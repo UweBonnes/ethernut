@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:04  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:43:12  haraldkipp
+ * Ethernut 2.0 support added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:04  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:39:37  harald
  * Realtek definitions
@@ -79,8 +82,34 @@
 /*! \brief Interrupt signal handler of \ref RTL_SIGNAL_BIT. */
 #define RTL_SIGNAL  sig_INTERRUPT5
 
-/*! \brief Interrupt signal bit. */
+/*! 
+ * \brief Interrupt signal bit for Ethernut 1.x Ethernet controller.
+ */
 #define RTL_SIGNAL_BIT     5
+
+
+/*! 
+ * \brief Ethernut 2.x Ethernet controller base address.
+ */
+#define NIC_BASE            0xC000
+
+/*! Port output register of \ref LAN_SIGNAL_BIT. */
+#define LAN_SIGNAL_PORT     PORTE
+
+/*! Port input register of \ref LAN_SIGNAL_BIT. */	
+#define LAN_SIGNAL_PIN      PINE	
+
+/*! Data direction register of \ref LAN_SIGNAL_BIT. */
+#define LAN_SIGNAL_DDR      DDRE	
+
+/*! \brief Interrupt signal handler of \ref LAN_SIGNAL_BIT. */
+#define LAN_SIGNAL          sig_INTERRUPT5
+
+/*! 
+ * \brief Interrupt signal bit for Ethernut 2.x Ethernet controller.
+ */
+#define LAN_SIGNAL_BIT      5
+
 
 /*@}*/
 
