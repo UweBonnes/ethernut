@@ -2,7 +2,7 @@
 #define _NETINET_PPP_FSM_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -85,8 +85,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:16  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/08 11:19:55  haraldkipp
+ * HDLC functions moved to async HDLC driver.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:16  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:46:46  harald
  * Cleanup
@@ -148,6 +151,9 @@ typedef struct {
 } XCPOPT;
 
 
+__BEGIN_DECLS
+
+extern void LcpOpen(NUTDEVICE * dev);
 extern void LcpClose(NUTDEVICE *dev);
 extern void LcpLowerUp(NUTDEVICE *dev);
 extern void LcpLowerDown(NUTDEVICE *dev);
@@ -155,13 +161,17 @@ extern void LcpLowerDown(NUTDEVICE *dev);
 extern void PapLowerUp(NUTDEVICE *dev);
 extern void PapLowerDown(NUTDEVICE *dev);
 
+extern void IpcpOpen(NUTDEVICE * dev);
+extern void IpcpClose(NUTDEVICE * dev);
 extern void IpcpLowerUp(NUTDEVICE *dev);
 extern void IpcpLowerDown(NUTDEVICE *dev);
 
 extern void PppOpen(NUTDEVICE *dev);
 extern void PppClose(NUTDEVICE *dev);
-extern void PppUp(NUTDEVICE *dev);
-extern void PppDown(NUTDEVICE *dev);
+
+extern int NutPppInitStateMachine(NUTDEVICE * dev);
+
+__END_DECLS
 
 #endif
 

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2002 by Call Direct Cellular Solutions Pty. Ltd. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.calldirect.com.au/
  * -
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:15:32  haraldkipp
+ * HDLC functions moved to async HDLC driver.
+ *
  * Revision 1.3  2003/08/14 15:21:01  haraldkipp
  * Bugfix, allow HDLC flag to mark end _and_ begin
  *
@@ -84,6 +87,7 @@
 
 #include <string.h>
 #include <io.h>
+#include <fcntl.h>
 
 #include <net/if_var.h>
 #include <net/ppp.h>
@@ -94,6 +98,7 @@
 #include <sys/thread.h>
 
 #include <dev/ppp.h>
+#include <netinet/ppp_fsm.h>
 #include <dev/ahdlc.h>
 
 #ifdef NUTDEBUG
@@ -105,288 +110,15 @@
  */
 /*@{*/
 
-/* Ugly hack to get simple UART drivers working. */
-extern u_char ppp_hackup;
-
 static PPPDCB dcb_ppp;
-static char ppp_tx_bsy;
-static HANDLE ppp_tx_rdy;
 
-/*
- * Deprecated. Will be included in the AHDLC driver.
- */
-static unsigned int PPP_Calc_CRC(unsigned int c)
-{
-    char i;                     // Just a loop index
-    c &= 0xFF;                  // Only calculate CRC on low byte
-    for (i = 0; i < 8; i++)     // Loop eight times, once for each bit
-    {
-        if (c & 1)              // Is bit high?
-        {
-            c /= 2;             // Position for next bit
-            c ^= 0x8408;        // Toggle the feedback bits
-        } else
-            c /= 2;             // Just position for next bit
-    }                           // This routine would be best optimized in assembly
-    return c;                   // Return the 16 bit checksum
-}
-
-/*
- * Deprecated. Will be included in the AHDLC driver.
- */
-static void PPP_AsyncMapOut(int fd, u_char * p, u_short len)
-{
-
-    u_char obuff[130];
-    u_char i;
-    u_short n;
-
-    n = 0;
-
-    while (n < len) {
-        // Send 128 byte chunks
-        for (i = 0; i < 128;) {
-            if ((*p) < 0x20) {
-                obuff[i++] = 0x7D;
-                obuff[i] = (*p) ^ 0x20;
-            } else if ((*p) == 0x7E) {
-                obuff[i++] = 0x7D;
-                obuff[i] = (*p) ^ 0x20;
-            } else if ((*p) == 0x7D) {
-                obuff[i++] = 0x7D;
-                obuff[i] = (*p) ^ 0x20;
-            } else {
-                obuff[i] = (*p);
-            }
-            p++;
-            n++;
-            i++;
-            if (n == len)
-                break;
-        }
-        _write(fd, obuff, i);
-    }
-
-
-    return;
-}
-
-/*!
- * \brief Actually send a PPP packet
- *
- * Deprecated. Will be included in the AHDLC driver.
- *
- * \param nb Network buffer structure containing the packet to be sent.
- *           The structure must have been allocated by a previous
- *           call NutNetBufAlloc(). This routine will automatically
- *           release the buffer in case of an error.
- *
- * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
- *         structure.
- *
- * \bug Never returns an error.
- */
-int PPPPutPacket(NUTDEVICE * dev, NETBUF * nb)
-{
-    u_short sz;
-    u_short CSum;
-    u_short i;
-    u_char flag = 0x7E;
-    u_char *p;
-    PPPDCB *dcb = dev->dev_dcb;
-
-    /*
-     * Lock duplicate entries. Michael Fischer presented a better
-     * example on how to use events for mutex. But this one is
-     * OK for now.
-     */
-    if (ppp_tx_bsy == 1)
-        NutEventWait(&ppp_tx_rdy, 0);
-    ppp_tx_bsy = 1;
-
-    //
-    // Calculate the number of bytes to be send. Do not
-    // send packets larger than 1536 bytes.
-    //
-    sz = nb->nb_dl.sz + nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz;
-    if (sz >= dcb->dcb_loc_mru) {
-#ifdef NUTDEBUG
-        if (__ppp_trf) {
-            static prog_char dbgfmt[] = "[PPP] sz = %d mru = %d\n";
-            fprintf_P(__ppp_trs, dbgfmt, sz, dcb->dcb_loc_mru);
-        }
-#elif defined(__IMAGECRAFT__)
-        /*
-         * No idea what this is, but ICCAVR fails if this call isn't there.
-         */
-        NutSleep(100);
-#endif
-        NutNetBufFree(nb);
-        return -1;
-    }
-
-    // Calculate checksum
-    CSum = 0xFFFF;
-
-    p = nb->nb_dl.vp;
-    for (i = 0; i < nb->nb_dl.sz; i++)
-        CSum = PPP_Calc_CRC((*p++) ^ CSum) ^ (CSum / 256);
-
-    p = nb->nb_nw.vp;
-    for (i = 0; i < nb->nb_nw.sz; i++)
-        CSum = PPP_Calc_CRC((*p++) ^ CSum) ^ (CSum / 256);
-
-    p = nb->nb_tp.vp;
-    for (i = 0; i < nb->nb_tp.sz; i++)
-        CSum = PPP_Calc_CRC((*p++) ^ CSum) ^ (CSum / 256);
-
-    p = nb->nb_ap.vp;
-    for (i = 0; i < nb->nb_ap.sz; i++)
-        CSum = PPP_Calc_CRC((*p++) ^ CSum) ^ (CSum / 256);
-
-    _write(dcb->dcb_fd, &flag, 1);
-
-    PPP_AsyncMapOut(dcb->dcb_fd, nb->nb_dl.vp, nb->nb_dl.sz);
-    PPP_AsyncMapOut(dcb->dcb_fd, nb->nb_nw.vp, nb->nb_nw.sz);
-    PPP_AsyncMapOut(dcb->dcb_fd, nb->nb_tp.vp, nb->nb_tp.sz);
-    PPP_AsyncMapOut(dcb->dcb_fd, nb->nb_ap.vp, nb->nb_ap.sz);
-
-
-    CSum = ~CSum;
-    PPP_AsyncMapOut(dcb->dcb_fd, (u_char *) & CSum, 2);
-    _write(dcb->dcb_fd, &flag, 1);
-
-    // Let any other threads that are waiting to send PPP packets know it's OK to do so
-    ppp_tx_bsy = 0;
-    NutEventBroadcastAsync(&ppp_tx_rdy);
-
-    return 0;
-}
-
-/*! \fn PPPRx(void *arg)
- * \brief PPP receiver thread.
- *
- * Deprecated. Will be included in the AHDLC driver.
- * 
- * It runs with high priority.
- */
-
-THREAD(PPPRx, arg)
-{
-    NUTDEVICE *dev;
-    IFNET *ifn;
-    NETBUF *nb;
-    u_char *PPPRxBuff;
-    u_char inbuf[1];
-    int i;
-    char esc;
-    char got_flag = 0;
-    unsigned int CSum;
-    PPPDCB *dcb;
-
-    dev = arg;
-    dcb = dev->dev_dcb;
-    ifn = (IFNET *) dev->dev_icb;
-
-#ifdef NUTDEBUG
-    if (__ppp_trf) {
-        static prog_char dbgstr[] = "Enter PPPReceive \n";
-        fputs_P(dbgstr, __ppp_trs);
-    }
-#endif
-
-    while((PPPRxBuff = NutHeapAlloc(PPP_MRU)) == NULL) {
-#ifdef NUTDEBUG
-        if (__ppp_trf) {
-            static prog_char dbgstr[] = "\nFatal Error: Cannot Allocate PPP receive buffer\n";
-            fputs_P(dbgstr, __ppp_trs);
-        }
-#endif
-        NutSleep(1000);
-    }
-
-    NutThreadSetPriority(18);
-    for (;;) {
-        /* Wait for network mode. */
-        while(ppp_hackup == 0)
-            NutSleep(250);
-
-        /* Signal the link driver that we are up. */
-        dev->dev_ioctl(dev, LCP_LOWERUP, 0);
-        
-        // Start off by waiting for a flag byte 
-        if (_read(dcb->dcb_fd, inbuf, 1) == 0) {
-            got_flag = 0;
-            continue;
-        }
-        
-        if(got_flag == 0 && inbuf[0] != AHDLC_FLAG) {
-            continue;
-        }
-        got_flag = 1;
-
-        // Absorb any extra flags that may appear (particularly if we miss a packet)
-        // And place the first byte of the packet in inbuf [0]
-        while (inbuf[0] == AHDLC_FLAG) {
-            _read(dcb->dcb_fd, inbuf, 1);
-        }
-
-        esc = 0;
-        CSum = 0xFFFF;
-
-        // Ok we've got a flag now lets get the rest of the packet
-        for (i = 0; i < PPP_MRU; i++) {
-            if (inbuf[0] == AHDLC_FLAG) {
-                // Complete packet received
-                if (CSum == AHDLC_GOODFCS) {
-                    i -= 2;     // Don't copy FCS       
-                    nb = NutNetBufAlloc(0, NBAF_DATALINK, i);
-                    if (nb) {
-                        memcpy(nb->nb_dl.vp, PPPRxBuff, i);
-                        (*ifn->if_recv) (dev, nb);
-                    }
-                }
-                break;
-            } else if (inbuf[0] == AHDLC_ESCAPE) {
-                esc = 1;
-                i--;
-            } else {
-                PPPRxBuff[i] = inbuf[0];
-                if (esc) {
-                    PPPRxBuff[i] ^= 0x20;
-                    esc = 0;
-                }
-                CSum = PPP_Calc_CRC(PPPRxBuff[i] ^ CSum) ^ (CSum / 256);        // Calculate CRC
-            }
-            // Get the next byte
-            while (ppp_hackup && _read(dcb->dcb_fd, inbuf, 1) == 0);
-        }
-        /* Signal the link driver that we are down. */
-        if(ppp_hackup == 0)
-            dev->dev_ioctl(dev, LCP_LOWERDOWN, 0);
-    }
-}
-
-/*
- * Deprecated. The AHDLC driver will be enabled by ioctl.
- */
-void NutPppEnable(NUTDEVICE *dev) 
-{
-    /* If an AHDLC driver has been registered, it must have started 
-       a receiver thread with the same name. */
-    if (GetThreadByName("ahdlcrx") == NULL)
-        NutThreadCreate("ahdlcrx", PPPRx, dev, 512);
-}
 
 /*
  * Pass reads to the physical driver for now.
  */
-int NutPppRead(NUTFILE * fp, void *buffer, int size)
+static int NutPppRead(NUTFILE * fp, void *buffer, int size)
 {
-    PPPDCB *pppdcb = fp->nf_dev->dev_dcb;
-
-    return _read(pppdcb->dcb_fd, buffer, size);
+    return _read(((PPPDCB *) (dev->dev_dcb))->dcb_fd, buffer, size);
 }
 
 /*
@@ -394,9 +126,7 @@ int NutPppRead(NUTFILE * fp, void *buffer, int size)
  */
 static int NutPppWrite(NUTFILE * fp, CONST void *buffer, int len)
 {
-    PPPDCB *pppdcb = fp->nf_dev->dev_dcb;
-
-    return _write(pppdcb->dcb_fd, buffer, len);
+    return _write(((PPPDCB *) (dev->dev_dcb))->dcb_fd, buffer, len);
 }
 
 /*
@@ -404,9 +134,160 @@ static int NutPppWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 static int NutPppWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    PPPDCB *pppdcb = fp->nf_dev->dev_dcb;
+    return _write_P(((PPPDCB *) (dev->dev_dcb))->dcb_fd, buffer, len);
+}
 
-    return _write_P(pppdcb->dcb_fd, buffer, len);
+
+/*!
+ * \brief Perform PPP control functions.
+ *
+ * \param dev  Identifies the device that receives the device-control
+ *             function.
+ * \param req  Requested control function. May be set to one of the
+ *             following constants:
+ *             - LCP_OPEN
+ *             - LCP_CLOSE
+ *             - LCP_LOWERUP
+ *             - LCP_LOWERDOWN
+ *             Any other function will be passed to the physical driver.
+ *
+ * \param conf Points to a buffer that contains any data required for
+ *             the given control function or receives data from that
+ *             function.
+ * \return 0 on success, -1 otherwise.
+ *
+ */
+static int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = 0;
+
+    switch (req) {
+    case LCP_OPEN:
+        LcpOpen(dev);
+        break;
+
+    case LCP_CLOSE:
+        LcpClose(dev);
+        break;
+
+    case LCP_LOWERUP:
+        LcpLowerUp(dev);
+        break;
+
+    case LCP_LOWERDOWN:
+        LcpLowerDown(dev);
+        break;
+
+    default:
+        rc = _ioctl(((PPPDCB *) (dev->dev_dcb))->dcb_fd, req, conf);
+        break;
+    }
+    return rc;
+}
+
+/*
+ * \brief Enable the link layer to come up.
+ *
+ * The underlying hardware driver should have established a physical 
+ * connection before calling this function.
+ *
+ * \param name Physical device name optionally followed by username 
+ *             and password, each separated by a slash.
+ *
+ */
+static NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
+{
+    NUTFILE *fp;
+    u_char i;
+    char *cp;
+    char *sp;
+    char pdn[9];
+    PPPDCB *dcb = dev->dev_dcb;
+
+    /* Clear our device control block. */
+    memset(dcb, 0, sizeof(PPPDCB));
+
+    /* Get the first part of the name, it specifies the physical device. */
+    for (cp = (char *) name, i = 0; *cp && *cp != '/' && i < sizeof(pdn) - 1; i++) {
+        pdn[i] = *cp++;
+    }
+    pdn[i] = 0;
+
+    /* Open the pysical device. */
+    if ((dcb->dcb_fd = _open(pdn, _O_RDWR | _O_BINARY)) == -1) {
+        return NUTFILE_EOF;
+    }
+
+    /*
+     * Allocate a file structure to return.
+     */
+    if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0) {
+        return NUTFILE_EOF;
+    }
+    fp->nf_next = 0;
+    fp->nf_dev = dev;
+    fp->nf_fcb = 0;
+
+    /*
+     * Extract user name and password and store it in our device control
+     * block. It will be used later by the authentication layer.
+     */
+    if (*cp == '/') {
+        for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
+        if (i) {
+            dcb->dcb_user = NutHeapAlloc(i + 1);
+            for (sp = dcb->dcb_user; *cp && *cp != '/';)
+                *sp++ = *cp++;
+            *sp = 0;
+        }
+        if (*cp == '/') {
+            for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
+            if (i) {
+                dcb->dcb_pass = NutHeapAlloc(i + 1);
+                for (sp = dcb->dcb_pass; *cp && *cp != '/';)
+                    *sp++ = *cp++;
+                *sp = 0;
+            }
+        }
+    }
+
+    /* Enable all layers to come up. */
+    IpcpOpen(dev);
+
+    return fp;
+}
+
+
+/*
+ * Start closing connection.
+ */
+static int NutPppClose(NUTFILE * fp)
+{
+    PPPDCB *dcb = fp->nf_dev->dev_dcb;
+
+    IpcpClose(fp->nf_dev);
+    if (dcb->dcb_user)
+        NutHeapFree(dcb->dcb_user);
+    if (dcb->dcb_pass)
+        NutHeapFree(dcb->dcb_pass);
+    NutHeapFree(fp);
+
+    return 0;
+}
+
+/*!
+ * \brief Initialize the PPP device.
+ *
+ * This routine is called during device registration and initializes the 
+ * PPP state machine.
+ *
+ * \param dev  Identifies the device to initialize.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+static int NutPppInit(NUTDEVICE * dev)
+{
+    return NutPppInitStateMachine(dev);
 }
 
 /*!
@@ -414,7 +295,8 @@ static int NutPppWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  */
 IFNET ifn_ppp = {
     IFT_PPP,                    /*!< \brief Interface type. */
-    {0, 0, 0, 0, 0, 0},         /*!< \brief Hardware net address. */
+    {0, 0, 0, 0, 0, 0}
+    ,                           /*!< \brief Hardware net address. */
     0,                          /*!< \brief IP address. */
     0,                          /*!< \brief Remote IP address for point to point. */
     0,                          /*!< \brief IP network mask. */
@@ -434,21 +316,22 @@ IFNET ifn_ppp = {
  * application calls NutNetIfConfig().
  */
 NUTDEVICE devPpp = {
-    0,              /* Pointer to next device. */
-    {'p', 'p', 'p', 0, 0, 0, 0, 0, 0},        /* Unique device name. */
-    IFTYP_NET,	    /* Type of device. */
-    0,		    /* Base address. */
-    0,		    /* First interrupt number. */
-    &ifn_ppp,	    /* Interface control block. */
-    &dcb_ppp,	    /* Driver control block. */
-    NutPppInit,	    /* Driver initialization routine, dev_init(). */
-    NutPppIOCtl,    /* Driver specific control function, dev_ioctl(). */
-    NutPppRead,     /* Read from device, dev_read. */
-    NutPppWrite,    /* Write to device, dev_write. */ 
-    NutPppWrite_P,  /* Write data from program space to device, dev_write_P. */
-    NutPppOpen,     /* Open a device or file, dev_open. */
-    NutPppClose,    /* Close a device or file, dev_close. */
-    0		    /* Request file size. */
+    0,                          /* Pointer to next device, dev_next. */
+    {'p', 'p', 'p', 0, 0, 0, 0, 0, 0}
+    ,                           /* Unique device name, dev_name. */
+    IFTYP_NET,                  /* Type of device, dev_type. */
+    0,                          /* Base address, dev_base. */
+    0,                          /* First interrupt number, dev_irq. */
+    &ifn_ppp,                   /* Interface control block, dev_icb. */
+    &dcb_ppp,                   /* Driver control block, dev_dcb. */
+    NutPppInit,                 /* Driver initialization routine, dev_init(). */
+    NutPppIOCtl,                /* Driver specific control function, dev_ioctl(). */
+    NutPppRead,                 /* Read from device, dev_read. */
+    NutPppWrite,                /* Write to device, dev_write. */
+    NutPppWrite_P,              /* Write data from program space to device, dev_write_P. */
+    NutPppOpen,                 /* Open a device or file, dev_open. */
+    NutPppClose,                /* Close a device or file, dev_close. */
+    0                           /* Request file size. */
 };
 
 /*@}*/
