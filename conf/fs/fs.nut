@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.4  2005/04/05 17:56:16  haraldkipp
+-- UROM file system is not platform dependant.
+--
 -- Revision 1.3  2005/02/05 20:40:44  haraldkipp
 -- Peanut added.
 --
@@ -75,7 +78,6 @@ nutfs =
     {
         name = "nutfs_uromfs",
         brief = "UROM",
-        requires = { "HW_MCU_AVR" },
         provides = { "NUT_FS", "NUT_FS_READ" },
         description = "Read only.",
         sources = { "uromfs.c" },
