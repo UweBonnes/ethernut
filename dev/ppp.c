@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/14 10:12:29  haraldkipp
+ * Bugfix, failed to compile
+ *
  * Revision 1.4  2004/03/08 11:15:32  haraldkipp
  * HDLC functions moved to async HDLC driver.
  *
@@ -118,7 +121,7 @@ static PPPDCB dcb_ppp;
  */
 static int NutPppRead(NUTFILE * fp, void *buffer, int size)
 {
-    return _read(((PPPDCB *) (dev->dev_dcb))->dcb_fd, buffer, size);
+    return _read(((PPPDCB *) (fp->nf_dev->dev_dcb))->dcb_fd, buffer, size);
 }
 
 /*
@@ -126,7 +129,7 @@ static int NutPppRead(NUTFILE * fp, void *buffer, int size)
  */
 static int NutPppWrite(NUTFILE * fp, CONST void *buffer, int len)
 {
-    return _write(((PPPDCB *) (dev->dev_dcb))->dcb_fd, buffer, len);
+    return _write(((PPPDCB *) (fp->nf_dev->dev_dcb))->dcb_fd, buffer, len);
 }
 
 /*
@@ -134,7 +137,7 @@ static int NutPppWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 static int NutPppWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
-    return _write_P(((PPPDCB *) (dev->dev_dcb))->dcb_fd, buffer, len);
+    return _write_P(((PPPDCB *) (fp->nf_dev->dev_dcb))->dcb_fd, buffer, len);
 }
 
 
