@@ -33,6 +33,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2003/11/24 21:01:42  drsung
+ * Now using UDP packet queue.
+ *
  * Revision 1.1  2003/11/24 18:13:22  drsung
  * first release
  *
@@ -128,16 +131,19 @@ int NutSNTPGetTime(u_long * server_adr, time_t * t)
     if (sock == NULL)
         goto error;
 
+    /* Set UDP input buffer to 256 bytes */
+    u_short bufsize = 256;
+    NutUdpSetSockOpt(sock, SO_RCVBUF, &bufsize, sizeof(bufsize));
+
     data->mode = 0x1B;          // LI, VN and Mode bit fields (all in u_char mode);
     if (NutUdpSendTo(sock, *server_adr, SNTP_PORT, data, sizeof(*data)))        // Send packet to server
         goto error;             // on error return -1
-
   retry:
     rec_addr = 0;
     len = NutUdpReceiveFrom(sock, &rec_addr, &port, data, sizeof(*data), 5000); // Receive packet with timeout of 5s
     if (len <= 0) {
         goto error;             // error or timeout occured
-    }
+    } 
 
     if (port != SNTP_PORT || (data->mode & 0xc0) == 0xc0)       // if source port is not SNTP_PORT or server is not in sync return
     {
@@ -156,7 +162,6 @@ int NutSNTPGetTime(u_long * server_adr, time_t * t)
     if (data)
         NutHeapFree(data);
     return result;
-
 }
 
 int NutSNTPStartThread(u_long server_addr, u_long interval)
