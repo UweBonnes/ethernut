@@ -33,8 +33,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:37  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/17 09:41:35  haraldkipp
+ * Setting the data direction during init only may fail on some hardware.
+ * We are now doing this immediately before using the port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:37  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.3  2003/05/06 18:30:10  harald
  * ICCAVR port
@@ -65,6 +69,7 @@ static u_char short_delay = LCD_SHORT_DELAY;
 
 static INLINE void LcdSendNibble(u_char nib)
 {
+    outp(inp(LCD_DATA_DDR) | LCD_DATA_BITS, LCD_DATA_DDR);
     outp((inp(LCD_DATA_PORT) & ~LCD_DATA_BITS) | (nib & LCD_DATA_BITS), LCD_DATA_PORT);
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     _NOP(); _NOP();
@@ -100,6 +105,7 @@ static INLINE void LcdSendByte(u_char ch, u_char xt)
 
 static void LcdWriteData(u_char ch)
 {
+    sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
     sbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
     LcdSendByte(ch, short_delay);
 }
@@ -109,6 +115,7 @@ static void LcdWriteData(u_char ch)
  */
 static void LcdWriteCmd(u_char cmd, u_char xt)
 {
+    sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
     cbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
     LcdSendByte(cmd, xt);
 }
@@ -146,9 +153,6 @@ static void LcdCursorMode(u_char on)
 
 static void LcdInit(void)
 {
-    outp(inp(LCD_DATA_PORT) & ~LCD_DATA_BITS, LCD_DATA_PORT);
-    outp(inp(LCD_DATA_DDR) | LCD_DATA_BITS, LCD_DATA_DDR);
-
     /*
      * Set LCD register select and enable outputs.
      */
