@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/06/08 10:18:11  olereinhardt
+ * If macro MCAN is not defined some necessary defines need to be set by default (Interrupt defines)
+ *
  * Revision 1.1  2004/06/07 15:11:49  olereinhardt
  * Initial checkin
  *
@@ -74,8 +77,19 @@
 #include <dev/sja1000.h>
 
 
-CANINFO dcb_sja1000;
+#ifndef SJA_SIGNAL
+#define SJA_SIGNAL     sig_INTERRUPT7
+#endif
 
+#ifndef SJA_EICR
+#define SJA_EICR       EICRB
+#endif
+
+#ifndef SJA_SIGNAL_BIT
+#define SJA_SIGNAL_BIT 7
+#endif
+
+CANINFO dcb_sja1000;
 
 volatile u_short sja_base = 0x0000;
 
@@ -538,7 +552,7 @@ static void SJAInterrupt(void *arg)
 {
     CANINFO *ci;
     volatile u_char irq = SJA1000_INT;
-
+    
     ci = (CANINFO *) (((NUTDEVICE *) arg)->dev_dcb);
 
     ci->can_interrupts++;
@@ -653,7 +667,7 @@ int SJAInit(NUTDEVICE * dev)
 
     SJA1000_OUTCTRL = (Tx1Float | Tx0PshPull | NormalMode);     // Set up Output Control Register
 
-    SJA1000_IEN = (RIE_Bit | TIE_Bit /*| EIE_Bit | DOIE_Bit */ );       // Enables receive IRQ
+    SJA1000_IEN = (RIE_Bit | TIE_Bit | EIE_Bit | DOIE_Bit );       // Enables receive IRQ
 
     SJA1000_MODECTRL = (AFM_Bit);       // set single filter mode + sleep
     // *** Note - if you change SJA1000_MODECTRL, change it in
