@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.120 2004/09/19 11:23:11 haraldkipp Exp $
+$Id: ChangeLog,v 1.121 2004/09/19 12:31:47 haraldkipp Exp $
 
 2004-09-19  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -7,6 +7,10 @@ $Id: ChangeLog,v 1.120 2004/09/19 11:23:11 haraldkipp Exp $
 
 	* include/sys/syslog.h, pro/syslog.c, pro/Makefile, 
 	conf/pro/pro.nut: Syslog protocol added.
+
+	* include/cfg/arch.h, include/cfg/crt.h, include/cfg/eeprom.h,
+	include/cfg/os.h, include/cfg/syslog.h: Configuration 
+	placeholders for building in source tree.
 
 
 2004-09-17  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>
