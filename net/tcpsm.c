@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2003/11/04 17:57:35  haraldkipp
+ * Bugfix: Race condition left socket in close-wait state
+ *
  * Revision 1.4  2003/11/03 16:48:02  haraldkipp
  * Use the system timer for retransmission timouts
  *
@@ -164,7 +167,7 @@
 #include <net/netdebug.h>
 #endif
 
-extern TCPSOCKET *volatile tcpSocketList;
+extern TCPSOCKET *tcpSocketList;
 
 /*!
  * \addtogroup xgTCP
@@ -318,6 +321,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
              * the oldest unacknowledged netbuf.
              */
             if (++sock->so_tx_dup >= 3) {
+                /* Restart the retransmission timer. */
                 sock->so_retran_time = (u_short)NutGetMillis();
                 sock->so_tx_dup = 0;
 #ifdef NUTDEBUG
@@ -382,6 +386,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
 static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
 {
     int rc = 0;
+    ureg_t txf = 0;
 
     switch (sock->so_state) {
         /* Handle the most common case first. */
@@ -392,21 +397,14 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              * Closed by application.
              */
             sock->so_tx_flags |= SO_FIN | SO_ACK;
-            NutTcpOutput(sock, 0, 0);
+            txf = 1;
             break;
         case TCPS_CLOSE_WAIT:
             /*
              * FIN received.
              */
             sock->so_tx_flags |= SO_ACK | SO_FORCE;
-            NutTcpOutput(sock, 0, 0);
-            /*
-             * Inform application.
-             */
-            NutEventBroadcast(&sock->so_rx_tq);
-            NutEventBroadcast(&sock->so_tx_tq);
-            NutEventBroadcast(&sock->so_pc_tq);
-            NutEventBroadcast(&sock->so_ac_tq);
+            txf = 1;
             break;
         default:
             rc = -1;
@@ -420,7 +418,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
          */
         if (state == TCPS_SYN_RECEIVED) {
             sock->so_tx_flags |= SO_SYN | SO_ACK;
-            NutTcpOutput(sock, 0, 0);
+            txf = 1;
         } else
             rc = -1;
         break;
@@ -437,14 +435,14 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              * SYN received.
              */
             sock->so_tx_flags |= SO_SYN | SO_ACK;
-            NutTcpOutput(sock, 0, 0);
+            txf = 1;
             break;
         case TCPS_ESTABLISHED:
             /*
              * SYNACK received.
              */
             sock->so_tx_flags |= SO_ACK | SO_FORCE;
-            NutTcpOutput(sock, 0, 0);
+            txf = 1;
             break;
         default:
             rc = -1;
@@ -474,14 +472,14 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              * Closed by application.
              */
             sock->so_tx_flags |= SO_FIN;
-            NutTcpOutput(sock, 0, 0);
+            txf = 1;
             break;
         case TCPS_CLOSE_WAIT:
             /*
              * FIN received.
              */
             sock->so_tx_flags |= SO_FIN | SO_ACK;
-            NutTcpOutput(sock, 0, 0);
+            txf = 1;
             break;
         default:
             rc = -1;
@@ -491,6 +489,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
 
     case TCPS_FIN_WAIT_1:
         switch (state) {
+        case TCPS_FIN_WAIT_1:
         case TCPS_FIN_WAIT_2:
             /*
              * ACK of FIN received.
@@ -519,7 +518,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
         if (state != TCPS_TIME_WAIT)
             rc = -1;
         sock->so_tx_flags |= SO_ACK | SO_FORCE;
-        NutTcpOutput(sock, 0, 0);
+        txf = 1;
         break;
 
     case TCPS_CLOSE_WAIT:
@@ -528,7 +527,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
          */
         if (state == TCPS_LAST_ACK) {
             sock->so_tx_flags |= SO_FIN | SO_ACK;
-            NutTcpOutput(sock, 0, 0);
+            txf = 1;
         } else
             rc = -1;
         break;
@@ -561,11 +560,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              * Active open by application.
              */
             sock->so_tx_flags |= SO_SYN;
-            if (NutTcpOutput(sock, 0, 0)) {
-                rc = -1;
-                sock->so_last_error = EHOSTDOWN;
-                NutEventPost(&sock->so_ac_tq);
-            }
+            txf = 1;
             break;
         default:
             rc = -1;
@@ -581,8 +576,26 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
         NutDumpSockState(__tcp_trs, state, "[>", "]");
     }
 #endif
-    if (rc == 0)
+
+    if (rc == 0) {
         sock->so_state = state;
+        if(txf && NutTcpOutput(sock, 0, 0)) {
+            if(state == TCPS_SYN_SENT) {
+                rc = -1;
+                sock->so_last_error = EHOSTDOWN;
+                NutEventPost(&sock->so_ac_tq);
+            }
+        }
+        if(state == TCPS_CLOSE_WAIT) {
+            /*
+             * Inform application.
+             */
+            NutEventBroadcast(&sock->so_rx_tq);
+            NutEventBroadcast(&sock->so_tx_tq);
+            NutEventBroadcast(&sock->so_pc_tq);
+            NutEventBroadcast(&sock->so_ac_tq);
+        }
+    }
     return rc;
 }
 
@@ -728,6 +741,8 @@ int NutTcpStateWindowEvent(TCPSOCKET * sock)
 void NutTcpStateRetranTimeout(TCPSOCKET * sock)
 {
     if ((u_short)NutGetMillis() - sock->so_retran_time > 3000) {
+        /* Stop the retransmission timer. */
+        sock->so_retran_time = 0;
         sock->so_time_wait = 0;
         sock->so_state = TCPS_CLOSE_WAIT;
         NutEventBroadcast(&sock->so_ac_tq);
@@ -740,6 +755,8 @@ void NutTcpStateRetranTimeout(TCPSOCKET * sock)
             NutDumpTcpHeader(__tcp_trs, "RET", sock, sock->so_tx_nbq);
 #endif
         if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, sock->so_tx_nbq)) {
+            /* Stop the retransmission timer. */
+            sock->so_retran_time = 0;
             sock->so_tx_nbq = sock->so_tx_nbq->nb_next;
             sock->so_time_wait = 0;
             sock->so_state = TCPS_CLOSE_WAIT;
@@ -748,8 +765,11 @@ void NutTcpStateRetranTimeout(TCPSOCKET * sock)
             NutEventBroadcast(&sock->so_tx_tq);
             NutEventBroadcast(&sock->so_pc_tq);
         }
+        else {
+            /* Restart the retransmission timer. */
+            sock->so_retran_time = (u_short)NutGetMillis();
+        }
     }
-    sock->so_retran_time = (u_short)NutGetMillis();
 }
 
 /* ================================================================
@@ -1362,7 +1382,7 @@ THREAD(NutTcpSm, arg)
                 /*
                  * Process retransmit timer.
                  */
-                if (sock->so_tx_nbq) {
+                if (sock->so_retran_time && sock->so_tx_nbq) {
                     if (sock->so_state == TCPS_ESTABLISHED) {
                         /*
                          * For slow connections you may have to replace the 
@@ -1373,8 +1393,10 @@ THREAD(NutTcpSm, arg)
                         if ((u_short)NutGetMillis() - sock->so_retran_time > 500) {
                             NutTcpStateRetranTimeout(sock);
                         }
-                    } else if ((u_short)NutGetMillis() - sock->so_retran_time > 1000) {
-                        NutTcpStateRetranTimeout(sock);
+                    } else if (sock->so_state != TCPS_CLOSE_WAIT) {
+                        if ((u_short)NutGetMillis() - sock->so_retran_time > 1000) {
+                            NutTcpStateRetranTimeout(sock);
+                        }
                     }
                 }
 
