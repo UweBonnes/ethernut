@@ -40,7 +40,6 @@
 /* avoid stdio nut wrapper */
 #define NO_STDIO_NUT_WRAPPER
 
-#include <fcntl.h>
 #include <fcntl_orig.h>
 #include <arch/unix.h>
 #include <sys/device.h>
@@ -48,7 +47,7 @@
 #include <sys/timer.h>
 #include <sys/thread.h>
 #include <dev/usart.h>
-#include <errno.h> 
+#include <errno.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,6 +56,23 @@
 #include <termios.h>
 
 #include <dev/unix_devs.h>
+
+/* on mac os x, not all baud rates are defined in termios.h but
+   they are mapped to the numeric value anyway, so we define them here */
+#ifdef __APPLE__
+#ifndef B460800
+#define B460800 460800
+#endif
+#ifndef B500000
+#define B500000 500000
+#endif
+#ifndef B576000
+#define B576000 576000
+#endif
+#ifndef B921600
+#define B921600 921600
+#endif
+#endif
 
 /* private prototypes */
 int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf);
@@ -77,6 +93,140 @@ char *dtostrf(double f, char width, char prec, char *str)
     return str;
 }
 
+/*
+ * Quite unnecessary functions, because linux doesn't define B19200 as 19200
+ * we have to map those value to their symbolic counterparts:
+ * 0
+ * 50
+ * 75
+ * 110
+ * 134
+ * 150
+ * 200
+ * 300
+ * 600
+ * 1200
+ * 1800
+ * 2400
+ * 4800
+ * 9600
+ * 19200
+ * 38400
+ * 57600
+ * 115200
+ * 230400
+ * 460800
+ * 500000
+ * 576000
+ * 921600
+ */
+static int convertToRealSpeed(int baudSpeed)
+{
+    switch (baudSpeed) {
+    case B0:
+        return 0;
+    case B50:
+        return 50;
+    case B75:
+        return 75;
+    case B110:
+        return 110;
+    case B134:
+        return 134;
+    case B150:
+        return 150;
+    case B200:
+        return 200;
+    case B300:
+        return 300;
+    case B600:
+        return 600;
+    case B1200:
+        return 1200;
+    case B1800:
+        return 1800;
+    case B2400:
+        return 2400;
+    case B4800:
+        return 4800;
+    case B9600:
+        return 9600;
+    case B19200:
+        return 19200;
+    case B38400:
+        return 38400;
+    case B57600:
+        return 57600;
+    case B115200:
+        return 115200;
+    case B230400:
+        return 230400;
+    case B460800:
+        return 460800;
+    case B500000:
+        return 500000;
+    case B576000:
+        return 576000;
+    case B921600:
+        return 921600;
+    }
+    return -1;
+}
+
+
+static int convertToBaudSpeed(int realSpeed)
+{
+    switch (realSpeed) {
+    case 0:
+        return B0;
+    case 50:
+        return B50;
+    case 75:
+        return B75;
+    case 110:
+        return B110;
+    case 134:
+        return B134;
+    case 150:
+        return B150;
+    case 200:
+        return B200;
+    case 300:
+        return B300;
+    case 600:
+        return B600;
+    case 1200:
+        return B1200;
+    case 1800:
+        return B1800;
+    case 2400:
+        return B2400;
+    case 4800:
+        return B4800;
+    case 9600:
+        return B9600;
+    case 19200:
+        return B19200;
+    case 38400:
+        return B38400;
+    case 57600:
+        return B57600;
+    case 115200:
+        return B115200;
+    case 230400:
+        return B230400;
+    case 460800:
+        return B460800;
+    case 500000:
+        return B500000;
+    case 576000:
+        return B576000;
+    case 921600:
+        return B921600;
+    }
+    return -1;
+}
+
 
 /*!
  * \brief Open UnixDev
@@ -87,11 +237,10 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
 {
     NUTFILE *nf;
 
-    FILE *nativeFile;
+    int nativeFile;
     char *nativeName;
-    const char *modeString;
     struct termios t;
-	long	baud = USART_INITSPEED;
+    long baud;
 
     // map from dev->name to unix name
     if (strncmp("uart", dev->dev_name, 4) == 0) {
@@ -104,89 +253,60 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     } else
         return NULL;
 
-    // construct mode from flags
-    if (mode & (_O_APPEND || _O_RDWR)) {
-        if (mode & _O_BINARY)
-            modeString = "a+b";
-        else
-            modeString = "a+";
-    } else if (mode & _O_APPEND) {
-        if (mode & _O_BINARY)
-            modeString = "ab";
-        else
-            modeString = "a";
-    } else if (mode & _O_RDWR) {
-        if (mode & _O_BINARY)
-            modeString = "r+b";
-        else
-            modeString = "r+";
-    } else if (mode & _O_RDONLY) {
-        if (mode & _O_BINARY)
-            modeString = "rb";
-        else
-            modeString = "r";
-    } else if (mode & _O_WRONLY) {
-        if (mode & _O_BINARY)
-            modeString = "wb";
-        else
-            modeString = "w";
-    } else
-        // default mode
-        modeString = "a";
+    // determine mode -- not implemented yet 
+    // set default mode
+    mode = O_RDWR | O_NOCTTY;
 
     // fopen unix device
     if (strcmp("stdio", nativeName) == 0) {
 
-        nativeFile = stdout;
-		// store unix fd in dev
-		dev->dev_dcb = nativeFile;
+        // store unix fd in dev
+        nativeFile = STDOUT_FILENO;
+        setvbuf(stdout, NULL, _IONBF, 0);
+        dev->dev_dcb = (void *) nativeFile;
 
     } else {
 
-        nativeFile = fopen(nativeName, modeString);
+        nativeFile = open(nativeName, mode);
 
-        if (tcgetattr(fileno(nativeFile), &t) == 0) {
+        if (tcgetattr((int) nativeFile, &t) == 0) {
 
-            cfmakeraw(&t);
+            baud = convertToBaudSpeed(USART_INITSPEED);
 
-            // regular device file
-            t.c_cflag |= CS8 | CLOCAL;
+            bzero(&t, sizeof(t));
+            t.c_cflag = CS8 | CLOCAL | CREAD;
+            t.c_iflag = IGNPAR;
             t.c_oflag = 0;
-
-            // no flow control
-            t.c_iflag &= ~(IXON | IXOFF | IXANY);
-            t.c_cflag &= ~CRTSCTS;
 
             cfsetospeed(&t, baud);
             cfsetispeed(&t, baud);
-			
+
+            /* set input mode (non-canonical, no echo,...) */
+            t.c_lflag = 0;
+            t.c_cc[VTIME] = 0;  /* inter-character timer unused */
+            t.c_cc[VMIN] = 0;   /* non-blocking read */
+
+            tcflush(nativeFile, TCIFLUSH);
+
             // apply file descriptor options
-            if ( tcsetattr(fileno(nativeFile), TCSANOW, &t) < 0) 
-			{
-				printf("UnixDevOpen: tcsetattr failed\n\r" );
-			}
-
-            setvbuf(nativeFile, NULL, _IONBF, 0);
+            if (tcsetattr((int) nativeFile, TCSANOW, &t) < 0) {
+                printf("UnixDevOpen: tcsetattr failed\n\r");
+            }
         }
-
-		// store unix fd in dev
-		dev->dev_dcb = nativeFile;
-
-		// set initial speed to UART_SETSPEED
-		UnixDevIOCTL(dev, UART_SETSPEED, &baud);
+        // store unix fd in dev
+        dev->dev_dcb = (void *) nativeFile;
     }
 
-    if (nativeFile == NULL)
+    if (nativeFile == 0)
         return NULL;
 
-	// set non-blocking
-	if ( fcntl(fileno(nativeFile), F_SETFL, O_NONBLOCK) < 0 )
-	{
-		printf("UnixDevOpen: fcntl O_NONBLOCK failed");
-	}
-		
-	// printf("UnixDevOpen: %s, FILE * %lx, int %d\n\r", nativeName, (long) nativeFile, fileno(nativeFile));
-	
+    printf("UnixDevOpen: %s, fd * %d\n\r", nativeName, nativeFile);
+    printf("UnixDevOpen: stdout %d, stdin %d, stderr %d \n\r", fileno(stdin), fileno(stdout), fileno(stderr));
+
+    // set non-blocking
+    if (fcntl(nativeFile, F_SETFL, O_NONBLOCK) < 0) {
+        printf("UnixDevOpen: fcntl O_NONBLOCK failed\n\r");
+    }
     // create new NUTFILE using malloc
     nf = malloc(sizeof(NUTFILE));
 
@@ -195,30 +315,31 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     nf->nf_dev = dev;
     nf->nf_fcb = 0;
 
-    // set stdio unbuffered, if used
-    if (nativeFile == stdout)
-        setvbuf(stdout, NULL, _IONBF, 0);
-
     return nf;
 }
 
 
 /*!
- * \brief ...
+ * \brief Blocking write bytes to file
  *
  * \return Number of characters sent.
  */
 static int UnixDevWrite(NUTFILE * fp, CONST void *buffer, int len)
 {
     int rc;
-    // printf("UnixDevWrite: nutfile %0Xl, native handle %0Xl, text %s, len %d\n", (int) fp, (int) fp->nf_dev->dev_dcb,(char*) buffer, len);
-    // return fwrite(buffer, (size_t) 1, (size_t) len, (FILE *) fp->nf_dev->dev_dcb);
-    rc = write(fileno((FILE *) fp->nf_dev->dev_dcb), buffer, len);
-    return rc;
+    int remaining = len;
+    do {
+        rc = write((int) fp->nf_dev->dev_dcb, buffer, remaining);
+        if (rc > 0) {
+            buffer += rc;
+            remaining -= rc;
+        }
+    } while (remaining > 0);
+    return len;
 }
 
 /*!
- * \brief ...
+ * \brief Read bytes from file
  *
  * \return Number of characters read.
  */
@@ -226,45 +347,42 @@ static int UnixDevRead(NUTFILE * fp, void *buffer, int len)
 {
     int rc = 0;
     int newBytes;
-	// printf("UnixDevRead: called: len = %d\n\r",len);
+    // printf("UnixDevRead: called: len = %d\n\r",len);
 
     do {
-	
-        newBytes = read(fileno((FILE *) fp->nf_dev->dev_dcb), buffer, len);
+
+        newBytes = read((int) fp->nf_dev->dev_dcb, buffer, len);
 
         /* error or timeout ? */
         if (newBytes < 0) {
-		
-			if (errno == EAGAIN ) {
-				// timeout. No data available right now
-				// printf("UnixDevRead: no bytes available, trying again\n\r");
-				errno = 0;
-				NutSleep( 100 );
-				continue;
-			}
-			else {
 
-				printf("UnixDevRead: error %d occured, giving up\n\r", errno);
-				return newBytes;
-			}
-		}
-		else
-			rc += newBytes;
+            if (errno == EAGAIN) {
+                // timeout. No data available right now
+                // printf("UnixDevRead: no bytes available, trying again\n\r");
+                errno = 0;
+                NutSleep(100);
+                continue;
+            } else {
+
+                printf("UnixDevRead: error %d occured, giving up\n\r", errno);
+                return newBytes;
+            }
+        } else
+            rc += newBytes;
 
 #ifdef UART_SETBLOCKREAD
-		// printf("UnixDevRead: UART_SETBLOCKREAD defined\n\r");
-		// check for blocking read: all bytes received
-		if ( (((UNIXDCB *) fp->nf_dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD)  && (rc < len) )
-		{
-			// printf("UnixDevRead: block read enabled, but not enough bytes rad \n\r");
-			continue;
-		}
+        // printf("UnixDevRead: UART_SETBLOCKREAD defined\n\r");
+        // check for blocking read: all bytes received
+        if ((((UNIXDCB *) fp->nf_dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD) && (rc < len)) {
+            // printf("UnixDevRead: block read enabled, but not enough bytes rad \n\r");
+            continue;
+        }
 #endif
-		// did we got one?
-		if (rc > 0)
-			break;
+        // did we get one?
+        if (rc > 0)
+            break;
 
-	} while (1);	
+    } while (1);
 
     return rc;
 }
@@ -276,6 +394,8 @@ static int UnixDevRead(NUTFILE * fp, void *buffer, int len)
  */
 static int UnixDevClose(NUTFILE * fp)
 {
+    if ((int) fp->nf_dev->dev_dcb > STDERR_FILENO)
+        close((int) fp->nf_dev->dev_dcb);
     return 0;
 }
 
@@ -317,7 +437,7 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     u_long *lvp = (u_long *) conf;
     u_long lv = *lvp;
 
-	// printf("UnixDevIOCTL, native %lx, req: %d, lv: %ld\n\r", (long) dev->dev_dcb, req, lv);
+    printf("UnixDevIOCTL, native %x, req: %d, lv: %ld\n\r", (int) dev->dev_dcb, req, lv);
 
     switch (req) {
 
@@ -327,20 +447,20 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     case UART_SETDATABITS:
     case UART_SETSTOPBITS:
 
-	    if (fileno(dev->dev_dcb) <= STDERR_FILENO)
-			return -1;
-			
-        if (tcgetattr(fileno(dev->dev_dcb), &t))
-		{
-			printf("UnixDevIOCTL, tcgetattr failed\n\r");
+        if ((int) dev->dev_dcb <= STDERR_FILENO)
             return -1;
-		}
+
+        if (tcgetattr((int) dev->dev_dcb, &t)) {
+            printf("UnixDevIOCTL, tcgetattr failed\n\r");
+            return -1;
+        }
 
         switch (req) {
 
         case UART_SETSPEED:
-			cfsetospeed(&t, lv);
-			cfsetispeed(&t, lv);
+            lv = convertToBaudSpeed(lv);
+            cfsetospeed(&t, lv);
+            cfsetispeed(&t, lv);
 
             break;
 
@@ -417,36 +537,36 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
 
         }
 
+        /* tcdrain fails on mac os x for some unknown reason -- work around */
+        while (tcdrain((int) dev->dev_dcb) < 0) {
+            // printf("UnixDevIOCTL: tcdrain failed: errno: %d\n\r", errno);
+            errno = 0;
+            usleep(1000);
+        }
 
-		if ( tcdrain(fileno(dev->dev_dcb)) < 0 ) {
-			printf("UnixDevIOCTL: tcdrain failed: errno: %d\n\r", errno);
-			errno = 0;
-			return -1;
-		}
-		
-		if ( tcsetattr(fileno(dev->dev_dcb), TCSANOW, &t ) < 0) { 
-			printf("UnixDevIOCTL: tcsetattr failed: errno: %d\n\r", errno);
-			errno = 0;
-			return -1;
-		}
-		return 0;
-		
+        if (tcsetattr((int) dev->dev_dcb, TCSANOW, &t) < 0) {
+            printf("UnixDevIOCTL: tcsetattr failed: errno: %d\n\r", errno);
+            errno = 0;
+            return -1;
+        }
+        return 0;
+
     case UART_GETSPEED:
     case UART_GETFLOWCONTROL:
     case UART_GETPARITY:
     case UART_GETDATABITS:
     case UART_GETSTOPBITS:
 
-	    if (fileno(dev->dev_dcb) <= STDERR_FILENO)
-			return -1;
+        if ((int) dev->dev_dcb <= STDERR_FILENO)
+            return -1;
 
-        if (tcgetattr(fileno(dev->dev_dcb), &t) != 0)
+        if (tcgetattr((int) dev->dev_dcb, &t) != 0)
             return -1;
 
         switch (req) {
 
         case UART_GETSPEED:
-            *lvp = cfgetospeed(&t);
+            *lvp = convertToRealSpeed(cfgetospeed(&t));
             break;
 
         case UART_GETFLOWCONTROL:
