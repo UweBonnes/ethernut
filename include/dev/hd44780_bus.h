@@ -1,7 +1,8 @@
 #ifndef _DEV_HD44780_BUS_H_
 #define _DEV_HD44780_BUS_H_
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004 by Ole Reinhardt <ole.reinhardt@kernelconcepts.de>,
+ *                       Kernelconcepts http://www.kernelconcepts.de
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +37,9 @@
  
 /*
  * $Log$
+ * Revision 1.3  2004/05/27 15:03:54  olereinhardt
+ * Changed copyright notice
+ *
  * Revision 1.2  2004/05/25 17:33:32  drsung
  * Added 'log' keyword for CVS.
  *

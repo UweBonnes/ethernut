@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004 by Ole Reinhardt <ole.reinhardt@kernelconcepts.de>,
+ *                       Kernelconcepts http://www.kernelconcepts.de
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,7 +37,6 @@
  * \brief Terminal device definitions for memory mapped lcd.
  *
  *
- * (c) 2004 Ole Reinhardt, Kernel concepts (http://www.kernelconcepts.de)
  * This is a terminal device driver for a memory mapped hd44780 compatible
  * lcd. It is connected to the databus / adressbus. A Chipselect is generated
  * from /rd, /wr, and the address decoder. It is connected to the lcds enable
@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/05/27 15:03:14  olereinhardt
+ * Changed copyright notice
+ *
  * Revision 1.3  2004/05/25 17:33:01  drsung
  * Added 'log' keyword for CVS.
  *
