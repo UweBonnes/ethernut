@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.3  2004/09/08 10:17:44  haraldkipp
+# Listing in local dir
+#
 # Revision 1.2  2004/08/18 16:20:21  haraldkipp
 # Use consistent directory structure
 #
@@ -53,7 +56,7 @@ AS     = $(TRGT)gcc -x assembler-with-cpp
 RANLIB = $(TRGT)ranlib
 
 MCFLAGS = -mmcu=$(MCU)
-CPFLAGS = $(MCFLAGS) -Os -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
+CPFLAGS = $(MCFLAGS) -Os -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
 LDFLAGS = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref
 ARFLAGS = rsv
 ASFLAGS = $(MCFLAGS) -Wa,-amhls=$(<:.S=.lst) $(DEFS)
