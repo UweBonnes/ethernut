@@ -323,6 +323,7 @@ if [ "$ARCH" = "unix" ]; then
     cat <<EOF > UserConf.mk
 CRUROM = \$(top_srcdir)/tools/crurom/crurom
 ARCH=$ARCH
+MCU=$ARCH
 EOF
 
     # Get system include paths for stdio.h, sys/types.h, fcntl.h
@@ -337,6 +338,8 @@ EOF
          sed 's/#....\(\/.*\/sys\/types.h\).*/#include "\1"/' > include/sys/types_orig.h
     rm include_test.c
     
+    # assert lib dirs
+    mkdir -p lib/gcc/$ARCH
 
     # ready
 

@@ -1,5 +1,10 @@
-$Id: ChangeLog,v 1.65 2004/05/20 09:11:16 drsung Exp $
+$Id: ChangeLog,v 1.66 2004/05/21 17:04:36 freckle Exp $
 
+2004-05-21  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+        * configure: defined MCU for *nix emulation as 'unix', so libs can go
+        into lib/gcc/unix. MCU names like 'i386' and 'ppc' would be better.
+ 
 2004-05-20  Oliver Schulz  <olischulz@web.de>
 
 	* dev/usart.c: Memory was allocated twice for NUTFILE in UsartOpen.
