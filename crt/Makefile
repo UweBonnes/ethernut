@@ -32,8 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2003/05/09 14:40:30  haraldkipp
-# Initial revision
+# Revision 1.2  2003/11/24 18:10:24  drsung
+# Time functions added
+#
+# Revision 1.1.1.1  2003/05/09 14:40:30  haraldkipp
+# Initial using 3.2.1
 #
 # Revision 1.2  2003/03/31 14:53:05  harald
 # Prepare release 3.1
@@ -59,6 +62,7 @@ SRCC =  clrerr.c fclose.c fcloseall.c fdopen.c feof.c ferror.c fflush.c \
 	vfscanf.c vfscanf_p.c vsprintf.c vsprintf_p.c \
 	vsscanf.c vsscanf_p.c \
 	close.c ioctl.c open.c read.c write.c write_p.c filelength.c \
+	tzset.c gmtime.c mktime.c localtim.c time.c \
 	malloc.c strtok_r.c
 SRCS =  $(SRCC) putf.c getf.c
 SRCF =  $(SRCC) putff.c getff.c
