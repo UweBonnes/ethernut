@@ -36,6 +36,12 @@
  * 2004.05.06 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
  *
  */
+/*
+ * $Log$
+ * Revision 1.2  2004/05/18 18:38:42  drsung
+ * Added $Log keyword for CVS.
+ *
+ */
 
 /*!
  * \addtogroup xgMutex
