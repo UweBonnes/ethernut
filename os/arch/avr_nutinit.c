@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2004/11/08 18:58:59  haraldkipp
+ * Configurable stack sizes
+ *
  * Revision 1.10  2004/09/01 14:27:03  haraldkipp
  * Using configuration values from cfg/memory.h.
  * Added configurable reserved memory area.
@@ -69,6 +72,7 @@
  */
 
 #include <cfg/memory.h>
+#include <cfg/os.h>
 
 #ifdef NUTXMEM_SIZE
 /*!
@@ -197,7 +201,7 @@ THREAD(NutIdle, arg)
     NutTimerInit();
 
     /* Create the main application thread. */
-    NutThreadCreate("main", main, 0, 768);
+    NutThreadCreate("main", main, 0, NUT_THREAD_MAINSTACK);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
@@ -294,7 +298,7 @@ void NutInit(void)
 
     /* Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0, 384);
+    NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
 }
 
 /*@}*/

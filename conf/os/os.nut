@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.7  2004/11/08 18:58:58  haraldkipp
+-- Configurable stack sizes
+--
 -- Revision 1.6  2004/09/25 15:42:09  drsung
 -- Removed configuration for separate interrupt stack,
 -- it's now in conf/dev/dev.nut
@@ -185,6 +188,21 @@ nutos =
         brief = "Multithreading",
         provides = { "NUT_THREAD" },
         sources = { "thread.c" },
+        options = 
+        {
+            {
+                macro = "NUT_THREAD_IDLESTACK",
+                brief = "Idle Thread Stack Size",
+                description = "Number of bytes to be allocated for the stack of the idle thread.",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUT_THREAD_MAINSTACK",
+                brief = "Main Thread Stack Size",
+                description = "Number of bytes to be allocated for the stack of the main thread.",
+                file = "include/cfg/os.h"
+            },
+        }
     },
 
     --

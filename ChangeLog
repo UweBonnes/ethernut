@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.131 2004/11/08 18:07:36 haraldkipp Exp $
+$Id: ChangeLog,v 1.132 2004/11/08 18:58:58 haraldkipp Exp $
 
 2004-11-08  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -25,6 +25,11 @@ $Id: ChangeLog,v 1.131 2004/11/08 18:07:36 haraldkipp Exp $
 	* os/heap.c: Allocated sizes are adjusted to 32-bit
 	boundaries. I know this is botch. We need something
 	more general to configure alignment.
+
+	* conf/*.conf, conf/os/os.nut, include/cfg/os.h,
+	os/arch/arm_nutinit.c, os/arch/avr_nutinit.c,
+	os/arch/h8_nutinit.c, os/arch/unix_nutinit.c:
+	Stack size of idle and main thread is now configurable.
 
 
 2004-10-14  Oliver Schulz  <olischulz@web.de>

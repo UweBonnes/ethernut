@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/11/08 18:58:59  haraldkipp
+ * Configurable stack sizes
+ *
  * Revision 1.2  2004/09/08 10:19:23  haraldkipp
  * Made it look more general
  *
@@ -43,6 +46,7 @@
  */
 
 #include <cfg/memory.h>
+#include <cfg/os.h>
 #include <arch/at91.h>
 #include <arch/at91eb40a.h>
 
@@ -71,7 +75,7 @@ THREAD(NutIdle, arg)
     NutTimerInit();
 
     /* Create the main application thread. */
-    NutThreadCreate("main", main, 0, 768);
+    NutThreadCreate("main", main, 0, NUT_THREAD_MAINSTACK);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
@@ -85,7 +89,6 @@ THREAD(NutIdle, arg)
     }
 }
 
-//char lheap[8192];
 /*!
  * \brief Nut/OS Initialization.
  *
@@ -96,7 +99,7 @@ THREAD(NutIdle, arg)
 void NutInit(void)
 {
     NutHeapAdd(&__heap_start, (uptr_t)(NUTMEM_END - 256 - (uptr_t)(&__heap_start)));
-    //NutHeapAdd(lheap, sizeof(lheap));
+
 #if 0
     /*
      * Read eeprom configuration.
@@ -109,7 +112,7 @@ void NutInit(void)
     /*
      * Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0, 384);
+    NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
 }
 
 /*@}*/

@@ -33,10 +33,15 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/11/08 18:58:59  haraldkipp
+ * Configurable stack sizes
+ *
  * Revision 1.1  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
  */
+
+#include <cfg/os.h>
 
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 
@@ -57,7 +62,7 @@ THREAD(NutIdle, arg)
     NutTimerInit();
 
     /* Create the main application thread. */
-    NutThreadCreate("main", main, 0, 768);
+    NutThreadCreate("main", main, 0, NUT_THREAD_MAINSTACK);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
@@ -93,7 +98,7 @@ void NutInit(void)
     /*
      * Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0, 384);
+    NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
 }
 
 /*@}*/

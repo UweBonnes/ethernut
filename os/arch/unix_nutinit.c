@@ -44,6 +44,8 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include <cfg/os.h>
+
 #include <sys/types.h>
 #include <sys/event.h>
 #include <sys/device.h>
@@ -359,7 +361,7 @@ THREAD(NutIdle, arg)
     NutTimerInit();
 
     /* Create the main application thread. */
-    NutThreadCreate("main", NutAppMain, 0, 768);
+    NutThreadCreate("main", NutAppMain, 0, NUT_THREAD_MAINSTACK);
 
     // printf("main task created, idling now..\n");
     /*
@@ -443,7 +445,7 @@ int main(int argc, char *argv[])
     /*
      * Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0, 384);
+    NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
     
     return 0;
 }

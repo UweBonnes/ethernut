@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2004/11/08 18:58:59  haraldkipp
+ * Configurable stack sizes
+ *
  * Revision 1.1  2004/09/19 12:31:52  haraldkipp
  * Configuration placeholders added
  *
@@ -45,6 +48,14 @@
  * This file is reserved for kernel related configurations.
  *
  */
+
+#ifndef NUT_THREAD_MAINSTACK
+#define NUT_THREAD_MAINSTACK    768
+#endif
+
+#ifndef NUT_THREAD_IDLESTACK
+#define NUT_THREAD_IDLESTACK    384
+#endif
 
 #endif
 
