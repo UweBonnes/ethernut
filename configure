@@ -127,10 +127,10 @@ if [ "$ARCH" = "h8300h" -o "$ARCH" = "h8300s" ]; then
 
     if [ "$ARCH" = "h8300h" ]; then
 	# flags for H8/300H micros
-	MCUOPTS="-mh"
+	MCUOPTS="-mh -mint32"
     else
 	# flags for H8S micros
-	MCUOPTS="-ms"
+	MCUOPTS="-ms -mint32"
     fi
     
     # Setup paths to libc and libgcc for linker
