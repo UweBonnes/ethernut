@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/24 18:21:50  drsung
+ * Added support for program space strings (%P)
+ *
  * Revision 1.2  2003/08/14 15:21:51  haraldkipp
  * Formatted output of unsigned int fixed
  *
@@ -71,18 +74,17 @@
 #endif                          /* STDIO_FLOATING_POINT */
 
 #define	PADSIZE	16
-static char blanks[PADSIZE] =
-    { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-' ', ' ' };
-static char zeroes[PADSIZE] =
-    { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-'0', '0' };
+static char blanks[PADSIZE] = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' '
+};
+static char zeroes[PADSIZE] = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+    '0', '0'
+};
 
 /*
  *
  */
-static void _putpad(int _putb(int fd, CONST void *, size_t), int fd,
-                    char *padch, int count)
+static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch, int count)
 {
     while (count > PADSIZE) {
         _putb(fd, padch, PADSIZE);
@@ -111,8 +113,7 @@ static void _putpad(int _putb(int fd, CONST void *, size_t), int fd,
  *
  * 
  */
-int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt,
-          va_list ap)
+int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list ap)
 {
     u_char ch;                  /* character from fmt */
     int n;                      /* handy integer (short term usage) */
@@ -133,8 +134,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt,
 #ifdef __IMAGECRAFT__
     int iccfmt;
     int fps;
-    extern char *FormatFP_1(int format, float f, unsigned flag,
-                            int field_width, int prec);
+    extern char *FormatFP_1(int format, float f, unsigned flag, int field_width, int prec);
     extern char *ftoa(float f, int *status);
 #else
     char *dtostre(double f, char *str, u_char prec, u_char flags);
@@ -237,6 +237,29 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt,
             sign = 0;
             break;
 
+        case 'P':              //Program Chars
+            /* Thanks to Ralph Mason who added this support. */
+            cp = va_arg(ap, char *);
+            xdigs = buf;
+            n = 0;
+            while (1) {
+                u_char ch = PRG_RDB(cp++);
+                if (!ch)
+                    break;
+                *xdigs++ = ch;
+                n++;
+
+                if (n == BUF) {
+                    _putb(fd, buf, n);
+                    n = 0;
+                    xdigs = buf;
+                }
+            }
+            _putb(fd, buf, n);
+            size = 0;
+            sign = 0;
+            break;
+
         case 'u':
             sign = 0;
         case 'd':
@@ -268,8 +291,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt,
             break;
 
         case 'o':
-            ulval =
-                (flags & LONGINT) ? va_arg(ap, u_long) : va_arg(ap, u_int);
+            ulval = (flags & LONGINT) ? va_arg(ap, u_long) : va_arg(ap, u_int);
             sign = 0;
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
@@ -293,9 +315,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt,
                 flags |= ALT;
                 ch = 'x';
             } else
-                ulval =
-                    (flags & LONGINT) ? va_arg(ap,
-                                               u_long) : (u_long)
+                ulval = (flags & LONGINT) ? va_arg(ap, u_long) : (u_long)
                     va_arg(ap, u_int);
 
             sign = 0;
