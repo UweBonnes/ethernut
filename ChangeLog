@@ -1,4 +1,113 @@
-$Id: ChangeLog,v 1.189 2005/04/04 19:37:20 freckle Exp $
+$Id: ChangeLog,v 1.190 2005/04/05 17:32:46 haraldkipp Exp $
+
+2005-04-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Updated for the next pre-release 3.9.6. Still
+	no version 4, because of several problems with ARM7 (see below). 
+	Anyway, most applications should now run on the ARM CPU with 
+	minor or no modification.
+
+	* include/netinet/if_ether.h, include/netinet/ip.h,
+	include/netinet/tcp.h: Finally the TCP/IP stack is running on 
+	the ARM7 platform. Added the 'packed' attribute to several 
+	protocol structures.
+
+	* net/ipcsum.c, include/netinet/ipcsum.h: Northern hemisphere 
+	spring cleaning ;-). This part contained a lot of garbage and 
+	left overs. The AVRGCC inline assembly from Liquorice seemed to 
+	be buggy, the ImageCraft inline assembly didn't work better than 
+	compiled code, NutIpPseudoChkSum() was never called and nothing 
+	worked on 32 bit little endian machines. This whole mess had 
+	been radically replaced by a generic routine. Now we have room 
+	for new and clean optimizations.
+
+	* net/tcpout.c: Inclusion of stdio header removed. These headers 
+	are useful during debugging, but may cause a lot of trouble 
+	later, if you forget to remove all print statements. Without the 
+	stdio header file, the compiler takes care that all debug 
+	outputs are removed.
+
+	* include/sys/atom.h: NutEnter/ExitCritical for ARM7 added. 
+	I missed to commit this earlier, sorry.
+
+	* conf/dev/dev.nut, conf/net/net.nut, conf/pro/pro.nut,
+	dev/ahdlcavr.c, net/pppsm.c, net/tcpsm.c, pro/dhcpc.c,
+	pro/sntp.c: Configurable stack sizes. Because of larger 
+	registers and memory alignment, ARM CPUs consume a lot more 
+	stack.
+
+	* include/cfg/ahdlc.h, include/cfg/ppp.h, include/cfg/sntp.h,
+	include/cfg/tcp.h: Placeholders added to allow building
+	in the source tree.
+
+	* conf/dev/dev.nut, dev/ax88796.c, dev/reg_ax88796.h, 
+	include/dev/ax88796.h: ARM7 Ethernet driver for Asix' AX88796 
+	added. Many thanks to Marek Hummel for the initial work.
+
+	* dev/debug_at91.c, include/dev/debug.h: Hacked to make it work 
+	on USART0. Initialization had been removed too, because I do 
+	not have the time for a nicer porting. This probably breaks the
+	implementation for the AT91EB40A, but to my knowledge I'm to 
+	only user. :)
+
+	* dev/debug_gba.c, os/arch/arm_timer.c, include/arch/gba.h: More 
+	consistent register naming for the Gameboy Advance. The hardware
+	definitions are now in the central file gba.h. Additionally I 
+	cleaned up the AT91 timer handling.
+
+	* dev/irqreg.c, include/dev/irqreg.h, include/dev/irqreg_arm.h,
+	os/arch/arm_nutinit.c, dev/gba_irqreg.c: Implements conformant 
+	interrupt registration for the Gameboy Advance. Still no 
+	solution for the AT91.
+
+	* os/arch/arm_thread.c: ARM threads are now running in system
+	mode instead of very limited user mode. I alos removed some less
+	helpful debug outputs. The big problem with the initial port
+	still exists: It is not yet possible to pass a parameter to
+	another thread. Important note: Due to the mode change the 
+	Gameboy startup needs to be fixed. Again, since I'm the only 
+	user running Nut/OS on the GBA, who cares?
+
+	* pro/dhcpc.c: No parameter parsing to threads when running
+	on ARM. Using a global variable until this is fixed.
+
+	* include/arch/at91.h: Previous interrupt handling allowed 
+	nesting. This was nice, but regularly crashed the system. 
+	Nesting has been disabled.
+
+	* conf/fs/fs.nut: UROM file system isn't limited to AVR.
+
+	* conf/net/net.nut: TCP provides device read and write. Even if
+	no other devices are available, stdio read and write should be
+	included in the build.
+
+	* app/Makedefs.arm-gcc, crt/fwrite.c, net/tcpsock.c, pro/httpd.c:
+	No decision about ARM runtime lib, so we go without any. The main 
+	problem is integer division, which demands assembly language
+	routines. As a temporary solution these parts had been excluded
+	from the code. The result is, that fwrite will return the number 
+	of bytes instead of the number of items and that HTTP parameter 
+	parsing is not available.
+
+	* arch/arm/init/crtwolf_ram.S, arch/arm/ldscripts/wolf_ram.ld, 
+	app/httpd/httpserv.c, conf/wolf.conf, conf/repository.nut,
+	conf/tools.nut: Added support for the Wolf prototype board, which 
+	uses the AT91R40008 CPU and the AX88796 Ethernet controller.
+	Right now there is no support for ROM-able applications. Our 
+	prototypes run 'armboot' from FLASH and load the Nut/OS 
+	application via TFTP into the internal RAM. Special thanks to 
+	Marek Hummel for providing this ported armboot and to hwgroup 
+	for the hardware.
+
+	* app/threads/threads.c, app/timers/timers.c: Applications can 
+	run on the Gameboy Advance.
+
+	* dev/uartgba.c, include/dev/uartgba.h: UART support for the 
+	Gameboy Advance using MBV II hardware. Unfortunately it doesn't
+	work as expected. It sends and receives characters somehow, but 
+	the number of characters is quite random. If someone else with 
+	some spare time is interested...
+
 
 2005-04-04  Matthias Ringwald <mringwal@.inf.ethz.ch>
 
@@ -199,7 +308,7 @@ $Id: ChangeLog,v 1.189 2005/04/04 19:37:20 freckle Exp $
 	Many thanks to Matthias Ringwald and Philipp Blum for their
 	stimulating thoughts and discussions.
 
-	* conf/os/os.nut, nut/dev/usart0avr.c, include/sys/atom.h:
+	* conf/os/os.nut, dev/usart0avr.c, include/sys/atom.h:
 	Typo of NUTDEBUG corrected and Philipp Blum's tracer added
 	(AVRGCC only).
 
@@ -591,7 +700,7 @@ $Id: ChangeLog,v 1.189 2005/04/04 19:37:20 freckle Exp $
 	arrays. This enables creation of empty items, which
 	are not added to the .conf files.
 
-	* nut/include/arch/gba.h, nut/include/cfg/chat.h:
+	* include/arch/gba.h, include/cfg/chat.h:
 	Placeholders added.
 
 	* app/Makeburn.gba-xport2: Programming support for
