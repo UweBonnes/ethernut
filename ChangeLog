@@ -1,4 +1,43 @@
-$Id: ChangeLog,v 1.135 2004/11/12 16:26:41 olereinhardt Exp $
+$Id: ChangeLog,v 1.136 2004/11/24 14:45:12 haraldkipp Exp $
+
+2004-11-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.cpp,
+	tools/nutconf/nutconf.h, tools/nutconf/valuewindow.cpp,
+	tools/nutconf/nutconfdoc.cpp: Release 1.1.1. Do not store 
+	empty options. Remove include files from the build tree, 
+	if they are no longer used. Command line parameter 's' 
+	allows different settings. Minor compiler warning fixed.
+
+	* conf/stk501.conf: Configuration for Atmel's STK501 board
+	added.
+
+	* conf/crt/crt.nut, crt/getf.c, crt/putf.c: Floating point 
+	working again. putff.c, getff.c and libnutcrtf.a are unused 
+	but kept a while for backward compatibility. Configuration 
+	of max. number of streams added.
+
+	* conf/dev/dev.nut: Advanced descriptions. Ole's memory
+	mapped LCD driver, CAN Bus driver and ADC routines added.
+	Chat options added.
+
+	* include/dev/chat.h: Configurable chat options.
+
+	* conf/os/os.nut: EEPROM location no more required in
+	.conf files. The problem is, that we can't have empty
+	integer values, so I added flavor 'booldata' to disable
+	this item.
+
+	* conf/repository.nut: Added empty strings to choice
+	arrays. This enables creation of empty items, which
+	are not added to the .conf files.
+
+	* nut/include/arch/gba.h, nut/include/cfg/chat.h:
+	Placeholders added.
+
+	* app/Makeburn.gba-xport2: Programming support for
+	Xport 2.0.
+
 
 2004-11-11  Ole Reinhardt
 	* dev/sja1000.c
