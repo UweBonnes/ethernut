@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.82 2004/07/09 14:40:29 freckle Exp $
+$Id: ChangeLog,v 1.83 2004/07/09 19:51:34 freckle Exp $
 
 2004-07-09  Matthias Ringwald <mringwal@inf.ethz.ch>
 
@@ -6,6 +6,10 @@ $Id: ChangeLog,v 1.82 2004/07/09 14:40:29 freckle Exp $
       by giving it as a compiler flag and moved
       ((volatile u_char *) NUTRAMEND) cast into NUTRAMENDPTR
 
+    * os/arch/avr-nutinit.c: New function 
+      NutThreadSetSleepMode to tell nut/os to set the
+      MCU to sleep when in idle (avr-gcc && avr128 only)
+      
 2004-06-25  Matthias Ringwald <mringwal@inf.ethz.ch>
 
     * crt/write.c, crt/write_P.c: Added note that write

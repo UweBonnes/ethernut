@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/07/09 19:51:17  freckle
+ * Added new function NutThreadSetSleepMode to tell nut/os to set the MCU
+ * into sleep mode when idle (avr-gcc && avr128 only)
+ *
  * Revision 1.7  2004/07/09 14:40:43  freckle
  * Moved ((volatile u_char *) NUTRAMEND) cast into NUTRAMENDPTR define
  *
@@ -61,6 +65,11 @@
 #endif
 
 #define NUTRAMENDPTR ((volatile u_char *)NUTRAMEND)
+
+/* sleep mode to put avr in idle thread, SLEEP_MODE_NONE is used for for non sleeping */
+#ifdef __GNUC__
+u_char idle_sleep_mode = SLEEP_MODE_NONE;
+#endif
 
 #ifdef __GNUC__
 /*
@@ -110,6 +119,27 @@ void NutInitXRAM(void)
 #endif
 
 /*!
+ * \addtogroup xgThread
+ */
+/*@{*/
+
+/*! \fn NutThreadSetSleepMode(u_char mode)
+ * \brief Sets the sleep mode to enter in Idle thread
+ *
+ * If the idle thread is running, no other thread is active
+ * so we can safely put the mcu to sleep.
+ * 
+ * \param mode one of the sleep modes defined in avr/sleep.h or
+ *             sleep_mode_none (don't enter sleep mode)  
+ */
+#ifdef __GNUC__
+void NutThreadSetSleepMode(u_char mode)
+{
+    idle_sleep_mode = mode;
+}
+#endif
+
+/*!
  * \addtogroup xgNutInit
  */
 /*@{*/
@@ -122,6 +152,9 @@ void NutInitXRAM(void)
  */
 THREAD(NutIdle, arg)
 {
+#ifdef __GNUC__
+    u_char sleep_mode;
+#endif    
     /* Initialize system timers. */
     NutTimerInit();
 
@@ -137,6 +170,15 @@ THREAD(NutIdle, arg)
     for (;;) {
         NutThreadYield();
         NutThreadDestroy();
+        
+#ifdef __GNUC__
+        if (idle_sleep_mode != SLEEP_MODE_NONE) {
+            sleep_mode = MCUCR & SLEEP_MODE_EXT_STANDBY;
+            set_sleep_mode(idle_sleep_mode);
+            sleep_mode();
+            set_sleep_mode(sleep_mode);
+#endif
+        }
     }
 }
 

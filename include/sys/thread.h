@@ -51,6 +51,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/07/09 19:51:34  freckle
+ * Added new function NutThreadSetSleepMode to tell nut/os to set the MCU
+ * into sleep mode when idle (avr-gcc && avr128 only)
+ *
  * Revision 1.4  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -133,6 +137,7 @@ extern "C" {
 #define TDS_SLEEP       3       /*!< Thread is sleeping. */
 /*@}*/
 
+#define SLEEP_MODE_NONE 0xff
 
     extern NUTTHREADINFO *volatile runningThread;
     extern NUTTHREADINFO *volatile nutThreadList;
@@ -141,6 +146,10 @@ extern "C" {
 
 #if defined (__APPLE__) || (__linux__)
     extern void NutThreadInit(void);
+#endif
+
+#if defined(__GNUC__) && defined (__AVR_ATmega128__)
+    extern void NutThreadSetSleepMode(u_char mode);
 #endif
 
     extern HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t stackSize);

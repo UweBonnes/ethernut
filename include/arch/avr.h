@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/07/09 19:51:34  freckle
+ * Added new function NutThreadSetSleepMode to tell nut/os to set the MCU
+ * into sleep mode when idle (avr-gcc && avr128 only)
+ *
  * Revision 1.5  2004/05/23 14:30:32  drsung
  * Added some macros, because they are no longer available since version 1.1.0 of avr-libc.
  *
@@ -228,6 +232,7 @@
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
 #include <avr/twi.h>
+#include <avr/sleep.h>
 
 #ifndef __SFR_OFFSET
 #define __SFR_OFFSET    0
