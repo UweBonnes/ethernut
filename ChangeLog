@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.20 2003/12/15 19:33:08 haraldkipp Exp $
+$Id: ChangeLog,v 1.21 2003/12/17 14:56:40 drsung Exp $
 
 2003-12-15  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -29,7 +29,14 @@ $Id: ChangeLog,v 1.20 2003/12/15 19:33:08 haraldkipp Exp $
 	* include/bankmem.h: Banking enabled with Ethernut 2.
 
 
+2003-12-12  Oliver Schulz  <olischulz@web.de>
 
+	* crt/putf.c: Rewritten support for strings stored in prgram
+	space. Using still type character 'P', but also some heap
+	to store the string in RAM before the output function is
+	called.
+	
+	
 2003-12-06  Oliver Schulz  <olischulz@web.de>
 
 	* os/nutinit.c, os/init.c: Using __heap_start instead of
@@ -37,6 +44,7 @@ $Id: ChangeLog,v 1.20 2003/12/15 19:33:08 haraldkipp Exp $
 
 	* os/nutinit.c: changed external RAM detection. Now it's
 	possible to used more than 4KB static data under gcc.
+
 
 2003-11-28  Harald Kipp  <harald.kipp@egnite.de>
 
