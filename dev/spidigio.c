@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/02/02 19:59:12  haraldkipp
+ * Typo corrected. Compiler failed, if ports were not configured. Due
+ * to the completely broken port configuration this error wasn't
+ * detected.
+ *
  * Revision 1.4  2005/01/22 19:25:14  haraldkipp
  * Changed AVR port configuration names from PORTx to AVRPORTx.
  *
@@ -78,7 +83,7 @@
 #define SPIDIGIO_SOUT_BIT 5
 #define SPIDIGIO_SOUT_AVRPORT AVRPORTD
 #define SPIDIGIO_SIN_BIT 6
-#define SPIDIGIO_SIN_AVRPPORT AVRPORTD
+#define SPIDIGIO_SIN_AVRPORT AVRPORTD
 #define SPIDIGIO_SCLK_BIT 7
 #define SPIDIGIO_SCLK_AVRPORT AVRPORTD
 #define SPIDIGIO_LDI_BIT 7
@@ -124,7 +129,6 @@
 #define SPIDIGIO_SIN_PORT   PORTF
 #define SPIDIGIO_SIN_PIN    PINF
 #define SPIDIGIO_SIN_DDR    DDRF
-
 #endif
 
 #if (SPIDIGIO_SCLK_AVRPORT == AVRPORTB)
