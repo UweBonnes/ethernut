@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.110 2004/09/08 11:05:12 haraldkipp Exp $
+$Id: ChangeLog,v 1.111 2004/09/08 16:10:14 haraldkipp Exp $
 
 2004-09-08  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -79,6 +79,8 @@ $Id: ChangeLog,v 1.110 2004/09/08 11:05:12 haraldkipp Exp $
 	* nut/os/confos.c: No EEPROM support for AT91.
 
 	* nut/os/timer.c: Added OS configuration include file.
+
+	* conf/*.conf: Ethernut configuration files updated.
 
 
 2004-09-07  Harald Kipp  <harald.kipp@egnite.de>
