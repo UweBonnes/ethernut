@@ -1,6 +1,13 @@
-$Id: ChangeLog,v 1.31 2004/02/02 19:05:50 drsung Exp $
+$Id: ChangeLog,v 1.32 2004/02/04 18:09:22 drsung Exp $
 
-2004-01-30  Oliver Schulz  <olischulz@web.de>
+2004-02-04  Oliver Schulz  <olischulz@web.de>
+
+	* os/msg.c, include/sys/msg.h, os/Makefile: First version of message 
+	queueing  implemented. Thanks to Ralph Mason, who provided this code. 
+	Still contains some debug functions.
+
+
+2004-02-02  Oliver Schulz  <olischulz@web.de>
 
 	* include/net/if_var.h, net/ifconfig.c, pro/dhcp.c: Gateway ip 
 	address was not set, if static network configuration from 
@@ -10,6 +17,7 @@ $Id: ChangeLog,v 1.31 2004/02/02 19:05:50 drsung Exp $
 	include/sys/socket.h, include/netinet/icmp.h: Added some more ICMP 
 	support. Now the network stack handles incoming ICMP unreachable 
 	messages, and aborts appropiate TCP sockets.
+
 
 2004-02-01  Harald Kipp  <harald.kipp@egnite.de>
 
