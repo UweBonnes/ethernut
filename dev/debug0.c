@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/25 16:19:09  haraldkipp
+ * Support baudrate settings
+ *
  * Revision 1.2  2003/11/03 17:17:47  haraldkipp
  * Comments added
  *
@@ -56,6 +59,7 @@
 
 #include <sys/device.h>
 #include <sys/file.h>
+#include <sys/timer.h>
 
 static NUTFILE dbgfile;
 
@@ -68,6 +72,10 @@ static NUTFILE dbgfile;
  */
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
+    if(req == UART_SETSPEED) {
+        outb(UBRR, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 16UL)) + 1UL) / 2UL) - 1);
+        return 0;
+    }
     return -1;
 }
 

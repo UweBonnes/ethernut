@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:37  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/25 16:19:10  haraldkipp
+ * Support baudrate settings
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:37  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:29:49  harald
  * ICCAVR port
@@ -45,6 +48,7 @@
  */
 
 #include <dev/debug.h>
+#include <sys/timer.h>
 
 /*!
  * \addtogroup xgDebugDev1
@@ -60,6 +64,10 @@ static NUTFILE dbgfile;
 
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
+    if(req == UART_SETSPEED) {
+        outb(UBRR1L, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 16UL)) + 1UL) / 2UL) - 1);
+        return 0;
+    }
     return -1;
 }
 
