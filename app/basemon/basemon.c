@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/03 17:55:47  drsung
+ * Default hostname to 'ethernut', if os configuration is invalid.
+ *
  * Revision 1.5  2004/03/03 17:53:28  drsung
  * Support for new field 'hostname' in structure confos added.
  *
@@ -454,7 +457,8 @@ void NutInit(void)
     /*
      * Load os configuration from EEPROM.
      */
-    NutLoadConfig();
+    if (NutLoadConfig())
+    	strcpy (confos.hostname, "ethernut");
     /*
      * Load network configuration from EEPROM.
      */
