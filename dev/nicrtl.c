@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/07/17 09:39:56  haraldkipp
+ * Optimized controller feeding.
+ * Ignore LSB of packet status.
+ *
  * Revision 1.2  2003/05/15 14:09:16  haraldkipp
  * Much better performance under heavy traffic.
  *
@@ -432,22 +436,22 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD1);
 
     /*
-     * Transfer ethernet physical header.
+     * Transfer the Ethernet frame.
      */
     p = nb->nb_dl.vp;
-    for (i = 0; i < nb->nb_dl.sz; i++)
+    for (i = nb->nb_dl.sz; i; i--)
         nic_write(NIC_IOPORT, *p++);
 
     p = nb->nb_nw.vp;
-    for (i = 0; i < nb->nb_nw.sz; i++)
+    for (i = nb->nb_nw.sz; i; i--)
         nic_write(NIC_IOPORT, *p++);
 
     p = nb->nb_tp.vp;
-    for (i = 0; i < nb->nb_tp.sz; i++)
+    for (i = nb->nb_tp.sz; i; i--)
         nic_write(NIC_IOPORT, *p++);
 
     p = nb->nb_ap.vp;
-    for (i = 0; i < nb->nb_ap.sz; i++)
+    for (i = nb->nb_ap.sz; i; i--)
         nic_write(NIC_IOPORT, *p++);
 
     /*
@@ -564,9 +568,10 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
     }
 
     /*
-     * Check packet status.
+     * Check packet status. It should have set bit 0, but
+     * even without this bit packets seem to be OK.
      */
-    if ((hdr.ph_status & 0x0F) == 1) {
+    if ((hdr.ph_status & 0x0E) == 0) {
         /*
          * Allocate a NETBUF.
          */
@@ -791,7 +796,7 @@ THREAD(NicRx, arg)
         rlcnt = 0;
         cbi(EIMSK, RTL_SIGNAL_BIT);
         while (rlcnt++ < 10) {
-            if((nb = NicGetPacket((u_char *) (dev->dev_base), 0)) == 0) 
+            if((nb = NicGetPacket((u_char *) (dev->dev_base), 0)) == 0)
                 break;
             /* The sanity check may fail because the controller is too busy.
                try another read before giving up and restarting the NIC. */
