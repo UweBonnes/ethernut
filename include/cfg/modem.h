@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/15 19:27:11  haraldkipp
+ * Ethernut 2 handshake lines
+ *
  * Revision 1.2  2003/08/05 20:17:46  haraldkipp
  * Typing errors corrected
  *
@@ -57,15 +60,59 @@
  */
 /*@{*/
 
+#if 1
+
+/*! Port output register of \ref UART0_RTS_BIT. */
+#define UART0_RTS_PORT  PORTE
+/*! Data direction register of \ref UART0_RTS_BIT. */
+#define UART0_RTS_DDR   DDRE
+/*! \brief RTS handshake control bit.
+ *
+ * If undefined, RTS handshake is not supported. 
+ */
+#define UART0_RTS_BIT   2
+
+
+/*! Port output register of \ref UART0_CTS_BIT. */
+#define UART0_CTS_PORT   PORTE
+/*! Port input register of \ref UART0_CTS_BIT. */
+#define UART0_CTS_PIN    PINE
+/*! Data direction register of \ref UART0_CTS_BIT. */
+#define UART0_CTS_DDR    DDRE
+/*! Interrupt signal of \ref UART0_CTS_BIT. */
+#define UART0_CTS_SIGNAL sig_INTERRUPT7
+/*! \brief CTS handshake sense bit.
+ *
+ * If undefined, CTS handshake is not supported. 
+ */
+#define UART0_CTS_BIT    7
+
+
+/*! Port output register of \ref UART0_HDX_BIT. */
+#define UART0_HDX_PORT  PORTD
+/*! Data direction register of \ref UART0_HDX_BIT. */
+#define UART0_HDX_DDR   DDRD
+/*! \brief Half duplex control bit.
+ *
+ * If undefined, half duplex is not supported. 
+ */
+#define UART0_HDX_BIT   4
+
+#endif
+
+
 #if 0
 
 /*! Port output register of \ref UART1_RTS_BIT. */
 #define UART1_RTS_PORT   PORTD
 /*! Data direction register of \ref UART1_RTS_BIT. */
 #define UART1_RTS_DDR    DDRD
-/*! \brief RTS handshake output bit. 
-           If undefined, RTS handshake is not supported. */
+/*! \brief RTS handshake output bit.
+ * 
+ * If undefined, RTS handshake is not supported. 
+ */
 #define UART1_RTS_BIT    5
+
 
 /*! Port output register of \ref UART1_CTS_BIT. */
 #define UART1_CTS_PORT   PORTE
@@ -76,19 +123,25 @@
 /*! Interrupt signal of \ref UART1_CTS_BIT. */
 #define UART1_CTS_SIGNAL sig_INTERRUPT7
 /*! \brief CTS handshake input bit. 
-           If undefined, CTS handshake is not supported.
-           Bits 0 to 3 are not supported. */
+ *
+ * If undefined, CTS handshake is not supported.
+ * Bits 0 to 3 are not supported. 
+ */
 #define UART1_CTS_BIT    7
+
 
 /*! Port output register of \ref UART1_DTR_BIT. */
 #define UART1_DTR_PORT   PORTD
 /*! Data direction register of \ref UART1_DTR_BIT. */
 #define UART1_DTR_DDR    DDRD
 /*! \brief DTR handshake output bit.
-           If undefined, DTR handshake is not supported. */
+ *
+ * If undefined, DTR handshake is not supported. 
+ */
 #define UART1_DTR_BIT    7
 
 #endif
+
 
 /*@}*/
 
