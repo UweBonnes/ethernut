@@ -1,5 +1,10 @@
-$Id: ChangeLog,v 1.80 2004/06/24 14:46:55 freckle Exp $
+$Id: ChangeLog,v 1.81 2004/06/25 08:28:04 freckle Exp $
 
+2004-06-25  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * crt/write.c, crt/write_P.c: Added note that write
+    calls are not thread-safe, i.e, two writes might
+    come out intermixed
 
 2004-06-24  Matthias Ringwald <mringwal@inf.ethz.ch>
 

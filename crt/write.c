@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/06/25 08:28:11  freckle
+ * Added note that write calls are not thread-safe, i.e, two writes might
+ * come out intermixed (although no bytes get lost)
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -63,6 +67,11 @@
  *
  * \return The number of bytes written, which may be less than the number
  *         of bytes specified. A return value of -1 indicates an error.
+ *
+ * \note   The write implementation of the underlying driver does not need
+ *         to be thread-safe. Parallel writes using device usartavr will
+ *         lead to intermixed data (if data doesn't fit into ringbuffer
+ *         on the first try )
  */
 int _write(int fd, CONST void *data, unsigned int count)
 {
