@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/08 10:19:31  haraldkipp
+ * Tyou's support for the ARM7
+ *
  * Revision 1.1  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -44,15 +47,32 @@
  *
  */
 
+#include <stdio.h>
+
 /*!
  * \brief ARM7TDMI GCC context switch frame layout.
  *
- * This is the layout of the stack after a thread's context has been 
+ * This is the layout of the stack after a thread's context has been
  * switched-out.
  */
 typedef struct {
-    u_char csf_pchi;
-    u_char csf_pclo;
+	u_long csf_spsr;
+	u_long csf_cpsr;
+    u_long csf_r0;
+	u_long csf_r1;
+	u_long csf_r2;
+	u_long csf_r3;
+	u_long csf_r4;
+	u_long csf_r5;
+	u_long csf_r6;
+	u_long csf_r7;
+	u_long csf_r8;
+	u_long csf_r9;
+	u_long csf_r10;
+	u_long csf_r11;
+	u_long csf_r12;
+	u_long csf_lr;
+    u_long csf_pc;
 } SWITCHFRAME;
 
 /*!
@@ -61,12 +81,10 @@ typedef struct {
  * This is the stack layout being build to enter a new thread.
  */
 typedef struct {
-    u_char cef_arghi;
-    u_char cef_arglo;
-    u_char cef_pchi;
-    u_char cef_pclo;
+	u_long cef_cpsr;
+    u_long cef_r0;
+    u_long cef_pc;
 } ENTERFRAME;
-
 
 /*
  * This code is executed when entering a thread.
@@ -74,6 +92,14 @@ typedef struct {
 static void NutThreadEntry(void) __attribute__ ((naked));
 static void NutThreadEntry(void)
 {
+    asm volatile(
+	    "	ldmfd 	sp!,      {r0}\n"
+	"	msr 	cpsr_all, r0\n"
+	"	ldmfd   sp!, 	  {r0, pc}\n"
+		
+		::
+		:"cc","sp","r0"
+	);
 }
 
 /*!
@@ -87,40 +113,79 @@ static void NutThreadEntry(void)
  * \note CPU interrupts must be disabled before calling this function.
  *
  */
-void NutThreadSwitch(void) __attribute__ ((noinline));
+void NutThreadSwitch(void) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
+/*
+ * arm-elf-gcc can not recognize attribute noinline.
+ * It won't be inlined because there are global label thread_start in func?
+ * static void NutThreadSwitch(void) __attribute__ ((noinline));
+ */
     /*
      * Save all CPU registers.
      */
 
+    asm volatile(
+		"	stmfd   sp!, {lr}\n"
+		"	stmfd   sp!, {r0-r12,lr}\n"
+
+		"	mrs     r4,  cpsr\n"
+		"	stmfd   sp!, {r4}\n"
+		"	mrs     r4,  spsr\n"
+		"	stmfd   sp!, {r4}\n"
+	);
+
+	asm volatile(
+		"	str     sp, %0"
+		::"m"(runningThread->td_sp)
+		:"cc"
+    );
     /*
      * This defines a global label, which may be called
      * as an entry point into this function.
      */
-    asm volatile (".global thread_start\n" "thread_start:\n\t"::);
+    asm volatile (
+    	
+    	"	.global thread_start\n"
+
+    	"thread_start:"
+    );
 
     /*
      * Reload CPU registers from the thread on top of the run queue.
      */
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
-}
 
+    asm volatile(
+	    "	ldr 	sp,   %0"
+		::"m"(runningThread->td_sp)
+		:"cc","sp"
+	);
+
+	asm volatile(
+		"	ldmfd 	sp!,      {r4}\n"
+		"	msr 	spsr_all, r4\n"
+		"	ldmfd 	sp!,      {r4}\n"
+		"	msr 	cpsr_all, r4\n"
+
+		"	ldmfd   sp!,  {r0-r12, lr, pc}\n"
+    );
+}
 
 /*!
  * \brief Create a new thread.
  *
- * If the current thread's priority is lower or equal than the default 
- * priority (64), then the current thread is stopped and the new one 
+ * If the current thread's priority is lower or equal than the default
+ * priority (64), then the current thread is stopped and the new one
  * is started.
  *
- * \param name      String containing the symbolic name of the new thread, 
+ * \param name      String containing the symbolic name of the new thread,
  *                  up to 8 characters long.
- * \param fn        The thread's entry point, typically created by the 
+ * \param fn        The thread's entry point, typically created by the
  *                  THREAD macro.
  * \param arg       Argument pointer passed to the new thread.
- * \param stackSize Number of bytes of the stack space allocated for 
+ * \param stackSize Number of bytes of the stack space allocated for
  *                  the new thread.
  *
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
@@ -132,45 +197,62 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
-
     const uptr_t *paddr;
+
     NutEnterCritical();
     paddr = (const uptr_t *) fn;
 
     /*
+     * 4bytes boundary
+     */
+    while(((stackSize + sizeof(NUTTHREADINFO)) & 0x03) != 0)
+        stackSize++;
+
+    /*
      * Allocate stack and thread info structure in one block.
+     * Confirm the mem size be 4 bytes aligned.
+     * sizeof(NUTTHREADINFO) be 4 bytes too.
      */
     if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
-        NutExitCritical();
+        NutJumpOutCritical();
         return 0;
     }
 
+    /*
+     * growth down
+     */
     td = (NUTTHREADINFO *) (threadMem + stackSize);
     ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));
 
-
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
     td->td_name[sizeof(td->td_name) - 1] = 0;
-    td->td_sp = (uptr_t) sf - 1;
+    td->td_sp = (uptr_t) sf; /* FIXME */
     td->td_memory = threadMem;
     *((u_long *) threadMem) = DEADBEEF;
     *((u_long *) (threadMem + 4)) = DEADBEEF;
     *((u_long *) (threadMem + 8)) = DEADBEEF;
     *((u_long *) (threadMem + 12)) = DEADBEEF;
     td->td_priority = 64;
-
     /*
      * Setup entry frame to simulate C function entry.
      */
-    ef->cef_pchi = (u_char) (((uptr_t) fn) >> 8);
-    ef->cef_pclo = (u_char) (((uptr_t) fn) & 0xff);
 
-    ef->cef_arglo = (u_char) (((uptr_t) arg) & 0xff);
-    ef->cef_arghi = (u_char) (((uptr_t) arg) >> 8);
+    /*
+     * 0101003 SVC mode, irq enabled.
+     * the first thread , idle thread, will jump
+     * to start without NutExitCritical.
+     */
+    ef->cef_cpsr = 0x53;
+    ef->cef_pc   = (uptr_t) fn;
+    ef->cef_r0 = (uptr_t) arg;
 
-    sf->csf_pchi = (u_char) (((uptr_t) NutThreadEntry) >> 8);
-    sf->csf_pclo = (u_char) (((uptr_t) NutThreadEntry) & 0xff);
+    sf->csf_pc = (uptr_t) NutThreadEntry;
+    /*
+     * SVC mode, irq need to be disabled when context switching.
+     */
+    sf->csf_cpsr = 0x13;
+    sf->csf_spsr = 0x13;
 
     /*
      * Insert into the thread list and the run queue.
@@ -180,6 +262,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     td->td_state = TDS_READY;
     td->td_timer = 0;
     td->td_queue = 0;
+
 #ifdef NUTDEBUG
     if (__os_trf)
         fprintf(__os_trs, "Cre<%08lx>", (uptr_t) td);
@@ -193,9 +276,9 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     /*
      * If no thread is active, switch to new thread.
      */
-    if (runningThread == 0);
-    /* Write appropriate assembly here */
-/*         __asm__ __volatile__ (";rjmp thread_start"); */
+    if (runningThread == 0) {
+        asm volatile("\n\tb thread_start\n\t");
+    }
 
     /*
      * If current context is not in front of
@@ -206,10 +289,12 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "New<%08lx %08lx>", (uptr_t) runningThread, (uptr_t) runQueue);
+            fprintf(__os_trs, "New<%08lx %08lx>",
+            	(uptr_t) runningThread, (uptr_t) runQueue);
 #endif
         NutThreadSwitch();
     }
+
     NutExitCritical();
 
     return td;
