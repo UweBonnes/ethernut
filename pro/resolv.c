@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/18 13:39:05  haraldkipp
+ * Deprecated header file replaced
+ *
  * Revision 1.3  2004/02/28 20:14:38  drsung
  * Merge from nut-3_4-release b/c of bugfixes.
  *
@@ -61,7 +64,7 @@
 
 #include <arpa/inet.h>
 #include <net/if_var.h>
-#include <netinet/sostream.h>
+#include <sys/socket.h>
 
 #ifdef NUTDEBUG
 #include <stdio.h>
