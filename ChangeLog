@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.117 2004/09/17 13:05:01 haraldkipp Exp $
+$Id: ChangeLog,v 1.118 2004/09/17 14:39:05 olereinhardt Exp $
+
+2004-09-17  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>
+	* dev/hd44780_bus, dev/sja1000.c
+	Added #ifdef __GNUC__ statement since both drivers are not ported 
+	to icc by now... Anybody wants to port them
 
 2004-09-17  Harald Kipp  <harald.kipp@egnite.de>
 	* tools/nutconf/Makefile: Ole removed tooloptdlg.o, which
