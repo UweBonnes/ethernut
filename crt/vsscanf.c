@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:35  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 16:53:02  haraldkipp
+ * Bugfix: sscanf is now working.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:35  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:09  harald
  * *** empty log message ***
@@ -76,7 +79,8 @@ static int _sgetb(int fd, void *buffer, unsigned int count)
  */
 int vsscanf(CONST char *string, CONST char *fmt, va_list ap)
 {
-    CONST char *ptr;
+    /* Bugfix kindly provided by Tomasz Niewegowski. */
+    CONST char *ptr = string;
 
     return _getf(_sgetb, (int) &ptr, fmt, ap);
 }
