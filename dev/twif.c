@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/11/03 17:03:53  haraldkipp
+ * Many new comments added
+ *
  * Revision 1.3  2003/07/20 18:28:10  haraldkipp
  * Explain how to disable timeout.
  *
@@ -543,16 +546,22 @@ static int TwAccess(u_long tmo)
 /*! 
  * \brief Transmit and/or receive data as a master.
  *
- * This function is only available on ATmega128 systems.
+ * The slave address must be specified as a 7-bit address. For
+ * example, the PCF8574A may be configured to slave addresses
+ * from 0x38 to 0x3F.
+ *
+ * \note This function is only available on ATmega128 systems.
  *
  * \param sla    Slave address of the destination.
  * \param txdata Points to the data to transmit. Ignored, if the
  *		 number of bytes to transmit is zero.
- * \param txlen  Number of bytes to transmit.
+ * \param txlen  Number of data bytes to transmit. This does not
+ *               include the first byte containing the device address.
  * \param rxdata Points to a buffer, where the received data will be
  *               stored. Ignored, if the maximum number of bytes to 
  *               receive is zero.
- * \param rxsiz  Maximum number of bytes to receive.
+ * \param rxsiz  Maximum number of bytes to receive. Set to zero, if
+ *               no bytes are expected from the device.
  * \param tmo    Timeout in milliseconds. To disable timeout,
  *               set this parameter to NUT_WAIT_INFINITE.
  *
@@ -611,7 +620,13 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata,
 }
 
 /*!
- * \brief Get last slave mode error.
+ * \brief Get last master mode error.
+ *
+ * You may call this function to determine the specific cause
+ * of an error after TwMasterTransact() failed.
+ *
+ * \note This function is only available on ATmega128 systems.
+ * 
  */
 int TwMasterError(void)
 {
@@ -625,7 +640,7 @@ int TwMasterError(void)
  * must immediately process the request and return a response by calling 
  * TwSlaveRespond().
  *
- * This function is only available on ATmega128 systems.
+ * \note This function is only available on ATmega128 systems.
  *
  * \param sla    Points to a byte variable, which receives the slave 
  *               address sent by the master. This can be used by the 
@@ -688,8 +703,22 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
     return rc;
 }
 
-/*
+/*!
+ * \brief Send response to a master.
  *
+ * This function must be called as soon as possible after TwSlaveListen()
+ * returned successfully, even if no data needs to be returned. Not doing 
+ * so will completely block the bus.
+ *
+ * \note This function is only available on ATmega128 systems.
+ *
+ * \param txdata Points to the data to transmit. Ignored, if the
+ *      		 number of bytes to transmit is zero.
+ * \param txlen  Number of data bytes to transmit.
+ * \param tmo	 Timeout in milliseconds. To disable timeout,
+ *               set this parameter to NUT_WAIT_INFINITE.
+ *
+ * \return The number of bytes transmitted, -1 in case of an error or timeout.
  */
 int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
 {
@@ -733,7 +762,10 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
 /*!
  * \brief Get last slave mode error.
  *
- * This function is only available on ATmega128 systems.
+ * You may call this function to determine the specific cause
+ * of an error after TwSlaveListen() or TwSlaveRespond() failed.
+ *
+ * \note This function is only available on ATmega128 systems.
  *
  */
 int TwSlaveError(void)
@@ -814,9 +846,14 @@ int TwIOCtl(int req, void *conf)
 /*!
  * \brief Initialize TWI interface.
  *
- * This function is only available on ATmega128 systems.
+ * The specified slave address is used only, if the local system
+ * is running as a slave. Anyway, care must be taken that it doesn't
+ * conflict with another connected device.
  *
- * \param sla Slave address, must be lower than 128.
+ * \note This function is only available on ATmega128 systems.
+ *
+ * \param sla Slave address, must be specified as a 7-bit address,
+ *            always lower than 128.
  */
 int TwInit(u_char sla)
 {
