@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.183 2005/03/09 08:36:04 hwmaier Exp $
+$Id: ChangeLog,v 1.184 2005/03/13 13:41:04 haraldkipp Exp $
+
+2005-03-13  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/arpcache.c: If NutArpOutput() failed, then NutArpCacheQuery()
+	released the already released NETBUF. This bug had been fixed.
+	If NutArpAllocNetBuf() fails, the ARP entry will now be
+	removed immediately. Additional check for valid entry pointer 
+	added. These modifications had been suggested by Dusan Ferbas.
+	Finally memcpy() has been replaced by a simple loop in order
+	to provide a work around for GCC Bug #18251.
+
 
 2005-03-09  Henrik Maier  <hwmaier@users.sourceforge.net>
 
