@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/11/24 16:41:18  haraldkipp
+ * Wrong prototypes for _P routines fixed
+ *
  * Revision 1.4  2004/10/03 18:41:43  haraldkipp
  * RAM saving calls added
  *
@@ -157,8 +160,8 @@ extern u_long setlogserver(u_long ip, u_short port);
 extern void syslog(int, CONST char *, ...);
 extern void vsyslog(int, CONST char *, va_list);
 #ifdef __HARVARD_ARCH__
-extern void syslog_P(int, CONST char *, ...);
-extern void vsyslog_P(int, CONST char *, va_list);
+extern void syslog_P(int pri, PGM_P fmt, ...);
+extern void vsyslog_P(int pri, PGM_P fmt, va_list ap);
 #endif
 __END_DECLS                     /* */
 #endif
