@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/03 17:52:26  drsung
+ * New field 'hostname' added to structure confos.
+ *
  * Revision 1.4  2004/02/18 13:51:06  drsung
  * Changed memory calculations to use u_short. Makes more sense than using signed integers, especially on hardware with more than 32KB static RAM...
  *
@@ -86,6 +89,7 @@
 #include <sys/timer.h>
 
 #include <sys/confos.h>
+#include <string.h>
 
 CONFOS confos;
 
@@ -137,13 +141,14 @@ int NutLoadConfig(void)
 int NutSaveConfig(void)
 {
     u_char *cp;
-    size_t i;
+    u_short i;
 
     confos.size = sizeof(CONFOS);
     confos.magic[0] = 'O';
     confos.magic[1] = 'S';
-    for (cp = (u_char *) & confos, i = 0; i < sizeof(CONFOS); i++)
-        eeprom_write_byte((void *) (i + CONFOS_EE_OFFSET), *cp++);
+    for (cp = (u_char *) & confos, i = 0; i < sizeof(CONFOS); cp++, i++)
+        if (eeprom_read_byte((void *) (i + CONFOS_EE_OFFSET)) != *cp)
+            eeprom_write_byte((void *) (i + CONFOS_EE_OFFSET), *cp);
 
     return 0;
 }
@@ -177,7 +182,10 @@ int main(void)
      * Read eeprom configuration.
      */
     if (NutLoadConfig())
+    {
+    	strcpy (confos.hostname, "ethernut");
         NutSaveConfig();
+    }
 
     outp(BV(SRE) | BV(SRW), MCUCR);
 

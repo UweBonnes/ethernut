@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:19  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/03 17:52:25  drsung
+ * New field 'hostname' added to structure confos.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:19  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.4  2003/02/04 18:00:52  harald
  * Version 3 released
@@ -73,6 +76,7 @@ typedef struct _CONFOS CONFOS;
 struct _CONFOS {
     u_char size;            /*!< \brief Size of this structure. */
     u_char magic[2];        /*!< \brief Magic cookie. */
+    u_char hostname[16];    /*!< \brief host name of the system. */
 };
 
 extern CONFOS confos;

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/03 17:52:26  drsung
+ * New field 'hostname' added to structure confos.
+ *
  * Revision 1.5  2004/02/18 13:51:06  drsung
  * Changed memory calculations to use u_short. Makes more sense than using signed integers, especially on hardware with more than 32KB static RAM...
  *
@@ -68,6 +71,7 @@
 #include <sys/timer.h>
 
 #include <sys/confos.h>
+#include <string.h>
 
 #define NUTRAMEND ((volatile u_char *)0x7FFF)
 
@@ -207,7 +211,10 @@ void NutInit(void)
      * Read eeprom configuration.
      */
     if (NutLoadConfig())
+    {
+    	strcpy (confos.hostname, "ethernut");
         NutSaveConfig();
+    }
 
     /* Create idle thread
      */
