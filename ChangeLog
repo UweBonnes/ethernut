@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.29 2004/01/30 22:06:44 drsung Exp $
+$Id: ChangeLog,v 1.30 2004/02/01 18:49:47 haraldkipp Exp $
+
+2004-02-01  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/compiler.h, os/timer.c, os/thread.c: Additional support 
+	started for ARM7TDMI, H8/300 and Coldfire.
+
+	* os/ctx_CPU.c: Split os/thread.c by CPU families.
+
+	* os/tmr_CPU.c: Split os/timer.c by CPU families.
+
+	* include/cpu/CPU.h: Split include/compiler.h by CPU families.
+
 
 2004-01-30  Harald Kipp  <harald.kipp@egnite.de>
 

@@ -1,5 +1,5 @@
-#ifndef _COMPILER_H_
-#define _COMPILER_H_
+#ifndef _CPU_M68K_H_
+#define _CPU_M68K_H_
 
 /*
  * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
@@ -35,62 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.5  2004/02/01 18:49:47  haraldkipp
+ * Revision 1.1  2004/02/01 18:49:48  haraldkipp
  * Added CPU family support
  *
  */
 
-#ifdef  __cplusplus
-# define __BEGIN_DECLS  extern "C" {
-# define __END_DECLS    }
-#else
-# define __BEGIN_DECLS
-# define __END_DECLS
-#endif
-
-/*!
- * \addtogroup xgCrtMisc
- */
-/*@{*/
-
-/*! 
- * \brief Unsigned register type. 
- *
- * The size of this type is equal to the size of a register, 
- * the hardware datapath or whatever might fit to give optimum 
- * performance for values from 0 to 255.
- *
- * Typically 8 bit CPUs will use unsigned characters, 16 bit
- * CPUs will use unsigned shorts etc.
- */
-typedef unsigned char ureg_t;
-
-/*! 
- * \brief Unsigned register type. 
- *
- * Similar to ureg_t, but for signed values from -128 to +127.
- */
-typedef signed char reg_t;
-
-/*! 
- * \brief Unsigned pointer value type. 
- *
- * The size of this type is at least the size of a memory pointer.
- * For CPUs with 16 address bits this will be an unsigned short.
- */
-typedef unsigned short uptr_t;
-
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-#include <cpu/avr.h>
-#elif defined(__arm__)
-#include <cpu/arm.h>
-#elif defined(__H8300__)
-#include <cpu/h8.h>
-#elif defined(__m68k__)
-#include <cpu/m68k.h>
 #endif
 
 
-/*@}*/
-
-#endif
