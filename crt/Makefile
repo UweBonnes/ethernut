@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.6  2004/05/24 20:26:45  drsung
+# Added function kbhit(). Return nonzero if stdin has at least one char
+# in input buffer. Uses _filelength to get the file size.
+#
 # Revision 1.5  2004/04/07 16:28:20  freckle
 # Target install: use ranlib only for arch *nix emulation (ranlib is required
 # on mac os x)
@@ -68,7 +72,8 @@ SRCC =  clrerr.c fclose.c fcloseall.c fdopen.c feof.c ferror.c fflush.c \
 	fwrite.c getc.c getchar.c gets.c printf.c putc.c putchar.c puts.c \
 	scanf.c sprintf.c sscanf.c ungetc.c vfprintf.c vfscanf.c vsprintf.c \
 	vsscanf.c close.c ioctl.c open.c read.c write.c filelength.c \
-	tzset.c gmtime.c mktime.c localtim.c time.c malloc.c strtok_r.c
+	tzset.c gmtime.c mktime.c localtim.c time.c malloc.c strtok_r.c \
+	kbhit.c
 
 SRCCP = fprintf_p.c fputs_p.c fscanf_p.c fwrite_p.c printf_p.c puts_p.c \
 	scanf_p.c sprintf_p.c sscanf_p.c vfprintf_p.c vfscanf_p.c \

@@ -138,6 +138,7 @@ extern long ftell(FILE * stream);
 extern size_t fwrite(CONST void *data, size_t size, size_t count, FILE * stream);
 extern int getc(FILE * stream);
 extern int getchar(void);
+extern int kbhit(void);
 extern char *gets(char *buffer);
 extern int printf(CONST char *fmt, ...);
 extern int putc(int c, FILE * stream);
