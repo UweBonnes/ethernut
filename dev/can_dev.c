@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/08/25 15:45:18  olereinhardt
+ * Added function to set acceptance filter
+ *
  * Revision 1.3  2004/08/02 09:56:13  olereinhardt
  * changed typing of CAN_TryRxFrame
  *
@@ -66,6 +69,13 @@
 #include <sys/timer.h>
 #include <sys/device.h>
 #include <dev/can_dev.h>
+
+void CAN_SetFilter(NUTDEVICE *dev, u_char *ac, u_char *am)
+{
+    (((IFCAN *)(dev->dev_icb))->can_set_ac)(dev, ac);
+    (((IFCAN *)(dev->dev_icb))->can_set_am)(dev, am);
+}
+
 
 void CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
