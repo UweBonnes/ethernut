@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.18 2003/11/29 16:09:35 drsung Exp $
+$Id: ChangeLog,v 1.19 2003/12/07 18:08:07 drsung Exp $
+
+2003-12-06  Oliver Schulz  <olischulz@web.de>
+
+	* os/nutinit.c, os/init.c: Using __heap_start instead of
+	__bss_end to support .noinit section under gcc.
+
+	* os/nutinit.c: changed external RAM detection. Now it's
+	possible to used more than 4KB static data under gcc.
 
 2003-11-28  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -6,12 +14,12 @@ $Id: ChangeLog,v 1.18 2003/11/29 16:09:35 drsung Exp $
 	transmission. Bug in retransmission timer fixed.
 
 
-2003-11-27  Oliver Schulz <olischulz@web.de>
+2003-11-27  Oliver Schulz  <olischulz@web.de>
 
 	* pro/dencode.c: Bug fix and code size improvement
 
 
-2003-11-26  Oliver Schulz <olischulz@web.de>
+2003-11-26  Oliver Schulz  <olischulz@web.de>
 
 	* nutlibcrt.a: Added some standard C time functions to
 	implement time handling and real time clocks.
