@@ -39,6 +39,10 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.7  2004/09/26 12:04:07  drsung
+ * Fixed several hundred memory leaks :-).
+ * Relative pathes can now be used for source, build and install directory.
+ *
  * Revision 1.6  2004/09/19 15:12:22  haraldkipp
  * Set mod flag on all changes
  *
@@ -211,6 +215,7 @@ bool CNutConfDoc::OnCloseDocument()
 
 void CNutConfDoc::ReleaseRepository()
 {
+	ReleaseComponents(m_root);
 }
 
 /*

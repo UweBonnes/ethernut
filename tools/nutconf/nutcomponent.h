@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/09/26 12:04:07  drsung
+ * Fixed several hundred memory leaks :-).
+ * Relative pathes can now be used for source, build and install directory.
+ *
  * Revision 1.4  2004/09/17 13:02:39  haraldkipp
  * First and last directory added to sample dir
  *
@@ -136,6 +140,8 @@ __BEGIN_DECLS
 /* Function prototypes */
 extern NUTREPOSITORY *OpenRepository(const char *pathname);
 extern NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo);
+extern void ReleaseComponents(NUTCOMPONENT *comp);
+
 extern int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pathname);
 extern void CloseRepository(NUTREPOSITORY *repo);
 

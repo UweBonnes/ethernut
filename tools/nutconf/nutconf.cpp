@@ -32,6 +32,10 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.6  2004/09/26 12:04:07  drsung
+ * Fixed several hundred memory leaks :-).
+ * Relative pathes can now be used for source, build and install directory.
+ *
  * Revision 1.5  2004/09/17 13:09:29  haraldkipp
  * New settings page for tool options
  *
@@ -164,6 +168,9 @@ int NutConfApp::OnExit()
     delete wxConfigBase::Set((wxConfigBase *) NULL);
     if(m_docManager) {
         delete m_docManager;
+    }
+    if(m_settings) {
+        delete m_settings;
     }
     return 0;
 }

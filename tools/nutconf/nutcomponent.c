@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2004/09/26 12:04:07  drsung
+ * Fixed several hundred memory leaks :-).
+ * Relative pathes can now be used for source, build and install directory.
+ *
  * Revision 1.9  2004/09/19 15:13:09  haraldkipp
  * Only one target per OBJx entry
  *
@@ -435,6 +439,7 @@ void LoadOptions(lua_State * ls, NUTCOMPONENT * root)
                     if (subc) {
                         LoadComponentOptions(ls, subc);
                     }
+					free(name);
                 }
             }
             lua_pop(ls, 1);
@@ -623,7 +628,7 @@ int LuaError(lua_State *ls)
 NUTREPOSITORY *OpenRepository(const char *pathname)
 {
     char *cp;
-    NUTREPOSITORY *repo = malloc(sizeof(NUTREPOSITORY));
+    NUTREPOSITORY *repo; //OS = malloc(sizeof(NUTREPOSITORY));
 
     if(pathname == NULL || access(pathname, 0)) {
         return NULL;
@@ -634,8 +639,8 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
          * directory is our root directory. All component scripts will
          * be below this point.
          */
-        repo->nr_dir = strdup(pathname);
-        if((repo->nr_dir = strdup(pathname)) == NULL) {
+        //OS repo->nr_dir = _strdup_dbg(pathname);
+        if((repo->nr_dir = _strdup_dbg(pathname)) == NULL) {
             free(repo);
             return NULL;
         }
@@ -671,7 +676,67 @@ void CloseRepository(NUTREPOSITORY *repo)
         if(repo->nr_ls) {
             lua_close((lua_State *)(repo->nr_ls));
         }
+		free(repo);
     }
+}
+
+void ReleaseStringArray(char **stringarray)
+{
+	int cnt = 0;
+	while (stringarray[cnt])
+		free(stringarray[cnt++]);
+	free(stringarray);
+}
+
+void ReleaseComponentOptions(NUTCOMPONENTOPTION *opts)
+{
+	NUTCOMPONENTOPTION *c;
+	while (opts)
+	{
+		c = opts->nco_nxt;
+
+		if (opts->nco_name) free(opts->nco_name);
+        if (opts->nco_brief) free(opts->nco_brief);
+        if (opts->nco_description) free(opts->nco_description);
+        if (opts->nco_active_if) free(opts->nco_active_if);
+        if (opts->nco_requires) ReleaseStringArray(opts->nco_requires);
+        if (opts->nco_provides) ReleaseStringArray(opts->nco_provides);
+        if (opts->nco_flavor) free(opts->nco_flavor);
+        if (opts->nco_type) free(opts->nco_type);
+        if (opts->nco_choices) ReleaseStringArray(opts->nco_choices);
+        if (opts->nco_ctype) free(opts->nco_ctype);
+        if (opts->nco_value) free(opts->nco_value);
+        if (opts->nco_file) free(opts->nco_file);
+        if (opts->nco_makedefs) ReleaseStringArray(opts->nco_makedefs);
+
+		free(opts);
+		opts = c;
+	}
+}
+
+
+void ReleaseComponents(NUTCOMPONENT *comp)
+{
+	NUTCOMPONENT *child = comp->nc_child, *c;
+	while (child)
+	{
+		c = child->nc_nxt;
+		ReleaseComponents(child);
+		child = c;
+	}
+
+    if (comp->nc_name) free (comp->nc_name);
+	if (comp->nc_brief) free (comp->nc_brief);
+    if (comp->nc_description) free (comp->nc_description);
+    if (comp->nc_requires) ReleaseStringArray(comp->nc_requires);
+    if (comp->nc_provides) ReleaseStringArray(comp->nc_provides);
+    if (comp->nc_active_if) free(comp->nc_active_if);
+    if (comp->nc_subdir) free(comp->nc_subdir);
+    if (comp->nc_sources) ReleaseStringArray(comp->nc_sources);
+    if (comp->nc_targets) ReleaseStringArray(comp->nc_targets);
+    if (comp->nc_makedefs) ReleaseStringArray(comp->nc_makedefs);
+	if (comp->nc_opts) ReleaseComponentOptions(comp->nc_opts);
+	free (comp);
 }
 
 /*!
@@ -1099,7 +1164,7 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
             fprintf(fp, "# Automatically generated on %s", asctime(ltime));
             fprintf(fp, "#\n# Do not edit, modify UserConf.mk instead!\n#\n\n");
             WriteMakedefLines(fp, root->nc_child);
-            fprintf(fp, "\n\ninclude %s/UserConf.mk\n", bld_dir);
+		    fprintf(fp, "\n\ninclude $(top_blddir)/UserConf.mk\n");
             fclose(fp);
         }
     }
@@ -1141,8 +1206,20 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                 if (fp) {
                     fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
                     fprintf(fp, "PROJ =\tlib%s\n\n", compo->nc_name);
-                    fprintf(fp, "top_srcdir = %s\n", src_dir);
-                    fprintf(fp, "top_blddir = %s\n\n", bld_dir);
+					if (src_dir[0] == '/' || src_dir[1] == ':')
+						fprintf(fp, "top_srcdir = %s\n", src_dir);
+					else if (strlen(src_dir))
+						fprintf(fp, "top_srcdir = ../../%s\n", src_dir);
+					else
+						fprintf(fp, "top_srcdir = ../..\n");
+
+					if (bld_dir[0] == '/' || bld_dir[1] == ':')
+						fprintf(fp, "top_blddir = %s\n\n", bld_dir);
+					else if (strlen(bld_dir))
+						fprintf(fp, "top_blddir = ../../%s\n\n", bld_dir);
+					else
+						fprintf(fp, "top_blddir = ../..\n\n");
+
                     fprintf(fp, "VPATH = $(top_srcdir)/%s\n\n", compo->nc_subdir);
 
                     sprintf(path, "%s/%s", bld_dir, compo->nc_subdir);
@@ -1155,7 +1232,7 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                     fprintf(fp, "include $(top_blddir)/NutConf.mk\n\n", mak_ext);
                     fprintf(fp, "include $(top_srcdir)/Makedefs.%s\n\n", mak_ext);
 
-                    fprintf(fp, "INCFIRST=$(INCPRE)%s/include ", bld_dir);
+                    fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
                     if(ifirst_dir && *ifirst_dir) {
                         fprintf(fp, " $(INCPRE)%s", ifirst_dir);
                     }
@@ -1179,9 +1256,15 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                         for(i = 0; i < targets; i++) {
                             fprintf(fp, " $(OBJ%d)", i + 1);
                         }
-                        fprintf(fp, "\n\t$(CP) $(PROJ).a %s/$(PROJ).a\n", ins_dir);
+
+						if (ins_dir[0] == '/' || ins_dir[1] == ':')
+							strcpy (path, ins_dir);
+						else
+							sprintf(path, "../../%s", ins_dir);
+
+                        fprintf(fp, "\n\t$(CP) $(PROJ).a %s/$(PROJ).a\n", path);
                         for(i = 0; i < targets; i++) {
-                            fprintf(fp, "\t$(CP) $(OBJ%d) %s/$(notdir $(OBJ%d))\n", i + 1, ins_dir, i + 1);
+                            fprintf(fp, "\t$(CP) $(OBJ%d) %s/$(notdir $(OBJ%d))\n", i + 1, path, i + 1);
                         }
                     }
                     fprintf(fp, "\ninclude $(top_srcdir)/Makerules.%s\n\n", mak_ext);
@@ -1269,7 +1352,7 @@ NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * o
 
     /* First entry of this header file. */
     else {
-        nhm = calloc(1, sizeof(NUTHEADERFILE));
+        nhm = calloc(1, sizeof(NUTHEADERMACRO));
         nhm->nhm_name = opts->nco_name;
         nhm->nhm_value = opts->nco_value;
         nhf->nhf_macros = nhm;
@@ -1298,6 +1381,28 @@ NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
         compo = compo->nc_nxt;
     }
     return nh_root;
+}
+
+/*!
+ * \brief Deletes a linked list of header files and associated macros. 
+ */
+void ReleaseHeaderList(NUTHEADERFILE *nh_root)
+{
+	NUTHEADERFILE *nhf;
+	NUTHEADERMACRO *nhm, *c;
+	while (nh_root)
+	{
+		nhm = nh_root->nhf_macros;
+		while (nhm)
+		{
+			c = nhm->nhm_nxt;
+			free (nhm);
+			nhm = c;
+		}
+		nhf = nh_root->nhf_nxt;
+		free (nh_root);
+		nh_root = nhf;
+	}
 }
 
 /*!
@@ -1367,7 +1472,8 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
                 return -1;
             }
         }
-    }
+	}
+	ReleaseHeaderList (nh_root);
     return 0;
 }
 
