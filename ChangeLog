@@ -1,10 +1,17 @@
-$Id: ChangeLog,v 1.172 2005/02/19 22:53:51 hwmaier Exp $
+$Id: ChangeLog,v 1.173 2005/02/21 00:58:15 hwmaier Exp $
 
-2005-02-20  Henrik Maier  <hwmaier@users.sourceforge.net>
+2005-02-21  Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * conf/arch/arch.nut: Fixed makedefs MCU definition for AT90CAN128
 
-        * conf/arch/dev.nut: New CAN int vectors ivect35.c and ivect36 added
+        * conf/dev/dev.nut: New CAN int vectors ivect35.c and ivect36 added,
+        removed "makedefs" entry for RTL_IRQ_RISING_EDGE. Wasn't causing
+        trouble with nutconf 1.0.4 but it does with the 1.1.2 version.
+
+        * os/thread.c:
+        Changed "#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)"
+        to a more generic "#if defined(__AVR__)" in order to support
+        AT90CAN128, ATMEGA64, and possibly the ATMEGA256 as well.
 
 
 2005-02-17 Matthias Ringwald <mringwal@.inf.ethz.ch>
