@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/08/25 15:48:21  olereinhardt
+ * Added function to set an acceptance filter
+ *
  * Revision 1.3  2004/08/02 09:59:53  olereinhardt
  * changed typing of CAN_TryRxFrame
  *
@@ -119,7 +122,7 @@ struct ifcan {
     void   (*can_recv) (NUTDEVICE *, CANFRAME *); /*!< \brief Receive routine. */
     void   (*can_send) (NUTDEVICE *, CANFRAME *); /*!< \brief Send routine. */
     void   (*can_set_ac) (NUTDEVICE *, u_char*); /*!< \brief Set accaptance code */
-    void   (*can_set_am) (NUTDEVICE *, u_char*); /*!< \brief Set accaptance mode */
+    void   (*can_set_am) (NUTDEVICE *, u_char*); /*!< \brief Set accaptance mask */
     u_char (*can_set_baud) (NUTDEVICE *, u_long); /*!< \brief Set accaptance code */
 };
 
@@ -127,6 +130,8 @@ struct ifcan {
  * \brief Canbus interface type.
  */
 typedef struct ifcan IFCAN;
+
+void   CAN_SetFilter(NUTDEVICE *dev, u_char *ac, u_char *am);
 
 void   CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame);
