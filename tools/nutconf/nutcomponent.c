@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/08/18 16:06:03  haraldkipp
+ * Use consistent directory structure
+ *
  * Revision 1.5  2004/08/18 15:36:25  haraldkipp
  * Phony target clean divided
  *
@@ -1139,9 +1142,11 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                     fprintf(fp, "include $(top_blddir)/NutConf.mk\n\n", mak_ext);
                     fprintf(fp, "include $(top_srcdir)/Makedefs.%s\n\n", mak_ext);
 
+                    fprintf(fp, "INCFIRST=$(INCPRE)%s/include ", bld_dir);
                     if(ifirst_dir && *ifirst_dir) {
-                        fprintf(fp, "INCFIRST=$(INCPRE)%s\n", ifirst_dir);
+                        fprintf(fp, " $(INCPRE)%s", ifirst_dir);
                     }
+                    fputc('\n', fp);
                     if(ilast_dir && *ilast_dir) {
                         fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
                     }

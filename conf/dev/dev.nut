@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.4  2004/08/18 16:05:38  haraldkipp
+-- Use consistent directory structure
+--
 -- Revision 1.3  2004/08/18 13:46:09  haraldkipp
 -- Fine with avr-gcc
 --
@@ -191,19 +194,19 @@ nutdev =
                 brief = "UART0 RTS bit",
                 description = "Bit number of UART0 RTS handshake output.",
                 flavor = "booldata",
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "UART0_RTS_PORT",
                 brief = "UART0 RTS port",
                 description = "Port register name of UART0 RTS handshake output.",
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "UART0_RTS_DDR",
                 brief = "UART0 RTS DDR",
                 description = "Data direction register name of UART0 RTS handshake output.",
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             }
         }
     },
@@ -270,7 +273,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "RTL_RESET_PORT",
@@ -278,7 +281,7 @@ nutdev =
                 description = "Port register name of the Ethernet controller reset output.",
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "RTL_RESET_DDR",
@@ -286,7 +289,7 @@ nutdev =
                 description = "Data direction register name of the Ethernet controller reset output.",
                 type = "enumerated",
                 choices = avr_ddr_choice,
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "RTL_SIGNAL_BIT",
@@ -294,7 +297,7 @@ nutdev =
                 description = "Bit number of the Ethernet controller interrupt input.",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "RTL_SIGNAL_PORT",
@@ -302,7 +305,7 @@ nutdev =
                 description = "Port register name of the Ethernet controller interrupt input.",
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "RTL_SIGNAL_DDR",
@@ -310,7 +313,7 @@ nutdev =
                 description = "Data direction register name of the Ethernet controller interrupt input.",
                 type = "enumerated",
                 choices = avr_ddr_choice,
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             }
         }
     },
@@ -369,14 +372,14 @@ nutdev =
                 brief = "Short delay",
                 description = "Number of milliseconds",
                 type = "integer",
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             },
             {
                 macro = "LCD_LONG_DELAY",
                 brief = "Long delay",
                 description = "Number of milliseconds",
                 type = "integer",
-                file = "cfg/portdefs.h"
+                file = "include/cfg/portdefs.h"
             }
         }
     },

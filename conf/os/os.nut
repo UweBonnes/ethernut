@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.4  2004/08/18 16:05:38  haraldkipp
+-- Use consistent directory structure
+--
 -- Revision 1.3  2004/08/18 13:46:10  haraldkipp
 -- Fine with avr-gcc
 --
@@ -71,7 +74,7 @@ nutos =
                 brief = "Seperate IRQ stack",
                 description = "If separate IRQ stack is enabled", 
                 flavor = "boolean",
-                file = "cfg/os.h"
+                file = "include/cfg/os.h"
             }
         }
     },
@@ -94,7 +97,7 @@ nutos =
                               "will automatically determine this value during initialization "..
                               "by using an additional 32 kHz crystal as a reference clock.",
                 flavor = "booldata",
-                file = "cfg/os.h"
+                file = "include/cfg/os.h"
             }
         }
     },
@@ -136,27 +139,27 @@ nutos =
                 macro = "NUTBANK_COUNT",
                 brief = "Number of banks",
                 description = "For systems without banked memory this is set to zero.",
-                file = "cfg/bankmem.h"
+                file = "include/cfg/bankmem.h"
             },
             {
                 macro = "NUTBANK_START",
                 brief = "Bank start address",
                 description = "First address of the banked memory area.",
                 ctype = "(char *)",
-                file = "cfg/bankmem.h"
+                file = "include/cfg/bankmem.h"
             },
             {
                 macro = "NUTBANK_SIZE",
                 brief = "Bank size",
                 description = "Size of the banked memory area.",
-                file = "cfg/bankmem.h"
+                file = "include/cfg/bankmem.h"
             },
             {
                 macro = "NUTBANK_SR",
                 brief = "Bank select register",
                 description = "Address of the bank select register.",
                 ctype = "(char *)",
-                file = "cfg/bankmem.h"
+                file = "include/cfg/bankmem.h"
             }
         }
     },
@@ -184,7 +187,7 @@ nutos =
                 description = "This is the first EEPROM address, where Nut/OS "..
                               "expects its configuration",
                 type = "integer",
-                file = "cfg/eeprom.h"
+                file = "include/cfg/eeprom.h"
             }
         }
     },
@@ -199,7 +202,7 @@ nutos =
                 brief = "Extended",
                 description = "User provided extension to the hard coded version information.",
                 requires = { "NOT_AVAILABLE" },
-                file = "cfg/os.h"
+                file = "include/cfg/os.h"
             }
         }
     },
@@ -255,7 +258,7 @@ nutos =
                               "the application must register an output device "..
                               "early and redirect stdout to it.",
                 flavor = "boolean",
-                file = "cfg/os.h"
+                file = "include/cfg/os.h"
             }
         }
     }

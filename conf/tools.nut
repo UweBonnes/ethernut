@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.2  2004/08/18 16:05:13  haraldkipp
+-- Use consistent directory structure
+--
 -- Revision 1.1  2004/08/18 14:02:00  haraldkipp
 -- First check-in
 --
@@ -50,7 +53,7 @@ nuttools =
             provides = { "TOOL_CC_ARM", "TOOL_GCC" },
             macro = "ARM_GCC",
             flavor = "boolean",
-            file = "cfg/arch.h"
+            file = "include/cfg/arch.h"
         },
         {
             brief = "GCC for ARM (no libc)",
@@ -60,7 +63,7 @@ nuttools =
             provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_NOLIBC" },
             macro = "ARM_GCC",
             flavor = "boolean",
-            file = "cfg/arch.h"
+            file = "include/cfg/arch.h"
         },
         {
             brief = "GCC for AVR",
@@ -68,7 +71,7 @@ nuttools =
             provides = { "TOOL_CC_AVR", "TOOL_GCC" },
             macro = "AVR_GCC",
             flavor = "boolean",
-            file = "cfg/arch.h",
+            file = "include/cfg/arch.h",
             makedefs = { "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
         },
         {
@@ -77,7 +80,7 @@ nuttools =
             provides = { "TOOL_CC_LINUX", "TOOL_GCC" },
             macro = "LINUX_GCC",
             flavor = "boolean",
-            file = "cfg/arch.h"
+            file = "include/cfg/arch.h"
         },
         {
             brief = "ImageCraft for AVR",
@@ -85,7 +88,7 @@ nuttools =
             provides = { "TOOL_CC_AVR", "TOOL_ICC" },
             macro = "ICCAVR",
             flavor = "boolean",
-            file = "cfg/arch.h",
+            file = "include/cfg/arch.h",
             makedefs = { "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=atmega" }
         }
     },

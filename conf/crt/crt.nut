@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.4  2004/08/18 16:05:38  haraldkipp
+-- Use consistent directory structure
+--
 -- Revision 1.3  2004/08/18 13:46:09  haraldkipp
 -- Fine with avr-gcc
 --
@@ -120,7 +123,7 @@ nutcrt =
                 brief = "Floating point",
                 description = "Enables floating point support for standard input/output.", 
                 flavor = "boolean",
-                file = "cfg/crt.h"
+                file = "include/cfg/crt.h"
             }
         }
 

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2004/08/18 16:05:26  haraldkipp
+-- Use consistent directory structure
+--
 -- Revision 1.2  2004/08/18 13:46:08  haraldkipp
 -- Fine with avr-gcc
 --
@@ -67,7 +70,7 @@ nutarch =
                     "HW_UART_AVR"
                 },
                 flavor = "boolean",
-                file = "cfg/arch.h",
+                file = "include/cfg/arch.h",
                 makedefs = { "MCU=$(MCU_ATMEGA103)", "HWDEF=-D__HARVARD_ARCH__" }
             },
             {
@@ -85,7 +88,7 @@ nutarch =
                     "HW_UART_AVR"
                 },
                 flavor = "boolean",
-                file = "cfg/arch.h",
+                file = "include/cfg/arch.h",
                 makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF=-D__HARVARD_ARCH__" }
             },
             {
@@ -95,7 +98,7 @@ nutarch =
                               "4K bytes EEPROM, 64K bytes data memory space, 2 USARTs, 4 timers, "..
                               "8-channel ADC, SPI, TWI and CAN controller.",
                 flavor = "boolean",
-                file = "cfg/arch.h",
+                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR" },
                 provides = {
                     "HW_TARGET",
@@ -112,7 +115,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes RAM, "..
                               "64M bytes address space, 2 USARTs and 3 timers. ",
                 flavor = "boolean",
-                file = "cfg/arch.h",
+                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
                     "HW_TARGET",
@@ -125,7 +128,7 @@ nutarch =
                 macro = "MCU_LINUX_EMU",
                 brief = "Linux Emulator",
                 flavor = "boolean",
-                file = "cfg/arch.h",
+                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_LINUX" },
                 provides = { "HW_TARGET", "HW_NVMEM", "HW_EMU_LINUX" }
             },
@@ -133,7 +136,7 @@ nutarch =
                 macro = "MCU_H8_3068",
                 brief = "Renesas H8/3068",
                 flavor = "boolean",
-                file = "cfg/arch.h",
+                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_H8300" },
                 provides = {
                     "HW_TARGET",
@@ -149,7 +152,7 @@ nutarch =
                               "HDLC protocol, 64M bytes address space, I2C, 2 UARTs and "..
                               "2 timers.",
                 flavor = "boolean",
-                file = "cfg/arch.h",
+                file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
                     "HW_TARGET",
