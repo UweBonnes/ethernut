@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/12/17 15:27:19  haraldkipp
+ * Added Adam Pierce's routing management functions.
+ *
  * Revision 1.2  2004/10/10 16:37:03  drsung
  * Detection of directed broadcasts to local network added.
  *
@@ -116,6 +119,8 @@
 #include <net/if_var.h>
 #include <net/route.h>
 
+#include <string.h>
+
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #endif
@@ -128,7 +133,7 @@
 
 static u_char rteLock;
 
-RTENTRY *rteList = 0;           //!< Linked list of routing entries.
+RTENTRY *rteList;           /*!< Linked list of routing entries. */
 
 /*!
  * \brief Add a new entry to the IP routing table.
@@ -190,10 +195,129 @@ int NutIpRouteAdd(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev)
 }
 
 /*!
+ * \brief Delete all route table entries for the given device.
+ *
+ * \param dev Pointer to the device. If NULL, it deletes all route table entries.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutIpRouteDelAll(NUTDEVICE * dev)
+{
+    RTENTRY **rtpp;
+    RTENTRY *rte;
+
+    AtomicInc(&rteLock);
+    NutEnterCritical();
+
+    if (rteLock == 1) {
+        rtpp = &rteList;
+
+        while (*rtpp) {
+            rte = *rtpp;
+
+            if (rte->rt_dev == dev || dev == 0) {
+                *rtpp = rte->rt_next;
+                NutHeapFree(rte);
+            } else
+                *rtpp = (*rtpp)->rt_next;
+        }
+    }
+
+    NutExitCritical();
+    AtomicDec(&rteLock);
+    return 0;
+}
+
+
+/*!
+ * \brief Delete the specified route table entry.
+ *
+ * All fields must exactly match an existing entry.
+ *
+ * \param ip   Network or host IP address of the route entry.
+ * \param mask Mask for this entry. -1 for host routes,
+ *             0 for default or net mask for net routes.
+ * \param gate Route through this gateway, 0 for default gate.
+ * \param dev  Network interface to use.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutIpRouteDel(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev)
+{
+    int rc = -1;
+    RTENTRY **rtpp;
+    RTENTRY *rte;
+
+    AtomicInc(&rteLock);
+    NutEnterCritical();
+
+    if (rteLock == 1) {
+        for (rtpp = &rteList; *rtpp; *rtpp = (*rtpp)->rt_next) {
+            rte = *rtpp;
+
+            if (rte->rt_ip == ip && rte->rt_mask == mask && rte->rt_gateway == gate && rte->rt_dev == dev) {
+                *rtpp = rte->rt_next;
+                NutHeapFree(rte);
+                rc = 0;
+            }
+        }
+    }
+
+    NutExitCritical();
+    AtomicDec(&rteLock);
+
+    return rc;
+}
+
+/*!
+ * \brief Return an array of RTENTRY structures which contain all the current route table entries. 
+ *
+ * The calling function is responsible for deleting the array.
+ *
+ * \param numEntries Points to an integer, which receives the length of the array.
+ *
+ * \return Pointer to the array. Will be NULL in case of an error.
+ */
+RTENTRY *NutIpRouteList(int *numEntries)
+{
+    RTENTRY *rte;
+    RTENTRY *rc;
+    int i;
+
+    AtomicInc(&rteLock);
+    NutEnterCritical();
+
+    if (rteLock == 1) {
+        // First count the number of entries.
+        *numEntries = 0;
+        for (rte = rteList; rte; rte = rte->rt_next)
+            (*numEntries)++;
+
+        // Allocate space for the result.
+        rc = (RTENTRY *) NutHeapAlloc(sizeof(RTENTRY) * (*numEntries));
+
+        // Fill in the result.
+        i = 0;
+        for (rte = rteList; rte; rte = rte->rt_next) {
+            memcpy(&rc[i], rte, sizeof(RTENTRY));
+            rc[i].rt_next = 0;
+        }
+    } else {
+        rc = 0;
+        *numEntries = 0;
+    }
+
+    NutExitCritical();
+    AtomicDec(&rteLock);
+
+    return rc;
+}
+
+/*!
  * \brief Used to limit route lookup recursion for gateways.
  *
  * The returned pointer points directly into the linked
- * list of all route entries, which is save, as entries
+ * list of all route entries, which is safe, as entries
  * are never removed or modified.
  *
  * \param ip    IP address in network byte order.

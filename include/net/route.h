@@ -2,7 +2,7 @@
 #define _NET_ROUTE_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:12  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/12/17 15:27:21  haraldkipp
+ * Added Adam Pierce's routing management functions.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:12  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/02/04 18:00:42  harald
  * Version 3 released
@@ -96,9 +99,6 @@
  * \brief Routing information definitions.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*!
  * \brief Route entry type.
@@ -110,18 +110,21 @@ typedef struct _RTENTRY RTENTRY;
  * \brief Route entry structure.
  */
 struct _RTENTRY {
-    RTENTRY *rt_next;       //!< \brief Link to next entry.
-    u_long   rt_ip;         //!< \brief Destination ip address.
-    u_long   rt_mask;       //!< \brief IP address mask, -1 on host routes.
-    u_long   rt_gateway;    //!< \brief Gateway ip address.
-    NUTDEVICE  *rt_dev;     //!< \brief Device to use.
+    RTENTRY *rt_next;           //!< \brief Link to next entry.
+    u_long rt_ip;               //!< \brief Destination ip address.
+    u_long rt_mask;             //!< \brief IP address mask, -1 on host routes.
+    u_long rt_gateway;          //!< \brief Gateway ip address.
+    NUTDEVICE *rt_dev;          //!< \brief Device to use.
 };
 
-extern int NutIpRouteAdd(u_long ip, u_long mask, u_long gate, NUTDEVICE *dev);
-extern NUTDEVICE *NutIpRouteQuery(u_long ip, u_long *gate);
+__BEGIN_DECLS
+/* Function prototypes. */
+extern int NutIpRouteAdd(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev);
+extern NUTDEVICE *NutIpRouteQuery(u_long ip, u_long * gate);
+extern int NutIpRouteDelAll(NUTDEVICE * dev);
+extern int NutIpRouteDel(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev);
+extern RTENTRY *NutIpRouteList(int *numEntries);
 
-#ifdef __cplusplus
-}
-#endif
-
+__END_DECLS
+/* */
 #endif
