@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/02/04 17:16:45  haraldkipp
+ * Stop searching when listening socket found
+ *
  * Revision 1.11  2005/01/03 08:44:15  haraldkipp
  * Simplyfied NutTcpSend().
  *
@@ -292,10 +295,14 @@ TCPSOCKET *NutTcpFindSocket(u_short lport, u_short rport, u_long raddr)
      * incoming requests on any port. Thanks to
      * Alejandro Lopez, who pointed this out.
      */
-    if (sock == 0)
-        for (sp = tcpSocketList; sp; sp = sp->so_next)
-            if (sp->so_state == TCPS_LISTEN && sp->so_local_port == lport)
+    if (sock == 0) {
+        for (sp = tcpSocketList; sp; sp = sp->so_next) {
+            if (sp->so_state == TCPS_LISTEN && sp->so_local_port == lport) {
                 sock = sp;
+                break;
+            }
+        }
+    }
 
     return sock;
 }
