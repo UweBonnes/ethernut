@@ -33,6 +33,13 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/05/24 17:11:05  olereinhardt
+ * dded terminal device driver for hd44780 compatible LCD displays directly
+ * connected to the memory bus (memory mapped). See hd44780.c for more
+ * information.Therefore some minor changed in include/dev/term.h and
+ * dev/term.c are needet to
+ * pass a base address to the lcd driver.
+ *
  * Revision 1.4  2004/03/18 18:30:11  haraldkipp
  * Added Michael Fischer's TIOCGWINSZ ioctl
  *
@@ -379,7 +386,7 @@ int TermInit(NUTDEVICE * dev)
     /*
      * Initialize the display hardware.
      */
-    (*dcb->dss_init) ();
+    (*dcb->dss_init) (dev);
 
     /*
      * Initialize driver control block.
