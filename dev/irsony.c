@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/18 18:41:18  haraldkipp
+ * Bugfix. Now works with ICCAVR
+ *
  * Revision 1.1  2003/07/21 18:07:54  haraldkipp
  * Sony infrared remote control driver added
  *
@@ -41,6 +44,11 @@
 #include <cfg/medianut.h>
 #include <sys/atom.h>
 #include <sys/event.h>
+
+#ifdef __IMAGECRAFT__
+#pragma interrupt_handler SIG_INTERRUPT4:iv_INT4
+#pragma interrupt_handler SIG_OVERFLOW2:iv_TIMER2_OVF
+#endif
 
 /*!
  * \addtogroup xgIrSony
