@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.5  2005/01/22 19:19:31  haraldkipp
+-- Added C++ support contributed by Oliver Schulz (MPI).
+--
 -- Revision 1.4  2004/10/03 18:37:39  haraldkipp
 -- GBA support
 --
@@ -75,7 +78,7 @@ nuttools =
         {
             brief = "GCC for AVR",
             description = "Make sure you have deselected all other compilers.",
-            provides = { "TOOL_CC_AVR", "TOOL_GCC" },
+            provides = { "TOOL_CC_AVR", "TOOL_GCC", "TOOL_CXX" },
             macro = "AVR_GCC",
             flavor = "boolean",
             file = "include/cfg/arch.h",
