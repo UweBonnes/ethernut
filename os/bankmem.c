@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/12/17 15:28:33  haraldkipp
+ * Bugfix. Comparison of the read and write pointers now includes the segments.
+ * Thanks to Pete Allinson and Johan van der Stoel.
+ *
  * Revision 1.2  2004/08/18 18:51:56  haraldkipp
  * Made banked memory configurable.
  *
@@ -151,7 +155,7 @@ char *NutSegBufReadRequest(size_t * bcp)
         *bcp = 0;
     else if (segbuf_ws != segbuf_rs || segbuf_rp >= segbuf_wp)
         *bcp = segbuf_end - segbuf_rp;
-    else if ((*bcp = segbuf_wp - segbuf_rp) == 0)
+    else if ((*bcp = segbuf_wp - segbuf_rp) == 0 && segbuf_ws == segbuf_rs)
         segbuf_empty = 1;
 
     NutSegBufEnable(segbuf_rs);
@@ -207,7 +211,7 @@ char *NutSegBufReadCommit(size_t bc)
                 segbuf_rs = 0;
             NutSegBufEnable(segbuf_rs);
         }
-        if (segbuf_rp == segbuf_wp)
+        if (segbuf_rp == segbuf_wp  && segbuf_rs == segbuf_ws)
             segbuf_empty = 1;
     }
     return segbuf_rp;
@@ -257,7 +261,7 @@ void NutSegBufReadLast(u_short bc)
             if (++segbuf_rs >= NUTBANK_COUNT)
                 segbuf_rs = 0;
         }
-        if (segbuf_rp == segbuf_wp)
+        if (segbuf_rp == segbuf_wp && segbuf_rs == segbuf_ws)
             segbuf_empty = 1;
     }
     NutSegBufEnable(segbuf_ws);
