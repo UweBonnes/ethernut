@@ -2,7 +2,7 @@
 #define _DEV_TERM_H_
 
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,6 +57,9 @@
 #define LCD_SETCOOKEDMODE   0x0413  /*!< \brief Set raw mode. */ 
 #define LCD_GETCOOKEDMODE   0x0414  /*!< \brief Query raw mode. */ 
 
+#define TIOCGWINSZ          0x0501  /*!< Gets the window size */
+#define TIOCSWINSZ          0x0502  /*!< Sets the window size */
+
 #define LCD_MF_CURSORON     0x00000001UL    /*!< \brief Cursor on flag. */
 #define LCD_MF_COOKEDMODE   0x00020000UL    /*!< \brief Control character interpretation on flag. */
 
@@ -88,6 +91,18 @@
 #define ESC_DEFAULTSET  ESC_CHAR "G"
 #define ESC_ACTIVE      ESC_CHAR "R"
 #define ESC_SLEEP       ESC_CHAR "S"
+
+/*
+ * winsize structure
+ */
+typedef struct _WINSIZE WINSIZE;
+
+struct _WINSIZE {
+    u_short ws_row;
+    u_short ws_col;
+    u_short ws_xpixel;
+    u_short ws_ypixel;
+};
 
 /*!
  * Terminal device control block type.

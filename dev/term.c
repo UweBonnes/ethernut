@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/18 18:30:11  haraldkipp
+ * Added Michael Fischer's TIOCGWINSZ ioctl
+ *
  * Revision 1.3  2004/03/18 14:02:46  haraldkipp
  * Comments updated
  *
@@ -300,6 +303,7 @@ int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
     TERMDCB *dcb = dev->dev_dcb;
     u_short usv;
     u_long ulv;
+    WINSIZE *win_size;
 
     switch (req) {
     case LCD_CMDBYTE:
@@ -343,6 +347,13 @@ int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
             *(u_long *)conf = 1;
         else
             *(u_long *)conf = 0;
+        break;
+    case TIOCGWINSZ:
+        win_size = (WINSIZE *)conf;
+        win_size->ws_col    = dcb->dcb_nrows;
+        win_size->ws_row    = dcb->dcb_vcols;
+        win_size->ws_xpixel = 0;
+        win_size->ws_ypixel = 0;
         break;
     }
     return 0;
