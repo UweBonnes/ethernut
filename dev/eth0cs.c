@@ -68,6 +68,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/05 20:05:11  haraldkipp
+ * DNS removed from interface
+ *
  * Revision 1.2  2003/07/20 20:07:38  haraldkipp
  * Conflicting Ethernet driver routine names solved.
  *
@@ -101,8 +104,6 @@ IFNET ifn_eth0cs = {
     0,                          /*!< \brief IP address. */
     0,                          /*!< \brief Remote IP address for point to point. */
     0,                          /*!< \brief IP network mask. */
-    0,                          /*!< \brief IP Primary DNS */
-    0,                          /*!< \brief IP Secondary DNS */
     567,                        /*!< \brief Maximum size of a transmission unit. */
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */

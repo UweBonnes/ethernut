@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:37  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/05 20:05:11  haraldkipp
+ * DNS removed from interface
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:37  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.11  2003/03/31 14:53:06  harald
  * Prepare release 3.1
@@ -73,8 +76,6 @@ IFNET ifn_eth0 = {
     0,                          /*!< \brief IP address. */
     0,                          /*!< \brief Remote IP address for point to point. */
     0,                          /*!< \brief IP network mask. */
-    0,                          /*!< \brief IP Primary DNS */
-    0,                          /*!< \brief IP Secondary DNS */
     ETHERMTU,                   /*!< \brief Maximum size of a transmission unit. */
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */

@@ -65,8 +65,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:48  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/05 20:05:11  haraldkipp
+ * DNS removed from interface
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:48  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:33:50  harald
  * PPP hack for simple UART support, functions reordered.
@@ -93,6 +96,11 @@
 #ifdef NUTDEBUG
 #include <net/netdebug.h>
 #endif
+
+/*!
+ * \addtogroup xgPPP
+ */
+/*@{*/
 
 /* Ugly hack to get simple UART drivers working. */
 extern u_char ppp_hackup;
@@ -393,8 +401,6 @@ IFNET ifn_ppp = {
     0,                          /*!< \brief IP address. */
     0,                          /*!< \brief Remote IP address for point to point. */
     0,                          /*!< \brief IP network mask. */
-    0,                          /*!< \brief IP Primary DNS */
-    0,                          /*!< \brief IP Secondary DNS */
     PPP_MRU,                    /*!< \brief Maximum size of a transmission unit. */
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */
