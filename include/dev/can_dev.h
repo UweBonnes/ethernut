@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/06/23 10:15:35  olereinhardt
+ * Added function for buffer monitoring (avail / free)
+ *
  * Revision 1.1  2004/06/07 15:13:48  olereinhardt
  * Initial checkin
  *
@@ -112,9 +115,9 @@ struct ifcan {
     u_char (*can_txfree) (NUTDEVICE *);           /*!< \brief Transmit buffer free? */
     void   (*can_recv) (NUTDEVICE *, CANFRAME *); /*!< \brief Receive routine. */
     void   (*can_send) (NUTDEVICE *, CANFRAME *); /*!< \brief Send routine. */
-    void   (*can_set_ac) (NUTDEVICE *, u_char* code); /*!< \brief Set accaptance code */
-    void   (*can_set_am) (NUTDEVICE *, u_char* mode); /*!< \brief Set accaptance mode */
-    u_char (*can_set_baud) (NUTDEVICE *, u_long baudrate); /*!< \brief Set accaptance code */
+    void   (*can_set_ac) (NUTDEVICE *, u_char*); /*!< \brief Set accaptance code */
+    void   (*can_set_am) (NUTDEVICE *, u_char*); /*!< \brief Set accaptance mode */
+    u_char (*can_set_baud) (NUTDEVICE *, u_long); /*!< \brief Set accaptance code */
 };
 
 /*!
@@ -124,9 +127,11 @@ typedef struct ifcan IFCAN;
 
 void   CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame);
+u_char CAN_TxFree(NUTDEVICE *dev);
 
 void   CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_TryRXFrame(NUTDEVICE *dev, CANFRAME *frame);
+u_char CAN_RxAvail(NUTDEVICE *dev);
 
 /*@}*/
 
