@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2005/02/05 20:46:09  haraldkipp
+# FTP server sample added
+#
 # Revision 1.3  2004/08/18 15:02:34  haraldkipp
 # Application build is no longer fixed in top_srcdir
 #
@@ -54,6 +57,7 @@
 
 all:
 	$(MAKE) -C basemon
+	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
 	$(MAKE) -C inetq
 	$(MAKE) -C nutpiper
@@ -68,6 +72,7 @@ all:
 
 install:
 	$(MAKE) -C basemon install
+	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
 	$(MAKE) -C inetq install
 	$(MAKE) -C nutpiper install
@@ -82,6 +87,7 @@ install:
 
 clean:
 	$(MAKE) -C basemon clean
+	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C inetq clean
 	$(MAKE) -C nutpiper clean
