@@ -39,6 +39,9 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.4  2004/09/07 19:16:12  haraldkipp
+ * Activate boolean items only
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -549,13 +552,16 @@ bool CConfigItem::IsEnabled() const
 bool CConfigItem::IsActive() const
 {
     if (m_option) {
-        if(m_option->nco_active == 0) {
-            if(m_option->nco_active_if) {
-                CNutConfDoc *pDoc = wxGetApp().GetNutConfDoc();
-                m_option->nco_active = pDoc->IsOptionActive(m_option->nco_active_if);
+        if (HasBool()) {
+            if(m_option->nco_active == 0) {
+                if(m_option->nco_active_if) {
+                    CNutConfDoc *pDoc = wxGetApp().GetNutConfDoc();
+                    m_option->nco_active = pDoc->IsOptionActive(m_option->nco_active_if);
+                }
             }
+            return m_option->nco_active != 0;
         }
-        return m_option->nco_active != 0;
+        m_option->nco_active = 1;
     }
     return true;
 }
