@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.12  2004/04/07 16:28:22  freckle
+# Target install: use ranlib only for arch *nix emulation (ranlib is required
+# on mac os x)
+#
 # Revision 1.11  2004/04/07 12:13:56  haraldkipp
 # Matthias Ringwald's *nix emulation added
 #
@@ -158,8 +162,10 @@ $(TARG): $(OBJS)
 
 install: $(TARG)
 	$(CP)     $(TARG) $(LIBDIR)/$(TARG)
+ifeq ($(ARCH), unix)
 	$(RANLIB) $(LIBDIR)/$(TARG)
-
+endif
+	
 clean:
 	-rm -f $(OBJS)
 	-rm -f $(TARG)

@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2004/04/07 16:28:20  freckle
+# Target install: use ranlib only for arch *nix emulation (ranlib is required
+# on mac os x)
+#
 # Revision 1.4  2004/03/16 16:48:27  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
@@ -103,6 +107,10 @@ $(TARGF): $(OBJF)
 install: $(TARGS)
 	$(CP) $(TARG) $(LIBDIR)/$(TARG)
 	$(CP) $(TARGF) $(LIBDIR)/$(TARGF)
+ifeq ($(ARCH), unix)
+	$(RANLIB) $(LIBDIR)/$(TARG)
+	$(RANLIB) $(LIBDIR)/$(TARGF)
+endif
 
 clean:
 	-rm -f $(OBJS)
