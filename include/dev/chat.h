@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:18:54  haraldkipp
+ * Debug output added.
+ *
  * Revision 1.3  2004/01/06 18:12:36  drsung
  * Bugfix multiple define: '_chat_report' under ICCAVR
  *
@@ -72,7 +75,15 @@ typedef struct {
 
 extern u_char *chat_report;
 
+#ifdef NUTDEBUG
+#include <stdio.h>
+#endif
+
 __BEGIN_DECLS
+
+#ifdef NUTDEBUG
+void NutTraceChat(FILE * stream, u_char flags);
+#endif
 
 int NutChatExpectString(NUTCHAT *ci, char *str);
 int NutChatExpect(NUTCHAT *ci, char *str);
