@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/07/20 16:03:27  haraldkipp
+ * Saved some RAM by moving string literals to program memory.
+ *
  * Revision 1.2  2003/07/17 12:28:21  haraldkipp
  * Memory hole bugfix
  *
@@ -60,6 +63,7 @@
 #include <fcntl.h>
 
 #include <sys/heap.h>
+#include <sys/version.h>
 
 #include "dencode.h"
 
@@ -97,12 +101,12 @@ static char *http_root;
  * \param status Response status, error code or 200, if no error occured.
  * \param title  Error text, or OK, if no error occured.
  */
-void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status,
-                          char *title)
+void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
 {
-    fprintf(stream, "HTTP/%d.%d %d %s\r\n", req->req_version / 10,
-            req->req_version % 10, status, title);
-    fputs("Server: Ethernut 3.0\r\n", stream);
+    static prog_char fmt_P[] = "HTTP/%d.%d %d %s\r\nServer: Ethernut %s\r\n";
+
+    fprintf_P(stream, fmt_P, req->req_version / 10, req->req_version % 10, 
+              status, title, NutVersionString());
 }
 
 /*!
@@ -121,16 +125,16 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status,
  */
 void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
 {
-    if (mime_type)
-        fprintf(stream, "Content-Type: %s\r\n", mime_type);
-    if (bytes >= 0)
-        fprintf(stream, "Content-Length: %ld\r\n", bytes);
-    fputs("Connection: close\r\n\r\n", stream);
-}
+    static prog_char typ_fmt_P[] = "Content-Type: %s\r\n";
+    static prog_char len_fmt_P[] = "Content-Length: %ld\r\n";
+    static prog_char ccl_str_P[] = "Connection: close\r\n\r\n";
 
-static char *err_file =
-    "<HTML>" "<HEAD>" "<TITLE>%d %s</TITLE>" "</HEAD>" "<BODY>" "%d %s"
-    "</BODY>" "</HTML>";
+    if (mime_type)
+        fprintf_P(stream, typ_fmt_P, mime_type);
+    if (bytes >= 0)
+        fprintf_P(stream, len_fmt_P, bytes);
+    fputs_P(ccl_str_P, stream);
+}
 
 /*!
  * \brief Send a HTTP error response.
@@ -144,6 +148,8 @@ static char *err_file =
  */
 void NutHttpSendError(FILE * stream, REQUEST * req, int status)
 {
+    static prog_char err_fmt_P[] = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>";
+    static prog_char auth_fmt_P[] = "WWW-Authenticate: Basic realm=\"%s\"";
     char *title;
 
     switch (status) {
@@ -176,13 +182,12 @@ void NutHttpSendError(FILE * stream, REQUEST * req, int status)
             *cp = 0;
         else
             realm = ".";
-        fprintf(stream, "WWW-Authenticate: Basic realm=\"%s\"", realm);
+        fprintf_P(stream, auth_fmt_P, realm);
         if (cp)
             *cp = '/';
     }
     NutHttpSendHeaderBot(stream, "text/html", -1);
-    fprintf(stream, err_file, status, title, status, title);
-
+    fprintf_P(stream, err_fmt_P, status, title, status, title);
 }
 
 /*!
