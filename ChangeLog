@@ -1,6 +1,8 @@
-$Id: ChangeLog,v 1.161 2005/02/06 16:34:37 haraldkipp Exp $
+$Id: ChangeLog,v 1.162 2005/02/06 20:35:28 haraldkipp Exp $
 
 2005-02-06  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c, doc/gen/nut_en.cfg: Release 3.9.4
 
 	* dev/debug0.c, dev/debug1.c: Added UL modifier to baudrate
 	calculation fixes ICCAVR V7 bug. Also make sure you added
@@ -13,6 +15,20 @@ $Id: ChangeLog,v 1.161 2005/02/06 16:34:37 haraldkipp Exp $
 	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
 	Configurator version 1.1.2. Fixes a bad entry in NutConf.mk
 	for Gameboy Advance.
+
+	* tools/linux/README, tools/win32/README: Target 
+	directories for tool's binaries added.
+
+	* tools/nutconf/utils.cpp: Fixed missing declaration
+	of errno.
+
+	* tools/nutconf/Makefile: Lua library names differ on
+	Fedora Linux.
+
+	* app/basemon/basemon.c: Fixed missing declaration
+	of ms62_5.
+
+	* configure: Force re-linking or Makedefs and Makerules.
 
 
 2005-02-05  Harald Kipp  <harald.kipp@egnite.de>
