@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/05/11 17:22:12  drsung
+ * Deprecated header file removed.
+ *
  * Revision 1.2  2003/11/04 17:46:52  haraldkipp
  * Adapted to Ethernut 2
  *
@@ -66,7 +69,6 @@
 #include <sys/thread.h>
 #include <sys/timer.h>
 
-#include <netinet/sostream.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <net/route.h>
@@ -269,13 +271,13 @@ static void UserInterface(void)
                 break;
             case IRCMD_VOL_UP:
                 player.psi_start = 1;
-                if (radio.rc_rvolume < 255)
-                    radio.rc_rvolume++;
+                if (radio.rc_rvolume < 245)
+                    radio.rc_rvolume += 10;
                 break;
             case IRCMD_VOL_DN:
                 player.psi_start = 1;
-                if (radio.rc_rvolume > 1)
-                    radio.rc_rvolume--;
+                if (radio.rc_rvolume > 10)
+                    radio.rc_rvolume -= 10;
                 break;
             case IRCMD_MUTE:
                 radio.rc_rmute = !radio.rc_rmute;
