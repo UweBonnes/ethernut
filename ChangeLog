@@ -1,9 +1,14 @@
-$Id: ChangeLog,v 1.95 2004/08/04 22:12:07 freckle Exp $
+$Id: ChangeLog,v 1.96 2004/08/04 23:10:29 freckle Exp $
 
 2004-08-05  Matthias Ringwald <mringwal@inf.ethz.ch>
     * dev/unix_devs.c: CTRL-C on terminal terminates running
-    unix emulation apps nows
+    unix emulation apps nows.
 
+    * os/nutinit.c, os/arch/unix_eeprom.c, include/arch/unix.h:
+    added an avr-libc compatible (but yet uncomplete) eeprom simulation
+    that uses file 'eeprom.bin' in the current directory to store eeprom
+    content.
+    
 2004-08-03  Harald Kipp  <harald.kipp@egnite.de>
 
 	* app/basemon: Dataflash check added. Fixed a bug, which offered MAC

@@ -141,5 +141,16 @@ extern emulation_options_t emulation_options;
  * ------------------------------------------------------------------------- */
 void emulation_options_parse(int argc, char *argv[]);
 
+/** \name Backwards compatibility defines */
+#define eeprom_rb(addr) eeprom_read_byte       ((u_char  *)(u_long) (addr))
+#define eeprom_rw(addr) eeprom_read_word       ((u_short *)(u_long) (addr))
+#define eeprom_wb(addr, val) eeprom_write_byte ((u_char  *)(u_long) (addr), (val))
+// fake ATmega128 has 0xfff eeprom
+#define    E2END    0x0FFF
+
+/** \def eeprom_is_ready
+    \ingroup unix_eeprom
+    always returns 1, as eeprom = unix_file is always ready */
+#define eeprom_is_ready() TRUE
 
 #endif                          /* #ifndef _CPU_UNIX_H_ */

@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/08/04 23:10:30  freckle
+ * added an avr-libc compatible (but yet uncomplete) eeprom simulation that
+ * uses file 'eeprom.bin' in the current directory to store eeprom content
+ *
  * Revision 1.8  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -93,6 +97,7 @@
 #define NO_STDIO_NUT_WRAPPER
 #include "arch/unix_nutinit.c"
 #include "arch/unix_options.c"
+#include "arch/unix_eeprom.c"
 #endif
 
 /*@}*/
