@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.5  2004/09/07 19:09:53  haraldkipp
+-- Split program space I/O
+--
 -- Revision 1.4  2004/08/18 16:05:38  haraldkipp
 -- Use consistent directory structure
 --
@@ -79,14 +82,23 @@ nutcrt =
     },
     {
         name = "nutcrt_write",
-        brief = "Low level file write",
+        brief = "Low Level Write",
         requires = { "DEV_WRITE", "CRT_FILE" },
         provides = { "CRT_WRITE" },
         sources = 
         { 
             "putf.c",
             "putff.c",
-            "write.c",
+            "write.c"
+        }
+    },
+    {
+        name = "nutcrt_write_p",
+        brief = "Low Level Write (PGM-Space)",
+        requires = { "HW_MCU_AVR", "DEV_WRITE", "CRT_FILE" },
+        provides = { "CRT_WRITE_P" },
+        sources = 
+        { 
             "write_p.c"
         }
     },
@@ -96,7 +108,7 @@ nutcrt =
     --
     {
         name = "nutcrt_stream",
-        brief = "File streams",
+        brief = "File Streams",
         provides = { "CRT_STREAM" },
         sources = 
         { 
@@ -130,7 +142,7 @@ nutcrt =
     },
     {
         name = "nutcrt_istream",
-        brief = "File stream input",
+        brief = "File Stream Input",
         provides = { "CRT_STREAM_READ" },
         sources = 
         { 
@@ -138,38 +150,56 @@ nutcrt =
             "fgets.c",
             "fread.c",
             "fscanf.c",
-            "fscanf_p.c",
             "getc.c",
             "getchar.c",
             "gets.c",
             "scanf.c",
-            "scanf_p.c",
             "ungetc.c",
-            "vfscanf.c",
+            "vfscanf.c"
+        }
+    },
+    {
+        name = "nutcrt_istream_p",
+        brief = "File Stream Input (PGM-Space)",
+        requires = { "HW_MCU_AVR" },
+        provides = { "CRT_STREAM_READ_P" },
+        sources = 
+        { 
+            "fscanf_p.c",
+            "scanf_p.c",
             "vfscanf_p.c"
         }
     },
     {
         name = "nutcrt_ostream",
-        brief = "File stream output",
+        brief = "File Stream Output",
         provides = { "CRT_STREAM_WRITE" },
         sources = 
         { 
             "fprintf.c",
-            "fprintf_p.c",
             "fputc.c",
             "fputs.c",
-            "fputs_p.c",
             "fwrite.c",
-            "fwrite_p.c",
             "printf.c",
-            "printf_p.c",
             "putc.c",
             "putchar.c",
             "puts.c",
+            "vfprintf.c"
+        }
+    },
+    {
+        name = "nutcrt_ostream_p",
+        brief = "File Stream Output (PGM-Space)",
+        requires = { "HW_MCU_AVR" },
+        provides = { "CRT_STREAM_WRITE_P" },
+        sources = 
+        { 
+            "fprintf_p.c",
+            "fputs_p.c",
+            "fwrite_p.c",
+            "printf_p.c",
             "puts_p.c",
-            "vfprintf.c",
-            "vfprintf_p.c",
+            "vfprintf_p.c"
         }
     },
 
@@ -178,16 +208,24 @@ nutcrt =
     --
     {
         name = "nutcrt_fstrio",
-        brief = "Formatted string I/O",
+        brief = "Formatted String I/O",
         sources = 
         { 
             "sprintf.c",
-            "sprintf_p.c",
             "sscanf.c",
-            "sscanf_p.c",
             "vsprintf.c",
+            "vsscanf.c"
+        }
+    },
+    {
+        name = "nutcrt_fstrio_p",
+        brief = "Formatted String I/O (PGM-Space)",
+        requires = { "HW_MCU_AVR" },
+        sources = 
+        { 
+            "sprintf_p.c",
+            "sscanf_p.c",
             "vsprintf_p.c",
-            "vsscanf.c",
             "vsscanf_p.c"
         }
     },
