@@ -2,7 +2,7 @@
 #define _SYS_BANKMEM_H_
 
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2004/09/01 14:19:41  haraldkipp
+ * Avoiding too many ifdefs
+ *
  * Revision 1.3  2004/08/18 18:51:41  haraldkipp
  * Made banked memory configurable.
  *
@@ -55,10 +58,20 @@
  * \brief Banked memory management definitions.
  */
 
-
-#ifndef NutSegBufEnable
-#define NutSegBufEnable(bank) *((char *)(NUTBANK_SR) + (bank)) = (bank);
+#ifndef NUTBANK_COUNT
+/*
+ * Arrrgh! I hate this. OK, on one hand the code is not
+ * spoiled by ifdefs, but this one is sooouuu ugly.
+ */
+#define NUTBANK_COUNT   0
 #endif
+
+#if NUTBANK_COUNT
+#define NutSegBufEnable(bank) *((char *)(NUTBANK_SR) + (bank)) = (bank)
+#else
+#define NutSegBufEnable(bank)
+#endif
+
 
 __BEGIN_DECLS
 /* Prototypes */
