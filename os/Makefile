@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.10  2004/09/16 11:42:01  olereinhardt
+# Changed Makefile to install libraries into correct directory
+#
 # Revision 1.9  2004/09/10 17:18:29  haraldkipp
 # Building inside source tree is working again
 #
@@ -104,9 +107,9 @@ PROJ = libnutos
 top_srcdir = ..
 top_blddir = ..
 
+LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
-LIBDIR = $(top_blddir)/lib
 
 SRC1 = 	nutinit.c
 SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
