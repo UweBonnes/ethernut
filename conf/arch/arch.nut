@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.4  2004/09/07 19:07:45  haraldkipp
+-- MCU type in NutConf.mk and cstartup added.
+--
 -- Revision 1.3  2004/08/18 16:05:26  haraldkipp
 -- Use consistent directory structure
 --
@@ -119,10 +122,11 @@ nutarch =
                 requires = { "TOOL_CC_ARM" },
                 provides = {
                     "HW_TARGET",
-                    "HW_MCU_ARM7",
+                    "HW_MCU_AT91",
                     "HW_TIMER_AT91",
                     "HW_UART_AT91"
-                }
+                },
+                makedefs = { "MCU=arm7tdmi" }
             },
             {
                 macro = "MCU_LINUX_EMU",
@@ -162,5 +166,15 @@ nutarch =
                 }
             }
         }
-    }
+    },
+
+    --
+    -- Runtime Initialization
+    --
+    {
+        name = "nutos_cstartup",
+        brief = "C Startup",
+        sources = { "arm/init/crt$(LDNAME).S" },
+        targets = { "arm/init/crt$(LDNAME).o" },
+    },
 }
