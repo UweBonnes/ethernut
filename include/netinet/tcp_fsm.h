@@ -63,8 +63,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:17  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/07/30 19:36:29  drsung
+ * Added a comment and changed the prototype of NutTcpStateRetranTimeout.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:17  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/02/04 18:00:46  harald
  * Version 3 released
@@ -85,6 +88,10 @@ extern "C" {
 
 #define TCP_NSTATES         11  /*!< \brief Total number of possible states. */
 
+/*
+ * Warning: Do NOT change the values or the order of the TCP states.
+ * Some functions in tcpsm.c rely on the the order below.
+ */
 #define TCPS_CLOSED         0   /*!< \brief closed */
 #define TCPS_LISTEN         1   /*!< \brief listening for connection */
 #define TCPS_SYN_SENT       2   /*!< \brief active, have sent syn */
@@ -105,7 +112,7 @@ extern int NutTcpStateActiveOpenEvent(TCPSOCKET *sock);
 extern int NutTcpStateCloseEvent(TCPSOCKET *sock);
 extern int NutTcpStateWindowEvent(TCPSOCKET *sock);
 
-extern void NutTcpStateRetranTimeout(TCPSOCKET *sock);
+extern int NutTcpStateRetranTimeout(TCPSOCKET *sock);
 
 #ifdef __cplusplus
 }
