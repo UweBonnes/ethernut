@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2005/02/26 12:09:28  drsung
+ * Moved heap initialization to section .init5 to support c++ constructors for static objects.
+ *
  * Revision 1.15  2005/02/10 07:06:48  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -79,6 +82,8 @@
 
 #include <cfg/memory.h>
 #include <cfg/os.h>
+#include <cfg/arch/avr.h>
+#include <cfg/arch/avrpio.h>
 
 #ifdef NUTXMEM_SIZE
 /*!
@@ -425,6 +430,34 @@ THREAD(NutIdle, arg)
     }
 }
 
+#if defined(__GNUC__)
+static void NutInitSP(void) __attribute__ ((naked, section (".init5"), used));
+NutInitSP(void)
+{
+    /* Initialize stack pointer to end of external RAM while starting up the system
+     * to avoid overwriting .data and .bss section.
+     */
+    SP = (u_short)(NUTMEM_END);
+}
+#endif
+
+#if defined(__GNUC__)
+static void NutInitHeap(void) __attribute__ ((naked, section (".init5"), used));
+#endif
+void NutInitHeap()
+{
+
+    /* Then add the remaining RAM to heap.
+     *
+     * 20.Aug.2004 haraldkipp: This had been messed up somehow. It's nice to have
+     * one continuous heap area, but we lost the ability to have systems with
+     * a gap between internal and external RAM.
+     */
+    if ((u_short)NUTMEM_END - (u_short) (&__heap_start) > 384) {
+        NutHeapAdd(&__heap_start, (u_short) NUTMEM_END - 256 - (u_short) (&__heap_start));
+    }
+}
+
 /*!
  * \brief Nut/OS Initialization.
  *
@@ -473,20 +506,16 @@ void NutInit(void)
     outp(BV(RXEN) | BV(TXEN), UCR);
 #endif
 
-    /* If we have external RAM, initialize stack pointer to
-     *  end of external RAM to avoid overwriting .data and .bss section
+#ifndef __GNUC__
+    /* Initialize stack pointer to end of external RAM while starting up the system
+     * to avoid overwriting .data and .bss section.
      */
     SP = (u_short)(NUTMEM_END);
-
-    /* Then add the remaining RAM to heap.
-     *
-     * 20.Aug.2004 haraldkipp: This had been messed up somehow. It's nice to have
-     * one continuous heap area, but we lost the ability to have systems with
-     * a gap between internal and external RAM.
+    
+    /* Initialize the heap memory
      */
-    if ((u_short)NUTMEM_END - (u_short) (&__heap_start) > 384) {
-        NutHeapAdd(&__heap_start, (u_short) NUTMEM_END - 256 - (u_short) (&__heap_start));
-    }
+    NutInitHeap();
+#endif
 
     /*
      * Read eeprom configuration.
