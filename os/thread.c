@@ -48,8 +48,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:54  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/11/18 22:18:40  drsung
+ * thread name with 8 characters fixed.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:54  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.23  2003/05/06 18:56:24  harald
  * Avoid inlining with GCC optimizations
@@ -196,9 +199,7 @@ static void NutThreadEntry(void)
                   "out %0, __tmp_reg__" "\n\t"
                   "pop __tmp_reg__" "\n\t"
                   "out %1, __tmp_reg__" "\n\t"
-                  "pop __zero_reg__" "\n\t"
-                  "reti" "\n\t"::"I" _SFR_IO_ADDR(RAMPZ),
-                  "I" _SFR_IO_ADDR(SREG)
+                  "pop __zero_reg__" "\n\t" "reti" "\n\t"::"I" _SFR_IO_ADDR(RAMPZ), "I" _SFR_IO_ADDR(SREG)
         );
 }
 #else
@@ -268,10 +269,7 @@ void NutThreadSwitch(void)
                   "push r27" "\n\t"
                   "push r28" "\n\t"
                   "push r29" "\n\t"
-                  "push r30" "\n\t"
-                  "push r31" "\n\t"
-                  "in %A0, %1" "\n\t"
-                  "in %B0, %2" "\n\t":"=r" (runningThread->td_sp)
+                  "push r30" "\n\t" "push r31" "\n\t" "in %A0, %1" "\n\t" "in %B0, %2" "\n\t":"=r" (runningThread->td_sp)
                   :"I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
         );
 
@@ -319,9 +317,7 @@ void NutThreadSwitch(void)
                   "pop r4" "\n\t"
                   "pop r3" "\n\t"
                   "pop r2" "\n\t"
-                  "pop r1" "\n\t"
-                  "pop r0" "\n\t"::"r" (runningThread->td_sp),
-                  "I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
+                  "pop r1" "\n\t" "pop r0" "\n\t"::"r" (runningThread->td_sp), "I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
         );
 }
 #else
@@ -470,8 +466,7 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO ** tqpp)
  *             removed from the queue.
  * \param tqpp Pointer to the root of the queue.
  */
-void NutThreadRemoveQueue(NUTTHREADINFO * td,
-                          NUTTHREADINFO * volatile *tqpp)
+void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 {
     NUTTHREADINFO *tqp;
 #ifdef NUTDEBUG
@@ -585,8 +580,7 @@ void NutThreadYield(void)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "SWY<%04x %04x>", (u_int) runningThread,
-                    (u_int) runQueue);
+            fprintf(__os_trs, "SWY<%04x %04x>", (u_int) runningThread, (u_int) runQueue);
 #endif
         NutThreadSwitch();
     }
@@ -634,8 +628,7 @@ u_char NutThreadSetPriority(u_char level)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "SWC<%04x %04x>", (u_int) runningThread,
-                    (u_int) runQueue);
+            fprintf(__os_trs, "SWC<%04x %04x>", (u_int) runningThread, (u_int) runQueue);
 #endif
         NutThreadSwitch();
     }
@@ -662,8 +655,7 @@ u_char NutThreadSetPriority(u_char level)
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
  *         error.
  */
-HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg,
-                       u_short stackSize)
+HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, u_short stackSize)
 {
     u_char *threadMem;
     SWITCHFRAME *sf;
@@ -689,6 +681,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg,
 
 
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
+    td->td_name[sizeof(td->td_name) - 1] = 0;
     td->td_sp = (u_short) sf - 1;
     td->td_memory = threadMem;
     *((u_long *) threadMem) = DEADBEEF;
@@ -771,8 +764,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg,
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "New<%04x %04x>", (u_int) runningThread,
-                    (u_int) runQueue);
+            fprintf(__os_trs, "New<%04x %04x>", (u_int) runningThread, (u_int) runQueue);
 #endif
         NutThreadSwitch();
     }
