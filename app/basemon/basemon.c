@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/01/04 16:44:52  drsung
+ * Bugfix after thread termination support
+ *
  * Revision 1.3  2003/11/04 17:37:04  haraldkipp
  * PD5 used with RS485, do not test
  *
@@ -144,7 +147,7 @@ THREAD(idle, arg)
 {
     NutTimerInit();
     NutThreadCreate("main", WebDemo, 0, 1384);
-    NutThreadSetPriority(255);
+    NutThreadSetPriority(254);
     for (;;)
         NutThreadYield();
 }
