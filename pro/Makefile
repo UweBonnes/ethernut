@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/03/16 16:48:46  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
 # Revision 1.2  2003/11/24 18:12:40  drsung
 # Added sntp.c to sources
 #
@@ -87,6 +90,7 @@ clean:
 	-rm -f $(OBJS)
 	-rm -f $(TARG)
 	-rm -f $(SRCS:.c=.lst)
-	-rm -f $(SRCS:.c=.bak)
 	-rm -f $(SRCS:.c=.lis)
 	-rm -f $(SRCS:.c=.s)
+	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.c~)

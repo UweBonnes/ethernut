@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:18  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:18  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/05/06 17:53:56  harald
  * Force critical inline
@@ -53,6 +56,8 @@
 #include <sys/types.h>
 
 __BEGIN_DECLS
+
+#if defined(__AVR__)
 
 #ifdef __IMAGECRAFT__
 
@@ -125,6 +130,72 @@ static inline void AtomicDec(volatile u_char *p)
     )
 
 #endif
+
+#define NutJumpOutCritical() NutExitCritical()
+
+#elif defined(__H8300H__) || defined(__H8300S__)
+
+#define AtomicInc(p)     (++(*p))
+#define AtomicDec(p)     (--(*p))
+
+#define NutEnterCritical()                     \
+    {                                          \
+        u_char __ccr__;                        \
+        asm volatile(                          \
+            "stc.b ccr, %0l"            "\n\t" \
+            "orc.b #0xc0, ccr":"=r"(__ccr__):  \
+        );
+
+#define NutExitCritical()                      \
+       asm volatile(                           \
+        "ldc.b %0l, ccr"::"r"(__ccr__)         \
+       );                                      \
+    }
+
+#define NutJumpOutCritical()                   \
+       asm volatile(                           \
+        "ldc.b %0l, ccr"::"r"(__ccr__)         \
+       );
+
+#define NutEnableInt(ccr)                      \
+    {                                          \
+        u_char __ccr__;                        \
+        asm volatile(                          \
+            "stc.b ccr, %0l"            "\n\t" \
+            "andc.b #0x3f, ccr":"=r"(__ccr__): \
+        );
+
+#define NutDisableInt() NutExitCritical()
+
+/* #define NutEnterCritical(ccr) NutDisableInt(ccr) */
+
+/* #define NutExitCritical(ccr) NutRestoreInt(ccr) */
+
+#elif defined(__arm__)
+
+#define AtomicInc(p)     (++(*p))
+#define AtomicDec(p)     (--(*p))
+
+/* TODO */
+#define NutEnterCritical()
+/* TODO */
+#define NutExitCritical()
+/* TODO */
+#define NutJumpOutCritical()
+
+#elif defined(__m68k__)
+
+#define AtomicInc(p)     (++(*p))
+#define AtomicDec(p)     (--(*p))
+
+/* TODO */
+#define NutEnterCritical()
+/* TODO */
+#define NutExitCritical()
+/* TODO */
+#define NutJumpOutCritical()
+
+#endif /* !defined(__m68k__) */
 
 __END_DECLS
 

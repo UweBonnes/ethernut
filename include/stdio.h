@@ -40,7 +40,7 @@
 #ifndef _STDIO_H_
 #define	_STDIO_H_
 
-#include <compiler.h>
+#include <sys/types.h>
 #include <stdarg.h>
 
 #ifdef __IMAGECRAFT__
@@ -98,42 +98,44 @@ extern int _fileno(FILE * stream);
 extern void _flushall(void);
 extern FILE *fopen(CONST char *name, CONST char *mode);
 extern int fprintf(FILE * stream, CONST char *fmt, ...);
-extern int fprintf_P(FILE * stream, PGM_P fmt, ...);
 extern int fputc(int c, FILE * stream);
 extern int fputs(CONST char *string, FILE * stream);
-extern int fputs_P(PGM_P string, FILE * stream);
 extern size_t fread(void *buffer, size_t size, size_t count, FILE * stream);
 extern FILE *freopen(CONST char *name, CONST char *mode, FILE * stream);
 extern int fscanf(FILE * stream, CONST char *fmt, ...);
-extern int fscanf_P(FILE * stream, PGM_P fmt, ...);
 extern int fseek(FILE * stream, long offset, int origin);
 extern long ftell(FILE * stream);
 extern size_t fwrite(CONST void *data, size_t size, size_t count, FILE * stream);
-extern size_t fwrite_P(PGM_P data, size_t size, size_t count, FILE * stream);
 extern int getc(FILE * stream);
 extern int getchar(void);
 extern char *gets(char *buffer);
 extern int printf(CONST char *fmt, ...);
-extern int printf_P(PGM_P fmt, ...);
 extern int putc(int c, FILE * stream);
 extern int putchar(int c);
 extern int puts(CONST char *string);
-extern int puts_P(PGM_P string);
 extern int scanf(CONST char *fmt, ...);
-extern int scanf_P(PGM_P fmt, ...);
 extern int sprintf(char *buffer, CONST char *fmt, ...);
-extern int sprintf_P(char *buffer, PGM_P fmt, ...);
 extern int sscanf(CONST char *string, CONST char *fmt, ...);
-extern int sscanf_P(CONST char *string, CONST char *fmt, ...);
 extern int ungetc(int c, FILE * stream);
 extern int vfprintf(FILE * stream, CONST char *fmt, va_list ap);
-extern int vfprintf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vfscanf(FILE * stream, CONST char *fmt, va_list ap);
-extern int vfscanf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vsprintf(char *buffer, CONST char *fmt, va_list ap);
-extern int vsprintf_P(char *buffer, PGM_P fmt, va_list ap);
 extern int vsscanf(CONST char *string, CONST char *fmt, va_list ap);
-extern int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap);
 
+#ifdef __HARVARD_ARCH__
+extern int fprintf_P(FILE * stream, PGM_P fmt, ...);
+extern int fputs_P(PGM_P string, FILE * stream);
+extern int fscanf_P(FILE * stream, PGM_P fmt, ...);
+extern size_t fwrite_P(PGM_P data, size_t size, size_t count, FILE * stream);
+extern int printf_P(PGM_P fmt, ...);
+extern int puts_P(PGM_P string);
+extern int scanf_P(PGM_P fmt, ...);
+extern int sprintf_P(char *buffer, PGM_P fmt, ...);
+extern int sscanf_P(CONST char *string, CONST char *fmt, ...);
+extern int vfprintf_P(FILE * stream, PGM_P fmt, va_list ap);
+extern int vfscanf_P(FILE * stream, PGM_P fmt, va_list ap);
+extern int vsprintf_P(char *buffer, PGM_P fmt, va_list ap);
+extern int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap);
+#endif
 
 #endif

@@ -53,6 +53,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/13 19:37:39  haraldkipp
  * Enable application to control decoder interrupts.
  *
@@ -82,7 +85,7 @@
  *
  */
 
-#include <sys/config.h>
+#include <sys/nutconfig.h>
 #include <sys/types.h>
 
 /*!

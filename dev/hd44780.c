@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/17 09:41:35  haraldkipp
  * Setting the data direction during init only may fail on some hardware.
  * We are now doing this immediately before using the port.
@@ -54,7 +57,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <sys/config.h>
+#include <sys/nutconfig.h>
 #include <dev/hd44780.h>
 #include <dev/term.h>
 #include <sys/timer.h>

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.1  2003/12/18 09:33:58  haraldkipp
  * First check in
  *
@@ -43,7 +46,7 @@
 
 
 #include <sys/device.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 #include <dev/usart.h>
 
 /*!

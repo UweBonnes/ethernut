@@ -1748,6 +1748,7 @@ static int FATFileWrite(NUTFILE * hNUTFile, CONST void *pData, int nSize)
     return (nError);
 }
 
+#ifdef __HARVARD_ARCH__
 static int FATFileWriteP(NUTFILE * hNUTFile, PGM_P pData, int nSize)
 {
     int nError;
@@ -1756,6 +1757,7 @@ static int FATFileWriteP(NUTFILE * hNUTFile, PGM_P pData, int nSize)
 
     return (nError);
 }
+#endif
 
 
 //
@@ -1776,7 +1778,9 @@ NUTDEVICE devFATC = {
     0,                          /* Driver specific control function. */
     FATFileRead,                /* Driver specific read function.    */
     FATFileWrite,               /* Driver specific write function.   */
+#ifdef __HARVARD_ARCH__
     FATFileWriteP,              /* Driver specific write_p function. */
+#endif
     FATFileOpen,                /* Driver specific open function.    */
     FATFileClose,               /* Driver specific close function.   */
     FATFileSize

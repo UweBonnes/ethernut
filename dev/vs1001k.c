@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/21 18:06:34  haraldkipp
  * Buffer function removed. The driver is now using the banked memory routines.
  * New functions allows the application to enable/disable decoder interrupts.
@@ -114,6 +117,8 @@
 #include <dev/vs1001k.h>
 
 #include <sys/bankmem.h>
+
+#include <stddef.h> /* NULL definition */
 
 /*!
  * \addtogroup xgVs1001

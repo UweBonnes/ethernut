@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2004/03/08 11:18:54  haraldkipp
  * Debug output added.
  *
@@ -91,7 +94,9 @@ int NutChatSend(NUTCHAT *ci, char *str);
 NUTCHAT *NutChatCreate(int fd);
 void NutChatDestroy(NUTCHAT *ci);
 int NutChat(int fd, CONST char *script);
+#ifdef __HARVARD__ARCH__
 int NutChat_P(int fd, PGM_P script);
+#endif
 
 __END_DECLS
 

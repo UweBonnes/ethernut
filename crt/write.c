@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:35  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:35  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:09  harald
  * *** empty log message ***
@@ -63,7 +66,7 @@
  */
 int _write(int fd, CONST void *data, unsigned int count)
 {
-    NUTFILE *fp = (NUTFILE *) fd;
+    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
 
     if (dev == 0) {

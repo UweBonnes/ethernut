@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:47  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:47  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.4  2003/04/21 17:05:42  harald
  * Device init moved to registration
@@ -53,7 +56,7 @@
 #include <string.h>
 
 #include <sys/ifstream.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 
 /*!
  * \addtogroup xgDevice

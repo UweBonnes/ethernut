@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/08/05 20:01:55  haraldkipp
  * Typing errors corrected
  *
@@ -107,7 +110,7 @@ int _open(CONST char *name, int mode)
      */
     if (*nptr++ != ':')
         nptr = 0;
-    return (int) ((*dev->dev_open) (dev, nptr, mode, 0));
+    return (int) ((uptr_t) ((*dev->dev_open) (dev, nptr, mode, 0)));
 }
 
 /*@}*/

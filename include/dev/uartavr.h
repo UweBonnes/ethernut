@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:09  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:09  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.12  2003/05/06 18:44:45  harald
  * Handshakes added
@@ -47,7 +50,7 @@
  */
 
 #include <sys/device.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 
 /*!
  * \file dev/uartavr.h

@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:47  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:47  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.3  2003/04/21 17:06:40  harald
  * Device init moved to registration
@@ -50,7 +53,7 @@
 #include <string.h>
 
 #include <sys/ifstream.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 
 /*!
  * \addtogroup xgDevice
@@ -107,7 +110,7 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
  *         structure is invalid or if the device initialization
  *         failed.
  */
-int NutRegisterDevice(NUTDEVICE * dev, u_short base, u_char irq)
+int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, u_char irq)
 {
     int rc = -1;
 

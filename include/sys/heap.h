@@ -51,8 +51,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:20  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:20  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/02/04 18:00:52  harald
  * Version 3 released
@@ -62,7 +65,6 @@
  *
  */
 
-#include <stddef.h>
 #include <sys/types.h>
 
 /*!
@@ -83,7 +85,7 @@ extern "C" {
  * \brief Heap memory node type.
  */
 typedef struct _HEAPNODE {
-    u_short hn_size;            /*!< \brief Size of this node. */
+    size_t hn_size;             /*!< \brief Size of this node. */
     struct _HEAPNODE *hn_next;  /*!< \brief Link to next free node. */
 } HEAPNODE;
 
@@ -98,11 +100,11 @@ extern HEAPNODE* volatile heapFreeList;
  */
 #define ALLOC_THRESHOLD 6
 
-extern void *NutHeapAlloc(u_short size);
-extern void *NutHeapAllocClear(u_short size);
+extern void *NutHeapAlloc(size_t size);
+extern void *NutHeapAllocClear(size_t size);
 extern int NutHeapFree(void *block);
-extern void NutHeapAdd(void *addr, u_short size);
-extern u_short NutHeapAvailable(void);
+extern void NutHeapAdd(void *addr, size_t size);
+extern size_t NutHeapAvailable(void);
 
 #ifdef __cplusplus
 }

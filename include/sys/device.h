@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:19  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:19  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.18  2003/05/06 17:58:04  harald
  * ATmega128 definitions moved to compiler include
@@ -147,7 +150,7 @@ struct _NUTDEVICE {
      * Will be set by calling NutRegisterDevice(). On some device 
      * drivers this address may be fixed.
      */
-    u_short dev_base;
+    uptr_t dev_base;
 
     /*! \brief Interrupt registration number. 
      *
@@ -198,7 +201,9 @@ struct _NUTDEVICE {
     /*! 
      * \brief Write to device. 
      */
+#ifdef __HARVARD_ARCH__
     int (*dev_write_P) (NUTFILE *, PGM_P, int);
+#endif
 
     /*! 
      * \brief Open a device or file. 
@@ -232,7 +237,9 @@ struct _NUTVIRTUALDEVICE {
     u_char vdv_type;
     int (*vdv_read) (void *, void *, int);
     int (*vdv_write) (void *, CONST void *, int);
+#ifdef __HARVARD_ARCH__
     int (*vdv_write_P) (void *, PGM_P, int);
+#endif
     int (*vdv_ioctl) (void *, int, void *);
 };
 
@@ -242,7 +249,7 @@ struct _NUTVIRTUALDEVICE {
 
 extern NUTDEVICE *nutDeviceList;
 
-extern int NutRegisterDevice(NUTDEVICE * dev, u_short base, u_char irq);
+extern int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, u_char irq);
 extern NUTDEVICE *NutDeviceLookup(CONST char *name);
 extern NUTDEVICE *NutDeviceOpen(CONST char *name);
 extern int NutDeviceClose(NUTDEVICE * dev);
@@ -251,7 +258,9 @@ extern int NutDeviceReadTran(NUTDEVICE * dev, void *data, int size);
 extern int NutDeviceGetLine(NUTDEVICE * dev, void *data, int size);
 extern int NutDeviceWrite(NUTDEVICE * dev, CONST void *data, int len);
 extern int NutDeviceWriteTran(NUTDEVICE * dev, CONST void *data);
+#ifdef __HARVARD_ARCH__
 extern int NutDeviceWrite_P(NUTDEVICE * dev, PGM_P data, int len);
+#endif
 extern int NutDeviceIOCtl(NUTDEVICE * dev, int req, void *conf);
 
 __END_DECLS

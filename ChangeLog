@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.45 2004/03/14 10:16:45 haraldkipp Exp $
+$Id: ChangeLog,v 1.46 2004/03/16 16:48:23 haraldkipp Exp $
+
+2004-03-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Jan Dubiec's H8/300 port added. This breaks at least the
+	make process on Windows machines. Jan's work is substantial,
+	so I added his diff regardless of any existing code. Actually
+	his code is very clean and porting it back again for the 
+	Windows environment should be easy.
+
 
 2004-03-14  Harald Kipp  <harald.kipp@egnite.de>
 

@@ -82,6 +82,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/20 18:26:41  haraldkipp
  * Support secondary DNS.
  *
@@ -98,6 +101,8 @@
  * First pre-release with 2.4 stack
  *
  */
+
+#include <sys/types.h>
 
 __BEGIN_DECLS
 

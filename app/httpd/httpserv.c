@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:26  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2003/11/04 17:46:52  haraldkipp
  * Adapted to Ethernut 2
  *
@@ -71,6 +74,7 @@
 #include <dev/debug.h>
 #include <dev/urom.h>
 
+#include <sys/nutconfig.h>
 #include <sys/version.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
@@ -174,8 +178,13 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 {
     static prog_char head[] = "<HTML><HEAD><TITLE>Threads</TITLE></HEAD><BODY><H1>Threads</H1>\r\n"
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Name</TH><TH>Priority</TH><TH>Status</TH><TH>Event<BR>Queue</TH><TH>Timer</TH><TH>Stack-<BR>pointer</TH><TH>Free<BR>Stack</TH></TR>\r\n";
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
     static prog_char tfmt[] =
         "<TR><TD>%04X</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%04X</TD><TD>%04X</TD><TD>%04X</TD><TD>%u</TD><TD>%s</TD></TR>\r\n";
+#else
+    static prog_char tfmt[] =
+        "<TR><TD>%08lX</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%08lX</TD><TD>%08lX</TD><TD>%08lX</TD><TD>%lu</TD><TD>%s</TD></TR>\r\n";
+#endif
     static prog_char foot[] = "</TABLE></BODY></HTML>";
     static char *thread_states[] = { "TRM", "<FONT COLOR=#CC0000>RUN</FONT>", "<FONT COLOR=#339966>RDY</FONT>", "SLP" };
     NUTTHREADINFO *tdp = nutThreadList;
@@ -187,9 +196,9 @@ static int ShowThreads(FILE * stream, REQUEST * req)
     /* Send HTML header. */
     fputs_P(head, stream);
     for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
-        fprintf_P(stream, tfmt, (u_int) tdp, tdp->td_name, tdp->td_priority,
-                  thread_states[tdp->td_state], (u_int) tdp->td_queue, (u_int) tdp->td_timer,
-                  tdp->td_sp, (u_short) tdp->td_sp - (u_short) tdp->td_memory,
+        fprintf_P(stream, tfmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
+                  thread_states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer,
+                  (uptr_t) tdp->td_sp, (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
                   *((u_long *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
     }
     fputs_P(foot, stream);
@@ -210,7 +219,11 @@ static int ShowTimers(FILE * stream, REQUEST * req)
     static prog_char head[] = "<HTML><HEAD><TITLE>Timers</TITLE></HEAD><BODY><H1>Timers</H1>\r\n";
     static prog_char thead[] =
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Countdown</TH><TH>Tick Reload</TH><TH>Callback<BR>Address</TH><TH>Callback<BR>Argument</TH></TR>\r\n";
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
     static prog_char tfmt[] = "<TR><TD>%04X</TD><TD>%lu</TD><TD>%lu</TD><TD>%04X</TD><TD>%04X</TD></TR>\r\n";
+#else
+    static prog_char tfmt[] = "<TR><TD>%08lX</TD><TD>%lu</TD><TD>%lu</TD><TD>%08lX</TD><TD>%08lX</TD></TR>\r\n";
+#endif
     static prog_char foot[] = "</TABLE></BODY></HTML>";
     NUTTIMERINFO *tnp;
     u_long ticks_left;
@@ -225,7 +238,7 @@ static int ShowTimers(FILE * stream, REQUEST * req)
         ticks_left = 0;
         while (tnp) {
             ticks_left += tnp->tn_ticks_left;
-            fprintf_P(stream, tfmt, (u_int) tnp, ticks_left, tnp->tn_ticks, (u_int) tnp->tn_callback, (u_int) tnp->tn_arg);
+            fprintf_P(stream, tfmt, (uptr_t) tnp, ticks_left, tnp->tn_ticks, (uptr_t) tnp->tn_callback, (uptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
@@ -249,7 +262,11 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     static prog_char head[] = "<HTML><HEAD><TITLE>Sockets</TITLE></HEAD>"
         "<BODY><H1>Sockets</H1>\r\n"
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Type</TH><TH>Local</TH><TH>Remote</TH><TH>Status</TH></TR>\r\n";
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
     static prog_char tfmt1[] = "<TR><TD>%04X</TD><TD>TCP</TD><TD>%s:%u</TD>";
+#else
+    static prog_char tfmt1[] = "<TR><TD>%08lX</TD><TD>TCP</TD><TD>%s:%u</TD>";
+#endif
     static prog_char tfmt2[] = "<TD>%s:%u</TD><TD>";
     static prog_char foot[] = "</TABLE></BODY></HTML>";
     static prog_char st_listen[] = "LISTEN";
@@ -315,7 +332,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
         /*
          * Fixed a bug reported by Zhao Weigang.
          */
-        fprintf_P(stream, tfmt1, (u_int) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
+        fprintf_P(stream, tfmt1, (uptr_t) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf_P(stream, tfmt2, inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
         fputs_P(st_P, stream);
         fputs("</TD></TR>\r\n", stream);
@@ -418,7 +435,7 @@ THREAD(Service, arg)
 {
     TCPSOCKET *sock;
     FILE *stream;
-    u_char id = (u_char) ((u_short) arg);
+    u_char id = (u_char) ((uptr_t) arg);
 
     /*
      * Now loop endless for connections.
@@ -439,13 +456,21 @@ THREAD(Service, arg)
          * from a client.
          */
         NutTcpAccept(sock, 80);
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
         printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
+#else
+        printf("[%u] Connected, %lu bytes free\n", id, NutHeapAvailable());
+#endif
 
         /*
          * Wait until at least 8 kByte of free RAM is available. This will 
          * keep the client connected in low memory situations.
          */
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
         while (NutHeapAvailable() < 8192) {
+#else
+        while (NutHeapAvailable() < 4096) {
+#endif
             printf("[%u] Low mem\n", id);
             NutSleep(1000);
         }
@@ -453,7 +478,7 @@ THREAD(Service, arg)
         /*
          * Associate a stream with the socket so we can use standard I/O calls.
          */
-        if ((stream = _fdopen((int) sock, "r+b")) == 0) {
+        if ((stream = _fdopen((int) ((uptr_t) sock), "r+b")) == 0) {
             printf("[%u] Creating stream device failed\n", id);
         } else {
             /*
@@ -491,8 +516,13 @@ int main(void)
     /*
      * Initialize the uart device.
      */
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
     NutRegisterDevice(&devDebug0, 0, 0);
     freopen("uart0", "w", stdout);
+#else
+    NutRegisterDevice(&devDebug2, 0, 0);
+    freopen("sci2dbg", "w", stdout);
+#endif
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     NutSleep(200);
     printf("\n\nNut/OS %s HTTP Daemon...", NutVersionString());
@@ -507,7 +537,11 @@ int main(void)
     /*
      * Register Ethernet controller.
      */
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
     if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5))
+#else
+    if (NutRegisterDevice(&devEth0, NIC_IO_BASE, 0))
+#endif
         puts("Registering device failed");
 
     /*
@@ -561,7 +595,7 @@ int main(void)
         char *thname = "httpd0";
 
         thname[5] = '0' + i;
-        NutThreadCreate(thname, Service, (void *) (u_short) i, 640);
+        NutThreadCreate(thname, Service, (void *) (uptr_t) i, 640);
     }
 
     /*

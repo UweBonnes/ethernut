@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:20  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:20  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/02/04 18:00:53  harald
  * Version 3 released
@@ -85,7 +88,9 @@ extern "C" {
 extern int NutPrintBinary(NUTDEVICE *dev, CONST char *data, int len);
 extern int NutPrintBinary_P(NUTDEVICE *dev, PGM_P data, int len);
 extern int NutPrintString(NUTDEVICE *dev, CONST char *str);
+#ifdef __HARVARD_ARCH__
 extern int NutPrintString_P(NUTDEVICE *dev, PGM_P str);
+#endif
 extern int NutPrintInteger(NUTDEVICE *dev, u_long val, u_char radix, u_char width, u_char flags);
 extern int NutPrintFormat(NUTDEVICE *dev, CONST char *fmt, ...);
 extern int NutPrintFlush(NUTDEVICE *dev);

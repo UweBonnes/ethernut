@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:46  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2004/01/16 10:27:55  drsung
  * Another code size improvement.
  *
@@ -100,7 +103,7 @@ char *NutDecodeBase64(u_char * str)
     for (tp = sp = str; *sp; ++sp) {
     	if (*sp < 32)
     	    continue;
-        if ((code = PRG_RDB(&base64dtab[(int) *sp - 32])) == -1)
+        if ((code = PRG_RDB(&base64dtab[(int) *sp - 32])) == (char)-1)
             continue;
         switch (step++) {
         case 1:

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/20 16:53:02  haraldkipp
  * Bugfix: sscanf is now working.
  *
@@ -54,9 +57,9 @@
  */
 /*@{*/
 
-static int _sgetb(int fd, void *buffer, unsigned int count)
+static int _sgetb(int fd, void *buffer, size_t count)
 {
-    char **spp = (char **) fd;
+    char **spp = (char **) ((uptr_t) fd);
 
     memcpy(buffer, *spp, count);
     *spp += count;
@@ -82,7 +85,7 @@ int vsscanf(CONST char *string, CONST char *fmt, va_list ap)
     /* Bugfix kindly provided by Tomasz Niewegowski. */
     CONST char *ptr = string;
 
-    return _getf(_sgetb, (int) &ptr, fmt, ap);
+    return _getf(_sgetb, (int) ((uptr_t) &ptr), fmt, ap);
 }
 
 /*@}*/

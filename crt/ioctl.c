@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/12/15 19:23:09  haraldkipp
  * We need more dox on this
  *
@@ -68,7 +71,7 @@
  */
 int _ioctl(int fd, int cmd, void *data)
 {
-    NUTFILE *fp = (NUTFILE *) fd;
+    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
 
     if (dev == 0) {

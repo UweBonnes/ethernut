@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2004/02/01 18:49:48  haraldkipp
  * Added CPU family support
  *
@@ -157,13 +160,17 @@ static volatile u_long seconds;
 static void NutTimerInsert(NUTTIMERINFO * tn);
 
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-#include "tmr_avr.c"
+#include "arch/avr_timer.c"
 #elif defined(__arm__)
-#include "tmr_arm.c"
-#elif defined(__H8300__)
-#include "tmr_h8.c"
+#include "arch/arm_timer.c"
+#elif defined(__H8300H__) || defined(__H8300S__)
+#include "arch/h8_timer.c"
 #elif defined(__m68k__)
-#include "tmr_m68k.c"
+#include "arch/m68k_timer.c"
+#endif
+
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#define ARCH_32BIT
 #endif
 
 
@@ -176,8 +183,14 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
     NUTTIMERINFO *tnp;
 
 #ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt[] = "InsTmr<%08lX>\n";
+#else
+    static char fmt[] = "InsTmr<%04X>\n";
+#endif
+
     if (__os_trf)
-        fprintf(__os_trs, "InsTmr<%04X>\n", (u_int) tn);
+        fprintf(__os_trs, fmt, (uptr_t) tn);
 #endif
     tnpp = &nutTimerList;
     tnp = nutTimerList;
@@ -299,6 +312,16 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *),
  */
 void NutSleep(u_long ms)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "Rem<%08lx>";
+    static prog_char fmt2[] = "SWS<%08lx %08lx>";
+#else
+    static char fmt1[] = "Rem<%04x>";
+    static char fmt2[] = "SWS<%04x %04x>";
+#endif
+#endif
+
     if (ms) {
         NutEnterCritical();
         if ((runningThread->td_timer =
@@ -306,7 +329,7 @@ void NutSleep(u_long ms)
                            TM_ONESHOT)) != 0) {
 #ifdef NUTDEBUG
             if (__os_trf)
-                fprintf(__os_trs, "Rem<%04x>", (u_int) runningThread);
+                fprintf(__os_trs, fmt1, (uptr_t) runningThread);
 #endif
             NutThreadRemoveQueue(runningThread, &runQueue);
             runningThread->td_state = TDS_SLEEP;
@@ -314,8 +337,8 @@ void NutSleep(u_long ms)
             if (__os_trf) {
                 NutDumpThreadList(__os_trs);
                 //NutDumpThreadQueue(__os_trs, runQueue);
-                fprintf(__os_trs, "SWS<%04x %04x>", (u_int) runningThread,
-                        (u_int) runQueue);
+                fprintf(__os_trs, fmt2, (uptr_t) runningThread,
+                        (uptr_t) runQueue);
             }
 #endif
             NutThreadSwitch();
@@ -346,8 +369,14 @@ void NutTimerStopAsync(HANDLE handle)
     NUTTIMERINFO *volatile *tnpp;
 
 #ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt[] = "StpTmr<%08lX>\r\n";
+#else
+    static char fmt[] = "StpTmr<%04X>\r\n";
+#endif
+
     if(__os_trf)
-        fprintf(__os_trs, "StpTmr<%04X>\r\n", (int)handle);
+        fprintf(__os_trs, fmt, (uptr_t)handle);
 #endif
     tnpp = &nutTimerList;
     tnp = nutTimerList;

@@ -36,13 +36,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.1  2003/07/21 18:22:38  haraldkipp
  * First check in
  *
  */
 
 
-#include <sys/ir.h>
+#include <dev/ir.h>
 
 /*!
  * \file dev/irsony.h

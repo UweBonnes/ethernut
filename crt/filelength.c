@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.3  2003/07/20 18:24:55  haraldkipp
  * errno support added.
  *
@@ -67,7 +70,7 @@
  */
 long _filelength(int fd)
 {
-    NUTFILE *fp = (NUTFILE *) fd;
+    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
 
     if (dev == 0 || dev->dev_size == 0) {

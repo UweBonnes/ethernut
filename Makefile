@@ -32,8 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2003/05/09 14:40:23  haraldkipp
-# Initial revision
+# Revision 1.2  2004/03/16 16:48:24  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
+# Revision 1.1.1.1  2003/05/09 14:40:23  haraldkipp
+# Initial using 3.2.1
 #
 # Revision 1.13  2003/03/31 14:52:54  harald
 # Prepare release 3.1
@@ -81,6 +84,9 @@ top_srcdir = .
 include UserConf.mk
 
 all:
+ifneq (, $(findstring h8300, $(ARCH)))
+	$(MAKE) -C arch/$(ARCH)/init
+endif
 	$(MAKE) -C os
 	$(MAKE) -C fs
 	$(MAKE) -C dev
@@ -89,6 +95,9 @@ all:
 	$(MAKE) -C crt
 
 install:
+ifneq (, $(findstring h8300, $(ARCH)))
+	$(MAKE) -C arch/$(ARCH)/init install
+endif
 	$(MAKE) -C os install
 	$(MAKE) -C fs install
 	$(MAKE) -C dev install
@@ -97,6 +106,9 @@ install:
 	$(MAKE) -C crt install
 
 clean:
+ifneq (, $(findstring h8300, $(ARCH)))
+	$(MAKE) -C arch/$(ARCH)/init clean
+endif
 	$(MAKE) -C os clean
 	$(MAKE) -C fs clean
 	$(MAKE) -C dev clean
@@ -111,6 +123,9 @@ apps-install:
 	$(MAKE) -C app install
 
 cleanall:
+ifneq (, $(findstring h8300, $(ARCH)))
+	$(MAKE) -C arch/$(ARCH)/init clean
+endif
 	$(MAKE) -C os clean
 	$(MAKE) -C fs clean
 	$(MAKE) -C dev clean
@@ -119,3 +134,16 @@ cleanall:
 	$(MAKE) -C crt clean
 	$(MAKE) -C app clean
 
+distclean:
+ifneq (, $(findstring h8300, $(ARCH)))
+	$(MAKE) -C arch/$(ARCH)/init clean
+endif
+	$(MAKE) -C os clean
+	$(MAKE) -C fs clean
+	$(MAKE) -C dev clean
+	$(MAKE) -C net clean
+	$(MAKE) -C pro clean
+	$(MAKE) -C crt clean
+	$(MAKE) -C app clean
+	rm -f UserConf.mk Makerules Makedefs app/Makerules app/Makedefs
+	rm -f `find . -name '*\.[ch]~'`

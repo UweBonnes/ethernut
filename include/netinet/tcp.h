@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:16  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:16  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/02/04 18:00:46  harald
  * Version 3 released
@@ -129,12 +132,17 @@ typedef struct tcphdr {
     u_short th_dport;       /*!< \brief Destination port. */
     u_long  th_seq;         /*!< \brief Sequence number of first octet in this segment. */
     u_long  th_ack;         /*!< \brief Expected sequence number of next octet. */
+#ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned th_x2:4,
              th_off:4;
-#else
+#else /* #ifndef __BIG_ENDIAN__ */
     u_char  th_x2:4,        /*!< \brief Unused. */
             th_off:4;       /*!< \brief Data offset. */
+#endif
+#else /* #ifndef __BIG_ENDIAN__ */
+    u_char  th_off:4,       /*!< \brief Data offset. */
+	    th_x2:4;        /*!< \brief Unused. */
 #endif
     u_char  th_flags;       /*!< \brief Control flags. */
     u_short th_win;         /*!< \brief Number of acceptable octects. */

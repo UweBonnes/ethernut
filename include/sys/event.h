@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/20 18:28:54  haraldkipp
  * Explain how to disable timeout.
  *
@@ -68,7 +71,7 @@
  *
  */
 
-#include <sys/device.h>
+#include <sys/types.h>
 
 /*!
  * \file sys/event.h

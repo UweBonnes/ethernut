@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2004/03/16 16:48:45  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
 # Revision 1.3  2004/02/04 18:05:46  drsung
 # Message queueing added.
 #
@@ -85,38 +88,37 @@ top_srcdir = ..
 
 include $(top_srcdir)/Makedefs
 
-SRC1 = 	init.c
-SRC2 = 	nutinit.c
-SRC3 =  print.c ir.c \
-	devclose.c devioctl.c devopen.c devread.c devreg.c \
-	devtran.c devwrite.c \
-	ifstream.c timer.c msg.c \
-	event.c thread.c bankmem.c heap.c osdebug.c confos.c version.c
+SRC1 = 	nutinit.c
+SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
+	version.c
+
+#Add support for memory banks on AVR architecture
+ifeq ($(ARCH), avr)
+    SRC2 += bankmem.c
+endif
 
 OBJ1 = $(SRC1:.c=.o)
 OBJ2 = $(SRC2:.c=.o)
-OBJ3 = $(SRC3:.c=.o)
 
 TRG1 = $(OBJ1)
-TRG2 = $(OBJ2)
-TRG3 = $(PROJ).a
+TRG2 = $(PROJ).a
 
-all: $(TRG1) $(TRG2) $(TRG3)
+all: $(TRG1) $(TRG2)
 
 include $(top_srcdir)/Makerules
 
-$(TRG3): $(OBJ3)
-	$(AR) $(ARFLAGS) $(TRG3) $(OBJ3)
+$(TRG2): $(OBJ2)
+	$(AR) $(ARFLAGS) $(TRG2) $(OBJ2)
 
-install: $(TRG1) $(TRG2) $(TRG3)
+install: $(TRG1) $(TRG2)
 	$(CP) $(TRG1) $(LIBDIR)/$(TRG1)
 	$(CP) $(TRG2) $(LIBDIR)/$(TRG2)
-	$(CP) $(TRG3) $(LIBDIR)/$(TRG3)
 
 clean:
-	-rm -f $(OBJ1) $(OBJ2) $(OBJ3)
-	-rm -f $(TRG1) $(TRG2) $(TRG3)
-	-rm -f $(SRC1:.c=.lst) $(SRC2:.c=.lst) $(SRC3:.c=.lst)
-	-rm -f $(SRC1:.c=.lis) $(SRC2:.c=.lis) $(SRC3:.c=.lis)
-	-rm -f $(SRC1:.c=.s) $(SRC2:.c=.s) $(SRC3:.c=.s)
-	-rm -f $(SRC1:.c=.bak) $(SRC2:.c=.bak) $(SRC3:.c=.bak)
+	-rm -f $(OBJ1) $(OBJ2)
+	-rm -f $(TRG1) $(TRG2)
+	-rm -f $(SRC1:.c=.lst) $(SRC2:.c=.lst)
+	-rm -f $(SRC1:.c=.lis) $(SRC2:.c=.lis)
+	-rm -f $(SRC1:.c=.s) $(SRC2:.c=.s)
+	-rm -f $(SRC1:.c=.bak) $(SRC2:.c=.bak)
+	-rm -f $(SRC1:.c=.c~) $(SRC2:.c=.c~)

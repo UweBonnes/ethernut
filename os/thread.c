@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.5  2004/02/01 18:49:48  haraldkipp
  * Added CPU family support
  *
@@ -107,13 +110,16 @@
 /*@{*/
 
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-#include "ctx_avr.c"
+#include "arch/avr_thread.c"
 #elif defined(__arm__)
-#include "ctx_arm.c"
-#elif defined(__H8300__)
-#include "ctx_h8.c"
+#define ARCH_32BIT
+#include "arch/arm_thread.c"
+#elif defined(__H8300H__) || defined(__H8300S__)
+#define ARCH_32BIT
+#include "arch/h8_thread.c"
 #elif defined(__m68k__)
-#include "ctx_m68k.c"
+#define ARCH_32BIT
+#include "arch/m68k_thread.c"
 #endif
 
 /*!
@@ -231,10 +237,20 @@ void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
  */
 void NutThreadResumeAsync(HANDLE th)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "Add<%08lx>";
+    static prog_char fmt2[] = "<#A%08lX>";
+#else
+    static char fmt1[] = "Add<%04x>";
+    static char fmt2[] = "<#A%04X>";
+#endif
+#endif
+
     if (th && ((NUTTHREADINFO *) th)->td_state == TDS_SLEEP) {
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "Add<%04x>", (u_int) th);
+            fprintf(__os_trs, fmt1, (uptr_t) th);
 #endif
         NutThreadAddPriQueue(th, (NUTTHREADINFO **) & runQueue);
         ((NUTTHREADINFO *) th)->td_state = TDS_READY;
@@ -245,7 +261,7 @@ void NutThreadResumeAsync(HANDLE th)
     }
 #ifdef NUTDEBUG
     else if (__os_trf)
-        fprintf(__os_trs, "<#A%04X>", (u_int) th);
+        fprintf(__os_trs, fmt2, (uptr_t) th);
 #endif
 }
 
@@ -279,6 +295,16 @@ void NutThreadWake(HANDLE timer, HANDLE th)
  */
 void NutThreadYield(void)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "Yld<%08lx>";
+    static prog_char fmt2[] = "SWY<%08lx %08lx>";
+#else
+    static char fmt1[] = "Yld<%04x>";
+    static char fmt2[] = "SWY<%04x %04x>";
+#endif
+#endif
+
     NutEnterCritical();
 
     /*
@@ -290,7 +316,7 @@ void NutThreadYield(void)
     if (runningThread == runQueue && runningThread->td_qnxt) {
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "Yld<%04x>", (u_int) runningThread);
+            fprintf(__os_trs, fmt1, (uptr_t) runningThread);
 #endif
         runQueue = runningThread->td_qnxt;
         runningThread->td_qnxt = 0;
@@ -310,7 +336,7 @@ void NutThreadYield(void)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "SWY<%04x %04x>", (u_int) runningThread, (u_int) runQueue);
+            fprintf(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
 #endif
         NutThreadSwitch();
     }
@@ -340,6 +366,15 @@ void NutThreadYield(void)
  */
 u_char NutThreadSetPriority(u_char level)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "Pri%u<%08lx>";
+    static prog_char fmt2[] = "SWC<%08lx %08lx>";
+#else
+    static char fmt1[] = "Pri%u<%04x>";
+    static char fmt2[] = "SWC<%04x %04x>";
+#endif
+#endif
     u_char last = runningThread->td_priority;
 
     /* Block interrupts. */
@@ -347,7 +382,7 @@ u_char NutThreadSetPriority(u_char level)
 
 #ifdef NUTDEBUG
     if (__os_trf) {
-        fprintf(__os_trs, "Pri%u<%04x>", level, (u_int) runningThread);
+        fprintf(__os_trs, fmt1, level, (uptr_t) runningThread);
     }
 #endif
 
@@ -381,7 +416,7 @@ u_char NutThreadSetPriority(u_char level)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf) {
-            fprintf(__os_trs, "SWC<%04x %04x>", (u_int) runningThread, (u_int) runQueue);
+            fprintf(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
         }
 #endif
         NutThreadSwitch();

@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.5  2004/03/08 11:12:59  haraldkipp
  * Debug output added.
  *
@@ -41,7 +44,7 @@
  */
 
 #include <sys/timer.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -663,6 +666,7 @@ int NutChat(int fd, CONST char *script)
  *         for an expected string, or the index of an abort string plus
  *         4, if one has been received. 
  */
+#ifdef __HARVARD_ARCH__
 int NutChat_P(int fd, PGM_P script)
 {
     int rc = -1;
@@ -678,3 +682,4 @@ int NutChat_P(int fd, PGM_P script)
     }
     return rc;
 }
+#endif

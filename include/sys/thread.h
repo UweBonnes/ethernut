@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/12/15 19:28:26  haraldkipp
  * Kill function prototypes
  *
@@ -68,7 +71,7 @@
  *
  */
 
-#include <sys/device.h>
+#include <sys/types.h>
 
 /*!
  * \file sys/thread.h
@@ -101,7 +104,7 @@ struct _NUTTHREADINFO {
     NUTTHREADINFO *td_qnxt;    /*!< \brief Linked list of all queued thread. */
     u_char  td_name[9];     /*!< \brief Name of this thread. */
     u_char  td_state;       /*!< \brief Operating state. One of TDS_ */
-    u_short td_sp;          /*!< \brief Stack pointer. */
+    uptr_t  td_sp;          /*!< \brief Stack pointer. */
     u_char  td_priority;    /*!< \brief Priority level. 0 is highest priority. */
     u_char *td_memory;     /*!< \brief Pointer to heap memory used for stack. */
     HANDLE  td_timer;       /*!< \brief Event timer. */
@@ -126,7 +129,7 @@ extern NUTTHREADINFO * volatile runQueue;
 
 
 
-extern HANDLE NutThreadCreate(u_char *name, void (*fn)(void *), void *arg, u_short stackSize);
+extern HANDLE NutThreadCreate(u_char *name, void (*fn)(void *), void *arg, size_t stackSize);
 extern u_char NutThreadSetPriority(u_char level);
 
 extern void NutThreadKill(void);

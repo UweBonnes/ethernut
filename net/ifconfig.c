@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2004/03/08 11:24:19  haraldkipp
  * Ugly PPP activation hack replaced by HDLC ioctl.
  *
@@ -135,7 +138,7 @@
 #include <netinet/ppp_fsm.h>
 
 #include <sys/event.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 #include <sys/confnet.h>
 
 #include <pro/dhcp.h>

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/20 19:27:59  haraldkipp
  * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
  * AVR's flash memory.
@@ -66,7 +69,9 @@
 
 static int UromRead(NUTFILE * fp, void *buffer, int size);
 static int UromWrite(NUTFILE * fp, CONST void *buffer, int len);
+#ifdef __HARVARD_ARCH__
 static int UromWrite_P(NUTFILE * fp, PGM_P buffer, int len);
+#endif
 static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
                          int acc);
 static int UromClose(NUTFILE * fp);
@@ -95,7 +100,9 @@ NUTDEVICE devUrom = {
     0,                          /*!< Driver specific control function. Not supported. */
     UromRead,                   /*!< Read data from a file. */
     UromWrite,                  /*!< Write data to a file. */
+#ifdef __HARVARD_ARCH__
     UromWrite_P,                /*!< Write data from program space to a file. */
+#endif
     UromOpen,                   /*!< Open a file. */
     UromClose,                  /*!< Close a file. */
     UromSize                    /*!< Return file size. */
@@ -255,10 +262,12 @@ static int UromWrite(NUTFILE * fp, CONST void *buffer, int len)
  *
  * \return Always returns -1.
  */
+#ifdef __HARVARD_ARCH__
 static int UromWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
     return -1;
 }
+#endif
 
 
 /*! 

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/20 16:04:36  haraldkipp
  * Nicer debug output
  *
@@ -83,6 +86,10 @@
 #include <sys/osdebug.h>
 #endif
 
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#define ARCH_32BIT
+#endif
+
 /*!
  * \brief List of free nodes.
  */
@@ -91,7 +98,13 @@ HEAPNODE *volatile heapFreeList = 0;
 /*!
  * \brief Number of bytes available.
  */
-u_short available = 0;
+size_t available = 0;
+
+/*!
+ * \brief Overhead for each allocated memory clock.
+ */
+/* MEMOVHD = sizeof(HEAPNODE:hn_size) + sizeof(0xDEADBEEF) */
+#define MEMOVHD (sizeof(size_t) + sizeof(0xDEADBEEF))
 
 /*!
  * \brief
@@ -124,14 +137,28 @@ u_short available = 0;
  *         function is successful or NULL if the requested
  *         amount of memory is not available.
  */
-void *NutHeapAlloc(u_short size)
+void *NutHeapAlloc(size_t size)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt[] = "\n[H%lx,A%09ld/%ld] ";
+#else
+    static char fmt[] = "\n[H%x,A%04d/%d] ";
+#endif
+#endif
     HEAPNODE *node;
     HEAPNODE **npp;
     HEAPNODE *fit = 0;
     HEAPNODE **fpp = 0;
 
-    
+#if defined(__arm__) || defined(__m68k__) || defined (__H8300H__) || defined (__H8300S__)
+    /*
+     * Allign to the word boundary
+     */
+    if ((size & 0x01) != 0)
+        size++;
+#endif
+
     if (size >= available) {
 #ifdef NUTDEBUG
         if (__heap_trf)
@@ -145,7 +172,7 @@ void *NutHeapAlloc(u_short size)
      * block to store its size. If this is still less than the
      * space required by a free node, increase it.
      */
-    if ((size += 6) < sizeof(HEAPNODE))
+    if ((size += MEMOVHD) < sizeof(HEAPNODE))
         size = sizeof(HEAPNODE);
 
     /*
@@ -190,7 +217,7 @@ void *NutHeapAlloc(u_short size)
          * we split it.
          */
         if (fit->hn_size > size + sizeof(HEAPNODE) + ALLOC_THRESHOLD) {
-            node = (HEAPNODE *) ((u_short) fit + size);
+            node = (HEAPNODE *) ((uptr_t) fit + size);
             node->hn_size = fit->hn_size - size;
             node->hn_next = fit->hn_next;
             fit->hn_size = size;
@@ -204,7 +231,7 @@ void *NutHeapAlloc(u_short size)
     }
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf(__heap_trs, "\n[H%x,A%04d/%d] ", (u_int) fit, ((HEAPNODE *) (((u_short *) fit) - 1))->hn_size, size);
+        fprintf(__heap_trs, fmt, (uptr_t) fit, ((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size, size);
 #endif
     return fit;
 }
@@ -222,7 +249,7 @@ void *NutHeapAlloc(u_short size)
  *         function is successful or NULL if the requested
  *         amount of memory is not available.
  */
-void *NutHeapAllocClear(u_short size)
+void *NutHeapAllocClear(size_t size)
 {
     void *ptr;
 
@@ -252,6 +279,13 @@ void *NutHeapAllocClear(u_short size)
  */
 int NutHeapFree(void *block)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt[] = "\n[H%lx,F%09ld] ";
+#else
+    static char fmt[] = "\n[H%x,F%04d] ";
+#endif
+#endif
     HEAPNODE *node;
     HEAPNODE **npp;
     HEAPNODE *fnode;
@@ -260,9 +294,9 @@ int NutHeapFree(void *block)
 #ifdef NUTDEBUG
     if(__heap_trf) {
         if (block) {
-            u_short size;
-            size = *(((u_short *) block) - 1);
-            if (*((u_long *) (((char *) block) + (size - 6))) != 0xDEADBEEF)
+            size_t size;
+            size = *(((uptr_t *) block) - 1);
+            if (*((u_long *) (((char *) block) + (size - MEMOVHD))) != 0xDEADBEEF)
                 fputs("\nMEMCORR-", __heap_trs);
 
         } else
@@ -273,11 +307,11 @@ int NutHeapFree(void *block)
     /*
      * Convert our block into a node.
      */
-    fnode = (HEAPNODE *) (((u_short *) block) - 1);
+    fnode = (HEAPNODE *) (((uptr_t *) block) - 1);
 
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf(__heap_trs, "\n[H%x,F%04d] ", (u_int) block, fnode->hn_size);
+        fprintf(__heap_trs, fmt, (uptr_t) block, fnode->hn_size);
 #endif
     available += fnode->hn_size;
 
@@ -291,14 +325,14 @@ int NutHeapFree(void *block)
         /*
          * If there' s a free node in front of us, merge it.
          */
-        if (((u_short) node + node->hn_size) == (u_short) fnode) {
+        if (((uptr_t) node + node->hn_size) == (uptr_t) fnode) {
             node->hn_size += fnode->hn_size;
 
             /*
              * If a free node is following us, merge it.
              */
-            if (((u_short) node + node->hn_size) ==
-                (u_short) node->hn_next) {
+            if (((uptr_t) node + node->hn_size) ==
+                (uptr_t) node->hn_next) {
                 node->hn_size += node->hn_next->hn_size;
                 node->hn_next = node->hn_next->hn_next;
             }
@@ -308,13 +342,13 @@ int NutHeapFree(void *block)
         /*
          * If we walked past our address, link us to the list.
          */
-        if ((u_short) node > (u_short) fnode) {
+        if ((uptr_t) node > (uptr_t) fnode) {
             *npp = fnode;
 
             /*
              * If a free node is following us, merge it.
              */
-            if (((u_short) fnode + fnode->hn_size) == (u_short) node) {
+            if (((uptr_t) fnode + fnode->hn_size) == (uptr_t) node) {
                 fnode->hn_size += node->hn_size;
                 fnode->hn_next = node->hn_next;
             } else
@@ -326,7 +360,7 @@ int NutHeapFree(void *block)
          * If we are within a free node, somebody tried
          * to free a block twice.
          */
-        if (((u_short) node + node->hn_size) > (u_short) fnode) {
+        if (((uptr_t) node + node->hn_size) > (uptr_t) fnode) {
 #ifdef NUTDEBUG
             if (__heap_trf)
                 fputs("\nTWICE\n", __heap_trs);
@@ -362,10 +396,10 @@ int NutHeapFree(void *block)
  * \param addr Start address of the memory region.
  * \param size Number of bytes of the memory region.
  */
-void NutHeapAdd(void *addr, u_short size)
+void NutHeapAdd(void *addr, size_t size)
 {
-    *((u_short *) addr) = size;
-    NutHeapFree(((u_short *) addr) + 1);
+    *((uptr_t *) addr) = size;
+    NutHeapFree(((uptr_t *) addr) + 1);
 }
 
 /*!
@@ -373,7 +407,7 @@ void NutHeapAdd(void *addr, u_short size)
  *
  * \return Number of bytes.
  */
-u_short NutHeapAvailable(void)
+size_t NutHeapAvailable(void)
 {
     return available;
 }

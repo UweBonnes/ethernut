@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.1  2004/03/08 11:16:54  haraldkipp
  * Asynchronous HDLC driver added
  *
@@ -41,7 +44,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <sys/config.h>
+#include <sys/nutconfig.h>
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/event.h>

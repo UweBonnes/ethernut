@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2004/03/16 16:48:27  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
 # Revision 1.3  2004/03/03 18:09:32  drsung
 # Added function 'fpurge' to crt.
 #
@@ -57,16 +60,26 @@ include $(top_srcdir)/Makedefs
 
 SRCC =  clrerr.c fclose.c fcloseall.c fdopen.c feof.c ferror.c fflush.c \
 	fgetc.c fgets.c fileno.c flushall.c fmode.c fopen.c fprintf.c \
-	fprintf_p.c fputc.c fputs.c fputs_p.c fread.c freopen.c fpurge.c \
-	fscanf.c fscanf_p.c fseek.c ftell.c fwrite.c fwrite_p.c \
-	getc.c getchar.c gets.c printf.c printf_p.c putc.c putchar.c \
-	puts.c puts_p.c scanf.c scanf_p.c sprintf.c sprintf_p.c \
-	sscanf.c sscanf_p.c ungetc.c vfprintf.c vfprintf_p.c \
-	vfscanf.c vfscanf_p.c vsprintf.c vsprintf_p.c \
-	vsscanf.c vsscanf_p.c \
-	close.c ioctl.c open.c read.c write.c write_p.c filelength.c \
-	tzset.c gmtime.c mktime.c localtim.c time.c \
-	malloc.c strtok_r.c
+	fputc.c fputs.c fread.c freopen.c fpurge.c fscanf.c fseek.c ftell.c \
+	fwrite.c getc.c getchar.c gets.c printf.c putc.c putchar.c puts.c \
+	scanf.c sprintf.c sscanf.c ungetc.c vfprintf.c vfscanf.c vsprintf.c \
+	vsscanf.c close.c ioctl.c open.c read.c write.c filelength.c \
+	tzset.c gmtime.c mktime.c localtim.c time.c malloc.c strtok_r.c
+
+SRCCP = fprintf_p.c fputs_p.c fscanf_p.c fwrite_p.c printf_p.c puts_p.c \
+	scanf_p.c sprintf_p.c sscanf_p.c vfprintf_p.c vfscanf_p.c \
+	vsprintf_p.c vsscanf_p.c write_p.c
+
+ifneq (, $(findstring __HARVARD_ARCH__, $(HWDEF)))
+# Include _P functions for Harvard based MCUs
+    SRCC += $(SRCCP)
+endif
+
+ifneq (, $(findstring h8300, $(ARCH)))
+# Include errno definition for H8 based MCUs
+    SRCC += errno.c
+endif
+
 SRCS =  $(SRCC) putf.c getf.c
 SRCF =  $(SRCC) putff.c getff.c
 
@@ -99,3 +112,4 @@ clean:
 	-rm -f $(SRCS:.c=.lis) $(SRCF:.c=.lis)
 	-rm -f $(SRCS:.c=.s) $(SRCF:.c=.s)
 	-rm -f $(SRCS:.c=.bak) $(SRCF:.c=.bak)
+	-rm -f $(SRCS:.c=.c~) $(SRCF:.c=.c~)

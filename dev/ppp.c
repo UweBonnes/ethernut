@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.5  2004/03/14 10:12:29  haraldkipp
  * Bugfix, failed to compile
  *
@@ -135,11 +138,12 @@ static int NutPppWrite(NUTFILE * fp, CONST void *buffer, int len)
 /*
  * Pass writes to the physical driver for now.
  */
+#ifdef __HARVARD_ARCH__
 static int NutPppWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
     return _write_P(((PPPDCB *) (fp->nf_dev->dev_dcb))->dcb_fd, buffer, len);
 }
-
+#endif
 
 /*!
  * \brief Perform PPP control functions.
@@ -331,7 +335,9 @@ NUTDEVICE devPpp = {
     NutPppIOCtl,                /* Driver specific control function, dev_ioctl(). */
     NutPppRead,                 /* Read from device, dev_read. */
     NutPppWrite,                /* Write to device, dev_write. */
+#ifdef __HARVARD_ARCH__
     NutPppWrite_P,              /* Write data from program space to device, dev_write_P. */
+#endif
     NutPppOpen,                 /* Open a device or file, dev_open. */
     NutPppClose,                /* Close a device or file, dev_close. */
     0                           /* Request file size. */

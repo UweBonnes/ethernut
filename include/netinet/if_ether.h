@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:13  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:13  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/02/04 18:00:45  harald
  * Version 3 released
@@ -122,7 +125,7 @@ typedef struct ether_header {
 #define ETHERTYPE_ARP   0x0806  /*!< \brief Address resolution protocol */
 
 #define ETHERMTU    1500        /*!< \brief Ethernet maximum transfer unit. */
-//#define ETHERMTU    567           /*!< \brief Ethernet maximum transfer unit. */
+//#define ETHERMTU    576           /*!< \brief Ethernet maximum transfer unit. */
 #define ETHERMIN    (60-14)     /*!< \brief Ethernet minimum transfer unit. */
 
 /*!
@@ -135,7 +138,7 @@ typedef struct ether_header {
  * \typedef ETHERARP
  * \brief Ethernet ARP protocol type.
  */
-typedef struct ether_arp {
+typedef struct __attribute__((packed)) ether_arp {
     ARPHDR ea_hdr;     /*!< \brief Fixed-size header. */
     u_char arp_sha[6]; /*!< \brief Source hardware address. */
     u_long arp_spa;    /*!< \brief Source protocol address. */

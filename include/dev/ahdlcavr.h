@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.1  2004/03/09 11:49:52  haraldkipp
  * Added
  *
@@ -67,7 +70,9 @@ extern int AhdlcAvrPutRaw(u_char ch);
 
 extern int AhdlcAvrRead(NUTFILE *fp, void *buffer, int size);
 extern int AhdlcAvrWrite(NUTFILE *fp, CONST void *buffer, int len);
+#ifdef __HARVARD_ARCH__
 extern int AhdlcAvrWrite_P(NUTFILE *fp, PGM_P buffer, int len);
+#endif
 extern NUTFILE *AhdlcAvrOpen(NUTDEVICE *dev, CONST char *name, int mode, int acc);
 extern int AhdlcAvrClose(NUTFILE *fp);
 

@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:14  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:14  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.9  2003/02/04 18:00:45  harald
  * Version 3 released
@@ -123,6 +126,7 @@ typedef struct ip IPHDR;
  * \brief Structure of an internet header.
  */
 struct ip {
+#ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned ip_hl:4,
              ip_v:4; 
@@ -130,6 +134,10 @@ struct ip {
     u_char  ip_hl:4,        /*!< \brief Header length. */
             ip_v:4;         /*!< \brief Version. */
 #endif
+#else /* #ifndef __BIG_ENDIAN__ */
+    u_char  ip_v:4,         /*!< \brief Version. */
+	    ip_hl:4;        /*!< \brief Header length. */
+#endif /* #ifndef __BIG_ENDIAN__ */
     u_char  ip_tos;         /*!< \brief Type of service. */
     short   ip_len;         /*!< \brief Total length. */
     u_short ip_id;          /*!< \brief Identification. */

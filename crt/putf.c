@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.7  2003/12/17 14:33:24  drsung
  * Another bug fix for putf. Thanks to Dusan Ferbas.
  *
@@ -318,7 +321,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
         case 'X':
         case 'x':
             if (ch == 'p') {
-                ulval = (u_short) va_arg(ap, void *);
+                ulval = (uptr_t) va_arg(ap, void *);
                 flags |= ALT;
                 ch = 'x';
             } else

@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:32  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:32  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.15  2003/03/31 14:53:27  harald
  * Prepare release 3.1
@@ -120,6 +123,10 @@
  */
 
 #include <netinet/ipcsum.h>
+
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#define ARCH_32BIT
+#endif
 
 /*!
  * \addtogroup xgIP
@@ -161,12 +168,16 @@ u_short NutIpChkSumPartial(u_short partial_csum, void *buf, u_short count)
         count -= 2;
     }
     if (count > 0)
+#ifndef ARCH_32BIT
         sum += *(u_char *) d2++;
+#else
+        sum += ((u_short)(*(u_char *) d2)) << 8;
+#endif
 
     while (sum >> 16)
         sum = (sum & 0xFFFF) + (sum >> 16);
 
-    partial_csum = sum;
+    partial_csum = (u_short) sum;
 #if 0
     u_short words;
     void *d1;

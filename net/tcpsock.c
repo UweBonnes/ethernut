@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.7  2004/01/28 12:11:57  drsung
  * Bugfix for ICCAVR ... again
  *
@@ -304,7 +307,9 @@ TCPSOCKET *NutTcpCreateSocket(void)
             sock->so_devtype = IFTYP_TCPSOCK;
             sock->so_devread = NutTcpDeviceRead;
             sock->so_devwrite = NutTcpDeviceWrite;
+#ifdef __HARVARD_ARCH__
             sock->so_devwrite_P = NutTcpDeviceWrite_P;
+#endif
             sock->so_devioctl = NutTcpDeviceIOCtl;
 
             sock->so_tx_isn = 1000000;  /* 0x00a8393a; */
@@ -962,6 +967,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
  *
  * \warning Inefficient implementation.
  */
+#ifdef __HARVARD_ARCH__
 int NutTcpDeviceWrite_P(TCPSOCKET * sock, PGM_P buffer, int size)
 {
     int rc;
@@ -979,6 +985,7 @@ int NutTcpDeviceWrite_P(TCPSOCKET * sock, PGM_P buffer, int size)
 
     return rc;
 }
+#endif
 
 /*! 
  * \brief Driver control function.

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.2  2003/07/20 18:27:44  haraldkipp
  * Explain how to disable timeout.
  *
@@ -79,6 +82,10 @@
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
+#endif
+
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#define ARCH_32BIT
 #endif
 
 /*!
@@ -151,6 +158,16 @@ void NutEventTimeout(HANDLE timer, void *arg)
  */
 int NutEventWait(volatile HANDLE * qhp, u_long ms)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "Rem<%08lx>";
+    static prog_char fmt2[] = "SWW<%08lx %08lx>";
+#else
+    static char fmt1[] = "Rem<%04x>";
+    static char fmt2[] = "SWW<%04x %04x>";
+#endif
+#endif
+
     NutEnterCritical();
 
     /*
@@ -162,7 +179,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
          * is ready to run and has the same or higher priority.
          */
         *qhp = 0;
-        NutExitCritical();
+        NutJumpOutCritical();
         NutThreadYield();
         return 0;
     }
@@ -174,7 +191,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      */
 #ifdef NUTDEBUG
     if (__os_trf)
-        fprintf(__os_trs, "Rem<%04x>", (u_int) runningThread);
+        fprintf(__os_trs, fmt1, (uptr_t) runningThread);
 #endif
     NutThreadRemoveQueue(runningThread, &runQueue);
 #ifdef NUTDEBUG
@@ -200,8 +217,8 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      */
 #ifdef NUTDEBUG
     if (__os_trf)
-        fprintf(__os_trs, "SWW<%04x %04x>", (u_int) runningThread,
-                (u_int) runQueue);
+        fprintf(__os_trs, fmt2, (uptr_t) runningThread,
+                (uptr_t) runQueue);
 #endif
     NutThreadSwitch();
 
@@ -215,7 +232,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
     if (runningThread->td_timer)
         runningThread->td_timer = 0;
     else if (ms) {
-        NutExitCritical();
+        NutJumpOutCritical();
         return -1;
     }
     NutExitCritical();
@@ -318,6 +335,13 @@ int NutEventPostAsync(HANDLE volatile *qhp)
  */
 int NutEventPost(HANDLE * qhp)
 {
+#ifdef NUTDEBUG
+#ifdef ARCH_32BIT
+    static prog_char fmt[] = "SWP<%08lx %08lx>";
+#else
+    static char fmt[] = "SWP<%04x %04x>";
+#endif
+#endif
     int rc;
 
     NutEnterCritical();
@@ -332,8 +356,8 @@ int NutEventPost(HANDLE * qhp)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "SWP<%04x %04x>", (u_int) runningThread,
-                    (u_int) runQueue);
+            fprintf(__os_trs, fmt, (uptr_t) runningThread,
+                    (uptr_t) runQueue);
 #endif
         NutThreadSwitch();
     }

@@ -32,8 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2003/05/09 14:41:34  haraldkipp
-# Initial revision
+# Revision 1.2  2004/03/16 16:48:45  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
+# Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
+# Initial using 3.2.1
 #
 # Revision 1.12  2003/05/06 18:22:17  harald
 # Separate PPP debug module added.
@@ -107,14 +110,10 @@ install: $(TARG)
 	$(CP) $(TARG) $(LIBDIR)/$(TARG)
 
 clean:
-	-rm -f $(OBJ1)
-	-rm -f $(OBJ2)
 	-rm -f $(TARG)
-	-rm -f $(SRC1:.c=.lst)
-	-rm -f $(SRC2:.c=.lst)
-	-rm -f $(SRC1:.c=.bak)
-	-rm -f $(SRC2:.c=.bak)
-	-rm -f $(SRC1:.c=.lis)
-	-rm -f $(SRC2:.c=.lis)
-	-rm -f $(SRC1:.c=.s)
-	-rm -f $(SRC2:.c=.s)
+	-rm -f $(OBJ1) $(OBJ2)
+	-rm -f $(SRC1:.c=.lst) $(SRC2:.c=.lst)
+	-rm -f $(SRC1:.c=.lis) $(SRC2:.c=.lis)
+	-rm -f $(SRC1:.c=.s) $(SRC2:.c=.s)
+	-rm -f $(SRC1:.c=.bak) $(SRC2:.c=.bak)
+	-rm -f $(SRC1:.c=.c~) $(SRC2:.c=.c~)

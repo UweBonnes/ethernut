@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2003/08/05 20:05:59  haraldkipp
  * Bugfix. Empty MAC address is FF, not 00
  *
@@ -91,7 +94,7 @@
 
 #include <string.h>
 
-#include <cfg/ethernut.h>
+#include <sys/nutconfig.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>

@@ -9,8 +9,11 @@ CC = gcc
 crurom:	$(OBJS)
 	$(CC) -o crurom $(OBJS) $(LDFLAGS) $(LLDLIBS)
 clean:
-	rm -f glload *.o core
+	rm -f crurom glload *.o core
 # $Log: Makefile,v $
+# Revision 1.2  2004/03/16 16:48:46  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
 # Revision 1.1  2003/07/20 19:18:16  haraldkipp
 # First check in
 #

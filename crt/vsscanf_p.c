@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:35  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:35  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:09  harald
  * *** empty log message ***
@@ -53,9 +56,9 @@
  */
 /*@{*/
 
-static int _sgetb(int fd, void *buffer, unsigned int count)
+static int _sgetb(int fd, void *buffer, size_t count)
 {
-    char **spp = (char **) fd;
+    char **spp = (char **) ((uptr_t) fd);
 
     memcpy(buffer, *spp, count);
     *spp += count;
@@ -90,7 +93,7 @@ int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap)
     if ((rp = NutHeapAlloc(rl)) == 0)
         return -1;
     memcpy_P(rp, fmt, rl);
-    rc = _getf(_sgetb, (int) &ptr, rp, ap);
+    rc = _getf(_sgetb, (int) ((uptr_t) &ptr), rp, ap);
     NutHeapFree(rp);
 
     return rc;

@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:23  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:23  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/02/04 18:00:54  harald
  * Version 3 released
@@ -92,8 +95,6 @@
  *
  */
 
-#include <compiler.h>
-
 /*!
  * \file sys/types.h
  * \brief Nut/OS type declarations.
@@ -103,11 +104,6 @@
 extern "C" {
 #endif
 
-#define __SFR_OFFSET 0 
-#define SFR_IO_ADDR(sfr) ((sfr) - __SFR_OFFSET)
-#define SFR_MEM_ADDR(sfr) (sfr)
-#define SFR_IO_REG_P(sfr) ((sfr) < 0x40 + __SFR_OFFSET) 
-
 /*!
  * \weakgroup xgNutOS
  */
@@ -115,35 +111,91 @@ extern "C" {
 
 /*! \brief Unsigned 8-bit value. */
 typedef unsigned char      u_char;
+
 /*! \brief Unsigned 16-bit value. */
 typedef unsigned short     u_short;
-/*! \brief Unsigned 16-bit value. */
+
+/*! \brief Unsigned int value. */
+/* Warning: size is highly architecture/compiler dependant! */
 typedef unsigned int       u_int;
+
 /*! \brief Unsigned 32-bit value */
 typedef unsigned long      u_long;
+
 /*! \brief Unsigned 64-bit value */
 typedef unsigned long long u_longlong;
+
 /*! \brief Void pointer */
 typedef void * HANDLE;
 
-#ifdef __IMAGECRAFT__
+
+/*! 
+ * \brief Unsigned register type. 
+ *
+ * The size of this type is equal to the size of a register, 
+ * the hardware datapath or whatever might fit to give optimum 
+ * performance for values from 0 to 255.
+ *
+ * Typically 8 bit CPUs will use unsigned characters, 16 bit
+ * CPUs will use unsigned shorts etc.
+ */
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+typedef unsigned char ureg_t;
+#elif defined(__arm__)
+typedef unsigned short ureg_t;
+#elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
+typedef unsigned short ureg_t;
+#elif defined(__m68k__)
+typedef unsigned short ureg_t;
+#endif
+
+/*! 
+ * \brief Signed register type. 
+ *
+ * Similar to ureg_t, but for signed values from -128 to +127.
+ */
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+typedef unsigned char reg_t;
+#elif defined(__arm__)
+typedef unsigned short reg_t;
+#elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
+typedef unsigned short reg_t;
+#elif defined(__m68k__)
+typedef unsigned short reg_t;
+#endif
+
+/*! 
+ * \brief Unsigned pointer value type. 
+ *
+ * The size of this type is at least the size of a memory pointer.
+ * For CPUs with 16 address bits this will be an unsigned short.
+ */
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+typedef unsigned short uptr_t;
+#else
+/*
+ * For remaining MCUs GCC is assumed where __PTRDIFF_TYPE__ macro is defined
+ */
+typedef unsigned __PTRDIFF_TYPE__ uptr_t;
+#endif
+
+#include <compiler.h>
 
 #define __byte_swap2(val)           \
-    (((val & 0xff) << 8) |          \
-     ((val & 0xff00) >> 8))
+    ((((val) & 0xff) << 8) |        \
+     (((val) & 0xff00) >> 8))
 
 #define __byte_swap4(val)           \
-    (((val & 0xff) << 24) |         \
-     ((val & 0xff00) << 8) |        \
-     ((val & 0xff0000) >> 8) |      \
-     ((val & 0xff000000) >> 24))
+    ((((val) & 0xff) << 24) |       \
+     (((val) & 0xff00) << 8) |      \
+     (((val) & 0xff0000) >> 8) |    \
+     (((val) & 0xff000000) >> 24))
 
-
-#else
-
+#if defined(__GCC__) && defined(__AVR__)
 /*
  * Conversion of 16 bit value to network order.
  */
+#undef __byte_swap2
 static inline u_short __byte_swap2(u_short val)
 {
     asm volatile(
@@ -159,6 +211,7 @@ static inline u_short __byte_swap2(u_short val)
 /*
  * Conversion of 32 bit value to network order.
  */
+#undef __byte_swap4
 static inline u_long __byte_swap4(u_long val)
 {
     asm volatile(
@@ -173,28 +226,43 @@ static inline u_long __byte_swap4(u_long val)
     );
     return val;
 }
-
-#endif
+#endif /* #if defined(__GCC__) && defined(__AVR__) */
 
 /*!
  * \brief Convert short value from host to network byte order.
  */
+#ifndef __BIG_ENDIAN__
 #define htons(x) __byte_swap2(x)
+#else
+#define htons(x) (x)
+#endif
 
 /*!
  * \brief Convert long value from host to network byte order.
  */
+#ifndef __BIG_ENDIAN__
 #define htonl(x) __byte_swap4(x)
+#else
+#define htonl(x) (x)
+#endif
 
 /*!
  * \brief Convert short value from network to host byte order.
  */
+#ifndef __BIG_ENDIAN__
 #define ntohs(x) __byte_swap2(x)
+#else
+#define ntohs(x) (x)
+#endif
 
 /*!
  * \brief Convert long value from network to host byte order.
  */
+#ifndef __BIG_ENDIAN__
 #define ntohl(x) __byte_swap4(x)
+#else
+#define ntohl(x) (x)
+#endif
 
 /*@}*/
 
@@ -202,4 +270,4 @@ static inline u_long __byte_swap4(u_long val)
 }
 #endif
 
-#endif
+#endif /* #ifndef _SYS_TYPES_H_ */

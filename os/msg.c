@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.1  2004/02/04 18:05:07  drsung
  * First version of message queueing  implemented. Thanks to Ralph Mason, who provided this code.
  * Still contains some debug functions.
@@ -46,6 +49,7 @@
 #include <sys/atom.h>
 #include <sys/thread.h>
 #include <sys/msg.h>
+#include <stddef.h> /* NULL definition */
 
 
 #define ASSERT(x)
@@ -144,7 +148,7 @@ int NutMsgQPost(NUTMSGQ * que, u_char id, int param, void *data)
     NutEnterCritical();
 
     if (NutMsgQFull(que)) {
-        NutExitCritical();
+        NutJumpOutCritical();
         return -1;
     }
 
@@ -330,7 +334,7 @@ int NutMsgQGetMessage(NUTMSGQ * que, NUTMSG * msg, u_long timeout)
     NutEnterCritical();
 
     if (NutEventWait(&que->mq_wait, timeout)) {
-        NutExitCritical();
+        NutJumpOutCritical();
         return -1;
     }
     /* Are there messages in the queue */

@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.3  2004/02/02 19:03:09  drsung
  * Some more ICMP support added.
  *
@@ -144,7 +147,9 @@ extern int NutTcpConnect(TCPSOCKET *sock, u_long addr, u_short port);
 extern int NutTcpAccept(TCPSOCKET *sock, u_short port);
 extern void NutTcpInput(NETBUF *nb);
 extern int NutTcpSend(TCPSOCKET *sock, CONST void *data, u_short len);
+#ifdef __HARVARD_ARCH__
 extern int NutTcpSend_P(TCPSOCKET *sock, PGM_P data, u_short len);
+#endif
 extern int NutTcpCloseSocket(TCPSOCKET *sock);
 extern void NutTcpDestroySocket(TCPSOCKET *sock);
 extern int NutTcpReceive(TCPSOCKET *sock, void *data, u_short size);
@@ -154,7 +159,9 @@ extern int NutTcpAbortSocket(TCPSOCKET *sock, u_short last_error);
 
 extern int NutTcpDeviceRead(TCPSOCKET *sock, void *buffer, int size);
 extern int NutTcpDeviceWrite(TCPSOCKET *sock, CONST void *buffer, int size);
+#ifdef __HARVARD_ARCH__
 extern int NutTcpDeviceWrite_P(TCPSOCKET *sock, PGM_P buffer, int size);
+#endif
 extern int NutTcpDeviceIOCtl(TCPSOCKET *sock, int cmd, void *param);
 extern int NutTcpDeviceClose(TCPSOCKET *sock);
 

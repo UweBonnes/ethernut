@@ -35,6 +35,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.3  2003/12/19 22:24:25  drsung
  * Dox written.
  *
@@ -53,7 +56,6 @@
  */
 
 #include <sys/types.h>
-#include <compiler.h>
 
 /*!
  * \addtogroup xgCrtTime

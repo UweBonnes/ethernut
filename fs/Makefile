@@ -32,8 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2003/05/09 14:41:01  haraldkipp
-# Initial revision
+# Revision 1.2  2004/03/16 16:48:27  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
+# Revision 1.1.1.1  2003/05/09 14:41:01  haraldkipp
+# Initial using 3.2.1
 #
 # Revision 1.6  2003/02/04 17:57:14  harald
 # Version 3 released
@@ -81,6 +84,7 @@ clean:
 	-rm -f $(OBJS)
 	-rm -f $(TARG)
 	-rm -f $(SRCS:.c=.lst)
-	-rm -f $(SRCS:.c=.bak)
 	-rm -f $(SRCS:.c=.lis)
 	-rm -f $(SRCS:.c=.s)
+	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.c~)

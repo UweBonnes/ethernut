@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:34  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/05/06 18:16:14  harald
  * Separate PPP debug module added.
@@ -59,6 +62,10 @@
 #include <net/netdebug.h>
 #include <sys/socket.h>
 
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#define ARCH_32BIT
+#endif
+
 extern TCPSOCKET *tcpSocketList;
 extern UDPSOCKET *udpSocketList;
 
@@ -68,10 +75,14 @@ u_char __tcp_trf;               /*!< \brief TCP trace flags. */
 void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock,
                       NETBUF * nb)
 {
+#ifdef ARCH_32BIT
+    static prog_char fmt[] = "%s%08lX[%u]-SEQ(%lx)";
+#else
+    static char fmt[] = "%s%04X[%u]-SEQ(%lx)";
+#endif
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
-    fprintf(stream, "%s%04X[%u]-SEQ(%lx)", ds, (u_int) sock, nb->nb_ap.sz,
-            ntohl(th->th_seq));
+    fprintf(stream, fmt, ds, (uptr_t) sock, nb->nb_ap.sz, ntohl(th->th_seq));
     if (th->th_flags & TH_ACK)
         fprintf(stream, "-ACK(%lx)", ntohl(th->th_ack));
     if (th->th_flags & TH_FIN)
@@ -140,19 +151,33 @@ void NutDumpSocketList(FILE * stream)
     TCPSOCKET *ts;
     UDPSOCKET *us;
 
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "%08lX TCP %15s:%-6u ";
+    static prog_char fmt2[] = "%08lX UDP %6u\r\n";
+
+    fputs
+	("\r\nSocket   Typ Local                  Remote                 State\n",
+         stream);
+    /*        12345678 123 123456789012345:123456 123456789012345:123456 */
+#else
+    static char fmt1[] = "%04X TCP %15s:%-6u ";
+    static char fmt2[] = "%04X UDP %6u\r\n";
+
     fputs
         ("\r\nSock Typ Local                  Remote                 State\n",
          stream);
-    /*                 1234 123 123456789012345:123456 123456789012345:123456 */
+    /*        1234 123 123456789012345:123456 123456789012345:123456 */
+#endif
+
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
-        fprintf(stream, "%04X TCP %15s:%-6u ", (u_int) ts,
+        fprintf(stream, fmt1, (uptr_t) ts,
                 inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf(stream, "%15s:%-6u ", inet_ntoa(ts->so_remote_addr),
                 ntohs(ts->so_remote_port));
         NutDumpSockState(stream, ts->so_state, 0, "\r\n");
     }
     for (us = udpSocketList; us; us = us->so_next) {
-        fprintf(stream, "%04X UDP %6u\r\n", (u_int) us,
+        fprintf(stream, fmt2, (uptr_t) us,
                 ntohs(us->so_local_port));
     }
 }

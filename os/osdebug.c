@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:52  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:52  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/04/21 17:09:01  harald
  * *** empty log message ***
@@ -55,6 +58,10 @@
 
 #include <sys/osdebug.h>
 
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#define ARCH_32BIT
+#endif
+
 FILE *__os_trs;
 u_char __os_trf;
 
@@ -63,9 +70,13 @@ u_char __heap_trf;
 
 static char *states[] = { "TRM", "RUN", "RDY", "SLP" };
 
+#ifdef ARCH_32BIT
+/*                              12345678 12345678 1234 123 12345678 12345678 12345678 1234556789 */
+static prog_char qheader[] = "\nHandle   Name     Prio Sta Queue    Timer    StackPtr FreeMem\n";
+#else
 /*                              1234 12345678 1234 123 1234 1234 1234 12345 */
 static prog_char qheader[] = "\nHndl Name     Prio Sta QUE  Timr StkP FreeMem\n";
-
+#endif
 
 /*!
  * \brief Dump system queue contents.
@@ -78,6 +89,12 @@ static prog_char qheader[] = "\nHndl Name     Prio Sta QUE  Timr StkP FreeMem\n"
  */
 void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
 {
+#ifdef ARCH_32BIT
+    static prog_char fmt[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s\n";
+#else
+    static char fmt[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s\n";
+#endif
+
     fputs_P(qheader, stream);
 
     NutEnterCritical();
@@ -85,11 +102,10 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
         fputs("SIGNALED\n", stream);
     else {
         while (tdp) {
-            fprintf(stream, "%04X %-8s %4u %s %04X %04X %04X %5u %s\n",
-                    (u_int) tdp, tdp->td_name, tdp->td_priority,
-                    states[tdp->td_state], (u_int) tdp->td_queue,
-                    (u_int) tdp->td_timer, tdp->td_sp,
-                    (u_short) tdp->td_sp - (u_short) tdp->td_memory,
+            fprintf(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
+                    states[tdp->td_state], (uptr_t) tdp->td_queue,
+                    (uptr_t) tdp->td_timer, tdp->td_sp,
+                    (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
                     *((u_long *) tdp->td_memory) != DEADBEEF
                     && *((u_long *) (tdp->td_memory + 4)) != DEADBEEF
                     && *((u_long *) (tdp->td_memory + 8)) != DEADBEEF
@@ -111,6 +127,13 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
  */
 void NutDumpThreadList(FILE * stream)
 {
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s";
+    static prog_char fmt2[] = " %08lX";
+#else
+    static char fmt1[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s";
+    static char fmt2[] = " %04X";
+#endif
     NUTTHREADINFO *tqp;
     NUTTHREADINFO *tdp;
 
@@ -119,11 +142,10 @@ void NutDumpThreadList(FILE * stream)
     NutEnterCritical();
     tdp = nutThreadList;
     while (tdp) {
-        fprintf(stream, "%04X %-8s %4u %s %04X %04X %04X %5u %s",
-                (u_int) tdp, tdp->td_name, tdp->td_priority,
-                states[tdp->td_state], (u_int) tdp->td_queue,
-                (u_int) tdp->td_timer, tdp->td_sp,
-                (u_short) tdp->td_sp - (u_short) tdp->td_memory,
+        fprintf(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
+                states[tdp->td_state], (uptr_t) tdp->td_queue,
+                (uptr_t) tdp->td_timer, tdp->td_sp,
+                (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
                 *((u_long *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
         if (tdp->td_queue) {
             tqp = *(NUTTHREADINFO **) (tdp->td_queue);
@@ -131,7 +153,7 @@ void NutDumpThreadList(FILE * stream)
                 fputs("SIGNALED", stream);
             else {
                 while (tqp) {
-                    fprintf(stream, " %04X", (u_int) tqp);
+                    fprintf(stream, fmt2, (uptr_t) tqp);
                     tqp = tqp->td_qnxt;
                 }
             }
@@ -152,32 +174,44 @@ void NutDumpThreadList(FILE * stream)
  */
 void NutDumpTimerList(FILE * stream)
 {
-    static prog_char theader[] = "Addr Ticks  Left Callback\n";
     static prog_char wname[] = "NutThreadWake";
     static prog_char tname[] = "NutEventTimeout";
+#ifdef ARCH_32BIT
+    static prog_char theader[] = "Address  Ticks  Left Callback\n";
+    static prog_char fmt1[] = "%08lX%6lu%6lu ";
+    static prog_char fmt2[] = "%09lX";
+    static prog_char fmt3[] = "(%08lX)\n";
+    static prog_char fmt4[] = " %08lX";
+#else
+    static prog_char theader[] = "Addr Ticks  Left Callback\n";
+    static char fmt1[] = "%04X%6lu%6lu ";
+    static char fmt2[] = "%05lX";
+    static char fmt3[] = "(%04X)\n";
+    static char fmt4[] = " %04X";
+#endif
     NUTTIMERINFO *tnp;
 
     NutEnterCritical();
     if ((tnp = nutTimerList) != 0) {
         fputs_P(theader, stream);
         while (tnp) {
-            fprintf(stream, "%04X%6lu%6lu ", (u_int) tnp, tnp->tn_ticks,
+            fprintf(stream, fmt1, (uptr_t) tnp, tnp->tn_ticks,
                     tnp->tn_ticks_left);
             if (tnp->tn_callback == NutThreadWake)
                 fputs_P(wname, stream);
             else if (tnp->tn_callback == NutEventTimeout)
                 fputs_P(tname, stream);
             else
-                fprintf(stream, "%05lX",
-                        (u_long) ((u_short) tnp->tn_callback) << 1);
-            fprintf(stream, "(%04X)\n", (u_int) tnp->tn_arg);
+                fprintf(stream, fmt2,
+                        (u_long) ((uptr_t) tnp->tn_callback) << 1);
+            fprintf(stream, fmt3, (uptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
     if ((tnp = nutTimerPool) != 0) {
         fputs("Pool:", stream);
         while (tnp) {
-            fprintf(stream, " %04X", (u_int) tnp);
+            fprintf(stream, fmt4, (uptr_t) tnp);
             tnp = tnp->tn_next;
         }
         fputc('\n', stream);
@@ -210,21 +244,31 @@ void NutTraceOs(FILE * stream, u_char flags)
  */
 void NutDumpHeap(FILE * stream)
 {
+#ifdef ARCH_32BIT
+    static prog_char fmt1[] = "%08lx %9ld\n";
+    static prog_char fmt2[] = "%lu counted, but %lu reported\n";
+    static prog_char fmt3[] = "%lu bytes free\n";
+#else
+    static char fmt1[] = "%04x %5d\n";
+    static char fmt2[] = "%u counted, but %u reported\n";
+    static char fmt3[] = "%u bytes free\n";
+#endif
     HEAPNODE *node;
-    u_short sum = 0;
-    u_short avail;
+    size_t sum = 0;
+    size_t avail;
 
     fputc('\n', stream);
     for (node = heapFreeList; node; node = node->hn_next) {
         sum += node->hn_size;
-        fprintf(stream, "%04x %5d\n", (u_short) node, node->hn_size);
-        if ((u_short) node < 0x60 || (u_short) node > 0x7fff)
+        fprintf(stream, fmt1, (uptr_t) node, node->hn_size);
+        /* TODO: Remove hardcoded RAMSTART and RAMEND */
+        if ((uptr_t) node < 0x60 || (uptr_t) node > 0x7fff)
             break;
     }
     if ((avail = NutHeapAvailable()) != sum)
-        fprintf(stream, "%u counted, but %u reported\n", sum, avail);
+        fprintf(stream, fmt2, sum, avail);
     else
-        fprintf(stream, "%u bytes free\n", avail);
+        fprintf(stream, fmt3, avail);
 }
 
 /*!

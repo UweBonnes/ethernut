@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2004/03/08 11:28:37  haraldkipp
  * HDLC functions moved to async HDLC driver.
  *
@@ -58,7 +61,7 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 
 #include <sys/thread.h>
 #include <sys/heap.h>

@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:05  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:05  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/04/21 16:57:05  harald
  * First check in
@@ -44,7 +47,7 @@
  */
 
 #include <sys/device.h>
-#include <sys/uart.h>
+#include <dev/uart.h>
 
 /*!
  * \file dev/debug.h
@@ -54,9 +57,23 @@
 /*
  * Available devices.
  */
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+
 extern NUTDEVICE devDebug0;
 #ifdef __AVR_ATmega128__
 extern NUTDEVICE devDebug1;
 #endif
 
+#elif defined(__H8300H__) || defined(__H8300S__)
+
+/* SCIs (USARTs) in the H8/3068F; it should be adjusted for other H8 devices */
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
+extern NUTDEVICE devDebug2;
+
+#elif defined(__arm__)
+#elif defined(__m68k__)
 #endif
+
+
+#endif /* #ifndef _DEV_DEBUG_H_ */

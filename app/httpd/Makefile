@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/03/16 16:48:26  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
 # Revision 1.1  2003/07/20 15:56:14  haraldkipp
 # *** empty log message ***
 #
@@ -74,6 +77,11 @@ OBJS =  $(SRCS:.c=.o)
 #MODS =  $(MODDIR)/dev/lanc111.o
 LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutnet -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
 TARG =  $(PROJ).hex
+
+ifneq (, $(findstring h8300, $(ARCH)))
+# Libraries specific for H8 port
+LIBS += -lnutentry -lc -lgcc
+endif
 
 all: $(OBJS) $(TARG)
 

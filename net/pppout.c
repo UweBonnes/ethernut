@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:45  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2004/03/08 11:28:23  haraldkipp
  * HDLC functions moved to async HDLC driver.
  *
@@ -151,7 +154,7 @@ int NutPppOutput(NUTDEVICE * dev, u_short type, u_char * ha, NETBUF * nb)
     /*
      * Call the physical device output routine.
      */
-    if (nif->if_send && (*nif->if_send) (((NUTFILE *) (dcb->dcb_fd))->nf_dev, nb) == 0) {
+    if (nif->if_send && (*nif->if_send) ((((NUTFILE *) (uptr_t) (dcb->dcb_fd)))->nf_dev, nb) == 0) {
         return 0;
     }
     NutNetBufFree(nb);

@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.3  2003/11/03 16:35:18  haraldkipp
  * New API returns system uptime in miliseconds
  *
@@ -71,7 +74,7 @@
  *
  */
 
-#include <sys/device.h>
+#include <sys/types.h>
 
 /*!
  * \file sys/timer.h

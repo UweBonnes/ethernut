@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2004/03/16 16:48:27  haraldkipp
+# Added Jan Dubiec's H8/300 port.
+#
 # Revision 1.8  2004/03/08 11:16:54  haraldkipp
 # Asynchronous HDLC driver added
 #
@@ -101,10 +104,12 @@ top_srcdir = ..
 
 include $(top_srcdir)/Makedefs
 
+ifeq ($(ARCH), avr)
+# sources for AVR
 SRCS =  irqstack.c \
 	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c ahdlc0.c ahdlc1.c ahdlcavr.c \
 	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
-	vs1001k.c irsony.c spidigio.c spiflash.c \
+	vs1001k.c ir.c irsony.c spidigio.c spiflash.c \
 	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
 	ppp.c chat.c \
 	ivect01.c ivect02.c ivect03.c ivect04.c ivect05.c ivect06.c \
@@ -113,6 +118,21 @@ SRCS =  irqstack.c \
 	ivect19.c ivect20.c ivect21.c ivect22.c ivect23.c ivect24.c \
 	ivect25.c ivect26.c ivect27.c ivect28.c ivect29.c ivect30.c \
 	ivect31.c ivect32.c ivect33.c ivect34.c ihndlr.c
+else
+ifneq (, $(findstring h8300, $(ARCH)))
+# sources for H8
+SRCS =  irqreg.c ihndlr.c scih8.c scih8devs.c nicrtl_h8.c netbuf.c \
+	ppp.c chat.c mweeprom.c scih8dbg.c
+else
+ifeq ($(ARCH), arm)
+# sources for ARM (TODO!)
+SRCS =  irqreg.c ihndlr.c
+else
+# sources for M68K (TODO!)
+SRCS =  irqreg.c ihndlr.c
+endif
+endif
+endif
 
 OBJS = $(SRCS:.c=.o)
 
@@ -133,5 +153,6 @@ clean:
 	-rm -f $(TARG)
 	-rm -f $(SRCS:.c=.lst)
 	-rm -f $(SRCS:.c=.lis)
-	-rm -f $(SRCS:.c=.bak)
 	-rm -f $(SRCS:.c=.s)
+	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.c~)

@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/16 16:48:44  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.4  2004/01/14 19:33:13  drsung
  * New TCP output buffer handling
  *
@@ -91,7 +94,6 @@
 
 #include <sys/types.h>
 #include <dev/netbuf.h>
-#include <sys/device.h>
 
 /*!
  * \file sys/sock_var.h

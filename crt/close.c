@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:24  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:24  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:04  harald
  * *** empty log message ***
@@ -59,11 +62,11 @@
  * \param fd   Descriptor of a previously opened file, device or
  *             connected socket.
  *
- * \return 0 if the file was successfully closed or –1 to indicate an error.
+ * \return 0 if the file was successfully closed or -1 to indicate an error.
  */
 int _close(int fd)
 {
-    NUTFILE *fp = (NUTFILE *) fd;
+    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
 
     if (dev == 0) {

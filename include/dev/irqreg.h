@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.3  2004/01/30 17:00:46  drsung
  * Separate interrupt stack for avr-gcc only added.
  *
@@ -71,46 +74,6 @@
  */
 /*@{*/
 
-enum {
-    IRQ_INT0,
-    IRQ_INT1,
-    IRQ_INT2,
-    IRQ_INT3,
-    IRQ_INT4,
-    IRQ_INT5,
-    IRQ_INT6,
-    IRQ_INT7,
-    IRQ_TIMER2_COMP,
-    IRQ_TIMER2_OVF,
-    IRQ_TIMER1_CAPT,
-    IRQ_TIMER1_COMPA,
-    IRQ_TIMER1_COMPB,
-    IRQ_TIMER1_OVF,
-    IRQ_TIMER0_COMP,
-    IRQ_TIMER0_OVF,
-    IRQ_SPI_STC,
-    IRQ_UART_RX,
-    IRQ_UART_UDRE,
-    IRQ_UART_TX,
-    IRQ_ADC,
-    IRQ_EE_RDY,
-    IRQ_ANA_COMP,
-#ifdef __AVR_ATmega128__
-    IRQ_TIMER1_COMPC,
-    IRQ_TIMER3_CAP,
-    IRQ_TIMER3_COMPA,
-    IRQ_TIMER3_COMPB,
-    IRQ_TIMER3_COMPC,
-    IRQ_TIMER3_OVF,
-    IRQ_UART1_RX,
-    IRQ_UART1_UDRE,
-    IRQ_UART1_TX,
-    IRQ_I2C,
-    IRQ_SPM_RDY,
-#endif
-    IRQ_MAX
-};
-
 /*
  * Registered interrupt handler information structure.
  */
@@ -120,41 +83,14 @@ typedef struct {
     void (*ir_handler)(void *);
 } IRQ_HANDLER;
 
-extern IRQ_HANDLER sig_INTERRUPT0;
-extern IRQ_HANDLER sig_INTERRUPT1;
-extern IRQ_HANDLER sig_INTERRUPT2;
-extern IRQ_HANDLER sig_INTERRUPT3;
-extern IRQ_HANDLER sig_INTERRUPT4;
-extern IRQ_HANDLER sig_INTERRUPT5;
-extern IRQ_HANDLER sig_INTERRUPT6;
-extern IRQ_HANDLER sig_INTERRUPT7;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE2;
-extern IRQ_HANDLER sig_OVERFLOW2;
-extern IRQ_HANDLER sig_INPUT_CAPTURE1;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE1A;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE1B;
-extern IRQ_HANDLER sig_OVERFLOW1;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE0;
-extern IRQ_HANDLER sig_OVERFLOW0;
-extern IRQ_HANDLER sig_SPI;
-extern IRQ_HANDLER sig_UART0_TRANS;
-extern IRQ_HANDLER sig_UART0_DATA;
-extern IRQ_HANDLER sig_UART0_RECV;
-extern IRQ_HANDLER sig_ADC;
-extern IRQ_HANDLER sig_EEPROM_READY;
-extern IRQ_HANDLER sig_COMPARATOR;
-#ifdef __AVR_ATmega128__
-extern IRQ_HANDLER sig_OUTPUT_COMPARE1C;
-extern IRQ_HANDLER sig_INPUT_CAPTURE3;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE3A;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE3B;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE3C;
-extern IRQ_HANDLER sig_OVERFLOW3;
-extern IRQ_HANDLER sig_UART1_RECV;
-extern IRQ_HANDLER sig_UART1_DATA;
-extern IRQ_HANDLER sig_UART1_TRANS;
-extern IRQ_HANDLER sig_2WIRE_SERIAL;
-extern IRQ_HANDLER sig_SPM_READY;
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#include "irqreg_avr.h"
+#elif defined(__arm__)
+#include "irqreg_arm.h"
+#elif defined(__H8300H__) || defined(__H8300S__)
+#include "irqreg_h8.h"
+#elif defined(__m68k__)
+#include "irqreg_m68k.h"
 #endif
 
 /*@}*/

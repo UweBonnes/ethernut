@@ -35,12 +35,15 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/16 16:48:28  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
  * Revision 1.1  2003/12/18 09:33:58  haraldkipp
  * First check in
  *
  */
 
-#include <sys/uart.h>
+#include <dev/uart.h>
 
 /*!
  * \file dev/usart.h
@@ -364,7 +367,9 @@ extern int UsartInit(NUTDEVICE * dev);
 extern int UsartIOCtl(NUTDEVICE * dev, int req, void *conf);
 extern int UsartRead(NUTFILE * fp, void *buffer, int size);
 extern int UsartWrite(NUTFILE * fp, CONST void *buffer, int len);
+#ifdef __HARVARD_ARCH__
 extern int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len);
+#endif
 extern NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
 extern int UsartClose(NUTFILE * fp);
 /*@}*/

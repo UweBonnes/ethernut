@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:27  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/16 16:48:27  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:27  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:05  harald
  * *** empty log message ***
@@ -98,7 +101,7 @@ FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
     if ((__iob[i]->iob_fd = _open(name, mflags)) == -1) {
         free(__iob[i]);
         if (i < 3)
-            __iob[i] = (FILE *) (i + 1);
+            __iob[i] = (FILE *) ((uptr_t) (i + 1));
         else
             __iob[i] = 0;
         return 0;
