@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.17  2004/09/16 11:54:48  olereinhardt
+# Added hd44780_bus.c again as someone removed it??? Any reasons?
+#
 # Revision 1.16  2004/09/10 17:18:29  haraldkipp
 # Building inside source tree is working again
 #
@@ -144,7 +147,7 @@ SRCS =  irqstack.c \
 	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c ahdlc0.c ahdlc1.c ahdlcavr.c \
 	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
 	vs1001k.c ir.c irsony.c spiflash.c \
-	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
+	ide.c twif.c hd44780.c hd44780_bus.c term.c debug0.c debug1.c \
 	ppp.c chat.c pcmcia.c wlan.c wlandrv.c \
 	ivect01.c ivect02.c ivect03.c ivect04.c ivect05.c ivect06.c \
 	ivect07.c ivect08.c ivect09.c ivect10.c ivect11.c ivect12.c \
