@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.144 2005/01/02 10:07:06 haraldkipp Exp $
+$Id: ChangeLog,v 1.145 2005/01/03 08:41:21 haraldkipp Exp $
+
+2004-01-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/tcpsm.c: Replaced unprotected calls to NutEventPostAsync()
+	by late calls to NutEventPost(). This should fix the infrequent
+	system halts/resets. The event to the transmitter waiting queue
+	will be broadcasted on relevant state changes. Finally I added
+	some more comments to the code.
+
+	* net/tcpsock.c: Simplyfied NutTcpSend().
+
 
 2004-01-02  Harald Kipp  <harald.kipp@egnite.de>
 
