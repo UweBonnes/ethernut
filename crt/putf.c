@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/08/18 16:30:05  haraldkipp
+ * Compile error on non-Harvard architecture fixed
+ *
  * Revision 1.8  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -234,8 +237,9 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             size = 1;
             sign = 0;
             break;
-
+            
         case 'P':
+#ifdef __HARVARD_ARCH__
             /*
              * Thanks to Ralph Mason and Damian Slee, who provided some ideas of
              * handling prog_char strings
@@ -250,10 +254,15 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             strcpy_P(xdigs, cp);        /* copy the string to RAM */
             cp = xdigs;         /* use cp for further processing */
             goto putf_s;        /* jump to std %s handling */
+#endif /* __HARVARD_ARCH__ */
 
         case 's':
             cp = va_arg(ap, char *);
+
+#ifdef __HARVARD_ARCH__
           putf_s:
+#endif /* __HARVARD_ARCH__ */
+
             if (cp == 0)
                 cp = "(null)";
             if (prec >= 0) {
@@ -425,8 +434,10 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
         if (size)		/* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
             _putb(fd, cp, size);
 
+#ifdef __HARVARD_ARCH__
         if (ch == 'P')
             free(cp);
+#endif
 
         if (flags & LADJUST)
             _putpad(_putb, fd, blanks, width - realsz);
