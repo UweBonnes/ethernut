@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2004/09/10 10:29:11  haraldkipp
+# Undefined refs solved
+#
 # Revision 1.3  2004/09/08 10:18:15  haraldkipp
 # Configurable library list
 #
@@ -64,7 +67,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutcrt -lnutos -lnutdev $(ADDLIBS)
+LIBS =  $(LIBDIR)/nutinit.o -lnutcrt -lnutos -lnutdev -lnutos $(ADDLIBS)
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG)
