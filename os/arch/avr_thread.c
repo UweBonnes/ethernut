@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/02/16 19:55:18  haraldkipp
+ * Ready-to-run queue handling removed from interrupt context.
+ * Avoid AVRGCC prologue and epilogue code. Thanks to Pete Allinson.
+ *
  * Revision 1.4  2005/02/10 07:06:48  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -201,63 +205,74 @@ static void NutThreadEntry(void)
  * \note CPU interrupts must be disabled before calling this function.
  *
  */
-void NutThreadSwitch(void) __attribute__ ((noinline));
+void NutThreadSwitch(void) __attribute__ ((noinline)) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
     /*
      * Save all CPU registers.
      */
-    asm volatile ("push r2" "\n\t"
-                  "push r3" "\n\t"
-                  "push r4" "\n\t"
-                  "push r5" "\n\t"
-                  "push r6" "\n\t"
-                  "push r7" "\n\t"
-                  "push r8" "\n\t"
-                  "push r9" "\n\t"
-                  "push r10" "\n\t"
-                  "push r11" "\n\t"
-                  "push r12" "\n\t"
-                  "push r13" "\n\t"
-                  "push r14" "\n\t"
-                  "push r15" "\n\t"
-                  "push r16" "\n\t"
-                  "push r17" "\n\t"
-                  "push r28" "\n\t" "push r29" "\n\t" "in %A0, %1" "\n\t" "in %B0, %2" "\n\t":"=r" (runningThread->td_sp)
-                  :"I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
-        );
+    asm volatile ("push r2" "\n\t"              /* */
+              "push r3" "\n\t"              /* */
+              "push r4" "\n\t"              /* */
+              "push r5" "\n\t"              /* */
+              "push r6" "\n\t"              /* */
+              "push r7" "\n\t"              /* */
+              "push r8" "\n\t"              /* */
+              "push r9" "\n\t"              /* */
+              "push r10" "\n\t"             /* */
+              "push r11" "\n\t"             /* */
+              "push r12" "\n\t"             /* */
+              "push r13" "\n\t"             /* */
+              "push r14" "\n\t"             /* */
+              "push r15" "\n\t"             /* */
+              "push r16" "\n\t"             /* */
+              "push r17" "\n\t"             /* */
+              "push r28" "\n\t"             /* */
+              "push r29" "\n\t"             /* */
+              "in %A0, %1" "\n\t"           /* */
+              "in %B0, %2" "\n\t"           /* */
+              :"=r" (runningThread->td_sp)  /* */
+              :"I" _SFR_IO_ADDR(SPL),       /* */
+               "I" _SFR_IO_ADDR(SPH)        /* */
+    );
 
     /*
      * This defines a global label, which may be called
      * as an entry point into this function.
      */
-    asm volatile (".global thread_start\n" "thread_start:\n\t"::);
+    asm volatile (".global thread_start\n"  /* */
+                  "thread_start:\n\t"::);
 
     /*
      * Reload CPU registers from the thread on top of the run queue.
      */
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
-    asm volatile ("out %1, %A0" "\n\t"
-                  "out %2, %B0" "\n\t"
-                  "pop r29" "\n\t"
-                  "pop r28" "\n\t"
-                  "pop r17" "\n\t"
-                  "pop r16" "\n\t"
-                  "pop r15" "\n\t"
-                  "pop r14" "\n\t"
-                  "pop r13" "\n\t"
-                  "pop r12" "\n\t"
-                  "pop r11" "\n\t"
-                  "pop r10" "\n\t"
-                  "pop r9" "\n\t"
-                  "pop r8" "\n\t"
-                  "pop r7" "\n\t"
-                  "pop r6" "\n\t"
-                  "pop r5" "\n\t"
-                  "pop r4" "\n\t"
-                  "pop r3" "\n\t" "pop r2" "\n\t"::"r" (runningThread->td_sp), "I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
-        );
+    asm volatile ("out %1, %A0" "\n\t"          /* */
+              "out %2, %B0" "\n\t"          /* */
+              "pop r29" "\n\t"              /* */
+              "pop r28" "\n\t"              /* */
+              "pop r17" "\n\t"              /* */
+              "pop r16" "\n\t"              /* */
+              "pop r15" "\n\t"              /* */
+              "pop r14" "\n\t"              /* */
+              "pop r13" "\n\t"              /* */
+              "pop r12" "\n\t"              /* */
+              "pop r11" "\n\t"              /* */
+              "pop r10" "\n\t"              /* */
+              "pop r9" "\n\t"               /* */
+              "pop r8" "\n\t"               /* */
+              "pop r7" "\n\t"               /* */
+              "pop r6" "\n\t"               /* */
+              "pop r5" "\n\t"               /* */
+              "pop r4" "\n\t"               /* */
+              "pop r3" "\n\t"               /* */
+              "pop r2" "\n\t"               /* */
+              "ret" "\n\t"                  /* */
+              ::"r" (runningThread->td_sp), /* */
+                "I" _SFR_IO_ADDR(SPL),      /* */
+                "I" _SFR_IO_ADDR(SPH)       /* */
+    );
 }
 #else
 
