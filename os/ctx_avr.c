@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/02/18 16:32:48  drsung
+ * Bugfix in NutThreadCreate. Thanks to Mike Cornelius.
+ *
  * Revision 1.1  2004/02/01 18:49:48  haraldkipp
  * Added CPU family support
  *
@@ -329,7 +332,10 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, u_short st
      * Allocate stack and thread info structure in one block.
      */
     if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0)
+    {
+    	NutExitCritical();
         return 0;
+    }
 
     td = (NUTTHREADINFO *) (threadMem + stackSize);
     ef = (ENTERFRAME *) ((u_short) td - sizeof(ENTERFRAME));

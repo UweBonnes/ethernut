@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/02/18 16:32:50  drsung
+ * Bugfix in NutThreadCreate. Thanks to Mike Cornelius.
+ *
  * Revision 1.1  2004/02/01 18:49:48  haraldkipp
  * Added CPU family support
  *
@@ -211,7 +214,10 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, SIZE stackSi
     }
 
     if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0)
+    {
+    	NutExitCritical();
         return 0;
+    }
 
     td = (NUTTHREADINFO *) ((PTRINT)threadMem + stackSize);
     ef = (ENTERFRAME *)    ((PTRINT)td - sizeof(ENTERFRAME));
