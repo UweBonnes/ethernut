@@ -237,8 +237,12 @@ THREAD(WebDemo, arg)
 {
     TCPSOCKET *sock;
     FILE *stream;
+    IFNET *ifn;
     u_long ip_addr;             /* ICCAVR bugfix */
-    static prog_char netfail_P[] = "\nFailed to configure network " "interface: Ethernut stopped!\n\x07";
+    static prog_char netfail_P[] = "\nFailed to configure network " /* */
+                                   "interface: Ethernut stopped!\n\x07";
+    static prog_char dhcpfail_P[] = "\nFailed to configure network " /* */
+                                    "via DHCP: Ethernut stopped!\n\x07";
     /*
      * Register Realtek controller at address 8300 hex
      * and interrupt 5.
@@ -254,8 +258,8 @@ THREAD(WebDemo, arg)
     ip_addr = inet_addr(my_ip);
     if (ip_addr) {
         if (NutNetIfConfig("eth0", my_mac, ip_addr, inet_addr(my_mask))) {
+            printf_P(netfail_P);
             if (uart_bs >= 0) {
-                printf_P(netfail_P);
                 for (;;)
                     NutSleep(1000);
             } else {
@@ -264,8 +268,8 @@ THREAD(WebDemo, arg)
             }
         }
     } else if (NutDhcpIfConfig("eth0", my_mac, 60000)) {
+        printf_P(dhcpfail_P);
         if (uart_bs >= 0) {
-            printf_P(netfail_P);
             for (;;)
                 NutSleep(1000);
         } else {
@@ -274,22 +278,11 @@ THREAD(WebDemo, arg)
         }
     }
 
-
-    NutNetLoadConfig("eth0");
-    if ((confnet.cdn_mac[0] & confnet.cdn_mac[1] & confnet.cdn_mac[2]) == 0xFF) {
-        u_char mac[] = {
-            0x00, 0x06, 0x98, 0x00, 0x00, 0x00
-        };
-        memcpy(confnet.cdn_mac, mac, sizeof(confnet.cdn_mac));
-    }
-
-    if (uart_bs >= 0) {
-        printf("MAC  %02X-%02X-%02X-%02X-%02X-%02X\nIP   %s",
-                       confnet.cdn_mac[0], confnet.cdn_mac[1],
-                       confnet.cdn_mac[2], confnet.cdn_mac[3], confnet.cdn_mac[4], confnet.cdn_mac[5],
-                       inet_ntoa(confnet.cdn_ip_addr));
-        printf("\nMask %s", inet_ntoa(confnet.cdn_ip_mask));
-    }
+    printf("MAC  %02X-%02X-%02X-%02X-%02X-%02X\nIP   %s",
+                   confnet.cdn_mac[0], confnet.cdn_mac[1],
+                   confnet.cdn_mac[2], confnet.cdn_mac[3], confnet.cdn_mac[4], confnet.cdn_mac[5],
+                   inet_ntoa(confnet.cdn_ip_addr));
+    printf("\nMask %s", inet_ntoa(confnet.cdn_ip_mask));
 
     /*
      * Add optional default route.
@@ -302,16 +295,12 @@ THREAD(WebDemo, arg)
 
     else if (confnet.cdn_gateway && uart_bs >= 0)
         printf("\nGate %s", inet_ntoa(confnet.cdn_gateway));
-    if (uart_bs >= 0) {
-        IFNET *ifn;
+    if(nic == 1)
+        ifn = (IFNET *) (devEth0.dev_icb);
+    else
+        ifn = (IFNET *) (devSmsc111.dev_icb);
 
-        if(nic == 1)
-            ifn = (IFNET *) (devEth0.dev_icb);
-        else
-            ifn = (IFNET *) (devSmsc111.dev_icb);
-
-        printf("\nHTTP server running. URL http://%s/\n", inet_ntoa(ifn->if_local_ip));
-    }
+    printf("\nHTTP server running. URL http://%s/\n", inet_ntoa(ifn->if_local_ip));
 
     /*
      * Register our device for the file system.
