@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/02 19:03:09  drsung
+ * Some more ICMP support added.
+ *
  * Revision 1.2  2003/11/24 21:00:21  drsung
  * Packet queue added for UDP sockets.
  *
@@ -147,6 +150,7 @@ extern void NutTcpDestroySocket(TCPSOCKET *sock);
 extern int NutTcpReceive(TCPSOCKET *sock, void *data, u_short size);
 extern TCPSOCKET *NutTcpFindSocket(u_short lport, u_short rport, u_long raddr);
 extern int NutTcpError(TCPSOCKET *sock);
+extern int NutTcpAbortSocket(TCPSOCKET *sock, u_short last_error);
 
 extern int NutTcpDeviceRead(TCPSOCKET *sock, void *buffer, int size);
 extern int NutTcpDeviceWrite(TCPSOCKET *sock, CONST void *buffer, int size);

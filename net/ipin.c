@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:32  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/02 18:59:25  drsung
+ * Some more ICMP support added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:32  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.16  2003/05/06 18:14:18  harald
  * Allow incoming DHCP telegrams, even if not broadcasted
@@ -114,6 +117,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/icmp.h>
+#include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -150,8 +154,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
      * Silently discard datagrams of different IP version
      * and fragmented datagrams.
      */
-    if (ip->ip_v != IPVERSION
-        || (ntohs(ip->ip_off) & (IP_MF | IP_OFFMASK)) != 0) {
+    if (ip->ip_v != IPVERSION || (ntohs(ip->ip_off) & (IP_MF | IP_OFFMASK)) != 0) {
         NutNetBufFree(nb);
         return;
     }
@@ -168,16 +171,12 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     dst = ip->ip_dst;
     nif = dev->dev_icb;
 
-    if (dst == 0xffffffff ||
-        (nif->if_local_ip && nif->if_mask != 0xffffffff &&
-        (dst | nif->if_mask) == 0xffffffff)) {
+    if (dst == 0xffffffff || (nif->if_local_ip && nif->if_mask != 0xffffffff && (dst | nif->if_mask) == 0xffffffff)) {
         bcast = 1;
     } else {
         bcast = 0;
 
-        if (nif->if_local_ip == 0 &&
-            ip->ip_p == IPPROTO_ICMP &&
-            (dst & 0xff000000) != 0xff000000 && (dst & 0xff000000) != 0) {
+        if (nif->if_local_ip == 0 && ip->ip_p == IPPROTO_ICMP && (dst & 0xff000000) != 0xff000000 && (dst & 0xff000000) != 0) {
             NutNetIfSetup(dev, dst, 0, 0);
         }
 
@@ -186,7 +185,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
          * However, if we haven't got an IP address yet, we
          * allow ICMP datagrams to support dynamic IP ARP method.
          */
-        if(nif->if_local_ip && (dst == 0 || dst != nif->if_local_ip)) {
+        if (nif->if_local_ip && (dst == 0 || dst != nif->if_local_ip)) {
             NutNetBufFree(nb);
             return;
         }
@@ -213,7 +212,11 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
             NutTcpInput(nb);
         break;
     default:
-        NutNetBufFree(nb);
+        /* Unkown protocol, send ICMP destination (protocol)
+         * unreachable message.
+         */
+        if (!NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PROTOCOL, 0, nb))
+            NutNetBufFree(nb);
         break;
     }
 }

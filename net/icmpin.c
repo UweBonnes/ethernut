@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:28  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/02 18:59:25  drsung
+ * Some more ICMP support added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:28  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.11  2003/02/04 18:14:57  harald
  * Version 3 released
@@ -107,6 +110,10 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/ipcsum.h>
 #include <netinet/icmp.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+#include <net/errno.h>
+#include <netinet/in.h>
 
 /*!
  * \addtogroup xgICMP
@@ -132,6 +139,31 @@ static int NutIcmpReflect(NUTDEVICE * dev, u_char type, NETBUF * nb)
     return NutIcmpOutput(type, dest, nb);
 }
 
+static int NutIcmpUnreach(NETBUF * nb)
+{
+    IPHDR *ih;
+    TCPHDR *th;
+    TCPSOCKET *sock;
+
+    if (nb->nb_ap.sz <= sizeof(IPHDR) + 8)
+        return -1;
+
+    ih = nb->nb_ap.vp;
+    if (ih->ip_p != IPPROTO_TCP)
+        return -1;
+
+    th = (TCPHDR *) ((u_char *) ih) + sizeof(IPHDR);
+    sock = NutTcpFindSocket(th->th_dport, th->th_sport, ih->ip_src);
+    if (sock == 0)
+        return -1;
+
+    if (sock->so_state != TCPS_SYN_SENT && sock->so_state != TCPS_ESTABLISHED)
+        return -1;
+
+    NutTcpAbortSocket(sock, EHOSTUNREACH);
+    NutNetBufFree(nb);
+    return 0;
+}
 
 /*!
  * \brief Handle incoming ICMP packets.
@@ -151,10 +183,25 @@ void NutIcmpInput(NUTDEVICE * dev, NETBUF * nb)
      */
     if (nb->nb_tp.sz > ICMP_MINLEN) {
         ICMPHDR *icp = (ICMPHDR *) nb->nb_tp.vp;
-        if (icp->icmp_type == ICMP_ECHO)
-            NutIcmpReflect(dev, ICMP_ECHOREPLY, nb);
-    }
-    NutNetBufFree(nb);
+
+        nb->nb_ap.sz = nb->nb_tp.sz - sizeof(ICMPHDR);
+        if (nb->nb_ap.sz)
+            nb->nb_ap.vp = ((u_char *) icp) + sizeof(ICMPHDR);
+
+        switch (icp->icmp_type) {
+        case ICMP_ECHO:
+            if (NutIcmpReflect(dev, ICMP_ECHOREPLY, nb) == 0)
+                NutNetBufFree(nb);
+            break;
+        case ICMP_UNREACH:
+            if (NutIcmpUnreach(nb) != 0)
+                NutNetBufFree(nb);
+            break;
+        default:
+            NutNetBufFree(nb);
+        }
+    } else
+        NutNetBufFree(nb);
 }
 
 /*@}*/

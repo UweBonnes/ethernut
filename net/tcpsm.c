@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2004/02/02 18:59:25  drsung
+ * Some more ICMP support added.
+ *
  * Revision 1.9  2004/01/25 11:50:03  drsung
  * setting correct error code on timeout while NutTcpConnect.
  *
@@ -867,10 +870,9 @@ static void NutTcpStateSynSent(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETB
         if (flags & TH_ACK) {
             if (sock->so_pc_tq)
                 NutTcpStateChange(sock, TCPS_LISTEN);
-            else {
-                sock->so_last_error = ECONNREFUSED;
-                NutTcpStateChange (sock, TCPS_CLOSE_WAIT);
-            }
+            else
+                NutTcpAbortSocket(sock, ECONNREFUSED);
+
         }
         NutNetBufFree(nb);
         return;
@@ -1434,8 +1436,7 @@ THREAD(NutTcpSm, arg)
                         /* Check timeout SYN_SENT state */
                         if ((u_short) NutGetMillis() - sock->so_retran_time > 2000) {
                             /* Retransmit after 2 secs */
-                            if (sock->so_time_wait++ >= 3)
-                            {
+                            if (sock->so_time_wait++ >= 3) {
                                 /* Abort after 3 retries */
                                 sock->so_retran_time = 0;
                                 sock->so_last_error = ETIMEDOUT;
@@ -1556,6 +1557,25 @@ int NutTcpInitStateMachine(void)
     if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, 512)) == 0)
         return -1;
     return 0;
+}
+
+/*!
+ * \brief Closes socket with error.
+ *
+ * Aborts any socket activity and sets last error.
+ *
+ * \param sock  Socket descriptor.
+ * \param last_error Error number to report
+ *
+ * \note This routine is called internaly by Nut/Net.
+ *       Applications typically do not call this function.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutTcpAbortSocket(TCPSOCKET * sock, u_short last_error)
+{
+    sock->so_last_error = last_error;
+    return NutTcpStateChange(sock, TCPS_CLOSE_WAIT);
 }
 
 /*@}*/

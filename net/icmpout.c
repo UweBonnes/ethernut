@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:28  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/02 18:59:25  drsung
+ * Some more ICMP support added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:28  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.11  2003/03/31 12:02:27  harald
  * Check NEBUF allocation
@@ -111,6 +114,7 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/ipcsum.h>
 #include <netinet/icmp.h>
+#include <string.h>
 
 /*!
  * \addtogroup xgICMP
@@ -163,10 +167,10 @@ int NutIcmpOutput(u_char type, u_long dest, NETBUF * nb)
  * \param code Type subcode.
  * \param spec Type specific data item.
  * \param dest IP address of the target.
- * \param nb    Network buffer structure containing the meesage to be sent.
- *              The structure must have been allocated by a previous
- *              call NutNetBufAlloc() and will be freed if this function
- *              returns with an error.
+ * \param nb   Network buffer structure containing the message to be sent.
+ *             The structure must have been allocated by a previous
+ *             call NutNetBufAlloc() and will be freed if this function
+ *             returns with an error.
  *
  * \return 0 on success, -1 otherwise.
  */
@@ -175,7 +179,7 @@ int NutIcmpReply(u_char type, u_char code, u_long spec, u_long dest, NETBUF * nb
     ICMPHDR *icp;
     u_short csum;
 
-    if((nb = NutNetBufAlloc(nb, NBAF_TRANSPORT, sizeof(ICMPHDR))) == 0)
+    if ((nb = NutNetBufAlloc(nb, NBAF_TRANSPORT, sizeof(ICMPHDR))) == 0)
         return -1;
 
     icp = (ICMPHDR *) nb->nb_tp.vp;
@@ -189,5 +193,39 @@ int NutIcmpReply(u_char type, u_char code, u_long spec, u_long dest, NETBUF * nb
 
     return NutIpOutput(IPPROTO_ICMP, dest, nb);
 }
+
+/*!
+ * \brief Send an ICMP message as a response to a given destination.
+ *
+ * \param type Type of the ICMP message. See NutIcmpOutput() for 
+ *             a list of valid types.
+ * \param code Type subcode.
+ * \param spec Type specific data item.
+ * \param nb   Network buffer structure containing the previously recevied
+ *             network packet. According to RFC792 the complete ip header 
+ *             and the first 8 bytes of the transport netbuf is used as the
+ *             application data for the response. If this function returns 
+ *             with an error, the buffer is freed. The destination addess is
+ *             taken from the ip header.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutIcmpResponse(u_char type, u_char code, u_long spec, NETBUF * nb)
+{
+    IPHDR *ip;
+    u_long dest;
+
+    ip = nb->nb_nw.vp;
+    dest = ip->ip_src;
+
+    if ((nb = NutNetBufAlloc(nb, NBAF_APPLICATION, sizeof(IPHDR) + 8)) == 0)
+        return -1;
+
+    memcpy(nb->nb_ap.vp, nb->nb_nw.vp, sizeof(IPHDR));
+    memcpy(nb->nb_ap.vp + sizeof(IPHDR), nb->nb_tp.vp, 8);
+
+    return NutIcmpReply(type, code, spec, dest, nb);
+}
+
 
 /*@}*/
