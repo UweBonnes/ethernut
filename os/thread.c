@@ -48,6 +48,12 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/02/17 14:44:39  phblum
+ * Removed volatile declarations of runQueue since it is not touched from interrupt context. Same for nutThreadList, runningThread and killedThreads.
+ * As runQueue is not modified by interrupts, runningThread == runQueue always. Therefore removed obsolete comparison in NutThreadYield().
+ * Removed unnecessary critical section in NutThreadYield.
+ * Put NutThreadSwitch call of NutThreadResume into critical section.
+ *
  * Revision 1.12  2005/02/16 19:53:17  haraldkipp
  * Ready-to-run queue handling removed from interrupt context.
  *
@@ -155,7 +161,7 @@
  * Pointer to the NUTTHREADINFO structure of the currently
  * running thread.
  */
-NUTTHREADINFO *volatile runningThread;
+NUTTHREADINFO * runningThread;
 
 /*!
  * \brief Thread to be killed.
@@ -163,7 +169,7 @@ NUTTHREADINFO *volatile runningThread;
  * Pointer to the NUTTHREADINFO structure of the latest 
  * killed thread.
  */
-NUTTHREADINFO *volatile killedThread;
+NUTTHREADINFO * killedThread;
 
 /*!
  * \brief List of all created threads.
@@ -173,7 +179,7 @@ NUTTHREADINFO *volatile killedThread;
  * least two threads, the main application thread followed
  * by the idle thread.
  */
-NUTTHREADINFO *volatile nutThreadList;
+NUTTHREADINFO * nutThreadList;
 
 /*!
  * \brief List of threads to resume.
@@ -189,7 +195,7 @@ NUTTHREADINFO *volatile readyQueue;
  * Priority ordered linked list of NUTTHREADINFO structures
  * of all threads which are ready to run.
  */
-NUTTHREADINFO *volatile runQueue;
+NUTTHREADINFO * runQueue;
 
 
 
@@ -305,7 +311,9 @@ void NutThreadResume(void)
         if (runningThread->td_state == TDS_RUNNING) {
             runningThread->td_state = TDS_READY;
         }
+        NutEnterCritical();
         NutThreadSwitch();
+        NutExitCritical();
     }
 }
 
@@ -340,19 +348,19 @@ void NutThreadWake(HANDLE timer, HANDLE th)
  */
 void NutThreadYield(void)
 {
-    NutEnterCritical();
 
 #if defined(__linux__) || defined(__APPLE__)
+    NutEnterCritical();
     NutUnixThreadYieldHook();
+    NutExitCritical();
 #endif
 
     /*
-     * If the current thread is still in front of the
-     * run queue, remove it and reinsert it. The idle
-     * thread is the last one in the queue and will
+     * Remove current thread from runQueue and reinsert it.
+     * The idle thread is the last one in the queue and will
      * never be removed.
      */
-    if (runningThread == runQueue && runningThread->td_qnxt) {
+    if (runningThread->td_qnxt) {
 #ifdef NUTDEBUG
         if (__os_trf) {
             static prog_char fmt1[] = "Yld<%p>";
@@ -365,7 +373,6 @@ void NutThreadYield(void)
 #ifdef NUTDEBUG
         if (__os_trf)
             NutDumpThreadList(__os_trs);
-        //NutDumpThreadQueue(__os_trs, runQueue);
 #endif
     }
 
@@ -374,7 +381,6 @@ void NutThreadYield(void)
 		TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread)
 #endif
     NutThreadResume();
-    NutExitCritical();
 }
 
 /*!
