@@ -1,6 +1,6 @@
-$Id: ChangeLog,v 1.88 2004/07/27 19:33:52 drsung Exp $
+$Id: ChangeLog,v 1.89 2004/07/27 19:35:09 drsung Exp $
 
-2004-05-23  Oliver Schulz  <olischulz@web.de>
+2004-07-27  Oliver Schulz  <olischulz@web.de>
 
     * crt/strtok_r.c, include/strtok_r.h: Implementation of strtok_r adjusted to 
     the POSIX 1c standard. This will just affect the ImageCraft compiler, 
