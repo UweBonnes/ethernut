@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.44 2004/03/09 11:51:54 haraldkipp Exp $
+$Id: ChangeLog,v 1.45 2004/03/14 10:16:45 haraldkipp Exp $
+
+2004-03-14  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/ppp.c, include/dev/ppp.h: Compile problems fixed, thanks
+	to Jan Dubiec.
+
 
 2004-03-09  Harald Kipp  <harald.kipp@egnite.de>
 
