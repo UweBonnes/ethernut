@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/05/25 12:03:37  olereinhardt
+ * Sorry, fixed typing bug
+ *
  * Revision 1.3  2004/05/25 12:00:37  olereinhardt
  * Newly added 3Waitstate support now needs to be enabled by
  * defining NUT_3WAITSTATES. By default this behaves like normal
@@ -81,7 +84,7 @@ void NutInitXRAM(void)
     /* At the very beginning enable extended memory interface.
      */
     //MCUCR = _BV(SRE) | _BV(SRW);
-    MCUCR = _BV(SRE) | _BV(SWR10);
+    MCUCR = _BV(SRE) | _BV(SRW10);
 
 #ifdef NUT_3WAITSTATES
     outb (XMCRA, 0x42);
