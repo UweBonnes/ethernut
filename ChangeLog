@@ -1,9 +1,15 @@
-$Id: ChangeLog,v 1.47 2004/03/17 11:28:04 haraldkipp Exp $
+$Id: ChangeLog,v 1.48 2004/03/17 14:54:53 haraldkipp Exp $
 
 2004-03-17  Harald Kipp  <harald.kipp@egnite.de>
 
 	* include/dev/chat.h, include/sys/atom.h: Bugfix, ICCAVR
 	does not define __AVR__.
+
+	* irqreg.c, avr_irqreg.c: Deprecated AVR interrupt registration
+	removed.
+
+	* include/arch/avr.h: Define Harvard architecture for AVR by
+	default.
 
 
 2004-03-16  Harald Kipp  <harald.kipp@egnite.de>
