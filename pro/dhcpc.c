@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2003/10/13 10:18:08  haraldkipp
+ * Using new seconds counter
+ *
  * Revision 1.5  2003/08/07 09:09:08  haraldkipp
  * Redesign to follow RFC 2131 more closely.
  *
@@ -130,6 +133,10 @@
 #include <net/route.h>
 #include <sys/socket.h>
 #include <pro/dhcp.h>
+
+#ifdef NUTDEBUG
+#include <net/netdebug.h>
+#endif
 
 /*!
  * \addtogroup xgDHCPC
@@ -672,7 +679,11 @@ THREAD(NutDhcpClient, arg)
          * Maintain lease time.
          */
         if(dhcpState == DHCPST_BOUND) {
-            if(NutGetTickCount() / 16UL - secs > dyncfg->dyn_leaseTime / 2UL) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[BOUND %lu]", NutGetSeconds() - secs);
+#endif
+            if(NutGetSeconds() - secs > dyncfg->dyn_leaseTime / 2UL) {
                 /* Lease time elapsed. */
                 while((sock = NutUdpCreateSocket(DHCP_CLIENTPORT)) == 0)
                     NutSleep(1000);
@@ -695,6 +706,10 @@ THREAD(NutDhcpClient, arg)
          * Waiting for an acknowledge of our renewal request.
          */
         else if(dhcpState == DHCPST_RENEWING) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[RENEWING]");
+#endif
             if(retries++ >= MAX_DCHP_RETRIES) {
                 /* This is not following RFC 2131, because we do not maintain a second 
                    timer but a fixed number of retries. And we will never disable our
@@ -715,7 +730,7 @@ THREAD(NutDhcpClient, arg)
             else if (n > 0 && ParseReply(dyncfg, server_ip, bp, n) == 0) {
                 if(dyncfg->dyn_msgtyp == DHCP_ACK) {
                     /* Got an acknowledge, return to bound state. */
-                    secs = NutGetTickCount() / 16UL;
+                    secs = NutGetSeconds();
                     dhcpState = DHCPST_BOUND;
                 }
                 else if(dyncfg->dyn_msgtyp == DHCP_NAK) {
@@ -731,6 +746,10 @@ THREAD(NutDhcpClient, arg)
          * Waiting for an acknowledge of our rebind request.
          */
         else if(dhcpState == DHCPST_REBINDING) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[REBINDING]");
+#endif
             if(retries++ >= MAX_DCHP_RETRIES) {
                 /* This is not following RFC 2131, because we do not maintain a second 
                    timer but a fixed number of retries. And we will never disable our
@@ -750,7 +769,7 @@ THREAD(NutDhcpClient, arg)
             else if (n > 0 && ParseReply(dyncfg, server_ip, bp, n) == 0) {
                 if(dyncfg->dyn_msgtyp == DHCP_ACK) {
                     /* Got an acknowledge, return to bound state. */
-                    secs = NutGetTickCount() / 16UL;
+                    secs = NutGetSeconds();
                     dhcpState = DHCPST_BOUND;
                 }
                 else if(dyncfg->dyn_msgtyp == DHCP_NAK) {
@@ -763,7 +782,7 @@ THREAD(NutDhcpClient, arg)
                      * down our interface (not yet implemented) we are stuck.
                      * We switch to discovery state, but the problem remains.
                      */
-                    secs = NutGetTickCount() / 16UL;
+                    secs = NutGetSeconds();
                     xid += NutGetTickCount();
                     dhcpState = DHCPST_SELECTING;
                 }
@@ -783,6 +802,10 @@ THREAD(NutDhcpClient, arg)
          * Broadcast discover and collect incoming offers.
          */
         else if(dhcpState == DHCPST_SELECTING) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[SELECTING]");
+#endif
             ReleaseDynCfg(dyncfg);
             dyncfg = 0;
             /* Broadcast a discover telegram. No retry count, continue until success. */
@@ -821,6 +844,10 @@ THREAD(NutDhcpClient, arg)
          * Send request and wait for an acknowledge.
          */
         else if(dhcpState == DHCPST_REQUESTING) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[REQUESTING]");
+#endif
             if(retries++ >= MAX_DCHP_RETRIES) {
                 /* Too many retries with this server, fall back to discovery. */
                 xid += NutGetTickCount();
@@ -865,6 +892,10 @@ THREAD(NutDhcpClient, arg)
          * Waiting for a response after reboot.
          */
         else if(dhcpState == DHCPST_REBOOTING) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[REBOOTING]");
+#endif
             if(retries++ >= MAX_DCHP_RETRIES) {
                 /* Too many retries, fall back to discovery. */
                 xid += NutGetTickCount();
@@ -909,6 +940,10 @@ THREAD(NutDhcpClient, arg)
          * and keep as quiet as possible.
          */
         else if(dhcpState == DHCPST_ERROR) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[DHCPERROR]");
+#endif
             if(sock) {
                 NutUdpDestroySocket(sock);
                 sock = 0;
