@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2004/06/03 08:24:21  olereinhardt
+ * Changed semaphore behavior in NutSemTryWait too.
+ *
  * Revision 1.3  2004/06/02 16:42:53  olereinhardt
  * fixed bug (integer overflow) in semaphore implementation.
  *
@@ -101,7 +104,7 @@ extern "C" {
  */
 
     int NutSemTryWait(SEM * sem) {
-        if (sem->value == 0)
+        if (sem->value < 0)
             return -1;
         else
             NutSemWait(sem);
