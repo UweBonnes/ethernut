@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.62 2004/05/17 18:01:18 drsung Exp $
+$Id: ChangeLog,v 1.63 2004/05/17 18:59:49 freckle Exp $
+
+2004-05-16  Matthias Ringwald <mringwal@inf.ethz.ch>
+    * os/mutex.c, include/sys/mutex.h: added recursive mutex implementation
+    * os/semaphore.c, include/sys/semaphore.h: added semaphore implementation
+    * os/Makefile: added above files
+
 
 2004-05-16  Oliver Schulz  <olischulz@web.de>
 

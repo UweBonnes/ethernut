@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/05/17 18:59:49  freckle
+# Implemented recursive mutex and semaphore functions for nut/os based on the
+# posix specifation using existing nut/os primitives (post/wait event)
+#
 # Revision 1.6  2004/04/07 16:28:24  freckle
 # Target install: use ranlib only for arch *nix emulation (ranlib is required
 # on mac os x)
@@ -97,7 +101,7 @@ include $(top_srcdir)/Makedefs
 
 SRC1 = 	nutinit.c
 SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
-	version.c
+	version.c semapore.c mutex.c
 
 #Add support for memory banks on AVR architecture
 ifeq ($(ARCH), avr)
