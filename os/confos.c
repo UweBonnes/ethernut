@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/09/08 10:24:34  haraldkipp
+ * No EEPROM support for AT91
+ *
  * Revision 1.4  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -51,6 +54,7 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <sys/confos.h>
 
 CONFOS confos;
@@ -65,7 +69,7 @@ CONFOS confos;
  */
 int NutLoadConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(MCU_AT91R40008)
     eeprom_read_block(&confos, CONFOS_EE_OFFSET, sizeof(CONFOS));
     if (confos.size != sizeof(CONFOS) || confos.magic[0] != 'O' || confos.magic[1] != 'S') {
         return -1;
@@ -81,7 +85,7 @@ int NutLoadConfig(void)
  */
 int NutSaveConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(MCU_AT91R40008)
     u_char *cp;
     u_short i;
 
