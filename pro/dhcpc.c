@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2004/04/15 07:16:47  drsung
+ * Now it works... :-/
+ *
  * Revision 1.13  2004/04/15 07:11:50  drsung
  * Added hostname support to NutDHCPDiscover
  *
@@ -543,6 +546,7 @@ static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, u_long * addr, struct b
 static int DhcpDiscover(UDPSOCKET * sock, struct bootp *bp, u_long xid, u_short secs)
 {
     size_t optlen;
+    int len;
     u_char *op = bp->bp_options;
     u_char reqOpts[3];
 
