@@ -112,11 +112,12 @@ void emulation_options_parse(int argc, char *argv[])
                 // terminal stdio?
                 if (strcmp(device, "stdio") == 0) {
 
-                    // usb device ?
+                // usb device ? hci:x
                 } else if (strncmp(device, "hci", 3) == 0) {
                     emulation_options.uart_options[devno].usbnum = atoi(device + 3);
+				} else {
+					// tcp/ip ? host:port
                     // tty
-                } else {
 
                 }
                 emulation_options.uart_options[devno].device = device;
@@ -190,25 +191,28 @@ void emulation_options_print_uart(int no)
 
     printf("  device: %s\n", uart_opt.device);
     if (uart_opt.usbnum >= 0) {
-        printf("  hci num : %i\n", (int) uart_opt.bautrate);
+        printf("  hci num : %i\n", (int) uart_opt.usbnum);
     } else {
-        printf("  bautrate: %i\n", (int) uart_opt.usbnum);
+        printf("  bautrate: %i\n", (int) uart_opt.bautrate);
         printf("  flowcontrol: %i\n", (int) uart_opt.flowcontrol);
     }
 }                               // end _btn_uart_options_print()
 
 static void emulation_options_usage()
 {
-    printf("To properly run a Nut/OS app, some hardware might needs to connected."
-           "With the following options you can specify it.\n");
-    printf("  -h: prints this help.\n");
-    printf("  -v: verbose mode. print the options parsed.\n");
-    printf("  -u<N> DEVICE:\n");
-    printf("     map uart N to unix DEVICE ");
+    printf("To properly run an emulated Nut/OS app, some hardware might need to be connected.\n"
+           "With the following options you can specify how the uarts are mapped.\n");
+    printf("  -h  prints this help.\n");
+    printf("  -v  verbose mode. print the options parsed.\n");
+    printf("  -u<N> DEVICE \n");
+    printf("     map uart N to unix DEVICE \n");
     printf("     example: ./prog -u0 /dev/ttyS0 \n");
-    printf("  -u<N> hci<M>:\n");
-    printf("     map uart N to the USB BT dongle nr. M\n");
-    printf("     example: ./prog -u0 hci0\n");
+    printf("  -u<N> HOST:PORT \n");
+    printf("     map uart N to TCP/IP socket with HOST at PORT \n");
+    printf("     example: ./prog -u0 localhost:7007 \n");
+//    printf("  -u<N> hci<M> \n");
+//    printf("     map uart N to the USB BT dongle nr. M\n");
+//    printf("     example: ./prog -u0 hci0\n");
 
     printf("  \n");
     printf("  \n");
