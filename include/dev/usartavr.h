@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/06/21 10:40:25  freckle
+ * Added *nix emulation uart definitions to uartavr.h and usartavr.h to
+ * allow compilation of apps without adding #include <dev/unix.devs.h>
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -57,6 +61,11 @@
 extern NUTDEVICE devUsartAvr0;
 
 #ifdef __AVR_ATmega128__
+extern NUTDEVICE devUsartAvr1;
+#endif
+
+#if defined(__linux__) || defined(__APPLE__)
+extern NUTDEVICE devUsartAvr0;
 extern NUTDEVICE devUsartAvr1;
 #endif
 

@@ -1,6 +1,12 @@
-$Id: ChangeLog,v 1.74 2004/06/08 15:04:24 freckle Exp $
+$Id: ChangeLog,v 1.75 2004/06/21 10:40:24 freckle Exp $
 
-2004-05-21  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+2004-06-08  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+        * include/dev/usart.h|uart.h: added device definitions for
+          *nix emulation
+
+2004-06-08  Matthias Ringwald <mringwal@inf.ethz.ch>
 
         * include/sys/types.h: changed #include "types_orig.h" to
         <sys/types_orig.h> to allow this file to be in $MODDIR
@@ -47,8 +53,7 @@ $Id: ChangeLog,v 1.74 2004/06/08 15:04:24 freckle Exp $
 	* tools/nutconf: Working configuration tool replaced by very
 	incomplete re-design. It will read the Lua scripts from the
 	conf directory and display an editable tree of configuration
-	items.
-
+    items.
 
 2004-05-24  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 
@@ -78,7 +83,6 @@ $Id: ChangeLog,v 1.74 2004/06/08 15:04:24 freckle Exp $
 	disabled by default.
 
 	To get back the old functionality define NUT_CS8900_OLD
-
 
 2004-05-24  Oliver Schulz  <olischulz@web.de>
 
