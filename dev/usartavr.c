@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/05/16 14:09:06  drsung
+ * Applied bugfixes for half duplex mode an XON/XOFF handling. Thanks to Damian Slee.
+ *
  * Revision 1.2  2004/04/07 12:58:52  haraldkipp
  * Bugfix for half duplex mode
  *
@@ -87,6 +90,17 @@ static ureg_t flow_control;
  * \brief Transmit address frame, if not zero.
  */
 static ureg_t tx_aframe;
+
+#ifdef UART_HDX_BIT
+	/* define in cfg/modem.h */
+	#ifdef UART_HDX_FLIP_BIT	/* same as RTS toggle by Windows NT driver */
+		#define UART_HDX_TX		cbi
+		#define UART_HDX_RX		sbi
+	#else						/* previous usage by Ethernut */
+		#define UART_HDX_TX		sbi
+		#define UART_HDX_RX		cbi
+	#endif
+#endif
 
 
 #ifdef UART_HDX_BIT
@@ -161,7 +175,7 @@ static void AvrUsartTxComplete(void *arg)
      */
     if (hdx_control && rbf->rbf_cnt == 0) {
         /* Switch to receiver mode. */
-        cbi(UART_HDX_PORT, UART_HDX_BIT);
+        UART_HDX_RX(UART_HDX_PORT, UART_HDX_BIT);
     }
 }
 #endif
@@ -190,6 +204,15 @@ static void AvrUsartTxEmpty(void *arg)
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
         return;
     }
+
+    if (flow_control & XOFF_RCVD) {
+        /* 
+         * If XOFF has been received, we disable the transmit interrupts
+         * and return without sending anything.
+         */
+        cbi(UCSRnB, UDRIE);
+        return;
+	}
 
     if (rbf->rbf_cnt--) {
 
@@ -1001,7 +1024,9 @@ static int AvrUsartSetFlowControl(u_long flags)
      */
     if (flags & USART_MF_XONXOFF) {
         if(flow_control == 0) {
-            flow_control = 1;
+            NutEnterCritical();
+            flow_control = 1 | XOFF_SENT;  /* force XON to be sent on next read */
+            NutExitCritical();
         }
     } else {
         NutEnterCritical();
@@ -1053,11 +1078,15 @@ static int AvrUsartSetFlowControl(u_long flags)
             return -1;
         }
         /* Initially enable the receiver. */
-        cbi(UART_HDX_PORT, UART_HDX_BIT);
+        UART_HDX_RX(UART_HDX_PORT, UART_HDX_BIT);
         sbi(UART_HDX_DDR, UART_HDX_BIT);
         hdx_control = 1;
+        /* Enable transmit complete interrupt. */
+        sbi(UCSRnB, TXCIE);
     } else if (hdx_control) {
         hdx_control = 0;
+        /* disable transmit complete interrupt */
+        cbi(UCSRnB, TXCIE);
         /* Deregister transmit complete interrupt. */
         NutRegisterIrqHandler(&sig_UART_TRANS, 0, 0);
         cbi(UART_HDX_DDR, UART_HDX_BIT);
@@ -1085,7 +1114,7 @@ static void AvrUsartTxStart(void)
 #ifdef UART_HDX_BIT
     if (hdx_control) {
         /* Enable half duplex transmitter. */
-        sbi(UART_HDX_PORT, UART_HDX_BIT);
+	UART_HDX_TX(UART_RTS_PORT, UART_RTS_BIT);
     }
 #endif
     /* Enable transmit interrupts. */
