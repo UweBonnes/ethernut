@@ -39,6 +39,9 @@
 
 /*
  * $Log: configtree.cpp,v $
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -67,14 +70,19 @@
 #include "bitmaps/text_dis.xpm"
 #include "bitmaps/unchecked.xpm"
 #include "bitmaps/unchecked_dis.xpm"
+#include "bitmaps/library.xpm"
+#include "bitmaps/library_dis.xpm"
+#include "bitmaps/module.xpm"
+#include "bitmaps/module_dis.xpm"
 #endif
 
 IMPLEMENT_CLASS(CConfigTree, CScrolledTreeCtrl)
 
-    BEGIN_EVENT_TABLE(CConfigTree, CScrolledTreeCtrl)
+BEGIN_EVENT_TABLE(CConfigTree, CScrolledTreeCtrl)
     EVT_MOUSE_EVENTS(CConfigTree::OnMouseEvent)
     EVT_TREE_SEL_CHANGED(-1, CConfigTree::OnSelChanged)
-    END_EVENT_TABLE();
+    EVT_SCROLLWIN(CConfigTree::OnScroll)
+END_EVENT_TABLE();
 
 CConfigTree::CConfigTree(wxWindow * parent, wxWindowID id, const wxPoint & pt, const wxSize & sz, long style)
 :  CScrolledTreeCtrl(parent, id, pt, sz, style)
@@ -148,4 +156,11 @@ void CConfigTree::OnSelChanged(wxTreeEvent & event)
 CIconList & CConfigTree::GetIconDB()
 {
     return m_iconDB;
+}
+
+/* Debugging only. */
+void CConfigTree::OnScroll(wxScrollWinEvent & event)
+{
+    wxLogVerbose(wxT("  CConfigTree::OnScroll"));
+    CScrolledTreeCtrl::OnScroll(event);
 }

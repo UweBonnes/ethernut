@@ -1,3 +1,4 @@
+SSB_NUTCONF         BITMAP "bitmaps/nutconf.bmp"
 TBB_BUILDLIBRARY    BITMAP "bitmaps/buildlibrary.bmp"
 TBB_COPY            BITMAP "bitmaps/copy.bmp"
 TBB_CSHELP          BITMAP "bitmaps/cshelp.bmp"

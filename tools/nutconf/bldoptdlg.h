@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
@@ -59,12 +62,16 @@ public:
     virtual bool TransferDataToWindow();
     virtual bool TransferDataFromWindow();
 private:
-    wxString m_path;
     wxComboBox *m_cbxPlatform;
     wxTextCtrl *m_entSourceDir;
+    wxTextCtrl *m_entInclFirstDir;
+    wxTextCtrl *m_entInclLastDir;
+    wxTextCtrl *m_entBuildDir;
+    wxTextCtrl *m_entInstallDir;
     wxString m_lastSourceDir;
     void OnBrowseBuildPath(wxCommandEvent& event);
-    void OnButtonSourceDir(wxCommandEvent& event);
+    void OnBrowseInstallPath(wxCommandEvent& event);
+    void OnBrowseSourceDir(wxCommandEvent& event);
     void OnPlatformEnter(wxCommandEvent& event);
     void OnSourceDirChange(wxCommandEvent& event);
     void PopulatePlatform();

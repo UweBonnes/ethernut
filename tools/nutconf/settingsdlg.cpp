@@ -39,6 +39,9 @@
 
 /*
  * $Log: settingsdlg.cpp,v $
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
@@ -50,28 +53,22 @@
 #include "nutconf.h"
 #include "settingsdlg.h"
 
-#ifdef __WXMSW__
-#define PROPERTY_DIALOG_WIDTH   380
-#define PROPERTY_DIALOG_HEIGHT  420
-#else
-#define PROPERTY_DIALOG_WIDTH   550 // 460
-#define PROPERTY_DIALOG_HEIGHT  480
-#endif
-
 IMPLEMENT_CLASS(CSettingsDialog, wxDialog)
 
-
 CSettingsDialog::CSettingsDialog(wxWindow* parent)
-: wxDialog(parent, -1, wxGetApp().GetAppName() + wxT(" Settings"), wxPoint(0, 0), wxSize(PROPERTY_DIALOG_WIDTH, PROPERTY_DIALOG_HEIGHT))
+: wxDialog(parent, -1, wxGetApp().GetAppName() + wxT(" Settings"), wxDefaultPosition, 
+           wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
-    m_notebook = new wxNotebook(this, ID_SETTINGS_NOTEBOOK, wxPoint(2, 2), wxSize(PROPERTY_DIALOG_WIDTH - 4, PROPERTY_DIALOG_HEIGHT - 4));
+    m_notebook = new wxNotebook(this, ID_SETTINGS_NOTEBOOK);
 
     m_repositoryOptions = new CRepositoryOptionsDialog(m_notebook);
     m_buildOptions = new CBuildOptionsDialog(m_notebook);
+    m_appOptions = new CAppOptionsDialog(m_notebook);
     //m_toolOptions = new CToolOptionsDialog(m_notebook);
 
     m_notebook->AddPage(m_repositoryOptions, wxT("Repository"));
     m_notebook->AddPage(m_buildOptions, wxT("Build"));
+    m_notebook->AddPage(m_appOptions, wxT("Samples"));
     //m_notebook->AddPage(m_toolOptions, wxT("Tools"));
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
@@ -88,6 +85,19 @@ CSettingsDialog::CSettingsDialog(wxWindow* parent)
     sizerTop->Add(4, 4, 0, wxALIGN_CENTRE|wxALL, 0);
     sizerTop->Add(sizerBot, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 0);
 
+    /*
+     * Restore frame position and size.
+     */
+    wxConfigBase *pConfig = wxConfigBase::Get();
+    if(pConfig) {
+        wxString lastPath = pConfig->GetPath();
+        pConfig->SetPath(wxT("/SettingsDlg"));
+        SetSize(pConfig->Read(wxT("x"), 50), pConfig->Read(wxT("y"), 50),
+                pConfig->Read(wxT("w"), 400), pConfig->Read(wxT("h"), 460));
+        m_notebook->SetSelection((long)pConfig->Read(wxT("page"), (long)0));
+        pConfig->SetPath(lastPath);
+    }
+
     this->SetAutoLayout(true);
     this->SetSizer(sizerTop);
 
@@ -101,10 +111,40 @@ CSettingsDialog::CSettingsDialog(wxWindow* parent)
     Centre(wxBOTH);
 }
 
+/*!
+ * \brief Destructor.
+ */
+CSettingsDialog::~CSettingsDialog()
+{
+    // Save frame size and position.
+    wxConfigBase *pConfig = wxConfigBase::Get();
+    if (pConfig) {
+        wxString lastPath = pConfig->GetPath();
+        pConfig->SetPath(wxT("/SettingsDlg"));
+
+        /*
+         * Dialog frame window position and client window size.
+         */
+        int x, y;
+        int w, h;
+        GetPosition(&x, &y);
+        pConfig->Write(wxT("x"), (long) x);
+        pConfig->Write(wxT("y"), (long) y);
+        GetSize(&w, &h);
+        pConfig->Write(wxT("w"), (long) w);
+        pConfig->Write(wxT("h"), (long) h);
+
+        pConfig->Write(wxT("page"), m_notebook->GetSelection());
+
+        pConfig->SetPath(lastPath);
+    }
+}
+
 bool CSettingsDialog::TransferDataToWindow()
 {
     m_repositoryOptions->TransferDataToWindow();
     m_buildOptions->TransferDataToWindow();
+    m_appOptions->TransferDataToWindow();
     //m_toolOptions->TransferDataToWindow();
 
     return true;
@@ -114,6 +154,7 @@ bool CSettingsDialog::TransferDataFromWindow()
 {
     m_repositoryOptions->TransferDataFromWindow();
     m_buildOptions->TransferDataFromWindow();
+    m_appOptions->TransferDataFromWindow();
     //m_toolOptions->TransferDataFromWindow();
 
     wxGetApp().GetSettings()->Save();

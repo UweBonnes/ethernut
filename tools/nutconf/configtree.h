@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -61,8 +64,9 @@ class CConfigTree:public CScrolledTreeCtrl {
 
     void OnMouseEvent(wxMouseEvent & event);
     void OnSelChanged(wxTreeEvent & event);
+    void OnScroll(wxScrollWinEvent & event);
 
-     CIconList & GetIconDB();
+    CIconList & GetIconDB();
 
   protected:
      wxImageList * m_imageList;

@@ -39,12 +39,16 @@
 
 /*
  * $Log: repoptdlg.cpp,v $
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
  */
 
 #include <wx/valgen.h>
+#include <wx/filename.h>
 
 #include "ids.h"
 #include "nutconf.h"
@@ -52,19 +56,23 @@
 
 IMPLEMENT_CLASS(CRepositoryOptionsDialog, wxPanel)
 
+BEGIN_EVENT_TABLE(CRepositoryOptionsDialog, wxPanel)
+    EVT_BUTTON(ID_BROWSE_REPOPATH, CRepositoryOptionsDialog::OnBrowseRepositoryFile)
+END_EVENT_TABLE()
+
 CRepositoryOptionsDialog::CRepositoryOptionsDialog(wxWindow* parent)
 : wxPanel(parent, ID_SETTINGS_REPOSITORY)
 {
     CSettings *opts = wxGetApp().GetSettings();
 
     wxStaticBox *groupPath = new wxStaticBox(this, -1, wxT("Repository File"));
-    wxTextCtrl *entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_repositoryname));
-    wxButton *btnBrowse = new wxButton(this, ID_BROWSE_BUTTON, wxT("&Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    m_entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_repositoryname));
+    wxButton *btnBrowse = new wxButton(this, ID_BROWSE_REPOPATH, wxT("&Browse..."));
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
     wxSizer *sizerGroup = new wxStaticBoxSizer(groupPath, wxHORIZONTAL);
 
-    sizerGroup->Add(entryPath, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    sizerGroup->Add(m_entryPath, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
     sizerGroup->Add(btnBrowse, 0, wxALIGN_RIGHT | wxALL, 5);
     sizerTop->Add(sizerGroup, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
 
@@ -85,3 +93,18 @@ bool CRepositoryOptionsDialog::TransferDataFromWindow()
 
     return true;
 }
+
+void CRepositoryOptionsDialog::OnBrowseRepositoryFile(wxCommandEvent& event)
+{
+    wxFileName fname(m_entryPath->GetValue());
+
+    wxFileDialog dlg(this, wxT("Choose a repository file"), fname.GetPath(), fname.GetFullName(), 
+        wxT("Nut/OS Repository (*.nut)|*.nut"), wxOPEN | wxHIDE_READONLY);
+
+    if (dlg.ShowModal() == wxID_OK) {
+        m_repositoryPath = dlg.GetPath();
+        m_repositoryPath.Replace(wxT("\\"), wxT("/"));
+        m_entryPath->SetValue(m_repositoryPath);
+    }
+}
+

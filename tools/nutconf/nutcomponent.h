@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -86,6 +89,7 @@ struct _NUTCOMPONENTOPTION {
     char *nco_ctype;
     char *nco_value;
     char *nco_file;
+    char **nco_makedefs;
 };
 
 typedef struct _NUTCOMPONENT NUTCOMPONENT;
@@ -109,7 +113,12 @@ struct _NUTCOMPONENT {
     char **nc_provides;
     char *nc_active_if;
     char *nc_subdir;
+    /*! \brief List of source files. */
     char **nc_sources;
+    /*! \brief List of target files. */
+    char **nc_targets;
+    /*! \brief Additional lines added to NutConf.mk. */
+    char **nc_makedefs;
 };
 
 typedef struct _NUTREPOSITORY NUTREPOSITORY;
@@ -129,8 +138,13 @@ extern void CloseRepository(NUTREPOSITORY *repo);
 
 extern int RefreshComponents(NUTCOMPONENT *root);
 
-extern void CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext);
-extern void CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir);
+extern int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext, 
+                     const char *ifirst_dir, const char *ilast_dir, const char *ins_dir);
+extern int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir);
+extern int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *src_dir, 
+                                 const char *lib_dir, const char *mak_ext, const char *prg_ext);
+
+const char *GetScriptErrorString(void);
 
 __END_DECLS                     /* */
 #endif

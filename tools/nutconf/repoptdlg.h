@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
@@ -59,7 +62,13 @@ public:
     virtual bool TransferDataToWindow();
     virtual bool TransferDataFromWindow();
 private:
-    wxString m_path;
+    void OnBrowseRepositoryFile(wxCommandEvent& event);
+
+    wxString m_repositoryPath;
+    wxTextCtrl *m_entryPath;
+
+    DECLARE_EVENT_TABLE()
+
 };
 
 #endif

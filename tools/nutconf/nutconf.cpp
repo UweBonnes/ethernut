@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.4  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.3  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -55,10 +58,20 @@
 #include <wx/notebook.h>
 #include <wx/config.h>
 #include <wx/mimetype.h>
+#include <wx/cmdline.h>
+#include <wx/image.h>
+#include <wx/filename.h>
+#include <wx/splash.h>
+#include <wx/bitmap.h>
+#include <wx/busyinfo.h>
 
 
 #include "mainframe.h"
 #include "nutconf.h"
+
+#if !defined(__WXMSW__)
+#include "bitmaps/nutconf.xpm"
+#endif
 
 IMPLEMENT_APP(NutConfApp);
 
@@ -67,6 +80,28 @@ IMPLEMENT_APP(NutConfApp);
  */
 bool NutConfApp::OnInit()
 {
+    m_docManager = NULL;
+
+    static const wxCmdLineEntryDesc cmdLineDesc[] =
+    {
+        { wxCMD_LINE_SWITCH, wxT("v"), _T("verbose"), _T("be verbose") },
+        { wxCMD_LINE_SWITCH, wxT("h"), _T("help"), _T("show usage"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+        { wxCMD_LINE_NONE }
+    };
+
+    wxCmdLineParser parser(cmdLineDesc, argc, argv);
+    parser.SetLogo(_T("Nut/OS Configurator\n" VERSION
+                      "Copyright (c) 2004 by egnite Software GmbH\n"
+                      "Copyright (C) 1998, 1999, 2000 Red Hat, Inc."));
+    if(parser.Parse()) {
+        return false;
+    }
+    if(parser.Found(wxT("v"))) {
+        wxLog::GetActiveTarget()->SetVerbose();
+    }
+    else {
+        wxLog::GetActiveTarget()->SetVerbose(false);
+    }
 
     /*
      * Load settings early.
@@ -81,6 +116,8 @@ bool NutConfApp::OnInit()
     if (!wxApp::OnInit())
         return false;
 
+    wxGetEnv(wxT("PATH"), &m_initialPath);
+
     /*
      * The document manager will handle non application specific menu commands.
      */
@@ -94,11 +131,26 @@ bool NutConfApp::OnInit()
                                              CLASSINFO(CNutConfDoc), CLASSINFO(CNutConfView));
     m_docManager->SetMaxDocsOpen(1);
 
-    m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configuration"));
+    m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configurator"));
     SetTopWindow(m_mainFrame);
     m_mainFrame->Show();
     SendIdleEvents();
 
+    /*
+     * Splash display.
+     */
+    wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
+    wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_PARENT, 
+                0, m_mainFrame, -1, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER | wxSTAY_ON_TOP);
+    wxYield();
+    wxSleep(1);
+    if(splash) {
+        delete splash;
+    }
+
+    /*
+     * Create the document. 
+     */
     m_docManager->CreateDocument(m_settings->m_configname, 0);
 
     return true;
@@ -107,8 +159,9 @@ bool NutConfApp::OnInit()
 int NutConfApp::OnExit()
 {
     delete wxConfigBase::Set((wxConfigBase *) NULL);
-    delete m_docManager;
-
+    if(m_docManager) {
+        delete m_docManager;
+    }
     return 0;
 }
 
@@ -123,28 +176,30 @@ CNutConfDoc *NutConfApp::GetNutConfDoc() const
     return wxDynamicCast(m_docManager->GetCurrentDocument(), CNutConfDoc);
 }
 
-void NutConfApp::Log(const wxString & msg)
-{
-    CMainFrame *frame = (CMainFrame *) GetTopWindow();
-    if (frame) {
-        frame->GetOutputWindow()->AppendText(msg);
-        if ((msg == wxEmptyString) || (msg.Last() != wxT('\n'))) {
-            frame->GetOutputWindow()->AppendText(wxT("\n"));
-        }
-    }
-}
-
-void NutConfApp::SetStatusText(const wxString & text, bool clearFailingRulesPane)
+void NutConfApp::SetStatusText(const wxString & text)
 {
     CMainFrame *mainFrame = GetMainFrame();
     if (mainFrame) {
         mainFrame->GetStatusBar()->SetStatusText(text, 0);
-        if (clearFailingRulesPane)
-            mainFrame->GetStatusBar()->SetStatusText(wxT(""), 3);
 #ifdef __WXMSW__
         ::UpdateWindow((HWND) mainFrame->GetHWND());
 #endif
     }
+}
+
+CMainFrame *NutConfApp::GetMainFrame() const
+{
+    return m_mainFrame;
+}
+
+wxDocManager *NutConfApp::GetDocManager() const
+{
+    return m_docManager;
+}
+
+CSettings* NutConfApp::GetSettings() 
+{ 
+    return m_settings; 
 }
 
 bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer)
@@ -179,18 +234,75 @@ bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer
     return ok;
 }
 
-CMainFrame *NutConfApp::GetMainFrame() const
+bool NutConfApp::Build(const wxString &target)
 {
-    return m_mainFrame;
-}
+    CNutConfDoc *doc = GetNutConfDoc();
+    if(doc == NULL) {
+        return false;
+    }
 
-wxDocManager *NutConfApp::GetDocManager() const
-{
-    return m_docManager;
-}
+    /*
+     * Change working directory to the top build directory.
+     */
+    wxString initialCwd = wxFileName::GetCwd();
+    if(!m_settings->m_buildpath.IsEmpty()) {
+        wxFileName::SetCwd(m_settings->m_buildpath);
+    }
 
-CSettings* NutConfApp::GetSettings() 
-{ 
-    return m_settings; 
-}
+    /* Add tool directories to the PATH. */
+#ifdef _WIN32
+    wxString newPath(wxT("c:/WinAVR/bin;c:/WinAVR/utils/bin;"));
+    newPath += m_initialPath;
+    wxSetEnv(wxT("PATH"), newPath);
+#endif
 
+    /*
+     * Assemble the command.
+     */
+    wxString cmd = wxT("make ") + target;
+
+    /*
+     * Start execution. stdout and stderr output is collected
+     * in string arrays. Not very nice here, but works for now.
+     */
+    wxLogMessage(wxT("----- Running '%s' -----"), cmd.c_str());
+    wxBusyInfo wait(wxT("Please wait, running '") + cmd + wxT("'..."));
+    wxArrayString output, errors;
+    int code = wxExecute(cmd, output, errors);
+
+    /*
+     * Display collected output in the output window.
+     */
+    if(code != -1) {
+        wxTextCtrl *outwin = wxGetApp().GetMainFrame()->GetOutputWindow();
+        size_t i;
+        size_t count;
+
+        if(wxLog::GetVerbose()) {
+            count = output.GetCount();
+            for (i = 0; i < count; i++) {
+                outwin->AppendText(output[i]);
+                outwin->AppendText(wxT("\n"));
+            }
+        }
+        count = errors.GetCount();
+        for (i = 0; i < count; i++) {
+            outwin->AppendText(errors[i]);
+            outwin->AppendText(wxT("\n"));
+        }
+    }
+    if(code) {
+        wxLogMessage(wxT("----- '%s' failed with error %d -----"), cmd.c_str(), code);
+    }
+    else {
+        wxLogMessage(wxT("----- '%s' terminated successfully -----"), cmd.c_str(), code);
+    }
+
+    /* 
+     * Restore initial environment. 
+     */
+    wxSetEnv(wxT("PATH"), m_initialPath);
+    wxFileName::SetCwd(initialCwd);
+
+    return (code == 0);
+}

@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -47,6 +50,9 @@
  *
  */
 
+#include <wx/dir.h>
+#include <wx/file.h>
+#include <wx/filename.h>
 
 #include "nutconf.h"
 #include "treeitemdata.h"
@@ -63,6 +69,7 @@ IMPLEMENT_DYNAMIC_CLASS(CNutConfDoc, wxDocument);
  */
 CNutConfDoc::CNutConfDoc()
 {
+    m_root = NULL;
 }
 
 /*!
@@ -81,11 +88,15 @@ CNutConfDoc::~CNutConfDoc()
  */
 bool CNutConfDoc::OnCreate(const wxString & path, long flags)
 {
-    bool rc;
+    bool rc = false;
+    wxString normPath(path);
+
+    normPath.Replace(wxT("\\"), wxT("/"));
+    wxGetApp().GetSettings()->m_configname = normPath;
 
     wxGetApp().m_currentDoc = this;
 
-    if ((rc = ReadRepository(wxGetApp().GetSettings()->m_repositoryname, path)) == true) {
+    if ((rc = ReadRepository(wxGetApp().GetSettings()->m_repositoryname, normPath)) == true) {
         Modify(false);
         SetDocumentSaved(false);
 
@@ -101,6 +112,7 @@ bool CNutConfDoc::OnCreate(const wxString & path, long flags)
             }
         }
     }
+
     if(!rc) {
         wxGetApp().m_currentDoc = NULL;
     }
@@ -128,12 +140,6 @@ bool CNutConfDoc::OnOpenDocument(const wxString & filename)
      */
     if (!OnSaveModified())
         return false;
-
-    wxString msgTitle;
-    if (wxGetApp().GetAppName() != "")
-        msgTitle = wxGetApp().GetAppName();
-    else
-        msgTitle = wxString("File error");
 
     SetFilename(filename, true);
     Modify(false);
@@ -165,10 +171,7 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
 
 bool CNutConfDoc::OnSaveDocument(const wxString& filename)
 {
-    //NUTCOMPONENT *compo;
-    //NUTCOMPONENTOPTION *opt;
-
-    if (filename == "") {
+    if (filename.IsEmpty()) {
         return false;
     }
 
@@ -215,17 +218,36 @@ void CNutConfDoc::DeleteItems()
 
 bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString & configname)
 {
-    wxString str;
-    str.Printf(wxT("Loading %s..."), (const wxChar *)configname);
-    wxGetApp().SetStatusText(str);
-
     wxBusyCursor wait;
-    NUTREPOSITORY *repo = OpenRepository(repositoryname);
-    m_root = LoadComponents(repo);
-    ConfigureComponents(repo, m_root, configname);
-    RefreshComponents(m_root);
-    CloseRepository(repo);
+    wxString str;
 
+    str = wxT("Loading ") + repositoryname;
+    wxGetApp().SetStatusText(str);
+    wxLogMessage(wxT("%s"), str.c_str());
+
+    NUTREPOSITORY *repo = OpenRepository(repositoryname);
+    if(repo) {
+        m_root = LoadComponents(repo);
+        if(m_root) {
+            str = wxT("Loading ") + configname;
+            wxGetApp().SetStatusText(str);
+            wxLogMessage(wxT("%s"), str.c_str());
+            if(ConfigureComponents(repo, m_root, configname)) {
+                wxLogMessage(wxT("%s"), GetScriptErrorString());
+            }
+            else {
+                RefreshComponents(m_root);
+                wxLogMessage("OK");
+            }
+        }
+        else {
+            wxLogMessage(wxT("%s"), GetScriptErrorString());
+        }
+        CloseRepository(repo);
+    }
+    else {
+        wxLogError(wxT("Failed to open repository"));
+    }
 
     wxDocument::OnNewDocument();
     AddAllItems();
@@ -239,28 +261,30 @@ void CNutConfDoc::AddChildItems(NUTCOMPONENT * compo, wxTreeItemId parent)
 {
     CConfigTree *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
 
-    compo = compo->nc_child;
-    while (compo) {
-        CConfigItem *item = new CConfigItem(NULL, compo);
+    if(compo) {
+        compo = compo->nc_child;
+        while (compo) {
+            CConfigItem *item = new CConfigItem(NULL, compo);
 
-        wxTreeItemId childId = treeCtrl->AppendItem(parent, wxT(""), -1, -1, new CTreeItemData(item));
-        item->SetTreeItem(childId);
-        item->UpdateTreeItem(*treeCtrl);
-        m_items.Append(item);
-
-
-        NUTCOMPONENTOPTION *opts = compo->nc_opts;
-        while (opts) {
-            item = new CConfigItem(item, opts);
-            wxTreeItemId optId = treeCtrl->AppendItem(childId, wxT(""), -1, -1, new CTreeItemData(item));
-            item->SetTreeItem(optId);
+            wxTreeItemId childId = treeCtrl->AppendItem(parent, wxT(""), -1, -1, new CTreeItemData(item));
+            item->SetTreeItem(childId);
             item->UpdateTreeItem(*treeCtrl);
             m_items.Append(item);
-            opts = opts->nco_nxt;
-        }
 
-        AddChildItems(compo, childId);
-        compo = compo->nc_nxt;
+
+            NUTCOMPONENTOPTION *opts = compo->nc_opts;
+            while (opts) {
+                item = new CConfigItem(item, opts);
+                wxTreeItemId optId = treeCtrl->AppendItem(childId, wxT(""), -1, -1, new CTreeItemData(item));
+                item->SetTreeItem(optId);
+                item->UpdateTreeItem(*treeCtrl);
+                m_items.Append(item);
+                opts = opts->nco_nxt;
+            }
+
+            AddChildItems(compo, childId);
+            compo = compo->nc_nxt;
+        }
     }
 }
 
@@ -438,15 +462,89 @@ wxString CNutConfDoc::GetBuildTree()
 }
 
 /*!
+ * \brief Return build tree path.
+ */
+wxString CNutConfDoc::GetInstallDir()
+{
+    return wxGetApp().GetSettings()->m_lib_dir;
+}
+
+/*!
  * \brief Create all header amd make files.
+ *
+ * \return true on success, otherwise false.
  */
 bool CNutConfDoc::GenerateBuildTree()
 {
     CSettings *cfg = wxGetApp().GetSettings();
     
     wxBusyCursor wait;
-    CreateMakeFiles(m_root, cfg->m_buildpath.c_str(), cfg->m_source_dir.c_str(), cfg->m_platform.c_str());
-    CreateHeaderFiles(m_root, cfg->m_buildpath.c_str());
 
+    wxLogMessage("Creating Makefiles for %s in %s", cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
+    if(CreateMakeFiles(m_root, cfg->m_buildpath.c_str(), cfg->m_source_dir.c_str(), 
+                       cfg->m_platform.c_str(), cfg->m_firstidir.c_str(), cfg->m_lastidir.c_str(), 
+                       cfg->m_lib_dir.c_str())) {
+        return false;
+    }
+    wxLogMessage("Creating header files in %s", cfg->m_buildpath.c_str());
+    if(CreateHeaderFiles(m_root, cfg->m_buildpath.c_str())) {
+        return false;
+    }
+    wxLogMessage("OK");
+    return true;
+}
+
+class CDirCopyTraverser : public wxDirTraverser
+{
+public:
+    CDirCopyTraverser(wxString source, wxString target) 
+    : m_source(source)
+    , m_target(target)
+    {
+    }
+
+    virtual wxDirTraverseResult OnFile(const wxString& filename)
+    {
+        wxString sub = filename.Mid(m_source.Length());
+        wxFileName name(m_target + sub);
+        if(!name.GetName().IsSameAs(wxT("Makedefs"), false) &&
+            !name.GetName().IsSameAs(wxT("Makerules"), false) &&
+            !name.GetName().IsSameAs(wxT("Makeburn"), false)) {
+            ::wxCopyFile(filename, name.GetFullPath());
+            //copy the file (filter Makedefs/Makerules)
+        }
+        return wxDIR_CONTINUE;
+    }
+
+    virtual wxDirTraverseResult OnDir(const wxString& dirname)
+    {
+        wxString sub = dirname.Mid(m_source.Length());
+        wxFileName name(m_target + sub);
+        name.Mkdir(0777, wxPATH_MKDIR_FULL);
+        //create the directory
+        return wxDIR_CONTINUE;
+    }
+private:
+    wxString m_source;
+    wxString m_target;
+};
+
+bool CNutConfDoc::GenerateApplicationTree()
+{
+    CSettings *cfg = wxGetApp().GetSettings();
+    
+    wxBusyCursor wait;
+
+    CDirCopyTraverser traverser(cfg->m_source_dir + wxT("/app"), cfg->m_app_dir);
+
+    wxDir dir(cfg->m_source_dir + wxT("/app"));
+    dir.Traverse(traverser);
+
+    wxLogMessage("Copying samples from %s/app to %s", cfg->m_app_dir.c_str(), cfg->m_app_dir.c_str());
+    if(CreateSampleDirectory(m_root, cfg->m_app_dir.c_str(), cfg->m_source_dir.c_str(), 
+                             cfg->m_lib_dir.c_str(), cfg->m_platform.c_str(), cfg->m_programmer.c_str())) {
+        return false;
+    }
+    wxLogMessage("OK");
     return true;
 }

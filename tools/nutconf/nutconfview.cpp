@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfview.cpp,v $
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -101,10 +104,10 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
     switch (hintOp) {
     case nutSelChanged:
         if (selItem) {
-            wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->SetValue(selItem->GetDescription());
+            wxGetApp().GetMainFrame()->GetInfoWindow()->SetValue(selItem->GetDescription());
             wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
         } else {
-            wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->Clear();
+            wxGetApp().GetMainFrame()->GetInfoWindow()->Clear();
             wxGetApp().GetMainFrame()->GetPropertyListWindow()->ClearAll();
         }
         break;
@@ -151,7 +154,7 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
         m_expandedForFind = wxTreeItemId();
         treeCtrl->DeleteAllItems();
 
-        wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->Clear();
+        wxGetApp().GetMainFrame()->GetInfoWindow()->Clear();
         wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(NULL);
         wxGetApp().GetMainFrame()->GetValueWindow()->Refresh();
         break;
@@ -221,7 +224,7 @@ void CNutConfView::OnChangeFilename()
         wxStripExtension(docTitle);
         GetDocument()->SetTitle(docTitle);
 
-        wxString title = wxT("Nut/OS Configuration - ") + docTitle;
+        wxString title = wxT("Nut/OS Configurator - ") + docTitle;
 
         ((wxFrame*)wxGetApp().GetTopWindow())->SetTitle(title);
     }

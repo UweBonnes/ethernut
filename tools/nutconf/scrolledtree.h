@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -63,6 +66,7 @@ class CScrolledTreeCtrl:public wxTreeCtrl {
     void OnSize(wxSizeEvent & event);
     void OnExpand(wxTreeEvent & event);
     void OnScroll(wxScrollWinEvent & event);
+    void OnPaint(wxPaintEvent& event);
 
     virtual void SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY,
                                int noUnitsX, int noUnitsY, int xPos = 0, int yPos = 0, bool noRefresh = false);
@@ -83,6 +87,7 @@ class CScrolledTreeCtrl:public wxTreeCtrl {
     void CalcTreeSize(const wxTreeItemId & id, wxRect & rect);
 
     wxWindow *m_companionWindow;
+    bool m_drawRowLines;
 };
 
 

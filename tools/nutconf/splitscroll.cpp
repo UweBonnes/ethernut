@@ -39,6 +39,9 @@
 
 /*
  * $Log: splitscroll.cpp,v $
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -49,15 +52,17 @@
 
 #include "splitscroll.h"
 
-// wxSplitterScrolledWindow
 IMPLEMENT_CLASS(CSplitScroll, wxScrolledWindow)
 
-    BEGIN_EVENT_TABLE(CSplitScroll, wxScrolledWindow)
+BEGIN_EVENT_TABLE(CSplitScroll, wxScrolledWindow)
     EVT_SCROLLWIN(CSplitScroll::OnScroll)
     EVT_SIZE(CSplitScroll::OnSize)
-    END_EVENT_TABLE()
+END_EVENT_TABLE()
 
-    CSplitScroll::CSplitScroll(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
+/* 
+ * \brief Constructs a splitted scroll window with two children.
+ */
+CSplitScroll::CSplitScroll(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
 :  wxScrolledWindow(parent, id, pos, sz, style)
 {
 }
@@ -74,35 +79,34 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
 {
     // Ensure that events being propagated back up the window hierarchy
     // don't cause an infinite loop
-    static bool inOnScroll = false;
-    if (inOnScroll) {
+    static bool scrolling = false;
+    if (scrolling) {
         event.Skip();
         return;
     }
-    inOnScroll = true;
 
+    /*
+     * Skip horizontal scrolling.
+     */
     int orient = event.GetOrientation();
+    if (orient == wxHORIZONTAL) {
+        event.Skip();
+        return;
+    }
 
     int nScrollInc = CalcScrollInc(event);
+    wxLogVerbose(wxT("CSplitScroll::OnScroll(%d)"), nScrollInc);
     if (nScrollInc == 0) {
-        inOnScroll = false;
         return;
     }
 
-    if (orient == wxHORIZONTAL) {
-        inOnScroll = false;
-        event.Skip();
-        return;
-    } else {
-        int newPos = m_yScrollPosition + nScrollInc;
-        SetScrollPos(wxVERTICAL, newPos, true);
-    }
 
-    if (orient == wxHORIZONTAL) {
-        m_xScrollPosition += nScrollInc;
-    } else {
-        m_yScrollPosition += nScrollInc;
-    }
+    scrolling = true;
+
+    int newPos = m_yScrollPosition + nScrollInc;
+    SetScrollPos(wxVERTICAL, newPos, true);
+
+    m_yScrollPosition += nScrollInc;
 
     // Find targets in splitter window and send the event to them
     wxNode *node = GetChildren().First();
@@ -110,10 +114,12 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
         wxWindow *child = (wxWindow *) node->Data();
         if (child->IsKindOf(CLASSINFO(wxSplitterWindow))) {
             wxSplitterWindow *splitter = (wxSplitterWindow *) child;
-            if (splitter->GetWindow1())
+            if (splitter->GetWindow1()) {
                 splitter->GetWindow1()->ProcessEvent(event);
-            if (splitter->GetWindow2())
+            }
+            if (splitter->GetWindow2()) {
                 splitter->GetWindow2()->ProcessEvent(event);
+            }
             break;
         }
         node = node->Next();
@@ -123,5 +129,5 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
     m_targetWindow->MacUpdateImmediately();
 #endif
 
-    inOnScroll = false;
+    scrolling = false;
 }

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
@@ -52,6 +55,7 @@
 
 #include "repoptdlg.h"
 #include "bldoptdlg.h"
+#include "appoptdlg.h"
 
 class CSettingsDialog: public wxDialog
 {
@@ -59,12 +63,14 @@ DECLARE_CLASS(CSettingsDialog)
 
 public:
     CSettingsDialog(wxWindow* parent);
+    virtual ~CSettingsDialog();
 
 protected:
     wxNotebook* m_notebook;
     CRepositoryOptionsDialog* m_repositoryOptions;
     CBuildOptionsDialog* m_buildOptions;
-    //CToolOptionsDialog* m_buildOptions;
+    CAppOptionsDialog* m_appOptions;
+    //CToolOptionsDialog* m_toolOptions;
 
     virtual bool TransferDataToWindow();
     virtual bool TransferDataFromWindow();

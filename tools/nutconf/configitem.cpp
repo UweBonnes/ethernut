@@ -39,6 +39,9 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:24  haraldkipp
  * Another change of everything
  *
@@ -57,6 +60,10 @@
 #include "inteditctrl.h"
 #include "texteditctrl.h"
 
+#ifdef __WXMSW__
+#define strcasecmp stricmp
+#endif
+
 IMPLEMENT_CLASS(CConfigItem, wxObject);
 
 /*!
@@ -66,7 +73,7 @@ CConfigItem::CConfigItem()
 {
     m_compo = NULL;
     m_option = NULL;
-    m_name = wxT("");
+    m_name = wxEmptyString;
     m_configType = nutConfigTypeNone;
     m_optionType = nutOptionTypeNone;
     m_parent = NULL;
@@ -95,7 +102,7 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENT * compo)
     switch (m_optionType) {
     case nutString:
     case nutEnumerated:
-        m_value = wxT("");
+        m_value = wxEmptyString;
         break;
     case nutInteger:
         m_value = (long) 0;
@@ -123,7 +130,7 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENTOPTION * option)
     switch (m_optionType) {
     case nutString:
     case nutEnumerated:
-        m_value = wxT("");
+        m_value = wxEmptyString;
         break;
     case nutInteger:
         m_value = (long) 0;
@@ -309,7 +316,7 @@ bool CConfigItem::ViewHeaderFile()
             strFile.Prepend(wxT("/"));
             strFile.Prepend(pDoc->GetBuildTree());
             //rc = wxGetApp().Launch(strFile, "notepad.exe");
-            rc = wxGetApp().Launch(strFile, "");
+            rc = wxGetApp().Launch(strFile, wxEmptyString);
         }
     }
     return rc;
@@ -335,7 +342,7 @@ wxString CConfigItem::GetBriefDescription() const
             str = m_option->nco_name;
         }
     } else {
-        str = wxT("Nut/OS");
+        str = wxT("Nut/OS Components");
     }
     return str;
 }
@@ -368,10 +375,10 @@ nutOptionFlavor CConfigItem::GetOptionFlavor() const
 {
     if (m_option) {
         if (m_option->nco_flavor) {
-            if (stricmp(m_option->nco_flavor, "boolean") == 0) {
+            if (strcasecmp(m_option->nco_flavor, "boolean") == 0) {
                 return nutFlavorBool;
             }
-            if (stricmp(m_option->nco_flavor, "booldata") == 0) {
+            if (strcasecmp(m_option->nco_flavor, "booldata") == 0) {
                 return nutFlavorBoolData;
             }
         }
@@ -384,13 +391,13 @@ nutOptionType CConfigItem::GetOptionType() const
 {
     if (m_option) {
         if (m_option->nco_type) {
-            if (stricmp(m_option->nco_type, "integer") == 0) {
+            if (strcasecmp(m_option->nco_type, "integer") == 0) {
                 return nutInteger;
             }
-            if (stricmp(m_option->nco_type, "bool") == 0) {
+            if (strcasecmp(m_option->nco_type, "bool") == 0) {
                 return nutBool;
             }
-            if (stricmp(m_option->nco_type, "enumerated") == 0) {
+            if (strcasecmp(m_option->nco_type, "enumerated") == 0) {
                 return nutEnumerated;
             }
         }
@@ -428,27 +435,69 @@ wxString CConfigItem::StringValue() const
             }
         }
     }
-    return wxString("");
+    return wxEmptyString;
 }
 
 wxString CConfigItem::GetFilename() const
 {
-    if (m_option) {
-        if (m_option->nco_file) {
-            return wxString(m_option->nco_file);
-        }
+    if (m_option &&  m_option->nco_file) {
+        return wxString(m_option->nco_file);
     }
-    return wxString("");
+    return wxEmptyString;
 }
 
 wxString CConfigItem::GetMacro() const
 {
-    if (m_option) {
-        if (m_option->nco_name) {
-            return wxString(m_option->nco_name);
+    if (m_option && m_option->nco_name) {
+        return wxString(m_option->nco_name);
+    }
+    return wxEmptyString;
+}
+
+wxString CConfigItem::GetRequirementList() const
+{
+    wxString str;
+
+    if (m_option && m_option->nco_requires) {
+        for (int i = 0; m_option->nco_requires[i]; i++) {
+            if(!str.IsEmpty()) {
+                str += wxT(", ");
+            }
+            str += m_option->nco_requires[i];
         }
     }
-    return wxString("");
+    if (m_compo && m_compo->nc_requires) {
+        for (int i = 0; m_compo->nc_requires[i]; i++) {
+            if(!str.IsEmpty()) {
+                str += wxT(", ");
+            }
+            str += m_compo->nc_requires[i];
+        }
+    }
+    return str;
+}
+
+wxString CConfigItem::GetProvisionList() const
+{
+    wxString str;
+
+    if (m_option && m_option->nco_provides) {
+        for (int i = 0; m_option->nco_provides[i]; i++) {
+            if(!str.IsEmpty()) {
+                str += wxT(", ");
+            }
+            str += m_option->nco_provides[i];
+        }
+    }
+    if (m_compo && m_compo->nc_provides) {
+        for (int i = 0; m_compo->nc_provides[i]; i++) {
+            if(!str.IsEmpty()) {
+                str += wxT(", ");
+            }
+            str += m_compo->nc_provides[i];
+        }
+    }
+    return str;
 }
 
 int CConfigItem::GetEnumStrings(wxArrayString & arEnumStrings) const
@@ -461,13 +510,14 @@ int CConfigItem::GetEnumStrings(wxArrayString & arEnumStrings) const
     return arEnumStrings.GetCount();
 }
 
+
 /*!
  * \brief Check if this is a boolean item.
  */
 bool CConfigItem::HasBool() const
 {
     if (m_option && m_option->nco_flavor) {
-        if (stricmp(m_option->nco_flavor, "boolean") == 0 || stricmp(m_option->nco_flavor, "booldata") == 0) {
+        if (strcasecmp(m_option->nco_flavor, "boolean") == 0 || strcasecmp(m_option->nco_flavor, "booldata") == 0) {
             return true;
         }
     }

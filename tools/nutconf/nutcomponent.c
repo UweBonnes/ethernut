@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -46,16 +49,31 @@
  * to make its use in simple non-GUI applications as easy as
  * possible.
  */
+//#define NUT_CONFIGURE_EXEC
+#define NUT_CONFIGURE_VERSION   "0.0.0"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <io.h>
-#include <direct.h>
+#include <sys/stat.h>
 #include <time.h>
 
+#ifdef _WIN32
+
+#include <io.h>
+#include <direct.h>
+#define mkdir(P, M) _mkdir(P)
+#define access _access
+#define strcasecmp stricmp
+
+#else
+
+#include <unistd.h>
+
+#endif
+
+
 #include <lua.h>
-#include <lualib.h>
 #include <lauxlib.h>
 
 #include "nutcomponent.h"
@@ -123,9 +141,19 @@
  */
 #define TKN_SOURCES "sources"
 
+/*! \brief List of explicit target files.
+ */
+#define TKN_TARGETS "targets"
+
 /*! \brief
  */
 #define TKN_CHOICES "choices"
+
+/*! \brief
+ */
+#define TKN_MAKEDEFS "makedefs"
+
+static char errtxt[1024];
 
 #if 0
 
@@ -208,6 +236,11 @@ void ShowCompoTree(NUTCOMPONENT * compo, int level)
 }
 
 #endif
+
+const char *GetScriptErrorString(void)
+{
+    return errtxt;
+}
 
 /*!
  * \brief Get a string value from a named item of a table.
@@ -322,7 +355,6 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
     char *name;
     NUTCOMPONENTOPTION *opts;
 
-    printf("Loading options of %s\n", compo->nc_name);
     /* Push the option table on the stack. */
     lua_pushstring(ls, TKN_OPTIONS);
     lua_gettable(ls, -2);
@@ -335,7 +367,6 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
         while (lua_next(ls, -2)) {
             name = GetStringByNameFromTable(ls, -1, TKN_MACRO, NULL, 0);
             if (name) {
-                printf("Option: '%s'\n", name);
                 if (opts) {
                     opts->nco_nxt = calloc(1, sizeof(NUTCOMPONENTOPTION));
                     opts = opts->nco_nxt;
@@ -354,6 +385,7 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                 opts->nco_ctype = GetStringByNameFromTable(ls, -1, TKN_CTYPE, NULL, 0);
                 opts->nco_file = GetStringByNameFromTable(ls, -1, TKN_FILE, NULL, 0);
                 opts->nco_choices = GetStringArrayByNameFromTable(ls, -1, TKN_CHOICES);
+                opts->nco_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
             }
             lua_pop(ls, 1);
         }
@@ -421,14 +453,17 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
     strcpy(script, path);
     strcat(script, "/");
     strcat(script, file);
-    if (_access(script, 0)) {
+    if (access(script, 0)) {
         return -1;
     }
 
     /* Let the interpreter load the script file. */
-    printf("Loading %s from %s\n", parent->nc_name, script);
-    if ((rc = lua_dofile(ls, script)) != 0) {
-        fprintf(stderr, "Bad script in %s\n", path);
+    if ((rc = luaL_loadfile(ls, script)) != 0) {
+        strcpy(errtxt, lua_tostring(ls, -1));
+        return -1;
+    }
+    if(lua_pcall(ls, 0, 0, 0)) {
+        strcpy(errtxt, lua_tostring(ls, -1));
         return -1;
     }
 
@@ -439,7 +474,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
      */
     lua_getglobal(ls, parent->nc_name);
     if (!lua_istable(ls, -1)) {
-        fprintf(stderr, "Bad type for %s\n", parent->nc_name);
+        sprintf(errtxt, "%s: '%s' missing or not an array", file, parent->nc_name);
         lua_pop(ls, 1);
         return -1;
     }
@@ -494,10 +529,14 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
                 compo->nc_active_if = GetStringByNameFromTable(ls, -1, TKN_ACTIF, NULL, 0);
                 compo->nc_subdir = GetStringByNameFromTable(ls, -1, TKN_SUBDIR, NULL, 0);
                 compo->nc_sources = GetStringArrayByNameFromTable(ls, -1, TKN_SOURCES);
+                compo->nc_targets = GetStringArrayByNameFromTable(ls, -1, TKN_TARGETS);
+                compo->nc_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
 
                 /* If this component got any subcomponent, then load it now. */
                 if (GetStringByNameFromTable(ls, -1, TKN_SCRIPT, script, sizeof(script))) {
-                    LoadComponentTree(ls, compo, path, script);
+                    if(LoadComponentTree(ls, compo, path, script)) {
+                        return -1;
+                    }
                 }
             }
         }
@@ -540,6 +579,20 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
     }
 }
 
+#if 0
+int LuaPanic(lua_State *ls)
+{
+    int i = 1;
+    return 0;
+}
+
+int LuaError(lua_State *ls)
+{
+    return -1;
+    exit(0);
+}
+#endif
+
 /*!
  * \brief Open a Nut/OS component repository.
  *
@@ -577,6 +630,9 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
          * Create a LUA state.
          */
         repo->nr_ls = lua_open();
+
+        //lua_atpanic(repo->nr_ls, LuaPanic);
+        //lua_cpcall(repo->nr_ls, LuaError, NULL);
     }
     return repo;
 }
@@ -618,14 +674,19 @@ NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo)
      * Collect the components first. As a result we will have a tree
      * structure of all components.
      */
-    LoadComponentTree(ls, root, repo->nr_dir, repo->nr_name);
+    if(LoadComponentTree(ls, root, repo->nr_dir, repo->nr_name)) {
+        free(root->nc_name);
+        free(root);
+        root = NULL;
+    }
 
     /*
      * Now walk along the component tree and collect the options of
      * all components.
      */
-    LoadOptions(ls, root);
-
+    if(root) {
+        LoadOptions(ls, root);
+    }
     return root;
 }
 
@@ -647,8 +708,13 @@ int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pat
         return -1;
     }
 
-    if ((rc = lua_dofile(ls, pathname)) != 0) {
-        fprintf(stderr, "Bad script in %s\n", pathname);
+    /* Let the interpreter load the script file. */
+    if ((rc = luaL_loadfile(ls, pathname)) != 0) {
+        strcpy(errtxt, lua_tostring(ls, -1));
+        return -1;
+    }
+    if(lua_pcall(ls, 0, 0, 0)) {
+        strcpy(errtxt, lua_tostring(ls, -1));
         return -1;
     }
     LoadConfigValues(ls, root);
@@ -723,6 +789,7 @@ int RefreshComponentTree(NUTCOMPONENT *root, NUTCOMPONENT *compo)
 {
     int rc = 0;
     int i;
+    NUTCOMPONENTOPTION *opts;
 
     while (compo) {
         if(compo->nc_requires) {
@@ -738,6 +805,22 @@ int RefreshComponentTree(NUTCOMPONENT *root, NUTCOMPONENT *compo)
                 EnableComponentTree(compo, provided);
                 rc++;
             }
+        }
+        opts = compo->nc_opts;
+        while (opts) {
+            if(opts->nco_requires) {
+                int provided = 1;
+                for (i = 0; opts->nco_requires[i]; i++) {
+                    if((provided = IsProvided(root, opts->nco_requires[i])) == 0) {
+                        break;
+                    }
+                }
+                if(provided != opts->nco_enabled) {
+                    opts->nco_enabled = provided;
+                    rc++;
+                }
+            }
+            opts = opts->nco_nxt;
         }
         rc += RefreshComponentTree(root, compo->nc_child);
         compo = compo->nc_nxt;
@@ -760,27 +843,120 @@ int RefreshComponents(NUTCOMPONENT *root)
     return -1;
 }
 
-void WriteMakeSources(FILE * fp, NUTCOMPONENT * compo)
+/*!
+ * \brief Add the source file list to the Makefile.
+ *
+ * \param fp      Pointer to an opened file.
+ * \param compo   Pointer to a library component.
+ * \param sub_dir Component's subdirectory.
+ *
+ * \return Number of explicit target files.
+ */
+int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
 {
+    int rc = 0;
     int i;
+    int k;
     int c = 8;
+    NUTCOMPONENT *cop = compo;
 
     fprintf(fp, "SRCS =\t");
-    while (compo && compo->nc_enabled && compo->nc_sources) {
-        for (i = 0; compo->nc_sources[i]; i++) {
-            c += strlen(compo->nc_sources[i]);
-            if (c > 72) {
-                fprintf(fp, " \\\n\t");
-                c = 8;
+    while (cop) {
+        if(cop->nc_enabled && cop->nc_sources) {
+            for (i = 0; cop->nc_sources[i]; i++) {
+                if(strchr(cop->nc_sources[i], '/')) {
+                    char path[255];
+                    sprintf(path, "%s/%s", sub_dir, cop->nc_sources[i]);
+                    CreateDirectoryPath(path);
+                }
+
+                /* Check if this source results in an explicit target. */
+                if(cop->nc_targets && cop->nc_targets[i]) {
+                    rc++;
+                }
+                else {
+                    c += strlen(cop->nc_sources[i]);
+                    if (c > 72) {
+                        fprintf(fp, " \\\n\t");
+                        c = 8;
+                    }
+                    fprintf(fp, " %s", cop->nc_sources[i]);
+                }
             }
-            fprintf(fp, " %s", compo->nc_sources[i]);
+        }
+        cop = cop->nc_nxt;
+    }
+    fputc('\n', fp);
+
+    for(k = 0; k < rc; k++) {
+        fprintf(fp, "SRC%d =\t", k + 1);
+        c = 8;
+        cop = compo;
+        while (cop) {
+            if(cop->nc_enabled && cop->nc_sources) {
+                for (i = 0; cop->nc_sources[i]; i++) {
+                    if(cop->nc_targets && cop->nc_targets[i]) {
+                        c += strlen(cop->nc_sources[i]);
+                        if (c > 72) {
+                            fprintf(fp, " \\\n\t");
+                            c = 8;
+                        }
+                        fprintf(fp, " %s", cop->nc_sources[i]);
+                    }
+                }
+            }
+            cop = cop->nc_nxt;
+        }
+        fputc('\n', fp);
+    }
+    fputc('\n', fp);
+
+    return rc;
+}
+
+/*!
+ * \brief Add the configured lines to the Makefile.
+ *
+ * \param fp Pointer to an opened file.
+ * \param compo Pointer to a library component.
+ *
+ * \todo This is not yet finished. All 'name=value' pairs should 
+ *       be collected and combined.
+ */
+void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
+{
+    NUTCOMPONENTOPTION *opts;
+    int i;
+
+    while (compo) {
+        if(compo->nc_enabled && compo->nc_makedefs) {
+            for (i = 0; compo->nc_makedefs[i]; i++) {
+                fprintf(fp, "%s\n", compo->nc_makedefs[i]);
+            }
+        }
+        opts = compo->nc_opts;
+        while (opts) {
+            if (opts->nco_enabled && opts->nco_active && opts->nco_makedefs) {
+                for (i = 0; opts->nco_makedefs[i]; i++) {
+                    fprintf(fp, "%s\n", opts->nco_makedefs[i]);
+                }
+            }
+            opts = opts->nco_nxt;
+        }
+        if (compo->nc_child) {
+            WriteMakedefLines(fp, compo->nc_child);
         }
         compo = compo->nc_nxt;
     }
-    fputc('\n', fp);
-    fputc('\n', fp);
 }
 
+/*!
+ * \brief Add target to the Makefile in the top build directory.
+ *
+ * \param fp     Pointer to an opened file.
+ * \param compo  Pointer to the first child of the root component.
+ * \param target Makefile target, set to NULL for 'all'.
+ */
 void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
 {
     if (target) {
@@ -801,6 +977,13 @@ void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
     fprintf(fp, "\n");
 }
 
+/*
+ * \brief Creates the complete directory path to a given pathname of a file.
+ *
+ * \param path The file's pathname.
+ *
+ * \return 0 on success, -1 if we failed to create any non existing subdirectoy.
+ */
 static int CreateDirectoryPath(const char *path)
 {
     char subpath[255];
@@ -808,7 +991,7 @@ static int CreateDirectoryPath(const char *path)
 
     if(*path) {
         /*
-         * Copy any optional device/drive information.
+         * Copy any optional WIN32 device/drive information.
          */
         if((cp = strchr(path, ':')) != 0) {
             for(cp = subpath; *path != ':'; path++, cp++) {
@@ -833,8 +1016,9 @@ static int CreateDirectoryPath(const char *path)
         while(*path) {
             if(*path == '/') {
                 *cp = 0;
-                if(_access(subpath, 0)) {
-                    if(_mkdir(subpath)) {
+                if(access(subpath, 0)) {
+                    if(mkdir(subpath, S_IRWXU)) {
+                        sprintf(errtxt, "Failed to make %s", subpath);
                         return -1;
                     }
                 }
@@ -847,26 +1031,77 @@ static int CreateDirectoryPath(const char *path)
 
 /*!
  * \brief Create makefiles from a specified NUTCOMPONENT tree.
+ *
+ * This routine creates all required Makefiles, one in the top build directory
+ * and one in each library's subdirectory. It will also create the NutConf.mk
+ * and UserConf.mk. Except for UserConf.mk, any existing file will be replaced.
+ *
+ * \param root       Pointer to the root component.
+ * \param bld_dir    Pathname of the top build directory.
+ * \param src_dir    Pathname of the top source directory.
+ * \param mak_ext    Filename extension of the Makedefs/Makerules to be used, e.g. avr-gcc.
+ * \param ifirst_dir Optional include directory. Header files will be included first
+ *                   and thus may replace standard Nut/OS headers with the same name.
+ * \param ilast_dir  Optional include directory. Header files will be included last.
+ *                   This parameter is typically used to specify the compilers runtime 
+ *                   library. Header files with the same name as Nut/OS standard headers
+ *                   are ignored.
+ * \param ins_dir    Final target directory of the Nut/OS libraries. Will be used with
+ *                   'make install'.
+ *
+ * \return 0 on success, otherwise return -1.
+ *
+ * \todo This function's parameter list is a bit overloaded. Either split the function
+ *       or use a parameter structure.
  */
-void CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext)
+int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext, 
+                     const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
 {
     FILE *fp;
     char path[255];
     NUTCOMPONENT *compo;
+    int targets;
+    int i;
     struct tm *ltime;
     time_t now;
 
     time(&now);
     ltime = localtime(&now);
 
+    /* Create the Makedefs file */
+    sprintf(path, "%s/NutConf.mk", bld_dir);
+    if(CreateDirectoryPath(path) == 0) {
+        fp = fopen(path, "w");
+        if (fp) {
+            fprintf(fp, "# Automatically generated on %s", asctime(ltime));
+            fprintf(fp, "#\n# Do not edit, modify UserConf.mk instead!\n#\n\n");
+            WriteMakedefLines(fp, root->nc_child);
+            fprintf(fp, "\n\ninclude %s/UserConf.mk\n", bld_dir);
+            fclose(fp);
+        }
+    }
+
+    /* Create the user's Makedefs file, if it doesn't exist */
+    sprintf(path, "%s/UserConf.mk", bld_dir);
+    if(access(path, 0)) {
+        fp = fopen(path, "w");
+        if (fp) {
+            fprintf(fp, "# Automatically created on %s", asctime(ltime));
+            fprintf(fp, "#\n# You can use this file to modify values in NutConf.mk\n#\n\n");
+            fclose(fp);
+        }
+    }
+
     /* Create the root Makefile */
     sprintf(path, "%s/Makefile", bld_dir);
     if(CreateDirectoryPath(path) == 0) {
         fp = fopen(path, "w");
         if (fp) {
-            fprintf(fp, "# This file has been created automatically\n\n");
+            fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
             WriteMakeRootLines(fp, root->nc_child, NULL);
-            WriteMakeRootLines(fp, root->nc_child, "install");
+            if(ins_dir && *ins_dir) {
+                WriteMakeRootLines(fp, root->nc_child, "install");
+            }
             WriteMakeRootLines(fp, root->nc_child, "clean");
             fclose(fp);
         }
@@ -887,21 +1122,54 @@ void CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_di
                     fprintf(fp, "top_blddir = %s\n\n", bld_dir);
                     fprintf(fp, "VPATH = $(top_srcdir)/%s\n\n", compo->nc_subdir);
 
-                    WriteMakeSources(fp, compo->nc_child);
-                    fprintf(fp, "OBJS = $(SRCS:.c=.o)\n\n");
+                    sprintf(path, "%s/%s", bld_dir, compo->nc_subdir);
+                    targets = WriteMakeSources(fp, compo->nc_child, path);
+
+                    fprintf(fp, "OBJS = $(SRCS:.c=.o)\n");
+                    for(i = 0; i < targets; i++) {
+                        fprintf(fp, "OBJ%d = $(SRC%d:.c=.o)\n", i + 1, i + 1);
+                    }
+                    fprintf(fp, "include $(top_blddir)/NutConf.mk\n\n", mak_ext);
                     fprintf(fp, "include $(top_srcdir)/Makedefs.%s\n\n", mak_ext);
-                    fprintf(fp, "all: $(PROJ).a $(OBJS)\n\n");
-                    fprintf(fp, "include $(top_srcdir)/Makerules.%s\n\n", mak_ext);
+
+                    if(ifirst_dir && *ifirst_dir) {
+                        fprintf(fp, "INCFIRST=$(INCPRE)%s\n", ifirst_dir);
+                    }
+                    if(ilast_dir && *ilast_dir) {
+                        fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
+                    }
+
+                    fprintf(fp, "\nall: $(PROJ).a $(OBJS)");
+                    for(i = 0; i < targets; i++) {
+                        fprintf(fp, " $(OBJ%d)", i + 1);
+                    }
+                    fprintf(fp, "\n\n");
+
+                    if(ins_dir && *ins_dir) {
+                        fprintf(fp, "install: $(PROJ).a");
+                        for(i = 0; i < targets; i++) {
+                            fprintf(fp, " $(OBJ%d)", i + 1);
+                        }
+                        fprintf(fp, "\n\t$(CP) $(PROJ).a %s/$(PROJ).a\n", ins_dir);
+                        for(i = 0; i < targets; i++) {
+                            fprintf(fp, "\t$(CP) $(OBJ%d) %s/$(OBJ%d)\n", i + 1, ins_dir, i + 1);
+                        }
+                    }
+                    fprintf(fp, "\ninclude $(top_srcdir)/Makerules.%s\n\n", mak_ext);
                     fclose(fp);
                 }
             }
         }
         compo = compo->nc_nxt;
     }
+    return 0;
 }
 
 typedef struct _NUTHEADERMACRO NUTHEADERMACRO;
 
+/*!
+ * \brief Linked list of header file macros.
+ */
 struct _NUTHEADERMACRO {
     NUTHEADERMACRO *nhm_nxt;
     char *nhm_name;
@@ -910,6 +1178,9 @@ struct _NUTHEADERMACRO {
 
 typedef struct _NUTHEADERFILE NUTHEADERFILE;
 
+/*!
+ * \brief Linked list of header files.
+ */
 struct _NUTHEADERFILE {
     NUTHEADERFILE *nhf_nxt;
     char *nhf_path;
@@ -927,7 +1198,7 @@ NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * o
     /* Add to existing list. */
     if (nh_root) {
         nhf = nh_root;
-        while (stricmp(nhf->nhf_path, opts->nco_file)) {
+        while (strcasecmp(nhf->nhf_path, opts->nco_file)) {
             if (nhf->nhf_nxt) {
                 nhf = nhf->nhf_nxt;
             } else {
@@ -947,7 +1218,7 @@ NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * o
     /* Add macro to existing header file entry. */
     if (nhf->nhf_macros) {
         nhm = nhf->nhf_macros;
-        while (stricmp(nhm->nhm_name, opts->nco_name)) {
+        while (strcasecmp(nhm->nhm_name, opts->nco_name)) {
             if (nhm->nhm_nxt) {
                 nhm = nhm->nhm_nxt;
             } else {
@@ -994,8 +1265,18 @@ NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
 
 /*!
  * \brief Create header files from a specified NUTCOMPONENT tree.
+ *
+ * This routine creates all build specific header files in the build
+ * directory. Existing files will be replaced.
+ *
+ * \param root    Pointer to the root component.
+ * \param bld_dir Pathname of the top build directory.
+ * 
+ * \return 0 on success, otherwise return -1.
+ *
+ * \todo Release allocated heap space.
  */
-void CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
+int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
 {
     NUTHEADERFILE *nh_root = NULL;
     NUTHEADERFILE *nhf;
@@ -1010,6 +1291,7 @@ void CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
     time(&now);
     ltime = localtime(&now);
 
+    /* Create a linked list of header files with active component options. */
     nh_root = CreateHeaderList(root->nc_child, nh_root);
 
     for (nhf = nh_root; nhf; nhf = nhf->nhf_nxt) {
@@ -1043,6 +1325,110 @@ void CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
                 fprintf(fp, "\n#endif\n");
                 fclose(fp);
             }
+            else {
+                sprintf(errtxt, "Failed to create %s", path);
+                return -1;
+            }
         }
     }
+    return 0;
 }
+
+/*!
+ * \brief Create build directory for Nut/OS applications.
+ *
+ * This routine creates Makedefs and Makerules in the specified directory.
+ * It will also create the NutConf.mk and UserConf.mk. Except for UserConf.mk, 
+ * any existing file will be replaced.
+ *
+ * \param root       Pointer to the root component.
+ * \param app_dir    Pathname of the application build directory.
+ * \param src_dir    Pathname of the top source directory.
+ * \param mak_ext    Filename extension of the platform specific Makedefs/Makerules, e.g. avr-gcc.
+ * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
+ *
+ * \return 0 on success, otherwise return -1.
+ */
+int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *src_dir, 
+                          const char *lib_dir, const char *mak_ext, const char *prg_ext)
+{
+    FILE *fp;
+    char path[255];
+    struct tm *ltime;
+    time_t now;
+
+    time(&now);
+    ltime = localtime(&now);
+
+    sprintf(path, "%s/NutConf.mk", app_dir);
+    if(CreateDirectoryPath(path) == 0) {
+        /* Create the configuration Makedefs file */
+        fp = fopen(path, "w");
+        if (fp) {
+            fprintf(fp, "# Automatically generated on %s", asctime(ltime));
+            fprintf(fp, "#\n# Do not edit, modify UserConf.mk instead!\n#\n\n");
+            WriteMakedefLines(fp, root->nc_child);
+            fprintf(fp, "\n\ninclude $(top_appdir)/UserConf.mk\n");
+            fclose(fp);
+        }
+
+        /* Create the user's Makedefs file, if it doesn't exist */
+        sprintf(path, "%s/UserConf.mk", app_dir);
+        if(access(path, 0)) {
+            fp = fopen(path, "w");
+            if (fp) {
+                fprintf(fp, "# Automatically created on %s", asctime(ltime));
+                fprintf(fp, "#\n# You can use this file to modify values in NutConf.mk\n#\n\n");
+                fclose(fp);
+            }
+        }
+
+        /* Create the application Makedefs. */
+        sprintf(path, "%s/Makedefs", app_dir);
+        if ((fp = fopen(path, "w")) != 0) {
+            fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
+            fprintf(fp, "top_srcdir = %s\n", src_dir);
+            fprintf(fp, "top_appdir = %s\n", app_dir);
+            fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
+
+            fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
+            fprintf(fp, "include $(top_srcdir)/app/Makedefs.%s\n", mak_ext);
+            fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
+            fclose(fp);
+        }
+        else {
+            sprintf(errtxt, "Failed to create %s", path);
+            return -1;
+        }
+
+        /* Create the application Makerules. */
+        sprintf(path, "%s/Makerules", app_dir);
+        if ((fp = fopen(path, "w")) != 0) {
+            fprintf(fp, "# Do not edit! Automatically generated on %s\n\n", asctime(ltime));
+            fprintf(fp, "include $(top_srcdir)/app/Makerules.%s\n", mak_ext);
+            fclose(fp);
+        }
+        else {
+            sprintf(errtxt, "Failed to create %s", path);
+            return -1;
+        }
+    }
+    else {
+        sprintf(errtxt, "Failed to create directory for %s", path);
+        return -1;
+    }
+    return 0;
+}
+
+#ifdef NUT_CONFIGURE_EXEC
+/*!
+ * \brief Running without GUI.
+ *
+ * All settings are passed as command line options.
+ *
+ * \todo Everything.
+ */
+int main(int argc, char **argv)
+{
+}
+#endif

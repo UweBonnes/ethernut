@@ -1,5 +1,5 @@
 /* XPM */
-static char* DsnOpen_xpm[] = {
+static char* library_xpm[] = {
 "16 16 4 1",
 "  c #000000",
 "! c #C0C0C0",

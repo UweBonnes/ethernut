@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
@@ -54,14 +57,34 @@ IMPLEMENT_DYNAMIC_CLASS(CSettings, wxObject)
  */
 CSettings::CSettings()
 {
-    m_config = new wxConfig(wxGetApp().GetAppName());
+    /* We may later have a more versatile way to locate these. */
+    m_configname_default = wxT("nut/conf/ethernut21.conf");
+    m_repositoryname_default = wxT("nut/conf/repository.nut");
+    m_firstidir_default = wxEmptyString;
+    m_lastidir_default = wxEmptyString;
+    m_buildpath_default = wxT("nut/conf/repository.nut");
+    m_lib_dir_default = wxT("nutlib");
+    m_source_dir_default = wxT("nut");
+    m_platform_default = wxT("avr-gcc");
+    m_app_dir_default = wxT("nutapp");
+    m_programmer_default = wxT("uisp-avr");
 
-    m_config->Read("ConfigName", &m_configname, "nut/conf/ethernut2.conf");
-    m_config->Read("RepositoryName", &m_repositoryname, "nut/conf/repository.nut");
-    m_config->Read("BuildPath", &m_buildpath, "nutbld");
-    m_config->Read("SourceDirectory", &m_source_dir, "c:/ethernut/nutconf/nut");
-    m_config->Read("TargetPlatform", &m_platform, "avr-gcc");
-    m_config->Read("ToolPath", &m_toolpath, "c:/iccavr/bin;tools/win32");
+    wxConfigBase *pConfig = wxConfigBase::Get();
+    if (pConfig) {
+        wxString lastPath = pConfig->GetPath();
+        pConfig->SetPath(wxT("/Settings"));
+
+        pConfig->Read("ConfigName", &m_configname, m_configname_default);
+        pConfig->Read("RepositoryName", &m_repositoryname, m_repositoryname_default);
+        pConfig->Read("BuildPath", &m_buildpath, m_buildpath_default);
+        pConfig->Read("InstallPath", &m_lib_dir, m_lib_dir_default);
+        pConfig->Read("SourceDirectory", &m_source_dir, m_source_dir_default);
+        pConfig->Read("TargetPlatform", &m_platform, m_platform_default);
+        pConfig->Read("ApplicationDirectory", &m_app_dir, m_app_dir_default);
+        pConfig->Read("Programmer", &m_programmer, m_programmer_default);
+
+        pConfig->SetPath(lastPath);
+    }
 }
 
 /*!
@@ -69,18 +92,24 @@ CSettings::CSettings()
  */
 CSettings::~CSettings()
 {
-    delete m_config;
 }
 
 bool CSettings::Save()
 {
-    m_config->Write("ConfigName", m_configname);
-    m_config->Write("RepositoryName", m_repositoryname);
-    m_config->Write("BuildPath", m_buildpath);
-    m_config->Write("SourceDirectory", m_source_dir);
-    m_config->Write("TargetPlatform", m_platform);
-    m_config->Write("ToolPath", m_toolpath);
-
+    wxConfigBase *pConfig = wxConfigBase::Get();
+    if (pConfig) {
+        wxString lastPath = pConfig->GetPath();
+        pConfig->SetPath(wxT("/Settings"));
+        pConfig->Write("ConfigName", m_configname);
+        pConfig->Write("RepositoryName", m_repositoryname);
+        pConfig->Write("BuildPath", m_buildpath);
+        pConfig->Write("InstallPath", m_lib_dir);
+        pConfig->Write("SourceDirectory", m_source_dir);
+        pConfig->Write("TargetPlatform", m_platform);
+        pConfig->Write("ApplicationDirectory", m_app_dir);
+        pConfig->Write("Programmer", m_programmer);
+        pConfig->SetPath(lastPath);
+    }
     return true;
 }
 

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:24  haraldkipp
  * Another change of everything
  *
@@ -115,6 +118,9 @@ class CConfigItem:public wxObject {
     nutOptionFlavor GetOptionFlavor() const;
     nutOptionType GetOptionType() const;
     int GetEnumStrings(wxArrayString & arEnumStrings) const;
+    wxString GetRequirementList() const;
+    wxString GetProvisionList() const;
+
 
     void SetActive(bool ena);
     bool IsActive() const;

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -89,6 +92,9 @@ class CNutConfDoc:public wxDocument {
 
     wxString GetBuildTree();
     bool GenerateBuildTree();
+    bool GenerateApplicationTree();
+
+    wxString GetInstallDir();
 
     bool IsOptionActive(char *name);
 

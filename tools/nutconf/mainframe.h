@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -82,13 +85,14 @@ class CMainFrame:public wxDocParentFrame {
     wxTextCtrl *GetOutputWindow() const;
     CConfigTree *GetTreeCtrl() const;
     CValueWindow *GetValueWindow() const;
-    CInfoWindow *GetShortDescriptionWindow() const;
+    CInfoWindow *GetInfoWindow() const;
     CPropertyList *GetPropertyListWindow() const;
-    //CConflictList *GetConflictsWindow() const;
 
     /* ---------- Menu Event Handlers ---------- */
     void OnQuit(wxCommandEvent & event);
     void OnGenerateBuildTree(wxCommandEvent & event);
+    void OnBuildNutOS(wxCommandEvent & event);
+    void OnCreateSampleDir(wxCommandEvent & event);
     void OnSettings(wxCommandEvent& event);
 
   protected:
@@ -98,19 +102,20 @@ class CMainFrame:public wxDocParentFrame {
     void CreateNutWindows();
 
   protected:
-     wxSashLayoutWindow * m_outputSashWindow;
+    wxSashLayoutWindow *m_outputSashWindow;
     wxSashLayoutWindow *m_configSashWindow;
-    //wxSashLayoutWindow *m_conflictsSashWindow;
     wxSashLayoutWindow *m_propertiesSashWindow;
-    wxSashLayoutWindow *m_shortDescrSashWindow;
-    wxTextCtrl *m_outputWindow;
-    wxSplitterWindow *m_splitter;
+    wxSashLayoutWindow *m_infoSashWindow;
+
     CSplitScroll *m_scrolledWindow;
-    CConfigTree *m_tree;
-    //CConflictList *m_conflictsWindow;
+    wxSplitterWindow *m_splitter;
+    CConfigTree *m_treeWindow;
     CValueWindow *m_valueWindow;
-    CInfoWindow *m_shortDescrWindow;
+
     CPropertyList *m_propertyListWindow;
+    CInfoWindow *m_infoWindow;
+
+    wxTextCtrl *m_outputWindow;
   private:
      DECLARE_EVENT_TABLE()
 

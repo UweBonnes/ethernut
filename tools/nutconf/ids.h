@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -50,13 +53,11 @@
 #define ID_MAIN_FRAME           2000
 
 #define ID_CONFIG_SASH_WINDOW       2500
-//#define ID_CONFLICTS_SASH_WINDOW    2501
 #define ID_PROPERTIES_SASH_WINDOW   2502
 #define ID_SHORT_DESCR_SASH_WINDOW  2504
 #define ID_OUTPUT_SASH_WINDOW       2505
 
 #define ID_OUTPUT_WINDOW        2002
-//#define ID_CONFLICTS_WINDOW     2003
 #define ID_MEMORY_WINDOW        2004
 
 #define ID_SPLITTER_WINDOW      2006
@@ -77,7 +78,6 @@
 #define ID_TOGGLE_PROPERTIES    2023
 #define ID_TOGGLE_OUTPUT        2024
 #define ID_TOGGLE_SHORT_DESCR   2025
-//#define ID_TOGGLE_CONFLICTS     2026
 #define ID_BUILD_LIBRARY        2027
 #define ID_BUILD_TESTS          2028
 #define ID_CLEAN                2029
@@ -93,7 +93,6 @@
 #define ID_SHELL                2039
 #define ID_RUN_TESTS            2040
 #define ID_PLATFORMS            2041
-//#define ID_RESOLVE_CONFLICTS    2042
 #define ID_ADMINISTRATION       2043
 #define ID_INDEX_DOCS           2044
 #define ID_CONFIGTOOL_HELP      2045
@@ -111,5 +110,23 @@
 #define ID_BROWSE_BUTTON        2054
 #define ID_PATH_ENTRY           2055
 #define ID_ENTRY_SRCDIR         2056
-#define ID_BUTTON_SRCDIR        2057
+#define ID_BROWSE_SRCDIR        2057
 #define ID_COMBO_SRCDIR         2058
+
+#define ID_BROWSE_INSTALL       2059
+#define ID_PATH_INSTALL         2060
+
+#define ID_BROWSE_INCLFIRST     2061
+#define ID_BROWSE_INCLLAST      2062
+
+#define ID_HELP_ABOUT           2063
+
+#define ID_BROWSE_REPOPATH      2064
+
+#define ID_BUILD_NUTOS          2065
+
+#define ID_CREATE_SAMPLE_APPS   2066
+
+#define ID_ENTRY_APPDIR         2067
+#define ID_BROWSE_APPDIR        2068
+#define ID_COMBO_APPDIR         2069

@@ -16,6 +16,12 @@
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  * ----------------------------------------------------------------------------
+ *
+ * Mainly taken from wxWindows/contribs/gizmos, copyright by 
+ *
+ * Julian Smart, wxWindows licence.
+ *
+ * ----------------------------------------------------------------------------
  * Parts are
  *
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
@@ -39,6 +45,9 @@
 
 /*
  * $Log: treecomp.cpp,v $
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -48,12 +57,12 @@
 
 IMPLEMENT_CLASS(CTreeCompWindow, wxWindow)
 
-    BEGIN_EVENT_TABLE(CTreeCompWindow, wxWindow)
+BEGIN_EVENT_TABLE(CTreeCompWindow, wxWindow)
     EVT_PAINT(CTreeCompWindow::OnPaint)
     EVT_SCROLLWIN(CTreeCompWindow::OnScroll)
     EVT_TREE_ITEM_EXPANDED(-1, CTreeCompWindow::OnExpand)
     EVT_TREE_ITEM_COLLAPSED(-1, CTreeCompWindow::OnExpand)
-    END_EVENT_TABLE()
+END_EVENT_TABLE()
 
     CTreeCompWindow::CTreeCompWindow(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
 :wxWindow(parent, id, pos, sz, style)
@@ -110,11 +119,13 @@ void CTreeCompWindow::OnPaint(wxPaintEvent & event)
 
 void CTreeCompWindow::OnScroll(wxScrollWinEvent & event)
 {
-    if (!m_treeCtrl) {
-        return;
-    }
+    wxLogVerbose(wxT("  CTreeCompWindow::OnScroll"));
     if (event.GetOrientation() == wxHORIZONTAL) {
         event.Skip();
+        return;
+    }
+    if (!m_treeCtrl) {
+        wxLogVerbose(wxT("No tree to scroll"));
         return;
     }
     Refresh();
@@ -122,6 +133,7 @@ void CTreeCompWindow::OnScroll(wxScrollWinEvent & event)
 
 void CTreeCompWindow::OnExpand(wxTreeEvent & event)
 {
+    wxLogVerbose(wxT("CTreeCompWindow::OnExpand"));
     Refresh();
 }
 
@@ -132,5 +144,6 @@ wxTreeCtrl *CTreeCompWindow::GetTreeCtrl() const
 
 void CTreeCompWindow::SetTreeCtrl(wxTreeCtrl * treeCtrl)
 {
+    wxLogVerbose(wxT("CTreeCompWindow::SetTreeCtrl"));
     m_treeCtrl = treeCtrl;
 }

@@ -39,10 +39,17 @@
 
 /*
  * $Log: bldoptdlg.cpp,v $
+ * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
  */
+
+#ifdef __GNUG__
+    #pragma implementation "bldoptdlg.h"
+#endif
 
 #include <wx/valgen.h>
 #include <wx/dir.h>
@@ -55,9 +62,10 @@ IMPLEMENT_CLASS(CBuildOptionsDialog, wxPanel)
 
 BEGIN_EVENT_TABLE(CBuildOptionsDialog, wxPanel)
     EVT_BUTTON(ID_BROWSE_BUTTON, CBuildOptionsDialog::OnBrowseBuildPath)
-    EVT_BUTTON(ID_BUTTON_SRCDIR, CBuildOptionsDialog::OnButtonSourceDir)
-    EVT_TEXT_ENTER(ID_COMBO_SRCDIR, OnPlatformEnter)
-    EVT_TEXT(ID_ENTRY_SRCDIR, OnSourceDirChange) 
+    EVT_BUTTON(ID_BROWSE_SRCDIR, CBuildOptionsDialog::OnBrowseSourceDir)
+    EVT_BUTTON(ID_BROWSE_INSTALL, CBuildOptionsDialog::OnBrowseInstallPath)
+    EVT_TEXT_ENTER(ID_COMBO_SRCDIR, CBuildOptionsDialog::OnPlatformEnter)
+    EVT_TEXT(ID_ENTRY_SRCDIR, CBuildOptionsDialog::OnSourceDirChange) 
 END_EVENT_TABLE()
 
 CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
@@ -67,20 +75,38 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
 
     wxStaticBox *grpSource = new wxStaticBox(this, -1, wxT("Source Directory"));
     m_entSourceDir = new wxTextCtrl(this, ID_ENTRY_SRCDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_source_dir));
-    wxButton *btnSourceDir = new wxButton(this, ID_BUTTON_SRCDIR, wxT("&Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    wxButton *btnSourceDir = new wxButton(this, ID_BROWSE_SRCDIR, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
     wxStaticText *lblPlatform = new wxStaticText(this, -1, wxT("Platform"));
     m_cbxPlatform = new wxComboBox(this, ID_COMBO_SRCDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0, wxGenericValidator(&opts->m_platform));
 
-    wxStaticBox *groupPath = new wxStaticBox(this, -1, wxT("Build Directory"));
-    wxTextCtrl *entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_buildpath));
-    wxButton *btnBrowse = new wxButton(this, ID_BROWSE_BUTTON, wxT("&Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticBox *grpBuild = new wxStaticBox(this, -1, wxT("Build Directory"));
+    m_entBuildDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_buildpath));
+    wxButton *btnBrowseBuild = new wxButton(this, ID_BROWSE_BUTTON, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+
+    wxStaticBox *grpInclude = new wxStaticBox(this, -1, wxT("Include Directories"));
+    wxStaticText *lblFirst = new wxStaticText(this, -1, wxT("First"));
+    m_entInclFirstDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_firstidir));
+    wxButton *btnBrowseInclFirst = new wxButton(this, ID_BROWSE_INCLFIRST, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+    wxStaticText *lblLast = new wxStaticText(this, -1, wxT("Last"));
+    m_entInclLastDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_lastidir));
+    wxButton *btnBrowseInclLast = new wxButton(this, ID_BROWSE_INCLLAST, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+
+    wxStaticBox *grpInstall = new wxStaticBox(this, -1, wxT("Install Directory"));
+    m_entInstallDir = new wxTextCtrl(this, ID_PATH_INSTALL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_lib_dir));
+    wxButton *btnBrowseInstall = new wxButton(this, ID_BROWSE_INSTALL, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
 
     wxSizer *szrSource = new wxStaticBoxSizer(grpSource, wxVERTICAL);
     wxSizer *szrSourceDir = new wxBoxSizer(wxHORIZONTAL);
     wxSizer *szrPlatform = new wxBoxSizer(wxHORIZONTAL);
-    wxSizer *sizerPath = new wxStaticBoxSizer(groupPath, wxHORIZONTAL);
+
+    wxSizer *szrInclude = new wxStaticBoxSizer(grpInclude, wxVERTICAL);
+    wxSizer *szrInclFirst = new wxBoxSizer(wxHORIZONTAL);
+    wxSizer *szrInclLast = new wxBoxSizer(wxHORIZONTAL);
+
+    wxSizer *sizerBuildDir = new wxStaticBoxSizer(grpBuild, wxHORIZONTAL);
+    wxSizer *sizerInstallDir = new wxStaticBoxSizer(grpInstall, wxHORIZONTAL);
 
     szrSourceDir->Add(m_entSourceDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
     szrSourceDir->Add(btnSourceDir, 0, wxALIGN_RIGHT | wxGROW | wxALL, 5);
@@ -91,10 +117,30 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     szrSource->Add(szrSourceDir, 0, wxGROW | wxALL, 5);
     szrSource->Add(szrPlatform, 0, wxGROW | wxALL, 5);
 
-    sizerPath->Add(entryPath, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
-    sizerPath->Add(btnBrowse, 0, wxALIGN_RIGHT | wxALL, 5);
+
+
+    szrInclFirst->Add(lblFirst, 0, wxALIGN_LEFT | wxALL, 5);
+    szrInclFirst->Add(m_entInclFirstDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    szrInclFirst->Add(btnBrowseInclFirst, 0, wxALIGN_RIGHT | wxALL, 5);
+
+    szrInclLast->Add(lblLast, 0, wxALIGN_LEFT | wxALL, 5);
+    szrInclLast->Add(m_entInclLastDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    szrInclLast->Add(btnBrowseInclLast, 0, wxALIGN_RIGHT | wxALL, 5);
+
+    szrInclude->Add(szrInclFirst, 0, wxGROW | wxALL, 5);
+    szrInclude->Add(szrInclLast, 0, wxGROW | wxALL, 5);
+
+
+    sizerBuildDir->Add(m_entBuildDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    sizerBuildDir->Add(btnBrowseBuild, 0, wxALIGN_RIGHT | wxALL, 5);
+
+    sizerInstallDir->Add(m_entInstallDir, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    sizerInstallDir->Add(btnBrowseInstall, 0, wxALIGN_RIGHT | wxALL, 5);
+
     sizerTop->Add(szrSource, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
-    sizerTop->Add(sizerPath, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
+    sizerTop->Add(szrInclude, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
+    sizerTop->Add(sizerBuildDir, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
+    sizerTop->Add(sizerInstallDir, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
 
     SetAutoLayout(true);
     SetSizer(sizerTop);
@@ -131,7 +177,7 @@ void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& event)
     }
 }
 
-void CBuildOptionsDialog::OnButtonSourceDir(wxCommandEvent& event)
+void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& event)
 {
     wxString path = m_entSourceDir->GetValue();
 
@@ -145,6 +191,22 @@ void CBuildOptionsDialog::OnButtonSourceDir(wxCommandEvent& event)
         m_entSourceDir->SetValue(val);
     }
 }
+
+void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& event)
+{
+    wxString path = m_entInstallDir->GetValue();
+
+    wxDirDialog dlg(this, wxT("Choose an install directory"), path, wxDD_NEW_DIR_BUTTON);
+
+    if (dlg.ShowModal() == wxID_OK) {
+        wxString val = dlg.GetPath();
+#ifdef __WXMSW__
+        val.Replace(wxT("\\"), wxT("/"));
+#endif
+        m_entInstallDir->SetValue(val);
+    }
+}
+
 
 void CBuildOptionsDialog::OnPlatformEnter(wxCommandEvent& event)
 {

@@ -1,5 +1,5 @@
-#ifndef SETTINGS_H_
-#define SETTINGS_H_
+#ifndef APPOPTDLG_H_
+#define APPOPTDLG_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,46 +42,31 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/08/18 13:34:20  haraldkipp
+ * Revision 1.1  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
- *
- * Revision 1.1  2004/08/03 15:04:59  haraldkipp
- * Another change of everything
  *
  */
 
 #include <wx/wx.h>
 #include <wx/config.h>
 
-class CSettings: public wxObject
+class CAppOptionsDialog: public wxPanel
 {
-DECLARE_DYNAMIC_CLASS(CSettings)
+DECLARE_CLASS(CAppOptionsDialog)
 public:
-    CSettings();
-    ~CSettings();
+    CAppOptionsDialog(wxWindow* parent);
+    virtual bool TransferDataToWindow();
+    virtual bool TransferDataFromWindow();
+private:
+    wxComboBox *m_cbxProgrammer;
+    wxTextCtrl *m_entAppDir;
+    void OnBrowseAppDir(wxCommandEvent& event);
+    void OnProgrammerEnter(wxCommandEvent& event);
+    void OnAppDirChange(wxCommandEvent& event);
+    void PopulateProgrammer();
 
-    bool Save();
+    DECLARE_EVENT_TABLE()
 
-    wxString m_configname;
-    wxString m_configname_default;
-    wxString m_repositoryname;
-    wxString m_repositoryname_default;
-    wxString m_firstidir;
-    wxString m_firstidir_default;
-    wxString m_lastidir;
-    wxString m_lastidir_default;
-    wxString m_buildpath;
-    wxString m_buildpath_default;
-    wxString m_lib_dir;
-    wxString m_lib_dir_default;
-    wxString m_source_dir;
-    wxString m_source_dir_default;
-    wxString m_platform;
-    wxString m_platform_default;
-    wxString m_app_dir;
-    wxString m_app_dir_default;
-    wxString m_programmer;
-    wxString m_programmer_default;
 };
 
 #endif

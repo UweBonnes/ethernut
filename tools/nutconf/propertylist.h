@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -57,7 +60,7 @@
 
 class CPropertyList:public wxListCtrl {
   public:
-    enum nutFieldType {
+    enum nutPropertyType {
         nutEnabled,
         nutActive,
         nutRequires,
@@ -74,8 +77,7 @@ class CPropertyList:public wxListCtrl {
     void OnRightClick(wxMouseEvent & event);
     void OnDoubleClick(wxMouseEvent & event);
 
-    int SetItem(nutFieldType f, const wxString & value);
-    int SetItem(const wxString & item, const wxString & value, int nInsertAs, int nRepeat = 1);
+    int SetItem(nutPropertyType type, const wxString & value);
 
     void RefreshValue();
     void Fill(CConfigItem * pti);
@@ -85,10 +87,9 @@ class CPropertyList:public wxListCtrl {
      DECLARE_EVENT_TABLE()
      DECLARE_CLASS(CPropertyList)
 
-    int m_nFirstProperty;
     CConfigItem *m_pti;
 
-    static const wxChar *sm_fieldTypeImage[nutMAXFIELDTYPE];
+    static const wxChar *m_propertyName[nutMAXFIELDTYPE];
 };
 
 

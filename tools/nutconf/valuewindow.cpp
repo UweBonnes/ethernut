@@ -39,6 +39,9 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.3  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -58,13 +61,13 @@
 
 IMPLEMENT_CLASS(CValueWindow, CTreeCompWindow)
 
-    BEGIN_EVENT_TABLE(CValueWindow, CTreeCompWindow)
+BEGIN_EVENT_TABLE(CValueWindow, CTreeCompWindow)
     EVT_PAINT(CValueWindow::OnPaint)
     EVT_MOUSE_EVENTS(CValueWindow::OnMouseEvent)
     EVT_SCROLLWIN(CValueWindow::OnScroll)
     EVT_TREE_ITEM_EXPANDED(-1, CValueWindow::OnExpand)
     EVT_TREE_ITEM_COLLAPSED(-1, CValueWindow::OnExpand)
-    END_EVENT_TABLE();
+END_EVENT_TABLE();
 
 CValueWindow::CValueWindow(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
 :  CTreeCompWindow(parent, id, pos, sz, style)
@@ -147,6 +150,7 @@ void CValueWindow::OnScroll(wxScrollWinEvent & event)
 
 void CValueWindow::OnExpand(wxTreeEvent & event)
 {
+    wxLogVerbose(wxT("CValueWindow::OnExpand"));
     CTreeCompWindow::OnExpand(event);
 
     EndEditing();

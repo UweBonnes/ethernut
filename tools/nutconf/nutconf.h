@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/08/18 13:34:20  haraldkipp
+ * Now working on Linux
+ *
  * Revision 1.3  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -53,6 +56,8 @@
 #include "settings.h"
 #include "nutconfdoc.h"
 #include "mainframe.h"
+
+#define VERSION "0.9.1"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
@@ -68,15 +73,15 @@ class NutConfApp:public wxApp {
     CNutConfDoc *m_currentDoc;
     CMainFrame *m_mainFrame;
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
+    void SetStatusText(const wxString & text);
     bool Launch(const wxString & strFileName, const wxString & strViewer);
 
     CSettings* GetSettings();
+    bool Build(const wxString &target = wxT("all"));
 
   protected:
     CSettings* m_settings;
-
+    wxString m_initialPath;
 };
 
 
