@@ -35,7 +35,6 @@
  *
  * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
  *
- * \todo provide CTRL-C as kill cmd (somehow blocked because of raw i/o)
  * \todo check block read implementation
  * \todo allow native filee accesss using names like "FAT_C:/.." \see fs/fat.c
  * \todo implement cooked mode and use it as default mode
@@ -359,8 +358,8 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         // make raw
         if (tcgetattr(nativeFile, &t) == 0) {
 
-            /* set input mode (non-canonical, no echo,...) */
-            t.c_lflag = 0;
+            /* set input mode (non-canonical, no echo,...) but allow INTR signal */
+            t.c_lflag = ISIG;
             t.c_cc[VTIME] = 0;  /* inter-character timer unused */
             t.c_cc[VMIN] = 0;   /* non-blocking read */
 

@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.94 2004/08/04 16:36:05 haraldkipp Exp $
+$Id: ChangeLog,v 1.95 2004/08/04 22:12:07 freckle Exp $
+
+2004-08-05  Matthias Ringwald <mringwal@inf.ethz.ch>
+    * dev/unix_devs.c: CTRL-C on terminal terminates running
+    unix emulation apps nows
 
 2004-08-03  Harald Kipp  <harald.kipp@egnite.de>
 
