@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/09/08 10:53:14  haraldkipp
+ * Our first device for the EB40A
+ *
  * Revision 1.3  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -49,6 +52,7 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <sys/device.h>
 #include <dev/uart.h>
 
@@ -75,6 +79,9 @@ extern NUTDEVICE devDebug1;
 extern NUTDEVICE devDebug2;
 
 #elif defined(__arm__)
+#ifdef MCU_AT91R40008
+extern NUTDEVICE devDebug1;
+#endif
 #elif defined(__m68k__)
 #endif
 
