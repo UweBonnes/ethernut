@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.153 2005/01/24 22:33:47 freckle Exp $
+$Id: ChangeLog,v 1.154 2005/01/26 09:56:02 freckle Exp $
+
+2005-01-26  Matthias Ringwald <mringwal@inf.ethz.ch> 
+	
+	* os/tracer.c, include/sys/tracer.h: fixed includes
+	and prototypes 
 
 2005-01-21  Matthias Ringwald <mringwal@inf.ethz.ch> 
 	
