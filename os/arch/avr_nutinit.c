@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/07/09 14:23:13  freckle
+ * Allow setting of NUTRAMEND by giving it as a compiler flag
+ *
  * Revision 1.5  2004/05/25 17:13:48  drsung
  * Bit name SRW10 is not defined for atmega103, so added some defines to make it compatible.. :-X
  *
@@ -50,7 +53,9 @@
  *
  */
 
+#ifndef NUTRAMEND
 #define NUTRAMEND ((volatile u_char *)0x7FFF)
+#endif
 
 #ifdef __GNUC__
 /*
