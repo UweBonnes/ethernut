@@ -8,7 +8,9 @@
 //                                                                          //
 //--------------------------------------------------------------------------//
 
+#ifdef __IMAGECRAFT__
 char * strtok_r(  char ** pp_str, const char * p_delim );
+#endif
 char * strsep_r(  char ** pp_str, const char * p_delim );
 char * strsep_rs( char ** pp_str, const char * p_delim, char * p_term );
 

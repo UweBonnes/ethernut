@@ -162,7 +162,12 @@ char *strsep_r(char **pp_str, const char *p_delim)
  * delimiter character (or NULL, if the end of the string was reached) is 
  * stored in *str. The first character not a delimiter character from the original 
  * value of *str is returned.
+ *
+ * \deprecated This function is supported by avrlibc, which uses different
+ *             parameters. It's still available for ICCAVR, but should be
+ *             avoided for portability reasons.
  */
+#ifdef __IMAGECRAFT__
 char *strtok_r(char **pp_str, const char *p_delim)
 {
     register const char *sp;
@@ -215,6 +220,7 @@ char *strtok_r(char **pp_str, const char *p_delim)
     //
     return end_tok(pp_str, p_delim, NULL);
 }
+#endif
 
 /*@}*/
 
