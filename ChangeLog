@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.60 2004/04/15 19:32:29 drsung Exp $
+$Id: ChangeLog,v 1.61 2004/04/25 17:13:03 drsung Exp $
+
+2004-04-25  Oliver Schulz  <olischulz@web.de>
+
+	* include/dev/irqstack.h, dev/irqstack.h, os/arch/avr_thread.c: 
+	Modified to be compatible with nested interrupts. Every time a interrupt 
+	occurs, a counter is incremented. If the counter is zero, the stack 
+	switch is performed. After the isr returns, the counter is decremented. 
+	An additional variable _irqstackdec defined in os/arch/avr_thread.c. The 
+	stack size of each new thread will be decremented by this value.
+
 
 2004-04-15  Oliver Schulz  <olischulz@web.de>
 
