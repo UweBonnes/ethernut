@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.8  2005/01/22 19:18:37  haraldkipp
+-- Changed AVR port configuration names from PORTx to AVRPORTx.
+-- Added C++ support contributed by Oliver Schulz (MPI).
+--
 -- Revision 1.7  2004/11/24 14:47:24  haraldkipp
 -- Empty items allow to disable choices
 --
@@ -59,9 +63,7 @@
 --
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
-avr_port_choice = { " ", "PORTA", "PORTB", "PORTC", "PORTD", "PORTE", "PORTF", "PORTG" }
-avr_pin_choice = { " ", "PINA", "PINB", "PINC", "PIND", "PINE", "PINF", "PING" }
-avr_ddr_choice = { " ", "DDRA", "DDRB", "DDRC", "DDRD", "DDRE", "DDRF", "DDRG" }
+avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG" }
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
 arm_ld_choice = { " ", "s3c4510b-ram", "eb40a_ram", "gbaxport2" }
@@ -136,5 +138,13 @@ repository =
         requires = { "HW_TARGET" },
         subdir = "fs",
         script = "fs/fs.nut"
+    },
+    {
+        name = "nutcpp",
+        brief = "C++ runtime extensions",
+        description = "C++ runtime extensions",
+        requires = { "HW_TARGET", "TOOL_CXX" },
+        subdir = "cpp",
+        script = "cpp/cpp.nut"
     }
 }
