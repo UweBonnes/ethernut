@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/08 11:12:59  haraldkipp
+ * Debug output added.
+ *
  * Revision 1.4  2004/01/15 08:02:35  drsung
  * Copyright added
  *
@@ -40,26 +43,51 @@
 #include <sys/timer.h>
 #include <sys/uart.h>
 
-#include <dev/chat.h>
-
 #include <stdlib.h>
 #include <string.h>
 #include <io.h>
 
+#include <dev/chat.h>
+
 u_char *chat_report;
+
+#ifdef NUTDEBUG
+
+static FILE *__chat_trs;        /*!< \brief Chat trace output stream. */
+static u_char __chat_trf;       /*!< \brief Chat trace flags. */
+
+/*!
+ * \brief Control chat tracing.
+ *
+ * \param stream Pointer to a previously opened stream or null to 
+ *               disable trace output.
+ * \param flags  Flags to enable specific traces.
+ */
+void NutTraceChat(FILE * stream, u_char flags)
+{
+    if (stream)
+        __chat_trs = stream;
+    if (__chat_trs) {
+        static prog_char dbgfmt[] = "Chat trace flags=0x%02X\n";
+        __chat_trf = flags;
+        fprintf_P(__chat_trs, dbgfmt, flags);
+    } else
+        __chat_trf = 0;
+}
+
+#endif
 
 /*
  * Special version of strchr, handling escaped characters.
  */
 static char *strechr(CONST char *str, int c)
 {
-    while(*str) {
-        if(*str == '\\') {
-            if(*++str)
+    while (*str) {
+        if (*str == '\\') {
+            if (*++str)
                 str++;
-        }
-        else if(*str == c)
-            return (char *)str;
+        } else if (*str == c)
+            return (char *) str;
         else
             str++;
     }
@@ -77,31 +105,75 @@ static char *strechr(CONST char *str, int c)
  *         for an expected string, or the index of an abort string 
  *         plus 4, if one has been received. 
  */
-int NutChatExpectString(NUTCHAT *ci, char *str)
+int NutChatExpectString(NUTCHAT * ci, char *str)
 {
     char ch;
     u_char m;
     u_char i;
     char *cp = str;
 
-    while(*cp) {
-        if(_read(ci->chat_fd, &ch, 1) != 1)
+#ifdef NUTDEBUG
+    if (__chat_trf) {
+        static prog_char dbgfmt[] = "Expect '%s', got '";
+        fprintf_P(__chat_trs, dbgfmt, str);
+    }
+#endif
+
+    while (*cp) {
+
+        /*
+         * Read the next character. Return on timeout.
+         */
+        if (_read(ci->chat_fd, &ch, 1) != 1) {
+#ifdef NUTDEBUG
+            if (__chat_trf) {
+                static prog_char dbgmsg[] = "' TIMEOUT\n";
+                fputs_P(dbgmsg, __chat_trs);
+            }
+#endif
             return 3;
-        if(ch != *cp)
+        }
+#ifdef NUTDEBUG
+        if (__chat_trf) {
+            if (ch > 31 && ch < 127) {
+                fputc(ch, __chat_trs);
+            } else {
+                fprintf(__chat_trs, "\\x%02X", ch);
+            }
+        }
+#endif
+        /*
+         * If the character doesn't match the next expected one,
+         * then restart from the beginning of the expected string.
+         */
+        if (ch != *cp) {
             cp = str;
-        if(ch == *cp)
+        }
+
+        /*
+         * If the character matched, advance the pointer into
+         * the expected string.
+         */
+        if (ch == *cp) {
             cp++;
+        }
 
         /*
          * Check for abort strings.
          */
-        for(i = 0; i < ci->chat_aborts; i++) {
+        for (i = 0; i < ci->chat_aborts; i++) {
             m = ci->chat_abomat[i];
-            if(ch == ci->chat_abort[i][m]) {
-                if(ci->chat_abort[i][++m] == 0)
+            if (ch == ci->chat_abort[i][m]) {
+                if (ci->chat_abort[i][++m] == 0) {
+#ifdef NUTDEBUG
+                    if (__chat_trf) {
+                        static prog_char dbgmsg[] = "' ABORT\n";
+                        fputs_P(dbgmsg, __chat_trs);
+                    }
+#endif
                     return i + 4;
-            }
-            else
+                }
+            } else
                 m = (ch == ci->chat_abort[i][0]);
             ci->chat_abomat[i] = m;
         }
@@ -111,35 +183,50 @@ int NutChatExpectString(NUTCHAT *ci, char *str)
          */
         if (ci->chat_report_state > 0) {
             m = ci->chat_repmat;
-            if (ci->chat_report_state == 2)
-                chat_report[m++]=ch;
-            else if (ch == ci->chat_report_search[m]) {
-                chat_report[m++]=ch;
+            if (ci->chat_report_state == 2) {
+                chat_report[m++] = ch;
+            } else if (ch == ci->chat_report_search[m]) {
+                chat_report[m++] = ch;
                 if (ci->chat_report_search[m] == 0) {
-                    ci->chat_report_state=2;
+                    ci->chat_report_state = 2;
                 }
-            }
-            else
+            } else {
                 m = (ch == ci->chat_report_search[0]);
+            }
             ci->chat_repmat = m;
         }
     }
-    
+
     /*
      * Read the remainder of the string before NutChatSendString clears it
      */
     if (ci->chat_report_state == 2) {
-        m = ci->chat_repmat;      // not needed... (but not nice to remove it)
+        m = ci->chat_repmat;    /* not needed... (but not nice to remove it) */
         while (m < CHAT_MAX_REPORT_SIZE) {
-            if(_read(ci->chat_fd, &ch, 1) != 1)
-                return 3;
-            if (ch < 0x20)
+            if (_read(ci->chat_fd, &ch, 1) != 1 || ch < ' ') {
                 break;
-            chat_report[m++]=ch;
+            }
+            chat_report[m++] = ch;
+
+#ifdef NUTDEBUG
+            if (__chat_trf) {
+                if (ch > 31 && ch < 127) {
+                    fputc(ch, __chat_trs);
+                } else {
+                    fprintf(__chat_trs, "\\x%02X", ch);
+                }
+            }
+#endif
         }
-        ci->chat_report_state=0;    // Only find first occurence
-        chat_report[m]=0;
+        ci->chat_report_state = 0;      /* Only find first occurence */
+        chat_report[m] = 0;
     }
+#ifdef NUTDEBUG
+    if (__chat_trf) {
+        static prog_char dbgmsg[] = "'\n";
+        fputs_P(dbgmsg, __chat_trs);
+    }
+#endif
 
     return 0;
 }
@@ -154,18 +241,24 @@ static int NutChatSendString(int fd, char *str)
     u_char skip;
     char ch;
 
+#ifdef NUTDEBUG
+    if (__chat_trf) {
+        static prog_char dbgfmt[] = "Send '%s'\n";
+        fprintf_P(__chat_trs, dbgfmt, str);
+    }
+#endif
+
     /* Flush input buffer. */
     _read(fd, 0, 0);
-    while(*str && eol && rc == 0) {
+    while (*str && eol && rc == 0) {
         ch = *str++;
         skip = 0;
-        if(ch == '^') {
+        if (ch == '^') {
             ch = *str++;
             ch &= 0x1f;
-        }
-        else if(ch == '\\') {
+        } else if (ch == '\\') {
             ch = *str++;
-            switch(ch) {
+            switch (ch) {
             case 'b':
                 ch = '\b';
                 break;
@@ -197,12 +290,12 @@ static int NutChatSendString(int fd, char *str)
                 ch = '\t';
                 break;
             default:
-                if(ch >= '0' && ch <= '7') {
+                if (ch >= '0' && ch <= '7') {
                     ch &= 0x07;
-                    if(*str >= '0' && *str <= '7') {
+                    if (*str >= '0' && *str <= '7') {
                         ch <<= 3;
                         ch |= *str++ & 0x07;
-                        if(*str >= '0' && *str <= '7') {
+                        if (*str >= '0' && *str <= '7') {
                             ch <<= 3;
                             ch |= *str++ & 0x07;
                         }
@@ -211,17 +304,17 @@ static int NutChatSendString(int fd, char *str)
                 break;
             }
         }
-        if(skip)
+        if (skip)
             skip = 0;
         else {
             NutDelay(10);
-            if(_write(fd, &ch, 1) != 1)
+            if (_write(fd, &ch, 1) != 1)
                 rc = 2;
             else
                 _write(fd, 0, 0);
         }
     }
-    if(eol && rc == 0 && _write(fd, "\r", 1) != 1)
+    if (eol && rc == 0 && _write(fd, "\r", 1) != 1)
         rc = 2;
     else
         _write(fd, 0, 0);
@@ -238,7 +331,7 @@ static int NutChatSendString(int fd, char *str)
  *         for an expected string, or the index of an abort string plus
  *         4, if one has been received. 
  */
-int NutChatExpect(NUTCHAT *ci, char *str)
+int NutChatExpect(NUTCHAT * ci, char *str)
 {
     int rc = 0;
     char *reply;
@@ -247,17 +340,17 @@ int NutChatExpect(NUTCHAT *ci, char *str)
     /*
      * Process special keywords.
      */
-    if(strcmp(str, "ABORT") == 0) {
+    if (strcmp(str, "ABORT") == 0) {
         ci->chat_arg = CHAT_ARG_ABORT;
         return 0;
     }
-    if(strcmp(str, "TIMEOUT") == 0) {
+    if (strcmp(str, "TIMEOUT") == 0) {
         ci->chat_arg = CHAT_ARG_TIMEOUT;
         return 0;
     }
-    if(strcmp(str, "REPORT") == 0) {
-        ci->chat_repmat=0;                // not needed ???
-        ci->chat_report_state=1;
+    if (strcmp(str, "REPORT") == 0) {
+        ci->chat_repmat = 0;    /* not needed ??? */
+        ci->chat_report_state = 1;
         ci->chat_arg = CHAT_ARG_REPORT;
         return 0;
     }
@@ -265,18 +358,17 @@ int NutChatExpect(NUTCHAT *ci, char *str)
     /*
      * Process expected string.
      */
-    while(str) {
-        if((reply = strechr(str, '-')) != 0) {
+    while (str) {
+        if ((reply = strechr(str, '-')) != 0) {
             *reply++ = 0;
-            if((subexpect = strechr(reply, '-')) != 0)
+            if ((subexpect = strechr(reply, '-')) != 0)
                 *subexpect++ = 0;
-        }
-        else
+        } else
             subexpect = 0;
 
-        if((rc = NutChatExpectString(ci, str)) != 3 || reply == 0)
+        if ((rc = NutChatExpectString(ci, str)) != 3 || reply == 0)
             break;
-        if((rc = NutChatSendString(ci->chat_fd, reply)) != 0)
+        if ((rc = NutChatSendString(ci->chat_fd, reply)) != 0)
             break;
         str = subexpect;
     }
@@ -295,7 +387,7 @@ int NutChatExpect(NUTCHAT *ci, char *str)
  *         for an expected string, or the index of an abort string plus
  *         4, if one has been received. 
  */
-int NutChatSend(NUTCHAT *ci, char *str)
+int NutChatSend(NUTCHAT * ci, char *str)
 {
     char *cp;
     char ch;
@@ -311,13 +403,13 @@ int NutChatSend(NUTCHAT *ci, char *str)
             return 1;
         cp = malloc(strlen(str) + 1);
         ci->chat_abort[ci->chat_aborts++] = cp;
-        while(*str) {
+        while (*str) {
             ch = *str++;
-            if(ch == '^')
+            if (ch == '^')
                 *cp = *str++ & 0x1f;
-            else if(ch == '\\') {
+            else if (ch == '\\') {
                 ch = *str++;
-                switch(ch) {
+                switch (ch) {
                 case 'b':
                     *cp++ = '\b';
                     break;
@@ -334,23 +426,22 @@ int NutChatSend(NUTCHAT *ci, char *str)
                     *cp++ = '\t';
                     break;
                 default:
-                    if(ch >= '0' && ch <= '7') {
+                    if (ch >= '0' && ch <= '7') {
                         ch &= 0x07;
-                        if(*str >= '0' && *str <= '7') {
+                        if (*str >= '0' && *str <= '7') {
                             ch <<= 3;
                             ch |= *str++ & 0x07;
-                            if(*str >= '0' && *str <= '7') {
+                            if (*str >= '0' && *str <= '7') {
                                 ch <<= 3;
                                 ch |= *str++ & 0x07;
                             }
                         }
                     }
-                    if(ch)
+                    if (ch)
                         *cp++ = ch;
                     break;
                 }
-            }
-            else
+            } else
                 *cp++ = ch;
         }
         *cp = 0;
@@ -364,7 +455,7 @@ int NutChatSend(NUTCHAT *ci, char *str)
         ci->chat_arg = CHAT_ARG_SEND;
 
         lv = atol(str) * 1000L;
-        if(lv <= 0)
+        if (lv <= 0)
             lv = CHAT_DEFAULT_TIMEOUT;
 
         _ioctl(ci->chat_fd, UART_SETREADTIMEOUT, &lv);
@@ -377,11 +468,11 @@ int NutChatSend(NUTCHAT *ci, char *str)
      */
     if (ci->chat_arg == CHAT_ARG_REPORT) {
         ci->chat_arg = CHAT_ARG_SEND;
-        chat_report = malloc(CHAT_MAX_REPORT_SIZE+1);
+        chat_report = malloc(CHAT_MAX_REPORT_SIZE + 1);
         cp = malloc(strlen(str) + 1);
         ci->chat_report_search = cp;
-        while(*str)
-            *cp++ = *str++;       // Do it the easy way, not as smart and thorough as the abort string...
+        while (*str)
+            *cp++ = *str++;     /* Do it the easy way, not as smart and thorough as the abort string... */
         *cp = 0;
 
         return 0;
@@ -403,7 +494,7 @@ NUTCHAT *NutChatCreate(int fd)
 {
     NUTCHAT *ci;
 
-    if((ci = malloc(sizeof(NUTCHAT))) != 0) {
+    if ((ci = malloc(sizeof(NUTCHAT))) != 0) {
         memset(ci, 0, sizeof(NUTCHAT));
         ci->chat_fd = fd;
     }
@@ -416,12 +507,12 @@ NUTCHAT *NutChatCreate(int fd)
  * \param ci Pointer to a NUTCHAT structure, which must have been 
  *           created by NutChatCreate().
  */
-void NutChatDestroy(NUTCHAT *ci)
+void NutChatDestroy(NUTCHAT * ci)
 {
     u_char i;
 
-    if(ci) {
-        for(i = 0; i < ci->chat_aborts; i++)
+    if (ci) {
+        for (i = 0; i < ci->chat_aborts; i++)
             free(ci->chat_abort[i]);
         free(ci);
     }
@@ -448,7 +539,7 @@ static int NutChatProc(int fd, char *script)
     /*
      * Initialize the chat info structure.
      */
-    if((ci = NutChatCreate(fd)) == 0)
+    if ((ci = NutChatCreate(fd)) == 0)
         return 2;
 
     /*
@@ -465,13 +556,12 @@ static int NutChatProc(int fd, char *script)
      * This loop splits up the chat string into arguments and 
      * alternating calls NutChatSend and NutChatExpect.
      */
-    while(*script && rc == 0) {
+    while (*script && rc == 0) {
 
         /*
          * Skip leading spaces.
          */
-        if(*script == ' ' || *script == '\t' ||
-           *script == '\r' || *script == '\n') {
+        if (*script == ' ' || *script == '\t' || *script == '\r' || *script == '\n') {
             script++;
             continue;
         }
@@ -479,7 +569,7 @@ static int NutChatProc(int fd, char *script)
         /*
          * Collect a quoted argument.
          */
-        if(*script == '"' || *script == '\'') {
+        if (*script == '"' || *script == '\'') {
             char quote = *script++;
 
             arg = script;
@@ -500,18 +590,17 @@ static int NutChatProc(int fd, char *script)
          */
         else {
             arg = script;
-            while (*script && *script != ' ' && *script != '\t' &&
-                   *script != '\r' && *script != '\n')
+            while (*script && *script != ' ' && *script != '\t' && *script != '\r' && *script != '\n')
                 ++script;
         }
-        
+
         if (*script)
             *script++ = 0;
 
         /*
          * Either send or expect the collected argument.
          */
-        if(rc == 0) {
+        if (rc == 0) {
             if (sendflg)
                 rc = NutChatSend(ci, arg);
             else
@@ -537,7 +626,7 @@ static int NutChatProc(int fd, char *script)
 /*!
  * \brief Execute a conversational exchange with a serial device.
  *
- * Its primary purpose is to establish a PPP connection.
+ * Its primary purpose is to establish a modem connection.
  *
  * \param fd Descriptor of a previously opened device.
  * \param script Pointer to a string containing the chat script.
@@ -555,7 +644,7 @@ int NutChat(int fd, CONST char *script)
     /*
      * Work with a local copy of the chat string.
      */
-    if((buf = malloc(strlen(script) + 1)) != 0) {
+    if ((buf = malloc(strlen(script) + 1)) != 0) {
         strcpy(buf, script);
         rc = NutChatProc(fd, buf);
         free(buf);
@@ -582,7 +671,7 @@ int NutChat_P(int fd, PGM_P script)
     /*
      * Work with a local copy of the chat string.
      */
-    if((buf = malloc(strlen_P(script) + 1)) != 0) {
+    if ((buf = malloc(strlen_P(script) + 1)) != 0) {
         strcpy_P(buf, script);
         rc = NutChatProc(fd, buf);
         free(buf);
