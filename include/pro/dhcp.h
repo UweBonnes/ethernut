@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/14 17:51:05  drsung
+ * Fix for Win2k DHCP server applied. Thanks to Damian Slee
+ *
  * Revision 1.2  2003/08/05 20:20:36  haraldkipp
  * Comments added
  *
@@ -90,25 +93,26 @@
  * \brief DHCP protocol definitions.
  */
 
-#define DHCP_SERVERPORT     67
-#define DHCP_CLIENTPORT     68
+#define DHCP_SERVERPORT      67
+#define DHCP_CLIENTPORT      68
 
 /* See RFC 2131. */
-#define DHCPOPT_PAD         0
-#define DHCPOPT_NETMASK     1
-#define DHCPOPT_GATEWAY     3
-#define DHCPOPT_DNS         6
-#define DHCPOPT_HOSTNAME    12
-#define DHCPOPT_DOMAIN      15
-#define DHCPOPT_BROADCAST   28
-#define DHCPOPT_REQESTIP    50
-#define DHCPOPT_LEASETIME   51
-#define DHCPOPT_MSGTYPE     53
-#define DHCPOPT_SID         54
-#define DHCPOPT_MAXMSGSIZE  57
-#define DHCPOPT_RENEWALTIME 58
-#define DHCPOPT_REBINDTIME  59
-#define DHCPOPT_END         255
+#define DHCPOPT_PAD          0
+#define DHCPOPT_NETMASK      1
+#define DHCPOPT_GATEWAY      3
+#define DHCPOPT_DNS          6
+#define DHCPOPT_HOSTNAME     12
+#define DHCPOPT_DOMAIN       15
+#define DHCPOPT_BROADCAST    28
+#define DHCPOPT_REQESTIP     50
+#define DHCPOPT_LEASETIME    51
+#define DHCPOPT_MSGTYPE      53
+#define DHCPOPT_SID          54
+#define DHCPOPT_PARAMREQUEST 55
+#define DHCPOPT_MAXMSGSIZE   57
+#define DHCPOPT_RENEWALTIME  58
+#define DHCPOPT_REBINDTIME   59
+#define DHCPOPT_END          255
 
 /*! \brief Client broadcast to locate available servers.
  */
