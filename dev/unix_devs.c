@@ -275,6 +275,9 @@ static void *UnixDevReadThread( void * arg )
 
     // printf("UnixDevReadThread() started\n");
     
+    // be ready to receive requests
+    pthread_mutex_lock(&dcb->dcb_rx_mutex);
+
     // confirm start
     pthread_mutex_lock(&unix_devs_mutex);
     pthread_cond_signal(&unix_devs_cv);
@@ -285,9 +288,7 @@ static void *UnixDevReadThread( void * arg )
     // 
     for (;;) {
 
-        pthread_mutex_lock(&dcb->dcb_rx_mutex);
         pthread_cond_wait(&dcb->dcb_rx_trigger, &dcb->dcb_rx_mutex);
-        pthread_mutex_unlock(&dcb->dcb_rx_mutex);
 
         // printf("UnixDevReadThread(%s) triggered\n", dev->dev_name);
 
@@ -418,6 +419,11 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     if (nativeFile == 0)
         return NULL;
 
+    // set non-blocking
+    if (fcntl(nativeFile, F_SETFL, O_NONBLOCK) < 0) {
+        printf("UnixDevOpen: fcntl O_NONBLOCK failed\n\r");
+    }
+
     // store unix fd in dev
     ((UNIXDCB*)dev->dev_dcb)->dcb_fd = nativeFile;
 
@@ -449,14 +455,14 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     pthread_mutex_lock(&unix_devs_mutex);
     pthread_create(thread, &unix_devs_attr, UnixDevReadThread, dev);
 
+    // printf("UnixDevOpen: %s, waiting for UnixDevRead ack\n\r", nativeName);
+
     // wait for ack
     pthread_cond_wait(&unix_devs_cv, &unix_devs_mutex);
     pthread_mutex_unlock(&unix_devs_mutex);
 
-    // set non-blocking
-    if (fcntl(nativeFile, F_SETFL, O_NONBLOCK) < 0) {
-        printf("UnixDevOpen: fcntl O_NONBLOCK failed\n\r");
-    }
+    // printf("UnixDevOpen: %s, ack from UnixDevRead received\n\r", nativeName);
+
     // create new NUTFILE using malloc
     nf = malloc(sizeof(NUTFILE));
 
