@@ -75,6 +75,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/06/08 15:04:24  freckle
+ * changed #include "types_orig.h" to <sys/types_orig.h>
+ * to allow this file to be in $MODDIR. Relevant only for *nix emulation
+ *
  * Revision 1.5  2004/04/20 07:58:32  drsung
  * Use __GNUC__ instead of __GCC__
  *
@@ -110,7 +114,7 @@
 #if defined(__linux__) || defined(__APPLE__)
 //  on an emulation platform, we need to have both
 //              a) the native types headers and libs and
-#include "types_orig.h"
+#include <sys/types_orig.h>
 //              b) the additional nut os header and implementation
 #endif
 
