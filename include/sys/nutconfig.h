@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/06/07 15:08:58  olereinhardt
+ * Added suport for M-CAN Config header file
+ *
  * Revision 1.2  2004/03/18 15:44:47  haraldkipp
  * ICCAVR failed to compile
  *
@@ -57,6 +60,11 @@
 
 /* Ethernut MP3 add-on. */
 #include <cfg/medianut.h>
+
+#if defined(MCAN)
+/* M-CAN special hardware definitions */
+#include <cfg/m-can.h>
+#endif
 
 /* Ethernut RS232 multiport. */
 #include <cfg/coconut.h>
