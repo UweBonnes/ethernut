@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/10 10:10:17  haraldkipp
+ * Removed unused bootp parameters
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -50,9 +53,9 @@
 BOOTFRAME sframe;
 BOOTFRAME rframe;
 u_long netmask;
-u_long broadcast;
-u_long gateway;
-u_long dns;
+//u_long broadcast;
+//u_long gateway;
+//u_long dns;
 u_long sid;
 u_long local_ip;
 u_long server_ip;

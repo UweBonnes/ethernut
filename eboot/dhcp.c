@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/10 10:10:17  haraldkipp
+ * Removed unused bootp parameters
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -242,9 +245,9 @@ int DhcpQuery(void)
     bootfile[i] = 0;
 
     DhcpGetOption(DHCPOPT_NETMASK, &netmask, 4);
-    DhcpGetOption(DHCPOPT_BROADCAST, &broadcast, 4);
-    DhcpGetOption(DHCPOPT_GATEWAY, &gateway, 4);
-    DhcpGetOption(DHCPOPT_DNS, &dns, 4);
+    //DhcpGetOption(DHCPOPT_BROADCAST, &broadcast, 4);
+    //DhcpGetOption(DHCPOPT_GATEWAY, &gateway, 4);
+    //DhcpGetOption(DHCPOPT_DNS, &dns, 4);
     DhcpGetOption(DHCPOPT_SID, &sid, 4);
 
     return 0;

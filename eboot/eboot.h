@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/10 10:10:17  haraldkipp
+ * Removed unused bootp parameters
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -87,9 +90,9 @@ extern BOOTFRAME rframe;
 
 extern u_char mac[6];
 extern u_long netmask;
-extern u_long broadcast;
-extern u_long gateway;
-extern u_long dns;
+//extern u_long broadcast;
+//extern u_long gateway;
+//extern u_long dns;
 extern u_long sid;
 extern u_long local_ip;
 extern u_long server_ip;
