@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2005/02/05 20:35:21  haraldkipp
+# Peanut added
+#
 # Revision 1.6  2004/11/08 09:57:40  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -80,7 +83,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS =  fat.c uromfs.c
+SRCS = pathops.c dirent.c fat.c uromfs.c pnutfs.c
 
 OBJS = $(SRCS:.c=.o)
 
