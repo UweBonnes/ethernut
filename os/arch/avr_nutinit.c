@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/07/28 13:43:25  drsung
+ * Corrected a misplaced #endif after last change.
+ *
  * Revision 1.8  2004/07/09 19:51:17  freckle
  * Added new function NutThreadSetSleepMode to tell nut/os to set the MCU
  * into sleep mode when idle (avr-gcc && avr128 only)
@@ -177,8 +180,8 @@ THREAD(NutIdle, arg)
             set_sleep_mode(idle_sleep_mode);
             sleep_mode();
             set_sleep_mode(sleep_mode);
-#endif
         }
+#endif
     }
 }
 
