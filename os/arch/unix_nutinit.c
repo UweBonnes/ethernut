@@ -52,11 +52,6 @@
 
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 
-// pro
-extern void NutTimer0Intr(void);
-
-
-#define IRQ_MAX 16
 
 /* our IRQ signal */
 sigset_t irq_signal;
@@ -126,7 +121,7 @@ void NutIRQTrigger(u_char irq_nr)
     // signal this interrupt
     pthread_mutex_lock(&irq_mutex);
     irq_vect[irq_nr] = 1;
-    pthread_cond_signal(&irq_cv);
+    pthread_cond_broadcast(&irq_cv);
     pthread_mutex_unlock(&irq_mutex);
 }
 
@@ -157,6 +152,9 @@ void NutUnixIntr(int signal)
         runningThread->td_cs_level++;
     else
         main_cs_level++;
+
+    // printf("NutUnixIntr: calling IRQ %d\n", irq_nr);
+    
 
     // call IRQ_handler (if set)
     if (irq_nr < IRQ_MAX) {
@@ -198,6 +196,8 @@ void *NutIRQSimulation(void *arg)
         // lock the irq_mutex and wait for interrupts
         pthread_mutex_lock(&irq_mutex);
 
+        // printf("NutIRQSimulation: mutex locked\n");
+
         // check if irq already set
         for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++) {
 
@@ -223,6 +223,8 @@ void *NutIRQSimulation(void *arg)
                 // handshake
                 irq_processed = 0;
 
+                // printf("NutIRQSimulation: IRQ signaling nr %d \n", irq_nr);
+    
                 // signal to running thread
                 kill(-getpgrp(), SIGUSR1);
                 break;
@@ -232,6 +234,8 @@ void *NutIRQSimulation(void *arg)
         // unlock the irq_mutex
         pthread_mutex_unlock(&irq_mutex);
 
+        // printf("NutIRQSimulation: mutex unlocked\n");
+
         // if irq found and signaled, wait until irq processed
         if (irq_nr < IRQ_MAX) {
 
@@ -240,12 +244,23 @@ void *NutIRQSimulation(void *arg)
                 if (irq_processed)
                     break;
 
-                usleep(00);
+                usleep(1000);
 
             }
         }
         // printf("NutIRQSimulation: IRQ processed\n");
     }
+}
+
+/*
+ * Init IRQ handling
+ *
+ */
+void NutUnixControlC(int);
+void NutUnixControlC(int signal)
+{
+	printf("CTRL-C! Abort application.\n\r");
+    exit( 0 );
 }
 
 /*
@@ -269,6 +284,7 @@ void NutIRQInit()
 
     // the signal/IRQ handler
     signal(SIGUSR1, NutUnixIntr);
+    signal(SIGINT,  NutUnixControlC);
 
     // synchronization tools
     pthread_mutex_init(&irq_mutex, NULL);
@@ -312,9 +328,6 @@ THREAD(NutIdle, arg)
         // lock the irq_mutex and wait for interrupts
         pthread_mutex_lock(&irq_mutex);
         pthread_cond_wait(&irq_cv, &irq_mutex);
-
-        // ok. in case we got this instead of the IRQ thread...
-        pthread_cond_signal(&irq_cv);
 
         // unlock the irq_mutex
         pthread_mutex_unlock(&irq_mutex);

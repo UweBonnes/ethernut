@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.83 2004/07/09 19:51:34 freckle Exp $
+$Id: ChangeLog,v 1.84 2004/07/14 15:32:02 freckle Exp $
+
+2004-07-14  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * os/arch/unix-nutinit.c, unix_timer.c, unix.h:
+      Provide enumeration for IRQs used so far,
+      IRQ dispatcher uses broadcast now,
+      added handler for CTRL-C 
 
 2004-07-09  Matthias Ringwald <mringwal@inf.ethz.ch>
 

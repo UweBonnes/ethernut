@@ -172,7 +172,7 @@ void *NutTimerSimulation(void *arg)
 void NutTimerInit(void);
 void NutTimerInit()
 {
-    u_char timerIrqNr = 0;
+    u_char timerIrqNr = IRQ_TIMER0;
 
     // register irq handler
     NutRegisterIrqHandler(timerIrqNr, NutTimer0Intr, (void *) 0);
