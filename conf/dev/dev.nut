@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.9  2004/10/03 18:39:12  haraldkipp
+-- GBA debug output on screen
+--
 -- Revision 1.8  2004/09/25 15:43:54  drsung
 -- Light change for separate interrupt stack. Now it depends also
 -- on macro HW_MCU_AVR.
@@ -291,7 +294,7 @@ nutdev =
         name = "nutdev_uart_spi",
         brief = "SPI UART Driver (AVR)",
         description = "Deprecated driver for UARTs connected via SPI.",
-        requires = { "CRT_HEAPMEM" },
+        requires = { "CRT_HEAPMEM", "HW_MCU_AVR" },
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
         sources = { "uarts.c", "uartspi.c" },
     },
@@ -694,6 +697,13 @@ nutdev =
         requires = { "HW_UART_AT91" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
         sources = { "debug_at91.c" }
+    },
+    {
+        name = "nutdev_debug_gba",
+        brief = "LCD Debug Output (GBA)",
+        requires = { "HW_LCD_GBA" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "debug_gba.c" }
     },
 
     --

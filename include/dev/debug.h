@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/10/03 18:39:12  haraldkipp
+ * GBA debug output on screen
+ *
  * Revision 1.4  2004/09/08 10:53:14  haraldkipp
  * Our first device for the EB40A
  *
@@ -81,6 +84,8 @@ extern NUTDEVICE devDebug2;
 #elif defined(__arm__)
 #ifdef MCU_AT91R40008
 extern NUTDEVICE devDebug1;
+#elif defined(MCU_GBA)
+extern NUTDEVICE devDebug0;
 #endif
 #elif defined(__m68k__)
 #endif
