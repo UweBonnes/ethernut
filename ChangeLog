@@ -1,5 +1,18 @@
-$Id: ChangeLog,v 1.188 2005/03/30 15:18:07 mrjones4u Exp $
+$Id: ChangeLog,v 1.189 2005/04/04 19:37:20 freckle Exp $
 
+2005-04-04  Matthias Ringwald <mringwal@.inf.ethz.ch>
+
+	* configure, Makefile, include/netdb.h, include/sys/socket.h,
+	include/netinet/in.h: added creation of include/netdb_orig.h,
+	include/sys/socket_orig.h and include/netinet/in_orig.h to allow unix
+	emulation to use tcp/ip sockets.
+
+	* dev/unix_devs.c, include/dev/unix_devs.h: added socket redirection
+	feature for unix emulation uarts. Every nut/os uart device can now be mapped
+	to a TCP/IP socket using the "-u{0/1/2} hostname:port" command line option.
+
+	* os/arch/unix_options.c: clean up of usage message.
+	
 2005-03-30  Michael Jones <Michael.e.Jones@web.de>
 
 	* net/tcpsm.c: Defussed race condition in NutTcpStateActiveOpenEvent
