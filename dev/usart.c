@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/18 13:59:14  haraldkipp
+ * Comment updated
+ *
  * Revision 1.1  2003/12/15 19:25:33  haraldkipp
  * New USART driver added
  *
@@ -585,8 +588,7 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  * library.
  *
  * \param dev  Identifies the device that receives the device-control
- *             function. This pointer must have been retrieved previously
- *             by using the NutDeviceOpen() function.
+ *             function.
  * \param req  Requested control function. May be set to one of the
  *             following constants:
  *             - \ref UART_SETSPEED
