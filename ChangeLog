@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.132 2004/11/08 18:58:58 haraldkipp Exp $
+$Id: ChangeLog,v 1.133 2004/11/08 19:16:58 haraldkipp Exp $
 
 2004-11-08  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -30,6 +30,15 @@ $Id: ChangeLog,v 1.132 2004/11/08 18:58:58 haraldkipp Exp $
 	os/arch/arm_nutinit.c, os/arch/avr_nutinit.c,
 	os/arch/h8_nutinit.c, os/arch/unix_nutinit.c:
 	Stack size of idle and main thread is now configurable.
+
+	* os/arch/arm_timer.c: Hacked in Gameboy timer support.
+
+	* os/arch/arm_thread.c: Made assembly includes look
+	nice (and independent from embedded tabs). Changed
+	mode from supervisory to user supervisory, which
+	seems to work with the GBA. Skipped entry frame,
+	because it simply confuses me. :-) Finally Nut/OS
+	is now running on my GBA SP.
 
 
 2004-10-14  Oliver Schulz  <olischulz@web.de>
