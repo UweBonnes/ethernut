@@ -1,0 +1,294 @@
+#include <stdio.h>
+#include <sys/timer.h>
+
+#include "basemon.h"
+#include "utils.h"
+#include "uart.h"
+#include "rtlregs.h"
+#include "realtek.h"
+
+static int NicReset(void)
+{
+    volatile u_char *base = (u_char *) 0x8300;
+    u_char i;
+    u_char j;
+    for (j = 0; j < 20; j++) {
+        printf("SW-Reset...");
+        i = nic_read(NIC_RESET);
+        Delay(500);
+        nic_write(NIC_RESET, i);
+        for (i = 0; i < 20; i++) {
+            Delay(5000);
+            /*
+             * ID detection added for version 1.1 boards.
+             */
+            if ((nic_read(NIC_PG0_ISR) & NIC_ISR_RST) != 0 && nic_read(NIC_PG0_RBCR0) == 0x50 && nic_read(NIC_PG0_RBCR1) == 0x70) {
+                puts("OK");
+                return 0;
+            }
+        }
+        puts("failed\x07");
+        /*
+         * Toggle the hardware reset line. Since Ethernut version 1.3 the 
+         * hardware reset pin of the nic is no longer connected to bit 4 
+         * on port E, but wired to the board reset line.
+         */
+        if (j == 10) {
+            puts("HW-Reset");
+            sbi(DDRE, 4);
+            sbi(PORTE, 4);
+            Delay(100000);
+            cbi(PORTE, 4);
+            Delay(250000);
+        }
+    }
+    return -1;
+}
+
+/*!
+ * \brief Detect an RTL8019AS chip.
+ */
+int RealtekDetect(void)
+{
+    u_char bv;
+
+    bv = nic_inlb(NIC_CR);
+    if(bv & (NIC_CR_PS0 | NIC_CR_PS1)) {
+        nic_outlb(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+    }
+    if(nic_inw(NIC_PG0_RBCR0) != 0x7050) {
+        return -1;
+    }
+    return 0;
+}
+
+void RealtekLoop(void)
+{
+    printf_P(presskey_P);
+    for (;;) {
+        nic_outlb(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+        printf("\rid=0x%04X", nic_inw(NIC_PG0_RBCR0));
+        if (GetChar()) {
+            puts("");
+            return;
+        }
+    }
+}
+
+int RealtekTest(void)
+{
+    int i;
+    u_char force_swreset = 0;
+    volatile u_char *base = (u_char *) 0x8300;
+    u_short nic_id;
+
+    /*
+     * NIC ID detection loop.
+     */
+    for (;;) {
+        /*
+         * Reset loop.
+         */
+        for (;;) {
+
+#ifndef __AVR_ATmega128__
+            /*
+             * The hardware reset pin of the nic is connected
+             * to bit 4 on port E. Make this pin an output pin
+             * and toggle it.
+             */
+            sbi(DDRE, 4);
+            sbi(PORTE, 4);
+            Delay(2000);
+            cbi(PORTE, 4);
+            Delay(20000);
+#endif
+
+            /*
+             * If the hardware reset didn't set the nic in reset
+             * state, perform an additional software reset and
+             * wait until the controller enters the reset state.
+             */
+            if (force_swreset || (*(base + 7) & 0x80) == 0) {
+                printf("failed\nTrying NIC software reset...");
+                *(base + 0x1f) = *(base + 0x1f);
+                Delay(200000);
+                for (i = 0; i < 255; i++) {
+                    if (*(base + 7) & 0x80) {
+                        break;
+                    }
+                }
+                if (i < 255) {
+                    puts("OK");
+                    break;
+                }
+                puts("failed\x07");
+            } else {
+                break;
+            }
+            if (uart_bs >= 0)
+                break;
+        }
+        nic_id = nic_inw(NIC_PG0_RBCR0);
+        if (nic_id == 0x7050) {
+            puts("OK");
+            break;
+        }
+        printf("failed, got 0x%04X, expected 0x7050\n\x07", nic_id);
+        if (force_swreset && uart_bs >= 0)
+            break;
+        force_swreset = 1;
+    }
+    return 0;
+}
+
+#define NIC_PAGE_SIZE       0x100
+#define NIC_START_PAGE      0x40
+#define NIC_STOP_PAGE       0x60
+#define NIC_TX_PAGES        6
+#define NIC_TX_BUFFERS      2
+#define NIC_FIRST_TX_PAGE   NIC_START_PAGE
+#define NIC_FIRST_RX_PAGE   (NIC_FIRST_TX_PAGE + NIC_TX_PAGES * NIC_TX_BUFFERS)
+#define TX_PAGES            12
+
+void RealtekSend(void)
+{
+    u_char mac[] = {
+        0x00, 0x06, 0x98, 0x00, 0x00, 0x00
+    };
+    u_short sz;
+    u_short i;
+    volatile u_char *base = (u_char *) 0x8300;
+    u_char rb;
+    u_long cnt = 0;
+    if (NicReset())
+        return;
+    printf("Init controller...");
+    nic_write(NIC_PG0_IMR, 0);
+    nic_write(NIC_PG0_ISR, 0xff);
+    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
+    nic_write(NIC_PG3_EECR, NIC_EECR_EEM0 | NIC_EECR_EEM1);
+    nic_write(NIC_PG3_CONFIG3, 0);
+    nic_write(NIC_PG3_CONFIG2, NIC_CONFIG2_BSELB);
+    nic_write(NIC_PG3_EECR, 0);
+    Delay(50000);
+    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+    nic_write(NIC_PG0_DCR, NIC_DCR_LS | NIC_DCR_FT1);
+    nic_write(NIC_PG0_RBCR0, 0);
+    nic_write(NIC_PG0_RBCR1, 0);
+    nic_write(NIC_PG0_RCR, NIC_RCR_MON);
+    nic_write(NIC_PG0_TCR, NIC_TCR_LB0);
+    nic_write(NIC_PG0_TPSR, NIC_FIRST_TX_PAGE);
+    nic_write(NIC_PG0_BNRY, NIC_STOP_PAGE - 1);
+    nic_write(NIC_PG0_PSTART, NIC_FIRST_RX_PAGE);
+    nic_write(NIC_PG0_PSTOP, NIC_STOP_PAGE);
+    nic_write(NIC_PG0_ISR, 0xff);
+    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
+    for (i = 0; i < 6; i++)
+        nic_write(NIC_PG1_PAR0 + i, mac[i]);
+    for (i = 0; i < 8; i++)
+        nic_write(NIC_PG1_MAR0 + i, 0);
+    nic_write(NIC_PG1_CURR, NIC_START_PAGE + TX_PAGES);
+    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+    nic_write(NIC_PG0_RCR, NIC_RCR_AB);
+    nic_write(NIC_PG0_ISR, 0xff);
+    nic_write(NIC_PG0_IMR, 0);
+    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+    nic_write(NIC_PG0_TCR, 0);
+    Delay(1000000);
+    puts("done");
+    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
+    rb = nic_read(NIC_PG3_CONFIG0);
+    switch (rb & 0xC0) {
+    case 0x00:
+        printf("RTL8019AS ");
+        if (rb & 0x08)
+            printf("jumper mode: ");
+        if (rb & 0x20)
+            printf("AUI ");
+        if (rb & 0x10)
+            printf("PNP ");
+        break;
+    case 0xC0:
+        printf("RTL8019 ");
+        if (rb & 0x08)
+            printf("jumper mode: ");
+        break;
+    default:
+        printf("Unknown chip ");
+        break;
+    }
+    if (rb & 0x04)
+        printf("BNC\x07 ");
+    if (rb & 0x03)
+        printf("Failed\x07 ");
+    rb = nic_read(NIC_PG3_CONFIG1);
+    printf("IRQ%u ", (rb >> 4) & 7);
+    rb = nic_read(NIC_PG3_CONFIG2);
+    switch (rb & 0xC0) {
+    case 0x00:
+        printf("Auto ");
+        break;
+    case 0x40:
+        printf("10BaseT ");
+        break;
+    case 0x80:
+        printf("10Base5 ");
+        break;
+    case 0xC0:
+        printf("10Base2 ");
+        break;
+    }
+
+
+    printf("\n");
+    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+    for (;;) {
+        printf("\r%lu", cnt++);
+        sz = 1500;
+        nic_write(NIC_PG0_RBCR0, sz);
+        nic_write(NIC_PG0_RBCR1, sz >> 8);
+        nic_write(NIC_PG0_RSAR0, 0);
+        nic_write(NIC_PG0_RSAR1, NIC_FIRST_TX_PAGE);
+        nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD1);
+        /*
+         * Transfer ethernet physical header.
+         */
+        for (i = 0; i < 6; i++)
+            nic_write(NIC_IOPORT, 0xFF);
+        for (i = 0; i < 6; i++)
+            nic_write(NIC_IOPORT, mac[i]);
+        nic_write(NIC_IOPORT, 0x08);
+        nic_write(NIC_IOPORT, 0x00);
+        /*
+         * Add pad bytes.
+         */
+        for (i = 0; i < sz; i++)
+            nic_write(NIC_IOPORT, 0);
+        /*
+         * Complete remote dma.
+         */
+        nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+        for (i = 0; i <= 20; i++)
+            if (nic_read(NIC_PG0_ISR) & NIC_ISR_RDC)
+                break;
+        nic_write(NIC_PG0_ISR, NIC_ISR_RDC);
+        /*
+         * Number of bytes to be transmitted.
+         */
+        nic_write(NIC_PG0_TBCR0, (sz & 0xff));
+        nic_write(NIC_PG0_TBCR1, ((sz >> 8) & 0xff));
+        /*
+         * First page of packet to be transmitted.
+         */
+        nic_write(NIC_PG0_TPSR, NIC_FIRST_TX_PAGE);
+        /*
+         * Start transmission.
+         */
+        nic_write(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
+        if (GetChar())
+            break;
+        Delay(10000);
+    }
+}
+

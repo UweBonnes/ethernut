@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/11/03 16:07:40  haraldkipp
+ * Completely rewritten to support Ethernut 2
+ *
  * Revision 1.1  2003/08/07 09:37:59  haraldkipp
  * First public check in
  *
@@ -54,6 +57,8 @@
  * \file dev/rtlregs.h
  * \brief Realtek 8019AS register definitions.
  */
+
+#define NIC_BASE        0x8300
 
 /*
  * Register offset applicable to all register pages.
@@ -292,5 +297,12 @@
  * \brief Write byte to controller register.
  */
 #define nic_write(reg, data) *(base + (reg)) = data
+
+
+#define nic_outlb(reg, val) (*(volatile u_char *)(NIC_BASE + (reg)) = (val))
+#define nic_inlb(reg) (*(volatile u_char *)(NIC_BASE + (reg)))
+#define nic_inw(reg) (*(volatile u_short *)(NIC_BASE + (reg)))
+
+#define nic_bs(bank)    nic_outlb(NIC_BSR, (bank))
 
 #endif
