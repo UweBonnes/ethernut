@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2004/08/18 22:34:08  drsung
+ * Final #endif was missing.
+ *
  * Revision 1.1  2004/08/18 18:51:41  haraldkipp
  * Made banked memory configurable.
  *
@@ -85,3 +88,4 @@
 #define NUTBANK_SR      0xFF00
 #endif
 
+#endif /* #ifndef _CFG_BANKMEM_H_ */
