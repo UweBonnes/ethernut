@@ -1,8 +1,18 @@
-$Id: ChangeLog,v 1.14 2003/11/04 18:03:41 haraldkipp Exp $
+$Id: ChangeLog,v 1.15 2003/11/06 09:23:47 haraldkipp Exp $
 
-2003-11-04  Harald Kipp  <harald.kipp@egnite.de>
+2003-11-05  Harald Kipp  <harald.kipp@egnite.de>
 
 	* Version 3.3.2
+
+	* app/pppc.c: Added a note, that this will not work with
+	ATmega103 chips as long as debugging is enabled, which
+	requires a second UART.
+
+	* dev/lanc111.c: Leftover from debugging set last byte
+	of MAC address to 1.
+
+
+2003-11-04  Harald Kipp  <harald.kipp@egnite.de>
 
 	* All applications will work on Ethernut 1 and 2.
 
