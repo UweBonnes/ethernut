@@ -49,8 +49,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:34  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/14 15:18:41  haraldkipp
+ * Negotiate local magic
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:15:30  harald
  * Use async map define
@@ -75,6 +78,8 @@
  * \addtogroup xgLCP
  */
 /*@{*/
+
+extern u_long new_magic;
 
 /*!
  * \brief Send a LCP packet.
@@ -114,6 +119,7 @@ void LcpResetOptions(NUTDEVICE * dev)
 
     dcb->dcb_compr = 0;
     dcb->dcb_auth = PPP_PAP;
+    dcb->dcb_neg_magic = new_magic;
     dcb->dcb_loc_magic = 0;
     dcb->dcb_rem_magic = 0;
     dcb->dcb_accm = LCP_DEFOPT_ASYNCMAP;
@@ -123,7 +129,7 @@ void LcpResetOptions(NUTDEVICE * dev)
 /*
  * Send a Configure-Request.
  */
-void LcpTxConfReq(NUTDEVICE *dev)
+void LcpTxConfReq(NUTDEVICE *dev, u_char id)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -144,12 +150,18 @@ void LcpTxConfReq(NUTDEVICE *dev)
     /*
      * Create the request.
      */
-    if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, 6)) != 0) {
+    if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, 12)) != 0) {
         xcpo = nb->nb_ap.vp;
         xcpo->xcpo_type = LCP_ASYNCMAP;
         xcpo->xcpo_len = 6;
         xcpo->xcpo_.ul = htonl(LCP_DEFOPT_ASYNCMAP);
-        NutLcpOutput(dev, XCP_CONFREQ, ++dcb->dcb_reqid, nb);
+
+        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo->xcpo_type = LCP_MAGICNUMBER;
+        xcpo->xcpo_len = 6;
+        xcpo->xcpo_.ul = dcb->dcb_neg_magic;
+
+        NutLcpOutput(dev, XCP_CONFREQ, id, nb);
     }
 }
 
@@ -164,7 +176,7 @@ void LcpTxProtRej(NUTDEVICE *dev, u_short protocol, NETBUF *nb)
 
     if ((nbr = NutNetBufAlloc(0, NBAF_APPLICATION, nb->nb_nw.sz)) != 0) {
         sp = nbr->nb_ap.vp;
-        *sp++ = protocol;
+        *sp++ = htons(protocol);
         memcpy(sp, nb->nb_nw.vp, nb->nb_nw.sz - 2);
         NutNetBufFree(nb);
         NutLcpOutput(dev, LCP_PROTREJ, ++dcb->dcb_rejid, nbr);
