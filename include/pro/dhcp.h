@@ -61,8 +61,29 @@
  * SUCH DAMAGE.
  */
 
-/*
+/*!
+ * \file pro/dhcp.h
+ * \brief DHCP protocol definitions.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.7  2005/02/03 14:34:05  haraldkipp
+ * Several bug fixes and enhancements. The most important fix will
+ * avoid hanging, when Ethernut is reset while ICMP pings are
+ * received. A large number of changes make the client to follow
+ * RFC 2131 more closely, like maintaining renewal and rebind time.
+ * Two new API calls, NutDhcpStatus() and NutDhcpError(), allow
+ * to query the current status of the DHCP client. The previously
+ * introduced API call NutDhcpIsConfigured() has been marked
+ * deprecated. Another problem was with timeout, because the client
+ * continued negotiation with the server after the timeout time
+ * given in the API called elapsed. Now all internal timeouts are
+ * adjusted to the API timeout. Furthermore the previous version
+ * let the client continue on fatal errors like UDP receive or UDP
+ * broadcast failures. Now the client stops on such errors and
+ * informs the caller. Finally the documentation has been enhanced.
+ *
  * Revision 1.6  2004/12/31 10:52:18  drsung
  * Bugfixes from Michel Hendriks applied.
  *
@@ -81,116 +102,205 @@
  * Revision 1.1.1.1  2003/05/09 14:41:18  haraldkipp
  * Initial using 3.2.1
  *
- * Revision 1.8  2003/05/06 18:47:25  harald
- * New function
- *
- * Revision 1.7  2003/04/21 16:59:18  harald
- * Auto configuration moved
- *
- * Revision 1.6  2003/02/04 18:00:50  harald
- * Version 3 released
- *
- * Revision 1.5  2002/06/26 17:29:27  harald
- * First pre-release with 2.4 stack
- *
+ * \endverbatim
  */
 
+#include <cfg/dhcp.h>
 #include <sys/types.h>
 
 /*!
- * \file pro/dhcp.h
- * \brief DHCP protocol definitions.
+ * \addtogroup xgDHCPC
  */
+/*@{*/
 
-#define DHCP_SERVERPORT      67
-#define DHCP_CLIENTPORT      68
-
-/* See RFC 2131. */
-#define DHCPOPT_PAD          0
-#define DHCPOPT_NETMASK      1
-#define DHCPOPT_GATEWAY      3
-#define DHCPOPT_DNS          6
-#define DHCPOPT_HOSTNAME     12
-#define DHCPOPT_DOMAIN       15
-#define DHCPOPT_BROADCAST    28
-#define DHCPOPT_REQESTIP     50
-#define DHCPOPT_LEASETIME    51
-#define DHCPOPT_MSGTYPE      53
-#define DHCPOPT_SID          54
-#define DHCPOPT_PARAMREQUEST 55
-#define DHCPOPT_MAXMSGSIZE   57
-#define DHCPOPT_RENEWALTIME  58
-#define DHCPOPT_REBINDTIME   59
-#define DHCPOPT_END          255
-
-/*! \brief Client broadcast to locate available servers.
- */
-#define DHCP_DISCOVER   1
-
-/*! \brief Server to client in response to DHCP_DISCOVER.
- * Contains an offer of configuration parameters.
- */
-#define DHCP_OFFER      2
-
-/*! \brief Client message to servers.
- * Used for 
- * - requesting offered parameters from one server and implicitly declining offers from all others.
- * - confirming correctness of previously allocated address after, e.g., system reboot.
- * - extending the lease on a particular network address.
- */
-#define DHCP_REQUEST    3
-
-/*! \brief Client to server indicating network address is already in use.
- */
-#define DHCP_DECLINE    4
-
-/*! \brief Server to client with configuration parameters.
- * Contains committed network address.
- */
-#define DHCP_ACK        5
-
-/*! \brief Server to client indicating client's notion of network address is incorrect.
- * May be caused by the client's move to new subnet or by expiration of the client's lease.
- */
-#define DHCP_NAK        6
-
-/*! \brief Client to server relinquishing network address and cancelling remaining lease.
- */
-#define DHCP_RELEASE    7
-
-/*! \brief Client to server, asking only for local configuration parameters.
- * Used, if the client already has externally configured network address.
- */
-#define DHCP_INFORM     8
 
 /*!
- * \struct bootp dhcp.h pro/dhcp.h
- * \brief DHCP telegram structure.
+ * \name DHCP Client States.
+ *
+ * Applications can request the current state of the DHCP client by 
+ * calling NutDhcpStatus().
  */
-struct bootp {
-    u_char  bp_op;              /*!< \brief Packet opcode type: 1=request, 2=reply */
-    u_char  bp_htype;           /*!< \brief Hardware address type: 1=Ethernet */
-    u_char  bp_hlen;            /*!< \brief Hardware address length: 6 for Ethernet */
-    u_char  bp_hops;            /*!< \brief Gateway hops */
-    u_long  bp_xid;             /*!< \brief Transaction ID */
-    u_short bp_secs;            /*!< \brief Seconds since boot began */
-    u_short bp_flags;           /*!< \brief RFC1532 broadcast, etc. */
-    u_long  bp_ciaddr;          /*!< \brief Client IP address */
-    u_long  bp_yiaddr;          /*!< \brief 'Your' IP address */
-    u_long  bp_siaddr;          /*!< \brief Server IP address */
-    u_long  bp_giaddr;          /*!< \brief Gateway IP address */
-    u_char  bp_chaddr[16];      /*!< \brief Client hardware address */
-    char    bp_sname[64];       /*!< \brief Server host name */
-    char    bp_file[128];       /*!< \brief Boot file name */
-    u_char  bp_options[312];    /*!< \brief Vendor-specific area */
-};
+/*@{*/
+
+/*! \brief DHCP state: Stopped.
+ *
+ * Indicates that the DHCP client is inactive. Either it just started,
+ * gave up the lease or ran into an error. In the latter case the
+ * application may call NutDhcpError() to retrieve the specific
+ * error code.
+ *
+ * In order to save heap memory, the client will not open the UDP socket
+ * while inactive.
+ */
+#define DHCPST_IDLE         0
+
+/*! \brief DHCP state: Starting.
+ * 
+ * Indicates that the DHCP client started to request a configuration from
+ * the DHCP server. If any previously allocated IP address is available
+ * in the non-volatile configuration memory, then the client will continue 
+ * with \ref DHCPST_REBOOTING. Otherwise it will move to 
+ * \ref DHCPST_SELECTING.
+ */
+#define DHCPST_INIT         1
+
+/*! \brief DHCP state: Selecting.
+ *
+ * In this state the client will transmit a DHCP discover message and
+ * collect incoming offers from DHCP servers. If at least one acceptable
+ * offer has been received, it will change to \ref DHCPST_REQUESTING.
+ */
+#define DHCPST_SELECTING    2
+
+/*! \brief DHCP state: Requesting.
+ *
+ * Indicates that the client received and selected an offer from a
+ * DHCP server. It is now sending a request for an offered 
+ * configuration and waiting for an acknowledge, which will change
+ * the client's state to \ref DHCPST_BOUND.
+ */
+#define DHCPST_REQUESTING   3
+
+/*! \brief DHCP state: Rebooting.
+ *
+ * The client enters this state to request a previously assigned
+ * configuration.
+ */
+#define DHCPST_REBOOTING    4
+
+/*! \brief DHCP state: Bound.
+ *
+ * This state indicates, that the DHCP client has successfully allocated
+ * a network address. Any thread blocked in NutDhcpIfConfig() will be
+ * woken up.
+ *
+ * The client remains in this state until the renewal time elapses, in
+ * which case it moves to \ref DHCPST_RENEWING.
+ *
+ * In order to save heap memory, the client will close the UDP socket
+ * while in bound state.
+ */
+#define DHCPST_BOUND        5
+
+/*! \brief DHCP state: Renewing.
+ *
+ * In this state the client tries to extend its lease by sending
+ * a request to the DHCP server. If the server responds with an
+ * acknowledge, the client returns to \ref DHCPST_BOUND.
+ *
+ * If no acknowledge is received until the rebind time elapses,
+ * the client moves to \ref DHCPST_REBINDING.
+ */
+#define DHCPST_RENEWING     6
+
+/*! \brief DHCP state: Rebinding.
+ *
+ * The client enters this state after the no acknowledge has been
+ * received during \ref DHCPST_RENEWING and the rebind time
+ * elapsed. It will broadcast a request to extend its lease.
+ *
+ * If no acknowledge is received until the lease time elapsed,
+ * the client will move to \ref DHCPST_START.
+ */
+#define DHCPST_REBINDING    7
+
+/*! \brief DHCP state: Informing.
+ *
+ * The client enters this state when the application calls
+ * NutDhcpInform().
+ */
+#define DHCPST_INFORMING    8
+
+/*! \brief DHCP state: Releasing.
+ * 
+ * The client enters this state when the application calls
+ * NutDhcpRelease().
+ */
+#define DHCPST_RELEASING    9
+
+/*@}*/
+
+
+/*!
+ * \name DHCP Error Codes
+ *
+ * Applications can request the lastest error code of the DHCP client by 
+ * calling NutDhcpError().
+ */
+/*@{*/
+
+/*!
+ * \brief DHCP timeout error.
+ *
+ * No server response within the specified number of milliseconds. Either
+ * the timeout value has been too low or no DHCP server is available in
+ * the local network.
+ */
+#define DHCPERR_TIMEOUT     1
+
+/*!
+ * \brief DHCP MAC error.
+ *
+ * No Ethernet MAC address found in the non-volatile configuration memory
+ * and none specified by calling NutDhcpIfConfig().
+ */
+#define DHCPERR_NOMAC       2
+
+/*!
+ * \brief DHCP state error.
+ *
+ * Either NutDhcpInform() has been called while not in state 
+ * \ref DHCPST_IDLE or NutDhcpRelease() has been called while not in
+ * state \ref DHCPST_BOUND.
+ */
+#define DHCPERR_STATE       3
+
+/*!
+ * \brief DHCP error: Bad device.
+ *
+ * The specified device name hasn't been registered or is not an
+ * Ethernet device.
+ */
+#define DHCPERR_BADDEV      17
+
+/*!
+ * \brief DHCP system error.
+ *
+ * A system error occured during DHCP processing. Most probably the
+ * system ran out of memory.
+ */
+#define DHCPERR_SYSTEM      18
+
+/*!
+ * \brief DHCP transmit error.
+ *
+ * Failed to send an UDP datagram. The DHCP client considers it a fatal
+ * error if NutUdpSendTo() to the broadcast address fails.
+ */
+#define DHCPERR_TRANSMIT    19
+
+/*!
+ * \brief DHCP receive error.
+ *
+ * Failed to receive an UDP datagram. The DHCP client considers it a fatal
+ * error if NutUdpReceiveFrom() fails.
+ */
+#define DHCPERR_RECEIVE     20
+
+/*@}*/
+
+/*@}*/
 
 __BEGIN_DECLS
 /* Function prototypes. */
-extern int NutDhcpIfConfig(CONST char *name, u_char *mac, u_long timeout);
+extern int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout);
 extern int NutDhcpRelease(CONST char *name, u_long timeout);
+extern int NutDhcpInform(CONST char *name, u_long timeout);
+extern int NutDhcpStatus(CONST char *name);
+extern int NutDhcpError(CONST char *name);
+
 extern int NutDhcpIsConfigured(void);
 
 __END_DECLS
-
+/* */
 #endif
