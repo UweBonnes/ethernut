@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/07/30 19:45:48  drsung
+ * Slightly improved handling if socket was closed by peer.
+ *
  * Revision 1.4  2004/03/02 10:09:59  drsung
  * Small bugfix in NutHttpSendError. Thanks to Damian Slee.
  *
@@ -309,7 +312,8 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
                     size = (int) file_len;
 
                 n = _read(fd, data, size);
-                fwrite(data, 1, n, stream);
+                if (fwrite(data, 1, n, stream) == 0)
+                    break;
                 file_len -= (long) n;
             }
             NutHeapFree(data);
