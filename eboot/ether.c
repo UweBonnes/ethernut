@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/10 10:08:54  haraldkipp
+ * Minimal EEPROM emulation
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -88,6 +91,56 @@ struct nic_pkt_header {
     u_short ph_size;            /*!< \brief Size of header and packet in octets */
 };
 
+static void EmulateNicEeprom(void)
+{
+    register u_int cnt;
+
+    /*
+     * Prepare the EEPROM emulation port bits. Configure the EEDO
+     * and the EEMU lines as outputs and set both lines to high.
+     */
+    outb(PORTC, 0xC0);
+    outb(DDRC, 0xC0);
+    Delay(20);
+
+    /*
+     * Force the chip to re-read the EEPROM contents.
+     */
+    NIC_CR = NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1;
+    NIC_PG3_EECR = NIC_EECR_EEM0;
+
+    /*
+     * No external memory access beyond this point.
+     */
+    cbi(MCUCR, SRE);
+
+    /*
+     * Loop until the chip stops toggling our EESK input.
+     */
+    do {
+        cnt = 0;
+        if(bit_is_set(PINC, 5)) {
+            while(++cnt && bit_is_set(PINC, 5));
+        }
+        else {
+            while(++cnt && bit_is_clear(PINC, 5));
+        }
+    } while(cnt);
+
+    /*
+     * Enable memory interface.
+     */
+    sbi(MCUCR, SRE);
+
+    /* Reset port outputs to default. */
+    outb(PORTC, 0x00);
+    outb(DDRC, 0x00);
+
+    /* Wait until controller ready. */
+    while(NIC_CR != (NIC_CR_STP | NIC_CR_RD2));
+}
+
+
 /*!
  * \brief Initialize the NIC.
  *
@@ -107,7 +160,8 @@ void NicInit(void)
     c = NIC_RESET;
     Delay(5);
     NIC_RESET = c;
-    Delay(50);
+    Delay(1000);
+    EmulateNicEeprom();
 
     NIC_PG0_IMR = 0;
     NIC_PG0_ISR = 0xff;
