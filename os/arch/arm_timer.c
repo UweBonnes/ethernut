@@ -33,13 +33,22 @@
 
 /*
  * $Log$
- * Revision 1.1  2004/03/16 16:48:46  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1  2004/02/01 18:49:48  haraldkipp
- * Added CPU family support
+ * Revision 1.2  2004/09/08 10:19:39  haraldkipp
+ * Running on AT91 and S3C, thanks to James Tyou
  *
  */
+
+#include <cfg/arch.h>
+#if defined(MCU_AT91R40008)
+#include <arch/at91eb40a.h> /* LED debug */
+#include <arch/at91.h>
+#elif defined(MCU_S3C4510B)
+#include <arch/arm.h>
+#include <dev/s3c4510b_hw.h>
+#include <dev/s3c4510b_irqs.h>
+#endif
+
+static int dummy;
 
 /*!
  * \brief Loop for a specified number of milliseconds.
@@ -72,6 +81,7 @@ static void NutTimerIntr(void *arg)
 {
     NUTTIMERINFO *tnp;
 
+    dummy = inr(TC0_SR);
     /*
      * Increment the tick counter used by Michael Fischer's
      * NutGetTickCount() routine.
@@ -126,6 +136,16 @@ static void NutTimerIntr(void *arg)
     }
 }
 
+/*!
+ * \brief Timer 0 interrupt entry.
+ */
+static void Timer0Entry(void) __attribute__ ((naked));
+void Timer0Entry(void)
+{
+    IRQ_ENTRY;
+    NutTimerIntr(0);
+    IRQ_EXIT;
+}
 
 /*!
  * \brief Initialize system timer.
@@ -137,9 +157,57 @@ static void NutTimerIntr(void *arg)
  * Applications should not modify any registers of this
  * timer, but make use of the Nut/OS timer API. Timer 1
  * and timer 2 are available to applications.
+ *
+ * \todo Hardware stuff to be put in nutlibdev.
  */
 void NutTimerInit(void)
 {
-    /* Just to make arm-elf-gcc happy - insert appropriate code here */
-    NutRegisterIrqHandler(0, NutTimerIntr, 0);
+#if defined(MCU_AT91R40008)
+
+    /* Disable the Clock Counter */
+    outr(TC0_CCR, TC_CLKDIS);
+    /* Disable all interrupts */
+    outr(TC0_IDR, 0xFFFFFFFF);
+    /* Clear the status register. */
+    dummy = inr(TC0_SR);
+    /* Select divider and compare trigger */
+    outr(TC0_CMR, TC_CLKS_MCK32 | TC_CPCTRG);
+    /* Enable the Clock counter */
+    outr(TC0_CCR, TC_CLKEN);
+    /* Validate the RC compare interrupt */
+    outr(TC0_IER, TC_CPCS);
+
+    /* Disable timer 0 interrupts. */
+    outr(AIC_IDCR, (1<<TC0_ID));
+    /* Set the TC0 IRQ handler address */
+    outr(AIC_SVR(4), (unsigned int)Timer0Entry);
+    /* Set the trigg and priority for timer 0 interrupt */
+    outr(AIC_SMR(4), (AIC_SRCTYPE_INT_LEVEL_SENSITIVE | 0x4));
+    /* Clear timer 0 interrupt */
+    outr(AIC_ICCR, (1<<TC0_ID));
+    /* Enable timer 0 interrupts */
+    outr(AIC_IECR, (1<<TC0_ID));
+
+    /* Set compare value for 1 ms. */
+    outr(TC0_RC, 0x80F);
+    /* Software trigger starts the clock. */
+    outr(TC0_CCR, TC_SWTRG);
+
+#elif defined(MCU_S3C4510B)
+
+    INT_DISABLE(IRQ_TIMER);
+    CSR_WRITE(TCNT0, 0);
+    CSR_WRITE(TDATA0, CLOCK_TICK_RATE);
+    CSR_WRITE(TMOD, TMOD_TIMER0_VAL);
+
+    CLEAR_PEND_INT(IRQ_TIMER);
+
+    NutRegisterIrqHandler(
+        &InterruptHandlers[IRQ_TIMER], NutTimerIntr, 0);
+
+    INT_ENABLE(IRQ_TIMER);
+
+#else
+#warning "MCU not defined"
+#endif
 }
