@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/02/02 15:35:31  drsung
+ * Bloody 'no new line at end of file' error fixed... Grrrr..
+ *
  * Revision 1.3  2004/02/01 10:47:51  drsung
  * #ifdef .. #endif inserted, to make iccavr compile.
  *
