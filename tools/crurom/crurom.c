@@ -2,6 +2,10 @@ const char crurom_rcsid[] = "@(#) $Id$";
 
 /*
  * $Log$
+ * Revision 1.2  2003/07/20 19:27:59  haraldkipp
+ * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
+ * AVR's flash memory.
+ *
  * Revision 1.1  2003/07/20 19:18:16  haraldkipp
  * First check in
  *
@@ -86,14 +90,20 @@ int dofile(char *name)
 			fprintf(fpout, "0x%02x,", buf[i]);
 		}
 	}
-    close(fd);
+	close(fd);
 
-	fprintf(fpout, "\n};\nstatic ROMENTRY file%dentry = { ", entryno);
+	fprintf(fpout, "\n};\n\n");
+
+	fprintf(fpout, "prog_char file%dname[] = \"%s\";\n\n", entryno, fsname); 
+	
+	fprintf(fpout, "static ROMENTRY file%dentry = { ", entryno);
+
 	if(entryno > 1)
 		fprintf(fpout, "&file%dentry, ", entryno - 1);
 	else
 		fprintf(fpout, "0, ", entryno - 1);
-    fprintf(fpout, "\"%s\", %d, (prog_char *)file%ddata };\n\n", fsname, total, entryno);
+
+    fprintf(fpout, "(prog_char *)file%dname, %d, (prog_char *)file%ddata };\n", entryno, total, entryno);
 
     return rc;
 }

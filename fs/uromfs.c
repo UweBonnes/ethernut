@@ -33,8 +33,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:02  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 19:27:59  haraldkipp
+ * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
+ * AVR's flash memory.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:02  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.12  2003/04/21 16:58:20  harald
  * Make use of predefined eof
@@ -116,7 +120,7 @@ ROMFILE *NutRomFileOpen(char *name)
     ROMFILE *romf = 0;
 
     for (rome = romEntryList; rome; rome = rome->rome_next) {
-        if (strcmp(rome->rome_name, name) == 0)
+        if (strcmp_P(name, rome->rome_name) == 0)
             break;
     }
     if (rome) {
@@ -273,7 +277,7 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
     }
 
     for (rome = romEntryList; rome; rome = rome->rome_next) {
-        if (strcmp(rome->rome_name, name) == 0)
+        if (strcmp_P(name, rome->rome_name) == 0)
             break;
     }
     if (rome) {

@@ -36,8 +36,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:10  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 19:27:59  haraldkipp
+ * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
+ * AVR's flash memory.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:10  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/02/04 18:00:41  harald
  * Version 3 released
@@ -79,16 +83,16 @@ typedef struct _ROMENTRY ROMENTRY;
 #ifdef __IMAGECRAFT__
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
-    u_char   *rome_name;    /*!< Filename. */
+    const u_char *rome_name;/*!< Filename. */
     u_short   rome_size;    /*!< File size. */
     const char *rome_data;  /*!< File data. */
 };
 #else
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
-    u_char   *rome_name;    /*!< Filename. */
+    prog_char *rome_name;   /*!< Filename. */
     u_short   rome_size;    /*!< File size. */
-    prog_char *rome_data; /* __attribute__ ((progmem));  !< File data. */
+    prog_char *rome_data;   /* __attribute__ ((progmem));  !< File data. */
 };
 #endif
 
