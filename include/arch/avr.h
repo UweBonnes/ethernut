@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 09:57:01  haraldkipp
+ * Architecture required in UserConf.mk
+ *
  * Revision 1.2  2004/03/17 14:54:00  haraldkipp
  * Compiling for AVR works again
  *
@@ -45,8 +48,6 @@
  * Added CPU family support
  *
  */
-
-#define __HARVARD_ARCH__
 
 #ifdef __IMAGECRAFT__
 
