@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/04/05 17:44:56  haraldkipp
+ * Made stack space configurable.
+ *
  * Revision 1.7  2005/02/10 07:06:17  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -55,6 +58,8 @@
  * Asynchronous HDLC driver added
  *
  */
+
+#include <cfg/ahdlc.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -127,7 +132,9 @@ static prog_char fcstab[512] = {
  */
 /*@{*/
 
-
+#ifndef NUT_THREAD_AHDLCRXSTACK
+#define NUT_THREAD_AHDLCRXSTACK     512
+#endif
 
 /*
  * Handle AVR UART0 transmit complete interrupts.
@@ -1019,7 +1026,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
      * If we have been successful so far, start the HDLC receiver thread,
      * set the initial baudrate and enable the UART.
      */
-    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, 512)) {
+    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, NUT_THREAD_AHDLCRXSTACK)) {
         AhdlcAvrIOCtl(dev, UART_SETSPEED, &baudrate);
 
         return 0;

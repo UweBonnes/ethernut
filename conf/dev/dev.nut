@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.17  2005/04/05 17:44:56  haraldkipp
+-- Made stack space configurable.
+--
 -- Revision 1.16  2005/02/21 00:56:59  hwmaier
 -- New CAN int vectors ivect35.c and ivect36 added, removed "makedefs" entry for RTL_IRQ_RISING_EDGE.
 --
@@ -550,13 +553,19 @@ nutdev =
     {
         name = "nutdev_ahdlc_avr",
         brief = "AHDLC Protocol (AVR)",
+        description = "HDLC driver, required for PPP.",
         requires = { "HW_UART_AVR", "NUT_EVENT" },
         provides = { "PROTO_HDLC" },
-        sources =
+        sources = { "ahdlc0.c", "ahdlc1.c", "ahdlcavr.c" },
+        options = 
         {
-            "ahdlc0.c",
-            "ahdlc1.c",
-            "ahdlcavr.c"
+            {
+                macro = "NUT_THREAD_AHDLCRXSTACK",
+                brief = "Receiver Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the AHDLC receive thread.",
+                flavor = "booldata",
+                file = "include/cfg/ahdlc.h"
+            }
         }
     },
 
@@ -879,7 +888,15 @@ nutdev =
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
         sources = { "debug_gba.c" }
     },
-
+    {
+        name = "nutdev_ax88796_at91",
+        brief = "AX88796 Driver (AT91)",
+        description = "LAN driver for Asix 88796. AT91 only.",
+        requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "ax88796.c" },
+    },
+    
     --
     -- H8/300 drivers
     --

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.5  2005/04/05 17:44:56  haraldkipp
+-- Made stack space configurable.
+--
 -- Revision 1.4  2005/02/04 15:05:59  haraldkipp
 -- ARP configuration added.
 --
@@ -53,7 +56,7 @@ nutnet =
         name = "nutnet_tcp",
         brief = "TCP",
         requires = { "NET_IP", "NET_ICMP", "NUT_EVENT" },
-        provides = { "NET_TCP" },
+        provides = { "NET_TCP", "DEV_READ", "DEV_WRITE" },
         sources = 
         { 
             "tcpin.c",
@@ -61,6 +64,16 @@ nutnet =
             "tcpsm.c",
             "tcpsock.c",
             "tcputil.c"
+        },
+        options = 
+        {
+            {
+                macro = "NUT_THREAD_TCPSMSTACK",
+                brief = "State Machine Stack",
+                description = "Number of bytes to be allocated for the stack of the TCP state machine thread.",
+                flavor = "booldata",
+                file = "include/cfg/tcp.h"
+            }
         }
     },
     {
@@ -177,6 +190,16 @@ nutnet =
             "ipcpout.c",
             "lcpin.c", 
             "lcpout.c"
+        },
+        options = 
+        {
+            {
+                macro = "NUT_THREAD_PPPSMSTACK",
+                brief = "State Machine Stack",
+                description = "Number of bytes to be allocated for the stack of the PPP state machine thread.",
+                flavor = "booldata",
+                file = "include/cfg/ppp.h"
+            }
         }
     },
     {

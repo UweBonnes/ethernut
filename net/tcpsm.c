@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2005/04/05 17:44:57  haraldkipp
+ * Made stack space configurable.
+ *
  * Revision 1.17  2005/03/30 15:17:58  mrjones4u
  * Defussed race condition in NutTcpStateActiveOpenEvent where the NutEventWait would be called after sock->so_ac_tq had been signaled and therefore the calling thread will hang due to usage of NutEventBroadcast which will not ‘store’ the signaled state. This condition can e.g. occur when attempting connection an unconnected target port on an active host. The returning RST would be processed and signaled before the NutEventWait is called.
  *
@@ -190,6 +193,8 @@
  *
  */
 
+#include <cfg/tcp.h>
+
 #include <sys/thread.h>
 #include <sys/heap.h>
 #include <sys/event.h>
@@ -205,6 +210,10 @@
 
 #ifdef NUTDEBUG
 #include <net/netdebug.h>
+#endif
+
+#ifndef NUT_THREAD_TCPSMSTACK
+#define NUT_THREAD_TCPSMSTACK   512
 #endif
 
 extern TCPSOCKET *tcpSocketList;
@@ -1680,7 +1689,7 @@ void NutTcpStateMachine(NETBUF * nb)
  */
 int NutTcpInitStateMachine(void)
 {
-    if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, 512)) == 0)
+    if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, NUT_THREAD_TCPSMSTACK)) == 0)
         return -1;
     return 0;
 }

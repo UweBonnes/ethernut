@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/04/05 17:44:57  haraldkipp
+ * Made stack space configurable.
+ *
  * Revision 1.5  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -58,6 +61,8 @@
  *
  */
 
+#include <cfg/ppp.h>
+
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
@@ -76,6 +81,10 @@
 
 #ifdef NUTDEBUG
 #include <net/netdebug.h>
+#endif
+
+#ifndef NUT_THREAD_PPPSMSTACK
+#define NUT_THREAD_PPPSMSTACK   512
 #endif
 
 /*!
@@ -180,7 +189,7 @@ THREAD(NutPppSm, arg)
  */
 int NutPppInitStateMachine(NUTDEVICE * dev)
 {
-    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev, 512)) == 0) {
+    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev, NUT_THREAD_PPPSMSTACK)) == 0) {
         return -1;
     }
     return 0;

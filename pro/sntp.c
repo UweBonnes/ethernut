@@ -33,6 +33,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2005/04/05 17:44:57  haraldkipp
+ * Made stack space configurable.
+ *
  * Revision 1.4  2003/11/26 12:55:35  drsung
  * Portability issues ... again
  *
@@ -48,6 +51,8 @@
  *
  */
 
+#include <cfg/sntp.h>
+
 #include <pro/sntp.h>
 #include <sys/socket.h>
 #include <sys/heap.h>
@@ -56,6 +61,10 @@
 #include <stdio.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
+
+#ifndef NUT_THREAD_SNTPSTACK
+#define NUT_THREAD_SNTPSTACK    256
+#endif
 
 typedef struct _sntpframe sntpframe;
 struct _sntpframe {
@@ -179,7 +188,7 @@ int NutSNTPStartThread(u_long server_addr, u_long interval)
         return -1;
     arg->server_addr = server_addr;
     arg->interval = interval;
-    if (NutThreadCreate("sntpc", SNTP_resync, arg, 256))
+    if (NutThreadCreate("sntpc", SNTP_resync, arg, NUT_THREAD_SNTPSTACK))
         return 0;
     else {
         NutHeapFree(arg);

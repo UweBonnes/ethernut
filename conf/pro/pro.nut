@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.6  2005/04/05 17:44:56  haraldkipp
+-- Made stack space configurable.
+--
 -- Revision 1.5  2005/02/05 20:41:13  haraldkipp
 -- Wins and FTP added.
 --
@@ -157,7 +160,14 @@ nutpro =
                               "uses the number of seconds given by this value. Default is 43200.",
                 flavor = "booldata",
                 file = "include/cfg/dhcp.h"
-            }
+            },
+            {
+                macro = "NUT_THREAD_DHCPSTACK",
+                brief = "Client Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the DHCP client thread.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
         }
 
     },
@@ -213,7 +223,17 @@ nutpro =
         description = "Simple network time protocol.",
         requires = { "NET_UDP" },
         provides = { "PRO_SNTP" },
-        sources =  { "sntp.c" }
+        sources =  { "sntp.c" },
+        options = 
+        {
+            {
+                macro = "NUT_THREAD_SNTPSTACK",
+                brief = "Client Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the SNTP client thread.",
+                flavor = "booldata",
+                file = "include/cfg/sntp.h"
+            }
+        }
     },
     {
         name = "nutpro_smtpc",

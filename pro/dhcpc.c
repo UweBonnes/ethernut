@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.18  2005/04/05 17:44:57  haraldkipp
+ * Made stack space configurable.
+ *
  * Revision 1.17  2005/03/28 18:26:59  mrjones4u
  * Fixed non-release bug in DCHP client
  *
@@ -331,6 +334,15 @@ static u_char __tcp_trf = 1;
  */
 #ifndef MAX_DHCP_NAPTIME
 #define MAX_DHCP_NAPTIME    4294967
+#endif
+
+/*!
+ * \brief Stack size of the DHCP client thread.
+ *
+ * \showinitializer
+ */
+#ifndef NUT_THREAD_DHCPSTACK
+#define NUT_THREAD_DHCPSTACK    512
 #endif
 
 /*@}*/
@@ -583,6 +595,16 @@ static u_long dhcpApiTimeout;
  * wait time for server responses.
  */
 static u_long dhcpApiStart;
+
+/*!
+ * \brief DHCP device.
+ *
+ * The ARM port doesn't provide parameter passing to thread routines.
+ * Thus we use a global variable to store the NUTDEVICE pointer.
+ */
+#ifdef __arm__
+static NUTDEVICE *dhcpDev;
+#endif
 
 /*!
  * \brief Dynamic string copy.
@@ -1281,7 +1303,7 @@ THREAD(NutDhcpClient, arg)
     struct bootp *bp = 0;
     int n;
     u_long xid;
-    IFNET *nif = ((NUTDEVICE *) arg)->dev_icb;
+    IFNET *nif;
     u_short secs = 0;
     u_long aqsTime = NutGetSeconds();
     u_long leaseTime = 0;
@@ -1290,6 +1312,16 @@ THREAD(NutDhcpClient, arg)
     u_long tmo = MIN_DHCP_WAIT;
     u_long last_ip = confnet.cdn_ip_addr;
     u_long server_ip;
+
+    /*
+     * Hack alert: Our ARM port doesn't allow parameter
+     * passing to threads.
+     */
+#ifdef __arm__
+    nif = dhcpDev->dev_icb;
+#else
+    nif = ((NUTDEVICE *) arg)->dev_icb;
+#endif
 
     /* 
      * Generate a random transaction identifier based on our MAC 
@@ -1794,7 +1826,10 @@ static int DhcpKick(CONST char *name, u_char state, u_long timeout)
 
     dhcpState = state;
     if (dhcpThread == 0) {
-        dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev, 512);
+#ifdef __arm__
+        dhcpDev = dev;
+#endif
+        dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev, NUT_THREAD_DHCPSTACK);
     }
     NutEventPost(&dhcpWake);
     NutEventWait(&dhcpDone, NUT_WAIT_INFINITE);
