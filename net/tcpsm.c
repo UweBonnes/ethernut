@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/11/03 16:48:02  haraldkipp
+ * Use the system timer for retransmission timouts
+ *
  * Revision 1.3  2003/08/14 15:10:31  haraldkipp
  * Two bugfixes: 1. NutTcpAccept fails if caller got higher priority.
  * 2. Incoming TCP NETBUFs will never be released if TCP is not used by
@@ -143,6 +146,7 @@
 #include <sys/thread.h>
 #include <sys/heap.h>
 #include <sys/event.h>
+#include <sys/timer.h>
 #include <sys/atom.h>
 
 #include <net/errno.h>
@@ -314,7 +318,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
              * the oldest unacknowledged netbuf.
              */
             if (++sock->so_tx_dup >= 3) {
-                sock->so_retran_time = 0;
+                sock->so_retran_time = (u_short)NutGetMillis();
                 sock->so_tx_dup = 0;
 #ifdef NUTDEBUG
                 if (__tcp_trf)
@@ -357,7 +361,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
     /*
      * Reset retransmit timer and wake up waiting transmissions.
      */
-    sock->so_retran_time = 0;
+    sock->so_retran_time = (u_short)NutGetMillis();
     NutEventPost(&sock->so_tx_tq);
 }
 
@@ -612,7 +616,7 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
 /*!
  * \brief Initiated by the application.
  *
- * Optionally specify the local IP address.
+ * The caller must make sure, that the socket is in closed state.
  *
  * \param sock Socket descriptor. This pointer must have been 
  *             retrieved by calling NutTcpCreateSocket().
@@ -723,7 +727,7 @@ int NutTcpStateWindowEvent(TCPSOCKET * sock)
  */
 void NutTcpStateRetranTimeout(TCPSOCKET * sock)
 {
-    if (sock->so_retran_time > 300) {
+    if ((u_short)NutGetMillis() - sock->so_retran_time > 3000) {
         sock->so_time_wait = 0;
         sock->so_state = TCPS_CLOSE_WAIT;
         NutEventBroadcast(&sock->so_ac_tq);
@@ -745,6 +749,7 @@ void NutTcpStateRetranTimeout(TCPSOCKET * sock)
             NutEventBroadcast(&sock->so_pc_tq);
         }
     }
+    sock->so_retran_time = (u_short)NutGetMillis();
 }
 
 /* ================================================================
@@ -1325,6 +1330,8 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
 /*! \fn NutTcpSm(void *arg)
  * \brief TCP state machine thread.
  *
+ * The TCP state machine serves two purposes: It processes incoming TCP
+ * segments and handles TCP timers.
  */
 THREAD(NutTcpSm, arg)
 {
@@ -1363,10 +1370,10 @@ THREAD(NutTcpSm, arg)
                          *
                          * Yes, we really need round trip time calculation.
                          */
-                        if ((++(sock->so_retran_time) & 3) == 0) {
+                        if ((u_short)NutGetMillis() - sock->so_retran_time > 500) {
                             NutTcpStateRetranTimeout(sock);
                         }
-                    } else if ((++(sock->so_retran_time) & 15) == 0) {
+                    } else if ((u_short)NutGetMillis() - sock->so_retran_time > 1000) {
                         NutTcpStateRetranTimeout(sock);
                     }
                 }
@@ -1422,6 +1429,14 @@ THREAD(NutTcpSm, arg)
 
 /*!
  * \brief Process incoming TCP segments.
+ *
+ * All incoming TCP packets are passed to this routine. They will
+ * be added to a global queue and processed by the TCP state
+ * machine, which is running on a separate thread.
+ *
+ * \note This routine is called by the IP layer on incoming 
+ *       TCP segments. Applications typically do not call 
+ *       this function.
  */
 void NutTcpStateMachine(NETBUF * nb)
 {
@@ -1459,6 +1474,11 @@ void NutTcpStateMachine(NETBUF * nb)
 
 /*!
  * \brief Start TCP state machine.
+ *
+ * The socket interface will automatically call this routine as
+ * soon as the first socket is created.
+ *
+ * \return 0 on success, -1 otherwise.
  */
 int NutTcpInitStateMachine(void)
 {
