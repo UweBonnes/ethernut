@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/05/25 17:13:48  drsung
+ * Bit name SRW10 is not defined for atmega103, so added some defines to make it compatible.. :-X
+ *
  * Revision 1.4  2004/05/25 12:03:37  olereinhardt
  * Sorry, fixed typing bug
  *
@@ -83,12 +86,14 @@ void NutInitXRAM(void)
 {
     /* At the very beginning enable extended memory interface.
      */
-    //MCUCR = _BV(SRE) | _BV(SRW);
+#ifdef __AVR_ATmega128__    
     MCUCR = _BV(SRE) | _BV(SRW10);
-
 #ifdef NUT_3WAITSTATES
     outb (XMCRA, 0x42);
     outb (XMCRB, 0x00);
+#endif
+#else
+    MCUCR = _BV(SRE) | _BV(SRW);
 #endif
 }
 
