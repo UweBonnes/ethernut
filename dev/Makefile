@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.14  2004/06/07 15:10:34  olereinhardt
+# Added can_dev.c and sja1000.c
+#
 # Revision 1.13  2004/05/24 17:09:17  olereinhardt
 # Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
 # Base address can now be passed to the nic driver by NutRegisterDevice.
@@ -139,7 +142,8 @@ SRCS =  irqstack.c \
 	ivect13.c ivect14.c ivect15.c ivect16.c ivect17.c ivect18.c \
 	ivect19.c ivect20.c ivect21.c ivect22.c ivect23.c ivect24.c \
 	ivect25.c ivect26.c ivect27.c ivect28.c ivect29.c ivect30.c \
-	ivect31.c ivect32.c ivect33.c ivect34.c ihndlr.c
+	ivect31.c ivect32.c ivect33.c ivect34.c ihndlr.c \
+        can_dev.c sja1000.c
 else
 ifeq ($(ARCH), unix)
 # source for Unix Emulation
