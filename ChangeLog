@@ -1,4 +1,30 @@
-$Id: ChangeLog,v 1.159 2005/02/04 17:23:56 haraldkipp Exp $
+$Id: ChangeLog,v 1.160 2005/02/05 20:47:22 haraldkipp Exp $
+
+2005-02-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/Makefile, conf/pro/pro.nut, pro/Makefile, 
+	include/pro/ftpd.h, pro/ftpd.c: FTP server API added. Right 
+	now 'Peanut' is the only file system (see below), which
+	supports reading and writing. Thus, the FTP API is available
+	on Ethernut 2 (or similar boards) only.
+
+	* include/pro/wins.h, pro/wins.c: Implements NetBIOS name
+	query response. Many thanks to Jean Pierre Gauthier, who
+	contributed these files.
+
+	* conf/fs/fs.nut, fs/Makefile, fs/dirent.c, fs/pathops.c,
+	fs/pnutfs.c, include/dev/pnut.h, include/dirent.h,
+	include/fs/fs.h, include/sys/stat.h, include/unistd.h:
+	Peanut is a RAM file system. The current implementation
+	supports banking hardware similar to Ethernut 2 only.
+	Peanut offers file reading and writing, as well as
+	hierarchical directory structures.
+
+	* app/ftpd/Makefile, app/ftpd/ftpserv.c: FTP daemon sample
+	added.
+
+	* dev/nicrtl.c, include/dev/irqstack.h: stdio include removed.
+
 
 2005-02-04  Harald Kipp  <harald.kipp@egnite.de>
 
