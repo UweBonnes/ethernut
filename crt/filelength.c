@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/07/20 18:24:55  haraldkipp
+ * errno support added.
+ *
  * Revision 1.2  2003/07/20 17:19:00  haraldkipp
  * Description and result corrected.
  *
@@ -46,6 +49,7 @@
 
 #include "nut_io.h"
 
+#include <errno.h>
 #include <sys/device.h>
 
 /*!
