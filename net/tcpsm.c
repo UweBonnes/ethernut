@@ -93,8 +93,13 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:42  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:22:23  haraldkipp
+ * TCP transfer speed increased by changing the character receive buffer
+ * in TCPSOCKET to a NETBUF queue. (More confusing diff lines by using
+ * indent, sorry.)
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:42  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.20  2003/05/06 18:20:02  harald
  * Stack size reduced
@@ -159,7 +164,7 @@ extern TCPSOCKET *volatile tcpSocketList;
 
 HANDLE tcp_in_rdy;
 NETBUF *volatile tcp_in_nbq;
-volatile u_short tcp_in_cnt;
+static u_short tcp_in_cnt;
 static HANDLE tcpThread = 0;
 
 /* ================================================================
@@ -175,8 +180,8 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
 }
 
 /*!
- * \brief Move application data from the network buffer structure 
- *        to the socket's receive buffer.
+ * \brief Move application data in sync from the network buffer 
+ *        structure to the socket's receive buffer.
  *
  * \param sock Socket descriptor. This pointer must have been 
  *             retrieved by calling NutTcpCreateSocket().
@@ -184,36 +189,35 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
  */
 static void NutTcpProcessAppData(TCPSOCKET * sock, NETBUF * nb)
 {
-    u_short total;
+    if (sock->so_rx_buf) {
+        NETBUF *nbp = sock->so_rx_buf;
 
-    if ((total = nb->nb_ap.sz + sock->so_rx_cnt) < sock->so_rx_bsz) {
-        if (sock->so_rx_buf == 0) {
-            //if(NutHeapAvailable() > sock->so_rx_bsz + 2048)
-            sock->so_rx_buf = NutHeapAlloc(sock->so_rx_bsz);
-        }
-        if (sock->so_rx_buf) {
-            memcpy(sock->so_rx_buf + sock->so_rx_cnt, nb->nb_ap.vp,
-                   nb->nb_ap.sz);
-            sock->so_rx_cnt = total;
+        while (nbp->nb_next)
+            nbp = nbp->nb_next;
+        nbp->nb_next = nb;
+    } else
+        sock->so_rx_buf = nb;
 
-            sock->so_rx_nxt += nb->nb_ap.sz;
-            if (nb->nb_ap.sz >= sock->so_rx_win)
-                sock->so_rx_win = 0;
-            else
-                sock->so_rx_win -= nb->nb_ap.sz;
-            if (nb->nb_next == 0 && tcp_in_nbq == 0)
-                sock->so_tx_flags |= SO_FORCE | SO_ACK;
-            else
-                sock->so_tx_flags |= SO_ACK;
+    sock->so_rx_cnt += nb->nb_ap.sz;
+    sock->so_rx_nxt += nb->nb_ap.sz;
 
-            /*
-             * Wake up a thread waiting for data.
-             */
-            NutEventPost(&sock->so_rx_tq);
+    if (nb->nb_ap.sz >= sock->so_rx_win)
+        sock->so_rx_win = 0;
+    else
+        sock->so_rx_win -= nb->nb_ap.sz;
 
-            NutTcpOutput(sock, 0, 0);
-        }
-    }
+    sock->so_tx_flags |= SO_ACK;
+    if (nb->nb_next)
+        nb->nb_next = 0;
+    else
+        sock->so_tx_flags |= SO_FORCE;
+
+    /*
+     * Wake up a thread waiting for data.
+     */
+    NutEventPost(&sock->so_rx_tq);
+
+    NutTcpOutput(sock, 0, 0);
 }
 
 /*
@@ -229,8 +233,7 @@ static void NutTcpProcessSyn(TCPSOCKET * sock, IPHDR * ih, TCPHDR * th)
     sock->so_remote_port = th->th_sport;
     sock->so_remote_addr = ih->ip_src;
 
-    sock->so_rx_nxt =
-        sock->so_tx_wl1 = sock->so_rx_isn = ntohl(th->th_seq);
+    sock->so_rx_nxt = sock->so_tx_wl1 = sock->so_rx_isn = ntohl(th->th_seq);
     sock->so_rx_nxt++;
     sock->so_tx_win = ntohs(th->th_win);
 
@@ -276,8 +279,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
      */
     h_seq = ntohl(th->th_seq);
     if (h_ack == sock->so_tx_una) {
-        if (h_seq > sock->so_tx_wl1
-            || (h_seq == sock->so_tx_wl1 && h_ack >= sock->so_tx_wl2)) {
+        if (h_seq > sock->so_tx_wl1 || (h_seq == sock->so_tx_wl1 && h_ack >= sock->so_tx_wl2)) {
             sock->so_tx_win = ntohs(th->th_win);
             sock->so_tx_wl1 = h_seq;
             sock->so_tx_wl2 = h_ack;
@@ -301,8 +303,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
          * Don't count, if nothing is waiting for ACK,
          * segment contains data or on SYN/FIN segments.
          */
-        if (sock->so_tx_nbq && length == 0
-            && (th->th_flags & (TH_SYN | TH_FIN)) == 0) {
+        if (sock->so_tx_nbq && length == 0 && (th->th_flags & (TH_SYN | TH_FIN)) == 0) {
             /*
              * If dupe counter reaches it's limit, resend
              * the oldest unacknowledged netbuf.
@@ -317,7 +318,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
                 /*
                  * Actually we got much more trouble if this fails.
                  */
-                if(NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, sock->so_tx_nbq))
+                if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, sock->so_tx_nbq))
                     sock->so_tx_nbq = sock->so_tx_nbq->nb_next;
             }
         }
@@ -332,11 +333,17 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
     sock->so_tx_una = h_ack;
 
     /*
+     * Bugfix contributed by Liu Limin: If the remote is slow and this
+     * line is missing, then Ethernut will send a full data packet even
+     * if the remote closed the window.
+     */
+    sock->so_tx_win = ntohs(th->th_win);
+
+    /*
      * Remove all acknowledged netbufs.
      */
     while ((nb = sock->so_tx_nbq) != 0) {
-        if (ntohl(((TCPHDR *) (nb->nb_tp.vp))->th_seq) + nb->nb_ap.sz >
-            h_ack)
+        if (ntohl(((TCPHDR *) (nb->nb_tp.vp))->th_seq) + nb->nb_ap.sz > h_ack)
             break;
         sock->so_tx_nbq = nb->nb_next;
         NutNetBufFree(nb);
@@ -368,6 +375,36 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
     int rc = 0;
 
     switch (sock->so_state) {
+        /* Handle the most common case first. */
+    case TCPS_ESTABLISHED:
+        switch (state) {
+        case TCPS_FIN_WAIT_1:
+            /*
+             * Closed by application.
+             */
+            sock->so_tx_flags |= SO_FIN | SO_ACK;
+            NutTcpOutput(sock, 0, 0);
+            break;
+        case TCPS_CLOSE_WAIT:
+            /*
+             * FIN received.
+             */
+            sock->so_tx_flags |= SO_ACK | SO_FORCE;
+            NutTcpOutput(sock, 0, 0);
+            /*
+             * Inform application.
+             */
+            NutEventBroadcast(&sock->so_rx_tq);
+            NutEventBroadcast(&sock->so_tx_tq);
+            NutEventBroadcast(&sock->so_pc_tq);
+            NutEventBroadcast(&sock->so_ac_tq);
+            break;
+        default:
+            rc = -1;
+            break;
+        }
+        break;
+
     case TCPS_LISTEN:
         /*
          * SYN received.
@@ -433,35 +470,6 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              */
             sock->so_tx_flags |= SO_FIN | SO_ACK;
             NutTcpOutput(sock, 0, 0);
-            break;
-        default:
-            rc = -1;
-            break;
-        }
-        break;
-
-    case TCPS_ESTABLISHED:
-        switch (state) {
-        case TCPS_FIN_WAIT_1:
-            /*
-             * Closed by application.
-             */
-            sock->so_tx_flags |= SO_FIN | SO_ACK;
-            NutTcpOutput(sock, 0, 0);
-            break;
-        case TCPS_CLOSE_WAIT:
-            /*
-             * FIN received.
-             */
-            sock->so_tx_flags |= SO_ACK | SO_FORCE;
-            NutTcpOutput(sock, 0, 0);
-            /*
-             * Inform application.
-             */
-            NutEventBroadcast(&sock->so_rx_tq);
-            NutEventBroadcast(&sock->so_tx_tq);
-            NutEventBroadcast(&sock->so_pc_tq);
-            NutEventBroadcast(&sock->so_ac_tq);
             break;
         default:
             rc = -1;
@@ -745,8 +753,7 @@ void NutTcpStateRetranTimeout(TCPSOCKET * sock)
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateListen(TCPSOCKET * sock, u_char flags, TCPHDR * th,
-                              NETBUF * nb)
+static void NutTcpStateListen(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     /*
      * Got a SYN segment. Store relevant data in our socket
@@ -769,15 +776,13 @@ static void NutTcpStateListen(TCPSOCKET * sock, u_char flags, TCPHDR * th,
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateSynSent(TCPSOCKET * sock, u_char flags, TCPHDR * th,
-                               NETBUF * nb)
+static void NutTcpStateSynSent(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     /*
      * Validate ACK, if set.
      */
     if (flags & TH_ACK) {
-        if (!IsInLimits
-            (ntohl(th->th_ack), sock->so_tx_isn + 1, sock->so_tx_nxt)) {
+        if (!IsInLimits(ntohl(th->th_ack), sock->so_tx_isn + 1, sock->so_tx_nxt)) {
             NutTcpReject(nb);
             return;
         }
@@ -830,8 +835,7 @@ static void NutTcpStateSynSent(TCPSOCKET * sock, u_char flags, TCPHDR * th,
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags,
-                                   TCPHDR * th, NETBUF * nb)
+static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     /*
      * If our previous ack receives a reset response,
@@ -854,8 +858,7 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags,
     /*
      * Reject out of window sequence.
      */
-    if (!IsInLimits
-        (ntohl(th->th_ack), sock->so_tx_una + 1, sock->so_tx_nxt)) {
+    if (!IsInLimits(ntohl(th->th_ack), sock->so_tx_una + 1, sock->so_tx_nxt)) {
         NutTcpReject(nb);
         return;
     }
@@ -875,7 +878,8 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags,
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
     if (nb->nb_ap.sz)
         NutTcpProcessAppData(sock, nb);
-    NutNetBufFree(nb);
+    else
+        NutNetBufFree(nb);
 
     /*
      * Process state change.
@@ -898,8 +902,7 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags,
  * \param th    Pointer to the TCP header within the NETBUF.
  * \param nb    Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags,
-                                   TCPHDR * th, NETBUF * nb)
+static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     if (flags & TH_RST) {
         sock->so_state = TCPS_CLOSE_WAIT;
@@ -985,7 +988,6 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags,
         NutTcpOutput(sock, 0, 0);
     } else if (nb->nb_ap.sz) {
         NutTcpProcessAppData(sock, nb);
-        NutNetBufFree(nb);
         while ((nb = sock->so_rx_nbq) != 0) {
             th = (TCPHDR *) (nb->nb_tp.vp);
             if (htonl(th->th_seq) > sock->so_rx_nxt)
@@ -994,13 +996,13 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags,
             if (htonl(th->th_seq) >= sock->so_rx_nxt) {
                 NutTcpProcessAppData(sock, nb);
                 flags |= th->th_flags;
-            }
-            NutNetBufFree(nb);
+            } else
+                NutNetBufFree(nb);
         }
     } else {
         NutNetBufFree(nb);
-        sock->so_tx_flags |= SO_ACK | SO_FORCE;
-        NutTcpOutput(sock, 0, 0);
+        //sock->so_tx_flags |= SO_ACK | SO_FORCE;
+        //NutTcpOutput(sock, 0, 0);
     }
     if (flags & TH_FIN) {
         sock->so_rx_nxt++;
@@ -1020,8 +1022,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags,
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags,
-                                TCPHDR * th, NETBUF * nb)
+static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
@@ -1053,7 +1054,8 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags,
      */
     if (nb->nb_ap.sz)
         NutTcpProcessAppData(sock, nb);
-    NutNetBufFree(nb);
+    else
+        NutNetBufFree(nb);
 
     if (flags & TH_FIN) {
         sock->so_rx_nxt++;
@@ -1076,8 +1078,7 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags,
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateFinWait2(TCPSOCKET * sock, u_char flags,
-                                TCPHDR * th, NETBUF * nb)
+static void NutTcpStateFinWait2(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
@@ -1108,7 +1109,8 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, u_char flags,
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
     if (nb->nb_ap.sz)
         NutTcpProcessAppData(sock, nb);
-    NutNetBufFree(nb);
+    else
+        NutNetBufFree(nb);
 
     if (flags & TH_FIN) {
         sock->so_rx_nxt++;
@@ -1127,8 +1129,7 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, u_char flags,
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateCloseWait(TCPSOCKET * sock, u_char flags,
-                                 TCPHDR * th, NETBUF * nb)
+static void NutTcpStateCloseWait(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
@@ -1168,8 +1169,7 @@ static void NutTcpStateCloseWait(TCPSOCKET * sock, u_char flags,
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateClosing(TCPSOCKET * sock, u_char flags, TCPHDR * th,
-                               NETBUF * nb)
+static void NutTcpStateClosing(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
@@ -1215,8 +1215,7 @@ static void NutTcpStateClosing(TCPSOCKET * sock, u_char flags, TCPHDR * th,
  * \param th    TCP header of incoming segment.
  * \param nb    Network buffer structure containing a TCP segment.
  */
-static void NutTcpStateLastAck(TCPSOCKET * sock, u_char flags, TCPHDR * th,
-                               NETBUF * nb)
+static void NutTcpStateLastAck(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
     if (flags & TH_RST) {
         NutNetBufFree(nb);
@@ -1269,6 +1268,10 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
     }
 #endif
     switch (sock->so_state) {
+        /* Handle the most common case first. */
+    case TCPS_ESTABLISHED:
+        NutTcpStateEstablished(sock, flags, th, nb);
+        break;
     case TCPS_LISTEN:
         NutTcpStateListen(sock, flags, th, nb);
         break;
@@ -1277,9 +1280,6 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
         break;
     case TCPS_SYN_RECEIVED:
         NutTcpStateSynReceived(sock, flags, th, nb);
-        break;
-    case TCPS_ESTABLISHED:
-        NutTcpStateEstablished(sock, flags, th, nb);
         break;
     case TCPS_FIN_WAIT_1:
         NutTcpStateFinWait1(sock, flags, th, nb);
@@ -1328,10 +1328,9 @@ THREAD(NutTcpSm, arg)
     u_char tac = 0;
 
     /*
-     * Give us a very high priority to avoid queuing too many packets.
+     * It won't help giving us a higher priority than the application
+     * code. We depend on the speed of the reading application.
      */
-    //NutThreadSetPriority(9);
-
     for (;;) {
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {
             tac = 0;
@@ -1367,9 +1366,7 @@ THREAD(NutTcpSm, arg)
                 /*
                  * Destroy sockets after timeout in TIMEWAIT state.
                  */
-                if (sock->so_state == TCPS_TIME_WAIT ||
-                    sock->so_state == TCPS_FIN_WAIT_1 ||
-                    sock->so_state == TCPS_FIN_WAIT_2) {
+                if (sock->so_state == TCPS_TIME_WAIT || sock->so_state == TCPS_FIN_WAIT_1 || sock->so_state == TCPS_FIN_WAIT_2) {
                     if (sock->so_time_wait++ >= 9) {
                         NutTcpDestroySocket(sock);
                         break;
@@ -1446,8 +1443,7 @@ void NutTcpStateMachine(NETBUF * nb)
  */
 int NutTcpInitStateMachine(void)
 {
-    if (tcpThread == 0 &&
-        (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, 512)) == 0)
+    if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, 512)) == 0)
         return -1;
     return 0;
 }
