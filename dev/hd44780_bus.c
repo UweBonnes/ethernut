@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/08/26 14:00:04  olereinhardt
+ * Fixed cursor positioning for different devices
+ *
  * Revision 1.4  2004/05/27 15:03:14  olereinhardt
  * Changed copyright notice
  *
@@ -125,6 +128,28 @@ static void LcdWriteCmd(u_char cmd, u_char delay)
 
 static void LcdSetCursor(u_char pos)
 {
+    u_char x = 0;
+    u_char y = 0;
+
+#ifdef KS0073_CONTROLLER
+    u_char  offset[4] = {0x00, 0x20, 0x40, 0x60};
+    y = pos / 20;
+    x = pos % 20;
+#endif
+
+#ifdef LCD_4x20
+    u_char  offset  [4] = {0x00, 0x40, 0x14, 0x54};
+    y = pos / 20;
+    x = pos % 20;
+#endif    
+    
+#ifdef LCD_4x16
+    u_char  offset  [4] = {0x00, 0x40, 0x10, 0x50};
+    y = pos << 4;
+    x = pos & 0x0F;
+#endif    
+
+    pos = x + offset[y];
     LcdWriteCmd(1 << LCD_DDRAM | pos, 0);
 }
 
@@ -212,12 +237,18 @@ TERMDCB dcb_term = {
     0,                          /*!< \brief Status flags. */
 #ifdef  KS0073_CONTROLLER
     4,                          /*!< \brief Number of rows. */
-    32,                         /*!< \brief Number of columns per row. */
+    20,                         /*!< \brief Number of columns per row. */
     20,                         /*!< \brief Number of visible columns. */
-#else
-    2,                          /*!< \brief Number of rows. */
-    80,                         /*!< \brief Number of columns per row. */
+#endif
+#ifdef LCD_4x20
+    4,                          /*!< \brief Number of rows. */
+    20,                         /*!< \brief Number of columns per row. */
     20,                         /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_4x16
+    4,                          /*!< \brief Number of rows. */
+    16,                         /*!< \brief Number of columns per row. */
+    16,                         /*!< \brief Number of visible columns. */
 #endif
     0,                          /*!< \brief Cursor row. */
     0,                          /*!< \brief Cursor column. */
