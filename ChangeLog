@@ -1,4 +1,38 @@
-$Id: ChangeLog,v 1.104 2004/08/18 18:51:41 haraldkipp Exp $
+$Id: ChangeLog,v 1.105 2004/08/25 10:58:55 haraldkipp Exp $
+
+2004-08-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/cfg/arch/avr.h, include/cfg/arch/avrpio.h:
+	New include directory cfg/arch added, which should be used
+	for target specific items, mainly port usage or MCU specific
+	register settings. Still the top configuration directory
+	should be prefered whenever possible. For example, memory
+	layout may seem MCU specific, but in this sense it is not.
+	Memory addresses are typically board specific.
+
+	* include/cfg/bankmem.h, include/cfg/memory.h: More general
+	memory layout definitions moved to the new cfg/memory.h.
+	The header file bankmem.h is still kept and may define
+	the number of banks to used by a specific function.
+
+	* dev/nicrtl.c: Hardware dependent definitions are
+	configurable. For performance reasons the base address is not
+	kept in a variable any longer. It is now a preprocessor macro
+	and the parameters during device registration are ignored. The 
+	speed improvements provided by Kolja Waschk for the LAN91C111 
+	had been implemented here too. The driver will not touch a
+	port anymore unless a reset port bit had been configured.
+	For Ethernut 1.1 bit 4 PORTE must be specified in the 
+	configuration. Finally, an EEPROM emulation had been added,
+	which can use address bus bits instead of wasting additional
+	port pins. The required hardware has been implemented on
+	Rev.-G Ethernut 1.3 boards. This fixes the Realtek full
+	duplex problem.
+
+	* app/Makedefs.*: Fixed a problem with undefined top_srcdir
+	and top_blddir when building applications in the source
+	directory.
+
 
 2004-08-18  Harald Kipp  <harald.kipp@egnite.de>
 
