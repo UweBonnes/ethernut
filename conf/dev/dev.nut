@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.16  2005/02/21 00:56:59  hwmaier
+-- New CAN int vectors ivect35.c and ivect36 added, removed "makedefs" entry for RTL_IRQ_RISING_EDGE.
+--
 -- Revision 1.15  2005/02/19 22:47:54  hwmaier
 -- no message
 --
@@ -421,8 +424,7 @@ nutdev =
                               "Valid only for ATMega 128 or AT90CAN128 parts, "..
                               "not supported by ATMega 103.",
                 flavor = "boolean",
-                file = "include/cfg/arch/avrpio.h",
-                makedefs = { "RTL_IRQ_RISING_EDGE" }
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_RESET_BIT",
