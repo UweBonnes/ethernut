@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.92 2004/08/02 10:15:24 olereinhardt Exp $
+$Id: ChangeLog,v 1.93 2004/08/03 15:15:16 haraldkipp Exp $
+
+2004-08-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf, tools/nutconf: Lots of changes, too many to list here.
+	The tool seems to become useful soon, just a few bug fixes
+	away from here.
+
 
 2004-08-02  Ole Reinhardt
     * include/can_dev.h dev/can_dev.c
