@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/04/25 17:05:56  drsung
+ * Separate IRQ stack now compatible with nested interrupts.
+ *
  * Revision 1.5  2004/02/03 11:28:40  drsung
  * Modified to support different target platforms.
  *
@@ -50,13 +53,12 @@
  *
  */
 
-
-#if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__))
-
 #include <dev/irqstack.h>
+#ifdef USE_IRQ_STACK
 
-u_char _irq_stack[IRQSTACK_SIZE];
-u_char _irq_SPL;
-u_char _irq_SPH;
+u_char _irq_stack[IRQSTACK_SIZE]; //__attribute__((section(".data.irqstack")));
+u_char _irq_SPL; 	//__attribute__((section(".data.irqstack")));
+u_char _irq_SPH; 	//__attribute__((section(".data.irqstack")));
+u_char _irq_nesting;	// __attribute__((section(".data.irqstack"))) = 0;
 
-#endif
+#endif /* #ifdef USE_IRQ_STACK */

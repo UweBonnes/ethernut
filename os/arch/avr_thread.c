@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/04/25 17:06:17  drsung
+ * Separate IRQ stack now compatible with nested interrupts.
+ *
  * Revision 1.1  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -43,6 +46,21 @@
  * Added CPU family support
  *
  */
+
+/* Support for separate irq stack only for avr-gcc */
+#ifdef __GNUC__
+#include <dev/irqstack.h>
+#ifdef USE_IRQ_STACK
+/*!  * \brief Decrement value for thread's stack size, if separate irq stack is used.
+ *
+ * If separate irq stack is enabled (avr-gcc only), the initial parameter 
+ * 'stacksize' in function 'NutThreadCreate' is decremented by this value, if the 
+ * remaining stack size is 128 bytes or greater.
+ *
+ */
+u_short _irqstackdec = 128;
+#endif /* #ifdef USE_IRQ_STACK */
+#endif /* #ifdef __GNU__ */
 
 #ifdef __GNUC__
 
@@ -325,6 +343,9 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     NUTTHREADINFO *td;
 #ifdef __IMAGECRAFT__
     u_short yreg;
+#endif
+#ifdef USE_IRQ_STACK
+    if (stackSize > _irqstackdec + 128) stackSize -= _irqstackdec;
 #endif
 
     const u_short *paddr;

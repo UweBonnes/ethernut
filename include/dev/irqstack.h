@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/04/25 17:06:17  drsung
+ * Separate IRQ stack now compatible with nested interrupts.
+ *
  * Revision 1.2  2004/02/03 11:28:41  drsung
  * Modified to support different target platforms.
  *
@@ -43,39 +46,54 @@
  *
  */
 
-#include <sys/types.h>
-#include <stdio.h>
-
 #if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__))
 
+#include <sys/types.h>
+#include <stdio.h>
+#define USE_IRQ_STACK
 #define IRQSTACK_SIZE 256
 
 extern u_char _irq_stack[];
 extern u_char _irq_SPL;
 extern u_char _irq_SPH;
+extern u_char _irq_nesting;
 
 #define _SwitchToIrqStack	\
-    asm volatile ("push r24" "\n\t"			\
-                  "in r24,__SREG__" "\n\t"		\
-                  "push r24" "\n\t"			\
-                  "in r24, __SP_L__" "\n\t"		\
-                  "sts _irq_SPL, r24" "\n\t"		\
-                  "in r24, __SP_H__" "\n\t"		\
-                  "sts _irq_SPH, r24" "\n\t");		\
-    asm volatile ("ldi r24, lo8(%0)" "\n\t"		\
-                  "out __SP_L__, r24" "\n\t"		\
-                  "ldi r24, hi8(%0)" "\n\t"		\
-                  "out __SP_H__, r24" "\n\t"::		\
-                  "i" (_irq_stack+IRQSTACK_SIZE-1)  );
+    asm volatile ("push r24" "\n\t"				/* save r24 to current stack */ \
+                  "in r24,__SREG__" "\n\t"			/* load SREG into r24 */ \
+                  "push r24" "\n\t"				/* and push it to current stack */ \
+                  "lds r24, _irq_nesting" "\n\t"		/* load _irq_nesting in r24 */ \
+                  "tst r24" "\n\t"				/* test for zero */ \
+                  "brne no_switch1" "\n\t"			/* jump to no_switch1 if not zero */ \
+                  "in r24, __SP_L__" "\n\t"			/* load SP_L into r24 */ \
+                  "sts _irq_SPL, r24" "\n\t"			/* and save it to _irq_SPL */ \
+                  "in r24, __SP_H__" "\n\t"			/* load SP_H into r24 */ \
+                  "sts _irq_SPH, r24" "\n\t");			/* and save it to _irq_SPH */ \
+    asm volatile ("ldi r24, lo8(%0)" "\n\t"			/* load lo addr of begin of irqstack to r24 */ \
+                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */ \
+                  "ldi r24, hi8(%0)" "\n\t"			/* load hi addr of begin of irqstack to r24 */ \
+                  "out __SP_H__, r24" "\n\t"			/* write it to SP_H */ \
+                  "lds r24, _irq_nesting" "\n\t"		/* load _irq_nesting to r24 */ \
+                  "no_switch1:" "\n\t"				/* jump label */ \
+                  "inc r24" "\n\t"				/* increment r24 */ \
+                  "sts _irq_nesting, r24" "\n\t"		/* save it back to _irq_nesting */ \
+                  ::					\
+                  "i" (_irq_stack+IRQSTACK_SIZE-1));
 
 #define _SwitchToAppStack	\
-    asm volatile ("lds r24, _irq_SPL" "\n\t"		\
-                  "out __SP_L__, r24" "\n\t"		\
-                  "lds r24, _irq_SPH" "\n\t"		\
-                  "out __SP_H__, r24" "\n\t");		\
-    asm volatile ("pop r24" "\n\t"			\
-                  "out __SREG__, r24" "\n\t"		\
-                  "pop r24" "\n\t");
+    asm volatile ("cli" "\n\t"					/* disable interrupts */ \
+                  "lds r24, _irq_nesting" "\n\t"		/* load _irq_nesting in r24 */ \
+                  "dec r24" "\n\t"				/* decrement r24 */ \
+                  "sts _irq_nesting, r24" "\n\t"		/* save it back to _irq_nesting */ \
+                  "brne no_switch2" "\n\t"			/* jump to no_switch2 if not zero */ \
+                  "lds r24, _irq_SPL" "\n\t"			/* load _irq_SPL to r24 */ \
+                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */ \
+                  "lds r24, _irq_SPH" "\n\t"			/* load _irq_SPH to r24 */ \
+                  "out __SP_H__, r24" "\n\t");			/* write it to SP_H */ \
+    asm volatile ("no_switch2:" "\n\t"				/* jump label */ \
+                  "pop r24" "\n\t"				/* load byte from stack to r24 */ \
+                  "out __SREG__, r24" "\n\t"			/* write it to SREG */ \
+                  "pop r24" "\n\t");				/* restore r24 from stack */ \
 
 #define _SaveRegs	\
     asm volatile ("push __tmp_reg__" "\n\t"	\
@@ -87,7 +105,6 @@ extern u_char _irq_SPH;
                   "push r21" "\n\t"		\
                   "push r22" "\n\t"		\
                   "push r23" "\n\t"		\
-                  "push r24" "\n\t"		\
                   "push r25" "\n\t"		\
                   "push r26" "\n\t"		\
                   "push r27" "\n\t"		\
@@ -101,7 +118,6 @@ extern u_char _irq_SPH;
                   "pop r27" "\n\t"		\
                   "pop r26" "\n\t"		\
                   "pop r25" "\n\t"		\
-                  "pop r24" "\n\t"		\
                   "pop r23" "\n\t"		\
                   "pop r22" "\n\t"		\
                   "pop r21" "\n\t"		\
@@ -120,7 +136,7 @@ void signame (void)	\
    CallHandler (&handler);	\
    _RestoreRegs			\
    _SwitchToAppStack		\
-   asm ("reti");		\
+   asm ("reti");				/* will enable interrupts */ \
 }
 
 #else                           /* #if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)) */
