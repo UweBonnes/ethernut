@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/01/28 12:11:57  drsung
+ * Bugfix for ICCAVR ... again
+ *
  * Revision 1.6  2004/01/28 07:11:38  drsung
  * Bugfix for ICCAVR
  *
@@ -864,9 +867,11 @@ static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
  *             retrieved by calling NutTcpCreateSocket().
  *
  */
-int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
+int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
 {
     int rc, sz;
+    /* hack alert for ICCAVR */
+    u_char *buffer = (u_char*) buf;
 
     /* Flush buffer? */
     if (size == 0) {
@@ -891,7 +896,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
         if (size >= sock->so_devobsz) {
             rc = size % sock->so_devobsz;
             SendBuffer(sock, buffer, size - rc);
-            (u_char*) buffer += size - rc;
+            buffer += size - rc;
         } else
             rc = size;
 
@@ -919,7 +924,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
      */
     sz = sock->so_devobsz - sock->so_devocnt;
     memcpy(sock->so_devobuf + sock->so_devocnt, buffer, sz);
-    (u_char*) buffer += sz;
+    buffer += sz;
     if (SendBuffer(sock, sock->so_devobuf, sock->so_devobsz) < 0) {
         NutHeapFree(sock->so_devobuf);
         sock->so_devocnt = 0;
@@ -934,7 +939,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
     if (sz >= sock->so_devobsz) {
         rc = sz % sock->so_devobsz;
         SendBuffer(sock, buffer, sz - rc);
-        (u_char*) buffer += sz - rc;
+        buffer += sz - rc;
     } else
         rc = sz;
 
