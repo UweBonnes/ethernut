@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/09/08 10:24:26  haraldkipp
+ * RAMSTART is too platform dependant
+ *
  * Revision 1.2  2003/08/05 20:01:55  haraldkipp
  * Typing errors corrected
  *
@@ -84,7 +87,7 @@ void *malloc(size_t len)
  */
 void free(void *p)
 {
-    if (p > RAMSTART)
+    //if (p > RAMSTART)
         NutHeapFree(p);
 }
 

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/09/08 10:24:26  haraldkipp
+ * RAMSTART is too platform dependant
+ *
  * Revision 1.3  2004/03/18 13:42:50  haraldkipp
  * Deprecated header file removed
  *
@@ -116,7 +119,8 @@ int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, u_char irq)
 {
     int rc = -1;
 
-    if ((void *) dev >= RAMSTART) {
+    //if ((void *) dev >= RAMSTART) {
+    if (dev) {
         if (base)
             dev->dev_base = base;
         if (irq)

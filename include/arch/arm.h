@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/08 10:24:26  haraldkipp
+ * RAMSTART is too platform dependant
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -78,7 +81,7 @@ extern void *__bss_end;
  */
 extern void *__stack;
 
-#define RAMSTART    ((void *)0xffbf20)
+/* #define RAMSTART    ((void *)0xffbf20) */
 
 /* #define RAMEND  (0xffbf20 + 0x4000) */
 
