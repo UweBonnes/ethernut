@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.61 2004/04/25 17:13:03 drsung Exp $
+$Id: ChangeLog,v 1.62 2004/05/17 18:01:18 drsung Exp $
+
+2004-05-16  Oliver Schulz  <olischulz@web.de>
+
+	* dev/usartavr.c: Applied bugfixes for half duplex mode and XON/XOFF 
+	handling. Thanks to Damian Slee.
+
 
 2004-04-25  Oliver Schulz  <olischulz@web.de>
 
