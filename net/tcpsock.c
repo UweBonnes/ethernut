@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/04/05 17:58:02  haraldkipp
+ * Avoid integer division on ARM platform as long as we run without crtlib.
+ *
  * Revision 1.12  2005/02/04 17:16:45  haraldkipp
  * Stop searching when listening socket found
  *
@@ -934,7 +937,15 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
          * bytes in buffer
          */
         if ((u_short) size >= sock->so_devobsz) {
+#ifdef ARM_GCC_NOLIBC
+            /* Little hacking to avoid integer divisions. */
+            rc = size;
+            while(rc >= sock->so_devobsz) {
+                rc -= sock->so_devobsz;
+            }
+#else
             rc = size % sock->so_devobsz;
+#endif
             if (SendBuffer(sock, buffer, size - rc) < 0)
                 return -1;
             buffer += size - rc;
@@ -978,7 +989,15 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
      */
     sz = size - sz;
     if (sz >= sock->so_devobsz) {
-        rc = sz % sock->so_devobsz;
+#ifdef ARM_GCC_NOLIBC
+        /* Little hacking to avoid integer divisions. */
+        rc = size;
+        while(rc >= sock->so_devobsz) {
+            rc -= sock->so_devobsz;
+        }
+#else
+        rc = size % sock->so_devobsz;
+#endif
         if (SendBuffer(sock, buffer, sz - rc) < 0) {
             NutHeapFree(sock->so_devobuf);
             sock->so_devocnt = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,13 +33,18 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:28  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/04/05 17:58:02  haraldkipp
+ * Avoid integer division on ARM platform as long as we run without crtlib.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:28  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:06  harald
  * *** empty log message ***
  *
  */
+
+#include <cfg/arch.h>
 
 #include "nut_io.h"
 
@@ -72,9 +77,10 @@ size_t fwrite(CONST void *data, size_t size, size_t count, FILE * stream)
         count *= size;
     if ((int) (rc = (size_t) _write(stream->iob_fd, data, count)) <= 0)
         return 0;
+#ifndef ARM_GCC_NOLIBC
     if (size > 1)
         rc /= size;
-
+#endif
     return rc;
 }
 
