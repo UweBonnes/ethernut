@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/11/06 09:24:50  haraldkipp
+ * Added a note that debug output will hang ATmega103
+ *
  * Revision 1.1  2003/08/14 14:57:07  haraldkipp
  * First release
  *
@@ -50,6 +53,8 @@
  *
  * \bug This sample works with ICCAVR (6.28 tested) only with debugging
  *      enabled.
+ *
+ * \bug Not working with ATmega103. Debug output needs to be removed.
  */
 
 /*
@@ -84,10 +89,12 @@
 /*
  * Debug output device settings.
  */
+#ifdef __AVR_ATmega128__
 #define DBGDEV      devDebug1   /* Use debug driver. */
 //#define DBGDEV      devUart1    /* Use standard UART driver. */
 #define DBGCOM      "uart1"     /* Device name. */
 #define DBGSPEED    115200      /* Baudrate. */
+#endif
 
 /*
  * Server input buffer size.
@@ -276,20 +283,26 @@ int main(void)
     /*
      * Register our devices.
      */
+#ifdef __AVR_ATmega128__
     NutRegisterDevice(&DBGDEV, 0, 0);
+#endif
     NutRegisterDevice(&PPPDEV, 0, 0);
     NutRegisterDevice(&devPpp, 0, 0);
 
     /*
      * Open debug device for standard output.
      */
-    freopen("uart1", "w", stdout);
+    if(freopen("uart1", "w", stdout) == 0) {
+        for(;;);
+    }
 
     /*
      * Set debug output speed.
      */
+#ifdef __AVR_ATmega128__
     lctl = DBGSPEED;
     _ioctl(_fileno(stdout), UART_SETSPEED, &lctl);
+#endif
 
     /*
      * Display banner including compiler info and Nut/OS version.
