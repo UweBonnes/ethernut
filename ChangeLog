@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.70 2004/06/02 16:46:27 olereinhardt Exp $
+$Id: ChangeLog,v 1.71 2004/06/03 08:47:23 olereinhardt Exp $
+
+
+2004-06-02  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
+	* os/semaphore.c
+	Changed NutEventWait to NutEventWaitNext according to a hint 
+	from Oliver
 
 2004-06-02  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 	* os/semaphore.c, include/sys/semaphore.h
