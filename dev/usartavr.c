@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/11/12 08:25:51  drsung
+ * Bugfix in AvrUsartTxEmpty. Thanks to Grzegorz Plonski and Matthias Ringwald.
+ *
  * Revision 1.4  2004/05/26 09:04:17  drsung
  * Bugfix in AvrUsartTxStart. Now the correct port and pin are used for half duplex mode...again...
  * Thanks to Przemyslaw Rudy.
@@ -218,7 +221,7 @@ static void AvrUsartTxEmpty(void *arg)
         return;
 	}
 
-    if (rbf->rbf_cnt--) {
+    if (rbf->rbf_cnt) {
 
 #ifdef UART_CTS_BIT
         /* 
@@ -231,7 +234,8 @@ static void AvrUsartTxEmpty(void *arg)
             return;
         }
 #endif
-
+        rbf->rbf_cnt--;
+        
         /*
          * The data sheet doesn't exactly tell us, if this bit is retained 
          * or cleared after the character has been sent out. So we do it
