@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/09/10 10:09:40  haraldkipp
+# Using new Configurator
+#
 # Revision 1.1  2004/04/15 09:34:45  haraldkipp
 # Checked in
 #
@@ -40,8 +43,9 @@
 PROJ = eboot
 
 top_srcdir = ..
+top_appdir = ..
 
-include $(top_srcdir)/UserConf.mk
+include $(top_srcdir)/NutConf.mk
 include Makedefs
 
 SRCS =  $(PROJ).c tftp.c dhcp.c udp.c ip.c arp.c ether.c util.c
