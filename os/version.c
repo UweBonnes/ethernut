@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/01/27 13:41:52  haraldkipp
+ * Branch 3.4 announced
+ *
  * Revision 1.6  2003/12/15 19:32:32  haraldkipp
  * Preview
  *
@@ -64,8 +67,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03030301UL
-static CONST char os_version_string[] = "3.3.3.1pre";
+#define OS_VERSION_NUMBER  0x03039901UL
+static CONST char os_version_string[] = "3.3.99.1";
 
 /*!
  * \addtogroup xgNutInit
