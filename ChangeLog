@@ -1,4 +1,18 @@
-$Id: ChangeLog,v 1.15 2003/11/06 09:23:47 haraldkipp Exp $
+$Id: ChangeLog,v 1.16 2003/11/26 15:17:21 drsung Exp $
+
+2003-11-26  Oliver Schulz <olischulz@web.de>
+
+	* nutlibcrt.a: Added some standard C time functions to
+	implement time handling and real time clocks.
+
+	* pro/sntp.c: Added SNTP protocol to retreive universal
+	coordinated time (UCT) from SNTP servers.
+
+	* net/udpin.c, net/udpsock.h: Added a configurable receive
+	packet queue for UDP packets.
+
+	* crt/putf.c: Added support for program space character
+	strings (%P).
 
 2003-11-05  Harald Kipp  <harald.kipp@egnite.de>
 
