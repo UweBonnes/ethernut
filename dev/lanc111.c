@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/09/22 08:14:48  haraldkipp
+ * Made configurable
+ *
  * Revision 1.7  2004/03/08 11:14:17  haraldkipp
  * Added quick hack for fixed mode.
  *
@@ -59,9 +62,38 @@
  *
  */
 
-#include <string.h>
+#include <cfg/arch/avr.h>
+#include <cfg/arch/avrpio.h>
 
-#include <cfg/ethernut.h>
+/*
+ * Determine ports, which had not been explicitely configured.
+ */
+#ifndef LANC111_BASE_ADDR
+#define LANC111_BASE_ADDR   0xC000
+#endif
+
+#ifndef LANC111_SIGNAL_IRQ
+#define LANC111_SIGNAL_IRQ  INT5
+#endif
+
+#ifdef LANC111_RESET_BIT
+#if (PIO_NAME(LANC111_RESET_PORT) == PIO_PORTB)
+#define LANC111_RESET_DDR    DDRB
+
+#elif (PIO_NAME(LANC111_RESET_PORT) == PIO_PORTD)
+#define LANC111_RESET_DDR    DDRD
+
+#elif (PIO_NAME(LANC111_RESET_PORT) == PIO_PORTE)
+#define LANC111_RESET_DDR    DDRE
+
+#elif (PIO_NAME(LANC111_RESET_PORT) == PIO_PORTF)
+#define LANC111_RESET_DDR    DDRF
+
+#endif
+#endif /* LANC111_RESET_BIT */
+
+
+#include <string.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>
@@ -81,6 +113,43 @@
 #include <stdio.h>
 #endif
 
+/*
+ * Determine interrupt settings.
+ */
+#if (LANC111_SIGNAL_IRQ == INT0)
+#define LANC111_SIGNAL          sig_INTERRUPT0
+#define LANC111_SIGNAL_MODE()   sbi(EICRA, ISC00); sbi(EICRA, ISC01)
+
+#elif (LANC111_SIGNAL_IRQ == INT1)
+#define LANC111_SIGNAL          sig_INTERRUPT1
+#define LANC111_SIGNAL_MODE()   sbi(EICRA, ISC10); sbi(EICRA, ISC11)
+
+#elif (LANC111_SIGNAL_IRQ == INT2)
+#define LANC111_SIGNAL          sig_INTERRUPT2
+#define LANC111_SIGNAL_MODE()   sbi(EICRA, ISC20); sbi(EICRA, ISC21)
+
+#elif (LANC111_SIGNAL_IRQ == INT3)
+#define LANC111_SIGNAL          sig_INTERRUPT3
+#define LANC111_SIGNAL_MODE()   sbi(EICRA, ISC30); sbi(EICRA, ISC31)
+
+#elif (LANC111_SIGNAL_IRQ == INT4)
+#define LANC111_SIGNAL          sig_INTERRUPT4
+#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC40); sbi(EICRB, ISC41)
+
+#elif (LANC111_SIGNAL_IRQ == INT6)
+#define LANC111_SIGNAL          sig_INTERRUPT6
+#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC60); sbi(EICRB, ISC61)
+
+#elif (LANC111_SIGNAL_IRQ == INT7)
+#define LANC111_SIGNAL          sig_INTERRUPT7
+#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC70); sbi(EICRB, ISC71)
+
+#else
+#define LANC111_SIGNAL          sig_INTERRUPT5
+#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC50); sbi(EICRB, ISC51)
+
+#endif
+
 /*!
  * \addtogroup xgSmscRegs
  */
@@ -89,12 +158,12 @@
 /*! 
  * \brief Bank select register. 
  */
-#define NIC_BSR         NIC_BASE + 0x0E
+#define NIC_BSR         (LANC111_BASE_ADDR + 0x0E)
 
 /*! 
  * \brief Bank 0 - Transmit control register. 
  */
-#define NIC_TCR         NIC_BASE + 0x00
+#define NIC_TCR         (LANC111_BASE_ADDR + 0x00)
 
 #define TCR_SWFDUP      0x8000  /*!< \ref NIC_TCR bit mask, enables full duplex.  */
 #define TCR_EPH_LOOP    0x2000  /*!< \ref NIC_TCR bit mask, enables internal loopback. */
@@ -111,12 +180,12 @@
 /*! 
  * \brief Bank 0 - EPH status register. 
  */
-#define NIC_EPHSR       NIC_BASE + 0x02
+#define NIC_EPHSR       (LANC111_BASE_ADDR + 0x02)
 
 /*! 
  * \brief Bank 0 - Receive control register. 
  */
-#define NIC_RCR         NIC_BASE + 0x04
+#define NIC_RCR         (LANC111_BASE_ADDR + 0x04)
 
 #define RCR_SOFT_RST    0x8000  /*!< \ref NIC_RCR bit mask, activates software reset. */
 #define RCR_FILT_CAR    0x4000  /*!< \ref NIC_RCR bit mask, enables carrier filter. */
@@ -130,17 +199,17 @@
 /*! 
  * \brief Bank 0 - Counter register.
  */
-#define NIC_ECR         NIC_BASE + 0x06
+#define NIC_ECR         (LANC111_BASE_ADDR + 0x06)
 
 /*! 
  * \brief Bank 0 - Memory information register.
  */
-#define NIC_MIR         NIC_BASE + 0x08
+#define NIC_MIR         (LANC111_BASE_ADDR + 0x08)
 
 /*! 
  * \brief Bank 0 - Receive / PHY control register.
  */
-#define NIC_RPCR        NIC_BASE + 0x0A
+#define NIC_RPCR        (LANC111_BASE_ADDR + 0x0A)
 
 #define RPCR_SPEED      0x2000  /*!< \ref NIC_RPCR bit mask, PHY operates at 100 Mbps. */
 #define RPCR_DPLX       0x1000  /*!< \ref NIC_RPCR bit mask, PHY operates at full duplex mode. */
@@ -151,29 +220,29 @@
 /*! 
  * \brief Bank 1 - Configuration register.
  */
-#define NIC_CR          NIC_BASE + 0x00
+#define NIC_CR          (LANC111_BASE_ADDR + 0x00)
 
 #define CR_EPH_EN       0x8000  /*!< \ref NIC_CR bit mask, . */
 
 /*! 
  * \brief Bank 1 - Base address register.
  */
-#define NIC_BAR         NIC_BASE + 0x02
+#define NIC_BAR         (LANC111_BASE_ADDR + 0x02)
 
 /*! 
  * \brief Bank 1 - Individual address register.
  */
-#define NIC_IAR         NIC_BASE + 0x04
+#define NIC_IAR         (LANC111_BASE_ADDR + 0x04)
 
 /*! 
  * \brief Bank 1 - General purpose register.
  */
-#define NIC_GPR         NIC_BASE + 0x0A
+#define NIC_GPR         (LANC111_BASE_ADDR + 0x0A)
 
 /*! 
  * \brief Bank 1 - Control register.
  */
-#define NIC_CTR         NIC_BASE + 0x0C
+#define NIC_CTR         (LANC111_BASE_ADDR + 0x0C)
 
 #define CTR_RCV_BAD     0x4000  /*!< \ref NIC_CTR bit mask. */
 #define CTR_AUTO_RELEASE 0x0800 /*!< \ref NIC_CTR bit mask, transmit packets automatically released. */
@@ -181,7 +250,7 @@
 /*!
  * \brief Bank 2 - MMU command register.
  */
-#define NIC_MMUCR       NIC_BASE + 0x00
+#define NIC_MMUCR       (LANC111_BASE_ADDR + 0x00)
 
 #define MMUCR_BUSY      0x0001
 
@@ -199,26 +268,26 @@
  *
  * This byte register specifies the accessible transmit packet number.
  */
-#define NIC_PNR         NIC_BASE + 0x02
+#define NIC_PNR         (LANC111_BASE_ADDR + 0x02)
 
 /*!
  * \brief Bank 2 - Allocation result register.
  *
  * This byte register is updated upon a \ref MMU_ALO command.
  */
-#define NIC_ARR         NIC_BASE + 0x03
+#define NIC_ARR         (LANC111_BASE_ADDR + 0x03)
 
 #define ARR_FAILED      0x80
 
 /*!
  * \brief Bank 2 - FIFO ports register.
  */
-#define NIC_FIFO        NIC_BASE + 0x04
+#define NIC_FIFO        (LANC111_BASE_ADDR + 0x04)
 
 /*!
  * \brief Bank 2 - Pointer register.
  */
-#define NIC_PTR         NIC_BASE + 0x06
+#define NIC_PTR         (LANC111_BASE_ADDR + 0x06)
 
 #define PTR_RCV         0x8000  /*! \ref NIC_PTR bit mask, specifies receive or transmit buffer. */
 #define PTR_AUTO_INCR   0x4000  /*! \ref NIC_PTR bit mask, enables automatic pointer increment. */
@@ -229,22 +298,22 @@
 /*!
  * \brief Bank 2 - Data register.
  */
-#define NIC_DATA        NIC_BASE + 0x08
+#define NIC_DATA        (LANC111_BASE_ADDR + 0x08)
 
 /*!
  * \brief Bank 2 - Interrupt status register.
  */
-#define NIC_IST         NIC_BASE + 0x0C
+#define NIC_IST         (LANC111_BASE_ADDR + 0x0C)
 
 /*!
  * \brief Bank 2 - Interrupt acknowledge register.
  */
-#define NIC_ACK         NIC_BASE + 0x0C
+#define NIC_ACK         (LANC111_BASE_ADDR + 0x0C)
 
 /*!
  * \brief Bank 2 - Interrupt mask register.
  */
-#define NIC_MSK         NIC_BASE + 0x0D
+#define NIC_MSK         (LANC111_BASE_ADDR + 0x0D)
 
 #define INT_MD          0x80    /*!< \ref PHY state change interrupt bit mask. */
 #define INT_ERCV        0x40    /*!< \ref Early receive interrupt bit mask. */
@@ -258,12 +327,12 @@
 /*!
  * \brief Bank 3 - Multicast table register.
  */
-#define NIC_MT          NIC_BASE + 0x00
+#define NIC_MT          (LANC111_BASE_ADDR + 0x00)
 
 /*!
  * \brief Bank 3 - Management interface register.
  */
-#define NIC_MGMT        NIC_BASE + 0x08
+#define NIC_MGMT        (LANC111_BASE_ADDR + 0x08)
 
 #define MGMT_MDOE       0x08    /*!< \ref NIC_MGMT bit mask, enables MDO pin. */
 #define MGMT_MCLK       0x04    /*!< \ref NIC_MGMT bit mask, drives MDCLK pin. */
@@ -273,12 +342,12 @@
 /*!
  * \brief Bank 3 - Revision register.
  */
-#define NIC_REV         NIC_BASE + 0x0A
+#define NIC_REV         (LANC111_BASE_ADDR + 0x0A)
 
 /*!
  * \brief Bank 3 - Early RCV register.
  */
-#define NIC_ERCV        NIC_BASE + 0x0C
+#define NIC_ERCV        (LANC111_BASE_ADDR + 0x0C)
 
 /*!
  * \brief PHY control register.
@@ -691,6 +760,15 @@ static INLINE int NicMmuWait(u_short tmo)
  */
 static int NicReset(void)
 {
+#ifdef LANC111_RESET_BIT
+    sbi(LANC111_RESET_DDR, LANC111_RESET_BIT);
+    sbi(LANC111_RESET_PORT, LANC111_RESET_BIT);
+    NutDelay(WAIT100);
+    cbi(LANC111_RESET_PORT, LANC111_RESET_BIT);
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+#endif
+
     /* Disable all interrupts. */
     nic_outlb(NIC_MSK, 0);
 
@@ -1071,9 +1149,8 @@ THREAD(NicRxLanc, arg)
     }
     NicStart(ifn->if_mac);
 
-    sbi(EICR, 2);
-    sbi(EICR, 3);
-    sbi(EIMSK, LAN_SIGNAL_BIT);
+    LANC111_SIGNAL_MODE();
+    sbi(EIMSK, LANC111_SIGNAL_IRQ);
 
     NutEventPost(&mutex);
 
@@ -1154,11 +1231,11 @@ int LancOutput(NUTDEVICE * dev, NETBUF * nb)
 int LancInit(NUTDEVICE * dev)
 {
     /* Disable NIC interrupt and clear NICINFO structure. */
-    cbi(EIMSK, LAN_SIGNAL_BIT);
+    cbi(EIMSK, LANC111_SIGNAL_IRQ);
     memset(dev->dev_dcb, 0, sizeof(NICINFO));
 
     /* Register interrupt handler and enable interrupts. */
-    if (NutRegisterIrqHandler(&LAN_SIGNAL, NicInterrupt, dev))
+    if (NutRegisterIrqHandler(&LANC111_SIGNAL, NicInterrupt, dev))
         return -1;
 
     /*

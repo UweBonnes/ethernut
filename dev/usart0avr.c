@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/09/22 08:14:48  haraldkipp
+ * Made configurable
+ *
  * Revision 1.2  2004/05/24 20:17:15  drsung
  * Added function UsartSize to return number of chars in input buffer.
  *
@@ -45,13 +48,66 @@
  *
  */
 
+#include <cfg/arch/avr.h>
+#include <cfg/arch/avrpio.h>
+
+/*!
+ * \name UART0 RTS Handshake Control
+ *
+ * \ref UART0_RTS_BIT must be defined in arch/avr.h
+ */
+#ifdef UART0_RTS_BIT
+
+#if (PIO_NAME(UART0_RTS_PORT) == PIO_PORTB)
+#define UART_RTS_DDR   DDRB
+
+#elif (PIO_NAME(UART0_RTS_PORT) == PIO_PORTD)
+#define UART_RTS_DDR   DDRD
+
+#elif (PIO_NAME(UART0_RTS_PORT) == PIO_PORTE)
+#define UART_RTS_DDR   DDRE
+
+#elif (PIO_NAME(UART0_RTS_PORT) == PIO_PORTF)
+#define UART_RTS_DDR   DDRF
+
+#endif
+#define UART_RTS_PORT   UART0_RTS_PORT
+#define UART_RTS_BIT    UART0_RTS_BIT
+
+#endif /* UART0_RTS_BIT */
+
+/*!
+ * \name UART0 Half Duplex Control
+ *
+ * \ref UART0_HDX_BIT must be defined in arch/avr.h
+ */
+#ifdef UART0_HDX_BIT
+
+#if (PIO_NAME(UART0_HDX_PORT) == PIO_PORTB)
+#define UART_HDX_DDR   DDRB
+
+#elif (PIO_NAME(UART0_HDX_PORT) == PIO_PORTD)
+#define UART_HDX_DDR   DDRD
+
+#elif (PIO_NAME(UART0_HDX_PORT) == PIO_PORTE)
+#define UART_HDX_DDR   DDRE
+
+#elif (PIO_NAME(UART0_HDX_PORT) == PIO_PORTF)
+#define UART_HDX_DDR   DDRF
+
+#endif
+#define UART_HDX_PORT   UART0_HDX_PORT
+#define UART_HDX_BIT    UART0_HDX_BIT
+
+#endif /* UART0_HDX_BIT */
+
+
 #include <string.h>
 
 #include <sys/atom.h>
 #include <sys/event.h>
 #include <sys/timer.h>
 
-#include <cfg/modem.h>
 #include <dev/irqreg.h>
 #include <dev/usartavr.h>
 
@@ -147,71 +203,71 @@ NUTDEVICE devUsartAvr0 = {
 };
 /*@}*/
 
-/*!
- * \name UART0 RTS Handshake Control
- *
- * \ref UART0_RTS_BIT must be defined in modem.h
- */
-/*@{*/
-
-#ifdef UART0_RTS_BIT
-
-/*! Port output register of \ref UART_RTS_BIT. */
-#define UART_RTS_PORT   UART0_RTS_PORT
-/*! Data direction register of \ref UART_RTS_BIT. */
-#define UART_RTS_DDR    UART0_RTS_DDR
-/*! RTS handshake control bit. */
-#define UART_RTS_BIT    UART0_RTS_BIT
-
-#endif
-
-/*@}*/
-
 
 /*!
  * \name UART0 CTS Handshake Sense
  *
- * \ref UART0_CTS_BIT must be defined in modem.h
+ * \ref UART0_CTS_IRQ must be defined in arch/avr.h
  */
-/*@{*/
+#if (UART0_CTS_IRQ == INT0)
+#define UART_CTS_SIGNAL sig_INTERRUPT0
+#define UART_CTS_BIT    0
+#define UART_CTS_PORT   PORTD
+#define UART_CTS_PIN    PIND
+#define UART_CTS_DDR    DDRD
 
-#ifdef UART0_CTS_BIT
+#elif (UART0_CTS_IRQ == INT1)
+#define UART_CTS_SIGNAL sig_INTERRUPT1
+#define UART_CTS_BIT    1
+#define UART_CTS_PORT   PORTD
+#define UART_CTS_PIN    PIND
+#define UART_CTS_DDR    DDRD
 
-/*! Port output register of \ref UART_CTS_BIT. */
-#define UART_CTS_PORT   UART0_CTS_PORT
-/*! Port input register of \ref UART_CTS_BIT. */
-#define UART_CTS_PIN    UART0_CTS_PIN
-/*! Data direction register of \ref UART_CTS_BIT. */
-#define UART_CTS_DDR    UART0_CTS_DDR
-/*! Interrupt signal of \ref UART_CTS_BIT. */
-#define UART_CTS_SIGNAL UART0_CTS_SIGNAL
-/*! CTS handshake sense bit. */
-#define UART_CTS_BIT    UART0_CTS_BIT
+#elif (UART0_CTS_IRQ == INT2)
+#define UART_CTS_SIGNAL sig_INTERRUPT2
+#define UART_CTS_BIT    2
+#define UART_CTS_PORT   PORTD
+#define UART_CTS_PIN    PIND
+#define UART_CTS_DDR    DDRD
+
+#elif (UART0_CTS_IRQ == INT3)
+#define UART_CTS_SIGNAL sig_INTERRUPT3
+#define UART_CTS_BIT    3
+#define UART_CTS_PORT   PORTD
+#define UART_CTS_PIN    PIND
+#define UART_CTS_DDR    DDRD
+
+#elif (UART0_CTS_IRQ == INT4)
+#define UART_CTS_SIGNAL sig_INTERRUPT4
+#define UART_CTS_BIT    4
+#define UART_CTS_PORT   PORTE
+#define UART_CTS_PIN    PINE
+#define UART_CTS_DDR    DDRE
+
+#elif (UART0_CTS_IRQ == INT5)
+#define UART_CTS_SIGNAL sig_INTERRUPT5
+#define UART_CTS_BIT    5
+#define UART_CTS_PORT   PORTE
+#define UART_CTS_PIN    PINE
+#define UART_CTS_DDR    DDRE
+
+#elif (UART0_CTS_IRQ == INT6)
+#define UART_CTS_SIGNAL sig_INTERRUPT6
+#define UART_CTS_BIT    6
+#define UART_CTS_PORT   PORTE
+#define UART_CTS_PIN    PINE
+#define UART_CTS_DDR    DDRE
+
+#elif (UART0_CTS_IRQ == INT7)
+#define UART_CTS_SIGNAL sig_INTERRUPT7
+#define UART_CTS_BIT    7
+#define UART_CTS_PORT   PORTE
+#define UART_CTS_PIN    PINE
+#define UART_CTS_DDR    DDRE
 
 #endif
 
-/*@}*/
 
-
-/*!
- * \name UART0 Half Duplex Control
- *
- * \ref UART0_HDX_BIT must be defined in modem.h
- */
-/*@{*/
-
-#ifdef UART0_HDX_BIT
-
-/*! Port output register of \ref UART_HDX_BIT. */
-#define UART_HDX_PORT   UART0_HDX_PORT
-/*! Data direction register of \ref UART_HDX_BIT. */
-#define UART_HDX_DDR    UART0_HDX_DDR
-/*! Half duplex control bit. */
-#define UART_HDX_BIT    UART0_HDX_BIT
-
-#endif
-
-/*@}*/
 /*@}*/
 
 

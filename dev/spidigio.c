@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/09/22 08:14:48  haraldkipp
+ * Made configurable
+ *
  * Revision 1.2  2004/09/08 10:53:25  haraldkipp
  * os/timer.c
  *
@@ -57,7 +60,98 @@
  * This header file specifies the hardware port bits. You
  * need to change or replace it, if your hardware differs.
  */
-#include <cfg/coconut.h>
+#include <cfg/arch/avr.h>
+#include <cfg/arch/avrpio.h>
+
+/*
+ * Determine ports, which had not been explicitly configured.
+ */
+#ifndef SPIDIGIO_SOUT_BIT
+#define SPIDIGIO_SOUT_BIT 5
+#define SPIDIGIO_SOUT_PORT PORTD
+#define SPIDIGIO_SIN_BIT 6
+#define SPIDIGIO_SIN_PIN PIND
+#define SPIDIGIO_SCLK_BIT 7
+#define SPIDIGIO_SCLK_PORT PORTD
+#define SPIDIGIO_LDI_BIT 7
+#define SPIDIGIO_LDI_PORT PORTB
+#define SPIDIGIO_LDO_BIT 5
+#define SPIDIGIO_LDO_PORT PORTB
+#endif
+
+#if (PIO_NAME(SPIDIGIO_SOUT_PORT) == PIO_PORTB)
+#define SPIDIGIO_SOUT_DDR   DDRB
+
+#elif (PIO_NAME(SPIDIGIO_SOUT_PORT) == PIO_PORTD)
+#define SPIDIGIO_SOUT_DDR   DDRD
+
+#elif (PIO_NAME(SPIDIGIO_SOUT_PORT) == PIO_PORTE)
+#define SPIDIGIO_SOUT_DDR   DDRE
+
+#elif (PIO_NAME(SPIDIGIO_SOUT_PORT) == PIO_PORTF)
+#define SPIDIGIO_SOUT_DDR   DDRF
+
+#endif
+
+#if (PIO_NAME(SPIDIGIO_SIN_PIN) == PIO_PINB)
+#define SPIDIGIO_SIN_PORT   PORTB
+#define SPIDIGIO_SIN_DDR    DDRB
+
+#elif (PIO_NAME(SPIDIGIO_SIN_PIN) == PIO_PIND)
+#define SPIDIGIO_SIN_PORT   PORTD
+#define SPIDIGIO_SIN_DDR    DDRD
+
+#elif (PIO_NAME(SPIDIGIO_SIN_PIN) == PIO_PINE)
+#define SPIDIGIO_SIN_PORT   PORTE
+#define SPIDIGIO_SIN_DDR    DDRE
+
+#elif (PIO_NAME(SPIDIGIO_SIN_PIN) == PIO_PINF)
+#define SPIDIGIO_SIN_PORT   PORTF
+#define SPIDIGIO_SIN_DDR    DDRF
+
+#endif
+
+#if (PIO_NAME(SPIDIGIO_SCLK_PORT) == PIO_PORTB)
+#define SPIDIGIO_SCLK_DDR   DDRB
+
+#elif (PIO_NAME(SPIDIGIO_SCLK_PORT) == PIO_PORTD)
+#define SPIDIGIO_SCLK_DDR   DDRD
+
+#elif (PIO_NAME(SPIDIGIO_SCLK_PORT) == PIO_PORTE)
+#define SPIDIGIO_SCLK_DDR   DDRE
+
+#elif (PIO_NAME(SPIDIGIO_SCLK_PORT) == PIO_PORTF)
+#define SPIDIGIO_SCLK_DDR   DDRF
+
+#endif
+
+#if (PIO_NAME(SPIDIGIO_LDO_PORT) == PIO_PORTB)
+#define SPIDIGIO_LDO_DDR    DDRB
+
+#elif (PIO_NAME(SPIDIGIO_LDO_PORT) == PIO_PORTD)
+#define SPIDIGIO_LDO_DDR    DDRD
+
+#elif (PIO_NAME(SPIDIGIO_LDO_PORT) == PIO_PORTE)
+#define SPIDIGIO_LDO_DDR    DDRE
+
+#elif (PIO_NAME(SPIDIGIO_LDO_PORT) == PIO_PORTF)
+#define SPIDIGIO_LDO_DDR    DDRF
+
+#endif
+
+#if (PIO_NAME(SPIDIGIO_LDI_PORT) == PIO_PORTB)
+#define SPIDIGIO_LDI_DDR    DDRB
+
+#elif (PIO_NAME(SPIDIGIO_LDI_PORT) == PIO_PORTD)
+#define SPIDIGIO_LDI_DDR    DDRD
+
+#elif (PIO_NAME(SPIDIGIO_LDI_PORT) == PIO_PORTE)
+#define SPIDIGIO_LDI_DDR    DDRE
+
+#elif (PIO_NAME(SPIDIGIO_LDI_PORT) == PIO_PORTF)
+#define SPIDIGIO_LDI_DDR    DDRF
+
+#endif
 
 /*
  * The following header file contains the prototypes of
@@ -115,12 +209,12 @@ static INLINE void delay_us(ureg_t us)
 static INLINE void ShiftDigital(void)
 {
     /* Switch clock line low. */
-    cbi(ENUT_SCLK_PORT, ENUT_SCLK_BIT);
+    cbi(SPIDIGIO_SCLK_PORT, SPIDIGIO_SCLK_BIT);
     /* Four microseconds delay. */
     delay_us(4);
 
     /* Switch clock line back high. */
-    sbi(ENUT_SCLK_PORT, ENUT_SCLK_BIT);
+    sbi(SPIDIGIO_SCLK_PORT, SPIDIGIO_SCLK_BIT);
     /* Four microseconds delay. */
     delay_us(4);
 }
@@ -147,16 +241,16 @@ u_long SpiDigitalGet(ureg_t num)
 {
     u_long bits = 0;
 
-    cbi(ENUT_SOUT_PORT, ENUT_SOUT_BIT);
+    cbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
 
     /*
      * Toggle the input strobe. The shift register will latch
      * the current value at the parallel inputs into the shift
      * register.
      */
-    sbi(ENUT_LDI_PORT, ENUT_LDI_BIT);
+    sbi(SPIDIGIO_LDI_PORT, SPIDIGIO_LDI_BIT);
     delay_us(4);
-    cbi(ENUT_LDI_PORT, ENUT_LDI_BIT);
+    cbi(SPIDIGIO_LDI_PORT, SPIDIGIO_LDI_BIT);
     delay_us(4);
 
     /* Loop for the specified number of bits. */
@@ -170,7 +264,7 @@ u_long SpiDigitalGet(ureg_t num)
          * significant bit of the resulting value. Otherwise leave 
          * it zero.
          */
-        if (bit_is_set(ENUT_SIN_PIN, ENUT_SIN_BIT)) {
+        if (bit_is_set(SPIDIGIO_SIN_PIN, SPIDIGIO_SIN_BIT)) {
             bits |= 1;
         }
 
@@ -223,11 +317,11 @@ void SpiDigitalSet(ureg_t num, u_long bits)
              */
             if (bits & mask) {
                 /* Set bit instruction. */
-                sbi(ENUT_SOUT_PORT, ENUT_SOUT_BIT);
+                sbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
             } 
             else {
                 /* Clear bit instruction. */
-                cbi(ENUT_SOUT_PORT, ENUT_SOUT_BIT);
+                cbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
             }
 
             /* Let the value get settled. */
@@ -244,9 +338,9 @@ void SpiDigitalSet(ureg_t num, u_long bits)
          * Toggle the output strobe line. The shift register will latch
          * the shifted value and present it at its parallel output pins.
          */
-        cbi(ENUT_LDO_PORT, ENUT_LDO_BIT);
+        cbi(SPIDIGIO_LDO_PORT, SPIDIGIO_LDO_BIT);
         delay_us(4);
-        sbi(ENUT_LDO_PORT, ENUT_LDO_BIT);
+        sbi(SPIDIGIO_LDO_PORT, SPIDIGIO_LDO_BIT);
     }
 }
 
@@ -285,18 +379,18 @@ static ureg_t CountDigitalShifts(ureg_t num, ureg_t bit, ureg_t smode)
      * Input lines are latched on the falling edge.
      */
     if (smode) {
-        sbi(ENUT_LDI_PORT, ENUT_LDI_BIT);
+        sbi(SPIDIGIO_LDI_PORT, SPIDIGIO_LDI_BIT);
         delay_us(4);
-        cbi(ENUT_LDI_PORT, ENUT_LDI_BIT);
+        cbi(SPIDIGIO_LDI_PORT, SPIDIGIO_LDI_BIT);
     }
 
     /*
      * Set the shift register input.
      */
     if (bit) {
-        sbi(ENUT_SOUT_PORT, ENUT_SOUT_BIT);
+        sbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
     } else {
-        cbi(ENUT_SOUT_PORT, ENUT_SOUT_BIT);
+        cbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
     }
     delay_us(4);
 
@@ -305,7 +399,7 @@ static ureg_t CountDigitalShifts(ureg_t num, ureg_t bit, ureg_t smode)
      * position.
      */
     for (i = 0; i < num; i++) {
-        if (bit_is_set(ENUT_SIN_PIN, ENUT_SIN_BIT)) {
+        if (bit_is_set(SPIDIGIO_SIN_PIN, SPIDIGIO_SIN_BIT)) {
             if (bit) {
                 if (smode) {
                     rc = i + 1;
@@ -358,34 +452,34 @@ void SpiDigitalInit(ureg_t * inputs, ureg_t * outputs)
     /*
      * Set serial data output line direction.
      */
-    sbi(ENUT_SOUT_DDR, ENUT_SOUT_BIT);
+    sbi(SPIDIGIO_SOUT_DDR, SPIDIGIO_SOUT_BIT);
 
     /*
      * Set serial data input line direction and enable pullup.
      */
-    sbi(ENUT_SIN_PORT, ENUT_SIN_BIT);
-    cbi(ENUT_SIN_DDR, ENUT_SIN_BIT);
+    sbi(SPIDIGIO_SIN_PORT, SPIDIGIO_SIN_BIT);
+    cbi(SPIDIGIO_SIN_DDR, SPIDIGIO_SIN_BIT);
 
     /*
      * Clock. Input data is shifted on the falling, output data on the 
      * rising edge.
      */
-    sbi(ENUT_SCLK_PORT, ENUT_SCLK_BIT);
-    sbi(ENUT_SCLK_DDR, ENUT_SCLK_BIT);
+    sbi(SPIDIGIO_SCLK_PORT, SPIDIGIO_SCLK_BIT);
+    sbi(SPIDIGIO_SCLK_DDR, SPIDIGIO_SCLK_BIT);
 
     /*
      * UCN5841 output strobe. Shift register data appears on the output 
      * pins as long as this line is held high.
      */
-    sbi(ENUT_LDO_PORT, ENUT_LDO_BIT);
-    sbi(ENUT_LDO_DDR, ENUT_LDO_BIT);
+    sbi(SPIDIGIO_LDO_PORT, SPIDIGIO_LDO_BIT);
+    sbi(SPIDIGIO_LDO_DDR, SPIDIGIO_LDO_BIT);
 
     /*
      * SN74HC165 input strobe. Data at input pins is latched in the shift 
      * register on the falling edge.
      */
-    cbi(ENUT_LDI_PORT, ENUT_LDI_BIT);
-    sbi(ENUT_LDI_DDR, ENUT_LDI_BIT);
+    cbi(SPIDIGIO_LDI_PORT, SPIDIGIO_LDI_BIT);
+    sbi(SPIDIGIO_LDI_DDR, SPIDIGIO_LDI_BIT);
 
     /*
      * Fill the shift register with zeros. Then shift in ones until the 
