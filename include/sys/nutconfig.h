@@ -1,5 +1,5 @@
-#ifndef _CPU_M68K_H_
-#define _CPU_M68K_H_
+#ifndef _SYS_NUTCONFIG_H_
+#define _SYS_NUTCONFIG_H_
 
 /*
  * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
@@ -35,11 +35,33 @@
 
 /*
  * $Log$
- * Revision 1.1  2004/02/01 18:49:48  haraldkipp
- * Added CPU family support
+ * Revision 1.1  2004/03/16 16:56:21  haraldkipp
+ * Added Jan Dubiec's H8/300 port.
  *
  */
 
+/*!
+ * \file sys/config.h
+ * \brief Hardware configuration.
+ */
+
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+/* Ethernut board. */
+#include <cfg/ethernut.h>
+
+/* Modem handshake line. */
+#include <cfg/modem.h>
+
+/* Ethernut MP3 add-on. */
+#include <cfg/medianut.h>
+
+/* Ethernut RS232 multiport. */
+#include <cfg/coconut.h>
+
+#elif defined(__H8300H__) || defined(__H8300S__)
+
+#include <cfg/rport.h>
+
 #endif
 
-
+#endif
