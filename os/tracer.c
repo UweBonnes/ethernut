@@ -39,7 +39,7 @@
  * \note  Only supported on AVR-GCC platform
  * 
  */
-#if defined(__GNUC__) && (defined(__AVR__)
+#if defined(__GNUC__) && defined(__AVR__)
  
 /************************************************/
 /* includes */
