@@ -32,8 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2003/05/09 14:41:58  haraldkipp
-# Initial revision
+# Revision 1.2  2003/11/24 18:12:40  drsung
+# Added sntp.c to sources
+#
+# Revision 1.1.1.1  2003/05/09 14:41:58  haraldkipp
+# Initial using 3.2.1
 #
 # Revision 1.7  2003/02/04 18:18:46  harald
 # Clean up ICC leftovers
@@ -64,7 +67,7 @@ top_srcdir = ..
 
 include $(top_srcdir)/Makedefs
 
-SRCS =  dhcpc.c resolv.c httpd.c auth.c cgi.c dencode.c
+SRCS =  dhcpc.c resolv.c httpd.c auth.c cgi.c dencode.c sntp.c
 
 OBJS = $(SRCS:.c=.o)
 
