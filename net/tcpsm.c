@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:10:31  haraldkipp
+ * Two bugfixes: 1. NutTcpAccept fails if caller got higher priority.
+ * 2. Incoming TCP NETBUFs will never be released if TCP is not used by
+ * the application.
+ *
  * Revision 1.2  2003/07/13 19:22:23  haraldkipp
  * TCP transfer speed increased by changing the character receive buffer
  * in TCPSOCKET to a NETBUF queue. (More confusing diff lines by using
@@ -455,7 +460,10 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              * ACK of SYN received.
              */
             /* wake up accepting thread on passive socket. */
-            NutEventPost(&sock->so_pc_tq);
+            /* We previously used NutEventPost, which caused NutTcpAccept to 
+               fail when the accepting thread is higher priority than the
+               tcpsm thread. Thanks to Ralph Mason. */
+            NutEventPostAsync(&sock->so_pc_tq);
             break;
         case TCPS_FIN_WAIT_1:
             /*
@@ -1421,6 +1429,17 @@ void NutTcpStateMachine(NETBUF * nb)
     u_short size;
 
     nb->nb_next = 0;
+
+    /*
+     * Incoming TCP segments are rejected and released if no TCP
+     * sockets have been opened. Not doing so would add them
+     * to the queue and never release the NETBUF. Thanks to
+     * Ralph Mason for this fix.
+     */
+    if (tcpThread == 0) {
+        NutTcpReject(nb);
+        return;
+    }
 
     if ((nbp = tcp_in_nbq) == 0) {
         tcp_in_nbq = nb;
