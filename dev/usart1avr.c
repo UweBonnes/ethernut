@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/10/03 18:43:44  haraldkipp
+ * Some drivers may require the base address set to 1
+ *
  * Revision 1.3  2004/09/22 08:14:48  haraldkipp
  * Made configurable
  *
@@ -191,7 +194,7 @@ NUTDEVICE devUsartAvr1 = {
     0,                          /* Pointer to next device, dev_next. */
     {'u', 'a', 'r', 't', '1', 0, 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
-    0,                          /* Base address, dev_base (not used). */
+    1,                          /* Base address, dev_base. */
     0,                          /* First interrupt number, dev_irq (not used). */
     0,                          /* Interface control block, dev_icb (not used). */
     &dcb_usart1,                /* Driver control block, dev_dcb. */
