@@ -33,8 +33,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:46  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/03 17:42:19  drsung
+ * Bugfix in NutSaveConfig. Write only to eeprom if actual byte in
+ * eeprom differs from byte to write.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:46  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 18:17:07  harald
  * Version 3 released
@@ -56,8 +60,7 @@ CONFOS confos;
 int NutLoadConfig(void)
 {
     eeprom_read_block(&confos, CONFOS_EE_OFFSET, sizeof(CONFOS));
-    if (confos.size != sizeof(CONFOS) || confos.magic[0] != 'O'
-        || confos.magic[1] != 'S') {
+    if (confos.size != sizeof(CONFOS) || confos.magic[0] != 'O' || confos.magic[1] != 'S') {
         return -1;
     }
     return 0;
@@ -76,8 +79,9 @@ int NutSaveConfig(void)
     confos.size = sizeof(CONFOS);
     confos.magic[0] = 'O';
     confos.magic[1] = 'S';
-    for (cp = (u_char *) & confos, i = 0; i < sizeof(CONFOS); i++)
-        eeprom_write_byte((void *) (i + CONFOS_EE_OFFSET), *cp++);
+    for (cp = (u_char *) & confos, i = 0; i < sizeof(CONFOS); cp++, i++)
+        if (eeprom_read_byte((void *) (i + CONFOS_EE_OFFSET)) != *cp)
+            eeprom_write_byte((void *) (i + CONFOS_EE_OFFSET), *cp);
 
     return 0;
 }
