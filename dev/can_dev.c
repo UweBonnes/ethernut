@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/06/23 10:17:04  olereinhardt
+ * Added buffer monitoring functions (free / avail)
+ *
  * Revision 1.1  2004/06/07 15:15:28  olereinhardt
  * Initial checkin
  *
@@ -68,11 +71,16 @@ void CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame)
 
 u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
-    if (((IFCAN *)(dev->dev_icb))->can_txfree) {
+    if (((IFCAN *)(dev->dev_icb))->can_txfree(dev)) {
         (((IFCAN *)(dev->dev_icb))->can_send)(dev, frame);
         return 0;
     }
     return 1;
+}
+
+u_char CAN_TxFree(NUTDEVICE *dev)
+{
+    return ((IFCAN *)(dev->dev_icb))->can_txfree(dev);
 }
 
 void CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame)
@@ -82,12 +90,19 @@ void CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame)
 
 u_char CAN_TryRXFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
-    if (((IFCAN *)(dev->dev_icb))->can_rxavail) {
+    if (((IFCAN *)(dev->dev_icb))->can_rxavail(dev)) {
         (((IFCAN *)(dev->dev_icb))->can_recv)(dev, frame);
         return 0;
     }
     return 1;
 }
+
+u_char CAN_RxAvail(NUTDEVICE *dev)
+{
+    return ((IFCAN *)(dev->dev_icb))->can_rxavail(dev);
+}
+
+
 #else
 
 void keep_icc_happy(void)
