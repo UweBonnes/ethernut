@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/18 10:49:59  haraldkipp
+ * Comments updated
+ *
  * Revision 1.5  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -154,10 +157,9 @@
 /*@{*/
 
 /*!
- * Network interface setup.
+ * \brief Network interface setup.
  *
- * \param dev     Identifies the network device to setup. This pointer must 
- *                have been retrieved previously by calling NutDeviceOpen().
+ * \param dev     Identifies the network device to setup.
  * \param ip_addr Specified IP address in network byte order.
  * \param ip_mask Specified IP network mask in network byte order.
  * \param gateway Optional default gateway.
@@ -165,7 +167,7 @@
  * \return 0 on success, -1 otherwise.
  *
  * \note Typical applications do not use this function, but call 
- *       NutNetIfConfig() or NutNetAutoConfig().
+ *       NutDhcpIfConfig() or NutNetIfConfig().
  */
 int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gateway)
 {
@@ -222,7 +224,7 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
  * calling this function.
  *
  * For Ethernet devices applications may alternatively call 
- * NutNetAutoConfig(), which allows automatic configuration by DHCP or 
+ * NutDhcpIfConfig(), which allows automatic configuration by DHCP or 
  * the so called ARP method.
  *
  * \param name    Name of the device to configure.
@@ -249,13 +251,13 @@ int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mas
 }
 
 /*!
- * \brief Configure a network interface.
+ * \brief Configure a network interface including the default gateway.
  *
  * Devices must have been registered by NutRegisterDevice() before 
  * calling this function.
  *
  * For Ethernet devices applications may alternatively call 
- * NutNetAutoConfig(), which allows automatic configuration by DHCP or 
+ * NutDhcpIfConfig(), which allows automatic configuration by DHCP or 
  * the so called ARP method.
  *
  * \param name    Name of the device to configure.
@@ -275,8 +277,11 @@ int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mas
  *                is the default.
  * \param gateway Specified IP address of gateway or next router in LAN.
  *                
- *
  * \return 0 on success, -1 otherwise.
+ *
+ * \note I do not like this function, because setting a gateway should
+ *       be handled by NutIpRouteAdd(). It's not yet deprecated, but I
+ *       recommend not to use it in application code.
  */
 int NutNetIfConfig2(CONST char *name, void *params, u_long ip_addr, u_long ip_mask, u_long gateway)
 {
