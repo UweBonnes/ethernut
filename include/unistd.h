@@ -42,6 +42,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2005/02/21 11:08:45  olereinhardt
+ * For unix plattforms I added #include "/usr/include/unistd.h" since some
+ * functions needed for unix_nutinit.c are missing in this file...
+ *
  * Revision 1.1  2005/02/05 20:37:17  haraldkipp
  * Peanut added
  *
@@ -51,6 +55,12 @@
 
 #include <sys/types.h>
 
+#if defined(__linux__) || defined(__APPLE__)
+
+#include "/usr/include/unistd.h"
+
+#else
+
 __BEGIN_DECLS
 /* */
 extern int access(CONST char *path, int what);
@@ -59,4 +69,5 @@ extern int rmdir(CONST char *path);
 extern int unlink(CONST char *path);
 __END_DECLS
 /* */
+#endif
 #endif
