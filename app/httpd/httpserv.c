@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.7  2005/02/22 02:44:34  hwmaier
+ * Changes to compile as well for AT90CAN128 device.
+ *
  * Revision 1.6  2004/12/16 10:17:18  haraldkipp
  * Added Mikael Adolfsson's excellent parameter parsing routines.
  *
@@ -102,8 +105,8 @@ static char *html_mt = "text/html";
  *
  * See httpd.h for REQUEST structure.
  *
- * This routine must have been registered by NutRegisterCgi() and is 
- * automatically called by NutHttpProcessRequest() when the client 
+ * This routine must have been registered by NutRegisterCgi() and is
+ * automatically called by NutHttpProcessRequest() when the client
  * request the URL 'cgi-bin/test.cgi'.
  */
 static int ShowQuery(FILE * stream, REQUEST * req)
@@ -132,8 +135,8 @@ static int ShowQuery(FILE * stream, REQUEST * req)
     /* Send HTML header. */
     fputs_P(head, stream);
 
-    /* 
-     * Send request parameters. 
+    /*
+     * Send request parameters.
      */
     switch (req->req_method) {
     case METHOD_GET:
@@ -173,8 +176,8 @@ static int ShowQuery(FILE * stream, REQUEST * req)
 /*
  * CGI Sample: Show list of threads.
  *
- * This routine must have been registered by NutRegisterCgi() and is 
- * automatically called by NutHttpProcessRequest() when the client 
+ * This routine must have been registered by NutRegisterCgi() and is
+ * automatically called by NutHttpProcessRequest() when the client
  * request the URL 'cgi-bin/threads.cgi'.
  */
 static int ShowThreads(FILE * stream, REQUEST * req)
@@ -213,8 +216,8 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 /*
  * CGI Sample: Show list of timers.
  *
- * This routine must have been registered by NutRegisterCgi() and is 
- * automatically called by NutHttpProcessRequest() when the client 
+ * This routine must have been registered by NutRegisterCgi() and is
+ * automatically called by NutHttpProcessRequest() when the client
  * request the URL 'cgi-bin/timers.cgi'.
  */
 static int ShowTimers(FILE * stream, REQUEST * req)
@@ -255,8 +258,8 @@ static int ShowTimers(FILE * stream, REQUEST * req)
 /*
  * CGI Sample: Show list of sockets.
  *
- * This routine must have been registered by NutRegisterCgi() and is 
- * automatically called by NutHttpProcessRequest() when the client 
+ * This routine must have been registered by NutRegisterCgi() and is
+ * automatically called by NutHttpProcessRequest() when the client
  * request the URL 'cgi-bin/sockets.cgi'.
  */
 static int ShowSockets(FILE * stream, REQUEST * req)
@@ -351,8 +354,8 @@ static int ShowSockets(FILE * stream, REQUEST * req)
 /*
  * CGI Sample: Proccessing a form.
  *
- * This routine must have been registered by NutRegisterCgi() and is 
- * automatically called by NutHttpProcessRequest() when the client 
+ * This routine must have been registered by NutRegisterCgi() and is
+ * automatically called by NutHttpProcessRequest() when the client
  * request the URL 'cgi-bin/form.cgi'.
  *
  * Thanks to Tom Boettger, who provided this sample for ICCAVR.
@@ -440,7 +443,7 @@ THREAD(Service, arg)
 #endif
 
         /*
-         * Wait until at least 8 kByte of free RAM is available. This will 
+         * Wait until at least 8 kByte of free RAM is available. This will
          * keep the client connected in low memory situations.
          */
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
@@ -459,7 +462,7 @@ THREAD(Service, arg)
             printf("[%u] Creating stream device failed\n", id);
         } else {
             /*
-             * This API call saves us a lot of work. It will parse the 
+             * This API call saves us a lot of work. It will parse the
              * client's HTTP request, send any requested file from the
              * registered file system or handle CGI requests by calling
              * our registered CGI routine.
@@ -481,7 +484,7 @@ THREAD(Service, arg)
 }
 
 /*!
- * \brief Main application routine. 
+ * \brief Main application routine.
  *
  * Nut/OS automatically calls this entry after initialization.
  */
@@ -493,7 +496,7 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     NutRegisterDevice(&devDebug0, 0, 0);
     freopen("uart0", "w", stdout);
 #else
@@ -514,7 +517,7 @@ int main(void)
     /*
      * Register Ethernet controller.
      */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5))
 #else
     if (NutRegisterDevice(&devEth0, NIC_IO_BASE, 0))
