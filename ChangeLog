@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.43 2004/03/08 11:30:05 haraldkipp Exp $
+$Id: ChangeLog,v 1.44 2004/03/09 11:51:54 haraldkipp Exp $
+
+2004-03-09  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/dev/ahdlcavr.h: This one was missing.
+
 
 2004-03-08  Harald Kipp  <harald.kipp@egnite.de>
 
