@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.91 2004/07/30 19:58:03 drsung Exp $
+$Id: ChangeLog,v 1.92 2004/08/02 10:15:24 olereinhardt Exp $
+
+2004-08-02  Ole Reinhardt
+    * include/can_dev.h dev/can_dev.c
+    Changed typing of CAN_TryRxFrame. Hope this will not concern too much
+    people
+
+    * include/adc.h dev/adc.c
+    Initial import of an ADC driver for ATMega128 / AVR-GCC
 
 2004-07-30  Oliver Schulz  <olischulz@web.de>
 
