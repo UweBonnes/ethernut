@@ -1,11 +1,11 @@
-$Id: ChangeLog,v 1.37 2004/02/25 16:35:37 haraldkipp Exp $
+$Id: ChangeLog,v 1.38 2004/02/25 16:38:39 haraldkipp Exp $
 
 2004-02-01  Harald Kipp  <harald.kipp@egnite.de>
 
 	* dev/debug*.c: Added ioctl baudrate support.
 
-	* dev/lanc111.c: Avoid chip initialization with MAC address zero.
-	This is a quick hack for all this init mess.
+	* dev/lanc111.c, net/ifconfig.c: Avoid chip initialization with MAC 
+	address zero. This is a quick hack for all this init mess.
 
 	* include/pro/dhcp.h: Added NutDhcpRelease prototype.
 
