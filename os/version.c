@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/02/07 15:24:46  haraldkipp
+ * ARP cache bugfix.
+ *
  * Revision 1.12  2005/02/06 16:35:33  haraldkipp
  * *** empty log message ***
  *
@@ -84,8 +87,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090401UL
-static CONST char os_version_string[] = "3.9.4.1 pre";
+#define OS_VERSION_NUMBER  0x03090501UL
+static CONST char os_version_string[] = "3.9.5.1 pre";
 
 /*!
  * \addtogroup xgNutInit
