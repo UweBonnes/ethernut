@@ -29,6 +29,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/19 07:46:23  jdubiec
+ * Make this file independent on sys/types.h due to compilation problems.
+ *
  * Revision 1.1  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -60,7 +63,7 @@
 #define EEPROM_WORD             8       /* 93LC66A : 1 word = 8 bit */
 
 
-static const u_short bitmask[16] = {
+static const unsigned short bitmask[16] = {
     0x0001,                     /* 0000 0000 0000 0001 */
     0x0002,                     /* 0000 0000 0000 0010 */
     0x0004,                     /* 0000 0000 0000 0100 */
@@ -102,9 +105,9 @@ static void eeprom_disable(void)
     microdelay();
 }
 
-static u_char eeprom_pulse(u_char di)
+static unsigned char eeprom_pulse(unsigned char di)
 {
-    u_char buf;
+    unsigned char buf;
 
     EEPROM_DI = di;
     EEPROM_SK = EEPROM_HIGH;
@@ -117,21 +120,21 @@ static u_char eeprom_pulse(u_char di)
     return buf;
 }
 
-u_char eeprom_read_byte(const u_char * addr)
+unsigned char eeprom_read_byte(const unsigned char *addr)
 {
     signed char i;
-    u_char c;
-    u_short cmd;
+    unsigned char c;
+    unsigned short cmd;
 
     eeprom_enable();
 
-    cmd = 0x0c00 | (uptr_t) addr;
+    cmd = 0x0c00 | (size_t) addr;
     for (i = 11; i >= 0; --i)
         eeprom_pulse(EEPROM_MASK(cmd, bitmask[i]));
 
     c = 0;
     for (i = 7; i >= 0; --i)
-        c += ((u_char) eeprom_pulse(EEPROM_LOW) << i);
+        c += ((unsigned char) eeprom_pulse(EEPROM_LOW) << i);
 
     eeprom_disable();
 
@@ -140,20 +143,20 @@ u_char eeprom_read_byte(const u_char * addr)
 
 void eeprom_read_block(void *buf, const void *addr, size_t n)
 {
-    u_char *p, *d;
+    unsigned char *p, *d;
 
-    p = (u_char *) addr;
-    d = (u_char *) buf;
+    p = (unsigned char *) addr;
+    d = (unsigned char *) buf;
 
     while (n-- > 0)
         *(d++) = eeprom_read_byte(p++);
 }
 
-u_short eeprom_read_word(const u_short * addr)
+unsigned short eeprom_read_word(const unsigned short *addr)
 {
-    u_short i;
+    unsigned short i;
 
-    eeprom_read_block((void *) &i, (void *) addr, sizeof(u_short));
+    eeprom_read_block((void *) &i, (void *) addr, sizeof(unsigned short));
 
     return i;
 }
@@ -186,14 +189,14 @@ static void eeprom_write_disable(void)
     eeprom_disable();
 }
 
-static void eeprom_generic_write(u_char * addr, u_char val)
+static void eeprom_generic_write(unsigned char *addr, unsigned char val)
 {
     signed char i;
-    u_short cmd;
+    unsigned short cmd;
 
     eeprom_enable();
 
-    cmd = 0x0a00 | (uptr_t) addr;
+    cmd = 0x0a00 | (size_t) addr;
     for (i = 11; i >= 0; --i)
         eeprom_pulse(EEPROM_MASK(cmd, bitmask[i]));
 
@@ -207,7 +210,7 @@ static void eeprom_generic_write(u_char * addr, u_char val)
     eeprom_disable();
 }
 
-void eeprom_write_byte(u_char * addr, u_char val)
+void eeprom_write_byte(unsigned char *addr, unsigned char val)
 {
     eeprom_write_enable();
 
@@ -218,10 +221,10 @@ void eeprom_write_byte(u_char * addr, u_char val)
 
 void eeprom_write_block(const void *buf, void *addr, size_t n)
 {
-    u_char *p, *s;
+    unsigned char *p, *s;
 
-    p = (u_char *) addr;
-    s = (u_char *) buf;
+    p = (unsigned char *) addr;
+    s = (unsigned char *) buf;
 
     eeprom_write_enable();
 
@@ -231,15 +234,15 @@ void eeprom_write_block(const void *buf, void *addr, size_t n)
     eeprom_write_disable();
 }
 
-void eeprom_write_word(u_short * addr, u_short val)
+void eeprom_write_word(unsigned short *addr, unsigned short val)
 {
-    eeprom_write_block((void *) addr, (void *) &val, sizeof(u_short));
+    eeprom_write_block((void *) addr, (void *) &val, sizeof(unsigned short));
 }
 
-void eeprom_fill_all(const u_char c)
+void eeprom_fill_all(const unsigned char c)
 {
     signed char i;
-    u_short cmd;
+    unsigned short cmd;
 
     eeprom_write_enable();
 
@@ -261,16 +264,16 @@ void eeprom_fill_all(const u_char c)
     eeprom_write_disable();
 }
 
-void eeprom_erase(u_char * addr)
+void eeprom_erase(unsigned char *addr)
 {
     signed char i;
-    u_short cmd;
+    unsigned short cmd;
 
     eeprom_write_enable();
 
     eeprom_enable();
 
-    cmd = 0x0e00 | (uptr_t) addr;
+    cmd = 0x0e00 | (size_t) addr;
     for (i = 11; i >= 0; --i)
         eeprom_pulse(EEPROM_MASK(cmd, bitmask[i]));
 
@@ -287,7 +290,7 @@ void eeprom_erase(u_char * addr)
 void eeprom_erase_all(void)
 {
     signed char i;
-    u_short cmd;
+    unsigned short cmd;
 
     eeprom_write_enable();
 

@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/19 07:46:35  jdubiec
+ * Make this file independent on sys/types.h due to compilation problems.
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -47,20 +50,19 @@
  */
 
 #include <stddef.h>
-#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    extern u_char eeprom_read_byte(const u_char * addr);
-    extern u_short eeprom_read_word(const u_short * addr);
+    extern unsigned char eeprom_read_byte(const unsigned char *addr);
+    extern unsigned short eeprom_read_word(const unsigned short *addr);
     extern void eeprom_read_block(void *buf, const void *addr, size_t n);
-    extern void eeprom_write_byte(u_char * addr, u_char val);
-    extern void eeprom_write_word(u_short * addr, u_short val);
+    extern void eeprom_write_byte(unsigned char *addr, unsigned char val);
+    extern void eeprom_write_word(unsigned short *addr, unsigned short val);
     extern void eeprom_write_block(const void *buf, void *addr, size_t n);
-    extern void eeprom_fill_all(const u_char c);
-    extern void eeprom_erase(u_char * addr);
+    extern void eeprom_fill_all(const unsigned char c);
+    extern void eeprom_erase(unsigned char *addr);
     extern void eeprom_erase_all(void);
 
 #ifdef __cplusplus
