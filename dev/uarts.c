@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:55  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/18 14:00:12  haraldkipp
+ * Comments updated
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:55  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/02/04 17:50:55  harald
  * Version 3 released
@@ -44,7 +47,6 @@
  *
  */
 
-#include <sys/ifstream.h>
 #include <dev/uartspi.h>
 
 /*!
@@ -67,9 +69,6 @@ static UARTSDCB dcb_uart8;
  *
  * Applications must pass this structure to NutRegisterDevice() 
  * to bind this serial port device driver to the Nut/OS kernel.
- * Having done that, the application may call NutDeviceOpen()
- * with the name of this driver to initialize the interface.
- * 
  */
 NUTDEVICE devUarts[] = {
     {

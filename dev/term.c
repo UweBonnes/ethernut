@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 14:02:46  haraldkipp
+ * Comments updated
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -259,8 +262,7 @@ static void TermIdentify(TERMDCB * dcb)
  * \brief Perform special LCD control functions.
  *
  * \param dev  Identifies the device that receives the device-control
- *             function. This pointer must have been retrieved previously
- *             by using the NutDeviceOpen() function.
+ *             function.
  * \param req  Requested control function. May be set to one of the
  *             following constants:
  * - LCD_CMDBYTE     Send command byte to display. Parameter conf points 

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 14:05:20  haraldkipp
+ * Comments updated
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -651,8 +654,7 @@ static void AhdlcAvrDisable(u_short base)
  * \brief Perform on-chip UART control functions.
  *
  * \param dev  Identifies the device that receives the device-control
- *             function. This pointer must have been retrieved previously
- *             by using the NutDeviceOpen() function.
+ *             function.
  * \param req  Requested control function. May be set to one of the
  *             following constants:
  *             - UART_SETSPEED, conf points to an u_long value containing the baudrate.
