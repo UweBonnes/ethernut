@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/03 17:06:52  haraldkipp
+ * Allow linking with lanc111
+ *
  * Revision 1.2  2003/08/05 20:05:11  haraldkipp
  * DNS removed from interface
  *
@@ -70,7 +73,7 @@ static NICINFO dcb_eth0;
  *
  * Used to call.
  */
-IFNET ifn_eth0 = {
+static IFNET ifn_eth0 = {
     IFT_ETHER,                  /*!< \brief Interface type. */
     {0, 0, 0, 0, 0, 0},         /*!< \brief Hardware net address. */
     0,                          /*!< \brief IP address. */
