@@ -1,0 +1,85 @@
+#! /bin/sh
+
+if [ "x`uname`" != "xLinux" ]
+then
+	echo "This is not a Linux system. I'm so confused!"
+	exit 1
+fi
+
+# Verify that avr-gcc is in the users PATH
+
+if ! avr-gcc --version >/dev/null 2>&1
+then
+	echo "Can't find avr-gcc. :-("
+	echo ""
+	echo "This could mean either of the following:"
+	echo "  1: You don't have avr-gcc installed."
+	echo "  2: You don't have your PATH environment variable set right."
+	echo "Here is your PATH variable:"
+	echo ""
+	echo $PATH
+	echo ""
+	exit 1
+fi
+
+# Make links to included make fragments
+
+[ -f Makedefs ]  || ln -s Makedefs.gcc Makedefs
+[ -f Makerules ] || ln -s Makerules.gcc Makerules
+
+[ -f app/Makedefs ]  || ln -s Makedefs.gcc app/Makedefs
+[ -f app/Makerules ] || ln -s Makerules.gcc app/Makerules
+
+# Ask user which device to target
+
+unset DEV
+while [ "x$DEV" = "x" ]
+do
+	echo "Select a target device:"
+	echo ""
+	echo "  1) ATmega128"
+	echo "  2) ATmega103"
+	echo ""
+	echo -n "Selection -> "
+	read answ
+
+	case "$answ" in
+	1) DEV=atmega128 ;;
+	2) DEV=atmega103 ;;
+	*)
+		echo "invalid choice" ;;
+	esac
+done
+
+# Ask which isp programmer is being used
+
+unset UISP_PROG
+while [ "x$UISP_PROG" = "x" ]
+do
+	echo "Which isp programmer are you using?"
+	echo ""
+	echo "  1) stk200, stk300 or compatible"
+	echo "  2) skt500"
+	echo ""
+	echo -n "Selection -> "
+	read answ
+
+	case "$answ" in
+	1) UISP_PROG=stk200 ;;
+	2) UISP_PROG=stk500 ;;
+	*)
+		echo "invalid choice" ;;
+	esac
+done
+
+# Generate the config file
+
+cat <<EOF > UserConf.mk
+MCU=$DEV
+BURN=uisp
+BURNFLAGS=-dprog=$UISP_PROG --erase --upload --verify -if\$(TARG)
+CRUROM = \$(top_srcdir)/tools/linux/crurom
+EOF
+
+echo "Your system is now configured to build for $DEV."
+echo "Type \`make\` to build the system."
