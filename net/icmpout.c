@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:22:16  haraldkipp
+ * Not all compilers like pointer calculation with void pointers
+ *
  * Revision 1.3  2004/02/06 19:24:00  drsung
  * Bugfix. After last changes, ping didn't work any more. Thanks to Pavel Celeda, who discovered this bug.
  *
@@ -222,7 +225,7 @@ int NutIcmpResponse(u_char type, u_char code, u_long spec, NETBUF * nb)
         return -1;
 
     memcpy(nb->nb_ap.vp, nb->nb_nw.vp, sizeof(IPHDR));
-    memcpy(nb->nb_ap.vp + sizeof(IPHDR), nb->nb_tp.vp, 8);
+    memcpy((u_char *)nb->nb_ap.vp + sizeof(IPHDR), nb->nb_tp.vp, 8);
 
     return NutIcmpReply(type, code, spec, dest, nb);
 }
