@@ -37,6 +37,21 @@
  
 /*
  * $Log$
+ * Revision 1.2  2004/05/25 11:39:48  olereinhardt
+ * Define NUT_CS8900_OLD to get the old functionality back again
+ *
+ * Revision 1.1  2004/05/24 17:09:17  olereinhardt
+ * Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
+ * Base address can now be passed to the nic driver by NutRegisterDevice.
+ * Removed some Assembler code in cs8900.c
+ *
+ * Added some databus waitstate settings for the upper half of the address space in os/arch/avr_nutinit.c. Now three waitstates are default for 0x8000-0xFFFF
+ *
+ * Added terminal device driver for hd44780 compatible LCD displays directly
+ * connected to the memory bus (memory mapped). See hd44780.c for more information.
+ * Therefore some minor changed in include/dev/term.h and dev/term.c are needet to
+ * pass a base address to the lcd driver.
+ *
  * Revision 1.1  2003/07/20 16:37:21  haraldkipp
  * CrystalTek 8900A driver added.
  *
@@ -47,6 +62,9 @@
  */
 
 // Cirrus Logic CS8900a I/O Registers
+
+#ifdef  NUT_CS8900_OLD
+
 #define	CS_DATA_P0		0x1100
 #define	CS_DATA_P1		0x1102
 #define	CS_TX_CMD_I		0x1104
@@ -55,6 +73,20 @@
 #define	CS_PP_PTR		0x110A
 #define	CS_PP_DATA0		0x110C
 #define	CS_PP_DATA1		0x110E
+
+#else
+
+#define	CS_DATA_P0		(cs_base + 0x0000)
+#define	CS_DATA_P1		(cs_base + 0x0002)
+#define	CS_TX_CMD_I		(cs_base + 0x0004)
+#define	CS_TX_LEN_I		(cs_base + 0x0006)
+#define	CS_INT_STAT		(cs_base + 0x0008)
+#define	CS_PP_PTR		(cs_base + 0x000A)
+#define	CS_PP_DATA0		(cs_base + 0x000C)
+#define	CS_PP_DATA1		(cs_base + 0x000E)
+
+#endif
+
 
 // Cirrus Logic CS8900a Packet Page registers
 #define	CS_PROD_ID		0x0000

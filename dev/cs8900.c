@@ -132,6 +132,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/05/25 11:39:47  olereinhardt
+ * Define NUT_CS8900_OLD to get the old functionality back again
+ *
  * Revision 1.6  2004/05/24 17:09:17  olereinhardt
  * Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
  * Base address can now be passed to the nic driver by NutRegisterDevice.
@@ -187,7 +190,7 @@
 #include <netinet/ip.h>
 
 #include <dev/irqreg.h>
-#include <dev/cs8900.h>
+#include "cs8900.h"
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -449,7 +452,7 @@ THREAD(CSNICrx, arg)
             NutSleep(10);
         }
 
-/*  
+#ifdef NUT_CS8900_OLD  
 	// Get the RxStatus But don't let the compiler do any optomisation
         asm volatile ("lds __tmp_reg__, %3" "\n\t"
                       "mov %B0, __tmp_reg__" "\n\t" "lds __tmp_reg__, %2" "\n\t" "mov %A0, __tmp_reg__" "\n\t":"=r" (l)
@@ -461,9 +464,10 @@ THREAD(CSNICrx, arg)
                       "mov %B0, __tmp_reg__" "\n\t" "lds __tmp_reg__, %2" "\n\t" "mov %A0, __tmp_reg__" "\n\t":"=r" (l)
                       :"0"(l), "n"((unsigned short) (CS_DATA_P0)), "n"((unsigned short) (CS_DATA_P0 + 1))
             );
-*/
+#else
 	l = *(u_short *) CS_DATA_P0;
 	l = *(u_short *) CS_DATA_P0;
+#endif
         //NutPrintFormat_P(dev_debug,PSTR("RxLength = %x \r\n"), l);
         //NutPrintFlush(dev_debug);
 
@@ -532,8 +536,9 @@ int CSNicInit(NUTDEVICE * dev)
     ni = (NICINFO *) dev->dev_dcb;
 
     // Take CS8900 out of reset and wait for internal reset to complete
-    //kc-or:
-    //outp(inp(PORTD) & ~RESETE, PORTD);
+#ifdef NUT_CS8900_OLD
+    outp(inp(PORTD) & ~RESETE, PORTD);
+#endif
     NutSleep(100);
     
     // Check for presence
