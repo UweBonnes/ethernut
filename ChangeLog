@@ -1,4 +1,19 @@
-$Id: ChangeLog,v 1.40 2004/03/02 10:10:34 drsung Exp $
+$Id: ChangeLog,v 1.41 2004/03/03 21:16:57 drsung Exp $
+
+2004-03-03  Oliver Schulz  <olischulz@web.de>
+
+	* crt/fpurge.c, crt/Makefile: Added function 'fpurge'. This is only a 
+	wrapper for calling the device read function with buffer pointer set to 
+	zero to purge a stream, i.e. discard any input buffer.
+
+	* include/sys/confos.h, os/confos.h, app/basemon/basemon.c, pro/dhcpc.c, 
+	os/init.c, os/nutinit.c: Structure confos was extended to store the 
+	system's hostname in EEPROM. This hostname is reported to DHCP server 
+	while requesting a DHCP lease.
+
+	* os/confos.c, os/init.c: Bugfix in NutSaveConfig. Write only to eeprom 
+	if actual byte in eeprom differs from byte to write.
+
 
 2004-03-02  Oliver Schulz  <olischulz@web.de>
 
