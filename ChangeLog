@@ -1,4 +1,22 @@
-$Id: ChangeLog,v 1.9 2003/08/14 15:23:07 haraldkipp Exp $
+$Id: ChangeLog,v 1.10 2003/09/29 16:31:55 haraldkipp Exp $
+
+2003-09-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Tested with WinAVR-20030913
+
+	* app/httpd/httpserv.c: Using strtok and portable 
+	version of strtok_r.
+
+	* crt/srttok_r.c: Incompatible strtok_r marked 
+	deprecated and removed from GCC compile.
+
+	* os/nutinit.c: XRAMEND replaced by NUTRAMEND to avoid
+	GCC conflicts.
+
+	* app/nutpiper/player.c: Include file sequence changed.
+
+	* app/nutpiper/scanner.c: dito.
+
 
 2003-08-14  Harald Kipp  <harald.kipp@egnite.de>
 
