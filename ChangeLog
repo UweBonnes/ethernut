@@ -1,4 +1,24 @@
-$Id: ChangeLog,v 1.157 2005/02/03 14:36:41 haraldkipp Exp $
+$Id: ChangeLog,v 1.158 2005/02/04 15:04:51 haraldkipp Exp $
+
+2005-02-04  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/cfg/dhcp.h: Added missing file for compiling in the
+	source tree.
+
+	* net/arpcache.c: A few problems solved, thanks to Dusam Ferbas
+	and Rostislav Hlebak. Check for completed entry and generating a 
+	request had been in wrong order, producing one additional 
+	request. After further looking into the code, it became obvious,
+	that this is one of the oldest parts from the very beginning
+	of Nut/OS. Several volatile attributes had been left over from
+	the days when outdated ARP entries were removed in interrupt 
+	context. Later, the interrupt handling had been replaced by
+	a thread. I decided to remove this thread to save a lot of RAM.
+	ARP cache aging is now processed before each incoming and
+	outgoing packet.
+
+	* include/cfg/arp.h, conf/net/net.nut: ARP configuration added.
+
 
 2005-02-03  Harald Kipp  <harald.kipp@egnite.de>
 
