@@ -64,6 +64,10 @@
 
 #include <dev/unix_devs.h>
 
+#ifdef __CYGWIN__
+#include <sys/select.h>
+#endif
+
 /* on mac os x, not all baud rates are defined in termios.h but
    they are mapped to the numeric value anyway, so we define them here */
 #ifdef __APPLE__
@@ -80,6 +84,7 @@
 #define B921600 921600
 #endif
 #endif
+
 
 
 /* thread attributes */
@@ -176,6 +181,7 @@ static int convertToRealSpeed(int baudSpeed)
         return 115200;
     case B230400:
         return 230400;
+#ifndef __CYGWIN__
     case B460800:
         return 460800;
     case B500000:
@@ -184,6 +190,7 @@ static int convertToRealSpeed(int baudSpeed)
         return 576000;
     case B921600:
         return 921600;
+#endif
     }
     return -1;
 }
@@ -230,6 +237,7 @@ static int convertToBaudSpeed(int realSpeed)
         return B115200;
     case 230400:
         return B230400;
+#ifndef __CYGWIN__
     case 460800:
         return B460800;
     case 500000:
@@ -238,6 +246,7 @@ static int convertToBaudSpeed(int realSpeed)
         return B576000;
     case 921600:
         return B921600;
+#endif
     }
     return -1;
 }
