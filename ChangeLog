@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.32 2004/02/04 18:09:22 drsung Exp $
+$Id: ChangeLog,v 1.33 2004/02/06 19:25:39 drsung Exp $
+
+2004-02-06  Oliver Schulz  <olischulz@web.de>
+
+	* net/icmpin.c, net/icmpout.c: After my last changes, ping didn't work 
+	any more. Thanks to Pavel Celeda, who discovered this bug.
+
 
 2004-02-04  Oliver Schulz  <olischulz@web.de>
 
