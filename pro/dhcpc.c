@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2004/04/15 07:11:50  drsung
+ * Added hostname support to NutDHCPDiscover
+ *
  * Revision 1.12  2004/03/18 11:24:01  haraldkipp
  * Deprecated functions removed
  *
@@ -556,6 +559,15 @@ static int DhcpDiscover(UDPSOCKET * sock, struct bootp *bp, u_long xid, u_short 
     reqOpts[2] = DHCPOPT_DNS;   /* Win2k DHCP won't respond with DNS, unless we ask */
     optlen += DhcpAddOptionFromRAM(op + optlen, DHCPOPT_PARAMREQUEST, reqOpts, 3);
 
+    /* Pass host name if specified in confos structure.  
+     * Win2k DHCP server can register this as dynamic DNS entry.
+     * Also viewing DHCP lease table shows something sensible.
+     */
+    len = strlen(confos.hostname);
+    if (len > 0) {
+        optlen += DhcpAddOptionFromRAM(op + optlen, DHCPOPT_HOSTNAME, confos.hostname, len);
+    }
+
     /* Request a maximum message size. */
     optlen += DhcpAddShortOption(op + optlen, DHCPOPT_MAXMSGSIZE, htons(MAX_DHCP_MSGSIZE));
 
@@ -601,18 +613,18 @@ static int DhcpRequest(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long 
         optlen += DhcpAddLongOption(op + optlen, DHCPOPT_SID, sid);
     }
 
-	/* Pass host name if specified in confos structure.  */
-	/* viewing DHCP lease table shows something sensible. */
-	len = strlen(confos.hostname);
-	if (len > 0)  {
-		optlen += DhcpAddOptionFromRAM(op + optlen, DHCPOPT_HOSTNAME, confos.hostname, len);
-	}
-
     /* request gateway and DNS be returned */
     reqOpts[0] = DHCPOPT_NETMASK;       /* Win2k DHCP Server responds with this anyway. But Ethereal, showed it in a Win2k DHCP client request */
     reqOpts[1] = DHCPOPT_GATEWAY;       /* Win2k DHCP won't respond with gateway, unless we ask */
     reqOpts[2] = DHCPOPT_DNS;   /* Win2k DHCP won't respond with DNS, unless we ask */
     optlen += DhcpAddOptionFromRAM(op + optlen, DHCPOPT_PARAMREQUEST, reqOpts, 3);
+
+    /* Pass host name if specified in confos structure.  */
+    /* viewing DHCP lease table shows something sensible. */
+    len = strlen(confos.hostname);
+    if (len > 0) {
+        optlen += DhcpAddOptionFromRAM(op + optlen, DHCPOPT_HOSTNAME, confos.hostname, len);
+    }
 
     return DhcpSendMessage(sock, daddr, bp, optlen);
 }
