@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/01/10 12:40:15  olereinhardt
+ * Included check if atof is just defined (needed by new avr-libc versions on debian unstable)
+ *
  * Revision 1.6  2004/07/09 19:51:34  freckle
  * Added new function NutThreadSetSleepMode to tell nut/os to set the MCU
  * into sleep mode when idle (avr-gcc && avr128 only)
@@ -233,6 +236,7 @@
 #include <avr/pgmspace.h>
 #include <avr/twi.h>
 #include <avr/sleep.h>
+#include <stdlib.h>
 
 #ifndef __SFR_OFFSET
 #define __SFR_OFFSET    0
@@ -247,7 +251,10 @@
 
 #define SEI()	    sei()
 #define CLI()	    cli()
+
+#ifndef atof
 #define atof(s)	    strtod(s, 0)
+#endif
 
 #define EEPROMReadBytes(addr, ptr, size)    eeprom_read_block((char *)(addr), ptr, size)
 /*!
