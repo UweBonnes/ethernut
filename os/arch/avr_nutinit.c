@@ -33,17 +33,10 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/05/24 17:09:18  olereinhardt
- * Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
- * Base address can now be passed to the nic driver by NutRegisterDevice.
- * Removed some Assembler code in cs8900.c
+ * Revision 1.3  2004/05/25 12:00:37  olereinhardt
+ * Newly added 3Waitstate support now needs to be enabled by
+ * defining NUT_3WAITSTATES. By default this behaves like normal
  *
- * Added some databus waitstate settings for the upper half of the address space in os/arch/avr_nutinit.c. Now three waitstates are default for 0x8000-0xFFFF
- *
- * Added terminal device driver for hd44780 compatible LCD displays directly
- * connected to the memory bus (memory mapped). See hd44780.c for more information.
- * Therefore some minor changed in include/dev/term.h and dev/term.c are needet to
- * pass a base address to the lcd driver.
  *
  * Revision 1.1  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
@@ -88,10 +81,12 @@ void NutInitXRAM(void)
     /* At the very beginning enable extended memory interface.
      */
     //MCUCR = _BV(SRE) | _BV(SRW);
-    sbi  (MCUCR, SRE);
+    MCUCR = _BV(SRE) | _BV(SWR10);
+
+#ifdef NUT_3WAITSTATES
     outb (XMCRA, 0x42);
-    sbi  (MCUCR, SRW01);
     outb (XMCRB, 0x00);
+#endif
 }
 
 #endif
