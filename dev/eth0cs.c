@@ -68,6 +68,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/07/20 20:07:38  haraldkipp
+ * Conflicting Ethernet driver routine names solved.
+ *
  * Revision 1.1  2003/07/20 16:37:21  haraldkipp
  * CrystalTek 8900A driver added.
  *
@@ -83,6 +86,9 @@
 
 
 NICINFO dcb_eth0cs;
+
+extern int CSNicOutput(NUTDEVICE * dev, NETBUF * nb);
+extern int CSNicInit(NUTDEVICE * dev);
 
 /*!
  * \brief Network interface information structure.
@@ -101,7 +107,7 @@ IFNET ifn_eth0cs = {
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
-    NicOutput,                  /*!< \brief Driver output routine, if_send(). */
+    CSNicOutput,                /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput              /*!< \brief Media output routine, if_output(). */
 };
 
@@ -124,7 +130,7 @@ NUTDEVICE devEth0cs = {
     0,                          /*!< First interrupt number. */
     &ifn_eth0cs,                /*!< Interface control block. */
     &dcb_eth0cs,                /*!< Driver control block. */
-    NicInit,                    /*!< Driver initialization routine. */
+    CSNicInit,                  /*!< Driver initialization routine. */
     0,                          /*!< Driver specific control function. */
     0,                          /*!< Read from device. */
     0,                          /*!< Write to device. */

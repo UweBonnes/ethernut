@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/07/20 20:07:38  haraldkipp
+ * Conflicting Ethernet driver routine names solved.
+ *
  * Revision 1.1  2003/07/13 19:40:01  haraldkipp
  * LAN91C111 driver redesigned.
  *
@@ -81,8 +84,8 @@ extern NUTDEVICE devSmsc111;
 /*
  * Driver routines.
  */
-extern int NicInit(NUTDEVICE *dev);
-extern int NicOutput(NUTDEVICE *dev, NETBUF *nb);
+extern int LancInit(NUTDEVICE *dev);
+extern int LancOutput(NUTDEVICE *dev, NETBUF *nb);
 
 __END_DECLS
 

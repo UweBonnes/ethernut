@@ -132,6 +132,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/07/20 20:07:38  haraldkipp
+ * Conflicting Ethernet driver routine names solved.
+ *
  * Revision 1.1  2003/07/20 16:37:21  haraldkipp
  * CrystalTek 8900A driver added.
  *
@@ -164,7 +167,6 @@
 #include "cs8900.h"
 
 #ifdef NUTDEBUG
-#include <sys/kprint.h>
 #include <sys/osdebug.h>
 #include <net/netdebug.h>
 #endif
@@ -286,7 +288,7 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
         NutNetBufFree(nb);
         return -1;
     }
-#ifdef NUTDEBUG
+#if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("[ETHTX-%u]\r\n"), sz);
         NutPrintFlush(dev_debug);
@@ -357,14 +359,14 @@ static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
  *         structure.
  */
 
-int NicOutput(NUTDEVICE * dev, NETBUF * nb)
+int CSNicOutput(NUTDEVICE * dev, NETBUF * nb)
 {
     int rc = -1;
     NICINFO *ni;
 
     ni = (NICINFO *) dev->dev_dcb;
 
-#ifdef NUTDEBUG
+#if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("Enter EthOutput\r\n"));
         NutPrintFlush(dev_debug);
@@ -403,7 +405,7 @@ THREAD(CSNICrx, arg)
     ifn = (IFNET *) dev->dev_icb;
     ni = (NICINFO *) dev->dev_dcb;
 
-#ifdef NUTDEBUG
+#if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("Enter ETHReceive\r\n"));
         NutPrintFlush(dev_debug);
@@ -474,7 +476,7 @@ THREAD(CSNICrx, arg)
  * \param dev Identifies the device to initialize. The
  *            structure must be properly set.
  */
-int NicInit(NUTDEVICE * dev)
+int CSNicInit(NUTDEVICE * dev)
 {
     u_short i;
     u_short j;
@@ -482,7 +484,7 @@ int NicInit(NUTDEVICE * dev)
     NICINFO *ni;
 
 
-#ifdef NUTDEBUG
+#if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("Enter NicInit  \r\n"));
         NutPrintFlush(dev_debug);
@@ -509,7 +511,7 @@ int NicInit(NUTDEVICE * dev)
         j |= ifn->if_mac[i + 1];
         CSWritePP16(CS_IEEE_ADDR + i, j);
         j = CSReadPP16(CS_IEEE_ADDR + i);
-#ifdef NUTDEBUG
+#if 0
         if (tcp_trace) {
             NutPrintFormat_P(dev_debug, PSTR("ADDR = %x\r\n"), j);
             NutPrintFlush(dev_debug);

@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.4 2003/07/20 18:36:58 haraldkipp Exp $
+$Id: ChangeLog,v 1.5 2003/07/20 20:07:38 haraldkipp Exp $
 
 2003-07-20  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -30,6 +30,11 @@ $Id: ChangeLog,v 1.4 2003/07/20 18:36:58 haraldkipp Exp $
 	to event.h.
 
 	* Missing directories added to repository.
+
+	* urom filesystem filenames moved to program space
+	to save RAM.
+
+	* Conflicting Ethernet driver routine names solved.
 
 
 2003-07-17  Harald Kipp  <harald.kipp@egnite.de>
