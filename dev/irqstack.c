@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/01 10:47:51  drsung
+ * #ifdef .. #endif inserted, to make iccavr compile.
+ *
  * Revision 1.2  2004/01/31 13:59:14  drsung
  * Stupid attributes removed.
  *
@@ -42,8 +45,12 @@
  */
 
 
+#ifdef __GNUC__
+
 #include <dev/irqstack.h>
 
 u_char _irq_stack[IRQSTACK_SIZE];
 u_char _irq_SPL;
 u_char _irq_SPH;
+
+#endif
