@@ -64,8 +64,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:36  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:05:22  haraldkipp
+ * Debug output corrected.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:36  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:17:11  harald
  * Separate PPP debug module added.
@@ -82,7 +85,9 @@
 #include <netinet/ip.h>
 #include <net/ppp.h>
 
+#ifdef NUTDEBUG
 #include <net/netdebug.h>
+#endif
 
 /*!
  * \addtogroup xgPPP
@@ -112,7 +117,7 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
 
 #ifdef NUTDEBUG
     if (__ppp_trf) {
-        fprintf(__ppp_trs, "\nPPP>");
+        fputs("\nPPP>", __ppp_trs);
         NutDumpPpp(__ppp_trs, nb);
     }
 #endif
