@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/01/30 11:43:34  haraldkipp
+# avr-objcopy can create extended coff
+#
 # Revision 1.1  2003/05/15 14:30:09  haraldkipp
 # Initial using 3.2.1
 #
@@ -70,10 +73,7 @@ include $(top_srcdir)/Makerules
 	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 %cof: %elf
-	$(ELFCOF) $< coff $@ $*sym
-	$(CP) coff\$@ .
-	$(CP) coff\\*sym .
-	$(CP) coff\\*S .
+	$(ELFCOF) -O coff-ext-avr $< $@
 
 %hex: %elf
 	$(BIN) -O ihex $< $@

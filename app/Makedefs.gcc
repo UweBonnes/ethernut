@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/01/30 11:43:34  haraldkipp
+# avr-objcopy can create extended coff
+#
 # Revision 1.1  2003/05/15 14:30:09  haraldkipp
 # Initial using 3.2.1
 #
@@ -81,7 +84,6 @@ include $(top_srcdir)/Makedefs
 TARG      = $(PROJ).hex
 ITARG     = $(PROJ).bin
 
-ELFCOF    = elfcoff
 BIN       = $(TRGT)objcopy
 
 BINDIR    = $(top_srcdir)/bin/$(MCU)
@@ -89,3 +91,9 @@ BINDIR    = $(top_srcdir)/bin/$(MCU)
 CPFLAGS   = $(MCFLAGS) -Os -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 #CPFLAGS  = -g $(MCFLAGS) -O0 -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 LDFLAGS   = $(MCFLAGS) -Wl,--defsym=main=0,-Map=$(PROJ).map,--cref -L$(LIBDIR) 
+
+ELFCOF    = $(BIN) --debugging \
+	--change-section-address .data-0x800000 \
+	--change-section-address .bss-0x800000 \
+	--change-section-address .noinit-0x800000 \
+	--change-section-address .eeprom-0x810000
