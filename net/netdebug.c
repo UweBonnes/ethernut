@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/01/13 18:48:53  haraldkipp
+ * Compiler warnings avoided.
+ *
  * Revision 1.5  2005/01/02 10:07:10  haraldkipp
  * Replaced platform dependant formats in debug outputs.
  *
@@ -82,7 +85,7 @@ void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock, NETBUF * nb)
     static prog_char fmt[] = "%s%p[%u]-SEQ(%lx)";
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
-    fprintf_P(stream, fmt, ds, (uptr_t) sock, nb->nb_ap.sz, ntohl(th->th_seq));
+    fprintf_P(stream, fmt, ds, sock, nb->nb_ap.sz, ntohl(th->th_seq));
     if (th->th_flags & TH_ACK)
         fprintf(stream, "-ACK(%lx)", ntohl(th->th_ack));
     if (th->th_flags & TH_FIN)
@@ -157,12 +160,12 @@ void NutDumpSocketList(FILE * stream)
     /*         1234567890 123 123456789012345:123456 123456789012345:123456 */
 
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
-        fprintf_P(stream, fmt1, (uptr_t) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
+        fprintf_P(stream, fmt1, ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf(stream, "%15s:%-6u ", inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
         NutDumpSockState(stream, ts->so_state, 0, "\r\n");
     }
     for (us = udpSocketList; us; us = us->so_next) {
-        fprintf_P(stream, fmt2, (uptr_t) us, ntohs(us->so_local_port));
+        fprintf_P(stream, fmt2, us, ntohs(us->so_local_port));
     }
 }
 
