@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.25 2004/01/14 19:51:45 drsung Exp $
+$Id: ChangeLog,v 1.26 2004/01/25 11:34:36 drsung Exp $
+
+2004-01-25  Oliver Schulz  <olischulz@web.de>
+
+	* net/tcpsm.c: Bugfix for establishing tcp connections by
+	calling NutTcpConnect. If no answer is received, retransmission
+	is stoped after about 6 secs. If RST if received, the
+	connection request is now properly aborted and the error is
+	returned to the caller.
 
 2004-01-14  Oliver Schulz  <olischulz@web.de>
 
