@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/06/07 15:07:00  olereinhardt
+ * Added IFTYP_CAN
+ *
  * Revision 1.3  2004/03/18 13:49:00  haraldkipp
  * Deprecated functions removed.
  * IFSTREAM structure taken from ifstream
@@ -114,6 +117,7 @@ __BEGIN_DECLS
 #define IFTYP_NET       3	/*!< \brief Net device */
 #define IFTYP_TCPSOCK	4	/*!< \brief TCP socket */
 #define IFTYP_CHAR      5	/*!< \brief Character stream device */
+#define IFTYP_CAN       6       /*!< \brief CAN device */
 
 /*!
  * \brief Device structure type.
