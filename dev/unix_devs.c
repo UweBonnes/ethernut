@@ -478,12 +478,12 @@ static int UnixDevWrite(NUTFILE * nf, CONST void *buffer, int len)
 {
     int rc;
     int remaining = len;
+    UNIXDCB * dcb = (UNIXDCB*) nf->nf_dev->dev_dcb;
     
     /* flush ? */
     if (len == 0)
         return 0;
         
-    UNIXDCB * dcb = (UNIXDCB*) nf->nf_dev->dev_dcb;
     do {
         rc = write(dcb->dcb_fd, buffer, remaining);
         if (rc > 0) {
