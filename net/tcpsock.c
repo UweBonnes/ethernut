@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/03 08:44:15  haraldkipp
+ * Simplyfied NutTcpSend().
+ *
  * Revision 1.10  2004/10/14 16:43:07  drsung
  * Fixed compiler warning "comparison between signed and unsigned"
  *
@@ -622,10 +625,11 @@ int NutTcpAccept(TCPSOCKET * sock, u_short port)
  * \param data Pointer to a buffer containing the data to send.
  * \param len  Number of bytes to be sent.
  *
- * \return If successful, the number of bytes added to the
- *         socket transmit buffer. This may be less than
- *         the specified number of bytes to send. The return
- *         value -1 indicates a fatal error.
+ * \return If successful, the number of bytes added to the socket transmit 
+ *         buffer. This is limited to the maximum segment size of the 
+ *         connection and thus may be less than the specified number of 
+ *         bytes to send. The return value -1 indicates a fatal error.
+ *         On time out, a value of 0 is returned.
  */
 int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
 {
@@ -638,10 +642,6 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
     
     if (sock == 0)
         return -1;
-    if (sock->so_state != TCPS_ESTABLISHED) {
-        sock->so_last_error = ENOTCONN;
-        return -1;
-    }
     if (data == 0 || len == 0)
         return 0;
 
@@ -653,34 +653,25 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
 
     for (;;) {
         /*
-         * Limit the size of unacknowledged data to four full segments.
+         * We can only send on an established connection.
          */
-        unacked = sock->so_tx_nxt - sock->so_tx_una;
-        if ((unacked >> 2) > sock->so_mss) {
-            if (NutEventWait(&sock->so_tx_tq, sock->so_write_to)) {
-                return 0;
-            }
-            if (sock->so_state != TCPS_ESTABLISHED) {
-                sock->so_last_error = ENOTCONN;
-                return -1;
-            }
-            continue;
+        if (sock->so_state != TCPS_ESTABLISHED) {
+            sock->so_last_error = ENOTCONN;
+            return -1;
         }
+
         /*
-         * Wait for peer's window open wide enough to take all our 
+         * Limit the size of unacknowledged data to four full segments.
+         * Also wait for peer's window open wide enough to take all our 
          * data. This also avoids silly window syndrome on our side.
          */
-        if (len > sock->so_tx_win - unacked) {
-            if (NutEventWait(&sock->so_tx_tq, sock->so_write_to)) {
-                return 0;
-            }
-            if (sock->so_state != TCPS_ESTABLISHED) {
-                sock->so_last_error = ENOTCONN;
-                return -1;
-            }
-            continue;
+        unacked = sock->so_tx_nxt - sock->so_tx_una;
+        if ((unacked >> 2) < sock->so_mss && len <= sock->so_tx_win - unacked) {
+            break;
         }
-        break;
+        if (NutEventWait(&sock->so_tx_tq, sock->so_write_to)) {
+            return 0;
+        }
     }
     /*
      * The segment will be automatically retransmitted if not 
