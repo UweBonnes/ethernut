@@ -1,8 +1,22 @@
-$Id: ChangeLog,v 1.178 2005/02/22 16:26:27 freckle Exp $
+$Id: ChangeLog,v 1.179 2005/02/23 06:14:25 hwmaier Exp $
+
+2005-02-23  Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * app/basemon/basemon.c: Some minor changes to support AT90CAN128 MCU
+
+        * app/basemon/realtek.c, app/basemon/xmemtest.c:
+        Changes in order to support AT90CAN128 with it's different register
+        structure, changed "ifdef __AVR_ATmega128__" to
+        "#ifdef __AVR_ENHANCED__" so the condition also includes AT90CAN128.
+
+        * app/pppc/pppc.c:
+        Changed "ifdef __AVR_ATmega128__" to "#ifdef __AVR_ENHANCED__" so the
+        condition also includes AT90CAN128.
+
 
 2005-02-22 Matthias Ringwald <mringwal@.inf.ethz.ch>
 
-	* include/arch/avr.h: Added cpp test to guess avr-libc-version required 
+	* include/arch/avr.h: Added cpp test to guess avr-libc-version required
 	to specify twi.h include path.
 	
 2005-02-22  Ole Reinhardt <ole.reinhardt@embedded-it.de>
@@ -41,7 +55,7 @@ $Id: ChangeLog,v 1.178 2005/02/22 16:26:27 freckle Exp $
 
 2005-02-21  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* fs/pnutfs.c
-	Changed declaration of the "root" variable to compile with 
+	Changed declaration of the "root" variable to compile with
 	unix emulation
 
 	* include/unistd.h
