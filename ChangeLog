@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.138 2004/11/24 16:48:00 haraldkipp Exp $
+$Id: ChangeLog,v 1.139 2004/12/16 08:39:05 haraldkipp Exp $
+
+2004-12-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/ahdlcavr.c, dev/twif.c, dev/uartavr.c, 
+	os/arch/avr_timer.c: Late increment fixes ICCAVR bug. 
+	Thanks to Andreas Siebert and Michael Fischer.
+	
+	* conf/charon2.conf: Configuration for Charon II added.
+
 
 2004-11-24  Harald Kipp  <harald.kipp@egnite.de>
 
