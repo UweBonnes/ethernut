@@ -1,8 +1,17 @@
-$Id: ChangeLog,v 1.129 2004/10/14 08:58:46 olereinhardt Exp $
+$Id: ChangeLog,v 1.130 2004/10/14 16:50:23 drsung Exp $
 
-2004-10-14  Ole Reinhardt <ole.reinhardt@kernelconcepts.de
+2004-10-14  Oliver Schulz  <olischulz@web.de>
+
+	* crt/localtim.c, crt/gmtime.c, dev/usart.c, dev/wlandrv.c, pro/resolv.c: 
+	Fixed compiler warning "comparison between signed and unsigned"
+
+
+2004-10-14  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>
+
         * dev/hd44780_bus.c: Added default LCD config to avoid compiling 
 	  error if no LCD type is defined.
+
+
 2004-10-10  Oliver Schulz  <olischulz@web.de>
 
 	* net/route.c: Removed unneccessary call to NutIpRouteRecQuery.
