@@ -2,6 +2,9 @@ const char crurom_rcsid[] = "@(#) $Id$";
 
 /*
  * $Log$
+ * Revision 1.3  2003/07/20 20:06:28  haraldkipp
+ * MSC compilation error fixed.
+ *
  * Revision 1.2  2003/07/20 19:27:59  haraldkipp
  * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
  * AVR's flash memory.
@@ -26,6 +29,8 @@ const char crurom_rcsid[] = "@(#) $Id$";
 #include "dirent.h"
 #else
 #include <dirent.h>
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
 #endif
 
 #include "getopt.h"
@@ -34,12 +39,9 @@ const char crurom_rcsid[] = "@(#) $Id$";
 #define O_BINARY 0
 #endif
  
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
-
 
 #define IDENT   "crurom"
-#define VERSION "1.2.2"
+#define VERSION "1.3.1"
 
 static int entryno = 0;
 static int verbose = 0;
