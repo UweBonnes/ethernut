@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.5  2004/09/01 14:04:57  haraldkipp
+-- Added UART handshake and EEPROM emulation port bits
+--
 -- Revision 1.4  2004/08/18 16:05:38  haraldkipp
 -- Use consistent directory structure
 --
@@ -191,22 +194,63 @@ nutdev =
         {
             {
                 macro = "UART0_RTS_BIT",
-                brief = "UART0 RTS bit",
-                description = "Bit number of UART0 RTS handshake output.",
+                brief = "UART0 RTS Bit",
+                description = "Bit number of UART0 RTS handshake output. If enabled, "..
+                              "the driver provides RS 232 input hardware handshake.",
+                provides = { "UART0_RTS_BIT" },
                 flavor = "booldata",
-                file = "include/cfg/portdefs.h"
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
             },
             {
                 macro = "UART0_RTS_PORT",
-                brief = "UART0 RTS port",
+                brief = "UART0 RTS Port",
                 description = "Port register name of UART0 RTS handshake output.",
-                file = "include/cfg/portdefs.h"
+                requires = { "UART0_RTS_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "UART0_RTS_DDR",
-                brief = "UART0 RTS DDR",
-                description = "Data direction register name of UART0 RTS handshake output.",
-                file = "include/cfg/portdefs.h"
+                macro = "UART0_CTS_IRQ",
+                brief = "UART0 CTS Interrupt",
+                description = "Interrupt number of UART0 CTS handshake input. If enabled, "..
+                              "the driver provides RS 232 output hardware handshake.",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "UART1_RTS_BIT",
+                brief = "UART1 RTS Bit",
+                description = "Bit number of UART1 RTS handshake output. If enabled, "..
+                              "the driver provides RS 232 input hardware handshake.",
+                provides = { "UART1_RTS_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "UART1_RTS_PORT",
+                brief = "UART1 RTS Port",
+                description = "Port register name of UART1 RTS handshake output.",
+                requires = { "UART1_RTS_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "UART1_CTS_IRQ",
+                brief = "UART1 CTS Interrupt",
+                description = "Interrupt number of UART1 CTS handshake input. If enabled, "..
+                              "the driver provides RS 232 output hardware handshake.",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
             }
         }
     },
@@ -254,7 +298,53 @@ nutdev =
         brief = "LAN91C111 Driver (AVR)",
         requires = { "HW_MCU_AVR", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
-        sources = { "lanc111.c" }
+        sources = { "lanc111.c" },
+        options = 
+        {
+            {
+                macro = "LANC111_BASE_ADDR",
+                brief = "Controller Base Address",
+                description = "The driver supports memory mapped controllers only, using "..
+                              "the specified based address.\n\n"..
+                              "The Ethernut 2 reference design uses 0xC000.",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "LANC111_SIGNAL_IRQ",
+                brief = "Ethernet Interrupt",
+                description = "Ethernet controller interrupt, typically INT5.",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "LANC111_RESET_BIT",
+                brief = "Ethernet Reset Bit",
+                description = "Bit number of the Ethernet controller reset output.\n\n"..
+                              "Should be disabled when the LAN91C111 hardware reset "..
+                              "is not connected to a port pin.\n\n"..
+                              "On Ethernut 2 boards the controller's reset pin "..
+                              "is connected to the system reset. However, on early "..
+                              "board revisions of Ethernut 2.0 no supervisory chip "..
+                              "had been mounted, which causes problems with some "..
+                              "power supplies. Mounting R30 or R31 connects the reset "..
+                              "to bit 3 or bit 7 of PORTE.",
+                provides = { "LANC111_RESET_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "LANC111_RESET_PORT",
+                brief = "Ethernet Reset Port",
+                description = "Port register name of the Ethernet controller reset output.",
+                requires = { "LANC111_RESET_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+        }
     },
     {
         name = "nutdev_rtl8019as_avr",
@@ -265,56 +355,122 @@ nutdev =
         options = 
         {
             {
+                macro = "RTL_BASE_ADDR",
+                brief = "Controller Base Address",
+                description = "The driver supports memory mapped controllers only, using "..
+                              "the specified based address.\n\n"..
+                              "The Ethernut 1 reference design uses 0x8300.",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "RTL_SIGNAL_IRQ",
+                brief = "Ethernet Interrupt",
+                description = "Ethernet controller interrupt, typically INT5.",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
                 macro = "RTL_RESET_BIT",
-                brief = "Ethernet reset bit",
-                description = "Bit number of the Ethernet controller reset output. "..
-                              "Should be disabled when the hardware doesn't support "..
-                              "this function.",
+                brief = "Ethernet Reset Bit",
+                description = "Bit number of the Ethernet controller reset output.\n\n"..
+                              "Early Ethernut revisions use bit 4 on PORTE to hard "..
+                              "reset the RTL8019AS. Later the controller's reset pin "..
+                              "had been connected to the system reset.\n\n"..
+                              "Should be disabled when the RTL8019AS hardware reset "..
+                              "is not connected to a port pin.",
+                provides = { "RTL_RESET_BIT" },
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/portdefs.h"
+                file = "include/cfg/arch/avr.h"
             },
             {
                 macro = "RTL_RESET_PORT",
-                brief = "Ethernet reset port",
+                brief = "Ethernet Reset Port",
                 description = "Port register name of the Ethernet controller reset output.",
+                requires = { "RTL_RESET_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/portdefs.h"
+                file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "RTL_RESET_DDR",
-                brief = "Ethernet reset DDR",
-                description = "Data direction register name of the Ethernet controller reset output.",
-                type = "enumerated",
-                choices = avr_ddr_choice,
-                file = "include/cfg/portdefs.h"
-            },
-            {
-                macro = "RTL_SIGNAL_BIT",
-                brief = "Ethernet IRQ bit",
-                description = "Bit number of the Ethernet controller interrupt input.",
+                macro = "RTL_EESK_BIT",
+                brief = "Ethernet EESK Bit",
+                description = "Bit number of the Ethernet controller EEPROM clock input.\n\n"..
+                              "This function, when enabled, uses three port pins to emulate "..
+                              "a serial EEPROM for the RTL8019AS. The clock pin is driven "..
+                              "by the Ethernet controller and will be monitored by the "..
+                              "driver to shift the correct values out of the EEDO pin.\n\n"..
+                              "Ethernut 1.3 Rev-G uses Bit 5 on Port C. On previous board "..
+                              "revisions the EEDO pin is connected to high. As a result, "..
+                              "the full duplex bit is permanently enabled. But the RTL8019AS "..
+                              "does not provide link level handshake, which makes the "..
+                              "peer believe, that it's half duplex only and any full duplex "..
+                              "traffic from the RTL8019AS is considered a collision. This "..
+                              "is not fatal, but noticeably reduces throughput.\n\n"..
+                              "Should be disabled when the hardware doesn't support "..
+                              "EEPROM Emulation or provides a real EEPROM.",
+                provides = { "RTL_EESK_BIT" },
+                flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/portdefs.h"
+                file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "RTL_SIGNAL_PORT",
-                brief = "Ethernet IRQ port",
-                description = "Port register name of the Ethernet controller interrupt input.",
+                macro = "RTL_EESK_PORT",
+                brief = "Ethernet EESK Port",
+                description = "Port register name of the Ethernet controller EEPROM clock input.\n\n"..
+                              "Ethernut 1.3 Rev-G uses Bit 5 on Port C.",
+                requires = { "RTL_EESK_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/portdefs.h"
+                file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "RTL_SIGNAL_DDR",
-                brief = "Ethernet IRQ DDR",
-                description = "Data direction register name of the Ethernet controller interrupt input.",
+                macro = "RTL_EEDO_BIT",
+                brief = "Ethernet EEDO Bit",
+                description = "Bit number of the Ethernet controller EEPROM data output.\n\n"..
+                              "Ethernut 1.3 Rev-G uses Bit 6 on Port C.",
+                requires = { "RTL_EESK_BIT" },
                 type = "enumerated",
-                choices = avr_ddr_choice,
-                file = "include/cfg/portdefs.h"
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "RTL_EEDO_PORT",
+                brief = "Ethernet EEDO Port",
+                description = "Port register name of the Ethernet controller EEPROM data output.\n\n"..
+                              "Ethernut 1.3 Rev-G uses Bit 6 on Port C.",
+                requires = { "RTL_EESK_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "RTL_EEMU_BIT",
+                brief = "Ethernet EEMU Bit",
+                description = "Bit number of the Ethernet controller EEPROM emulator output.\n\n"..
+                              "Ethernut 1.3 Rev-G uses Bit 7 on Port C to keep A15 high.\n\n"..
+                              "Disable this option if the hardware doesn't use this signal.",
+                requires = { "RTL_EESK_BIT" },
+                provides = { "RTL_EEMU_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "RTL_EEMU_PORT",
+                brief = "Ethernet EEMU Port",
+                description = "Port register name of the Ethernet controller reset output.\n\n"..
+                              "Ethernut 1.3 Rev-G uses Bit 7 on Port C.",
+                requires = { "RTL_EEMU_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
             }
+
         }
     },
     {
@@ -372,14 +528,14 @@ nutdev =
                 brief = "Short delay",
                 description = "Number of milliseconds",
                 type = "integer",
-                file = "include/cfg/portdefs.h"
+                file = "include/cfg/arch/avr.h"
             },
             {
                 macro = "LCD_LONG_DELAY",
                 brief = "Long delay",
                 description = "Number of milliseconds",
                 type = "integer",
-                file = "include/cfg/portdefs.h"
+                file = "include/cfg/arch/avr.h"
             }
         }
     },
