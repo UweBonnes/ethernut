@@ -93,8 +93,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:44  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:23:59  haraldkipp
+ * TCP transfer speed increased by changing the character receive buffer
+ * in TCPSOCKET to a NETBUF queue.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:44  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.18  2003/02/04 18:14:57  harald
  * Version 3 released
@@ -190,10 +194,9 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
      * Free all memory occupied by the socket.
      */
     if (sp) {
-        if (sock->so_rx_buf) {
-            NutHeapFree(sock->so_rx_buf);
-            sock->so_rx_cnt = 0;
-            sock->so_rx_buf = 0;
+        while ((nb = sock->so_rx_buf) != 0) {
+            sock->so_rx_buf = nb->nb_next;
+            NutNetBufFree(nb);
         }
         while ((nb = sock->so_tx_nbq) != 0) {
             sock->so_tx_nbq = nb->nb_next;
@@ -667,7 +670,7 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
      * Wait until any data arrived, a timeout occurs
      * or the connection terminates.
      */
-    while (sock->so_rx_cnt == 0) {
+    while (sock->so_rx_cnt - sock->so_rd_cnt == 0) {
         if (sock->so_state != TCPS_ESTABLISHED) {
             sock->so_last_error = ENOTCONN;
             return -1;
@@ -676,18 +679,36 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
             return 0;
     }
 
-    if (size > sock->so_rx_cnt)
-        size = sock->so_rx_cnt;
+    if (size > sock->so_rx_cnt - sock->so_rd_cnt)
+        size = sock->so_rx_cnt - sock->so_rd_cnt;
     if (size) {
-        memcpy(data, sock->so_rx_buf, size);
-        sock->so_rx_cnt -= size;
-        if (sock->so_rx_cnt == 0) {
-            NutHeapFree(sock->so_rx_buf);
-            sock->so_rx_buf = 0;
-        } else {
-            for (i = 0; i < sock->so_rx_cnt; i++)
-                sock->so_rx_buf[i] = sock->so_rx_buf[i + size];
+        NETBUF *nb;
+        u_short rd_cnt; /* Bytes read from NETBUF. */
+        u_short nb_cnt; /* Bytes left in NETBUF. */
+        u_short ab_cnt; /* Total bytes in app buffer. */
+        u_short mv_cnt; /* Bytes to move to app buffer. */
+
+        rd_cnt = sock->so_rd_cnt;
+
+        ab_cnt = 0;
+        while (ab_cnt < size) {
+            nb = sock->so_rx_buf;
+            nb_cnt = nb->nb_ap.sz - rd_cnt;
+            mv_cnt = size - ab_cnt;
+            if(mv_cnt > nb_cnt)
+                mv_cnt = nb_cnt;
+            memcpy((char *)data + ab_cnt, (char *)(nb->nb_ap.vp) + rd_cnt, mv_cnt);
+            ab_cnt += mv_cnt;
+            rd_cnt += mv_cnt;
+            if(mv_cnt >= nb_cnt) {
+                sock->so_rx_buf = nb->nb_next;
+                sock->so_rx_cnt -= rd_cnt;
+                NutNetBufFree(nb);
+                nb = sock->so_rx_buf;
+                rd_cnt = 0;
+            }
         }
+        sock->so_rd_cnt = rd_cnt;
 
         /*
          * Update our receive window.
@@ -697,7 +718,7 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
             if ((i += size) > sock->so_rx_bsz)
                 i = sock->so_rx_bsz;
 
-            if (sock->so_rx_win < sock->so_mss) {
+            if (sock->so_rx_win <= sock->so_mss) {
                 sock->so_rx_win = i;
                 NutTcpStateWindowEvent(sock);
             } else {
