@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/18 15:36:09  haraldkipp
+ * ICCAVR failed to compile
+ *
  * Revision 1.4  2004/03/08 11:27:44  haraldkipp
  * Accept incoming header compression.
  *
@@ -158,7 +161,7 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
         /*
          * Chop off the compressed header.
          */
-        nb->nb_nw.vp = nb->nb_dl.vp + protocolsz;
+        nb->nb_nw.vp = (char *)nb->nb_dl.vp + protocolsz;
         nb->nb_nw.sz = nb->nb_dl.sz - protocolsz;
         nb->nb_dl.sz = protocolsz;
     } else {

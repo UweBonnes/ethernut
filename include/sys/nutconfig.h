@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/18 15:44:47  haraldkipp
+ * ICCAVR failed to compile
+ *
  * Revision 1.1  2004/03/16 16:56:21  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -45,7 +48,7 @@
  * \brief Hardware configuration.
  */
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
 /* Ethernut board. */
 #include <cfg/ethernut.h>
 

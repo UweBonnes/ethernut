@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/18 15:53:42  haraldkipp
+ * ICCAVR failed to compile
+ *
  * Revision 1.3  2004/03/18 09:57:01  haraldkipp
  * Architecture required in UserConf.mk
  *
@@ -51,6 +54,7 @@
 
 #ifdef __IMAGECRAFT__
 
+#include <stddef.h>
 #include <macros.h>
 #include <eeprom.h>
 
@@ -194,6 +198,7 @@
 #else                           /* ATmega103 */
 
 #include <iom103v.h>
+#define __AVR_ATmega103__
 
 #ifndef DOR
 #define DOR  OVR

@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 15:40:55  haraldkipp
+ * ICCAVR failed to compile
+ *
  * Revision 1.2  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -103,6 +106,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <compiler.h>
+
 
 /*!
  * \weakgroup xgNutOS
@@ -178,8 +184,6 @@ typedef unsigned short uptr_t;
  */
 typedef unsigned __PTRDIFF_TYPE__ uptr_t;
 #endif
-
-#include <compiler.h>
 
 #define __byte_swap2(val)           \
     ((((val) & 0xff) << 8) |        \

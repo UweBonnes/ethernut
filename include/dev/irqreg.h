@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/18 15:48:13  haraldkipp
+ * ICCAVR failed to compile
+ *
  * Revision 1.4  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -83,14 +86,14 @@ typedef struct {
     void (*ir_handler)(void *);
 } IRQ_HANDLER;
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-#include "irqreg_avr.h"
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
+#include <dev/irqreg_avr.h>
 #elif defined(__arm__)
-#include "irqreg_arm.h"
+#include <dev/irqreg_arm.h>
 #elif defined(__H8300H__) || defined(__H8300S__)
-#include "irqreg_h8.h"
+#include <dev/irqreg_h8.h>
 #elif defined(__m68k__)
-#include "irqreg_m68k.h"
+#include <dev/irqreg_m68k.h>
 #endif
 
 /*@}*/

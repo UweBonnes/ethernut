@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/03/18 15:51:45  haraldkipp
+ * ICCAVR failed to compile
+ *
  * Revision 1.6  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -56,7 +59,7 @@
  */
 /*@{*/
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
 #include <arch/avr.h>
 #elif defined(__arm__)
 #include <arch/arm.h>
