@@ -33,15 +33,14 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/09/29 16:34:26  haraldkipp
+ * Include file sequence changed
+ *
  * Revision 1.1  2003/07/21 17:50:48  haraldkipp
  * First check in
  *
  */
 
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 
 #include <sys/heap.h>
 #include <sys/event.h>
@@ -49,6 +48,10 @@
 #include <sys/thread.h>
 
 #include <dev/vs1001k.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "player.h"
 #include <sys/bankmem.h>

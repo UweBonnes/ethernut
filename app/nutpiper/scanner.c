@@ -33,15 +33,14 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/09/29 16:34:26  haraldkipp
+ * Include file sequence changed
+ *
  * Revision 1.1  2003/07/21 17:50:48  haraldkipp
  * First check in
  *
  */
 
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -49,6 +48,10 @@
 
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 
 #include "scanner.h"
