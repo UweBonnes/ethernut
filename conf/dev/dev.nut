@@ -33,6 +33,13 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.7  2004/09/22 08:21:43  haraldkipp
+-- No ATmega103 support for LAN91C111. Is there any hardware?
+-- List of devices sorted by platform.
+-- Separate IRQ stack for AVR is configurable.
+-- Configurable ports for digital I/O shift register.
+-- Configurable handshake ports for AVR USART.
+--
 -- Revision 1.6  2004/09/07 19:11:15  haraldkipp
 -- Simplified IRQ handling to get it done for EB40A
 --
@@ -56,7 +63,7 @@
 nutdev =
 {
     --
-    -- Interrupt handler.
+    -- AVR interrupt handling.
     --
     {
         name = "nutdev_irq_avr",
@@ -65,7 +72,7 @@ nutdev =
         provides = { "DEV_IRQ_AVR" },
         sources = 
         { 
-            "irqreg.c",
+            "ihndlr.c",
             "irqstack.c",
             "ivect01.c",
             "ivect02.c",
@@ -101,98 +108,54 @@ nutdev =
             "ivect32.c",
             "ivect33.c",
             "ivect34.c"
+        },
+        options = 
+        {
+            {
+                macro = "IRQSTACK_SIZE",
+                brief = "Separate Stack",
+                description = "If this option is enabled, Nut/OS will use a separate "..
+                              "stack of the specified size for interrupts.\n"..
+                              "If this option is disabled, make sure to reserve "..
+                              "additional stack space for each thread.",
+                requires = { "TOOL_GCC" },
+                flavor = "booldata",
+                file = "include/cfg/dev.h"
+            },
         }
-    },
-    {
-        name = "nutdev_ihndlr_avr",
-        sources = { "ihndlr.c" },
-        requires = { "HW_MCU_AVR" }
-    },
-    {
-        name = "nutdev_irq_h8",
-        brief = "Interrupt Handler (H8300)",
-        requires = { "HW_MCU_H8300" },
-        provides = { "DEV_IRQ_H8300" },
-        sources = { "h8_irqreg.c" }
-    },
-    {
-        name = "nutdev_irq_m68k",
-        brief = "Interrupt Handler (M68K)",
-        requires = { "HW_MCU_M68K" },
-        provides = { "DEV_IRQ_M68K" },
-        sources = { "m68k_irqreg.c" }
-    },
-    {
-        name = "nutdev_s3c4510b_irqreg",
-        brief = "Interrupt Handler (S3C)",
-        requires = { "HW_MCU_S3C45" },
-        sources = { "arm_irqreg.c", "s3c4510b_irqreg.c" }
     },
 
     --
-    -- Polling UART drivers.
+    -- AVR UART drivers.
     --
     {
         name = "nutdev_debug_avr",
-        brief = "UART debug output (AVR)",
+        brief = "UART Debug Output (AVR)",
         description = "Simple UART output",
         requires = { "HW_UART_AVR" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
         sources = { "debug0.c", "debug1.c" }
     },
     {
-        name = "nutdev_debug_at91",
-        brief = "UART debug output (ARM7)",
-        requires = { "HW_UART_AT91" },
-        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        sources = { "debug_at91.c" }
-    },
-    {
-        name = "nutdev_scih8dbg",
-        brief = "SCI debug output (H8300)",
-        requires = { "HW_MCU_H8300" },
-        sources = { "scih8dbg.c" }
-    },
-    {
-        name = "nutdev_uart_s3c4510b_dbg",
-        brief = "S3C4510B debug output (S3C45)",
-        requires = { "HW_UART_S3C45" },
-        sources = { "uart_s3c4510b_dbg.c" }
-    },
-
-    --
-    -- Interrupt driven UART drivers.
-    --
-    {
-        name = "nutdev_uarts",
-        brief = "UART driver",
-        description = "Hardware independent UART driver framework.",
-        requires = { "CRT_HEAPMEM" },
-        provides = { "DEV_UART_GENERIC", "DEV_FILE", "DEV_READ", "DEV_WRITE" },
-        sources = { "uarts.c" },
-    },
-    {
-        name = "nutdev_usart_avr",
-        brief = "USART driver (AVR)",
-        description = "Interrupt driven, buffered UART driver.",
+        name = "nutdev_usart0_avr",
+        brief = "USART0 Driver (AVR)",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
         requires = { 
                         "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC", 
                         "NUT_EVENT", "CRT_HEAPMEM" 
         },
-        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
-        sources = 
-        { 
-            "usart.c",
-            "usart0avr.c",
-            "usart1avr.c"
-        },
+        provides = { "DEV_UART_SPECIFIC" },
+        sources = { "usart0avr.c" },
         options = 
         {
             {
                 macro = "UART0_RTS_BIT",
-                brief = "UART0 RTS Bit",
+                brief = "RTS Bit",
                 description = "Bit number of UART0 RTS handshake output. If enabled, "..
-                              "the driver provides RS 232 input hardware handshake.",
+                              "the driver provides RS 232 input hardware handshake.\n\n"..
+                              "Ethernut 2.x:\n"..
+                              "Short JP1 pins 4 and 6 to select bit 2 on PORTE.",
                 provides = { "UART0_RTS_BIT" },
                 flavor = "booldata",
                 type = "enumerated",
@@ -201,7 +164,7 @@ nutdev =
             },
             {
                 macro = "UART0_RTS_PORT",
-                brief = "UART0 RTS Port",
+                brief = "RTS Port",
                 description = "Port register name of UART0 RTS handshake output.",
                 requires = { "UART0_RTS_BIT" },
                 type = "enumerated",
@@ -210,19 +173,58 @@ nutdev =
             },
             {
                 macro = "UART0_CTS_IRQ",
-                brief = "UART0 CTS Interrupt",
+                brief = "CTS Interrupt",
                 description = "Interrupt number of UART0 CTS handshake input. If enabled, "..
-                              "the driver provides RS 232 output hardware handshake.",
+                              "the driver provides RS 232 output hardware handshake.\n\n"..
+                              "Ethernut 2.x:\n"..
+                              "Short JP1 pins 7 and 8 to select INT7.",
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_irq_choice,
                 file = "include/cfg/arch/avr.h"
             },
             {
+                macro = "UART0_HDX_BIT",
+                brief = "Half Duplex Bit",
+                description = "Bit number of UART0 half duplex control output. If enabled, "..
+                              "the driver provides RS 485 half duplex mode.",
+                provides = { "UART0_HDX_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "UART0_HDX_PORT",
+                brief = "Half Duplex Port",
+                description = "Port register name of UART0 half duplex control output.",
+                requires = { "UART0_HDX_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+        }
+    },
+    {
+        name = "nutdev_usart1_avr",
+        brief = "USART1 Driver (AVR)",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = { 
+                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC", 
+                        "NUT_EVENT", "CRT_HEAPMEM" 
+        },
+        provides = { "DEV_UART_SPECIFIC" },
+        sources = { "usart1avr.c" },
+        options = 
+        {
+            {
                 macro = "UART1_RTS_BIT",
-                brief = "UART1 RTS Bit",
+                brief = "RTS Bit",
                 description = "Bit number of UART1 RTS handshake output. If enabled, "..
-                              "the driver provides RS 232 input hardware handshake.",
+                              "the driver provides RS 232 input hardware handshake.\n\n"..
+                              "Ethernut 2.x:\n"..
+                              "Short JP1 pins 4 and 6 to select bit 2 on PORTE.",
                 provides = { "UART1_RTS_BIT" },
                 flavor = "booldata",
                 type = "enumerated",
@@ -231,7 +233,7 @@ nutdev =
             },
             {
                 macro = "UART1_RTS_PORT",
-                brief = "UART1 RTS Port",
+                brief = "RTS Port",
                 description = "Port register name of UART1 RTS handshake output.",
                 requires = { "UART1_RTS_BIT" },
                 type = "enumerated",
@@ -240,14 +242,36 @@ nutdev =
             },
             {
                 macro = "UART1_CTS_IRQ",
-                brief = "UART1 CTS Interrupt",
+                brief = "CTS Interrupt",
                 description = "Interrupt number of UART1 CTS handshake input. If enabled, "..
-                              "the driver provides RS 232 output hardware handshake.",
+                              "the driver provides RS 232 output hardware handshake.\n\n"..
+                              "Ethernut 2.x:\n"..
+                              "Short JP1 pins 7 and 8 to select INT7.",
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
                 file = "include/cfg/arch/avr.h"
-            }
+            },
+            {
+                macro = "UART1_HDX_BIT",
+                brief = "Half Duplex Bit",
+                description = "Bit number of UART1 half duplex control output. If enabled, "..
+                              "the driver provides RS 485 half duplex mode.",
+                provides = { "UART1_HDX_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "UART1_HDX_PORT",
+                brief = "Half Duplex Port",
+                description = "Port register name of UART1 half duplex control output.",
+                requires = { "UART1_HDX_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
         }
     },
     {
@@ -260,28 +284,16 @@ nutdev =
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
     },
     {
-        name = "nutdev_uartspi",
-        requires = { "HW_MCU_AVR" },
+        name = "nutdev_uart_spi",
+        brief = "SPI UART Driver (AVR)",
+        description = "Deprecated driver for UARTs connected via SPI.",
+        requires = { "CRT_HEAPMEM" },
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
-        sources = { "uartspi.c" }
-    },
-    {
-        name = "nutdev_s3c4510b_console",
-        brief = "UART driver (S3C45)",
-        requires = { "HW_UART_S3C45" },
-        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
-        sources = { "s3c4510b_console.c" }
-    },
-    {
-        name = "nutdev_scih8",
-        brief = "UART driver (H8300)",
-        requires = { "HW_UART_H8300" },
-        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
-        sources = { "scih8.c", "scih8devs.c" }
+        sources = { "uarts.c", "uartspi.c" },
     },
 
     --
-    -- Physical layer network drivers.
+    -- AVR LAN drivers.
     --
     {
         name = "nutdev_cs8900_avr",
@@ -292,7 +304,8 @@ nutdev =
     {
         name = "nutdev_lanc111_avr",
         brief = "LAN91C111 Driver (AVR)",
-        requires = { "HW_MCU_AVR", "NUT_EVENT", "NUT_TIMER" },
+        description = "LAN driver for SMSC LAN91C111. ATmega128 only.",
+        requires = { "HW_MCU_ATMEGA128", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "lanc111.c" },
         options = 
@@ -470,29 +483,26 @@ nutdev =
         }
     },
     {
-        name = "nutdev_rtl8019as_h8",
-        brief = "RTL8019AS Driver (H8300)",
-        requires = { "HW_MCU_H8300", "NUT_TIMER" },
-        provides = { "NET_PHY" },
-        sources = { "nicrtl_h8.c" }
-    },
-    {
         name = "nutdev_wlan_avr",
         brief = "WLAN Driver (AVR)",
         requires = { "NUT_EVENT", "HW_MCU_AVR" },
         provides = { "NET_PHY" },
         sources = { "wlan.c", "wlandrv.c" }
     },
+
+    --
+    -- AVR WAN drivers.
+    --
     {
         name = "nutdev_ppp",
-        brief = "PPP Driver",
+        brief = "PPP Driver (AVR)",
         requires = { "HW_MCU_AVR", "NUT_TIMER", "PROTO_HDLC" },
         provides = { "NET_PHY" },
         sources = { "ppp.c" }
     },
     {
         name = "nutdev_ahdlc_avr",
-        brief = "AHDLC Protocol",
+        brief = "AHDLC Protocol (AVR)",
         requires = { "HW_UART_AVR", "NUT_EVENT" },
         provides = { "PROTO_HDLC" },
         sources = 
@@ -502,15 +512,10 @@ nutdev =
             "ahdlcavr.c"
         }
     },
-    {
-        name = "nutdev_chat",
-        brief = "UART Chat",
-        description = "Executes a conversational exchange with a serial device.",
-        requires = { "CRT_HEAPMEM", "DEV_UART", "NUT_TIMER" },
-        provides = { "UART_CHAT" },
-        sources =  { "chat.c" }
-    },
 
+    --
+    -- Miscellaneous AVR drivers.
+    --
     {
         name = "nutdev_hd44780_avr",
         brief = "HD44780 Driver (AVR)",
@@ -550,54 +555,252 @@ nutdev =
         sources = { "ir.c", "irsony.c" }
     },
     {
-        name = "nutdev_netbuf",
-        provides = { "DEV_NETBUF" },
-        sources = { "netbuf.c" }
-    },
-    {
         name = "nutdev_pcmcia",
+        brief = "PCMCIA Driver (AVR)",
         sources = { "pcmcia.c" },
         requires = { "HW_MCU_AVR" }
     },
     {
-        name = "nutdev_mweeprom",
-        requires = { "HW_MCU_H8300" },
-        sources = { "mweeprom.c" }
-    },
-    {
         name = "nutdev_spidigio_avr",
+        brief = "Shift Register I/O (AVR)",
+        description = "Digital I/O using shift registers.\n"..
+                      "This driver supports upto 32 digital inputs or outputs "..
+                      "and occupies 5 port bits only:\n"..
+                      "- Shift register data output\n"..
+                      "- Shift register data input\n"..
+                      "- Shift register clock output\n"..
+                      "- Shift register input latch\n"..
+                      "- Shift register output latch\n"..
+                      "The hardware is very simple, using standard TTL 74165 "..
+                      "shift registers for inputs and Allegro's UCN5841A for "..
+                      "outputs. All shift are connected in series, with the "..
+                      "first output register connected to the MCU data output "..
+                      "and the last input register connected to the data input.",
         sources = { "spidigio.c" },
-        requires = { "NOT_AVAILABLE" }
-    },
-    {
-        name = "nutdev_spiflash_avr",
-        sources = { "spiflash.c" },
-        requires = { "NOT_AVAILABLE" }
-    },
-    {
-        name = "nutdev_term",
-        requires = { "CRT_HEAPMEM" },
-        sources = { "term.c" }
+        requires = { "HW_MCU_AVR" },
+        options = 
+        {
+            {
+                macro = "SPIDIGIO_SOUT_BIT",
+                brief = "Shift Output Bit",
+                description = "Bit number of the serial data output.\n"..
+                              "Coconut uses bit 5 of PORTD.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_SOUT_PORT",
+                brief = "Shift Output Port",
+                description = "Port register name of serial data output.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_SIN_BIT",
+                brief = "Shift Input Bit",
+                description = "Bit number of the serial data input.\n"..
+                              "Coconut uses bit 6 of PIND.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_SIN_PIN",
+                brief = "Shift Input Port",
+                description = "Port register name of serial data input.",
+                type = "enumerated",
+                choices = avr_pin_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_SCLK_BIT",
+                brief = "Clock Output Bit",
+                description = "Bit number of the serial clock output.\n"..
+                              "Coconut uses bit 7 of PORTD.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_SCLK_PORT",
+                brief = "Clock Output Port",
+                description = "Port register name of serial clock output.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_LDI_BIT",
+                brief = "Input Latch Bit",
+                description = "Bit number of the input latch output.\n"..
+                              "Coconut uses bit 7 of PORTB.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_LDI_PORT",
+                brief = "Input Latch Port",
+                description = "Port register name of the input latch output.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_LDO_BIT",
+                brief = "Output Latch Bit",
+                description = "Bit number of the output latch signal, which is "..
+                              "connected to the strobe input of the UCN5841A\n"..
+                              "Coconut uses bit 5 of PORTB.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SPIDIGIO_LDO_PORT",
+                brief = "Output Latch Port",
+                description = "Port register name of the output latch output.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avr.h"
+            },
+        }
     },
     {
         name = "nutdev_twif_avr",
+        brief = "TWI Driver (AVR)",
         requires = { "HW_MCU_AVR", "NUT_EVENT" },
         sources = { "twif.c" }
     },
     {
-        name = "nutdev_ueeprom",
-        provides = { "HW_NVMEM" },
-        requires = { "HW_EMU_LINUX" },
-        sources = { "ueeprom.c" }
+        name = "nutdev_vs1001k_avr",
+        brief = "VS1001 Driver (AVR)",
+        requires = { "NUT_SEGBUF", "HW_MCU_AVR" },
+        sources = { "vs1001k.c" }
+    },
+
+    --
+    -- AT91 drivers
+    --
+    {
+        name = "nutdev_debug_at91",
+        brief = "UART Debug Output (AT91)",
+        requires = { "HW_UART_AT91" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "debug_at91.c" }
+    },
+
+    --
+    -- H8/300 drivers
+    --
+    {
+        name = "nutdev_scih8dbg",
+        brief = "SCI Debug Output (H8300)",
+        requires = { "HW_MCU_H8300" },
+        sources = { "scih8dbg.c" }
     },
     {
+        name = "nutdev_scih8",
+        brief = "UART driver (H8300)",
+        requires = { "HW_UART_H8300" },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "scih8.c", "scih8devs.c" }
+    },
+    {
+        name = "nutdev_rtl8019as_h8",
+        brief = "RTL8019AS Driver (H8300)",
+        requires = { "HW_MCU_H8300", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "nicrtl_h8.c" }
+    },
+    {
+        name = "nutdev_mweeprom",
+        brief = "EEPROM Support (H8300)",
+        requires = { "HW_MCU_H8300" },
+        sources = { "mweeprom.c" }
+    },
+
+    --
+    -- S3C45 drivers
+    --
+    {
+        name = "nutdev_uart_s3c4510b_dbg",
+        brief = "S3C4510B Debug Output (S3C45)",
+        requires = { "HW_UART_S3C45" },
+        sources = { "uart_s3c4510b_dbg.c" }
+    },
+    {
+        name = "nutdev_s3c4510b_console",
+        brief = "UART driver (S3C45)",
+        requires = { "HW_UART_S3C45" },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "s3c4510b_console.c" }
+    },
+
+    --
+    -- LINUX emulation drivers.
+    --
+    {
         name = "nutdev_unix_devs",
+        brief = "Device Emulation (Linux)",
         requires = { "HW_EMU_LINUX", "NUT_EVENT" },
         sources = { "unix_devs.c" }
     },
     {
-        name = "nutdev_vs1001k_avr",
-        requires = { "NUT_SEGBUF", "HW_MCU_AVR" },
-        sources = { "vs1001k.c" }
-    }
+        name = "nutdev_ueeprom",
+        brief = "EEPROM Support (Linux)",
+        provides = { "HW_NVMEM" },
+        requires = { "HW_EMU_LINUX" },
+        sources = { "ueeprom.c" }
+    },
+
+    --
+    -- General device helper routines.
+    --
+    {
+        name = "nutdev_ihndlr_avr",
+        brief = "Interrupt Handler",
+        description = "Currently used for all MCUs except AVR.",
+        sources = { "irqreg.c" },
+    },
+    {
+        name = "nutdev_usart",
+        brief = "USART Driver Framework",
+        description = "Generic USART driver framework.",
+        requires = { "CRT_HEAPMEM", "DEV_UART_SPECIFIC" },
+        provides = { "DEV_UART_GENERIC", "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "usart.c" },
+    },
+    {
+        name = "nutdev_chat",
+        brief = "UART Chat",
+        description = "Executes a conversational exchange with a serial device.",
+        requires = { "CRT_HEAPMEM", "DEV_UART", "NUT_TIMER" },
+        provides = { "UART_CHAT" },
+        sources =  { "chat.c" }
+    },
+    {
+        name = "nutdev_term",
+        brief = "Terminal Emulation",
+        requires = { "CRT_HEAPMEM" },
+        sources = { "term.c" }
+    },
+    {
+        name = "nutdev_netbuf",
+        brief = "Network Buffers",
+        provides = { "DEV_NETBUF" },
+        sources = { "netbuf.c" }
+    },
+
+    --
+    -- Disabled components.
+    --
+    {
+        name = "nutdev_spiflash_avr",
+        brief = "SPI Flashing (AVR)",
+        sources = { "spiflash.c" },
+        requires = { "NOT_AVAILABLE" }
+    },
 }
