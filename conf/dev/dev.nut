@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.6  2004/09/07 19:11:15  haraldkipp
+-- Simplified IRQ handling to get it done for EB40A
+--
 -- Revision 1.5  2004/09/01 14:04:57  haraldkipp
 -- Added UART handshake and EEPROM emulation port bits
 --
@@ -106,31 +109,24 @@ nutdev =
         requires = { "HW_MCU_AVR" }
     },
     {
-        name = "nutdev_irq_arm",
-        brief = "Interrupt handler (ARM7)",
-        requires = { "HW_MCU_ARM7" },
-        provides = { "DEV_IRQ_ARM7" },
-        sources = { "arm_irqreg.c" }
-    },
-    {
         name = "nutdev_irq_h8",
-        brief = "Interrupt handler (H8300)",
+        brief = "Interrupt Handler (H8300)",
         requires = { "HW_MCU_H8300" },
         provides = { "DEV_IRQ_H8300" },
         sources = { "h8_irqreg.c" }
     },
     {
         name = "nutdev_irq_m68k",
-        brief = "Interrupt handler (M68K)",
+        brief = "Interrupt Handler (M68K)",
         requires = { "HW_MCU_M68K" },
         provides = { "DEV_IRQ_M68K" },
         sources = { "m68k_irqreg.c" }
     },
     {
         name = "nutdev_s3c4510b_irqreg",
-        brief = "? Interrupt handler (S3C)",
+        brief = "Interrupt Handler (S3C)",
         requires = { "HW_MCU_S3C45" },
-        sources = { "s3c4510b_irqreg.c" }
+        sources = { "arm_irqreg.c", "s3c4510b_irqreg.c" }
     },
 
     --
