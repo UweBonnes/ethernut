@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.187 2005/03/28 18:27:06 mrjones4u Exp $
+$Id: ChangeLog,v 1.188 2005/03/30 15:18:07 mrjones4u Exp $
+
+2005-03-30  Michael Jones <Michael.e.Jones@web.de>
+
+	* net/tcpsm.c: Defussed race condition in NutTcpStateActiveOpenEvent
+	where the NutEventWait would be called after sock->so_ac_tq had been
+	signaled and therefore the calling thread will hang due to usage of
+	NutEventBroadcast which will not ‘store’ the signaled state.
+	This condition can e.g. occur when attempting connection an
+	unconnected target port on an active host. The returning RST would
+	be processed and signaled before the NutEventWait is called.
 
 2005-03-25  Michael Jones <Michael.e.Jones@web.de>
 

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/03/30 15:17:58  mrjones4u
+ * Defussed race condition in NutTcpStateActiveOpenEvent where the NutEventWait would be called after sock->so_ac_tq had been signaled and therefore the calling thread will hang due to usage of NutEventBroadcast which will not ‘store’ the signaled state. This condition can e.g. occur when attempting connection an unconnected target port on an active host. The returning RST would be processed and signaled before the NutEventWait is called.
+ *
  * Revision 1.16  2005/02/04 17:17:49  haraldkipp
  * Unused include files removed.
  *
@@ -297,7 +300,7 @@ static void NutTcpProcessSyn(TCPSOCKET * sock, IPHDR * ih, TCPHDR * th)
     sock->so_tx_win = ntohs(th->th_win);
 
     /*
-     * To avoid unneccessary fragmentation, limit the
+     * To avoid unnecessary fragmentation, limit the
      * maximum segment size to the maximum transfer
      * unit of our interface.
      */
@@ -735,10 +738,12 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
     /*
      * Block application.
      */
-    NutEventWait(&sock->so_ac_tq, 0);
+	 if(sock->so_state == TCPS_SYN_SENT)
+		NutEventWait(&sock->so_ac_tq, 0);
 
     if (sock->so_state != TCPS_ESTABLISHED)
         return -1;
+
     return 0;
 }
 
@@ -1688,7 +1693,7 @@ int NutTcpInitStateMachine(void)
  * \param sock  Socket descriptor.
  * \param last_error Error number to report
  *
- * \note This routine is called internaly by Nut/Net.
+ * \note This routine is called internally by Nut/Net.
  *       Applications typically do not call this function.
  *
  * \return 0 on success, -1 otherwise.
