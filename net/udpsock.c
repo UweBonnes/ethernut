@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:46  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 16:01:01  haraldkipp
+ * Bugfix: Send crashed on routing problems.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:46  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.13  2003/05/06 18:21:52  harald
  * Memory hole fixed
@@ -188,8 +191,9 @@ int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data,
     }
     memcpy(nb->nb_ap.vp, data, len);
 
-    rc = NutUdpOutput(sock, addr, port, nb);
-    NutNetBufFree(nb);
+    /* Bugfix by Ralph Mason. We should not free the NETBUF in case of an error. */
+    if((rc = NutUdpOutput(sock, addr, port, nb)) == 0)
+        NutNetBufFree(nb);
 
     return rc;
 }
