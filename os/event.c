@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/01/02 10:07:10  haraldkipp
+ * Replaced platform dependant formats in debug outputs.
+ *
  * Revision 1.6  2004/07/20 08:33:28  freckle
  * Fixed NutPostEvent to give up CPU if there is another thread ready with
  * same priority to match the documentation
@@ -95,11 +98,6 @@
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #include <stdio.h>
-#endif
-
-
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
-#define ARCH_32BIT
 #endif
 
 /*!
@@ -172,16 +170,6 @@ void NutEventTimeout(HANDLE timer, void *arg)
  */
 int NutEventWait(volatile HANDLE * qhp, u_long ms)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt1[] = "Rem<%08lx>";
-    static prog_char fmt2[] = "SWW<%08lx %08lx>";
-#else
-    static prog_char fmt1[] = "Rem<%04x>";
-    static prog_char fmt2[] = "SWW<%04x %04x>";
-#endif
-#endif
-
     NutEnterCritical();
 
     /*
@@ -204,8 +192,10 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      * specified queue.
      */
 #ifdef NUTDEBUG
-    if (__os_trf)
-        fprintf_P(__os_trs, fmt1, (uptr_t) runningThread);
+    if (__os_trf) {
+        static prog_char fmt1[] = "Rem<%p>";
+        fprintf_P(__os_trs, fmt1, runningThread);
+    }
 #endif
     NutThreadRemoveQueue(runningThread, &runQueue);
 #ifdef NUTDEBUG
@@ -229,8 +219,10 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      * to run.
      */
 #ifdef NUTDEBUG
-    if (__os_trf)
-        fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
+    if (__os_trf) {
+        static prog_char fmt2[] = "SWW<%p %p>";
+        fprintf_P(__os_trs, fmt2, runningThread, runQueue);
+    }
 #endif
     NutThreadSwitch();
 

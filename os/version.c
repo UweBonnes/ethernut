@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/02 10:07:10  haraldkipp
+ * Replaced platform dependant formats in debug outputs.
+ *
  * Revision 1.10  2004/10/03 18:44:40  haraldkipp
  * A little bit of Game Boy
  *
@@ -78,8 +81,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090201UL
-static CONST char os_version_string[] = "3.9.2.1 pre";
+#define OS_VERSION_NUMBER  0x03090301UL
+static CONST char os_version_string[] = "3.9.3.1 pre";
 
 /*!
  * \addtogroup xgNutInit

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/01/02 10:07:10  haraldkipp
+ * Replaced platform dependant formats in debug outputs.
+ *
  * Revision 1.4  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -68,10 +71,6 @@
 #include <net/netdebug.h>
 #include <sys/socket.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
-#define ARCH_32BIT
-#endif
-
 extern TCPSOCKET *tcpSocketList;
 extern UDPSOCKET *udpSocketList;
 
@@ -80,11 +79,7 @@ u_char __tcp_trf;               /*!< \brief TCP trace flags. */
 
 void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock, NETBUF * nb)
 {
-#ifdef ARCH_32BIT
-    static prog_char fmt[] = "%s%08lX[%u]-SEQ(%lx)";
-#else
-    static prog_char fmt[] = "%s%04X[%u]-SEQ(%lx)";
-#endif
+    static prog_char fmt[] = "%s%p[%u]-SEQ(%lx)";
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
     fprintf_P(stream, fmt, ds, (uptr_t) sock, nb->nb_ap.sz, ntohl(th->th_seq));
@@ -155,19 +150,11 @@ void NutDumpSocketList(FILE * stream)
     TCPSOCKET *ts;
     UDPSOCKET *us;
 
-#ifdef ARCH_32BIT
-    static prog_char fmt1[] = "%08lX TCP %15s:%-6u ";
-    static prog_char fmt2[] = "%08lX UDP %6u\r\n";
+    static prog_char fmt1[] = "%10p TCP %15s:%-6u ";
+    static prog_char fmt2[] = "%10p UDP %6u\r\n";
 
-    fputs("\r\nSocket   Typ Local                  Remote                 State\n", stream);
-    /*        12345678 123 123456789012345:123456 123456789012345:123456 */
-#else
-    static prog_char fmt1[] = "%04X TCP %15s:%-6u ";
-    static prog_char fmt2[] = "%04X UDP %6u\r\n";
-
-    fputs("\r\nSock Typ Local                  Remote                 State\n", stream);
-    /*        1234 123 123456789012345:123456 123456789012345:123456 */
-#endif
+    fputs("\r\nSocket     Typ Local                  Remote                 State\n", stream);
+    /*         1234567890 123 123456789012345:123456 123456789012345:123456 */
 
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
         fprintf_P(stream, fmt1, (uptr_t) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));

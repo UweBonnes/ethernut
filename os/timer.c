@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/01/02 10:07:10  haraldkipp
+ * Replaced platform dependant formats in debug outputs.
+ *
  * Revision 1.8  2004/09/08 10:53:25  haraldkipp
  * os/timer.c
  *
@@ -187,11 +190,6 @@ static void NutTimerInsert(NUTTIMERINFO * tn);
 #include "arch/unix_timer.c"
 #endif
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
-#define ARCH_32BIT
-#endif
-
-
 /*!
  * \brief Insert a new timer in the global timer list.
  */
@@ -201,14 +199,10 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
     NUTTIMERINFO *tnp;
 
 #ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt[] = "InsTmr<%08lX>\n";
-#else
-    static prog_char fmt[] = "InsTmr<%04X>\n";
-#endif
-
-    if (__os_trf)
-        fprintf_P(__os_trs, fmt, (uptr_t) tn);
+    if (__os_trf) {
+        static prog_char fmt[] = "InsTmr<%p>\n";
+        fprintf_P(__os_trs, fmt, tn);
+    }
 #endif
     tnpp = &nutTimerList;
     tnp = nutTimerList;
@@ -329,30 +323,23 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_
  */
 void NutSleep(u_long ms)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt1[] = "Rem<%08lx>\n";
-    static prog_char fmt2[] = "SWS<%08lx %08lx>\n";
-#else
-    static prog_char fmt1[] = "Rem<%04x>\n";
-    static prog_char fmt2[] = "SWS<%04x %04x>\n";
-#endif
-#endif
-
     if (ms) {
         NutEnterCritical();
         if ((runningThread->td_timer = NutTimerStart(ms, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
 #ifdef NUTDEBUG
-            if (__os_trf)
-                fprintf_P(__os_trs, fmt1, (uptr_t) runningThread);
+            if (__os_trf) {
+                static prog_char fmt1[] = "Rem<%p>\n";
+                fprintf_P(__os_trs, fmt1, runningThread);
+            }
 #endif
             NutThreadRemoveQueue(runningThread, &runQueue);
             runningThread->td_state = TDS_SLEEP;
 #ifdef NUTDEBUG
             if (__os_trf) {
+                static prog_char fmt2[] = "SWS<%p %p>\n";
                 NutDumpThreadList(__os_trs);
                 //NutDumpThreadQueue(__os_trs, runQueue);
-                fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
+                fprintf_P(__os_trs, fmt2, runningThread, runQueue);
             }
 #endif
             NutThreadSwitch();
@@ -383,14 +370,10 @@ void NutTimerStopAsync(HANDLE handle)
     NUTTIMERINFO *volatile *tnpp;
 
 #ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt[] = "StpTmr<%08lX>\r\n";
-#else
-    static prog_char fmt[] = "StpTmr<%04X>\r\n";
-#endif
-
-    if (__os_trf)
+    if (__os_trf) {
+        static prog_char fmt[] = "StpTmr<%p>\r\n";
         fprintf_P(__os_trs, fmt, (uptr_t) handle);
+    }
 #endif
     tnpp = &nutTimerList;
     tnp = nutTimerList;

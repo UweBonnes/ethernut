@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/01/02 10:07:10  haraldkipp
+ * Replaced platform dependant formats in debug outputs.
+ *
  * Revision 1.9  2004/08/05 12:13:57  freckle
  * Added unix emulation hook in NutThreadYield to safely process
  * NutPostEventAsync calls occuring in non Nut/OS threads.
@@ -125,16 +128,12 @@
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
 #include "arch/avr_thread.c"
 #elif defined(__arm__)
-#define ARCH_32BIT
 #include "arch/arm_thread.c"
 #elif defined(__H8300H__) || defined(__H8300S__)
-#define ARCH_32BIT
 #include "arch/h8_thread.c"
 #elif defined(__m68k__)
-#define ARCH_32BIT
 #include "arch/m68k_thread.c"
 #elif defined(__linux__) || defined(__APPLE__)
-#define ARCH_32BIT
 #include "arch/unix_thread.c"
 #endif
 
@@ -253,20 +252,12 @@ void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
  */
 void NutThreadResumeAsync(HANDLE th)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt1[] = "Add<%08lx>";
-    static prog_char fmt2[] = "<#A%08lX>";
-#else
-    static prog_char fmt1[] = "Add<%04x>";
-    static prog_char fmt2[] = "<#A%04X>";
-#endif
-#endif
-
     if (th && ((NUTTHREADINFO *) th)->td_state == TDS_SLEEP) {
 #ifdef NUTDEBUG
-        if (__os_trf)
-            fprintf_P(__os_trs, fmt1, (uptr_t) th);
+        if (__os_trf) {
+            static prog_char fmt1[] = "Add<%p>";
+            fprintf_P(__os_trs, fmt1, th);
+        }
 #endif
         NutThreadAddPriQueue(th, (NUTTHREADINFO **) & runQueue);
         ((NUTTHREADINFO *) th)->td_state = TDS_READY;
@@ -276,8 +267,10 @@ void NutThreadResumeAsync(HANDLE th)
 #endif
     }
 #ifdef NUTDEBUG
-    else if (__os_trf)
-        fprintf_P(__os_trs, fmt2, (uptr_t) th);
+    else if (__os_trf) {
+        static prog_char fmt2[] = "<#A%p>";
+        fprintf_P(__os_trs, fmt2, th);
+    }
 #endif
 }
 
@@ -311,16 +304,6 @@ void NutThreadWake(HANDLE timer, HANDLE th)
  */
 void NutThreadYield(void)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt1[] = "Yld<%08lx>";
-    static prog_char fmt2[] = "SWY<%08lx %08lx>";
-#else
-    static prog_char fmt1[] = "Yld<%04x>";
-    static prog_char fmt2[] = "SWY<%04x %04x>";
-#endif
-#endif
-
     NutEnterCritical();
 
 #if defined(__linux__) || defined(__APPLE__)
@@ -335,8 +318,10 @@ void NutThreadYield(void)
      */
     if (runningThread == runQueue && runningThread->td_qnxt) {
 #ifdef NUTDEBUG
-        if (__os_trf)
-            fprintf_P(__os_trs, fmt1, (uptr_t) runningThread);
+        if (__os_trf) {
+            static prog_char fmt1[] = "Yld<%p>";
+            fprintf_P(__os_trs, fmt1, runningThread);
+        }
 #endif
         runQueue = runningThread->td_qnxt;
         runningThread->td_qnxt = 0;
@@ -355,8 +340,10 @@ void NutThreadYield(void)
     if (runningThread != runQueue) {
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
-        if (__os_trf)
-            fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
+        if (__os_trf) {
+            static prog_char fmt2[] = "SWY<%p %p>";
+            fprintf_P(__os_trs, fmt2, runningThread, runQueue);
+        }
 #endif
         NutThreadSwitch();
     }
@@ -386,15 +373,6 @@ void NutThreadYield(void)
  */
 u_char NutThreadSetPriority(u_char level)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt1[] = "Pri%u<%08lx>";
-    static prog_char fmt2[] = "SWC<%08lx %08lx>";
-#else
-    static prog_char fmt1[] = "Pri%u<%04x>";
-    static prog_char fmt2[] = "SWC<%04x %04x>";
-#endif
-#endif
     u_char last = runningThread->td_priority;
 
     /* Block interrupts. */
@@ -402,7 +380,8 @@ u_char NutThreadSetPriority(u_char level)
 
 #ifdef NUTDEBUG
     if (__os_trf) {
-        fprintf_P(__os_trs, fmt1, level, (uptr_t) runningThread);
+        static prog_char fmt1[] = "Pri%u<%p>";
+        fprintf_P(__os_trs, fmt1, level, runningThread);
     }
 #endif
 
@@ -436,7 +415,8 @@ u_char NutThreadSetPriority(u_char level)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf) {
-            fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
+            static prog_char fmt2[] = "SWC<%p %p>";
+            fprintf_P(__os_trs, fmt2, runningThread, runQueue);
         }
 #endif
         NutThreadSwitch();
