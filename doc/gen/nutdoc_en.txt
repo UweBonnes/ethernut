@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.5  2005/02/06 16:37:54  haraldkipp
+ * FTP sample added
+ *
  * Revision 1.4  2004/09/12 09:10:04  haraldkipp
  * Version 3.9, old stuff removed
  *
@@ -759,6 +762,11 @@
  */
 
 /*!
+ * \defgroup xgFTPD FTP
+ * \brief File transfer protocol.
+ */
+
+/*!
  * \defgroup xgHTTPD HTTP
  * \brief Hypertext transfer protocol.
  */
@@ -820,8 +828,6 @@
  * requesting the physical hardware address for the
  * given IP address.
  *
- * \todo Configurable cache timeout.
- * \todo Only save the last packet to unresolved destinations.
  * \todo Add functions to manually add or remove ARP entries.
  * \todo Add function to query ARP tables.
  */
