@@ -93,8 +93,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:26  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/07/27 19:41:00  drsung
+ * If NutArpOutput fails, the NetBuf must not be deallocated by
+ * calling NutNetBufFree.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:26  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.9  2003/02/04 18:14:56  harald
  * Version 3 released
@@ -190,8 +194,8 @@ void NutArpInput(NUTDEVICE * dev, NETBUF * nb)
             NutArpAllocNetBuf(ARPOP_REPLY, ea->arp_spa, ea->arp_sha);
 
         if (nbr) {
-            NutArpOutput(dev, nbr);
-            NutNetBufFree(nbr);
+            if (!NutArpOutput(dev, nbr))
+                NutNetBufFree(nbr);
         }
     }
     NutNetBufFree(nb);
