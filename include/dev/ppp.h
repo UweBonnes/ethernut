@@ -66,6 +66,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/14 10:14:42  haraldkipp
+ * Unused prototypes removed
+ *
  * Revision 1.3  2003/08/14 15:05:55  haraldkipp
  * Distinguish negotiated and final magic
  *
@@ -252,12 +255,6 @@ extern NUTDEVICE devPpp;
 #define LCP_LOWERUP     3
 #define LCP_LOWERDOWN   4
 
-extern int NutPppInit(NUTDEVICE *dev);
-extern int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf);
-extern NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
-extern int NutPppClose(NUTFILE *fp);
-
-extern int PPPPutPacket(NUTDEVICE * dev, NETBUF * nb);
 
 #ifdef __cplusplus
 }
