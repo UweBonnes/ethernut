@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2003/09/29 16:33:12  haraldkipp
+ * Using portable strtok and strtok_r
+ *
  * Revision 1.2  2003/08/07 08:27:58  haraldkipp
  * Bugfix, remote not displayed in socket list
  *
@@ -55,11 +58,6 @@
 
 #include <string.h>
 #include <io.h>
-
-/* The avrlibc doesn't support strtok. */
-#ifndef __IMAGECRAFT__
-#include <strtok_r.h>
-#endif
 
 //#include <dev/lanc111.h>
 #include <dev/nicrtl.h>
@@ -344,54 +342,51 @@ int ShowForm(FILE * stream, REQUEST * req)
     fputs_P(html_head, stream);
 
     if (req->req_query) {
-#ifdef __IMAGECRAFT__
-        char *param1;
-        char *param2;
-        char *param3;
-
-        /*
-         * Extract the parameters. Note, that it is potentially dangerous
-         * to use strtok in multithreaded applications. There's no problem
-         * here, because we can be sure that there will by no thread switch
-         * between the first and the last call to strtok. Otherwise we
-         * must use strtok_r().
-         */
-        param1 = strtok(req->req_query, "=");
-        param1 = strtok(NULL, "&");
-        param2 = strtok(NULL, "=");
-        param2 = strtok(NULL, "&");
-        param3 = strtok(NULL, "=");
-        param3 = strtok(NULL, "&");
-
-        /* Send the parameters back to the client. */
-        fputs("Param1=", stream);
-        fputs(param1, stream);
-        fputs("<BR>Param2=", stream);
-        fputs(param2, stream);
-        fputs("<BR>Param3=", stream);
-        fputs(param3, stream);
-#else
-        /*
-         * There's no strtok in the GCC library. So we take the chance to
-         * demonstrate Peter Scandrett's strtok_r().
-         */
-        char *qp;
+#ifndef __IMAGECRAFT__
+        char *qp1;
+#endif
         char *c[3];
         char *p[3];
         u_char i;
 
         /* Extract 3 parameters. */
-        qp = req->req_query;
         for (i = 0; i < 3; i++) {
-            c[i] = strtok_r(&qp, "=");
-            p[i] = strtok_r(&qp, "&");
+            if(i == 0) {
+#ifdef __IMAGECRAFT__
+                /*
+                 * Extract the parameters. Note, that it is potentially dangerous
+                 * to use strtok in multithreaded applications. There's no problem
+                 * here, because we can be sure that there will by no thread switch
+                 * between the first and the last call to strtok. Otherwise we
+                 * must use strtok_r().
+                 */
+                c[0] = strtok(req->req_query, "=");
+#else
+                /*
+                 * There's no strtok in the GCC library. So we take the chance to
+                 * demonstrate strtok_r().
+                 */
+                c[0] = strtok_r(req->req_query, "=", &qp1);
+#endif
+            }
+            else {
+#ifdef __IMAGECRAFT__
+                c[i] = strtok(0, "=");
+#else
+                c[i] = strtok_r(0, "=", &qp1);
+#endif
+            }
+#ifdef __IMAGECRAFT__
+            p[i] = strtok(0, "&");
+#else
+            p[i] = strtok_r(0, "&", &qp1);
+#endif
         }
 
         /* Send the parameters back to the client. */
         for (i = 0; i < 3; i++) {
             fprintf_P(stream, PSTR("%s: %s<BR>\r\n"), c[i], p[i]);
         }
-#endif
     }
 
     fputs_P(html_body, stream);
