@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/09/07 19:19:12  haraldkipp
+ * Tested with EB40A on Win32
+ *
  * Revision 1.4  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -57,7 +60,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "0.9.1"
+#define VERSION "0.9.2"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
