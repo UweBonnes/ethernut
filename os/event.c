@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/24 22:34:35  freckle
+ * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
+ *
  * Revision 1.10  2005/01/24 21:11:21  freckle
  * renamed NutEventPostFromIRQ into NutEventPostFromIrq
  *
@@ -107,6 +110,10 @@
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #include <stdio.h>
+#endif
+
+#ifdef NUTTRACER
+#include <sys/tracer.h>
 #endif
 
 /*!
@@ -236,6 +243,10 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
         fprintf_P(__os_trs, fmt2, runningThread, runQueue);
     }
 #endif
+#ifdef NUTTRACER
+	TRACE_ADD_ITEM(TRACE_TAG_THREAD_WAIT,(int)runningThread)
+#endif
+
     NutThreadSwitch();
 
     /*
@@ -314,7 +325,7 @@ int NutEventPostAsync(HANDLE volatile *qhp)
     NutEnterCritical();
     
     /*
-     * so far, the code is identical to NutEventPostIRQ
+     * so far, the code is identical to NutEventPostIrq
      */ 
 
     rc = NutEventPostFromIrq(qhp);

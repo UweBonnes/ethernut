@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/01/24 22:34:50  freckle
+ * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
+ *
  * Revision 1.2  2004/12/16 08:40:35  haraldkipp
  * Late increment fixes ICCAVR bug.
  *
@@ -90,6 +93,10 @@ void NutDelay(u_char ms)
 static void NutTimer0Intr(void *arg)
 {
     NUTTIMERINFO *tnp;
+
+#ifdef NUTTRACER
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_TIMER0_OVERFL)
+#endif
 
     /*
      * Increment the tick counter used by Michael Fischer's
@@ -174,6 +181,9 @@ static void NutTimer0Intr(void *arg)
             }
         }
     }
+#ifdef NUTTRACER
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_TIMER0_OVERFL)
+#endif    
 }
 
 

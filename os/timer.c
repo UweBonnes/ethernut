@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/01/24 22:34:40  freckle
+ * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
+ *
  * Revision 1.11  2005/01/19 17:59:43  freckle
  * Improved interrupt performance by reducing some critical section
  *
@@ -127,6 +130,9 @@
 #include <sys/osdebug.h>
 #endif
 
+#ifdef NUTTRACER
+#include <sys/tracer.h>
+#endif
 
 /*!
  * \addtogroup xgTimer
@@ -365,6 +371,9 @@ void NutSleep(u_long ms)
                 //NutDumpThreadQueue(__os_trs, runQueue);
                 fprintf_P(__os_trs, fmt2, runningThread, runQueue);
             }
+#endif
+#ifdef NUTTRACER
+			TRACE_ADD_ITEM(TRACE_TAG_THREAD_SLEEP,(int)runningThread)
 #endif
             NutThreadSwitch();
         }

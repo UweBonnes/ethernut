@@ -37,8 +37,8 @@
 
 /*
  * $Log$
- * Revision 1.7  2005/01/24 21:12:06  freckle
- * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ * Revision 1.8  2005/01/24 22:34:46  freckle
+ * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
  * Revision 1.6  2005/01/21 16:49:46  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
@@ -68,6 +68,10 @@
 #include <dev/irqreg.h>
 
 #include <dev/usartavr.h>
+
+#ifdef NUTTRACER
+#include <sys/tracer.h>
+#endif
 
 /*!
  * \addtogroup xgUsartAvr
@@ -203,6 +207,11 @@ static void AvrUsartTxEmpty(void *arg)
     register RINGBUF *rbf = (RINGBUF *) arg;
     register u_char *cp = rbf->rbf_tail;
 
+
+#ifdef NUTTRACER
+	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_TXEMPTY)
+#endif	
+
     /*
      * Process pending software flow controls first.
      */
@@ -215,6 +224,9 @@ static void AvrUsartTxEmpty(void *arg)
             flow_control &= ~XOFF_SENT;
         }
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
+#ifdef NUTTRACER
+		TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+#endif        
         return;
     }
 
@@ -224,6 +236,9 @@ static void AvrUsartTxEmpty(void *arg)
          * and return without sending anything.
          */
         cbi(UCSRnB, UDRIE);
+#ifdef NUTTRACER
+		TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+#endif
         return;
 	}
 
@@ -237,6 +252,9 @@ static void AvrUsartTxEmpty(void *arg)
         if (cts_sense && bit_is_set(UART_CTS_PIN, UART_CTS_BIT)) {
             cbi(UCSRnB, UDRIE);
             sbi(EIMSK, UART_CTS_BIT);
+#ifdef NUTTRACER
+			TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+#endif
             return;
         }
 #endif
@@ -278,6 +296,9 @@ static void AvrUsartTxEmpty(void *arg)
         rbf->rbf_cnt = 0;
         NutEventPostFromIrq(&rbf->rbf_que);
     }
+#ifdef NUTTRACER
+	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+#endif
 }
 
 /*
@@ -292,6 +313,9 @@ static void AvrUsartRxComplete(void *arg)
     register size_t cnt;
     register u_char ch;
 
+#ifdef NUTTRACER
+	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_RXCOMPL)
+#endif	
     /*
      * We read the received character as early as possible to avoid overflows
      * caused by interrupt latency. However, reading the error flags must come 
@@ -310,12 +334,18 @@ static void AvrUsartRxComplete(void *arg)
         if (ch == ASCII_XOFF) {
             cbi(UCSRnB, UDRIE);
             flow_control |= XOFF_RCVD;
+ #ifdef NUTTRACER
+			TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+#endif			
             return;
         }
         /* XON enables transmit interrupts. */
         else if (ch == ASCII_XON) {
             sbi(UCSRnB, UDRIE);
             flow_control &= ~XOFF_RCVD;
+#ifdef NUTTRACER
+			TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+#endif			
             return;
         }
     }
@@ -326,6 +356,9 @@ static void AvrUsartRxComplete(void *arg)
     cnt = rbf->rbf_cnt;
     if (cnt >= rbf->rbf_siz) {
         rx_errors |= _BV(DOR);
+#ifdef NUTTRACER
+		TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+#endif			
         return;
     }
 
@@ -371,6 +404,9 @@ static void AvrUsartRxComplete(void *arg)
 
     /* Update the ring buffer counter. */
     rbf->rbf_cnt = cnt;
+#ifdef NUTTRACER
+	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+#endif			
 }
 
 

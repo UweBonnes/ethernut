@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/01/24 22:34:49  freckle
+ * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
+ *
  * Revision 1.5  2005/01/22 19:25:32  haraldkipp
  * Changed AVR port configuration names from PORTx to AVRPORTx.
  *
@@ -341,5 +344,11 @@ NUTDEVICE devUsartAvr0 = {
 #define sig_UART_TRANS  sig_UART0_TRANS
 
 #define dcb_usart   dcb_usart0
+
+#ifdef NUTTRACER
+#define TRACE_INT_UART_CTS TRACE_INT_UART0_CTS
+#define TRACE_INT_UART_RXCOMPL TRACE_INT_UART0_RXCOMPL
+#define TRACE_INT_UART_TXEMPTY TRACE_INT_UART0_TXEMPTY
+#endif
 
 #include "usartavr.c"

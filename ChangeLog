@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.152 2005/01/22 19:00:34 haraldkipp Exp $
+$Id: ChangeLog,v 1.153 2005/01/24 22:33:47 freckle Exp $
+
+2005-01-21  Matthias Ringwald <mringwal@inf.ethz.ch> 
+	
+	* os/tracer.c, include/sys/tracer.h: new tracer for
+	profiling of nut/os and app functions by Philipp Blum
+	
+	* dev/usart0avr.c, dev/usart1avr.c, dev/usartavr.c,
+	include/sys/atom.h, os/arch/avr_timer.c, os/event.c,
+	thread.c, timer.c: enable profiling of AvrUsartTxEmpty,
+	AvrUsartRxComplete, NutEnterCritical, NutExitCritical,
+	NutTimer0Intr, NutEventWait, NutThreadYield, NutThreadSetPriority,
+	NutSleep
 
 2005-01-22  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -51,14 +63,15 @@ $Id: ChangeLog,v 1.152 2005/01/22 19:00:34 haraldkipp Exp $
 	help in most cases.
 
 
-2005-01-21  Matthias Ringwald <mringwal@inf.ethz.ch> 
-	* event.c: NutEventPostAsync -> NutEventPostFromIRQ,
+2005-01-21  Matthias Ringwald <mringwal@inf.ethz.ch>
+ 
+	* os/event.c: NutEventPostAsync -> NutEventPostFromIrq,
 	new NutEventPostAsync with build-in critical section.
 	* include/sys/event.h os/event.c dev/sja1000.c dev/ahdlcavr.c
 	dev/ide.c dev/lanc111.c dev/nicrtl.c dev/nicrtl_h8.c dev/scih8.c
 	dev/twif.c dev/uartavr.c dev/uartspi.c dev/unix_devs.c dev/usartavr.c
 	dev/wlandrv.c net/tcpsm.c os/arch/unix_nutinit.c os/msg.c:
-	Renamed calls from IRQs to NutEvenPostAsync into NutEventPostFromIRQ,
+	Renamed calls from IRQs to NutEvenPostAsync into NutEventPostFromIrq,
 	removed Critcal Sections around calls to NutEventPostAsync
     
 2005-01-19  Matthias Ringwald <mringwal@inf.ethz.ch> 
@@ -167,6 +180,16 @@ $Id: ChangeLog,v 1.152 2005/01/22 19:00:34 haraldkipp Exp $
 	* net/ipin.c, include/netinet/ip.h: Added Damian Slee's
 	IP filter function.
 
+
+2004-11-29  Matthias Ringwald <mringwal@inf.ethz.ch> 
+
+    * include/stdio.h, include/stdio_nut_wrapper.h, include/time.h,
+    dev/unix_devs.c: some fixed to get core nut/os compiled on cygwin
+    hint: add -D__linux__ to Makedefs after configuration
+
+    * dev/unix_devs.c: no support for speed > 230400 on cygwin
+
+    * os/arch/unix_thread.c: added return to make a compiler happy
 
 2004-11-29  Matthias Ringwald <mringwal@inf.ethz.ch> 
 

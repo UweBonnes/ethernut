@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/24 22:34:36  freckle
+ * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
+ *
  * Revision 1.10  2005/01/02 10:07:10  haraldkipp
  * Replaced platform dependant formats in debug outputs.
  *
@@ -118,6 +121,10 @@
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
+#endif
+
+#ifdef NUTTRACER
+#include <sys/tracer.h>
 #endif
 
 /*!
@@ -345,6 +352,10 @@ void NutThreadYield(void)
             fprintf_P(__os_trs, fmt2, runningThread, runQueue);
         }
 #endif
+#ifdef NUTTRACER
+		TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread)
+#endif
+
         NutThreadSwitch();
     }
     NutExitCritical();
@@ -419,6 +430,10 @@ u_char NutThreadSetPriority(u_char level)
             fprintf_P(__os_trs, fmt2, runningThread, runQueue);
         }
 #endif
+#ifdef NUTTRACER
+		TRACE_ADD_ITEM(TRACE_TAG_THREAD_SETPRIO,(int)runningThread)
+#endif		
+
         NutThreadSwitch();
     }
     /* Release interrupt blocking. */

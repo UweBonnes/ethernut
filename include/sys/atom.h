@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/01/24 22:34:46  freckle
+ * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
+ *
  * Revision 1.4  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -60,6 +63,11 @@
  */
 
 #include <sys/types.h>
+
+#ifdef NUTTRACER_CRITICAL
+#include <sys/tracer.h>
+#endif
+
 
 __BEGIN_DECLS
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
@@ -103,19 +111,34 @@ static inline void AtomicDec(volatile u_char * p)
 
 #else
 
-#define NutEnterCritical()                  \
+#define NutEnterCritical_nt()               \
     asm volatile(                           \
         "in  __tmp_reg__, __SREG__" "\n\t"  \
         "push __tmp_reg__"          "\n\t"  \
         "cli"                       "\n\t"  \
     )
-
-#define NutExitCritical()                   \
+        
+#define NutExitCritical_nt()                \
     asm volatile(                           \
         "pop __tmp_reg__"           "\n\t"  \
         "out __SREG__, __tmp_reg__" "\n\t"  \
     )
-
+    
+#ifdef NUTTRACER_CRITICAL
+#define NutEnterCritical()                  \
+    NutEnterCritical_nt();                  \
+	TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_ENTER)
+    
+#define NutExitCritical()                   \
+	TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_EXIT); \
+	NutExitCritical_nt()
+#else
+#define NutEnterCritical()                  \
+    NutEnterCritical_nt();                  
+    
+#define NutExitCritical()                   \
+	NutExitCritical_nt()
+#endif
 #endif
 
 #define NutJumpOutCritical() NutExitCritical()
