@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 10:18:01  haraldkipp
+ * Comments updated
+ *
  * Revision 1.2  2004/02/08 17:14:05  drsung
  * arp entries with set ATF_PERM flag are not removed any longer.
  *
@@ -243,9 +246,7 @@ static ARPENTRY *NutArpCacheNew(IFNET * ifn, u_long ip, u_char * ha, u_char flag
  *       ARP telegram. Applications typically do not call this 
  *       function.
  *
- * \param dev Identifies the device, which cache is updated.
- *            This pointer must have been retrieved previously
- *            by using the NutDeviceOpen() function.
+ * \param dev Identifies the device.
  * \param ip  Requested IP address in network byte order.
  * \param ha  Pointer to a buffer which receives the MAC address.
  */
@@ -292,9 +293,7 @@ void NutArpCacheUpdate(NUTDEVICE * dev, u_long ip, u_char * ha)
  * is generated, sent out to the network and the calling
  * thread will be suspended.
  *
- * \param dev  Identifies the device to be used for sending.
- *             This pointer must have been retrieved previously
- *             by using the NutDeviceOpen() function.
+ * \param dev  Identifies the device.
  * \param ip   IP address of which the caller asked the MAC address.
  * \param mac  Buffer for the retrieved MAC address.
  *
