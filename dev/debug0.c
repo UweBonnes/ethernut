@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:36  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/11/03 17:17:47  haraldkipp
+ * Comments added
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:36  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:29:42  harald
  * ICCAVR port
@@ -56,11 +59,26 @@
 
 static NUTFILE dbgfile;
 
+/*!
+ * \brief Handle I/O controls for debug device 0.
+ *
+ * The debug device doesn't support any.
+ *
+ * \return Always -1.
+ */
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     return -1;
 }
 
+/*!
+ * \brief Initialize debug device 0.
+ *
+ * Simply enable the device. Baudrate divisor set to 7 for
+ * 115.2 kBaud at 14.7456 MHz.
+ *
+ * \return Always 0.
+ */
 static int DebugInit(NUTDEVICE * dev)
 {
     UBRR = 7;
@@ -68,6 +86,12 @@ static int DebugInit(NUTDEVICE * dev)
     return 0;
 }
 
+/*!
+ * \brief Send a single character to debug device 0.
+ *
+ * A carriage return character will be automatically appended 
+ * to any linefeed.
+ */
 static void DebugPut(char ch)
 {
     while((USR & BV(UDRE)) == 0);
@@ -76,6 +100,14 @@ static void DebugPut(char ch)
         DebugPut('\r');
 }
 
+/*!
+ * \brief Send characters to debug device 0.
+ *
+ * A carriage return character will be automatically appended 
+ * to any linefeed.
+ *
+ * \return Number of characters sent.
+ */
 static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
 {
     int c = len;
@@ -86,6 +118,14 @@ static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
     return len;
 }
 
+/*!
+ * \brief Send characters from progam memory to debug device 0.
+ *
+ * A carriage return character will be automatically appended 
+ * to any linefeed.
+ *
+ * \return Number of characters sent.
+ */
 static int DebugWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 {
     int c = len;
@@ -98,6 +138,11 @@ static int DebugWrite_P(NUTFILE * fp, PGM_P buffer, int len)
     return len;
 }
 
+/*!
+ * \brief Open debug device 0.
+ *
+ * \return Pointer to a static NUTFILE structure.
+ */
 static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 {
     dbgfile.nf_next = 0;
@@ -108,7 +153,9 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 }
 
 /*! 
- * \brief Close a device or file. 
+ * \brief Close debug device 0.
+ *
+ * \return Always 0.
  */
 static int DebugClose(NUTFILE * fp)
 {
