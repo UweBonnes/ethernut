@@ -36,6 +36,15 @@
  * 2004.05.06 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
  *
  */
+/*
+ * $Log$
+ * Revision 1.2  2004/05/18 18:38:14  drsung
+ * Added $Log keyword for CVS and avoid multiple inclusion of header file.
+ *
+ */
+
+#ifndef _SYS_MUTEX_H
+#define _SYS_MUTEX_H
 
 #include <sys/types.h>
 #include <sys/thread.h>
@@ -73,3 +82,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* #ifndef _SYS_MUTEX_H */
+
