@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.2  2004/08/18 13:46:09  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.1  2004/06/07 16:35:53  haraldkipp
 -- First release
 --
@@ -42,16 +45,19 @@ nutfs =
 {
     {
         name = "nutfs_fat",
-        sources = 
-        { 
-            "fat.c"
-        }
+        brief = "FAT32",
+        description = "Read only.",
+        requires = { "NUT_EVENT", "HW_MCU_AVR" },
+        provides = { "NUT_FS", "NUT_FS_READ" },
+        sources = { "fat.c" }
     },
     {
         name = "nutfs_uromfs",
-        sources = 
-        { 
-            "uromfs.c"
-        }
+        brief = "UROM",
+        requires = { "HW_MCU_AVR" },
+        provides = { "NUT_FS", "NUT_FS_READ" },
+        description = "Read only.",
+        sources = { "uromfs.c" },
+        makedefs = { "CRUROM=crurom" }
     }
 }

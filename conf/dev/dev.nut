@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2004/08/18 13:46:09  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.2  2004/08/03 15:09:31  haraldkipp
 -- Another change of everything
 --
@@ -43,154 +46,14 @@
 
 nutdev =
 {
-    {
-        name = "nutdev_ahdlc_avr",
-        sources = 
-        { 
-            "ahdlc0.c",
-            "ahdlc1.c",
-            "ahdlcavr.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_chat",
-        sources = 
-        { 
-            "chat.c"
-        }
-    },
-    {
-        name = "nutdev_cs8900_avr",
-        sources = 
-        { 
-            "cs8900.c",
-            "eth0cs.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_debug_avr",
-        sources = 
-        { 
-            "debug0.c",
-            "debug1.c"
-        },
-        requires =
-        {
-            "AVR_UART"
-        }
-    },
-    {
-        name = "nutdev_debug_at91",
-        sources = 
-        { 
-            "debug_at91.c"
-        },
-        requires =
-        {
-            "AT91_UART"
-        }
-    },
-    {
-        name = "nutdev_rtl8019as_avr",
-        sources = 
-        { 
-            "nicrtl.c",
-            "eth0rtl.c"
-        },
-        requires =
-        {
-            "AVR_MCU"
-        },
-        provides =
-        {
-            "PHYNET_LAYER"
-        },
-        options = 
-        {
-            {
-                macro = "RTL_RESET_BIT",
-                brief = "Ethernet reset bit",
-                description = "Bit number of the Ethernet controller reset output. "..
-                              "Should be disabled when the hardware doesn't support "..
-                              "this function.",
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "cfg/portdefs.h"
-            },
-            {
-                macro = "RTL_RESET_PORT",
-                brief = "Ethernet reset port",
-                description = "Port register name of the Ethernet controller reset output.",
-                active_if = "RTL_RESET_BIT",
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "cfg/portdefs.h"
-            },
-            {
-                macro = "RTL_RESET_DDR",
-                brief = "Ethernet reset DDR",
-                description = "Data direction register name of the Ethernet controller reset output.",
-                active_if = "RTL_RESET_BIT",
-                type = "enumerated",
-                choices = avr_ddr_choice,
-                file = "cfg/portdefs.h"
-            },
-            {
-                macro = "RTL_SIGNAL_BIT",
-                brief = "Ethernet IRQ bit",
-                description = "Bit number of the Ethernet controller interrupt input.",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "cfg/portdefs.h"
-            },
-            {
-                macro = "RTL_SIGNAL_PORT",
-                brief = "Ethernet IRQ port",
-                description = "Port register name of the Ethernet controller interrupt input.",
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "cfg/portdefs.h"
-            },
-            {
-                macro = "RTL_SIGNAL_DDR",
-                brief = "Ethernet IRQ DDR",
-                description = "Data direction register name of the Ethernet controller interrupt input.",
-                type = "enumerated",
-                choices = avr_ddr_choice,
-                file = "cfg/portdefs.h"
-            }
-        }
-    },
-    {
-        name = "nutdev_hd44780_avr",
-        sources = 
-        { 
-            "hd44780.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_ide_avr",
-        sources = 
-        { 
-            "ide.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_ir_avr",
-        sources = 
-        { 
-            "ir.c",
-            "irsony.c"
-        },
-        requires = { "AVR_MCU" }
-    },
+    --
+    -- Interrupt handler.
+    --
     {
         name = "nutdev_irq_avr",
+        brief = "Interrupt handler (AVR)",
+        requires = { "HW_MCU_AVR" },
+        provides = { "DEV_IRQ_AVR" },
         sources = 
         { 
             "irqreg.c",
@@ -229,206 +92,97 @@ nutdev =
             "ivect32.c",
             "ivect33.c",
             "ivect34.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_irq_arm",
-        requires = { "ARM7_MCU" },
-        sources = 
-        { 
-            "arm_irqreg.c"
-        }
-    },
-    {
-        name = "nutdev_irq_h8",
-        requires = { "H8300_MCU" },
-        sources = 
-        { 
-            "h8_irqreg.c"
-        }
-    },
-    {
-        name = "nutdev_lanc111_avr",
-        sources = 
-        { 
-            "lanc111.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_irq_m68k",
-        sources = 
-        { 
-            "m68k_irqreg.c"
-        }
-    },
-    {
-        name = "nutdev_rtl8019as_h8",
-        requires = { "H8300_MCU" },
-        sources = 
-        { 
-            "nicrtl_h8.c"
-        }
-    },
-    {
-        name = "nutdev_netbuf",
-        sources = 
-        { 
-            "netbuf.c"
-        }
-    },
-    {
-        name = "nutdev_pcmcia",
-        sources = 
-        { 
-            "pcmcia.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_ppp",
-        sources = 
-        { 
-            "ppp.c"
-        }
-    },
-    {
-        name = "nutdev_s3c4510b_console",
-        sources = 
-        { 
-            "s3c4510b_console.c"
-        }
-    },
-    {
-        name = "nutdev_s3c4510b_irqreg",
-        sources = 
-        { 
-            "s3c4510b_irqreg.c"
-        }
-    },
-    {
-        name = "nutdev_scih8",
-        requires = { "H8300_MCU" },
-        sources = 
-        { 
-            "scih8.c",
-            "scih8devs.c"
-        }
-    },
-    {
-        name = "nutdev_scih8dbg",
-        requires = { "H8300_MCU" },
-        sources = 
-        { 
-            "scih8dbg.c"
         }
     },
     {
         name = "nutdev_ihndlr_avr",
-        sources = 
-        { 
-            "ihndlr.c"
-        },
-        requires = { "AVR_MCU" }
+        sources = { "ihndlr.c" },
+        requires = { "HW_MCU_AVR" }
     },
     {
-        name = "nutdev_mweeprom",
-        sources = 
-        { 
-            "mweeprom.c"
-        }
+        name = "nutdev_irq_arm",
+        brief = "Interrupt handler (ARM7)",
+        requires = { "HW_MCU_ARM7" },
+        provides = { "DEV_IRQ_ARM7" },
+        sources = { "arm_irqreg.c" }
     },
     {
-        name = "nutdev_spidigio_avr",
-        sources = 
-        { 
-            "spidigio.c"
-        },
-        requires = { "AVR_MCU" }
+        name = "nutdev_irq_h8",
+        brief = "Interrupt handler (H8300)",
+        requires = { "HW_MCU_H8300" },
+        provides = { "DEV_IRQ_H8300" },
+        sources = { "h8_irqreg.c" }
     },
     {
-        name = "nutdev_spiflash_avr",
-        sources = 
-        { 
-            "spiflash.c"
-        },
-        requires = { "AVR_MCU" }
+        name = "nutdev_irq_m68k",
+        brief = "Interrupt handler (M68K)",
+        requires = { "HW_MCU_M68K" },
+        provides = { "DEV_IRQ_M68K" },
+        sources = { "m68k_irqreg.c" }
     },
     {
-        name = "nutdev_term",
-        sources = 
-        { 
-            "term.c"
-        }
+        name = "nutdev_s3c4510b_irqreg",
+        brief = "? Interrupt handler (S3C)",
+        requires = { "HW_MCU_S3C45" },
+        sources = { "s3c4510b_irqreg.c" }
+    },
+
+    --
+    -- Polling UART drivers.
+    --
+    {
+        name = "nutdev_debug_avr",
+        brief = "UART debug output (AVR)",
+        description = "Simple UART output",
+        requires = { "HW_UART_AVR" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "debug0.c", "debug1.c" }
     },
     {
-        name = "nutdev_twif_avr",
-        sources = 
-        { 
-            "twif.c"
-        },
-        requires = { "AVR_MCU" }
+        name = "nutdev_debug_at91",
+        brief = "UART debug output (ARM7)",
+        requires = { "HW_UART_AT91" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "debug_at91.c" }
     },
     {
-        name = "nutdev_uart_avr",
-        sources = 
-        { 
-            "uart0.c",
-            "uart1.c",
-            "uartavr.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_uarts",
-        sources = 
-        { 
-            "uarts.c"
-        },
-        requires = { "AVR_MCU" }
-    },
-    {
-        name = "nutdev_uartspi",
-        sources = 
-        { 
-            "uartspi.c"
-        },
-        requires = { "AVR_MCU" }
+        name = "nutdev_scih8dbg",
+        brief = "SCI debug output (H8300)",
+        requires = { "HW_MCU_H8300" },
+        sources = { "scih8dbg.c" }
     },
     {
         name = "nutdev_uart_s3c4510b_dbg",
-        sources = 
-        { 
-            "uart_s3c4510b_dbg.c"
-        }
+        brief = "S3C4510B debug output (S3C45)",
+        requires = { "HW_UART_S3C45" },
+        sources = { "uart_s3c4510b_dbg.c" }
     },
+
+    --
+    -- Interrupt driven UART drivers.
+    --
     {
-        name = "nutdev_ueeprom",
-        sources = 
-        { 
-            "ueeprom.c"
-        }
-    },
-    {
-        name = "nutdev_unix_devs",
-        sources = 
-        { 
-            "unix_devs.c"
-        }
+        name = "nutdev_uarts",
+        brief = "UART driver",
+        description = "Hardware independent UART driver framework.",
+        requires = { "CRT_HEAPMEM" },
+        provides = { "DEV_UART_GENERIC", "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "uarts.c" },
     },
     {
         name = "nutdev_usart_avr",
-        brief = "AVR USART device",
-        description = "Interrupt driven buffered UART driver.",
-        provides = { "UART_READ", "UART_WRITE" },
-        requires = { "AVR_MCU" },
+        brief = "USART driver (AVR)",
+        description = "Interrupt driven, buffered UART driver.",
+        requires = { 
+                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC", 
+                        "NUT_EVENT", "CRT_HEAPMEM" 
+        },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
         sources = 
         { 
             "usart.c",
             "usart0avr.c",
-            "usart1avr.c",
-            "usartavr.c"
+            "usart1avr.c"
         },
         options = 
         {
@@ -454,20 +208,241 @@ nutdev =
         }
     },
     {
-        name = "nutdev_vs1001k_avr",
-        requires = { "AVR_MCU" },
-        sources = 
-        { 
-            "vs1001k.c"
+        name = "nutdev_uart_avr",
+        brief = "UART driver (AVR)",
+        description = "Interrupt driven, buffered UART driver.\n"..
+                      "Deprecated, use the USART driver.",
+        sources = { "uart0.c", "uart1.c", "uartavr.c" },
+        requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM" },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+    },
+    {
+        name = "nutdev_uartspi",
+        requires = { "HW_MCU_AVR" },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "uartspi.c" }
+    },
+    {
+        name = "nutdev_s3c4510b_console",
+        brief = "UART driver (S3C45)",
+        requires = { "HW_UART_S3C45" },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "s3c4510b_console.c" }
+    },
+    {
+        name = "nutdev_scih8",
+        brief = "UART driver (H8300)",
+        requires = { "HW_UART_H8300" },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
+        sources = { "scih8.c", "scih8devs.c" }
+    },
+
+    --
+    -- Physical layer network drivers.
+    --
+    {
+        name = "nutdev_cs8900_avr",
+        brief = "CS8900 Driver (AVR)",
+        requires = { "HW_MCU_AVR", "NUT_TIMER" },
+        sources = { "cs8900.c", "eth0cs.c" }
+    },
+    {
+        name = "nutdev_lanc111_avr",
+        brief = "LAN91C111 Driver (AVR)",
+        requires = { "HW_MCU_AVR", "NUT_EVENT", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "lanc111.c" }
+    },
+    {
+        name = "nutdev_rtl8019as_avr",
+        brief = "RTL8019AS Driver (AVR)",
+        requires = { "HW_MCU_AVR", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "nicrtl.c", "eth0rtl.c" },
+        options = 
+        {
+            {
+                macro = "RTL_RESET_BIT",
+                brief = "Ethernet reset bit",
+                description = "Bit number of the Ethernet controller reset output. "..
+                              "Should be disabled when the hardware doesn't support "..
+                              "this function.",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "cfg/portdefs.h"
+            },
+            {
+                macro = "RTL_RESET_PORT",
+                brief = "Ethernet reset port",
+                description = "Port register name of the Ethernet controller reset output.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "cfg/portdefs.h"
+            },
+            {
+                macro = "RTL_RESET_DDR",
+                brief = "Ethernet reset DDR",
+                description = "Data direction register name of the Ethernet controller reset output.",
+                type = "enumerated",
+                choices = avr_ddr_choice,
+                file = "cfg/portdefs.h"
+            },
+            {
+                macro = "RTL_SIGNAL_BIT",
+                brief = "Ethernet IRQ bit",
+                description = "Bit number of the Ethernet controller interrupt input.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "cfg/portdefs.h"
+            },
+            {
+                macro = "RTL_SIGNAL_PORT",
+                brief = "Ethernet IRQ port",
+                description = "Port register name of the Ethernet controller interrupt input.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "cfg/portdefs.h"
+            },
+            {
+                macro = "RTL_SIGNAL_DDR",
+                brief = "Ethernet IRQ DDR",
+                description = "Data direction register name of the Ethernet controller interrupt input.",
+                type = "enumerated",
+                choices = avr_ddr_choice,
+                file = "cfg/portdefs.h"
+            }
         }
     },
     {
+        name = "nutdev_rtl8019as_h8",
+        brief = "RTL8019AS Driver (H8300)",
+        requires = { "HW_MCU_H8300", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "nicrtl_h8.c" }
+    },
+    {
         name = "nutdev_wlan_avr",
-        requires = { "AVR_MCU" },
+        brief = "WLAN Driver (AVR)",
+        requires = { "NUT_EVENT", "HW_MCU_AVR" },
+        provides = { "NET_PHY" },
+        sources = { "wlan.c", "wlandrv.c" }
+    },
+    {
+        name = "nutdev_ppp",
+        brief = "PPP Driver",
+        requires = { "HW_MCU_AVR", "NUT_TIMER", "PROTO_HDLC" },
+        provides = { "NET_PHY" },
+        sources = { "ppp.c" }
+    },
+    {
+        name = "nutdev_ahdlc_avr",
+        brief = "AHDLC Protocol",
+        requires = { "HW_UART_AVR", "NUT_EVENT" },
+        provides = { "PROTO_HDLC" },
         sources = 
         { 
-            "wlan.c",
-            "wlandrv.c"
+            "ahdlc0.c",
+            "ahdlc1.c",
+            "ahdlcavr.c"
         }
+    },
+    {
+        name = "nutdev_chat",
+        brief = "UART Chat",
+        description = "Executes a conversational exchange with a serial device.",
+        requires = { "CRT_HEAPMEM", "DEV_UART", "NUT_TIMER" },
+        provides = { "UART_CHAT" },
+        sources =  { "chat.c" }
+    },
+
+    {
+        name = "nutdev_hd44780_avr",
+        brief = "HD44780 Driver (AVR)",
+        requires = { "HW_MCU_AVR" },
+        provides = { "DEV_FILE", "DEV_WRITE" },
+        sources = { "hd44780.c" },
+        options = 
+        {
+            {
+                macro = "LCD_SHORT_DELAY",
+                brief = "Short delay",
+                description = "Number of milliseconds",
+                type = "integer",
+                file = "cfg/portdefs.h"
+            },
+            {
+                macro = "LCD_LONG_DELAY",
+                brief = "Long delay",
+                description = "Number of milliseconds",
+                type = "integer",
+                file = "cfg/portdefs.h"
+            }
+        }
+    },
+    {
+        name = "nutdev_ide_avr",
+        brief = "ATA/IDE driver (AVR)",
+        description = "Mass storage driver.",
+        requires = { "HW_MCU_AVR" },
+        sources = { "ide.c" }
+    },
+    {
+        name = "nutdev_ir_avr",
+        brief = "IR Driver (AVR)",
+        requires = { "HW_MCU_AVR", "NUT_EVENT" },
+        description = "Infrared remote control for Sony protocol.",
+        sources = { "ir.c", "irsony.c" }
+    },
+    {
+        name = "nutdev_netbuf",
+        provides = { "DEV_NETBUF" },
+        sources = { "netbuf.c" }
+    },
+    {
+        name = "nutdev_pcmcia",
+        sources = { "pcmcia.c" },
+        requires = { "HW_MCU_AVR" }
+    },
+    {
+        name = "nutdev_mweeprom",
+        requires = { "HW_MCU_H8300" },
+        sources = { "mweeprom.c" }
+    },
+    {
+        name = "nutdev_spidigio_avr",
+        sources = { "spidigio.c" },
+        requires = { "NOT_AVAILABLE" }
+    },
+    {
+        name = "nutdev_spiflash_avr",
+        sources = { "spiflash.c" },
+        requires = { "NOT_AVAILABLE" }
+    },
+    {
+        name = "nutdev_term",
+        requires = { "CRT_HEAPMEM" },
+        sources = { "term.c" }
+    },
+    {
+        name = "nutdev_twif_avr",
+        requires = { "HW_MCU_AVR", "NUT_EVENT" },
+        sources = { "twif.c" }
+    },
+    {
+        name = "nutdev_ueeprom",
+        provides = { "HW_NVMEM" },
+        requires = { "HW_EMU_LINUX" },
+        sources = { "ueeprom.c" }
+    },
+    {
+        name = "nutdev_unix_devs",
+        requires = { "HW_EMU_LINUX", "NUT_EVENT" },
+        sources = { "unix_devs.c" }
+    },
+    {
+        name = "nutdev_vs1001k_avr",
+        requires = { "NUT_SEGBUF", "HW_MCU_AVR" },
+        sources = { "vs1001k.c" }
     }
 }

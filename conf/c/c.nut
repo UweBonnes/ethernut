@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2004/08/18 13:46:08  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.2  2004/08/03 15:09:31  haraldkipp
 -- Another change of everything
 --
@@ -45,20 +48,46 @@ nutc =
 {
     {
         name = "nutc_stdlib",
+        brief = "C stdlib routines",
+        description = "This component will provide all stdlib functions "..
+                      "required by Nut/OS. Typically these are included "..
+                      "in the compiler's runtime library, but may not be "..
+                      "available in all environments.",
+        requires = { "TOOL_NOLIBC" },
+        provides = { "C_STDLIB" },
         sources = 
         { 
             "stdlib/abs.c",
             "stdlib/atoi.c",
             "stdlib/atol.c",
-            "stdlib/calloc.c",
             "stdlib/labs.c",
             "stdlib/strtol.c",
             "stdlib/strtoul.c"
-        },
-        provides = { "C_STDLIB" }
+        }
+    },
+    {
+        name = "nutc_heap",
+        brief = "C heap routines",
+        description = "Although some runtime libraries provide "..
+                      "identical routines, we better use our own to avoid "..
+                      "memory management conflicts.\nFor historical reasons "..
+                      "malloc and free are part of another component.",
+        requires = { "NUT_HEAPMEM" },
+        provides = { "C_STDLIB" },
+        sources = 
+        { 
+            "stdlib/calloc.c"
+        }
     },
     {
         name = "nutc_string",
+        brief = "C string routines",
+        description = "This component will provide all string functions "..
+                      "required by Nut/OS. Typically these are included "..
+                      "in the compiler's runtime library, but may not be "..
+                      "available in all environments.",
+        requires = { "TOOL_NOLIBC" },
+        provides = { "C_STRING" },
         sources = 
         { 
             "string/memchr.c",
@@ -78,9 +107,6 @@ nutc =
             "string/strrchr.c",
             "string/strstr.c",
             "string/strtok.c"
-        },
-        provides = { "C_STRING" },
-        -- Some of these don't work with AVR. Limit to ARM7 for now.
-        requires = { "ARM7_MCU" }
+        }
     }
 }

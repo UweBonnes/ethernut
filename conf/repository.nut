@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.3  2004/08/18 13:46:08  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.2  2004/08/03 15:09:30  haraldkipp
 -- Another change of everything
 --
@@ -51,57 +54,71 @@ avr_ddr_choice = { "DDRA", "DDRB", "DDRC", "DDRD", "DDRE", "DDRF", "DDRG" }
 repository =
 {
     {
+        name = "nuttools",
+        brief = "Tools",
+        description = "Select one only.",
+        script = "tools.nut"
+    },
+    {
         name = "nutarch",
-        description = "Target hardware",
+        brief = "Target",
+        description = "Select one only.",
         subdir = "arch",
         script = "arch/arch.nut"
     },
     {
         name = "nutos",
+        brief = "RTOS Kernel",
         description = "Operating system core functions",
-        requires = { "TARGET" },
+        requires = { "HW_TARGET" },
         subdir = "os",
         script = "os/os.nut"
     },
     {
         name = "nutdev",
+        brief = "Device drivers",
         description = "Hardware device drivers",
-        requires = { "TARGET" },
+        requires = { "HW_TARGET" },
         subdir = "dev",
         script = "dev/dev.nut"
     },
     {
         name = "nutc",
+        brief = "C runtime (tool specific)",
         description = "Hardware independent C runtime",
-        requires = { "TARGET" },
+        requires = { "HW_TARGET" },
         subdir = "c",
         script = "c/c.nut"
     },
     {
         name = "nutcrt",
+        brief = "C runtime (target specific)",
         description = "Hardware dependent C runtime",
-        requires = { "TARGET" },
+        requires = { "HW_TARGET" },
         subdir = "crt",
         script = "crt/crt.nut"
     },
     {
         name = "nutnet",
+        brief = "Network (general)",
         description = "Network functions",
-        requires = { "TARGET" },
+        requires = { "HW_TARGET" },
         subdir = "net",
         script = "net/net.nut"
     },
     {
         name = "nutpro",
+        brief = "Network (application layer)",
         description = "High level network protocols",
-        requires = { "TARGET" },
+        requires = { "HW_TARGET" },
         subdir = "pro",
         script = "pro/pro.nut"
     },
     {
         name = "nutfs",
+        brief = "File system",
         description = "File systems",
-        requires = { "TARGET" },
+        requires = { "HW_TARGET" },
         subdir = "fs",
         script = "fs/fs.nut"
     }

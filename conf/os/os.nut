@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2004/08/18 13:46:10  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.2  2004/08/03 15:09:31  haraldkipp
 -- Another change of everything
 --
@@ -43,13 +46,90 @@
 
 nutos =
 {
+    --
+    -- Initialization
+    --
+    {
+        name = "nutos_init",
+        brief = "Initialization",
+        sources = { "nutinit.c" },
+        targets = { "nutinit.o" }
+    },
+
+    --
+    -- Thread management
+    --
+    {
+        name = "nutos_thread",
+        brief = "Multithreading",
+        provides = { "NUT_THREAD" },
+        sources = { "thread.c" },
+        options = 
+        {
+            {
+                macro = "USE_IRQ_STACK",
+                brief = "Seperate IRQ stack",
+                description = "If separate IRQ stack is enabled", 
+                flavor = "boolean",
+                file = "cfg/os.h"
+            }
+        }
+    },
+
+    --
+    -- Timer management
+    --
+    {
+        name = "nutos_timer",
+        brief = "Timer management",
+        requires = { "NUT_EVENT" },
+        provides = { "NUT_TIMER" },
+        sources = { "timer.c" },
+        options = 
+        {
+            {
+                macro = "NUT_CPU_FREQ",
+                brief = "Fixed MCU clock",
+                description = "Frequency of the MCU clock. If disabled, the system "..
+                              "will automatically determine this value during initialization "..
+                              "by using an additional 32 kHz crystal as a reference clock.",
+                flavor = "booldata",
+                file = "cfg/os.h"
+            }
+        }
+    },
+
+    --
+    -- Event management
+    --
+    {
+        name = "nutos_event",
+        brief = "Event handling",
+        description = "Events provide the core thread synchronization.",
+        provides = { "NUT_EVENT" },
+        sources = { "event.c" }
+    },
+
+
+    --
+    -- Memory management
+    --
+    {
+        name = "nutos_heap",
+        brief = "Dynamic memory management",
+        provides = { "NUT_HEAPMEM" },
+        sources = { "heap.c" }
+    },
     {
         name = "nutos_bankmem",
-        brief = "AVR memory banking",
-        description = "Part of the AVR data space can be used for banked memory.",
-        requires = { "AVR_MCU" },
+        brief = "Segmented Buffer (AVR)",
+        description = "The segmented buffer API can either handle a continuos "..
+                      "memory space automatically allocated from heap or it can "..
+                      "use banked memory hardware.",
+        requires = { "HW_MCU_AVR" },
+        provides = { "NUT_SEGMEM" },
         sources = { "bankmem.c" },
-        provides = { "MEMORY_BANKING" },
+        provides = { "NUT_SEGBUF" },
         options = 
         {
             {
@@ -81,9 +161,20 @@ nutos =
         }
     },
     {
+        name = "nutos_devreg",
+        brief = "Device registration",
+        description = "Applications need to register devices before using "..
+                      "them. This serves two purposes. First it will create "..
+                      "a link to the device driver code. Second it will "..
+                      "initialize the device hardware.",
+        provides = { "NUT_DEVREG" },
+        sources = { "devreg.c" }
+    },
+    {
         name = "nutos_confos",
         brief = "Configuration",
         description = "Initial configuration settings are stored in the AVR EEPROM",
+        provides = { "NUT_OSCONFIG" },
         sources = { "confos.c" },
         options = 
         {
@@ -98,75 +189,74 @@ nutos =
         }
     },
     {
-        name = "nutos_devreg",
-        brief = "Device registration",
-        sources = { "devreg.c" }
+        name = "nutos_version",
+        brief = "Version identifier",
+        sources = { "version.c" },
+        options = 
+        {
+            {
+                macro = "NUT_VERSION_EXT",
+                brief = "Extended",
+                description = "User provided extension to the hard coded version information.",
+                requires = { "NOT_AVAILABLE" },
+                file = "cfg/os.h"
+            }
+        }
     },
+
+    --
+    -- Additional functions, not required by the kernel.
+    --
     {
-        name = "nutos_event",
-        brief = "Event handling",
-        sources = { "event.c" }
-    },
-    {
-        name = "nutos_heap",
-        brief = "Dynamic memory management",
-        sources = { "heap.c" }
-    },
-    {
-        name = "nutos_msg",
-        brief = "Message queues",
-        sources = { "msg.c" }
+        name = "nutos_semaphore",
+        brief = "Semaphores",
+        description = "Semaphores are not required by the kernel, but "..
+                      "may be useful for applications.",
+        requires = { "NUT_EVENT" },
+        provides = { "NUT_SEMAPHORE" },
+        sources = { "semaphore.c" }
     },
     {
         name = "nutos_mutex",
         brief = "Mutual exclusion semaphores",
+        description = "Mutex semaphores are not required by the kernel, but "..
+                      "may be useful for applications.",
+        requires = { "NUT_EVENT" },
+        provides = { "NUT_MUTEX" },
         sources = { "mutex.c" }
     },
     {
+        name = "nutos_msg",
+        brief = "Message queues",
+        description = "Message queues are not required by the kernel, but "..
+                      "may be useful for applications.",
+        requires = { "NUT_EVENT" },
+        provides = { "NUT_MQUEUE" },
+        sources = { "msg.c" }
+    },
+
+    --
+    -- Debugging
+    --
+    {
         name = "nutos_osdebug",
         brief = "OS debug tracing",
-        sources = { "osdebug.c" }
-    },
-    {
-        name = "nutos_semaphore",
-        brief = "Semaphores",
-        sources = { "semaphore.c" }
-    },
-    {
-        name = "nutos_thread",
-        brief = "Multithreading",
-        sources = { "thread.c" },
+        requires = { "NUT_EVENT", "CRT_STREAM_WRITE" },
+        provides = { "NUT_OSDEBUG" },
+        sources = { "osdebug.c" },
         options = 
         {
             {
-                macro = "USE_IRQ_STACK",
-                brief = "Seperate IRQ stack",
-                description = "If separate IRQ stack is enabled", 
+                macro = "NUT_DEBUG",
+                brief = "OS tracing",
+                description = "Used for kernel debugging.\n"..
+                              "Enabling this functions will add a lot of "..
+                              "extra code and require more RAM. In addition "..
+                              "the application must register an output device "..
+                              "early and redirect stdout to it.",
                 flavor = "boolean",
                 file = "cfg/os.h"
             }
         }
-    },
-    {
-        name = "nutos_timer",
-        brief = "Timer management",
-        sources = { "timer.c" },
-        options = 
-        {
-            {
-                macro = "NUT_CPU_FREQ",
-                brief = "Fixed MCU clock",
-                description = "Frequency of the MCU clock. If disabled, the system "..
-                              "will automatically determine this value during initialization "..
-                              "by using an additional 32 kHz crystal as a reference clock.",
-                flavor = "booldata",
-                file = "cfg/os.h"
-            }
-        }
-    },
-    {
-        name = "nutos_version",
-        brief = "Version identifier",
-        sources = { "version.c" }
     }
 }

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2004/08/18 13:46:09  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.2  2004/08/03 15:09:31  haraldkipp
 -- Another change of everything
 --
@@ -43,25 +46,55 @@
 
 nutcrt =
 {
+    --
+    -- Low level I/O
+    --
     {
-        name = "nutcrt_io",
+        name = "nutcrt_file",
+        brief = "Low level file I/O",
+        requires = { "DEV_FILE" },
+        provides = { "CRT_FILE" },
         sources = 
         { 
             "close.c",
             "clrerr.c",
-            "getf.c",
-            "getff.c",
             "ioctl.c",
             "open.c",
+        }
+    },
+    {
+        name = "nutcrt_read",
+        brief = "Low level file read",
+        requires = { "DEV_READ", "CRT_FILE" },
+        provides = { "CRT_READ" },
+        sources = 
+        { 
+            "getf.c",
+            "getff.c",
+            "read.c",
+        }
+    },
+    {
+        name = "nutcrt_write",
+        brief = "Low level file write",
+        requires = { "DEV_WRITE", "CRT_FILE" },
+        provides = { "CRT_WRITE" },
+        sources = 
+        { 
             "putf.c",
             "putff.c",
-            "read.c",
             "write.c",
             "write_p.c"
         }
     },
+
+    --
+    -- Stream I/O
+    --
     {
-        name = "nutcrt_stdio",
+        name = "nutcrt_stream",
+        brief = "File streams",
+        provides = { "CRT_STREAM" },
         sources = 
         { 
             "fclose.c",
@@ -70,51 +103,15 @@ nutcrt =
             "feof.c",
             "ferror.c",
             "fflush.c",
-            "fgetc.c",
-            "fgets.c",
             "filelength.c",
             "fileno.c",
             "flushall.c",
             "fmode.c",
             "fopen.c",
-            "fprintf.c",
-            "fprintf_p.c",
             "fpurge.c",
-            "fputc.c",
-            "fputs.c",
-            "fputs_p.c",
-            "fread.c",
             "freopen.c",
-            "fscanf.c",
-            "fscanf_p.c",
             "fseek.c",
-            "ftell.c",
-            "fwrite.c",
-            "fwrite_p.c",
-            "getc.c",
-            "getchar.c",
-            "gets.c",
-            "printf.c",
-            "printf_p.c",
-            "putc.c",
-            "putchar.c",
-            "puts.c",
-            "puts_p.c",
-            "scanf.c",
-            "scanf_p.c",
-            "sprintf.c",
-            "sprintf_p.c",
-            "sscanf.c",
-            "sscanf_p.c",
-            "ungetc.c",
-            "vfprintf.c",
-            "vfprintf_p.c",
-            "vfscanf.c",
-            "vfscanf_p.c",
-            "vsprintf.c",
-            "vsprintf_p.c",
-            "vsscanf.c",
-            "vsscanf_p.c"
+            "ftell.c"
         },
         options = 
         {
@@ -129,7 +126,76 @@ nutcrt =
 
     },
     {
+        name = "nutcrt_istream",
+        brief = "File stream input",
+        provides = { "CRT_STREAM_READ" },
+        sources = 
+        { 
+            "fgetc.c",
+            "fgets.c",
+            "fread.c",
+            "fscanf.c",
+            "fscanf_p.c",
+            "getc.c",
+            "getchar.c",
+            "gets.c",
+            "scanf.c",
+            "scanf_p.c",
+            "ungetc.c",
+            "vfscanf.c",
+            "vfscanf_p.c"
+        }
+    },
+    {
+        name = "nutcrt_ostream",
+        brief = "File stream output",
+        provides = { "CRT_STREAM_WRITE" },
+        sources = 
+        { 
+            "fprintf.c",
+            "fprintf_p.c",
+            "fputc.c",
+            "fputs.c",
+            "fputs_p.c",
+            "fwrite.c",
+            "fwrite_p.c",
+            "printf.c",
+            "printf_p.c",
+            "putc.c",
+            "putchar.c",
+            "puts.c",
+            "puts_p.c",
+            "vfprintf.c",
+            "vfprintf_p.c",
+        }
+    },
+
+    --
+    -- String I/O
+    --
+    {
+        name = "nutcrt_fstrio",
+        brief = "Formatted string I/O",
+        sources = 
+        { 
+            "sprintf.c",
+            "sprintf_p.c",
+            "sscanf.c",
+            "sscanf_p.c",
+            "vsprintf.c",
+            "vsprintf_p.c",
+            "vsscanf.c",
+            "vsscanf_p.c"
+        }
+    },
+
+    --
+    -- Date and time
+    --
+    {
         name = "nutcrt_time",
+        brief = "Time and date",
+        provides = { "CRT_DATETIME" },
         sources = 
         { 
             "gmtime.c",
@@ -139,36 +205,34 @@ nutcrt =
             "tzset.c"
         }
     },
+
+    --
+    -- Date and time
+    --
     {
         name = "nutcrt_errno",
-        sources = 
-        { 
-            "errno.c"
-        }
+        brief = "Global errno",
+        sources = { "errno.c" }
     },
-    {
-        name = "nutcrt_h8_irqreq",
-        requires =
-        {
-            "H8300_MCU"
-        },
-        sources = 
-        { 
-            "h8_irqreg.c"
-        }
-    },
+
+    --
+    -- Heap memory
+    --
     {
         name = "nutcrt_malloc",
-        sources = 
-        { 
-            "malloc.c"
-        }
+        brief = "Heap memory",
+        requires = { "NUT_HEAPMEM" },
+        provides = { "CRT_HEAPMEM" },
+        sources = { "malloc.c" }
     },
+
+    --
+    -- Misc
+    --
     {
         name = "nutcrt_strtok_r",
-        sources = 
-        { 
-            "strtok_r.c"
-        }
+        brief = "Recursive strtok",
+        requires = { "TOOL_ICC" },
+        sources = { "strtok_r.c" }
     }
 }

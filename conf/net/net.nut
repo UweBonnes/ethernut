@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.2  2004/08/18 13:46:09  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.1  2004/06/07 16:38:43  haraldkipp
 -- First release
 --
@@ -41,110 +44,10 @@
 nutnet =
 {
     {
-        name = "nutnet_arp",
-        sources = 
-        { 
-            "arpcache.c",
-            "arpin.c",
-            "arpout.c"
-        }
-    },
-    {
-        name = "nutnet_conf",
-        sources = 
-        { 
-            "confnet.c"
-        }
-    },
-    {
-        name = "nutnet_ethernet",
-        sources = 
-        { 
-            "ethin.c",
-            "ethout.c"
-        }
-    },
-    {
-        name = "nutnet_icmp",
-        sources = 
-        { 
-            "icmpin.c",
-            "icmpout.c"
-        }
-    },
-    {
-        name = "nutnet_ifconfig",
-        sources = 
-        { 
-            "ifconfig.c"
-        }
-    },
-    {
-        name = "nutnet_inet",
-        sources = 
-        { 
-            "inet.c"
-        }
-    },
-    {
-        name = "nutnet_ipcp",
-        sources = 
-        { 
-            "ipcpin.c",
-            "ipcpout.c"
-        }
-    },
-    {
-        name = "nutnet_ip",
-        sources = 
-        { 
-            "ipcsum.c",
-            "ipin.c",
-            "ipout.c",
-            "route.c"
-        }
-    },
-    {
-        name = "nutnet_lcp",
-        sources = 
-        { 
-            "lcpin.c",
-            "lcpout.c"
-        }
-    },
-    {
-        name = "nutnet_pap",
-        sources = 
-        { 
-            "papin.c",
-            "papout.c"
-        }
-    },
-    {
-        name = "nutnet_debug",
-        sources = 
-        { 
-            "netdebug.c"
-        }
-    },
-    {
-        name = "nutnet_debug_ppp",
-        sources = 
-        { 
-            "pppdebug.c"
-        }
-    },
-    {
-        name = "nutnet_ppp",
-        sources = 
-        { 
-            "pppin.c",
-            "pppout.c",
-            "pppsm.c"
-        }
-    },
-    {
         name = "nutnet_tcp",
+        brief = "TCP",
+        requires = { "NET_IP", "NET_ICMP", "NUT_EVENT" },
+        provides = { "NET_TCP" },
         sources = 
         { 
             "tcpin.c",
@@ -156,11 +59,121 @@ nutnet =
     },
     {
         name = "nutnet_udp",
+        brief = "UDP",
+        requires = { "NET_IP", "NUT_EVENT" },
+        provides = { "NET_UDP" },
         sources = 
         { 
             "udpin.c",
             "udpout.c",
             "udpsock.c"
         }
+    },
+    {
+        name = "nutnet_ip",
+        brief = "IP",
+        requires = { "NET_LINK" },
+        provides = { "NET_IP" },
+        sources = 
+        { 
+            "ipcsum.c",
+            "ipin.c",
+            "ipout.c",
+            "route.c"
+        }
+    },
+    {
+        name = "nutnet_icmp",
+        brief = "ICMP",
+        requires = { "NET_LINK" },
+        provides = { "NET_ICMP" },
+        sources = 
+        { 
+            "icmpin.c",
+            "icmpout.c"
+        }
+    },
+    {
+        name = "nutnet_inet",
+        brief = "INET",
+        provides = { "NET_INET" },
+        sources = 
+        { 
+            "inet.c"
+        }
+    },
+    {
+        name = "nutnet_arp",
+        brief = "ARP",
+        description = "Address Resolution Protocol, translates a "..
+                      "32-bit IP address into a 48-bit Ethernet address.",
+        requires = { "NUT_EVENT" },
+        provides = { "NET_ARP" },
+        sources = 
+        { 
+            "arpcache.c",
+            "arpin.c",
+            "arpout.c"
+        }
+    },
+    {
+        name = "nutnet_ethernet",
+        brief = "Ethernet",
+        requires = { "NET_ARP" },
+        provides = { "NET_LINK" },
+        sources = 
+        { 
+            "ethin.c",
+            "ethout.c"
+        }
+    },
+    {
+        name = "nutnet_ppp",
+        brief = "PPP",
+        requires = { 
+            "NET_PPPAUTH", "NUT_EVENT", "PROTO_HDLC", "DEV_FILE", "DEV_READ", "DEV_WRITE" 
+        },
+        provides = { "NET_PPP", "NET_LINK" },
+        sources = { 
+            "pppin.c",
+            "pppout.c",
+            "pppsm.c",
+            "ipcpin.c",
+            "ipcpout.c",
+            "lcpin.c", 
+            "lcpout.c"
+        }
+    },
+    {
+        name = "nutnet_pap",
+        brief = "PPP PAP",
+        requires = { "NET_PPP" },
+        provides = { "NET_PPPAUTH" },
+        sources = { "papin.c", "papout.c" }
+    },
+    {
+        name = "nutnet_ifconfig",
+        brief = "Network interface",
+        requires = { "NUT_EVENT" },
+        sources = { "ifconfig.c" }
+    },
+    {
+        name = "nutnet_conf",
+        brief = "Network parameters",
+        requires = { "HW_NVMEM" },
+        provides = { "NET_PARMS" },
+        sources = { "confnet.c" }
+    },
+    {
+        name = "nutnet_debug",
+        brief = "Network debug",
+        requires = { "DEV_WRITE" },
+        sources = { "netdebug.c" }
+    },
+    {
+        name = "nutnet_debug_ppp",
+        brief = "PPP debug",
+        requires = { "DEV_WRITE" },
+        sources = { "pppdebug.c" }
     }
 }

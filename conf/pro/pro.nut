@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.2  2004/08/18 13:46:10  haraldkipp
+-- Fine with avr-gcc
+--
 -- Revision 1.1  2004/06/07 16:38:43  haraldkipp
 -- First release
 --
@@ -41,7 +44,45 @@
 nutpro =
 {
     {
+        name = "nutpro_dhcpc",
+        brief = "DHCP/BOOTP client",
+        requires = { "NET_UDP", "NUT_EVENT" },
+        sources = 
+        { 
+            "dhcpc.c"
+        }
+    },
+    {
+        name = "nutpro_resolv",
+        brief = "DNS client API",
+        requires = { "NET_UDP" },
+        sources = 
+        { 
+            "resolv.c"
+        }
+    },
+    {
+        name = "nutpro_ftpd",
+        brief = "FTP server API",
+        description = "File transfer protocol. Not implemented.",
+        requires = 
+        {
+            "NOT_AVAILABLE",
+            "NET_TCP",
+            "NET_UDP",
+            "CRT_STREAM_READ", 
+            "CRT_STREAM_WRITE", 
+            "NUT_FS", 
+            "NUT_FS_READ", 
+            "NUT_FS_WRITE" 
+        }
+    },
+    {
         name = "nutpro_httpd",
+        brief = "HTTP server API",
+        description = "Webserver helper routines. Provides simple authorization "..
+                      "and registration of C functions as CGI routines",
+        requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
         sources = 
         { 
             "auth.c",
@@ -51,24 +92,29 @@ nutpro =
         }
     },
     {
-        name = "nutpro_dhcpc",
-        sources = 
-        { 
-            "dhcpc.c"
-        }
-    },
-    {
-        name = "nutpro_resolv",
-        sources = 
-        { 
-            "resolv.c"
-        }
+        name = "nutpro_sntp",
+        brief = "SNMP agent",
+        description = "Simple network management protocol. Not implemented.",
+        requires = { "NOT_AVAILABLE", "NET_UDP" },
+        sources =  { "sntp.c" }
     },
     {
         name = "nutpro_sntp",
-        sources = 
-        { 
-            "sntp.c"
+        brief = "SNTP client API",
+        description = "Simple network time protocol.",
+        requires = { "NET_UDP" },
+        sources =  { "sntp.c" }
+    },
+    {
+        name = "nutpro_smtpc",
+        brief = "SMTP client API",
+        description = "Simple mail transfer protocol. Not implemented.",
+        requires = 
+        {
+            "NOT_AVAILABLE",
+            "NET_TCP",
+            "CRT_STREAM_READ", 
+            "CRT_STREAM_WRITE"
         }
     }
 }
