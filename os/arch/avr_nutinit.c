@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/02/08 10:41:26  olereinhardt
+ * Modified Waitstate settings for NUT_3WAITSTATES in the manner that for the lower sector one waitstate is still defined
+ *
  * Revision 1.13  2005/02/07 19:05:26  haraldkipp
  * ATmega 103 compile errors fixed
  *
@@ -239,9 +242,15 @@ void NutInitXRAM(void)
 {
 #ifdef __AVR_ATmega128__    
     MCUCR = _BV(SRE) | _BV(SRW10);
+
+/* Configure two sectors, lower sector = 0x1100 - 0x7FFF,
+ * Upper sector = 0x8000 - 0xFFFF and run 3 wait states for the
+ * upper sector (NIC), 1 wait state for lower sector (XRAM).
+ */
+
 #ifdef NUT_3WAITSTATES
-    outb (XMCRA, 0x42);
-    outb (XMCRB, 0x00);
+    XMCRA |= _BV(SRL2) | _BV(SRW00) | _BV(SRW11); // SRW10 is set in MCUCR
+    XMCRB = 0;
 #endif
 #else
     MCUCR = _BV(SRE) | _BV(SRW);
