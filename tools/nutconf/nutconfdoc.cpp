@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.8  2004/11/08 10:21:26  drsung
+ * While creating the sample directory, CVS files are now not copied.
+ *
  * Revision 1.7  2004/09/26 12:04:07  drsung
  * Fixed several hundred memory leaks :-).
  * Relative pathes can now be used for source, build and install directory.
@@ -215,7 +218,8 @@ bool CNutConfDoc::OnCloseDocument()
 
 void CNutConfDoc::ReleaseRepository()
 {
-	ReleaseComponents(m_root);
+	if (m_root)
+		ReleaseComponents(m_root);
 }
 
 /*
@@ -540,8 +544,12 @@ public:
     {
         wxString sub = dirname.Mid(m_source.Length());
         wxFileName name(m_target + sub);
-        name.Mkdir(0777, wxPATH_MKDIR_FULL);
-        return wxDIR_CONTINUE;
+		if(!name.GetName().IsSameAs(wxT("CVS"), true)) {
+            name.Mkdir(0777, wxPATH_MKDIR_FULL);
+			return wxDIR_CONTINUE;
+		}
+		else
+			return wxDIR_IGNORE;
     }
 private:
     wxString m_source;
