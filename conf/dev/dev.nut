@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.8  2004/09/25 15:43:54  drsung
+-- Light change for separate interrupt stack. Now it depends also
+-- on macro HW_MCU_AVR.
+--
 -- Revision 1.7  2004/09/22 08:21:43  haraldkipp
 -- No ATmega103 support for LAN91C111. Is there any hardware?
 -- List of devices sorted by platform.
@@ -118,7 +122,7 @@ nutdev =
                               "stack of the specified size for interrupts.\n"..
                               "If this option is disabled, make sure to reserve "..
                               "additional stack space for each thread.",
-                requires = { "TOOL_GCC" },
+                requires = { "HW_MCU_AVR", "TOOL_GCC" },
                 flavor = "booldata",
                 file = "include/cfg/dev.h"
             },
