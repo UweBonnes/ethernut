@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/04/05 17:50:46  haraldkipp
+ * Use register names in gba.h.
+ *
  * Revision 1.4  2004/11/08 19:16:37  haraldkipp
  * Hacked in Gameboy timer support
  *
@@ -54,12 +57,8 @@
 #include <dev/s3c4510b_irqs.h>
 
 #elif defined(MCU_GBA)
-#define REG_IE      *(volatile u_short *)0x04000200 /* Interrupt Enable Register */
-#define REG_IF      *(volatile u_short *)0x04000202 /* Interrupt Flags Regster */
-#define REG_IME     *(volatile u_short *)0x04000208 /* Interrupt Master Enable */
-
-#define TIM_IRQ     0x0040
-#define TIM_ENABLE  0x0080
+#include <arch/gba.h>
+#include <dev/irqreg.h>
 
 #endif
 
@@ -95,14 +94,15 @@ void NutDelay(u_char ms)
 /*
  * Timer interrupt handler.
  */
-static void NutTimerIntr(void *arg)
+void NutTimerIntr(void *arg)
 {
     NUTTIMERINFO *tnp;
 
 #if defined(MCU_AT91R40008)
     dummy = inr(TC0_SR);
 #elif defined(MCU_GBA)
-    REG_IF = 0x40;
+    /* Clear interrupt flag. */
+    outw(REG_IF, INT_TMR3);
 #endif
 
     /*
@@ -164,17 +164,17 @@ static void NutTimerIntr(void *arg)
  * \brief Timer 0 interrupt entry.
  */
 #if defined(MCU_AT91R40008)
-static void Timer0Entry(void) __attribute__ ((naked));
+void Timer0Entry(void) __attribute__ ((naked));
 void Timer0Entry(void)
 {
-    IRQ_ENTRY;
+    IRQ_ENTRY();
     NutTimerIntr(0);
-    IRQ_EXIT;
+    IRQ_EXIT();
 }
 
 #elif defined(MCU_GBA)
 
-void Timer0Entry(void)
+void Timer3Entry(void)
 {
     NutTimerIntr(0);
 }
@@ -212,15 +212,16 @@ void NutTimerInit(void)
     outr(TC0_IER, TC_CPCS);
 
     /* Disable timer 0 interrupts. */
-    outr(AIC_IDCR, (1<<TC0_ID));
+    outr(AIC_IDCR, _BV(TC0_ID));
     /* Set the TC0 IRQ handler address */
     outr(AIC_SVR(4), (unsigned int)Timer0Entry);
     /* Set the trigg and priority for timer 0 interrupt */
+    /* Level 7 is highest, level 0 lowest. */
     outr(AIC_SMR(4), (AIC_SRCTYPE_INT_LEVEL_SENSITIVE | 0x4));
     /* Clear timer 0 interrupt */
-    outr(AIC_ICCR, (1<<TC0_ID));
+    outr(AIC_ICCR, _BV(TC0_ID));
     /* Enable timer 0 interrupts */
-    outr(AIC_IECR, (1<<TC0_ID));
+    outr(AIC_IECR, _BV(TC0_ID));
 
     /* Set compare value for 1 ms. */
     outr(TC0_RC, 0x80F);
@@ -243,14 +244,20 @@ void NutTimerInit(void)
 
 #elif defined(MCU_GBA)
 
-    REG_IME = 0;
-    *((volatile u_long *)0x3007ffc) = (u_long)Timer0Entry;
+    /* Disable master interrupt. */
+    outw(REG_IME, 0);
 
-    (*((volatile u_short *)0x0400010C)) = 0xBE74;
-    (*((volatile u_short *)0x0400010E)) = TIM_ENABLE | TIM_IRQ;
+    /* Set global interrupt vector. */
+    NutRegisterIrqHandler(&sig_TMR3, NutTimerIntr, 0);
 
-    REG_IE |= 0x40;
-    REG_IME = 1;
+    /* Enable timer and timer interrupts. */
+    outdw(REG_TMR3CNT, TMR_IRQ_ENA | TMR_ENA | 48756);
+
+    /* Enable timer 3 interrupts. */
+    outw(REG_IE, inw(REG_IE) | INT_TMR3);
+
+    /* Enable master interrupt. */
+    outw(REG_IME, 1);
 
 #else
 #warning "MCU not defined"

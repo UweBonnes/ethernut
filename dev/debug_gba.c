@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/04/05 17:50:46  haraldkipp
+ * Use register names in gba.h.
+ *
  * Revision 1.2  2004/11/08 18:11:49  haraldkipp
  * Support for carriage return added.
  *
@@ -42,6 +45,7 @@
  */
 
 #include <dev/debug.h>
+#include <arch/gba.h>
 
 /*!
  * \addtogroup xgDebugDevGba
@@ -53,12 +57,6 @@
 
 #define PALRAM_BASE     0x05000000
 #define VIDRAM_BASE     0x06000000
-
-#define REG_DISPCTRL    0x04000000
-#define REG_BG2CTRL     0x0400000C
-#define REG_BG2VOFS     0x0400001A
-
-#define outw(_reg, _val)  (*((volatile unsigned short *)(_reg)) = (_val))
 
 #define LCD_COLS    30  /* Visible display columns */
 #define LCD_ROWS    20  /* Visible display rows */
@@ -198,8 +196,8 @@ int DebugInit(NUTDEVICE * dev)
     u_short *pal;
     u_short *vid;
 
-    outw(REG_DISPCTRL, 0x0400);
-    outw(REG_BG2CTRL, 0xA880);
+    outw(REG_DISPCNT, 0x0400);
+    outw(REG_BG2CNT, 0xA880);
 
     pal = (u_short *)PALRAM_BASE;
     for (i = 1; i < 256; i++) {
