@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2003/11/23 15:05:21  drsung
+# irqreg.c removed from source list
+#
 # Revision 1.4  2003/10/13 10:13:49  haraldkipp
 # First release
 #
@@ -90,7 +93,7 @@ top_srcdir = ..
 include $(top_srcdir)/Makedefs
 
 SRCS =  uartavr.c uart0.c uart1.c uartspi.c uarts.c \
-	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c irqreg.c \
+	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
 	vs1001k.c irsony.c spidigio.c spiflash.c \
 	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
 	ppp.c chat.c \
