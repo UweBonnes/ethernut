@@ -1,21 +1,27 @@
-$Id: ChangeLog,v 1.84 2004/07/14 15:32:02 freckle Exp $
+$Id: ChangeLog,v 1.85 2004/07/14 15:43:40 freckle Exp $
 
 2004-07-14  Matthias Ringwald <mringwal@inf.ethz.ch>
 
+    * dev/unix_devs.c: read operation is now woken by
+    a 'IRQ'-handler to avoid race-conditions
+    Provide placebo implementations for
+    UART_[SET/GET][TX|RX]BUF[SIZ|HWMARK|LWMARK],
+    UART_[GET|SET]STATUS and UART_SETCOOKEDMODE ioctl.
+
     * os/arch/unix-nutinit.c, unix_timer.c, unix.h:
-      Provide enumeration for IRQs used so far,
-      IRQ dispatcher uses broadcast now,
-      added handler for CTRL-C 
+    Provide enumeration for IRQs used so far,
+    IRQ dispatcher uses broadcast now,
+    added handler for CTRL-C 
 
 2004-07-09  Matthias Ringwald <mringwal@inf.ethz.ch>
 
     * os/arch/avr-nutinit.c: Allow setting of NUTRAMEND
-      by giving it as a compiler flag and moved
-      ((volatile u_char *) NUTRAMEND) cast into NUTRAMENDPTR
+    by giving it as a compiler flag and moved
+    ((volatile u_char *) NUTRAMEND) cast into NUTRAMENDPTR
 
     * os/arch/avr-nutinit.c: New function 
-      NutThreadSetSleepMode to tell nut/os to set the
-      MCU to sleep when in idle (avr-gcc && avr128 only)
+    NutThreadSetSleepMode to tell nut/os to set the
+    MCU to sleep when in idle (avr-gcc && avr128 only)
       
 2004-06-25  Matthias Ringwald <mringwal@inf.ethz.ch>
 

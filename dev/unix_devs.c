@@ -35,8 +35,11 @@
  *
  * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
  *
- * \todo implement cooked mode and use it as default mode
+ * \todo provide CTRL-C as kill cmd (somehow blocked because of raw i/o)
  * \todo check block read implementation
+ * \todo allow native filee accesss using names like "FAT_C:/.." \see fs/fat.c
+ * \todo implement cooked mode and use it as default mode
+ *
  */
 
 /* avoid stdio nut wrapper */
@@ -51,6 +54,7 @@
 #include <sys/thread.h>
 #include <sys/event.h>
 #include <dev/usart.h>
+#include <dev/irqreg.h>
 #include <errno.h>
 
 #include <stdio.h>
@@ -81,6 +85,7 @@
 /* private prototypes */
 int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf);
 
+extern void NutIRQTrigger(u_char);
 
 /* thread attributes */
 pthread_attr_t unix_devs_attr;
@@ -243,6 +248,15 @@ static int convertToBaudSpeed(int realSpeed)
 }
 
 /*
+ * IRQ Handler for correct signaling
+ */
+static void UnixDevRxIntr(void *arg){
+    NUTDEVICE* dev = (NUTDEVICE*) arg;
+    UNIXDCB *  dcb = (UNIXDCB*) dev->dev_dcb;
+    NutEventPostAsync( &dcb->dcb_rx_rdy);
+}
+
+/*
  * Read Thread
  *
  */
@@ -292,7 +306,12 @@ static void *UnixDevReadThread( void * arg )
         // printf("UnixDevReadThread(%s) task processed\n", dev->dev_name);
 
         // signale waiting thread
-        NutEventPostAsync( &dcb->dcb_rx_rdy);
+        // NutEventPostAsync( &dcb->dcb_rx_rdy);
+        if (dev->dev_name[4] == '0') {
+            NutIRQTrigger(IRQ_UART0_RX);
+        } else {
+            NutIRQTrigger(IRQ_UART1_RX);
+        }
     }
    
     return 0;
@@ -396,6 +415,14 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     // printf("UnixDevOpen: %s, fd * %d\n\r", nativeName, nativeFile);
     // printf("UnixDevOpen: stdout %d, stdin %d, stderr %d \n\r", fileno(stdin), fileno(stdout), fileno(stderr));
 
+	/* initialized rx IRQ handler */
+	if (dev->dev_name[4] == '0') {
+		NutRegisterIrqHandler(IRQ_UART0_RX, UnixDevRxIntr, dev);
+	} else
+	{
+		NutRegisterIrqHandler(IRQ_UART1_RX, UnixDevRxIntr, dev);
+	}
+	
     /* Initialize mutex and condition variable objects */
     pthread_mutex_init(&unix_devs_mutex, NULL);
 
@@ -581,7 +608,8 @@ static int UnixDevClose(NUTFILE * nf)
  *             - \ref UART_GETFLOWCONTROL
  *			   - \ref UART_SETBLOCKREAD
  *			   - \ref UART_GETBLOCKREAD
- *
+ *			   - \ref UART_SETSTATUS
+ *			   - \ref UART_GETSTATUS
  * \param conf Points to a buffer that contains any data required for
  *             the given control function or receives data from that
  *             function.
@@ -792,6 +820,26 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
             *lvp = 0;
         return 0;
 #endif
+
+	case UART_SETCOOKEDMODE:
+		if (*lvp == 0)
+			return 0;
+		else
+			return -1;
+			
+	case UART_GETSTATUS:
+		*lvp = 0;
+		return 0;
+
+	case UART_SETTXBUFSIZ:
+	case UART_SETRXBUFSIZ:
+	case UART_SETTXBUFHWMARK:
+	case UART_SETRXBUFHWMARK:
+	case UART_SETTXBUFLWMARK:
+	case UART_SETRXBUFLWMARK:
+	case UART_SETSTATUS:
+		return 0;
+		
     default:
         return -1;
     }
