@@ -48,6 +48,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/07/20 08:33:28  freckle
+ * Fixed NutPostEvent to give up CPU if there is another thread ready with
+ * same priority to match the documentation
+ * Also removed 'SWP..' NBUTDEBUG output, as switching is done calling NutThreadYield()
+ *
  * Revision 1.5  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -342,13 +347,6 @@ int NutEventPostAsync(HANDLE volatile *qhp)
  */
 int NutEventPost(HANDLE * qhp)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt[] = "SWP<%08lx %08lx>";
-#else
-    static prog_char fmt[] = "SWP<%04x %04x>";
-#endif
-#endif
     int rc;
 
     NutEnterCritical();
@@ -356,17 +354,11 @@ int NutEventPost(HANDLE * qhp)
     rc = NutEventPostAsync(qhp);
 
     /*
-     * If any thread with higher priority is
+     * If any thread with higher or equal priority is
      * ready to run, switch the context.
      */
-    if (runningThread != runQueue) {
-        runningThread->td_state = TDS_READY;
-#ifdef NUTDEBUG
-        if (__os_trf)
-            fprintf_P(__os_trs, fmt, (uptr_t) runningThread, (uptr_t) runQueue);
-#endif
-        NutThreadSwitch();
-    }
+    NutThreadYield();
+
     NutExitCritical();
 
     return rc;

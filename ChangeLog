@@ -1,5 +1,12 @@
-$Id: ChangeLog,v 1.86 2004/07/19 16:24:24 freckle Exp $
+$Id: ChangeLog,v 1.87 2004/07/20 08:33:17 freckle Exp $
 
+2004-07-19  Matthias Ringwald <mringwal@inf.ethz.ch>
+    * os/event.c: Fixed NutPostEvent to give up CPU
+    if there is another thread ready with same priority.
+    to match the documentation
+    Also removed 'SWP..' NBUTDEBUG output, as switching
+    is done calling NutThreadYield()
+    
 2004-07-19  Matthias Ringwald <mringwal@inf.ethz.ch>
 
     * os/mutex.c: code contained same bug as os/semaphore.c.
