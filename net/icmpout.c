@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/06 19:24:00  drsung
+ * Bugfix. After last changes, ping didn't work any more. Thanks to Pavel Celeda, who discovered this bug.
+ *
  * Revision 1.2  2004/02/02 18:59:25  drsung
  * Some more ICMP support added.
  *
@@ -150,11 +153,14 @@
 int NutIcmpOutput(u_char type, u_long dest, NETBUF * nb)
 {
     ICMPHDR *icp;
+    u_short csum;
 
     icp = (ICMPHDR *) nb->nb_tp.vp;
     icp->icmp_type = type;
     icp->icmp_cksum = 0;
-    icp->icmp_cksum = NutIpChkSum(0, nb->nb_tp.vp, nb->nb_tp.sz);
+
+    csum = NutIpChkSumPartial(0, nb->nb_tp.vp, nb->nb_tp.sz);
+    icp->icmp_cksum = NutIpChkSum(csum, nb->nb_ap.vp, nb->nb_ap.sz);
 
     return NutIpOutput(IPPROTO_ICMP, dest, nb);
 }
@@ -177,21 +183,15 @@ int NutIcmpOutput(u_char type, u_long dest, NETBUF * nb)
 int NutIcmpReply(u_char type, u_char code, u_long spec, u_long dest, NETBUF * nb)
 {
     ICMPHDR *icp;
-    u_short csum;
 
     if ((nb = NutNetBufAlloc(nb, NBAF_TRANSPORT, sizeof(ICMPHDR))) == 0)
         return -1;
 
     icp = (ICMPHDR *) nb->nb_tp.vp;
-    icp->icmp_type = type;
     icp->icmp_code = code;
     icp->icmp_spec = spec;
-    icp->icmp_cksum = 0;
 
-    csum = NutIpChkSumPartial(0, nb->nb_tp.vp, nb->nb_tp.sz);
-    icp->icmp_cksum = NutIpChkSum(csum, nb->nb_ap.vp, nb->nb_ap.sz);
-
-    return NutIpOutput(IPPROTO_ICMP, dest, nb);
+    return NutIcmpOutput(type, dest, nb);
 }
 
 /*!

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/06 19:23:59  drsung
+ * Bugfix. After last changes, ping didn't work any more. Thanks to Pavel Celeda, who discovered this bug.
+ *
  * Revision 1.2  2004/02/02 18:59:25  drsung
  * Some more ICMP support added.
  *
@@ -127,10 +130,12 @@
 static int NutIcmpReflect(NUTDEVICE * dev, u_char type, NETBUF * nb)
 {
     IPHDR *ip;
+    ICMPHDR *icmp;
     u_long dest;
     IFNET *nif;
 
     ip = nb->nb_nw.vp;
+    icmp = nb->nb_tp.vp;
     dest = ip->ip_src;
     nif = dev->dev_icb;
     ip->ip_src = nif->if_local_ip;
@@ -184,9 +189,11 @@ void NutIcmpInput(NUTDEVICE * dev, NETBUF * nb)
     if (nb->nb_tp.sz > ICMP_MINLEN) {
         ICMPHDR *icp = (ICMPHDR *) nb->nb_tp.vp;
 
-        nb->nb_ap.sz = nb->nb_tp.sz - sizeof(ICMPHDR);
-        if (nb->nb_ap.sz)
+        if (nb->nb_tp.sz > sizeof(ICMPHDR)) {
+            nb->nb_ap.sz = nb->nb_tp.sz - sizeof(ICMPHDR);
             nb->nb_ap.vp = ((u_char *) icp) + sizeof(ICMPHDR);
+            nb->nb_tp.sz = sizeof(ICMPHDR);
+        }
 
         switch (icp->icmp_type) {
         case ICMP_ECHO:
