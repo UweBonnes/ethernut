@@ -7,6 +7,8 @@
 ..\..\app\basemon\utils.c
 ..\..\app\basemon\webdemo.c
 ..\..\app\basemon\realtek.c
+..\..\app\basemon\dataflash.c
+..\..\app\basemon\dataflash.h
 [Headers]
 ..\..\app\basemon\basemon.h
 ..\..\app\basemon\webdemo.h
