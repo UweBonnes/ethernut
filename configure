@@ -330,8 +330,8 @@ EOF
     echo "#include <sys/types.h>" >> include_test.c
     gcc -E include_test.c | grep stdio | head -1 | \
          sed 's/#....\(\/.*\/stdio.h\).*/#include "\1"/' > include/stdio_orig.h
-    gcc -E include_test.c | grep types | head -1 | \
-         sed 's/#....\(\/.*\/sy/types.h\).*/#include "\1"/' > include/sys/types_orig.h
+    gcc -E include_test.c | grep "/sys/types.h" | head -1 | \
+         sed 's/#....\(\/.*\/sys\/types.h\).*/#include "\1"/' > include/sys/types_orig.h
     rm include_test.c
     
 
