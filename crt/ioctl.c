@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:30  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/12/15 19:23:09  haraldkipp
+ * We need more dox on this
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:30  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:07  harald
  * *** empty log message ***
@@ -52,6 +55,9 @@
 
 /*!
  * \brief Perform device specific control functions.
+ *
+ * Check the specific device driver for a list of supported control 
+ * functions.
  *
  * \param fd   Descriptor of a previously opened device or
  *             connected socket.
