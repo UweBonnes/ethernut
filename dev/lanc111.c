@@ -33,6 +33,13 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/02/02 19:55:34  haraldkipp
+ * If no Ethernet link was available on the LAN91C111, each outgoing packet
+ * took 15 seconds and, even worse, the ouput routine doesn't return an error.
+ * Now the first attempt to send a packet without Ethernet link will wait for
+ * 5 seconds and subsequent attempts take 0.5 seconds only, always returning
+ * an error.
+ *
  * Revision 1.11  2005/01/24 21:11:49  freckle
  * renamed NutEventPostFromIRQ into NutEventPostFromIrq
  *
@@ -1160,7 +1167,16 @@ THREAD(NicRxLanc, arg)
         }
         NutSleep(63);
     }
-    NicStart(ifn->if_mac);
+
+    /*
+     * Do not continue unless we managed to start the NIC. We are
+     * trapped here if the Ethernet link cannot be established.
+     * This happens, for example, if no Ethernet cable is plugged
+     * in.
+     */
+    while(NicStart(ifn->if_mac)) {
+        NutSleep(1000);
+    }
 
     LANC111_SIGNAL_MODE();
     sbi(EIMSK, LANC111_SIGNAL_IRQ);
@@ -1206,21 +1222,33 @@ THREAD(NicRxLanc, arg)
  */
 int LancOutput(NUTDEVICE * dev, NETBUF * nb)
 {
+    static u_long mx_wait = 5000;
     int rc = -1;
     NICINFO *ni;
 
-    if (NutEventWait(&mutex, 15000)) {
-        //printf("[MTX]");
+    /*
+     * After initialization we are waiting for a long time to give
+     * the PHY a chance to establish an Ethernet link.
+     */
+    if (NutEventWait(&mutex, mx_wait) == 0) {
+        ni = (NICINFO *) dev->dev_dcb;
+
+        if (NicPutPacket(nb) == 0) {
+            ni->ni_tx_packets++;
+            rc = 0;
+            /* Ethernet works. Set a long waiting time in case we
+               temporarly lose the link next time. */
+            mx_wait = 5000;
+        }
+        NutEventPost(&mutex);
     }
-
-    ni = (NICINFO *) dev->dev_dcb;
-
-    if (NicPutPacket(nb) == 0) {
-        ni->ni_tx_packets++;
-        rc = 0;
+    /*
+     * Probably no Ethernet link. Significantly reduce the waiting
+     * time, so following transmission will soon return an error.
+     */
+    else {
+        mx_wait = 500;
     }
-    NutEventPost(&mutex);
-
     return rc;
 }
 
