@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.125 2004/09/25 15:47:04 drsung Exp $
+$Id: ChangeLog,v 1.126 2004/09/26 13:16:56 drsung Exp $
+
+2004-09-26  Oliver Schulz  <olischulz@web.de>
+
+	* tools/nutconf/nutconf.cpp, tools/nutconf/nutcomponent.c, 
+	tools/nutconf/nutcomponent.h, tools/nutconf/nutconfdoc.cpp: Fixed several 
+	hundred memory leaks :-). Relative pathes can now be used for source, build 
+	and install directory, but doesn't work for samples yet.
+
 
 2004-09-25  Oliver Schulz  <olischulz@web.de>
 
