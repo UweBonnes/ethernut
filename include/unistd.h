@@ -39,6 +39,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2005/03/24 14:32:02  freckle
+ * added creation of include/unistd_orig.h to configure
+ * Added NUT_ wrapper for nut's unistd.h functions. Use <unistd_orig.h>
+ * instead of "/usr/include/unistd.h". Relevant for unix emulation only.
+ *
  * Revision 1.3  2005/02/23 13:42:28  freckle
  * Correctly include /usr/include/unistd.h for unix emulation
  *
@@ -62,15 +67,21 @@
 /* use native version on unix emulation */
 #if defined(__linux__) || defined(__APPLE__)
 
-#include "/usr/include/unistd.h"
+#include "unistd_orig.h"
+
+// prefix all unistd calls with NUT_
+#define access(...) NUT_access(__VA_ARGS__)
+#define lseek(...) NUT_lseek(__VA_ARGS__)
+#define rmdir(...) NUT_rmdir(__VA_ARGS__)
+#define unlink(...) NUT_unlink(__VA_ARGS__)
 
 /* assure _UNISTD_H_ is set */
 #undef  _UNISTD_H_
 #define _UNISTD_H_
 
-#else /* non unix emulation */
-
 #define _UNISTD_H_
+
+#endif /* unix emulation */
 
 __BEGIN_DECLS
 /* */
@@ -80,8 +91,6 @@ extern int rmdir(CONST char *path);
 extern int unlink(CONST char *path);
 __END_DECLS
 /* */
-
-#endif /* unix emulation */
 
 
 #endif /* _UNISTD_VIRTUAL_H_ */

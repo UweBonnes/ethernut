@@ -335,8 +335,11 @@ EOF
     echo "#include <fcntl.h>"     >> include_test.c
     echo "#include <errno.h>"     >> include_test.c
     echo "#include <sys/types.h>" >> include_test.c
+    echo "#include <unistd.h>" >> include_test.c
     gcc -E include_test.c | grep stdio | head -1 | \
          sed 's/#....\(\/.*\/stdio.h\).*/#include "\1"/' > include/stdio_orig.h
+    gcc -E include_test.c | grep unistd | head -1 | \
+         sed 's/#....\(\/.*\/unistd.h\).*/#include "\1"/' > include/unistd_orig.h
     gcc -E include_test.c | grep fcntl | head -1 | \
          sed 's/#....\(\/.*\/fcntl.h\).*/#include "\1"/' > include/fcntl_orig.h
     gcc -E include_test.c | grep errno | head -1 | \
