@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/18 20:44:11  drsung
+ * Bug fix in IpcpRxConfReq. Thanks to Michel Hendriks.
+ *
  * Revision 1.3  2003/08/14 15:17:50  haraldkipp
  * Caller controls ID increment
  *
@@ -157,7 +160,8 @@ void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
                 xcpr->xcpo_type = xcpo->xcpo_type;
                 xcpr->xcpo_len = len;
                 for(i = 0; i < len - 2; i++)
-                    xcpr->xcpo_.uc[i] = xcpr->xcpo_.uc[i];
+                    /* bug fix by Michel Hendriks. Thanks! */
+                    xcpr->xcpo_.uc[i] = xcpo->xcpo_.uc[i];
             }
             xcpr = (XCPOPT *)((char *)xcpr + len);
             xcps += len;
