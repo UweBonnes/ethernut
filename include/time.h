@@ -30,34 +30,50 @@
  * For additional information see http://www.ethernut.de/
  *
  */
-
 /*
- * Some constants for use in time conversion functions.
- *
  * $Log$
- * Revision 1.2  2003/11/24 18:05:11  drsung
+ * Revision 1.1  2003/11/24 18:11:03  drsung
  * first release
  *
  *
  */
 
-#ifndef __CTIME_H
-#define __CTIME_H
+#ifndef __TIME_H
+#define __TIME_H
 
+#include <sys/types.h>
+#include <compiler.h>
 
-#define _DAY_SEC           (24UL * 60UL * 60UL) /* secs in a day */
-#define _YEAR_SEC          (365L * _DAY_SEC)    /* secs in a year */
-#define _FOUR_YEAR_SEC     (1461L * _DAY_SEC)   /* secs in a 4 year interval */
-#define _DEC_SEC           315532800UL  /* secs in 1970-1979 */
-#define _BASE_YEAR         70L  /* 1970 is the base year */
-#define _BASE_DOW          4    /* 01-01-70 was a Thursday */
-#define _LEAP_YEAR_ADJUST  17L  /* Leap years 1900 - 1970 */
-#define _MAX_YEAR          138L /* 2038 is the max year */
+__BEGIN_DECLS 
+typedef struct _tm tm;
+struct _tm {
+    int tm_sec;                 /* seconds after the minute - [0,59] */
+    int tm_min;                 /* minutes after the hour - [0,59] */
+    int tm_hour;                /* hours since midnight - [0,23] */
+    int tm_mday;                /* day of the month - [1,31] */
+    int tm_mon;                 /* months since January - [0,11] */
+    int tm_year;                /* years since 1900 */
+    int tm_wday;                /* days since Sunday - [0,6] */
+    int tm_yday;                /* days since January 1 - [0,365] */
+    int tm_isdst;               /* daylight savings time flag */
+};
 
-extern int _lpdays[];
-extern int _days[];
-extern tm _tb;
+typedef u_long time_t;
 
-int _isindst(tm * tb);
+time_t time(time_t *);
+int gmtime_r(const time_t *, tm *);
+tm *gmtime(const time_t *);
+int localtime_r(const time_t *, tm *);
+tm *localtime(const time_t *);
 
-#endif                          /* __CTIME_H */
+int stime(time_t * t);
+time_t mktime(tm * timeptr);
+time_t _mkgmtime(tm * timeptr);
+
+extern u_char _daylight;
+extern long _timezone;
+extern long _dstbias;
+
+__END_DECLS
+
+#endif

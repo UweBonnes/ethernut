@@ -30,34 +30,35 @@
  * For additional information see http://www.ethernut.de/
  *
  */
-
 /*
- * Some constants for use in time conversion functions.
- *
  * $Log$
- * Revision 1.2  2003/11/24 18:05:11  drsung
+ * Revision 1.1  2003/11/24 18:07:37  drsung
  * first release
  *
  *
  */
 
-#ifndef __CTIME_H
-#define __CTIME_H
+#include <time.h>
+#include <sys/timer.h>
+#include <sys/atom.h>
 
+static u_long epo_offs = 0;
 
-#define _DAY_SEC           (24UL * 60UL * 60UL) /* secs in a day */
-#define _YEAR_SEC          (365L * _DAY_SEC)    /* secs in a year */
-#define _FOUR_YEAR_SEC     (1461L * _DAY_SEC)   /* secs in a 4 year interval */
-#define _DEC_SEC           315532800UL  /* secs in 1970-1979 */
-#define _BASE_YEAR         70L  /* 1970 is the base year */
-#define _BASE_DOW          4    /* 01-01-70 was a Thursday */
-#define _LEAP_YEAR_ADJUST  17L  /* Leap years 1900 - 1970 */
-#define _MAX_YEAR          138L /* 2038 is the max year */
+time_t time(time_t * timer)
+{
+    NutEnterCritical();
+    u_long r = epo_offs + NutGetSeconds();
+    NutExitCritical();
 
-extern int _lpdays[];
-extern int _days[];
-extern tm _tb;
+    if (timer)
+        *timer = r;
+    return r;
+}
 
-int _isindst(tm * tb);
-
-#endif                          /* __CTIME_H */
+int stime(time_t * t)
+{
+    NutEnterCritical();
+    epo_offs = *(u_long *) t - NutGetSeconds();
+    NutExitCritical();
+    return 0;
+}
