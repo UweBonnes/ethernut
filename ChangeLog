@@ -1,20 +1,24 @@
-$Id: ChangeLog,v 1.76 2004/06/21 10:58:01 freckle Exp $
-
-
-2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
-
-        * dev/unix_devs.c: read operation is using extra pthread
-          to only block current thread (instead of all threads)
+$Id: ChangeLog,v 1.77 2004/06/21 16:36:25 freckle Exp $
 
 2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
 
-        * include/dev/usart.h|uart.h: added device definitions for
-          *nix emulation
+   * os/arch/unix_nutinit.c: idle thread now sleeps until
+    the next (virtual) IRQ occures
+
+2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * dev/unix_devs.c: read operation is using extra pthread
+      to only block current thread (instead of all threads)
+
+2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * include/dev/usart.h|uart.h: added device definitions for
+      *nix emulation
 
 2004-06-08  Matthias Ringwald <mringwal@inf.ethz.ch>
 
-        * include/sys/types.h: changed #include "types_orig.h" to
-        <sys/types_orig.h> to allow this file to be in $MODDIR
+    * include/sys/types.h: changed #include "types_orig.h" to
+    <sys/types_orig.h> to allow this file to be in $MODDIR
 
 2004-06-07  Harald Kipp  <harald.kipp@egnite.de>
 

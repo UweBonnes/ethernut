@@ -306,8 +306,18 @@ THREAD(NutIdle, arg)
     for (;;) {
         NutThreadYield();
         NutThreadDestroy();
-        // sleep ( 1 );
-        // printf(".\n");
+        
+        // sleep(); ... sleeping would be fine. try to simulate this
+
+        // lock the irq_mutex and wait for interrupts
+        pthread_mutex_lock(&irq_mutex);
+        pthread_cond_wait(&irq_cv, &irq_mutex);
+
+        // ok. in case we got this instead of the IRQ thread...
+        pthread_cond_signal(&irq_cv);
+
+        // unlock the irq_mutex
+        pthread_mutex_unlock(&irq_mutex);
     }
 }
 
