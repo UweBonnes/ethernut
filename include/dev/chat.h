@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/17 11:29:20  haraldkipp
+ * Bugfix for ICCAVR
+ *
  * Revision 1.5  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -94,7 +97,7 @@ int NutChatSend(NUTCHAT *ci, char *str);
 NUTCHAT *NutChatCreate(int fd);
 void NutChatDestroy(NUTCHAT *ci);
 int NutChat(int fd, CONST char *script);
-#ifdef __HARVARD__ARCH__
+#ifdef __HARVARD_ARCH__
 int NutChat_P(int fd, PGM_P script);
 #endif
 

@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/17 11:30:22  haraldkipp
+ * Bugfix for ICCAVR
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -57,7 +60,7 @@
 
 __BEGIN_DECLS
 
-#if defined(__AVR__)
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
 
 #ifdef __IMAGECRAFT__
 
