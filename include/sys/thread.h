@@ -51,8 +51,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:22  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/12/15 19:28:26  haraldkipp
+ * Kill function prototypes
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:22  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.14  2003/02/04 18:00:54  harald
  * Version 3 released
@@ -125,6 +128,10 @@ extern NUTTHREADINFO * volatile runQueue;
 
 extern HANDLE NutThreadCreate(u_char *name, void (*fn)(void *), void *arg, u_short stackSize);
 extern u_char NutThreadSetPriority(u_char level);
+
+extern void NutThreadKill(void);
+extern void NutThreadDestroy(void);
+extern void NutThreadExit(void);
 
 extern void NutThreadResumeAsync(HANDLE th);
 extern void NutThreadWake(HANDLE timer, HANDLE th);
