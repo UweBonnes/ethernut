@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/02/06 19:55:03  haraldkipp
+ * The tick counter is now in nutinit. Because Basemon mimics nutinit,
+ * it must provide the tick counter too.
+ *
  * Revision 1.8  2004/09/01 13:56:09  haraldkipp
  * Added support for EEPROM emulation
  *
@@ -147,7 +151,7 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.1.2";
+static char *version = "4.1.3";
 static size_t sram;
 static u_char banks;
 static size_t banksize;
@@ -159,6 +163,8 @@ char my_mask[32];
 char my_gate[32];
 u_char my_mac[32];
 u_char eg_mac[] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
+
+volatile u_char ms62_5;
 
 THREAD(idle, arg)
 {
