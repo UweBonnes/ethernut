@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.139 2004/12/16 08:39:05 haraldkipp Exp $
+$Id: ChangeLog,v 1.140 2004/12/16 09:19:57 haraldkipp Exp $
 
 2004-12-16  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -7,6 +7,13 @@ $Id: ChangeLog,v 1.139 2004/12/16 08:39:05 haraldkipp Exp $
 	Thanks to Andreas Siebert and Michael Fischer.
 	
 	* conf/charon2.conf: Configuration for Charon II added.
+
+	* pro/httpd.c, include/pro/httpd.h: Added Mikael Adolfsson's
+	excellent parameter parsing routines. (Mikael, sorry for
+	the delay.)
+
+	* app/httpd/httpserv.c: Form handling uses Mikael's
+	NutHttpGetParameter routines. Provided by Michael Fischer.
 
 
 2004-11-24  Harald Kipp  <harald.kipp@egnite.de>
