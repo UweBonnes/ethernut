@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.10  2005/02/19 22:48:12  hwmaier
+-- no message
+--
 -- Revision 1.9  2005/01/22 19:20:21  haraldkipp
 -- Fixes Ethernut 1.3G memory bug
 --
@@ -71,7 +74,7 @@ nutarch =
         name = "nutarch_mcu",
         brief = "Microcontroller",
         description = "Select one only.",
-        options = 
+        options =
         {
             {
                 macro = "MCU_ATMEGA103",
@@ -101,6 +104,7 @@ nutarch =
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_AVR",
+                    "HW_MCU_AVR_ENHANCED",
                     "HW_MCU_ATMEGA128",
                     "HW_NVMEM",
                     "HW_TIMER_AVR",
@@ -122,11 +126,12 @@ nutarch =
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_AVR",
+                    "HW_MCU_AVR_ENHANCED",
                     "HW_NVMEM",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR"
                 },
-                makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF=-D__HARVARD_ARCH__" }
+                makedefs = { "MCU=at90can128", "HWDEF=-D__HARVARD_ARCH__" }
             },
             {
                 macro = "MCU_AT91R40008",
@@ -218,17 +223,17 @@ nutarch =
                       "crtnutram.s, if globals and static variables use more than 4kB.\n"..
                       "crtenutram.s, same as above but including EEPROM emulation.\n\n"..
                       "Ethernut 1.3 Rev-G boards require EEPROM emulation.",
-        sources = { 
-            "avr/init/crtnut.s", 
-            "avr/init/crtnutram.s", 
-            "avr/init/crtenut.s", 
-            "avr/init/crtenutram.s" 
+        sources = {
+            "avr/init/crtnut.s",
+            "avr/init/crtnutram.s",
+            "avr/init/crtenut.s",
+            "avr/init/crtenutram.s"
         },
-        targets = { 
-            "avr/init/crtnut.o", 
-            "avr/init/crtnutram.o", 
-            "avr/init/crtenut.o", 
-            "avr/init/crtenutram.o" 
+        targets = {
+            "avr/init/crtnut.o",
+            "avr/init/crtnutram.o",
+            "avr/init/crtenut.o",
+            "avr/init/crtenutram.o"
         },
         requires = { "TOOL_CC_AVR", "TOOL_ICC" },
     },

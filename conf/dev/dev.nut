@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.15  2005/02/19 22:47:54  hwmaier
+-- no message
+--
 -- Revision 1.14  2005/02/07 19:05:25  haraldkipp
 -- ATmega 103 compile errors fixed
 --
@@ -98,8 +101,8 @@ nutdev =
         brief = "Interrupt handler (AVR)",
         requires = { "HW_MCU_AVR" },
         provides = { "DEV_IRQ_AVR" },
-        sources = 
-        { 
+        sources =
+        {
             "ihndlr.c",
             "irqstack.c",
             "ivect01.c",
@@ -135,9 +138,11 @@ nutdev =
             "ivect31.c",
             "ivect32.c",
             "ivect33.c",
-            "ivect34.c"
+            "ivect34.c",
+            "ivect35.c",
+            "ivect36.c"
         },
-        options = 
+        options =
         {
             {
                 macro = "IRQSTACK_SIZE",
@@ -176,13 +181,13 @@ nutdev =
         brief = "USART0 Driver (AVR)",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { 
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC", 
-                        "NUT_EVENT", "CRT_HEAPMEM" 
+        requires = {
+                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
+                        "NUT_EVENT", "CRT_HEAPMEM"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "usart0avr.c" },
-        options = 
+        options =
         {
             {
                 macro = "UART0_RTS_BIT",
@@ -245,13 +250,13 @@ nutdev =
         brief = "USART1 Driver (AVR)",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { 
-                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC", 
-                        "NUT_EVENT", "CRT_HEAPMEM" 
+        requires = {
+                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
+                        "NUT_EVENT", "CRT_HEAPMEM"
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "usart1avr.c" },
-        options = 
+        options =
         {
             {
                 macro = "UART1_RTS_BIT",
@@ -335,7 +340,7 @@ nutdev =
         requires = { "HW_MCU_ATMEGA128", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "lanc111.c" },
-        options = 
+        options =
         {
             {
                 macro = "LANC111_BASE_ADDR",
@@ -388,7 +393,7 @@ nutdev =
         requires = { "HW_MCU_AVR", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "nicrtl.c", "eth0rtl.c" },
-        options = 
+        options =
         {
             {
                 macro = "RTL_BASE_ADDR",
@@ -418,7 +423,7 @@ nutdev =
                 flavor = "boolean",
                 file = "include/cfg/arch/avrpio.h",
                 makedefs = { "RTL_IRQ_RISING_EDGE" }
-            },            
+            },
             {
                 macro = "RTL_RESET_BIT",
                 brief = "Ethernet Reset Bit",
@@ -545,8 +550,8 @@ nutdev =
         brief = "AHDLC Protocol (AVR)",
         requires = { "HW_UART_AVR", "NUT_EVENT" },
         provides = { "PROTO_HDLC" },
-        sources = 
-        { 
+        sources =
+        {
             "ahdlc0.c",
             "ahdlc1.c",
             "ahdlcavr.c"
@@ -562,7 +567,7 @@ nutdev =
         requires = { "HW_MCU_AVR" },
         provides = { "DEV_FILE", "DEV_WRITE" },
         sources = { "hd44780.c" },
-        options = 
+        options =
         {
             {
                 macro = "LCD_SHORT_DELAY",
@@ -599,7 +604,7 @@ nutdev =
         requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
         provides = { "DEV_FILE", "DEV_WRITE" },
         sources = { "hd44780_bus.c" },
-        options = 
+        options =
         {
             {
                 macro = "LCD_4x16",
@@ -629,7 +634,7 @@ nutdev =
                       "Contributed by Ole Reinhardt from www.kernelconcepts.de",
         requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
         sources = { "adc.c" },
-        options = 
+        options =
         {
             {
                 macro = "ADC_BUF_SIZE",
@@ -689,7 +694,7 @@ nutdev =
                       "Contributed by Ole Reinhardt from www.kernelconcepts.de",
         requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
         sources = { "sja1000.c" },
-        options = 
+        options =
         {
             {
                 macro = "SJA_SIGNAL_BIT",
@@ -752,7 +757,7 @@ nutdev =
                       "and the last input register connected to the data input.",
         sources = { "spidigio.c" },
         requires = { "HW_MCU_AVR" },
-        options = 
+        options =
         {
             {
                 macro = "SPIDIGIO_SOUT_BIT",
@@ -962,7 +967,7 @@ nutdev =
         requires = { "CRT_HEAPMEM", "DEV_UART", "NUT_TIMER" },
         provides = { "UART_CHAT" },
         sources =  { "chat.c" },
-        options = 
+        options =
         {
             {
                 macro = "CHAT_MAX_ABORTS",
