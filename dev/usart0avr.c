@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/02/16 19:50:28  haraldkipp
+ * Enable tracer configuration.
+ *
  * Revision 1.7  2005/02/10 07:06:18  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -62,6 +65,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/arch/avr.h>
 
 #include <string.h>

@@ -2,7 +2,7 @@
 #define _SYS_ATOM_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/02/16 19:51:15  haraldkipp
+ * Enable tracer configuration.
+ *
  * Revision 1.6  2005/02/10 07:06:48  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -65,6 +68,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <sys/types.h>
 
 #ifdef NUTTRACER_CRITICAL
