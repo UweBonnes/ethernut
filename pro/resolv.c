@@ -32,8 +32,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:59  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 18:25:40  haraldkipp
+ * Support secondary DNS.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:59  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.5  2003/02/04 18:17:32  harald
  * Version 3 released
@@ -65,7 +68,8 @@
 typedef struct {
     u_char *doc_hostname;
     u_char *doc_domain;
-    u_long doc_ip;
+    u_long doc_ip1;
+    u_long doc_ip2;
 } DNSCONFIG;
 
 static DNSCONFIG doc;
@@ -335,13 +339,14 @@ static u_short DecodeDnsResource(DNSRESOURCE * dor, u_char * buf)
 }
 
 /*!
- * \brief Sets DNS configuration.
+ * \brief Set DNS configuration.
  *
  * \param hostname DNS name of the local host.
  * \param domain Name of the domain of the local host.
- * \param dnsip IP address of the DNS server.
+ * \param pdnsip IP address of the primary DNS server.
+ * \param sdnsip IP address of the secondary DNS server.
  */
-void NutDnsConfig(u_char * hostname, u_char * domain, u_long dnsip)
+void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdnsip)
 {
     if (doc.doc_hostname) {
         NutHeapFree(doc.doc_hostname);
@@ -359,7 +364,22 @@ void NutDnsConfig(u_char * hostname, u_char * domain, u_long dnsip)
         doc.doc_domain = NutHeapAlloc(strlen(domain) + 1);
         strcpy(doc.doc_domain, domain);
     }
-    doc.doc_ip = dnsip;
+    doc.doc_ip1 = pdnsip;
+    doc.doc_ip2 = sdnsip;
+}
+
+/*!
+ * \brief Sets DNS configuration.
+ *
+ * \deprecated New applications should use NutDnsConfig2().
+ *
+ * \param hostname DNS name of the local host.
+ * \param domain Name of the domain of the local host.
+ * \param dnsip IP address of the DNS server.
+ */
+void NutDnsConfig(u_char * hostname, u_char * domain, u_long dnsip)
+{
+    NutDnsConfig2(hostname, domain, dnsip, 0);
 }
 
 /*!
@@ -391,7 +411,7 @@ u_long NutDnsGetHostByName(CONST u_char * hostname)
     /*
      * We need a configured DNS address.
      */
-    if (doc.doc_ip == 0)
+    if (doc.doc_ip1 == 0 && doc.doc_ip2 == 0)
         return 0;
 
     /*
@@ -402,7 +422,7 @@ u_long NutDnsGetHostByName(CONST u_char * hostname)
         return 0;
     pkt = NutHeapAlloc(512);
 
-    for (retries = 0; retries < 5; retries++) {
+    for (retries = 0; retries < 6; retries++) {
 
         /*
          * Create standard header info structures.
@@ -422,8 +442,14 @@ u_long NutDnsGetHostByName(CONST u_char * hostname)
         len = EncodeDnsHeader(pkt, doh);
         len += EncodeDnsQuestion(pkt + len, doq);
 
-        if (NutUdpSendTo(sock, doc.doc_ip, 53, pkt, len) < 0)
-            break;
+        if ((retries & 1) == 0 || doc.doc_ip2 == 0) {
+            if (NutUdpSendTo(sock, doc.doc_ip1, 53, pkt, len) < 0)
+                break;
+        }
+        else {
+            if (NutUdpSendTo(sock, doc.doc_ip2, 53, pkt, len) < 0)
+                break;
+         }
 
         /*
          * Loop until we receive a response with the

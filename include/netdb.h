@@ -82,8 +82,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:03  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 18:26:41  haraldkipp
+ * Support secondary DNS.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:03  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.5  2003/05/06 18:38:33  harald
  * Cleanup
@@ -109,6 +112,7 @@ __BEGIN_DECLS
 #define NO_DATA         4       /* Valid name, no data record of requested type */
 #define NO_ADDRESS      NO_DATA /* no address, look for MX record */
 
+extern void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdnsip);
 extern void NutDnsConfig(CONST u_char *hostname, CONST u_char *domain, u_long dnsip);
 extern u_long NutDnsGetHostByName(CONST u_char *hostname);
 

@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/07/20 18:25:40  haraldkipp
+ * Support secondary DNS.
+ *
  * Revision 1.3  2003/07/17 09:44:14  haraldkipp
  * Removed default MAC address and let the caller have a second chance.
  *
@@ -134,7 +137,8 @@ typedef struct {
     u_long netmask;
     u_long broadcast;
     u_long gateway;
-    u_long dns;
+    u_long pdns;
+    u_long sdns;
     u_long sid;
     u_long xid;
     u_long leaseTime;
@@ -231,14 +235,12 @@ int NutDhcpParse(DYNCFG * cfgp, struct bootp *bp, int len)
             copy_str(&cfgp->domain, cp + 2, ol);
             break;
         case DHCPOPT_DNS:
-            /*
-             * Fix me. 
-             * There may be several entries, but
-             * we take the first only.
-             */
+            /* Update by Jelle Martijn Kok to support a secondary DNS. */
             if (ol >= 4)
-                cfgp->dns = lval;
-            else
+                cfgp->pdns = lval;
+            if (ol >= 8)
+                cfgp->sdns = *((u_long *) (cp + 6));
+            if (ol < 4)
                 result = -1;
             break;
         case DHCPOPT_SID:
@@ -505,8 +507,11 @@ THREAD(NutDhcpClient, arg)
      * asleep.
      */
     if(got_offer && NutNetIfSetup(dev, rxcfg->ip, rxcfg->netmask, rxcfg->gateway) == 0) {
-        if(rxcfg->dns)
-            NutDnsConfig(0, 0, rxcfg->dns);
+        /* Additional code by Jelle Martijn Kok to support secondary server
+           and update the network interface. Do we need the nif items anyway? */
+        nif->if_pdns = rxcfg->pdns;
+        nif->if_sdns = rxcfg->sdns;
+        NutDnsConfig2(0, 0, rxcfg->pdns, rxcfg->sdns);
         NutEventPost((HANDLE *) & dhcpDone);
         /*
          * Fix me: We should renew our ip.
@@ -561,7 +566,8 @@ THREAD(NutDhcpClient, arg)
  * \param name    Name of the registered Ethernet device.
  * \param mac     MAC address of the destination. Set null to use 
  *                the configuration stored in the EEPROM.
- * \param timeout Maximum number of milliseconds to wait.
+ * \param timeout Maximum number of milliseconds to wait. To disable 
+ *                timeout, set this parameter to NUT_WAIT_INFINITE.
  *
  * \return 0 on success or -1, if no IP configuration could have
  *         been received within the specified timeout.
