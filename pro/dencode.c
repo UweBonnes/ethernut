@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/01/16 10:27:55  drsung
+ * Another code size improvement.
+ *
  * Revision 1.3  2003/11/27 08:46:41  drsung
  * Code size improvement
  *
@@ -53,12 +56,15 @@
 ** Then the 6-bit values are represented using the characters "A-Za-z0-9+/".
 */
 
-/* Since base-64 encodes strings do not have any charactor above 127,
- * we need just the first 128 bytes.
+/* Since base-64 encodes strings do not have any character above 127,
+ * we need just the first 128 bytes. Furthermore there is no char
+ * below 32, so we can save 32 additional bytes of flash.
  */
-static prog_char base64dtab[128] = {
+static prog_char base64dtab[96] = {
+/*
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+*/
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
     -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
@@ -92,9 +98,9 @@ char *NutDecodeBase64(u_char * str)
     char step = 0;
 
     for (tp = sp = str; *sp; ++sp) {
-    	if (*sp < 0)
+    	if (*sp < 32)
     	    continue;
-        if ((code = PRG_RDB(&base64dtab[(int) *sp])) == -1)
+        if ((code = PRG_RDB(&base64dtab[(int) *sp - 32])) == -1)
             continue;
         switch (step++) {
         case 1:
