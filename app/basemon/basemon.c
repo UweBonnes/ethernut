@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/02/23 05:54:54  hwmaier
+ * Changes in order to support AT90CAN128
+ *
  * Revision 1.9  2005/02/06 19:55:03  haraldkipp
  * The tick counter is now in nutinit. Because Basemon mimics nutinit,
  * it must provide the tick counter too.
@@ -176,7 +179,7 @@ THREAD(idle, arg)
 }
 
 /*
- * Test external SRAM.
+ * Test ports.
  */
 int TestPorts(void)
 {
@@ -248,7 +251,7 @@ int TestPorts(void)
     if (epat)
         printf("PORTE bits 0x%02X\n\x07", epat);
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /*
      * Port F. Exclude PF4, PF5, PF6 and PF7.
      */
@@ -297,11 +300,15 @@ void BaseMon(void)
 #else
     printf("AVRGCC");
 #endif
-    printf(" for ATmega");
-#ifdef __AVR_ATmega128__
-    puts("128");
+    printf(" for ");
+#if defined(__AVR_ATmega128__)
+    puts("ATmega128");
+#elif defined(__AVR_ATmega103__)
+    puts("ATmega103");
+#elif defined(__AVR_AT90CAN128__)
+    puts("AT90CAN128");
 #else
-    puts("103");
+    puts("unknown");
 #endif
 
     if (uart_bs >= 0) {
@@ -464,7 +471,7 @@ void NutInit(void)
 {
     extern void *__bss_end;
     /*
-     * Switch off analog comparator to reduce power 
+     * Switch off analog comparator to reduce power
      * consumption. The comparator is switched on
      * after CPU reset.
      */
@@ -506,7 +513,7 @@ void NutInit(void)
      */
     BaseMon();
     /*
-     * Initialize heap and create the idle thread. This will in turn 
+     * Initialize heap and create the idle thread. This will in turn
      * start the WebDemo thread.
      */
     if (sram) {
