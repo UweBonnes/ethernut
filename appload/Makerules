@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2002-2003 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2002-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makerules,v $
+# Revision 1.2  2004/01/30 18:19:26  haraldkipp
+# Coff debugging enabled
+#
 # Revision 1.1  2003/11/03 16:19:38  haraldkipp
 # First release
 #
@@ -62,10 +65,7 @@
 	$(CC) $(OBJS) $(LDFLAGS) -o $@
 
 %cof: %elf
-	$(ELFCOF) $< coff $@ $*sym
-	$(CP) coff\$@ .
-	$(CP) coff\\*sym .
-	$(CP) coff\\*S .
+	$(ELFCOF) -O coff-ext-avr $< $@
 
 %eep: %elf
 	$(BIN) -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex $< $@

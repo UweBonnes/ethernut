@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makedefs,v $
+# Revision 1.2  2004/01/30 18:19:26  haraldkipp
+# Coff debugging enabled
+#
 # Revision 1.1  2003/11/03 16:19:38  haraldkipp
 # First release
 #
@@ -48,7 +51,6 @@ AR     = $(TRGT)ar
 CP     = cp
 AS     = $(TRGT)gcc -x assembler-with-cpp
 
-ELFCOF    = elfcoff
 BIN       = $(TRGT)objcopy
 
 MCU=atmega128
@@ -56,6 +58,14 @@ BURN=stk500
 BURNFLAGS=-datmega128 -e -pf -if$(TARG)
 
 MCFLAGS   = -mmcu=$(MCU)
+#CPFLAGS   = $(MCFLAGS) -g -O0 -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 CPFLAGS   = $(MCFLAGS) -Os -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 ASFLAGS   = -Wa,-gstabs,-ahlms=$(<:.s=.lst) $(MCFLAGS)
 LDFLAGS   = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref,--defsym,__stack=0x10FF -nostartfiles -nodefaultlibs -Ttext=0x1F000
+#LDFLAGS   = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref,--defsym,__stack=0x10FF -nostartfiles -nodefaultlibs -Ttext=0x1E000
+
+ELFCOF    = $(BIN) --debugging \
+	--change-section-address .data-0x800000 \
+	--change-section-address .bss-0x800000 \
+	--change-section-address .noinit-0x800000 \
+	--change-section-address .eeprom-0x810000
