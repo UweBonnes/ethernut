@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/03/08 11:14:17  haraldkipp
+ * Added quick hack for fixed mode.
+ *
  * Revision 1.6  2004/02/25 16:22:33  haraldkipp
  * Do not initialize MAC with all zeros
  *
@@ -82,7 +85,6 @@
  * \addtogroup xgSmscRegs
  */
 /*@{*/
-
 
 /*! 
  * \brief Bank select register. 
@@ -615,6 +617,23 @@ static int NicPhyConfig(void)
     nic_bs(0);
     nic_outw(NIC_RPCR, mode);
 
+#ifdef NIC_FIXED
+    /* Disable link. */
+    phy_sr = NicPhyRead(NIC_PHYCFR1);
+    NicPhyWrite(NIC_PHYCFR1, phy_sr | 0x8000);
+    NutSleep(63);
+
+    /* Set fixed capabilities. */
+    NicPhyWrite(NIC_PHYCR, NIC_FIXED);
+    nic_bs(0);
+    nic_outw(NIC_RPCR, mode);
+
+    /* Enable link. */
+    phy_sr = NicPhyRead(NIC_PHYCFR1);
+    NicPhyWrite(NIC_PHYCFR1, phy_sr & ~0x8000);
+    phy_sr = NicPhyRead(NIC_PHYCFR1);
+
+#else
     /*
      * Advertise our capabilities, initiate auto negotiation
      * and wait until this has been completed.
@@ -640,6 +659,7 @@ static int NicPhyConfig(void)
         NutSleep(63);
     }
     //printf("OK\n");
+#endif
 
     return 0;
 }
@@ -1043,8 +1063,8 @@ THREAD(NicRxLanc, arg)
      * we may not have got a MAC address yet. Wait until one has been
      * set.
      */
-    for(;;) {
-        if(*((u_long *)(ifn->if_mac)) && *((u_long *)(ifn->if_mac)) != 0xFFFFFFFFUL) {
+    for (;;) {
+        if (*((u_long *) (ifn->if_mac)) && *((u_long *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
             break;
         }
         NutSleep(63);
