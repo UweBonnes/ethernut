@@ -37,8 +37,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:58  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/21 18:06:34  haraldkipp
+ * Buffer function removed. The driver is now using the banked memory routines.
+ * New functions allows the application to enable/disable decoder interrupts.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:58  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.12  2003/05/06 18:35:21  harald
  * ICCAVR port
@@ -109,6 +113,8 @@
 #include <dev/irqreg.h>
 #include <dev/vs1001k.h>
 
+#include <sys/bankmem.h>
+
 /*!
  * \addtogroup xgVs1001
  */
@@ -118,11 +124,6 @@
 static volatile u_char vs_status = VS_STATUS_STOPPED;
 static volatile u_short vs_flush;
 
-static u_char *vs_databuff;
-static u_char *vs_dataend;
-
-static u_char *vs_writeptr;
-static u_char *volatile vs_readptr;
 
 
 /*
@@ -294,7 +295,6 @@ static u_short VsRegRead(u_char reg)
     u_short data;
 
     /* Disable interrupts and select chip. */
-    cbi(EIMSK, VS_DREQ_BIT);
     cbi(VS_XCS_PORT, VS_XCS_BIT);
 
 #ifndef VS_NOSPI
@@ -315,9 +315,34 @@ static u_short VsRegRead(u_char reg)
 
     /* Deselect chip and enable interrupts. */
     sbi(VS_XCS_PORT, VS_XCS_BIT);
-    sbi(EIMSK, VS_DREQ_BIT);
 
     return data;
+}
+
+/*!
+ * \brief Enable or disable player interrupts.
+ *
+ * This routine is typically used by applications when dealing with 
+ * unprotected buffers.
+ *
+ * \param enable Disables interrupts when zero. Otherwise interrupts
+ *               are enabled.
+ *
+ * \return Zero if interrupts were disabled before this call.
+ */
+u_char VsPlayerInterrupts(u_char enable)
+{
+    u_char rc;
+
+    NutEnterCritical();
+    rc = (inb(EIMSK) & _BV(VS_DREQ_BIT)) != 0;
+    if(enable)
+        sbi(EIMSK, VS_DREQ_BIT);
+    else
+        cbi(EIMSK, VS_DREQ_BIT);
+    NutExitCritical();
+
+    return rc;
 }
 
 /*
@@ -329,51 +354,75 @@ static u_short VsRegRead(u_char reg)
  */
 static void VsPlayerFeed(void *arg)
 {
-    u_char j;
+    u_char ief;
+    u_char j = 32;
 
     /* Cancel interrupt if not running. */
-    if (vs_status != VS_STATUS_RUNNING)
+    if (vs_status != VS_STATUS_RUNNING || bit_is_clear(VS_DREQ_PIN, VS_DREQ_BIT))
         return;
 
-    /* We may feed 32 bytes to the decoder. */
-    if (bit_is_set(VS_DREQ_PIN, VS_DREQ_BIT))
-        j = 32;
-    else
-        j = 0;
+    /*
+     * We are hanging around here some time and may block other important
+     * interrupts. Disable decoder interrupts and enable global interrupts.
+     */
+    ief = VsPlayerInterrupts(0);
+    sei();
 
     /* 
-     * Feed the decoder until its buffer is full. 
+     * Flush the internal VS buffer. 
      */
-    while (j--) {
-
-        /* Is main buffer empty? */
-        if (vs_readptr == vs_writeptr) {
-            if (vs_flush) {
-                /* Auto flush the internal VS buffer. */
-                VsSdiPutByte(0);
-                if (--vs_flush == 0) {
-                    /* Decoder internal buffer is flushed. */
-                    vs_status = VS_STATUS_EMPTY;
-                    break;
-                }
-            } else {
-                /* End of stream. */
-                vs_status = VS_STATUS_EOF;
+    if(vs_flush) {
+        do {
+            VsSdiPutByte(0);
+            if (--vs_flush == 0) {
+                /* Decoder internal buffer is flushed. */
+                vs_status = VS_STATUS_EMPTY;
                 break;
             }
-        }
-        /* We have some data in the buffer, feed it. */
-        else {
-            VsSdiPutByte(*vs_readptr);
-            if (++vs_readptr == vs_dataend)
-                vs_readptr = vs_databuff;
-        }
-
-        /* If DREQ is high, allow 31 bytes to be sent, SPI transfer may 
-           still be in progress, which is the 32nd byte. */
-        if (bit_is_set(VS_DREQ_PIN, VS_DREQ_BIT))
-            j = 31;
+            /* Allow 32 bytes to be sent as long as DREQ is set, This includes
+               the one in progress. */
+            if (bit_is_set(VS_DREQ_PIN, VS_DREQ_BIT))
+                j = 32;
+        } while(j--);
     }
+
+    /* 
+     * Feed the decoder until its buffer is full or we ran out of data.
+     */
+    else {
+        char *bp = 0;
+        size_t consumed = 0;
+        size_t available = 0;
+        do {
+            if(consumed >= available) {
+                /* Commit previously consumed bytes. */
+                if(consumed) {
+                    NutSegBufReadCommit(consumed);
+                    consumed = 0;
+                }
+                /* All bytes consumed, request new. */
+                bp = NutSegBufReadRequest(&available);
+                if(available == 0) {
+                    /* End of stream. */
+                    vs_status = VS_STATUS_EOF;
+                    break;
+                }
+            }
+            /* We have some data in the buffer, feed it. */
+            VsSdiPutByte(*bp);
+            bp++;
+            consumed++;
+
+            /* Allow 32 bytes to be sent as long as DREQ is set, This includes
+               the one in progress. */
+            if (bit_is_set(VS_DREQ_PIN, VS_DREQ_BIT))
+                j = 32;
+        } while(j--);
+
+        /* Finally re-enable the producer buffer. */
+        NutSegBufReadLast(consumed);
+    }
+    VsPlayerInterrupts(ief);
 }
 
 /*!
@@ -383,20 +432,20 @@ static void VsPlayerFeed(void *arg)
  * decoder, until it is completely filled. The data buffer
  * should have been filled before calling this routine.
  *
+ * Decoder interrupts will be enabled.
+ *
  * \return 0 on success, -1 otherwise.
  */
 int VsPlayerKick(void)
 {
-    cbi(EIMSK, VS_DREQ_BIT);
-
     /*
-     * Start feeding the decoder with data and
-     * enable interrupts.
+     * Start feeding the decoder with data.
      */
+    VsPlayerInterrupts(0);
     vs_status = VS_STATUS_RUNNING;
     VsPlayerFeed(NULL);
+    VsPlayerInterrupts(1);
 
-    sbi(EIMSK, VS_DREQ_BIT);
     return 0;
 }
 
@@ -410,11 +459,13 @@ int VsPlayerKick(void)
  */
 int VsPlayerStop(void)
 {
-    cbi(EIMSK, VS_DREQ_BIT);
+    u_char ief;
+
+    ief = VsPlayerInterrupts(0);
     /* Check whether we need to stop at all to not overwrite other than running status */
     if (vs_status == VS_STATUS_RUNNING)
         vs_status = VS_STATUS_STOPPED;
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(ief);
 
     return 0;
 }
@@ -428,20 +479,22 @@ int VsPlayerStop(void)
  * if necessary. The internal VS buffer is flushed in VsPlayerFeed()
  * at the end of the stream.
  *
+ * Decoder interrupts will be enabled.
+ *
  * \return 0 on success, -1 otherwise.
  */
 int VsPlayerFlush(void)
 {
-    cbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(0);
     /* Set up fluhing unless both buffers are empty. */
-    if (vs_status != VS_STATUS_EMPTY || vs_readptr != vs_writeptr) {
+    if (vs_status != VS_STATUS_EMPTY || NutSegBufUsed()) {
         if (vs_flush == 0)
             vs_flush = VS_FLUSH_BYTES;
         /* start the playback if necessary */
         if (vs_status != VS_STATUS_RUNNING)
             VsPlayerKick();
     }
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(1);
     return 0;
 }
 
@@ -454,7 +507,7 @@ int VsPlayerFlush(void)
 int VsPlayerInit(void)
 {
     /* Disable decoder interrupts. */
-    cbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(0);
 
     /* Keep decoder in reset state. */
     cbi(VS_RESET_PORT, VS_RESET_BIT);
@@ -513,9 +566,8 @@ int VsPlayerInit(void)
     VsRegWrite(VS_INT_FCTLH_REG, 0x8008);
     NutDelay(200);
 
-    /* Clear any spurious interrupt and enable decoder interrupts. */
+    /* Clear any spurious interrupt. */
     outp(BV(VS_DREQ_BIT), EIFR);
-    sbi(EIMSK, VS_DREQ_BIT);
 
     return 0;
 }
@@ -538,7 +590,7 @@ int VsPlayerInit(void)
 int VsPlayerReset(u_short mode)
 {
     /* Disable decoder interrupts and feeding. */
-    cbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(0);
     vs_status = VS_STATUS_STOPPED;
 
     /* Software reset, set modes of decoder. */
@@ -568,9 +620,8 @@ int VsPlayerReset(u_short mode)
     VsRegWrite(VS_INT_FCTLH_REG, 0x8008);
     NutDelay(2);
 
-    /* Clear any spurious interrupt and enable decoder interrupts. */
+    /* Clear any spurious interrupts. */
     outp(BV(VS_DREQ_BIT), EIFR);
-    sbi(EIMSK, VS_DREQ_BIT);
 
     return 0;
 }
@@ -589,103 +640,13 @@ int VsPlayerReset(u_short mode)
  */
 int VsPlayerSetMode(u_short mode)
 {
-    cbi(EIMSK, VS_DREQ_BIT);
+    u_char ief;
+    
+    ief = VsPlayerInterrupts(0);
     VsRegWrite(VS_MODE_REG, mode);
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(ief);
 
     return 0;
-}
-
-/*!
- * \brief Initialize the MP3 data buffer.
- *
- * \param size Number of bytes to allocate for the data buffer.
- *             Should be at least 4k. If this parameter is 0,
- *             all available memory minus 8k are allocated.
- *
- * \return Pointer to the data buffer or null on failures.
- */
-u_char *VsBufferInit(u_short size)
-{
-    if (size == 0)
-        size = NutHeapAvailable() - 8192;
-    if ((vs_databuff = NutHeapAlloc(size)) != 0)
-        vs_dataend = vs_databuff + size;
-
-    vs_readptr = vs_writeptr = vs_databuff;
-    return vs_writeptr;
-}
-
-/*!
- * \brief Reset all MP3 data buffer pointers.
- *
- * \return Pointer to the data buffer.
- */
-u_char *VsBufferReset(void)
-{
-    cbi(EIMSK, VS_DREQ_BIT);
-    vs_readptr = vs_writeptr = vs_databuff;
-    sbi(EIMSK, VS_DREQ_BIT);
-
-    return vs_databuff;
-}
-
-/*!
- * \brief Request MP3 data buffer space.
- *
- * \param sizep Pointer to an unsigned short, which receives the
- *              number of bytes available in the buffer.
- *
- * \return Pointer to the next write position.
- */
-u_char *VsBufferRequest(u_short * sizep)
-{
-    cbi(EIMSK, VS_DREQ_BIT);
-    if (vs_writeptr >= vs_readptr)
-        *sizep = vs_dataend - vs_writeptr - (vs_readptr == vs_databuff);
-    else
-        *sizep = vs_readptr - vs_writeptr - 1;
-    sbi(EIMSK, VS_DREQ_BIT);
-
-    return vs_writeptr;
-}
-
-/*!
- * \brief Acknowledge filled buffer space.
- *
- * \return Pointer to the next write position.
- */
-u_char *VsBufferAcknowledge(u_short nbytes)
-{
-    cbi(EIMSK, VS_DREQ_BIT);
-    vs_writeptr += nbytes;
-    if (vs_writeptr == vs_dataend)
-        vs_writeptr = vs_databuff;
-    /* Cancel flushing in progress. */
-    vs_flush = 0;
-    sbi(EIMSK, VS_DREQ_BIT);
-
-    return vs_writeptr;
-}
-
-
-/*!
- * \brief Returns total free buffer space.
- *
- * \return Total number of free bytes in the buffer.
- */
-u_short VsBufferAvailable(void)
-{
-    u_short avail;
-
-    cbi(EIMSK, VS_DREQ_BIT);
-    if (vs_writeptr >= vs_readptr)
-        avail = (vs_dataend - vs_databuff) - (vs_writeptr - vs_readptr);
-    else
-        avail = (vs_readptr - vs_writeptr) - 1;
-    sbi(EIMSK, VS_DREQ_BIT);
-
-    return avail;
 }
 
 /*!
@@ -696,10 +657,11 @@ u_short VsBufferAvailable(void)
 u_short VsPlayTime(void)
 {
     u_short rc;
+    u_char ief;
 
-    cbi(EIMSK, VS_DREQ_BIT);
+    ief = VsPlayerInterrupts(0);
     rc = VsRegRead(VS_DECODE_TIME_REG);
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(ief);
 
     return rc;
 }
@@ -730,11 +692,12 @@ u_char VsGetStatus(void)
 int VsGetHeaderInfo(VS_HEADERINFO * vshi)
 {
     u_short *usp = (u_short *) vshi;
+    u_char ief;
 
-    cbi(EIMSK, VS_DREQ_BIT);
+    ief = VsPlayerInterrupts(0);
     *usp = VsRegRead(VS_HDAT1_REG);
     *++usp = VsRegRead(VS_HDAT0_REG);
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(ief);
 
     return 0;
 }
@@ -755,13 +718,14 @@ int VsGetHeaderInfo(VS_HEADERINFO * vshi)
 u_short VsMemoryTest(void)
 {
     u_short rc;
+    u_char ief;
     static prog_char mtcmd[] = { 0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00 };
 
-    cbi(EIMSK, VS_DREQ_BIT);
+    ief = VsPlayerInterrupts(0);
     VsSdiWrite_P(mtcmd, sizeof(mtcmd));
     NutDelay(40);
     rc = VsRegRead(VS_HDAT0_REG);
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(ief);
 
     return rc;
 }
@@ -776,9 +740,11 @@ u_short VsMemoryTest(void)
  */
 int VsSetVolume(u_char left, u_char right)
 {
-    cbi(EIMSK, VS_DREQ_BIT);
+    u_char ief;
+
+    ief = VsPlayerInterrupts(0);
     VsRegWrite(VS_VOL_REG, (((u_short) left) << 8) | (u_short) right);
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(ief);
 
     return 0;
 }
@@ -793,12 +759,13 @@ int VsSetVolume(u_char left, u_char right)
  */
 int VsBeep(u_char fsin, u_char ms)
 {
+    u_char ief;
     static prog_char on[] = { 0x53, 0xEF, 0x6E };
     static prog_char off[] = { 0x45, 0x78, 0x69, 0x74 };
     static prog_char end[] = { 0x00, 0x00, 0x00, 0x00 };
 
     /* Disable decoder interrupts. */
-    cbi(EIMSK, VS_DREQ_BIT);
+    ief = VsPlayerInterrupts(0);
 
     fsin = 56 + (fsin & 7) * 9;
     VsSdiWrite_P(on, sizeof(on));
@@ -809,7 +776,7 @@ int VsBeep(u_char fsin, u_char ms)
     VsSdiWrite_P(end, sizeof(end));
 
     /* Enable decoder interrupts. */
-    sbi(EIMSK, VS_DREQ_BIT);
+    VsPlayerInterrupts(ief);
 
     return 0;
 }
