@@ -331,21 +331,30 @@ MCU=$ARCH
 EOF
 
     # Get system include paths for stdio.h, errno.h, sys/types.h, fcntl.h
-    echo "#include <stdio.h>"      > include_test.c
-    echo "#include <fcntl.h>"     >> include_test.c
-    echo "#include <errno.h>"     >> include_test.c
-    echo "#include <sys/types.h>" >> include_test.c
-    echo "#include <unistd.h>" >> include_test.c
+    echo "#include <stdio.h>"       > include_test.c
+    echo "#include <fcntl.h>"      >> include_test.c
+    echo "#include <errno.h>"      >> include_test.c
+    echo "#include <unistd.h>"     >> include_test.c
+    echo "#include <netdb.h>"      >> include_test.c
+    echo "#include <netinet/in.h>" >> include_test.c
+    echo "#include <sys/types.h>"  >> include_test.c
+    echo "#include <sys/socket.h>" >> include_test.c
     gcc -E include_test.c | grep stdio | head -1 | \
-         sed 's/#....\(\/.*\/stdio.h\).*/#include "\1"/' > include/stdio_orig.h
+         sed 's/#....\(\/.*\/stdio.h\).*/#include "\1"/'  > include/stdio_orig.h
     gcc -E include_test.c | grep unistd | head -1 | \
          sed 's/#....\(\/.*\/unistd.h\).*/#include "\1"/' > include/unistd_orig.h
     gcc -E include_test.c | grep fcntl | head -1 | \
-         sed 's/#....\(\/.*\/fcntl.h\).*/#include "\1"/' > include/fcntl_orig.h
+         sed 's/#....\(\/.*\/fcntl.h\).*/#include "\1"/'  > include/fcntl_orig.h
     gcc -E include_test.c | grep errno | head -1 | \
-         sed 's/#....\(\/.*\/errno.h\).*/#include "\1"/' > include/errno_orig.h
-    gcc -E include_test.c | grep "/sys/types.h" | head -1 | \
+         sed 's/#....\(\/.*\/errno.h\).*/#include "\1"/'  > include/errno_orig.h
+    gcc -E include_test.c | grep "sys/types.h" | head -1 | \
          sed 's/#....\(\/.*\/sys\/types.h\).*/#include "\1"/' > include/sys/types_orig.h
+    gcc -E include_test.c | grep "sys/socket" | head -1 | \
+         sed 's/#....\(\/.*\/sys\/socket.h\).*/#include "\1"/'  > include/sys/socket_orig.h
+    gcc -E include_test.c | grep netdb | head -1 | \
+         sed 's/#....\(\/.*\/netdb.h\).*/#include "\1"/'  > include/netdb_orig.h
+    gcc -E include_test.c | grep "netinet/in" | head -1 | \
+         sed 's/#....\(\/.*\/netinet\/in.h\).*/#include "\1"/'  > include/netinet/in_orig.h
     rm include_test.c
 
     # assert lib dirs

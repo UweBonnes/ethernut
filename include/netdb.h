@@ -1,5 +1,4 @@
 #ifndef _NETDB_H_
-#define _NETDB_H_
 
 /*
  * Copyright (C) 2002 by egnite Software GmbH. All rights reserved.
@@ -82,6 +81,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/04/04 19:33:40  freckle
+ * added creation of include/netdb_orig.h, include/sys/socket_orig.h and
+ * include/netinet/in_orig.h to allow unix emulation to use tcp/ip sockets
+ *
  * Revision 1.4  2004/04/15 19:28:02  drsung
  * New function NutDnsGetMxByDomain to request
  * an MX record from DNS server.
@@ -106,6 +109,15 @@
  *
  */
 
+/* use native version on unix emulation */
+#if defined(__linux__) || defined(__APPLE__)
+#include <netdb_orig.h>
+/* assure _NETDB_H_ is set */
+#undef  _NETDB_H_
+#define _NETDB_H_
+#else  /* unix emulation */
+
+#define _NETDB_H_
 #include <sys/types.h>
 
 __BEGIN_DECLS
@@ -120,6 +132,12 @@ __BEGIN_DECLS
 #define NO_RECOVERY     3       /* Non recoverable errors, FORMERR, REFUSED, NOTIMP */
 #define NO_DATA         4       /* Valid name, no data record of requested type */
 #define NO_ADDRESS      NO_DATA /* no address, look for MX record */
+
+__END_DECLS
+
+#endif /* unix emulation */
+
+__BEGIN_DECLS
 
 extern void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdnsip);
 extern void NutDnsConfig(CONST u_char *hostname, CONST u_char *domain, u_long dnsip);

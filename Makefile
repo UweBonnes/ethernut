@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2005/04/04 19:33:35  freckle
+# added creation of include/netdb_orig.h, include/sys/socket_orig.h and
+# include/netinet/in_orig.h to allow unix emulation to use tcp/ip sockets
+#
 # Revision 1.7  2005/01/22 19:12:51  haraldkipp
 # Added C++ support contributed by Oliver Schulz (MPI).
 #
@@ -163,4 +167,5 @@ endif
 	$(MAKE) -C app clean
 	rm -f UserConf.mk Makerules Makedefs app/Makerules app/Makedefs
 	rm -f include/stdio_orig.h include/sys/types_orig.h include/errno_orig.h include/fcntl_orig.h
+	rm -f include/sys/socket_orig.h include/netdb_orig.h include/netinet/in_orig.h
 	rm -f `find . -name '*\.[ch]~'`

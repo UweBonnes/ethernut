@@ -1,5 +1,4 @@
 #ifndef _SYS_SOCKET_H_
-#define _SYS_SOCKET_H_
 
 /*
  * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
@@ -63,6 +62,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/04/04 19:33:54  freckle
+ * added creation of include/netdb_orig.h, include/sys/socket_orig.h and
+ * include/netinet/in_orig.h to allow unix emulation to use tcp/ip sockets
+ *
  * Revision 1.5  2004/07/30 19:54:46  drsung
  * Some code of TCP stack redesigned. Round trip time calculation is now
  * supported. Fixed several bugs in TCP state machine. Now TCP connections
@@ -90,6 +93,16 @@
  * First pre-release with 2.4 stack
  *
  */
+
+/* use native version on unix emulation */
+#if defined(__linux__) || defined(__APPLE__)
+#include <sys/socket_orig.h>
+#endif /* unix emulation */
+
+/* assure _SYS_SOCKET_H_ is set */
+#undef  _SYS_SOCKET_H_
+#define _SYS_SOCKET_H_
+
 
 #include <sys/sock_var.h>
 

@@ -1,5 +1,4 @@
 #ifndef _NETINET_IN_H_
-#define _NETINET_IN_H_
 
 /*
  * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
@@ -78,8 +77,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:14  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/04/04 19:33:55  freckle
+ * added creation of include/netdb_orig.h, include/sys/socket_orig.h and
+ * include/netinet/in_orig.h to allow unix emulation to use tcp/ip sockets
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:14  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.5  2003/02/04 18:00:45  harald
  * Version 3 released
@@ -90,6 +93,16 @@
  */
 
 #include <sys/types.h>
+
+/* use native version on unix emulation */
+#if defined(__linux__) || defined(__APPLE__)
+#include <netinet/in_orig.h>
+/* assure _NETINET_IN_H_ is set */
+#undef  _NETINET_IN_H_
+#define _NETINET_IN_H_
+#else  /* unix emulation */
+
+#define _NETINET_IN_H_
 
 /*!
  * \file netinet/in.h
@@ -127,5 +140,6 @@
  * \brief Official loopback net address.
  */
 #define IN_LOOPBACKNET      127
+#endif /* unix emulation */
 
 #endif
