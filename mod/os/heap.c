@@ -48,8 +48,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:25  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 16:05:00  haraldkipp
+ * *** empty log message ***
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:25  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.15  2002/06/26 17:29:44  harald
  * First pre-release with 2.4 stack
@@ -539,7 +542,9 @@ static u_char CheckHeapGuards( HEAPNODE * p_node, PGM_P str )
 HEAPTAIL      * p_tail;
 u_char          ret     =   0;
 int             slime;
+#ifdef NUTDEBUG
 char            temp[ 20 ];
+#endif
 
 #ifdef FRONT_GUARDED_HEAP
     if ( p_node->hn_guard != deadmeat )
