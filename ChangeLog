@@ -1,7 +1,12 @@
-$Id: ChangeLog,v 1.75 2004/06/21 10:40:24 freckle Exp $
+$Id: ChangeLog,v 1.76 2004/06/21 10:58:01 freckle Exp $
 
 
-2004-06-08  Matthias Ringwald <mringwal@inf.ethz.ch>
+2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+        * dev/unix_devs.c: read operation is using extra pthread
+          to only block current thread (instead of all threads)
+
+2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
 
         * include/dev/usart.h|uart.h: added device definitions for
           *nix emulation
