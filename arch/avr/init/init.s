@@ -1,3 +1,5 @@
+; init.s
+;
 ; to be included by the crt*.s files
 ;
 	; initialize stacks
@@ -40,11 +42,20 @@ init_done:
 	ldi R27,>__data_start
 	ldi R17,>__idata_end
 
+  .if USE_ELPM
+	; set RAMPZ to 1
+	ldi R16,1
+	out 0x3B,R16
+  .endif
 copy_loop:
 	cpi R30,<__idata_end
 	cpc R31,R17
 	breq copy_done
+  .if USE_ELPM
+	elpm	; load (RAMPZ:Z)
+  .else
 	lpm 	; load (Z) byte into R0
+  .endif
 	adiw R30,1
 	st X+,R0
 	rjmp copy_loop

@@ -5,6 +5,7 @@
 	.text
 __start::			; entry point
 	.include "extram.s"
+	USE_ELPM = 0
 	.include "init.s"
 
 ; call user main routine

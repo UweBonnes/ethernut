@@ -4,6 +4,7 @@
 	.include "area.s"
 	.text
 __start::			; entry point
+	USE_ELPM = 0
 	.include "init.s"
 
 ; call user main routine
