@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:05  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/10/13 10:15:54  haraldkipp
+ * Added Jelle's report function
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:05  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/03/31 14:53:23  harald
  * Prepare release 3.1
@@ -46,8 +49,10 @@
 #define CHAT_ARG_SEND           0
 #define CHAT_ARG_ABORT          1
 #define CHAT_ARG_TIMEOUT        2
+#define CHAT_ARG_REPORT					3
 
 #define CHAT_MAX_ABORTS         10
+#define CHAT_MAX_REPORT_SIZE    32
 
 #define CHAT_DEFAULT_TIMEOUT    45
 
@@ -57,7 +62,12 @@ typedef struct {
     u_char chat_aborts;
     u_char *chat_abort[CHAT_MAX_ABORTS];
     u_char chat_abomat[CHAT_MAX_ABORTS];
+    u_char *chat_report_search;
+    u_char chat_repmat;
+    char chat_report_state;
 } NUTCHAT;
+
+u_char *chat_report;
 
 __BEGIN_DECLS
 
