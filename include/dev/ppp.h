@@ -66,6 +66,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:05:55  haraldkipp
+ * Distinguish negotiated and final magic
+ *
  * Revision 1.2  2003/07/24 16:13:58  haraldkipp
  * Never request a rejected DNS
  *
@@ -163,6 +166,10 @@ struct _PPPDCB {
     /*! \brief Authentication type.
      */
     u_short dcb_auth;
+
+    /*! \brief Magic number to negotiate.
+     */
+    u_long dcb_neg_magic;
 
     /*! \brief Local magic number.
      * Used to detect loopback conditions.
