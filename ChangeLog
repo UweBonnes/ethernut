@@ -1,4 +1,35 @@
-$Id: ChangeLog,v 1.42 2004/03/05 20:43:08 drsung Exp $
+$Id: ChangeLog,v 1.43 2004/03/08 11:30:05 haraldkipp Exp $
+
+2004-03-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/ahdlc*.c: Asynchronous HDLC driver added.
+
+	* dev/chat.c, include/dev/chat.h: Debug output added.
+
+	* dev/lanc111.c: Quick hack for fixed mode added. Should be replaced
+	by ioctl() function.
+
+	* dev/ppp.c, include/netinet/ppp_fsm.h, net/pppout.c, net/pppsm.c: 
+	HDLC functions moved to async HDLC driver.
+
+	* include/cfg/modem.h: Hardware handshake disabled by default.
+
+	* include/sys/msg.h: Not all compilers like arrays of size zero.
+	Hopefully there are no side effects, but at least ICCAVR compiles it.
+
+	* net/icmpout.c: Not all compilers like pointer calculation with
+	void pointers.
+
+	* net/ifconfig.c: Ugly PPP activation hack replaced by HDLC ioctl.
+
+	* net/ipcpin.c: PppUp() replaced by direct post.
+
+	* net/lcpin.c, net/pppdebug.c, net/pppin.c: PPP header compression 
+	on incoming packets accepted. Thanks to Francois Rademeyer.
+
+	* net/lcpout.c: Bugfix, establishing PPP sessions failed. Thanks to
+	Zoltan Korbai.
+
 
 2004-03-05  Oliver Schulz  <olischulz@web.de>
 
