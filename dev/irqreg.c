@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/10/03 18:37:40  haraldkipp
+ * GBA support
+ *
  * Revision 1.4  2004/03/17 14:58:30  haraldkipp
  * Typos corrected
  *
@@ -68,6 +71,7 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <sys/atom.h>
 #include <dev/irqreg.h>
 
@@ -79,6 +83,8 @@
  * which saves a lot of space and allows native
  * interrupts.
  */
+#elif defined(MCU_GBA)
+/* Not yet */
 #elif defined(__arm__)
 #include "arm_irqreg.c"
 #elif defined(__H8300H__) || defined(__H8300S__)

@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.6  2004/10/03 18:37:39  haraldkipp
+-- GBA support
+--
 -- Revision 1.5  2004/09/07 19:12:57  haraldkipp
 -- Linker script support added
 --
@@ -58,7 +61,7 @@ avr_pin_choice = { "PINA", "PINB", "PINC", "PIND", "PINE", "PINF", "PING" }
 avr_ddr_choice = { "DDRA", "DDRB", "DDRC", "DDRD", "DDRE", "DDRF", "DDRG" }
 avr_irq_choice = { "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
-arm_ld_choice = { "s3c4510b-ram", "eb40a_ram" }
+arm_ld_choice = { "s3c4510b-ram", "eb40a_ram", "gbaxport2" }
 
 repository =
 {

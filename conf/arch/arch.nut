@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.8  2004/10/03 18:37:39  haraldkipp
+-- GBA support
+--
 -- Revision 1.7  2004/09/22 08:19:42  haraldkipp
 -- No ATmega103 with LAN91C111
 --
@@ -135,6 +138,21 @@ nutarch =
                     "HW_MCU_AT91",
                     "HW_TIMER_AT91",
                     "HW_UART_AT91"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_GBA",
+                brief = "Nintendo GBA",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller",
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_GBA",
+                    "HW_TIMER_GBA",
+                    "HW_LCD_GBA"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },

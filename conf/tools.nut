@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.4  2004/10/03 18:37:39  haraldkipp
+-- GBA support
+--
 -- Revision 1.3  2004/09/07 19:12:57  haraldkipp
 -- Linker script support added
 --
@@ -111,7 +114,8 @@ nuttools =
                 macro = "ARM_LDSCRIPT",
                 brief = "ARM Linker Script",
                 description = "s3c4510b-ram Samsung S3C4510B, code in RAM\n"..
-                              "eb40a_ram Atmel AT91R40008, code in RAM at 0x100\n",
+                              "eb40a_ram Atmel AT91R40008, code in RAM at 0x100\n"..
+                              "gba_xport2 Gameboy Advance with XPort 2\n",
                 requires = { "TOOL_CC_ARM", "TOOL_GCC" },
                 flavor = "booldata",
                 type = "enumerated",
