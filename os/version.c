@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2004/10/03 18:44:40  haraldkipp
+ * A little bit of Game Boy
+ *
  * Revision 1.9  2004/09/08 09:55:19  haraldkipp
  * Although this is no final release, there is a lot of new hardware waiting
  * for Nut/OS support. So I marked this with version 3.9.1 before creating
@@ -75,8 +78,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090100UL
-static CONST char os_version_string[] = "3.9.1.0 pre";
+#define OS_VERSION_NUMBER  0x03090201UL
+static CONST char os_version_string[] = "3.9.2.1 pre";
 
 /*!
  * \addtogroup xgNutInit
