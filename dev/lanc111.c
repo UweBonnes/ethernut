@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/11/06 09:26:50  haraldkipp
+ * Removed silly line with hardcoded MAC, left over from testing
+ *
  * Revision 1.3  2003/11/04 17:54:47  haraldkipp
  * PHY configuration timing changed again for reliable linking
  *
@@ -1018,7 +1021,6 @@ THREAD(NicRxLanc, arg)
         //printf("[WM]");
         NutSleep(63);
     }
-    ifn->if_mac[5] = 1;
     NicStart(ifn->if_mac);
 
     sbi(EICR, 2);
