@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.124 2004/09/22 08:22:36 haraldkipp Exp $
+$Id: ChangeLog,v 1.125 2004/09/25 15:47:04 drsung Exp $
+
+2004-09-25  Oliver Schulz  <olischulz@web.de>
+
+	* conf/dev/dev.nut: Light change for separate interrupt stack. Now it depends 
+	also on macro HW_MCU_AVR.
+
+	* conf/os/os.nut: Removed configuration for separate interrupt stack, it's now 
+	in conf/dev/dev.nut
+
 
 2004-09-22  Harald Kipp  <harald.kipp@egnite.de>
 
