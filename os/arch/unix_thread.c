@@ -108,6 +108,9 @@ static void *NutThreadEntry(void *arg)
 
     // thread exit routine 
     pthread_exit(NULL);
+
+    // make some compilers happy
+    return NULL;
 }
 
 /*!
