@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.141 2004/12/16 18:49:41 haraldkipp Exp $
+$Id: ChangeLog,v 1.142 2004/12/17 15:32:13 haraldkipp Exp $
+
+2004-12-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/route.c, include/net/route.h: Added Adam Pierce's 
+	routing management functions.
+
+	* os/bankmem.c: Bugfix. Comparison of the read and write 
+	pointers now includes the segments. Thanks to Pete Allinson
+	and Johan van der Stoel.
+
+	* dev/nicrtl.c, conf/dev/dev.nut: Support of rising edge 
+	interrupts for hardware w/o inverter gate. Fixed compilation 
+	issue for hardware with RTL reset port. Thanks to 
+	FOCUS Software Engineering Pty Ltd.
+
+	* conf/xnut-100.conf: proconX XNUT-100 board added.
+
 
 2004-12-16  Harald Kipp  <harald.kipp@egnite.de>
 
