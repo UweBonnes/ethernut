@@ -1,4 +1,23 @@
-$Id: ChangeLog,v 1.66 2004/05/21 17:04:36 freckle Exp $
+$Id: ChangeLog,v 1.67 2004/05/24 20:35:59 drsung Exp $
+
+2004-05-24  Oliver Schulz  <olischulz@web.de>
+
+	* include/dev/usart.h, dev/usart.c, dev/usart0avr.c, dev/usart1avr.c: 
+	Implemented function dev_size, which retrieves the number of bytes in 
+	input buffer.
+
+	* include/dev/uart.h, dev/uartavr.c, dev/uart0.c, dev/uart1.c: ditto.
+
+	* crt/kbhit.c, crt/Makefile: Added function kbhit(). Returns nonzero if 
+	stdin has at least one char in input buffer. Uses _filelength to get the 
+	file size.
+
+
+2004-05-23  Oliver Schulz  <olischulz@web.de>
+
+	* include/arch/avr.h: Added some macros, because they are no longer 
+	available since version 1.1.0 of avr-libc.
+
 
 2004-05-21  Matthias Ringwald <mringwal@inf.ethz.ch>
 
