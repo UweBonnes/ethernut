@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.109 2004/09/08 09:52:14 haraldkipp Exp $
+$Id: ChangeLog,v 1.110 2004/09/08 11:05:12 haraldkipp Exp $
 
 2004-09-08  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -34,14 +34,14 @@ $Id: ChangeLog,v 1.109 2004/09/08 09:52:14 haraldkipp Exp $
 
 	* c/stdlib/*, c/string/*: Minimal standard C library added,
 	using some BSD code. There are a lot of libraries available, 
-	but many of them are not really OS independant.
+	but many of them are not really OS independent.
 
 	* conf/arch/arch.nut: Enable C startup for ARM platforms
 	only.
 
 	* crt/fclose.c, crt/freopen.c, include/arch/arm.h: RAMSTART 
 	check removed. In fact we need to check the stream for stdio, 
-	so this is now wrong. But RAMSTART is too hardware dependant. 
+	so this is now wrong. But RAMSTART is too hardware dependent. 
 	For now it is not possible to close stdio streams.
 
 	* crt/malloc.c, nut/os/devreg.c: RAMSTART check removed. Buggy 
@@ -186,7 +186,7 @@ $Id: ChangeLog,v 1.109 2004/09/08 09:52:14 haraldkipp Exp $
 	* crt/putf.c: Compile error on non-Harvard architecture fixed.
 
 	* app/*/Makefile: Replaced top_srcdir by parent directory to
-	allow independant application directories.
+	allow independent application directories.
 
 	* tools/nutconf, conf/*.nut: Tool is working now on Win32 and 
 	Linux for avr-gvv.
