@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2003/11/26 12:55:12  drsung
+ * Portability issues ... again
+ *
  * Revision 1.4  2003/11/24 21:01:04  drsung
  * Packet queue added for UDP sockets.
  *
@@ -349,7 +352,7 @@ int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optl
         break;
 
     default:
-        //sock->so_last_error = ENOPROTOOPT;
+        /* sock->so_last_error = ENOPROTOOPT; */
         break;
     }
     return rc;
@@ -386,7 +389,7 @@ int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
         break;
 
     default:
-        //sock->so_last_error = ENOPROTOOPT;
+        /* sock->so_last_error = ENOPROTOOPT; */
         break;
     }
     return rc;

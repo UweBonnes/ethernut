@@ -33,6 +33,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2003/11/26 12:55:35  drsung
+ * Portability issues ... again
+ *
  * Revision 1.3  2003/11/26 11:16:44  haraldkipp
  * Portability issues
  *
@@ -94,34 +97,35 @@ THREAD(SNTP_resync, arg)
 
     NutThreadSetPriority(63);
     for (;;) {
-        if (NutSNTPGetTime(&cur_server_addr, &t)) {     // if any error retry
+        if (NutSNTPGetTime(&cur_server_addr, &t)) {     /* if any error retry */
             if (cur_server_addr != server_addr && server_addr == 0xFFFFFFFF) {
                 cur_server_addr = server_addr;
                 continue;
             }
 
-            if (retry++ >= 3) { // if numer of retries >= 3 wait 30 secs before next retry sequence ...
+            if (retry++ >= 3) { /* if numer of retries >= 3 wait 30 secs before next retry sequence ... */
                 retry = 0;
                 NutSleep(30000);
-            } else              // ... else wait 5 secs for next retry
+            } else              /* ... else wait 5 secs for next retry */
                 NutSleep(5000);
-        } else {                // no error
-            stime(&t);          // so set the time
+        } else {                /* no error */
+            stime(&t);          /* so set the time */
             retry = 0;
-            NutSleep(interval); // and wait the interval time
+            NutSleep(interval); /* and wait the interval time */
         }
     }
 }
 
 int NutSNTPGetTime(u_long * server_adr, time_t * t)
 {
-    //first check the pointers
+    /*first check the pointers */
     u_long rec_addr;
-    UDPSOCKET *sock = NULL;     // the udp socket
-    sntpframe *data;            // we're using the heap to save stack space
-    u_short port;               // source port from incoming packet
+    UDPSOCKET *sock = NULL;     /* the udp socket */
+    sntpframe *data;            /* we're using the heap to save stack space */
+    u_short port;               /* source port from incoming packet */
     int len;
     int result = -1;
+    /* Set UDP input buffer to 256 bytes */
     u_short bufsize = 256;
 
 
@@ -133,27 +137,26 @@ int NutSNTPGetTime(u_long * server_adr, time_t * t)
     if ((data = NutHeapAllocClear(sizeof(*data))) == NULL)
         goto error;
 
-    sock = NutUdpCreateSocket(0);       // allocate new udp socket
+    sock = NutUdpCreateSocket(0);       /* allocate new udp socket */
     if (sock == NULL)
         goto error;
 
-    /* Set UDP input buffer to 256 bytes */
     NutUdpSetSockOpt(sock, SO_RCVBUF, &bufsize, sizeof(bufsize));
 
-    data->mode = 0x1B;          // LI, VN and Mode bit fields (all in u_char mode);
-    if (NutUdpSendTo(sock, *server_adr, SNTP_PORT, data, sizeof(*data)))        // Send packet to server
-        goto error;             // on error return -1
+    data->mode = 0x1B;          /* LI, VN and Mode bit fields (all in u_char mode); */
+    if (NutUdpSendTo(sock, *server_adr, SNTP_PORT, data, sizeof(*data)))        /* Send packet to server */
+        goto error;             /* on error return -1 */
   retry:
     rec_addr = 0;
-    len = NutUdpReceiveFrom(sock, &rec_addr, &port, data, sizeof(*data), 5000); // Receive packet with timeout of 5s
+    len = NutUdpReceiveFrom(sock, &rec_addr, &port, data, sizeof(*data), 5000); /* Receive packet with timeout of 5s */
     if (len <= 0) {
-        goto error;             // error or timeout occured
+        goto error;             /* error or timeout occured */
     } 
 
-    if (port != SNTP_PORT || (data->mode & 0xc0) == 0xc0)       // if source port is not SNTP_PORT or server is not in sync return
+    if (port != SNTP_PORT || (data->mode & 0xc0) == 0xc0)       /* if source port is not SNTP_PORT or server is not in sync return */
     {
         if (*server_adr == 0xFFFFFFFF)
-            goto retry;         // unusable packets will be just ignored.
+            goto retry;         /*  unusable packets will be just ignored. */
         else
             goto error;
     }
