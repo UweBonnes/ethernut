@@ -1,4 +1,27 @@
-$Id: ChangeLog,v 1.126 2004/09/26 13:16:56 drsung Exp $
+$Id: ChangeLog,v 1.127 2004/10/03 18:34:09 haraldkipp Exp $
+
+2004-10-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* doc/gen/nut_en.cfg, os/version.c: Set to 3.9.2.
+
+	* conf/arch/arch.nut, conf/repository.nut, conf/tools.nut,
+	dev/irqreg.c, arch/arm/init/crtgbaxport2.S, 
+	arch/arm/ldscripts/gbaxport2.ld, conf/gbaxport2.conf: 
+	Added Nintendo Game Boy Advance with Xport 2.0 from Charmed Labs.
+
+	* conf/dev/dev.nut, include/dev/debug.h, debug_gba.c: 
+	Added GBA debug device and made UART SPI dependent from 
+	HW_MCU_AVR.
+
+	* dev/usart1avr.c: Set base address to 1, so drivers are
+	able to distinguish UART0 from UART1.
+
+	* pro/syslog.c, include/sys/syslog.h: Harvard architecture 
+	calls added.
+
+	* os/arch/arm_timer.c: No GBA timer yet, but made it
+	compilable.
+
 
 2004-09-26  Oliver Schulz  <olischulz@web.de>
 
