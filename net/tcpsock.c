@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/11/04 17:58:18  haraldkipp
+ * Removed volatile attibute from socket list
+ *
  * Revision 1.3  2003/08/14 15:08:36  haraldkipp
  * Bugfix, TCP may reuse socket ports because of wrong byte order during compare.
  *
@@ -153,7 +156,7 @@
 
 #define TICK_RATE   1
 
-TCPSOCKET *volatile tcpSocketList = 0;  /*!< Linked list of all TCP sockets. */
+TCPSOCKET *tcpSocketList = 0;  /*!< Linked list of all TCP sockets. */
 
 static volatile u_short last_local_port = 4096; /* Unassigned local port. */
 
