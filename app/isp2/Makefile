@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/09/08 10:17:52  haraldkipp
+# Dot-slash needed by Linux
+#
 # Revision 1.2  2004/08/18 15:02:35  haraldkipp
 # Application build is no longer fixed in top_srcdir
 #
@@ -46,7 +49,7 @@ ROMDIR  = isp
 ROMFILE = urom.c
 
 include ../Makedefs
-include Makedefs.isp
+include ./Makedefs.isp
 
 SRCS =  $(PROJ).c $(ROMFILE)
 OBJS =  $(SRCS:.c=.o) sisp.o
@@ -61,7 +64,7 @@ $(ROMFILE): $(ISPTARG)
 	$(CRUROM) -r -o$(ROMFILE) $(ROMDIR)
 
 include ../Makerules
-include Makerules.isp
+include ./Makerules.isp
 
 clean: cleanisp
 	-rm -f $(OBJS)
