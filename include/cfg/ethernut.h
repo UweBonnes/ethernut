@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/01/22 19:26:33  haraldkipp
+ * Marked deprecated.
+ *
  * Revision 1.2  2003/07/13 19:43:12  haraldkipp
  * Ethernut 2.0 support added.
  *
@@ -53,6 +56,8 @@
 /*!
  * \file cfg/ethernut.h
  * \brief Ethernut hardware specification.
+ *
+ * Including this file is deprecated. Use cfg/arch/avr.h.
  */
 /*!
  * \addtogroup xgEthernutCfg

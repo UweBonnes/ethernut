@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/01/22 19:26:33  haraldkipp
+ * Marked deprecated.
+ *
  * Revision 1.3  2003/08/05 20:17:46  haraldkipp
  * Typing errors corrected
  *
@@ -53,6 +56,8 @@
 /*!
  * \file cfg/coconut.h
  * \brief Coconut hardware specification.
+ *
+ * Including this file is deprecated. Use cfg/arch/avr.h.
  */
 /*
  * \addtogroup xgCoconutCfg
