@@ -33,6 +33,12 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.13  2005/02/02 19:46:53  haraldkipp
+-- Port configuration was completely broken, because no AVRPORT values
+-- had been defined for the preprocessor. To fix this without modifying
+-- too many sourcefiles we change the name of AVR port config file and
+-- include this new file in the old avr.h.
+--
 -- Revision 1.12  2005/01/22 19:22:42  haraldkipp
 -- Changed AVR port configuration names from PORTx to AVRPORTx.
 -- Removed uartspi devices.
@@ -186,7 +192,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART0_RTS_AVRPORT",
@@ -195,7 +201,7 @@ nutdev =
                 requires = { "UART0_RTS_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART0_CTS_IRQ",
@@ -207,7 +213,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_irq_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART0_HDX_BIT",
@@ -218,7 +224,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART0_HDX_AVRPORT",
@@ -227,7 +233,7 @@ nutdev =
                 requires = { "UART0_HDX_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
         }
     },
@@ -255,7 +261,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART1_RTS_AVRPORT",
@@ -264,7 +270,7 @@ nutdev =
                 requires = { "UART1_RTS_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART1_CTS_IRQ",
@@ -276,7 +282,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART1_HDX_BIT",
@@ -287,7 +293,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "UART1_HDX_AVRPORT",
@@ -296,7 +302,7 @@ nutdev =
                 requires = { "UART1_HDX_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
         }
     },
@@ -334,7 +340,7 @@ nutdev =
                 description = "The driver supports memory mapped controllers only, using "..
                               "the specified based address.\n\n"..
                               "The Ethernut 2 reference design uses 0xC000.",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LANC111_SIGNAL_IRQ",
@@ -342,7 +348,7 @@ nutdev =
                 description = "Ethernet controller interrupt, typically INT5.",
                 type = "enumerated",
                 choices = avr_irq_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LANC111_RESET_BIT",
@@ -360,7 +366,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LANC111_RESET_AVRPORT",
@@ -369,7 +375,7 @@ nutdev =
                 requires = { "LANC111_RESET_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
         }
     },
@@ -387,7 +393,7 @@ nutdev =
                 description = "The driver supports memory mapped controllers only, using "..
                               "the specified based address.\n\n"..
                               "The Ethernut 1 reference design uses 0x8300.",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_SIGNAL_IRQ",
@@ -395,7 +401,7 @@ nutdev =
                 description = "Ethernet controller interrupt, typically INT5.",
                 type = "enumerated",
                 choices = avr_irq_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_IRQ_RISING_EDGE",
@@ -407,7 +413,7 @@ nutdev =
                               "Valid only for ATMega 128 or AT90CAN128 parts, "..
                               "not supported by ATMega 103.",
                 flavor = "boolean",
-                file = "include/cfg/arch/avr.h",
+                file = "include/cfg/arch/avrpio.h",
                 makedefs = { "RTL_IRQ_RISING_EDGE" }
             },            
             {
@@ -423,7 +429,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_RESET_AVRPORT",
@@ -432,7 +438,7 @@ nutdev =
                 requires = { "RTL_RESET_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_EESK_BIT",
@@ -455,7 +461,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_EESK_AVRPORT",
@@ -465,7 +471,7 @@ nutdev =
                 requires = { "RTL_EESK_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_EEDO_BIT",
@@ -475,7 +481,7 @@ nutdev =
                 requires = { "RTL_EESK_BIT" },
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_EEDO_AVRPORT",
@@ -485,7 +491,7 @@ nutdev =
                 requires = { "RTL_EESK_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_EEMU_BIT",
@@ -498,7 +504,7 @@ nutdev =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "RTL_EEMU_AVRPORT",
@@ -508,7 +514,7 @@ nutdev =
                 requires = { "RTL_EEMU_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             }
 
         }
@@ -561,7 +567,7 @@ nutdev =
                 description = "Number of milliseconds",
                 flavor = "booldata",
                 type = "integer",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_LONG_DELAY",
@@ -569,7 +575,7 @@ nutdev =
                 description = "Number of milliseconds",
                 flavor = "booldata",
                 type = "integer",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             }
         }
     },
@@ -596,19 +602,19 @@ nutdev =
                 macro = "LCD_4x16",
                 brief = "LCD 4x16",
                 flavor = "boolean",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_4x20",
                 brief = "LCD 4x20",
                 flavor = "boolean",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "KS0073_CONTROLLER",
                 brief = "KS0073 Controller",
                 flavor = "boolean",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             }
         }
     },
@@ -626,13 +632,13 @@ nutdev =
                 macro = "ADC_BUF_SIZE",
                 brief = "Buffer Size",
                 description = "Defaults to 16",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "ADC_INITIAL_CHANNEL",
                 brief = "Initial Channel",
                 description = "Set to ADC0..ADC7",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "ADC_INITIAL_REF",
@@ -640,7 +646,7 @@ nutdev =
                 description = "Set to AVCC (supply voltage), "..
                               "AREF (external reference) "..
                               "or INTERNAL_256 (2.56V)",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "ADC_INITIAL_MODE",
@@ -652,7 +658,7 @@ nutdev =
                               "SINGLE_CONVERSION:\n"..
                               "Single-conversion mode. One sample taken every "..
                               "time ADC_start_conversion() is called.",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "ADC_INITIAL_PRESCALE",
@@ -665,7 +671,7 @@ nutdev =
                               "ADC_PRESCALE_DIV32 for CPU clk/32\n"..
                               "ADC_PRESCALE_DIV64 for CPU clk/64\n"..
                               "ADC_PRESCALE_DIV128 for CPU clk/128",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
         }
     },
@@ -687,21 +693,21 @@ nutdev =
                 brief = "Interrupt Number",
                 description = "Default is 7. Must correspond "..
                               "to SJA_SIGNAL.",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SJA_SIGNAL",
                 brief = "Interrupt Signal",
                 description = "Default is sig_INTERRUPT7. Must correspond "..
                               "to SJA_SIGNAL_BIT.",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SJA_EICR",
                 brief = "Interrupt Control",
                 description = "Default is EICRB. Must correspond "..
                               "to SJA_SIGNAL_BIT.",
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             }
         }
     },
@@ -752,7 +758,7 @@ nutdev =
                               "Coconut uses bit 5 of PORTD.",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_SOUT_AVRPORT",
@@ -760,7 +766,7 @@ nutdev =
                 description = "Port register name of serial data output.",
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_SIN_BIT",
@@ -769,7 +775,7 @@ nutdev =
                               "Coconut uses bit 6 of PIND.",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_SIN_AVRPORT",
@@ -777,7 +783,7 @@ nutdev =
                 description = "Port register name of serial data input.",
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_SCLK_BIT",
@@ -786,7 +792,7 @@ nutdev =
                               "Coconut uses bit 7 of PORTD.",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_SCLK_AVRPORT",
@@ -794,7 +800,7 @@ nutdev =
                 description = "Port register name of serial clock output.",
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_LDI_BIT",
@@ -803,7 +809,7 @@ nutdev =
                               "Coconut uses bit 7 of PORTB.",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_LDI_AVRPORT",
@@ -811,7 +817,7 @@ nutdev =
                 description = "Port register name of the input latch output.",
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_LDO_BIT",
@@ -821,7 +827,7 @@ nutdev =
                               "Coconut uses bit 5 of PORTB.",
                 type = "enumerated",
                 choices = avr_bit_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIDIGIO_LDO_AVRPORT",
@@ -829,7 +835,7 @@ nutdev =
                 description = "Port register name of the output latch output.",
                 type = "enumerated",
                 choices = avr_port_choice,
-                file = "include/cfg/arch/avr.h"
+                file = "include/cfg/arch/avrpio.h"
             },
         }
     },
