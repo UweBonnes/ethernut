@@ -558,6 +558,12 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
     if (fd == STDOUT_FILENO)
         fd = STDIN_FILENO;
     
+    // test for read len. len == 0 => flush fd
+    if (len == 0){
+        tcflush(fd, TCIFLUSH);
+        return 0;
+    }
+    
     // printf("UnixDevRead: called: len = %d\n\r",len);
     timeout.tv_usec = 0;
     timeout.tv_sec  = 0;
