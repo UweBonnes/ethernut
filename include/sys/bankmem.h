@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/12/15 19:27:53  haraldkipp
+ * Ethernut 2 support added
+ *
  * Revision 1.1  2003/07/21 18:21:34  haraldkipp
  * First check in
  *
@@ -49,13 +52,17 @@
  */
 
 #ifndef NUTBANK_COUNT
+#ifdef ETHERNUT2
 /*!
  * \brief Number of memory banks.
  *
  * For systems without banked memory this is set to zero.
  * Ethernut 2 has 30 memory banks.
  */
+#define NUTBANK_COUNT   30
+#else
 #define NUTBANK_COUNT   0
+#endif
 #endif
 
 #ifndef NUTBANK_START
