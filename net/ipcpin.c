@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:17:50  haraldkipp
+ * Caller controls ID increment
+ *
  * Revision 1.2  2003/07/24 16:12:53  haraldkipp
  * First bugfix: PPP always used the secondary DNS.
  * Second bugfix: When the PPP server rejects the
@@ -113,14 +116,14 @@ void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         break;
 
     case PPPS_STOPPED:
         /* 
          * Negotiation started by our peer.
          */
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_ipcp_state = PPPS_REQSENT;
         break;
     }
@@ -243,8 +246,9 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
     /*
      * Ignore, if we are not expecting this id.
      */
-    if (id != dcb->dcb_reqid || dcb->dcb_acked)
+    if (id != dcb->dcb_reqid || dcb->dcb_acked) {
         return;
+    }
 
     switch (dcb->dcb_ipcp_state) {
     case PPPS_CLOSED:
@@ -263,7 +267,7 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     case PPPS_ACKRCVD:
         /* Huh? an extra valid Ack? oh well... */
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_ipcp_state = PPPS_REQSENT;
         break;
 
@@ -276,7 +280,7 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
     case PPPS_OPENED:
         /* Go down and restart negotiation */
         IpcpLowerDown(dev);
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_ipcp_state = PPPS_REQSENT;
         break;
     }
@@ -322,8 +326,9 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rej
     /*
      * Ignore, if we are not expecting this id.
      */
-    if (id != dcb->dcb_reqid || dcb->dcb_acked)
+    if (id != dcb->dcb_reqid || dcb->dcb_acked) {
         return;
+    }
 
     switch (dcb->dcb_ipcp_state) {
     case PPPS_CLOSED:
@@ -374,7 +379,6 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rej
         xcpl -= xcpo->xcpo_len;
         xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
     }
-
     NutNetBufFree(nb);
 
     switch (dcb->dcb_ipcp_state) {
@@ -382,19 +386,19 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rej
     case PPPS_REQSENT:
     case PPPS_ACKSENT:
         /* They didn't agree to what we wanted - try another request */
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         break;
 
     case PPPS_ACKRCVD:
         /* Got a Nak/reject when we had already had an Ack?? oh well... */
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_ipcp_state = PPPS_REQSENT;
         break;
 
     case PPPS_OPENED:
         /* Go down and restart negotiation */
         IpcpLowerDown(dev);
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_ipcp_state = PPPS_REQSENT;
         break;
     }
@@ -443,7 +447,7 @@ void IpcpRxTermAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     case PPPS_OPENED:
         IpcpLowerDown(dev);
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         break;
     }
 }

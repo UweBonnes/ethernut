@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:35  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/14 15:17:50  haraldkipp
+ * Caller controls ID increment
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:35  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/03/31 14:53:28  harald
  * Prepare release 3.1
@@ -159,7 +162,7 @@ int NutPapOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb)
 /*
  * Send a Configure-Request.
  */
-void PapTxAuthReq(NUTDEVICE *dev)
+void PapTxAuthReq(NUTDEVICE *dev, u_char id)
 {
     PPPDCB *dcb = dev->dev_dcb;
     NETBUF *nb;

@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:17:50  haraldkipp
+ * Caller controls ID increment
+ *
  * Revision 1.2  2003/07/24 16:13:38  haraldkipp
  * Never request a rejected DNS
  *
@@ -113,7 +116,7 @@ int NutIpcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb)
  * Send a Configure-Request.
  * TODO: May use preconfigured addresses.
  */
-void IpcpTxConfReq(NUTDEVICE *dev)
+void IpcpTxConfReq(NUTDEVICE *dev, u_char id)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -157,7 +160,7 @@ void IpcpTxConfReq(NUTDEVICE *dev)
             xcpo->xcpo_len = 6;
             xcpo->xcpo_.ul = dcb->dcb_ip_dns2;
         }
-        NutIpcpOutput(dev, XCP_CONFREQ, ++dcb->dcb_reqid, nb);
+        NutIpcpOutput(dev, XCP_CONFREQ, id, nb);
     }
 }
 
