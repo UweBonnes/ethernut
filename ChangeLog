@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.69 2004/05/26 09:43:28 olereinhardt Exp $
+$Id: ChangeLog,v 1.70 2004/06/02 16:46:27 olereinhardt Exp $
+
+2004-06-02  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
+	* os/semaphore.c, include/sys/semaphore.h
+	Fixed a integer overflow (underflow) in semaphore implementation
+	Now a Semaphore initialized with 0 can not underrun any longer.
 
 2004-05-26  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 	* dev/cs8900.c
