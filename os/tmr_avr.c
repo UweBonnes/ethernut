@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/05 20:19:45  drsung
+ * Bugfix in NutTimerInit. ICCAVR failed to compile, if NUT_CPU_FREQ is defined.
+ *
  * Revision 1.1  2004/02/01 18:49:48  haraldkipp
  * Added CPU family support
  *
@@ -260,11 +263,7 @@ void NutTimerInit(void)
      * - Write (CPU frequency / (prescaler * 1KHz)) in the output compare.
      *   register, so we'll get a compare match interrupt every millisecond.
      */
-#ifdef __AVR_ATmega128__
-    outp(BV(CS0) | BV(CS2) | BV(WGM1), TCCR0);
-#else
     outp(BV(CS00) | BV(CS02) | BV(CTC0), TCCR0);
-#endif
     outp(0, TCNT0);
     outp(NUT_CPU_FREQ / (128L * 1000), OCR0);
     NutRegisterIrqHandler(&sig_OUTPUT_COMPARE0, NutTimer0Intr, 0);
