@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:42  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/01/30 17:02:19  drsung
+ * Separate interrupt stack for avr-gcc only added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:42  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
@@ -56,9 +59,6 @@ IRQ_HANDLER sig_OVERFLOW2;
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_OVERFLOW2:iv_TIMER2_OVF
 #endif
-SIGNAL(SIG_OVERFLOW2)
-{
-    CallHandler(&sig_OVERFLOW2);
-}
+NUTSIGNAL(SIG_OVERFLOW2, sig_OVERFLOW2)
 
 /*@}*/

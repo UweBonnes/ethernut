@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/01/30 17:02:19  drsung
+# Separate interrupt stack for avr-gcc only added.
+#
 # Revision 1.6  2003/12/15 19:24:49  haraldkipp
 # New USART driver added
 #
@@ -95,7 +98,8 @@ top_srcdir = ..
 
 include $(top_srcdir)/Makedefs
 
-SRCS =  uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c \
+SRCS =  irqstack.c \
+	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c \
 	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
 	vs1001k.c irsony.c spidigio.c spiflash.c \
 	ide.c twif.c hd44780.c term.c debug0.c debug1.c \

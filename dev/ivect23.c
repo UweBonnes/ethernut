@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:43  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/01/30 17:02:20  drsung
+ * Separate interrupt stack for avr-gcc only added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:43  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:07  harald
  * Prepare release 3.1
@@ -56,9 +59,6 @@ IRQ_HANDLER sig_COMPARATOR;
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_COMPARATOR:iv_ANALOG_COMP
 #endif
-SIGNAL(SIG_COMPARATOR)
-{
-    CallHandler(&sig_COMPARATOR);
-}
+NUTSIGNAL(SIG_COMPARATOR, sig_COMPARATOR)
 
 /*@}*/

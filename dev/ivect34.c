@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:45  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/01/30 17:02:20  drsung
+ * Separate interrupt stack for avr-gcc only added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:45  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:07  harald
  * Prepare release 3.1
@@ -58,10 +61,7 @@ IRQ_HANDLER sig_SPM_READY;
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_SPM_READY:iv_SPM_READY
 #endif
-SIGNAL(SIG_SPM_READY)
-{
-    CallHandler(&sig_SPM_READY);
-}
+NUTSIGNAL(SIG_SPM_READY, sig_SPM_READY)
 
 #endif
 

@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:43  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/01/30 17:02:20  drsung
+ * Separate interrupt stack for avr-gcc only added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:43  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
@@ -58,10 +61,7 @@ IRQ_HANDLER sig_UART0_RECV;
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_UART0_RECV:iv_USART0_RX
 #endif
-SIGNAL(SIG_UART0_RECV)
-{
-    CallHandler(&sig_UART0_RECV);
-}
+NUTSIGNAL(SIG_UART0_RECV, sig_UART0_RECV)
 
 #else
 
@@ -71,10 +71,7 @@ SIGNAL(SIG_UART0_RECV)
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_UART_RECV:iv_UART_RX
 #endif
-SIGNAL(SIG_UART_RECV)
-{
-    CallHandler(&sig_UART0_RECV);
-}
+NUTSIGNAL(SIG_UART_RECV, sig_UART0_RECV)
 
 #endif
 

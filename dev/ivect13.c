@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:42  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/01/30 17:02:19  drsung
+ * Separate interrupt stack for avr-gcc only added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:42  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
@@ -56,10 +59,7 @@ IRQ_HANDLER sig_OUTPUT_COMPARE1B;
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_OUTPUT_COMPARE1B:iv_TIMER1_COMPB
 #endif
-SIGNAL(SIG_OUTPUT_COMPARE1B)
-{
-    CallHandler(&sig_OUTPUT_COMPARE1B);
-}
+NUTSIGNAL(SIG_OUTPUT_COMPARE1B, sig_OUTPUT_COMPARE1B)
 
 
 /*@}*/

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,33 +33,14 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/01/30 17:02:19  drsung
+ * Revision 1.1  2004/01/30 17:02:20  drsung
  * Separate interrupt stack for avr-gcc only added.
  *
- * Revision 1.1.1.1  2003/05/09 14:40:42  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:06  harald
- * Prepare release 3.1
- *
  */
 
-#include <dev/irqreg.h>
 
-/*!
- * \addtogroup xgIrqReg
- */
-/*@{*/
+#include <dev/irqstack.h>
 
-IRQ_HANDLER sig_INPUT_CAPTURE1;
-
-/*! \fn SIG_INPUT_CAPTURE1(void)
- * \brief Timer 1 input capture interrupt entry.
- */
-#ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_INPUT_CAPTURE1:iv_TIMER1_CAPT
-#endif
-NUTSIGNAL(SIG_INPUT_CAPTURE1, sig_INPUT_CAPTURE1)
-
-
-/*@}*/
+u_char _irq_stack[IRQSTACK_SIZE] __attribute__ ((used));
+u_char _irq_SPL __attribute((used));
+u_char _irq_SPH __attribute((used));

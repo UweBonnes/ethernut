@@ -2,7 +2,7 @@
 #define _DEV_IRQREG_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/30 17:00:46  drsung
+ * Separate interrupt stack for avr-gcc only added.
+ *
  * Revision 1.2  2003/11/23 16:42:13  drsung
  * NutRegisterInterrupt removed, because it's incompatible to the new interrupt handling
  *
@@ -56,6 +59,7 @@
  */
 
 #include <sys/device.h>
+#include <dev/irqstack.h>
 
 /*!
  * \file dev/irqreg.h

@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:41  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/01/30 17:02:19  drsung
+ * Separate interrupt stack for avr-gcc only added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:41  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
@@ -56,9 +59,6 @@ IRQ_HANDLER sig_INTERRUPT6;
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_INTERRUPT6:iv_INT6
 #endif
-SIGNAL(SIG_INTERRUPT6)
-{
-    CallHandler(&sig_INTERRUPT6);
-}
+NUTSIGNAL(SIG_INTERRUPT6, sig_INTERRUPT6)
 
 /*@}*/
