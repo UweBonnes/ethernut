@@ -1,14 +1,19 @@
-$Id: ChangeLog,v 1.79 2004/06/23 10:19:37 olereinhardt Exp $
+$Id: ChangeLog,v 1.80 2004/06/24 14:46:55 freckle Exp $
 
 
+2004-06-24  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * dev/unix_devs.c: if using STDIO, better read from
+    STDIN instead of STDOUT => unix piping works
+    
 2004-06-23  Ole Reinhardt <ole.reinhardt@kernelconcept.de>
     * dev/can_dev.c, include/dev/can_dev.h:
     Added functions for buffer monitoring (avail / free)
 
 2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
 
-    * dev/unix_devs.c: multiple parallel reads now work
-    partly work, still dead-locks possible.
+    * dev/unix_devs.c: multiple parallel reads now work.
+    But still dead-locks possible.
     Non-blocking stdio.
 
 2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>

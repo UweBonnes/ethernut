@@ -249,11 +249,17 @@ static int convertToBaudSpeed(int realSpeed)
 static void *UnixDevReadThread( void * arg )
 {
     int ret;
+    int fd;
     fd_set rfd_set;
 
     NUTDEVICE* dev = (NUTDEVICE*) arg;
     UNIXDCB *  dcb = (UNIXDCB*) dev->dev_dcb;
     
+    // fd
+    fd = dcb->dcb_fd;
+    if (fd == STDOUT_FILENO)
+        fd = STDIN_FILENO;
+
     // non-nut thread => block IRQ signals
     pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
 
@@ -279,9 +285,9 @@ static void *UnixDevReadThread( void * arg )
         do {
 
             FD_ZERO(&rfd_set);
-            FD_SET(dcb->dcb_fd, &rfd_set);
-            ret = select(dcb->dcb_fd + 1, &rfd_set, NULL, NULL, NULL);
-        } while (FD_ISSET(dcb->dcb_fd, &rfd_set) == 0);
+            FD_SET(fd, &rfd_set);
+            ret = select(fd + 1, &rfd_set, NULL, NULL, NULL);
+        } while (FD_ISSET(fd, &rfd_set) == 0);
 
         // printf("UnixDevReadThread(%s) task processed\n", dev->dev_name);
 
@@ -458,12 +464,18 @@ static int UnixDevWrite(NUTFILE * nf, CONST void *buffer, int len)
 static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
 {
     int newBytes;
+    int fd;
     fd_set rfd_set;
     int ret;
     struct timeval timeout;
 
     int rc = 0;
     UNIXDCB * dcb = (UNIXDCB*) nf->nf_dev->dev_dcb;
+
+    // fd
+    fd = dcb->dcb_fd;
+    if (fd == STDOUT_FILENO)
+        fd = STDIN_FILENO;
     
     // printf("UnixDevRead: called: len = %d\n\r",len);
     timeout.tv_usec = 0;
@@ -473,10 +485,10 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
 
         // data available ?
         FD_ZERO(&rfd_set);
-        FD_SET(dcb->dcb_fd, &rfd_set);
-        ret = select(dcb->dcb_fd + 1, &rfd_set, NULL, NULL, &timeout);
+        FD_SET(fd, &rfd_set);
+        ret = select(fd + 1, &rfd_set, NULL, NULL, &timeout);
         
-        if (ret == 0) {
+        if (FD_ISSET(fd, &rfd_set) == 0) {
             // no data available. let's block the nut way...
 
             // printf("UnixDevRead(%s): no data ready, signaling read thread\n\r", nf->nf_dev->dev_name);
@@ -497,7 +509,7 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
         }
         
         //  printf("UnixDevRead(%s): before read\n\r", nf->nf_dev->dev_name);
-        newBytes = read( dcb->dcb_fd, buffer, len);
+        newBytes = read( fd, buffer, len);
         // printf("UnixDevRead(%s): read some bytes. res = %d\n\r", nf->nf_dev->dev_name, newBytes);
 
         /* error or timeout ? */
