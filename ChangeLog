@@ -1,4 +1,17 @@
-$Id: ChangeLog,v 1.10 2003/09/29 16:31:55 haraldkipp Exp $
+$Id: ChangeLog,v 1.11 2003/10/13 10:30:38 haraldkipp Exp $
+
+2003-10-13  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/lanc111.c: New driver for SMSC LAN91C111 provides
+	100 Mbps Ethernet interface.
+
+	* os/timer.c: Added a seconds counter.
+
+	* pro/dhcpc.c: Replaced tick counter with seconds
+	counter. This should fix the DHCP timer bug.
+
+	* Added hardware definition to Makedef files.
+
 
 2003-09-03  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -16,6 +29,9 @@ $Id: ChangeLog,v 1.10 2003/09/29 16:31:55 haraldkipp Exp $
 	* app/nutpiper/player.c: Include file sequence changed.
 
 	* app/nutpiper/scanner.c: dito.
+
+	* dev/chat.c: Report function contributed by Jelle
+	Martijn Kok.
 
 
 2003-08-14  Harald Kipp  <harald.kipp@egnite.de>
