@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2004/04/07 12:14:00  haraldkipp
+# Matthias Ringwald's *nix emulation added
+#
 # Revision 1.3  2004/03/16 16:48:46  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
@@ -84,7 +87,8 @@ $(TARG): $(OBJS)
 	$(AR) $(ARFLAGS) $(TARG) $(OBJS)
 
 install: $(TARG)
-	$(CP) $(TARG) $(LIBDIR)/$(TARG)
+	$(CP)     $(TARG) $(LIBDIR)/$(TARG)
+	$(RANLIB) $(LIBDIR)/$(TARG)
 
 clean:
 	-rm -f $(OBJS)

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/04/07 12:13:57  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -75,5 +78,9 @@ extern NUTDEVICE devDebug2;
 #elif defined(__m68k__)
 #endif
 
+#if defined(__linux__) || defined(__APPLE__)
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
+#endif
 
-#endif /* #ifndef _DEV_DEBUG_H_ */
+#endif                          /* #ifndef _DEV_DEBUG_H_ */

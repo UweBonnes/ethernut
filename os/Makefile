@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2004/04/07 12:13:58  haraldkipp
+# Matthias Ringwald's *nix emulation added
+#
 # Revision 1.4  2004/03/16 16:48:45  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
@@ -97,22 +100,26 @@ ifeq ($(ARCH), avr)
     SRC2 += bankmem.c
 endif
 
-OBJ1 = $(SRC1:.c=.o)
-OBJ2 = $(SRC2:.c=.o)
 
-TRG1 = $(OBJ1)
-TRG2 = $(PROJ).a
+OBJ1 = $(SRC1:.c=.o)
+OBJ2 = $(SRC2:.c=.o) 
+
+
+TRG1 = $(OBJ1) 
+TRG2 = $(PROJ).a $(SRC1.c=.d)
 
 all: $(TRG1) $(TRG2)
 
 include $(top_srcdir)/Makerules
+$(TRG1): $(SRC1.c=.d)
 
-$(TRG2): $(OBJ2)
+$(TRG2): $(OBJ2) $(SRC2.c=.d)
 	$(AR) $(ARFLAGS) $(TRG2) $(OBJ2)
 
 install: $(TRG1) $(TRG2)
 	$(CP) $(TRG1) $(LIBDIR)/$(TRG1)
 	$(CP) $(TRG2) $(LIBDIR)/$(TRG2)
+	$(RANLIB) $(LIBDIR)/$(TRG2)
 
 clean:
 	-rm -f $(OBJ1) $(OBJ2)

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/04/07 12:13:57  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.5  2004/03/18 15:48:13  haraldkipp
  * ICCAVR failed to compile
  *
@@ -83,7 +86,7 @@
 typedef struct {
     u_long ir_count;
     void *ir_arg;
-    void (*ir_handler)(void *);
+    void (*ir_handler) (void *);
 } IRQ_HANDLER;
 
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
@@ -99,14 +102,26 @@ typedef struct {
 /*@}*/
 
 __BEGIN_DECLS
-
 /* NutRegisterInterrupt is obsolete, use NutRegisterIrqHandler instead */
 //extern int NutRegisterInterrupt(int irq, void (*handler)(void *), void *arg) __attribute__ ((obsolete)) ;
-	
-extern void CallHandler(IRQ_HANDLER *irh);
+extern void CallHandler(IRQ_HANDLER * irh);
 
-extern int NutRegisterIrqHandler(IRQ_HANDLER *irh, void (*handler)(void *), void *arg);
+#if defined (__linux__) || defined (__APPLE__)
+
+#include <signal.h>
+extern u_char irq_processed;
+extern pthread_mutex_t irq_mutex;
+extern pthread_cond_t irq_cv;
+extern sigset_t irq_signal;
+
+extern void NutIRQTrigger(u_char);
+extern int NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg);
+
+#else
+
+extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);
+
+#endif
 
 __END_DECLS
-
 #endif

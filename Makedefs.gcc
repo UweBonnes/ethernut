@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.5  2004/04/07 12:13:46  haraldkipp
+# Matthias Ringwald's *nix emulation added
+#
 # Revision 1.4  2004/03/16 16:48:24  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
@@ -97,6 +100,7 @@ CC     = $(TRGT)gcc
 AR     = $(TRGT)ar
 CP     = cp
 AS     = $(TRGT)gcc -x assembler-with-cpp
+RANLIB = $(TRGT)ranlib
 
 MCFLAGS = -mmcu=$(MCU)
 CPFLAGS = $(MCFLAGS) -Os -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)

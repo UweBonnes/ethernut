@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.7  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -69,6 +72,7 @@
  */
 
 #define __NUTINIT__
+#include <compiler.h>
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
@@ -84,6 +88,11 @@
 #include "arch/h8_nutinit.c"
 #elif defined(__m68k__)
 #include "arch/m68k_nutinit.c"
+#elif defined(__linux__) || defined(__APPLE__)
+// avoid stdio nut wrapper */
+#define NO_STDIO_NUT_WRAPPER
+#include "arch/unix_nutinit.c"
+#include "arch/unix_options.c"
 #endif
 
 /*@}*/

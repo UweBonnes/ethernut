@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.3  2004/03/19 09:05:12  jdubiec
  * Fixed format strings declarations for AVR.
  *
@@ -53,6 +56,7 @@
  *
  */
 
+#include <compiler.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
 #include <sys/event.h>
@@ -61,9 +65,10 @@
 
 #include <sys/osdebug.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
 #define ARCH_32BIT
 #endif
+
 
 FILE *__os_trs;
 u_char __os_trf;
@@ -98,25 +103,30 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
     static prog_char fmt[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s\n";
 #endif
 
-    fputs_P(qheader, stream);
-
     NutEnterCritical();
+
     if (tdp == SIGNALED)
         fputs("SIGNALED\n", stream);
     else {
         while (tdp) {
+#if defined(__linux__) || defined(__APPLE__)
             fprintf_P(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
-                    states[tdp->td_state], (uptr_t) tdp->td_queue,
-                    (uptr_t) tdp->td_timer, tdp->td_sp,
-                    (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
-                    *((u_long *) tdp->td_memory) != DEADBEEF
-                    && *((u_long *) (tdp->td_memory + 4)) != DEADBEEF
-                    && *((u_long *) (tdp->td_memory + 8)) != DEADBEEF
-                    && *((u_long *) (tdp->td_memory + 12)) !=
-                    DEADBEEF ? "FAIL" : "OK");
+                      states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
+#else
+            fprintf_P(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
+                      states[tdp->td_state], (uptr_t) tdp->td_queue,
+                      (uptr_t) tdp->td_timer, tdp->td_sp,
+                      (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
+                      *((u_long *) tdp->td_memory) != DEADBEEF
+                      && *((u_long *) (tdp->td_memory + 4)) != DEADBEEF
+                      && *((u_long *) (tdp->td_memory + 8)) != DEADBEEF
+                      && *((u_long *) (tdp->td_memory + 12)) != DEADBEEF ? "FAIL" : "OK");
+#endif
             tdp = tdp->td_qnxt;
+
         }
     }
+
     NutExitCritical();
 }
 
@@ -130,6 +140,7 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
  */
 void NutDumpThreadList(FILE * stream)
 {
+
 #ifdef ARCH_32BIT
     static prog_char fmt1[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s";
     static prog_char fmt2[] = " %08lX";
@@ -145,11 +156,15 @@ void NutDumpThreadList(FILE * stream)
     NutEnterCritical();
     tdp = nutThreadList;
     while (tdp) {
+#if defined(__linux__) || defined(__APPLE__)
         fprintf_P(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
-                states[tdp->td_state], (uptr_t) tdp->td_queue,
-                (uptr_t) tdp->td_timer, tdp->td_sp,
-                (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
-                *((u_long *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
+                  states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
+#else
+        fprintf_P(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
+                  states[tdp->td_state], (uptr_t) tdp->td_queue,
+                  (uptr_t) tdp->td_timer, tdp->td_sp,
+                  (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory, *((u_long *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
+#endif
         if (tdp->td_queue) {
             tqp = *(NUTTHREADINFO **) (tdp->td_queue);
             if (tqp == SIGNALED)
@@ -177,6 +192,7 @@ void NutDumpThreadList(FILE * stream)
  */
 void NutDumpTimerList(FILE * stream)
 {
+
     static prog_char wname[] = "NutThreadWake";
     static prog_char tname[] = "NutEventTimeout";
 #ifdef ARCH_32BIT
@@ -192,21 +208,19 @@ void NutDumpTimerList(FILE * stream)
     static prog_char fmt3[] = "(%04X)\n";
     static prog_char fmt4[] = " %04X";
 #endif
-    NUTTIMERINFO *tnp;
 
+    NUTTIMERINFO *tnp;
     NutEnterCritical();
     if ((tnp = nutTimerList) != 0) {
         fputs_P(theader, stream);
         while (tnp) {
-            fprintf_P(stream, fmt1, (uptr_t) tnp, tnp->tn_ticks,
-                    tnp->tn_ticks_left);
+            fprintf_P(stream, fmt1, (uptr_t) tnp, tnp->tn_ticks, tnp->tn_ticks_left);
             if (tnp->tn_callback == NutThreadWake)
                 fputs_P(wname, stream);
             else if (tnp->tn_callback == NutEventTimeout)
                 fputs_P(tname, stream);
             else
-                fprintf_P(stream, fmt2,
-                        (u_long) ((uptr_t) tnp->tn_callback) << 1);
+                fprintf_P(stream, fmt2, (u_long) ((uptr_t) tnp->tn_callback) << 1);
             fprintf_P(stream, fmt3, (uptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
@@ -247,6 +261,7 @@ void NutTraceOs(FILE * stream, u_char flags)
  */
 void NutDumpHeap(FILE * stream)
 {
+
 #ifdef ARCH_32BIT
     static prog_char fmt1[] = "%08lx %9ld\n";
     static prog_char fmt2[] = "%lu counted, but %lu reported\n";

@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/04/07 12:13:57  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.3  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -93,58 +96,69 @@ extern "C" {
 /*!
  * Thread information structure type.
  */
-typedef struct _NUTTHREADINFO NUTTHREADINFO;
+    typedef struct _NUTTHREADINFO NUTTHREADINFO;
 
 /*!
  * \struct _NUTTHREADINFO thread.h sys/thread.h
  * \brief Thread information structure.
  */
-struct _NUTTHREADINFO {
-    NUTTHREADINFO *volatile td_next;    /*!< \brief Linked list of all threads. */
-    NUTTHREADINFO *td_qnxt;    /*!< \brief Linked list of all queued thread. */
-    u_char  td_name[9];     /*!< \brief Name of this thread. */
-    u_char  td_state;       /*!< \brief Operating state. One of TDS_ */
-    uptr_t  td_sp;          /*!< \brief Stack pointer. */
-    u_char  td_priority;    /*!< \brief Priority level. 0 is highest priority. */
-    u_char *td_memory;     /*!< \brief Pointer to heap memory used for stack. */
-    HANDLE  td_timer;       /*!< \brief Event timer. */
-    HANDLE  td_queue;       /*!< \brief Root entry of the waiting queue. */
-};
+
+    struct _NUTTHREADINFO {
+        NUTTHREADINFO *volatile td_next;        /*!< \brief Linked list of all threads. */
+        NUTTHREADINFO *td_qnxt; /*!< \brief Linked list of all queued thread. */
+        u_char td_name[9];      /*!< \brief Name of this thread. */
+        u_char td_state;        /*!< \brief Operating state. One of TDS_ */
+        uptr_t td_sp;           /*!< \brief Stack pointer. */
+        u_char td_priority;     /*!< \brief Priority level. 0 is highest priority. */
+        u_char *td_memory;      /*!< \brief Pointer to heap memory used for stack. */
+        HANDLE td_timer;        /*!< \brief Event timer. */
+        HANDLE td_queue;        /*!< \brief Root entry of the waiting queue. */
+#if defined (__APPLE__) || (__linux__)
+        pthread_t td_pthread;   /*!< \brief pthread for unix emulations. */
+        void (*td_fn) (void *); /*!< \brief thread function */
+        void *td_arg;           /*!< \brief args given to NutCreateThread */
+        pthread_cond_t td_cv;   /*!< \brief conditional variable for unix emulations. */
+        u_short td_cs_level;    /*! \brief number critical sections has been entered without leaving */
+#endif
+    };
 /*@}*/
 
 /*!
  * \addtogroup xgThreadState
  */
 /*@{*/
-#define TDS_TERM        0   /*!< Thread has exited. */
-#define TDS_RUNNING     1   /*!< Thread is running. */
-#define TDS_READY       2   /*!< Thread is ready to run. */
-#define TDS_SLEEP       3   /*!< Thread is sleeping. */
+#define TDS_TERM        0       /*!< Thread has exited. */
+#define TDS_RUNNING     1       /*!< Thread is running. */
+#define TDS_READY       2       /*!< Thread is ready to run. */
+#define TDS_SLEEP       3       /*!< Thread is sleeping. */
 /*@}*/
 
 
-extern NUTTHREADINFO* volatile runningThread;
-extern NUTTHREADINFO* volatile nutThreadList;
-extern NUTTHREADINFO * volatile runQueue;
+    extern NUTTHREADINFO *volatile runningThread;
+    extern NUTTHREADINFO *volatile nutThreadList;
+    extern NUTTHREADINFO *volatile runQueue;
 
 
+#if defined (__APPLE__) || (__linux__)
+    extern void NutThreadInit(void);
+#endif
 
-extern HANDLE NutThreadCreate(u_char *name, void (*fn)(void *), void *arg, size_t stackSize);
-extern u_char NutThreadSetPriority(u_char level);
+    extern HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t stackSize);
+    extern u_char NutThreadSetPriority(u_char level);
 
-extern void NutThreadKill(void);
-extern void NutThreadDestroy(void);
-extern void NutThreadExit(void);
+    extern void NutThreadKill(void);
+    extern void NutThreadDestroy(void);
+    extern void NutThreadExit(void);
 
-extern void NutThreadResumeAsync(HANDLE th);
-extern void NutThreadWake(HANDLE timer, HANDLE th);
-extern void NutThreadYield(void);
+    extern void NutThreadResumeAsync(HANDLE th);
+    extern void NutThreadWake(HANDLE timer, HANDLE th);
+    extern void NutThreadYield(void);
 
-extern void NutThreadAddPriQueue(NUTTHREADINFO *td, NUTTHREADINFO **tqpp);
-extern void NutThreadRemoveQueue(NUTTHREADINFO *td, NUTTHREADINFO *volatile *tqpp);
+    extern void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO ** tqpp);
+    extern void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp);
 
-extern void NutThreadSwitch(void);
-extern HANDLE GetThreadByName(u_char *name);
+    extern void NutThreadSwitch(void);
+    extern HANDLE GetThreadByName(u_char * name);
 
 /*!
  * \brief Macro for thread entry definitions.
@@ -153,10 +167,9 @@ extern HANDLE GetThreadByName(u_char *name);
 void threadfn(void *arg) __attribute__ ((noreturn)); \
 void threadfn(void *arg)
 
-extern void DumpThreads(HANDLE handle);
+    extern void DumpThreads(HANDLE handle);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

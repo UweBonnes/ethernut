@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/04/07 12:13:57  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.3  2004/03/17 11:30:22  haraldkipp
  * Bugfix for ICCAVR
  *
@@ -59,44 +62,25 @@
 #include <sys/types.h>
 
 __BEGIN_DECLS
-
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-
 #ifdef __IMAGECRAFT__
-
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
-
 #else
-
-static inline void AtomicInc(volatile u_char *p)
+static inline void AtomicInc(volatile u_char * p)
 {
-    asm volatile(
-        "in  __tmp_reg__, __SREG__" "\n\t"
-        "cli"                       "\n\t"
-        "ld r24, %a0"               "\n\t"
-        "subi r24, lo8(-1)"         "\n\t"
-        "st %a0, r24"               "\n\t"
-        "out __SREG__, __tmp_reg__" "\n\t"
-        :
-        : "z" (p)
-        : "r24"
-    );
+    asm volatile ("in  __tmp_reg__, __SREG__" "\n\t"
+                  "cli" "\n\t"
+                  "ld r24, %a0" "\n\t" "subi r24, lo8(-1)" "\n\t" "st %a0, r24" "\n\t" "out __SREG__, __tmp_reg__" "\n\t"::"z" (p)
+                  :"r24");
 }
 
-static inline void AtomicDec(volatile u_char *p)
+static inline void AtomicDec(volatile u_char * p)
 {
-    asm volatile(
-        "in  __tmp_reg__, __SREG__" "\n\t"
-        "cli"                       "\n\t"
-        "ld r24, %a0"               "\n\t"
-        "subi r24, lo8(1)"          "\n\t"
-        "st %a0, r24"               "\n\t"
-        "out __SREG__, __tmp_reg__" "\n\t"
-        :
-        : "z" (p)
-        : "r24"
-    );
+    asm volatile ("in  __tmp_reg__, __SREG__" "\n\t"
+                  "cli" "\n\t"
+                  "ld r24, %a0" "\n\t" "subi r24, lo8(1)" "\n\t" "st %a0, r24" "\n\t" "out __SREG__, __tmp_reg__" "\n\t"::"z" (p)
+                  :"r24");
 }
 
 #endif
@@ -137,10 +121,8 @@ static inline void AtomicDec(volatile u_char *p)
 #define NutJumpOutCritical() NutExitCritical()
 
 #elif defined(__H8300H__) || defined(__H8300S__)
-
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
-
 #define NutEnterCritical()                     \
     {                                          \
         u_char __ccr__;                        \
@@ -148,18 +130,15 @@ static inline void AtomicDec(volatile u_char *p)
             "stc.b ccr, %0l"            "\n\t" \
             "orc.b #0xc0, ccr":"=r"(__ccr__):  \
         );
-
 #define NutExitCritical()                      \
        asm volatile(                           \
         "ldc.b %0l, ccr"::"r"(__ccr__)         \
        );                                      \
     }
-
 #define NutJumpOutCritical()                   \
        asm volatile(                           \
         "ldc.b %0l, ccr"::"r"(__ccr__)         \
        );
-
 #define NutEnableInt(ccr)                      \
     {                                          \
         u_char __ccr__;                        \
@@ -167,39 +146,105 @@ static inline void AtomicDec(volatile u_char *p)
             "stc.b ccr, %0l"            "\n\t" \
             "andc.b #0x3f, ccr":"=r"(__ccr__): \
         );
-
 #define NutDisableInt() NutExitCritical()
-
 /* #define NutEnterCritical(ccr) NutDisableInt(ccr) */
-
 /* #define NutExitCritical(ccr) NutRestoreInt(ccr) */
-
 #elif defined(__arm__)
-
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
-
 /* TODO */
 #define NutEnterCritical()
 /* TODO */
 #define NutExitCritical()
 /* TODO */
 #define NutJumpOutCritical()
+#elif defined(__linux__) || defined (__APPLE__)
+#include <pthread.h>
+#include <signal.h>
+#include <sys/thread.h>
+#include <stdio.h>
+#include <stdlib.h>
+extern u_short main_cs_level;
+extern sigset_t irq_signal;
+
+extern FILE *__os_trs;
+extern u_char __os_trf;
+
+#define AtomicInc(p)     (++(*p))
+#define AtomicDec(p)     (--(*p))
+
+
+
+#define NutEnterCritical()					     \
+		pthread_sigmask(SIG_BLOCK, &irq_signal, 0);  \
+		if (runningThread){						 \
+			/* if (runningThread->td_cs_level==0)												    \
+				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name); */	\
+			runningThread->td_cs_level++;        \
+		} else {								 \
+			/* if (main_cs_level==0)												\
+				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT") */;	\
+			main_cs_level++;					 \
+		}										 \
+
+#define NutExitCritical()									\
+		if (runningThread){									\
+			if (--runningThread->td_cs_level == 0) {		\
+				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	*/ \
+				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);   \
+			}												\
+		} else {											\
+			if (--main_cs_level == 0) {						\
+				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	*/ \
+				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);	\
+			}												\
+		}
+
+#if 0
+
+#define NutEnterCritical()					     \
+		if (runningThread){						 \
+			if (runningThread->td_cs_level==0)												\
+				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
+			runningThread->td_cs_level++;        \
+		} else {								 \
+			if (main_cs_level==0)												\
+				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
+			main_cs_level++;					 \
+		}										 \
+
+#define NutExitCritical()									\
+		if (runningThread){									\
+			if (--runningThread->td_cs_level == 0) {		\
+				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
+			}												\
+		} else {											\
+			if (--main_cs_level == 0) {						\
+				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
+			}												\
+		}
+#endif
+
+#if 0
+/* TODO */
+#define NutEnterCritical()
+/* TODO */
+#define NutExitCritical()
+#endif
+
+
+#define NutJumpOutCritical() NutExitCritical()
+
 
 #elif defined(__m68k__)
-
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
-
 /* TODO */
 #define NutEnterCritical()
 /* TODO */
 #define NutExitCritical()
 /* TODO */
 #define NutJumpOutCritical()
-
-#endif /* !defined(__m68k__) */
-
-__END_DECLS
-
+#endif                          /* !defined(__m68k__) */
+    __END_DECLS
 #endif

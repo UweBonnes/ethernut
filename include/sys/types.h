@@ -1,5 +1,3 @@
-#ifndef _SYS_TYPES_H_
-#define _SYS_TYPES_H_
 
 /*
  * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
@@ -78,6 +76,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/04/07 12:13:57  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.3  2004/03/18 15:40:55  haraldkipp
  * ICCAVR failed to compile
  *
@@ -98,6 +99,23 @@
  *
  */
 
+#ifndef _SYS_TYPES_H_
+
+#ifndef _SYS_VIRTUAL_TYPES_H_
+#define _SYS_VIRTUAL_TYPES_H_
+
+
+#if defined(__linux__) || defined(__APPLE__)
+//  on an emulation platform, we need to have both
+//              a) the native types headers and libs and
+#include "types_orig.h"
+//              b) the additional nut os header and implementation
+#endif
+
+#ifndef _SYS_TYPES_H
+#define _SYS_TYPES_H_
+#endif
+
 /*!
  * \file sys/types.h
  * \brief Nut/OS type declarations.
@@ -115,25 +133,28 @@ extern "C" {
  */
 /*@{*/
 
+#if !defined(__linux__) && !defined(__APPLE__)
+
 /*! \brief Unsigned 8-bit value. */
-typedef unsigned char      u_char;
+    typedef unsigned char u_char;
 
 /*! \brief Unsigned 16-bit value. */
-typedef unsigned short     u_short;
+    typedef unsigned short u_short;
 
 /*! \brief Unsigned int value. */
 /* Warning: size is highly architecture/compiler dependant! */
-typedef unsigned int       u_int;
+    typedef unsigned int u_int;
 
 /*! \brief Unsigned 32-bit value */
-typedef unsigned long      u_long;
+    typedef unsigned long u_long;
 
 /*! \brief Unsigned 64-bit value */
-typedef unsigned long long u_longlong;
+    typedef unsigned long long u_longlong;
+
+#endif                          /* unix emulation */
 
 /*! \brief Void pointer */
-typedef void * HANDLE;
-
+    typedef void *HANDLE;
 
 /*! 
  * \brief Unsigned register type. 
@@ -146,13 +167,15 @@ typedef void * HANDLE;
  * CPUs will use unsigned shorts etc.
  */
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-typedef unsigned char ureg_t;
+    typedef unsigned char ureg_t;
 #elif defined(__arm__)
-typedef unsigned short ureg_t;
+    typedef unsigned short ureg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
-typedef unsigned short ureg_t;
+    typedef unsigned short ureg_t;
+#elif defined(__linux__) || defined(__APPLE__)
+    typedef unsigned short ureg_t;
 #elif defined(__m68k__)
-typedef unsigned short ureg_t;
+    typedef unsigned short ureg_t;
 #endif
 
 /*! 
@@ -161,13 +184,15 @@ typedef unsigned short ureg_t;
  * Similar to ureg_t, but for signed values from -128 to +127.
  */
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-typedef unsigned char reg_t;
+    typedef unsigned char reg_t;
 #elif defined(__arm__)
-typedef unsigned short reg_t;
+    typedef unsigned short reg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
-typedef unsigned short reg_t;
+    typedef unsigned short reg_t;
+#elif defined(__linux__) || defined(__APPLE__)
+    typedef unsigned short reg_t;
 #elif defined(__m68k__)
-typedef unsigned short reg_t;
+    typedef unsigned short reg_t;
 #endif
 
 /*! 
@@ -177,12 +202,12 @@ typedef unsigned short reg_t;
  * For CPUs with 16 address bits this will be an unsigned short.
  */
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-typedef unsigned short uptr_t;
+    typedef unsigned short uptr_t;
 #else
 /*
  * For remaining MCUs GCC is assumed where __PTRDIFF_TYPE__ macro is defined
  */
-typedef unsigned __PTRDIFF_TYPE__ uptr_t;
+    typedef unsigned __PTRDIFF_TYPE__ uptr_t;
 #endif
 
 #define __byte_swap2(val)           \
@@ -200,37 +225,25 @@ typedef unsigned __PTRDIFF_TYPE__ uptr_t;
  * Conversion of 16 bit value to network order.
  */
 #undef __byte_swap2
-static inline u_short __byte_swap2(u_short val)
-{
-    asm volatile(
-        "mov __tmp_reg__, %A0\n\t"
-        "mov %A0, %B0\n\t"
-        "mov %B0, __tmp_reg__\n\t"
-        : "=r" (val)
-        : "0" (val)
-    );
-    return val;
-}
-
+    static inline u_short __byte_swap2(u_short val) {
+        asm volatile ("mov __tmp_reg__, %A0\n\t" "mov %A0, %B0\n\t" "mov %B0, __tmp_reg__\n\t":"=r" (val)
+                      :"0"(val)
+            );
+         return val;
+    }
 /*
  * Conversion of 32 bit value to network order.
  */
 #undef __byte_swap4
-static inline u_long __byte_swap4(u_long val)
-{
-    asm volatile(
-        "mov __tmp_reg__, %A0\n\t"
-        "mov %A0, %D0\n\t"
-        "mov %D0, __tmp_reg__\n\t"
-        "mov __tmp_reg__, %B0\n\t"
-        "mov %B0, %C0\n\t"
-        "mov %C0, __tmp_reg__\n\t"
-        : "=r" (val)
-        : "0" (val)
-    );
-    return val;
-}
-#endif /* #if defined(__GCC__) && defined(__AVR__) */
+    static inline u_long __byte_swap4(u_long val) {
+        asm volatile ("mov __tmp_reg__, %A0\n\t"
+                      "mov %A0, %D0\n\t"
+                      "mov %D0, __tmp_reg__\n\t" "mov __tmp_reg__, %B0\n\t" "mov %B0, %C0\n\t" "mov %C0, __tmp_reg__\n\t":"=r" (val)
+                      :"0"(val)
+            );
+        return val;
+    }
+#endif                          /* #if defined(__GCC__) && defined(__AVR__) */
 
 /*!
  * \brief Convert short value from host to network byte order.
@@ -274,4 +287,6 @@ static inline u_long __byte_swap4(u_long val)
 }
 #endif
 
-#endif /* #ifndef _SYS_TYPES_H_ */
+#endif                          /* #ifndef _SYS_VIRTUAL_TYPES_H_ */
+
+#endif                          /* #ifndef _SYS_TYPES_H_ */

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.3  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -62,10 +65,12 @@ CONFOS confos;
  */
 int NutLoadConfig(void)
 {
+#if !defined(__linux__) && !defined(__APPLE__)
     eeprom_read_block(&confos, CONFOS_EE_OFFSET, sizeof(CONFOS));
     if (confos.size != sizeof(CONFOS) || confos.magic[0] != 'O' || confos.magic[1] != 'S') {
         return -1;
     }
+#endif
     return 0;
 }
 
@@ -76,6 +81,7 @@ int NutLoadConfig(void)
  */
 int NutSaveConfig(void)
 {
+#if !defined(__linux__) && !defined(__APPLE__)
     u_char *cp;
     u_short i;
 
@@ -86,5 +92,6 @@ int NutSaveConfig(void)
         if (eeprom_read_byte((void *) ((uptr_t) (i + CONFOS_EE_OFFSET))) != *cp)
             eeprom_write_byte((void *) ((uptr_t) (i + CONFOS_EE_OFFSET)), *cp);
 
+#endif
     return 0;
 }

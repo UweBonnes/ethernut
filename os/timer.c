@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.6  2004/03/19 09:05:12  jdubiec
  * Fixed format strings declarations for AVR.
  *
@@ -107,6 +110,7 @@
 #include <sys/osdebug.h>
 #endif
 
+
 /*!
  * \addtogroup xgTimer
  */
@@ -149,10 +153,15 @@ static volatile u_short ms1;
 
 #else                           /* !NUT_CPU_FREQ */
 
-static volatile u_char ms62_5;
 static u_long cpu_clock;
+
+#if !defined(__linux__) && !defined(__APPLE__)
+
+static volatile u_char ms62_5;
 static u_short delay_count;
 static u_long NutComputeCpuClock(void);
+
+#endif
 
 #endif                          /* !NUT_CPU_FREQ */
 
@@ -170,9 +179,11 @@ static void NutTimerInsert(NUTTIMERINFO * tn);
 #include "arch/h8_timer.c"
 #elif defined(__m68k__)
 #include "arch/m68k_timer.c"
+#elif defined(__linux__) || defined(__APPLE__)
+#include "arch/unix_timer.c"
 #endif
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
 #define ARCH_32BIT
 #endif
 
@@ -239,8 +250,7 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
  * \return Timer handle if successfull, 0 otherwise. The handle
  *         may be used to stop the timer by calling TimerStop.
  */
-HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *),
-                     void *arg, u_char flags)
+HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_char flags)
 {
     NUTTIMERINFO *tn;
 
@@ -261,7 +271,7 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *),
         /*
          * Calculate the number of system ticks.
          */
-#ifdef NUT_CPU_FREQ
+#if defined(NUT_CPU_FREQ) || defined(__linux__) || defined(__APPLE__)
         tn->tn_ticks_left = ms;
 #else                           /* !NUT_CPU_FREQ */
         tn->tn_ticks_left = (ms / 125) * 2 + ((ms % 125) > 62);
@@ -317,19 +327,17 @@ void NutSleep(u_long ms)
 {
 #ifdef NUTDEBUG
 #ifdef ARCH_32BIT
-    static prog_char fmt1[] = "Rem<%08lx>";
-    static prog_char fmt2[] = "SWS<%08lx %08lx>";
+    static prog_char fmt1[] = "Rem<%08lx>\n";
+    static prog_char fmt2[] = "SWS<%08lx %08lx>\n";
 #else
-    static prog_char fmt1[] = "Rem<%04x>";
-    static prog_char fmt2[] = "SWS<%04x %04x>";
+    static prog_char fmt1[] = "Rem<%04x>\n";
+    static prog_char fmt2[] = "SWS<%04x %04x>\n";
 #endif
 #endif
 
     if (ms) {
         NutEnterCritical();
-        if ((runningThread->td_timer =
-             NutTimerStart(ms, NutThreadWake, runningThread,
-                           TM_ONESHOT)) != 0) {
+        if ((runningThread->td_timer = NutTimerStart(ms, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
 #ifdef NUTDEBUG
             if (__os_trf)
                 fprintf_P(__os_trs, fmt1, (uptr_t) runningThread);
@@ -340,8 +348,7 @@ void NutSleep(u_long ms)
             if (__os_trf) {
                 NutDumpThreadList(__os_trs);
                 //NutDumpThreadQueue(__os_trs, runQueue);
-                fprintf_P(__os_trs, fmt2, (uptr_t) runningThread,
-                          (uptr_t) runQueue);
+                fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
             }
 #endif
             NutThreadSwitch();
@@ -378,8 +385,8 @@ void NutTimerStopAsync(HANDLE handle)
     static prog_char fmt[] = "StpTmr<%04X>\r\n";
 #endif
 
-    if(__os_trf)
-        fprintf_P(__os_trs, fmt, (uptr_t)handle);
+    if (__os_trf)
+        fprintf_P(__os_trs, fmt, (uptr_t) handle);
 #endif
     tnpp = &nutTimerList;
     tnp = nutTimerList;

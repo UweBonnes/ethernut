@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.3  2004/03/19 09:05:08  jdubiec
  * Fixed format strings declarations for AVR.
  *
@@ -65,7 +68,7 @@
 #include <net/netdebug.h>
 #include <sys/socket.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
 #define ARCH_32BIT
 #endif
 
@@ -75,8 +78,7 @@ extern UDPSOCKET *udpSocketList;
 FILE *__tcp_trs;                /*!< \brief TCP trace output stream. */
 u_char __tcp_trf;               /*!< \brief TCP trace flags. */
 
-void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock,
-                      NETBUF * nb)
+void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock, NETBUF * nb)
 {
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "%s%08lX[%u]-SEQ(%lx)";
@@ -101,8 +103,7 @@ void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock,
     fputs("\n", stream);
 }
 
-void NutDumpSockState(FILE * stream, u_char state, u_char * lead,
-                      u_char * trail)
+void NutDumpSockState(FILE * stream, u_char state, u_char * lead, u_char * trail)
 {
     if (lead)
         fputs(lead, stream);
@@ -158,30 +159,23 @@ void NutDumpSocketList(FILE * stream)
     static prog_char fmt1[] = "%08lX TCP %15s:%-6u ";
     static prog_char fmt2[] = "%08lX UDP %6u\r\n";
 
-    fputs
-	("\r\nSocket   Typ Local                  Remote                 State\n",
-         stream);
+    fputs("\r\nSocket   Typ Local                  Remote                 State\n", stream);
     /*        12345678 123 123456789012345:123456 123456789012345:123456 */
 #else
     static prog_char fmt1[] = "%04X TCP %15s:%-6u ";
     static prog_char fmt2[] = "%04X UDP %6u\r\n";
 
-    fputs
-        ("\r\nSock Typ Local                  Remote                 State\n",
-         stream);
+    fputs("\r\nSock Typ Local                  Remote                 State\n", stream);
     /*        1234 123 123456789012345:123456 123456789012345:123456 */
 #endif
 
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
-        fprintf_P(stream, fmt1, (uptr_t) ts,
-                inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
-        fprintf(stream, "%15s:%-6u ", inet_ntoa(ts->so_remote_addr),
-                ntohs(ts->so_remote_port));
+        fprintf_P(stream, fmt1, (uptr_t) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
+        fprintf(stream, "%15s:%-6u ", inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
         NutDumpSockState(stream, ts->so_state, 0, "\r\n");
     }
     for (us = udpSocketList; us; us = us->so_next) {
-        fprintf_P(stream, fmt2, (uptr_t) us,
-                ntohs(us->so_local_port));
+        fprintf_P(stream, fmt2, (uptr_t) us, ntohs(us->so_local_port));
     }
 }
 
@@ -202,4 +196,3 @@ void NutTraceTcp(FILE * stream, u_char flags)
     else
         __tcp_trf = 0;
 }
-

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.7  2004/03/19 09:05:12  jdubiec
  * Fixed format strings declarations for AVR.
  *
@@ -123,6 +126,9 @@
 #elif defined(__m68k__)
 #define ARCH_32BIT
 #include "arch/m68k_thread.c"
+#elif defined(__linux__) || defined(__APPLE__)
+#define ARCH_32BIT
+#include "arch/unix_thread.c"
 #endif
 
 /*!

@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.11  2004/04/07 12:13:56  haraldkipp
+# Matthias Ringwald's *nix emulation added
+#
 # Revision 1.10  2004/03/18 19:59:26  haraldkipp
 # WLAN preview added
 #
@@ -122,6 +125,10 @@ SRCS =  irqstack.c \
 	ivect25.c ivect26.c ivect27.c ivect28.c ivect29.c ivect30.c \
 	ivect31.c ivect32.c ivect33.c ivect34.c ihndlr.c
 else
+ifeq ($(ARCH), unix)
+# source for Unix Emulation
+SRCS = unix_devs.c chat.c netbuf.c ppp.c
+else
 ifneq (, $(findstring h8300, $(ARCH)))
 # sources for H8
 SRCS =  irqreg.c ihndlr.c scih8.c scih8devs.c nicrtl_h8.c netbuf.c \
@@ -132,7 +139,8 @@ ifeq ($(ARCH), arm)
 SRCS =  irqreg.c ihndlr.c
 else
 # sources for M68K (TODO!)
-SRCS =  irqreg.c ihndlr.c
+# SRCS =  irqreg.c ihndlr.c
+endif
 endif
 endif
 endif
@@ -149,7 +157,8 @@ $(TARG): $(OBJS)
 	$(AR) $(ARFLAGS) $(TARG) $(OBJS)
 
 install: $(TARG)
-	$(CP) $(TARG) $(LIBDIR)/$(TARG)
+	$(CP)     $(TARG) $(LIBDIR)/$(TARG)
+	$(RANLIB) $(LIBDIR)/$(TARG)
 
 clean:
 	-rm -f $(OBJS)

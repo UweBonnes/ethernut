@@ -38,7 +38,38 @@
  */
 
 #ifndef _STDIO_H_
-#define	_STDIO_H_
+
+#ifndef _STDIO_VIRTUAL_H_
+#define _STDIO_VIRTUAL_H_
+
+#if defined(__linux__) || defined(__APPLE__)
+//  on an emulation platform, we need to have both
+//              a) the native stdio headers and libs and
+#include "stdio_orig.h"
+//              b) the nut os header and implementation
+//              the nut os function calls and defines are renamed by the stdio_nut_wrapper.h
+
+// some defines in /usr/include/stdio.h we need to overload
+#ifndef NO_STDIO_NUT_WRAPPER
+#undef getc
+#undef putc
+#undef stdin
+#undef stdout
+#undef stderr
+#include <stdio_nut_wrapper.h>
+
+#endif                          /* NO_STDIO_NUT_WRAPPER */
+
+#endif                          /* __linux__ || __APPLE__ */
+
+#ifndef _STDIO_H_
+#define _STDIO_H_
+#endif
+
+#ifdef NO_STDIO_NUT_WRAPPER
+// this is for unix device drivers, they want to see their native functions
+// and don't need nut stdio
+#else
 
 #include <sys/types.h>
 #include <stdarg.h>
@@ -55,12 +86,14 @@
  * Returned by an input or output operation when the end of a file is 
  * encountered. Some routines return this value to indicate an error.
  */
-#define EOF	(-1)	    
+#define EOF	(-1)
 #endif
 
-#define _IOFBF	    0x00    /*!< \brief Fully buffered. */
-#define _IOLBF	    0x01    /*!< \brief Line buffered. */
-#define _IONBF	    0x02    /*!< \brief Unbuffered. */
+#ifndef _IOFBF
+#define _IOFBF	    0x00        /*!< \brief Fully buffered. */
+#define _IOLBF	    0x01        /*!< \brief Line buffered. */
+#define _IONBF	    0x02        /*!< \brief Unbuffered. */
+#endif
 
 /*!
  * \brief Stream structure type.
@@ -73,11 +106,11 @@
  */
 typedef struct __iobuf FILE;
 
-extern FILE * __iob[];	    /*!< \internal Stream slots. */
+extern FILE *__iob[];           /*!< \internal Stream slots. */
 
-#define stdin (__iob[0])    /*!< \brief Standard input stream. */
-#define stdout (__iob[1])   /*!< \brief Standard output stream. */
-#define stderr (__iob[2])   /*!< \brief Standard error output stream. */
+#define stdin (__iob[0])        /*!< \brief Standard input stream. */
+#define stdout (__iob[1])       /*!< \brief Standard output stream. */
+#define stderr (__iob[2])       /*!< \brief Standard error output stream. */
 
 /*@}*/
 
@@ -94,6 +127,7 @@ extern int _fileno(FILE * stream);
 extern void _flushall(void);
 extern FILE *fopen(CONST char *name, CONST char *mode);
 extern int fprintf(FILE * stream, CONST char *fmt, ...);
+extern int fpurge(FILE * stream);
 extern int fputc(int c, FILE * stream);
 extern int fputs(CONST char *string, FILE * stream);
 extern size_t fread(void *buffer, size_t size, size_t count, FILE * stream);
@@ -135,3 +169,7 @@ extern int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap);
 #endif
 
 #endif
+
+#endif                          /* _STDIO_VIRTUAL_H_ */
+
+#endif                          /* _STDIO_H_ */

@@ -1,8 +1,9 @@
-#ifndef _COMPILER_H_
-#define _COMPILER_H_
+#ifndef _DEV_UNIX_DEVS_H_
+#define _DEV_UNIX_DEVS_H_
+
 
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2000-2004 by ETH Zurich
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +18,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY ETH ZURICH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ETH ZURICH
+ *  OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,50 +32,44 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
+ *
+ */
+
+/* unix_devs.h - a nut/os device driver for native unix devices
+ *
+ * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
+ *
  */
 
 /*
  * $Log$
- * Revision 1.8  2004/04/07 12:13:57  haraldkipp
+ * Revision 1.1  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
- *
- * Revision 1.7  2004/03/18 15:51:45  haraldkipp
- * ICCAVR failed to compile
- *
- * Revision 1.6  2004/03/16 16:48:27  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.5  2004/02/01 18:49:47  haraldkipp
- * Added CPU family support
  *
  */
 
-#ifdef  __cplusplus
-# define __BEGIN_DECLS  extern "C" {
-# define __END_DECLS    }
-#else
-# define __BEGIN_DECLS
-# define __END_DECLS
+#include <sys/device.h>
+#include <dev/netbuf.h>
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /*!
- * \addtogroup xgCrtMisc
+ * \addtogroup xgPPP
  */
 /*@{*/
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
-#include <arch/avr.h>
-#elif defined(__arm__)
-#include <arch/arm.h>
-#elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
-#include <arch/h8.h>
-#elif defined(__m68k__)
-#include <arch/m68k.h>
-#elif defined(__linux__) || defined (__APPLE__)
-#include <arch/unix.h>
+/*
+ * Available devices.
+ */
+    extern NUTDEVICE devUart0;
+    extern NUTDEVICE devUart1;
+    extern NUTDEVICE devDebug0;
+    extern NUTDEVICE devDebug1;
+
+
+#ifdef __cplusplus
+}
 #endif
-
-
-/*@}*/
-
 #endif

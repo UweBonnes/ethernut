@@ -1,9 +1,11 @@
 #! /bin/sh
 
-if [ "x`uname`" != "xLinux" ]
-then
-	echo "This is not a Linux system. I'm so confused!"
-	exit 1
+if [ "x`uname`" != "xLinux"  ]; then
+if [ "x`uname`" != "xDarwin" ]; then
+  echo "This is not a Linux or Mac OS X system."
+  echo "I'm so confused!"
+  exit 1
+fi
 fi
 
 # Ask user which device to target
@@ -17,6 +19,7 @@ do
 	echo "  1) Atmel ATmega128"
 	echo "  2) Atmel ATmega103"
 	echo "  3) Renesas H8/3068F"
+	echo "  4) UNIX Emulation"
 #	echo "  4) Renesas H8/3069F" # just an example
 #	echo "  5) Renesas H8S/2676F" # just an example
 #	echo "  6) OKI ML67Q5003" # just an example
@@ -28,6 +31,7 @@ do
 	1) DEV=atmega128; ARCH=avr ;;
 	2) DEV=atmega103; ARCH=avr ;;
 	3) DEV=H8/3068F; ARCH=h8300h ;;
+	4) DEV=mac; ARCH=unix ;;
 #	4) DEV=H8/3069F; ARCH=h8300h ;; # just an example
 #	5) DEV=H8S/2676F; ARCH=h8300s ;; # just an example
 #	6) DEV=ML67Q5003; ARCH=arm ;; # just an example
@@ -285,4 +289,57 @@ EOF
     echo "Type \`make\` to build the system."
 
     exit 0
+fi
+
+
+if [ "$ARCH" = "unix" ]; then
+
+    # Verify that gcc is in the users PATH
+
+    if ! gcc --version >/dev/null 2>&1
+    then
+	    echo "Can't find gcc. :-("
+	    echo ""
+	    echo "This could mean either of the following:"
+	    echo "  1: You don't have gcc installed."
+	    echo "  2: You don't have your PATH environment variable set right."
+	    echo "Here is your PATH variable:"
+	    echo ""
+	    echo $PATH
+	    echo ""
+	    exit 1
+    fi
+
+    # Make links to included make fragments
+
+    [ -f Makedefs ]  || ln -s Makedefs.unix-gcc Makedefs
+    [ -f Makerules ] || ln -s Makerules.unix-gcc Makerules
+
+    [ -f app/Makedefs ]  || ln -s Makedefs.unix-gcc app/Makedefs
+    [ -f app/Makerules ] || ln -s Makerules.unix-gcc app/Makerules
+
+    # Generate the config file
+
+    cat <<EOF > UserConf.mk
+CRUROM = \$(top_srcdir)/tools/crurom/crurom
+ARCH=$ARCH
+EOF
+
+    # Get system include paths for stdio.h and sys/types.h
+    echo "#include <stdio.h>"      > include_test.c
+    echo "#include <sys/types.h>" >> include_test.c
+    gcc -E include_test.c | grep stdio | head -1 | \
+         sed 's/#....\(\/.*\/stdio.h\).*/#include "\1"/' > unix/include/stdio_orig.h
+    gcc -E include_test.c | grep types | head -1 | \
+         sed 's/#....\(\/.*\/types.h\).*/#include "\1"/' > unix/include/sys/types_orig.h
+    rm include_test.c
+    
+
+    # ready
+
+    echo "Your system is now configured to build for your native system."
+    echo "Type \`make\` to build the system."
+
+    exit 0
+
 fi

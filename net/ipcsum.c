@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.2  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -124,7 +127,7 @@
 
 #include <netinet/ipcsum.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
 #define ARCH_32BIT
 #endif
 
@@ -171,7 +174,7 @@ u_short NutIpChkSumPartial(u_short partial_csum, void *buf, u_short count)
 #ifndef ARCH_32BIT
         sum += *(u_char *) d2++;
 #else
-        sum += ((u_short)(*(u_char *) d2)) << 8;
+        sum += ((u_short) (*(u_char *) d2)) << 8;
 #endif
 
     while (sum >> 16)
@@ -194,10 +197,7 @@ u_short NutIpChkSumPartial(u_short partial_csum, void *buf, u_short count)
                       "adc %A0, r1\n\t"
                       "adc %B0, r1\n\t"
                       "dec %A2\n\t"
-                      "brne L_redo%=\n\t"
-                      "subi %B2, 1\n\t"
-                      "brsh L_redo%=\n\t"
-                      "\n\t":"=r" (partial_csum), "=e"(d1), "=w"(d2)
+                      "brne L_redo%=\n\t" "subi %B2, 1\n\t" "brsh L_redo%=\n\t" "\n\t":"=r" (partial_csum), "=e"(d1), "=w"(d2)
                       :"0"(partial_csum), "1"(d1), "2"(words)
             );
     }
@@ -207,9 +207,7 @@ u_short NutIpChkSumPartial(u_short partial_csum, void *buf, u_short count)
      */
     if (count & 0x01) {
         asm volatile ("ld __tmp_reg__, %a1+\n\t"
-                      "add %A0, __tmp_reg__\n\t"
-                      "adc %B0, r1\n\t"
-                      "adc %A0, r1\n\t":"=r" (partial_csum), "=e"(d1)
+                      "add %A0, __tmp_reg__\n\t" "adc %B0, r1\n\t" "adc %A0, r1\n\t":"=r" (partial_csum), "=e"(d1)
                       :"0"(partial_csum), "1"(d1)
             );
     }
@@ -351,8 +349,7 @@ struct pseudo_hdr {
  * \brief Calculates the partial IP pseudo checksum.
  *
  */
-u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr,
-                                 u_char protocol, u_short len)
+u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, u_short len)
 {
     struct pseudo_hdr ph;
 
@@ -369,11 +366,9 @@ u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr,
  * \brief Calculates the IP pseudo checksum.
  *
  */
-u_short NutIpPseudoChkSum(u_long src_addr, u_long dest_addr,
-                          u_char protocol, u_short len)
+u_short NutIpPseudoChkSum(u_long src_addr, u_long dest_addr, u_char protocol, u_short len)
 {
-    return NutIpPseudoChkSumPartial(src_addr, dest_addr, protocol,
-                                    len) ^ 0xffff;
+    return NutIpPseudoChkSumPartial(src_addr, dest_addr, protocol, len) ^ 0xffff;
 }
 
 /*@}*/

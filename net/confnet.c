@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.2  2003/07/13 19:03:06  haraldkipp
  * Make empty MAC broadcast.
  *
@@ -67,12 +70,12 @@ CONFNET confnet;
  */
 int NutNetLoadConfig(CONST char *name)
 {
-    eeprom_read_block(&confnet, (void *) CONFNET_EE_OFFSET,
-                      sizeof(CONFNET));
+#if !defined(__linux__) && !defined(__APPLE__)
+    eeprom_read_block(&confnet, (void *) CONFNET_EE_OFFSET, sizeof(CONFNET));
     if (confnet.cd_size == sizeof(CONFNET)
         && strcmp(confnet.cd_name, name) == 0)
         return 0;
-
+#endif
     memset(&confnet, 0, sizeof(confnet));
 
     /*
@@ -92,13 +95,15 @@ int NutNetLoadConfig(CONST char *name)
  */
 int NutNetSaveConfig(void)
 {
+#if !defined(__linux__) && !defined(__APPLE__)
     u_char *cp;
     size_t i;
 
     confnet.cd_size = sizeof(CONFNET);
-    for (cp = (u_char *) &confnet, i = 0; i < sizeof(CONFNET); cp++, i++)
-        if(eeprom_read_byte((void *) (i + CONFNET_EE_OFFSET)) != *cp)
+    for (cp = (u_char *) & confnet, i = 0; i < sizeof(CONFNET); cp++, i++)
+        if (eeprom_read_byte((void *) (i + CONFNET_EE_OFFSET)) != *cp)
             eeprom_write_byte((void *) (i + CONFNET_EE_OFFSET), *cp);
 
+#endif
     return 0;
 }

@@ -35,6 +35,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2004/04/07 12:13:57  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.4  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -54,7 +57,7 @@
  * \file time.h
  * \brief Standard C time handling functions.
  */
-
+#include <compiler.h>
 #include <sys/types.h>
 
 /*!
@@ -62,7 +65,7 @@
  * @{
  */
 
-__BEGIN_DECLS 
+__BEGIN_DECLS
 /*!
  * \brief Type definition for struct _tm
  */
@@ -93,7 +96,14 @@ struct _tm {
  * \typedef long time_t
  * \brief Serial date/time. Holds number of seconds after January 1st, 1970.
  */
+#ifndef __APPLE__
 typedef long time_t;
+#endif
+
+#ifdef __linux__
+/* make compiler on linux gcc-2.95 happy */
+struct timespec;
+#endif
 
 time_t time(time_t * timer);
 int gmtime_r(CONST time_t * timer, tm * theTime);
@@ -140,8 +150,5 @@ extern long _timezone;
 extern long _dstbias;
 
 __END_DECLS
-
 /*@}*/
-
 #endif
-

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.4  2004/03/19 09:05:12  jdubiec
  * Fixed format strings declarations for AVR.
  *
@@ -80,6 +83,7 @@
 
 /*@{*/
 
+#include <compiler.h>
 #include <string.h>
 
 #include <sys/atom.h>
@@ -89,7 +93,7 @@
 #include <sys/osdebug.h>
 #endif
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
 #define ARCH_32BIT
 #endif
 
@@ -154,7 +158,7 @@ void *NutHeapAlloc(size_t size)
     HEAPNODE *fit = 0;
     HEAPNODE **fpp = 0;
 
-#if defined(__arm__) || defined(__m68k__) || defined (__H8300H__) || defined (__H8300S__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
     /*
      * Allign to the word boundary
      */
@@ -295,7 +299,7 @@ int NutHeapFree(void *block)
 
     //NutEnterCritical();
 #ifdef NUTDEBUG
-    if(__heap_trf) {
+    if (__heap_trf) {
         if (block) {
             size_t size;
             size = *(((uptr_t *) block) - 1);
@@ -334,8 +338,7 @@ int NutHeapFree(void *block)
             /*
              * If a free node is following us, merge it.
              */
-            if (((uptr_t) node + node->hn_size) ==
-                (uptr_t) node->hn_next) {
+            if (((uptr_t) node + node->hn_size) == (uptr_t) node->hn_next) {
                 node->hn_size += node->hn_next->hn_size;
                 node->hn_next = node->hn_next->hn_next;
             }

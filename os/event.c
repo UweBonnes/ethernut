@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/04/07 12:13:58  haraldkipp
+ * Matthias Ringwald's *nix emulation added
+ *
  * Revision 1.4  2004/03/19 09:05:12  jdubiec
  * Fixed format strings declarations for AVR.
  *
@@ -78,6 +81,7 @@
  *
  */
 
+#include <compiler.h>
 #include <sys/atom.h>
 #include <sys/timer.h>
 #include <sys/thread.h>
@@ -85,9 +89,11 @@
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
+#include <stdio.h>
 #endif
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__)
+
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
 #define ARCH_32BIT
 #endif
 
@@ -209,8 +215,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      * a oneshot timer.
      */
     if (ms)
-        runningThread->td_timer =
-            NutTimerStart(ms, NutEventTimeout, (void *) qhp, TM_ONESHOT);
+        runningThread->td_timer = NutTimerStart(ms, NutEventTimeout, (void *) qhp, TM_ONESHOT);
     else
         runningThread->td_timer = 0;
 
@@ -220,8 +225,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      */
 #ifdef NUTDEBUG
     if (__os_trf)
-        fprintf_P(__os_trs, fmt2, (uptr_t) runningThread,
-                (uptr_t) runQueue);
+        fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
 #endif
     NutThreadSwitch();
 
@@ -359,8 +363,7 @@ int NutEventPost(HANDLE * qhp)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf_P(__os_trs, fmt, (uptr_t) runningThread,
-                    (uptr_t) runQueue);
+            fprintf_P(__os_trs, fmt, (uptr_t) runningThread, (uptr_t) runQueue);
 #endif
         NutThreadSwitch();
     }
