@@ -14,6 +14,7 @@
 #include <net/route.h>
 #include <pro/httpd.h>
 #include <pro/dhcp.h>
+#include <sys/atom.h>
 
 #include "basemon.h"
 #include "webdemo.h"
@@ -116,6 +117,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
 
     fputs_P(head_P, stream);
 
+    NutEnterCritical();
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
         fprintf_P(stream, fmt1_P, ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf_P(stream, fmt2_P, inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
@@ -159,7 +161,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
         }
         fputs("</TD></TR>\r\n", stream);
     }
-
+    NutExitCritical();
     fputs_P(tbot_P, stream);
     fflush(stream);
 
