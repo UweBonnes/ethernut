@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.181 2005/02/26 12:16:58 drsung Exp $
+$Id: ChangeLog,v 1.182 2005/03/04 11:42:24 olereinhardt Exp $
+
+2005-03-04  Ole Reinhardt  <ole.reinhardt@embedded-it.de>
+	* dev/adc.c; include/dev/adc.h
+	Added function void ADCStartLowNoiseConversion(void)
+	This function enters sleep mode!!! Be shure to read 
+	the AVR datasheet before using this function
+	Only implemented on avr_gcc
 
 2005-02-26  Oliver Schulz  <olischulz@web.de>
 
