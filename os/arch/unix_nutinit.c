@@ -291,7 +291,7 @@ void NutUnixThreadYieldHook()
     for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++) {
         if ( irq_eventqueues[irq_nr] != 0) {
             // printf("NutUnixThreadYield posting event nr %d\n\r", irq_nr);
-            NutEventPostFromIRQ( irq_eventqueues[irq_nr] );
+            NutEventPostFromIrq( irq_eventqueues[irq_nr] );
             irq_eventqueues[irq_nr] = 0; 
         }
     }

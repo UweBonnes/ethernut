@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/01/24 21:11:48  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.5  2005/01/21 16:49:45  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -141,7 +144,7 @@ static void Tx0Complete(void *arg)
         dcb->dcb_tx_idx++;
     } else {
         cbi(UCR, UDRIE);
-        NutEventPostFromIRQ(&dcb->dcb_tx_rdy);
+        NutEventPostFromIrq(&dcb->dcb_tx_rdy);
     }
 }
 
@@ -174,7 +177,7 @@ static void Tx1Complete(void *arg)
         dcb->dcb_tx_idx++;
     } else {
         cbi(UCSR1B, UDRIE);
-        NutEventPostFromIRQ(&dcb->dcb_tx_rdy);
+        NutEventPostFromIrq(&dcb->dcb_tx_rdy);
     }
 }
 
@@ -199,7 +202,7 @@ static void Rx0Complete(void *arg)
 
     dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inp(UDR);
     if (dcb->dcb_rd_idx == dcb->dcb_rx_idx)
-        NutEventPostFromIRQ(&dcb->dcb_rx_rdy);
+        NutEventPostFromIrq(&dcb->dcb_rx_rdy);
     /* Late increment fixes ICCAVR bug on volatile variables. */
     dcb->dcb_rx_idx++;
 }
@@ -214,7 +217,7 @@ static void Rx1Complete(void *arg)
 
     dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inp(UDR1);
     if (dcb->dcb_rd_idx == dcb->dcb_rx_idx)
-        NutEventPostFromIRQ(&dcb->dcb_rx_rdy);
+        NutEventPostFromIrq(&dcb->dcb_rx_rdy);
     /* Late increment fixes ICCAVR bug on volatile variables. */
     dcb->dcb_rx_idx++;
 }

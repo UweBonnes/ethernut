@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/01/24 21:11:21  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.9  2005/01/21 16:49:44  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -314,7 +317,7 @@ int NutEventPostAsync(HANDLE volatile *qhp)
      * so far, the code is identical to NutEventPostIRQ
      */ 
 
-    rc = NutEventPostFromIRQ(qhp);
+    rc = NutEventPostFromIrq(qhp);
 
     NutExitCritical();
 
@@ -336,7 +339,7 @@ int NutEventPostAsync(HANDLE volatile *qhp)
  * \return The number of threads woken up, either 0 or 1.
  *
  */
-int NutEventPostFromIRQ(HANDLE volatile *qhp)
+int NutEventPostFromIrq(HANDLE volatile *qhp)
 {
     NUTTHREADINFO *td;
     int rc = 0;

@@ -713,7 +713,7 @@ static void WLANInterrupt(void *p)
 
     sc->EventStatus = CSR_READ_2(sc, WI_EVENT_STAT);
 
-    NutEventPostFromIRQ(&sc->InterruptEvent);
+    NutEventPostFromIrq(&sc->InterruptEvent);
 }
 
 /************************************************************/

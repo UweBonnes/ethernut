@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/01/24 21:11:46  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.4  2005/01/21 16:49:44  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -93,7 +96,7 @@ extern void NutEventTimeout(HANDLE timer, void *arg);
 extern int NutEventWait(volatile HANDLE *qhp, u_long ms);
 extern int NutEventWaitNext(volatile HANDLE *qhp, u_long ms);
 extern int NutEventPostAsync(HANDLE volatile *qhp);
-extern int NutEventPostFromIRQ(HANDLE volatile *qhp);
+extern int NutEventPostFromIrq(HANDLE volatile *qhp);
 extern int NutEventPost(HANDLE *qhp);
 extern int NutEventBroadcastAsync(HANDLE *qhp);
 extern int NutEventBroadcast(HANDLE *qhp);

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/01/24 21:11:52  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.2  2005/01/21 16:49:46  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -684,7 +687,7 @@ static void NicInterrupt(void *arg)
         if (NicOverflow(base))
             ni->ni_tx_bsy++;
         else {
-            NutEventPostFromIRQ(&ni->ni_tx_rdy);
+            NutEventPostFromIrq(&ni->ni_tx_rdy);
         }
         ni->ni_overruns++;
         NutDisableInt();
@@ -697,7 +700,7 @@ static void NicInterrupt(void *arg)
          */
         if (isr & (NIC_ISR_PTX | NIC_ISR_TXE)) {
             ni->ni_tx_bsy = 0;
-            NutEventPostFromIRQ(&ni->ni_tx_rdy);
+            NutEventPostFromIrq(&ni->ni_tx_rdy);
         }
 
         /*
@@ -706,7 +709,7 @@ static void NicInterrupt(void *arg)
          */
         if (isr & NIC_ISR_PRX) {
             ni->ni_rx_pending++;
-            NutEventPostFromIRQ(&ni->ni_rx_rdy);
+            NutEventPostFromIrq(&ni->ni_rx_rdy);
         }
         if (isr & NIC_ISR_RXE) {
             ni->ni_rx_frame_errors += nic_read(NIC_PG0_CNTR0);

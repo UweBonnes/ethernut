@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/01/24 21:12:06  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.6  2005/01/21 16:49:46  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -263,7 +266,7 @@ static void AvrUsartTxEmpty(void *arg)
         }
         rbf->rbf_tail = cp;
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
-            NutEventPostFromIRQ(&rbf->rbf_que);
+            NutEventPostFromIrq(&rbf->rbf_que);
         }
     }
 
@@ -273,7 +276,7 @@ static void AvrUsartTxEmpty(void *arg)
     else {
         cbi(UCSRnB, UDRIE);
         rbf->rbf_cnt = 0;
-        NutEventPostFromIRQ(&rbf->rbf_que);
+        NutEventPostFromIrq(&rbf->rbf_que);
     }
 }
 
@@ -328,7 +331,7 @@ static void AvrUsartRxComplete(void *arg)
 
     /* Wake up waiting threads if this is the first byte in the buffer. */
     if (cnt++ == 0) {
-        NutEventPostFromIRQ(&rbf->rbf_que);
+        NutEventPostFromIrq(&rbf->rbf_que);
     }
 
     /*

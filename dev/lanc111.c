@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/24 21:11:49  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.10  2005/01/22 19:24:11  haraldkipp
  * Changed AVR port configuration names from PORTx to AVRPORTx.
  *
@@ -880,7 +883,7 @@ static void NicInterrupt(void *arg)
     if (isr & INT_TX_EMPTY) {
         nic_outlb(NIC_ACK, INT_TX_EMPTY);
         imr &= ~INT_TX_EMPTY;
-        NutEventPostFromIRQ(&ni->ni_tx_rdy);
+        NutEventPostFromIrq(&ni->ni_tx_rdy);
     }
     /* Transmit error. */
     else if (isr & INT_TX) {
@@ -892,7 +895,7 @@ static void NicInterrupt(void *arg)
         /* kill the packet */
         nic_outlb(NIC_MMUCR, MMU_PKT);
 
-        NutEventPostFromIRQ(&ni->ni_tx_rdy);
+        NutEventPostFromIrq(&ni->ni_tx_rdy);
     }
 
 
@@ -906,17 +909,17 @@ static void NicInterrupt(void *arg)
     }
     if (isr & INT_ERCV) {
         nic_outlb(NIC_ACK, INT_ERCV);
-        NutEventPostFromIRQ(&ni->ni_rx_rdy);
+        NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
     if (isr & INT_RCV) {
         nic_outlb(NIC_ACK, INT_RCV);
         imr &= ~INT_RCV;
-        NutEventPostFromIRQ(&ni->ni_rx_rdy);
+        NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
 
     if (isr & INT_ALLOC) {
         imr &= ~INT_ALLOC;
-        NutEventPostFromIRQ(&maq);
+        NutEventPostFromIrq(&maq);
     }
     //printf(" -%02X-%02X- ", nic_inlb(NIC_IST), inb(PINE) & 0x20);
     nic_outlb(NIC_MSK, imr);

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/01/24 21:11:50  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.11  2005/01/22 19:24:46  haraldkipp
  * Changed AVR port configuration names from PORTx to AVRPORTx.
  *
@@ -1215,7 +1218,7 @@ static void NicInterrupt(void *arg)
          * thread.
          */
         if (isr & NIC_ISR_PRX)
-            NutEventPostFromIRQ(&ni->ni_rx_rdy);
+            NutEventPostFromIrq(&ni->ni_rx_rdy);
 
         if (isr & NIC_ISR_RXE) {
             ni->ni_rx_frame_errors += NICINB(NIC_PG0_CNTR0);

@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/01/24 21:12:04  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.6  2005/01/21 16:49:45  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -576,7 +579,7 @@ static void SJAInterrupt(void *arg)
 
     if (((irq & TI_Bit) == TI_Bit))     // transmit IRQ fired
     {
-        NutEventPostFromIRQ(&ci->can_tx_rdy);
+        NutEventPostFromIrq(&ci->can_tx_rdy);
     }
 
     if ((irq & RI_Bit) == RI_Bit)       // Receive IRQ fired
@@ -587,7 +590,7 @@ static void SJAInterrupt(void *arg)
             CANBufferPut(&CAN_RX_BUF, &in_frame);
             if (CAN_RX_BUF.size==CAN_RX_BUF.datalength)
                 SJA1000_IEN &= (~RIE_Bit);      // Disable RX IRQ until data has been poped from input buffer
-            NutEventPostFromIRQ(&ci->can_rx_rdy);
+            NutEventPostFromIrq(&ci->can_rx_rdy);
             ci->can_rx_frames++;
         }
     }

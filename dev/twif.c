@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/01/24 21:12:05  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.8  2005/01/21 16:49:46  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -204,7 +207,7 @@ static void TwInterrupt(void *arg)
         }
 
         /* Wake up the application. */
-        NutEventPostFromIRQ(&tw_mm_que);
+        NutEventPostFromIrq(&tw_mm_que);
 
         /*
          * Send a stop condition. If we have a listener, generate
@@ -273,7 +276,7 @@ static void TwInterrupt(void *arg)
         tw_mr_siz = 0;
 
         /* Wake up the application. */
-        NutEventPostFromIRQ(&tw_mm_que);
+        NutEventPostFromIrq(&tw_mm_que);
 
         /*
          * Send a stop condition. If we have a listener, generate
@@ -380,7 +383,7 @@ static void TwInterrupt(void *arg)
          * must now setup the transmit buffer and re-enable the
          * interface.
          */
-        if (NutEventPostFromIRQ(&tw_sr_que) == 0 || tw_sm_err) {
+        if (NutEventPostFromIrq(&tw_sr_que) == 0 || tw_sm_err) {
             /*
              * If no one has been waiting on the queue, the application 
              * probably gave up waiting. So we continue on our own, either
@@ -447,7 +450,7 @@ static void TwInterrupt(void *arg)
      */
     case TW_ST_DATA_NACK:
     case TW_ST_LAST_DATA:
-        NutEventPostFromIRQ(&tw_st_que);
+        NutEventPostFromIrq(&tw_st_que);
 
         /* Transmit start condition, if a master transfer is waiting. */
         if (tw_mt_len || tw_mr_siz) {
@@ -469,9 +472,9 @@ static void TwInterrupt(void *arg)
         tw_if_bsy = 0;
         tw_mm_err = TWERR_BUS;
         tw_sm_err = TWERR_BUS;
-        NutEventPostFromIRQ(&tw_sr_que);
-        NutEventPostFromIRQ(&tw_st_que);
-        NutEventPostFromIRQ(&tw_mm_que);
+        NutEventPostFromIrq(&tw_sr_que);
+        NutEventPostFromIrq(&tw_st_que);
+        NutEventPostFromIrq(&tw_mm_que);
 #endif
         break;
     }

@@ -259,7 +259,7 @@ static void UnixDevRxIntr(void *arg){
     NUTDEVICE* dev = (NUTDEVICE*) arg;
     UNIXDCB *  dcb = (UNIXDCB*) dev->dev_dcb;
     // printf("UnixDevRxIntr(%s)\n",dev->dev_name);
-    NutEventPostFromIRQ( &dcb->dcb_rx_rdy);
+    NutEventPostFromIrq( &dcb->dcb_rx_rdy);
 }
  */
 

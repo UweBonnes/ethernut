@@ -301,7 +301,7 @@ static void CFInterrupt(void *p)
 {
     p = p;
 
-    NutEventPostFromIRQ(&hCFChangeInt);
+    NutEventPostFromIrq(&hCFChangeInt);
 }
 
 /************************************************************/
@@ -313,7 +313,7 @@ static void IDEInterrupt(void *p)
 
     gbIntStatus = IDEIn(STATUS_REG);
 
-    NutEventPostFromIRQ(&hIDEEvent);
+    NutEventPostFromIrq(&hIDEEvent);
 }
 
 /************************************************************/

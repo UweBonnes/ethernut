@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/01/24 21:12:05  freckle
+ * renamed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.7  2005/01/21 16:49:46  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -113,7 +116,7 @@ static void TxComplete(void *arg)
     } else {
         ifs->if_tx_act = 0;
         dcb = dev->dev_dcb;
-        NutEventPostFromIRQ(&dcb->dcb_tx_rdy);
+        NutEventPostFromIrq(&dcb->dcb_tx_rdy);
     }
 }
 
@@ -140,7 +143,7 @@ static void RxComplete(void *arg)
 
     if (ifs->if_rd_idx == ifs->if_rx_idx) {
         dcb = dev->dev_dcb;
-        NutEventPostFromIRQ(&dcb->dcb_rx_rdy);
+        NutEventPostFromIrq(&dcb->dcb_rx_rdy);
     }
     /* Late increment fixes ICCAVR bug on volatile variables. */
     ifs->if_rx_idx++;
