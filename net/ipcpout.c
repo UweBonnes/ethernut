@@ -49,8 +49,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:31  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/24 16:13:38  haraldkipp
+ * Never request a rejected DNS
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:31  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/03/31 14:53:27  harald
  * Prepare release 3.1
@@ -115,6 +118,7 @@ void IpcpTxConfReq(NUTDEVICE *dev)
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
     NETBUF *nb;
+    u_int len;
 
     /*
      * Not currently negotiating.
@@ -129,22 +133,30 @@ void IpcpTxConfReq(NUTDEVICE *dev)
     /*
      * Create the request.
      */
-    if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, 18)) != 0) {
+    len = 6;
+    if((dcb->dcb_rejects & REJ_IPCP_DNS1) == 0)
+        len += 6;
+    if((dcb->dcb_rejects & REJ_IPCP_DNS2) == 0)
+        len += 6;
+    if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, len)) != 0) {
         xcpo = nb->nb_ap.vp;
         xcpo->xcpo_type = IPCP_ADDR;
         xcpo->xcpo_len = 6;
         xcpo->xcpo_.ul = dcb->dcb_local_ip;
 
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
-        xcpo->xcpo_type = IPCP_MS_DNS1;
-        xcpo->xcpo_len = 6;
-        xcpo->xcpo_.ul = dcb->dcb_ip_dns1;
+        if((dcb->dcb_rejects & REJ_IPCP_DNS1) == 0) {
+            xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+            xcpo->xcpo_type = IPCP_MS_DNS1;
+            xcpo->xcpo_len = 6;
+            xcpo->xcpo_.ul = dcb->dcb_ip_dns1;
+        }
 
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
-        xcpo->xcpo_type = IPCP_MS_DNS2;
-        xcpo->xcpo_len = 6;
-        xcpo->xcpo_.ul = dcb->dcb_ip_dns2;
-
+        if((dcb->dcb_rejects & REJ_IPCP_DNS2) == 0) {
+            xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+            xcpo->xcpo_type = IPCP_MS_DNS2;
+            xcpo->xcpo_len = 6;
+            xcpo->xcpo_.ul = dcb->dcb_ip_dns2;
+        }
         NutIpcpOutput(dev, XCP_CONFREQ, ++dcb->dcb_reqid, nb);
     }
 }

@@ -66,8 +66,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:08  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/24 16:13:58  haraldkipp
+ * Never request a rejected DNS
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:08  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:43:30  harald
  * Cleanup
@@ -84,6 +87,12 @@
  * \file dev/ppp.h
  * \brief PPP device definitions.
  */
+
+/*
+ * Reject flags. Not completed, more will follow.
+ */
+#define REJ_IPCP_DNS1       0x00000100
+#define REJ_IPCP_DNS2       0x00000200
 
 #ifdef __cplusplus
 extern "C" {
@@ -185,15 +194,19 @@ struct _PPPDCB {
      */
     u_long dcb_ip_mask;
 
-    /*! \brief Negotiated IP address.
+    /*! \brief Negotiated primary DNS.
      */
     u_long dcb_ip_dns1;
 
-    /*! \brief Negotiated IP address.
+    /*! \brief Negotiated secondary DNS.
      */
     u_long dcb_ip_dns2;
 
-    /*! \brief LCP retransmit counter.
+    /*! \brief Rejected items.
+     */
+    u_long dcb_rejects;
+
+    /*! \brief LCP/IPCP retransmit counter.
      */
     u_char dcb_retries;
 

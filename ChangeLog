@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.7 2003/07/23 19:17:51 haraldkipp Exp $
+$Id: ChangeLog,v 1.8 2003/07/24 16:13:58 haraldkipp Exp $
+
+2003-07-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/ipcpin.c: Bugfix, PPP always used the secondary 
+	DNS.
+
+	* net/ipcpout.c: When the PPP server rejects the 
+	secondary DNS, IPCP negotiation was trapped in a
+	loop.
+
 
 2003-07-23  Harald Kipp  <harald.kipp@egnite.de>
 
