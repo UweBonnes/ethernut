@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:27  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/04/15 10:23:24  haraldkipp
+ * Distinguish between read error and end of file
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:27  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:05  harald
  * *** empty log message ***
@@ -79,12 +82,18 @@ size_t fread(void *buffer, size_t size, size_t count, FILE * stream)
         count--;
         nu++;
     }
-    if ((int) (rc = (size_t) _read(stream->iob_fd, buffer, count)) <= 0)
-        return 0;
+    rc = (size_t) _read(stream->iob_fd, buffer, count);
+    if (rc == 0) {
+        stream->iob_flags |= _IOEOF;
+    }
+    else if(rc == (size_t)-1) {
+        stream->iob_flags |= _IOERR;
+        rc = 0;
+    }
     rc += nu;
-    if (size > 1)
+    if (size > 1) {
         rc /= size;
-
+    }
     return rc;
 }
 

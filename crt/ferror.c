@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:25  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/04/15 10:23:24  haraldkipp
+ * Distinguish between read error and end of file
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:25  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:04  harald
  * *** empty log message ***
@@ -55,11 +58,10 @@
  *
  * \return 0 if no error occured.
  *
- * \bug The function always returns 0.
  */
 int ferror(FILE * stream)
 {
-    return 0;
+    return stream->iob_flags & _IOERR;
 }
 
 /*@}*/

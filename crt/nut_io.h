@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:30  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/04/15 10:23:24  haraldkipp
+ * Distinguish between read error and end of file
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:30  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:08  harald
  * *** empty log message ***
@@ -56,6 +59,7 @@
 
 #define _IOUNG	    0x08    /*!< \internal Unget buffer filled. */
 #define _IOERR	    0x10    /*!< \internal Error occured. */
+#define _IOEOF      0x20    /*!< \internal End of file reached. */
 #define _IOPGM	    0x40    /*!< \internal Input from program memory. */
 
 #ifndef BUFSIZ
