@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.28 2004/01/30 18:28:12 haraldkipp Exp $
+$Id: ChangeLog,v 1.29 2004/01/30 22:06:44 drsung Exp $
 
 2004-01-30  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -18,6 +18,17 @@ $Id: ChangeLog,v 1.28 2004/01/30 18:28:12 haraldkipp Exp $
 	this problem.
 
 
+2004-01-30  Oliver Schulz  <olischulz@web.de>
+
+	* include/dev/irqreg.h, include/dev/irqstack.h, dev/irqstack.c, 
+	dev/ivect??.c, dev/Makefile: Separate interrupt stack for avr-gcc only 
+	implemented. Size of this stack is 256 bytes. May be changed later. The 
+	interrupt stack reduces the stack space needed for every thread, because 
+	if an interrupt occurs, the stack pointer is immediately changed to the 
+	interrupt stack and the thread stack is no longer used while executing 
+	interrupt code.
+
+
 2004-01-25  Oliver Schulz  <olischulz@web.de>
 
 	* net/tcpsm.c: Bugfix for establishing tcp connections by
@@ -25,6 +36,7 @@ $Id: ChangeLog,v 1.28 2004/01/30 18:28:12 haraldkipp Exp $
 	is stoped after about 6 secs. If RST if received, the
 	connection request is now properly aborted and the error is
 	returned to the caller.
+
 
 2004-01-14  Oliver Schulz  <olischulz@web.de>
 
