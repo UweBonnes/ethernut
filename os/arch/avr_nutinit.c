@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/01/22 19:30:56  haraldkipp
+ * Fixes Ethernut 1.3G memory bug.
+ *
  * Revision 1.11  2004/11/08 18:58:59  haraldkipp
  * Configurable stack sizes
  *
@@ -110,6 +113,88 @@ u_char nutmem_onchip[NUTMEM_RESERVED];
 u_char idle_sleep_mode = SLEEP_MODE_NONE;
 #endif
 
+/* 
+ * Macros used for RTL8019AS EEPROM Emulation.
+ * See FakeNicEeprom().
+ */
+#if defined(RTL_EESK_BIT) && defined(__GNUC__)
+
+#ifndef RTL_BASE_ADDR
+#define RTL_BASE_ADDR 0x8300
+#endif
+#define NIC_CR  _MMIO_BYTE(RTL_BASE_ADDR)
+#define NIC_EE  _MMIO_BYTE(RTL_BASE_ADDR + 1)
+
+#if (RTL_EEMU_AVRPORT == AVRPORTB)
+#define RTL_EEMU_PORT   PORTB
+#define RTL_EEMU_DDR    DDRB
+
+#elif (RTL_EEMU_AVRPORT == AVRPORTD)
+#define RTL_EEMU_PORT   PORTD
+#define RTL_EEMU_DDR    DDRD
+
+#elif (RTL_EEMU_AVRPORT == AVRPORTE)
+#define RTL_EEMU_PORT   PORTE
+#define RTL_EEMU_DDR    DDRE
+
+#elif (RTL_EEMU_AVRPORT == AVRPORTF)
+#define RTL_EEMU_PORT   PORTF
+#define RTL_EEMU_DDR    DDRF
+
+#else
+#define RTL_EE_MEMBUS
+#define RTL_EEMU_PORT   PORTC
+#define RTL_EEMU_DDR    DDRC
+
+#endif /* RTL_EEMU_AVRPORT */
+
+#if (RTL_EEDO_AVRPORT == AVRPORTB)
+#define RTL_EEDO_PORT   PORTB
+#define RTL_EEDO_DDR    DDRB
+
+#elif (RTL_EEDO_AVRPORT == AVRPORTD)
+#define RTL_EEDO_PORT   PORTD
+#define RTL_EEDO_DDR    DDRD
+
+#elif (RTL_EEDO_AVRPORT == AVRPORTE)
+#define RTL_EEDO_PORT   PORTE
+#define RTL_EEDO_DDR    DDRE
+
+#elif (RTL_EEDO_AVRPORT == AVRPORTF)
+#define RTL_EEDO_PORT   PORTF
+#define RTL_EEDO_DDR    DDRF
+
+#else
+#define RTL_EE_MEMBUS
+#define RTL_EEDO_PORT   PORTC
+#define RTL_EEDO_DDR    DDRC
+
+#endif /* RTL_EEDO_AVRPORT */
+
+#if (RTL_EESK_AVRPORT == AVRPORTB)
+#define RTL_EESK_PIN    PINB
+#define RTL_EESK_DDR    DDRB
+
+#elif (RTL_EESK_AVRPORT == AVRPORTD)
+#define RTL_EESK_PIN    PIND
+#define RTL_EESK_DDR    DDRD
+
+#elif (RTL_EESK_AVRPORT == AVRPORTE)
+#define RTL_EESK_PIN    PINE
+#define RTL_EESK_DDR    DDRE
+
+#elif (RTL_EESK_AVRPORT == AVRPORTF)
+#define RTL_EESK_PIN    PINF
+#define RTL_EESK_DDR    DDRF
+
+#else
+#define RTL_EE_MEMBUS
+#define RTL_EESK_PIN    PINC
+#define RTL_EESK_DDR    DDRC
+
+#endif /* RTL_EESK_AVRPORT */
+#endif /* RTL_EESK_BIT && __GNUC__ */
+
 #ifdef __GNUC__
 /*
  * Some special declarations for AVRGCC. The runtime library
@@ -138,13 +223,17 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 extern void main(void *);
 #endif
 
+/*
+ * External memory interface for GCC.
+ */
 #if defined(__GNUC__) && defined(NUTXMEM_SIZE)
 
+/* 
+ * At the very beginning enable extended memory interface.
+ */
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
-    /* At the very beginning enable extended memory interface.
-     */
 #ifdef __AVR_ATmega128__    
     MCUCR = _BV(SRE) | _BV(SRW10);
 #ifdef NUT_3WAITSTATES
@@ -157,6 +246,87 @@ void NutInitXRAM(void)
 }
 
 #endif
+
+#if defined(RTL_EESK_BIT) && defined(__GNUC__) && defined(NUTXMEM_SIZE)
+/* 
+ * Before using extended memory, we need to run the RTL8019AS EEPROM emulation.
+ * Not doing this may put this controller in a bad state, where it interferes
+ * the data/address bus.
+ *
+ * This function has to be called as early as possible but after the external
+ * memory interface has been enabled.
+ *
+ * The following part is used by the GCC environment only. For ICCAVR it has
+ * been included in the C startup file.
+ */
+static void FakeNicEeprom(void) __attribute__ ((naked, section(".init1"), used));
+void FakeNicEeprom(void)
+{
+    /*
+     * Prepare the EEPROM emulation port bits. Configure the EEDO
+     * and the EEMU lines as outputs and set both lines to high.
+     */
+#ifdef RTL_EEMU_BIT
+    sbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
+    sbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
+#endif
+    sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+    sbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
+
+    /* Force the chip to re-read the EEPROM contents. */
+    NIC_CR = 0xE1;
+    NIC_EE = 0x40;
+
+    /* No external memory access beyond this point. */
+#ifdef RTL_EE_MEMBUS
+    cbi(MCUCR, SRE);
+#endif
+
+    /*
+     * Loop until the chip stops toggling our EESK input. We do it in 
+     * assembly language to make sure, that no external RAM is used 
+     * for the counter variable.
+     */
+    __asm__ __volatile__("\n"   /* */
+                         "EmuLoop:               " "\n" /* */
+                         "        ldi  r24, 0    " "\n" /* Clear counter. */
+                         "        ldi  r25, 0    " "\n" /* */
+                         "        sbis %0, %1    " "\n" /* Check if EESK set. */
+                         "        rjmp EmuClkClr " "\n" /* */
+                         "EmuClkSet:             " "\n" /* */
+                         "        adiw r24, 1    " "\n" /* Count loops with EESK set. */
+                         "        breq EmuDone   " "\n" /* Exit loop on counter overflow. */
+                         "        sbis %0, %1    " "\n" /* Test if EESK is still set. */
+                         "        rjmp EmuLoop   " "\n" /* EESK changed, do another loop. */
+                         "        rjmp EmuClkSet " "\n" /* Continue waiting. */
+                         "EmuClkClr:             " "\n" /* */
+                         "        adiw r24, 1    " "\n" /* Count loops with EESK clear. */
+                         "        breq EmuDone   " "\n" /* Exit loop on counter overflow. */
+                         "        sbic %0, %1    " "\n" /* Test if EESK is still clear. */
+                         "        rjmp EmuLoop   " "\n" /* EESK changed, do another loop. */
+                         "        rjmp EmuClkClr " "\n" /* Continue waiting. */
+                         "EmuDone:               \n\t"  /* */
+                         :      /* No outputs. */
+                         :"I"(_SFR_IO_ADDR(RTL_EESK_PIN)), /* Emulation port. */
+                          "I"(RTL_EESK_BIT)                 /* EESK bit. */
+                         :"r24", "r25");
+
+    /* Enable memory interface. */
+#ifdef RTL_EE_MEMBUS
+    sbi(MCUCR, SRE);
+#endif
+
+    /* Reset port outputs to default. */
+#ifdef RTL_EEMU_BIT
+    cbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
+    cbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
+#endif
+    cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+    cbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
+}
+
+#endif /* RTL_EESK_BIT && __GNUC__ && NUTXMEM_SIZE */
+
 
 /*!
  * \addtogroup xgThread
@@ -238,6 +408,10 @@ THREAD(NutIdle, arg)
  * crtnut.o, which calls NutInit instead of main(). This is done
  * by adding the following compiler options in the project:
  * \code -ucrtnut.o nutinit.o \endcode
+ *
+ * crtnut.o should be replaced by crtnutram.o, if the application's
+ * variable space exceeds 4kB. For boards with RTL8019AS and EEPROM
+ * emulation (like Ethernut 1.3 Rev-G) use crtenut.o or crtenutram.o.
  * 
  * For AVRGCC this function is located in section .init8, which is
  * called immediately before jumping to main(). NutInit is defined
@@ -246,11 +420,7 @@ THREAD(NutIdle, arg)
  * void NutInit(void) __attribute__ ((naked)) __attribute__ ((section (".init8")));
  * \endcode
  *
- * \todo Verify ICCAVR external memory handling.
- *
  * \todo Make heap threshold configurable, currently hardcoded at 384.
- *
- * \todo Make stack size of the idle thread configurable.
  *
  * \todo Make wait states for external memory access configuratble.
  *
@@ -264,13 +434,6 @@ void NutInit(void)
 #ifdef NUTDEBUG
     outp(7, UBRR);
     outp(BV(RXEN) | BV(TXEN), UCR);
-#endif
-
-#ifndef __GNUC__
-// FIXME: move this line to an appropriate initialization section of ICCAVR (os)
-#ifdef NUTXMEM_SIZE
-    outp(BV(SRE) | BV(SRW), MCUCR);
-#endif
 #endif
 
     /* If we have external RAM, initialize stack pointer to
