@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/02/04 15:08:37  haraldkipp
+ * ARP redesign requires removal flag.
+ *
  * Revision 1.4  2004/03/18 11:17:16  haraldkipp
  * Comments updated
  *
@@ -107,6 +110,7 @@
  */
 /*@{*/
 
+#define ATF_REM     0x01        /*!< \brief Entry marked for removal. */
 #define ATF_COM     0x02        /*!< \brief Completed entry. */
 #define ATF_PERM    0x04        /*!< \brief Permanent entry. */
 
@@ -134,7 +138,7 @@ struct _ARPENTRY {
 /*@}*/
 
 /*!
- * \addtogroup xgNet
+ * \addtogroup xgIP
  */
 /*@{*/
 
