@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.114 2004/09/10 17:18:19 haraldkipp Exp $
+$Id: ChangeLog,v 1.115 2004/09/12 09:06:43 haraldkipp Exp $
+
+2004-09-12  Harald Kipp  <harald.kipp@egnite.de>
+
+	* doc/gen/nut_en.cfg: Updated version and using default
+	installation path.
+
+	* doc/gen/nutdoc_en.txt: Old history, stream and init 
+	removed. Version updated.
+
+	* tools/crurom/Makefile: Target install added.
+
+	* tools/nutconf/Makefile: Target install and tooloptdlg.o
+	added.
+
+	* tools/packaging/ethernut-3.9-1.spec: RPM spec file
+	added.
+
 
 2004-09-10  Harald Kipp  <harald.kipp@egnite.de>
 
