@@ -1,4 +1,40 @@
-$Id: ChangeLog,v 1.48 2004/03/17 14:54:53 haraldkipp Exp $
+$Id: ChangeLog,v 1.49 2004/03/18 13:53:32 haraldkipp Exp $
+
+2004-03-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/arch/avr.h: Removed Harvard architecture definition.
+	It's required in UserConf.mk.
+
+	* dev/uartavr.c: Removed deprecated raw I/O.
+
+	* os/devclose.c, os/devioctl.c, os/devopen.c, os/devread.c,
+	os/devtran.c, os/devwrite.c, os/ifstran.c, os/ifstream.c,
+	os/init.c, os/print.cnet/sostream.c: Deprecated functions 
+	from version 2 finally removed.
+
+	* sys/atomic.h: Unused file removed to simplify portability.
+
+	* sys/devtran.h, sys/ifstran.h, print.h, netinet/sostream.h: 
+	Deprecated prototypes removed.
+
+	* sys/device.h, sys/ifstream.h: Second header file removed.
+	The IFSTREAM structure is still used by some device drivers
+	and has been moved to sys/device.h.
+
+	* pro/resolv.c: Deprecated header file replaced.
+
+	* pro/dhcpc.c, include/pro/dhcp.h: Deprecated NutNetAutoConfig 
+	removed.
+
+	* fs/uromfs.c, include/fs/uromfs.h: Deprecated NutRom functions
+	removed.
+
+	* net/arpcache.c, net/icmpin.c, net/ifconfig.c, if_var.h: 
+	Comments updated.
+
+	* doc/copying-gpl.txt, doc/copying-liquorice.txt:
+	Added as required by Liquorice's licence.
+
 
 2004-03-17  Harald Kipp  <harald.kipp@egnite.de>
 
