@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.12  2004/04/15 11:08:21  haraldkipp
+ * Bugfix: Sequence number had not been incremented on FIN segments.
+ * Added Realtek hack to reduce concurrent connection problems.
+ * Rely on TCP output to set the retransmission timer.
+ *
  * Revision 1.11  2004/02/28 20:14:38  drsung
  * Merge from nut-3_4-release b/c of bugfixes.
  *
@@ -315,8 +320,8 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
      * is above our last update, we adjust our transmit window.
      * Avoid dupe ACK processing on window updates.
      */
-    h_seq = ntohl(th->th_seq);
     if (h_ack == sock->so_tx_una) {
+        h_seq = ntohl(th->th_seq);
         if (h_seq > sock->so_tx_wl1 || (h_seq == sock->so_tx_wl1 && h_ack >= sock->so_tx_wl2)) {
             sock->so_tx_win = ntohs(th->th_win);
             sock->so_tx_wl1 = h_seq;
@@ -382,8 +387,14 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
      * Remove all acknowledged netbufs.
      */
     while ((nb = sock->so_tx_nbq) != 0) {
-        if (ntohl(((TCPHDR *) (nb->nb_tp.vp))->th_seq) + nb->nb_ap.sz > h_ack)
+        /* Calculate the sequence beyond this netbuf. */
+        h_seq = ntohl(((TCPHDR *) (nb->nb_tp.vp))->th_seq) + nb->nb_ap.sz;
+        if (((TCPHDR *) (nb->nb_tp.vp))->th_flags & (TH_SYN | TH_FIN)) {
+            h_seq++;
+        }
+        if (h_seq > h_ack) {
             break;
+        }
         sock->so_tx_nbq = nb->nb_next;
         NutNetBufFree(nb);
     }
@@ -428,6 +439,19 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              */
             sock->so_tx_flags |= SO_FIN | SO_ACK;
             txf = 1;
+
+#ifdef RTLCONNECTHACK
+            /*
+             * Hack alert!
+             * On the RTL8019AS we got a problem. Because of not handling
+             * the CHRDY line, the controller drops outgoing packets when
+             * a browser opens multiple connections concurrently, producing
+             * several short incoming packets. Empirical test showed, that
+             * a slight delay during connects and disconnects helped to
+             * remarkably reduce this problem.
+             */
+            NutDelay(5);
+#endif
             break;
         case TCPS_CLOSE_WAIT:
             /*
@@ -449,6 +473,18 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
         if (state == TCPS_SYN_RECEIVED) {
             sock->so_tx_flags |= SO_SYN | SO_ACK;
             txf = 1;
+#ifdef RTLCONNECTHACK
+            /*
+             * Hack alert!
+             * On the RTL8019AS we got a problem. Because of not handling
+             * the CHRDY line, the controller drops outgoing packets when
+             * a browser opens multiple connections concurrently, producing
+             * several short incoming packets. Empirical test showed, that
+             * a slight delay during connects and disconnects helped to
+             * remarkably reduce this problem.
+             */
+            NutDelay(5);
+#endif
         } else
             rc = -1;
         break;
@@ -678,12 +714,6 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
      * transmit a SYN packet.
      */
     NutTcpStateChange(sock, TCPS_SYN_SENT);
-
-    /* 
-     * Start retransmission timer.
-     */
-    if (sock->so_tx_nbq)
-        sock->so_retran_time = (u_short) NutGetMillis();
 
     /*
      * Block application.
@@ -1127,7 +1157,13 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags, TCPHDR * th, NET
     }
 
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
-    NutTcpStateChange(sock, TCPS_FIN_WAIT_2);
+
+    /*
+     * All segments had been acknowledged, including our FIN.
+     */
+    if (sock->so_tx_nbq == 0) {
+        NutTcpStateChange(sock, TCPS_FIN_WAIT_2);
+    }
 
     /*
      * Process application data and release the network buffer.
@@ -1430,17 +1466,7 @@ THREAD(NutTcpSm, arg)
                  * Process retransmit timer.
                  */
                 if (sock->so_retran_time && sock->so_tx_nbq) {
-                    if (sock->so_state == TCPS_ESTABLISHED) {
-                        /*
-                         * For slow connections you may have to replace the 
-                         * 3 by 15. Thanks to Mike Cornelius.
-                         *
-                         * Yes, we really need round trip time calculation.
-                         */
-                        if ((u_short) NutGetMillis() - sock->so_retran_time > 500) {
-                            NutTcpStateRetranTimeout(sock);
-                        }
-                    } else if (sock->so_state == TCPS_SYN_SENT) {
+                    if (sock->so_state == TCPS_SYN_SENT) {
                         /* Check timeout SYN_SENT state */
                         if ((u_short) NutGetMillis() - sock->so_retran_time > 2000) {
                             /* Retransmit after 2 secs */
@@ -1453,6 +1479,16 @@ THREAD(NutTcpSm, arg)
                         }
                     } else if (sock->so_state != TCPS_CLOSE_WAIT) {
                         if ((u_short) NutGetMillis() - sock->so_retran_time > 1000) {
+                            NutTcpStateRetranTimeout(sock);
+                        }
+                    } else {
+                        /*
+                         * For slow connections you may have to replace the 
+                         * 3 by 15. Thanks to Mike Cornelius.
+                         *
+                         * Yes, we really need round trip time calculation.
+                         */
+                        if ((u_short) NutGetMillis() - sock->so_retran_time > 500) {
                             NutTcpStateRetranTimeout(sock);
                         }
                     }
