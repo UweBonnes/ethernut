@@ -65,8 +65,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:37  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:09:59  haraldkipp
+ * Debug output fixed.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:37  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:17:58  harald
  * PPP hack for simple UART support
@@ -83,7 +86,9 @@
 #include <netinet/if_ppp.h>
 #include <net/ppp.h>
 
+#ifdef NUTDEBUG
 #include <net/netdebug.h>
+#endif
 
 /*!
  * \addtogroup xgPPP
@@ -125,7 +130,7 @@ int NutPppOutput(NUTDEVICE * dev, u_short type, u_char * ha, NETBUF * nb)
 
 #ifdef NUTDEBUG
     if (__ppp_trf) {
-        fprintf(__ppp_trs, "\nPPP<");
+        fputs("\nPPP<", __ppp_trs);
         NutDumpPpp(__ppp_trs, nb);
     }
 #endif
