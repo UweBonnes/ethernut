@@ -31,24 +31,24 @@
  *
  */
  /*
- * btn-tracer.c
+ * os/tracer.c
  *
  * 22.12.2004 Philipp Blum <blum@tik.ee.ethz.ch>
  * 
  * \brief Routines to capture traces of nutOS programs
+ * \note  Only supported on AVR-GCC platform
  * 
  */
 /************************************************/
 /* includes */
 /************************************************/
-#include <hardware/btn-hardware.h> // SP
-#include <sys/tracer.h>     // t_traceitem, t_trace
+#include <sys/tracer.h>            // t_traceitem, t_trace
 #include <sys/heap.h>              // NutHeapAlloc
 #include <sys/timer.h>             // NutGetMillis
 #include <sys/thread.h>            // NUTTHREADINFO
 #include <sys/atom.h>			   // NutEnterCritical_notrace
 #include <dev/irqreg.h>			   // sig_OVERFLOW1
-
+#include <stdio.h>                 // printf, sscanf
 
 /************************************************/
 /* global variables */
@@ -91,9 +91,6 @@ char* int_string[TRACE_INT_END] = {
 /************************************************/
 /* prototypes of internal functions */
 /************************************************/
-void NutClearTrace(void);
-void NutPrintTraceMask(u_char* arg);
-void NutPrintTrace(u_char* arg);
 static void NutTraceTimer1IRQ(void *arg);
 
 
@@ -168,8 +165,6 @@ void NutPrintTrace(u_char* arg)
 	u_long time;
 	char mode;
 	int size;
-//	NUTTHREADINFO* thread;
-//	u_char* threadname;
 	u_int micros, millis, secs;
 
 	if (sscanf(arg,"%d",&size)!=1) {

@@ -31,16 +31,16 @@
  *
  */
  /*
- * btn-tracer.h
+ * sys/tracer.h
  *
  * 22.12.2004 Philipp Blum <blum@tik.ee.ethz.ch>
  */
-#ifndef _BTN_TRACER_H_
-#define _BTN_TRACER_H_
+#ifndef _SYS_TRACER_H_
+#define _SYS_TRACER_H_
 
 /**
 
-\file btn-tracer.h
+\file sys/tracer.h
 
 \author Philipp Blum <blum@tik.ee.ethz.ch>
 
@@ -115,6 +115,9 @@ extern void NutStopTrace(void);
 extern void NutStartTrace(void);
 extern void NutPrintTrace(u_char* arg);
 extern int  NutGetPC(void);
+extern void NutClearTrace(void);
+extern void NutPrintTraceMask(u_char* arg);
+extern void NutPrintTrace(u_char* arg);
 
 
 #define TRACE_ADD_ITEM(TAG,PC)                      \
