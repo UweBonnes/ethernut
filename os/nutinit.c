@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/01/13 18:56:04  haraldkipp
+ * Moved ms62_5 counter from timer.c to make sure this is located in internal
+ * RAM (AVR platforms). This fixes the wrong baudrate bug for applications
+ * occupying all internal RAM.
+ *
  * Revision 1.9  2004/08/04 23:10:30  freckle
  * added an avr-libc compatible (but yet uncomplete) eeprom simulation that
  * uses file 'eeprom.bin' in the current directory to store eeprom content
@@ -83,6 +88,19 @@
 
 #include <sys/confos.h>
 #include <string.h>
+
+/*!
+ * \brief System tick counter.
+ *
+ * For the time being we put this here to ensure that it will be placed
+ * in lower RAM. This is essential for the AVR platform, where we use
+ * this counter to determine the system clock and calculate the correct
+ * baudrate factors. If this counter would be placed in external RAM,
+ * additional wait states may apply.
+ *
+ * \todo Layout for internal RAM and place this into a special link segment.
+ */
+volatile u_char ms62_5;
 
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
 #include "arch/avr_nutinit.c"
