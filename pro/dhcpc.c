@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/07/17 09:44:14  haraldkipp
+ * Removed default MAC address and let the caller have a second chance.
+ *
  * Revision 1.2  2003/05/15 14:25:38  haraldkipp
  * Some DHCP servers discard discover telegrams.
  * Thanks to Tomohiro Haraikawa.
@@ -115,6 +118,7 @@
 #include <sys/confnet.h>
 
 #include <netinet/in.h>
+#include <netdb.h>
 #include <net/route.h>
 #include <sys/socket.h>
 #include <pro/dhcp.h>
@@ -141,9 +145,7 @@ typedef struct {
     u_char *domain;
 } DYNCFG;
 
-static u_char egnite_null_mac[] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
 static u_char cookie[4] = { 0x63, 0x82, 0x53, 0x63 };
-static u_char macaddr[6];
 
 static volatile HANDLE dhcpDone;
 
@@ -309,7 +311,7 @@ static u_char *prep_header(struct bootp *bp, u_char msgtyp, u_long xid)
      * while using ISC-DHCP 3.
      */
     bp->bp_flags = htons(0x8000);
-    memcpy(bp->bp_chaddr, macaddr, bp->bp_hlen);
+    memcpy(bp->bp_chaddr, confnet.cdn_mac, bp->bp_hlen);
 
     op = bp->bp_options;
     memcpy(op, cookie, 4);
@@ -503,6 +505,8 @@ THREAD(NutDhcpClient, arg)
      * asleep.
      */
     if(got_offer && NutNetIfSetup(dev, rxcfg->ip, rxcfg->netmask, rxcfg->gateway) == 0) {
+        if(rxcfg->dns)
+            NutDnsConfig(0, 0, rxcfg->dns);
         NutEventPost((HANDLE *) & dhcpDone);
         /*
          * Fix me: We should renew our ip.
@@ -585,23 +589,35 @@ int NutDhcpIfConfig(CONST char *name, u_char *mac, u_long timeout)
         return -1;
 
     /*
-     * If no MAC address has been specified, read the configuration 
-     * from EEPROM. If this fails, use egnite's null MAC.
+     * If the caller specified a MAC address, we use it and
+     * overwrite the configuration.
      */
-    if(mac == 0) {
-        if(NutNetLoadConfig(name))
-            memcpy(confnet.cdn_mac, egnite_null_mac, 6);
-        mac = confnet.cdn_mac;
-    }
-    memcpy(nif->if_mac, mac, 6);
+    if(mac)
+        memcpy(confnet.cdn_mac, mac, sizeof(confnet.cdn_mac));
 
     /*
-     * If we got an invalid configuration, then start the
+     * If no MAC address has been specified, read the configuration 
+     * from EEPROM. If this fails, we do not continue any further,
+     * but let the caller know that something is wrong. He may call
+     * us again with a valid MAC address.
+     */
+    else if(NutNetLoadConfig(name))
+        return -1;
+
+    /*
+     * Copy the MAC address to the interface structure. This will
+     * magically enable the interface. Well, actually this is a
+     * bad hack.
+     */
+    memcpy(nif->if_mac, confnet.cdn_mac, 6);
+    NutSleep(500);
+
+    /*
+     * If we got an invalid IP configuration, then start the
      * DHCP client and wait the given number of milliseconds
      * for a response from the DHCP server.
      */
     if((confnet.cdn_cip_addr & confnet.cdn_ip_mask) == 0) {
-        memcpy(macaddr, nif->if_mac, 6);
         NutThreadCreate("dhcpc", NutDhcpClient, dev, 512);
         return NutEventWait((HANDLE *) & dhcpDone, timeout);
     }
