@@ -242,15 +242,18 @@ static int convertToBaudSpeed(int realSpeed)
     return -1;
 }
 
+
 /*
  * IRQ Handler for correct signaling
- */
+ * not currently used (see UnixDevReadThread for more info on variants
 static void UnixDevRxIntr(void *arg){
     NUTDEVICE* dev = (NUTDEVICE*) arg;
     UNIXDCB *  dcb = (UNIXDCB*) dev->dev_dcb;
     // printf("UnixDevRxIntr(%s)\n",dev->dev_name);
     NutEventPostAsync( &dcb->dcb_rx_rdy);
 }
+ */
+
 
 /*
  * Read Thread
@@ -316,10 +319,16 @@ static void *UnixDevReadThread( void * arg )
         }*/
  
         /* version 3 (another hack, but fast and correct */
-        if (dev->dev_name[4] == '0') {
-            NutUnixIrqEventPostAsync( IRQ_UART0_RX,  &dcb->dcb_rx_rdy);
-        } else {
-            NutUnixIrqEventPostAsync( IRQ_UART1_RX,  &dcb->dcb_rx_rdy);
+        switch (dev->dev_name[4]) {
+            case '0':
+                NutUnixIrqEventPostAsync( IRQ_UART0_RX,  &dcb->dcb_rx_rdy);
+                break;
+            case '1':
+                NutUnixIrqEventPostAsync( IRQ_UART1_RX,  &dcb->dcb_rx_rdy);
+                break;
+            case '2':
+                NutUnixIrqEventPostAsync( IRQ_UART2_RX,  &dcb->dcb_rx_rdy);
+                break;
         }
     }
    
@@ -346,10 +355,18 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     // map from dev->name to unix name
     if (strncmp("uart", dev->dev_name, 4) == 0) {
         // uart
-        if (dev->dev_name[4] == '0') {
-            nativeName = emulation_options.uart_options[0].device;
-        } else {
-            nativeName = emulation_options.uart_options[1].device;
+        switch (dev->dev_name[4]) {
+            case '0':
+                nativeName = emulation_options.uart_options[0].device;
+                break;
+            case '1':
+                nativeName = emulation_options.uart_options[1].device;
+                break;
+            case '2':
+                nativeName = emulation_options.uart_options[2].device;
+                break;
+            default:
+                return NULL;
         }
     } else
         return NULL;
@@ -384,12 +401,17 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
 
         nativeFile = open(nativeName, mode);
         
-        if (nativeFile < 0)
-        {
+        if (nativeFile < 0) {
             printf("UnixDevOpen: open('%s',%d) failed!\n", nativeName, mode);
             return NULL;
         }
         
+        /* flush pending data*/
+        if (tcflush( nativeFile, TCIOFLUSH)) {
+            printf("UnixDevOpen: tcflush('%s',%d) failed!\n", nativeName, TCIOFLUSH);
+            return NULL;
+        } 
+
         if (tcgetattr(nativeFile, &t) == 0) {
 
             baud = convertToBaudSpeed(USART_INITSPEED);
@@ -430,14 +452,15 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     // printf("UnixDevOpen: %s, fd * %d\n\r", nativeName, nativeFile);
     // printf("UnixDevOpen: stdout %d, stdin %d, stderr %d \n\r", fileno(stdin), fileno(stdout), fileno(stderr));
 
-	/* initialized rx IRQ handler */
+	/* initialized rx IRQ handler -- not currently used (see UnixDevReadThread for more info on variants 
 	if (dev->dev_name[4] == '0') {
 		NutRegisterIrqHandler(IRQ_UART0_RX, UnixDevRxIntr, dev);
 	} else
 	{
 		NutRegisterIrqHandler(IRQ_UART1_RX, UnixDevRxIntr, dev);
 	}
-	
+    */
+    	
     /* Initialize mutex and condition variable objects */
     pthread_mutex_init(&unix_devs_mutex, NULL);
 
@@ -884,9 +907,24 @@ static UNIXDCB dcb_usart0 = {
 };
 
 /*!
- * \brief USART0 device control block structure.
+ * \brief USART1 device control block structure.
  */
 static UNIXDCB dcb_usart1 = {
+    0,                          /* dcb_modeflags */
+    0,                          /* dcb_statusflags */
+    0,                          /* dcb_rtimeout */
+    0,                          /* dcb_wtimeout */
+    0,                          /* dbc_last_eol */
+    0,                          /* dcb_fd */
+    0,                          /* dcb_rx_rdy */
+/*  xx,                            dcb_rx_mutex */
+/*  xx,                            dcb_rx_trigger */
+};
+
+/*!
+ * \brief USART1 device control block structure.
+ */
+static UNIXDCB dcb_usart2 = {
     0,                          /* dcb_modeflags */
     0,                          /* dcb_statusflags */
     0,                          /* dcb_rtimeout */
@@ -984,6 +1022,27 @@ NUTDEVICE devUart1 = {
 };
 
 /*!
+ * \brief uart device 2 information structure.
+ */
+NUTDEVICE devUart2 = {
+    0,                          /*!< Pointer to next device. */
+    {'u', 'a', 'r', 't', '2', 0, 0, 0, 0}
+    ,                           /*!< Unique device name. */
+    0,                          /*!< Type of device. */
+    0,                          /*!< Base address. */
+    0,                          /*!< First interrupt number. */
+    0,                          /*!< Interface control block. */
+    &dcb_usart2,                /*!< Driver control block. */
+    0,                          /*!< Driver initialization routine. */
+    UnixDevIOCTL,               /*!< Driver specific control function. */
+    UnixDevRead,
+    UnixDevWrite,
+    UnixDevOpen,
+    UnixDevClose,
+    0
+};
+
+/*!
  * \brief usartavr device 0 information structure.
  */
 NUTDEVICE devUsartAvr0 = {
@@ -1016,6 +1075,27 @@ NUTDEVICE devUsartAvr1 = {
     0,                          /*!< First interrupt number. */
     0,                          /*!< Interface control block. */
     &dcb_usart1,                /*!< Driver control block. */
+    0,                          /*!< Driver initialization routine. */
+    UnixDevIOCTL,               /*!< Driver specific control function. */
+    UnixDevRead,
+    UnixDevWrite,
+    UnixDevOpen,
+    UnixDevClose,
+    0
+};
+
+/*!
+ * \brief usartavr device 2 information structure.
+ */
+NUTDEVICE devUsartAvr2 = {
+    0,                          /*!< Pointer to next device. */
+    {'u', 'a', 'r', 't', '2', 0, 0, 0, 0}
+    ,                           /*!< Unique device name. */
+    0,                          /*!< Type of device. */
+    0,                          /*!< Base address. */
+    0,                          /*!< First interrupt number. */
+    0,                          /*!< Interface control block. */
+    &dcb_usart2,                /*!< Driver control block. */
     0,                          /*!< Driver initialization routine. */
     UnixDevIOCTL,               /*!< Driver specific control function. */
     UnixDevRead,

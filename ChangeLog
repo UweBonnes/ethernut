@@ -1,5 +1,9 @@
-$Id: ChangeLog,v 1.98 2004/08/05 12:13:54 freckle Exp $
+$Id: ChangeLog,v 1.99 2004/08/09 21:28:03 freckle Exp $
 
+2004-08-09  Matthias Ringwald <mringwal@inf.ethz.ch>
+    * dev/unix_devs.c, include/arch/unix.h: added a third uart
+    as devDebug2, devUart2, devUsartAvr2 for testing to unix emu
+    
 2004-08-05  Oliver Schulz  <olischulz@web.de>
 
 	* crt/filelength.c: For VIRTUALDEVICEs the return value of the ioctl 

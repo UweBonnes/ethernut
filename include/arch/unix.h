@@ -90,6 +90,7 @@ enum {
 	IRQ_TIMER0,
     IRQ_UART0_RX,
     IRQ_UART1_RX,
+    IRQ_UART2_RX,
 	IRQ_MAX
 };
 
