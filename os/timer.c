@@ -48,8 +48,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:55  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/10/13 10:17:36  haraldkipp
+ * Seconds counter added
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:55  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.24  2003/05/06 18:56:58  harald
  * Allow compilation without clock crystal
@@ -130,17 +133,19 @@ NUTTIMERINFO *volatile nutTimerPool = 0;
 #define cpu_clock   NUT_CPU_FREQ
 #define delay_count (NUT_CPU_FREQ/4000)
 
+static volatile u_short ms1;
+
 #else                           /* !NUT_CPU_FREQ */
 
-static volatile u_long seconds = 0;
-static volatile u_char ms62_5 = 0;
-static u_long cpu_clock = 0;
-static u_short delay_count = 0;
+static volatile u_char ms62_5;
+static u_long cpu_clock;
+static u_short delay_count;
 static u_long NutComputeCpuClock(void);
 
 #endif                          /* !NUT_CPU_FREQ */
 
-static volatile u_long milli_ticks = 0;
+static volatile u_long milli_ticks;
+static volatile u_long seconds;
 
 /*!
  * \brief Insert a new timer in the global timer list.
@@ -186,7 +191,14 @@ static void NutTimer0Intr(void *arg)
      */
     milli_ticks++;
 
-#ifndef NUT_CPU_FREQ
+#ifdef NUT_CPU_FREQ
+
+    if (ms1++ >= 999) {
+        ms1 = 0;
+        seconds++;
+    }
+
+#else   /* NUT_CPU_FREQ */
 
     /*
      * Update RTC. We do a post increment here, because
@@ -197,7 +209,8 @@ static void NutTimer0Intr(void *arg)
         ms62_5 = 0;
         seconds++;
     }
-#endif                          /* NUT_CPU_FREQ */
+
+#endif  /* NUT_CPU_FREQ */
 
     if (nutTimerList) {
         if (nutTimerList->tn_ticks_left)
@@ -241,7 +254,6 @@ static void NutTimer0Intr(void *arg)
             }
         }
     }
-    //fprintf(__os_trs, "]");
 }
 
 
@@ -633,6 +645,31 @@ u_long NutGetTickCount(void)
 
     NutEnterCritical();
     rc = milli_ticks;
+    NutExitCritical();
+
+    return rc;
+}
+
+/*!
+ * \brief Return the seconds counter value.
+ *
+ * This function returns the value of a counter, which is incremented
+ * every second. During system start, the counter is cleared to zero.
+ *
+ * \note There is intentionally no provision to modify the seconds counter.
+ *       Callers can rely on a continuous update and use this value for
+ *       system tick independend timeout calculations. Applications,
+ *       which want to use this counter for date and time functions,
+ *       should use an offset value.
+ *
+ * \return Value of the seconds counter.
+ */
+u_long NutGetSeconds(void)
+{
+    u_long rc;
+
+    NutEnterCritical();
+    rc = seconds;
     NutExitCritical();
 
     return rc;

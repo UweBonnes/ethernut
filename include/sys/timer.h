@@ -51,8 +51,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:22  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/10/13 10:17:11  haraldkipp
+ * Seconds counter added
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:22  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.12  2003/02/04 18:00:54  harald
  * Version 3 released
@@ -125,6 +128,8 @@ extern void NutDelay(u_char ms);
 extern u_long NutGetCpuClock(void);
 
 extern u_long NutGetTickCount(void); //@@MF
+
+extern u_long NutGetSeconds(void);
 
 #ifdef __cplusplus
 }
