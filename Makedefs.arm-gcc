@@ -32,36 +32,25 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
-# Revision 1.1  2004/03/16 16:48:24  haraldkipp
-# Added Jan Dubiec's H8/300 port.
+# Revision 1.2  2004/09/08 10:17:12  haraldkipp
+# Back to the basics
 #
 #
 
-include $(top_srcdir)/UserConf.mk
+DEFS = $(HWDEF)
 
-DEFS = -DNUT_CPU_FREQ=22118400 $(HWDEF)
-#DEFS = -DNUT_CPU_FREQ=22118400 -DNUTDEBUG $(HWDEF)
-#DEFS  = $(HWDEF)
-#DEFS = -DNUTDEBUG $(HWDEF)
-#DEFS = -DNUT_CPU_FREQ=14745600 $(HWDEF)
-#DEFS = -DNUT_CPU_FREQ=3686400 $(HWDEF)
-
-LIBDIR = $(top_srcdir)/lib/gcc/$(MCU)
+INCPRE = -I
 INCDIR = $(top_srcdir)/include
-HWINC = $(top_srcdir)/arch/$(ARCH)/include
-
-MODDIR = $(top_srcdir)/mod
-MODINC = $(MODDIR)/include
 
 TRGT   = arm-elf-
 CC     = $(TRGT)gcc
 AR     = $(TRGT)ar
 CP     = cp
 AS     = $(TRGT)gcc -x assembler-with-cpp
+RANLIN = $(TARG)ranlib
 
-MCFLAGS = $(MCUOPTS)
-CPFLAGS = $(MCFLAGS) -Os -fomit-frame-pointer -Wall -Werror -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
-#CPFLAGS = -g $(MCFLAGS) -O1 -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
-LDFLAGS = $(MCFLAGS) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--relax,--sort-common,--strip-all,--cref -L$(LIBDIR) $(LDDIRS)
+MCFLAGS = -mcpu=$(MCU)
+CPFLAGS = $(MCFLAGS) -O0 -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS) $(UCPFLAGS) 
+LDFLAGS = $(MCFLAGS) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--relax,--sort-common,--strip-all,--cref -L$(LIBDIR)
 ARFLAGS = rsv
-ASFLAGS = $(MCFLAGS) -DROMSTART $(RUNFLAG) -Wa,-amhls=$(<:.S=.lst) $(DEFS)
+ASFLAGS = $(MCFLAGS) -Wa,-amhls=$(<F:.S=.lst) $(DEFS) $(UASFLAG)

@@ -32,19 +32,22 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/09/08 10:17:37  haraldkipp
+# Back to the basics
+#
 # Revision 1.1  2004/03/16 16:48:24  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
 #
 
 %o : %c
-	$(CC) -c $(CPFLAGS) -I$(MODINC) -I$(INCDIR) -I$(HWINC) $< -o $@
+	$(CC) -c $(CPFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
 
 %o : %S
 	$(AS) -c $(ASFLAGS) $< -o $@
 
 %s : %c
-	$(CC) -S $(CPFLAGS) -I$(MODINC) -I$(INCDIR) -I$(HWINC) $< -o $@
+	$(CC) -c $(CPFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
 
 %elf: $(OBJS)
 	$(CC) $(OBJS) $(LIB) $(LDFLAGS) -o $@
@@ -58,3 +61,18 @@
 %eep: %elf
 	$(BIN) -j .eeprom --set-section-flags=.eeprom="alloc,load" -O srec $< $@
 
+%a: $(OBJS)
+	$(AR) $(ARFLAGS) $@ $?
+
+.PHONY: cleancc
+cleancc:
+	-rm -f $(OBJS)
+	-rm -f $(TARG)
+	-rm -f $(SRCS:.c=.lst)
+	-rm -f $(SRCS:.c=.lis)
+	-rm -f $(SRCS:.c=.s)
+
+.PHONY: cleanedit
+cleanedit:
+	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.c~)
