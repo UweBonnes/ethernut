@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/02/05 20:42:38  haraldkipp
+ * Force compiler error for leftover debug prints.
+ *
  * Revision 1.12  2005/01/24 21:11:50  freckle
  * renamed NutEventPostFromIRQ into NutEventPostFromIrq
  *
@@ -105,8 +108,6 @@
 #include <sys/osdebug.h>
 #include <net/netdebug.h>
 #endif
-
-#include <stdio.h>
 
 /*
  * Determine ports, which had not been explicitely configured.

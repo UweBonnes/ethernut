@@ -2,7 +2,7 @@
 #define _DEV_IRQSTACK_H_
 
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/02/05 20:39:43  haraldkipp
+ * Force compiler error for leftover debug prints.
+ *
  * Revision 1.4  2004/09/22 08:15:56  haraldkipp
  * Speparate IRQ stack configurable
  *
@@ -54,7 +57,6 @@
 #ifdef IRQSTACK_SIZE
 
 #include <sys/types.h>
-#include <stdio.h>
 
 extern u_char _irq_stack[];
 extern u_char _irq_SPL;
