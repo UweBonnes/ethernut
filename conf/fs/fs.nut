@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2005/02/05 20:40:44  haraldkipp
+-- Peanut added.
+--
 -- Revision 1.2  2004/08/18 13:46:09  haraldkipp
 -- Fine with avr-gcc
 --
@@ -43,6 +46,24 @@
 
 nutfs =
 {
+    {
+        name = "nutfs_pathops",
+        brief = "Path Operations",
+        requires = { "NUT_FS_WRITE", "NUT_FS_DIR" },
+        provides = { "NUT_FS_PATHOPS" },
+        description = "Standard file system functions:\n"..
+                      "mkdir()\nstat()\nfstat()\nunlink()\nrmdir()\nlseek()\n",
+        sources = { "pathops.c" },
+    },
+    {
+        name = "nutfs_dirent",
+        brief = "Directory Read",
+        requires = { "NUT_FS_DIR" },
+        provides = { "NUT_FS_DIRSTREAM" },
+        description = "Standard functions for reading directories:\n"..
+                      "opendir()\nclosedir()\nreaddir()\n",
+        sources = { "dirent.c" },
+    },
     {
         name = "nutfs_fat",
         brief = "FAT32",
@@ -59,5 +80,13 @@ nutfs =
         description = "Read only.",
         sources = { "uromfs.c" },
         makedefs = { "CRUROM=crurom" }
+    },
+    {
+        name = "nutfs_pnutfs",
+        brief = "PNUT",
+        requires = { "HW_MCU_AVR", "NUT_SEGBUF" },
+        provides = { "NUT_FS", "NUT_FS_READ", "NUT_FS_WRITE", "NUT_FS_DIR" },
+        description = "RAM file system for banked memory (Ethernut 2).",
+        sources = { "pnutfs.c" },
     }
 }
