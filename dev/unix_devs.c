@@ -35,6 +35,8 @@
  *
  * 2004.04.01 Matthias Ringwald <matthias.ringwald@inf.ethz.ch>
  *
+ * \todo implement cooked mode and use it as default mode
+ * \todo check block read implementation
  */
 
 /* avoid stdio nut wrapper */
@@ -42,10 +44,12 @@
 
 #include <fcntl_orig.h>
 #include <arch/unix.h>
+#include <sys/atom.h>
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
 #include <sys/thread.h>
+#include <sys/event.h>
 #include <dev/usart.h>
 #include <errno.h>
 
@@ -76,6 +80,17 @@
 
 /* private prototypes */
 int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf);
+
+
+/* thread attributes */
+pthread_attr_t unix_devs_attr;
+
+/* protect thread signaling */
+pthread_mutex_t unix_devs_mutex;
+
+/* to get a new thread start acked'd */
+pthread_cond_t unix_devs_cv;
+
 
 /*
  * functions available on avr somehow -- not implemented properly here :(
@@ -227,6 +242,53 @@ static int convertToBaudSpeed(int realSpeed)
     return -1;
 }
 
+/*
+ * Read Thread
+ *
+ */
+static void *UnixDevReadThread( void * arg )
+{
+    int ret;
+    fd_set rfd_set;
+
+    UNIXDCB * dcb = (UNIXDCB*) arg;
+    
+    // non-nut thread => block IRQ signals
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
+
+    // printf("UnixDevReadThread() started\n");
+    
+    // confirm start
+    pthread_mutex_lock(&unix_devs_mutex);
+    pthread_cond_signal(&unix_devs_cv);
+
+    // printf("UnixDevReadThread() start confirmed\n");
+
+    // 
+    for (;;) {
+
+        pthread_cond_wait(&dcb->dcb_rx_trigger, &unix_devs_mutex);
+
+        // printf("UnixDevReadThread() triggered\n");
+
+        // wait for data to become ready //
+        do {
+
+            FD_ZERO(&rfd_set);
+            FD_SET(dcb->dcb_fd, &rfd_set);
+            ret = select(dcb->dcb_fd + 1, &rfd_set, NULL, NULL, NULL);
+        } while (ret < 1);
+
+        // printf("UnixDevReadThread() task processed\n");
+
+        // signale waiting thread
+        NutEventPostAsync( &dcb->dcb_rx_rdy);
+    }
+   
+    return 0;
+}
+
+
 
 /*!
  * \brief Open UnixDev
@@ -241,6 +303,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     char *nativeName;
     struct termios t;
     long baud;
+    pthread_t *thread;
 
     // map from dev->name to unix name
     if (strncmp("uart", dev->dev_name, 4) == 0) {
@@ -253,6 +316,8 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     } else
         return NULL;
 
+    // printf("UnixDevOpen: Nut name = %s, unix name = %s\n",  dev->dev_name, nativeName);
+
     // determine mode -- not implemented yet 
     // set default mode
     mode = O_RDWR | O_NOCTTY;
@@ -263,13 +328,19 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         // store unix fd in dev
         nativeFile = STDOUT_FILENO;
         setvbuf(stdout, NULL, _IONBF, 0);
-        dev->dev_dcb = (void *) nativeFile;
+        ((UNIXDCB*)dev->dev_dcb)->dcb_fd = nativeFile;
 
     } else {
 
         nativeFile = open(nativeName, mode);
-
-        if (tcgetattr((int) nativeFile, &t) == 0) {
+        
+        if (nativeFile < 0)
+        {
+            printf("UnixDevOpen: open('%s',%d) failed!\n", nativeName, mode);
+            return NULL;
+        }
+        
+        if (tcgetattr(nativeFile, &t) == 0) {
 
             baud = convertToBaudSpeed(USART_INITSPEED);
 
@@ -289,19 +360,40 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
             tcflush(nativeFile, TCIFLUSH);
 
             // apply file descriptor options
-            if (tcsetattr((int) nativeFile, TCSANOW, &t) < 0) {
+            if (tcsetattr(nativeFile, TCSANOW, &t) < 0) {
                 printf("UnixDevOpen: tcsetattr failed\n\r");
             }
         }
         // store unix fd in dev
-        dev->dev_dcb = (void *) nativeFile;
+        ((UNIXDCB*)dev->dev_dcb)->dcb_fd = nativeFile;
     }
 
     if (nativeFile == 0)
         return NULL;
 
-    printf("UnixDevOpen: %s, fd * %d\n\r", nativeName, nativeFile);
-    printf("UnixDevOpen: stdout %d, stdin %d, stderr %d \n\r", fileno(stdin), fileno(stdout), fileno(stderr));
+    // printf("UnixDevOpen: %s, fd * %d\n\r", nativeName, nativeFile);
+    // printf("UnixDevOpen: stdout %d, stdin %d, stderr %d \n\r", fileno(stdin), fileno(stdout), fileno(stderr));
+
+    /* Initialize mutex and condition variable objects */
+    pthread_mutex_init(&unix_devs_mutex, NULL);
+
+    pthread_attr_init(&unix_devs_attr);
+    pthread_attr_setdetachstate(&unix_devs_attr, PTHREAD_CREATE_JOINABLE);
+
+    // unix_devs_cv init
+    pthread_cond_init(&unix_devs_cv, NULL);
+    pthread_cond_init( &((UNIXDCB*)dev->dev_dcb)->dcb_rx_trigger, NULL);
+
+    // get thrad struct
+    thread = malloc(sizeof(pthread_t));
+
+    // lock mutex and start thread
+    pthread_mutex_lock(&unix_devs_mutex);
+    pthread_create(thread, &unix_devs_attr, UnixDevReadThread, dev->dev_dcb);
+
+    // wait for ack
+    pthread_cond_wait(&unix_devs_cv, &unix_devs_mutex);
+    pthread_mutex_unlock(&unix_devs_mutex);
 
     // set non-blocking
     if (fcntl(nativeFile, F_SETFL, O_NONBLOCK) < 0) {
@@ -324,12 +416,13 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
  *
  * \return Number of characters sent.
  */
-static int UnixDevWrite(NUTFILE * fp, CONST void *buffer, int len)
+static int UnixDevWrite(NUTFILE * nf, CONST void *buffer, int len)
 {
     int rc;
     int remaining = len;
+    UNIXDCB * dcb = (UNIXDCB*) nf->nf_dev->dev_dcb;
     do {
-        rc = write((int) fp->nf_dev->dev_dcb, buffer, remaining);
+        rc = write(dcb->dcb_fd, buffer, remaining);
         if (rc > 0) {
             buffer += rc;
             remaining -= rc;
@@ -338,20 +431,53 @@ static int UnixDevWrite(NUTFILE * fp, CONST void *buffer, int len)
     return len;
 }
 
+
+
+ 
 /*!
  * \brief Read bytes from file
  *
  * \return Number of characters read.
  */
-static int UnixDevRead(NUTFILE * fp, void *buffer, int len)
+static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
 {
-    int rc = 0;
     int newBytes;
+    fd_set rfd_set;
+    int ret;
+    struct timeval timeout;
+
+    int rc = 0;
+    UNIXDCB * dcb = (UNIXDCB*) nf->nf_dev->dev_dcb;
+    
     // printf("UnixDevRead: called: len = %d\n\r",len);
+    timeout.tv_usec = 0;
+    timeout.tv_sec  = 0;
 
     do {
 
-        newBytes = read((int) fp->nf_dev->dev_dcb, buffer, len);
+        // data available ?
+        FD_ZERO(&rfd_set);
+        FD_SET(dcb->dcb_fd, &rfd_set);
+        ret = select(dcb->dcb_fd + 1, &rfd_set, NULL, NULL, &timeout);
+        
+        if (ret == 0) {
+            // no data available. let's block the nut way...
+
+            // printf("UnixDevRead: no data ready, signaling read thread\n\r");
+
+            // lock mutex and signal read thread
+            pthread_mutex_lock(&unix_devs_mutex);
+            pthread_cond_signal(&dcb->dcb_rx_trigger);
+            pthread_mutex_unlock(&unix_devs_mutex);
+
+            // wait for data to be ready
+            NutEventWait( &dcb->dcb_rx_rdy, dcb->dcb_rtimeout);
+
+            // printf("UnixDevRead: read thread returned\n\r");
+
+        }
+        
+        newBytes = read( dcb->dcb_fd, buffer, len);
 
         /* error or timeout ? */
         if (newBytes < 0) {
@@ -373,7 +499,7 @@ static int UnixDevRead(NUTFILE * fp, void *buffer, int len)
 #ifdef UART_SETBLOCKREAD
         // printf("UnixDevRead: UART_SETBLOCKREAD defined\n\r");
         // check for blocking read: all bytes received
-        if ((((UNIXDCB *) fp->nf_dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD) && (rc < len)) {
+        if ( (dcb->dcb_modeflags & USART_MF_BLOCKREAD) && (rc < len)) {
             // printf("UnixDevRead: block read enabled, but not enough bytes rad \n\r");
             continue;
         }
@@ -392,10 +518,11 @@ static int UnixDevRead(NUTFILE * fp, void *buffer, int len)
  *
  * \return Always 0.
  */
-static int UnixDevClose(NUTFILE * fp)
+static int UnixDevClose(NUTFILE * nf)
 {
-    if ((int) fp->nf_dev->dev_dcb > STDERR_FILENO)
-        close((int) fp->nf_dev->dev_dcb);
+    UNIXDCB * dcb = (UNIXDCB*) nf->nf_dev->dev_dcb;
+    if ( dcb->dcb_fd > STDERR_FILENO)
+        close( dcb->dcb_fd );
     return 0;
 }
 
@@ -436,8 +563,9 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     struct termios t;
     u_long *lvp = (u_long *) conf;
     u_long lv = *lvp;
-
-    printf("UnixDevIOCTL, native %x, req: %d, lv: %ld\n\r", (int) dev->dev_dcb, req, lv);
+    UNIXDCB * dcb = (UNIXDCB*) dev->dev_dcb;
+    
+    // printf("UnixDevIOCTL, native %x, req: %d, lv: %ld\n\r", dcb->dcb_fd , req, lv);
 
     switch (req) {
 
@@ -447,10 +575,10 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     case UART_SETDATABITS:
     case UART_SETSTOPBITS:
 
-        if ((int) dev->dev_dcb <= STDERR_FILENO)
+        if ( dcb->dcb_fd <= STDERR_FILENO)
             return -1;
 
-        if (tcgetattr((int) dev->dev_dcb, &t)) {
+        if (tcgetattr( dcb->dcb_fd , &t)) {
             printf("UnixDevIOCTL, tcgetattr failed\n\r");
             return -1;
         }
@@ -538,13 +666,13 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
         }
 
         /* tcdrain fails on mac os x for some unknown reason -- work around */
-        while (tcdrain((int) dev->dev_dcb) < 0) {
+        while (tcdrain( dcb->dcb_fd ) < 0) {
             // printf("UnixDevIOCTL: tcdrain failed: errno: %d\n\r", errno);
             errno = 0;
             usleep(1000);
         }
 
-        if (tcsetattr((int) dev->dev_dcb, TCSANOW, &t) < 0) {
+        if (tcsetattr( dcb->dcb_fd , TCSANOW, &t) < 0) {
             printf("UnixDevIOCTL: tcsetattr failed: errno: %d\n\r", errno);
             errno = 0;
             return -1;
@@ -557,10 +685,10 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     case UART_GETDATABITS:
     case UART_GETSTOPBITS:
 
-        if ((int) dev->dev_dcb <= STDERR_FILENO)
+        if (dcb->dcb_fd <= STDERR_FILENO)
             return -1;
 
-        if (tcgetattr((int) dev->dev_dcb, &t) != 0)
+        if (tcgetattr(dcb->dcb_fd, &t) != 0)
             return -1;
 
         switch (req) {
@@ -619,13 +747,13 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
 #ifdef UART_SETBLOCKREAD
     case UART_SETBLOCKREAD:
         if (lv)
-            ((UNIXDCB *) dev->dev_dcb)->dcb_modeflags |= USART_MF_BLOCKREAD;
+            dcb->dcb_modeflags |= USART_MF_BLOCKREAD;
         else
-            ((UNIXDCB *) dev->dev_dcb)->dcb_modeflags &= ~USART_MF_BLOCKREAD;
+            dcb->dev_dcb)->dcb_modeflags &= ~USART_MF_BLOCKREAD;
         return 0;
 
     case UART_GETBLOCKREAD:
-        if (((UNIXDCB *) dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD)
+        if ( dcb->dcb_modeflags & USART_MF_BLOCKREAD)
             *lvp = 1;
         else
             *lvp = 0;
@@ -648,6 +776,9 @@ static UNIXDCB dcb_usart0 = {
     0,                          /* dcb_rtimeout */
     0,                          /* dcb_wtimeout */
     0,                          /* dbc_last_eol */
+    0,                          /* dcb_fd */
+    0,                          /* dcb_rx_rdy */
+/*  xx,                            dcb_rx_trigger */
 };
 
 /*!
@@ -659,6 +790,9 @@ static UNIXDCB dcb_usart1 = {
     0,                          /* dcb_rtimeout */
     0,                          /* dcb_wtimeout */
     0,                          /* dbc_last_eol */
+    0,                          /* dcb_fd */
+    0,                          /* dcb_rx_rdy */
+/*  xx,                            dcb_rx_trigger */
 };
 
 /*!
@@ -705,7 +839,7 @@ NUTDEVICE devDebug1 = {
 
 
 /*!
- * \brief Debug device 0 information structure.
+ * \brief uart device 0 information structure.
  */
 NUTDEVICE devUart0 = {
     0,                          /*!< Pointer to next device. */
@@ -726,7 +860,7 @@ NUTDEVICE devUart0 = {
 };
 
 /*!
- * \brief Debug device 1 information structure.
+ * \brief uart device 1 information structure.
  */
 NUTDEVICE devUart1 = {
     0,                          /*!< Pointer to next device. */
@@ -746,6 +880,47 @@ NUTDEVICE devUart1 = {
     0
 };
 
+/*!
+ * \brief usartavr device 0 information structure.
+ */
+NUTDEVICE devUsartAvr0 = {
+    0,                          /*!< Pointer to next device. */
+    {'u', 'a', 'r', 't', '0', 0, 0, 0, 0}
+    ,                           /*!< Unique device name. */
+    0,                          /*!< Type of device. */
+    0,                          /*!< Base address. */
+    0,                          /*!< First interrupt number. */
+    0,                          /*!< Interface control block. */
+    &dcb_usart0,                /*!< Driver control block. */
+    0,                          /*!< Driver initialization routine. */
+    UnixDevIOCTL,               /*!< Driver specific control function. */
+    UnixDevRead,
+    UnixDevWrite,
+    UnixDevOpen,
+    UnixDevClose,
+    0
+};
+
+/*!
+ * \brief usartavr device 1 information structure.
+ */
+NUTDEVICE devUsartAvr1 = {
+    0,                          /*!< Pointer to next device. */
+    {'u', 'a', 'r', 't', '1', 0, 0, 0, 0}
+    ,                           /*!< Unique device name. */
+    0,                          /*!< Type of device. */
+    0,                          /*!< Base address. */
+    0,                          /*!< First interrupt number. */
+    0,                          /*!< Interface control block. */
+    &dcb_usart1,                /*!< Driver control block. */
+    0,                          /*!< Driver initialization routine. */
+    UnixDevIOCTL,               /*!< Driver specific control function. */
+    UnixDevRead,
+    UnixDevWrite,
+    UnixDevOpen,
+    UnixDevClose,
+    0
+};
 
 
 /*@}*/

@@ -43,6 +43,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/06/21 10:57:25  freckle
+ * dev/unix_devs.c: read operation is using extra pthread to only block the
+ * current thread instead of all threads
+ *
  * Revision 1.2  2004/04/16 17:50:35  freckle
  * Implemented the most common _IOCTL calls
  * Added block read functionality to read call
@@ -52,6 +56,7 @@
  *
  */
 
+#include <pthread.h>
 #include <sys/device.h>
 #include <dev/netbuf.h>
 
@@ -69,36 +74,51 @@ extern "C" {
  */
     extern NUTDEVICE devUart0;
     extern NUTDEVICE devUart1;
+    extern NUTDEVICE devUsartAvr0;
+    extern NUTDEVICE devUsartAvr1;
     extern NUTDEVICE devDebug0;
     extern NUTDEVICE devDebug1;
 
 /*!
- * \struct _UNIXDCB unix_devs.h dev/unix_devs.h
+ * \struct _UNIXDCB unix_d  evs.h dev/unix_devs.h
  * \brief UNIX devices low level information structure.
  *
  */
-    struct _UNIXDCB {
+struct _UNIXDCB {
 
-        /*! \brief Mode flags.
-         */
-        u_long dcb_modeflags;
+    /*! \brief Mode flags.
+     */
+    u_long dcb_modeflags;
 
-        /*! \brief Status flags.
-         */
-        u_long dcb_statusflags;
+    /*! \brief Status flags.
+     */
+    u_long dcb_statusflags;
 
-        /*! \brief Read timeout.
-         */
-        u_long dcb_rtimeout;
+    /*! \brief Read timeout.
+     */
+    u_long dcb_rtimeout;
 
-        /*! \brief Write timeout.
-         */
-        u_long dcb_wtimeout;
+    /*! \brief Write timeout.
+     */
+    u_long dcb_wtimeout;
 
-        /*! \brief Last EOL character.
-         */
-        u_char dcb_last_eol;
-    };
+    /*! \brief Last EOL character.
+     */
+    u_char dcb_last_eol;
+
+    /*! \brief Native file descriptor
+    */
+    int dcb_fd;
+    
+    /*! \brief Queue of threads waiting for a character in the input buffer.
+     */
+    HANDLE dcb_rx_rdy;
+    
+    /*! \brief Conditional Variable to trigger read thread 
+    */
+    pthread_cond_t dcb_rx_trigger;
+
+};
 
 /*!
  * USART device low level information type.
