@@ -1,9 +1,14 @@
-$Id: ChangeLog,v 1.17 2003/11/28 19:52:26 haraldkipp Exp $
+$Id: ChangeLog,v 1.18 2003/11/29 16:09:35 drsung Exp $
 
 2003-11-28  Harald Kipp  <harald.kipp@egnite.de>
 
 	* net/tcpsm.c: TCP connections suddenly drop during 
 	transmission. Bug in retransmission timer fixed.
+
+
+2003-11-27  Oliver Schulz <olischulz@web.de>
+
+	* pro/dencode.c: Bug fix and code size improvement
 
 
 2003-11-26  Oliver Schulz <olischulz@web.de>
@@ -19,6 +24,7 @@ $Id: ChangeLog,v 1.17 2003/11/28 19:52:26 haraldkipp Exp $
 
 	* crt/putf.c: Added support for program space character
 	strings (%P).
+
 
 2003-11-05  Harald Kipp  <harald.kipp@egnite.de>
 
