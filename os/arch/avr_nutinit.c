@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/02/28 08:44:54  drsung
+ * Fixed missing return type of NutInitSP
+ * Removed inlcude file avrpio.h
+ *
  * Revision 1.16  2005/02/26 12:09:28  drsung
  * Moved heap initialization to section .init5 to support c++ constructors for static objects.
  *
@@ -83,7 +87,6 @@
 #include <cfg/memory.h>
 #include <cfg/os.h>
 #include <cfg/arch/avr.h>
-#include <cfg/arch/avrpio.h>
 
 #ifdef NUTXMEM_SIZE
 /*!
@@ -432,7 +435,7 @@ THREAD(NutIdle, arg)
 
 #if defined(__GNUC__)
 static void NutInitSP(void) __attribute__ ((naked, section (".init5"), used));
-NutInitSP(void)
+void NutInitSP(void)
 {
     /* Initialize stack pointer to end of external RAM while starting up the system
      * to avoid overwriting .data and .bss section.
