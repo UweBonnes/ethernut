@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2004/09/08 10:18:23  haraldkipp
+ * For EB40A
+ *
  * Revision 1.1  2003/08/05 18:59:05  haraldkipp
  * Release 3.3 update
  *
@@ -70,7 +73,17 @@
 #include <stdio.h>
 #include <io.h>
 
+#include <cfg/arch.h>
+/* Only devDebug1 supported with AT91 */
+#ifdef MCU_AT91R40008
+#include <dev/debug.h>
+#define DEV_UART devDebug1
+#define DEV_UART_NAME "uart1"
+#else
 #include <dev/uartavr.h>
+#define DEV_UART devUart0
+#define DEV_UART_NAME "uart0"
+#endif
 #include <sys/thread.h>
 #include <sys/timer.h>
 
@@ -115,8 +128,8 @@ int main(void)
      * Register the UART device, open it, assign stdout to it and set 
      * the baudrate.
      */
-    NutRegisterDevice(&devUart0, 0, 0);
-    freopen("uart0", "w", stdout);
+    NutRegisterDevice(&DEV_UART, 0, 0);
+    freopen(DEV_UART_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     puts("\nThread Test");
