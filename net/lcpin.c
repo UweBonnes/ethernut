@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/14 19:05:53  drsung
+ * Bug fix in LcpRxConfReq. Thanks to Michel Hendriks.
+ *
  * Revision 1.2  2003/08/14 15:19:15  haraldkipp
  * Echo support added.
  *
@@ -162,7 +165,8 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
                 xcpr->xcpo_type = xcpo->xcpo_type;
                 xcpr->xcpo_len = len;
                 for(i = 0; i < len - 2; i++)
-                    xcpr->xcpo_.uc[i] = xcpr->xcpo_.uc[i];
+                    /* bug fix by Michel Hendriks. Thanks! */
+                    xcpr->xcpo_.uc[i] = xcpo->xcpo_.uc[i];
             }
             xcpr = (XCPOPT *)((char *)xcpr + len);
             xcps += len;
