@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:21:01  haraldkipp
+ * Bugfix, allow HDLC flag to mark end _and_ begin
+ *
  * Revision 1.2  2003/08/05 20:05:11  haraldkipp
  * DNS removed from interface
  *
@@ -213,6 +216,11 @@ int PPPPutPacket(NUTDEVICE * dev, NETBUF * nb)
             static prog_char dbgfmt[] = "[PPP] sz = %d mru = %d\n";
             fprintf_P(__ppp_trs, dbgfmt, sz, dcb->dcb_loc_mru);
         }
+#elif defined(__IMAGECRAFT__)
+        /*
+         * No idea what this is, but ICCAVR fails if this call isn't there.
+         */
+        NutSleep(100);
 #endif
         NutNetBufFree(nb);
         return -1;
@@ -273,6 +281,7 @@ THREAD(PPPRx, arg)
     u_char inbuf[1];
     int i;
     char esc;
+    char got_flag = 0;
     unsigned int CSum;
     PPPDCB *dcb;
 
@@ -307,13 +316,21 @@ THREAD(PPPRx, arg)
         dev->dev_ioctl(dev, LCP_LOWERUP, 0);
         
         // Start off by waiting for a flag byte 
-        if ((_read(dcb->dcb_fd, inbuf, 1) == 0) || (inbuf[0] != AHDLC_FLAG))
+        if (_read(dcb->dcb_fd, inbuf, 1) == 0) {
+            got_flag = 0;
             continue;
+        }
+        
+        if(got_flag == 0 && inbuf[0] != AHDLC_FLAG) {
+            continue;
+        }
+        got_flag = 1;
 
         // Absorb any extra flags that may appear (particularly if we miss a packet)
         // And place the first byte of the packet in inbuf [0]
-        while (inbuf[0] == AHDLC_FLAG)
+        while (inbuf[0] == AHDLC_FLAG) {
             _read(dcb->dcb_fd, inbuf, 1);
+        }
 
         esc = 0;
         CSum = 0xFFFF;
