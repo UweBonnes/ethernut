@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/10/03 18:41:43  haraldkipp
+ * RAM saving calls added
+ *
  * Revision 1.1  2004/09/19 11:18:45  haraldkipp
  * Syslog client added
  *
@@ -203,6 +206,108 @@ void syslog(int pri, CONST char *fmt, ...)
     vsyslog(pri, (char *) fmt, ap);
     va_end(ap);
 }
+
+#ifdef __HARVARD_ARCH__
+/*!
+ * \brief Print log message.
+ *
+ * Alternate form of syslog(), in which the arguments have already been captured
+ * using the variable-length argument facilities.
+ *
+ * \param pri Priority level of this message. See syslog().
+ * \param fmt Format string containing conversion specifications like printf.
+ * \param ap  List of arguments.
+ */
+void vsyslog_P(int pri, PGM_P fmt, va_list ap)
+{
+    time_t now;
+    struct _tm *tip;
+    size_t cnt;
+
+    /* Remove invalid bits. */
+    pri &= LOG_PRIMASK | LOG_FACMASK;
+
+    /* Check priority against setlog mask values. */
+    if ((LOG_MASK(LOG_PRI(pri)) & syslog_mask) == 0) {
+        return;
+    }
+
+    /* Open log if not done before. */
+    if (syslog_buf == 0) {
+        openlog(0, syslog_stat | LOG_NDELAY, syslog_fac);
+    }
+
+    /* Set default facility if none specified. */
+    if ((pri & LOG_FACMASK) == 0) {
+        pri |= syslog_fac;
+    }
+
+    time(&now);
+    tip = localtime(&now);
+    sprintf(syslog_buf, "<%d>%.3s%3d %02d:%02d:%02d %s ", pri, &mon_name[tip->tm_mon * 3],
+            tip->tm_mday, tip->tm_hour, tip->tm_min, tip->tm_sec, confos.hostname);
+    cnt = strlen(syslog_buf);
+
+    if (syslog_taglen) {
+        cnt += syslog_taglen + 2;
+        if (cnt >= SYSLOG_MAXBUF) {
+            return;
+        }
+        strcat(syslog_buf, syslog_tag);
+        strcat(syslog_buf, ": ");
+    }
+
+    /* Potentially dangerous. We need vsnprintf() */
+    if (cnt + strlen_P(fmt) >= SYSLOG_MAXBUF) {
+        return;
+    }
+    vsprintf_P(&syslog_buf[cnt], fmt, ap);
+    cnt = strlen(syslog_buf);
+
+    /* Output to stderr if requested */
+    if (syslog_stat & LOG_PERROR) {
+        _write(_fileno(stderr), syslog_buf, cnt);
+        _write(_fileno(stderr), "\n", 1);
+    }
+#ifndef SYSLOG_PERROR_ONLY
+    /*
+     * Output the message to a remote logger.
+     */
+    if (syslog_server) {
+        NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, cnt);
+    }
+#endif
+}
+
+/*!
+ * \brief Print log message.
+ *
+ * The message is tagged with priority.
+ *
+ * \param pri Priority level of this message, selected from the following
+ *            ordered list (high to low):
+ *            - LOG_EMERG   A panic condition.
+ *            - LOG_ALERT   A condition that should be corrected immediately.
+ *            - LOG_CRIT    Critical conditions, e.g., hard device errors.
+ *            - LOG_ERR     Errors.
+ *            - LOG_WARNING Warning messages.
+ *            - LOG_NOTICE  Conditions that are not error conditions, but should 
+ *                          possibly be handled specially.
+ *            - LOG_INFO    Informational messages.
+ *            - LOG_DEBUG   Messages that contain information normally of use only 
+ *                          when debugging a program.
+ * \param fmt Format string containing conversion specifications like printf.
+ */
+void syslog_P(int pri, PGM_P fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    vsyslog_P(pri, fmt, ap);
+    va_end(ap);
+}
+
+#endif /* __HARVARD_ARCH__ */
 
 /*!
  * \brief Set the log priority mask level.

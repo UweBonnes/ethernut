@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/10/03 18:41:43  haraldkipp
+ * RAM saving calls added
+ *
  * Revision 1.3  2004/09/19 11:18:44  haraldkipp
  * Syslog client added
  *
@@ -153,5 +156,9 @@ extern int setlogmask(int);
 extern u_long setlogserver(u_long ip, u_short port);
 extern void syslog(int, CONST char *, ...);
 extern void vsyslog(int, CONST char *, va_list);
+#ifdef __HARVARD_ARCH__
+extern void syslog_P(int, CONST char *, ...);
+extern void vsyslog_P(int, CONST char *, va_list);
+#endif
 __END_DECLS                     /* */
 #endif
