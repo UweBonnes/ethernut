@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.6  2004/09/19 15:12:22  haraldkipp
+ * Set mod flag on all changes
+ *
  * Revision 1.5  2004/09/17 13:02:39  haraldkipp
  * First and last directory added to sample dir
  *
@@ -423,6 +426,7 @@ bool CNutConfDoc::SetValue(CConfigItem & item, long nValue)
         wxString str;
         str.Printf("%ld", nValue);
         item.m_option->nco_value = strdup(str);
+        Modify(true);
     }
     return true;
 }
@@ -437,6 +441,7 @@ bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
             free(item.m_option->nco_value);
         }
         item.m_option->nco_value = strdup(strValue);
+        Modify(true);
 
         CNutConfHint hint(&item, nutValueChanged);
         UpdateAllViews(NULL, &hint);
