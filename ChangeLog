@@ -1,4 +1,17 @@
-$Id: ChangeLog,v 1.1 2003/07/13 20:11:02 haraldkipp Exp $
+$Id: ChangeLog,v 1.2 2003/07/17 09:56:33 haraldkipp Exp $
+
+2003-07-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/hd44780.c: Works with applications which may
+	change the data direction registers.
+
+	* dev/nicrtl.c: Speed enhancements and being less
+	strictly for accepting valid frames.
+
+	* dev/twif.c: Missing speed settings added.
+
+	* pro/dhcpc.c: No more default (egnite) MAC address.
+
 
 2003-07-13  Harald Kipp  <harald.kipp@egnite.de>
 
