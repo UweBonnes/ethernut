@@ -2,7 +2,7 @@
 #define _NET_IF_VAR_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/18 11:17:16  haraldkipp
+ * Comments updated
+ *
  * Revision 1.3  2004/02/02 18:53:49  drsung
  * gateway ip address was not set, if static network configuration from EEPROM is used.
  *
@@ -99,12 +102,8 @@
  * network interface structure.
  */
 
-#ifdef __cplusplus
-//extern "C" {
-#endif
-
 /*!
- * \addtogroup xgIP
+ * \addtogroup xgARP
  */
 /*@{*/
 
@@ -115,6 +114,7 @@
  * \brief ARP entry type.
  */
 typedef struct _ARPENTRY ARPENTRY;
+
 
 /*!
  * \struct _ARPENTRY if_var.h net/if_var.h
@@ -130,6 +130,14 @@ struct _ARPENTRY {
     u_char ae_outdated;         /*!< \brief Minutes since last use. */
     HANDLE ae_tq;               /*!< \brief Threads waiting for entry to be completed. */
 };
+
+/*@}*/
+
+/*!
+ * \addtogroup xgNet
+ */
+/*@{*/
+
 
 /*!
  * \brief Network interface type.
@@ -158,13 +166,9 @@ struct ifnet {
     int (*if_output) (NUTDEVICE *, u_short, u_char *, NETBUF *);    /*!< \brief Media output routine. */
 };
 
-typedef struct _PPP_PARAMS {
-    int ppp_host_dev;
-    u_char *ppp_user;
-    u_char *ppp_pass;
+/*@}*/
 
-} PPP_PARAMS;
-
+__BEGIN_DECLS
 
 extern int NutNetIfConfig2(CONST char *name, void *mac_dev, u_long ip_addr,
                           u_long ip_mask, u_long gateway);
@@ -175,12 +179,7 @@ extern int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask,
 
 extern int NutNetLoadConfig(CONST char *name);
 extern int NutNetSaveConfig(void);
-extern int NutNetAutoConfig(CONST char *name);
 
-/*@}*/
-
-#ifdef __cplusplus
-//}
-#endif
+__END_DECLS
 
 #endif
