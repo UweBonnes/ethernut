@@ -1,5 +1,12 @@
-$Id: ChangeLog,v 1.71 2004/06/03 08:47:23 olereinhardt Exp $
+$Id: ChangeLog,v 1.72 2004/06/07 15:37:26 olereinhardt Exp $
 
+2004-06-07  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
+	* dev/sja1000.c, dev/can_dev.c
+	  include/dev/sja1000.h, include/dev/can_dev.h
+	
+	Initial checkin of a driver and a simple api for can-bus devices.
+	This driver is for the well known phillips sja1000 wich is connected
+	to the Memory bus and an external interrupt.
 
 2004-06-02  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 	* os/semaphore.c
