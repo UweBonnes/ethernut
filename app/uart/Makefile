@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/09/10 10:33:28  haraldkipp
+# Temporarly removed non-configurable FP support
+#
 # Revision 1.2  2004/08/18 15:02:36  haraldkipp
 # Application build is no longer fixed in top_srcdir
 #
@@ -64,7 +67,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutos -lnutdev -lnutos -lnutcrtf -lm
+LIBS =  $(LIBDIR)/nutinit.o -lnutos -lnutdev -lnutos -lnutcrt
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG)

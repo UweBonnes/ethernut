@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2004/09/10 10:33:28  haraldkipp
+ * Temporarly removed non-configurable FP support
+ *
  * Revision 1.1  2003/08/05 18:59:52  haraldkipp
  * Release 3.3 update
  *
@@ -96,7 +99,9 @@ int main(void)
     char *cp;
     u_long baud = 115200;
     FILE *uart;
+#ifdef STDIO_FLOATING_POINT
     float dval = 0.0;
+#endif
 
     /*
      * Each device must be registered. We do this by referencing the 
@@ -190,7 +195,9 @@ int main(void)
          * In order to use this, we need to link the application
          * with nutcrtf instead of nutcrt for pure integer.
          */
+#ifdef STDIO_FLOATING_POINT
         dval += 1.0125;
         fprintf(uart, "FP %f\n", dval);
+#endif
     }
 }
