@@ -63,8 +63,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:21  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/11/24 21:00:21  drsung
+ * Packet queue added for UDP sockets.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:21  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/02/04 18:00:53  harald
  * Version 3 released
@@ -156,6 +159,8 @@ extern int NutUdpSendTo(UDPSOCKET *sock, u_long addr, u_short port, void *data, 
 extern int NutUdpReceiveFrom(UDPSOCKET *sock, u_long *addr, u_short *port, void *data, u_short size, u_long timeout);
 extern int NutUdpDestroySocket(UDPSOCKET *sock);
 extern UDPSOCKET *NutUdpFindSocket(u_short port);
+extern int NutUdpSetSockOpt(UDPSOCKET *sock, int optname, CONST void *optval, int optlen);
+extern int NutUdpGetSockOpt(UDPSOCKET *sock, int optname, void *optval, int optlen);
 
 
 #ifdef __cplusplus

@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:45  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/11/24 21:01:04  drsung
+ * Packet queue added for UDP sockets.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:45  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.10  2003/02/04 18:14:57  harald
  * Version 3 released
@@ -123,6 +126,7 @@
  *
  * \param nb  Network buffer structure containing the UDP packet.
  */
+ /* @@@ 2003-10-24: modified by OS for udp packet queue */
 void NutUdpInput(NETBUF * nb)
 {
     UDPHDR *uh;
@@ -142,15 +146,37 @@ void NutUdpInput(NETBUF * nb)
         return;
     }
 
-    /*
-     * If we stored a previous buffer, remove
-     * it and store the new one.
-     */
-    if (sock->so_rx_nb)
-        NutNetBufFree(sock->so_rx_nb);
-    sock->so_rx_nb = nb;
+    /* if buffer size is defined, use packet queue */
+    if (sock->so_rx_bsz) {
+        /* New packet fits into the buffer? */
+        if (sock->so_rx_cnt + nb->nb_ap.sz > sock->so_rx_bsz) {
+            /* No, so discard it */
+            NutNetBufFree(nb);
+        } else {
+            /* if a first packet is already in the queue, find the end
+             * and add the new packet */
+            if (sock->so_rx_nb) {
+                NETBUF *snb;
+                for (snb = sock->so_rx_nb; snb->nb_next != 0; snb = snb->nb_next);
+                snb->nb_next = nb;
+            } else
+                sock->so_rx_nb = nb;
 
-    NutEventPost(&sock->so_rx_rdy);
+            /* increment input buffer count */
+            sock->so_rx_cnt += nb->nb_ap.sz;
+        };
+    } else {                    /* no packet queue */
+        /* if a packet is still buffered, discard it */
+        if (sock->so_rx_nb) {
+            NutNetBufFree(sock->so_rx_nb);
+        }
+        sock->so_rx_nb = nb;
+        sock->so_rx_cnt = nb->nb_ap.sz; /* set input buffer count to size of new packet */
+    };
+
+    /* post the event only, if one thread is waiting */
+    if (sock->so_rx_rdy)
+        NutEventPost(&sock->so_rx_rdy);
 }
 
 /*@}*/

@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/24 21:00:21  drsung
+ * Packet queue added for UDP sockets.
+ *
  * Revision 1.2  2003/07/13 19:32:12  haraldkipp
  * Faster TCP transfers by changing receive buffer
  *
@@ -115,10 +118,12 @@ typedef struct udp_socket UDPSOCKET;
  * \brief UDP socket information structure.
  */
 struct udp_socket {
-    UDPSOCKET *so_next;     /*!< Link to next tcp socket structure. */
-    u_short so_local_port;  /*!< Local port number in net byte order. */
-    NETBUF  *so_rx_nb;      /*!< Received, but not read by application. */
-    HANDLE  so_rx_rdy;      /*!< Receiver event queue. */
+    UDPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
+    u_short so_local_port;  /*!< \brief Local port number in net byte order. */
+    NETBUF  *so_rx_nb;      /*!< \brief Received, but not read by application. */
+    HANDLE  so_rx_rdy;      /*!< \brief Receiver event queue. */
+    u_short so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
+    u_short so_rx_bsz;      /*!< \brief Receive buffer size. */
 };
 
 /*@}*/

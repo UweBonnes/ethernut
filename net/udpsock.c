@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/11/24 21:01:04  drsung
+ * Packet queue added for UDP sockets.
+ *
  * Revision 1.3  2003/08/14 15:07:18  haraldkipp
  * Optimization
  *
@@ -131,7 +134,7 @@
 /*@{*/
 
 
-UDPSOCKET *udpSocketList;   /*!< Linked list of all UDP sockets. */
+UDPSOCKET *udpSocketList;       /*!< Linked list of all UDP sockets. */
 static u_short last_local_port = 4096;  /* Unassigned local port. */
 
 /*!
@@ -183,8 +186,7 @@ UDPSOCKET *NutUdpCreateSocket(u_short port)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data,
-                 u_short len)
+int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data, u_short len)
 {
     int rc;
     NETBUF *nb;
@@ -195,7 +197,7 @@ int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data,
     memcpy(nb->nb_ap.vp, data, len);
 
     /* Bugfix by Ralph Mason. We should not free the NETBUF in case of an error. */
-    if((rc = NutUdpOutput(sock, addr, port, nb)) == 0)
+    if ((rc = NutUdpOutput(sock, addr, port, nb)) == 0)
         NutNetBufFree(nb);
 
     return rc;
@@ -217,8 +219,8 @@ int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data,
  *
  * \note Timeout is limited to the granularity of the system timer.
  */
-int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port,
-                      void *data, u_short size, u_long timeout)
+ /* @@@ 2003-10-24: modified by OS for udp packet queue */
+int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port, void *data, u_short size, u_long timeout)
 {
     IPHDR *ip;
     UDPHDR *uh;
@@ -229,7 +231,9 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port,
 
     if ((nb = sock->so_rx_nb) == 0)
         return 0;
-    sock->so_rx_nb = 0;
+
+    /* forward the queue's head to the next packet */
+    sock->so_rx_nb = nb->nb_next;
 
     ip = nb->nb_nw.vp;
     *addr = ip->ip_src;
@@ -239,6 +243,8 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port,
 
     if (size > nb->nb_ap.sz)
         size = nb->nb_ap.sz;
+
+    sock->so_rx_cnt -= nb->nb_ap.sz;    /* decrement input buffer count */
 
     memcpy(data, nb->nb_ap.vp, size);
     NutNetBufFree(nb);
@@ -258,11 +264,13 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port,
  *
  * \return 0 on success, -1 otherwise.
  */
+ /* @@@ 2003-10-24: modified by OS for udp packet queue */
 int NutUdpDestroySocket(UDPSOCKET * sock)
 {
     UDPSOCKET *sp;
     UDPSOCKET **spp;
     int rc = -1;
+    NETBUF *nb;
 
     spp = &udpSocketList;
     sp = udpSocketList;
@@ -270,10 +278,11 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
     while (sp) {
         if (sp == sock) {
             *spp = sock->so_next;
-            /* A packet may have arrived that the application 
+            /* packets may have arrived that the application 
                did not read before closing the socket. */
-            if ( sock->so_rx_nb != 0 ) {
-			NutNetBufFree(sock->so_rx_nb);
+            while ((nb = sock->so_rx_nb) != 0) {
+                sock->so_rx_nb = nb->nb_next;
+                NutNetBufFree(nb);
             }
             NutHeapFree(sock);
             rc = 0;
@@ -309,5 +318,79 @@ UDPSOCKET *NutUdpFindSocket(u_short port)
     }
     return sock;
 }
+
+/*!
+ * \brief Set value of a UDP socket option.
+ *
+ * The following values can be set:
+ *
+ * - SO_RCVBUF   Socket input buffer size (#u_short).
+ *
+ * \param sock    Socket descriptor. This pointer must have been 
+ *                retrieved by calling NutUdpCreateSocket().
+ * \param optname Option to set.
+ * \param optval  Pointer to the value.
+ * \param optlen  Length of the value.
+ * \return 0 on success, -1 otherwise. 
+ */
+int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optlen)
+{
+    int rc = -1;
+
+    if (sock == 0)
+        return -1;
+    switch (optname) {
+
+    case SO_RCVBUF:
+        if (optval != 0 && optlen == sizeof(u_short)) {
+            sock->so_rx_bsz = *((u_short *) optval);
+            rc = 0;
+        }
+        break;
+
+    default:
+        //sock->so_last_error = ENOPROTOOPT;
+        break;
+    }
+    return rc;
+}
+
+/*!
+ * \brief Get a UDP socket option value.
+ *
+ * The following values can be set:
+ *
+ * - SO_RCVBUF   Socket input buffer size (#u_short).
+ *
+ * \param sock    Socket descriptor. This pointer must have been 
+ *                retrieved by calling NutUdpCreateSocket().
+ * \param optname Option to get.
+ * \param optval  Points to a buffer receiving the value.
+ * \param optlen  Length of the value buffer.
+ *
+ * \return 0 on success, -1 otherwise. 
+ */
+int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
+{
+    int rc = -1;
+
+    if (sock == 0)
+        return -1;
+    switch (optname) {
+
+    case SO_RCVBUF:
+        if (optval != 0 && optlen == sizeof(u_short)) {
+            *((u_short *) optval) = sock->so_rx_bsz;
+            rc = 0;
+        }
+        break;
+
+    default:
+        //sock->so_last_error = ENOPROTOOPT;
+        break;
+    }
+    return rc;
+}
+
 
 /*@}*/
