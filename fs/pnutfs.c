@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/02/21 11:10:21  olereinhardt
+ * Changed deckaration of the "root" variable to compile with unix emulation
+ *
  * Revision 1.2  2005/02/07 18:57:47  haraldkipp
  * ICCAVR compile errors fixed
  *
@@ -246,7 +249,7 @@ struct _PNUTFILE {
 };
 
 /*! \brief Root node of the filesystem. */
-static u_short root;
+static PNUT_BLKNUM root;
 
 /* -------------------- Banking hardware routines ------------------- */
 
