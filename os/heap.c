@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/11/08 18:15:02  haraldkipp
+ * Very bad hack to support 32-bit boundaries.
+ *
  * Revision 1.5  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -162,7 +165,7 @@ void *NutHeapAlloc(size_t size)
     /*
      * Allign to the word boundary
      */
-    if ((size & 0x01) != 0)
+    while ((size & 0x03) != 0)
         size++;
 #endif
 
