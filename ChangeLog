@@ -1,10 +1,31 @@
-$Id: ChangeLog,v 1.146 2005/01/10 12:42:18 olereinhardt Exp $
+$Id: ChangeLog,v 1.147 2005/01/13 18:46:15 haraldkipp Exp $
+
+2004-01-13  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/net/net.nut: Added dependencies to avoid compilation
+	of network parts for targets without network hardware.
+
+	* net/netdebug.c: Removed type casts from previously converted
+	printf formats to avoid compiler warnings.
+
+	* os/timer.c, os/nutinit.c: Moved ms62_5 counter from timer.c
+	to nutinit.c. On AVR platforms this makes sure, that the
+	variable is located in internal RAM, because nutinit.c is
+	the first module being linked. This fixes the wrong baudrate 
+	bug for applications occupying all internal RAM. Not nice,
+	but works. In addition some timer handling had been optimized.
+	The volatile attribute of a pointer in NutTimerInsert() wasn't
+	really required and had been removed. In NutTimerStop() the
+	critical section had been reduced to improve interrupt
+	performance of the hole system. More could be done here.
+
 
 2005-01-10  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 
 	* include/arch/avr.h
 	Included check if atof is just defined (needed by 
 	new avr-libc versions on debian unstable)
+
 
 2005-01-02  Harald Kipp  <harald.kipp@egnite.de>
 
