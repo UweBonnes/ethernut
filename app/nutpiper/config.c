@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/05/11 17:23:05  drsung
+ * Advanced radio stations are now used depending of macro ETHERNUT2.
+ *
  * Revision 1.2  2003/11/04 17:46:52  haraldkipp
  * Adapted to Ethernut 2
  *
@@ -291,7 +294,7 @@ void ConfigResetFactory(void)
     /* Newsradio 24 kbit. */
     ConfigStation(MAXNUM_STATIONS, "65.172.162.93:9191");
 
-#if 0
+#ifdef ETHERNUT2
     /*
      * These stations require Ethernut 2.
      */
