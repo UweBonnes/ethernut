@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:24:19  haraldkipp
+ * Ugly PPP activation hack replaced by HDLC ioctl.
+ *
  * Revision 1.3  2004/02/25 16:38:20  haraldkipp
  * Do not use zero MAC
  *
@@ -142,10 +145,6 @@
 #include <net/netdebug.h>
 #endif
 
-/* Ugly hack to get simple UART drivers working. */
-u_char ppp_hackup;
-
-
 /*!
  * \addtogroup xgIP
  */
@@ -197,8 +196,7 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
      */
     memcpy(confnet.cd_name, dev->dev_name, sizeof(confnet.cd_name));
     /* Never save MAC address 0. */
-    if(nif->if_mac[0] || nif->if_mac[1] || nif->if_mac[2] ||
-        nif->if_mac[3] || nif->if_mac[4] || nif->if_mac[5]) {
+    if (nif->if_mac[0] || nif->if_mac[1] || nif->if_mac[2] || nif->if_mac[3] || nif->if_mac[4] || nif->if_mac[5]) {
         memcpy(confnet.cdn_mac, nif->if_mac, sizeof(nif->if_mac));
     }
     confnet.cdn_ip_addr = ip_addr;
@@ -244,7 +242,7 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
  */
 int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mask)
 {
-    return NutNetIfConfig2 (name, params, ip_addr, ip_mask, 0);
+    return NutNetIfConfig2(name, params, ip_addr, ip_mask, 0);
 }
 
 /*!
@@ -311,19 +309,14 @@ int NutNetIfConfig2(CONST char *name, void *params, u_long ip_addr, u_long ip_ma
         dcb->dcb_local_ip = ip_addr;
         dcb->dcb_ip_mask = ip_mask ? ip_mask : 0xffffffff;
         NutEventBroadcast(&dcb->dcb_state_chg);
-        //(*dcb->dcb_pdev->dev_ioctl)(dcb->dcb_pdev, HDLC_SETIFNET, &dev);
         _ioctl(dcb->dcb_fd, HDLC_SETIFNET, &dev);
-
-        /* Ugly hack to get simple UART drivers working. */
-        ppp_hackup = 1;
 
         /*
          * Wait for network layer up and configure the interface on
          * success.
          */
-        if(NutEventWait(&dcb->dcb_state_chg, 60000) == 0 && 
-           dcb->dcb_ipcp_state == PPPS_OPENED) {
-            return NutNetIfSetup(dev, dcb->dcb_local_ip, dcb->dcb_ip_mask, dcb->dcb_remote_ip);    
+        if (NutEventWait(&dcb->dcb_state_chg, 60000) == 0 && dcb->dcb_ipcp_state == PPPS_OPENED) {
+            return NutNetIfSetup(dev, dcb->dcb_local_ip, dcb->dcb_ip_mask, dcb->dcb_remote_ip);
         }
     }
     return -1;
