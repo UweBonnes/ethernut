@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/09/17 13:02:39  haraldkipp
+ * First and last directory added to sample dir
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -142,7 +145,8 @@ extern int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *
                      const char *ifirst_dir, const char *ilast_dir, const char *ins_dir);
 extern int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir);
 extern int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *src_dir, 
-                                 const char *lib_dir, const char *mak_ext, const char *prg_ext);
+                                 const char *lib_dir, const char *mak_ext, const char *prg_ext,
+                                 const char *ifirst_dir, const char *ilast_dir);
 
 const char *GetScriptErrorString(void);
 

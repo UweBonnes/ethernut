@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/09/17 13:02:18  haraldkipp
+ * First and last directory added to sample dir
+ *
  * Revision 1.7  2004/09/07 19:18:11  haraldkipp
  * Trying to get additional .S and .c targets assembled/compiled.
  * ETHERNUT2 default for newly created UserConf.mk.
@@ -63,7 +66,7 @@
  * possible.
  */
 //#define NUT_CONFIGURE_EXEC
-#define NUT_CONFIGURE_VERSION   "0.0.0"
+#define NUT_CONFIGURE_VERSION   "1.0.3"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1380,17 +1383,24 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
  * \param root       Pointer to the root component.
  * \param app_dir    Pathname of the application build directory.
  * \param src_dir    Pathname of the top source directory.
+ * \param lib_dir    Pathname of the directory containing the libraries.
  * \param mak_ext    Filename extension of the platform specific Makedefs/Makerules, e.g. avr-gcc.
  * \param prg_ext    Filename extension of the programmer specific Makedefs/Makerules, e.g. uisp-avr.
+ * \param ifirst_dir Optional include directory. Header files will be included first
+ *                   and thus may replace standard Nut/OS headers with the same name.
+ * \param ilast_dir  Optional include directory. Header files will be included last.
+ *                   This parameter is typically used to specify the compilers runtime 
+ *                   library. Header files with the same name as Nut/OS standard headers
+ *                   are ignored.
  *
  * \return 0 on success, otherwise return -1.
  */
 int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *src_dir, 
-                          const char *lib_dir, const char *mak_ext, const char *prg_ext)
+                          const char *lib_dir, const char *mak_ext, const char *prg_ext,
+                          const char *ifirst_dir, const char *ilast_dir)
 {
     FILE *fp;
     char path[255];
-    char *cp;
     struct tm *ltime;
     time_t now;
 
@@ -1428,10 +1438,11 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
             fprintf(fp, "top_srcdir = %s\n", src_dir);
             fprintf(fp, "top_appdir = %s\n", app_dir);
             fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
-            strcpy(path, lib_dir);
-            if((cp = strrchr(path, '/')) != NULL && strcmp(cp, "/lib") == 0) {
-                *cp = '\0';
-                fprintf(fp, "INCFIRST=$(INCPRE)%s/include\n", path);
+            if(ifirst_dir && *ifirst_dir) {
+                fprintf(fp, "INCFIRST = $(INCPRE)%s\n", ifirst_dir);
+            }
+            if(ilast_dir && *ilast_dir) {
+                fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
             }
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
             fprintf(fp, "include $(top_srcdir)/app/Makedefs.%s\n", mak_ext);

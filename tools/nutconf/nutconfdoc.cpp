@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.5  2004/09/17 13:02:39  haraldkipp
+ * First and last directory added to sample dir
+ *
  * Revision 1.4  2004/09/07 19:20:07  haraldkipp
  * Initial/default lib/inc dirs updated
  *
@@ -542,6 +545,7 @@ bool CNutConfDoc::GenerateApplicationTree()
     wxBusyCursor wait;
 
     wxString src_dir = cfg->m_source_dir + wxT("/app");
+    wxString cfg_inc = cfg->m_firstidir;
 
     wxLogMessage("Copying samples from %s to %s", src_dir.c_str(), cfg->m_app_dir.c_str());
     CDirCopyTraverser traverser(src_dir, cfg->m_app_dir);
@@ -553,8 +557,12 @@ bool CNutConfDoc::GenerateApplicationTree()
     if(lib_dir.IsEmpty()) {
         lib_dir = cfg->m_buildpath + "/lib";
     }
+    if(cfg_inc.IsEmpty()) {
+        cfg_inc = cfg->m_buildpath + "/include";
+    }
     if(CreateSampleDirectory(m_root, cfg->m_app_dir.c_str(), cfg->m_source_dir.c_str(), 
-                             lib_dir.c_str(), cfg->m_platform.c_str(), cfg->m_programmer.c_str())) {
+                             lib_dir.c_str(), cfg->m_platform.c_str(), cfg->m_programmer.c_str(),
+                             cfg_inc, cfg->m_lastidir.c_str())) {
         return false;
     }
     wxLogMessage("OK");
