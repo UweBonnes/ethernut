@@ -46,6 +46,12 @@
  * Have a look to our m-can board if you have questions.
  */
 
+/*
+ * $Log$
+ * Revision 1.3  2004/05/25 17:33:01  drsung
+ * Added 'log' keyword for CVS.
+ *
+ */
 
 
 #include <stdlib.h>

@@ -34,6 +34,13 @@
  * For additional information see http://www.ethernut.de/
  */
  
+/*
+ * $Log$
+ * Revision 1.2  2004/05/25 17:33:32  drsung
+ * Added 'log' keyword for CVS.
+ *
+ */
+
 #include <sys/device.h>
 
 
