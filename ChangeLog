@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.106 2004/08/26 14:03:24 olereinhardt Exp $
+$Id: ChangeLog,v 1.107 2004/09/01 14:31:00 haraldkipp Exp $
+
+2004-09-01  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/basemon/basemon.c, app/basemon/realtek.c: Added support
+	for EEPROM emulation.
+
+	* conf/dev/dev.nut: Added UART handshake and EEPROM emulation 
+	port bits.
+
+	* conf/os/os.nut: Cleaned up memory configuration.
+
+	* conf/repository.nut: AVR interrupts chosen by number.
+
+	* os/arch/avr_nutinit.c: Using configuration values from 
+	cfg/memory.h. Added configurable reserved memory area.
+	Automatic check for external memory removed.
+
 
 2004-08-26
 	* dev/hd44780_bus.c
