@@ -35,6 +35,9 @@
  */
 /*
  * $Log$
+ * Revision 1.6  2005/01/19 17:03:35  freckle
+ * forget to check in other cygwin fixes
+ *
  * Revision 1.5  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -96,7 +99,7 @@ struct _tm {
  * \typedef long time_t
  * \brief Serial date/time. Holds number of seconds after January 1st, 1970.
  */
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 typedef long time_t;
 #endif
 

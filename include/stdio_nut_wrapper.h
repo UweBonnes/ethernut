@@ -58,9 +58,10 @@
 #define vsscanf_P(...) NUT_vsscanf(__VA_ARGS__)
 
 #define fileno(...) NUT__fileno(__VA_ARGS__)
+#define fcloseall(...) NUT_fcloseall(__VA_ARGS__)
 
 #define _fileno(...) NUT__fileno(__VA_ARGS__)
 #define _fdopen(...) NUT__fdopen(__VA_ARGS__)
 #define _flushall(...) NUT__flushall(__VA_ARGS__)
+#define _fmode(...) NUT__fmode(__VA_ARGS__)
 
-#define fcloseall(...) NUT_fcloseall(__VA_ARGS__)

@@ -1,9 +1,14 @@
-$Id: ChangeLog,v 1.148 2005/01/18 10:00:51 freckle Exp $
+$Id: ChangeLog,v 1.149 2005/01/19 17:03:31 freckle Exp $
 
-2004-11-29  Matthias Ringwald <mringwal@inf.ethz.ch> 
+2005-01-19  Matthias Ringwald <mringwal@inf.ethz.ch> 
 
-    * unix_devs.c: added includes for cygwin compile.
-    Implemented input flush (read with len = 0).
+	* stdio.h, stdio_nut_wrapper.h, time.h: more fixes
+	for cygwin compilation
+
+2005-01-19  Matthias Ringwald <mringwal@inf.ethz.ch> 
+
+	* unix_devs.c: added includes for cygwin compile.
+	Implemented input flush (read with len = 0).
       
 2004-01-13  Harald Kipp  <harald.kipp@egnite.de>
 

@@ -56,6 +56,12 @@
 #undef stdin
 #undef stdout
 #undef stderr
+#undef clearerr
+#undef feof
+#undef ferror
+#undef getchar
+#undef putchar
+
 #include <stdio_nut_wrapper.h>
 
 #endif                          /* NO_STDIO_NUT_WRAPPER */
