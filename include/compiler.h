@@ -89,6 +89,9 @@
 #define strcpy_P(x,y)       cstrcpy(x,y)
 #define strncpy_P(x,y,z)    cstrncpy(x,y,z)
 
+/* This will only work for equal/not equal comparisions. */
+#define strcmp_P(x, y)      cstrcmp(y, x)
+
 #define memcpy_P(dst, src, size)    \
 {                                   \
     u_short _i;                     \
@@ -104,6 +107,7 @@
 #define strncasecmp(s1, s2, n)  strncmp(s1, s2, n)
 
 #define BV(x)       BIT(x)
+#define _BV(x)      BIT(x)
 
 #define cli()           CLI()
 #define sei()           SEI()
@@ -123,7 +127,10 @@
 #define SIGNAL(x)   void x(void)
 
 #define outp(val, reg)  (reg = val)
+#define outb(reg, val)  (reg = val)
+
 #define inp(reg)        (reg)
+#define inb(reg)        (reg)
 
 #include <eeprom.h>
 
