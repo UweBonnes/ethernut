@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.17  2005/03/28 18:26:59  mrjones4u
+ * Fixed non-release bug in DCHP client
+ *
  * Revision 1.16  2005/02/03 14:33:56  haraldkipp
  * Several bug fixes and enhancements. The most important fix will
  * avoid hanging, when Ethernut is reset while ICMP pings are
@@ -1393,7 +1396,7 @@ THREAD(NutDhcpClient, arg)
         }
 
         /*
-         * Keep track of aquisition time.
+         * Keep track of acquisition time.
          */
         if (dhcpState == DHCPST_SELECTING || dhcpState == DHCPST_RENEWING || dhcpState == DHCPST_REBINDING) {
             /* For retries make sure that secs doesn't overflow. */
@@ -1580,7 +1583,7 @@ THREAD(NutDhcpClient, arg)
                     reply = 0;
                     leaseTime = aqsTime;
                     dhcpState = DHCPST_BOUND;
-                } else if (dhcpConfig->dyn_msgtyp == DHCP_NAK) {
+                } else if (reply->dyn_msgtyp == DHCP_NAK) {
                     /* Either our previous address had been allocated by
                        someone else or we changed the network. Remove the
                        previous address and restart. */

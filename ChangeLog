@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.186 2005/03/24 16:09:38 freckle Exp $
+$Id: ChangeLog,v 1.187 2005/03/28 18:27:06 mrjones4u Exp $
+
+2005-03-25  Michael Jones <Michael.e.Jones@web.de>
+
+	* pro/dhcpc.c: Removed small typo that stopped the DHCPST_REBOOTING state
+	from releasing a previously reserved IP-Address if the DHCP server
+	sends an NAK.
 
 2005-03-21  Matthias Ringwald <mringwal@.inf.ethz.ch>
 
