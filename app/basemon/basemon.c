@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/04 17:37:04  haraldkipp
+ * PD5 used with RS485, do not test
+ *
  * Revision 1.2  2003/11/03 16:07:40  haraldkipp
  * Completely rewritten to support Ethernut 2
  *
@@ -127,7 +130,7 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.0.1";
+static char *version = "4.0.2";
 static size_t sram;
 static u_char banks;
 static size_t banksize;
@@ -168,26 +171,34 @@ int TestPorts(void)
         outb(PORTB, ipat);
         Delay(100);
         if ((val = inb(PINB)) != ipat)
-            bpat |= ~val;
+            bpat |= pat;
     }
     outb(DDRB, 0);
     if (bpat)
-        printf("PORTB bits %02X\n\x07", bpat);
+        printf("PORTB bits 0x%02X\n\x07", bpat);
 
     /*
      * Port D.
      */
     for (pat = 1; pat; pat <<= 1) {
+#ifdef __AVR_ATmega128__
+        /* Exclude PD5 used for RS485 direction select. */
+        if(ipat & 0x20) {
+            continue;
+        }
+#endif
         ipat = ~pat;
         outb(DDRD, pat);
         outb(PORTD, ipat);
         Delay(1000);
-        if ((val = inb(PIND)) != ipat)
-            dpat |= ~val;
+        if ((val = inb(PIND) | 0x20) != ipat) {
+            printf("[%02X-%02X]", ipat, val);
+            dpat |= pat;
+        }
     }
     outb(DDRD, 0);
     if (dpat)
-        printf("PORTD bits %02X\n\x07", dpat);
+        printf("PORTD bits 0x%02X\n\x07", dpat);
 
     /*
      * Port E. Exclude PE0, PE1 and PE5.
@@ -200,12 +211,12 @@ int TestPorts(void)
         outb(PORTE, ipat);
         Delay(1000);
         if ((val = inb(PINE) | 0x23) != ipat) {
-            epat |= ~val;
+            epat |= pat;
         }
     }
     outb(DDRE, 0);
     if (epat)
-        printf("PORTE bits %02X\n\x07", epat);
+        printf("PORTE bits 0x%02X\n\x07", epat);
 
 #ifdef __AVR_ATmega128__
     /*
@@ -217,12 +228,12 @@ int TestPorts(void)
         outb(PORTF, ipat);
         Delay(1000);
         if ((val = inb(PINF) | 0xF0) != ipat) {
-            fpat |= ~val;
+            fpat |= pat;
         }
     }
     outb(DDRF, 0);
     if (fpat)
-        printf("PORTF bits %02X\n\x07", fpat);
+        printf("PORTF bits 0x%02X\n\x07", fpat);
 #endif
 
     if (bpat || dpat || epat || fpat)
