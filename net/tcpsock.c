@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/01/14 19:34:08  drsung
+ * New TCP output buffer handling
+ *
  * Revision 1.4  2003/11/04 17:58:18  haraldkipp
  * Removed volatile attibute from socket list
  *
@@ -132,7 +135,6 @@
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/event.h>
-#include <sys/thread.h>
 #include <sys/timer.h>
 
 #include <net/errno.h>
@@ -156,7 +158,7 @@
 
 #define TICK_RATE   1
 
-TCPSOCKET *tcpSocketList = 0;  /*!< Linked list of all TCP sockets. */
+TCPSOCKET *tcpSocketList = 0;   /*!< Linked list of all TCP sockets. */
 
 static volatile u_short last_local_port = 4096; /* Unassigned local port. */
 
@@ -242,9 +244,7 @@ TCPSOCKET *NutTcpFindSocket(u_short lport, u_short rport, u_long raddr)
      */
     for (sp = tcpSocketList; sp; sp = sp->so_next) {
         if (sp->so_local_port == lport) {
-            if (sp->so_remote_addr == raddr &&
-                sp->so_remote_port == rport &&
-                sp->so_state != TCPS_CLOSED) {
+            if (sp->so_remote_addr == raddr && sp->so_remote_port == rport && sp->so_state != TCPS_CLOSED) {
                 sock = sp;
                 break;
             }
@@ -287,8 +287,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
 {
     TCPSOCKET *sock = 0;
 
-    if (tcpStateRunning ||
-        (tcpStateRunning = (NutTcpInitStateMachine() == 0))) {
+    if (tcpStateRunning || (tcpStateRunning = (NutTcpInitStateMachine() == 0))) {
 
         if ((sock = NutHeapAllocClear(sizeof(TCPSOCKET))) != 0) {
             sock->so_state = TCPS_CLOSED;
@@ -312,6 +311,9 @@ TCPSOCKET *NutTcpCreateSocket(void)
             sock->so_srtt_var = 3 * TICK_RATE;
 
             sock->so_next = tcpSocketList;
+
+            sock->so_devobsz = TCP_MSS; /* Default output buffer size is TCP_MSS bytes */
+
             tcpSocketList = sock;
         }
     }
@@ -326,6 +328,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
  * - TCP_MAXSEG Maximum segment size (#u_short).
  * - SO_SNDTIMEO Socket send timeout (#u_long).
  * - SO_RCVTIMEO Socket receive timeout (#u_long).
+ * - SO_SNDBUF   Socket output buffer size (#u_short).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutTcpCreateSocket().
@@ -335,8 +338,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
  * \return 0 on success, -1 otherwise. The specific error code
  *         can be retrieved by calling NutTcpError().
  */
-int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval,
-                     int optlen)
+int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optlen)
 {
     int rc = -1;
 
@@ -381,6 +383,16 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval,
         }
         break;
 
+    case SO_SNDBUF:
+        if (optval == 0 || optlen != sizeof(u_short))
+            sock->so_last_error = EINVAL;
+        else {
+            NutTcpDeviceWrite(sock, 0, 0);
+            sock->so_devobsz = *((u_short *) optval);
+            rc = 0;
+        }
+        break;
+
     default:
         sock->so_last_error = ENOPROTOOPT;
         break;
@@ -396,6 +408,7 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval,
  * - TCP_MAXSEG Maximum segment size (#u_short).
  * - SO_SNDTIMEO Socket send timeout (#u_long).
  * - SO_RCVTIMEO Socket receive timeout (#u_long).
+ * - SO_SNDBUF   Socket output buffer size (#u_short).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutTcpCreateSocket().
@@ -406,8 +419,7 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval,
  * \return 0 on success, -1 otherwise. The specific error code
  *         can be retrieved by calling NutTcpError().
  */
-int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval,
-                     int optlen)
+int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval, int optlen)
 {
     int rc = -1;
 
@@ -447,6 +459,15 @@ int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval,
             sock->so_last_error = EINVAL;
         else {
             *((u_long *) optval) = sock->so_read_to;
+            rc = 0;
+        }
+        break;
+
+    case SO_SNDBUF:
+        if (optval == 0 || optlen != sizeof(u_short))
+            sock->so_last_error = EINVAL;
+        else {
+            *((u_short *) optval) = sock->so_devobsz;
             rc = 0;
         }
         break;
@@ -610,7 +631,6 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
             }
             continue;
         }
-
         /*
          * Wait for peer's window open wide enough to take all our 
          * data. This also avoids silly window syndrome on our side.
@@ -627,7 +647,6 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
         }
         break;
     }
-
     /*
      * The segment will be automatically retransmitted if not 
      * acknowledged in time. If this returns an error, it's a 
@@ -665,8 +684,7 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
      */
     if (sock == 0)
         return -1;
-    if (sock->so_state != TCPS_ESTABLISHED
-        && sock->so_state != TCPS_CLOSE_WAIT) {
+    if (sock->so_state != TCPS_ESTABLISHED && sock->so_state != TCPS_CLOSE_WAIT) {
         sock->so_last_error = ENOTCONN;
         return -1;
     }
@@ -690,10 +708,10 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
         size = sock->so_rx_cnt - sock->so_rd_cnt;
     if (size) {
         NETBUF *nb;
-        u_short rd_cnt; /* Bytes read from NETBUF. */
-        u_short nb_cnt; /* Bytes left in NETBUF. */
-        u_short ab_cnt; /* Total bytes in app buffer. */
-        u_short mv_cnt; /* Bytes to move to app buffer. */
+        u_short rd_cnt;         /* Bytes read from NETBUF. */
+        u_short nb_cnt;         /* Bytes left in NETBUF. */
+        u_short ab_cnt;         /* Total bytes in app buffer. */
+        u_short mv_cnt;         /* Bytes to move to app buffer. */
 
         rd_cnt = sock->so_rd_cnt;
 
@@ -702,12 +720,12 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
             nb = sock->so_rx_buf;
             nb_cnt = nb->nb_ap.sz - rd_cnt;
             mv_cnt = size - ab_cnt;
-            if(mv_cnt > nb_cnt)
+            if (mv_cnt > nb_cnt)
                 mv_cnt = nb_cnt;
-            memcpy((char *)data + ab_cnt, (char *)(nb->nb_ap.vp) + rd_cnt, mv_cnt);
+            memcpy((char *) data + ab_cnt, (char *) (nb->nb_ap.vp) + rd_cnt, mv_cnt);
             ab_cnt += mv_cnt;
             rd_cnt += mv_cnt;
-            if(mv_cnt >= nb_cnt) {
+            if (mv_cnt >= nb_cnt) {
                 sock->so_rx_buf = nb->nb_next;
                 sock->so_rx_cnt -= rd_cnt;
                 NutNetBufFree(nb);
@@ -750,6 +768,8 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
  */
 int NutTcpCloseSocket(TCPSOCKET * sock)
 {
+    /* Flush buffer first */
+    NutTcpDeviceWrite(sock, 0, 0);
     return NutTcpStateCloseEvent(sock);
 }
 
@@ -819,6 +839,19 @@ int NutTcpDeviceRead(TCPSOCKET * sock, void *buffer, int size)
     return NutTcpReceive(sock, buffer, size);
 }
 
+static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
+{
+    int rc;
+    int bite;
+
+    for (rc = 0; rc < size; rc += bite) {
+        if ((bite = NutTcpSend(sock, (u_char *) buffer + rc, size - rc)) <= 0) {
+            return -1;
+        }
+    }
+    return rc;
+}
+
 /*! 
  * \brief Write to a socket.
  *
@@ -830,22 +863,15 @@ int NutTcpDeviceRead(TCPSOCKET * sock, void *buffer, int size)
  */
 int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
 {
-    int rc;
-    int bite;
+    int rc, sz;
 
-    /*
-     * Flush buffer.
-     */
+    /* Flush buffer? */
     if (size == 0) {
         if (sock->so_devocnt) {
-            for (rc = 0; rc < sock->so_devocnt; rc += bite) {
-                if ((bite =
-                     NutTcpSend(sock, sock->so_devobuf + rc,
-                                sock->so_devocnt - rc)) <= 0) {
-                    NutHeapFree(sock->so_devobuf);
-                    sock->so_devocnt = 0;
-                    return -1;
-                }
+            if (SendBuffer(sock, sock->so_devobuf, sock->so_devocnt) < 0) {
+                NutHeapFree(sock->so_devobuf);
+                sock->so_devocnt = 0;
+                return -1;
             }
             NutHeapFree(sock->so_devobuf);
             sock->so_devocnt = 0;
@@ -853,49 +879,69 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
         return 0;
     }
 
+    /* If we don't have a buffer so far... */
     if (sock->so_devocnt == 0) {
-        if (size >= 64) {
-            for (rc = 0; rc < size; rc += bite) {
-                if ((bite =
-                     NutTcpSend(sock, (u_char *) buffer + rc,
-                                size - rc)) <= 0)
-                    return -1;
-            }
-            return size;
+        /* If new data block is bigger or equal than buffer size
+         * send first part of data to nic and store remaining
+         * bytes in buffer
+         */
+        if (size >= sock->so_devobsz) {
+            rc = size % sock->so_devobsz;
+            SendBuffer(sock, buffer, size - rc);
+            buffer += size - rc;
+        } else
+            rc = size;
+
+        /* If there are some remainings bytes, allocate buffer
+         * and store them
+         */
+        if (rc) {
+            if (!(sock->so_devobuf = NutHeapAlloc(sock->so_devobsz)))
+                return -1;
+            memcpy(sock->so_devobuf, buffer, rc);
+            sock->so_devocnt = rc;
         }
-        sock->so_devobuf = NutHeapAlloc(256);
-        memcpy(sock->so_devobuf, buffer, size);
-        sock->so_devocnt = size;
         return size;
     }
 
-    if (size < 64 && sock->so_devocnt + size < 256) {
+    /* Check if new data fully fits in output buffer */
+    if (sock->so_devocnt + size < sock->so_devobsz) {
         memcpy(sock->so_devobuf + sock->so_devocnt, buffer, size);
         sock->so_devocnt += size;
         return size;
     }
 
-    for (rc = 0; rc < sock->so_devocnt; rc += bite) {
-        if ((bite =
-             NutTcpSend(sock, sock->so_devobuf + rc,
-                        sock->so_devocnt - rc)) <= 0) {
-            NutHeapFree(sock->so_devobuf);
-            sock->so_devocnt = 0;
-            return -1;
-        }
-    }
-    sock->so_devocnt = 0;
-    if (size >= 64) {
+    /* Otherwise store first bytes of new data in buffer and flush
+     * the buffer
+     */
+    sz = sock->so_devobsz - sock->so_devocnt;
+    memcpy(sock->so_devobuf + sock->so_devocnt, buffer, sz);
+    buffer += sz;
+    if (SendBuffer(sock, sock->so_devobuf, sock->so_devobsz) < 0) {
         NutHeapFree(sock->so_devobuf);
-        for (rc = 0; rc < size; rc += bite) {
-            if ((bite =
-                 NutTcpSend(sock, (u_char *) buffer + rc, size - rc)) <= 0)
-                return -1;
-        }
-        return size;
+        sock->so_devocnt = 0;
+        return -1;
     }
-    memcpy(sock->so_devobuf, buffer, size);
-    sock->so_devocnt = size;
+
+    /* If remaining data is bigger or equal than buffer size
+     * send first part of data to nic and later store remaining
+     * bytes in buffer
+     */
+    sz = size - sz;
+    if (sz >= sock->so_devobsz) {
+        rc = sz % sock->so_devobsz;
+        SendBuffer(sock, buffer, sz - rc);
+        buffer += sz - rc;
+    } else
+        rc = sz;
+
+    /* If there are some remainings bytes, store them in buffer
+     */
+    if (rc)
+        memcpy(sock->so_devobuf, buffer, rc);
+    else                        /* Otherwise free buffer */
+        NutHeapFree(sock->so_devobuf);
+    sock->so_devocnt = rc;
 
     return size;
 }

@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/01/14 19:33:13  drsung
+ * New TCP output buffer handling
+ *
  * Revision 1.3  2003/11/24 21:00:21  drsung
  * Packet queue added for UDP sockets.
  *
@@ -158,8 +161,9 @@ struct tcp_socket {
     int (*so_devwrite) (TCPSOCKET *, CONST void *, int); /*!< \brief Write to device. */
     int (*so_devwrite_P) (TCPSOCKET *, PGM_P, int); /*!< \brief Write to device. */
     int (*so_devioctl) (TCPSOCKET *, int, void *); /*!< \brief Driver control function. */
-    int so_devocnt;
-    u_char *so_devobuf;
+    u_short so_devocnt;     /*!< \brief Number of data bytes in output buffer. */
+    u_char *so_devobuf;     /*!< \brief Pointer to output buffer. */
+    u_short so_devobsz;     /*!< \brief Output buffer size. */
 
     volatile u_char  so_state;       /*!< \brief Connection state, see tcp_fsm.h */
     u_long  so_local_addr;  /*!< \brief Local IP address in net byte order. */
