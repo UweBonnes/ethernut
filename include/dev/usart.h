@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/11/12 11:55:39  freckle
+ * marked rbf_blockcnt and rbf_blockptr as volatile
+ *
  * Revision 1.5  2004/11/12 11:25:43  freckle
  * added rbf_blockcnt and rbf_blockptr to _RINGBUF (if UART_BLOCKING_READ is
  * defined). added USART_MF_BLOCKREAD mode define
@@ -191,14 +194,16 @@ struct _RINGBUF {
      *
      * If this is zero, incoming bytes are stored in ringbuffer
      * If this not zero, incoming bytes are stored in rbf_blockptr
+     * Changed by the receiver interrupt.
      */
-	size_t rbf_blockcnt;
+	size_t volatile rbf_blockcnt;
 	
     /*! \brief Address for block-read
      *
      * If bf_blockbytes is not zero, incoming bytes are stored here
+     * Changed by the receiver interrupt.
      */
-	u_char* rbf_blockptr;
+	u_char* volatile rbf_blockptr;
 #endif
 
 };
