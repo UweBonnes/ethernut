@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/08/04 16:28:16  haraldkipp
+# Dataflash check added
+#
 # Revision 1.2  2003/11/03 16:12:02  haraldkipp
 # Completely rewritten to support Ethernut 2
 #
@@ -71,7 +74,7 @@ top_srcdir = ../..
 
 include $(top_srcdir)/app/Makedefs
 
-SRCS =  $(PROJ).c xmemtest.c realtek.c smsc.c uart.c webdemo.c utils.c $(WEBFILE)
+SRCS =  $(PROJ).c xmemtest.c dataflash.c realtek.c smsc.c uart.c webdemo.c utils.c $(WEBFILE)
 LIBS =  -lnutnet -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
 
 OBJS =  $(SRCS:.c=.o)
