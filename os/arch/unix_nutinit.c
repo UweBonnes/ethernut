@@ -41,14 +41,16 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <dev/unix_devs.h>
-#include <sys/types.h>
-#include <sys/device.h>
-#include <sys/osdebug.h>
 #include <unistd.h>
 #include <signal.h>
+
+#include <sys/types.h>
+#include <sys/event.h>
+#include <sys/device.h>
+#include <sys/osdebug.h>
 #include <sys/atom.h>
 #include <dev/irqreg.h>
+#include <dev/unix_devs.h>
 
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 
@@ -80,6 +82,8 @@ u_char irq_processed;
 /* used to check (not-)allowed IRQ/signaled recursion */
 static int irq_inside;
 
+/* queue to signal at next NutThreadYield() */
+HANDLE * irq_eventqueues[IRQ_MAX];
 
 /*!
  * \brief Register an interrupt handler.
@@ -252,6 +256,46 @@ void *NutIRQSimulation(void *arg)
     }
 }
 
+/*!
+ * \brief Register NutEventPostAsync for next NutThreadYield
+ * 
+ * Store responsible IRQ and queue to signal in list
+ *
+ * \param irq_nr responsible IRQ
+ * \param queue to signal
+ *
+ * this is added to allow an non-nut thread to post events without
+ * introducing a race-condition
+ *
+ */
+void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue )
+{
+    if (irq_nr < IRQ_MAX)
+        irq_eventqueues[irq_nr] = queue;
+}
+
+/*!
+ * \brief Handle interrupt triggered NutEventPostAsync
+ * Check list of events to post and call NutEventPostAsync on them
+ *
+ * this is added to allow an non-nut thread to post events without
+ * introducing a race-condition
+ *
+ */
+void NutUnixThreadYieldHook(void);
+void NutUnixThreadYieldHook()
+{   
+    u_char irq_nr;
+    for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++) {
+        if ( irq_eventqueues[irq_nr] != 0) {
+            // printf("NutUnixThreadYield posting event nr %d\n\r", irq_nr);
+            NutEventPostAsync( irq_eventqueues[irq_nr] );
+            irq_eventqueues[irq_nr] = 0; 
+        }
+    }
+}
+
+
 /*
  * Init IRQ handling
  *
@@ -273,6 +317,11 @@ void NutIRQInit()
 {
     /* Init interrupts */
     irq_inside = 0;
+
+    for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++)
+        irq_eventqueues[irq_nr] = 0;
+
+    // no irq pending
     irq_nr = IRQ_MAX;
 
     // define our IRQ signal
@@ -395,7 +444,7 @@ int main(int argc, char *argv[])
      * Create idle thread
      */
     NutThreadCreate("idle", NutIdle, 0, 384);
-
+    
     return 0;
 }
 

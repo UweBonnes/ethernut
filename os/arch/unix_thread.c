@@ -41,6 +41,9 @@
 #include <pthread.h>
 #include <stdio.h>
 
+// prototypes
+extern void NutUnixThreadYieldHook(void);  // from unix_nutinit.c
+
 // global stuff 
 
 /* reused parameters for other calls */
@@ -239,9 +242,8 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
         // go!
         fn(arg);
 
-        // this should not be reached
-        return td;
-
+        printf("Nut/OS Application terminated.\n\r");
+        exit( 0 );
     };
 
     // lock mutex and start thread
@@ -269,3 +271,4 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
 
     return td;
 }
+

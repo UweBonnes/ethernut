@@ -48,6 +48,13 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/08/05 12:13:57  freckle
+ * Added unix emulation hook in NutThreadYield to safely process
+ * NutPostEventAsync calls occuring in non Nut/OS threads.
+ * Rewrote the unix read function again using the new unix NutThreadYield hook
+ * to call the NutPostEventAsync function safely (fast & correct).
+ * _write(nf, 0, 0) aka fflush is ignored on unix emulation.
+ *
  * Revision 1.8  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -315,6 +322,10 @@ void NutThreadYield(void)
 #endif
 
     NutEnterCritical();
+
+#if defined(__linux__) || defined(__APPLE__)
+    NutUnixThreadYieldHook();
+#endif
 
     /*
      * If the current thread is still in front of the

@@ -35,6 +35,13 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/08/05 12:13:56  freckle
+ * Added unix emulation hook in NutThreadYield to safely process
+ * NutPostEventAsync calls occuring in non Nut/OS threads.
+ * Rewrote the unix read function again using the new unix NutThreadYield hook
+ * to call the NutPostEventAsync function safely (fast & correct).
+ * _write(nf, 0, 0) aka fflush is ignored on unix emulation.
+ *
  * Revision 1.6  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -115,7 +122,8 @@ extern pthread_cond_t irq_cv;
 extern sigset_t irq_signal;
 
 extern void NutIRQTrigger(u_char);
-extern int NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg);
+extern int  NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg);
+extern void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue );
 
 #else
 

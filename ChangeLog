@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.97 2004/08/05 06:54:40 drsung Exp $
+$Id: ChangeLog,v 1.98 2004/08/05 12:13:54 freckle Exp $
 
 2004-08-05  Oliver Schulz  <olischulz@web.de>
 
@@ -6,8 +6,17 @@ $Id: ChangeLog,v 1.97 2004/08/05 06:54:40 drsung Exp $
 	function was returned, which is obviosly wrong. Now the correct 
 	filelength value is returned to the caller.
 
-
 2004-08-05  Matthias Ringwald <mringwal@inf.ethz.ch>
+    * dev/irqreg.h, os/thread.c, os/arch/unix_nutinit.c,
+    os/arch/unix_thread.c: added unix emulation hook in NutThreadYield
+    to safely process NutPostEventAsync calls occuring in non Nut/OS
+    threads.
+    
+    * dev/unix_devs.c, include/dev/unix_devs.c: rewrote the unix read
+    function again using the new unix NutThreadYield hook to call
+    the NutPostEventAsync function safely (fast & correct).
+    _write(nf, 0, 0) aka fflush is ignored on unix emulation.
+
     * dev/unix_devs.c: CTRL-C on terminal terminates running
     unix emulation apps nows.
 

@@ -43,6 +43,13 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/08/05 12:13:56  freckle
+ * Added unix emulation hook in NutThreadYield to safely process
+ * NutPostEventAsync calls occuring in non Nut/OS threads.
+ * Rewrote the unix read function again using the new unix NutThreadYield hook
+ * to call the NutPostEventAsync function safely (fast & correct).
+ * _write(nf, 0, 0) aka fflush is ignored on unix emulation.
+ *
  * Revision 1.4  2004/06/22 09:00:00  freckle
  * Further work on unix_dev emulation. Multiple parallel reads don't block
  * each other. Still, dead-locks occure.
@@ -73,6 +80,8 @@ extern "C" {
  * \addtogroup xgUnixEmulation
  */
 /*@{*/
+
+// int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf);
 
 /*
  * Available devices.

@@ -81,10 +81,6 @@
 #endif
 #endif
 
-/* private prototypes */
-int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf);
-
-extern void NutIRQTrigger(u_char);
 
 /* thread attributes */
 pthread_attr_t unix_devs_attr;
@@ -252,6 +248,7 @@ static int convertToBaudSpeed(int realSpeed)
 static void UnixDevRxIntr(void *arg){
     NUTDEVICE* dev = (NUTDEVICE*) arg;
     UNIXDCB *  dcb = (UNIXDCB*) dev->dev_dcb;
+    // printf("UnixDevRxIntr(%s)\n",dev->dev_name);
     NutEventPostAsync( &dcb->dcb_rx_rdy);
 }
 
@@ -305,11 +302,23 @@ static void *UnixDevReadThread( void * arg )
         // printf("UnixDevReadThread(%s) task processed\n", dev->dev_name);
 
         // signale waiting thread
-        // NutEventPostAsync( &dcb->dcb_rx_rdy);
+
+        /* version 1 (working but could cause a race condition)
+        NutEventPostAsync( &dcb->dcb_rx_rdy);
+        */
+        
+        /* version 2 (correct, but currently very slow)
         if (dev->dev_name[4] == '0') {
             NutIRQTrigger(IRQ_UART0_RX);
         } else {
             NutIRQTrigger(IRQ_UART1_RX);
+        }*/
+ 
+        /* version 3 (another hack, but fast and correct */
+        if (dev->dev_name[4] == '0') {
+            NutUnixIrqEventPostAsync( IRQ_UART0_RX,  &dcb->dcb_rx_rdy);
+        } else {
+            NutUnixIrqEventPostAsync( IRQ_UART1_RX,  &dcb->dcb_rx_rdy);
         }
     }
    
@@ -359,6 +368,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         if (tcgetattr(nativeFile, &t) == 0) {
 
             /* set input mode (non-canonical, no echo,...) but allow INTR signal */
+            // bzero(&t, sizeof(t));
             t.c_lflag = ISIG;
             t.c_cc[VTIME] = 0;  /* inter-character timer unused */
             t.c_cc[VMIN] = 0;   /* non-blocking read */
@@ -468,6 +478,11 @@ static int UnixDevWrite(NUTFILE * nf, CONST void *buffer, int len)
 {
     int rc;
     int remaining = len;
+    
+    /* flush ? */
+    if (len == 0)
+        return 0;
+        
     UNIXDCB * dcb = (UNIXDCB*) nf->nf_dev->dev_dcb;
     do {
         rc = write(dcb->dcb_fd, buffer, remaining);
