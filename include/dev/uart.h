@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/05/24 20:19:08  drsung
+ * Added function UartAvrSize to return number of chars in input buffer.
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -562,6 +565,7 @@ extern int UartAvrWrite(NUTFILE * fp, CONST void *buffer, int len);
 extern int UartAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
 extern NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern long UartAvrSize(NUTFILE * fp);
 extern int UartAvrClose(NUTFILE * fp);
 
 __END_DECLS

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/05/24 20:15:49  drsung
+ * Added function UartAvrSize to return number of chars in input buffer.
+ *
  * Revision 1.2  2004/03/18 14:01:53  haraldkipp
  * Deprecated header file removed
  *
@@ -74,12 +77,12 @@ NUTDEVICE devUart0 = {
     &dcb_uart0,                 /*!< Driver control block. */
     UartAvrInit,                /*!< Driver initialization routine. */
     UartAvrIOCtl,               /*!< Driver specific control function. */
-    UartAvrRead,
-    UartAvrWrite,
-    UartAvrWrite_P,
-    UartAvrOpen,
-    UartAvrClose,
-    0
+    UartAvrRead,                /*!< Read from device. */
+    UartAvrWrite,               /*!< Write to device. */
+    UartAvrWrite_P,             /*!< Write to device from program space. */
+    UartAvrOpen,                /*!< Open a device or file. */
+    UartAvrClose,               /*!< Close a device or file. */
+    UartAvrSize                 /*!< Request file size. */
 };
 
 /*@}*/

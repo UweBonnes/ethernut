@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/05/24 20:15:50  drsung
+ * Added function UartAvrSize to return number of chars in input buffer.
+ *
  * Revision 1.4  2004/03/18 14:01:07  haraldkipp
  * Deprecated header file replaced
  *
@@ -792,5 +795,19 @@ int UartAvrClose(NUTFILE * fp)
 
     return 0;
 }
+
+/*! 
+ * \brief Request file size.
+ */
+long UartAvrSize(NUTFILE * fp)
+{
+    NUTDEVICE *dev;
+    IFSTREAM *ifs;
+
+    dev = fp->nf_dev;
+    ifs = (IFSTREAM *) dev->dev_icb;
+    return ((u_char)(ifs->if_rx_idx - ifs->if_rd_idx));
+}
+
 
 /*@}*/
