@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/09/19 15:13:09  haraldkipp
+ * Only one target per OBJx entry
+ *
  * Revision 1.6  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
  *
@@ -63,7 +66,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.0.3"
+#define VERSION "1.0.4"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

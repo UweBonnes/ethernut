@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/09/19 15:13:09  haraldkipp
+ * Only one target per OBJx entry
+ *
  * Revision 1.8  2004/09/17 13:02:18  haraldkipp
  * First and last directory added to sample dir
  *
@@ -66,7 +69,7 @@
  * possible.
  */
 //#define NUT_CONFIGURE_EXEC
-#define NUT_CONFIGURE_VERSION   "1.0.3"
+#define NUT_CONFIGURE_VERSION   "1.0.4"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -957,28 +960,23 @@ int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
     }
     fputc('\n', fp);
 
-    for(k = 0; k < rc; k++) {
-        //fprintf(fp, "SRC%d =\t", k + 1);
-        fprintf(fp, "OBJ%d =\t", k + 1);
-        c = 8;
-        cop = compo;
-        while (cop) {
-            if(cop->nc_enabled && cop->nc_sources) {
-                for (i = 0; cop->nc_sources[i]; i++) {
-                    if(cop->nc_targets && cop->nc_targets[i]) {
-                        c += strlen(cop->nc_sources[i]);
-                        if (c > 72) {
-                            fprintf(fp, " \\\n\t");
-                            c = 8;
-                        }
-                        //fprintf(fp, " %s", cop->nc_sources[i]);
-                        fprintf(fp, " %s", cop->nc_targets[i]);
-                    }
+    /*
+     * If explicit targets are specified, we list the objects and
+     * hope that Makerules will do it right.
+     */
+    k = 0;
+    c = 8;
+    cop = compo;
+    while (k < rc && cop) {
+        if(cop->nc_enabled && cop->nc_sources) {
+            for (i = 0; cop->nc_sources[i]; i++) {
+                if(cop->nc_targets && cop->nc_targets[i]) {
+                    k++;
+                    fprintf(fp, "OBJ%d = %s\n", k, cop->nc_targets[i]);
                 }
             }
-            cop = cop->nc_nxt;
         }
-        fputc('\n', fp);
+        cop = cop->nc_nxt;
     }
     fputc('\n', fp);
 
