@@ -41,11 +41,14 @@
 #define NO_STDIO_NUT_WRAPPER
 
 #include <fcntl.h>
+#include <fcntl_orig.h>
 #include <arch/unix.h>
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
+#include <sys/thread.h>
 #include <dev/usart.h>
+#include <errno.h> 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,6 +57,9 @@
 #include <termios.h>
 
 #include <dev/unix_devs.h>
+
+/* private prototypes */
+int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf);
 
 /*
  * functions available on avr somehow -- not implemented properly here :(
@@ -85,6 +91,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     char *nativeName;
     const char *modeString;
     struct termios t;
+	long	baud = USART_INITSPEED;
 
     // map from dev->name to unix name
     if (strncmp("uart", dev->dev_name, 4) == 0) {
@@ -129,9 +136,13 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
 
     // fopen unix device
     if (strcmp("stdio", nativeName) == 0) {
+
         nativeFile = stdout;
+		// store unix fd in dev
+		dev->dev_dcb = nativeFile;
+
     } else {
-        // printf("UnixDevOpen: uart%c -> %s, mode: %s\n", dev->dev_name[4], nativeName, modeString);
+
         nativeFile = fopen(nativeName, modeString);
 
         if (tcgetattr(fileno(nativeFile), &t) == 0) {
@@ -146,16 +157,36 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
             t.c_iflag &= ~(IXON | IXOFF | IXANY);
             t.c_cflag &= ~CRTSCTS;
 
+            cfsetospeed(&t, baud);
+            cfsetispeed(&t, baud);
+			
             // apply file descriptor options
-            tcsetattr(fileno(nativeFile), TCSANOW, &t);
+            if ( tcsetattr(fileno(nativeFile), TCSANOW, &t) < 0) 
+			{
+				printf("UnixDevOpen: tcsetattr failed\n\r" );
+			}
 
             setvbuf(nativeFile, NULL, _IONBF, 0);
         }
+
+		// store unix fd in dev
+		dev->dev_dcb = nativeFile;
+
+		// set initial speed to UART_SETSPEED
+		UnixDevIOCTL(dev, UART_SETSPEED, &baud);
     }
 
     if (nativeFile == NULL)
         return NULL;
 
+	// set non-blocking
+	if ( fcntl(fileno(nativeFile), F_SETFL, O_NONBLOCK) < 0 )
+	{
+		printf("UnixDevOpen: fcntl O_NONBLOCK failed");
+	}
+		
+	// printf("UnixDevOpen: %s, FILE * %lx, int %d\n\r", nativeName, (long) nativeFile, fileno(nativeFile));
+	
     // create new NUTFILE using malloc
     nf = malloc(sizeof(NUTFILE));
 
@@ -163,9 +194,6 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     nf->nf_next = 0;
     nf->nf_dev = dev;
     nf->nf_fcb = 0;
-
-    // store unix fd in dev
-    dev->dev_dcb = nativeFile;
 
     // set stdio unbuffered, if used
     if (nativeFile == stdout)
@@ -198,19 +226,46 @@ static int UnixDevRead(NUTFILE * fp, void *buffer, int len)
 {
     int rc = 0;
     int newBytes;
+	// printf("UnixDevRead: called: len = %d\n\r",len);
+
     do {
+	
         newBytes = read(fileno((FILE *) fp->nf_dev->dev_dcb), buffer, len);
+
         /* error or timeout ? */
-        if (newBytes <= 0)
-            break;
-        rc += newBytes;
+        if (newBytes < 0) {
+		
+			if (errno == EAGAIN ) {
+				// timeout. No data available right now
+				// printf("UnixDevRead: no bytes available, trying again\n\r");
+				errno = 0;
+				NutSleep( 100 );
+				continue;
+			}
+			else {
+
+				printf("UnixDevRead: error %d occured, giving up\n\r", errno);
+				return newBytes;
+			}
+		}
+		else
+			rc += newBytes;
+
 #ifdef UART_SETBLOCKREAD
-    } while ((rc < len) && (((UNIXDCB *) fp->nf_dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD));
-#else
-    } while (0);
-    // allow return of 0 and -1
-    rc = newBytes;
+		// printf("UnixDevRead: UART_SETBLOCKREAD defined\n\r");
+		// check for blocking read: all bytes received
+		if ( (((UNIXDCB *) fp->nf_dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD)  && (rc < len) )
+		{
+			// printf("UnixDevRead: block read enabled, but not enough bytes rad \n\r");
+			continue;
+		}
 #endif
+		// did we got one?
+		if (rc > 0)
+			break;
+
+	} while (1);	
+
     return rc;
 }
 
@@ -262,6 +317,8 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     u_long *lvp = (u_long *) conf;
     u_long lv = *lvp;
 
+	// printf("UnixDevIOCTL, native %lx, req: %d, lv: %ld\n\r", (long) dev->dev_dcb, req, lv);
+
     switch (req) {
 
     case UART_SETSPEED:
@@ -270,14 +327,21 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     case UART_SETDATABITS:
     case UART_SETSTOPBITS:
 
-        if (tcgetattr(fileno(dev->dev_dcb), &t) != 0)
+	    if (fileno(dev->dev_dcb) <= STDERR_FILENO)
+			return -1;
+			
+        if (tcgetattr(fileno(dev->dev_dcb), &t))
+		{
+			printf("UnixDevIOCTL, tcgetattr failed\n\r");
             return -1;
+		}
 
         switch (req) {
 
         case UART_SETSPEED:
-            cfsetospeed(&t, lv);
-            cfsetispeed(&t, lv);
+			cfsetospeed(&t, lv);
+			cfsetispeed(&t, lv);
+
             break;
 
         case UART_SETFLOWCONTROL:
@@ -352,13 +416,29 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
             break;
 
         }
-        return tcsetattr(fileno(dev->dev_dcb), TCSADRAIN, &t);
 
+
+		if ( tcdrain(fileno(dev->dev_dcb)) < 0 ) {
+			printf("UnixDevIOCTL: tcdrain failed: errno: %d\n\r", errno);
+			errno = 0;
+			return -1;
+		}
+		
+		if ( tcsetattr(fileno(dev->dev_dcb), TCSANOW, &t ) < 0) { 
+			printf("UnixDevIOCTL: tcsetattr failed: errno: %d\n\r", errno);
+			errno = 0;
+			return -1;
+		}
+		return 0;
+		
     case UART_GETSPEED:
     case UART_GETFLOWCONTROL:
     case UART_GETPARITY:
     case UART_GETDATABITS:
     case UART_GETSTOPBITS:
+
+	    if (fileno(dev->dev_dcb) <= STDERR_FILENO)
+			return -1;
 
         if (tcgetattr(fileno(dev->dev_dcb), &t) != 0)
             return -1;
