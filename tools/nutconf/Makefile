@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,12 +32,20 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2005/02/06 19:59:45  haraldkipp
+# Added lib names for Fedora
+#
 # Revision 1.4  2004/09/17 13:03:48  haraldkipp
 # New settings page for tool options
 #
 #
 
+
+
 PROJ = nutconf
+
+#LUALIBS=-llualib50
+LUALIBS=-llua -llualib
 
 CP = cp
 
@@ -61,7 +69,7 @@ OBJS = $(PROJ).o appoptdlg.o bldoptdlg.o configitem.o configtree.o enumeditctrl.
 all:    $(PROJ)
 
 $(PROJ):	$(OBJS)
-	$(CXX) -o $(PROJ) $(OBJS) `wx-config --libs` -llualib50 -lc
+	$(CXX) -o $(PROJ) $(OBJS) `wx-config --libs` $(LUALIBS) -lc
 
 install: $(PROJ)
 	$(CP) $(PROJ) ../linux/$(PROJ)
