@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.64 2004/05/17 19:17:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.65 2004/05/20 09:11:16 drsung Exp $
+
+2004-05-20  Oliver Schulz  <olischulz@web.de>
+
+	* dev/usart.c: Memory was allocated twice for NUTFILE in UsartOpen.
+
 
 2004-05-17  Harald Kipp  <harald.kipp@egnite.de>
 
