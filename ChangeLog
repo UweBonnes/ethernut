@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.137 2004/11/24 15:22:42 haraldkipp Exp $
+$Id: ChangeLog,v 1.138 2004/11/24 16:48:00 haraldkipp Exp $
 
 2004-11-24  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -41,6 +41,12 @@ $Id: ChangeLog,v 1.137 2004/11/24 15:22:42 haraldkipp Exp $
 	* During commit I mistyped the command. CVS is too
 	tolerant and some log messages in the conf directory
 	are spoiled. Grrrrrr....
+
+	* app/uart/uart.c: Include cfg/crt.h for floating point
+	support.
+
+	* include/sys/syslog.h: Prototype declarations for
+	Harvard architecture corrected.
 
 
 2004-11-11  Ole Reinhardt
