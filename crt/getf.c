@@ -39,8 +39,17 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:29  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/28 20:14:38  drsung
+ * Merge from nut-3_4-release b/c of bugfixes.
+ *
+ * Revision 1.1.1.1.2.1  2004/02/28 18:47:34  drsung
+ * Several bugfixes provided by Francois Rademeyer.
+ * - "%%" didnt work
+ * - integer parsing corrected
+ * - support for "%u"
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:29  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:07  harald
  * *** empty log message ***
@@ -89,8 +98,7 @@
  *         The return value is EOF, if an error occurs or if the end 
  *         of the stream is reached before the first conversion.
  */
-int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt,
-          va_list ap)
+int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
 {
     u_char cf;                  /* Character from format. */
     u_char ch;                  /* Character from input. */
@@ -132,20 +140,24 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt,
             continue;
         }
 
+        cf = *fmt++;
+        /*
+         * Check for a '%' literal.
+         */
+        if (cf == '%') {
+            if (_getb(fd, &ch, 1) != 1)
+                return ccnt ? acnt : EOF;
+            if (ch != cf)
+                return acnt;
+            continue;
+        }
+
         /*
          * Collect modifiers.
          */
         width = 0;
         flags = 0;
         for (;;) {
-            cf = *fmt++;
-            if (cf == '%') {
-                if (_getb(fd, &ch, 1) != 1)
-                    return ccnt ? acnt : EOF;
-                if (ch != cf)
-                    return acnt;
-                continue;
-            }
             if (cf == '*')
                 flags |= CF_SUPPRESS;
             else if (cf == 'l')
@@ -154,6 +166,8 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt,
                 width = width * 10 + cf - '0';
             else
                 break;
+
+            cf = *fmt++;
         }
 
         /*
@@ -172,6 +186,9 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt,
             break;
         case 'i':
             base = 0;
+            break;
+        case 'u':
+            base = 10;
             break;
         case 'o':
             base = 8;
@@ -297,8 +314,10 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt,
                 } else
                     break;
                 *cp++ = ch;
-                if (_getb(fd, &ch, 1) != 1)
-                    break;
+                if (width > 1) {
+                    if (_getb(fd, &ch, 1) != 1)
+                        break;
+                }
             }
 
             if (flags & CF_NDIGITS)
@@ -336,9 +355,7 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt,
                 } else if (ch == 'e' || ch == 'E') {
                     if ((flags & (CF_NDIGITS | CF_EXPOK)) != CF_EXPOK)
                         break;
-                    flags =
-                        (flags & ~(CF_EXPOK | CF_DPTOK)) | CF_SIGNOK |
-                        CF_NDIGITS;
+                    flags = (flags & ~(CF_EXPOK | CF_DPTOK)) | CF_SIGNOK | CF_NDIGITS;
                 } else
                     break;
                 *cp++ = ch;

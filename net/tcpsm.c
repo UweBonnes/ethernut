@@ -93,8 +93,14 @@
 
 /*
  * $Log$
- * Revision 1.10  2004/02/02 18:59:25  drsung
- * Some more ICMP support added.
+ * Revision 1.11  2004/02/28 20:14:38  drsung
+ * Merge from nut-3_4-release b/c of bugfixes.
+ *
+ * Revision 1.9.2.1  2004/02/28 20:02:23  drsung
+ * Bugfix in several tcp state functions. Swapped around the check
+ * for ACK and SYN flag. Because initial SYN packets don't have
+ * an ACK flag, recevied SYN packets were never rejected.
+ * Thanks to Damian Slee, who discovered that.
  *
  * Revision 1.9  2004/01/25 11:50:03  drsung
  * setting correct error code on timeout while NutTcpConnect.
@@ -920,6 +926,14 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
     }
 
     /*
+     * Reject SYNs.
+     */
+    if (flags & TH_SYN) {
+        NutTcpReject(nb);
+        return;
+    }
+
+    /*
      * Silently discard segments without ACK.
      */
     if ((flags & TH_ACK) == 0) {
@@ -931,14 +945,6 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
      * Reject out of window sequence.
      */
     if (!IsInLimits(ntohl(th->th_ack), sock->so_tx_una + 1, sock->so_tx_nxt)) {
-        NutTcpReject(nb);
-        return;
-    }
-
-    /*
-     * Reject SYNs.
-     */
-    if (flags & TH_SYN) {
         NutTcpReject(nb);
         return;
     }
@@ -987,20 +993,22 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
     }
 
     /*
-     * Silently discard segments without ACK.
-     */
-    if ((flags & TH_ACK) == 0) {
-        NutNetBufFree(nb);
-        return;
-    }
-
-    /*
      * Reject SYNs. Silently discard late SYNs
      * (Thanks to Mike Cornelius).
      */
     if (flags & TH_SYN) {
         if (htonl(th->th_seq) != sock->so_rx_isn)
             NutTcpReject(nb);
+        else
+            NutNetBufFree(nb);
+        return;
+    }
+
+    /*
+     * Silently discard segments without ACK.
+     */
+    if ((flags & TH_ACK) == 0) {
+        NutNetBufFree(nb);
         return;
     }
 
@@ -1103,18 +1111,18 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags, TCPHDR * th, NET
     }
 
     /*
-     * Silently discard segments without ACK.
-     */
-    if ((flags & TH_ACK) == 0) {
-        NutNetBufFree(nb);
-        return;
-    }
-
-    /*
      * Reject SYNs.
      */
     if (flags & TH_SYN) {
         NutTcpReject(nb);
+        return;
+    }
+
+    /*
+     * Silently discard segments without ACK.
+     */
+    if ((flags & TH_ACK) == 0) {
+        NutNetBufFree(nb);
         return;
     }
 
@@ -1159,18 +1167,18 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, u_char flags, TCPHDR * th, NET
     }
 
     /*
-     * Silently discard segments without ACK.
-     */
-    if ((flags & TH_ACK) == 0) {
-        NutNetBufFree(nb);
-        return;
-    }
-
-    /*
      * Reject SYNs.
      */
     if (flags & TH_SYN) {
         NutTcpReject(nb);
+        return;
+    }
+
+    /*
+     * Silently discard segments without ACK.
+     */
+    if ((flags & TH_ACK) == 0) {
+        NutNetBufFree(nb);
         return;
     }
 
@@ -1209,18 +1217,18 @@ static void NutTcpStateCloseWait(TCPSOCKET * sock, u_char flags, TCPHDR * th, NE
     }
 
     /*
-     * Silently discard segments without ACK.
-     */
-    if ((flags & TH_ACK) == 0) {
-        NutNetBufFree(nb);
-        return;
-    }
-
-    /*
      * Reject SYNs.
      */
     if (flags & TH_SYN) {
         NutTcpReject(nb);
+        return;
+    }
+
+    /*
+     * Silently discard segments without ACK.
+     */
+    if ((flags & TH_ACK) == 0) {
+        NutNetBufFree(nb);
         return;
     }
 
@@ -1250,18 +1258,18 @@ static void NutTcpStateClosing(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETB
     }
 
     /*
-     * Silently discard segments without ACK.
-     */
-    if ((flags & TH_ACK) == 0) {
-        NutNetBufFree(nb);
-        return;
-    }
-
-    /*
      * Reject SYNs.
      */
     if (flags & TH_SYN) {
         NutTcpReject(nb);
+        return;
+    }
+
+    /*
+     * Silently discard segments without ACK.
+     */
+    if ((flags & TH_ACK) == 0) {
+        NutNetBufFree(nb);
         return;
     }
 
@@ -1296,18 +1304,18 @@ static void NutTcpStateLastAck(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETB
     }
 
     /*
-     * Silently discard segments without ACK.
-     */
-    if ((flags & TH_ACK) == 0) {
-        NutNetBufFree(nb);
-        return;
-    }
-
-    /*
      * Reject SYNs.
      */
     if (flags & TH_SYN) {
         NutTcpReject(nb);
+        return;
+    }
+
+    /*
+     * Silently discard segments without ACK.
+     */
+    if ((flags & TH_ACK) == 0) {
+        NutNetBufFree(nb);
         return;
     }
 

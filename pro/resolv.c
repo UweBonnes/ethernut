@@ -32,6 +32,13 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/28 20:14:38  drsung
+ * Merge from nut-3_4-release b/c of bugfixes.
+ *
+ * Revision 1.2.2.1  2004/02/28 19:15:07  drsung
+ * Memory leak fixed in CreateDnsQuestion.
+ * Thanks to Jean Pierre Gauthier.
+ *
  * Revision 1.2  2003/07/20 18:25:40  haraldkipp
  * Support secondary DNS.
  *
@@ -267,6 +274,8 @@ static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq,
     if (doq == 0)
         doq = NutHeapAllocClear(sizeof(DNSQUESTION));
     if (doq) {
+    	if (doq->doq_name)
+    	    NutHeapFree (doq->doq_name);
         doq->doq_name = NutHeapAlloc(strlen(name) + 1);
         strcpy(doq->doq_name, name);
         doq->doq_type = 1;
