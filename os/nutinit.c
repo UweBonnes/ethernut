@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:51  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/09/29 16:35:25  haraldkipp
+ * Replaced XRAMEND by NUTRAMEND
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:51  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.4  2003/05/06 18:53:43  harald
  * ICCAVR port
@@ -57,7 +60,7 @@
 
 #include <sys/confos.h>
 
-#define XRAMEND ((volatile u_char *)0x7FFF)
+#define NUTRAMEND ((volatile u_char *)0x7FFF)
 
 #ifdef __GNUC__
 /*
@@ -149,13 +152,13 @@ void NutInit(void)
     if ((int) RAMEND - (int) (&__bss_end) > 384) {
         NutHeapAdd(&__bss_end, (u_short) RAMEND - 256 - (u_short) (&__bss_end));
 
-        *(XRAMEND - 1) = 0x55;
-        *XRAMEND = 0xAA;
-        if (*(XRAMEND - 1) == 0x55 && *XRAMEND == 0xAA)
-            NutHeapAdd((void *) (RAMEND + 1), (u_short) XRAMEND - RAMEND);
+        *(NUTRAMEND - 1) = 0x55;
+        *NUTRAMEND = 0xAA;
+        if (*(NUTRAMEND - 1) == 0x55 && *NUTRAMEND == 0xAA)
+            NutHeapAdd((void *) (RAMEND + 1), (u_short) NUTRAMEND - RAMEND);
     }
-    else if ((int) XRAMEND - (int) (&__bss_end) > 384) 
-        NutHeapAdd(&__bss_end, (u_short) XRAMEND - 256 - (u_short) (&__bss_end));
+    else if ((int) NUTRAMEND - (int) (&__bss_end) > 384) 
+        NutHeapAdd(&__bss_end, (u_short) NUTRAMEND - 256 - (u_short) (&__bss_end));
 
     NutThreadCreate("idle", NutIdle, 0, 384);
 }
