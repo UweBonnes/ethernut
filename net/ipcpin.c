@@ -49,8 +49,14 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:30  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/24 16:12:53  haraldkipp
+ * First bugfix: PPP always used the secondary DNS.
+ * Second bugfix: When the PPP server rejects the
+ * secondary DNS, IPCP negotiation was trapped in a
+ * loop.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:30  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:04:57  harald
  * PPP IP config to DCB
@@ -290,8 +296,10 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
                 dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
             break;
 	case IPCP_MS_DNS2:
+            /* Fixed secondary DNS bug, thanks to Tarmo Fimberg
+               and Jelle Martijn Kok. */
             if(xcpo->xcpo_.ul)
-                dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
+                dcb->dcb_ip_dns2 = xcpo->xcpo_.ul;
             break;
 	}
         xcpl -= xcpo->xcpo_len;
@@ -305,7 +313,7 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Configure-Nak or Configure-Reject received.
  */
-void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -351,11 +359,15 @@ void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
 	case IPCP_COMPRESSTYPE:
             break;
 	case IPCP_MS_DNS1:
-            if(xcpo->xcpo_.ul)
+            if(rejected)
+                dcb->dcb_rejects |= REJ_IPCP_DNS1;
+            else if(xcpo->xcpo_.ul)
                 dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
             break;
 	case IPCP_MS_DNS2:
-            if(xcpo->xcpo_.ul)
+            if(rejected)
+                dcb->dcb_rejects |= REJ_IPCP_DNS2;
+            else if(xcpo->xcpo_.ul)
                 dcb->dcb_ip_dns2 = xcpo->xcpo_.ul;
             break;
 	}
@@ -541,8 +553,11 @@ void NutIpcpInput(NUTDEVICE * dev, NETBUF * nb)
         break;
 
     case XCP_CONFNAK:
+        IpcpRxConfNakRej(dev, xch->xch_id, nb, 0);
+        break;
+
     case XCP_CONFREJ:
-        IpcpRxConfNakRej(dev, xch->xch_id, nb);
+        IpcpRxConfNakRej(dev, xch->xch_id, nb, 1);
         break;
 
     case XCP_TERMREQ:
