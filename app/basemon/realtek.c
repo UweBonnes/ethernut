@@ -68,6 +68,7 @@ static int NicReset(void)
 
 static int DetectNicEeprom(void)
 {
+#ifdef __AVR_ATmega128__
     register u_int cnt = 0;
 
     cli();
@@ -114,6 +115,9 @@ static int DetectNicEeprom(void)
 
     sei();
     return cnt ? 0 : -1;
+#else
+    return -1;
+#endif
 }
 
 /*
@@ -144,6 +148,7 @@ static prog_char nic_eeprom[18] = {
  */
 static void EmulateNicEeprom(void)
 {
+#ifdef __AVR_ATmega128__
     register u_char clk;
     register u_char cnt;
     register u_char val;
@@ -234,6 +239,7 @@ static void EmulateNicEeprom(void)
     /* Reset port outputs to default. */
     outb(PORTC, 0x00);
     outb(DDRC, 0x00);
+#endif
 }
 
 

@@ -204,6 +204,7 @@ int XMemTestBus(void)
     outb(PORTA, 0);
     outb(DDRA, 0xFF);
 
+#ifdef __AVR_ATmega128__
     /*
      * Checking the high address bus is easy.
      */
@@ -226,6 +227,7 @@ int XMemTestBus(void)
     };
     outb(PORTC, 0);
     outb(DDRC, 0xFF);
+#endif
 
     return 0;
 }

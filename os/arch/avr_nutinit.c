@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/02/07 19:05:26  haraldkipp
+ * ATmega 103 compile errors fixed
+ *
  * Revision 1.12  2005/01/22 19:30:56  haraldkipp
  * Fixes Ethernut 1.3G memory bug.
  *
@@ -109,7 +112,7 @@ u_char nutmem_onchip[NUTMEM_RESERVED];
 #endif
 
 /* sleep mode to put avr in idle thread, SLEEP_MODE_NONE is used for for non sleeping */
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__AVR_ATmega128__)
 u_char idle_sleep_mode = SLEEP_MODE_NONE;
 #endif
 
@@ -342,7 +345,7 @@ void FakeNicEeprom(void)
  * \param mode one of the sleep modes defined in avr/sleep.h or
  *             sleep_mode_none (don't enter sleep mode)  
  */
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__AVR_ATmega128__)
 void NutThreadSetSleepMode(u_char mode)
 {
     idle_sleep_mode = mode;
@@ -364,7 +367,7 @@ void NutThreadSetSleepMode(u_char mode)
  */
 THREAD(NutIdle, arg)
 {
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__AVR_ATmega128__)
     u_char sleep_mode;
 #endif    
     /* Initialize system timers. */
@@ -383,7 +386,7 @@ THREAD(NutIdle, arg)
         NutThreadYield();
         NutThreadDestroy();
         
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__AVR_ATmega128__)
         if (idle_sleep_mode != SLEEP_MODE_NONE) {
             sleep_mode = MCUCR & SLEEP_MODE_EXT_STANDBY;
             set_sleep_mode(idle_sleep_mode);

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.14  2005/02/07 19:05:25  haraldkipp
+-- ATmega 103 compile errors fixed
+--
 -- Revision 1.13  2005/02/02 19:46:53  haraldkipp
 -- Port configuration was completely broken, because no AVRPORT values
 -- had been defined for the preprocessor. To fix this without modifying
@@ -684,7 +687,7 @@ nutdev =
                       "NutRegisterDevice().\n\n"..
                       "Only available for AVR-GCC.\n\n"..
                       "Contributed by Ole Reinhardt from www.kernelconcepts.de",
-        requires = { "HW_MCU_AVR", "TOOL_GCC" },
+        requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
         sources = { "sja1000.c" },
         options = 
         {

@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2005/02/07 19:05:23  haraldkipp
+ * ATmega 103 compile errors fixed
+ *
  * Revision 1.1  2005/02/05 20:32:57  haraldkipp
  * First release
  *
@@ -245,6 +248,7 @@ void InitDebugDevice(void)
  */
 void InitEthernetDevice(void)
 {
+#ifdef __AVR_ATmega128__
     NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
     printf("Configure eth0...");
     if (NutDhcpIfConfig("eth0", 0, 60000)) {
@@ -266,6 +270,7 @@ void InitEthernetDevice(void)
         }
     }
     puts("OK");
+#endif
 }
 
 /*

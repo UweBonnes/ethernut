@@ -237,7 +237,7 @@ THREAD(WebDemo, arg)
 {
     TCPSOCKET *sock;
     FILE *stream;
-    IFNET *ifn;
+    IFNET *ifn = 0;
     u_long ip_addr;             /* ICCAVR bugfix */
     static prog_char netfail_P[] = "\nFailed to configure network " /* */
                                    "interface: Ethernut stopped!\n\x07";
@@ -249,8 +249,10 @@ THREAD(WebDemo, arg)
      */
     if(nic == 1)
         NutRegisterDevice(&devEth0, 0x8300, 5);
+#ifdef __AVR_ATmega128__
     else
         NutRegisterDevice(&devSmsc111, 0, 0);
+#endif
 
     /*
      * Configure lan interface.
@@ -297,9 +299,10 @@ THREAD(WebDemo, arg)
         printf("\nGate %s", inet_ntoa(confnet.cdn_gateway));
     if(nic == 1)
         ifn = (IFNET *) (devEth0.dev_icb);
+#ifdef __AVR_ATmega128__
     else
         ifn = (IFNET *) (devSmsc111.dev_icb);
-
+#endif
     printf("\nHTTP server running. URL http://%s/\n", inet_ntoa(ifn->if_local_ip));
 
     /*
