@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/04/05 17:52:40  haraldkipp
+ * Much better implementation of GBA interrupt registration.
+ *
  * Revision 1.6  2005/02/10 07:06:18  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -87,7 +90,8 @@
  * interrupts.
  */
 #elif defined(MCU_GBA)
-/* Not yet */
+#include "gba_irqreg.c"
+#elif defined(MCU_AT91R40008)
 #elif defined(__arm__)
 #include "arm_irqreg.c"
 #elif defined(__H8300H__) || defined(__H8300S__)

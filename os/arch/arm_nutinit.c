@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/05 17:52:41  haraldkipp
+ * Much better implementation of GBA interrupt registration.
+ *
  * Revision 1.3  2004/11/08 18:58:59  haraldkipp
  * Configurable stack sizes
  *
@@ -45,10 +48,15 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <cfg/memory.h>
 #include <cfg/os.h>
+#ifdef MCU_GBA
+#include <dev/irqreg.h>
+#else
 #include <arch/at91.h>
 #include <arch/at91eb40a.h>
+#endif
 
 /*!
  * \brief Last memory address.
@@ -71,6 +79,9 @@ extern void *__heap_start;
  */
 THREAD(NutIdle, arg)
 {
+#ifdef MCU_GBA
+    InitIrqHandler();
+#endif
     /* Initialize system timers. */
     NutTimerInit();
 
@@ -100,15 +111,11 @@ void NutInit(void)
 {
     NutHeapAdd(&__heap_start, (uptr_t)(NUTMEM_END - 256 - (uptr_t)(&__heap_start)));
 
-#if 0
     /*
-     * Read eeprom configuration.
+     * No EEPROM configuration.
      */
-    if (NutLoadConfig()) {
-        strcpy(confos.hostname, "ethernut");
-        NutSaveConfig();
-    }
-#endif
+    strcpy(confos.hostname, "ethernut");
+
     /*
      * Create idle thread
      */

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/04/05 17:52:40  haraldkipp
+ * Much better implementation of GBA interrupt registration.
+ *
  * Revision 1.2  2004/09/08 10:52:31  haraldkipp
  * Tyou's support for the SAMSUNG S3C45
  *
@@ -46,85 +49,29 @@
 #ifdef S3C4510B
 #include "s3c4510b_irqreg.h"
 
+#elif defined(MCU_GBA)
+
+extern IRQ_HANDLER sig_VBLANK;
+extern IRQ_HANDLER sig_HBLANK;
+extern IRQ_HANDLER sig_VCOUNT;
+extern IRQ_HANDLER sig_TMR0;
+extern IRQ_HANDLER sig_TMR1;
+extern IRQ_HANDLER sig_TMR2;
+extern IRQ_HANDLER sig_TMR3;
+extern IRQ_HANDLER sig_SIO;
+extern IRQ_HANDLER sig_DMA0;
+extern IRQ_HANDLER sig_DMA1;
+extern IRQ_HANDLER sig_DMA2;
+extern IRQ_HANDLER sig_DMA3;
+extern IRQ_HANDLER sig_KEYPAD;
+extern IRQ_HANDLER sig_GAMEPAK;
+
+extern void InitIrqHandler(void);
+
+#elif defined(MCU_AT91R40008)
+
 #else
-
-enum {
-    IRQ_INT0,
-    IRQ_INT1,
-    IRQ_INT2,
-    IRQ_INT3,
-    IRQ_INT4,
-    IRQ_INT5,
-    IRQ_INT6,
-    IRQ_INT7,
-    IRQ_TIMER2_COMP,
-    IRQ_TIMER2_OVF,
-    IRQ_TIMER1_CAPT,
-    IRQ_TIMER1_COMPA,
-    IRQ_TIMER1_COMPB,
-    IRQ_TIMER1_OVF,
-    IRQ_TIMER0_COMP,
-    IRQ_TIMER0_OVF,
-    IRQ_SPI_STC,
-    IRQ_UART_RX,
-    IRQ_UART_UDRE,
-    IRQ_UART_TX,
-    IRQ_ADC,
-    IRQ_EE_RDY,
-    IRQ_ANA_COMP,
-#ifdef __AVR_ATmega128__
-    IRQ_TIMER1_COMPC,
-    IRQ_TIMER3_CAP,
-    IRQ_TIMER3_COMPA,
-    IRQ_TIMER3_COMPB,
-    IRQ_TIMER3_COMPC,
-    IRQ_TIMER3_OVF,
-    IRQ_UART1_RX,
-    IRQ_UART1_UDRE,
-    IRQ_UART1_TX,
-    IRQ_I2C,
-    IRQ_SPM_RDY,
-#endif
-    IRQ_MAX
-};
-
-extern IRQ_HANDLER sig_INTERRUPT0;
-extern IRQ_HANDLER sig_INTERRUPT1;
-extern IRQ_HANDLER sig_INTERRUPT2;
-extern IRQ_HANDLER sig_INTERRUPT3;
-extern IRQ_HANDLER sig_INTERRUPT4;
-extern IRQ_HANDLER sig_INTERRUPT5;
-extern IRQ_HANDLER sig_INTERRUPT6;
-extern IRQ_HANDLER sig_INTERRUPT7;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE2;
-extern IRQ_HANDLER sig_OVERFLOW2;
-extern IRQ_HANDLER sig_INPUT_CAPTURE1;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE1A;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE1B;
-extern IRQ_HANDLER sig_OVERFLOW1;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE0;
-extern IRQ_HANDLER sig_OVERFLOW0;
-extern IRQ_HANDLER sig_SPI;
-extern IRQ_HANDLER sig_UART0_TRANS;
-extern IRQ_HANDLER sig_UART0_DATA;
-extern IRQ_HANDLER sig_UART0_RECV;
-extern IRQ_HANDLER sig_ADC;
-extern IRQ_HANDLER sig_EEPROM_READY;
-extern IRQ_HANDLER sig_COMPARATOR;
-#ifdef __AVR_ATmega128__
-extern IRQ_HANDLER sig_OUTPUT_COMPARE1C;
-extern IRQ_HANDLER sig_INPUT_CAPTURE3;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE3A;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE3B;
-extern IRQ_HANDLER sig_OUTPUT_COMPARE3C;
-extern IRQ_HANDLER sig_OVERFLOW3;
-extern IRQ_HANDLER sig_UART1_RECV;
-extern IRQ_HANDLER sig_UART1_DATA;
-extern IRQ_HANDLER sig_UART1_TRANS;
-extern IRQ_HANDLER sig_2WIRE_SERIAL;
-extern IRQ_HANDLER sig_SPM_READY;
-#endif
-
+#warning "No MCU defined"
 #endif
 
 #endif

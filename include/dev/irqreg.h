@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/04/05 17:52:40  haraldkipp
+ * Much better implementation of GBA interrupt registration.
+ *
  * Revision 1.8  2005/02/10 07:06:51  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -77,6 +80,7 @@
  *
  */
 
+#include <cfg/arch.h>
 #include <sys/device.h>
 #include <dev/irqstack.h>
 
@@ -107,6 +111,8 @@ typedef struct {
 #include <dev/irqreg_h8.h>
 #elif defined(__m68k__)
 #include <dev/irqreg_m68k.h>
+#else
+#warning "MCU not defined"
 #endif
 
 /*@}*/
