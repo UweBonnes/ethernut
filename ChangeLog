@@ -1,4 +1,23 @@
-$Id: ChangeLog,v 1.156 2005/02/02 20:25:36 haraldkipp Exp $
+$Id: ChangeLog,v 1.157 2005/02/03 14:36:41 haraldkipp Exp $
+
+2005-02-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* pro/dhcpc.c, include/pro/dhcp.c: Several bug fixes and
+	enhancements. The most important fix will avoid hanging, when 
+	Ethernut is reset while ICMP pings are received. A large number 
+	of changes make the client to follow RFC 2131 more closely, 
+	like maintaining renewal and rebind time. Two new API calls, 
+	NutDhcpStatus() and NutDhcpError(), allow to query the current 
+	status of the DHCP client. The previously introduced API call 
+	NutDhcpIsConfigured() has been marked deprecated. Another 
+	problem was with timeout, because the client continued 
+	negotiation with the server after the timeout time given in the
+	API called elapsed. Now all internal timeouts are adjusted to 
+	the API timeout. Furthermore the previous version let the 
+	client continue on fatal errors like UDP receive or UDP 
+	broadcast failures. Now the client stops on such errors and 
+	informs the caller. Finally the documentation has been enhanced.
+
 
 2005-02-02  Harald Kipp  <harald.kipp@egnite.de>
 
