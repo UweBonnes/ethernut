@@ -1,4 +1,18 @@
-$Id: ChangeLog,v 1.38 2004/02/25 16:38:39 haraldkipp Exp $
+$Id: ChangeLog,v 1.39 2004/02/29 07:19:59 drsung Exp $
+
+2004-02-28  Oliver Schulz  <olischulz@web.de>
+
+	* net/tcpsm.c: Bugfix in several tcp state functions. Swapped around the 
+	check for ACK and SYN flag. Because initial SYN packets don't have an 
+	ACK flag, recevied SYN packets were never rejected.
+
+	* pro/resolv.c: Memory leak fixed in CreateDnsQuestion.
+
+	* crt/getf.c: Several bugfixes applied.
+ 	- "%%" didnt work.
+ 	- integer parsing corrected.
+ 	- support for "%u".
+
 
 2004-02-01  Harald Kipp  <harald.kipp@egnite.de>
 
