@@ -31,7 +31,23 @@
  */
 
 /*
+ * This file is based on 3068s.h which can be freely downloaded from
+ * http://www.renesas.com/eng/products/mpumcu/tool/crosstool/iodef/index.html.
+ * 
+ * I have added lacking definition of ADRCR register in structure st_bsc
+ * (bus controler), chanded "int" to "short" in some places in order to make
+ * structs/unions be compatible with gcc's "-mint32" option and added appropriate
+ * ifdefs in order to avoid including the contents of this file more than once.
+ *
+ * Jan Dubiec <jdx@slackware.pl>
+ *
+ */
+
+/*
  * $Log$
+ * Revision 1.2  2004/03/19 18:21:12  jdubiec
+ * Added comment about the origin of this file.
+ *
  * Revision 1.1  2004/03/16 16:48:26  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
