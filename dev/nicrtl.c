@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,18 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/08/25 10:41:00  haraldkipp
+ * Hardware dependent definitions are configurable. For performance reasons the
+ * base address is not kept in a variable any longer. It is now a preprocessor
+ * macro and the parameters during device registration are ignored. The speed
+ * improvements provided by Kolja Waschk for the LAN91C111 had been implemented
+ * here too. The driver will not touch a port anymore unless a reset port bit
+ * had been configured. For Ethernut 1.1 bit 4 PORTE must be specified in the
+ * configuration. Finally, an EEPROM emulation had been added, which can use
+ * address bus bits instead of wasting additional port pins. The required
+ * hardware has been implemented on Rev.-G Ethernut 1.3 boards. This fixes the
+ * Realtek full duplex problem.
+ *
  * Revision 1.6  2004/05/17 19:14:53  haraldkipp
  * Added Bengt Florin's RTL8019 driver mods
  *
@@ -54,10 +66,72 @@
  *
  */
 
+#include <cfg/arch/avr.h>
+#include <cfg/arch/avrpio.h>
+
+/*
+ * Determine ports, which had not been explicitely configured.
+ */
+#if (PIO_NAME(RTL_EESK_PORT) == PIO_PORTB)
+#define RTL_EESK_PIN    PINB
+#define RTL_EESK_DDR    DDRB
+
+#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTC)
+#define RTL_EE_MEMBUS
+#define RTL_EESK_PIN    PINC
+#define RTL_EESK_DDR    DDRC
+
+#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTD)
+#define RTL_EESK_PIN    PIND
+#define RTL_EESK_DDR    DDRD
+
+#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTE)
+#define RTL_EESK_PIN    PINE
+#define RTL_EESK_DDR    DDRE
+
+#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTF)
+#define RTL_EESK_PIN    PINF
+#define RTL_EESK_DDR    DDRF
+
+#endif
+
+#if (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTB)
+#define RTL_EEDO_DDR    DDRB
+
+#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTC)
+#define RTL_EE_MEMBUS
+#define RTL_EEDO_DDR    DDRC
+
+#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTD)
+#define RTL_EEDO_DDR    DDRD
+
+#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTE)
+#define RTL_EEDO_DDR    DDRE
+
+#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTF)
+#define RTL_EEDO_DDR    DDRF
+
+#endif
+
+#if (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTB)
+#define RTL_EEMU_DDR    DDRB
+
+#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTC)
+#define RTL_EE_MEMBUS
+#define RTL_EEMU_DDR    DDRC
+
+#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTD)
+#define RTL_EEMU_DDR    DDRD
+
+#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTE)
+#define RTL_EEMU_DDR    DDRE
+
+#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTF)
+#define RTL_EEMU_DDR    DDRF
+
+#endif
 
 #include <string.h>
-
-#include <sys/nutconfig.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>
@@ -77,6 +151,44 @@
 #include <sys/osdebug.h>
 #include <net/netdebug.h>
 #endif
+
+/*!
+ * \brief Interrupt used.
+ */
+#if (RTL_SIGNAL_IRQ == INT0)
+#define RTL_SIGNAL sig_INTERRUPT0
+#define SIGNAL_NAME "sig_INTERRUPT0"
+
+#elif (RTL_SIGNAL_IRQ == INT1)
+#define RTL_SIGNAL sig_INTERRUPT1
+#define SIGNAL_NAME "sig_INTERRUPT1"
+
+#elif (RTL_SIGNAL_IRQ == INT2)
+#define RTL_SIGNAL sig_INTERRUPT2
+#define SIGNAL_NAME "sig_INTERRUPT2"
+
+#elif (RTL_SIGNAL_IRQ == INT3)
+#define RTL_SIGNAL sig_INTERRUPT3
+#define SIGNAL_NAME "sig_INTERRUPT3"
+
+#elif (RTL_SIGNAL_IRQ == INT4)
+#define RTL_SIGNAL sig_INTERRUPT4
+#define SIGNAL_NAME "sig_INTERRUPT4"
+
+#elif (RTL_SIGNAL_IRQ == INT6)
+#define RTL_SIGNAL sig_INTERRUPT6
+#define SIGNAL_NAME "sig_INTERRUPT6"
+
+#elif (RTL_SIGNAL_IRQ == INT7)
+#define RTL_SIGNAL sig_INTERRUPT7
+#define SIGNAL_NAME "sig_INTERRUPT7"
+
+#else
+#define RTL_SIGNAL sig_INTERRUPT5
+#define SIGNAL_NAME "sig_INTERRUPT5"
+
+#endif
+
 
 /*!
  * \brief Size of a single ring buffer page.
@@ -163,14 +275,31 @@ struct nic_pkt_header {
     u_short ph_size;            /*!< \brief Size of header and packet in octets */
 };
 
+#define NICINB(reg)         (*((volatile u_char *)RTL_BASE_ADDR + reg))
+#define NICOUTB(reg, val)   (*((volatile u_char *)RTL_BASE_ADDR + reg) = val)
+
 /*!
  * \brief Reset the Ethernet controller.
  *
  */
-static int NicReset(volatile u_char * base)
+static int NicReset(void)
 {
     u_char i;
     u_char j;
+
+/*
+ * Toggle the hardware reset line. Since Ethernut version 1.3 the 
+ * hardware reset pin of the nic is no longer connected to bit 4 
+ * on port E, but wired to the board reset line.
+ */
+#ifdef RTL_RESET_BIT
+    sbi(RTL_RESET_DDR, RTL_RESET_BIT);
+    sbi(RTL_RESET_PORT, RTL_RESET_BIT);
+    NutDelay(WAIT100);
+    cbi(RTL_RESET_PORT, RTL_RESET_BIT);
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+#endif
 
     /*
      * Do the software reset by reading from the reset register followed 
@@ -178,9 +307,9 @@ static int NicReset(volatile u_char * base)
      * the reset state.
      */
     for (j = 0; j < 20; j++) {
-        i = nic_read(NIC_RESET);
+        i = NICINB(NIC_RESET);
         NutDelay(WAIT5);
-        nic_write(NIC_RESET, i);
+        NICOUTB(NIC_RESET, i);
         for (i = 0; i < 20; i++) {
             NutDelay(WAIT50);
             /*
@@ -190,27 +319,255 @@ static int NicReset(volatile u_char * base)
              * read noise instead of the register. To solve this
              * problem, we will verify the NIC's id.
              */
-            if ((nic_read(NIC_PG0_ISR) & NIC_ISR_RST) != 0 &&
-                nic_read(NIC_PG0_RBCR0) == 0x50 &&
-                nic_read(NIC_PG0_RBCR1) == 0x70)
+            if ((NICINB(NIC_PG0_ISR) & NIC_ISR_RST) != 0 &&
+                NICINB(NIC_PG0_RBCR0) == 0x50 &&
+                NICINB(NIC_PG0_RBCR1) == 0x70)
                 return 0;
-        }
-
-        /*
-         * Toggle the hardware reset line. Since Ethernut version 1.3 the 
-         * hardware reset pin of the nic is no longer connected to bit 4 
-         * on port E, but wired to the board reset line.
-         */
-        if (j == 10) {
-            sbi(RTL_RESET_DDR, RTL_RESET_BIT);
-            sbi(RTL_RESET_PORT, RTL_RESET_BIT);
-            NutDelay(WAIT100);
-            cbi(RTL_RESET_PORT, RTL_RESET_BIT);
-            NutDelay(WAIT250);
-            NutDelay(WAIT250);
         }
     }
     return -1;
+}
+
+static int DetectNicEeprom(void)
+{
+#ifdef RTL_EESK_BIT
+    register u_int cnt = 0;
+
+    NutEnterCritical();
+
+    /*
+     * Prepare the EEPROM emulation port bits. Configure the EEDO
+     * and the EEMU lines as outputs and set both lines to high.
+     */
+    sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+    sbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
+#ifdef RTL_EEMU_BIT
+    sbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
+    sbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
+#endif
+    NutDelay(20);
+
+    /*
+     * Force the chip to re-read the EEPROM contents.
+     */
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
+    NICOUTB(NIC_PG3_EECR, NIC_EECR_EEM0);
+
+    /*
+     * No external memory access beyond this point.
+     */
+#ifdef RTL_EE_MEMBUS
+    /*
+     * No external memory access beyond this point.
+     */
+#ifdef __AVR_ATmega128__
+    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
+    outb(XMCRB, inb(XMCRB) | _BV(XMM0) | _BV(XMM1));
+#else
+    /* On the ATmega 103 we have to disable the external memory interface. */
+    cbi(MCUCR, SRE);
+#endif
+#endif
+
+    /*
+     * Check, if the chip toggles our EESK input. If not, we do not
+     * have EEPROM emulation hardware.
+     */
+    if(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT)) {
+        while(++cnt && bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+    }
+    else {
+        while(++cnt && bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+    }
+
+#ifdef RTL_EE_MEMBUS
+    /*
+     * Enable memory interface.
+     */
+#ifdef __AVR_ATmega128__
+    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
+    outb(XMCRB, inb(XMCRB) & ~( _BV(XMM0) | _BV(XMM1)));
+#else
+    /* On the ATmega 103 we have to disable the external memory interface. */
+    sbi(MCUCR, SRE);
+#endif
+#endif
+
+    /* Reset port outputs to default. */
+    cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+    cbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
+#ifdef RTL_EEMU_BIT
+    cbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
+    cbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
+#endif
+
+    /* Restore previous interrupt enable state. */
+    NutExitCritical();
+
+    /* Wait until controller ready. */
+    while(NICINB(NIC_CR) != (NIC_CR_STP | NIC_CR_RD2));
+
+    return cnt ? 0 : -1;
+#else
+    return -1;
+#endif
+}
+
+#ifdef RTL_EESK_BIT
+/*
+ * Emulated EEPROM contents.
+ *
+ * In jumper mode our influence is quite limited, only CONFIG3 and CONFIG4
+ * can be modified.
+ */
+static prog_char nic_eeprom[18] = {
+    0xFF,   /* CONFIG2: jPL1 jPL0   0      jBS4   jBS3   jBS2  jBS1  jBS0  */
+    0xFF,   /* CONFIG1: 1    jIRQS2 jIRQS1 jIRQS0 jIOS3  jIOS2 jIOS1 jIOS0 */
+
+    0xFF,   /* CONFIG4: -    -      -      -      -      -     -     IOMS  */
+    0x30,   /* CONFIG3  PNP  FUDUP  LEDS1  LEDS0  -      0     PWRDN ACTB  */
+
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, /* MAC */
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF /* ID */
+};
+#endif
+
+/*!
+ * \brief EEPROM emulator.
+ *
+ * Forces the chip to re-read the EEPROM contents and emulates a serial
+ * EEPROM.
+ *
+ * If the hardware does not support this feature, then this call will
+ * never return. Thus, make sure to have the driver properly configured.
+ */
+static void EmulateNicEeprom(void)
+{
+#ifdef RTL_EESK_BIT
+    register u_char clk;
+    register u_char cnt;
+    register u_char val;
+
+    /*
+     * Disable all interrupts. This routine requires critical timing 
+     * and optionally may disable the memory interface.
+     */
+    NutEnterCritical();
+
+    /*
+     * Prepare the EEPROM emulation port bits. Configure the EEDO and 
+     * the EEMU lines as outputs and set EEDO to low and EEMU to high.
+     */
+    cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+    sbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
+#ifdef RTL_EEMU_BIT
+    sbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
+    sbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
+#endif
+    NutDelay(20);
+
+    /*
+     * Start EEPROM configuration. Stop/abort any activity and select
+     * configuration page 3. Setting bit EEM0 will force the controller
+     * to read the EEPROM contents.
+     */
+
+    /* Select page 3, stop and abort/complete. */
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
+    NICOUTB(NIC_PG3_EECR, NIC_EECR_EEM0);
+
+    /*
+     * We can avoid wasting port pins for EEPROM emulation by using the 
+     * upper bits of the address bus.
+     */
+#ifdef RTL_EE_MEMBUS
+    /*
+     * No external memory access beyond this point.
+     */
+#ifdef __AVR_ATmega128__
+    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
+    outb(XMCRB, inb(XMCRB) | _BV(XMM0) | _BV(XMM1));
+#else
+    /* On the ATmega 103 we have to disable the external memory interface. */
+    cbi(MCUCR, SRE);
+#endif
+#endif
+
+    /*
+     * Loop for all EEPROM words.
+     */
+    for(cnt = 0; cnt < sizeof(nic_eeprom); ) {
+
+        /*
+         * 
+         * 1 start bit, always high
+         * 2 op-code bits
+         * 7 address bits
+         * 1 dir change bit, always low
+         */
+        for(clk = 0; clk < 11; clk++) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+        }
+
+        /*
+         * Shift out the high byte, MSB first. Our data changes at the EESK 
+         * rising edge. Data is sampled by the Realtek at the falling edge.
+         */
+        val = PRG_RDB(nic_eeprom + cnt);
+        cnt++;
+        for(clk = 0x80; clk; clk >>= 1) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            if(val & clk) 
+                sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+            cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+        }
+
+        /*
+         * Shift out the low byte.
+         */
+        val = PRG_RDB(nic_eeprom + cnt);
+        cnt++;
+        for(clk = 0x80; clk; clk >>= 1) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            if(val & clk) 
+                sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+            cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+        }
+
+
+        /* 5 remaining clock cycles. */
+        for(clk = 0; clk < 5; clk++) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+        }
+    }
+
+#ifdef RTL_EE_MEMBUS
+    /*
+     * Enable memory interface.
+     */
+#ifdef __AVR_ATmega128__
+    /* On the ATmega 128 we release bits 5-7 as normal port pins. */
+    outb(XMCRB, inb(XMCRB) & ~( _BV(XMM0) | _BV(XMM1)));
+#else
+    /* On the ATmega 103 we have to disable the external memory interface. */
+    sbi(MCUCR, SRE);
+#endif
+#endif
+
+    /* Reset port outputs to default. */
+    cbi(RTL_EEDO_DDR, RTL_EEDO_BIT);
+#ifdef RTL_EEMU_BIT
+    cbi(RTL_EEMU_PORT, RTL_EEMU_BIT);
+    cbi(RTL_EEMU_DDR, RTL_EEMU_BIT);
+#endif
+
+    /* Restore previous interrupt enable state. */
+    NutExitCritical();
+#endif
 }
 
 /*
@@ -218,19 +575,23 @@ static int NicReset(volatile u_char * base)
  * should have been disabled when calling this
  * function.
  */
-static int NicStart(volatile u_char * base, CONST u_char * mac)
+static int NicStart(CONST u_char * mac)
 {
     u_char i;
 
-    if (NicReset(base))
+    if (NicReset()) {
         return -1;
+    }
+    if (DetectNicEeprom() == 0) {
+        EmulateNicEeprom();
+    }
 
     /*
      * Mask all interrupts and clear any interrupt status flag to set the 
      * INT pin back to low.
      */
-    nic_write(NIC_PG0_IMR, 0);
-    nic_write(NIC_PG0_ISR, 0xff);
+    NICOUTB(NIC_PG0_IMR, 0);
+    NICOUTB(NIC_PG0_ISR, 0xff);
 
     /*
      * During reset the nic loaded its initial configuration from an 
@@ -239,36 +600,36 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
      * high level. So we have to clear some bits in the configuration 
      * register. Switch to register page 3.
      */
-    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
 
     /*
      * The nic configuration registers are write protected unless both 
      * EEM bits are set to 1.
      */
-    nic_write(NIC_PG3_EECR, NIC_EECR_EEM0 | NIC_EECR_EEM1);
+    NICOUTB(NIC_PG3_EECR, NIC_EECR_EEM0 | NIC_EECR_EEM1);
 
     /*
      * Network media had been set to 10Base2 by the virtual EEPROM and
      * will be set now to auto detect. This will initiate a link test.
      * We don't force 10BaseT, because this would disable the link test.
      */
-    nic_write(NIC_PG3_CONFIG2, NIC_CONFIG2_BSELB);
+    NICOUTB(NIC_PG3_CONFIG2, NIC_CONFIG2_BSELB);
 
     /*
-     * Disable sleep and power down, enable FDX
+     * Disable sleep and power down.
      *
-     * Bengt Florin moved this command down, no idea why. But it
-     * reminds me of the possibility to get the full duplex problem
-     * solved without hardware modification. May be that the NIC
-     * will restart in full duplex after woken up from sleep mode.
+     * The virtual EEPROM (resistor tight to VCC) will set all bits of
+     * CONFIG3 to 1. Unfortunately we are not able to modify the full
+     * duplex bit. The only solution is to use a real EEPROM or emulate
+     * one.
      */
-    nic_write(NIC_PG3_CONFIG3, NIC_CONFIG3_FUDUP);
+    NICOUTB(NIC_PG3_CONFIG3, NIC_CONFIG3_LEDS1 | NIC_CONFIG3_LEDS1);
 
     /*
      * Reenable write protection of the nic configuration registers
      * and wait for link test to complete.
      */
-    nic_write(NIC_PG3_EECR, 0);
+    NICOUTB(NIC_PG3_EECR, 0);
     NutDelay(255);
 
     /*
@@ -276,22 +637,22 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
      * to byte-wide DMA transfers, normal operation (no loopback),
      * send command not executed and 8 byte fifo threshold.
      */
-    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
-    nic_write(NIC_PG0_DCR, NIC_DCR_LS | NIC_DCR_FT1);
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+    NICOUTB(NIC_PG0_DCR, NIC_DCR_LS | NIC_DCR_FT1);
 
     /*
      * Clear remote dma byte count register.
      */
-    nic_write(NIC_PG0_RBCR0, 0);
-    nic_write(NIC_PG0_RBCR1, 0);
+    NICOUTB(NIC_PG0_RBCR0, 0);
+    NICOUTB(NIC_PG0_RBCR1, 0);
 
     /*
      * Temporarily set receiver to monitor mode and transmitter to 
      * internal loopback mode. Incoming packets will not be stored 
      * in the nic ring buffer and no data will be send to the network.
      */
-    nic_write(NIC_PG0_RCR, NIC_RCR_MON);
-    nic_write(NIC_PG0_TCR, NIC_TCR_LB0);
+    NICOUTB(NIC_PG0_RCR, NIC_RCR_MON);
+    NICOUTB(NIC_PG0_TCR, NIC_TCR_LB0);
 
     /*
      * Configure the nic's ring buffer page layout.
@@ -299,60 +660,60 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
      * NIC_PG0_PSTART: First page of receiver buffer.
      * NIC_PG0_PSTOP: Last page of receiver buffer.
      */
-    nic_write(NIC_PG0_TPSR, NIC_FIRST_TX_PAGE);
-    nic_write(NIC_PG0_BNRY, NIC_STOP_PAGE - 1);
-    nic_write(NIC_PG0_PSTART, NIC_FIRST_RX_PAGE);
-    nic_write(NIC_PG0_PSTOP, NIC_STOP_PAGE);
+    NICOUTB(NIC_PG0_TPSR, NIC_FIRST_TX_PAGE);
+    NICOUTB(NIC_PG0_BNRY, NIC_STOP_PAGE - 1);
+    NICOUTB(NIC_PG0_PSTART, NIC_FIRST_RX_PAGE);
+    NICOUTB(NIC_PG0_PSTOP, NIC_STOP_PAGE);
 
     /*
      * Once again clear interrupt status register.
      */
-    nic_write(NIC_PG0_ISR, 0xff);
+    NICOUTB(NIC_PG0_ISR, 0xff);
 
     /*
      * Switch to register page 1 and copy our MAC address into the nic. 
      * We are still in stop mode.
      */
-    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
     for (i = 0; i < 6; i++)
-        nic_write(NIC_PG1_PAR0 + i, mac[i]);
+        NICOUTB(NIC_PG1_PAR0 + i, mac[i]);
 
     /*
      * Clear multicast filter bits to disable all packets.
      */
     for (i = 0; i < 8; i++)
-        nic_write(NIC_PG1_MAR0 + i, 0);
+        NICOUTB(NIC_PG1_MAR0 + i, 0);
 
     /*
      * Set current page pointer to one page after the boundary pointer.
      */
-    nic_write(NIC_PG1_CURR, NIC_FIRST_RX_PAGE);
+    NICOUTB(NIC_PG1_CURR, NIC_FIRST_RX_PAGE);
 
     /*
      * Switch back to register page 0, remaining in stop mode.
      */
-    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
 
     /*
      * Take receiver out of monitor mode and enable it for accepting 
      * broadcasts.
      */
-    nic_write(NIC_PG0_RCR, NIC_RCR_AB);
+    NICOUTB(NIC_PG0_RCR, NIC_RCR_AB);
 
     /*
      * Clear all interrupt status flags and enable interrupts.
      */
-    nic_write(NIC_PG0_ISR, 0xff);
+    NICOUTB(NIC_PG0_ISR, 0xff);
     /* Note: transmitter if polled, thus no NIC_IMR_PTXE */
-    nic_write(NIC_PG0_IMR, NIC_IMR_PRXE | NIC_IMR_RXEE | NIC_IMR_TXEE | NIC_IMR_OVWE);
+    NICOUTB(NIC_PG0_IMR, NIC_IMR_PRXE | NIC_IMR_RXEE | NIC_IMR_TXEE | NIC_IMR_OVWE);
 
     /*
      * Fire up the nic by clearing the stop bit and setting the start bit. 
      * To activate the local receive dma we must also take the nic out of
      * the local loopback mode.
      */
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
-    nic_write(NIC_PG0_TCR, 0);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+    NICOUTB(NIC_PG0_TCR, 0);
 
     NutDelay(255);
 
@@ -362,27 +723,66 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
 /*!
  * Complete remote DMA.
  */
-static void NicCompleteDma(volatile u_char * base)
+static void NicCompleteDma(void)
 {
     u_char i;
 
     /*
      * Complete remote dma.
      */
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
 
     /*
      * Check that we have a DMA complete flag.
      */
     for (i = 0; i <= 20; i++)
-        if (nic_read(NIC_PG0_ISR) & NIC_ISR_RDC)
+        if (NICINB(NIC_PG0_ISR) & NIC_ISR_RDC)
             break;
 
     /*
      * Reset remote dma complete flag.
      */
-    nic_write(NIC_PG0_ISR, NIC_ISR_RDC);
+    NICOUTB(NIC_PG0_ISR, NIC_ISR_RDC);
 }
+
+/*
+ * Write data block to the NIC.
+ */
+static void NicWrite(u_char * buf, u_short len)
+{
+    register u_short l = len - 1;
+    register u_char ih = (u_short) l >> 8;
+    register u_char il = (u_char) l;
+
+    if (!len)
+        return;
+
+    do {
+        do {
+            NICOUTB(NIC_IOPORT, *buf++);
+        } while (il-- != 0);
+    } while (ih-- != 0);
+}
+
+/*
+ * Read data block from the NIC.
+ */
+static void NicRead(u_char * buf, u_short len)
+{
+    register u_short l = len - 1;
+    register u_char ih = (u_short) l >> 8;
+    register u_char il = (u_char) l;
+
+    if (!len)
+        return;
+
+    do {
+        do {
+            *buf++ = NICINB(NIC_IOPORT);
+        } while (il-- != 0);
+    } while (ih-- != 0);
+}
+
 
 /*!
  * \brief Load a packet into the nic's transmit ring buffer.
@@ -397,11 +797,10 @@ static void NicCompleteDma(volatile u_char * base)
  *         will automatically release the network buffer 
  *         structure.
  */
-static int NicPutPacket(volatile u_char * base, NETBUF * nb)
+static int NicPutPacket(NETBUF * nb)
 {
     u_short sz;
     u_short i;
-    u_char *p;
     u_char padding = 0;
 
     /*
@@ -432,73 +831,62 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
      * priority thread is waiting for the transmitter, it may hold
      * the CPU for more than 1.2 milliseconds in worst cases.
      */
-    while (nic_read(NIC_CR) & NIC_CR_TXP)
+    while (NICINB(NIC_CR) & NIC_CR_TXP)
         NutThreadYield();
 
     /* we don't want to be interrupted by NIC owerflow */
-    cbi(EIMSK, RTL_SIGNAL_BIT);
+    cbi(EIMSK, RTL_SIGNAL_IRQ);
 
     /*
      * Set remote dma byte count
      * and start address.
      */
-    nic_write(NIC_PG0_RBCR0, sz);
-    nic_write(NIC_PG0_RBCR1, sz >> 8);
-    nic_write(NIC_PG0_RSAR0, 0);
-    nic_write(NIC_PG0_RSAR1, NIC_FIRST_TX_PAGE);
+    NICOUTB(NIC_PG0_RBCR0, sz);
+    NICOUTB(NIC_PG0_RBCR1, sz >> 8);
+    NICOUTB(NIC_PG0_RSAR0, 0);
+    NICOUTB(NIC_PG0_RSAR1, NIC_FIRST_TX_PAGE);
 
     /*
      * Peform the write.
      */
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD1);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD1);
 
     /*
      * Transfer the Ethernet frame.
      */
-    p = nb->nb_dl.vp;
-    for (i = nb->nb_dl.sz; i; i--)
-        nic_write(NIC_IOPORT, *p++);
-
-    p = nb->nb_nw.vp;
-    for (i = nb->nb_nw.sz; i; i--)
-        nic_write(NIC_IOPORT, *p++);
-
-    p = nb->nb_tp.vp;
-    for (i = nb->nb_tp.sz; i; i--)
-        nic_write(NIC_IOPORT, *p++);
-
-    p = nb->nb_ap.vp;
-    for (i = nb->nb_ap.sz; i; i--)
-        nic_write(NIC_IOPORT, *p++);
+    NicWrite(nb->nb_dl.vp, nb->nb_dl.sz);
+    NicWrite(nb->nb_nw.vp, nb->nb_nw.sz);
+    NicWrite(nb->nb_tp.vp, nb->nb_tp.sz);
+    NicWrite(nb->nb_ap.vp, nb->nb_ap.sz);
 
     /*
      * Add pad bytes.
      */
     for (i = 0; i < padding; i++)
-        nic_write(NIC_IOPORT, 0);
+        NICOUTB(NIC_IOPORT, 0);
 
     /*
      * Complete remote dma.
      */
-    NicCompleteDma(base);
+    NicCompleteDma();
 
     /*
      * Number of bytes to be transmitted.
      */
-    nic_write(NIC_PG0_TBCR0, (sz & 0xff));
-    nic_write(NIC_PG0_TBCR1, ((sz >> 8) & 0xff));
+    NICOUTB(NIC_PG0_TBCR0, (sz & 0xff));
+    NICOUTB(NIC_PG0_TBCR1, ((sz >> 8) & 0xff));
 
     /*
      * First page of packet to be transmitted.
      */
-    nic_write(NIC_PG0_TPSR, NIC_FIRST_TX_PAGE);
+    NICOUTB(NIC_PG0_TPSR, NIC_FIRST_TX_PAGE);
 
     /*
      * Start transmission.
      */
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
 
-    sbi(EIMSK, RTL_SIGNAL_BIT);
+    sbi(EIMSK, RTL_SIGNAL_IRQ);
 
     return 0;
 }
@@ -513,7 +901,7 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
  *         null pointer. If the NIC's buffer seems to be
  *         corrupted, a pointer to 0xFFFF is returned.
  */
-static NETBUF *NicGetPacket(volatile u_char * base)
+static NETBUF *NicGetPacket(void)
 {
     NETBUF *nb = 0;
     struct nic_pkt_header hdr;
@@ -526,15 +914,15 @@ static NETBUF *NicGetPacket(volatile u_char * base)
     u_char drop = 0;
 
     /* we don't want to be interrupted by NIC owerflow */
-    cbi(EIMSK, RTL_SIGNAL_BIT);
+    cbi(EIMSK, RTL_SIGNAL_IRQ);
     /*
      * Get the current page pointer. It points to the page where the NIC 
      * will start saving the next incoming packet.
      */
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2 | NIC_CR_PS0);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD2 | NIC_CR_PS0);
     Delay16Cycles();
-    curr = nic_read(NIC_PG1_CURR);
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+    curr = NICINB(NIC_PG1_CURR);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
 
     /*
      * Get the pointer to the last page we read from. The following page
@@ -542,27 +930,27 @@ static NETBUF *NicGetPacket(volatile u_char * base)
      * page pointer, then there's nothing to read. In this case we return
      * a null pointer.
      */
-    if ((bnry = nic_read(NIC_PG0_BNRY) + 1) >= NIC_STOP_PAGE)
+    if ((bnry = NICINB(NIC_PG0_BNRY) + 1) >= NIC_STOP_PAGE)
         bnry = NIC_FIRST_RX_PAGE;
         
     if (bnry == curr) {
-        sbi(EIMSK, RTL_SIGNAL_BIT);
+        sbi(EIMSK, RTL_SIGNAL_IRQ);
         return 0;
     }
 
     /*
      * Read the NIC specific packet header.
      */
-    nic_write(NIC_PG0_RBCR0, sizeof(struct nic_pkt_header));
-    nic_write(NIC_PG0_RBCR1, 0);
-    nic_write(NIC_PG0_RSAR0, 0);
-    nic_write(NIC_PG0_RSAR1, bnry);
+    NICOUTB(NIC_PG0_RBCR0, sizeof(struct nic_pkt_header));
+    NICOUTB(NIC_PG0_RBCR1, 0);
+    NICOUTB(NIC_PG0_RSAR0, 0);
+    NICOUTB(NIC_PG0_RSAR1, bnry);
     buf = (u_char *) & hdr;
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
     Delay16Cycles();
     for (i = 0; i < sizeof(struct nic_pkt_header); i++)
-        *buf++ = nic_read(NIC_IOPORT);
-    NicCompleteDma(base);
+        *buf++ = NICINB(NIC_IOPORT);
+    NicCompleteDma();
 
     /*
      *  Check packet length. Silently discard packets of illegal size.
@@ -588,7 +976,7 @@ static NETBUF *NicGetPacket(volatile u_char * base)
             nextpg1 += NIC_FIRST_RX_PAGE;
         }
         if (nextpg1 != hdr.ph_nextpg) {
-            sbi(EIMSK, RTL_SIGNAL_BIT);
+            sbi(EIMSK, RTL_SIGNAL_IRQ);
             return (NETBUF *)0xFFFF;
         }
         nextpg = nextpg1;
@@ -610,21 +998,18 @@ static NETBUF *NicGetPacket(volatile u_char * base)
              * start address. Don't read the
              * header again.
              */
-            nic_write(NIC_PG0_RBCR0, count);
-            nic_write(NIC_PG0_RBCR1, count >> 8);
-            nic_write(NIC_PG0_RSAR0, sizeof(struct nic_pkt_header));
-            nic_write(NIC_PG0_RSAR1, bnry);
+            NICOUTB(NIC_PG0_RBCR0, count);
+            NICOUTB(NIC_PG0_RBCR1, count >> 8);
+            NICOUTB(NIC_PG0_RSAR0, sizeof(struct nic_pkt_header));
+            NICOUTB(NIC_PG0_RSAR1, bnry);
 
             /*
              * Perform the read.
              */
-            nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
+            NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
             Delay16Cycles();
-            buf = nb->nb_dl.vp;
-            for (i = 0; i < count; i++)
-                *buf++ = nic_read(NIC_IOPORT);
-                
-            NicCompleteDma(base);
+            NicRead(nb->nb_dl.vp, count);
+            NicCompleteDma();
         }
     }
 
@@ -634,9 +1019,9 @@ static NETBUF *NicGetPacket(volatile u_char * base)
      */
     if (--nextpg < NIC_FIRST_RX_PAGE)
         nextpg = NIC_STOP_PAGE - 1;
-    nic_write(NIC_PG0_BNRY, nextpg);
+    NICOUTB(NIC_PG0_BNRY, nextpg);
 
-    sbi(EIMSK, RTL_SIGNAL_BIT);
+    sbi(EIMSK, RTL_SIGNAL_IRQ);
     return nb;
 }
 
@@ -658,7 +1043,7 @@ static NETBUF *NicGetPacket(volatile u_char * base)
  * to Bengt Florin for contributing his code, which provides much more
  * stability than its predecessor.
  */
-static u_char NicOverflow(volatile u_char * base)
+static u_char NicOverflow(void)
 {
     uint8_t cr;
     uint8_t resend = 0;
@@ -669,29 +1054,29 @@ static u_char NicOverflow(volatile u_char * base)
      * so we can later determine, if NIC transmitter has been interrupted. 
      * or reception in progress.
      */
-    while (nic_read(NIC_CR) & NIC_CR_TXP);
-    cr = nic_read(NIC_CR);
+    while (NICINB(NIC_CR) & NIC_CR_TXP);
+    cr = NICINB(NIC_CR);
 
     /*
      * Get the current page pointer. It points to the page where the NIC 
      * will start saving the next incoming packet.
      */
-    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
-    curr = nic_read(NIC_PG1_CURR);
-    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
+    curr = NICINB(NIC_PG1_CURR);
+    NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
 
     /* Clear remote byte count register. */
-    nic_write(NIC_PG0_RBCR0, 0);
-    nic_write(NIC_PG0_RBCR1, 0);
+    NICOUTB(NIC_PG0_RBCR0, 0);
+    NICOUTB(NIC_PG0_RBCR1, 0);
 
     /* Check for any incomplete transmission. */
-    if ((cr & NIC_CR_TXP) && ((nic_read(NIC_PG0_ISR) & (NIC_ISR_PTX | NIC_ISR_TXE)) == 0)) {
+    if ((cr & NIC_CR_TXP) && ((NICINB(NIC_PG0_ISR) & (NIC_ISR_PTX | NIC_ISR_TXE)) == 0)) {
         resend = 1;
     }
 
     /* Enter loopback mode and restart the NIC. */
-    nic_write(NIC_PG0_TCR, NIC_TCR_LB0);
-    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+    NICOUTB(NIC_PG0_TCR, NIC_TCR_LB0);
+    NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
 
     /* 
      * Discard all packets from the receiver buffer. Set boundary 
@@ -700,18 +1085,18 @@ static u_char NicOverflow(volatile u_char * base)
     if (--curr < NIC_FIRST_RX_PAGE) {
         curr = NIC_STOP_PAGE - 1;
     }
-    nic_write(NIC_PG0_BNRY, curr);
+    NICOUTB(NIC_PG0_BNRY, curr);
 
     /* Switch from loopback to normal mode mode. */
-    nic_write(NIC_PG0_TCR, 0);
+    NICOUTB(NIC_PG0_TCR, 0);
 
     /* Re-invoke any interrupted transmission. */
     if (resend) {
-        nic_write(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
+        NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
     }
 
     /* Finally clear the overflow flag */
-    nic_write(NIC_PG0_ISR, NIC_ISR_OVW);
+    NICOUTB(NIC_PG0_ISR, NIC_ISR_OVW);
     return resend;
 }
 
@@ -722,13 +1107,12 @@ static u_char NicOverflow(volatile u_char * base)
 static void NicInterrupt(void *arg)
 {
     u_char isr;
-    volatile u_char *base = (u_char *) (((NUTDEVICE *) arg)->dev_base);
     NICINFO *ni = (NICINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     ni->ni_interrupts++;
 
-    isr = nic_read(NIC_PG0_ISR);
-    nic_write(NIC_PG0_ISR, isr);
+    isr = NICINB(NIC_PG0_ISR);
+    NICOUTB(NIC_PG0_ISR, isr);
 
     /*
      * Recover from receive buffer overflow. This may take some
@@ -739,13 +1123,13 @@ static void NicInterrupt(void *arg)
         /* The AVR platform uses a dedicated interrupt stack, which
          * forbids interrupt nesting. */
 #if !defined(__AVR_ATmega128__) && !defined(__AVR_ATmega103__)
-        cbi(EIMSK, RTL_SIGNAL_BIT);
+        cbi(EIMSK, RTL_SIGNAL_IRQ);
         sei();
 #endif
-        NicOverflow(base);
+        NicOverflow();
 #if !defined(__AVR_ATmega128__) && !defined(__AVR_ATmega103__)
         cli();
-        sbi(EIMSK, RTL_SIGNAL_BIT);
+        sbi(EIMSK, RTL_SIGNAL_IRQ);
 #endif
         ni->ni_rx_overruns++;
     } else {
@@ -765,9 +1149,9 @@ static void NicInterrupt(void *arg)
             NutEventPostAsync(&ni->ni_rx_rdy);
 
         if (isr & NIC_ISR_RXE) {
-            ni->ni_rx_frame_errors += nic_read(NIC_PG0_CNTR0);
-            ni->ni_rx_crc_errors += nic_read(NIC_PG0_CNTR1);
-            ni->ni_rx_missed_errors += nic_read(NIC_PG0_CNTR2);
+            ni->ni_rx_frame_errors += NICINB(NIC_PG0_CNTR0);
+            ni->ni_rx_crc_errors += NICINB(NIC_PG0_CNTR1);
+            ni->ni_rx_missed_errors += NICINB(NIC_PG0_CNTR2);
         }
     }
 }
@@ -798,9 +1182,9 @@ THREAD(NicRx, arg)
     if ((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF) {
         while((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF)
             NutSleep(125);
-        cbi(EIMSK, RTL_SIGNAL_BIT);
-        NicStart((u_char *) (dev->dev_base), ifn->if_mac);
-        sbi(EIMSK, RTL_SIGNAL_BIT);
+        cbi(EIMSK, RTL_SIGNAL_IRQ);
+        NicStart(ifn->if_mac);
+        sbi(EIMSK, RTL_SIGNAL_IRQ);
     }
 
     while (1) {
@@ -810,12 +1194,12 @@ THREAD(NicRx, arg)
          * buffer and pass them to the registered handler.
          */
         do {
-            nb = NicGetPacket((u_char *) (dev->dev_base));
+            nb = NicGetPacket();
             
             /* The sanity check may fail because the controller is too busy.
                restart the NIC. */
             if ((u_short)nb == 0xFFFF) {
-                NicStart((u_char *) (dev->dev_base), ifn->if_mac);
+                NicStart(ifn->if_mac);
                 ni->ni_rx_size_errors++;
             } else if (nb) {
                 ni->ni_rx_packets++;
@@ -840,7 +1224,7 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
     int rc = -1;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
-    if (NicPutPacket((u_char *) (dev->dev_base), nb) == 0) {
+    if (NicPutPacket(nb) == 0) {
         ni->ni_tx_packets++;
         rc = 0;
     }
@@ -856,7 +1240,10 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
  *
  * Applications should do not directly call this function. It is 
  * automatically executed during during device registration by 
- * NutRegisterDevice().
+ * NutRegisterDevice(). Note, that base address and interrupt number
+ * passed to NutRegisterDevice() are silently ignored by this driver
+ * for performance reasons. These values can be changed only by 
+ * using the Nut/OS Configurator to rebuild the system.
  *
  * If the network configuration hasn't been set by the application
  * before registering the specified device, this function will
@@ -866,7 +1253,6 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
  */
 int NicInit(NUTDEVICE * dev)
 {
-    volatile u_char *base;
     IFNET *ifn;
     NICINFO *ni;
 
@@ -881,7 +1267,6 @@ int NicInit(NUTDEVICE * dev)
     memcpy(ifn->if_mac, confnet.cdn_mac, 6);
     ni = (NICINFO *) dev->dev_dcb;
     memset(ni, 0, sizeof(NICINFO));
-    base = (u_char *) (dev->dev_base);
 
     /*
      * Start the receiver thread.
@@ -895,13 +1280,13 @@ int NicInit(NUTDEVICE * dev)
     if (NutRegisterIrqHandler(&RTL_SIGNAL, NicInterrupt, dev)) 
         return -1;
         
-    cbi(EIMSK, RTL_SIGNAL_BIT);
+    cbi(EIMSK, RTL_SIGNAL_IRQ);
     
     if(ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2])
-        if (NicStart(base, ifn->if_mac))
+        if (NicStart(ifn->if_mac))
             return -1;
 
-    sbi(EIMSK, RTL_SIGNAL_BIT);
+    sbi(EIMSK, RTL_SIGNAL_IRQ);
 
     return 0;
 }
