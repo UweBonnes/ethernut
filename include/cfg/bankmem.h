@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/08/25 10:56:10  haraldkipp
+ * More general memory layout definitions moved from cfg/bankmem.h to cfg/memory.h.
+ *
  * Revision 1.2  2004/08/18 22:34:08  drsung
  * Final #endif was missing.
  *
@@ -49,43 +52,10 @@
  * \brief Banked memory default configuration.
  *
  * Values can be changed by the configurator.
+ *
+ * \todo Add configuration items instead of occupying all banks.
  */
 
-#ifndef NUTBANK_COUNT
-/*!
- * \brief Number of memory banks.
- *
- * For systems without banked memory this is set to zero.
- * Ethernut 2 has 30 memory banks.
- */
-#define NUTBANK_COUNT   0
-#endif
-
-#ifndef NUTBANK_START
-/*!
- * \brief Start address of memory banks.
- *
- * For systems without banked memory this is ignored.
- */
-#define NUTBANK_START   0x8000
-#endif
-
-#ifndef NUTBANK_SIZE
-/*!
- * \brief Size of a single memory bank.
- *
- * For systems without banked memory this is ignored.
- */
-#define NUTBANK_SIZE    0x4000
-#endif
-
-#ifndef NUTBANK_SR
-/*!
- * \brief Address of the bank select register.
- *
- * For systems without banked memory this is ignored.
- */
-#define NUTBANK_SR      0xFF00
-#endif
+#include <cfg/memory.h>
 
 #endif /* #ifndef _CFG_BANKMEM_H_ */
