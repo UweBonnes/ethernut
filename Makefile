@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2004/10/21 19:17:59  freckle
+# added include/errno.h include/fcntl.h to distclean
+#
 # Revision 1.4  2004/09/10 17:18:25  haraldkipp
 # Building inside source tree is working again
 #
@@ -148,5 +151,5 @@ endif
 	$(MAKE) -C crt clean
 	$(MAKE) -C app clean
 	rm -f UserConf.mk Makerules Makedefs app/Makerules app/Makedefs
-	rm -f include/stdio_orig.h include/sys/types_orig.h
+	rm -f include/stdio_orig.h include/sys/types_orig.h include/errno.h include/fcntl.h
 	rm -f `find . -name '*\.[ch]~'`
