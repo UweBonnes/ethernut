@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.46 2004/03/16 16:48:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.47 2004/03/17 11:28:04 haraldkipp Exp $
+
+2004-03-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/dev/chat.h, include/sys/atom.h: Bugfix, ICCAVR
+	does not define __AVR__.
+
 
 2004-03-16  Harald Kipp  <harald.kipp@egnite.de>
 
