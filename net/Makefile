@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,47 +32,14 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/03/18 13:45:57  haraldkipp
+# Deprecated functions removed
+#
 # Revision 1.2  2004/03/16 16:48:45  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
 # Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
 # Initial using 3.2.1
-#
-# Revision 1.12  2003/05/06 18:22:17  harald
-# Separate PPP debug module added.
-#
-# Revision 1.11  2003/03/31 11:44:05  harald
-# New PPP structure added.
-#
-# Revision 1.10  2003/02/04 18:14:56  harald
-# Version 3 released
-#
-# Revision 1.9  2002/10/31 16:35:18  harald
-# Mods by troth for Linux
-#
-# Revision 1.8  2002/08/11 12:28:43  harald
-# Using hex file extension now
-#
-# Revision 1.7  2002/06/26 17:29:35  harald
-# First pre-release with 2.4 stack
-#
-# Revision 1.6  2002/06/04 18:40:28  harald
-# New make environment
-#
-# Revision 1.5  2002/05/08 16:03:06  harald
-# First Imagecraft compilation
-#
-# Revision 1.4  2001/09/01 17:39:11  harald
-# Debug module added
-#
-# Revision 1.3  2001/06/09 10:26:06  harald
-# Cleanup
-#
-# Revision 1.2  2001/05/27 19:59:09  harald
-# New device structure implemented
-#
-# Revision 1.1  2001/05/19 12:30:35  harald
-# First check in
 #
 #
 
@@ -82,7 +49,7 @@ top_srcdir = ..
 
 include $(top_srcdir)/Makedefs
 
-SRC1 =  sostream.c tcpsock.c tcpsm.c tcpin.c tcpout.c tcputil.c \
+SRC1 =  tcpsock.c tcpsm.c tcpin.c tcpout.c tcputil.c \
 	udpsock.c udpin.c udpout.c \
 	icmpin.c icmpout.c \
 	lcpin.c ipcpin.c pppsm.c papin.c papout.c
