@@ -43,6 +43,11 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/04/04 19:35:06  freckle
+ * added socket redirection feature for unix emulation uarts. Every nut/os
+ * uart device can now be mapped to a TCP/IP socket using the
+ * "-u{0/1/2} hostname:port" command line option
+ *
  * Revision 1.6  2004/08/09 21:31:30  freckle
  * Added include/dev/unix_devs.h changes
  *
@@ -130,6 +135,10 @@ struct _UNIXDCB {
     */
     int dcb_fd;
     
+	/*! \brief File is Socket 
+	*/
+	u_char dcb_socket;
+
     /*! \brief Queue of threads waiting for a character in the input buffer.
      */
     HANDLE dcb_rx_rdy;

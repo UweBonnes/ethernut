@@ -64,6 +64,17 @@
 
 #include <dev/unix_devs.h>
 
+// for sockets 
+#include <sys/types.h>
+#include <sys/socket.h>  // 
+#include <netinet/in.h>  // 
+#include <arpa/inet.h>   // 
+#include <netdb.h>
+#include <sys/uio.h>     
+#include <unistd.h>
+#include <string.h>
+
+
 #ifdef __CYGWIN__
 #include <sys/select.h>
 #endif
@@ -251,6 +262,28 @@ static int convertToBaudSpeed(int realSpeed)
     return -1;
 }
 
+/* ======================= sockets ======================== */
+
+unsigned int resolve(char *);
+unsigned int resolve(char *ip_addr)
+{
+    struct hostent *hp;
+    unsigned int ip;
+    hp = gethostbyname(ip_addr);
+    if (!hp)
+    {
+        ip = inet_addr(ip_addr);
+        if ((int)ip == -1) {
+            return -1;
+        } else {
+            return ip;
+        }
+    }
+    // hp->h_length should equal to 4
+    memcpy(&ip, hp->h_addr, 4);
+    return ip;
+}
+
 
 /*
  * IRQ Handler for correct signaling
@@ -346,7 +379,6 @@ static void *UnixDevReadThread( void * arg )
 }
 
 
-
 /*!
  * \brief Open UnixDev
  *
@@ -361,6 +393,14 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     struct termios t;
     long baud;
     pthread_t *thread;
+
+    // sockets
+    struct sockaddr_in sinaddr;
+    struct sockaddr_in remote;
+    unsigned int remote_ip;
+    unsigned int remote_port;
+    char *ip;
+    char *port;
 
     // map from dev->name to unix name
     if (strncmp("uart", dev->dev_name, 4) == 0) {
@@ -380,6 +420,11 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         }
     } else
         return NULL;
+
+    // check for sockets
+    // try to split "device name" into ip:port
+    ip = strtok( nativeName, ":");
+    port = strtok ( NULL, ":");
 
     // printf("UnixDevOpen: Nut name = %s, unix name = %s\n",  dev->dev_name, nativeName);
 
@@ -405,7 +450,51 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
             if (tcsetattr(nativeFile, TCSANOW, &t) < 0) {
                 printf("UnixDevOpen: tcsetattr failed\n\r");
             }
+            ((UNIXDCB*)dev->dev_dcb)->dcb_socket = 0;
         }
+
+    } else if (port) {
+
+        // tcp/ip socket
+        remote_ip = resolve ( ip );
+        remote_port = atoi( port );
+        
+        if ( (int) ip != -1) {
+        
+            NutEnterCritical();
+
+            // create socket
+            nativeFile = socket(AF_INET, SOCK_STREAM, 0);
+            
+            // set inbound address
+            sinaddr.sin_family = AF_INET;
+            sinaddr.sin_addr.s_addr = INADDR_ANY;
+            sinaddr.sin_port = htons(0);
+
+            // bind to socket
+            bind(nativeFile, (struct sockaddr *)&sinaddr, sizeof(sinaddr));
+            
+            // set remote address
+            remote.sin_family = AF_INET;
+            remote.sin_port = htons(remote_port);
+            remote.sin_addr.s_addr = remote_ip;
+            
+            // try to connect
+            if ( connect ( nativeFile, (struct sockaddr *)&remote, sizeof(remote) ) == 0) {
+                // connected
+                ((UNIXDCB*)dev->dev_dcb)->dcb_socket = 1;
+                
+            } else {
+                NutExitCritical();
+                printf( "UnixDevOpen: Connect to %s port %d failed (errno = %d)\n\r", ip, remote_port, errno);
+                return NULL;
+            }            
+        } else {
+            NutExitCritical();
+            printf("UnixDevOpen: Could not resolve IP address of '%s'!\n", ip);
+            return NULL;
+        }  
+        
 
     } else {
 
@@ -446,6 +535,8 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
                 printf("UnixDevOpen: tcsetattr failed\n\r");
             }
         }
+        ((UNIXDCB*)dev->dev_dcb)->dcb_socket = 0;
+
     }
 
     if (nativeFile == 0)
@@ -462,15 +553,15 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     // printf("UnixDevOpen: %s, fd * %d\n\r", nativeName, nativeFile);
     // printf("UnixDevOpen: stdout %d, stdin %d, stderr %d \n\r", fileno(stdin), fileno(stdout), fileno(stderr));
 
-	/* initialized rx IRQ handler -- not currently used (see UnixDevReadThread for more info on variants 
-	if (dev->dev_name[4] == '0') {
-		NutRegisterIrqHandler(IRQ_UART0_RX, UnixDevRxIntr, dev);
-	} else
-	{
-		NutRegisterIrqHandler(IRQ_UART1_RX, UnixDevRxIntr, dev);
-	}
+    /* initialized rx IRQ handler -- not currently used (see UnixDevReadThread for more info on variants 
+    if (dev->dev_name[4] == '0') {
+        NutRegisterIrqHandler(IRQ_UART0_RX, UnixDevRxIntr, dev);
+    } else
+    {
+        NutRegisterIrqHandler(IRQ_UART1_RX, UnixDevRxIntr, dev);
+    }
     */
-    	
+        
     /* Initialize mutex and condition variable objects */
     pthread_mutex_init(&unix_devs_mutex, NULL);
     pthread_mutex_init(&((UNIXDCB*)dev->dev_dcb)->dcb_rx_mutex, NULL);
@@ -668,10 +759,10 @@ static int UnixDevClose(NUTFILE * nf)
  *             - \ref UART_GETPARITY
  *             - \ref UART_SETFLOWCONTROL
  *             - \ref UART_GETFLOWCONTROL
- *			   - \ref UART_SETBLOCKREAD
- *			   - \ref UART_GETBLOCKREAD
- *			   - \ref UART_SETSTATUS
- *			   - \ref UART_GETSTATUS
+ *               - \ref UART_SETBLOCKREAD
+ *               - \ref UART_GETBLOCKREAD
+ *               - \ref UART_SETSTATUS
+ *               - \ref UART_GETSTATUS
  * \param conf Points to a buffer that contains any data required for
  *             the given control function or receives data from that
  *             function.
@@ -698,8 +789,13 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     case UART_SETDATABITS:
     case UART_SETSTOPBITS:
 
+        // ok on stdio
         if ( dcb->dcb_fd <= STDERR_FILENO)
-            return -1;
+            return 0;
+
+        // ok on sockets
+        if ( dcb->dcb_socket)
+            return 0;
 
         if (tcgetattr( dcb->dcb_fd , &t)) {
             printf("UnixDevIOCTL, tcgetattr failed\n\r");
@@ -808,9 +904,24 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     case UART_GETDATABITS:
     case UART_GETSTOPBITS:
 
-        if (dcb->dcb_fd <= STDERR_FILENO)
-            return -1;
-
+        if ((dcb->dcb_fd <= STDERR_FILENO) || ( dcb->dcb_socket))
+        {
+            // default answers for sockets / stdio
+            switch (req){
+                case UART_GETSPEED:
+                    *lvp = 9600; return 0;
+                case UART_GETFLOWCONTROL:
+                    *lvp = 0; return 0;
+                case UART_GETPARITY:
+                    *lvp = 0; return 0;
+                case UART_GETDATABITS:
+                    *lvp = 8; return 0;
+                case UART_GETSTOPBITS:
+                    *lvp = 1; return 0;
+            }
+            return 0;
+        }
+        
         if (tcgetattr(dcb->dcb_fd, &t) != 0)
             return -1;
 
@@ -883,30 +994,33 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
         return 0;
 #endif
 
-	case UART_SETCOOKEDMODE:
-		if (*lvp == 0)
-			return 0;
-		else
-			return -1;
-			
-	case UART_GETSTATUS:
-		*lvp = 0;
-		return 0;
+    case UART_SETCOOKEDMODE:
+        if (*lvp == 0)
+            return 0;
+        else
+            return -1;
+            
+    case UART_GETSTATUS:
+        *lvp = 0;
+        return 0;
 
-	case UART_SETTXBUFSIZ:
-	case UART_SETRXBUFSIZ:
-	case UART_SETTXBUFHWMARK:
-	case UART_SETRXBUFHWMARK:
-	case UART_SETTXBUFLWMARK:
-	case UART_SETRXBUFLWMARK:
-	case UART_SETSTATUS:
-		return 0;
-		
+    case UART_SETTXBUFSIZ:
+    case UART_SETRXBUFSIZ:
+    case UART_SETTXBUFHWMARK:
+    case UART_SETRXBUFHWMARK:
+    case UART_SETTXBUFLWMARK:
+    case UART_SETRXBUFLWMARK:
+    case UART_SETSTATUS:
+        return 0;
+        
     default:
         return -1;
     }
     return -1;
 }
+
+
+
 
 /* ======================= Devices ======================== */
 
