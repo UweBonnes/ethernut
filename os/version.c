@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/01/30 11:50:26  haraldkipp
+ * Release branch 3.4 created
+ *
  * Revision 1.7  2004/01/27 13:41:52  haraldkipp
  * Branch 3.4 announced
  *
@@ -67,8 +70,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03039901UL
-static CONST char os_version_string[] = "3.3.99.1";
+#define OS_VERSION_NUMBER  0x03050000UL
+static CONST char os_version_string[] = "3.5.0.0";
 
 /*!
  * \addtogroup xgNutInit
