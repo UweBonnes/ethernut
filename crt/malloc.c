@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:30  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/05 20:01:55  haraldkipp
+ * Typing errors corrected
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:30  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:07  harald
  * *** empty log message ***
@@ -75,8 +78,8 @@ void *malloc(size_t len)
  * of the runtime library, when the application is linked with nutcrt or
  * nutcrtf.
  *
- * \param block Points to a memory block previously allocated
- *              through a call to malloc().
+ * \param p Points to a memory block previously allocated
+ *          through a call to malloc().
  *
  */
 void free(void *p)

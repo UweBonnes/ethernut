@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:30  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/05 20:01:55  haraldkipp
+ * Typing errors corrected
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:30  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:08  harald
  * *** empty log message ***
@@ -68,7 +71,7 @@
  * - _O_TRUNC Truncate file if it exists. 
  * - _O_WRONLY Write only.
  *
- * \return File descriptor for the opened file or –1 to indicate an error.
+ * \return File descriptor for the opened file or -1 to indicate an error.
  */
 int _open(CONST char *name, int mode)
 {
