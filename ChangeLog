@@ -1,4 +1,40 @@
-$Id: ChangeLog,v 1.107 2004/09/01 14:31:00 haraldkipp Exp $
+$Id: ChangeLog,v 1.108 2004/09/07 19:05:47 haraldkipp Exp $
+
+2004-09-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arch/arch.nut: MCU type in NutConf.mk and cstartup
+	added.
+
+	* conf/crt/crt.nut: Program space routines moved to specific
+	modules.
+
+	* conf/dev/dev.nut: ARM7 IRQ handler removed to get it
+	running with the current implementation for EB40A, which
+	handles the timer interrupt in arm_timer.c. We will have
+	to create a more general interrupt handler for ARMs later.
+
+	* conf/repository.nut: ARM7 linker script choice added.
+
+	* conf/tools.nut: ARM7 linker script and nutlibc configuration
+	added.
+
+	* tools/nutconf/configitem.cpp: Boolean items were not
+	properly initialized. 
+
+	* tools/nutconf/nutcomponent.c: SRCx replaced by OBJx for
+	additional modules. Still bumpy with some versions of make.
+	Not all subdirs had been created with prior versions.
+	-DETHERNUT2 added to any newly created UserConf.mk.
+
+	* tools/nutconf/nutconfdoc.cpp: Configured build dir
+	added to library and include paths of sample makefiles.
+
+	* tools/nutconf/settings.cpp: Initial default lib
+	directory is now empty.
+
+	* conf/ethernut13f.conf, conf/ethernut13g.conf,
+	conf/at91eb40a.conf: New pre-defined hardware configurations.
+
 
 2004-09-01  Harald Kipp  <harald.kipp@egnite.de>
 
