@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/07/30 19:14:09  drsung
+ * filelength implemented for VIRTUALDEVICEs using the new
+ * global ioctl command IOCTL_GETFILESIZE.
+ *
  * Revision 1.4  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -54,6 +58,7 @@
 
 #include <errno.h>
 #include <sys/device.h>
+#include <io.h>
 
 /*!
  * \addtogroup xgCrtLowio
@@ -72,8 +77,19 @@ long _filelength(int fd)
 {
     NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
+    long l;
 
-    if (dev == 0 || dev->dev_size == 0) {
+    if (dev == 0) {
+        NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
+        if (vdv->vdv_ioctl)
+            return (*vdv->vdv_ioctl) (vdv, IOCTL_GETFILESIZE, &l);
+        else {
+            errno = EBADF;
+            return -1;
+        }
+    }
+
+    if (dev->dev_size == 0) {
         errno = EBADF;
         return -1;
     }
