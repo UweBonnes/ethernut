@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/08/25 10:45:41  haraldkipp
+# Fixed a problem with undefined top_srcdir and top_blddir when building applications
+# in the source directory.
+#
 # Revision 1.1  2003/05/15 14:30:09  haraldkipp
 # Initial using 3.2.1
 #
@@ -69,6 +73,14 @@
 # Preview release
 #
 #
+
+ifeq ($(top_srcdir),)
+top_srcdir = ../..
+endif
+
+ifeq ($(top_blddir),)
+top_blddir = ../..
+endif
 
 include $(top_srcdir)/Makedefs
 
