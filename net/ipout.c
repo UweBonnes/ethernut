@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/10/10 16:37:03  drsung
+ * Detection of directed broadcasts to local network added.
+ *
  * Revision 1.2  2003/07/20 16:00:23  haraldkipp
  * Memory hole fixed.
  *
@@ -210,9 +213,9 @@ int NutIpOutput(u_char proto, u_long dest, NETBUF * nb)
                  * TODO: We must clone the NETBUF!!!
                  */
                 if (nif->if_type == IFT_ETHER)
-                    rc = (*nif->if_output)(dev, ETHERTYPE_IP, ha, nb);
-                else 
-                    rc = (*nif->if_output)(dev, PPP_IP, 0, nb);
+                    rc = (*nif->if_output) (dev, ETHERTYPE_IP, ha, nb);
+                else
+                    rc = (*nif->if_output) (dev, PPP_IP, 0, nb);
             }
         }
         return rc;
@@ -242,14 +245,20 @@ int NutIpOutput(u_char proto, u_long dest, NETBUF * nb)
      * destination.
      */
     if (nif->if_type == IFT_ETHER) {
-        if (NutArpCacheQuery(dev, gate ? gate : dest, ha)) {
+        /* 
+         * Detect directed broadcasts for the local network. In this
+         * case don't send ARP queries, but send directly to MAC broadcast
+         * address. 
+         */
+        if ((gate == 0) && ((dest | nif->if_mask) == 0xffffffff)) {
+            memset(ha, 0xff, sizeof(ha));
+        } else if (NutArpCacheQuery(dev, gate ? gate : dest, ha)) {
             NutNetBufFree(nb);
             return -1;
         }
-        return (*nif->if_output)(dev, ETHERTYPE_IP, ha, nb);
-    }
-    else if (nif->if_type == IFT_PPP) 
-        return (*nif->if_output)(dev, PPP_IP, 0, nb);
+        return (*nif->if_output) (dev, ETHERTYPE_IP, ha, nb);
+    } else if (nif->if_type == IFT_PPP)
+        return (*nif->if_output) (dev, PPP_IP, 0, nb);
 
     NutNetBufFree(nb);
     return -1;

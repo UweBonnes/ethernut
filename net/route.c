@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:38  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/10/10 16:37:03  drsung
+ * Detection of directed broadcasts to local network added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:38  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.12  2003/03/31 14:53:28  harald
  * Prepare release 3.1
@@ -242,12 +245,11 @@ NUTDEVICE *NutIpRouteQuery(u_long ip, u_long * gate)
     if (gate)
         *gate = 0;
     AtomicInc(&rteLock);
-    rte = NutIpRouteRecQuery(ip, gate, 0);
     /* Return the first interface if the IP is broadcast. This solves the
-	   long existing problem with bad checksums on UDP broadcasts. Many
-	   thanks to Nicolas Moreau for this patch. */
-    if(ip == 0xFFFFFFFF) 
-		rte = rteList;
+       long existing problem with bad checksums on UDP broadcasts. Many
+       thanks to Nicolas Moreau for this patch. */
+    if (ip == 0xFFFFFFFF)
+        rte = rteList;
     else
         rte = NutIpRouteRecQuery(ip, gate, 0);
     AtomicDec(&rteLock);

@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.127 2004/10/03 18:34:09 haraldkipp Exp $
+$Id: ChangeLog,v 1.128 2004/10/10 16:36:59 drsung Exp $
+
+2004-10-10  Oliver Schulz  <olischulz@web.de>
+
+	* net/route.c: Removed unneccessary call to NutIpRouteRecQuery.
+
+	* net/ipout.c: Now directed broadcasts to the local network are detected, 
+	and no ARP queries are sent.
+
 
 2004-10-03  Harald Kipp  <harald.kipp@egnite.de>
 
