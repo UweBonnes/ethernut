@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/11/12 11:14:32  freckle
+ * added UART_GETBLOCKREAD & UART_SETBLOCKREAD defines
+ *
  * Revision 1.2  2004/05/24 20:19:08  drsung
  * Added function UartAvrSize to return number of chars in input buffer.
  *
@@ -333,6 +336,19 @@
  * The configuration parameter specifies the number of bytes.
  */
 #define UART_GETRXBUFHWMARK     0x0127
+
+/*! \brief UART _ioctl() command code to set the block read mode
+*
+* The configuration parameter specifies the block read mode
+*/
+#define UART_SETBLOCKREAD		0x0128
+
+/*! \brief UART _ioctl() command code to query the receive buffer high watermark.
+*
+* The configuration parameter specifies the block read mode
+*/
+#define UART_GETBLOCKREAD		0x0129
+
 
 /*!
  * \addtogroup xgUARTStatus
