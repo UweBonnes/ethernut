@@ -51,8 +51,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:19  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 18:28:54  haraldkipp
+ * Explain how to disable timeout.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:19  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/02/04 18:00:52  harald
  * Version 3 released
@@ -77,6 +80,8 @@ extern "C" {
 #endif
 
 #define SIGNALED    (void *)0xffff
+
+#define NUT_WAIT_INFINITE   0
 
 extern void NutEventTimeout(HANDLE timer, void *arg);
 extern int NutEventWait(volatile HANDLE *qhp, u_long ms);

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/07/20 18:28:10  haraldkipp
+ * Explain how to disable timeout.
+ *
  * Revision 1.2  2003/07/17 09:38:07  haraldkipp
  * Setting different speeds is now supported.
  *
@@ -550,7 +553,8 @@ static int TwAccess(u_long tmo)
  *               stored. Ignored, if the maximum number of bytes to 
  *               receive is zero.
  * \param rxsiz  Maximum number of bytes to receive.
- * \param tmo    Timeout in milliseconds.
+ * \param tmo    Timeout in milliseconds. To disable timeout,
+ *               set this parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes received, -1 in case of an error or 
  *         timeout.
@@ -630,7 +634,8 @@ int TwMasterError(void)
  * \param rxdata Points to a data buffer where the received data bytes
  *               are stored.
  * \param rxsize Specifies the maximum number of data bytes to receive.
- * \param tmo	 Timeout in milliseconds.
+ * \param tmo	 Timeout in milliseconds. To disable timeout,
+ *               set this parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
  */

@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:55  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 18:28:10  haraldkipp
+ * Explain how to disable timeout.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:55  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.21  2003/05/06 18:35:06  harald
  * Avoid duplicate initialization
@@ -375,7 +378,8 @@ static void UartAvrDisable(u_short base)
  * \return 0 on success, -1 otherwise.
  *
  * \warning Timeout values are given in milliseconds and are limited to 
- *          the granularity of the system timer.
+ *          the granularity of the system timer. To disable timeout,
+ *          set the parameter to NUT_WAIT_INFINITE.
  *
  * \bug For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
  *

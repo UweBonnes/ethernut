@@ -48,8 +48,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:49  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 18:27:44  haraldkipp
+ * Explain how to disable timeout.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:49  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.20  2003/04/21 17:07:41  harald
  * Comments added
@@ -139,7 +142,8 @@ void NutEventTimeout(HANDLE timer, void *arg)
  * higher priority is ready to run.
  *
  * \param qhp Identifies the queue to wait on.
- * \param ms  Maximum wait time in milliseconds.
+ * \param ms  Maximum wait time in milliseconds. To disable timeout,
+ *            set this parameter to NUT_WAIT_INFINITE.
  *
  * \return 0 if event received, -1 on timeout.
  *
