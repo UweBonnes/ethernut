@@ -8,6 +8,7 @@
 #include <string.h>
 #include <io.h>
 
+u_char *chat_report;
 
 /*
  * Special version of strchr, handling escaped characters.

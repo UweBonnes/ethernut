@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/06 18:12:36  drsung
+ * Bugfix multiple define: '_chat_report' under ICCAVR
+ *
  * Revision 1.2  2003/10/13 10:15:54  haraldkipp
  * Added Jelle's report function
  *
@@ -67,7 +70,7 @@ typedef struct {
     char chat_report_state;
 } NUTCHAT;
 
-u_char *chat_report;
+extern u_char *chat_report;
 
 __BEGIN_DECLS
 
