@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.9  2005/01/22 19:20:21  haraldkipp
+-- Fixes Ethernut 1.3G memory bug
+--
 -- Revision 1.8  2004/10/03 18:37:39  haraldkipp
 -- GBA support
 --
@@ -209,8 +212,24 @@ nutarch =
     {
         name = "nutarch_cstartup_avr_icc",
         brief = "ICCAVR Startup",
-        sources = { "avr/init/crtnut.s", "avr/init/crtnutram.s" },
-        targets = { "avr/init/crtnut.o", "avr/init/crtnutram.o" },
+        description = "There are four different ICCAVR startup files available.\n\n"..
+                      "crtnut.s, if globals and static variables use less than 4kB.\n"..
+                      "crtenut.s, same as above but including EEPROM emulation.\n"..
+                      "crtnutram.s, if globals and static variables use more than 4kB.\n"..
+                      "crtenutram.s, same as above but including EEPROM emulation.\n\n"..
+                      "Ethernut 1.3 Rev-G boards require EEPROM emulation.",
+        sources = { 
+            "avr/init/crtnut.s", 
+            "avr/init/crtnutram.s", 
+            "avr/init/crtenut.s", 
+            "avr/init/crtenutram.s" 
+        },
+        targets = { 
+            "avr/init/crtnut.o", 
+            "avr/init/crtnutram.o", 
+            "avr/init/crtenut.o", 
+            "avr/init/crtenutram.o" 
+        },
         requires = { "TOOL_CC_AVR", "TOOL_ICC" },
     },
 }
