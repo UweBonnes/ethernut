@@ -1,6 +1,9 @@
-$Id: ChangeLog,v 1.119 2004/09/19 11:18:31 haraldkipp Exp $
+$Id: ChangeLog,v 1.120 2004/09/19 11:23:11 haraldkipp Exp $
 
 2004-09-19  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/logtime/logtime.c, app/logtime/Makefile: New application
+	demonstrates usage of syslog and SNTP.
 
 	* include/sys/syslog.h, pro/syslog.c, pro/Makefile, 
 	conf/pro/pro.nut: Syslog protocol added.
