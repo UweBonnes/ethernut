@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2004/09/26 13:25:00  drsung
+ * Fixed call to strdup.
+ *
  * Revision 1.10  2004/09/26 12:04:07  drsung
  * Fixed several hundred memory leaks :-).
  * Relative pathes can now be used for source, build and install directory.
@@ -639,8 +642,7 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
          * directory is our root directory. All component scripts will
          * be below this point.
          */
-        //OS repo->nr_dir = _strdup_dbg(pathname);
-        if((repo->nr_dir = _strdup_dbg(pathname)) == NULL) {
+        if((repo->nr_dir = strdup(pathname)) == NULL) {
             free(repo);
             return NULL;
         }
