@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.170 2005/02/17 14:47:38 phblum Exp $
+$Id: ChangeLog,v 1.171 2005/02/17 17:54:02 freckle Exp $
+
+2005-02-17 Matthias Ringwald <mringwal@.inf.ethz.ch>
+
+	* os/arch/unix_options.c, os/arch/unix_nutinit: added #include <getopt.h>
 
 2005-02-17  Philipp Blum <blum@tik.ee.ethz.ch>, Matthias Ringwald
 

@@ -43,6 +43,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <getopt.h>
 
 #include <cfg/os.h>
 

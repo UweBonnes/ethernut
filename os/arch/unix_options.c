@@ -54,6 +54,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <getopt.h>
 
 /* the command line options are stored here */
 emulation_options_t emulation_options;
