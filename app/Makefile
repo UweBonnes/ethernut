@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/08/18 15:02:34  haraldkipp
+# Application build is no longer fixed in top_srcdir
+#
 # Revision 1.2  2003/11/04 17:46:52  haraldkipp
 # Adapted to Ethernut 2
 #
@@ -48,8 +51,6 @@
 # Added by troth
 #
 #
-
-top_srcdir = ..
 
 all:
 	$(MAKE) -C basemon

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/08/18 15:02:35  haraldkipp
+# Application build is no longer fixed in top_srcdir
+#
 # Revision 1.1  2003/11/03 15:51:31  haraldkipp
 # First check in
 #
@@ -42,9 +45,7 @@ PROJ    = isp2
 ROMDIR  = isp
 ROMFILE = urom.c
 
-top_srcdir = ../..
-
-include $(top_srcdir)/app/Makedefs
+include ../Makedefs
 include Makedefs.isp
 
 SRCS =  $(PROJ).c $(ROMFILE)
@@ -59,7 +60,7 @@ $(ROMFILE): $(ISPTARG)
 	$(CP) $(ISPTARG) $(ROMDIR)/$(ISPTARG)
 	$(CRUROM) -r -o$(ROMFILE) $(ROMDIR)
 
-include $(top_srcdir)/app/Makerules
+include ../Makerules
 include Makerules.isp
 
 clean: cleanisp

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/08/18 15:02:35  haraldkipp
+# Application build is no longer fixed in top_srcdir
+#
 # Revision 1.2  2004/03/16 16:48:26  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
@@ -68,9 +71,7 @@ PROJ   = httpserv
 WEBDIR = sample
 WEBFILE= urom.c
 
-top_srcdir = ../..
-
-include $(top_srcdir)/app/Makedefs
+include ../Makedefs
 
 SRCS =  $(PROJ).c $(WEBFILE)
 OBJS =  $(SRCS:.c=.o)
@@ -89,7 +90,7 @@ $(WEBFILE): $(WEBDIR)/enlogo.gif $(WEBDIR)/entail.gif $(WEBDIR)/index.html $(WEB
             $(WEBDIR)/flash/egnite.swf $(WEBDIR)/flash/flash.html
 	$(CRUROM) -r -o$(WEBFILE) $(WEBDIR)
 
-include $(top_srcdir)/app/Makerules
+include ../Makerules
 
 clean:
 	-rm -f $(OBJS)

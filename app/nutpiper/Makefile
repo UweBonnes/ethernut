@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/08/18 15:02:35  haraldkipp
+# Application build is no longer fixed in top_srcdir
+#
 # Revision 1.1  2003/07/21 17:50:48  haraldkipp
 # First check in
 #
@@ -40,22 +43,17 @@
 
 PROJ = nutpiper
 
-top_srcdir = ../..
-
-include $(top_srcdir)/app/Makedefs
-
-#LDFLAGS= $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref -L$(LIBDIR)
+include ../Makedefs
 
 SRCS =  $(PROJ).c config.c player.c display.c scanner.c
 OBJS =  $(SRCS:.c=.o)
-#MODS =  $(MODDIR)/dev/lanc111.o
-LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutpro -lnutos -lnutdev -lnutnet -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutos -lnutdev -lnutnet -lnutcrt
 TARG =  $(PROJ).hex
 PARM =  $(PROJ).eep
 
 all: $(OBJS) $(TARG) $(ITARG)
 
-include $(top_srcdir)/app/Makerules
+include ../Makerules
 
 clean:
 	-rm -f $(OBJS)

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/08/18 15:02:36  haraldkipp
+# Application build is no longer fixed in top_srcdir
+#
 # Revision 1.1  2003/11/21 17:00:15  haraldkipp
 # First release
 #
@@ -42,14 +45,11 @@ PROJ   = playmp3
 WEBDIR = sounds
 WEBFILE= urom.c
 
-top_srcdir = ../..
-
-include $(top_srcdir)/app/Makedefs
+include ../Makedefs
 
 SRCS =  $(PROJ).c $(WEBFILE)
 OBJS =  $(SRCS:.c=.o)
-#MODS =  $(MODDIR)/dev/lanc111.o
-LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutnet -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutnet -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG)
@@ -57,7 +57,7 @@ all: $(OBJS) $(TARG)
 $(WEBFILE): $(WEBDIR)/sound1a.mp3 $(WEBDIR)/sound2a.mp3 $(WEBDIR)/sound3a.mp3 $(WEBDIR)/sound4a.mp3
 	$(CRUROM) -r -o$(WEBFILE) $(WEBDIR)
 
-include $(top_srcdir)/app/Makerules
+include ../Makerules
 
 clean:
 	-rm -f $(OBJS)
