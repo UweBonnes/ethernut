@@ -1,4 +1,22 @@
-$Id: ChangeLog,v 1.36 2004/02/20 12:37:32 haraldkipp Exp $
+$Id: ChangeLog,v 1.37 2004/02/25 16:35:37 haraldkipp Exp $
+
+2004-02-01  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/debug*.c: Added ioctl baudrate support.
+
+	* dev/lanc111.c: Avoid chip initialization with MAC address zero.
+	This is a quick hack for all this init mess.
+
+	* include/pro/dhcp.h: Added NutDhcpRelease prototype.
+
+	* pro/dhcpc.c: New API added to relinguish the DHCP lease.
+	Collecting more than one offer is now disabled, if the application
+	sets timeout below three times of MAX_DHCP_WAIT (5 seconds).
+	The lease renewal will now start when 3/4 has elapsed, opposed
+	to 1/2 used previously. Finally the DHCP thread will sleep as
+	long as possible, while the previous version woke up every
+	ten seconds.
+
 
 2004-02-01  Harald Kipp  <harald.kipp@egnite.de>
 
