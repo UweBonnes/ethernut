@@ -132,6 +132,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/18 14:06:52  haraldkipp
+ * Deprecated header file replaced
+ *
  * Revision 1.4  2003/10/13 10:13:49  haraldkipp
  * First release
  *
@@ -163,8 +166,6 @@
 #include <sys/thread.h>
 #include <sys/event.h>
 #include <sys/timer.h>
-#include <sys/ifstream.h>
-#include <sys/print.h>          /* Formatted output functions. */
 
 #include <dev/nicrtl.h>
 #include <netinet/if_ether.h>

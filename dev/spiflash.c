@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:50  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/18 14:06:52  haraldkipp
+ * Deprecated header file replaced
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:50  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.4  2003/02/04 17:50:54  harald
  * Version 3 released
@@ -53,7 +56,7 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/heap.h>
-#include <sys/ifstream.h>
+#include <sys/device.h>
 
 #include <dev/spiflash.h>
 

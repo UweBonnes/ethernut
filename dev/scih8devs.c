@@ -29,13 +29,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/18 14:06:52  haraldkipp
+ * Deprecated header file replaced
+ *
  * Revision 1.1  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
  */
 
 #include <sys/file.h>
-#include <sys/ifstream.h>
+#include <sys/device.h>
 #include <dev/scih8.h>
 
 /*!
