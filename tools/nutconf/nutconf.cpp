@@ -32,6 +32,13 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.7  2004/11/24 15:36:53  haraldkipp
+ * Release 1.1.1.
+ * Do not store empty options.
+ * Remove include files from the build tree, if they are no longer used.
+ * Command line parameter 's' allows different settings.
+ * Minor compiler warning fixed.
+ *
  * Revision 1.6  2004/09/26 12:04:07  drsung
  * Fixed several hundred memory leaks :-).
  * Relative pathes can now be used for source, build and install directory.
@@ -88,11 +95,14 @@ IMPLEMENT_APP(NutConfApp);
 bool NutConfApp::OnInit()
 {
     m_docManager = NULL;
+    wxString settings_name(wxT("NutConf"));
+    wxString settings_ext;
 
     static const wxCmdLineEntryDesc cmdLineDesc[] =
     {
-        { wxCMD_LINE_SWITCH, wxT("v"), _T("verbose"), _T("be verbose") },
+        { wxCMD_LINE_SWITCH, wxT("v"), _T("verbose"), _T("be verbose"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL },
         { wxCMD_LINE_SWITCH, wxT("h"), _T("help"), _T("show usage"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+        { wxCMD_LINE_OPTION, wxT("s"), _T("settings"), _T("use alternate settings"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_NEEDS_SEPARATOR },
         { wxCMD_LINE_NONE }
     };
 
@@ -114,12 +124,16 @@ bool NutConfApp::OnInit()
      * Load settings early.
      */
     SetVendorName(wxT("egnite"));
-    SetAppName(wxT("NutConf"));
+    if(parser.Found(wxT("s"), &settings_ext)) {
+        settings_name += settings_ext;
+    }
+    SetAppName(settings_name);
     m_settings = new CSettings();
 
     /*
      * Create a wxConfig object early.
      */
+    argc = 1;
     if (!wxApp::OnInit())
         return false;
 

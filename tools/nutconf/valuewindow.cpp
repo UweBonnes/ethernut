@@ -39,6 +39,13 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.4  2004/11/24 15:36:53  haraldkipp
+ * Release 1.1.1.
+ * Do not store empty options.
+ * Remove include files from the build tree, if they are no longer used.
+ * Command line parameter 's' allows different settings.
+ * Minor compiler warning fixed.
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -268,14 +275,14 @@ bool CConfigItem::TransferDataFromWindow(wxWindow * window)
         wxASSERT(GetOptionType() == nutString);
 
         // TODO: do checking
-        doc->SetValue(*this, win->GetValue());
+        doc->SetValue(*this, win->GetValue().Trim(false));
     } else if (window->IsKindOf(CLASSINFO(CEnumEditCtrl))) {
         CEnumEditCtrl *win = (CEnumEditCtrl *) window;
 
         wxASSERT(GetOptionType() == nutEnumerated);
 
         // TODO: do checking
-        doc->SetValue(*this, win->GetStringSelection());
+        doc->SetValue(*this, win->GetStringSelection().Trim(false));
     } else if (window->IsKindOf(CLASSINFO(CIntEditCtrl))) {
         CIntEditCtrl *win = (CIntEditCtrl *) window;
 

@@ -33,6 +33,13 @@
 
 /*
  * $Log$
+ * Revision 1.12  2004/11/24 15:36:53  haraldkipp
+ * Release 1.1.1.
+ * Do not store empty options.
+ * Remove include files from the build tree, if they are no longer used.
+ * Command line parameter 's' allows different settings.
+ * Minor compiler warning fixed.
+ *
  * Revision 1.11  2004/09/26 13:25:00  drsung
  * Fixed call to strdup.
  *
@@ -76,7 +83,7 @@
  * possible.
  */
 //#define NUT_CONFIGURE_EXEC
-#define NUT_CONFIGURE_VERSION   "1.0.4"
+#define NUT_CONFIGURE_VERSION   "1.1.1"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -595,6 +602,10 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
             lua_getglobal(ls, opts->nco_name);
             if (lua_isstring(ls, -1)) {
                 opts->nco_value = strdup(lua_tostring(ls, -1));
+                if (opts->nco_value[0] == '\0' || opts->nco_value[0] == ' ') {
+                    free(opts->nco_value);
+                    opts->nco_value = NULL;
+                }
                 opts->nco_active = 1;
             }
             lua_pop(ls, 1);
@@ -1075,7 +1086,7 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
             if (opts->nco_enabled && opts->nco_active && opts->nco_makedefs) {
                 for (i = 0; opts->nco_makedefs[i]; i++) {
                     fprintf(fp, "%s", opts->nco_makedefs[i]);
-                    if(strchr(opts->nco_makedefs[i], '=')) {
+                    if(strchr(opts->nco_makedefs[i], '=') && opts->nco_value == NULL) {
                         fputc('\n', fp);
                     }
                     else {
@@ -1310,32 +1321,44 @@ struct _NUTHEADERFILE {
 };
 
 /*!
- * \brief Add option to header file list.
+ * \brief Get entry to the header file list.
  */
-NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * opts)
+NUTHEADERFILE *GetHeaderFileEntry(NUTHEADERFILE **nh_root, char *filename)
 {
     NUTHEADERFILE *nhf;
-    NUTHEADERMACRO *nhm;
 
     /* Add to existing list. */
-    if (nh_root) {
-        nhf = nh_root;
-        while (strcasecmp(nhf->nhf_path, opts->nco_file)) {
+    if (*nh_root) {
+        nhf = *nh_root;
+        while (strcasecmp(nhf->nhf_path, filename)) {
             if (nhf->nhf_nxt) {
                 nhf = nhf->nhf_nxt;
             } else {
                 nhf->nhf_nxt = calloc(1, sizeof(NUTHEADERFILE));
                 nhf = nhf->nhf_nxt;
-                nhf->nhf_path = opts->nco_file;
+                nhf->nhf_path = filename;
             }
         }
     } 
     /* First entry, create list root. */
     else {
         nhf = calloc(1, sizeof(NUTHEADERFILE));
-        nhf->nhf_path = opts->nco_file;
-        nh_root = nhf;
+        nhf->nhf_path = filename;
+        *nh_root = nhf;
     }
+    return nhf;
+}
+
+/*!
+ * \brief Add header file and option to the header file list.
+ */
+NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * opts)
+{
+    NUTHEADERFILE *nhf;
+    NUTHEADERMACRO *nhm;
+
+    /* Get the header file entry. */
+    nhf = GetHeaderFileEntry(&nh_root, opts->nco_file);
 
     /* Add macro to existing header file entry. */
     if (nhf->nhf_macros) {
@@ -1372,8 +1395,26 @@ NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
     while (compo) {
         opts = compo->nc_opts;
         while (opts) {
-            if (opts->nco_file && opts->nco_enabled) {
-                nh_root = AddHeaderFileMacro(nh_root, opts);
+            if (opts->nco_file) {
+                if(opts->nco_enabled && opts->nco_active) {
+                    /* Do not save empty values. */
+                    if (opts->nco_value == NULL) {
+                        if (opts->nco_flavor && 
+                                 (strcasecmp(opts->nco_flavor, "boolean") == 0 || 
+                                 strcasecmp(opts->nco_flavor, "booldata") == 0)) {
+                            nh_root = AddHeaderFileMacro(nh_root, opts);
+                        }
+                        else {
+                            GetHeaderFileEntry(&nh_root, opts->nco_file);
+                        }
+                    }
+                    else {
+                        nh_root = AddHeaderFileMacro(nh_root, opts);
+                    }
+                }
+                else {
+                    GetHeaderFileEntry(&nh_root, opts->nco_file);
+                }
             }
             opts = opts->nco_nxt;
         }
@@ -1454,17 +1495,23 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
                 *cp = (char)toupper(*cp);
             }
         }
-        if(CreateDirectoryPath(path) == 0) {
+
+        /* If no macros are specified, then remove the file. */
+        if(nhf->nhf_macros == NULL) {
+            unlink(path);
+        }
+        else if(CreateDirectoryPath(path) == 0) {
             if ((fp = fopen(path, "w")) != 0) {
                 fprintf(fp, "#ifndef %s\n", exname);
                 fprintf(fp, "#define %s\n\n", exname);
                 fprintf(fp, "/*\n * Do not edit! Automatically generated on %s */\n\n", asctime(ltime));
                 for (nhm = nhf->nhf_macros; nhm; nhm = nhm->nhm_nxt) {
+                    fprintf(fp, "#ifndef %s\n", nhm->nhm_name);
+                    fprintf(fp, "#define %s", nhm->nhm_name);
                     if (nhm->nhm_value) {
-                        fprintf(fp, "#ifndef %s\n", nhm->nhm_name);
-                        fprintf(fp, "#define %s %s\n", nhm->nhm_name, nhm->nhm_value);
-                        fprintf(fp, "#endif\n\n");
+                        fprintf(fp, " %s", nhm->nhm_value);
                     }
+                    fprintf(fp, "\n#endif\n\n");
                 }
                 fprintf(fp, "\n#endif\n");
                 fclose(fp);

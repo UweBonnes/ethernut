@@ -39,6 +39,13 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.9  2004/11/24 15:36:53  haraldkipp
+ * Release 1.1.1.
+ * Do not store empty options.
+ * Remove include files from the build tree, if they are no longer used.
+ * Command line parameter 's' allows different settings.
+ * Minor compiler warning fixed.
+ *
  * Revision 1.8  2004/11/08 10:21:26  drsung
  * While creating the sample directory, CVS files are now not copied.
  *
@@ -74,6 +81,10 @@
 #include "treeitemdata.h"
 #include "nutconfhint.h"
 #include "nutconfdoc.h"
+
+#ifdef __WXMSW__
+#define strcasecmp stricmp
+#endif
 
 /*
  * The doc/view framework will create instances of this class dynamically.
@@ -173,7 +184,10 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
                 if(opts->nco_value) {
                     fprintf(fp, "%s = \"%s\"\n", opts->nco_name, opts->nco_value);
                 }
-                else {
+                /* Do not save empty values. */
+                else if (opts->nco_flavor && 
+                         (strcasecmp(opts->nco_flavor, "boolean") == 0 || 
+                         strcasecmp(opts->nco_flavor, "booldata") == 0)) {
                     fprintf(fp, "%s = \"\"\n", opts->nco_name);
                 }
             }
@@ -449,7 +463,13 @@ bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
         if (item.m_option->nco_value) {
             free(item.m_option->nco_value);
         }
-        item.m_option->nco_value = strdup(strValue);
+        if (strValue.IsEmpty()) {
+            item.m_option->nco_value = NULL;
+        }
+        else {
+            item.m_option->nco_value = strdup(strValue);
+        }
+        item.m_option->nco_active = 1;
         Modify(true);
 
         CNutConfHint hint(&item, nutValueChanged);
@@ -544,12 +564,11 @@ public:
     {
         wxString sub = dirname.Mid(m_source.Length());
         wxFileName name(m_target + sub);
-		if(!name.GetName().IsSameAs(wxT("CVS"), true)) {
+        if(!name.GetName().IsSameAs(wxT("CVS"), true)) {
             name.Mkdir(0777, wxPATH_MKDIR_FULL);
-			return wxDIR_CONTINUE;
-		}
-		else
-			return wxDIR_IGNORE;
+            return wxDIR_CONTINUE;
+        }
+        return wxDIR_IGNORE;
     }
 private:
     wxString m_source;

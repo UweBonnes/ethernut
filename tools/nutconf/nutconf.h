@@ -42,6 +42,13 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/11/24 15:36:53  haraldkipp
+ * Release 1.1.1.
+ * Do not store empty options.
+ * Remove include files from the build tree, if they are no longer used.
+ * Command line parameter 's' allows different settings.
+ * Minor compiler warning fixed.
+ *
  * Revision 1.7  2004/09/19 15:13:09  haraldkipp
  * Only one target per OBJx entry
  *
@@ -66,7 +73,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.0.4"
+#define VERSION "1.1.1"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
