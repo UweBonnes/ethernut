@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/08/07 08:27:58  haraldkipp
+ * Bugfix, remote not displayed in socket list
+ *
  * Revision 1.1  2003/07/20 15:56:14  haraldkipp
  * *** empty log message ***
  *
@@ -241,7 +244,8 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     static prog_char head[] = "<HTML><HEAD><TITLE>Sockets</TITLE></HEAD>"
         "<BODY><H1>Sockets</H1>\r\n"
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Type</TH><TH>Local</TH><TH>Remote</TH><TH>Status</TH></TR>\r\n";
-    static prog_char tfmt[] = "<TR><TD>%04X</TD><TD>TCP</TD><TD>%s:%u</TD><TD>%s:%u</TD><TD>";
+    static prog_char tfmt1[] = "<TR><TD>%04X</TD><TD>TCP</TD><TD>%s:%u</TD>";
+    static prog_char tfmt2[] = "<TD>%s:%u</TD><TD>";
     static prog_char foot[] = "</TABLE></BODY></HTML>";
     static prog_char st_listen[] = "LISTEN";
     static prog_char st_synsent[] = "SYNSENT";
@@ -303,8 +307,11 @@ static int ShowSockets(FILE * stream, REQUEST * req)
             st_P = st_unknown;
             break;
         }
-        fprintf_P(stream, tfmt, (u_int) ts, inet_ntoa(ts->so_local_addr),
-                  ntohs(ts->so_local_port), inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
+        /*
+         * Fixed a bug reported by Zhao Weigang.
+         */
+        fprintf_P(stream, tfmt1, (u_int) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
+        fprintf_P(stream, tfmt2, inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
         fputs_P(st_P, stream);
         fputs("</TD></TR>\r\n", stream);
         fflush(stream);
@@ -375,13 +382,13 @@ int ShowForm(FILE * stream, REQUEST * req)
 
         /* Extract 3 parameters. */
         qp = req->req_query;
-        for(i = 0; i < 3; i++) {
+        for (i = 0; i < 3; i++) {
             c[i] = strtok_r(&qp, "=");
             p[i] = strtok_r(&qp, "&");
         }
 
         /* Send the parameters back to the client. */
-        for(i = 0; i < 3; i++) {
+        for (i = 0; i < 3; i++) {
             fprintf_P(stream, PSTR("%s: %s<BR>\r\n"), c[i], p[i]);
         }
 #endif
