@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/02/22 17:03:02  freckle
+ * changed avr-libc-1.2 test to use eeprom_rb, as other test was wrong on
+ * 1.0.5
+ *
  * Revision 1.9  2005/02/22 16:22:21  freckle
  * Added cpp test to guess avr-libc-version required  to specify twi.h path
  *
@@ -246,24 +250,23 @@
 #define INLINE  inline
 
 
-
-
-#include <avr/eeprom.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/signal.h>
+#include <avr/eeprom.h>
 #include <avr/pgmspace.h>
 #include <avr/sleep.h>
 #include <stdlib.h>
+
 
 /*
  * test for a macro added in avr-libc 1.2.0, if yes use different path for twi.h
  * note: has to be after #include <eeprom.h>
  */
-#ifdef eeprom_busy_wait
-#include <compat/twi.h>
-#else
+#ifdef eeprom_rb
 #include <avr/twi.h>
+#else
+#include <compat/twi.h>
 #endif
 
 #ifndef __SFR_OFFSET
