@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.5  2004/09/17 13:09:29  haraldkipp
+ * New settings page for tool options
+ *
  * Revision 1.4  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -251,7 +254,7 @@ bool NutConfApp::Build(const wxString &target)
 
     /* Add tool directories to the PATH. */
 #ifdef _WIN32
-    wxString newPath(wxT("c:/WinAVR/bin;c:/WinAVR/utils/bin;"));
+    wxString newPath(m_settings->m_toolpath);
     newPath += m_initialPath;
     wxSetEnv(wxT("PATH"), newPath);
 #endif
