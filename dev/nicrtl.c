@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/22 19:24:46  haraldkipp
+ * Changed AVR port configuration names from PORTx to AVRPORTx.
+ *
  * Revision 1.10  2005/01/21 16:49:46  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -78,93 +81,6 @@
  */
 
 #include <cfg/arch/avr.h>
-#include <cfg/arch/avrpio.h>
-
-/*
- * Determine ports, which had not been explicitely configured.
- */
-#if (PIO_NAME(RTL_EESK_PORT) == PIO_PORTB)
-#define RTL_EESK_PIN    PINB
-#define RTL_EESK_DDR    DDRB
-
-#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTC)
-#define RTL_EE_MEMBUS
-#define RTL_EESK_PIN    PINC
-#define RTL_EESK_DDR    DDRC
-
-#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTD)
-#define RTL_EESK_PIN    PIND
-#define RTL_EESK_DDR    DDRD
-
-#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTE)
-#define RTL_EESK_PIN    PINE
-#define RTL_EESK_DDR    DDRE
-
-#elif (PIO_NAME(RTL_EESK_PORT) == PIO_PORTF)
-#define RTL_EESK_PIN    PINF
-#define RTL_EESK_DDR    DDRF
-
-#endif
-
-#if (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTB)
-#define RTL_EEDO_DDR    DDRB
-
-#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTC)
-#define RTL_EE_MEMBUS
-#define RTL_EEDO_DDR    DDRC
-
-#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTD)
-#define RTL_EEDO_DDR    DDRD
-
-#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTE)
-#define RTL_EEDO_DDR    DDRE
-
-#elif (PIO_NAME(RTL_EEDO_PORT) == PIO_PORTF)
-#define RTL_EEDO_DDR    DDRF
-
-#endif
-
-#if (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTB)
-#define RTL_EEMU_DDR    DDRB
-
-#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTC)
-#define RTL_EE_MEMBUS
-#define RTL_EEMU_DDR    DDRC
-
-#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTD)
-#define RTL_EEMU_DDR    DDRD
-
-#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTE)
-#define RTL_EEMU_DDR    DDRE
-
-#elif (PIO_NAME(RTL_EEMU_PORT) == PIO_PORTF)
-#define RTL_EEMU_DDR    DDRF
-
-#endif
-
-// HM: RESET port added
-#if (PIO_NAME(RTL_RESET_PORT) == PIO_PORTB)
-#define RTL_RESET_PIN    PINB
-#define RTL_RESET_DDR    DDRB
-
-#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTC)
-#define RTL_RESET_PIN    PINC
-#define RTL_RESET_DDR    DDRC
-
-#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTD)
-#define RTL_RESET_PIN    PIND
-#define RTL_RESET_DDR    DDRD
-
-#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTE)
-#define RTL_RESET_PIN    PINE
-#define RTL_RESET_DDR    DDRE
-
-#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTF)
-#define RTL_RESET_PIN    PINF
-#define RTL_RESET_DDR    DDRF
-
-#endif
-// End HM
 
 #include <string.h>
 
@@ -187,52 +103,151 @@
 #include <net/netdebug.h>
 #endif
 
+#include <stdio.h>
+
+/*
+ * Determine ports, which had not been explicitely configured.
+ */
+#if (RTL_EESK_AVRPORT == AVRPORTB)
+#define RTL_EESK_PIN    PINB
+#define RTL_EESK_DDR    DDRB
+
+#elif (RTL_EESK_AVRPORT == AVRPORTC)
+#define RTL_EE_MEMBUS
+#define RTL_EESK_PIN    PINC
+#define RTL_EESK_DDR    DDRC
+
+#elif (RTL_EESK_AVRPORT == AVRPORTD)
+#define RTL_EESK_PIN    PIND
+#define RTL_EESK_DDR    DDRD
+
+#elif (RTL_EESK_AVRPORT == AVRPORTE)
+#define RTL_EESK_PIN    PINE
+#define RTL_EESK_DDR    DDRE
+
+#elif (RTL_EESK_AVRPORT == AVRPORTF)
+#define RTL_EESK_PIN    PINF
+#define RTL_EESK_DDR    DDRF
+
+#endif /* RTL_EESK_AVRPORT */
+
+#if (RTL_EEDO_AVRPORT == AVRPORTB)
+#define RTL_EEDO_PORT   PORTB
+#define RTL_EEDO_DDR    DDRB
+
+#elif (RTL_EEDO_AVRPORT == AVRPORTC)
+#define RTL_EE_MEMBUS
+#define RTL_EEDO_PORT   PORTC
+#define RTL_EEDO_DDR    DDRC
+
+#elif (RTL_EEDO_AVRPORT == AVRPORTD)
+#define RTL_EEDO_PORT   PORTD
+#define RTL_EEDO_DDR    DDRD
+
+#elif (RTL_EEDO_AVRPORT == AVRPORTE)
+#define RTL_EEDO_PORT   PORTE
+#define RTL_EEDO_DDR    DDRE
+
+#elif (RTL_EEDO_AVRPORT == AVRPORTF)
+#define RTL_EEDO_PORT   PORTF
+#define RTL_EEDO_DDR    DDRF
+
+#endif /* RTL_EEDO_AVRPORT */
+
+#if (RTL_EEMU_AVRPORT == AVRPORTB)
+#define RTL_EEMU_PORT   PORTB
+#define RTL_EEMU_DDR    DDRB
+
+#elif (RTL_EEMU_AVRPORT == AVRPORTC)
+#define RTL_EE_MEMBUS
+#define RTL_EEMU_PORT   PORTC
+#define RTL_EEMU_DDR    DDRC
+
+#elif (RTL_EEMU_AVRPORT == AVRPORTD)
+#define RTL_EEMU_PORT   PORTD
+#define RTL_EEMU_DDR    DDRD
+
+#elif (RTL_EEMU_AVRPORT == AVRPORTE)
+#define RTL_EEMU_PORT   PORTE
+#define RTL_EEMU_DDR    DDRE
+
+#elif (RTL_EEMU_AVRPORT == AVRPORTF)
+#define RTL_EEMU_PORT   PORTF
+#define RTL_EEMU_DDR    DDRF
+
+#endif /* RTL_EEMU_AVRPORT */
+
+#if (RTL_RESET_AVRPORT == AVRPORTB)
+#define RTL_RESET_PORT   PORTB
+#define RTL_RESET_DDR    DDRB
+
+#elif (RTL_RESET_AVRPORT == AVRPORTD)
+#define RTL_RESET_PORT   PORTD
+#define RTL_RESET_DDR    DDRD
+
+#elif (RTL_RESET_AVRPORT == AVRPORTE)
+#define RTL_RESET_PORT   PORTE
+#define RTL_RESET_DDR    DDRE
+
+#elif (RTL_RESET_AVRPORT == AVRPORTF)
+#define RTL_RESET_PORT   PORTF
+#define RTL_RESET_DDR    DDRF
+
+#endif /* RTL_RESET_AVRPORT */
+
+
 /*!
  * \brief Interrupt used.
  */
-// HM: Support of rising edge interrupts for HW w/o inverter gate
 #if (RTL_SIGNAL_IRQ == INT0)
 #define RTL_SIGNAL sig_INTERRUPT0
-#define SIGNAL_NAME "sig_INTERRUPT0"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC00); sbi(EICRA, ISC01)
+#endif
 
 #elif (RTL_SIGNAL_IRQ == INT1)
 #define RTL_SIGNAL sig_INTERRUPT1
-#define SIGNAL_NAME "sig_INTERRUPT1"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC10); sbi(EICRA, ISC11)
+#endif
 
 #elif (RTL_SIGNAL_IRQ == INT2)
 #define RTL_SIGNAL sig_INTERRUPT2
-#define SIGNAL_NAME "sig_INTERRUPT2"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC20); sbi(EICRA, ISC21)
+#endif
 
 #elif (RTL_SIGNAL_IRQ == INT3)
 #define RTL_SIGNAL sig_INTERRUPT3
-#define SIGNAL_NAME "sig_INTERRUPT3"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC30); sbi(EICRA, ISC31)
+#endif
 
 #elif (RTL_SIGNAL_IRQ == INT4)
 #define RTL_SIGNAL sig_INTERRUPT4
-#define SIGNAL_NAME "sig_INTERRUPT4"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC40); sbi(EICRB, ISC41)
+#endif
 
 #elif (RTL_SIGNAL_IRQ == INT6)
 #define RTL_SIGNAL sig_INTERRUPT6
-#define SIGNAL_NAME "sig_INTERRUPT6"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC60); sbi(EICRB, ISC61)
+#endif
 
 #elif (RTL_SIGNAL_IRQ == INT7)
 #define RTL_SIGNAL sig_INTERRUPT7
-#define SIGNAL_NAME "sig_INTERRUPT7"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC70); sbi(EICRB, ISC71)
+#endif
 
 #else
 #define RTL_SIGNAL sig_INTERRUPT5
-#define SIGNAL_NAME "sig_INTERRUPT5"
+#ifdef __AVR_ATmega128__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC50); sbi(EICRB, ISC51)
-// End HM
-
 #endif
+
+#endif /* RTL_SIGNAL_IRQ */
 
 
 /*!

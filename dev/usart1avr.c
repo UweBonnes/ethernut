@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/01/22 19:25:48  haraldkipp
+ * Changed AVR port configuration names from PORTx to AVRPORTx.
+ *
  * Revision 1.5  2004/10/22 18:04:35  freckle
  * added #ifdef check to support old-style CTS definition
  * (old style: setting CTS_SIGNAL, CTS_BIT, CTS_PORT, CTS_PIN and CTS_DDR)
@@ -57,7 +60,16 @@
  */
 
 #include <cfg/arch/avr.h>
-#include <cfg/arch/avrpio.h>
+
+
+#include <string.h>
+
+#include <sys/atom.h>
+#include <sys/event.h>
+#include <sys/timer.h>
+
+#include <dev/irqreg.h>
+#include <dev/usartavr.h>
 
 /*!
  * \name UART1 RTS Handshake Control
@@ -66,20 +78,23 @@
  */
 #ifdef UART1_RTS_BIT
 
-#if (PIO_NAME(UART1_RTS_PORT) == PIO_PORTB)
-#define UART_RTS_DDR   DDRB
+#if (UART1_RTS_AVRPORT == AVRPORTB)
+#define UART_RTS_PORT   PORTB
+#define UART_RTS_DDR    DDRB
 
-#elif (PIO_NAME(UART1_RTS_PORT) == PIO_PORTD)
-#define UART_RTS_DDR   DDRD
+#elif (UART1_RTS_AVRPORT == AVRPORTD)
+#define UART_RTS_PORT   PORTD
+#define UART_RTS_DDR    DDRD
 
-#elif (PIO_NAME(UART1_RTS_PORT) == PIO_PORTE)
-#define UART_RTS_DDR   DDRE
+#elif (UART1_RTS_AVRPORT == AVRPORTE)
+#define UART_RTS_PORT   PORTE
+#define UART_RTS_DDR    DDRE
 
-#elif (PIO_NAME(UART1_RTS_PORT) == PIO_PORTF)
-#define UART_RTS_DDR   DDRF
+#elif (UART1_RTS_AVRPORT == AVRPORTF)
+#define UART_RTS_PORT   PORTF
+#define UART_RTS_DDR    DDRF
 
 #endif
-#define UART_RTS_PORT   UART1_RTS_PORT
 #define UART_RTS_BIT    UART1_RTS_BIT
 
 #endif /* UART1_RTS_BIT */
@@ -91,34 +106,27 @@
  */
 #ifdef UART1_HDX_BIT
 
-#if (PIO_NAME(UART1_HDX_PORT) == PIO_PORTB)
-#define UART_HDX_DDR   DDRB
+#if (UART1_HDX_AVRPORT == AVRPORTB)
+#define UART_HDX_PORT   PORTB
+#define UART_HDX_DDR    DDRB
 
-#elif (PIO_NAME(UART1_HDX_PORT) == PIO_PORTD)
-#define UART_HDX_DDR   DDRD
+#elif (UART1_HDX_AVRPORT == AVRPORTD)
+#define UART_HDX_PORT   PORTD
+#define UART_HDX_DDR    DDRD
 
-#elif (PIO_NAME(UART1_HDX_PORT) == PIO_PORTE)
-#define UART_HDX_DDR   DDRE
+#elif (UART1_HDX_AVRPORT == AVRPORTE)
+#define UART_HDX_PORT   PORTE
+#define UART_HDX_DDR    DDRE
 
-#elif (PIO_NAME(UART1_HDX_PORT) == PIO_PORTF)
-#define UART_HDX_DDR   DDRF
+#elif (UART1_HDX_AVRPORT == AVRPORTF)
+#define UART_HDX_PORT   PORTF
+#define UART_HDX_DDR    DDRF
 
-#endif
-#define UART_HDX_PORT   UART1_HDX_PORT
+#endif /* UART1_HDX_AVRPORT */
 #define UART_HDX_BIT    UART1_HDX_BIT
 
 #endif /* UART1_HDX_BIT */
 
-
-#include <string.h>
-
-#include <sys/atom.h>
-#include <sys/event.h>
-#include <sys/timer.h>
-
-#include <cfg/modem.h>
-#include <dev/irqreg.h>
-#include <dev/usartavr.h>
 
 #ifdef __AVR_ATmega128__
 
