@@ -1,4 +1,85 @@
-$Id: ChangeLog,v 1.108 2004/09/07 19:05:47 haraldkipp Exp $
+$Id: ChangeLog,v 1.109 2004/09/08 09:52:14 haraldkipp Exp $
+
+2004-09-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Although this is no final release, there
+	is a lot of new hardware waiting for Nut/OS support. So
+	I marked this with version 3.9.1 before creating the
+	long awaited 4.0 branch.
+
+	* Makedefs.arm-gcc, Makerules.arm-gcc: Reduced to what we 
+	really need.
+
+	* Makedefs.avr-gcc: Remove directory part from listing
+	files to keep the source directory clean.
+
+	* nut/Makerules.avr-gcc: Assembler rule added.
+
+	* nut/app/Makedefs.avr-dude, nut/app/Makeburn.avr-uisp-stk500:
+	Programmer configuration files added. Frankly, I'm not happy
+	with this solution. Any better ideas for programmer
+	configuration?
+
+	* app/isp2/Makefile: *nix requires dot-slash for local
+	include directory.
+
+	* app/simple/Makefile, app/threads/Makefile: Add configurable 
+	library list.
+
+	* app/threads/threads.cpp: Added support for EB40A. This is
+	our first example running on that board.
+
+	* app/timers/timers.cpp: Added support for EB40A, but still
+	not working. :-(
+
+	* c/stdlib/*, c/string/*: Minimal standard C library added,
+	using some BSD code. There are a lot of libraries available, 
+	but many of them are not really OS independant.
+
+	* conf/arch/arch.nut: Enable C startup for ARM platforms
+	only.
+
+	* crt/fclose.c, crt/freopen.c, include/arch/arm.h: RAMSTART 
+	check removed. In fact we need to check the stream for stdio, 
+	so this is now wrong. But RAMSTART is too hardware dependant. 
+	For now it is not possible to close stdio streams.
+
+	* crt/malloc.c, nut/os/devreg.c: RAMSTART check removed. Buggy 
+	AVR applications may now crash when freeing unallocated
+	memory.
+
+	* dev/arm_irqreg.c, include/dev/irqreg_arm.h, 
+	dev/s3c4510b_console.c, dev/s3c4510b_irqreg.c,
+	dev/uart_s3c4510b_dbg.c: SAMSUNG S3C45 support added, but not 
+	fully working yet.
+
+	* dev/twif.c: Too lazy to list all fixes. :-) Many thanks to
+	all the unnamed contributors.
+
+	* include/arch/at91.h, include/arch/at91eb40a.h: Hardware
+	definitions for new ARM7 support.
+
+	* dev/debug_at91.c, include/dev/debug.h: Device devDebug1 
+	added for ARM7. This is the only device for this CPU so far.
+
+	* os/arch/arm_nutinit.c: Using configurable NUTMEM_SIZE
+	and __heap_start from linker script. Looks like all platform
+	dependancies can be removed from NutInit?
+
+	* os/arch/arm_thread.c: I took over James Tyou's port for the
+	SAMSUNG chip nearly without modifications and it works fine
+	with Atmel's ARM7TDMI. Good work!
+
+	* os/arch/arm_timer.c: Added my AT91 timer interrupt, which
+	ignores Nut/OS interrupt registration for now. Also included
+	is Tyou's SAMSUNG timer initialization, but some more has to
+	be done. Please use the full port from Tyou's website until
+	then.
+
+	* nut/os/confos.c: No EEPROM support for AT91.
+
+	* nut/os/timer.c: Added OS configuration include file.
+
 
 2004-09-07  Harald Kipp  <harald.kipp@egnite.de>
 
