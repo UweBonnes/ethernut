@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/02/21 00:53:57  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.13  2005/02/17 14:44:39  phblum
  * Removed volatile declarations of runQueue since it is not touched from interrupt context. Same for nutThreadList, runningThread and killedThreads.
  * As runQueue is not modified by interrupts, runningThread == runQueue always. Therefore removed obsolete comparison in NutThreadYield().
@@ -143,7 +146,7 @@
  */
 /*@{*/
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 #include "arch/avr_thread.c"
 #elif defined(__arm__)
 #include "arch/arm_thread.c"
@@ -166,7 +169,7 @@ NUTTHREADINFO * runningThread;
 /*!
  * \brief Thread to be killed.
  *
- * Pointer to the NUTTHREADINFO structure of the latest 
+ * Pointer to the NUTTHREADINFO structure of the latest
  * killed thread.
  */
 NUTTHREADINFO * killedThread;
@@ -205,7 +208,7 @@ NUTTHREADINFO * runQueue;
  * Insert the thread into a specified queue behind
  * the last thread with lower or equal priority.
  *
- * \note CPU interrupts must have been disabled before 
+ * \note CPU interrupts must have been disabled before
  *       calling this function.
  *
  * \param td   Pointer to NUTTHREADINFO of the thread to be
@@ -324,8 +327,8 @@ void NutThreadResume(void)
  * sleep timer elapses.
  *
  * \note This routine is running in interrupt context.
- *       Applications typically do not call this 
- *       function. In any case interrupts must have 
+ *       Applications typically do not call this
+ *       function. In any case interrupts must have
  *       been disabled.
  *
  * \param timer Handle of the elapsed timer.
@@ -467,8 +470,8 @@ u_char NutThreadSetPriority(u_char level)
 /*!
  * \brief End the current thread
  *
- * Terminates the current thread, in due course the memory associated 
- * with the thread will be released back to the OS this is done by the 
+ * Terminates the current thread, in due course the memory associated
+ * with the thread will be released back to the OS this is done by the
  * idle thread.
  */
 void NutThreadExit(void)
@@ -477,12 +480,12 @@ void NutThreadExit(void)
 }
 
 /*!
- * \brief Free a thread that was previously killed and release memory 
+ * \brief Free a thread that was previously killed and release memory
  *        back to the OS.
  *
  * Called when another thread is killed and by the idle thread.
  *
- * Applications generally do not call this function, however you could 
+ * Applications generally do not call this function, however you could
  * call it to try to reclaim memory.
  */
 void NutThreadDestroy(void)
