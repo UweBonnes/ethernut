@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/09/22 08:15:57  haraldkipp
+ * Speparate IRQ stack configurable
+ *
  * Revision 1.6  2004/04/25 17:05:56  drsung
  * Separate IRQ stack now compatible with nested interrupts.
  *
@@ -54,11 +57,12 @@
  */
 
 #include <dev/irqstack.h>
-#ifdef USE_IRQ_STACK
+
+#ifdef IRQSTACK_SIZE
 
 u_char _irq_stack[IRQSTACK_SIZE]; //__attribute__((section(".data.irqstack")));
 u_char _irq_SPL; 	//__attribute__((section(".data.irqstack")));
 u_char _irq_SPH; 	//__attribute__((section(".data.irqstack")));
 u_char _irq_nesting;	// __attribute__((section(".data.irqstack"))) = 0;
 
-#endif /* #ifdef USE_IRQ_STACK */
+#endif /* #ifdef IRQSTACK_SIZE */

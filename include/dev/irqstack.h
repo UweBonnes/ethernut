@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/09/22 08:15:56  haraldkipp
+ * Speparate IRQ stack configurable
+ *
  * Revision 1.3  2004/04/25 17:06:17  drsung
  * Separate IRQ stack now compatible with nested interrupts.
  *
@@ -46,12 +49,12 @@
  *
  */
 
-#if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__))
+#include <cfg/dev.h>
+
+#ifdef IRQSTACK_SIZE
 
 #include <sys/types.h>
 #include <stdio.h>
-#define USE_IRQ_STACK
-#define IRQSTACK_SIZE 256
 
 extern u_char _irq_stack[];
 extern u_char _irq_SPL;
@@ -139,13 +142,13 @@ void signame (void)	\
    asm ("reti");				/* will enable interrupts */ \
 }
 
-#else                           /* #if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)) */
+#else                           /* IRQSTACK_SIZE */
 
 
 #define NUTSIGNAL(signame,handler)	\
 SIGNAL(signame)		\
 { CallHandler (&handler);  }
 
-#endif                          /* #if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)) */
+#endif                          /* !IRQSTACK_SIZE */
 
 #endif

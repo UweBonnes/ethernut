@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/09/22 08:15:56  haraldkipp
+ * Speparate IRQ stack configurable
+ *
  * Revision 1.2  2004/04/25 17:06:17  drsung
  * Separate IRQ stack now compatible with nested interrupts.
  *
@@ -50,7 +53,7 @@
 /* Support for separate irq stack only for avr-gcc */
 #ifdef __GNUC__
 #include <dev/irqstack.h>
-#ifdef USE_IRQ_STACK
+#ifdef IRQSTACK_SIZE
 /*!  * \brief Decrement value for thread's stack size, if separate irq stack is used.
  *
  * If separate irq stack is enabled (avr-gcc only), the initial parameter 
@@ -59,7 +62,7 @@
  *
  */
 u_short _irqstackdec = 128;
-#endif /* #ifdef USE_IRQ_STACK */
+#endif /* #ifdef IRQSTACK_SIZE */
 #endif /* #ifdef __GNU__ */
 
 #ifdef __GNUC__
@@ -344,7 +347,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
 #ifdef __IMAGECRAFT__
     u_short yreg;
 #endif
-#ifdef USE_IRQ_STACK
+#ifdef IRQSTACK_SIZE
     if (stackSize > _irqstackdec + 128) stackSize -= _irqstackdec;
 #endif
 
