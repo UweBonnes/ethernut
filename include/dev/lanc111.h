@@ -1,8 +1,8 @@
-#ifndef _DEV_NICLC111_H_
-#define _DEV_NICLC111_H_
+#ifndef _DEV_LANC111_H_
+#define _DEV_LANC111_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,17 +35,8 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:07  haraldkipp
- * Initial revision
- *
- * Revision 1.3  2003/05/06 18:43:16  harald
- * Cleanup
- *
- * Revision 1.2  2003/02/04 18:00:37  harald
- * Version 3 released
- *
- * Revision 1.1  2002/10/29 15:41:59  harald
- * *** empty log message ***
+ * Revision 1.1  2003/07/13 19:40:01  haraldkipp
+ * LAN91C111 driver redesigned.
  *
  */
 
@@ -54,22 +45,20 @@
 
 
 /*!
- * \file dev/niclc111.h
+ * \file dev/lanc111.h
  * \brief Network interface controller definitions.
  */
 
+__BEGIN_DECLS
 
 /*!
- * \struct _NICINFO niclc111.h dev/niclc111.h
+ * \struct _NICINFO lanc111.h dev/lanc111.h
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {
-    u_char volatile ni_tx_bsy;      /*!< NIC transmitter busy flags. */
     HANDLE volatile ni_rx_rdy;      /*!< Receiver event queue. */
     HANDLE volatile ni_tx_rdy;      /*!< Transmitter event queue. */
-    NETBUF * volatile ni_tx_nbq;    /*!< Queued packets waiting for transmission. */
     u_short ni_tx_cnt;              /*!< Number of bytes in transmission queue. */
-    u_char ni_curr_page;            /*!< Current receive page. */
     u_long ni_rx_packets;           /*!< Number of packets received. */
     u_long ni_tx_packets;           /*!< Number of packets sent. */
     u_long ni_interrupts;           /*!< Number of interrupts. */
@@ -84,20 +73,16 @@ struct _NICINFO {
  */
 typedef struct _NICINFO NICINFO;
 
-
-
 /*
  * Available drivers.
  */
-extern NUTDEVICE devEth1;
-
-__BEGIN_DECLS
+extern NUTDEVICE devSmsc111;
 
 /*
  * Driver routines.
  */
-extern int NicInitLc(NUTDEVICE *dev);
-extern int NicOutputLc(NUTDEVICE *dev, NETBUF *nb);
+extern int NicInit(NUTDEVICE *dev);
+extern int NicOutput(NUTDEVICE *dev, NETBUF *nb);
 
 __END_DECLS
 
