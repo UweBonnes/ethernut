@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:55  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/21 18:26:31  haraldkipp
+ * Version 3.3
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:55  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.3  2003/05/06 18:58:16  harald
  * Prepare final release
@@ -49,8 +52,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03020101UL
-static CONST char os_version_string[] = "3.2.1.1";
+#define OS_VERSION_NUMBER  0x03030001UL
+static CONST char os_version_string[] = "3.3.0.1";
 
 /*!
  * \addtogroup xgNutInit

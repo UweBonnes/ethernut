@@ -1,4 +1,22 @@
-$Id: ChangeLog,v 1.5 2003/07/20 20:07:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.6 2003/07/21 18:26:03 haraldkipp Exp $
+
+2003-07-21  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Version 3.3 prepared for release.
+
+	* os/bankmem.c: Support for banked memory added.
+
+	* os/ir.c: Support for infrared remote control added.
+
+	* dev/irsony.c: First infrared remote control driver
+	for Sony TV codes.
+
+	* dev/vs1001k.c: Internal buffer handling replaced by
+	banked memory support routines.
+
+	* app/nutpiper: New application. Shoutcast radio with
+	remote control, LCD displayand banked memory support.
+	Experimental.
 
 2003-07-20  Harald Kipp  <harald.kipp@egnite.de>
 
