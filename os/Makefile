@@ -32,8 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2003/05/09 14:41:51  haraldkipp
-# Initial revision
+# Revision 1.2  2003/07/21 18:12:44  haraldkipp
+# IR and banked memory support added
+#
+# Revision 1.1.1.1  2003/05/09 14:41:51  haraldkipp
+# Initial using 3.2.1
 #
 # Revision 1.13  2003/02/04 18:15:56  harald
 # Version 3 released
@@ -81,11 +84,11 @@ include $(top_srcdir)/Makedefs
 
 SRC1 = 	init.c
 SRC2 = 	nutinit.c
-SRC3 =  print.c \
+SRC3 =  print.c ir.c \
 	devclose.c devioctl.c devopen.c devread.c devreg.c \
 	devtran.c devwrite.c \
 	ifstream.c timer.c \
-	event.c thread.c heap.c osdebug.c confos.c version.c
+	event.c thread.c bankmem.c heap.c osdebug.c confos.c version.c
 
 OBJ1 = $(SRC1:.c=.o)
 OBJ2 = $(SRC2:.c=.o)
