@@ -63,8 +63,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:12  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/05 20:19:13  haraldkipp
+ * DNS removed from interface
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:12  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.10  2003/03/31 14:33:26  harald
  * Moved some declarations to ppp device
@@ -144,8 +147,6 @@ struct ifnet {
     u_long if_local_ip;         /*!< \brief IP address. */
     u_long if_remote_ip;        /*!< \brief Remote IP address for point to point. */
     u_long if_mask;             /*!< \brief IP network mask. */
-    u_long if_pdns;             /*!< \brief IP Primary DNS */
-    u_long if_sdns;             /*!< \brief IP Secondary DNS */
     u_short if_mtu;             /*!< \brief Maximum size of a transmission unit. */
     u_short if_pkt_id;          /*!< \brief Packet identifier. */
     ARPENTRY *arpTable;         /*!< \brief Linked list of arp entries. */
