@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2003/11/26 12:45:20  drsung
+ * Portability issues ... again
+ *
  * Revision 1.2  2003/11/26 11:13:17  haraldkipp
  * Portability issues
  *
@@ -68,12 +71,12 @@ int _days[] = {
 */
 int gmtime_r(CONST time_t * timer, tm * ptm)
 {
-    time_t ctimer = *timer;     // var to calculate with
-    u_char isleapyear = 0;      // current year is leap year
+    time_t ctimer = *timer;     /* var to calculate with */
+    u_char isleapyear = 0;      /* current year is leap year */
     u_long tmptimer;
-    int *mdays;                 // pointer to _numdayslp or _numdays
+    int *mdays;                 /* pointer to _numdayslp or _numdays */
 
-    if (ptm == NULL)            // check pointer
+    if (ptm == NULL)            /* check pointer */
         return -1;
 
     /*
@@ -84,20 +87,20 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
     tmptimer = (u_long) (ctimer / _FOUR_YEAR_SEC);
     ctimer -= ((time_t) tmptimer * _FOUR_YEAR_SEC);
 
-    // Determine the correct year within the interval
-    tmptimer = (tmptimer * 4) + 70;     // 1970, 1974, 1978,...
+    /* Determine the correct year within the interval
+    tmptimer = (tmptimer * 4) + 70;     /* 1970, 1974, 1978,... */
     if (ctimer >= _YEAR_SEC) {
-        tmptimer++;             // 1971, 1975, 1979,...
+        tmptimer++;             /* 1971, 1975, 1979,... */
         ctimer -= _YEAR_SEC;
         if (ctimer >= _YEAR_SEC) {
-            tmptimer++;         // 1972, 1976, 1980,... (all leap years!)
+            tmptimer++;         /* 1972, 1976, 1980,... (all leap years!) */
             ctimer -= _YEAR_SEC;
-            // A leap year has 366 days, so compare to _YEAR_SEC + _DAY_SEC
+            /* A leap year has 366 days, so compare to _YEAR_SEC + _DAY_SEC */
             if (ctimer >= (_YEAR_SEC + _DAY_SEC)) {
-                tmptimer++;     // 1973, 1977, 1981,...
+                tmptimer++;     /* 1973, 1977, 1981,... */
                 ctimer -= (_YEAR_SEC + _DAY_SEC);
             } else
-                isleapyear = 1; //If leap year, set the flag
+                isleapyear = 1; /*If leap year, set the flag */
         }
     }
 
@@ -130,10 +133,10 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
 
     ptm->tm_mday = ptm->tm_yday - mdays[tmptimer];
 
-    // Calculate day of week. Sunday is 0
+    /* Calculate day of week. Sunday is 0 */
     ptm->tm_wday = ((int) (*timer / _DAY_SEC) + _BASE_DOW) % 7;
 
-    // Calculate the time of day from the remaining seconds
+    /* Calculate the time of day from the remaining seconds */
     ptm->tm_hour = (int) (ctimer / 3600);
     ctimer -= (time_t) ptm->tm_hour * 3600L;
 

@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/11/26 12:45:20  drsung
+ * Portability issues ... again
+ *
  * Revision 1.3  2003/11/24 18:21:50  drsung
  * Added support for program space strings (%P)
  *
@@ -237,7 +240,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             sign = 0;
             break;
 
-        case 'P':              //Program Chars
+        case 'P':              /* Program Chars */
             /* Thanks to Ralph Mason who added this support. */
             cp = va_arg(ap, char *);
             xdigs = buf;
