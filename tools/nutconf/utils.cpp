@@ -39,12 +39,15 @@
 
 /*
  * $Log: utils.cpp,v $
+ * Revision 1.2  2005/02/06 20:00:44  haraldkipp
+ * Missing errno included.
+ *
  * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-
+#include <errno.h>
 #include "utils.h"
 
 bool CUtils::StrToItemIntegerType(const wxString & str, long &d)
