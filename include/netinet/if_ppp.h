@@ -83,8 +83,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:14  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/14 15:05:18  haraldkipp
+ * Caller will do ID increment
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:14  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:46:33  harald
  * Cleanup
@@ -181,16 +184,16 @@ typedef struct xcphdr {
 
 extern void NutLcpInput(NUTDEVICE * dev, NETBUF * nb);
 extern int NutLcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb);
-extern void LcpTxConfReq(NUTDEVICE *dev);
+extern void LcpTxConfReq(NUTDEVICE *dev, u_char id);
 extern void LcpTxProtRej(NUTDEVICE *dev, u_short protocol, NETBUF *nb);
 
 extern void NutPapInput(NUTDEVICE * dev, NETBUF * nb);
 extern int NutPapOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb);
-extern void PapTxAuthReq(NUTDEVICE *dev);
+extern void PapTxAuthReq(NUTDEVICE *dev, u_char id);
 
 extern void NutIpcpInput(NUTDEVICE * dev, NETBUF * nb);
 extern int NutIpcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb);
-extern void IpcpTxConfReq(NUTDEVICE *dev);
+extern void IpcpTxConfReq(NUTDEVICE *dev, u_char id);
 
 #endif
 
