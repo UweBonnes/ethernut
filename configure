@@ -137,8 +137,8 @@ if [ "$ARCH" = "h8300h" -o "$ARCH" = "h8300s" ]; then
 
     GCCVER=`h8300-elf-gcc --version|grep h8300-elf-gcc|cut -d ' ' -f 3`
     GCCDIR=`dirname \`which h8300-elf-gcc\``
-    LIBGCCDIR="lib/gcc-lib/h8300-elf/$GCCVER/$ARCH"
-    LIBCDIR="h8300-elf/lib/$ARCH"
+    LIBGCCDIR="lib/gcc-lib/h8300-elf/$GCCVER/$ARCH/int32"
+    LIBCDIR="h8300-elf/lib/$ARCH/int32"
     LDDIRS="-L $GCCDIR/../$LIBGCCDIR -L $GCCDIR/../$LIBCDIR"
 
     # Select whether code is to be executed from ROM or RAM
