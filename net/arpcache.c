@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:26  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/08 17:14:05  drsung
+ * arp entries with set ATF_PERM flag are not removed any longer.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:26  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.16  2003/02/04 18:14:56  harald
  * Version 3 released
@@ -155,7 +158,7 @@ THREAD(NutArpExpire, arg)
                  * remove outdated ones.
                  */
                 while (ae) {
-                    if (ae->ae_outdated++ >= 9) {
+                    if (((ae->ae_flags & ATF_PERM) == 0) && (ae->ae_outdated++ >= 9)) {
                         *aep = ae->ae_next;
                         aer = ae;
                     }
@@ -204,8 +207,7 @@ static ARPENTRY *volatile NutArpCacheLookup(IFNET * ifn, u_long ip)
  * If the cache is locked by another reader, the entry is not added.
  * Later we may add a backlog to queue completed entries.
  */
-static ARPENTRY *NutArpCacheNew(IFNET * ifn, u_long ip, u_char * ha,
-                                u_char flags)
+static ARPENTRY *NutArpCacheNew(IFNET * ifn, u_long ip, u_char * ha, u_char flags)
 {
     u_char rc = 0;
     ARPENTRY *entry = 0;
