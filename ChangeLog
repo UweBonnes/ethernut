@@ -1,24 +1,31 @@
-$Id: ChangeLog,v 1.182 2005/03/04 11:42:24 olereinhardt Exp $
+$Id: ChangeLog,v 1.183 2005/03/09 08:36:04 hwmaier Exp $
+
+2005-03-09  Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * os/arch/avr_timer.c: Finally implemented the correct timer routines
+        and init for AT90CAN128. Timer2 is now used on AT90CAN128 rather
+        Timer0 because Atmel (don't blame me) swapped the Timer designation.
+
 
 2005-03-04  Ole Reinhardt  <ole.reinhardt@embedded-it.de>
 	* dev/adc.c; include/dev/adc.h
 	Added function void ADCStartLowNoiseConversion(void)
-	This function enters sleep mode!!! Be shure to read 
+	This function enters sleep mode!!! Be shure to read
 	the AVR datasheet before using this function
 	Only implemented on avr_gcc
 
 2005-02-26  Oliver Schulz  <olischulz@web.de>
 
-	* os/arch/avr_nutinit.c: Moved heap initialization to section .init5 to 
+	* os/arch/avr_nutinit.c: Moved heap initialization to section .init5 to
 	support c++ constructors for static objects.
 
-	* tools/nutconf/nutcomponent.c: Added support for relative paths for sample 
+	* tools/nutconf/nutcomponent.c: Added support for relative paths for sample
 	application directory.
 
 
 2005-02-23 Matthias Ringwald <mringwal@.inf.ethz.ch>
 
-	* include/unistd.h: Correctly include /usr/include/unistd.h for 
+	* include/unistd.h: Correctly include /usr/include/unistd.h for
 	unix emulation
 
 2005-02-23  Henrik Maier  <hwmaier@users.sourceforge.net>

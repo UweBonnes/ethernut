@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/03/09 08:33:34  hwmaier
+ * Finally implemented the correct timer routines and init for AT90CAN128. Timer2 is now used on AT90CAN128 rather Timer0 because Atmel (don't blame me) swapped the Timer designation.
+ *
  * Revision 1.5  2005/02/21 12:38:00  phblum
  * Removed tabs and added semicolons after NUTTRACER macros
  *
@@ -94,9 +97,9 @@ void NutDelay(u_char ms)
 }
 
 /*
- * Timer 0 interrupt handler.
+ * Timer interrupt handler. Timer0 on ATmega's and Timer2 on AT90CAN128 parts.
  */
-static void NutTimer0Intr(void *arg)
+static void NutTimerIntr(void *arg)
 {
     NUTTIMERINFO *tnp;
 
@@ -228,7 +231,7 @@ static u_long NutComputeCpuClock(void)
      * Wait for update busy clear and
      * enable timer overflow interrupt.
      */
-    NutRegisterIrqHandler(&sig_OVERFLOW0, NutTimer0Intr, 0);
+    NutRegisterIrqHandler(&sig_OVERFLOW0, NutTimerIntr, 0);
     while (inp(ASSR) & (TCN0UB | TCR0UB))
         continue;
     sbi(TIMSK, TOIE0);
@@ -275,38 +278,53 @@ static u_long NutComputeCpuClock(void)
  * This function is automatically called by Nut/OS
  * during system initialization.
  *
- * Nut/OS uses on-chip timer 0 for its timer services.
+ * Nut/OS uses on-chip timer 0 for it's timer services.
  * Applications should not modify any registers of this
  * timer, but make use of the Nut/OS timer API. Timer 1
  * and timer 2 are available to applications.
+ *
+ * On AT90CAN128 processors Nut/OS uses timer 2 for it's timer services.
+ * Timer 0, 1 and 3 are available to applications.
  */
 void NutTimerInit(void)
 {
 #ifdef NUT_CPU_FREQ
+#ifdef __AVR_AT90CAN128__
+    /*
+     * On ATCAN128 Timer2 provides the functionality which Timer0 of
+     * ATmega128 offers, hence we must use Timer2 on this device.
+     * Using above calculation and prescaler setting the error is:
+     *  0.17% for 14.7456MHz
+     *  0.27% for 12.0MHz
+     */
+    outp(BV(CS20) | BV(CS22) | BV(WGM21), TCCR2A);
+    outp(0, TCNT2);
+    outp((NUT_CPU_FREQ / (128L * 1000) + 0.5/*round*/), OCR2A);
+    NutRegisterIrqHandler(&sig_OUTPUT_COMPARE2, NutTimerIntr, 0);
+    sbi(TIMSK2, OCIE2A);
+#else
     /*
      * - Program prescaler to output PCK0/32 and clear Timer0 on compare match.
      * - Clear timer counter register to get the first tick right.
      * - Write (CPU frequency / (prescaler * 1KHz)) in the output compare.
      *   register, so we'll get a compare match interrupt every millisecond.
      */
-#ifdef __AVR_ENHANCED__
+#if __AVR_ENHANCED__
     outp(BV(CS00) | BV(CS02) | BV(WGM01), TCCR0);
 #else
     outp(BV(CS00) | BV(CS02) | BV(CTC0), TCCR0);
 #endif
     outp(0, TCNT0);
-    outp(NUT_CPU_FREQ / (128L * 1000), OCR0);
-    NutRegisterIrqHandler(&sig_OUTPUT_COMPARE0, NutTimer0Intr, 0);
+    outp((NUT_CPU_FREQ / (128L * 1000) + 0.5/*round*/), OCR0);
+    NutRegisterIrqHandler(&sig_OUTPUT_COMPARE0, NutTimerIntr, 0);
     sbi(TIMSK, OCIE0);
-#ifdef __AVR_AT90CAN128__
-/* TODO FIXME ttt */
-#warning Code compiles and runs for AT90CAN128 but timing is no yet ok!
 #endif
-#else
+#else /* #ifdef NUT_CPU_FREQ */
 #ifdef __AVR_AT90CAN128__
 #error Define NUT_CPU_FREQ to compile for this CPU. NutComputeCpuClock not yet implemented!
-#endif
+#else
     NutComputeCpuClock();
     sbi(TIMSK, TOIE0);
+#endif
 #endif
 }
