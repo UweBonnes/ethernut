@@ -1,4 +1,34 @@
-$Id: ChangeLog,v 1.67 2004/05/24 20:35:59 drsung Exp $
+$Id: ChangeLog,v 1.68 2004/05/25 12:02:16 olereinhardt Exp $
+
+2004-05-24  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
+
+	* include/dev/hd44780_bus, dev/hd44780_bus
+	New driver for memory mappen LCD displays. Take a look into
+	hd44780_bus.c for detailed information about hardware design
+
+	* include/dev/term.h, dev/term.h
+	Small change to pass base address to LCD driver. 
+
+	* include/dev/hd44780.h, dev/hd44780.c
+	Small changes to be compatible with newly added hd44780_bus.c driver
+	and changed terminal driver
+
+	* os/arch/avr_nutinit.c
+	Added option to add 3 waitstates to memory region 0x8000-0xFFFF. You
+	can enable this option by defining NUT_3WAITSTATES 
+	This is needed for some memory mapped io devices. Espacialy for the 
+	cs8900 driver and hd44780_bus device.
+
+	* dev/cs8900.h, dev/cs8900.c
+	
+	CHANGED BEHAVIOR:
+	By default this driver will now retreive it's MAC Address from
+	EEPROM config. Also it will retreive it's base address by default 
+	from NutRegisterDevice. Also a hardware depended reset method is
+	disabled by default.
+
+	To get back the old functionality define NUT_CS8900_OLD
+
 
 2004-05-24  Oliver Schulz  <olischulz@web.de>
 
