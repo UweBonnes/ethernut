@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.3  2004/08/11 22:21:53  freckle
+ * Some docu added for mutex, semaphore and the unix emulation
+ *
  * Revision 1.2  2003/12/19 22:34:35  drsung
  * Added xgCrtTime for time functions
  *
@@ -1013,8 +1016,33 @@
  * A waiting queue is a simple linked list of waiting
  * threads.
  *
+ * 
  */
 
+/*!
+ * \defgroup xgMutex Recursive Mutex 
+ * \brief Thread synchronization support.
+ *
+ * In addition to posting and waiting for events, Threads
+ * can use the provided recursive mutex funxtions to assert
+ * mutual access to shared data structures.
+ *
+ * A recursive mutex is a mutex that can be locked several
+ * times by the thread that already owns the mutex.
+ * 
+ */
+
+/*!
+ * \defgroup xgSemaphore Semaphore
+ * \brief Thread synchronization support.
+ *
+ * In addition to posting and waiting for events, Threads
+ * can use the provided semaphore funxtions to handle a pool
+ * of shared resources.
+ * 
+ */
+ 
+ 
 /*!
  * \defgroup xgHeap Heap Management
  * \brief Dynamic memory management.
@@ -1832,5 +1860,20 @@
 
 /* ======================================================================================= */
 
+/*!
+ * \defgroup xgUnixEmulation 
+ * \brief Running Nut/OS Apps on a unix machine 
+ *
+ * Nut/OS can be compiled for a native unix target.
+ *
+ * The following hardware is currently emulated: RTC and UART.
+ * A RTC clock is provided. All AVR UARTS are mapped to STDIO but this can configure
+ * at app start-up using command line paramters. Syntax:
+ * 
+ * MyNutOSAPP.unix [-u0 deviceName] [-u1 deviceName] [-u2 deviceName]
+ * 
+ * The unix emulation provides a third uart for debugging purposes as devDebug2, devUsart2 and devUsartAvr2)
+ * 
+ */
 
 
