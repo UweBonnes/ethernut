@@ -1,10 +1,16 @@
-$Id: ChangeLog,v 1.89 2004/07/27 19:35:09 drsung Exp $
+$Id: ChangeLog,v 1.90 2004/07/27 19:44:25 drsung Exp $
 
 2004-07-27  Oliver Schulz  <olischulz@web.de>
 
     * crt/strtok_r.c, include/strtok_r.h: Implementation of strtok_r adjusted to 
     the POSIX 1c standard. This will just affect the ImageCraft compiler, 
     because avrlibc already supplies this function.
+
+    * net/arpcache.c: Under certain circumstances the same ARPENTRY was 
+    allocated twice.
+
+    * net/arpin.c: If NutArpOutput fails, the NetBuf must not be deallocated by 
+    calling NutNetBufFree.
 
     
 2004-07-19  Matthias Ringwald <mringwal@inf.ethz.ch>
