@@ -1,4 +1,22 @@
-$Id: ChangeLog,v 1.116 2004/09/16 11:44:49 olereinhardt Exp $
+$Id: ChangeLog,v 1.117 2004/09/17 13:05:01 haraldkipp Exp $
+
+2004-09-17  Harald Kipp  <harald.kipp@egnite.de>
+	* tools/nutconf/Makefile: Ole removed tooloptdlg.o, which
+	was correct to get it compiled. But the real problem was,
+	that I forget to commit all changes. So tooloptdlg.o
+	has been added again.
+
+	* tools/nutconf/tooloptdlg.cpp, tools/nutconf/tooloptdlg.h, 
+	tools/nutconf/nutconf.cpp, tools/nutconf/settings.cpp,
+	tools/nutconf/settings.h, tools/nutconf/settingsdlg.cpp,
+	tools/nutconf/settingsdlg.h: New settings page for tool 
+	options added.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutcomponent.h,
+	tools/nutconf/nutconfdoc.cpp: 
+	INCFIRST and INCLAST definitions added to application sample 
+	directory building.
+
 
 2004-09-16  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>
 	* os/Makefile
