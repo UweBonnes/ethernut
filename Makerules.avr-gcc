@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/08/18 15:36:33  haraldkipp
+# Phony target clean divided
+#
 # Revision 1.1  2004/08/18 13:27:37  haraldkipp
 # Copied from .gcc
 #
@@ -54,3 +57,16 @@
 
 %a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
+
+.PHONY: cleancc
+cleancc:
+	-rm -f $(OBJS)
+	-rm -f $(TARG)
+	-rm -f $(SRCS:.c=.lst)
+	-rm -f $(SRCS:.c=.lis)
+	-rm -f $(SRCS:.c=.s)
+
+.PHONY: cleanedit
+cleanedit:
+	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.c~)

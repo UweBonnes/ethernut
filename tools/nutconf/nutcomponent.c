@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/08/18 15:36:25  haraldkipp
+ * Phony target clean divided
+ *
  * Revision 1.4  2004/08/18 14:05:22  haraldkipp
  * Fill error text if script not found
  *
@@ -1160,6 +1163,11 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                         }
                     }
                     fprintf(fp, "\ninclude $(top_srcdir)/Makerules.%s\n\n", mak_ext);
+
+                    fprintf(fp, ".PHONY: clean\n");
+                    fprintf(fp, "clean: cleancc cleanedit\n");
+                    fprintf(fp, "\t-rm -f $(PROJ).a\n\n");
+
                     fclose(fp);
                 }
             }
