@@ -48,6 +48,13 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/01/13 18:51:23  haraldkipp
+ * Moved ms62_5 counter to nutinit.c to make sure this is located in internal
+ * RAM (AVR platforms). This fixes the wrong baudrate bug for applications
+ * occupying all internal RAM.
+ *
+ * Optimized some timer handling.
+ *
  * Revision 1.9  2005/01/02 10:07:10  haraldkipp
  * Replaced platform dependant formats in debug outputs.
  *
@@ -164,7 +171,7 @@ static u_long cpu_clock;
 
 #if !defined(__linux__) && !defined(__APPLE__)
 
-static volatile u_char ms62_5;
+extern volatile u_char ms62_5;
 static u_short delay_count;
 static u_long NutComputeCpuClock(void);
 
@@ -195,7 +202,7 @@ static void NutTimerInsert(NUTTIMERINFO * tn);
  */
 static void NutTimerInsert(NUTTIMERINFO * tn)
 {
-    NUTTIMERINFO *volatile *tnpp;
+    NUTTIMERINFO **tnpp;
     NUTTIMERINFO *tnp;
 
 #ifdef NUTDEBUG
@@ -204,7 +211,7 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
         fprintf_P(__os_trs, fmt, tn);
     }
 #endif
-    tnpp = &nutTimerList;
+    tnpp = (NUTTIMERINFO **)&nutTimerList;
     tnp = nutTimerList;
     while (tnp) {
         if (tn->tn_ticks_left < tnp->tn_ticks_left) {
@@ -423,19 +430,19 @@ void NutTimerStopAsync(HANDLE handle)
 void NutTimerStop(HANDLE handle)
 {
     NUTTIMERINFO *tnp;
+    NUTTIMERINFO *tnp_nxt;
 
     NutEnterCritical();
     NutTimerStopAsync(handle);
+    tnp_nxt = nutTimerPool;
+    nutTimerPool = 0;
+    NutExitCritical();
 
-    /*
-     * Release the timer pool.
-     */
-    tnp = nutTimerPool;
-    while ((tnp = nutTimerPool) != 0) {
-        nutTimerPool = nutTimerPool->tn_next;
+    /* Release the timer pool. */
+    while ((tnp = tnp_nxt) != 0) {
+        tnp_nxt = tnp->tn_next;
         NutHeapFree(tnp);
     }
-    NutExitCritical();
 }
 
 /*!
