@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/09/10 10:31:06  haraldkipp
+ * Use newer AVR UART device driver
+ *
  * Revision 1.2  2004/09/08 10:18:23  haraldkipp
  * For EB40A
  *
@@ -80,8 +83,8 @@
 #define DEV_UART devDebug1
 #define DEV_UART_NAME "uart1"
 #else
-#include <dev/uartavr.h>
-#define DEV_UART devUart0
+#include <dev/usartavr.h>
+#define DEV_UART devUsartAvr0
 #define DEV_UART_NAME "uart0"
 #endif
 #include <sys/thread.h>
