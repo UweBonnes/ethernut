@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2003/12/19 22:26:37  drsung
+ * Dox written.
+ *
  * Revision 1.4  2003/11/27 09:17:18  drsung
  * Wrong comment fixed
  *
@@ -57,7 +60,6 @@
 
 tm _tb;
 
-
 /*      static arrays used by gmtime to determine date and time
 *       values. Shows days from being of year.
 ***************************************************************/
@@ -68,10 +70,22 @@ int _days[] = {
     -1, 30, 58, 89, 119, 150, 180, 211, 242, 272, 303, 333, 364
 };
 
-/*
-  Note: This function is thread safe, because it uses *no* a static variable.
-  You have to provide a pointer to a tm struct instead.
-*/
+/*!
+ * \addtogroup xgCrtTime
+ * @{
+ */
+
+/*!
+ * \brief Convert a time value to a structure.
+ * 
+ * Thread safe version of \b gmtime. See ::gmtime for more information.
+ *
+ * \param timer Pointer to stored time. The time is represented as seconds elapsed 
+ * since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC). 
+ * \param ptm Pointer to structure ::tm where the converted time is stored. 
+ * \return Returns nonzero value if any error occured.
+ *
+ */
 int gmtime_r(CONST time_t * timer, tm * ptm)
 {
     time_t ctimer = *timer;     /* var to calculate with */
@@ -150,12 +164,23 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
     return 0;
 }
 
-/*
-  Note: This function is *not* thread safe, because it uses a static variable
-  to store the calculated values. To be safe, you must surround the call to gmtime 
-  _and_ the usage of the returned pointer with NutEnterCritical() and NutExitCritical()!
-  Provided for compatibility to std c lib.
-*/
+/*!
+ * \brief Convert a time value to a structure.
+ * 
+ * The \b gmtime function breaks down the \e timer value and stores it in a statically 
+ * allocated structure of type ::tm, defined in time.h. The value of \e timer is usually 
+ * obtained from a call to the ::time function.
+ *
+ * \param timer Pointer to stored time. The time is represented as seconds elapsed 
+ * since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC). 
+ * \return Returns a pointer to a structure of type ::tm. The fields of the returned 
+ * structure hold the evaluated value of the timer argument in UTC rather than in local time. 
+ *
+ * \note This function is \m not thread safe, because it uses a static variable
+ * to store the calculated values. To be safe, you must surround the call to \b gmtime 
+ * and the usage of the returned pointer with ::NutEnterCritical() and ::NutExitCritical()!
+ *
+ */
 tm *gmtime(CONST time_t * timer)
 {
     if (gmtime_r(timer, &_tb))
@@ -163,3 +188,5 @@ tm *gmtime(CONST time_t * timer)
     else
         return &_tb;
 }
+
+/*@}*/

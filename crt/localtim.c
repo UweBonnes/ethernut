@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2003/12/19 22:26:37  drsung
+ * Dox written.
+ *
  * Revision 1.2  2003/11/26 11:14:32  haraldkipp
  * Portability issues
  *
@@ -42,6 +45,7 @@
  *
  *
  */
+ 
 
 #include <time.h>
 #include "ctime.h"
@@ -51,6 +55,21 @@
 
 #define LONG_MAX   2147483647L
 
+/*!
+ * \addtogroup xgCrtTime
+ * @{
+ */
+
+/*!
+ * \brief Convert a time value and correct for the local time zone.
+ *
+ * Thread safe version of \b localtime. See ::localtime for more information.
+ *
+ * \param timer Pointer to stored time. 
+ * \param ptm Pointer to structure ::tm where the converted time is stored. 
+ * \return Always return 0.
+ *
+ */
 int localtime_r(CONST time_t * timer, tm * ptm)
 {
     long ltime;
@@ -148,6 +167,26 @@ int localtime_r(CONST time_t * timer, tm * ptm)
 }
 
 
+/*!
+ * \brief Convert a time value and correct for the local time zone.
+ *
+ * The localtime function converts a time stored as a time_t value and stores the 
+ * result in a structure of type ::tm. The long value \e timer represents the seconds 
+ * elapsed since midnight (00:00:00), January 1, 1970, UTC. This value is usually 
+ * obtained from the ::time function.
+ *
+ * ::gmtime, ::mktime, and \b localtime all use a single statically allocated ::tm structure 
+ * for the conversion. Each call to one of these routines destroys the result of the 
+ * previous call.
+ *
+ * \b localtime corrects for the local time zone if the user first sets the global 
+ * variable #_timezone. 
+ * 
+ * \param timer Pointer to stored time. 
+ * \return Return a pointer to the structure result. If the value in \e timer 
+ * represents a date before midnight, January 1, 1970, return \b NULL.
+ *
+ */
 /*
   Note: This function is *not* thread safe, because it uses a static variable
   to store the calculated values. To be safe, you must surround the call to localtime 
@@ -161,3 +200,5 @@ tm *localtime(CONST time_t * timer)
     else
         return &_tb;
 }
+
+/*@}*/

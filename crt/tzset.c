@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2003/12/19 22:26:38  drsung
+ * Dox written.
+ *
  * Revision 1.1  2003/11/24 18:07:37  drsung
  * first release
  *
@@ -54,9 +57,9 @@ typedef struct {
  */
 static transitiondate dststart = { -1, 0, 0L };
 static transitiondate dstend = { -1, 0, 0L };
-u_char _daylight = 1;           // daylight saving default enabled
-long _dstbias = -1 * 60L * 60L; // bias for daylight saving in seconds
-long _timezone = 5L * 60L * 60L;        // default time zone is EST = -05:00:00
+u_char _daylight = 1;                   /* daylight saving default enabled */
+long _dstbias = -1 * 60L * 60L;         /* bias for daylight saving in seconds */
+long _timezone = 5L * 60L * 60L;        /* default time zone is EST = -05:00:00 */
 
 /*
  * The macro below is valid for years between 1901 and 2099, which easily

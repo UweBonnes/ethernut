@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2003/12/19 22:26:37  drsung
+ * Dox written.
+ *
  * Revision 1.1  2003/11/24 18:07:37  drsung
  * first release
  *
@@ -57,6 +60,10 @@
  */
 #define ChkMul(dest, src1, src2)   ( src1 ? (dest/src1 != src2) : 0 )
 
+/*!
+ * \addtogroup xgCrtTime
+ * @{
+ */
 
 static time_t _make_time_t(tm * tb, int ultflag)
 {
@@ -215,13 +222,56 @@ static time_t _make_time_t(tm * tb, int ultflag)
     return (time_t) (-1);
 }
 
-
-time_t mktime(tm * tb)
+/*!
+ * \brief Convert the local time to a calendar value.
+ *
+ * The \b mktime function converts the supplied time structure (possibly incomplete)
+ * pointed to by \e timeptr into a fully defined structure with normalized values 
+ * and then converts it to a ::time_t calendar time value. The converted time has 
+ * the same encoding as the values returned by the ::time function. The original 
+ * values of the \c tm_wday and \c tm_yday components of the \e timeptr structure are 
+ * ignored, and the original values of the other components are not restricted 
+ * to their normal ranges. 
+ *
+ * After an adjustment to Greenwich Mean Time (GMT), \b mktime handles dates from 
+ * midnight, January 1, 1970, to January 19, 3:14:07, 2038. This adjustment may 
+ * cause \b mktime to return -1 (cast to ::time_t) even though the date you specify 
+ * is within range. For example, if you are in Cairo, Egypt, which is two hours ahead
+ * of GMT, two hours will first be subtracted from the date you specify in \e timeptr; 
+ * this may now put your date out of range.
+ *
+ * If successful, \b mktime sets the values of \c tm_wday and \c tm_yday as appropriate 
+ * and sets the other components to represent the specified calendar time, but with 
+ * their values forced to the normal ranges. The final value of tm_mday is not set until 
+ * tm_mon and tm_year are determined. When specifying a tm structure time, set 
+ * the \c tm_isdst field to: 
+ * 
+ * - Zero (0) to indicate that standard time is in effect. 
+ * - A value greater than 0 to indicate that daylight savings time is in effect. 
+ *
+ * \c tm_isdst is a required field. If not set, its value is undefined and the return value
+ * from \b mktime is unpredictable. If \e timeptr points to a ::tm structure returned by a 
+ * previous call to ::gmtime or ::localtime, the \c tm_isdst field contains the correct value.
+ *
+ * \note Note that ::gmtime and ::localtime use a single statically allocated buffer 
+ * for the conversion. If you supply this buffer to \b mktime, the previous contents are destroyed.
+ *
+ * \param timeptr Pointer to time structure.
+ * \return \b mktime returns the specified calendar time encoded as a value of type
+ * ::time_t. If \e timeptr references a date before midnight, January 1, 1970, or 
+ * if the calendar time cannot be represented, \b mktime returns –1 cast to type ::time_t. 
+ * When using \b mktime and if \e timeptr references a date after 3:14:07 January 19, 2038, UTC,
+ * it will return –1 cast to type ::time_t. 
+ *
+ */
+time_t mktime(tm * timeptr)
 {
-    return (_make_time_t(tb, 1));
+    return (_make_time_t(timeptr, 1));
 }
 
-time_t _mkgmtime(tm * tb)
+time_t _mkgmtime(tm * timeptr)
 {
-    return (_make_time_t(tb, 0));
+    return (_make_time_t(timeptr, 0));
 }
+
+/*@}*/

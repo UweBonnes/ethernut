@@ -32,6 +32,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2003/12/19 22:26:38  drsung
+ * Dox written.
+ *
  * Revision 1.2  2003/11/26 11:14:32  haraldkipp
  * Portability issues
  *
@@ -47,6 +50,23 @@
 
 static u_long epo_offs = 0;
 
+/*!
+ * \addtogroup xgCrtTime
+ *
+ */
+/*@{*/
+
+/*!
+ * \brief Get the system time.
+ *
+ * The \b time function returns the number of seconds elapsed since midnight (00:00:00), January 1, 1970, 
+ * coordinated universal time (UTC), according to the system clock. The return value is stored in the location 
+ * given by \e timer. This parameter may be \b NULL, in which case the return value is not stored.
+ *
+ * \param timer Pointer to the storage location for time. 
+ * \return Return the time in elapsed seconds. There is no error return. 
+ *
+ */
 time_t time(time_t * timer)
 {
     u_long r;
@@ -60,10 +80,19 @@ time_t time(time_t * timer)
     return r;
 }
 
-int stime(time_t * t)
+/*!
+ * \brief Set the system time.
+ *
+ * \param timer Pointer to the storage location for time.
+ * \return This function always returns 0.
+ *
+ */
+int stime(time_t * timer)
 {
     NutEnterCritical();
-    epo_offs = *(u_long *) t - NutGetSeconds();
+    epo_offs = *(u_long *) timer - NutGetSeconds();
     NutExitCritical();
     return 0;
 }
+
+/*@}*/
