@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/02/25 16:22:33  haraldkipp
+ * Do not initialize MAC with all zeros
+ *
  * Revision 1.5  2004/01/14 19:31:43  drsung
  * Speed improvement to NicWrite applied. Thanks to Kolja Waschk
  *
@@ -1040,8 +1043,10 @@ THREAD(NicRxLanc, arg)
      * we may not have got a MAC address yet. Wait until one has been
      * set.
      */
-    while ((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF) {
-        //printf("[WM]");
+    for(;;) {
+        if(*((u_long *)(ifn->if_mac)) && *((u_long *)(ifn->if_mac)) != 0xFFFFFFFFUL) {
+            break;
+        }
         NutSleep(63);
     }
     NicStart(ifn->if_mac);
@@ -1062,7 +1067,6 @@ THREAD(NicRxLanc, arg)
          * check the receiver every two second.
          */
         NutEventWait(&ni->ni_rx_rdy, 2000);
-        //printf("[P]");
 
         /*
          * Fetch all packets from the NIC's internal
