@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/11/08 19:15:33  haraldkipp
+ * Made assembly includes look nicer.
+ * Changed mode from supervisory to user supervisory, which seems to work
+ * with the GBA.
+ * Skipped entry frame, because it simply confuses me. :-)
+ *
  * Revision 1.2  2004/09/08 10:19:31  haraldkipp
  * Tyou's support for the ARM7
  *
@@ -89,16 +95,13 @@ typedef struct {
 /*
  * This code is executed when entering a thread.
  */
-static void NutThreadEntry(void) __attribute__ ((naked));
-static void NutThreadEntry(void)
+void NutThreadEntry(void) __attribute__ ((naked));
+void NutThreadEntry(void)
 {
     asm volatile(
-	    "	ldmfd 	sp!,      {r0}\n"
-	"	msr 	cpsr_all, r0\n"
-	"	ldmfd   sp!, 	  {r0, pc}\n"
-		
-		::
-		:"cc","sp","r0"
+	    "ldmfd   sp!, {r0}\n\t"     /* */
+	    "msr     cpsr_all, r0\n\t"  /* */
+	    "ldmfd   sp!, {r0, pc}"     /* */
 	);
 }
 
@@ -124,30 +127,25 @@ void NutThreadSwitch(void)
     /*
      * Save all CPU registers.
      */
-
-    asm volatile(
-		"	stmfd   sp!, {lr}\n"
-		"	stmfd   sp!, {r0-r12,lr}\n"
-
-		"	mrs     r4,  cpsr\n"
-		"	stmfd   sp!, {r4}\n"
-		"	mrs     r4,  spsr\n"
-		"	stmfd   sp!, {r4}\n"
+    asm volatile(                       /* */
+        "@ Save context\n\t"            /* */
+		"stmfd   sp!, {lr}\n\t"         /* */
+		"stmfd   sp!, {r0-r12,lr}\n\t"  /* */
+		"mrs     r4, cpsr\n\t"          /* */
+		"stmfd   sp!, {r4}\n\t"         /* */
+		"mrs     r4, spsr\n\t"          /* */
+		"stmfd   sp!, {r4}\n\t"         /* */
+		"str     sp, %0"                /* */
+		::"m"(runningThread->td_sp)     /* */
+		:"cc"
 	);
 
-	asm volatile(
-		"	str     sp, %0"
-		::"m"(runningThread->td_sp)
-		:"cc"
-    );
     /*
      * This defines a global label, which may be called
      * as an entry point into this function.
      */
     asm volatile (
-    	
-    	"	.global thread_start\n"
-
+    	".global thread_start\n"
     	"thread_start:"
     );
 
@@ -157,19 +155,15 @@ void NutThreadSwitch(void)
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
 
-    asm volatile(
-	    "	ldr 	sp,   %0"
-		::"m"(runningThread->td_sp)
-		:"cc","sp"
-	);
-
-	asm volatile(
-		"	ldmfd 	sp!,      {r4}\n"
-		"	msr 	spsr_all, r4\n"
-		"	ldmfd 	sp!,      {r4}\n"
-		"	msr 	cpsr_all, r4\n"
-
-		"	ldmfd   sp!,  {r0-r12, lr, pc}\n"
+	asm volatile(                       /* */
+        "@ Load context\n\t"            /* */
+        "ldr     sp, %0\n\t"            /* */
+		"ldmfd 	 sp!, {r4}\n\t"         /* */
+		"msr     spsr_all, r4\n\t"      /* */
+		"ldmfd   sp!, {r4}\n\t"         /* */
+		"msr     cpsr_all, r4\n\t"      /* */
+		"ldmfd   sp!, {r0-r12, lr, pc}" /* */
+        ::"m"(runningThread->td_sp)     /* */
     );
 }
 
@@ -219,7 +213,10 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     }
 
     /*
-     * growth down
+     * threadMem --> bottom
+     * sf
+     * ef
+     * td
      */
     td = (NUTTHREADINFO *) (threadMem + stackSize);
     ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
@@ -243,16 +240,18 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
      * the first thread , idle thread, will jump
      * to start without NutExitCritical.
      */
-    ef->cef_cpsr = 0x53;
+    ef->cef_cpsr = 0x1F; // 0x53;
     ef->cef_pc   = (uptr_t) fn;
     ef->cef_r0 = (uptr_t) arg;
 
-    sf->csf_pc = (uptr_t) NutThreadEntry;
+    //sf->csf_pc = (uptr_t) NutThreadEntry;
+    sf->csf_pc = (uptr_t) fn;
+
     /*
      * SVC mode, irq need to be disabled when context switching.
      */
-    sf->csf_cpsr = 0x13;
-    sf->csf_spsr = 0x13;
+    sf->csf_cpsr = 0x1F; // 0x13;
+    sf->csf_spsr = 0x1F; // 0x13;
 
     /*
      * Insert into the thread list and the run queue.
