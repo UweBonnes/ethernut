@@ -63,8 +63,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:18  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/05 20:20:36  haraldkipp
+ * Comments added
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:18  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.8  2003/05/06 18:47:25  harald
  * New function
@@ -87,13 +90,10 @@
  * \brief DHCP protocol definitions.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define DHCP_SERVERPORT     67
 #define DHCP_CLIENTPORT     68
 
+/* See RFC 2131. */
 #define DHCPOPT_PAD         0
 #define DHCPOPT_NETMASK     1
 #define DHCPOPT_GATEWAY     3
@@ -105,17 +105,49 @@ extern "C" {
 #define DHCPOPT_LEASETIME   51
 #define DHCPOPT_MSGTYPE     53
 #define DHCPOPT_SID         54
+#define DHCPOPT_MAXMSGSIZE  57
 #define DHCPOPT_RENEWALTIME 58
 #define DHCPOPT_REBINDTIME  59
 #define DHCPOPT_END         255
 
+/*! \brief Client broadcast to locate available servers.
+ */
 #define DHCP_DISCOVER   1
+
+/*! \brief Server to client in response to DHCP_DISCOVER.
+ * Contains an offer of configuration parameters.
+ */
 #define DHCP_OFFER      2
+
+/*! \brief Client message to servers.
+ * Used for 
+ * - requesting offered parameters from one server and implicitly declining offers from all others.
+ * - confirming correctness of previously allocated address after, e.g., system reboot.
+ * - extending the lease on a particular network address.
+ */
 #define DHCP_REQUEST    3
+
+/*! \brief Client to server indicating network address is already in use.
+ */
 #define DHCP_DECLINE    4
+
+/*! \brief Server to client with configuration parameters.
+ * Contains committed network address.
+ */
 #define DHCP_ACK        5
+
+/*! \brief Server to client indicating client's notion of network address is incorrect.
+ * May be caused by the client's move to new subnet or by expiration of the client's lease.
+ */
 #define DHCP_NAK        6
+
+/*! \brief Client to server relinquishing network address and cancelling remaining lease.
+ */
 #define DHCP_RELEASE    7
+
+/*! \brief Client to server, asking only for local configuration parameters.
+ * Used, if the client already has externally configured network address.
+ */
 #define DHCP_INFORM     8
 
 /*!
@@ -140,11 +172,11 @@ struct bootp {
     u_char  bp_options[312];    /*!< \brief Vendor-specific area */
 };
 
+__BEGIN_DECLS
+/* Function prototypes. */
 extern int NutDhcpIfConfig(CONST char *name, u_char *mac, u_long timeout);
 extern int NutNetAutoConfig(CONST char *name);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif
