@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.122 2004/09/19 12:37:42 haraldkipp Exp $
+$Id: ChangeLog,v 1.123 2004/09/19 15:17:37 haraldkipp Exp $
 
 2004-09-19  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -15,6 +15,18 @@ $Id: ChangeLog,v 1.122 2004/09/19 12:37:42 haraldkipp Exp $
 	* arch/arm/init/crteb40a_ram.S, arch/arm/ldscripts/eb40a_ram.ld,
 	arch/arm/ldscripts/s3c4510b_ram.ld, arch/Makefile:
 	ARM7 initialization.
+
+	* arch/avr/init/area.s, arch/avr/init/crtnut.s, 
+	arch/avr/init/crtnutram.s, arch/avr/init/extram.s,
+	arch/avr/init/init.s, Makedefs.avr-icc, Makerules.avr-icc,
+	conf/arch/arch.nut: ICCAVR initialization added to build.
+
+	* tools/nutconf/nutcomponent.c: Bugfix. More than one target
+	in a single component created wrong list, which failed with
+	'make install'.
+
+	* tools/nutconf/nutconfdoc.cpp: Bugfix. Modifying anything 
+	else but checkboxes didn't enable the toolbar's save button.
 
 
 2004-09-17  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>

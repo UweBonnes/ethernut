@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/09/19 15:17:37  haraldkipp
+# ICCAVR initialization added to build
+#
 # Revision 1.1  2004/09/10 10:19:49  haraldkipp
 # Replaces .icc
 #
@@ -39,6 +42,9 @@
 
 %o : %c
 	$(CC) -c $(CPFLAGS) $<
+
+%o : %S
+	$(AS) -c $(ASFLAGS) $< -o $@
 
 %s : %c
 	$(CC) -S $(CPFLAGS) $< -o $@
