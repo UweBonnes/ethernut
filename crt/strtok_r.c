@@ -40,6 +40,14 @@
 
 /*!
  * \addtogroup xgCrtMisc
+ *
+ * The functions strtok_r(), strsep_r() and strsep_rs() are intended as a 
+ * replacement for the strtok() function. While the strtok() function should 
+ * be preferred for portability reasons (it conforms to ISO/IEC 9899:1990 
+ * ("ISO C89")) it may not be able to be used in a multi-threaded environment 
+ * (that is it is not reentrant). Functions strsep_r() and strsep_rs() can 
+ * handle empty fields, (i.e. detect fields delimited by two adjacent 
+ * delimiter characters). Function strsep() first appeared in 4.4BSD.
  */
 /*@{*/
 
@@ -81,6 +89,12 @@ static char *end_tok(char **pp_str, const char *p_delim, char *p_sep)
 
 //--------------------------------------------------------------------------//
 
+/*!
+ * \brief Thread safe variant of strsep.
+ *
+ * This function is identical in operation to strsep_r(), except it returns the 
+ * deliminating character.
+ */
 char *strsep_rs(char **pp_str, const char *p_delim, char *p_sep)
 {
     char *p_ch;
@@ -118,6 +132,20 @@ char *strsep_rs(char **pp_str, const char *p_delim, char *p_sep)
 
 /*!
  * \brief Thread safe version of strsep.
+ *
+ * This function locates, in the string referenced by *str, the first occurrence of 
+ * any character in the string delim (or the terminating `\0' character) and 
+ * replaces it with a `\0'. The location of the next character after the delimiter 
+ * character (or NULL, if the end of the string was reached) is stored in *str. 
+ * The original value of *str is returned.
+ *
+ * An "empty" field, i.e. one caused by two adjacent delimiter characters, can be 
+ * detected by comparing the location referenced by the pointer returned in *str 
+ * to `\0'.
+ *
+ * If *str is initially NULL, strsep_r() returns NULL. 
+ *
+ * If delim is NULL or the empty string, strsep_r() returns *str.
  */
 char *strsep_r(char **pp_str, const char *p_delim)
 {
@@ -127,6 +155,13 @@ char *strsep_r(char **pp_str, const char *p_delim)
 //--------------------------------------------------------------------------//
 /*!
  * \brief Thread safe version of strtok.
+ *
+ * This function locates, in the string referenced by *str, the occurrence of 
+ * any character in the string delim (or the terminating `\0' character) and 
+ * replaces them with a `\0'. The location of the next character after the 
+ * delimiter character (or NULL, if the end of the string was reached) is 
+ * stored in *str. The first character not a delimiter character from the original 
+ * value of *str is returned.
  */
 char *strtok_r(char **pp_str, const char *p_delim)
 {
