@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2004/10/14 16:43:07  drsung
+ * Fixed compiler warning "comparison between signed and unsigned"
+ *
  * Revision 1.9  2004/07/30 19:54:46  drsung
  * Some code of TCP stack redesigned. Round trip time calculation is now
  * supported. Fixed several bugs in TCP state machine. Now TCP connections
@@ -897,7 +900,8 @@ static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
  */
 int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
 {
-    int rc, sz;
+    int rc;
+    u_short sz;
     /* hack alert for ICCAVR */
     u_char *buffer = (u_char*) buf;
 
@@ -931,7 +935,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
          * send first part of data to nic and store remaining
          * bytes in buffer
          */
-        if (size >= sock->so_devobsz) {
+        if ((u_short) size >= sock->so_devobsz) {
             rc = size % sock->so_devobsz;
             if (SendBuffer(sock, buffer, size - rc) < 0)
                 return -1;

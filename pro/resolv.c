@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/10/14 16:43:07  drsung
+ * Fixed compiler warning "comparison between signed and unsigned"
+ *
  * Revision 1.6  2004/07/28 19:23:15  drsung
  * call to DumpDnsResource commented out.
  *
@@ -506,7 +509,7 @@ u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type)
             if (doh->doh_answers < 1)
                 break;
             else {
-                for (n = 1; n <= doh->doh_answers; n++) {
+                for (n = 1; n <= (int) doh->doh_answers; n++) {
                     dor = CreateDnsResource(dor);
                     len += DecodeDnsResource(dor, pkt + len);
 #ifdef NUTDEBUG

@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.6  2004/10/14 16:43:00  drsung
+ * Fixed compiler warning "comparison between signed and unsigned"
+ *
  * Revision 1.5  2003/12/19 22:26:37  drsung
  * Dox written.
  *
@@ -106,14 +109,14 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
 
     /* Determine the correct year within the interval */
     tmptimer = (tmptimer * 4) + 70;     /* 1970, 1974, 1978,... */
-    if (ctimer >= _YEAR_SEC) {
+    if (ctimer >= (time_t)_YEAR_SEC) {
         tmptimer++;             /* 1971, 1975, 1979,... */
         ctimer -= _YEAR_SEC;
-        if (ctimer >= _YEAR_SEC) {
+        if (ctimer >= (time_t)_YEAR_SEC) {
             tmptimer++;         /* 1972, 1976, 1980,... (all leap years!) */
             ctimer -= _YEAR_SEC;
             /* A leap year has 366 days, so compare to _YEAR_SEC + _DAY_SEC */
-            if (ctimer >= (_YEAR_SEC + _DAY_SEC)) {
+            if (ctimer >= (time_t)(_YEAR_SEC + _DAY_SEC)) {
                 tmptimer++;     /* 1973, 1977, 1981,... */
                 ctimer -= (_YEAR_SEC + _DAY_SEC);
             } else

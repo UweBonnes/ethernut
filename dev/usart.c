@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/10/14 16:43:06  drsung
+ * Fixed compiler warning "comparison between signed and unsigned"
+ *
  * Revision 1.4  2004/05/24 20:17:15  drsung
  * Added function UsartSize to return number of chars in input buffer.
  *
@@ -228,7 +231,7 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
      * Get cooked characters from receive buffer.
      */
     if (dcb->dcb_modeflags & USART_MF_COOKEDMODE) {
-        for (rc = 0; rc < size;) {
+        for (rc = 0; rc < (size_t) size;) {
             if (taken >= avail) {
                 break;
             }

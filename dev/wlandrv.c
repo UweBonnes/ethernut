@@ -292,7 +292,7 @@ void DumpWlanData(BYTE * pBuffer, WORD wBufferSize)
 static int wi_cmd(struct wi_softc *sc, int cmd, int val0, int val1, int val2)
 {
     unsigned long i;            /* Harald: Changed from int to long. */
-    int s = 0;
+    unsigned int s = 0;			/* Oliver: Changed from signed to unsigned. */
     static volatile int count = 0;
 
     if (sc->wi_gone) {
@@ -397,7 +397,7 @@ void wi_stop(struct wi_softc *sc, int disable)
 static int wi_seek_bap(struct wi_softc *sc, int id, int off)
 {
     long i;                     /* Harald: from int to long  */
-    int status;
+    unsigned int status;		/* Oliver: from signed to unsigned */
 
     CSR_WRITE_2(sc, WI_SEL0, id);
     CSR_WRITE_2(sc, WI_OFF0, off);
@@ -527,7 +527,7 @@ static int wi_read_rid(struct wi_softc *sc, int rid, void *buf, int *buflenp)
         return error;
     }
 
-    if (le16toh(ltbuf[1]) != rid) {
+    if (le16toh(ltbuf[1]) != (u_int16_t) rid) {
         Debug(("record read mismatch, rid=%x, got=%x\n", rid, le16toh(ltbuf[1])));
         return EIO;
     }
@@ -631,7 +631,7 @@ static int wi_write_txrate(struct wi_softc *sc)
          * * 3   | 11Mbps
          */
         for (i = 8; i > 0; i >>= 1) {
-            if (rate >= i) {
+            if ((int) rate >= i) {
                 break;
             }
         }
@@ -1161,7 +1161,8 @@ THREAD(RxThread, arg)
 /************************************************************/
 static int wi_alloc_fid(struct wi_softc *sc, int len, int *idp)
 {
-    long i;                     /* Harald: Changed from int to long */
+    unsigned long i;                     /* Harald: Changed from int to long */
+    									 /* Oliver: Changed from signed to unsigned */
 
     if (wi_cmd(sc, WI_CMD_ALLOC_MEM, len, 0, 0)) {
         Debug(("failed to allocate %d bytes on NIC\n", len));

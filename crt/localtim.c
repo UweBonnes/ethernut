@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2004/10/14 16:43:00  drsung
+ * Fixed compiler warning "comparison between signed and unsigned"
+ *
  * Revision 1.3  2003/12/19 22:26:37  drsung
  * Dox written.
  *
@@ -73,7 +76,7 @@
 int localtime_r(CONST time_t * timer, tm * ptm)
 {
     long ltime;
-    if ((*timer > 3 * _DAY_SEC) && (*timer < LONG_MAX - 3 * _DAY_SEC)) {
+    if ((*timer > (time_t)(3 * _DAY_SEC)) && (*timer < (time_t)(LONG_MAX - 3 * _DAY_SEC))) {
         /*
          * The date does not fall within the first three, or last
          * three, representable days of the Epoch. Therefore, there
