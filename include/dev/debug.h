@@ -2,7 +2,7 @@
 #define _DEV_DEBUG_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/04/05 17:49:06  haraldkipp
+ * Make it work on Wolf, but breaks AT91EB40A.
+ *
  * Revision 1.6  2005/02/10 07:06:50  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -86,6 +89,7 @@ extern NUTDEVICE devDebug2;
 
 #elif defined(__arm__)
 #ifdef MCU_AT91R40008
+extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/04/05 17:49:05  haraldkipp
+ * Make it work on Wolf, but breaks AT91EB40A.
+ *
  * Revision 1.1  2004/09/08 10:53:13  haraldkipp
  * Our first device for the EB40A
  *
@@ -196,6 +199,7 @@ int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 int DebugInit(NUTDEVICE * dev)
 {
+#if 0
     *(ps_reg + AT91_PS_PCER) = (1 << US0_ID) | (1 << US1_ID);
 
     *PIO_PDR = (1 << PIOTXD1) | (1 << PIORXD1);
@@ -220,7 +224,7 @@ int DebugInit(NUTDEVICE * dev)
 
     // Enable RX and TX
     *(usart1_reg + AT91_US_CR) = AT91_US_CR_RxENAB | AT91_US_CR_TxENAB;
-
+#endif
     return 0;
 }
 
@@ -232,8 +236,8 @@ int DebugInit(NUTDEVICE * dev)
  */
 void DebugPut(char ch)
 {
-    while((usart1_reg[AT91_US_CSR] & AT91_US_CSR_TxRDY) == 0);
-    usart1_reg[AT91_US_THR] = ch;
+    while((usart0_reg[AT91_US_CSR] & AT91_US_CSR_TxRDY) == 0);
+    usart0_reg[AT91_US_THR] = ch;
 
     if(ch == '\n') 
         DebugPut('\r');
@@ -284,11 +288,31 @@ int DebugClose(NUTFILE * fp)
 /*!
  * \brief Debug device 0 information structure.
  */
+NUTDEVICE devDebug0 = {
+    0,                          /*!< Pointer to next device, dev_next. */
+    {'u', 'a', 'r', 't', '0', 0, 0, 0, 0},      /*!< Unique device name, dev_name. */
+    0,                          /*!< Type of device, dev_type. */
+    0xFFFD0000,                 /*!< Base address, dev_base. */
+    0,                          /*!< First interrupt number, dev_irq. */
+    0,                          /*!< Interface control block, dev_icb. */
+    0,                          /*!< Driver control block, dev_dcb. */
+    DebugInit,                  /*!< Driver initialization routine, dev_init. */
+    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
+    0,                          /*!< dev_read. */
+    DebugWrite,                 /*!< dev_write. */
+    DebugOpen,                  /*!< dev_opem. */
+    DebugClose,                 /*!< dev_close. */
+    0                           /*!< dev_size. */
+};
+
+/*!
+ * \brief Debug device 1 information structure.
+ */
 NUTDEVICE devDebug1 = {
     0,                          /*!< Pointer to next device, dev_next. */
     {'u', 'a', 'r', 't', '1', 0, 0, 0, 0},      /*!< Unique device name, dev_name. */
     0,                          /*!< Type of device, dev_type. */
-    0,                          /*!< Base address, dev_base. */
+    0xFFFCC000,                 /*!< Base address, dev_base. */
     0,                          /*!< First interrupt number, dev_irq. */
     0,                          /*!< Interface control block, dev_icb. */
     0,                          /*!< Driver control block, dev_dcb. */
