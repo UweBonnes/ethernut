@@ -35,11 +35,18 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/08 10:52:31  haraldkipp
+ * Tyou's support for the SAMSUNG S3C45
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
  *
  */
+#ifdef S3C4510B
+#include "s3c4510b_irqreg.h"
+
+#else
 
 enum {
     IRQ_INT0,
@@ -116,6 +123,8 @@ extern IRQ_HANDLER sig_UART1_DATA;
 extern IRQ_HANDLER sig_UART1_TRANS;
 extern IRQ_HANDLER sig_2WIRE_SERIAL;
 extern IRQ_HANDLER sig_SPM_READY;
+#endif
+
 #endif
 
 #endif

@@ -33,12 +33,19 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/08 10:52:30  haraldkipp
+ * Tyou's support for the SAMSUNG S3C45
+ *
  * Revision 1.1  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
  */
+#ifdef S3C4510B
+#include "s3c4510b_irqreg.c"
+#else
 
-/*! 
+
+/*!
  * \fn SIG_INTERRUPT0(void)
  * \brief External interrupt 0 entry.
  */
@@ -127,7 +134,7 @@ SIGNAL(SIG_INTERRUPT7)
     CallHandler(&irqHandler[IRQ_INT7]);
 }
 
-/*! \fn SIG_OUTPUT_COMPARE2(void) 
+/*! \fn SIG_OUTPUT_COMPARE2(void)
  * \brief Timer 2 output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
@@ -473,5 +480,7 @@ SIGNAL(SIG_SPM_READY)
 }
 
 #endif
+
+#endif /* S3C4510B */
 
 /*@}*/
