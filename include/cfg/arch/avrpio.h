@@ -36,6 +36,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/02/02 20:06:37  haraldkipp
+ * This file will now contain the AVR port definitions, which were
+ * previously specified in avr.h. This file will be included by avr.h,
+ * so existing code should continue to run without change.
+ *
  * Revision 1.1  2004/08/25 10:58:02  haraldkipp
  * New include directory cfg/arch added, which is used for target specific items,
  * mainly port usage or MCU specific register settings.
@@ -44,20 +49,128 @@
 
 /*!
  * \file cfg/arch/avrpio.h
- * \brief AVR port enumeration.
+ * \brief AVR port configuration.
  *
+ * This file collects all port specifications for the AVR platform and 
+ * provides an overview of hardware resources in use.
+ *
+ * Values are geared to the Ethernut reference design and can be changed 
+ * by the Configurator. This program creates a file with the same name
+ * in the build tree, which replaces this placeholder.
  */
 
-#define PIO_PORTA  1
-#define PIO_PORTB  2
-#define PIO_PORTC  3
-#define PIO_PORTD  4
-#define PIO_PORTE  5
-#define PIO_PORTF  6
-#define PIO_PORTG  7
+/*!
+ * \brief USART settings.
+ */
+//#define UART0_RTS_BIT 2
+//#define UART0_CTS_IRQ INT7
 
-#define PIO_CONCAT(NAME) PIO_##NAME
-#define PIO_NAME(NAME)   PIO_CONCAT(NAME)
+#ifdef UART0_RTS_BIT
+#ifndef UART0_RTS_AVRPORT
+#define UART0_RTS_AVRPORT AVRPORTE
+#endif
+#endif /* UART0_RTS_BIT */
+
+
+//#define UART1_RTS_BIT 2
+//#define UART1_CTS_IRQ INT7
+
+#ifdef UART1_RTS_BIT
+#ifndef UART1_RTS_AVRPORT
+#define UART1_RTS_AVRPORT AVRPORTE
+#endif
+#endif /* UART1_RTS_BIT */
+
+/*!
+ * \brief Settings for the Realtek RTL8019AS.
+ */
+
+#ifndef RTL_BASE_ADDR
+/*!
+ * \brief Memory mapped base address.
+ */
+#define RTL_BASE_ADDR 0x8300
+#endif
+
+#ifndef RTL_SIGNAL_IRQ
+/*!
+ * \brief Interrupt used by the controller.
+ */
+#define RTL_SIGNAL_IRQ INT5
+#endif
+
+#ifndef RTL_EESK_BIT
+/*!
+ * \brief Clock input for EEPROM emulation.
+ *
+ * This is enabled by default, but the driver will run a check before
+ * jumping into the emulation.
+ */
+#define RTL_EESK_BIT 5
+#endif
+
+#ifndef RTL_EESK_AVRPORT
+#define RTL_EESK_AVRPORT AVRPORTC
+#endif
+
+#ifndef RTL_EEDO_BIT
+#define RTL_EEDO_BIT 6
+#endif
+
+#ifndef RTL_EEDO_AVRPORT
+#define RTL_EEDO_AVRPORT AVRPORTC
+#endif
+
+#ifndef RTL_EEMU_BIT
+#define RTL_EEMU_BIT 7
+#endif
+
+#ifndef RTL_EEMU_AVRPORT
+#define RTL_EEMU_AVRPORT AVRPORTC
+#endif
+
+/*!
+ * \brief Port usage of digital I/O shift register.
+ */
+#ifndef SPIDIGIO_SOUT_BIT
+#define SPIDIGIO_SOUT_BIT 5
+#endif
+
+#ifndef SPIDIGIO_SOUT_AVRPORT
+#define SPIDIGIO_SOUT_AVRPORT AVRPORTD
+#endif
+
+#ifndef SPIDIGIO_SIN_BIT
+#define SPIDIGIO_SIN_BIT 6
+#endif
+
+#ifndef SPIDIGIO_SIN_PIN
+#define SPIDIGIO_SIN_PIN PIND
+#endif
+
+#ifndef SPIDIGIO_SCLK_BIT
+#define SPIDIGIO_SCLK_BIT 7
+#endif
+
+#ifndef SPIDIGIO_SCLK_AVRPORT
+#define SPIDIGIO_SCLK_AVRPORT AVRPORTD
+#endif
+
+#ifndef SPIDIGIO_LDI_BIT
+#define SPIDIGIO_LDI_BIT 7
+#endif
+
+#ifndef SPIDIGIO_LDI_AVRPORT
+#define SPIDIGIO_LDI_AVRPORT AVRPORTB
+#endif
+
+#ifndef SPIDIGIO_LDO_BIT
+#define SPIDIGIO_LDO_BIT 5
+#endif
+
+#ifndef SPIDIGIO_LDO_AVRPORT
+#define SPIDIGIO_LDO_AVRPORT AVRPORTB
+#endif
 
 #endif
 
