@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:15:28  haraldkipp
+ * Unsuccessful try to fix ICCAVR bug
+ *
  * Revision 1.2  2003/07/13 19:09:59  haraldkipp
  * Debug output fixed.
  *
@@ -85,6 +88,8 @@
 #include <dev/ahdlc.h>
 #include <netinet/if_ppp.h>
 #include <net/ppp.h>
+
+#include <sys/timer.h>
 
 #ifdef NUTDEBUG
 #include <net/netdebug.h>
@@ -133,6 +138,11 @@ int NutPppOutput(NUTDEVICE * dev, u_short type, u_char * ha, NETBUF * nb)
         fputs("\nPPP<", __ppp_trs);
         NutDumpPpp(__ppp_trs, nb);
     }
+#elif defined(__IMAGECRAFT__)
+    /*
+     * No idea what this is, but ICCAVR fails if this call isn't there.
+     */
+    NutSleep(100);
 #endif
 
     /*
