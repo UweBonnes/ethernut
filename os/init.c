@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/04 19:24:21  drsung
+ * Thread termination support
+ *
  * Revision 1.2  2003/12/05 22:39:14  drsung
  * Using heap_start instead of bss_end
  *
@@ -98,9 +101,10 @@ THREAD(NutIdle, arg)
     NutTimerInit();
 
     NutThreadCreate("main", NutMain, 0, 768);
-    NutThreadSetPriority(255);
+    NutThreadSetPriority(254);
     for (;;) {
         NutThreadYield();
+        NutThreadDestroy();
     }
 }
 
