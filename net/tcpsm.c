@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/01/25 11:29:48  drsung
+ * bugfix for connection establishing.
+ *
  * Revision 1.7  2004/01/14 19:35:19  drsung
  * New TCP output buffer handling and fixed not starting retransmission timer for NutTcpConnect.
  *
@@ -459,6 +462,11 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
             sock->so_tx_flags |= SO_ACK | SO_FORCE;
             txf = 1;
             break;
+        case TCPS_CLOSE_WAIT:
+            /*
+             * RST received on active socket.
+             */
+            break;
         default:
             rc = -1;
             break;
@@ -761,6 +769,7 @@ int NutTcpStateWindowEvent(TCPSOCKET * sock)
  */
 void NutTcpStateRetranTimeout(TCPSOCKET * sock)
 {
+    NETBUF *so_tx_next;
     if ((u_short) NutGetMillis() - sock->so_retran_time > 3000) {
         /* Stop the retransmission timer. */
         sock->so_retran_time = 0;
@@ -775,10 +784,15 @@ void NutTcpStateRetranTimeout(TCPSOCKET * sock)
         if (__tcp_trf)
             NutDumpTcpHeader(__tcp_trs, "RET", sock, sock->so_tx_nbq);
 #endif
+        /* We must save sock->so_tx_nbq->nb_next before calling NutIpOutput,
+         * because in case of error the NETBUF is release by NutIpOutput and
+         * not longer available.
+         */
+        so_tx_next = sock->so_tx_nbq->nb_next;
         if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, sock->so_tx_nbq)) {
             /* Stop the retransmission timer. */
             sock->so_retran_time = 0;
-            sock->so_tx_nbq = sock->so_tx_nbq->nb_next;
+            sock->so_tx_nbq = so_tx_next;
             sock->so_time_wait = 0;
             sock->so_state = TCPS_CLOSE_WAIT;
             NutEventBroadcast(&sock->so_ac_tq);
@@ -852,7 +866,7 @@ static void NutTcpStateSynSent(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETB
                 NutTcpStateChange(sock, TCPS_LISTEN);
             else {
                 sock->so_last_error = ECONNREFUSED;
-                sock->so_state = TCPS_CLOSE_WAIT;
+                NutTcpStateChange (sock, TCPS_CLOSE_WAIT);
             }
         }
         NutNetBufFree(nb);
@@ -1411,6 +1425,15 @@ THREAD(NutTcpSm, arg)
                          * Yes, we really need round trip time calculation.
                          */
                         if ((u_short) NutGetMillis() - sock->so_retran_time > 500) {
+                            NutTcpStateRetranTimeout(sock);
+                        }
+                    } else if (sock->so_state == TCPS_SYN_SENT) {
+                        /* Check timeout SYN_SENT state */
+                        if ((u_short) NutGetMillis() - sock->so_retran_time > 2000) {
+                            /* Retransmit after 2 secs */
+                            if (sock->so_time_wait++ >= 3)
+                                /* Abort after 3 retries */
+                                sock->so_retran_time = 0;
                             NutTcpStateRetranTimeout(sock);
                         }
                     } else if (sock->so_state != TCPS_CLOSE_WAIT) {
