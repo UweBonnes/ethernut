@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/22 19:29:56  haraldkipp
+ * Initializing ms62_5 will move it to the data segment. Still no final
+ * solution to make sure it's kept in AVR's internal memory. But helps
+ * in most cases.
+ *
  * Revision 1.10  2005/01/13 18:56:04  haraldkipp
  * Moved ms62_5 counter from timer.c to make sure this is located in internal
  * RAM (AVR platforms). This fixes the wrong baudrate bug for applications
@@ -100,7 +105,7 @@
  *
  * \todo Layout for internal RAM and place this into a special link segment.
  */
-volatile u_char ms62_5;
+volatile u_char ms62_5 = 0;
 
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
 #include "arch/avr_nutinit.c"
