@@ -1,4 +1,48 @@
-$Id: ChangeLog,v 1.11 2003/10/13 10:30:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.12 2003/11/03 17:22:54 haraldkipp Exp $
+
+2003-11-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Version 3.3.2
+
+	* app/isp2: New application to update the ISP adapter
+	included in the Ethernut Starter Kit.
+
+	* app/basemon: Rewritten to support RTL8019AS and
+	LAN91C111 Ethernet Controllers and banked memory.
+
+	* appload: New bootloader for LAN91C111 added.
+
+	* include/lanc111.h: Allow applications to link
+	both Ethernet Controller Drivers.
+
+	* dev/lanc111.c: Several optimizations and bugfixes.
+	The driver will reliably link now on 10 MBit networks.
+	Sudden buffer allocation failures had been fixed by
+	resetting the MMU in this situation.
+
+	* pro/dhcpc.c: Renewal disabled, if lease time is set 
+	to zero
+
+	* os/timer.c: New API function returns system uptime in 
+	miliseconds. This function is now used by the TCP state
+	machine to calculate retransmission timeouts. Another
+	step towards round trip time calculation, which is
+	still missing in Nut/Net.
+
+	* include/compiler.h: New register types added for
+	better portability to different MCU platforms.
+
+	* dev/twif.c: Documentation of API calls enhanced.
+
+
+2003-10-14  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf: New GUI configuration tool named nutconf.
+	Based on the excellent wxWindows class library.
+
+	* crt/icc: Imagecraft runtime initialization added to
+	the CVS repository.
+
 
 2003-10-13  Harald Kipp  <harald.kipp@egnite.de>
 
