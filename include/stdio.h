@@ -43,10 +43,6 @@
 #include <sys/types.h>
 #include <stdarg.h>
 
-#ifdef __IMAGECRAFT__
-#include <stddef.h>
-#endif
-
 /*!
  * \addtogroup xgCrtStdio
  */
