@@ -48,8 +48,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:49  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 16:04:36  haraldkipp
+ * Nicer debug output
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:49  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.18  2003/05/06 18:53:10  harald
  * Use trace flag
@@ -145,11 +148,6 @@ void *NutHeapAlloc(u_short size)
     if ((size += 6) < sizeof(HEAPNODE))
         size = sizeof(HEAPNODE);
 
-#ifdef NUTDEBUG
-    if (__heap_trf)
-        fprintf(__heap_trs, "A(%d,", size);
-#endif
-
     /*
      * Walk through the linked list of free nodes and find the best fit.
      */
@@ -206,7 +204,7 @@ void *NutHeapAlloc(u_short size)
     }
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf(__heap_trs, "%x) ", (u_short) fit);
+        fprintf(__heap_trs, "\n[H%x,A%04d/%d] ", (u_int) fit, ((HEAPNODE *) (((u_short *) fit) - 1))->hn_size, size);
 #endif
     return fit;
 }
@@ -279,7 +277,7 @@ int NutHeapFree(void *block)
 
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf(__heap_trs, "F(%d,%x) ", fnode->hn_size, (u_short) block);
+        fprintf(__heap_trs, "\n[H%x,F%04d] ", (u_int) block, fnode->hn_size);
 #endif
     available += fnode->hn_size;
 
