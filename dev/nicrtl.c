@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/08/05 20:05:59  haraldkipp
+ * Bugfix. Empty MAC address is FF, not 00
+ *
  * Revision 1.3  2003/07/17 09:39:56  haraldkipp
  * Optimized controller feeding.
  * Ignore LSB of packet status.
@@ -765,8 +768,8 @@ THREAD(NicRx, arg)
      * we may not have got a MAC address yet. Wait until one has been
      * set.
      */
-    if((ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2]) == 0) {
-        while((ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2]) == 0)
+    if ((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF) {
+        while((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF)
             NutSleep(125);
         cbi(EIMSK, RTL_SIGNAL_BIT);
         NicStart((u_char *) (dev->dev_base), ifn->if_mac);
