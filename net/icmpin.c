@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/18 10:28:36  haraldkipp
+ * Comments updated
+ *
  * Revision 1.3  2004/02/06 19:23:59  drsung
  * Bugfix. After last changes, ping didn't work any more. Thanks to Pavel Celeda, who discovered this bug.
  *
@@ -124,8 +127,7 @@
 /*@{*/
 
 /*
- * \param dev Identifies the device to be used. This pointer must 
- *            have been retrieved by using the NutDeviceOpen() function.
+ * Send out ICMP echo response.
  */
 static int NutIcmpReflect(NUTDEVICE * dev, u_char type, NETBUF * nb)
 {
@@ -144,6 +146,9 @@ static int NutIcmpReflect(NUTDEVICE * dev, u_char type, NETBUF * nb)
     return NutIcmpOutput(type, dest, nb);
 }
 
+/*
+ * Process incoming ICMP messages for destination unreachable.
+ */
 static int NutIcmpUnreach(NETBUF * nb)
 {
     IPHDR *ih;
@@ -172,6 +177,11 @@ static int NutIcmpUnreach(NETBUF * nb)
 
 /*!
  * \brief Handle incoming ICMP packets.
+ *
+ * Incoming ICMP packets are processed in the background.
+ * NutNet currently handles echo request and destination
+ * unreachable packets. Any other packet type is silently 
+ * discarded.
  *
  * \note This routine is called by the IP layer on incoming 
  *       ICMP datagrams. Applications typically do not call 
