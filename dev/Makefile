@@ -32,8 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2003/05/09 14:40:45  haraldkipp
-# Initial revision
+# Revision 1.2  2003/07/20 16:37:21  haraldkipp
+# CrystalTek 8900A driver added.
+#
+# Revision 1.1.1.1  2003/05/09 14:40:45  haraldkipp
+# Initial using 3.2.1
 #
 # Revision 1.12  2003/05/06 18:27:02  harald
 # Cleanup
@@ -81,7 +84,7 @@ top_srcdir = ..
 include $(top_srcdir)/Makedefs
 
 SRCS =  uartavr.c uart0.c uart1.c uartspi.c uarts.c \
-	nicrtl.c eth0rtl.c netbuf.c irqreg.c \
+	nicrtl.c eth0rtl.c cs8900.c eth0cs.c netbuf.c irqreg.c \
 	vs1001k.c spidigio.c spiflash.c \
 	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
 	ppp.c chat.c \

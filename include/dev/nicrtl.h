@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:07  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 16:40:52  haraldkipp
+ * CrystalTek 8900A driver added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:07  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.9  2003/02/04 18:00:37  harald
  * Version 3 released
@@ -97,6 +100,7 @@ typedef struct _NICINFO NICINFO;
  * Available drivers.
  */
 extern NUTDEVICE devEth0;
+extern NUTDEVICE devEth0cs;
 
 /*
  * Driver routines.
