@@ -1,6 +1,3 @@
-#ifndef _UNISTD_H_
-#define _UNISTD_H_
-
 /*
  * Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
  *
@@ -42,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/02/23 13:42:28  freckle
+ * Correctly include /usr/include/unistd.h for unix emulation
+ *
  * Revision 1.2  2005/02/21 11:08:45  olereinhardt
  * For unix plattforms I added #include "/usr/include/unistd.h" since some
  * functions needed for unix_nutinit.c are missing in this file...
@@ -53,13 +53,24 @@
  * \endverbatim
  */
 
-#include <sys/types.h>
+#ifndef _UNISTD_H_
 
+#ifndef _UNISTD_VIRTUAL_H_
+#define _UNISTD_VIRTUAL_H_
+
+
+/* use native version on unix emulation */
 #if defined(__linux__) || defined(__APPLE__)
 
 #include "/usr/include/unistd.h"
 
-#else
+/* assure _UNISTD_H_ is set */
+#undef  _UNISTD_H_
+#define _UNISTD_H_
+
+#else /* non unix emulation */
+
+#define _UNISTD_H_
 
 __BEGIN_DECLS
 /* */
@@ -69,5 +80,10 @@ extern int rmdir(CONST char *path);
 extern int unlink(CONST char *path);
 __END_DECLS
 /* */
-#endif
-#endif
+
+#endif /* unix emulation */
+
+
+#endif /* _UNISTD_VIRTUAL_H_ */
+
+#endif /* _UNISTD_H */

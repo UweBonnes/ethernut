@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.179 2005/02/23 06:14:25 hwmaier Exp $
+$Id: ChangeLog,v 1.180 2005/02/23 13:42:11 freckle Exp $
+
+2005-02-23 Matthias Ringwald <mringwal@.inf.ethz.ch>
+
+	* include/unistd.h: Correctly include /usr/include/unistd.h for 
+	unix emulation
 
 2005-02-23  Henrik Maier  <hwmaier@users.sourceforge.net>
 
