@@ -2,7 +2,7 @@
 #define _SYS_THREAD_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/02/16 19:53:15  haraldkipp
+ * Ready-to-run queue handling removed from interrupt context.
+ *
  * Revision 1.5  2004/07/09 19:51:34  freckle
  * Added new function NutThreadSetSleepMode to tell nut/os to set the MCU
  * into sleep mode when idle (avr-gcc && avr128 only)
@@ -141,6 +144,7 @@ extern "C" {
 
     extern NUTTHREADINFO *volatile runningThread;
     extern NUTTHREADINFO *volatile nutThreadList;
+    extern NUTTHREADINFO *volatile readyQueue;
     extern NUTTHREADINFO *volatile runQueue;
 
 
@@ -159,7 +163,7 @@ extern "C" {
     extern void NutThreadDestroy(void);
     extern void NutThreadExit(void);
 
-    extern void NutThreadResumeAsync(HANDLE th);
+    extern void NutThreadResume(void);
     extern void NutThreadWake(HANDLE timer, HANDLE th);
     extern void NutThreadYield(void);
 

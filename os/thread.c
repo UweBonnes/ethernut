@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/02/16 19:53:17  haraldkipp
+ * Ready-to-run queue handling removed from interrupt context.
+ *
  * Revision 1.11  2005/01/24 22:34:36  freckle
  * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
@@ -107,6 +110,8 @@
  * First pre-release with 2.4 stack
  *
  */
+
+#include <cfg/os.h>
 
 #include <string.h>
 
@@ -169,6 +174,14 @@ NUTTHREADINFO *volatile killedThread;
  * by the idle thread.
  */
 NUTTHREADINFO *volatile nutThreadList;
+
+/*!
+ * \brief List of threads to resume.
+ *
+ * Unordered linked list of NUTTHREADINFO structures of all threads which
+ * are ready to run but haven't been added to the runQueue yet.
+ */
+NUTTHREADINFO *volatile readyQueue;
 
 /*!
  * \brief List of ready-to-run threads.
@@ -249,36 +262,51 @@ void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 }
 
 /*!
- * \brief Make a previously suspended thread ready to run.
+ * \brief Continue with the highest priority thread, which is ready to run.
  *
- * \param th Handle of the thread to resume.
- *
- * \note CPU interrupts must have been disabled before calling
- *       this function. It is save to call this function from
- *       within an interrupt handler.
+ * All threads, which had been woken up in interrupt context, will be
+ * inserted into the priority ordered queue of ready-to-run threads.
+ * If the currently running thread lost its top position in the queue
+ * of ready-to-run threads, then the context will be switched.
  */
-void NutThreadResumeAsync(HANDLE th)
+void NutThreadResume(void)
 {
-    if (th && ((NUTTHREADINFO *) th)->td_state == TDS_SLEEP) {
+    NUTTHREADINFO *td;
+
+    /*
+     * Process all entries of the readyQueue.
+     */
+    do {
+        /* Protect access to the readyQueue. */
+        NutEnterCritical();
+
+        /* Remove the top entry from the woken up threads. */
+        if ((td = readyQueue) != 0) {
+            readyQueue = td->td_qnxt;
+        }
+
+        NutExitCritical();
+
+        /* Add the thread to the runQueue. */
+        if (td) {
+            td->td_state = TDS_READY;
+            NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
+        }
+    } while (td);
+
+    /* Check for context switch. */
+    if (runningThread != runQueue) {
 #ifdef NUTDEBUG
         if (__os_trf) {
-            static prog_char fmt1[] = "Add<%p>";
-            fprintf_P(__os_trs, fmt1, th);
+            static prog_char fmt2[] = "SW<%p %p>";
+            fprintf_P(__os_trs, fmt2, runningThread, runQueue);
         }
 #endif
-        NutThreadAddPriQueue(th, (NUTTHREADINFO **) & runQueue);
-        ((NUTTHREADINFO *) th)->td_state = TDS_READY;
-#ifdef NUTDEBUG
-        if (__os_trf)
-            NutDumpThreadList(__os_trs);
-#endif
+        if (runningThread->td_state == TDS_RUNNING) {
+            runningThread->td_state = TDS_READY;
+        }
+        NutThreadSwitch();
     }
-#ifdef NUTDEBUG
-    else if (__os_trf) {
-        static prog_char fmt2[] = "<#A%p>";
-        fprintf_P(__os_trs, fmt2, th);
-    }
-#endif
 }
 
 /*!
@@ -298,7 +326,8 @@ void NutThreadResumeAsync(HANDLE th)
 void NutThreadWake(HANDLE timer, HANDLE th)
 {
     ((NUTTHREADINFO *) th)->td_timer = 0;
-    NutThreadResumeAsync(th);
+    ((NUTTHREADINFO *) th)->td_qnxt = readyQueue;
+    readyQueue = (NUTTHREADINFO *)th;
 }
 
 /*!
@@ -340,24 +369,11 @@ void NutThreadYield(void)
 #endif
     }
 
-    /*
-     * If another thread moved in front,
-     * switch to it.
-     */
-    if (runningThread != runQueue) {
-        runningThread->td_state = TDS_READY;
-#ifdef NUTDEBUG
-        if (__os_trf) {
-            static prog_char fmt2[] = "SWY<%p %p>";
-            fprintf_P(__os_trs, fmt2, runningThread, runQueue);
-        }
-#endif
+    /* Continue with the highest priority thread, which is ready to run. */
 #ifdef NUTTRACER
 		TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread)
 #endif
-
-        NutThreadSwitch();
-    }
+    NutThreadResume();
     NutExitCritical();
 }
 

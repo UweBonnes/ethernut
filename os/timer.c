@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/02/16 19:53:27  haraldkipp
+ * Ready-to-run queue handling removed from interrupt context.
+ *
  * Revision 1.13  2005/02/10 07:06:51  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -378,7 +381,7 @@ void NutSleep(u_long ms)
 #ifdef NUTTRACER
 			TRACE_ADD_ITEM(TRACE_TAG_THREAD_SLEEP,(int)runningThread)
 #endif
-            NutThreadSwitch();
+            NutThreadResume();
         }
         NutExitCritical();
     } else
