@@ -1,6 +1,12 @@
-$Id: ChangeLog,v 1.176 2005/02/22 12:37:10 olereinhardt Exp $
+$Id: ChangeLog,v 1.177 2005/02/22 16:22:19 freckle Exp $
 
+2005-02-17 Matthias Ringwald <mringwal@.inf.ethz.ch>
+
+	* include/arch/avr.h: Added cpp test to guess avr-libc-version required 
+	to specify twi.h include path.
+	
 2005-02-22  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+
 	* os/tracer.c
         Changed "#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || ..."
         to a more generic "#if defined(__AVR__)"
@@ -169,6 +175,7 @@ $Id: ChangeLog,v 1.176 2005/02/22 12:37:10 olereinhardt Exp $
 
 
 2005-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+
 	* os/arch/avr-nutinit.c
 	Changed waitstate settings in the manner that the lower
 	sector still use one waitstate (only for NUT_3WAITSTATES)
@@ -327,6 +334,7 @@ $Id: ChangeLog,v 1.176 2005/02/22 12:37:10 olereinhardt Exp $
 
 	* os/event.c: NutEventPostAsync -> NutEventPostFromIrq,
 	new NutEventPostAsync with build-in critical section.
+
 	* include/sys/event.h os/event.c dev/sja1000.c dev/ahdlcavr.c
 	dev/ide.c dev/lanc111.c dev/nicrtl.c dev/nicrtl_h8.c dev/scih8.c
 	dev/twif.c dev/uartavr.c dev/uartspi.c dev/unix_devs.c dev/usartavr.c

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/02/22 16:22:21  freckle
+ * Added cpp test to guess avr-libc-version required  to specify twi.h path
+ *
  * Revision 1.8  2005/02/10 07:06:48  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -242,14 +245,26 @@
 #define CONST   const
 #define INLINE  inline
 
+
+
+
+#include <avr/eeprom.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/signal.h>
-#include <avr/eeprom.h>
 #include <avr/pgmspace.h>
-#include <avr/twi.h>
 #include <avr/sleep.h>
 #include <stdlib.h>
+
+/*
+ * test for a macro added in avr-libc 1.2.0, if yes use different path for twi.h
+ * note: has to be after #include <eeprom.h>
+ */
+#ifdef eeprom_busy_wait
+#include <compat/twi.h>
+#else
+#include <avr/twi.h>
+#endif
 
 #ifndef __SFR_OFFSET
 #define __SFR_OFFSET    0
