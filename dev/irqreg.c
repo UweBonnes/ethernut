@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/17 14:49:38  haraldkipp
+ * Deprecated AVR functions removed.
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -68,8 +71,14 @@
 #include <sys/atom.h>
 #include <dev/irqreg.h>
 
+//static IRQ_HANDLER irqHandler[IRQ_MAX];
+
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-#include "avr_irqreg.c"
+/* 
+ * AVR is using separate file for each vector,
+ * which save a lot of space and allows native
+ * interrupts.
+ */
 #elif defined(__arm__)
 #include "arm_irqreg.c"
 #elif defined(__H8300H__) || defined(__H8300S__)
@@ -78,36 +87,3 @@
 #include "m68k_irqreg.c"
 #endif
 
-/*!
- * \addtogroup xgIrqReg
- */
-/*@{*/
-
-static IRQ_HANDLER irqHandler[IRQ_MAX];
-
-/*!
- * \brief Register an interrupt handler.
- *
- * This function is typically called by device drivers.
- *
- * \deprecated Use NutRegisterIrqHandler() in new programs
- *
- * \param irq     Interrupt number to be associated with this handler.
- * \param handler This routine will be called by Nut/OS, when the
- *                specified interrupt occurs.
- * \param arg     Argument to be passed to the interrupt handler.
- *
- * \return 0 on success, -1 otherwise.
- */
-int NutRegisterInterrupt(int irq, void (*handler) (void *), void *arg)
-{
-    NutEnterCritical();
-
-    irqHandler[irq].ir_arg = arg;
-    irqHandler[irq].ir_handler = handler;
-
-    NutExitCritical();
-    return 0;
-}
-
-/*@}*/
