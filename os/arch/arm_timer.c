@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/11/08 19:16:37  haraldkipp
+ * Hacked in Gameboy timer support
+ *
  * Revision 1.3  2004/10/03 18:42:21  haraldkipp
  * No GBA support yet, but let the compiler run through
  *
@@ -49,6 +52,15 @@
 #include <arch/arm.h>
 #include <dev/s3c4510b_hw.h>
 #include <dev/s3c4510b_irqs.h>
+
+#elif defined(MCU_GBA)
+#define REG_IE      *(volatile u_short *)0x04000200 /* Interrupt Enable Register */
+#define REG_IF      *(volatile u_short *)0x04000202 /* Interrupt Flags Regster */
+#define REG_IME     *(volatile u_short *)0x04000208 /* Interrupt Master Enable */
+
+#define TIM_IRQ     0x0040
+#define TIM_ENABLE  0x0080
+
 #endif
 
 #if defined(MCU_AT91R40008)
@@ -79,7 +91,7 @@ void NutDelay(u_char ms)
     }
 }
 
-#if defined(MCU_AT91R40008)
+#if defined(MCU_AT91R40008) || defined(MCU_GBA)
 /*
  * Timer interrupt handler.
  */
@@ -87,7 +99,11 @@ static void NutTimerIntr(void *arg)
 {
     NUTTIMERINFO *tnp;
 
+#if defined(MCU_AT91R40008)
     dummy = inr(TC0_SR);
+#elif defined(MCU_GBA)
+    REG_IF = 0x40;
+#endif
 
     /*
      * Increment the tick counter used by Michael Fischer's
@@ -155,6 +171,14 @@ void Timer0Entry(void)
     NutTimerIntr(0);
     IRQ_EXIT;
 }
+
+#elif defined(MCU_GBA)
+
+void Timer0Entry(void)
+{
+    NutTimerIntr(0);
+}
+
 #endif
 
 /*!
@@ -218,7 +242,16 @@ void NutTimerInit(void)
     INT_ENABLE(IRQ_TIMER);
 
 #elif defined(MCU_GBA)
-    ms1++; /* Avoids compiler warning */
+
+    REG_IME = 0;
+    *((volatile u_long *)0x3007ffc) = (u_long)Timer0Entry;
+
+    (*((volatile u_short *)0x0400010C)) = 0xBE74;
+    (*((volatile u_short *)0x0400010E)) = TIM_ENABLE | TIM_IRQ;
+
+    REG_IE |= 0x40;
+    REG_IME = 1;
+
 #else
 #warning "MCU not defined"
 #endif
