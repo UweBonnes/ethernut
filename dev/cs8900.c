@@ -132,6 +132,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/05 20:11:30  haraldkipp
+ * Removed from ICCAVR compilation
+ *
  * Revision 1.2  2003/07/20 20:07:38  haraldkipp
  * Conflicting Ethernet driver routine names solved.
  *
@@ -146,6 +149,9 @@
  * Modified behaviour when transmit buffer space unavailable
  *
  */
+
+/* Not ported. */
+#ifdef __GNUC__
 
 #include <string.h>
 #include <avr/interrupt.h>
@@ -539,3 +545,10 @@ int CSNicInit(NUTDEVICE * dev)
 }
 
 /*@}*/
+#else
+void keep_icc_happy(void)
+{
+}
+
+#endif
+
