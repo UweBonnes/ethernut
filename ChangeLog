@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.171 2005/02/17 17:54:02 freckle Exp $
+$Id: ChangeLog,v 1.172 2005/02/19 22:53:51 hwmaier Exp $
+
+2005-02-20  Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * conf/arch/arch.nut: Fixed makedefs MCU definition for AT90CAN128
+
+        * conf/arch/dev.nut: New CAN int vectors ivect35.c and ivect36 added
+
 
 2005-02-17 Matthias Ringwald <mringwal@.inf.ethz.ch>
 
@@ -7,11 +14,11 @@ $Id: ChangeLog,v 1.171 2005/02/17 17:54:02 freckle Exp $
 2005-02-17  Philipp Blum <blum@tik.ee.ethz.ch>, Matthias Ringwald
 
 	* os/thread.c, include/sys/thread.h: Removed volatile declarations of
-	runQueue since it is not touched from interrupt context. 
+	runQueue since it is not touched from interrupt context.
 	Same for nutThreadList, runningThread and killedThreads.	
 
 	* os/thread.c: As runQueue is not modified by interrupts,
-	runningThread == runQueue always. Therefore removed obsolete 
+	runningThread == runQueue always. Therefore removed obsolete
 	comparison in NutThreadYield().
 
 	* os/thread.c: Removed unnecessary critical section in NutThreadYield.
@@ -22,36 +29,36 @@ $Id: ChangeLog,v 1.171 2005/02/17 17:54:02 freckle Exp $
 	
 2005-02-16  Harald Kipp  <harald.kipp@egnite.de>
 
-	* os/event.c, os/thread.c, os/timer.c, os/arch/avr_thread.c, 
+	* os/event.c, os/thread.c, os/timer.c, os/arch/avr_thread.c,
 	include/sys/thread.h: Introduced a new queue in the kernel.
 	This may currently break any non-AVR port!
 	Instead of inserting a woken-up thread to the priority ordered
-	queue of ready-to-run threads, it will be added to the new 
+	queue of ready-to-run threads, it will be added to the new
 	simple linked list of threads waiting to become ready.
 	This results in a more deterministic execution time of
 	NutEventPostFromIrq(), which is running in interrupt context.
 	As a side effect, interrupts do not change the runQueue
 	anymore, which in turn allows much tighter critical
 	sections.
-	All threads collected in the new queue will be moved to the 
+	All threads collected in the new queue will be moved to the
 	ready-to-run queue, when the currently running thread is
 	willing to release the CPU. Thus, the non-deterministic
 	task of modifify a priority ordered queue has been moved
 	from interrupt context to application context, which reduces
 	overall interrupt latency.
 	Remark: This is the first step towards guaranteed real-time
-	response, which is independant of the number of running threads 
+	response, which is independant of the number of running threads
 	or timers. In a second step, a new timer handling will have
 	to be implemented.
 	Many thanks to Matthias Ringwald and Philipp Blum for their
 	stimulating thoughts and discussions.
 
-	* conf/os/os.nut, nut/dev/usart0avr.c, include/sys/atom.h: 
-	Typo of NUTDEBUG corrected and Philipp Blum's tracer added 
+	* conf/os/os.nut, nut/dev/usart0avr.c, include/sys/atom.h:
+	Typo of NUTDEBUG corrected and Philipp Blum's tracer added
 	(AVRGCC only).
 
 	* os/arch/avr_thread.c: Added attribute 'naked' to the declaration
-	for NutThreadSwitch. Without this attribute GCC may introduced 
+	for NutThreadSwitch. Without this attribute GCC may introduced
 	some harmful prologue and epilogue code. Thanks to Pete Allinson.
 
 
