@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.49 2004/03/18 13:53:32 haraldkipp Exp $
+$Id: ChangeLog,v 1.50 2004/03/18 15:54:56 haraldkipp Exp $
 
 2004-03-18  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -34,6 +34,21 @@ $Id: ChangeLog,v 1.49 2004/03/18 13:53:32 haraldkipp Exp $
 
 	* doc/copying-gpl.txt, doc/copying-liquorice.txt:
 	Added as required by Liquorice's licence.
+
+	* net/pppin.c: Avoid calculation with void pointers.
+
+	* include/sys/types.h: compiler.h must be included
+	early to allow definitions of platform dependant
+	macros.
+
+	* include/compiler.h, include/sys/nutconfig.h: Added ATMEGA 
+	macro for ICCAVR support.
+
+	* include/stdio.h: stddef header inclusion removed.
+
+	* include/dev/irqreg.h: Bugfix. ICCAVR can't find header files.
+
+	* include/arch/avr.h: Added __AVR_ATmega103__ in ICCAVR block.
 
 
 2004-03-17  Harald Kipp  <harald.kipp@egnite.de>
