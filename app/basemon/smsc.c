@@ -187,7 +187,7 @@ static int NicPhyConfig(void)
     NicPhyWrite(NIC_PHYANAD, PHYANAD_TX_FDX | PHYANAD_TX_HDX | PHYANAD_10FDX | PHYANAD_10_HDX | PHYANAD_CSMA);
     for (phy_to = 0, phy_sr = 0;; phy_to++) {
         /* Give up after long time wait. */
-        if (phy_to >= 1024) {
+        if (phy_to >= 32) {
             return -1;
         }
         /* Restart auto negotiation every 4 seconds or on failures. */
@@ -219,7 +219,7 @@ static INLINE int NicMmuWait(u_short tmo)
     while (tmo--) {
         if ((nic_inlb(NIC_MMUCR) & MMUCR_BUSY) == 0)
             break;
-        NutDelay(1);
+        Delay(2000);
     }
     return tmo ? 0 : -1;
 }
@@ -242,7 +242,7 @@ static int NicReset(void)
     nic_bs(1);
     nic_outw(NIC_CR, CR_EPH_EN);
 
-    NutDelay(10);
+    Delay(20000);
 
     /* Disable transmit and receive. */
     nic_bs(0);
@@ -329,12 +329,11 @@ static int SmscTestInterrupt(void)
     /* Wait for allocation success. */
     tmo = 255;
     while ((nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
-        printf("[W]");
         if(--tmo == 0) {
             puts("IRQ failed");
             return -1;
         }
-        NutDelay(1);
+        Delay(2000);
     }
     if(bit_is_clear(PINE, 5)) {
         puts("no IRQ");
@@ -371,12 +370,11 @@ static int SmscTestBuffer(void)
         /* Wait for allocation success. */
         tmo = 255;
         while ((nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
-            printf("[W]");
             if(--tmo == 0) {
                 puts("IRQ failed");
                 return -1;
             }
-            NutDelay(1);
+            Delay(2000);
         }
 
         /*
@@ -452,7 +450,7 @@ void SmscSend(void)
     nic_bs(3);
     nic_outlb(NIC_ERCV, 7);
     nic_bs(0);
-    nic_outw(NIC_RCR, RCR_RXEN);
+    //nic_outw(NIC_RCR, RCR_RXEN);
 
     /* Enable transmitter and padding. */
     nic_outw(NIC_TCR, TCR_PAD_EN | TCR_TXENA);
@@ -471,6 +469,7 @@ void SmscSend(void)
     puts("OK");
 
     for(cnt = 0;; cnt++) {
+        Delay(500000);
         printf("\r%lu", cnt);
         sz = 1500;
 
@@ -485,11 +484,20 @@ void SmscSend(void)
         /* Enable allocation interrupt. */
         nic_outlb(NIC_MSK, INT_ALLOC);
 
-        /* Wait for allocation success. */
+        /* 
+         * Wait for allocation success. This fails quite often, possibly
+         * because we do not clear our receive buffer.
+         */
         if ((nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
-            NutDelay(250);
+            puts(" Alloc");
+            Delay(500000);
             if ((nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
-                break;
+                nic_outlb(NIC_MMUCR, MMU_RST);
+                NicMmuWait(1000);
+                nic_outlb(NIC_MMUCR, MMU_ALO);
+                if (NicMmuWait(100) || (nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
+                    break;
+                }
             }
         }
 
