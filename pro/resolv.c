@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/04/15 18:38:58  drsung
+ * Bugfix if the DNS server sends more than one answer.
+ *
  * Revision 1.4  2004/03/18 13:39:05  haraldkipp
  * Deprecated header file replaced
  *
@@ -113,14 +116,12 @@ void DumpDnsHeader(FILE * stream, DNSHEADER * doh)
 {
     fprintf(stream,
             "HEADER: id=%u flg=%04X #q=%u #an=%u #au=%u #ad=%u\r\n",
-            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers,
-            doh->doh_authrr, doh->doh_addrr);
+            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers, doh->doh_authrr, doh->doh_addrr);
 }
 
 void DumpDnsQuestion(FILE * stream, DNSQUESTION * doq)
 {
-    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n",
-            doq->doq_name, doq->doq_type, doq->doq_class);
+    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n", doq->doq_name, doq->doq_type, doq->doq_class);
 }
 
 void DumpDnsResource(FILE * stream, DNSRESOURCE * dor)
@@ -128,8 +129,7 @@ void DumpDnsResource(FILE * stream, DNSRESOURCE * dor)
     u_short i;
 
     fprintf(stream, "RESOURCE: name='%s' type=%u class=%u ttl=%lu len=%u ",
-            dor->dor_name, dor->dor_type, dor->dor_class, dor->dor_ttl,
-            dor->dor_len);
+            dor->dor_name, dor->dor_type, dor->dor_class, dor->dor_ttl, dor->dor_len);
     for (i = 0; i < dor->dor_len; i++)
         fprintf(stream, "%02X ", dor->dor_data[i]);
     fputc('\n', stream);
@@ -271,17 +271,16 @@ static u_short DecodeDnsHeader(DNSHEADER * doh, u_char * buf)
     return rc;
 }
 
-static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq,
-                                      CONST u_char * name)
+static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, CONST u_char * name, u_short type)
 {
     if (doq == 0)
         doq = NutHeapAllocClear(sizeof(DNSQUESTION));
     if (doq) {
-    	if (doq->doq_name)
-    	    NutHeapFree (doq->doq_name);
+        if (doq->doq_name)
+            NutHeapFree(doq->doq_name);
         doq->doq_name = NutHeapAlloc(strlen(name) + 1);
         strcpy(doq->doq_name, name);
-        doq->doq_type = 1;
+        doq->doq_type = type;
         doq->doq_class = 1;
     }
     return doq;
@@ -405,7 +404,19 @@ void NutDnsConfig(u_char * hostname, u_char * domain, u_long dnsip)
  * \return IP address, which is zero, if the name could not
  *         be resolved.
  */
+u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type);
+
 u_long NutDnsGetHostByName(CONST u_char * hostname)
+{
+    return NutDnsGetResource(hostname, 1);
+}
+
+u_long NutDnsGetMxByDomain(CONST u_char * hostname)
+{
+    return NutDnsGetResource(hostname, 0x0F);
+}
+
+u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type)
 {
     u_long ip = 0;
     u_char *pkt;
@@ -440,7 +451,7 @@ u_long NutDnsGetHostByName(CONST u_char * hostname)
          * Create standard header info structures.
          */
         doh = CreateDnsHeader(doh, ++id);
-        doq = CreateDnsQuestion(doq, hostname);
+        doq = CreateDnsQuestion(doq, hostname, type);
 
 #ifdef NUTDEBUG
         //DumpDnsHeader(doh);
@@ -457,11 +468,10 @@ u_long NutDnsGetHostByName(CONST u_char * hostname)
         if ((retries & 1) == 0 || doc.doc_ip2 == 0) {
             if (NutUdpSendTo(sock, doc.doc_ip1, 53, pkt, len) < 0)
                 break;
-        }
-        else {
+        } else {
             if (NutUdpSendTo(sock, doc.doc_ip2, 53, pkt, len) < 0)
                 break;
-         }
+        }
 
         /*
          * Loop until we receive a response with the
@@ -490,18 +500,24 @@ u_long NutDnsGetHostByName(CONST u_char * hostname)
 #ifdef NUTDEBUG
             //DumpDnsQuestion(doq);
 #endif
-            if (doh->doh_answers >= 1) {
-                dor = CreateDnsResource(dor);
-                len += DecodeDnsResource(dor, pkt + len);
+            if (doh->doh_answers < 1)
+                break;
+            else {
+                for (n = 1; n <= doh->doh_answers; n++) {
+                    dor = CreateDnsResource(dor);
+                    len += DecodeDnsResource(dor, pkt + len);
 #ifdef NUTDEBUG
-                //DumpDnsResource(dor);
+                    DumpDnsResource(dor);
 #endif
+                    if (dor->dor_type == 1)
+                        break;
+                }
                 if (dor->dor_len == 4) {
                     ip = *((u_long *) (dor->dor_data));
                     break;
                 }
-            } else
-                break;
+                /* TBD: 18.3.2004 - for MX requests authoritative rrs should be skipped + additional rrs should be searched for IP address */
+            }
         }
     }
 
