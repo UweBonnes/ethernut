@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:26:57  haraldkipp
+ * Bugfix, establishing PPP sessions failed.
+ *
  * Revision 1.3  2004/01/30 11:37:58  haraldkipp
  * Handle magic number rejects
  *
@@ -166,7 +169,7 @@ void LcpTxConfReq(NUTDEVICE * dev, u_char id, u_char rejected)
          * reject processing but blindly assume, that the 
          * MAGICNUMBER is the rejected option.
          */
-        if (rejected) {
+        if (!rejected) {
             xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
             xcpo->xcpo_type = LCP_MAGICNUMBER;
             xcpo->xcpo_len = 6;
