@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.9  2005/02/16 20:02:07  haraldkipp
+-- Typo of NUTDEBUG corrected.
+-- Philipp Blum's tracer added.
+--
 -- Revision 1.8  2004/11/24 14:48:34  haraldkipp
 -- crt/crt.nut
 --
@@ -324,20 +328,44 @@ nutos =
     --
     {
         name = "nutos_osdebug",
-        brief = "OS debug tracing",
+        brief = "OS Debug",
         requires = { "NUT_EVENT", "CRT_STREAM_WRITE" },
         provides = { "NUT_OSDEBUG" },
         sources = { "osdebug.c" },
         options = 
         {
             {
-                macro = "NUT_DEBUG",
-                brief = "OS tracing",
+                macro = "NUTDEBUG",
+                brief = "OS Debug",
                 description = "Used for kernel debugging.\n"..
                               "Enabling this functions will add a lot of "..
                               "extra code and require more RAM. In addition "..
                               "the application must register an output device "..
                               "early and redirect stdout to it.",
+                flavor = "boolean",
+                file = "include/cfg/os.h"
+            }
+        }
+    },
+    {
+        name = "nutos_ostracer",
+        brief = "OS Tracer",
+        requires = { "HW_MCU_AVR", "TOOL_GCC" },
+        provides = { "NUT_OSTRACER" },
+        sources = { "tracer.c" },
+        options = 
+        {
+            {
+                macro = "NUTTRACER",
+                brief = "OS Tracer",
+                description = "Used for kernel debugging.\n",
+                flavor = "boolean",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUTTRACER_CRITICAL",
+                brief = "OS Critical Tracer",
+                description = "Used for kernel debugging.\n",
                 flavor = "boolean",
                 file = "include/cfg/os.h"
             }
