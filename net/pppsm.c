@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:28:37  haraldkipp
+ * HDLC functions moved to async HDLC driver.
+ *
  * Revision 1.3  2004/01/30 11:37:58  haraldkipp
  * Handle magic number rejects
  *
@@ -72,16 +75,13 @@
 #include <net/netdebug.h>
 #endif
 
-/* Ugly hack to get simple UART drivers working. */
-extern u_char ppp_hackup;
-extern void NutPppEnable(NUTDEVICE * dev);
-
 /*!
  * \addtogroup xgPPP
  */
 /*@{*/
 
 u_long new_magic = 0x12345678;
+static HANDLE pppThread;
 
 
 /*! \fn NutPppSm(void *arg)
@@ -166,45 +166,100 @@ THREAD(NutPppSm, arg)
     }
 }
 
+/*!
+ * \brief Initialize the PPP state machine.
+ *
+ * Start the PPP timer thread, if not already running.
+ *
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutPppInitStateMachine(NUTDEVICE * dev)
+{
+    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev, 512)) == 0) {
+        return -1;
+    }
+    return 0;
+}
 
-/*
- * Link is allowed to come up.
+/*!
+ * \brief Trigger LCP open event.
+ *
+ * Enable the link to come up. Typically triggered by the upper layer,
+ * when it is enabled.
+ *
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
+ *
  */
 void LcpOpen(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[LCP-OPEN]", __ppp_trs);
+    }
+#endif
+
     switch (dcb->dcb_lcp_state) {
     case PPPS_INITIAL:
+        /*
+         * The LCP layer and the lower layer are down. Enable the LCP
+         * layer. Link negotiation will start as soon as the lower
+         * layer comes up.
+         */
         dcb->dcb_lcp_state = PPPS_STARTING;
         break;
 
     case PPPS_CLOSED:
+        /*
+         * The LCP layer is down and the lower layer is up. Start 
+         * link negotiation by sending out a request.
+         */
         LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
 
     case PPPS_CLOSING:
+        /*
+         * The LCP layer is going down.
+         */
         dcb->dcb_lcp_state = PPPS_STOPPING;
         break;
     }
 }
 
-
-/*
- * Start closing connection.
+/*!
+ * \brief Trigger LCP close event.
+ *
+ * Disable the link.
+ *
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
  */
 void LcpClose(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[LCP-CLOSE]", __ppp_trs);
+    }
+#endif
+
     switch (dcb->dcb_lcp_state) {
     case PPPS_STARTING:
+        /*
+         * The LCP layer has been enabled, but the lower layer is still 
+         * down. Disable the link layer.
+         */
         dcb->dcb_lcp_state = PPPS_INITIAL;
         break;
+
     case PPPS_STOPPED:
         dcb->dcb_lcp_state = PPPS_CLOSED;
         break;
+
     case PPPS_STOPPING:
         dcb->dcb_lcp_state = PPPS_CLOSING;
         break;
@@ -213,6 +268,11 @@ void LcpClose(NUTDEVICE * dev)
     case PPPS_ACKRCVD:
     case PPPS_ACKSENT:
     case PPPS_OPENED:
+        /*
+         * The LCP layer and the lower layer are up. Inform the upper
+         * layer that we are going down and send out a termination
+         * request.
+         */
         dcb->dcb_lcp_state = PPPS_CLOSING;
         IpcpLowerDown(dev);
         NutLcpOutput(dev, XCP_TERMREQ, dcb->dcb_reqid, 0);
@@ -220,21 +280,33 @@ void LcpClose(NUTDEVICE * dev)
     }
 }
 
-/*
- * The lower layer is up.
+/*!
+ * \brief Trigger LCP lower up event.
+ *
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
+ *
  */
 void LcpLowerUp(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[LCP-LOWERUP]", __ppp_trs);
+    }
+#endif
+
     switch (dcb->dcb_lcp_state) {
     case PPPS_INITIAL:
+        /*
+         * The LCP layer is still disabled.
+         */
         dcb->dcb_lcp_state = PPPS_CLOSED;
         break;
 
     case PPPS_STARTING:
         /*
-         * Layer had been opened. Send configuration request.
+         * The LCP layer is enabled. Send a configuration request.
          */
         LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
@@ -242,14 +314,21 @@ void LcpLowerUp(NUTDEVICE * dev)
     }
 }
 
-/*
- * The lower layer is down.
+/*!
+ * \brief Trigger LCP lower down event.
  *
- * Cancel all timeouts and inform upper layers.
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
+ *
  */
 void LcpLowerDown(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
+
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[LCP-LOWERDOWN]", __ppp_trs);
+    }
+#endif
 
     switch (dcb->dcb_lcp_state) {
     case PPPS_CLOSED:
@@ -278,15 +357,29 @@ void LcpLowerDown(NUTDEVICE * dev)
     }
 }
 
-/*
+/*!
+ * \brief Trigger IPCP open event.
+ *
  * Link is allowed to come up.
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
+ *
  */
 void IpcpOpen(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[IPCP-OPEN]", __ppp_trs);
+    }
+#endif
+
     switch (dcb->dcb_ipcp_state) {
     case PPPS_INITIAL:
+        /*
+         * The IPCP layer and the lower layer are down. Enable the
+         * IPCP layer and the lower layer.
+         */
         dcb->dcb_ipcp_state = PPPS_STARTING;
         LcpOpen(dev);
         break;
@@ -302,24 +395,39 @@ void IpcpOpen(NUTDEVICE * dev)
     }
 }
 
-
-/*
- * Start closing connection.
+/*!
+ * \brief Trigger IPCP close event.
+ *
+ * Disable the link.
  *
  * Cancel timeouts and either initiate close or possibly go directly to
  * the PPPS_CLOSED state.
+ *
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
  */
 void IpcpClose(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[IPCP-CLOSE]", __ppp_trs);
+    }
+#endif
+
     switch (dcb->dcb_ipcp_state) {
     case PPPS_STARTING:
+        /*
+         * The IPCP layer has been enabled, but the lower layer is still 
+         * down. Disable the network layer.
+         */
         dcb->dcb_ipcp_state = PPPS_INITIAL;
         break;
+
     case PPPS_STOPPED:
         dcb->dcb_ipcp_state = PPPS_CLOSED;
         break;
+
     case PPPS_STOPPING:
         dcb->dcb_ipcp_state = PPPS_CLOSING;
         break;
@@ -328,19 +436,32 @@ void IpcpClose(NUTDEVICE * dev)
     case PPPS_ACKRCVD:
     case PPPS_ACKSENT:
     case PPPS_OPENED:
-        PppDown(dev);
+        /*
+         * The IPCP layer and the lower layer are up. Inform the upper
+         * layer that we are going down and send out a termination
+         * request.
+         */
         NutIpcpOutput(dev, XCP_TERMREQ, dcb->dcb_reqid, 0);
         dcb->dcb_ipcp_state = PPPS_CLOSING;
+        NutEventPost(&dcb->dcb_state_chg);
         break;
     }
 }
 
 /*
  * The lower layer is up.
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
+ *
  */
 void IpcpLowerUp(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
+
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[IPCP-LOWERUP]", __ppp_trs);
+    }
+#endif
 
     switch (dcb->dcb_ipcp_state) {
     case PPPS_INITIAL:
@@ -358,18 +479,23 @@ void IpcpLowerUp(NUTDEVICE * dev)
  * The link layer is down.
  *
  * Cancel all timeouts and inform upper layers.
+ * \param dev Pointer to the NUTDEVICE structure of the PPP device.
+ *
  */
 void IpcpLowerDown(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
+#ifdef NUTDEBUG
+    if (__ppp_trf) {
+        fputs("\n[IPCP-LOWERDOWN]", __ppp_trs);
+    }
+#endif
+
     switch (dcb->dcb_ipcp_state) {
     case PPPS_CLOSED:
         dcb->dcb_ipcp_state = PPPS_INITIAL;
-        //(*dcb->dcb_pdev->dev_ioctl)(dcb->dcb_pdev, HDLC_SETIFNET, 0);
-        _ioctl(dcb->dcb_fd, HDLC_SETIFNET, &dev);
-        /* Ugly hack to get simple UART drivers working. */
-        ppp_hackup = 0;
+        _ioctl(dcb->dcb_fd, HDLC_SETIFNET, 0);
         break;
 
     case PPPS_STOPPED:
@@ -388,187 +514,10 @@ void IpcpLowerDown(NUTDEVICE * dev)
         break;
 
     case PPPS_OPENED:
-        PppDown(dev);
         dcb->dcb_ipcp_state = PPPS_STARTING;
+        NutEventPost(&dcb->dcb_state_chg);
         break;
     }
-}
-
-/*
- * The network layer is up.
- */
-void PppUp(NUTDEVICE * dev)
-{
-    PPPDCB *dcb = dev->dev_dcb;
-
-    NutEventPost(&dcb->dcb_state_chg);
-}
-
-
-/*
- * The network layer is down.
- */
-void PppDown(NUTDEVICE * dev)
-{
-    PPPDCB *dcb = dev->dev_dcb;
-
-    NutEventPost(&dcb->dcb_state_chg);
-}
-
-/*!
- * \brief Perform PPP control functions.
- *
- * \param dev  Identifies the device that receives the device-control
- *             function.
- * \param req  Requested control function. May be set to one of the
- *             following constants:
- *             - LCP_OPEN
- *             - LCP_CLOSE
- *             - LCP_LOWERUP
- *             - LCP_LOWERDOWN
- *             Any other function will be passed to the physical driver.
- *
- * \param conf Points to a buffer that contains any data required for
- *             the given control function or receives data from that
- *             function.
- * \return 0 on success, -1 otherwise.
- *
- */
-int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf)
-{
-    int rc = 0;
-
-    switch (req) {
-    case LCP_OPEN:
-        LcpOpen(dev);
-        break;
-
-    case LCP_CLOSE:
-        LcpClose(dev);
-        break;
-
-    case LCP_LOWERUP:
-        LcpLowerUp(dev);
-        break;
-
-    case LCP_LOWERDOWN:
-        LcpLowerDown(dev);
-        break;
-
-    default:
-        {
-            //PPPDCB *dcb = dev->dev_dcb;
-            rc = _ioctl(((PPPDCB *) (dev->dev_dcb))->dcb_fd, req, conf);
-            //rc = (*dcb->dcb_pdev->dev_ioctl)(dcb->dcb_pdev, req, conf);
-        }
-        break;
-    }
-    return rc;
-}
-
-/*
- * \brief Enable the link layer to come up.
- *
- * The underlying hardware driver should have established a physical 
- * connection before calling this function.
- *
- * \param name Physical device name optionally followed by username 
- *             and password, each separated by a slash.
- *
- */
-NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
-{
-    NUTFILE *fp;
-    u_char i;
-    char *cp;
-    char *sp;
-    char pdn[9];
-    PPPDCB *dcb = dev->dev_dcb;
-
-    memset(dcb, 0, sizeof(PPPDCB));
-
-    /*
-     * Determine the physical device.
-     */
-    for (cp = (char *) name, i = 0; *cp && *cp != '/' && i < sizeof(pdn) - 1; i++)
-        pdn[i] = *cp++;
-    pdn[i] = 0;
-
-    if ((dcb->dcb_fd = _open(pdn, _O_RDWR | _O_BINARY)) == -1)
-        return NUTFILE_EOF;
-    //if((dcb->dcb_pdev = NutDeviceLookup(pdn)) == 0)
-    //    return NUTFILE_EOF;
-
-    /*
-     * Allocate a file structure to return.
-     */
-    if ((fp = NutHeapAlloc(sizeof(NUTFILE))) == 0)
-        return NUTFILE_EOF;
-    fp->nf_next = 0;
-    fp->nf_dev = dev;
-    fp->nf_fcb = 0;
-
-    /*
-     * Parse user name and password.
-     */
-    if (*cp == '/') {
-        for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
-        if (i) {
-            dcb->dcb_user = NutHeapAlloc(i + 1);
-            for (sp = dcb->dcb_user; *cp && *cp != '/';)
-                *sp++ = *cp++;
-            *sp = 0;
-        }
-        if (*cp == '/') {
-            for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
-            if (i) {
-                dcb->dcb_pass = NutHeapAlloc(i + 1);
-                for (sp = dcb->dcb_pass; *cp && *cp != '/';)
-                    *sp++ = *cp++;
-                *sp = 0;
-            }
-        }
-    }
-
-    /*
-     * Enable all layers to come up.
-     */
-    IpcpOpen(dev);
-
-    return fp;
-}
-
-
-/*
- * Start closing connection.
- */
-int NutPppClose(NUTFILE * fp)
-{
-    PPPDCB *dcb = fp->nf_dev->dev_dcb;
-
-    IpcpClose(fp->nf_dev);
-    if (dcb->dcb_user)
-        NutHeapFree(dcb->dcb_user);
-    if (dcb->dcb_pass)
-        NutHeapFree(dcb->dcb_pass);
-    NutHeapFree(fp);
-
-    return 0;
-}
-
-/*!
- * \brief Initialize the PPP state machine.
- *
- */
-int NutPppInit(NUTDEVICE * dev)
-{
-    /*
-     * Start the timer thread if not already running.
-     */
-    NutThreadCreate("pppsm", NutPppSm, dev, 512);
-    NutPppEnable(dev);
-
-    return 0;
 }
 
 /*@}*/

@@ -30,7 +30,7 @@
  * For additional information see http://www.calldirect.com.au/
  * -
  *
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:28:23  haraldkipp
+ * HDLC functions moved to async HDLC driver.
+ *
  * Revision 1.3  2003/08/14 15:15:28  haraldkipp
  * Unsuccessful try to fix ICCAVR bug
  *
@@ -146,24 +149,14 @@ int NutPppOutput(NUTDEVICE * dev, u_short type, u_char * ha, NETBUF * nb)
 #endif
 
     /*
-     * Call the network device output routine.
+     * Call the physical device output routine.
      */
-    if(nif->if_send) {
-        if((*nif->if_send)(((NUTFILE *)(dcb->dcb_fd))->nf_dev, nb)) {
-            NutNetBufFree(nb);
-            return -1;
-        }
+    if (nif->if_send && (*nif->if_send) (((NUTFILE *) (dcb->dcb_fd))->nf_dev, nb) == 0) {
+        return 0;
     }
-
-    /*
-     * Using a simple UART.
-     */
-    else 
-        PPPPutPacket(dev, nb);
-
-    return 0;
+    NutNetBufFree(nb);
+    return -1;
 }
 
 
 /*@}*/
-
