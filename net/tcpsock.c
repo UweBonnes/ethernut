@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/01/28 07:11:38  drsung
+ * Bugfix for ICCAVR
+ *
  * Revision 1.5  2004/01/14 19:34:08  drsung
  * New TCP output buffer handling
  *
@@ -888,7 +891,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
         if (size >= sock->so_devobsz) {
             rc = size % sock->so_devobsz;
             SendBuffer(sock, buffer, size - rc);
-            buffer += size - rc;
+            (u_char*) buffer += size - rc;
         } else
             rc = size;
 
@@ -916,7 +919,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
      */
     sz = sock->so_devobsz - sock->so_devocnt;
     memcpy(sock->so_devobuf + sock->so_devocnt, buffer, sz);
-    buffer += sz;
+    (u_char*) buffer += sz;
     if (SendBuffer(sock, sock->so_devobuf, sock->so_devobsz) < 0) {
         NutHeapFree(sock->so_devobuf);
         sock->so_devocnt = 0;
@@ -931,7 +934,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buffer, int size)
     if (sz >= sock->so_devobsz) {
         rc = sz % sock->so_devobsz;
         SendBuffer(sock, buffer, sz - rc);
-        buffer += sz - rc;
+        (u_char*) buffer += sz - rc;
     } else
         rc = sz;
 
