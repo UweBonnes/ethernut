@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/15 19:31:46  haraldkipp
+ * Ralph Mason's thread termination and reduced stack frame.
+ *
  * Revision 1.3  2003/11/19 12:06:23  drsung
  * CR/LF issue corrected
  *
@@ -106,21 +109,10 @@
  * This is the layout of the stack after a thread's
  * context has been switched-out.
  */
+#ifdef __GNUC__
 typedef struct {
-    u_char csf_r31;
-    u_char csf_r30;
     u_char csf_r29;
     u_char csf_r28;
-    u_char csf_r27;
-    u_char csf_r26;
-    u_char csf_r25;
-    u_char csf_r24;
-    u_char csf_r23;
-    u_char csf_r22;
-    u_char csf_r21;
-    u_char csf_r20;
-    u_char csf_r19;
-    u_char csf_r18;
     u_char csf_r17;
     u_char csf_r16;
     u_char csf_r15;
@@ -137,11 +129,28 @@ typedef struct {
     u_char csf_r4;
     u_char csf_r3;
     u_char csf_r2;
-    u_char csf_r1;
-    u_char csf_r0;
     u_char csf_pchi;
     u_char csf_pclo;
 } SWITCHFRAME;
+#else
+typedef struct {
+    u_char csf_r29;
+    u_char csf_r28;
+    u_char csf_r23;
+    u_char csf_r22;
+    u_char csf_r21;
+    u_char csf_r20;
+    u_char csf_r15;
+    u_char csf_r14;
+    u_char csf_r13;
+    u_char csf_r12;
+    u_char csf_r11;
+    u_char csf_r10;
+    u_char csf_pchi;
+    u_char csf_pclo;
+} SWITCHFRAME;
+#endif
+
 
 /*
  * Thread entry frame layout.
@@ -169,7 +178,15 @@ typedef struct {
  * Pointer to the NUTTHREADINFO structure of the currently
  * running thread.
  */
-NUTTHREADINFO *volatile runningThread = 0;
+NUTTHREADINFO *volatile runningThread;
+
+/*!
+ * \brief Thread to be killed.
+ *
+ * Pointer to the NUTTHREADINFO structure of the latest 
+ * killed thread.
+ */
+NUTTHREADINFO *volatile killedThread;
 
 /*!
  * \brief List of all created threads.
@@ -179,7 +196,7 @@ NUTTHREADINFO *volatile runningThread = 0;
  * least two threads, the main application thread followed
  * by the idle thread.
  */
-NUTTHREADINFO *volatile nutThreadList = 0;
+NUTTHREADINFO *volatile nutThreadList;
 
 /*!
  * \brief List of ready-to-run threads.
@@ -187,7 +204,7 @@ NUTTHREADINFO *volatile nutThreadList = 0;
  * Priority ordered linked list of NUTTHREADINFO structures
  * of all threads which are ready to run.
  */
-NUTTHREADINFO *volatile runQueue = 0;
+NUTTHREADINFO *volatile runQueue;
 
 #ifdef __GNUC__
 /*
@@ -196,13 +213,15 @@ NUTTHREADINFO *volatile runQueue = 0;
 static void NutThreadEntry(void) __attribute__ ((naked));
 static void NutThreadEntry(void)
 {
-    asm volatile ("pop r25" "\n\t"
-                  "pop r24" "\n\t"
-                  "pop __tmp_reg__" "\n\t"
-                  "out %0, __tmp_reg__" "\n\t"
-                  "pop __tmp_reg__" "\n\t"
-                  "out %1, __tmp_reg__" "\n\t"
-                  "pop __zero_reg__" "\n\t" "reti" "\n\t"::"I" _SFR_IO_ADDR(RAMPZ), "I" _SFR_IO_ADDR(SREG)
+    asm volatile ("pop r25" "\n\t"      /* first parameter hi-byte */
+                  "pop r24" "\n\t"      /* first parameter lo-byte */
+                  "pop __tmp_reg__" "\n\t"      /* Get RAMPZ */
+                  "out %0, __tmp_reg__" "\n\t"  /* Restore RAMPZ */
+                  "pop __tmp_reg__" "\n\t"      /* Get SREG */
+                  "out %1, __tmp_reg__" "\n\t"  /* Restore SREG */
+                  "pop __zero_reg__" "\n\t"     /* Zero register */
+                  "reti" "\n\t" /* enables interrupts */
+                  ::"I" _SFR_IO_ADDR(RAMPZ), "I" _SFR_IO_ADDR(SREG)
         );
 }
 #else
@@ -242,9 +261,7 @@ void NutThreadSwitch(void)
     /*
      * Save all CPU registers.
      */
-    asm volatile ("push r0" "\n\t"
-                  "push r1" "\n\t"
-                  "push r2" "\n\t"
+    asm volatile ("push r2" "\n\t"
                   "push r3" "\n\t"
                   "push r4" "\n\t"
                   "push r5" "\n\t"
@@ -260,19 +277,7 @@ void NutThreadSwitch(void)
                   "push r15" "\n\t"
                   "push r16" "\n\t"
                   "push r17" "\n\t"
-                  "push r18" "\n\t"
-                  "push r19" "\n\t"
-                  "push r20" "\n\t"
-                  "push r21" "\n\t"
-                  "push r22" "\n\t"
-                  "push r23" "\n\t"
-                  "push r24" "\n\t"
-                  "push r25" "\n\t"
-                  "push r26" "\n\t"
-                  "push r27" "\n\t"
-                  "push r28" "\n\t"
-                  "push r29" "\n\t"
-                  "push r30" "\n\t" "push r31" "\n\t" "in %A0, %1" "\n\t" "in %B0, %2" "\n\t":"=r" (runningThread->td_sp)
+                  "push r28" "\n\t" "push r29" "\n\t" "in %A0, %1" "\n\t" "in %B0, %2" "\n\t":"=r" (runningThread->td_sp)
                   :"I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
         );
 
@@ -283,27 +288,14 @@ void NutThreadSwitch(void)
     asm volatile (".global thread_start\n" "thread_start:\n\t"::);
 
     /*
-     * Reload CPU registers from the thread in front
-     * of the run queue.
+     * Reload CPU registers from the thread on top of the run queue.
      */
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
     asm volatile ("out %1, %A0" "\n\t"
                   "out %2, %B0" "\n\t"
-                  "pop r31" "\n\t"
-                  "pop r30" "\n\t"
                   "pop r29" "\n\t"
                   "pop r28" "\n\t"
-                  "pop r27" "\n\t"
-                  "pop r26" "\n\t"
-                  "pop r25" "\n\t"
-                  "pop r24" "\n\t"
-                  "pop r23" "\n\t"
-                  "pop r22" "\n\t"
-                  "pop r21" "\n\t"
-                  "pop r20" "\n\t"
-                  "pop r19" "\n\t"
-                  "pop r18" "\n\t"
                   "pop r17" "\n\t"
                   "pop r16" "\n\t"
                   "pop r15" "\n\t"
@@ -318,9 +310,7 @@ void NutThreadSwitch(void)
                   "pop r6" "\n\t"
                   "pop r5" "\n\t"
                   "pop r4" "\n\t"
-                  "pop r3" "\n\t"
-                  "pop r2" "\n\t"
-                  "pop r1" "\n\t" "pop r0" "\n\t"::"r" (runningThread->td_sp), "I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
+                  "pop r3" "\n\t" "pop r2" "\n\t"::"r" (runningThread->td_sp), "I" _SFR_IO_ADDR(SPL), "I" _SFR_IO_ADDR(SPH)
         );
 }
 #else
@@ -333,38 +323,18 @@ void NutThreadSwitch(void)
     register u_char i = 0;
     register u_char j = 0;
 
-    asm("push r0");
-    asm("push r1");
-    asm("push r2");
-    asm("push r3");
-    asm("push r4");
-    asm("push r5");
-    asm("push r6");
-    asm("push r7");
-    asm("push r8");
-    asm("push r9");
     asm("push r10");
     asm("push r11");
     asm("push r12");
     asm("push r13");
     asm("push r14");
     asm("push r15");
-    asm("push r16");
-    asm("push r17");
-    asm("push r18");
-    asm("push r19");
     asm("push r20");
     asm("push r21");
     asm("push r22");
     asm("push r23");
-    asm("push r24");
-    asm("push r25");
-    asm("push r26");
-    asm("push r27");
     asm("push r28");
     asm("push r29");
-    asm("push r30");
-    asm("push r31");
     asm("in %i, $3D");          // SPL
     asm("in %j, $3E");          // SPH        
 
@@ -389,38 +359,18 @@ void NutThreadSwitch(void)
 
     asm("out $3D, %i");         // SPL
     asm("out $3E, %j");         // SPH
-    asm("pop r31");
-    asm("pop r30");
     asm("pop r29");
     asm("pop r28");
-    asm("pop r27");
-    asm("pop r26");
-    asm("pop r25");
-    asm("pop r24");
     asm("pop r23");
     asm("pop r22");
     asm("pop r21");
     asm("pop r20");
-    asm("pop r19");
-    asm("pop r18");
-    asm("pop r17");
-    asm("pop r16");
     asm("pop r15");
     asm("pop r14");
     asm("pop r13");
     asm("pop r12");
     asm("pop r11");
     asm("pop r10");
-    asm("pop r9");
-    asm("pop r8");
-    asm("pop r7");
-    asm("pop r6");
-    asm("pop r5");
-    asm("pop r4");
-    asm("pop r3");
-    asm("pop r2");
-    asm("pop r1");
-    asm("pop r0");
 }
 #endif
 
@@ -596,6 +546,9 @@ void NutThreadYield(void)
  * The priority of newly created threads is set to 64,
  * but may be changed when the thread starts running.
  *
+ * Changing the priority level to 255 will kill the
+ * calling thread.
+ *
  * When another thread with a higher or equal priority
  * is ready to run, the current thread will be stopped
  * and control of the CPU is passed to the other thread.
@@ -604,7 +557,7 @@ void NutThreadYield(void)
  * easy to temporarily switch to another priority and
  * later set back the old one.
  *
- * \param level New priority level.
+ * \param level New priority level or 255 to kill the thread.
  *
  * \return The old priority of this thread.
  */
@@ -612,33 +565,116 @@ u_char NutThreadSetPriority(u_char level)
 {
     u_char last = runningThread->td_priority;
 
+    /* Block interrupts. */
     NutEnterCritical();
+
 #ifdef NUTDEBUG
-    if (__os_trf)
+    if (__os_trf) {
         fprintf(__os_trs, "Pri%u<%04x>", level, (u_int) runningThread);
+    }
 #endif
+
+    /*
+     * Remove the thread from the run queue and re-insert it with a new
+     * priority, if this new priority level is below 255. A priotity of
+     * 255 will kill the thread.
+     */
     NutThreadRemoveQueue(runningThread, &runQueue);
     runningThread->td_priority = level;
-    NutThreadAddPriQueue(runningThread, (NUTTHREADINFO **) & runQueue);
+    if (level < 255) {
+        NutThreadAddPriQueue(runningThread, (NUTTHREADINFO **) & runQueue);
+    } else {
+        NutThreadKill();
+    }
+
 #ifdef NUTDEBUG
-    if (__os_trf)
+    if (__os_trf) {
         NutDumpThreadList(__os_trs);
-    //NutDumpThreadQueue(__os_trs, runQueue);
+        NutDumpThreadQueue(__os_trs, runQueue);
+    }
 #endif
-    if (runningThread == runQueue)
+
+    /*
+     * Are we still on top of the queue? If yes, then change our status
+     * back to running, otherwise do a context switch.
+     */
+    if (runningThread == runQueue) {
         runningThread->td_state = TDS_RUNNING;
-    else {
+    } else {
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
-        if (__os_trf)
+        if (__os_trf) {
             fprintf(__os_trs, "SWC<%04x %04x>", (u_int) runningThread, (u_int) runQueue);
+        }
 #endif
         NutThreadSwitch();
     }
+    /* Release interrupt blocking. */
     NutExitCritical();
 
     return last;
 }
+
+/*!
+ * \brief End the current thread
+ *
+ * Terminates the current thread, in due course the memory associated 
+ * with the thread will be released back to the OS this is done by the 
+ * idle thread.
+ */
+void NutThreadExit(void)
+{
+    NutThreadSetPriority(255);
+}
+
+/*!
+ * \brief Free a thread that was previously killed and release memory 
+ *        back to the OS.
+ *
+ * Called when another thread is killed and by the idle thread.
+ *
+ * Applications generally do not call this function, however you could 
+ * call it to try to reclaim memory.
+ */
+void NutThreadDestroy(void)
+{
+    if (killedThread) {
+        NutHeapFree(killedThread->td_memory);
+        killedThread = 0;
+    }
+}
+
+/*!
+ * \brief Kill the running thread.
+ *
+ * The thread is moved from the schedule que and
+ *
+ * Applications generally do not call this function
+ */
+void NutThreadKill(void)
+{
+
+    NUTTHREADINFO *pCur = nutThreadList;
+    NUTTHREADINFO **pp = (NUTTHREADINFO **) & nutThreadList;
+
+    /* Free up any unfinished already killed threads. */
+    NutThreadDestroy();
+
+    /* Remove from the thread list. */
+    while (pCur) {
+        if (pCur == runningThread) {
+            *pp = pCur->td_next;
+            break;
+        }
+
+        pp = (NUTTHREADINFO **) & pCur->td_next;
+        pCur = pCur->td_next;
+    }
+
+    /* Schedule for cleanup. */
+    killedThread = runningThread;
+}
+
 
 /*!
  * \brief Create a new thread.
