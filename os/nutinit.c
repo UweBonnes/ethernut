@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/12/15 19:30:19  haraldkipp
+ * Thread termination support
+ *
  * Revision 1.3  2003/12/05 22:39:46  drsung
  * New external RAM handling
  *
@@ -111,15 +114,27 @@ void NutInitXRAM(void)
 
 /*! \fn NutIdle(void *arg)
  * \brief Idle thread. 
+ *
+ * After initializing the timers, the idle thread switches to priority 254
+ * and enters an endless loop.
  */
 THREAD(NutIdle, arg)
 {
+    /* Initialize system timers. */
     NutTimerInit();
 
+    /* Create the main application thread. */
     NutThreadCreate("main", main, 0, 768);
-    NutThreadSetPriority(255);
+
+    /*
+     * Run in an idle loop at the lowest priority. We can still
+     * do something useful here, like killing terminated threads
+     * or putting the CPU into sleep mode.
+     */
+    NutThreadSetPriority(254);
     for (;;) {
         NutThreadYield();
+        NutThreadDestroy();
     }
 }
 
