@@ -43,6 +43,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/08/09 21:31:30  freckle
+ * Added include/dev/unix_devs.h changes
+ *
  * Revision 1.5  2004/08/05 12:13:56  freckle
  * Added unix emulation hook in NutThreadYield to safely process
  * NutPostEventAsync calls occuring in non Nut/OS threads.
@@ -88,10 +91,13 @@ extern "C" {
  */
     extern NUTDEVICE devUart0;
     extern NUTDEVICE devUart1;
+    extern NUTDEVICE devUart2;
     extern NUTDEVICE devUsartAvr0;
     extern NUTDEVICE devUsartAvr1;
+    extern NUTDEVICE devUsartAvr2;
     extern NUTDEVICE devDebug0;
     extern NUTDEVICE devDebug1;
+    extern NUTDEVICE devDebug2;
 
 /*!
  * \struct _UNIXDCB unix_d  evs.h dev/unix_devs.h
