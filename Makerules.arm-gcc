@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.3  2004/11/08 21:43:54  drsung
+# Added rule to clean also intermediate files (*.i)
+#
 # Revision 1.2  2004/09/08 10:17:37  haraldkipp
 # Back to the basics
 #
@@ -71,6 +74,7 @@ cleancc:
 	-rm -f $(SRCS:.c=.lst)
 	-rm -f $(SRCS:.c=.lis)
 	-rm -f $(SRCS:.c=.s)
+	-rm -f $(SRCS:.c=.i)
 
 .PHONY: cleanedit
 cleanedit:
