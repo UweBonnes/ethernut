@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/09/07 19:18:11  haraldkipp
+ * Trying to get additional .S and .c targets assembled/compiled.
+ * ETHERNUT2 default for newly created UserConf.mk.
+ *
  * Revision 1.6  2004/08/18 16:06:03  haraldkipp
  * Use consistent directory structure
  *
@@ -853,140 +857,6 @@ int RefreshComponents(NUTCOMPONENT *root)
     return -1;
 }
 
-/*!
- * \brief Add the source file list to the Makefile.
- *
- * \param fp      Pointer to an opened file.
- * \param compo   Pointer to a library component.
- * \param sub_dir Component's subdirectory.
- *
- * \return Number of explicit target files.
- */
-int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
-{
-    int rc = 0;
-    int i;
-    int k;
-    int c = 8;
-    NUTCOMPONENT *cop = compo;
-
-    fprintf(fp, "SRCS =\t");
-    while (cop) {
-        if(cop->nc_enabled && cop->nc_sources) {
-            for (i = 0; cop->nc_sources[i]; i++) {
-                if(strchr(cop->nc_sources[i], '/')) {
-                    char path[255];
-                    sprintf(path, "%s/%s", sub_dir, cop->nc_sources[i]);
-                    CreateDirectoryPath(path);
-                }
-
-                /* Check if this source results in an explicit target. */
-                if(cop->nc_targets && cop->nc_targets[i]) {
-                    rc++;
-                }
-                else {
-                    c += strlen(cop->nc_sources[i]);
-                    if (c > 72) {
-                        fprintf(fp, " \\\n\t");
-                        c = 8;
-                    }
-                    fprintf(fp, " %s", cop->nc_sources[i]);
-                }
-            }
-        }
-        cop = cop->nc_nxt;
-    }
-    fputc('\n', fp);
-
-    for(k = 0; k < rc; k++) {
-        fprintf(fp, "SRC%d =\t", k + 1);
-        c = 8;
-        cop = compo;
-        while (cop) {
-            if(cop->nc_enabled && cop->nc_sources) {
-                for (i = 0; cop->nc_sources[i]; i++) {
-                    if(cop->nc_targets && cop->nc_targets[i]) {
-                        c += strlen(cop->nc_sources[i]);
-                        if (c > 72) {
-                            fprintf(fp, " \\\n\t");
-                            c = 8;
-                        }
-                        fprintf(fp, " %s", cop->nc_sources[i]);
-                    }
-                }
-            }
-            cop = cop->nc_nxt;
-        }
-        fputc('\n', fp);
-    }
-    fputc('\n', fp);
-
-    return rc;
-}
-
-/*!
- * \brief Add the configured lines to the Makefile.
- *
- * \param fp Pointer to an opened file.
- * \param compo Pointer to a library component.
- *
- * \todo This is not yet finished. All 'name=value' pairs should 
- *       be collected and combined.
- */
-void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
-{
-    NUTCOMPONENTOPTION *opts;
-    int i;
-
-    while (compo) {
-        if(compo->nc_enabled && compo->nc_makedefs) {
-            for (i = 0; compo->nc_makedefs[i]; i++) {
-                fprintf(fp, "%s\n", compo->nc_makedefs[i]);
-            }
-        }
-        opts = compo->nc_opts;
-        while (opts) {
-            if (opts->nco_enabled && opts->nco_active && opts->nco_makedefs) {
-                for (i = 0; opts->nco_makedefs[i]; i++) {
-                    fprintf(fp, "%s\n", opts->nco_makedefs[i]);
-                }
-            }
-            opts = opts->nco_nxt;
-        }
-        if (compo->nc_child) {
-            WriteMakedefLines(fp, compo->nc_child);
-        }
-        compo = compo->nc_nxt;
-    }
-}
-
-/*!
- * \brief Add target to the Makefile in the top build directory.
- *
- * \param fp     Pointer to an opened file.
- * \param compo  Pointer to the first child of the root component.
- * \param target Makefile target, set to NULL for 'all'.
- */
-void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
-{
-    if (target) {
-        fprintf(fp, "%s:\n", target);
-    } else {
-        fprintf(fp, "all:\n");
-    }
-    while (compo) {
-        if (compo->nc_subdir) {
-            fprintf(fp, "\t$(MAKE) -C %s", compo->nc_subdir);
-            if (target) {
-                fprintf(fp, " %s", target);
-            }
-            fputc('\n', fp);
-        }
-        compo = compo->nc_nxt;
-    }
-    fprintf(fp, "\n");
-}
-
 /*
  * \brief Creates the complete directory path to a given pathname of a file.
  *
@@ -1037,6 +907,148 @@ static int CreateDirectoryPath(const char *path)
         }
     }
     return 0;
+}
+
+/*!
+ * \brief Add the source file list to the Makefile.
+ *
+ * \param fp      Pointer to an opened file.
+ * \param compo   Pointer to a library component.
+ * \param sub_dir Component's subdirectory.
+ *
+ * \return Number of explicit target files.
+ */
+int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
+{
+    int rc = 0;
+    int i;
+    int k;
+    int c = 8;
+    NUTCOMPONENT *cop = compo;
+
+    fprintf(fp, "SRCS =\t");
+    while (cop) {
+        if(cop->nc_enabled && cop->nc_sources) {
+            for (i = 0; cop->nc_sources[i]; i++) {
+                if(strchr(cop->nc_sources[i], '/')) {
+                    char path[255];
+                    sprintf(path, "%s/%s", sub_dir, cop->nc_sources[i]);
+                    CreateDirectoryPath(path);
+                }
+
+                /* Check if this source results in an explicit target. */
+                if(cop->nc_targets && cop->nc_targets[i]) {
+                    rc++;
+                }
+                else {
+                    c += strlen(cop->nc_sources[i]);
+                    if (c > 72) {
+                        fprintf(fp, " \\\n\t");
+                        c = 8;
+                    }
+                    fprintf(fp, " %s", cop->nc_sources[i]);
+                }
+            }
+        }
+        cop = cop->nc_nxt;
+    }
+    fputc('\n', fp);
+
+    for(k = 0; k < rc; k++) {
+        //fprintf(fp, "SRC%d =\t", k + 1);
+        fprintf(fp, "OBJ%d =\t", k + 1);
+        c = 8;
+        cop = compo;
+        while (cop) {
+            if(cop->nc_enabled && cop->nc_sources) {
+                for (i = 0; cop->nc_sources[i]; i++) {
+                    if(cop->nc_targets && cop->nc_targets[i]) {
+                        c += strlen(cop->nc_sources[i]);
+                        if (c > 72) {
+                            fprintf(fp, " \\\n\t");
+                            c = 8;
+                        }
+                        //fprintf(fp, " %s", cop->nc_sources[i]);
+                        fprintf(fp, " %s", cop->nc_targets[i]);
+                    }
+                }
+            }
+            cop = cop->nc_nxt;
+        }
+        fputc('\n', fp);
+    }
+    fputc('\n', fp);
+
+    return rc;
+}
+
+/*!
+ * \brief Add the configured lines to the Makefile.
+ *
+ * \param fp Pointer to an opened file.
+ * \param compo Pointer to a library component.
+ *
+ * \todo This is not yet finished. All 'name=value' pairs should 
+ *       be collected and combined.
+ */
+void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
+{
+    NUTCOMPONENTOPTION *opts;
+    int i;
+
+    while (compo) {
+        if(compo->nc_enabled && compo->nc_makedefs) {
+            for (i = 0; compo->nc_makedefs[i]; i++) {
+                fprintf(fp, "%s\n", compo->nc_makedefs[i]);
+            }
+        }
+        opts = compo->nc_opts;
+        while (opts) {
+            if (opts->nco_enabled && opts->nco_active && opts->nco_makedefs) {
+                for (i = 0; opts->nco_makedefs[i]; i++) {
+                    fprintf(fp, "%s", opts->nco_makedefs[i]);
+                    if(strchr(opts->nco_makedefs[i], '=')) {
+                        fputc('\n', fp);
+                    }
+                    else {
+                        fprintf(fp, "=%s\n", opts->nco_value);
+                    }
+                }
+            }
+            opts = opts->nco_nxt;
+        }
+        if (compo->nc_child) {
+            WriteMakedefLines(fp, compo->nc_child);
+        }
+        compo = compo->nc_nxt;
+    }
+}
+
+/*!
+ * \brief Add target to the Makefile in the top build directory.
+ *
+ * \param fp     Pointer to an opened file.
+ * \param compo  Pointer to the first child of the root component.
+ * \param target Makefile target, set to NULL for 'all'.
+ */
+void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
+{
+    if (target) {
+        fprintf(fp, "%s:\n", target);
+    } else {
+        fprintf(fp, "all:\n");
+    }
+    while (compo) {
+        if (compo->nc_subdir) {
+            fprintf(fp, "\t$(MAKE) -C %s", compo->nc_subdir);
+            if (target) {
+                fprintf(fp, " %s", target);
+            }
+            fputc('\n', fp);
+        }
+        compo = compo->nc_nxt;
+    }
+    fprintf(fp, "\n");
 }
 
 /*!
@@ -1136,9 +1148,9 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                     targets = WriteMakeSources(fp, compo->nc_child, path);
 
                     fprintf(fp, "OBJS = $(SRCS:.c=.o)\n");
-                    for(i = 0; i < targets; i++) {
-                        fprintf(fp, "OBJ%d = $(SRC%d:.c=.o)\n", i + 1, i + 1);
-                    }
+                    //for(i = 0; i < targets; i++) {
+                    //    fprintf(fp, "OBJ%d = $(SRC%d:.c=.o)\n", i + 1, i + 1);
+                    //}
                     fprintf(fp, "include $(top_blddir)/NutConf.mk\n\n", mak_ext);
                     fprintf(fp, "include $(top_srcdir)/Makedefs.%s\n\n", mak_ext);
 
@@ -1158,20 +1170,27 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                     fprintf(fp, "\n\n");
 
                     if(ins_dir && *ins_dir) {
+                        /* Sigh! What a crap! But the bloody create requires a file. */
+                        sprintf(path, "%s/read.me", ins_dir);
+                        CreateDirectoryPath(path);
+
                         fprintf(fp, "install: $(PROJ).a");
                         for(i = 0; i < targets; i++) {
                             fprintf(fp, " $(OBJ%d)", i + 1);
                         }
                         fprintf(fp, "\n\t$(CP) $(PROJ).a %s/$(PROJ).a\n", ins_dir);
                         for(i = 0; i < targets; i++) {
-                            fprintf(fp, "\t$(CP) $(OBJ%d) %s/$(OBJ%d)\n", i + 1, ins_dir, i + 1);
+                            fprintf(fp, "\t$(CP) $(OBJ%d) %s/$(notdir $(OBJ%d))\n", i + 1, ins_dir, i + 1);
                         }
                     }
                     fprintf(fp, "\ninclude $(top_srcdir)/Makerules.%s\n\n", mak_ext);
 
                     fprintf(fp, ".PHONY: clean\n");
                     fprintf(fp, "clean: cleancc cleanedit\n");
-                    fprintf(fp, "\t-rm -f $(PROJ).a\n\n");
+                    fprintf(fp, "\t-rm -f $(PROJ).a\n");
+                    for(i = 0; i < targets; i++) {
+                        fprintf(fp, "\t-rm -f $(OBJ%d)\n", i + 1);
+                    }
 
                     fclose(fp);
                 }
@@ -1371,6 +1390,7 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
 {
     FILE *fp;
     char path[255];
+    char *cp;
     struct tm *ltime;
     time_t now;
 
@@ -1396,6 +1416,7 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
             if (fp) {
                 fprintf(fp, "# Automatically created on %s", asctime(ltime));
                 fprintf(fp, "#\n# You can use this file to modify values in NutConf.mk\n#\n\n");
+                fprintf(fp, "HWDEF += -DETHERNUT2\n\n");
                 fclose(fp);
             }
         }
@@ -1407,7 +1428,11 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
             fprintf(fp, "top_srcdir = %s\n", src_dir);
             fprintf(fp, "top_appdir = %s\n", app_dir);
             fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
-
+            strcpy(path, lib_dir);
+            if((cp = strrchr(path, '/')) != NULL && strcmp(cp, "/lib") == 0) {
+                *cp = '\0';
+                fprintf(fp, "INCFIRST=$(INCPRE)%s/include\n", path);
+            }
             fprintf(fp, "include $(top_appdir)/NutConf.mk\n");
             fprintf(fp, "include $(top_srcdir)/app/Makedefs.%s\n", mak_ext);
             fprintf(fp, "include $(top_srcdir)/app/Makeburn.%s\n\n", prg_ext);
