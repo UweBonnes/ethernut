@@ -1,5 +1,26 @@
-$Id: ChangeLog,v 1.90 2004/07/27 19:44:25 drsung Exp $
+$Id: ChangeLog,v 1.91 2004/07/30 19:58:03 drsung Exp $
 
+2004-07-30  Oliver Schulz  <olischulz@web.de>
+
+    * include/io.h: First proposal to define some global ioctl commands.
+
+    * crt/filelength.c:  filelength implemented for VIRTUALDEVICEs using the new 
+    global ioctl command IOCTL_GETFILESIZE.
+    
+    * include/netinet/tcp_fsm.h: Added a comment and changed the prototype of 
+    NutTcpStateRetranTimeout.
+    
+    * include/netinet/tcputil.h: Added prototype of new function NutTcpCalcRtt.
+    
+    * pro/httpd.c: Slightly improved handling if socket was closed by peer.
+    
+    * include/sys/socket.h, include/sys/sock_var.h, net/tcpsock.c, net/tcpout.c, 
+    net/tcpsm.c, net/tcputil.c: Some code of TCP stack redesigned. Round trip 
+    time calculation is now supported. Fixed several bugs in TCP state machine. 
+    Now TCP connections should be more reliable under heavy traffic or poor 
+    physical connections.
+
+    
 2004-07-27  Oliver Schulz  <olischulz@web.de>
 
     * crt/strtok_r.c, include/strtok_r.h: Implementation of strtok_r adjusted to 
