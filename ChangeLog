@@ -1,6 +1,9 @@
-$Id: ChangeLog,v 1.103 2004/08/18 16:48:12 haraldkipp Exp $
+$Id: ChangeLog,v 1.104 2004/08/18 18:51:41 haraldkipp Exp $
 
 2004-08-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/bankmem.c, include/sys/bankmem.h, include/cfg/bankmem.h:
+	Made banked memory configurable.
 
 	* crt/putf.c: Compile error on non-Harvard architecture fixed.
 

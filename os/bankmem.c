@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2004/08/18 18:51:56  haraldkipp
+ * Made banked memory configurable.
+ *
  * Revision 1.1  2003/07/21 18:19:48  haraldkipp
  * First check in
  *
@@ -93,8 +96,8 @@ char *NutSegBufInit(size_t size)
 {
 
 #if NUTBANK_COUNT
-    segbuf_start = NUTBANK_START;
-    segbuf_end = NUTBANK_START + NUTBANK_SIZE;
+    segbuf_start = (char *)(NUTBANK_START);
+    segbuf_end = (char *)(NUTBANK_START) + NUTBANK_SIZE;
     segbuf_total = (u_long) NUTBANK_COUNT *(u_long) NUTBANK_SIZE;
 #else
     if (size == 0)

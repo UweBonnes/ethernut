@@ -1,8 +1,8 @@
-#ifndef _SYS_BANKMEM_H_
-#define _SYS_BANKMEM_H_
+#ifndef _CFG_BANKMEM_H_
+#define _CFG_BANKMEM_H_
 
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,42 +36,52 @@
 
 /*!
  * $Log$
- * Revision 1.3  2004/08/18 18:51:41  haraldkipp
+ * Revision 1.1  2004/08/18 18:51:41  haraldkipp
  * Made banked memory configurable.
  *
- * Revision 1.2  2003/12/15 19:27:53  haraldkipp
- * Ethernut 2 support added
- *
- * Revision 1.1  2003/07/21 18:21:34  haraldkipp
- * First check in
- *
  */
-
-#include <sys/types.h>
-#include <cfg/bankmem.h>
 
 /*!
- * \file sys/bankmem.h
- * \brief Banked memory management definitions.
+ * \file cfg/bankmem.h
+ * \brief Banked memory default configuration.
+ *
+ * Values can be changed by the configurator.
  */
 
-
-#ifndef NutSegBufEnable
-#define NutSegBufEnable(bank) *((char *)(NUTBANK_SR) + (bank)) = (bank);
+#ifndef NUTBANK_COUNT
+/*!
+ * \brief Number of memory banks.
+ *
+ * For systems without banked memory this is set to zero.
+ * Ethernut 2 has 30 memory banks.
+ */
+#define NUTBANK_COUNT   0
 #endif
 
-__BEGIN_DECLS
-/* Prototypes */
-extern char *NutSegBufReset(void);
-extern char *NutSegBufInit(size_t size);
-extern char *NutSegBufWriteRequest(size_t * bcp);
-extern char *NutSegBufReadRequest(size_t * bcp);
-extern char *NutSegBufWriteCommit(u_short bc);
-extern char *NutSegBufReadCommit(size_t bc);
-extern void NutSegBufWriteLast(u_short bc);
-extern void NutSegBufReadLast(u_short bc);
-extern u_long NutSegBufAvailable(void);
-extern u_long NutSegBufUsed(void);
-/* */
-__END_DECLS
+#ifndef NUTBANK_START
+/*!
+ * \brief Start address of memory banks.
+ *
+ * For systems without banked memory this is ignored.
+ */
+#define NUTBANK_START   0x8000
 #endif
+
+#ifndef NUTBANK_SIZE
+/*!
+ * \brief Size of a single memory bank.
+ *
+ * For systems without banked memory this is ignored.
+ */
+#define NUTBANK_SIZE    0x4000
+#endif
+
+#ifndef NUTBANK_SR
+/*!
+ * \brief Address of the bank select register.
+ *
+ * For systems without banked memory this is ignored.
+ */
+#define NUTBANK_SR      0xFF00
+#endif
+
