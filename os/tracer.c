@@ -110,15 +110,7 @@ char* mode_string[TRACE_MODE_LAST+1] = {
 	"ONESHOT"
 };
 
-char* user_string[] = {
-	"my first event",
-	"my second event"
-	// here you can modify/extend your event names, create events using
-	//                 TRACE_ADD_ITEM(TRACE_TAG_USER,<int>)
-	// where <int> is the number of your event, e.g. <int>=0 for "my first event"
-	// WARNING: Do not use numbers for which no user_string is defined, otherwise
-	// unpredictable behaviour results when printing the trace buffer!
-};
+char* user_string[TRACE_MAX_USER];
 	
 /************************************************/
 /* function definitions */
@@ -161,11 +153,11 @@ int NutTraceInit(int size, char mode)
 		}
 	}
 	
-	if (mode == TRACE_MODE_OFF) {
-		// if terminal-cmd "trace size <val>" is called trace is started in
-		// default mode
-		mode = TRACE_MODE_DEFAULT;
-	}
+//	if (mode == TRACE_MODE_OFF) {
+//		// if terminal-cmd "trace size <val>" is called trace is started in
+//		// default mode
+//		mode = TRACE_MODE_DEFAULT;
+//	}
 	trace_mode   = mode;
 	NutTraceClear();	
 	return trace_size;		
@@ -352,4 +344,13 @@ void NutTraceMaskPrint(void)
 		else
 			printf("OFF\n");
 	}					
+}
+
+int NutTraceRegisterUserTag(int tag, char* tag_string)
+{
+	if (tag >= TRACE_MAX_USER)
+		return -1;
+		
+	user_string[tag] = tag_string;
+	return tag;		
 }

@@ -87,6 +87,8 @@
 #define TRACE_TAG_USER             10
 #define TRACE_TAG_LAST             10
 
+#define TRACE_MAX_USER             10
+
 #define TRACE_INT_FIRST             0
 #define TRACE_INT_UART0_CTS         0
 #define TRACE_INT_UART0_RXCOMPL     1
@@ -251,8 +253,16 @@ extern void NutTraceMaskSet(int tag);
  * Prints current status of tracing facility
  */
 extern void NutTraceStatusPrint(void);
-
-
+/*******************************************************************************
+ * NutTraceRegisterUserTag
+ ******************************************************************************/
+/**
+ * Registers a user event type
+ * 
+ * @param tag of the new event type (e.g. #define TRACE_USER_SEND 0)
+ * @param tag_string name of the event type used when printing the trace buffer
+ */
+extern int NutTraceRegisterUserTag(int tag, char* tag_string);
 /**
  * Macro to insert an event in the trace buffer
  * 
