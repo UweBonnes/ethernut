@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef SCROLLEDTREE_H_
+#define SCROLLEDTREE_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,45 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
+#include <wx/treectrl.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+class CScrolledTreeCtrl:public wxTreeCtrl {
+    DECLARE_CLASS(CScrolledTreeCtrl)
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CScrolledTreeCtrl(wxWindow * parent, wxWindowID id = -1, const wxPoint & pt = wxDefaultPosition,
+                      const wxSize & sz = wxDefaultSize, long style = wxTR_HAS_BUTTONS);
+    ~CScrolledTreeCtrl();
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    void OnSize(wxSizeEvent & event);
+    void OnExpand(wxTreeEvent & event);
+    void OnScroll(wxScrollWinEvent & event);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    virtual void SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY,
+                               int noUnitsX, int noUnitsY, int xPos = 0, int yPos = 0, bool noRefresh = FALSE);
+    virtual void GetViewStart(int *x, int *y) const;
+    virtual void PrepareDC(wxDC & dc);
+    virtual int GetScrollPos(int orient) const;
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    void SetCompanionWindow(wxWindow * companion);
+
+     DECLARE_EVENT_TABLE()
+  protected:
+    void AdjustRemoteScrollbars();
+    wxScrolledWindow *GetScrolledWindow() const;
+    void HideVScrollbar();
+    void ScrollToLine(int posHoriz, int posVert);
+    wxWindow *GetCompanionWindow() const;
+    void CalcTreeSize(wxRect & rect);
+    void CalcTreeSize(const wxTreeItemId & id, wxRect & rect);
+
+    wxWindow *m_companionWindow;
 };
 
-
-DECLARE_APP(NutConfApp);
 
 #endif

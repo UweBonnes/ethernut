@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef NUTCONFHINT_H_
+#define NUTCONFHINT_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,36 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
+#include <wx/treectrl.h>
+#include <wx/docview.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+
+#define nutNoHint                0
+#define nutAllSaved              1
+#define nutNameFormatChanged     2
+#define nutIntFormatChanged      3
+#define nutClear                 4
+#define nutValueChanged          5
+#define nutExternallyChanged     6
+#define nutSelChanged            7
+#define nutFilenameChanged       8
+#define nutMemLayoutChanged      9
+
+class CConfigItem;
+
+class CNutConfHint:public wxObject {
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CNutConfHint(CConfigItem * item, int op);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
-
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
-
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    CConfigItem *m_item;
+    int m_op;
 };
 
-
-DECLARE_APP(NutConfApp);
 
 #endif

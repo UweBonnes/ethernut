@@ -1,6 +1,3 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,35 +38,29 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * $Log: conflictlist.cpp,v $
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include "ids.h"
+#include "conflictlist.h"
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
-  public:
-     virtual bool OnInit();
-    virtual int OnExit();
+IMPLEMENT_CLASS(CConflictList, wxListCtrl);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+CConflictList::CConflictList(wxWindow * parent, wxWindowID id, const wxPoint & pt, const wxSize & sz, long style):
+wxListCtrl(parent, id, pt, sz, style)
+{
+    InsertColumn(0, "Item", wxLIST_FORMAT_LEFT, 200);
+    InsertColumn(1, "Conflict", wxLIST_FORMAT_LEFT, 80);
+    InsertColumn(2, "Property", wxLIST_FORMAT_LEFT, 200);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    m_contextMenu = new wxMenu;
+    m_contextMenu->Append(ID_WHATS_THIS, wxT("&What's This?"));
+}
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
-};
-
-
-DECLARE_APP(NutConfApp);
-
-#endif
+CConflictList::~CConflictList()
+{
+    delete m_contextMenu;
+}

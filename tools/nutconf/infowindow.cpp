@@ -1,6 +1,3 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,35 +38,44 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * $Log: infowindow.cpp,v $
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include "ids.h"
+#include "nutconf.h"
+#include "infowindow.h"
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
-  public:
-     virtual bool OnInit();
-    virtual int OnExit();
+IMPLEMENT_CLASS(CInfoWindow, wxTextCtrl)
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    BEGIN_EVENT_TABLE(CInfoWindow, wxTextCtrl)
+    EVT_MOUSE_EVENTS(CInfoWindow::OnMouseEvent)
+    END_EVENT_TABLE();
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+CInfoWindow::CInfoWindow(wxWindow * parent, wxWindowID id, const wxPoint & pt, const wxSize & sz, long style)
+: wxTextCtrl(parent, id, wxEmptyString, pt, sz, style)
+{
+    m_propertiesMenu = new wxMenu;
+    m_propertiesMenu->Append(ID_WHATS_THIS, wxT("&What's This?"));
+}
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
-};
+CInfoWindow::~CInfoWindow()
+{
+    delete m_propertiesMenu;
+}
 
+void CInfoWindow::OnMouseEvent(wxMouseEvent & event)
+{
+    if (event.RightDown()) {
+        PopupMenu(GetPropertiesMenu(), event.GetX(), event.GetY());
+    } else {
+        event.Skip();
+    }
+}
 
-DECLARE_APP(NutConfApp);
-
-#endif
+wxMenu *CInfoWindow::GetPropertiesMenu() const
+{
+    return m_propertiesMenu;
+}

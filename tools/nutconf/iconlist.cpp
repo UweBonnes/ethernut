@@ -1,6 +1,3 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,35 +38,72 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * $Log: iconlist.cpp,v $
+ * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
-
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
-  public:
-     virtual bool OnInit();
-    virtual int OnExit();
-
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
-
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
-
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
-};
+#include "iconlist.h"
 
 
-DECLARE_APP(NutConfApp);
+/*
+ * List of icon states.
+ */
+CIconList::CIconList(wxImageList * imageList)
+{
+    m_imageList = imageList;
+    DeleteContents(TRUE);
+}
 
-#endif
+bool CIconList::AddInfo(const wxString & name, const wxIcon & icon, int state, bool enabled)
+{
+    wxASSERT(m_imageList != NULL);
+
+    CIconInfo *info = FindInfo(name);
+    if (!info) {
+        info = new CIconInfo(name);
+        Append(info);
+    }
+    info->SetIconId(state, enabled, m_imageList->Add(icon));
+    return TRUE;
+}
+
+CIconInfo *CIconList::FindInfo(const wxString & name) const
+{
+    wxNode *node = First();
+    while (node) {
+        CIconInfo *info = (CIconInfo *) node->Data();
+        if (info->GetName() == name)
+            return info;
+        node = node->Next();
+    }
+    return NULL;
+}
+
+int CIconList::GetIconId(const wxString & name, int state, bool enabled) const
+{
+    CIconInfo *info = FindInfo(name);
+    if (!info)
+        return -1;
+    return info->GetIconId(state, enabled);
+}
+
+bool CIconList::SetIconId(const wxString & name, int state, bool enabled, int iconId)
+{
+    CIconInfo *info = FindInfo(name);
+    if (!info)
+        return FALSE;
+    info->SetIconId(state, enabled, iconId);
+    return TRUE;
+}
+
+void CIconList::SetImageList(wxImageList * imageList)
+{
+    m_imageList = imageList;
+}
+
+wxImageList *CIconList::GetImageList() const
+{
+    return m_imageList;
+}

@@ -1,6 +1,3 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,35 +38,32 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * $Log: treeitemdata.cpp,v $
+ * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include "treeitemdata.h"
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
-  public:
-     virtual bool OnInit();
-    virtual int OnExit();
+CTreeItemData::CTreeItemData(CConfigItem * item)
+:  m_configItem(item)
+{
+}
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+CTreeItemData::~CTreeItemData()
+{
+    if (m_configItem) {
+        delete m_configItem;
+    }
+}
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+CConfigItem *CTreeItemData::GetConfigItem() const
+{
+    return m_configItem;
+}
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
-};
-
-
-DECLARE_APP(NutConfApp);
-
-#endif
+void CTreeItemData::SetConfigItem(CConfigItem * item)
+{
+    m_configItem = item;
+}

@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef VALUEWINDOW_H_
+#define VALUEWINDOW_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,39 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include "treecomp.h"
+#include "configitem.h"
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+class CValueWindow:public CTreeCompWindow {
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CValueWindow(wxWindow * parent, wxWindowID id = -1, const wxPoint & pos = wxDefaultPosition,
+                 const wxSize & sz = wxDefaultSize, long style = 0);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    virtual void DrawItem(wxDC & dc, wxTreeItemId id, const wxRect & rect);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    void OnPaint(wxPaintEvent & event);
+    void OnMouseEvent(wxMouseEvent & event);
+    void OnScroll(wxScrollWinEvent & event);
+    void OnExpand(wxTreeEvent & event);
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    wxWindow *GetEditWindow() const;
+
+    bool BeginEditing(CConfigItem * item);
+    bool EndEditing();
+    void PositionEditWindow();
+    wxRect GetItemRect(CConfigItem * item);
+
+  protected:
+    wxWindow * m_editWindow;
+    CConfigItem *m_configItem;
+
+    DECLARE_EVENT_TABLE();
+    DECLARE_CLASS(CValueWindow);
 };
-
-
-DECLARE_APP(NutConfApp);
 
 #endif

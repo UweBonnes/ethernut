@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef NUTCONFDOC_H_
+#define NUTCONFDOC_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,54 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
+#include <wx/docview.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+#include "nutconfview.h"
+#include "configitem.h"
+
+#include "nutcomponent.h"
+
+class CNutConfDoc:public wxDocument {
+    DECLARE_DYNAMIC_CLASS(CNutConfDoc)
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CNutConfDoc();
+    ~CNutConfDoc();
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    virtual bool OnCreate(const wxString & path, long flags);
+    virtual bool OnOpenDocument(const wxString & filename);
+    virtual bool OnNewDocument();
+    virtual bool OnCloseDocument();
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    bool OpenRepository(const wxString & pszRepository = wxEmptyString);
+    void CloseRepository();
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    void DeleteItems();
+    void AddAllItems();
+    void AddChildItems(NUTCOMPONENT * compo, wxTreeItemId parent);
+
+     wxList & GetItems();
+    CConfigItem *GetItem(size_t i);
+
+    bool SetValue(CConfigItem & ti, long nValue);
+    bool SetValue(CConfigItem & ti, const wxString & strValue);
+    bool SetEnabled(CConfigItem & ti, bool bEnabled);
+
+    wxString GetBuildTree();
+    bool GenerateBuildTree();
+
+    bool IsOptionActive(char *name);
+
+  protected:
+     bool m_bRepositoryOpen;
+    NUTCOMPONENT *m_root;
+    wxList m_items;
+    NUTCOMPONENTOPTION *FindOption(NUTCOMPONENT * compo, char *name);
 };
-
-
-DECLARE_APP(NutConfApp);
 
 #endif

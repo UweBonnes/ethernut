@@ -1,6 +1,3 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,35 +38,36 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * $Log: iconinfo.cpp,v $
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include "iconinfo.h"
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
-  public:
-     virtual bool OnInit();
-    virtual int OnExit();
+CIconInfo::CIconInfo(const wxString & name)
+{
+    m_name = name;
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    for (int i = 0; i < wxMAX_ICON_STATES; i++)
+        m_states[i] = 0;
+}
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+int CIconInfo::GetIconId(int state, bool enabled) const
+{
+    wxASSERT(state < (wxMAX_ICON_STATES * 2));
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
-};
+    return m_states[state * 2 + (enabled ? 0 : 1)];
+}
 
+void CIconInfo::SetIconId(int state, bool enabled, int iconId)
+{
+    wxASSERT(state < (wxMAX_ICON_STATES * 2));
+    m_states[state * 2 + (enabled ? 0 : 1)] = iconId;
+}
 
-DECLARE_APP(NutConfApp);
-
-#endif
+const wxString & CIconInfo::GetName() const
+{
+    return m_name;
+}

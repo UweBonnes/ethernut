@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef ICONINFO_H_
+#define ICONINFO_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,27 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+#define wxMAX_ICON_STATES   4
+
+class CIconInfo:public wxObject {
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CIconInfo(const wxString & name);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    int GetIconId(int state, bool enabled = TRUE) const;
+    void SetIconId(int state, bool enabled, int iconId);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    const wxString & GetName() const;
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+  protected:
+    int m_states[wxMAX_ICON_STATES * 2];
+    wxString m_name;
 };
-
-
-DECLARE_APP(NutConfApp);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef NUTCONFVIEW_H_
+#define NUTCONFVIEW_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,36 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
+#include <wx/treectrl.h>
+#include <wx/docview.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+class CConfigItem;
+class CNutConfView:public wxView {
+    DECLARE_DYNAMIC_CLASS(CNutConfView);
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CNutConfView();
+    ~CNutConfView() {
+    };
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    bool OnCreate(wxDocument * doc, long flags);
+    void OnDraw(wxDC * dc);
+    void OnUpdate(wxView * sender, wxObject * hint = (wxObject *) NULL);
+    bool OnClose(bool deleteWindow = true);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    void Refresh(const wxString & macroName);
+    void Refresh(wxTreeItemId h);
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    DECLARE_EVENT_TABLE();
+
+  protected:
+    wxTreeItemId m_expandedForFind;
 };
 
-
-DECLARE_APP(NutConfApp);
 
 #endif

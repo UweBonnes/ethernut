@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef PROPERTYLIST_H_
+#define PROPERTYLIST_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,48 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
+#include <wx/listctrl.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+#include "configitem.h"
+
+class CPropertyList:public wxListCtrl {
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    enum nutFieldType {
+        nutType,
+        nutValue,
+        nutDefaultValue,
+        nutMacro,
+        nutFile,
+        nutEnabled,
+        nutMAXFIELDTYPE
+    };
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+     CPropertyList(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & size, long style);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    void OnRightClick(wxMouseEvent & event);
+    void OnDoubleClick(wxMouseEvent & event);
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    int SetItem(nutFieldType f, const wxString & value);
+    int SetItem(const wxString & item, const wxString & value, int nInsertAs, int nRepeat = 1);
+
+    void Fill(CConfigItem * pti);
+    void AddColumns();
+
+  private:
+     DECLARE_EVENT_TABLE()
+     DECLARE_CLASS(CPropertyList)
+
+    int m_nFirstProperty;
+    CConfigItem *m_pti;
+
+    static const wxChar *sm_fieldTypeImage[nutMAXFIELDTYPE];
 };
 
-
-DECLARE_APP(NutConfApp);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef MAINFRAME_H_
+#define MAINFRAME_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,70 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
+#include <wx/laywin.h>
+#include <wx/splitter.h>
+#include <wx/docview.h>
+#include <wx/docmdi.h>
+#include <wx/treectrl.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+#include "configtree.h"
+#include "conflictlist.h"
+#include "valuewindow.h"
+#include "splitscroll.h"
+#include "infowindow.h"
+#include "propertylist.h"
+
+#if !wxUSE_DOC_VIEW_ARCHITECTURE
+#error You must set wxUSE_DOC_VIEW_ARCHITECTURE to 1 in setup.h!
+#endif
+
+class CMainFrame:public wxDocParentFrame {
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CMainFrame(wxDocManager * manager, const wxString & title);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    void OnSize(wxSizeEvent & event);
+    void OnSashDrag(wxSashEvent & event);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    wxTextCtrl *GetOutputWindow() const;
+    CConfigTree *GetTreeCtrl() const;
+    CValueWindow *GetValueWindow() const;
+    CInfoWindow *GetShortDescriptionWindow() const;
+    CPropertyList *GetPropertyListWindow() const;
+    CConflictList *GetConflictsWindow() const;
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    /* ---------- Menu Event Handlers ---------- */
+    void OnQuit(wxCommandEvent & event);
+    void OnGenerateBuildTree(wxCommandEvent & event);
+
+  protected:
+    void CreateNutMenuBar();
+    void CreateNutToolBar();
+    void CreateNutStatusBar();
+    void CreateNutWindows();
+
+  protected:
+     wxSashLayoutWindow * m_outputSashWindow;
+    wxSashLayoutWindow *m_configSashWindow;
+    wxSashLayoutWindow *m_conflictsSashWindow;
+    wxSashLayoutWindow *m_propertiesSashWindow;
+    wxSashLayoutWindow *m_shortDescrSashWindow;
+    wxTextCtrl *m_outputWindow;
+    wxSplitterWindow *m_splitter;
+    CSplitScroll *m_scrolledWindow;
+    CConfigTree *m_tree;
+    CConflictList *m_conflictsWindow;
+    CValueWindow *m_valueWindow;
+    CInfoWindow *m_shortDescrWindow;
+    CPropertyList *m_propertyListWindow;
+  private:
+     DECLARE_EVENT_TABLE()
+
 };
-
-
-DECLARE_APP(NutConfApp);
 
 #endif

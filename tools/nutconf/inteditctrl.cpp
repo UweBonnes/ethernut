@@ -1,6 +1,3 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,35 +38,35 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * $Log: inteditctrl.cpp,v $
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include "valuewindow.h"
+#include "inteditctrl.h"
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
-  public:
-     virtual bool OnInit();
-    virtual int OnExit();
+BEGIN_EVENT_TABLE(CIntEditCtrl, wxSpinCtrl)
+    EVT_TEXT_ENTER(-1, CIntEditCtrl::OnEnter)
+    EVT_KILL_FOCUS(CIntEditCtrl::OnKillFocus)
+    END_EVENT_TABLE();
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+IMPLEMENT_CLASS(CIntEditCtrl, wxSpinCtrl);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+CIntEditCtrl::CIntEditCtrl(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & size, long style)
+: wxSpinCtrl(parent, id, wxEmptyString, pos, size, style, -32000, 32000, 0)
+{
+}
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
-};
+void CIntEditCtrl::OnEnter(wxCommandEvent & event)
+{
+    CValueWindow *parent = (CValueWindow *) GetParent();
+    parent->EndEditing();
+}
 
-
-DECLARE_APP(NutConfApp);
-
-#endif
+void CIntEditCtrl::OnKillFocus(wxFocusEvent & event)
+{
+    CValueWindow *parent = (CValueWindow *) GetParent();
+    parent->EndEditing();
+}

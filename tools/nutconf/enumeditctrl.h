@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef ENUMEDITCTRL_H_
+#define ENUMEDITCTRL_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,23 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+class CEnumEditCtrl:public wxChoice {
+    DECLARE_CLASS(CEnumEditCtrl)
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CEnumEditCtrl(wxWindow * parent, wxWindowID id = -1, const wxPoint & pos = wxDefaultPosition, const wxSize & size =
+                  wxDefaultSize, long style = 0);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    void OnChar(wxKeyEvent & event);
+    void OnKillFocus(wxFocusEvent & event);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
-
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+     DECLARE_EVENT_TABLE()
 };
-
-
-DECLARE_APP(NutConfApp);
 
 #endif

@@ -1,6 +1,3 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,35 +38,23 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * $Log: utils.cpp,v $
+ * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
-  public:
-     virtual bool OnInit();
-    virtual int OnExit();
+#include "utils.h"
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+bool CUtils::StrToItemIntegerType(const wxString & str, long &d)
+{
+    wxChar *pEnd;
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    errno = 0;
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
-};
+    bool bHex = (str.Len() > 2 && str[0] == wxT('0') && (str[1] == wxT('x') || str[1] == wxT('X')));
 
-
-DECLARE_APP(NutConfApp);
-
-#endif
+    d = wxStrtol(str, &pEnd, bHex ? 16 : 10);
+    return (errno == 0 && (*pEnd == wxT('\0')));
+}

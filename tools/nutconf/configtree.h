@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef CONFIGTREE_H_
+#define CONFIGTREE_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,35 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+#include "iconlist.h"
+#include "scrolledtree.h"
+
+class CConfigTree:public CScrolledTreeCtrl {
+    DECLARE_CLASS(CConfigTree);
+
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CConfigTree(wxWindow * parent, wxWindowID id = -1, const wxPoint & pt = wxDefaultPosition,
+                const wxSize & sz = wxDefaultSize, long style = wxTR_HAS_BUTTONS);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    void OnMouseEvent(wxMouseEvent & event);
+    void OnSelChanged(wxTreeEvent & event);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+     CIconList & GetIconDB();
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+  protected:
+     wxImageList * m_imageList;
+    CIconList m_iconDB;
+    wxMenu *m_propertiesMenu;
+
+     DECLARE_EVENT_TABLE();
 };
 
-
-DECLARE_APP(NutConfApp);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef _NUTCONF_H_
-#define _NUTCONF_H_
+#ifndef ICONLIST_H_
+#define ICONLIST_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,34 +42,34 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
+ * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
-#include "nutconfdoc.h"
-#include "mainframe.h"
+#include <wx/wx.h>
+#include <wx/imaglist.h>
 
-class NutConfApp:public wxApp {
-    friend class CMainFrame;
+#include "iconinfo.h"
+
+
+class CIconList:public wxList {
   public:
-     virtual bool OnInit();
-    virtual int OnExit();
+    CIconList(wxImageList * imageList = NULL);
 
-    CNutConfDoc *GetNutConfDoc() const;
-    CMainFrame *GetMainFrame() const;
-    wxDocManager *GetDocManager() const;
+    bool AddInfo(const wxString & name, const wxIcon & icon, int state, bool enabled);
 
-    wxDocManager *m_docManager;
-    CNutConfDoc *m_currentDoc;
-    CMainFrame *m_mainFrame;
+    CIconInfo *FindInfo(const wxString & name) const;
 
-    void Log(const wxString & msg);
-    void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
-    bool Launch(const wxString & strFileName, const wxString & strViewer);
+    int GetIconId(const wxString & name, int state, bool enabled = TRUE) const;
+    bool SetIconId(const wxString & name, int state, bool enabled, int iconId);
+
+    void SetImageList(wxImageList * imageList);
+    wxImageList *GetImageList() const;
+
+  protected:
+     wxImageList * m_imageList;
 };
 
-
-DECLARE_APP(NutConfApp);
 
 #endif

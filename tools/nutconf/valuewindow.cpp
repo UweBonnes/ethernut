@@ -1,0 +1,310 @@
+/* ----------------------------------------------------------------------------
+ * Copyright (C) 2004 by egnite Software GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * ----------------------------------------------------------------------------
+ * Parts are
+ *
+ * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * ----------------------------------------------------------------------------
+ */
+
+/*
+ * $Log: valuewindow.cpp,v $
+ * Revision 1.1  2004/06/07 16:15:03  haraldkipp
+ * Complete redesign based on eCos' configtool
+ *
+ */
+
+#include "nutconf.h"
+#include "treeitemdata.h"
+#include "configtree.h"
+#include "enumeditctrl.h"
+#include "valuewindow.h"
+#include "texteditctrl.h"
+#include "inteditctrl.h"
+#include "utils.h"
+
+IMPLEMENT_CLASS(CValueWindow, CTreeCompWindow)
+
+    BEGIN_EVENT_TABLE(CValueWindow, CTreeCompWindow)
+    EVT_PAINT(CValueWindow::OnPaint)
+    EVT_MOUSE_EVENTS(CValueWindow::OnMouseEvent)
+    EVT_SCROLLWIN(CValueWindow::OnScroll)
+    EVT_TREE_ITEM_EXPANDED(-1, CValueWindow::OnExpand)
+    EVT_TREE_ITEM_COLLAPSED(-1, CValueWindow::OnExpand)
+    END_EVENT_TABLE();
+
+CValueWindow::CValueWindow(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
+:  CTreeCompWindow(parent, id, pos, sz, style)
+{
+    SetBackgroundColour(wxSystemSettings::GetSystemColour(wxSYS_COLOUR_LISTBOX));
+
+    SetFont(wxSystemSettings::GetSystemFont(wxSYS_DEFAULT_GUI_FONT));
+
+    m_editWindow = NULL;
+    m_configItem = NULL;
+}
+
+void CValueWindow::DrawItem(wxDC & dc, wxTreeItemId id, const wxRect & rect)
+{
+    if (m_treeCtrl) {
+        CConfigItem *item = ((CTreeItemData *) m_treeCtrl->GetItemData(id))->GetConfigItem();
+        if (!item)
+            return;
+        wxString text = item->GetDisplayValue();
+
+        if (text.IsEmpty())
+            return;
+
+        static wxColour normalColour = wxSystemSettings::GetSystemColour(wxSYS_COLOUR_WINDOWTEXT);
+        static wxColour disabledColour = wxSystemSettings::GetSystemColour(wxSYS_COLOUR_GRAYTEXT);
+        dc.SetTextForeground((item->IsActive() && (item->GetConfigType() != nutModule)) ? normalColour : disabledColour);
+
+        int textW, textH;
+        dc.GetTextExtent(text, &textW, &textH);
+
+        int x = 2;
+        int y = rect.GetY() + wxMax(0, (rect.GetHeight() - textH) / 2);
+
+        dc.DrawText(text, x, y);
+    }
+}
+
+void CValueWindow::OnPaint(wxPaintEvent & event)
+{
+    wxPaintDC dc(this);
+
+    if (!m_treeCtrl)
+        return;
+
+    wxPen pen(wxSystemSettings::GetSystemColour(wxSYS_COLOUR_3DLIGHT), 1, wxSOLID);
+    dc.SetPen(pen);
+    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+    wxFont font(GetFont());
+    dc.SetFont(font);
+    dc.SetBackgroundMode(wxTRANSPARENT);
+
+    wxSize clientSize = GetClientSize();
+    wxRect itemRect;
+    int cy = 0;
+    wxTreeItemId h, lastH;
+    for (h = m_treeCtrl->GetFirstVisibleItem(); h; h = m_treeCtrl->GetNextVisible(h)) {
+        if (m_treeCtrl->GetBoundingRect(h, itemRect)) {
+            cy = itemRect.GetTop();
+            wxRect drawItemRect(0, cy, clientSize.x, itemRect.GetHeight());
+
+            lastH = h;
+
+            // Draw the actual item
+            DrawItem(dc, h, drawItemRect);
+            dc.DrawLine(0, cy, clientSize.x, cy);
+        }
+    }
+    if (lastH && lastH.IsOk() && m_treeCtrl->GetBoundingRect(lastH, itemRect)) {
+        cy = itemRect.GetBottom();
+        dc.DrawLine(0, cy, clientSize.x, cy);
+    }
+}
+
+void CValueWindow::OnScroll(wxScrollWinEvent & event)
+{
+    CTreeCompWindow::OnScroll(event);
+
+    PositionEditWindow();
+}
+
+void CValueWindow::OnExpand(wxTreeEvent & event)
+{
+    CTreeCompWindow::OnExpand(event);
+
+    EndEditing();
+}
+
+void CValueWindow::PositionEditWindow()
+{
+    if (!m_configItem || !m_editWindow)
+        return;
+
+    // Position the control
+    wxSize clientSize = GetClientSize();
+    wxRect itemRect;
+    m_treeCtrl->GetBoundingRect(m_configItem->GetTreeItem(), itemRect);
+
+    wxSize sz = m_editWindow->GetSize();
+
+    m_editWindow->SetSize(0, itemRect.y, clientSize.x, sz.y);
+}
+
+bool CValueWindow::EndEditing()
+{
+    if (m_configItem) {
+        if (m_editWindow)
+            m_configItem->TransferDataFromWindow(m_editWindow);
+        m_configItem = NULL;
+    }
+
+    if (m_editWindow) {
+        delete m_editWindow;
+        m_editWindow = NULL;
+    }
+
+    return TRUE;
+}
+
+void CValueWindow::OnMouseEvent(wxMouseEvent & event)
+{
+    if (event.LeftDown() && (event.GetX() > 2)) {
+        // Find if this corresponds to a tree item
+        int flags = 0;
+        wxTreeItemId item = m_treeCtrl->HitTest(wxPoint(4, event.GetY()), flags);
+        if (item.IsOk()) {
+            m_treeCtrl->SelectItem(item);
+            CConfigItem *configItem = ((CTreeItemData *) m_treeCtrl->GetItemData(item))->GetConfigItem();
+            if (configItem->CanEdit())
+                BeginEditing(configItem);
+        }
+    } else if (event.RightDown()) {
+    }
+}
+
+/*
+ * Creates an edit control and starts editing.
+ */
+bool CValueWindow::BeginEditing(CConfigItem * item)
+{
+    if (m_configItem)
+        EndEditing();
+
+    m_configItem = item;
+
+    m_editWindow = item->CreateEditWindow(this);
+    if (m_editWindow) {
+        m_editWindow->Show(FALSE);
+
+        item->TransferDataToWindow(m_editWindow);
+
+        // Position the control
+        PositionEditWindow();
+
+        m_editWindow->Show(TRUE);
+        m_editWindow->SetFocus();
+
+        return TRUE;
+    } else {
+        m_configItem = NULL;
+        return FALSE;
+    }
+}
+
+bool CConfigItem::TransferDataToWindow(wxWindow * window)
+{
+    if (window->IsKindOf(CLASSINFO(CTextEditCtrl))) {
+        CTextEditCtrl *win = (CTextEditCtrl *) window;
+        win->SetValue(GetDisplayValue());
+    } else if (window->IsKindOf(CLASSINFO(CEnumEditCtrl))) {
+        CEnumEditCtrl *win = (CEnumEditCtrl *) window;
+        win->SetStringSelection(GetDisplayValue());
+    } else if (window->IsKindOf(CLASSINFO(CIntEditCtrl))) {
+        CIntEditCtrl *win = (CIntEditCtrl *) window;
+        long i;
+        CUtils::StrToItemIntegerType(StringValue(), i);
+
+        wxString val;
+        val.Printf(wxT("%ld"), i);
+
+        win->SetValue(val);
+    }
+    return true;
+}
+
+bool CConfigItem::TransferDataFromWindow(wxWindow * window)
+{
+    CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
+    wxASSERT(doc != NULL);
+
+    if (!doc)
+        return FALSE;
+
+    if (window->IsKindOf(CLASSINFO(CTextEditCtrl))) {
+        CTextEditCtrl *win = (CTextEditCtrl *) window;
+
+        wxASSERT(GetOptionType() == nutString);
+
+        // TODO: do checking
+        doc->SetValue(*this, win->GetValue());
+    } else if (window->IsKindOf(CLASSINFO(CEnumEditCtrl))) {
+        CEnumEditCtrl *win = (CEnumEditCtrl *) window;
+
+        wxASSERT(GetOptionType() == nutEnumerated);
+
+        // TODO: do checking
+        doc->SetValue(*this, win->GetStringSelection());
+    } else if (window->IsKindOf(CLASSINFO(CIntEditCtrl))) {
+        CIntEditCtrl *win = (CIntEditCtrl *) window;
+
+        wxASSERT(GetOptionType() == nutInteger);
+
+        // TODO: do checking
+        doc->SetValue(*this, (long) win->GetValue());
+    }
+
+    return TRUE;
+}
+
+
+wxRect CValueWindow::GetItemRect(CConfigItem * item)
+{
+    if (!m_treeCtrl)
+        return wxRect(0, 0, 0, 0);
+
+    wxSize clientSize = GetClientSize();
+    wxRect itemRect;
+    int cy = 0;
+    wxTreeItemId h;
+    for (h = m_treeCtrl->GetFirstVisibleItem(); h; h = m_treeCtrl->GetNextVisible(h)) {
+        CTreeItemData *data = (CTreeItemData *) m_treeCtrl->GetItemData(h);
+        if (data->GetConfigItem() == item) {
+            if (m_treeCtrl->GetBoundingRect(h, itemRect)) {
+                cy = itemRect.GetTop();
+                wxRect drawItemRect(0, cy, clientSize.x, itemRect.GetHeight());
+                return drawItemRect;
+            } else
+                return wxRect(0, 0, 0, 0);
+        }
+    }
+    return wxRect(0, 0, 0, 0);
+}
+
+wxWindow *CValueWindow::GetEditWindow() const
+{
+    return m_editWindow;
+}
