@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/02 20:03:46  haraldkipp
+ * All definitions had been moved to avrpio.h in order to fix the broken
+ * port I/O without being forced to change other existing modules.
+ *
  * Revision 1.3  2005/01/22 19:27:19  haraldkipp
  * Changed AVR port configuration names from PORTx to AVRPORTx.
  *
@@ -49,137 +53,26 @@
  */
 
 /*!
- * \file cfg/arch/avr.h
- * \brief AVR default hardware configuration.
- *
- * In the first place this file collects all port specifications for the 
- * AVR platform and provides an overview of hardware resources in use.
- * Values are geared to the Ethernut reference design and can be changed 
- * by the Configurator. This program creates a file with the same name
- * in the build tree, which replaces this placeholder.
- */
-
-/*!
- * \brief USART settings.
- */
-//#define UART0_RTS_BIT 2
-//#define UART0_CTS_IRQ INT7
-
-#ifdef UART0_RTS_BIT
-#ifndef UART0_RTS_AVRPORT
-#define UART0_RTS_AVRPORT AVRPORTE
-#endif
-#endif /* UART0_RTS_BIT */
-
-
-//#define UART1_RTS_BIT 2
-//#define UART1_CTS_IRQ INT7
-
-#ifdef UART1_RTS_BIT
-#ifndef UART1_RTS_AVRPORT
-#define UART1_RTS_AVRPORT AVRPORTE
-#endif
-#endif /* UART1_RTS_BIT */
-
-/*!
- * \addtogroup xgNet
+ * \addtogroup xgConfig
  */
 /*@{*/
 
 /*!
- * \brief Settings for the Realtek RTL8019AS.
+ * \file include/cfg/arch/avr.h
+ * \brief AVR hardware configuration.
  */
 
-#ifndef RTL_BASE_ADDR
-/*!
- * \brief Memory mapped base address.
- */
-#define RTL_BASE_ADDR 0x8300
-#endif
 
-#ifndef RTL_SIGNAL_IRQ
-/*!
- * \brief Interrupt used by the controller.
- */
-#define RTL_SIGNAL_IRQ INT5
-#endif
+#define AVRPORTA    1
+#define AVRPORTB    2
+#define AVRPORTC    3
+#define AVRPORTD    4
+#define AVRPORTE    5
+#define AVRPORTF    6
+#define AVRPORTG    7
 
-#ifndef RTL_EESK_BIT
-/*!
- * \brief Clock input for EEPROM emulation.
- *
- * This is enabled by default, but the driver will run a check before
- * jumping into the emulation.
- */
-#define RTL_EESK_BIT 5
-#endif
-
-#ifndef RTL_EESK_AVRPORT
-#define RTL_EESK_AVRPORT AVRPORTC
-#endif
-
-#ifndef RTL_EEDO_BIT
-#define RTL_EEDO_BIT 6
-#endif
-
-#ifndef RTL_EEDO_AVRPORT
-#define RTL_EEDO_AVRPORT AVRPORTC
-#endif
-
-#ifndef RTL_EEMU_BIT
-#define RTL_EEMU_BIT 7
-#endif
-
-#ifndef RTL_EEMU_AVRPORT
-#define RTL_EEMU_AVRPORT AVRPORTC
-#endif
-
-/*!
- * \brief Port usage of digital I/O shift register.
- */
-#ifndef SPIDIGIO_SOUT_BIT
-#define SPIDIGIO_SOUT_BIT 5
-#endif
-
-#ifndef SPIDIGIO_SOUT_AVRPORT
-#define SPIDIGIO_SOUT_AVRPORT AVRPORTD
-#endif
-
-#ifndef SPIDIGIO_SIN_BIT
-#define SPIDIGIO_SIN_BIT 6
-#endif
-
-#ifndef SPIDIGIO_SIN_PIN
-#define SPIDIGIO_SIN_PIN PIND
-#endif
-
-#ifndef SPIDIGIO_SCLK_BIT
-#define SPIDIGIO_SCLK_BIT 7
-#endif
-
-#ifndef SPIDIGIO_SCLK_AVRPORT
-#define SPIDIGIO_SCLK_AVRPORT AVRPORTD
-#endif
-
-#ifndef SPIDIGIO_LDI_BIT
-#define SPIDIGIO_LDI_BIT 7
-#endif
-
-#ifndef SPIDIGIO_LDI_AVRPORT
-#define SPIDIGIO_LDI_AVRPORT AVRPORTB
-#endif
-
-#ifndef SPIDIGIO_LDO_BIT
-#define SPIDIGIO_LDO_BIT 5
-#endif
-
-#ifndef SPIDIGIO_LDO_AVRPORT
-#define SPIDIGIO_LDO_AVRPORT AVRPORTB
-#endif
-
+#include <cfg/arch/avrpio.h>
 
 /*@}*/
-
-
 
 #endif
