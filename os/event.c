@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/02/17 14:45:10  phblum
+ * In NutEventWait(), replaced NutThreadRemoveQueue by direct removal of first thread in queue.
+ *
  * Revision 1.12  2005/02/16 19:53:17  haraldkipp
  * Ready-to-run queue handling removed from interrupt context.
  *
@@ -222,7 +225,11 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
         fprintf_P(__os_trs, fmt1, runningThread);
     }
 #endif
-    NutThreadRemoveQueue(runningThread, &runQueue);
+    // NutThreadRemoveQueue(runningThread, &runQueue); .. does the following:
+    runQueue = runQueue->td_qnxt;
+    runningThread->td_qnxt = 0;
+    runningThread->td_queue = 0;
+
 #ifdef NUTDEBUG
     if (__os_trf)
         NutDumpThreadList(__os_trs);
