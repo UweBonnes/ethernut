@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/05 17:41:48  haraldkipp
+ * Header is dangerous when you forget to remove all debug outputs.
+ *
  * Revision 1.3  2004/07/30 19:54:46  drsung
  * Some code of TCP stack redesigned. Round trip time calculation is now
  * supported. Fixed several bugs in TCP state machine. Now TCP connections
@@ -133,7 +136,6 @@
 #include <netinet/tcp.h>
 #include <net/errno.h>
 #include <sys/thread.h>
-#include <stdio.h>
 
 #ifdef NUTDEBUG
 #include <net/netdebug.h>
