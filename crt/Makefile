@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/03/03 18:09:32  drsung
+# Added function 'fpurge' to crt.
+#
 # Revision 1.2  2003/11/24 18:10:24  drsung
 # Time functions added
 #
@@ -54,7 +57,7 @@ include $(top_srcdir)/Makedefs
 
 SRCC =  clrerr.c fclose.c fcloseall.c fdopen.c feof.c ferror.c fflush.c \
 	fgetc.c fgets.c fileno.c flushall.c fmode.c fopen.c fprintf.c \
-	fprintf_p.c fputc.c fputs.c fputs_p.c fread.c freopen.c \
+	fprintf_p.c fputc.c fputs.c fputs_p.c fread.c freopen.c fpurge.c \
 	fscanf.c fscanf_p.c fseek.c ftell.c fwrite.c fwrite_p.c \
 	getc.c getchar.c gets.c printf.c printf_p.c putc.c putchar.c \
 	puts.c puts_p.c scanf.c scanf_p.c sprintf.c sprintf_p.c \
