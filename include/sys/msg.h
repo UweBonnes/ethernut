@@ -38,6 +38,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/08 11:20:36  haraldkipp
+ * Not all compilers like arrays of size zero.
+ *
  * Revision 1.1  2004/02/04 18:05:04  drsung
  * First version of message queueing  implemented. Thanks to Ralph Mason, who provided this code.
  * Still contains some debug functions.
@@ -68,7 +71,7 @@ struct _NUTMSGQ {
     u_char mq_read;
     u_char mq_write;
     u_char mq_mask;
-    NUTMSG mq_que[0];
+    NUTMSG mq_que[1];
 };
 
 
