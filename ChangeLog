@@ -1,4 +1,26 @@
-$Id: ChangeLog,v 1.53 2004/03/18 19:59:25 haraldkipp Exp $
+$Id: ChangeLog,v 1.54 2004/03/19 18:25:09 jdubiec Exp $
+
+2004-03-19  Jan Dubiec  <jdx@slackware.pl>
+
+	* os/event.c, os/heap.c, os/osdebug.c, os/thread.c, os/timer.c,
+	net/netdebug.c: Format strings declarations has been changed
+	to static prog_char in order to save data memory and print debug
+	messages properly on AVR.
+
+	* configure: Added "-mint32" switch to H8 gcc options so "int"
+	is now 32 bit on H8/300H and H8S.
+
+	* include/dev/mweeprom.h, dev/mweeprom.c: u_char and u_short
+	changed to unsigned char and unsigned short accordingly in order
+	to avoid compilation problems on H8 microcontrollers: mweeprom.h
+	is included by compiler.h and compiler.h in included by sys/types.h
+	so u_char and u_short were used before they were defined. The
+	occurence of this problem depended on place in sys/types.h in which
+	compiler.h was included.
+
+	* arch/h8300h/include/h83068f.h: Added comment about the origin of 
+	this file.
+
 
 2004-03-18  Harald Kipp  <harald.kipp@egnite.de>
 
