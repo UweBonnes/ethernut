@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.41 2004/03/03 21:16:57 drsung Exp $
+$Id: ChangeLog,v 1.42 2004/03/05 20:43:08 drsung Exp $
+
+2004-03-05  Oliver Schulz  <olischulz@web.de>
+
+	* os/tmr_avr.c: Bugfix in NutTimerInit. ICCAVR failed to compile, if 
+	NUT_CPU_FREQ is defined.
+
 
 2004-03-03  Oliver Schulz  <olischulz@web.de>
 
