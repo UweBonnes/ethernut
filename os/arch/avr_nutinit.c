@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.10  2004/09/01 14:27:03  haraldkipp
+ * Using configuration values from cfg/memory.h.
+ * Added configurable reserved memory area.
+ * Automatic check for external memory removed.
+ *
  * Revision 1.9  2004/07/28 13:43:25  drsung
  * Corrected a misplaced #endif after last change.
  *
@@ -63,11 +68,38 @@
  *
  */
 
-#ifndef NUTRAMEND
-#define NUTRAMEND 0x7FFF
+#include <cfg/memory.h>
+
+#ifdef NUTXMEM_SIZE
+/*!
+ * \brief Last memory address using external SRAM.
+ */
+#define NUTMEM_END (u_short)(NUTXMEM_START + (u_short)NUTXMEM_SIZE - 1U)
+
+#else
+/*!
+ * \brief Last memory address without using external SRAM.
+ *
+ * \todo Shall we support NUTRAMEND for backward compatibility? If, then
+ *       let's do it in cfg/memory.h.
+ */
+#define NUTMEM_END (u_short)(NUTMEM_START + (u_short)NUTMEM_SIZE - 1U)
+
 #endif
 
-#define NUTRAMENDPTR ((volatile u_char *)NUTRAMEND)
+#ifdef NUTMEM_RESERVED
+/*!
+ * \brief Number of bytes reserved in on-chip memory.
+ *
+ * AVR offers the option to temporarly use address and data bus
+ * lines as general purpose I/O. If such drivers need data memory,
+ * this must be located at internal memory addresses.
+ * 
+ * \todo Not a nice implementation but works as long as this module
+ *       is linked first. Should be made a linker option.
+ */
+u_char nutmem_onchip[NUTMEM_RESERVED];
+#endif
 
 /* sleep mode to put avr in idle thread, SLEEP_MODE_NONE is used for for non sleeping */
 #ifdef __GNUC__
@@ -102,7 +134,8 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 extern void main(void *);
 #endif
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(NUTXMEM_SIZE)
+
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
@@ -152,6 +185,8 @@ void NutThreadSetSleepMode(u_char mode)
  *
  * After initializing the timers, the idle thread switches to priority 254
  * and enters an endless loop.
+ *
+ * \todo Make the stack size of the application main thread configurable.
  */
 THREAD(NutIdle, arg)
 {
@@ -206,6 +241,16 @@ THREAD(NutIdle, arg)
  * \code
  * void NutInit(void) __attribute__ ((naked)) __attribute__ ((section (".init8")));
  * \endcode
+ *
+ * \todo Verify ICCAVR external memory handling.
+ *
+ * \todo Make heap threshold configurable, currently hardcoded at 384.
+ *
+ * \todo Make stack size of the idle thread configurable.
+ *
+ * \todo Make wait states for external memory access configuratble.
+ *
+ * \todo Make early UART initialization for kernel debugging configurable.
  */
 void NutInit(void)
 {
@@ -219,34 +264,26 @@ void NutInit(void)
 
 #ifndef __GNUC__
 // FIXME: move this line to an appropriate initialization section of ICCAVR (os)
+#ifdef NUTXMEM_SIZE
     outp(BV(SRE) | BV(SRW), MCUCR);
 #endif
+#endif
 
-    /* First check, whether external RAM is available
+    /* If we have external RAM, initialize stack pointer to
+     *  end of external RAM to avoid overwriting .data and .bss section
      */
-    *(NUTRAMENDPTR - 1) = 0x55;
-    *NUTRAMENDPTR = 0xAA;
-    if (*(NUTRAMENDPTR - 1) == 0x55 && *NUTRAMENDPTR == 0xAA) {
-        /* If we have external RAM, initialize stack pointer to
-         *  end of external RAM to avoid overwriting .data and .bss section
-         */
-        SP = (u_short) NUTRAMENDPTR;
+    SP = (u_short)(NUTMEM_END);
 
-        /* Then add the remaining RAM to heap
-         */
-        if ((u_short) NUTRAMENDPTR - (u_short) (&__heap_start) > 384)
-            NutHeapAdd(&__heap_start, (u_short) NUTRAMENDPTR - 256 - (u_short) (&__heap_start));
-    } else {
-        /* No external RAM, so disable external memory interface to use the port pins
-           for normal operation
-         */
-        MCUCR = 0x00;
+    /* Then add the remaining RAM to heap.
+     *
+     * 20.Aug.2004 haraldkipp: This had been messed up somehow. It's nice to have 
+     * one continuous heap area, but we lost the ability to have systems with
+     * a gap between internal and external RAM.
+     */
+    if ((u_short)NUTMEM_END - (u_short) (&__heap_start) > 384) {
+        NutHeapAdd(&__heap_start, (u_short) NUTMEM_END - 256 - (u_short) (&__heap_start));
+    }
 
-        /* Add the remaining internal RAM to heap
-         */
-        if ((u_short) RAMEND - (u_short) (&__heap_start) > 384)
-            NutHeapAdd(&__heap_start, (u_short) RAMEND - 256 - (u_short) (&__heap_start));
-    };
     /*
      * Read eeprom configuration.
      */
