@@ -78,6 +78,14 @@
 
 /*
  * $Log$
+ * Revision 1.10  2004/02/25 16:34:32  haraldkipp
+ * New API added to relinguish the DHCP lease. Collecting more
+ * than one offer is now disabled, if the application sets timeout
+ * below three times of MAX_DHCP_WAIT (5 seconds). The lease renewal
+ * will now start when 3/4 has elapsed, opposed to 1/2 used previously.
+ * Finally the DHCP thread will sleep as long as possible, while the
+ * previous version woke up every ten seconds.
+ *
  * Revision 1.9  2004/02/02 18:54:43  drsung
  * gateway ip address was not set, if static network configuration from EEPROM is used.
  *
@@ -153,7 +161,12 @@
 /*@{*/
 
 #define MIN_DHCP_MSGSIZE    300
+#define MAX_DHCP_MSGSIZE    576
+
+#ifndef MAX_DHCP_WAIT
 #define MAX_DHCP_WAIT       5000
+#endif
+
 #define MAX_OFFERS          5
 #define MAX_DCHP_RETRIES    3
 
@@ -164,6 +177,7 @@
 #define DHCPST_RENEWING     4
 #define DHCPST_REBINDING    5
 #define DHCPST_ERROR        6
+#define DHCPST_RELEASING    7
 
 static u_char dhcpState;
 
@@ -181,9 +195,12 @@ struct dyn_cfg {
     u_long dyn_leaseTime;       /*!< \brief Offered lease time in seconds. */
     u_char *dyn_hostname;       /*!< \brief Local hostname. */
     u_char *dyn_domain;         /*!< \brief Name of local domain. */
+    u_long dyn_server;          /*!< \brief DHCP server IP */
 };
 
 static HANDLE dhcpDone;
+static HANDLE dhcpWake;
+static u_long dhcp_timeout;
 
 /* Magic cookie according to RFC 1497. */
 static u_char cookie[4] = { 0x63, 0x82, 0x53, 0x63 };
@@ -223,6 +240,7 @@ int ParseReply(DYNCFG * cfgp, u_long ip, struct bootp *bp, int len)
     if (bp->bp_op != 2)
         return -1;
 
+    cfgp->dyn_server = ip;
     memcpy(&cfgp->dyn_yiaddr, &bp->bp_yiaddr, 4);
 
     op = bp->bp_options + 4;
@@ -532,7 +550,7 @@ static int DhcpDiscover(UDPSOCKET * sock, struct bootp *bp, u_long xid, u_short 
     optlen += DhcpAddOptionFromRAM(op + optlen, DHCPOPT_PARAMREQUEST, reqOpts, 3);
 
     /* Request a maximum message size. */
-    optlen += DhcpAddShortOption(op + optlen, DHCPOPT_MAXMSGSIZE, htons(576));
+    optlen += DhcpAddShortOption(op + optlen, DHCPOPT_MAXMSGSIZE, htons(MAX_DHCP_MSGSIZE));
 
     return DhcpSendMessage(sock, INADDR_BROADCAST, bp, optlen);
 }
@@ -585,6 +603,41 @@ static int DhcpRequest(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long 
 }
 
 /*!
+ * \brief Relinguish our DHCP lease.
+ *
+ * \param sock  Socket descriptor. This pointer must have been retrieved by 
+ *              calling NutUdpCreateSocket().
+ * \param daddr IP address of the DHCP server.
+ * \param bp    Pointer to a buffer to be used for transmission.
+ * \param xid   Random transaction identifier.
+ * \param caddr Our IP address. Should be set only if we are able to respond 
+ *              to ARP requests. Otherwise must be set to 0.
+ * \param sid   Server identifier. If this request is not an offer response, 
+ *              then set it to zero.
+ *
+ * \return 0 on success, -1 if send failed.
+ */
+static int DhcpRelease(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long xid, u_long caddr, u_long sid)
+{
+    size_t optlen;
+    u_char *op = bp->bp_options;
+
+    /* Prepare BOOTP header. 'secs' is set to zero. */
+    optlen = DhcpPrepHeader(bp, DHCP_RELEASE, xid, caddr, 0);
+
+    /* Optionally add server identifier. */
+    if (sid) {
+        optlen += DhcpAddLongOption(op + optlen, DHCPOPT_SID, sid);
+    }
+
+    /* We should provide the maximum message size. */
+    optlen += DhcpAddShortOption(op + optlen, DHCPOPT_MAXMSGSIZE, htons(MAX_DHCP_MSGSIZE));
+
+    return DhcpSendMessage(sock, daddr, bp, optlen);
+}
+
+
+/*!
  * \brief Release DYNCFG structure.
  */
 static void ReleaseDynCfg(DYNCFG * dyncfg)
@@ -620,7 +673,7 @@ static u_char AddOffer(DYNCFG ** offer, u_char noffers, u_long ip, struct bootp 
 
     /* Avoid duplicate entries. */
     for (i = 0; i < noffers; i++) {
-        if (offer[i]->dyn_sid == ip) {
+        if (offer[i]->dyn_server == ip) {
             return noffers;
         }
     }
@@ -691,13 +744,17 @@ THREAD(NutDhcpClient, arg)
     u_long xid;
     IFNET *nif = ((NUTDEVICE *) arg)->dev_icb;
     u_long secs = 0;
+    u_long leased;
+    u_long safe;
     u_char retries = 0;
     u_char noffers = 0;
     DYNCFG *offer[MAX_OFFERS];
     u_char configured = 0;
+    u_short max_ms = MAX_DHCP_MSGSIZE;
 
     while ((sock = NutUdpCreateSocket(DHCP_CLIENTPORT)) == 0)
         NutSleep(10000);
+    NutUdpSetSockOpt(sock, SO_RCVBUF, &max_ms, sizeof(max_ms));
 
     bp = malloc(sizeof(struct bootp));
 
@@ -713,7 +770,6 @@ THREAD(NutDhcpClient, arg)
     xid += NutGetTickCount();
 
     for (;;) {
-
         /*
          * Maintain lease time.
          */
@@ -722,21 +778,49 @@ THREAD(NutDhcpClient, arg)
             if (__tcp_trf)
                 fprintf(__tcp_trs, "[BOUND %lu]", NutGetSeconds() - secs);
 #endif
-            if (dyncfg->dyn_leaseTime && NutGetSeconds() - secs > dyncfg->dyn_leaseTime / 2UL) {
-                /* Lease time elapsed. */
-                while ((sock = NutUdpCreateSocket(DHCP_CLIENTPORT)) == 0)
+            /* We do not need the socket until our lease time expires.
+               Release its allocated memory. */
+            if (sock) {
+                NutUdpDestroySocket(sock);
+                sock = 0;
+            };
+
+
+            if (dyncfg->dyn_leaseTime) {
+                /* Calculate the remaining lease time and take a nap. */
+                safe = dyncfg->dyn_leaseTime - (dyncfg->dyn_leaseTime >> 2);
+                leased = NutGetSeconds() - secs;
+                if (leased < safe) {
+                    safe -= leased;
+
+                    /* Lease time is in seconds while timeout uses milliseconds. */
+                    if (safe > 2000000UL) {
+                        safe = 2000000UL;
+                    }
+                    NutEventWait(&dhcpWake, safe * 1000UL);
+                }
+
+                /* We are beyond safe lease time, start renewal. Make sure
+                   that we are still bound. We should, but there was the
+                   socket destroy above, so better check again. */
+                else if (dhcpState == DHCPST_BOUND) {
+                    dhcpState = DHCPST_RENEWING;
+                }
+            }
+
+            /* Lease time of 0 means unlimited. */
+            else {
+                NutEventWait(&dhcpWake, NUT_WAIT_INFINITE);
+            }
+
+            if (dhcpState != DHCPST_BOUND) {
+                /* Our status changed, we need a new socket now. */
+                while ((sock = NutUdpCreateSocket(DHCP_CLIENTPORT)) == 0) {
                     NutSleep(1000);
-                dhcpState = DHCPST_RENEWING;
+                }
+                NutUdpSetSockOpt(sock, SO_RCVBUF, &max_ms, sizeof(max_ms));
                 retries = 0;
                 xid += NutGetTickCount();
-            } else {
-                /* We do not need the socket until our lease time expires.
-                   Release its allocated memory. */
-                if (sock) {
-                    NutUdpDestroySocket(sock);
-                    sock = 0;
-                }
-                NutSleep(10000);
             }
         }
 
@@ -757,7 +841,7 @@ THREAD(NutDhcpClient, arg)
                 dhcpState = DHCPST_REBINDING;
             }
             /* Send a request to our leasing server. */
-            else if (DhcpRequest(sock, dyncfg->dyn_sid, bp, xid, confnet.cdn_ip_addr, confnet.cdn_ip_addr, 0, (u_short) secs) <
+            else if (DhcpRequest(sock, dyncfg->dyn_server, bp, xid, confnet.cdn_ip_addr, confnet.cdn_ip_addr, 0, (u_short) secs) <
                      0) {
                 /* Fatal transmit error. */
                 dhcpState = DHCPST_ERROR;
@@ -794,8 +878,7 @@ THREAD(NutDhcpClient, arg)
                 dhcpState = DHCPST_SELECTING;
             }
             /* Broadcast a request for our previous configuration. */
-            else if (DhcpRequest(sock, INADDR_BROADCAST, bp, xid, confnet.cdn_ip_addr, confnet.cdn_ip_addr, 0, (u_short) secs) <
-                     0) {
+            else if (DhcpRequest(sock, INADDR_BROADCAST, bp, xid, confnet.cdn_ip_addr, confnet.cdn_ip_addr, 0, (u_short) secs) < 0) {
                 /* Fatal transmit error. */
                 dhcpState = DHCPST_ERROR;
             } else if ((n = DhcpRecvMessage(sock, xid, &server_ip, bp)) < 0) {
@@ -856,6 +939,16 @@ THREAD(NutDhcpClient, arg)
                     } else if (n > 0) {
                         /* Add the offer received, if it's unique and valid. */
                         noffers = AddOffer(offer, noffers, server_ip, bp, n);
+                        /* If the callers timeout is low, do not collect. 
+                           Thanks to Jelle Kok. */
+                        if (dhcp_timeout < MAX_DHCP_WAIT * 3) {
+                            dyncfg = SelectOffer(offer, noffers);
+                            noffers = 0;
+                            /* Start requesting the selected offer. */
+                            retries = 0;
+                            dhcpState = DHCPST_REQUESTING;
+                            break;
+                        }
                     } else {
                         /* Receive timeout. If we got offers, select one. */
                         if (noffers) {
@@ -961,6 +1054,23 @@ THREAD(NutDhcpClient, arg)
 
 
         /*
+         * Send a release and wait for its (optional) echo.
+         */
+        else if (dhcpState == DHCPST_RELEASING) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[RELEASING]");
+#endif
+            DhcpRelease(sock, dyncfg->dyn_server, bp, xid, confnet.cdn_ip_addr, dyncfg->dyn_sid);
+            DhcpRecvMessage(sock, xid, &server_ip, bp);
+            NutEventBroadcast((HANDLE *) & dhcpDone);
+
+            /* Go back to bound state, but with unlimited lease time. */
+            dyncfg->dyn_leaseTime = 0;
+            dhcpState = DHCPST_BOUND;
+        }
+
+        /*
          * Something miserable happened to us. Release all resources
          * and keep as quiet as possible.
          */
@@ -1010,13 +1120,11 @@ THREAD(NutDhcpClient, arg)
  *                the configuration stored in the EEPROM.
  * \param timeout Maximum number of milliseconds to wait. To disable 
  *                timeout, set this parameter to NUT_WAIT_INFINITE.
+ *                This value must be larger than 3 times of MAX_DHCP_WAIT
+ *                to enable collection of offers from multiple servers.
  *
  * \return 0 on success or -1, if no IP configuration could have
  *         been received within the specified timeout.
- *
- * \bug The client doesn't send update information to the server. To 
- *      avoid loosing the assignment while Ethernut is down, addresses 
- *      can be fixed in the DHCP server tables.
  */
 int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
 {
@@ -1067,6 +1175,11 @@ int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
      * for a response from the DHCP server.
      */
     if ((confnet.cdn_cip_addr & confnet.cdn_ip_mask) == 0) {
+        /*
+         * Pass the caller's timeout to the client thread. In case
+         * of long timeouts, the client may wait for several offers.
+         */
+        dhcp_timeout = timeout;
         if (thread == 0)
             thread = NutThreadCreate("dhcpc", NutDhcpClient, dev, 512);
         NutEventWait((HANDLE *) & dhcpDone, timeout);
@@ -1079,6 +1192,30 @@ int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
      * We got a valid IP configuration. Configure the interface.
      */
     return NutNetIfConfig2(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask, confnet.cdn_gateway);
+}
+
+/*!
+ * \brief Relinguish our DHCP lease.
+ *
+ * This function will be called by the application if we are moving
+ * to another network. It helps the DHCP server to tidy up his
+ * allocation table, but is not a required DHCP function.
+ *
+ * Upon return, the system should be shut down within 20 seconds.
+ *
+ * \param name    Name of the registered Ethernet device, currently ignored.
+ * \param timeout Maximum number of milliseconds to wait, minimum is 11000.
+ *
+ * \return 0 on success or -1, if DHCP is not in bound state.
+ */
+int NutDhcpRelease(CONST char *name, u_long timeout)
+{
+    if (name == 0 || dhcpState != DHCPST_BOUND) {
+        return -1;
+    }
+    dhcpState = DHCPST_RELEASING;
+    NutEventPost(&dhcpWake);
+    return NutEventWait(&dhcpDone, timeout);
 }
 
 /*!
