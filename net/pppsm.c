@@ -34,8 +34,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:37  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/14 15:14:19  haraldkipp
+ * Do not increment ID when resending.
+ * Added authentication retries.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:37  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:18:37  harald
  * PPP hack for simple UART support, functions reordered.
@@ -102,7 +106,7 @@ THREAD(NutPppSm, arg)
         case PPPS_STOPPING:
             if(retries < 9) {
                 if (retries) {
-                    NutLcpOutput(dev, XCP_TERMREQ, ++dcb->dcb_reqid, 0);
+                    NutLcpOutput(dev, XCP_TERMREQ, dcb->dcb_reqid, 0);
                 }
                 dcb->dcb_retries = retries + 1;
             }
@@ -114,12 +118,25 @@ THREAD(NutPppSm, arg)
         case PPPS_ACKSENT:
             if(retries < 9) {
                 if(retries)
-                    LcpTxConfReq(dev);
+                    LcpTxConfReq(dev, dcb->dcb_reqid);
                 dcb->dcb_retries = retries + 1;
             }
             else
                 dcb->dcb_lcp_state = PPPS_STOPPED;
             break;
+        }
+
+        /*
+         * Authentication timeouts.
+         */
+        if(dcb->dcb_auth_state == PAPCS_AUTHREQ) {
+            if(retries < 9) {
+                if(retries)
+                    PapTxAuthReq(dev, dcb->dcb_reqid);
+                dcb->dcb_retries = retries + 1;
+            }
+            else
+                dcb->dcb_lcp_state = PPPS_STOPPED;
         }
 
         /*
@@ -141,7 +158,7 @@ THREAD(NutPppSm, arg)
         case PPPS_ACKSENT:
             if(retries < 9) {
                 if (retries)
-                    IpcpTxConfReq(dev);
+                    IpcpTxConfReq(dev, dcb->dcb_reqid);
                 dcb->dcb_retries = retries + 1;
             }
             else
@@ -165,7 +182,7 @@ void LcpOpen(NUTDEVICE *dev)
         break;
 
     case PPPS_CLOSED:
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
 
@@ -200,7 +217,7 @@ void LcpClose(NUTDEVICE *dev)
     case PPPS_OPENED:
         dcb->dcb_lcp_state = PPPS_CLOSING;
         IpcpLowerDown(dev);
-        NutLcpOutput(dev, XCP_TERMREQ, ++dcb->dcb_reqid, 0);
+        NutLcpOutput(dev, XCP_TERMREQ, dcb->dcb_reqid, 0);
         break;
     }
 }
@@ -221,7 +238,7 @@ void LcpLowerUp(NUTDEVICE *dev)
         /*
          * Layer had been opened. Send configuration request.
          */
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -277,7 +294,7 @@ void IpcpOpen(NUTDEVICE *dev)
         break;
 
     case PPPS_CLOSED:
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_ipcp_state = PPPS_REQSENT;
         break;
 
@@ -333,7 +350,7 @@ void IpcpLowerUp(NUTDEVICE *dev)
         break;
 
     case PPPS_STARTING:
-        IpcpTxConfReq(dev);
+        IpcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_ipcp_state = PPPS_REQSENT;
         break;
     }
