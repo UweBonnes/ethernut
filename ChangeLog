@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.93 2004/08/03 15:15:16 haraldkipp Exp $
+$Id: ChangeLog,v 1.94 2004/08/04 16:36:05 haraldkipp Exp $
+
+2004-08-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/basemon: Dataflash check added. Fixed a bug, which offered MAC
+	address 0. This is really weird: The MAC address bug had been fixed
+	by making an auto array global. There's probably something wrong
+	with the stack. UART initialization is now early for easier debugging.
+	In previous releases the web server didn't produce any output when
+	Basemon didn't detect RS232 input. This confused users, didn't show
+	the IP settings and thus had been changed. All calls to NutDelay had
+	been replaced by calls of the local Delay routine. The SMSC shares
+	transmit and receive buffer, which let the broadcast test fail after
+	some incoming packets, which where never removed from the NIC. Now
+	the receiver is disabled during broadcast test and the NIC will be
+	reset if running out of buffer space. A more feasible baudrate table
+	is used now, which also supports overclocked ATmegas.
+
 
 2004-08-03  Harald Kipp  <harald.kipp@egnite.de>
 
