@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/01/21 17:19:21  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.3  2004/03/18 13:59:41  haraldkipp
  * Deprecated header file removed
  *
@@ -300,7 +303,7 @@ static void SpiDevRequest(void *arg)
         /*
          * FIXME: May be called with interrupts enabled??
          */
-        NutEventPostAsync(&dio_change);
+        NutEventPostFromIRQ(&dio_change);
         return;
     }
 
@@ -440,9 +443,9 @@ static void SpiDevRequest(void *arg)
             ifs->if_tx_idx = tx_idx;
             ifs->if_rx_idx = rx_idx;
             if (tx_post && tx_idx == wr_idx)
-                NutEventPostAsync(&dcb->dcb_tx_rdy);
+                NutEventPostFromIRQ(&dcb->dcb_tx_rdy);
             if (rx_post && rx_idx != rd_idx)
-                NutEventPostAsync(&dcb->dcb_rx_rdy);
+                NutEventPostFromIRQ(&dcb->dcb_rx_rdy);
         } else {
             while (xav--) {
                 outp(0xff, SPDR);
