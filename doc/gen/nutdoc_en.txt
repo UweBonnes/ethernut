@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.4  2004/09/12 09:10:04  haraldkipp
+ * Version 3.9, old stuff removed
+ *
  * Revision 1.3  2004/08/11 22:21:53  freckle
  * Some docu added for mutex, semaphore and the unix emulation
  *
@@ -48,6 +51,15 @@
  *
  * \section intro Introduction
  *
+ * This is a preview of the upcoming version 4.
+ *
+ * For latest information please visit
+ * http://www.ethernut.de/en/nutconf/index.html
+ *
+ * ImageCraft users will find additional information at
+ * http://www.ethernut.de/en/iccavr/index.html
+ *
+ *
  * Ethernut is an Open Source Hardware and Software Project for building 
  * Embedded Ethernet Devices.
  *
@@ -70,16 +82,20 @@
  * If you would like to contact us regarding Ethernut, please email
  * info@egnite.de
  *
- * For updated information you may regularily visit
+ * For updated information you may regularly visit
  * http://www.ethernut.de/
- *
- * Bare Ethernut boards as well as assembled and tested Ethernuts
- * may be ordered from
- * http://www.egnite.de/
  */
 
 /*!
  * \page compiler Setting the Compiler Environment
+ *
+ * This section is not up to date. Please visit
+ * http://www.ethernut.de/en/nutconf/index.html
+ *
+ * ImageCraft users will find more information at
+ * http://www.ethernut.de/en/iccavr/index.html
+ *
+ *
  *
  * The first decision that has to be made, is to select the development 
  * platform you want to use. The commercial ImageCraft Compiler offers 
@@ -332,441 +348,6 @@
  * it may take more time until it appears in an official release.
  */
 
-/*!
- * \page history History
- *
- * Since version 3.3 this list has been replaced by a standard ChangeLog file.
- *
- * \section hist332 Version 3.3.2
- *
- * \section hist331 Version 3.3.1
- *
- * \section hist330 Version 3.3.0
- *
- * \section hist322 Version 3.2.2
- *
- * - Fixed: Some DHCP servers discard Nut/Net DHCP discover telegram 
- *          because it doesn't satisfy upward compatibility with BOOTP 
- *          packet. Thanks to Tomohiro Haraikawa for this patch.
- *
- * \section hist321 Version 3.2.1
- *
- * - Added: PPP debug module.
- * - Fixed: Corrupted network configuration in EEPROM. Thanks to 
- *          Stephen Noftall.
- * - Fixed: Compilation of timer.c fails if NUT_CPU_FREQ has been
- *          defined. Thanks to Zoltan Molnar.
- * - Fixed: NutEnterCritical may corrupt the stack when compiled with
- *          GCC option -O0. Thanks to Nicolas Moreau and Johan Kruger.
- * - Added: Global system configuration include.
- * - Changed: PPP IP configuration moved from net interface to driver 
- *            control block.
- * - Fixed: DHCP offers had been accepted only, if they were sent as
- *          broadcasts. Many people had sent patches, I took the one
- *          from Mitsuru Sato, which is the most simple.
- * - Changed: Reduced TCP state machine stack size from 1024 to 512
- *            bytes, keeping fingers crossed.
- * - Changed: Input buffer flushed before sending out a modem chat 
- *            string.
- * - Changed: Realtek driver uses definitions from config includes.
- * - Fixed: Realtek driver ends up with all zero MAC address.
- * - Changed: Using preprocessor definition for C++ compatible
- *            declaration block to avoid automatic indention.
- * - Fixed: Starting threads may fail whith some GCC optimizations.
- * - Fixed: UDP checksum may have been wrong when transmitting broadcasts.
- *          Special thanks to Nicolas Moreau for this patch.
- * - Fixed: When starting several Ethernuts at the same time, some may
- *          receive the same IP address offer from DHCP. Tom Nyström
- *          reported this first. The DHCP message ID is now based on the
- *          MAC address and the system tick counter.
- * - Fixed: Device registration failed for devices without initialization
- *          routine, e.g. urom file system driver.
- * - Changed: Cleaned up the code for network interface configuration,
- *            specially for cases where DHCP isn't available.
- * - Changed: Using a well known spammer to test the inetq application.
- * - Changed: Global variables are no longer limited to internal SRAM.
- * - Fixed: Added Ted Roth's patches to let crurom compile under Linux.
- * - Fixed: Binary mode not working in _fmode(). Thanks to Alessandro 
- *          Zummo.
- *
- * \section hist319 Version 3.1.9
- *
- * - Changed: PPP has been redesigned. It is now using a more complete 
- *            state machine and has been split into a network and a 
- *            driver part. Ethernet-only application will not link in
- *            PPP code anymore.
- * - Added: Chat script interpreter for enhanced modem handling.
- * - Added: LCD driver with VT52 terminal emulation device.
- * - Fixed: Allocating and releasing of NETBUF structures has been
- *          inconsistent in case of communication errors and low
- *          memory situations. Generally, all transmit routines will
- *          now release its NETBUF in case of failures.
- * - Fixed: Undefined signal handler variables with registered timer 
- *          interrupts. Thanks to Tom Nystrom.
- * - Fixed: Network masks with all bits set had been refused.
- * - Fixed: GCC sets the stack on main entry. As a temporary fix
- *          we redefine main during preprocessing.
- * - Changed: Broadcasting to a queue will clear it, even if it had
- *            been in signaled state.
- * - Changed: For applications, make install will additionally build a 
- *            binary and copy it to the bin directory. This is most
- *            useful when working with eboot and tftp.
- * - Fixed: When compiling with GCC and different optimizations, NutInit
- *          may have failed. Thanks to Ralph Mason.
- * - Fixed: Andre Albsmeier found and fixed a problem with ISC-DHCP V3,
- *          which also occured with the DHCP server of some routers.
- * - Fixed: NutUdpReceiveFrom returned the port number in network byte
- *          order, which doesn't fit with the documentation and other
- *          functions. It will be now returned in host byte order. 
- *          Thanks to Pavel Chromy.
- * - Added: Two additional devices for debugging output, which can be
- *          even used while running in interrupt context.
- * - Changed: NutNetAutoConfig() has been moved to pro/dhcpc and is now
- *            deprecated for new applications. A new function named
- *            NutDhcpIfConfig() allows for specifying a timeout. Thanks
- *            to Pavel Chromy.
- * - Changed: In previous releases network devices had been initialized
- *            during interface configuration, while all other devices
- *            had been initialized when opening that device. Now all
- *            devices are initialized during registration. This will
- *            probably break your existing device drivers.
- * - Fixed: Packet overflows in the Realtek network driver caused high
- *          interrupt latency times for other interrupt driven devices.
- * - Changed: Complete redesign of VS1001K driver by Pavel Chromy. Great.
- * - Fixed: Memory leak in NutUdpDestroySocket(). Thanks to Ralph Mason.
- * - Fixed: When reading 255, fgetc() returned EOF. Thanks to Ralph Mason.
- *
- * \section hist301 Version 3.0.1
- *
- * - Added: Almost full stdio provided, which is usable with sockets.
- * - Changed: NutMain() is now deprecated. Use main() for your application's
- *            main thread.
- * - Changed: Major change to the I/O system. NutPrint and NutIfStream are 
- *            deprecated. Use stdio.
- *
- * \section hist260 Version 2.6.0
- *
- * Note: IDE, Compact Flash and PPP are still experimental code.
- *
- * - Changed: Moved to AVRGCC 3.3 and ICCAVR 2.26c.
- * - Changed: Default windows installation directory is now c:/ethernut/nut.
- * - Added: Cool IDE diskdrive and Compact Flash interface done by Michael 
- *          Fischer. Supports FAT32 with long filenames. Be aware, that this
- *          is not stable.
- * - Added: Multimaster TWI interface (aka I2C). No sample available yet.
- * - Added: Enhanced UART interface for ATmega128.
- * - Added: Special directory for OS modifications allows changing Nut/OS
- *          parts for specific application needs without touching the
- *          original code.
- * - Added: Tick counter for number of ticks since system started. By 
- *          Michael Fischer.
- * - Added: Enhanced HTTP request handler by Michael Fischer.
- * - Changed: Event routines return the number of threads woken up. This
- *            may improve your application code a lot.
- * - Changed: The for-statements in the Makefiles had been replaced. Now
- *            sh.exe isn't required anymore and make all should work fine
- *            on Windows XP.
- * - Changed: UART specific definitions were moved from device.h to uart.h.
- *            This may break your existing applications.
- * - Fixed: More reliable MP3 driver for VS1001k.
- * - Fixed: Handle possible deadlock in the TCP state machine in low memory
- *          situations.
- * - Fixed: TCP might fail to process incoming packets on slow connections.
- *          Was it Mike Cornelius, who detected this?
- * - Fixed: Racing conditions on signaled events. Thanks to Michael Fischer.
- * - Changed: Some RAM saved by moving HTTP de-/encoder table to ROM.
- *
- * \section hist2591 Version 2.5.91 (unstable)
- *
- * - Changed: Supports the latest AVR-GCC snapshot, but may introduce some 
- *            compatibility problems with previous versions. avrlibc is now 
- *            using  include/avr for avr specific files, which broke many 
- *            Nut/OS modules. These include definitions have now been moved 
- *            to compiler.h to avoid changing too many files in the future. 
- *            In addition, a copy of the latest avrlibc includes have been 
- *            added to the Nut/OS include directory. If you installed the 
- *            latest avrlibc, you may manually remove these files from 
- *            include/avr.
- * - Added: Configure executable for Windows allows the user to select his 
- *          specific environment. Almost the same as the Linux configure script, 
- *          but supports both compilers, AVR-GCC and ICCAVR. This replaces
- *          the previous batch files to setup the environment, but requires
- *          that the compiler's bin directory has been added to the PATH 
- *          environment variable.
- * - Fixed: Some compiler warnings about signed/unsigned comparisions.
- * - Fixed: Bad volatile declaration in init.c.
- *
- * \section hist259 Version 2.5.9 (unstable)
- *
- * - Added: Long awaited PPP support, contributed by Mike Cornelius
- *          from Call Direct Cellular Solutions Pty. Ltd. Mike wrote:
- *
- *          This driver is stable for my configuration but will need 
- *          work if it is going to be generally useful, as such it is
- *          being released as a pre-alpha driver at this stage.
- *          Specific things that are known to be missing or need work are:
- *          
- *	        User Authentication
- *
- *	        Link state management (please discuss with me if you are planning to work on this)
- *
- *	        CRC should be table based
- *
- *          DNS server update handling (Ethernut native resolver not presently supported)
- *
- *          Outbound Async Character mapping should be improved
- *
- * - Fixed: Corrupted NIC registers were not handled correctly.
- *          This bug occured in heavy traffic networks. Thanks to 
- *          Gerd Mueller and Dirk Tappert from Endress + Hauser Wetzer 
- *          GmbH + Co. KG, who spend many hours tracing this nasty bug.
- * - Fixed: IP checksum calculation sometimes returns a wrong result.
- *          Temporarly switch back to the C routines.
- * - Added: Auto detection of external RAM.
- * - Added: New API GetThreadByName added by Mike Cornelius.
- * - Fixed: Compile bug when compiling for fixed crystal frequency. Thanks
- *          to Robert Hildebrand.
- *
- * \section hist252 Version 2.5.2
- *
- * - Fixed: When registering and opening UART1, Nut/OS continues 
- *          using UART0. Thanks to James Canterbury for tracking
- *          down this problem.
- * - Fixed: Prototype of NutTcpError is missing in socket.h.
- * - Fixed: NutTcpConnect() fails to return, if the destination 
- *          is on the local network and is not reachable. 
- * - Fixed: Already received and buffered TCP data may be discarded, 
- *          when the peer closes the connection before the application 
- *          reads this data. Thanks to James Canterbury for reporting
- *          this problem.
- * - Fixed: Nut/Net responds with RST to late SYNs. This breaks
- *          low speed connections. RSTs are send now only, if the
- *          sequence number of the SYN differs from the initially
- *          sent sequence. Thanks to Mike Cornelius for pointing
- *          this out.
- * - Fixed: ISO-8859-1 character set was hardcoded into the HTTP 
- *          routines. This disables correct display of different 
- *          character sets in the webbrowser. Thanks to JianJian,
- *          who detected this.
- * - Fixed: Bug in retransmit timer initialization may retransmit 
- *          immediately after the original packet is ready to send.
- *          Thanks to Mike Cornelius.
- * 
- * \section hist251 Version 2.5.1
- *
- * - Added: TCP segments received in advance are now buffered.
- *          This gives much better performance while receiving
- *          MP3 streams from Internet Radio Stations.
- * - Added: Additional notes about setting up the different
- *          compiler environments.
- * - Added: Ready-to-run projects for ImageCraft IDE. However
- *          basemon and httpd are slightly limited compared to 
- *          their AVR-GCC counterparts.
- * - Added: Socket option for configurable TCP receive buffer 
- *          size. Default is 3216 bytes.
- * - Fixed: Files created by crurom utility failed to compile
- *          under ICCAVR. 
- * - Fixed: Bad documentation about the return value, when
- *          reading from sostream devices. They return 0 on 
- *          broken connections, not -1. Thanks to Markus von Ehr.
- *
- * \section hist250 Version 2.5.0
- *
- * - Added: Support for ImageCraft ICCAVR Compiler. Major work
- *          has been done by Klaus Ummenhofer. RTOS and TCP
- *          stack are working, but most samples need to be
- *          partly rewritten, because of different ROM string
- *          handling. Documentation is still missing.
- * - Added: Device driver for VS1001K MP3 deoder. This is
- *          still experimental.
- * - Fixed: Reset problem with pre-1.3 boards.
- * - Fixed: System may crash when all timers elapsed. Thanks
- *          to Klaus Ummenhofer.
- * - Added: Crurom utility enhanced
- * - Fixed: Second UART was missing in the library. Thanks
- *          to Robert Hildebrand.
- * - Changed: Default TCP window size is now 4288.
- *
- * \section hist242 Version 2.4.2
- *
- * - Changed: GCC Version 3.2 required for ATmega 128 and
- *            ATmega 103.
- * - Changed: uisp is used for flashing.
- * - Changed: Bin directory divided for ATmega 103 and
- *            ATmega 128.
- * - Fixed: Baudrate detection didn't work on fast CPU and
- *          slow keyboard repeat.
- * - Fixed: Broken ATmega 128 watchdog routines in AVR-GCC.
- * - Changed: Enhanced Basemon detects shortcuts on data bus,
- *            address bus and port lines. Basemon can also
- *            send Ethernet broadcasts without initializing
- *            the TCP/IP stack.
- * - Changed: Optimizing for space. Previously used level 3
- *            will fail with new compiler, because inline
- *            behaviour changed.
- * - Fixed: Bug in ifconfig doesn't store default gate in
- *          EEPROM.
- * - Changed: crurom utility skips CVS directories.
- *
- * \section hist241 Version 2.4.1
- *
- * - Changed: Most parts of the TCP stack have been
- *            redesigned. The new stack can transfer
- *            up to 256 kByte of data per second on
- *            a 14.7 MHz ATmega 128.
- * - Changed: Redesigned NIC driver with improved
- *            stability in heavy traffic networks.
- * - Added: Ability to set some socket options, like
- *          maximum segment size and read/write timeout.
- * - Fixed: Signaled event queue freezes thread.
- * - Fixed: Misconfigured Makefiles called uninstalled
- *          nutisp.exe.
- *
- * \section hist234 Version 2.3.4
- *
- * - Fixed: TCP stack miserably failed if more than one
- *          port was listening. Alejandro Lopez kindly
- *          reported this bug.
- * - Fixed: Serveral interrupts, mainly UART related, were 
- *          not working with ATmega 128.
- * - Added: New device driver routines for digital I/O and
- *          two new sample programs for relay outputs and
- *          optocoupler inputs.
- * - Added: Routines to flash externally attached AVR
- *          controller.
- *
- * \section hist233 Version 2.3.3
- *
- * - Added: Enhanced API documentation.
- * - Added: Support for standard stream I/O device using a
- *          null pointer. This device uses the first on-chip
- *          UART and doesn't do any buffering. This replaces
- *          the NutKPrint functions.
- * - Fixed: Another timer bug has been fixed. If a timeout
- *          timer elapsed after the thread received the event
- *          it was waiting for but before this thread starts
- *          running, it removed the timer, although this
- *          timer may already had been re-used by another
- *          thread.
- * - Fixed: Empty filenames returned the wrong mime type.
- *          Some browsers displayed the source of index.html.
- * - Fixed: Code for using CPU crystal instead of the 
- *          asynchronous 32 kHz clock for the system timer
- *          was broken.
- * - Changed: Unused NutDeviceSend removed.
- * - Added: Support for Imagecraft ICCAVR, but not completed.
- * - Changed: Makefile, Makedefs and Makerules restructured.
- *            The library directory has been divided into
- *            processor specific subdirs.
- * - Added: Batch file to setup different environments for
- *          ATmega 103 and ATmega 128.
- * - Changed: Using __SFR_OFFSET to register access set to 0x20 
- *            for ATmega 128 and 0x00 for ATmega 103.
- * - Fixed: TCP state machine didn't handle keepalive packets,
- *          some out-of-sequence packets and window probes
- *          correctly. Thanks to Michael Stegen, who reported
- *          this bug. Michael is working on Netuner, an Internet
- *          Radio based on Ethernut.
- * - Changed: Basemon SRAM test enhanced.
- * - Added: Simple RS232 server to access the serial port on the
- *          Ethernut via TCP/IP.
- *
- * \section hist232 Version 2.3.2
- *
- * - Fixed: Archive contained a very old API doc.
- * - Fixed: System crash if last timer stops. Thanks to Bernardo
- *          Innocenti.
- * - Fixed: Stream I/O failed on empty buffers, returning garbage.
- *          Thanks to Mike Cornelius.
- * - Added: Many requests were sent to us regarding correct
- *          linefeed / carriage return handling. GetLine should
- *          work now with all combinations.
- * - Added: Support for 1 millisecond system timer using the
- *          CPU crystal instead of the asynchronous 32 kHz clock.
- *          This had been suggested by Marc Wetzel some time
- *          ago. Code has been donated by Bernardo Innocenti.
- * - Changed: SPI UART names changed from uart1/8 to uarts0/7.
- *            Suggested by Marc Wetzel.
- * - Fixed: Interrupt registration doesn't support ATmega 128
- *          interrupts. Code provided by Marc Wetzel.
- * - Added: Timeout support for UART I/O. This is in untested 
- *          alpha stage.
- * - Added: Support for UART 1 on ATmega 128. This is in untested
- *          alpha stage. Marc told me, that he got more on this,
- *          like 9 bit support etc.
- *
- * \section hist231 Version 2.3.1
- *
- * - Added: Support for ATmega 128.
- * - Added: DNS protocol support.
- * - Added: Internet routing sample.
- * - Changed: API functions restore CPU interrupt status flag 
- *            before returning to the caller. This may break
- *            your current application.
- * - Changed: Waiting for an event will yield the CPU, even
- *            if the event has been already signaled.
- * - Fixed: SOSTREAM failed on high traffic output.
- * - Fixed: Racing condition in TCP output eats heap.
- * - Fixed: Recovering from closed TCP window failed.
- * - Fixed: Resending lost TCP segments with too much delay.
- * - Changed: Redesigned TCP socket close.
- * - Fixed: DHCP failed with multiple DNS entries.
- * - Added: Compiling with NUTDEBUG will automatically initialize
- *          the UART and add 4 bytes to every allocated unit to 
- *          detect heap corruption.
- * - Changed: KPrint routines can be used in interrupt context.
- *
- * \section hist222 Version 2.2.2
- *
- * - Fixed: Marc found a missing cli() in NutEventWait.
- *
- * \section hist221 Version 2.2.1
- *
- * - Changed: Events posted to an empty queue are remembered. Note,
- *            that this might break your current application.
- *            Thanks to Marc Wetzel for this suggestion.
- * - Changed: Completely redesigned timer handling. This may break your
- *            application, because timer callbacks are now running in
- *            interrupt context. Marc Wetzel send a complete new timer 
- *            handling with great performance and made additional suggestions 
- *            to further enhance it. I didn't taken over his complete code but
- *            tried to implement most of it.
- * - Changed: New HTTP server sample supporting multiple connections and 
- *            throttling in low memory situations.
- * - Added: HTTP library automatically looks for index.html.
- * - Changed: Network debugging.
- * - Changed: NutThreadSuspend and NutThreadResume are gone. Use events.
- * - Added: New item td_queue added to NUTTHREADINFO. This is used to identify
- *          the root of the event waiting queue.
- * - Added: New module osdebug.c.
- * - Fixed: Due to bad overflow error recovery, the Ethernet controller died 
- *          under heavy traffic.
- * - Fixed: TCP continuosly resends unacknowledged segments, even if the remote 
- *          responds with a reset segment.
- * - Fixed: TCP sockets may get stuck in SYNRECEIVED state.
- * - Fixed: Multiple threads listening on the same TCP port may receive wrong
- *          segments while in listening state.
- * - Added: Read timeout value in TCPSOCKET structure, but no socket option
- *          routine yet. May be set manually.
- * - Added: Better API documentation.
- *
- * \section hist213 Version 2.1.3
- *
- * - Changed: Using AVR GCC 3.0.2.
- * - Fixed: Stopping oneshot timers corrupts timer list, which makes threads disappear.
- * - Fixed: ARP queues the last packet only, discards older ones.
- * - Fixed: If sending too fast after initialization, the NIC sender might hang.
- * 
- * \section hist211 Version 2.1.1
- *
- * - Added: SPI UART support added, still undocumented.
- * - Added: Kernel print routines, still undocumented.
- * - Added: Stream I/O with character translation, undocumented.
- * - Changed: Interrupt are not disabled anymore within heap routines.
- * - Changed: Timeout handling in NutEventWait(), but still buggy.
- * - Fixed: Threads sample ran out of stack.
- */
-
 
 /*!
  * \page copyleft Copyright Statement
@@ -936,15 +517,6 @@
 /*!
  * \defgroup xgNutInit System Initialization
  * \brief Nut/OS initialization.
- *
- * \todo Automatically determine available extension RAM.
- */
-
-/*!
- * \defgroup xgOldInit Old System Initialization
- * \brief Nut/OS initialization.
- *
- * \deprecated New programs should link to nutinit.
  */
 
 /*!
@@ -1113,42 +685,6 @@
  * \defgroup xgDevice Device I/O
  *
  * \brief Input and output device functions.
- */
-
-/*!
- * \defgroup xgPrint Formatted output
- * \brief Formatted character output
- *
- * This module contains routines to print strings
- * and numeric values.
- *
- * All output function in this module will block until 
- * all bytes have been transfered to the output buffer. 
- * If this buffer gets filled up, transmission to the 
- * physical device is started automatically in the 
- * background.
- */
-
-/*!
- * \defgroup xgIfStream Streaming I/O
- * \brief Buffered stream device support.
- *
- * Stream devices use input and output buffers. If an
- * application writes to a stream device, the output
- * data is not directly passed to the device, but
- * buffered first. The transmission starts in the backgorund, 
- * if the output buffer is full or if a special flush
- * function is called.
- */
-
-/*!
- * \defgroup xgIfStran Translated Streaming I/O
- * \brief This module is no longer supported.
- */
-
-/*!
- * \defgroup xgDevTran Translated Format I/O
- * \brief This module is no longer supported.
  */
 
 /*@}*/
@@ -1371,15 +907,6 @@
  * \defgroup xgEthernutCfg Ethernut Hardware.
  * \brief Ethernut internal I/O port usage.
  *
- */
-
-/*!
- * \defgroup xgCoconutCfg Coconut Hardware.
- * \brief Coconut board hardware dependencies.
- *
- * Coconut is an add-on board and can be attached to the Ethernut
- * expansion port. It contains three ATmega128 CPUs, which are
- * used as intelligent RS232 protocol servers.
  */
 
 /*!
