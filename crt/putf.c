@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2003/12/17 14:33:24  drsung
+ * Another bug fix for putf. Thanks to Dusan Ferbas.
+ *
  * Revision 1.6  2003/12/12 23:14:11  drsung
  * Rewritten %P handling for program space strings
  *
@@ -121,7 +124,7 @@ static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch
  * \param fmt   Format string containing conversion specifications.
  * \param ap    List of arguments.
  *
- * 
+ *
  */
 int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list ap)
 {
@@ -230,7 +233,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             break;
 
         case 'P':
-            /* 
+            /*
              * Thanks to Ralph Mason and Damian Slee, who provided some ideas of
              * handling prog_char strings
              */
@@ -416,7 +419,8 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
 
         _putpad(_putb, fd, zeroes, dprec - size);
 
-        _putb(fd, cp, size);
+        if (size)		/* DF 12/16/03 - zero length is "flush" in NutTcpDeviceWrite() */
+            _putb(fd, cp, size);
 
         if (ch == 'P')
             free(cp);
