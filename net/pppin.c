@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.calldirect.com.au/
  * -
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/08 11:27:44  haraldkipp
+ * Accept incoming header compression.
+ *
  * Revision 1.3  2003/08/14 15:15:28  haraldkipp
  * Unsuccessful try to fix ICCAVR bug
  *
@@ -82,6 +85,7 @@
  */
 
 #include <dev/ppp.h>
+#include <dev/ahdlc.h>
 
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
@@ -116,9 +120,10 @@
  */
 void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
 {
-    PPPHDR *ph;
+    PPPHDR *ph = (PPPHDR *) nb->nb_dl.vp;
     PPPDCB *dcb = dev->dev_dcb;
     u_short protocol;
+    u_char protocolsz;
 
 #ifdef NUTDEBUG
     if (__ppp_trf) {
@@ -133,21 +138,46 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
 #endif
 
     /*
-     * Chop off the PPP header.
+     * Check if the address and control field is compressed.
+     * Thanks to Francois Rademeyer.
      */
-    ph = (PPPHDR *) nb->nb_dl.vp;
-    nb->nb_nw.vp = ph + 1;
-    nb->nb_nw.sz = nb->nb_dl.sz - sizeof(PPPHDR);
-    nb->nb_dl.sz = sizeof(PPPHDR);
+    if (ph->address != AHDLC_ALLSTATIONS) {
 
-    protocol = ntohs(ph->prot_type);
+        /*
+         * Check for protocol compression.
+         * LSB of 2nd octet for protocol is always 1.
+         */
+        if (((u_char *) nb->nb_dl.vp)[0] & 0x01) {
+            protocolsz = 1;
+            protocol = *(u_char *) nb->nb_dl.vp;
+        } else {
+            protocolsz = 2;
+            protocol = ntohs(*(u_short *) nb->nb_dl.vp);
+        }
+
+        /*
+         * Chop off the compressed header.
+         */
+        nb->nb_nw.vp = nb->nb_dl.vp + protocolsz;
+        nb->nb_nw.sz = nb->nb_dl.sz - protocolsz;
+        nb->nb_dl.sz = protocolsz;
+    } else {
+        /*
+         * Chop off the PPP header.
+         */
+        nb->nb_nw.vp = ph + 1;
+        nb->nb_nw.sz = nb->nb_dl.sz - sizeof(PPPHDR);
+        nb->nb_dl.sz = sizeof(PPPHDR);
+
+        protocol = ntohs(ph->prot_type);
+    }
 
     /*
      * Toss all non-LCP packets unless LCP is OPEN.
      */
     if (protocol != PPP_LCP && dcb->dcb_lcp_state != PPPS_OPENED) {
-	NutNetBufFree(nb);
-	return;
+        NutNetBufFree(nb);
+        return;
     }
 
     /*
@@ -155,9 +185,9 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
      * except LCP, LQR and authentication packets.
      */
     if (dcb->dcb_auth_state != PAPCS_OPEN &&
-	!(protocol == PPP_LCP || protocol == PPP_LQR || protocol == PPP_PAP || protocol == PPP_CHAP)) {
-	NutNetBufFree(nb);
-	return;
+        !(protocol == PPP_LCP || protocol == PPP_LQR || protocol == PPP_PAP || protocol == PPP_CHAP)) {
+        NutNetBufFree(nb);
+        return;
     }
 
     /*
@@ -166,7 +196,7 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
     switch (protocol) {
     case PPP_IP:
         /* Internet protocol. */
-        if(dcb->dcb_ipcp_state == PPPS_OPENED)
+        if (dcb->dcb_ipcp_state == PPPS_OPENED)
             NutIpInput(dev, nb);
         else
             NutNetBufFree(nb);
@@ -194,4 +224,3 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
 }
 
 /*@}*/
-

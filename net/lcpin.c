@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/08 11:26:13  haraldkipp
+ * Accept incoming header compression.
+ *
  * Revision 1.4  2004/01/30 11:37:58  haraldkipp
  * Handle magic number rejects
  *
@@ -159,6 +162,12 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
             case LCP_AUTHTYPE:
                 if (xcpo->xcpo_len >= 4)
                     len = 0;
+                break;
+            case LCP_PCOMPRESSION:
+                len = 0;
+                break;
+            case LCP_ACCOMPRESSION:
+                len = 0;
                 break;
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/08 11:27:24  haraldkipp
+ * Accept incoming header compression.
+ *
  * Revision 1.2  2003/08/14 15:16:22  haraldkipp
  * Echo, discard and protocol reject added
  *
@@ -46,12 +49,16 @@
 
 #include <net/netdebug.h>
 
+#include <dev/ahdlc.h>
+
 #include <arpa/inet.h>
 #include <netinet/ppp_fsm.h>
 #include <netinet/if_ppp.h>
 
 FILE *__ppp_trs;                /*!< \brief PPP trace output stream. */
 u_char __ppp_trf;               /*!< \brief PPP trace flags. */
+
+static u_char ppp_header_sz;    /* Size of the PPP header. */
 
 static prog_char dbg_confreq[] = "[CONFREQ]";
 static prog_char dbg_confack[] = "[CONFACK]";
@@ -74,11 +81,11 @@ void NutDumpLcpOption(FILE * stream, NETBUF * nb)
     if ((len = nb->nb_ap.sz) != 0)
         xcpo = nb->nb_ap.vp;
     else {
-        len = nb->nb_dl.sz - sizeof(PPPHDR) - sizeof(XCPHDR);
-        xcpo = (XCPOPT *) (((char *) nb->nb_dl.vp) + sizeof(PPPHDR) + sizeof(XCPHDR));
+        len = nb->nb_dl.sz - ppp_header_sz - sizeof(XCPHDR);
+        xcpo = (XCPOPT *) (((char *) nb->nb_dl.vp) + ppp_header_sz + sizeof(XCPHDR));
     }
     fprintf(stream, "[OPT(%u)]", len);
-    while(len) {
+    while (len) {
         switch (xcpo->xcpo_type) {
         case LCP_MRU:
             fprintf(stream, "[MRU=%u]", ntohs(xcpo->xcpo_.us));
@@ -102,12 +109,12 @@ void NutDumpLcpOption(FILE * stream, NETBUF * nb)
             fprintf(stream, "[OPT%u?]", xcpo->xcpo_type);
             break;
         }
-        if(len < xcpo->xcpo_len) {
+        if (len < xcpo->xcpo_len) {
             fputs("[LEN?]", stream);
             break;
         }
         len -= xcpo->xcpo_len;
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
     }
 }
 
@@ -119,10 +126,9 @@ void NutDumpLcp(FILE * stream, NETBUF * nb)
     if ((len = nb->nb_nw.sz) != 0) {
         len = nb->nb_nw.sz + nb->nb_ap.sz;
         lcp = nb->nb_nw.vp;
-    }
-    else {
-        len = nb->nb_dl.sz - sizeof(PPPHDR);
-        lcp = (XCPHDR *) (((char *) nb->nb_dl.vp) + sizeof(PPPHDR));
+    } else {
+        len = nb->nb_dl.sz - ppp_header_sz;
+        lcp = (XCPHDR *) (((char *) nb->nb_dl.vp) + ppp_header_sz);
     }
     fprintf(stream, "[LCP-%03u(%u)]", lcp->xch_id, ntohs(lcp->xch_len));
     if (len < sizeof(XCPHDR)) {
@@ -191,18 +197,18 @@ void NutDumpPapOption(FILE * stream, NETBUF * nb)
     if ((len = nb->nb_ap.sz) != 0)
         xcpo = nb->nb_ap.vp;
     else {
-        len = nb->nb_dl.sz - sizeof(PPPHDR) - sizeof(XCPHDR);
-        xcpo = ((char *) nb->nb_dl.vp) + sizeof(PPPHDR) + sizeof(XCPHDR);
+        len = nb->nb_dl.sz - ppp_header_sz - sizeof(XCPHDR);
+        xcpo = ((char *) nb->nb_dl.vp) + ppp_header_sz + sizeof(XCPHDR);
     }
     fprintf(stream, "[OPT(%u)]", len);
-    while(len) {
-        if(*xcpo) {
+    while (len) {
+        if (*xcpo) {
             fputc('[', stream);
-            for(i = 1; i <= *xcpo; i++)
+            for (i = 1; i <= *xcpo; i++)
                 fputc(*(xcpo + i), stream);
             fputc(']', stream);
         }
-        if(len < (u_short)(*xcpo + 1)) {
+        if (len < (u_short) (*xcpo + 1)) {
             fputs("[LEN?]", stream);
             break;
         }
@@ -219,8 +225,8 @@ void NutDumpPap(FILE * stream, NETBUF * nb)
     if ((len = nb->nb_nw.sz) != 0)
         pap = nb->nb_nw.vp;
     else {
-        len = nb->nb_dl.sz - sizeof(PPPHDR);
-        pap = (XCPHDR *) (((char *) nb->nb_dl.vp) + sizeof(PPPHDR));
+        len = nb->nb_dl.sz - ppp_header_sz;
+        pap = (XCPHDR *) (((char *) nb->nb_dl.vp) + ppp_header_sz);
     }
     fprintf(stream, "[PAP-%03u(%u)]", pap->xch_id, ntohs(pap->xch_len));
     if (len < sizeof(XCPHDR)) {
@@ -256,34 +262,34 @@ void NutDumpIpcpOption(FILE * stream, NETBUF * nb)
     if ((len = nb->nb_ap.sz) != 0)
         xcpo = nb->nb_ap.vp;
     else {
-        len = nb->nb_dl.sz - sizeof(PPPHDR) - sizeof(XCPHDR);
-        xcpo = (XCPOPT *) (((char *) nb->nb_dl.vp) + sizeof(PPPHDR) + sizeof(XCPHDR));
+        len = nb->nb_dl.sz - ppp_header_sz - sizeof(XCPHDR);
+        xcpo = (XCPOPT *) (((char *) nb->nb_dl.vp) + ppp_header_sz + sizeof(XCPHDR));
     }
     fprintf(stream, "[OPT(%u)]", len);
-    while(len) {
+    while (len) {
         switch (xcpo->xcpo_type) {
-	case IPCP_ADDR:
+        case IPCP_ADDR:
             fprintf(stream, "[ADDR=%s]", inet_ntoa(xcpo->xcpo_.ul));
             break;
-	case IPCP_COMPRESSTYPE:
+        case IPCP_COMPRESSTYPE:
             fputs("[COMP]", stream);
             break;
-	case IPCP_MS_DNS1:
+        case IPCP_MS_DNS1:
             fprintf(stream, "[DNS1=%s]", inet_ntoa(xcpo->xcpo_.ul));
             break;
-	case IPCP_MS_DNS2:
+        case IPCP_MS_DNS2:
             fprintf(stream, "[DNS2=%s]", inet_ntoa(xcpo->xcpo_.ul));
             break;
         default:
             fprintf(stream, "[OPT%u?]", xcpo->xcpo_type);
             break;
         }
-        if(len < xcpo->xcpo_len) {
+        if (len < xcpo->xcpo_len) {
             fputs("[LEN?]", stream);
             break;
         }
         len -= xcpo->xcpo_len;
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
     }
 }
 
@@ -295,8 +301,8 @@ void NutDumpIpcp(FILE * stream, NETBUF * nb)
     if ((len = nb->nb_nw.sz) != 0)
         ipcp = nb->nb_nw.vp;
     else {
-        len = nb->nb_dl.sz - sizeof(PPPHDR);
-        ipcp = (XCPHDR *) (((char *) nb->nb_dl.vp) + sizeof(PPPHDR));
+        len = nb->nb_dl.sz - ppp_header_sz;
+        ipcp = (XCPHDR *) (((char *) nb->nb_dl.vp) + ppp_header_sz);
     }
     fprintf(stream, "[IPCP-%03u(%u)]", ipcp->xch_id, ntohs(ipcp->xch_len));
     if (len < sizeof(XCPHDR)) {
@@ -345,16 +351,39 @@ void NutDumpIpcp(FILE * stream, NETBUF * nb)
 
 void NutDumpPpp(FILE * stream, NETBUF * nb)
 {
-    PPPHDR *ph;
-    
+    PPPHDR *ph = (PPPHDR *) nb->nb_dl.vp;
+    u_short protocol;
+
     fprintf(stream, "(%u)", nb->nb_dl.sz + nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz);
-    if (nb->nb_dl.sz < sizeof(PPPHDR)) {
+
+    /*
+     * Check if the address and control field is compressed.
+     * Thanks to Francois Rademeyer.
+     */
+    if (ph->address != AHDLC_ALLSTATIONS) {
+
+        /*
+         * Check for protocol compression.
+         * LSB of 2nd octet for protocol is always 1.
+         */
+        if (((u_char *) nb->nb_dl.vp)[0] & 0x01) {
+            ppp_header_sz = 1;
+            protocol = *(u_char *) nb->nb_dl.vp;
+        } else {
+            ppp_header_sz = 2;
+            protocol = ntohs(*(u_short *) nb->nb_dl.vp);
+        }
+    } else {
+        ppp_header_sz = sizeof(PPPHDR);
+        protocol = ntohs(ph->prot_type);
+    }
+
+    if (nb->nb_dl.sz < ppp_header_sz) {
         fputs("[LEN?]", stream);
         return;
     }
-    ph = (PPPHDR *) nb->nb_dl.vp;
 
-    switch (ntohs(ph->prot_type)) {
+    switch (protocol) {
     case PPP_IP:
         break;
 
