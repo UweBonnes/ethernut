@@ -132,6 +132,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2003/10/13 10:13:49  haraldkipp
+ * First release
+ *
  * Revision 1.3  2003/08/05 20:11:30  haraldkipp
  * Removed from ICCAVR compilation
  *
@@ -176,6 +179,11 @@
 #include <sys/osdebug.h>
 #include <net/netdebug.h>
 #endif
+
+/*!
+ * \addtogroup xgNicCs8900
+ */
+/*@{*/
 
 
 // Ethernet flags byte

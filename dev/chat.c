@@ -66,7 +66,42 @@ int NutChatExpectString(NUTCHAT *ci, char *str)
                 m = (ch == ci->chat_abort[i][0]);
             ci->chat_abomat[i] = m;
         }
+
+        /*
+         * Check for report strings.
+         */
+        if (ci->chat_report_state > 0) {
+            m = ci->chat_repmat;
+            if (ci->chat_report_state == 2)
+                chat_report[m++]=ch;
+            else if (ch == ci->chat_report_search[m]) {
+                chat_report[m++]=ch;
+                if (ci->chat_report_search[m] == 0) {
+                    ci->chat_report_state=2;
+                }
+            }
+            else
+                m = (ch == ci->chat_report_search[0]);
+            ci->chat_repmat = m;
+        }
     }
+    
+    /*
+     * Read the remainder of the string before NutChatSendString clears it
+     */
+    if (ci->chat_report_state == 2) {
+        m = ci->chat_repmat;      // not needed... (but not nice to remove it)
+        while (m < CHAT_MAX_REPORT_SIZE) {
+            if(_read(ci->chat_fd, &ch, 1) != 1)
+                return 3;
+            if (ch < 0x20)
+                break;
+            chat_report[m++]=ch;
+        }
+        ci->chat_report_state=0;    // Only find first occurence
+        chat_report[m]=0;
+    }
+
     return 0;
 }
 
@@ -181,6 +216,12 @@ int NutChatExpect(NUTCHAT *ci, char *str)
         ci->chat_arg = CHAT_ARG_TIMEOUT;
         return 0;
     }
+    if(strcmp(str, "REPORT") == 0) {
+        ci->chat_repmat=0;                // not needed ???
+        ci->chat_report_state=1;
+        ci->chat_arg = CHAT_ARG_REPORT;
+        return 0;
+    }
 
     /*
      * Process expected string.
@@ -288,6 +329,21 @@ int NutChatSend(NUTCHAT *ci, char *str)
             lv = CHAT_DEFAULT_TIMEOUT;
 
         _ioctl(ci->chat_fd, UART_SETREADTIMEOUT, &lv);
+
+        return 0;
+    }
+
+    /*
+     * Set report string
+     */
+    if (ci->chat_arg == CHAT_ARG_REPORT) {
+        ci->chat_arg = CHAT_ARG_SEND;
+        chat_report = malloc(CHAT_MAX_REPORT_SIZE+1);
+        cp = malloc(strlen(str) + 1);
+        ci->chat_report_search = cp;
+        while(*str)
+            *cp++ = *str++;       // Do it the easy way, not as smart and thorough as the abort string...
+        *cp = 0;
 
         return 0;
     }
