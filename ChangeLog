@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.167 2005/02/11 00:02:17 hwmaier Exp $
+$Id: ChangeLog,v 1.168 2005/02/11 00:11:26 hwmaier Exp $
 
 2005-02-10  Henrik Maier  <hwmaier@users.sourceforge.net>
 
@@ -43,17 +43,17 @@ $Id: ChangeLog,v 1.167 2005/02/11 00:02:17 hwmaier Exp $
         include/compiler.h, sys/atom.h, sys/types.h, sys/nut_types.h,
         os/nutinit.c, os/timer.c, os/thread.c, include/arch/avr.h,
         sys/nutconfig.h:
-        Changed "#ifdef __AVR_ATmega128__" to "#ifdef __AVR_ENHANCED__" to
-        ar more generic "#ifd efined(__AVR__)" in order to support
+        Changed "#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)"
+        to a more generic "#if defined(__AVR__)" in order to support
         AT90CAN128, ATMEGA64, and possibly the ATMEGA256 as well.
 
-        * dev/adhdlc.c, dev/debug.h, dev.ide.c, dev/nicrtl.c, dev/twif.c,
+        * dev/adhdlc.c, dev/debug.h, dev/ide.c, dev/nicrtl.c, dev/twif.c,
         dev/uartavr.c, dev/usart0avr.c, dev/usart1avr.c, dev/usartavr.c,
         include/arch/avr.h, include/dev/debug.h, include/dev/uartavr.h,
         include/dev/usartavr.h, os/arch/timer.c, dev/debug1.c, dev/ide.c,
-        include/arch/avr.h, os/arch/avr_timer.c:
+        os/arch/avr_timer.c:
         Changed "ifdef __AVR_ATmega128__" to "#ifdef __AVR_ENHANCED__" so the
-        condition also includes AT90CAN128 ans ATMEGA64.
+        condition also includes AT90CAN128 and ATMEGA64.
 
 
 2005-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
