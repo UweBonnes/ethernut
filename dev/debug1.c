@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/02/06 16:36:59  haraldkipp
+ * Fixes ICCAVR V7 baudrate miscalculation.
+ *
  * Revision 1.2  2004/02/25 16:19:10  haraldkipp
  * Support baudrate settings
  *
@@ -65,7 +68,7 @@ static NUTFILE dbgfile;
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outb(UBRR1L, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 16UL)) + 1UL) / 2UL) - 1);
+        outb(UBRR1L, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 16UL)) + 1UL) / 2UL) - 1UL);
         return 0;
     }
     return -1;
