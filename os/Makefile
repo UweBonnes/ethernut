@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2004/05/18 10:23:41  haraldkipp
+# Typo corrected
+#
 # Revision 1.7  2004/05/17 18:59:49  freckle
 # Implemented recursive mutex and semaphore functions for nut/os based on the
 # posix specifation using existing nut/os primitives (post/wait event)
@@ -101,7 +104,7 @@ include $(top_srcdir)/Makedefs
 
 SRC1 = 	nutinit.c
 SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
-	version.c semapore.c mutex.c
+	version.c semaphore.c mutex.c
 
 #Add support for memory banks on AVR architecture
 ifeq ($(ARCH), avr)
