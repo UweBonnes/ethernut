@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.162 2005/02/06 20:35:28 haraldkipp Exp $
+$Id: ChangeLog,v 1.163 2005/02/07 09:23:41 haraldkipp Exp $
+
+2005-02-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/arpcache.c: Wrong pointer sequence in flush
+	routine fixed. Thanks to Dusan Ferbas.
+
 
 2005-02-06  Harald Kipp  <harald.kipp@egnite.de>
 
