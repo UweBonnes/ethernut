@@ -83,6 +83,14 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2005/03/13 13:40:32  haraldkipp
+ * If NutArpOutput() failed, then NutArpCacheQuery() released the already
+ * released NETBUF. This bug had been fixed. If NutArpAllocNetBuf() fails,
+ * the ARP entry will now be removed immediately. Additional check for
+ * valid entry pointer added. These modifications had been suggested by
+ * Dusan Ferbas. Finally memcpy() has been replaced by a simple loop in order
+ * to provide a work around for GCC Bug #18251.
+ *
  * Revision 1.8  2005/02/07 18:57:49  haraldkipp
  * ICCAVR compile errors fixed
  *
@@ -432,6 +440,8 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
             return -1;
         }
         if ((nb = NutArpAllocNetBuf(ARPOP_REQUEST, ip, 0)) == 0) {
+            entry->ae_flags |= ATF_REM;
+            ArpCacheFlush(ifn);
             return -1;
         }
     }
@@ -444,8 +454,14 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
     for (;;) {
         /* If completed, provide the MAC address and exit. */
         if (entry->ae_flags & ATF_COM) {
-            memcpy(mac, (void *) entry->ae_ha, 6);
-            rc = 0;
+            //Work around for GCC 3.4.3 bug #18251
+            //memcpy(mac, entry->ae_ha, 6);
+            //rc = 0;
+            rc = 6;
+            do {
+                rc--;
+                mac[rc] = entry->ae_ha[rc];
+            } while(rc);
             break;
         }
 #ifdef NUTDEBUG
@@ -457,8 +473,13 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
         }
 #endif
 
-        /* Give up on too many retries or on transmit failures. */
-        if (retries-- == 0 || (nb && NutArpOutput(dev, nb))) {
+        /* Give up on too many retries. */
+        if (retries-- == 0) {
+            break;
+        }
+        /* Mark buffer released on transmit errors. */
+        if (nb && NutArpOutput(dev, nb)) {
+            nb = 0;
             break;
         }
         /* Sleep until woken up by an update of this ARP entry
@@ -478,7 +499,8 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
        packet. If this thread fails, it should also remove the entry. */
     if (nb) {
         NutNetBufFree(nb);
-        if (rc) {
+        /* Play save and check, if the entry still exists. */
+        if (rc && entry) {
             entry->ae_flags |= ATF_REM;
             ArpCacheFlush(ifn);
         }
