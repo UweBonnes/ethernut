@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.2  2003/12/19 22:34:35  drsung
+ * Added xgCrtTime for time functions
+ *
  * Revision 1.1  2003/12/15 19:41:08  haraldkipp
  * First check in
  *
@@ -1791,6 +1794,15 @@
  * \code #include <io.h> \endcode
  * 
  * Standard C runtime file interface to Nut/OS devices.
+ */
+
+/*!
+ * \defgroup xgCrtTime Time handling Functions
+ * \brief Implements some standard C time functions.
+ *
+ * Use these functions to get the current time and convert, 
+ * adjust, and store it as necessary. The current time is the system time. 
+ *
  */
 
 /*!
