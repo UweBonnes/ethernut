@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.4  2005/02/02 15:53:15  haraldkipp
+-- DHCP configuration added
+--
 -- Revision 1.3  2004/09/19 11:18:44  haraldkipp
 -- Syslog client added
 --
@@ -53,7 +56,107 @@ nutpro =
         sources = 
         { 
             "dhcpc.c"
+        },
+        options = 
+        {
+            {
+                macro = "DHCP_SERVERPORT",
+                brief = "Server Port",
+                description = "UDP port of the DHCP server. Default is 67.", 
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "DHCP_CLIENTPORT",
+                brief = "Client Port",
+                description = "UDP port of the DHCP client. Default is 68.", 
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "DHCP_BROADCAST_FLAG",
+                brief = "Broadcast Flag",
+                description = "If enabled, the client will set the broadcast flag in all "..
+                              "outgoing messages. This is not required, because Nut/Net is "..
+                              "able to receive UPD datagrams without configuring the "..
+                              "interface.",
+                flavor = "boolean",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "MIN_DHCP_MSGSIZE",
+                brief = "Min. Message Size",
+                description = "Used to maintain BOOTP compatibility of outgoing messages. "..
+                              "Default is 300 octets.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "MAX_DHCP_MSGSIZE",
+                brief = "Max. Message Size",
+                description = "RFC 2131 demands, that a DHCP client must be prepared to receive DHCP "..
+                              "messages with an options field length of at least 312 octets. This "..
+                              "implies that we must be able to accept messages of up to 576 octets (default)",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "MAX_DHCP_BUFSIZE",
+                brief = "UDP Buffer Size",
+                description = "By default this value is set to 1728 and allows the client to concurrently "..
+                              "receive offers from up to 3 DHCP servers. Setting this value to zero will "..
+                              "save some heap space by disabling UDP buffering. This is fine for networks "..
+                              "with a single DHCP server.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "MIN_DHCP_WAIT",
+                brief = "Min. Wait Time",
+                description = "The client will wait this number of milliseconds (default is 4000) before "..
+                              "resending a request. The timeout is doubled on each retry up to the "..
+                              "number of milliseconds specified by MAX_DHCP_WAIT.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "MAX_DHCP_WAIT",
+                brief = "Max. Wait Time",
+                description = "With each retry the client will double the number of milliseconds to wait "..
+                              "for a response from the server. However, the maximum time can be limited "..
+                              "by this item, which defaults to 64000.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "MAX_DCHP_RETRIES",
+                brief = "Max. Request Retries",
+                description = "The client will give up after resending this number of requests without "..
+                              "receiving a response from the server. Default is 3.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "MAX_DCHP_RELEASE_RETRIES",
+                brief = "Max. Release Retries",
+                description = "RFC 2131 doesn't specify a server response to release messages from "..
+                              "the client. If the message gets lost, then the lease isn't released. "..
+                              "Setting a value greater than zero (default) will cause the client "..
+                              "to resend a release message for the given number of times or until "..
+                              "the server sends a response.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            },
+            {
+                macro = "DHCP_DEFAULT_LEASE",
+                brief = "Default Lease",
+                description = "If the server doesn't provide a maximum lease time, the client "..
+                              "uses the number of seconds given by this value. Default is 43200.",
+                flavor = "booldata",
+                file = "include/cfg/dhcp.h"
+            }
         }
+
     },
     {
         name = "nutpro_resolv",
