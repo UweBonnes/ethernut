@@ -49,20 +49,35 @@
 #include <sys/atom.h>			   // NutEnterCritical_notrace
 #include <dev/irqreg.h>			   // sig_OVERFLOW1
 #include <stdio.h>                 // printf, sscanf
+#include <string.h>                // strcmp
 
 /************************************************/
 /* global variables */
 /************************************************/
-u_int micros_high = 0;
-t_traceitem *trace_items;
-t_traceitem *trace_current;
-int trace_head = 0;
-int trace_size = 0;
-char trace_isfull = 0;
-char trace_mode = TRACE_MODE_OFF;
-char trace_mask[TRACE_TAG_END] = {1,1,1,1,1,1,1,1};
+u_int micros_high 			= 0;
+t_traceitem *trace_items 	= 0;
+t_traceitem *trace_current 	= 0;
+int trace_head 				= 0;
+int trace_size 				= 0;
+char trace_isfull 			= 0;
+char trace_isinit 			= 0;
+char trace_mode 			= TRACE_MODE_OFF;
 
-char* tag_string[TRACE_TAG_END] = {
+char trace_mask[TRACE_TAG_LAST+1] = {
+	0,
+	0,
+	1,
+	1,
+	1,
+	1,
+	0,
+	0,
+	1,
+	1,
+	1
+};
+
+char* tag_string[TRACE_TAG_LAST+1] = {
 	"Critical  Enter",
 	"Critical  Exit",
 	"Thread    Yield",
@@ -71,10 +86,12 @@ char* tag_string[TRACE_TAG_END] = {
 	"Thread    Sleep",
 	"Interrupt Enter",
 	"Interrupt Exit",
-	"Trace Stop"
+	"Trace Start",
+	"Trace Stop",
+	"User *"
 };
 
-char* int_string[TRACE_INT_END] = {
+char* int_string[TRACE_INT_LAST+1] = {
 	"UART0_CTS",
 	"UART0_RXCOMPL",
 	"UART0_TXEMPTY",
@@ -86,14 +103,23 @@ char* int_string[TRACE_INT_END] = {
 	"SUART_TIMER",
 	"SUART_RX"	
 };
+
+char* mode_string[TRACE_MODE_LAST+1] = {
+	"OFF",
+	"CIRCULAR",
+	"ONESHOT"
+};
+
+char* user_string[] = {
+	"my first event",
+	"my second event"
+	// here you can modify/extend your event names, create events using
+	//                 TRACE_ADD_ITEM(TRACE_TAG_USER,<int>)
+	// where <int> is the number of your event, e.g. <int>=0 for "my first event"
+	// WARNING: Do not use numbers for which no user_string is defined, otherwise
+	// unpredictable behaviour results when printing the trace buffer!
+};
 	
-
-/************************************************/
-/* prototypes of internal functions */
-/************************************************/
-static void NutTraceTimer1IRQ(void *arg);
-
-
 /************************************************/
 /* function definitions */
 /************************************************/
@@ -104,72 +130,129 @@ static void NutTraceTimer1IRQ(void *arg)
 //	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_TIMER1_OVERFL)
 }
 
-int NutInitTrace(int size) 
-{
-	trace_items = (t_traceitem *)NutHeapAlloc(size*sizeof(t_traceitem));
-	if (trace_items == 0) {
-		return 0;
-	}
-	trace_size       = size;
-	trace_head 		 = 0;
-	trace_isfull     = 0;
-	trace_mode       = TRACE_MODE_CIRCULAR;
 
-	// start timer1 at CPU frequency/8 and register interrupt service routine
-	outp(2,TCCR1B);
-	NutRegisterIrqHandler(&sig_OVERFLOW1, NutTraceTimer1IRQ, 0);
-	sbi(TIMSK, TOIE1);	
-	return 1;		
+
+int NutTraceInit(int size, char mode) 
+{
+	if (!trace_isinit) {
+		// start timer1 at CPU frequency/8 and register interrupt service routine
+		outp(2,TCCR1B);
+		NutRegisterIrqHandler(&sig_OVERFLOW1, NutTraceTimer1IRQ, 0);
+		sbi(TIMSK, TOIE1);
+		trace_isinit = 1;
+	}		
+	if (size==0) {
+		size = TRACE_SIZE_DEFAULT;
+	}	
+	if (size != trace_size) {
+		// current buffer is not of size that is wanted
+		if (trace_items != 0) {
+			// but memory is already allocated -> free old buffer
+			NutHeapFree(trace_items);
+		}
+		// allocate buffer
+		trace_items = (t_traceitem *)NutHeapAlloc(size * sizeof(t_traceitem));
+		if (trace_items == 0) {
+			// failed
+			return trace_size = 0;
+		}
+		else {
+			trace_size = size;
+		}
+	}
+	
+	if (mode == TRACE_MODE_OFF) {
+		// if terminal-cmd "trace size <val>" is called trace is started in
+		// default mode
+		mode = TRACE_MODE_DEFAULT;
+	}
+	trace_mode   = mode;
+	NutTraceClear();	
+	return trace_size;		
 }
 
-void NutClearTrace()
+
+
+void NutTraceClear()
 {
 	trace_head = trace_isfull = 0;
+	TRACE_ADD_ITEM(TRACE_TAG_START,0)	
 }
 
-void NutStopTrace()
+void NutTraceStop()
 {
-	TRACE_ADD_ITEM(TRACE_TAG_STOP,0);
+	TRACE_ADD_ITEM(TRACE_TAG_STOP,0)
 	trace_mode = TRACE_MODE_OFF;
 }
 
-void NutStartTrace()
+void NutTraceTerminal(u_char* arg)
 {
-	NutClearTrace();
-	trace_mode = TRACE_MODE_CIRCULAR;
-}
+	int val;
 
-void NutPrintTraceMask(u_char* arg)
-{
-	int tag,toggle;
-	if (sscanf(arg,"%d",&toggle)==1) {
-		if (toggle<TRACE_TAG_END) {
-			trace_mask[toggle]=trace_mask[toggle] ? 0 : 1;
-			NutClearTrace();
+	if (sscanf(arg,"print%d",&val)==1) {
+		NutTracePrint(val);
+		return;
+	}
+	if (!strncmp(arg,"print",5)) {
+		NutTracePrint(0);
+		return;
+	}
+	if (!strncmp(arg,"oneshot",7)) {
+		NutTraceInit(trace_size,TRACE_MODE_ONESHOT);
+		printf("TRACE mode %s, restarted\n",mode_string[(int)trace_mode]);
+		return;
+	}
+	if (!strncmp(arg,"circular",8)) {
+		NutTraceInit(trace_size,TRACE_MODE_CIRCULAR);
+		printf("TRACE mode %s, restarted\n",mode_string[(int)trace_mode]);
+		return;
+	}
+	if (sscanf(arg,"size%d",&val)==1) {
+		printf("TRACE new size: %d\n",NutTraceInit(val,trace_mode));
+		return;
+	}
+	if (!strncmp(arg,"stop",4)) {
+		NutTraceStop();
+		printf("TRACE stopped\n");
+		return;
+	}
+	if (sscanf(arg,"mask%d",&val)==1) {
+		if (val<=TRACE_TAG_LAST) {
+			trace_mask[val]=trace_mask[val] ? 0 : 1;
+			NutTraceClear();
 		}
+		NutTraceMaskPrint();
+		return;
 	}
-	printf("\nTRACEMASK\n");
-	for (tag=0;tag<TRACE_TAG_END;tag++) {
-		printf("%d %s ",tag,tag_string[tag]);
-		if (trace_mask[tag])
-			printf("ON\n");
-		else
-			printf("OFF\n");
+	if (!strncmp(arg,"mask",4)) {
+		NutTraceMaskPrint();
+		return;
 	}
-					
+	
+	
+	
+	NutTraceStatusPrint();
+	printf("SYNTAX: trace [print [<size>]|oneshot|circular|size <size>|stop|mask [<tag>]]\n");
 }
 
-void NutPrintTrace(u_char* arg)
+void NutTraceStatusPrint(void)
+{
+	printf("TRACE STATUS\n");
+	printf(" Mode is %s\n",mode_string[(int)trace_mode]);
+	printf(" Size is %d\n",trace_size);
+	if (trace_isfull)
+		printf(" is full\n");
+	else
+		printf(" contains %d elements\n",trace_head);		
+}
+
+void NutTracePrint(int size)
 {
 	int i,index;
 	u_long time;
 	char mode;
-	int size;
 	u_int micros, millis, secs;
 
-	if (sscanf(arg,"%d",&size)!=1) {
-		size = 0;
-	}
 	mode = trace_mode;
 	trace_mode = TRACE_MODE_OFF;
 	printf("\nTRACE");
@@ -220,6 +303,12 @@ void NutPrintTrace(u_char* arg)
 						int_string[(int)trace_items[index].pc],
 						secs,millis,micros);
 				break;
+			case TRACE_TAG_USER:
+				printf("%-20s%-15s%7u:%03u:%03u\n",
+						tag_string[(int)trace_items[index].tag],
+						user_string[(int)trace_items[index].pc],
+						secs,millis,micros);
+				break;
 			default:
 				printf("%-20s%-#15x%7u:%03u:%03u\n",
 						tag_string[(int)trace_items[index].tag],
@@ -230,7 +319,7 @@ void NutPrintTrace(u_char* arg)
 	trace_mode = mode;
 }
 
-int NutGetPC(void)
+int NutTraceGetPC(void)
 {
 	int pc = ((int)(*((char*)SP+1)));
 	pc = (pc<<8)|(0x00ff&(int)(*((char*)SP+2)));
@@ -238,3 +327,29 @@ int NutGetPC(void)
 } 
 
 
+void NutTraceMaskSet(int tag)
+{
+	if (tag<=TRACE_TAG_LAST) {
+		trace_mask[tag] = 1;
+	}
+}
+
+void NutTraceMaskClear(int tag)
+{
+	if (tag<=TRACE_TAG_LAST) {
+		trace_mask[tag] = 0;
+	}
+}
+
+void NutTraceMaskPrint(void)
+{
+	int tag;
+	printf("TRACEMASK\n");
+	for (tag=0;tag<=TRACE_TAG_LAST;tag++) {
+		printf(" %d %s ",tag,tag_string[tag]);
+		if (trace_mask[tag])
+			printf("ON\n");
+		else
+			printf("OFF\n");
+	}					
+}
