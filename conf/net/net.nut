@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2005/01/13 18:47:31  haraldkipp
+-- Network dependencies added.
+--
 -- Revision 1.2  2004/08/18 13:46:09  haraldkipp
 -- Fine with avr-gcc
 --
@@ -96,6 +99,7 @@ nutnet =
     {
         name = "nutnet_inet",
         brief = "INET",
+        requires = { "NET_LINK" },
         provides = { "NET_INET" },
         sources = 
         { 
@@ -107,7 +111,7 @@ nutnet =
         brief = "ARP",
         description = "Address Resolution Protocol, translates a "..
                       "32-bit IP address into a 48-bit Ethernet address.",
-        requires = { "NUT_EVENT" },
+        requires = { "NUT_EVENT", "NET_PHY" },
         provides = { "NET_ARP" },
         sources = 
         { 
@@ -154,7 +158,7 @@ nutnet =
     {
         name = "nutnet_ifconfig",
         brief = "Network interface",
-        requires = { "NUT_EVENT" },
+        requires = { "NUT_EVENT", "NET_LINK" },
         sources = { "ifconfig.c" }
     },
     {
@@ -167,13 +171,13 @@ nutnet =
     {
         name = "nutnet_debug",
         brief = "Network debug",
-        requires = { "DEV_WRITE" },
+        requires = { "DEV_WRITE", "NET_LINK" },
         sources = { "netdebug.c" }
     },
     {
         name = "nutnet_debug_ppp",
         brief = "PPP debug",
-        requires = { "DEV_WRITE" },
+        requires = { "DEV_WRITE", "NET_PPP" },
         sources = { "pppdebug.c" }
     }
 }
