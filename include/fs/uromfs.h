@@ -2,7 +2,7 @@
 #define _FS_UROMFS_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 11:38:09  haraldkipp
+ * Deprecated functions removed
+ *
  * Revision 1.2  2003/07/20 19:27:59  haraldkipp
  * Patch by Alessandro Zummo. Moves the urom filesystem filenames to
  * AVR's flash memory.
@@ -66,10 +69,6 @@
  * \file fs/uromfs.h
  * \brief Micro-ROM file system definitions.
  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*!
  * \brief Mikro-ROM directory entry type.
@@ -114,15 +113,5 @@ struct _ROMFILE {
  * \brief Linked list of all microROM files.
  */
 extern ROMENTRY *romEntryList;
-
-extern ROMFILE *NutRomFileOpen(char *name);
-extern int NutRomFileClose(ROMFILE *romf);
-extern int NutRomFileRead(ROMFILE *romf, void *data, size_t size);
-extern int NutRomFileSize(ROMFILE *romf);
-extern int NutRomFileSeek(ROMFILE *romf, int pos);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

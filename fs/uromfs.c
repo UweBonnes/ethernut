@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/18 11:37:06  haraldkipp
+ * Deprecated functions removed
+ *
  * Revision 1.3  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -107,127 +110,6 @@ NUTDEVICE devUrom = {
     UromClose,                  /*!< Close a file. */
     UromSize                    /*!< Return file size. */
 };
-
-/*!
- * \brief Opens an existing file for reading.
- *
- * \deprecated Use _open() or fopen() in new programs.
- *
- * \param name Points to a string that specifies the name of the
- *             file to open. The name must exactly match the
- *             full pathname of the file.
- *
- * \return A pointer to a ROMFILE structure that can be used
- *         to read from the file and retrieve information about
- *         the file.
- */
-ROMFILE *NutRomFileOpen(char *name)
-{
-    ROMENTRY *rome;
-    ROMFILE *romf = 0;
-
-    for (rome = romEntryList; rome; rome = rome->rome_next) {
-        if (strcmp_P(name, rome->rome_name) == 0)
-            break;
-    }
-    if (rome) {
-        if ((romf = NutHeapAllocClear(sizeof(ROMFILE))) != 0)
-            romf->romf_entry = rome;
-    }
-    return romf;
-}
-
-/*!
- * \brief Close a previously opened file.
- *
- * \deprecated Use _close() or fclose() in new programs.
- *
- * \param romf Identifies the file to close. This pointer must
- *             have been created by calling NutRomFileOpen().
- *
- * \return 0 if the function is successful, -1 otherwise.
- */
-int NutRomFileClose(ROMFILE * romf)
-{
-    return NutHeapFree(romf);
-}
-
-/*!
- * \brief Read data from a file.
- *
- * Read up to a specified number of bytes of data from a
- * file into a buffer. The function may read fewer than
- * the specified number of bytes if it reaches the end of
- * the file.
- *
- * \deprecated New programs should use stdio.
- *
- * \param romf Identifies the file to read from. This pointer must
- *             have been created by calling NutRomFileOpen().
- * \param data Points to the buffer that receives the data.
- * \param size Specifies the number of bytes to read from the file.
- *
- * \return The number of bytes read from the file or -1 if
- *         an error occured.
- */
-int NutRomFileRead(ROMFILE * romf, void *data, size_t size)
-{
-    ROMENTRY *rome = romf->romf_entry;
-
-    if (size > rome->rome_size - romf->romf_pos)
-        size = rome->rome_size - romf->romf_pos;
-    if (size) {
-        memcpy_P(data, rome->rome_data + romf->romf_pos, size);
-        romf->romf_pos += size;
-    }
-    return size;
-}
-
-/*!
- * \brief Retrieve the size of a file.
- *
- * \deprecated New programs should use stdio.
- *
- * \bug stdio doesn't support fstat yet.
- *
- * \param romf Identifies the file to query. This pointer must
- *             have been created by calling NutRomFileOpen().
- *
- * \return The number of bytes in this file or -1 if an
- *         error occured.
- */
-int NutRomFileSize(ROMFILE * romf)
-{
-    return romf->romf_entry->rome_size;
-}
-
-/*!
- * \brief Move the file pointer to a new position.
- *
- * The file pointer is maintained by Nut/OS. It points to
- * the next byte to be read from a file. The file pointer
- * is automatically incremented for each byte read. When
- * the file is opened, it is at position 0, the beginning
- * of the file.
- *
- * \deprecated New programs should use stdio.
- *
- * \bug stdio's seek is not working.
- *
- * \param romf Identifies the file to seek. This pointer must
- *             have been created by calling NutRomFileOpen().
- * \param pos  Specifies the new absolute position of the file pointer.
- *
- * \return 0 if the function is successful, -1 otherwise.
- */
-int NutRomFileSeek(ROMFILE * romf, int pos)
-{
-    if (pos < 0 || pos > NutRomFileSize(romf))
-        return -1;
-    romf->romf_pos = pos;
-
-    return 0;
-}
 
 /*! 
  * \brief Read from device. 
