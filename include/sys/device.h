@@ -36,6 +36,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 13:49:00  haraldkipp
+ * Deprecated functions removed.
+ * IFSTREAM structure taken from ifstream
+ * header file.
+ *
  * Revision 1.2  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -176,8 +181,7 @@ struct _NUTDEVICE {
     /*! 
      * \brief Driver initialization routine. 
      *
-     * With stream devices this is called during NutDeviceOpen(). For 
-     * network devices this routine is called within NutNetIfConfig().
+     * This routine is called during device registration.
      */
     int (*dev_init) (NUTDEVICE *);
 
@@ -243,6 +247,31 @@ struct _NUTVIRTUALDEVICE {
     int (*vdv_ioctl) (void *, int, void *);
 };
 
+/*!
+ * \brief Stream interface type.
+ */
+typedef struct _IFSTREAM IFSTREAM;
+
+/*!
+ * \struct _IFSTREAM device.h sys/device.h
+ * \brief Stream interface information structure.
+ *
+ * Deprecated structure. Device drivers should use
+ * the device control block.
+ */
+struct _IFSTREAM {
+    int  (*if_input)(NUTDEVICE *);  /*!< \brief Wait for input. */
+    int  (*if_output)(NUTDEVICE *); /*!< \brief Initiate output. */
+    int  (*if_flush)(NUTDEVICE *);  /*!< \brief Wait until output buffer empty. */
+    volatile u_char if_rx_idx;      /*!< \brief Next input index. */
+    u_char if_rd_idx;               /*!< \brief Next read index. */
+    volatile u_char if_tx_idx;      /*!< \brief Next output index. */
+    u_char if_wr_idx;               /*!< \brief Next write index. */
+    volatile u_char if_tx_act;      /*!< \brief Set if transmitter running. */
+    u_char if_last_eol;             /*!< \brief Last end of line character read. */
+    u_char if_rx_buf[256];          /*!< \brief Input buffer. */
+    u_char if_tx_buf[256];          /*!< \brief Output buffer. */
+};
 
 /*@}*/
 
@@ -251,17 +280,6 @@ extern NUTDEVICE *nutDeviceList;
 
 extern int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, u_char irq);
 extern NUTDEVICE *NutDeviceLookup(CONST char *name);
-extern NUTDEVICE *NutDeviceOpen(CONST char *name);
-extern int NutDeviceClose(NUTDEVICE * dev);
-extern int NutDeviceRead(NUTDEVICE * dev, void *data, int size);
-extern int NutDeviceReadTran(NUTDEVICE * dev, void *data, int size);
-extern int NutDeviceGetLine(NUTDEVICE * dev, void *data, int size);
-extern int NutDeviceWrite(NUTDEVICE * dev, CONST void *data, int len);
-extern int NutDeviceWriteTran(NUTDEVICE * dev, CONST void *data);
-#ifdef __HARVARD_ARCH__
-extern int NutDeviceWrite_P(NUTDEVICE * dev, PGM_P data, int len);
-#endif
-extern int NutDeviceIOCtl(NUTDEVICE * dev, int req, void *conf);
 
 __END_DECLS
 
