@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2004/06/02 16:43:36  olereinhardt
+ * fixed bug (integer overflow) in semaphore implementation
+ *
  * Revision 1.2  2004/05/18 18:38:14  drsung
  * Added $Log keyword for CVS and avoid multiple inclusion of header file.
  *
@@ -69,11 +72,11 @@ extern "C" {
  *
  */
     struct _SEM {
-        HANDLE qhp;             /*!< \brief Queue to wait, if semaphore is zero. */
-        u_short value;          /*!< \brief semaphore value . */
+        HANDLE qhp;           /*!< \brief Queue to wait, if semaphore is zero. */
+        short value;          /*!< \brief semaphore value . */
     };
 
-    extern void NutSemInit(SEM * sem, u_short value);
+    extern void NutSemInit(SEM * sem, short value);
     extern void NutSemWait(SEM * sem);
     extern int NutSemTryWait(SEM * sem);
     extern void NutSemPost(SEM * sem);
@@ -84,4 +87,3 @@ extern "C" {
 #endif
 
 #endif /* #ifndef _SYS_SEMAPHORE_H */
-
