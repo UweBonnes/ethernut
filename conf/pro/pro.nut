@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.5  2005/02/05 20:41:13  haraldkipp
+-- Wins and FTP added.
+--
 -- Revision 1.4  2005/02/02 15:53:15  haraldkipp
 -- DHCP configuration added
 --
@@ -51,7 +54,7 @@ nutpro =
 {
     {
         name = "nutpro_dhcpc",
-        brief = "DHCP/BOOTP client",
+        brief = "DHCP/BOOTP Client",
         requires = { "NET_UDP", "NUT_EVENT" },
         sources = 
         { 
@@ -160,7 +163,7 @@ nutpro =
     },
     {
         name = "nutpro_resolv",
-        brief = "DNS client API",
+        brief = "DNS Client API",
         requires = { "NET_UDP" },
         sources = 
         { 
@@ -169,23 +172,23 @@ nutpro =
     },
     {
         name = "nutpro_ftpd",
-        brief = "FTP server API",
-        description = "File transfer protocol. Not implemented.",
+        brief = "FTP Server API",
+        description = "File transfer protocol server.",
         requires = 
         {
-            "NOT_AVAILABLE",
             "NET_TCP",
             "NET_UDP",
             "CRT_STREAM_READ", 
             "CRT_STREAM_WRITE", 
-            "NUT_FS", 
+            "NUT_FS_DIR", 
             "NUT_FS_READ", 
             "NUT_FS_WRITE" 
-        }
+        },
+        sources = { "ftpd.c" }
     },
     {
         name = "nutpro_httpd",
-        brief = "HTTP server API",
+        brief = "HTTP Server API",
         description = "Webserver helper routines. Provides simple authorization "..
                       "and registration of C functions as CGI routines",
         requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
@@ -199,14 +202,14 @@ nutpro =
     },
     {
         name = "nutpro_snmp",
-        brief = "SNMP agent",
+        brief = "SNMP Agent",
         description = "Simple network management protocol. Not implemented.",
         requires = { "NOT_AVAILABLE", "NET_UDP" },
         sources =  { "snmp.c" }
     },
     {
         name = "nutpro_sntp",
-        brief = "SNTP client API",
+        brief = "SNTP Client API",
         description = "Simple network time protocol.",
         requires = { "NET_UDP" },
         provides = { "PRO_SNTP" },
@@ -214,7 +217,7 @@ nutpro =
     },
     {
         name = "nutpro_smtpc",
-        brief = "SMTP client API",
+        brief = "SMTP Client API",
         description = "Simple mail transfer protocol. Not implemented.",
         requires = 
         {
@@ -248,5 +251,17 @@ nutpro =
                 file = "include/cfg/syslog.h"
             }
         }
-    }
+    },
+    {
+        name = "nutpro_wins",
+        brief = "NetBIOS WINS Responder",
+        description = "Netbios WINS (RFC 1002) Name Query Response.\n\n"..
+                      "Only query request client routine sending/positive name query response "..
+                      "receiving is implemented.\n\n"..
+                      "When the NetBIOS name 1uery request UDP datagram is on the ethernet "..
+                      "network, asking 'Who is name?', NutWinsNameQuery answers with the "..
+                      "specified 'ipaddr' Ethernut IP address.",
+        requires =  { "NET_UDP" },
+        sources =  { "wins.c" }
+    }    
 }

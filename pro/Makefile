@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2005/02/05 20:44:49  haraldkipp
+# Wins and FTP added.
+#
 # Revision 1.8  2004/11/08 09:57:40  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -89,7 +92,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS =  dhcpc.c resolv.c httpd.c auth.c cgi.c dencode.c sntp.c syslog.c
+SRCS =  dhcpc.c resolv.c httpd.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c wins.c
 
 OBJS = $(SRCS:.c=.o)
 
