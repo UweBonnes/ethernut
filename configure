@@ -329,9 +329,9 @@ EOF
     echo "#include <stdio.h>"      > include_test.c
     echo "#include <sys/types.h>" >> include_test.c
     gcc -E include_test.c | grep stdio | head -1 | \
-         sed 's/#....\(\/.*\/stdio.h\).*/#include "\1"/' > unix/include/stdio_orig.h
+         sed 's/#....\(\/.*\/stdio.h\).*/#include "\1"/' > include/stdio_orig.h
     gcc -E include_test.c | grep types | head -1 | \
-         sed 's/#....\(\/.*\/types.h\).*/#include "\1"/' > unix/include/sys/types_orig.h
+         sed 's/#....\(\/.*\/types.h\).*/#include "\1"/' > include/sys/types_orig.h
     rm include_test.c
     
 
