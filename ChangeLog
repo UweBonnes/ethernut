@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.85 2004/07/14 15:43:40 freckle Exp $
+$Id: ChangeLog,v 1.86 2004/07/19 16:24:24 freckle Exp $
+
+2004-07-19  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * os/mutex.c: code contained same bug as os/semaphore.c.
+    Unfortunately I didn't understand the other fix, but 
+    anyway made NutMutexLock more robust.
+    Fixed wrong indention of all functions
 
 2004-07-14  Matthias Ringwald <mringwal@inf.ethz.ch>
 

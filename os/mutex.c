@@ -38,6 +38,12 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2004/07/19 16:24:23  freckle
+ * Code contained same bug as os/semaphore.c.
+ * Unfortunately I didn't understand the other fix, but anyway made
+ * NutMutexLock more robust.
+ * Fixed wrong indention of all functions
+ *
  * Revision 1.2  2004/05/18 18:38:42  drsung
  * Added $Log keyword for CVS.
  *
@@ -60,11 +66,13 @@ extern "C" {
  *
  * The type for the mutex is recursive
  */
-    void NutMutexInit(MUTEX * mutex) {
-        mutex->thread = 0;
-        mutex->count = 0;
-        mutex->qhp = 0;
-    }
+ 
+void NutMutexInit(MUTEX * mutex) {
+    mutex->thread = 0;
+    mutex->count = 0;
+    mutex->qhp = 0;
+}
+
 /*!
  * \brief Lock a mutex
  *
@@ -72,17 +80,16 @@ extern "C" {
  * the thread will block until the mutex becomes available
  *
  * \Note: Should not be called from interrupt context
- */ void NutMutexLock(MUTEX * mutex) {
-        if (mutex->count) {
-            if (mutex->thread != runningThread) {
-                NutEventWait(&mutex->qhp, NUT_WAIT_INFINITE);
-                mutex->thread = runningThread;
-            }
-        } else {
-            mutex->thread = runningThread;
-        }
-        mutex->count++;
+ */
+ 
+void NutMutexLock(MUTEX * mutex) {
+    if (mutex->thread != runningThread) {
+        while( mutex->count != 0)
+            NutEventWaitNext(&mutex->qhp, NUT_WAIT_INFINITE);
     }
+    mutex->thread = runningThread;
+    mutex->count++;
+}
 
 /*!
  * \brief Attempt to lock a mutex without blocking
@@ -91,13 +98,13 @@ extern "C" {
  * by another thread
  * \Note: Should not be called from interrupt context
  */
-
-    int NutMutexTrylock(MUTEX * mutex) {
-        if ((mutex->count != 0) && (mutex->thread != runningThread))
-            return -1;
-        NutMutexLock(mutex);
-        return 0;
-    }
+ 
+int NutMutexTrylock(MUTEX * mutex) {
+    if ((mutex->count != 0) && (mutex->thread != runningThread))
+        return -1;
+    NutMutexLock(mutex);
+    return 0;
+}
 
 /*!
  * \brief Unlock a mutex.
@@ -106,14 +113,15 @@ extern "C" {
  * hold a lock on mutex.
  * \Note: Should not be called from interrupt context
  */
-    int NutMutexUnlock(MUTEX * mutex) {
-        if (mutex->thread != runningThread)
-            return -1;
-        if (--mutex->count == 0) {
-            NutEventPost(&mutex->qhp);
-        }
-        return 0;
+ 
+int NutMutexUnlock(MUTEX * mutex) {
+    if (mutex->thread != runningThread)
+        return -1;
+    if (--mutex->count == 0) {
+        NutEventPost(&mutex->qhp);
     }
+    return 0;
+}
 
 /*!
  * \brief Free resources allocated for a mutex
@@ -122,13 +130,13 @@ extern "C" {
  * by another thread
  */
 
-    int NutMutexDestroy(MUTEX * mutex) {
-        if (mutex->count == 0)
-            return 0;
-        if (mutex->thread == runningThread)
-            return 0;
-        return -1;
-    }
+int NutMutexDestroy(MUTEX * mutex) {
+    if (mutex->count == 0)
+        return 0;
+    if (mutex->thread == runningThread)
+        return 0;
+    return -1;
+}
 
 #ifdef __cplusplus
 }
