@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.6  2004/11/24 14:48:34  haraldkipp
+-- crt/crt.nut
+--
 -- Revision 1.5  2004/09/07 19:09:53  haraldkipp
 -- Split program space I/O
 --
@@ -76,7 +79,6 @@ nutcrt =
         sources = 
         { 
             "getf.c",
-            "getff.c",
             "read.c",
         }
     },
@@ -88,7 +90,6 @@ nutcrt =
         sources = 
         { 
             "putf.c",
-            "putff.c",
             "write.c"
         }
     },
@@ -135,6 +136,15 @@ nutcrt =
                 brief = "Floating point",
                 description = "Enables floating point support for standard input/output.", 
                 flavor = "boolean",
+                file = "include/cfg/crt.h"
+            },
+            {
+                macro = "FOPEN_MAX",
+                brief = "Max. Open Streams",
+                description = "Maximum number of concurrently opened streams.\n\n"..
+                              "Default is 8",
+                type = "integer",
+                flavor = "booldata",
                 file = "include/cfg/crt.h"
             }
         }

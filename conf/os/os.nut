@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.8  2004/11/24 14:48:34  haraldkipp
+-- crt/crt.nut
+--
 -- Revision 1.7  2004/11/08 18:58:58  haraldkipp
 -- Configurable stack sizes
 --
@@ -264,6 +267,7 @@ nutos =
                 description = "This is the first EEPROM address, where Nut/OS "..
                               "expects its configuration",
                 type = "integer",
+                flavor = "booldata",
                 file = "include/cfg/eeprom.h"
             }
         }

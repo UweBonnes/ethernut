@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.10  2004/11/24 14:48:34  haraldkipp
+-- crt/crt.nut
+--
 -- Revision 1.9  2004/10/03 18:39:12  haraldkipp
 -- GBA debug output on screen
 --
@@ -124,7 +127,8 @@ nutdev =
                 description = "If this option is enabled, Nut/OS will use a separate "..
                               "stack of the specified size for interrupts.\n"..
                               "If this option is disabled, make sure to reserve "..
-                              "additional stack space for each thread.",
+                              "additional stack space for each thread.\n\n"..
+                              "Available for AVR-GCC only.",
                 requires = { "HW_MCU_AVR", "TOOL_GCC" },
                 flavor = "booldata",
                 file = "include/cfg/dev.h"
@@ -138,7 +142,13 @@ nutdev =
     {
         name = "nutdev_debug_avr",
         brief = "UART Debug Output (AVR)",
-        description = "Simple UART output",
+        description = "This simple UART output driver uses polling instead of "..
+                      "interrupts and can be used within interrupt routines. It "..
+                      "is mainly used for debugging and tracing.\n\n"..
+                      "Call NutRegisterDevice(&devDebug0, 0, 0) for U(S)ART0 and "..
+                      "NutRegisterDevice(&devDebug1, 0, 0) for U(S)ART1. "..
+                      "Then you can use any of the stdio functions to open "..
+                      "device uart0 or uart1 resp.",
         requires = { "HW_UART_AVR" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
         sources = { "debug0.c", "debug1.c" }
@@ -535,6 +545,7 @@ nutdev =
                 macro = "LCD_SHORT_DELAY",
                 brief = "Short delay",
                 description = "Number of milliseconds",
+                flavor = "booldata",
                 type = "integer",
                 file = "include/cfg/arch/avr.h"
             },
@@ -542,7 +553,140 @@ nutdev =
                 macro = "LCD_LONG_DELAY",
                 brief = "Long delay",
                 description = "Number of milliseconds",
+                flavor = "booldata",
                 type = "integer",
+                file = "include/cfg/arch/avr.h"
+            }
+        }
+    },
+    {
+        name = "nutdev_hd44780_bus_avr",
+        brief = "HD44780 Bus Driver (AVR)",
+        description = "Alternate memory mapped LCD Driver.\n\n"..
+                      "This is a terminal device driver for a memory "..
+                      "mapped HD44780 compatible LCD. It is connected "..
+                      "to the databus / adressbus. A chip select is "..
+                      "generated from /RD, /WR, and the address decoder. "..
+                      "It is connected to the LCD's enable signal. "..
+                      "A0 is connected to the register select pin and A1 "..
+                      "to the read/write signal. Therefore you'll read from "..
+                      "an address with an offset of two.\n\n"..
+                      "Only available for AVR-GCC.\n\n"..
+                      "Contributed by Ole Reinhardt from www.kernelconcepts.de",
+        requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
+        provides = { "DEV_FILE", "DEV_WRITE" },
+        sources = { "hd44780_bus.c" },
+        options = 
+        {
+            {
+                macro = "LCD_4x16",
+                brief = "LCD 4x16",
+                flavor = "boolean",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "LCD_4x20",
+                brief = "LCD 4x20",
+                flavor = "boolean",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "KS0073_CONTROLLER",
+                brief = "KS0073 Controller",
+                flavor = "boolean",
+                file = "include/cfg/arch/avr.h"
+            }
+        }
+    },
+    {
+        name = "nutdev_adc_avr",
+        brief = "ADC Driver (AVR)",
+        description = "Driver for the ATmega128 analog to digital converter.\n\n"..
+                      "Only available for AVR-GCC.\n\n"..
+                      "Contributed by Ole Reinhardt from www.kernelconcepts.de",
+        requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
+        sources = { "adc.c" },
+        options = 
+        {
+            {
+                macro = "ADC_BUF_SIZE",
+                brief = "Buffer Size",
+                description = "Defaults to 16",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "ADC_INITIAL_CHANNEL",
+                brief = "Initial Channel",
+                description = "Set to ADC0..ADC7",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "ADC_INITIAL_REF",
+                brief = "Initial Reference",
+                description = "Set to AVCC (supply voltage), "..
+                              "AREF (external reference) "..
+                              "or INTERNAL_256 (2.56V)",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "ADC_INITIAL_MODE",
+                brief = "Initial Mode",
+                description = "Set to\n\nFREE_RUNNING:\n"..
+                              "Free-running mode. Samples continuously taken "..
+                              "every 13 cycles of ADC clock after "..
+                              "ADC_start_conversion() is called.\n\n"..
+                              "SINGLE_CONVERSION:\n"..
+                              "Single-conversion mode. One sample taken every "..
+                              "time ADC_start_conversion() is called.",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "ADC_INITIAL_PRESCALE",
+                brief = "Initial Prescale",
+                description = "Set to\n"..
+                              "ADC_PRESCALE_DIV2 for CPU clk/2\n"..
+                              "ADC_PRESCALE_DIV4 for CPU clk/4\n"..
+                              "ADC_PRESCALE_DIV8 for CPU clk/8\n"..
+                              "ADC_PRESCALE_DIV16 for CPU clk/16\n"..
+                              "ADC_PRESCALE_DIV32 for CPU clk/32\n"..
+                              "ADC_PRESCALE_DIV64 for CPU clk/64\n"..
+                              "ADC_PRESCALE_DIV128 for CPU clk/128",
+                file = "include/cfg/arch/avr.h"
+            },
+        }
+    },
+    {
+        name = "nutdev_sja1000_avr",
+        brief = "SJA1000 CAN Driver (AVR)",
+        description = "Driver for SJA1000 CAN-Bus controller.\n\n"..
+                      "The SJA1000 controller is connected to the memory "..
+                      "bus. It's base address and interrupt is set by "..
+                      "NutRegisterDevice().\n\n"..
+                      "Only available for AVR-GCC.\n\n"..
+                      "Contributed by Ole Reinhardt from www.kernelconcepts.de",
+        requires = { "HW_MCU_AVR", "TOOL_GCC" },
+        sources = { "sja1000.c" },
+        options = 
+        {
+            {
+                macro = "SJA_SIGNAL_BIT",
+                brief = "Interrupt Number",
+                description = "Default is 7. Must correspond "..
+                              "to SJA_SIGNAL.",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SJA_SIGNAL",
+                brief = "Interrupt Signal",
+                description = "Default is sig_INTERRUPT7. Must correspond "..
+                              "to SJA_SIGNAL_BIT.",
+                file = "include/cfg/arch/avr.h"
+            },
+            {
+                macro = "SJA_EICR",
+                brief = "Interrupt Control",
+                description = "Default is EICRB. Must correspond "..
+                              "to SJA_SIGNAL_BIT.",
                 file = "include/cfg/arch/avr.h"
             }
         }
@@ -790,10 +934,33 @@ nutdev =
     {
         name = "nutdev_chat",
         brief = "UART Chat",
-        description = "Executes a conversational exchange with a serial device.",
+        description = "Executes a conversational exchange with a serial device."..
+                      "Typically used for modem dial commands and login scripts.",
         requires = { "CRT_HEAPMEM", "DEV_UART", "NUT_TIMER" },
         provides = { "UART_CHAT" },
-        sources =  { "chat.c" }
+        sources =  { "chat.c" },
+        options = 
+        {
+            {
+                macro = "CHAT_MAX_ABORTS",
+                brief = "Max. Number of Aborts",
+                description = "Default is 10.",
+                file = "include/cfg/chat.h"
+            },
+            {
+                macro = "CHAT_MAX_REPORT_SIZE",
+                brief = "Max. Size of Reports",
+                description = "Default is 32",
+                file = "include/cfg/chat.h"
+            },
+            {
+                macro = "CHAT_DEFAULT_TIMEOUT",
+                brief = "Default Timeout",
+                description = "Specify the number of seconds. "..
+                              "Default is 45",
+                file = "include/cfg/chat.h"
+            }
+        }
     },
     {
         name = "nutdev_term",
