@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.51 2004/03/18 18:31:52 haraldkipp Exp $
+$Id: ChangeLog,v 1.52 2004/03/18 18:42:59 haraldkipp Exp $
 
 2004-03-18  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -52,6 +52,9 @@ $Id: ChangeLog,v 1.51 2004/03/18 18:31:52 haraldkipp Exp $
 
 	* dev/term.c, include/dev/term.h: Added Michael Fischer's
 	TIOCGWINSZ ioctl.
+
+	* dev/irsony.c: Infrared interrupts now working. Thanks to
+	Michael Fischer, who reported this problem.
 
 
 2004-03-17  Harald Kipp  <harald.kipp@egnite.de>
