@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.12  2005/01/22 19:22:42  haraldkipp
+-- Changed AVR port configuration names from PORTx to AVRPORTx.
+-- Removed uartspi devices.
+--
 -- Revision 1.11  2004/12/17 15:31:28  haraldkipp
 -- Support of rising edge interrupts for hardware w/o inverter gate.
 -- Fixed compilation issue for hardware with RTL reset port.
@@ -185,7 +189,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "UART0_RTS_PORT",
+                macro = "UART0_RTS_AVRPORT",
                 brief = "RTS Port",
                 description = "Port register name of UART0 RTS handshake output.",
                 requires = { "UART0_RTS_BIT" },
@@ -217,7 +221,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "UART0_HDX_PORT",
+                macro = "UART0_HDX_AVRPORT",
                 brief = "Half Duplex Port",
                 description = "Port register name of UART0 half duplex control output.",
                 requires = { "UART0_HDX_BIT" },
@@ -254,7 +258,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "UART1_RTS_PORT",
+                macro = "UART1_RTS_AVRPORT",
                 brief = "RTS Port",
                 description = "Port register name of UART1 RTS handshake output.",
                 requires = { "UART1_RTS_BIT" },
@@ -286,7 +290,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "UART1_HDX_PORT",
+                macro = "UART1_HDX_AVRPORT",
                 brief = "Half Duplex Port",
                 description = "Port register name of UART1 half duplex control output.",
                 requires = { "UART1_HDX_BIT" },
@@ -304,14 +308,6 @@ nutdev =
         sources = { "uart0.c", "uart1.c", "uartavr.c" },
         requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
-    },
-    {
-        name = "nutdev_uart_spi",
-        brief = "SPI UART Driver (AVR)",
-        description = "Deprecated driver for UARTs connected via SPI.",
-        requires = { "CRT_HEAPMEM", "HW_MCU_AVR" },
-        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
-        sources = { "uarts.c", "uartspi.c" },
     },
 
     --
@@ -367,7 +363,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "LANC111_RESET_PORT",
+                macro = "LANC111_RESET_AVRPORT",
                 brief = "Ethernet Reset Port",
                 description = "Port register name of the Ethernet controller reset output.",
                 requires = { "LANC111_RESET_BIT" },
@@ -430,7 +426,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "RTL_RESET_PORT",
+                macro = "RTL_RESET_AVRPORT",
                 brief = "Ethernet Reset Port",
                 description = "Port register name of the Ethernet controller reset output.",
                 requires = { "RTL_RESET_BIT" },
@@ -462,7 +458,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "RTL_EESK_PORT",
+                macro = "RTL_EESK_AVRPORT",
                 brief = "Ethernet EESK Port",
                 description = "Port register name of the Ethernet controller EEPROM clock input.\n\n"..
                               "Ethernut 1.3 Rev-G uses Bit 5 on Port C.",
@@ -482,7 +478,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "RTL_EEDO_PORT",
+                macro = "RTL_EEDO_AVRPORT",
                 brief = "Ethernet EEDO Port",
                 description = "Port register name of the Ethernet controller EEPROM data output.\n\n"..
                               "Ethernut 1.3 Rev-G uses Bit 6 on Port C.",
@@ -505,7 +501,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "RTL_EEMU_PORT",
+                macro = "RTL_EEMU_AVRPORT",
                 brief = "Ethernet EEMU Port",
                 description = "Port register name of the Ethernet controller reset output.\n\n"..
                               "Ethernut 1.3 Rev-G uses Bit 7 on Port C.",
@@ -759,7 +755,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "SPIDIGIO_SOUT_PORT",
+                macro = "SPIDIGIO_SOUT_AVRPORT",
                 brief = "Shift Output Port",
                 description = "Port register name of serial data output.",
                 type = "enumerated",
@@ -776,11 +772,11 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "SPIDIGIO_SIN_PIN",
+                macro = "SPIDIGIO_SIN_AVRPORT",
                 brief = "Shift Input Port",
                 description = "Port register name of serial data input.",
                 type = "enumerated",
-                choices = avr_pin_choice,
+                choices = avr_port_choice,
                 file = "include/cfg/arch/avr.h"
             },
             {
@@ -793,7 +789,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "SPIDIGIO_SCLK_PORT",
+                macro = "SPIDIGIO_SCLK_AVRPORT",
                 brief = "Clock Output Port",
                 description = "Port register name of serial clock output.",
                 type = "enumerated",
@@ -810,7 +806,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "SPIDIGIO_LDI_PORT",
+                macro = "SPIDIGIO_LDI_AVRPORT",
                 brief = "Input Latch Port",
                 description = "Port register name of the input latch output.",
                 type = "enumerated",
@@ -828,7 +824,7 @@ nutdev =
                 file = "include/cfg/arch/avr.h"
             },
             {
-                macro = "SPIDIGIO_LDO_PORT",
+                macro = "SPIDIGIO_LDO_AVRPORT",
                 brief = "Output Latch Port",
                 description = "Port register name of the output latch output.",
                 type = "enumerated",
