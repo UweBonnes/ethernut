@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/08/18 14:05:22  haraldkipp
+ * Fill error text if script not found
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -454,6 +457,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
     strcat(script, "/");
     strcat(script, file);
     if (access(script, 0)) {
+        sprintf(errtxt, "%s: Script not found", file);
         return -1;
     }
 
