@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/02/10 07:06:17  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.6  2005/01/24 21:11:48  freckle
  * renamed NutEventPostFromIRQ into NutEventPostFromIrq
  *
@@ -158,7 +161,7 @@ static void Cts0Interrupt(void *arg)
 }
 #endif
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 /*
  * Handle AVR UART1 transmit complete interrupts.
  */
@@ -191,7 +194,7 @@ static void Cts1Interrupt(void *arg)
 }
 #endif
 
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
 
 /*
  * Handle AVR UART0 receive complete interrupts.
@@ -207,7 +210,7 @@ static void Rx0Complete(void *arg)
     dcb->dcb_rx_idx++;
 }
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 /*
  * Handle AVR UART1 receive complete interrupts.
  */
@@ -221,7 +224,7 @@ static void Rx1Complete(void *arg)
     /* Late increment fixes ICCAVR bug on volatile variables. */
     dcb->dcb_rx_idx++;
 }
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
 
 /*
  * \return 0 on success, -1 in case of any errors.
@@ -229,7 +232,7 @@ static void Rx1Complete(void *arg)
 static int SendRawByte(AHDLCDCB * dcb, u_char ch, u_char flush)
 {
     /*
-     * If transmit buffer is full, wait until interrupt routine 
+     * If transmit buffer is full, wait until interrupt routine
      * signals an empty buffer or until a timeout occurs.
      */
     while ((u_char) (dcb->dcb_wr_idx + 1) == dcb->dcb_tx_idx) {
@@ -245,7 +248,7 @@ static int SendRawByte(AHDLCDCB * dcb, u_char ch, u_char flush)
     }
 
     /*
-     * Buffer has room for more data. Put the byte in the buffer 
+     * Buffer has room for more data. Put the byte in the buffer
      * and increment the write index.
      */
     dcb->dcb_tx_buf[dcb->dcb_wr_idx] = ch;
@@ -261,7 +264,7 @@ static int SendRawByte(AHDLCDCB * dcb, u_char ch, u_char flush)
          * TODO: Check handshake.
          */
         NutEnterCritical();
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (dcb->dcb_base)
             sbi(UCSR1B, UDRIE);
         else
@@ -360,7 +363,7 @@ int AhdlcOutput(NUTDEVICE * dev, NETBUF * nb)
 /*! \fn AhdlcRx(void *arg)
  * \brief Asynchronous HDLC receiver thread.
  *
- * 
+ *
  * Running at high priority.
  */
 THREAD(AhdlcRx, arg)
@@ -383,9 +386,9 @@ THREAD(AhdlcRx, arg)
     for (;;) {
 
         for (;;) {
-            /* 
-             * Wait until the network interface has been attached. 
-             * This will be initiated by the application calling 
+            /*
+             * Wait until the network interface has been attached.
+             * This will be initiated by the application calling
              * NutNetIfConfig(), which in turn calls a HDLC_SETIFNET
              * ioctl() to store the NUTDEVICE pointer of the network
              * device in dev_icb and trigger an event on dcb_mf_evt.
@@ -442,8 +445,8 @@ THREAD(AhdlcRx, arg)
                     }
 
                     /*
-                     * Unless the peer lied to us about the negotiated MRU, 
-                     * we should never get a frame which is too long. If it 
+                     * Unless the peer lied to us about the negotiated MRU,
+                     * we should never get a frame which is too long. If it
                      * happens, toss it away and grab the next incoming one.
                      */
                     if (rxcnt++ < dcb->dcb_rx_mru) {
@@ -459,7 +462,7 @@ THREAD(AhdlcRx, arg)
 
                 if (rxcnt > 6 && rxfcs == AHDLC_GOODFCS) {
                     /*
-                     * If the frame checksum is valid, create a NETBUF 
+                     * If the frame checksum is valid, create a NETBUF
                      * and pass it to the network specific receive handler.
                      */
                     rxcnt -= 2;
@@ -502,7 +505,7 @@ static int AhdlcAvrGetStatus(NUTDEVICE * dev, u_long * status)
 
     *status = 0;
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (dev->dev_base) {
 #ifdef UART1_CTS_BIT
         if (bit_is_set(UART1_CTS_PIN, UART1_CTS_BIT))
@@ -524,7 +527,7 @@ static int AhdlcAvrGetStatus(NUTDEVICE * dev, u_long * status)
 #endif
         us = inp(UCSR1A);
     } else
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
     {
 #ifdef UART0_CTS_BIT
         if (bit_is_set(UART0_CTS_PIN, UART0_CTS_BIT))
@@ -565,7 +568,7 @@ static int AhdlcAvrGetStatus(NUTDEVICE * dev, u_long * status)
  */
 static int AhdlcAvrSetStatus(NUTDEVICE * dev, u_long status)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (dev->dev_base) {
 #ifdef UART1_RTS_BIT
         if (status & UART_RTSDISABLED)
@@ -580,7 +583,7 @@ static int AhdlcAvrSetStatus(NUTDEVICE * dev, u_long status)
             cbi(UART1_DTR_PORT, UART1_DTR_BIT);
 #endif
     } else
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
     {
 #ifdef UART0_RTS_BIT
         if (status & UART_RTSDISABLED)
@@ -605,14 +608,14 @@ static void AhdlcAvrEnable(u_short base)
 {
     NutEnterCritical();
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (base) {
 #ifdef UART1_CTS_BIT
         sbi(EIMSK, UART1_CTS_BIT);
 #endif
         outp(BV(RXCIE) | BV(RXEN) | BV(TXEN), UCSR1B);
     } else
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
     {
 #ifdef UART0_CTS_BIT
         sbi(EIMSK, UART0_CTS_BIT);
@@ -631,14 +634,14 @@ static void AhdlcAvrDisable(u_short base)
      * Disable UART interrupts.
      */
     NutEnterCritical();
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (base) {
 #ifdef UART1_CTS_BIT
         cbi(EIMSK, UART1_CTS_BIT);
 #endif
         outp(inp(UCSR1B) & ~(BV(RXCIE) | BV(UDRIE)), UCSR1B);
     } else
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
     {
 #ifdef UART0_CTS_BIT
         cbi(EIMSK, UART0_CTS_BIT);
@@ -655,11 +658,11 @@ static void AhdlcAvrDisable(u_short base)
     /*
      * Now disable UART functions.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (base)
         outp(inp(UCSR1B) & ~(BV(RXEN) | BV(TXEN)), UCSR1B);
     else
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
         outp(inp(UCR) & ~(BV(RXEN) | BV(TXEN)), UCR);
 }
 
@@ -698,7 +701,7 @@ static void AhdlcAvrDisable(u_short base)
  *             function.
  * \return 0 on success, -1 otherwise.
  *
- * \warning Timeout values are given in milliseconds and are limited to 
+ * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer.
  *
  * \bug For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
@@ -725,7 +728,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     case UART_SETSPEED:
         AhdlcAvrDisable(devnum);
         sv = (u_short) ((((2UL * NutGetCpuClock()) / (lv * 16UL)) + 1UL) / 2UL) - 1;
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (devnum) {
             outp((u_char) sv, UBRR1L);
             outp((u_char) (sv >> 8), UBRR1H);
@@ -740,7 +743,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_GETSPEED:
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (devnum)
             sv = (u_short) inp(UBRR1H) << 8 | inp(UBRR1L);
         else
@@ -753,7 +756,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETDATABITS:
         AhdlcAvrDisable(devnum);
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (bv >= 5 && bv <= 8) {
             bv = (bv - 5) << 1;
             if (devnum) {
@@ -773,7 +776,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_GETDATABITS:
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (devnum)
             *lvp = ((inp(UCSR1C) & 0x06) >> 1) + 5;
         else
@@ -785,7 +788,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETPARITY:
         AhdlcAvrDisable(devnum);
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (bv <= 2) {
             if (bv == 1)
                 bv = 3;
@@ -803,7 +806,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_GETPARITY:
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (devnum)
             bv = (inp(UCSR1C) & 0x30) >> 4;
         else
@@ -817,7 +820,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETSTOPBITS:
         AhdlcAvrDisable(devnum);
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (bv == 1 || bv == 2) {
             bv = (bv - 1) << 3;
             if (devnum)
@@ -834,7 +837,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_GETSTOPBITS:
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (devnum)
             *lvp = ((inp(UCSR1C) & 0x08) >> 3) + 1;
         else
@@ -912,9 +915,9 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
  *
  * This function will be called during device registration. It
  * initializes the hardware, registers all required interrupt
- * handlers and initializes all internal data structures used by 
+ * handlers and initializes all internal data structures used by
  * this driver.
- * 
+ *
  * \param dev  Identifies the device to initialize.
  *
  * \return 0 on success, -1 otherwise.
@@ -938,11 +941,11 @@ int AhdlcAvrInit(NUTDEVICE * dev)
     dcb->dcb_tx_mru = 1500;
     dcb->dcb_tx_accm = 0xFFFFFFFF;
 
-    /* 
-     * Initialize UART handshake hardware and register interrupt handlers. 
+    /*
+     * Initialize UART handshake hardware and register interrupt handlers.
      */
     if (dev->dev_base) {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 
 #ifdef UART1_CTS_BIT
         sbi(UART1_CTS_PORT, UART1_CTS_BIT);
@@ -974,7 +977,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
             rc = -1;
         else if (NutRegisterIrqHandler(&UART1_CTS_SIGNAL, Cts1Interrupt, dev))
 #endif
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
             rc = -1;
 
     } else {
@@ -1031,22 +1034,22 @@ int AhdlcAvrInit(NUTDEVICE * dev)
     return -1;
 }
 
-/*! 
- * \brief Read from the asynchronous HDLC device. 
+/*!
+ * \brief Read from the asynchronous HDLC device.
  *
- * This function is called by the low level input routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read 
+ * This function is called by the low level input routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
  * entry.
  *
  * The function may block the calling thread until at least one
  * character has been received or a timeout occurs.
  *
  * It is recommended to set a proper read timeout with software handshake.
- * In this case a timeout may occur, if the communication peer lost our 
- * last XON character. The application may then use ioctl() to disable the 
+ * In this case a timeout may occur, if the communication peer lost our
+ * last XON character. The application may then use ioctl() to disable the
  * receiver and do the read again. This will send out another XON.
  *
- * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
  *               previous call to AhdlcOpen().
  * \param buffer Pointer to the buffer that receives the data. If zero,
  *               then all characters in the input buffer will be
@@ -1122,7 +1125,7 @@ int AhdlcAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
         /*
          * TODO: Check handshake.
          */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (dev->dev_base)
             sbi(UCSR1B, UDRIE);
         else
@@ -1135,20 +1138,20 @@ int AhdlcAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 /*!
  * \brief Write to the asynchronous HDLC device.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write entry.
  *
  * The function may block the calling thread.
  *
- * \param fp     Pointer to a _NUTFILE structure, obtained by a previous 
+ * \param fp     Pointer to a _NUTFILE structure, obtained by a previous
  *               call to AhldcOpen().
  * \param buffer Pointer to the data to be written. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1 
+ *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
 int AhdlcAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
@@ -1159,22 +1162,22 @@ int AhdlcAvrWrite(NUTFILE * fp, CONST void *buffer, int len)
 /*!
  * \brief Write to the asynchronous HDLC device.
  *
- * Similar to AhdlcWrite() except that the data is located in program 
+ * Similar to AhdlcWrite() except that the data is located in program
  * memory.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P
  * entry.
  *
  * The function may block the calling thread.
  *
- * \param fp     Pointer to a NUTFILE structure, obtained by a previous 
+ * \param fp     Pointer to a NUTFILE structure, obtained by a previous
  *               call to AhdlcOpen().
  * \param buffer Pointer to the data in program space to be written.
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1 
+ *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
 int AhdlcAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
@@ -1185,7 +1188,7 @@ int AhdlcAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 /*!
  * \brief Open the asynchronous HDLC device.
  *
- * This function is called by the low level open routine of the C runtime 
+ * This function is called by the low level open routine of the C runtime
  * library, using the _NUTDEVICE::dev_open entry.
  *
  * \param dev Pointer to the NUTDEVICE structure.
@@ -1210,7 +1213,7 @@ NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     fp->nf_fcb = 0;
 
     /* Enable handshake outputs. */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (dev->dev_base) {
 #ifdef UART1_RTS_BIT
         cbi(UART1_RTS_PORT, UART1_RTS_BIT);
@@ -1219,7 +1222,7 @@ NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         cbi(UART1_DTR_PORT, UART1_DTR_BIT);
 #endif
     } else
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
     {
 #ifdef UART0_RTS_BIT
         cbi(UART0_RTS_PORT, UART0_RTS_BIT);
@@ -1231,10 +1234,10 @@ NUTFILE *AhdlcAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
+/*!
  * \brief Close the asynchronous HDLC device.
  *
- * This function is called by the low level close routine of the C runtime 
+ * This function is called by the low level close routine of the C runtime
  * library, using the _NUTDEVICE::dev_close entry.
  *
  * \param fp Pointer to a _NUTFILE structure, obtained by a previous call
@@ -1248,7 +1251,7 @@ int AhdlcAvrClose(NUTFILE * fp)
 {
     if (fp && fp != NUTFILE_EOF) {
         /* Disable handshake outputs. */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
         if (fp->nf_dev->dev_base) {
 #ifdef UART1_RTS_BIT
             sbi(UART1_RTS_PORT, UART1_RTS_BIT);
@@ -1257,7 +1260,7 @@ int AhdlcAvrClose(NUTFILE * fp)
             sbi(UART1_DTR_PORT, UART1_DTR_BIT);
 #endif
         } else
-#endif                          /* __AVR_ATmega128__ */
+#endif                          /* __AVR_ENHANCED__ */
         {
 #ifdef UART0_RTS_BIT
             sbi(UART0_RTS_PORT, UART0_RTS_BIT);

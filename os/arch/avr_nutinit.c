@@ -33,11 +33,8 @@
 
 /*
  * $Log$
- * Revision 1.14  2005/02/08 10:41:26  olereinhardt
- * Modified Waitstate settings for NUT_3WAITSTATES in the manner that for the lower sector one waitstate is still defined
- *
- * Revision 1.13  2005/02/07 19:05:26  haraldkipp
- * ATmega 103 compile errors fixed
+ * Revision 1.15  2005/02/10 07:06:48  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
  *
  * Revision 1.12  2005/01/22 19:30:56  haraldkipp
  * Fixes Ethernut 1.3G memory bug.
@@ -107,7 +104,7 @@
  * AVR offers the option to temporarly use address and data bus
  * lines as general purpose I/O. If such drivers need data memory,
  * this must be located at internal memory addresses.
- * 
+ *
  * \todo Not a nice implementation but works as long as this module
  *       is linked first. Should be made a linker option.
  */
@@ -115,11 +112,19 @@ u_char nutmem_onchip[NUTMEM_RESERVED];
 #endif
 
 /* sleep mode to put avr in idle thread, SLEEP_MODE_NONE is used for for non sleeping */
-#if defined(__GNUC__) && defined(__AVR_ATmega128__)
+#if defined(__GNUC__) && defined(__AVR_ENHANCED__)
 u_char idle_sleep_mode = SLEEP_MODE_NONE;
+
+/* AT90CAN128 uses a different register to enter sleep mode */
+#if defined(SMCR)
+#define AVR_SLEEP_CTRL_REG    SMCR
+#else
+#define AVR_SLEEP_CTRL_REG    MCUCR
 #endif
 
-/* 
+#endif
+
+/*
  * Macros used for RTL8019AS EEPROM Emulation.
  * See FakeNicEeprom().
  */
@@ -216,7 +221,7 @@ u_char idle_sleep_mode = SLEEP_MODE_NONE;
  * Solutions:
  * 1. We do not use main at all, but let the preprocessor
  *    redefine it to NutAppMain() in the application code.
- *    See compiler.h. Note, that the declaration of NutAppMain 
+ *    See compiler.h. Note, that the declaration of NutAppMain
  *    in this module differs from the one in the application
  *    code. Fortunately the linker doesn't detect this hack.
  * 2. We use a linker option to set the symbol main to zero.
@@ -234,13 +239,23 @@ extern void main(void *);
  */
 #if defined(__GNUC__) && defined(NUTXMEM_SIZE)
 
-/* 
+/*
  * At the very beginning enable extended memory interface.
  */
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
-#ifdef __AVR_ATmega128__    
+#if defined(__AVR_AT90CAN128__)
+/*
+ * Note: Register structure of ATCAN128 differs from ATMEGA128 in regards
+ * to wait states.
+ */
+#ifdef NUT_3WAITSTATES /* One wait state 1 for low, 3 for high memory range */
+    XMCRA = _BV(SRE) | _BV(SRL2) | _BV(SRW00) | _BV(SRW10) | _BV(SRW11);
+#else
+    XMCRA = _BV(SRE) | _BV(SRW10); /* One wait state for the whole memory range */
+#endif
+#elif defined(__AVR_ATmega128__) || defined(__AVR_ATmega64__)
     MCUCR = _BV(SRE) | _BV(SRW10);
 
 /* Configure two sectors, lower sector = 0x1100 - 0x7FFF,
@@ -249,7 +264,7 @@ void NutInitXRAM(void)
  */
 
 #ifdef NUT_3WAITSTATES
-    XMCRA |= _BV(SRL2) | _BV(SRW00) | _BV(SRW11); // SRW10 is set in MCUCR
+    XMCRA |= _BV(SRL2) | _BV(SRW00) | _BV(SRW11); /* SRW10 is set in MCUCR */
     XMCRB = 0;
 #endif
 #else
@@ -260,7 +275,7 @@ void NutInitXRAM(void)
 #endif
 
 #if defined(RTL_EESK_BIT) && defined(__GNUC__) && defined(NUTXMEM_SIZE)
-/* 
+/*
  * Before using extended memory, we need to run the RTL8019AS EEPROM emulation.
  * Not doing this may put this controller in a bad state, where it interferes
  * the data/address bus.
@@ -295,8 +310,8 @@ void FakeNicEeprom(void)
 #endif
 
     /*
-     * Loop until the chip stops toggling our EESK input. We do it in 
-     * assembly language to make sure, that no external RAM is used 
+     * Loop until the chip stops toggling our EESK input. We do it in
+     * assembly language to make sure, that no external RAM is used
      * for the counter variable.
      */
     __asm__ __volatile__("\n"   /* */
@@ -350,11 +365,11 @@ void FakeNicEeprom(void)
  *
  * If the idle thread is running, no other thread is active
  * so we can safely put the mcu to sleep.
- * 
+ *
  * \param mode one of the sleep modes defined in avr/sleep.h or
- *             sleep_mode_none (don't enter sleep mode)  
+ *             sleep_mode_none (don't enter sleep mode)
  */
-#if defined(__GNUC__) && defined(__AVR_ATmega128__)
+#if defined(__GNUC__) && defined(__AVR_ENHANCED__)
 void NutThreadSetSleepMode(u_char mode)
 {
     idle_sleep_mode = mode;
@@ -367,7 +382,7 @@ void NutThreadSetSleepMode(u_char mode)
 /*@{*/
 
 /*! \fn NutIdle(void *arg)
- * \brief Idle thread. 
+ * \brief Idle thread.
  *
  * After initializing the timers, the idle thread switches to priority 254
  * and enters an endless loop.
@@ -376,9 +391,9 @@ void NutThreadSetSleepMode(u_char mode)
  */
 THREAD(NutIdle, arg)
 {
-#if defined(__GNUC__) && defined(__AVR_ATmega128__)
+#if defined(__GNUC__) && defined(__AVR_ENHANCED__)
     u_char sleep_mode;
-#endif    
+#endif
     /* Initialize system timers. */
     NutTimerInit();
 
@@ -394,12 +409,16 @@ THREAD(NutIdle, arg)
     for (;;) {
         NutThreadYield();
         NutThreadDestroy();
-        
-#if defined(__GNUC__) && defined(__AVR_ATmega128__)
+
+#if defined(__GNUC__) && defined(__AVR_ENHANCED__)
         if (idle_sleep_mode != SLEEP_MODE_NONE) {
-            sleep_mode = MCUCR & SLEEP_MODE_EXT_STANDBY;
+            sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
             set_sleep_mode(idle_sleep_mode);
-            sleep_mode();
+            /* Note:  avr-libc has a sleep_mode() function, but it's broken for
+            AT90CAN128 with avr-libc version earlier than 1.2 */
+            AVR_SLEEP_CTRL_REG |= _BV(SE);
+            __asm__ __volatile__ ("sleep" "\n\t" :: );
+            AVR_SLEEP_CTRL_REG &= ~_BV(SE);
             set_sleep_mode(sleep_mode);
         }
 #endif
@@ -409,8 +428,8 @@ THREAD(NutIdle, arg)
 /*!
  * \brief Nut/OS Initialization.
  *
- * Initializes the memory management and the thread system and starts 
- * an idle thread, which in turn initializes the timer management. 
+ * Initializes the memory management and the thread system and starts
+ * an idle thread, which in turn initializes the timer management.
  * Finally the application's main() function is called.
  *
  * Depending on the compiler, different methods are used to execute this
@@ -424,7 +443,7 @@ THREAD(NutIdle, arg)
  * crtnut.o should be replaced by crtnutram.o, if the application's
  * variable space exceeds 4kB. For boards with RTL8019AS and EEPROM
  * emulation (like Ethernut 1.3 Rev-G) use crtenut.o or crtenutram.o.
- * 
+ *
  * For AVRGCC this function is located in section .init8, which is
  * called immediately before jumping to main(). NutInit is defined
  * as:
@@ -444,7 +463,13 @@ void NutInit(void)
      * We can't use local variables in naked functions.
      */
 #ifdef NUTDEBUG
+#ifdef NUT_CPU_FREQ
+    /* Configure baudrate register according to clock frequency for 115200bps */
+    outp((NUT_CPU_FREQ / (16 * 115200UL)) - 1, UBRR);
+#else
+    /* Assume standard Ethernut with 14.745600 MHz crystal, set to 115200bps */
     outp(7, UBRR);
+#endif
     outp(BV(RXEN) | BV(TXEN), UCR);
 #endif
 
@@ -455,7 +480,7 @@ void NutInit(void)
 
     /* Then add the remaining RAM to heap.
      *
-     * 20.Aug.2004 haraldkipp: This had been messed up somehow. It's nice to have 
+     * 20.Aug.2004 haraldkipp: This had been messed up somehow. It's nice to have
      * one continuous heap area, but we lost the ability to have systems with
      * a gap between internal and external RAM.
      */

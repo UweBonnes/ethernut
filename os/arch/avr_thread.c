@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/10 07:06:48  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.3  2004/09/22 08:15:56  haraldkipp
  * Speparate IRQ stack configurable
  *
@@ -56,8 +59,8 @@
 #ifdef IRQSTACK_SIZE
 /*!  * \brief Decrement value for thread's stack size, if separate irq stack is used.
  *
- * If separate irq stack is enabled (avr-gcc only), the initial parameter 
- * 'stacksize' in function 'NutThreadCreate' is decremented by this value, if the 
+ * If separate irq stack is enabled (avr-gcc only), the initial parameter
+ * 'stacksize' in function 'NutThreadCreate' is decremented by this value, if the
  * remaining stack size is 128 bytes or greater.
  *
  */
@@ -70,7 +73,7 @@ u_short _irqstackdec = 128;
 /*!
  * \brief AVR GCC context switch frame layout.
  *
- * This is the layout of the stack after a thread's context has been 
+ * This is the layout of the stack after a thread's context has been
  * switched-out.
  */
 typedef struct {
@@ -101,7 +104,7 @@ typedef struct {
 /*!
  * \brief ICC AVR context switch frame layout.
  *
- * This is the layout of the stack after a thread's context has been 
+ * This is the layout of the stack after a thread's context has been
  * switched-out.
  */
 typedef struct {
@@ -148,7 +151,6 @@ typedef struct {
 
 #ifdef __GNUC__
 
-#if defined (__AVR_ATmega128__) || defined (__AVR_ATmega103__)
 
 /*
  * This code is executed when entering a thread.
@@ -168,7 +170,6 @@ static void NutThreadEntry(void)
         );
 }
 
-#endif
 
 #else
 
@@ -281,7 +282,7 @@ void NutThreadSwitch(void)
     asm("push r28");
     asm("push r29");
     asm("in %i, $3D");          // SPL
-    asm("in %j, $3E");          // SPH        
+    asm("in %j, $3E");          // SPH
 
     runningThread->td_sp = (((u_short) j) << 8) & 0xFF00 | (i & 0xFF);
 
@@ -323,16 +324,16 @@ void NutThreadSwitch(void)
 /*!
  * \brief Create a new thread.
  *
- * If the current thread's priority is lower or equal than the default 
- * priority (64), then the current thread is stopped and the new one 
+ * If the current thread's priority is lower or equal than the default
+ * priority (64), then the current thread is stopped and the new one
  * is started.
  *
- * \param name      String containing the symbolic name of the new thread, 
+ * \param name      String containing the symbolic name of the new thread,
  *                  up to 8 characters long.
- * \param fn        The thread's entry point, typically created by the 
+ * \param fn        The thread's entry point, typically created by the
  *                  THREAD macro.
  * \param arg       Argument pointer passed to the new thread.
- * \param stackSize Number of bytes of the stack space allocated for 
+ * \param stackSize Number of bytes of the stack space allocated for
  *                  the new thread.
  *
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an

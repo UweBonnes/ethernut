@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/02/10 07:06:51  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.11  2005/01/22 19:29:56  haraldkipp
  * Initializing ms62_5 will move it to the data segment. Still no final
  * solution to make sure it's kept in AVR's internal memory. But helps
@@ -107,7 +110,7 @@
  */
 volatile u_char ms62_5 = 0;
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 #include "arch/avr_nutinit.c"
 #elif defined(__arm__)
 #include "arch/arm_nutinit.c"

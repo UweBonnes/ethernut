@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/10 07:06:51  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.3  2004/06/21 10:40:25  freckle
  * Added *nix emulation uart definitions to uartavr.h and usartavr.h to
  * allow compilation of apps without adding #include <dev/unix.devs.h>
@@ -139,13 +142,13 @@ struct _UARTDCB {
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
-     * Threads are added to this queue when calling UartAvrFlush(). 
+     * Threads are added to this queue when calling UartAvrFlush().
      */
     HANDLE dcb_tx_rdy;
 
     /*! \brief Queue of threads waiting for a character in the input buffer.
      *
-     * Threads are added to this queue when calling UartAvrInput(). 
+     * Threads are added to this queue when calling UartAvrInput().
      */
     HANDLE dcb_rx_rdy;
 
@@ -160,7 +163,7 @@ struct _UARTDCB {
  * Available devices.
  */
 extern NUTDEVICE devUart0;
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     extern NUTDEVICE devUart1;
 #endif
 

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/10 07:06:50  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.3  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -70,17 +73,27 @@ CONFNET confnet;
  */
 int NutNetLoadConfig(CONST char *name)
 {
+/*
+ * Note: eeprom is currently disabled for AT90CAN128 MCU as the current
+ * avr-libc 1.2 and earlier versions do not support this function!
+ * Refer to: http://lists.gnu.org/archive/html/avr-libc-dev/2004-04/msg00108.html
+ */
+#if defined(__AVR_AT90CAN128__)
+/* TODO FIXME ttt */
+#warning NutNetLoadConfig is not yet supported with this device!
+#else
 #if !defined(__linux__) && !defined(__APPLE__)
     eeprom_read_block(&confnet, (void *) CONFNET_EE_OFFSET, sizeof(CONFNET));
     if (confnet.cd_size == sizeof(CONFNET)
         && strcmp(confnet.cd_name, name) == 0)
         return 0;
 #endif
+#endif
     memset(&confnet, 0, sizeof(confnet));
 
     /*
-     * Set initial MAC address to broadcast. Thanks to Tomohiro 
-     * Haraikawa, who pointed out that all zeroes is occupied by 
+     * Set initial MAC address to broadcast. Thanks to Tomohiro
+     * Haraikawa, who pointed out that all zeroes is occupied by
      * Xerox and should not be used.
      */
     memset(confnet.cdn_mac, 0xFF, sizeof(confnet.cdn_mac));
@@ -95,6 +108,15 @@ int NutNetLoadConfig(CONST char *name)
  */
 int NutNetSaveConfig(void)
 {
+/*
+ * Note: eeprom is currently disabled for AT90CAN128 MCU as the current
+ * avr-libc 1.2 and earlier versions do not support this function!
+ * Refer to: http://lists.gnu.org/archive/html/avr-libc-dev/2004-04/msg00108.html
+ */
+#if defined(__AVR_AT90CAN128__)
+/* TODO FIXME ttt */
+#warning NutNetLoadConfig is not yet supported with this device!
+#else
 #if !defined(__linux__) && !defined(__APPLE__)
     u_char *cp;
     size_t i;
@@ -104,6 +126,7 @@ int NutNetSaveConfig(void)
         if (eeprom_read_byte((void *) (i + CONFNET_EE_OFFSET)) != *cp)
             eeprom_write_byte((void *) (i + CONFNET_EE_OFFSET), *cp);
 
+#endif
 #endif
     return 0;
 }

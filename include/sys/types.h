@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/02/10 07:06:48  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.6  2004/06/08 15:04:24  freckle
  * changed #include "types_orig.h" to <sys/types_orig.h>
  * to allow this file to be in $MODDIR. Relevant only for *nix emulation
@@ -162,17 +165,17 @@ extern "C" {
 /*! \brief Void pointer */
     typedef void *HANDLE;
 
-/*! 
- * \brief Unsigned register type. 
+/*!
+ * \brief Unsigned register type.
  *
- * The size of this type is equal to the size of a register, 
- * the hardware datapath or whatever might fit to give optimum 
+ * The size of this type is equal to the size of a register,
+ * the hardware datapath or whatever might fit to give optimum
  * performance for values from 0 to 255.
  *
  * Typically 8 bit CPUs will use unsigned characters, 16 bit
  * CPUs will use unsigned shorts etc.
  */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     typedef unsigned char ureg_t;
 #elif defined(__arm__)
     typedef unsigned short ureg_t;
@@ -184,12 +187,12 @@ extern "C" {
     typedef unsigned short ureg_t;
 #endif
 
-/*! 
- * \brief Signed register type. 
+/*!
+ * \brief Signed register type.
  *
  * Similar to ureg_t, but for signed values from -128 to +127.
  */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     typedef unsigned char reg_t;
 #elif defined(__arm__)
     typedef unsigned short reg_t;
@@ -201,13 +204,13 @@ extern "C" {
     typedef unsigned short reg_t;
 #endif
 
-/*! 
- * \brief Unsigned pointer value type. 
+/*!
+ * \brief Unsigned pointer value type.
  *
  * The size of this type is at least the size of a memory pointer.
  * For CPUs with 16 address bits this will be an unsigned short.
  */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     typedef unsigned short uptr_t;
 #else
 /*

@@ -3,34 +3,34 @@
 *
 *  Copyright (c) 2004 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
-*  Portions Copyright: 
+*  Portions Copyright:
 *
 *  Copyright (c) 2002
 *	 M Warner Losh <imp@freebsd.org>.  All rights reserved.
@@ -67,13 +67,13 @@
 *  28.02.04  mifi   First Version
 *                   If you like to see the original source. Take a look
 *                   in if_wi.c from FreeBSD.
-*  01.03.04  mifi   Now we use a timeout in our Thread, and check if we lost 
+*  01.03.04  mifi   Now we use a timeout in our Thread, and check if we lost
 *                   the card. In this case we try to Init it again.
 *  02.03.04  mifi   Remove QuickHack for Networkname and WEP.
 *  03.03.04  mifi   Use struct to config WLAN (WLAN_IOCTL_SET_CONFIG)
 *  04.03.04  mifi   Add function to get WLAN_STATUS (WLAN_IOCTL_GET_STATUS)
 *  06.03.04  mifi   Remove all @@MF later for monitor mode.
-*                   It does not work with my card, and I think we need a 
+*                   It does not work with my card, and I think we need a
 *                   special firmware for it.
 ****************************************************************************/
 #define __WLANDRV_C__
@@ -197,7 +197,7 @@ static BYTE bDebugState = 0;
 
 struct wi_card_ident wi_card_ident[] = {
     /*
-     * CARD_ID          CARD_NAME      FIRM_TYPE 
+     * CARD_ID          CARD_NAME      FIRM_TYPE
      */
 #if (WLAN_SUPPORT_LUCENT >= 1)
     {WI_NIC_LUCENT_ID, WI_NIC_LUCENT_STR, WI_LUCENT},
@@ -306,7 +306,7 @@ static int wi_cmd(struct wi_softc *sc, int cmd, int val0, int val1, int val2)
     count++;
 
     /*
-     * wait for the busy bit to clear 
+     * wait for the busy bit to clear
      */
     for (i = sc->wi_cmd_count; i > 0; i--) {    /* 500ms */
         if (!(CSR_READ_2(sc, WI_COMMAND) & WI_CMD_BUSY)) {
@@ -328,7 +328,7 @@ static int wi_cmd(struct wi_softc *sc, int cmd, int val0, int val1, int val2)
 
     if (cmd == WI_CMD_INI) {
         /*
-         * XXX: should sleep here. 
+         * XXX: should sleep here.
          */
         /* Harald: Added UL specifiers, no idea how Michael's ICC accepted this */
         DELAY(250UL * 1000UL);  /* 250ms delay for init */
@@ -341,7 +341,7 @@ static int wi_cmd(struct wi_softc *sc, int cmd, int val0, int val1, int val2)
         s = CSR_READ_2(sc, WI_EVENT_STAT);
         if (s & WI_EV_CMD) {
             /*
-             * Ack the event and read result code. 
+             * Ack the event and read result code.
              */
             s = CSR_READ_2(sc, WI_STATUS);
             CSR_WRITE_2(sc, WI_EVENT_ACK, WI_EV_CMD);
@@ -515,7 +515,7 @@ static int wi_read_rid(struct wi_softc *sc, int rid, void *buf, int *buflenp)
     u_int16_t ltbuf[2];
 
     /*
-     * Tell the NIC to enter record read mode. 
+     * Tell the NIC to enter record read mode.
      */
     error = wi_cmd(sc, WI_CMD_ACCESS | WI_ACCESS_READ, rid, 0, 0);
     if (error) {
@@ -597,7 +597,7 @@ static int wi_write_txrate(struct wi_softc *sc)
     }
 
     /*
-     * rate: 0, 1, 2, 5, 11 
+     * rate: 0, 1, 2, 5, 11
      */
 
     switch (sc->sc_firmware_type) {
@@ -607,7 +607,7 @@ static int wi_write_txrate(struct wi_softc *sc)
             rate = 3;
             break;
             /*
-             * case 1, 2 map to 1, 2 
+             * case 1, 2 map to 1, 2
              */
         case 5:                /* 5.5Mbps -> 4 */
             rate = 4;
@@ -656,7 +656,7 @@ static int wi_reset(struct wi_softc *sc)
     int tries;
 
     /*
-     * Symbol firmware cannot be initialized more than once 
+     * Symbol firmware cannot be initialized more than once
      */
     if (sc->sc_firmware_type == WI_SYMBOL && sc->sc_reset) {
         return (0);
@@ -706,7 +706,7 @@ static void WLANInterrupt(void *p)
     }
 
     /*
-     * Disable interrupts. We will enable the interrupt 
+     * Disable interrupts. We will enable the interrupt
      * later in the RxThread.
      */
     CSR_WRITE_2(sc, WI_INT_EN, 0);
@@ -785,7 +785,7 @@ static void wi_info_intr(struct wi_softc *sc)
                 break;
             }
             /*
-             * FALLTHROUGH 
+             * FALLTHROUGH
              */
         case WI_INFO_LINK_STAT_AP_CHG:
             ieee80211_new_state(ic, IEEE80211_S_RUN, -1);
@@ -822,7 +822,7 @@ static void wi_info_intr(struct wi_softc *sc)
          */
 
         /*
-         * some card versions have a larger stats structure 
+         * some card versions have a larger stats structure
          */
         len = min(le16toh(ltbuf[0]) - 1, sizeof(sc->sc_stats) / 4);
         ptr = (u_int32_t *) & sc->sc_stats;
@@ -883,7 +883,7 @@ static NETBUF *wi_rx_intr(struct wi_softc *sc)
     fid = CSR_READ_2(sc, WI_RX_FID);
 
     /*
-     * First read in the frame header 
+     * First read in the frame header
      */
     if (wi_read_bap(sc, fid, 0, &frmhdr, sizeof(frmhdr))) {
         CSR_WRITE_2(sc, WI_EVENT_ACK, WI_EV_RX);
@@ -907,7 +907,7 @@ static NETBUF *wi_rx_intr(struct wi_softc *sc)
     memcpy(MAC802_3.ether_dhost, frmhdr.wi_ehdr.ether_dhost, IEEE80211_ADDR_LEN);
     memcpy(MAC802_3.ether_shost, frmhdr.wi_ehdr.ether_shost, IEEE80211_ADDR_LEN);
     /*
-     * The ether_type comes later 
+     * The ether_type comes later
      */
 
     /*
@@ -965,8 +965,8 @@ static NETBUF *wi_rx_intr(struct wi_softc *sc)
                 len += 12;
 
                 /*
-                 * The MAC can not handle odd counts, test it.         
-                 * 
+                 * The MAC can not handle odd counts, test it.
+                 *
                  */
                 len += 1;
                 len &= ~1;
@@ -995,16 +995,16 @@ static NETBUF *wi_rx_intr(struct wi_softc *sc)
                      */
                     pBytePointer = (BYTE *) & LABBuffer;
                     /*
-                     * jump over the header 
+                     * jump over the header
                      */
                     pBytePointer += sizeof(LLCS_SNAP_HEADER);
                     /*
-                     * and copy the rest 
+                     * and copy the rest
                      */
                     size = sizeof(LABBuffer) - sizeof(LLCS_SNAP_HEADER);
                     memcpy(pFrameBuffer, pBytePointer, size);
                     /*
-                     * Change the pointer for the "global copy" 
+                     * Change the pointer for the "global copy"
                      */
                     pFrameBuffer += size;
                     copy_size -= size;  /* This was already in the LookAheadBuffer */
@@ -1025,8 +1025,8 @@ static NETBUF *wi_rx_intr(struct wi_softc *sc)
                 IPFrame = 1;
 
                 /*
-                 * The MAC can not handle odd counts, test it.         
-                 * 
+                 * The MAC can not handle odd counts, test it.
+                 *
                  */
                 len += 1;
                 len &= ~1;
@@ -1106,7 +1106,7 @@ THREAD(RxThread, arg)
 
         /*
          * Clear the sc-EventStatus. If the next time the
-         * EventStatus is 0, it was the timeout and not 
+         * EventStatus is 0, it was the timeout and not
          * an interrupt.
          */
         sc->EventStatus = 0;
@@ -1211,7 +1211,7 @@ static void wi_read_nicid(struct wi_softc *sc)
     u_int16_t ver[4];
 
     /*
-     * getting chip identity 
+     * getting chip identity
      */
     memset(ver, 0, sizeof(ver));
     len = sizeof(ver);
@@ -1237,7 +1237,7 @@ static void wi_read_nicid(struct wi_softc *sc)
     }
 
     /*
-     * get primary firmware version (Only Prism chips) 
+     * get primary firmware version (Only Prism chips)
      */
     if (sc->sc_firmware_type != WI_LUCENT) {
         memset(ver, 0, sizeof(ver));
@@ -1247,7 +1247,7 @@ static void wi_read_nicid(struct wi_softc *sc)
     }
 
     /*
-     * get station firmware version 
+     * get station firmware version
      */
     memset(ver, 0, sizeof(ver));
     len = sizeof(ver);
@@ -1258,7 +1258,7 @@ static void wi_read_nicid(struct wi_softc *sc)
         memset(ident, 0, sizeof(ident));
         len = sizeof(ident);
         /*
-         * value should be the format like "V2.00-11" 
+         * value should be the format like "V2.00-11"
          */
         if (wi_read_rid(sc, WI_RID_SYMBOL_IDENTITY, ident, &len) == 0 &&
             *(p = (char *) ident) >= 'A' && p[2] == '.' && p[5] == '-' && p[8] == '\0') {
@@ -1324,7 +1324,7 @@ static int wi_write_wep(struct wi_softc *sc)
              */
             if (sc->sc_firmware_type == WI_INTERSIL && sc->sc_sta_firmware_ver < 802) {
                 /*
-                 * firm ver < 0.8 variant 2 
+                 * firm ver < 0.8 variant 2
                  */
                 wi_write_val(sc, WI_RID_PROMISC, 1);
             }
@@ -1451,7 +1451,7 @@ int wlandrv_Attach(device_t dev)
 
 
     /*
-     * Reset the NIC. 
+     * Reset the NIC.
      */
     if (wi_reset(sc) != 0) {
         return ENXIO;           /* XXX */
@@ -1477,7 +1477,7 @@ int wlandrv_Attach(device_t dev)
            ic->ic_myaddr[0], ic->ic_myaddr[1], ic->ic_myaddr[2], ic->ic_myaddr[3], ic->ic_myaddr[4], ic->ic_myaddr[5]));
 
     /*
-     * Read NIC identification 
+     * Read NIC identification
      */
     wi_read_nicid(sc);
 
@@ -1530,7 +1530,7 @@ int wlandrv_Attach(device_t dev)
 
 #ifdef WI_HERMES_AUTOINC_WAR
         /*
-         * XXX: not confirmed, but never seen for recent firmware 
+         * XXX: not confirmed, but never seen for recent firmware
          */
         if (sc->sc_sta_firmware_ver < 40000) {
             sc->sc_flags |= WI_FLAGS_BUG_AUTOINC;
@@ -1611,7 +1611,7 @@ int wlandrv_Attach(device_t dev)
     }
 
     /*
-     * Find supported rates. 
+     * Find supported rates.
      */
     buflen = sizeof(ratebuf);
     rs = &ic->ic_sup_rates[IEEE80211_MODE_11B];
@@ -1628,7 +1628,7 @@ int wlandrv_Attach(device_t dev)
         }
     } else {
         /*
-         * XXX fallback on error? 
+         * XXX fallback on error?
          */
         rs->rs_nrates = 0;
     }
@@ -1677,7 +1677,7 @@ void wlandrv_Init(device_t dev)
     wi_reset(sc);
 
     /*
-     * common 802.11 configuration 
+     * common 802.11 configuration
      */
     ic->ic_flags &= ~IEEE80211_F_IBSSON;
     sc->sc_flags &= ~WI_FLAGS_OUTRANGE;
@@ -1715,7 +1715,7 @@ void wlandrv_Init(device_t dev)
     }
 
     /*
-     * Intersil interprets this RID as joining ESS even in IBSS mode 
+     * Intersil interprets this RID as joining ESS even in IBSS mode
      */
     if (sc->sc_firmware_type == WI_LUCENT && (ic->ic_flags & IEEE80211_F_IBSSON) && ic->ic_des_esslen > 0) {
         wi_write_val(sc, WI_RID_CREATE_IBSS, 1);
@@ -1736,7 +1736,7 @@ void wlandrv_Init(device_t dev)
     wi_write_val(sc, WI_RID_PM_ENABLED, (ic->ic_flags & IEEE80211_F_PMGTON) ? 1 : 0);
 
     /*
-     * not yet common 802.11 configuration 
+     * not yet common 802.11 configuration
      */
     wi_write_val(sc, WI_RID_MAX_DATALEN, sc->sc_max_datalen);
 
@@ -1748,7 +1748,7 @@ void wlandrv_Init(device_t dev)
 #endif                          /* later */
 
     /*
-     * driver specific 802.11 configuration 
+     * driver specific 802.11 configuration
      */
     if (sc->sc_flags & WI_FLAGS_HAS_SYSSCALE) {
         wi_write_val(sc, WI_RID_SYSTEM_SCALE, sc->sc_system_scale);
@@ -1795,20 +1795,20 @@ void wlandrv_Init(device_t dev)
     }
 
     /*
-     * Configure WEP. 
+     * Configure WEP.
      */
     if (ic->ic_caps & IEEE80211_C_WEP) {
         wi_write_wep(sc);
     }
 #if 0                           //@@MF later
     /*
-     * Set multicast filter. 
+     * Set multicast filter.
      */
     wi_write_multi(sc);
 #endif                          /* later */
 
     /*
-     * Allocate fids for the card 
+     * Allocate fids for the card
      */
     if (sc->sc_firmware_type != WI_SYMBOL || !wasenabled) {
         sc->sc_buflen = IEEE80211_MAX_LEN + sizeof(struct wi_frame);
@@ -1827,7 +1827,7 @@ void wlandrv_Init(device_t dev)
     sc->sc_txcur = sc->sc_txnext = 0;
 
     /*
-     * Enable desired port 
+     * Enable desired port
      */
     wi_cmd(sc, WI_CMD_ENABLE | sc->sc_portnum, 0, 0, 0);
 
@@ -1848,7 +1848,7 @@ void wlandrv_Init(device_t dev)
         error = NutRegisterIrqHandler(&sig_INTERRUPT7, WLANInterrupt, dev);
         if (error == FALSE) {
             EICR |= 0x80;       // falling edge
-            sbi(EIMSK, IRQ_INT7);
+            sbi(EIMSK, INT7);
 
             /*
              * Start the receiver thread.
@@ -1860,13 +1860,13 @@ void wlandrv_Init(device_t dev)
 
 
     /*
-     * Enable interrupts 
+     * Enable interrupts
      */
     CSR_WRITE_2(sc, WI_INT_EN, WI_INTRS);
 
     if (!wasenabled && ic->ic_opmode == IEEE80211_M_HOSTAP && sc->sc_firmware_type == WI_INTERSIL) {
         /*
-         * XXX: some card need to be re-enabled for hostap 
+         * XXX: some card need to be re-enabled for hostap
          */
         wi_cmd(sc, WI_CMD_DISABLE | WI_PORT0, 0, 0, 0);
         wi_cmd(sc, WI_CMD_ENABLE | WI_PORT0, 0, 0, 0);
@@ -1882,7 +1882,7 @@ void wlandrv_Init(device_t dev)
         if (ic->ic_des_chan != IEEE80211_CHAN_ANYC)
             join.wi_chan = htole16(ieee80211_chan2ieee(ic, ic->ic_des_chan));
         /*
-         * Lucent firmware does not support the JOIN RID. 
+         * Lucent firmware does not support the JOIN RID.
          */
         if (sc->sc_firmware_type != WI_LUCENT)
             wi_write_rid(sc, WI_RID_JOIN_REQ, &join, sizeof(join));
@@ -1929,7 +1929,7 @@ int wlandrv_PutPacket(NUTDEVICE * dev, NETBUF * nb)
         WI_LOCK(sc);
 
         /*
-         * This is a RFC894 Frame from Ethernut  
+         * This is a RFC894 Frame from Ethernut
          */
 #if (WLAN_ENABLE_TX_FRAME_DUMP >= 1)
         Debug(("TxFrame: %d\n", len));
@@ -1971,7 +1971,7 @@ int wlandrv_PutPacket(NUTDEVICE * dev, NETBUF * nb)
         LLCSSNAPHeader.Type = pMAC8023Header->ether_type;
 
         /*
-         * Get the TX-BUffer-ID          
+         * Get the TX-BUffer-ID
          */
         cur = sc->sc_txcur;
         fid = sc->sc_txd[cur].d_fid;
@@ -1991,7 +1991,7 @@ int wlandrv_PutPacket(NUTDEVICE * dev, NETBUF * nb)
                 off += sizeof(LLCSSNAPHeader);
 
                 /*
-                 * Copy the rest of the Ethernut Data 
+                 * Copy the rest of the Ethernut Data
                  */
                 if ((error == 0) && (nb->nb_nw.sz != 0)) {
                     error = wi_write_bap(sc, fid, off, nb->nb_nw.vp, nb->nb_nw.sz);
@@ -2006,7 +2006,7 @@ int wlandrv_PutPacket(NUTDEVICE * dev, NETBUF * nb)
                 }
                 if (error == 0) {
 
-                    //@@MF sc->sc_txd[cur].d_len = off;          
+                    //@@MF sc->sc_txd[cur].d_len = off;
 
                     error = wi_cmd(sc, WI_CMD_TX | WI_RECLAIM, fid, 0, 0);
                     if (error != 0) {

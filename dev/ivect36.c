@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,17 +33,8 @@
 
 /*
  * $Log$
- * Revision 1.3  2005/02/10 07:06:18  hwmaier
+ * Revision 1.1  2005/02/10 07:06:18  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.2  2004/01/30 17:02:19  drsung
- * Separate interrupt stack for avr-gcc only added.
- *
- * Revision 1.1.1.1  2003/05/09 14:40:43  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/03/31 14:53:06  harald
- * Prepare release 3.1
  *
  */
 
@@ -54,27 +45,17 @@
  */
 /*@{*/
 
-IRQ_HANDLER sig_UART0_TRANS;
+#if defined(SIG_CAN_OVRIT) || defined(iv_CAN_TIM_OVR)
 
-#if defined(SIG_UART0_TRANS) || defined(iv_USART0_TX)
+IRQ_HANDLER sig_CAN_OVERRUN;
 
-/*! \fn SIG_UART0_TRANS(void)
- * \brief Uart0 transmit complete interrupt entry.
+/*! \fn SIG_CAN_OVRIT(void)
+ * \brief Store program memory interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART0_TRANS:iv_USART0_TX
+#pragma interrupt_handler SIG_CAN_OVRIT:iv_CAN_TIM_OVR
 #endif
-NUTSIGNAL(SIG_UART0_TRANS, sig_UART0_TRANS)
-
-#else
-
-/*! \fn SIG_UART_TRANS(void)
- * \brief Uart0 transmit complete interrupt entry.
- */
-#ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_UART_TRANS:iv_UART_TX
-#endif
-NUTSIGNAL(SIG_UART_TRANS, sig_UART0_TRANS)
+NUTSIGNAL(SIG_CAN_OVRIT, sig_SPM_READY)
 
 #endif
 

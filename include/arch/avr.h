@@ -2,7 +2,7 @@
 #define _ARCH_AVR_H_
 
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/02/10 07:06:48  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.7  2005/01/10 12:40:15  olereinhardt
  * Included check if atof is just defined (needed by new avr-libc versions on debian unstable)
  *
@@ -63,6 +66,16 @@
  */
 
 #ifdef __IMAGECRAFT__
+
+#ifndef __AVR__
+#define __AVR__ /* Generic test for AVR architecture */
+#endif
+#ifdef _MCU_enhanced
+#ifndef __AVR_ENHANCED__
+#define __AVR_ENHANCED__ /* Generic test for enhanced AVRs like ATMEGA128, AT09CAN128 */
+#endif
+#endif
+
 
 #include <stddef.h>
 #include <macros.h>
@@ -287,7 +300,7 @@
 #define __bss_end	__heap_start
 extern void *__heap_start;
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RAMSTART    ((void *)0x100)
 
 /* Nut/OS is still using the original ATmega103 register names for
@@ -335,13 +348,44 @@ extern void *__heap_start;
 #define TXEN    TXEN0
 #endif
 
+#define RAMSTART    ((void *)0x100)
+
+/* Some ATC90CAN128 SFR names are different to ATMEGA128. Define some
+   compatibilty macros. */
+#if defined(__AVR_AT90CAN128__)
+#ifndef ADCW
+#define ADCW    ADC
+#endif
+#ifndef ADCSR
+#define ADCSR   ADCSRA
+#endif
+#ifndef ADFR
+#define ADFR    ADATE
+#endif
+#ifndef OCIE0
+#define OCIE0   OCIE0A
+#endif
+#ifndef TCCR0
+#define TCCR0   TCCR0A
+#endif
+#ifndef TCCR2
+#define TCCR2   TCCR2A
+#endif
+#ifndef OCR0
+#define OCR0    OCR0A
+#endif
+#ifndef TIMSK
+#define TIMSK   TIMSK0
+#endif
+#endif
+
 #else
 #define RAMSTART    ((void *)0x60)
 
 #endif
 
 /*
- * Since version 1.1.0 of avr-libc, some former deprecated macros are deleted. 
+ * Since version 1.1.0 of avr-libc, some former deprecated macros are deleted.
  * But we need them futher on, so they are defined here.
  */
 #ifndef cbi

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/10 07:06:48  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.3  2004/06/07 15:08:58  olereinhardt
  * Added suport for M-CAN Config header file
  *
@@ -51,7 +54,7 @@
  * \brief Hardware configuration.
  */
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
+#if defined(__AVR__) || defined(ATMEGA)
 /* Ethernut board. */
 #include <cfg/ethernut.h>
 

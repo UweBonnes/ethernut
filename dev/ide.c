@@ -3,30 +3,30 @@
 *
 *  Copyright (c) 2002-2003 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
@@ -37,19 +37,19 @@
 *  01.01.03  mifi   Add support for IDELock, IDEFree.
 *  08.01.03  mifi   Now support several modes, like:
 *                   IDE_HARDDISK           16bit 14.7456Mhz / 2 wait states
-*                   IDE_HARDDISK_7MHZ      16bit  7.3728Mhz / 2 wait states 
+*                   IDE_HARDDISK_7MHZ      16bit  7.3728Mhz / 2 wait states
 *                   IDE_COMPACT_FLASH      16bit 14.7456Mhz / 2 wait states
 *                   MEM_8BIT_COMPACT_FLASH  8bit 14.7456Mhz / 2 wait states
 *  18.01.03  mifi   Change Licence from GPL to BSD.
 *  25.01.03  mifi   Fix the bug in ClearEvent.
-*                   Change IDEInit and add "AutoMount", "AutoUnMount" 
+*                   Change IDEInit and add "AutoMount", "AutoUnMount"
 *                   callback function. With these functions we are
 *                   independent from the FileSystem.
 *                   Now support changing of the CF-Card in a running system.
-*  19.06.03  mifi   Change IDEInit, if the BaseAddress is 0, we use the 
-*                   default address IDE_BASE_ADDRESS. Now we can use the 
+*  19.06.03  mifi   Change IDEInit, if the BaseAddress is 0, we use the
+*                   default address IDE_BASE_ADDRESS. Now we can use the
 *                   address 0 in FAT.C and hide the ide stuff.
-*  24.06.03  mifi   Enable the IDE Reset pin with DDRD = 0x20, 
+*  24.06.03  mifi   Enable the IDE Reset pin with DDRD = 0x20,
 *                   add some stuff to detect PACKET device.
 *  25.06.03  mifi   Fix overflow with IDE_MAX_SUPPORTED_DEVICE
 *  29.06.03  mifi   First ATAPI-Version
@@ -80,10 +80,10 @@
 // Here are some important values.
 // Change these values if you change the hardware.
 //
-#define IDE_IRQ                 IRQ_INT7
+#define IDE_IRQ                 INT7
 #define IDE_INT_RISING_EDGE     0xC0
 
-#define CF_IRQ                  IRQ_INT6
+#define CF_IRQ                  INT6
 #define CF_INT_SENS_MASK        0x30
 #define CF_INT_FALLING_EDGE     0x20
 #define CF_INT_RISING_EDGE      0x30
@@ -111,7 +111,7 @@
 //
 // Device shall assert INTRQ when DRQ
 // is set to one after receiving PACKET.
-// 
+//
 #define IDE_SUPPORT_INTRQ_PACKET    0x0008
 
 #define IDE_CDROM_DEVICE            0x1000
@@ -121,7 +121,7 @@
 #define IDE_READY                   0x8000
 
 //
-// Identify packet device 
+// Identify packet device
 // config word[0] bit masks
 //
 #define ATAPI_CFG_12_BYTE_MSK       0x0003
@@ -285,7 +285,7 @@ static void HardwareReset(DRIVE * pDrive)
             NutSleep(1000);
         } else {
             //
-            // It can takes up to 10 seconds (2.5-Inch drive) 
+            // It can takes up to 10 seconds (2.5-Inch drive)
             // from reset high to NOT busy.
             // Take a look in the drive manual "Reset timings"
             //
@@ -673,7 +673,7 @@ static int GetDeviceInfoPacket(LPDRIVE pDrive, BYTE * pSectorBuffer)
                         pDrive->dwTotalSectors = dwTotalSectors;
 
                         //
-                        // ModeSense 
+                        // ModeSense
                         //
                         ATAPI_CMD(0x5A);
                         aATAPICmd[2] = 0x2A;
@@ -1200,12 +1200,12 @@ int IDEInit(int nBaseAddress, int nIDEMode, IDE_MOUNT_FUNC * pMountFunc, IDE_MOU
     //
     // With MCUCR 0xC0 and XMCRA 0x02 we set:
     //
-    // Wait two cycles during read/write and 
+    // Wait two cycles during read/write and
     // wait one cycle before driving out new address.
     // This setting is for 0x1100 - 0xffff
     //
-#ifdef __AVR_ATmega128__
-    XMCRA = 0x02;
+#ifdef __AVR_ENHANCED__
+    XMCRA = _BV(SRW11);
 #endif
 
     //
@@ -1248,15 +1248,20 @@ int IDEInit(int nBaseAddress, int nIDEMode, IDE_MOUNT_FUNC * pMountFunc, IDE_MOU
             break;
         }
 
-        // 
-        // If your drive does not work correct with 14.7456Mhz, 
+        //
+        // If your drive does not work correct with 14.7456Mhz,
         // try to devide the clock by 2.
-        // 
+        //
         // Important: You must correct the baudrate in your app.
         // if you set 115200, you get only 57600.
-        // 
+        //
     case IDE_HARDDISK_7MHZ:{
+#if defined(CLKPR) /* AT90MEGA128 uses a clock prescaler register */
+            CLKPR = _BV(CLKPCE); // Enable clock speed change
+            CLKPR = 2; // Run at half the clock speed
+#else
             XDIV = 0xff;
+#endif
             break;
         }
     case IDE_COMPACT_FLASH:{
@@ -1264,14 +1269,14 @@ int IDEInit(int nBaseAddress, int nIDEMode, IDE_MOUNT_FUNC * pMountFunc, IDE_MOU
         }
     case MEM_8BIT_COMPACT_FLASH:{
             //
-            // Now we will support to change the CF-Card in 
+            // Now we will support to change the CF-Card in
             // a running system, therefore we must install
             // a INT handler and some other parts :-)
             //
 
             //
             // Clear CF_INT_SENS_MASK.
-            // 
+            //
             EICR &= ~CF_INT_SENS_MASK;
 
             //
@@ -1282,16 +1287,16 @@ int IDEInit(int nBaseAddress, int nIDEMode, IDE_MOUNT_FUNC * pMountFunc, IDE_MOU
                 gbCFMountStatus = CF_AVAILABLE;
 
                 //
-                // The rising edge between two samples 
-                // of INTX generates an interrupt request.                            
+                // The rising edge between two samples
+                // of INTX generates an interrupt request.
                 //
                 EICR |= CF_INT_RISING_EDGE;
             } else {
                 gbCFMountStatus = CF_NOT_AVAILABLE;
 
                 //
-                // The falling edge between two samples 
-                // of INTX generates an interrupt request.                            
+                // The falling edge between two samples
+                // of INTX generates an interrupt request.
                 //
                 EICR |= CF_INT_FALLING_EDGE;
             }
@@ -1336,7 +1341,7 @@ int IDEMountDevice(BYTE bDevice, BYTE * pSectorBuffer)
 #if (IDE_SUPPORT_CHS == 1)
         //
         // CHS values
-        //  
+        //
         pDrive->wCylinders = 0;
         pDrive->wHeads = 0;
         pDrive->wSectorsPerTrack = 0;
@@ -1538,7 +1543,7 @@ int IDEReadSectors(BYTE bDevice, void *pData, DWORD dwStartSector, WORD wSectorC
     if ((pDrive->wFlags & IDE_SUPPORT_PACKET) && ((wSectorCount > 1))) {
         //
         // Sorry, in this version we support
-        // only 1 sector for PACKET devices. 
+        // only 1 sector for PACKET devices.
         //
         nError = IDE_PARAM_ERROR;
     }
@@ -1547,7 +1552,7 @@ int IDEReadSectors(BYTE bDevice, void *pData, DWORD dwStartSector, WORD wSectorC
 #if (IDE_SUPPORT_ATAPI == 1)
         //
         // ATAPI
-        // 
+        //
         ATAPI_CMD(ATAPI_CMD_READ12);
         i = 5;
         while (dwStartSector) {
@@ -1555,7 +1560,7 @@ int IDEReadSectors(BYTE bDevice, void *pData, DWORD dwStartSector, WORD wSectorC
             dwStartSector >>= 8;
         }
         //
-        // Reading one sector only 
+        // Reading one sector only
         //
         aATAPICmd[9] = 1;
         nError = ATAPISendCommand(pDrive, pData, &i);

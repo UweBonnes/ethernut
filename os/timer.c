@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/02/10 07:06:51  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.12  2005/01/24 22:34:40  freckle
  * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
@@ -84,7 +87,7 @@
  *
  * Revision 1.2  2003/10/13 10:17:11  haraldkipp
  * Seconds counter added
- * 
+ *
  * Revision 1.1.1.1  2003/05/09 14:41:55  haraldkipp
  * Initial using 3.2.1
  *
@@ -194,7 +197,7 @@ static volatile u_long seconds;
 
 static void NutTimerInsert(NUTTIMERINFO * tn);
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 #include "arch/avr_timer.c"
 #elif defined(__arm__)
 #include "arch/arm_timer.c"
@@ -254,7 +257,7 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
  * of functions and must return as soon as possible.
  *
  * \param ms       Specifies the timer interval in milliseconds.
- * \param callback Identifies the function to be called on each 
+ * \param callback Identifies the function to be called on each
  *                 timer interval.
  * \param arg      The argument passed to the callback function.
  * \param flags    If set to TM_ONESHOT, the timer will be stopped
@@ -337,7 +340,7 @@ HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void 
  * This function may switch to another application thread, that
  * got the same or a higher priority and is ready to run.
  *
- * \note Threads may sleep longer than the specified number of 
+ * \note Threads may sleep longer than the specified number of
  *       milliseconds, depending on the number of threads
  *       with higher or equal priority, which are ready to run.
  *       If you need exact timing, use NutDelay().
@@ -353,7 +356,7 @@ void NutSleep(u_long ms)
 {
     u_long ticks;
     if (ms) {
-        ticks = NutTimerMillisToTicks(ms);        
+        ticks = NutTimerMillisToTicks(ms);
         NutEnterCritical();
         if ((runningThread->td_timer = NutTimerStartTicks(ticks, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
 #ifdef NUTDEBUG
@@ -390,7 +393,7 @@ void NutSleep(u_long ms)
  * \note It is save to call this function from within an interrupt
  *       handler. The memory occupied by the timer is not released,
  *       but added to a pool and will be re-used by the next timer
- *       being created. In any case interrupts should be disabled 
+ *       being created. In any case interrupts should be disabled
  *       when calling this function.
  *
  * \param handle Identifies the timer to be stopped. This handle
@@ -484,7 +487,7 @@ u_long NutGetCpuClock(void)
 /*!
  * \brief Return the number of timer ticks.
  *
- * This function returns the TickCount since the system was started. It 
+ * This function returns the TickCount since the system was started. It
  * is limited to the resolution of the system timer.
  *
  * \return Number of ticks.
@@ -529,7 +532,7 @@ u_long NutGetSeconds(void)
  * \brief Return the milliseconds counter value.
  *
  * This function returns the value of a counter, which is incremented
- * every system timer tick. During system start, the counter is cleared 
+ * every system timer tick. During system start, the counter is cleared
  * to zero and will overflow roughly after 49.7 days. The resolution
  * is depends on system ticks.
  *

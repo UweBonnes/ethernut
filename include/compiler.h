@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/02/10 07:06:50  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.8  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -62,7 +65,7 @@
  */
 /*@{*/
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
+#if defined(__AVR__) || defined(ATMEGA)
 #include <arch/avr.h>
 #elif defined(__arm__)
 #include <arch/arm.h>

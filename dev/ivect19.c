@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/02/10 07:06:18  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.2  2004/01/30 17:02:20  drsung
  * Separate interrupt stack for avr-gcc only added.
  *
@@ -53,7 +56,7 @@
 
 IRQ_HANDLER sig_UART0_DATA;
 
-#ifdef __AVR_ATmega128__
+#if defined(SIG_UART0_DATA) || defined(iv_USART0_UDRE)
 
 /*! \fn SIG_UART0_DATA(void)
  * \brief Uart0 data register empty interrupt entry.

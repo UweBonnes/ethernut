@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/02/10 07:06:48  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.5  2005/01/24 22:34:46  freckle
  * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
@@ -70,7 +73,7 @@
 
 
 __BEGIN_DECLS
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 #ifdef __IMAGECRAFT__
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
@@ -117,25 +120,25 @@ static inline void AtomicDec(volatile u_char * p)
         "push __tmp_reg__"          "\n\t"  \
         "cli"                       "\n\t"  \
     )
-        
+
 #define NutExitCritical_nt()                \
     asm volatile(                           \
         "pop __tmp_reg__"           "\n\t"  \
         "out __SREG__, __tmp_reg__" "\n\t"  \
     )
-    
+
 #ifdef NUTTRACER_CRITICAL
 #define NutEnterCritical()                  \
     NutEnterCritical_nt();                  \
 	TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_ENTER)
-    
+
 #define NutExitCritical()                   \
 	TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_EXIT); \
 	NutExitCritical_nt()
 #else
 #define NutEnterCritical()                  \
-    NutEnterCritical_nt();                  
-    
+    NutEnterCritical_nt();
+
 #define NutExitCritical()                   \
 	NutExitCritical_nt()
 #endif

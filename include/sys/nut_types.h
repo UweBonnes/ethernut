@@ -5,17 +5,17 @@
  * nut-specific sys/types.h definitions that are not available on in unix sys/types.h
  */
 
-/*! 
- * \brief Unsigned register type. 
+/*!
+ * \brief Unsigned register type.
  *
- * The size of this type is equal to the size of a register, 
- * the hardware datapath or whatever might fit to give optimum 
+ * The size of this type is equal to the size of a register,
+ * the hardware datapath or whatever might fit to give optimum
  * performance for values from 0 to 255.
  *
  * Typically 8 bit CPUs will use unsigned characters, 16 bit
  * CPUs will use unsigned shorts etc.
  */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 typedef unsigned char ureg_t;
 #elif defined(__arm__)
 typedef unsigned short ureg_t;
@@ -27,12 +27,12 @@ typedef unsigned short ureg_t;
 typedef unsigned short ureg_t;
 #endif
 
-/*! 
- * \brief Signed register type. 
+/*!
+ * \brief Signed register type.
  *
  * Similar to ureg_t, but for signed values from -128 to +127.
  */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 typedef unsigned char reg_t;
 #elif defined(__arm__)
 typedef unsigned short reg_t;
@@ -45,13 +45,13 @@ typedef unsigned short reg_t;
 #endif
 
 
-/*! 
- * \brief Unsigned pointer value type. 
+/*!
+ * \brief Unsigned pointer value type.
  *
  * The size of this type is at least the size of a memory pointer.
  * For CPUs with 16 address bits this will be an unsigned short.
  */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 typedef unsigned short uptr_t;
 #else
 /*

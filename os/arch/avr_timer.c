@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/10 07:06:48  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.3  2005/01/24 22:34:50  freckle
  * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
@@ -171,7 +174,7 @@ static void NutTimer0Intr(void *arg)
 
             /*
              * We can't touch the heap while running in
-             * interrupt context. Oneshot timers are added 
+             * interrupt context. Oneshot timers are added
              * to a pool of available timers.
              */
             else {
@@ -183,7 +186,7 @@ static void NutTimer0Intr(void *arg)
     }
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_TIMER0_OVERFL)
-#endif    
+#endif
 }
 
 
@@ -283,7 +286,7 @@ void NutTimerInit(void)
      * - Write (CPU frequency / (prescaler * 1KHz)) in the output compare.
      *   register, so we'll get a compare match interrupt every millisecond.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     outp(BV(CS00) | BV(CS02) | BV(WGM01), TCCR0);
 #else
     outp(BV(CS00) | BV(CS02) | BV(CTC0), TCCR0);
@@ -292,7 +295,14 @@ void NutTimerInit(void)
     outp(NUT_CPU_FREQ / (128L * 1000), OCR0);
     NutRegisterIrqHandler(&sig_OUTPUT_COMPARE0, NutTimer0Intr, 0);
     sbi(TIMSK, OCIE0);
+#ifdef __AVR_AT90CAN128__
+/* TODO FIXME ttt */
+#warning Code compiles and runs for AT90CAN128 but timing is no yet ok!
+#endif
 #else
+#ifdef __AVR_AT90CAN128__
+#error Define NUT_CPU_FREQ to compile for this CPU. NutComputeCpuClock not yet implemented!
+#endif
     NutComputeCpuClock();
     sbi(TIMSK, TOIE0);
 #endif

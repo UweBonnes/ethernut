@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/02/10 07:06:18  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.13  2005/02/05 20:42:38  haraldkipp
  * Force compiler error for leftover debug prints.
  *
@@ -205,49 +208,49 @@
  */
 #if (RTL_SIGNAL_IRQ == INT0)
 #define RTL_SIGNAL sig_INTERRUPT0
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC00); sbi(EICRA, ISC01)
 #endif
 
 #elif (RTL_SIGNAL_IRQ == INT1)
 #define RTL_SIGNAL sig_INTERRUPT1
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC10); sbi(EICRA, ISC11)
 #endif
 
 #elif (RTL_SIGNAL_IRQ == INT2)
 #define RTL_SIGNAL sig_INTERRUPT2
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC20); sbi(EICRA, ISC21)
 #endif
 
 #elif (RTL_SIGNAL_IRQ == INT3)
 #define RTL_SIGNAL sig_INTERRUPT3
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC30); sbi(EICRA, ISC31)
 #endif
 
 #elif (RTL_SIGNAL_IRQ == INT4)
 #define RTL_SIGNAL sig_INTERRUPT4
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC40); sbi(EICRB, ISC41)
 #endif
 
 #elif (RTL_SIGNAL_IRQ == INT6)
 #define RTL_SIGNAL sig_INTERRUPT6
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC60); sbi(EICRB, ISC61)
 #endif
 
 #elif (RTL_SIGNAL_IRQ == INT7)
 #define RTL_SIGNAL sig_INTERRUPT7
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC70); sbi(EICRB, ISC71)
 #endif
 
 #else
 #define RTL_SIGNAL sig_INTERRUPT5
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC50); sbi(EICRB, ISC51)
 #endif
 
@@ -279,7 +282,7 @@
 /*!
  * \brief Number of transmit buffers.
  *
- * The initial value had been 2. The idea was to use two alternating 
+ * The initial value had been 2. The idea was to use two alternating
  * buffers. However, this had never been implemented and we took over
  * Bengt Florin's change, defining 1 transmit buffer only and give
  * more buffer space to the receiver.
@@ -307,7 +310,7 @@
 #define NIC_CR_PAGE3 (NIC_CR_PS1 | NIC_CR_PS0)
 
 /*
- * This delay has been added by Bengt Florin and is used to minimize 
+ * This delay has been added by Bengt Florin and is used to minimize
  * the effect of the IORDY line during reads. Bengt contributed a
  * more versatile loop, which unfortunately wasn't portable to the
  * ImageCraft compiler.
@@ -362,8 +365,8 @@ static int NicReset(void)
     u_char j;
 
 /*
- * Toggle the hardware reset line. Since Ethernut version 1.3 the 
- * hardware reset pin of the nic is no longer connected to bit 4 
+ * Toggle the hardware reset line. Since Ethernut version 1.3 the
+ * hardware reset pin of the nic is no longer connected to bit 4
  * on port E, but wired to the board reset line.
  */
 #ifdef RTL_RESET_BIT
@@ -376,8 +379,8 @@ static int NicReset(void)
 #endif
 
     /*
-     * Do the software reset by reading from the reset register followed 
-     * by writing to the reset register. Wait until the controller enters 
+     * Do the software reset by reading from the reset register followed
+     * by writing to the reset register. Wait until the controller enters
      * the reset state.
      */
     for (j = 0; j < 20; j++) {
@@ -434,7 +437,7 @@ static int DetectNicEeprom(void)
     /*
      * No external memory access beyond this point.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /* On the ATmega 128 we release bits 5-7 as normal port pins. */
     outb(XMCRB, inb(XMCRB) | _BV(XMM0) | _BV(XMM1));
 #else
@@ -457,7 +460,7 @@ static int DetectNicEeprom(void)
     /*
      * Enable memory interface.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /* On the ATmega 128 we release bits 5-7 as normal port pins. */
     outb(XMCRB, inb(XMCRB) & ~(_BV(XMM0) | _BV(XMM1)));
 #else
@@ -522,13 +525,13 @@ static void EmulateNicEeprom(void)
     register u_char val;
 
     /*
-     * Disable all interrupts. This routine requires critical timing 
+     * Disable all interrupts. This routine requires critical timing
      * and optionally may disable the memory interface.
      */
     NutEnterCritical();
 
     /*
-     * Prepare the EEPROM emulation port bits. Configure the EEDO and 
+     * Prepare the EEPROM emulation port bits. Configure the EEDO and
      * the EEMU lines as outputs and set EEDO to low and EEMU to high.
      */
     cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
@@ -550,14 +553,14 @@ static void EmulateNicEeprom(void)
     NICOUTB(NIC_PG3_EECR, NIC_EECR_EEM0);
 
     /*
-     * We can avoid wasting port pins for EEPROM emulation by using the 
+     * We can avoid wasting port pins for EEPROM emulation by using the
      * upper bits of the address bus.
      */
 #ifdef RTL_EE_MEMBUS
     /*
      * No external memory access beyond this point.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /* On the ATmega 128 we release bits 5-7 as normal port pins. */
     outb(XMCRB, inb(XMCRB) | _BV(XMM0) | _BV(XMM1));
 #else
@@ -572,7 +575,7 @@ static void EmulateNicEeprom(void)
     for (cnt = 0; cnt < sizeof(nic_eeprom);) {
 
         /*
-         * 
+         *
          * 1 start bit, always high
          * 2 op-code bits
          * 7 address bits
@@ -584,7 +587,7 @@ static void EmulateNicEeprom(void)
         }
 
         /*
-         * Shift out the high byte, MSB first. Our data changes at the EESK 
+         * Shift out the high byte, MSB first. Our data changes at the EESK
          * rising edge. Data is sampled by the Realtek at the falling edge.
          */
         val = PRG_RDB(nic_eeprom + cnt);
@@ -622,7 +625,7 @@ static void EmulateNicEeprom(void)
     /*
      * Enable memory interface.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /* On the ATmega 128 we release bits 5-7 as normal port pins. */
     outb(XMCRB, inb(XMCRB) & ~(_BV(XMM0) | _BV(XMM1)));
 #else
@@ -660,23 +663,23 @@ static int NicStart(CONST u_char * mac)
     }
 
     /*
-     * Mask all interrupts and clear any interrupt status flag to set the 
+     * Mask all interrupts and clear any interrupt status flag to set the
      * INT pin back to low.
      */
     NICOUTB(NIC_PG0_IMR, 0);
     NICOUTB(NIC_PG0_ISR, 0xff);
 
     /*
-     * During reset the nic loaded its initial configuration from an 
-     * external eeprom. On the ethernut board we do not have any 
-     * configuration eeprom, but simply tied the eeprom data line to 
-     * high level. So we have to clear some bits in the configuration 
+     * During reset the nic loaded its initial configuration from an
+     * external eeprom. On the ethernut board we do not have any
+     * configuration eeprom, but simply tied the eeprom data line to
+     * high level. So we have to clear some bits in the configuration
      * register. Switch to register page 3.
      */
     NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
 
     /*
-     * The nic configuration registers are write protected unless both 
+     * The nic configuration registers are write protected unless both
      * EEM bits are set to 1.
      */
     NICOUTB(NIC_PG3_EECR, NIC_EECR_EEM0 | NIC_EECR_EEM1);
@@ -720,8 +723,8 @@ static int NicStart(CONST u_char * mac)
     NICOUTB(NIC_PG0_RBCR1, 0);
 
     /*
-     * Temporarily set receiver to monitor mode and transmitter to 
-     * internal loopback mode. Incoming packets will not be stored 
+     * Temporarily set receiver to monitor mode and transmitter to
+     * internal loopback mode. Incoming packets will not be stored
      * in the nic ring buffer and no data will be send to the network.
      */
     NICOUTB(NIC_PG0_RCR, NIC_RCR_MON);
@@ -744,7 +747,7 @@ static int NicStart(CONST u_char * mac)
     NICOUTB(NIC_PG0_ISR, 0xff);
 
     /*
-     * Switch to register page 1 and copy our MAC address into the nic. 
+     * Switch to register page 1 and copy our MAC address into the nic.
      * We are still in stop mode.
      */
     NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
@@ -768,7 +771,7 @@ static int NicStart(CONST u_char * mac)
     NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
 
     /*
-     * Take receiver out of monitor mode and enable it for accepting 
+     * Take receiver out of monitor mode and enable it for accepting
      * broadcasts.
      */
     NICOUTB(NIC_PG0_RCR, NIC_RCR_AB);
@@ -781,7 +784,7 @@ static int NicStart(CONST u_char * mac)
     NICOUTB(NIC_PG0_IMR, NIC_IMR_PRXE | NIC_IMR_RXEE | NIC_IMR_TXEE | NIC_IMR_OVWE);
 
     /*
-     * Fire up the nic by clearing the stop bit and setting the start bit. 
+     * Fire up the nic by clearing the stop bit and setting the start bit.
      * To activate the local receive dma we must also take the nic out of
      * the local loopback mode.
      */
@@ -867,7 +870,7 @@ static void NicRead(u_char * buf, u_short len)
  *           call NutNetBufAlloc().
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int NicPutPacket(NETBUF * nb)
@@ -989,7 +992,7 @@ static NETBUF *NicGetPacket(void)
     /* we don't want to be interrupted by NIC owerflow */
     cbi(EIMSK, RTL_SIGNAL_IRQ);
     /*
-     * Get the current page pointer. It points to the page where the NIC 
+     * Get the current page pointer. It points to the page where the NIC
      * will start saving the next incoming packet.
      */
     NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD2 | NIC_CR_PS0);
@@ -1101,7 +1104,7 @@ static NETBUF *NicGetPacket(void)
 /*
  * \brief Handle NIC overflows.
  *
- * When a receiver buffer overflow occurs, the NIC will defer any subsequent 
+ * When a receiver buffer overflow occurs, the NIC will defer any subsequent
  * action until properly restarted.
  *
  * This routine is called within interrupt context, which introduces a big
@@ -1123,15 +1126,15 @@ static u_char NicOverflow(void)
     u_char curr;
 
     /*
-     * Wait for any transmission in progress. Save the command register, 
-     * so we can later determine, if NIC transmitter has been interrupted. 
+     * Wait for any transmission in progress. Save the command register,
+     * so we can later determine, if NIC transmitter has been interrupted.
      * or reception in progress.
      */
     while (NICINB(NIC_CR) & NIC_CR_TXP);
     cr = NICINB(NIC_CR);
 
     /*
-     * Get the current page pointer. It points to the page where the NIC 
+     * Get the current page pointer. It points to the page where the NIC
      * will start saving the next incoming packet.
      */
     NICOUTB(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
@@ -1151,9 +1154,9 @@ static u_char NicOverflow(void)
     NICOUTB(NIC_PG0_TCR, NIC_TCR_LB0);
     NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
 
-    /* 
-     * Discard all packets from the receiver buffer. Set boundary 
-     * register to the last page we read. 
+    /*
+     * Discard all packets from the receiver buffer. Set boundary
+     * register to the last page we read.
      */
     if (--curr < NIC_FIRST_RX_PAGE) {
         curr = NIC_STOP_PAGE - 1;
@@ -1195,27 +1198,27 @@ static void NicInterrupt(void *arg)
     if (isr & NIC_ISR_OVW) {
         /* The AVR platform uses a dedicated interrupt stack, which
          * forbids interrupt nesting. */
-#if !defined(__AVR_ATmega128__) && !defined(__AVR_ATmega103__)
+#if !defined(__AVR__)
         cbi(EIMSK, RTL_SIGNAL_IRQ);
         sei();
 #endif
         NicOverflow();
-#if !defined(__AVR_ATmega128__) && !defined(__AVR_ATmega103__)
+#if !defined(__AVR__)
         cli();
         sbi(EIMSK, RTL_SIGNAL_IRQ);
 #endif
         ni->ni_rx_overruns++;
     } else {
         /*
-         * If this is a transmit interrupt, then a packet has been sent. 
-         * So we can clear the transmitter busy flag and wake up the 
+         * If this is a transmit interrupt, then a packet has been sent.
+         * So we can clear the transmitter busy flag and wake up the
          * transmitter thread.
          */
         if (isr & NIC_ISR_TXE)
             ni->ni_tx_errors++;
 
         /*
-         * If this is a receive interrupt, then wake up the receiver 
+         * If this is a receive interrupt, then wake up the receiver
          * thread.
          */
         if (isr & NIC_ISR_PRX)
@@ -1232,7 +1235,7 @@ static void NicInterrupt(void *arg)
 /*! \fn NicRx(void *arg)
  * \brief NIC receiver thread.
  *
- * 
+ *
  * It runs with high priority.
  */
 THREAD(NicRx, arg)
@@ -1307,15 +1310,15 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets RTL8019AS Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets RTL8019AS Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice(). Note, that base address and interrupt number
  * passed to NutRegisterDevice() are silently ignored by this driver
- * for performance reasons. These values can be changed only by 
+ * for performance reasons. These values can be changed only by
  * using the Nut/OS Configurator to rebuild the system.
  *
  * If the network configuration hasn't been set by the application
@@ -1330,7 +1333,7 @@ int NicInit(NUTDEVICE * dev)
     NICINFO *ni;
 
     /*
-     * We need to know our MAC address. If no configuration is 
+     * We need to know our MAC address. If no configuration is
      * available, load it now.
      */
     if (confnet.cd_size == 0)
@@ -1354,11 +1357,10 @@ int NicInit(NUTDEVICE * dev)
         return -1;
 
     cbi(EIMSK, RTL_SIGNAL_IRQ);
-// HM: Support of rising edge interrupts for HW w/o inverter gate
 #ifdef RTL_IRQ_RISING_EDGE
+    /* Support of rising edge interrupts for HW w/o inverter gate */
     RTL_RISING_EDGE_MODE();
 #endif
-// End HM
 
     if (ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2])
         if (NicStart(ifn->if_mac))

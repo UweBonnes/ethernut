@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/02/10 07:06:51  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.7  2004/08/05 12:13:56  freckle
  * Added unix emulation hook in NutThreadYield to safely process
  * NutPostEventAsync calls occuring in non Nut/OS threads.
@@ -96,7 +99,7 @@ typedef struct {
     void (*ir_handler) (void *);
 } IRQ_HANDLER;
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || defined(ATMEGA)
+#if defined(__AVR__)
 #include <dev/irqreg_avr.h>
 #elif defined(__arm__)
 #include <dev/irqreg_arm.h>

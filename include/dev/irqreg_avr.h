@@ -35,51 +35,14 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/02/10 07:06:51  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
  *
  */
-
-enum {
-    IRQ_INT0,
-    IRQ_INT1,
-    IRQ_INT2,
-    IRQ_INT3,
-    IRQ_INT4,
-    IRQ_INT5,
-    IRQ_INT6,
-    IRQ_INT7,
-    IRQ_TIMER2_COMP,
-    IRQ_TIMER2_OVF,
-    IRQ_TIMER1_CAPT,
-    IRQ_TIMER1_COMPA,
-    IRQ_TIMER1_COMPB,
-    IRQ_TIMER1_OVF,
-    IRQ_TIMER0_COMP,
-    IRQ_TIMER0_OVF,
-    IRQ_SPI_STC,
-    IRQ_UART_RX,
-    IRQ_UART_UDRE,
-    IRQ_UART_TX,
-    IRQ_ADC,
-    IRQ_EE_RDY,
-    IRQ_ANA_COMP,
-#ifdef __AVR_ATmega128__
-    IRQ_TIMER1_COMPC,
-    IRQ_TIMER3_CAP,
-    IRQ_TIMER3_COMPA,
-    IRQ_TIMER3_COMPB,
-    IRQ_TIMER3_COMPC,
-    IRQ_TIMER3_OVF,
-    IRQ_UART1_RX,
-    IRQ_UART1_UDRE,
-    IRQ_UART1_TX,
-    IRQ_I2C,
-    IRQ_SPM_RDY,
-#endif
-    IRQ_MAX
-};
 
 extern IRQ_HANDLER sig_INTERRUPT0;
 extern IRQ_HANDLER sig_INTERRUPT1;
@@ -104,7 +67,7 @@ extern IRQ_HANDLER sig_UART0_RECV;
 extern IRQ_HANDLER sig_ADC;
 extern IRQ_HANDLER sig_EEPROM_READY;
 extern IRQ_HANDLER sig_COMPARATOR;
-#ifdef __AVR_ATmega128__
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega64__)
 extern IRQ_HANDLER sig_OUTPUT_COMPARE1C;
 extern IRQ_HANDLER sig_INPUT_CAPTURE3;
 extern IRQ_HANDLER sig_OUTPUT_COMPARE3A;
@@ -116,6 +79,10 @@ extern IRQ_HANDLER sig_UART1_DATA;
 extern IRQ_HANDLER sig_UART1_TRANS;
 extern IRQ_HANDLER sig_2WIRE_SERIAL;
 extern IRQ_HANDLER sig_SPM_READY;
+#endif
+#if defined(__AVR_AT90CAN128__)
+extern IRQ_HANDLER sig_CAN_COMPLETE;
+extern IRQ_HANDLER sig_CAN_OVERRUN;
 #endif
 
 #endif

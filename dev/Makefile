@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.20  2005/02/10 07:06:18  hwmaier
+# Changes to incorporate support for AT90CAN128 CPU
+#
 # Revision 1.19  2005/01/22 19:23:21  haraldkipp
 # Removed uartspi devices.
 #
@@ -160,8 +163,8 @@ SRCS =  irqstack.c \
 	ivect13.c ivect14.c ivect15.c ivect16.c ivect17.c ivect18.c \
 	ivect19.c ivect20.c ivect21.c ivect22.c ivect23.c ivect24.c \
 	ivect25.c ivect26.c ivect27.c ivect28.c ivect29.c ivect30.c \
-	ivect31.c ivect32.c ivect33.c ivect34.c ihndlr.c \
-        can_dev.c sja1000.c adc.c
+	ivect31.c ivect32.c ivect33.c ivect34.c ivect35.c ivect36.c \
+	ihndlr.c can_dev.c sja1000.c adc.c
 else
 ifeq ($(ARCH), unix)
 # source for Unix Emulation

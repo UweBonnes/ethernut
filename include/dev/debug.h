@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/02/10 07:06:50  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.5  2004/10/03 18:39:12  haraldkipp
  * GBA debug output on screen
  *
@@ -67,10 +70,10 @@
 /*
  * Available devices.
  */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
 
 extern NUTDEVICE devDebug0;
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 extern NUTDEVICE devDebug1;
 #endif
 

@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * The 9-bit communication had been contributed by Brett Abbott, 
+ * The 9-bit communication had been contributed by Brett Abbott,
  * Digital Telemetry Limited.
  *
  * Dave Smart contributed the synchronous mode support.
@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/02/10 07:06:18  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.6  2005/01/24 22:34:49  freckle
  * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
@@ -192,7 +195,7 @@ static USARTDCB dcb_usart0 = {
 /*!
  * \brief USART0 device information structure.
  *
- * An application must pass a pointer to this structure to 
+ * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using the serial communication
  * driver of the AVR's on-chip USART0.
  *
@@ -305,7 +308,7 @@ NUTDEVICE devUsartAvr0 = {
 /*@}*/
 
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 
 #define UDRn    UDR0
 #define UCSRnA  UCSR0A

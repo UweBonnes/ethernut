@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/02/10 07:06:51  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.3  2004/06/21 10:40:25  freckle
  * Added *nix emulation uart definitions to uartavr.h and usartavr.h to
  * allow compilation of apps without adding #include <dev/unix.devs.h>
@@ -60,7 +63,7 @@
 
 extern NUTDEVICE devUsartAvr0;
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 extern NUTDEVICE devUsartAvr1;
 #endif
 

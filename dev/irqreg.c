@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/02/10 07:06:18  hwmaier
+ * Changes to incorporate support for AT90CAN128 CPU
+ *
  * Revision 1.5  2004/10/03 18:37:40  haraldkipp
  * GBA support
  *
@@ -77,8 +80,8 @@
 
 //static IRQ_HANDLER irqHandler[IRQ_MAX];
 
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
-/* 
+#if defined(__AVR__)
+/*
  * AVR is using a separate file for each vector,
  * which saves a lot of space and allows native
  * interrupts.
