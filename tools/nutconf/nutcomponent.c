@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/02/26 12:13:40  drsung
+ * Added support for relative paths for sample application directory.
+ *
  * Revision 1.13  2005/02/06 16:39:52  haraldkipp
  * GBA linker script entry in NutConf.mk fixed
  *
@@ -1591,9 +1594,31 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
         sprintf(path, "%s/Makedefs", app_dir);
         if ((fp = fopen(path, "w")) != 0) {
             fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
-            fprintf(fp, "top_srcdir = %s\n", src_dir);
-            fprintf(fp, "top_appdir = %s\n", app_dir);
-            fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
+
+            //fprintf(fp, "top_srcdir = %s\n", src_dir);
+			if (src_dir[0] == '/' || src_dir[1] == ':')
+				fprintf(fp, "top_srcdir = %s\n", src_dir);
+			else if (strlen(src_dir))
+				fprintf(fp, "top_srcdir = ../../%s\n", src_dir);
+			else
+				fprintf(fp, "top_srcdir = ../..\n");
+			
+			//fprintf(fp, "top_appdir = %s\n", app_dir);
+			if (app_dir[0] == '/' || app_dir[1] == ':')
+				fprintf(fp, "top_appdir = %s\n", src_dir);
+			else if (strlen(app_dir))
+				fprintf(fp, "top_appdir = ../../%s\n", app_dir);
+			else
+				fprintf(fp, "top_appdir = ../..\n");
+
+			//fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
+			if (lib_dir[0] == '/' || lib_dir[1] == ':')
+				fprintf(fp, "LIBDIR = %s\n", lib_dir);
+			else if (strlen(app_dir))
+				fprintf(fp, "LIBDIR = ../../%s\n", lib_dir);
+			else
+				fprintf(fp, "LIBDIR = ../..\n");
+
             if(ifirst_dir && *ifirst_dir) {
                 fprintf(fp, "INCFIRST = $(INCPRE)%s\n", ifirst_dir);
             }
