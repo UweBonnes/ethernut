@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.3 2003/07/20 16:05:44 haraldkipp Exp $
+$Id: ChangeLog,v 1.4 2003/07/20 18:36:58 haraldkipp Exp $
 
 2003-07-20  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -11,6 +11,25 @@ $Id: ChangeLog,v 1.3 2003/07/20 16:05:44 haraldkipp Exp $
 	has been fixed.
 
 	* app/httpd: Redesigned HTTP server sample added.
+
+	* dev: New Ethernet driver for CS8900A.
+
+	* crt/vsscanf.c: Bugfix for sscanf functions.
+
+	* crt/sprintf_p.c: Bugfix.
+
+	* crt/filelength.c: Wrong description replaced.
+
+	* pro/dhcpc.c: Added code to support secondary DNS.
+
+	* pro/resolve.c: Dito.
+
+	* No explanation had been given how to disable the
+	timeout of several functions using NutEventWait().
+	A defined value of NUT_WAIT_INFINITE has been added
+	to event.h.
+
+	* Missing directories added to repository.
 
 
 2003-07-17  Harald Kipp  <harald.kipp@egnite.de>
