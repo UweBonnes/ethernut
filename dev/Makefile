@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.19  2005/01/22 19:23:21  haraldkipp
+# Removed uartspi devices.
+#
 # Revision 1.18  2004/11/08 09:57:39  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -147,7 +150,7 @@ include $(top_srcdir)/Makedefs
 ifeq ($(ARCH), avr)
 # sources for AVR
 SRCS =  irqstack.c \
-	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c ahdlc0.c ahdlc1.c ahdlcavr.c \
+	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c ahdlc0.c ahdlc1.c ahdlcavr.c \
 	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
 	vs1001k.c ir.c irsony.c spiflash.c \
 	ide.c twif.c hd44780.c hd44780_bus.c term.c debug0.c debug1.c \
