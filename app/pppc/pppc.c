@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/01/28 14:24:47  drsung
+ * Bugfix for ICCAVR
+ *
  * Revision 1.2  2003/11/06 09:24:50  haraldkipp
  * Added a note that debug output will hang ATmega103
  *
@@ -87,16 +90,6 @@
 
 
 /*
- * Debug output device settings.
- */
-#ifdef __AVR_ATmega128__
-#define DBGDEV      devDebug1   /* Use debug driver. */
-//#define DBGDEV      devUart1    /* Use standard UART driver. */
-#define DBGCOM      "uart1"     /* Device name. */
-#define DBGSPEED    115200      /* Baudrate. */
-#endif
-
-/*
  * Server input buffer size.
  */
 #define RXBUFFSIZE  256
@@ -136,6 +129,16 @@
 #define CC_STRING   "AVRGCC"
 #else
 #define CC_STRING   "Compiler unknown"
+#endif
+
+/*
+ * Debug output device settings.
+ */
+#ifdef __AVR_ATmega128__
+#define DBGDEV      devDebug1   /* Use debug driver. */
+//#define DBGDEV      devUart1    /* Use standard UART driver. */
+#define DBGCOM      "uart1"     /* Device name. */
+#define DBGSPEED    115200      /* Baudrate. */
 #endif
 
 prog_char vbanner_P[] = "\n\nPPP Client Sample - Nut/OS %s - " CC_STRING "\n";
