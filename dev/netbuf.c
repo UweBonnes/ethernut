@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:46  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/01/16 07:51:43  drsung
+ * Bugfix for reallocating smaller network buffers. Thx to Mike Cornelius.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:46  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.12  2003/03/31 14:53:07  harald
  * Prepare release 3.1
@@ -173,7 +176,8 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, u_short size)
                             NutNetBufFree(nb);
                             return 0;
                         }
-                    }
+                    } else
+                        nb->nb_dl.sz = size;
                 } else if (NutNetBufAllocData(&nb->nb_dl, size)) {
                     NutNetBufFree(nb);
                     return 0;
@@ -188,7 +192,8 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, u_short size)
                             NutNetBufFree(nb);
                             return 0;
                         }
-                    }
+                    } else
+                        nb->nb_nw.sz = size;
                 } else if (NutNetBufAllocData(&nb->nb_nw, size)) {
                     NutNetBufFree(nb);
                     return 0;
@@ -203,7 +208,8 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, u_short size)
                             NutNetBufFree(nb);
                             return 0;
                         }
-                    }
+                    } else
+                        nb->nb_tp.sz = size;
                 } else if (NutNetBufAllocData(&nb->nb_tp, size)) {
                     NutNetBufFree(nb);
                     return 0;
@@ -218,7 +224,8 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, u_short size)
                             NutNetBufFree(nb);
                             return 0;
                         }
-                    }
+                    } else
+                        nb->nb_ap.sz = size;
                 } else if (NutNetBufAllocData(&nb->nb_ap, size)) {
                     NutNetBufFree(nb);
                     return 0;
