@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,21 +29,6 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
  * -
  * Portions Copyright (c) 1983, 1993 by
  *  The Regents of the University of California.  All rights reserved.
@@ -93,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/05 17:39:56  haraldkipp
+ * Replaced all this awful crap by a simple generic routine.
+ *
  * Revision 1.3  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -127,197 +115,52 @@
 
 #include <netinet/ipcsum.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
-#define ARCH_32BIT
-#endif
-
 /*!
  * \addtogroup xgIP
  *
  * \brief Internet Protocol checksum and related support.
  *
- *
- * \author Harald Kipp, egnite Software GmbH
  */
 
 /*@{*/
 
 
 /*!
- * \brief Calculates a partial IP checksum over a block of data.
+ * \brief Calculate a partial IP checksum of a buffer.
  *
- * Note that this returns the checksum in network byte order, and thus does
- * not need to be converted via hton16(), etc.  Of course this means that
- * we mustn't use this value for normal arithmetic!
+ * The caller must create the one's complement of the final result.
  *
- * This is a partial checksum because it doesn't take the 1's complement
- * of the overall sum.
+ * \param ics Initial checksum from previous parts.
+ * \param buf Pointer to the buffer.
+ * \param len Number of bytes in the buffer.
  *
- * \note by Dave Hudson: This doesn't look particularly intuitive at 
- * first sight - in fact it probably looks plain wrong.  It does work 
- * however (take my word for it), but for some explanation the reader 
- * is referred to RFC1071 where the maths is explained in detail.
- *
- * \note by Harald Kipp: Yes, the GCC version looks wrong. I assume that
- *       this will not work for all packet sizes. Not yet confirmed.
+ * \return Partial checksum in network byte order.
  */
-u_short NutIpChkSumPartial(u_short partial_csum, void *buf, u_short count)
+u_short NutIpChkSumPartial(u_short ics, CONST void *buf, size_t len)
 {
-#ifdef __GNUC__
-    u_long sum = partial_csum;
-    u_short *d2 = (u_short *) buf;
-    while (count > 1) {
-        sum += *d2++;
-        count -= 2;
+    register u_long sum = ics;
+    register u_short *wp = (u_short *) buf;
+
+    /* Sum up 16 bit values. */
+    while (len > 1) {
+        sum += *wp++;
+        len -= 2;
     }
-    if (count > 0)
-#ifndef ARCH_32BIT
-        sum += *(u_char *) d2++;
+
+    /* Add remaining byte on odd lengths. */
+    if (len) {
+#ifdef __BIG_ENDIAN__
+        sum += ((u_short) (*(u_char *) wp)) << 8;
 #else
-        sum += ((u_short) (*(u_char *) d2)) << 8;
+        sum += *(u_char *) wp;
 #endif
-
-    while (sum >> 16)
-        sum = (sum & 0xFFFF) + (sum >> 16);
-
-    partial_csum = (u_short) sum;
-#if 0
-    u_short words;
-    void *d1;
-    u_short d2;
-    d1 = buf;
-    words = count >> 1;
-    if (words != 0) {
-        asm volatile ("\n"
-                      "L_redo%=:\n\t"
-                      "ld __tmp_reg__, %a1+\n\t"
-                      "add %A0, __tmp_reg__\n\t"
-                      "ld __tmp_reg__, %a1+\n\t"
-                      "adc %B0, __tmp_reg__\n\t"
-                      "adc %A0, r1\n\t"
-                      "adc %B0, r1\n\t"
-                      "dec %A2\n\t"
-                      "brne L_redo%=\n\t" "subi %B2, 1\n\t" "brsh L_redo%=\n\t" "\n\t":"=r" (partial_csum), "=e"(d1), "=w"(d2)
-                      :"0"(partial_csum), "1"(d1), "2"(words)
-            );
     }
 
-    /*
-     * Did we have an odd number of bytes to do?
-     */
-    if (count & 0x01) {
-        asm volatile ("ld __tmp_reg__, %a1+\n\t"
-                      "add %A0, __tmp_reg__\n\t" "adc %B0, r1\n\t" "adc %A0, r1\n\t":"=r" (partial_csum), "=e"(d1)
-                      :"0"(partial_csum), "1"(d1)
-            );
+    /* Fold upper 16 bits to lower ones. */
+    while (sum >> 16) {
+        sum = (u_short)sum + (sum >> 16);
     }
-#endif
-#else
-
-#if 0
-    {
-        /* Compute Internet Checksum for "count" bytes
-         *         beginning at location "addr".
-         */
-        register long sum = 0;
-
-        /*  This is the inner loop */
-        while (count > 1) {
-            sum += *(unsigned short) addr++;
-            count -= 2;
-        }
-
-        /*  Add left-over byte, if any */
-        if (count > 0)
-            sum += *(unsigned char *) addr;
-
-        /*  Fold 32-bit sum to 16 bits */
-        while (sum >> 16)
-            sum = (sum & 0xffff) + (sum >> 16);
-
-        checksum = ~sum;
-    }
-#endif
-
-//*KU* implementation of checksum
-// has to be optimized later !
-
-/*	u_long sum = partial_csum;
-	u_short *d2 = (u_short*) buf;
-	while (count > 1) 
-	{
-		sum += *d2++;	
-		count -= 2;
-	}
-	if (count > 0)
-		sum += *(u_char*) d2++;
-		
-	while (sum>>16)
-		sum = (sum & 0xFFFF) + (sum >>16);
-
-	partial_csum = sum;		*/
-
-
-/*KU* this should be much faster */
-    asm("ldd r24, Y+0");        // pop count from stack
-    asm("ldd r25, Y+1");
-    asm("clr r1");              // zero reg
-    asm("clr r8");              // registers for short sum
-    asm("clr r9");
-    asm("clr r4");              // registers for long sum
-    asm("clr r5");
-    asm("clr r6");
-    asm("clr r7");
-    asm("add r4, r16");         // initialize sum with partial_csum
-    asm("adc r5, r17");
-    asm("movw r26, r24");       // check count if zero
-    asm("subi r26, 0");
-    asm("sbci r27, 0");
-    asm("movw r8, r16");        // returnvalue if exit here
-    asm("breq NutIPChk_Exit");
-    asm("subi r26, 1");         // check count = 1
-    asm("sbci r27, 0");
-    asm("movw r30, r18");       // load buffer address
-    asm("breq NutIPChk_OneByte");
-
-    asm("NutIPChk_Start:");
-    asm("ld r8, Z+");           // load value from buf
-    asm("ld r9, Z+");
-    asm("add r4, r8");          // add to long sum
-    asm("adc r5, r9");
-    asm("adc r6, r1");
-    asm("adc r7, r1");
-    asm("subi r24, 2");         // count - 2; next word
-    asm("sbci r25, 0");
-    asm("breq NutIPChk_Fold");
-    asm("movw r26, r24");       // check count = 1
-    asm("subi r26, 1");
-    asm("sbci r27, 0");
-    asm("breq NutIPChk_OneByte");
-    asm("rjmp NutIPChk_Start"); // there are more words
-
-    asm("NutIPChk_OneByte:");   // no word, only one byte left
-    asm("ld r8, Z");            // load last byte
-    asm("add r4, r8");          // add it to long sum
-    asm("adc r5, r1");
-    asm("adc r6, r1");
-    asm("adc r7, r1");
-
-    asm("NutIPChk_Fold:");      // see the while loop in the
-    asm("movw r8, r4");         // source code above if you
-    asm("add r8, r6");          // want to understand this
-    asm("adc r9, r7");
-    asm("brcc NutIPChk_Exit");  // fold again if sum>>16 = true
-    asm("ldi r26, 1");
-    asm("add r8, r26");
-    asm("adc r9, r1");
-
-    asm("NutIPChk_Exit:");
-    asm("movw %partial_csum, r8");      // pass the return value
-
-#endif
-
-    return partial_csum;
+    return (u_short) sum;
 }
 
 
@@ -328,16 +171,16 @@ u_short NutIpChkSumPartial(u_short partial_csum, void *buf, u_short count)
  * Unlike the partial checksum in NutIpChkSumPartial(), this function takes
  * the one's complement of the final result, thus making it the full checksum.
  */
-u_short NutIpChkSum(u_short partial_csum, void *buf, u_short count)
+u_short NutIpChkSum(u_short ics, CONST void *buf, size_t len)
 {
-    return NutIpChkSumPartial(partial_csum, buf, count) ^ 0xffff;
+    return ~NutIpChkSumPartial(ics, buf, len);
 }
 
 /*
  * Details of the pseudo header used as part of the
  * calculation of UDP and TCP header checksums.
  */
-struct pseudo_hdr {
+struct __attribute__ ((packed)) pseudo_hdr {
     u_long ph_src_addr;
     u_long ph_dest_addr;
     u_char ph_zero;
@@ -360,15 +203,6 @@ u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protoc
     ph.ph_len = len;
 
     return NutIpChkSumPartial(0, &ph, sizeof(struct pseudo_hdr));
-}
-
-/*!
- * \brief Calculates the IP pseudo checksum.
- *
- */
-u_short NutIpPseudoChkSum(u_long src_addr, u_long dest_addr, u_char protocol, u_short len)
-{
-    return NutIpPseudoChkSumPartial(src_addr, dest_addr, protocol, len) ^ 0xffff;
 }
 
 /*@}*/

@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:15  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/04/05 17:39:56  haraldkipp
+ * Replaced all this awful crap by a simple generic routine.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:15  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/03/31 14:53:24  harald
  * Prepare release 3.1
@@ -99,18 +102,13 @@
  * \brief IP checksum definitions.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern u_short NutIpChkSumPartial(u_short partial_csum, void *buf, u_short count);
-extern u_short NutIpChkSum(u_short partial_csum, void *buf, u_short count);
+__BEGIN_DECLS
+/* Prototypes */
+extern u_short NutIpChkSumPartial(u_short ics, CONST void *buf, size_t len);
+extern u_short NutIpChkSum(u_short ics, CONST void *buf, size_t len);
 
 extern u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, u_short len);
-extern u_short NutIpPseudoChkSum(u_long src_addr, u_long dest_addr, u_char protocol, u_short len);
 
-#ifdef __cplusplus
-}
-#endif
-
+__END_DECLS
+/* */
 #endif
