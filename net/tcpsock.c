@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:08:36  haraldkipp
+ * Bugfix, TCP may reuse socket ports because of wrong byte order during compare.
+ *
  * Revision 1.2  2003/07/13 19:23:59  haraldkipp
  * TCP transfer speed increased by changing the character receive buffer
  * in TCPSOCKET to a NETBUF queue.
@@ -497,7 +500,8 @@ int NutTcpConnect(TCPSOCKET * sock, u_long addr, u_short port)
 
         sp = tcpSocketList;
         while (sp) {
-            if (sp->so_local_port == last_local_port)
+            /* Thanks to Ralph Mason for fixing the byte order bug. */
+            if (sp->so_local_port == htons(last_local_port))
                 break;
             sp = sp->so_next;
         }
@@ -718,7 +722,7 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
             if ((i += size) > sock->so_rx_bsz)
                 i = sock->so_rx_bsz;
 
-            if (sock->so_rx_win <= sock->so_mss) {
+            if (sock->so_rx_win <= sock->so_mss && i > sock->so_mss) {
                 sock->so_rx_win = i;
                 NutTcpStateWindowEvent(sock);
             } else {
