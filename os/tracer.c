@@ -39,6 +39,10 @@
  * \note  Only supported on AVR-GCC platform
  * 
  */
+#if defined(__GNUC__) && (defined(__AVR_ATmega128__) || \
+    defined(__AVR_ATmega64__) || defined(__AVR_AT90CAN128__) || \
+    defined(__AVR_ATmega103))
+ 
 /************************************************/
 /* includes */
 /************************************************/
@@ -353,3 +357,4 @@ int NutTraceRegisterUserTag(int tag, char* tag_string)
     user_string[tag] = tag_string;
     return tag;		
 }
+#endif
