@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.58 2004/04/15 10:22:36 haraldkipp Exp $
+$Id: ChangeLog,v 1.59 2004/04/15 11:18:02 haraldkipp Exp $
 
 2004-04-15  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -7,6 +7,24 @@ $Id: ChangeLog,v 1.58 2004/04/15 10:22:36 haraldkipp Exp $
 	* crt/feof.c, crt/ferror.c, crt/fread.c, crt/nut_io.h:
 	Stream functions feof() and ferror() do now return meaningful
 	results.
+
+	* net/tcpout.c: Retransmission timer not always set in the
+	state machine. Initializing it when the first entry is added
+	to the transmit buffer is a much better idea. However, now
+	we have a unique retransmission in every situation. Again,
+	it is most important to implement round trip time calculation.
+
+	* net/tcpsm.c: The state machine did not increment the sequence
+	number on FIN segments. Thus, FIN segments were never
+	retransmitted and connections weren't properly closed.
+
+	* net/tcpsm.c: The packet drop problem of the Realtek driver
+	could be observed quite often in HTTP applications, where
+	the browser concurrently opened several connections. Adding
+	a slight delay during SYN and FIN receptions remarkably
+	reduced the problem. This delay is activated only, if
+	RTLCONNECTHACK has been defined. Note, that this is a
+	temporary hack, but it really helps some applications.
 
 
 2004-04-07  Harald Kipp  <harald.kipp@egnite.de>
