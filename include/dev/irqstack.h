@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/02/03 11:28:41  drsung
+ * Modified to support different target platforms.
+ *
  * Revision 1.1  2004/01/30 17:00:46  drsung
  * Separate interrupt stack for avr-gcc only added.
  *
@@ -43,7 +46,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__))
 
 #define IRQSTACK_SIZE 256
 
@@ -120,12 +123,13 @@ void signame (void)	\
    asm ("reti");		\
 }
 
-#else                           /* ifdef __GNUC__ */
+#else                           /* #if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)) */
+
 
 #define NUTSIGNAL(signame,handler)	\
 SIGNAL(signame)		\
 { CallHandler (&handler);  }
 
-#endif                          /* ifdef __GNUC__ */
+#endif                          /* #if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)) */
 
 #endif

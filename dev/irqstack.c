@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/02/03 11:28:40  drsung
+ * Modified to support different target platforms.
+ *
  * Revision 1.4  2004/02/02 15:35:31  drsung
  * Bloody 'no new line at end of file' error fixed... Grrrr..
  *
@@ -48,7 +51,7 @@
  */
 
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && (defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__))
 
 #include <dev/irqstack.h>
 
