@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/09/17 13:03:48  haraldkipp
+ * New settings page for tool options
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -78,6 +81,8 @@ public:
     wxString m_source_dir_default;
     wxString m_platform;
     wxString m_platform_default;
+    wxString m_toolpath;
+    wxString m_toolpath_default;
     wxString m_app_dir;
     wxString m_app_dir_default;
     wxString m_programmer;

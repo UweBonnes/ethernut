@@ -1,6 +1,3 @@
-#ifndef SETTINGSDLG_H_
-#define SETTINGSDLG_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,43 +38,50 @@
  */
 
 /*
- * $Log$
- * Revision 1.3  2004/09/17 13:03:48  haraldkipp
+ * $Log: tooloptdlg.cpp,v $
+ * Revision 1.1  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
- *
- * Revision 1.2  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.1  2004/08/03 15:04:59  haraldkipp
- * Another change of everything
  *
  */
 
-#include <wx/wx.h>
-#include <wx/config.h>
+#include <wx/valgen.h>
+#include <wx/filename.h>
 
-#include "repoptdlg.h"
-#include "bldoptdlg.h"
+#include "ids.h"
+#include "nutconf.h"
 #include "tooloptdlg.h"
-#include "appoptdlg.h"
 
-class CSettingsDialog: public wxDialog
+IMPLEMENT_CLASS(CToolOptionsDialog, wxPanel)
+
+CToolOptionsDialog::CToolOptionsDialog(wxWindow* parent)
+: wxPanel(parent, ID_SETTINGS_REPOSITORY)
 {
-DECLARE_CLASS(CSettingsDialog)
+    CSettings *opts = wxGetApp().GetSettings();
 
-public:
-    CSettingsDialog(wxWindow* parent);
-    virtual ~CSettingsDialog();
+    wxStaticBox *groupPath = new wxStaticBox(this, -1, wxT("Tool Paths"));
+    m_entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_toolpath));
 
-protected:
-    wxNotebook* m_notebook;
-    CRepositoryOptionsDialog* m_repositoryOptions;
-    CBuildOptionsDialog* m_buildOptions;
-    CToolOptionsDialog* m_toolOptions;
-    CAppOptionsDialog* m_appOptions;
+    wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
+    wxSizer *sizerGroup = new wxStaticBoxSizer(groupPath, wxHORIZONTAL);
 
-    virtual bool TransferDataToWindow();
-    virtual bool TransferDataFromWindow();
-};
+    sizerGroup->Add(m_entryPath, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    sizerTop->Add(sizerGroup, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
 
-#endif
+    SetAutoLayout(true);
+    SetSizer(sizerTop);
+}
+
+bool CToolOptionsDialog::TransferDataToWindow()
+{
+    wxPanel::TransferDataToWindow();
+
+    return true;
+}
+
+bool CToolOptionsDialog::TransferDataFromWindow()
+{
+    wxPanel::TransferDataFromWindow();
+
+    return true;
+}
+

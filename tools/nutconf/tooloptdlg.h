@@ -1,5 +1,5 @@
-#ifndef SETTINGSDLG_H_
-#define SETTINGSDLG_H_
+#ifndef TOOLOPTDLG_H_
+#define TOOLOPTDLG_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,42 +42,26 @@
 
 /*
  * $Log$
- * Revision 1.3  2004/09/17 13:03:48  haraldkipp
+ * Revision 1.1  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
- *
- * Revision 1.2  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.1  2004/08/03 15:04:59  haraldkipp
- * Another change of everything
  *
  */
 
 #include <wx/wx.h>
 #include <wx/config.h>
 
-#include "repoptdlg.h"
-#include "bldoptdlg.h"
-#include "tooloptdlg.h"
-#include "appoptdlg.h"
 
-class CSettingsDialog: public wxDialog
+class CToolOptionsDialog: public wxPanel
 {
-DECLARE_CLASS(CSettingsDialog)
-
+DECLARE_CLASS(CToolOptionsDialog)
 public:
-    CSettingsDialog(wxWindow* parent);
-    virtual ~CSettingsDialog();
-
-protected:
-    wxNotebook* m_notebook;
-    CRepositoryOptionsDialog* m_repositoryOptions;
-    CBuildOptionsDialog* m_buildOptions;
-    CToolOptionsDialog* m_toolOptions;
-    CAppOptionsDialog* m_appOptions;
-
+    CToolOptionsDialog(wxWindow* parent);
     virtual bool TransferDataToWindow();
     virtual bool TransferDataFromWindow();
+private:
+
+    wxString m_envPath;
+    wxTextCtrl *m_entryPath;
 };
 
 #endif

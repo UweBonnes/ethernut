@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.5  2004/09/17 13:03:48  haraldkipp
+ * New settings page for tool options
+ *
  * Revision 1.4  2004/09/07 19:20:07  haraldkipp
  * Initial/default lib/inc dirs updated
  *
@@ -74,6 +77,7 @@ CSettings::CSettings()
     m_platform_default = wxT("avr-gcc");
     m_app_dir_default = wxT("nutapp");
     m_programmer_default = wxT("avr-uisp-stk500");
+    m_toolpath_default = wxT("");
 
     wxConfigBase *pConfig = wxConfigBase::Get();
     if (pConfig) {
@@ -83,9 +87,12 @@ CSettings::CSettings()
         pConfig->Read("ConfigName", &m_configname, m_configname_default);
         pConfig->Read("RepositoryName", &m_repositoryname, m_repositoryname_default);
         pConfig->Read("BuildPath", &m_buildpath, m_buildpath_default);
+        pConfig->Read("FirstInclude", &m_firstidir, m_firstidir_default);
+        pConfig->Read("LastInclude", &m_lastidir, m_lastidir_default);
         pConfig->Read("InstallPath", &m_lib_dir, m_lib_dir_default);
         pConfig->Read("SourceDirectory", &m_source_dir, m_source_dir_default);
         pConfig->Read("TargetPlatform", &m_platform, m_platform_default);
+        pConfig->Read("ToolPath", &m_toolpath, m_toolpath_default);
         pConfig->Read("ApplicationDirectory", &m_app_dir, m_app_dir_default);
         pConfig->Read("Programmer", &m_programmer, m_programmer_default);
 
@@ -109,9 +116,12 @@ bool CSettings::Save()
         pConfig->Write("ConfigName", m_configname);
         pConfig->Write("RepositoryName", m_repositoryname);
         pConfig->Write("BuildPath", m_buildpath);
+        pConfig->Write("FirstInclude", m_firstidir);
+        pConfig->Write("LastInclude", m_lastidir);
         pConfig->Write("InstallPath", m_lib_dir);
         pConfig->Write("SourceDirectory", m_source_dir);
         pConfig->Write("TargetPlatform", m_platform);
+        pConfig->Write("ToolPath", m_toolpath);
         pConfig->Write("ApplicationDirectory", m_app_dir);
         pConfig->Write("Programmer", m_programmer);
         pConfig->SetPath(lastPath);

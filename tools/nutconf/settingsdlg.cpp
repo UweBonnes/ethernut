@@ -39,6 +39,9 @@
 
 /*
  * $Log: settingsdlg.cpp,v $
+ * Revision 1.3  2004/09/17 13:03:48  haraldkipp
+ * New settings page for tool options
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -63,13 +66,13 @@ CSettingsDialog::CSettingsDialog(wxWindow* parent)
 
     m_repositoryOptions = new CRepositoryOptionsDialog(m_notebook);
     m_buildOptions = new CBuildOptionsDialog(m_notebook);
+    m_toolOptions = new CToolOptionsDialog(m_notebook);
     m_appOptions = new CAppOptionsDialog(m_notebook);
-    //m_toolOptions = new CToolOptionsDialog(m_notebook);
 
     m_notebook->AddPage(m_repositoryOptions, wxT("Repository"));
     m_notebook->AddPage(m_buildOptions, wxT("Build"));
+    m_notebook->AddPage(m_toolOptions, wxT("Tools"));
     m_notebook->AddPage(m_appOptions, wxT("Samples"));
-    //m_notebook->AddPage(m_toolOptions, wxT("Tools"));
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
 
@@ -144,8 +147,8 @@ bool CSettingsDialog::TransferDataToWindow()
 {
     m_repositoryOptions->TransferDataToWindow();
     m_buildOptions->TransferDataToWindow();
+    m_toolOptions->TransferDataToWindow();
     m_appOptions->TransferDataToWindow();
-    //m_toolOptions->TransferDataToWindow();
 
     return true;
 }
@@ -154,8 +157,8 @@ bool CSettingsDialog::TransferDataFromWindow()
 {
     m_repositoryOptions->TransferDataFromWindow();
     m_buildOptions->TransferDataFromWindow();
+    m_toolOptions->TransferDataFromWindow();
     m_appOptions->TransferDataFromWindow();
-    //m_toolOptions->TransferDataFromWindow();
 
     wxGetApp().GetSettings()->Save();
 

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/09/17 13:03:48  haraldkipp
+ * New settings page for tool options
+ *
  * Revision 1.5  2004/09/07 19:19:12  haraldkipp
  * Tested with EB40A on Win32
  *
@@ -60,7 +63,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "0.9.2"
+#define VERSION "1.0.3"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
