@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2003/12/12 20:23:17  drsung
+ * Fixed %P handling
+ *
  * Revision 1.4  2003/11/26 12:45:20  drsung
  * Portability issues ... again
  *
@@ -258,7 +261,8 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
                     xdigs = buf;
                 }
             }
-            _putb(fd, buf, n);
+            if (n)
+                _putb(fd, buf, n);
             size = 0;
             sign = 0;
             break;
