@@ -77,7 +77,7 @@ done
 cat <<EOF > UserConf.mk
 MCU=$DEV
 BURN=uisp
-BURNFLAGS=-dprog=$UISP_PROG --erase --upload --verify -if\$(TARG)
+BURNFLAGS=-dprog=$UISP_PROG --erase --upload --verify if=\$(TARG)
 CRUROM = \$(top_srcdir)/tools/linux/crurom
 EOF
 
