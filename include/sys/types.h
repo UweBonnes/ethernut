@@ -1,6 +1,5 @@
-
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -76,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/04/20 07:58:32  drsung
+ * Use __GNUC__ instead of __GCC__
+ *
  * Revision 1.4  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -220,7 +222,7 @@ extern "C" {
      (((val) & 0xff0000) >> 8) |    \
      (((val) & 0xff000000) >> 24))
 
-#if defined(__GCC__) && defined(__AVR__)
+#if defined(__GNUC__) && defined(__AVR__)
 /*
  * Conversion of 16 bit value to network order.
  */
