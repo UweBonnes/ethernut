@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/09/10 10:36:01  haraldkipp
+ * ICCAVR compile problems fixed
+ *
  * Revision 1.7  2004/08/25 10:41:00  haraldkipp
  * Hardware dependent definitions are configurable. For performance reasons the
  * base address is not kept in a variable any longer. It is now a preprocessor
@@ -251,7 +254,7 @@
  * Both versions depend on the CPU clock and had been tested with
  * 14.7456 MHz.
  */
-static inline void Delay16Cycles(void)
+static INLINE void Delay16Cycles(void)
 {
     _NOP(); _NOP(); _NOP();
     _NOP(); _NOP(); _NOP();
@@ -1045,9 +1048,9 @@ static NETBUF *NicGetPacket(void)
  */
 static u_char NicOverflow(void)
 {
-    uint8_t cr;
-    uint8_t resend = 0;
-    uint8_t curr;
+    u_char cr;
+    u_char resend = 0;
+    u_char curr;
 
     /*
      * Wait for any transmission in progress. Save the command register, 
