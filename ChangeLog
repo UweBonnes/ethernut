@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.164 2005/02/07 18:55:32 haraldkipp Exp $
+$Id: ChangeLog,v 1.165 2005/02/08 10:42:32 olereinhardt Exp $
+
+2005-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* os/arch/avr-nutinit.c
+	Changed waitstate settings in the manner that the lower
+	sector still use one waitstate (only for NUT_3WAITSTATES)
 
 2005-02-07  Harald Kipp  <harald.kipp@egnite.de>
 
