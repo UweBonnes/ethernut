@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/03 16:58:00  haraldkipp
+ * NICINFO structure removed to allow apps for different Ethernet controller
+ *
  * Revision 1.2  2003/07/20 20:07:38  haraldkipp
  * Conflicting Ethernet driver routine names solved.
  *
@@ -54,32 +57,14 @@
 
 __BEGIN_DECLS
 
-/*!
- * \struct _NICINFO lanc111.h dev/lanc111.h
- * \brief Network interface controller information structure.
- */
-struct _NICINFO {
-    HANDLE volatile ni_rx_rdy;      /*!< Receiver event queue. */
-    HANDLE volatile ni_tx_rdy;      /*!< Transmitter event queue. */
-    u_short ni_tx_cnt;              /*!< Number of bytes in transmission queue. */
-    u_long ni_rx_packets;           /*!< Number of packets received. */
-    u_long ni_tx_packets;           /*!< Number of packets sent. */
-    u_long ni_interrupts;           /*!< Number of interrupts. */
-    u_long ni_overruns;             /*!< Number of packet overruns. */
-    u_long ni_rx_frame_errors;      /*!< Number of frame errors. */
-    u_long ni_rx_crc_errors;        /*!< Number of CRC errors. */
-    u_long ni_rx_missed_errors;     /*!< Number of missed packets. */
-};
-
-/*!
- * \brief Network interface controller information type.
- */
-typedef struct _NICINFO NICINFO;
-
 /*
  * Available drivers.
  */
 extern NUTDEVICE devSmsc111;
+
+#ifndef DEV_ETHER
+#define DEV_ETHER   devSmsc111
+#endif
 
 /*
  * Driver routines.
