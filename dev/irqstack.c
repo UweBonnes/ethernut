@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/01/31 13:59:14  drsung
+ * Stupid attributes removed.
+ *
  * Revision 1.1  2004/01/30 17:02:20  drsung
  * Separate interrupt stack for avr-gcc only added.
  *
@@ -41,6 +44,6 @@
 
 #include <dev/irqstack.h>
 
-u_char _irq_stack[IRQSTACK_SIZE] __attribute__ ((used));
-u_char _irq_SPL __attribute((used));
-u_char _irq_SPH __attribute((used));
+u_char _irq_stack[IRQSTACK_SIZE];
+u_char _irq_SPL;
+u_char _irq_SPH;
