@@ -33,13 +33,26 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/09/08 10:19:23  haraldkipp
+ * Made it look more general
+ *
  * Revision 1.1  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
  *
  */
 
+#include <cfg/memory.h>
+#include <arch/at91.h>
+#include <arch/at91eb40a.h>
+
+/*!
+ * \brief Last memory address.
+ */
+#define NUTMEM_END (uptr_t)(NUTMEM_START + NUTMEM_SIZE - 1U)
+
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
+extern void *__heap_start;
 
 /*!
  * \addtogroup xgNutInit
@@ -72,6 +85,7 @@ THREAD(NutIdle, arg)
     }
 }
 
+//char lheap[8192];
 /*!
  * \brief Nut/OS Initialization.
  *
@@ -81,8 +95,9 @@ THREAD(NutIdle, arg)
  */
 void NutInit(void)
 {
-    NutHeapAdd(&__bss_end, ((uptr_t) & __stack - 256 - (uptr_t) (&__bss_end)));
-
+    NutHeapAdd(&__heap_start, (uptr_t)(NUTMEM_END - 256 - (uptr_t)(&__heap_start)));
+    //NutHeapAdd(lheap, sizeof(lheap));
+#if 0
     /*
      * Read eeprom configuration.
      */
@@ -90,7 +105,7 @@ void NutInit(void)
         strcpy(confos.hostname, "ethernut");
         NutSaveConfig();
     }
-
+#endif
     /*
      * Create idle thread
      */
