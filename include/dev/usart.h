@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/11/08 18:14:09  haraldkipp
+ * Marked RINGBUF members volatile, which are modified within
+ * interrupt routines.
+ *
  * Revision 1.3  2004/05/24 20:19:49  drsung
  * Added function UsartSize to return number of chars in input buffer.
  *
@@ -126,12 +130,16 @@ typedef struct _RINGBUF RINGBUF;
 struct _RINGBUF {
 
     /*! \brief Buffer head pointer.
+     *
+     * Changed by the receiver interrupt.
      */
-    u_char *rbf_head;
+    u_char * volatile rbf_head;
 
     /*! \brief Buffer tail pointer.
+     *
+     * Changed by the transmitter interrupt.
      */
-    u_char *rbf_tail;
+    u_char * volatile rbf_tail;
 
     /*! \brief First buffer address.
      */
@@ -148,8 +156,10 @@ struct _RINGBUF {
     size_t rbf_siz;
 
     /*! \brief Number of bytes in the buffer.
+     *
+     * Changed by receiver and transmitter interrupts.
      */
-    size_t rbf_cnt;
+    volatile size_t rbf_cnt;
 
     /*! \brief Buffer low watermark.
      *
