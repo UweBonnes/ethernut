@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2005/01/22 19:12:51  haraldkipp
+# Added C++ support contributed by Oliver Schulz (MPI).
+#
 # Revision 1.6  2004/10/22 15:06:22  freckle
 # fixed distclean (was deleting the wrong files)
 #
@@ -101,6 +104,7 @@ endif
 	$(MAKE) -C net
 	$(MAKE) -C pro
 	$(MAKE) -C crt
+	$(MAKE) -C cpp
 
 install:
 ifneq (, $(findstring h8300, $(ARCH)))
@@ -112,6 +116,7 @@ endif
 	$(MAKE) -C net install
 	$(MAKE) -C pro install
 	$(MAKE) -C crt install
+	$(MAKE) -C cpp install
 
 clean:
 ifneq (, $(findstring h8300, $(ARCH)))
@@ -123,6 +128,7 @@ endif
 	$(MAKE) -C net clean
 	$(MAKE) -C pro clean
 	$(MAKE) -C crt clean
+	$(MAKE) -C cpp clean
 
 apps:
 	$(MAKE) -C app
@@ -140,6 +146,7 @@ endif
 	$(MAKE) -C net clean
 	$(MAKE) -C pro clean
 	$(MAKE) -C crt clean
+	$(MAKE) -C cpp clean
 	$(MAKE) -C app clean
 
 distclean:
@@ -152,6 +159,7 @@ endif
 	$(MAKE) -C net clean
 	$(MAKE) -C pro clean
 	$(MAKE) -C crt clean
+	$(MAKE) -C cpp clean
 	$(MAKE) -C app clean
 	rm -f UserConf.mk Makerules Makedefs app/Makerules app/Makedefs
 	rm -f include/stdio_orig.h include/sys/types_orig.h include/errno_orig.h include/fcntl_orig.h

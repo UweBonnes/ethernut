@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.6  2005/01/22 19:13:08  haraldkipp
+# Added C++ support contributed by Oliver Schulz (MPI).
+#
 # Revision 1.5  2004/11/08 21:43:54  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -51,6 +54,9 @@
 
 %o : %c
 	$(CC) -c $(CPFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
+
+%o : %cc
+	$(CXX) -c $(CXXFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
 
 %o : %S
 	$(AS) -c $(ASFLAGS) $< -o $@

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.7  2005/01/22 19:12:31  haraldkipp
+# Added C++ support contributed by Oliver Schulz (MPI).
+#
 # Revision 1.6  2004/11/08 21:43:10  drsung
 # Step back to version 1.4
 #
@@ -57,13 +60,15 @@ INCDIR = $(top_srcdir)/include
 ARCH   = avr
 TRGT   = avr-
 CC     = $(TRGT)gcc
+CXX    = $(TRGT)g++
 AR     = $(TRGT)ar
 CP     = cp
 AS     = $(TRGT)gcc -x assembler-with-cpp
 RANLIB = $(TRGT)ranlib
 
-MCFLAGS = -mmcu=$(MCU)
-CPFLAGS = $(MCFLAGS) -Os -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
-LDFLAGS = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref
-ARFLAGS = rsv
-ASFLAGS = $(MCFLAGS) -Wa,-amhls=$(<:.S=.lst) $(DEFS)
+MCFLAGS  = -mmcu=$(MCU)
+CPFLAGS  = $(MCFLAGS) -Os -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
+CXXFLAGS = $(MCFLAGS) -Os -Wall -Werror -Wa,-ahlms=$(<F:.cc=.lst) $(DEFS)
+LDFLAGS  = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref
+ARFLAGS  = rsv
+ASFLAGS  = $(MCFLAGS) -Wa,-amhls=$(<:.S=.lst) $(DEFS)
