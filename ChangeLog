@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.56 2004/04/07 12:58:42 haraldkipp Exp $
+$Id: ChangeLog,v 1.57 2004/04/15 09:34:01 haraldkipp Exp $
+
+2004-04-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* eboot: Ethernet boot loader for RTL8019AS added.
+
 
 2004-04-07  Harald Kipp  <harald.kipp@egnite.de>
 
