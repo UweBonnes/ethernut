@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.2  2004/08/03 15:09:31  haraldkipp
+-- Another change of everything
+--
 -- Revision 1.1  2004/06/07 16:35:53  haraldkipp
 -- First release
 --
@@ -145,6 +148,10 @@ nutcrt =
     },
     {
         name = "nutcrt_h8_irqreq",
+        requires =
+        {
+            "H8300_MCU"
+        },
         sources = 
         { 
             "h8_irqreg.c"

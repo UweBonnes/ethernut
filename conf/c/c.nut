@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.2  2004/08/03 15:09:31  haraldkipp
+-- Another change of everything
+--
 -- Revision 1.1  2004/06/07 16:32:45  haraldkipp
 -- First release
 --
@@ -76,6 +79,8 @@ nutc =
             "string/strstr.c",
             "string/strtok.c"
         },
-        provides = { "C_STRING" }
+        provides = { "C_STRING" },
+        -- Some of these don't work with AVR. Limit to ARM7 for now.
+        requires = { "ARM7_MCU" }
     }
 }

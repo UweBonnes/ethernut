@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -50,6 +53,9 @@
 #include "nutconfhint.h"
 #include "nutconfdoc.h"
 
+/*
+ * The doc/view framework will create instances of this class dynamically.
+ */
 IMPLEMENT_DYNAMIC_CLASS(CNutConfDoc, wxDocument);
 
 /*!
@@ -57,7 +63,6 @@ IMPLEMENT_DYNAMIC_CLASS(CNutConfDoc, wxDocument);
  */
 CNutConfDoc::CNutConfDoc()
 {
-    m_bRepositoryOpen = FALSE;
 }
 
 /*!
@@ -65,46 +70,41 @@ CNutConfDoc::CNutConfDoc()
  */
 CNutConfDoc::~CNutConfDoc()
 {
-    CloseRepository();
+    ReleaseRepository();
     DeleteItems();
 }
 
 /*!
  * \brief Create a document from a specified file.
+ *
+ * \param path Pathname of the configuration file.
  */
 bool CNutConfDoc::OnCreate(const wxString & path, long flags)
 {
+    bool rc;
+
     wxGetApp().m_currentDoc = this;
 
-    if (flags & wxDOC_NEW) {
-        m_bRepositoryOpen = FALSE;
+    if ((rc = ReadRepository(wxGetApp().GetSettings()->m_repositoryname, path)) == true) {
+        Modify(false);
+        SetDocumentSaved(false);
 
-        if (!OpenRepository(wxEmptyString)) {
-            wxGetApp().m_currentDoc = NULL;
-            return FALSE;
-        }
+        rc = wxDocument::OnCreate(path, flags);
+        if (rc) {
+            if (flags & wxDOC_NEW) {
+                wxBusyCursor wait;
 
-        Modify(FALSE);
-        SetDocumentSaved(FALSE);
+                CNutConfHint hint(NULL, nutSelChanged);
+                UpdateAllViews(NULL, &hint);
 
-        wxString rootName(wxT("untitled"));
-        wxStripExtension(rootName);
-        SetFilename("default.nut");
-    }
-    // Creates the view, so do any view updating after this
-    bool success = wxDocument::OnCreate(path, flags);
-
-    if (success) {
-        if (flags & wxDOC_NEW) {
-            wxBusyCursor wait;
-
-            CNutConfHint hint(NULL, nutSelChanged);
-            UpdateAllViews(NULL, &hint);
-
-            SetFilename(GetFilename(), true);
+                SetFilename(GetFilename(), true);
+            }
         }
     }
-    return success;
+    if(!rc) {
+        wxGetApp().m_currentDoc = NULL;
+    }
+    return rc;
 }
 
 /*!
@@ -120,10 +120,67 @@ bool CNutConfDoc::OnNewDocument()
 /*!
  * \brief Open an existing document.
  *
- * \todo Doesn't do anything right now.
  */
 bool CNutConfDoc::OnOpenDocument(const wxString & filename)
 {
+    /*
+     * Check if the current document has been modified.
+     */
+    if (!OnSaveModified())
+        return false;
+
+    wxString msgTitle;
+    if (wxGetApp().GetAppName() != "")
+        msgTitle = wxGetApp().GetAppName();
+    else
+        msgTitle = wxString("File error");
+
+    SetFilename(filename, true);
+    Modify(false);
+    UpdateAllViews();
+
+    return true;
+}
+
+void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
+{
+    while (compo) {
+        NUTCOMPONENTOPTION *opts = compo->nc_opts;
+        while (opts) {
+            if(opts->nco_enabled && opts->nco_active) {
+                if(opts->nco_value) {
+                    fprintf(fp, "%s = \"%s\"\n", opts->nco_name, opts->nco_value);
+                }
+                else {
+                    fprintf(fp, "%s = \"\"\n", opts->nco_name);
+                }
+            }
+            opts = opts->nco_nxt;
+        }
+        SaveComponentOptions(fp, compo->nc_child);
+        compo = compo->nc_nxt;
+    }
+}
+
+
+bool CNutConfDoc::OnSaveDocument(const wxString& filename)
+{
+    //NUTCOMPONENT *compo;
+    //NUTCOMPONENTOPTION *opt;
+
+    if (filename == "") {
+        return false;
+    }
+
+    FILE *fp = fopen(filename, "w");
+    if (fp) {
+        SaveComponentOptions(fp, m_root->nc_child);
+        fclose(fp);
+    }
+
+    Modify(false);
+    SetFilename(filename);
+
     return true;
 }
 
@@ -134,17 +191,14 @@ bool CNutConfDoc::OnCloseDocument()
 {
     if (wxDocument::OnCloseDocument()) {
         DeleteItems();
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 
-void CNutConfDoc::CloseRepository()
+void CNutConfDoc::ReleaseRepository()
 {
-    if (m_bRepositoryOpen) {
-        m_bRepositoryOpen = FALSE;
-    }
 }
 
 /*
@@ -152,49 +206,32 @@ void CNutConfDoc::CloseRepository()
  */
 void CNutConfDoc::DeleteItems()
 {
-    // Delete any remaining items
     wxNode *node = m_items.First();
     while (node) {
         wxNode *next = node->Next();
-
-        // Note: automatically removes itself from this list in ~ecConfigItem
-        //delete item;
         node = next;
     }
 }
 
-bool CNutConfDoc::OpenRepository(const wxString & pszRepository)
+bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString & configname)
 {
-    if (!m_bRepositoryOpen) {
-        wxString strNewRepository;
-        while (!m_bRepositoryOpen) {
-            // Use what came in as parameter or what was found in registry
-            if (!pszRepository.IsEmpty())
-                strNewRepository = pszRepository;
-            else
-                strNewRepository = "nut/conf/repository.nut";
+    wxString str;
+    str.Printf(wxT("Loading %s..."), (const wxChar *)configname);
+    wxGetApp().SetStatusText(str);
 
-            wxString str;
-            if (strNewRepository.IsEmpty())
-                str.Printf(wxT("Opening repository..."));
-            else
-                str.Printf(wxT("Opening repository %s..."), (const wxChar *) strNewRepository);
-            wxGetApp().SetStatusText(str);
-
-            wxString strNewPackagesDir;
-
-            wxBusyCursor wait;
-
-            m_root = LoadRepository(strNewRepository);
+    wxBusyCursor wait;
+    NUTREPOSITORY *repo = OpenRepository(repositoryname);
+    m_root = LoadComponents(repo);
+    ConfigureComponents(repo, m_root, configname);
+    RefreshComponents(m_root);
+    CloseRepository(repo);
 
 
-            wxDocument::OnNewDocument();
-            AddAllItems();
-            m_bRepositoryOpen = TRUE;
-        }
+    wxDocument::OnNewDocument();
+    AddAllItems();
+    wxGetApp().SetStatusText(wxEmptyString);
 
-    }
-    return m_bRepositoryOpen;
+    return true;
 }
 
 
@@ -204,8 +241,8 @@ void CNutConfDoc::AddChildItems(NUTCOMPONENT * compo, wxTreeItemId parent)
 
     compo = compo->nc_child;
     while (compo) {
-        CConfigItem *item;
-        item = new CConfigItem(item, compo);
+        CConfigItem *item = new CConfigItem(NULL, compo);
+
         wxTreeItemId childId = treeCtrl->AppendItem(parent, wxT(""), -1, -1, new CTreeItemData(item));
         item->SetTreeItem(childId);
         item->UpdateTreeItem(*treeCtrl);
@@ -275,9 +312,8 @@ CConfigItem *CNutConfDoc::GetItem(size_t i)
 /*!
  * \brief Find NUTCOMPONENTOPTION by name.
  */
-NUTCOMPONENTOPTION *CNutConfDoc::FindOption(NUTCOMPONENT * compo, char *name)
+NUTCOMPONENTOPTION *CNutConfDoc::FindOptionByName(NUTCOMPONENT * compo, char *name)
 {
-
     while (compo) {
         NUTCOMPONENTOPTION *opts = compo->nc_opts;
         while (opts) {
@@ -286,7 +322,7 @@ NUTCOMPONENTOPTION *CNutConfDoc::FindOption(NUTCOMPONENT * compo, char *name)
             }
             opts = opts->nco_nxt;
         }
-        if ((opts = FindOption(compo->nc_child, name)) != NULL) {
+        if ((opts = FindOptionByName(compo->nc_child, name)) != NULL) {
             return opts;
         }
         compo = compo->nc_nxt;
@@ -299,12 +335,49 @@ NUTCOMPONENTOPTION *CNutConfDoc::FindOption(NUTCOMPONENT * compo, char *name)
  */
 bool CNutConfDoc::IsOptionActive(char *name)
 {
-    NUTCOMPONENTOPTION *opt = FindOption(m_root->nc_child, name);
+    NUTCOMPONENTOPTION *opt = FindOptionByName(m_root->nc_child, name);
 
-    if (opt && opt->nco_value && atoi(opt->nco_value)) {
+    if (opt && opt->nco_active) {
         return true;
     }
     return false;
+}
+
+bool CNutConfDoc::IsRequirementProvided(NUTCOMPONENT *compo, char *requirement)
+{
+    int i;
+
+    while (compo) {
+        if(compo->nc_enabled) {
+            for (i = 0; compo->nc_provides[i]; i++) {
+                if(strcmp(compo->nc_provides[i], requirement) == 0) {
+                    return true;
+                }
+            }
+
+            NUTCOMPONENTOPTION *opts = compo->nc_opts;
+            while (opts) {
+                for (i = 0; opts->nco_provides[i]; i++) {
+                    if(strcmp(opts->nco_provides[i], requirement) == 0) {
+                        if(opts->nco_active) {
+                            return true;
+                        }
+                    }
+                }
+                opts = opts->nco_nxt;
+            }
+            if (IsRequirementProvided(compo->nc_child, requirement)) {
+                return true;
+            }
+        }
+        compo = compo->nc_nxt;
+    }
+    return false;
+}
+
+bool CNutConfDoc::IsRequirementProvided(char *requirement)
+{
+    return IsRequirementProvided(m_root, requirement);
 }
 
 /*!
@@ -344,12 +417,13 @@ bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
 /*!
  * \brief Set value of a boolean item.
  */
-bool CNutConfDoc::SetEnabled(CConfigItem & item, bool bEnabled)
+bool CNutConfDoc::SetActive(CConfigItem & item, bool bEnabled)
 {
-    item.SetEnabled(bEnabled);
+    item.SetActive(bEnabled);
 
-    Modify(TRUE);
-    CNutConfHint hint(&item, nutValueChanged);
+    RefreshComponents(m_root);
+    Modify(true);
+    CNutConfHint hint(&item, nutExternallyChanged);
     UpdateAllViews(NULL, &hint);
 
     return true;
@@ -360,7 +434,7 @@ bool CNutConfDoc::SetEnabled(CConfigItem & item, bool bEnabled)
  */
 wxString CNutConfDoc::GetBuildTree()
 {
-    return wxString(wxT("nutbld"));
+    return wxGetApp().GetSettings()->m_buildpath;
 }
 
 /*!
@@ -368,10 +442,11 @@ wxString CNutConfDoc::GetBuildTree()
  */
 bool CNutConfDoc::GenerateBuildTree()
 {
+    CSettings *cfg = wxGetApp().GetSettings();
+    
     wxBusyCursor wait;
-
-    CreateMakeFiles(m_root);
-    CreateHeaderFiles(m_root);
+    CreateMakeFiles(m_root, cfg->m_buildpath.c_str(), cfg->m_source_dir.c_str(), cfg->m_platform.c_str());
+    CreateHeaderFiles(m_root, cfg->m_buildpath.c_str());
 
     return true;
 }

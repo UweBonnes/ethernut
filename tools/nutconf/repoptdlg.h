@@ -1,5 +1,5 @@
-#ifndef NUTCONFVIEW_H_
-#define NUTCONFVIEW_H_
+#ifndef REPOPTDLG_H_
+#define REPOPTDLG_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,44 +42,24 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
- *
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
  *
  */
 
 #include <wx/wx.h>
-#include <wx/treectrl.h>
-#include <wx/docview.h>
+#include <wx/config.h>
 
-class CConfigItem;
 
-/*!
- * \brief Configuration view class.
- */
-class CNutConfView:public wxView {
-    DECLARE_DYNAMIC_CLASS(CNutConfView);
-  public:
-    CNutConfView();
-    ~CNutConfView() {
-    };
-
-    bool OnCreate(wxDocument * doc, long flags);
-    void OnDraw(wxDC * dc);
-    void OnUpdate(wxView * sender, wxObject * hint = (wxObject *) NULL);
-    bool OnClose(bool deleteWindow = true);
-    void OnChangeFilename();
-
-    void Refresh(const wxString & macroName);
-    void Refresh(wxTreeItemId h);
-
-    DECLARE_EVENT_TABLE();
-
-  protected:
-    wxTreeItemId m_expandedForFind;
+class CRepositoryOptionsDialog: public wxPanel
+{
+DECLARE_CLASS(CRepositoryOptionsDialog)
+public:
+    CRepositoryOptionsDialog(wxWindow* parent);
+    virtual bool TransferDataToWindow();
+    virtual bool TransferDataFromWindow();
+private:
+    wxString m_path;
 };
-
 
 #endif

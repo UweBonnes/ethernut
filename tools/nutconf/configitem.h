@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:24  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -101,7 +104,7 @@ class CConfigItem:public wxObject {
     void SetUIHint(nutUIHint hint);
     nutUIHint GetUIHint() const;
 
-    bool IsActive() const;
+    bool IsEnabled() const;
 
     void SetValue(const wxVariant & value);
      wxVariant & GetValue();
@@ -113,8 +116,8 @@ class CConfigItem:public wxObject {
     nutOptionType GetOptionType() const;
     int GetEnumStrings(wxArrayString & arEnumStrings) const;
 
-    void SetEnabled(bool ena);
-    bool IsEnabled() const;
+    void SetActive(bool ena);
+    bool IsActive() const;
 
     bool UpdateTreeItem(CConfigTree & treeCtrl);
 

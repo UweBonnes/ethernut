@@ -38,29 +38,49 @@
  */
 
 /*
- * $Log: conflictlist.cpp,v $
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
+ * $Log: settings.cpp,v $
+ * Revision 1.1  2004/08/03 15:04:59  haraldkipp
+ * Another change of everything
  *
  */
 
-#include "ids.h"
-#include "conflictlist.h"
+#include "nutconf.h"
+#include "settings.h"
 
-IMPLEMENT_CLASS(CConflictList, wxListCtrl);
+IMPLEMENT_DYNAMIC_CLASS(CSettings, wxObject)
 
-CConflictList::CConflictList(wxWindow * parent, wxWindowID id, const wxPoint & pt, const wxSize & sz, long style):
-wxListCtrl(parent, id, pt, sz, style)
+/*!
+ * \brief Default constructor.
+ */
+CSettings::CSettings()
 {
-    InsertColumn(0, "Item", wxLIST_FORMAT_LEFT, 200);
-    InsertColumn(1, "Conflict", wxLIST_FORMAT_LEFT, 80);
-    InsertColumn(2, "Property", wxLIST_FORMAT_LEFT, 200);
+    m_config = new wxConfig(wxGetApp().GetAppName());
 
-    m_contextMenu = new wxMenu;
-    m_contextMenu->Append(ID_WHATS_THIS, wxT("&What's This?"));
+    m_config->Read("ConfigName", &m_configname, "nut/conf/ethernut2.conf");
+    m_config->Read("RepositoryName", &m_repositoryname, "nut/conf/repository.nut");
+    m_config->Read("BuildPath", &m_buildpath, "nutbld");
+    m_config->Read("SourceDirectory", &m_source_dir, "c:/ethernut/nutconf/nut");
+    m_config->Read("TargetPlatform", &m_platform, "avr-gcc");
+    m_config->Read("ToolPath", &m_toolpath, "c:/iccavr/bin;tools/win32");
 }
 
-CConflictList::~CConflictList()
+/*!
+ * \brief Default destructor.
+ */
+CSettings::~CSettings()
 {
-    delete m_contextMenu;
+    delete m_config;
 }
+
+bool CSettings::Save()
+{
+    m_config->Write("ConfigName", m_configname);
+    m_config->Write("RepositoryName", m_repositoryname);
+    m_config->Write("BuildPath", m_buildpath);
+    m_config->Write("SourceDirectory", m_source_dir);
+    m_config->Write("TargetPlatform", m_platform);
+    m_config->Write("ToolPath", m_toolpath);
+
+    return true;
+}
+

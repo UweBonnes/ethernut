@@ -39,6 +39,9 @@
 
 /*
  * $Log: propertylist.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -47,9 +50,27 @@
 #include "nutconf.h"
 #include "utils.h"
 #include "propertylist.h"
-
-const wxChar *CPropertyList::sm_fieldTypeImage[nutMAXFIELDTYPE] =
-    { wxT("Type"), wxT("Value"), wxT("Default"), wxT("Macro"), wxT("File"), wxT("Enabled") };
+#if 0
+    enum nutFieldType {
+        nutEnabled,
+        nutType,
+        nutFile,
+        nutMacro,
+        nutValue,
+        nutActive,
+        nutMAXFIELDTYPE
+    };
+#endif
+const wxChar *CPropertyList::sm_fieldTypeImage[nutMAXFIELDTYPE] = { 
+    wxT("Enabled"), 
+    wxT("Active"),
+    wxT("Requires"), 
+    wxT("Provides"), 
+    wxT("Type"), 
+    wxT("File"), 
+    wxT("Macro"), 
+    wxT("Value")
+};
 
 
 /*
@@ -101,10 +122,6 @@ void CPropertyList::Fill(CConfigItem * pti)
             SetItemData(i, 0);
         }
 
-        if (m_pti->HasBool()) {
-            SetItem(nutEnabled, m_pti->IsEnabled()? wxT("True") : wxT("False"));
-        }
-
         if (!m_pti->GetFilename().IsEmpty()) {
             SetItem(nutFile, m_pti->GetFilename());
         }
@@ -115,18 +132,23 @@ void CPropertyList::Fill(CConfigItem * pti)
         if (type != nutOptionTypeNone) {
 
             switch (type) {
+            case nutEnumerated:
             case nutString:
-                SetItem(nutValue, m_pti->StringValue());
+                if(!m_pti->StringValue().IsEmpty()) {
+                    SetItem(nutValue, m_pti->StringValue());
+                }
                 break;
             case nutInteger:
                 break;
-            case nutEnumerated:
-                break;
             default:
-                wxASSERT(FALSE);
+                wxASSERT(false);
                 break;
             }
         }
+        if (m_pti->HasBool()) {
+            SetItem(nutActive, m_pti->IsActive()? wxT("True") : wxT("False"));
+        }
+        SetItem(nutEnabled, m_pti->IsEnabled()? wxT("Yes") : wxT("No"));
 
         for (i = GetItemCount() - 1; i >= 0; --i) {
             if (0 == GetItemData(i)) {
@@ -137,8 +159,21 @@ void CPropertyList::Fill(CConfigItem * pti)
             }
         }
     }
-
     Refresh();
+}
+
+void CPropertyList::RefreshValue()
+{
+    if(m_pti) {
+        if (m_pti->HasBool()) {
+            SetItem(nutActive, m_pti->IsActive()? wxT("True") : wxT("False"));
+        }
+        if (m_pti->GetOptionType () != nutOptionTypeNone) {
+            if(!m_pti->StringValue().IsEmpty()) {
+                SetItem(nutValue, m_pti->StringValue());
+            }
+        }
+    }
 }
 
 int CPropertyList::SetItem(nutFieldType f, const wxString & value)

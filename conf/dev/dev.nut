@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.2  2004/08/03 15:09:31  haraldkipp
+-- Another change of everything
+--
 -- Revision 1.1  2004/06/07 16:35:53  haraldkipp
 -- First release
 --
@@ -47,7 +50,8 @@ nutdev =
             "ahdlc0.c",
             "ahdlc1.c",
             "ahdlcavr.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_chat",
@@ -62,7 +66,8 @@ nutdev =
         { 
             "cs8900.c",
             "eth0cs.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_debug_avr",
@@ -70,6 +75,10 @@ nutdev =
         { 
             "debug0.c",
             "debug1.c"
+        },
+        requires =
+        {
+            "AVR_UART"
         }
     },
     {
@@ -77,6 +86,10 @@ nutdev =
         sources = 
         { 
             "debug_at91.c"
+        },
+        requires =
+        {
+            "AT91_UART"
         }
     },
     {
@@ -85,6 +98,14 @@ nutdev =
         { 
             "nicrtl.c",
             "eth0rtl.c"
+        },
+        requires =
+        {
+            "AVR_MCU"
+        },
+        provides =
+        {
+            "PHYNET_LAYER"
         },
         options = 
         {
@@ -148,14 +169,16 @@ nutdev =
         sources = 
         { 
             "hd44780.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_ide_avr",
         sources = 
         { 
             "ide.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_ir_avr",
@@ -163,7 +186,8 @@ nutdev =
         { 
             "ir.c",
             "irsony.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_irq_avr",
@@ -205,10 +229,12 @@ nutdev =
             "ivect32.c",
             "ivect33.c",
             "ivect34.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_irq_arm",
+        requires = { "ARM7_MCU" },
         sources = 
         { 
             "arm_irqreg.c"
@@ -216,6 +242,7 @@ nutdev =
     },
     {
         name = "nutdev_irq_h8",
+        requires = { "H8300_MCU" },
         sources = 
         { 
             "h8_irqreg.c"
@@ -226,7 +253,8 @@ nutdev =
         sources = 
         { 
             "lanc111.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_irq_m68k",
@@ -237,6 +265,7 @@ nutdev =
     },
     {
         name = "nutdev_rtl8019as_h8",
+        requires = { "H8300_MCU" },
         sources = 
         { 
             "nicrtl_h8.c"
@@ -254,7 +283,8 @@ nutdev =
         sources = 
         { 
             "pcmcia.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_ppp",
@@ -279,6 +309,7 @@ nutdev =
     },
     {
         name = "nutdev_scih8",
+        requires = { "H8300_MCU" },
         sources = 
         { 
             "scih8.c",
@@ -287,6 +318,7 @@ nutdev =
     },
     {
         name = "nutdev_scih8dbg",
+        requires = { "H8300_MCU" },
         sources = 
         { 
             "scih8dbg.c"
@@ -297,7 +329,8 @@ nutdev =
         sources = 
         { 
             "ihndlr.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_mweeprom",
@@ -311,14 +344,16 @@ nutdev =
         sources = 
         { 
             "spidigio.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_spiflash_avr",
         sources = 
         { 
             "spiflash.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_term",
@@ -332,7 +367,8 @@ nutdev =
         sources = 
         { 
             "twif.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_uart_avr",
@@ -341,21 +377,24 @@ nutdev =
             "uart0.c",
             "uart1.c",
             "uartavr.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_uarts",
         sources = 
         { 
             "uarts.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_uartspi",
         sources = 
         { 
             "uartspi.c"
-        }
+        },
+        requires = { "AVR_MCU" }
     },
     {
         name = "nutdev_uart_s3c4510b_dbg",
@@ -383,6 +422,7 @@ nutdev =
         brief = "AVR USART device",
         description = "Interrupt driven buffered UART driver.",
         provides = { "UART_READ", "UART_WRITE" },
+        requires = { "AVR_MCU" },
         sources = 
         { 
             "usart.c",
@@ -415,6 +455,7 @@ nutdev =
     },
     {
         name = "nutdev_vs1001k_avr",
+        requires = { "AVR_MCU" },
         sources = 
         { 
             "vs1001k.c"
@@ -422,6 +463,7 @@ nutdev =
     },
     {
         name = "nutdev_wlan_avr",
+        requires = { "AVR_MCU" },
         sources = 
         { 
             "wlan.c",

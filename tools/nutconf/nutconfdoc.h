@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -55,6 +58,9 @@
 
 #include "nutcomponent.h"
 
+/*!
+ * \brief Configuration document class.
+ */
 class CNutConfDoc:public wxDocument {
     DECLARE_DYNAMIC_CLASS(CNutConfDoc)
   public:
@@ -63,33 +69,37 @@ class CNutConfDoc:public wxDocument {
 
     virtual bool OnCreate(const wxString & path, long flags);
     virtual bool OnOpenDocument(const wxString & filename);
+    virtual bool CNutConfDoc::OnSaveDocument(const wxString& filename);
     virtual bool OnNewDocument();
     virtual bool OnCloseDocument();
 
-    bool OpenRepository(const wxString & pszRepository = wxEmptyString);
-    void CloseRepository();
+    bool ReadRepository(const wxString & repositoryname, const wxString & configname);
+    void ReleaseRepository();
 
     void DeleteItems();
     void AddAllItems();
     void AddChildItems(NUTCOMPONENT * compo, wxTreeItemId parent);
 
-     wxList & GetItems();
+    wxList & GetItems();
     CConfigItem *GetItem(size_t i);
 
     bool SetValue(CConfigItem & ti, long nValue);
     bool SetValue(CConfigItem & ti, const wxString & strValue);
-    bool SetEnabled(CConfigItem & ti, bool bEnabled);
+    bool SetActive(CConfigItem & ti, bool bEnabled);
 
     wxString GetBuildTree();
     bool GenerateBuildTree();
 
     bool IsOptionActive(char *name);
 
+
   protected:
-     bool m_bRepositoryOpen;
     NUTCOMPONENT *m_root;
     wxList m_items;
-    NUTCOMPONENTOPTION *FindOption(NUTCOMPONENT * compo, char *name);
+    NUTCOMPONENTOPTION *FindOptionByName(NUTCOMPONENT * compo, char *name);
+    bool IsRequirementProvided(NUTCOMPONENT *compo, char *requirement);
+    bool IsRequirementProvided(char *requirement);
+    void SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo);
 };
 
 #endif

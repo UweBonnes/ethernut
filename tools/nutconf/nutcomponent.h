@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -49,6 +52,17 @@
 # define __END_DECLS
 #endif
 
+/*
+ * Options
+ *
+ * enabled - can be modified.
+ * active - macro is included.
+ * active_if - automatically activated.
+ *
+ * requires - needs this function (may result in conflict)
+ * provides - provides this funktion
+ */
+
 typedef struct _NUTCOMPONENTOPTION NUTCOMPONENTOPTION;
 
 struct _NUTCOMPONENTOPTION {
@@ -59,7 +73,13 @@ struct _NUTCOMPONENTOPTION {
     char *nco_name;
     char *nco_brief;
     char *nco_description;
+
+    int  nco_enabled;
+    int  nco_active;
     char *nco_active_if;
+    char **nco_requires;
+    char **nco_provides;
+
     char *nco_flavor;
     char *nco_type;
     char **nco_choices;
@@ -84,16 +104,33 @@ struct _NUTCOMPONENT {
     char *nc_name;
     char *nc_brief;
     char *nc_description;
+    int  nc_enabled;
+    char **nc_requires;
+    char **nc_provides;
+    char *nc_active_if;
     char *nc_subdir;
     char **nc_sources;
-    char *nc_display;
+};
+
+typedef struct _NUTREPOSITORY NUTREPOSITORY;
+
+struct _NUTREPOSITORY {
+    void *nr_ls;
+    char *nr_dir;
+    char *nr_name;
 };
 
 __BEGIN_DECLS
 /* Function prototypes */
-extern NUTCOMPONENT *LoadRepository(const char *file);
-extern void CreateMakeFiles(NUTCOMPONENT * root);
-void CreateHeaderFiles(NUTCOMPONENT * root);
+extern NUTREPOSITORY *OpenRepository(const char *pathname);
+extern NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo);
+extern int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pathname);
+extern void CloseRepository(NUTREPOSITORY *repo);
+
+extern int RefreshComponents(NUTCOMPONENT *root);
+
+extern void CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext);
+extern void CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir);
 
 __END_DECLS                     /* */
 #endif

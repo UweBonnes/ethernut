@@ -39,6 +39,9 @@
 
 /*
  * $Log: splitscroll.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -71,28 +74,28 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
 {
     // Ensure that events being propagated back up the window hierarchy
     // don't cause an infinite loop
-    static bool inOnScroll = FALSE;
+    static bool inOnScroll = false;
     if (inOnScroll) {
         event.Skip();
         return;
     }
-    inOnScroll = TRUE;
+    inOnScroll = true;
 
     int orient = event.GetOrientation();
 
     int nScrollInc = CalcScrollInc(event);
     if (nScrollInc == 0) {
-        inOnScroll = FALSE;
+        inOnScroll = false;
         return;
     }
 
     if (orient == wxHORIZONTAL) {
-        inOnScroll = FALSE;
+        inOnScroll = false;
         event.Skip();
         return;
     } else {
         int newPos = m_yScrollPosition + nScrollInc;
-        SetScrollPos(wxVERTICAL, newPos, TRUE);
+        SetScrollPos(wxVERTICAL, newPos, true);
     }
 
     if (orient == wxHORIZONTAL) {
@@ -120,5 +123,5 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
     m_targetWindow->MacUpdateImmediately();
 #endif
 
-    inOnScroll = FALSE;
+    inOnScroll = false;
 }

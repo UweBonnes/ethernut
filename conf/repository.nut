@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.2  2004/08/03 15:09:30  haraldkipp
+-- Another change of everything
+--
 -- Revision 1.1  2004/06/07 16:38:43  haraldkipp
 -- First release
 --
@@ -45,55 +48,61 @@ avr_port_choice = { "PORTA", "PORTB", "PORTC", "PORTD", "PORTE", "PORTF", "PORTG
 avr_pin_choice = { "PINA", "PINB", "PINC", "PIND", "PINE", "PINF", "PING" }
 avr_ddr_choice = { "DDRA", "DDRB", "DDRC", "DDRD", "DDRE", "DDRF", "DDRG" }
 
-test =
-    {
-        name = "nutbld",
-        display = "General build options",
-        xsubdir = "bld",
-        script = "bld/bld.nut"
-    }
 repository =
 {
     {
+        name = "nutarch",
+        description = "Target hardware",
+        subdir = "arch",
+        script = "arch/arch.nut"
+    },
+    {
         name = "nutos",
-        display = "Operating system functions",
+        description = "Operating system core functions",
+        requires = { "TARGET" },
         subdir = "os",
         script = "os/os.nut"
     },
     {
-        name = "nutfs",
-        display = "File systems",
-        subdir = "fs",
-        script = "fs/fs.nut"
-    },
-    {
         name = "nutdev",
-        display = "Hardware device drivers",
+        description = "Hardware device drivers",
+        requires = { "TARGET" },
         subdir = "dev",
         script = "dev/dev.nut"
     },
     {
+        name = "nutc",
+        description = "Hardware independent C runtime",
+        requires = { "TARGET" },
+        subdir = "c",
+        script = "c/c.nut"
+    },
+    {
+        name = "nutcrt",
+        description = "Hardware dependent C runtime",
+        requires = { "TARGET" },
+        subdir = "crt",
+        script = "crt/crt.nut"
+    },
+    {
         name = "nutnet",
-        display = "Network functions",
+        description = "Network functions",
+        requires = { "TARGET" },
         subdir = "net",
         script = "net/net.nut"
     },
     {
         name = "nutpro",
-        display = "High level network protocols",
+        description = "High level network protocols",
+        requires = { "TARGET" },
         subdir = "pro",
         script = "pro/pro.nut"
     },
     {
-        name = "nutcrt",
-        display = "Hardware dependent C runtime",
-        subdir = "crt",
-        script = "crt/crt.nut"
-    },
-    {
-        name = "nutc",
-        display = "Hardware independent C runtime",
-        subdir = "c",
-        script = "c/c.nut"
+        name = "nutfs",
+        description = "File systems",
+        requires = { "TARGET" },
+        subdir = "fs",
+        script = "fs/fs.nut"
     }
 }

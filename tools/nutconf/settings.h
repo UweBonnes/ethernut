@@ -1,5 +1,5 @@
-#ifndef CONFLICTLIST_H_
-#define CONFLICTLIST_H_
+#ifndef SETTINGS_H_
+#define SETTINGS_H_
 
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
@@ -42,25 +42,32 @@
 
 /*
  * $Log$
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
+ * Revision 1.1  2004/08/03 15:04:59  haraldkipp
+ * Another change of everything
  *
  */
 
 #include <wx/wx.h>
-#include <wx/listctrl.h>
+#include <wx/config.h>
 
-#include "configitem.h"
+class CSettings: public wxObject
+{
+DECLARE_DYNAMIC_CLASS(CSettings)
+public:
+    CSettings();
+    ~CSettings();
 
-class CConflictList:public wxListCtrl {
-  public:
-    CConflictList(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & size, long style);
-    ~CConflictList();
+    bool Save();
 
-  private:
-     wxMenu * m_contextMenu;
+    wxString m_configname;
+    wxString m_repositoryname;
+    wxString m_buildpath;
+    wxString m_source_dir;
+    wxString m_platform;
+    wxString m_toolpath;
 
-     DECLARE_CLASS(CConflictList);
+protected:
+    wxConfig *m_config;
 };
 
 #endif

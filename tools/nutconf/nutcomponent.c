@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -49,6 +52,7 @@
 #include <string.h>
 #include <io.h>
 #include <direct.h>
+#include <time.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -56,7 +60,72 @@
 
 #include "nutcomponent.h"
 
-char configuration_path[] = "nut/conf/ethernut2.conf";
+/*! \brief Internal component name.
+ * Must be unique.
+ */
+#define TKN_NAME    "name"
+
+/*! \brief Name of a macro.
+ * Identifier used in configuration include files.
+ */
+#define TKN_MACRO   "macro"
+
+/*! \brief
+ */
+#define TKN_SCRIPT  "script"
+
+/*! \brief
+ */
+#define TKN_SUBDIR  "subdir"
+
+/*! \brief Short component description.
+ */
+#define TKN_BRIEF   "brief"
+
+/*! \brief Detailed component description.
+ */
+#define TKN_DESC    "description"
+
+#define TKN_REQUIRES "requires"
+#define TKN_PROVIDES "provides"
+
+/*! \brief Component option list.
+ */
+#define TKN_OPTIONS "options"
+
+/*! \brief
+ */
+#define TKN_ACTIF   "active_if"
+
+/*! \brief Component's option flavor.
+ * Possible values are
+ * - boolean: Option may be disabled or enabled
+ * - booldata: Option may be disabled or enabled and contains a value if enabled.
+ */
+#define TKN_FLAVOR  "flavor"
+
+/*! \brief Option's value type.
+ * - integer
+ * - bool
+ * - enumerated
+ */
+#define TKN_TYPE    "type"
+
+/*! \brief
+ */
+#define TKN_CTYPE   "ctype"
+
+/*! \brief Relative path of the configuration include file.
+ */
+#define TKN_FILE    "file"
+
+/*! \brief List of source files.
+ */
+#define TKN_SOURCES "sources"
+
+/*! \brief
+ */
+#define TKN_CHOICES "choices"
 
 #if 0
 
@@ -255,7 +324,7 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
 
     printf("Loading options of %s\n", compo->nc_name);
     /* Push the option table on the stack. */
-    lua_pushstring(ls, "options");
+    lua_pushstring(ls, TKN_OPTIONS);
     lua_gettable(ls, -2);
     if (lua_istable(ls, -1)) {
         opts = compo->nc_opts;
@@ -264,7 +333,7 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
         }
         lua_pushnil(ls);
         while (lua_next(ls, -2)) {
-            name = GetStringByNameFromTable(ls, -1, "macro", NULL, 0);
+            name = GetStringByNameFromTable(ls, -1, TKN_MACRO, NULL, 0);
             if (name) {
                 printf("Option: '%s'\n", name);
                 if (opts) {
@@ -275,14 +344,16 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                     compo->nc_opts = opts;
                 }
                 opts->nco_name = name;
-                opts->nco_brief = GetStringByNameFromTable(ls, -1, "brief", NULL, 0);
-                opts->nco_description = GetStringByNameFromTable(ls, -1, "description", NULL, 0);
-                opts->nco_active_if = GetStringByNameFromTable(ls, -1, "active_if", NULL, 0);
-                opts->nco_flavor = GetStringByNameFromTable(ls, -1, "flavor", NULL, 0);
-                opts->nco_type = GetStringByNameFromTable(ls, -1, "type", NULL, 0);
-                opts->nco_ctype = GetStringByNameFromTable(ls, -1, "ctype", NULL, 0);
-                opts->nco_file = GetStringByNameFromTable(ls, -1, "file", NULL, 0);
-                opts->nco_choices = GetStringArrayByNameFromTable(ls, -1, "choices");
+                opts->nco_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
+                opts->nco_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
+                opts->nco_requires = GetStringArrayByNameFromTable(ls, -1, TKN_REQUIRES);
+                opts->nco_provides = GetStringArrayByNameFromTable(ls, -1, TKN_PROVIDES);
+                opts->nco_active_if = GetStringByNameFromTable(ls, -1, TKN_ACTIF, NULL, 0);
+                opts->nco_flavor = GetStringByNameFromTable(ls, -1, TKN_FLAVOR, NULL, 0);
+                opts->nco_type = GetStringByNameFromTable(ls, -1, TKN_TYPE, NULL, 0);
+                opts->nco_ctype = GetStringByNameFromTable(ls, -1, TKN_CTYPE, NULL, 0);
+                opts->nco_file = GetStringByNameFromTable(ls, -1, TKN_FILE, NULL, 0);
+                opts->nco_choices = GetStringArrayByNameFromTable(ls, -1, TKN_CHOICES);
             }
             lua_pop(ls, 1);
         }
@@ -290,6 +361,10 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
     lua_pop(ls, 1);
 }
 
+
+/*!
+ * \brief Recursively load Nut/OS component options.
+ */
 void LoadOptions(lua_State * ls, NUTCOMPONENT * root)
 {
     NUTCOMPONENT *compo;
@@ -303,7 +378,7 @@ void LoadOptions(lua_State * ls, NUTCOMPONENT * root)
         lua_pushnil(ls);
         while (lua_next(ls, -2)) {
             if (lua_isnumber(ls, -2)) {
-                name = GetStringByNameFromTable(ls, -1, "name", NULL, 0);
+                name = GetStringByNameFromTable(ls, -1, TKN_NAME, NULL, 0);
                 if (name) {
                     subc = FindComponentByName(root, name);
                     if (subc) {
@@ -318,27 +393,50 @@ void LoadOptions(lua_State * ls, NUTCOMPONENT * root)
     }
 }
 
-/*
+/*!
+ * \brief Recursively load Nut/OS components.
+ *
+ * Components may have siblings and children. Right now, Nut/OS has two levels
+ * only. The root component is the repository itself and all Nut/OS components
+ * like os, crt, net etc. are children of this root. Anyway, we recursively
+ * call this routine to be prepared for future subcomponents.
+ *
+ * \param ls     Lua state.
+ * \param parent Parent component.
+ * \param path   Top directory of the repository.
+ * \param file   Relative pathname of the script file.
+ *
+ * \return 0 on success, -1 otherwise.
+ *
  * Option name is a global LUA variable.
  */
-int LoadComponents(lua_State * ls, NUTCOMPONENT * parent, const char *path, const char *file)
+int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, const char *file)
 {
     int rc = 0;
     char script[255];
     char *name;
     NUTCOMPONENT *compo = NULL;
 
+    /* Build the pathname and check if the script file exists. */
     strcpy(script, path);
+    strcat(script, "/");
     strcat(script, file);
     if (_access(script, 0)) {
         return -1;
     }
+
+    /* Let the interpreter load the script file. */
     printf("Loading %s from %s\n", parent->nc_name, script);
     if ((rc = lua_dofile(ls, script)) != 0) {
         fprintf(stderr, "Bad script in %s\n", path);
         return -1;
     }
 
+    /* 
+     * The component is defined by a Lua array, which name is the
+     * name of the parent component. Push this array on top of the
+     * Lua stack and make sure we got an array.
+     */
     lua_getglobal(ls, parent->nc_name);
     if (!lua_istable(ls, -1)) {
         fprintf(stderr, "Bad type for %s\n", parent->nc_name);
@@ -346,34 +444,74 @@ int LoadComponents(lua_State * ls, NUTCOMPONENT * parent, const char *path, cons
         return -1;
     }
 
-    /* Enumerate */
+    /*
+     * Enumerate the array. Start with nil for the first key.
+     */
     lua_pushnil(ls);
+
+    /*
+     * Each loop will take the key from the top of the stack and
+     * push the next key followed by the corresponding value back
+     * to the stack.
+     */
     while (lua_next(ls, -2)) {
+        /* 
+         * Now the next value is on top and its key (array index) is below. Components
+         * are specified without a named index. Thus, they have a numeric index.
+         */ 
         if (lua_isnumber(ls, -2)) {
-            name = GetStringByNameFromTable(ls, -1, "name", NULL, 0);
+
+            /*
+             * This is a numeric index. Now let's check the value, which is
+             * expected to be an array containing a named index 'name'.
+             */
+            name = GetStringByNameFromTable(ls, -1, TKN_NAME, NULL, 0);
             if (name) {
-                /* First component on this level. */
+                /*
+                 * The value on top of the stack is an array, which contains
+                 * a named item 'name'. We probably found a new component.
+                 */
                 if (compo == NULL) {
+                    /* This is the first child component of our parent. */
                     compo = calloc(1, sizeof(NUTCOMPONENT));
                     parent->nc_child = compo;
                 } else {
+                    /* Siblings exist already. */
                     compo->nc_nxt = calloc(1, sizeof(NUTCOMPONENT));
                     compo->nc_nxt->nc_prv = compo;
                     compo = compo->nc_nxt;
                 }
+
+                /*
+                 * Transfer the component's items from Lua to a C structure.
+                 */
                 compo->nc_parent = parent;
                 compo->nc_name = name;
-                compo->nc_brief = GetStringByNameFromTable(ls, -1, "brief", NULL, 0);
-                compo->nc_description = GetStringByNameFromTable(ls, -1, "description", NULL, 0);
-                compo->nc_subdir = GetStringByNameFromTable(ls, -1, "subdir", NULL, 0);
-                compo->nc_sources = GetStringArrayByNameFromTable(ls, -1, "sources");
-                if (GetStringByNameFromTable(ls, -1, "script", script, sizeof(script))) {
-                    LoadComponents(ls, compo, path, script);
+                compo->nc_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
+                compo->nc_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
+                compo->nc_requires = GetStringArrayByNameFromTable(ls, -1, TKN_REQUIRES);
+                compo->nc_provides = GetStringArrayByNameFromTable(ls, -1, TKN_PROVIDES);
+                compo->nc_active_if = GetStringByNameFromTable(ls, -1, TKN_ACTIF, NULL, 0);
+                compo->nc_subdir = GetStringByNameFromTable(ls, -1, TKN_SUBDIR, NULL, 0);
+                compo->nc_sources = GetStringArrayByNameFromTable(ls, -1, TKN_SOURCES);
+
+                /* If this component got any subcomponent, then load it now. */
+                if (GetStringByNameFromTable(ls, -1, TKN_SCRIPT, script, sizeof(script))) {
+                    LoadComponentTree(ls, compo, path, script);
                 }
             }
         }
+
+        /*
+         * Remove the value from stack, so the next lua_next will find the
+         * key (arry index) on top.
+         */
         lua_pop(ls, 1);
     }
+
+    /*
+     * Remove the key in order to leave the stack like we found it.
+     */
     lua_pop(ls, 1);
 
     return rc;
@@ -390,6 +528,7 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
             lua_getglobal(ls, opts->nco_name);
             if (lua_isstring(ls, -1)) {
                 opts->nco_value = strdup(lua_tostring(ls, -1));
+                opts->nco_active = 1;
             }
             lua_pop(ls, 1);
             opts = opts->nco_nxt;
@@ -401,57 +540,224 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
     }
 }
 
-void LoadConfiguration(lua_State * ls, NUTCOMPONENT * root, const char *file)
+/*!
+ * \brief Open a Nut/OS component repository.
+ *
+ * \param pathname Pathname of the repository file. Use slashes, not backslashes.
+ *
+ * \return Pointer to a NUTREPOSITORY structure on success or NULL otherwise.
+ */
+NUTREPOSITORY *OpenRepository(const char *pathname)
 {
-    int rc;
+    char *cp;
+    NUTREPOSITORY *repo = malloc(sizeof(NUTREPOSITORY));
 
-    /* NAME.value */
-    if ((rc = lua_dofile(ls, file)) != 0) {
-        fprintf(stderr, "Bad script in %s\n", file);
-        return;
+    if(pathname == NULL || access(pathname, 0)) {
+        return NULL;
     }
-    LoadConfigValues(ls, root);
+    if((repo = calloc(1, sizeof(NUTREPOSITORY))) != NULL) {
+        /*
+         * Cut off the directory path of the repository script. This
+         * directory is our root directory. All component scripts will
+         * be below this point.
+         */
+        repo->nr_dir = strdup(pathname);
+        if((repo->nr_dir = strdup(pathname)) == NULL) {
+            free(repo);
+            return NULL;
+        }
+        if ((cp = strrchr(repo->nr_dir, '/')) != NULL) {
+            *cp++ = 0;
+            repo->nr_name = cp;
+        } else {
+            repo->nr_dir[0] = 0;
+        }
+
+        /*
+         * Create a LUA state.
+         */
+        repo->nr_ls = lua_open();
+    }
+    return repo;
 }
 
 /*!
- * \brief Load a Nut/OS configuration repository.
+ * \brief Close a Nut/OS component repository.
  *
- * \param file Pathname of the repository file. Use slashes, not backslashes.
- *
- * \return Root pointer of a linked tree of NUTCOMPONENT structures.
+ * \param repo Pointer to a NUTREPOSITORY structure.
  */
-NUTCOMPONENT *LoadRepository(const char *file)
+void CloseRepository(NUTREPOSITORY *repo)
 {
-    lua_State *ls;
-    NUTCOMPONENT *root;
-    char path[255];
-    char *np;
-
-    strcpy(path, file);
-    if ((np = strrchr(path, '/')) != NULL) {
-        *++np = 0;
-        file += strlen(path);
-    } else {
-        path[0] = 0;
+    if(repo) {
+        if(repo->nr_dir) {
+            free(repo->nr_dir);
+        }
+        if(repo->nr_ls) {
+            lua_close((lua_State *)(repo->nr_ls));
+        }
     }
+}
 
-    /* Create root component. */
+/*!
+ * \brief Load Nut/OS repository components.
+ *
+ * \param repo Pointer to a NUTREPOSITORY structure.
+ *
+ * \return Root pointer to a linked tree of NUTCOMPONENT structures.
+ */
+NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+    NUTCOMPONENT *root;
+
+    /* Create a repository root component. */
     root = calloc(1, sizeof(NUTCOMPONENT));
     root->nc_name = strdup("repository");
 
-    /*
-     * Create a LUA state.
+    /* 
+     * Collect the components first. As a result we will have a tree
+     * structure of all components.
      */
-    ls = lua_open();
-    LoadComponents(ls, root, path, file);
+    LoadComponentTree(ls, root, repo->nr_dir, repo->nr_name);
 
+    /*
+     * Now walk along the component tree and collect the options of
+     * all components.
+     */
     LoadOptions(ls, root);
 
-    LoadConfiguration(ls, root, configuration_path);
-
-    lua_close(ls);
-
     return root;
+}
+
+/*!
+ * \brief Read Nut/OS component configuration values.
+ *
+ * \param repo Pointer to a NUTREPOSITORY structure.
+ * \param root Pointer to a linked tree of NUTCOMPONENT structures.
+ * \param pathname Pathname of the repository file. Use slashes, not backslashes.
+ *
+ * \return 0 on success or -1 otherwise.
+ */
+int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pathname)
+{
+    int rc;
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    if(ls == NULL || root == NULL || pathname == NULL || access(pathname, 0)) {
+        return -1;
+    }
+
+    if ((rc = lua_dofile(ls, pathname)) != 0) {
+        fprintf(stderr, "Bad script in %s\n", pathname);
+        return -1;
+    }
+    LoadConfigValues(ls, root);
+
+    return 0;
+}
+
+int IsProvided(NUTCOMPONENT *compo, char *requirement)
+{
+    NUTCOMPONENTOPTION *opts;
+    int i;
+
+    while (compo) {
+        if(compo->nc_enabled) {
+            if(compo->nc_provides) {
+                for (i = 0; compo->nc_provides[i]; i++) {
+                    if(strcmp(compo->nc_provides[i], requirement) == 0) {
+                        return 1;
+                    }
+                }
+            }
+            opts = compo->nc_opts;
+            while (opts) {
+                if(opts->nco_enabled && opts->nco_active && opts->nco_provides) {
+                    for (i = 0; opts->nco_provides[i]; i++) {
+                        if(strcmp(opts->nco_provides[i], requirement) == 0) {
+                            return 1;
+                        }
+                    }
+                }
+                opts = opts->nco_nxt;
+            }
+            if (IsProvided(compo->nc_child, requirement)) {
+                return 1;
+            }
+        }
+        compo = compo->nc_nxt;
+    }
+    return 0;
+}
+
+void EnableSubComponents(NUTCOMPONENT *compo, int enable)
+{
+    NUTCOMPONENTOPTION *opts;
+
+    while (compo) {
+        compo->nc_enabled = enable;
+        opts = compo->nc_opts;
+        while (opts) {
+            opts->nco_enabled = enable;
+            opts = opts->nco_nxt;
+        }
+        EnableSubComponents(compo->nc_child, enable);
+        compo = compo->nc_nxt;
+    }
+}
+
+void EnableComponentTree(NUTCOMPONENT *compo, int enable)
+{
+    NUTCOMPONENTOPTION *opts;
+
+    compo->nc_enabled = enable;
+    opts = compo->nc_opts;
+    while (opts) {
+        opts->nco_enabled = enable;
+        opts = opts->nco_nxt;
+    }
+    EnableSubComponents(compo->nc_child, enable);
+}
+
+int RefreshComponentTree(NUTCOMPONENT *root, NUTCOMPONENT *compo)
+{
+    int rc = 0;
+    int i;
+
+    while (compo) {
+        if(compo->nc_requires) {
+            int provided = 1;
+            for (i = 0; compo->nc_requires[i]; i++) {
+                if((provided = IsProvided(root, compo->nc_requires[i])) == 0) {
+                    break;
+                }
+            }
+            if(provided != compo->nc_enabled) {
+                /* Update this component branch. */
+                //compo->nc_enabled = provided;
+                EnableComponentTree(compo, provided);
+                rc++;
+            }
+        }
+        rc += RefreshComponentTree(root, compo->nc_child);
+        compo = compo->nc_nxt;
+    }
+    return rc;
+}
+
+int RefreshComponents(NUTCOMPONENT *root)
+{
+    int i;
+
+    /* Enable all components. */
+    EnableComponentTree(root, 1);
+
+    for(i = 0; i < 10; i++) {
+        if(RefreshComponentTree(root, root) == 0) {
+            return 0;
+        }
+    }
+    return -1;
 }
 
 void WriteMakeSources(FILE * fp, NUTCOMPONENT * compo)
@@ -460,7 +766,7 @@ void WriteMakeSources(FILE * fp, NUTCOMPONENT * compo)
     int c = 8;
 
     fprintf(fp, "SRCS =\t");
-    while (compo) {
+    while (compo && compo->nc_enabled && compo->nc_sources) {
         for (i = 0; compo->nc_sources[i]; i++) {
             c += strlen(compo->nc_sources[i]);
             if (c > 72) {
@@ -495,44 +801,99 @@ void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
     fprintf(fp, "\n");
 }
 
+static int CreateDirectoryPath(const char *path)
+{
+    char subpath[255];
+    char *cp;
+
+    if(*path) {
+        /*
+         * Copy any optional device/drive information.
+         */
+        if((cp = strchr(path, ':')) != 0) {
+            for(cp = subpath; *path != ':'; path++, cp++) {
+                *cp = *path;
+            }
+        }
+        else {
+            cp = subpath;
+        }
+
+        /*
+         * Copy the first character unchecked. This way we avoid to check the
+         * root directory.
+         */
+        if(*path) {
+            *cp++ = *path++;
+        }
+
+        /*
+         * Create the directory tree, processing path component by path component.
+         */
+        while(*path) {
+            if(*path == '/') {
+                *cp = 0;
+                if(_access(subpath, 0)) {
+                    if(_mkdir(subpath)) {
+                        return -1;
+                    }
+                }
+            }
+            *cp++ = *path++;
+        }
+    }
+    return 0;
+}
+
 /*!
  * \brief Create makefiles from a specified NUTCOMPONENT tree.
  */
-void CreateMakeFiles(NUTCOMPONENT * root)
+void CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext)
 {
     FILE *fp;
     char path[255];
     NUTCOMPONENT *compo;
+    struct tm *ltime;
+    time_t now;
+
+    time(&now);
+    ltime = localtime(&now);
 
     /* Create the root Makefile */
-    fp = fopen("nutbld/Makefile", "w");
-    if (fp) {
-        fprintf(fp, "# This file has been created automatically\n\n");
-        WriteMakeRootLines(fp, root->nc_child, NULL);
-        WriteMakeRootLines(fp, root->nc_child, "install");
-        WriteMakeRootLines(fp, root->nc_child, "clean");
-        fclose(fp);
+    sprintf(path, "%s/Makefile", bld_dir);
+    if(CreateDirectoryPath(path) == 0) {
+        fp = fopen(path, "w");
+        if (fp) {
+            fprintf(fp, "# This file has been created automatically\n\n");
+            WriteMakeRootLines(fp, root->nc_child, NULL);
+            WriteMakeRootLines(fp, root->nc_child, "install");
+            WriteMakeRootLines(fp, root->nc_child, "clean");
+            fclose(fp);
+        }
     }
 
     /* Create library Makefiles */
     compo = root->nc_child;
     while (compo) {
         if (compo->nc_subdir) {
-            sprintf(path, "nutbld/%s", compo->nc_subdir);
-            _mkdir(path);
+            sprintf(path, "%s/%s", bld_dir, compo->nc_subdir);
             strcat(path, "/Makefile");
-            fp = fopen(path, "w");
-            if (fp) {
-                fprintf(fp, "# This file has been created automatically\n\n");
-                fprintf(fp, "PROJ =\tlib%s\n\n", compo->nc_name);
-                fprintf(fp, "top_srcdir = ../../nut\n\n");
-                fprintf(fp, "top_blddir = ..\n\n");
+            if(CreateDirectoryPath(path) == 0) {
+                fp = fopen(path, "w");
+                if (fp) {
+                    fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
+                    fprintf(fp, "PROJ =\tlib%s\n\n", compo->nc_name);
+                    fprintf(fp, "top_srcdir = %s\n", src_dir);
+                    fprintf(fp, "top_blddir = %s\n\n", bld_dir);
+                    fprintf(fp, "VPATH = $(top_srcdir)/%s\n\n", compo->nc_subdir);
 
-                WriteMakeSources(fp, compo->nc_child);
-                fprintf(fp, "include $(top_srcdir)/Makedefs\n\n");
-                fprintf(fp, "all: $(PROJ).a\n\n");
-                fprintf(fp, "include $(top_srcdir)/Makerules\n\n");
-                fclose(fp);
+                    WriteMakeSources(fp, compo->nc_child);
+                    fprintf(fp, "OBJS = $(SRCS:.c=.o)\n\n");
+                    fprintf(fp, "include $(top_srcdir)/Makedefs.%s\n\n", mak_ext);
+                    fprintf(fp, "all: $(PROJ).a $(OBJS)\n\n");
+                    fprintf(fp, "include $(top_srcdir)/Makerules.%s\n\n", mak_ext);
+                    fclose(fp);
+                }
             }
         }
         compo = compo->nc_nxt;
@@ -555,13 +916,15 @@ struct _NUTHEADERFILE {
     NUTHEADERMACRO *nhf_macros;
 };
 
-NUTHEADERFILE *nh_root;
-
-void AddHeaderFileMacro(NUTCOMPONENTOPTION * opts)
+/*!
+ * \brief Add option to header file list.
+ */
+NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * opts)
 {
     NUTHEADERFILE *nhf;
     NUTHEADERMACRO *nhm;
 
+    /* Add to existing list. */
     if (nh_root) {
         nhf = nh_root;
         while (stricmp(nhf->nhf_path, opts->nco_file)) {
@@ -573,12 +936,15 @@ void AddHeaderFileMacro(NUTCOMPONENTOPTION * opts)
                 nhf->nhf_path = opts->nco_file;
             }
         }
-    } else {
+    } 
+    /* First entry, create list root. */
+    else {
         nhf = calloc(1, sizeof(NUTHEADERFILE));
         nhf->nhf_path = opts->nco_file;
         nh_root = nhf;
     }
 
+    /* Add macro to existing header file entry. */
     if (nhf->nhf_macros) {
         nhm = nhf->nhf_macros;
         while (stricmp(nhm->nhm_name, opts->nco_name)) {
@@ -591,62 +957,92 @@ void AddHeaderFileMacro(NUTCOMPONENTOPTION * opts)
                 nhm->nhm_value = opts->nco_value;
             }
         }
-    } else {
+    } 
+
+    /* First entry of this header file. */
+    else {
         nhm = calloc(1, sizeof(NUTHEADERFILE));
         nhm->nhm_name = opts->nco_name;
         nhm->nhm_value = opts->nco_value;
         nhf->nhf_macros = nhm;
     }
+    return nh_root;
 }
 
 /*!
  * \brief Create a linked list of header files and associated macros. 
  */
-void CreateHeaderList(NUTCOMPONENT * compo)
+NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
 {
     NUTCOMPONENTOPTION *opts;
 
     while (compo) {
         opts = compo->nc_opts;
         while (opts) {
-            if (opts->nco_file) {
-                AddHeaderFileMacro(opts);
+            if (opts->nco_file && opts->nco_enabled) {
+                nh_root = AddHeaderFileMacro(nh_root, opts);
             }
             opts = opts->nco_nxt;
         }
         if (compo->nc_child) {
-            CreateHeaderList(compo->nc_child);
+            nh_root = CreateHeaderList(compo->nc_child, nh_root);
         }
         compo = compo->nc_nxt;
     }
+    return nh_root;
 }
 
 /*!
  * \brief Create header files from a specified NUTCOMPONENT tree.
  */
-void CreateHeaderFiles(NUTCOMPONENT * root)
+void CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
 {
+    NUTHEADERFILE *nh_root = NULL;
     NUTHEADERFILE *nhf;
     NUTHEADERMACRO *nhm;
     FILE *fp;
     char path[255];
+    char exname[255];
+    char *cp;
+    struct tm *ltime;
+    time_t now;
 
-    CreateHeaderList(root->nc_child);
+    time(&now);
+    ltime = localtime(&now);
 
-    /* Create the build directories. */
-    _mkdir("nutbld");
-    _mkdir("nutbld/cfg");
+    nh_root = CreateHeaderList(root->nc_child, nh_root);
 
     for (nhf = nh_root; nhf; nhf = nhf->nhf_nxt) {
-        strcpy(path, "nutbld/");
+        strcpy(path, bld_dir);
+        strcat(path, "/");
         strcat(path, nhf->nhf_path);
-        if ((fp = fopen(path, "w")) != 0) {
-            for (nhm = nhf->nhf_macros; nhm; nhm = nhm->nhm_nxt) {
-                if (nhm->nhm_value) {
-                    fprintf(fp, "#define %s %s\n", nhm->nhm_name, nhm->nhm_value);
-                }
+
+        strcpy(exname, "_");
+        strcat(exname, nhf->nhf_path);
+        strcat(exname, "_");
+        for(cp = exname; *cp; cp++) {
+            if(*cp < '0') {
+                *cp = '_';
             }
-            fclose(fp);
+            else {
+                *cp = (char)toupper(*cp);
+            }
+        }
+        if(CreateDirectoryPath(path) == 0) {
+            if ((fp = fopen(path, "w")) != 0) {
+                fprintf(fp, "#ifndef %s\n", exname);
+                fprintf(fp, "#define %s\n\n", exname);
+                fprintf(fp, "/*\n * Do not edit! Automatically generated on %s */\n\n", asctime(ltime));
+                for (nhm = nhf->nhf_macros; nhm; nhm = nhm->nhm_nxt) {
+                    if (nhm->nhm_value) {
+                        fprintf(fp, "#ifndef %s\n", nhm->nhm_name);
+                        fprintf(fp, "#define %s %s\n", nhm->nhm_name, nhm->nhm_value);
+                        fprintf(fp, "#endif\n\n");
+                    }
+                }
+                fprintf(fp, "\n#endif\n");
+                fclose(fp);
+            }
         }
     }
 }

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.2  2004/08/03 15:09:31  haraldkipp
+-- Another change of everything
+--
 -- Revision 1.1  2004/06/07 16:38:43  haraldkipp
 -- First release
 --
@@ -44,6 +47,7 @@ nutos =
         name = "nutos_bankmem",
         brief = "AVR memory banking",
         description = "Part of the AVR data space can be used for banked memory.",
+        requires = { "AVR_MCU" },
         sources = { "bankmem.c" },
         provides = { "MEMORY_BANKING" },
         options = 

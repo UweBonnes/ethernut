@@ -39,6 +39,9 @@
 
 /*
  * $Log: scrolledtree.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -97,7 +100,7 @@ void CScrolledTreeCtrl::SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY,
         // Pass TRUE for noRefresh so that it doesn't
         // draw part of the tree as if the scroll view is
         // at zero vertically.
-        win->wxGenericTreeCtrl::SetScrollbars(pixelsPerUnitX, pixelsPerUnitY, noUnitsX, 0, xPos, 0, /* noRefresh */ TRUE);
+        win->wxGenericTreeCtrl::SetScrollbars(pixelsPerUnitX, pixelsPerUnitY, noUnitsX, 0, xPos, 0, /* noRefresh */ true);
 
         wxScrolledWindow *scrolledWindow = GetScrolledWindow();
         if (scrolledWindow) {
@@ -300,7 +303,7 @@ void CScrolledTreeCtrl::HideVScrollbar()
 {
 #ifdef __WXMSW__
     if (!IsKindOf(CLASSINFO(wxGenericTreeCtrl))) {
-        ::ShowScrollBar((HWND) GetHWND(), SB_VERT, FALSE);
+        ::ShowScrollBar((HWND) GetHWND(), SB_VERT, false);
     } else
 #endif
     {

@@ -39,13 +39,20 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
+#include <wx/config.h>
+
 #include "ids.h"
 #include "nutconf.h"
+#include "settings.h"
+#include "settingsdlg.h"
 #include "mainframe.h"
 
 BEGIN_EVENT_TABLE(CMainFrame, wxDocParentFrame)
@@ -53,6 +60,9 @@ BEGIN_EVENT_TABLE(CMainFrame, wxDocParentFrame)
     EVT_MENU(ID_GENERATE_BUILD_TREE, CMainFrame::OnGenerateBuildTree)
     EVT_SIZE(CMainFrame::OnSize)
     EVT_SASH_DRAGGED_RANGE(ID_CONFIG_SASH_WINDOW, ID_OUTPUT_SASH_WINDOW, CMainFrame::OnSashDrag)
+    EVT_MENU(ID_SETTINGS, CMainFrame::OnSettings)
+
+
     END_EVENT_TABLE();
 
 CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
@@ -62,22 +72,82 @@ CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
     CreateNutToolBar();
     CreateNutStatusBar();
     CreateNutWindows();
+
+    /*
+     * Restore frame position and size.
+     */
+    wxConfigBase *pConfig = wxConfigBase::Get();
+    Move(pConfig->Read(wxT("/MainFrame/x"), 50), pConfig->Read(wxT("/MainFrame/y"), 50));
+    SetClientSize(pConfig->Read(wxT("/MainFrame/w"), 350), pConfig->Read(wxT("/MainFrame/h"), 200));
+}
+
+/*!
+ * \brief Destructor.
+ */
+CMainFrame::~CMainFrame()
+{
+    // Save frame size and position.
+    wxConfigBase *pConfig = wxConfigBase::Get();
+    if (pConfig) {
+        wxString lastPath = pConfig->GetPath();
+        pConfig->SetPath(wxT("/MainFrame"));
+
+        /*
+         * Frame window position and client window size.
+         */
+        int x, y;
+        int w, h;
+        GetPosition(&x, &y);
+        pConfig->Write(wxT("x"), (long) x);
+        pConfig->Write(wxT("y"), (long) y);
+        GetClientSize(&w, &h);
+        pConfig->Write(wxT("w"), (long) w);
+        pConfig->Write(wxT("h"), (long) h);
+
+        wxSize sz;
+        sz = m_configSashWindow->GetSize();
+        pConfig->Write(wxT("tree_w"), (long) sz.x);
+        pConfig->Write(wxT("tree_h"), (long) sz.y);
+
+        sz = m_propertiesSashWindow->GetSize();
+        pConfig->Write(wxT("prop_w"), (long) sz.x);
+        pConfig->Write(wxT("prop_h"), (long) sz.y);
+
+        //sz = m_conflictsSashWindow->GetSize();
+        //pConfig->Write(wxT("cflc_w"), (long) sz.x);
+        //pConfig->Write(wxT("cflc_h"), (long) sz.y);
+
+        sz = m_shortDescrSashWindow->GetSize();
+        pConfig->Write(wxT("desc_w"), (long) sz.x);
+        pConfig->Write(wxT("desc_h"), (long) sz.y);
+
+        sz = m_outputSashWindow->GetSize();
+        pConfig->Write(wxT("outp_w"), (long) sz.x);
+        pConfig->Write(wxT("outp_h"), (long) sz.y);
+
+        x = m_splitter->GetSashPosition();
+        if(x > 0) {
+            pConfig->Write(wxT("split_x"), (long) x);
+        }
+        pConfig->SetPath(lastPath);
+    }
 }
 
 void CMainFrame::CreateNutMenuBar()
 {
     wxMenu *fileMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
     //td fileMenu->Append(wxID_NEW, wxT("&New\tCtrl+N"), wxT("Creates a new document"));
-    //td fileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"), wxT("Opens an existing document"));
-    //td fileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Saves the active document"));
-    //td fileMenu->Append(wxID_SAVEAS, wxT("Save &As..."), wxT("Saves the active document with a new name"));
+    fileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"), wxT("Opens an existing document"));
+    fileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Saves the active document"));
+    fileMenu->Append(wxID_SAVEAS, wxT("Save &As..."), wxT("Saves the active document with a new name"));
     //td fileMenu->AppendSeparator();
     //td fileMenu->Append(ID_IMPORT, wxT("&Import..."), wxT("Imports a minimal configuration exported from another configuration"));
     //td fileMenu->Append(ID_EXPORT, wxT("&Export..."), wxT("Exports a minimal configuration for importing into another configuration"));
     //td fileMenu->AppendSeparator();
     fileMenu->Append(wxID_EXIT, wxT("E&xit\tAlt+X"), wxT("Quits the application"));
 
-    //td wxMenu *editMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+    wxMenu *editMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+    editMenu->Append(ID_SETTINGS, wxT("&Settings...\tCtrl+T"), wxT("Shows the application settings dialog"));
     //td editMenu->Append(wxID_CUT, wxT("Cu&t\tCtrl+X"), wxT("Cuts the output pane selection and moves it to the Clipboard"));
     //td editMenu->Append(wxID_COPY, wxT("&Copy\tCtrl+C"), wxT("Copies the output pane selection to the clipboard"));
     //td editMenu->Append(wxID_PASTE, wxT("&Paste\tCtrl+V"), wxT("Inserts Clipboard contents"));
@@ -133,7 +203,7 @@ void CMainFrame::CreateNutMenuBar()
 
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, wxT("&File"));
-    //td menuBar->Append(editMenu, wxT("&Edit"));
+    menuBar->Append(editMenu, wxT("&Edit"));
     //td menuBar->Append(viewMenu, wxT("&View"));
     menuBar->Append(buildMenu, wxT("&Build"));
     //td menuBar->Append(toolsMenu, wxT("&Tools"));
@@ -149,8 +219,8 @@ void CMainFrame::CreateNutToolBar()
     toolBar->SetMargins(4, 4);
 
     //td toolBar->AddTool(wxID_NEW, wxBITMAP(TBB_NEW), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("New file"));
-    //td toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open file"));
-    //td toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save file"));
+    toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open file"));
+    toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save file"));
     //td toolBar->AddSeparator();
     //td toolBar->AddTool(wxID_CUT, wxBITMAP(TBB_CUT), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Cut");
     //td toolBar->AddTool(wxID_COPY, wxBITMAP(TBB_COPY), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Copy");
@@ -174,44 +244,56 @@ void CMainFrame::CreateNutStatusBar()
     int widths[] = { -1, 100, 40, 80 };
     SetStatusWidths(4, widths);
     SetStatusText(wxT("Ready"), 0);
-    SetStatusText(wxT("No conflicts"), 3);
 }
 
 void CMainFrame::CreateNutWindows()
 {
+    wxSize sz;
+    wxConfigBase *pConfig = wxConfigBase::Get();
+    wxString lastPath = pConfig->GetPath();
+
+    pConfig->SetPath(wxT("/MainFrame"));
+
     m_outputSashWindow = new wxSashLayoutWindow(this, ID_OUTPUT_SASH_WINDOW);
-    m_outputSashWindow->SetDefaultSize(wxSize(1000, 50));
+    sz = wxSize(pConfig->Read(wxT("outp_w"), 100), pConfig->Read(wxT("outp_h"), 50));
+    m_outputSashWindow->SetDefaultSize(sz);
     m_outputSashWindow->SetOrientation(wxLAYOUT_HORIZONTAL);
     m_outputSashWindow->SetAlignment(wxLAYOUT_BOTTOM);
     m_outputSashWindow->SetSashVisible(wxSASH_TOP, true);
 
     m_configSashWindow = new wxSashLayoutWindow(this, ID_CONFIG_SASH_WINDOW);
-    m_configSashWindow->SetDefaultSize(wxSize(400, 1000));
+    sz = wxSize(pConfig->Read(wxT("tree_w"), 100), pConfig->Read(wxT("tree_h"), 50));
+    m_configSashWindow->SetDefaultSize(sz);
     m_configSashWindow->SetOrientation(wxLAYOUT_VERTICAL);
     m_configSashWindow->SetAlignment(wxLAYOUT_LEFT);
     m_configSashWindow->SetSashVisible(wxSASH_RIGHT, true);
 
+#if 0
     m_conflictsSashWindow =
         new wxSashLayoutWindow(this, ID_CONFLICTS_SASH_WINDOW, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxCLIP_SIBLINGS);
-    m_conflictsSashWindow->SetDefaultSize(wxSize(1000, 80));
+    sz = wxSize(pConfig->Read(wxT("cflc_w"), 100), pConfig->Read(wxT("cflc_h"), 50));
+    m_conflictsSashWindow->SetDefaultSize(sz);
     m_conflictsSashWindow->SetOrientation(wxLAYOUT_HORIZONTAL);
     m_conflictsSashWindow->SetAlignment(wxLAYOUT_TOP);
     m_conflictsSashWindow->SetSashVisible(wxSASH_BOTTOM, true);
+#endif
 
     m_propertiesSashWindow = new wxSashLayoutWindow(this, ID_PROPERTIES_SASH_WINDOW);
-    m_propertiesSashWindow->SetDefaultSize(wxSize(1000, 80));
+    sz = wxSize(pConfig->Read(wxT("prop_w"), 100), pConfig->Read(wxT("prop_h"), 50));
+    m_propertiesSashWindow->SetDefaultSize(sz);
     m_propertiesSashWindow->SetOrientation(wxLAYOUT_HORIZONTAL);
     m_propertiesSashWindow->SetAlignment(wxLAYOUT_TOP);
     m_propertiesSashWindow->SetSashVisible(wxSASH_BOTTOM, true);
 
     m_shortDescrSashWindow = new wxSashLayoutWindow(this, ID_SHORT_DESCR_SASH_WINDOW);
-    m_shortDescrSashWindow->SetDefaultSize(wxSize(1000, 80));
+    sz = wxSize(pConfig->Read(wxT("desc_w"), 100), pConfig->Read(wxT("desc_h"), 50));
+    m_shortDescrSashWindow->SetDefaultSize(sz);
     m_shortDescrSashWindow->SetOrientation(wxLAYOUT_HORIZONTAL);
     m_shortDescrSashWindow->SetAlignment(wxLAYOUT_TOP);
 
     m_outputWindow = new wxTextCtrl(m_outputSashWindow, ID_OUTPUT_WINDOW);
-    m_conflictsWindow = new CConflictList(m_conflictsSashWindow, ID_CONFLICTS_WINDOW,
-                                          wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxCLIP_CHILDREN | wxSUNKEN_BORDER);
+    //m_conflictsWindow = new CConflictList(m_conflictsSashWindow, ID_CONFLICTS_WINDOW,
+    //                                      wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxCLIP_CHILDREN | wxSUNKEN_BORDER);
     m_propertyListWindow = new CPropertyList(m_propertiesSashWindow, ID_PROPERTIES_WINDOW,
                                              wxDefaultPosition, wxDefaultSize,
                                              wxLC_REPORT | wxCLIP_CHILDREN | wxLC_VRULES | wxLC_HRULES | wxSUNKEN_BORDER);
@@ -231,7 +313,11 @@ void CMainFrame::CreateNutWindows()
 
     m_splitter->SplitVertically(m_tree, m_valueWindow);
     m_splitter->SetMinimumPaneSize(100);
-    m_splitter->SetSashPosition(200);
+    int x = pConfig->Read(wxT("split_x"), 200);
+    if(x <= 0) {
+        x = 200;    
+    }
+    m_splitter->SetSashPosition(x);
 
     m_scrolledWindow->SetTargetWindow(m_tree);
     m_scrolledWindow->EnableScrolling(false, false);
@@ -239,6 +325,8 @@ void CMainFrame::CreateNutWindows()
     // Let the two controls know about each other
     m_valueWindow->SetTreeCtrl(m_tree);
     m_tree->SetCompanionWindow(m_valueWindow);
+
+    pConfig->SetPath(lastPath);
 }
 
 wxTextCtrl *CMainFrame::GetOutputWindow() const
@@ -266,10 +354,10 @@ CPropertyList *CMainFrame::GetPropertyListWindow() const
     return m_propertyListWindow;
 }
 
-CConflictList *CMainFrame::GetConflictsWindow() const
-{
-    return m_conflictsWindow;
-}
+//CConflictList *CMainFrame::GetConflictsWindow() const
+//{
+//    return m_conflictsWindow;
+//}
 
 void CMainFrame::OnSize(wxSizeEvent & WXUNUSED(event))
 {
@@ -286,9 +374,9 @@ void CMainFrame::OnSashDrag(wxSashEvent & event)
     case ID_CONFIG_SASH_WINDOW:
         m_configSashWindow->SetDefaultSize(wxSize(event.GetDragRect().width, 2000));
         break;
-    case ID_CONFLICTS_SASH_WINDOW:
-        m_conflictsSashWindow->SetDefaultSize(wxSize(2000, event.GetDragRect().height));
-        break;
+    //case ID_CONFLICTS_SASH_WINDOW:
+    //    m_conflictsSashWindow->SetDefaultSize(wxSize(2000, event.GetDragRect().height));
+    //    break;
     case ID_PROPERTIES_SASH_WINDOW:
         m_propertiesSashWindow->SetDefaultSize(wxSize(2000, event.GetDragRect().height));
         break;
@@ -322,9 +410,16 @@ void CMainFrame::OnQuit(wxCommandEvent & WXUNUSED(event))
     Close();
 }
 
+void CMainFrame::OnSettings(wxCommandEvent& event)
+{
+    CSettingsDialog dialog(this);
+    dialog.ShowModal();
+}
+
 void CMainFrame::OnGenerateBuildTree(wxCommandEvent & event)
 {
     if (wxGetApp().GetNutConfDoc()) {
         wxGetApp().GetNutConfDoc()->GenerateBuildTree();
     }
 }
+

@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.3  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.2  2004/06/07 16:08:07  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -64,27 +67,41 @@ IMPLEMENT_APP(NutConfApp);
  */
 bool NutConfApp::OnInit()
 {
+
+    /*
+     * Load settings early.
+     */
     SetVendorName(wxT("egnite"));
+    SetAppName(wxT("NutConf"));
+    m_settings = new CSettings();
 
+    /*
+     * Create a wxConfig object early.
+     */
     if (!wxApp::OnInit())
-        return FALSE;
+        return false;
 
+    /*
+     * The document manager will handle non application specific menu commands.
+     */
     m_docManager = new wxDocManager;
     m_currentDoc = NULL;
-    new wxDocTemplate(m_docManager, "Nutconf", "*.ecc", "", "ecc", "Nutconf Doc", "Nutconf View",
+
+    /*
+     * The document template defines the relationship between document and view.
+     */
+    new wxDocTemplate(m_docManager, "Nut/OS Configuration", "*.conf", "", "conf", "NutconfDoc", "NutconfView",
                                              CLASSINFO(CNutConfDoc), CLASSINFO(CNutConfView));
     m_docManager->SetMaxDocsOpen(1);
-
-    SetAppName(wxT("Nutconf"));
 
     m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configuration"));
     SetTopWindow(m_mainFrame);
     m_mainFrame->Show();
     SendIdleEvents();
 
-    m_docManager->CreateDocument(wxString(""), wxDOC_NEW);
+    m_docManager->CreateDocument(m_settings->m_configname, 0);
 
-    return TRUE;
+    return true;
 }
 
 int NutConfApp::OnExit()
@@ -132,7 +149,7 @@ void NutConfApp::SetStatusText(const wxString & text, bool clearFailingRulesPane
 
 bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer)
 {
-    bool ok = FALSE;
+    bool ok = false;
     wxString cmd;
 
     if (!strViewer.IsEmpty()) {
@@ -144,7 +161,7 @@ bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer
         wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(ext);
         if (!ft) {
             wxLogError(wxT("Impossible to determine the file type for extension '%s'"), ext.c_str());
-            return FALSE;
+            return false;
         }
 
         bool ok = ft->GetOpenCommand(&cmd, wxFileType::MessageParameters(strFileName, wxT("")));
@@ -153,11 +170,11 @@ bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer
         if (!ok) {
             // TODO: some kind of configuration dialog here.
             wxMessageBox(wxT("Could not determine the command for opening this file."), wxT("Error"), wxOK | wxICON_EXCLAMATION);
-            return FALSE;
+            return false;
         }
     }
 
-    ok = (wxExecute(cmd, FALSE) != 0);
+    ok = (wxExecute(cmd, false) != 0);
 
     return ok;
 }
@@ -171,3 +188,9 @@ wxDocManager *NutConfApp::GetDocManager() const
 {
     return m_docManager;
 }
+
+CSettings* NutConfApp::GetSettings() 
+{ 
+    return m_settings; 
+}
+

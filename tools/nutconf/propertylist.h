@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -55,12 +58,14 @@
 class CPropertyList:public wxListCtrl {
   public:
     enum nutFieldType {
-        nutType,
-        nutValue,
-        nutDefaultValue,
-        nutMacro,
-        nutFile,
         nutEnabled,
+        nutActive,
+        nutRequires,
+        nutProvides,
+        nutType,
+        nutFile,
+        nutMacro,
+        nutValue,
         nutMAXFIELDTYPE
     };
 
@@ -72,6 +77,7 @@ class CPropertyList:public wxListCtrl {
     int SetItem(nutFieldType f, const wxString & value);
     int SetItem(const wxString & item, const wxString & value, int nInsertAs, int nRepeat = 1);
 
+    void RefreshValue();
     void Fill(CConfigItem * pti);
     void AddColumns();
 

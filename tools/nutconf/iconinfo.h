@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -55,7 +58,7 @@ class CIconInfo:public wxObject {
   public:
     CIconInfo(const wxString & name);
 
-    int GetIconId(int state, bool enabled = TRUE) const;
+    int GetIconId(int state, bool enabled = true) const;
     void SetIconId(int state, bool enabled, int iconId);
 
     const wxString & GetName() const;

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -51,11 +54,11 @@
 #include <wx/laywin.h>
 #include <wx/splitter.h>
 #include <wx/docview.h>
-#include <wx/docmdi.h>
+//#include <wx/docmdi.h>
 #include <wx/treectrl.h>
 
 #include "configtree.h"
-#include "conflictlist.h"
+//#include "conflictlist.h"
 #include "valuewindow.h"
 #include "splitscroll.h"
 #include "infowindow.h"
@@ -65,9 +68,13 @@
 #error You must set wxUSE_DOC_VIEW_ARCHITECTURE to 1 in setup.h!
 #endif
 
+/*
+ * \brief Main frame acting as a document parent frame.
+ */
 class CMainFrame:public wxDocParentFrame {
   public:
     CMainFrame(wxDocManager * manager, const wxString & title);
+    virtual ~CMainFrame();
 
     void OnSize(wxSizeEvent & event);
     void OnSashDrag(wxSashEvent & event);
@@ -77,11 +84,12 @@ class CMainFrame:public wxDocParentFrame {
     CValueWindow *GetValueWindow() const;
     CInfoWindow *GetShortDescriptionWindow() const;
     CPropertyList *GetPropertyListWindow() const;
-    CConflictList *GetConflictsWindow() const;
+    //CConflictList *GetConflictsWindow() const;
 
     /* ---------- Menu Event Handlers ---------- */
     void OnQuit(wxCommandEvent & event);
     void OnGenerateBuildTree(wxCommandEvent & event);
+    void OnSettings(wxCommandEvent& event);
 
   protected:
     void CreateNutMenuBar();
@@ -92,14 +100,14 @@ class CMainFrame:public wxDocParentFrame {
   protected:
      wxSashLayoutWindow * m_outputSashWindow;
     wxSashLayoutWindow *m_configSashWindow;
-    wxSashLayoutWindow *m_conflictsSashWindow;
+    //wxSashLayoutWindow *m_conflictsSashWindow;
     wxSashLayoutWindow *m_propertiesSashWindow;
     wxSashLayoutWindow *m_shortDescrSashWindow;
     wxTextCtrl *m_outputWindow;
     wxSplitterWindow *m_splitter;
     CSplitScroll *m_scrolledWindow;
     CConfigTree *m_tree;
-    CConflictList *m_conflictsWindow;
+    //CConflictList *m_conflictsWindow;
     CValueWindow *m_valueWindow;
     CInfoWindow *m_shortDescrWindow;
     CPropertyList *m_propertyListWindow;

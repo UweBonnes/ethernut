@@ -1,6 +1,3 @@
-#ifndef NUTCONFVIEW_H_
-#define NUTCONFVIEW_H_
-
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
  *
@@ -41,45 +38,50 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * $Log: repoptdlg.cpp,v $
+ * Revision 1.1  2004/08/03 15:04:59  haraldkipp
  * Another change of everything
  *
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
- *
  */
 
-#include <wx/wx.h>
-#include <wx/treectrl.h>
-#include <wx/docview.h>
+#include <wx/valgen.h>
 
-class CConfigItem;
+#include "ids.h"
+#include "nutconf.h"
+#include "repoptdlg.h"
 
-/*!
- * \brief Configuration view class.
- */
-class CNutConfView:public wxView {
-    DECLARE_DYNAMIC_CLASS(CNutConfView);
-  public:
-    CNutConfView();
-    ~CNutConfView() {
-    };
+IMPLEMENT_CLASS(CRepositoryOptionsDialog, wxPanel)
 
-    bool OnCreate(wxDocument * doc, long flags);
-    void OnDraw(wxDC * dc);
-    void OnUpdate(wxView * sender, wxObject * hint = (wxObject *) NULL);
-    bool OnClose(bool deleteWindow = true);
-    void OnChangeFilename();
+CRepositoryOptionsDialog::CRepositoryOptionsDialog(wxWindow* parent)
+: wxPanel(parent, ID_SETTINGS_REPOSITORY)
+{
+    CSettings *opts = wxGetApp().GetSettings();
 
-    void Refresh(const wxString & macroName);
-    void Refresh(wxTreeItemId h);
+    wxStaticBox *groupPath = new wxStaticBox(this, -1, wxT("Repository File"));
+    wxTextCtrl *entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_repositoryname));
+    wxButton *btnBrowse = new wxButton(this, ID_BROWSE_BUTTON, wxT("&Browse..."), wxDefaultPosition, wxDefaultSize, 0);
 
-    DECLARE_EVENT_TABLE();
+    wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
+    wxSizer *sizerGroup = new wxStaticBoxSizer(groupPath, wxHORIZONTAL);
 
-  protected:
-    wxTreeItemId m_expandedForFind;
-};
+    sizerGroup->Add(entryPath, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+    sizerGroup->Add(btnBrowse, 0, wxALIGN_RIGHT | wxALL, 5);
+    sizerTop->Add(sizerGroup, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
 
+    SetAutoLayout(true);
+    SetSizer(sizerTop);
+}
 
-#endif
+bool CRepositoryOptionsDialog::TransferDataToWindow()
+{
+    wxPanel::TransferDataToWindow();
+
+    return true;
+}
+
+bool CRepositoryOptionsDialog::TransferDataFromWindow()
+{
+    wxPanel::TransferDataFromWindow();
+
+    return true;
+}

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -62,7 +65,7 @@ class CScrolledTreeCtrl:public wxTreeCtrl {
     void OnScroll(wxScrollWinEvent & event);
 
     virtual void SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY,
-                               int noUnitsX, int noUnitsY, int xPos = 0, int yPos = 0, bool noRefresh = FALSE);
+                               int noUnitsX, int noUnitsY, int xPos = 0, int yPos = 0, bool noRefresh = false);
     virtual void GetViewStart(int *x, int *y) const;
     virtual void PrepareDC(wxDC & dc);
     virtual int GetScrollPos(int orient) const;

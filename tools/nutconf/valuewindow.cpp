@@ -39,6 +39,9 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -177,7 +180,7 @@ bool CValueWindow::EndEditing()
         m_editWindow = NULL;
     }
 
-    return TRUE;
+    return true;
 }
 
 void CValueWindow::OnMouseEvent(wxMouseEvent & event)
@@ -189,8 +192,9 @@ void CValueWindow::OnMouseEvent(wxMouseEvent & event)
         if (item.IsOk()) {
             m_treeCtrl->SelectItem(item);
             CConfigItem *configItem = ((CTreeItemData *) m_treeCtrl->GetItemData(item))->GetConfigItem();
-            if (configItem->CanEdit())
+            if (configItem->CanEdit()) {
                 BeginEditing(configItem);
+            }
         }
     } else if (event.RightDown()) {
     }
@@ -208,20 +212,20 @@ bool CValueWindow::BeginEditing(CConfigItem * item)
 
     m_editWindow = item->CreateEditWindow(this);
     if (m_editWindow) {
-        m_editWindow->Show(FALSE);
+        m_editWindow->Show(false);
 
         item->TransferDataToWindow(m_editWindow);
 
         // Position the control
         PositionEditWindow();
 
-        m_editWindow->Show(TRUE);
+        m_editWindow->Show(true);
         m_editWindow->SetFocus();
 
-        return TRUE;
+        return true;
     } else {
         m_configItem = NULL;
-        return FALSE;
+        return false;
     }
 }
 
@@ -252,7 +256,7 @@ bool CConfigItem::TransferDataFromWindow(wxWindow * window)
     wxASSERT(doc != NULL);
 
     if (!doc)
-        return FALSE;
+        return false;
 
     if (window->IsKindOf(CLASSINFO(CTextEditCtrl))) {
         CTextEditCtrl *win = (CTextEditCtrl *) window;
@@ -277,7 +281,7 @@ bool CConfigItem::TransferDataFromWindow(wxWindow * window)
         doc->SetValue(*this, (long) win->GetValue());
     }
 
-    return TRUE;
+    return true;
 }
 
 

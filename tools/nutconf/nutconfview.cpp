@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfview.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -77,6 +80,7 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
 {
     CNutConfDoc *pDoc = (CNutConfDoc *) GetDocument();
     CConfigTree *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
+    int nItem;
 
     wxASSERT(pDoc);
 
@@ -96,56 +100,37 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
 
     switch (hintOp) {
     case nutSelChanged:
-
-        {
-            // Note that we're cheating a bit here, since we're using the tree view
-            // to update another view, instead of having a view per control as in the MFC
-            // version. However, it doesn't seem to be worth the extra machinery.
-            // Update the description window
-            if (selItem) {
-                wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->SetValue(selItem->GetDescription());
-
-                // Update the properties window
-                wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
-            } else {
-                wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->Clear();
-                wxGetApp().GetMainFrame()->GetPropertyListWindow()->ClearAll();
-            }
-
+        if (selItem) {
+            wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->SetValue(selItem->GetDescription());
+            wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
+        } else {
+            wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->Clear();
+            wxGetApp().GetMainFrame()->GetPropertyListWindow()->ClearAll();
         }
         break;
+
     case nutAllSaved:
-
-        {
-            int nItem;
-            for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
-                CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
-                wxTreeItemId treeItem = pItem->GetTreeItem();
-                if (treeItem) {
-                    treeCtrl->SetItemText(treeItem, pItem->GetName());
-                }
+        for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
+            CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
+            wxTreeItemId treeItem = pItem->GetTreeItem();
+            if (treeItem) {
+                treeCtrl->SetItemText(treeItem, pItem->GetName());
             }
-
-            // Update the properties window
-            if (selItem) {
-                wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
-            }
-            // Update the value pane
-            wxGetApp().GetMainFrame()->GetValueWindow()->Refresh();
         }
+        if (selItem) {
+            wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
+        }
+        wxGetApp().GetMainFrame()->GetValueWindow()->Refresh();
         break;
+
     case nutFilenameChanged:
-
-        {
-            // Update the properties window
-            if (selItem) {
-                wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
-            }
+        if (selItem) {
+            wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
         }
         break;
+
     case nutNameFormatChanged:
         {
-            int nItem;
             for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
                 CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
                 wxString strName(pItem->GetName());
@@ -155,22 +140,21 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
             treeCtrl->Refresh();
         }
         break;
+
     case nutIntFormatChanged:
         if (selItem && selItem->GetOptionType() == nutInteger) {
             wxGetApp().GetMainFrame()->GetPropertyListWindow()->SetItem(CPropertyList::nutValue, selItem->StringValue());
         }
         break;
+
     case nutClear:
-        {
-            m_expandedForFind = wxTreeItemId();
+        m_expandedForFind = wxTreeItemId();
+        treeCtrl->DeleteAllItems();
 
-            treeCtrl->DeleteAllItems();
-
-            wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->Clear();
-            wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(NULL);
-            wxGetApp().GetMainFrame()->GetValueWindow()->Refresh();
-            break;
-        }
+        wxGetApp().GetMainFrame()->GetShortDescriptionWindow()->Clear();
+        wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(NULL);
+        wxGetApp().GetMainFrame()->GetValueWindow()->Refresh();
+        break;
 
     case nutValueChanged:
         {
@@ -193,18 +177,20 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
             }
             // Properties window
             if (selItem) {
+                wxGetApp().GetMainFrame()->GetPropertyListWindow()->RefreshValue();
             }
         }
         break;
 
     case nutExternallyChanged:
-        {
-            int nItem;
-            for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
-                CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
-                pItem->UpdateTreeItem(*treeCtrl);
-            }
+        for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
+            CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
+            pItem->UpdateTreeItem(*treeCtrl);
         }
+        if (selItem) {
+            wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(selItem);
+        }
+        wxGetApp().GetMainFrame()->GetValueWindow()->Refresh();
         break;
     default:
         break;                  // not for us, apparently
@@ -218,13 +204,27 @@ bool CNutConfView::OnClose(bool deleteWindow)
     GetDocument()->UpdateAllViews(NULL, &hint);
 
     if (!GetDocument()->Close())
-        return FALSE;
+        return false;
 
-    wxGetApp().GetDocManager()->ActivateView(this, FALSE);
+    wxGetApp().GetDocManager()->ActivateView(this, false);
 
-    Activate(FALSE);
+    Activate(false);
 
     return true;
+}
+
+void CNutConfView::OnChangeFilename()
+{
+    if (wxGetApp().GetTopWindow() && GetDocument()) {
+        wxString docTitle(wxFileNameFromPath(GetDocument()->GetFilename()));
+
+        wxStripExtension(docTitle);
+        GetDocument()->SetTitle(docTitle);
+
+        wxString title = wxT("Nut/OS Configuration - ") + docTitle;
+
+        ((wxFrame*)wxGetApp().GetTopWindow())->SetTitle(title);
+    }
 }
 
 void CNutConfView::Refresh(const wxString & macroName)

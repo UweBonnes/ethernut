@@ -42,11 +42,15 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.2  2004/06/07 16:08:07  haraldkipp
  * Complete redesign based on eCos' configtool
  *
  */
 
+#include "settings.h"
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
@@ -67,6 +71,12 @@ class NutConfApp:public wxApp {
     void Log(const wxString & msg);
     void SetStatusText(const wxString & text, bool clearFailingRulesPane = true);
     bool Launch(const wxString & strFileName, const wxString & strViewer);
+
+    CSettings* GetSettings();
+
+  protected:
+    CSettings* m_settings;
+
 };
 
 

@@ -39,6 +39,9 @@
 
 /*
  * $Log: iconlist.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:25  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -53,7 +56,7 @@
 CIconList::CIconList(wxImageList * imageList)
 {
     m_imageList = imageList;
-    DeleteContents(TRUE);
+    DeleteContents(true);
 }
 
 bool CIconList::AddInfo(const wxString & name, const wxIcon & icon, int state, bool enabled)
@@ -66,7 +69,7 @@ bool CIconList::AddInfo(const wxString & name, const wxIcon & icon, int state, b
         Append(info);
     }
     info->SetIconId(state, enabled, m_imageList->Add(icon));
-    return TRUE;
+    return true;
 }
 
 CIconInfo *CIconList::FindInfo(const wxString & name) const
@@ -93,9 +96,9 @@ bool CIconList::SetIconId(const wxString & name, int state, bool enabled, int ic
 {
     CIconInfo *info = FindInfo(name);
     if (!info)
-        return FALSE;
+        return false;
     info->SetIconId(state, enabled, iconId);
-    return TRUE;
+    return true;
 }
 
 void CIconList::SetImageList(wxImageList * imageList)

@@ -39,6 +39,9 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.2  2004/08/03 15:03:24  haraldkipp
+ * Another change of everything
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -98,7 +101,7 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENT * compo)
         m_value = (long) 0;
         break;
     case nutBool:
-        m_value = (bool) FALSE;
+        m_value = false;
         break;
     }
 }
@@ -126,7 +129,7 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENTOPTION * option)
         m_value = (long) 0;
         break;
     case nutBool:
-        m_value = (bool) FALSE;
+        m_value = false;
         break;
     }
 }
@@ -154,15 +157,6 @@ void CConfigItem::SetUIHint(nutUIHint hint)
 nutUIHint CConfigItem::GetUIHint() const
 {
     return m_hint;
-}
-
-bool CConfigItem::IsActive() const
-{
-    if (m_option && m_option->nco_active_if) {
-        CNutConfDoc *pDoc = wxGetApp().GetNutConfDoc();
-        return pDoc->IsOptionActive(m_option->nco_active_if);
-    }
-    return true;
 }
 
 void CConfigItem::SetValue(const wxVariant & value)
@@ -226,13 +220,13 @@ bool CConfigItem::UpdateTreeItem(CConfigTree & treeCtrl)
                 iconName = wxT("Radiobox");
             else
                 iconName = wxT("Checkbox");
-            iconState = (IsEnabled()? 0 : 1);
+            iconState = (IsActive()? 0 : 1);
         }
         break;
     }
 
     if (!iconName.IsEmpty()) {
-        int iconId = treeCtrl.GetIconDB().GetIconId(iconName, iconState, IsActive());
+        int iconId = treeCtrl.GetIconDB().GetIconId(iconName, iconState, IsEnabled());
         treeCtrl.SetItemImage(m_itemId, iconId, wxTreeItemIcon_Normal);
         treeCtrl.SetItemImage(m_itemId, iconId, wxTreeItemIcon_Selected);
     }
@@ -291,8 +285,8 @@ void CConfigItem::OnIconLeftDown(CConfigTree & treeCtrl)
     switch (GetOptionFlavor()) {
     case nutFlavorBool:
     case nutFlavorBoolData:
-        if (IsActive()) {
-            wxGetApp().GetNutConfDoc()->SetEnabled(*this, !IsEnabled());
+        if (IsEnabled()) {
+            wxGetApp().GetNutConfDoc()->SetActive(*this, !IsActive());
         }
     default:
         break;
@@ -305,14 +299,17 @@ void CConfigItem::OnIconLeftDown(CConfigTree & treeCtrl)
 bool CConfigItem::ViewHeaderFile()
 {
     bool rc = false;
-    const wxString strFile(GetFilename());
+    wxString strFile(GetFilename());
 
     if (!strFile.IsEmpty()) {
         CNutConfDoc *pDoc = wxGetApp().GetNutConfDoc();
         if (pDoc->GetBuildTree().IsEmpty()) {
             wxMessageBox(wxT("Cannot display header file until configuration is saved"));
         } else {
-            rc = wxGetApp().Launch(strFile, "notepad.exe");
+            strFile.Prepend(wxT("/"));
+            strFile.Prepend(pDoc->GetBuildTree());
+            //rc = wxGetApp().Launch(strFile, "notepad.exe");
+            rc = wxGetApp().Launch(strFile, "");
         }
     }
     return rc;
@@ -416,6 +413,9 @@ wxString CConfigItem::GetDisplayValue() const
     return str;
 }
 
+/*!
+ * \brief Return configuration item as a string.
+ */
 wxString CConfigItem::StringValue() const
 {
     if (m_option) {
@@ -461,47 +461,75 @@ int CConfigItem::GetEnumStrings(wxArrayString & arEnumStrings) const
     return arEnumStrings.GetCount();
 }
 
+/*!
+ * \brief Check if this is a boolean item.
+ */
 bool CConfigItem::HasBool() const
 {
     if (m_option && m_option->nco_flavor) {
-        if (stricmp(m_option->nco_flavor, "boolean") == 0) {
+        if (stricmp(m_option->nco_flavor, "boolean") == 0 || stricmp(m_option->nco_flavor, "booldata") == 0) {
             return true;
         }
     }
     return false;
 }
 
+/*!
+ * \brief Check if this item is enabled.
+ *
+ * An item is disabled, if it requires other items being activated.
+ */
 bool CConfigItem::IsEnabled() const
 {
-    if (m_option && m_option->nco_value) {
-        return true;
+    if (m_option) {
+        return m_option->nco_enabled != 0;
+    }
+    if (m_compo) {
+        return m_compo->nc_enabled != 0;
     }
     return false;
 }
 
-void CConfigItem::SetEnabled(bool ena)
+/*!
+ * \brief Check if this item is active.
+ *
+ * An option is activated by the user or automatically by active_if.
+ * Only options may become incative, components are always active.
+ */
+bool CConfigItem::IsActive() const
 {
     if (m_option) {
-        if (m_option->nco_value) {
-            free(m_option->nco_value);
-            m_option->nco_value = NULL;
+        if(m_option->nco_active == 0) {
+            if(m_option->nco_active_if) {
+                CNutConfDoc *pDoc = wxGetApp().GetNutConfDoc();
+                m_option->nco_active = pDoc->IsOptionActive(m_option->nco_active_if);
+            }
         }
-        if (ena) {
-            m_option->nco_value = strdup("");
-        }
+        return m_option->nco_active != 0;
+    }
+    return true;
+}
+
+/*!
+ * \brief Set boolean value of this item.
+ */
+void CConfigItem::SetActive(bool ena)
+{
+    if (m_option) {
+        m_option->nco_active = ena;
     }
 }
 
 bool CConfigItem::CanEdit() const
 {
-    if (!IsActive())
-        return FALSE;
+    if (!IsEnabled())
+        return false;
 
     if (GetConfigType() != nutOption)
-        return FALSE;
+        return false;
 
     if (GetOptionFlavor() != nutFlavorData && GetOptionFlavor() != nutFlavorBoolData)
-        return FALSE;
+        return false;
 
     return true;
 }
