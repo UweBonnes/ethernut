@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/12/16 08:40:35  haraldkipp
+ * Late increment fixes ICCAVR bug.
+ *
  * Revision 1.3  2004/03/18 14:05:20  haraldkipp
  * Comments updated
  *
@@ -192,8 +195,10 @@ static void Rx0Complete(void *arg)
     AHDLCDCB *dcb = arg;
 
     dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inp(UDR);
-    if (dcb->dcb_rd_idx == dcb->dcb_rx_idx++)
+    if (dcb->dcb_rd_idx == dcb->dcb_rx_idx)
         NutEventPostAsync(&dcb->dcb_rx_rdy);
+    /* Late increment fixes ICCAVR bug on volatile variables. */
+    dcb->dcb_rx_idx++;
 }
 
 #ifdef __AVR_ATmega128__
@@ -205,8 +210,10 @@ static void Rx1Complete(void *arg)
     AHDLCDCB *dcb = arg;
 
     dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inp(UDR1);
-    if (dcb->dcb_rd_idx == dcb->dcb_rx_idx++)
+    if (dcb->dcb_rd_idx == dcb->dcb_rx_idx)
         NutEventPostAsync(&dcb->dcb_rx_rdy);
+    /* Late increment fixes ICCAVR bug on volatile variables. */
+    dcb->dcb_rx_idx++;
 }
 #endif                          /* __AVR_ATmega128__ */
 

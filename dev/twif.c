@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/12/16 08:40:35  haraldkipp
+ * Late increment fixes ICCAVR bug.
+ *
  * Revision 1.6  2004/11/08 18:12:59  haraldkipp
  * Soooo many fixes, but I'm tired...really.
  *
@@ -165,7 +168,9 @@ static void TwInterrupt(void *arg)
          * register.
          */
         if (tw_mt_idx < tw_mt_len) {
-            outb(TWDR, tw_mt_buf[tw_mt_idx++]);
+            outb(TWDR, tw_mt_buf[tw_mt_idx]);
+            /* Late increment fixes ICCAVR bug. Thanks to Andreas Siebert and Michael Fischer. */
+            tw_mt_idx++;
             outb(TWCR, TWGO | (twcr & _BV(TWEA)));
             break;
         }
@@ -233,7 +238,9 @@ static void TwInterrupt(void *arg)
         /*
          * Store the data byte in the master receive buffer.
          */
-        tw_mr_buf[tw_mr_idx++] = inb(TWDR);
+        tw_mr_buf[tw_mr_idx] = inb(TWDR);
+        /* Late increment fixes ICCAVR bug. Thanks to Andreas Siebert and Michael Fischer. */
+        tw_mr_idx++;
 
     /*
      * 0x40: SLA+R has been transmitted and ACK has been received.
@@ -257,7 +264,9 @@ static void TwInterrupt(void *arg)
         /*
          * Store the last data byte.
          */
-        tw_mr_buf[tw_mr_idx++] = inb(TWDR);
+        tw_mr_buf[tw_mr_idx] = inb(TWDR);
+        /* Late increment fixes ICCAVR bug. Thanks to Andreas Siebert and Michael Fischer. */
+        tw_mr_idx++;
         tw_mr_siz = 0;
 
         /* Wake up the application. */
@@ -323,7 +332,9 @@ static void TwInterrupt(void *arg)
          * If the receive buffer isn't filled up, store data byte.
          */
         if (tw_sr_idx < tw_sr_siz) {
-            tw_sr_buf[tw_sr_idx++] = inb(TWDR);
+            tw_sr_buf[tw_sr_idx] = inb(TWDR);
+            /* Late increment fixes ICCAVR bug. Thanks to Andreas Siebert and Michael Fischer. */
+            tw_sr_idx++;
         }
         else {
             tw_sr_siz = 0;
@@ -410,7 +421,9 @@ static void TwInterrupt(void *arg)
         if (tw_st_idx < tw_st_len) {
             outb(TWDR, tw_st_buf[tw_st_idx]);
             /* Do not set acknowledge on the last data byte. */
-            if (++tw_st_idx < tw_st_len) {
+            /* Early increment fixes ICCAVR bug. Thanks to Andreas Siebert and Michael Fischer. */
+            ++tw_st_idx;
+            if (tw_st_idx < tw_st_len) {
                 outb(TWCR, TWGO | _BV(TWEA));
             }
             else {
@@ -489,6 +502,9 @@ static void TwInterrupt(void *arg)
  *               parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
+ *
+ * \bug Joel Dotreppe reported, that TwMasterTransact() doesn't work when
+ *      passing 0 for txdata and txlen. Though, I'm not able to verify this.
  */
 int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
 {
@@ -732,7 +748,7 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
         twcr = inb(TWCR);
         twsr = inb(TWSR);
         /* Transmit start condition, if a master transfer is waiting. */
-        if (tw_mt_len) {
+        if (tw_mt_len || tw_mr_siz) {
             outb(TWCR, TWGO | _BV(TWSTA));
         }
         /* Otherwise enter idle state. */

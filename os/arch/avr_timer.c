@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/12/16 08:40:35  haraldkipp
+ * Late increment fixes ICCAVR bug.
+ *
  * Revision 1.1  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -97,7 +100,8 @@ static void NutTimer0Intr(void *arg)
 #ifdef NUT_CPU_FREQ
 
     millis++;
-    if (ms1++ >= 999) {
+    ms1++; /* See comment on volatiles below. */
+    if (ms1 >= 1000) {
         ms1 = 0;
         seconds++;
     }
@@ -112,8 +116,19 @@ static void NutTimer0Intr(void *arg)
      * Update RTC. We do a post increment here, because
      * of an ImageCraft bug with volatiles. Thanks to
      * Michael Fischer.
+     *
+     * Later comment: Now I'm confused. The ICCAVR bug was reported on
+     * pre-increments only. But later Michael Fischer sent a fix for
+     * twi, where all increments of volatile variables had been moved
+     * out of the comparision. Checking all of the code again for these
+     * increments I stumbled over this one, which had been fixed
+     * previously by changing the pre-increment to a post-increment.
+     *
+     * To play save, I'll follow Michael's advice and isolate all
+     * increments of volatile variables from expressions.
      */
-    if (ms62_5++ >= 15) {
+    ms62_5++;
+    if (ms62_5 >= 16) {
         ms62_5 = 0;
         seconds++;
     }

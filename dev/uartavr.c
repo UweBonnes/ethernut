@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/12/16 08:40:35  haraldkipp
+ * Late increment fixes ICCAVR bug.
+ *
  * Revision 1.5  2004/05/24 20:15:50  drsung
  * Added function UartAvrSize to return number of chars in input buffer.
  *
@@ -132,10 +135,12 @@ static void RxComplete(void *arg)
 #endif
         ifs->if_rx_buf[ifs->if_rx_idx] = inp(UDR);
 
-    if (ifs->if_rd_idx == ifs->if_rx_idx++) {
+    if (ifs->if_rd_idx == ifs->if_rx_idx) {
         dcb = dev->dev_dcb;
         NutEventPostAsync(&dcb->dcb_rx_rdy);
     }
+    /* Late increment fixes ICCAVR bug on volatile variables. */
+    ifs->if_rx_idx++;
 }
 
 /*!
