@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Copyright (c) 1990, 1993
  *      The Regents of the University of California.  All rights reserved.
@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2004/11/24 15:24:07  haraldkipp
+ * Floating point configuration works again.
+ *
  * Revision 1.9  2004/08/18 16:30:05  haraldkipp
  * Compile error on non-Harvard architecture fixed
  *
@@ -70,6 +73,8 @@
  * *** empty log message ***
  *
  */
+
+#include <cfg/crt.h>
 
 #include <string.h>
 #include "nut_io.h"

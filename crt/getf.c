@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/11/24 15:24:07  haraldkipp
+ * Floating point configuration works again.
+ *
  * Revision 1.2  2004/02/28 20:14:38  drsung
  * Merge from nut-3_4-release b/c of bugfixes.
  *
@@ -55,6 +58,8 @@
  * *** empty log message ***
  *
  */
+
+#include <cfg/crt.h>
 
 #include "nut_io.h"
 
