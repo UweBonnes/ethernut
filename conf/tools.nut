@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.3  2004/09/07 19:12:57  haraldkipp
+-- Linker script support added
+--
 -- Revision 1.2  2004/08/18 16:05:13  haraldkipp
 -- Use consistent directory structure
 --
@@ -61,9 +64,10 @@ nuttools =
                           "Nut/OS provides all required C standard functions."..
                           "Make sure you have deselected all other compilers.",
             provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_NOLIBC" },
-            macro = "ARM_GCC",
+            macro = "ARM_GCC_NOLIBC",
             flavor = "boolean",
-            file = "include/cfg/arch.h"
+            file = "include/cfg/arch.h",
+            makedefs = { "ADDLIBS = -lnutc" }
         },
         {
             brief = "GCC for AVR",
@@ -102,6 +106,21 @@ nuttools =
                 brief = "Include debug info",
                 flavor = "booldata",
                 macro = "GCC_DEBUG"
+            },
+            {
+                macro = "ARM_LDSCRIPT",
+                brief = "ARM Linker Script",
+                description = "s3c4510b-ram Samsung S3C4510B, code in RAM\n"..
+                              "eb40a_ram Atmel AT91R40008, code in RAM at 0x100\n",
+                requires = { "TOOL_CC_ARM", "TOOL_GCC" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = arm_ld_choice,
+                makedefs = 
+                { 
+                    "LDNAME", 
+                    "LDSCRIPT=$(top_srcdir)/arch/arm/ldscripts/$(LDNAME).ld" 
+                }
             },
         }
     },
