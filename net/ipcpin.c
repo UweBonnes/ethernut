@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/01/30 11:36:52  haraldkipp
+ * Memory hole fixed
+ *
  * Revision 1.4  2003/12/18 20:44:11  drsung
  * Bug fix in IpcpRxConfReq. Thanks to Michel Hendriks.
  *
@@ -138,39 +141,39 @@ void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
     xcpl = nb->nb_ap.sz;
     xcpr = nb->nb_ap.vp;
     xcps = 0;
-    while(xcpl >= 2) {
-        len  = xcpo->xcpo_len;
-        if(len > xcpl)
+    while (xcpl >= 2) {
+        len = xcpo->xcpo_len;
+        if (len > xcpl)
             len = xcpl;
         else {
-	    switch (xcpo->xcpo_type) {
-	    case IPCP_COMPRESSTYPE:
+            switch (xcpo->xcpo_type) {
+            case IPCP_COMPRESSTYPE:
                 break;
-	    case IPCP_ADDR:
-	    case IPCP_MS_DNS1:
-	    case IPCP_MS_DNS2:
-	        if (xcpo->xcpo_len == 6)
+            case IPCP_ADDR:
+            case IPCP_MS_DNS1:
+            case IPCP_MS_DNS2:
+                if (xcpo->xcpo_len == 6)
                     len = 0;
-	        break;
+                break;
             }
-	}
+        }
 
         if (len) {
-            if(xcpr != xcpo) {
+            if (xcpr != xcpo) {
                 xcpr->xcpo_type = xcpo->xcpo_type;
                 xcpr->xcpo_len = len;
-                for(i = 0; i < len - 2; i++)
+                for (i = 0; i < len - 2; i++)
                     /* bug fix by Michel Hendriks. Thanks! */
                     xcpr->xcpo_.uc[i] = xcpo->xcpo_.uc[i];
             }
-            xcpr = (XCPOPT *)((char *)xcpr + len);
+            xcpr = (XCPOPT *) ((char *) xcpr + len);
             xcps += len;
         }
         xcpl -= xcpo->xcpo_len;
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
     }
 
-    if(xcps) {
+    if (xcps) {
         nb->nb_ap.sz = xcps;
         rc = XCP_CONFREJ;
     }
@@ -184,41 +187,41 @@ void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
         xcpr = nb->nb_ap.vp;
         xcps = 0;
         len = 0;
-        while(xcpl >= 2) {
-	    switch (xcpo->xcpo_type) {
-	    case IPCP_ADDR:
-                if(xcpo->xcpo_.ul)
+        while (xcpl >= 2) {
+            switch (xcpo->xcpo_type) {
+            case IPCP_ADDR:
+                if (xcpo->xcpo_.ul)
                     dcb->dcb_remote_ip = xcpo->xcpo_.ul;
-                else if(dcb->dcb_remote_ip == 0)
+                else if (dcb->dcb_remote_ip == 0)
                     len = xcpo->xcpo_len;
                 break;
-	    case IPCP_COMPRESSTYPE:
+            case IPCP_COMPRESSTYPE:
                 len = 6;
                 xcpr->xcpo_.ul = 0;
                 break;
-	    case IPCP_MS_DNS1:
-                if(xcpo->xcpo_.ul)
+            case IPCP_MS_DNS1:
+                if (xcpo->xcpo_.ul)
                     dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
                 break;
-	    case IPCP_MS_DNS2:
-                if(xcpo->xcpo_.ul)
+            case IPCP_MS_DNS2:
+                if (xcpo->xcpo_.ul)
                     dcb->dcb_ip_dns2 = xcpo->xcpo_.ul;
                 break;
-	    }
+            }
 
             if (len) {
-                if(xcpr != xcpo) {
+                if (xcpr != xcpo) {
                     xcpr->xcpo_type = xcpo->xcpo_type;
                     xcpr->xcpo_len = len;
                 }
-                xcpr = (XCPOPT *)((char *)xcpr + len);
+                xcpr = (XCPOPT *) ((char *) xcpr + len);
                 xcps += len;
                 len = 0;
             }
             xcpl -= xcpo->xcpo_len;
-            xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+            xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
         }
-        if(xcps) {
+        if (xcps) {
             nb->nb_ap.sz = xcps;
             rc = XCP_CONFNAK;
         }
@@ -233,8 +236,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
         } else
             dcb->dcb_ipcp_state = PPPS_ACKSENT;
         dcb->dcb_ipcp_naks = 0;
-    } 
-    else if (dcb->dcb_ipcp_state != PPPS_ACKRCVD)
+    } else if (dcb->dcb_ipcp_state != PPPS_ACKRCVD)
         dcb->dcb_ipcp_state = PPPS_REQSENT;
 }
 
@@ -291,27 +293,27 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     xcpo = nb->nb_ap.vp;
     xcpl = nb->nb_ap.sz;
-    while(xcpl >= 2) {
+    while (xcpl >= 2) {
         switch (xcpo->xcpo_type) {
-	case IPCP_ADDR:
-            if(xcpo->xcpo_.ul)
+        case IPCP_ADDR:
+            if (xcpo->xcpo_.ul)
                 dcb->dcb_local_ip = xcpo->xcpo_.ul;
             break;
-	case IPCP_COMPRESSTYPE:
+        case IPCP_COMPRESSTYPE:
             break;
-	case IPCP_MS_DNS1:
-            if(xcpo->xcpo_.ul)
+        case IPCP_MS_DNS1:
+            if (xcpo->xcpo_.ul)
                 dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
             break;
-	case IPCP_MS_DNS2:
+        case IPCP_MS_DNS2:
             /* Fixed secondary DNS bug, thanks to Tarmo Fimberg
                and Jelle Martijn Kok. */
-            if(xcpo->xcpo_.ul)
+            if (xcpo->xcpo_.ul)
                 dcb->dcb_ip_dns2 = xcpo->xcpo_.ul;
             break;
-	}
+        }
         xcpl -= xcpo->xcpo_len;
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
     }
 
     dcb->dcb_acked = 1;
@@ -331,6 +333,7 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rej
      * Ignore, if we are not expecting this id.
      */
     if (id != dcb->dcb_reqid || dcb->dcb_acked) {
+        NutNetBufFree(nb);
         return;
     }
 
@@ -359,29 +362,29 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rej
 
     xcpo = nb->nb_ap.vp;
     xcpl = nb->nb_ap.sz;
-    while(xcpl >= 2) {
+    while (xcpl >= 2) {
         switch (xcpo->xcpo_type) {
-	case IPCP_ADDR:
-            if(xcpo->xcpo_.ul)
+        case IPCP_ADDR:
+            if (xcpo->xcpo_.ul)
                 dcb->dcb_local_ip = xcpo->xcpo_.ul;
             break;
-	case IPCP_COMPRESSTYPE:
+        case IPCP_COMPRESSTYPE:
             break;
-	case IPCP_MS_DNS1:
-            if(rejected)
+        case IPCP_MS_DNS1:
+            if (rejected)
                 dcb->dcb_rejects |= REJ_IPCP_DNS1;
-            else if(xcpo->xcpo_.ul)
+            else if (xcpo->xcpo_.ul)
                 dcb->dcb_ip_dns1 = xcpo->xcpo_.ul;
             break;
-	case IPCP_MS_DNS2:
-            if(rejected)
+        case IPCP_MS_DNS2:
+            if (rejected)
                 dcb->dcb_rejects |= REJ_IPCP_DNS2;
-            else if(xcpo->xcpo_.ul)
+            else if (xcpo->xcpo_.ul)
                 dcb->dcb_ip_dns2 = xcpo->xcpo_.ul;
             break;
-	}
+        }
         xcpl -= xcpo->xcpo_len;
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
     }
     NutNetBufFree(nb);
 
@@ -461,7 +464,7 @@ void IpcpRxTermAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
  *
  * Treat this as a catastrophic error (RXJ-).
  */
-void IpcpRxProtRej(NUTDEVICE *dev)
+void IpcpRxProtRej(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -524,12 +527,12 @@ void NutIpcpInput(NUTDEVICE * dev, NETBUF * nb)
     /*
      * Discard packets with illegal lengths.
      */
-    if(nb->nb_nw.sz < sizeof(XCPHDR)) {
+    if (nb->nb_nw.sz < sizeof(XCPHDR)) {
         NutNetBufFree(nb);
         return;
     }
     xch = (XCPHDR *) nb->nb_nw.vp;
-    if((len = htons(xch->xch_len)) < sizeof(XCPHDR) || len > nb->nb_nw.sz) {
+    if ((len = htons(xch->xch_len)) < sizeof(XCPHDR) || len > nb->nb_nw.sz) {
         NutNetBufFree(nb);
         return;
     }
@@ -590,4 +593,3 @@ void NutIpcpInput(NUTDEVICE * dev, NETBUF * nb)
 }
 
 /*@}*/
-
