@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.6  2004/09/25 15:42:09  drsung
+-- Removed configuration for separate interrupt stack,
+-- it's now in conf/dev/dev.nut
+--
 -- Revision 1.5  2004/09/01 14:07:15  haraldkipp
 -- Cleaned up memory configuration
 --
@@ -181,16 +185,6 @@ nutos =
         brief = "Multithreading",
         provides = { "NUT_THREAD" },
         sources = { "thread.c" },
-        options = 
-        {
-            {
-                macro = "USE_IRQ_STACK",
-                brief = "Seperate IRQ stack",
-                description = "If separate IRQ stack is enabled", 
-                flavor = "boolean",
-                file = "include/cfg/os.h"
-            }
-        }
     },
 
     --
