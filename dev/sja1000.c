@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/09/17 14:31:37  olereinhardt
+ * Compile only if __GNUC__ defined
+ *
  * Revision 1.3  2004/06/08 14:50:25  olereinhardt
  * Removed receive thread and moved input data handling into irq handler. Much faster now on reception.
  *
@@ -720,12 +723,6 @@ int SJAInit(NUTDEVICE * dev)
     return 0;
 }
 
-#else
-void keep_icc_happy(void)
-{
-}
-
-#endif
 
 /*!
  * \brief Interface information structure.
@@ -776,4 +773,12 @@ NUTDEVICE devSJA1000 = {
     0,                          /*!< Close a device or file. */
     0                           /*!< Request file size. */
 };
+
+#else
+void keep_icc_happy(void)
+{
+}
+
+#endif
+
 /*@}*/

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/09/17 14:31:06  olereinhardt
+ * Compile only if __GNUC__ defined
+ *
  * Revision 1.5  2004/08/26 14:00:04  olereinhardt
  * Fixed cursor positioning for different devices
  *
@@ -59,6 +62,8 @@
  *
  */
 
+/* Not ported. */
+#ifdef __GNUC__
 
 #include <stdlib.h>
 #include <string.h>
@@ -275,5 +280,13 @@ NUTDEVICE devLcdBus = {
     TermClose,
     0
 };
+
+
+#else
+void keep_icc_happy(void)
+{
+}
+
+#endif
 
 /*@}*/
