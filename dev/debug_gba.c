@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/11/08 18:11:49  haraldkipp
+ * Support for carriage return added.
+ *
  * Revision 1.1  2004/10/03 18:39:12  haraldkipp
  * GBA debug output on screen
  *
@@ -228,7 +231,10 @@ static void DebugPut(char ch)
     u_short *vid = (u_short *)(VIDRAM_BASE + 0x4000);
     u_short pos;
 
-    if (pos_x == LCD_COLS || ch == '\n') {
+    if (ch == '\r') {
+        pos_x = 0;
+    }
+    else if (pos_x == LCD_COLS || ch == '\n') {
         pos_x = 0;
         pos_y++;
         if ((pos_y - pos_vofs) == LCD_ROWS) {
