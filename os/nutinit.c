@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/02/18 13:51:06  drsung
+ * Changed memory calculations to use u_short. Makes more sense than using signed integers, especially on hardware with more than 32KB static RAM...
+ *
  * Revision 1.4  2003/12/15 19:30:19  haraldkipp
  * Thread termination support
  *
@@ -187,7 +190,7 @@ void NutInit(void)
 
         /* Then add the remaining RAM to heap
          */
-        if ((int) NUTRAMEND - (int) (&__heap_start) > 384)
+        if ((u_short) NUTRAMEND - (u_short) (&__heap_start) > 384)
             NutHeapAdd(&__heap_start, (u_short) NUTRAMEND - 256 - (u_short) (&__heap_start));
     } else {
         /* No external RAM, so disable external memory interface to use the port pins
@@ -197,7 +200,7 @@ void NutInit(void)
 
         /* Add the remaining internal RAM to heap
          */
-        if ((int) RAMEND - (int) (&__heap_start) > 384)
+        if ((u_short) RAMEND - (u_short) (&__heap_start) > 384)
             NutHeapAdd(&__heap_start, (u_short) RAMEND - 256 - (u_short) (&__heap_start));
     };
     /*

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/02/18 13:51:06  drsung
+ * Changed memory calculations to use u_short. Makes more sense than using signed integers, especially on hardware with more than 32KB static RAM...
+ *
  * Revision 1.3  2004/01/04 19:24:21  drsung
  * Thread termination support
  *
@@ -178,7 +181,7 @@ int main(void)
 
     outp(BV(SRE) | BV(SRW), MCUCR);
 
-    if ((short) RAMEND - (short) (&__heap_start) > 384)
+    if ((u_short) RAMEND - (u_short) (&__heap_start) > 384)
         NutHeapAdd(&__heap_start,
                    (u_short) RAMEND - 256 - (u_short) (&__heap_start));
 
