@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.113 2004/09/10 10:38:00 haraldkipp Exp $
+$Id: ChangeLog,v 1.114 2004/09/10 17:18:19 haraldkipp Exp $
 
 2004-09-10  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -23,6 +23,12 @@ $Id: ChangeLog,v 1.113 2004/09/10 10:38:00 haraldkipp Exp $
 	configuration broken. Temporarly removed.
 
 	* dev/nicrtl.c: ICCAVR compile problems fixed.
+
+	* Makedefs.avr-gcc, Makefile, app/Makedefs.avr-gcc,
+	crt/Makefile, dev/Makefile, fs/Makefile, net/Makefile,
+	os/Makefile, pro/Makefile: Old method of building the
+	system within the source dir works again for AVR. We 
+	keep this as a backup method.
 
 
 2004-09-08  Harald Kipp  <harald.kipp@egnite.de>

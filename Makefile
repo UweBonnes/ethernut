@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2004/09/10 17:18:25  haraldkipp
+# Building inside source tree is working again
+#
 # Revision 1.3  2004/04/14 18:07:51  freckle
 # Target distclean deletes: include/stdio_orig.h and include/sys/types_orig.h
 #
@@ -81,10 +84,6 @@
 # First check in
 #
 #
-
-top_srcdir = .
-
-include UserConf.mk
 
 all:
 ifneq (, $(findstring h8300, $(ARCH)))

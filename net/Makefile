@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.6  2004/09/10 17:18:29  haraldkipp
+# Building inside source tree is working again
+#
 # Revision 1.5  2004/04/07 16:28:23  freckle
 # Target install: use ranlib only for arch *nix emulation (ranlib is required
 # on mac os x)
@@ -53,7 +56,10 @@
 PROJ = libnutnet
 
 top_srcdir = ..
+top_blddir = ..
 
+LIBDIR = $(top_blddir)/lib
+include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
 SRC1 =  tcpsock.c tcpsm.c tcpin.c tcpout.c tcputil.c \

@@ -32,10 +32,30 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/09/10 17:18:29  haraldkipp
+# Building inside source tree is working again
+#
 # Revision 1.1  2004/09/10 10:23:33  haraldkipp
 # Replaces .gcc
 #
 #
+
+ifeq ($(top_srcdir),)
+top_srcdir = ../..
+endif
+
+ifeq ($(top_blddir),)
+top_blddir = ../..
+endif
+
+ifeq ($(top_appdir),)
+top_appdir = ../..
+endif
+
+ifeq ($(MCU),)
+include $(top_srcdir)/UserConf.mk
+LIBDIR = $(top_blddir)/lib
+endif
 
 include $(top_srcdir)/Makedefs.avr-gcc
 

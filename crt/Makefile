@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/09/10 17:18:29  haraldkipp
+# Building inside source tree is working again
+#
 # Revision 1.6  2004/05/24 20:26:45  drsung
 # Added function kbhit(). Return nonzero if stdin has at least one char
 # in input buffer. Uses _filelength to get the file size.
@@ -63,7 +66,10 @@
 PROJ = libnutcrt
 
 top_srcdir = ..
+top_blddir = ..
 
+LIBDIR = $(top_blddir)/lib
+include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCC =  clrerr.c fclose.c fcloseall.c fdopen.c feof.c ferror.c fflush.c \

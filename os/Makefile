@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2004/09/10 17:18:29  haraldkipp
+# Building inside source tree is working again
+#
 # Revision 1.8  2004/05/18 10:23:41  haraldkipp
 # Typo corrected
 #
@@ -99,8 +102,11 @@
 PROJ = libnutos
 
 top_srcdir = ..
+top_blddir = ..
 
+include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
+LIBDIR = $(top_blddir)/lib
 
 SRC1 = 	nutinit.c
 SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
