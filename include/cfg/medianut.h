@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:04  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:42:28  haraldkipp
+ * Infrared remote control added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:04  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.4  2003/05/06 18:39:54  harald
  * Cleanup
@@ -131,6 +134,10 @@
 #define LCD_LIGHT_DDR   DDRB    /*!< Data direction register of \ref LCD_LIGHT_BIT. */
 #define LCD_LIGHT_BIT   6       /*!< \brief LCD output to switch backlight. */
 
+#define IR_SIGNAL_PORT  PORTE   /*!< Port output register of \ref IR_SIGNAL_BIT. */
+#define IR_SIGNAL_PIN   PINE    /*!< Port input register of \ref IR_SIGNAL_BIT. */
+#define IR_SIGNAL_DDR   DDRE    /*!< Data direction register of \ref IR_SIGNAL_BIT. */
+#define IR_SIGNAL_BIT   4       /*!< \brief Infrared decoder signal bit. */
 
 /*@}*/
 
