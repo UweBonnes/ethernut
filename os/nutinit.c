@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/12/05 22:39:46  drsung
+ * New external RAM handling
+ *
  * Revision 1.2  2003/09/29 16:35:25  haraldkipp
  * Replaced XRAMEND by NUTRAMEND
  *
@@ -90,6 +93,17 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 extern void main(void *);
 #endif
 
+#ifdef __GNUC__
+static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
+void NutInitXRAM(void)
+{
+    /* At the very beginning enable extended memory interface.
+     */
+    MCUCR = _BV(SRE) | _BV(SRW);
+}
+
+#endif
+
 /*!
  * \addtogroup xgNutInit
  */
@@ -141,25 +155,44 @@ void NutInit(void)
     outp(BV(RXEN) | BV(TXEN), UCR);
 #endif
 
+#ifndef __GNUC__
+// FIXME: move this line to an appropriate initialization section of ICCAVR (os)
+    outp(BV(SRE) | BV(SRW), MCUCR);
+#endif
+
+    /* First check, whether external RAM is available
+     */
+    *(NUTRAMEND - 1) = 0x55;
+    *NUTRAMEND = 0xAA;
+    if (*(NUTRAMEND - 1) == 0x55 && *NUTRAMEND == 0xAA) {
+        /* If we have external RAM, initialize stack pointer to
+         *  end of external RAM to avoid overwriting .data and .bss section
+         */
+        SP = (u_short) NUTRAMEND;
+
+        /* Then add the remaining RAM to heap
+         */
+        if ((int) NUTRAMEND - (int) (&__heap_start) > 384)
+            NutHeapAdd(&__heap_start, (u_short) NUTRAMEND - 256 - (u_short) (&__heap_start));
+    } else {
+        /* No external RAM, so disable external memory interface to use the port pins
+           for normal operation
+         */
+        MCUCR = 0x00;
+
+        /* Add the remaining internal RAM to heap
+         */
+        if ((int) RAMEND - (int) (&__heap_start) > 384)
+            NutHeapAdd(&__heap_start, (u_short) RAMEND - 256 - (u_short) (&__heap_start));
+    };
     /*
      * Read eeprom configuration.
      */
     if (NutLoadConfig())
         NutSaveConfig();
 
-    outp(BV(SRE) | BV(SRW), MCUCR);
-
-    if ((int) RAMEND - (int) (&__bss_end) > 384) {
-        NutHeapAdd(&__bss_end, (u_short) RAMEND - 256 - (u_short) (&__bss_end));
-
-        *(NUTRAMEND - 1) = 0x55;
-        *NUTRAMEND = 0xAA;
-        if (*(NUTRAMEND - 1) == 0x55 && *NUTRAMEND == 0xAA)
-            NutHeapAdd((void *) (RAMEND + 1), (u_short) NUTRAMEND - RAMEND);
-    }
-    else if ((int) NUTRAMEND - (int) (&__bss_end) > 384) 
-        NutHeapAdd(&__bss_end, (u_short) NUTRAMEND - 256 - (u_short) (&__bss_end));
-
+    /* Create idle thread
+     */
     NutThreadCreate("idle", NutIdle, 0, 384);
 }
 
