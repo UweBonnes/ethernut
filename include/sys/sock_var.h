@@ -63,8 +63,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:22  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:32:12  haraldkipp
+ * Faster TCP transfers by changing receive buffer
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:22  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.10  2003/02/04 18:00:53  harald
  * Version 3 released
@@ -175,7 +178,8 @@ struct tcp_socket {
     u_short so_rx_win;      /*!< \brief Local receive window. */
     u_short so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
     u_short so_rx_bsz;      /*!< \brief Receive buffer size. */
-    u_char  *so_rx_buf;     /*!< \brief Data waiting to be read by application. */
+    u_short so_rd_cnt;      /*!< \brief Number of bytes read from buffer top. */
+    NETBUF  *so_rx_buf;     /*!< \brief Data waiting to be read by application. */
     HANDLE  so_rx_tq;       /*!< \brief Threads waiting for received data. */
     NETBUF  *so_rx_nbq;     /*!< \brief Network buffers received in advance. */
 
