@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/09/08 10:53:25  haraldkipp
+ * os/timer.c
+ *
  * Revision 1.7  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -98,6 +101,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <dev/irqreg.h>
 
 #include <sys/types.h>

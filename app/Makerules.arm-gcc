@@ -32,21 +32,24 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2004/09/08 10:53:24  haraldkipp
+# os/timer.c
+#
 # Revision 1.1  2004/03/16 16:48:26  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
 #
 
-include $(top_srcdir)/Makerules
+include $(top_srcdir)/Makerules.arm-gcc
 
 %elf: $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) $(ADDLIBS) -o $@
 
 %cof: %elf
 	$(ELFCOF) -O coff-ext-avr $< $@
 
 %hex: %elf
-	$(BIN) -O srec $< $@
+	$(BIN) -O ihex $< $@
 
 %rom: %elf
 	$(BIN) -O srec $< $@
