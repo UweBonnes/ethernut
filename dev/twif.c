@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/09/08 10:19:14  haraldkipp
+ * *** empty log message ***
+ *
  * Revision 1.4  2003/11/03 17:03:53  haraldkipp
  * Many new comments added
  *
@@ -65,537 +68,542 @@
 
 #include <dev/twif.h>
 
-//#include <sys/print.h>
+//#include <stdio.h>
 
 #ifdef __AVR_ATmega128__
 
-HANDLE tw_if_mutex;
+static volatile u_char tw_if_bsy;   /* Set while interface is busy. */
 
-volatile u_char tw_if_bsy;      /*!< Set while interface is busy. */
-HANDLE tw_if_que;               /*!< Threads waiting for interface becoming idle. */
+static HANDLE tw_mm_mutex;          /* Exclusive master access. */
+static HANDLE tw_mm_que;            /* Threads waiting for master transfer done. */
+static HANDLE tw_sr_que;            /* Threads waiting for slave receive. */
+static HANDLE tw_st_que;            /* Threads waiting for slave transmit done. */
 
-HANDLE tw_mm_que;               /*!< Threads waiting for master mode done. */
-HANDLE tw_sm_que;               /*!< Threads waiting for slave mode done. */
+static u_char tw_mm_sla;            /* Destination slave address. */
+static volatile u_char tw_mm_err;   /* Last master mode error. */
 
-volatile u_char tw_mm_sla;      /*!< Destination slave address. */
-volatile u_char tw_mm_err;      /*!< Last master mode error. */
-volatile u_short tw_mt_idx;
-volatile u_short tw_mt_len;
-volatile u_char *tw_mt_buf;
+static u_char *tw_mt_buf;           /* Pointer to the master transmit buffer. */
+static volatile u_short tw_mt_len;  /* Number of bytes to transmit in master mode. */
+static volatile u_short tw_mt_idx;  /* Current master transmit buffer index. */
 
-volatile u_short tw_mr_siz;
-volatile u_short tw_mr_idx;
-volatile u_char *tw_mr_buf;
+static u_char *tw_mr_buf;           /* Pointer to the master receive buffer. */
+static volatile u_short tw_mr_siz;  /* Size of the master receive buffer. */
+static volatile u_short tw_mr_idx;  /* Current master receive buffer index. */
 
-volatile u_char tw_sm_sla;      /*!< Slave address received. */
-volatile u_char tw_sm_err;      /*!< Last slave mode error. */
-volatile u_short tw_sr_siz;
-volatile u_short tw_sr_idx;
-volatile u_char *tw_sr_buf;
+static volatile u_char tw_sm_sla;   /* Slave address received. */
+static volatile u_char tw_sm_err;   /* Last slave mode error. */
 
-volatile u_short tw_st_len;
-volatile u_short tw_st_idx;     /*!< Slave transmit index. */
-volatile u_char *tw_st_buf;
+static u_char *tw_st_buf;           /* Pointer to the slave transmit buffer. */
+static volatile u_short tw_st_len;  /* Number of bytes to transmit in slave mode. */
+static volatile u_short tw_st_idx;  /* Current slave transmit buffer index. */
 
+static u_char *tw_sr_buf;           /* Pointer to the slave receive buffer. */
+static volatile u_short tw_sr_siz;  /* Size of the master receive buffer. */
+static volatile u_short tw_sr_idx;  /* Current slave receive buffer index. */
+
+/*
+TWINT TWEA TWSTA TWSTO TWWC TWEN  0  TWIE
+  C                      R        R
+*/
+
+#define TWGO    (_BV(TWINT) | _BV(TWEN) | _BV(TWIE))
+
+/*
+ * TWI interrupt handler.
+ */
 static void TwInterrupt(void *arg)
 {
     u_char twsr;
+    register u_char twcr = inb(TWCR);
 
     /*
-     * Read the status.
+     * Read the status and interpret its contents.
      */
-    twsr = TWSR & 0xF8;
-    //NutPrintFormat(0, "[%02X]", twsr);
-
+    twsr = inb(TWSR) & 0xF8;
     switch (twsr) {
 
-        /*
-         * 0x10: Repeated start condition has been transmitted.
-         */
+    /*
+     * 0x08: Start condition has been transmitted.
+     * 0x10: Repeated start condition has been transmitted.
+     */
+    case TW_START:
     case TW_REP_START:
+        /* We are entering the master mode. Mark the interface busy. */
+        tw_if_bsy = 1;
+        //printf("\nB%lu:", NutGetMillis());
+        /*
+         * If outgoing data is available, transmit SLA+W. Logic is in 
+         * master transmit mode.
+         */
+        if (tw_mt_len) {
+            tw_mt_idx = 0;
+            outb(TWDR, tw_mm_sla);
+        }
+
         /*
          * If outgoing data not available, transmit SLA+R. Logic will 
          * switch to master receiver mode.
          */
-        if (tw_mt_len == 0) {
-            TWDR = tw_mm_sla | 1;
-            TWCR = (TWCR & 0xC5);
-            break;
-        }
-
-        /*
-         * If outgoing data is available, fall through.
-         */
-
-        /*
-         * 0x08: Start condition has been transmitted.
-         */
-    case TW_START:
-        /*
-         * Transmit SLA+W.
-         */
-        TWDR = tw_mm_sla;
-        TWCR = (TWCR & 0xC5);
-        tw_mm_err = 0;
-        break;
-
-        /*
-         * 0x20: SLA+W has been transmitted, but not acknowledged.
-         */
-    case TW_MT_SLA_NACK:
-        /*
-         * If all retries failed, transmit a stop condition, disable 
-         * further device interrupts and inform the application.
-         */
-        tw_mm_err = TWERR_SLA_NACK;
-        if (NutEventPostAsync(&tw_mm_que))
-            TWCR = (TWCR & 0x74) | (1 << TWSTO);
         else {
-            tw_if_bsy = 0;
-            TWCR = (TWCR & 0xC5) | (1 << TWSTO);
+            tw_mr_idx = 0;
+            outb(TWDR, tw_mm_sla | 1);
         }
+        outb(TWCR, TWGO | (twcr & _BV(TWEA)));
         break;
 
-        /*
-         * 0x18: SLA+W has been transmitted and ACK has been received.
-         */
+    /*
+     * 0x18: SLA+W has been transmitted and ACK has been received.
+     * 0x28: Data byte has been transmitted and ACK has been received.
+     */
     case TW_MT_SLA_ACK:
-        /*
-         * If no transmit data is waiting, transmit repeated start 
-         * condition.
-         */
-        if (tw_mt_len == 0) {
-            TWCR = (TWCR & 0xC5) | (1 << TWSTA);
-            break;
-        }
-
-        /*
-         * Reset transmit index and fall through for outgoing data.
-         */
-        tw_mt_idx = 0;
-
-        /*
-         * 0x28: Data byte has been transmitted and ACK has been received.
-         */
     case TW_MT_DATA_ACK:
+        //printf("<%u.%u.%u.%u>", tw_mt_idx, tw_mt_len, tw_mr_idx, tw_mr_siz);
         /*
-         * If outgoing data left to send, put the next byte in
-         * the data register.
+         * If outgoing data left to send, put the next byte in the data 
+         * register.
          */
         if (tw_mt_idx < tw_mt_len) {
-            TWDR = tw_mt_buf[tw_mt_idx++];
-            TWCR = (TWCR & 0xC5);
+            outb(TWDR, tw_mt_buf[tw_mt_idx++]);
+            outb(TWCR, TWGO | (twcr & _BV(TWEA)));
             break;
         }
 
         /*
-         * All outgoing data has been sent. If a response is expected, 
+         * All outgoing data has been sent. If a response is expected,
          * transmit a repeated start condition.
          */
         tw_mt_len = 0;
-        if (tw_mr_siz)
-            TWCR = (TWCR & 0xC5) | (1 << TWEA) | (1 << TWSTA);
-
-        /*
-         * No response expected. Transmit stop condition, disable device 
-         * interrupts and inform application.
-         */
-        else if (NutEventPostAsync(&tw_mm_que))
-            TWCR = (TWCR & 0x44) | (1 << TWSTO);
-        else {
-            tw_if_bsy = 0;
-            TWCR = (TWCR & 0xC5) | (1 << TWSTO);
+        if (tw_mr_siz) {
+            //printf("[TWSTA1]");
+            outb(TWCR, TWGO | (twcr & _BV(TWEA)) | _BV(TWSTA));
+            break;
         }
-        break;
 
-        /*
-         * 0x30: Data byte has been transmitted, but not acknowledged.
-         */
+    /*
+     * 0x20: SLA+W has been transmitted, but not acknowledged.
+     * 0x30: Data byte has been transmitted, but not acknowledged.
+     * 0x48: SLA+R has been transmitted, but not acknowledged.
+     */
+    case TW_MT_SLA_NACK:
     case TW_MT_DATA_NACK:
-        /*
-         * Transmit stop condition, disable device interrupts and 
-         * inform the application.
-         */
-        tw_mm_err = TWERR_DATA_NACK;
-        if (NutEventPostAsync(&tw_mm_que))
-            TWCR = (TWCR & 0x74) | (1 << TWSTO);
-        else {
-            tw_if_bsy = 0;
-            TWCR = (TWCR & 0xC5) | (1 << TWSTO);
+    case TW_MR_SLA_NACK:
+        /* Set unique error code. */
+        if (twsr == TW_MT_SLA_NACK || twsr == TW_MR_SLA_NACK) {
+            tw_mm_err = TWERR_SLA_NACK;
+        } else if (twsr == TW_MT_DATA_NACK) {
+            // tw_mm_err = TWERR_DATA_NACK; /***************************************************/
         }
-        break;
+        if(tw_mm_err) {
+            tw_mt_len = 0;
+            tw_mr_siz = 0;
+        }
+
+        /* Wake up the application. */
+        NutEventPostAsync(&tw_mm_que);
 
         /*
-         * 0x38: Arbitration lost while in master mode.
+         * Send a stop condition. If we have a listener, generate
+         * an acknowlegde on an incoming address byte.
          */
+        if(tw_sr_siz) {
+            //printf("[TWSTO1]");
+            outb(TWCR, TWGO | _BV(TWEA) | _BV(TWSTO));
+        }
+        else {
+            //printf("[TWSTO2]");
+            outb(TWCR, TWGO | _BV(TWSTO));
+        }
+
+        /* The interface is idle. */
+        tw_if_bsy = 0;
+        //printf("\nF:");
+        break;
+
+    /*
+     * 0x38: Arbitration lost while in master mode.
+     */
     case TW_MT_ARB_LOST:
         /*
          * The start condition will be automatically resend after 
          * the bus becomes available.
          */
-        TWCR = (TWCR & 0xC5) | (1 << TWSTA);
+        //printf("[TWSTA2]");
+        sbi(TWCR, TWSTA);
+        /* The interface is idle. */
+        tw_if_bsy = 0;
         break;
 
-        /*
-         * 0x48: SLA+R has been transmitted, but not acknowledged.
-         */
-    case TW_MR_SLA_NACK:
-        /*
-         * Transmit stop condition, disable device interrupts and 
-         * inform the application.
-         */
-
-        tw_mm_err = TWERR_SLA_NACK;
-        if (NutEventPostAsync(&tw_mm_que))
-            TWCR = (TWCR & 0x74) | (1 << TWSTO);
-        else {
-            tw_if_bsy = 0;
-            TWCR = (TWCR & 0xC5) | (1 << TWSTO);
-        }
-        break;
-
-        /*
-         * 0x40: SLA+R has been transmitted and ACK has been received.
-         */
-    case TW_MR_SLA_ACK:
-        /*
-         * Reset index for incoming data.
-         */
-        tw_mr_idx = 0;
-        TWCR = (TWCR & 0xC5);
-        break;
-
-        /*
-         * 0x50: Data received, ACK returned.
-         */
+    /*
+     * 0x50: Data byte has been received and acknowledged.
+     */
     case TW_MR_DATA_ACK:
         /*
-         * Store data byte, if buffer space for incoming data is 
-         * available and transmit an ACK.
+         * Store the data byte in the master receive buffer.
          */
-        if (tw_mr_idx < tw_mr_siz) {
-            tw_mr_buf[tw_mr_idx++] = TWDR;
-            TWCR = (TWCR & 0x85) | (1 << TWEA);
-        }
+        tw_mr_buf[tw_mr_idx++] = inb(TWDR);
 
+    /*
+     * 0x40: SLA+R has been transmitted and ACK has been received.
+     */
+    case TW_MR_SLA_ACK:
         /*
-         * If no more data expected, do not transmit ACKs. 
+         * Acknowledge next data bytes except the last one.
          */
-        else
-            TWCR &= 0x85;
+        if (tw_mr_idx + 1 < tw_mr_siz) {
+            outb(TWCR, TWGO | _BV(TWEA));
+        }
+        else {
+            outb(TWCR, TWGO);
+        }
         break;
 
-        /*
-         * 0x58: Data byte has been received, but not acknowledged.
-         */
+    /*
+     * 0x58: Data byte has been received, but not acknowledged.
+     */
     case TW_MR_DATA_NACK:
         /*
-         * Transmit stop condition, disable device interrupts and 
-         * inform the application.
+         * Store the last data byte.
          */
-        if (NutEventPostAsync(&tw_mm_que))
-            TWCR = (TWCR & 0x74) | (1 << TWSTO);
+        tw_mr_buf[tw_mr_idx++] = inb(TWDR);
+        tw_mr_siz = 0;
+
+        /* Wake up the application. */
+        NutEventPostAsync(&tw_mm_que);
+
+        /*
+         * Send a stop condition. If we have a listener, generate
+         * an acknowlegde on an incoming address byte.
+         */
+        if(tw_sr_siz) {
+            outb(TWCR, TWGO | _BV(TWEA) | _BV(TWSTO));
+        }
         else {
-            tw_if_bsy = 0;
-            TWCR = (TWCR & 0xC5) | (1 << TWSTO);
+            outb(TWCR, TWGO | _BV(TWSTO));
+        }
+
+        /* The interface is idle. */
+        tw_if_bsy = 0;
+        //printf("\nF:");
+        break;
+
+    /*
+     * 0x60: Own SLA+W has been received and acknowledged. 
+     * 0x68: Arbitration lost as master. Own SLA+W has been received 
+     *       and acknowledged.
+     * 0x70: General call address has been received and acknowledged.
+     * 0x78: Arbitration lost as master. General call address has been
+     *       received and acknowledged.
+     */
+    case TW_SR_SLA_ACK:
+    case TW_SR_ARB_LOST_SLA_ACK:
+    case TW_SR_GCALL_ACK:
+    case TW_SR_ARB_LOST_GCALL_ACK:
+        /* We are entering the slave receive mode. Mark the interface busy. */
+        tw_if_bsy = 1;
+
+        //NutEventPostAsync(&tw_st_que); /*****************************************************/
+        //printf("\nB%lu:", NutGetMillis());
+
+        /*
+         * Do only acknowledge incoming data bytes, if we got receive 
+         * buffer space. Fetch the slave address from the data register 
+         * and reset the receive index.
+         */
+        if (tw_sr_siz) {
+            //printf("[AVA]");
+            tw_sm_sla = inb(TWDR);
+            outb(TWCR, TWGO | _BV(TWEA));
+            tw_sr_idx = 0;
+        } 
+        /*
+         * Do not acknowledge incoming data.
+         */
+        else {
+            //printf("[REF]");
+            outb(TWCR, TWGO | _BV(TWEA)); /*********** *************/
+            /************* outb(TWCR, TWGO); *********/
         }
         break;
 
-        /*
-         * 0x68: Arbitration lost as master. Own SLA+W has been received 
-         *       and acknowledged.
-         */
-    case TW_SR_ARB_LOST_SLA_ACK:
-        /*
-         * 0x78: Arbitration lost as master. General call address has been
-         *       received and acknowledged.
-         */
-    case TW_SR_ARB_LOST_GCALL_ACK:
-        /*
-         * Send start as soon as bus becomes available again.
-         */
-        TWCR = (TWCR & 0x75) | (1 << TWSTA);
-
-        /*
-         * 0x60: Own SLA+W has been received and acknowledged. 
-         */
-    case TW_SR_SLA_ACK:
-        /*
-         * 0x70: General call address has been received and acknowledged.
-         */
-    case TW_SR_GCALL_ACK:
-        /*
-         * Do only acknowledge incoming data bytes, if we got receive 
-         * buffer space.
-         * Fetch the slave address from the data register and reset the
-         * receive index and receive error status.
-         */
-        tw_if_bsy = 1;
-        if (tw_sr_siz) {
-            TWCR = (TWCR & 0xF5);
-            tw_sm_sla = TWDR;
-            tw_sr_idx = 0;
-            tw_sm_err = 0;
-        } else
-            TWCR = (TWCR & 0xB5);
-        break;
-
-        /*
-         * 0x80: Data byte for own SLA has been received and acknowledged.
-         */
+    /*
+     * 0x80: Data byte for own SLA has been received and acknowledged.
+     * 0x90: Data byte for general call address has been received and 
+     *       acknowledged.
+     */
     case TW_SR_DATA_ACK:
-        /*
-         * 0x90: Data byte for general call address has been received and 
-         *       acknowledged.
-         */
     case TW_SR_GCALL_DATA_ACK:
         /*
-         * If the receive buffer hasn't been filled, store data byte.
+         * If the receive buffer isn't filled up, store data byte.
          */
-        if (tw_sr_idx < tw_sr_siz)
-            tw_sr_buf[tw_sr_idx++] = TWDR;
+        if (tw_sr_idx < tw_sr_siz) {
+            tw_sr_buf[tw_sr_idx++] = inb(TWDR);
+        }
+        else {
+            tw_sr_siz = 0;
+        }
 
         /*
          * If more space is available for incoming data, then continue
          * receiving. Otherwise do not acknowledge new data bytes.
          */
-        if (tw_sr_idx < tw_sr_siz)
-            TWCR = (TWCR & 0xF5);
-        else
-            TWCR = (TWCR & 0xB5);
-        break;
+        if (tw_sr_siz) {
+            outb(TWCR, TWGO | _BV(TWEA));
+            break;
+        }
 
-        /*
-         * 0x88: Data byte received, but not acknowledged.
-         */
+    /*
+     * 0x88: Data byte received, but not acknowledged.
+     * 0x98: Data byte for general call address received, but not 
+     *       acknowledged.
+     */
     case TW_SR_DATA_NACK:
-        /*
-         * 0x98: Data byte for general call address received, but not 
-         *       acknowledged.
-         */
     case TW_SR_GCALL_DATA_NACK:
         /*
          * Continue not accepting more data.
          */
-        TWCR = (TWCR & 0xB5);
-        break;
-
-        /*
-         * 0xA0: Stop condition or repeated start condition received.
-         */
-    case TW_SR_STOP:
-        /*
-         * Disable device interrupts and inform the application. Note,
-         * that SCL is kept low.
-         */
-        if (tw_sr_siz) {
-            tw_sr_siz = 0;
-            if (NutEventPostAsync(&tw_sm_que)) {
-                TWCR &= 0x74;
-            } else {
-                tw_if_bsy = 0;
-                TWCR &= 0xB5;
-            }
-        } else {
-            TWCR &= 0xB5;
-            tw_if_bsy = 0;
+        //outb(TWCR, TWGO);
+        if (tw_mt_len || tw_mr_siz) {
+            outb(TWCR, inb(TWCR) | _BV(TWEA) | _BV(TWSTA));
+        }
+        else {
+            outb(TWCR, inb(TWCR) | _BV(TWEA));
         }
         break;
 
+    /*
+     * 0xA0: Stop condition or repeated start condition received.
+     */
+    case TW_SR_STOP:
         /*
-         * 0xA8: Own SLA+R has been received and acknowledged.
+         * Wake up the application. If successful, do nothing. This
+         * will keep SCL low and thus block the bus. The application
+         * must now setup the transmit buffer and re-enable the
+         * interface.
          */
+        if (NutEventPostAsync(&tw_sr_que) == 0 || tw_sm_err) {
+            /*
+             * If no one has been waiting on the queue, the application 
+             * probably gave up waiting. So we continue on our own, either
+             * in idle mode or switching to master mode if a master
+             * request is waiting.
+             */
+            if (tw_mt_len || tw_mr_siz) {
+                //printf("[TWSTA3]");
+                outb(TWCR, TWGO | _BV(TWSTA));
+            }
+            else {
+                outb(TWCR, TWGO);
+            }
+            tw_if_bsy = 0;
+            //printf("\nF:");
+            //printf("[NOAPP]");
+        }
+        else {
+            tw_sr_siz = 0;
+            outb(TWCR, twcr & ~(_BV(TWINT) | _BV(TWIE)));
+        }
+        break;
+
+    /*
+     * 0xA8: Own SLA+R has been received and acknowledged.
+     * 0xB0: Arbitration lost in master mode. Own SLA has been received 
+     *       and acknowledged.
+     */
     case TW_ST_SLA_ACK:
-        /*
-         * Fall through to start slave transmit mode.
-         */
-
-        /*
-         * 0xB0: Arbitration lost in master mode. Own SLA has been received
-         *       and acknowledged.
-         */
     case TW_ST_ARB_LOST_SLA_ACK:
-        /*
-         * Reset transmit index and fall through for outgoing data.
-         */
-        tw_st_idx = 0;
+        /* Not idle. */
         tw_if_bsy = 1;
+        //printf("\nB%lu:", NutGetMillis());
+        /* Reset transmit index and fall through for outgoing data. */
+        tw_st_idx = 0;
 
-        /*
-         * 0xB8: Data bytes has been transmitted and acknowledged.
-         */
+    /*
+     * 0xB8: Data bytes has been transmitted and acknowledged.
+     */
     case TW_ST_DATA_ACK:
         /*
          * If outgoing data left to send, put the next byte in the 
          * data register. Otherwise transmit a dummy byte.
          */
-        if (tw_st_idx < tw_st_len)
-            TWDR = tw_st_buf[tw_st_idx++];
-        else
-            TWDR = 0;
-        TWCR &= 0xF5;
+        //printf("<%u.%u>", tw_st_idx, tw_st_len);
+        if (tw_st_idx < tw_st_len) {
+            outb(TWDR, tw_st_buf[tw_st_idx]);
+            /* Do not set acknowledge on the last data byte. */
+            if (++tw_st_idx < tw_st_len) {
+                outb(TWCR, TWGO | _BV(TWEA));
+            }
+            else {
+                tw_st_len = 0;
+                outb(TWCR, TWGO);
+            }
+            break;
+        }
+
+        /* No more data. Continue sending dummies. */
+        outb(TWDR, 0);
+        outb(TWCR, TWGO);
         break;
 
-
-        /*
-         * 0xC0: Data byte has been transmitted, but not acknowledged.
-         */
+    /*
+     * 0xC0: Data byte has been transmitted, but not acknowledged.
+     * 0xC8: Last data byte has been transmitted and acknowledged.
+     */
     case TW_ST_DATA_NACK:
-        if (NutEventPostAsync(&tw_sm_que))
-            TWCR &= 0x74;
-        else {
-            tw_if_bsy = 0;
-            TWCR &= 0xB5;
-        }
-        break;
-
-        /*
-         * 0xC8: Last data byte has been transmitted and acknowledged.
-         */
     case TW_ST_LAST_DATA:
-        TWCR = (TWCR & 0xF5);
+        NutEventPostAsync(&tw_st_que);
+
+        /* Transmit start condition, if a master transfer is waiting. */
+        if (tw_mt_len || tw_mr_siz) {
+            //printf("[TWSTA4]");
+            outb(TWCR, TWGO | _BV(TWSTA) | /**/ _BV(TWEA));
+        }
+        /* Otherwise enter idle state. */
+        else {
+            //outb(TWCR, TWGO);
+            outb(TWCR, TWGO | _BV(TWEA));
+        }
+        tw_if_bsy = 0;
+        //printf("\nF:");
         break;
 
-        /*
-         * 0xF8: No info.
-         */
-    case TW_NO_INFO:
-        break;
-
-        /*
-         * 0x00: Bus error.
-         */
+    /*
+     * 0x00: Bus error.
+     */
     case TW_BUS_ERROR:
-        TWCR = (TWCR & 0xF5) | (1 << TWSTO);
+        outb(TWCR, inb(TWCR) | _BV(TWSTO));
+#if 0
+        tw_if_bsy = 0;
+        //printf("\nF:");
+        tw_mm_err = TWERR_BUS;
+        tw_sm_err = TWERR_BUS;
+        NutEventPostAsync(&tw_sr_que);
+        NutEventPostAsync(&tw_st_que);
+        NutEventPostAsync(&tw_mm_que);
+#endif
         break;
     }
-}
-
-/*
- * Make sure, that only one application thread is dealing with our
- * interface and disable interface interrupts.
- */
-static int TwAccess(u_long tmo)
-{
-    int rc;
-    u_long wt = tmo ? tmo : 250;
-    u_char retry = 0;
-
-    for (;;) {
-        rc = NutEventWait(&tw_if_mutex, wt);
-
-        /*
-         * Disable TWI interrupts.
-         */
-        NutEnterCritical();
-        TWCR = (TWCR & 0x74);
-        NutExitCritical();
-
-        /*
-         * Check the busy flag, even if we failed locking the mutex.
-         * This gives us an extra bonus to avoid deadlocks.
-         */
-        if (tw_if_bsy == 0) {
-            tw_if_bsy = 1;
-            rc = 0;
-            break;
-        }
-        //NutPrintString(0, "[BUSY]");
-
-        /*
-         * Enable TWI interrupts.
-         */
-        NutEnterCritical();
-        TWCR = (TWCR & 0x74) | (1 << TWIE);
-        NutExitCritical();
-
-        /*
-         * Release the mutex if we locked it before. Note, that if we
-         * hold the lock, we usually didn't wait for the lock. So
-         * let's take a nap now.
-         */
-        if (rc == 0) {
-            NutEventPost(&tw_if_mutex);
-            NutSleep(wt);
-        }
-
-        /*
-         * If timeout has been specified by the caller, then return
-         * on mutex timeout.
-         */
-        else if (tmo)
-            break;
-
-        /*
-         * Do not try more than 5 times.
-         */
-        if (retry++ > 5) {
-            NutEnterCritical();
-            TWCR = (TWCR & 0xF5) | (1 << TWSTO);
-            TWDR = 0;
-            tw_if_bsy = 0;
-            NutExitCritical();
-            rc = -1;
-            break;
-        }
-
+#if 0
+#if 1
+    if (twsr == TW_MT_DATA_ACK) {
+        putchar('M');
     }
-    return rc;
+    else if(twsr == TW_MR_DATA_ACK) {
+        putchar('m');
+    }
+    else if(twsr == TW_ST_DATA_ACK) {
+        putchar('S');
+    }
+    else if(twsr == TW_SR_DATA_ACK) {
+        putchar('s');
+    }
+    else if (twsr == TW_BUS_ERROR) {
+        puts("\n\n\n");
+    }
+    else 
+#endif
+    {
+        printf("[%02X%02X%02X]", twsr, twcr, inb(TWCR));
+    }
+#endif
+
+#if 0
+    if (twsr == TW_MT_DATA_ACK) {
+    }
+    else if(twsr == TW_MR_DATA_ACK) {
+    }
+    else if(twsr == TW_ST_DATA_ACK) {
+    }
+    else if(twsr == TW_SR_DATA_ACK) {
+    }
+    else 
+    {
+        printf("[%02X]", twsr);
+    }
+#endif
 }
+
+#endif /* __AVR_ATmega128__ */
 
 /*! 
  * \brief Transmit and/or receive data as a master.
  *
- * The slave address must be specified as a 7-bit address. For
- * example, the PCF8574A may be configured to slave addresses
- * from 0x38 to 0x3F.
+ * The two-wire serial interface must have been initialized by calling
+ * TwInit() before this function can be used.
  *
  * \note This function is only available on ATmega128 systems.
  *
- * \param sla    Slave address of the destination.
- * \param txdata Points to the data to transmit. Ignored, if the
- *		 number of bytes to transmit is zero.
- * \param txlen  Number of data bytes to transmit. This does not
- *               include the first byte containing the device address.
+ * \param sla    Slave address of the destination. This slave address 
+ *               must be specified as a 7-bit address. For example, the 
+ *               PCF8574A may be configured to slave addresses from 0x38 
+ *               to 0x3F.
+ * \param txdata Points to the data to transmit. Ignored, if the number 
+ *               of data bytes to transmit is zero.
+ * \param txlen  Number of data bytes to transmit. If zero, then the 
+ *               interface will not send any data to the slave device
+ *               and will directly enter the master receive mode.
  * \param rxdata Points to a buffer, where the received data will be
  *               stored. Ignored, if the maximum number of bytes to 
  *               receive is zero.
  * \param rxsiz  Maximum number of bytes to receive. Set to zero, if
- *               no bytes are expected from the device.
- * \param tmo    Timeout in milliseconds. To disable timeout,
- *               set this parameter to NUT_WAIT_INFINITE.
+ *               no bytes are expected from the slave device.
+ * \param tmo    Timeout in milliseconds. To disable timeout, set this 
+ *               parameter to NUT_WAIT_INFINITE.
  *
- * \return The number of bytes received, -1 in case of an error or 
- *         timeout.
+ * \return The number of bytes received, -1 in case of an error or timeout.
  */
-int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata,
-                     u_short rxsiz, u_long tmo)
+int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
 {
-    int rc;
+    int rc = -1;
 
-    /*
-     * Lock the interface.
-     */
-    if (TwAccess(tmo)) {
+#ifdef __AVR_ATmega128__
+    //printf("(me=%d,%d)", txlen, rxsiz);
+    /* This routine is marked reentrant, so lock the interface. */
+    if(NutEventWait(&tw_mm_mutex, 0)) {
         tw_mm_err = TWERR_IF_LOCKED;
         return -1;
     }
+    //printf("(ma=%d,%d)", txlen, rxsiz);
 
+    //while(tw_if_bsy) {
+    //    printf("\n[BSY]");
+    //    NutSleep(63);
+    //}
+    NutEnterCritical();
     /*
      * Set all parameters for master mode.
      */
-    tw_mt_len = txlen;
     tw_mm_sla = sla << 1;
+    tw_mm_err = 0;
+    tw_mt_len = txlen;
     tw_mt_buf = txdata;
     tw_mr_siz = rxsiz;
     tw_mr_buf = rxdata;
 
     /*
-     * Send a start condition and enable device interrupts.
+     * Send a start condition if the interface is idle. If busy, then 
+     * the interrupt routine will automatically initiate the transfer 
+     * as soon as the interface becomes ready again.
      */
-    NutEnterCritical();
-    TWCR = (TWCR & 0x44) | (1 << TWINT) | (1 << TWSTA) | (1 << TWIE);
-    NutEventBroadcast(&tw_mm_que);
+    if(tw_if_bsy == 0) {
+        u_char twcr = inb(TWCR);
+        u_char twsr = inb(TWSR);
+        if((twsr & 0xF8) == 0xF8) {
+            //printf("[TWSTA5]");
+            if(tw_sr_siz) {
+                outb(TWCR, TWGO | _BV(TWEA) | _BV(TWSTA) | (twcr & _BV(TWSTO)));
+                //outb(TWCR, TWGO | _BV(TWEA) | _BV(TWSTA));
+            }
+            else {
+                outb(TWCR, TWGO | _BV(TWSTA) | (twcr & _BV(TWSTO)));
+                //outb(TWCR, TWGO | _BV(TWSTA));
+            }
+        }
+        //printf("[AMI %02X%02X%02X]", twsr, twcr, inb(TWCR));
+    }
+
+    /* Clear the queue. */
+    NutEventBroadcastAsync(&tw_mm_que);
+    //printf("(mw)");
     NutExitCritical();
 
     /*
@@ -603,19 +611,39 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata,
      */
     rc = -1;
     if (NutEventWait(&tw_mm_que, tmo)) {
+#if 0
+        /************************/
+        u_char twsr;
+        NutEnterCritical();
+        twsr = inb(TWSR);
+        if((twsr & 0xF8) == 0xF8) {
+            outb(TWCR, _BV(TWINT));
+            if(tw_sr_siz) {
+                outb(TWCR, _BV(TWEN) | _BV(TWIE) | _BV(TWSTO) | _BV(TWSTA));
+            }
+            else {
+                outb(TWCR, _BV(TWEN) | _BV(TWIE) | _BV(TWSTO));
+            }
+        }
+        NutExitCritical();
+        /************************/
+#endif
         tw_mm_err = TWERR_TIMEOUT;
     } else {
-        if (tw_mm_err == 0)
+        NutEnterCritical();
+        if (tw_mm_err == 0) {
             rc = tw_mr_idx;
-        TWCR = (TWCR & 0xF4) | (1 << TWIE);
+        }
+        NutExitCritical();
     }
 
     /*
      * Release the interface.
      */
-    tw_if_bsy = 0;
-    NutEventPost(&tw_if_mutex);
+    //printf("(mx=%d)", rc);
+    NutEventPost(&tw_mm_mutex);
 
+#endif /* __AVR_ATmega128__ */
     return rc;
 }
 
@@ -630,7 +658,11 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata,
  */
 int TwMasterError(void)
 {
+#ifndef __AVR_ATmega128__
+    return -1;
+#else
     return (int) tw_mm_err;
+#endif
 }
 
 /*!
@@ -640,7 +672,8 @@ int TwMasterError(void)
  * must immediately process the request and return a response by calling 
  * TwSlaveRespond().
  *
- * \note This function is only available on ATmega128 systems.
+ * \note This function is only available on ATmega128 systems. The
+ *       function is not reentrant.
  *
  * \param sla    Points to a byte variable, which receives the slave 
  *               address sent by the master. This can be used by the 
@@ -656,51 +689,64 @@ int TwMasterError(void)
  */
 int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
 {
-    int rc;
+#ifndef __AVR_ATmega128__
+    return -1;
+#else
+    int rc = -1;
 
-    /*
-     * Lock the interface.
-     */
-    if (TwAccess(tmo)) {
-        tw_sm_err = TWERR_IF_LOCKED;
-        return -1;
-    }
+    NutEnterCritical();
+    //printf("(le)");
 
-    /*
-     * Set all parameters for slave receive.
-     */
+    /* Initialize parameters for slave receive. */
+    tw_sm_err = 0;
     tw_sr_siz = rxsiz;
     tw_sr_buf = rxdata;
 
     /*
-     * Enable the receiver, clear the listener queue and release the 
-     * interface.
+     * If the interface is currently not busy then enable it for 
+     * address recognition.
      */
-    NutEnterCritical();
-    TWCR = (TWCR & 0x74) | (1 << TWEA) | (1 << TWIE);
-    NutEventBroadcastAsync(&tw_sm_que);
-    tw_if_bsy = 0;
-    NutExitCritical();
-    NutEventPost(&tw_if_mutex);
-
-    /*
-     * Wait for slave event and return on timeout.
-     */
-    rc = -1;
-    if (NutEventWait(&tw_sm_que, tmo)) {
-        tw_sm_err = TWERR_TIMEOUT;
+    if(tw_if_bsy == 0) {
+        //u_char twcr = inb(TWCR);
+        u_char twsr = inb(TWSR);
+        if((twsr & 0xF8) == 0xF8) {
+            //printf("[TWEA1]");
+            if(tw_mt_len || tw_mr_siz)
+                outb(TWCR, _BV(TWEA) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA));
+            else
+                outb(TWCR, _BV(TWEA) | _BV(TWEN) | _BV(TWIE));
+        }
+        //printf("[ASI %02X%02X%02X]", twsr, twcr, inb(TWCR));
     }
+
+    /* Clear the queue. */
+    NutEventBroadcastAsync(&tw_sr_que);
+    //printf("(lw)");
+
+    /* Wait for a frame on the slave mode queue. */
+    if (NutEventWait(&tw_sr_que, tmo)) {
+        //printf("[ATO]");
+        NutEnterCritical();
+        tw_sm_err = TWERR_TIMEOUT;
+        tw_sr_siz = 0;
+        NutExitCritical();
+    }
+    //printf("(ls)");
+    NutExitCritical();
 
     /*
      * Return the number of bytes received and the destination slave
      * address, if no slave error occured. In this case the bus is
      * blocked.
      */
-    else if (tw_sm_err == 0) {
+    if(tw_sm_err == 0) {
+        //printf("[AOK]");
         rc = tw_sr_idx;
         *sla = tw_sm_sla;
     }
+    //printf("(lx=%d)", rc);
     return rc;
+#endif /* __AVR_ATmega128__ */
 }
 
 /*!
@@ -723,39 +769,74 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
 int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
 {
     int rc = -1;
+#ifdef __AVR_ATmega128__
 
+    //printf("(pe=%d)", txlen);
+    /* The bus is blocked. No critical section required. */
     tw_st_buf = txdata;
     tw_st_len = txlen;
-    tw_st_idx = 0;
 
     /*
-     * Enable interface interrupts.
+     * If there is anything to transmit, start the interface.
      */
     if (txlen) {
-        tw_sm_err = 0;
+        //u_char twcr = inb(TWCR);
+        //u_char twsr = inb(TWSR);
+
         NutEnterCritical();
-        TWDR = tw_st_buf[tw_st_idx++];
-        TWCR = (TWCR & 0x34) | (1 << TWINT) | (1 << TWEA) | (1 << TWIE);
-        NutEventBroadcastAsync(&tw_sm_que);
-        tw_if_bsy = 0;
+        /* Clear the queue. */
+        NutEventBroadcastAsync(&tw_st_que);
+        /* Release the bus, accepting SLA+R. */
+        //printf("[TWEA2]");
+        outb(TWCR, TWGO | _BV(TWEA));
+        //printf("[CON %02X%02X%02X]", twsr, twcr, inb(TWCR));
+
+        //printf("(pw)");
         NutExitCritical();
-        if (NutEventWait(&tw_sm_que, tmo)) {
+        if (NutEventWait(&tw_st_que, tmo)) {
             tw_sm_err = TWERR_TIMEOUT;
-        } else {
-            if (tw_sm_err == 0)
-                rc = tw_st_idx;
-            NutEnterCritical();
-            TWCR = (TWCR & 0x24) | (1 << TWINT) | (1 << TWIE);
-            tw_if_bsy = 0;
-            NutExitCritical();
         }
-    } else {
-        rc = 0;
+        //printf("(ps)");
+        //NutExitCritical();
+
         NutEnterCritical();
-        TWDR = 0;
-        TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE);
+        tw_st_len = 0;
+        if (tw_sm_err == 0) {
+            rc = tw_st_idx;
+        }
+        NutExitCritical();
+    } 
+
+    /*
+     * Nothing to transmit.
+     */
+    else {
+        u_char twcr;
+        u_char twsr;
+        rc = 0;
+        /* Release the bus, not accepting SLA+R. */
+        
+        NutEnterCritical();
+        twcr = inb(TWCR);
+        twsr = inb(TWSR);
+        /* Transmit start condition, if a master transfer is waiting. */
+        if (tw_mt_len) {
+            outb(TWCR, TWGO | _BV(TWSTA));
+        }
+        /* Otherwise enter idle state. */
+        else {
+            tw_if_bsy = 0;
+            outb(TWCR, TWGO);
+            //printf("\nF:");
+        }
+
+        //outb(TWCR, _BV(TWINT));
+        //outb(TWCR, _BV(TWEN) | _BV(TWIE));
+        //printf("[NOC %02X%02X%02X]", twsr, twcr, inb(TWCR));
         NutExitCritical();
     }
+#endif /* __AVR_ATmega128__ */
+    //printf("(px=%d)", rc);
     return rc;
 }
 
@@ -770,7 +851,11 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
  */
 int TwSlaveError(void)
 {
+#ifndef __AVR_ATmega128__
+    return -1;
+#else
     return (int) tw_sm_err;
+#endif
 }
 
 /*!
@@ -780,8 +865,8 @@ int TwSlaveError(void)
  *
  * \param req  Requested control function. May be set to one of the
  *	       following constants:
- *	       - TWI_SETSPEED, if conf points to an u_long value containing the baudrate.
- *	       - TWI_GETSPEED, if conf points to an u_long value receiving the current baudrate.
+ *	       - TWI_SETSPEED, if conf points to an u_long value containing the bitrate.
+ *	       - TWI_GETSPEED, if conf points to an u_long value receiving the current bitrate.
  * \param conf Points to a buffer that contains any data required for
  *	       the given control function or receives data from that
  *	       function.
@@ -792,8 +877,11 @@ int TwSlaveError(void)
  */
 int TwIOCtl(int req, void *conf)
 {
+#ifndef __AVR_ATmega128__
+    return -1;
+#else
     int rc = 0;
-    u_long i;
+    u_long lval;
 
     switch (req) {
     case TWI_SETSLAVEADDRESS:
@@ -804,31 +892,34 @@ int TwIOCtl(int req, void *conf)
         break;
 
     case TWI_SETSPEED:
-        i = (NutGetCpuClock() / (*((u_long *) conf))) - 16;
-        if (i < 500) {
-            TWBR = i / 2;
-            cbi(TWSR, TWPS0);
-            cbi(TWSR, TWPS1);
-        } else if (i < 2000) {
-            TWBR = i / 8;
-            sbi(TWSR, TWPS0);
-            cbi(TWSR, TWPS1);
-        } else if (i < 8000) {
-            TWBR = i / 32;
-            cbi(TWSR, TWPS0);
-            sbi(TWSR, TWPS1);
-        } else if (i < 32000) {
-            TWBR = i / 128;
-            sbi(TWSR, TWPS0);
+        lval = ((2UL * NutGetCpuClock() / (*((u_long *) conf)) + 1UL) / 2UL - 16UL) / 2UL;
+        if (lval > 1020UL) {
+            lval /= 16UL;
             sbi(TWSR, TWPS1);
         } else {
-            TWBR = 250;
+            cbi(TWSR, TWPS1);
+        }
+        if (lval > 255UL) {
+            lval /= 4UL;
             sbi(TWSR, TWPS0);
-            sbi(TWSR, TWPS1);
+        } else {
+            cbi(TWSR, TWPS0);
+        }
+        if (lval > 9UL && lval < 256UL) {
+            outb(TWBR, (u_char) lval);
+        } else {
+            rc = -1;
         }
         break;
     case TWI_GETSPEED:
-        *((u_long *) conf) = NutGetCpuClock() / (16 + 2 * TWBR);
+        lval = 2UL;
+        if (bit_is_set(TWSR, TWPS0)) {
+            lval *= 4UL;
+        }
+        if (bit_is_set(TWSR, TWPS1)) {
+            lval *= 16UL;
+        }
+        *((u_long *) conf) = NutGetCpuClock() / (16UL + lval * (u_long) inb(TWBR));
         break;
 
     case TWI_GETSTATUS:
@@ -841,6 +932,7 @@ int TwIOCtl(int req, void *conf)
         break;
     }
     return rc;
+#endif /* __AVR_ATmega128__ */
 }
 
 /*!
@@ -857,24 +949,29 @@ int TwIOCtl(int req, void *conf)
  */
 int TwInit(u_char sla)
 {
-    if (NutRegisterIrqHandler(&sig_2WIRE_SERIAL, TwInterrupt, 0))
+#ifndef __AVR_ATmega128__
+    return -1;
+#else
+    u_long speed = 2400;
+
+    if (NutRegisterIrqHandler(&sig_2WIRE_SERIAL, TwInterrupt, 0)) {
         return -1;
+    }
 
     /*
      * Set address register, enable general call address, set transfer 
      * speed and enable interface.
      */
-    TWAR = (sla << 1) | 1;
-    /* TWBR = NutGetCpuClock() / (2 * 76800) - 8; */
-    TWBR = 16;
-    TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE);
+    outb(TWAR, (sla << 1) | 1);
+    TwIOCtl(TWI_SETSPEED, &speed);
+    outb(TWCR, _BV(TWINT));
+    outb(TWCR, _BV(TWEN) | _BV(TWIE));
 
     /*
-     * Initialize mutex semaphore.
+     * Initialize mutex semaphores.
      */
-    NutEventPost(&tw_if_mutex);
+    NutEventPost(&tw_mm_mutex);
 
     return 0;
+#endif /* __AVR_ATmega128__ */
 }
-
-#endif
