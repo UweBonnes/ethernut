@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/11/03 17:12:53  haraldkipp
+ * Allow linking with RTL8019 driver.
+ * Links more reliable to 10 MBit networks now.
+ * Reset MMU on allocation failures.
+ * Some optimizations.
+ *
  * Revision 1.1  2003/10/13 10:13:49  haraldkipp
  * First release
  *
@@ -382,6 +388,28 @@
 
 #define nic_bs(bank)    nic_outlb(NIC_BSR, bank)
 
+/*!
+ * \struct _NICINFO lanc111.h dev/lanc111.h
+ * \brief Network interface controller information structure.
+ */
+struct _NICINFO {
+    HANDLE volatile ni_rx_rdy;      /*!< Receiver event queue. */
+    HANDLE volatile ni_tx_rdy;      /*!< Transmitter event queue. */
+    u_short ni_tx_cnt;              /*!< Number of bytes in transmission queue. */
+    u_long ni_rx_packets;           /*!< Number of packets received. */
+    u_long ni_tx_packets;           /*!< Number of packets sent. */
+    u_long ni_interrupts;           /*!< Number of interrupts. */
+    u_long ni_overruns;             /*!< Number of packet overruns. */
+    u_long ni_rx_frame_errors;      /*!< Number of frame errors. */
+    u_long ni_rx_crc_errors;        /*!< Number of CRC errors. */
+    u_long ni_rx_missed_errors;     /*!< Number of missed packets. */
+};
+
+/*!
+ * \brief Network interface controller information type.
+ */
+typedef struct _NICINFO NICINFO;
+
 /*@}*/
 
 /*!
@@ -396,8 +424,10 @@ static HANDLE maq;
 /*!
  * \brief Select specified PHY register for reading or writing.
  *
+ * \note NIC interrupts must have been disabled before calling this routine.
+ *
  * \param reg PHY register number.
- * \param we  Should be 1 for write access, 0 for read access.
+ * \param we  Indicates type of access, 1 for write and 0 for read.
  *
  * \return Contents of the PHY interface rgister.
  */
@@ -459,6 +489,8 @@ static u_char NicPhyRegSelect(u_char reg, u_char we)
 /*!
  * \brief Read contents of PHY register.
  *
+ * \note NIC interrupts must have been disabled before calling this routine.
+ *
  * \param reg PHY register number.
  *
  * \return Contents of the specified register.
@@ -493,6 +525,8 @@ static u_short NicPhyRead(u_char reg)
 
 /*!
  * \brief Write value to PHY register.
+ *
+ * \note NIC interrupts must have been disabled before calling this routine.
  *
  * \param reg PHY register number.
  * \param val Value to write.
@@ -574,7 +608,7 @@ static int NicPhyConfig(void)
         if (phy_to >= 24)
             return -1;
         /* Restart auto negotiation every 4 seconds or on failures. */
-        if ((phy_to & 7) == 0 || (phy_sr & PHYSR_REM_FLT) != 0) {
+        if ((phy_to & 7) == 0 /* || (phy_sr & PHYSR_REM_FLT) != 0 */) {
             NicPhyWrite(NIC_PHYCR, PHYCR_ANEG_EN | PHYCR_ANEG_RST);
             NutSleep(1000);
         }
@@ -717,7 +751,6 @@ static void NicInterrupt(void *arg)
     }
     /* Transmit error. */
     else if (isr & INT_TX) {
-        //printf("[TXERR]");
         /* re-enable transmit */
         nic_bs(0);
         nic_outw(NIC_TCR, nic_inlb(NIC_TCR) | TCR_TXENA);
@@ -811,13 +844,11 @@ static NETBUF *NicGetPacket(void)
     //printf("[SW=%04X,BC=%04X]", fsw, fbc);
 
     /* Check for frame errors. */
-    if (fsw & 0xBC00) {
-        //printf("[Bad Frame]");
+    if (fsw & 0xAC00) {
         nb = (NETBUF *) 0xFFFF;
     }
     /* Check the byte count. */
     else if (fbc < 66 || fbc > 1524) {
-        //printf("[Bad Len %u]", fbc);
         nb = (NETBUF *) 0xFFFF;
     }
 
@@ -892,9 +923,15 @@ static int NicPutPacket(NETBUF * nb)
 
     /* Wait for allocation success. */
     while ((nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
-        if (NutEventWait(&maq, 2000)) {
-            //printf("FAIL");
-            return -1;
+        if (NutEventWait(&maq, 125)) {
+            nic_outlb(NIC_MMUCR, MMU_RST);
+            NicMmuWait(1000);
+            nic_outlb(NIC_MMUCR, MMU_ALO);
+            if (NicMmuWait(100) || (nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
+                if (NutEventWait(&maq, 125)) {
+                    return -1;
+                }
+            }
         }
     }
 
@@ -924,8 +961,7 @@ static int NicPutPacket(NETBUF * nb)
         nic_outlb(NIC_DATA, 0);
 
     /* Transfer the control word. */
-    nic_outlb(NIC_DATA, 0);
-    nic_outlb(NIC_DATA, 0);
+    nic_outw(NIC_DATA, 0);
 
     /* Enqueue packet. */
     if (NicMmuWait(100))
@@ -940,11 +976,11 @@ static int NicPutPacket(NETBUF * nb)
 }
 
 
-/*! \fn NicRx(void *arg)
+/*! \fn NicRxLanc(void *arg)
  * \brief NIC receiver thread.
  *
  */
-THREAD(NicRx, arg)
+THREAD(NicRxLanc, arg)
 {
     NUTDEVICE *dev;
     IFNET *ifn;
@@ -1060,7 +1096,7 @@ int LancInit(NUTDEVICE * dev)
     /*
      * Start the receiver thread.
      */
-    NutThreadCreate("rxi5", NicRx, dev, 640);
+    NutThreadCreate("rxi5", NicRxLanc, dev, 640);
 
     //NutSleep(500);
 
@@ -1081,7 +1117,7 @@ static NICINFO dcb_eth0;
  *
  * Used to call.
  */
-IFNET ifn_eth0 = {
+static IFNET ifn_eth0 = {
     IFT_ETHER,                  /*!< \brief Interface type. */
     {0, 0, 0, 0, 0, 0},         /*!< \brief Hardware net address. */
     0,                          /*!< \brief IP address. */
