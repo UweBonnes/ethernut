@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.155 2005/02/02 17:00:48 haraldkipp Exp $
+$Id: ChangeLog,v 1.156 2005/02/02 20:25:36 haraldkipp Exp $
 
 2005-02-02  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -10,6 +10,30 @@ $Id: ChangeLog,v 1.155 2005/02/02 17:00:48 haraldkipp Exp $
 	* doc/gen/nutfoot.html: Number of year updated.
 
 	* doc/gen/nut_en.cfg: Upgraded to Doxygen 1.4.1.
+
+	* conf/dev/dev.nut, conf/ethernut13g.conf, include/cfg/arch/avr.h,
+	include/cfg/arch/avrpio.h: Port configuration was completely 
+	broken, because no AVRPORT values had been left undefined for the 
+	preprocessor. To fix this without modifying too many sourcefiles,
+	the name of AVR port config file changed and this new file is
+	included by the old cfg/arch/avr.h. However, this may break
+	your exisiting code. If you are using a modified version of
+	cfg/arch/avr.h, please move all definitions to cfg/arch/avrpio.h.
+	If you're using your own configuration files for the Configurator,
+	make sure that all items are still correctly configured.
+	Specially configured port names may disappear, because most
+	names changed from SOME_PORT to SOME_AVRPORT. Sorry for the
+	inconvenience caused by this confusing port modification chaos.
+
+	* dev/lanc111.c: If no Ethernet link was available on the LAN91C111, 
+	each outgoing packet took 15 seconds and, even worse, the ouput 
+	routine doesn't return an error. Now the first attempt to send a 
+	packet without Ethernet link will wait 5 seconds for the link to
+	come up again and, if this fails, subsequent attempts will take 
+	0.5 seconds only, always returning an error.
+
+	* dev/spidigio.c: Corrected a typo. Due to the port configuration
+	problem, this and the resulting compile error wasn't detected.
 
 
 2005-01-26  Matthias Ringwald <mringwal@inf.ethz.ch> 
