@@ -1,9 +1,16 @@
-$Id: ChangeLog,v 1.55 2004/04/07 12:13:46 haraldkipp Exp $
+$Id: ChangeLog,v 1.56 2004/04/07 12:58:42 haraldkipp Exp $
 
 2004-04-07  Harald Kipp  <harald.kipp@egnite.de>
 
 	* Added Matthias Ringwald's patches, which enable Nut/OS
 	emulation running on Linux and Mac OS X.
+
+	* dev/usartavr.c: Half duplex operation failed if direction
+	is not controlled by RTS. Thanks to Dusan Ferbas for reporting
+	this problem and providing a solution. Dusan also found out,
+	that half duplex is not enabled by _ioctl(UART_SETFLOWCONTROL)
+	alone. As a temporary fix, call _ioctl(UART_SETSPEED) after
+	setting flow control.
 
 
 2004-03-19  Jan Dubiec  <jdx@slackware.pl>

@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/04/07 12:58:52  haraldkipp
+ * Bugfix for half duplex mode
+ *
  * Revision 1.1  2003/12/15 19:25:33  haraldkipp
  * New USART driver added
  *
@@ -1082,7 +1085,7 @@ static void AvrUsartTxStart(void)
 #ifdef UART_HDX_BIT
     if (hdx_control) {
         /* Enable half duplex transmitter. */
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
+        sbi(UART_HDX_PORT, UART_HDX_BIT);
     }
 #endif
     /* Enable transmit interrupts. */
