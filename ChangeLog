@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.22 2003/12/18 09:56:53 haraldkipp Exp $
+$Id: ChangeLog,v 1.23 2003/12/19 22:30:06 drsung Exp $
+
+2003-12-19  Oliver Schulz  <olischulz@web.de>
+
+	* include/time.h, crt/time.c, crt/mktime.c, crt/gmtime.c
+	crt/localtim.c: Dox written.
+
 
 2003-12-18  Harald Kipp  <harald.kipp@egnite.de>
 
