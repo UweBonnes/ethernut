@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.4  2004/09/07 19:20:07  haraldkipp
+ * Initial/default lib/inc dirs updated
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -480,12 +483,17 @@ bool CNutConfDoc::GenerateBuildTree()
     
     wxBusyCursor wait;
 
+    wxString ins_dir(cfg->m_lib_dir);
+    if(ins_dir.IsEmpty()) {
+        ins_dir = cfg->m_buildpath + wxT("/lib");
+    }
     wxLogMessage("Creating Makefiles for %s in %s", cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
     if(CreateMakeFiles(m_root, cfg->m_buildpath.c_str(), cfg->m_source_dir.c_str(), 
                        cfg->m_platform.c_str(), cfg->m_firstidir.c_str(), cfg->m_lastidir.c_str(), 
-                       cfg->m_lib_dir.c_str())) {
+                       ins_dir.c_str())) {
         return false;
     }
+
     wxLogMessage("Creating header files in %s", cfg->m_buildpath.c_str());
     if(CreateHeaderFiles(m_root, cfg->m_buildpath.c_str())) {
         return false;
@@ -511,7 +519,6 @@ public:
             !name.GetName().IsSameAs(wxT("Makerules"), false) &&
             !name.GetName().IsSameAs(wxT("Makeburn"), false)) {
             ::wxCopyFile(filename, name.GetFullPath());
-            //copy the file (filter Makedefs/Makerules)
         }
         return wxDIR_CONTINUE;
     }
@@ -521,7 +528,6 @@ public:
         wxString sub = dirname.Mid(m_source.Length());
         wxFileName name(m_target + sub);
         name.Mkdir(0777, wxPATH_MKDIR_FULL);
-        //create the directory
         return wxDIR_CONTINUE;
     }
 private:
@@ -535,14 +541,20 @@ bool CNutConfDoc::GenerateApplicationTree()
     
     wxBusyCursor wait;
 
-    CDirCopyTraverser traverser(cfg->m_source_dir + wxT("/app"), cfg->m_app_dir);
+    wxString src_dir = cfg->m_source_dir + wxT("/app");
 
-    wxDir dir(cfg->m_source_dir + wxT("/app"));
+    wxLogMessage("Copying samples from %s to %s", src_dir.c_str(), cfg->m_app_dir.c_str());
+    CDirCopyTraverser traverser(src_dir, cfg->m_app_dir);
+    wxDir dir(src_dir);
     dir.Traverse(traverser);
 
-    wxLogMessage("Copying samples from %s/app to %s", cfg->m_app_dir.c_str(), cfg->m_app_dir.c_str());
+    wxLogMessage("Creating Makefiles for %s in %s", cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
+    wxString lib_dir(cfg->m_lib_dir);
+    if(lib_dir.IsEmpty()) {
+        lib_dir = cfg->m_buildpath + "/lib";
+    }
     if(CreateSampleDirectory(m_root, cfg->m_app_dir.c_str(), cfg->m_source_dir.c_str(), 
-                             cfg->m_lib_dir.c_str(), cfg->m_platform.c_str(), cfg->m_programmer.c_str())) {
+                             lib_dir.c_str(), cfg->m_platform.c_str(), cfg->m_programmer.c_str())) {
         return false;
     }
     wxLogMessage("OK");

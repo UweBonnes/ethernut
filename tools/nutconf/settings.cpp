@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.4  2004/09/07 19:20:07  haraldkipp
+ * Initial/default lib/inc dirs updated
+ *
  * Revision 1.3  2004/08/18 17:22:28  haraldkipp
  * STK500 is the default programmer
  *
@@ -66,7 +69,7 @@ CSettings::CSettings()
     m_firstidir_default = wxEmptyString;
     m_lastidir_default = wxEmptyString;
     m_buildpath_default = wxT("nut/conf/repository.nut");
-    m_lib_dir_default = wxT("nutlib");
+    m_lib_dir_default = wxT("");
     m_source_dir_default = wxT("nut");
     m_platform_default = wxT("avr-gcc");
     m_app_dir_default = wxT("nutapp");
