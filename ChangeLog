@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.175 2005/02/22 02:53:58 hwmaier Exp $
+$Id: ChangeLog,v 1.176 2005/02/22 12:37:10 olereinhardt Exp $
+
+2005-02-22  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* os/tracer.c
+        Changed "#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__) || ..."
+        to a more generic "#if defined(__AVR__)"
+
 
 2005-02-22  Henrik Maier  <hwmaier@users.sourceforge.net>
 
@@ -21,6 +27,21 @@ $Id: ChangeLog,v 1.175 2005/02/22 02:53:58 hwmaier Exp $
         * dev/usartavr.c, include/sys/atom.h, include/sys/tracer.h,
         os/event.c, os/thread.c, os/timer.c, os/tracer.c, os/arch/avr_timer.c
         Removed tabs and added semicolons after NUTTRACER macros
+
+2005-02-21  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* os/tracer.c
+	Added #if defined(...) statement to compile only on avr-gcc
+	platform (fixed compile bug for unix emulation)
+
+2005-02-21  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* fs/pnutfs.c
+	Changed declaration of the "root" variable to compile with 
+	unix emulation
+
+	* include/unistd.h
+	For unix plattforms I added #include "/usr/include/unistd.h"
+	since some functions needed for unix_nutinit.c are missing in this
+	file...
 
 2005-02-21  Henrik Maier  <hwmaier@users.sourceforge.net>
 
