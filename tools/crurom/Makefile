@@ -1,4 +1,6 @@
-OBJS = crurom.o 
+PROJ = crurom
+
+OBJS = $(PROJ).o 
 # i need this
 LDFLAGS = -L/usr/lib 
 # link flags
@@ -6,11 +8,21 @@ LLDLIBS = -lm
 # your C-compiler
 CC = gcc
 
+CP = cp
+
 crurom:	$(OBJS)
 	$(CC) -o crurom $(OBJS) $(LDFLAGS) $(LLDLIBS)
+
+install: $(PROJ)
+	$(CP) $(PROJ) ../linux/$(PROJ)
+
 clean:
 	rm -f crurom glload *.o core
+
 # $Log: Makefile,v $
+# Revision 1.3  2004/09/12 09:12:16  haraldkipp
+# Enable make install
+#
 # Revision 1.2  2004/03/16 16:48:46  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
