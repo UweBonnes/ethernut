@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/05/20 09:05:07  drsung
+ * Memory was allocated twice for NUTFILE in UsartOpen.
+ *
  * Revision 1.2  2004/03/18 13:59:14  haraldkipp
  * Comment updated
  *
@@ -528,7 +531,7 @@ int UsartClose(NUTFILE * fp)
 NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 {
     USARTDCB *dcb = dev->dev_dcb;
-    NUTFILE *fp = malloc(sizeof(NUTFILE));
+    NUTFILE *fp;
 
     /*
      * Create the tranmit buffer unless this is used for read only.
