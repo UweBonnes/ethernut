@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:53  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/17 09:38:07  haraldkipp
+ * Setting different speeds is now supported.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:53  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:08  harald
  * Prepare release 3.1
@@ -383,8 +386,7 @@ static void TwInterrupt(void *arg)
             tw_sr_siz = 0;
             if (NutEventPostAsync(&tw_sm_que)) {
                 TWCR &= 0x74;
-            }
-            else {
+            } else {
                 tw_if_bsy = 0;
                 TWCR &= 0xB5;
             }
@@ -506,7 +508,7 @@ static int TwAccess(u_long tmo)
          * hold the lock, we usually didn't wait for the lock. So
          * let's take a nap now.
          */
-        if(rc == 0) {
+        if (rc == 0) {
             NutEventPost(&tw_if_mutex);
             NutSleep(wt);
         }
@@ -515,7 +517,7 @@ static int TwAccess(u_long tmo)
          * If timeout has been specified by the caller, then return
          * on mutex timeout.
          */
-        else if(tmo) 
+        else if (tmo)
             break;
 
         /*
@@ -561,7 +563,7 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata,
     /*
      * Lock the interface.
      */
-    if(TwAccess(tmo)) {
+    if (TwAccess(tmo)) {
         tw_mm_err = TWERR_IF_LOCKED;
         return -1;
     }
@@ -639,7 +641,7 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
     /*
      * Lock the interface.
      */
-    if(TwAccess(tmo)) {
+    if (TwAccess(tmo)) {
         tw_sm_err = TWERR_IF_LOCKED;
         return -1;
     }
@@ -754,6 +756,7 @@ int TwSlaveError(void)
 int TwIOCtl(int req, void *conf)
 {
     int rc = 0;
+    u_long i;
 
     switch (req) {
     case TWI_SETSLAVEADDRESS:
@@ -764,7 +767,28 @@ int TwIOCtl(int req, void *conf)
         break;
 
     case TWI_SETSPEED:
-        TWBR = NutGetCpuClock() / (2 * *((u_long *) conf)) - 8;
+        i = (NutGetCpuClock() / (*((u_long *) conf))) - 16;
+        if (i < 500) {
+            TWBR = i / 2;
+            cbi(TWSR, TWPS0);
+            cbi(TWSR, TWPS1);
+        } else if (i < 2000) {
+            TWBR = i / 8;
+            sbi(TWSR, TWPS0);
+            cbi(TWSR, TWPS1);
+        } else if (i < 8000) {
+            TWBR = i / 32;
+            cbi(TWSR, TWPS0);
+            sbi(TWSR, TWPS1);
+        } else if (i < 32000) {
+            TWBR = i / 128;
+            sbi(TWSR, TWPS0);
+            sbi(TWSR, TWPS1);
+        } else {
+            TWBR = 250;
+            sbi(TWSR, TWPS0);
+            sbi(TWSR, TWPS1);
+        }
         break;
     case TWI_GETSPEED:
         *((u_long *) conf) = NutGetCpuClock() / (16 + 2 * TWBR);
