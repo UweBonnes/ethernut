@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/05/26 09:04:17  drsung
+ * Bugfix in AvrUsartTxStart. Now the correct port and pin are used for half duplex mode...again...
+ * Thanks to Przemyslaw Rudy.
+ *
  * Revision 1.3  2004/05/16 14:09:06  drsung
  * Applied bugfixes for half duplex mode an XON/XOFF handling. Thanks to Damian Slee.
  *
@@ -1114,7 +1118,7 @@ static void AvrUsartTxStart(void)
 #ifdef UART_HDX_BIT
     if (hdx_control) {
         /* Enable half duplex transmitter. */
-	UART_HDX_TX(UART_RTS_PORT, UART_RTS_BIT);
+	UART_HDX_TX(UART_HDX_PORT, UART_HDX_BIT);
     }
 #endif
     /* Enable transmit interrupts. */
