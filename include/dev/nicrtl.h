@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/03 16:58:42  haraldkipp
+ * *** empty log message ***
+ *
  * Revision 1.2  2003/07/20 16:40:52  haraldkipp
  * CrystalTek 8900A driver added.
  *
@@ -101,6 +104,10 @@ typedef struct _NICINFO NICINFO;
  */
 extern NUTDEVICE devEth0;
 extern NUTDEVICE devEth0cs;
+
+#ifndef DEV_ETHER
+#define DEV_ETHER   devEth0
+#endif
 
 /*
  * Driver routines.
