@@ -48,9 +48,12 @@
 
 /*
  * $Log$
- * Revision 1.2  2003/10/13 10:17:36  haraldkipp
- * Seconds counter added
+ * Revision 1.3  2003/11/03 16:34:21  haraldkipp
+ * New API returns system uptime in miliseconds
  *
+ * Revision 1.2  2003/10/13 10:17:11  haraldkipp
+ * Seconds counter added
+ * 
  * Revision 1.1.1.1  2003/05/09 14:41:55  haraldkipp
  * Initial using 3.2.1
  *
@@ -145,6 +148,7 @@ static u_long NutComputeCpuClock(void);
 #endif                          /* !NUT_CPU_FREQ */
 
 static volatile u_long milli_ticks;
+static volatile u_long millis;
 static volatile u_long seconds;
 
 /*!
@@ -193,6 +197,7 @@ static void NutTimer0Intr(void *arg)
 
 #ifdef NUT_CPU_FREQ
 
+    millis++;
     if (ms1++ >= 999) {
         ms1 = 0;
         seconds++;
@@ -200,6 +205,12 @@ static void NutTimer0Intr(void *arg)
 
 #else   /* NUT_CPU_FREQ */
 
+    if (ms62_5 & 1) {
+        millis += 62;
+    }
+    else {
+        millis += 63;
+    }
     /*
      * Update RTC. We do a post increment here, because
      * of an ImageCraft bug with volatiles. Thanks to
@@ -670,6 +681,31 @@ u_long NutGetSeconds(void)
 
     NutEnterCritical();
     rc = seconds;
+    NutExitCritical();
+
+    return rc;
+}
+
+/*!
+ * \brief Return the milliseconds counter value.
+ *
+ * This function returns the value of a counter, which is incremented
+ * every system timer tick. During system start, the counter is cleared 
+ * to zero and will overflow roughly after 49.7 days. The resolution
+ * is depends on system ticks.
+ *
+ * \note There is intentionally no provision to modify the seconds counter.
+ *       Callers can rely on a continuous update and use this value for
+ *       system tick independend timeout calculations.
+ *
+ * \return Value of the seconds counter.
+ */
+u_long NutGetMillis(void)
+{
+    u_long rc;
+
+    NutEnterCritical();
+    rc = millis;
     NutExitCritical();
 
     return rc;

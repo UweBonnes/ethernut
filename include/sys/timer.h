@@ -51,9 +51,12 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/03 16:35:18  haraldkipp
+ * New API returns system uptime in miliseconds
+ *
  * Revision 1.2  2003/10/13 10:17:11  haraldkipp
  * Seconds counter added
- *
+ * 
  * Revision 1.1.1.1  2003/05/09 14:41:22  haraldkipp
  * Initial using 3.2.1
  *
@@ -130,6 +133,7 @@ extern u_long NutGetCpuClock(void);
 extern u_long NutGetTickCount(void); //@@MF
 
 extern u_long NutGetSeconds(void);
+extern u_long NutGetMillis(void);
 
 #ifdef __cplusplus
 }
