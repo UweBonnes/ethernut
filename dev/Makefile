@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2004/03/08 11:16:54  haraldkipp
+# Asynchronous HDLC driver added
+#
 # Revision 1.7  2004/01/30 17:02:19  drsung
 # Separate interrupt stack for avr-gcc only added.
 #
@@ -99,7 +102,7 @@ top_srcdir = ..
 include $(top_srcdir)/Makedefs
 
 SRCS =  irqstack.c \
-	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c \
+	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c ahdlc0.c ahdlc1.c ahdlcavr.c \
 	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
 	vs1001k.c irsony.c spidigio.c spiflash.c \
 	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
