@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:04  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/05 20:17:46  haraldkipp
+ * Typing errors corrected
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:04  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/05/06 18:37:33  harald
  * *** empty log message ***
@@ -45,7 +48,7 @@
  */
 
 /*!
- * \file cfg/medianut.h
+ * \file cfg/modem.h
  * \brief RS232 handshake hardware specification.
  */
 

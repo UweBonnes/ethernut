@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/05 20:17:46  haraldkipp
+ * Typing errors corrected
+ *
  * Revision 1.2  2003/05/15 15:47:30  haraldkipp
  * Conflict with NIC interrupt and LEDL removed.
  *
@@ -169,5 +172,7 @@
 #define ENUT_HSI1_BIT   7
 
 #define ENUT_HS1_SIGNAL sig_INTERRUPT7
+
+/*@}*/
 
 #endif
