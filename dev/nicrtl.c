@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/01/21 16:49:46  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.9  2004/12/17 15:31:28  haraldkipp
  * Support of rising edge interrupts for hardware w/o inverter gate.
  * Fixed compilation issue for hardware with RTL reset port.
@@ -1197,7 +1200,7 @@ static void NicInterrupt(void *arg)
          * thread.
          */
         if (isr & NIC_ISR_PRX)
-            NutEventPostAsync(&ni->ni_rx_rdy);
+            NutEventPostFromIRQ(&ni->ni_rx_rdy);
 
         if (isr & NIC_ISR_RXE) {
             ni->ni_rx_frame_errors += NICINB(NIC_PG0_CNTR0);

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/01/21 16:49:45  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.8  2004/09/22 08:14:48  haraldkipp
  * Made configurable
  *
@@ -870,7 +873,7 @@ static void NicInterrupt(void *arg)
     if (isr & INT_TX_EMPTY) {
         nic_outlb(NIC_ACK, INT_TX_EMPTY);
         imr &= ~INT_TX_EMPTY;
-        NutEventPostAsync(&ni->ni_tx_rdy);
+        NutEventPostFromIRQ(&ni->ni_tx_rdy);
     }
     /* Transmit error. */
     else if (isr & INT_TX) {
@@ -882,7 +885,7 @@ static void NicInterrupt(void *arg)
         /* kill the packet */
         nic_outlb(NIC_MMUCR, MMU_PKT);
 
-        NutEventPostAsync(&ni->ni_tx_rdy);
+        NutEventPostFromIRQ(&ni->ni_tx_rdy);
     }
 
 
@@ -896,17 +899,17 @@ static void NicInterrupt(void *arg)
     }
     if (isr & INT_ERCV) {
         nic_outlb(NIC_ACK, INT_ERCV);
-        NutEventPostAsync(&ni->ni_rx_rdy);
+        NutEventPostFromIRQ(&ni->ni_rx_rdy);
     }
     if (isr & INT_RCV) {
         nic_outlb(NIC_ACK, INT_RCV);
         imr &= ~INT_RCV;
-        NutEventPostAsync(&ni->ni_rx_rdy);
+        NutEventPostFromIRQ(&ni->ni_rx_rdy);
     }
 
     if (isr & INT_ALLOC) {
         imr &= ~INT_ALLOC;
-        NutEventPostAsync(&maq);
+        NutEventPostFromIRQ(&maq);
     }
     //printf(" -%02X-%02X- ", nic_inlb(NIC_IST), inb(PINE) & 0x20);
     nic_outlb(NIC_MSK, imr);

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/01/21 16:49:46  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.14  2005/01/03 08:43:29  haraldkipp
  * Replaced unprotected calls to NutEventPostAsync() by late calls to NutEventPost().
  * This should fix the infrequent system halts/resets. The event to the transmitter
@@ -673,9 +676,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
             if (state == TCPS_SYN_SENT) {
                 rc = -1;
                 sock->so_last_error = EHOSTDOWN;
-                NutEnterCritical();
                 NutEventPostAsync(&sock->so_ac_tq);
-                NutExitCritical();
             }
         }
         if (state == TCPS_CLOSE_WAIT) {

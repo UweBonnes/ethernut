@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/01/21 16:49:45  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.5  2004/11/12 16:27:42  olereinhardt
  * Added critical section around NutEventPostAsync
  *
@@ -254,9 +257,7 @@ void SJAOutput(NUTDEVICE * dev, CANFRAME * frame)
     ci = (CANINFO *) dev->dev_dcb;
 
     CANBufferPutMutex(&CAN_TX_BUF, frame);
-    NutEnterCritical();
     NutEventPostAsync(&ci->can_tx_rdy);
-    NutExitCritical();
 }
 
 /*!
@@ -575,7 +576,7 @@ static void SJAInterrupt(void *arg)
 
     if (((irq & TI_Bit) == TI_Bit))     // transmit IRQ fired
     {
-        NutEventPostAsync(&ci->can_tx_rdy);
+        NutEventPostFromIRQ(&ci->can_tx_rdy);
     }
 
     if ((irq & RI_Bit) == RI_Bit)       // Receive IRQ fired
@@ -586,7 +587,7 @@ static void SJAInterrupt(void *arg)
             CANBufferPut(&CAN_RX_BUF, &in_frame);
             if (CAN_RX_BUF.size==CAN_RX_BUF.datalength)
                 SJA1000_IEN &= (~RIE_Bit);      // Disable RX IRQ until data has been poped from input buffer
-            NutEventPostAsync(&ci->can_rx_rdy);
+            NutEventPostFromIRQ(&ci->can_rx_rdy);
             ci->can_rx_frames++;
         }
     }

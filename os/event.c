@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/01/21 16:49:44  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.8  2005/01/19 17:59:45  freckle
  * Improved interrupt performance by reducing some critical section
  *
@@ -296,10 +299,6 @@ int NutEventWaitNext(volatile HANDLE * qhp, u_long ms)
  * If no thread is waiting, then the queue will be set to the signaled
  * state. 
  *
- * \note It is save to call this function from within an interrupt
- *       handler. In any case interrupts must be disabled when
- *       calling this function.
- *
  * \param qhp Identifies the queue an event is posted to.
  *
  * \return The number of threads woken up, either 0 or 1.
@@ -307,13 +306,45 @@ int NutEventWaitNext(volatile HANDLE * qhp, u_long ms)
  */
 int NutEventPostAsync(HANDLE volatile *qhp)
 {
-    NUTTHREADINFO *td;
     int rc = 0;
 
+    NutEnterCritical();
+    
+    /*
+     * so far, the code is identical to NutEventPostIRQ
+     */ 
+
+    rc = NutEventPostFromIRQ(qhp);
+
+    NutExitCritical();
+
+    return rc;
+}
+
+/*!
+* \brief Asynchronously post an event to a specified queue from IRQ.
+ *
+ * Wake up the thread with the highest priority waiting on the 
+ * specified queue. This function is explicitly provided for IRQ
+ * handlers to wakeup waiting user threads
+ *
+ * \note It is save to call this function from within an interrupt
+ *       handler.
+ *
+ * \param qhp Identifies the queue an event is posted to.
+ *
+ * \return The number of threads woken up, either 0 or 1.
+ *
+ */
+int NutEventPostFromIRQ(HANDLE volatile *qhp)
+{
+    NUTTHREADINFO *td;
+    int rc = 0;
+    
     if (*qhp != SIGNALED) {
         if ((td = *qhp) != 0) {
             NutThreadRemoveQueue(td, (NUTTHREADINFO * volatile *) qhp);
-
+            
             /*
              * Stop any running timeout timer.
              */

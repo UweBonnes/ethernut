@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/01/21 16:49:44  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.3  2005/01/19 17:59:46  freckle
  * Improved interrupt performance by reducing some critical section
  *
@@ -164,8 +167,10 @@ int NutMsgQPost(NUTMSGQ * que, u_char id, int param, void *data)
     que->mq_write++;
     que->mq_write &= que->mq_mask;
 
-    NutEventPostAsync(&que->mq_wait);
     NutExitCritical();
+
+    NutEventPostAsync(&que->mq_wait);
+    
     return 0;
 }
 

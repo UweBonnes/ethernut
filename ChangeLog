@@ -1,5 +1,15 @@
-$Id: ChangeLog,v 1.150 2005/01/19 17:58:55 freckle Exp $
+$Id: ChangeLog,v 1.151 2005/01/21 16:49:18 freckle Exp $
 
+2005-01-21  Matthias Ringwald <mringwal@inf.ethz.ch> 
+	* event.c: NutEventPostAsync -> NutEventPostFromIRQ,
+	new NutEventPostAsync with build-in critical section.
+	* include/sys/event.h os/event.c dev/sja1000.c dev/ahdlcavr.c
+	dev/ide.c dev/lanc111.c dev/nicrtl.c dev/nicrtl_h8.c dev/scih8.c
+	dev/twif.c dev/uartavr.c dev/uartspi.c dev/unix_devs.c dev/usartavr.c
+	dev/wlandrv.c net/tcpsm.c os/arch/unix_nutinit.c os/msg.c:
+	Renamed calls from IRQs to NutEvenPostAsync into NutEventPostFromIRQ,
+	removed Critcal Sections around calls to NutEventPostAsync
+    
 2005-01-19  Matthias Ringwald <mringwal@inf.ethz.ch> 
 
 	* stdio.h, stdio_nut_wrapper.h, time.h: more fixes

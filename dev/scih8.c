@@ -29,6 +29,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/01/21 16:49:46  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.2  2004/03/18 14:06:52  haraldkipp
  * Deprecated header file replaced
  *
@@ -143,7 +146,7 @@ static void TxComplete(void *arg)
 
         ifs->if_tx_act = 0;
         dcb = dev->dev_dcb;
-        NutEventPostAsync(&dcb->dcb_tx_rdy);
+        NutEventPostFromIRQ(&dcb->dcb_tx_rdy);
     }
 }
 
@@ -167,7 +170,7 @@ static void RxComplete(void *arg)
 
     if (ifs->if_rd_idx == ifs->if_rx_idx++) {
         dcb = dev->dev_dcb;
-        NutEventPostAsync(&dcb->dcb_rx_rdy);
+        NutEventPostFromIRQ(&dcb->dcb_rx_rdy);
     }
 }
 

@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/01/21 16:49:46  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.5  2004/11/12 08:25:51  drsung
  * Bugfix in AvrUsartTxEmpty. Thanks to Grzegorz Plonski and Matthias Ringwald.
  *
@@ -260,7 +263,7 @@ static void AvrUsartTxEmpty(void *arg)
         }
         rbf->rbf_tail = cp;
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
-            NutEventPostAsync(&rbf->rbf_que);
+            NutEventPostFromIRQ(&rbf->rbf_que);
         }
     }
 
@@ -270,7 +273,7 @@ static void AvrUsartTxEmpty(void *arg)
     else {
         cbi(UCSRnB, UDRIE);
         rbf->rbf_cnt = 0;
-        NutEventPostAsync(&rbf->rbf_que);
+        NutEventPostFromIRQ(&rbf->rbf_que);
     }
 }
 
@@ -325,7 +328,7 @@ static void AvrUsartRxComplete(void *arg)
 
     /* Wake up waiting threads if this is the first byte in the buffer. */
     if (cnt++ == 0) {
-        NutEventPostAsync(&rbf->rbf_que);
+        NutEventPostFromIRQ(&rbf->rbf_que);
     }
 
     /*

@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/01/21 16:49:44  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.3  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -90,6 +93,7 @@ extern void NutEventTimeout(HANDLE timer, void *arg);
 extern int NutEventWait(volatile HANDLE *qhp, u_long ms);
 extern int NutEventWaitNext(volatile HANDLE *qhp, u_long ms);
 extern int NutEventPostAsync(HANDLE volatile *qhp);
+extern int NutEventPostFromIRQ(HANDLE volatile *qhp);
 extern int NutEventPost(HANDLE *qhp);
 extern int NutEventBroadcastAsync(HANDLE *qhp);
 extern int NutEventBroadcast(HANDLE *qhp);

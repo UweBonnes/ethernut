@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/01/21 16:49:46  freckle
+ * Seperated calls to NutEventPostAsync between Threads and IRQs
+ *
  * Revision 1.1  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -681,7 +684,7 @@ static void NicInterrupt(void *arg)
         if (NicOverflow(base))
             ni->ni_tx_bsy++;
         else {
-            NutEventPostAsync(&ni->ni_tx_rdy);
+            NutEventPostFromIRQ(&ni->ni_tx_rdy);
         }
         ni->ni_overruns++;
         NutDisableInt();
@@ -694,7 +697,7 @@ static void NicInterrupt(void *arg)
          */
         if (isr & (NIC_ISR_PTX | NIC_ISR_TXE)) {
             ni->ni_tx_bsy = 0;
-            NutEventPostAsync(&ni->ni_tx_rdy);
+            NutEventPostFromIRQ(&ni->ni_tx_rdy);
         }
 
         /*
@@ -703,7 +706,7 @@ static void NicInterrupt(void *arg)
          */
         if (isr & NIC_ISR_PRX) {
             ni->ni_rx_pending++;
-            NutEventPostAsync(&ni->ni_rx_rdy);
+            NutEventPostFromIRQ(&ni->ni_rx_rdy);
         }
         if (isr & NIC_ISR_RXE) {
             ni->ni_rx_frame_errors += nic_read(NIC_PG0_CNTR0);
