@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2005/02/07 18:57:49  haraldkipp
+ * ICCAVR compile errors fixed
+ *
  * Revision 1.7  2005/02/07 09:26:56  haraldkipp
  * Argh! Committed wrong source.
  *
@@ -116,11 +119,11 @@
 
 #include <cfg/arp.h>
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <sys/event.h>
 #include <sys/timer.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <net/if_var.h>
 #include <netinet/if_ether.h>

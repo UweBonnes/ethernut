@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2005/02/07 18:57:51  haraldkipp
+ * ICCAVR compile errors fixed
+ *
  * Revision 1.1  2005/02/05 20:45:38  haraldkipp
  * First release.
  *
@@ -45,18 +48,19 @@
  * \endverbatim
  */
 
+#include <sys/version.h>
+
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
-
-#include <sys/socket.h>
-#include <netinet/tcp.h>
-
-#include <sys/version.h>
 
 #include <pro/ftpd.h>
 
@@ -156,7 +160,7 @@ static void SplitCmdArg(u_char * line, u_char ** cmd, u_char ** args)
         if (*line >= (u_char) 'a' && *line <= (u_char) 'z') {
             *line -= (u_char) 'a' - 'A';
         }
-        *line++;
+        line++;
     }
 
     /* Mark end of the command word. */

@@ -68,6 +68,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2005/02/07 18:57:47  haraldkipp
+ * ICCAVR compile errors fixed
+ *
  * Revision 1.1  2005/02/05 20:35:21  haraldkipp
  * Peanut added
  *
@@ -75,12 +78,12 @@
  * \endverbatim
  */
 
+#include <sys/device.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-
-#include <sys/device.h>
 
 #include <fs/fs.h>
 
