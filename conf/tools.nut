@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.6  2005/04/05 18:04:17  haraldkipp
+-- Support for ARM7 Wolf Board added.
+--
 -- Revision 1.5  2005/01/22 19:19:31  haraldkipp
 -- Added C++ support contributed by Oliver Schulz (MPI).
 --
@@ -116,9 +119,10 @@ nuttools =
             {
                 macro = "ARM_LDSCRIPT",
                 brief = "ARM Linker Script",
-                description = "s3c4510b-ram Samsung S3C4510B, code in RAM\n"..
-                              "eb40a_ram Atmel AT91R40008, code in RAM at 0x100\n"..
-                              "gba_xport2 Gameboy Advance with XPort 2\n",
+                description = "s3c4510b-ram\tSamsung's S3C4510B, code in RAM\n"..
+                              "eb40a_ram\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
+                              "gba_xport2\tNintendo's Gameboy Advance\n"..
+                              "wolf_ram\t\thwgroup's Wolf Module, code in RAM at 0x100\n",
                 requires = { "TOOL_CC_ARM", "TOOL_GCC" },
                 flavor = "booldata",
                 type = "enumerated",

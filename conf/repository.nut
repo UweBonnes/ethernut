@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.9  2005/04/05 18:04:17  haraldkipp
+-- Support for ARM7 Wolf Board added.
+--
 -- Revision 1.8  2005/01/22 19:18:37  haraldkipp
 -- Changed AVR port configuration names from PORTx to AVRPORTx.
 -- Added C++ support contributed by Oliver Schulz (MPI).
@@ -66,7 +69,7 @@ avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG" }
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
-arm_ld_choice = { " ", "s3c4510b-ram", "eb40a_ram", "gbaxport2" }
+arm_ld_choice = { " ", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
 
 repository =
 {

@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.9  2005/04/05 18:04:17  haraldkipp
+ * Support for ARM7 Wolf Board added.
+ *
  * Revision 1.8  2005/02/23 04:39:26  hwmaier
  * no message
  *
@@ -70,12 +73,15 @@
 #define MYIP    "192.168.192.100"
 #define MYMASK  "255.255.255.0"
 
+#include <cfg/os.h>
 
 #include <string.h>
 #include <io.h>
 
 #ifdef ETHERNUT2
 #include <dev/lanc111.h>
+#elif defined(WOLF)
+#include <dev/ax88796.h>
 #else
 #include <dev/nicrtl.h>
 #endif
@@ -499,7 +505,7 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-#if defined(__AVR__)
+#if defined(__AVR__) || defined(WOLF)
     NutRegisterDevice(&devDebug0, 0, 0);
     freopen("uart0", "w", stdout);
 #else
@@ -522,6 +528,8 @@ int main(void)
      */
 #if defined(__AVR__)
     if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5))
+#elif defined(WOLF)
+    if (NutRegisterDevice(&DEV_ETHER, 0, 0))
 #else
     if (NutRegisterDevice(&devEth0, NIC_IO_BASE, 0))
 #endif
@@ -578,7 +586,7 @@ int main(void)
         char *thname = "httpd0";
 
         thname[5] = '0' + i;
-        NutThreadCreate(thname, Service, (void *) (uptr_t) i, 640);
+        NutThreadCreate(thname, Service, (void *) (uptr_t) i, NUT_THREAD_MAINSTACK);
     }
 
     /*
