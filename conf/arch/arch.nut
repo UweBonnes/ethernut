@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.7  2004/09/22 08:19:42  haraldkipp
+-- No ATmega103 with LAN91C111
+--
 -- Revision 1.6  2004/09/19 15:17:37  haraldkipp
 -- ICCAVR initialization added to build
 --
@@ -92,6 +95,7 @@ nutarch =
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_AVR",
+                    "HW_MCU_ATMEGA128",
                     "HW_NVMEM",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR"
