@@ -101,7 +101,7 @@ typedef unsigned short uptr_t;
 #define INLINE
 #endif
 
-#define __bss_end   _bss_end
+#define __heap_start   _bss_end
 
 #define __attribute__(x)
 
@@ -284,8 +284,8 @@ typedef unsigned short uptr_t;
 
 #endif				/* GCC */
 
-
-extern void *__bss_end;
+#define __bss_end	__heap_start
+extern void *__heap_start;
 
 #ifdef __AVR_ATmega128__
 #define RAMSTART    ((void *)0x100)

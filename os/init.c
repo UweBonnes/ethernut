@@ -48,8 +48,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:51  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/12/05 22:39:14  drsung
+ * Using heap_start instead of bss_end
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:51  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.22  2003/03/31 14:53:30  harald
  * Prepare release 3.1
@@ -171,9 +174,9 @@ int main(void)
 
     outp(BV(SRE) | BV(SRW), MCUCR);
 
-    if ((short) RAMEND - (short) (&__bss_end) > 384)
-        NutHeapAdd(&__bss_end,
-                   (u_short) RAMEND - 256 - (u_short) (&__bss_end));
+    if ((short) RAMEND - (short) (&__heap_start) > 384)
+        NutHeapAdd(&__heap_start,
+                   (u_short) RAMEND - 256 - (u_short) (&__heap_start));
 
     *(xramend - 1) = 0x55;
     *xramend = 0xAA;
