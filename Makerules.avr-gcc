@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.4  2004/09/08 10:22:06  haraldkipp
+# Assembler rule added
+#
 # Revision 1.3  2004/08/18 16:21:27  haraldkipp
 # Use consistent directory structure
 #
@@ -45,6 +48,9 @@
 
 %o : %c
 	$(CC) -c $(CPFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
+
+%o : %S
+	$(AS) -c $(ASFLAGS) $< -o $@
 
 %s : %c
 	$(CC) -S $(CPFLAGS) -I$(INCDIR) $< -o $@
