@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.52 2004/03/18 18:42:59 haraldkipp Exp $
+$Id: ChangeLog,v 1.53 2004/03/18 19:59:25 haraldkipp Exp $
 
 2004-03-18  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -55,6 +55,18 @@ $Id: ChangeLog,v 1.52 2004/03/18 18:42:59 haraldkipp Exp $
 
 	* dev/irsony.c: Infrared interrupts now working. Thanks to
 	Michael Fischer, who reported this problem.
+
+	* Added Michael Fischer's WLAN driver almost unchanged. I had
+	to make some changes though, because the code mixes int
+	variables with long constants. GCC is very picky in these
+	things. This compiler also throws warnings, if static functions
+	or local variables are unused. Remember, we compile with -Werror.
+	I have marked my changes with '/* Harald:'. Additionally I
+	blindly put all in dev/ and updated the includes. FInally it
+	compiles, but not sure, what it does. The code needs some
+	extra care, but due to demand I put it in CVS in its current
+	state. If it breaks something, please remove it from the
+	Makefile.
 
 
 2004-03-17  Harald Kipp  <harald.kipp@egnite.de>

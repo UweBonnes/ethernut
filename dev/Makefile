@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.10  2004/03/18 19:59:26  haraldkipp
+# WLAN preview added
+#
 # Revision 1.9  2004/03/16 16:48:27  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
@@ -111,7 +114,7 @@ SRCS =  irqstack.c \
 	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
 	vs1001k.c ir.c irsony.c spidigio.c spiflash.c \
 	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
-	ppp.c chat.c \
+	ppp.c chat.c pcmcia.c wlan.c wlandrv.c \
 	ivect01.c ivect02.c ivect03.c ivect04.c ivect05.c ivect06.c \
 	ivect07.c ivect08.c ivect09.c ivect10.c ivect11.c ivect12.c \
 	ivect13.c ivect14.c ivect15.c ivect16.c ivect17.c ivect18.c \
