@@ -1,4 +1,55 @@
-$Id: ChangeLog,v 1.151 2005/01/21 16:49:18 freckle Exp $
+$Id: ChangeLog,v 1.152 2005/01/22 19:00:34 haraldkipp Exp $
+
+2005-01-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Makefile, Makedefs.avr-gcc, conf/cpp/cpp.nut,
+	conf/repository.nut, conf/tools.nut, include/cpp/nutcpp.h:
+	Added C++ patches contributed by Oliver Schulz (MPI). The
+	file nutcpp.h must be included by C++ applications. We got 
+	a real problem now, because this is not the same Oliver Schulz 
+	we know from several previous contributions. I'll add MPI to
+	his name, because he's currently working at the Max Planck 
+	Institute of Molecular Physiology in Dortmund.
+
+	* app/cppdemo/cppdemo.cc, app/cppdemo/Makefile: Not yet
+	documented very well, but it proofs that C++ is available
+	to Nut/OS applications.
+
+	* app/Makedefs.avr-icc: Compiling applications with external
+	RAM for variable space didn't work when using ICCAVR on the 
+	command line. This fixes it.
+
+	* arch/avr/init/crtnut.s, arch/avr/init/crtnutram.s,
+	arch/avr/init/init.s: Upgraded to the latest ICCAVR V6
+	release.
+
+	* arch/avr/init/crtenut.s, arch/avr/init/crtenutram.s,
+	arch/avr/init/ethini.s, conf/arch/arch.nut: Fixes external 
+	memory problems for ICCAVR and Ethernut 1.3 Rev-G. The 
+	RTL8019AS is now initialized early.
+
+	* os/arch/avr_nutinit.c: Fixes the same external memory 
+	problems on Ethernut 1.3 Rev-G for GCC.
+
+	* conf/repository.nut, conf/dev/dev.nut, dev/lanc111.c,
+	dev/nicrtl.c, dev/spidigio.c, dev/usart0avr.c, dev/usart1avr.c,
+	include/cfg/arch/avr.h:
+	Changed AVR port configuration names from PORTx to AVRPORTx.
+	Now the preprocessor is able to handle port related 
+	expressions even after avr/io.h has been included.
+
+	* dev/uartspi.c, dev/uarts.c, dev/Makefile, conf/dev/dev.nut: 
+	Removed uartspi devices. No one uses them any more.
+
+	* cfg/coconut.h, cfg/ethernut.h, cfg/modem.h: Marked
+	deprecated.
+
+	* os/nutinit.c: My assumption on moving the ms62_5 counter
+	from timer.c to nutinit.c to keep it in AVR's internal memory
+	was wrong. However, in most cases applications consume RAM by 
+	large uninitialized arrays. Explicitly initializing ms62_5 will 
+	help in most cases.
+
 
 2005-01-21  Matthias Ringwald <mringwal@inf.ethz.ch> 
 	* event.c: NutEventPostAsync -> NutEventPostFromIRQ,
@@ -27,7 +78,7 @@ $Id: ChangeLog,v 1.151 2005/01/21 16:49:18 freckle Exp $
 	* unix_devs.c: added includes for cygwin compile.
 	Implemented input flush (read with len = 0).
       
-2004-01-13  Harald Kipp  <harald.kipp@egnite.de>
+2005-01-13  Harald Kipp  <harald.kipp@egnite.de>
 
 	* conf/net/net.nut: Added dependencies to avoid compilation
 	of network parts for targets without network hardware.
