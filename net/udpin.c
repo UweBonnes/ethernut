@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/02/02 16:22:35  haraldkipp
+ * Do not wake up waiting threads if the incoming datagram
+ * doesn't fit in the buffer.
+ *
  * Revision 1.2  2003/11/24 21:01:04  drsung
  * Packet queue added for UDP sockets.
  *
@@ -152,6 +156,7 @@ void NutUdpInput(NETBUF * nb)
         if (sock->so_rx_cnt + nb->nb_ap.sz > sock->so_rx_bsz) {
             /* No, so discard it */
             NutNetBufFree(nb);
+            return;
         } else {
             /* if a first packet is already in the queue, find the end
              * and add the new packet */
