@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.105 2004/08/25 10:58:55 haraldkipp Exp $
+$Id: ChangeLog,v 1.106 2004/08/26 14:03:24 olereinhardt Exp $
+
+2004-08-26
+	* dev/hd44780_bus.c
+	Fixed cursor positionion for different devices. Now can set
+	four LCD types by defining: KS0073_CONTROLLER, LCD_4x20, LCD_4x16
 
 2004-08-25  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -33,6 +38,11 @@ $Id: ChangeLog,v 1.105 2004/08/25 10:58:55 haraldkipp Exp $
 	and top_blddir when building applications in the source
 	directory.
 
+
+2004-08-25  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>
+
+	* dev/candev.c, dev/candev.h
+	Added function to set acceptance filter
 
 2004-08-18  Harald Kipp  <harald.kipp@egnite.de>
 
