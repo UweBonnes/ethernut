@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/25 16:38:20  haraldkipp
+ * Do not use zero MAC
+ *
  * Revision 1.2  2004/02/02 18:54:22  drsung
  * gateway ip address was not set, if static network configuration from EEPROM is used.
  *
@@ -193,7 +196,11 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
      * Save configuration in EEPROM.
      */
     memcpy(confnet.cd_name, dev->dev_name, sizeof(confnet.cd_name));
-    memcpy(confnet.cdn_mac, nif->if_mac, sizeof(nif->if_mac));
+    /* Never save MAC address 0. */
+    if(nif->if_mac[0] || nif->if_mac[1] || nif->if_mac[2] ||
+        nif->if_mac[3] || nif->if_mac[4] || nif->if_mac[5]) {
+        memcpy(confnet.cdn_mac, nif->if_mac, sizeof(nif->if_mac));
+    }
     confnet.cdn_ip_addr = ip_addr;
     confnet.cdn_ip_mask = ip_mask;
 
