@@ -33,8 +33,8 @@
 
 /*
  * $Log$
- * Revision 1.3  2004/03/17 14:49:38  haraldkipp
- * Deprecated AVR functions removed.
+ * Revision 1.4  2004/03/17 14:58:30  haraldkipp
+ * Typos corrected
  *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
@@ -75,8 +75,8 @@
 
 #if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
 /* 
- * AVR is using separate file for each vector,
- * which save a lot of space and allows native
+ * AVR is using a separate file for each vector,
+ * which saves a lot of space and allows native
  * interrupts.
  */
 #elif defined(__arm__)
