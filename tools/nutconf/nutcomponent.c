@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/02/06 16:39:52  haraldkipp
+ * GBA linker script entry in NutConf.mk fixed
+ *
  * Revision 1.12  2004/11/24 15:36:53  haraldkipp
  * Release 1.1.1.
  * Do not store empty options.
@@ -83,7 +86,7 @@
  * possible.
  */
 //#define NUT_CONFIGURE_EXEC
-#define NUT_CONFIGURE_VERSION   "1.1.1"
+#define NUT_CONFIGURE_VERSION   "1.1.2"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1086,7 +1089,7 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
             if (opts->nco_enabled && opts->nco_active && opts->nco_makedefs) {
                 for (i = 0; opts->nco_makedefs[i]; i++) {
                     fprintf(fp, "%s", opts->nco_makedefs[i]);
-                    if(strchr(opts->nco_makedefs[i], '=') && opts->nco_value == NULL) {
+                    if(strchr(opts->nco_makedefs[i], '=') || opts->nco_value == NULL) {
                         fputc('\n', fp);
                     }
                     else {
