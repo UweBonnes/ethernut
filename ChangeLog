@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.154 2005/01/26 09:56:02 freckle Exp $
+$Id: ChangeLog,v 1.155 2005/02/02 17:00:48 haraldkipp Exp $
+
+2005-02-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/pro/pro.nut: DHCP configuration added.
+
+	* net/udpin.c: Do not wake up waiting threads if the incoming 
+	datagram doesn't fit in the buffer.
+
+	* doc/gen/nutfoot.html: Number of year updated.
+
+	* doc/gen/nut_en.cfg: Upgraded to Doxygen 1.4.1.
+
 
 2005-01-26  Matthias Ringwald <mringwal@inf.ethz.ch> 
 	
