@@ -49,8 +49,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:34  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/14 15:19:15  haraldkipp
+ * Echo support added.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:14:45  harald
  * Cleanup
@@ -65,6 +68,8 @@
 
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
+
+#include <string.h>
 
 /*!
  * \addtogroup xgLCP
@@ -111,14 +116,14 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         break;
 
     case PPPS_STOPPED:
         /* 
          * Negotiation started by our peer.
          */
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -200,7 +205,8 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
                 }
                 break;
 	    case LCP_MAGICNUMBER:
-                if(xcpo->xcpo_.ul == dcb->dcb_loc_magic) {
+                if(xcpo->xcpo_.ul == dcb->dcb_loc_magic || 
+                   xcpo->xcpo_.ul == dcb->dcb_neg_magic) {
                     dcb->dcb_rem_magic = new_magic;
                     len = 6;
                     xcpr->xcpo_.ul = dcb->dcb_rem_magic;
@@ -238,7 +244,7 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
         if (dcb->dcb_lcp_state == PPPS_ACKRCVD) {
             dcb->dcb_lcp_state = PPPS_OPENED;
             if(dcb->dcb_auth == PPP_PAP)
-                PapTxAuthReq(dev);
+                PapTxAuthReq(dev, ++dcb->dcb_reqid);
             else
                 IpcpLowerUp(dev);
         } else
@@ -281,8 +287,12 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
                     dcb->dcb_acked = 0;
                 break;
             case LCP_MAGICNUMBER:
-                if(xcpo->xcpo_.ul != dcb->dcb_loc_magic)
+                if(xcpo->xcpo_.ul == dcb->dcb_neg_magic) {
+                    dcb->dcb_loc_magic = dcb->dcb_neg_magic;
+                }
+                else {
                     dcb->dcb_acked = 0;
+                }
                 break;
             case LCP_PCOMPRESSION:
                 dcb->dcb_acked = 0;
@@ -322,7 +332,7 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
         break;
 
     case PPPS_ACKRCVD:
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
 
@@ -333,7 +343,7 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
         dcb->dcb_lcp_state = PPPS_OPENED;
         
         if(dcb->dcb_auth == PPP_PAP)
-            PapTxAuthReq(dev);
+            PapTxAuthReq(dev, ++dcb->dcb_reqid);
         else
             IpcpLowerUp(dev);
         break;
@@ -343,7 +353,7 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -397,12 +407,12 @@ static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
         if (ret < 0)
             dcb->dcb_lcp_state = PPPS_STOPPED;       /* kludge for stopping CCP */
         else
-            LcpTxConfReq(dev);
+            LcpTxConfReq(dev, ++dcb->dcb_reqid);
         break;
 
     case PPPS_ACKRCVD:
         /* Got a Nak/reject when we had already had an Ack?? oh well... */
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
 
@@ -411,7 +421,7 @@ static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -463,7 +473,7 @@ static void LcpRxTermAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     case PPPS_OPENED:
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid);
         break;
     }
 }
@@ -500,7 +510,7 @@ void LcpRxProtRej(NUTDEVICE *dev)
 }
 
 /*
- * Receive an Code-Reject.
+ * Received a Code-Reject.
  */
 static void LcpRxCodeRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
 {
@@ -510,6 +520,23 @@ static void LcpRxCodeRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     if (dcb->dcb_lcp_state == PPPS_ACKRCVD)
         dcb->dcb_lcp_state = PPPS_REQSENT;
+}
+
+/*
+ * Received an Echo-Request.
+ */
+static void LcpRxEchoReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
+{
+    PPPDCB *dcb = dev->dev_dcb;
+
+    if (dcb->dcb_lcp_state != PPPS_OPENED) {
+        NutNetBufFree(nb);
+    }
+    else {
+        /* Use local magic number. */
+        memcpy(nb->nb_ap.vp, &dcb->dcb_loc_magic, sizeof(u_long));
+        NutLcpOutput(dev, LCP_ERP, id, nb);
+    }
 }
 
 
@@ -588,6 +615,16 @@ void NutLcpInput(NUTDEVICE * dev, NETBUF * nb)
 
     case XCP_CODEREJ:
         LcpRxCodeRej(dev, lcp->xch_id, nb);
+        break;
+
+    case LCP_ERQ:
+        LcpRxEchoReq(dev, lcp->xch_id, nb);
+        break;
+
+    case LCP_ERP:
+    case LCP_DRQ:
+        /* Silently ignore echo responses and discard requests. */
+        NutNetBufFree(nb);
         break;
 
     default:
