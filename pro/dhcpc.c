@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2003/11/03 16:22:59  haraldkipp
+ * Renewal disabled if lease time is set to zero
+ *
  * Revision 1.6  2003/10/13 10:18:08  haraldkipp
  * Using new seconds counter
  *
@@ -683,7 +686,7 @@ THREAD(NutDhcpClient, arg)
             if (__tcp_trf)
                 fprintf(__tcp_trs, "[BOUND %lu]", NutGetSeconds() - secs);
 #endif
-            if(NutGetSeconds() - secs > dyncfg->dyn_leaseTime / 2UL) {
+            if(dyncfg->dyn_leaseTime && NutGetSeconds() - secs > dyncfg->dyn_leaseTime / 2UL) {
                 /* Lease time elapsed. */
                 while((sock = NutUdpCreateSocket(DHCP_CLIENTPORT)) == 0)
                     NutSleep(1000);
