@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/02/25 16:24:13  haraldkipp
+ * DHCP release added
+ *
  * Revision 1.3  2004/01/14 17:51:05  drsung
  * Fix for Win2k DHCP server applied. Thanks to Damian Slee
  *
@@ -179,6 +182,7 @@ struct bootp {
 __BEGIN_DECLS
 /* Function prototypes. */
 extern int NutDhcpIfConfig(CONST char *name, u_char *mac, u_long timeout);
+extern int NutDhcpRelease(CONST char *name, u_long timeout);
 extern int NutNetAutoConfig(CONST char *name);
 
 __END_DECLS
