@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2005/04/05 18:00:29  haraldkipp
+ * Make it work on the Gameboy Advance.
+ *
  * Revision 1.2  2004/09/08 10:18:23  haraldkipp
  * For EB40A
  *
@@ -127,6 +130,9 @@
 #ifdef MCU_AT91R40008
 #define DEV_DEBUG devDebug1
 #define DEV_DEBUG_NAME "uart1"
+#elif defined(MCU_GBA)
+#define DEV_DEBUG devDebug0
+#define DEV_DEBUG_NAME "con"
 #else
 #define DEV_DEBUG devDebug0
 #define DEV_DEBUG_NAME "uart0"

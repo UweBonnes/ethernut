@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2005/04/05 18:00:29  haraldkipp
+ * Make it work on the Gameboy Advance.
+ *
  * Revision 1.3  2004/09/10 10:31:06  haraldkipp
  * Use newer AVR UART device driver
  *
@@ -82,6 +85,11 @@
 #include <dev/debug.h>
 #define DEV_UART devDebug1
 #define DEV_UART_NAME "uart1"
+#elif defined(MCU_GBA)
+/* Only devDebug0 with name "con" supported with GBA */
+#include <dev/debug.h>
+#define DEV_UART devDebug0
+#define DEV_UART_NAME "con"
 #else
 #include <dev/usartavr.h>
 #define DEV_UART devUsartAvr0
