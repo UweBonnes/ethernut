@@ -1,6 +1,6 @@
-$Id: ChangeLog,v 1.177 2005/02/22 16:22:19 freckle Exp $
+$Id: ChangeLog,v 1.178 2005/02/22 16:26:27 freckle Exp $
 
-2005-02-17 Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-02-22 Matthias Ringwald <mringwal@.inf.ethz.ch>
 
 	* include/arch/avr.h: Added cpp test to guess avr-libc-version required 
 	to specify twi.h include path.
