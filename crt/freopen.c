@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/09/08 10:19:05  haraldkipp
+ * Todo: We need a better check for stdio channels!
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -93,9 +96,10 @@ FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
             return 0;
         }
 
-    if (stream > (FILE *) RAMSTART)
-        _close(stream->iob_fd);
-    else if ((__iob[i] = malloc(sizeof(FILE))) == 0)
+    //if (stream)
+    //    _close(stream->iob_fd);
+    //else 
+    if ((__iob[i] = malloc(sizeof(FILE))) == 0)
         return 0;
 
     if ((__iob[i]->iob_fd = _open(name, mflags)) == -1) {
