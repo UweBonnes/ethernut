@@ -8,7 +8,7 @@ OBJS = $(PROJ).o appoptdlg.o bldoptdlg.o configitem.o configtree.o enumeditctrl.
     iconinfo.o iconlist.o infowindow.o inteditctrl.o mainframe.o \
     nutconfdoc.o nutconfhint.o nutconfview.o propertylist.o repoptdlg.o \
     scrolledtree.o settings.o settingsdlg.o splitscroll.o texteditctrl.o \
-    tooloptdlg.o treecomp.o treeitemdata.o utils.o valuewindow.o nutcomponent.o
+    treecomp.o treeitemdata.o utils.o valuewindow.o nutcomponent.o
 
 
 .SUFFIXES:	.o .cpp .c
