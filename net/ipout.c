@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:33  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 16:00:23  haraldkipp
+ * Memory hole fixed.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:33  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.17  2003/04/01 18:31:47  harald
  * *** empty log message ***
@@ -239,8 +242,10 @@ int NutIpOutput(u_char proto, u_long dest, NETBUF * nb)
      * destination.
      */
     if (nif->if_type == IFT_ETHER) {
-        if (NutArpCacheQuery(dev, gate ? gate : dest, ha))
+        if (NutArpCacheQuery(dev, gate ? gate : dest, ha)) {
+            NutNetBufFree(nb);
             return -1;
+        }
         return (*nif->if_output)(dev, ETHERTYPE_IP, ha, nb);
     }
     else if (nif->if_type == IFT_PPP) 
