@@ -82,6 +82,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/04/15 19:28:02  drsung
+ * New function NutDnsGetMxByDomain to request
+ * an MX record from DNS server.
+ *
  * Revision 1.3  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -120,6 +124,7 @@ __BEGIN_DECLS
 extern void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdnsip);
 extern void NutDnsConfig(CONST u_char *hostname, CONST u_char *domain, u_long dnsip);
 extern u_long NutDnsGetHostByName(CONST u_char *hostname);
+extern u_long NutDnsGetMxByDomain(CONST u_char * hostname);
 
 __END_DECLS
 
