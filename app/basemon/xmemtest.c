@@ -40,9 +40,13 @@ static void *merr_addr;
 void XMemDisable(void)
 {
     /* Disable external memory bus. */
+#if defined(__AVR_AT90CAN128__)
+    cbi(XMCRA, SRE);
+#else
     cbi(MCUCR, SRE);
+#endif
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /* Disable write signal. */
     sbi(PORTG, PORTG0);
     sbi(DDRG, PORTG0);
@@ -59,19 +63,19 @@ void XMemDisable(void)
     /* Set latch register to zero. */
     outb(PORTA, 0);
     outb(DDRA, 0xFF);
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     cbi(PORTG, PORTG2);
     sbi(PORTG, PORTG2);
 #endif
 
     /* Set high address bus to zero. */
     outb(PORTC, 0);
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     outb(DDRC, 0xFF);
 #endif
 }
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 
 void XMemLatch(u_char val)
 {
@@ -140,9 +144,9 @@ int XMemTestBus(void)
 {
     u_char wb;
 
-    /* 
+    /*
      * Disable external memory bus. This will set the control bus
-     * signals high, clear the address latch and set all data and 
+     * signals high, clear the address latch and set all data and
      * address bus lines to low.
      */
     XMemDisable();
@@ -174,7 +178,7 @@ int XMemTestBus(void)
 
     /*
      * Check the data bus for any sticky bits. Note, that ALE is
-     * still low, so the latch contents (all zero) will appear on 
+     * still low, so the latch contents (all zero) will appear on
      * the high byte address bus lines. We switch AD0..AD7 into
      * input mode, enable the pullups and expect all line kept
      * high.
@@ -204,7 +208,7 @@ int XMemTestBus(void)
     outb(PORTA, 0);
     outb(DDRA, 0xFF);
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /*
      * Checking the high address bus is easy.
      */
@@ -246,7 +250,7 @@ size_t XMemTest(void)
     u_char pattern[] = { 0x00, 0xFF, 0x55, 0xAA };
     u_char *last = (u_char *)-1;
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /*
      * Test external memory bus on ATmega128 systems.
      */
@@ -258,10 +262,14 @@ size_t XMemTest(void)
     /*
      * Enable external RAM.
      */
+#if defined(__AVR_AT90CAN128__)
+    outb(XMCRA, BV(SRE));
+#else
     outb(MCUCR, BV(SRE));
+#endif
 
     /*
-     * Let's see, how many kBytes we have. A simple pattern test on the 
+     * Let's see, how many kBytes we have. A simple pattern test on the
      * first bytes of each kilobyte boundary will do.
      */
     for (mem = (u_char *)(RAMEND + 1); mem <= last; mem += 1024) {
@@ -270,9 +278,9 @@ size_t XMemTest(void)
             last = (u_char *)(mem - 1);
         }
 
-        /* 
+        /*
          * External RAM may not start at kilobyte boundary. Set the
-         * address to full kilobytes after first test. 
+         * address to full kilobytes after first test.
          */
         else if(mem == (u_char *)(RAMEND + 1)) {
             mem = (u_char *)((uptr_t)mem & ~0x3FF);
@@ -303,7 +311,7 @@ size_t XMemTest(void)
         }
 
         /*
-         * Do a walking bit test including all bits zero on the current 
+         * Do a walking bit test including all bits zero on the current
          * RAM location.
          */
         wb = 1;

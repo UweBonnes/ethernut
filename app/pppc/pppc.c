@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2005/02/23 04:44:35  hwmaier
+ * Changes in order to support AT90CAN128
+ *
  * Revision 1.3  2004/01/28 14:24:47  drsung
  * Bugfix for ICCAVR
  *
@@ -134,7 +137,7 @@
 /*
  * Debug output device settings.
  */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 #define DBGDEV      devDebug1   /* Use debug driver. */
 //#define DBGDEV      devUart1    /* Use standard UART driver. */
 #define DBGCOM      "uart1"     /* Device name. */
@@ -286,7 +289,7 @@ int main(void)
     /*
      * Register our devices.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     NutRegisterDevice(&DBGDEV, 0, 0);
 #endif
     NutRegisterDevice(&PPPDEV, 0, 0);
@@ -302,7 +305,7 @@ int main(void)
     /*
      * Set debug output speed.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     lctl = DBGSPEED;
     _ioctl(_fileno(stdout), UART_SETSPEED, &lctl);
 #endif
@@ -379,7 +382,7 @@ int main(void)
         puts("done");
 
         /*
-         * Set name server and default route. Actually the PPP interface 
+         * Set name server and default route. Actually the PPP interface
          * should do this, but the current release doesn't.
          */
         dcb = devPpp.dev_dcb;
@@ -414,7 +417,7 @@ int main(void)
                     puts("connected");
 
                     /*
-                     * Open a stream and associate it with the socket, so 
+                     * Open a stream and associate it with the socket, so
                      * we can use standard I/O. Note, that socket streams
                      * currently do support text mode.
                      */

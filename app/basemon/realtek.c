@@ -50,8 +50,8 @@ static int NicReset(void)
         }
         puts("failed\x07");
         /*
-         * Toggle the hardware reset line. Since Ethernut version 1.3 the 
-         * hardware reset pin of the nic is no longer connected to bit 4 
+         * Toggle the hardware reset line. Since Ethernut version 1.3 the
+         * hardware reset pin of the nic is no longer connected to bit 4
          * on port E, but wired to the board reset line.
          */
         if (j == 10) {
@@ -68,7 +68,7 @@ static int NicReset(void)
 
 static int DetectNicEeprom(void)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     register u_int cnt = 0;
 
     cli();
@@ -88,7 +88,11 @@ static int DetectNicEeprom(void)
     /*
      * No external memory access beyond this point.
      */
+#if defined(__AVR_AT90CAN128__)
+    cbi(XMCRA, SRE);
+#else
     cbi(MCUCR, SRE);
+#endif
 
     /*
      * Check, if the chip toggles our EESK input. If not, we do not
@@ -104,7 +108,11 @@ static int DetectNicEeprom(void)
     /*
      * Enable memory interface.
      */
+#if defined(__AVR_AT90CAN128__)
+    sbi(XMCRA, SRE);
+#else
     sbi(MCUCR, SRE);
+#endif
 
     /* Reset port outputs to default. */
     outb(PORTC, 0x00);
@@ -148,13 +156,13 @@ static prog_char nic_eeprom[18] = {
  */
 static void EmulateNicEeprom(void)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     register u_char clk;
     register u_char cnt;
     register u_char val;
 
     /*
-     * Prepare the EEPROM emulation port bits. Configure the EEDO and 
+     * Prepare the EEPROM emulation port bits. Configure the EEDO and
      * the EEMU lines as outputs and set EEDO to low and EEMU to high.
      */
     outb(PORTC, 0xC0);
@@ -171,13 +179,17 @@ static void EmulateNicEeprom(void)
     nic_outlb(NIC_PG3_EECR, NIC_EECR_EEM0);
 
     /*
-     * We can avoid wasting port pins for EEPROM emulation by using the 
+     * We can avoid wasting port pins for EEPROM emulation by using the
      * upper bits of the address bus.
      */
     /*
      * No external memory access beyond this point.
      */
+#if defined(__AVR_AT90CAN128__)
+    cbi(XMCRA, SRE);
+#else
     cbi(MCUCR, SRE);
+#endif
 
     /*
      * Loop for all EEPROM words.
@@ -185,7 +197,7 @@ static void EmulateNicEeprom(void)
     for(cnt = 0; cnt < sizeof(nic_eeprom); ) {
 
         /*
-         * 
+         *
          * 1 start bit, always high
          * 2 op-code bits
          * 7 address bits
@@ -197,14 +209,14 @@ static void EmulateNicEeprom(void)
         }
 
         /*
-         * Shift out the high byte, MSB first. Our data changes at the EESK 
+         * Shift out the high byte, MSB first. Our data changes at the EESK
          * rising edge. Data is sampled by the Realtek at the falling edge.
          */
         val = PRG_RDB(nic_eeprom + cnt);
         cnt++;
         for(clk = 0x80; clk; clk >>= 1) {
             while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            if(val & clk) 
+            if(val & clk)
                 sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
             while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
             cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
@@ -217,7 +229,7 @@ static void EmulateNicEeprom(void)
         cnt++;
         for(clk = 0x80; clk; clk >>= 1) {
             while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            if(val & clk) 
+            if(val & clk)
                 sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
             while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
             cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
@@ -234,7 +246,11 @@ static void EmulateNicEeprom(void)
     /*
      * Enable memory interface.
      */
+#if defined(__AVR_AT90CAN128__)
+    sbi(XMCRA, SRE);
+#else
     sbi(MCUCR, SRE);
+#endif
 
     /* Reset port outputs to default. */
     outb(PORTC, 0x00);
@@ -289,7 +305,6 @@ int RealtekTest(void)
          */
         for (;;) {
 
-#ifndef __AVR_ATmega128__
             /*
              * The hardware reset pin of the nic is connected
              * to bit 4 on port E. Make this pin an output pin
@@ -300,7 +315,6 @@ int RealtekTest(void)
             Delay(2000);
             cbi(PORTE, 4);
             Delay(20000);
-#endif
 
             /*
              * If the hardware reset didn't set the nic in reset
