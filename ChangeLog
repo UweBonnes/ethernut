@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.59 2004/04/15 11:18:02 haraldkipp Exp $
+$Id: ChangeLog,v 1.60 2004/04/15 19:32:29 drsung Exp $
+
+2004-04-15  Oliver Schulz  <olischulz@web.de>
+
+	* pro/dhcpc.c: Added support for hostname also in DHCPDiscover.
+
+	* pro/resolv.c: If the DNS server answers with more than one record, and 
+	the first has no ip address (CNAME), the function failed. 
+
+	* pro/resolv.c, include/netdb.h: New function NutDnsGetMxByDomain to 
+	request an MX record from DNS server.
+
 
 2004-04-15  Harald Kipp  <harald.kipp@egnite.de>
 
