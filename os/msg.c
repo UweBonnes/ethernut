@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/01/19 17:59:46  freckle
+ * Improved interrupt performance by reducing some critical section
+ *
  * Revision 1.2  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -214,7 +217,7 @@ static void NutMsgQTimerCb(HANDLE hndl, void *arg)
          * Also oneshots are important we expect it will go off
          */
         if (timer->mt_flags && TM_ONESHOT) {
-            timer->mt_handle = NutTimerStart(1, NutMsgQTimerCb, timer, TM_ONESHOT);
+            timer->mt_handle = NutTimerStartTicks(1, NutMsgQTimerCb, timer, TM_ONESHOT);
         }
     } else {
         /*We can't kill it b/c it kills it's self */

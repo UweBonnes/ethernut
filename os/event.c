@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/01/19 17:59:45  freckle
+ * Improved interrupt performance by reducing some critical section
+ *
  * Revision 1.7  2005/01/02 10:07:10  haraldkipp
  * Replaced platform dependant formats in debug outputs.
  *
@@ -170,6 +173,9 @@ void NutEventTimeout(HANDLE timer, void *arg)
  */
 int NutEventWait(volatile HANDLE * qhp, u_long ms)
 {
+    u_long ticks;
+    ticks = NutTimerMillisToTicks(ms);
+    
     NutEnterCritical();
 
     /*
@@ -210,7 +216,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      * a oneshot timer.
      */
     if (ms)
-        runningThread->td_timer = NutTimerStart(ms, NutEventTimeout, (void *) qhp, TM_ONESHOT);
+        runningThread->td_timer = NutTimerStartTicks(ticks, NutEventTimeout, (void *) qhp, TM_ONESHOT);
     else
         runningThread->td_timer = 0;
 
@@ -345,13 +351,13 @@ int NutEventPost(HANDLE * qhp)
 
     rc = NutEventPostAsync(qhp);
 
+    NutExitCritical();
+
     /*
      * If any thread with higher or equal priority is
      * ready to run, switch the context.
      */
     NutThreadYield();
-
-    NutExitCritical();
 
     return rc;
 }

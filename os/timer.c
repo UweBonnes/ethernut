@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/01/19 17:59:43  freckle
+ * Improved interrupt performance by reducing some critical section
+ *
  * Revision 1.10  2005/01/13 18:51:23  haraldkipp
  * Moved ms62_5 counter to nutinit.c to make sure this is located in internal
  * RAM (AVR platforms). This fixes the wrong baudrate bug for applications
@@ -255,7 +258,26 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
  * \return Timer handle if successfull, 0 otherwise. The handle
  *         may be used to stop the timer by calling TimerStop.
  */
+
+u_long NutTimerMillisToTicks(u_long ms)
+{
+    /*
+     * Calculate the number of system ticks.
+     */
+
+#if defined(NUT_CPU_FREQ) || defined(__linux__) || defined(__APPLE__)
+    return ms;
+#else
+	return (ms / 125) * 2 + ((ms % 125) > 62);
+#endif
+}
+
 HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_char flags)
+{
+	return NutTimerStartTicks(NutTimerMillisToTicks(ms), callback, arg, flags);
+}
+
+HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
 {
     NUTTIMERINFO *tn;
 
@@ -273,14 +295,7 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_
     }
 
     if (tn) {
-        /*
-         * Calculate the number of system ticks.
-         */
-#if defined(NUT_CPU_FREQ) || defined(__linux__) || defined(__APPLE__)
-        tn->tn_ticks_left = ms;
-#else                           /* !NUT_CPU_FREQ */
-        tn->tn_ticks_left = (ms / 125) * 2 + ((ms % 125) > 62);
-#endif                          /* !NUT_CPU_FREQ */
+        tn->tn_ticks_left = ticks;
 
         /*
          * Periodic timers will reload the tick counter
@@ -330,9 +345,11 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_
  */
 void NutSleep(u_long ms)
 {
+    u_long ticks;
     if (ms) {
+        ticks = NutTimerMillisToTicks(ms);        
         NutEnterCritical();
-        if ((runningThread->td_timer = NutTimerStart(ms, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
+        if ((runningThread->td_timer = NutTimerStartTicks(ticks, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
 #ifdef NUTDEBUG
             if (__os_trf) {
                 static prog_char fmt1[] = "Rem<%p>\n";

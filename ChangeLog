@@ -1,9 +1,16 @@
-$Id: ChangeLog,v 1.149 2005/01/19 17:03:31 freckle Exp $
+$Id: ChangeLog,v 1.150 2005/01/19 17:58:55 freckle Exp $
 
 2005-01-19  Matthias Ringwald <mringwal@inf.ethz.ch> 
 
 	* stdio.h, stdio_nut_wrapper.h, time.h: more fixes
 	for cygwin compilation
+
+	* timer.h, timer.c, event.c, msg.c: Made critical section
+	of NuTimerStart shorter. Extracted ms to ticks
+	conversion out of NutTimerStart as NutTimerMillisToTicks.
+	Extra function NutTimerStartTicks. Adapted NutSleep
+	and NutMsgQTimerCb to take benefit of this.
+ 	Improved critical section in NutEventPost.
 
 2005-01-19  Matthias Ringwald <mringwal@inf.ethz.ch> 
 
@@ -27,7 +34,7 @@ $Id: ChangeLog,v 1.149 2005/01/19 17:03:31 freckle Exp $
 	The volatile attribute of a pointer in NutTimerInsert() wasn't
 	really required and had been removed. In NutTimerStop() the
 	critical section had been reduced to improve interrupt
-	performance of the hole system. More could be done here.
+	performance of the whole system. More could be done here.
 
 
 2005-01-10  Ole Reinhardt <ole.reinhardt@embedded-it.de>

@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/01/19 17:59:42  freckle
+ * Improved interrupt performance by reducing some critical section
+ *
  * Revision 1.4  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -126,6 +129,8 @@ extern void NutTimerInit(void);
 #define TM_ONESHOT  0x01
 
 extern HANDLE NutTimerStart(u_long ms, void (*callback)(HANDLE, void *), void *arg, u_char flags);
+extern HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
+extern u_long NutTimerMillisToTicks(u_long ms);
 extern void NutTimerStop(HANDLE handle);
 extern void NutTimerStopAsync(HANDLE handle);
 extern void NutSleep(u_long ms);
