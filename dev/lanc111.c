@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/01/14 19:31:43  drsung
+ * Speed improvement to NicWrite applied. Thanks to Kolja Waschk
+ *
  * Revision 1.4  2003/11/06 09:26:50  haraldkipp
  * Removed silly line with hardcoded MAC, left over from testing
  *
@@ -402,16 +405,16 @@
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {
-    HANDLE volatile ni_rx_rdy;      /*!< Receiver event queue. */
-    HANDLE volatile ni_tx_rdy;      /*!< Transmitter event queue. */
-    u_short ni_tx_cnt;              /*!< Number of bytes in transmission queue. */
-    u_long ni_rx_packets;           /*!< Number of packets received. */
-    u_long ni_tx_packets;           /*!< Number of packets sent. */
-    u_long ni_interrupts;           /*!< Number of interrupts. */
-    u_long ni_overruns;             /*!< Number of packet overruns. */
-    u_long ni_rx_frame_errors;      /*!< Number of frame errors. */
-    u_long ni_rx_crc_errors;        /*!< Number of CRC errors. */
-    u_long ni_rx_missed_errors;     /*!< Number of missed packets. */
+    HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
+    HANDLE volatile ni_tx_rdy;  /*!< Transmitter event queue. */
+    u_short ni_tx_cnt;          /*!< Number of bytes in transmission queue. */
+    u_long ni_rx_packets;       /*!< Number of packets received. */
+    u_long ni_tx_packets;       /*!< Number of packets sent. */
+    u_long ni_interrupts;       /*!< Number of interrupts. */
+    u_long ni_overruns;         /*!< Number of packet overruns. */
+    u_long ni_rx_frame_errors;  /*!< Number of frame errors. */
+    u_long ni_rx_crc_errors;    /*!< Number of CRC errors. */
+    u_long ni_rx_missed_errors; /*!< Number of missed packets. */
 };
 
 /*!
@@ -621,7 +624,7 @@ static int NicPhyConfig(void)
         if (phy_to >= 1024)
             return -1;
         /* Restart auto negotiation every 4 seconds or on failures. */
-        if ((phy_to & 127) == 0 /* || (phy_sr & PHYSR_REM_FLT) != 0 */) {
+        if ((phy_to & 127) == 0 /* || (phy_sr & PHYSR_REM_FLT) != 0 */ ) {
             NicPhyWrite(NIC_PHYCR, PHYCR_ANEG_EN | PHYCR_ANEG_RST);
             //printf("Restart..");
             NutSleep(63);
@@ -809,21 +812,41 @@ static void NicInterrupt(void *arg)
 }
 
 /*
- * Read data block from the NIC.
+ * Write data block to the NIC.
  */
-static void NicWrite(u_char * buf, int len)
+static void NicWrite(u_char * buf, u_short len)
 {
-    for (; len; len--)
-        nic_outlb(NIC_DATA, *buf++);
+    register u_short l = len - 1;
+    register u_char ih = (u_short) l >> 8;
+    register u_char il = (u_char) l;
+
+    if (!len)
+        return;
+
+    do {
+        do {
+            nic_outlb(NIC_DATA, *buf++);
+        } while (il-- != 0);
+    } while (ih-- != 0);
 }
 
 /*
- * Write data block to the NIC.
+ * Read data block from the NIC.
  */
-static void NicRead(u_char * buf, int len)
+static void NicRead(u_char * buf, u_short len)
 {
-    for (; len; len--)
-        *buf++ = nic_inlb(NIC_DATA);
+    register u_short l = len - 1;
+    register u_char ih = (u_short) l >> 8;
+    register u_char il = (u_char) l;
+
+    if (!len)
+        return;
+
+    do {
+        do {
+            *buf++ = nic_inlb(NIC_DATA);
+        } while (il-- != 0);
+    } while (ih-- != 0);
 }
 
 /*!
