@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/11/12 16:27:42  olereinhardt
+ * Added critical section around NutEventPostAsync
+ *
  * Revision 1.4  2004/09/17 14:31:37  olereinhardt
  * Compile only if __GNUC__ defined
  *
@@ -251,7 +254,9 @@ void SJAOutput(NUTDEVICE * dev, CANFRAME * frame)
     ci = (CANINFO *) dev->dev_dcb;
 
     CANBufferPutMutex(&CAN_TX_BUF, frame);
+    NutEnterCritical();
     NutEventPostAsync(&ci->can_tx_rdy);
+    NutExitCritical();
 }
 
 /*!
