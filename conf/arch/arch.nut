@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.5  2004/09/08 10:18:54  haraldkipp
+-- C startup on ARM platforms only
+--
 -- Revision 1.4  2004/09/07 19:07:45  haraldkipp
 -- MCU type in NutConf.mk and cstartup added.
 --
@@ -176,5 +179,6 @@ nutarch =
         brief = "C Startup",
         sources = { "arm/init/crt$(LDNAME).S" },
         targets = { "arm/init/crt$(LDNAME).o" },
+        requires = { "TOOL_CC_ARM" },
     },
 }
