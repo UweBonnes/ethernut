@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2003/12/12 23:14:11  drsung
+ * Rewritten %P handling for program space strings
+ *
  * Revision 1.5  2003/12/12 20:23:17  drsung
  * Fixed %P handling
  *
@@ -61,6 +64,7 @@
 
 #include <string.h>
 #include "nut_io.h"
+#include <stdlib.h>
 
 /*!
  * \addtogroup xgCrtStdio
@@ -225,8 +229,25 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             sign = 0;
             break;
 
+        case 'P':
+            /* 
+             * Thanks to Ralph Mason and Damian Slee, who provided some ideas of
+             * handling prog_char strings
+             */
+            cp = va_arg(ap, char *);    /* retrieve pointer */
+            if (cp == 0) {      /* if NULL pointer jump to std %s handling */
+                ch = 's';       /* manipulate ch, so 'free' is later not called */
+                goto putf_s;
+            }
+            size = strlen_P(cp);        /* get length of string */
+            xdigs = malloc(size + 1);   /* allocate buffer to store string */
+            strcpy_P(xdigs, cp);        /* copy the string to RAM */
+            cp = xdigs;         /* use cp for further processing */
+            goto putf_s;        /* jump to std %s handling */
+
         case 's':
             cp = va_arg(ap, char *);
+          putf_s:
             if (cp == 0)
                 cp = "(null)";
             if (prec >= 0) {
@@ -240,30 +261,6 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
                     size = prec;
             } else
                 size = strlen(cp);
-            sign = 0;
-            break;
-
-        case 'P':              /* Program Chars */
-            /* Thanks to Ralph Mason who added this support. */
-            cp = va_arg(ap, char *);
-            xdigs = buf;
-            n = 0;
-            while (1) {
-                u_char ch = PRG_RDB(cp++);
-                if (!ch)
-                    break;
-                *xdigs++ = ch;
-                n++;
-
-                if (n == BUF) {
-                    _putb(fd, buf, n);
-                    n = 0;
-                    xdigs = buf;
-                }
-            }
-            if (n)
-                _putb(fd, buf, n);
-            size = 0;
             sign = 0;
             break;
 
@@ -420,6 +417,9 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
         _putpad(_putb, fd, zeroes, dprec - size);
 
         _putb(fd, cp, size);
+
+        if (ch == 'P')
+            free(cp);
 
         if (flags & LADJUST)
             _putpad(_putb, fd, blanks, width - realsz);
