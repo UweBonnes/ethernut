@@ -2,7 +2,7 @@
 #define _PRO_DHCP_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/18 11:22:03  haraldkipp
+ * Deprecated functions removed
+ *
  * Revision 1.4  2004/02/25 16:24:13  haraldkipp
  * DHCP release added
  *
@@ -183,7 +186,6 @@ __BEGIN_DECLS
 /* Function prototypes. */
 extern int NutDhcpIfConfig(CONST char *name, u_char *mac, u_long timeout);
 extern int NutDhcpRelease(CONST char *name, u_long timeout);
-extern int NutNetAutoConfig(CONST char *name);
 
 __END_DECLS
 

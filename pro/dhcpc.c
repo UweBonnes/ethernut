@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2004/03/18 11:24:01  haraldkipp
+ * Deprecated functions removed
+ *
  * Revision 1.11  2004/03/03 17:53:28  drsung
  * Support for new field 'hostname' in structure confos added.
  *
@@ -1228,24 +1231,6 @@ int NutDhcpRelease(CONST char *name, u_long timeout)
     dhcpState = DHCPST_RELEASING;
     NutEventPost(&dhcpWake);
     return NutEventWait(&dhcpDone, timeout);
-}
-
-/*!
- * \brief Automatically configure a network interface.
- *
- * This function is deprecated. New applications should call
- * NutDhcpIfConfig().
- *
- * 
- *
- * \param name Name of the device.
- *
- * \return 0 on success, -1 otherwise.
- *
- */
-int NutNetAutoConfig(CONST char *name)
-{
-    return NutDhcpIfConfig(name, 0, 0);
 }
 
 /*@}*/
