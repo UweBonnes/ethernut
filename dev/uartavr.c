@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 10:09:27  haraldkipp
+ * Removed deprecated raw I/O
+ *
  * Revision 1.2  2003/07/20 18:28:10  haraldkipp
  * Explain how to disable timeout.
  *
@@ -77,41 +80,6 @@
  * \addtogroup xgUartAvr
  */
 /*@{*/
-
-/*!
- * \brief Get raw byte from the UART receiver register.
- *
- * \deprecated Will be removed in the near future.
- *
- * \param cp Pointer to the character buffer.
- *
- * \return 1 if a byte has been available, 0 otherwise.
- */
-int UartAvrGetRaw(u_char * cp)
-{
-    if ((inp(USR) & BV(RXC)) == 0)
-        return 0;
-    *cp = inp(UDR);
-    return 1;
-}
-
-/*!
- * \brief Put raw byte to the UART transmit register.
- *
- * \deprecated Will be removed in the near future.
- *
- * \param ch Character to transmit.
- *
- * \return 1 if the byte has been stored in the transmit
- *         register, 0 if the transmitter is busy.
- */
-int UartAvrPutRaw(u_char ch)
-{
-    if ((inp(USR) & BV(UDRE)) == 0)
-        return 0;
-    outp(ch, UDR);
-    return 1;
-}
 
 /*
  * Handle AVR UART transmit complete.
