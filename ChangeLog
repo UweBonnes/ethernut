@@ -1,4 +1,31 @@
-$Id: ChangeLog,v 1.130 2004/10/14 16:50:23 drsung Exp $
+$Id: ChangeLog,v 1.131 2004/11/08 18:07:36 haraldkipp Exp $
+
+2004-11-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Makedefs.arm-gcc, app/Makedefs.arm-gcc: Generating code 
+	that works with mixed arm and thumb mode (interwork). Usage 
+	of frame pointer disabled. No idea why, but it failed on 
+	the Gameboy when code uses a frame pointer register.
+
+	* arch/arm/init/crtgbaxport2.S: Interrupt handling
+	removed. It didn't work, didn't even compile without
+	modification. GBA interrupt support is still a hack.
+
+	* dev/debug_gba.c: Now supports carriage return.
+
+	* dev/twif.c: Several fixes, don't ask me about details.
+	I'm really fed up with this. But we've got four ATmegas
+	running Nut/OS in multimaster mode for days without
+	problem.
+
+	* include/dev/usart.h: Changed rbf_head, rbf_tail and
+	rbf_cnt in the RINGBUFF structure to volatile, because
+	they are modified by the interrupt routines.
+
+	* os/heap.c: Allocated sizes are adjusted to 32-bit
+	boundaries. I know this is botch. We need something
+	more general to configure alignment.
+
 
 2004-10-14  Oliver Schulz  <olischulz@web.de>
 
