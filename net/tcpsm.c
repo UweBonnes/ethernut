@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2003/11/28 19:49:58  haraldkipp
+ * TCP connections suddenly drop during transmission.
+ * Bug in retransmission timer fixed.
+ *
  * Revision 1.5  2003/11/04 17:57:35  haraldkipp
  * Bugfix: Race condition left socket in close-wait state
  *
@@ -322,7 +326,7 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
              */
             if (++sock->so_tx_dup >= 3) {
                 /* Restart the retransmission timer. */
-                sock->so_retran_time = (u_short)NutGetMillis();
+                sock->so_retran_time = (u_short) NutGetMillis();
                 sock->so_tx_dup = 0;
 #ifdef NUTDEBUG
                 if (__tcp_trf)
@@ -365,7 +369,11 @@ static void NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
     /*
      * Reset retransmit timer and wake up waiting transmissions.
      */
-    sock->so_retran_time = (u_short)NutGetMillis();
+    if (sock->so_tx_nbq) {
+        sock->so_retran_time = (u_short) NutGetMillis();
+    } else {
+        sock->so_retran_time = 0;
+    }
     NutEventPost(&sock->so_tx_tq);
 }
 
@@ -579,14 +587,14 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
 
     if (rc == 0) {
         sock->so_state = state;
-        if(txf && NutTcpOutput(sock, 0, 0)) {
-            if(state == TCPS_SYN_SENT) {
+        if (txf && NutTcpOutput(sock, 0, 0)) {
+            if (state == TCPS_SYN_SENT) {
                 rc = -1;
                 sock->so_last_error = EHOSTDOWN;
                 NutEventPost(&sock->so_ac_tq);
             }
         }
-        if(state == TCPS_CLOSE_WAIT) {
+        if (state == TCPS_CLOSE_WAIT) {
             /*
              * Inform application.
              */
@@ -740,7 +748,7 @@ int NutTcpStateWindowEvent(TCPSOCKET * sock)
  */
 void NutTcpStateRetranTimeout(TCPSOCKET * sock)
 {
-    if ((u_short)NutGetMillis() - sock->so_retran_time > 3000) {
+    if ((u_short) NutGetMillis() - sock->so_retran_time > 3000) {
         /* Stop the retransmission timer. */
         sock->so_retran_time = 0;
         sock->so_time_wait = 0;
@@ -764,10 +772,9 @@ void NutTcpStateRetranTimeout(TCPSOCKET * sock)
             NutEventBroadcast(&sock->so_rx_tq);
             NutEventBroadcast(&sock->so_tx_tq);
             NutEventBroadcast(&sock->so_pc_tq);
-        }
-        else {
+        } else {
             /* Restart the retransmission timer. */
-            sock->so_retran_time = (u_short)NutGetMillis();
+            sock->so_retran_time = (u_short) NutGetMillis();
         }
     }
 }
@@ -1390,11 +1397,11 @@ THREAD(NutTcpSm, arg)
                          *
                          * Yes, we really need round trip time calculation.
                          */
-                        if ((u_short)NutGetMillis() - sock->so_retran_time > 500) {
+                        if ((u_short) NutGetMillis() - sock->so_retran_time > 500) {
                             NutTcpStateRetranTimeout(sock);
                         }
                     } else if (sock->so_state != TCPS_CLOSE_WAIT) {
-                        if ((u_short)NutGetMillis() - sock->so_retran_time > 1000) {
+                        if ((u_short) NutGetMillis() - sock->so_retran_time > 1000) {
                             NutTcpStateRetranTimeout(sock);
                         }
                     }
