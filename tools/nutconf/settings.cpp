@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.3  2004/08/18 17:22:28  haraldkipp
+ * STK500 is the default programmer
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -67,7 +70,7 @@ CSettings::CSettings()
     m_source_dir_default = wxT("nut");
     m_platform_default = wxT("avr-gcc");
     m_app_dir_default = wxT("nutapp");
-    m_programmer_default = wxT("uisp-avr");
+    m_programmer_default = wxT("avr-uisp-stk500");
 
     wxConfigBase *pConfig = wxConfigBase::Get();
     if (pConfig) {
