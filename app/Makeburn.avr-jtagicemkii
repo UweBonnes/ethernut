@@ -1,0 +1,6 @@
+# Atmel JTAGICE mk-II Programmer
+BURN="c:/Program Files/Atmel/AVR Tools/JTAGICEmkII/jtagiceii.exe"
+BURNPORT=auto
+BURNTARGET=$(MCU)
+BURNFLAGS=-c$(BURNPORT) -d$(BURNTARGET) -e -pf -if$(TARG)
+

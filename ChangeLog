@@ -1,4 +1,20 @@
-$Id: ChangeLog,v 1.174 2005/02/21 12:37:59 phblum Exp $
+$Id: ChangeLog,v 1.175 2005/02/22 02:53:58 hwmaier Exp $
+
+2005-02-22  Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * app/Makeburn.avr-uisp-stk500: Replaced hardcoded processor definition
+        with MCU definition to allow burning of AT90CAN128 once it is supported
+        by uisp.
+
+        * app/Makeburn.avr-jtagice, app/Makeburn.avr-jtagicemkii: Added to
+        support Atmel JTAGICE programmers (Windows only, as Atmel provides
+        only Windows tools)
+
+        * app/httpd/httpserv.c:
+        Changed "#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)"
+        to a more generic "#if defined(__AVR__)" in order to support
+        AT90CAN128 device as well.
+
 
 2005-02-21 Philipp Blum <blum@tik.ee.ethz.ch>
 
