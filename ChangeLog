@@ -1,4 +1,17 @@
-$Id: ChangeLog,v 1.26 2004/01/25 11:34:36 drsung Exp $
+$Id: ChangeLog,v 1.27 2004/01/30 11:39:23 haraldkipp Exp $
+
+2004-01-30  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/ipcpin.c: Fixed a memory hole in case of incoming IPCP
+	with bad identifiers.
+
+	* net/lcpout.c: Added a parameter to LcpTxConfReq to handle
+	rejected magic number requests. This is a dirty hack, but
+	should help for now. All calls in lcpin.c and pppsm.c plus
+	the prototype in include/netinet/if_ppp.h had been adapted as 
+	well. Thanks to Alex Joni and Zoltan Korbai, who discovered
+	this problem.
+
 
 2004-01-25  Oliver Schulz  <olischulz@web.de>
 
