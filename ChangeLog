@@ -1,4 +1,19 @@
-$Id: ChangeLog,v 1.102 2004/08/11 22:21:42 freckle Exp $
+$Id: ChangeLog,v 1.103 2004/08/18 16:48:12 haraldkipp Exp $
+
+2004-08-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* crt/putf.c: Compile error on non-Harvard architecture fixed.
+
+	* app/*/Makefile: Replaced top_srcdir by parent directory to
+	allow independant application directories.
+
+	* tools/nutconf, conf/*.nut: Tool is working now on Win32 and 
+	Linux for avr-gvv.
+
+	* makedefs.avr-gcc, makerules.avr-gcc: Copied from .gcc to have
+	a more consistent naming convention. The original files may be
+	removed later.
+
 
 2004-08-11  Matthias Ringwald <mringwal@inf.ethz.ch>
     * dev/unix_devs.c: removed a potential dead lock,
