@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/12/17 15:31:28  haraldkipp
+ * Support of rising edge interrupts for hardware w/o inverter gate.
+ * Fixed compilation issue for hardware with RTL reset port.
+ * Thanks to FOCUS Software Engineering Pty Ltd.
+ *
  * Revision 1.8  2004/09/10 10:36:01  haraldkipp
  * ICCAVR compile problems fixed
  *
@@ -134,6 +139,30 @@
 
 #endif
 
+// HM: RESET port added
+#if (PIO_NAME(RTL_RESET_PORT) == PIO_PORTB)
+#define RTL_RESET_PIN    PINB
+#define RTL_RESET_DDR    DDRB
+
+#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTC)
+#define RTL_RESET_PIN    PINC
+#define RTL_RESET_DDR    DDRC
+
+#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTD)
+#define RTL_RESET_PIN    PIND
+#define RTL_RESET_DDR    DDRD
+
+#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTE)
+#define RTL_RESET_PIN    PINE
+#define RTL_RESET_DDR    DDRE
+
+#elif (PIO_NAME(RTL_RESET_PORT) == PIO_PORTF)
+#define RTL_RESET_PIN    PINF
+#define RTL_RESET_DDR    DDRF
+
+#endif
+// End HM
+
 #include <string.h>
 
 #include <sys/atom.h>
@@ -158,37 +187,47 @@
 /*!
  * \brief Interrupt used.
  */
+// HM: Support of rising edge interrupts for HW w/o inverter gate
 #if (RTL_SIGNAL_IRQ == INT0)
 #define RTL_SIGNAL sig_INTERRUPT0
 #define SIGNAL_NAME "sig_INTERRUPT0"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC00); sbi(EICRA, ISC01)
 
 #elif (RTL_SIGNAL_IRQ == INT1)
 #define RTL_SIGNAL sig_INTERRUPT1
 #define SIGNAL_NAME "sig_INTERRUPT1"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC10); sbi(EICRA, ISC11)
 
 #elif (RTL_SIGNAL_IRQ == INT2)
 #define RTL_SIGNAL sig_INTERRUPT2
 #define SIGNAL_NAME "sig_INTERRUPT2"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC20); sbi(EICRA, ISC21)
 
 #elif (RTL_SIGNAL_IRQ == INT3)
 #define RTL_SIGNAL sig_INTERRUPT3
 #define SIGNAL_NAME "sig_INTERRUPT3"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRA, ISC30); sbi(EICRA, ISC31)
 
 #elif (RTL_SIGNAL_IRQ == INT4)
 #define RTL_SIGNAL sig_INTERRUPT4
 #define SIGNAL_NAME "sig_INTERRUPT4"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC40); sbi(EICRB, ISC41)
 
 #elif (RTL_SIGNAL_IRQ == INT6)
 #define RTL_SIGNAL sig_INTERRUPT6
 #define SIGNAL_NAME "sig_INTERRUPT6"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC60); sbi(EICRB, ISC61)
 
 #elif (RTL_SIGNAL_IRQ == INT7)
 #define RTL_SIGNAL sig_INTERRUPT7
 #define SIGNAL_NAME "sig_INTERRUPT7"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC70); sbi(EICRB, ISC71)
 
 #else
 #define RTL_SIGNAL sig_INTERRUPT5
 #define SIGNAL_NAME "sig_INTERRUPT5"
+#define RTL_RISING_EDGE_MODE()   sbi(EICRB, ISC50); sbi(EICRB, ISC51)
+// End HM
 
 #endif
 
@@ -256,11 +295,21 @@
  */
 static INLINE void Delay16Cycles(void)
 {
-    _NOP(); _NOP(); _NOP();
-    _NOP(); _NOP(); _NOP();
-    _NOP(); _NOP(); _NOP();
-    _NOP(); _NOP(); _NOP();
-    _NOP(); _NOP(); _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
     _NOP();
 }
 
@@ -322,8 +371,8 @@ static int NicReset(void)
              * read noise instead of the register. To solve this
              * problem, we will verify the NIC's id.
              */
-            if ((NICINB(NIC_PG0_ISR) & NIC_ISR_RST) != 0 &&
-                NICINB(NIC_PG0_RBCR0) == 0x50 &&
+            if ((NICINB(NIC_PG0_ISR) & NIC_ISR_RST) != 0 &&     /* */
+                NICINB(NIC_PG0_RBCR0) == 0x50 &&        /* */
                 NICINB(NIC_PG0_RBCR1) == 0x70)
                 return 0;
         }
@@ -376,11 +425,10 @@ static int DetectNicEeprom(void)
      * Check, if the chip toggles our EESK input. If not, we do not
      * have EEPROM emulation hardware.
      */
-    if(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT)) {
-        while(++cnt && bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
-    }
-    else {
-        while(++cnt && bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+    if (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT)) {
+        while (++cnt && bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+    } else {
+        while (++cnt && bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
     }
 
 #ifdef RTL_EE_MEMBUS
@@ -389,7 +437,7 @@ static int DetectNicEeprom(void)
      */
 #ifdef __AVR_ATmega128__
     /* On the ATmega 128 we release bits 5-7 as normal port pins. */
-    outb(XMCRB, inb(XMCRB) & ~( _BV(XMM0) | _BV(XMM1)));
+    outb(XMCRB, inb(XMCRB) & ~(_BV(XMM0) | _BV(XMM1)));
 #else
     /* On the ATmega 103 we have to disable the external memory interface. */
     sbi(MCUCR, SRE);
@@ -408,7 +456,7 @@ static int DetectNicEeprom(void)
     NutExitCritical();
 
     /* Wait until controller ready. */
-    while(NICINB(NIC_CR) != (NIC_CR_STP | NIC_CR_RD2));
+    while (NICINB(NIC_CR) != (NIC_CR_STP | NIC_CR_RD2));
 
     return cnt ? 0 : -1;
 #else
@@ -424,14 +472,14 @@ static int DetectNicEeprom(void)
  * can be modified.
  */
 static prog_char nic_eeprom[18] = {
-    0xFF,   /* CONFIG2: jPL1 jPL0   0      jBS4   jBS3   jBS2  jBS1  jBS0  */
-    0xFF,   /* CONFIG1: 1    jIRQS2 jIRQS1 jIRQS0 jIOS3  jIOS2 jIOS1 jIOS0 */
+    0xFF,                       /* CONFIG2: jPL1 jPL0   0      jBS4   jBS3   jBS2  jBS1  jBS0  */
+    0xFF,                       /* CONFIG1: 1    jIRQS2 jIRQS1 jIRQS0 jIOS3  jIOS2 jIOS1 jIOS0 */
 
-    0xFF,   /* CONFIG4: -    -      -      -      -      -     -     IOMS  */
-    0x30,   /* CONFIG3  PNP  FUDUP  LEDS1  LEDS0  -      0     PWRDN ACTB  */
+    0xFF,                       /* CONFIG4: -    -      -      -      -      -     -     IOMS  */
+    0x30,                       /* CONFIG3  PNP  FUDUP  LEDS1  LEDS0  -      0     PWRDN ACTB  */
 
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, /* MAC */
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF /* ID */
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF      /* ID */
 };
 #endif
 
@@ -499,7 +547,7 @@ static void EmulateNicEeprom(void)
     /*
      * Loop for all EEPROM words.
      */
-    for(cnt = 0; cnt < sizeof(nic_eeprom); ) {
+    for (cnt = 0; cnt < sizeof(nic_eeprom);) {
 
         /*
          * 
@@ -508,9 +556,9 @@ static void EmulateNicEeprom(void)
          * 7 address bits
          * 1 dir change bit, always low
          */
-        for(clk = 0; clk < 11; clk++) {
-            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+        for (clk = 0; clk < 11; clk++) {
+            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
         }
 
         /*
@@ -519,11 +567,11 @@ static void EmulateNicEeprom(void)
          */
         val = PRG_RDB(nic_eeprom + cnt);
         cnt++;
-        for(clk = 0x80; clk; clk >>= 1) {
-            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            if(val & clk) 
+        for (clk = 0x80; clk; clk >>= 1) {
+            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            if (val & clk)
                 sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
             cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
         }
 
@@ -532,19 +580,19 @@ static void EmulateNicEeprom(void)
          */
         val = PRG_RDB(nic_eeprom + cnt);
         cnt++;
-        for(clk = 0x80; clk; clk >>= 1) {
-            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            if(val & clk) 
+        for (clk = 0x80; clk; clk >>= 1) {
+            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            if (val & clk)
                 sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
-            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
             cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
         }
 
 
         /* 5 remaining clock cycles. */
-        for(clk = 0; clk < 5; clk++) {
-            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
-            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+        for (clk = 0; clk < 5; clk++) {
+            while (bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            while (bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
         }
     }
 
@@ -554,7 +602,7 @@ static void EmulateNicEeprom(void)
      */
 #ifdef __AVR_ATmega128__
     /* On the ATmega 128 we release bits 5-7 as normal port pins. */
-    outb(XMCRB, inb(XMCRB) & ~( _BV(XMM0) | _BV(XMM1)));
+    outb(XMCRB, inb(XMCRB) & ~(_BV(XMM0) | _BV(XMM1)));
 #else
     /* On the ATmega 103 we have to disable the external memory interface. */
     sbi(MCUCR, SRE);
@@ -935,7 +983,7 @@ static NETBUF *NicGetPacket(void)
      */
     if ((bnry = NICINB(NIC_PG0_BNRY) + 1) >= NIC_STOP_PAGE)
         bnry = NIC_FIRST_RX_PAGE;
-        
+
     if (bnry == curr) {
         sbi(EIMSK, RTL_SIGNAL_IRQ);
         return 0;
@@ -958,7 +1006,7 @@ static NETBUF *NicGetPacket(void)
     /*
      *  Check packet length. Silently discard packets of illegal size.
      */
-    if (hdr.ph_size < 60 + sizeof(struct nic_pkt_header) ||
+    if (hdr.ph_size < 60 + sizeof(struct nic_pkt_header) ||     /* */
         hdr.ph_size > 1514 + sizeof(struct nic_pkt_header)) {
         drop = 1;
     }
@@ -980,7 +1028,7 @@ static NETBUF *NicGetPacket(void)
         }
         if (nextpg1 != hdr.ph_nextpg) {
             sbi(EIMSK, RTL_SIGNAL_IRQ);
-            return (NETBUF *)0xFFFF;
+            return (NETBUF *) 0xFFFF;
         }
         nextpg = nextpg1;
     }
@@ -1183,7 +1231,7 @@ THREAD(NicRx, arg)
      * set.
      */
     if ((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF) {
-        while((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF)
+        while ((ifn->if_mac[0] & ifn->if_mac[1] & ifn->if_mac[2]) == 0xFF)
             NutSleep(125);
         cbi(EIMSK, RTL_SIGNAL_IRQ);
         NicStart(ifn->if_mac);
@@ -1198,15 +1246,15 @@ THREAD(NicRx, arg)
          */
         do {
             nb = NicGetPacket();
-            
+
             /* The sanity check may fail because the controller is too busy.
                restart the NIC. */
-            if ((u_short)nb == 0xFFFF) {
+            if ((u_short) nb == 0xFFFF) {
                 NicStart(ifn->if_mac);
                 ni->ni_rx_size_errors++;
             } else if (nb) {
                 ni->ni_rx_packets++;
-                (*ifn->if_recv)(dev, nb);
+                (*ifn->if_recv) (dev, nb);
             }
         } while (nb);
     }
@@ -1263,7 +1311,7 @@ int NicInit(NUTDEVICE * dev)
      * We need to know our MAC address. If no configuration is 
      * available, load it now.
      */
-    if(confnet.cd_size == 0)
+    if (confnet.cd_size == 0)
         NutNetLoadConfig(dev->dev_name);
 
     ifn = dev->dev_icb;
@@ -1280,12 +1328,17 @@ int NicInit(NUTDEVICE * dev)
     /*
      * Register interrupt handler and enable interrupts.
      */
-    if (NutRegisterIrqHandler(&RTL_SIGNAL, NicInterrupt, dev)) 
+    if (NutRegisterIrqHandler(&RTL_SIGNAL, NicInterrupt, dev))
         return -1;
-        
+
     cbi(EIMSK, RTL_SIGNAL_IRQ);
-    
-    if(ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2])
+// HM: Support of rising edge interrupts for HW w/o inverter gate
+#ifdef RTL_IRQ_RISING_EDGE
+    RTL_RISING_EDGE_MODE();
+#endif
+// End HM
+
+    if (ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2])
         if (NicStart(ifn->if_mac))
             return -1;
 

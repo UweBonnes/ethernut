@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.11  2004/12/17 15:31:28  haraldkipp
+-- Support of rising edge interrupts for hardware w/o inverter gate.
+-- Fixed compilation issue for hardware with RTL reset port.
+-- Thanks to FOCUS Software Engineering Pty Ltd.
+--
 -- Revision 1.10  2004/11/24 14:48:34  haraldkipp
 -- crt/crt.nut
 --
@@ -396,6 +401,19 @@ nutdev =
                 choices = avr_irq_choice,
                 file = "include/cfg/arch/avr.h"
             },
+            {
+                macro = "RTL_IRQ_RISING_EDGE",
+                brief = "IRQ Rising Edge Trigger",
+                description = "Configures rising edge trigger for RTL interrupt.\n\n"..
+                              "Don't enable this for Ethernut boards! "..
+                              "Used only on custom hardware designs without "..
+                              "inverter gate for the interrupt.\n\n"..
+                              "Valid only for ATMega 128 or AT90CAN128 parts, "..
+                              "not supported by ATMega 103.",
+                flavor = "boolean",
+                file = "include/cfg/arch/avr.h",
+                makedefs = { "RTL_IRQ_RISING_EDGE" }
+            },            
             {
                 macro = "RTL_RESET_BIT",
                 brief = "Ethernet Reset Bit",
