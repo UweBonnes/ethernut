@@ -1,0 +1,7 @@
+[Files]
+..\..\app\basemon\urom.c
+..\..\app\basemon\basemon.c
+[Headers]
+..\..\app\basemon\rtlregs.h
+[Documents]
+..\..\app\basemon\html\index.html
