@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/03/17 14:54:00  haraldkipp
+ * Compiling for AVR works again
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -42,6 +45,8 @@
  * Added CPU family support
  *
  */
+
+#define __HARVARD_ARCH__
 
 #ifdef __IMAGECRAFT__
 
