@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/11/24 16:35:56  haraldkipp
+ * Configurable floating point support
+ *
  * Revision 1.2  2004/09/10 10:33:28  haraldkipp
  * Temporarly removed non-configurable FP support
  *
@@ -73,6 +76,8 @@
  *
  * We use floating points. Make sure to link with nutlibcrtf.
  */
+
+#include <cfg/crt.h>    /* Floating point configuration. */
 
 #include <string.h>
 #include <stdio.h>
