@@ -1,4 +1,22 @@
-$Id: ChangeLog,v 1.123 2004/09/19 15:17:37 haraldkipp Exp $
+$Id: ChangeLog,v 1.124 2004/09/22 08:22:36 haraldkipp Exp $
+
+2004-09-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arch/arch.nut, conf/dev/dev.nut, dev/lanc111.c: 
+	LAN91C111 driver is configurable, but no ATmega103
+	support. Does anybody need this?
+	List of devices sorted by platform.
+
+	* conf/dev/dev.nut, dev/irqstack.c, include/dev/irqstack.h, 
+	os/arch/avr_thread.c: Separate IRQ stack for AVR is
+	configurable.
+
+	* conf/dev/dev.nut, dev/spidigio.c: Configurable ports
+	for digital I/O shift register.
+
+	* conf/dev/dev.nut, dev/usart0avr.c, dev/usart0avr.c:
+	Configurable handshake ports.
+
 
 2004-09-19  Harald Kipp  <harald.kipp@egnite.de>
 
