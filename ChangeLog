@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.23 2003/12/19 22:30:06 drsung Exp $
+$Id: ChangeLog,v 1.24 2004/01/04 16:48:49 drsung Exp $
+
+2004-01-04  Oliver Schulz  <olischulz@web.de>
+
+	* app/basemon/basemon.c: After adding thread termination
+	support to Nut/OS, the priority of basemon's own idle
+	thread was also changed from 255 to 254 to avoid idle thread
+	termination.
+
 
 2003-12-19  Oliver Schulz  <olischulz@web.de>
 
