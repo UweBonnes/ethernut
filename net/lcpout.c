@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/30 11:37:58  haraldkipp
+ * Handle magic number rejects
+ *
  * Revision 1.2  2003/08/14 15:18:41  haraldkipp
  * Negotiate local magic
  *
@@ -129,7 +132,7 @@ void LcpResetOptions(NUTDEVICE * dev)
 /*
  * Send a Configure-Request.
  */
-void LcpTxConfReq(NUTDEVICE *dev, u_char id)
+void LcpTxConfReq(NUTDEVICE * dev, u_char id, u_char rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -138,9 +141,7 @@ void LcpTxConfReq(NUTDEVICE *dev, u_char id)
     /*
      * Not currently negotiating, reset options.
      */
-    if(dcb->dcb_lcp_state != PPPS_REQSENT &&
-       dcb->dcb_lcp_state != PPPS_ACKRCVD &&
-       dcb->dcb_lcp_state != PPPS_ACKSENT) {
+    if (dcb->dcb_lcp_state != PPPS_REQSENT && dcb->dcb_lcp_state != PPPS_ACKRCVD && dcb->dcb_lcp_state != PPPS_ACKSENT) {
         LcpResetOptions(dev);
         dcb->dcb_lcp_naks = 0;
     }
@@ -150,16 +151,27 @@ void LcpTxConfReq(NUTDEVICE *dev, u_char id)
     /*
      * Create the request.
      */
-    if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, 12)) != 0) {
+    if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, rejected ? 6 : 12)) != 0) {
         xcpo = nb->nb_ap.vp;
         xcpo->xcpo_type = LCP_ASYNCMAP;
         xcpo->xcpo_len = 6;
         xcpo->xcpo_.ul = htonl(LCP_DEFOPT_ASYNCMAP);
 
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
-        xcpo->xcpo_type = LCP_MAGICNUMBER;
-        xcpo->xcpo_len = 6;
-        xcpo->xcpo_.ul = dcb->dcb_neg_magic;
+        /*
+         * This is a temporary hack. In the initial version
+         * we sent the ASYNCMAP only and never expected any
+         * rejects. The MAGICNUMBER had been added later
+         * to support echo requests, but some servers reject
+         * this option. Now we still do not provide full
+         * reject processing but blindly assume, that the 
+         * MAGICNUMBER is the rejected option.
+         */
+        if (rejected) {
+            xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
+            xcpo->xcpo_type = LCP_MAGICNUMBER;
+            xcpo->xcpo_len = 6;
+            xcpo->xcpo_.ul = dcb->dcb_neg_magic;
+        }
 
         NutLcpOutput(dev, XCP_CONFREQ, id, nb);
     }
@@ -168,7 +180,7 @@ void LcpTxConfReq(NUTDEVICE *dev, u_char id)
 /*
  * Send a Protocol-Reject for some protocol.
  */
-void LcpTxProtRej(NUTDEVICE *dev, u_short protocol, NETBUF *nb)
+void LcpTxProtRej(NUTDEVICE * dev, u_short protocol, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     NETBUF *nbr;
@@ -180,8 +192,7 @@ void LcpTxProtRej(NUTDEVICE *dev, u_short protocol, NETBUF *nb)
         memcpy(sp, nb->nb_nw.vp, nb->nb_nw.sz - 2);
         NutNetBufFree(nb);
         NutLcpOutput(dev, LCP_PROTREJ, ++dcb->dcb_rejid, nbr);
-    }
-    else {
+    } else {
         NutNetBufFree(nb);
     }
 }

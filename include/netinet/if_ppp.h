@@ -83,6 +83,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/30 11:38:25  haraldkipp
+ * Handle magic number rejects
+ *
  * Revision 1.2  2003/08/14 15:05:18  haraldkipp
  * Caller will do ID increment
  *
@@ -184,7 +187,7 @@ typedef struct xcphdr {
 
 extern void NutLcpInput(NUTDEVICE * dev, NETBUF * nb);
 extern int NutLcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb);
-extern void LcpTxConfReq(NUTDEVICE *dev, u_char id);
+extern void LcpTxConfReq(NUTDEVICE *dev, u_char id, u_char rejected);
 extern void LcpTxProtRej(NUTDEVICE *dev, u_short protocol, NETBUF *nb);
 
 extern void NutPapInput(NUTDEVICE * dev, NETBUF * nb);

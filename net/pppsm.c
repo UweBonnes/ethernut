@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/01/30 11:37:58  haraldkipp
+ * Handle magic number rejects
+ *
  * Revision 1.2  2003/08/14 15:14:19  haraldkipp
  * Do not increment ID when resending.
  * Added authentication retries.
@@ -71,7 +74,7 @@
 
 /* Ugly hack to get simple UART drivers working. */
 extern u_char ppp_hackup;
-extern void NutPppEnable(NUTDEVICE *dev);
+extern void NutPppEnable(NUTDEVICE * dev);
 
 /*!
  * \addtogroup xgPPP
@@ -104,24 +107,22 @@ THREAD(NutPppSm, arg)
         switch (dcb->dcb_lcp_state) {
         case PPPS_CLOSING:
         case PPPS_STOPPING:
-            if(retries < 9) {
+            if (retries < 9) {
                 if (retries) {
                     NutLcpOutput(dev, XCP_TERMREQ, dcb->dcb_reqid, 0);
                 }
                 dcb->dcb_retries = retries + 1;
-            }
-            else
+            } else
                 dcb->dcb_lcp_state = (dcb->dcb_lcp_state == PPPS_CLOSING) ? PPPS_CLOSED : PPPS_STOPPED;
             break;
 
         case PPPS_REQSENT:
         case PPPS_ACKSENT:
-            if(retries < 9) {
-                if(retries)
-                    LcpTxConfReq(dev, dcb->dcb_reqid);
+            if (retries < 9) {
+                if (retries)
+                    LcpTxConfReq(dev, dcb->dcb_reqid, 0);
                 dcb->dcb_retries = retries + 1;
-            }
-            else
+            } else
                 dcb->dcb_lcp_state = PPPS_STOPPED;
             break;
         }
@@ -129,13 +130,12 @@ THREAD(NutPppSm, arg)
         /*
          * Authentication timeouts.
          */
-        if(dcb->dcb_auth_state == PAPCS_AUTHREQ) {
-            if(retries < 9) {
-                if(retries)
+        if (dcb->dcb_auth_state == PAPCS_AUTHREQ) {
+            if (retries < 9) {
+                if (retries)
                     PapTxAuthReq(dev, dcb->dcb_reqid);
                 dcb->dcb_retries = retries + 1;
-            }
-            else
+            } else
                 dcb->dcb_lcp_state = PPPS_STOPPED;
         }
 
@@ -145,23 +145,21 @@ THREAD(NutPppSm, arg)
         switch (dcb->dcb_ipcp_state) {
         case PPPS_CLOSING:
         case PPPS_STOPPING:
-            if(retries < 9) {
+            if (retries < 9) {
                 if (retries)
                     NutIpcpOutput(dev, XCP_TERMREQ, dcb->dcb_reqid, 0);
                 dcb->dcb_retries = retries + 1;
-            }
-            else
+            } else
                 dcb->dcb_ipcp_state = (dcb->dcb_ipcp_state == PPPS_CLOSING) ? PPPS_CLOSED : PPPS_STOPPED;
             break;
 
         case PPPS_REQSENT:
         case PPPS_ACKSENT:
-            if(retries < 9) {
+            if (retries < 9) {
                 if (retries)
                     IpcpTxConfReq(dev, dcb->dcb_reqid);
                 dcb->dcb_retries = retries + 1;
-            }
-            else
+            } else
                 dcb->dcb_ipcp_state = PPPS_STOPPED;
             break;
         }
@@ -172,7 +170,7 @@ THREAD(NutPppSm, arg)
 /*
  * Link is allowed to come up.
  */
-void LcpOpen(NUTDEVICE *dev)
+void LcpOpen(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -182,7 +180,7 @@ void LcpOpen(NUTDEVICE *dev)
         break;
 
     case PPPS_CLOSED:
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
 
@@ -196,7 +194,7 @@ void LcpOpen(NUTDEVICE *dev)
 /*
  * Start closing connection.
  */
-void LcpClose(NUTDEVICE *dev)
+void LcpClose(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -225,7 +223,7 @@ void LcpClose(NUTDEVICE *dev)
 /*
  * The lower layer is up.
  */
-void LcpLowerUp(NUTDEVICE *dev)
+void LcpLowerUp(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -238,7 +236,7 @@ void LcpLowerUp(NUTDEVICE *dev)
         /*
          * Layer had been opened. Send configuration request.
          */
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -249,7 +247,7 @@ void LcpLowerUp(NUTDEVICE *dev)
  *
  * Cancel all timeouts and inform upper layers.
  */
-void LcpLowerDown(NUTDEVICE *dev)
+void LcpLowerDown(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -283,7 +281,7 @@ void LcpLowerDown(NUTDEVICE *dev)
 /*
  * Link is allowed to come up.
  */
-void IpcpOpen(NUTDEVICE *dev)
+void IpcpOpen(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -311,7 +309,7 @@ void IpcpOpen(NUTDEVICE *dev)
  * Cancel timeouts and either initiate close or possibly go directly to
  * the PPPS_CLOSED state.
  */
-void IpcpClose(NUTDEVICE *dev)
+void IpcpClose(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -340,7 +338,7 @@ void IpcpClose(NUTDEVICE *dev)
 /*
  * The lower layer is up.
  */
-void IpcpLowerUp(NUTDEVICE *dev)
+void IpcpLowerUp(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -361,7 +359,7 @@ void IpcpLowerUp(NUTDEVICE *dev)
  *
  * Cancel all timeouts and inform upper layers.
  */
-void IpcpLowerDown(NUTDEVICE *dev)
+void IpcpLowerDown(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -399,7 +397,7 @@ void IpcpLowerDown(NUTDEVICE *dev)
 /*
  * The network layer is up.
  */
-void PppUp(NUTDEVICE *dev)
+void PppUp(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -410,7 +408,7 @@ void PppUp(NUTDEVICE *dev)
 /*
  * The network layer is down.
  */
-void PppDown(NUTDEVICE *dev)
+void PppDown(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -460,7 +458,7 @@ int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf)
     default:
         {
             //PPPDCB *dcb = dev->dev_dcb;
-            rc = _ioctl(((PPPDCB *)(dev->dev_dcb))->dcb_fd, req, conf);
+            rc = _ioctl(((PPPDCB *) (dev->dev_dcb))->dcb_fd, req, conf);
             //rc = (*dcb->dcb_pdev->dev_ioctl)(dcb->dcb_pdev, req, conf);
         }
         break;
@@ -492,11 +490,11 @@ NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     /*
      * Determine the physical device.
      */
-    for(cp = (char *)name, i = 0; *cp && *cp != '/' && i < sizeof(pdn) - 1; i++)
+    for (cp = (char *) name, i = 0; *cp && *cp != '/' && i < sizeof(pdn) - 1; i++)
         pdn[i] = *cp++;
     pdn[i] = 0;
 
-    if((dcb->dcb_fd = _open(pdn, _O_RDWR | _O_BINARY)) == -1)
+    if ((dcb->dcb_fd = _open(pdn, _O_RDWR | _O_BINARY)) == -1)
         return NUTFILE_EOF;
     //if((dcb->dcb_pdev = NutDeviceLookup(pdn)) == 0)
     //    return NUTFILE_EOF;
@@ -513,19 +511,19 @@ NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     /*
      * Parse user name and password.
      */
-    if(*cp == '/') {
-        for(sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
-        if(i) {
+    if (*cp == '/') {
+        for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
+        if (i) {
             dcb->dcb_user = NutHeapAlloc(i + 1);
-            for(sp = dcb->dcb_user; *cp && *cp != '/'; )
+            for (sp = dcb->dcb_user; *cp && *cp != '/';)
                 *sp++ = *cp++;
             *sp = 0;
         }
-        if(*cp == '/') {
-            for(sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
-            if(i) {
+        if (*cp == '/') {
+            for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
+            if (i) {
                 dcb->dcb_pass = NutHeapAlloc(i + 1);
-                for(sp = dcb->dcb_pass; *cp && *cp != '/'; )
+                for (sp = dcb->dcb_pass; *cp && *cp != '/';)
                     *sp++ = *cp++;
                 *sp = 0;
             }
@@ -544,14 +542,14 @@ NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 /*
  * Start closing connection.
  */
-int NutPppClose(NUTFILE *fp)
+int NutPppClose(NUTFILE * fp)
 {
     PPPDCB *dcb = fp->nf_dev->dev_dcb;
 
     IpcpClose(fp->nf_dev);
-    if(dcb->dcb_user)
+    if (dcb->dcb_user)
         NutHeapFree(dcb->dcb_user);
-    if(dcb->dcb_pass)
+    if (dcb->dcb_pass)
         NutHeapFree(dcb->dcb_pass);
     NutHeapFree(fp);
 
@@ -562,7 +560,7 @@ int NutPppClose(NUTFILE *fp)
  * \brief Initialize the PPP state machine.
  *
  */
-int NutPppInit(NUTDEVICE *dev)
+int NutPppInit(NUTDEVICE * dev)
 {
     /*
      * Start the timer thread if not already running.

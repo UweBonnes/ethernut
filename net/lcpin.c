@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/01/30 11:37:58  haraldkipp
+ * Handle magic number rejects
+ *
  * Revision 1.3  2004/01/14 19:05:53  drsung
  * Bug fix in LcpRxConfReq. Thanks to Michel Hendriks.
  *
@@ -119,14 +122,14 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         break;
 
     case PPPS_STOPPED:
         /* 
          * Negotiation started by our peer.
          */
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -138,44 +141,44 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
     xcpl = nb->nb_ap.sz;
     xcpr = nb->nb_ap.vp;
     xcps = 0;
-    while(xcpl >= 2) {
-        len  = xcpo->xcpo_len;
-        if(len > xcpl)
+    while (xcpl >= 2) {
+        len = xcpo->xcpo_len;
+        if (len > xcpl)
             len = xcpl;
         else {
-	    switch (xcpo->xcpo_type) {
-	    case LCP_MRU:
-	        if (xcpo->xcpo_len == 4) 
+            switch (xcpo->xcpo_type) {
+            case LCP_MRU:
+                if (xcpo->xcpo_len == 4)
                     len = 0;
-	        break;
-	    case LCP_MAGICNUMBER:
-	    case LCP_ASYNCMAP:
-	        if (xcpo->xcpo_len == 6)
+                break;
+            case LCP_MAGICNUMBER:
+            case LCP_ASYNCMAP:
+                if (xcpo->xcpo_len == 6)
                     len = 0;
-	        break;
-	    case LCP_AUTHTYPE:
-	        if (xcpo->xcpo_len >= 4) 
+                break;
+            case LCP_AUTHTYPE:
+                if (xcpo->xcpo_len >= 4)
                     len = 0;
-	        break;
+                break;
             }
-	}
+        }
 
         if (len) {
-            if(xcpr != xcpo) {
+            if (xcpr != xcpo) {
                 xcpr->xcpo_type = xcpo->xcpo_type;
                 xcpr->xcpo_len = len;
-                for(i = 0; i < len - 2; i++)
+                for (i = 0; i < len - 2; i++)
                     /* bug fix by Michel Hendriks. Thanks! */
                     xcpr->xcpo_.uc[i] = xcpo->xcpo_.uc[i];
             }
-            xcpr = (XCPOPT *)((char *)xcpr + len);
+            xcpr = (XCPOPT *) ((char *) xcpr + len);
             xcps += len;
         }
         xcpl -= xcpo->xcpo_len;
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
     }
 
-    if(xcps) {
+    if (xcps) {
         nb->nb_ap.sz = xcps;
         rc = XCP_CONFREJ;
     }
@@ -189,54 +192,52 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
         xcpr = nb->nb_ap.vp;
         xcps = 0;
         len = 0;
-        while(xcpl >= 2) {
-	    switch (xcpo->xcpo_type) {
-	    case LCP_MRU:
-                if((sval = htons(xcpo->xcpo_.us)) < MIN_LCPMRU) {
+        while (xcpl >= 2) {
+            switch (xcpo->xcpo_type) {
+            case LCP_MRU:
+                if ((sval = htons(xcpo->xcpo_.us)) < MIN_LCPMRU) {
                     len = 4;
                     xcpr->xcpo_.us = ntohs(MIN_LCPMRU);
-                }
-                else
+                } else
                     dcb->dcb_rem_mru = sval;
-	        break;
-	    case LCP_ASYNCMAP:
+                break;
+            case LCP_ASYNCMAP:
                 dcb->dcb_accm = ntohl(xcpo->xcpo_.ul);
-	        break;
-	    case LCP_AUTHTYPE:
-                if(htons(xcpo->xcpo_.us) != PPP_PAP) {
+                break;
+            case LCP_AUTHTYPE:
+                if (htons(xcpo->xcpo_.us) != PPP_PAP) {
                     len = 4;
                     xcpr->xcpo_.us = htons(PPP_PAP);
                 }
                 break;
-	    case LCP_MAGICNUMBER:
-                if(xcpo->xcpo_.ul == dcb->dcb_loc_magic || 
-                   xcpo->xcpo_.ul == dcb->dcb_neg_magic) {
+            case LCP_MAGICNUMBER:
+                if (xcpo->xcpo_.ul == dcb->dcb_loc_magic || xcpo->xcpo_.ul == dcb->dcb_neg_magic) {
                     dcb->dcb_rem_magic = new_magic;
                     len = 6;
                     xcpr->xcpo_.ul = dcb->dcb_rem_magic;
                 }
-	        break;
+                break;
             case LCP_PCOMPRESSION:
                 dcb->dcb_compr |= PPP_PFC;
-	        break;
+                break;
             case LCP_ACCOMPRESSION:
                 dcb->dcb_compr |= PPP_ACFC;
-	        break;
-	    }
+                break;
+            }
 
             if (len) {
-                if(xcpr != xcpo) {
+                if (xcpr != xcpo) {
                     xcpr->xcpo_type = xcpo->xcpo_type;
                     xcpr->xcpo_len = len;
                 }
-                xcpr = (XCPOPT *)((char *)xcpr + len);
+                xcpr = (XCPOPT *) ((char *) xcpr + len);
                 xcps += len;
                 len = 0;
             }
             xcpl -= xcpo->xcpo_len;
-            xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+            xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
         }
-        if(xcps) {
+        if (xcps) {
             nb->nb_ap.sz = xcps;
             rc = XCP_CONFNAK;
         }
@@ -247,15 +248,14 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
     if (rc == XCP_CONFACK) {
         if (dcb->dcb_lcp_state == PPPS_ACKRCVD) {
             dcb->dcb_lcp_state = PPPS_OPENED;
-            if(dcb->dcb_auth == PPP_PAP)
+            if (dcb->dcb_auth == PPP_PAP)
                 PapTxAuthReq(dev, ++dcb->dcb_reqid);
             else
                 IpcpLowerUp(dev);
         } else
             dcb->dcb_lcp_state = PPPS_ACKSENT;
         dcb->dcb_lcp_naks = 0;
-    } 
-    else if (dcb->dcb_lcp_state != PPPS_ACKRCVD)
+    } else if (dcb->dcb_lcp_state != PPPS_ACKRCVD)
         dcb->dcb_lcp_state = PPPS_REQSENT;
 }
 
@@ -276,25 +276,24 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
         dcb->dcb_acked = 1;
         xcpo = nb->nb_ap.vp;
         xcpl = nb->nb_ap.sz;
-        while(xcpl >= 2) {
+        while (xcpl >= 2) {
             switch (xcpo->xcpo_type) {
             case LCP_MRU:
-                if(htons(xcpo->xcpo_.us) != 1500)
+                if (htons(xcpo->xcpo_.us) != 1500)
                     dcb->dcb_acked = 0;
                 break;
-	    case LCP_ASYNCMAP:
+            case LCP_ASYNCMAP:
                 //if(ntohl(xcpo->xcpo_.ul) != )
                 //    dcb->dcb_acked = 0;
                 break;
-	    case LCP_AUTHTYPE:
-                if(htons(xcpo->xcpo_.us) != dcb->dcb_auth)
+            case LCP_AUTHTYPE:
+                if (htons(xcpo->xcpo_.us) != dcb->dcb_auth)
                     dcb->dcb_acked = 0;
                 break;
             case LCP_MAGICNUMBER:
-                if(xcpo->xcpo_.ul == dcb->dcb_neg_magic) {
+                if (xcpo->xcpo_.ul == dcb->dcb_neg_magic) {
                     dcb->dcb_loc_magic = dcb->dcb_neg_magic;
-                }
-                else {
+                } else {
                     dcb->dcb_acked = 0;
                 }
                 break;
@@ -303,10 +302,10 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
                 break;
             case LCP_ACCOMPRESSION:
                 dcb->dcb_acked = 0;
-	        break;
-	    }
+                break;
+            }
             xcpl -= xcpo->xcpo_len;
-            xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+            xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
         }
     }
 
@@ -336,7 +335,7 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
         break;
 
     case PPPS_ACKRCVD:
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
 
@@ -345,8 +344,8 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * ACK sent and ACK received.
          */
         dcb->dcb_lcp_state = PPPS_OPENED;
-        
-        if(dcb->dcb_auth == PPP_PAP)
+
+        if (dcb->dcb_auth == PPP_PAP)
             PapTxAuthReq(dev, ++dcb->dcb_reqid);
         else
             IpcpLowerUp(dev);
@@ -357,7 +356,7 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -366,10 +365,9 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Configure-Nak or Configure-Reject received.
  */
-static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
-    int ret = 0;
 
     XCPOPT *xcpo;
     u_short xcpl;
@@ -389,9 +387,9 @@ static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     xcpo = nb->nb_ap.vp;
     xcpl = nb->nb_ap.sz;
-    while(xcpl >= 2) {
+    while (xcpl >= 2) {
         xcpl -= xcpo->xcpo_len;
-        xcpo = (XCPOPT *)((char *)xcpo + xcpo->xcpo_len);
+        xcpo = (XCPOPT *) ((char *) xcpo + xcpo->xcpo_len);
     }
 
     NutNetBufFree(nb);
@@ -408,15 +406,12 @@ static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
     case PPPS_REQSENT:
     case PPPS_ACKSENT:
         /* They didn't agree to what we wanted - try another request */
-        if (ret < 0)
-            dcb->dcb_lcp_state = PPPS_STOPPED;       /* kludge for stopping CCP */
-        else
-            LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, rejected);
         break;
 
     case PPPS_ACKRCVD:
         /* Got a Nak/reject when we had already had an Ack?? oh well... */
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
 
@@ -425,7 +420,7 @@ static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         dcb->dcb_lcp_state = PPPS_REQSENT;
         break;
     }
@@ -443,7 +438,7 @@ static void LcpRxTermReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
     switch (dcb->dcb_lcp_state) {
     case PPPS_ACKRCVD:
     case PPPS_ACKSENT:
-        dcb->dcb_lcp_state = PPPS_REQSENT;   /* Start over but keep trying */
+        dcb->dcb_lcp_state = PPPS_REQSENT;      /* Start over but keep trying */
         break;
 
     case PPPS_OPENED:
@@ -477,7 +472,7 @@ static void LcpRxTermAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     case PPPS_OPENED:
         IpcpLowerDown(dev);
-        LcpTxConfReq(dev, ++dcb->dcb_reqid);
+        LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
         break;
     }
 }
@@ -487,7 +482,7 @@ static void LcpRxTermAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
  *
  * Treat this as a catastrophic error (RXJ-).
  */
-void LcpRxProtRej(NUTDEVICE *dev)
+void LcpRxProtRej(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -535,8 +530,7 @@ static void LcpRxEchoReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
 
     if (dcb->dcb_lcp_state != PPPS_OPENED) {
         NutNetBufFree(nb);
-    }
-    else {
+    } else {
         /* Use local magic number. */
         memcpy(nb->nb_ap.vp, &dcb->dcb_loc_magic, sizeof(u_long));
         NutLcpOutput(dev, LCP_ERP, id, nb);
@@ -605,8 +599,11 @@ void NutLcpInput(NUTDEVICE * dev, NETBUF * nb)
         break;
 
     case XCP_CONFNAK:
+        LcpRxConfNakRej(dev, lcp->xch_id, nb, 0);
+        break;
+
     case XCP_CONFREJ:
-        LcpRxConfNakRej(dev, lcp->xch_id, nb);
+        LcpRxConfNakRej(dev, lcp->xch_id, nb, 1);
         break;
 
     case XCP_TERMREQ:
