@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.158 2005/02/04 15:04:51 haraldkipp Exp $
+$Id: ChangeLog,v 1.159 2005/02/04 17:23:56 haraldkipp Exp $
 
 2005-02-04  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -18,6 +18,13 @@ $Id: ChangeLog,v 1.158 2005/02/04 15:04:51 haraldkipp Exp $
 	outgoing packet.
 
 	* include/cfg/arp.h, conf/net/net.nut: ARP configuration added.
+
+	* net/tcpsm.c: Unused include files removed.
+
+	* net/tcpsock.c: Minor performance fix. NutTcpFindSocket()
+	didn't stop on the first listening socket, but always parsed
+	the complete list. Now the socket list isn't nicely sorted
+	anymore, but that's acceptable.
 
 
 2005-02-03  Harald Kipp  <harald.kipp@egnite.de>
