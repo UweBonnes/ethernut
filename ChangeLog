@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.173 2005/02/21 00:58:15 hwmaier Exp $
+$Id: ChangeLog,v 1.174 2005/02/21 12:37:59 phblum Exp $
+
+2005-02-21 Philipp Blum <blum@tik.ee.ethz.ch>
+
+        * dev/usartavr.c, include/sys/atom.h, include/sys/tracer.h,
+        os/event.c, os/thread.c, os/timer.c, os/tracer.c, os/arch/avr_timer.c
+        Removed tabs and added semicolons after NUTTRACER macros
 
 2005-02-21  Henrik Maier  <hwmaier@users.sourceforge.net>
 

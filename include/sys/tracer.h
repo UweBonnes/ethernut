@@ -62,7 +62,7 @@
 #define TRACE_MODE_CIRCULAR         1 
 #define TRACE_MODE_ONESHOT          2
 #define TRACE_MODE_LAST             2
-#define TRACE_MODE_DEFAULT        TRACE_MODE_CIRCULAR
+#define TRACE_MODE_DEFAULT          TRACE_MODE_CIRCULAR
 
 #define TRACE_SIZE_DEFAULT        500
 
@@ -108,19 +108,20 @@
 /*! \brief Item in the trace buffer
 */
 typedef struct _t_traceitem {
-	/*! \brief Type of event
-	*/
-	u_char tag;
-	/*! \brief Additional information, depending on the type of the event
-	*/
-	u_int  pc;
-	/*! \brief Upper 16 bit of microseconds clock when event occured
-	*/
-	u_int  time_h;
-	/*! \brief Lower 16 bit of microseconds clock when event occured
-	*/
-	u_int  time_l;
+    /*! \brief Type of event
+    */
+    u_char tag;
+    /*! \brief Additional information, depending on the type of the event
+    */
+    u_int  pc;
+    /*! \brief Upper 16 bit of microseconds clock when event occured
+    */
+    u_int  time_h;
+    /*! \brief Lower 16 bit of microseconds clock when event occured
+    */
+    u_int  time_l;
 } t_traceitem;
+
 
 /******************************************************************
  * global variables 
@@ -271,29 +272,29 @@ extern int NutTraceRegisterUserTag(int tag, char* tag_string);
  */
 #define TRACE_ADD_ITEM(TAG,PC)                      \
     if ((trace_mode != TRACE_MODE_OFF) &&           \
-		(trace_mask[TAG] == 1))                     \
-	{                                               \
-	 	asm volatile(                               \
-    	    "in  __tmp_reg__, __SREG__" "\n\t"      \
-        	        "push __tmp_reg__"  "\n\t"      \
-	        "cli"                       "\n\t"      \
-    	);                                          \
-		trace_current = &trace_items[trace_head++]; \
-		trace_current->tag = TAG;                   \
-		trace_current->pc = PC;                     \
-		trace_current->time_h = micros_high;        \
-		trace_current->time_l = TCNT1;              \
-		if (trace_head >= trace_size) {             \
-			trace_isfull = 1;                       \
-			trace_head = 0;                     	\
-			if (trace_mode == TRACE_MODE_ONESHOT)   \
-				trace_mode = TRACE_MODE_OFF;        \
-		}                                           \
-		asm volatile(                               \
-    	    "pop __tmp_reg__"           "\n\t"      \
-        	"out __SREG__, __tmp_reg__" "\n\t"      \
-	    );                                          \
-	};
+        (trace_mask[TAG] == 1))                     \
+    {                                               \
+        asm volatile(                               \
+            "in  __tmp_reg__, __SREG__" "\n\t"      \
+            "push __tmp_reg__"  "\n\t"              \
+            "cli"                       "\n\t"      \
+        );                                          \
+        trace_current = &trace_items[trace_head++]; \
+        trace_current->tag = TAG;                   \
+        trace_current->pc = PC;                     \
+        trace_current->time_h = micros_high;        \
+        trace_current->time_l = TCNT1;              \
+        if (trace_head >= trace_size) {             \
+            trace_isfull = 1;                       \
+            trace_head = 0;                     	\
+            if (trace_mode == TRACE_MODE_ONESHOT)   \
+                trace_mode = TRACE_MODE_OFF;        \
+        }                                           \
+        asm volatile(                               \
+            "pop __tmp_reg__"           "\n\t"      \
+            "out __SREG__, __tmp_reg__" "\n\t"      \
+        );                                          \
+    }
 /**
  * Macro to insert an event in the trace buffer, 
  * filling the additional information field with the program counter (PC)

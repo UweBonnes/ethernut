@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/02/21 12:37:57  phblum
+ * Removed tabs and added semicolons after NUTTRACER macros
+ *
  * Revision 1.14  2005/02/21 00:53:57  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -381,7 +384,7 @@ void NutThreadYield(void)
 
     /* Continue with the highest priority thread, which is ready to run. */
 #ifdef NUTTRACER
-		TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread)
+        TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread);
 #endif
     NutThreadResume();
 }
@@ -456,7 +459,7 @@ u_char NutThreadSetPriority(u_char level)
         }
 #endif
 #ifdef NUTTRACER
-		TRACE_ADD_ITEM(TRACE_TAG_THREAD_SETPRIO,(int)runningThread)
+        TRACE_ADD_ITEM(TRACE_TAG_THREAD_SETPRIO,(int)runningThread);
 #endif		
 
         NutThreadSwitch();

@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/02/21 12:38:00  phblum
+ * Removed tabs and added semicolons after NUTTRACER macros
+ *
  * Revision 1.8  2005/01/24 22:34:46  freckle
  * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
@@ -209,7 +212,7 @@ static void AvrUsartTxEmpty(void *arg)
 
 
 #ifdef NUTTRACER
-	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_TXEMPTY)
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_TXEMPTY);
 #endif	
 
     /*
@@ -225,7 +228,7 @@ static void AvrUsartTxEmpty(void *arg)
         }
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
 #ifdef NUTTRACER
-		TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+        TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
 #endif        
         return;
     }
@@ -237,7 +240,7 @@ static void AvrUsartTxEmpty(void *arg)
          */
         cbi(UCSRnB, UDRIE);
 #ifdef NUTTRACER
-		TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+        TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
 #endif
         return;
 	}
@@ -253,7 +256,7 @@ static void AvrUsartTxEmpty(void *arg)
             cbi(UCSRnB, UDRIE);
             sbi(EIMSK, UART_CTS_BIT);
 #ifdef NUTTRACER
-			TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+            TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
 #endif
             return;
         }
@@ -297,7 +300,7 @@ static void AvrUsartTxEmpty(void *arg)
         NutEventPostFromIrq(&rbf->rbf_que);
     }
 #ifdef NUTTRACER
-	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY)
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
 #endif
 }
 
@@ -314,7 +317,7 @@ static void AvrUsartRxComplete(void *arg)
     register u_char ch;
 
 #ifdef NUTTRACER
-	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_RXCOMPL)
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_RXCOMPL);
 #endif	
     /*
      * We read the received character as early as possible to avoid overflows
@@ -334,8 +337,8 @@ static void AvrUsartRxComplete(void *arg)
         if (ch == ASCII_XOFF) {
             cbi(UCSRnB, UDRIE);
             flow_control |= XOFF_RCVD;
- #ifdef NUTTRACER
-			TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+#ifdef NUTTRACER
+            TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif			
             return;
         }
@@ -344,7 +347,7 @@ static void AvrUsartRxComplete(void *arg)
             sbi(UCSRnB, UDRIE);
             flow_control &= ~XOFF_RCVD;
 #ifdef NUTTRACER
-			TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+            TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif			
             return;
         }
@@ -357,7 +360,7 @@ static void AvrUsartRxComplete(void *arg)
     if (cnt >= rbf->rbf_siz) {
         rx_errors |= _BV(DOR);
 #ifdef NUTTRACER
-		TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+        TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif			
         return;
     }
@@ -405,7 +408,7 @@ static void AvrUsartRxComplete(void *arg)
     /* Update the ring buffer counter. */
     rbf->rbf_cnt = cnt;
 #ifdef NUTTRACER
-	TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL)
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif			
 }
 

@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/02/21 12:37:59  phblum
+ * Removed tabs and added semicolons after NUTTRACER macros
+ *
  * Revision 1.7  2005/02/16 19:51:15  haraldkipp
  * Enable tracer configuration.
  *
@@ -134,17 +137,17 @@ static inline void AtomicDec(volatile u_char * p)
 #ifdef NUTTRACER_CRITICAL
 #define NutEnterCritical()                  \
     NutEnterCritical_nt();                  \
-	TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_ENTER)
+    TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_ENTER);
 
 #define NutExitCritical()                   \
-	TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_EXIT); \
-	NutExitCritical_nt()
+    TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_EXIT); \
+    NutExitCritical_nt()
 #else
 #define NutEnterCritical()                  \
     NutEnterCritical_nt();
 
 #define NutExitCritical()                   \
-	NutExitCritical_nt()
+    NutExitCritical_nt()
 #endif
 #endif
 

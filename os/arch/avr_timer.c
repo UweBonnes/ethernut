@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/02/21 12:38:00  phblum
+ * Removed tabs and added semicolons after NUTTRACER macros
+ *
  * Revision 1.4  2005/02/10 07:06:48  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -98,7 +101,7 @@ static void NutTimer0Intr(void *arg)
     NUTTIMERINFO *tnp;
 
 #ifdef NUTTRACER
-    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_TIMER0_OVERFL)
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_TIMER0_OVERFL);
 #endif
 
     /*

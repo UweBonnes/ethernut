@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/02/21 12:37:57  phblum
+ * Removed tabs and added semicolons after NUTTRACER macros
+ *
  * Revision 1.14  2005/02/16 19:53:27  haraldkipp
  * Ready-to-run queue handling removed from interrupt context.
  *
@@ -379,7 +382,7 @@ void NutSleep(u_long ms)
             }
 #endif
 #ifdef NUTTRACER
-			TRACE_ADD_ITEM(TRACE_TAG_THREAD_SLEEP,(int)runningThread)
+            TRACE_ADD_ITEM(TRACE_TAG_THREAD_SLEEP,(int)runningThread);
 #endif
             NutThreadResume();
         }

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/02/21 12:37:57  phblum
+ * Removed tabs and added semicolons after NUTTRACER macros
+ *
  * Revision 1.13  2005/02/17 14:45:10  phblum
  * In NutEventWait(), replaced NutThreadRemoveQueue by direct removal of first thread in queue.
  *
@@ -257,7 +260,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
     }
 #endif
 #ifdef NUTTRACER
-	TRACE_ADD_ITEM(TRACE_TAG_THREAD_WAIT,(int)runningThread)
+    TRACE_ADD_ITEM(TRACE_TAG_THREAD_WAIT,(int)runningThread);
 #endif
     NutExitCritical();
 
