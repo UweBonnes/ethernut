@@ -78,6 +78,15 @@
 
 /*
  * $Log$
+ * Revision 1.15  2004/12/31 10:51:40  drsung
+ * Bugfixes from Michel Hendriks applied:
+ * Allocate empty dyncfg's to prevent freeing twice of domain/hostname
+ * Clear pointer after ReleaseDynCfg to prevent freeing twice
+ * Make sure SelectOffer is never called with 0 offers
+ * When falling back from rebooting to selecting, clear
+ * the received ip address so NutDhcpIfConfig does not
+ * assume it has been configured properly
+ *
  * Revision 1.14  2004/04/15 07:16:47  drsung
  * Now it works... :-/
  *
@@ -147,6 +156,7 @@
  *
  */
 
+
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/event.h>
@@ -183,14 +193,15 @@
 #define MAX_OFFERS          5
 #define MAX_DCHP_RETRIES    3
 
-#define DHCPST_SELECTING    0
-#define DHCPST_REQUESTING   1
-#define DHCPST_REBOOTING    2
-#define DHCPST_BOUND        3
-#define DHCPST_RENEWING     4
-#define DHCPST_REBINDING    5
-#define DHCPST_ERROR        6
-#define DHCPST_RELEASING    7
+#define DHCPST_START        0
+#define DHCPST_SELECTING    1
+#define DHCPST_REQUESTING   2
+#define DHCPST_REBOOTING    3
+#define DHCPST_BOUND        4
+#define DHCPST_RENEWING     5
+#define DHCPST_REBINDING    6
+#define DHCPST_ERROR        7
+#define DHCPST_RELEASING    8
 
 static u_char dhcpState;
 
@@ -247,8 +258,18 @@ int ParseReply(DYNCFG * cfgp, u_long ip, struct bootp *bp, int len)
     int ol;
     int rc = -1;
 
-    memset(cfgp, 0, sizeof(*cfgp));
+#ifdef NUTDEBUG
+    if (__tcp_trf)
+        fprintf(__tcp_trs, "[Parse]");
+#endif
 
+    /* Michel Hendriks. No longer needed */
+    //memset(cfgp, 0, sizeof(*cfgp));
+
+    /* Michel Hendriks. Reject anything that is too short to be a reply.
+       if (len < (int)(sizeof(*bp) - sizeof(bp->bp_options)))
+       return -1;
+     */
     /* Reject anything which is not a reply. */
     if (bp->bp_op != 2)
         return -1;
@@ -697,6 +718,11 @@ static u_char AddOffer(DYNCFG ** offer, u_char noffers, u_long ip, struct bootp 
 {
     u_char i;
 
+#ifdef NUTDEBUG
+    if (__tcp_trf)
+        fprintf(__tcp_trs, "[Offer %d]", noffers);
+#endif
+
     /* Avoid table overrun. */
     if (noffers >= MAX_OFFERS) {
         return noffers;
@@ -710,10 +736,17 @@ static u_char AddOffer(DYNCFG ** offer, u_char noffers, u_long ip, struct bootp 
     }
 
     /* Create a new entry. */
-    offer[noffers] = malloc(sizeof(DYNCFG));
+    /* Michel Hendriks. Prevent accidental free of host name/domain by allocating cleared memory */
+    offer[noffers] = NutHeapAllocClear(sizeof(DYNCFG));
     if (ParseReply(offer[noffers], ip, bp, len) || offer[noffers]->dyn_msgtyp != DHCP_OFFER) {
+#ifdef NUTDEBUG
+        if (__tcp_trf)
+            fprintf(__tcp_trs, "[Rejected %d]", noffers);
+#endif
         /* Silently discard malformed messages and anything which isn't an offer. */
         ReleaseDynCfg(offer[noffers]);
+        /* Michel Hendriks. Prevent 2nd free */
+        offer[noffers] = 0;
     } else {
         noffers++;
     }
@@ -735,6 +768,11 @@ static DYNCFG *SelectOffer(DYNCFG ** offer, u_char noffers)
     DYNCFG *rc = 0;
     u_char i = 0;
 
+#ifdef NUTDEBUG
+    if (__tcp_trf)
+        fprintf(__tcp_trs, "[Select %d]", noffers);
+#endif
+
     /* 
      * Check if any offer matches our previous configuration. 
      */
@@ -752,6 +790,8 @@ static DYNCFG *SelectOffer(DYNCFG ** offer, u_char noffers)
             rc = offer[noffers];
         else {
             ReleaseDynCfg(offer[noffers]);
+            /* Michel Hendriks. Prevent 2nd free */
+            offer[noffers] = 0;
         }
     }
     return rc;
@@ -768,7 +808,7 @@ static DYNCFG *SelectOffer(DYNCFG ** offer, u_char noffers)
 THREAD(NutDhcpClient, arg)
 {
     DYNCFG *dyncfg = 0;
-    UDPSOCKET *sock;
+    UDPSOCKET *sock = 0;
     int n;
     struct bootp *bp;
     u_long server_ip;
@@ -783,18 +823,10 @@ THREAD(NutDhcpClient, arg)
     u_char configured = 0;
     u_short max_ms = MAX_DHCP_MSGSIZE;
 
-    while ((sock = NutUdpCreateSocket(DHCP_CLIENTPORT)) == 0)
-        NutSleep(10000);
-    NutUdpSetSockOpt(sock, SO_RCVBUF, &max_ms, sizeof(max_ms));
+    dhcpState = DHCPST_START;
+    memset(offer, 0, sizeof(offer));
 
-    bp = malloc(sizeof(struct bootp));
-
-    /* Determine wether this is an initial boot or a reboot. */
-    if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) != 0) {
-        dhcpState = DHCPST_REBOOTING;
-    } else {
-        dhcpState = DHCPST_SELECTING;
-    }
+    bp = NutHeapAllocClear(sizeof(struct bootp));
 
     /* Generate a random transaction identifier. */
     memcpy(&xid, &nif->if_mac[2], sizeof(u_long));
@@ -802,9 +834,30 @@ THREAD(NutDhcpClient, arg)
 
     for (;;) {
         /*
+         * (Re)Start.
+         */
+        if (dhcpState == DHCPST_START) {
+#ifdef NUTDEBUG
+            if (__tcp_trf)
+                fprintf(__tcp_trs, "[START]");
+#endif
+            while ((sock = NutUdpCreateSocket(DHCP_CLIENTPORT)) == 0)
+                NutSleep(10000);
+            NutUdpSetSockOpt(sock, SO_RCVBUF, &max_ms, sizeof(max_ms));
+
+
+
+            /* Determine wether this is an initial boot or a reboot. */
+            if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) != 0) {
+                dhcpState = DHCPST_REBOOTING;
+            } else {
+                dhcpState = DHCPST_SELECTING;
+            }
+        }
+        /*
          * Maintain lease time.
          */
-        if (dhcpState == DHCPST_BOUND) {
+        else if (dhcpState == DHCPST_BOUND) {
 #ifdef NUTDEBUG
             if (__tcp_trf)
                 fprintf(__tcp_trs, "[BOUND %lu]", NutGetSeconds() - secs);
@@ -972,7 +1025,8 @@ THREAD(NutDhcpClient, arg)
                         noffers = AddOffer(offer, noffers, server_ip, bp, n);
                         /* If the callers timeout is low, do not collect. 
                            Thanks to Jelle Kok. */
-                        if (dhcp_timeout < MAX_DHCP_WAIT * 3) {
+                        /* Michel Hendriks. Check if we have offers */
+                        if ((noffers) && (dhcp_timeout < MAX_DHCP_WAIT * 3)) {
                             dyncfg = SelectOffer(offer, noffers);
                             noffers = 0;
                             /* Start requesting the selected offer. */
@@ -995,10 +1049,14 @@ THREAD(NutDhcpClient, arg)
             }
         }
 
+        /* Michel Hendriks.
+         * If the next test is an 'else if' sometimes DHCP fails.
+         * GCC bug??????????
+         */
         /*
          * Send request and wait for an acknowledge.
          */
-        else if (dhcpState == DHCPST_REQUESTING) {
+        if (dhcpState == DHCPST_REQUESTING) {
 #ifdef NUTDEBUG
             if (__tcp_trf)
                 fprintf(__tcp_trs, "[REQUESTING]");
@@ -1016,7 +1074,8 @@ THREAD(NutDhcpClient, arg)
                 /* Fatal receive error. */
                 dhcpState = DHCPST_ERROR;
             } else if (n > 0) {
-                dyncfg = malloc(sizeof(DYNCFG));
+                /* Michel Hendriks. Prevent accidental free of host name/domain */
+                dyncfg = NutHeapAllocClear(sizeof(DYNCFG));
                 if (ParseReply(dyncfg, server_ip, bp, n) == 0) {
                     if (dyncfg->dyn_msgtyp == DHCP_ACK) {
                         /* Hack. Shutdown of the interface isn't available,
@@ -1056,12 +1115,17 @@ THREAD(NutDhcpClient, arg)
             /* Broadcast a request for our previous configuration. */
             else if (DhcpRequest(sock, INADDR_BROADCAST, bp, xid, 0, confnet.cdn_ip_addr, 0, (u_short) secs) < 0) {
                 /* Fatal transmit error. */
+                /* Michel Hendriks. Make sure we restart in discover mode */
+                confnet.cdn_ip_addr = 0;
                 dhcpState = DHCPST_ERROR;
             } else if ((n = DhcpRecvMessage(sock, xid, &server_ip, bp)) < 0) {
                 /* Fatal receive error. */
+                /* Michel Hendriks. Make sure we restart in discover mode */
+                confnet.cdn_ip_addr = 0;
                 dhcpState = DHCPST_ERROR;
             } else if (n > 0) {
-                dyncfg = malloc(sizeof(DYNCFG));
+                /* Michel Hendriks. Prevent accidental free of host name/domain */
+                dyncfg = NutHeapAllocClear(sizeof(DYNCFG));
                 if (ParseReply(dyncfg, server_ip, bp, n) == 0) {
                     if (dyncfg->dyn_msgtyp == DHCP_ACK) {
                         if (configured) {
@@ -1105,6 +1169,7 @@ THREAD(NutDhcpClient, arg)
          * Something miserable happened to us. Release all resources
          * and keep as quiet as possible.
          */
+        /* Michel Hendriks. Do a restart */
         else if (dhcpState == DHCPST_ERROR) {
 #ifdef NUTDEBUG
             if (__tcp_trf)
@@ -1116,11 +1181,14 @@ THREAD(NutDhcpClient, arg)
             }
             while (noffers) {
                 ReleaseDynCfg(offer[noffers]);
+                /* Michel Hendriks. Prevent 2nd free */
+                offer[noffers] = 0;
                 noffers--;
             }
             ReleaseDynCfg(dyncfg);
             dyncfg = 0;
             NutSleep(1000);
+            dhcpState = DHCPST_START;
         }
     }
 }
@@ -1214,8 +1282,17 @@ int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
         if (thread == 0)
             thread = NutThreadCreate("dhcpc", NutDhcpClient, dev, 512);
         NutEventWait((HANDLE *) & dhcpDone, timeout);
-        if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) == 0)
+        /* 
+         * Michel Hendriks
+         * Bound is the only state that is OK
+         */
+        /*
+           if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) == 0)
+           return -1;
+         */
+        if (dhcpState != DHCPST_BOUND) {
             return -1;
+        }
     } else
         confnet.cdn_ip_addr = confnet.cdn_cip_addr;
 
@@ -1247,6 +1324,16 @@ int NutDhcpRelease(CONST char *name, u_long timeout)
     dhcpState = DHCPST_RELEASING;
     NutEventPost(&dhcpWake);
     return NutEventWait(&dhcpDone, timeout);
+}
+
+/*!
+ * \brief Check if DHCP has configured our interface 
+ *
+ * \return 0 if DHCP is in bound state.
+ */
+int NutDhcpIsConfigured(void)
+{
+    return (dhcpState == DHCPST_BOUND);
 }
 
 /*@}*/
