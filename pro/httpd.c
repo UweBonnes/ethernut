@@ -32,8 +32,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:58  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/17 12:28:21  haraldkipp
+ * Memory hole bugfix
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:58  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.14  2003/02/04 18:17:32  harald
  * Version 3 released
@@ -252,11 +255,11 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     strcat(filename, req->req_url);
 
     fd = _open(filename, _O_BINARY | _O_RDONLY);
+    NutHeapFree(filename);
     if (fd == -1) {
         u_char *index;
         u_short urll;
 
-        NutHeapFree(filename);
 
         urll = strlen(req->req_url);
         if ((index = NutHeapAllocClear(urll + 12)) == 0) {
@@ -281,12 +284,11 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         NutHeapFree(index);
 
         fd = _open(filename, _O_BINARY | _O_RDONLY);
+        NutHeapFree(filename);
         if (fd == -1) {
-            NutHeapFree(filename);
             NutHttpSendError(stream, req, 404);
             return;
         }
-        NutHeapFree(filename);
     }
     file_len = _filelength(fd);
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
