@@ -36,14 +36,18 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/07/27 19:28:51  drsung
+ * Implementation of strtok_r adjusted to the POSIX 1c standard.
+ *
  * Revision 1.4  2003/12/16 22:34:41  drsung
  * Portability issues
  *
  */
 
-#include    <stdlib.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include    "strtok_r.h"
+#include "strtok_r.h"
 
 /*!
  * \addtogroup xgCrtMisc
@@ -60,7 +64,7 @@
 
 /*--------------------------------------------------------------------------*/
 
-static char *end_tok(char **pp_str, const char *p_delim, char *p_sep)
+static char *end_tok(char **pp_str, CONST char *p_delim, char *p_sep)
 {
     register const char *sp;
     char *p_tok;
@@ -99,7 +103,7 @@ static char *end_tok(char **pp_str, const char *p_delim, char *p_sep)
  * This function is identical in operation to strsep_r(), except it returns the 
  * deliminating character.
  */
-char *strsep_rs(char **pp_str, const char *p_delim, char *p_sep)
+char *strsep_rs(char **pp_str, CONST char *p_delim, char *p_sep)
 {
     char *p_ch;
 
@@ -147,7 +151,7 @@ char *strsep_rs(char **pp_str, const char *p_delim, char *p_sep)
  *
  * If delim is NULL or the empty string, strsep_r() returns *str.
  */
-char *strsep_r(char **pp_str, const char *p_delim)
+char *strsep_r(char **pp_str, CONST char *p_delim)
 {
     return strsep_rs(pp_str, p_delim, NULL);
 }
@@ -156,63 +160,54 @@ char *strsep_r(char **pp_str, const char *p_delim)
 /*!
  * \brief Thread safe version of strtok.
  *
- * This function locates, in the string referenced by *str, the occurrence of 
+ * This function locates, in the string referenced by *s, the occurrence of 
  * any character in the string delim (or the terminating `\0' character) and 
  * replaces them with a `\0'. The location of the next character after the 
  * delimiter character (or NULL, if the end of the string was reached) is 
- * stored in *str. The first character not a delimiter character from the original 
- * value of *str is returned.
+ * stored in *save_ptr. The first character not a delimiter character from 
+ * the original value of *s is returned.
  *
  * \deprecated This function is supported by avrlibc, which uses different
  *             parameters. It's still available for ICCAVR, but should be
  *             avoided for portability reasons.
  */
 #ifdef __IMAGECRAFT__
-char *strtok_r(char **pp_str, const char *p_delim)
+/* Parse S into tokens separated by characters in DELIM.
+   If S is NULL, the saved pointer in SAVE_PTR is used as
+   the next starting point.  For example:
+	char s[] = "-abc-=-def";
+	char *sp;
+	x = strtok_r(s, "-", &sp);	// x = "abc", sp = "=-def"
+	x = strtok_r(NULL, "-=", &sp);	// x = "def", sp = NULL
+	x = strtok_r(NULL, "=", &sp);	// x = NULL
+		// s = "abc\0-def\0"
+*/
+char *strtok_r(char *s, CONST char *delim, char **save_ptr)
 {
-    register const char *sp;
-    char *p_ch;
+    char *token;
 
-    /*  Check not passed a NULL. */
-    if (pp_str == NULL)
+    if (s == NULL)
+        s = *save_ptr;
+
+    /* Scan leading delimiters.  */
+    s += strspn(s, delim);
+    if (*s == '\0')
         return NULL;
 
-    /*  Use a local pointer. */
-    p_ch = *pp_str;
-    if (p_ch == NULL)
-        return NULL;
-
-    if (*p_ch == 0)
-        return NULL;
-
-    /*  Check a valid delimiter string. */
-    if ((p_delim == NULL) || (*p_delim == 0)) {
-        *pp_str = NULL;
-        return p_ch;
+    /* Find the end of the token.  */
+    token = s;
+    s = strpbrk(token, delim);
+    if (s == NULL)
+        /* This token finishes the string.  */
+        *save_ptr = strchr(token, '\0');
+    else {
+        /* Terminate the token and make *SAVE_PTR point past it.  */
+        *s = '\0';
+        *save_ptr = s + 1;
     }
-    /*  Skip leading deliminators. */
-    while (*p_ch != 0) {
-        for (sp = p_delim; *sp != 0; sp++) {
-            if (*sp == *p_ch)
-                /*  break on non-delimiter character. */
-                break;
-        }
-        if (*sp == 0)
-            break;
-        p_ch++;
-    }
-
-    /*  Save point where tokenising stopped. */
-    *pp_str = p_ch;
-
-    /*  Exit if at end of string. */
-    if (*p_ch == 0)
-        return NULL;
-
-    /*  Have found a non-deliminator character, so scan for next deliminator. */
-    return end_tok(pp_str, p_delim, NULL);
+    return token;
 }
-#endif
+#endif /*__IMAGECRAFT__ */
 
 /*@}*/
 
