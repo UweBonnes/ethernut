@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.16 2003/11/26 15:17:21 drsung Exp $
+$Id: ChangeLog,v 1.17 2003/11/28 19:52:26 haraldkipp Exp $
+
+2003-11-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/tcpsm.c: TCP connections suddenly drop during 
+	transmission. Bug in retransmission timer fixed.
+
 
 2003-11-26  Oliver Schulz <olischulz@web.de>
 
