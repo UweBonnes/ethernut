@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/01/25 11:50:03  drsung
+ * setting correct error code on timeout while NutTcpConnect.
+ *
  * Revision 1.8  2004/01/25 11:29:48  drsung
  * bugfix for connection establishing.
  *
@@ -1432,8 +1435,11 @@ THREAD(NutTcpSm, arg)
                         if ((u_short) NutGetMillis() - sock->so_retran_time > 2000) {
                             /* Retransmit after 2 secs */
                             if (sock->so_time_wait++ >= 3)
+                            {
                                 /* Abort after 3 retries */
                                 sock->so_retran_time = 0;
+                                sock->so_last_error = ETIMEDOUT;
+                            }
                             NutTcpStateRetranTimeout(sock);
                         }
                     } else if (sock->so_state != TCPS_CLOSE_WAIT) {
