@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2002-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/01/30 18:18:55  haraldkipp
+ * Bugfix. Loading programs > 64k failed
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -65,7 +68,7 @@ void FlashPage(unsigned short page, unsigned char *data)
     unsigned long i;
     unsigned long addr;
 
-    addr = page * SPM_PAGESIZE;
+    addr = (unsigned long)page << 8;
 
     /*
      * Erase page.
