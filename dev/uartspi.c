@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 13:59:41  haraldkipp
+ * Deprecated header file removed
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -72,7 +75,6 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/heap.h>
-#include <sys/ifstream.h>
 
 #include <dev/uart.h>
 #include <dev/irqreg.h>

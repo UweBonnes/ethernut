@@ -77,7 +77,6 @@
 #include <ctype.h>
 
 #include <sys/heap.h>
-#include <sys/print.h>
 #include <sys/event.h>
 #include <sys/thread.h>
 

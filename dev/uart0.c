@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:53  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/03/18 14:01:53  haraldkipp
+ * Deprecated header file removed
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:53  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.10  2003/02/04 17:50:55  harald
  * Version 3 released
@@ -47,7 +50,6 @@
  *
  */
 
-#include <sys/ifstream.h>
 #include <dev/uartavr.h>
 
 /*!
