@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2005/02/04 17:17:49  haraldkipp
+ * Unused include files removed.
+ *
  * Revision 1.15  2005/01/21 16:49:46  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -184,21 +187,14 @@
  *
  */
 
-#include <string.h>
-
 #include <sys/thread.h>
 #include <sys/heap.h>
 #include <sys/event.h>
 #include <sys/timer.h>
-#include <sys/atom.h>
-#include <stdio.h>
 
 #include <net/errno.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <netinet/icmp.h>
-#include <netinet/ip_icmp.h>
-#include <netinet/ipcsum.h>
 #include <net/route.h>
 #include <sys/socket.h>
 #include <netinet/tcputil.h>
