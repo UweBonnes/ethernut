@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/03/18 11:08:32  haraldkipp
+ * Comments updated
+ *
  * Revision 1.6  2004/03/18 10:49:59  haraldkipp
  * Comments updated
  *
@@ -228,10 +231,14 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
  * the so called ARP method.
  *
  * \param name    Name of the device to configure.
- * \param params  Pointer to interface specific parameters. For PPP 
- *                interfaces this is a pointer to the PPP_PARAMS 
- *                structure. For Ethernet interfaces this parameter
- *                is ignored.
+ * \param params  Pointer to interface specific parameters. For Ethernet 
+ *                interfaces this parameter may be a pointer to a buffer 
+ *                containing the 6 byte long MAC address. This will
+ *                override the MAC address stored in the non-volatile
+ *                configuration memory. If this memory is uninitialized
+ *                or not available, the MAC address must be specified. 
+ *                For PPP interfaces this parameter is ignored and should
+ *                be set to zero.
  * \param ip_addr Specified IP address in network byte order. This must 
  *                be a unique address within the Internet. If you do not 
  *                directly communicate with other Internet hosts, you can 
@@ -244,6 +251,9 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
  *                is the default.
  *
  * \return 0 on success, -1 otherwise.
+ *
+ * \note The whole interface configuration has become a mess over
+ *       the years and need a major redesign.
  */
 int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mask)
 {
@@ -261,10 +271,7 @@ int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mas
  * the so called ARP method.
  *
  * \param name    Name of the device to configure.
- * \param params  Pointer to interface specific parameters. For PPP 
- *                interfaces this is a pointer to the PPP_PARAMS 
- *                structure. For Ethernet interfaces this parameter
- *                is ignored.
+ * \param params  Pointer to interface specific parameters.
  * \param ip_addr Specified IP address in network byte order. This must 
  *                be a unique address within the Internet. If you do not 
  *                directly communicate with other Internet hosts, you can 
