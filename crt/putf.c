@@ -39,8 +39,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:32  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/14 15:21:51  haraldkipp
+ * Formatted output of unsigned int fixed
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:32  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:08  harald
  * *** empty log message ***
@@ -238,7 +241,13 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt,
             sign = 0;
         case 'd':
         case 'i':
-            ulval = (flags & LONGINT) ? va_arg(ap, long) : va_arg(ap, int);
+            /* Thanks to Ralph Mason for fixing the u_int bug. */
+            if (flags & LONGINT)
+                ulval = va_arg(ap, u_long);
+            else if (ch == 'u')
+                ulval = va_arg(ap, u_int);
+            else
+                ulval = va_arg(ap, int);
             if (ch != 'u' && (long) ulval < 0) {
                 ulval = (u_long) (-((long) ulval));
                 sign = '-';
