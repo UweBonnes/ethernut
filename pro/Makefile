@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/09/19 11:18:45  haraldkipp
+# Syslog client added
+#
 # Revision 1.6  2004/09/10 17:18:30  haraldkipp
 # Building inside source tree is working again
 #
@@ -83,7 +86,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS =  dhcpc.c resolv.c httpd.c auth.c cgi.c dencode.c sntp.c
+SRCS =  dhcpc.c resolv.c httpd.c auth.c cgi.c dencode.c sntp.c syslog.c
 
 OBJS = $(SRCS:.c=.o)
 

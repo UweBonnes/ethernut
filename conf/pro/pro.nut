@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.3  2004/09/19 11:18:44  haraldkipp
+-- Syslog client added
+--
 -- Revision 1.2  2004/08/18 13:46:10  haraldkipp
 -- Fine with avr-gcc
 --
@@ -92,17 +95,18 @@ nutpro =
         }
     },
     {
-        name = "nutpro_sntp",
+        name = "nutpro_snmp",
         brief = "SNMP agent",
         description = "Simple network management protocol. Not implemented.",
         requires = { "NOT_AVAILABLE", "NET_UDP" },
-        sources =  { "sntp.c" }
+        sources =  { "snmp.c" }
     },
     {
         name = "nutpro_sntp",
         brief = "SNTP client API",
         description = "Simple network time protocol.",
         requires = { "NET_UDP" },
+        provides = { "PRO_SNTP" },
         sources =  { "sntp.c" }
     },
     {
@@ -116,6 +120,30 @@ nutpro =
             "CRT_STREAM_READ", 
             "CRT_STREAM_WRITE"
         }
+    },
+    {
+        name = "nutpro_syslog",
+        brief = "Syslog Client API",
+        description = "Logs system and debug information to a remote server.",
+        requires = { "PRO_SNTP", "NET_UDP" },
+        sources =  { "syslog.c" },
+        options = 
+        {
+            {
+                macro = "SYSLOG_PERROR_ONLY",
+                brief = "Disable Network",
+                description = "UDP references are excluded.", 
+                flavor = "boolean",
+                file = "include/cfg/syslog.h"
+            },
+            {
+                macro = "SYSLOG_MAXBUF",
+                brief = "Output buffer size",
+                description = "This is a critical value. If set too low, then "..
+                              "syslog may crash with long messages. Default is 256.",
+                flavor = "booldata",
+                file = "include/cfg/syslog.h"
+            }
+        }
     }
 }
-

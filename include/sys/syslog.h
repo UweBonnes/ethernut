@@ -1,5 +1,38 @@
+#ifndef _SYS_SYSLOG_H_
+#define _SYS_SYSLOG_H_
 /*
- * Copyright (c) 1982, 1986, 1988, 1993
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holders nor the names of
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * For additional information see http://www.ethernut.de/
+ *
+ * -
+ * Portions Copyright (c) 1982, 1986, 1988, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,10 +61,12 @@
  *
  */
 
-#ifndef _SYS_SYSLOG_H_
-#define _SYS_SYSLOG_H_
-
-#define	_PATH_LOG	"/var/run/log"
+/*
+ * $Log$
+ * Revision 1.3  2004/09/19 11:18:44  haraldkipp
+ * Syslog client added
+ *
+ */
 
 /*
  * priorities/facilities are encoded into a single 32-bit quantity, where the
@@ -42,6 +77,10 @@
  *
  * priorities (these are ordered)
  */
+
+#include <sys/types.h>
+#include <stdarg.h>
+
 #define	LOG_EMERG	0       /* system is unusable */
 #define	LOG_ALERT	1       /* action must be taken immediately */
 #define	LOG_CRIT	2       /* critical conditions */
@@ -107,10 +146,12 @@
 #define	LOG_PERROR	0x20    /* log to stderr as well */
 
 
-__BEGIN_DECLS extern void closelog(void);
+__BEGIN_DECLS                   /* */
+extern void closelog(void);
 extern void openlog(CONST char *, int, int);
 extern int setlogmask(int);
+extern u_long setlogserver(u_long ip, u_short port);
 extern void syslog(int, CONST char *, ...);
 extern void vsyslog(int, CONST char *, va_list);
-__END_DECLS
+__END_DECLS                     /* */
 #endif

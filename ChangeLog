@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.118 2004/09/17 14:39:05 olereinhardt Exp $
+$Id: ChangeLog,v 1.119 2004/09/19 11:18:31 haraldkipp Exp $
+
+2004-09-19  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/sys/syslog.h, pro/syslog.c, pro/Makefile, 
+	conf/pro/pro.nut: Syslog protocol added.
+
 
 2004-09-17  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>
 	* dev/hd44780_bus, dev/sja1000.c
@@ -6,6 +12,7 @@ $Id: ChangeLog,v 1.118 2004/09/17 14:39:05 olereinhardt Exp $
 	to icc by now... Anybody wants to port them
 
 2004-09-17  Harald Kipp  <harald.kipp@egnite.de>
+
 	* tools/nutconf/Makefile: Ole removed tooloptdlg.o, which
 	was correct to get it compiled. But the real problem was,
 	that I forget to commit all changes. So tooloptdlg.o
