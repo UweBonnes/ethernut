@@ -1,0 +1,15 @@
+$Id: ChangeLog,v 1.1 2003/07/13 20:11:02 haraldkipp Exp $
+
+2003-07-13  Harald Kipp  <harald.kipp@egnite.de>
+
+	* ChangeLog: Added.
+
+	* net/confnet.c: Unconfigured MAC address changed to
+	broadcast address.
+
+	* net/tcpsm.c: Changing the socket data buffer into
+	a NETBUF queue results in faster TCP transfers.
+
+	* net/tcpsock.c: dito.
+
+	* include/sys/sock_var.h: dito.
