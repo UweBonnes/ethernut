@@ -1,8 +1,21 @@
-$Id: ChangeLog,v 1.12 2003/11/03 17:22:54 haraldkipp Exp $
+$Id: ChangeLog,v 1.13 2003/11/04 18:02:16 haraldkipp Exp $
 
 2003-11-03  Harald Kipp  <harald.kipp@egnite.de>
 
 	* Version 3.3.2
+
+	* All applications will work on Ethernut 1 and 2.
+
+	* net/tcpsm.c: Race condition in TCP state machine left
+	socket in CLOSE-WAIT state. Fixed.
+
+	* app/basemon: Ignore PD5 in port test. Used with RS485.
+
+	* dev/lanc111.c: Still link problems. Finally it should
+	work now after correcting delays during PHY configuration.
+
+
+2003-11-03  Harald Kipp  <harald.kipp@egnite.de>
 
 	* app/isp2: New application to update the ISP adapter
 	included in the Ethernut Starter Kit.
