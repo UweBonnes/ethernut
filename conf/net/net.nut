@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.4  2005/02/04 15:05:59  haraldkipp
+-- ARP configuration added.
+--
 -- Revision 1.3  2005/01/13 18:47:31  haraldkipp
 -- Network dependencies added.
 --
@@ -118,7 +121,35 @@ nutnet =
             "arpcache.c",
             "arpin.c",
             "arpout.c"
+        },
+        options = 
+        {
+            {
+                macro = "MAX_ARPAGE",
+                brief = "Max. ARP Age",
+                description = "Maximum age of an entry in the ARP cache in minutes. "..
+                              "Default is 9 minutes.",
+                flavor = "booldata",
+                file = "include/cfg/arp.h"
+            },
+            {
+                macro = "MAX_ARPREQUESTS",
+                brief = "Max. ARP Requests",
+                description = "Maximum number of ARP requests generated per query. "..
+                              "Default is 4.",
+                flavor = "booldata",
+                file = "include/cfg/arp.h"
+            },
+            {
+                macro = "MIN_ARPWAIT",
+                brief = "Min. ARP Wait",
+                description = "Minimum number of milliseconds to wait before sending "..
+                              "out a new ARP request. Default is 500 milliseconds.",
+                flavor = "booldata",
+                file = "include/cfg/arp.h"
+            },
         }
+        
     },
     {
         name = "nutnet_ethernet",
