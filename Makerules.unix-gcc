@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2005/03/24 16:09:38  freckle
+# added Bernado Innocenti's patches to compile unix c++
+#
 # Revision 1.1  2004/04/07 12:13:46  haraldkipp
 # Matthias Ringwald's *nix emulation added
 #
@@ -55,6 +58,9 @@
 
 %o : %c
 	$(CC) -c $(CPFLAGS) -I$(MODINC) -I$(INCDIR) $< -o $@
+
+%.o: %.cc
+	$(CC) -c $(CPFLAGS) -I$(MODINC) -I$(INCDIR) $< -o $@	
 
 %s : %c
 	$(CC) -S $(CPFLAGS) -I$(MODINC) -I$(INCDIR) $< -o $@

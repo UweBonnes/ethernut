@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.185 2005/03/24 14:31:59 freckle Exp $
+$Id: ChangeLog,v 1.186 2005/03/24 16:09:38 freckle Exp $
 
 2005-03-21  Matthias Ringwald <mringwal@.inf.ethz.ch>
 
@@ -6,6 +6,7 @@ $Id: ChangeLog,v 1.185 2005/03/24 14:31:59 freckle Exp $
 	Added NUT_ wrapper for nut's unistd.h functions. Use <unistd_orig.h>
 	instead of "/usr/include/unistd.h". Relevant for unix emulation only.
 
+	* Makefile: added Bernado Innocenti's patches to compile unix c++
 
 2005-03-13  Harald Kipp  <harald.kipp@egnite.de>
 
