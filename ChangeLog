@@ -1,4 +1,65 @@
-$Id: ChangeLog,v 1.8 2003/07/24 16:13:58 haraldkipp Exp $
+$Id: ChangeLog,v 1.9 2003/08/14 15:23:07 haraldkipp Exp $
+
+2003-08-14  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Version 3.3.1
+
+	* app/pppc.c: PPP sample added.
+
+	* crt/putf.c: Formatted output of unsigned int fixed
+	by Ralph Mason.
+
+	* dev/ppp.c: Bugfix, HDLC may only use a single flag
+	between two consecutive frames.
+
+	* Avoid changing the PPP request identifier while 
+	resending unanswered frames.
+
+	* net/lcpout.c: Negotiate local PPP magic.
+
+	* net/lcpin.c: LCP echo reply support added.
+
+	* net/lcpout.c: Bugfix, send protocol reject in correct
+	byte order.
+
+	* net/pppdebug.c: Added support for LCP echo and
+	discard frames.
+
+	* net/pppsm.c: Retry for authentication request added.
+
+	* net/tcpsm.c: Bugfix by Ralph Mason, NutTcpAccept
+	fails if caller got higher priority.
+
+	* net/tcpsm.c: Bugfix by Ralph Mason, incoming TCP 
+	NETBUFs will never be released if TCP is not used by
+	application.
+
+	* net/tcpsock.c: Another fix by Ralph, TCP may reuse
+	socket ports because of wrong byte order during
+	compare.
+
+
+2003-08-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/httpd/httpserv.c: Bugfix, remote not displayed
+	in the socket list.
+
+	* pro/dhcpc.c: Complete redesign to follow RFC 2131.
+
+
+2003-08-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app: Examples updated and checked in.
+
+	* Removed DNS entries from network interface
+	structure. This may break your driver/app.
+
+	* dev/nicrtl.c: Bugfix, failed to boot with empty 
+	EEPROM.
+
+	* include/compiler.h: Added strcmp_P(), outb() and
+	_BV() for ICCAVR.
+
 
 2003-07-24  Harald Kipp  <harald.kipp@egnite.de>
 
