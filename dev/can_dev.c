@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/02 09:56:13  olereinhardt
+ * changed typing of CAN_TryRxFrame
+ *
  * Revision 1.2  2004/06/23 10:17:04  olereinhardt
  * Added buffer monitoring functions (free / avail)
  *
@@ -88,7 +91,7 @@ void CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame)
     (((IFCAN *)(dev->dev_icb))->can_recv)(dev, frame);
 }
 
-u_char CAN_TryRXFrame(NUTDEVICE *dev, CANFRAME *frame)
+u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
     if (((IFCAN *)(dev->dev_icb))->can_rxavail(dev)) {
         (((IFCAN *)(dev->dev_icb))->can_recv)(dev, frame);

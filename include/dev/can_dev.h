@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/08/02 09:59:53  olereinhardt
+ * changed typing of CAN_TryRxFrame
+ *
  * Revision 1.2  2004/06/23 10:15:35  olereinhardt
  * Added function for buffer monitoring (avail / free)
  *
@@ -130,7 +133,7 @@ u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_TxFree(NUTDEVICE *dev);
 
 void   CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame);
-u_char CAN_TryRXFrame(NUTDEVICE *dev, CANFRAME *frame);
+u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_RxAvail(NUTDEVICE *dev);
 
 /*@}*/
