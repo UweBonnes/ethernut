@@ -43,6 +43,11 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/06/22 09:00:00  freckle
+ * Further work on unix_dev emulation. Multiple parallel reads don't block
+ * each other. Still, dead-locks occure.
+ * STDIO is set to non-blocking.
+ *
  * Revision 1.3  2004/06/21 10:57:25  freckle
  * dev/unix_devs.c: read operation is using extra pthread to only block the
  * current thread instead of all threads
@@ -114,6 +119,10 @@ struct _UNIXDCB {
      */
     HANDLE dcb_rx_rdy;
     
+    /*! \brief Mutex to protect rx trigger 
+    */
+    pthread_mutex_t dcb_rx_mutex;
+
     /*! \brief Conditional Variable to trigger read thread 
     */
     pthread_cond_t dcb_rx_trigger;

@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.77 2004/06/21 16:36:25 freckle Exp $
+$Id: ChangeLog,v 1.78 2004/06/22 08:59:41 freckle Exp $
+
+2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * dev/unix_devs.c: multiple parallel reads now work
+    partly work, still dead-locks possible.
+    Non-blocking stdio.
 
 2004-06-21  Matthias Ringwald <mringwal@inf.ethz.ch>
 

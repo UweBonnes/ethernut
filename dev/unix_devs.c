@@ -251,7 +251,8 @@ static void *UnixDevReadThread( void * arg )
     int ret;
     fd_set rfd_set;
 
-    UNIXDCB * dcb = (UNIXDCB*) arg;
+    NUTDEVICE* dev = (NUTDEVICE*) arg;
+    UNIXDCB *  dcb = (UNIXDCB*) dev->dev_dcb;
     
     // non-nut thread => block IRQ signals
     pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
@@ -261,15 +262,18 @@ static void *UnixDevReadThread( void * arg )
     // confirm start
     pthread_mutex_lock(&unix_devs_mutex);
     pthread_cond_signal(&unix_devs_cv);
+    pthread_mutex_unlock(&unix_devs_mutex);
 
-    // printf("UnixDevReadThread() start confirmed\n");
+    // printf("UnixDevReadThread(%s) start confirmed\n", dev->dev_name);
 
     // 
     for (;;) {
 
-        pthread_cond_wait(&dcb->dcb_rx_trigger, &unix_devs_mutex);
+        pthread_mutex_lock(&dcb->dcb_rx_mutex);
+        pthread_cond_wait(&dcb->dcb_rx_trigger, &dcb->dcb_rx_mutex);
+        pthread_mutex_unlock(&dcb->dcb_rx_mutex);
 
-        // printf("UnixDevReadThread() triggered\n");
+        // printf("UnixDevReadThread(%s) triggered\n", dev->dev_name);
 
         // wait for data to become ready //
         do {
@@ -277,9 +281,9 @@ static void *UnixDevReadThread( void * arg )
             FD_ZERO(&rfd_set);
             FD_SET(dcb->dcb_fd, &rfd_set);
             ret = select(dcb->dcb_fd + 1, &rfd_set, NULL, NULL, NULL);
-        } while (ret < 1);
+        } while (FD_ISSET(dcb->dcb_fd, &rfd_set) == 0);
 
-        // printf("UnixDevReadThread() task processed\n");
+        // printf("UnixDevReadThread(%s) task processed\n", dev->dev_name);
 
         // signale waiting thread
         NutEventPostAsync( &dcb->dcb_rx_rdy);
@@ -325,10 +329,21 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     // fopen unix device
     if (strcmp("stdio", nativeName) == 0) {
 
-        // store unix fd in dev
         nativeFile = STDOUT_FILENO;
-        setvbuf(stdout, NULL, _IONBF, 0);
-        ((UNIXDCB*)dev->dev_dcb)->dcb_fd = nativeFile;
+
+        // make raw
+        if (tcgetattr(nativeFile, &t) == 0) {
+
+            /* set input mode (non-canonical, no echo,...) */
+            t.c_lflag = 0;
+            t.c_cc[VTIME] = 0;  /* inter-character timer unused */
+            t.c_cc[VMIN] = 0;   /* non-blocking read */
+
+            // apply file descriptor options
+            if (tcsetattr(nativeFile, TCSANOW, &t) < 0) {
+                printf("UnixDevOpen: tcsetattr failed\n\r");
+            }
+        }
 
     } else {
 
@@ -364,12 +379,13 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
                 printf("UnixDevOpen: tcsetattr failed\n\r");
             }
         }
-        // store unix fd in dev
-        ((UNIXDCB*)dev->dev_dcb)->dcb_fd = nativeFile;
     }
 
     if (nativeFile == 0)
         return NULL;
+
+    // store unix fd in dev
+    ((UNIXDCB*)dev->dev_dcb)->dcb_fd = nativeFile;
 
     // printf("UnixDevOpen: %s, fd * %d\n\r", nativeName, nativeFile);
     // printf("UnixDevOpen: stdout %d, stdin %d, stderr %d \n\r", fileno(stdin), fileno(stdout), fileno(stderr));
@@ -389,7 +405,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
 
     // lock mutex and start thread
     pthread_mutex_lock(&unix_devs_mutex);
-    pthread_create(thread, &unix_devs_attr, UnixDevReadThread, dev->dev_dcb);
+    pthread_create(thread, &unix_devs_attr, UnixDevReadThread, dev);
 
     // wait for ack
     pthread_cond_wait(&unix_devs_cv, &unix_devs_mutex);
@@ -463,21 +479,26 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
         if (ret == 0) {
             // no data available. let's block the nut way...
 
-            // printf("UnixDevRead: no data ready, signaling read thread\n\r");
+            // printf("UnixDevRead(%s): no data ready, signaling read thread\n\r", nf->nf_dev->dev_name);
 
             // lock mutex and signal read thread
-            pthread_mutex_lock(&unix_devs_mutex);
+            pthread_mutex_lock(&dcb->dcb_rx_mutex);
             pthread_cond_signal(&dcb->dcb_rx_trigger);
-            pthread_mutex_unlock(&unix_devs_mutex);
+            pthread_mutex_unlock(&dcb->dcb_rx_mutex);
+
+            // printf("UnixDevRead(%s): no data ready, waiting for answer\n\r", nf->nf_dev->dev_name);
 
             // wait for data to be ready
+            dcb->dcb_rx_rdy = 0;
             NutEventWait( &dcb->dcb_rx_rdy, dcb->dcb_rtimeout);
 
-            // printf("UnixDevRead: read thread returned\n\r");
+            // printf("UnixDevRead(%s): got answer\n\r", nf->nf_dev->dev_name);
 
         }
         
+        //  printf("UnixDevRead(%s): before read\n\r", nf->nf_dev->dev_name);
         newBytes = read( dcb->dcb_fd, buffer, len);
+        // printf("UnixDevRead(%s): read some bytes. res = %d\n\r", nf->nf_dev->dev_name, newBytes);
 
         /* error or timeout ? */
         if (newBytes < 0) {
@@ -778,6 +799,7 @@ static UNIXDCB dcb_usart0 = {
     0,                          /* dbc_last_eol */
     0,                          /* dcb_fd */
     0,                          /* dcb_rx_rdy */
+/*  xx,                            dcb_rx_mutex */
 /*  xx,                            dcb_rx_trigger */
 };
 
@@ -792,6 +814,7 @@ static UNIXDCB dcb_usart1 = {
     0,                          /* dbc_last_eol */
     0,                          /* dcb_fd */
     0,                          /* dcb_rx_rdy */
+/*  xx,                            dcb_rx_mutex */
 /*  xx,                            dcb_rx_trigger */
 };
 
