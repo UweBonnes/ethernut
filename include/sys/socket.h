@@ -63,6 +63,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/07/30 19:54:46  drsung
+ * Some code of TCP stack redesigned. Round trip time calculation is now
+ * supported. Fixed several bugs in TCP state machine. Now TCP connections
+ * should be more reliable under heavy traffic or poor physical connections.
+ *
  * Revision 1.4  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -156,6 +161,7 @@ extern int NutTcpReceive(TCPSOCKET *sock, void *data, u_short size);
 extern TCPSOCKET *NutTcpFindSocket(u_short lport, u_short rport, u_long raddr);
 extern int NutTcpError(TCPSOCKET *sock);
 extern int NutTcpAbortSocket(TCPSOCKET *sock, u_short last_error);
+extern void NutTcpDiscardBuffers(TCPSOCKET * sock);
 
 extern int NutTcpDeviceRead(TCPSOCKET *sock, void *buffer, int size);
 extern int NutTcpDeviceWrite(TCPSOCKET *sock, CONST void *buffer, int size);

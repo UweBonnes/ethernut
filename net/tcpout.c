@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/07/30 19:54:46  drsung
+ * Some code of TCP stack redesigned. Round trip time calculation is now
+ * supported. Fixed several bugs in TCP state machine. Now TCP connections
+ * should be more reliable under heavy traffic or poor physical connections.
+ *
  * Revision 1.2  2004/04/15 11:05:35  haraldkipp
  * Set retransmission timer on first transmit queue entry
  *
@@ -127,6 +132,8 @@
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 #include <net/errno.h>
+#include <sys/thread.h>
+#include <stdio.h>
 
 #ifdef NUTDEBUG
 #include <net/netdebug.h>
@@ -172,6 +179,7 @@
 int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
 {
     NETBUF *nb;
+    NETBUF *nb_clone = 0;
     TCPHDR *th;
     u_short csum;
     u_char hlen;
@@ -197,6 +205,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
     th = (TCPHDR *) nb->nb_tp.vp;
     th->th_sport = sock->so_local_port;
     th->th_dport = sock->so_remote_port;
+    th->th_x2 = 0;
     th->th_off = hlen >> 2;
 
     sock->so_tx_flags &= ~SO_FORCE;
@@ -252,6 +261,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
         th->th_flags |= TH_FIN;
         sock->so_tx_flags &= ~SO_FIN;
         sock->so_tx_nxt++;
+        //@@@printf ("[%04X]TcpOutput: sending FIN\n", (u_short) sock);
     }
 
     /*
@@ -280,17 +290,17 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
         NutDumpTcpHeader(__tcp_trs, "OUT", sock, nb);
 #endif
 
-    /*
-     * IP output might fail because of routing, ARP or network device 
-     * problems or because the system ran out of memory.
-     */
-    if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, nb))
-        return -1;
+	/*
+	 * To avoid a race condition in tcp state machine, the segment is first
+     * appended to the transmission que, and then sent to the network.
+	 */
 
     /*
      * Append the segment to our transmission queue.
      */
+    //@@@printf ("[%04X]TcpOutput: size: %u, flags: %u\n", (u_short) sock, size, th->th_flags);
     if (size || ((th->th_flags & (TH_FIN | TH_SYN)))) {
+        //@@@printf ("[%04X]TcpOutput: appending nb to queue\n", (u_short) sock);
         NETBUF *nbp;
 
         nb->nb_next = 0;
@@ -310,9 +320,21 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
                 nbp = nbp->nb_next;
             nbp->nb_next = nb;
         }
-    } else {
-        NutNetBufFree(nb);
+        if (sock->so_rtt_seq == 0)
+            sock->so_rtt_seq = ntohl (th->th_seq);
+        nb_clone = NutNetBufClone (nb);
     }
+    else
+        nb_clone = nb;
+
+    /*
+     * IP output might fail because of routing, ARP or network device 
+     * problems or because the system ran out of memory.
+     */
+    if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, nb_clone)) 
+        return -1;
+
+    NutNetBufFree (nb_clone);
     return 0;
 }
 

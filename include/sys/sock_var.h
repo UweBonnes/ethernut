@@ -63,6 +63,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/07/30 19:54:46  drsung
+ * Some code of TCP stack redesigned. Round trip time calculation is now
+ * supported. Fixed several bugs in TCP state machine. Now TCP connections
+ * should be more reliable under heavy traffic or poor physical connections.
+ *
  * Revision 1.5  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -163,6 +168,7 @@ struct tcp_socket {
     int (*so_devwrite) (TCPSOCKET *, CONST void *, int); /*!< \brief Write to device. */
     int (*so_devwrite_P) (TCPSOCKET *, PGM_P, int); /*!< \brief Write to device. */
     int (*so_devioctl) (TCPSOCKET *, int, void *); /*!< \brief Driver control function. */
+    
     u_short so_devocnt;     /*!< \brief Number of data bytes in output buffer. */
     u_char *so_devobuf;     /*!< \brief Pointer to output buffer. */
     u_short so_devobsz;     /*!< \brief Output buffer size. */
@@ -196,9 +202,8 @@ struct tcp_socket {
 
     u_short so_mss;         /*!< \brief MSS, limited by remote option or MTU. */
 
-    u_long  so_rto_next;    /*!< \brief Next round-trip timeout. */
-    u_long  so_srtt_avg;    /*!< \brief Scaled round-trip timer average. */
-    u_long  so_srtt_var;    /*!< \brief Scaled round-trip timer variance. */
+    u_long  so_rtt_seq;     /*!< \brief Sequence number for RTT calculation. */
+    u_short so_rtto;        /*!< \brief Current retransmission timeout. */
     u_short so_retransmits; /*!< \brief Number of retransmits. */
     u_short so_time_wait;   /*!< \brief Time wait counter. */
     u_short so_retran_time; /*!< \brief Retransmit time counter. */

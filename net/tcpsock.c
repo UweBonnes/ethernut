@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/07/30 19:54:46  drsung
+ * Some code of TCP stack redesigned. Round trip time calculation is now
+ * supported. Fixed several bugs in TCP state machine. Now TCP connections
+ * should be more reliable under heavy traffic or poor physical connections.
+ *
  * Revision 1.8  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -154,6 +159,8 @@
 #include <netinet/ipcsum.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
+#include <stdio.h>
+#include <io.h>
 
 #ifdef NUTDEBUG
 #include <net/netdebug.h>
@@ -173,6 +180,23 @@ static volatile u_short last_local_port = 4096; /* Unassigned local port. */
 
 static u_char tcpStateRunning = 0;
 
+void NutTcpDiscardBuffers(TCPSOCKET * sock)
+{
+    NETBUF *nb;
+    while ((nb = sock->so_rx_buf) != 0) {
+        sock->so_rx_buf = nb->nb_next;
+        NutNetBufFree(nb);
+    }
+    while ((nb = sock->so_tx_nbq) != 0) {
+        sock->so_tx_nbq = nb->nb_next;
+        NutNetBufFree(nb);
+    }
+    while ((nb = sock->so_rx_nbq) != 0) {
+        sock->so_rx_nbq = nb->nb_next;
+        NutNetBufFree(nb);
+    }
+}
+
 
 /*!
  * \brief Destroy a previously allocated socket.
@@ -191,7 +215,8 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
 {
     TCPSOCKET *sp;
     TCPSOCKET *volatile *spp;
-    NETBUF *nb;
+    
+    //@@@printf ("[%04X] Calling destroy.\n", (u_short) sock);
 
     /*
      * Remove socket from the list.
@@ -211,17 +236,11 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
      * Free all memory occupied by the socket.
      */
     if (sp) {
-        while ((nb = sock->so_rx_buf) != 0) {
-            sock->so_rx_buf = nb->nb_next;
-            NutNetBufFree(nb);
-        }
-        while ((nb = sock->so_tx_nbq) != 0) {
-            sock->so_tx_nbq = nb->nb_next;
-            NutNetBufFree(nb);
-        }
-        while ((nb = sock->so_rx_nbq) != 0) {
-            sock->so_rx_nbq = nb->nb_next;
-            NutNetBufFree(nb);
+        NutTcpDiscardBuffers(sock);
+        if (sock->so_devocnt)
+        {
+            NutHeapFree(sock->so_devobuf);
+            sock->so_devocnt = 0;
         }
         memset(sock, 0, sizeof(TCPSOCKET));
         NutHeapFree(sock);
@@ -318,8 +337,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
             sock->so_rx_bsz = sock->so_rx_win = TCP_WINSIZE;
 
             sock->so_mss = TCP_MSS;
-            sock->so_rto_next = 3 * TICK_RATE;
-            sock->so_srtt_var = 3 * TICK_RATE;
+            sock->so_rtto = 1000; /* Initial retransmission time out */
 
             sock->so_next = tcpSocketList;
 
@@ -328,6 +346,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
             tcpSocketList = sock;
         }
     }
+    //@@@printf ("[%04X] Socket created.\n", (u_short) sock);
     return sock;
 }
 
@@ -612,6 +631,8 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
     /*
      * Check parameters.
      */
+    NutThreadYield();
+    
     if (sock == 0)
         return -1;
     if (sock->so_state != TCPS_ESTABLISHED) {
@@ -690,6 +711,7 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
 {
     u_short i;
 
+    NutThreadYield();
     /*
      * Check parameters.
      */
@@ -780,6 +802,7 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
 int NutTcpCloseSocket(TCPSOCKET * sock)
 {
     /* Flush buffer first */
+    //@@@printf ("[%04X] Calling close\n", (u_short) sock);
     NutTcpDeviceWrite(sock, 0, 0);
     return NutTcpStateCloseEvent(sock);
 }
@@ -878,6 +901,16 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     /* hack alert for ICCAVR */
     u_char *buffer = (u_char*) buf;
 
+    /*
+     * Check parameters.
+     */
+    if (sock == 0)
+        return -1;
+    if (sock->so_state != TCPS_ESTABLISHED) {
+        sock->so_last_error = ENOTCONN;
+        return -1;
+    }
+
     /* Flush buffer? */
     if (size == 0) {
         if (sock->so_devocnt) {
@@ -900,7 +933,8 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
          */
         if (size >= sock->so_devobsz) {
             rc = size % sock->so_devobsz;
-            SendBuffer(sock, buffer, size - rc);
+            if (SendBuffer(sock, buffer, size - rc) < 0)
+                return -1;
             buffer += size - rc;
         } else
             rc = size;
@@ -943,7 +977,11 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     sz = size - sz;
     if (sz >= sock->so_devobsz) {
         rc = sz % sock->so_devobsz;
-        SendBuffer(sock, buffer, sz - rc);
+        if (SendBuffer(sock, buffer, sz - rc) < 0) {
+            NutHeapFree(sock->so_devobuf);
+            sock->so_devocnt = 0;
+            return -1;
+        }
         buffer += sz - rc;
     } else
         rc = sz;
@@ -997,7 +1035,22 @@ int NutTcpDeviceWrite_P(TCPSOCKET * sock, PGM_P buffer, int size)
  */
 int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
 {
-    return 0;
+    u_long *lvp = (u_long *) param;
+    int rc = 0;
+    
+    switch (cmd) {
+    case IOCTL_GETFILESIZE:
+    case IOCTL_GETINBUFCOUNT:
+        *lvp = (sock->so_rx_cnt - sock->so_rd_cnt);
+        break;
+    case IOCTL_GETOUTBUFCOUNT:
+        *lvp = (sock->so_devocnt);
+        break;
+    default:
+        rc = -1;
+    }
+    
+    return rc;    
 }
 
 /*@}*/
