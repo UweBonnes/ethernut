@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.133 2004/11/08 19:16:58 haraldkipp Exp $
+$Id: ChangeLog,v 1.134 2004/11/08 21:48:50 drsung Exp $
+
+2004-11-08  Oliver Schulz  <olischulz@web.de>
+
+	* Makerules.arm-gcc, Makerules.avr-gcc, */Makefile: Added rule to clean up 
+	intermediate gcc files (*.i)
+
+	* tools/nutconf/nutconfdoc.cpp: While creating the sample directory, CVS 
+	files are now not copied.
+
 
 2004-11-08  Harald Kipp  <harald.kipp@egnite.de>
 
