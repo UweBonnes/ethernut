@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/11/04 17:46:52  haraldkipp
+ * Adapted to Ethernut 2
+ *
  * Revision 1.1  2003/07/21 17:50:48  haraldkipp
  * First check in
  *
@@ -53,8 +56,11 @@
 #include <dev/term.h>
 #include <dev/hd44780.h>
 #include <dev/vs1001k.h>
-//#include <dev/lanc111.h>
+#ifdef ETHERNUT2
+#include <dev/lanc111.h>
+#else
 #include <dev/nicrtl.h>
+#endif
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -420,13 +426,12 @@ int main(void)
      * LAN configuration using EEPROM values or DHCP/ARP method.
      * If it fails, use fixed values.
      */
-    //if(NutRegisterDevice(&devSmsc111, 0, 0)) 
-    if (NutRegisterDevice(&devEth0, 0x8300, 5))
+    if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5))
         puts("Registering device failed");
     if (NutDhcpIfConfig("eth0", 0, 60000)) {
         puts("EEPROM/DHCP/ARP config failed");
         NutNetIfConfig("eth0", mac, ip_addr, ip_mask);
-        NutIpRouteAdd(0, 0, ip_gate, &devEth0);
+        NutIpRouteAdd(0, 0, ip_gate, &DEV_ETHER);
     }
     puts("ready\n");
 

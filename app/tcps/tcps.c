@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/11/04 17:46:52  haraldkipp
+ * Adapted to Ethernut 2
+ *
  * Revision 1.1  2003/08/05 18:59:05  haraldkipp
  * Release 3.3 update
  *
@@ -71,8 +74,11 @@
 #include <stdio.h>
 #include <io.h>
 
+#ifdef ETHERNUT2
+#include <dev/lanc111.h>
+#else
 #include <dev/nicrtl.h>
-//#include <dev/lanc111.h>
+#endif
 #include <dev/debug.h>
 
 #include <sys/version.h>
@@ -83,6 +89,13 @@
 
 #include <arpa/inet.h>
 #include <pro/dhcp.h>
+
+#ifdef NUTDEBUG
+#include <sys/osdebug.h>
+#include <net/netdebug.h>
+#endif
+
+#include <sys/confnet.h>
 
 static char buff[128];
 
@@ -235,13 +248,13 @@ int main(void)
     TCPSOCKET *sock;
     FILE *stream;
     u_long baud = 115200;
-    u_char mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
+    u_char mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x55 };
 
     /*
      * Register all devices used in our application.
      */
     NutRegisterDevice(&devDebug0, 0, 0);
-    NutRegisterDevice(&devEth0, 0x8300, 5);
+    NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
      * Assign stdout to the UART device.
@@ -249,8 +262,16 @@ int main(void)
     freopen("uart0", "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     printf_P(vbanner_P, NutVersionString());
+#ifdef NUTDEBUG
+    NutTraceTcp(stdout, 1);
+    NutTraceOs(stdout, 0);
+    NutTraceHeap(stdout, 0);
+    NutTracePPP(stdout, 0);
+#endif
 
-    //NutRegisterDevice(&devSmsc111, 0, 0);
+    NutNetLoadConfig("eth0");
+    memcpy(confnet.cdn_mac, mac, 6);
+    NutNetSaveConfig();
 
     /*
      * Setup the ethernet device. Try DHCP first. If this is
@@ -271,6 +292,7 @@ int main(void)
         }
     }
     puts("OK");
+    printf("IP: %s\n", inet_ntoa(confnet.cdn_ip_addr));
 
     /*
      * Now loop endless for connections.

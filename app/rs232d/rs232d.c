@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/11/04 17:46:52  haraldkipp
+ * Adapted to Ethernut 2
+ *
  * Revision 1.1  2003/08/05 18:59:05  haraldkipp
  * Release 3.3 update
  *
@@ -68,7 +71,11 @@
  *
  */
 
+#ifdef ETHERNUT2
+#include <dev/lanc111.h>
+#else
 #include <dev/nicrtl.h>
+#endif
 #include <dev/uartavr.h>
 
 #include <sys/heap.h>
@@ -153,7 +160,7 @@ int main(void)
      * Register our devices.
      */
     NutRegisterDevice(&devUart0, 0, 0);
-    NutRegisterDevice(&devEth0, 0x8300, 5);
+    NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
      * Setup the uart device.

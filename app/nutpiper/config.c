@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/11/04 17:46:52  haraldkipp
+ * Adapted to Ethernut 2
+ *
  * Revision 1.1  2003/07/21 17:50:48  haraldkipp
  * First check in
  *
@@ -238,7 +241,7 @@ void ConfigResetFactory(void)
     ConfigCreate();
 
     /* Initial radio control settings. */
-    radio.rc_rstation = 1;
+    radio.rc_rstation = 2;
     radio.rc_rvolume = 223;
 
     /* 

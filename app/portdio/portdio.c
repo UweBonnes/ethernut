@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/11/04 17:46:52  haraldkipp
+ * Adapted to Ethernut 2
+ *
  * Revision 1.1  2003/08/05 18:59:05  haraldkipp
  * Release 3.3 update
  *
@@ -84,7 +87,11 @@
 #include <string.h>
 #include <stdio.h>
 
+#ifdef ETHERNUT2
+#include <dev/lanc111.h>
+#else
 #include <dev/nicrtl.h>
+#endif
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -362,7 +369,7 @@ int main(void)
      * Register Realtek controller at address 8300 hex
      * and interrupt 5.
      */
-    NutRegisterDevice(&devEth0, 0x8300, 5);
+    NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
      * Configure lan interface. 

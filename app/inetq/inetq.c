@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2003/11/04 17:46:52  haraldkipp
+ * Adapted to Ethernut 2
+ *
  * Revision 1.1  2003/08/05 18:59:05  haraldkipp
  * Release 3.3 update
  *
@@ -74,8 +77,12 @@
 #include <stdio.h>
 #include <io.h>
 
-#include <dev/uartavr.h>
+#include <dev/debug.h>
+#ifdef ETHERNUT2
+#include <dev/lanc111.h>
+#else
 #include <dev/nicrtl.h>
+#endif
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -112,7 +119,7 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-    NutRegisterDevice(&devUart0, 0, 0);
+    NutRegisterDevice(&devDebug0, 0, 0);
     freopen("uart0", "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("\nInetQuery 1.0");
@@ -121,7 +128,7 @@ int main(void)
      * Register Realtek controller at address 8300 hex and interrupt 5.
      */
     puts("Configuring Ethernet interface");
-    NutRegisterDevice(&devEth0, 0x8300, 5);
+    NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
      * Try DHCP. First use MAC from EEPROM.
@@ -132,7 +139,7 @@ int main(void)
          */
         ip_addr = inet_addr(MY_IP);
         NutNetIfConfig("eth0", my_mac, ip_addr, inet_addr(MY_MASK));
-        NutIpRouteAdd(0, 0, inet_addr(MY_GATE), &devEth0);
+        NutIpRouteAdd(0, 0, inet_addr(MY_GATE), &DEV_ETHER);
         NutDnsConfig(0, 0, inet_addr(DNSSERVERIP));
     } else
         ip_addr = confnet.cdn_ip_addr;

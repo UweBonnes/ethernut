@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2003/11/04 17:46:52  haraldkipp
+ * Adapted to Ethernut 2
+ *
  * Revision 1.3  2003/09/29 16:33:12  haraldkipp
  * Using portable strtok and strtok_r
  *
@@ -59,8 +62,12 @@
 #include <string.h>
 #include <io.h>
 
-//#include <dev/lanc111.h>
+#ifdef ETHERNUT2
+#include <dev/lanc111.h>
+#else
 #include <dev/nicrtl.h>
+#endif
+
 #include <dev/debug.h>
 #include <dev/urom.h>
 
@@ -500,8 +507,7 @@ int main(void)
     /*
      * Register Ethernet controller.
      */
-    //if(NutRegisterDevice(&devSmsc111, 0, 0)) 
-    if (NutRegisterDevice(&devEth0, 0x8300, 5))
+    if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5))
         puts("Registering device failed");
 
     /*

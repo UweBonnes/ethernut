@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2003/11/04 17:46:52  haraldkipp
+# Adapted to Ethernut 2
+#
 # Revision 1.1  2003/05/15 14:30:09  haraldkipp
 # Initial using 3.2.1
 #
@@ -52,7 +55,9 @@ all:
 	$(MAKE) -C basemon
 	$(MAKE) -C httpd
 	$(MAKE) -C inetq
+	$(MAKE) -C nutpiper
 	$(MAKE) -C portdio
+	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
 	$(MAKE) -C simple
 	$(MAKE) -C tcps
@@ -64,7 +69,9 @@ install:
 	$(MAKE) -C basemon install
 	$(MAKE) -C httpd install
 	$(MAKE) -C inetq install
+	$(MAKE) -C nutpiper install
 	$(MAKE) -C portdio install
+	$(MAKE) -C pppc install
 	$(MAKE) -C rs232d install
 	$(MAKE) -C simple install
 	$(MAKE) -C tcps install
@@ -76,7 +83,9 @@ clean:
 	$(MAKE) -C basemon clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C inetq clean
+	$(MAKE) -C nutpiper clean
 	$(MAKE) -C portdio clean
+	$(MAKE) -C pppc clean
 	$(MAKE) -C rs232d clean
 	$(MAKE) -C simple clean
 	$(MAKE) -C tcps clean
