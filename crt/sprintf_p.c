@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:33  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 17:00:56  haraldkipp
+ * Bugfix
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:33  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:09  harald
  * *** empty log message ***
@@ -68,7 +71,8 @@ int sprintf_P(char *buffer, PGM_P fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    rc = vsprintf(buffer, (char *) fmt, ap);
+    /* Bugfix by Ralph Mason. */
+    rc = vsprintf_P(buffer, (char *) fmt, ap);
     va_end(ap);
 
     return rc;
