@@ -53,8 +53,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:10  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:37:39  haraldkipp
+ * Enable application to control decoder interrupts.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:10  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.9  2003/05/06 18:44:58  harald
  * Cleanup
@@ -187,6 +190,7 @@ extern int VsPlayerSetMode(u_short mode);
 extern int VsPlayerKick(void);
 extern int VsPlayerStop(void);
 extern int VsPlayerFlush(void);
+extern u_char VsPlayerInterrupts(u_char enable);
 
 extern u_char *VsBufferInit(u_short size);
 extern u_char *VsBufferReset(void);
