@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:48  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/05/15 14:09:16  haraldkipp
+ * Much better performance under heavy traffic.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:48  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.29  2003/05/06 18:32:01  harald
  * Use config include and avoid null mac
@@ -218,11 +221,6 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
 {
     u_char i;
 
-    /*
-     * Disable NIC interrupts.
-     */
-    cbi(EIMSK, RTL_SIGNAL_BIT);
-
     if (NicReset(base))
         return -1;
 
@@ -265,7 +263,7 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
      * and wait for link test to complete.
      */
     nic_write(NIC_PG3_EECR, 0);
-    NutSleep(WAIT500);
+    NutDelay(255);
 
     /*
      * Switch to register page 0 and set data configuration register
@@ -350,7 +348,7 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
     nic_write(NIC_PG0_TCR, 0);
 
-    NutSleep(WAIT500);
+    NutDelay(255);
 
     return 0;
 }
@@ -485,7 +483,7 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
 /*!
  * \brief Fetch the next packet out of the receive ring buffer.
  *
- * Interrupts must be disabled when calling this funtion.
+ * Nic interrupts must be disabled when calling this funtion.
  *
  * \return Pointer to an allocated ::NETBUF. If there is no
  *         no data available, then the function returns a
@@ -504,11 +502,6 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
     u_short i;
 
     /*
-     * Disable NIC interrupts.
-     */
-    cbi(EIMSK, RTL_SIGNAL_BIT);
-
-    /*
      * Get the current page pointer. It points to the page where the NIC 
      * will start saving the next incoming packet.
      */
@@ -524,10 +517,8 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
      */
     if ((bnry = nic_read(NIC_PG0_BNRY) + 1) >= NIC_STOP_PAGE)
         bnry = NIC_FIRST_RX_PAGE;
-    if (bnry == curr) {
-        sbi(EIMSK, RTL_SIGNAL_BIT);
+    if (bnry == curr)
         return 0;
-    }
 
     /*
      * Read the NIC specific packet header.
@@ -547,7 +538,6 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
      */
     if (hdr.ph_size < 60 + sizeof(struct nic_pkt_header) ||
         hdr.ph_size > 1518 + sizeof(struct nic_pkt_header)) {
-        sbi(EIMSK, RTL_SIGNAL_BIT);
         return dflg ? 0 : (NETBUF *) 0xFFFF;
     }
 
@@ -568,7 +558,6 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
             nextpg1 += NIC_FIRST_RX_PAGE;
         }
         if (nextpg1 != hdr.ph_nextpg) {
-            sbi(EIMSK, RTL_SIGNAL_BIT);
             return dflg ? 0 : (NETBUF *) 0xFFFF;
         }
         nextpg = nextpg1;
@@ -624,7 +613,6 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
         nextpg = NIC_STOP_PAGE - 1;
     nic_write(NIC_PG0_BNRY, nextpg);
 
-    sbi(EIMSK, RTL_SIGNAL_BIT);
     return dflg ? (NETBUF *) ((u_short) dflg) : nb;
 }
 
@@ -683,6 +671,9 @@ static int NicOverflow(volatile u_char * base)
     if (resend) {
         nic_write(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
     }
+
+    /* Finally clear the overflow flag. */
+    nic_write(NIC_PG0_ISR, NIC_ISR_OVW);
     return resend;
 }
 
@@ -717,7 +708,7 @@ static void NicInterrupt(void *arg)
         }
         ni->ni_overruns++;
         cli();
-        sbi(EIMSK, RTL_SIGNAL_BIT);
+        sbi(EIMSK, RTL_SIGNAL_BIT);        
     } else {
         /*
          * If this is a transmit interrupt, then a packet has been sent. 
@@ -770,9 +761,9 @@ THREAD(NicRx, arg)
      * set.
      */
     if((ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2]) == 0) {
-        cbi(EIMSK, RTL_SIGNAL_BIT);
         while((ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2]) == 0)
             NutSleep(125);
+        cbi(EIMSK, RTL_SIGNAL_BIT);
         NicStart((u_char *) (dev->dev_base), ifn->if_mac);
         ni->ni_curr_page = NIC_START_PAGE + TX_PAGES;
         sbi(EIMSK, RTL_SIGNAL_BIT);
@@ -798,22 +789,30 @@ THREAD(NicRx, arg)
          * buffer and pass them to the registered handler.
          */
         rlcnt = 0;
-        while (rlcnt++ < 10
-               && (nb =
-                   NicGetPacket((u_char *) (dev->dev_base), 0)) != 0) {
+        cbi(EIMSK, RTL_SIGNAL_BIT);
+        while (rlcnt++ < 10) {
+            if((nb = NicGetPacket((u_char *) (dev->dev_base), 0)) == 0) 
+                break;
+            /* The sanity check may fail because the controller is too busy.
+               try another read before giving up and restarting the NIC. */
             if ((u_short) nb == 0xFFFF) {
-                cbi(EIMSK, RTL_SIGNAL_BIT);
+                if((nb = NicGetPacket((u_char *) (dev->dev_base), 0)) == 0) 
+                    break;
+            }
+            if ((u_short) nb == 0xFFFF) {
                 if (NicStart((u_char *) (dev->dev_base), ifn->if_mac) == 0)
                     ni->ni_rx_pending = 0;
                 ni->ni_curr_page = NIC_START_PAGE + TX_PAGES;
                 ni->ni_rx_pending = 0;
-                sbi(EIMSK, RTL_SIGNAL_BIT);
             } else {
                 ni->ni_rx_pending = 0;
                 ni->ni_rx_packets++;
+                sbi(EIMSK, RTL_SIGNAL_BIT);
                 (*ifn->if_recv) (dev, nb);
+                cbi(EIMSK, RTL_SIGNAL_BIT);
             }
         }
+        sbi(EIMSK, RTL_SIGNAL_BIT);
     }
 }
 
@@ -832,6 +831,7 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
     int rc = -1;
     NICINFO *ni;
     u_char retries = 10;
+    u_char sigmod = 0;
 
     ni = (NICINFO *) dev->dev_dcb;
 
@@ -844,14 +844,23 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
              * with the transmit interrupt. Force sending the packet, 
              * if the transmitter has become inactive.
              */
-            cbi(EIMSK, RTL_SIGNAL_BIT);
+            if(bit_is_set(EIMSK, RTL_SIGNAL_BIT)) {
+                cbi(EIMSK, RTL_SIGNAL_BIT);
+                sigmod = 1;
+            }
             if ((nic_read(NIC_CR) & NIC_CR_TXP) == 0)
                 ni->ni_tx_bsy = 0;
-            sbi(EIMSK, RTL_SIGNAL_BIT);
+            if(sigmod) {
+                sbi(EIMSK, RTL_SIGNAL_BIT);
+                sigmod = 0;
+            }
         }
     }
 
-    cbi(EIMSK, RTL_SIGNAL_BIT);
+    if(bit_is_set(EIMSK, RTL_SIGNAL_BIT)) {
+        cbi(EIMSK, RTL_SIGNAL_BIT);
+        sigmod = 1;
+    }
     if (ni->ni_tx_bsy == 0) {
         ni->ni_tx_bsy++;
         if (NicPutPacket((u_char *) (dev->dev_base), nb) == 0) {
@@ -859,7 +868,8 @@ int NicOutput(NUTDEVICE * dev, NETBUF * nb)
             rc = 0;
         }
     }
-    sbi(EIMSK, RTL_SIGNAL_BIT);
+    if(sigmod)
+        sbi(EIMSK, RTL_SIGNAL_BIT);
 
     return rc;
 }
