@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/07/27 19:38:30  drsung
+ * Under certain circumstances the same ARPENTRY was
+ * allocated twice.
+ *
  * Revision 1.3  2004/03/18 10:18:01  haraldkipp
  * Comments updated
  *
@@ -321,7 +325,7 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
      * No entry exists. Create a new incomplete entry.
      * This may fail if we ran out of memeory.
      */
-    else if ((entry = NutArpCacheNew(dev->dev_icb, ip, 0, 0)) == 0) {
+    else if (entry == 0 && (entry = NutArpCacheNew(dev->dev_icb, ip, 0, 0)) == 0) {
         return -1;
     }
 
