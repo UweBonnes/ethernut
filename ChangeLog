@@ -1,10 +1,28 @@
-$Id: ChangeLog,v 1.112 2004/09/10 10:11:00 haraldkipp Exp $
+$Id: ChangeLog,v 1.113 2004/09/10 10:38:00 haraldkipp Exp $
 
 2004-09-10  Harald Kipp  <harald.kipp@egnite.de>
 
 	* eboot/ether.c: Added minimal "EEPROM emulation" to support
 	Ethernut 1.3 Rev-G boards. To squeeze it again in 4kByte,
 	the broadcast, gateway and dns had been removed.
+
+	* Makedefs.avr-icc, Makerules.avr-icc, app/Makedefs.avr-icc, 
+	app/Makerules.avr-icc: Replaces .icc files.
+
+	* app/Makedefs.avr-gcc, app/Makerules.avr-gcc: Replaces 
+	.gcc files.
+
+	* app/rs232d/rs232d.c: Removed old header files.
+
+	* app/threads/Makefile: Undefined references solved by
+	second pass for libnutos.
+
+	* app/threads/threads.c: Replaced devUart0 by devUsartAvr0.
+
+	* app/uart/Makefile, app/uart/uart.c: Floating point
+	configuration broken. Temporarly removed.
+
+	* dev/nicrtl.c: ICCAVR compile problems fixed.
 
 
 2004-09-08  Harald Kipp  <harald.kipp@egnite.de>
