@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.115 2004/09/12 09:06:43 haraldkipp Exp $
+$Id: ChangeLog,v 1.116 2004/09/16 11:44:49 olereinhardt Exp $
+
+2004-09-16  Ole Reinhardt <ole.reinhardt@kernelconcepts.de>
+	* os/Makefile
+	Changed position of LIBDIR to support correct install directory for 
+	nutinit.o and libnutos.a
 
 2004-09-12  Harald Kipp  <harald.kipp@egnite.de>
 
