@@ -63,8 +63,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:17  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/07/30 19:38:02  drsung
+ * Added prototype of net function NutTcpCalcRtt.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:17  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/02/04 18:00:46  harald
  * Version 3 released
@@ -75,6 +78,7 @@
  */
 
 #include <sys/device.h>
+#include <sys/sock_var.h>
 
 /*!
  * \file netinet/tcputil.h
@@ -86,6 +90,7 @@ extern "C" {
 #endif
 
 extern int IsInLimits(u_long x, u_long low, u_long high);
+extern void NutTcpCalcRtt(TCPSOCKET * sock);
 
 #ifdef __cplusplus
 }
