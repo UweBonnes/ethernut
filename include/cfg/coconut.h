@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:04  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/05/15 15:47:30  haraldkipp
+ * Conflict with NIC interrupt and LEDL removed.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:04  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:39:12  harald
  * Cleanup
@@ -104,6 +107,7 @@
 /*
  * Ethernut LEDs.
  * LEDA (activity) with 1k resistor to ground.
+ * LEDL (link) moved from PE5 to PE4. PE5 is NIC IRQ.
  */
 #define ENUT_LED0_PORT  PORTB
 #define ENUT_LED0_DDR   DDRB
@@ -115,7 +119,7 @@
 
 #define ENUT_LEDL_PORT  PORTE
 #define ENUT_LEDL_DDR   DDRE
-#define ENUT_LEDL_BIT   5
+#define ENUT_LEDL_BIT   4
 
 #define ENUT_LEDA_PORT  PORTE
 #define ENUT_LEDA_DDR   DDRE
