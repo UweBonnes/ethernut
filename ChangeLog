@@ -1,50 +1,65 @@
-$Id: ChangeLog,v 1.166 2005/02/10 07:06:48 hwmaier Exp $
+$Id: ChangeLog,v 1.167 2005/02/11 00:02:17 hwmaier Exp $
 
-2005-02-07  Henrik Maier  <henrik@focus-sw.com>
+2005-02-10  Henrik Maier  <hwmaier@users.sourceforge.net>
 
-        * os/arch/avr_nutinit.c: Various changes in order to support AT90CAN128
-        with it's different register structure.
+        * configure: Added Cygwin platform and ATMEGA128 CPU
 
-        * net/confnet.c: NutNetLoadConfig and NutNetSaveConfig are disabled
+        * net/confnet.c NutNetLoadConfig and NutNetSaveConfig are disabled
         for the AT90CAN128 device as the EEPROM routines are not yet supported
         in avr-libc v1.2 and earlier.
         Refer to: http://lists.gnu.org/archive/html/avr-libc-dev/2004-04/msg00108.html
 
+        * dev/ivect18.c, dev/ivect19.c, dev/ivect20.c, dev/ivect22.c,
+        dev/ivect24.c, dev/ivect25.c, dev/ivect26.c, dev/ivect27.c,
+        dev/ivect28.c, dev/ivect29.c, dev/ivect30.c, dev/ivect31.c,
+        dev/ivect32.c, dev/ivect33.c, dev/ivect34.c:
+        Changed test for __AVR_ATmega128__ to a test for the definition of the
+        interrupt signal name (GCC) or interrupt vector number (ICC)
+        to allow compilation for AT90CAN128.
+
+        * dev/ivect35.c, dev/ivect36.c, dev/Makefile: New files added w/
+        interupt handler for AT90CAN128 CAN interupts.
+
         * include/dev/irqreg.h: Obsolete IRQ enumeration removed. Added CAN
         interrupts for AT90CAN128.
 
-        * os/avr/thread: Removed conditional compilation of NutThreadEntry
-        for __AVR_ATmega128__ and __AVR_ATmega103__. This section is also
-        valid for other AVR MCUs.
+        * include/avr.h: Added some compatibility definitions to support
+        AT90CAN128. At this stage only for GCC. ICC still needs work here.
 
-        * include/dev/debug.h, dev/usartavr.c, dev/usart0avr.c,
-        dev/usart1avr.c, dev/ahdlcavr.c, dev/debug1.c,
-        include/dev/uartavr.h, include/dev/usartavr.h:
-        Using "#if !defined(__AVR_ATmega103__)" to check for the existance of
-        the second UART in order to support AT90CAN128, ATMEGA64 and
-        possibly the ATMEGA256 as well.
+        * os/arch/avr_nutinit.c: Various changes in order to support AT90CAN128
+        with it's different register structure.
 
-        * dev/irqreq.c, include/dev/irqreg.h, os/timer.c, include/dev/debug.h,
-        include/compiler.h, sys/atom.h, sys/types.h, sys/nut_types.h,
-        os/nutinit.c, os/timer.c, os/thread.c :
-        Changed "#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)"
-        to a more generic "#if defined(__AVR__)" in order to support
-        AT90CAN128, ATMEGA64 and possibly the ATMEGA256 as well.
-
-        * os/arch/avr_timer.c, dev/nicrtl.c, dev/ide.c, dev/twi.c,
-        include/avr.h,
-        Changed "#ifdef __AVR_ATmega128__" to "#if !defined(__AVR_ATmega103__)".
-        Rationale is that ATMEGA103 is a legacy device which is still
-        supported, however there are quite a few AVR devices which are more
-        compatible to the ATMEGA128 and it is easier to support them by
-        checking for a non-ATMEGA103 device.
+        * os/avr/thread.c: Removed conditional compilation of
+        NutThreadEntry for __AVR_ATmega128__ and __AVR_ATmega103__ as this
+        code section is also valid for other supported AVR MCUs.
 
         * dev/ide.c: Changes to compile for AT90CAN128 MCU.
 
-        * include/avr.h: Added some compatibility definitions to support AT90CAN128.
+        * dev/ide.c, dev/wlandrv.c: Removed dependency from
+        include/dev/irqreg.h's IRQ enumeration. Using now INTx definition
+        instead of irqreg.h's IRQ_INTx.
 
-        * configure: Added Cygwin platform
+        * dev/irqreq.c, include/dev/irqreg.h, include/dev/debug.h,
+        include/compiler.h, sys/atom.h, sys/types.h, sys/nut_types.h,
+        os/nutinit.c, os/timer.c, os/thread.c, include/arch/avr.h,
+        sys/nutconfig.h:
+        Changed "#ifdef __AVR_ATmega128__" to "#ifdef __AVR_ENHANCED__" to
+        ar more generic "#ifd efined(__AVR__)" in order to support
+        AT90CAN128, ATMEGA64, and possibly the ATMEGA256 as well.
 
+        * dev/adhdlc.c, dev/debug.h, dev.ide.c, dev/nicrtl.c, dev/twif.c,
+        dev/uartavr.c, dev/usart0avr.c, dev/usart1avr.c, dev/usartavr.c,
+        include/arch/avr.h, include/dev/debug.h, include/dev/uartavr.h,
+        include/dev/usartavr.h, os/arch/timer.c, dev/debug1.c, dev/ide.c,
+        include/arch/avr.h, os/arch/avr_timer.c:
+        Changed "ifdef __AVR_ATmega128__" to "#ifdef __AVR_ENHANCED__" so the
+        condition also includes AT90CAN128 ans ATMEGA64.
+
+
+2005-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* os/arch/avr-nutinit.c
+	Changed waitstate settings in the manner that the lower
+	sector still use one waitstate (only for NUT_3WAITSTATES)
 
 2005-02-04  Harald Kipp  <harald.kipp@egnite.de>
 
