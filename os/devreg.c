@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/18 13:42:50  haraldkipp
+ * Deprecated header file removed
+ *
  * Revision 1.2  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -52,7 +55,6 @@
 
 #include <string.h>
 
-#include <sys/ifstream.h>
 #include <dev/uart.h>
 
 /*!
