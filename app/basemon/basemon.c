@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/08/04 16:31:20  haraldkipp
+ * Never use MAC address with all 0. Dataflash added.
+ *
  * Revision 1.6  2004/03/03 17:55:47  drsung
  * Default hostname to 'ethernut', if os configuration is invalid.
  *
@@ -128,6 +131,7 @@
 #include "smsc.h"
 #include "webdemo.h"
 #include "xmemtest.h"
+#include "dataflash.h"
 #include "uart.h"
 #include "utils.h"
 
@@ -140,15 +144,18 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.0.3";
+static char *version = "4.1.1";
 static size_t sram;
 static u_char banks;
 static size_t banksize;
+
+static long srom;
 
 char my_ip[32];
 char my_mask[32];
 char my_gate[32];
 u_char my_mac[32];
+u_char eg_mac[] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
 
 THREAD(idle, arg)
 {
@@ -177,11 +184,15 @@ int TestPorts(void)
      */
     for (pat = 1; pat; pat <<= 1) {
         ipat = ~pat;
-        outb(DDRB, pat);
+        /* Keep dataflash select low. */
+        ipat &= 0xEF;
+        outb(DDRB, pat | 0x10);
         outb(PORTB, ipat);
         Delay(100);
-        if ((val = inb(PINB)) != ipat)
-            bpat |= pat;
+        val = inb(PINB);
+        if (val != ipat) {
+            bpat |= (ipat ^ val);
+        }
     }
     outb(DDRB, 0);
     if (bpat)
@@ -193,7 +204,7 @@ int TestPorts(void)
     for (pat = 1; pat; pat <<= 1) {
 #ifdef __AVR_ATmega128__
         /* Exclude PD5 used for RS485 direction select. */
-        if (ipat & 0x20) {
+        if (pat & 0x20) {
             continue;
         }
 #endif
@@ -268,16 +279,6 @@ void BaseMon(void)
     static prog_char menu4_P[] = "    X - Exit BaseMon, configure network and start WebServer";
 
     /*
-     * Use the debug UART driver for output. In opposite
-     * to the standard UART driver, it uses non-buffered
-     * polling mode, which is better suited to run on
-     * untested hardware.
-     */
-    NutRegisterDevice(&devDebug0, 0, 0);
-    uart_bs = DetectSpeed();
-    freopen("uart0", "w", stdout);
-
-    /*
      * Print banner.
      */
     printf("\n\nBaseMon %s\nNut/OS %s\n", version, NutVersionString());
@@ -294,8 +295,12 @@ void BaseMon(void)
     puts("103");
 #endif
 
-    if (uart_bs >= 0)
+    if (uart_bs >= 0) {
         printf("Baudrate select = %d\n", uart_bs);
+    }
+    else {
+        puts("No user input detected");
+    }
 
     /*
      * Test external SRAM.
@@ -311,6 +316,13 @@ void BaseMon(void)
         printf("%u banks, %u bytes ea.\n", banks, banksize);
     else
         puts("none");
+
+    /*
+     * Test external Flash.
+     */
+    printf("Serial FLASH...      ");
+    srom = SpiMemTest();
+    printf("%lu bytes\n", srom);
 
     /*
      * Test Ethernet controller hardware.
@@ -383,7 +395,7 @@ void BaseMon(void)
          * Input MAC address.
          */
         for (;;) {
-            printf("\nMAC address  (%02X%02X%02X%02X%02X%02X): ", my_mac[0], my_mac[1], my_mac[2], my_mac[3], my_mac[4],
+            printf("\nMAC address (%02X%02X%02X%02X%02X%02X): ", my_mac[0], my_mac[1], my_mac[2], my_mac[3], my_mac[4],
                    my_mac[5]);
             GetLine(inbuff, sizeof(inbuff));
             if ((n = strlen(inbuff)) == 0)
@@ -410,12 +422,12 @@ void BaseMon(void)
         /*
          * Input IP address.
          */
-        GetIP("IP address   ", my_ip);
+        GetIP("IP address", my_ip);
         /*
          * Input netmask and gateway, if non-zero IP address.
          */
         if (inet_addr(my_ip)) {
-            GetIP("Net mask     ", my_mask);
+            GetIP("Net mask", my_mask);
             GetIP("Default route", my_gate);
             if (inet_addr(my_gate) == 0 || (inet_addr(my_ip) & inet_addr(my_mask)) == (inet_addr(my_gate) & inet_addr(my_mask)))
                 break;
@@ -455,6 +467,15 @@ void NutInit(void)
      */
     NutHeapAdd(&__bss_end, (uptr_t) RAMEND - 256 - (uptr_t) (&__bss_end));
     /*
+     * Use the debug UART driver for output. In opposite
+     * to the standard UART driver, it uses non-buffered
+     * polling mode, which is better suited to run on
+     * untested hardware.
+     */
+    NutRegisterDevice(&devDebug0, 0, 0);
+    uart_bs = DetectSpeed();
+    freopen("uart0", "w", stdout);
+    /*
      * Load os configuration from EEPROM.
      */
     if (NutLoadConfig())
@@ -463,11 +484,9 @@ void NutInit(void)
      * Load network configuration from EEPROM.
      */
     NutNetLoadConfig("eth0");
-    if ((confnet.cdn_mac[0] & confnet.cdn_mac[1] & confnet.cdn_mac[2]) == 0xFF) {
-        u_char mac[] = {
-            0x00, 0x06, 0x98, 0x00, 0x00, 0x00
-        };
-        memcpy(confnet.cdn_mac, mac, sizeof(confnet.cdn_mac));
+    if ((confnet.cdn_mac[0] & confnet.cdn_mac[1] & confnet.cdn_mac[2]) == 0xFF ||
+        (confnet.cdn_mac[0] | confnet.cdn_mac[1] | confnet.cdn_mac[2]) == 0x00) {
+        memcpy(confnet.cdn_mac, eg_mac, sizeof(confnet.cdn_mac));
     }
     strcpy(my_ip, inet_ntoa(confnet.cdn_cip_addr));
     strcpy(my_mask, inet_ntoa(confnet.cdn_ip_mask));
