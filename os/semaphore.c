@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2004/06/02 16:42:53  olereinhardt
+ * fixed bug (integer overflow) in semaphore implementation.
+ *
  * Revision 1.2  2004/05/18 18:38:42  drsung
  * Added $Log keyword for CVS.
  *
@@ -58,7 +61,7 @@ extern "C" {
 /*!
  * \brief Initialize an unnamed semaphore to value
  */
-    void NutSemInit(SEM * sem, u_short value) {
+    void NutSemInit(SEM * sem, short value) {
         sem->qhp = 0;
         sem->value = value;
     }
@@ -70,9 +73,11 @@ extern "C" {
  *
  * \Note: Should not be called from interrupt context
  */ void NutSemWait(SEM * sem) {
-        if (sem->value == 0)
-            NutEventWait(&sem->qhp, NUT_WAIT_INFINITE);
         sem->value--;
+        if (sem->value < 0)
+        {
+            NutEventWait(&sem->qhp, NUT_WAIT_INFINITE);
+        }
     }
 
 /*!
@@ -81,8 +86,11 @@ extern "C" {
  * \Note: Should not be called from interrupt context
  */
     void NutSemPost(SEM * sem) {
-        if (sem->value++ == 0)
+        sem->value++;
+        if (sem->value <= 0)
+        {
             NutEventPost(&sem->qhp);
+        }
     }
 
 /*!
