@@ -132,6 +132,12 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/05/26 09:40:30  olereinhardt
+ * Changed reading of packet length / receive status to be compatible with
+ * newer AVRGCC versions. (Need to read high byte first!)
+ *
+ * Added software reset / wakeup routine to init code. (only avalilable in new code)
+ *
  * Revision 1.7  2004/05/25 11:39:47  olereinhardt
  * Define NUT_CS8900_OLD to get the old functionality back again
  *
@@ -270,6 +276,8 @@ u_long CSReadPP32(u_int addr)
 
     return l;
 }
+
+
 
 void CSBeginFrame(void)
 {
@@ -430,8 +438,8 @@ THREAD(CSNICrx, arg)
     NETBUF *nb;
     u_char *p;
     u_char *q;
-    volatile u_short i, l, m;
-
+    u_short i, m;
+    volatile u_short l;
 
     dev = arg;
     ifn = (IFNET *) dev->dev_icb;
@@ -452,21 +460,22 @@ THREAD(CSNICrx, arg)
             NutSleep(10);
         }
 
-#ifdef NUT_CS8900_OLD  
-	// Get the RxStatus But don't let the compiler do any optomisation
+#ifdef NUT_CS8900_OLD
+        // Get the RxStatus But don't let the compiler do any optomisation
         asm volatile ("lds __tmp_reg__, %3" "\n\t"
                       "mov %B0, __tmp_reg__" "\n\t" "lds __tmp_reg__, %2" "\n\t" "mov %A0, __tmp_reg__" "\n\t":"=r" (l)
                       :"0"(l), "n"((unsigned short) (CS_DATA_P0)), "n"((unsigned short) (CS_DATA_P0 + 1))
             );
-	
+
         // Get the Packet Length But don't let the compiler do any optomisation
         asm volatile ("lds __tmp_reg__, %3" "\n\t"
                       "mov %B0, __tmp_reg__" "\n\t" "lds __tmp_reg__, %2" "\n\t" "mov %A0, __tmp_reg__" "\n\t":"=r" (l)
                       :"0"(l), "n"((unsigned short) (CS_DATA_P0)), "n"((unsigned short) (CS_DATA_P0 + 1))
             );
 #else
-	l = *(u_short *) CS_DATA_P0;
-	l = *(u_short *) CS_DATA_P0;
+
+        l = *(u_char *) (CS_DATA_P0 + 1) << 8 | *(u_char *) (CS_DATA_P0);
+        l = *(u_char *) (CS_DATA_P0 + 1) << 8 | *(u_char *) (CS_DATA_P0);
 #endif
         //NutPrintFormat_P(dev_debug,PSTR("RxLength = %x \r\n"), l);
         //NutPrintFlush(dev_debug);
@@ -477,13 +486,13 @@ THREAD(CSNICrx, arg)
         else
             m = l;
 
+
         nb = NutNetBufAlloc(0, NBAF_DATALINK, l);
         if (nb) {
             q = nb->nb_dl.vp;
             for (i = 0; i < m; i += 2) {
                 p = (u_char *) CS_DATA_P0;
                 *q++ = *p;
-
                 p = (u_char *) CS_DATA_P0 + 1;
                 *q++ = *p;
             }
@@ -502,6 +511,28 @@ THREAD(CSNICrx, arg)
     }
 }
 
+void CSSoftwareWakeup(void)
+{
+    volatile u_short *p;
+
+    p = (u_short *) CS_PP_PTR;
+    *p = CS_SELF_CTRL;
+
+    NutDelay(10);
+}
+
+
+void CSSoftwareReset(void)
+{
+    volatile u_short *p;
+
+    p = (u_short *) CS_PP_PTR;
+    *p = CS_SELF_CTRL;
+    p = (u_short *) CS_DATA_P0;
+    *p = 0x0040;
+}
+
+
 /*!
  * \brief Initialize Ethernet Interface.
  *
@@ -518,7 +549,7 @@ int CSNicInit(NUTDEVICE * dev)
     u_short j;
     IFNET *ifn;
     NICINFO *ni;
-	
+
 #if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("Enter NicInit  \r\n"));
@@ -526,21 +557,25 @@ int CSNicInit(NUTDEVICE * dev)
     }
 #endif
     cs_base = dev->dev_base;
-    
-    if(confnet.cd_size == 0)
+
+    if (confnet.cd_size == 0)
         NutNetLoadConfig(dev->dev_name);
 
     ifn = dev->dev_icb;
-    memcpy(ifn->if_mac, confnet.cdn_mac, 6);    
+    memcpy(ifn->if_mac, confnet.cdn_mac, 6);
     memset(dev->dev_dcb, 0, sizeof(NICINFO));
     ni = (NICINFO *) dev->dev_dcb;
 
     // Take CS8900 out of reset and wait for internal reset to complete
 #ifdef NUT_CS8900_OLD
     outp(inp(PORTD) & ~RESETE, PORTD);
+#else
+    CSSoftwareWakeup();
+    CSSoftwareReset();
 #endif
-    NutSleep(100);
-    
+
+    NutDelay(100);
+
     // Check for presence
     if (CSReadPP16(CS_PROD_ID) != 0x630E)
         return -1;
@@ -553,7 +588,6 @@ int CSNicInit(NUTDEVICE * dev)
         j |= ifn->if_mac[i + 1];
         CSWritePP16(CS_IEEE_ADDR + i, j);
         j = CSReadPP16(CS_IEEE_ADDR + i);
-	    
 #if 0
         if (tcp_trace) {
             NutPrintFormat_P(dev_debug, PSTR("ADDR = %x\r\n"), j);
