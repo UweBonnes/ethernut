@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.5  2004/09/01 14:07:15  haraldkipp
+-- Cleaned up memory configuration
+--
 -- Revision 1.4  2004/08/18 16:05:38  haraldkipp
 -- Use consistent directory structure
 --
@@ -55,8 +58,119 @@ nutos =
     {
         name = "nutos_init",
         brief = "Initialization",
+        description = "This module is automatically called after booting the system. "..
+                      "It will initialize memory and timer hardware and start the "..
+                      "Nut/OS idle thread, which in turn starts the application's "..
+                      "main routine in a separate thread.",
         sources = { "nutinit.c" },
         targets = { "nutinit.o" }
+    },
+
+    --
+    -- Memory management
+    --
+    {
+        name = "nutos_heap",
+        brief = "Memory management",
+        provides = { "NUT_HEAPMEM" },
+        sources = { "heap.c" },
+        options = 
+        {
+            {
+                macro = "NUTMEM_SIZE",
+                brief = "Memory Size",
+                description = "Number of bytes available in fast data memory. On "..
+                              "most platforms this value specifies the total number "..
+                              "of bytes available in RAM.\n\n"..
+                              "On Harvard architectures this value specifies the size "..
+                              "of the data memory. It will be occupied by global "..
+                              "variables and static data. Any remaining space will "..
+                              "be added to the Nut/OS heap during system initialization.\n"..
+                              "When running on an AVR MCU, set this to size of the "..
+                              "on-chip SRAM, e.g. 4096 for the ATmega128.",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_START",
+                brief = "Memory Start",
+                description = "First address of fast data memory.", 
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_RESERVED",
+                brief = "Reserved Memory Size",
+                description = "Number of bytes reserved for special purposes.\n"..
+                              "Right now this is used with the AVR platform only. "..
+                              "The specified number of bytes may be used by a "..
+                              "device driver when the external memory interface "..
+                              " is disabled.",
+                requires = { "HW_MCU_AVR" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTXMEM_SIZE",
+                brief = "Extended Memory Size",
+                description = "Number of bytes available in external data memory.\n\n"..
+                              "The result of enabling this item is platform specific."..
+                              "With AVR systems it will enable the external memory "..
+                              "interface of the CPU, even if the value is set to zero.", 
+                provides = { "NUTXDATAMEM_SIZE" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTXMEM_START",
+                brief = "Extended Memory Start",
+                description = "First address of external data memory.", 
+                requires = { "NUTXDATAMEM_SIZE" },
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTBANK_COUNT",
+                brief = "Memory Banks",
+                description = "Number of memory banks.\n\n"..
+                              "Specially on 8-bit systems the address space is typically "..
+                              "very limited. To overcome this, some hardware implementations "..
+                              "like the Ethernut 2 reference design provide memory banking. "..
+                              "Right now this is supported for the AVR platform only.",
+                requires = { "HW_MCU_AVR" },
+                provides = { "NUTBANK_COUNT" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTBANK_START",
+                brief = "Banked Memory Start",
+                description = "First address of the banked memory area.",
+                requires = { "NUTBANK_COUNT" },
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTBANK_SIZE",
+                brief = "Banked Memory Size",
+                description = "Size of the banked memory area.",
+                requires = { "NUTBANK_COUNT" },
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTBANK_SR",
+                brief = "Bank Select Register",
+                description = "Address of the bank select register.",
+                requires = { "NUTBANK_COUNT" },
+                file = "include/cfg/memory.h"
+            }
+        }
+    },
+    {
+        name = "nutos_bankmem",
+        brief = "Segmented Buffer (AVR)",
+        description = "The segmented buffer API can either handle a continuos "..
+                      "memory space automatically allocated from heap or it can "..
+                      "use banked memory hardware.",
+        requires = { "HW_MCU_AVR" },
+        provides = { "NUT_SEGBUF" },
+        sources = { "bankmem.c" }
     },
 
     --
@@ -114,55 +228,6 @@ nutos =
     },
 
 
-    --
-    -- Memory management
-    --
-    {
-        name = "nutos_heap",
-        brief = "Dynamic memory management",
-        provides = { "NUT_HEAPMEM" },
-        sources = { "heap.c" }
-    },
-    {
-        name = "nutos_bankmem",
-        brief = "Segmented Buffer (AVR)",
-        description = "The segmented buffer API can either handle a continuos "..
-                      "memory space automatically allocated from heap or it can "..
-                      "use banked memory hardware.",
-        requires = { "HW_MCU_AVR" },
-        provides = { "NUT_SEGMEM" },
-        sources = { "bankmem.c" },
-        provides = { "NUT_SEGBUF" },
-        options = 
-        {
-            {
-                macro = "NUTBANK_COUNT",
-                brief = "Number of banks",
-                description = "For systems without banked memory this is set to zero.",
-                file = "include/cfg/bankmem.h"
-            },
-            {
-                macro = "NUTBANK_START",
-                brief = "Bank start address",
-                description = "First address of the banked memory area.",
-                ctype = "(char *)",
-                file = "include/cfg/bankmem.h"
-            },
-            {
-                macro = "NUTBANK_SIZE",
-                brief = "Bank size",
-                description = "Size of the banked memory area.",
-                file = "include/cfg/bankmem.h"
-            },
-            {
-                macro = "NUTBANK_SR",
-                brief = "Bank select register",
-                description = "Address of the bank select register.",
-                ctype = "(char *)",
-                file = "include/cfg/bankmem.h"
-            }
-        }
-    },
     {
         name = "nutos_devreg",
         brief = "Device registration",
@@ -263,3 +328,4 @@ nutos =
         }
     }
 }
+
