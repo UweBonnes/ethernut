@@ -117,7 +117,7 @@ struct _TERMDCB {
 
     /*! \brief Initialize display subsystem.
      */
-    void (*dss_init)(void);
+    void (*dss_init)(NUTDEVICE*);
 
     /*! \brief Write display character.
      */

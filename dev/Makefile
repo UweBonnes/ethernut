@@ -32,6 +32,18 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.13  2004/05/24 17:09:17  olereinhardt
+# Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
+# Base address can now be passed to the nic driver by NutRegisterDevice.
+# Removed some Assembler code in cs8900.c
+#
+# Added some databus waitstate settings for the upper half of the address space in os/arch/avr_nutinit.c. Now three waitstates are default for 0x8000-0xFFFF
+#
+# Added terminal device driver for hd44780 compatible LCD displays directly
+# connected to the memory bus (memory mapped). See hd44780.c for more information.
+# Therefore some minor changed in include/dev/term.h and dev/term.c are needet to
+# pass a base address to the lcd driver.
+#
 # Revision 1.12  2004/04/07 16:28:22  freckle
 # Target install: use ranlib only for arch *nix emulation (ranlib is required
 # on mac os x)
@@ -120,7 +132,7 @@ SRCS =  irqstack.c \
 	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c uartspi.c uarts.c ahdlc0.c ahdlc1.c ahdlcavr.c \
 	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
 	vs1001k.c ir.c irsony.c spidigio.c spiflash.c \
-	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
+	ide.c twif.c hd44780.c hd44780_bus.c term.c debug0.c debug1.c \
 	ppp.c chat.c pcmcia.c wlan.c wlandrv.c \
 	ivect01.c ivect02.c ivect03.c ivect04.c ivect05.c ivect06.c \
 	ivect07.c ivect08.c ivect09.c ivect10.c ivect11.c ivect12.c \

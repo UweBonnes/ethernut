@@ -132,6 +132,18 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/05/24 17:09:17  olereinhardt
+ * Changed base address handling in cs8900.c and moved cs8900.h to /include/dev
+ * Base address can now be passed to the nic driver by NutRegisterDevice.
+ * Removed some Assembler code in cs8900.c
+ *
+ * Added some databus waitstate settings for the upper half of the address space in os/arch/avr_nutinit.c. Now three waitstates are default for 0x8000-0xFFFF
+ *
+ * Added terminal device driver for hd44780 compatible LCD displays directly
+ * connected to the memory bus (memory mapped). See hd44780.c for more information.
+ * Therefore some minor changed in include/dev/term.h and dev/term.c are needet to
+ * pass a base address to the lcd driver.
+ *
  * Revision 1.5  2004/03/18 14:06:52  haraldkipp
  * Deprecated header file replaced
  *
@@ -166,6 +178,7 @@
 #include <sys/thread.h>
 #include <sys/event.h>
 #include <sys/timer.h>
+#include <sys/confnet.h>
 
 #include <dev/nicrtl.h>
 #include <netinet/if_ether.h>
@@ -174,7 +187,7 @@
 #include <netinet/ip.h>
 
 #include <dev/irqreg.h>
-#include "cs8900.h"
+#include <dev/cs8900.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -190,6 +203,7 @@
 // Ethernet flags byte
 // Bit 0 = transmit byte flag
 u_char cs_flags;
+volatile u_short cs_base = 0x0000;
 
 
 void CSWrite16(u_short addr, u_short data)
@@ -413,7 +427,7 @@ THREAD(CSNICrx, arg)
     NETBUF *nb;
     u_char *p;
     u_char *q;
-    u_short i, l, m;
+    volatile u_short i, l, m;
 
 
     dev = arg;
@@ -435,18 +449,21 @@ THREAD(CSNICrx, arg)
             NutSleep(10);
         }
 
-        // Get the RxStatus But don't let the compiler do any optomisation
+/*  
+	// Get the RxStatus But don't let the compiler do any optomisation
         asm volatile ("lds __tmp_reg__, %3" "\n\t"
                       "mov %B0, __tmp_reg__" "\n\t" "lds __tmp_reg__, %2" "\n\t" "mov %A0, __tmp_reg__" "\n\t":"=r" (l)
                       :"0"(l), "n"((unsigned short) (CS_DATA_P0)), "n"((unsigned short) (CS_DATA_P0 + 1))
             );
-
+	
         // Get the Packet Length But don't let the compiler do any optomisation
         asm volatile ("lds __tmp_reg__, %3" "\n\t"
                       "mov %B0, __tmp_reg__" "\n\t" "lds __tmp_reg__, %2" "\n\t" "mov %A0, __tmp_reg__" "\n\t":"=r" (l)
                       :"0"(l), "n"((unsigned short) (CS_DATA_P0)), "n"((unsigned short) (CS_DATA_P0 + 1))
             );
-
+*/
+	l = *(u_short *) CS_DATA_P0;
+	l = *(u_short *) CS_DATA_P0;
         //NutPrintFormat_P(dev_debug,PSTR("RxLength = %x \r\n"), l);
         //NutPrintFlush(dev_debug);
 
@@ -497,23 +514,28 @@ int CSNicInit(NUTDEVICE * dev)
     u_short j;
     IFNET *ifn;
     NICINFO *ni;
-
-
+	
 #if 0
     if (tcp_trace) {
         NutPrintFormat_P(dev_debug, PSTR("Enter NicInit  \r\n"));
         NutPrintFlush(dev_debug);
     }
 #endif
+    cs_base = dev->dev_base;
+    
+    if(confnet.cd_size == 0)
+        NutNetLoadConfig(dev->dev_name);
 
     ifn = dev->dev_icb;
+    memcpy(ifn->if_mac, confnet.cdn_mac, 6);    
     memset(dev->dev_dcb, 0, sizeof(NICINFO));
     ni = (NICINFO *) dev->dev_dcb;
 
     // Take CS8900 out of reset and wait for internal reset to complete
-    outp(inp(PORTD) & ~RESETE, PORTD);
+    //kc-or:
+    //outp(inp(PORTD) & ~RESETE, PORTD);
     NutSleep(100);
-
+    
     // Check for presence
     if (CSReadPP16(CS_PROD_ID) != 0x630E)
         return -1;
@@ -526,6 +548,7 @@ int CSNicInit(NUTDEVICE * dev)
         j |= ifn->if_mac[i + 1];
         CSWritePP16(CS_IEEE_ADDR + i, j);
         j = CSReadPP16(CS_IEEE_ADDR + i);
+	    
 #if 0
         if (tcp_trace) {
             NutPrintFormat_P(dev_debug, PSTR("ADDR = %x\r\n"), j);
@@ -560,4 +583,3 @@ void keep_icc_happy(void)
 }
 
 #endif
-
