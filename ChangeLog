@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.39 2004/02/29 07:19:59 drsung Exp $
+$Id: ChangeLog,v 1.40 2004/03/02 10:10:34 drsung Exp $
+
+2004-03-02  Oliver Schulz  <olischulz@web.de>
+
+	* pro/httpd.c: Bugfix in NutHttpSendError. Appended \r\n to auth_fmt_P 
+	to write the next header line to a new line.
+
 
 2004-02-28  Oliver Schulz  <olischulz@web.de>
 
