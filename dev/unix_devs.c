@@ -18,7 +18,7 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ETH ZURICH
- *  OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -45,13 +45,15 @@
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
-#include <dev/uart.h>
+#include <dev/usart.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <termios.h>
+
+#include <dev/unix_devs.h>
 
 /*
  * functions available on avr somehow -- not implemented properly here :(
@@ -135,11 +137,13 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         if (tcgetattr(fileno(nativeFile), &t) == 0) {
 
             cfmakeraw(&t);
+
             // regular device file
             t.c_cflag |= CS8 | CLOCAL;
             t.c_oflag = 0;
 
-            // _fd_set_flowctrl(&t); =
+            // no flow control
+            t.c_iflag &= ~(IXON | IXOFF | IXANY);
             t.c_cflag &= ~CRTSCTS;
 
             // apply file descriptor options
@@ -192,14 +196,26 @@ static int UnixDevWrite(NUTFILE * fp, CONST void *buffer, int len)
  */
 static int UnixDevRead(NUTFILE * fp, void *buffer, int len)
 {
-    int rc;
-    // rc = fread(buffer, (size_t) 1, (size_t) len, (FILE *) fp->nf_dev->dev_dcb);
-    rc = read(fileno((FILE *) fp->nf_dev->dev_dcb), buffer, len);
+    int rc = 0;
+    int newBytes;
+    do {
+        newBytes = read(fileno((FILE *) fp->nf_dev->dev_dcb), buffer, len);
+        /* error or timeout ? */
+        if (newBytes <= 0)
+            break;
+        rc += newBytes;
+#ifdef UART_SETBLOCKREAD
+    } while ((rc < len) && (((UNIXDCB *) fp->nf_dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD));
+#else
+    } while (0);
+    // allow return of 0 and -1
+    rc = newBytes;
+#endif
     return rc;
 }
 
 /*! 
- * \brief Close stdout.
+ * \brief Close ...
  *
  * \return Always 0.
  */
@@ -222,36 +238,14 @@ static int UnixDevClose(NUTFILE * fp)
  *             - \ref UART_GETSPEED
  *             - \ref UART_SETDATABITS
  *             - \ref UART_GETDATABITS
- *             - \ref UART_SETPARITY
- *             - \ref UART_GETPARITY
  *             - \ref UART_SETSTOPBITS
  *             - \ref UART_GETSTOPBITS
- *             - \ref UART_SETSTATUS
- *             - \ref UART_GETSTATUS
- *             - \ref UART_SETREADTIMEOUT
- *             - \ref UART_GETREADTIMEOUT
- *             - \ref UART_SETWRITETIMEOUT
- *             - \ref UART_GETWRITETIMEOUT
- *             - \ref UART_SETLOCALECHO
- *             - \ref UART_GETLOCALECHO
+ *             - \ref UART_SETPARITY
+ *             - \ref UART_GETPARITY
  *             - \ref UART_SETFLOWCONTROL
  *             - \ref UART_GETFLOWCONTROL
- *             - \ref UART_SETCOOKEDMODE
- *             - \ref UART_GETCOOKEDMODE
- *             - \ref UART_SETCLOCKMODE
- *             - \ref UART_GETCLOCKMODE
- *             - \ref UART_SETTXBUFSIZ
- *             - \ref UART_GETTXBUFSIZ
- *             - \ref UART_SETRXBUFSIZ
- *             - \ref UART_GETRXBUFSIZ
- *             - \ref UART_SETTXBUFLWMARK
- *             - \ref UART_GETTXBUFLWMARK
- *             - \ref UART_SETTXBUFHWMARK
- *             - \ref UART_GETTXBUFHWMARK
- *             - \ref UART_SETRXBUFLWMARK
- *             - \ref UART_GETRXBUFLWMARK
- *             - \ref UART_SETRXBUFHWMARK
- *             - \ref UART_GETRXBUFHWMARK
+ *			   - \ref UART_SETBLOCKREAD
+ *			   - \ref UART_GETBLOCKREAD
  *
  * \param conf Points to a buffer that contains any data required for
  *             the given control function or receives data from that
@@ -269,34 +263,203 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
     u_long lv = *lvp;
 
     switch (req) {
-    case UART_GETFLOWCONTROL:
-        break;
-
-    case UART_SETFLOWCONTROL:
-        break;
-
-    case UART_GETSPEED:
-        if (tcgetattr(fileno(dev->dev_dcb), &t) == 0) {
-            *lvp = cfgetospeed(&t);
-        } else
-            return -1;
-        break;
 
     case UART_SETSPEED:
-        if (tcgetattr(fileno(dev->dev_dcb), &t) == 0) {
+    case UART_SETFLOWCONTROL:
+    case UART_SETPARITY:
+    case UART_SETDATABITS:
+    case UART_SETSTOPBITS:
+
+        if (tcgetattr(fileno(dev->dev_dcb), &t) != 0)
+            return -1;
+
+        switch (req) {
+
+        case UART_SETSPEED:
             cfsetospeed(&t, lv);
             cfsetispeed(&t, lv);
-            // apply file descriptor options
-            tcsetattr(fileno(dev->dev_dcb), TCSANOW, &t);
-        } else
+            break;
+
+        case UART_SETFLOWCONTROL:
+            switch (lv) {
+            case 0:
+                t.c_cflag &= ~CRTSCTS;
+                t.c_iflag &= ~(IXON | IXOFF | IXANY);
+                break;
+            case UART_HS_SOFT:
+                t.c_cflag &= ~CRTSCTS;
+                t.c_iflag |= (IXON | IXOFF | IXANY);
+                return -1;
+            case UART_HS_MODEM:
+                return -1;
+            case UART_HS_RTSCTS:
+                t.c_cflag |= CRTSCTS;
+                t.c_iflag &= ~(IXON | IXOFF | IXANY);
+                break;
+            default:
+                return -1;
+            }
+            break;
+
+        case UART_SETPARITY:
+            // 0 (none), 1 (odd) or 2 (even).
+            t.c_cflag &= ~(PARODD | PARENB);
+            switch (lv) {
+            case 0:
+                break;
+            case 1:
+                t.c_cflag |= PARENB | PARODD;
+                break;
+            case 2:
+                t.c_cflag |= PARENB;
+            default:
+                return -1;
+            }
+            break;
+
+
+        case UART_SETDATABITS:
+            t.c_cflag &= ~CSIZE;
+            switch (lv) {
+            case 5:
+                t.c_cflag |= CS5;
+                break;
+            case 6:
+                t.c_cflag |= CS6;
+                break;
+            case 7:
+                t.c_cflag |= CS7;
+                break;
+            case 8:
+                t.c_cflag |= CS8;
+                break;
+            default:
+                return -1;
+            }
+            break;
+
+        case UART_SETSTOPBITS:
+            switch (lv) {
+            case 1:
+                t.c_cflag &= ~CSTOPB;
+                break;
+            case 2:
+                t.c_cflag |= CSTOPB;
+                break;
+            default:
+                return -1;
+            }
+            break;
+
+        }
+        return tcsetattr(fileno(dev->dev_dcb), TCSADRAIN, &t);
+
+    case UART_GETSPEED:
+    case UART_GETFLOWCONTROL:
+    case UART_GETPARITY:
+    case UART_GETDATABITS:
+    case UART_GETSTOPBITS:
+
+        if (tcgetattr(fileno(dev->dev_dcb), &t) != 0)
             return -1;
-        break;
+
+        switch (req) {
+
+        case UART_GETSPEED:
+            *lvp = cfgetospeed(&t);
+            break;
+
+        case UART_GETFLOWCONTROL:
+            if (t.c_cflag & CRTSCTS)
+                *lvp = UART_HS_RTSCTS;
+            else if (t.c_iflag & IXANY)
+                *lvp = UART_HS_SOFT;
+            else
+                *lvp = 0;
+            break;
+
+        case UART_GETPARITY:
+            if (t.c_cflag & PARENB) {
+                if (t.c_cflag & PARODD)
+                    *lvp = 1;
+                else
+                    *lvp = 2;
+            } else
+                *lvp = 0;
+            break;
+
+        case UART_GETDATABITS:
+            switch (t.c_cflag & CSIZE) {
+            case CS5:
+                *lvp = 5;
+                break;
+            case CS6:
+                *lvp = 6;
+                break;
+            case CS7:
+                *lvp = 7;
+                break;
+            case CS8:
+                *lvp = 8;
+                break;
+            default:
+                return -1;
+            }
+            break;
+
+        case UART_GETSTOPBITS:
+            if (t.c_cflag & CSTOPB)
+                *lvp = 2;
+            else
+                *lvp = 1;
+            break;
+        }
+        return 0;
+
+#ifdef UART_SETBLOCKREAD
+    case UART_SETBLOCKREAD:
+        if (lv)
+            ((UNIXDCB *) dev->dev_dcb)->dcb_modeflags |= USART_MF_BLOCKREAD;
+        else
+            ((UNIXDCB *) dev->dev_dcb)->dcb_modeflags &= ~USART_MF_BLOCKREAD;
+        return 0;
+
+    case UART_GETBLOCKREAD:
+        if (((UNIXDCB *) dev->dev_dcb)->dcb_modeflags & USART_MF_BLOCKREAD)
+            *lvp = 1;
+        else
+            *lvp = 0;
+        return 0;
+#endif
+    default:
+        return -1;
     }
     return -1;
 }
 
 /* ======================= Devices ======================== */
 
+/*!
+ * \brief USART0 device control block structure.
+ */
+static UNIXDCB dcb_usart0 = {
+    0,                          /* dcb_modeflags */
+    0,                          /* dcb_statusflags */
+    0,                          /* dcb_rtimeout */
+    0,                          /* dcb_wtimeout */
+    0,                          /* dbc_last_eol */
+};
+
+/*!
+ * \brief USART0 device control block structure.
+ */
+static UNIXDCB dcb_usart1 = {
+    0,                          /* dcb_modeflags */
+    0,                          /* dcb_statusflags */
+    0,                          /* dcb_rtimeout */
+    0,                          /* dcb_wtimeout */
+    0,                          /* dbc_last_eol */
+};
 
 /*!
  * \brief Debug device 0 information structure.
@@ -309,7 +472,7 @@ NUTDEVICE devDebug0 = {
     0,                          /*!< Base address. */
     0,                          /*!< First interrupt number. */
     0,                          /*!< Interface control block. */
-    0,                          /*!< Driver control block. */
+    &dcb_usart0,                /*!< Driver control block. */
     0,                          /*!< Driver initialization routine. */
     UnixDevIOCTL,               /*!< Driver specific control function. */
     UnixDevRead,
@@ -330,7 +493,7 @@ NUTDEVICE devDebug1 = {
     0,                          /*!< Base address. */
     0,                          /*!< First interrupt number. */
     0,                          /*!< Interface control block. */
-    0,                          /*!< Driver control block. */
+    &dcb_usart1,                /*!< Driver control block. */
     0,                          /*!< Driver initialization routine. */
     UnixDevIOCTL,               /*!< Driver specific control function. */
     UnixDevRead,
@@ -352,7 +515,7 @@ NUTDEVICE devUart0 = {
     0,                          /*!< Base address. */
     0,                          /*!< First interrupt number. */
     0,                          /*!< Interface control block. */
-    0,                          /*!< Driver control block. */
+    &dcb_usart0,                /*!< Driver control block. */
     0,                          /*!< Driver initialization routine. */
     UnixDevIOCTL,               /*!< Driver specific control function. */
     UnixDevRead,
@@ -373,7 +536,7 @@ NUTDEVICE devUart1 = {
     0,                          /*!< Base address. */
     0,                          /*!< First interrupt number. */
     0,                          /*!< Interface control block. */
-    0,                          /*!< Driver control block. */
+    &dcb_usart1,                /*!< Driver control block. */
     0,                          /*!< Driver initialization routine. */
     UnixDevIOCTL,               /*!< Driver specific control function. */
     UnixDevRead,
@@ -382,6 +545,7 @@ NUTDEVICE devUart1 = {
     UnixDevClose,
     0
 };
+
 
 
 /*@}*/

@@ -43,6 +43,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/04/16 17:50:35  freckle
+ * Implemented the most common _IOCTL calls
+ * Added block read functionality to read call
+ *
  * Revision 1.1  2004/04/07 12:13:57  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -56,7 +60,7 @@ extern "C" {
 #endif
 
 /*!
- * \addtogroup xgPPP
+ * \addtogroup xgUnixEmulation
  */
 /*@{*/
 
@@ -67,6 +71,42 @@ extern "C" {
     extern NUTDEVICE devUart1;
     extern NUTDEVICE devDebug0;
     extern NUTDEVICE devDebug1;
+
+/*!
+ * \struct _UNIXDCB unix_devs.h dev/unix_devs.h
+ * \brief UNIX devices low level information structure.
+ *
+ */
+    struct _UNIXDCB {
+
+        /*! \brief Mode flags.
+         */
+        u_long dcb_modeflags;
+
+        /*! \brief Status flags.
+         */
+        u_long dcb_statusflags;
+
+        /*! \brief Read timeout.
+         */
+        u_long dcb_rtimeout;
+
+        /*! \brief Write timeout.
+         */
+        u_long dcb_wtimeout;
+
+        /*! \brief Last EOL character.
+         */
+        u_char dcb_last_eol;
+    };
+
+/*!
+ * USART device low level information type.
+ */
+    typedef struct _UNIXDCB UNIXDCB;
+
+/*@}*/
+
 
 
 #ifdef __cplusplus
