@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:36  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/08/14 15:16:22  haraldkipp
+ * Echo, discard and protocol reject added
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:36  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/05/06 17:30:28  harald
  * Put in seperate module
@@ -57,6 +60,10 @@ static prog_char dbg_confrej[] = "[CONFREJ]";
 static prog_char dbg_termreq[] = "[TERMREQ]";
 static prog_char dbg_termack[] = "[TERMACK]";
 static prog_char dbg_coderej[] = "[CODEREJ]";
+static prog_char dbg_protrej[] = "[PROTREJ]";
+static prog_char dbg_echoreq[] = "[ECHOREQ]";
+static prog_char dbg_echorsp[] = "[ECHORSP]";
+static prog_char dbg_discreq[] = "[DISCREQ]";
 
 
 void NutDumpLcpOption(FILE * stream, NETBUF * nb)
@@ -154,6 +161,19 @@ void NutDumpLcp(FILE * stream, NETBUF * nb)
 
     case XCP_CODEREJ:
         fputs_P(dbg_coderej, stream);
+        break;
+
+    case LCP_PROTREJ:
+        fputs_P(dbg_protrej, stream);
+        break;
+    case LCP_ERQ:
+        fputs_P(dbg_echoreq, stream);
+        break;
+    case LCP_ERP:
+        fputs_P(dbg_echorsp, stream);
+        break;
+    case LCP_DRQ:
+        fputs_P(dbg_discreq, stream);
         break;
 
     default:
@@ -351,7 +371,7 @@ void NutDumpPpp(FILE * stream, NETBUF * nb)
         break;
 
     default:
-        fprintf(stream, "[TYPE%u?]", ntohs(ph->prot_type));
+        fprintf(stream, "[TYPE 0x%04X?]", ntohs(ph->prot_type));
         break;
     }
 }
