@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/10/03 18:42:21  haraldkipp
+ * No GBA support yet, but let the compiler run through
+ *
  * Revision 1.2  2004/09/08 10:19:39  haraldkipp
  * Running on AT91 and S3C, thanks to James Tyou
  *
@@ -48,7 +51,9 @@
 #include <dev/s3c4510b_irqs.h>
 #endif
 
+#if defined(MCU_AT91R40008)
 static int dummy;
+#endif
 
 /*!
  * \brief Loop for a specified number of milliseconds.
@@ -74,6 +79,7 @@ void NutDelay(u_char ms)
     }
 }
 
+#if defined(MCU_AT91R40008)
 /*
  * Timer interrupt handler.
  */
@@ -82,6 +88,7 @@ static void NutTimerIntr(void *arg)
     NUTTIMERINFO *tnp;
 
     dummy = inr(TC0_SR);
+
     /*
      * Increment the tick counter used by Michael Fischer's
      * NutGetTickCount() routine.
@@ -135,10 +142,12 @@ static void NutTimerIntr(void *arg)
         }
     }
 }
+#endif
 
 /*!
  * \brief Timer 0 interrupt entry.
  */
+#if defined(MCU_AT91R40008)
 static void Timer0Entry(void) __attribute__ ((naked));
 void Timer0Entry(void)
 {
@@ -146,6 +155,7 @@ void Timer0Entry(void)
     NutTimerIntr(0);
     IRQ_EXIT;
 }
+#endif
 
 /*!
  * \brief Initialize system timer.
@@ -207,6 +217,8 @@ void NutTimerInit(void)
 
     INT_ENABLE(IRQ_TIMER);
 
+#elif defined(MCU_GBA)
+    ms1++; /* Avoids compiler warning */
 #else
 #warning "MCU not defined"
 #endif
