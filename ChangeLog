@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.180 2005/02/23 13:42:11 freckle Exp $
+$Id: ChangeLog,v 1.181 2005/02/26 12:16:58 drsung Exp $
+
+2005-02-26  Oliver Schulz  <olischulz@web.de>
+
+	* os/arch/avr_nutinit.c: Moved heap initialization to section .init5 to 
+	support c++ constructors for static objects.
+
+	* tools/nutconf/nutcomponent.c: Added support for relative paths for sample 
+	application directory.
+
 
 2005-02-23 Matthias Ringwald <mringwal@.inf.ethz.ch>
 
