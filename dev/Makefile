@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2003/07/21 18:07:54  haraldkipp
+# Sony infrared remote control driver added
+#
 # Revision 1.2  2003/07/20 16:37:21  haraldkipp
 # CrystalTek 8900A driver added.
 #
@@ -85,7 +88,7 @@ include $(top_srcdir)/Makedefs
 
 SRCS =  uartavr.c uart0.c uart1.c uartspi.c uarts.c \
 	nicrtl.c eth0rtl.c cs8900.c eth0cs.c netbuf.c irqreg.c \
-	vs1001k.c spidigio.c spiflash.c \
+	vs1001k.c irsony.c spidigio.c spiflash.c \
 	ide.c twif.c hd44780.c term.c debug0.c debug1.c \
 	ppp.c chat.c \
 	ivect01.c ivect02.c ivect03.c ivect04.c ivect05.c ivect06.c \
