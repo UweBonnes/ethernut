@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2004/11/08 09:57:39  drsung
+# Added rule to clean also intermediate files (*.i)
+#
 # Revision 1.4  2004/09/10 10:29:11  haraldkipp
 # Undefined refs solved
 #
@@ -82,3 +85,4 @@ clean:
 	-rm -f $(PROJ).map
 	-rm -f $(SRCS:.c=.lst)
 	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.i)

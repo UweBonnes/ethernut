@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/11/08 09:57:37  drsung
+# Added rule to clean also intermediate files (*.i)
+#
 # Revision 1.1  2004/09/19 11:23:12  haraldkipp
 # Syslog/SNTP application added
 #
@@ -59,3 +62,4 @@ clean:
 	-rm -f $(PROJ).map
 	-rm -f $(SRCS:.c=.lst)
 	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.i)

@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/11/08 09:57:40  drsung
+# Added rule to clean also intermediate files (*.i)
+#
 # Revision 1.6  2004/09/10 17:18:29  haraldkipp
 # Building inside source tree is working again
 #
@@ -100,3 +103,4 @@ clean:
 	-rm -f $(SRC1:.c=.s) $(SRC2:.c=.s)
 	-rm -f $(SRC1:.c=.bak) $(SRC2:.c=.bak)
 	-rm -f $(SRC1:.c=.c~) $(SRC2:.c=.c~)
+	-rm -f $(SRC1:.c=.i) $(SRC2:.c=.i)

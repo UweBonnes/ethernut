@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2004/11/08 09:57:39  drsung
+# Added rule to clean also intermediate files (*.i)
+#
 # Revision 1.3  2004/09/10 10:33:28  haraldkipp
 # Temporarly removed non-configurable FP support
 #
@@ -87,3 +90,4 @@ clean:
 	-rm -f $(SRCS:.c=.lis)
 	-rm -f $(SRCS:.c=.s)
 	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.i)

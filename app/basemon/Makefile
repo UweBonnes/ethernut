@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2004/11/08 09:57:37  drsung
+# Added rule to clean also intermediate files (*.i)
+#
 # Revision 1.4  2004/08/18 15:02:35  haraldkipp
 # Application build is no longer fixed in top_srcdir
 #
@@ -103,4 +106,5 @@ clean:
 	-rm -f $(PROJ).map
 	-rm -f $(SRCS:.c=.lst)
 	-rm -f $(SRCS:.c=.bak)
+	-rm -f $(SRCS:.c=.i)
 	-rm -f $(WEBFILE)
