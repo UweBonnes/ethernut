@@ -78,8 +78,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:57  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/05/15 14:25:38  haraldkipp
+ * Some DHCP servers discard discover telegrams.
+ * Thanks to Tomohiro Haraikawa.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:57  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.14  2003/05/08 12:02:50  harald
  * More consistent handling if DHCP not available
@@ -334,14 +338,19 @@ int NutDhcpDiscover(UDPSOCKET * sock, u_long daddr, u_short dport,
                     struct bootp *bp, DYNCFG * cfgp)
 {
     char *cp;
+    u_short len;
 
     cp = prep_header(bp, cfgp->op = DHCP_DISCOVER, cfgp->xid);
     bp->bp_secs = htons(cfgp->ackTime);
 
     *cp++ = DHCPOPT_END;
 
-    return NutUdpSendTo(sock, daddr, dport, bp,
-                        (u_short) cp - (u_short) bp);
+    /* DHCP discover telegram should be upward compatible with BOOTP */
+    len = (u_short) cp - (u_short) bp;
+    if (len < (char *)&bp->bp_options - (char *)bp + 64)
+        len = (char *)&bp->bp_options - (char *)bp + 64;
+
+    return NutUdpSendTo(sock, daddr, dport, bp, len);
 }
 
 
