@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/12/16 18:48:50  haraldkipp
+ * Added Damian Slee's IP filter function.
+ *
  * Revision 1.2  2004/02/02 18:59:25  drsung
  * Some more ICMP support added.
  *
@@ -127,6 +130,26 @@
  */
 /*@{*/
 
+static NutIpFilterFunc NutIpFilter;
+
+/*!
+ * \brief Set filter function for incoming IP datagrams.
+ *
+ * The callbackFunc is called by the IP layer on every incoming IP 
+ * datagram. Thus it must not block. The implementer returns 0 for 
+ * allow, -1 for deny.
+ *
+ * It is recommended to set the filer after DHCP has done its thing,
+ * just in case your DHCP server is on a different subnet for example.
+ *
+ * \param callbackFunc Pointer to callback function to filter IP packets.
+ *                     Set to 0 to disable the filter again.
+ */
+void NutIpSetInputFilter(NutIpFilterFunc callbackFunc)
+{
+    NutIpFilter = callbackFunc;
+}
+
 /*!
  * \brief Process incoming IP datagrams.
  *
@@ -151,10 +174,12 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     ip = nb->nb_nw.vp;
 
     /*
-     * Silently discard datagrams of different IP version
-     * and fragmented datagrams.
+     * Silently discard datagrams of different IP version as well as
+     * fragmented or filtered datagrams.
      */
-    if (ip->ip_v != IPVERSION || (ntohs(ip->ip_off) & (IP_MF | IP_OFFMASK)) != 0) {
+    if (ip->ip_v != IPVERSION ||        /* Version check. */
+        (ntohs(ip->ip_off) & (IP_MF | IP_OFFMASK)) != 0 ||      /* Fragmentation. */
+        (NutIpFilter && NutIpFilter(ip->ip_src))) {     /* Filter. */
         NutNetBufFree(nb);
         return;
     }

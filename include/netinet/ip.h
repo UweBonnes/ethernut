@@ -2,7 +2,7 @@
 #define _NETINET_IP_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/12/16 18:47:02  haraldkipp
+ * Added Damian Slee's IP filter function.
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -101,20 +104,16 @@
  * RFC 791.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*!
  * \addtogroup xgIP
  */
 /*@{*/
 
-#define IPVERSION   4   /*!< \brief IP protocol version. */
+#define IPVERSION   4           /*!< \brief IP protocol version. */
 
-#define IP_DF       0x4000  /*!< \brief Don't fragment flag. */
-#define IP_MF       0x2000  /*!< \brief More fragments flag. */
-#define IP_OFFMASK  0x1fff  /*!< \brief Mask for fragmenting bits. */
+#define IP_DF       0x4000      /*!< \brief Don't fragment flag. */
+#define IP_MF       0x2000      /*!< \brief More fragments flag. */
+#define IP_OFFMASK  0x1fff      /*!< \brief Mask for fragmenting bits. */
 
 /*!
  * \brief Internet header type.
@@ -128,25 +127,25 @@ typedef struct ip IPHDR;
 struct ip {
 #ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
-    unsigned ip_hl:4,
-             ip_v:4; 
+    unsigned ip_hl:4,           /*!< \brief Header length. */
+     ip_v:4;                    /*!< \brief Version. */
 #else
-    u_char  ip_hl:4,        /*!< \brief Header length. */
-            ip_v:4;         /*!< \brief Version. */
+    u_char ip_hl:4,             /*!< \brief Header length. */
+     ip_v:4;                    /*!< \brief Version. */
 #endif
-#else /* #ifndef __BIG_ENDIAN__ */
-    u_char  ip_v:4,         /*!< \brief Version. */
-	    ip_hl:4;        /*!< \brief Header length. */
-#endif /* #ifndef __BIG_ENDIAN__ */
-    u_char  ip_tos;         /*!< \brief Type of service. */
-    short   ip_len;         /*!< \brief Total length. */
-    u_short ip_id;          /*!< \brief Identification. */
-    short   ip_off;         /*!< \brief Fragment offset field. */
-    u_char  ip_ttl;         /*!< \brief Time to live. */
-    u_char  ip_p;           /*!< \brief Protocol. */
-    u_short ip_sum;         /*!< \brief Checksum. */
-    u_long  ip_src;         /*!< \brief Source IP address. */
-    u_long  ip_dst;         /*!< \brief Destination IP address. */
+#else                           /* #ifndef __BIG_ENDIAN__ */
+    u_char ip_v:4,              /*!< \brief Version. */
+     ip_hl:4;                   /*!< \brief Header length. */
+#endif                          /* #ifndef __BIG_ENDIAN__ */
+    u_char ip_tos;              /*!< \brief Type of service. */
+    short ip_len;               /*!< \brief Total length. */
+    u_short ip_id;              /*!< \brief Identification. */
+    short ip_off;               /*!< \brief Fragment offset field. */
+    u_char ip_ttl;              /*!< \brief Time to live. */
+    u_char ip_p;                /*!< \brief Protocol. */
+    u_short ip_sum;             /*!< \brief Checksum. */
+    u_long ip_src;              /*!< \brief Source IP address. */
+    u_long ip_dst;              /*!< \brief Destination IP address. */
 };
 
 #define IPOPT_EOL       0       /*!< \brief End of option list. */
@@ -164,27 +163,32 @@ struct ip {
 #define IPOPT_OFFSET    2       /*!< \brief Offset within option. */
 #define IPOPT_MINOFF    4       /*!< \brief Minimum offset within option. */
 
-#define MAXTTL      255     /*!< \brief Maximum time to live (seconds). */
-#define IPDEFTTL    64      /*!< \brief Default time to live. */
-#define IPFRAGTTL   60      /*!< \brief Time to live for fragments. */
-#define IPTTLDEC    1       /*!< \brief Subtracted from time to live when forwarding. */
+#define MAXTTL      255         /*!< \brief Maximum time to live (seconds). */
+#define IPDEFTTL    64          /*!< \brief Default time to live. */
+#define IPFRAGTTL   60          /*!< \brief Time to live for fragments. */
+#define IPTTLDEC    1           /*!< \brief Subtracted from time to live when forwarding. */
 
+/*@}*/
+
+__BEGIN_DECLS
 /*
  * API declarations.
  */
 #include <dev/netbuf.h>
-extern int NutIpOutput(u_char proto, u_long dest, NETBUF *nb);
+extern int NutIpOutput(u_char proto, u_long dest, NETBUF * nb);
 
 /*
  * Kernel declarations.
  */
 #include <net/if_var.h>
-extern void NutIpInput(NUTDEVICE *dev, NETBUF *nb);
+extern void NutIpInput(NUTDEVICE * dev, NETBUF * nb);
 
-/*@}*/
+/*
+ * Ip Filter declarations.
+ */
+typedef int (*NutIpFilterFunc) (u_long);
+extern void NutIpSetInputFilter(NutIpFilterFunc callbackFunc);
 
-#ifdef __cplusplus
-}
-#endif
-
+__END_DECLS
+/* */
 #endif
