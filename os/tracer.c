@@ -39,9 +39,7 @@
  * \note  Only supported on AVR-GCC platform
  * 
  */
-#if defined(__GNUC__) && (defined(__AVR_ATmega128__) || \
-    defined(__AVR_ATmega64__) || defined(__AVR_AT90CAN128__) || \
-    defined(__AVR_ATmega103))
+#if defined(__GNUC__) && (defined(__AVR__)
  
 /************************************************/
 /* includes */
