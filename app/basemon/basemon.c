@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/09/01 13:56:09  haraldkipp
+ * Added support for EEPROM emulation
+ *
  * Revision 1.7  2004/08/04 16:31:20  haraldkipp
  * Never use MAC address with all 0. Dataflash added.
  *
@@ -144,7 +147,7 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.1.1";
+static char *version = "4.1.2";
 static size_t sram;
 static u_char banks;
 static size_t banksize;

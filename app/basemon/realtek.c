@@ -7,18 +7,39 @@
 #include "rtlregs.h"
 #include "realtek.h"
 
+
+#define RTL_EESK_BIT    5
+#define RTL_EESK_PORT   PORTC
+#define RTL_EESK_PIN    PINC
+#define RTL_EESK_DDR    DDRC
+
+#define RTL_EEDO_BIT    6
+#define RTL_EEDO_PORT   PORTC
+#define RTL_EEDO_DDR    DDRC
+
+#define RTL_EEMU_BIT    7
+#define RTL_EEMU_PORT   PORTC
+#define RTL_EEMU_DDR    DDRC
+
+#define RTL_EE_MEMBUS
+
+
 static int NicReset(void)
 {
     volatile u_char *base = (u_char *) 0x8300;
     u_char i;
     u_char j;
+
+    /* Start command clears the reset bit. */
+    nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
+    //printf("[%02X]", nic_read(NIC_PG0_ISR));
     for (j = 0; j < 20; j++) {
         printf("SW-Reset...");
         i = nic_read(NIC_RESET);
         Delay(500);
         nic_write(NIC_RESET, i);
         for (i = 0; i < 20; i++) {
-            Delay(5000);
+            //Delay(5000);
             /*
              * ID detection added for version 1.1 boards.
              */
@@ -44,6 +65,177 @@ static int NicReset(void)
     }
     return -1;
 }
+
+static int DetectNicEeprom(void)
+{
+    register u_int cnt = 0;
+
+    cli();
+    /*
+     * Prepare the EEPROM emulation port bits. Configure the EEDO
+     * and the EEMU lines as outputs and set both lines to high.
+     */
+    outb(PORTC, 0xC0);
+    outb(DDRC, 0xC0);
+
+    /*
+     * Force the chip to re-read the EEPROM contents.
+     */
+    nic_outlb(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
+    nic_outlb(NIC_PG3_EECR, NIC_EECR_EEM0);
+
+    /*
+     * No external memory access beyond this point.
+     */
+    cbi(MCUCR, SRE);
+
+    /*
+     * Check, if the chip toggles our EESK input. If not, we do not
+     * have EEPROM emulation hardware.
+     */
+    if(bit_is_set(PINC, 5)) {
+        while(++cnt && bit_is_set(PINC, 5));
+    }
+    else {
+        while(++cnt && bit_is_clear(PINC, 5));
+    }
+
+    /*
+     * Enable memory interface.
+     */
+    sbi(MCUCR, SRE);
+
+    /* Reset port outputs to default. */
+    outb(PORTC, 0x00);
+    outb(DDRC, 0x00);
+
+    /* Wait until controller ready. */
+    while(nic_inlb(NIC_CR) != (NIC_CR_STP | NIC_CR_RD2));
+
+    sei();
+    return cnt ? 0 : -1;
+}
+
+/*
+ * Emulated EEPROM contents.
+ *
+ * In jumper mode our influence is quite limited, only CONFIG3 and CONFIG4
+ * can be modified.
+ */
+static prog_char nic_eeprom[18] = {
+    0xFF,   /* CONFIG2: jPL1 jPL0   0      jBS4   jBS3   jBS2  jBS1  jBS0  */
+    0xFF,   /* CONFIG1: 1    jIRQS2 jIRQS1 jIRQS0 jIOS3  jIOS2 jIOS1 jIOS0 */
+
+    0xFF,   /* CONFIG4: -    -      -      -      -      -     -     IOMS  */
+    0x30,   /* CONFIG3  PNP  FUDUP  LEDS1  LEDS0  -      0     PWRDN ACTB  */
+
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, /* MAC */
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF /* ID */
+};
+
+/*!
+ * \brief EEPROM emulator.
+ *
+ * Forces the chip to re-read the EEPROM contents and emulates a serial
+ * EEPROM.
+ *
+ * If the hardware does not support this feature, then this call will
+ * never return. Thus, make sure to have the driver properly configured.
+ */
+static void EmulateNicEeprom(void)
+{
+    register u_char clk;
+    register u_char cnt;
+    register u_char val;
+
+    /*
+     * Prepare the EEPROM emulation port bits. Configure the EEDO and 
+     * the EEMU lines as outputs and set EEDO to low and EEMU to high.
+     */
+    outb(PORTC, 0xC0);
+    outb(DDRC, 0xC0);
+
+    /*
+     * Start EEPROM configuration. Stop/abort any activity and select
+     * configuration page 3. Setting bit EEM0 will force the controller
+     * to read the EEPROM contents.
+     */
+
+    /* Select page 3, stop and abort/complete. */
+    nic_outlb(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
+    nic_outlb(NIC_PG3_EECR, NIC_EECR_EEM0);
+
+    /*
+     * We can avoid wasting port pins for EEPROM emulation by using the 
+     * upper bits of the address bus.
+     */
+    /*
+     * No external memory access beyond this point.
+     */
+    cbi(MCUCR, SRE);
+
+    /*
+     * Loop for all EEPROM words.
+     */
+    for(cnt = 0; cnt < sizeof(nic_eeprom); ) {
+
+        /*
+         * 
+         * 1 start bit, always high
+         * 2 op-code bits
+         * 7 address bits
+         * 1 dir change bit, always low
+         */
+        for(clk = 0; clk < 11; clk++) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+        }
+
+        /*
+         * Shift out the high byte, MSB first. Our data changes at the EESK 
+         * rising edge. Data is sampled by the Realtek at the falling edge.
+         */
+        val = PRG_RDB(nic_eeprom + cnt);
+        cnt++;
+        for(clk = 0x80; clk; clk >>= 1) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            if(val & clk) 
+                sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+            cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+        }
+
+        /*
+         * Shift out the low byte.
+         */
+        val = PRG_RDB(nic_eeprom + cnt);
+        cnt++;
+        for(clk = 0x80; clk; clk >>= 1) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            if(val & clk) 
+                sbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+            cbi(RTL_EEDO_PORT, RTL_EEDO_BIT);
+        }
+
+
+        /* 5 remaining clock cycles. */
+        for(clk = 0; clk < 5; clk++) {
+            while(bit_is_clear(RTL_EESK_PIN, RTL_EESK_BIT));
+            while(bit_is_set(RTL_EESK_PIN, RTL_EESK_BIT));
+        }
+    }
+
+    /*
+     * Enable memory interface.
+     */
+    sbi(MCUCR, SRE);
+
+    /* Reset port outputs to default. */
+    outb(PORTC, 0x00);
+    outb(DDRC, 0x00);
+}
+
 
 /*!
  * \brief Detect an RTL8019AS chip.
@@ -110,7 +302,6 @@ int RealtekTest(void)
              * wait until the controller enters the reset state.
              */
             if (force_swreset || (*(base + 7) & 0x80) == 0) {
-                printf("failed\nTrying NIC software reset...");
                 *(base + 0x1f) = *(base + 0x1f);
                 Delay(200000);
                 for (i = 0; i < 255; i++) {
@@ -119,7 +310,6 @@ int RealtekTest(void)
                     }
                 }
                 if (i < 255) {
-                    puts("OK");
                     break;
                 }
                 puts("failed\x07");
@@ -161,16 +351,26 @@ void RealtekSend(void)
     volatile u_char *base = (u_char *) 0x8300;
     u_char rb;
     u_long cnt = 0;
-    if (NicReset())
-        return;
+
     printf("Init controller...");
     nic_write(NIC_PG0_IMR, 0);
     nic_write(NIC_PG0_ISR, 0xff);
+    if (NicReset())
+        return;
+
+    printf(" detecting...");
+    Delay(200000);
+    if (DetectNicEeprom() == 0) {
+        printf("EEPROM Emulation...");
+        EmulateNicEeprom();
+    }
+
     nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0 | NIC_CR_PS1);
     nic_write(NIC_PG3_EECR, NIC_EECR_EEM0 | NIC_EECR_EEM1);
     nic_write(NIC_PG3_CONFIG3, 0);
     nic_write(NIC_PG3_CONFIG2, NIC_CONFIG2_BSELB);
     nic_write(NIC_PG3_EECR, 0);
+
     Delay(50000);
     nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
     nic_write(NIC_PG0_DCR, NIC_DCR_LS | NIC_DCR_FT1);
@@ -244,6 +444,7 @@ void RealtekSend(void)
     printf("\n");
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
     for (;;) {
+        Delay(500000);
         printf("\r%lu", cnt++);
         sz = 1500;
         nic_write(NIC_PG0_RBCR0, sz);
