@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2004/09/10 10:26:35  haraldkipp
+ * Removed old header files
+ *
  * Revision 1.2  2003/11/04 17:46:52  haraldkipp
  * Adapted to Ethernut 2
  *
@@ -81,7 +84,7 @@
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
-#include <sys/print.h>
+#include <sys/socket.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -89,7 +92,6 @@
 #include <io.h>
 #include <fcntl.h>
 
-#include <netinet/sostream.h>
 #include <arpa/inet.h>
 
 #include <pro/dhcp.h>
