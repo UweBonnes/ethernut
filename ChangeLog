@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.50 2004/03/18 15:54:56 haraldkipp Exp $
+$Id: ChangeLog,v 1.51 2004/03/18 18:31:52 haraldkipp Exp $
 
 2004-03-18  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -49,6 +49,9 @@ $Id: ChangeLog,v 1.50 2004/03/18 15:54:56 haraldkipp Exp $
 	* include/dev/irqreg.h: Bugfix. ICCAVR can't find header files.
 
 	* include/arch/avr.h: Added __AVR_ATmega103__ in ICCAVR block.
+
+	* dev/term.c, include/dev/term.h: Added Michael Fischer's
+	TIOCGWINSZ ioctl.
 
 
 2004-03-17  Harald Kipp  <harald.kipp@egnite.de>
