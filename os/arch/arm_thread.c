@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/05 17:54:36  haraldkipp
+ * Moved from user mode to system mode. Probably breaks the GBA port.
+ *
  * Revision 1.3  2004/11/08 19:15:33  haraldkipp
  * Made assembly includes look nicer.
  * Changed mode from supervisory to user supervisory, which seems to work
@@ -52,8 +55,6 @@
  * Added CPU family support
  *
  */
-
-#include <stdio.h>
 
 /*!
  * \brief ARM7TDMI GCC context switch frame layout.
@@ -161,6 +162,7 @@ void NutThreadSwitch(void)
 		"ldmfd 	 sp!, {r4}\n\t"         /* */
 		"msr     spsr_all, r4\n\t"      /* */
 		"ldmfd   sp!, {r4}\n\t"         /* */
+                "bic     r4, r4, #0x80" "\n\t"  /* */
 		"msr     cpsr_all, r4\n\t"      /* */
 		"ldmfd   sp!, {r0-r12, lr, pc}" /* */
         ::"m"(runningThread->td_sp)     /* */
@@ -191,16 +193,8 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
-    const uptr_t *paddr;
 
     NutEnterCritical();
-    paddr = (const uptr_t *) fn;
-
-    /*
-     * 4bytes boundary
-     */
-    while(((stackSize + sizeof(NUTTHREADINFO)) & 0x03) != 0)
-        stackSize++;
 
     /*
      * Allocate stack and thread info structure in one block.
@@ -240,7 +234,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
      * the first thread , idle thread, will jump
      * to start without NutExitCritical.
      */
-    ef->cef_cpsr = 0x1F; // 0x53;
+    ef->cef_cpsr = 0xD3;
     ef->cef_pc   = (uptr_t) fn;
     ef->cef_r0 = (uptr_t) arg;
 
@@ -250,8 +244,8 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     /*
      * SVC mode, irq need to be disabled when context switching.
      */
-    sf->csf_cpsr = 0x1F; // 0x13;
-    sf->csf_spsr = 0x1F; // 0x13;
+    sf->csf_cpsr = 0xD3;
+    sf->csf_spsr = 0xD3;
 
     /*
      * Insert into the thread list and the run queue.
@@ -262,15 +256,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     td->td_timer = 0;
     td->td_queue = 0;
 
-#ifdef NUTDEBUG
-    if (__os_trf)
-        fprintf(__os_trs, "Cre<%08lx>", (uptr_t) td);
-#endif
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
-#ifdef NUTDEBUG
-    if (__os_trf)
-        NutDumpThreadList(__os_trs);
-#endif
 
     /*
      * If no thread is active, switch to new thread.
@@ -286,14 +272,8 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
      */
     if (runningThread != runQueue) {
         runningThread->td_state = TDS_READY;
-#ifdef NUTDEBUG
-        if (__os_trf)
-            fprintf(__os_trs, "New<%08lx %08lx>",
-            	(uptr_t) runningThread, (uptr_t) runQueue);
-#endif
         NutThreadSwitch();
     }
-
     NutExitCritical();
 
     return td;
