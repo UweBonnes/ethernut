@@ -1,4 +1,34 @@
-$Id: ChangeLog,v 1.19 2003/12/07 18:08:07 drsung Exp $
+$Id: ChangeLog,v 1.20 2003/12/15 19:33:08 haraldkipp Exp $
+
+2003-12-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Switched to 3.3.3, still preview.
+
+	* os/thread.c: Long awaited support for terminating
+	threads had been implemented. The context switch frame
+	has been reduced to those registers, which really need
+	to be saved. These most valuable changes had been
+	contributed by Ralph Mason.
+
+	* os/nutinit.c: Destroys terminated threads. Priority
+	255 is used to terminate threads, thus the idle thread's
+	priority changed from 255 to 254. This may break your
+	existing application. Thanks again to Ralph Mason.
+
+	* appicc: Imagecraft projects updated to version 6.29.
+
+	* dev/usart.c: Hardware independant U(S)ART device driver
+	added.
+
+	* dev/usartavr.c: ATmega128/103 USART hardware support 
+	for new usart.c. Includes HW/SW handshake, 9-bit and
+	synchronous communication.
+
+	* include/fcntl.h: Dox updated.
+
+	* include/bankmem.h: Banking enabled with Ethernut 2.
+
+
 
 2003-12-06  Oliver Schulz  <olischulz@web.de>
 
