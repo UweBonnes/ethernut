@@ -36,6 +36,7 @@
 *  18.01.03  mifi   Change Licence from GPL to BSD
 *  25.01.03  mifi   Change IDEInit. 
 *  29.01.03  mifi   Remove IDE_MAX_SUPPORTED_DEVICE, support 2 drives now.
+*  29.06.03  mifi   First ATAPI-Version
 ****************************************************************************/
 #ifndef __IDE_H__
 #define __IDE_H__
@@ -45,12 +46,23 @@
 /*-------------------------------------------------------------------------*/
 /* global defines                                                          */
 /*-------------------------------------------------------------------------*/
+//
+// Here we can switch on/off some
+// feature of the software
+//
+#define IDE_SUPPORT_WRITE               0
+#define IDE_SUPPORT_ATAPI               1
+
+#define ATAPI_START_SEARCH_SECTOR       16
+#define ATAPI_MAX_SEARCH_SECTOR         100
+
 #define IDE_OK                          0x00
 #define IDE_ERROR                       0x01
 #define IDE_DRIVE_NOT_FOUND             0x02
 #define IDE_PARAM_ERROR                 0x03
 #define IDE_BUSY                        0x04
-                                        
+#define IDE_NOT_SUPPORTED               0x08
+
 #define IDE_DRIVE_C                     0
 #define IDE_DRIVE_D                     1
 
@@ -58,20 +70,21 @@
 // IDE type for IDEInit
 //
 #define IDE_HARDDISK                    0
-#define IDE_HARDDISK_7MHZ               1        
+#define IDE_HARDDISK_7MHZ               1
 #define IDE_COMPACT_FLASH               2
 #define MEM_8BIT_COMPACT_FLASH          3
-                                        
+
+//
+// Sector size for HD/CF-Card and CDROM
+//
 #define IDE_SECTOR_SIZE                 512
-
-
-
-#define IDE_SUPPORT_WRITE               1
+#define ATAPI_SECTOR_SIZE               2048
+#define MAX_SECTOR_SIZE                 2048
 
 /*-------------------------------------------------------------------------*/
 /* global types                                                            */
 /*-------------------------------------------------------------------------*/
-typedef void IDE_MOUNT_FUNC (int nDevice);
+typedef void IDE_MOUNT_FUNC(int nDevice);
 
 /*-------------------------------------------------------------------------*/
 /* global macros                                                           */
@@ -80,26 +93,32 @@ typedef void IDE_MOUNT_FUNC (int nDevice);
 /*-------------------------------------------------------------------------*/
 /* Prototypes                                                              */
 /*-------------------------------------------------------------------------*/
-int   IDEInit (int             nBaseAddress, 
-               int             nIDEMode,
-               IDE_MOUNT_FUNC *pMountFunc,
-               IDE_MOUNT_FUNC *pUnMountFunc);
-                 
+int IDEInit(int nBaseAddress, int nIDEMode, IDE_MOUNT_FUNC * pMountFunc, IDE_MOUNT_FUNC * pUnMountFunc);
 
-int   IDEMountDevice (BYTE bDevice, BYTE *pSectorBuffer);
+int IDEMountDevice(BYTE bDevice, BYTE * pSectorBuffer);
 
-int   IDEUnMountDevice (BYTE bDevice);
+int IDEGetSectorSize(BYTE bDevice);
 
-DWORD IDEGetTotalSectors (BYTE bDevice);
+int IDEIsCDROMDevice(BYTE bDevice);
 
-int   IDEReadSectors (BYTE   bDevice,      void *pData, 
-                      DWORD dwStartSector, WORD  wSectorCount);
+int IDEIsZIPDevice(BYTE bDevice);
+
+int IDEUnMountDevice(BYTE bDevice);
+
+DWORD IDEGetTotalSectors(BYTE bDevice);
+
+int IDEReadSectors(BYTE bDevice, void *pData, DWORD dwStartSector, WORD wSectorCount);
 
 #if (IDE_SUPPORT_WRITE == 1)
 
-int   IDEWriteSectors (BYTE   bDevice,      void *pData, 
-                       DWORD dwStartSector, WORD  wSectorCount);
+int IDEWriteSectors(BYTE bDevice, void *pData, DWORD dwStartSector, WORD wSectorCount);
 
 #endif
 
-#endif /* !__IDE_H__ */
+#if (IDE_SUPPORT_ATAPI == 1)
+
+int IDEATAPISetCDSpeed(BYTE bDevice, WORD wSpeed);
+
+#endif
+
+#endif                          /* !__IDE_H__ */

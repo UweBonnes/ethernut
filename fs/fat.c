@@ -61,6 +61,14 @@
 *  27.01.03  mifi   Rename all FAT32xxx function to FATxxx.
 *
 *  28.01.03  mifi   Start porting to Nut/OS 3.X.X
+*  19.06.03  mifi   Change the call of IDEInit, now we use the BaseAddress
+*                   of 0. Because the fat module does not need to know the
+*                   address. It will be handled in ide.c.
+*  29.06.03  mifi   First ATAPI-Version
+*                   Now we can read files from a CD-ROM. But there exist
+*                   some open points:
+*                   - only first session from a multisession CD is supported
+*                   - only iso9660, no Joliet support now, later
 ****************************************************************************/
 #define __FAT_C__
 
@@ -69,6 +77,7 @@
 #include <ctype.h>
 
 #include <sys/heap.h>
+#include <sys/print.h>
 #include <sys/event.h>
 #include <sys/thread.h>
 
@@ -101,6 +110,8 @@
 //
 // Some defines for the FAT structures
 //
+#define ZIP_DRIVE_BR_SECTOR             32
+
 #define BPB_RsvdSecCnt                  32
 #define BPB_NumFATs                     2
 #define BPB_HiddSec                     63
@@ -161,6 +172,14 @@
 //
 #define FAT_SHORT_NAME_LEN              (FAT_NAME_LEN+FAT_EXT_LEN+1)
 #define FAT_LONG_NAME_LEN               64
+
+
+//
+// Some stuff for HD and CD, DRIVE_INFO Flags
+// 
+//
+#define FLAG_FAT_IS_CDROM               0x0001
+#define FLAG_FAT_IS_ZIP                 0x0002
 
 //
 //  DiskSize to SectorPerCluster table
@@ -303,7 +322,9 @@ typedef struct _drive_info {
     BYTE bIsFAT32;
     BYTE bDevice;
     BYTE bSectorsPerCluster;
-    BYTE bReserved;
+    BYTE bFlags;
+
+    WORD wSectorSize;
 
     DWORD dwRootDirSectors;
     DWORD dwFirstRootDirSector;
@@ -328,6 +349,70 @@ typedef struct _fhandle {
 
     DRIVE_INFO *pDrive;
 } FHANDLE;
+
+#if (IDE_SUPPORT_ATAPI == 1)
+//
+// Some ATAPI stuff
+//
+typedef struct _atapi_pvd {
+    BYTE descr_type;
+    BYTE magic[5];
+    BYTE descr_ver;
+    BYTE unused;
+    BYTE sysid[32];
+    BYTE volid[32];
+    BYTE zeros1[8];
+    BYTE seknum[8];
+    BYTE zeros2[32];
+    BYTE volsetsize[4];
+    BYTE volseqnum[4];
+    BYTE seksize[4];
+    BYTE pathtablen[8];
+    BYTE firstsek_LEpathtab1_LE[4];
+    BYTE firstsek_LEpathtab2_LE[4];
+    BYTE firstsek_BEpathtab1_BE[4];
+    BYTE firstsek_BEpathtab2_BE[4];
+    BYTE rootdir[34];
+    BYTE volsetid[128];
+    BYTE pubid[128];
+    BYTE dataprepid[128];
+    BYTE appid[128];
+    BYTE copyr[37];
+    BYTE abstractfileid[37];
+    BYTE bibliofileid[37];
+    BYTE creationdate[17];
+    BYTE modify[17];
+    BYTE expire[17];
+    BYTE effective[17];
+    BYTE filestruc_ver;
+    BYTE zero;
+    BYTE app_use[512];
+    BYTE res[653];
+} ATAPI_PVD;
+
+//
+// Descriptor values
+//
+#define ATAPI_BOOT_RECORD   0x00
+#define ATAPI_PVD_DESC      0x01
+#define ATAPI_SVD_DESC      0x02
+#define ATAPI_VDST_DESC     0xFF
+
+typedef struct _ATAPIDirectoryRecord {
+    BYTE bRecordSize;
+    BYTE bShouldBeZero;
+    DWORD dwFirstSector;
+    DWORD dwNotUse1;
+    DWORD dwEntrySize;
+    DWORD dwNotUse2;
+    BYTE bDate[7];
+    BYTE bFlags;
+    BYTE bInterleaveInfo[2];
+    BYTE bVolumeSequenceNumber[4];
+    BYTE bIdentifierLength;
+    BYTE bName[1];
+} ATAPI2_DIRECTORY_RECORD;
+#endif
 
 /*==========================================================*/
 /*  DEFINE: Definition of all local Data                    */
@@ -374,8 +459,12 @@ static DWORD GetFirstSectorOfCluster(DRIVE_INFO * pDrive, DWORD dwCluster)
 {
     DWORD dwSector;
 
-    dwSector = (dwCluster - 2) * pDrive->bSectorsPerCluster;
-    dwSector += pDrive->dwCluster2StartSector;
+    if (pDrive->bFlags & FLAG_FAT_IS_CDROM) {
+        dwSector = dwCluster;
+    } else {
+        dwSector = (dwCluster - 2) * pDrive->bSectorsPerCluster;
+        dwSector += pDrive->dwCluster2StartSector;
+    }
 
     return (dwSector);
 }
@@ -391,41 +480,41 @@ static DWORD GetNextCluster(DRIVE_INFO * pDrive, DWORD dwCluster)
     FAT_ENTRY_TABLE16 *pFatTable16;
     FAT_ENTRY_TABLE32 *pFatTable32;
 
-    if (pDrive->bIsFAT32 == TRUE) {
-        //
-        //  (IDE_SECTOR_SIZE / sizeof(long)) == 128
-        // 
-        dwSector = (dwCluster / 128) + pDrive->dwFAT1StartSector;
-        dwIndex = dwCluster % 128;
+    if (pDrive->bFlags & FLAG_FAT_IS_CDROM) {
+        dwNextCluster = dwCluster + 1;
+    } else {
+        if (pDrive->bIsFAT32 == TRUE) {
+            //
+            //  (IDE_SECTOR_SIZE / sizeof(long)) == 128
+            // 
+            dwSector = (dwCluster / 128) + pDrive->dwFAT1StartSector;
+            dwIndex = dwCluster % 128;
 
-        IDEReadSectors(pDrive->bDevice, pSectorBuffer, dwSector, 1);
-        pFatTable32 = (FAT_ENTRY_TABLE32 *) pSectorBuffer;
+            IDEReadSectors(pDrive->bDevice, pSectorBuffer, dwSector, 1);
+            pFatTable32 = (FAT_ENTRY_TABLE32 *) pSectorBuffer;
 
-        dwNextCluster =
-            (pFatTable32->aEntry[dwIndex] & FAT32_CLUSTER_MASK);
-        if ((dwNextCluster == FAT32_CLUSTER_EOF)
-            || (dwNextCluster == FAT32_CLUSTER_ERROR)) {
-            dwNextCluster = 0;
-        }
+            dwNextCluster = (pFatTable32->aEntry[dwIndex] & FAT32_CLUSTER_MASK);
+            if ((dwNextCluster == FAT32_CLUSTER_EOF) || (dwNextCluster == FAT32_CLUSTER_ERROR)) {
+                dwNextCluster = 0;
+            }
 
-    } else {                    /* FAT16 */
-        //
-        //  (IDE_SECTOR_SIZE / sizeof(word)) == 256
-        // 
-        dwSector = (dwCluster / 256) + pDrive->dwFAT1StartSector;
-        dwIndex = dwCluster % 256;
+        } else {                /* FAT16 */
+            //
+            //  (IDE_SECTOR_SIZE / sizeof(word)) == 256
+            // 
+            dwSector = (dwCluster / 256) + pDrive->dwFAT1StartSector;
+            dwIndex = dwCluster % 256;
 
-        IDEReadSectors(pDrive->bDevice, pSectorBuffer, dwSector, 1);
-        pFatTable16 = (FAT_ENTRY_TABLE16 *) pSectorBuffer;
+            IDEReadSectors(pDrive->bDevice, pSectorBuffer, dwSector, 1);
+            pFatTable16 = (FAT_ENTRY_TABLE16 *) pSectorBuffer;
 
-        dwNextCluster =
-            (pFatTable16->aEntry[dwIndex] & FAT16_CLUSTER_MASK);
-        if ((dwNextCluster == FAT16_CLUSTER_EOF)
-            || (dwNextCluster == FAT16_CLUSTER_ERROR)) {
-            dwNextCluster = 0;
-        }
+            dwNextCluster = (pFatTable16->aEntry[dwIndex] & FAT16_CLUSTER_MASK);
+            if ((dwNextCluster == FAT16_CLUSTER_EOF) || (dwNextCluster == FAT16_CLUSTER_ERROR)) {
+                dwNextCluster = 0;
+            }
 
-    }                           /* endif pDrive->bIsFAT32 */
+        }                       /* endif pDrive->bIsFAT32 */
+    }
 
     return (dwNextCluster);
 }
@@ -449,6 +538,172 @@ static char GetLongChar(WORD wValue)
     return ((char) Value);
 }
 
+#if (IDE_SUPPORT_ATAPI == 1)
+/************************************************************/
+/*  CheckATAPIName                                          */
+/*                                                          */
+/*  Some values are not allowed in a "ATAPIname",           */
+/*  Therefore we will change the name here.                 */
+/************************************************************/
+static char *CheckATAPIName(char *pLongName)
+{
+    char *pRead;
+
+    pRead = pLongName;
+
+    while (*pRead != 0) {
+        switch (*pRead) {
+        case '-':
+            *pRead = '_';
+            break;
+        case ' ':
+            *pRead = '_';
+            break;
+        }
+        pRead++;
+    }
+
+    return (pLongName);
+}
+
+/************************************************************/
+/*  RemoveChar                                              */
+/*                                                          */
+/*  Houston, we have a problem....                          */
+/*  Some chars are not allowed in a name, in the case of    */
+/*  ATAPI, the filename test.pic.gif is stored as           */
+/*  testpic.gif. For a directory, we must remove all '.'    */
+/*  Therefore we must correct the name :o(                  */
+/************************************************************/
+static char *RemoveChar(char *pLongName, BYTE bDir)
+{
+    char *pRead;
+    char *pWrite;
+    BYTE bPointCount;
+
+    pRead = pLongName;
+    pWrite = pLongName;
+
+    if (bDir == TRUE) {
+        while (*pRead != 0) {
+            if (*pRead != '.') {
+                *pWrite = *pRead;
+                pWrite++;
+            }
+            pRead++;
+        }
+        *pWrite = 0;
+    } else {
+        //
+        // 1. search all points in the name
+        //
+        pRead = pLongName;
+        bPointCount = 0;
+        while (*pRead != 0) {
+            if (*pRead == '.') {
+                bPointCount++;
+            }
+            pRead++;
+        }
+
+        if (bPointCount >= 2) {
+            //
+            // Remove the points...
+            //
+            bPointCount--;
+
+            pRead = pLongName;
+            pWrite = pLongName;
+
+            while (*pRead != 0) {
+                if ((*pRead == '.') && (bPointCount)) {
+                    bPointCount--;
+                } else {
+                    *pWrite = *pRead;
+                    pWrite++;
+                }
+                pRead++;
+            }
+            *pWrite = 0;
+        }
+    }
+
+    return (pLongName);
+}
+
+/************************************************************/
+/*  FindFileATAPI                                           */
+/*                                                          */
+/*  Find a file by a given name pLongName.                  */
+/*  For ATAPI, we have NO cluster. A cluster is the same    */
+/*  as a sector.                                            */
+/************************************************************/
+static DWORD FindFileATAPI(DRIVE_INFO * pDrive,
+                           FAT32_DIRECTORY_ENTRY * pSearchEntry,
+                           char *pLongName, DWORD dwDirCluster, DWORD * pFileSize, int nIsLongName)
+{
+    DWORD dwSector;
+    DWORD dwDirSector;
+    DWORD dwMaxDirSector;
+    WORD wByteCount;
+    BYTE bLongNameLen;
+    BYTE bSearchFlags;
+    ATAPI2_DIRECTORY_RECORD *pDirEntry;
+
+    dwSector = 0;
+    dwDirSector = dwDirCluster;
+
+    dwMaxDirSector = pDrive->dwFirstRootDirSector + pDrive->dwRootDirSectors - 1;
+
+    bSearchFlags = 0;
+    if (pSearchEntry->Attribute == DIRECTORY_ATTRIBUTE_DIRECTORY) {
+        bSearchFlags = 0x02;
+        pLongName = RemoveChar(pLongName, TRUE);
+    } else {
+        pLongName = RemoveChar(pLongName, FALSE);
+    }
+
+    //
+    // ' ' and '-' are not allowed in the name, change it...
+    //
+    pLongName = CheckATAPIName(pLongName);
+    bLongNameLen = strlen(pLongName);
+
+    while (dwDirCluster <= dwMaxDirSector) {
+        IDEReadSectors(pDrive->bDevice, pSectorBuffer, dwDirCluster, 1);
+
+        wByteCount = 0;
+        pDirEntry = (ATAPI2_DIRECTORY_RECORD *) & pSectorBuffer[0];
+        while (wByteCount < pDrive->dwClusterSize) {
+            if (pDirEntry->bRecordSize == 0) {
+                break;
+            } else {
+                //
+                // Check pDirEntry
+                //
+                if (((pDirEntry->bFlags & 0x03) == bSearchFlags) &&
+                    (pDirEntry->bIdentifierLength >= bLongNameLen) &&
+                    (strncmp(&pDirEntry->bName[0], pLongName, bLongNameLen) == 0)) {
+                    //
+                    // We have found the file :-)
+                    // 
+                    dwSector = pDirEntry->dwFirstSector;
+                    *pFileSize = pDirEntry->dwEntrySize;
+                    // Sorry for the return here :-(
+                    return (dwSector);
+                }
+
+                wByteCount += pDirEntry->bRecordSize;
+                pDirEntry = (ATAPI2_DIRECTORY_RECORD *) & pSectorBuffer[wByteCount];
+            }
+        }
+        dwDirCluster++;
+    }
+
+    return (dwSector);
+}
+#endif
+
 /************************************************************/
 /*  FindFile                                                */
 /*                                                          */
@@ -460,10 +715,7 @@ static char GetLongChar(WORD wValue)
 /*  the long name too, even if nIsLongName is FALSE.        */
 /************************************************************/
 static DWORD FindFile(DRIVE_INFO * pDrive,
-                      FAT32_DIRECTORY_ENTRY * pSearchEntry,
-                      char *pLongName,
-                      DWORD dwDirCluster,
-                      DWORD * pFileSize, int nIsLongName)
+                      FAT32_DIRECTORY_ENTRY * pSearchEntry, char *pLongName, DWORD dwDirCluster, DWORD * pFileSize, int nIsLongName)
 {
     int i, x;
     BYTE bError;
@@ -475,7 +727,7 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
     BYTE bMaxOrder;
     int nDirMaxSector;
     DWORD dwSector;
-    DWORD dwNewCluster = 0;
+    DWORD dwNewCluster;
     FAT32_DIRECTORY_ENTRY *pDirEntryShort;
     FAT32_DIRECTORY_ENTRY_LONG *pDirEntryLong;
     char *pDirName = 0;
@@ -483,6 +735,7 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
 
     bError = FALSE;
     *pFileSize = 0;
+    dwNewCluster = 0;
 
     nNameLen = strlen(pLongName);
 
@@ -519,8 +772,7 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
             // One cluster has SecPerCluster sectors.
             //
             for (i = 0; i < nDirMaxSector; i++) {
-                IDEReadSectors(pDrive->bDevice, pSectorBuffer,
-                               dwSector + i, 1);
+                IDEReadSectors(pDrive->bDevice, pSectorBuffer, dwSector + i, 1);
                 pDirTable = (FAT_DIR_TABLE *) pSectorBuffer;
 
                 //
@@ -530,13 +782,9 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
                 //
                 for (x = 0; x < 16; x++) {
                     if (bFound == TRUE) {
-                        pDirEntryShort =
-                            (FAT32_DIRECTORY_ENTRY *) & pDirTable->
-                            aShort[x];
+                        pDirEntryShort = (FAT32_DIRECTORY_ENTRY *) & pDirTable->aShort[x];
                         dwNewCluster = pDirEntryShort->HighCluster;
-                        dwNewCluster =
-                            (dwNewCluster << 16) | (DWORD) pDirEntryShort->
-                            LowCluster;
+                        dwNewCluster = (dwNewCluster << 16) | (DWORD) pDirEntryShort->LowCluster;
                         *pFileSize = pDirEntryShort->FileSize;
                         bEndLoop = TRUE;
                         break;
@@ -544,11 +792,8 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
                     //
                     // Check for valid entry.
                     //
-                    pDirEntryShort =
-                        (FAT32_DIRECTORY_ENTRY *) & pDirTable->aShort[x];
-                    pDirEntryLong =
-                        (FAT32_DIRECTORY_ENTRY_LONG *) & pDirTable->
-                        aLong[x];
+                    pDirEntryShort = (FAT32_DIRECTORY_ENTRY *) & pDirTable->aShort[x];
+                    pDirEntryLong = (FAT32_DIRECTORY_ENTRY_LONG *) & pDirTable->aLong[x];
 
                     if (nIsLongName == FALSE) {
                         //
@@ -556,25 +801,17 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
                         // is a short name, it is true. But with Win98 we must
                         // test both, short and long...
                         //
-                        if ((pDirEntryShort->Name[0] != 0xE5) &&
-                            (pDirEntryShort->Name[0] != 0x00)) {
-                            if (memcmp(pDirEntryShort, pSearchEntry, 11) ==
-                                0) {
+                        if ((pDirEntryShort->Name[0] != 0xE5) && (pDirEntryShort->Name[0] != 0x00)) {
+                            if (memcmp(pDirEntryShort, pSearchEntry, 11) == 0) {
                                 //
                                 // Check for the correct attribute, this is done with
                                 // the '&' and not with the memcmp.
                                 // With the '&' it is possible to find a hidden archive too :-)
                                 //
-                                if ((pDirEntryShort->
-                                     Attribute & pSearchEntry->
-                                     Attribute) ==
-                                    pSearchEntry->Attribute) {
+                                if ((pDirEntryShort->Attribute & pSearchEntry->Attribute) == pSearchEntry->Attribute) {
 
-                                    dwNewCluster =
-                                        pDirEntryShort->HighCluster;
-                                    dwNewCluster =
-                                        (dwNewCluster << 16) | (DWORD)
-                                        pDirEntryShort->LowCluster;
+                                    dwNewCluster = pDirEntryShort->HighCluster;
+                                    dwNewCluster = (dwNewCluster << 16) | (DWORD) pDirEntryShort->LowCluster;
                                     *pFileSize = pDirEntryShort->FileSize;
 
                                     bEndLoop = TRUE;
@@ -585,9 +822,7 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
                         }       /* endif Name[0] != 0xe5, 0x00 */
                     }
                     /* endif nIsLongName == FALSE */
-                    if ((pDirEntryLong->Attribute ==
-                         DIRECTORY_ATTRIBUTE_LONG_NAME)
-                        && (pDirEntryLong->Order == bOrder)) {
+                    if ((pDirEntryLong->Attribute == DIRECTORY_ATTRIBUTE_LONG_NAME) && (pDirEntryLong->Order == bOrder)) {
                         //
                         // Next bOrder is bOrder--
                         //  
@@ -605,34 +840,21 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
                             pDirName[nMaxLen--] = 0;
                         }
 
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name3[1]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name3[0]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name3[1]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name3[0]);
 
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name2[5]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name2[4]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name2[3]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name2[2]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name2[1]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name2[0]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name2[5]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name2[4]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name2[3]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name2[2]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name2[1]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name2[0]);
 
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name1[4]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name1[3]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name1[2]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name1[1]);
-                        pDirName[nMaxLen--] =
-                            GetLongChar(pDirEntryLong->Name1[0]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name1[4]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name1[3]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name1[2]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name1[1]);
+                        pDirName[nMaxLen--] = GetLongChar(pDirEntryLong->Name1[0]);
 
                         bOrder--;
                         if (bOrder == 0) {
@@ -641,9 +863,7 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
                             //
                             bOrder = (BYTE) (0x40 | bMaxOrder);
                             nMaxLen = (int) (bMaxOrder * 13);
-                            if (memcmp
-                                (pLongName, pDirName,
-                                 strlen(pLongName)) == 0) {
+                            if (memcmp(pLongName, pDirName, strlen(pLongName)) == 0) {
                                 //
                                 // The next entry will be the correct entry.
                                 //
@@ -672,6 +892,141 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
     return (dwNewCluster);
 }
 
+#if (IDE_SUPPORT_ATAPI == 1)
+/************************************************************/
+/*  MountATAPI                                              */
+/************************************************************/
+static int MountATAPI(int nDrive)
+{
+    int nError = IDE_OK;
+    DWORD dwSector;
+    DWORD dwPVDSector;
+    DRIVE_INFO *pDrive;
+    ATAPI_PVD *pPVD;
+
+    pDrive = &sDriveInfo[nDrive];
+    dwSector = ATAPI_START_SEARCH_SECTOR;
+    dwPVDSector = 0;
+    while (dwSector <= ATAPI_MAX_SEARCH_SECTOR) {
+        nError = IDEReadSectors(nDrive, pSectorBuffer, dwSector, 1);
+        if (nError != IDE_OK) {
+            break;
+        } else {
+            if ((pSectorBuffer[0] == ATAPI_PVD_DESC) &&
+                (pSectorBuffer[1] == 'C') && (pSectorBuffer[2] == 'D') &&
+                (pSectorBuffer[3] == '0') && (pSectorBuffer[4] == '0') && (pSectorBuffer[5] == '1')) {
+                dwPVDSector = dwSector;
+            }
+            if ((pSectorBuffer[0] == ATAPI_VDST_DESC) &&
+                (pSectorBuffer[1] == 'C') && (pSectorBuffer[2] == 'D') &&
+                (pSectorBuffer[3] == '0') && (pSectorBuffer[4] == '0') && (pSectorBuffer[5] == '1')) {
+                break;
+            }
+        }
+        dwSector++;
+    }
+
+    if (dwPVDSector != 0) {
+        IDEReadSectors(nDrive, pSectorBuffer, dwPVDSector, 1);
+        pPVD = (ATAPI_PVD *) pSectorBuffer;
+
+        pDrive->bSectorsPerCluster = 1;
+        pDrive->dwFirstRootDirSector = *(DWORD *) & pPVD->rootdir[2];
+        pDrive->dwFAT1StartSector = *(DWORD *) & pPVD->firstsek_LEpathtab1_LE[0];
+        pDrive->dwFAT2StartSector = *(DWORD *) & pPVD->firstsek_LEpathtab2_LE[0];
+
+        pDrive->dwRootDirSectors = pDrive->dwFAT1StartSector - pDrive->dwFirstRootDirSector;
+        pDrive->dwRootCluster = pDrive->dwFirstRootDirSector;
+        pDrive->dwClusterSize = (DWORD) pDrive->wSectorSize;
+
+        //nError = IDEATAPISetCDSpeed(nDrive, 0xFFFF);
+    }
+
+    return (nError);
+}
+#endif
+
+/************************************************************/
+/*  MountIDE                                                 */
+/************************************************************/
+static int MountIDE(int nDrive)
+{
+    int nError;
+    int i;
+    DWORD dwSector;
+    DWORD dwFATSz;
+    DWORD dwRootDirSectors;
+    FAT32_PARTITION_TABLE *pPartitionTable;
+    FAT32_BOOT_RECORD *pBootRecord;
+    DRIVE_INFO *pDrive;
+
+    nError = IDE_OK;
+    i = nDrive;
+    pDrive = &sDriveInfo[nDrive];
+    dwSector = 0;
+
+    if (pDrive->bFlags & FLAG_FAT_IS_ZIP) {
+        dwSector = ZIP_DRIVE_BR_SECTOR;
+    } else {
+        //
+        // Try to find a PartitionTable.
+        // 
+        nError = IDEReadSectors(nDrive, pSectorBuffer, 0, 1);
+        if (nError == IDE_OK) {
+            pPartitionTable = (FAT32_PARTITION_TABLE *) pSectorBuffer;
+
+            if (pPartitionTable->Signature == FAT_SIGNATURE) {
+                if (pPartitionTable->Partition[0].NumSectors) {
+                    //
+                    // We found a PartitionTable, read BootRecord.
+                    // 
+                    dwSector = pPartitionTable->Partition[0].StartSectors;
+                }
+            }
+        }
+    }
+
+    if (dwSector != 0) {
+        IDEReadSectors(i, pSectorBuffer, dwSector, 1);
+        pBootRecord = (FAT32_BOOT_RECORD *) pSectorBuffer;
+
+        //
+        // Test valid BootRecord.
+        //
+        if (pBootRecord->Signature == FAT_SIGNATURE) {
+            pDrive->bSectorsPerCluster = pBootRecord->SecPerClus;
+
+            if (pBootRecord->FATSz16 != 0) {
+                dwFATSz = pBootRecord->FATSz16;
+                pDrive->bIsFAT32 = FALSE;
+                pDrive->dwRootCluster = 1;      /* special value, see */
+                /* FindFile           */
+            } else {
+                dwFATSz = pBootRecord->Off36.FAT32.FATSz32;
+                pDrive->bIsFAT32 = TRUE;
+                pDrive->dwRootCluster = pBootRecord->Off36.FAT32.RootClus;
+            }
+
+            dwRootDirSectors = ((pBootRecord->RootEntCnt * 32) + (pBootRecord->BytsPerSec - 1)) / pBootRecord->BytsPerSec;
+
+            sDriveInfo[i].dwFAT1StartSector = pBootRecord->HiddSec + pBootRecord->RsvdSecCnt;
+
+            pDrive->dwFAT2StartSector = pDrive->dwFAT1StartSector + dwFATSz;
+
+            sDriveInfo[i].dwCluster2StartSector =
+                pBootRecord->HiddSec + pBootRecord->RsvdSecCnt + (pBootRecord->NumFATs * dwFATSz) + dwRootDirSectors;
+
+            pDrive->dwClusterSize = pBootRecord->SecPerClus * pDrive->wSectorSize;
+
+            pDrive->dwRootDirSectors = dwRootDirSectors;
+            pDrive->dwFirstRootDirSector = pDrive->dwFAT2StartSector + dwFATSz;
+
+        }                       /* endif pBootRecord->Signature */
+    }
+    /* endif dwSector != 0 */
+    return (nError);
+}
+
 /*==========================================================*/
 /*  DEFINE: All code exported by the NUTDEVICE              */
 /*==========================================================*/
@@ -681,12 +1036,9 @@ static DWORD FindFile(DRIVE_INFO * pDrive,
 static int FATMountDrive(int nDrive)
 {
     BYTE i;
-    int nError = IDE_OK;
-    DWORD dwSector;
-    DWORD dwFATSz;
-    DWORD dwRootDirSectors;
-    FAT32_PARTITION_TABLE *pPartitionTable;
-    FAT32_BOOT_RECORD *pBootRecord;
+    int nError;
+
+    nError = IDE_OK;
 
     FATLock();
 
@@ -699,84 +1051,42 @@ static int FATMountDrive(int nDrive)
         pLongName2 = (char *) NutHeapAlloc(FAT_LONG_NAME_LEN);
     }
     if (pSectorBuffer == NULL) {
-        pSectorBuffer = (BYTE *) NutHeapAlloc(IDE_SECTOR_SIZE);
+        pSectorBuffer = (BYTE *) NutHeapAlloc(MAX_SECTOR_SIZE);
     }
 
-    if ((pSectorBuffer != NULL) &&
-        (pLongName1 != NULL) && (pLongName2 != NULL)) {
+    if ((pSectorBuffer != NULL) && (pLongName1 != NULL) && (pLongName2 != NULL)) {
 
         for (i = 0; i < FAT_MAX_DRIVE; i++) {
             memset((BYTE *) & sDriveInfo[i], 0x00, sizeof(DRIVE_INFO));
 
             sDriveInfo[i].bDevice = i;
+            sDriveInfo[i].wSectorSize = IDEGetSectorSize(i);
 
-            //
-            // Try to find a PartitionTable.
-            // 
-            nError = IDEReadSectors(i, pSectorBuffer, 0, 1);
-            if (nError == IDE_OK) {
-                pPartitionTable = (FAT32_PARTITION_TABLE *) pSectorBuffer;
+            if (IDEIsCDROMDevice(i) == TRUE) {
+                sDriveInfo[i].bFlags |= FLAG_FAT_IS_CDROM;
+            }
 
-                if (pPartitionTable->Signature == FAT_SIGNATURE) {
-                    if (pPartitionTable->Partition[0].NumSectors) {
+            if (IDEIsZIPDevice(i) == TRUE) {
+                sDriveInfo[i].bFlags |= FLAG_FAT_IS_ZIP;
+            }
 
-                        //
-                        // We found a PartitionTable, read BootRecord.
-                        // 
-                        dwSector =
-                            pPartitionTable->Partition[0].StartSectors;
-                        IDEReadSectors(i, pSectorBuffer, dwSector, 1);
-                        pBootRecord = (FAT32_BOOT_RECORD *) pSectorBuffer;
+            switch (sDriveInfo[i].wSectorSize) {
+            case IDE_SECTOR_SIZE:{
+                    nError = MountIDE(i);
+                    break;
+                }
+#if (IDE_SUPPORT_ATAPI == 1)
+            case ATAPI_SECTOR_SIZE:{
+                    nError = MountATAPI(i);
+                    break;
+                }
+#endif
+            default:{
+                    nError = IDE_ERROR;
+                    break;
+                }
+            }
 
-                        //
-                        // Test valid BootRecord.
-                        //
-                        if (pBootRecord->Signature == FAT_SIGNATURE) {
-                            sDriveInfo[i].bSectorsPerCluster =
-                                pBootRecord->SecPerClus;
-
-                            if (pBootRecord->FATSz16 != 0) {
-                                dwFATSz = pBootRecord->FATSz16;
-                                sDriveInfo[i].bIsFAT32 = FALSE;
-                                sDriveInfo[i].dwRootCluster = 1;        /* special value, see */
-                                /* FindFile           */
-                            } else {
-                                dwFATSz = pBootRecord->Off36.FAT32.FATSz32;
-                                sDriveInfo[i].bIsFAT32 = TRUE;
-                                sDriveInfo[i].dwRootCluster =
-                                    pBootRecord->Off36.FAT32.RootClus;
-                            }
-
-                            dwRootDirSectors =
-                                ((pBootRecord->RootEntCnt * 32) +
-                                 (pBootRecord->BytsPerSec -
-                                  1)) / pBootRecord->BytsPerSec;
-
-                            sDriveInfo[i].dwFAT1StartSector =
-                                pBootRecord->HiddSec +
-                                pBootRecord->RsvdSecCnt;
-
-                            sDriveInfo[i].dwFAT2StartSector =
-                                sDriveInfo[i].dwFAT1StartSector + dwFATSz;
-
-                            sDriveInfo[i].dwCluster2StartSector =
-                                pBootRecord->HiddSec +
-                                pBootRecord->RsvdSecCnt +
-                                (pBootRecord->NumFATs * dwFATSz) +
-                                dwRootDirSectors;
-
-                            sDriveInfo[i].dwClusterSize =
-                                pBootRecord->SecPerClus * IDE_SECTOR_SIZE;
-
-                            sDriveInfo[i].dwRootDirSectors =
-                                dwRootDirSectors;
-                            sDriveInfo[i].dwFirstRootDirSector =
-                                sDriveInfo[i].dwFAT2StartSector + dwFATSz;
-
-                        }       /* endif pBootRecord->Signature */
-                    }           /* endif pPartitionTable->Partition[0].NumSectors */
-                }               /* endif pPartitionTable->Signature == FAT_SIGNATURE */
-            }                   /* endif IDEReadSectors == IDE_OK */
         }                       /* endfor i<FAT32_MAX_DRIVE */
     }
     /* endif pSectorBuffer != NULL */
@@ -816,7 +1126,7 @@ static void CFMount(int nDrive)
 {
     BYTE *pSectorBuffer;
 
-    pSectorBuffer = (BYTE *) NutHeapAlloc(IDE_SECTOR_SIZE);
+    pSectorBuffer = (BYTE *) NutHeapAlloc(MAX_SECTOR_SIZE);
     if (pSectorBuffer != NULL) {
         FATMountDrive(nDrive);
         NutHeapFree(pSectorBuffer);
@@ -836,9 +1146,13 @@ static void CFUnMount(int nDrive)
 /************************************************************/
 static int FATInit(NUTDEVICE * pDevice)
 {
-    int nError = NUTDEV_OK;
-    int nIDEMode = IDE_HARDDISK;
-    BYTE *pSectorBuffer = NULL;
+    int nError;
+    int nIDEMode;
+    BYTE *pSectorBuffer;
+
+    nError = NUTDEV_OK;
+    nIDEMode = IDE_HARDDISK;
+    pSectorBuffer = NULL;
 
     if (gnIsInit == FALSE) {
         gnIsInit = TRUE;
@@ -870,9 +1184,9 @@ static int FATInit(NUTDEVICE * pDevice)
             //
             FATSemaInit();
 
-            pSectorBuffer = (BYTE *) NutHeapAlloc(IDE_SECTOR_SIZE);
+            pSectorBuffer = (BYTE *) NutHeapAlloc(MAX_SECTOR_SIZE);
             if (pSectorBuffer != NULL) {
-                IDEInit(0x8000, nIDEMode, CFMount, CFUnMount);
+                IDEInit(0, nIDEMode, CFMount, CFUnMount);
 
                 IDEMountDevice(IDE_DRIVE_C, pSectorBuffer);
                 FATMountDrive(IDE_DRIVE_C);
@@ -900,16 +1214,13 @@ static int FATInit(NUTDEVICE * pDevice)
 /*                                                          */
 /*              A return value of -1 indicates an error.    */
 /************************************************************/
-static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
-                            int nMode, int nAccess)
+static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName, int nMode, int nAccess)
 {
     int i, x;
     int nError;
-    //int                    nDrive = 0;
     int nEndWhile;
     DWORD dwFileSize;
     DWORD dwCluster;
-    //DWORD                 dwSector = 0;
     FHANDLE *hFile;
     DRIVE_INFO *pDrive;
     FAT32_DIRECTORY_ENTRY sDirEntry;
@@ -959,16 +1270,14 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
         }
     }
 
-    if ((pDrive != NULL) && (pDrive->bSectorsPerCluster != 0)
-        && (pName[0] != 0)) {
+    if ((pDrive != NULL) && (pDrive->bSectorsPerCluster != 0) && (pName[0] != 0)) {
 
         //
         // Create a new file handle.
         //    
         hFile = (FHANDLE *) NutHeapAlloc(sizeof(FHANDLE));
 
-        if ((pDrive->dwFAT1StartSector) && (hFile != NULL)
-            && (*pName != '.')) {
+        if ((pDrive->dwFAT1StartSector) && (hFile != NULL) && (*pName != '.')) {
 
             memset(hFile, 0x00, sizeof(FHANDLE));
 
@@ -994,8 +1303,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
                 // Get Name
                 //
                 i = 0;
-                while ((*pName != '/') && (*pName != '\\')
-                       && (*pName != 0)) {
+                while ((*pName != '/') && (*pName != '\\') && (*pName != 0)) {
 
                     if (i >= (FAT_LONG_NAME_LEN - 1)) {
                         nEndWhile = TRUE;
@@ -1053,8 +1361,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
                         // ShortName
                         //
                         pShortName = pLongName;
-                        memset(&sDirEntry, 0x00,
-                               sizeof(FAT32_DIRECTORY_ENTRY));
+                        memset(&sDirEntry, 0x00, sizeof(FAT32_DIRECTORY_ENTRY));
                         memset(sDirEntry.Name, 0x20, FAT_NAME_LEN);
                         memset(sDirEntry.Extension, 0x20, FAT_EXT_LEN);
 
@@ -1062,8 +1369,7 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
                         // Get the name
                         //
                         i = 0;
-                        while ((pShortName[i] != '.')
-                               && (pShortName[i] != 0)) {
+                        while ((pShortName[i] != '.') && (pShortName[i] != 0)) {
                             sDirEntry.Name[i] = pShortName[i];
                             i++;
                         }
@@ -1091,13 +1397,17 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
                         //
                     case 0:{
                             nEndWhile = TRUE;
-                            sDirEntry.Attribute =
-                                DIRECTORY_ATTRIBUTE_ARCHIVE;
+                            sDirEntry.Attribute = DIRECTORY_ATTRIBUTE_ARCHIVE;
 
-                            dwCluster =
-                                FindFile(pDrive, &sDirEntry, pLongName,
-                                         dwCluster, &dwFileSize,
-                                         nLongName);
+                            if (pDrive->bFlags & FLAG_FAT_IS_CDROM) {
+                                dwCluster = FindFileATAPI(pDrive, &sDirEntry, pLongName, dwCluster, &dwFileSize, nLongName);
+                            } else {
+#if (IDE_SUPPORT_ATAPI == 1)
+                                dwCluster = FindFile(pDrive, &sDirEntry, pLongName, dwCluster, &dwFileSize, nLongName);
+#else
+                                dwCluster = 0;
+#endif
+                            }
                             if (dwCluster != 0) {
                                 hFile->dwFileSize = dwFileSize;
                                 hFile->dwStartCluster = dwCluster;
@@ -1120,13 +1430,17 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
                     case '\\':{
                             pName++;    /* jump over the char */
 
-                            sDirEntry.Attribute =
-                                DIRECTORY_ATTRIBUTE_DIRECTORY;
+                            sDirEntry.Attribute = DIRECTORY_ATTRIBUTE_DIRECTORY;
 
-                            dwCluster =
-                                FindFile(pDrive, &sDirEntry, pLongName,
-                                         dwCluster, &dwFileSize,
-                                         nLongName);
+                            if (pDrive->bFlags & FLAG_FAT_IS_CDROM) {
+                                dwCluster = FindFileATAPI(pDrive, &sDirEntry, pLongName, dwCluster, &dwFileSize, nLongName);
+                            } else {
+#if (IDE_SUPPORT_ATAPI == 1)
+                                dwCluster = FindFile(pDrive, &sDirEntry, pLongName, dwCluster, &dwFileSize, nLongName);
+#else
+                                dwCluster = 0;
+#endif
+                            }
                             if (dwCluster != 0) {
 
                                 //
@@ -1197,8 +1511,10 @@ static NUTFILE *FATFileOpen(NUTDEVICE * pDevice, CONST char *pName,
 /************************************************************/
 static int FATFileClose(NUTFILE * hNUTFile)
 {
-    int nError = NUTDEV_ERROR;
+    int nError;
     FHANDLE *hFile;
+
+    nError = NUTDEV_ERROR;
 
     FATLock();
 
@@ -1317,7 +1633,7 @@ int FATFileSeek(FILE * pFile, long lPos)
 int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
 {
     int nError;
-    int nBytesRead = 0;
+    int nBytesRead;
     int nBytesToRead;
     FHANDLE *hFile;
     DRIVE_INFO *pDrive;
@@ -1326,6 +1642,9 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
     DWORD dwSector;
     int nSectorCount;
     int nSectorOffset;
+    WORD wSectorSize;
+
+    nBytesRead = 0;
 
     FATLock();
 
@@ -1347,12 +1666,12 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
             pByte = (BYTE *) pData;
 
             nBytesRead = nSize;
+            wSectorSize = pDrive->wSectorSize;
 
             while (nSize) {
-                dwSector =
-                    GetFirstSectorOfCluster(pDrive, hFile->dwReadCluster);
-                nSectorCount = hFile->dwClusterPointer / IDE_SECTOR_SIZE;
-                nSectorOffset = hFile->dwClusterPointer % IDE_SECTOR_SIZE;
+                dwSector = GetFirstSectorOfCluster(pDrive, hFile->dwReadCluster);
+                nSectorCount = hFile->dwClusterPointer / wSectorSize;
+                nSectorOffset = hFile->dwClusterPointer % wSectorSize;
 
                 //
                 // (Sector + SectorCount) is the sector to read
@@ -1360,14 +1679,13 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
                 //
                 dwReadSector = dwSector + nSectorCount;
 
-                nError = IDEReadSectors(pDrive->bDevice,
-                                        pSectorBuffer, dwReadSector, 1);
+                nError = IDEReadSectors(pDrive->bDevice, pSectorBuffer, dwReadSector, 1);
                 if (nError == IDE_OK) {
                     //
                     // Find the size we can read from ONE sector
                     //
-                    if (nSize > IDE_SECTOR_SIZE) {
-                        nBytesToRead = IDE_SECTOR_SIZE;
+                    if (nSize > (int) wSectorSize) {
+                        nBytesToRead = wSectorSize;
                     } else {
                         nBytesToRead = nSize;
                     }
@@ -1375,12 +1693,11 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
                     //
                     // Test inside a sector
                     //
-                    if ((nSectorOffset + nBytesToRead) > IDE_SECTOR_SIZE) {
-                        nBytesToRead = IDE_SECTOR_SIZE - nSectorOffset;
+                    if ((nSectorOffset + nBytesToRead) > (int) wSectorSize) {
+                        nBytesToRead = wSectorSize - nSectorOffset;
                     }
 
-                    memcpy(pByte, &pSectorBuffer[nSectorOffset],
-                           nBytesToRead);
+                    memcpy(pByte, &pSectorBuffer[nSectorOffset], nBytesToRead);
                     pByte += nBytesToRead;
 
                     hFile->dwFilePointer += nBytesToRead;
@@ -1396,8 +1713,7 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
                         //
                         // We must switch to the next cluster
                         //
-                        hFile->dwReadCluster =
-                            GetNextCluster(pDrive, hFile->dwReadCluster);
+                        hFile->dwReadCluster = GetNextCluster(pDrive, hFile->dwReadCluster);
                         hFile->dwClusterPointer = 0;
                     }
 
@@ -1425,14 +1741,18 @@ int FATFileRead(NUTFILE * hNUTFile, void *pData, int nSize)
 
 static int FATFileWrite(NUTFILE * hNUTFile, CONST void *pData, int nSize)
 {
-    int nError = NUTDEV_ERROR;
+    int nError;
+
+    nError = NUTDEV_ERROR;
 
     return (nError);
 }
 
 static int FATFileWriteP(NUTFILE * hNUTFile, PGM_P pData, int nSize)
 {
-    int nError = NUTDEV_ERROR;
+    int nError;
+
+    nError = NUTDEV_ERROR;
 
     return (nError);
 }

@@ -43,6 +43,7 @@
 *  27.01.03  mifi   Rename all FAT32xxx function to FATxxx.
 *
 *  28.01.03  mifi   Start porting to Nut/OS 3.X.X
+*  29.06.03  mifi   First ATAPI-Version
 ****************************************************************************/
 #ifndef __FAT_H__
 #define __FAT_H__
@@ -74,4 +75,4 @@
 /*-------------------------------------------------------------------------*/
 extern NUTDEVICE devFATC;
 
-#endif /* !__FAT_H__ */
+#endif                          /* !__FAT_H__ */

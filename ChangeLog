@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.6 2003/07/21 18:26:03 haraldkipp Exp $
+$Id: ChangeLog,v 1.7 2003/07/23 19:17:51 haraldkipp Exp $
+
+2003-07-23  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Michael Fisher contributed the first ATAPI version
+	of his IDE driver and FAT filesystem. Note, that the
+	IDE port moved from 0x8000 to 0xE000.
+
 
 2003-07-21  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -17,6 +24,7 @@ $Id: ChangeLog,v 1.6 2003/07/21 18:26:03 haraldkipp Exp $
 	* app/nutpiper: New application. Shoutcast radio with
 	remote control, LCD displayand banked memory support.
 	Experimental.
+
 
 2003-07-20  Harald Kipp  <harald.kipp@egnite.de>
 

@@ -46,6 +46,13 @@
 *                   callback function. With these functions we are
 *                   independent from the FileSystem.
 *                   Now support changing of the CF-Card in a running system.
+*  19.06.03  mifi   Change IDEInit, if the BaseAddress is 0, we use the 
+*                   default address IDE_BASE_ADDRESS. Now we can use the 
+*                   address 0 in FAT.C and hide the ide stuff.
+*  24.06.03  mifi   Enable the IDE Reset pin with DDRD = 0x20, 
+*                   add some stuff to detect PACKET device.
+*  25.06.03  mifi   Fix overflow with IDE_MAX_SUPPORTED_DEVICE
+*  29.06.03  mifi   First ATAPI-Version
 ****************************************************************************/
 #define __IDE_C__
 
@@ -62,6 +69,9 @@
 #include <dev/ide.h>
 #include <dev/idep.h>
 #include <fs/typedefs.h>
+
+#define HIBYTE(_x) (BYTE)((_x >> 8) & 0x00FF)
+#define LOBYTE(_x) (BYTE)(_x & 0x00FF)
 
 /*==========================================================*/
 /*  DEFINE: All Structures and Common Constants             */
@@ -81,13 +91,13 @@
 /************************************************/
 #define IDE_MAX_SUPPORTED_DEVICE        1
 
-
 #define CF_AVAILABLE            0
 #define CF_NOT_AVAILABLE        1
 
 #define INITTIMEOUT             10000
 #define DISKTIMEOUT             10000
 #define CONTROLLERTIMEOUT       200
+#define ATAPITIMEOUT            5000
 
 #define IDEIn(x)                pIDE[x]
 #define IDEOut(x,y)             pIDE[x] = y
@@ -95,9 +105,37 @@
 //
 // Drive Flags
 //
-#define IDE_SUPPORT_LBA         0x0001
-#define IDE_SUPPORT_LBA48       0x0002
-#define IDE_READY               0x8000
+#define IDE_SUPPORT_LBA             0x0001
+#define IDE_SUPPORT_LBA48           0x0002
+#define IDE_SUPPORT_PACKET          0x0004
+//
+// Device shall assert INTRQ when DRQ
+// is set to one after receiving PACKET.
+// 
+#define IDE_SUPPORT_INTRQ_PACKET    0x0008
+
+#define IDE_CDROM_DEVICE            0x1000
+#define IDE_ZIP_DEVICE              0x2000
+
+#define IDE_READ_ONLY               0x4000
+#define IDE_READY                   0x8000
+
+//
+// Identify packet device 
+// config word[0] bit masks
+//
+#define ATAPI_CFG_12_BYTE_MSK       0x0003
+#define ATAPI_CFG_INTRQ             0x0060
+#define ATAPI_CFG_REM_MEDIUM        0x0080
+#define ATAPI_CFG_DEVICE            0x1F00
+#define ATAPI_CFG_ATAPI             0xC000
+
+#define ATAPI_IS_12_BYTE            0x0000
+#define ATAPI_USE_INTRQ             0x0020
+#define ATAPI_IS_DIRECT_ACCESS      0x0000
+#define ATAPI_IS_CDROM              0x0500
+#define ATAPI_IS_PACKET             0x8000
+
 
 typedef struct _drive {
     //
@@ -122,6 +160,7 @@ typedef struct _drive {
     //
     DWORD dwTotalSectors;
 
+    WORD wSectorSize;
 } DRIVE, *LPDRIVE;
 
 /*==========================================================*/
@@ -143,9 +182,45 @@ static BYTE gbCFMountStatus = 0;
 
 static IDE_MOUNT_FUNC *pUserMountFunc = NULL;
 static IDE_MOUNT_FUNC *pUserUnMountFunc = NULL;
+
+#if (IDE_SUPPORT_ATAPI == 1)
+//
+// ATAPI stuff
+//
+static BYTE aATAPICmd[12];
+
+#define ATAPI_CMD(_x) {                       \
+  memset(aATAPICmd, 0x00, sizeof(aATAPICmd)); \
+  aATAPICmd[0] = _x;                          \
+}
+
+#define CLEAR_ATAPI_CMD()   memset(aATAPICmd, 0x00, sizeof(aATAPICmd));
+#endif
+
 /*==========================================================*/
 /*  DEFINE: Definition of all local Procedures              */
 /*==========================================================*/
+/************************************************************/
+/*  Wait400ns                                               */
+/************************************************************/
+static void Wait400ns(void)
+{
+    //
+    // Wait at least 400ns, with 14.7456Mhz we need
+    // 8 nop's for 500ns
+    //
+    COMPRESS_DISABLE;
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    COMPRESS_REENABLE;
+}
+
 /************************************************************/
 /*  IDELock                                                 */
 /************************************************************/
@@ -260,8 +335,10 @@ static void ClearEvent(HANDLE * pEvent)
 /************************************************************/
 static int WaitForInterrupt(DWORD dwTimeout)
 {
-    int nError = IDE_OK;
+    int nError;
     int nTimeout;
+
+    nError = IDE_OK;
 
     nTimeout = NutEventWait(&hIDEEvent, dwTimeout);
     if (nTimeout == -1) {
@@ -271,7 +348,7 @@ static int WaitForInterrupt(DWORD dwTimeout)
     return (nError);
 }
 
-#if (IDE_SUPPORT_WRITE == 1)
+#if ((IDE_SUPPORT_WRITE == 1) || (IDE_SUPPORT_ATAPI == 1))
 /************************************************************/
 /*  WaitDRQ                                                 */
 /*                                                          */
@@ -279,19 +356,19 @@ static int WaitForInterrupt(DWORD dwTimeout)
 /************************************************************/
 static int WaitDRQ(DWORD dwTimeout)
 {
-    int nError = IDE_OK;
+    int nError;
     BYTE bStatus;
 
+    nError = IDE_OK;
+
     bStatus = IDEIn(STATUS_REG);
-    if ((bStatus & (STATUS_BUSY | STATUS_DATA_REQUEST)) !=
-        STATUS_DATA_REQUEST) {
+    if ((bStatus & (STATUS_BUSY | STATUS_DATA_REQUEST)) != STATUS_DATA_REQUEST) {
 
         dwTimeout = (DWORD) (((dwTimeout * 10UL) / 625UL) + 1UL);
         dwTimeout += NutGetTickCount();
 
         bStatus = IDEIn(STATUS_REG);
-        while ((bStatus & (STATUS_BUSY | STATUS_DATA_REQUEST)) !=
-               STATUS_DATA_REQUEST) {
+        while ((bStatus & (STATUS_BUSY | STATUS_DATA_REQUEST)) != STATUS_DATA_REQUEST) {
             if (NutGetTickCount() > dwTimeout) {
                 nError = IDE_ERROR;
                 break;
@@ -312,8 +389,10 @@ static int WaitDRQ(DWORD dwTimeout)
 /************************************************************/
 static int WaitNotBusy(DWORD dwTimeout)
 {
-    int nError = IDE_OK;
+    int nError;
     BYTE bStatus;
+
+    nError = IDE_OK;
 
     bStatus = IDEIn(STATUS_REG);
     if (bStatus & (STATUS_BUSY | STATUS_DATA_REQUEST)) {
@@ -353,20 +432,7 @@ static int SelectDevice(BYTE bDevice)
 
         IDEOut(DISK_HEAD_REG, 0xA0 + (bDevice << 4));
 
-        //
-        // Wait at least 400ns, with 14.7456Mhz we need
-        // 8 nop's for 500ns
-        //
-        COMPRESS_DISABLE;
-        _NOP();
-        _NOP();
-        _NOP();
-        _NOP();
-        _NOP();
-        _NOP();
-        _NOP();
-        _NOP();
-        COMPRESS_REENABLE;
+        Wait400ns();
 
         nError = WaitNotBusy(CONTROLLERTIMEOUT);
     } else {
@@ -394,6 +460,250 @@ static int SelectDevice(BYTE bDevice)
     return (nError);
 }
 
+#if (IDE_SUPPORT_ATAPI == 1)
+/************************************************************/
+/*  ATAPISendCommand                                        */
+/*                                                          */
+/*  Return: IDE_OK, IDE_ERROR                               */
+/************************************************************/
+static int ATAPISendCommand(LPDRIVE pDrive, BYTE * pSectorBuffer, WORD * pReadCount)
+{
+    int nError;
+    BYTE bStatus;
+    BYTE bDevice;
+    WORD x, y;
+    BYTE bDummy;
+    WORD wSectorSize;
+
+    nError = IDE_ERROR;
+    bDummy = 0;
+    bDevice = pDrive->bDevice;
+    wSectorSize = pDrive->wSectorSize;
+
+    *pReadCount = 0;
+
+    if (SelectDevice(bDevice) == IDE_OK) {
+
+        ClearEvent(&hIDEEvent);
+
+        if (WaitNotBusy(ATAPITIMEOUT) == IDE_OK) {
+
+            IDEOut(FEATURE_REG, 0x00);
+            IDEOut(SECTOR_COUNT_REG, 0x00);
+            IDEOut(SECTOR_REG, 0x00);
+            IDEOut(CYLINDER_LOW_REG, LOBYTE(wSectorSize));
+            IDEOut(CYLINDER_HIGH_REG, HIBYTE(wSectorSize));
+            IDEOut(COMMAND_REG, 0xA0);
+
+            if (pDrive->wFlags & IDE_SUPPORT_INTRQ_PACKET) {
+                nError = WaitForInterrupt(ATAPITIMEOUT);
+                if (nError == IDE_OK) {
+                    ClearEvent(&hIDEEvent);
+                }
+            } else {
+                nError = WaitDRQ(ATAPITIMEOUT);
+            }
+
+            if (nError == IDE_OK) {
+                for (x = 0; x < 12; x = x + 2) {
+                    IDEOut(DATA_WRITE_REG_HIGH, aATAPICmd[x + 1]);
+                    IDEOut(DATA_WRITE_REG_LOW, aATAPICmd[x]);
+                }
+
+                if (WaitForInterrupt(ATAPITIMEOUT) == IDE_OK) {
+                    if (gbIntStatus & STATUS_ERROR) {
+                        nError = IDE_ERROR;
+                    } else {
+                        nError = IDE_OK;
+
+                        if (gbIntStatus & STATUS_DATA_REQUEST) {
+
+                            Wait400ns();
+
+                            y = IDEIn(CYLINDER_HIGH_REG) << 8;
+                            y |= IDEIn(CYLINDER_LOW_REG);
+
+                            if (y > wSectorSize) {
+                                y = wSectorSize;
+                            }
+
+                            if (pSectorBuffer != NULL) {
+                                for (x = 0; x < y; x = x + 2) {
+                                    pSectorBuffer[x] = pIDE[DATA_READ_REG_LOW];
+                                    pSectorBuffer[x + 1] = pIDE[DATA_READ_REG_HIGH];
+                                }
+                            } else {
+                                for (x = 0; x < y; x = x + 2) {
+                                    bDummy += pIDE[DATA_READ_REG_LOW];
+                                    bDummy += pIDE[DATA_READ_REG_HIGH];
+                                }
+                            }
+
+                            *pReadCount = y;
+
+                            bStatus = IDEIn(STATUS_REG);
+                        }       /* endif STATUS_DATA_REQUEST */
+                    }           /* endif STATUS_ERROR */
+                }               /* endif WaitForInterrupt(ATAPITIMEOUT) */
+            }                   /* endif (WaitDRQ(ATAPITIMEOUT) */
+        }                       /* endif WaitNotBusy(ATAPITIMEOUT) */
+    }
+    /* endif SelectDevice(bDevice) */
+    return (nError);
+}
+
+/************************************************************/
+/*  ATAPIGetTotalSectors                                    */
+/*                                                          */
+/*  Return: IDE_OK, IDE_ERROR                               */
+/************************************************************/
+static int ATAPIGetTotalSectors(LPDRIVE pDrive, BYTE * pSectorBuffer, DWORD * pMaxSectors)
+{
+    int nError;
+    WORD wReadCount;
+    WORD wErrorCount;
+    DWORD dwValue;
+
+    nError = IDE_OK;
+    *pMaxSectors = 0;
+
+    wErrorCount = 4;
+    while (wErrorCount) {
+
+        ATAPI_CMD(ATAPI_CMD_READ_CAPACITY);
+        nError = ATAPISendCommand(pDrive, pSectorBuffer, &wReadCount);
+        if ((nError == IDE_OK) && (wReadCount == 8)) {
+            dwValue = pSectorBuffer[0];
+            dwValue = dwValue << 8;
+            dwValue |= pSectorBuffer[1];
+            dwValue = dwValue << 8;
+            dwValue |= pSectorBuffer[2];
+            dwValue = dwValue << 8;
+            dwValue |= pSectorBuffer[3];
+            *pMaxSectors = dwValue;
+
+            //
+            // Get SectorSize
+            //
+            dwValue = pSectorBuffer[4];
+            dwValue = dwValue << 8;
+            dwValue |= pSectorBuffer[5];
+            dwValue = dwValue << 8;
+            dwValue |= pSectorBuffer[6];
+            dwValue = dwValue << 8;
+            dwValue |= pSectorBuffer[7];
+            if (dwValue > ATAPI_SECTOR_SIZE) {
+                dwValue = ATAPI_SECTOR_SIZE;
+            }
+            pDrive->wSectorSize = (WORD) (dwValue & 0x0000FFFF);
+            break;
+        }
+        wErrorCount--;
+        NutSleep(2000);
+    }
+
+    return (nError);
+}
+
+/************************************************************/
+/*  GetDeviceInfoPacket                                     */
+/*                                                          */
+/*  PIO data in command protocol (see ATAPI-4 r17 p224 9.7) */
+/*                                                          */
+/*  Return: IDE_OK, IDE_ERROR                               */
+/************************************************************/
+static int GetDeviceInfoPacket(LPDRIVE pDrive, BYTE * pSectorBuffer)
+{
+    WORD i;
+    int nError;
+    BYTE bStatus;
+    BYTE bErrorReg;
+    BYTE bDevice;
+    WORD wConfig;
+    DWORD dwTotalSectors;
+
+    nError = IDE_ERROR;
+    bDevice = pDrive->bDevice;
+
+    if (SelectDevice(bDevice) == IDE_OK) {
+
+        ClearEvent(&hIDEEvent);
+
+        IDEOut(COMMAND_REG, COMMAND_DEVICE_INFO_P);
+        if (WaitForInterrupt(DISKTIMEOUT) == IDE_OK) {
+
+            if (gbIntStatus & STATUS_DATA_REQUEST) {
+
+                for (i = 0; i < IDE_SECTOR_SIZE; i = i + 2) {
+                    pSectorBuffer[i] = pIDE[DATA_READ_REG_LOW];
+                    if (pDrive->bIDEMode == MEM_8BIT_COMPACT_FLASH) {
+                        pSectorBuffer[i + 1] = pIDE[DATA_READ_REG_LOW];
+                    } else {
+                        pSectorBuffer[i + 1] = pIDE[DATA_READ_REG_HIGH];
+                    }
+                }
+
+                //
+                // Status register is read to clear
+                // pending interrupts.
+                //
+                bStatus = IDEIn(STATUS_REG);
+
+                pDrive->wFlags = 0;
+
+                wConfig = *(WORD *) & pSectorBuffer[0];
+                if ((wConfig & ATAPI_CFG_INTRQ) == ATAPI_USE_INTRQ) {
+                    pDrive->wFlags |= IDE_SUPPORT_INTRQ_PACKET;
+                }
+                if ((wConfig & ATAPI_CFG_DEVICE) == ATAPI_IS_DIRECT_ACCESS) {
+                    pDrive->wFlags |= IDE_ZIP_DEVICE;
+                }
+                if ((wConfig & ATAPI_CFG_DEVICE) == ATAPI_IS_CDROM) {
+                    pDrive->wFlags |= (IDE_READ_ONLY | IDE_CDROM_DEVICE);
+                }
+                if ((wConfig & ATAPI_CFG_ATAPI) == ATAPI_IS_PACKET) {
+                    pDrive->wFlags |= IDE_SUPPORT_PACKET;
+                }
+
+                if ((wConfig & ATAPI_CFG_12_BYTE_MSK) == ATAPI_IS_12_BYTE) {
+                    pDrive->wFlags |= IDE_READY;
+
+                    nError = ATAPIGetTotalSectors(pDrive, pSectorBuffer, &dwTotalSectors);
+                    if (nError == IDE_OK) {
+                        pDrive->dwTotalSectors = dwTotalSectors;
+
+                        //
+                        // ModeSense 
+                        //
+                        ATAPI_CMD(0x5A);
+                        aATAPICmd[2] = 0x2A;
+                        aATAPICmd[7] = 0x08;
+                        aATAPICmd[8] = 0x00;
+                        ATAPISendCommand(pDrive, pSectorBuffer, &i);
+
+                        //
+                        // Set Speed to 150KByte
+                        //
+                        IDEATAPISetCDSpeed(bDevice, 150);
+                    } else {
+                        pDrive->dwTotalSectors = 0;
+                    }
+
+                    //ATAPITest(pDrive, pSectorBuffer);
+                }
+            }
+
+            if (gbIntStatus & STATUS_ERROR) {
+                bErrorReg = IDEIn(ERROR_REG);
+            }
+        }
+
+    }
+
+    return (nError);
+}
+#endif
+
 /************************************************************/
 /*  GetDeviceInfo                                           */
 /*                                                          */
@@ -401,16 +711,17 @@ static int SelectDevice(BYTE bDevice)
 /*                                                          */
 /*  Return: IDE_OK, IDE_ERROR                               */
 /************************************************************/
-static BYTE GetDeviceInfo(LPDRIVE pDrive, BYTE * pSectorBuffer)
+static int GetDeviceInfo(LPDRIVE pDrive, BYTE * pSectorBuffer)
 {
     WORD i;
     int nError;
     BYTE bStatus;
     BYTE bErrorReg;
-    BYTE bDevice = pDrive->bDevice;
+    BYTE bDevice;
     IDEDEVICEINFO *pInfo;
 
     nError = IDE_ERROR;
+    bDevice = pDrive->bDevice;
 
     if (SelectDevice(bDevice) == IDE_OK) {
 
@@ -450,8 +761,7 @@ static BYTE GetDeviceInfo(LPDRIVE pDrive, BYTE * pSectorBuffer)
                 pDrive->wCylinders = (WORD) pInfo->Cylinders;
                 pDrive->wHeads = (BYTE) pInfo->Heads;
                 pDrive->wSectorsPerTrack = (BYTE) pInfo->SectorsPerTrack;
-                pDrive->dwOneSide = pDrive->wCylinders *
-                    pDrive->wSectorsPerTrack;
+                pDrive->dwOneSide = pDrive->wCylinders * pDrive->wSectorsPerTrack;
 #endif
 
                 if (pInfo->LBASectors > 0) {
@@ -482,6 +792,44 @@ static BYTE GetDeviceInfo(LPDRIVE pDrive, BYTE * pSectorBuffer)
 }
 
 /************************************************************/
+/*  IsPacketDevice                                          */
+/*                                                          */
+/*  Check Command block register,                           */
+/*  see page 210, 9.1 Signature and persistence             */
+/*                                                          */
+/*  Return: TRUE, FALSE                                     */
+/************************************************************/
+#if (IDE_SUPPORT_ATAPI == 1)
+static int IsPacketDevice(void)
+{
+    int nPacketDevice;
+    BYTE bSectorCount;
+    BYTE bSectorNumber;
+    BYTE bCylinderLow;
+    BYTE bCylinderHigh;
+
+    nPacketDevice = FALSE;
+
+    bSectorCount = IDEIn(SECTOR_COUNT_REG);
+    bSectorNumber = IDEIn(SECTOR_REG);
+    bCylinderLow = IDEIn(CYLINDER_LOW_REG);
+    bCylinderHigh = IDEIn(CYLINDER_HIGH_REG);
+
+
+    if ((bCylinderLow == 0x14) && (bCylinderHigh == 0xEB)) {
+        nPacketDevice = TRUE;
+    }
+
+    return (nPacketDevice);
+}
+#else
+static int IsPacketDevice(void)
+{
+    return (FALSE);
+}
+#endif
+
+/************************************************************/
 /*  DeviceDiag                                              */
 /*                                                          */
 /*  NON-data command protocol (see ATAPI-4 r17 p231 9.9)    */
@@ -490,8 +838,10 @@ static BYTE GetDeviceInfo(LPDRIVE pDrive, BYTE * pSectorBuffer)
 /************************************************************/
 static int DeviceDiag(LPDRIVE pDrive)
 {
-    int nError = IDE_ERROR;
+    int nError;
     BYTE bResult;
+
+    nError = IDE_ERROR;
 
     if (SelectDevice(0) == IDE_OK) {
 
@@ -505,14 +855,23 @@ static int DeviceDiag(LPDRIVE pDrive)
 
         ClearEvent(&hIDEEvent);
 
-        IDEOut(COMMAND_REG, COMMAND_DIAG);
-        if (WaitForInterrupt(INITTIMEOUT) == IDE_OK) {
+        //
+        // Check if we are a PACKET device
+        //
+        if (IsPacketDevice() == TRUE) {
+            nError = IDE_OK;
+            pDrive->wFlags = IDE_SUPPORT_PACKET;
+        } else {
 
-            bResult = IDEIn(ERROR_REG);
-            if (bResult == 0x01) {      // see ATAPI-4 r17 p72
-                nError = IDE_OK;
+            IDEOut(COMMAND_REG, COMMAND_DIAG);
+            if (WaitForInterrupt(INITTIMEOUT) == IDE_OK) {
+
+                bResult = IDEIn(ERROR_REG);
+                if (bResult == 0x01) {  // see ATAPI-4 r17 p72
+                    nError = IDE_OK;
+                }
+
             }
-
         }
     }
 
@@ -526,8 +885,7 @@ static int DeviceDiag(LPDRIVE pDrive)
 /*                                                          */
 /*  Return: IDE_OK, IDE_ERROR                               */
 /************************************************************/
-static int ReadSectors(BYTE bDevice, BYTE * pData,
-                       DWORD dwStartSector, WORD wSectorCount)
+static int ReadSectors(BYTE bDevice, BYTE * pData, DWORD dwStartSector, WORD wSectorCount)
 {
     WORD i, x;
     int nError;
@@ -565,8 +923,7 @@ static int ReadSectors(BYTE bDevice, BYTE * pData,
             //
             // LBA
             //
-            bValue =
-                (BYTE) ((bDevice << 4) | 0xE0 | (dwStartSector >> 24));
+            bValue = (BYTE) ((bDevice << 4) | 0xE0 | (dwStartSector >> 24));
             IDEOut(DISK_HEAD_REG, bValue);
             IDEOut(LBA_16_23, (BYTE) (dwStartSector >> 16));
             IDEOut(LBA_8_15, (BYTE) (dwStartSector >> 8));
@@ -580,12 +937,10 @@ static int ReadSectors(BYTE bDevice, BYTE * pData,
             //
             // CHS
             //
-            wCHSSector =
-                (WORD) (dwStartSector % pDrive->wSectorsPerTrack) + 1;
+            wCHSSector = (WORD) (dwStartSector % pDrive->wSectorsPerTrack) + 1;
             wCHSHead = (WORD) (dwStartSector / pDrive->dwOneSide);
             dwStartSector = dwStartSector % pDrive->dwOneSide;
-            wCHSCylinder =
-                (WORD) (dwStartSector / pDrive->wSectorsPerTrack);
+            wCHSCylinder = (WORD) (dwStartSector / pDrive->wSectorsPerTrack);
 
             wCHSHead |= (bDevice << 4) | 0xA0;
 
@@ -642,8 +997,7 @@ static int ReadSectors(BYTE bDevice, BYTE * pData,
 /*                                                          */
 /*  Return: IDE_OK, IDE_ERROR                               */
 /************************************************************/
-static BYTE WriteSectors(WORD bDevice, BYTE * pData,
-                         DWORD dwStartSector, WORD wSectorCount)
+static BYTE WriteSectors(WORD bDevice, BYTE * pData, DWORD dwStartSector, WORD wSectorCount)
 {
     WORD i;
     int x;
@@ -680,8 +1034,7 @@ static BYTE WriteSectors(WORD bDevice, BYTE * pData,
             //
             // LBA
             //
-            bValue =
-                (BYTE) ((bDevice << 4) | 0xE0 | (dwStartSector >> 24));
+            bValue = (BYTE) ((bDevice << 4) | 0xE0 | (dwStartSector >> 24));
             IDEOut(DISK_HEAD_REG, bValue);
             IDEOut(LBA_16_23, (BYTE) (dwStartSector >> 16));
             IDEOut(LBA_8_15, (BYTE) (dwStartSector >> 8));
@@ -695,12 +1048,10 @@ static BYTE WriteSectors(WORD bDevice, BYTE * pData,
             //
             // CHS
             //
-            wCHSSector =
-                (WORD) (dwStartSector % pDrive->wSectorsPerTrack) + 1;
+            wCHSSector = (WORD) (dwStartSector % pDrive->wSectorsPerTrack) + 1;
             wCHSHead = (WORD) (dwStartSector / pDrive->dwOneSide);
             dwStartSector = dwStartSector % pDrive->dwOneSide;
-            wCHSCylinder =
-                (WORD) (dwStartSector / pDrive->wSectorsPerTrack);
+            wCHSCylinder = (WORD) (dwStartSector / pDrive->wSectorsPerTrack);
 
             wCHSHead |= (bDevice << 4) | 0xA0;
 
@@ -831,9 +1182,7 @@ THREAD(CFChange, arg)
 /************************************************************/
 /*  IDEInit                                                 */
 /************************************************************/
-int IDEInit(int nBaseAddress,
-            int nIDEMode,
-            IDE_MOUNT_FUNC * pMountFunc, IDE_MOUNT_FUNC * pUnMountFunc)
+int IDEInit(int nBaseAddress, int nIDEMode, IDE_MOUNT_FUNC * pMountFunc, IDE_MOUNT_FUNC * pUnMountFunc)
 {
     int i;
     int nError;
@@ -842,6 +1191,12 @@ int IDEInit(int nBaseAddress,
     pUserMountFunc = pMountFunc;
     pUserUnMountFunc = pUnMountFunc;
 
+    //
+    // If nBaseAddress is 0, we use the default address
+    //
+    if (nBaseAddress == 0) {
+        nBaseAddress = IDE_BASE_ADDRESS;
+    }
     //
     // With MCUCR 0xC0 and XMCRA 0x02 we set:
     //
@@ -852,6 +1207,12 @@ int IDEInit(int nBaseAddress,
 #ifdef __AVR_ATmega128__
     XMCRA = 0x02;
 #endif
+
+    //
+    // Enable the IDE Reset
+    //
+    DDRD = 0x20;
+
 
     for (i = 0; i < IDE_MAX_SUPPORTED_DEVICE; i++) {
         memset((BYTE *) & sDrive[i], 0x00, sizeof(DRIVE));
@@ -935,8 +1296,7 @@ int IDEInit(int nBaseAddress,
                 EICR |= CF_INT_FALLING_EDGE;
             }
 
-            nError =
-                NutRegisterIrqHandler(&sig_INTERRUPT6, CFInterrupt, NULL);
+            nError = NutRegisterIrqHandler(&sig_INTERRUPT6, CFInterrupt, NULL);
             if (nError == FALSE) {
                 NutThreadCreate("cfchange", CFChange, NULL, 640);
                 sbi(EIMSK, CF_IRQ);
@@ -960,11 +1320,13 @@ int IDEInit(int nBaseAddress,
 int IDEMountDevice(BYTE bDevice, BYTE * pSectorBuffer)
 {
     int nError;
-    LPDRIVE pDrive = NULL;
+    LPDRIVE pDrive;
+
+    pDrive = NULL;
 
     IDELock();
 
-    if (bDevice > IDE_MAX_SUPPORTED_DEVICE) {
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
         nError = IDE_ERROR;
     } else {
         pDrive = &sDrive[bDevice];
@@ -986,25 +1348,112 @@ int IDEMountDevice(BYTE bDevice, BYTE * pSectorBuffer)
         pDrive->dwTotalSectors = 0;
 
         nError = DeviceDiag(pDrive);
-        if (nError != IDE_OK) {
-            //
-            // Try it again
-            //
-            nError = DeviceDiag(pDrive);
-        }
-
-        if (nError == IDE_OK) {
-            nError = GetDeviceInfo(pDrive, pSectorBuffer);
+        if (pDrive->wFlags & IDE_SUPPORT_PACKET) {
+#if (IDE_SUPPORT_ATAPI == 1)
+            pDrive->wSectorSize = ATAPI_SECTOR_SIZE;
+            nError = GetDeviceInfoPacket(pDrive, pSectorBuffer);
             if (pDrive->wFlags & IDE_READY) {
                 nError = IDE_OK;
             }
+#endif
+        } else {
+            if (nError != IDE_OK) {
+                //
+                // Try it again
+                //
+                nError = DeviceDiag(pDrive);
+            }
+
+            if (nError == IDE_OK) {
+                pDrive->wSectorSize = IDE_SECTOR_SIZE;
+                nError = GetDeviceInfo(pDrive, pSectorBuffer);
+                if (pDrive->wFlags & IDE_READY) {
+                    nError = IDE_OK;
+                }
+            }
         }
 
-    }
+    }                           /* (bDevice >= IDE_MAX_SUPPORTED_DEVICE) */
 
     IDEFree();
 
     return (nError);
+}
+
+/************************************************************/
+/*  IDEGetSectorSize                                        */
+/************************************************************/
+int IDEGetSectorSize(BYTE bDevice)
+{
+    int nSectorSize;
+    LPDRIVE pDrive;
+
+    nSectorSize = 0;
+
+    IDELock();
+
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
+        nSectorSize = 0;
+    } else {
+        pDrive = &sDrive[bDevice];
+        nSectorSize = pDrive->wSectorSize;
+    }
+
+    IDEFree();
+
+    return (nSectorSize);
+}
+
+/************************************************************/
+/*  IDEIsCDROMDevice                                        */
+/************************************************************/
+int IDEIsCDROMDevice(BYTE bDevice)
+{
+    int nIsCDROM;
+    LPDRIVE pDrive;
+
+    nIsCDROM = FALSE;
+
+    IDELock();
+
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
+        nIsCDROM = FALSE;
+    } else {
+        pDrive = &sDrive[bDevice];
+        if ((pDrive->wFlags & IDE_READY) && (pDrive->wFlags & IDE_CDROM_DEVICE)) {
+            nIsCDROM = TRUE;
+        }
+    }
+
+    IDEFree();
+
+    return (nIsCDROM);
+}
+
+/************************************************************/
+/*  IDEIsZIPDevice                                          */
+/************************************************************/
+int IDEIsZIPDevice(BYTE bDevice)
+{
+    int nIsZIP;
+    LPDRIVE pDrive;
+
+    nIsZIP = FALSE;
+
+    IDELock();
+
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
+        nIsZIP = FALSE;
+    } else {
+        pDrive = &sDrive[bDevice];
+        if ((pDrive->wFlags & IDE_READY) && (pDrive->wFlags & IDE_ZIP_DEVICE)) {
+            nIsZIP = TRUE;
+        }
+    }
+
+    IDEFree();
+
+    return (nIsZIP);
 }
 
 /************************************************************/
@@ -1013,11 +1462,13 @@ int IDEMountDevice(BYTE bDevice, BYTE * pSectorBuffer)
 int IDEUnMountDevice(BYTE bDevice)
 {
     int nError = 0;
-    LPDRIVE pDrive = NULL;
+    LPDRIVE pDrive;
+
+    pDrive = NULL;
 
     IDELock();
 
-    if (bDevice > IDE_MAX_SUPPORTED_DEVICE) {
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
         nError = IDE_ERROR;
     } else {
         pDrive = &sDrive[bDevice];
@@ -1035,12 +1486,14 @@ int IDEUnMountDevice(BYTE bDevice)
 /************************************************************/
 DWORD IDEGetTotalSectors(BYTE bDevice)
 {
-    DWORD dwTotalSectors = 0;
+    DWORD dwTotalSectors;
     LPDRIVE pDrive;
+
+    dwTotalSectors = 0;
 
     IDELock();
 
-    if (bDevice > IDE_MAX_SUPPORTED_DEVICE) {
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
         dwTotalSectors = 0;
     } else {
         pDrive = &sDrive[bDevice];
@@ -1057,17 +1510,19 @@ DWORD IDEGetTotalSectors(BYTE bDevice)
 /************************************************************/
 /*  IDEReadSectors                                          */
 /************************************************************/
-int IDEReadSectors(BYTE bDevice, void *pData,
-                   DWORD dwStartSector, WORD wSectorCount)
+int IDEReadSectors(BYTE bDevice, void *pData, DWORD dwStartSector, WORD wSectorCount)
 {
-    int nError = IDE_OK;
+    WORD i;
+    int nError;
     WORD wReadCount;
-    LPDRIVE pDrive;
+    LPDRIVE pDrive = 0;
     BYTE *pByte;
+
+    nError = IDE_OK;
 
     IDELock();
 
-    if (bDevice > IDE_MAX_SUPPORTED_DEVICE) {
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
         nError = IDE_DRIVE_NOT_FOUND;
     } else {
         pDrive = &sDrive[bDevice];
@@ -1080,25 +1535,56 @@ int IDEReadSectors(BYTE bDevice, void *pData,
         }
     }
 
-    if (nError == IDE_OK) {
-        pByte = (BYTE *) pData;
-        while (wSectorCount > 0) {
+    if ((pDrive->wFlags & IDE_SUPPORT_PACKET) && ((wSectorCount > 1))) {
+        //
+        // Sorry, in this version we support
+        // only 1 sector for PACKET devices. 
+        //
+        nError = IDE_PARAM_ERROR;
+    }
 
-            if (wSectorCount < 256) {
-                wReadCount = wSectorCount;
-            } else {
-                wReadCount = 256;
+    if ((pDrive->wFlags & IDE_SUPPORT_PACKET) && (nError == IDE_OK)) {
+#if (IDE_SUPPORT_ATAPI == 1)
+        //
+        // ATAPI
+        // 
+        ATAPI_CMD(ATAPI_CMD_READ12);
+        i = 5;
+        while (dwStartSector) {
+            aATAPICmd[i--] = (BYTE) dwStartSector;
+            dwStartSector >>= 8;
+        }
+        //
+        // Reading one sector only 
+        //
+        aATAPICmd[9] = 1;
+        nError = ATAPISendCommand(pDrive, pData, &i);
+        if ((nError != IDE_OK) || (i != pDrive->wSectorSize)) {
+            nError = IDE_ERROR;
+        }
+#else
+        nError = IDE_ERROR;
+#endif
+    } else {
+        if (nError == IDE_OK) {
+            pByte = (BYTE *) pData;
+            while (wSectorCount > 0) {
+
+                if (wSectorCount < 256) {
+                    wReadCount = wSectorCount;
+                } else {
+                    wReadCount = 256;
+                }
+
+                nError = ReadSectors(bDevice, pByte, dwStartSector, wReadCount);
+                if (nError != IDE_OK) {
+                    break;
+                }
+
+                dwStartSector += wReadCount;
+                wSectorCount -= wReadCount;
+                pByte += (wReadCount * pDrive->wSectorSize);
             }
-
-            nError =
-                ReadSectors(bDevice, pByte, dwStartSector, wReadCount);
-            if (nError != IDE_OK) {
-                break;
-            }
-
-            dwStartSector += wReadCount;
-            wSectorCount -= wReadCount;
-            pByte += (wReadCount * IDE_SECTOR_SIZE);
         }
     }
 
@@ -1111,26 +1597,31 @@ int IDEReadSectors(BYTE bDevice, void *pData,
 /************************************************************/
 /*  IDEWriteSectors                                         */
 /************************************************************/
-int IDEWriteSectors(BYTE bDevice, void *pData,
-                    DWORD dwStartSector, WORD wSectorCount)
+int IDEWriteSectors(BYTE bDevice, void *pData, DWORD dwStartSector, WORD wSectorCount)
 {
-    int nError = IDE_OK;
+    int nError;
     WORD wWriteCount;
-    LPDRIVE pDrive = NULL;
+    LPDRIVE pDrive;
     BYTE *pByte;
+
+    nError = IDE_OK;
+    pDrive = NULL;
 
     IDELock();
 
-    if (bDevice > IDE_MAX_SUPPORTED_DEVICE) {
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
         nError = IDE_DRIVE_NOT_FOUND;
     } else {
         pDrive = &sDrive[bDevice];
+
+        if ((dwStartSector + wSectorCount) > pDrive->dwTotalSectors) {
+            nError = IDE_PARAM_ERROR;
+        }
         if ((pDrive->wFlags & IDE_READY) == 0) {
             nError = IDE_DRIVE_NOT_FOUND;
-        } else {
-            if ((dwStartSector + wSectorCount) > pDrive->dwTotalSectors) {
-                nError = IDE_PARAM_ERROR;
-            }
+        }
+        if (pDrive->wFlags & IDE_READ_ONLY) {
+            nError = IDE_NOT_SUPPORTED;
         }
     }
 
@@ -1144,8 +1635,7 @@ int IDEWriteSectors(BYTE bDevice, void *pData,
                 wWriteCount = 256;
             }
 
-            nError =
-                WriteSectors(bDevice, pByte, dwStartSector, wWriteCount);
+            nError = WriteSectors(bDevice, pByte, dwStartSector, wWriteCount);
             if (nError != IDE_OK) {
                 break;
             }
@@ -1157,6 +1647,42 @@ int IDEWriteSectors(BYTE bDevice, void *pData,
     }
 
     IDEFree();
+
+    return (nError);
+}
+#endif
+
+#if (IDE_SUPPORT_ATAPI == 1)
+/************************************************************/
+/*  IDEATAPISetCDSpeed                                      */
+/************************************************************/
+int IDEATAPISetCDSpeed(BYTE bDevice, WORD wSpeed)
+{
+    WORD i;
+    int nError;
+    LPDRIVE pDrive;
+
+    nError = IDE_OK;
+    pDrive = NULL;
+
+    if (bDevice >= IDE_MAX_SUPPORTED_DEVICE) {
+        nError = IDE_DRIVE_NOT_FOUND;
+    } else {
+        pDrive = &sDrive[bDevice];
+        if ((pDrive->wFlags & IDE_READY) == 0) {
+            nError = IDE_DRIVE_NOT_FOUND;
+        }
+        if ((pDrive->wFlags & IDE_SUPPORT_PACKET) == 0) {
+            nError = IDE_NOT_SUPPORTED;
+        }
+    }
+
+    if (nError == IDE_OK) {
+        ATAPI_CMD(0xBB);
+        aATAPICmd[2] = (BYTE) ((wSpeed >> 8) & 0x00FF);
+        aATAPICmd[3] = (BYTE) (wSpeed & 0x00FF);
+        nError = ATAPISendCommand(pDrive, NULL, &i);
+    }
 
     return (nError);
 }
