@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/10/14 08:55:38  olereinhardt
+ * Added default LCD type to avoid compiling bug if no type is defined
+ *
  * Revision 1.6  2004/09/17 14:31:06  olereinhardt
  * Compile only if __GNUC__ defined
  *
@@ -75,6 +78,14 @@
 #include <sys/timer.h>
 
 static u_short lcd_base = 0x0000;
+
+#ifndef LCD_4x20
+#ifndef LCD_4x16
+#ifndef KS0073_CONTROLLER
+#define LCD_4x20
+#endif
+#endif
+#endif
 
 #define LCD_DELAY		asm volatile ("nop"); asm volatile ("nop")
 
