@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.15  2004/08/02 10:04:26  olereinhardt
+# Added adc.c to Makefile
+#
 # Revision 1.14  2004/06/07 15:10:34  olereinhardt
 # Added can_dev.c and sja1000.c
 #
@@ -143,7 +146,7 @@ SRCS =  irqstack.c \
 	ivect19.c ivect20.c ivect21.c ivect22.c ivect23.c ivect24.c \
 	ivect25.c ivect26.c ivect27.c ivect28.c ivect29.c ivect30.c \
 	ivect31.c ivect32.c ivect33.c ivect34.c ihndlr.c \
-        can_dev.c sja1000.c
+        can_dev.c sja1000.c adc.c
 else
 ifeq ($(ARCH), unix)
 # source for Unix Emulation
