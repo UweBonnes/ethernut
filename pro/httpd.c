@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/12/16 10:17:18  haraldkipp
+ * Added Mikael Adolfsson's excellent parameter parsing routines.
+ *
  * Revision 1.5  2004/07/30 19:45:48  drsung
  * Slightly improved handling if socket was closed by peer.
  *
@@ -67,6 +70,8 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 #include <sys/heap.h>
 #include <sys/version.h>
@@ -91,7 +96,9 @@ static struct {
     ".gif", "image/gif"}, {
     ".jpg", "image/jpeg"}, {
     ".pdf", "application/pdf"}, {
-    ".js", "application/x-javascript"}
+    ".js", "application/x-javascript"}, {
+    ".css", "text/css"}, {
+    ".xml", "text/xml"}
 };
 
 static char *http_root;
@@ -111,8 +118,7 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
 {
     static prog_char fmt_P[] = "HTTP/%d.%d %d %s\r\nServer: Ethernut %s\r\n";
 
-    fprintf_P(stream, fmt_P, req->req_version / 10, req->req_version % 10, 
-              status, title, NutVersionString());
+    fprintf_P(stream, fmt_P, req->req_version / 10, req->req_version % 10, status, title, NutVersionString());
 }
 
 /*!
@@ -220,11 +226,202 @@ char *NutGetMimeType(char *name)
     if (name == 0 || (fl = strlen(name)) == 0)
         return mimeTypes[1].type;
     for (i = 0; i < sizeof(mimeTypes) / sizeof(*mimeTypes); i++)
-        if (strcasecmp
-            (&(name[fl - strlen(mimeTypes[i].ext)]),
-             mimeTypes[i].ext) == 0)
+        if (strcasecmp(&(name[fl - strlen(mimeTypes[i].ext)]), mimeTypes[i].ext) == 0)
             return mimeTypes[i].type;
     return mimeTypes[0].type;
+}
+
+/*!
+ * \brief URLEncodes a string
+ *
+ * \param str String to encode
+ *
+ * \return A new allocated encoded string, or NULL if
+ * 	   str is null, or if there's not enough RAM
+ *         for the new string.
+ *
+ * \note This is done in the simplies way, i.e. we
+ * 	 encode everything that isn't alphanumeric.
+ */
+static char *hexdigits = "0123456789ABCDEF";
+
+char *NutHttpURLEncode(char *str)
+{
+    register char *ptr1, *ptr2;
+    char *encstring;
+    int numEncs = 0;
+
+    if (!str)
+        return 0;
+
+    /* Calculate how many characters we need to encode */
+    for (ptr1 = str; *ptr1; ptr1++) {
+        if (!isalnum(*ptr1) || *ptr1 == ' ')
+            numEncs++;
+    }
+    /* Now we can calculate the encoded string length */
+    encstring = (char *) NutHeapAlloc(strlen(str) + 2 * numEncs + 1);
+
+    /* Encode the string. ptr1 refers to the original string,
+     * and ptr2 refers to the new string. */
+    ptr2 = encstring;
+    for (ptr1 = str; *ptr1; ptr1++) {
+        if (*ptr1 == ' ')
+            *ptr2++ = '+';
+        else if (isalnum(*ptr1))
+            *ptr2++ = *ptr1;
+        else {
+            *ptr2++ = '%';
+            *ptr2++ = hexdigits[(*ptr1 >> 4)];
+            *ptr2++ = hexdigits[*ptr1 & 0x0F];
+        }
+    }
+    *ptr2++ = 0;
+    return encstring;
+}
+
+/*!
+ * \brief URLDecodes a string
+ *
+ * Takes a url-encoded string and decodes it.
+ *
+ * \param str String to decode. This is overwritten with
+ * the decoded string
+ * 
+ * \warning To save RAM, the str parameter will be 
+ * 	    overwritten with the encoded string.
+ */
+void NutHttpURLDecode(char *str)
+{
+    register char *ptr1, *ptr2, ch;
+    char hexstr[3] = { 0, 0, 0 };
+    for (ptr1 = ptr2 = str; *ptr1; ptr1++) {
+        if (*ptr1 == '+')
+            *ptr2++ = ' ';
+        else if (*ptr1 == '%') {
+            hexstr[0] = ptr1[1];
+            hexstr[1] = ptr1[2];
+            ch = strtol(hexstr, 0, 16);
+            *ptr2++ = ch;
+            ptr1 += 2;
+        } else
+            *ptr2++ = *ptr1;
+    }
+    *ptr2 = 0;
+}
+
+/*!
+ * \brief Parses the QueryString
+ *
+ * Reads the QueryString from a request, and parses it into
+ * name/value table. To save RAM, this method overwrites the
+ * contents of req_query, and creates a table of pointers
+ * into the req_query buffer.
+ *
+ * \param req Request object to parse
+ */
+static void NutHttpProcessQueryString(REQUEST * req)
+{
+    register int i;
+    register char *ptr;
+
+    if (!req->req_query)
+        return;
+
+    req->req_numqptrs = 1;
+    for (ptr = req->req_query; *ptr; ptr++)
+        if (*ptr == '&')
+            req->req_numqptrs++;
+
+    req->req_qptrs = (char **) NutHeapAlloc(sizeof(char *) * (req->req_numqptrs * 2));
+    if (!req->req_qptrs) {
+        /* Out of memory */
+        req->req_numqptrs = 0;
+        return;
+    }
+    req->req_qptrs[0] = req->req_query;
+    req->req_qptrs[1] = 0;
+    for (ptr = req->req_query, i = 2; *ptr; ptr++) {
+        if (*ptr == '&') {
+            req->req_qptrs[i] = ptr + 1;
+            req->req_qptrs[i + 1] = 0;
+            *ptr = 0;
+            i += 2;
+        }
+    }
+
+    for (i = 0; i < req->req_numqptrs; i++) {
+        for (ptr = req->req_qptrs[i * 2]; *ptr; ptr++) {
+            if (*ptr == '=') {
+                req->req_qptrs[i * 2 + 1] = ptr + 1;
+                *ptr = 0;
+                NutHttpURLDecode(req->req_qptrs[i * 2 + 1]);
+                break;
+            }
+        }
+        NutHttpURLDecode(req->req_qptrs[i * 2]);
+    }
+}
+
+/*!
+ * \brief Gets a request parameter value by name
+ * 
+ * \param req Request object
+ * \param name Name of parameter
+ *
+ * \return Pointer to the parameter value. 
+ */
+char *NutHttpGetParameter(REQUEST * req, char *name)
+{
+    int i;
+    for (i = 0; i < req->req_numqptrs; i++)
+        if (strcmp(req->req_qptrs[i * 2], name) == 0)
+            return req->req_qptrs[i * 2 + 1];
+    return NULL;
+}
+
+/*!
+ * \brief Gets the number of request parameters
+ *
+ * \param req Request object
+ *
+ * \return The number of request parameters
+ */
+int NutHttpGetParameterCount(REQUEST * req)
+{
+    return req->req_numqptrs;
+}
+
+/*!
+ * \brief Gets the name of a request parameter
+ *
+ * \param req Request object
+ * \param index Index of the requested parameter.
+ *
+ * \return Pointer to the parameter name at the given index,
+ *         or NULL if index is out of range.
+ */
+char *NutHttpGetParameterName(REQUEST * req, int index)
+{
+    if (index < 0 || index >= NutHttpGetParameterCount(req))
+        return NULL;
+    return req->req_qptrs[index * 2];
+}
+
+/*!
+ * \brief Get the value of a request paramter
+ *
+ * \param req Request object
+ * \param index Index to the requested parameter.
+ *
+ * \return Pointer to the paramter value at the given index,
+ *         or NULL if index is out of range.
+ */
+char *NutHttpGetParameterValue(REQUEST * req, int index)
+{
+    if (index < 0 || index >= NutHttpGetParameterCount(req))
+        return NULL;
+    return req->req_qptrs[index * 2 + 1];
 }
 
 static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
@@ -256,8 +453,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
      * Process file.
      */
     if (http_root) {
-        filename =
-            NutHeapAlloc(strlen(http_root) + strlen(req->req_url) + 1);
+        filename = NutHeapAlloc(strlen(http_root) + strlen(req->req_url) + 1);
         strcpy(filename, http_root);
     } else {
         filename = NutHeapAlloc(strlen(req->req_url) + 6);
@@ -361,6 +557,8 @@ static void DestroyRequestInfo(REQUEST * req)
         NutHeapFree(req->req_auth);
     if (req->req_agent)
         NutHeapFree(req->req_agent);
+    if (req->req_qptrs)
+        NutHeapFree(req->req_qptrs);
     NutHeapFree(req);
 }
 
@@ -519,6 +717,8 @@ void NutHttpProcessRequest(FILE * stream)
             return;
         }
         strcpy(req->req_query, cp);
+
+        NutHttpProcessQueryString(req);
     }
     if ((req->req_url = NutHeapAlloc(strlen(path) + 1)) == 0) {
         NutHeapFree(method);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2004/12/16 10:17:18  haraldkipp
+ * Added Mikael Adolfsson's excellent parameter parsing routines.
+ *
  * Revision 1.5  2004/03/16 16:48:26  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -366,50 +369,24 @@ int ShowForm(FILE * stream, REQUEST * req)
     fputs_P(html_head, stream);
 
     if (req->req_query) {
-#ifndef __IMAGECRAFT__
-        char *qp1;
-#endif
-        char *c[3];
-        char *p[3];
-        u_char i;
+        char *name;
+        char *value;
+        int i;
+        int count;
 
-        /* Extract 3 parameters. */
-        for (i = 0; i < 3; i++) {
-            if(i == 0) {
-#ifdef __IMAGECRAFT__
-                /*
-                 * Extract the parameters. Note, that it is potentially dangerous
-                 * to use strtok in multithreaded applications. There's no problem
-                 * here, because we can be sure that there will by no thread switch
-                 * between the first and the last call to strtok. Otherwise we
-                 * must use strtok_r().
-                 */
-                c[0] = strtok(req->req_query, "=");
-#else
-                /*
-                 * There's no strtok in the GCC library. So we take the chance to
-                 * demonstrate strtok_r().
-                 */
-                c[0] = strtok_r(req->req_query, "=", &qp1);
-#endif
-            }
-            else {
-#ifdef __IMAGECRAFT__
-                c[i] = strtok(0, "=");
-#else
-                c[i] = strtok_r(0, "=", &qp1);
-#endif
-            }
-#ifdef __IMAGECRAFT__
-            p[i] = strtok(0, "&");
-#else
-            p[i] = strtok_r(0, "&", &qp1);
-#endif
-        }
+        count = NutHttpGetParameterCount(req);
+        /* Extract count parameters. */
+        for (i = 0; i < count; i++) {
+            name = NutHttpGetParameterName(req, i);
+            value = NutHttpGetParameterValue(req, i);
 
-        /* Send the parameters back to the client. */
-        for (i = 0; i < 3; i++) {
-            fprintf_P(stream, PSTR("%s: %s<BR>\r\n"), c[i], p[i]);
+            /* Send the parameters back to the client. */
+
+#ifdef __IMAGECRAFT__
+            fprintf(stream, "%s: %s<BR>\r\n", name, value);
+#else
+            fprintf_P(stream, PSTR("%s: %s<BR>\r\n"), name, value);
+#endif
         }
     }
 
