@@ -62,11 +62,11 @@ if [ "$ARCH" = "avr" ]; then
 
     # Make links to included make fragments
 
-    [ -f Makedefs ]  || ln -s Makedefs.gcc Makedefs
-    [ -f Makerules ] || ln -s Makerules.gcc Makerules
+    ln -s -f Makedefs.avr-gcc Makedefs
+    ln -s -f Makerules.avr-gcc Makerules
 
-    [ -f app/Makedefs ]  || ln -s Makedefs.gcc app/Makedefs
-    [ -f app/Makerules ] || ln -s Makerules.gcc app/Makerules
+    ln -s -f Makedefs.avr-gcc app/Makedefs
+    ln -s -f Makerules.avr-gcc app/Makerules
 
     # Ask which isp programmer is being used
 
@@ -175,11 +175,11 @@ if [ "$ARCH" = "h8300h" -o "$ARCH" = "h8300s" ]; then
 
     # Make links to included make fragments
 
-    [ -f Makedefs ]  || ln -s Makedefs.h8-gcc Makedefs
-    [ -f Makerules ] || ln -s Makerules.h8-gcc Makerules
+    ln -s -f Makedefs.h8-gcc Makedefs
+    ln -s -f Makerules.h8-gcc Makerules
 
-    [ -f app/Makedefs ]  || ln -s Makedefs.h8-gcc app/Makedefs
-    [ -f app/Makerules ] || ln -s Makerules.h8-gcc app/Makerules
+    ln -s -f Makedefs.h8-gcc app/Makedefs
+    ln -s -f Makerules.h8-gcc app/Makerules
 
     # Generate config file
     cat <<EOF > UserConf.mk
@@ -265,11 +265,11 @@ if [ "$ARCH" = "arm" ]; then
 
     # Make links to included make fragments
 
-    [ -f Makedefs ]  || ln -s Makedefs.arm-gcc Makedefs
-    [ -f Makerules ] || ln -s Makerules.arm-gcc Makerules
+    ln -s -f Makedefs.arm-gcc Makedefs
+    ln -s -f Makerules.arm-gcc Makerules
 
-    [ -f app/Makedefs ]  || ln -s Makedefs.arm-gcc app/Makedefs
-    [ -f app/Makerules ] || ln -s Makerules.arm-gcc app/Makerules
+    ln -s -f Makedefs.arm-gcc app/Makedefs
+    ln -s -f Makerules.arm-gcc app/Makerules
 
     # Generate config file
     cat <<EOF > UserConf.mk
@@ -312,11 +312,11 @@ if [ "$ARCH" = "unix" ]; then
 
     # Make links to included make fragments
 
-    [ -f Makedefs ]  || ln -s Makedefs.unix-gcc Makedefs
-    [ -f Makerules ] || ln -s Makerules.unix-gcc Makerules
+    ln -s -f Makedefs.unix-gcc Makedefs
+    ln -s -f Makerules.unix-gcc Makerules
 
-    [ -f app/Makedefs ]  || ln -s Makedefs.unix-gcc app/Makedefs
-    [ -f app/Makerules ] || ln -s Makerules.unix-gcc app/Makerules
+    ln -s -f Makedefs.unix-gcc app/Makedefs
+    ln -s -f Makerules.unix-gcc app/Makerules
 
     # Generate the config file
 
