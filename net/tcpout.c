@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:40  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/04/15 11:05:35  haraldkipp
+ * Set retransmission timer on first transmit queue entry
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:40  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.15  2003/03/31 12:29:17  harald
  * Check NEBUF allocation
@@ -114,6 +117,7 @@
 
 #include <sys/heap.h>
 #include <sys/event.h>
+#include <sys/timer.h>
 
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -290,15 +294,25 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
         NETBUF *nbp;
 
         nb->nb_next = 0;
-        if ((nbp = sock->so_tx_nbq) == 0)
+        if ((nbp = sock->so_tx_nbq) == 0) {
             sock->so_tx_nbq = nb;
+            /*
+             * First entry, so initialize our retransmission timer.
+             * It is also set at various places in the state machine,
+             * but here is the best central point to do it. We may
+             * carefully check later, if we can remove some in the
+             * state machine.
+             */
+            sock->so_retran_time = (u_short) NutGetMillis();
+        }
         else {
             while (nbp->nb_next)
                 nbp = nbp->nb_next;
             nbp->nb_next = nb;
         }
-    } else
+    } else {
         NutNetBufFree(nb);
+    }
     return 0;
 }
 
