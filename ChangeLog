@@ -1,4 +1,19 @@
-$Id: ChangeLog,v 1.160 2005/02/05 20:47:22 haraldkipp Exp $
+$Id: ChangeLog,v 1.161 2005/02/06 16:34:37 haraldkipp Exp $
+
+2005-02-06  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/debug0.c, dev/debug1.c: Added UL modifier to baudrate
+	calculation fixes ICCAVR V7 bug. Also make sure you added
+	the latest ICC fix from www.dragonsgate.net/pub/BETAS/.
+	Thanks to Michael Fischer.
+
+	* doc/gen/nut_en.cfg, doc/gen/nutdoc_en.txt: FTP server 
+	added to documented samples.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
+	Configurator version 1.1.2. Fixes a bad entry in NutConf.mk
+	for Gameboy Advance.
+
 
 2005-02-05  Harald Kipp  <harald.kipp@egnite.de>
 

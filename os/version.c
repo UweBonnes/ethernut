@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/02/06 16:35:33  haraldkipp
+ * *** empty log message ***
+ *
  * Revision 1.11  2005/01/02 10:07:10  haraldkipp
  * Replaced platform dependant formats in debug outputs.
  *
@@ -81,8 +84,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090301UL
-static CONST char os_version_string[] = "3.9.3.1 pre";
+#define OS_VERSION_NUMBER  0x03090401UL
+static CONST char os_version_string[] = "3.9.4.1 pre";
 
 /*!
  * \addtogroup xgNutInit
