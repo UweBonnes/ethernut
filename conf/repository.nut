@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.7  2004/11/24 14:47:24  haraldkipp
+-- Empty items allow to disable choices
+--
 -- Revision 1.6  2004/10/03 18:37:39  haraldkipp
 -- GBA support
 --
@@ -55,13 +58,13 @@
 --
 --
 
-avr_bit_choice = { "0", "1", "2", "3", "4", "5", "6", "7" }
-avr_port_choice = { "PORTA", "PORTB", "PORTC", "PORTD", "PORTE", "PORTF", "PORTG" }
-avr_pin_choice = { "PINA", "PINB", "PINC", "PIND", "PINE", "PINF", "PING" }
-avr_ddr_choice = { "DDRA", "DDRB", "DDRC", "DDRD", "DDRE", "DDRF", "DDRG" }
-avr_irq_choice = { "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
+avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
+avr_port_choice = { " ", "PORTA", "PORTB", "PORTC", "PORTD", "PORTE", "PORTF", "PORTG" }
+avr_pin_choice = { " ", "PINA", "PINB", "PINC", "PIND", "PINE", "PINF", "PING" }
+avr_ddr_choice = { " ", "DDRA", "DDRB", "DDRC", "DDRD", "DDRE", "DDRF", "DDRG" }
+avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
-arm_ld_choice = { "s3c4510b-ram", "eb40a_ram", "gbaxport2" }
+arm_ld_choice = { " ", "s3c4510b-ram", "eb40a_ram", "gbaxport2" }
 
 repository =
 {
