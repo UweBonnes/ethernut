@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:25  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/20 17:19:00  haraldkipp
+ * Description and result corrected.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:25  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:04  harald
  * *** empty log message ***
@@ -51,23 +54,22 @@
 /*@{*/
 
 /*!
- * \brief Close a file, device or socket.
+ * \brief Return the length of a file.
  * 
- * The calling thread may be suspended until all buffered output data 
- * has been written.
- *
  * \param fd   Descriptor of a previously opened file, device or
  *             connected socket.
  *
- * \return 0 if the file was successfully closed or –1 to indicate an error.
+ * \return Filelength in bytes or -1 in case of an error.
  */
 long _filelength(int fd)
 {
     NUTFILE *fp = (NUTFILE *) fd;
     NUTDEVICE *dev = fp->nf_dev;
 
-    if (dev == 0)
-        return 0;
+    if (dev == 0 || dev->dev_size == 0) {
+        errno = EBADF;
+        return -1;
+    }
 
     return (*dev->dev_size) (fp);
 }
