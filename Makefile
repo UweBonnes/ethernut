@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/04/14 18:07:51  freckle
+# Target distclean deletes: include/stdio_orig.h and include/sys/types_orig.h
+#
 # Revision 1.2  2004/03/16 16:48:24  haraldkipp
 # Added Jan Dubiec's H8/300 port.
 #
@@ -146,4 +149,5 @@ endif
 	$(MAKE) -C crt clean
 	$(MAKE) -C app clean
 	rm -f UserConf.mk Makerules Makedefs app/Makerules app/Makedefs
+	rm -f include/stdio_orig.h include/sys/types_orig.h
 	rm -f `find . -name '*\.[ch]~'`
