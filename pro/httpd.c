@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/02 10:09:59  drsung
+ * Small bugfix in NutHttpSendError. Thanks to Damian Slee.
+ *
  * Revision 1.3  2003/07/20 16:03:27  haraldkipp
  * Saved some RAM by moving string literals to program memory.
  *
@@ -149,7 +152,7 @@ void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
 void NutHttpSendError(FILE * stream, REQUEST * req, int status)
 {
     static prog_char err_fmt_P[] = "<HTML><HEAD><TITLE>%d %s</TITLE></HEAD><BODY>%d %s</BODY></HTML>";
-    static prog_char auth_fmt_P[] = "WWW-Authenticate: Basic realm=\"%s\"";
+    static prog_char auth_fmt_P[] = "WWW-Authenticate: Basic realm=\"%s\"\r\n";
     char *title;
 
     switch (status) {
