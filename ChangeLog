@@ -1,15 +1,36 @@
-$Id: ChangeLog,v 1.63 2004/05/17 18:59:49 freckle Exp $
+$Id: ChangeLog,v 1.64 2004/05/17 19:17:23 haraldkipp Exp $
+
+2004-05-17  Harald Kipp  <harald.kipp@egnite.de>
+
+        * include/dev/nicrtl.h, dev/nicrtl.c: Added major changes,
+        which had been contributed by Bengt Florin. This driver
+        uses polling for transmission, which may look like a
+        disadvantage. In fact it became rock solid, hardly no
+        packet loss even under very heavy traffic.
+
 
 2004-05-16  Matthias Ringwald <mringwal@inf.ethz.ch>
-    * os/mutex.c, include/sys/mutex.h: added recursive mutex implementation
-    * os/semaphore.c, include/sys/semaphore.h: added semaphore implementation
-    * os/Makefile: added above files
+
+	* os/mutex.c, include/sys/mutex.h: added recursive mutex implementation
+
+	* os/semaphore.c, include/sys/semaphore.h: added semaphore implementation
+
+	* os/Makefile: added above files
 
 
 2004-05-16  Oliver Schulz  <olischulz@web.de>
 
 	* dev/usartavr.c: Applied bugfixes for half duplex mode and XON/XOFF 
 	handling. Thanks to Damian Slee.
+
+
+2004-05-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/dev/nicrtl.h, dev/nicrtl.c: Added major changes, 
+	which had been contributed by Bengt Florin. This driver
+	uses polling for transmission, which may look like a
+	disadvantage. In fact it became rock solid, hardly no
+	packet loss even under very heavy traffic.
 
 
 2004-04-25  Oliver Schulz  <olischulz@web.de>

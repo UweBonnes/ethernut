@@ -2,7 +2,7 @@
 #define _DEV_NICRTL_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/05/17 19:14:57  haraldkipp
+ * Added Bengt Florin's RTL8019 driver mods
+ *
  * Revision 1.3  2003/11/03 16:58:42  haraldkipp
  * *** empty log message ***
  *
@@ -43,18 +46,6 @@
  *
  * Revision 1.1.1.1  2003/05/09 14:41:07  haraldkipp
  * Initial using 3.2.1
- *
- * Revision 1.9  2003/02/04 18:00:37  harald
- * Version 3 released
- *
- * Revision 1.8  2002/10/29 15:40:49  harald
- * *** empty log message ***
- *
- * Revision 1.7  2002/08/08 17:23:20  harald
- * *** empty log message ***
- *
- * Revision 1.6  2002/06/26 17:29:15  harald
- * First pre-release with 2.4 stack
  *
  */
 
@@ -76,20 +67,16 @@ extern "C" {
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {
-    u_char volatile ni_tx_bsy;      /*!< NIC transmitter busy flags. */
     HANDLE volatile ni_rx_rdy;      /*!< Receiver event queue. */
-    HANDLE volatile ni_tx_rdy;      /*!< Transmitter event queue. */
-    NETBUF * volatile ni_tx_nbq;    /*!< Queued packets waiting for transmission. */
-    u_short ni_tx_cnt;              /*!< Number of bytes in transmission queue. */
-    u_char ni_curr_page;            /*!< Current receive page. */
-    u_long ni_rx_pending;           /*!< Number of pending receiver interrupts. */
     u_long ni_rx_packets;           /*!< Number of packets received. */
     u_long ni_tx_packets;           /*!< Number of packets sent. */
     u_long ni_interrupts;           /*!< Number of interrupts. */
-    u_long ni_overruns;             /*!< Number of packet overruns. */
+    u_long ni_rx_overruns;          /*!< Number of packet overruns. */
     u_long ni_rx_frame_errors;      /*!< Number of frame errors. */
     u_long ni_rx_crc_errors;        /*!< Number of CRC errors. */
     u_long ni_rx_missed_errors;     /*!< Number of missed packets. */
+    u_long ni_rx_size_errors;       /*!< Number of size missmatch in NIC. */
+    u_long ni_tx_errors;            /*!< Number of NIC transmit errors. */
 };
 
 /*!

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/05/17 19:14:53  haraldkipp
+ * Added Bengt Florin's RTL8019 driver mods
+ *
  * Revision 1.5  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -49,48 +52,8 @@
  * Revision 1.1.1.1  2003/05/09 14:40:48  haraldkipp
  * Initial using 3.2.1
  *
- * Revision 1.29  2003/05/06 18:32:01  harald
- * Use config include and avoid null mac
- *
- * Revision 1.28  2003/04/21 16:24:05  harald
- * MAC address required during init
- *
- * Revision 1.27  2003/04/07 12:18:37  harald
- * Bugfix: Avoid increasing system wide interrupt latency while recovering
- * from NIC overflows.
- * Moved initialization to NutRegisterDevice.
- *
- * Revision 1.26  2003/03/31 14:53:08  harald
- * Prepare release 3.1
- *
- * Revision 1.25  2003/02/04 17:50:54  harald
- * Version 3 released
- *
- * Revision 1.24  2002/10/29 13:37:47  harald
- * NIC corruption detection improved
- *
- * Revision 1.23  2002/09/15 16:39:27  harald
- * *** empty log message ***
- *
- * Revision 1.22  2002/08/16 17:48:30  harald
- * ICC syntax warning
- *
- * Revision 1.21  2002/08/11 12:13:44  harald
- * ICC mods
- *
- * Revision 1.20  2002/08/08 17:19:15  harald
- * *** empty log message ***
- *
- * Revision 1.19  2002/08/08 17:18:30  harald
- * Using time constants by KU
- *
- * Revision 1.18  2002/08/08 16:15:17  harald
- * Bugfix: Reset of pre 1.3 boards
- *
- * Revision 1.17  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
  */
+
 
 #include <string.h>
 
@@ -109,7 +72,6 @@
 #include <dev/irqreg.h>
 #include <dev/nicrtl.h>
 #include "rtlregs.h"
-
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -140,23 +102,52 @@
 
 /*!
  * \brief Number of transmit buffers.
- */
-#define NIC_TX_BUFFERS  2
-
-/*!
- * \brief Controller memory layout:
  *
- * 0x4000 - 0x4bff  3k bytes transmit buffer
- * 0x4c00 - 0x5fff  5k bytes receive buffer
+ * The initial value had been 2. The idea was to use two alternating 
+ * buffers. However, this had never been implemented and we took over
+ * Bengt Florin's change, defining 1 transmit buffer only and give
+ * more buffer space to the receiver.
+ *
+ * The controller memory layout is now
+ *
+ * - 0x4000..0x45ff  1.5K bytes transmit buffer
+ * - 0x4600..0x5fff  6.5K bytes receive buffer
+ *
+ * The routines are still not using the buffers in an optimal way,
+ * as transmission is limited to 1 packet at a time. In fact several
+ * smaller packets would fit into the 1.5 kByte buffer. On the other
+ * hand, filling the buffer with more than one transmission packet
+ * may result in other bad effects, like pulling the IORDY line more
+ * often.
  */
+#define NIC_TX_BUFFERS      1
+
 #define NIC_FIRST_TX_PAGE   NIC_START_PAGE
 #define NIC_FIRST_RX_PAGE   (NIC_FIRST_TX_PAGE + NIC_TX_PAGES * NIC_TX_BUFFERS)
 
-/*!
- * \brief Standard sizing information
- */
-#define TX_PAGES 12             /* Allow for 2 back-to-back frames */
+#define NIC_CR_PAGE0 (0)
+#define NIC_CR_PAGE1 (NIC_CR_PS0)
+#define NIC_CR_PAGE2 (NIC_CR_PS1)
+#define NIC_CR_PAGE3 (NIC_CR_PS1 | NIC_CR_PS0)
 
+/*
+ * This delay has been added by Bengt Florin and is used to minimize 
+ * the effect of the IORDY line during reads. Bengt contributed a
+ * more versatile loop, which unfortunately wasn't portable to the
+ * ImageCraft compiler.
+ *
+ * Both versions depend on the CPU clock and had been tested with
+ * 14.7456 MHz.
+ */
+static inline void Delay16Cycles(void)
+{
+    _NOP(); _NOP(); _NOP();
+    _NOP(); _NOP(); _NOP();
+    _NOP(); _NOP(); _NOP();
+    _NOP(); _NOP(); _NOP();
+    _NOP(); _NOP(); _NOP();
+    _NOP();
+}
 
 /*!
  * \addtogroup xgNicRtl
@@ -257,16 +248,21 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
     nic_write(NIC_PG3_EECR, NIC_EECR_EEM0 | NIC_EECR_EEM1);
 
     /*
-     * Disable sleep and power down.
-     */
-    nic_write(NIC_PG3_CONFIG3, 0);
-
-    /*
      * Network media had been set to 10Base2 by the virtual EEPROM and
      * will be set now to auto detect. This will initiate a link test.
      * We don't force 10BaseT, because this would disable the link test.
      */
     nic_write(NIC_PG3_CONFIG2, NIC_CONFIG2_BSELB);
+
+    /*
+     * Disable sleep and power down, enable FDX
+     *
+     * Bengt Florin moved this command down, no idea why. But it
+     * reminds me of the possibility to get the full duplex problem
+     * solved without hardware modification. May be that the NIC
+     * will restart in full duplex after woken up from sleep mode.
+     */
+    nic_write(NIC_PG3_CONFIG3, NIC_CONFIG3_FUDUP);
 
     /*
      * Reenable write protection of the nic configuration registers
@@ -330,7 +326,7 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
     /*
      * Set current page pointer to one page after the boundary pointer.
      */
-    nic_write(NIC_PG1_CURR, NIC_START_PAGE + TX_PAGES);
+    nic_write(NIC_PG1_CURR, NIC_FIRST_RX_PAGE);
 
     /*
      * Switch back to register page 0, remaining in stop mode.
@@ -347,8 +343,8 @@ static int NicStart(volatile u_char * base, CONST u_char * mac)
      * Clear all interrupt status flags and enable interrupts.
      */
     nic_write(NIC_PG0_ISR, 0xff);
-    nic_write(NIC_PG0_IMR, NIC_IMR_PRXE | NIC_IMR_PTXE | NIC_IMR_RXEE |
-              NIC_IMR_TXEE | NIC_IMR_OVWE);
+    /* Note: transmitter if polled, thus no NIC_IMR_PTXE */
+    nic_write(NIC_PG0_IMR, NIC_IMR_PRXE | NIC_IMR_RXEE | NIC_IMR_TXEE | NIC_IMR_OVWE);
 
     /*
      * Fire up the nic by clearing the stop bit and setting the start bit. 
@@ -391,13 +387,11 @@ static void NicCompleteDma(volatile u_char * base)
 /*!
  * \brief Load a packet into the nic's transmit ring buffer.
  *
- * Interupts must have been disabled when calling this function.
  *
  * \param base NIC hardware base address.
  * \param nb Network buffer structure containing the packet to be sent.
  *           The structure must have been allocated by a previous
- *           call NutNetBufAlloc(). This routine will automatically
- *           release the buffer in case of an error.
+ *           call NutNetBufAlloc().
  *
  * \return 0 on success, -1 in case of any errors. Errors
  *         will automatically release the network buffer 
@@ -412,10 +406,15 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
 
     /*
      * Calculate the number of bytes to be send. Do not
-     * send packets larger than 1518 bytes.
+     * send packets larger than 1514 bytes.
+     *
+     * The previous version was wrong by specifying a maximum
+     * of 1518, because it didn't take the CRC into account,
+     * which is generated by the hardware and automatically
+     * appended. Thanks to Bengt Florin, who discovered this.
      */
     sz = nb->nb_dl.sz + nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz;
-    if (sz > 1518)
+    if (sz > 1514)
         return -1;
 
     /*
@@ -426,6 +425,18 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
         padding = (u_char) (60 - sz);
         sz = 60;
     }
+
+    /*
+     * Bengt Florin introduces polling mode for the transmitter. Be
+     * aware, that this may introduce other problems. If a high
+     * priority thread is waiting for the transmitter, it may hold
+     * the CPU for more than 1.2 milliseconds in worst cases.
+     */
+    while (nic_read(NIC_CR) & NIC_CR_TXP)
+        NutThreadYield();
+
+    /* we don't want to be interrupted by NIC owerflow */
+    cbi(EIMSK, RTL_SIGNAL_BIT);
 
     /*
      * Set remote dma byte count
@@ -487,6 +498,8 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
      */
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
 
+    sbi(EIMSK, RTL_SIGNAL_BIT);
+
     return 0;
 }
 
@@ -500,7 +513,7 @@ static int NicPutPacket(volatile u_char * base, NETBUF * nb)
  *         null pointer. If the NIC's buffer seems to be
  *         corrupted, a pointer to 0xFFFF is returned.
  */
-static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
+static NETBUF *NicGetPacket(volatile u_char * base)
 {
     NETBUF *nb = 0;
     struct nic_pkt_header hdr;
@@ -510,12 +523,16 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
     u_char bnry;
     u_char curr;
     u_short i;
+    u_char drop = 0;
 
+    /* we don't want to be interrupted by NIC owerflow */
+    cbi(EIMSK, RTL_SIGNAL_BIT);
     /*
      * Get the current page pointer. It points to the page where the NIC 
      * will start saving the next incoming packet.
      */
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2 | NIC_CR_PS0);
+    Delay16Cycles();
     curr = nic_read(NIC_PG1_CURR);
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
 
@@ -527,8 +544,11 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
      */
     if ((bnry = nic_read(NIC_PG0_BNRY) + 1) >= NIC_STOP_PAGE)
         bnry = NIC_FIRST_RX_PAGE;
-    if (bnry == curr)
+        
+    if (bnry == curr) {
+        sbi(EIMSK, RTL_SIGNAL_BIT);
         return 0;
+    }
 
     /*
      * Read the NIC specific packet header.
@@ -539,22 +559,22 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
     nic_write(NIC_PG0_RSAR1, bnry);
     buf = (u_char *) & hdr;
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
+    Delay16Cycles();
     for (i = 0; i < sizeof(struct nic_pkt_header); i++)
         *buf++ = nic_read(NIC_IOPORT);
     NicCompleteDma(base);
 
     /*
-     *  Check packet length.
+     *  Check packet length. Silently discard packets of illegal size.
      */
     if (hdr.ph_size < 60 + sizeof(struct nic_pkt_header) ||
-        hdr.ph_size > 1518 + sizeof(struct nic_pkt_header)) {
-        return dflg ? 0 : (NETBUF *) 0xFFFF;
+        hdr.ph_size > 1514 + sizeof(struct nic_pkt_header)) {
+        drop = 1;
     }
 
     /*
      * Calculate the page of the next packet. If it differs from the
-     * pointer in the packet header, we discard the whole buffer
-     * and return a null pointer.
+     * pointer in the packet header, we return with errorcode.
      */
     nextpg = bnry + (hdr.ph_size >> 8) + ((hdr.ph_size & 0xFF) != 0);
     if (nextpg >= NIC_STOP_PAGE) {
@@ -568,7 +588,8 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
             nextpg1 += NIC_FIRST_RX_PAGE;
         }
         if (nextpg1 != hdr.ph_nextpg) {
-            return dflg ? 0 : (NETBUF *) 0xFFFF;
+            sbi(EIMSK, RTL_SIGNAL_BIT);
+            return (NETBUF *)0xFFFF;
         }
         nextpg = nextpg1;
     }
@@ -577,126 +598,132 @@ static NETBUF *NicGetPacket(volatile u_char * base, u_char dflg)
      * Check packet status. It should have set bit 0, but
      * even without this bit packets seem to be OK.
      */
-    if ((hdr.ph_status & 0x0E) == 0) {
+    if (!drop && ((hdr.ph_status & 0x0E) == 0)) {
         /*
          * Allocate a NETBUF.
+         * Omit the fcs.
          */
-        count = hdr.ph_size - sizeof(struct nic_pkt_header);
-        if (dflg == 0) {
-            nb = NutNetBufAlloc(0, NBAF_DATALINK, count);
-        }
+        count = hdr.ph_size - 4;
+        if ((nb = NutNetBufAlloc(0, NBAF_DATALINK, count))) {
+            /*
+             * Set remote dma byte count and
+             * start address. Don't read the
+             * header again.
+             */
+            nic_write(NIC_PG0_RBCR0, count);
+            nic_write(NIC_PG0_RBCR1, count >> 8);
+            nic_write(NIC_PG0_RSAR0, sizeof(struct nic_pkt_header));
+            nic_write(NIC_PG0_RSAR1, bnry);
 
-        /*
-         * Set remote dma byte count and
-         * start address. Don't read the
-         * header again.
-         */
-        nic_write(NIC_PG0_RBCR0, count);
-        nic_write(NIC_PG0_RBCR1, count >> 8);
-        nic_write(NIC_PG0_RSAR0, sizeof(struct nic_pkt_header));
-        nic_write(NIC_PG0_RSAR1, bnry);
-
-        /*
-         * Perform the read.
-         */
-        nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
-        if (nb) {
+            /*
+             * Perform the read.
+             */
+            nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
+            Delay16Cycles();
             buf = nb->nb_dl.vp;
             for (i = 0; i < count; i++)
                 *buf++ = nic_read(NIC_IOPORT);
-        } else {
-            for (i = 0; i < count; i++)
-#ifdef __IMAGECRAFT__
-            {
-                u_char dummy = nic_read(NIC_IOPORT);
-            }
-#else
-                nic_read(NIC_IOPORT);
-#endif
+                
+            NicCompleteDma(base);
         }
-        NicCompleteDma(base);
     }
 
     /*
      * Set boundary register to the last page we read.
+     * This also drops packets with errors
      */
     if (--nextpg < NIC_FIRST_RX_PAGE)
         nextpg = NIC_STOP_PAGE - 1;
     nic_write(NIC_PG0_BNRY, nextpg);
 
-    return dflg ? (NETBUF *) ((u_short) dflg) : nb;
+    sbi(EIMSK, RTL_SIGNAL_BIT);
+    return nb;
 }
 
 /*
- * When a receiver buffer overflow occurs, the NIC will defer any
- * subsequent action until properly restarted.
+ * \brief Handle NIC overflows.
+ *
+ * When a receiver buffer overflow occurs, the NIC will defer any subsequent 
+ * action until properly restarted.
+ *
+ * This routine is called within interrupt context, which introduces a big
+ * problem. It waits for the last transmission to finish, which may take
+ * several milliseconds. Since Nut/OS 3.5, we do not support nested interrupts
+ * on AVR systems anymore. So this routine may now increase interrupt
+ * latency in an unacceptable way. The solution might be to handle overflows
+ * in the receiver thread.
+ *
+ * In any case, this routines needs a major redesign. But it has been
+ * tested in its current form to gracefully withstand ping floods. Thanks
+ * to Bengt Florin for contributing his code, which provides much more
+ * stability than its predecessor.
  */
-static int NicOverflow(volatile u_char * base)
+static u_char NicOverflow(volatile u_char * base)
 {
-    u_char cr;
-    u_char resend;
+    uint8_t cr;
+    uint8_t resend = 0;
+    uint8_t curr;
 
     /*
-     * Save the command register, so we can later determine, if NIC
-     * transmitter has been interrupted. Then stop the NIC and wait
-     * 5 ms for any transmission or reception in progress.
+     * Wait for any transmission in progress. Save the command register, 
+     * so we can later determine, if NIC transmitter has been interrupted. 
+     * or reception in progress.
      */
+    while (nic_read(NIC_CR) & NIC_CR_TXP);
     cr = nic_read(NIC_CR);
-    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
-    NutDelay(WAIT5);
 
     /*
-     * Clear remote byte count register.
+     * Get the current page pointer. It points to the page where the NIC 
+     * will start saving the next incoming packet.
      */
+    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0);
+    curr = nic_read(NIC_PG1_CURR);
+    nic_write(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
+
+    /* Clear remote byte count register. */
     nic_write(NIC_PG0_RBCR0, 0);
     nic_write(NIC_PG0_RBCR1, 0);
 
-    /*
-     * Check for any incomplete transmission.
-     */
-    resend = 0;
-    if (cr & NIC_CR_TXP) {
-        if ((nic_read(NIC_PG0_ISR) & (NIC_ISR_PTX | NIC_ISR_TXE)) == 0)
-            resend = 1;
+    /* Check for any incomplete transmission. */
+    if ((cr & NIC_CR_TXP) && ((nic_read(NIC_PG0_ISR) & (NIC_ISR_PTX | NIC_ISR_TXE)) == 0)) {
+        resend = 1;
     }
 
-    /*
-     * Enter loopback mode and restart the NIC.
-     */
+    /* Enter loopback mode and restart the NIC. */
     nic_write(NIC_PG0_TCR, NIC_TCR_LB0);
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
 
-    /*
-     * Discard all packets from the receiver buffer.
+    /* 
+     * Discard all packets from the receiver buffer. Set boundary 
+     * register to the last page we read. 
      */
-    while (NicGetPacket(base, 1));
+    if (--curr < NIC_FIRST_RX_PAGE) {
+        curr = NIC_STOP_PAGE - 1;
+    }
+    nic_write(NIC_PG0_BNRY, curr);
 
-    /*
-     * Switch from loopback to normal mode mode.
-     */
+    /* Switch from loopback to normal mode mode. */
     nic_write(NIC_PG0_TCR, 0);
 
-    /*
-     * Re-invoke any interrupted transmission.
-     */
+    /* Re-invoke any interrupted transmission. */
     if (resend) {
         nic_write(NIC_CR, NIC_CR_STA | NIC_CR_TXP | NIC_CR_RD2);
     }
 
-    /* Finally clear the overflow flag. */
+    /* Finally clear the overflow flag */
     nic_write(NIC_PG0_ISR, NIC_ISR_OVW);
     return resend;
 }
 
+
 /*
- * NIC interrupt entry.
+ * \brief NIC interrupt entry.
  */
 static void NicInterrupt(void *arg)
 {
     u_char isr;
     volatile u_char *base = (u_char *) (((NUTDEVICE *) arg)->dev_base);
     NICINFO *ni = (NICINFO *) ((NUTDEVICE *) arg)->dev_dcb;
-
 
     ni->ni_interrupts++;
 
@@ -709,36 +736,34 @@ static void NicInterrupt(void *arg)
      * interrupts disabled.
      */
     if (isr & NIC_ISR_OVW) {
+        /* The AVR platform uses a dedicated interrupt stack, which
+         * forbids interrupt nesting. */
+#if !defined(__AVR_ATmega128__) && !defined(__AVR_ATmega103__)
         cbi(EIMSK, RTL_SIGNAL_BIT);
         sei();
-        ni->ni_rx_pending++;
-        if (NicOverflow(base))
-            ni->ni_tx_bsy++;
-        else {
-            NutEventPostAsync(&ni->ni_tx_rdy);
-        }
-        ni->ni_overruns++;
+#endif
+        NicOverflow(base);
+#if !defined(__AVR_ATmega128__) && !defined(__AVR_ATmega103__)
         cli();
-        sbi(EIMSK, RTL_SIGNAL_BIT);        
+        sbi(EIMSK, RTL_SIGNAL_BIT);
+#endif
+        ni->ni_rx_overruns++;
     } else {
         /*
          * If this is a transmit interrupt, then a packet has been sent. 
          * So we can clear the transmitter busy flag and wake up the 
          * transmitter thread.
          */
-        if (isr & (NIC_ISR_PTX | NIC_ISR_TXE)) {
-            ni->ni_tx_bsy = 0;
-            NutEventPostAsync(&ni->ni_tx_rdy);
-        }
+        if (isr & NIC_ISR_TXE)
+            ni->ni_tx_errors++;
 
         /*
          * If this is a receive interrupt, then wake up the receiver 
          * thread.
          */
-        if (isr & NIC_ISR_PRX) {
-            ni->ni_rx_pending++;
+        if (isr & NIC_ISR_PRX)
             NutEventPostAsync(&ni->ni_rx_rdy);
-        }
+
         if (isr & NIC_ISR_RXE) {
             ni->ni_rx_frame_errors += nic_read(NIC_PG0_CNTR0);
             ni->ni_rx_crc_errors += nic_read(NIC_PG0_CNTR1);
@@ -759,7 +784,6 @@ THREAD(NicRx, arg)
     IFNET *ifn;
     NICINFO *ni;
     NETBUF *nb;
-    u_char rlcnt;
 
     dev = arg;
     ifn = (IFNET *) dev->dev_icb;
@@ -776,54 +800,28 @@ THREAD(NicRx, arg)
             NutSleep(125);
         cbi(EIMSK, RTL_SIGNAL_BIT);
         NicStart((u_char *) (dev->dev_base), ifn->if_mac);
-        ni->ni_curr_page = NIC_START_PAGE + TX_PAGES;
         sbi(EIMSK, RTL_SIGNAL_BIT);
     }
 
-    for (;;) {
-
-        /*
-         * Wait for the arrival of new packets or check
-         * the receiver every two second.
-         */
-        if (ni->ni_rx_pending > 10) {
-            cbi(EIMSK, RTL_SIGNAL_BIT);
-            if (NicStart((u_char *) (dev->dev_base), ifn->if_mac) == 0)
-                ni->ni_rx_pending = 0;
-            ni->ni_curr_page = NIC_START_PAGE + TX_PAGES;
-            sbi(EIMSK, RTL_SIGNAL_BIT);
-        }
-        NutEventWait(&ni->ni_rx_rdy, 2000);
-
+    while (1) {
+        NutEventWait(&ni->ni_rx_rdy, 0);
         /*
          * Fetch all packets from the NIC's internal
          * buffer and pass them to the registered handler.
          */
-        rlcnt = 0;
-        cbi(EIMSK, RTL_SIGNAL_BIT);
-        while (rlcnt++ < 10) {
-            if((nb = NicGetPacket((u_char *) (dev->dev_base), 0)) == 0)
-                break;
+        do {
+            nb = NicGetPacket((u_char *) (dev->dev_base));
+            
             /* The sanity check may fail because the controller is too busy.
-               try another read before giving up and restarting the NIC. */
-            if ((u_short) nb == 0xFFFF) {
-                if((nb = NicGetPacket((u_char *) (dev->dev_base), 0)) == 0) 
-                    break;
-            }
-            if ((u_short) nb == 0xFFFF) {
-                if (NicStart((u_char *) (dev->dev_base), ifn->if_mac) == 0)
-                    ni->ni_rx_pending = 0;
-                ni->ni_curr_page = NIC_START_PAGE + TX_PAGES;
-                ni->ni_rx_pending = 0;
-            } else {
-                ni->ni_rx_pending = 0;
+               restart the NIC. */
+            if ((u_short)nb == 0xFFFF) {
+                NicStart((u_char *) (dev->dev_base), ifn->if_mac);
+                ni->ni_rx_size_errors++;
+            } else if (nb) {
                 ni->ni_rx_packets++;
-                sbi(EIMSK, RTL_SIGNAL_BIT);
-                (*ifn->if_recv) (dev, nb);
-                cbi(EIMSK, RTL_SIGNAL_BIT);
+                (*ifn->if_recv)(dev, nb);
             }
-        }
-        sbi(EIMSK, RTL_SIGNAL_BIT);
+        } while (nb);
     }
 }
 
@@ -840,48 +838,12 @@ THREAD(NicRx, arg)
 int NicOutput(NUTDEVICE * dev, NETBUF * nb)
 {
     int rc = -1;
-    NICINFO *ni;
-    u_char retries = 10;
-    u_char sigmod = 0;
+    NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
-    ni = (NICINFO *) dev->dev_dcb;
-
-    while (ni->ni_tx_bsy && retries--) {
-        if (NutEventWait(&ni->ni_tx_rdy, 200)) {
-            volatile u_char *base = (u_char *) (dev->dev_base);
-
-            /*
-             * If hanging around here too long, there's something wrong 
-             * with the transmit interrupt. Force sending the packet, 
-             * if the transmitter has become inactive.
-             */
-            if(bit_is_set(EIMSK, RTL_SIGNAL_BIT)) {
-                cbi(EIMSK, RTL_SIGNAL_BIT);
-                sigmod = 1;
-            }
-            if ((nic_read(NIC_CR) & NIC_CR_TXP) == 0)
-                ni->ni_tx_bsy = 0;
-            if(sigmod) {
-                sbi(EIMSK, RTL_SIGNAL_BIT);
-                sigmod = 0;
-            }
-        }
+    if (NicPutPacket((u_char *) (dev->dev_base), nb) == 0) {
+        ni->ni_tx_packets++;
+        rc = 0;
     }
-
-    if(bit_is_set(EIMSK, RTL_SIGNAL_BIT)) {
-        cbi(EIMSK, RTL_SIGNAL_BIT);
-        sigmod = 1;
-    }
-    if (ni->ni_tx_bsy == 0) {
-        ni->ni_tx_bsy++;
-        if (NicPutPacket((u_char *) (dev->dev_base), nb) == 0) {
-            ni->ni_tx_packets++;
-            rc = 0;
-        }
-    }
-    if(sigmod)
-        sbi(EIMSK, RTL_SIGNAL_BIT);
-
     return rc;
 }
 
@@ -921,12 +883,6 @@ int NicInit(NUTDEVICE * dev)
     memset(ni, 0, sizeof(NICINFO));
     base = (u_char *) (dev->dev_base);
 
-    cbi(EIMSK, RTL_SIGNAL_BIT);
-    if(ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2])
-        if (NicStart(base, ifn->if_mac))
-            return -1;
-    ni->ni_curr_page = NIC_START_PAGE + TX_PAGES;
-
     /*
      * Start the receiver thread.
      */
@@ -938,9 +894,17 @@ int NicInit(NUTDEVICE * dev)
      */
     if (NutRegisterIrqHandler(&RTL_SIGNAL, NicInterrupt, dev)) 
         return -1;
+        
+    cbi(EIMSK, RTL_SIGNAL_BIT);
+    
+    if(ifn->if_mac[0] | ifn->if_mac[1] | ifn->if_mac[2])
+        if (NicStart(base, ifn->if_mac))
+            return -1;
+
     sbi(EIMSK, RTL_SIGNAL_BIT);
 
     return 0;
 }
+
 
 /*@}*/
