@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.30 2004/02/01 18:49:47 haraldkipp Exp $
+$Id: ChangeLog,v 1.31 2004/02/02 19:05:50 drsung Exp $
+
+2004-01-30  Oliver Schulz  <olischulz@web.de>
+
+	* include/net/if_var.h, net/ifconfig.c, pro/dhcp.c: Gateway ip 
+	address was not set, if static network configuration from 
+	EEPROM is used.
+
+	* net/icmpin.c, net/icmpout.c, net/ipin.c, net/tcpsm.c, 
+	include/sys/socket.h, include/netinet/icmp.h: Added some more ICMP 
+	support. Now the network stack handles incoming ICMP unreachable 
+	messages, and aborts appropiate TCP sockets.
 
 2004-02-01  Harald Kipp  <harald.kipp@egnite.de>
 
