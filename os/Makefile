@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/02/04 18:05:46  drsung
+# Message queueing added.
+#
 # Revision 1.2  2003/07/21 18:12:44  haraldkipp
 # IR and banked memory support added
 #
@@ -87,7 +90,7 @@ SRC2 = 	nutinit.c
 SRC3 =  print.c ir.c \
 	devclose.c devioctl.c devopen.c devread.c devreg.c \
 	devtran.c devwrite.c \
-	ifstream.c timer.c \
+	ifstream.c timer.c msg.c \
 	event.c thread.c bankmem.c heap.c osdebug.c confos.c version.c
 
 OBJ1 = $(SRC1:.c=.o)
