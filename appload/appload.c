@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/02/20 12:31:36  haraldkipp
+ * Ignore target IP if local IP is not configured
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -124,7 +127,7 @@ int main(void)
 
 #ifdef NUTDEBUG
     DebugInit();
-    Debug("\nAppLoad 1.0.2\n");
+    Debug("\nAppLoad 1.0.3\n");
 #endif
 
     /*

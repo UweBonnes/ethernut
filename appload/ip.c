@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -67,6 +67,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/02/20 12:31:36  haraldkipp
+ * Ignore target IP if local IP is not configured
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -160,7 +163,7 @@ int IpInput(u_char proto, u_short tms)
              * Accept this packet, if it is addressed to us.
              */
             rc = htons(ip->ip_len) - (ip->ip_hl * 4);
-            if (ip->ip_dst == INADDR_BROADCAST)
+            if (ip->ip_dst == INADDR_BROADCAST || my_ip == 0)
                 break;
             if (my_ip) {
                 if (ip->ip_dst == my_ip) {
