@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.4  2004/09/01 14:09:49  haraldkipp
+-- AVR interrupt selection simplified
+--
 -- Revision 1.3  2004/08/18 13:46:08  haraldkipp
 -- Fine with avr-gcc
 --
@@ -50,6 +53,7 @@ avr_bit_choice = { "0", "1", "2", "3", "4", "5", "6", "7" }
 avr_port_choice = { "PORTA", "PORTB", "PORTC", "PORTD", "PORTE", "PORTF", "PORTG" }
 avr_pin_choice = { "PINA", "PINB", "PINC", "PIND", "PINE", "PINF", "PING" }
 avr_ddr_choice = { "DDRA", "DDRB", "DDRC", "DDRD", "DDRE", "DDRF", "DDRG" }
+avr_irq_choice = { "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
 repository =
 {
