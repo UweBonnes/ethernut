@@ -2,7 +2,7 @@
 #define _DEV_CHAT_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/11/24 15:25:15  haraldkipp
+ * Made options cnfigurable
+ *
  * Revision 1.6  2004/03/17 11:29:20  haraldkipp
  * Bugfix for ICCAVR
  *
@@ -58,15 +61,33 @@
  *
  */
 
+#include <cfg/chat.h>
+
 #define CHAT_ARG_SEND           0
 #define CHAT_ARG_ABORT          1
 #define CHAT_ARG_TIMEOUT        2
-#define CHAT_ARG_REPORT					3
+#define CHAT_ARG_REPORT         3
 
+/*!
+ * \brief Maximum number of abort strings.
+ */
+#ifndef CHAT_MAX_ABORTS
 #define CHAT_MAX_ABORTS         10
-#define CHAT_MAX_REPORT_SIZE    32
+#endif
 
+/*!
+ * \brief Maximum size of report strings.
+ */
+#ifndef CHAT_MAX_REPORT_SIZE
+#define CHAT_MAX_REPORT_SIZE    32
+#endif
+
+/*!
+ * \brief Default timeout.
+ */
+#ifndef CHAT_DEFAULT_TIMEOUT
 #define CHAT_DEFAULT_TIMEOUT    45
+#endif
 
 typedef struct {
     int chat_fd;
