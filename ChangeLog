@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.68 2004/05/25 12:02:16 olereinhardt Exp $
+$Id: ChangeLog,v 1.69 2004/05/26 09:43:28 olereinhardt Exp $
+
+2004-05-26  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
+	* dev/cs8900.c
+	Now compatible with newer AVRGCC versions. Reading of FrameLength
+	and ReceiveStatus needs to be done high byte first.
+	Added software wakeup and reset to init code (only available 
+	for new code)
 
 2004-05-24  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 
