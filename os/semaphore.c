@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2004/06/03 08:44:50  olereinhardt
+ * According to a hint from oliver I changed NutEventWait to NutEventWaitNext
+ *
  * Revision 1.4  2004/06/03 08:24:21  olereinhardt
  * Changed semaphore behavior in NutSemTryWait too.
  *
@@ -79,7 +82,7 @@ extern "C" {
         sem->value--;
         if (sem->value < 0)
         {
-            NutEventWait(&sem->qhp, NUT_WAIT_INFINITE);
+            NutEventWaitNext(&sem->qhp, NUT_WAIT_INFINITE);
         }
     }
 
