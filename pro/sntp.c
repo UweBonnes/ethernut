@@ -33,6 +33,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2003/11/26 11:16:44  haraldkipp
+ * Portability issues
+ *
  * Revision 1.2  2003/11/24 21:01:42  drsung
  * Now using UDP packet queue.
  *
@@ -79,16 +82,17 @@ struct SNTP_resync_args {
     u_long interval;
 };
 
-static THREAD(SNTP_resync, arg)
+THREAD(SNTP_resync, arg)
 {
     u_long server_addr = ((struct SNTP_resync_args *) arg)->server_addr;
     u_long interval = ((struct SNTP_resync_args *) arg)->interval;
     u_long cur_server_addr = server_addr;
+    int retry = 0;
+    time_t t;
+
     NutHeapFree(arg);
 
     NutThreadSetPriority(63);
-    int retry = 0;
-    time_t t;
     for (;;) {
         if (NutSNTPGetTime(&cur_server_addr, &t)) {     // if any error retry
             if (cur_server_addr != server_addr && server_addr == 0xFFFFFFFF) {
@@ -113,16 +117,18 @@ int NutSNTPGetTime(u_long * server_adr, time_t * t)
 {
     //first check the pointers
     u_long rec_addr;
-    if (t == NULL)
-        return -1;
-    if (server_adr == NULL)
-        return -1;
-
     UDPSOCKET *sock = NULL;     // the udp socket
     sntpframe *data;            // we're using the heap to save stack space
     u_short port;               // source port from incoming packet
     int len;
     int result = -1;
+    u_short bufsize = 256;
+
+
+    if (t == NULL)
+        return -1;
+    if (server_adr == NULL)
+        return -1;
 
     if ((data = NutHeapAllocClear(sizeof(*data))) == NULL)
         goto error;
@@ -132,7 +138,6 @@ int NutSNTPGetTime(u_long * server_adr, time_t * t)
         goto error;
 
     /* Set UDP input buffer to 256 bytes */
-    u_short bufsize = 256;
     NutUdpSetSockOpt(sock, SO_RCVBUF, &bufsize, sizeof(bufsize));
 
     data->mode = 0x1B;          // LI, VN and Mode bit fields (all in u_char mode);

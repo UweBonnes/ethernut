@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2003/11/26 11:13:17  haraldkipp
+ * Portability issues
+ *
  * Revision 1.1  2003/11/24 18:07:37  drsung
  * first release
  *
@@ -63,15 +66,15 @@ int _days[] = {
   Note: This function is thread safe, because it uses *no* a static variable.
   You have to provide a pointer to a tm struct instead.
 */
-int gmtime_r(const time_t * timer, tm * ptm)
+int gmtime_r(CONST time_t * timer, tm * ptm)
 {
-    if (ptm == NULL)            // check pointer
-        return -1;
-
     time_t ctimer = *timer;     // var to calculate with
     u_char isleapyear = 0;      // current year is leap year
     u_long tmptimer;
     int *mdays;                 // pointer to _numdayslp or _numdays
+
+    if (ptm == NULL)            // check pointer
+        return -1;
 
     /*
        First calculate the number of four-year-interval, so calculation
@@ -147,7 +150,7 @@ int gmtime_r(const time_t * timer, tm * ptm)
   _and_ the usage of the returned pointer with NutEnterCritical() and NutExitCritical()!
   Provided for compatibility to std c lib.
 */
-tm *gmtime(const time_t * timer)
+tm *gmtime(CONST time_t * timer)
 {
     if (gmtime_r(timer, &_tb))
         return NULL;

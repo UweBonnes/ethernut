@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2003/11/26 11:14:32  haraldkipp
+ * Portability issues
+ *
  * Revision 1.1  2003/11/24 18:07:37  drsung
  * first release
  *
@@ -48,9 +51,9 @@
 
 #define LONG_MAX   2147483647L
 
-int localtime_r(const time_t * timer, tm * ptm)
+int localtime_r(CONST time_t * timer, tm * ptm)
 {
-    u_long ltime;
+    long ltime;
     if ((*timer > 3 * _DAY_SEC) && (*timer < LONG_MAX - 3 * _DAY_SEC)) {
         /*
          * The date does not fall within the first three, or last
@@ -151,7 +154,7 @@ int localtime_r(const time_t * timer, tm * ptm)
   _and_ the usage of the returned pointer with NutEnterCritical() and NutExitCritical()!
   Provided for compatibility to std c lib.
 */
-tm *localtime(const time_t * timer)
+tm *localtime(CONST time_t * timer)
 {
     if (localtime_r(timer, &_tb))
         return NULL;

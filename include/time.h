@@ -32,6 +32,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2003/11/26 11:15:34  haraldkipp
+ * Portability issues
+ *
  * Revision 1.1  2003/11/24 18:11:03  drsung
  * first release
  *
@@ -58,13 +61,13 @@ struct _tm {
     int tm_isdst;               /* daylight savings time flag */
 };
 
-typedef u_long time_t;
+typedef long time_t;
 
 time_t time(time_t *);
-int gmtime_r(const time_t *, tm *);
-tm *gmtime(const time_t *);
-int localtime_r(const time_t *, tm *);
-tm *localtime(const time_t *);
+int gmtime_r(CONST time_t *, tm *);
+tm *gmtime(CONST time_t *);
+int localtime_r(CONST time_t *, tm *);
+tm *localtime(CONST time_t *);
 
 int stime(time_t * t);
 time_t mktime(tm * timeptr);

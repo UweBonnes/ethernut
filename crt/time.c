@@ -32,6 +32,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2003/11/26 11:14:32  haraldkipp
+ * Portability issues
+ *
  * Revision 1.1  2003/11/24 18:07:37  drsung
  * first release
  *
@@ -46,8 +49,10 @@ static u_long epo_offs = 0;
 
 time_t time(time_t * timer)
 {
+    u_long r;
+
     NutEnterCritical();
-    u_long r = epo_offs + NutGetSeconds();
+    r = epo_offs + NutGetSeconds();
     NutExitCritical();
 
     if (timer)
