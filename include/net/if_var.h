@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/02/02 18:53:49  drsung
+ * gateway ip address was not set, if static network configuration from EEPROM is used.
+ *
  * Revision 1.2  2003/08/05 20:19:13  haraldkipp
  * DNS removed from interface
  *
@@ -163,6 +166,8 @@ typedef struct _PPP_PARAMS {
 } PPP_PARAMS;
 
 
+extern int NutNetIfConfig2(CONST char *name, void *mac_dev, u_long ip_addr,
+                          u_long ip_mask, u_long gateway);
 extern int NutNetIfConfig(CONST char *name, void *mac_dev, u_long ip_addr,
                           u_long ip_mask);
 extern int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask,

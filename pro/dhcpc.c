@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2004/02/02 18:54:43  drsung
+ * gateway ip address was not set, if static network configuration from EEPROM is used.
+ *
  * Revision 1.8  2004/01/14 17:50:41  drsung
  * Fix for Win2k DHCP server applied. Thanks to Damian Slee
  *
@@ -1075,7 +1078,7 @@ int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
     /*
      * We got a valid IP configuration. Configure the interface.
      */
-    return NutNetIfConfig(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask);
+    return NutNetIfConfig2(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask, confnet.cdn_gateway);
 }
 
 /*!

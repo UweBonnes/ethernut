@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:29  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/02 18:54:22  drsung
+ * gateway ip address was not set, if static network configuration from EEPROM is used.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:29  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.24  2003/05/06 18:02:14  harald
  * PPP hack for simple UART support
@@ -234,6 +237,41 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
  */
 int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mask)
 {
+    return NutNetIfConfig2 (name, params, ip_addr, ip_mask, 0);
+}
+
+/*!
+ * \brief Configure a network interface.
+ *
+ * Devices must have been registered by NutRegisterDevice() before 
+ * calling this function.
+ *
+ * For Ethernet devices applications may alternatively call 
+ * NutNetAutoConfig(), which allows automatic configuration by DHCP or 
+ * the so called ARP method.
+ *
+ * \param name    Name of the device to configure.
+ * \param params  Pointer to interface specific parameters. For PPP 
+ *                interfaces this is a pointer to the PPP_PARAMS 
+ *                structure. For Ethernet interfaces this parameter
+ *                is ignored.
+ * \param ip_addr Specified IP address in network byte order. This must 
+ *                be a unique address within the Internet. If you do not 
+ *                directly communicate with other Internet hosts, you can 
+ *                use a locally assigned address. With PPP interfaces this
+ *                may be set to 0.0.0.0, in which case the remote peer
+ *                will be queried for an IP address.
+ * \param ip_mask Specified IP network mask in network byte order.
+ *                Typical Ethernet networks use 255.255.255.0, which 
+ *                allows upto 254 hosts. For PPP interfaces 255.255.255.255
+ *                is the default.
+ * \param gateway Specified IP address of gateway or next router in LAN.
+ *                
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutNetIfConfig2(CONST char *name, void *params, u_long ip_addr, u_long ip_mask, u_long gateway)
+{
     NUTDEVICE *dev;
     IFNET *nif;
 
@@ -249,7 +287,7 @@ int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mas
     nif = dev->dev_icb;
     if (nif->if_type == IFT_ETHER) {
         memcpy(nif->if_mac, params, sizeof(nif->if_mac));
-        return NutNetIfSetup(dev, ip_addr, ip_mask, 0);
+        return NutNetIfSetup(dev, ip_addr, ip_mask, gateway);
     }
 
     /*
