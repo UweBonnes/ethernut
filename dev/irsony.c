@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/01/28 12:13:14  freckle
+ * changed NutEventPostFromIRQ into NutEventPostFromIrq
+ *
  * Revision 1.2  2004/03/18 18:41:18  haraldkipp
  * Bugfix. Now works with ICCAVR
  *
@@ -138,7 +141,7 @@ SIGNAL(SIG_INTERRUPT4)
                     else if (ncode > 1) {
                         ncode = 0;
                         nut_ircode = ccode;
-                        NutEventPostAsync(&nut_irqueue);
+                        NutEventPostFromIrq(&nut_irqueue);
                     }
                 } else
                     lcode = ccode;
