@@ -1,4 +1,39 @@
-$Id: ChangeLog,v 1.168 2005/02/11 00:11:26 hwmaier Exp $
+$Id: ChangeLog,v 1.169 2005/02/16 19:55:46 haraldkipp Exp $
+
+2005-02-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/event.c, os/thread.c, os/timer.c, os/arch/avr_thread.c, 
+	include/sys/thread.h: Introduced a new queue in the kernel.
+	This may currently break any non-AVR port!
+	Instead of inserting a woken-up thread to the priority ordered
+	queue of ready-to-run threads, it will be added to the new 
+	simple linked list of threads waiting to become ready.
+	This results in a more deterministic execution time of
+	NutEventPostFromIrq(), which is running in interrupt context.
+	As a side effect, interrupts do not change the runQueue
+	anymore, which in turn allows much tighter critical
+	sections.
+	All threads collected in the new queue will be moved to the 
+	ready-to-run queue, when the currently running thread is
+	willing to release the CPU. Thus, the non-deterministic
+	task of modifify a priority ordered queue has been moved
+	from interrupt context to application context, which reduces
+	overall interrupt latency.
+	Remark: This is the first step towards guaranteed real-time
+	response, which is independant of the number of running threads 
+	or timers. In a second step, a new timer handling will have
+	to be implemented.
+	Many thanks to Matthias Ringwald and Philipp Blum for their
+	stimulating thoughts and discussions.
+
+	* conf/os/os.nut, nut/dev/usart0avr.c, include/sys/atom.h: 
+	Typo of NUTDEBUG corrected and Philipp Blum's tracer added 
+	(AVRGCC only).
+
+	* os/arch/avr_thread.c: Added attribute 'naked' to the declaration
+	for NutThreadSwitch. Without this attribute GCC may introduced 
+	some harmful prologue and epilogue code. Thanks to Pete Allinson.
+
 
 2005-02-10  Henrik Maier  <hwmaier@users.sourceforge.net>
 
