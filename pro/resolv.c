@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/07/28 19:23:15  drsung
+ * call to DumpDnsResource commented out.
+ *
  * Revision 1.5  2004/04/15 18:38:58  drsung
  * Bugfix if the DNS server sends more than one answer.
  *
@@ -507,7 +510,7 @@ u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type)
                     dor = CreateDnsResource(dor);
                     len += DecodeDnsResource(dor, pkt + len);
 #ifdef NUTDEBUG
-                    DumpDnsResource(dor);
+                    //DumpDnsResource(dor);
 #endif
                     if (dor->dor_type == 1)
                         break;
