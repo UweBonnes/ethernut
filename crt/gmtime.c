@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2003/11/27 09:17:18  drsung
+ * Wrong comment fixed
+ *
  * Revision 1.3  2003/11/26 12:45:20  drsung
  * Portability issues ... again
  *
@@ -87,7 +90,7 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
     tmptimer = (u_long) (ctimer / _FOUR_YEAR_SEC);
     ctimer -= ((time_t) tmptimer * _FOUR_YEAR_SEC);
 
-    /* Determine the correct year within the interval
+    /* Determine the correct year within the interval */
     tmptimer = (tmptimer * 4) + 70;     /* 1970, 1974, 1978,... */
     if (ctimer >= _YEAR_SEC) {
         tmptimer++;             /* 1971, 1975, 1979,... */
