@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/08/14 15:07:18  haraldkipp
+ * Optimization
+ *
  * Revision 1.2  2003/07/20 16:01:01  haraldkipp
  * Bugfix: Send crashed on routing problems.
  *
@@ -128,7 +131,7 @@
 /*@{*/
 
 
-UDPSOCKET *udpSocketList = 0;   /*!< Linked list of all UDP sockets. */
+UDPSOCKET *udpSocketList;   /*!< Linked list of all UDP sockets. */
 static u_short last_local_port = 4096;  /* Unassigned local port. */
 
 /*!
@@ -150,10 +153,10 @@ UDPSOCKET *NutUdpCreateSocket(u_short port)
         do {
             if (++last_local_port == 0)
                 last_local_port = 4096;
-
+            port = htons(last_local_port);
             sock = udpSocketList;
             while (sock) {
-                if (sock->so_local_port == last_local_port)
+                if (sock->so_local_port == port)
                     break;
                 sock = sock->so_next;
             }
