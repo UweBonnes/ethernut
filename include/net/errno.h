@@ -63,6 +63,11 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/05/10 19:17:17  freckle
+ * Only define constants if they are not already defined
+ * This is a fix to get the *nix emulation to compile on mac os x, but the
+ * file is propably obsolete anyway
+ *
  * Revision 1.3  2004/04/14 18:30:58  freckle
  * This is Revision 1.1.1.1 of errno.h. Revision 1.2 was checked in accidently
  *
@@ -81,6 +86,8 @@
  * \file net/errno.h
  * \brief Network error definitions.
  */
+
+#ifndef EINVAL
 
 #define EINVAL          22      /*!< Invalid argument */
 
@@ -117,5 +124,7 @@
 #define EHOSTDOWN       10064   //!< Host is down
 #define EHOSTUNREACH    10065   //!< No route to host
 #define ENOTEMPTY       10066   //!< Directory not empty
+
+#endif
 
 #endif
