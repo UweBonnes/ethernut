@@ -37,6 +37,11 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/10/22 18:04:35  freckle
+ * added #ifdef check to support old-style CTS definition
+ * (old style: setting CTS_SIGNAL, CTS_BIT, CTS_PORT, CTS_PIN and CTS_DDR)
+ * instead of the new single CTS_IRQ definition
+ *
  * Revision 1.3  2004/09/22 08:14:48  haraldkipp
  * Made configurable
  *
@@ -209,6 +214,10 @@ NUTDEVICE devUsartAvr0 = {
  *
  * \ref UART0_CTS_IRQ must be defined in arch/avr.h
  */
+
+// added extra ifdef as test below is true even if UART0_CTS_IRQ is undef
+#ifdef UART0_CTS_IRQ
+
 #if (UART0_CTS_IRQ == INT0)
 #define UART_CTS_SIGNAL sig_INTERRUPT0
 #define UART_CTS_BIT    0
@@ -264,6 +273,20 @@ NUTDEVICE devUsartAvr0 = {
 #define UART_CTS_PORT   PORTE
 #define UART_CTS_PIN    PINE
 #define UART_CTS_DDR    DDRE
+
+#endif
+
+#else
+
+// alternate way to specify the cts line
+#define UART_CTS_PORT   UART0_CTS_PORT
+#define UART_CTS_PIN    UART0_CTS_PIN
+#define UART_CTS_DDR    UART0_CTS_DDR
+// only set CTS_BIT if used and IRQ available
+#ifdef UART1_CTS_BIT
+#define UART_CTS_SIGNAL UART0_CTS_SIGNAL
+#define UART_CTS_BIT    UART0_CTS_BIT
+#endif
 
 #endif
 
