@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/08/05 06:49:44  drsung
+ * Now the correct value for VIRTUALDEVICEs is returned.
+ *
  * Revision 1.5  2004/07/30 19:14:09  drsung
  * filelength implemented for VIRTUALDEVICEs using the new
  * global ioctl command IOCTL_GETFILESIZE.
@@ -81,8 +84,8 @@ long _filelength(int fd)
 
     if (dev == 0) {
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
-        if (vdv->vdv_ioctl)
-            return (*vdv->vdv_ioctl) (vdv, IOCTL_GETFILESIZE, &l);
+        if (vdv->vdv_ioctl && vdv->vdv_ioctl(vdv, IOCTL_GETFILESIZE, &l) == 0)
+            return l;
         else {
             errno = EBADF;
             return -1;
