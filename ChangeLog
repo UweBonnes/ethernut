@@ -1,4 +1,24 @@
-$Id: ChangeLog,v 1.24 2004/01/04 16:48:49 drsung Exp $
+$Id: ChangeLog,v 1.25 2004/01/14 19:51:45 drsung Exp $
+
+2004-01-14  Oliver Schulz  <olischulz@web.de>
+
+	* pro/dhcpc.c, include/pro/dhcp.h: Applied changes by Damian
+	Slee. Now it should be possible to obtain gateway and dns 
+	server ip address from Win2k DHCP servers.
+	
+	* net/lcpin.c: Same bug fix like in IpcpRxConfReq applied
+	also to LcpRxConfReq.
+	
+	* dev/lanc111.c: Speed improvements for transfering bytes
+	from and to nic applied.
+	
+	* net/tcpsock.c: New TCP output buffering implemented. If not
+	configured, it works nearly like the old buffering. To
+	configure, use NutTcpSetSockOpt with new option SO_SNDBUF.
+	
+	* net/tcpsm.c: Now the retransmission timer is also 
+	started on call of NutTcpConnect. 
+
 
 2004-01-04  Oliver Schulz  <olischulz@web.de>
 
