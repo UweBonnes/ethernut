@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2005/01/22 19:14:51  haraldkipp
+# Command line support for external RAM.
+#
 # Revision 1.1  2004/09/10 10:20:27  haraldkipp
 # Replaces .icc
 #
@@ -47,5 +50,6 @@ BIN       = $(TRGT)objcopy
 
 BINDIR    = $(top_srcdir)/bin/$(MCU)
 
-LDFLAGS   = -LC:\icc\lib -m -g -ucrtnut.o -dram_end:0x10ff -bdata:0x100.0x10ff -bfunc_lit:0x8c.0x20000 -dhwstk_size:16 -beeprom:1.4096 -fihx_coff $(LIBS)
+#LDFLAGS   = -LC:\icc\lib -m -g -ucrtenutram.o -dram_end:0x10ff -bdata:0x1100.0x7fff -dFRAM:1 -bfunc_lit:0x8c.0x20000 -dhwstk_size:16 -beeprom:1.4096 -fihx_coff $(LIBS)
+LDFLAGS   = -LC:\icc\lib -m -g -ucrtenutram.o -dram_end:0x7fff -bdata:0x100.0x7fff -dFRAM:1 -bfunc_lit:0x8c.0x20000 -dhwstk_size:16 -beeprom:1.4096 -fihx_coff $(LIBS)
 
