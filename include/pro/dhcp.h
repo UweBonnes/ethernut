@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/12/31 10:52:18  drsung
+ * Bugfixes from Michel Hendriks applied.
+ *
  * Revision 1.5  2004/03/18 11:22:03  haraldkipp
  * Deprecated functions removed
  *
@@ -186,6 +189,7 @@ __BEGIN_DECLS
 /* Function prototypes. */
 extern int NutDhcpIfConfig(CONST char *name, u_char *mac, u_long timeout);
 extern int NutDhcpRelease(CONST char *name, u_long timeout);
+extern int NutDhcpIsConfigured(void);
 
 __END_DECLS
 
