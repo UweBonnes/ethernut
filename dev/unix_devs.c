@@ -330,6 +330,7 @@ static void *UnixDevReadThread( void * arg )
                 NutUnixIrqEventPostAsync( IRQ_UART2_RX,  &dcb->dcb_rx_rdy);
                 break;
         }
+
     }
    
     return 0;
@@ -463,6 +464,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     	
     /* Initialize mutex and condition variable objects */
     pthread_mutex_init(&unix_devs_mutex, NULL);
+    pthread_mutex_init(&((UNIXDCB*)dev->dev_dcb)->dcb_rx_mutex, NULL);
 
     pthread_attr_init(&unix_devs_attr);
     pthread_attr_setdetachstate(&unix_devs_attr, PTHREAD_CREATE_JOINABLE);
@@ -471,7 +473,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     pthread_cond_init(&unix_devs_cv, NULL);
     pthread_cond_init( &((UNIXDCB*)dev->dev_dcb)->dcb_rx_trigger, NULL);
 
-    // get thrad struct
+    // get thread struct
     thread = malloc(sizeof(pthread_t));
 
     // lock mutex and start thread
@@ -557,11 +559,15 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
         FD_ZERO(&rfd_set);
         FD_SET(fd, &rfd_set);
         ret = select(fd + 1, &rfd_set, NULL, NULL, &timeout);
-        
+      
         if (FD_ISSET(fd, &rfd_set) == 0) {
+
             // no data available. let's block the nut way...
 
             // printf("UnixDevRead(%s): no data ready, signaling read thread\n\r", nf->nf_dev->dev_name);
+
+            // prepared signaling
+            dcb->dcb_rx_rdy = 0;
 
             // lock mutex and signal read thread
             pthread_mutex_lock(&dcb->dcb_rx_mutex);
@@ -571,13 +577,12 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
             // printf("UnixDevRead(%s): no data ready, waiting for answer\n\r", nf->nf_dev->dev_name);
 
             // wait for data to be ready
-            dcb->dcb_rx_rdy = 0;
             NutEventWait( &dcb->dcb_rx_rdy, dcb->dcb_rtimeout);
 
             // printf("UnixDevRead(%s): got answer\n\r", nf->nf_dev->dev_name);
 
         }
-        
+
         //  printf("UnixDevRead(%s): before read\n\r", nf->nf_dev->dev_name);
         newBytes = read( fd, buffer, len);
         // printf("UnixDevRead(%s): read some bytes. res = %d\n\r", nf->nf_dev->dev_name, newBytes);
@@ -589,7 +594,6 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
                 // timeout. No data available right now
                 // printf("UnixDevRead: no bytes available, trying again\n\r");
                 errno = 0;
-                NutSleep(100);
                 continue;
             } else {
 
