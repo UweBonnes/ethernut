@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.33 2004/02/06 19:25:39 drsung Exp $
+$Id: ChangeLog,v 1.34 2004/02/08 17:17:46 drsung Exp $
+
+2004-02-08  Oliver Schulz  <olischulz@web.de>
+
+	* net/arpcache.c: Arp entries with set ATF_PERM are not removed from the 
+	cache list any more.
+
 
 2004-02-06  Oliver Schulz  <olischulz@web.de>
 
