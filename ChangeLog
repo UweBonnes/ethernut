@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.134 2004/11/08 21:48:50 drsung Exp $
+$Id: ChangeLog,v 1.135 2004/11/12 16:26:41 olereinhardt Exp $
+
+2004-11-11  Ole Reinhardt
+	* dev/sja1000.c
+	Added critical section around NutEventPostAsync
 
 2004-11-08  Oliver Schulz  <olischulz@web.de>
 
