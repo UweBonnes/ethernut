@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:13  haraldkipp
- * Initial revision
+ * Revision 1.2  2004/02/02 17:51:10  drsung
+ * gateway ip address was not set, if static network configuration from EEPROM is used.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:13  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/02/04 18:00:45  harald
  * Version 3 released
@@ -105,6 +108,7 @@ extern "C" {
 extern void NutIcmpInput(NUTDEVICE *dev, NETBUF *nb);
 extern int NutIcmpOutput(u_char type, u_long dest, NETBUF *nb);
 extern int NutIcmpReply(u_char type, u_char code, u_long spec, u_long dest, NETBUF *nb);
+extern int NutIcmpResponse(u_char type, u_char code, u_long spec, NETBUF * nb);
 
 #ifdef __cplusplus
 }
