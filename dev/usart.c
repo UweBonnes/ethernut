@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/05/24 20:17:15  drsung
+ * Added function UsartSize to return number of chars in input buffer.
+ *
  * Revision 1.3  2004/05/20 09:05:07  drsung
  * Memory was allocated twice for NUTFILE in UsartOpen.
  *
@@ -823,6 +826,32 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
     }
     return rc;
+}
+
+/*!
+ * \brief Retrieves the number of characters in input buffer.
+ *
+ * This function is called by the low level size routine of the C runtime 
+ * library, using the _NUTDEVICE::dev_size entry.
+ *
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a 
+ *               previous call to UsartOpen().
+ *
+ * \return The number of bytes currently stored in input buffer.
+ */
+long UsartSize (NUTFILE *fp)
+{
+    long avail;
+    NUTDEVICE *dev = fp->nf_dev;
+    USARTDCB *dcb = dev->dev_dcb;
+    RINGBUF *rbf = &dcb->dcb_rx_rbf;
+
+    /* Atomic access to the ring buffer counter. */
+    NutEnterCritical();
+    avail = rbf->rbf_cnt;
+    NutExitCritical();
+
+    return avail;
 }
 
 

@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/05/24 20:17:15  drsung
+ * Added function UsartSize to return number of chars in input buffer.
+ *
  * Revision 1.1  2003/12/15 19:25:33  haraldkipp
  * New USART driver added
  *
@@ -140,7 +143,7 @@ NUTDEVICE devUsartAvr0 = {
     UsartWrite_P,               /* Write data from program space to device, dev_write_P. */
     UsartOpen,                  /* Open a device or file, dev_open. */
     UsartClose,                 /* Close a device or file, dev_close. */
-    0                           /* Request file size, dev_size. */
+    UsartSize                   /* Request file size, dev_size. */
 };
 /*@}*/
 

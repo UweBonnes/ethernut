@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/05/24 20:19:49  drsung
+ * Added function UsartSize to return number of chars in input buffer.
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -372,6 +375,7 @@ extern int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len);
 #endif
 extern NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
 extern int UsartClose(NUTFILE * fp);
+extern long UsartSize (NUTFILE *fp);
 /*@}*/
 
 __END_DECLS
