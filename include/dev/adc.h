@@ -208,6 +208,26 @@ void ADCBufferFlush(void);
 void ADCStartConversion(void);
 
 
+// ADC_StartLowNoiseConversion
+//                                                    
+// Set Conversion Mode to SINGLE_CONVERSION, Enters 
+// adc sleep mode and wait until conversion interrupt occurs.
+// CPU will go to sleep mode!!!
+// BE AWARE OF WHAT IS WRITTEN IN THE AVR DATASHEET
+//
+// NOTE: Converted values from the ADC are stored
+//       in a local buffer. The user must call
+//       ADC_read to obtain these values.
+//
+//       Only implemented for avr_gcc. Any other architecture 
+//       and compiler will use normal conversion
+// pre:  none
+// post: The ADC has started conversion. Completion of
+//       any conversions is not guaranteed.
+
+
+void ADCStartLowNoiseConversion(void);
+
 // ADC_StopConversion
 //                                                    
 // Stops ADC conversion if ADC is in free-running

@@ -40,6 +40,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/03/04 11:42:05  olereinhardt
+ * Added function void ADCStartLowNoiseConversion(void)
+ * This function enters sleep mode!!! Be shure to read the AVR datasheet before using this function
+ *
  * Revision 1.1  2004/08/02 10:05:25  olereinhardt
  * First checkin. ADC driver for ATMega128 / GCC
  *
@@ -56,7 +60,7 @@
 #ifdef __GNUC__
 
 #include <string.h>
-
+#include <avr/sleep.h>
 #include <sys/heap.h>
 #include <sys/atom.h>
 #include <sys/nutconfig.h>
@@ -81,6 +85,19 @@
 #endif
 
 #define ADC_BUF_SIZE 16
+
+#if defined(__GNUC__) && defined(__AVR_ENHANCED__)
+u_char adc_sleep_mode = SLEEP_MODE_ADC;
+
+/* AT90CAN128 uses a different register to enter sleep mode */
+#if defined(SMCR)
+#define AVR_SLEEP_CTRL_REG    SMCR
+#else
+#define AVR_SLEEP_CTRL_REG    MCUCR
+#endif
+#endif
+
+
 
 /********** DRIVER GLOBALS **********/
 adc_mode_t current_mode;
@@ -272,6 +289,25 @@ void ADCBufferFlush(void)
 void ADCStartConversion()
 {
     sbi(ADCSR, ADSC);
+}
+
+void ADCStartLowNoiseConversion()
+{
+    u_char sleep_mode;
+    ADCSetMode(SINGLE_CONVERSION);
+
+#if defined(__GNUC__) && defined(__AVR_ENHANCED__)
+    sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
+    set_sleep_mode(adc_sleep_mode);
+    /* Note:  avr-libc has a sleep_mode() function, but it's broken for
+    AT90CAN128 with avr-libc version earlier than 1.2 */
+    AVR_SLEEP_CTRL_REG |= _BV(SE);
+    __asm__ __volatile__ ("sleep" "\n\t" :: );
+    AVR_SLEEP_CTRL_REG &= ~_BV(SE);
+    set_sleep_mode(sleep_mode);
+#else
+    sbi(ADCSR, ADSC);
+#endif    
 }
 
 void ADCStopConversion()
