@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/11/04 17:54:47  haraldkipp
+ * PHY configuration timing changed again for reliable linking
+ *
  * Revision 1.2  2003/11/03 17:12:53  haraldkipp
  * Allow linking with RTL8019 driver.
  * Links more reliable to 10 MBit networks now.
@@ -45,7 +48,6 @@
  */
 
 #include <string.h>
-#include <stdio.h>
 
 #include <cfg/ethernut.h>
 
@@ -62,6 +64,10 @@
 
 #include <dev/irqreg.h>
 #include <dev/lanc111.h>
+
+#ifdef NUTDEBUG
+#include <stdio.h>
+#endif
 
 /*!
  * \addtogroup xgSmscRegs
@@ -577,6 +583,7 @@ static int NicPhyConfig(void)
      * becomes zero. We sleep 63 ms before each poll and
      * give up after 3 retries. 
      */
+    //printf("Reset PHY..");
     NicPhyWrite(NIC_PHYCR, PHYCR_RST);
     for (phy_to = 0;; phy_to++) {
         NutSleep(63);
@@ -585,6 +592,7 @@ static int NicPhyConfig(void)
         if (phy_to > 3)
             return -1;
     }
+    //printf("OK\n");
 
     /* Store PHY status output. */
     phy_sor = NicPhyRead(NIC_PHYSOR);
@@ -602,22 +610,28 @@ static int NicPhyConfig(void)
      * Advertise our capabilities, initiate auto negotiation
      * and wait until this has been completed.
      */
+    //printf("Negotiate..");
     NicPhyWrite(NIC_PHYANAD, PHYANAD_TX_FDX | PHYANAD_TX_HDX | PHYANAD_10FDX | PHYANAD_10_HDX | PHYANAD_CSMA);
+    NutSleep(63);
     for (phy_to = 0, phy_sr = 0;; phy_to++) {
         /* Give up after 10 seconds. */
-        if (phy_to >= 24)
+        if (phy_to >= 1024)
             return -1;
         /* Restart auto negotiation every 4 seconds or on failures. */
-        if ((phy_to & 7) == 0 /* || (phy_sr & PHYSR_REM_FLT) != 0 */) {
+        if ((phy_to & 127) == 0 /* || (phy_sr & PHYSR_REM_FLT) != 0 */) {
             NicPhyWrite(NIC_PHYCR, PHYCR_ANEG_EN | PHYCR_ANEG_RST);
-            NutSleep(1000);
+            //printf("Restart..");
+            NutSleep(63);
         }
         /* Check if we are done. */
         phy_sr = NicPhyRead(NIC_PHYSR);
+        //printf("[SR %04X]", phy_sr);
         if (phy_sr & PHYSR_ANEG_ACK)
             break;
-        NutSleep(250);
+        NutSleep(63);
     }
+    //printf("OK\n");
+
     return 0;
 }
 
@@ -707,9 +721,11 @@ static int NicStart(CONST u_char * mac)
         return -1;
 
     /* Set MAC address. */
+    //printf("Set MAC %02X%02X%02X%02X%02X%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     nic_bs(1);
     for (i = 0; i < 6; i++)
         nic_outlb(NIC_IAR + i, mac[i]);
+    //printf("OK\n");
 
     /* Enable interrupts. */
     nic_bs(2);
@@ -891,6 +907,7 @@ static int NicPutPacket(NETBUF * nb)
     u_char odd = 0;
     u_char imsk;
 
+    //printf("[P]");
     /*
      * Calculate the number of bytes to be send. Do not send packets 
      * larger than the Ethernet maximum transfer unit. The MTU
@@ -1001,6 +1018,7 @@ THREAD(NicRxLanc, arg)
         //printf("[WM]");
         NutSleep(63);
     }
+    ifn->if_mac[5] = 1;
     NicStart(ifn->if_mac);
 
     sbi(EICR, 2);
@@ -1019,6 +1037,7 @@ THREAD(NicRxLanc, arg)
          * check the receiver every two second.
          */
         NutEventWait(&ni->ni_rx_rdy, 2000);
+        //printf("[P]");
 
         /*
          * Fetch all packets from the NIC's internal
