@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/04/05 17:38:45  haraldkipp
+ * ARM7 memory alignment bugs fixed.
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -115,7 +118,7 @@ extern "C" {
  * \typedef ETHERHDR
  * \brief Ethernet protocol header type.
  */
-typedef struct ether_header {
+typedef struct __attribute__((packed)) ether_header {
     u_char  ether_dhost[6];     /*!< \brief Destination MAC address. */
     u_char  ether_shost[6];     /*!< \brief Source MAC address. */
     u_short ether_type;         /*!< \brief Protocol type. */

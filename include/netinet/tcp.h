@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/04/05 17:38:45  haraldkipp
+ * ARM7 memory alignment bugs fixed.
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -127,7 +130,7 @@ extern "C" {
  * \typedef TCPHDR
  * \brief TCP protocol header type.
  */
-typedef struct tcphdr {
+typedef struct __attribute__ ((packed)) tcphdr {
     u_short th_sport;       /*!< \brief Source port. */
     u_short th_dport;       /*!< \brief Destination port. */
     u_long  th_seq;         /*!< \brief Sequence number of first octet in this segment. */

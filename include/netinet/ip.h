@@ -2,7 +2,7 @@
 #define _NETINET_IP_H_
 
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/05 17:38:45  haraldkipp
+ * ARM7 memory alignment bugs fixed.
+ *
  * Revision 1.3  2004/12/16 18:47:02  haraldkipp
  * Added Damian Slee's IP filter function.
  *
@@ -118,13 +121,13 @@
 /*!
  * \brief Internet header type.
  */
-typedef struct ip IPHDR;
+typedef struct __attribute__ ((packed)) ip IPHDR;
 
 /*!
  * \struct ip ip.h netinet/ip.h
  * \brief Structure of an internet header.
  */
-struct ip {
+struct __attribute__ ((packed)) ip {
 #ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned ip_hl:4,           /*!< \brief Header length. */
