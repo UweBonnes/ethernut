@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2004/11/08 18:10:45  haraldkipp
+ * Interrupt handling removed.
+ *
  * Revision 1.1  2004/10/17 15:14:21  haraldkipp
  * Added Nintendo Game Boy Advance with Xport 2.0 from Charmed Labs.
  *
@@ -153,11 +156,8 @@ _start:
         bx     r0
         .thumb
 _enter_thumb:
-        /* Set interrupt vectors. */
-        ldr     r1, =__intr_vector_buf
-        ldr     r0, =intr_main
-        str     r0, [r1]
 
+        /* Initialize data segment. */
         ldr     r1, =__rom_data_start
         ldr     r2, =__ram_data_start
         ldr     r4, =__ram_data_end
@@ -171,97 +171,10 @@ copy_data:
         bne     copy_data
 
 enter_main:
-        ldr     r0, =NutAppMain
+        ldr     r0, =NutInit
         bx      r0
-@        bl      NutInit
 
 exit_loop:
         b       exit_loop
-
-        .EXTERN     IntrTable
-intr_main:
-                                         @ Multiple interrupts support
-        mov     r2, #0x4000000           @ REG_BASE
-        ldr     r3, [r2,#0x200]!         @ r2 = IE : r3 = IF|IE
-        ldrh    r1, [r2, #0x8]           @ r1 = IME
-        mrs     r0, spsr
-        stmfd   sp!, {r0-r2,lr}          @ {spsr, IME, REG_IE, lr}  // IF|IE
-
-        mov     r0, #1                   @ IME = 1 (To permit multiple interrupts if
-                                         @ an interrupt occurs)
-        strh    r0, [r2, #0x8]
-        and     r1, r3, r3, lsr #16      @ r1 = IE & IF
-        ldr     r12, =IntrTable
-
-        ands    r0, r1, #1               @ V-blank interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #2               @ H-blank interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #4               @ V-counter interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #8               @ Timer 0 interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #0x10            @ Timer 1 interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #0x20            @ Timer 2 interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #0x40            @ Timer 3 interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #0x80            @ Serial Communication Interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #0x100           @ DMA 0 interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #0x200           @ DMA 1 interrupt
-        bne     jump_intr
-        add     r12,r12, #4
-        ands    r0, r1, #0x400           @ DMA 2 interrupt
-bne     jump_intr
-add     r12,r12, #4
-ands    r0, r1, #0x800           @ DMA 3 interrupt
-bne     jump_intr
-add     r12,r12, #4
-ands    r0, r1, #0x1000          @ Key interrupt
-bne     jump_intr
-add     r12,r12, #4
-ands    r0, r1, #0x2000          @ Cart interrupt
-
-jump_intr:
-        strh    r0, [r2, #2]             @ Clear IF
-
-@ Enable multiple interrupts & switch to system
-@ mode if __SwitchToUserStack is defined.
-
-        mrs     r3, cpsr
-        bic     r3, r3, #0xdf            @ \__
-        orr     r3, r3, #0x1f            @ /  --> Enable IRQ & FIQ. Set CPU mode to System.
-        msr     cpsr, r3
-
-        ldr     r0, [r12]
-
-        stmfd   sp!, {lr}
-        adr     lr, IntrRet
-        bx      r0
-IntrRet:
-        ldmfd   sp!, {lr}
-
-        mrs     r3, cpsr
-        bic     r3, r3, #0xdf            @ \__
-        orr     r3, r3, #0x92            @ /  --> Disable IRQ. Enable FIQ. Set CPU mode to IRQ.
-        msr     cpsr, r3
-
-        ldmfd   sp!, {r0-r2,lr}          @ {spsr, IME, REG_IE, lr}  //IF|IE
-        strh    r1,  [r2, #0x8]          @ restore REG_IME
-        msr     spsr, r0                 @ restore spsr
-        bx      lr
-
 
         .end
