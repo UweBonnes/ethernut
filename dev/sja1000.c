@@ -46,8 +46,8 @@
 
 /*
  * $Log$
- * Revision 1.2  2004/06/08 10:18:11  olereinhardt
- * If macro MCAN is not defined some necessary defines need to be set by default (Interrupt defines)
+ * Revision 1.3  2004/06/08 14:50:25  olereinhardt
+ * Removed receive thread and moved input data handling into irq handler. Much faster now on reception.
  *
  * Revision 1.1  2004/06/07 15:11:49  olereinhardt
  * Initial checkin
@@ -100,7 +100,6 @@ struct _CANBuffer {
     u_short datalength;         // the length of the data currently in the buffer
     u_short dataindex;          // the index into the buffer where the data starts
     SEM empty;
-    SEM mutex;
     SEM full;
 };
 
@@ -110,21 +109,15 @@ typedef struct _CANBuffer CANBuffer;
 #define CAN_BufSize 64
 #endif
 
-CANFRAME *CAN_RX_BUF_Frame;
-CANFRAME *CAN_TX_BUF_Frame;
-
 CANBuffer CAN_RX_BUF;
 CANBuffer CAN_TX_BUF;
 
-void CANBufferInit(CANBuffer * buffer, CANFRAME * start, u_short size)
+void CANBufferInit(CANBuffer * buffer,u_short size)
 {
-    start = NutHeapAlloc(size * sizeof(CANFRAME));
-
-    NutSemInit(&buffer->mutex, 1);
     NutSemInit(&buffer->full, 0);
     NutSemInit(&buffer->empty, CAN_BufSize - 1);
     // set start pointer of the buffer
-    buffer->dataptr = start;
+    buffer->dataptr = NutHeapAlloc(size * sizeof(CANFRAME));
     buffer->size = size;
     // initialize index and length
     buffer->dataindex = 0;
@@ -133,12 +126,12 @@ void CANBufferInit(CANBuffer * buffer, CANFRAME * start, u_short size)
 
 // access routines
 
-CANFRAME CANBufferGet(CANBuffer * buffer)
+CANFRAME CANBufferGetMutex(CANBuffer * buffer)
 {
     CANFRAME data;
 
     NutSemWait(&buffer->full);
-    NutSemWait(&buffer->mutex);
+//    NutSemWait(&buffer->mutex);
     // check to see if there's data in the buffer
     if (buffer->datalength) {
         // get the first frame from buffer
@@ -150,16 +143,16 @@ CANFRAME CANBufferGet(CANBuffer * buffer)
         }
         buffer->datalength--;
     }
-    NutSemPost(&buffer->mutex);
+//    NutSemPost(&buffer->mutex);
     NutSemPost(&buffer->empty);
     // return
     return data;
 }
 
-void CANBufferPut(CANBuffer * buffer, CANFRAME * data)
+void CANBufferPutMutex(CANBuffer * buffer, CANFRAME * data)
 {
     NutSemWait(&buffer->empty);
-    NutSemWait(&buffer->mutex);
+//    NutSemWait(&buffer->mutex);
 
     // make sure the buffer has room
     if (buffer->datalength < buffer->size) {
@@ -170,8 +163,39 @@ void CANBufferPut(CANBuffer * buffer, CANFRAME * data)
         // return success
     }
 
-    NutSemPost(&buffer->mutex);
+//    NutSemPost(&buffer->mutex);
     NutSemPost(&buffer->full);
+}
+
+CANFRAME CANBufferGet(CANBuffer * buffer)
+{
+    CANFRAME data;
+
+    // check to see if there's data in the buffer
+    if (buffer->datalength) {
+        // get the first frame from buffer
+        data = buffer->dataptr[buffer->dataindex];
+        // move index down and decrement length
+        buffer->dataindex++;
+        if (buffer->dataindex >= buffer->size) {
+            buffer->dataindex %= buffer->size;
+        }
+        buffer->datalength--;
+    }
+    // return
+    return data;
+}
+
+void CANBufferPut(CANBuffer * buffer, CANFRAME * data)
+{
+    // make sure the buffer has room
+    if (buffer->datalength < buffer->size) {
+        // save frame at end of buffer
+        buffer->dataptr[(buffer->dataindex + buffer->datalength) % buffer->size] = *data;
+        // increment the length
+        buffer->datalength++;
+        // return success
+    }
 }
 
 u_short CANBufferFree(CANBuffer * buffer)
@@ -223,7 +247,7 @@ void SJAOutput(NUTDEVICE * dev, CANFRAME * frame)
 
     ci = (CANINFO *) dev->dev_dcb;
 
-    CANBufferPut(&CAN_TX_BUF, frame);
+    CANBufferPutMutex(&CAN_TX_BUF, frame);
     NutEventPostAsync(&ci->can_tx_rdy);
 }
 
@@ -242,7 +266,23 @@ void SJAOutput(NUTDEVICE * dev, CANFRAME * frame)
 
 void SJAInput(NUTDEVICE * dev, CANFRAME * frame)
 {
-    *frame = CANBufferGet(&CAN_RX_BUF);
+    u_char ready = 0;
+    CANINFO *ci;
+    
+    ci = (CANINFO *) dev->dev_dcb;
+    while (!ready)
+    {
+        if (CAN_RX_BUF.datalength==0) 
+            NutEventWait(&ci->can_rx_rdy, NUT_WAIT_INFINITE);
+        NutEnterCritical();
+        if (CAN_RX_BUF.datalength)
+        {
+            *frame = CANBufferGet(&CAN_RX_BUF);
+            ready  = 1;
+        }
+        NutExitCritical();
+    }
+    SJA1000_IEN |= (RIE_Bit);       // enables IRQ since buffer has space
 }
 
 /*!
@@ -426,7 +466,7 @@ void SJATxFrame(CANFRAME * CAN_frame)
         SJA1000_Tx9 = CAN_frame->byte[6];
         SJA1000_Tx10 = CAN_frame->byte[7];
     }
-    SJA1000_CMD = (TR_Bit);     // Start Transmission
+    SJA1000_CMD = TR_Bit;     // Start Transmission
 }
 
 /*!
@@ -494,49 +534,16 @@ THREAD(CAN_Tx, arg)
     dev = arg;
     ci = (CANINFO *) dev->dev_dcb;
 
-    NutThreadSetPriority(9);
+    NutThreadSetPriority(16);
 
     while (1) {
         NutEventWait(&ci->can_tx_rdy, NUT_WAIT_INFINITE);
         while ((SJA1000_STATUS & TBS_Bit) == TBS_Bit)   // if transmit buffer released
         {
-            out_frame = CANBufferGet(&CAN_TX_BUF);
+            out_frame = CANBufferGetMutex(&CAN_TX_BUF);
             SJATxFrame(&out_frame);     // using SJA1000 TX buffer
             ci->can_tx_frames++;
         }
-    }
-}
-
-
-/*! 
- * \fn CAN_Rx(void *arg)
- * \brief CAN receiver thread.
- *
- * This thread is woken up by the interrupt handler and reads data from
- * the SJA1000 input buffer. Then it wries this data into our own input buffer
- * and reenables interrupts. If input buffer is full, the write opration will 
- * block and interrupts will only be enabled on reading from this buffer again.
- * 
- * It runs with high priority.
- */
-THREAD(CAN_Rx, arg)
-{
-    NUTDEVICE *dev;
-    CANINFO *ci;
-    CANFRAME in_frame;
-
-    dev = arg;
-    ci = (CANINFO *) dev->dev_dcb;
-
-    NutThreadSetPriority(9);
-
-    while (1) {
-        NutEventWait(&ci->can_rx_rdy, NUT_WAIT_INFINITE);
-
-        SJARxFrame(&in_frame);
-        ci->can_rx_frames++;
-        CANBufferPut(&CAN_RX_BUF, &in_frame);
-        SJA1000_IEN |= (RIE_Bit);       // enables IRQ since buffer has space
     }
 }
 
@@ -545,13 +552,14 @@ THREAD(CAN_Rx, arg)
  * \brief SJA interrupt entry.
  * 
  * The interrupt handler posts events to the rx and tx thread wait queue.
- * receive interrupt will be disabled on reception and will be enabled by there
+ * receive interrupt will be disabled on reception and will be enabled by the
  * rx thread again. Otherwise interrupt would not stop (level triggered)
  */
 static void SJAInterrupt(void *arg)
 {
     CANINFO *ci;
     volatile u_char irq = SJA1000_INT;
+    CANFRAME in_frame;
     
     ci = (CANINFO *) (((NUTDEVICE *) arg)->dev_dcb);
 
@@ -564,8 +572,15 @@ static void SJAInterrupt(void *arg)
 
     if ((irq & RI_Bit) == RI_Bit)       // Receive IRQ fired
     {
-        SJA1000_IEN &= (~RIE_Bit);      // Disable RX IRQ until data has been poped from input buffer
-        NutEventPostAsync(&ci->can_rx_rdy);
+        if (CAN_RX_BUF.size-CAN_RX_BUF.datalength > 0)
+        {
+            SJARxFrame(&in_frame);
+            CANBufferPut(&CAN_RX_BUF, &in_frame);
+            if (CAN_RX_BUF.size==CAN_RX_BUF.datalength)
+                SJA1000_IEN &= (~RIE_Bit);      // Disable RX IRQ until data has been poped from input buffer
+            NutEventPostAsync(&ci->can_rx_rdy);
+            ci->can_rx_frames++;
+        }
     }
 
     if ((irq & EI_Bit) == EI_Bit)       //Error IRQ fired
@@ -575,6 +590,7 @@ static void SJAInterrupt(void *arg)
     } else if ((irq & DOI_Bit) == DOI_Bit)      //Error IRQ fired
     {
         ci->can_overruns++;
+        SJA1000_CMD = CDO_Bit;          // Clear DO status;
         // TODO: Handle overrun
     }
 }
@@ -603,8 +619,8 @@ int SJAInit(NUTDEVICE * dev)
     memset(dev->dev_dcb, 0, sizeof(CANINFO));
     ci = (CANINFO *) dev->dev_dcb;
 
-    CANBufferInit(&CAN_RX_BUF, CAN_RX_BUF_Frame, CAN_BufSize);
-    CANBufferInit(&CAN_TX_BUF, CAN_TX_BUF_Frame, CAN_BufSize);
+    CANBufferInit(&CAN_RX_BUF, CAN_BufSize);
+    CANBufferInit(&CAN_TX_BUF, CAN_BufSize);
 
     while ((SJA1000_MODECTRL & RM_RR_Bit) == 0x00)      // entering reset mode
         SJA1000_MODECTRL = (RM_RR_Bit | SJA1000_MODECTRL);
@@ -697,7 +713,6 @@ int SJAInit(NUTDEVICE * dev)
     temp = SJA1000_INT;         // Read interrupt register to clear pendin bits    
     sbi(EIMSK, SJA_SIGNAL_BIT);
     sbi(PORTE, 7);
-    NutThreadCreate("sjacanrx", CAN_Rx, dev, 256);
     NutThreadCreate("sjacantx", CAN_Tx, dev, 256);
 
     NutExitCritical();
