@@ -1,5 +1,12 @@
-$Id: ChangeLog,v 1.87 2004/07/20 08:33:17 freckle Exp $
+$Id: ChangeLog,v 1.88 2004/07/27 19:33:52 drsung Exp $
 
+2004-05-23  Oliver Schulz  <olischulz@web.de>
+
+    * crt/strtok_r.c, include/strtok_r.h: Implementation of strtok_r adjusted to 
+    the POSIX 1c standard. This will just affect the ImageCraft compiler, 
+    because avrlibc already supplies this function.
+
+    
 2004-07-19  Matthias Ringwald <mringwal@inf.ethz.ch>
     * os/event.c: Fixed NutPostEvent to give up CPU
     if there is another thread ready with same priority.
