@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.72 2004/06/07 15:37:26 olereinhardt Exp $
+$Id: ChangeLog,v 1.73 2004/06/07 16:50:02 haraldkipp Exp $
+
+2004-06-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf: Still incomplete configuration scripts added.
+
+	* tools/nutconf: Working configuration tool replaced by very
+	incomplete re-design. It will read the Lua scripts from the
+	conf directory and display an editable tree of configuration
+	items.
+
 
 2004-06-07  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 	* dev/sja1000.c, dev/can_dev.c
@@ -24,6 +34,16 @@ $Id: ChangeLog,v 1.72 2004/06/07 15:37:26 olereinhardt Exp $
 	and ReceiveStatus needs to be done high byte first.
 	Added software wakeup and reset to init code (only available 
 	for new code)
+
+2004-06-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf: Still incomplete configuration scripts added.
+
+	* tools/nutconf: Working configuration tool replaced by very
+	incomplete re-design. It will read the Lua scripts from the
+	conf directory and display an editable tree of configuration
+	items.
+
 
 2004-05-24  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 
