@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/01/14 19:35:19  drsung
+ * New TCP output buffer handling and fixed not starting retransmission timer for NutTcpConnect.
+ *
  * Revision 1.6  2003/11/28 19:49:58  haraldkipp
  * TCP connections suddenly drop during transmission.
  * Bug in retransmission timer fixed.
@@ -263,6 +266,10 @@ static void NutTcpProcessSyn(TCPSOCKET * sock, IPHDR * ih, TCPHDR * th)
         mss = nif->if_mtu - sizeof(IPHDR) - sizeof(TCPHDR);
         if (sock->so_mss == 0 || sock->so_mss > mss)
             sock->so_mss = mss;
+
+        /* Limit output buffer size to mms */
+        if (sock->so_devobsz > sock->so_mss)
+            sock->so_devobsz = sock->so_mss;
     }
 }
 
@@ -651,6 +658,12 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
      * transmit a SYN packet.
      */
     NutTcpStateChange(sock, TCPS_SYN_SENT);
+
+    /* 
+     * Start retransmission timer.
+     */
+    if (sock->so_tx_nbq)
+        sock->so_retran_time = (u_short) NutGetMillis();
 
     /*
      * Block application.
