@@ -2,8 +2,10 @@
 
 #include "utils.h"
 
-/*
- * Delay by executing a given number of NOPs.
+/*!
+ * \brief Delay by executing a given number of NOPs.
+ *
+ * parm nops 2,000,000 is roughly 1 second.
  */
 void Delay(long nops)
 {
