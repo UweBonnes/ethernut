@@ -1,6 +1,12 @@
-$Id: ChangeLog,v 1.145 2005/01/03 08:41:21 haraldkipp Exp $
+$Id: ChangeLog,v 1.146 2005/01/10 12:42:18 olereinhardt Exp $
 
-2004-01-02  Harald Kipp  <harald.kipp@egnite.de>
+2005-01-10  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+
+	* include/arch/avr.h
+	Included check if atof is just defined (needed by 
+	new avr-libc versions on debian unstable)
+
+2005-01-02  Harald Kipp  <harald.kipp@egnite.de>
 
 	* net/tcpsm.c: Replaced unprotected calls to NutEventPostAsync()
 	by late calls to NutEventPost(). This should fix the infrequent
@@ -11,7 +17,7 @@ $Id: ChangeLog,v 1.145 2005/01/03 08:41:21 haraldkipp Exp $
 	* net/tcpsock.c: Simplyfied NutTcpSend().
 
 
-2004-01-02  Harald Kipp  <harald.kipp@egnite.de>
+2005-01-02  Harald Kipp  <harald.kipp@egnite.de>
 
 	* net/netdebug.c, os/event.c, os/thread.c, os/timer.c:
 	Replaced platform dependant formats in debug outputs.
