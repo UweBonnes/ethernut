@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2004/03/03 17:53:28  drsung
+ * Support for new field 'hostname' in structure confos added.
+ *
  * Revision 1.10  2004/02/25 16:34:32  haraldkipp
  * New API added to relinguish the DHCP lease. Collecting more
  * than one offer is now disabled, if the application sets timeout
@@ -140,6 +143,7 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/confnet.h>
+#include <sys/confos.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -580,6 +584,7 @@ static int DhcpRequest(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long 
                        u_short secs)
 {
     size_t optlen;
+    int len;
     u_char *op = bp->bp_options;
     u_char reqOpts[3];
 
@@ -592,6 +597,13 @@ static int DhcpRequest(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long 
     if (sid) {
         optlen += DhcpAddLongOption(op + optlen, DHCPOPT_SID, sid);
     }
+
+	/* Pass host name if specified in confos structure.  */
+	/* viewing DHCP lease table shows something sensible. */
+	len = strlen(confos.hostname);
+	if (len > 0)  {
+		optlen += DhcpAddOptionFromRAM(op + optlen, DHCPOPT_HOSTNAME, confos.hostname, len);
+	}
 
     /* request gateway and DNS be returned */
     reqOpts[0] = DHCPOPT_NETMASK;       /* Win2k DHCP Server responds with this anyway. But Ethereal, showed it in a Win2k DHCP client request */

@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/03/03 17:53:28  drsung
+ * Support for new field 'hostname' in structure confos added.
+ *
  * Revision 1.4  2004/01/04 16:44:52  drsung
  * Bugfix after thread termination support
  *
@@ -112,6 +115,7 @@
 #include <sys/thread.h>
 #include <sys/timer.h>
 #include <sys/confnet.h>
+#include <sys/confos.h>
 #include <sys/socket.h>
 
 #include <arpa/inet.h>
@@ -133,7 +137,7 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.0.2";
+static char *version = "4.0.3";
 static size_t sram;
 static u_char banks;
 static size_t banksize;
@@ -186,7 +190,7 @@ int TestPorts(void)
     for (pat = 1; pat; pat <<= 1) {
 #ifdef __AVR_ATmega128__
         /* Exclude PD5 used for RS485 direction select. */
-        if(ipat & 0x20) {
+        if (ipat & 0x20) {
             continue;
         }
 #endif
@@ -252,16 +256,13 @@ void BaseMon(void)
     char ch;
     int i;
     int n;
-    static prog_char menu1_P[] = 
-        "\nPress any of the following keys:";
-    static prog_char menu2_P[] = 
-        "    B - Send broadcasts";
-    static prog_char menu3_P[] =
-        "    E - Ethernet controller read/write\n"
-        "    J - Jump to bootloader\n"
-        "    S - SRAM read/write";
-    static prog_char menu4_P[] = 
-        "    X - Exit BaseMon, configure network and start WebServer";
+    char hostname[sizeof(confos.hostname)];
+    static prog_char menu1_P[] = "\nPress any of the following keys:";
+    static prog_char menu2_P[] = "    B - Send broadcasts";
+    static prog_char menu3_P[] = "    E - Ethernet controller read/write\n"
+                                 "    J - Jump to bootloader\n"
+                                 "    S - SRAM read/write";
+    static prog_char menu4_P[] = "    X - Exit BaseMon, configure network and start WebServer";
 
     /*
      * Use the debug UART driver for output. In opposite
@@ -303,7 +304,7 @@ void BaseMon(void)
     printf("Banked RAM Test...   ");
     banksize = sram;
     banks = XMemBankTest(&banksize);
-    if(banks)
+    if (banks)
         printf("%u banks, %u bytes ea.\n", banks, banksize);
     else
         puts("none");
@@ -312,27 +313,24 @@ void BaseMon(void)
      * Test Ethernet controller hardware.
      */
     printf("Detecting NIC...     ");
-    if(SmscDetect()) {
-        if(RealtekDetect()) {
+    if (SmscDetect()) {
+        if (RealtekDetect()) {
             nic = 0;
             puts("none\x07");
-        }
-        else {
+        } else {
             nic = 1;
             puts("RTL8019AS");
         }
-    }
-    else {
+    } else {
         nic = 2;
         puts("LAN91C111");
     }
 
-    if(nic) {
+    if (nic) {
         printf("Testing NIC...       ");
-        if(nic == 1) {
+        if (nic == 1) {
             RealtekTest();
-        }
-        else {
+        } else {
             SmscTest();
         }
     }
@@ -361,24 +359,20 @@ void BaseMon(void)
             if (sram > 8191 && (ch == 'x' || ch == 'X'))
                 break;
             if (sram && (ch == 'b' || ch == 'B')) {
-                if(nic == 1)
+                if (nic == 1)
                     RealtekSend();
                 else
                     SmscSend();
-            }
-            else if (ch == 'e' || ch == 'E') {
-                if(nic == 1) {
+            } else if (ch == 'e' || ch == 'E') {
+                if (nic == 1) {
                     RealtekLoop();
-                }
-                else {
+                } else {
                     SmscLoop();
                 }
-            }
-            else if (ch == 'j' || ch == 'J') {
+            } else if (ch == 'j' || ch == 'J') {
                 puts("Booting...");
                 asm("jmp 0x1F000");
-            }
-            else if (ch == 's' || ch == 'S')
+            } else if (ch == 's' || ch == 'S')
                 LoopSRAM();
         }
 
@@ -386,8 +380,8 @@ void BaseMon(void)
          * Input MAC address.
          */
         for (;;) {
-            printf("\nMAC address  (%02X%02X%02X%02X%02X%02X): ",
-                   my_mac[0], my_mac[1], my_mac[2], my_mac[3], my_mac[4], my_mac[5]);
+            printf("\nMAC address  (%02X%02X%02X%02X%02X%02X): ", my_mac[0], my_mac[1], my_mac[2], my_mac[3], my_mac[4],
+                   my_mac[5]);
             GetLine(inbuff, sizeof(inbuff));
             if ((n = strlen(inbuff)) == 0)
                 break;
@@ -403,6 +397,12 @@ void BaseMon(void)
             }
             printf("Bad MAC address");
         }
+
+        /*
+         * Input host name.
+         */
+        printf("Host name (%s): ", confos.hostname);
+        GetLine(hostname, sizeof(confos.hostname) - 1);
 
         /*
          * Input IP address.
@@ -427,28 +427,34 @@ void BaseMon(void)
     confnet.cdn_cip_addr = inet_addr(my_ip);
     confnet.cdn_ip_mask = inet_addr(my_mask);
     confnet.cdn_gateway = inet_addr(my_gate);
-	memcpy(confnet.cdn_mac, my_mac, sizeof(confnet.cdn_mac));
+    memcpy(confnet.cdn_mac, my_mac, sizeof(confnet.cdn_mac));
     NutNetSaveConfig();
+    if (strlen(hostname) > 0) {
+        strncpy(confos.hostname, hostname, sizeof(confos.hostname) - 1);
+        confos.hostname[sizeof(confos.hostname) - 1] = 0;
+    }
+    NutSaveConfig();
 }
 
 void NutInit(void)
 {
     extern void *__bss_end;
-
     /*
      * Switch off analog comparator to reduce power 
      * consumption. The comparator is switched on
      * after CPU reset.
      */
     sbi(ACSR, ACD);
-
     /*
      * Use the rest of our internal RAM for our heap. Re-opening
      * standard output will use malloc. We do not use any external
      * RAM before passing the memory test.
      */
     NutHeapAdd(&__bss_end, (uptr_t) RAMEND - 256 - (uptr_t) (&__bss_end));
-
+    /*
+     * Load os configuration from EEPROM.
+     */
+    NutLoadConfig();
     /*
      * Load network configuration from EEPROM.
      */
@@ -463,12 +469,10 @@ void NutInit(void)
     strcpy(my_mask, inet_ntoa(confnet.cdn_ip_mask));
     strcpy(my_gate, inet_ntoa(confnet.cdn_gateway));
     memcpy(my_mac, confnet.cdn_mac, 6);
-
     /*
      * Perform basic monitor functions.
      */
     BaseMon();
-
     /*
      * Initialize heap and create the idle thread. This will in turn 
      * start the WebDemo thread.
