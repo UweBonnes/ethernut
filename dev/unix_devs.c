@@ -607,7 +607,7 @@ static int UnixDevRead(NUTFILE * nf, void *buffer, int len)
         // printf("UnixDevRead: UART_SETBLOCKREAD defined\n\r");
         // check for blocking read: all bytes received
         if ( (dcb->dcb_modeflags & USART_MF_BLOCKREAD) && (rc < len)) {
-            // printf("UnixDevRead: block read enabled, but not enough bytes rad \n\r");
+            // printf("UnixDevRead: block read enabled, but not enough bytes read \n\r");
             continue;
         }
 #endif
@@ -857,7 +857,7 @@ int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
         if (lv)
             dcb->dcb_modeflags |= USART_MF_BLOCKREAD;
         else
-            dcb->dev_dcb)->dcb_modeflags &= ~USART_MF_BLOCKREAD;
+            dcb->dcb_modeflags &= ~USART_MF_BLOCKREAD;
         return 0;
 
     case UART_GETBLOCKREAD:
