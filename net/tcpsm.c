@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/01/03 08:43:29  haraldkipp
+ * Replaced unprotected calls to NutEventPostAsync() by late calls to NutEventPost().
+ * This should fix the infrequent system halts/resets. The event to the transmitter
+ * waiting queue will be broadcasted on relevant state changes.
+ *
  * Revision 1.13  2004/07/30 19:54:46  drsung
  * Some code of TCP stack redesigned. Round trip time calculation is now
  * supported. Fixed several bugs in TCP state machine. Now TCP connections
@@ -234,6 +239,9 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
  */
 static void NutTcpProcessAppData(TCPSOCKET * sock, NETBUF * nb)
 {
+    /*
+     * Add the NETBUF to the socket's input buffer.
+     */
     if (sock->so_rx_buf) {
         NETBUF *nbp = sock->so_rx_buf;
 
@@ -243,24 +251,31 @@ static void NutTcpProcessAppData(TCPSOCKET * sock, NETBUF * nb)
     } else
         sock->so_rx_buf = nb;
 
+    /*
+     * Update the number of bytes available in the socket's input buffer
+     * and the sequence number we expect next.
+     */
     sock->so_rx_cnt += nb->nb_ap.sz;
     sock->so_rx_nxt += nb->nb_ap.sz;
 
+    /*
+     * Reduce our TCP window size.
+     */
     if (nb->nb_ap.sz >= sock->so_rx_win)
         sock->so_rx_win = 0;
     else
         sock->so_rx_win -= nb->nb_ap.sz;
 
+    /*
+     * Set the socket's ACK flag. This will enable ACK transmission in
+     * the next outgoing segment. If no more NETBUFs are queued, we
+     * force immediate transmission of the ACK.
+     */
     sock->so_tx_flags |= SO_ACK;
     if (nb->nb_next)
         nb->nb_next = 0;
     else
         sock->so_tx_flags |= SO_FORCE;
-
-    /*
-     * Wake up a thread waiting for data.
-     */
-    NutEventPostAsync(&sock->so_rx_tq);
 
     NutTcpOutput(sock, 0, 0);
 }
@@ -340,7 +355,6 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
      * the window size may have changed.
      */
     if (h_ack < sock->so_tx_una) {
-        NutEventPostAsync(&sock->so_tx_tq);
         return 0;
     }
 
@@ -371,7 +385,6 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
                     return -1;
             }
         }
-        NutEventPostAsync(&sock->so_tx_tq);
         return 0;
     }
 
@@ -420,7 +433,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, u_short length)
         sock->so_retran_time = 0;
     }
     sock->so_retransmits = 0;
-    NutEventPostAsync(&sock->so_tx_tq);
+
     return 0;
 }
 
@@ -521,7 +534,6 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
             /*
              * SYNACK received.
              */
-            NutEventPostAsync(&sock->so_ac_tq);
             sock->so_tx_flags |= SO_ACK | SO_FORCE;
             txf = 1;
             break;
@@ -542,12 +554,6 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
             /*
              * ACK of SYN received.
              */
-            /* wake up accepting thread on passive socket. */
-            /* We previously used NutEventPost, which caused NutTcpAccept to 
-               fail when the accepting thread is higher priority than the
-               tcpsm thread. Thanks to Ralph Mason. */
-            NutEventPostAsync(&sock->so_pc_tq);
-            NutEventPostAsync(&sock->so_ac_tq);
             break;
         case TCPS_FIN_WAIT_1:
             /*
@@ -667,7 +673,9 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
             if (state == TCPS_SYN_SENT) {
                 rc = -1;
                 sock->so_last_error = EHOSTDOWN;
+                NutEnterCritical();
                 NutEventPostAsync(&sock->so_ac_tq);
+                NutExitCritical();
             }
         }
         if (state == TCPS_CLOSE_WAIT) {
@@ -675,7 +683,6 @@ static int NutTcpStateChange(TCPSOCKET * sock, u_char state)
              * Inform application.
              */
             NutEventBroadcast(&sock->so_rx_tq);
-            NutEventBroadcast(&sock->so_tx_tq);
             NutEventBroadcast(&sock->so_pc_tq);
             NutEventBroadcast(&sock->so_ac_tq);
         }
@@ -937,6 +944,8 @@ static void NutTcpStateSynSent(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETB
         if (flags & TH_ACK) {
             NutTcpProcessAck(sock, th, nb->nb_ap.sz);
             NutTcpStateChange(sock, TCPS_ESTABLISHED);
+            /* Wake up the actively connecting thread. */
+            NutEventPost(&sock->so_ac_tq);
         } else {
             NutTcpStateChange(sock, TCPS_SYN_RECEIVED);
         }
@@ -996,11 +1005,15 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
         return;
     }
 
-    /*
-     * Process acknowledge and application data
-     * and release the network buffer.
-     */
+    /* Acknowledge processing. */
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
+
+    /*
+     * Even SYN segments may contain application data, which will be stored
+     * in the socket's input buffer. However, there is no need to post an
+     * event to any thread waiting for data, because our connection is not 
+     * yet established.
+     */
     if (nb->nb_ap.sz)
         NutTcpProcessAppData(sock, nb);
     else
@@ -1012,8 +1025,11 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
     if (flags & TH_FIN) {
         sock->so_rx_nxt++;
         NutTcpStateChange(sock, TCPS_CLOSE_WAIT);
-    } else
+    } else {
         NutTcpStateChange(sock, TCPS_ESTABLISHED);
+        NutEventPost(&sock->so_pc_tq);
+        NutEventPost(&sock->so_ac_tq);
+    }
 }
 
 /*
@@ -1026,6 +1042,9 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
  * \param flags TCP flags.
  * \param th    Pointer to the TCP header within the NETBUF.
  * \param nb    Network buffer structure containing a TCP segment.
+ *
+ * \todo We may remove the unused counter of dropped segments, which
+ *       were out of sequence.
  */
 static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
@@ -1057,6 +1076,12 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
 
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
 
+    /*
+     * If the sequence number of the incoming segment is larger than 
+     * expected, we probably missed one or more previous segments. Let's 
+     * add this one to a linked list of segments received in advance and 
+     * hope that the missing data will arrive later.
+     */
     if (htonl(th->th_seq) > sock->so_rx_nxt) {
         NETBUF *nbq;
         NETBUF **nbqp;
@@ -1106,11 +1131,20 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
      */
     if (htonl(th->th_seq) != sock->so_rx_nxt) {
         sock->so_tx_flags |= SO_ACK | SO_FORCE;
+        /* This seems to be unused. */
         sock->so_oos_drop++;
         NutNetBufFree(nb);
         NutTcpOutput(sock, 0, 0);
-    } else if (nb->nb_ap.sz) {
+    } 
+
+    /*
+     * The sequence number is exactly what we expected.
+     */
+    else if (nb->nb_ap.sz) {
         NutTcpProcessAppData(sock, nb);
+        /*
+         * Process segments we may have received in advance.
+         */
         while ((nb = sock->so_rx_nbq) != 0) {
             th = (TCPHDR *) (nb->nb_tp.vp);
             if (htonl(th->th_seq) > sock->so_rx_nxt)
@@ -1122,6 +1156,8 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
             } else
                 NutNetBufFree(nb);
         }
+        /* Wake up a thread waiting for data. */
+        NutEventPost(&sock->so_rx_tq);
     } else {
         NutNetBufFree(nb);
         //sock->so_tx_flags |= SO_ACK | SO_FORCE;
@@ -1145,6 +1181,9 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, u_char flags, TCPHDR * th, 
  *
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
+ *
+ * \todo The out of sync case seems to be ignored. Anyway, do we
+ *       really need to process application data in this state?
  */
 static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
@@ -1188,9 +1227,13 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags, TCPHDR * th, NET
 
     /*
      * Process application data and release the network buffer.
+     * Is this really required?
      */
-    if (nb->nb_ap.sz)
+    if (nb->nb_ap.sz) {
         NutTcpProcessAppData(sock, nb);
+        /* Wake up a thread waiting for data. */
+        NutEventPost(&sock->so_rx_tq);
+    }
     else
         NutNetBufFree(nb);
 
@@ -1218,6 +1261,8 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, u_char flags, TCPHDR * th, NET
  *
  * \param sock Socket descriptor.
  * \param nb   Network buffer structure containing a TCP segment.
+ *
+ * \todo There's probably no need to process application data.
  */
 static void NutTcpStateFinWait2(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETBUF * nb)
 {
@@ -1252,9 +1297,12 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, u_char flags, TCPHDR * th, NET
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
 
     //@@@if (sock->so_tx_nbq) printf ("[%04X]FIN_WAIT_2: xmit buffer not empty!", (u_short) sock);
-    
-    if (nb->nb_ap.sz)
+    /* Do we really need this? */
+    if (nb->nb_ap.sz) {
         NutTcpProcessAppData(sock, nb);
+        /* Wake up a thread waiting for data. */
+        NutEventPost(&sock->so_rx_tq);
+    }
     else
         NutNetBufFree(nb);
 
@@ -1417,6 +1465,8 @@ static void NutTcpStateLastAck(TCPSOCKET * sock, u_char flags, TCPHDR * th, NETB
  */
 static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
 {
+    u_long tx_win;
+    u_long tx_una;
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
     u_char flags = th->th_flags;
 
@@ -1429,7 +1479,15 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
     switch (sock->so_state) {
         /* Handle the most common case first. */
     case TCPS_ESTABLISHED:
+        tx_win = sock->so_tx_win;
+        tx_una = sock->so_tx_una;
         NutTcpStateEstablished(sock, flags, th, nb);
+        /* Wake up all threads waiting for transmit, if something interesting happened. */
+        if(sock->so_state != TCPS_ESTABLISHED || /* Status changed. */
+           sock->so_tx_win > tx_win ||           /* Windows changed. */
+           sock->so_tx_una > tx_una) {           /* Unacknowledged data changed. */
+            NutEventBroadcast(&sock->so_tx_tq);
+        }
         break;
     case TCPS_LISTEN:
         NutTcpStateListen(sock, flags, th, nb);
