@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:27  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/07/13 19:03:06  haraldkipp
+ * Make empty MAC broadcast.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:27  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:22:48  harald
  * EEPROM corruption fixed
@@ -53,6 +56,10 @@ CONFNET confnet;
 /*!
  * \brief Load network configuration from EEPROM.
  *
+ * If no configuration is available in EEPROM, all configuration
+ * parameters are cleared to zero. Except the MAC address, which
+ * is set to the Ethernet broadcast address.
+ *
  * \param name Name of the device.
  *
  * \return 0 if configuration has been read. Otherwise the
@@ -67,6 +74,14 @@ int NutNetLoadConfig(CONST char *name)
         return 0;
 
     memset(&confnet, 0, sizeof(confnet));
+
+    /*
+     * Set initial MAC address to broadcast. Thanks to Tomohiro 
+     * Haraikawa, who pointed out that all zeroes is occupied by 
+     * Xerox and should not be used.
+     */
+    memset(confnet.cdn_mac, 0xFF, sizeof(confnet.cdn_mac));
+
     return -1;
 }
 
