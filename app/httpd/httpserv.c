@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.8  2005/02/23 04:39:26  hwmaier
+ * no message
+ *
  * Revision 1.7  2005/02/22 02:44:34  hwmaier
  * Changes to compile as well for AT90CAN128 device.
  *
@@ -184,7 +187,7 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 {
     static prog_char head[] = "<HTML><HEAD><TITLE>Threads</TITLE></HEAD><BODY><H1>Threads</H1>\r\n"
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Name</TH><TH>Priority</TH><TH>Status</TH><TH>Event<BR>Queue</TH><TH>Timer</TH><TH>Stack-<BR>pointer</TH><TH>Free<BR>Stack</TH></TR>\r\n";
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     static prog_char tfmt[] =
         "<TR><TD>%04X</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%04X</TD><TD>%04X</TD><TD>%04X</TD><TD>%u</TD><TD>%s</TD></TR>\r\n";
 #else
@@ -225,7 +228,7 @@ static int ShowTimers(FILE * stream, REQUEST * req)
     static prog_char head[] = "<HTML><HEAD><TITLE>Timers</TITLE></HEAD><BODY><H1>Timers</H1>\r\n";
     static prog_char thead[] =
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Countdown</TH><TH>Tick Reload</TH><TH>Callback<BR>Address</TH><TH>Callback<BR>Argument</TH></TR>\r\n";
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     static prog_char tfmt[] = "<TR><TD>%04X</TD><TD>%lu</TD><TD>%lu</TD><TD>%04X</TD><TD>%04X</TD></TR>\r\n";
 #else
     static prog_char tfmt[] = "<TR><TD>%08lX</TD><TD>%lu</TD><TD>%lu</TD><TD>%08lX</TD><TD>%08lX</TD></TR>\r\n";
@@ -268,7 +271,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     static prog_char head[] = "<HTML><HEAD><TITLE>Sockets</TITLE></HEAD>"
         "<BODY><H1>Sockets</H1>\r\n"
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Type</TH><TH>Local</TH><TH>Remote</TH><TH>Status</TH></TR>\r\n";
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
     static prog_char tfmt1[] = "<TR><TD>%04X</TD><TD>TCP</TD><TD>%s:%u</TD>";
 #else
     static prog_char tfmt1[] = "<TR><TD>%08lX</TD><TD>TCP</TD><TD>%s:%u</TD>";
@@ -436,7 +439,7 @@ THREAD(Service, arg)
          * from a client.
          */
         NutTcpAccept(sock, 80);
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
         printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
 #else
         printf("[%u] Connected, %lu bytes free\n", id, NutHeapAvailable());
@@ -446,7 +449,7 @@ THREAD(Service, arg)
          * Wait until at least 8 kByte of free RAM is available. This will
          * keep the client connected in low memory situations.
          */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega103__)
+#if defined(__AVR__)
         while (NutHeapAvailable() < 8192) {
 #else
         while (NutHeapAvailable() < 4096) {
