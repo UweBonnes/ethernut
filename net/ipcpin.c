@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/08 11:24:48  haraldkipp
+ * PppUp() replaced by direct post.
+ *
  * Revision 1.5  2004/01/30 11:36:52  haraldkipp
  * Memory hole fixed
  *
@@ -74,6 +77,8 @@
  * Prepare release 3.1
  *
  */
+
+#include <sys/event.h>
 
 #include <net/if_var.h>
 #include <dev/ppp.h>
@@ -232,7 +237,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
     if (rc == XCP_CONFACK) {
         if (dcb->dcb_ipcp_state == PPPS_ACKRCVD) {
             dcb->dcb_ipcp_state = PPPS_OPENED;
-            PppUp(dev);
+            NutEventPost(&dcb->dcb_state_chg);
         } else
             dcb->dcb_ipcp_state = PPPS_ACKSENT;
         dcb->dcb_ipcp_naks = 0;
@@ -280,7 +285,7 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
     case PPPS_ACKSENT:
         dcb->dcb_ipcp_state = PPPS_OPENED;
         dcb->dcb_retries = 0;
-        PppUp(dev);
+        NutEventPost(&dcb->dcb_state_chg);
         break;
 
     case PPPS_OPENED:
