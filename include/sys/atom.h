@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/04/05 17:42:45  haraldkipp
+ * ARM7 implementation of critical sections added.
+ *
  * Revision 1.8  2005/02/21 12:37:59  phblum
  * Removed tabs and added semicolons after NUTTRACER macros
  *
@@ -185,12 +188,25 @@ static inline void AtomicDec(volatile u_char * p)
 #elif defined(__arm__)
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
-/* TODO */
-#define NutEnterCritical()
-/* TODO */
-#define NutExitCritical()
-/* TODO */
-#define NutJumpOutCritical()
+
+#define NutEnterCritical() \
+        asm volatile (             \
+                "@ NutEnterCritical"      "\n\t"      \
+                "mrs r0, cpsr"      "\n\t"      \
+                "orr r0, r0, #0xC0" "\n\t"  \
+                "msr cpsr, r0"      "\n\t"  \
+                ::: "r0" )
+
+#define NutExitCritical() \
+        asm volatile (             \
+                "@ NutEnterCritical"      "\n\t"      \
+                "mrs r0, cpsr"      "\n\t"      \
+                "bic r0, r0, #0x80" "\n\t"  \
+                "msr cpsr, r0"      "\n\t"  \
+                ::: "r0" )
+
+#define NutJumpOutCritical()    NutExitCritical()
+
 #elif defined(__linux__) || defined (__APPLE__)
 #include <pthread.h>
 #include <signal.h>
