@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/19 09:05:12  jdubiec
+ * Fixed format strings declarations for AVR.
+ *
  * Revision 1.3  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -143,7 +146,7 @@ void *NutHeapAlloc(size_t size)
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "\n[H%lx,A%09ld/%ld] ";
 #else
-    static char fmt[] = "\n[H%x,A%04d/%d] ";
+    static prog_char fmt[] = "\n[H%x,A%04d/%d] ";
 #endif
 #endif
     HEAPNODE *node;
@@ -231,7 +234,7 @@ void *NutHeapAlloc(size_t size)
     }
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf(__heap_trs, fmt, (uptr_t) fit, ((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size, size);
+        fprintf_P(__heap_trs, fmt, (uptr_t) fit, ((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size, size);
 #endif
     return fit;
 }
@@ -283,7 +286,7 @@ int NutHeapFree(void *block)
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "\n[H%lx,F%09ld] ";
 #else
-    static char fmt[] = "\n[H%x,F%04d] ";
+    static prog_char fmt[] = "\n[H%x,F%04d] ";
 #endif
 #endif
     HEAPNODE *node;
@@ -311,7 +314,7 @@ int NutHeapFree(void *block)
 
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf(__heap_trs, fmt, (uptr_t) block, fnode->hn_size);
+        fprintf_P(__heap_trs, fmt, (uptr_t) block, fnode->hn_size);
 #endif
     available += fnode->hn_size;
 

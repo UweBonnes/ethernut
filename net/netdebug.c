@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/19 09:05:08  jdubiec
+ * Fixed format strings declarations for AVR.
+ *
  * Revision 1.2  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -78,11 +81,11 @@ void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock,
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "%s%08lX[%u]-SEQ(%lx)";
 #else
-    static char fmt[] = "%s%04X[%u]-SEQ(%lx)";
+    static prog_char fmt[] = "%s%04X[%u]-SEQ(%lx)";
 #endif
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
-    fprintf(stream, fmt, ds, (uptr_t) sock, nb->nb_ap.sz, ntohl(th->th_seq));
+    fprintf_P(stream, fmt, ds, (uptr_t) sock, nb->nb_ap.sz, ntohl(th->th_seq));
     if (th->th_flags & TH_ACK)
         fprintf(stream, "-ACK(%lx)", ntohl(th->th_ack));
     if (th->th_flags & TH_FIN)
@@ -160,8 +163,8 @@ void NutDumpSocketList(FILE * stream)
          stream);
     /*        12345678 123 123456789012345:123456 123456789012345:123456 */
 #else
-    static char fmt1[] = "%04X TCP %15s:%-6u ";
-    static char fmt2[] = "%04X UDP %6u\r\n";
+    static prog_char fmt1[] = "%04X TCP %15s:%-6u ";
+    static prog_char fmt2[] = "%04X UDP %6u\r\n";
 
     fputs
         ("\r\nSock Typ Local                  Remote                 State\n",
@@ -170,14 +173,14 @@ void NutDumpSocketList(FILE * stream)
 #endif
 
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
-        fprintf(stream, fmt1, (uptr_t) ts,
+        fprintf_P(stream, fmt1, (uptr_t) ts,
                 inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf(stream, "%15s:%-6u ", inet_ntoa(ts->so_remote_addr),
                 ntohs(ts->so_remote_port));
         NutDumpSockState(stream, ts->so_state, 0, "\r\n");
     }
     for (us = udpSocketList; us; us = us->so_next) {
-        fprintf(stream, fmt2, (uptr_t) us,
+        fprintf_P(stream, fmt2, (uptr_t) us,
                 ntohs(us->so_local_port));
     }
 }

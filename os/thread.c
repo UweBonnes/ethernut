@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/03/19 09:05:12  jdubiec
+ * Fixed format strings declarations for AVR.
+ *
  * Revision 1.6  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -242,15 +245,15 @@ void NutThreadResumeAsync(HANDLE th)
     static prog_char fmt1[] = "Add<%08lx>";
     static prog_char fmt2[] = "<#A%08lX>";
 #else
-    static char fmt1[] = "Add<%04x>";
-    static char fmt2[] = "<#A%04X>";
+    static prog_char fmt1[] = "Add<%04x>";
+    static prog_char fmt2[] = "<#A%04X>";
 #endif
 #endif
 
     if (th && ((NUTTHREADINFO *) th)->td_state == TDS_SLEEP) {
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, fmt1, (uptr_t) th);
+            fprintf_P(__os_trs, fmt1, (uptr_t) th);
 #endif
         NutThreadAddPriQueue(th, (NUTTHREADINFO **) & runQueue);
         ((NUTTHREADINFO *) th)->td_state = TDS_READY;
@@ -261,7 +264,7 @@ void NutThreadResumeAsync(HANDLE th)
     }
 #ifdef NUTDEBUG
     else if (__os_trf)
-        fprintf(__os_trs, fmt2, (uptr_t) th);
+        fprintf_P(__os_trs, fmt2, (uptr_t) th);
 #endif
 }
 
@@ -300,8 +303,8 @@ void NutThreadYield(void)
     static prog_char fmt1[] = "Yld<%08lx>";
     static prog_char fmt2[] = "SWY<%08lx %08lx>";
 #else
-    static char fmt1[] = "Yld<%04x>";
-    static char fmt2[] = "SWY<%04x %04x>";
+    static prog_char fmt1[] = "Yld<%04x>";
+    static prog_char fmt2[] = "SWY<%04x %04x>";
 #endif
 #endif
 
@@ -316,7 +319,7 @@ void NutThreadYield(void)
     if (runningThread == runQueue && runningThread->td_qnxt) {
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, fmt1, (uptr_t) runningThread);
+            fprintf_P(__os_trs, fmt1, (uptr_t) runningThread);
 #endif
         runQueue = runningThread->td_qnxt;
         runningThread->td_qnxt = 0;
@@ -336,7 +339,7 @@ void NutThreadYield(void)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
+            fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
 #endif
         NutThreadSwitch();
     }
@@ -371,8 +374,8 @@ u_char NutThreadSetPriority(u_char level)
     static prog_char fmt1[] = "Pri%u<%08lx>";
     static prog_char fmt2[] = "SWC<%08lx %08lx>";
 #else
-    static char fmt1[] = "Pri%u<%04x>";
-    static char fmt2[] = "SWC<%04x %04x>";
+    static prog_char fmt1[] = "Pri%u<%04x>";
+    static prog_char fmt2[] = "SWC<%04x %04x>";
 #endif
 #endif
     u_char last = runningThread->td_priority;
@@ -382,7 +385,7 @@ u_char NutThreadSetPriority(u_char level)
 
 #ifdef NUTDEBUG
     if (__os_trf) {
-        fprintf(__os_trs, fmt1, level, (uptr_t) runningThread);
+        fprintf_P(__os_trs, fmt1, level, (uptr_t) runningThread);
     }
 #endif
 
@@ -416,7 +419,7 @@ u_char NutThreadSetPriority(u_char level)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf) {
-            fprintf(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
+            fprintf_P(__os_trs, fmt2, (uptr_t) runningThread, (uptr_t) runQueue);
         }
 #endif
         NutThreadSwitch();

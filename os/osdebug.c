@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2004/03/19 09:05:12  jdubiec
+ * Fixed format strings declarations for AVR.
+ *
  * Revision 1.2  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -92,7 +95,7 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s\n";
 #else
-    static char fmt[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s\n";
+    static prog_char fmt[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s\n";
 #endif
 
     fputs_P(qheader, stream);
@@ -102,7 +105,7 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
         fputs("SIGNALED\n", stream);
     else {
         while (tdp) {
-            fprintf(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
+            fprintf_P(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
                     states[tdp->td_state], (uptr_t) tdp->td_queue,
                     (uptr_t) tdp->td_timer, tdp->td_sp,
                     (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
@@ -131,8 +134,8 @@ void NutDumpThreadList(FILE * stream)
     static prog_char fmt1[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s";
     static prog_char fmt2[] = " %08lX";
 #else
-    static char fmt1[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s";
-    static char fmt2[] = " %04X";
+    static prog_char fmt1[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s";
+    static prog_char fmt2[] = " %04X";
 #endif
     NUTTHREADINFO *tqp;
     NUTTHREADINFO *tdp;
@@ -142,7 +145,7 @@ void NutDumpThreadList(FILE * stream)
     NutEnterCritical();
     tdp = nutThreadList;
     while (tdp) {
-        fprintf(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
+        fprintf_P(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
                 states[tdp->td_state], (uptr_t) tdp->td_queue,
                 (uptr_t) tdp->td_timer, tdp->td_sp,
                 (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
@@ -153,7 +156,7 @@ void NutDumpThreadList(FILE * stream)
                 fputs("SIGNALED", stream);
             else {
                 while (tqp) {
-                    fprintf(stream, fmt2, (uptr_t) tqp);
+                    fprintf_P(stream, fmt2, (uptr_t) tqp);
                     tqp = tqp->td_qnxt;
                 }
             }
@@ -184,10 +187,10 @@ void NutDumpTimerList(FILE * stream)
     static prog_char fmt4[] = " %08lX";
 #else
     static prog_char theader[] = "Addr Ticks  Left Callback\n";
-    static char fmt1[] = "%04X%6lu%6lu ";
-    static char fmt2[] = "%05lX";
-    static char fmt3[] = "(%04X)\n";
-    static char fmt4[] = " %04X";
+    static prog_char fmt1[] = "%04X%6lu%6lu ";
+    static prog_char fmt2[] = "%05lX";
+    static prog_char fmt3[] = "(%04X)\n";
+    static prog_char fmt4[] = " %04X";
 #endif
     NUTTIMERINFO *tnp;
 
@@ -195,23 +198,23 @@ void NutDumpTimerList(FILE * stream)
     if ((tnp = nutTimerList) != 0) {
         fputs_P(theader, stream);
         while (tnp) {
-            fprintf(stream, fmt1, (uptr_t) tnp, tnp->tn_ticks,
+            fprintf_P(stream, fmt1, (uptr_t) tnp, tnp->tn_ticks,
                     tnp->tn_ticks_left);
             if (tnp->tn_callback == NutThreadWake)
                 fputs_P(wname, stream);
             else if (tnp->tn_callback == NutEventTimeout)
                 fputs_P(tname, stream);
             else
-                fprintf(stream, fmt2,
+                fprintf_P(stream, fmt2,
                         (u_long) ((uptr_t) tnp->tn_callback) << 1);
-            fprintf(stream, fmt3, (uptr_t) tnp->tn_arg);
+            fprintf_P(stream, fmt3, (uptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
     if ((tnp = nutTimerPool) != 0) {
         fputs("Pool:", stream);
         while (tnp) {
-            fprintf(stream, fmt4, (uptr_t) tnp);
+            fprintf_P(stream, fmt4, (uptr_t) tnp);
             tnp = tnp->tn_next;
         }
         fputc('\n', stream);
@@ -249,9 +252,9 @@ void NutDumpHeap(FILE * stream)
     static prog_char fmt2[] = "%lu counted, but %lu reported\n";
     static prog_char fmt3[] = "%lu bytes free\n";
 #else
-    static char fmt1[] = "%04x %5d\n";
-    static char fmt2[] = "%u counted, but %u reported\n";
-    static char fmt3[] = "%u bytes free\n";
+    static prog_char fmt1[] = "%04x %5d\n";
+    static prog_char fmt2[] = "%u counted, but %u reported\n";
+    static prog_char fmt3[] = "%u bytes free\n";
 #endif
     HEAPNODE *node;
     size_t sum = 0;
@@ -260,15 +263,15 @@ void NutDumpHeap(FILE * stream)
     fputc('\n', stream);
     for (node = heapFreeList; node; node = node->hn_next) {
         sum += node->hn_size;
-        fprintf(stream, fmt1, (uptr_t) node, node->hn_size);
+        fprintf_P(stream, fmt1, (uptr_t) node, node->hn_size);
         /* TODO: Remove hardcoded RAMSTART and RAMEND */
         if ((uptr_t) node < 0x60 || (uptr_t) node > 0x7fff)
             break;
     }
     if ((avail = NutHeapAvailable()) != sum)
-        fprintf(stream, fmt2, sum, avail);
+        fprintf_P(stream, fmt2, sum, avail);
     else
-        fprintf(stream, fmt3, avail);
+        fprintf_P(stream, fmt3, avail);
 }
 
 /*!

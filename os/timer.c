@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2004/03/19 09:05:12  jdubiec
+ * Fixed format strings declarations for AVR.
+ *
  * Revision 1.5  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -186,11 +189,11 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "InsTmr<%08lX>\n";
 #else
-    static char fmt[] = "InsTmr<%04X>\n";
+    static prog_char fmt[] = "InsTmr<%04X>\n";
 #endif
 
     if (__os_trf)
-        fprintf(__os_trs, fmt, (uptr_t) tn);
+        fprintf_P(__os_trs, fmt, (uptr_t) tn);
 #endif
     tnpp = &nutTimerList;
     tnp = nutTimerList;
@@ -317,8 +320,8 @@ void NutSleep(u_long ms)
     static prog_char fmt1[] = "Rem<%08lx>";
     static prog_char fmt2[] = "SWS<%08lx %08lx>";
 #else
-    static char fmt1[] = "Rem<%04x>";
-    static char fmt2[] = "SWS<%04x %04x>";
+    static prog_char fmt1[] = "Rem<%04x>";
+    static prog_char fmt2[] = "SWS<%04x %04x>";
 #endif
 #endif
 
@@ -329,7 +332,7 @@ void NutSleep(u_long ms)
                            TM_ONESHOT)) != 0) {
 #ifdef NUTDEBUG
             if (__os_trf)
-                fprintf(__os_trs, fmt1, (uptr_t) runningThread);
+                fprintf_P(__os_trs, fmt1, (uptr_t) runningThread);
 #endif
             NutThreadRemoveQueue(runningThread, &runQueue);
             runningThread->td_state = TDS_SLEEP;
@@ -337,8 +340,8 @@ void NutSleep(u_long ms)
             if (__os_trf) {
                 NutDumpThreadList(__os_trs);
                 //NutDumpThreadQueue(__os_trs, runQueue);
-                fprintf(__os_trs, fmt2, (uptr_t) runningThread,
-                        (uptr_t) runQueue);
+                fprintf_P(__os_trs, fmt2, (uptr_t) runningThread,
+                          (uptr_t) runQueue);
             }
 #endif
             NutThreadSwitch();
@@ -372,11 +375,11 @@ void NutTimerStopAsync(HANDLE handle)
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "StpTmr<%08lX>\r\n";
 #else
-    static char fmt[] = "StpTmr<%04X>\r\n";
+    static prog_char fmt[] = "StpTmr<%04X>\r\n";
 #endif
 
     if(__os_trf)
-        fprintf(__os_trs, fmt, (uptr_t)handle);
+        fprintf_P(__os_trs, fmt, (uptr_t)handle);
 #endif
     tnpp = &nutTimerList;
     tnp = nutTimerList;

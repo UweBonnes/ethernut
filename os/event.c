@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2004/03/19 09:05:12  jdubiec
+ * Fixed format strings declarations for AVR.
+ *
  * Revision 1.3  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -163,8 +166,8 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
     static prog_char fmt1[] = "Rem<%08lx>";
     static prog_char fmt2[] = "SWW<%08lx %08lx>";
 #else
-    static char fmt1[] = "Rem<%04x>";
-    static char fmt2[] = "SWW<%04x %04x>";
+    static prog_char fmt1[] = "Rem<%04x>";
+    static prog_char fmt2[] = "SWW<%04x %04x>";
 #endif
 #endif
 
@@ -191,7 +194,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      */
 #ifdef NUTDEBUG
     if (__os_trf)
-        fprintf(__os_trs, fmt1, (uptr_t) runningThread);
+        fprintf_P(__os_trs, fmt1, (uptr_t) runningThread);
 #endif
     NutThreadRemoveQueue(runningThread, &runQueue);
 #ifdef NUTDEBUG
@@ -217,7 +220,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      */
 #ifdef NUTDEBUG
     if (__os_trf)
-        fprintf(__os_trs, fmt2, (uptr_t) runningThread,
+        fprintf_P(__os_trs, fmt2, (uptr_t) runningThread,
                 (uptr_t) runQueue);
 #endif
     NutThreadSwitch();
@@ -339,7 +342,7 @@ int NutEventPost(HANDLE * qhp)
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "SWP<%08lx %08lx>";
 #else
-    static char fmt[] = "SWP<%04x %04x>";
+    static prog_char fmt[] = "SWP<%04x %04x>";
 #endif
 #endif
     int rc;
@@ -356,7 +359,7 @@ int NutEventPost(HANDLE * qhp)
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, fmt, (uptr_t) runningThread,
+            fprintf_P(__os_trs, fmt, (uptr_t) runningThread,
                     (uptr_t) runQueue);
 #endif
         NutThreadSwitch();
