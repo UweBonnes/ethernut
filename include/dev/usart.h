@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2004/11/12 11:25:43  freckle
+ * added rbf_blockcnt and rbf_blockptr to _RINGBUF (if UART_BLOCKING_READ is
+ * defined). added USART_MF_BLOCKREAD mode define
+ *
  * Revision 1.4  2004/11/08 18:14:09  haraldkipp
  * Marked RINGBUF members volatile, which are modified within
  * interrupt routines.
@@ -181,6 +185,22 @@ struct _RINGBUF {
      * Producing threads are added to this queue when the buffer is full.
      */
     HANDLE rbf_que;
+
+#ifdef UART_BLOCKING_READ    
+    /*! \brief Number of bytes for block-read
+     *
+     * If this is zero, incoming bytes are stored in ringbuffer
+     * If this not zero, incoming bytes are stored in rbf_blockptr
+     */
+	size_t rbf_blockcnt;
+	
+    /*! \brief Address for block-read
+     *
+     * If bf_blockbytes is not zero, incoming bytes are stored here
+     */
+	u_char* rbf_blockptr;
+#endif
+
 };
 
 /*@}*/
@@ -226,7 +246,8 @@ struct _RINGBUF {
 #define USART_MF_BUFFERMASK     0x0300  /*!< Masks buffering mode flags. */
 
 #define USART_MF_HALFDUPLEX     0x0400  /*!< Half duplex control. */
-
+#define USART_MF_BLOCKREAD		0x0800  /*!< Block read enabled */
+ 
 #define USART_SF_RTSOFF         0x0001  /*!< Set if RTS line is off. */
 #define USART_SF_CTSOFF         0x0002  /*!< Set if CTS line is off. */
 #define USART_SF_DTROFF         0x0004  /*!< Set if DTR line is off. */
