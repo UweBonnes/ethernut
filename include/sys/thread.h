@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/02/17 14:42:37  phblum
+ * Removed volatile declarations of runQueue since it is not touched from interrupt context. Same for nutThreadList, runningThread and killedThreads.
+ *
  * Revision 1.6  2005/02/16 19:53:15  haraldkipp
  * Ready-to-run queue handling removed from interrupt context.
  *
@@ -142,10 +145,10 @@ extern "C" {
 
 #define SLEEP_MODE_NONE 0xff
 
-    extern NUTTHREADINFO *volatile runningThread;
-    extern NUTTHREADINFO *volatile nutThreadList;
+    extern NUTTHREADINFO * runningThread;
+    extern NUTTHREADINFO * nutThreadList;
     extern NUTTHREADINFO *volatile readyQueue;
-    extern NUTTHREADINFO *volatile runQueue;
+    extern NUTTHREADINFO * runQueue;
 
 
 #if defined (__APPLE__) || (__linux__)
