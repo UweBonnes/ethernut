@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:06  haraldkipp
- * Initial revision
+ * Revision 1.2  2003/11/23 16:42:13  drsung
+ * NutRegisterInterrupt removed, because it's incompatible to the new interrupt handling
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:06  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.10  2003/05/06 18:42:55  harald
  * Cleanup
@@ -154,8 +157,9 @@ extern IRQ_HANDLER sig_SPM_READY;
 
 __BEGIN_DECLS
 
-extern int NutRegisterInterrupt(int irq, void (*handler)(void *), void *arg);
-
+/* NutRegisterInterrupt is obsolete, use NutRegisterIrqHandler instead */
+//extern int NutRegisterInterrupt(int irq, void (*handler)(void *), void *arg) __attribute__ ((obsolete)) ;
+	
 extern void CallHandler(IRQ_HANDLER *irh);
 
 extern int NutRegisterIrqHandler(IRQ_HANDLER *irh, void (*handler)(void *), void *arg);
