@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.81 2004/06/25 08:28:04 freckle Exp $
+$Id: ChangeLog,v 1.82 2004/07/09 14:40:29 freckle Exp $
+
+2004-07-09  Matthias Ringwald <mringwal@inf.ethz.ch>
+
+    * os/arch/avr-nutinit.c: Allow setting of NUTRAMEND
+      by giving it as a compiler flag and moved
+      ((volatile u_char *) NUTRAMEND) cast into NUTRAMENDPTR
 
 2004-06-25  Matthias Ringwald <mringwal@inf.ethz.ch>
 

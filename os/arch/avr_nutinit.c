@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2004/07/09 14:40:43  freckle
+ * Moved ((volatile u_char *) NUTRAMEND) cast into NUTRAMENDPTR define
+ *
  * Revision 1.6  2004/07/09 14:23:13  freckle
  * Allow setting of NUTRAMEND by giving it as a compiler flag
  *
@@ -54,8 +57,10 @@
  */
 
 #ifndef NUTRAMEND
-#define NUTRAMEND ((volatile u_char *)0x7FFF)
+#define NUTRAMEND 0x7FFF
 #endif
+
+#define NUTRAMENDPTR ((volatile u_char *)NUTRAMEND)
 
 #ifdef __GNUC__
 /*
@@ -174,18 +179,18 @@ void NutInit(void)
 
     /* First check, whether external RAM is available
      */
-    *(NUTRAMEND - 1) = 0x55;
-    *NUTRAMEND = 0xAA;
-    if (*(NUTRAMEND - 1) == 0x55 && *NUTRAMEND == 0xAA) {
+    *(NUTRAMENDPTR - 1) = 0x55;
+    *NUTRAMENDPTR = 0xAA;
+    if (*(NUTRAMENDPTR - 1) == 0x55 && *NUTRAMENDPTR == 0xAA) {
         /* If we have external RAM, initialize stack pointer to
          *  end of external RAM to avoid overwriting .data and .bss section
          */
-        SP = (u_short) NUTRAMEND;
+        SP = (u_short) NUTRAMENDPTR;
 
         /* Then add the remaining RAM to heap
          */
-        if ((u_short) NUTRAMEND - (u_short) (&__heap_start) > 384)
-            NutHeapAdd(&__heap_start, (u_short) NUTRAMEND - 256 - (u_short) (&__heap_start));
+        if ((u_short) NUTRAMENDPTR - (u_short) (&__heap_start) > 384)
+            NutHeapAdd(&__heap_start, (u_short) NUTRAMENDPTR - 256 - (u_short) (&__heap_start));
     } else {
         /* No external RAM, so disable external memory interface to use the port pins
            for normal operation
