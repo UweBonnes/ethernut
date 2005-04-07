@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/04/07 12:31:37  freckle
+ * most unix emulation specific stuff now in irqreg_unix.h.
+ * corrected #warning "MCU not defined"
+ *
  * Revision 1.9  2005/04/05 17:52:40  haraldkipp
  * Much better implementation of GBA interrupt registration.
  *
@@ -111,6 +115,8 @@ typedef struct {
 #include <dev/irqreg_h8.h>
 #elif defined(__m68k__)
 #include <dev/irqreg_m68k.h>
+#elif defined (__linux__) || defined (__APPLE__)
+#include <dev/irqreg_unix.h>
 #else
 #warning "MCU not defined"
 #endif
@@ -123,21 +129,9 @@ __BEGIN_DECLS
 extern void CallHandler(IRQ_HANDLER * irh);
 
 #if defined (__linux__) || defined (__APPLE__)
-
-#include <signal.h>
-extern u_char irq_processed;
-extern pthread_mutex_t irq_mutex;
-extern pthread_cond_t irq_cv;
-extern sigset_t irq_signal;
-
-extern void NutIRQTrigger(u_char);
 extern int  NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg);
-extern void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue );
-
 #else
-
 extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);
-
 #endif
 
 __END_DECLS

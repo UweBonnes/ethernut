@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.190 2005/04/05 17:32:46 haraldkipp Exp $
+$Id: ChangeLog,v 1.191 2005/04/07 12:31:33 freckle Exp $
+
+2005-04-04  Matthias Ringwald <mringwal@.inf.ethz.ch>
+
+	* include/irqreg.h, include/irqreg_unix.h: most unix emulation
+        specific stuff now in irqreg_unix.h. #warning "MCU not defined"
 
 2005-04-05  Harald Kipp  <harald.kipp@egnite.de>
 
