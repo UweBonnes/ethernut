@@ -62,6 +62,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/04/08 10:01:21  freckle
+ * removed #defines from unix emulation as provided by system headers
+ *
  * Revision 1.6  2005/04/04 19:33:54  freckle
  * added creation of include/netdb_orig.h, include/sys/socket_orig.h and
  * include/netinet/in_orig.h to allow unix emulation to use tcp/ip sockets
@@ -94,31 +97,18 @@
  *
  */
 
-/* use native version on unix emulation */
+
+
 #if defined(__linux__) || defined(__APPLE__)
+
+/* use native version on unix emulation */
 #include <sys/socket_orig.h>
-#endif /* unix emulation */
 
-/* assure _SYS_SOCKET_H_ is set */
-#undef  _SYS_SOCKET_H_
-#define _SYS_SOCKET_H_
-
-
-#include <sys/sock_var.h>
+#else /* embedded systems */
 
 /*!
- * \file sys/socket.h
- * \brief UDP and TCP socket interface definitions.
+* \addtogroup xgSocket
  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*!
- * \addtogroup xgSocket
- */
-
 
 /*
  * Types
@@ -157,6 +147,24 @@ extern "C" {
  * Address families.
  */
 #define AF_INET     2       /*!< \brief internetwork: UDP, TCP, etc. */
+
+#endif /* unix / embedded */
+
+
+/* assure _SYS_SOCKET_H_ is set */
+#undef  _SYS_SOCKET_H_
+#define _SYS_SOCKET_H_
+
+#include <sys/sock_var.h>
+
+/*!
+ * \file sys/socket.h
+ * \brief UDP and TCP socket interface definitions.
+ */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern TCPSOCKET *NutTcpCreateSocket(void);
 extern int NutTcpSetSockOpt(TCPSOCKET *sock, int optname, CONST void *optval, int optlen);
