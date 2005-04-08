@@ -49,6 +49,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/04/08 15:20:50  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.5  2004/03/08 11:26:13  haraldkipp
  * Accept incoming header compression.
  *
@@ -74,10 +78,10 @@
 
 #include <net/if_var.h>
 #include <dev/ppp.h>
-
+#include <sys/types.h>
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
-
+#include <netinet/in.h>
 #include <string.h>
 
 /*!

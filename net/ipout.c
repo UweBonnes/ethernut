@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/08 15:20:50  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.3  2004/10/10 16:37:03  drsung
  * Detection of directed broadcasts to local network added.
  *
@@ -127,13 +131,14 @@
 
 #include <string.h>
 
+#include <sys/types.h>
 #include <net/ether.h>
 #include <net/route.h>
 #include <netinet/if_ether.h>
 #include <netinet/if_ppp.h>
 #include <netinet/ipcsum.h>
 #include <netinet/ip.h>
-
+#include <netinet/in.h>
 /*!
  * \addtogroup xgIP
  */

@@ -93,8 +93,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:28  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/04/08 15:20:50  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:28  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.13  2003/03/31 12:01:36  harald
  * Release NETBUF on failures
@@ -108,8 +112,9 @@
  */
 
 #include <string.h>
-
+#include <sys/types.h>
 #include <netinet/if_ether.h>
+#include <netinet/in.h>
 #include <net/ether.h>
 
 /*!

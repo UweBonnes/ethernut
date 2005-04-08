@@ -49,6 +49,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/04/08 15:20:50  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.6  2004/03/08 11:24:48  haraldkipp
  * PppUp() replaced by direct post.
  *
@@ -79,13 +83,13 @@
  */
 
 #include <sys/event.h>
-
+#include <sys/types.h>
 #include <net/if_var.h>
 #include <dev/ppp.h>
 
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
-
+#include <netinet/in.h>
 /*!
  * \addtogroup xgIPCP
  */

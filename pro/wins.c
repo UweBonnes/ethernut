@@ -52,9 +52,9 @@ NutWinsNameQuery  (  "myboard", inet_addr(MYIP) ) ;
 #include <sys/heap.h>
 #include <sys/socket.h>
 #include <sys/sock_var.h>
-
+#include <sys/types.h>
 #include <pro/wins.h>
-
+#include <netinet/in.h>
 #ifdef NUTDEBUG
 #include <stdio.h>
 #endif

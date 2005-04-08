@@ -33,6 +33,10 @@
  */
 /*
  * $Log$
+ * Revision 1.6  2005/04/08 15:20:51  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.5  2005/04/05 17:44:57  haraldkipp
  * Made stack space configurable.
  *
@@ -61,7 +65,8 @@
 #include <stdio.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
-
+#include <sys/types.h>
+#include <netinet/in.h>
 #ifndef NUT_THREAD_SNTPSTACK
 #define NUT_THREAD_SNTPSTACK    256
 #endif

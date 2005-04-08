@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/04/08 15:20:51  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.5  2003/11/26 12:55:12  drsung
  * Portability issues ... again
  *
@@ -126,10 +130,12 @@
 
 #include <sys/heap.h>
 #include <sys/event.h>
-
+#include <sys/types.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
+
 
 /*!
  * \addtogroup xgUdpSocket

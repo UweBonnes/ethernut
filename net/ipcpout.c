@@ -49,6 +49,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/08 15:20:50  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.3  2003/08/14 15:17:50  haraldkipp
  * Caller controls ID increment
  *
@@ -68,10 +72,11 @@
 
 #include <sys/heap.h>
 #include <sys/thread.h>
-
+#include <sys/types.h>
 #include <net/if_var.h>
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
+#include <netinet/in.h>
 #include <net/ppp.h>
 
 /*!

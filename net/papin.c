@@ -49,8 +49,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:35  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/04/08 15:20:51  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:35  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:16:41  harald
  * PPP IP config to DCB
@@ -61,11 +65,11 @@
  */
 
 #include <dev/ppp.h>
-
+#include <sys/types.h>
 #include <net/if_var.h>
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
-
+#include <netinet/in.h>
 /*!
  * \addtogroup xgPAP
  *

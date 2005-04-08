@@ -49,6 +49,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/04/08 15:20:51  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.4  2004/03/08 11:26:57  haraldkipp
  * Bugfix, establishing PPP sessions failed.
  *
@@ -72,9 +76,9 @@
 #include <string.h>
 
 #include <dev/ppp.h>
-
+#include <sys/types.h>
 #include <sys/heap.h>
-
+#include <netinet/in.h>
 #include <net/if_var.h>
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>

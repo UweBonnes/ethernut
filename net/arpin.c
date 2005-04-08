@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/04/08 15:20:50  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.2  2004/07/27 19:41:00  drsung
  * If NutArpOutput fails, the NetBuf must not be deallocated by
  * calling NutNetBufFree.
@@ -107,10 +111,10 @@
  * First pre-release with 2.4 stack
  *
  */
-
+#include <sys/types.h>
 #include <net/if_var.h>
 #include <netinet/if_ether.h>
-
+#include <netinet/in.h>
 /*!
  * \addtogroup xgARP
  *

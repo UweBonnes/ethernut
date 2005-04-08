@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.191 2005/04/07 12:31:33 freckle Exp $
+$Id: ChangeLog,v 1.192 2005/04/08 15:20:46 olereinhardt Exp $
+
+2005-04-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* net/arpin.c, net/arpout.c, net/ethin.c, net/ethout.c,
+          net/ipcpin.c, net/ipcpout.c, net/ipout.c, net/lcpin.c,
+          net/lcpout.c, net/papin.c, net/papout.c, net/pppdebug.c,
+          net/pppin.c, net/pppout.c, net/udpsock.c, net/tcpin.c, 
+	  pro/sntp.c, pro/wins.c,
+	added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__) 
+	for htons and simmilar. 
+        Fixes to make the unix emulation compiling again. Hope this won't 
+	break anything.
 
 2005-04-04  Matthias Ringwald <mringwal@.inf.ethz.ch>
 

@@ -65,6 +65,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/04/08 15:20:51  olereinhardt
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+ * for htons and simmilar.
+ *
  * Revision 1.5  2004/03/16 16:48:45  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -92,9 +96,10 @@
 
 #include <dev/ppp.h>
 #include <dev/ahdlc.h>
+#include <netinet/in.h>
 #include <netinet/if_ppp.h>
 #include <net/ppp.h>
-
+#include <sys/types.h>
 #include <sys/timer.h>
 
 #ifdef NUTDEBUG
