@@ -32,9 +32,8 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
-# Revision 1.6  2005/04/08 15:20:46  olereinhardt
-# added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
-# for htons and simmilar.
+# Revision 1.7  2005/04/08 15:44:49  olereinhardt
+# *** empty log message ***
 #
 # Revision 1.7  2005/01/22 19:12:31  haraldkipp
 # Added C++ support contributed by Oliver Schulz (MPI).
@@ -55,6 +54,8 @@
 # Copied from .gcc
 #
 #
+
+include $(top_srcdir)/UserConf.mk
 
 DEFS  = $(HWDEF)
 
