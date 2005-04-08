@@ -75,6 +75,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/04/08 12:46:46  freckle
+ * removed htons, htonl, ntohs, ntohs, ntohl,  from unix emulation as
+ * provided by system headers somewhere
+ *
  * Revision 1.7  2005/02/10 07:06:48  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -254,7 +258,10 @@ extern "C" {
     }
 #endif                          /* #if defined(__GCC__) && defined(__AVR__) */
 
-/*!
+
+#if !defined(__linux__) && !defined(__APPLE__) /* provided by system libraries */
+
+    /*!
  * \brief Convert short value from host to network byte order.
  */
 #ifndef __BIG_ENDIAN__
@@ -262,7 +269,7 @@ extern "C" {
 #else
 #define htons(x) (x)
 #endif
-
+    
 /*!
  * \brief Convert long value from host to network byte order.
  */
@@ -289,6 +296,8 @@ extern "C" {
 #else
 #define ntohl(x) (x)
 #endif
+
+#endif /* network to host byte conversion */
 
 /*@}*/
 
