@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/04/08 14:40:36  freckle
+ * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__) for htons
+ *
  * Revision 1.13  2005/04/05 17:58:02  haraldkipp
  * Avoid integer division on ARM platform as long as we run without crtlib.
  *
@@ -155,6 +158,7 @@
  *
  */
 
+#include <sys/types.h>
 #include <string.h>
 
 #include <sys/atom.h>
@@ -165,6 +169,7 @@
 
 #include <net/errno.h>
 #include <net/route.h>
+#include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/icmp.h>
 #include <netinet/ip_icmp.h>
