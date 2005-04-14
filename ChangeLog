@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.192 2005/04/08 15:20:46 olereinhardt Exp $
+$Id: ChangeLog,v 1.193 2005/04/14 22:13:55 olereinhardt Exp $
+
+2005-04-15  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* dev/unix_devs.c
+        Changed the delimiting of the nativeName into ip and port. 
+        Now first check if nativeName == "stdio". Otherwise strtok will 
+        segfault. Strange... Perhaps a problem with the static declaration 
+        of the option strings? I don't know. Very mysterious.
 
 2005-04-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* net/arpin.c, net/arpout.c, net/ethin.c, net/ethout.c,
