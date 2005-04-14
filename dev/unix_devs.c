@@ -401,7 +401,8 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
     unsigned int remote_port;
     char *ip;
     char *port;
-
+//    char *idx;
+    
     // map from dev->name to unix name
     if (strncmp("uart", dev->dev_name, 4) == 0) {
         // uart
@@ -423,8 +424,13 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
 
     // check for sockets
     // try to split "device name" into ip:port
-    ip = strtok( nativeName, ":");
-    port = strtok ( NULL, ":");
+    if (strncmp("stdio", nativeName, 5)==0) {
+        ip = nativeName;
+        port = NULL;
+    } else { 
+        ip = strtok( nativeName, ":");
+        port = strtok ( NULL, ":");
+    }
 
     // printf("UnixDevOpen: Nut name = %s, unix name = %s\n",  dev->dev_name, nativeName);
 
