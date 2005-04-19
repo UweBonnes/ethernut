@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2005/04/19 14:15:28  phblum
+ * Moved trace macro to avoid jamming the buffer with yields that do not switch to another thread (e.g. idle thread does so all the time).
+ *
  * Revision 1.15  2005/02/21 12:37:57  phblum
  * Removed tabs and added semicolons after NUTTRACER macros
  *
@@ -314,6 +317,10 @@ void NutThreadResume(void)
             fprintf_P(__os_trs, fmt2, runningThread, runQueue);
         }
 #endif
+#ifdef NUTTRACER
+        TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread);
+#endif
+
         if (runningThread->td_state == TDS_RUNNING) {
             runningThread->td_state = TDS_READY;
         }
@@ -383,9 +390,6 @@ void NutThreadYield(void)
     }
 
     /* Continue with the highest priority thread, which is ready to run. */
-#ifdef NUTTRACER
-        TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread);
-#endif
     NutThreadResume();
 }
 
