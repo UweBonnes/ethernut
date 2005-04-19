@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.193 2005/04/14 22:13:55 olereinhardt Exp $
+$Id: ChangeLog,v 1.194 2005/04/19 09:09:42 haraldkipp Exp $
+
+2005-04-19  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/ftpd/ftpserv.c: Compiler warning added, if target is not
+	Ethernut 2.
+
+	* app/inetq/inetq.c: More detailed description added.
+
+	* app/tcps/tcps.c: Description updated.
+
+	* app/timers/timers.c: Description updated and ARM support added.
+
 
 2005-04-15  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* dev/unix_devs.c
