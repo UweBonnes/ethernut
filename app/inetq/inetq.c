@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2005/04/19 08:53:56  haraldkipp
+ * Added more detailed description
+ *
  * Revision 1.2  2003/11/04 17:46:52  haraldkipp
  * Adapted to Ethernut 2
  *
@@ -61,8 +64,17 @@
 /*!
  * \example inetq/inetq.c
  *
- * Requests an URL from the Internet. 
- * Demonstrates DNS query and default route usage.
+ * Requests an URL from the Internet and transfers the HTML
+ * source code to the serial device.
+ *
+ * Your local Ethernet network must provide Internet access.
+ * Connect the RS232 port of the Ethernut with a free COM
+ * port of your PC and run a terminal emulator at 115200 Baud.
+ *
+ * If your local network does not support DHCP, it may be
+ * required to modify the MY_IP, MY_MASK and MY_GATE below.
+ *
+ * This sample demonstrates DNS query and default route usage.
  */
 #define DNSSERVERIP     "192.168.192.2"
 #define INETSERVER	"www.kornet.net"
