@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2005/04/19 15:46:45  freckle
+ * added #include <compiler.h> as the implicit ordering is not sufficient
+ * on our red hat machines and the cruisecontrol build fails
+ *
  * Revision 1.4  2005/03/24 14:32:02  freckle
  * added creation of include/unistd_orig.h to configure
  * Added NUT_ wrapper for nut's unistd.h functions. Use <unistd_orig.h>
@@ -60,9 +64,10 @@
 
 #ifndef _UNISTD_H_
 
+#include <compiler.h>  // required e.g. for CONST
+
 #ifndef _UNISTD_VIRTUAL_H_
 #define _UNISTD_VIRTUAL_H_
-
 
 /* use native version on unix emulation */
 #if defined(__linux__) || defined(__APPLE__)

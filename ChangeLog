@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.195 2005/04/19 10:23:39 haraldkipp Exp $
+$Id: ChangeLog,v 1.196 2005/04/19 15:46:42 freckle Exp $
+
+2005-04-19  Matthias Ringwald <mringwal@.inf.ethz.ch>
+
+	* include/unistd.h: added #include <compiler.h> as the implicit
+	ordering is not sufficient on our red hat machines. relevant
+	to unix emulation.
 
 2005-04-19  Harald Kipp  <harald.kipp@egnite.de>
 
