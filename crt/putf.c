@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Copyright (c) 1990, 1993
  *      The Regents of the University of California.  All rights reserved.
@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/04/19 10:21:30  haraldkipp
+ * Support for size_t modifier added. Thanks to Tom Lynn
+ *
  * Revision 1.10  2004/11/24 15:24:07  haraldkipp
  * Floating point configuration works again.
  *
@@ -208,6 +211,11 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
                 flags |= ZEROPAD;
             else if (ch == 'l')
                 flags |= LONGINT;
+            else if (ch == 'z') {
+                if (sizeof(size_t) > sizeof(int)) {
+                    flags |= LONGINT;
+                }
+            }
             else if (ch == '*') {
                 width = va_arg(ap, int);
                 if (width < 0) {
