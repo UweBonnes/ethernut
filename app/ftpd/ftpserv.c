@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2005/04/19 08:51:26  haraldkipp
+ * Warn if not Ethernut 2
+ *
  * Revision 1.2  2005/02/07 19:05:23  haraldkipp
  * ATmega 103 compile errors fixed
  *
@@ -68,6 +71,10 @@
 #define CC_STRING   "AVRGCC"
 #else
 #define CC_STRING   "Compiler unknown"
+#endif
+
+#ifndef ETHERNUT2
+#warning Requires Ethernut 2
 #endif
 
 /*!
