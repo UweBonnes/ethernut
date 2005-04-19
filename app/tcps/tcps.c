@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2005/04/19 08:55:29  haraldkipp
+ * Description updated
+ *
  * Revision 1.2  2003/11/04 17:46:52  haraldkipp
  * Adapted to Ethernut 2
  *
@@ -61,7 +64,7 @@
  *
  * Simple TCP server.
  *
- * Program Ethernut with tcps.rom and enter
+ * Program Ethernut with tcps.hex and enter
  *
  * \code telnet x.x.x.x \endcode
  *
