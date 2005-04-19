@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2005/04/19 08:57:52  haraldkipp
+ * Description updated and ARM support added
+ *
  * Revision 1.3  2005/04/05 18:00:29  haraldkipp
  * Make it work on the Gameboy Advance.
  *
@@ -93,30 +96,14 @@
  *
  * In addition it demonstrates how to enable system debug output.
  * You need the debug version of the Nut/OS libraries. To create
- * them, you must modify the Makedefs file in the Ethernut
- * installation directory. Remove the # sign in front of the
- * DEFS line which contains a definition of NUTDEBUG. Then
- * rebuild the libraries by entering
- *
- * make clean
- *
- * and
- *
- * make install
- *
- * on the command line. Do not use configure or nutconf.exe, because
- * they will override your modified Makedefs.
- *
- * With AVRGCC simply rebuild this application.
- *
- * When using ICCAVR, you need to copy the libraries from the Ethernut
- * lib/enhanced directory to the ICCAVR lib subdirectory. You must also
- * add the macro NUTDEBUG to the compiler options of the project. 
- * Finally select rebuild all from the project menu.
+ * them, you must enable the RTOS Kernel - OS Debug option in
+ * the Configurator. Then use the Build Menu in the Configurator
+ * to generate the build tree again and build Nut/OS.
  *
  * Note, that the debug version consumes much more memory than the
  * original version. If in doubt, check the map file.
  */
+#include <cfg/os.h>
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #endif
@@ -126,17 +113,14 @@
 
 #include <cfg/arch.h>
 #include <dev/debug.h>
-/* Only devDebug1 supported with AT91 */
-#ifdef MCU_AT91R40008
-#define DEV_DEBUG devDebug1
-#define DEV_DEBUG_NAME "uart1"
-#elif defined(MCU_GBA)
-#define DEV_DEBUG devDebug0
+
+#ifdef MCU_GBA
 #define DEV_DEBUG_NAME "con"
 #else
-#define DEV_DEBUG devDebug0
 #define DEV_DEBUG_NAME "uart0"
 #endif
+
+#define DEV_DEBUG devDebug0
 
 #include <sys/thread.h>
 #include <sys/timer.h>
