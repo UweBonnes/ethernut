@@ -36,6 +36,12 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/04/19 09:02:17  haraldkipp
+ * Ole's mishap repaired
+ *
+ * Revision 1.5  2005/01/22 19:26:34  haraldkipp
+ * Marked deprecated.
+ *
  * Revision 1.4  2004/03/08 11:17:58  haraldkipp
  * Hardware handshake disabled by default.
  *
@@ -56,6 +62,8 @@
 /*!
  * \file cfg/modem.h
  * \brief RS232 handshake hardware specification.
+ *
+ * Including this file is deprecated. Use cfg/arch/avr.h.
  */
 
 /*!
