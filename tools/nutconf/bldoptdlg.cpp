@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,9 @@
 
 /*
  * $Log: bldoptdlg.cpp,v $
+ * Revision 1.3  2005/04/22 15:07:12  haraldkipp
+ * Avoid compiler warnings.
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -162,7 +165,7 @@ bool CBuildOptionsDialog::TransferDataFromWindow()
     return true;
 }
 
-void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& event)
+void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = ((wxTextCtrl*)FindWindow(ID_PATH_ENTRY))->GetValue();
 
@@ -177,7 +180,7 @@ void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& event)
     }
 }
 
-void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& event)
+void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = m_entSourceDir->GetValue();
 
@@ -192,7 +195,7 @@ void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& event)
     }
 }
 
-void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& event)
+void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = m_entInstallDir->GetValue();
 
@@ -208,7 +211,7 @@ void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& event)
 }
 
 
-void CBuildOptionsDialog::OnPlatformEnter(wxCommandEvent& event)
+void CBuildOptionsDialog::OnPlatformEnter(wxCommandEvent& WXUNUSED(event))
 {
 }
 
@@ -239,7 +242,7 @@ void CBuildOptionsDialog::PopulatePlatform()
     }
 }
 
-void CBuildOptionsDialog::OnSourceDirChange(wxCommandEvent& event)
+void CBuildOptionsDialog::OnSourceDirChange(wxCommandEvent& WXUNUSED(event))
 {
     PopulatePlatform();
 }

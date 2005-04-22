@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,9 @@
 
 /*
  * $Log: appoptdlg.cpp,v $
+ * Revision 1.2  2005/04/22 15:06:12  haraldkipp
+ * Avoid compiler warnings.
+ *
  * Revision 1.1  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -111,7 +114,7 @@ bool CAppOptionsDialog::TransferDataFromWindow()
     return true;
 }
 
-void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& event)
+void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = m_entAppDir->GetValue();
 
@@ -126,7 +129,7 @@ void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& event)
     }
 }
 
-void CAppOptionsDialog::OnProgrammerEnter(wxCommandEvent& event)
+void CAppOptionsDialog::OnProgrammerEnter(wxCommandEvent& WXUNUSED(event))
 {
 }
 
@@ -154,7 +157,7 @@ void CAppOptionsDialog::PopulateProgrammer()
     }
 }
 
-void CAppOptionsDialog::OnAppDirChange(wxCommandEvent& event)
+void CAppOptionsDialog::OnAppDirChange(wxCommandEvent& WXUNUSED(event))
 {
     PopulateProgrammer();
 }
