@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.5  2005/04/22 15:31:09  haraldkipp
+ * Avoid compiler warnings.
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.4  2004/11/24 15:36:53  haraldkipp
  * Release 1.1.1.
  * Do not store empty options.
@@ -79,9 +83,9 @@ END_EVENT_TABLE();
 CValueWindow::CValueWindow(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
 :  CTreeCompWindow(parent, id, pos, sz, style)
 {
-    SetBackgroundColour(wxSystemSettings::GetSystemColour(wxSYS_COLOUR_LISTBOX));
+    SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX));
 
-    SetFont(wxSystemSettings::GetSystemFont(wxSYS_DEFAULT_GUI_FONT));
+    SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
 
     m_editWindow = NULL;
     m_configItem = NULL;
@@ -98,8 +102,8 @@ void CValueWindow::DrawItem(wxDC & dc, wxTreeItemId id, const wxRect & rect)
         if (text.IsEmpty())
             return;
 
-        static wxColour normalColour = wxSystemSettings::GetSystemColour(wxSYS_COLOUR_WINDOWTEXT);
-        static wxColour disabledColour = wxSystemSettings::GetSystemColour(wxSYS_COLOUR_GRAYTEXT);
+        static wxColour normalColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
+        static wxColour disabledColour = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
         dc.SetTextForeground((item->IsActive() && (item->GetConfigType() != nutModule)) ? normalColour : disabledColour);
 
         int textW, textH;
@@ -112,14 +116,14 @@ void CValueWindow::DrawItem(wxDC & dc, wxTreeItemId id, const wxRect & rect)
     }
 }
 
-void CValueWindow::OnPaint(wxPaintEvent & event)
+void CValueWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
 {
     wxPaintDC dc(this);
 
     if (!m_treeCtrl)
         return;
 
-    wxPen pen(wxSystemSettings::GetSystemColour(wxSYS_COLOUR_3DLIGHT), 1, wxSOLID);
+    wxPen pen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DLIGHT), 1, wxSOLID);
     dc.SetPen(pen);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     wxFont font(GetFont());

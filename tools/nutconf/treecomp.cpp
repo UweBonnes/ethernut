@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -45,6 +45,10 @@
 
 /*
  * $Log: treecomp.cpp,v $
+ * Revision 1.3  2005/04/22 15:30:22  haraldkipp
+ * Avoid compiler warnings.
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -84,7 +88,7 @@ void CTreeCompWindow::DrawItem(wxDC & dc, wxTreeItemId id, const wxRect & rect)
     dc.DrawText(text, 5, rect.GetY() + wxMax(0, (rect.GetHeight() - textH) / 2));
 }
 
-void CTreeCompWindow::OnPaint(wxPaintEvent & event)
+void CTreeCompWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
 {
     wxPaintDC dc(this);
 
@@ -92,10 +96,10 @@ void CTreeCompWindow::OnPaint(wxPaintEvent & event)
         return;
     }
 
-    wxPen pen(wxSystemSettings::GetSystemColour(wxSYS_COLOUR_3DLIGHT), 1, wxSOLID);
+    wxPen pen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DLIGHT), 1, wxSOLID);
     dc.SetPen(pen);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    wxFont font(wxSystemSettings::GetSystemFont(wxSYS_DEFAULT_GUI_FONT));
+    wxFont font(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
     dc.SetFont(font);
 
     wxSize clientSize = GetClientSize();
@@ -131,7 +135,7 @@ void CTreeCompWindow::OnScroll(wxScrollWinEvent & event)
     Refresh();
 }
 
-void CTreeCompWindow::OnExpand(wxTreeEvent & event)
+void CTreeCompWindow::OnExpand(wxTreeEvent & WXUNUSED(event))
 {
     wxLogVerbose(wxT("CTreeCompWindow::OnExpand"));
     Refresh();

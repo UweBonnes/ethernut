@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: splitscroll.cpp,v $
+ * Revision 1.4  2005/04/22 15:27:19  haraldkipp
+ * Avoid compiler warnings.
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -67,11 +71,11 @@ CSplitScroll::CSplitScroll(wxWindow * parent, wxWindowID id, const wxPoint & pos
 {
 }
 
-void CSplitScroll::OnSize(wxSizeEvent & event)
+void CSplitScroll::OnSize(wxSizeEvent & WXUNUSED(event))
 {
     wxSize sz = GetClientSize();
-    if (GetChildren().First()) {
-        ((wxWindow *) GetChildren().First()->Data())->SetSize(0, 0, sz.x, sz.y);
+    if (GetChildren().GetFirst()) {
+        ((wxWindow *) GetChildren().GetFirst()->GetData())->SetSize(0, 0, sz.x, sz.y);
     }
 }
 
@@ -109,20 +113,18 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
     m_yScrollPosition += nScrollInc;
 
     // Find targets in splitter window and send the event to them
-    wxNode *node = GetChildren().First();
+    wxWindowList::compatibility_iterator node = GetChildren().GetFirst();
     while (node) {
-        wxWindow *child = (wxWindow *) node->Data();
+        wxWindow* child = (wxWindow*) node->GetData();
         if (child->IsKindOf(CLASSINFO(wxSplitterWindow))) {
-            wxSplitterWindow *splitter = (wxSplitterWindow *) child;
-            if (splitter->GetWindow1()) {
+            wxSplitterWindow* splitter = (wxSplitterWindow*) child;
+            if (splitter->GetWindow1())
                 splitter->GetWindow1()->ProcessEvent(event);
-            }
-            if (splitter->GetWindow2()) {
+            if (splitter->GetWindow2())
                 splitter->GetWindow2()->ProcessEvent(event);
-            }
             break;
         }
-        node = node->Next();
+        node = node->GetNext();
     }
 
 #ifdef __WXMAC__
