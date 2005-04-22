@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: repoptdlg.cpp,v $
+ * Revision 1.3  2005/04/22 15:21:30  haraldkipp
+ * Avoid compiler warnings.
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -94,12 +98,12 @@ bool CRepositoryOptionsDialog::TransferDataFromWindow()
     return true;
 }
 
-void CRepositoryOptionsDialog::OnBrowseRepositoryFile(wxCommandEvent& event)
+void CRepositoryOptionsDialog::OnBrowseRepositoryFile(wxCommandEvent& WXUNUSED(event))
 {
     wxFileName fname(m_entryPath->GetValue());
 
     wxFileDialog dlg(this, wxT("Choose a repository file"), fname.GetPath(), fname.GetFullName(), 
-        wxT("Nut/OS Repository (*.nut)|*.nut"), wxOPEN | wxHIDE_READONLY);
+        wxT("Nut/OS Repository (*.nut)|*.nut"), wxOPEN | OFN_HIDEREADONLY);
 
     if (dlg.ShowModal() == wxID_OK) {
         m_repositoryPath = dlg.GetPath();
