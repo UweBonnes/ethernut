@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.10  2005/04/22 15:19:45  haraldkipp
+ * Added support for building ICCAVR applications in the sample tree.
+ *
  * Revision 1.9  2004/11/24 15:36:53  haraldkipp
  * Release 1.1.1.
  * Do not store empty options.
@@ -76,6 +79,8 @@
 #include <wx/dir.h>
 #include <wx/file.h>
 #include <wx/filename.h>
+#include <wx/txtstrm.h>
+#include <wx/wfstream.h>
 
 #include "nutconf.h"
 #include "treeitemdata.h"
@@ -241,9 +246,9 @@ void CNutConfDoc::ReleaseRepository()
  */
 void CNutConfDoc::DeleteItems()
 {
-    wxNode *node = m_items.First();
+    wxNode *node = m_items.GetFirst();
     while (node) {
-        wxNode *next = node->Next();
+        wxNode *next = node->GetNext();
         node = next;
     }
 }
@@ -342,7 +347,7 @@ void CNutConfDoc::AddAllItems()
 
     UpdateAllViews();
 
-    if (GetItems().Number() > 0) {
+    if (GetItems().GetCount() > 0) {
         wxGetApp().GetMainFrame()->GetTreeCtrl()->Expand(rootId);
     }
     wxGetApp().GetMainFrame()->GetTreeCtrl()->SetFocus();
@@ -575,6 +580,137 @@ private:
     wxString m_target;
 };
 
+#ifdef _WIN32
+class CDirIccAvrProjectTraverser : public wxDirTraverser
+{
+public:
+    CDirIccAvrProjectTraverser(wxString source, wxString target) 
+    : m_source(source)
+    , m_target(target)
+    {
+    }
+
+    virtual wxDirTraverseResult OnFile(const wxString& filename)
+    {
+        wxString sub = filename.Mid(m_source.Length());
+        wxFileName name(m_target + sub);
+        if(name.GetExt().IsSameAs(wxT("src"), false)) {
+            TransferSourcesFile(filename, name.GetFullPath());
+        }
+        if(name.GetExt().IsSameAs(wxT("prj"), false)) {
+            TransferProjectFile(filename, name.GetFullPath());
+        }
+        return wxDIR_CONTINUE;
+    }
+
+    virtual wxDirTraverseResult OnDir(const wxString& dirname)
+    {
+        wxString sub = dirname.Mid(m_source.Length());
+        wxFileName name(m_target + sub);
+        if(!name.GetName().IsSameAs(wxT("CVS"), true)) {
+            name.Mkdir(0777, wxPATH_MKDIR_FULL);
+            return wxDIR_CONTINUE;
+        }
+        return wxDIR_IGNORE;
+    }
+private:
+    wxString m_source;
+    wxString m_target;
+
+    bool TransferProjectFile(wxString source, wxString target)
+    {
+        bool in_section = false;
+
+        wxFileInputStream f_source(source);
+        if (!f_source.Ok()) {
+            wxLogMessage("Failed to read from %s", source);
+            return false;
+        }
+        wxFileOutputStream f_target(target);
+        if (!f_target.Ok()) {
+            wxLogMessage("Failed to write to %s", target);
+            return false;
+        }
+
+        CSettings *cfg = wxGetApp().GetSettings();
+        wxTextInputStream istream(f_source);
+        wxTextOutputStream ostream(f_target);
+        for(;;) {
+            wxString line = istream.ReadLine();
+
+            if (f_source.Eof() && line.IsEmpty()) {
+                break;
+            }
+            if (in_section) {
+                if (line.StartsWith(wxT("Edit1="))) {
+                    line.Empty();
+                    if(!cfg->m_firstidir.IsEmpty()) {
+                        line += cfg->m_firstidir;
+                    }
+                    if (!line.IsEmpty()) {
+                        line += wxT(";");
+                    }
+                    line += cfg->m_buildpath + wxT("\\include");
+                    line += wxT(";") + cfg->m_source_dir + wxT("\\include");
+                    if(!cfg->m_lastidir.IsEmpty()) {
+                        line += wxT(";") + cfg->m_lastidir;
+                    }
+                    line = wxT("Edit1=") + line;
+                    line.Replace(wxT("/"), wxT("\\"));
+                }
+                else if (line.StartsWith(wxT("Edit2="))) {
+                    line = wxT("Edit2=") + cfg->m_buildpath + wxT("\\lib");
+                    line.Replace(wxT("/"), wxT("\\"));
+                }
+                else if (line.StartsWith(wxT("Edit3="))) {
+                    line = wxT("Edit3=ETHERNUT2 _MCU_enhanced __HARVARD_ARCH__");
+                }
+                else if (line.StartsWith(wxT("Edit27="))) {
+                    line = wxT("Edit27=-ucrtnutram.o ") + cfg->m_buildpath + wxT("\\lib\\nutinit.o");
+                    line.Replace(wxT("/"), wxT("\\"));
+                }
+            }
+            else if (line[0] == '[') {
+                in_section = line.IsSameAs(wxT("[Compiler Options]"), false);
+            }
+            ostream.WriteString(line + wxT("\n"));
+        }
+        return true;
+    }
+
+    bool TransferSourcesFile(wxString source, wxString target)
+    {
+        wxFileInputStream f_source(source);
+        if (!f_source.Ok()) {
+            wxLogMessage("Failed to read from %s", source);
+            return false;
+        }
+        wxFileOutputStream f_target(target);
+        if (!f_target.Ok()) {
+            wxLogMessage("Failed to write to %s", target);
+            return false;
+        }
+
+        wxTextInputStream istream(f_source);
+        wxTextOutputStream ostream(f_target);
+        for(;;) {
+            wxString line = istream.ReadLine();
+            wxString rest;
+
+            if (f_source.Eof() && line.IsEmpty()) {
+                break;
+            }
+            if (line.StartsWith(wxT("..\\..\\app\\"), &rest)) {
+                line = rest.AfterFirst('\\');
+            }
+            ostream.WriteString(line + wxT("\n"));
+        }
+        return true;
+    }
+
+};
+#endif
+
 bool CNutConfDoc::GenerateApplicationTree()
 {
     CSettings *cfg = wxGetApp().GetSettings();
@@ -588,6 +724,14 @@ bool CNutConfDoc::GenerateApplicationTree()
     CDirCopyTraverser traverser(src_dir, cfg->m_app_dir);
     wxDir dir(src_dir);
     dir.Traverse(traverser);
+
+#ifdef _WIN32
+    src_dir = cfg->m_source_dir + wxT("/appicc");
+    wxLogMessage("Translating ICCAVR projects from %s to %s", src_dir.c_str(), cfg->m_app_dir.c_str());
+    CDirIccAvrProjectTraverser icc_traverser(src_dir, cfg->m_app_dir);
+    wxDir icc_dir(src_dir);
+    icc_dir.Traverse(icc_traverser);
+#endif
 
     wxLogMessage("Creating Makefiles for %s in %s", cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
     wxString lib_dir(cfg->m_lib_dir);
