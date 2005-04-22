@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: configtree.cpp,v $
+ * Revision 1.3  2005/04/22 15:09:00  haraldkipp
+ * Avoid compiler warnings.
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -125,7 +129,7 @@ void CConfigTree::OnMouseEvent(wxMouseEvent & event)
     int flags = 0;
     wxTreeItemId item = HitTest(wxPoint(event.GetX(), event.GetY()), flags);
 
-    if (item == 0 || !item.IsOk()) {
+    if (item == (wxTreeItemId)0 || !item.IsOk()) {
         return;
     }
 
@@ -144,7 +148,7 @@ void CConfigTree::OnMouseEvent(wxMouseEvent & event)
     event.Skip();
 }
 
-void CConfigTree::OnSelChanged(wxTreeEvent & event)
+void CConfigTree::OnSelChanged(wxTreeEvent & WXUNUSED(event))
 {
     CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
     if (doc) {

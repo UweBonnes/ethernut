@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.5  2005/04/22 15:08:10  haraldkipp
+ * Avoid compiler warnings.
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.4  2004/09/07 19:16:12  haraldkipp
  * Activate boolean items only
  *
@@ -186,8 +190,8 @@ bool CConfigItem::UpdateTreeItem(CConfigTree & treeCtrl)
 {
     treeCtrl.SetItemText(m_itemId, GetBriefDescription());
 
-    static wxColour normalColour = wxSystemSettings::GetSystemColour(wxSYS_COLOUR_WINDOWTEXT);
-    static wxColour disabledColour = wxSystemSettings::GetSystemColour(wxSYS_COLOUR_GRAYTEXT);
+    static wxColour normalColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
+    static wxColour disabledColour = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
 
     treeCtrl.SetItemTextColour(m_itemId, normalColour);
 
@@ -287,7 +291,7 @@ wxWindow *CConfigItem::CreateEditWindow(wxWindow * parent)
  *
  * \param treeCtrl The tree control that received the click.
  */
-void CConfigItem::OnIconLeftDown(CConfigTree & treeCtrl)
+void CConfigItem::OnIconLeftDown(CConfigTree & WXUNUSED(treeCtrl))
 {
     if (GetConfigType() != nutOption)
         return;
