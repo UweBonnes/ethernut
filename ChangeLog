@@ -1,4 +1,36 @@
-$Id: ChangeLog,v 1.196 2005/04/19 15:46:42 freckle Exp $
+$Id: ChangeLog,v 1.197 2005/04/22 15:35:56 haraldkipp Exp $
+
+2005-04-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/Makeburn.avr-dude: Support for avrdude, kindly provided by
+	Martin Thomas.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h: 
+	Version 1.2.1 can now run without GUI or with wxWidgets 2.5.5.
+
+	* tools/nutconf/appoptdlg.cpp, tools/nutconf/bldoptdlg.cpp,
+	tools/nutconf/configitem.cpp, tools/nutconf/configtree.cpp,
+	tools/nutconf/enumeditctrl.cpp, tools/nutconf/inteditctrl.cpp,
+	tools/nutconf/mainframe.cpp, tools/nutconf/propertylist.cpp,
+	tools/nutconf/repoptdlg.cpp, tools/nutconf/splitscroll.cpp,
+	tools/nutconf/texteditctrl.cpp, tools/nutconf/treecomp.cpp,
+	tools/nutconf/valuewindow.cp: Marked unused function parameters 
+	to avoid compiler warnings.
+
+	* tools/nutconf/configitem.cpp, tools/nutconf/configtree.cpp,
+	tools/nutconf/nutconf.cpp, tools/nutconf/nutconfdoc.cpp,
+	tools/nutconf/repoptdlg.cpp, tools/nutconf/scrolledtree.cpp,
+	tools/nutconf/splitscroll.cpp, tools/nutconf/treecomp.cpp,
+	tools/nutconf/valuewindow.cpp: Upgraded to wxWidgets 2.5.5.
+	Mainly replaced deprecated functions.
+
+	* tools/nutconf/dirent.c, tools/nutconf/dirent.h,
+	tools/nutconf/getopt.c, tools/nutconf/getopt.h:
+	Files added to support non-GUI Configurator.
+
+	* tools/nutconf/nutconfdoc.cpp: Added support for building
+	ICCAVR applications in the sample tree.
+
 
 2005-04-19  Matthias Ringwald <mringwal@.inf.ethz.ch>
 
