@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,9 @@
 
 /*
  * $Log: propertylist.cpp,v $
+ * Revision 1.4  2005/04/22 15:20:32  haraldkipp
+ * Avoid compiler warnings.
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -85,7 +88,7 @@ CPropertyList::CPropertyList(wxWindow * parent, wxWindowID id, const wxPoint & p
     AddColumns();
 }
 
-void CPropertyList::OnRightClick(wxMouseEvent & event)
+void CPropertyList::OnRightClick(wxMouseEvent & WXUNUSED(event))
 {
 }
 
