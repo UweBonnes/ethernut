@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/04/22 15:16:01  haraldkipp
+ * Can now run without GUI.
+ *
  * Revision 1.14  2005/02/26 12:13:40  drsung
  * Added support for relative paths for sample application directory.
  *
@@ -88,8 +91,8 @@
  * to make its use in simple non-GUI applications as easy as
  * possible.
  */
-//#define NUT_CONFIGURE_EXEC
-#define NUT_CONFIGURE_VERSION   "1.1.2"
+
+#define NUT_CONFIGURE_VERSION   "1.2.1"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -101,6 +104,7 @@
 
 #include <io.h>
 #include <direct.h>
+#include "dirent.h"
 #define mkdir(P, M) _mkdir(P)
 #define access _access
 #define strcasecmp stricmp
@@ -108,12 +112,25 @@
 #else
 
 #include <unistd.h>
+#include <dirent.h>
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
 
 #endif
 
+#include <fcntl.h>
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
+#include "getopt.h"
 
 #include <lua.h>
 #include <lauxlib.h>
+
+#ifdef NUT_CONFIGURE_EXEC
+#include "getopt.h"
+#endif
 
 #include "nutcomponent.h"
 
@@ -1655,14 +1672,313 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
 }
 
 #ifdef NUT_CONFIGURE_EXEC
+
+/*!
+ * \brief Display program usage.
+ */
+void usage(void)
+{
+    fputs("Usage: nutconfigure OPTIONS ACTIONS\n"
+      "OPTIONS:\n"
+      "-a<dir>  application directory (./nutapp)\n"
+      "-b<dir>  build directory (./nutbld)\n"
+      "-c<file> configuration file (./nut/conf/ethernut21b.conf)\n"
+      "-i<dir>  first include path ()\n"
+      "-j<dir>  last include path ()\n"
+      "-l<dir>  library directory ()\n"
+      "-m<type> target platform (avr-gcc)\n"
+      "-p<type> programming adapter (avr-uisp-stk500)\n"
+      "-q       quiet (verbose)\n"
+      "-s<dir>  source directory (./nut)\n"
+      "-r<file> repository (./nut/conf/repository.nut)\n"
+      "ACTIONS:\n"
+      "create-buildtree\n"
+      "create-apptree\n"
+    , stderr);
+}
+
+/*!
+ * \brief Copy a file.
+ *
+ * \param src_path Source pathname.
+ * \param dst_path Destination pathname.
+ * \param quiet   If not 0, then progress and error output will be suppressed.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int copy_file(char *src_path, char *dst_path, int quiet)
+{
+    int rc = -1;
+    int fs;
+    int fd;
+    char buf[512];
+    int cnt;
+
+    if(CreateDirectoryPath(dst_path)) {
+        return -1;
+    }
+    if((fs = open(src_path, O_BINARY)) != -1) {
+        if((fd = open(dst_path, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, S_IREAD | S_IWRITE )) != -1) {
+            for(;;) {
+                if((cnt = read(fs, buf, sizeof(buf))) < 0) {
+                    if (!quiet) {
+                        printf("Error %d reading %s\n", errno, src_path);
+                    }
+                    break;
+                }
+                if (cnt == 0) {
+                    rc = 0;
+                    break;
+                }
+                if(write(fd, buf, cnt) != cnt) {
+                    if (!quiet) {
+                        printf("Error %d writing %s\n", errno, dst_path);
+                    }
+                    break;
+                }
+            }
+            close(fd);
+        }
+        else {
+            if (!quiet) {
+                printf("Error %d opening %s\n", errno, dst_path);
+            }
+        }
+        close(fs);
+    }
+    else {
+        if (!quiet) {
+            printf("Error %d opening %s\n", errno, src_path);
+        }
+    }
+    return rc;
+}
+
+/*!
+ * \brief Copy directory with application samples.
+ *
+ * \param src_dir Source directory.
+ * \param dst_dir Desitnation directory.
+ * \param quiet   If not 0, then progress and error output will be suppressed.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int copy_appdir(char *src_dir, char *dst_dir, int quiet)
+{
+    int rc = 0;
+    char src_path[256];
+    char dst_path[256];
+    DIR *dir;
+    struct dirent *dire;
+    struct stat statbuf;
+
+    if((dir = opendir(src_dir)) == NULL) {
+        if (!quiet) {
+            printf("Failed to scan directory %s\n", src_dir);
+        }
+        return -1;
+    }
+    if(!quiet) {
+        printf("Copying %s\n", src_dir);
+    }
+    while((dire = readdir(dir)) != NULL && rc == 0) {
+        if(dire->d_name[0] == '.' || 
+           stricmp(dire->d_name, "cvs") == 0 ||
+           strnicmp(dire->d_name, "Makeburn", 8) == 0 ||
+           strnicmp(dire->d_name, "Makedefs", 8) == 0 ||
+           strnicmp(dire->d_name, "Makerules", 9) == 0) {
+            continue;
+        }
+
+        strcpy(dst_path, dst_dir);
+        strcat(dst_path, "/");
+        strcat(dst_path, dire->d_name);
+
+        strcpy(src_path, src_dir);
+        strcat(src_path, "/");
+        strcat(src_path, dire->d_name);
+        stat(src_path, &statbuf);
+
+        if(statbuf.st_mode & S_IFDIR) {
+            rc = copy_appdir(src_path, dst_path, quiet);
+        }
+        else if(statbuf.st_mode & S_IFREG) {
+            copy_file(src_path, dst_path, quiet);
+        }
+    }
+    closedir(dir);
+    return rc;
+}
+
 /*!
  * \brief Running without GUI.
  *
  * All settings are passed as command line options.
- *
- * \todo Everything.
  */
 int main(int argc, char **argv)
 {
+    int rc = 3;
+    int option;
+    int quiet = 0;
+    char *app_dir = strdup("./nutapp");
+    char *bld_dir = strdup("./nutbld");
+    char *conf_name = strdup("./nut/conf/ethernut21b.conf");
+    char *ifirst_dir = strdup("");
+    char *ilast_dir = strdup("");
+    char *lib_dir = strdup("");
+    char *mak_ext = strdup("avr-gcc");
+    char *prg_ext = strdup("avr-uisp-stk500");
+    char *src_dir = strdup("./nut");
+    char *repo_name = strdup("./nut/conf/repository.nut");
+    NUTREPOSITORY *repo;
+    NUTCOMPONENT *root;
+
+    while((option = getopt(argc, argv, "a:b:c:i:j:l:m:p:s:r:v?")) != EOF) {
+        switch(option) {
+        case 'a':
+            free(app_dir);
+            app_dir = strdup(optarg);
+            break;
+        case 'b':
+            free(bld_dir);
+            bld_dir = strdup(optarg);
+            break;
+        case 'c':
+            free(conf_name);
+            conf_name = strdup(optarg);
+            break;
+        case 'i':
+            free(ifirst_dir);
+            ifirst_dir = strdup(optarg);
+            break;
+        case 'j':
+            free(ilast_dir);
+            ilast_dir = strdup(optarg);
+            break;
+        case 'l':
+            free(lib_dir);
+            lib_dir = strdup(optarg);
+            break;
+        case 'm':
+            free(mak_ext);
+            mak_ext = strdup(optarg);
+            break;
+        case 'p':
+            free(prg_ext);
+            prg_ext = strdup(optarg);
+            break;
+        case 'q':
+            quiet = 1;
+            break;
+        case 's':
+            free(src_dir);
+            src_dir = strdup(optarg);
+            break;
+        case 'r':
+            free(repo_name);
+            repo_name = strdup(optarg);
+            break;
+        default:
+            usage();
+            return 1;
+        }
+    }
+    argc -= optind;
+    argv += optind;
+
+    if (*lib_dir == '\0') {
+        free(lib_dir);
+        lib_dir = malloc(strlen(bld_dir) + 5);
+        strcpy(lib_dir, bld_dir);
+        strcat(lib_dir, "/lib");
+    }
+
+    if(!quiet) {
+        printf("nutconfigure %s\n", NUT_CONFIGURE_VERSION);
+        printf("Loading %s...", repo_name);
+    }
+    if ((repo = OpenRepository(repo_name)) != NULL) {
+        if ((root = LoadComponents(repo)) != NULL) {
+            if(!quiet) {
+                printf("OK\nLoading %s...", conf_name);
+            }
+            if (ConfigureComponents(repo, root, conf_name)) {
+                if(!quiet) {
+                    printf("%s\n", GetScriptErrorString());
+                }
+            }
+            else {
+                if(!quiet) {
+                    printf("OK\n");
+                }
+                RefreshComponents(root);
+                if(argc == 0) {
+                    if(!quiet) {
+                        printf("Nothing to do\n");
+                    }
+                }
+                else if(strcmp(argv[0], "create-buildtree") == 0) {
+                    if(!quiet) {
+                        printf("Creating Makefiles for %s in %s...", mak_ext, bld_dir);
+                    }
+                    if (CreateMakeFiles(root, bld_dir, src_dir, mak_ext, ifirst_dir, ilast_dir, lib_dir)) {
+                        if(!quiet) {
+                            printf("failed\n");
+                        }
+                    }
+                    else {
+                        if(!quiet) {
+                            printf("OK\nCreating header files in %s...", bld_dir);
+                        }
+                        if (CreateHeaderFiles(root, bld_dir)) {
+                            if(!quiet) {
+                                printf("failed\n");
+                            }
+                        }
+                        else {
+                            if(!quiet) {
+                                printf("OK\n");
+                            }
+                            rc = 0;
+                        }
+                    }
+                }
+                else if(strcmp(argv[0], "create-apptree") == 0) {
+                    ifirst_dir = realloc(ifirst_dir, strlen(ifirst_dir) + strlen(bld_dir) + 10);
+                    if (strlen(ifirst_dir)) {
+                        strcat(ifirst_dir, ";");
+                    }
+                    strcat(ifirst_dir, bld_dir);
+                    strcat(ifirst_dir, "/include");
+
+                    if (CreateSampleDirectory(root, app_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
+                        if(!quiet) {
+                            printf("failed\n");
+                        }
+                    }
+                    else {
+                        if(!quiet) {
+                            printf("OK\n");
+                        }
+                        src_dir = realloc(src_dir, strlen(src_dir) + 5);
+                        strcat(src_dir, "/app");
+                        rc = copy_appdir(src_dir, app_dir, quiet);
+                    }
+                }
+                else if(!quiet) {
+                    usage();
+                }
+            }
+        }
+        else if(!quiet) {
+            printf("%s\n", GetScriptErrorString());
+        }
+        CloseRepository(repo);
+    }
+    else if(!quiet) {
+        printf("failed\n");
+    }
+    return rc;
 }
+
 #endif
