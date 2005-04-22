@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,9 @@
 
 /*
  * $Log: enumeditctrl.cpp,v $
+ * Revision 1.2  2005/04/22 15:13:04  haraldkipp
+ * Avoid compiler warnings.
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -68,7 +71,7 @@ void CEnumEditCtrl::OnChar(wxKeyEvent & event)
         event.Skip();
 }
 
-void CEnumEditCtrl::OnKillFocus(wxFocusEvent & event)
+void CEnumEditCtrl::OnKillFocus(wxFocusEvent & WXUNUSED(event))
 {
     CValueWindow *parent = (CValueWindow *) GetParent();
     parent->EndEditing();

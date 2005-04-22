@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.4  2005/04/22 15:14:43  haraldkipp
+ * Avoid compiler warnings.
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -436,13 +439,13 @@ void CMainFrame::OnQuit(wxCommandEvent & WXUNUSED(event))
     Close();
 }
 
-void CMainFrame::OnSettings(wxCommandEvent& event)
+void CMainFrame::OnSettings(wxCommandEvent& WXUNUSED(event))
 {
     CSettingsDialog dialog(this);
     dialog.ShowModal();
 }
 
-void CMainFrame::OnGenerateBuildTree(wxCommandEvent & event)
+void CMainFrame::OnGenerateBuildTree(wxCommandEvent & WXUNUSED(event))
 {
     CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
     CSettings *cfg = wxGetApp().GetSettings();
@@ -462,7 +465,7 @@ void CMainFrame::OnGenerateBuildTree(wxCommandEvent & event)
     }
 }
 
-void CMainFrame::OnBuildNutOS(wxCommandEvent & event)
+void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
 {
     CSettings *cfg = wxGetApp().GetSettings();
     wxString str;
@@ -499,7 +502,7 @@ void CMainFrame::OnBuildNutOS(wxCommandEvent & event)
     }
 }
 
-void CMainFrame::OnCreateSampleDir(wxCommandEvent & event)
+void CMainFrame::OnCreateSampleDir(wxCommandEvent & WXUNUSED(event))
 {
     CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
     CSettings *cfg = wxGetApp().GetSettings();
