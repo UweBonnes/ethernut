@@ -45,6 +45,9 @@
 
 /*
  * $Log: scrolledtree.cpp,v $
+ * Revision 1.4  2005/04/22 15:26:21  haraldkipp
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -194,7 +197,7 @@ void CScrolledTreeCtrl::ScrollToLine(int posHoriz, int posVert)
     {
         UINT sbCode = SB_THUMBPOSITION;
         HWND vertScrollBar = 0;
-        MSWDefWindowProc((WXUINT) WM_VSCROLL, MAKELONG(sbCode, posVert), (WXHWND) vertScrollBar);
+        MSWDefWindowProc((WXUINT) WM_VSCROLL, MAKELONG(sbCode, posVert), (WXLPARAM) vertScrollBar);
     }
 #else
     wxGenericTreeCtrl *win = (wxGenericTreeCtrl *) this;
@@ -347,9 +350,9 @@ void CScrolledTreeCtrl::CalcTreeSize(const wxTreeItemId & id, wxRect & rect)
         rect = CombineRectangles(rect, itemSize);
     }
 
-    long cookie;
+    wxTreeItemIdValue cookie;
     wxTreeItemId childId = GetFirstChild(id, cookie);
-    while (childId != 0) {
+    while (childId) {
         CalcTreeSize(childId, rect);
         childId = GetNextChild(childId, cookie);
     }
