@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/04/22 15:17:50  haraldkipp
+ * Version 1.2.1 can now run without GUI or with wxWidgets 2.5.5.
+ *
  * Revision 1.9  2005/02/06 16:39:52  haraldkipp
  * GBA linker script entry in NutConf.mk fixed
  *
@@ -76,7 +79,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.1.2"
+#define VERSION "1.2.1"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
