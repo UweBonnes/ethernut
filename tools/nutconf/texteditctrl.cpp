@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2005 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,9 @@
 
 /*
  * $Log: texteditctrl.cpp,v $
+ * Revision 1.2  2005/04/22 15:28:10  haraldkipp
+ * Avoid compiler warnings.
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -59,13 +62,13 @@ CTextEditCtrl::CTextEditCtrl(wxWindow * parent, wxWindowID id, const wxPoint & p
 {
 }
 
-void CTextEditCtrl::OnEnter(wxCommandEvent & event)
+void CTextEditCtrl::OnEnter(wxCommandEvent & WXUNUSED(event))
 {
     CValueWindow *parent = (CValueWindow *) GetParent();
     parent->EndEditing();
 }
 
-void CTextEditCtrl::OnKillFocus(wxFocusEvent & event)
+void CTextEditCtrl::OnKillFocus(wxFocusEvent & WXUNUSED(event))
 {
     CValueWindow *parent = (CValueWindow *) GetParent();
     parent->EndEditing();
