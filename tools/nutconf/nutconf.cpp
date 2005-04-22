@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.8  2005/04/22 15:16:57  haraldkipp
+ * Upgraded to wxWidgets 2.5.5.
+ *
  * Revision 1.7  2004/11/24 15:36:53  haraldkipp
  * Release 1.1.1.
  * Do not store empty options.
@@ -155,7 +158,7 @@ bool NutConfApp::OnInit()
     m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configurator"));
     SetTopWindow(m_mainFrame);
     m_mainFrame->Show();
-    SendIdleEvents();
+    //2.5.5 SendIdleEvents();
 
     /*
      * Splash display.
