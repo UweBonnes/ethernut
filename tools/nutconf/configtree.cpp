@@ -39,6 +39,9 @@
 
 /*
  * $Log: configtree.cpp,v $
+ * Revision 1.4  2005/04/25 08:35:31  haraldkipp
+ * Upgrade to wxWidgets 6.0
+ *
  * Revision 1.3  2005/04/22 15:09:00  haraldkipp
  * Avoid compiler warnings.
  * Upgraded to wxWidgets 2.5.5.
@@ -129,7 +132,7 @@ void CConfigTree::OnMouseEvent(wxMouseEvent & event)
     int flags = 0;
     wxTreeItemId item = HitTest(wxPoint(event.GetX(), event.GetY()), flags);
 
-    if (item == (wxTreeItemId)0 || !item.IsOk()) {
+    if (item == (wxTreeItemId)0L || !item.IsOk()) {
         return;
     }
 
