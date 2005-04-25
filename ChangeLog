@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.197 2005/04/22 15:35:56 haraldkipp Exp $
+$Id: ChangeLog,v 1.198 2005/04/25 08:37:29 haraldkipp Exp $
+
+2005-04-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/configtree.cpp: Compile fix for the new
+	wxWidgets 2.6.0.
+
 
 2005-04-22  Harald Kipp  <harald.kipp@egnite.de>
 
