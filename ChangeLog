@@ -1,14 +1,12 @@
-$Id: ChangeLog,v 1.199 2005/04/26 12:46:09 haraldkipp Exp $
+$Id: ChangeLog,v 1.200 2005/04/26 12:49:58 haraldkipp Exp $
 
 2005-04-26  Harald Kipp  <harald.kipp@egnite.de>
 
-	* nut/tools/nutconf/enumeditctrl.cpp,
-	nut/tools/nutconf/enumeditctrl.h: Workaround for wxChoice focus 
-	bug on GTK+ added.
+	* tools/nutconf/enumeditctrl.cpp, tools/nutconf/enumeditctrl.h: 
+	Workaround for wxChoice focus bug on GTK+ added.
 
-	* nut/tools/nutconf/scrolledtree.cpp,
-	nut/tools/nutconf/valuewindow.cpp: Minor wxWidgets runtime
-	warning avoided.
+	* tools/nutconf/scrolledtree.cpp, tools/nutconf/valuewindow.cpp: 
+	Minor wxWidgets runtime warning avoided.
 
 
 2005-04-25  Harald Kipp  <harald.kipp@egnite.de>
