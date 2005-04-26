@@ -39,6 +39,9 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.6  2005/04/26 12:49:36  haraldkipp
+ * Minor wxWidgets runtime warning avoided.
+ *
  * Revision 1.5  2005/04/22 15:31:09  haraldkipp
  * Avoid compiler warnings.
  * Upgraded to wxWidgets 2.5.5.
@@ -134,7 +137,7 @@ void CValueWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
     wxRect itemRect;
     int cy = 0;
     wxTreeItemId h, lastH;
-    for (h = m_treeCtrl->GetFirstVisibleItem(); h; h = m_treeCtrl->GetNextVisible(h)) {
+    for (h = m_treeCtrl->GetFirstVisibleItem(); h.IsOk(); h = m_treeCtrl->GetNextVisible(h)) {
         if (m_treeCtrl->GetBoundingRect(h, itemRect)) {
             cy = itemRect.GetTop();
             wxRect drawItemRect(0, cy, clientSize.x, itemRect.GetHeight());
@@ -144,6 +147,9 @@ void CValueWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
             // Draw the actual item
             DrawItem(dc, h, drawItemRect);
             dc.DrawLine(0, cy, clientSize.x, cy);
+        }
+        if (!m_treeCtrl->IsVisible(h)) {
+            break;
         }
     }
     if (lastH && lastH.IsOk() && m_treeCtrl->GetBoundingRect(lastH, itemRect)) {

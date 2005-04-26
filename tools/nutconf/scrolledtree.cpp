@@ -45,6 +45,9 @@
 
 /*
  * $Log: scrolledtree.cpp,v $
+ * Revision 1.5  2005/04/26 12:49:36  haraldkipp
+ * Minor wxWidgets runtime warning avoided.
+ *
  * Revision 1.4  2005/04/22 15:26:21  haraldkipp
  * Upgraded to wxWidgets 2.5.5.
  *
@@ -251,11 +254,14 @@ void CScrolledTreeCtrl::OnPaint(wxPaintEvent& event)
     wxRect itemRect;
     int cy=0;
     wxTreeItemId h, lastH;
-    for(h = GetFirstVisibleItem(); h; h = GetNextVisible(h)) {
+    for(h = GetFirstVisibleItem(); h.IsOk(); h = GetNextVisible(h)) {
         if (GetBoundingRect(h, itemRect)) {
             cy = itemRect.GetTop();
             dc.DrawLine(0, cy, clientSize.x, cy);
             lastH = h;
+        }
+        if (!IsVisible(h)) {
+            break;
         }
     }
     if (lastH.IsOk() && GetBoundingRect(lastH, itemRect)) {
