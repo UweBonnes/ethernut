@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/04/26 12:48:28  haraldkipp
+ * Workaround for wxChoice focus bug on GTK+.
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -51,14 +54,19 @@
 
 class CEnumEditCtrl:public wxChoice {
     DECLARE_CLASS(CEnumEditCtrl)
+private:
+    bool m_mouseIsOver;
+
   public:
     CEnumEditCtrl(wxWindow * parent, wxWindowID id = -1, const wxPoint & pos = wxDefaultPosition, const wxSize & size =
                   wxDefaultSize, long style = 0);
 
     void OnChar(wxKeyEvent & event);
     void OnKillFocus(wxFocusEvent & event);
+    void OnMouseEnter(wxMouseEvent& event);
+    void OnMouseLeave(wxMouseEvent& event);
 
-     DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

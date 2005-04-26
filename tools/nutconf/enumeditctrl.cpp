@@ -39,6 +39,9 @@
 
 /*
  * $Log: enumeditctrl.cpp,v $
+ * Revision 1.3  2005/04/26 12:48:28  haraldkipp
+ * Workaround for wxChoice focus bug on GTK+.
+ *
  * Revision 1.2  2005/04/22 15:13:04  haraldkipp
  * Avoid compiler warnings.
  *
@@ -50,15 +53,19 @@
 #include "valuewindow.h"
 #include "enumeditctrl.h"
 
+
 BEGIN_EVENT_TABLE(CEnumEditCtrl, wxChoice)
     EVT_CHAR(CEnumEditCtrl::OnChar)
     EVT_KILL_FOCUS(CEnumEditCtrl::OnKillFocus)
-    END_EVENT_TABLE();
+    EVT_ENTER_WINDOW(CEnumEditCtrl::OnMouseEnter)
+    EVT_LEAVE_WINDOW(CEnumEditCtrl::OnMouseLeave)
+END_EVENT_TABLE();
 
 IMPLEMENT_CLASS(CEnumEditCtrl, wxChoice);
 
-CEnumEditCtrl::CEnumEditCtrl(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & size,
-                             long style):wxChoice(parent, id, pos, size, 0, 0, style)
+CEnumEditCtrl::CEnumEditCtrl(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & size, long style)
+    :wxChoice(parent, id, pos, size, 0, 0, style)
+    ,m_mouseIsOver(true)
 {
 }
 
@@ -67,12 +74,30 @@ void CEnumEditCtrl::OnChar(wxKeyEvent & event)
     if (event.GetKeyCode() == WXK_RETURN) {
         CValueWindow *parent = (CValueWindow *) GetParent();
         parent->EndEditing();
-    } else
+    } else {
         event.Skip();
+    }
 }
 
-void CEnumEditCtrl::OnKillFocus(wxFocusEvent & WXUNUSED(event))
+void CEnumEditCtrl::OnKillFocus(wxFocusEvent &event)
 {
-    CValueWindow *parent = (CValueWindow *) GetParent();
-    parent->EndEditing();
+    if (!m_mouseIsOver) {
+        CValueWindow *parent = (CValueWindow *) GetParent();
+        parent->EndEditing();
+    } else {
+        m_mouseIsOver = false;
+        event.Skip();
+    }
+}
+
+void CEnumEditCtrl::OnMouseEnter(wxMouseEvent& event)
+{
+    m_mouseIsOver = true;
+    event.Skip();
+}
+
+void CEnumEditCtrl::OnMouseLeave(wxMouseEvent& event)
+{
+    m_mouseIsOver = false;
+    event.Skip();
 }
