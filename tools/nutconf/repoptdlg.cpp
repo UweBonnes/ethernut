@@ -39,6 +39,9 @@
 
 /*
  * $Log: repoptdlg.cpp,v $
+ * Revision 1.4  2005/04/28 16:21:10  haraldkipp
+ * Failed to compile on Fedora
+ *
  * Revision 1.3  2005/04/22 15:21:30  haraldkipp
  * Avoid compiler warnings.
  * Upgraded to wxWidgets 2.5.5.
@@ -103,7 +106,7 @@ void CRepositoryOptionsDialog::OnBrowseRepositoryFile(wxCommandEvent& WXUNUSED(e
     wxFileName fname(m_entryPath->GetValue());
 
     wxFileDialog dlg(this, wxT("Choose a repository file"), fname.GetPath(), fname.GetFullName(), 
-        wxT("Nut/OS Repository (*.nut)|*.nut"), wxOPEN | OFN_HIDEREADONLY);
+        wxT("Nut/OS Repository (*.nut)|*.nut"), wxOPEN);
 
     if (dlg.ShowModal() == wxID_OK) {
         m_repositoryPath = dlg.GetPath();
