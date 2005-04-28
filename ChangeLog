@@ -1,4 +1,35 @@
-$Id: ChangeLog,v 1.200 2005/04/26 12:49:58 haraldkipp Exp $
+$Id: ChangeLog,v 1.201 2005/04/28 16:24:42 haraldkipp Exp $
+
+2005-04-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, Makefile.am, doc/Makefile.am, 
+	doc/gen/Makefile.am, tools/crurom/Makefile.am, 
+	tools/nutconf/Makefile.am: Support for autoconf/automake
+	added. This is far from working perfect, but at least
+	builds an installation on Fedora Core 3.
+
+	* AUTHORS COPYING INSTALL NEWS: Standard distribution doc files
+	added.
+
+	* reconf: Helper script for package building added.
+
+	* doc/gen/nut_en.cfg.in: Replaces nut_en.cfg, which is now
+	created by autoconf.
+
+	* tools/packaging/ethernut.spec.in: Replaces the previous
+	rpm spec, which is now created by autoconf.
+
+	* configure: This file stands in the way of autoconf and has
+	been renamed to nutsetup. Hopefully the executable permission
+	will now be preserved.
+
+	* Makefile: This file stands in the way of automake and has
+	been moved to the lib subdirectory. If you are building in the
+	source tree, then you must cd to lib first before running make.
+
+	* tools/crurom/crurom.c, tools/nutconf/nutcomponent.c: 
+	Include autoheader file.
+
 
 2005-04-26  Harald Kipp  <harald.kipp@egnite.de>
 
