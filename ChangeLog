@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.201 2005/04/28 16:24:42 haraldkipp Exp $
+$Id: ChangeLog,v 1.202 2005/04/28 16:26:31 haraldkipp Exp $
 
 2005-04-28  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -29,6 +29,9 @@ $Id: ChangeLog,v 1.201 2005/04/28 16:24:42 haraldkipp Exp $
 
 	* tools/crurom/crurom.c, tools/nutconf/nutcomponent.c: 
 	Include autoheader file.
+
+	* nut/tools/nutconf/repoptdlg.cpp: No idea why OFN_HIDEREADONLY
+	is undefined on Fedora. File dialog option removed.
 
 
 2005-04-26  Harald Kipp  <harald.kipp@egnite.de>
