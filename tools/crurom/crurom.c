@@ -2,6 +2,9 @@ const char crurom_rcsid[] = "@(#) $Id$";
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/28 16:02:43  haraldkipp
+ * Autoconfiscated
+ *
  * Revision 1.3  2003/07/20 20:06:28  haraldkipp
  * MSC compilation error fixed.
  *
@@ -17,6 +20,10 @@ const char crurom_rcsid[] = "@(#) $Id$";
  * directory scan added.
  *
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -41,7 +48,8 @@ const char crurom_rcsid[] = "@(#) $Id$";
  
 
 #define IDENT   "crurom"
-#define VERSION "1.3.1"
+#undef VERSION
+#define VERSION "1.3.2"
 
 static int entryno = 0;
 static int verbose = 0;
