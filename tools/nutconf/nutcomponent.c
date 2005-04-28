@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2005/04/28 16:18:22  haraldkipp
+ * Autoconfiscated
+ *
  * Revision 1.15  2005/04/22 15:16:01  haraldkipp
  * Can now run without GUI.
  *
@@ -92,6 +95,10 @@
  * possible.
  */
 
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #define NUT_CONFIGURE_VERSION   "1.2.1"
 
 #include <stdio.h>
@@ -113,6 +120,7 @@
 
 #include <unistd.h>
 #include <dirent.h>
+#include <errno.h>
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
@@ -122,8 +130,6 @@
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
-
-#include "getopt.h"
 
 #include <lua.h>
 #include <lauxlib.h>
