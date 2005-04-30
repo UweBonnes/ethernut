@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.14  2005/04/08 14:40:36  freckle
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__) for htons
  *
@@ -158,6 +162,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <sys/types.h>
 #include <string.h>
 

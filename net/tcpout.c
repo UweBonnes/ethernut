@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.4  2005/04/05 17:41:48  haraldkipp
  * Header is dangerous when you forget to remove all debug outputs.
  *
@@ -121,6 +125,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <string.h>
 
 #include <sys/heap.h>

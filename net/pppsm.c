@@ -34,6 +34,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.6  2005/04/05 17:44:57  haraldkipp
  * Made stack space configurable.
  *
@@ -61,6 +65,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/ppp.h>
 
 #include <string.h>

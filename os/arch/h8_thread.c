@@ -29,10 +29,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.1  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
  */
+
+#include <cfg/os.h>
 
 /*!
  * \brief H8/300 GCC context switch frame layout.

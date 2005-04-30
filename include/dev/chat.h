@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/04/30 16:42:41  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.7  2004/11/24 15:25:15  haraldkipp
  * Made options cnfigurable
  *
@@ -61,6 +65,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/chat.h>
 
 #define CHAT_ARG_SEND           0

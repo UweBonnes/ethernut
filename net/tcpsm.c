@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.19  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.18  2005/04/05 17:44:57  haraldkipp
  * Made stack space configurable.
  *
@@ -193,6 +197,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/tcp.h>
 
 #include <sys/thread.h>

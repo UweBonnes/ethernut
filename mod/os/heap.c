@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.2  2003/07/20 16:05:00  haraldkipp
  * *** empty log message ***
  *
@@ -67,6 +71,7 @@
 
 /*@{*/
 
+#include    <cfg/os.h>
 #include    <string.h>
 
 #include    <sys/atom.h>

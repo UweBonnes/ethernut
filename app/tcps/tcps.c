@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2005/04/30 16:42:41  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.3  2005/04/19 08:55:29  haraldkipp
  * Description updated
  *
@@ -73,6 +77,7 @@
  * for a list of available commands.
  */
 
+#include <cfg/os.h>
 #include <string.h>
 #include <stdio.h>
 #include <io.h>

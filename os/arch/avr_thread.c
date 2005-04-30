@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.5  2005/02/16 19:55:18  haraldkipp
  * Ready-to-run queue handling removed from interrupt context.
  * Avoid AVRGCC prologue and epilogue code. Thanks to Pete Allinson.
@@ -56,6 +60,8 @@
  * Added CPU family support
  *
  */
+
+#include <cfg/os.h>
 
 /* Support for separate irq stack only for avr-gcc */
 #ifdef __GNUC__

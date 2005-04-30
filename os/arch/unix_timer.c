@@ -38,6 +38,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <unistd.h>
 
 /* timer thread, generating ms ticks */

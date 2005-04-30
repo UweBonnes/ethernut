@@ -38,6 +38,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <pthread.h>
 #include <stdio.h>
 

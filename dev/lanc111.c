@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/04/30 16:42:41  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.12  2005/02/02 19:55:34  haraldkipp
  * If no Ethernet link was available on the LAN91C111, each outgoing packet
  * took 15 seconds and, even worse, the ouput routine doesn't return an error.
@@ -78,6 +82,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/arch/avr.h>
 
 #include <string.h>

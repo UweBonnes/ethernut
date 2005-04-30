@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.6  2004/11/08 18:15:02  haraldkipp
  * Very bad hack to support 32-bit boundaries.
  *
@@ -86,6 +90,7 @@
 
 /*@{*/
 
+#include <cfg/os.h>
 #include <compiler.h>
 #include <string.h>
 

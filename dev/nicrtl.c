@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/04/30 16:42:41  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.14  2005/02/10 07:06:18  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -89,6 +93,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/arch/avr.h>
 
 #include <string.h>

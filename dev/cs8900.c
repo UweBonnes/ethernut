@@ -132,6 +132,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/04/30 16:42:41  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.8  2004/05/26 09:40:30  olereinhardt
  * Changed reading of packet length / receive status to be compatible with
  * newer AVRGCC versions. (Need to read high byte first!)
@@ -180,6 +184,7 @@
 /* Not ported. */
 #ifdef __GNUC__
 
+#include <cfg/os.h>
 #include <string.h>
 #include <avr/interrupt.h>
 

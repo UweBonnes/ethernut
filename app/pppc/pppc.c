@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2005/04/30 16:42:41  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.4  2005/02/23 04:44:35  hwmaier
  * Changes in order to support AT90CAN128
  *
@@ -97,6 +101,7 @@
  */
 #define RXBUFFSIZE  256
 
+#include <cfg/os.h>
 #include <dev/debug.h>
 #include <dev/hd44780.h>
 //#include <dev/ahdlcavr.h>

@@ -47,6 +47,7 @@ NutWinsNameQuery  (  "myboard", inet_addr(MYIP) ) ;
 */
 /* ********************************************************* */
 
+#include <cfg/os.h>
 #include <string.h>
 
 #include <sys/heap.h>

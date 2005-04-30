@@ -83,6 +83,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.9  2005/03/13 13:40:32  haraldkipp
  * If NutArpOutput() failed, then NutArpCacheQuery() released the already
  * released NETBUF. This bug had been fixed. If NutArpAllocNetBuf() fails,
@@ -125,6 +129,7 @@
  * \endverbatim
  */
 
+#include <cfg/os.h>
 #include <cfg/arp.h>
 
 #include <sys/event.h>

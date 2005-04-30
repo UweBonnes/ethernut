@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/04/30 16:42:41  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.2  2004/01/16 07:51:43  drsung
  * Bugfix for reallocating smaller network buffers. Thx to Mike Cornelius.
  *
@@ -110,6 +114,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <string.h>
 
 #include <sys/heap.h>

@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
  * Revision 1.3  2004/12/17 15:27:19  haraldkipp
  * Added Adam Pierce's routing management functions.
  *
@@ -113,6 +117,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <sys/atom.h>
 #include <sys/heap.h>
 

@@ -93,8 +93,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:39  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/04/30 16:42:42  chaac
+ * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
+ * is defined in NutConf, it will make effect where it is used.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:39  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.11  2003/02/04 18:14:57  harald
  * Version 3 released
@@ -104,6 +108,7 @@
  *
  */
 
+#include <cfg/os.h>
 #include <sys/thread.h>
 
 #include <netinet/ip.h>
