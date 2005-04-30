@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.202 2005/04/28 16:26:31 haraldkipp Exp $
+$Id: ChangeLog,v 1.203 2005/04/30 13:08:11 chaac Exp $
+
+2005-04-30  Vesa Jaaskelainen  <chaac AT nic DOT fi>
+	* pro/httpd.c: Added support for parsing Content-Length field
+	in HTTP requests.
 
 2005-04-28  Harald Kipp  <harald.kipp@egnite.de>
 

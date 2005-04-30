@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/04/30 13:08:15  chaac
+ * Added support for parsing Content-Length field in HTTP requests.
+ *
  * Revision 1.7  2005/04/05 17:58:02  haraldkipp
  * Avoid integer division on ARM platform as long as we run without crtlib.
  *
@@ -660,9 +663,12 @@ void NutHttpProcessRequest(FILE * stream)
                     break;
                 strcpy(req->req_auth, cp);
             }
-        } else if (strncasecmp(line, "Content-Length:", 15) == 0)
-            req->req_length = 0 /*atoi(&line[15]) */ ;
-        else if (strncasecmp(line, "Content-Type:", 13) == 0) {
+        } else if (strncasecmp(line, "Content-Length:", 15) == 0) {
+            cp = &line[15];
+            while (*cp == ' ' || *cp == '\t')
+                cp++;
+            req->req_length = atoi(cp);
+        } else if (strncasecmp(line, "Content-Type:", 13) == 0) {
             if (req->req_type == 0) {
                 cp = &line[13];
                 while (*cp == ' ' || *cp == '\t')
