@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.8  2005/05/09 17:22:50  chaac
+# Added workaround for too aggressive GCC optimizations. Now C and C++
+# compilers use flag -fno-delete-null-pointer-checks when compiling Nut/OS.
+#
 # Revision 1.7  2005/01/22 19:12:31  haraldkipp
 # Added C++ support contributed by Oliver Schulz (MPI).
 #
@@ -67,8 +71,8 @@ AS     = $(TRGT)gcc -x assembler-with-cpp
 RANLIB = $(TRGT)ranlib
 
 MCFLAGS  = -mmcu=$(MCU)
-CPFLAGS  = $(MCFLAGS) -Os -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
-CXXFLAGS = $(MCFLAGS) -Os -Wall -Werror -Wa,-ahlms=$(<F:.cc=.lst) $(DEFS)
+CPFLAGS  = $(MCFLAGS) -Os -fno-delete-null-pointer-checks -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
+CXXFLAGS = $(MCFLAGS) -Os -fno-delete-null-pointer-checks -Wall -Werror -Wa,-ahlms=$(<F:.cc=.lst) $(DEFS)
 LDFLAGS  = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref
 ARFLAGS  = rsv
 ASFLAGS  = $(MCFLAGS) -Wa,-amhls=$(<:.S=.lst) $(DEFS)
