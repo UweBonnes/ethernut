@@ -1,6 +1,17 @@
-$Id: ChangeLog,v 1.204 2005/04/30 16:42:25 chaac Exp $
+$Id: ChangeLog,v 1.205 2005/05/09 17:29:45 chaac Exp $
 
-2005-05-30  Vesa Jaaskelainen  <chaac AT nic DOT fi>
+2005-05-09  Vesa Jaaskelainen  <chaac AT nic DOT fi)
+
+	* Makedefs.avr-gcc: Added workaround for too aggressive GCC 
+	optimizations. Now C and C++ compilers use flag 
+	-fno-delete-null-pointer-checks when compiling Nut/OS.
+
+        * app/Makerules.avr-gcc: Make sure that no EEPROM section is
+	written to .HEX file if eeprom sections are defined in source
+	files. EEPROM sections should only be in .EEP files.
+
+2005-04-30  Vesa Jaaskelainen  <chaac AT nic DOT fi>
+
 	* app/pppc/pppc.c, app/tcps/tcps.c, dev/chat.c, dev/cs8900.c,
 	dev/lanc111.c, dev/netbuf.c, dev/nicrtl.c, dev/nicrtl_h8.c,
 	dev/ppp.c, include/dev/chat.h, mod/os/heap.c, net/arpcache.c,
@@ -13,6 +24,7 @@ $Id: ChangeLog,v 1.204 2005/04/30 16:42:25 chaac Exp $
 	make effect where it is used.
 
 2005-04-30  Vesa Jaaskelainen  <chaac AT nic DOT fi>
+
 	* pro/httpd.c: Added support for parsing Content-Length field
 	in HTTP requests.
 
