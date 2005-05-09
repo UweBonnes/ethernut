@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2005/05/09 17:17:28  chaac
+# Make sure that no EEPROM section is written to .HEX file if eeprom sections
+# are defined in source files. EEPROM sections should only be in .EEP files.
+#
 # Revision 1.1  2004/09/10 10:23:33  haraldkipp
 # Replaces .gcc
 #
@@ -46,7 +50,7 @@ include $(top_srcdir)/Makerules.avr-gcc
 	$(ELFCOF) -O coff-ext-avr $< $@
 
 %hex: %elf
-	$(BIN) -O ihex $< $@
+	$(BIN) -R .eeprom -O ihex $< $@
 
 %rom: %elf
 	$(BIN) -O ihex $< $@
