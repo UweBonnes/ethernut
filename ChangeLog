@@ -1,16 +1,24 @@
-$Id: ChangeLog,v 1.205 2005/05/09 17:29:45 chaac Exp $
+$Id: ChangeLog,v 1.206 2005/05/13 21:46:57 chaac Exp $
 
-2005-05-09  Vesa Jaaskelainen  <chaac AT nic DOT fi)
+2005-05-14  Vesa Jaaskelainen  <chaac@.nic.fi>
+
+	* include/sys/atom.h: Entering a critical section should
+	now be faster on AVR's when calling NutEnterCritical().
+
+	* ChangeLog: Fixed my log entries to allow sf.net's file viewer
+	to correctly colorize it.
+
+2005-05-09  Vesa Jaaskelainen  <chaac@.nic.fi>
 
 	* Makedefs.avr-gcc: Added workaround for too aggressive GCC 
 	optimizations. Now C and C++ compilers use flag 
 	-fno-delete-null-pointer-checks when compiling Nut/OS.
 
-        * app/Makerules.avr-gcc: Make sure that no EEPROM section is
+	* app/Makerules.avr-gcc: Make sure that no EEPROM section is
 	written to .HEX file if eeprom sections are defined in source
 	files. EEPROM sections should only be in .EEP files.
 
-2005-04-30  Vesa Jaaskelainen  <chaac AT nic DOT fi>
+2005-04-30  Vesa Jaaskelainen  <chaac@.nic.fi>
 
 	* app/pppc/pppc.c, app/tcps/tcps.c, dev/chat.c, dev/cs8900.c,
 	dev/lanc111.c, dev/netbuf.c, dev/nicrtl.c, dev/nicrtl_h8.c,
@@ -23,7 +31,7 @@ $Id: ChangeLog,v 1.205 2005/05/09 17:29:45 chaac Exp $
 	include for cfg/os.h. If NUTDEBUG is defined in NutConf, it will 
 	make effect where it is used.
 
-2005-04-30  Vesa Jaaskelainen  <chaac AT nic DOT fi>
+2005-04-30  Vesa Jaaskelainen  <chaac@.nic.fi>
 
 	* pro/httpd.c: Added support for parsing Content-Length field
 	in HTTP requests.

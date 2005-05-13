@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/05/13 21:47:07  chaac
+ * Entering a critical section should now be faster on AVR's when
+ * calling NutEnterCritical().
+ *
  * Revision 1.9  2005/04/05 17:42:45  haraldkipp
  * ARM7 implementation of critical sections added.
  *
@@ -112,8 +116,8 @@ static inline void AtomicDec(volatile u_char * p)
 #define NutEnterCritical()  \
 {                           \
     asm("in R0, 0x3F\n"     \
-        "push R0\n"         \
-        "cli\n");           \
+        "cli\n"             \
+        "push R0\n");       \
 }
 
 #define NutExitCritical()   \
@@ -127,8 +131,8 @@ static inline void AtomicDec(volatile u_char * p)
 #define NutEnterCritical_nt()               \
     asm volatile(                           \
         "in  __tmp_reg__, __SREG__" "\n\t"  \
-        "push __tmp_reg__"          "\n\t"  \
         "cli"                       "\n\t"  \
+        "push __tmp_reg__"          "\n\t"  \
     )
 
 #define NutExitCritical_nt()                \
