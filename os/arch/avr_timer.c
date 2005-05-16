@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/05/16 08:54:45  haraldkipp
+ * Original routines did not work for Arthernet.
+ *
  * Revision 1.6  2005/03/09 08:33:34  hwmaier
  * Finally implemented the correct timer routines and init for AT90CAN128. Timer2 is now used on AT90CAN128 rather Timer0 because Atmel (don't blame me) swapped the Timer designation.
  *
@@ -198,6 +201,115 @@ static void NutTimerIntr(void *arg)
 
 #ifndef NUT_CPU_FREQ
 
+#ifdef ARTHERNET1
+/* ARTHERNET extension - since the old method depends
+   on cycle time of the inline-assembler instructions. Fails if
+   all RAM is external (waitstaits).
+   TODO: change to Nut/OS coding style */
+   
+/*
+   Utiltiy Function - Wait one second at 20MHz clock 
+   rough! - do not use for precise delays
+*/
+static void NutComputeCpuClockDelay(void)
+{
+	volatile u_short i, j;
+	
+	for (i = 0; i < 1000; i++) {
+		for (j = 0; j < 1000; j++);
+	}
+}
+
+/* 
+   Function determines CPU-Frequency by comparison
+   with 32kHz watch-crystal
+   methode: 
+   - let timer0 run in async-mode (32kHz), prescaler 1, 10 timer (compare match)
+   - let timer1 run wiht prescaler 8
+   calculation:
+        delta_T0 = delta_T1
+   cnt0*pres0/f0 = cnt1*pres1/f1
+   with: cnt0=10, pres0=0, f0=32867Hz, pres1=8
+         cnt1 measured
+   ==> f1 = cnt1*pres1*f0/cnt0
+*/
+static u_long NutComputeCpuClock(void)
+{
+    u_char sreg, cnt0;
+    u_short cnt1;
+    
+    sreg=SREG;
+    cli(); 
+    
+    TIMSK &= ~( (1<<OCIE0) | (1<<TOIE0) );  /* 1. disable Timer0 interrupts */
+    ASSR |= (1<<AS0);  /* 2. select 32,768kHz clock source */
+    
+    NutComputeCpuClockDelay(); /* 2b. stabilize  */
+    
+    TCNT0 = 0;  /* 3. write new values to TCNT, OCR, TCCR */
+    OCR0  = 30;  /* set compare match to 10 */
+    TCCR0 = (1<<CS00); /* prescaler 1 */
+    
+    /* 4. switch to async. operation */
+    while ( (ASSR & (1<<TCN0UB)) || (ASSR & (1<<OCR0UB)) || (ASSR & (1<<TCR0UB)) ) ; 
+
+    /* setup 16-bit timer 1 */
+    TCCR1B = (1<<CS11); /* prescaler 8 */
+    
+    TIFR |= ( (1<<OCF0) | (1<<TOV0) );  /* 5. clear interrupts flags */
+    
+    TCNT0 = 0; /* reset Timer0 Counter */
+    while ( (ASSR & (1<<TCN0UB)) ); /* sync */
+    
+    TCNT1 = 0; /* reset Timer1 Counter */
+    
+    while ( !(TIFR & (1<<OCF0)) ); /* wait for compare-match */
+
+    cnt0 = TCNT0;
+    cnt1 = TCNT1;
+    
+    TIFR |= ( (1<<OCF0) | (1<<TOV0) ); /* clear interrupt flags */
+    TCCR1B = 0; /* disable TC1 */
+
+    cpu_clock = cnt1 * 8 * 32786 / cnt0;
+    delay_count = cpu_clock / 4000;
+
+    SREG = sreg; /* restore status-reg. */
+    
+    
+    /* the following lines have been copied from the orignal subroutine */
+     /*
+     * Disable timer 0 interrupts.
+     */
+    cbi(TIMSK, TOIE0);
+    cbi(TIMSK, OCIE0);
+
+    /*
+     * Select oscillator 1 (32.768 kHz).
+     */
+    sbi(ASSR, AS0);
+
+    /*
+     * Reset counter register and set
+     * prescaler to 8.
+     */
+    outp(0, TCNT0);
+    outp(2, TCCR0);
+
+    /*
+     * Wait for update busy clear and
+     * enable timer overflow interrupt.
+     */
+    NutRegisterIrqHandler(&sig_OVERFLOW0, NutTimerIntr, 0);
+    while (inp(ASSR) & (TCN0UB | TCR0UB))
+        continue;
+    
+    return cpu_clock;
+}
+
+#else /* !Arthernet */
+
+
 /*!
  * \brief Compute CPU clock in Hertz.
  *
@@ -269,6 +381,7 @@ static u_long NutComputeCpuClock(void)
 
     return cpu_clock;
 }
+#endif /* !Arthernet */
 
 #endif
 
