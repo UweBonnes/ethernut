@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2005/05/16 08:41:25  haraldkipp
+ * Bugfix: Empty queue before removing entry.
+ *
  * Revision 1.10  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -214,6 +217,10 @@ static void ArpCacheFlush(IFNET * ifn)
 
     while (ae) {
         if (ae->ae_flags & ATF_REM) {
+            /* Remove all waiting threads from the queue of this
+               entry, but do not give up the CPU. If some other
+               thread takes over and deals with ARP, we are dead. */
+            NutEventBroadcastAsync(&ae->ae_tq);
 #ifdef NUTDEBUG
             if (__tcp_trf) {
                 fprintf(__tcp_trs, "[ARP-DEL %s]", inet_ntoa(ae->ae_ip));
@@ -377,7 +384,12 @@ void NutArpCacheUpdate(NUTDEVICE * dev, u_long ip, u_char * ha)
 
 #ifdef NUTDEBUG
         if (__tcp_trf) {
-            fprintf(__tcp_trs, "[ARP-UPD %s]", inet_ntoa(ip));
+            fprintf(__tcp_trs, "[ARP-UPD %s", inet_ntoa(ip));
+            if (ha) {
+                fprintf(__tcp_trs, " %02x%02x%02x%02x%02x%02x", /* */
+                        ha[0], ha[1], ha[2], ha[3], ha[4], ha[5]);
+            }
+            fputc(']', __tcp_trs);
         }
 #endif
 
