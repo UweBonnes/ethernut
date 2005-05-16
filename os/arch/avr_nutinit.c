@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2005/05/16 08:49:37  haraldkipp
+ * Arthernet requires different wait state settings.
+ *
  * Revision 1.17  2005/02/28 08:44:54  drsung
  * Fixed missing return type of NutInitSP
  * Removed inlcude file avrpio.h
@@ -263,7 +266,21 @@ void NutInitXRAM(void)
 #else
     XMCRA = _BV(SRE) | _BV(SRW10); /* One wait state for the whole memory range */
 #endif
+
+
 #elif defined(__AVR_ATmega128__) || defined(__AVR_ATmega64__)
+
+#if defined(ARTHERNET1)
+    /* Arthernet1 memory setup - mt - TODO: check this
+   0x1100-0x14FF  CLPD area  -> use 3 Waitstates for 0x1100-0x1FFF (no Limit at 0x1500 available)
+   0x1500-0xFFFF  Heap/Stack -> use 1 Waitstate  for 0x2000-0xFFFF
+    */
+    MCUCR  = _BV(SRE); /* enable xmem-Interface */
+    XMCRA |= _BV(SRL0) | _BV(SRW01) | _BV(SRW00); /* sep. at 0x2000, 3WS for lower Sector */
+    XMCRB = 0;
+
+#else  /* !ARTHERNET1 */
+
     MCUCR = _BV(SRE) | _BV(SRW10);
 
 /* Configure two sectors, lower sector = 0x1100 - 0x7FFF,
@@ -275,12 +292,27 @@ void NutInitXRAM(void)
     XMCRA |= _BV(SRL2) | _BV(SRW00) | _BV(SRW11); /* SRW10 is set in MCUCR */
     XMCRB = 0;
 #endif
-#else
+
+#endif /* !ARTHERNET1 */
+
+#else  /* ATmega103 */
     MCUCR = _BV(SRE) | _BV(SRW);
 #endif
 }
 
 #endif
+
+#ifdef ARTHERNET1
+/*
+ * Arthernet CPLD initialization.
+ */
+static void ANInitCPLD(void) __attribute__ ((naked, section(".init3"), used));
+void ANInitCPLD(void)
+{
+      *((volatile u_char *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
+      *((volatile u_char *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
+}
+#endif /* ARTHERNET1 */
 
 #if defined(RTL_EESK_BIT) && defined(__GNUC__) && defined(NUTXMEM_SIZE)
 /*
@@ -502,6 +534,9 @@ void NutInit(void)
 #ifdef NUT_CPU_FREQ
     /* Configure baudrate register according to clock frequency for 115200bps */
     outp((NUT_CPU_FREQ / (16 * 115200UL)) - 1, UBRR);
+#elif defined(ARTHERNET1)
+    /* Assume standard Arthernet1 with 16 MHz crystal, set to 38400 bps */
+    outp(25, UBRR);
 #else
     /* Assume standard Ethernut with 14.745600 MHz crystal, set to 115200bps */
     outp(7, UBRR);
