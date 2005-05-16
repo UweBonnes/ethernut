@@ -2,7 +2,7 @@
 #define _SYS_BANKMEM_H_
 
 /*
- * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2005/05/16 08:35:32  haraldkipp
+ * Added banking support for Arthernet.
+ *
  * Revision 1.4  2004/09/01 14:19:41  haraldkipp
  * Avoiding too many ifdefs
  *
@@ -67,8 +70,17 @@
 #endif
 
 #if NUTBANK_COUNT
-#define NutSegBufEnable(bank) *((char *)(NUTBANK_SR) + (bank)) = (bank)
+
+#ifdef ARTHERNET1
+/* Arthernet uses a different banking. */
+#define NutSegBufEnable(bank) *(volatile u_char *)(NUTBANK_SR) = (((u_char)bank+1)<<4)
 #else
+/* This is the Ethernut way. */
+#define NutSegBufEnable(bank) *((char *)(NUTBANK_SR) + (bank)) = (bank)
+#endif
+
+#else
+/* No banked memory. */
 #define NutSegBufEnable(bank)
 #endif
 

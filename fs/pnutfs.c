@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2005/05/16 08:33:59  haraldkipp
+ * Added banking support for Arthernet.
+ *
  * Revision 1.3  2005/02/21 11:10:21  olereinhardt
  * Changed deckaration of the "root" variable to compile with unix emulation
  *
@@ -112,7 +115,13 @@
 #endif
 
 #ifndef PNUTBANK_COUNT
+#ifdef ARTHERNET1
+/* Default for Arthernet 1. */
+#define PNUTBANK_COUNT 15
+#else
+/* Default for Ethernet 2. */
 #define PNUTBANK_COUNT 30
+#endif
 #endif
 
 /*@}*/
@@ -299,7 +308,14 @@ void BankSelect(PNUT_BLKNUM blk)
 {
     int bank = blk / BLOCKS_PER_BANK;
 
+#ifdef ARTHERNET1
+    /* 16 pages supported on arthernet1, page 0 reserved for AVR bank0
+       AVR bank1 is mapped to page number in upper nibble of "NUTBANK_SR" */
+    bank++;
+    *((volatile u_char *) NUTBANK_SR) = (((u_char)bank)<<4);
+#else
     *((u_char *) NUTBANK_SR + bank) = bank;
+#endif
 }
 
 /*!
