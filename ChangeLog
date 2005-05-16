@@ -1,4 +1,26 @@
-$Id: ChangeLog,v 1.206 2005/05/13 21:46:57 chaac Exp $
+$Id: ChangeLog,v 1.207 2005/05/16 09:06:02 haraldkipp Exp $
+
+2005-05-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arthernet1.conf: Configuration for Arthernet board.
+	See www.ispf.de. This one and all the following extensions
+	for Arthernet had been provided by Martin Thomas. The bad
+	thing is, that Nut/OS isn't flexible enough to handle this
+	different CPLD design and most of the patches cry for
+	more general solutions. For now we go the pragmatic way to
+	get Nut/OS running on this board.
+
+	* fs/pnutfs.c, include/sys/bankmem.h: Added banking support 
+	for the Arthernet board.
+
+	* os/arch/avr_nutinit.c: Different wait states for Arthernet.
+
+	* os/arch/avr_timer.c: Alternative CPU clock detection for
+	Arthernet added.
+
+	* net/arpcache.c: Fixes #1202404. Thanks to Marek Pavlu and 
+	Dusan Ferbas.
+
 
 2005-05-14  Vesa Jaaskelainen  <chaac@.nic.fi>
 
