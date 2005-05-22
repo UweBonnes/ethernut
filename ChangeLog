@@ -1,6 +1,8 @@
-$Id: ChangeLog,v 1.208 2005/05/22 15:02:53 haraldkipp Exp $
+$Id: ChangeLog,v 1.209 2005/05/22 16:06:08 haraldkipp Exp $
 
 2005-05-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Build number incremented, 3.9.6.2.
 
 	* tools/crurom/dirent.h, tools/crurom/getopt.h, 
 	tools/nutconf/dirent.h, tools/nutconf/getopt.h: Moved to
@@ -14,6 +16,7 @@ $Id: ChangeLog,v 1.208 2005/05/22 15:02:53 haraldkipp Exp $
 
 	* tools/nutconf/splitscroll.cpp: Removed MacUpdateImmediately.
 	Doesn't seem to be required anymore.
+
 
 2005-05-16  Harald Kipp  <harald.kipp@egnite.de>
 

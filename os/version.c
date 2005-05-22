@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/05/22 16:05:40  haraldkipp
+ * *** empty log message ***
+ *
  * Revision 1.14  2005/04/05 17:37:12  haraldkipp
  * First Nut/OS running ARM responds to http requests
  *
@@ -90,8 +93,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090501UL
-static CONST char os_version_string[] = "3.9.6.1 pre";
+#define OS_VERSION_NUMBER  0x03090502UL
+static CONST char os_version_string[] = "3.9.6.2 pre";
 
 /*!
  * \addtogroup xgNutInit
