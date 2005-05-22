@@ -34,12 +34,22 @@
 
 #
 # $Log$
+# Revision 1.2  2005/05/22 14:55:16  haraldkipp
+# Lua libs are determined in configure.ac.
+# Option to build no configuration tools.
+#
 # Revision 1.1  2005/04/28 15:08:35  haraldkipp
 # First check in
 #
 #
 
-bin_PROGRAMS = nutconfigure nutconf
+if BUILD_NUTCONF_TOOLS
+
+bin_PROGRAMS = nutconfigure
+
+if BUILD_NUTCONF_GUI
+
+bin_PROGRAMS += nutconf
 
 nutconf_SOURCES = nutconf.cpp nutcomponent.c appoptdlg.cpp bldoptdlg.cpp \
 configitem.cpp configtree.cpp enumeditctrl.cpp iconinfo.cpp iconlist.cpp \
@@ -67,9 +77,11 @@ bitmaps/library_dis.xpm bitmaps/text.xpm \
 bitmaps/library.xpm bitmaps/unchecked_dis.xpm \
 bitmaps/module_dis.xpm bitmaps/unchecked.xpm
 nutconf_CXXFLAGS = @WX_CXXFLAGS@
-nutconf_LDADD = -llua -llualib $(WX_LIBS)
+nutconf_LDADD = $(WX_LIBS)
+
+endif
 
 nutconfigure_SOURCES = nutcomponent.c nutcomponent.h
 nutconfigure_CPPFLAGS = -DNUT_CONFIGURE_EXEC
-nutconfigure_LDADD = -llua -llualib -lm
 
+endif
