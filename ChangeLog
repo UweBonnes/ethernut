@@ -1,4 +1,19 @@
-$Id: ChangeLog,v 1.207 2005/05/16 09:06:02 haraldkipp Exp $
+$Id: ChangeLog,v 1.208 2005/05/22 15:02:53 haraldkipp Exp $
+
+2005-05-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/crurom/dirent.h, tools/crurom/getopt.h, 
+	tools/nutconf/dirent.h, tools/nutconf/getopt.h: Moved to
+	tools/include/win32. Fixes #1205835.
+
+	* configure.ac: Added option to completely disable tool build.
+	Check versions of Lua and wxWidgets.
+
+	* tools/nutconf/Makefile.am: Lua libs are determined in
+	configure.ac. Option to build no configuration tools.
+
+	* tools/nutconf/splitscroll.cpp: Removed MacUpdateImmediately.
+	Doesn't seem to be required anymore.
 
 2005-05-16  Harald Kipp  <harald.kipp@egnite.de>
 
