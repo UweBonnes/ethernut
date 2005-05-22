@@ -39,6 +39,9 @@
 
 /*
  * $Log: splitscroll.cpp,v $
+ * Revision 1.5  2005/05/22 14:58:35  haraldkipp
+ * Compile failed on OS X. MacUpdateImmediately() seems to be vanished.
+ *
  * Revision 1.4  2005/04/22 15:27:19  haraldkipp
  * Avoid compiler warnings.
  * Upgraded to wxWidgets 2.5.5.
@@ -126,10 +129,6 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
         }
         node = node->GetNext();
     }
-
-#ifdef __WXMAC__
-    m_targetWindow->MacUpdateImmediately();
-#endif
 
     scrolling = false;
 }
