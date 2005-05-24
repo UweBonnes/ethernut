@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2005/05/24 16:12:51  haraldkipp
+ * Sigh!
+ *
  * Revision 1.15  2005/05/22 16:05:40  haraldkipp
  * *** empty log message ***
  *
@@ -93,7 +96,7 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090502UL
+#define OS_VERSION_NUMBER  0x03090602UL
 static CONST char os_version_string[] = "3.9.6.2 pre";
 
 /*!
