@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/05/25 09:59:53  haraldkipp
+ * Bugfix: Absolute application path for top_appdir pointed to source directory.
+ *
  * Revision 1.16  2005/04/28 16:18:22  haraldkipp
  * Autoconfiscated
  *
@@ -1628,7 +1631,7 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
 			
 			//fprintf(fp, "top_appdir = %s\n", app_dir);
 			if (app_dir[0] == '/' || app_dir[1] == ':')
-				fprintf(fp, "top_appdir = %s\n", src_dir);
+				fprintf(fp, "top_appdir = %s\n", app_dir);
 			else if (strlen(app_dir))
 				fprintf(fp, "top_appdir = ../../%s\n", app_dir);
 			else
