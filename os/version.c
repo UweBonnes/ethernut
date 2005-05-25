@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/05/25 10:04:58  haraldkipp
+ * Win 32 release.
+ *
  * Revision 1.16  2005/05/24 16:12:51  haraldkipp
  * Sigh!
  *
@@ -96,8 +99,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090602UL
-static CONST char os_version_string[] = "3.9.6.2 pre";
+#define OS_VERSION_NUMBER  0x03090603UL
+static CONST char os_version_string[] = "3.9.6.3";
 
 /*!
  * \addtogroup xgNutInit
