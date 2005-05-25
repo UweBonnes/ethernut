@@ -1,4 +1,36 @@
-$Id: ChangeLog,v 1.209 2005/05/22 16:06:08 haraldkipp Exp $
+$Id: ChangeLog,v 1.210 2005/05/25 10:12:28 haraldkipp Exp $
+
+2005-05-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Build number incremented for Win32 release.
+	Suffix 'pre' removed. We will hopefully create V4 trunk soon.
+
+	* appicc/ftpd/ftpd.prj, appicc/ftpd/FTPD.SRC: FTP server
+	sample ICC project added.
+
+	* appicc/logtime/logtime.prj, appicc/logtime/LOGTIME.SRC:
+	syslog client sample ICC project added.
+
+	* appicc/nutpiper/nutpiper.prj, appicc/nutpiper/NUTPIPER.SRC:
+	Internet radio sample ICC project added.
+
+	* appicc/playmp3/playmp3.prj, appicc/playmp3/PLAYMP3.SRC:
+	MP3 sample ICC project added.
+
+	* appicc/README, appicc/basemon/basemon.prj,
+	appicc/httpd/httpd.prj, appicc/inetq/inetq.prj,
+	appicc/portdio/portdio.prj, appicc/pppc/pppc.prj,
+	appicc/rs232d/rs232d.prj, appicc/simple/simple.prj,
+	appicc/tcps/tcps.prj, appicc/threads/threads.prj,
+	appicc/timers/timers.prj, appicc/uart/uart.prj:
+	ImageCraft projects updated for ICCAVR Version 7.
+
+
+2005-05-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/nutcomponent.c: Absolute application path for
+	top_appdir pointed to source directory. Fixed.
+
 
 2005-05-22  Harald Kipp  <harald.kipp@egnite.de>
 
