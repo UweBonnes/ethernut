@@ -36,8 +36,13 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/05/26 15:47:50  drsung
+ * Fixed cvs commit comment from last commit. The
+ * combination / and * made some compilers to produce errors... (ugh).
+ * Thanks to Daniel Hobi who discovered this.
+ *
  * Revision 1.11  2005/05/26 10:10:03  drsung
- * Moved all platform dependen code from this file to /include/arch/*_atom.h
+ * Moved all platform dependend code from this file to /include/arch/xxx_atom.h
  *
  * Revision 1.10  2005/05/13 21:47:07  chaac
  * Entering a critical section should now be faster on AVR's when
