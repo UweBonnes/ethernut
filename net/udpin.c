@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/05/26 11:47:24  drsung
+ * ICMP unreachable will be sent on incoming udp packets with no local peer port.
+ *
  * Revision 1.3  2005/02/02 16:22:35  haraldkipp
  * Do not wake up waiting threads if the incoming datagram
  * doesn't fit in the buffer.
@@ -115,6 +118,8 @@
 
 #include <netinet/udp.h>
 #include <sys/socket.h>
+#include <netinet/ip_icmp.h>
+#include <netinet/icmp.h>
 
 /*!
  * \addtogroup xgUDP
@@ -146,7 +151,8 @@ void NutUdpInput(NETBUF * nb)
      * Find a port. If none exists, return an ICMP unreachable.
      */
     if ((sock = NutUdpFindSocket(uh->uh_dport)) == 0) {
-        NutNetBufFree(nb);
+        if (!NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PORT, 0, nb))
+        	NutNetBufFree(nb);
         return;
     }
 
