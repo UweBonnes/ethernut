@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/05/26 10:10:03  drsung
+ * Moved all platform dependen code from this file to /include/arch/*_atom.h
+ *
  * Revision 1.10  2005/05/13 21:47:07  chaac
  * Entering a critical section should now be faster on AVR's when
  * calling NutEnterCritical().
@@ -85,219 +88,43 @@
 #include <sys/tracer.h>
 #endif
 
+/*
+ * The folowing macros must at least be defined for each supported platform.
+ *
+ * AtomicInc(p)
+ * Provides an atomic incrementation of the 8-bit value pointed to by p. Atomic means, 
+ * that the load-manipulate-store operations must not be interrupted by an ISR.
+ *
+ * AtomicDec(p)
+ * Provides an atomic decrementation of the 8-bit value pointed to by p. Atomic means, 
+ * that the load-manipulate-store operations must not be interrupted by an ISR.
+ *
+ * NutEnterCritical()
+ * Starts a critical section.
+ * The global interrupt flag must be disabled to protect the folowing code from 
+ * interruption. The state of the global interrupt flag must be saved, to 
+ * later restore.
+ *
+ * NutExitCritical()
+ * Finalize a critical section. Must be used only at the end of a critical section 
+ * to restore the global interrupt flag to the state saved by NutEnterCritical()
+ *
+ * NutJumpOutCritical()
+ * Macro for early leaving the critical section. Must be used in the middle on a 
+ * critical section if you want to terminate the critical section.
+ *
+ */
 
-__BEGIN_DECLS
 #if defined(__AVR__)
-#ifdef __IMAGECRAFT__
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
-#else
-static inline void AtomicInc(volatile u_char * p)
-{
-    asm volatile ("in  __tmp_reg__, __SREG__" "\n\t"
-                  "cli" "\n\t"
-                  "ld r24, %a0" "\n\t" "subi r24, lo8(-1)" "\n\t" "st %a0, r24" "\n\t" "out __SREG__, __tmp_reg__" "\n\t"::"z" (p)
-                  :"r24");
-}
-
-static inline void AtomicDec(volatile u_char * p)
-{
-    asm volatile ("in  __tmp_reg__, __SREG__" "\n\t"
-                  "cli" "\n\t"
-                  "ld r24, %a0" "\n\t" "subi r24, lo8(1)" "\n\t" "st %a0, r24" "\n\t" "out __SREG__, __tmp_reg__" "\n\t"::"z" (p)
-                  :"r24");
-}
-
-#endif
-
-
-#ifdef __IMAGECRAFT__
-
-#define NutEnterCritical()  \
-{                           \
-    asm("in R0, 0x3F\n"     \
-        "cli\n"             \
-        "push R0\n");       \
-}
-
-#define NutExitCritical()   \
-{                           \
-    asm("pop R0\n"          \
-        "out 0x3F, R0\n");  \
-}
-
-#else
-
-#define NutEnterCritical_nt()               \
-    asm volatile(                           \
-        "in  __tmp_reg__, __SREG__" "\n\t"  \
-        "cli"                       "\n\t"  \
-        "push __tmp_reg__"          "\n\t"  \
-    )
-
-#define NutExitCritical_nt()                \
-    asm volatile(                           \
-        "pop __tmp_reg__"           "\n\t"  \
-        "out __SREG__, __tmp_reg__" "\n\t"  \
-    )
-
-#ifdef NUTTRACER_CRITICAL
-#define NutEnterCritical()                  \
-    NutEnterCritical_nt();                  \
-    TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_ENTER);
-
-#define NutExitCritical()                   \
-    TRACE_ADD_ITEM_PC(TRACE_TAG_CRITICAL_EXIT); \
-    NutExitCritical_nt()
-#else
-#define NutEnterCritical()                  \
-    NutEnterCritical_nt();
-
-#define NutExitCritical()                   \
-    NutExitCritical_nt()
-#endif
-#endif
-
-#define NutJumpOutCritical() NutExitCritical()
-
-#elif defined(__H8300H__) || defined(__H8300S__)
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
-#define NutEnterCritical()                     \
-    {                                          \
-        u_char __ccr__;                        \
-        asm volatile(                          \
-            "stc.b ccr, %0l"            "\n\t" \
-            "orc.b #0xc0, ccr":"=r"(__ccr__):  \
-        );
-#define NutExitCritical()                      \
-       asm volatile(                           \
-        "ldc.b %0l, ccr"::"r"(__ccr__)         \
-       );                                      \
-    }
-#define NutJumpOutCritical()                   \
-       asm volatile(                           \
-        "ldc.b %0l, ccr"::"r"(__ccr__)         \
-       );
-#define NutEnableInt(ccr)                      \
-    {                                          \
-        u_char __ccr__;                        \
-        asm volatile(                          \
-            "stc.b ccr, %0l"            "\n\t" \
-            "andc.b #0x3f, ccr":"=r"(__ccr__): \
-        );
-#define NutDisableInt() NutExitCritical()
-/* #define NutEnterCritical(ccr) NutDisableInt(ccr) */
-/* #define NutExitCritical(ccr) NutRestoreInt(ccr) */
+#include <arch/avr_atom.h>
 #elif defined(__arm__)
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
-
-#define NutEnterCritical() \
-        asm volatile (             \
-                "@ NutEnterCritical"      "\n\t"      \
-                "mrs r0, cpsr"      "\n\t"      \
-                "orr r0, r0, #0xC0" "\n\t"  \
-                "msr cpsr, r0"      "\n\t"  \
-                ::: "r0" )
-
-#define NutExitCritical() \
-        asm volatile (             \
-                "@ NutEnterCritical"      "\n\t"      \
-                "mrs r0, cpsr"      "\n\t"      \
-                "bic r0, r0, #0x80" "\n\t"  \
-                "msr cpsr, r0"      "\n\t"  \
-                ::: "r0" )
-
-#define NutJumpOutCritical()    NutExitCritical()
-
-#elif defined(__linux__) || defined (__APPLE__)
-#include <pthread.h>
-#include <signal.h>
-#include <sys/thread.h>
-#include <stdio.h>
-#include <stdlib.h>
-extern u_short main_cs_level;
-extern sigset_t irq_signal;
-
-extern FILE *__os_trs;
-extern u_char __os_trf;
-
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
-
-
-
-#define NutEnterCritical()					     \
-		pthread_sigmask(SIG_BLOCK, &irq_signal, 0);  \
-		if (runningThread){						 \
-			/* if (runningThread->td_cs_level==0)												    \
-				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name); */	\
-			runningThread->td_cs_level++;        \
-		} else {								 \
-			/* if (main_cs_level==0)												\
-				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT") */;	\
-			main_cs_level++;					 \
-		}										 \
-
-#define NutExitCritical()									\
-		if (runningThread){									\
-			if (--runningThread->td_cs_level == 0) {		\
-				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	*/ \
-				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);   \
-			}												\
-		} else {											\
-			if (--main_cs_level == 0) {						\
-				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	*/ \
-				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);	\
-			}												\
-		}
-
-#if 0
-
-#define NutEnterCritical()					     \
-		if (runningThread){						 \
-			if (runningThread->td_cs_level==0)												\
-				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
-			runningThread->td_cs_level++;        \
-		} else {								 \
-			if (main_cs_level==0)												\
-				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
-			main_cs_level++;					 \
-		}										 \
-
-#define NutExitCritical()									\
-		if (runningThread){									\
-			if (--runningThread->td_cs_level == 0) {		\
-				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
-			}												\
-		} else {											\
-			if (--main_cs_level == 0) {						\
-				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
-			}												\
-		}
-#endif
-
-#if 0
-/* TODO */
-#define NutEnterCritical()
-/* TODO */
-#define NutExitCritical()
-#endif
-
-
-#define NutJumpOutCritical() NutExitCritical()
-
-
+#include <arch/arm_atom.h>
+#elif defined(__H8300H__) || defined(__H8300S__)
+#include <arch/h8_atom.h>
 #elif defined(__m68k__)
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
-/* TODO */
-#define NutEnterCritical()
-/* TODO */
-#define NutExitCritical()
-/* TODO */
-#define NutJumpOutCritical()
-#endif                          /* !defined(__m68k__) */
-    __END_DECLS
+#include <arch/m68k_atom.h>
+#elif defined(__linux__) || defined(__APPLE__)
+#include <arch/unix_atom.h>
+#endif
+
 #endif
