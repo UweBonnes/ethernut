@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.212 2005/05/26 11:48:47 drsung Exp $
+$Id: ChangeLog,v 1.213 2005/05/26 13:16:02 haraldkipp Exp $
 
 2005-05-26  Oliver Schulz  <olischulz@web.de>
 
@@ -8,6 +8,19 @@ $Id: ChangeLog,v 1.212 2005/05/26 11:48:47 drsung Exp $
 	* include/arch/*_atom.h: Contains the code moved from atom.h
 
 	* net/udpin.c: ICMP unreachable will be sent on incoming udp packets with no local peer port.
+
+
+2005-05-26  Harald Kipp  <harald.kipp@egnite.de>
+
+	* eboot/Makefile: Bootloader failed to compile because of 
+	missing NutConf.mk. This and the following two eboot patches
+	had been contributed by David (Who?).
+
+	* eboot/ether.c: Get MAC from EEPROM instead of using a
+	default. Deprecated GCC port macros replaced.
+
+	* eboot/tftp.c: Now the bootloader will program the space 
+	between 0x1E000 and 0x1EFFF.
 
 
 2005-05-25  Harald Kipp  <harald.kipp@egnite.de>
