@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/05/26 13:12:46  haraldkipp
+ * Bugfix: Never programmed flash between 0x1E000 and 0x1EFFF.
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -67,7 +70,7 @@ static void FlashPage(u_short page, void *data, u_short len)
         len = 256;
 
     if (page >= 256) {
-        if (page >= 480)
+        if (page >= 496)
             return;
         RAMPZ = 1;
     } else
