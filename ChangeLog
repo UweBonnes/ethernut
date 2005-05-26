@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.210 2005/05/25 10:12:28 haraldkipp Exp $
+$Id: ChangeLog,v 1.211 2005/05/26 10:14:05 drsung Exp $
+
+2005-05-26  Oliver Schulz  <olischulz@web.de>
+
+	* include/sys/atom.h: Moved all platform dependend code to 
+	include/arch/*_atom.h, added some descriptions.
+
+	* include/arch/*_atom.h: Contains the code moved from atom.h
+
 
 2005-05-25  Harald Kipp  <harald.kipp@egnite.de>
 
