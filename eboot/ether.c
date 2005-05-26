@@ -51,6 +51,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/05/26 13:11:14  haraldkipp
+ * Get MAC from EEPROM instead of using a default.
+ * Deprecated GCC port macros replaced.
+ *
  * Revision 1.2  2004/09/10 10:08:54  haraldkipp
  * Minimal EEPROM emulation
  *
@@ -82,6 +86,19 @@
 #define NIC_FIRST_RX_PAGE   (NIC_FIRST_TX_PAGE + NIC_TX_PAGES * NIC_TX_BUFFERS)
 #define TX_PAGES            12
 
+unsigned char EEPROM_read(unsigned int uiAddress)
+{
+       /* Wait for completion of previous write */
+       while(EECR & (1<<EEWE))
+               ;
+       /* Set up address register */
+       EEAR = uiAddress;
+       /* Start eeprom read by writing EERE */
+       EECR |= (1<<EERE);
+       /* Return data from data register */
+       return EEDR;
+}
+
 /*!
  * Realtek packet header.
  */
@@ -99,8 +116,8 @@ static void EmulateNicEeprom(void)
      * Prepare the EEPROM emulation port bits. Configure the EEDO
      * and the EEMU lines as outputs and set both lines to high.
      */
-    outb(PORTC, 0xC0);
-    outb(DDRC, 0xC0);
+    PORTC = 0xC0;
+    DDRC = 0xC0;
     Delay(20);
 
     /*
@@ -112,7 +129,7 @@ static void EmulateNicEeprom(void)
     /*
      * No external memory access beyond this point.
      */
-    cbi(MCUCR, SRE);
+    MCUCR &= ~_BV(SRE);
 
     /*
      * Loop until the chip stops toggling our EESK input.
@@ -130,11 +147,11 @@ static void EmulateNicEeprom(void)
     /*
      * Enable memory interface.
      */
-    sbi(MCUCR, SRE);
+    MCUCR |= _BV(SRE);
 
     /* Reset port outputs to default. */
-    outb(PORTC, 0x00);
-    outb(DDRC, 0x00);
+    PORTC = 0x00;
+    DDRC = 0x00;
 
     /* Wait until controller ready. */
     while(NIC_CR != (NIC_CR_STP | NIC_CR_RD2));
@@ -151,11 +168,15 @@ void NicInit(void)
 {
     u_char c;
 
+    mac[3]=EEPROM_read(0x4D);
+    mac[4]=EEPROM_read(0x4E);
+    mac[5]=EEPROM_read(0x4F);
+
     /*
      * Enable external data and address
      * bus.
      */
-    outp(BV(SRE) | BV(SRW), MCUCR);
+    MCUCR = (_BV(SRE) | _BV(SRW));
 
     c = NIC_RESET;
     Delay(5);
