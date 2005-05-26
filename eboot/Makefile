@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2005/05/26 13:09:59  haraldkipp
+# Bootloader failed to compile because of missing NutConf.mk.
+#
 # Revision 1.2  2004/09/10 10:09:40  haraldkipp
 # Using new Configurator
 #
@@ -45,7 +48,7 @@ PROJ = eboot
 top_srcdir = ..
 top_appdir = ..
 
-include $(top_srcdir)/NutConf.mk
+include $(top_srcdir)/UserConf.mk
 include Makedefs
 
 SRCS =  $(PROJ).c tftp.c dhcp.c udp.c ip.c arp.c ether.c util.c
