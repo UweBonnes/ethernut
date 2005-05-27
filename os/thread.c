@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/05/27 17:30:26  drsung
+ * Platform dependant files were moved to /arch directory.
+ *
  * Revision 1.16  2005/04/19 14:15:28  phblum
  * Moved trace macro to avoid jamming the buffer with yields that do not switch to another thread (e.g. idle thread does so all the time).
  *
@@ -153,15 +156,15 @@
 /*@{*/
 
 #if defined(__AVR__)
-#include "arch/avr_thread.c"
+#include "../arch/avr/os/thread.c"
 #elif defined(__arm__)
-#include "arch/arm_thread.c"
+#include "../arch/arm/os/thread.c"
 #elif defined(__H8300H__) || defined(__H8300S__)
-#include "arch/h8_thread.c"
+#include "../arch/h8300h/os/thread.c"
 #elif defined(__m68k__)
-#include "arch/m68k_thread.c"
+#include "../arch/m68k/os/thread.c"
 #elif defined(__linux__) || defined(__APPLE__)
-#include "arch/unix_thread.c"
+#include "../arch/unix/os/thread.c"
 #endif
 
 /*!

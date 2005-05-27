@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2005/05/27 17:30:27  drsung
+ * Platform dependant files were moved to /arch directory.
+ *
  * Revision 1.15  2005/02/21 12:37:57  phblum
  * Removed tabs and added semicolons after NUTTRACER macros
  *
@@ -204,15 +207,15 @@ static volatile u_long seconds;
 static void NutTimerInsert(NUTTIMERINFO * tn);
 
 #if defined(__AVR__)
-#include "arch/avr_timer.c"
+#include "../arch/avr/os/timer.c"
 #elif defined(__arm__)
-#include "arch/arm_timer.c"
+#include "../arch/arm/os/timer.c"
 #elif defined(__H8300H__) || defined(__H8300S__)
-#include "arch/h8_timer.c"
+#include "../arch/h8300h/os/timer.c"
 #elif defined(__m68k__)
-#include "arch/m68k_timer.c"
+#include "../arch/m68k/os/timer.c"
 #elif defined(__linux__) || defined(__APPLE__)
-#include "arch/unix_timer.c"
+#include "../arch/unix/os/timer.c"
 #endif
 
 /*!

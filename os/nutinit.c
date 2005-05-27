@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2005/05/27 17:30:25  drsung
+ * Platform dependant files were moved to /arch directory.
+ *
  * Revision 1.12  2005/02/10 07:06:51  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -111,19 +114,19 @@
 volatile u_char ms62_5 = 0;
 
 #if defined(__AVR__)
-#include "arch/avr_nutinit.c"
+#include "../arch/avr/os/nutinit.c"
 #elif defined(__arm__)
-#include "arch/arm_nutinit.c"
+#include "../arch/arm/os/nutinit.c"
 #elif defined(__H8300H__) || defined(__H8300S__)
-#include "arch/h8_nutinit.c"
+#include "../arch/h8300h/os/nutinit.c"
 #elif defined(__m68k__)
-#include "arch/m68k_nutinit.c"
+#include "../arch/m68k/os/nutinit.c"
 #elif defined(__linux__) || defined(__APPLE__)
 // avoid stdio nut wrapper */
 #define NO_STDIO_NUT_WRAPPER
-#include "arch/unix_nutinit.c"
-#include "arch/unix_options.c"
-#include "arch/unix_eeprom.c"
+#include "../arch/unix/os/nutinit.c"
+#include "../arch/unix/os/options.c"
+#include "../arch/unix/os/eeprom.c"
 #endif
 
 /*@}*/
