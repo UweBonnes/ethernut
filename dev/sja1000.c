@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/05/27 14:09:56  olereinhardt
+ * Fixed a bug in irq initialisation
+ *
  * Revision 1.7  2005/01/24 21:12:04  freckle
  * renamed NutEventPostFromIRQ into NutEventPostFromIrq
  *
@@ -75,7 +78,6 @@
 #ifdef __GNUC__
 
 #include <string.h>
-
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/event.h>
@@ -700,7 +702,7 @@ int SJAInit(NUTDEVICE * dev)
     SJA1000_MODECTRL = (AFM_Bit);       // set single filter mode + sleep
     // *** Note - if you change SJA1000_MODECTRL, change it in
     // functions SJASetAccMask and SJASetAccCode also.
-
+    
     do {
         SJA1000_MODECTRL = 0x00;
     }
@@ -724,7 +726,7 @@ int SJAInit(NUTDEVICE * dev)
     }
     temp = SJA1000_INT;         // Read interrupt register to clear pendin bits    
     sbi(EIMSK, SJA_SIGNAL_BIT);
-    sbi(PORTE, 7);
+    sbi(PORTE, SJA_SIGNAL_BIT);
     NutThreadCreate("sjacantx", CAN_Tx, dev, 256);
 
     NutExitCritical();
