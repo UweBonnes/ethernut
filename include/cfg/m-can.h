@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/05/27 14:08:01  olereinhardt
+ * Changed specs to new m-can board design (LCD controller)
+ *
  * Revision 1.1  2004/06/07 15:14:25  olereinhardt
  * Initial checkin
  *
@@ -53,11 +56,6 @@
 /*@{*/
 
 
-/*
- * \brief LCD Display definitions
- */
- 
-#define KS0073_CONTROLLER 
 
 /*
  * \brief Defines for CAN controller
@@ -67,6 +65,48 @@
 #define SJA_EICR       EICRB
 #define SJA_SIGNAL_BIT 7
 
+/*
+ * \brief LCD Display definitions
+ */
+ 
+//#define KS0073_CONTROLLER 
+
+#define LCD_4x20
+
+
+#undef  LCD_DATA_PORT
+#undef  LCD_DATA_DDR
+#undef  LCD_DATA_BITS
+#undef  LCD_DATA_PIN
+
+#define LCD_DATA_PORT   PORTB   /*!< Port output register of \ref LCD_DATA_BITS. */
+#define LCD_DATA_DDR    DDRB    /*!< Data direction register of \ref LCD_DATA_BITS. */
+#define LCD_DATA_BITS   0xFF    /*!< \brief LCD data lines, either upper or lower 4 bits. */
+#define LCD_DATA_PIN    PINB    /*!< Port input register of \ref LCD_DARA_BITS. */
+
+#undef  LCD_ENABLE_PORT
+#undef  LCD_ENABLE_DDR
+#undef  LCD_ENABLE_BIT
+
+#define LCD_ENABLE_PORT PORTE   /*!< Port output register of \ref LCD_ENABLE_BIT. */
+#define LCD_ENABLE_DDR  DDRE    /*!< Data direction register of \ref LCD_ENABLE_BIT. */
+#define LCD_ENABLE_BIT  2       /*!< \brief LCD enable output. */
+
+#undef  LCD_RW_PORT
+#undef  LCD_RW_DDR
+#undef  LCD_RW_BIT
+
+#define LCD_RW_PORT     PORTE   /*!< Port output register of \ref LCD_RW_BIT. */
+#define LCD_RW_DDR      DDRE    /*!< Data direction register of \ref LCD_RW_BIT. */
+#define LCD_RW_BIT      1       /*!< \brief LCD read/write output. */
+
+#undef  LCD_REGSEL_PORT
+#undef  LCD_REGSEL_DDR
+#undef  LCD_REGSEL_BIT
+
+#define LCD_REGSEL_PORT PORTE   /*!< Port output register of \ref LCD_REGSEL_BIT. */
+#define LCD_REGSEL_DDR  DDRE    /*!< Data direction register of \ref LCD_REGSEL_BIT. */
+#define LCD_REGSEL_BIT  0       /*!< \brief LCD register select output. */
 
 /*@}*/
 
