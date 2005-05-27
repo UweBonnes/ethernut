@@ -1,10 +1,16 @@
-$Id: ChangeLog,v 1.215 2005/05/27 14:43:19 chaac Exp $
+$Id: ChangeLog,v 1.216 2005/05/27 14:55:50 olereinhardt Exp $
 
 2005-05-14  Vesa Jaaskelainen  <chaac@.nic.fi>
 
 	* dev/ahdlcavr.c: Fixed bugs on closing AHDLC sessions. Fixed
 	AHDLC ioctl handling. Not all messages were handled correctly
 	and fixed possible problem of reading memory from address zero.
+
+2005-05-27  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+        * autogen.sh, cleansweep.sh
+          Added
+          autogen.sh: automaticaly call autoconf, automake, aclocal and...
+          cleansweep.sh: automaticaly remove all the auto generated files
 
 2005-05-27  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* conf/dev/dev.nut
