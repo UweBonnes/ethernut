@@ -33,6 +33,15 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/05/27 14:02:11  olereinhardt
+ * Added support for new display sizes configurable by macros
+ * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
+ * LCD_1x20, LCD_1x16, LCD_1x8, KS0078_CONTROLLER (4x20))
+ * Also added support for different delay types.
+ * For not to wait busy too long, I added support for busy bit
+ * read back and use NutSleep instead NutDelay if NUT_CPU_FREQ
+ * is defined.
+ *
  * Revision 1.4  2004/05/24 17:11:05  olereinhardt
  * dded terminal device driver for hd44780 compatible LCD displays directly
  * connected to the memory bus (memory mapped). See hd44780.c for more
@@ -69,55 +78,167 @@
 #include <dev/term.h>
 #include <sys/timer.h>
 
-static u_char long_delay = LCD_LONG_DELAY;
-static u_char short_delay = LCD_SHORT_DELAY;
-
+#ifndef LCD_4x20
+#ifndef LCD_4x16
+#ifndef LCD_2x40
+#ifndef LCD_2x20
+#ifndef LCD_2x16
+#ifndef LCD_2x8
+#ifndef LCD_1x20
+#ifndef LCD_1x16
+#ifndef LCD_1x8
+#ifndef KS0073_CONTROLLER
+#define LCD_2x16
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 /*!
  * \addtogroup xgDisplay
  */
 /*@{*/
 
+/*!
+ * \brief Wait until controller will be ready again
+ *
+ * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise 
+ * We will either busy loop with NutDelay or sleep with NutSleep. The second 
+ * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher 
+ * timer resolution.
+ *
+ * \param xt Delay time in milliseconds
+ */
+
+static u_char during_init = 1;
+#define LCD_DELAY		asm volatile ("nop"); asm volatile ("nop")
+
+#ifdef LCD_RW_BIT
+
+static INLINE u_char LcdReadNibble(void)
+{
+
+    sbi(LCD_RW_PORT, LCD_RW_BIT);
+    outp(inp(LCD_DATA_DDR) & ~LCD_DATA_BITS, LCD_DATA_DDR);   // enable data input
+    sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
+    LCD_DELAY;
+    cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
+    return inp(LCD_DATA_PIN) & LCD_DATA_BITS;
+}
+
+static INLINE u_char LcdReadByte(void)
+{    
+    u_char data;
+#if LCD_DATA_BITS == 0x0F
+    data = LcdReadNibble();
+    LCD_DELAY;
+    data = data | (LcdReadNibble() << 4);
+    LCD_DELAY;
+#elif LCD_DATA_BITS == 0xF0
+    data = LcdReadNibble() >> 4;
+    LCD_DELAY;
+    data |= LcdReadNibble();
+#elif LCD_DATA_BITS == 0xFF
+    data = LcdReadNibble();
+#else
+#error "Bad definition of LCD_DATA_BITS"
+#endif
+    return data;
+}
+
+/*!
+ * \brief Read command byte from LCD controller.
+ */
+
+static u_char LcdReadCmd(void)
+{
+    sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
+    cbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
+    return LcdReadByte();
+}
+
+#endif
+
+
+static void LcdDelay(u_char xt) 
+{
+    if (during_init) {
+        NutDelay(xt);
+    } else {
+#if defined(LCD_RW_BIT)
+    while (LcdReadCmd() & (1 << LCD_BUSY)) 
+        LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+    LCD_DELAY;
+#elif defined(NUT_CPU_FREQ)    
+    NutSleep(xt);
+#else
+    NutDelay(xt);
+#endif
+    }
+}
+
 static INLINE void LcdSendNibble(u_char nib)
 {
+#ifdef LCD_RW_BIT
+    cbi(LCD_RW_PORT, LCD_RW_BIT);
+#endif
     outp(inp(LCD_DATA_DDR) | LCD_DATA_BITS, LCD_DATA_DDR);
     outp((inp(LCD_DATA_PORT) & ~LCD_DATA_BITS) | (nib & LCD_DATA_BITS), LCD_DATA_PORT);
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
-    _NOP(); _NOP();
+    LCD_DELAY; 
     cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT); 
 }
 
 /*!
  * \brief Send byte to LCD controller.
  *
- * The byte is sent to a 4-bit interface in two nibbles.
+ * The byte is sent to a 4-bit interface in two nibbles. If one has configured 
+ * LCD_DATA_BITS to 0xFF this will send a whole byte at once
  *
  * \param ch Byte to send.
  * \param xt Delay time in milliseconds.
  */
 static INLINE void LcdSendByte(u_char ch, u_char xt)
-{
+{    
 #if LCD_DATA_BITS == 0x0F
     LcdSendNibble(ch >> 4);
     if(xt)
-        NutDelay(xt);
+        LcdDelay(xt);
     LcdSendNibble(ch);
 #elif LCD_DATA_BITS == 0xF0
     LcdSendNibble(ch);
     if(xt)
-        NutDelay(xt);
+        LcdDelay(xt);
     LcdSendNibble(ch << 4);
+#elif LCD_DATA_BITS == 0xFF
+    LcdSendNibble(ch);
 #else
 #error "Bad definition of LCD_DATA_BITS"
 #endif
     if(xt)
-        NutDelay(xt);
+        LcdDelay(xt);
 }
 
 static void LcdWriteData(u_char ch)
 {
     sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
     sbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
-    LcdSendByte(ch, short_delay);
+    LcdSendByte(ch, LCD_SHORT_DELAY);
 }
 
 /*!
@@ -130,35 +251,79 @@ static void LcdWriteCmd(u_char cmd, u_char xt)
     LcdSendByte(cmd, xt);
 }
 
-
 static void LcdSetCursor(u_char pos)
 {
-    LcdWriteCmd(0x80 + pos, long_delay);
+    u_char x = 0;
+    u_char y = 0;
+
+#ifdef KS0073_CONTROLLER
+    u_char  offset[4] = {0x00, 0x20, 0x40, 0x60};
+    y = pos / 20;
+    x = pos % 20;
+    if (y > 3) y = 3;
+#endif
+
+#if defined(LCD_2x40) 
+    u_char  offset  [2] = {0x00, 0x40};
+    y = pos / 40;
+    x = pos % 40;
+    if (y > 1) y = 1;
+#endif    
+    
+#if defined(LCD_4x20) || defined(LCD_2x20)
+    u_char  offset  [4] = {0x00, 0x40, 0x14, 0x54};
+    y = pos / 20;
+    x = pos % 20;
+    if (y>3) y=3;
+#endif    
+    
+#if defined(LCD_4x16) || defined(LCD_2x16)
+    u_char  offset  [4] = {0x00, 0x40, 0x10, 0x50};
+    y = pos / 16;
+    x = pos % 16;
+    if (y>3) y=3;
+#endif    
+
+#if defined(LCD_2x8)
+    u_char  offset  [2] = {0x00, 0x40};
+    y = pos / 8;
+    x = pos % 8;
+    if (y>1) y=1;
+#endif    
+
+#if defined(LCD_1x8) || defined(LCD_1x16) || defined(LCD_1x20)
+    u_char  offset  [1] = { 0x00 };
+    y = 0;
+    x = pos;
+#endif 
+    
+    pos = x + offset[y];
+    LcdWriteCmd(1 << LCD_DDRAM | pos, LCD_SHORT_DELAY);
 }
 
 static void LcdCursorHome(void)
 {
-    LcdWriteCmd(0x02, long_delay);
+    LcdWriteCmd(1 << LCD_HOME, LCD_LONG_DELAY);
 }
 
 static void LcdCursorLeft(void)
 {
-    LcdWriteCmd(0x10, short_delay);
+    LcdWriteCmd(1 << LCD_MOVE, LCD_SHORT_DELAY);
 }
 
 static void LcdCursorRight(void)
 {
-    LcdWriteCmd(0x14, short_delay);
+    LcdWriteCmd(1 << LCD_MOVE | 1 << LCD_MOVE_RIGHT, LCD_SHORT_DELAY);
 }
 
 static void LcdClear(void)
 {
-    LcdWriteCmd(0x01, long_delay);
+    LcdWriteCmd(1 << LCD_CLR, LCD_LONG_DELAY);
 }
 
 static void LcdCursorMode(u_char on)
 {
-    LcdWriteCmd(on ? 0x0F : 0x0C, long_delay);
+    LcdWriteCmd(1 << LCD_ON_CTRL | on ? 1 << LCD_ON_CURSOR : 0x00, LCD_LONG_DELAY);
 }
 
 static void LcdInit(NUTDEVICE *dev)
@@ -168,41 +333,62 @@ static void LcdInit(NUTDEVICE *dev)
      */
     sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
     sbi(LCD_ENABLE_DDR, LCD_ENABLE_BIT);
+#ifdef LCD_RW_BIT
+    sbi(LCD_RW_DDR, LCD_RW_BIT);
+    cbi(LCD_RW_PORT, LCD_RW_BIT);
+#endif
 
+	
     /*
      * Send a dummy data byte.
      */
-    LcdWriteData(0);
+    //LcdWriteData(0);
 
     /*
      * Initialize for 4-bit operation.
      */
     cbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
-    LcdSendNibble(0x33);
-    NutDelay(50);
-    LcdSendNibble(0x33);
-    NutDelay(50);
-    LcdSendNibble(0x33);
-    NutDelay(50);
-    LcdSendNibble(0x22);
-    NutDelay(50);
-    LcdWriteData(0);
-    NutDelay(50);
 
-    /*
-     * Clear display.
-     */
-    LcdWriteCmd(0x07, 2 * long_delay);
+#if (LCD_DATA_BITS == 0xFF)     // 8 Bit initialisation
+    LcdWriteCmd((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT), 50);
+    LcdWriteCmd((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT), 50);
+    LcdWriteCmd((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT), 50);
+    #ifdef  KS0073_CONTROLLER
+        LcdWriteCmd((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT) | (1 << LCD_FUNCTION_RE), LCD_SHORT_DELAY);
+        LcdWriteCmd((1 << LCD_EXT) | ((((TERMDCB *) dev->dev_dcb)->dcb_nrows > 2) ? (1 << LCD_EXT_4LINES) : 0), LCD_SHORT_DELAY);
+        LcdWriteCmd((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT), LCD_SHORT_DELAY);
+    #endif
+    LcdWriteCmd((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT) | ((((TERMDCB *) dev->dev_dcb)->dcb_nrows > 1) ?(1 << LCD_FUNCTION_2LINES):0), LCD_SHORT_DELAY);
 
-    /*
-     * Disable display shift and set incremental mode.
-     */
-    LcdWriteCmd(0x06,  2 * long_delay);
 
-    /*
-     * Enable the display and a blinking cursor.
-     */
-    LcdWriteCmd(0x0F,  2 * long_delay);
+#else                           // 4 Bit initialisation
+    LcdSendNibble((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT) | (((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT)) >> 4));
+    LcdDelay(50);
+    LcdSendNibble((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT) | (((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT)) >> 4));
+    LcdDelay(50);
+    LcdSendNibble((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT) | (((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_8BIT)) >> 4));
+    LcdDelay(50);
+    LcdSendNibble((1 << LCD_FUNCTION) | ((1 << LCD_FUNCTION) >> 4));    // Enter 4 Bit mode
+    LcdDelay(50);
+    #ifdef  KS0073_CONTROLLER
+        LcdWriteCmd((1 << LCD_FUNCTION) | (1 << LCD_FUNCTION_RE), LCD_SHORT_DELAY);
+        LcdWriteCmd((1 << LCD_EXT) | ((((TERMDCB *) dev->dev_dcb)->dcb_nrows > 2) ? (1 << LCD_EXT_4LINES) : 0), LCD_LONG_DELAY);
+        LcdWriteCmd((1 << LCD_FUNCTION), LCD_LONG_DELAY);
+    #endif
+    LcdWriteCmd((1 << LCD_FUNCTION) | ((((TERMDCB *) dev->dev_dcb)->dcb_nrows > 1) ? (1 << LCD_FUNCTION_2LINES):0), LCD_SHORT_DELAY);
+#endif
+
+    // clear LCD
+    LcdWriteCmd(1 << LCD_CLR, LCD_LONG_DELAY);
+    // set entry mode
+    LcdWriteCmd(1 << LCD_ENTRY_MODE | 1 << LCD_ENTRY_INC, LCD_LONG_DELAY);
+    // set display to on
+    LcdWriteCmd(1 << LCD_ON_CTRL | 1 << LCD_ON_DISPLAY, LCD_LONG_DELAY);
+    // move cursor to home
+    LcdWriteCmd(1 << LCD_HOME, LCD_LONG_DELAY);
+    // set data address to 0
+    LcdWriteCmd(1 << LCD_DDRAM | 0x00, LCD_LONG_DELAY);    
+    during_init = 0;
 }
 
 /*!
@@ -220,9 +406,56 @@ TERMDCB dcb_term = {
     LcdCursorMode,      /*!< \brief Switch cursor on/off, dss_cursor_mode. */
     0,                  /*!< \brief Mode flags. */
     0,                  /*!< \brief Status flags. */
-    2,                  /*!< \brief Number of rows. */
-    64,                 /*!< \brief Number of columns per row. */
+#ifdef KS0073_CONTROLLER
+    4,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_4x20
+    4,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_4x16
+    4,                  /*!< \brief Number of rows. */
+    16,                 /*!< \brief Number of columns per row. */
     16,                 /*!< \brief Number of visible columns. */
+#endif    
+#ifdef LCD_2x40    
+    2,                  /*!< \brief Number of rows. */
+    40,                 /*!< \brief Number of columns per row. */
+    40,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_2x20    
+    2,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_2x16    
+    2,                  /*!< \brief Number of rows. */
+    16,                 /*!< \brief Number of columns per row. */
+    16,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_2x8    
+    2,                  /*!< \brief Number of rows. */
+    8,                 /*!< \brief Number of columns per row. */
+    8,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_1x20    
+    1,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_1x16    
+    1,                  /*!< \brief Number of rows. */
+    16,                 /*!< \brief Number of columns per row. */
+    16,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_1x8    
+    1,                  /*!< \brief Number of rows. */
+    8,                 /*!< \brief Number of columns per row. */
+    8,                 /*!< \brief Number of visible columns. */
+#endif
     0,                  /*!< \brief Cursor row. */
     0,                  /*!< \brief Cursor column. */
     0                   /*!< \brief Display shadow memory. */
