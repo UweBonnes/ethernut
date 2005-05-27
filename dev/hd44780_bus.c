@@ -48,6 +48,11 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/05/27 14:05:25  olereinhardt
+ * Added support for new display sizes configurable by macros
+ * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
+ * LCD_1x20, LCD_1x16, LCD_1x8, KS0073_CONTROLLER (4x20))
+ *
  * Revision 1.7  2004/10/14 08:55:38  olereinhardt
  * Added default LCD type to avoid compiling bug if no type is defined
  *
@@ -81,8 +86,22 @@ static u_short lcd_base = 0x0000;
 
 #ifndef LCD_4x20
 #ifndef LCD_4x16
+#ifndef LCD_2x40
+#ifndef LCD_2x20
+#ifndef LCD_2x16
+#ifndef LCD_2x8
+#ifndef LCD_1x20
+#ifndef LCD_1x16
+#ifndef LCD_1x8
 #ifndef KS0073_CONTROLLER
-#define LCD_4x20
+#define LCD_2x16
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 #endif
 #endif
 #endif
@@ -151,20 +170,43 @@ static void LcdSetCursor(u_char pos)
     u_char  offset[4] = {0x00, 0x20, 0x40, 0x60};
     y = pos / 20;
     x = pos % 20;
+    if (y > 3) y = 3;
 #endif
 
-#ifdef LCD_4x20
+#if defined(LCD_2x40) 
+    u_char  offset  [2] = {0x00, 0x40};
+    y = pos / 40;
+    x = pos % 40;
+    if (y > 1) y = 1;
+#endif    
+    
+#if defined(LCD_4x20) || defined(LCD_2x20)
     u_char  offset  [4] = {0x00, 0x40, 0x14, 0x54};
     y = pos / 20;
     x = pos % 20;
+    if (y>3) y=3;
 #endif    
     
-#ifdef LCD_4x16
+#if defined(LCD_4x16) || defined(LCD_2x16)
     u_char  offset  [4] = {0x00, 0x40, 0x10, 0x50};
-    y = pos << 4;
-    x = pos & 0x0F;
+    y = pos / 16;
+    x = pos % 16;
+    if (y>3) y=3;
 #endif    
 
+#if defined(LCD_2x8)
+    u_char  offset  [2] = {0x00, 0x40};
+    y = pos / 8;
+    x = pos % 8;
+    if (y>1) y=1;
+#endif    
+
+#if defined(LCD_1x8) || defined(LCD_1x16) || defined(LCD_1x20)
+    u_char  offset  [1] = { 0x00 };
+    y = 0;
+    x = pos;
+#endif 
+    
     pos = x + offset[y];
     LcdWriteCmd(1 << LCD_DDRAM | pos, 0);
 }
@@ -251,24 +293,59 @@ TERMDCB dcb_term = {
     LcdCursorMode,              /*!< \brief Switch cursor on/off, dss_cursor_mode. */
     0,                          /*!< \brief Mode flags. */
     0,                          /*!< \brief Status flags. */
-#ifdef  KS0073_CONTROLLER
-    4,                          /*!< \brief Number of rows. */
-    20,                         /*!< \brief Number of columns per row. */
-    20,                         /*!< \brief Number of visible columns. */
+#ifdef KS0073_CONTROLLER
+    4,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
 #endif
 #ifdef LCD_4x20
-    4,                          /*!< \brief Number of rows. */
-    20,                         /*!< \brief Number of columns per row. */
-    20,                         /*!< \brief Number of visible columns. */
+    4,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
 #endif
 #ifdef LCD_4x16
-    4,                          /*!< \brief Number of rows. */
-    16,                         /*!< \brief Number of columns per row. */
-    16,                         /*!< \brief Number of visible columns. */
+    4,                  /*!< \brief Number of rows. */
+    16,                 /*!< \brief Number of columns per row. */
+    16,                 /*!< \brief Number of visible columns. */
+#endif    
+#ifdef LCD_2x40    
+    2,                  /*!< \brief Number of rows. */
+    40,                 /*!< \brief Number of columns per row. */
+    40,                 /*!< \brief Number of visible columns. */
 #endif
-    0,                          /*!< \brief Cursor row. */
-    0,                          /*!< \brief Cursor column. */
-    0                           /*!< \brief Display shadow memory. */
+#ifdef LCD_2x20    
+    2,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_2x16    
+    2,                  /*!< \brief Number of rows. */
+    16,                 /*!< \brief Number of columns per row. */
+    16,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_2x8    
+    2,                  /*!< \brief Number of rows. */
+    8,                 /*!< \brief Number of columns per row. */
+    8,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_1x20    
+    1,                  /*!< \brief Number of rows. */
+    20,                 /*!< \brief Number of columns per row. */
+    20,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_1x16    
+    1,                  /*!< \brief Number of rows. */
+    16,                 /*!< \brief Number of columns per row. */
+    16,                 /*!< \brief Number of visible columns. */
+#endif
+#ifdef LCD_1x8    
+    1,                  /*!< \brief Number of rows. */
+    8,                 /*!< \brief Number of columns per row. */
+    8,                 /*!< \brief Number of visible columns. */
+#endif
+    0,                  /*!< \brief Cursor row. */
+    0,                  /*!< \brief Cursor column. */
+    0                   /*!< \brief Display shadow memory. */
 };
 
 /*!
