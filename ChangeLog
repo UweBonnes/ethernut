@@ -1,6 +1,6 @@
-$Id: ChangeLog,v 1.217 2005/05/27 17:54:21 drsung Exp $
+$Id: ChangeLog,v 1.218 2005/05/27 17:55:54 drsung Exp $
 
-2005-05-26  Oliver Schulz  <olischulz@web.de>
+2005-05-27  Oliver Schulz  <olischulz@web.de>
 
 	* include/sys/atom.h, os/thread.c, os/timer.c, os/nutinit.c: Platform dependant files were moved to /arch directory.
 
