@@ -1,4 +1,26 @@
-$Id: ChangeLog,v 1.213 2005/05/26 13:16:02 haraldkipp Exp $
+$Id: ChangeLog,v 1.214 2005/05/27 14:11:44 olereinhardt Exp $
+
+2005-05-27  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* conf/dev/dev.nut
+          Added new Display sizes for hd44780 and hd44780_bus
+          Ports used for display connection still need's to be added.
+        * include/dev/hd44780.h, dev/hd44780.c
+	  Added support for new display sizes configurable by macros 
+          LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
+          LCD_1x20, LCD_1x16, LCD_1x8, KS0073_CONTROLLER (4x20)) 
+          Also added support for different delay types.
+          For not to wait busy too long, I added support for busy bit 
+          read back and use NutSleep instead NutDelay if NUT_CPU_FREQ 
+          is defined.
+          These changes hopefully should not break any existing code
+	* dev/hd44780_bus.c
+          Added support for new display sizes configurable by macros
+          LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
+          LCD_1x20, LCD_1x16, LCD_1x8, KS0073_CONTROLLER (4x20))
+	* include/cfg/m-can.h
+	  Changed specs to new m-can board design (LCD controller)
+	* dev/sja1000.c
+          Fixed a bug in irq initialisation
 
 2005-05-26  Oliver Schulz  <olischulz@web.de>
 
