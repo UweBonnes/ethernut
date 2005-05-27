@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.18  2005/05/27 13:51:07  olereinhardt
+-- Added new Display sizes for hd44780 and hd44780_bus
+-- Ports used for display connection still need's to be added.
+--
 -- Revision 1.17  2005/04/05 17:44:56  haraldkipp
 -- Made stack space configurable.
 --
@@ -581,6 +585,64 @@ nutdev =
         options =
         {
             {
+                macro = "LCD_4x20",
+                brief = "LCD 4x20",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_4x16",
+                brief = "LCD 4x16",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },            {
+                macro = "LCD_2x40",
+                brief = "LCD 2x40",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_2x20",
+                brief = "LCD 2x20",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_2x16",
+                brief = "LCD 2x16",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_2x8",
+                brief = "LCD 2x8",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },            {
+                macro = "LCD_1x20",
+                brief = "LCD 1x20",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_1x16",
+                brief = "LCD 1x16",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_1x8",
+                brief = "LCD 1x8",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "KS0073_CONTROLLER",
+                brief = "KS0073 Controller",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
                 macro = "LCD_SHORT_DELAY",
                 brief = "Short delay",
                 description = "Number of milliseconds",
@@ -596,6 +658,7 @@ nutdev =
                 type = "integer",
                 file = "include/cfg/arch/avrpio.h"
             }
+
         }
     },
     {
@@ -618,14 +681,54 @@ nutdev =
         options =
         {
             {
-                macro = "LCD_4x16",
-                brief = "LCD 4x16",
+                macro = "LCD_4x20",
+                brief = "LCD 4x20",
                 flavor = "boolean",
                 file = "include/cfg/arch/avrpio.h"
             },
             {
-                macro = "LCD_4x20",
-                brief = "LCD 4x20",
+                macro = "LCD_4x16",
+                brief = "LCD 4x16",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },            {
+                macro = "LCD_2x40",
+                brief = "LCD 2x40",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_2x20",
+                brief = "LCD 2x20",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_2x16",
+                brief = "LCD 2x16",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_2x8",
+                brief = "LCD 2x8",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },            {
+                macro = "LCD_1x20",
+                brief = "LCD 1x20",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_1x16",
+                brief = "LCD 1x16",
+                flavor = "boolean",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "LCD_1x8",
+                brief = "LCD 1x8",
                 flavor = "boolean",
                 file = "include/cfg/arch/avrpio.h"
             },
