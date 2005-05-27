@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/05/27 14:43:28  chaac
+ * Fixed bugs on closing AHDLC sessions. Fixed AHDLC ioctl handling. Not all
+ * messages were handled correctly	and fixed possible problem of reading memory
+ * from address zero.
+ *
  * Revision 1.8  2005/04/05 17:44:56  haraldkipp
  * Made stack space configurable.
  *
@@ -381,16 +386,24 @@ THREAD(AhdlcRx, arg)
     IFNET *ifn;
     NETBUF *nb;
     u_char *rxbuf;
-    u_char *rxptr = 0;
-    u_short rxcnt = 0;
+    u_char *rxptr;
+    u_short rxcnt;
     u_char ch;
     u_short tbx;
     u_char inframe;
-    u_char escaped = 0;
-    u_short rxfcs = AHDLC_INITFCS;
+    u_char escaped;
+    u_short rxfcs;
 
     NutThreadSetPriority(9);
     for (;;) {
+        /*
+         * Reset variables to their initial state
+         */
+        rxptr = 0;
+        rxcnt = 0;
+        escaped = 0;
+        rxfcs = AHDLC_INITFCS;
+        inframe = 0;
 
         for (;;) {
             /*
@@ -438,6 +451,15 @@ THREAD(AhdlcRx, arg)
                 }
             }
 
+            /*
+             * Leave loop if network interface is detached
+             */
+            if (dev->dev_icb == 0)
+                break;
+
+            /*
+             * Read next character from input buffer
+             */
             ch = dcb->dcb_rx_buf[dcb->dcb_rd_idx++];
 
             if (inframe) {
@@ -480,6 +502,9 @@ THREAD(AhdlcRx, arg)
                 }
             }
 
+            /*
+             * If frame flag is received, resync frame processing
+             */
             if (ch == AHDLC_FLAG) {
                 inframe = 1;
                 escaped = 0;
@@ -688,8 +713,8 @@ static void AhdlcAvrDisable(u_short base)
  *             - UART_GETPARITY, conf points to an u_long value receiving the parity, 0 (no), 1 (odd) or 2 (even).
  *             - UART_SETSTOPBITS, conf points to an u_long value containing the number of stop bits 1 or 2.
  *             - UART_GETSTOPBITS, conf points to an u_long value receiving the number of stop bits 1 or 2.
- *             - UART_SETSTATUS
- *             - UART_GETSTATUS
+ *             - UART_SETSTATUS, conf points to an u_long value containing the changes for the control lines.
+ *             - UART_GETSTATUS, conf points to an u_long value receiving the state of the control lines and the device.
  *             - UART_SETREADTIMEOUT, conf points to an u_long value containing the read timeout.
  *             - UART_GETREADTIMEOUT, conf points to an u_long value receiving the read timeout.
  *             - UART_SETWRITETIMEOUT, conf points to an u_long value containing the write timeout.
@@ -720,8 +745,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     AHDLCDCB *dcb;
     void **ppv = (void **) conf;
     u_long *lvp = (u_long *) conf;
-    u_long lv = *lvp;
-    u_char bv = (u_char) lv;
+    u_char bv;
     u_short sv;
     u_char devnum;
 
@@ -734,7 +758,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     switch (req) {
     case UART_SETSPEED:
         AhdlcAvrDisable(devnum);
-        sv = (u_short) ((((2UL * NutGetCpuClock()) / (lv * 16UL)) + 1UL) / 2UL) - 1;
+        sv = (u_short) ((((2UL * NutGetCpuClock()) / (*lvp * 16UL)) + 1UL) / 2UL) - 1;
 #ifdef __AVR_ENHANCED__
         if (devnum) {
             outp((u_char) sv, UBRR1L);
@@ -763,6 +787,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETDATABITS:
         AhdlcAvrDisable(devnum);
+        bv = (u_char)(*lvp);
 #ifdef __AVR_ENHANCED__
         if (bv >= 5 && bv <= 8) {
             bv = (bv - 5) << 1;
@@ -795,6 +820,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETPARITY:
         AhdlcAvrDisable(devnum);
+        bv = (u_char)(*lvp);
 #ifdef __AVR_ENHANCED__
         if (bv <= 2) {
             if (bv == 1)
@@ -823,10 +849,12 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #else
         bv = 0;
 #endif
+        *lvp = bv;
         break;
 
     case UART_SETSTOPBITS:
         AhdlcAvrDisable(devnum);
+        bv = (u_char)(*lvp);
 #ifdef __AVR_ENHANCED__
         if (bv == 1 || bv == 2) {
             bv = (bv - 1) << 3;
@@ -858,24 +886,25 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         AhdlcAvrGetStatus(dev, lvp);
         break;
     case UART_SETSTATUS:
-        AhdlcAvrSetStatus(dev, lv);
+        AhdlcAvrSetStatus(dev, *lvp);
         break;
 
     case UART_SETREADTIMEOUT:
-        dcb->dcb_rtimeout = lv;
+        dcb->dcb_rtimeout = *lvp;
         break;
     case UART_GETREADTIMEOUT:
         *lvp = dcb->dcb_rtimeout;
         break;
 
     case UART_SETWRITETIMEOUT:
-        dcb->dcb_wtimeout = lv;
+        dcb->dcb_wtimeout = *lvp;
         break;
     case UART_GETWRITETIMEOUT:
         *lvp = dcb->dcb_wtimeout;
         break;
 
     case UART_SETLOCALECHO:
+        bv = (u_char)(*lvp);
         if (bv)
             dcb->dcb_modeflags |= UART_MF_LOCALECHO;
         else
@@ -889,6 +918,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_SETFLOWCONTROL:
+        bv = (u_char)(*lvp);
         if (bv)
             dcb->dcb_modeflags |= UART_MF_LOCALECHO;
         else
@@ -898,12 +928,22 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case HDLC_SETIFNET:
-        if (ppv && (dev->dev_icb = *ppv) != 0) {
+        if (ppv && (*ppv != 0)) {
+            dev->dev_icb = *ppv;
             dev->dev_type = IFTYP_NET;
             NutEventPost(&dcb->dcb_mf_evt);
         } else {
-            dev->dev_icb = 0;
             dev->dev_type = IFTYP_CHAR;
+
+            if (dev->dev_icb != 0)
+            {
+                dev->dev_icb = 0;
+
+                /*
+                 * Signal AHDLC Thread, so it can change it's state instantly
+                 */
+                NutEventPost(&dcb->dcb_rx_rdy);
+            }
         }
         break;
     case HDLC_GETIFNET:

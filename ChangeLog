@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.214 2005/05/27 14:11:44 olereinhardt Exp $
+$Id: ChangeLog,v 1.215 2005/05/27 14:43:19 chaac Exp $
+
+2005-05-14  Vesa Jaaskelainen  <chaac@.nic.fi>
+
+	* dev/ahdlcavr.c: Fixed bugs on closing AHDLC sessions. Fixed
+	AHDLC ioctl handling. Not all messages were handled correctly
+	and fixed possible problem of reading memory from address zero.
 
 2005-05-27  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* conf/dev/dev.nut
