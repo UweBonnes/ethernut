@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/06/05 16:48:26  haraldkipp
+ * Additional parameter enables NutUdpInput() to avoid responding to UDP
+ * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
+ *
  * Revision 1.3  2004/12/16 18:48:50  haraldkipp
  * Added Damian Slee's IP filter function.
  *
@@ -168,7 +172,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     IPHDR *ip;
     u_short ip_hdrlen;
     u_long dst;
-    u_char bcast;
+    ureg_t bcast;
     IFNET *nif;
 
     ip = nb->nb_nw.vp;
@@ -225,7 +229,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         NutIcmpInput(dev, nb);
         break;
     case IPPROTO_UDP:
-        NutUdpInput(nb);
+        NutUdpInput(nb, bcast);
         break;
     case IPPROTO_TCP:
         /*

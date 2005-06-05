@@ -2,7 +2,7 @@
 #define _SYS_SOCK_VAR_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,6 +63,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/06/05 16:48:25  haraldkipp
+ * Additional parameter enables NutUdpInput() to avoid responding to UDP
+ * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
+ *
  * Revision 1.6  2004/07/30 19:54:46  drsung
  * Some code of TCP stack redesigned. Round trip time calculation is now
  * supported. Fixed several bugs in TCP state machine. Now TCP connections
@@ -138,7 +142,7 @@ struct udp_socket {
 
 /*@}*/
 
-extern void NutUdpInput(NETBUF *nb);
+extern void NutUdpInput(NETBUF *nb, ureg_t bcast);
 extern int NutUdpOutput(UDPSOCKET *sock, u_long dest, u_short port, NETBUF *nb);
 
 

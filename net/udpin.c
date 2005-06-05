@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/06/05 16:48:32  haraldkipp
+ * Additional parameter enables NutUdpInput() to avoid responding to UDP
+ * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
+ *
  * Revision 1.4  2005/05/26 11:47:24  drsung
  * ICMP unreachable will be sent on incoming udp packets with no local peer port.
  *
@@ -136,7 +140,7 @@
  * \param nb  Network buffer structure containing the UDP packet.
  */
  /* @@@ 2003-10-24: modified by OS for udp packet queue */
-void NutUdpInput(NETBUF * nb)
+void NutUdpInput(NETBUF * nb, ureg_t bcast)
 {
     UDPHDR *uh;
     UDPSOCKET *sock;
@@ -148,11 +152,13 @@ void NutUdpInput(NETBUF * nb)
     nb->nb_tp.sz = sizeof(UDPHDR);
 
     /*
-     * Find a port. If none exists, return an ICMP unreachable.
+     * Find a port. If none exists and if this datagram hasn't been
+     * broadcasted, return an ICMP unreachable.
      */
     if ((sock = NutUdpFindSocket(uh->uh_dport)) == 0) {
-        if (!NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PORT, 0, nb))
+        if (bcast || NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PORT, 0, nb) == 0) {
         	NutNetBufFree(nb);
+        }
         return;
     }
 
