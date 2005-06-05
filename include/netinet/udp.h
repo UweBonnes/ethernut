@@ -2,7 +2,7 @@
 #define _NETINET_UDP_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:17  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/06/05 16:45:32  haraldkipp
+ * Duplicate prototype in sock_var.h.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:17  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/02/04 18:00:47  harald
  * Version 3 released
@@ -115,8 +118,6 @@ typedef struct udphdr {
     u_short uh_ulen;    /*!< \brief UDP length */
     u_short uh_sum;     /*!< \brief UDP checksum */
 } UDPHDR;
-
-void NutUdpInput(NETBUF *nb);
 
 #ifdef __cplusplus
 }
