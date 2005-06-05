@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.7  2005/06/05 16:57:00  haraldkipp
+-- ICC target corrected
+--
 -- Revision 1.6  2005/04/05 18:04:17  haraldkipp
 -- Support for ARM7 Wolf Board added.
 --
@@ -102,7 +105,7 @@ nuttools =
             macro = "ICCAVR",
             flavor = "boolean",
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=atmega" }
+            makedefs = { "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
         }
     },
     {
