@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.12  2005/06/05 16:49:09  haraldkipp
+ * Do not do ARP retries by default.
+ *
  * Revision 1.11  2005/05/16 08:41:25  haraldkipp
  * Bugfix: Empty queue before removing entry.
  *
@@ -189,7 +192,7 @@ static u_char __tcp_trf = 1;
  * \showinitializer
  */
 #ifndef MAX_ARPREQUESTS
-#define MAX_ARPREQUESTS 4
+#define MAX_ARPREQUESTS 1
 #endif
 
 /*! \brief Minimum wait before sending out a new ARP request.
