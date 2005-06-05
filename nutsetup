@@ -363,7 +363,7 @@ EOF
     # ready
 
     echo "Your system is now configured to build for your native system."
-    echo "Type \`make\` to build the system."
+    echo "Change to lib and type \`make\` to build the system."
 
     exit 0
 

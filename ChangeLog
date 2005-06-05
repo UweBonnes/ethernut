@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.219 2005/06/05 16:43:51 haraldkipp Exp $
+$Id: ChangeLog,v 1.220 2005/06/05 18:48:53 haraldkipp Exp $
 
 2005-06-05  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -18,6 +18,9 @@ $Id: ChangeLog,v 1.219 2005/06/05 16:43:51 haraldkipp Exp $
 	* net/udpin.c: Added bcast parameter to NutUdpInput().
 	Do not respond with ICMP unreachable to broadcasts. Fixes
 	bug #1215192.
+
+	* nutsetup: Added advice to the user to change to lib/
+	before running make.
 
 
 2005-05-27  Oliver Schulz  <olischulz@web.de>
