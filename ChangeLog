@@ -1,4 +1,24 @@
-$Id: ChangeLog,v 1.218 2005/05/27 17:55:54 drsung Exp $
+$Id: ChangeLog,v 1.219 2005/06/05 16:43:51 haraldkipp Exp $
+
+2005-06-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/netinet/udp.h: NutUdpInput() prototype removed.
+	It' already defined in include/sys/sock_var.h.
+
+	* include/sys/sock_var.h: Added bcast parameter to
+	NutUdpInput() prototype.
+
+	* net/arpcache.c: MAX_ARPREQUESTS default changed from
+	4 to 1. ARP retries should be handled by upper layers.
+
+	* net/ipin.c: Broadcast flag is passed to NutUdpInput().
+	I changed its type from u_char to ureg_t to better support
+	16 and 32 bit platforms.
+
+	* net/udpin.c: Added bcast parameter to NutUdpInput().
+	Do not respond with ICMP unreachable to broadcasts. Fixes
+	bug #1215192.
+
 
 2005-05-27  Oliver Schulz  <olischulz@web.de>
 
