@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/06/06 10:42:36  haraldkipp
+ * Fix after avr-libc removed outb/outp.
+ *
  * Revision 1.2  2004/02/20 12:31:36  haraldkipp
  * Ignore target IP if local IP is not configured
  *
@@ -98,7 +101,7 @@ int main(void)
      * Enable external data and address
      * bus.
      */
-    outp(BV(SRE) | BV(SRW), MCUCR);
+    MCUCR = _BV(SRE) | _BV(SRW);
 
     /*
      * There's no data to initialize. However, if debugging
