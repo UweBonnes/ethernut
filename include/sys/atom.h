@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/06/06 10:44:42  haraldkipp
+ * Header files moved to re-enable building apart from source tree.
+ *
  * Revision 1.13  2005/05/27 17:42:27  drsung
  * Platform dependant files were moved to /arch directory.
  *
@@ -124,15 +127,15 @@
  */
 
 #if defined(__AVR__)
-#include "../../arch/avr/include/atom.h"
+#include <arch/avr/atom.h>
 #elif defined(__arm__)
-#include "../../arch/arm/include/atom.h"
+#include <arch/arm/atom.h>
 #elif defined(__H8300H__) || defined(__H8300S__)
-#include "../../arch/h8300h/include/atom.h"
+#include <arch/h8300h/atom.h>
 #elif defined(__m68k__)
-#include "../../arch/m68k/include/atom.h"
+#include <arch/m68k/atom.h>
 #elif defined(__linux__) || defined(__APPLE__)
-#include "../../arch/unix/include/atom.h"
+#include <arch/unix/atom.h>
 #endif
 
 #endif
