@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.220 2005/06/05 18:48:53 haraldkipp Exp $
+$Id: ChangeLog,v 1.221 2005/06/06 10:50:14 haraldkipp Exp $
+
+2005-06-06  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Emergency bugfix release 3.9.7.1.
+
+	* app/Makedefs.avr-gcc: Use Vesa's workaround for applications
+	too.
+
+	* appload/appload.c: Replaced deprecated port access. Now
+	compiles with latest avr-libc.
+
+	* dev/hd44780.c: Fixed to re-enable ICCAVR compilation.
+
+	* include/sys/atom.h: Failed with building outside the
+	source tree. In addition all header files moved from 
+	arch/cpu/include to include/arch/cpu.
+
 
 2005-06-05  Harald Kipp  <harald.kipp@egnite.de>
 
