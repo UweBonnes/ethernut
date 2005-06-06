@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/06/06 10:43:45  haraldkipp
+ * Fixed to re-enable ICCAVR compilation.
+ *
  * Revision 1.5  2005/05/27 14:02:11  olereinhardt
  * Added support for new display sizes configurable by macros
  * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
@@ -116,7 +119,7 @@
  */
 
 static u_char during_init = 1;
-#define LCD_DELAY		asm volatile ("nop"); asm volatile ("nop")
+#define LCD_DELAY _NOP(); _NOP()
 
 #ifdef LCD_RW_BIT
 
