@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.3  2005/06/06 10:40:31  haraldkipp
+# Emergency bugfix release 3.9.7.1.
+#
 # Revision 1.2  2005/05/22 14:48:46  haraldkipp
 # Added option to completely disable tool build.
 # Check versions of Lua and wxWidgets.
@@ -43,7 +46,7 @@
 #
 #
 
-AC_INIT(ethernut,3.9.6)
+AC_INIT(ethernut,3.9.7)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005 egnite Software GmbH])
