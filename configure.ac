@@ -34,6 +34,10 @@
 
 #
 # $Log$
+# Revision 1.4  2005/06/10 13:27:24  haraldkipp
+# Lua check failed because autoconf test needs additional libraries.
+# Thanks to Tim Lapawa for this fix.
+#
 # Revision 1.3  2005/06/06 10:40:31  haraldkipp
 # Emergency bugfix release 3.9.7.1.
 #
@@ -124,7 +128,7 @@ else
       nutconf_tools_ok=no
     else
       AC_SEARCH_LIBS([lua_open], [lua lua50], [nutconf_tools_ok="yes"], [nutconf_tools_ok="no"])
-      AC_SEARCH_LIBS([luaL_loadfile], [lualib lualib50], [nutconf_tools_ok="yes"], [nutconf_tools_ok="no"])
+      AC_SEARCH_LIBS([luaL_loadfile], [lualib lualib50], [nutconf_tools_ok="yes"], [nutconf_tools_ok="no"],[-lm -ldl])
       if test "x$nutconf_tools_ok" = "xno"; then
         AC_MSG_WARN([Lua library missing, will not build configuration tools.])
       fi
