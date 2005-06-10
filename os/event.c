@@ -48,6 +48,11 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/06/10 12:59:26  freckle
+ * corrected NuEventBroadcastAsync documentation.
+ * NutEventBroadcast uses NutEventPostAsync which disables IRQsCVS:
+ * ----------------------------------------------------------------------
+ *
  * Revision 1.14  2005/02/21 12:37:57  phblum
  * Removed tabs and added semicolons after NUTTRACER macros
  *
@@ -447,8 +452,7 @@ int NutEventPost(HANDLE * qhp)
  * event triggering action.
  *
  * \note It is save to call this function from within an interrupt
- *       handler. In any case interrupts must be disabled when
- *       calling this function.
+ *       handler. 
  *
  * \param qhp Identifies the queue an event is broadcasted to.
  *

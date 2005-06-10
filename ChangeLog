@@ -1,5 +1,10 @@
-$Id: ChangeLog,v 1.221 2005/06/06 10:50:14 haraldkipp Exp $
+$Id: ChangeLog,v 1.222 2005/06/10 12:59:26 freckle Exp $
 
+2005-04-19  Matthias Ringwald <mringwal@.inf.ethz.ch>
+
+	* os/event.c: corrected NuEventBroadcastAsync documentation.
+    NutEventBroadcast uses NutEventPostAsync which disables IRQs.
+    
 2005-06-06  Harald Kipp  <harald.kipp@egnite.de>
 
 	* configure.ac, os/version.c: Emergency bugfix release 3.9.7.1.
