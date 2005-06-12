@@ -1,4 +1,53 @@
-$Id: ChangeLog,v 1.223 2005/06/10 13:28:03 haraldkipp Exp $
+$Id: ChangeLog,v 1.224 2005/06/12 16:57:19 haraldkipp Exp $
+
+2005-06-12  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/avr/os/timer.c: Timer configuration registers and values
+	are now specified by preprocessor macros. This avoids code
+	contamination with preprocessor conditionals. A note has been
+	added to the documentation of NutDelay(), saying, that this
+	code may not work. The timer interrupt handler had been moved
+	to the hardware independent code. A new function CountCpuLoops()
+	has been added to count the number of loops from timer start
+	to timer overflow. In opposite to the previous check in
+	NutComputeCpuClock(), this new routine will not use interrupts
+	and thus will not initialize the timer for system use. This
+	is now done in another new function NutRegisterTimer(), which
+	contains all hardware dependent initialization previously
+	done by NutInit(). The latter had been moved to the hardware
+	independent part. The nominal timer granularity for the AVR
+	platform is now about one millisecond, even if NUT_CPU_FREQ has 
+	not been defined. Automatic calculation of the CPU clock will 
+	now also work for ICCAVR.
+
+	* os/timer.c: The most significant change had been done to the
+	timer interrupt handler. Elapsed timers are no longer removed
+	from the list. Instead, the handler uses a pointer to the
+	currently processed timer entry and simply steps up to the
+	next entry after the currently processed timer elapsed. These
+	elapsed entries are removed by the new NutTimerProcessElapsed(),
+	which is called from NutThreadResume() before switching the
+	context. This significantly reduces interrupt latency times,
+	but adds a new possible problem. Some applications may run
+	out of memory when starting and stopping too many timers
+	within a short period. Furthermore, I removed all but one
+	counter from interrupt update. Any previously value, which
+	had been updated in interrupt context, is now derived from this
+	remaining counter.
+
+	* include/sys/timer.h: Added NutTimerProcessElapsed() prototype.
+
+	* os/osdebug.c: References to nutTimerPool removed.
+
+	* os/thread.c: Added a call to NutTimerProcessElapsed() in
+	NutThreadResume(). This will remove elapsed timers from
+	nutTimerList, which had been previously done in the interrupt
+	handler.
+
+
+The most significant change had been done
+	to the timer interrupt handler.
+
 
 2005-06-10  Harald Kipp  <harald.kipp@egnite.de>
 
