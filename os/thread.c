@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2005/06/12 16:56:20  haraldkipp
+ * Calls new function to process elapsed timers.
+ *
  * Revision 1.17  2005/05/27 17:30:26  drsung
  * Platform dependant files were moved to /arch directory.
  *
@@ -311,6 +314,8 @@ void NutThreadResume(void)
             NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
         }
     } while (td);
+
+    NutTimerProcessElapsed();
 
     /* Check for context switch. */
     if (runningThread != runQueue) {
