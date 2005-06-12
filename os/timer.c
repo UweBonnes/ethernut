@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/06/12 16:53:01  haraldkipp
+ * Major redesing to reduce interrupt latency.
+ * Much better seperation of hardware dependent and independent parts.
+ *
  * Revision 1.16  2005/05/27 17:30:27  drsung
  * Platform dependant files were moved to /arch directory.
  *
@@ -154,58 +158,35 @@
 /*!
  * \brief Linked list of all system timers.
  */
-NUTTIMERINFO *volatile nutTimerList = 0;
+NUTTIMERINFO *volatile nutTimerList;
 
 /*!
- * This pool is used to collect released memory
- * from elapsed timers. It's required because
- * we can't free memory in interrupt context.
+ * \brief Pointer to the timer, which is currently processed by the timer
+ *        interrupt handler.
  */
-NUTTIMERINFO *volatile nutTimerPool = 0;
+NUTTIMERINFO *volatile runningTimer;
 
-/*
- * Bernardo Innocenti and Marc Wetzel both asked
- * for a high resolution timer. I can't really
- * follow that request, because timer 1 and 2
- * are still avaible for the application. Beside
- * that the 32 kHz timer offers some advantages
- * with CPU wakeup and automatic detection of
- * crystal frequency. Anyway I added Bernardo's
- * diff. It doesn't differ much from Marc's code,
- * but was based on a later version of Nut/OS.
- * I modified it a bit: To enable 1 millisecond
- * resolution you have to define the CPU frequency
- * in Makedefs:
- * DEFS = -DNUT_CPU_FREQ=14745600
-*/
-
+/*!
+ * \brief Nominal number of system ticks per second.
+ *
+ * The actual frequency depends on the timer crystal.
+ *
+ * \note Since version 3.9.8, the default frequency had been changed 
+ *       from 16 Hz to 1024 Hz, when the timer is running with an 
+ *       external 32 kHz clock crystal.
+ */
+#ifndef NUT_TICK_NFREQ
 #ifdef NUT_CPU_FREQ
-
-#define cpu_clock   NUT_CPU_FREQ
-#define delay_count (NUT_CPU_FREQ/4000)
-
-static volatile u_short ms1;
-
-#else                           /* !NUT_CPU_FREQ */
-
-static u_long cpu_clock;
-
-#if !defined(__linux__) && !defined(__APPLE__)
-
-extern volatile u_char ms62_5;
-static u_short delay_count;
-static u_long NutComputeCpuClock(void);
-
+#define NUT_TICK_NFREQ  1000L
+#else
+#define NUT_TICK_NFREQ  1024L
+#endif
 #endif
 
-#endif                          /* !NUT_CPU_FREQ */
-
-static volatile u_long milli_ticks;
-static volatile u_long millis;
-static volatile u_long seconds;
-
-static void NutTimerInsert(NUTTIMERINFO * tn);
-
+/*
+ * TODO: Now the hardware depedent parts had been seperated. It should
+ * be possible to compile them independently.
+ */
 #if defined(__AVR__)
 #include "../arch/avr/os/timer.c"
 #elif defined(__arm__)
@@ -217,6 +198,37 @@ static void NutTimerInsert(NUTTIMERINFO * tn);
 #elif defined(__linux__) || defined(__APPLE__)
 #include "../arch/unix/os/timer.c"
 #endif
+
+static volatile u_long nut_ticks;
+
+/*!
+ * \brief System timer interrupt handler.
+ */
+static void NutTimerIntr(void *arg)
+{
+    nut_ticks++;
+    if (runningTimer) {
+        if (runningTimer->tn_ticks_left) {
+            runningTimer->tn_ticks_left--;
+        }
+        if (runningTimer->tn_ticks_left == 0) {
+            runningTimer = runningTimer->tn_next;
+        }
+    }
+}
+
+/*!
+ * \brief Initialize system timer.
+ *
+ * This function is automatically called by Nut/OS during system 
+ * initialization. It calls the hardware dependent layer to initialze
+ * the timer hardware and register a timer interrupt handler.
+ */
+void NutTimerInit(void)
+{
+    NutRegisterTimer(NutTimerIntr);
+    NutEnableTimerIrq();
+}
 
 /*!
  * \brief Insert a new timer in the global timer list.
@@ -232,25 +244,92 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
         fprintf_P(__os_trs, fmt, tn);
     }
 #endif
-    tnpp = (NUTTIMERINFO **)&nutTimerList;
-    tnp = nutTimerList;
-    while (tnp) {
+
+    /* Stop timer interrupt handling. */
+    NutDisableTimerIrq();
+    runningTimer = 0;
+    NutEnableTimerIrq();
+
+    tnpp = (NUTTIMERINFO **) & nutTimerList;
+    for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
         if (tn->tn_ticks_left < tnp->tn_ticks_left) {
             tnp->tn_ticks_left -= tn->tn_ticks_left;
             break;
         }
         tn->tn_ticks_left -= tnp->tn_ticks_left;
         tnpp = &tnp->tn_next;
-        tnp = tnp->tn_next;
     }
     tn->tn_next = tnp;
     *tnpp = tn;
+
+    /* Restart timer interrupt handling. */
+    NutDisableTimerIrq();
+    runningTimer = nutTimerList;
+    while (runningTimer && runningTimer->tn_ticks_left == 0) {
+        runningTimer = runningTimer->tn_next;
+    }
+    NutEnableTimerIrq();
+
 #ifdef NUTDEBUG
     if (__os_trf)
         NutDumpTimerList(__os_trs);
 #endif
 }
 
+void NutTimerProcessElapsed(void)
+{
+    NUTTIMERINFO *tn;
+
+    NutDisableTimerIrq();
+    runningTimer = 0;
+    NutEnableTimerIrq();
+
+    while (nutTimerList && nutTimerList->tn_ticks_left == 0) {
+        tn = nutTimerList;
+        nutTimerList = nutTimerList->tn_next;
+        if (tn->tn_callback) {
+            (*tn->tn_callback) (tn, (void *) tn->tn_arg);
+        }
+        if ((tn->tn_ticks_left = tn->tn_ticks) != 0) {
+            NutTimerInsert(tn);
+        } else {
+            free(tn);
+        }
+    }
+
+    NutDisableTimerIrq();
+    runningTimer = nutTimerList;
+    NutEnableTimerIrq();
+}
+
+
+HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
+{
+    NUTTIMERINFO *tn;
+
+    tn = malloc(sizeof(NUTTIMERINFO));
+    if (tn) {
+        tn->tn_ticks_left = ticks;
+
+        /*
+         * Periodic timers will reload the tick counter on each timer 
+         * intervall.
+         */
+        if (flags & TM_ONESHOT) {
+            tn->tn_ticks = 0;
+        } else {
+            tn->tn_ticks = tn->tn_ticks_left;
+        }
+
+        /* Set callback and callback argument. */
+        tn->tn_callback = callback;
+        tn->tn_arg = arg;
+
+        /* Add the timer to the list. */
+        NutTimerInsert(tn);
+    }
+    return tn;
+}
 
 /*!
  * \brief Create an asynchronous timer.
@@ -276,67 +355,9 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
  * \return Timer handle if successfull, 0 otherwise. The handle
  *         may be used to stop the timer by calling TimerStop.
  */
-
-u_long NutTimerMillisToTicks(u_long ms)
-{
-    /*
-     * Calculate the number of system ticks.
-     */
-
-#if defined(NUT_CPU_FREQ) || defined(__linux__) || defined(__APPLE__)
-    return ms;
-#else
-	return (ms / 125) * 2 + ((ms % 125) > 62);
-#endif
-}
-
 HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_char flags)
 {
 	return NutTimerStartTicks(NutTimerMillisToTicks(ms), callback, arg, flags);
-}
-
-HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
-{
-    NUTTIMERINFO *tn;
-
-    NutEnterCritical();
-
-    /*
-     * If any timer info structure is available in
-     * the pool of elapsed timers, take it. Otherwise
-     * allocate memory from heap.
-     */
-    if ((tn = nutTimerPool) != 0)
-        nutTimerPool = nutTimerPool->tn_next;
-    else {
-        tn = NutHeapAlloc(sizeof(NUTTIMERINFO));
-    }
-
-    if (tn) {
-        tn->tn_ticks_left = ticks;
-
-        /*
-         * Periodic timers will reload the tick counter
-         * on each timer intervall.
-         */
-        if (flags & TM_ONESHOT)
-            tn->tn_ticks = 0;
-        else
-            tn->tn_ticks = tn->tn_ticks_left;
-
-        /*
-         * Set callback and callback argument.
-         */
-        tn->tn_callback = callback;
-        tn->tn_arg = arg;
-
-        /*
-         * Add the timer to the list.
-         */
-        NutTimerInsert(tn);
-    }
-    NutExitCritical();
-    return tn;
 }
 
 /*!
@@ -352,14 +373,9 @@ HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void 
  * \note Threads may sleep longer than the specified number of
  *       milliseconds, depending on the number of threads
  *       with higher or equal priority, which are ready to run.
- *       If you need exact timing, use NutDelay().
  *
- * \bug The system may freeze if a sleep time greater than 0 ms
- *      but lower than 63 ms is specified.
- *
- * \param ms Milliseconds to sleep. Granularity is 62.5 ms.
- *           If 0, the current thread will not sleep, but
- *           may give up the CPU.
+ * \param ms Milliseconds to sleep. If 0, the current thread will not 
+ *           sleep, but may give up the CPU.
  */
 void NutSleep(u_long ms)
 {
@@ -400,10 +416,7 @@ void NutSleep(u_long ms)
  * Stops one-shot and periodic timers.
  *
  * \note It is save to call this function from within an interrupt
- *       handler. The memory occupied by the timer is not released,
- *       but added to a pool and will be re-used by the next timer
- *       being created. In any case interrupts should be disabled
- *       when calling this function.
+ *       handler.
  *
  * \param handle Identifies the timer to be stopped. This handle
  *               must have been created by calling NutTimerStart().
@@ -411,8 +424,7 @@ void NutSleep(u_long ms)
  */
 void NutTimerStopAsync(HANDLE handle)
 {
-    NUTTIMERINFO *tnp;
-    NUTTIMERINFO *volatile *tnpp;
+    NUTTIMERINFO *tn = (NUTTIMERINFO *)handle;
 
 #ifdef NUTDEBUG
     if (__os_trf) {
@@ -420,34 +432,15 @@ void NutTimerStopAsync(HANDLE handle)
         fprintf_P(__os_trs, fmt, (uptr_t) handle);
     }
 #endif
-    tnpp = &nutTimerList;
-    tnp = nutTimerList;
-    while (tnp) {
-        if (tnp == handle) {
-            /*
-             * We found the timer to stop. Remove it from
-             * the list and add the number of ticks left
-             * to the next timer in the list.
-             *
-             * Bugfix: Thanks to Bernardo, who discovered,
-             * that we need an extra statement if just one
-             * timer is left.
-             */
-            if ((*tnpp = tnp->tn_next) != 0)
-                (*tnpp)->tn_ticks_left += tnp->tn_ticks_left;
 
-            /*
-             * This function may run in interrupt context,
-             * which doesn't allow us to use the heap. We
-             * put add the timer to a pool.
-             */
-            tnp->tn_next = nutTimerPool;
-            nutTimerPool = tnp;
-            break;
-        }
-        tnpp = &tnp->tn_next;
-        tnp = tnp->tn_next;
+    NutDisableTimerIrq();
+    if (tn->tn_next) {
+        tn->tn_next->tn_ticks_left += tn->tn_ticks_left;
     }
+    tn->tn_ticks_left = 0;
+    tn->tn_ticks = 0;
+    NutEnableTimerIrq();
+
 #ifdef NUTDEBUG
     if (__os_trf)
         NutDumpTimerList(__os_trs);
@@ -467,30 +460,7 @@ void NutTimerStopAsync(HANDLE handle)
  */
 void NutTimerStop(HANDLE handle)
 {
-    NUTTIMERINFO *tnp;
-    NUTTIMERINFO *tnp_nxt;
-
-    NutEnterCritical();
     NutTimerStopAsync(handle);
-    tnp_nxt = nutTimerPool;
-    nutTimerPool = 0;
-    NutExitCritical();
-
-    /* Release the timer pool. */
-    while ((tnp = tnp_nxt) != 0) {
-        tnp_nxt = tnp->tn_next;
-        NutHeapFree(tnp);
-    }
-}
-
-/*!
- * \brief Return the CPU clock in Hertz.
- *
- * \return CPU clock frequency in Hertz.
- */
-u_long NutGetCpuClock(void)
-{
-    return cpu_clock;
 }
 
 /*!
@@ -506,7 +476,7 @@ u_long NutGetTickCount(void)
     u_long rc;
 
     NutEnterCritical();
-    rc = milli_ticks;
+    rc = nut_ticks;
     NutExitCritical();
 
     return rc;
@@ -528,13 +498,7 @@ u_long NutGetTickCount(void)
  */
 u_long NutGetSeconds(void)
 {
-    u_long rc;
-
-    NutEnterCritical();
-    rc = seconds;
-    NutExitCritical();
-
-    return rc;
+    return NutGetTickCount() / NutGetTickClock();
 }
 
 /*!
@@ -553,13 +517,7 @@ u_long NutGetSeconds(void)
  */
 u_long NutGetMillis(void)
 {
-    u_long rc;
-
-    NutEnterCritical();
-    rc = millis;
-    NutExitCritical();
-
-    return rc;
+    return (NutGetTickCount() * 1000) / NutGetTickClock();
 }
 
 /*@}*/
