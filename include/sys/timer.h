@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/06/12 16:54:14  haraldkipp
+ * New function processes elapsed timers.
+ *
  * Revision 1.5  2005/01/19 17:59:42  freckle
  * Improved interrupt performance by reducing some critical section
  *
@@ -127,6 +130,8 @@ extern void NutTimerInit(void);
  */
 
 #define TM_ONESHOT  0x01
+
+extern void NutTimerProcessElapsed(void);
 
 extern HANDLE NutTimerStart(u_long ms, void (*callback)(HANDLE, void *), void *arg, u_char flags);
 extern HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
