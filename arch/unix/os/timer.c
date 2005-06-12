@@ -41,11 +41,20 @@
 #include <cfg/os.h>
 #include <unistd.h>
 
+#ifndef NUT_CPU_FREQ
+#define NUT_CPU_FREQ    1000000UL
+#endif
+
+
 /* timer thread, generating ms ticks */
 static pthread_t timer_thread;
 
-/* counter for ms */
-static u_short ms1;
+/*
+ * No idea how to block specific interrupts in the
+ * UNIX emulation. For now this should help.
+ */
+#define NutEnableTimerIrq()     NutEnterCritical()
+#define NutDisableTimerIrq()    NutExitCritical()
 
 
 /*!
@@ -66,75 +75,6 @@ void NutDelay(u_char ms)
     usleep(1000L * ms);
 }
 
-
-/*
- * Timer 0 interrupt handler. Should be called every ms
- */
-void NutTimer0Intr(void *);
-void NutTimer0Intr(void *arg)
-{
-
-    NUTTIMERINFO *tnp;
-
-    /*
-     * Increment the tick counter used by Michael Fischer's
-     * NutGetTickCount() routine.
-     */
-    milli_ticks++;
-
-    millis++;
-    if (ms1++ >= 999) {
-        ms1 = 0;
-        seconds++;
-    }
-
-    if (nutTimerList) {
-        if (nutTimerList->tn_ticks_left) {
-            nutTimerList->tn_ticks_left--;
-        }
-
-        /*
-         * Process all elapsed timers.
-         * Bugfix by KU: Avoid crash on empty timer list.
-         */
-        while ((nutTimerList != 0) && (nutTimerList->tn_ticks_left == 0)) {
-
-            /*
-             * Execute the callback.
-             */
-            if (nutTimerList->tn_callback) {
-                (*nutTimerList->tn_callback) (nutTimerList, (void *) nutTimerList->tn_arg);
-            }
-
-            /*
-             * Remove the timer from the list.
-             */
-            tnp = nutTimerList;
-#ifdef NUTDEBUG
-            if (__os_trf)
-                fprintf(__os_trs, "RemTmr<%04X>\r\n", tnp);
-#endif
-            nutTimerList = nutTimerList->tn_next;
-
-            /*
-             * Periodic timers are re-inserted.
-             */
-            if ((tnp->tn_ticks_left = tnp->tn_ticks) != 0)
-                NutTimerInsert(tnp);
-
-            /*
-             * We can't touch the heap while running in
-             * interrupt context. Oneshot timers are added 
-             * to a pool of available timers.
-             */
-            else {
-                tnp->tn_next = nutTimerPool;
-                nutTimerPool = tnp;
-                //NutKDumpTimerList();
-            }
-        }
-    }
-}
 
 /*
  * Unix fake timer interrupt handle
@@ -164,20 +104,42 @@ void *NutTimerSimulation(void *arg)
  *
  * This function is automatically called by Nut/OS
  * during system initialization.
- *
- * Nut/OS uses on-chip timer 0 for its timer services.
- * Applications should not modify any registers of this
- * timer, but make use of the Nut/OS timer API. Timer 1
- * and timer 2 are available to applications.
  */
-void NutTimerInit(void);
-void NutTimerInit()
+void NutRegisterTimer(void (*handler) (void *))
 {
     u_char timerIrqNr = IRQ_TIMER0;
 
     // register irq handler
-    NutRegisterIrqHandler(timerIrqNr, NutTimer0Intr, (void *) 0);
+    NutRegisterIrqHandler(timerIrqNr, handler, (void *) 0);
 
     // create rtc timer simulation
     pthread_create(&timer_thread, NULL, NutTimerSimulation, (void *) (uptr_t) timerIrqNr);
+}
+
+/*!
+ * \brief Return the CPU clock in Hertz.
+ *
+ * \return CPU clock frequency in Hertz.
+ */
+u_long NutGetCpuClock(void)
+{
+    return NUT_CPU_FREQ;
+}
+
+/*!
+ * \brief Return the number of system ticks per second.
+ *
+ * \return System tick frequency in Hertz.
+ */
+u_long NutGetTickClock(void)
+{
+    return 1000UL;
+}
+
+/*!
+ * \brief Calculate system ticks for a given number of milliseconds.
+ */
+u_long NutTimerMillisToTicks(u_long ms)
+{
+    return ms;
 }
