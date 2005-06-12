@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.224 2005/06/12 16:57:19 haraldkipp Exp $
+$Id: ChangeLog,v 1.225 2005/06/12 18:13:20 haraldkipp Exp $
 
 2005-06-12  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -33,7 +33,10 @@ $Id: ChangeLog,v 1.224 2005/06/12 16:57:19 haraldkipp Exp $
 	within a short period. Furthermore, I removed all but one
 	counter from interrupt update. Any previously value, which
 	had been updated in interrupt context, is now derived from this
-	remaining counter.
+	remaining counter. Finally one change may break existing
+	applications. Timer callbacks are not processed in interrupt
+	context and will not provide the exact timing you may expect. 
+	We are working on this issue.
 
 	* include/sys/timer.h: Added NutTimerProcessElapsed() prototype.
 
@@ -44,9 +47,10 @@ $Id: ChangeLog,v 1.224 2005/06/12 16:57:19 haraldkipp Exp $
 	nutTimerList, which had been previously done in the interrupt
 	handler.
 
-
-The most significant change had been done
-	to the timer interrupt handler.
+	* arch/unix/os/timer.c: Added hardware mimic functions and
+	removed interrupt routine, which should not be platform
+	dependent. Haven't checked these changes. Hope I didn't
+	break the Unix emulation.
 
 
 2005-06-10  Harald Kipp  <harald.kipp@egnite.de>
