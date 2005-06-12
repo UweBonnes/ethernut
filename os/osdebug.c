@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/06/12 16:55:24  haraldkipp
+ * Timer pool has been removed from the kernel.
+ *
  * Revision 1.4  2004/04/07 12:13:58  haraldkipp
  * Matthias Ringwald's *nix emulation added
  *
@@ -200,13 +203,11 @@ void NutDumpTimerList(FILE * stream)
     static prog_char fmt1[] = "%08lX%6lu%6lu ";
     static prog_char fmt2[] = "%09lX";
     static prog_char fmt3[] = "(%08lX)\n";
-    static prog_char fmt4[] = " %08lX";
 #else
     static prog_char theader[] = "Addr Ticks  Left Callback\n";
     static prog_char fmt1[] = "%04X%6lu%6lu ";
     static prog_char fmt2[] = "%05lX";
     static prog_char fmt3[] = "(%04X)\n";
-    static prog_char fmt4[] = " %04X";
 #endif
 
     NUTTIMERINFO *tnp;
@@ -224,14 +225,6 @@ void NutDumpTimerList(FILE * stream)
             fprintf_P(stream, fmt3, (uptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
-    }
-    if ((tnp = nutTimerPool) != 0) {
-        fputs("Pool:", stream);
-        while (tnp) {
-            fprintf_P(stream, fmt4, (uptr_t) tnp);
-            tnp = tnp->tn_next;
-        }
-        fputc('\n', stream);
     }
     NutExitCritical();
 }
