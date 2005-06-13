@@ -1,4 +1,7 @@
-$Id: ChangeLog,v 1.225 2005/06/12 18:13:20 haraldkipp Exp $
+$Id: ChangeLog,v 1.226 2005/06/13 12:32:24 olereinhardt Exp $
+
+2005-06-13  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ 	* dev/adc.c: Removed unnecessary NutExitCritical
 
 2005-06-12  Harald Kipp  <harald.kipp@egnite.de>
 
