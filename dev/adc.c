@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/06/13 12:00:09  olereinhardt
+ * Removed unnecessary NutExitCritical
+ *
  * Revision 1.2  2005/03/04 11:42:05  olereinhardt
  * Added function void ADCStartLowNoiseConversion(void)
  * This function enters sleep mode!!! Be shure to read the AVR datasheet before using this function
@@ -171,7 +174,7 @@ void ADCInit()
     ADCBufInit(ADC_buffer);
 
     if (NutRegisterIrqHandler(&sig_ADC, ADCInterrupt, NULL)) {
-        NutExitCritical();
+//        NutExitCritical();
         return;
     }
     // Enable ADC
