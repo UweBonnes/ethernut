@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2005/06/14 19:04:44  freckle
+ * Fixed NutTimerStopAsync(): it now removes callback ptr => timer stop
+ *
  * Revision 1.17  2005/06/12 16:53:01  haraldkipp
  * Major redesing to reduce interrupt latency.
  * Much better seperation of hardware dependent and independent parts.
@@ -439,6 +442,7 @@ void NutTimerStopAsync(HANDLE handle)
     }
     tn->tn_ticks_left = 0;
     tn->tn_ticks = 0;
+    tn->tn_callback = 0;
     NutEnableTimerIrq();
 
 #ifdef NUTDEBUG
