@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.226 2005/06/13 12:32:24 olereinhardt Exp $
+$Id: ChangeLog,v 1.227 2005/06/21 16:46:34 freckle Exp $
+
+2005-06-22  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+    * dev/null.c, include/dev/null.h: added /dev/null as devNull.
+    write always returns len of bytes to write, read returns
+    without read bytes and ioctl always returns ok.
+    This can be used to discard output of printf statements.
+    
+2005-06-14  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+ 	* os/timer.c: Fixed NutTimerStopAsync(): it now removes
+    callback ptr, which actually stops the timer
 
 2005-06-13  Ole Reinhardt <ole.reinhardt@embedded-it.de>
  	* dev/adc.c: Removed unnecessary NutExitCritical
