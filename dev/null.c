@@ -41,10 +41,11 @@
  *
  */
 
+#include <compiler.h>
+#include <stdlib.h>
+
 #include <sys/file.h>
 #include <sys/device.h>
-#include <sys/heap.h>
-
 
 /*!
  * \brief Open UnixDev
@@ -55,12 +56,7 @@ static NUTFILE *NullOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 {
     NUTFILE *nf;
 
-    // @TODO replace NutHeapAlloc with malloc and NutHeapFree with free
-    // -- malloc is used in all other drivers
-    // -- compilation for unix currently fails (probably because of #define/#include chaos)
-    // create new NUTFILE using malloc
-    //nf = malloc(sizeof(NUTFILE));
-    nf = NutHeapAlloc(sizeof(NUTFILE));
+    nf = malloc(sizeof(NUTFILE));
 
     // enter data
     nf->nf_next = 0;
@@ -113,8 +109,7 @@ static int NullRead(NUTFILE * nf, void *buffer, int len)
 static int NullClose(NUTFILE * nf)
 {
 	if (nf)
-		// free (nf);
-        NutHeapFree(nf);
+		free (nf);
     return 0;
 }
 
