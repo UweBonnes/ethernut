@@ -160,27 +160,5 @@ NUTDEVICE devNull = {
     0
 };
 
-#if 0
-NUTDEVICE devUsartAvr0 = {
-    0,                          /* Pointer to next device, dev_next. */
-    {'u', 'a', 'r', 't', '0', 0, 0, 0, 0},    /* Unique device name, dev_name. */
-    IFTYP_CHAR,                 /* Type of device, dev_type. */
-    0,                          /* Base address, dev_base (not used). */
-    0,                          /* First interrupt number, dev_irq (not used). */
-    0,                          /* Interface control block, dev_icb (not used). */
-    &dcb_usart0,                /* Driver control block, dev_dcb. */
-    UsartInit,                  /* Driver initialization routine, dev_init. */
-    
-    UsartIOCtl,                 /* Driver specific control function, dev_ioctl. */
-    UsartRead,                  /* Read from device, dev_read. */
-    UsartWrite,                 /* Write to device, dev_write. */
-    UsartWrite_P,               /* Write data from program space to device, dev_write_P. */
-    UsartOpen,                  /* Open a device or file, dev_open. */
-    UsartClose,                 /* Close a device or file, dev_close. */
-    UsartSize                   /* Request file size, dev_size. */
-};
-#endif 
-/*@}*/
-
 
 /*@}*/
