@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.7  2005/06/26 11:33:31  chaac
+-- Added forgotten kbhit.c to build process.
+--
 -- Revision 1.6  2004/11/24 14:48:34  haraldkipp
 -- crt/crt.nut
 --
@@ -163,6 +166,7 @@ nutcrt =
             "getc.c",
             "getchar.c",
             "gets.c",
+            "kbhit.c",
             "scanf.c",
             "ungetc.c",
             "vfscanf.c"

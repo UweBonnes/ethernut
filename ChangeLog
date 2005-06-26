@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.227 2005/06/21 16:46:34 freckle Exp $
+$Id: ChangeLog,v 1.228 2005/06/26 11:33:31 chaac Exp $
+
+2005-05-27  Vesa Jaaskelainen  <chaac@.nic.fi>
+
+	* conf/crt/crt.nut: Added forgotten kbhit.c to build process.
 
 2005-06-22  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * dev/null.c, include/dev/null.h: added /dev/null as devNull.
