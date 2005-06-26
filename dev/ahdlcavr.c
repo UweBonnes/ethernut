@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/06/26 12:40:59  chaac
+ * Added support for raw mode to AHDLC driver.
+ *
  * Revision 1.9  2005/05/27 14:43:28  chaac
  * Fixed bugs on closing AHDLC sessions. Fixed AHDLC ioctl handling. Not all
  * messages were handled correctly	and fixed possible problem of reading memory
@@ -338,6 +341,14 @@ int AhdlcOutput(NUTDEVICE * dev, NETBUF * nb)
     u_short sz;
 
     /*
+     * If we are in RAW mode we are not allowed to send AHDLC output.
+     * We just emulate packet loss behaviour in here.
+     */
+    if (dcb->dcb_modeflags & UART_MF_RAWMODE) {
+        return 0;
+    }
+
+    /*
      * Calculate the number of bytes to be send. Do not
      * send packets larger than transmit mru.
      */
@@ -456,6 +467,20 @@ THREAD(AhdlcRx, arg)
              */
             if (dev->dev_icb == 0)
                 break;
+
+            /*
+             * If RAW mode is active, we are not allowing any data encapsulation
+             * processing. So we just sleep for a while.
+             */
+            if (dcb->dcb_modeflags & UART_MF_RAWMODE) {
+                /*
+                 * It is a must to sleep here, because if we just yield it could create
+                 * too much processing in here and stall processing elsewhere. This gives
+                 * opportunity to other threads to process incoming data from USART.
+                 */
+                NutSleep(100);
+                continue;
+            }
 
             /*
              * Read next character from input buffer
@@ -725,6 +750,8 @@ static void AhdlcAvrDisable(u_short base)
  *             - UART_GETFLOWCONTROL, conf points to an u_long value containing receiving UART_FCTL_ values.
  *             - UART_SETCOOKEDMODE, conf points to an u_long value containing 0 (off) or 1 (on).
  *             - UART_GETCOOKEDMODE, conf points to an u_long value receiving 0 (off) or 1 (on).
+ *             - UART_SETRAWMODE, conf points to an u_long value containing 0 (off) or 1 (on).
+ *             - UART_GETRAWMODE, conf points to an u_long value receiving 0 (off) or 1 (on).
  *             - HDLC_SETIFNET, conf points to a pointer containing the address of the network device's NUTDEVICE structure.
  *             - HDLC_GETIFNET, conf points to a pointer receiving the address of the network device's NUTDEVICE structure.
  *
@@ -925,6 +952,21 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
             dcb->dcb_modeflags &= ~UART_MF_LOCALECHO;
         break;
     case UART_GETFLOWCONTROL:
+        break;
+
+    case UART_SETRAWMODE:
+        bv = (u_char)(*lvp);
+        if (bv)
+            dcb->dcb_modeflags |= UART_MF_RAWMODE;
+        else
+            dcb->dcb_modeflags &= ~UART_MF_RAWMODE;
+        break;
+
+    case UART_GETRAWMODE:
+        if (dcb->dcb_modeflags & UART_MF_RAWMODE)
+            *lvp = 1;
+        else
+            *lvp = 0;
         break;
 
     case HDLC_SETIFNET:

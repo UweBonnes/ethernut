@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/06/26 12:40:59  chaac
+ * Added support for raw mode to AHDLC driver.
+ *
  * Revision 1.4  2005/02/10 07:06:51  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -93,6 +96,7 @@
 #define UART_MF_LINEBUFFER  0x00200000UL    /*!< Line buffered. */
 #define UART_MF_BUFFERMASK  0x00300000UL    /*!< Masks buffering mode flags. */
 
+#define UART_MF_RAWMODE     0x00400000UL    /*!< Send data as raw, disables data encapsulation for device. */
 
 #define UART_SF_RTSOFF	    0x00000001UL    /*!< Set RTS line is off. */
 #define UART_SF_CTSOFF	    0x00000002UL    /*!< Set CTS line is off. */

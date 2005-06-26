@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/06/26 12:40:59  chaac
+ * Added support for raw mode to AHDLC driver.
+ *
  * Revision 1.3  2004/11/12 11:14:32  freckle
  * added UART_GETBLOCKREAD & UART_SETBLOCKREAD defines
  *
@@ -339,16 +342,29 @@
 
 /*! \brief UART _ioctl() command code to set the block read mode
 *
-* The configuration parameter specifies the block read mode
+* The configuration parameter specifies the block read mode.
 */
-#define UART_SETBLOCKREAD		0x0128
+#define UART_SETBLOCKREAD       0x0128
 
 /*! \brief UART _ioctl() command code to query the receive buffer high watermark.
 *
-* The configuration parameter specifies the block read mode
+* The configuration parameter specifies the block read mode.
 */
-#define UART_GETBLOCKREAD		0x0129
+#define UART_GETBLOCKREAD       0x0129
 
+/*! \brief UART _ioctl() command code to set physical device to the raw mode.
+ *
+ * The configuration parameter specifies the raw mode for device. In raw mode
+ * data encapsulation is not allowed to be done. This allows other processing to
+ * be done on physical device.
+ */
+#define UART_SETRAWMODE         0x012a
+
+/*! \brief UART _ioctl() command code to query the raw mode.
+ *
+ * The configuration parameter specified the raw mode.
+ */
+#define UART_GETRAWMODE         0x012b
 
 /*!
  * \addtogroup xgUARTStatus

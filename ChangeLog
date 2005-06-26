@@ -1,6 +1,16 @@
-$Id: ChangeLog,v 1.228 2005/06/26 11:33:31 chaac Exp $
+$Id: ChangeLog,v 1.229 2005/06/26 12:40:58 chaac Exp $
 
-2005-05-27  Vesa Jaaskelainen  <chaac@.nic.fi>
+2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
+
+	* dev/ahdlc0.c: Added support for raw mode. When enabled, raw mode 
+	disables all data encapsulation. This allows pausing of PPP session.
+
+	* include/dev/uart.h: Added RAW mode defines UART_SETRAWMODE and
+	UART_GETRAWMODE. Used to control raw mode.
+
+	* include/dev/uartavr.h: Added RAW mode control flag.
+
+2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
 
 	* conf/crt/crt.nut: Added forgotten kbhit.c to build process.
 
