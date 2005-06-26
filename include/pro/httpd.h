@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/06/26 13:35:26  chaac
+ * Added forgotten prototype for NutRegisterHttpRoot, fixes bug #1215853. Also fixed some prototypes when compiling with C++.
+ *
  * Revision 1.2  2004/12/16 10:17:18  haraldkipp
  * Added Mikael Adolfsson's excellent parameter parsing routines.
  *
@@ -75,6 +78,8 @@ struct _REQUEST {
     int req_numqptrs;           /*!< \brief Number of request parameters */
 };
 
+__BEGIN_DECLS
+
 extern void NutHttpProcessRequest(FILE * stream);
 
 extern void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title);
@@ -82,6 +87,7 @@ extern void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes);
 extern void NutHttpSendError(FILE * stream, REQUEST * req, int status);
 extern char *NutGetMimeType(char *name);
 
+__END_DECLS
 
 /*
  * Authorization
@@ -98,8 +104,12 @@ struct _AUTHINFO {
     CONST char *auth_login;     /*!< \brief Login user and password, separated by a colon. */
 };
 
+__BEGIN_DECLS
+
 extern int NutHttpAuthValidate(REQUEST * req);
 extern int NutRegisterAuth(CONST char *dirname, CONST char *login);
+
+__END_DECLS
 
 /*
  * CGI
@@ -118,9 +128,10 @@ struct _CGIFUNCTION {
 
 /*@}*/
 
-
 __BEGIN_DECLS
+
 /* Function prototypes. */
+extern int NutRegisterHttpRoot(char *path);
 extern int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *));
 extern void NutCgiProcessRequest(FILE * stream, REQUEST * req);
 extern char *NutHttpURLEncode(char *str);

@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.229 2005/06/26 12:40:58 chaac Exp $
+$Id: ChangeLog,v 1.230 2005/06/26 13:35:26 chaac Exp $
+
+2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
+
+	* include/pro/httpd.h: Added forgotten prototype for NutRegisterHttpRoot,
+	fixes bug #1215853. Also fixed some prototypes when compiling with C++.
 
 2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
 
