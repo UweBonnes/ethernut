@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.230 2005/06/26 13:35:26 chaac Exp $
+$Id: ChangeLog,v 1.231 2005/06/27 13:53:27 chaac Exp $
 
 2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
 
@@ -7,7 +7,7 @@ $Id: ChangeLog,v 1.230 2005/06/26 13:35:26 chaac Exp $
 
 2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
 
-	* dev/ahdlc0.c: Added support for raw mode. When enabled, raw mode 
+	* dev/ahdlcavr.c: Added support for raw mode. When enabled, raw mode 
 	disables all data encapsulation. This allows pausing of PPP session.
 
 	* include/dev/uart.h: Added RAW mode defines UART_SETRAWMODE and
