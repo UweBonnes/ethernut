@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2005/07/07 12:43:49  freckle
+ * removed stopped timers in NutTimerProcessElapsed
+ *
  * Revision 1.18  2005/06/14 19:04:44  freckle
  * Fixed NutTimerStopAsync(): it now removes callback ptr => timer stop
  *
@@ -162,6 +165,11 @@
  * \brief Linked list of all system timers.
  */
 NUTTIMERINFO *volatile nutTimerList;
+
+/*!
+* \brief Flag to indicate that a timer was stopped.
+ */
+u_char volatile nutTimerStopped;
 
 /*!
  * \brief Pointer to the timer, which is currently processed by the timer
@@ -281,12 +289,14 @@ static void NutTimerInsert(NUTTIMERINFO * tn)
 
 void NutTimerProcessElapsed(void)
 {
-    NUTTIMERINFO *tn;
-
+    NUTTIMERINFO *tn, *nexttn;
+    u_char tempTimerStopped;
+    
     NutDisableTimerIrq();
     runningTimer = 0;
     NutEnableTimerIrq();
 
+    // process elapsed timers
     while (nutTimerList && nutTimerList->tn_ticks_left == 0) {
         tn = nutTimerList;
         nutTimerList = nutTimerList->tn_next;
@@ -300,6 +310,25 @@ void NutTimerProcessElapsed(void)
         }
     }
 
+    // remove stopped timers, if nutTimerStopped
+    NutEnterCritical();
+    tempTimerStopped = nutTimerStopped;
+    nutTimerStopped  = 0;
+    NutExitCritical();
+    if ( (nutTimerList && tempTimerStopped) ){
+        tn     = nutTimerList;
+        while (tn->tn_next){
+            nexttn = tn->tn_next;
+            if (nexttn->tn_callback == 0) {
+                // remove entry from linked list and update ticks
+                nexttn->tn_next->tn_ticks_left += nexttn->tn_ticks_left;
+                tn->tn_next = nexttn->tn_next;
+                free(nexttn);
+            }
+            tn = tn->tn_next;
+        }
+    }
+    
     NutDisableTimerIrq();
     runningTimer = nutTimerList;
     NutEnableTimerIrq();
@@ -437,12 +466,18 @@ void NutTimerStopAsync(HANDLE handle)
 #endif
 
     NutDisableTimerIrq();
-    if (tn->tn_next) {
+
+    /* MR (20050707) moved this commented code to NutTimerProcessElapsed
+     if (tn->tn_next) {
         tn->tn_next->tn_ticks_left += tn->tn_ticks_left;
+        tn->tn_ticks_left = 0;
     }
-    tn->tn_ticks_left = 0;
+    */
+
     tn->tn_ticks = 0;
     tn->tn_callback = 0;
+    nutTimerStopped = 1; // set flag for NutTimerProcessElapsed
+    
     NutEnableTimerIrq();
 
 #ifdef NUTDEBUG

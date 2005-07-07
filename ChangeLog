@@ -1,24 +1,13 @@
-$Id: ChangeLog,v 1.231 2005/06/27 13:53:27 chaac Exp $
+$Id: ChangeLog,v 1.232 2005/07/07 12:43:46 freckle Exp $
 
-2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
-
-	* include/pro/httpd.h: Added forgotten prototype for NutRegisterHttpRoot,
-	fixes bug #1215853. Also fixed some prototypes when compiling with C++.
-
-2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
-
-	* dev/ahdlcavr.c: Added support for raw mode. When enabled, raw mode 
-	disables all data encapsulation. This allows pausing of PPP session.
-
-	* include/dev/uart.h: Added RAW mode defines UART_SETRAWMODE and
-	UART_GETRAWMODE. Used to control raw mode.
-
-	* include/dev/uartavr.h: Added RAW mode control flag.
-
-2005-06-26  Vesa Jaaskelainen  <chaac@.nic.fi>
-
-	* conf/crt/crt.nut: Added forgotten kbhit.c to build process.
-
+2005-07-07  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+    * os/timer.c: Stopped timers are removed by NutTimerProcessElapsed
+    now. NutTimerStopAsync does not set tn_ticks to zero and relies
+    on NutTimerProcessElapsed to do so when removing the stopped timer.
+    This assures that a stopped timer is removed on next thread switch
+    instead of staying in the nutTimerList until all previous timers 
+    are elapsed.
+    
 2005-06-22  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * dev/null.c, include/dev/null.h: added /dev/null as devNull.
     write always returns len of bytes to write, read returns
