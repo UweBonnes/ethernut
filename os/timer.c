@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2005/07/12 15:23:40  olereinhardt
+ * Added NULL pointer checks in NutTimerProcessElapsed(void)
+ *
  * Revision 1.20  2005/07/12 15:10:43  freckle
  * removed critical section in NutSleep
  *
@@ -319,12 +322,14 @@ void NutTimerProcessElapsed(void)
     nutTimerStopped  = 0;
     NutExitCritical();
     if ( (nutTimerList && tempTimerStopped) ){
-        tn     = nutTimerList;
-        while (tn->tn_next){
+        tn = nutTimerList;
+        while ((tn) && (tn->tn_next)) {
             nexttn = tn->tn_next;
             if (nexttn->tn_callback == 0) {
                 // remove entry from linked list and update ticks
-                nexttn->tn_next->tn_ticks_left += nexttn->tn_ticks_left;
+                if (nexttn->tn_next) {
+                    nexttn->tn_next->tn_ticks_left += nexttn->tn_ticks_left;
+                }
                 tn->tn_next = nexttn->tn_next;
                 free(nexttn);
             }
