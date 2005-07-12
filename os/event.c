@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/07/12 16:45:54  freckle
+ * Changed CS in NutEventWaitNext to benefit from NutEventWait CS reduction
+ *
  * Revision 1.16  2005/07/12 16:41:34  freckle
  * Comletely rewrote NutEventWait to reduce CS to minimum
  *
@@ -354,9 +357,9 @@ int NutEventWaitNext(volatile HANDLE * qhp, u_long ms)
     if (*qhp == SIGNALED)
         *qhp = 0;
 
-    rc = NutEventWait(qhp, ms);
-
     NutExitCritical();
+
+    rc = NutEventWait(qhp, ms);
 
     return rc;
 }

@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.238 2005/07/12 16:41:33 freckle Exp $
+$Id: ChangeLog,v 1.239 2005/07/12 16:45:54 freckle Exp $
 
 2005-07-12  Ole Reinhardt <ole.reinhardt@embedded-it.de>
     * os/timer.c: Added NULL pointer check in NutTimerProcessElapsed
@@ -17,6 +17,7 @@ $Id: ChangeLog,v 1.238 2005/07/12 16:41:33 freckle Exp $
     reason.
     Removed unnecessary critical sections in NutEventPost, NutEventWait.
     Comletely rewrote NutEventWait to reduce CS to minimum
+    Changed CS in NutEventWaitNext to benefit from NutEventWait CS reduction
     
     * os /osdebug.c: removed critical sections from various functions 
     as thread and timer lists are not changed by IRQ anymore
