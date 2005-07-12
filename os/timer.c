@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.23  2005/07/12 16:37:02  freckle
+ * made NutTimerInsert public
+ *
  * Revision 1.22  2005/07/12 16:26:04  freckle
  * extracted timer creation from NutTimerStartTicks into NutTimerCreate
  *
@@ -254,7 +257,7 @@ void NutTimerInit(void)
 /*!
  * \brief Insert a new timer in the global timer list.
  */
-static void NutTimerInsert(NUTTIMERINFO * tn)
+void NutTimerInsert(NUTTIMERINFO * tn)
 {
     NUTTIMERINFO **tnpp;
     NUTTIMERINFO *tnp;
