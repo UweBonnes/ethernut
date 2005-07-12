@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2005/07/12 15:10:43  freckle
+ * removed critical section in NutSleep
+ *
  * Revision 1.19  2005/07/07 12:43:49  freckle
  * removed stopped timers in NutTimerProcessElapsed
  *
@@ -411,19 +414,19 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_
  */
 void NutSleep(u_long ms)
 {
-    u_long ticks;
     if (ms) {
-        ticks = NutTimerMillisToTicks(ms);
-        NutEnterCritical();
-        if ((runningThread->td_timer = NutTimerStartTicks(ticks, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
+
+        /* remove running thread from runQueue */
+        NutThreadRemoveQueue(runningThread, &runQueue);
+        runningThread->td_state = TDS_SLEEP;
+
+        if ((runningThread->td_timer = NutTimerStart(ms, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
 #ifdef NUTDEBUG
             if (__os_trf) {
                 static prog_char fmt1[] = "Rem<%p>\n";
                 fprintf_P(__os_trs, fmt1, runningThread);
             }
 #endif
-            NutThreadRemoveQueue(runningThread, &runQueue);
-            runningThread->td_state = TDS_SLEEP;
 #ifdef NUTDEBUG
             if (__os_trf) {
                 static prog_char fmt2[] = "SWS<%p %p>\n";
@@ -436,8 +439,13 @@ void NutSleep(u_long ms)
             TRACE_ADD_ITEM(TRACE_TAG_THREAD_SLEEP,(int)runningThread);
 #endif
             NutThreadResume();
+        } else
+        {
+            /* timer creation failed, restore queues */
+            runningThread->td_queue = &runQueue;
+            runningThread->td_state = TDS_RUNNING;
+            runQueue = runningThread;
         }
-        NutExitCritical();
     } else
         NutThreadYield();
 }
