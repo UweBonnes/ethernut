@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.233 2005/07/12 13:57:49 freckle Exp $
+$Id: ChangeLog,v 1.234 2005/07/12 14:07:10 freckle Exp $
 
 2005-07-12  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * os/threads.c: Found and fixed this bug: 
@@ -6,6 +6,9 @@ $Id: ChangeLog,v 1.233 2005/07/12 13:57:49 freckle Exp $
     NutThreadWake changed readyQueue without critical section
     Improved docu on NutThreadRemoveQueue and NutThreadAddPriQueue
 
+    * os /osdebug.c: removed critical sections as thread and timer lists are
+    not changed by IRQ anymore
+    
 2005-07-07  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * os/timer.c: Stopped timers are removed by NutTimerProcessElapsed
     now. NutTimerStopAsync does not set tn_ticks to zero and relies

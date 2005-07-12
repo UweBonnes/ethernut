@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/07/12 14:07:14  freckle
+ * removed unnecessary critical sections
+ *
  * Revision 1.5  2005/06/12 16:55:24  haraldkipp
  * Timer pool has been removed from the kernel.
  *
@@ -64,7 +67,6 @@
 #include <sys/timer.h>
 #include <sys/event.h>
 #include <sys/heap.h>
-#include <sys/atom.h>
 
 #include <sys/osdebug.h>
 
@@ -106,8 +108,6 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
     static prog_char fmt[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s\n";
 #endif
 
-    NutEnterCritical();
-
     if (tdp == SIGNALED)
         fputs("SIGNALED\n", stream);
     else {
@@ -129,8 +129,6 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
 
         }
     }
-
-    NutExitCritical();
 }
 
 /*!
@@ -156,7 +154,6 @@ void NutDumpThreadList(FILE * stream)
 
     fputs_P(qheader, stream);
 
-    NutEnterCritical();
     tdp = nutThreadList;
     while (tdp) {
 #if defined(__linux__) || defined(__APPLE__)
@@ -182,7 +179,6 @@ void NutDumpThreadList(FILE * stream)
         fputc('\n', stream);
         tdp = tdp->td_next;
     }
-    NutExitCritical();
 }
 
 /*!
@@ -211,7 +207,6 @@ void NutDumpTimerList(FILE * stream)
 #endif
 
     NUTTIMERINFO *tnp;
-    NutEnterCritical();
     if ((tnp = nutTimerList) != 0) {
         fputs_P(theader, stream);
         while (tnp) {
@@ -226,7 +221,6 @@ void NutDumpTimerList(FILE * stream)
             tnp = tnp->tn_next;
         }
     }
-    NutExitCritical();
 }
 
 /*!
