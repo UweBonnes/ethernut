@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/07/12 16:26:08  freckle
+ * extracted timer creation from NutTimerStartTicks into NutTimerCreate
+ *
  * Revision 1.6  2005/06/12 16:54:14  haraldkipp
  * New function processes elapsed timers.
  *
@@ -133,6 +136,7 @@ extern void NutTimerInit(void);
 
 extern void NutTimerProcessElapsed(void);
 
+extern NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
 extern HANDLE NutTimerStart(u_long ms, void (*callback)(HANDLE, void *), void *arg, u_char flags);
 extern HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
 extern u_long NutTimerMillisToTicks(u_long ms);

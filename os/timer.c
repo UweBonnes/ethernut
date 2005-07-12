@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2005/07/12 16:26:04  freckle
+ * extracted timer creation from NutTimerStartTicks into NutTimerCreate
+ *
  * Revision 1.21  2005/07/12 15:23:40  olereinhardt
  * Added NULL pointer checks in NutTimerProcessElapsed(void)
  *
@@ -247,6 +250,7 @@ void NutTimerInit(void)
     NutEnableTimerIrq();
 }
 
+
 /*!
  * \brief Insert a new timer in the global timer list.
  */
@@ -342,15 +346,17 @@ void NutTimerProcessElapsed(void)
     NutEnableTimerIrq();
 }
 
-
-HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
+/*!
+* \brief Create a new timer.
+ */
+NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
 {
     NUTTIMERINFO *tn;
-
+    
     tn = malloc(sizeof(NUTTIMERINFO));
     if (tn) {
         tn->tn_ticks_left = ticks;
-
+        
         /*
          * Periodic timers will reload the tick counter on each timer 
          * intervall.
@@ -360,11 +366,21 @@ HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void 
         } else {
             tn->tn_ticks = tn->tn_ticks_left;
         }
-
+        
         /* Set callback and callback argument. */
         tn->tn_callback = callback;
         tn->tn_arg = arg;
+    }
+    return tn;    
+}
 
+
+HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
+{
+    NUTTIMERINFO *tn;
+
+    tn = NutTimerCreate( ticks, callback, arg, flags);
+    if (tn) {
         /* Add the timer to the list. */
         NutTimerInsert(tn);
     }
@@ -448,6 +464,7 @@ void NutSleep(u_long ms)
         {
             /* timer creation failed, restore queues */
             runningThread->td_queue = &runQueue;
+            runningThread->td_qnxt  = runQueue;
             runningThread->td_state = TDS_RUNNING;
             runQueue = runningThread;
         }
