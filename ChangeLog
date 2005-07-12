@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.237 2005/07/12 16:25:45 freckle Exp $
+$Id: ChangeLog,v 1.238 2005/07/12 16:41:33 freckle Exp $
 
 2005-07-12  Ole Reinhardt <ole.reinhardt@embedded-it.de>
     * os/timer.c: Added NULL pointer check in NutTimerProcessElapsed
@@ -9,13 +9,14 @@ $Id: ChangeLog,v 1.237 2005/07/12 16:25:45 freckle Exp $
     NutThreadWake changed readyQueue without critical section
     Improved docu on NutThreadRemoveQueue and NutThreadAddPriQueue
     Removed critical section from NutSleep
-    
+
     * os/timer.c: extracted timer creation from NutTimerStartTicks into NutTimerCreate
 
     * os/event.c: added missing critical section in NutEventTimeout. It can
     cause the same problems as the missing CS in NutThreadWake for the same
     reason.
     Removed unnecessary critical sections in NutEventPost, NutEventWait.
+    Comletely rewrote NutEventWait to reduce CS to minimum
     
     * os /osdebug.c: removed critical sections from various functions 
     as thread and timer lists are not changed by IRQ anymore

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2005/07/12 16:41:34  freckle
+ * Comletely rewrote NutEventWait to reduce CS to minimum
+ *
  * Revision 1.15  2005/06/10 12:59:26  freckle
  * corrected NuEventBroadcastAsync documentation.
  * NutEventBroadcast uses NutEventPostAsync which disables IRQsCVS:
@@ -144,7 +147,10 @@
  * \param timer Handle of the elapsed timeout timer.
  * \param arg   Handle of an event queue.
  *
- * \note This routine is running in interrupt context.
+ * \note This routine is used as a timer callback
+ *       for NutEventWait[Next] implementation
+ *       Applications typically do not call this
+ *       function.
  */
 void NutEventTimeout(HANDLE timer, void *arg)
 {
@@ -168,8 +174,13 @@ void NutEventTimeout(HANDLE timer, void *arg)
                    add it to the queue of threads, which are waiting to
                    become ready at the next context switch. */
                 *tqpp = tqp->td_qnxt;
+                
+                /* protected access to ready queue */
+                NutEnterCritical();
                 tqp->td_qnxt = readyQueue;
                 readyQueue = tqp;
+                NutExitCritical();
+                
                 /* Clear the timer entry in the thread's info structure.
                    This will tell the waiting thread, that it has been
                    woken up by a timeout. */
@@ -203,14 +214,12 @@ void NutEventTimeout(HANDLE timer, void *arg)
  */
 int NutEventWait(volatile HANDLE * qhp, u_long ms)
 {
-    u_long ticks;
-    ticks = NutTimerMillisToTicks(ms);
+    NUTTIMERINFO *tn;
     
-    NutEnterCritical();
-
     /*
      * Check for posts on a previously empty queue. 
      */
+    NutEnterCritical();
     if (*qhp == SIGNALED) {
         /*
          * Even if already signaled, switch to any other thread, which 
@@ -221,39 +230,69 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
         NutThreadYield();
         return 0;
     }
-
+    NutExitCritical();
+    
     /*
      * Remove the current thread from the list
      * of running threads and add it to the
      * specified queue.
      */
+    // NutThreadRemoveQueue(runningThread, &runQueue); .. would do the following:
+    runQueue = runQueue->td_qnxt;
+    runningThread->td_qnxt = 0;
+    runningThread->td_queue = 0;
+    
+    runningThread->td_state = TDS_SLEEP;
+    
+    /*
+     * If a timeout value had been given, create
+     * a oneshot timer.
+     */
+    if (ms)
+        tn = NutTimerCreate(ms, NutEventTimeout, (void *) qhp, TM_ONESHOT);
+    else 
+        tn = 0;
+    
+    // now, add thread to queue
+
+    NutEnterCritical();
+     
+    if (*qhp == SIGNALED) {
+        
+        /* event was posted during our preparation. clean up and exit */
+        *qhp = 0;
+        NutJumpOutCritical();
+        
+        // delete timer, if necessary 
+        if (tn)
+            free (tn);
+        
+        // bring back thread
+        runningThread->td_queue = &runQueue;
+        runningThread->td_qnxt  = runQueue;
+        runningThread->td_state = TDS_RUNNING;
+        runQueue = runningThread;
+        
+        NutThreadYield();
+        return 0;
+
+    } else  {
+        NutThreadAddPriQueue(runningThread, (NUTTHREADINFO **) qhp);
+    }
+    
+    NutExitCritical();
+    
+    // start timer
+    runningThread->td_timer = tn;
+    NutTimerInsert(tn);
+    
 #ifdef NUTDEBUG
     if (__os_trf) {
         static prog_char fmt1[] = "Rem<%p>";
         fprintf_P(__os_trs, fmt1, runningThread);
-    }
-#endif
-    // NutThreadRemoveQueue(runningThread, &runQueue); .. does the following:
-    runQueue = runQueue->td_qnxt;
-    runningThread->td_qnxt = 0;
-    runningThread->td_queue = 0;
-
-#ifdef NUTDEBUG
-    if (__os_trf)
         NutDumpThreadList(__os_trs);
 #endif
-    runningThread->td_state = TDS_SLEEP;
-    NutThreadAddPriQueue(runningThread, (NUTTHREADINFO **) qhp);
-
-    /*
-     * If a timeout value had been given, start
-     * a oneshot timer.
-     */
-    if (ms)
-        runningThread->td_timer = NutTimerStartTicks(ticks, NutEventTimeout, (void *) qhp, TM_ONESHOT);
-    else
-        runningThread->td_timer = 0;
-
+    
     /*
      * Switch to the next thread, which is ready
      * to run.
@@ -267,11 +306,10 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_THREAD_WAIT,(int)runningThread);
 #endif
-    NutExitCritical();
-
+    
     /* Continue with the highest priority thread, which is ready to run. */
     NutThreadResume();
-
+    
     /*
      * If our timer handle is still set, we were
      * woken up by an event. If the handle is
@@ -279,14 +317,11 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      * specified, then we know that a timeout
      * occured.
      */
-    NutEnterCritical();
     if (runningThread->td_timer)
         runningThread->td_timer = 0;
     else if (ms) {
-        NutJumpOutCritical();
         return -1;
     }
-    NutExitCritical();
     return 0;
 }
 
@@ -424,11 +459,7 @@ int NutEventPost(HANDLE * qhp)
 {
     int rc;
 
-    NutEnterCritical();
-
     rc = NutEventPostAsync(qhp);
-
-    NutExitCritical();
 
     /*
      * If any thread with higher or equal priority is
