@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2005/07/12 13:57:56  freckle
+ * Fixed bug in thread not waking up on NutSleep
+ *
  * Revision 1.18  2005/06/12 16:56:20  haraldkipp
  * Calls new function to process elapsed timers.
  *
@@ -220,8 +223,8 @@ NUTTHREADINFO * runQueue;
  * Insert the thread into a specified queue behind
  * the last thread with lower or equal priority.
  *
- * \note CPU interrupts must have been disabled before
- *       calling this function.
+ * \note Depending on the given queue, CPU interrupts must have
+ * been disabled before calling this function.
  *
  * \param td   Pointer to NUTTHREADINFO of the thread to be
  *             inserted in the queue.
@@ -251,8 +254,8 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO ** tqpp)
 /*!
  * \brief Remove a thread from a specified queue.
  *
- * CPU interrupts must have been disabled before calling
- * this function.
+ * \note Depending on the given queue, CPU interrupts must have
+ * been disabled before calling this function.
  *
  * \param td   Pointer to NUTTHREADINFO of the thread to be
  *             removed from the queue.
@@ -295,7 +298,12 @@ void NutThreadResume(void)
     NUTTHREADINFO *td;
 
     /*
-     * Process all entries of the readyQueue.
+     * Firste process elapsed timers
+     */
+    NutTimerProcessElapsed();
+
+    /*
+     * Then process all entries of the readyQueue.
      */
     do {
         /* Protect access to the readyQueue. */
@@ -315,7 +323,6 @@ void NutThreadResume(void)
         }
     } while (td);
 
-    NutTimerProcessElapsed();
 
     /* Check for context switch. */
     if (runningThread != runQueue) {
@@ -344,19 +351,25 @@ void NutThreadResume(void)
  * This routine is called by the system when a
  * sleep timer elapses.
  *
- * \note This routine is running in interrupt context.
+ * \note This routine is used as a timer callback
+ *       for NutSleep implementation
  *       Applications typically do not call this
- *       function. In any case interrupts must have
- *       been disabled.
+ *       function.
  *
  * \param timer Handle of the elapsed timer.
  * \param th    Handle of the thread to wake up.
  */
 void NutThreadWake(HANDLE timer, HANDLE th)
 {
+    /* clear pointer on timer and waiting queue */
     ((NUTTHREADINFO *) th)->td_timer = 0;
+    ((NUTTHREADINFO *) th)->td_queue = 0;
+
+    /* protected move into readyQueue */
+    NutEnterCritical();
     ((NUTTHREADINFO *) th)->td_qnxt = readyQueue;
     readyQueue = (NUTTHREADINFO *)th;
+    NutExitCritical();
 }
 
 /*!

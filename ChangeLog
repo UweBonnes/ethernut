@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.232 2005/07/07 12:43:46 freckle Exp $
+$Id: ChangeLog,v 1.233 2005/07/12 13:57:49 freckle Exp $
+
+2005-07-12  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+    * os/threads.c: Found and fixed this bug: 
+    http://permalink.gmane.org/gmane.comp.hardware.microcontrollers.ethernut/4023
+    NutThreadWake changed readyQueue without critical section
+    Improved docu on NutThreadRemoveQueue and NutThreadAddPriQueue
 
 2005-07-07  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * os/timer.c: Stopped timers are removed by NutTimerProcessElapsed
