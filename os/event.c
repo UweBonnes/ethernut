@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2005/07/12 18:44:05  freckle
+ * Removed unnecessary critical sections in NutEventPost, NutEventWait
+ *
  * Revision 1.18  2005/07/12 18:04:12  freckle
  * Reverted NutEventWait back to 1.15 but kept critical section in
  * NutEventTimeout + changed CS in NutEventWaitNext
@@ -287,14 +290,11 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      * specified, then we know that a timeout
      * occured.
      */
-    NutEnterCritical();
     if (runningThread->td_timer)
         runningThread->td_timer = 0;
     else if (ms) {
-        NutJumpOutCritical();
         return -1;
     }
-    NutExitCritical();
     return 0;
 }
 
@@ -428,11 +428,7 @@ int NutEventPost(HANDLE * qhp)
 {
     int rc;
 
-    NutEnterCritical();
-
     rc = NutEventPostAsync(qhp);
-
-    NutExitCritical();
 
     /*
      * If any thread with higher or equal priority is
