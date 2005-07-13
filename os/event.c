@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2005/07/13 15:25:50  freckle
+ * Rewrote NutEventWait to get short critical sections
+ *
  * Revision 1.19  2005/07/12 18:44:05  freckle
  * Removed unnecessary critical sections in NutEventPost, NutEventWait
  *
@@ -215,8 +218,18 @@ void NutEventTimeout(HANDLE timer, void *arg)
 int NutEventWait(volatile HANDLE * qhp, u_long ms)
 {
     u_long ticks;
-    ticks = NutTimerMillisToTicks(ms);
+    NUTTIMERINFO *tn;
     
+    /*
+     * If a timeout value had been given, create
+     * a oneshot timer.
+     */
+    if (ms) {
+        ticks = NutTimerMillisToTicks(ms);
+        tn = NutTimerCreate(ticks, NutEventTimeout, (void *) qhp, TM_ONESHOT);
+    } else
+        tn = 0;
+
     NutEnterCritical();
 
     /*
@@ -229,6 +242,11 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
          */
         *qhp = 0;
         NutJumpOutCritical();
+        
+        /* but free previously allocated timer first */
+        if (tn)
+            free(tn);
+
         NutThreadYield();
         return 0;
     }
@@ -238,33 +256,29 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
      * of running threads and add it to the
      * specified queue.
      */
-#ifdef NUTDEBUG
-    if (__os_trf) {
-        static prog_char fmt1[] = "Rem<%p>";
-        fprintf_P(__os_trs, fmt1, runningThread);
-    }
-#endif
-    // NutThreadRemoveQueue(runningThread, &runQueue); .. does the following:
+
+    // NutThreadRemoveQueue(runningThread, &runQueue); basically would do the following:
     runQueue = runQueue->td_qnxt;
     runningThread->td_qnxt = 0;
     runningThread->td_queue = 0;
 
-#ifdef NUTDEBUG
-    if (__os_trf)
-        NutDumpThreadList(__os_trs);
-#endif
-    runningThread->td_state = TDS_SLEEP;
     NutThreadAddPriQueue(runningThread, (NUTTHREADINFO **) qhp);
 
-    /*
-     * If a timeout value had been given, start
-     * a oneshot timer.
-     */
-    if (ms)
-        runningThread->td_timer = NutTimerStartTicks(ticks, NutEventTimeout, (void *) qhp, TM_ONESHOT);
-    else
-        runningThread->td_timer = 0;
+    NutExitCritical();
 
+    /* update our thread's state (sleeping + timer) */
+    runningThread->td_state = TDS_SLEEP;
+    runningThread->td_timer = tn;
+    if (tn)
+        NutTimerInsert(tn);
+
+#ifdef NUTDEBUG
+    if (__os_trf) {
+        static prog_char fmt1[] = "Rem<%p>";
+        fprintf_P(__os_trs, fmt1, runningThread);
+        NutDumpThreadList(__os_trs);
+#endif
+    
     /*
      * Switch to the next thread, which is ready
      * to run.
@@ -278,9 +292,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_THREAD_WAIT,(int)runningThread);
 #endif
-    NutExitCritical();
 
-    /* Continue with the highest priority thread, which is ready to run. */
     NutThreadResume();
 
     /*

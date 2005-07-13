@@ -1,4 +1,7 @@
-$Id: ChangeLog,v 1.240 2005/07/12 18:04:10 freckle Exp $
+$Id: ChangeLog,v 1.241 2005/07/13 15:25:50 freckle Exp $
+
+2005-07-12  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+    * os/event.c: Rewrote NutEventWait to gain short critical sections
 
 2005-07-12  Ole Reinhardt <ole.reinhardt@embedded-it.de>
     * os/timer.c: Added NULL pointer check in NutTimerProcessElapsed
