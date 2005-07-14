@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2005/07/14 08:57:54  freckle
+ * Rewrote CS in NutThreadSetPriority
+ *
  * Revision 1.19  2005/07/12 13:57:56  freckle
  * Fixed bug in thread not waking up on NutSleep
  *
@@ -439,9 +442,6 @@ u_char NutThreadSetPriority(u_char level)
 {
     u_char last = runningThread->td_priority;
 
-    /* Block interrupts. */
-    NutEnterCritical();
-
 #ifdef NUTDEBUG
     if (__os_trf) {
         static prog_char fmt1[] = "Pri%u<%p>";
@@ -487,10 +487,10 @@ u_char NutThreadSetPriority(u_char level)
         TRACE_ADD_ITEM(TRACE_TAG_THREAD_SETPRIO,(int)runningThread);
 #endif		
 
+        NutEnterCritical();
         NutThreadSwitch();
+        NutExitCritical();
     }
-    /* Release interrupt blocking. */
-    NutExitCritical();
 
     return last;
 }
