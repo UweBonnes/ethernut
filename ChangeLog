@@ -1,9 +1,10 @@
-$Id: ChangeLog,v 1.243 2005/07/14 08:57:53 freckle Exp $
+$Id: ChangeLog,v 1.244 2005/07/14 09:12:20 freckle Exp $
 
 2005-07-13  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * arch/avr/os/thread.c: Rewrote CS in NutThreadCreate
     * os/thread.c: Rewrote CS in NutThreadSetPriority
-
+    * dev/uartavr.c: Rewrote CS in UartAvrInput
+    
 2005-07-13  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * os/event.c: Rewrote NutEventWait to gain short critical sections
     

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/07/14 09:12:20  freckle
+ * Rewrote CS in UartAvrInput
+ *
  * Revision 1.8  2005/01/24 21:12:05  freckle
  * renamed NutEventPostFromIRQ into NutEventPostFromIrq
  *
@@ -164,12 +167,16 @@ static void RxComplete(void *arg)
 int UartAvrInput(NUTDEVICE * dev)
 {
     int rc = 0;
+    int empty;
     IFSTREAM *ifs = dev->dev_icb;
-    UARTDCB *dcb;
+    UARTDCB *dcb =  dev->dev_dcb;
 
     NutEnterCritical();
-    if (ifs->if_rd_idx == ifs->if_rx_idx) {
-        dcb = dev->dev_dcb;
+    empty = ifs->if_rd_idx == ifs->if_rx_idx;
+    NutExitCritical();
+    
+    if (empty) {
+        
         /*
          * Changing if into a while loop fixes a serious bug: 
          * Previous receiver events without any waiting thread 
@@ -177,12 +184,19 @@ int UartAvrInput(NUTDEVICE * dev)
          * wait returns immediately. Unfortunately the calling
          * routines rely on a filled buffer when we return 0.
          * Thanks to Mike Cornelius, who found this bug.
+         * 
+         * MR (2005-07-14): Reduced critical sections
          */
         do {
+
             rc = NutEventWait(&dcb->dcb_rx_rdy, dcb->dcb_rtimeout);
-        } while (rc == 0 && ifs->if_rd_idx == ifs->if_rx_idx);
+            
+            NutEnterCritical();
+            empty = ifs->if_rd_idx == ifs->if_rx_idx;
+            NutExitCritical();
+            
+        } while (rc == 0 && empty);
     }
-    NutExitCritical();
 
     return rc;
 }
