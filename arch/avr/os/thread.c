@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/07/14 08:55:57  freckle
+ * Rewrote CS in NutThreadCreate
+ *
  * Revision 1.1  2005/05/27 17:17:31  drsung
  * Moved the file
  *
@@ -377,14 +380,12 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
 #endif
 
     const u_short *paddr;
-    NutEnterCritical();
     paddr = (const u_short *) fn;       // *KU* fn doesn't contain the entry address
     // of the thread!
     /*
      * Allocate stack and thread info structure in one block.
      */
     if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
-        NutExitCritical();
         return 0;
     }
 
@@ -440,7 +441,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     /*
      * Insert into the thread list and the run queue.
      */
-//    NutEnterCritical();
+
     td->td_next = nutThreadList;
     nutThreadList = td;
     td->td_state = TDS_READY;
@@ -450,22 +451,31 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     if (__os_trf)
         fprintf(__os_trs, "Cre<%04x>", (uptr_t) td);
 #endif
+
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
+
 #ifdef NUTDEBUG
-    if (__os_trf)
+    if (__os_trf) {
         NutDumpThreadList(__os_trs);
-    //NutDumpThreadQueue(__os_trs, runQueue);
+        //NutDumpThreadQueue(__os_trs, runQueue);
+    }
 #endif
 
     /*
      * If no thread is active, switch to new thread.
      */
 #ifndef __IMAGECRAFT__
-    if (runningThread == 0)
+    if (runningThread == 0) {
+        NutEnterCritical();
         asm volatile ("rjmp thread_start\n\t"::);
+        /* we will never come back here .. */
+    }
 #else
-    if (runningThread == 0)
+    if (runningThread == 0) {
+        NutEnterCritical();
         asm("rjmp thread_start");
+        /* we will never come back here .. */
+    }
 #endif
 
     /*
@@ -479,9 +489,10 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
         if (__os_trf)
             fprintf(__os_trs, "New<%04x %04x>", (uptr_t) runningThread, (uptr_t) runQueue);
 #endif
+        NutEnterCritical();
         NutThreadSwitch();
+        NutExitCritical();
     }
-    NutExitCritical();
 
     return td;
 }
