@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.24  2005/07/15 14:44:46  freckle
+ * corrected NutGetMillis, update comments
+ *
  * Revision 1.23  2005/07/12 16:37:02  freckle
  * made NutTimerInsert public
  *
@@ -578,18 +581,24 @@ u_long NutGetSeconds(void)
  *
  * This function returns the value of a counter, which is incremented
  * every system timer tick. During system start, the counter is cleared
- * to zero and will overflow roughly after 49.7 days. The resolution
- * is depends on system ticks.
+ * to zero and will overflow with the 64 bit tick counter (4294967296).
+ * With the default 1024 ticks/s this will happen after 7.9 years.
+ * The resolution is also given by the system ticks.
  *
  * \note There is intentionally no provision to modify the seconds counter.
  *       Callers can rely on a continuous update and use this value for
  *       system tick independend timeout calculations.
+ *       Depending on 
  *
  * \return Value of the seconds counter.
  */
 u_long NutGetMillis(void)
 {
-    return (NutGetTickCount() * 1000) / NutGetTickClock();
+    // carefully stay within 64 bit values
+    u_long ticks   = NutGetTickCount();
+    u_long seconds = ticks / NutGetTickClock();
+    ticks         -= seconds * NutGetTickClock();
+    return seconds * 1000 + (ticks * 1000 ) / NutGetTickClock();
 }
 
 /*@}*/

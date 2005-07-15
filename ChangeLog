@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.244 2005/07/14 09:12:20 freckle Exp $
+$Id: ChangeLog,v 1.245 2005/07/15 14:44:46 freckle Exp $
+
+2005-07-15  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+    * os/timer.c: corrected NutGetMillis() calculation which did overflow
+    after approx. 8390 seconds (= 140 minutes) and updated comments
 
 2005-07-13  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * arch/avr/os/thread.c: Rewrote CS in NutThreadCreate
