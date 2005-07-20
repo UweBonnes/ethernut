@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/07/20 09:21:35  haraldkipp
+ * More comments
+ *
  * Revision 1.5  2004/09/26 12:04:07  drsung
  * Fixed several hundred memory leaks :-).
  * Relative pathes can now be used for source, build and install directory.
@@ -80,22 +83,36 @@ struct _NUTCOMPONENTOPTION {
     NUTCOMPONENTOPTION *nco_nxt;
     /*! \brief Pointer to previous option. */
     NUTCOMPONENTOPTION *nco_prv;
+    /*! \brief C macro name of this option. */
     char *nco_name;
+    /*! \brief Brief description. */
     char *nco_brief;
+    /*! \brief Long description. */
     char *nco_description;
 
+    /*! \brief Enable flag. */
     int  nco_enabled;
+    /*! \brief Active flag. */
     int  nco_active;
+    /*! \brief Not yet used. */
     char *nco_active_if;
+    /*! \brief Array of requirement keywords. */
     char **nco_requires;
+    /*! \brief Array of provision keywords. */
     char **nco_provides;
 
+    /*! \brief Data flavour. */
     char *nco_flavor;
+    /*! \brief Data type. */
     char *nco_type;
+    /*! \brief Possible choices. */
     char **nco_choices;
     char *nco_ctype;
+    /*! \brief Data value. */
     char *nco_value;
+    /*! \brief Source file to store this option. */
     char *nco_file;
+    /*! \brief Makefile macros. */
     char **nco_makedefs;
 };
 
@@ -112,13 +129,25 @@ struct _NUTCOMPONENT {
     NUTCOMPONENT *nc_child;
     /*! \brief Pointer to first option. */
     NUTCOMPONENTOPTION *nc_opts;
+    /*! \brief Name of this component. */
     char *nc_name;
+    /*! \brief Brief description. */
     char *nc_brief;
+    /*! \brief Long description. */
     char *nc_description;
+    /*! \brief Enable flag.
+     *
+     * A component is enabled, if all requirements of this component and
+     * all parent components are provided by other components or options.
+     */
     int  nc_enabled;
+    /*! \brief Array of requirement keywords. */
     char **nc_requires;
+    /*! \brief Array of provision keywords. */
     char **nc_provides;
+    /*! \brief Not yet used. */
     char *nc_active_if;
+    /*! \brief Subdirectory within the source tree. */
     char *nc_subdir;
     /*! \brief List of source files. */
     char **nc_sources;
@@ -131,8 +160,17 @@ struct _NUTCOMPONENT {
 typedef struct _NUTREPOSITORY NUTREPOSITORY;
 
 struct _NUTREPOSITORY {
+    /*! \brief Lua state. */
     void *nr_ls;
+    /*! \brief Root directory of the repository.
+     *
+     * Typically points to nut/conf within the source tree.
+     */
     char *nr_dir;
+    /*! \brief Filename of the top Lua script.
+     *
+     * Contains the top level components. Default is repository.nut.
+     */
     char *nr_name;
 };
 
