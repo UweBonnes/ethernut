@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.3  2005/07/20 11:15:23  haraldkipp
+# Linux application icon added
+#
 # Revision 1.2  2005/05/22 14:55:16  haraldkipp
 # Lua libs are determined in configure.ac.
 # Option to build no configuration tools.
@@ -64,6 +67,7 @@ configtree.h infowindow.h nutconfview.h splitscroll.h \
 inteditctrl.h propertylist.h texteditctrl.h \
 enumeditctrl.h mainframe.h repoptdlg.h tooloptdlg.h \
 nutcomponent.h resource.h treecomp.h \
+bitmaps/application.xpm \
 bitmaps/checked_dis.xpm bitmaps/module.xpm \
 bitmaps/checked.xpm bitmaps/nutconf.xpm \
 bitmaps/closedfolder_dis.xpm bitmaps/open.xpm \

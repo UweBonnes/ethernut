@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.6  2005/07/20 11:16:00  haraldkipp
+ * Linux application icon added
+ *
  * Revision 1.5  2005/07/20 09:20:25  haraldkipp
  * Set application icon
  *
@@ -65,6 +68,7 @@
 #include "mainframe.h"
 
 #if !defined(__WXMSW__)
+#include "bitmaps/application.xpm"
 #include "bitmaps/open.xpm"
 #include "bitmaps/save.xpm"
 #endif
