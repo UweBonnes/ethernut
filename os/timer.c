@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.25  2005/07/20 09:26:34  haraldkipp
+ * Use native heap calls to avoid dependencies
+ *
  * Revision 1.24  2005/07/15 14:44:46  freckle
  * corrected NutGetMillis, update comments
  *
@@ -322,7 +325,7 @@ void NutTimerProcessElapsed(void)
         if ((tn->tn_ticks_left = tn->tn_ticks) != 0) {
             NutTimerInsert(tn);
         } else {
-            free(tn);
+            NutHeapFree(tn);
         }
     }
 
@@ -341,7 +344,7 @@ void NutTimerProcessElapsed(void)
                     nexttn->tn_next->tn_ticks_left += nexttn->tn_ticks_left;
                 }
                 tn->tn_next = nexttn->tn_next;
-                free(nexttn);
+                NutHeapFree(nexttn);
             }
             tn = tn->tn_next;
         }
@@ -359,7 +362,7 @@ NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), v
 {
     NUTTIMERINFO *tn;
     
-    tn = malloc(sizeof(NUTTIMERINFO));
+    tn = NutHeapAlloc(sizeof(NUTTIMERINFO));
     if (tn) {
         tn->tn_ticks_left = ticks;
         
