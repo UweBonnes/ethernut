@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2005/07/20 09:19:45  haraldkipp
+ * Use native heap calls to avoid dependencies
+ *
  * Revision 1.20  2005/07/13 15:25:50  freckle
  * Rewrote NutEventWait to get short critical sections
  *
@@ -129,6 +132,7 @@
 
 #include <compiler.h>
 #include <sys/atom.h>
+#include <sys/heap.h>
 #include <sys/timer.h>
 #include <sys/thread.h>
 #include <sys/event.h>
@@ -245,7 +249,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
         
         /* but free previously allocated timer first */
         if (tn)
-            free(tn);
+            NutHeapFree(tn);
 
         NutThreadYield();
         return 0;
