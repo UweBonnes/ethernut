@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.6  2005/07/20 09:15:48  haraldkipp
+# Use GNUARM stdlibs
+#
 # Revision 1.5  2005/04/05 17:58:00  haraldkipp
 # Avoid integer division on ARM platform as long as we run without crtlib.
 #
@@ -70,7 +73,7 @@ BIN       = $(TRGT)objcopy
 BINDIR    = $(top_srcdir)/bin/$(MCU)
 
 CPFLAGS   = $(MCFLAGS) -O0 -mthumb-interwork -fomit-frame-pointer -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
-LDFLAGS   = $(MCFLAGS) -nostartfiles -nostdlib -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
+LDFLAGS   = $(MCFLAGS) -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
 
 
 ELFCOF    = $(BIN) --debugging \
