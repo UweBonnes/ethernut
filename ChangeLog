@@ -1,4 +1,44 @@
-$Id: ChangeLog,v 1.245 2005/07/15 14:44:46 freckle Exp $
+$Id: ChangeLog,v 1.246 2005/07/20 09:13:46 haraldkipp Exp $
+
+2005-07-20  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Preparing new release 3.9.8.
+
+	* app/Makedefs.arm-gcc: Use standard libraries provided by GNUARM.
+
+	* arch/arm/ldscripts/wolf_ram.ld: Startup name corrected.
+
+	* arch/arm/os/timer.c: Default NUT_CPU_FREQ and NUT_TICK_FREQ
+	added. NutTimerIntr() removed, because we can use the hardware
+	independent code.
+
+	* conf/c/c.nut, conf/c/stdlib.nut, conf/c/string.nut: Lua
+	scripts divided.
+
+	* os/event.c: I'd have prefered to use malloc() and free() 
+	instead of NutHeapAlloc() and NutHeapFree() in the kernel.
+	But sometimes this creates complicated dependencies. To
+	avoid these, let's stick with native Nut/OS heap routines.
+
+	* tools/nutconf/mainframe.cpp, tools/nutconf/nutconf.rc:
+	Set application icon.
+
+	* tools/nutconf/nutcomponent.c: Added provision to subdivide
+	modules. Several comment lines added.
+
+	* tools/nutconf/nutcomponent.h: Comments added.
+
+	* tools/nutconf/nutconf.cpp: Changed mime type handling to
+	make it work on Linux.
+
+	* tools/nutconf/nutconf.h: Preparing new release 1.2.2.
+
+	* tools/nutconf/settings.cpp: Prepend current directory
+	to the default file paths.
+
+	* tools/nutconf/bitmaps/nutconf.bmp, 
+	tools/nutconf/bitmaps/nutconf.ico: New artwork, more to come...
+
 
 2005-07-15  Matthias Ringwald  <mringwal@.inf.ethz.ch>
     * os/timer.c: corrected NutGetMillis() calculation which did overflow
