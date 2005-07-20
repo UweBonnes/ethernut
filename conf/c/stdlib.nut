@@ -30,41 +30,47 @@
 -- For additional information see http://www.ethernut.de/
 --
 
--- Operating system functions
+-- Standard C runtime
 --
 -- $Log$
--- Revision 1.4  2005/07/20 09:18:57  haraldkipp
+-- Revision 1.1  2005/07/20 09:18:58  haraldkipp
 -- Subdivided
---
--- Revision 1.3  2004/08/18 13:46:08  haraldkipp
--- Fine with avr-gcc
---
--- Revision 1.2  2004/08/03 15:09:31  haraldkipp
--- Another change of everything
---
--- Revision 1.1  2004/06/07 16:32:45  haraldkipp
--- First release
 --
 --
 
-nutc =
+nutc_stdlib =
 {
     {
-        name = "nutc_stdlib",
-        brief = "C Standard Library",
+        name = "nutc_stdlib_gen",
+        brief = "Generic stdlib Routines",
         description = "This component will provide all stdlib functions "..
                       "required by Nut/OS. Typically these are included "..
                       "in the compiler's runtime library, but may not be "..
                       "available in all environments.",
-        script = "c/stdlib.nut"
+        requires = { "TOOL_NOLIBC" },
+        provides = { "C_STDLIB" },
+        sources = 
+        { 
+            "stdlib/abs.c",
+            "stdlib/atoi.c",
+            "stdlib/atol.c",
+            "stdlib/labs.c",
+            "stdlib/strtol.c",
+            "stdlib/strtoul.c"
+        }
     },
     {
-        name = "nutc_string",
-        brief = "C String Library",
-        description = "This component will provide all string functions "..
-                      "required by Nut/OS. Typically these are included "..
-                      "in the compiler's runtime library, but may not be "..
-                      "available in all environments.",
-        script = "c/string.nut"
+        name = "nutc_stdlib_heap",
+        brief = "Additional Heap Routines",
+        description = "Although some runtime libraries provide "..
+                      "identical routines, we better use our own to avoid "..
+                      "memory management conflicts.\nFor historical reasons "..
+                      "malloc and free are part of another component.",
+        requires = { "NUT_HEAPMEM" },
+        provides = { "C_STDLIB" },
+        sources = 
+        { 
+            "stdlib/calloc.c"
+        }
     }
 }
