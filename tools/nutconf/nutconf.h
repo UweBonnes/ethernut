@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/07/20 09:22:39  haraldkipp
+ * Release 1.2.2
+ *
  * Revision 1.10  2005/04/22 15:17:50  haraldkipp
  * Version 1.2.1 can now run without GUI or with wxWidgets 2.5.5.
  *
@@ -79,7 +82,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.2.1"
+#define VERSION "1.2.2"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
