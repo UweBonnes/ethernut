@@ -44,7 +44,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <getopt.h>
-
+#include <termios.h>
 #include <cfg/os.h>
 
 #include <sys/types.h>
@@ -56,7 +56,6 @@
 #include <dev/unix_devs.h>
 
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
-
 
 /* our IRQ signal */
 sigset_t irq_signal;
@@ -86,7 +85,7 @@ u_char irq_processed;
 static int irq_inside;
 
 /* queue to signal at next NutThreadYield() */
-HANDLE * irq_eventqueues[IRQ_MAX];
+HANDLE *irq_eventqueues[IRQ_MAX];
 
 /*!
  * \brief Register an interrupt handler.
@@ -161,7 +160,7 @@ void NutUnixIntr(int signal)
         main_cs_level++;
 
     // printf("NutUnixIntr: calling IRQ %d\n", irq_nr);
-    
+
 
     // call IRQ_handler (if set)
     if (irq_nr < IRQ_MAX) {
@@ -231,7 +230,7 @@ void *NutIRQSimulation(void *arg)
                 irq_processed = 0;
 
                 // printf("NutIRQSimulation: IRQ signaling nr %d \n", irq_nr);
-    
+
                 // signal to running thread
                 kill(-getpgrp(), SIGUSR1);
                 break;
@@ -271,7 +270,7 @@ void *NutIRQSimulation(void *arg)
  * introducing a race-condition
  *
  */
-void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue )
+void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue)
 {
     if (irq_nr < IRQ_MAX)
         irq_eventqueues[irq_nr] = queue;
@@ -287,13 +286,13 @@ void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue )
  */
 void NutUnixThreadYieldHook(void);
 void NutUnixThreadYieldHook()
-{   
+{
     u_char irq_nr;
     for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++) {
-        if ( irq_eventqueues[irq_nr] != 0) {
+        if (irq_eventqueues[irq_nr] != 0) {
             // printf("NutUnixThreadYield posting event nr %d\n\r", irq_nr);
-            NutEventPostFromIrq( irq_eventqueues[irq_nr] );
-            irq_eventqueues[irq_nr] = 0; 
+            NutEventPostFromIrq(irq_eventqueues[irq_nr]);
+            irq_eventqueues[irq_nr] = 0;
         }
     }
 }
@@ -306,8 +305,9 @@ void NutUnixThreadYieldHook()
 void NutUnixControlC(int);
 void NutUnixControlC(int signal)
 {
-	printf("CTRL-C! Abort application.\n\r");
-    exit( 0 );
+    printf("CTRL-C! Abort application.\n\r");
+    tcsetattr(fileno(stdout), TCSANOW, &emulation_options.saved_termios);
+    exit(0);
 }
 
 /*
@@ -336,7 +336,7 @@ void NutIRQInit()
 
     // the signal/IRQ handler
     signal(SIGUSR1, NutUnixIntr);
-    signal(SIGINT,  NutUnixControlC);
+    signal(SIGINT, NutUnixControlC);
 
     // synchronization tools
     pthread_mutex_init(&irq_mutex, NULL);
@@ -374,7 +374,7 @@ THREAD(NutIdle, arg)
     for (;;) {
         NutThreadYield();
         NutThreadDestroy();
-        
+
         // sleep(); ... sleeping would be fine. try to simulate this
 
         // lock the irq_mutex and wait for interrupts
@@ -405,6 +405,8 @@ extern NUTFILE *__iob[];
 
 int main(int argc, char *argv[])
 {
+
+    tcgetattr(fileno(stdout), &emulation_options.saved_termios);
 
     /* get command line options */
     emulation_options_parse(argc, argv);
@@ -447,7 +449,7 @@ int main(int argc, char *argv[])
      * Create idle thread
      */
     NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
-    
+
     return 0;
 }
 

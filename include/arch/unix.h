@@ -65,6 +65,8 @@
 
 #include <sys/types.h>
 #include <dev/mweeprom.h>
+#include <termios.h>
+#include <unistd_orig.h>
 
 
 /* -------------------------------------------------------------------------
@@ -131,7 +133,7 @@ typedef struct {
     int verbose;
 
     uart_options_t uart_options[3];
-
+    struct termios saved_termios;
 } emulation_options_t;
 
 /* the command line options are stored here */
