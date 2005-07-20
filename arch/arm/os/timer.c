@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/07/20 09:17:26  haraldkipp
+ * Default NUT_CPU_FREQ and NUT_TICK_FREQ added.
+ * NutTimerIntr() removed, because we can use the hardware independent code.
+ *
  * Revision 1.1  2005/05/27 17:16:40  drsung
  * Moved the file.
  *
@@ -54,6 +58,7 @@
 #if defined(MCU_AT91R40008)
 #include <arch/at91eb40a.h> /* LED debug */
 #include <arch/at91.h>
+
 #elif defined(MCU_S3C4510B)
 #include <arch/arm.h>
 #include <dev/s3c4510b_hw.h>
@@ -65,9 +70,22 @@
 
 #endif
 
+#define NutEnableTimerIrq()     NutEnterCritical()
+#define NutDisableTimerIrq()    NutExitCritical()
+
+#ifndef NUT_CPU_FREQ
+#define NUT_CPU_FREQ    1000000UL
+#endif
+
+#ifndef NUT_TICK_FREQ
+#define NUT_TICK_FREQ   1000UL
+#endif
+
 #if defined(MCU_AT91R40008)
 static int dummy;
 #endif
+
+static void (*os_handler) (void *);
 
 /*!
  * \brief Loop for a specified number of milliseconds.
@@ -93,75 +111,6 @@ void NutDelay(u_char ms)
     }
 }
 
-#if defined(MCU_AT91R40008) || defined(MCU_GBA)
-/*
- * Timer interrupt handler.
- */
-void NutTimerIntr(void *arg)
-{
-    NUTTIMERINFO *tnp;
-
-#if defined(MCU_AT91R40008)
-    dummy = inr(TC0_SR);
-#elif defined(MCU_GBA)
-    /* Clear interrupt flag. */
-    outw(REG_IF, INT_TMR3);
-#endif
-
-    /*
-     * Increment the tick counter used by Michael Fischer's
-     * NutGetTickCount() routine.
-     */
-    milli_ticks++;
-
-    millis++;
-    if (ms1++ >= 999) {
-        ms1 = 0;
-        seconds++;
-    }
-
-    if (nutTimerList) {
-        if (nutTimerList->tn_ticks_left)
-            nutTimerList->tn_ticks_left--;
-
-        /*
-         * Process all elapsed timers.
-         * Bugfix by KU: Avoid crash on empty timer list.
-         */
-        while ((nutTimerList != 0) && (nutTimerList->tn_ticks_left == 0)) {
-            /*
-             * Execute the callback.
-             */
-            if (nutTimerList->tn_callback)
-                (*nutTimerList->tn_callback) (nutTimerList, (void *) nutTimerList->tn_arg);
-
-            /*
-             * Remove the timer from the list.
-             */
-            tnp = nutTimerList;
-            //fprintf(__os_trs, "RemTmr<%04X>\r\n", tnp);
-            nutTimerList = nutTimerList->tn_next;
-
-            /*
-             * Periodic timers are re-inserted.
-             */
-            if ((tnp->tn_ticks_left = tnp->tn_ticks) != 0)
-                NutTimerInsert(tnp);
-
-            /*
-             * We can't touch the heap while running in
-             * interrupt context. Oneshot timers are added 
-             * to a pool of available timers.
-             */
-            else {
-                tnp->tn_next = nutTimerPool;
-                nutTimerPool = tnp;
-                //NutKDumpTimerList();
-            }
-        }
-    }
-}
-#endif
 
 /*!
  * \brief Timer 0 interrupt entry.
@@ -171,15 +120,17 @@ void Timer0Entry(void) __attribute__ ((naked));
 void Timer0Entry(void)
 {
     IRQ_ENTRY();
-    NutTimerIntr(0);
+    dummy = inr(TC0_SR);
+    os_handler(0);
     IRQ_EXIT();
 }
 
 #elif defined(MCU_GBA)
 
-void Timer3Entry(void)
+void Timer3Entry(void *arg)
 {
-    NutTimerIntr(0);
+    outw(REG_IF, INT_TMR3);
+    os_handler(0);
 }
 
 #endif
@@ -197,8 +148,10 @@ void Timer3Entry(void)
  *
  * \todo Hardware stuff to be put in nutlibdev.
  */
-void NutTimerInit(void)
+void NutRegisterTimer(void (*handler) (void *))
 {
+    os_handler = handler;
+
 #if defined(MCU_AT91R40008)
 
     /* Disable the Clock Counter */
@@ -241,7 +194,7 @@ void NutTimerInit(void)
     CLEAR_PEND_INT(IRQ_TIMER);
 
     NutRegisterIrqHandler(
-        &InterruptHandlers[IRQ_TIMER], NutTimerIntr, 0);
+        &InterruptHandlers[IRQ_TIMER], handler, 0);
 
     INT_ENABLE(IRQ_TIMER);
 
@@ -251,7 +204,7 @@ void NutTimerInit(void)
     outw(REG_IME, 0);
 
     /* Set global interrupt vector. */
-    NutRegisterIrqHandler(&sig_TMR3, NutTimerIntr, 0);
+    NutRegisterIrqHandler(&sig_TMR3, Timer3Entry, 0);
 
     /* Enable timer and timer interrupts. */
     outdw(REG_TMR3CNT, TMR_IRQ_ENA | TMR_ENA | 48756);
@@ -266,3 +219,33 @@ void NutTimerInit(void)
 #warning "MCU not defined"
 #endif
 }
+
+/*!
+ * \brief Return the CPU clock in Hertz.
+ *
+ * \return CPU clock frequency in Hertz.
+ */
+u_long NutGetCpuClock(void)
+{
+    return NUT_CPU_FREQ;
+}
+
+/*!
+ * \brief Return the number of system ticks per second.
+ *
+ * \return System tick frequency in Hertz.
+ */
+u_long NutGetTickClock(void)
+{
+    return NUT_TICK_FREQ;
+}
+
+/*!
+ * \brief Calculate system ticks for a given number of milliseconds.
+ */
+u_long NutTimerMillisToTicks(u_long ms)
+{
+    return ms * 1000L / NutGetTickClock();
+}
+
+
