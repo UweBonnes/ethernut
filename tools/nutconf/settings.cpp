@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.6  2005/07/20 09:23:15  haraldkipp
+ * Prepend current directory to the default file paths.
+ *
  * Revision 1.5  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
  *
@@ -66,18 +69,29 @@ IMPLEMENT_DYNAMIC_CLASS(CSettings, wxObject)
  */
 CSettings::CSettings()
 {
-    /* We may later have a more versatile way to locate these. */
-    m_configname_default = wxT("nut/conf/ethernut21.conf");
-    m_repositoryname_default = wxT("nut/conf/repository.nut");
+    int idx;
+    wxString cwd = ::wxGetCwd();
+
+#ifdef __WXMSW__
+    cwd.Replace(wxT("\\"), wxT("/"));
+#endif
+    if((idx = cwd.Find(wxT("/nut/"))) > -1) {
+        cwd = cwd.Left(idx);
+    }
+    if(cwd.Length() > 1 && cwd.Last() == '/') {
+        cwd = cwd.BeforeLast('/');
+    }
+    m_configname_default = cwd + wxT("/nut/conf/ethernut21.conf");
+    m_repositoryname_default = cwd + wxT("/nut/conf/repository.nut");
     m_firstidir_default = wxEmptyString;
     m_lastidir_default = wxEmptyString;
-    m_buildpath_default = wxT("nut/conf/repository.nut");
-    m_lib_dir_default = wxT("");
-    m_source_dir_default = wxT("nut");
-    m_platform_default = wxT("avr-gcc");
-    m_app_dir_default = wxT("nutapp");
+    m_buildpath_default = cwd + wxT("/nutbld");
+    m_lib_dir_default = cwd + wxT("/nutbld/lib");
+    m_source_dir_default = cwd + wxT("/nut");
+    m_platform_default = wxT("Select one");
+    m_app_dir_default = cwd + wxT("/nutapp");
     m_programmer_default = wxT("avr-uisp-stk500");
-    m_toolpath_default = wxT("");
+    m_toolpath_default = cwd + wxT("/nut/tools/win32;\"(Add compiler paths here)\";");
 
     wxConfigBase *pConfig = wxConfigBase::Get();
     if (pConfig) {
