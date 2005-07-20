@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.247 2005/07/20 09:27:32 haraldkipp Exp $
+$Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
+
+2005-07-20  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+        * arch/unix/os/nutinit.c, include/arch/unix.h
+        added saved_termios to emulation_options. On startup the terminal
+        state will be saved and restored on exit by ctrl-c
 
 2005-07-20  Harald Kipp  <harald.kipp@egnite.de>
 
