@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2005/07/20 09:21:10  haraldkipp
+ * Allow subdivided modules
+ *
  * Revision 1.17  2005/05/25 09:59:53  haraldkipp
  * Bugfix: Absolute application path for top_appdir pointed to source directory.
  *
@@ -102,7 +105,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "1.2.1"
+#define NUT_CONFIGURE_VERSION   "1.2.2"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -324,8 +327,13 @@ const char *GetScriptErrorString(void)
  */
 char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, size_t siz)
 {
+    /* Lua expects the named key into the table on top of the stack. */
     lua_pushstring(ls, name);
+    /* This puts the value of the named table entry on top of the stack. 
+       Note, that we have to adjust the index because we pushed the key 
+       on top. */
     lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
+    /* Make sure that this is a string. */
     if (lua_isstring(ls, -1)) {
         if (dst == NULL) {
             dst = strdup(lua_tostring(ls, -1));
@@ -337,6 +345,7 @@ char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, s
     } else {
         dst = NULL;
     }
+    /* Remove the value to keep the stack unmodified. */
     lua_pop(ls, 1);
 
     return dst;
@@ -361,8 +370,13 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
     int cnt = 0;
     char **result = NULL;
 
+    /* Lua expects the named key into the table on top of the stack. */
     lua_pushstring(ls, name);
+    /* Replaces the key by its value. */
     lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
+
+    /* Make sure we have a table on top of the stack and traverse the
+       table, counting the number of strings in this table. */
     if (lua_istable(ls, -1)) {
         lua_pushnil(ls);
         while (lua_next(ls, -2)) {
@@ -372,14 +386,18 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
             lua_pop(ls, 1);
         }
     }
+    /* Keep the stack unmodified. */
     lua_pop(ls, 1);
 
+    /* If we found a table with one or more strings, then allocate a
+       pointer array to store these strings. */
     if (cnt) {
         result = calloc(cnt + 1, sizeof(char *));
         cnt = 0;
         lua_pushstring(ls, name);
         lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
         if (lua_istable(ls, -1)) {
+            /* Traverse the table. */
             lua_pushnil(ls);
             while (lua_next(ls, -2)) {
                 if (lua_isstring(ls, -1)) {
@@ -389,6 +407,7 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
             }
         }
         result[cnt] = NULL;
+        /* Keep the stack unmodified. */
         lua_pop(ls, 1);
     }
     return result;
@@ -440,16 +459,28 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                     compo->nc_opts = opts;
                 }
                 opts->nco_name = name;
+                /* Retrieve the option's brief description. */
                 opts->nco_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
+                /* Retrieve the option's long description. */
                 opts->nco_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
+                /* Retrieve the option's requirement keywords. */
                 opts->nco_requires = GetStringArrayByNameFromTable(ls, -1, TKN_REQUIRES);
+                /* Retrieve the option's provision keywords. */
                 opts->nco_provides = GetStringArrayByNameFromTable(ls, -1, TKN_PROVIDES);
+                /* Retrieve the option's activation requirements. */
                 opts->nco_active_if = GetStringByNameFromTable(ls, -1, TKN_ACTIF, NULL, 0);
+                /* Retrieve the option's data flavor. */
                 opts->nco_flavor = GetStringByNameFromTable(ls, -1, TKN_FLAVOR, NULL, 0);
+                /* Retrieve the option's data type. */
                 opts->nco_type = GetStringByNameFromTable(ls, -1, TKN_TYPE, NULL, 0);
+                /* Retrieve the option's data type. */
                 opts->nco_ctype = GetStringByNameFromTable(ls, -1, TKN_CTYPE, NULL, 0);
+                /* Retrieve the name of the file to store the option, 
+                   typically a C header file. */
                 opts->nco_file = GetStringByNameFromTable(ls, -1, TKN_FILE, NULL, 0);
+                /* Retrieve possible choices of the option's value. */
                 opts->nco_choices = GetStringArrayByNameFromTable(ls, -1, TKN_CHOICES);
+                /* Retrieve the Makefile macros for this option. */
                 opts->nco_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
             }
             lua_pop(ls, 1);
@@ -524,11 +555,19 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
         return -1;
     }
 
-    /* Let the interpreter load the script file. */
+    /* 
+     * Let the interpreter load and parse the script file. In case of
+     * an error, the error text is available on top of the Lua stack.
+     */
     if ((rc = luaL_loadfile(ls, script)) != 0) {
         strcpy(errtxt, lua_tostring(ls, -1));
         return -1;
     }
+
+    /*
+     * Run the script. Actually the script doesn't do much except
+     * initializing a bunch of global Lua variables.
+     */
     if(lua_pcall(ls, 0, 0, 0)) {
         strcpy(errtxt, lua_tostring(ls, -1));
         return -1;
@@ -589,14 +628,23 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
                  */
                 compo->nc_parent = parent;
                 compo->nc_name = name;
+                /* Retrieve the component's brief description. */
                 compo->nc_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
+                /* Retrieve the component's long description. */
                 compo->nc_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
+                /* Retrieve the component's requirement keywords. */
                 compo->nc_requires = GetStringArrayByNameFromTable(ls, -1, TKN_REQUIRES);
+                /* Retrieve the component's provision keywords. */
                 compo->nc_provides = GetStringArrayByNameFromTable(ls, -1, TKN_PROVIDES);
+                /* Retrieve the component's activation requirements. */
                 compo->nc_active_if = GetStringByNameFromTable(ls, -1, TKN_ACTIF, NULL, 0);
+                /* Retrieve the component's directory within the source tree. */
                 compo->nc_subdir = GetStringByNameFromTable(ls, -1, TKN_SUBDIR, NULL, 0);
+                /* Retrieve the component's source file. */
                 compo->nc_sources = GetStringArrayByNameFromTable(ls, -1, TKN_SOURCES);
+                /* Retrieve the optional targets of this component. */
                 compo->nc_targets = GetStringArrayByNameFromTable(ls, -1, TKN_TARGETS);
+                /* Retrieve the Makefile macros for this component. */
                 compo->nc_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
 
                 /* If this component got any subcomponent, then load it now. */
@@ -1025,49 +1073,71 @@ static int CreateDirectoryPath(const char *path)
     return 0;
 }
 
+int AddMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir, int *lpos)
+{
+    int rc = 0;
+    int i;
+    NUTCOMPONENT *cop = compo;
+
+    while (cop) {
+        if(cop->nc_enabled) {
+            if(cop->nc_sources) {
+                for (i = 0; cop->nc_sources[i]; i++) {
+
+                    /*
+                     * If sources are located in a subdirectory, make sure
+                     * the same directory exists in the build tree.
+                     */
+                    if(strchr(cop->nc_sources[i], '/')) {
+                        char path[255];
+                        sprintf(path, "%s/%s", sub_dir, cop->nc_sources[i]);
+                        CreateDirectoryPath(path);
+                    }
+
+                    /* Check if this source results in an explicit target. */
+                    if(cop->nc_targets && cop->nc_targets[i]) {
+                        rc++;
+                    }
+                    else {
+                        *lpos += strlen(cop->nc_sources[i]);
+                        if (*lpos > 72) {
+                            fprintf(fp, " \\\n\t");
+                            *lpos = 8;
+                        }
+                        fprintf(fp, " %s", cop->nc_sources[i]);
+                    }
+                }
+            }
+            if (cop->nc_child) {
+                /* FIXME: No explicit targets for subcomponents! */
+                AddMakeSources(fp, cop->nc_child, sub_dir, lpos);
+            }
+        }
+        cop = cop->nc_nxt;
+    }
+    return rc;
+}
+
 /*!
  * \brief Add the source file list to the Makefile.
  *
  * \param fp      Pointer to an opened file.
  * \param compo   Pointer to a library component.
- * \param sub_dir Component's subdirectory.
+ * \param sub_dir Component's subdirectory in the build tree.
  *
  * \return Number of explicit target files.
  */
 int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
 {
-    int rc = 0;
+    int rc;
     int i;
     int k;
-    int c = 8;
+    int lpos;
     NUTCOMPONENT *cop = compo;
 
     fprintf(fp, "SRCS =\t");
-    while (cop) {
-        if(cop->nc_enabled && cop->nc_sources) {
-            for (i = 0; cop->nc_sources[i]; i++) {
-                if(strchr(cop->nc_sources[i], '/')) {
-                    char path[255];
-                    sprintf(path, "%s/%s", sub_dir, cop->nc_sources[i]);
-                    CreateDirectoryPath(path);
-                }
-
-                /* Check if this source results in an explicit target. */
-                if(cop->nc_targets && cop->nc_targets[i]) {
-                    rc++;
-                }
-                else {
-                    c += strlen(cop->nc_sources[i]);
-                    if (c > 72) {
-                        fprintf(fp, " \\\n\t");
-                        c = 8;
-                    }
-                    fprintf(fp, " %s", cop->nc_sources[i]);
-                }
-            }
-        }
-        cop = cop->nc_nxt;
-    }
+    lpos = 8;
+    rc = AddMakeSources(fp, compo, sub_dir, &lpos);
     fputc('\n', fp);
 
     /*
@@ -1075,7 +1145,7 @@ int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
      * hope that Makerules will do it right.
      */
     k = 0;
-    c = 8;
+    lpos = 8;
     cop = compo;
     while (k < rc && cop) {
         if(cop->nc_enabled && cop->nc_sources) {
@@ -1107,12 +1177,21 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
     NUTCOMPONENTOPTION *opts;
     int i;
 
+    /* 
+     * Loop through all components. 
+     */
     while (compo) {
+        /* If this component is enabled and contains Makefile macros,
+           then simply print them to the file. */
         if(compo->nc_enabled && compo->nc_makedefs) {
             for (i = 0; compo->nc_makedefs[i]; i++) {
                 fprintf(fp, "%s\n", compo->nc_makedefs[i]);
             }
         }
+
+        /*
+         * Loop through all options of this component. 
+         */
         opts = compo->nc_opts;
         while (opts) {
             if (opts->nco_enabled && opts->nco_active && opts->nco_makedefs) {
@@ -1128,6 +1207,7 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
             }
             opts = opts->nco_nxt;
         }
+        /* Recursively process the subcomponents. */
         if (compo->nc_child) {
             WriteMakedefLines(fp, compo->nc_child);
         }
@@ -1906,11 +1986,17 @@ int main(int argc, char **argv)
         printf("nutconfigure %s\n", NUT_CONFIGURE_VERSION);
         printf("Loading %s...", repo_name);
     }
+
+    /*
+     * The repository is the top Lua script.
+     */
     if ((repo = OpenRepository(repo_name)) != NULL) {
+        /* Load the component tree. */
         if ((root = LoadComponents(repo)) != NULL) {
             if(!quiet) {
                 printf("OK\nLoading %s...", conf_name);
             }
+            /* Load the hardware specific configuration file. */
             if (ConfigureComponents(repo, root, conf_name)) {
                 if(!quiet) {
                     printf("%s\n", GetScriptErrorString());
