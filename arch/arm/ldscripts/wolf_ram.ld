@@ -32,13 +32,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/07/20 09:16:24  haraldkipp
+ * Corrected name of startup
+ *
  * Revision 1.1  2005/04/05 17:59:33  haraldkipp
  * Initial check in.
  *
  */
 
 ENTRY(_start)
-STARTUP(crtwulf-boot.o)
+STARTUP(crtwolf_ram.o)
 SEARCH_DIR(.)
 
 MEMORY
