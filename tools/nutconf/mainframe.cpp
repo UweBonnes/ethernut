@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.5  2005/07/20 09:20:25  haraldkipp
+ * Set application icon
+ *
  * Revision 1.4  2005/04/22 15:14:43  haraldkipp
  * Avoid compiler warnings.
  *
@@ -81,6 +84,8 @@ BEGIN_EVENT_TABLE(CMainFrame, wxDocParentFrame)
 CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
 :wxDocParentFrame(manager, (wxFrame *) NULL, ID_MAIN_FRAME, title)
 {
+    SetIcon(wxICON(application));
+
     CreateNutMenuBar();
     CreateNutToolBar();
     CreateNutStatusBar();
