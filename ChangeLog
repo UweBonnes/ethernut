@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.246 2005/07/20 09:13:46 haraldkipp Exp $
+$Id: ChangeLog,v 1.247 2005/07/20 09:27:32 haraldkipp Exp $
 
 2005-07-20  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -19,6 +19,8 @@ $Id: ChangeLog,v 1.246 2005/07/20 09:13:46 haraldkipp Exp $
 	instead of NutHeapAlloc() and NutHeapFree() in the kernel.
 	But sometimes this creates complicated dependencies. To
 	avoid these, let's stick with native Nut/OS heap routines.
+
+	* os/timer.c: Dito.
 
 	* tools/nutconf/mainframe.cpp, tools/nutconf/nutconf.rc:
 	Set application icon.
