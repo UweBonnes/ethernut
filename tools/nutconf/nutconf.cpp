@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.9  2005/07/20 09:22:18  haraldkipp
+ * Make mime types work on Linux
+ *
  * Revision 1.8  2005/04/22 15:16:57  haraldkipp
  * Upgraded to wxWidgets 2.5.5.
  *
@@ -233,31 +236,37 @@ bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer
 {
     bool ok = false;
     wxString cmd;
+    wxString filePath(strFileName);
+
+    filePath.Replace(wxT("/"), wxT("\\"));
 
     if (!strViewer.IsEmpty()) {
-        cmd = strViewer + wxString(wxT(" ")) + strFileName;
+        cmd = strViewer + wxString(wxT(" ")) + filePath;
     } else {
         wxString path, filename, ext;
-        wxSplitPath(strFileName, &path, &filename, &ext);
+        wxSplitPath(filePath, &path, &filename, &ext);
 
         wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(ext);
-        if (!ft) {
-            wxLogError(wxT("Impossible to determine the file type for extension '%s'"), ext.c_str());
-            return false;
+        if (ft == NULL) {
+            ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT(".txt"));
+            if (ft == NULL) {
+                return false;
+            }
         }
 
-        bool ok = ft->GetOpenCommand(&cmd, wxFileType::MessageParameters(strFileName, wxT("")));
+        ok = ft->GetOpenCommand(&cmd, wxFileType::MessageParameters(filePath, wxT("")));
         delete ft;
 
         if (!ok) {
-            // TODO: some kind of configuration dialog here.
-            wxMessageBox(wxT("Could not determine the command for opening this file."), wxT("Error"), wxOK | wxICON_EXCLAMATION);
-            return false;
+            ft = wxTheMimeTypesManager->GetFileTypeFromExtension(wxT(".txt"));
+            ok = ft->GetOpenCommand(&cmd, wxFileType::MessageParameters(filePath, wxT("")));
+            delete ft;
         }
     }
 
-    ok = (wxExecute(cmd, false) != 0);
-
+    if (ok) {
+        ok = (wxExecute(cmd, false) != 0);
+    }
     return ok;
 }
 
