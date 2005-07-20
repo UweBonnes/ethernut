@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.5  2005/07/20 09:14:39  haraldkipp
+# Release 3.9.8
+#
 # Revision 1.4  2005/06/10 13:27:24  haraldkipp
 # Lua check failed because autoconf test needs additional libraries.
 # Thanks to Tim Lapawa for this fix.
@@ -50,7 +53,7 @@
 #
 #
 
-AC_INIT(ethernut,3.9.7)
+AC_INIT(ethernut,3.9.8)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005 egnite Software GmbH])
