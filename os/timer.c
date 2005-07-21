@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.26  2005/07/21 15:31:04  freckle
+ * rewrote timer handling. timer interrupt handler only updates nut_ticks now
+ *
  * Revision 1.25  2005/07/20 09:26:34  haraldkipp
  * Use native heap calls to avoid dependencies
  *
@@ -193,7 +196,19 @@ u_char volatile nutTimerStopped;
  * \brief Pointer to the timer, which is currently processed by the timer
  *        interrupt handler.
  */
-NUTTIMERINFO *volatile runningTimer;
+// NUTTIMERINFO *volatile runningTimer;
+
+/*!
+*  \brief System tick counter
+ */
+static volatile u_long nut_ticks;
+
+/*!
+ *  \brief Time of last NutTimerProcessElapsed execution
+ */
+static u_long nut_ticks_resume;
+
+
 
 /*!
  * \brief Nominal number of system ticks per second.
@@ -228,7 +243,6 @@ NUTTIMERINFO *volatile runningTimer;
 #include "../arch/unix/os/timer.c"
 #endif
 
-static volatile u_long nut_ticks;
 
 /*!
  * \brief System timer interrupt handler.
@@ -236,15 +250,8 @@ static volatile u_long nut_ticks;
 static void NutTimerIntr(void *arg)
 {
     nut_ticks++;
-    if (runningTimer) {
-        if (runningTimer->tn_ticks_left) {
-            runningTimer->tn_ticks_left--;
-        }
-        if (runningTimer->tn_ticks_left == 0) {
-            runningTimer = runningTimer->tn_next;
-        }
-    }
 }
+
 
 /*!
  * \brief Initialize system timer.
@@ -275,11 +282,6 @@ void NutTimerInsert(NUTTIMERINFO * tn)
     }
 #endif
 
-    /* Stop timer interrupt handling. */
-    NutDisableTimerIrq();
-    runningTimer = 0;
-    NutEnableTimerIrq();
-
     tnpp = (NUTTIMERINFO **) & nutTimerList;
     for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
         if (tn->tn_ticks_left < tnp->tn_ticks_left) {
@@ -292,14 +294,6 @@ void NutTimerInsert(NUTTIMERINFO * tn)
     tn->tn_next = tnp;
     *tnpp = tn;
 
-    /* Restart timer interrupt handling. */
-    NutDisableTimerIrq();
-    runningTimer = nutTimerList;
-    while (runningTimer && runningTimer->tn_ticks_left == 0) {
-        runningTimer = runningTimer->tn_next;
-    }
-    NutEnableTimerIrq();
-
 #ifdef NUTDEBUG
     if (__os_trf)
         NutDumpTimerList(__os_trs);
@@ -310,30 +304,54 @@ void NutTimerProcessElapsed(void)
 {
     NUTTIMERINFO *tn, *nexttn;
     u_char tempTimerStopped;
+    u_long ticks;
+    u_long ticks_new;
     
-    NutDisableTimerIrq();
-    runningTimer = 0;
-    NutEnableTimerIrq();
-
-    // process elapsed timers
-    while (nutTimerList && nutTimerList->tn_ticks_left == 0) {
+    // calculate ticks since last call
+    ticks = NutGetTickCount();
+    ticks_new = ticks - nut_ticks_resume;
+    nut_ticks_resume = ticks;
+    
+    // process timers
+    while (nutTimerList && ticks_new){
+        
         tn = nutTimerList;
-        nutTimerList = nutTimerList->tn_next;
-        if (tn->tn_callback) {
-            (*tn->tn_callback) (tn, (void *) tn->tn_arg);
-        }
-        if ((tn->tn_ticks_left = tn->tn_ticks) != 0) {
-            NutTimerInsert(tn);
+
+        // subtract time
+        if (ticks_new < tn->tn_ticks_left) {
+            tn->tn_ticks_left -= ticks_new;
+            ticks_new = 0;
         } else {
-            NutHeapFree(tn);
+            ticks_new -= tn->tn_ticks_left;
+            tn->tn_ticks_left = 0;
+        }
+        
+        // elapsed
+        if (tn->tn_ticks_left == 0){
+
+            // remove from list
+            nutTimerList = nutTimerList->tn_next;
+
+            // callback
+            if (tn->tn_callback) {
+                (*tn->tn_callback) (tn, (void *) tn->tn_arg);
+            }
+            // re-insert
+            if ((tn->tn_ticks_left = tn->tn_ticks) != 0) {
+                NutTimerInsert(tn);
+            } else {
+                NutHeapFree(tn);
+            }
         }
     }
 
-    // remove stopped timers, if nutTimerStopped
+    // some timers stopped by NutTimerStopAsync?
     NutEnterCritical();
     tempTimerStopped = nutTimerStopped;
     nutTimerStopped  = 0;
     NutExitCritical();
+
+    // remove stopped timers, if nutTimerStopped
     if ( (nutTimerList && tempTimerStopped) ){
         tn = nutTimerList;
         while ((tn) && (tn->tn_next)) {
@@ -349,11 +367,8 @@ void NutTimerProcessElapsed(void)
             tn = tn->tn_next;
         }
     }
-    
-    NutDisableTimerIrq();
-    runningTimer = nutTimerList;
-    NutEnableTimerIrq();
 }
+
 
 /*!
 * \brief Create a new timer.
@@ -504,8 +519,6 @@ void NutTimerStopAsync(HANDLE handle)
     }
 #endif
 
-    NutDisableTimerIrq();
-
     /* MR (20050707) moved this commented code to NutTimerProcessElapsed
      if (tn->tn_next) {
         tn->tn_next->tn_ticks_left += tn->tn_ticks_left;
@@ -516,8 +529,6 @@ void NutTimerStopAsync(HANDLE handle)
     tn->tn_ticks = 0;
     tn->tn_callback = 0;
     nutTimerStopped = 1; // set flag for NutTimerProcessElapsed
-    
-    NutEnableTimerIrq();
 
 #ifdef NUTDEBUG
     if (__os_trf)

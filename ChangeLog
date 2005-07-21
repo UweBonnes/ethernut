@@ -1,9 +1,13 @@
-$Id: ChangeLog,v 1.249 2005/07/21 14:23:17 freckle Exp $
+$Id: ChangeLog,v 1.250 2005/07/21 15:31:03 freckle Exp $
 
 2005-07-21  Matthias Ringwald  <mringwal@inf.ethz.ch>
 
     * os/event.c: inlined NutEventPostFromIrq call in NutEventPostAsync to reduce CS
 
+    * os/timer.c: rewrote timer handling. timer interrupt handler only update nut_ticks,
+    NutTimerProcessElapsed uses diff to last execution to update timers accordingly.
+    Calls to NutEnableTimerIrq and NutDisableTimerIrq removed.
+        
 2005-07-20  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * arch/unix/os/nutinit.c, include/arch/unix.h
         added saved_termios to emulation_options. On startup the terminal
