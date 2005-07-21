@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
+$Id: ChangeLog,v 1.249 2005/07/21 14:23:17 freckle Exp $
+
+2005-07-21  Matthias Ringwald  <mringwal@inf.ethz.ch>
+
+    * os/event.c: inlined NutEventPostFromIrq call in NutEventPostAsync to reduce CS
 
 2005-07-20  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * arch/unix/os/nutinit.c, include/arch/unix.h
@@ -46,23 +50,22 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
 	* tools/nutconf/bitmaps/nutconf.bmp, 
 	tools/nutconf/bitmaps/nutconf.ico: New artwork, more to come...
 
-
-2005-07-15  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-07-15  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * os/timer.c: corrected NutGetMillis() calculation which did overflow
     after approx. 8390 seconds (= 140 minutes) and updated comments
 
-2005-07-13  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-07-13  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * arch/avr/os/thread.c: Rewrote CS in NutThreadCreate
     * os/thread.c: Rewrote CS in NutThreadSetPriority
     * dev/uartavr.c: Rewrote CS in UartAvrInput
     
-2005-07-13  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-07-13  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * os/event.c: Rewrote NutEventWait to gain short critical sections
     
 2005-07-12  Ole Reinhardt <ole.reinhardt@embedded-it.de>
     * os/timer.c: Added NULL pointer check in NutTimerProcessElapsed
 
-2005-07-12  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-07-12  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * os/threads.c: Found and fixed this bug: 
     http://permalink.gmane.org/gmane.comp.hardware.microcontrollers.ethernut/4023
     NutThreadWake changed readyQueue without critical section
@@ -80,7 +83,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
     * os /osdebug.c: removed critical sections from various functions 
     as thread and timer lists are not changed by IRQ anymore
     
-2005-07-07  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-07-07  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * os/timer.c: Stopped timers are removed by NutTimerProcessElapsed
     now. NutTimerStopAsync does not set tn_ticks to zero and relies
     on NutTimerProcessElapsed to do so when removing the stopped timer.
@@ -88,13 +91,13 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
     instead of staying in the nutTimerList until all previous timers 
     are elapsed.
     
-2005-06-22  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-06-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * dev/null.c, include/dev/null.h: added /dev/null as devNull.
     write always returns len of bytes to write, read returns
     without read bytes and ioctl always returns ok.
     This can be used to discard output of printf statements.
     
-2005-06-14  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-06-14  Matthias Ringwald  <mringwal@inf.ethz.ch>
  	* os/timer.c: Fixed NutTimerStopAsync(): it now removes
     callback ptr, which actually stops the timer
 
@@ -160,7 +163,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
 	additional libraries. Thanks to Tim Lapawa for this fix.
 
 
-2005-04-19  Matthias Ringwald  <mringwal@.inf.ethz.ch>
+2005-04-19  Matthias Ringwald  <mringwal@inf.ethz.ch>
 
 	* os/event.c: corrected NuEventBroadcastAsync documentation.
 	NutEventBroadcast uses NutEventPostAsync which disables IRQs.
@@ -457,7 +460,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
 	ICCAVR applications in the sample tree.
 
 
-2005-04-19  Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-04-19  Matthias Ringwald <mringwal@inf.ethz.ch>
 
 	* include/unistd.h: added #include <compiler.h> as the implicit
 	ordering is not sufficient on our red hat machines. relevant
@@ -496,7 +499,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
         Fixes to make the unix emulation compiling again. Hope this won't 
 	break anything.
 
-2005-04-04  Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-04-04  Matthias Ringwald <mringwal@inf.ethz.ch>
 
 	* include/irqreg.h, include/irqreg_unix.h: most unix emulation
         specific stuff now in irqreg_unix.h. #warning "MCU not defined"
@@ -610,7 +613,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
 	some spare time is interested...
 
 
-2005-04-04  Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-04-04  Matthias Ringwald <mringwal@inf.ethz.ch>
 
 	* configure, Makefile, include/netdb.h, include/sys/socket.h,
 	include/netinet/in.h: added creation of include/netdb_orig.h,
@@ -639,7 +642,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
 	from releasing a previously reserved IP-Address if the DHCP server
 	sends an NAK.
 
-2005-03-21  Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-03-21  Matthias Ringwald <mringwal@inf.ethz.ch>
 
 	* configure, include/unidst.h: added creation of include/unistd_orig.h
 	Added NUT_ wrapper for nut's unistd.h functions. Use <unistd_orig.h>
@@ -681,7 +684,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
 	application directory.
 
 
-2005-02-23 Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-02-23 Matthias Ringwald <mringwal@inf.ethz.ch>
 
 	* include/unistd.h: Correctly include /usr/include/unistd.h for
 	unix emulation
@@ -700,7 +703,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
         condition also includes AT90CAN128.
 
 
-2005-02-22 Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-02-22 Matthias Ringwald <mringwal@inf.ethz.ch>
 
 	* include/arch/avr.h: Added cpp test to guess avr-libc-version required
 	to specify twi.h include path.
@@ -763,7 +766,7 @@ $Id: ChangeLog,v 1.248 2005/07/20 11:24:56 olereinhardt Exp $
         AT90CAN128, ATMEGA64, and possibly the ATMEGA256 as well.
 
 
-2005-02-17 Matthias Ringwald <mringwal@.inf.ethz.ch>
+2005-02-17 Matthias Ringwald <mringwal@inf.ethz.ch>
 
 	* os/arch/unix_options.c, os/arch/unix_nutinit: added #include <getopt.h>
 

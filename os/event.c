@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2005/07/21 14:23:17  freckle
+ * inlined NutEventPostFromIrq call in NutEventPostAsync to reduce CS
+ *
  * Revision 1.21  2005/07/20 09:19:45  haraldkipp
  * Use native heap calls to avoid dependencies
  *
@@ -158,7 +161,6 @@
  * \param timer Handle of the elapsed timeout timer.
  * \param arg   Handle of an event queue.
  *
- * \note This routine is running in interrupt context.
  */
 void NutEventTimeout(HANDLE timer, void *arg)
 {
@@ -364,20 +366,46 @@ int NutEventWaitNext(volatile HANDLE * qhp, u_long ms)
  */
 int NutEventPostAsync(HANDLE volatile *qhp)
 {
-    int rc = 0;
-
-    NutEnterCritical();
-    
     /*
      * so far, the code is identical to NutEventPostIrq
+     * but has to use Critical Sections
      */ 
+    
+    NUTTHREADINFO *td;
+    
+    NutEnterCritical();
 
-    rc = NutEventPostFromIrq(qhp);
+    /* Ignore signaled queues. */
+    if (*qhp != SIGNALED) {
+        
+        /* A thread is waiting. */
+        if ((td = *qhp) != 0) {
+            /* Remove the thread from the wait queue. */
+            *qhp = td->td_qnxt;
+            /* Stop any running timeout timer. */
+            if (td->td_timer) {
+                NutTimerStopAsync(td->td_timer);
+            }
+            /* Add the thread to the ready queue. */
+            td->td_qnxt = readyQueue;
+            readyQueue = td;
+            
+            NutJumpOutCritical();
 
+            return 1;
+        }
+        
+        /* No thread is waiting. Mark the queue signaled. */
+        else {
+            *qhp = SIGNALED;
+        }
+    }
+    
     NutExitCritical();
 
-    return rc;
+    return 0;
 }
+
 
 /*!
 * \brief Asynchronously post an event to a specified queue from IRQ.
@@ -396,6 +424,11 @@ int NutEventPostAsync(HANDLE volatile *qhp)
  */
 int NutEventPostFromIrq(HANDLE volatile *qhp)
 {
+    /*
+     * so far, the code is identical to NutEventPostAsync
+     * but has to no Critical Sections
+     */ 
+
     NUTTHREADINFO *td;
 
     /* Ignore signaled queues. */
