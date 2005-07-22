@@ -1,4 +1,43 @@
-$Id: ChangeLog,v 1.251 2005/07/22 08:07:08 freckle Exp $
+$Id: ChangeLog,v 1.252 2005/07/22 18:23:30 haraldkipp Exp $
+
+2005-07-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/bitmaps/buildlibrary.xpm,
+	tools/nutconf/bitmaps/buildlibrary_large.bmp,
+	tools/nutconf/bitmaps/buildlibrary_large.xpm,
+	tools/nutconf/bitmaps/help.xpm,
+	tools/nutconf/bitmaps/help_large.bmp,
+	tools/nutconf/bitmaps/help_large.xpm,
+	tools/nutconf/bitmaps/library.xpm,
+	tools/nutconf/bitmaps/library_dis.xpm,
+	tools/nutconf/bitmaps/nutconf.xpm,
+	tools/nutconf/bitmaps/open_large.bmp,
+	tools/nutconf/bitmaps/open_large.xpm,
+	tools/nutconf/bitmaps/save_large.bmp,
+	tools/nutconf/bitmaps/save_large.xpm,
+	tools/nutconf/bitmaps/search.xpm,
+	tools/nutconf/bitmaps/search_large.bmp,
+	tools/nutconf/bitmaps/search_large.xpm:
+	New artwork added.
+
+	* tools/nutconf/bitmaps/application.xpm,
+	tools/nutconf/bitmaps/buildlibrary.bmp,
+	tools/nutconf/bitmaps/closedfolder.ico,
+	tools/nutconf/bitmaps/help.bmp,
+	tools/nutconf/bitmaps/library.ico,
+	tools/nutconf/bitmaps/library_dis.ico,
+	tools/nutconf/bitmaps/module.ico,
+	tools/nutconf/bitmaps/module.xpm,
+	tools/nutconf/bitmaps/module_dis.ico,
+	tools/nutconf/bitmaps/module_dis.xpm,
+	tools/nutconf/bitmaps/nutconf.ico,
+	tools/nutconf/bitmaps/open.bmp,
+	tools/nutconf/bitmaps/open.xpm,
+	tools/nutconf/bitmaps/save.bmp,
+	tools/nutconf/bitmaps/save.xpm,
+	tools/nutconf/bitmaps/search.bmp:
+	Artwork updated.
+
 
 2005-07-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
     
