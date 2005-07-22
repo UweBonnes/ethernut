@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.10  2005/07/22 18:47:15  haraldkipp
+ * Online help added and Copyright year updated.
+ *
  * Revision 1.9  2005/07/20 09:22:18  haraldkipp
  * Make mime types work on Linux
  *
@@ -85,6 +88,9 @@
 #include <wx/bitmap.h>
 #include <wx/busyinfo.h>
 
+#include <wx/filesys.h>
+#include <wx/fs_zip.h>
+
 
 #include "mainframe.h"
 #include "nutconf.h"
@@ -114,7 +120,7 @@ bool NutConfApp::OnInit()
 
     wxCmdLineParser parser(cmdLineDesc, argc, argv);
     parser.SetLogo(_T("Nut/OS Configurator\n" VERSION
-                      "Copyright (c) 2004 by egnite Software GmbH\n"
+                      "Copyright (c) 2004-2005 by egnite Software GmbH\n"
                       "Copyright (C) 1998, 1999, 2000 Red Hat, Inc."));
     if(parser.Parse()) {
         return false;
@@ -159,8 +165,6 @@ bool NutConfApp::OnInit()
     m_docManager->SetMaxDocsOpen(1);
 
     m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configurator"));
-    SetTopWindow(m_mainFrame);
-    m_mainFrame->Show();
     //2.5.5 SendIdleEvents();
 
     /*
@@ -169,12 +173,24 @@ bool NutConfApp::OnInit()
     wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
     wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_PARENT, 
                 0, m_mainFrame, -1, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER | wxSTAY_ON_TOP);
+
+    wxImage::AddHandler(new wxGIFHandler);
+    wxImage::AddHandler(new wxPNGHandler);
+    wxFileSystem::AddHandler(new wxZipFSHandler);
+
     wxYield();
     wxSleep(1);
+
+    SetTopWindow(m_mainFrame);
+    m_mainFrame->Show();
+
+    if (!m_mainFrame->GetHelpController().Initialize(wxT("nutoshelp"))) {
+        wxLogMessage("Failed to load help file");
+    }
+
     if(splash) {
         delete splash;
     }
-
     /*
      * Create the document. 
      */
