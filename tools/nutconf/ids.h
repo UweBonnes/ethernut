@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/07/22 18:44:43  haraldkipp
+ * New toolbar buttons added
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -130,3 +133,5 @@
 #define ID_ENTRY_APPDIR         2067
 #define ID_BROWSE_APPDIR        2068
 #define ID_COMBO_APPDIR         2069
+
+#define ID_TOOLBARSIZE          2070
