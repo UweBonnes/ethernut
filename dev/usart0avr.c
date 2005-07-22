@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/07/22 08:07:08  freckle
+ * added experimental improvements to usart driver. see ChangeLog for details
+ *
  * Revision 1.8  2005/02/16 19:50:28  haraldkipp
  * Enable tracer configuration.
  *
@@ -350,12 +353,28 @@ NUTDEVICE devUsartAvr0 = {
 #define sig_UART_DATA   sig_UART0_DATA
 #define sig_UART_TRANS  sig_UART0_TRANS
 
+#define SIG_UART_RECV   SIG_UART0_RECV
+#define SIG_UART_DATA   SIG_UART0_DATA
+#define SIG_UART_TRANS  SIG_UART0_TRANS
+
 #define dcb_usart   dcb_usart0
 
 #ifdef NUTTRACER
 #define TRACE_INT_UART_CTS TRACE_INT_UART0_CTS
 #define TRACE_INT_UART_RXCOMPL TRACE_INT_UART0_RXCOMPL
 #define TRACE_INT_UART_TXEMPTY TRACE_INT_UART0_TXEMPTY
+#endif
+
+#ifdef UART0_READMULTIBYTE
+#define UART_READMULTIBYTE
+#endif
+
+#ifdef USE_USART0
+#define USE_USART
+#endif
+
+#ifdef UART0_NO_SW_FLOWCONTROL
+#define UART_NO_SW_FLOWCONTROL
 #endif
 
 #include "usartavr.c"

@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/07/22 08:07:08  freckle
+ * added experimental improvements to usart driver. see ChangeLog for details
+ *
  * Revision 1.7  2005/01/24 22:34:49  freckle
  * Added new tracer by Phlipp Blum <blum@tik.ee.ethz.ch>
  *
@@ -335,12 +338,28 @@ NUTDEVICE devUsartAvr1 = {
 #define sig_UART_DATA   sig_UART1_DATA
 #define sig_UART_TRANS  sig_UART1_TRANS
 
+#define SIG_UART_RECV   SIG_UART1_RECV
+#define SIG_UART_DATA   SIG_UART1_DATA
+#define SIG_UART_TRANS  SIG_UART1_TRANS
+
 #define dcb_usart   dcb_usart1
 
 #ifdef NUTTRACER
 #define TRACE_INT_UART_CTS TRACE_INT_UART1_CTS
 #define TRACE_INT_UART_RXCOMPL TRACE_INT_UART1_RXCOMPL
 #define TRACE_INT_UART_TXEMPTY TRACE_INT_UART1_TXEMPTY
+#endif
+
+#ifdef UART1_READMULTIBYTE
+#define UART_READMULTIBYTE
+#endif
+
+#ifdef USE_USART1
+#define USE_USART
+#endif
+
+#ifdef UART1_NO_SW_FLOWCONTROL
+#define UART_NO_SW_FLOWCONTROL
 #endif
 
 #include "usartavr.c"

@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.250 2005/07/21 15:31:03 freckle Exp $
+$Id: ChangeLog,v 1.251 2005/07/22 08:07:08 freckle Exp $
+
+2005-07-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
+    
+    * dev/usartavr.c, dev/usart0avr.c, dev/usart1avr.c: added experimental
+    improvements to usart driver. they are off by defaut. to enable them define:
+    - USE_USART[0|1] to bypass Nut/OS IRQ handler
+    - UART[0|1]_READMULTIBYTE to allow IRQ handler to read all bytes from RX FIFO
+    - UART[0|1]_NO_SW_FLOWCONTROL to bypass software flowcontrol code
 
 2005-07-21  Matthias Ringwald  <mringwal@inf.ethz.ch>
 

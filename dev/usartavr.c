@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/07/22 08:07:07  freckle
+ * added experimental improvements to usart driver. see ChangeLog for details
+ *
  * Revision 1.9  2005/02/21 12:38:00  phblum
  * Removed tabs and added semicolons after NUTTRACER macros
  *
@@ -155,7 +158,7 @@ static ureg_t cts_sense;
 
 #ifdef UART_CTS_BIT
 /*!
- * \brief USART0 CTS sense interrupt handler.
+ * \brief USARTn CTS sense interrupt handler.
  *
  * This interrupt routine is called when the CTS line level is low.
  * Typical line drivers negate the signal, thus driving our port
@@ -175,7 +178,7 @@ static void AvrUsartCts(void *arg)
 
 #ifdef UART_HDX_BIT
 /*
- * \brief USART0 transmit complete interrupt handler.
+ * \brief USARTn transmit complete interrupt handler.
  *
  * Used with half duplex communication to switch from tranmit to receive
  * mode after the last character has been transmitted.
@@ -201,19 +204,30 @@ static void AvrUsartTxComplete(void *arg)
 #endif
 
 /*
- * \brief USART0 transmit data register empty interrupt handler.
+ * \brief USARTn transmit data register empty interrupt handler.
  *
  * \param arg Pointer to the transmitter ring buffer.
  */
-static void AvrUsartTxEmpty(void *arg)
-{
+#ifdef USE_USART
+
+SIGNAL( SIG_UART_DATA ) { 
+    register RINGBUF *rbf = &dcb_usart.dcb_tx_rbf;
+    
+#else
+    
+static void AvrUsartTxEmpty(void *arg) {
     register RINGBUF *rbf = (RINGBUF *) arg;
+        
+#endif
+
     register u_char *cp = rbf->rbf_tail;
 
 
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_TXEMPTY);
 #endif	
+
+#ifndef UART_NO_SW_FLOWCONTROL
 
     /*
      * Process pending software flow controls first.
@@ -244,7 +258,8 @@ static void AvrUsartTxEmpty(void *arg)
 #endif
         return;
 	}
-
+#endif /* UART_NO_SW_FLOWCONTROL */
+    
     if (rbf->rbf_cnt) {
 
 #ifdef UART_CTS_BIT
@@ -304,112 +319,150 @@ static void AvrUsartTxEmpty(void *arg)
 #endif
 }
 
+
 /*
- * \brief USART0 receive complete interrupt handler.
+ * \brief USARTn receive complete interrupt handler.
  *
  *
  * \param arg Pointer to the receiver ring buffer.
  */
-static void AvrUsartRxComplete(void *arg)
-{
+
+#ifdef USE_USART
+SIGNAL( SIG_UART_RECV ){
+    register RINGBUF *rbf = &dcb_usart.dcb_rx_rbf;
+
+#else
+
+static void AvrUsartRxComplete(void *arg) {
     register RINGBUF *rbf = (RINGBUF *) arg;
+
+#endif
+
     register size_t cnt;
     register u_char ch;
 
+        
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_RXCOMPL);
 #endif	
-    /*
-     * We read the received character as early as possible to avoid overflows
-     * caused by interrupt latency. However, reading the error flags must come 
-     * first, because reading the ATmega128 data register clears the status.
-     */
-    rx_errors |= inb(UCSRnA);
-    ch = inb(UDRn);
 
-    /*
-     * Handle software handshake. We have to do this before checking the
-     * buffer, because flow control must work in write-only mode, where
-     * there is no receive buffer.
-     */
-    if (flow_control) {
-        /* XOFF character disables transmit interrupts. */
-        if (ch == ASCII_XOFF) {
-            cbi(UCSRnB, UDRIE);
-            flow_control |= XOFF_RCVD;
+#ifdef UART_READMULTIBYTE
+    register u_char postEvent = 0;
+    do {
+#endif
+      
+        /*
+         * We read the received character as early as possible to avoid overflows
+         * caused by interrupt latency. However, reading the error flags must come 
+         * first, because reading the ATmega128 data register clears the status.
+         */
+        rx_errors |= inb(UCSRnA);
+        ch = inb(UDRn);
+
+#ifndef UART_NO_SW_FLOWCONTROL
+        /*
+         * Handle software handshake. We have to do this before checking the
+         * buffer, because flow control must work in write-only mode, where
+         * there is no receive buffer.
+         */
+        if (flow_control) {
+            /* XOFF character disables transmit interrupts. */
+            if (ch == ASCII_XOFF) {
+                cbi(UCSRnB, UDRIE);
+                flow_control |= XOFF_RCVD;
+#ifdef NUTTRACER
+                TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
+#endif			
+                return;
+            }
+            /* XON enables transmit interrupts. */
+            else if (ch == ASCII_XON) {
+                sbi(UCSRnB, UDRIE);
+                flow_control &= ~XOFF_RCVD;
+#ifdef NUTTRACER
+                TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
+#endif			
+                return;
+            }
+        }
+#endif
+        
+        /*
+         * Check buffer overflow.
+         */
+        cnt = rbf->rbf_cnt;
+        if (cnt >= rbf->rbf_siz) {
+            rx_errors |= _BV(DOR);
 #ifdef NUTTRACER
             TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif			
             return;
         }
-        /* XON enables transmit interrupts. */
-        else if (ch == ASCII_XON) {
-            sbi(UCSRnB, UDRIE);
-            flow_control &= ~XOFF_RCVD;
-#ifdef NUTTRACER
-            TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
-#endif			
-            return;
+
+        /* Wake up waiting threads if this is the first byte in the buffer. */
+        if (cnt++ == 0){
+#ifdef UART_READMULTIBYTE
+            // we do this later, to get the other bytes in time..
+            postEvent = 1;
+#else
+            NutEventPostFromIrq(&rbf->rbf_que);
+#endif
         }
-    }
+        
+#ifndef UART_NO_SW_FLOWCONTROL
 
-    /*
-     * Check buffer overflow.
-     */
-    cnt = rbf->rbf_cnt;
-    if (cnt >= rbf->rbf_siz) {
-        rx_errors |= _BV(DOR);
-#ifdef NUTTRACER
-        TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
-#endif			
-        return;
-    }
-
-    /* Wake up waiting threads if this is the first byte in the buffer. */
-    if (cnt++ == 0) {
-        NutEventPostFromIrq(&rbf->rbf_que);
-    }
-
-    /*
-     * Check the high watermark for software handshake. If the number of 
-     * buffered bytes is above this mark, then send XOFF.
-     */
-    else if (flow_control) {
-        if(cnt >= rbf->rbf_hwm) {
-            if((flow_control & XOFF_SENT) == 0) {
-                if (inb(UCSRnA) & _BV(UDRE)) {
-                    outb(UDRn, ASCII_XOFF);
-                    flow_control |= XOFF_SENT;
-                    flow_control &= ~XOFF_PENDING;
-                } else {
-                    flow_control |= XOFF_PENDING;
+        /*
+         * Check the high watermark for software handshake. If the number of 
+         * buffered bytes is above this mark, then send XOFF.
+         */
+        else if (flow_control) {
+            if(cnt >= rbf->rbf_hwm) {
+                if((flow_control & XOFF_SENT) == 0) {
+                    if (inb(UCSRnA) & _BV(UDRE)) {
+                        outb(UDRn, ASCII_XOFF);
+                        flow_control |= XOFF_SENT;
+                        flow_control &= ~XOFF_PENDING;
+                    } else {
+                        flow_control |= XOFF_PENDING;
+                    }
                 }
             }
         }
-    }
+#endif
+        
+        
 #ifdef UART_RTS_BIT
-    /*
-     * Check the high watermark for hardware handshake. If the number of 
-     * buffered bytes is above this mark, then disable RTS.
-     */
-    else if (rts_control && cnt >= rbf->rbf_hwm) {
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
-    }
+        /*
+         * Check the high watermark for hardware handshake. If the number of 
+         * buffered bytes is above this mark, then disable RTS.
+         */
+        else if (rts_control && cnt >= rbf->rbf_hwm) {
+            sbi(UART_RTS_PORT, UART_RTS_BIT);
+        }
 #endif
 
-    /* 
-     * Store the character and increment and the ring buffer pointer. 
-     */
-    *rbf->rbf_head++ = ch;
-    if (rbf->rbf_head == rbf->rbf_last) {
-        rbf->rbf_head = rbf->rbf_start;
-    }
+        /* 
+         * Store the character and increment and the ring buffer pointer. 
+         */
+        *rbf->rbf_head++ = ch;
+        if (rbf->rbf_head == rbf->rbf_last) {
+            rbf->rbf_head = rbf->rbf_start;
+        }
 
-    /* Update the ring buffer counter. */
-    rbf->rbf_cnt = cnt;
+        /* Update the ring buffer counter. */
+        rbf->rbf_cnt = cnt;
 #ifdef NUTTRACER
-    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
+        TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
 #endif			
+
+#ifdef UART_READMULTIBYTE
+    } while ( inb(UCSRnA) & _BV(RXC) ); // byte in buffer?
+
+    // Eventually post event to wake thread 
+    if (postEvent)
+        NutEventPostFromIrq(&rbf->rbf_que);
+#endif
+
 }
 
 
@@ -1216,6 +1269,7 @@ static void AvrUsartRxStart(void)
  */
 static int AvrUsartInit(void)
 {
+#ifndef USE_USART
     /*
      * Register receive and transmit interrupts.
      */
@@ -1225,6 +1279,7 @@ static int AvrUsartInit(void)
         NutRegisterIrqHandler(&sig_UART_RECV, 0, 0);
         return -1;
     }
+#endif
     return 0;
 }
 
@@ -1238,9 +1293,12 @@ static int AvrUsartInit(void)
  */
 static int AvrUsartDeinit(void)
 {
+
+#ifndef USE_USART
     /* Deregister receive and transmit interrupts. */
     NutRegisterIrqHandler(&sig_UART_RECV, 0, 0);
     NutRegisterIrqHandler(&sig_UART_DATA, 0, 0);
+#endif
 
     /*
      * Disabling flow control shouldn't be required here, because it's up
