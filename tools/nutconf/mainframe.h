@@ -42,6 +42,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/07/22 18:46:25  haraldkipp
+ * Added selectable toolbar button sizes, toolbar menu, more toolbar buttons
+ * and online help.
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -59,6 +63,7 @@
 #include <wx/docview.h>
 //#include <wx/docmdi.h>
 #include <wx/treectrl.h>
+#include <wx/help.h>
 
 #include "configtree.h"
 //#include "conflictlist.h"
@@ -88,12 +93,18 @@ class CMainFrame:public wxDocParentFrame {
     CInfoWindow *GetInfoWindow() const;
     CPropertyList *GetPropertyListWindow() const;
 
+    wxHelpController& GetHelpController() { return m_help; }
+
     /* ---------- Menu Event Handlers ---------- */
     void OnQuit(wxCommandEvent & event);
     void OnGenerateBuildTree(wxCommandEvent & event);
     void OnBuildNutOS(wxCommandEvent & event);
+    void OnBuildLibraries(wxCommandEvent & event);
     void OnCreateSampleDir(wxCommandEvent & event);
     void OnSettings(wxCommandEvent& event);
+    void OnToggleToolbar(wxCommandEvent& event);
+    void OnToggleToolbarSize(wxCommandEvent& event);
+    void OnHelp(wxCommandEvent& event);
 
   protected:
     void CreateNutMenuBar();
@@ -116,8 +127,13 @@ class CMainFrame:public wxDocParentFrame {
     CInfoWindow *m_infoWindow;
 
     wxTextCtrl *m_outputWindow;
+
+    bool m_smallToolbar;
+
   private:
-     DECLARE_EVENT_TABLE()
+    wxHelpController m_help;
+
+    DECLARE_EVENT_TABLE()
 
 };
 

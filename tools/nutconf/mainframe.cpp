@@ -39,6 +39,10 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.7  2005/07/22 18:46:25  haraldkipp
+ * Added selectable toolbar button sizes, toolbar menu, more toolbar buttons
+ * and online help.
+ *
  * Revision 1.6  2005/07/20 11:16:00  haraldkipp
  * Linux application icon added
  *
@@ -69,24 +73,37 @@
 
 #if !defined(__WXMSW__)
 #include "bitmaps/application.xpm"
+#include "bitmaps/buildlibrary.xpm"
+#include "bitmaps/buildlibrary_large.xpm"
+#include "bitmaps/help.xpm"
+#include "bitmaps/help_large.xpm"
 #include "bitmaps/open.xpm"
+#include "bitmaps/open_large.xpm"
 #include "bitmaps/save.xpm"
+#include "bitmaps/save_large.xpm"
+#include "bitmaps/search.xpm"
+#include "bitmaps/search_large.xpm"
 #endif
 
 BEGIN_EVENT_TABLE(CMainFrame, wxDocParentFrame)
     EVT_MENU(wxID_EXIT, CMainFrame::OnQuit)
+    EVT_MENU(ID_BUILD_LIBRARY, CMainFrame::OnBuildLibraries)
     EVT_MENU(ID_GENERATE_BUILD_TREE, CMainFrame::OnGenerateBuildTree)
     EVT_MENU(ID_BUILD_NUTOS, CMainFrame::OnBuildNutOS)
     EVT_MENU(ID_CREATE_SAMPLE_APPS, CMainFrame::OnCreateSampleDir)
     EVT_SIZE(CMainFrame::OnSize)
     EVT_SASH_DRAGGED_RANGE(ID_CONFIG_SASH_WINDOW, ID_OUTPUT_SASH_WINDOW, CMainFrame::OnSashDrag)
     EVT_MENU(ID_SETTINGS, CMainFrame::OnSettings)
+    EVT_MENU(ID_TOOLBARS, CMainFrame::OnToggleToolbar)
+    EVT_MENU(ID_TOOLBARSIZE, CMainFrame::OnToggleToolbarSize)
+    EVT_MENU(ID_NUTOS_HELP, CMainFrame::OnHelp)
 
 
     END_EVENT_TABLE();
 
 CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
 :wxDocParentFrame(manager, (wxFrame *) NULL, ID_MAIN_FRAME, title)
+, m_smallToolbar(true)
 {
     SetIcon(wxICON(application));
 
@@ -166,6 +183,7 @@ void CMainFrame::CreateNutMenuBar()
     fileMenu->Append(wxID_EXIT, wxT("E&xit\tAlt+X"), wxT("Quits the application"));
 
     wxMenu *editMenu = new wxMenu(wxEmptyString, wxMENU_TEAROFF);
+    editMenu->Append(wxID_FIND, wxT("&Find...\tCtrl+F"), wxT("Finds the specified text"));
     editMenu->Append(ID_SETTINGS, wxT("&Settings...\tCtrl+T"), wxT("Shows the settings dialog"));
     //td editMenu->Append(wxID_CUT, wxT("Cu&t\tCtrl+X"), wxT("Cuts the output pane selection and moves it to the Clipboard"));
     //td editMenu->Append(wxID_COPY, wxT("&Copy\tCtrl+C"), wxT("Copies the output pane selection to the clipboard"));
@@ -174,15 +192,18 @@ void CMainFrame::CreateNutMenuBar()
     //td editMenu->AppendSeparator();
     //td editMenu->Append(wxID_SELECTALL, wxT("&Select All\tCtrl+A"), wxT("Selects the entire output pane"));
     //td editMenu->AppendSeparator();
-    //td editMenu->Append(wxID_FIND, wxT("&Find...\tCtrl+F"), wxT("Finds the specified text"));
     //td editMenu->Append(ID_FIND_NEXT, wxT("Find &Next\tF3"), wxT("Finds the next item matching the Find text"));
     //td editMenu->AppendSeparator();
     //td editMenu->Append(ID_SAVE_OUTPUT, wxT("Sa&ve Output..."), wxT("Saves the contents of the output pane"));
 
-    //td wxMenu *viewMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+    wxMenu *viewMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+    wxMenu *toolbarMenu = new wxMenu;
+    toolbarMenu->AppendCheckItem(ID_TOOLBARS, wxT("&Show"), wxT("Shows or hides the toolbar"));
+    toolbarMenu->Check(ID_TOOLBARS, true);
+    toolbarMenu->AppendCheckItem(ID_TOOLBARSIZE, wxT("&Large Buttons"), wxT("Toggles toolbar size"));
+    viewMenu->Append(-1, wxT("Toolbar"), toolbarMenu);
     //td viewMenu->Append(ID_SETTINGS, wxT("&Settings...\tCtrl+T"), wxT("Shows the application settings dialog"));
     //td viewMenu->AppendSeparator();
-    //td viewMenu->Append(ID_TOOLBARS, wxT("&Toolbar"), wxT("Shows or hides the toolbar"), true);
     //td viewMenu->Append(ID_TOGGLE_PROPERTIES, wxT("&Properties\tAlt+1"), wxT("Shows or hides the properties window"), true);
     //td viewMenu->Append(ID_TOGGLE_OUTPUT, wxT("&Output\tAlt+2"), wxT("Shows the output window"), true);
     //td viewMenu->Append(ID_TOGGLE_SHORT_DESCR, wxT("&Short Description\tAlt+3"), wxT("Shows or hides the short description window"), true);
@@ -193,8 +214,9 @@ void CMainFrame::CreateNutMenuBar()
     //td buildMenu->Append(ID_CLEAN, wxT("&Clean"), wxT("Deletes intermediate and output files"));
     //td buildMenu->Append(ID_STOP_BUILD, wxT("&Stop"), wxT("Stops the build"));
     //td buildMenu->AppendSeparator();
-    buildMenu->Append(ID_GENERATE_BUILD_TREE, wxT("&Generate Build Tree"), wxT("Explicitly recreates the build tree"));
-    buildMenu->Append(ID_BUILD_NUTOS, wxT("Build Nut/OS"), wxT("Builds Nut/OS libraries"));
+    buildMenu->Append(ID_BUILD_LIBRARY, wxT("Build Nut/OS"), wxT("Builds Nut/OS libraries"));
+    // buildMenu->Append(ID_GENERATE_BUILD_TREE, wxT("&Generate Build Tree"), wxT("Explicitly recreates the build tree"));
+    // buildMenu->Append(ID_BUILD_NUTOS, wxT("Build Nut/OS"), wxT("Builds Nut/OS libraries"));
     buildMenu->AppendSeparator();
     buildMenu->Append(ID_CREATE_SAMPLE_APPS, wxT("Create Sample Directory"), wxT("Creates a directory with Nut/OS sample applications"));
     //td buildMenu->Append(ID_BUILD_OPTIONS, wxT("&Options..."), wxT("Changes build options"));
@@ -215,16 +237,16 @@ void CMainFrame::CreateNutMenuBar()
     //td toolsMenu->Append(ID_INDEX_DOCS, wxT("Regenerate Help &Index"), wxT("Regenerates the online help contents"));
 
     wxMenu *helpMenu = new wxMenu;
+    helpMenu->Append(ID_NUTOS_HELP, wxT("Help &Contents"), wxT("Displays help contents"));
     helpMenu->Append(ID_HELP_ABOUT, wxT("About NutConf..."), wxT("Displays version and copyright information"));
     //td helpMenu->Append(ID_CONFIGTOOL_HELP, wxT("&Configuration Tool Help\tShift+F1"), wxT("Displays help"));
-    //td helpMenu->Append(ID_NUTOS_HELP, wxT("&Nut/OS Documentation"), wxT("Displays the documentation home page"));
     //td helpMenu->Append(ID_CONTEXT_HELP, wxT("&Help On..."), wxT("Displays help for clicked-on windows"));
     //td helpMenu->AppendSeparator();
 
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, wxT("&File"));
     menuBar->Append(editMenu, wxT("&Edit"));
-    //td menuBar->Append(viewMenu, wxT("&View"));
+    menuBar->Append(viewMenu, wxT("&View"));
     menuBar->Append(buildMenu, wxT("&Build"));
     //td menuBar->Append(toolsMenu, wxT("&Tools"));
     menuBar->Append(helpMenu, wxT("&Help"));
@@ -238,21 +260,27 @@ void CMainFrame::CreateNutToolBar()
     wxToolBarBase *toolBar = CreateToolBar(wxNO_BORDER | wxTB_FLAT | wxTB_HORIZONTAL | wxTB_DOCKABLE, ID_TOOLBAR);
     toolBar->SetMargins(4, 4);
 
-    //td toolBar->AddTool(wxID_NEW, wxBITMAP(TBB_NEW), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("New file"));
-    toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
-    toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
-    //td toolBar->AddSeparator();
-    //td toolBar->AddTool(wxID_CUT, wxBITMAP(TBB_CUT), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Cut");
-    //td toolBar->AddTool(wxID_COPY, wxBITMAP(TBB_COPY), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Copy");
-    //td toolBar->AddTool(wxID_PASTE, wxBITMAP(TBB_PASTE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Paste");
-    //td toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Search");
-    //td toolBar->AddSeparator();
-    //td toolBar->AddTool(ID_STOP_BUILD, wxBITMAP(TBB_STOPBUILD), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Stop build");
-    //td toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Build library");
-    //td toolBar->AddSeparator();
-    //td toolBar->AddTool(ID_CONTEXT_HELP, wxBITMAP(TBB_CSHELP), wxNullBitmap, false, -1, -1, (wxObject *) NULL,
-    //td                  "Show help for clicked-on windows");
-    //td toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Show help");
+    /* Load small toolbar buttons. */
+    if (m_smallToolbar) {
+        toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
+        toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
+        toolBar->AddSeparator();
+        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Search");
+        toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
+        toolBar->AddSeparator();
+        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Show help");
+    }
+    /* Load large toolbar buttons. */
+    else {
+        toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
+        toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
+        toolBar->AddSeparator();
+        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Search");
+        toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
+        toolBar->AddSeparator();
+        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Show help");
+        toolBar->SetToolBitmapSize(wxSize(32, 32));
+    }
     toolBar->Realize();
 
     toolBar->SetHelpText(wxT("The toolbar allows quick access to commonly-used commands."));
@@ -511,6 +539,12 @@ void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
     }
 }
 
+void CMainFrame::OnBuildLibraries(wxCommandEvent &event)
+{
+    OnGenerateBuildTree(event);
+    OnBuildNutOS(event);
+}
+
 void CMainFrame::OnCreateSampleDir(wxCommandEvent & WXUNUSED(event))
 {
     CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
@@ -531,3 +565,35 @@ void CMainFrame::OnCreateSampleDir(wxCommandEvent & WXUNUSED(event))
         }
     }
 }
+
+void CMainFrame::OnToggleToolbar(wxCommandEvent& WXUNUSED(event))
+{
+    wxToolBar *tbar = GetToolBar();
+
+    if (tbar == NULL) {
+        CreateNutToolBar();
+    }
+    else {
+        delete tbar;
+
+        SetToolBar(NULL);
+    }
+}
+
+void CMainFrame::OnToggleToolbarSize(wxCommandEvent& WXUNUSED(event))
+{
+    wxToolBar *tbar = GetToolBar();
+
+    if (tbar) {
+        delete tbar;
+        SetToolBar(NULL);
+    }
+    m_smallToolbar = !m_smallToolbar;
+    CreateNutToolBar();
+}
+
+void CMainFrame::OnHelp(wxCommandEvent& event)
+{
+    m_help.DisplayContents();
+}
+
