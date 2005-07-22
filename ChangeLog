@@ -1,6 +1,19 @@
-$Id: ChangeLog,v 1.252 2005/07/22 18:23:30 haraldkipp Exp $
+$Id: ChangeLog,v 1.253 2005/07/22 18:51:01 haraldkipp Exp $
 
 2005-07-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/ids.h: Toolbar menu added.
+
+	* tools/nutconf/mainframe.cpp: Added selectable toolbar button
+	sizes. Toolbar menu added. Additional toolbar buttons added
+	for building, searching and help. Searching not yet implemented.
+	Online help added.
+
+	* tools/nutconf/mainframe.h, tools/nutconf/nutconf.rc: 
+	Accordingly updated.
+
+	* tools/nutconf/nutconf.cpp: Online help added and Copyright
+	years updated.
 
 	* tools/nutconf/bitmaps/buildlibrary.xpm,
 	tools/nutconf/bitmaps/buildlibrary_large.bmp,
