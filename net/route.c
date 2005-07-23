@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/07/23 14:30:40  haraldkipp
+ * Removed unnecessary critical sections and atomic inc-/decrements.
+ * Fixed a bug in NutIpRouteList(), which filled the first entry only.
+ * Corrected the comment about unavailabilty of removing routes.
+ *
  * Revision 1.4  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -118,7 +123,6 @@
  */
 
 #include <cfg/os.h>
-#include <sys/atom.h>
 #include <sys/heap.h>
 
 #include <net/if_var.h>
@@ -135,23 +139,17 @@
  */
 /*@{*/
 
-
-static u_char rteLock;
-
 RTENTRY *rteList;           /*!< Linked list of routing entries. */
 
 /*!
  * \brief Add a new entry to the IP routing table.
  *
- * Note, that there is currently no support for
- * removing entries or detecting duplicates.
- * Anyway, newer entries will be found first,
- * because they are inserted in front of older
- * entries. However, this works only for equal
- * masks, i.e. new network routes will never
- * overwrite old host routes.
+ * Note, that there is currently no support for detecting duplicates.
+ * Anyway, newer entries will be found first, because they are inserted 
+ * in front of older entries. However, this works only for equal masks, 
+ * i.e. new network routes will never overwrite old host routes.
  *
- * \param ip   Network or host IP address to be route.
+ * \param ip   Network or host IP address to be routed.
  *             Set 0 for default route.
  * \param mask Mask for this entry. -1 for host routes,
  *             0 for default or net mask for net routes.
@@ -167,35 +165,27 @@ int NutIpRouteAdd(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev)
     RTENTRY *rtp;
     RTENTRY **rtpp;
 
-    AtomicInc(&rteLock);
-    NutEnterCritical();
-    if (rteLock == 1) {
-
-        /*
-         * Insert a new entry into the list, which is
-         * sorted based on the mask. Host routes are
-         * in front, default routes at the end and
-         * networks in between.
-         */
-        rtp = rteList;
-        rtpp = &rteList;
-        while (rtp && rtp->rt_mask > mask) {
-            rtpp = &rtp->rt_next;
-            rtp = rtp->rt_next;
-        }
-        if ((rte = NutHeapAlloc(sizeof(RTENTRY))) != 0) {
-            rte->rt_ip = ip & mask;
-            rte->rt_mask = mask;
-            rte->rt_gateway = gate;
-            rte->rt_dev = dev;
-            rte->rt_next = rtp;
-            *rtpp = rte;
-            rc = 0;
-        }
+    /*
+     * Insert a new entry into the list, which is
+     * sorted based on the mask. Host routes are
+     * in front, default routes at the end and
+     * networks in between.
+     */
+    rtp = rteList;
+    rtpp = &rteList;
+    while (rtp && rtp->rt_mask > mask) {
+        rtpp = &rtp->rt_next;
+        rtp = rtp->rt_next;
     }
-    NutExitCritical();
-    AtomicDec(&rteLock);
-
+    if ((rte = NutHeapAlloc(sizeof(RTENTRY))) != 0) {
+        rte->rt_ip = ip & mask;
+        rte->rt_mask = mask;
+        rte->rt_gateway = gate;
+        rte->rt_dev = dev;
+        rte->rt_next = rtp;
+        *rtpp = rte;
+        rc = 0;
+    }
     return rc;
 }
 
@@ -211,25 +201,17 @@ int NutIpRouteDelAll(NUTDEVICE * dev)
     RTENTRY **rtpp;
     RTENTRY *rte;
 
-    AtomicInc(&rteLock);
-    NutEnterCritical();
+    rtpp = &rteList;
 
-    if (rteLock == 1) {
-        rtpp = &rteList;
+    while (*rtpp) {
+        rte = *rtpp;
 
-        while (*rtpp) {
-            rte = *rtpp;
-
-            if (rte->rt_dev == dev || dev == 0) {
-                *rtpp = rte->rt_next;
-                NutHeapFree(rte);
-            } else
-                *rtpp = (*rtpp)->rt_next;
-        }
+        if (rte->rt_dev == dev || dev == 0) {
+            *rtpp = rte->rt_next;
+            NutHeapFree(rte);
+        } else
+            *rtpp = (*rtpp)->rt_next;
     }
-
-    NutExitCritical();
-    AtomicDec(&rteLock);
     return 0;
 }
 
@@ -253,24 +235,15 @@ int NutIpRouteDel(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev)
     RTENTRY **rtpp;
     RTENTRY *rte;
 
-    AtomicInc(&rteLock);
-    NutEnterCritical();
+    for (rtpp = &rteList; *rtpp; *rtpp = (*rtpp)->rt_next) {
+        rte = *rtpp;
 
-    if (rteLock == 1) {
-        for (rtpp = &rteList; *rtpp; *rtpp = (*rtpp)->rt_next) {
-            rte = *rtpp;
-
-            if (rte->rt_ip == ip && rte->rt_mask == mask && rte->rt_gateway == gate && rte->rt_dev == dev) {
-                *rtpp = rte->rt_next;
-                NutHeapFree(rte);
-                rc = 0;
-            }
+        if (rte->rt_ip == ip && rte->rt_mask == mask && rte->rt_gateway == gate && rte->rt_dev == dev) {
+            *rtpp = rte->rt_next;
+            NutHeapFree(rte);
+            rc = 0;
         }
     }
-
-    NutExitCritical();
-    AtomicDec(&rteLock);
-
     return rc;
 }
 
@@ -285,36 +258,27 @@ int NutIpRouteDel(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev)
  */
 RTENTRY *NutIpRouteList(int *numEntries)
 {
-    RTENTRY *rte;
     RTENTRY *rc;
-    int i;
+    RTENTRY *rte;
 
-    AtomicInc(&rteLock);
-    NutEnterCritical();
-
-    if (rteLock == 1) {
-        // First count the number of entries.
-        *numEntries = 0;
-        for (rte = rteList; rte; rte = rte->rt_next)
-            (*numEntries)++;
-
-        // Allocate space for the result.
-        rc = (RTENTRY *) NutHeapAlloc(sizeof(RTENTRY) * (*numEntries));
-
-        // Fill in the result.
-        i = 0;
-        for (rte = rteList; rte; rte = rte->rt_next) {
-            memcpy(&rc[i], rte, sizeof(RTENTRY));
-            rc[i].rt_next = 0;
-        }
-    } else {
-        rc = 0;
-        *numEntries = 0;
+    /* First count the number of entries. */
+    *numEntries = 0;
+    for (rte = rteList; rte; rte = rte->rt_next) {
+        (*numEntries)++;
     }
 
-    NutExitCritical();
-    AtomicDec(&rteLock);
+    /* Allocate space for the result. */
+    rc = (RTENTRY *) NutHeapAlloc(sizeof(RTENTRY) * (*numEntries));
 
+    /* Fill in the result. */
+    if (rc) {
+        for (rte = rteList; rte; rc++, rte = rte->rt_next) {
+            memcpy(rc, rte, sizeof(RTENTRY));
+        }
+    }
+    else {
+        *numEntries = 0;
+    }
     return rc;
 }
 
@@ -373,7 +337,6 @@ NUTDEVICE *NutIpRouteQuery(u_long ip, u_long * gate)
 
     if (gate)
         *gate = 0;
-    AtomicInc(&rteLock);
     /* Return the first interface if the IP is broadcast. This solves the
        long existing problem with bad checksums on UDP broadcasts. Many
        thanks to Nicolas Moreau for this patch. */
@@ -381,7 +344,6 @@ NUTDEVICE *NutIpRouteQuery(u_long ip, u_long * gate)
         rte = rteList;
     else
         rte = NutIpRouteRecQuery(ip, gate, 0);
-    AtomicDec(&rteLock);
 
     return rte ? rte->rt_dev : 0;
 }
