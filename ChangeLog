@@ -1,9 +1,14 @@
-$Id: ChangeLog,v 1.254 2005/07/23 13:55:21 haraldkipp Exp $
+$Id: ChangeLog,v 1.255 2005/07/23 14:32:35 haraldkipp Exp $
 
 2005-07-23  Harald Kipp  <harald.kipp@egnite.de>
 
 	* app/Makefile, app/events/events.c, app/events/Makefile:
 	New sample demonstrates event queue handling.
+
+	* net/route.c: Removed unnecessary critical sections and atomic 
+	inc-/decrements. Fixed a bug in NutIpRouteList(), which filled 
+	the first entry only. Corrected the comment about unavailabilty 
+	of removing routes.
 
 
 2005-07-22  Harald Kipp  <harald.kipp@egnite.de>
