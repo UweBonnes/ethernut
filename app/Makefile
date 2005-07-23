@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2005/07/23 13:53:34  haraldkipp
+# Event queue sample added.
+#
 # Revision 1.4  2005/02/05 20:46:09  haraldkipp
 # FTP server sample added
 #
@@ -57,6 +60,7 @@
 
 all:
 	$(MAKE) -C basemon
+	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
 	$(MAKE) -C inetq
@@ -72,6 +76,7 @@ all:
 
 install:
 	$(MAKE) -C basemon install
+	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
 	$(MAKE) -C inetq install
@@ -87,6 +92,7 @@ install:
 
 clean:
 	$(MAKE) -C basemon clean
+	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C inetq clean
