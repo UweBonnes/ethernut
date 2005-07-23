@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.253 2005/07/22 18:51:01 haraldkipp Exp $
+$Id: ChangeLog,v 1.254 2005/07/23 13:55:21 haraldkipp Exp $
+
+2005-07-23  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/Makefile, app/events/events.c, app/events/Makefile:
+	New sample demonstrates event queue handling.
+
 
 2005-07-22  Harald Kipp  <harald.kipp@egnite.de>
 
