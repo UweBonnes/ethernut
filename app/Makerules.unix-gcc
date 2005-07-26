@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2005/07/26 16:11:48  haraldkipp
+# Include original rules from top directory. Otherwise external application
+# trees will not work.
+#
 # Revision 1.1  2004/04/07 12:13:56  haraldkipp
 # Matthias Ringwald's *nix emulation added
 #
@@ -70,7 +74,7 @@
 #
 #
 
-include $(top_srcdir)/Makerules
+include $(top_srcdir)/Makerules.unix-gcc
 
 %elf: $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
