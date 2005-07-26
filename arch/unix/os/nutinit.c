@@ -38,6 +38,10 @@
  *
  */
 
+#ifdef __CYGWIN__
+#include <sys/features.h>
+#endif
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
