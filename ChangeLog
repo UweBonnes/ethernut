@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.258 2005/07/26 18:25:17 haraldkipp Exp $
+$Id: ChangeLog,v 1.259 2005/07/26 18:43:41 haraldkipp Exp $
 
 2005-07-26  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -207,8 +207,8 @@ $Id: ChangeLog,v 1.258 2005/07/26 18:25:17 haraldkipp Exp $
 	* include/arch/arm/irqreg.h, include/arch/arm/timer.h,
 	include/arch/avr/irqreg.h, include/arch/avr/timer.h,
 	include/arch/h8300h/irqreg.h, include/arch/m68k/irqreg.h,
-	include/arch/unix/irqreg.h, include/arch/unix/timer.h:
-	Architecture dependent header files added.
+	include/arch/unix/irqreg.h, include/arch/unix/timer.h,
+	include/arch/timer.h: Architecture dependent header files added.
 
 
 2005-07-23  Harald Kipp  <harald.kipp@egnite.de>
