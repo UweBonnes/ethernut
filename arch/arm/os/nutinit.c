@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/07/26 16:17:03  haraldkipp
+ * Use default stack sizes for main and idle, if none had been defined.
+ *
  * Revision 1.1  2005/05/27 17:16:40  drsung
  * Moved the file.
  *
@@ -59,6 +62,14 @@
 #else
 #include <arch/at91.h>
 #include <arch/at91eb40a.h>
+#endif
+
+#ifndef NUT_THREAD_MAINSTACK
+#define NUT_THREAD_MAINSTACK    768
+#endif
+
+#ifndef NUT_THREAD_IDLESTACK
+#define NUT_THREAD_IDLESTACK    384
 #endif
 
 /*!
