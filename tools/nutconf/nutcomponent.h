@@ -2,7 +2,7 @@
 #define _NUTCOMPONENT_H_
 
 /*
- * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/07/26 15:52:15  haraldkipp
+ * Default values will not be stored in conf files
+ *
  * Revision 1.6  2005/07/20 09:21:35  haraldkipp
  * More comments
  *
@@ -110,6 +113,8 @@ struct _NUTCOMPONENTOPTION {
     char *nco_ctype;
     /*! \brief Data value. */
     char *nco_value;
+    /*! \brief Default value. */
+    char *nco_default;
     /*! \brief Source file to store this option. */
     char *nco_file;
     /*! \brief Makefile macros. */
