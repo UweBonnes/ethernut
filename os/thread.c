@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.21  2005/07/26 16:00:16  haraldkipp
+ * Cygwin added.
+ * Platform dependent part is now located in arch/(target)/context.c
+ *
  * Revision 1.20  2005/07/14 08:57:54  freckle
  * Rewrote CS in NutThreadSetPriority
  *
@@ -164,15 +168,7 @@
  */
 /*@{*/
 
-#if defined(__AVR__)
-#include "../arch/avr/os/thread.c"
-#elif defined(__arm__)
-#include "../arch/arm/os/thread.c"
-#elif defined(__H8300H__) || defined(__H8300S__)
-#include "../arch/h8300h/os/thread.c"
-#elif defined(__m68k__)
-#include "../arch/m68k/os/thread.c"
-#elif defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 #include "../arch/unix/os/thread.c"
 #endif
 
@@ -386,7 +382,7 @@ void NutThreadWake(HANDLE timer, HANDLE th)
 void NutThreadYield(void)
 {
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
     NutEnterCritical();
     NutUnixThreadYieldHook();
     NutExitCritical();
