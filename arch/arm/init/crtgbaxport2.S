@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/07/26 16:19:40  haraldkipp
+ * Run Nut/OS in user mode.
+ *
  * Revision 1.2  2004/11/08 18:10:45  haraldkipp
  * Interrupt handling removed.
  *
@@ -147,7 +150,7 @@ _start:
         ldr     sp, =__sp_irq
 
         /* Switch to user mode and set user stack pointer. */
-        mov     r0, #0x1f
+        mov     r0, #0x10
         msr     cpsr, r0
         ldr     sp, =__sp_usr
 
