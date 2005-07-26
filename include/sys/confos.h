@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/07/26 16:02:57  haraldkipp
+ * Avoid redefinition of CONFOS_EE_OFFSET.
+ *
  * Revision 1.2  2004/03/03 17:52:25  drsung
  * New field 'hostname' added to structure confos.
  *
@@ -50,17 +53,17 @@
  */
 
 #include <sys/types.h>
+#include <cfg/eeprom.h>
 
 /*!
  * \file sys/confos.h
  * \brief Nut/OS configuration.
  */
 
-#ifdef __cplusplus
-extern "C" {
+#ifndef CONFOS_EE_OFFSET
+#define CONFOS_EE_OFFSET    0
 #endif
 
-#define CONFOS_EE_OFFSET    0
 #define CONFOS_EE_MAGIC     "OS"
 
 /*!
@@ -81,11 +84,13 @@ struct _CONFOS {
 
 extern CONFOS confos;
 
+__BEGIN_DECLS
+/* Function prototypes */
+
 extern int NutLoadConfig(void);
 extern int NutSaveConfig(void);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
+/* End of prototypes */
 
 #endif
