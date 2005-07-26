@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.27  2005/07/26 16:01:19  haraldkipp
+ * Cygwin added.
+ * Platform dependent code is now located in arch/(target)/ostimer.c.
+ *
  * Revision 1.26  2005/07/21 15:31:04  freckle
  * rewrote timer handling. timer interrupt handler only updates nut_ticks now
  *
@@ -207,42 +211,6 @@ static volatile u_long nut_ticks;
  *  \brief Time of last NutTimerProcessElapsed execution
  */
 static u_long nut_ticks_resume;
-
-
-
-/*!
- * \brief Nominal number of system ticks per second.
- *
- * The actual frequency depends on the timer crystal.
- *
- * \note Since version 3.9.8, the default frequency had been changed 
- *       from 16 Hz to 1024 Hz, when the timer is running with an 
- *       external 32 kHz clock crystal.
- */
-#ifndef NUT_TICK_NFREQ
-#ifdef NUT_CPU_FREQ
-#define NUT_TICK_NFREQ  1000L
-#else
-#define NUT_TICK_NFREQ  1024L
-#endif
-#endif
-
-/*
- * TODO: Now the hardware depedent parts had been seperated. It should
- * be possible to compile them independently.
- */
-#if defined(__AVR__)
-#include "../arch/avr/os/timer.c"
-#elif defined(__arm__)
-#include "../arch/arm/os/timer.c"
-#elif defined(__H8300H__) || defined(__H8300S__)
-#include "../arch/h8300h/os/timer.c"
-#elif defined(__m68k__)
-#include "../arch/m68k/os/timer.c"
-#elif defined(__linux__) || defined(__APPLE__)
-#include "../arch/unix/os/timer.c"
-#endif
-
 
 /*!
  * \brief System timer interrupt handler.
