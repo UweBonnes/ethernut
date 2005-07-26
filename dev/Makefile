@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.21  2005/07/26 16:08:26  haraldkipp
+# Target dependent modules moved to arch.
+#
 # Revision 1.20  2005/02/10 07:06:18  hwmaier
 # Changes to incorporate support for AT90CAN128 CPU
 #
@@ -150,41 +153,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-ifeq ($(ARCH), avr)
-# sources for AVR
-SRCS =  irqstack.c \
-	uartavr.c uart0.c uart1.c usart.c usart0avr.c usart1avr.c ahdlc0.c ahdlc1.c ahdlcavr.c \
-	nicrtl.c lanc111.c eth0rtl.c cs8900.c eth0cs.c netbuf.c \
-	vs1001k.c ir.c irsony.c spiflash.c \
-	ide.c twif.c hd44780.c hd44780_bus.c term.c debug0.c debug1.c \
-	ppp.c chat.c pcmcia.c wlan.c wlandrv.c \
-	ivect01.c ivect02.c ivect03.c ivect04.c ivect05.c ivect06.c \
-	ivect07.c ivect08.c ivect09.c ivect10.c ivect11.c ivect12.c \
-	ivect13.c ivect14.c ivect15.c ivect16.c ivect17.c ivect18.c \
-	ivect19.c ivect20.c ivect21.c ivect22.c ivect23.c ivect24.c \
-	ivect25.c ivect26.c ivect27.c ivect28.c ivect29.c ivect30.c \
-	ivect31.c ivect32.c ivect33.c ivect34.c ivect35.c ivect36.c \
-	ihndlr.c can_dev.c sja1000.c adc.c
-else
-ifeq ($(ARCH), unix)
-# source for Unix Emulation
-SRCS = unix_devs.c chat.c netbuf.c ppp.c
-else
-ifneq (, $(findstring h8300, $(ARCH)))
-# sources for H8
-SRCS =  irqreg.c ihndlr.c scih8.c scih8devs.c nicrtl_h8.c netbuf.c \
-	ppp.c chat.c mweeprom.c scih8dbg.c
-else
-ifeq ($(ARCH), arm)
-# sources for ARM (TODO!)
-SRCS =  irqreg.c ihndlr.c
-else
-# sources for M68K (TODO!)
-# SRCS =  irqreg.c ihndlr.c
-endif
-endif
-endif
-endif
+SRCS = ihndlr.c irqstack.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c
 
 OBJS = $(SRCS:.c=.o)
 

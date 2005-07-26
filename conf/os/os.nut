@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.10  2005/07/26 16:13:24  haraldkipp
+-- Target dependent modules moved to arch.
+--
 -- Revision 1.9  2005/02/16 20:02:07  haraldkipp
 -- Typo of NUTDEBUG corrected.
 -- Philipp Blum's tracer added.
@@ -102,6 +105,7 @@ nutos =
                               "be added to the Nut/OS heap during system initialization.\n"..
                               "When running on an AVR MCU, set this to size of the "..
                               "on-chip SRAM, e.g. 4096 for the ATmega128.",
+                default = "4096",
                 file = "include/cfg/memory.h"
             },
             {
@@ -193,6 +197,7 @@ nutos =
     {
         name = "nutos_thread",
         brief = "Multithreading",
+        requires = { "NUT_CONTEXT_SWITCH" },
         provides = { "NUT_THREAD" },
         sources = { "thread.c" },
         options = 
@@ -201,12 +206,14 @@ nutos =
                 macro = "NUT_THREAD_IDLESTACK",
                 brief = "Idle Thread Stack Size",
                 description = "Number of bytes to be allocated for the stack of the idle thread.",
+                default = "384",
                 file = "include/cfg/os.h"
             },
             {
                 macro = "NUT_THREAD_MAINSTACK",
                 brief = "Main Thread Stack Size",
                 description = "Number of bytes to be allocated for the stack of the main thread.",
+                default = "768",
                 file = "include/cfg/os.h"
             },
         }
@@ -218,7 +225,7 @@ nutos =
     {
         name = "nutos_timer",
         brief = "Timer management",
-        requires = { "NUT_EVENT" },
+        requires = { "NUT_EVENT", "NUT_OSTIMER_DEV" },
         provides = { "NUT_TIMER" },
         sources = { "timer.c" },
         options = 
@@ -270,8 +277,8 @@ nutos =
                 brief = "Location",
                 description = "This is the first EEPROM address, where Nut/OS "..
                               "expects its configuration",
+                default = "0",
                 type = "integer",
-                flavor = "booldata",
                 file = "include/cfg/eeprom.h"
             }
         }
