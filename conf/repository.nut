@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.10  2005/07/26 16:14:21  haraldkipp
+-- Better title for architecture.
+--
 -- Revision 1.9  2005/04/05 18:04:17  haraldkipp
 -- Support for ARM7 Wolf Board added.
 --
@@ -81,7 +84,7 @@ repository =
     },
     {
         name = "nutarch",
-        brief = "Target",
+        brief = "Architecture",
         description = "Select one only.",
         subdir = "arch",
         script = "arch/arch.nut"
