@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.257 2005/07/26 18:13:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.258 2005/07/26 18:25:17 haraldkipp Exp $
 
 2005-07-26  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -203,6 +203,12 @@ $Id: ChangeLog,v 1.257 2005/07/26 18:13:23 haraldkipp Exp $
 
 	* arch/arm/os/context.c, arch/avr/os/context_gcc.c,
 	arch/avr/os/context_icc.c: moved from os/thread.c.
+
+	* include/arch/arm/irqreg.h, include/arch/arm/timer.h,
+	include/arch/avr/irqreg.h, include/arch/avr/timer.h,
+	include/arch/h8300h/irqreg.h, include/arch/m68k/irqreg.h,
+	include/arch/unix/irqreg.h, include/arch/unix/timer.h:
+	Architecture dependent header files added.
 
 
 2005-07-23  Harald Kipp  <harald.kipp@egnite.de>
