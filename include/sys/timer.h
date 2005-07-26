@@ -2,7 +2,7 @@
 #define _SYS_TIMER_H
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/07/26 16:04:02  haraldkipp
+ * Hardware dependent timer code moved to nutlibarch.
+ *
  * Revision 1.8  2005/07/12 16:36:53  freckle
  * made NutTimerInsert public
  *
@@ -87,15 +90,12 @@
  */
 
 #include <sys/types.h>
+#include <arch/timer.h>
 
 /*!
  * \file sys/timer.h
  * \brief Timer management definitions.
  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*!
  * \brief Timer type.
@@ -128,37 +128,34 @@ struct _NUTTIMERINFO {
 extern NUTTIMERINFO* volatile nutTimerList;
 extern NUTTIMERINFO* volatile nutTimerPool;
 
-extern void NutTimerInit(void);
+#define TM_ONESHOT  0x01
 
+__BEGIN_DECLS
+/* Prototypes */
+
+/*
+ * Functions used by the kernel.
+ */
+extern void NutTimerInit(void);
 extern NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
 extern void NutTimerInsert(NUTTIMERINFO * tn);
-
+extern void NutTimerProcessElapsed(void);
 
 /*
  * API declarations.
  */
-
-#define TM_ONESHOT  0x01
-
-extern void NutTimerProcessElapsed(void);
-
-extern HANDLE NutTimerStart(u_long ms, void (*callback)(HANDLE, void *), void *arg, u_char flags);
-extern HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
-extern u_long NutTimerMillisToTicks(u_long ms);
-extern void NutTimerStop(HANDLE handle);
-extern void NutTimerStopAsync(HANDLE handle);
 extern void NutSleep(u_long ms);
-extern void NutDelay(u_char ms);
 
-extern u_long NutGetCpuClock(void);
-
-extern u_long NutGetTickCount(void); //@@MF
-
+extern u_long NutGetTickCount(void);
 extern u_long NutGetSeconds(void);
 extern u_long NutGetMillis(void);
 
-#ifdef __cplusplus
-}
-#endif
+extern HANDLE NutTimerStart(u_long ms, void (*callback)(HANDLE, void *), void *arg, u_char flags);
+extern HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
+extern void NutTimerStop(HANDLE handle);
+extern void NutTimerStopAsync(HANDLE handle);
+
+__END_DECLS
+/* End of prototypes */
 
 #endif
