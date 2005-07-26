@@ -33,6 +33,13 @@
 
 /*
  * $Log$
+ * Revision 1.19  2005/07/26 15:55:36  haraldkipp
+ * Version 1.2.3.
+ * Added new keyword "default" to specify default values. They will no
+ * longer appear in the conf files and we can remove the booldata flavor
+ * from most options.
+ * Bugfix: Options will now be recognized in all sublevels.
+ *
  * Revision 1.18  2005/07/20 09:21:10  haraldkipp
  * Allow subdivided modules
  *
@@ -105,7 +112,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "1.2.2"
+#define NUT_CONFIGURE_VERSION   "1.2.3"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -171,6 +178,10 @@
 /*! \brief Detailed component description.
  */
 #define TKN_DESC    "description"
+
+/*! \brief Option's default value.
+ */
+#define TKN_DEFAULT "default"
 
 #define TKN_REQUIRES "requires"
 #define TKN_PROVIDES "provides"
@@ -432,7 +443,7 @@ NUTCOMPONENT *FindComponentByName(NUTCOMPONENT * root, char *name)
 }
 
 /*
- * The components table is expected on top of the LUA stack.
+ * The component's table is expected on top of the LUA stack.
  */
 void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
 {
@@ -442,6 +453,10 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
     /* Push the option table on the stack. */
     lua_pushstring(ls, TKN_OPTIONS);
     lua_gettable(ls, -2);
+
+    /* 
+     * Now the option table should be on top of the stack.
+     */
     if (lua_istable(ls, -1)) {
         opts = compo->nc_opts;
         while (opts && opts->nco_nxt) {
@@ -463,6 +478,11 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                 opts->nco_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
                 /* Retrieve the option's long description. */
                 opts->nco_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
+                /* Retrieve the option's default seeting. */
+                opts->nco_default = GetStringByNameFromTable(ls, -1, TKN_DEFAULT, NULL, 0);
+                if (opts->nco_default && opts->nco_value == NULL) {
+                    opts->nco_value = strdup(opts->nco_default);
+                }
                 /* Retrieve the option's requirement keywords. */
                 opts->nco_requires = GetStringArrayByNameFromTable(ls, -1, TKN_REQUIRES);
                 /* Retrieve the option's provision keywords. */
@@ -493,31 +513,58 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
 /*!
  * \brief Recursively load Nut/OS component options.
  */
-void LoadOptions(lua_State * ls, NUTCOMPONENT * root)
+void LoadOptions(lua_State * ls, NUTCOMPONENT * root, NUTCOMPONENT * compo)
 {
-    NUTCOMPONENT *compo;
     NUTCOMPONENT *subc;
     char *name;
 
-    compo = root->nc_child;
+    
     while (compo) {
+        /* 
+         * Push the component array with the given name on top of the 
+         * Lua stack and make sure we got a valid result.
+         */
         lua_getglobal(ls, compo->nc_name);
-        LoadComponentOptions(ls, compo);
-        lua_pushnil(ls);
-        while (lua_next(ls, -2)) {
-            if (lua_isnumber(ls, -2)) {
-                name = GetStringByNameFromTable(ls, -1, TKN_NAME, NULL, 0);
-                if (name) {
-                    subc = FindComponentByName(root, name);
-                    if (subc) {
-                        LoadComponentOptions(ls, subc);
+        if (lua_istable(ls, -1)) {
+            LoadComponentOptions(ls, compo);
+
+            /*
+             * Enumerate the array. Start with nil for the first key.
+             */
+            lua_pushnil(ls);
+
+            /*
+             * Each loop will take the key from the top of the stack and
+             * push the next key followed by the corresponding value back
+             * to the stack.
+             */
+            while (lua_next(ls, -2)) {
+                /* 
+                 * Now the next value is on top and its key (array index) is below. Components
+                 * are specified without a named index. Thus, they have a numeric index.
+                 */ 
+                if (lua_isnumber(ls, -2)) {
+                    name = GetStringByNameFromTable(ls, -1, TKN_NAME, NULL, 0);
+                    if (name) {
+                        subc = FindComponentByName(root, name);
+                        if (subc) {
+                            LoadComponentOptions(ls, subc);
+                        }
+				    	free(name);
                     }
-					free(name);
                 }
+                lua_pop(ls, 1);
             }
-            lua_pop(ls, 1);
         }
         lua_pop(ls, 1);
+
+        /*
+         * Process subcomponents.
+         */
+        if (compo->nc_child) {
+            LoadOptions(ls, root, compo->nc_child);
+        }
+
         compo = compo->nc_nxt;
     }
 }
@@ -681,6 +728,9 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
         while (opts) {
             lua_getglobal(ls, opts->nco_name);
             if (lua_isstring(ls, -1)) {
+                if (opts->nco_value) {
+                    free(opts->nco_value);
+                }
                 opts->nco_value = strdup(lua_tostring(ls, -1));
                 if (opts->nco_value[0] == '\0' || opts->nco_value[0] == ' ') {
                     free(opts->nco_value);
@@ -798,6 +848,7 @@ void ReleaseComponentOptions(NUTCOMPONENTOPTION *opts)
         if (opts->nco_type) free(opts->nco_type);
         if (opts->nco_choices) ReleaseStringArray(opts->nco_choices);
         if (opts->nco_ctype) free(opts->nco_ctype);
+        if (opts->nco_default) free(opts->nco_default);
         if (opts->nco_value) free(opts->nco_value);
         if (opts->nco_file) free(opts->nco_file);
         if (opts->nco_makedefs) ReleaseStringArray(opts->nco_makedefs);
@@ -863,7 +914,7 @@ NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo)
      * all components.
      */
     if(root) {
-        LoadOptions(ls, root);
+        LoadOptions(ls, root, root->nc_child);
     }
     return root;
 }
@@ -1109,8 +1160,36 @@ int AddMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir, int *lp
                 }
             }
             if (cop->nc_child) {
-                /* FIXME: No explicit targets for subcomponents! */
-                AddMakeSources(fp, cop->nc_child, sub_dir, lpos);
+                rc += AddMakeSources(fp, cop->nc_child, sub_dir, lpos);
+            }
+        }
+        cop = cop->nc_nxt;
+    }
+    return rc;
+}
+
+int AddMakeTargets(FILE * fp, NUTCOMPONENT * compo, int cnt)
+{
+    int i;
+    int rc = 0;
+    NUTCOMPONENT *cop = compo;
+
+    /*
+     * If explicit targets are specified, we list the objects and
+     * hope that Makerules will do it right.
+     */
+    while (rc < cnt && cop) {
+        if(cop->nc_enabled) {
+            if(cop->nc_sources) {
+                for (i = 0; cop->nc_sources[i]; i++) {
+                    if(cop->nc_targets && cop->nc_targets[i]) {
+                        rc++;
+                        fprintf(fp, "OBJ%d = %s\n", rc, cop->nc_targets[i]);
+                    }
+                }
+            }
+            if (cop->nc_child) {
+                rc += AddMakeTargets(fp, cop->nc_child, cnt);
             }
         }
         cop = cop->nc_nxt;
@@ -1130,34 +1209,14 @@ int AddMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir, int *lp
 int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
 {
     int rc;
-    int i;
-    int k;
     int lpos;
-    NUTCOMPONENT *cop = compo;
 
     fprintf(fp, "SRCS =\t");
     lpos = 8;
     rc = AddMakeSources(fp, compo, sub_dir, &lpos);
     fputc('\n', fp);
 
-    /*
-     * If explicit targets are specified, we list the objects and
-     * hope that Makerules will do it right.
-     */
-    k = 0;
-    lpos = 8;
-    cop = compo;
-    while (k < rc && cop) {
-        if(cop->nc_enabled && cop->nc_sources) {
-            for (i = 0; cop->nc_sources[i]; i++) {
-                if(cop->nc_targets && cop->nc_targets[i]) {
-                    k++;
-                    fprintf(fp, "OBJ%d = %s\n", k, cop->nc_targets[i]);
-                }
-            }
-        }
-        cop = cop->nc_nxt;
-    }
+    AddMakeTargets(fp, compo, rc);
     fputc('\n', fp);
 
     return rc;
