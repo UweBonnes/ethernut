@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.11  2005/07/26 16:39:09  haraldkipp
+ * Do not store default values.
+ *
  * Revision 1.10  2005/04/22 15:19:45  haraldkipp
  * Added support for building ICCAVR applications in the sample tree.
  *
@@ -186,7 +189,8 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
         NUTCOMPONENTOPTION *opts = compo->nc_opts;
         while (opts) {
             if(opts->nco_enabled && opts->nco_active) {
-                if(opts->nco_value) {
+                if(opts->nco_value &&
+                   (opts->nco_default == NULL || strcmp(opts->nco_value, opts->nco_default))) {
                     fprintf(fp, "%s = \"%s\"\n", opts->nco_name, opts->nco_value);
                 }
                 /* Do not save empty values. */
