@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/07/26 15:47:06  haraldkipp
+ * AtomicInc() and AtomicDec() are no longer required by Nut/Net.
+ * Removed to simplify the porting job. Broken applications should
+ * implement their own version.
+ *
  * Revision 1.1  2005/06/06 10:49:35  haraldkipp
  * Building outside the source tree failed. All header files moved from
  * arch/cpu/include to include/arch/cpu.
@@ -49,31 +54,6 @@
 #ifndef _SYS_ATOM_H_
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
-
-__BEGIN_DECLS
-
-#ifdef __IMAGECRAFT__
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
-#else
-static inline void AtomicInc(volatile u_char * p)
-{
-    asm volatile ("in  __tmp_reg__, __SREG__" "\n\t"
-                  "cli" "\n\t"
-                  "ld r24, %a0" "\n\t" "subi r24, lo8(-1)" "\n\t" "st %a0, r24" "\n\t" "out __SREG__, __tmp_reg__" "\n\t"::"z" (p)
-                  :"r24");
-}
-
-static inline void AtomicDec(volatile u_char * p)
-{
-    asm volatile ("in  __tmp_reg__, __SREG__" "\n\t"
-                  "cli" "\n\t"
-                  "ld r24, %a0" "\n\t" "subi r24, lo8(1)" "\n\t" "st %a0, r24" "\n\t" "out __SREG__, __tmp_reg__" "\n\t"::"z" (p)
-                  :"r24");
-}
-
-#endif
-
 
 #ifdef __IMAGECRAFT__
 
@@ -124,4 +104,3 @@ static inline void AtomicDec(volatile u_char * p)
 
 #define NutJumpOutCritical() NutExitCritical()
 
-__END_DECLS

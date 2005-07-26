@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/07/26 15:47:06  haraldkipp
+ * AtomicInc() and AtomicDec() are no longer required by Nut/Net.
+ * Removed to simplify the porting job. Broken applications should
+ * implement their own version.
+ *
  * Revision 1.1  2005/06/06 10:49:35  haraldkipp
  * Building outside the source tree failed. All header files moved from
  * arch/cpu/include to include/arch/cpu.
@@ -50,13 +55,9 @@
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
 
-__BEGIN_DECLS
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
 /* TODO */
 #define NutEnterCritical()
 /* TODO */
 #define NutExitCritical()
 /* TODO */
 #define NutJumpOutCritical()
-__END_DECLS

@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/07/26 15:47:06  haraldkipp
+ * AtomicInc() and AtomicDec() are no longer required by Nut/Net.
+ * Removed to simplify the porting job. Broken applications should
+ * implement their own version.
+ *
  * Revision 1.1  2005/06/06 10:49:35  haraldkipp
  * Building outside the source tree failed. All header files moved from
  * arch/cpu/include to include/arch/cpu.
@@ -50,9 +55,6 @@
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
 
-__BEGIN_DECLS
-#define AtomicInc(p)     (++(*p))
-#define AtomicDec(p)     (--(*p))
 #define NutEnterCritical()                     \
     {                                          \
         u_char __ccr__;                        \
@@ -60,15 +62,18 @@ __BEGIN_DECLS
             "stc.b ccr, %0l"            "\n\t" \
             "orc.b #0xc0, ccr":"=r"(__ccr__):  \
         );
+
 #define NutExitCritical()                      \
        asm volatile(                           \
         "ldc.b %0l, ccr"::"r"(__ccr__)         \
        );                                      \
     }
+
 #define NutJumpOutCritical()                   \
        asm volatile(                           \
         "ldc.b %0l, ccr"::"r"(__ccr__)         \
        );
+
 #define NutEnableInt(ccr)                      \
     {                                          \
         u_char __ccr__;                        \
@@ -76,7 +81,5 @@ __BEGIN_DECLS
             "stc.b ccr, %0l"            "\n\t" \
             "andc.b #0x3f, ccr":"=r"(__ccr__): \
         );
+
 #define NutDisableInt() NutExitCritical()
-/* #define NutEnterCritical(ccr) NutDisableInt(ccr) */
-/* #define NutExitCritical(ccr) NutRestoreInt(ccr) */
-__END_DECLS
