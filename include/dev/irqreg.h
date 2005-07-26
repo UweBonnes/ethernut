@@ -2,7 +2,7 @@
 #define _DEV_IRQREG_H_
 
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/07/26 16:05:24  haraldkipp
+ * Several files were moved from subdir dev to subdir arch.
+ *
  * Revision 1.10  2005/04/07 12:31:37  freckle
  * most unix emulation specific stuff now in irqreg_unix.h.
  * corrected #warning "MCU not defined"
@@ -108,15 +111,15 @@ typedef struct {
 } IRQ_HANDLER;
 
 #if defined(__AVR__)
-#include <dev/irqreg_avr.h>
+#include <arch/avr/irqreg.h>
 #elif defined(__arm__)
-#include <dev/irqreg_arm.h>
+#include <arch/arm/irqreg.h>
 #elif defined(__H8300H__) || defined(__H8300S__)
-#include <dev/irqreg_h8.h>
+#include <arch/h8300h/irqreg.h>
 #elif defined(__m68k__)
-#include <dev/irqreg_m68k.h>
-#elif defined (__linux__) || defined (__APPLE__)
-#include <dev/irqreg_unix.h>
+#include <arch/m68k/irqreg.h>
+#elif defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#include <arch/unix/irqreg.h>
 #else
 #warning "MCU not defined"
 #endif
@@ -128,7 +131,7 @@ __BEGIN_DECLS
 //extern int NutRegisterInterrupt(int irq, void (*handler)(void *), void *arg) __attribute__ ((obsolete)) ;
 extern void CallHandler(IRQ_HANDLER * irh);
 
-#if defined (__linux__) || defined (__APPLE__)
+#if defined (__linux__) || defined (__APPLE__) || defined(__CYGWIN__)
 extern int  NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg);
 #else
 extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);
