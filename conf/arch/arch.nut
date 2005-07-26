@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.11  2005/07/26 15:41:05  haraldkipp
+-- All target dependent code is has been moved to a new library named
+-- libnutarch. Each platform got its own script.
+--
 -- Revision 1.10  2005/02/19 22:48:12  hwmaier
 -- no message
 --
@@ -72,7 +76,7 @@ nutarch =
 {
     {
         name = "nutarch_mcu",
-        brief = "Microcontroller",
+        brief = "Target CPU",
         description = "Select one only.",
         options =
         {
@@ -143,6 +147,7 @@ nutarch =
                 requires = { "TOOL_CC_ARM" },
                 provides = {
                     "HW_TARGET",
+                    "HW_MCU_ARM",
                     "HW_MCU_AT91",
                     "HW_TIMER_AT91",
                     "HW_UART_AT91"
@@ -158,6 +163,7 @@ nutarch =
                 requires = { "TOOL_CC_ARM" },
                 provides = {
                     "HW_TARGET",
+                    "HW_MCU_ARM",
                     "HW_MCU_GBA",
                     "HW_TIMER_GBA",
                     "HW_LCD_GBA"
@@ -196,6 +202,7 @@ nutarch =
                 requires = { "TOOL_CC_ARM" },
                 provides = {
                     "HW_TARGET",
+                    "HW_MCU_ARM",
                     "HW_MCU_S3C45",
                     "HW_TIMER_S3C45",
                     "HW_UART_S3C45"
@@ -205,36 +212,38 @@ nutarch =
     },
 
     --
-    -- Runtime Initialization
+    -- Architecture Dependent Implementations
     --
     {
-        name = "nutarch_cstartup_arm",
-        brief = "ARM-GCC Startup",
-        sources = { "arm/init/crt$(LDNAME).S" },
-        targets = { "arm/init/crt$(LDNAME).o" },
-        requires = { "TOOL_CC_ARM" },
+        name = "nutarch_arm",
+        brief = "ARM",
+        requires = { "HW_MCU_ARM" },
+        script = "arch/arm.nut"
     },
     {
-        name = "nutarch_cstartup_avr_icc",
-        brief = "ICCAVR Startup",
-        description = "There are four different ICCAVR startup files available.\n\n"..
-                      "crtnut.s, if globals and static variables use less than 4kB.\n"..
-                      "crtenut.s, same as above but including EEPROM emulation.\n"..
-                      "crtnutram.s, if globals and static variables use more than 4kB.\n"..
-                      "crtenutram.s, same as above but including EEPROM emulation.\n\n"..
-                      "Ethernut 1.3 Rev-G boards require EEPROM emulation.",
-        sources = {
-            "avr/init/crtnut.s",
-            "avr/init/crtnutram.s",
-            "avr/init/crtenut.s",
-            "avr/init/crtenutram.s"
-        },
-        targets = {
-            "avr/init/crtnut.o",
-            "avr/init/crtnutram.o",
-            "avr/init/crtenut.o",
-            "avr/init/crtenutram.o"
-        },
-        requires = { "TOOL_CC_AVR", "TOOL_ICC" },
+        name = "nutarch_avr",
+        brief = "AVR",
+        requires = { "HW_MCU_AVR" },
+        script = "arch/avr.nut"
     },
+    {
+        name = "nutarch_h8300h",
+        brief = "H8/300H",
+        requires = { "HW_MCU_H8300" },
+        script = "arch/h8300h.nut"
+    },
+    {
+        name = "nutarch_m68k",
+        brief = "M68K",
+        requires = { "HW_MCU_M68K" },
+        script = "arch/m68k.nut"
+    },
+    {
+        name = "nutarch_unix",
+        brief = "Linux Emulator",
+        requires = { "HW_EMU_LINUX" },
+        script = "arch/unix.nut"
+    },
+
+    
 }
