@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.14  2005/07/26 15:58:49  haraldkipp
+ * Cygwin added.
+ * Linux EEPROM support moved to dev.
+ *
  * Revision 1.13  2005/05/27 17:30:25  drsung
  * Platform dependant files were moved to /arch directory.
  *
@@ -121,12 +125,12 @@ volatile u_char ms62_5 = 0;
 #include "../arch/h8300h/os/nutinit.c"
 #elif defined(__m68k__)
 #include "../arch/m68k/os/nutinit.c"
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 // avoid stdio nut wrapper */
 #define NO_STDIO_NUT_WRAPPER
 #include "../arch/unix/os/nutinit.c"
 #include "../arch/unix/os/options.c"
-#include "../arch/unix/os/eeprom.c"
+#include "../arch/unix/dev/eeprom.c"
 #endif
 
 /*@}*/
