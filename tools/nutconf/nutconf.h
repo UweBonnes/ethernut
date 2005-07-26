@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/07/26 15:57:18  haraldkipp
+ * New keyword "default" to specify default option values.
+ *
  * Revision 1.11  2005/07/20 09:22:39  haraldkipp
  * Release 1.2.2
  *
@@ -82,7 +85,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.2.2"
+#define VERSION "1.2.3"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
