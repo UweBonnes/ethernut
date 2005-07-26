@@ -1,4 +1,105 @@
-$Id: ChangeLog,v 1.255 2005/07/23 14:32:35 haraldkipp Exp $
+$Id: ChangeLog,v 1.256 2005/07/26 14:57:02 haraldkipp Exp $
+
+2005-07-26  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arch/arch.nut: All target dependent code is has been
+	moved to a new library named libnutarch. This will break
+	all existing application Makefiles.
+
+	* lib/Makefile: Include new libnutarch into the build.
+
+	* include/arch/arm/atom.h, include/arch/avr/atom.h,
+	include/arch/h8300h/atom.h, include/arch/m68k/atom.h:
+	AtomicInc() and AtomicDec() had been removed. This may break 
+	existing applications but simplifies portability.
+
+	* include/dev/irqreg.h: Several files were moved from dev
+	to arch.
+
+	* include/dev/term.h: Avoid redefinition of TIOCGWINSZ and
+	TIOCSWINSZ on Linux.
+
+	* include/sys/confos.h: Avoid redefinition of CONFOS_EE_OFFSET.
+
+	* include/arch/unix.h, include/compiler.h, include/dev/debug.h,
+	include/dev/uartavr.h, include/dev/usartavr.h, include/errno.h,
+	include/netdb.h, include/netinet/in.h, include/stdio.h, 
+	include/sys/atom.h, include/sys/nut_types.h, 
+	include/sys/socket.h, include/sys/thread.h, include/sys/types.h,
+	net/confnet.c, os/confos.c, os/heap.c, os/osdebug.c: 
+	Cygwin added.
+
+	* os/nutinit.c: Cygwin added. EEPROM support moved from os to
+	dev.
+
+	* os/thread.c: Cygwin added. The platform dependent part is
+	now located in context.c in arch.
+
+	* os/timer.c: Cygwin added. The platform dependent part is
+	now located in ostimer.c in arch.
+
+	* include/sys/timer.h: Hardware dependent timer functions
+	moved to arch.
+
+	* conf/arch/arm.nut, conf/arch/avr.nut, conf/arch/h8300h.nut,
+	conf/arch/m68k.nut, conf/arch/unix.nut: Now each platform
+	gets its own script.
+
+	* conf/dev/dev.nut: Target dependent modules moved to arch.
+
+	* conf/os/os.nut: Target dependent modules moved to arch.
+
+	* nut/conf/repository.nut: Renamed "Target" to "Architecture".
+
+	* conf/gbaxport2.conf: Main and idle stack size reduced
+	to 1024. Now we use the C library provided by GNUARM.
+
+	* arch/Makefile: Build new architecture library.
+
+	* dev/Makefile: Target dependent modules moved to arch.
+
+	* dev/ihndlr.c: Copyright added. Exclude NutRegisterIrqHandler()
+	from Linux builds.
+
+	* Makedefs.unix-gcc: Removed unused items and added INCPRE.
+
+	* Makerules.unix-gcc: Added first and last include path,
+	assembly rules and global clean rules.
+
+	* app/Makedefs.unix-gcc: Added appdir and enabled list files.
+
+	* app/Makerules.unix-gcc: Include original rules from top
+	directory. Otherwise external application trees will not
+	work.
+
+	* app/basemon/Makefile, app/events/Makefile, app/ftpd/Makefile,
+	app/httpd/Makefile, app/inetq/Makefile, app/nutpiper/Makefile,
+	app/portdio/Makefile, app/pppc/Makefile, app/rs232d/Makefile,
+	app/simple/Makefile, app/tcps/Makefile, app/threads/Makefile,
+	app/timers/Makefile, app/uart/Makefile: Added nutarch library
+	to the link list and cleaned it up where required.
+
+	* arch/arm/init/crtgbaxport2.S: Changed from system to user
+	mode for running Nut/OS.
+
+	* arch/arm/os/nutinit.c: Use default stack sizes for main and
+	idle if none had been defined.
+
+	* arch/unix/os/nutinit.c: Add feature header for Cygwin.
+
+	* include/cfg/arch/avrpio.h: Added missing SPIDIGIO_SIN_PORT
+	and SPIDIGIO_SIN_DDR.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutcomponent.h: 
+	Version 1.2.3. Added new keyword "default" to specify default 
+	values. They will no longer appear in the conf files and we can 
+	remove the booldata flavor from most options. Bugfix: Options 
+	will now be recognized in all sublevels.
+
+	* tools/nutconf/nutconf.h: Version 1.2.3.
+
+	* tools/nutconf/nutconfdoc.cpp: Do not store default values.
+
 
 2005-07-23  Harald Kipp  <harald.kipp@egnite.de>
 
