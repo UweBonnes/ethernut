@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.14  2005/06/06 10:44:42  haraldkipp
  * Header files moved to re-enable building apart from source tree.
  *
@@ -102,14 +105,6 @@
 /*
  * The folowing macros must at least be defined for each supported platform.
  *
- * AtomicInc(p)
- * Provides an atomic incrementation of the 8-bit value pointed to by p. Atomic means, 
- * that the load-manipulate-store operations must not be interrupted by an ISR.
- *
- * AtomicDec(p)
- * Provides an atomic decrementation of the 8-bit value pointed to by p. Atomic means, 
- * that the load-manipulate-store operations must not be interrupted by an ISR.
- *
  * NutEnterCritical()
  * Starts a critical section.
  * The global interrupt flag must be disabled to protect the folowing code from 
@@ -134,7 +129,7 @@
 #include <arch/h8300h/atom.h>
 #elif defined(__m68k__)
 #include <arch/m68k/atom.h>
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 #include <arch/unix/atom.h>
 #endif
 

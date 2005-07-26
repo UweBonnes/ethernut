@@ -1,7 +1,7 @@
 #ifndef _NETINET_IN_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -77,6 +77,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.2  2005/04/04 19:33:55  freckle
  * added creation of include/netdb_orig.h, include/sys/socket_orig.h and
  * include/netinet/in_orig.h to allow unix emulation to use tcp/ip sockets
@@ -95,7 +98,7 @@
 #include <sys/types.h>
 
 /* use native version on unix emulation */
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 #include <netinet/in_orig.h>
 /* assure _NETINET_IN_H_ is set */
 #undef  _NETINET_IN_H_

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/07/26 15:50:00  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.6  2005/07/12 14:07:14  freckle
  * removed unnecessary critical sections
  *
@@ -70,7 +73,7 @@
 
 #include <sys/osdebug.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 #define ARCH_32BIT
 #endif
 
@@ -112,7 +115,7 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
         fputs("SIGNALED\n", stream);
     else {
         while (tdp) {
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
             fprintf_P(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
                       states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else
@@ -156,7 +159,7 @@ void NutDumpThreadList(FILE * stream)
 
     tdp = nutThreadList;
     while (tdp) {
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
         fprintf_P(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
                   states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else

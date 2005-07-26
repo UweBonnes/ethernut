@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.7  2005/04/05 17:49:06  haraldkipp
  * Make it work on Wolf, but breaks AT91EB40A.
  *
@@ -97,7 +100,7 @@ extern NUTDEVICE devDebug0;
 #elif defined(__m68k__)
 #endif
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 #endif

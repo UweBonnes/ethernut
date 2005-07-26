@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.4  2005/02/10 07:06:50  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -82,7 +85,7 @@ int NutNetLoadConfig(CONST char *name)
 /* TODO FIXME ttt */
 #warning NutNetLoadConfig is not yet supported with this device!
 #else
-#if !defined(__linux__) && !defined(__APPLE__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
     eeprom_read_block(&confnet, (void *) CONFNET_EE_OFFSET, sizeof(CONFNET));
     if (confnet.cd_size == sizeof(CONFNET)
         && strcmp(confnet.cd_name, name) == 0)
@@ -117,7 +120,7 @@ int NutNetSaveConfig(void)
 /* TODO FIXME ttt */
 #warning NutNetLoadConfig is not yet supported with this device!
 #else
-#if !defined(__linux__) && !defined(__APPLE__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
     u_char *cp;
     size_t i;
 

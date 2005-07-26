@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.8  2005/04/08 12:46:46  freckle
  * removed htons, htonl, ntohs, ntohs, ntohl,  from unix emulation as
  * provided by system headers somewhere
@@ -118,7 +121,7 @@
 #define _SYS_VIRTUAL_TYPES_H_
 
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 //  on an emulation platform, we need to have both
 //              a) the native types headers and libs and
 #include <sys/types_orig.h>
@@ -146,7 +149,7 @@ extern "C" {
  */
 /*@{*/
 
-#if !defined(__linux__) && !defined(__APPLE__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
 
 /*! \brief Unsigned 8-bit value. */
     typedef unsigned char u_char;
@@ -185,7 +188,7 @@ extern "C" {
     typedef unsigned short ureg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short ureg_t;
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
     typedef unsigned short ureg_t;
 #elif defined(__m68k__)
     typedef unsigned short ureg_t;
@@ -202,7 +205,7 @@ extern "C" {
     typedef unsigned short reg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short reg_t;
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
     typedef unsigned short reg_t;
 #elif defined(__m68k__)
     typedef unsigned short reg_t;
@@ -259,7 +262,7 @@ extern "C" {
 #endif                          /* #if defined(__GCC__) && defined(__AVR__) */
 
 
-#if !defined(__linux__) && !defined(__APPLE__) /* provided by system libraries */
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) /* provided by system libraries */
 
     /*!
  * \brief Convert short value from host to network byte order.

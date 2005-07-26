@@ -42,7 +42,7 @@
  */
 
 
-#if !defined(__linux__) && !defined(__APPLE__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
 #error "Nut/OS emulation currently runs only on Linux and MAC OS X systems."
 #endif
 

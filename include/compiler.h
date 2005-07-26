@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.9  2005/02/10 07:06:50  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -73,7 +76,7 @@
 #include <arch/h8.h>
 #elif defined(__m68k__)
 #include <arch/m68k.h>
-#elif defined(__linux__) || defined (__APPLE__)
+#elif defined(__linux__) || defined (__APPLE__) || defined(__CYGWIN__)
 #include <arch/unix.h>
 #endif
 

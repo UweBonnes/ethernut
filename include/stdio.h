@@ -42,7 +42,7 @@
 #ifndef _STDIO_VIRTUAL_H_
 #define _STDIO_VIRTUAL_H_
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 //  on an emulation platform, we need to have both
 //              a) the native stdio headers and libs and
 #include "stdio_orig.h"

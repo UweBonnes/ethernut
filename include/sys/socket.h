@@ -1,7 +1,7 @@
 #ifndef _SYS_SOCKET_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -62,6 +62,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.7  2005/04/08 10:01:21  freckle
  * removed #defines from unix emulation as provided by system headers
  *
@@ -99,7 +102,7 @@
 
 
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 
 /* use native version on unix emulation */
 #include <sys/socket_orig.h>

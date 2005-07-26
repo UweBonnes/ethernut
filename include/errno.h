@@ -36,7 +36,7 @@
 
 #ifndef _ERRNO_H_
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 //  on an emulation platform, we need to use the native errno as it might 
 //  re-define errno (e.g. on red hat enterprise linux 3)
 #include <errno_orig.h>

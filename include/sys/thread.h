@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.7  2005/02/17 14:42:37  phblum
  * Removed volatile declarations of runQueue since it is not touched from interrupt context. Same for nutThreadList, runningThread and killedThreads.
  *
@@ -123,7 +126,7 @@ extern "C" {
         u_char *td_memory;      /*!< \brief Pointer to heap memory used for stack. */
         HANDLE td_timer;        /*!< \brief Event timer. */
         HANDLE td_queue;        /*!< \brief Root entry of the waiting queue. */
-#if defined (__APPLE__) || (__linux__)
+#if defined (__APPLE__) || defined(__linux__) || defined(__CYGWIN__)
         pthread_t td_pthread;   /*!< \brief pthread for unix emulations. */
         void (*td_fn) (void *); /*!< \brief thread function */
         void *td_arg;           /*!< \brief args given to NutCreateThread */
@@ -151,7 +154,7 @@ extern "C" {
     extern NUTTHREADINFO * runQueue;
 
 
-#if defined (__APPLE__) || (__linux__)
+#if defined (__APPLE__) || defined(__linux__) || defined(__CYGWIN__)
     extern void NutThreadInit(void);
 #endif
 

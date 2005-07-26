@@ -81,6 +81,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.5  2005/04/04 19:33:40  freckle
  * added creation of include/netdb_orig.h, include/sys/socket_orig.h and
  * include/netinet/in_orig.h to allow unix emulation to use tcp/ip sockets
@@ -110,7 +113,7 @@
  */
 
 /* use native version on unix emulation */
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 #include <netdb_orig.h>
 /* assure _NETDB_H_ is set */
 #undef  _NETDB_H_

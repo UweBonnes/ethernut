@@ -2,7 +2,7 @@
 #define _DEV_UARTAVR_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.5  2005/06/26 12:40:59  chaac
  * Added support for raw mode to AHDLC driver.
  *
@@ -171,7 +174,7 @@ extern NUTDEVICE devUart0;
     extern NUTDEVICE devUart1;
 #endif
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 extern NUTDEVICE devUart0;
 extern NUTDEVICE devUart1;
 #endif

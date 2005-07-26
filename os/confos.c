@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/07/26 15:49:59  haraldkipp
+ * Cygwin support added.
+ *
  * Revision 1.5  2004/09/08 10:24:34  haraldkipp
  * No EEPROM support for AT91
  *
@@ -69,7 +72,7 @@ CONFOS confos;
  */
 int NutLoadConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(MCU_AT91R40008)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(__arm__)
     eeprom_read_block(&confos, CONFOS_EE_OFFSET, sizeof(CONFOS));
     if (confos.size != sizeof(CONFOS) || confos.magic[0] != 'O' || confos.magic[1] != 'S') {
         return -1;
@@ -85,7 +88,7 @@ int NutLoadConfig(void)
  */
 int NutSaveConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(MCU_AT91R40008)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(__arm__)
     u_char *cp;
     u_short i;
 
