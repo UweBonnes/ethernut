@@ -2,7 +2,7 @@
 #define _DEV_TERM_H_
 
 /*
- * Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,8 +57,12 @@
 #define LCD_SETCOOKEDMODE   0x0413  /*!< \brief Set raw mode. */ 
 #define LCD_GETCOOKEDMODE   0x0414  /*!< \brief Query raw mode. */ 
 
+#ifndef TIOCGWINSZ
 #define TIOCGWINSZ          0x0501  /*!< Gets the window size */
+#endif
+#ifndef TIOCSWINSZ
 #define TIOCSWINSZ          0x0502  /*!< Sets the window size */
+#endif
 
 #define LCD_MF_CURSORON     0x00000001UL    /*!< \brief Cursor on flag. */
 #define LCD_MF_COOKEDMODE   0x00020000UL    /*!< \brief Control character interpretation on flag. */
