@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2005/07/26 15:44:50  haraldkipp
+# Include new libnutarch into the build
+#
 # Revision 1.4  2004/11/08 09:57:37  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -79,7 +82,7 @@ include ../Makedefs
 SRCS =  $(PROJ).c $(WEBFILE)
 OBJS =  $(SRCS:.c=.o)
 #MODS =  $(MODDIR)/dev/lanc111.o
-LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutnet -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutpro -lnutos -lnutarch -lnutdev -lnutnet -lnutfs -lnutcrt
 TARG =  $(PROJ).hex
 
 ifneq (, $(findstring h8300, $(ARCH)))

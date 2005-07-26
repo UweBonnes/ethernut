@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2005/07/26 15:44:38  haraldkipp
+# Include new libnutarch into the build
+#
 # Revision 1.1  2005/04/28 14:55:26  haraldkipp
 # Moved from top directory because of automake
 #
@@ -107,6 +110,7 @@ all:
 ifneq (, $(findstring h8300, $(ARCH)))
 	$(MAKE) -C $(top_srcdir)/arch/$(ARCH)/init
 endif
+	$(MAKE) -C $(top_srcdir)/arch
 	$(MAKE) -C $(top_srcdir)/os
 	$(MAKE) -C $(top_srcdir)/fs
 	$(MAKE) -C $(top_srcdir)/dev
@@ -119,6 +123,7 @@ install:
 ifneq (, $(findstring h8300, $(ARCH)))
 	$(MAKE) -C $(top_srcdir)/arch/$(ARCH)/init install
 endif
+	$(MAKE) -C $(top_srcdir)/arch install
 	$(MAKE) -C $(top_srcdir)/os install
 	$(MAKE) -C $(top_srcdir)/fs install
 	$(MAKE) -C $(top_srcdir)/dev install
@@ -131,6 +136,7 @@ clean:
 ifneq (, $(findstring h8300, $(ARCH)))
 	$(MAKE) -C $(top_srcdir)/arch/$(ARCH)/init clean
 endif
+	$(MAKE) -C $(top_srcdir)/arch clean
 	$(MAKE) -C $(top_srcdir)/os clean
 	$(MAKE) -C $(top_srcdir)/fs clean
 	$(MAKE) -C $(top_srcdir)/dev clean
@@ -149,6 +155,7 @@ cleanall:
 ifneq (, $(findstring h8300, $(ARCH)))
 	$(MAKE) -C $(top_srcdir)/arch/$(ARCH)/init clean
 endif
+	$(MAKE) -C $(top_srcdir)/arch clean
 	$(MAKE) -C $(top_srcdir)/os clean
 	$(MAKE) -C $(top_srcdir)/fs clean
 	$(MAKE) -C $(top_srcdir)/dev clean
@@ -162,6 +169,7 @@ distclean:
 ifneq (, $(findstring h8300, $(ARCH)))
 	$(MAKE) -C $(top_srcdir)/arch/$(ARCH)/init clean
 endif
+	$(MAKE) -C $(top_srcdir)/arch clean
 	$(MAKE) -C $(top_srcdir)/os clean
 	$(MAKE) -C $(top_srcdir)/fs clean
 	$(MAKE) -C $(top_srcdir)/dev clean

@@ -32,8 +32,8 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
-# Revision 1.1  2005/07/23 13:54:39  haraldkipp
-# First check in
+# Revision 1.2  2005/07/26 15:44:50  haraldkipp
+# Include new libnutarch into the build
 #
 #
 
@@ -43,7 +43,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutos -lnutdev -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutos -lnutarch -lnutdev -lnutcrt
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG)
