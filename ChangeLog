@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.256 2005/07/26 14:57:02 haraldkipp Exp $
+$Id: ChangeLog,v 1.257 2005/07/26 18:13:23 haraldkipp Exp $
 
 2005-07-26  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -99,6 +99,110 @@ $Id: ChangeLog,v 1.256 2005/07/26 14:57:02 haraldkipp Exp $
 	* tools/nutconf/nutconf.h: Version 1.2.3.
 
 	* tools/nutconf/nutconfdoc.cpp: Do not store default values.
+
+	* app/Makedefs.avr-dude: Wrong name removed. It's Makeburn.
+
+	* arch/arm/os/thread.c, arch/avr/os/thread.c: Moved to 
+	arch/(target)/os/context[_device].c.
+
+	* arch/arm/os/timer.c, arch/avr/os/timer.c, 
+	arch/h8300h/os/timer.c, arch/m68k/os/timer.c,
+	arch/unix/os/timer.c: Moved to arch/(target)/dev/ostimer.c.
+
+	* arch/unix/os/eeprom.c: Moved to arch/unix/dev.
+
+	* dev/irqreg.c: Previous platform distributor. No longer
+	required.
+
+	* dev/adc.c, dev/ahdlc0.c, dev/ahdlc1.c, dev/ahdlcavr.c, 
+	dev/cs8900.c, dev/cs8900.h, dev/debug0.c, dev/debug1.c, 
+	dev/eth0cs.c, dev/eth0rtl.c, dev/hd44780.c, dev/hd44780_bus.c,
+	dev/ide.c, dev/ir.c, dev/irsony.c, dev/ivect01.c, dev/ivect02.c,
+	dev/ivect03.c, dev/ivect04.c, dev/ivect05.c, dev/ivect06.c,
+	dev/ivect07.c, dev/ivect08.c, dev/ivect09.c, dev/ivect10.c,
+	dev/ivect11.c, dev/ivect12.c, dev/ivect13.c, dev/ivect14.c,
+	dev/ivect15.c, dev/ivect16.c, dev/ivect17.c, dev/ivect18.c,
+	dev/ivect19.c, dev/ivect20.c, dev/ivect21.c, dev/ivect22.c,
+	dev/ivect23.c, dev/ivect24.c, dev/ivect25.c, dev/ivect26.c,
+	dev/ivect27.c, dev/ivect28.c, dev/ivect29.c, dev/ivect30.c,
+	dev/ivect31.c, dev/ivect32.c, dev/ivect33.c, dev/ivect34.c,
+	dev/ivect35.c, dev/ivect36.c, dev/lanc111.c, dev/nicrtl.c,
+	dev/pcmcia.c, dev/rtlregs.h, dev/sja1000.c, dev/spidigio.c,
+	dev/spiflash.c, dev/twif.c, dev/uart0.c, dev/uart1.c,
+	dev/uartavr.c, dev/usart0avr.c, dev/usart1avr.c, dev/usartavr.c,
+	dev/vs1001k.c, dev/wlan.c, dev/wlandrv.c: Moved to arch/avr/dev.
+
+	* dev/arm_irqreg.c, dev/ax88796.c, dev/reg_ax88796.h,
+	dev/debug_at91.c, dev/debug_gba.c, dev/gba_irqreg.c,
+	dev/uartgba.c: Moved to arch/arm/dev.
+
+	* dev/h8_irqreg.c, dev/mweeprom.c, dev/nicrtl_h8.c,
+	dev/s3c4510b_console.c, dev/s3c4510b_irqreg.c,
+	dev/uart_s3c4510b_dbg.c, dev/scih8.c, dev/scih8dbg.c,
+	dev/scih8devs.c: Moved to arch/h8300h/dev.
+
+	* dev/m68k_irqreg.c: Moved to arch/m68k/dev/ihndlr.c.
+
+	* dev/unix_devs.c: Moved to arch/unix/dev.
+
+	* arch/arm/dev/ax88796.c, arch/arm/dev/debug_at91.c,
+	arch/arm/dev/debug_gba.c, arch/arm/dev/ihndlr_gba.c,
+	arch/arm/dev/ostimer_at91.c, arch/arm/dev/ostimer_gba.c,
+	arch/arm/dev/ostimer_s3c4510b.c, arch/arm/dev/reg_ax88796.h,
+	arch/arm/dev/uartgba.c: Moved from dev.
+
+	* arch/avr/dev/adc.c, arch/avr/dev/ahdlc0.c,
+	arch/avr/dev/ahdlc1.c, arch/avr/dev/ahdlcavr.c,
+	arch/avr/dev/cs8900.c, arch/avr/dev/cs8900.h,
+	arch/avr/dev/debug0.c, arch/avr/dev/debug1.c,
+	arch/avr/dev/eth0cs.c, arch/avr/dev/eth0rtl.c,
+	arch/avr/dev/hd44780.c, arch/avr/dev/hd44780_bus.c,
+	arch/avr/dev/ide.c, arch/avr/dev/ir.c,
+	arch/avr/dev/irsony.c, arch/avr/dev/ivect01.c,
+	arch/avr/dev/ivect02.c, arch/avr/dev/ivect03.c,
+	arch/avr/dev/ivect04.c, arch/avr/dev/ivect05.c,
+	arch/avr/dev/ivect06.c, arch/avr/dev/ivect07.c,
+	arch/avr/dev/ivect08.c, arch/avr/dev/ivect09.c,
+	arch/avr/dev/ivect10.c, arch/avr/dev/ivect11.c,
+	arch/avr/dev/ivect12.c, arch/avr/dev/ivect13.c,
+	arch/avr/dev/ivect14.c, arch/avr/dev/ivect15.c,
+	arch/avr/dev/ivect16.c, arch/avr/dev/ivect17.c,
+	arch/avr/dev/ivect18.c, arch/avr/dev/ivect19.c,
+	arch/avr/dev/ivect20.c, arch/avr/dev/ivect21.c,
+	arch/avr/dev/ivect22.c, arch/avr/dev/ivect23.c,
+	arch/avr/dev/ivect24.c, arch/avr/dev/ivect25.c,
+	arch/avr/dev/ivect26.c, arch/avr/dev/ivect27.c,
+	arch/avr/dev/ivect28.c, arch/avr/dev/ivect29.c,
+	arch/avr/dev/ivect30.c, arch/avr/dev/ivect31.c,
+	arch/avr/dev/ivect32.c, arch/avr/dev/ivect33.c,
+	arch/avr/dev/ivect34.c, arch/avr/dev/ivect35.c,
+	arch/avr/dev/ivect36.c, arch/avr/dev/lanc111.c,
+	arch/avr/dev/nicrtl.c, arch/avr/dev/ostimer.c,
+	arch/avr/dev/pcmcia.c, arch/avr/dev/rtlregs.h,
+	arch/avr/dev/sja1000.c, arch/avr/dev/spidigio.c,
+	arch/avr/dev/spiflash.c, arch/avr/dev/twif.c,
+	arch/avr/dev/uart0.c, arch/avr/dev/uart1.c,
+	arch/avr/dev/uartavr.c, arch/avr/dev/usart0avr.c,
+	arch/avr/dev/usart1avr.c, arch/avr/dev/usartavr.c,
+	arch/avr/dev/vs1001k.c, arch/avr/dev/wlan.c,
+	arch/avr/dev/wlandrv.c: Moved from dev.
+
+	* arch/h8300h/dev/ihndlr.c, arch/h8300h/dev/mweeprom.c,
+	arch/h8300h/dev/nicrtl.c, arch/h8300h/dev/ostimer.c,
+	arch/h8300h/dev/s3c4510b_console.c, 
+	arch/h8300h/dev/s3c4510b_irqreg.c,
+	arch/h8300h/dev/scih8.c, arch/h8300h/dev/scih8dbg.c,
+	arch/h8300h/dev/scih8devs.c, arch/h8300h/dev/uart_s3c4510b_dbg.c:
+	Moved from dev.
+
+	* arch/m68k/dev/ihndlr.c, arch/m68k/dev/ostimer.c:
+	Moved from dev.
+
+	* arch/unix/dev/eeprom.c, arch/unix/dev/ostimer.c,
+	arch/unix/dev/unix_devs.c: Moved from dev.
+
+	* arch/arm/os/context.c, arch/avr/os/context_gcc.c,
+	arch/avr/os/context_icc.c: moved from os/thread.c.
 
 
 2005-07-23  Harald Kipp  <harald.kipp@egnite.de>
