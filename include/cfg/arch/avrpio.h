@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/07/26 16:06:20  haraldkipp
+ * Added missing SPIDIGIO registers.
+ *
  * Revision 1.2  2005/02/02 20:06:37  haraldkipp
  * This file will now contain the AVR port definitions, which were
  * previously specified in avr.h. This file will be included by avr.h,
@@ -146,6 +149,14 @@
 
 #ifndef SPIDIGIO_SIN_PIN
 #define SPIDIGIO_SIN_PIN PIND
+#endif
+
+#ifndef SPIDIGIO_SIN_PORT
+#define SPIDIGIO_SIN_PORT PORTD
+#endif
+
+#ifndef SPIDIGIO_SIN_DDR
+#define SPIDIGIO_SIN_DDR DDRD
 #endif
 
 #ifndef SPIDIGIO_SCLK_BIT
