@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:30  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/08/02 17:47:03  haraldkipp
+ * Major API documentation update.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:30  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.11  2003/02/04 18:14:57  harald
  * Version 3 released
@@ -106,8 +109,6 @@
 
 /*!
  * \addtogroup xgIP
- *
- * \author Harald Kipp, egnite Software GmbH
  */
 /*@{*/
 

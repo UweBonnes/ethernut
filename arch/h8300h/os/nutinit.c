@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:46  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/05/27 17:18:41  drsung
  * Moved the file.
  *
@@ -49,11 +52,11 @@
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 
 /*!
- * \addtogroup xgNutInit
+ * \addtogroup xgNutArchH8300hInit
  */
 /*@{*/
 
-/*! \fn NutIdle(void *arg)
+/* \fn NutIdle(void *arg)
  * \brief Idle thread. 
  *
  * After initializing the timers, the idle thread switches to priority 254

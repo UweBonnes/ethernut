@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2004/09/08 10:23:43  haraldkipp
  * Generic C string library added
  *
@@ -169,3 +172,5 @@ void *memcpy(void *dst0, CONST void *src0, size_t length)
 done:
 	return dst0;
 }
+
+/*@}*/

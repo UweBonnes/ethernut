@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.5  2004/05/24 17:11:05  olereinhardt
  * dded terminal device driver for hd44780 compatible LCD displays directly
  * connected to the memory bus (memory mapped). See hd44780.c for more
@@ -752,3 +755,5 @@ int TermClose(NUTFILE * fp)
     }
     return -1;
 }
+
+/*@}*/

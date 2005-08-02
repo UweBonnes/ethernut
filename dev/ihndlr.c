@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.2  2005/07/26 16:30:58  haraldkipp
  * Copyright added.
  * Temporarily exclude NutRegisterIrqHandler() from Linux builds.
@@ -41,6 +44,11 @@
 
 #include <sys/atom.h>
 #include <dev/irqreg.h>
+
+/*!
+ * \addtogroup xgInterrupt
+ */
+/*@{*/
 
 /*!
  * \brief Call a registered interrupt handler.
@@ -55,7 +63,9 @@ void CallHandler(IRQ_HANDLER * irh)
 /*!
  * \brief Register an interrupt handler.
  *
- * This function is typically called by device drivers.
+ * This function is typically called by device drivers, but
+ * applications may also implement their local interrupt
+ * handlers.
  *
  * \param irq     Interrupt number to be associated with this handler.
  * \param handler This routine will be called by Nut/OS, when the
@@ -78,3 +88,5 @@ int NutRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *),
     return 0;
 }
 #endif
+
+/*@}*/

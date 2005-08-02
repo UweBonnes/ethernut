@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.3  2005/04/05 17:38:45  haraldkipp
  * ARM7 memory alignment bugs fixed.
  *
@@ -184,16 +187,18 @@ typedef struct _TCPPSEUDOHDR {
                                          IP datagram for Ethernet is 1500. Reduce this
                                          number by 40, 20 bytes TCP header and 20 bytes
                                          IP header.
+                                         \showinitializer 
                                      */
 #define TCP_WINSIZE         3216    /*!< \brief Default window size.
                                          It's recommended to set this 6 times the maximum
                                          segment size.
+                                         \showinitializer 
                                      */
 
-#define TCP_MAXWIN          65535   /*!< \brief Largest value for (unscaled) window. */
-#define TTCP_CLIENT_SND_WND 4096    /*!< \brief Default send window for T/TCP client. */
+#define TCP_MAXWIN          65535   /*!< \brief Largest value for (unscaled) window. \showinitializer */
+#define TTCP_CLIENT_SND_WND 4096    /*!< \brief Default send window for T/TCP client. \showinitializer */
 
-#define TCP_MAX_WINSHIFT    14      /*!< \brief Maximum window shift. */
+#define TCP_MAX_WINSHIFT    14      /*!< \brief Maximum window shift. \showinitializer */
 
 #define TCP_MAXHLEN         (0xf<<2)    /*!< \brief Maximum length of header in bytes. */
 #define TCP_MAXOLEN         (TCP_MAXHLEN - sizeof(struct tcphdr))   /*!< \brief Maximum space left for options. */

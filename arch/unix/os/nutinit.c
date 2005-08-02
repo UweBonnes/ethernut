@@ -349,12 +349,12 @@ void NutIRQInit()
 }
 
 /*!
- * \addtogroup xgNutInit
+ * \addtogroup xgNutArchUnixInit
  */
 /*@{*/
 
-/*! \fn NutIdle(void *arg)
- * \brief Idle thread. 
+/*!
+ * \brief Emulated idle thread. 
  *
  * After initializing the timers, the idle thread switches to priority 254
  * and enters an endless loop.

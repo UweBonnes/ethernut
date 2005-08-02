@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.3  2004/09/08 10:24:26  haraldkipp
  * RAMSTART is too platform dependant
  *
@@ -83,7 +86,6 @@ void *malloc(size_t len)
  *
  * \param p Points to a memory block previously allocated
  *          through a call to malloc().
- *
  */
 void free(void *p)
 {

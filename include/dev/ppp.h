@@ -66,6 +66,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/02 17:46:48  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.4  2004/03/14 10:14:42  haraldkipp
  * Unused prototypes removed
  *
@@ -255,6 +258,7 @@ extern NUTDEVICE devPpp;
 #define LCP_LOWERUP     3
 #define LCP_LOWERDOWN   4
 
+/*@}*/
 
 #ifdef __cplusplus
 }

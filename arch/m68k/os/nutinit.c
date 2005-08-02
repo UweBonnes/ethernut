@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:46  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/05/27 17:21:10  drsung
  * Moved the file.
  *
@@ -40,6 +43,11 @@
  * Added Jan Dubiec's H8/300 port.
  *
  */
+
+/*!
+ * \addtogroup xgNutArchM68kInit
+ */
+/*@{*/
 
 #define NUTRAMEND ((volatile u_char *)0x7FFF)
 
@@ -82,12 +90,7 @@ void NutInitXRAM(void)
 
 #endif
 
-/*!
- * \addtogroup xgNutInit
- */
-/*@{*/
-
-/*! \fn NutIdle(void *arg)
+/* \fn NutIdle(void *arg)
  * \brief Idle thread. 
  *
  * After initializing the timers, the idle thread switches to priority 254
@@ -113,7 +116,7 @@ THREAD(NutIdle, arg)
     }
 }
 
-/*!
+/*
  * \brief Nut/OS Initialization.
  *
  * Initializes the memory management and the thread system and starts 

@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2004/09/08 10:23:26  haraldkipp
  * Generic C stdlib added
  *
@@ -68,7 +71,7 @@
 #include <stdlib.h>
 
 /*!
- * \addtogroup xgCrtString
+ * \addtogroup xgCrtStdLib
  */
 /*@{*/
 
@@ -84,3 +87,5 @@ long labs(long j)
 {
     return (j < 0 ? -j : j);
 }
+
+/*@}*/

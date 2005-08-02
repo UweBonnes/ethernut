@@ -43,6 +43,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/08/02 17:46:48  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.7  2005/04/04 19:35:06  freckle
  * added socket redirection feature for unix emulation uarts. Every nut/os
  * uart device can now be mapped to a TCP/IP socket using the
@@ -85,7 +88,7 @@ extern "C" {
 #endif
 
 /*!
- * \addtogroup xgUnixEmulation
+ * \addtogroup xgNutArchUnix
  */
 /*@{*/
 

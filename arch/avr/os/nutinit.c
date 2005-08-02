@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:46  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/05/27 17:17:31  drsung
  * Moved the file
  *
@@ -93,6 +96,11 @@
 #include <cfg/memory.h>
 #include <cfg/os.h>
 #include <cfg/arch/avr.h>
+
+/*!
+ * \addtogroup xgNutArchAvrInit
+ */
+/*@{*/
 
 #ifdef NUTXMEM_SIZE
 /*!
@@ -397,12 +405,6 @@ void FakeNicEeprom(void)
 
 #endif /* RTL_EESK_BIT && __GNUC__ && NUTXMEM_SIZE */
 
-
-/*!
- * \addtogroup xgThread
- */
-/*@{*/
-
 /*! \fn NutThreadSetSleepMode(u_char mode)
  * \brief Sets the sleep mode to enter in Idle thread
  *
@@ -420,17 +422,9 @@ void NutThreadSetSleepMode(u_char mode)
 #endif
 
 /*!
- * \addtogroup xgNutInit
- */
-/*@{*/
-
-/*! \fn NutIdle(void *arg)
- * \brief Idle thread.
+ * \brief AVR Idle thread.
  *
- * After initializing the timers, the idle thread switches to priority 254
- * and enters an endless loop.
- *
- * \todo Make the stack size of the application main thread configurable.
+ * Running at priority 254 in an endless loop.
  */
 THREAD(NutIdle, arg)
 {

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.19  2005/07/20 09:14:40  haraldkipp
  * Release 3.9.8
  *
@@ -109,7 +112,7 @@
 static CONST char os_version_string[] = "3.9.8.2";
 
 /*!
- * \addtogroup xgNutInit
+ * \addtogroup xgNutVersion
  */
 /*@{*/
 

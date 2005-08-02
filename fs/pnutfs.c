@@ -31,12 +31,15 @@
  */
 
 /*!
- * \file fs/pnut.c
+ * \file fs/pnutfs.c
  * \brief Peanut File System.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.4  2005/05/16 08:33:59  haraldkipp
  * Added banking support for Arthernet.
  *
@@ -48,7 +51,6 @@
  *
  * Revision 1.1  2005/02/05 20:35:21  haraldkipp
  * Peanut added
- *
  *
  * \endverbatim
  */

@@ -31,8 +31,16 @@
  *
  */
 
-/*
+/*!
+ * \file arch/arm/dev/debug_at91.c
+ * \brief AT91 debug output device.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:02:26  haraldkipp
  * Moved from dev.
  *
@@ -42,12 +50,13 @@
  * Revision 1.1  2004/09/08 10:53:13  haraldkipp
  * Our first device for the EB40A
  *
+ * \endverbatim
  */
 
 #include <dev/debug.h>
 
 /*!
- * \addtogroup xgDebugDev0
+ * \addtogroup xgDevDebugAt91
  */
 /*@{*/
 

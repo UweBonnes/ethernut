@@ -38,34 +38,36 @@
 /*!
  * \file dev/uartspi.h
  * \brief SPI UART definitions.
+ *
+ * Removed.
  */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*!
+/*
  * \addtogroup xgUartSpi
  */
 /*@{*/
 
-/*!
+/*
  * UART device control block type.
  */
 typedef struct _UARTSDCB UARTSDCB;
 
-/*!
+/*
  * \struct _UARTSDCB uartspi.h dev/uartspi.h
  * \brief UART device control block structure.
  */
 struct _UARTSDCB {
-    /*! \brief Baudrate selector.
+    /* \brief Baudrate selector.
      *
      * See devices datasheet for further details.
      */
     u_char dcb_baudSelect;
 
-    /*! \brief Mode.
+    /* \brief Mode.
      *  - xxxx xxx0  8 bit
      *  - xxxx xxx1  7 bit
      *  - xxxx x0xx  No parity bit
@@ -74,35 +76,35 @@ struct _UARTSDCB {
      */
     u_char dcb_mode;
 
-    /*! \brief Read timeout.
+    /* \brief Read timeout.
      */
     u_long dcb_rtimeout;
 
-    /*! \brief Write timeout.
+    /* \brief Write timeout.
      */
     u_long dcb_wtimeout;
 
-    /*! \brief Configuration flag.
+    /* \brief Configuration flag.
      * Set if device has been configured.
      */
     volatile u_char dcb_configured;
 
-    /*! \brief Configuration flag.
+    /* \brief Configuration flag.
      * Set if device has been configured.
      */
     u_long dcb_crystal;
 
-    /*! \brief Device firmware version.
+    /* \brief Device firmware version.
      */
     u_long dcb_version;
 
-    /*! \brief Queue of threads waiting for output buffer empty.
+    /* \brief Queue of threads waiting for output buffer empty.
      *
      * Threads are added to this queue when calling UartSpiFlush(). 
      */
     HANDLE dcb_tx_rdy;
 
-    /*! \brief Queue of threads waiting for a character in the input buffer.
+    /* \brief Queue of threads waiting for a character in the input buffer.
      *
      * Threads are added to this queue when calling UartSpiInput(). 
      */

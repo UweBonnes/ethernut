@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/08/02 17:46:48  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.10  2005/02/22 17:03:02  freckle
  * changed avr-libc-1.2 test to use eeprom_rb, as other test was wrong on
  * 1.0.5
@@ -190,16 +193,16 @@
 #endif
 
 /* Master */
-#define TW_START		0x08
+#define TW_START		    0x08
 #define TW_REP_START		0x10
 /* Master Transmitter */
 #define TW_MT_SLA_ACK		0x18
 #define TW_MT_SLA_NACK		0x20
 #define TW_MT_DATA_ACK		0x28
 #define TW_MT_DATA_NACK		0x30
-#define TW_MT_ARB_LOST		0x38
+#define TW_MT_ARB_LOST      0x38
 /* Master Receiver */
-#define TW_MR_ARB_LOST		0x38
+#define TW_MR_ARB_LOST      0x38
 #define TW_MR_SLA_ACK		0x40
 #define TW_MR_SLA_NACK		0x48
 #define TW_MR_DATA_ACK		0x50

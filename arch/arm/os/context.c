@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:10:48  haraldkipp
  * Moved from os/thread.c
  *
@@ -69,6 +72,12 @@
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/thread.h>
+
+/*!
+ * \addtogroup xgNutArchArmOsContext
+ */
+/*@{*/
+
 
 /*!
  * \brief ARM7TDMI GCC context switch frame layout.
@@ -292,3 +301,5 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
 
     return td;
 }
+
+/*@}*/

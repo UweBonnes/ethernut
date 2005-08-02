@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.4  2004/06/07 15:07:00  olereinhardt
  * Added IFTYP_CAN
  *
@@ -88,12 +91,6 @@
 
 __BEGIN_DECLS
 
-/*!
- * \addtogroup xgDevice
- */
-/*@{*/
-
-
 // wait times for emulation and reality
 // has to be overworked
 
@@ -111,6 +108,11 @@ __BEGIN_DECLS
 #define WAIT500		50
 #endif
 
+/*!
+ * \addtogroup xgDevice
+ */
+/*@{*/
+
 #define IFTYP_RAM       0	/*!< \brief RAM device */
 #define IFTYP_ROM       1	/*!< \brief ROM device */
 #define IFTYP_STREAM    2	/*!< \brief Stream device */
@@ -125,8 +127,18 @@ __BEGIN_DECLS
 typedef struct _NUTDEVICE NUTDEVICE;
 
 /*!
- * \struct _NUTDEVICE device.h sys/device.h
  * \brief Device structure.
+ *
+ * Each device driver provides a global variable of this type.
+ * Applications use NutRegisterDevice() to bind the device
+ * driver to the application code. Except this call, applications
+ * refer to device drivers by the name of the device when using 
+ * standard C functions like _open() or fopen().
+ *
+ * More than one device driver may be available for the same
+ * hardware device. Typically these drivers provide the same
+ * name for the device and applications must not refer to
+ * more than one device driver with the same name.
  */
 struct _NUTDEVICE {
 
@@ -236,7 +248,6 @@ struct _NUTDEVICE {
 typedef struct _NUTVIRTUALDEVICE NUTVIRTUALDEVICE;
 
 /*!
- * \struct _NUTVIRTUALDEVICE device.h sys/device.h
  * \brief Virtual device structure.
  */
 struct _NUTVIRTUALDEVICE {
@@ -257,7 +268,6 @@ struct _NUTVIRTUALDEVICE {
 typedef struct _IFSTREAM IFSTREAM;
 
 /*!
- * \struct _IFSTREAM device.h sys/device.h
  * \brief Stream interface information structure.
  *
  * Deprecated structure. Device drivers should use

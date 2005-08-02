@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.3  2004/06/02 16:43:36  olereinhardt
  * fixed bug (integer overflow) in semaphore implementation
  *
@@ -85,5 +88,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/
 
 #endif /* #ifndef _SYS_SEMAPHORE_H */

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:02:26  haraldkipp
  * Moved from dev.
  *
@@ -60,6 +63,11 @@
 #include <cfg/arch.h>
 #include <arch/gba.h>
 #include <dev/irqreg.h>
+
+/*!
+ * \addtogroup xgNutArchArmOsTimerGba
+ */
+/*@{*/
 
 #ifndef NUT_CPU_FREQ
 #define NUT_CPU_FREQ    1000000UL
@@ -142,7 +150,7 @@ void NutRegisterTimer(void (*handler) (void *))
 /*!
  * \brief Return the CPU clock in Hertz.
  *
- * \return CPU clock frequency in Hertz.
+ * \return CPU clock frequency in Hertz, which is 16780000 for the GBA.
  */
 u_long NutGetCpuClock(void)
 {
@@ -167,4 +175,5 @@ u_long NutTimerMillisToTicks(u_long ms)
     return ms * 1000L / NutGetTickClock();
 }
 
+/*@}*/
 

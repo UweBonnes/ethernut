@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:44  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -93,10 +96,10 @@
 /*@{*/
 
 /*!
- * \brief Receive an UDP datagram on a specified port.
+ * \brief Receive a UDP datagram on a specified port.
  *
  * This function calls IpInput(). Any incoming Ethernet frame, which is 
- * not an UDP datagram to the specified port will be discarded.
+ * not a UDP datagram to the specified port will be discarded.
  *
  * \param port UDP port to listen to.
  * \param tms  Return with timeout after the specified number of 
@@ -128,7 +131,7 @@ int UdpInput(u_short port, u_short tms)
 }
 
 /*!
- * \brief Send an UDP datagram.
+ * \brief Send a UDP datagram.
  *
  * This function fills the UDP header of the global send frame and calls 
  * IpOutput().

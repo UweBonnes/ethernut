@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.6  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.5  2005/02/06 16:37:54  haraldkipp
  * FTP sample added
  *
@@ -47,7 +50,7 @@
  *
  */
 /*!
- * \mainpage Nut Operating System And TCP/IP Stack
+ * \mainpage Nut/OS
  *
  * \image html logo_ethernut_239x57.gif
  *
@@ -57,19 +60,17 @@
  * This is a preview of the upcoming version 4.
  *
  * For latest information please visit
- * http://www.ethernut.de/en/nutconf/index.html
- *
- * ImageCraft users will find additional information at
- * http://www.ethernut.de/en/iccavr/index.html
- *
+ * http://www.ethernut.de
  *
  * Ethernut is an Open Source Hardware and Software Project for building 
  * Embedded Ethernet Devices.
  *
- * The hardware design includes a small board, which is equipped with an 
- * Atmel ATmega128 CPU and a Realtek RTL8019AS or SMSC LAN91C111 Ethernet 
- * Controller.
- *
+ * For the hardware part three reference designs are currently available:
+ * - Ethernut 1 with ATmega103 or ATmega128 CPU and Realtek RTL8019AS 
+ *   Ethernet Controller.
+ * - Ethernut 2 with ATmega128 CPU and SMSC LAN91C111 Ethernet Controller.
+ * - Ethernut 3 with AT91R40008 CPU and Davicom DM9000E Ethernet Controller.
+ * 
  * The software part is based on an Open Source implementation of a Real 
  * Time Operating System called Nut/OS and a TCP/IP protocol suite named 
  * Nut/Net.
@@ -78,286 +79,17 @@
  * Nut/OS and Nut/Net API. It has been generated from the source 
  * code by Doxygen, a great tool created by Dimitri van Heesch.
  *
- * As a first step, you may want to set up your 
- * \ref compiler "Compiler Environment".
- *
- * \subsection contact Contact Information
- * If you would like to contact us regarding Ethernut, please email
- * info@egnite.de
- *
- * For updated information you may regularly visit
- * http://www.ethernut.de/
+ * As a first step, you may want to set up your Development Environment
+ * by following the latest version of the Ethernut Software Manual at
+ * http://www.ethernut.de/en/documents/
  */
-
-/*!
- * \page compiler Setting the Compiler Environment
- *
- * This section is not up to date. Please visit
- * http://www.ethernut.de/en/nutconf/index.html
- *
- * ImageCraft users will find more information at
- * http://www.ethernut.de/en/iccavr/index.html
- *
- *
- *
- * The first decision that has to be made, is to select the development 
- * platform you want to use. The commercial ImageCraft Compiler offers 
- * an advanced IDE and is the first choice of most professional developers 
- * using a Windows PC. The GNU compiler AVR-GCC is available for Linux 
- * and Windows (WinAVR).
- *
- * \li Open a command line window.
- * \li Change to the Nut/OS installation directory.
- * \li Make sure, that your compiler's bin directory is include in the PATH.
- * \li Execute configure or nutconf (see below).
- *
- * In order to start with your own Embedded Ethernet Application, take 
- * one of the samples like TCPS and add some modifications. Then recompile 
- * and link it with the Nut/OS library by using the prepared Makefile 
- * for the GNU compiler or simply press the "Build" button of the ImageCraft 
- * IDE. The ImageCraft IDE comes with an integrated tool to upload the 
- * resulting binary into your Ethernut Board. The GNU archive provides a 
- * command line utility named usip, which takes over this task. Also note, 
- * that Ethernut applications are linked to the Nut/OS operating system and 
- * its TCP/IP Stack. The resulting binary file contains all three parts, 
- * the application, Nut/OS and Nut/Net. The advantage is, that only those 
- * parts of the operating system are included, which your application 
- * really needs, leaving more room for application code.
- *
- * The next chapters will provide more detailed instructions.
- *
- * \section confnix Configuring the Nut/OS Development for Linux.
- *
- * Linux users are relieved of the burden choosing a compiler, but
- * the installation is a bit different from the dumb click and
- * clack being required under Windows.
- *
- * There is no all round packet like WinAVR, you need collect all
- * required parts first. These are
- *
- * \li avr-binutils
- * \li avr-gcc
- * \li avr-gcc-c++
- * \li avr-libc
- * \li avr-libc-docs
- * \li uisp
- * \li ethernut
- *
- * The next problem will arise, if your Linux system doesn't provide
- * rpm support. The following steps had been tested on Redhat 9 and
- * should work under Suse too. Different steps may be required for
- * Debian.
- *
- * To install the compiler, change to the directory where all packets
- * have been downloaded to. When using the Ethernut Starter Kit, they
- * are located on the CDROM. Then install the rpms. Note, that the
- * filenames may differ, if you got newer releases.
- *
- * \code cd /cdrom/gnu-c/gcc_linux/
- * rpm -Uvh \
- * avr-binutils-2.13.90.030512-1.i386.rpm \
- * avr-gcc-3.2.90.20030512-1.i386.rpm \
- * avr-gcc-c++-3.2.90.20030512-1.i386.rpm \
- * avr-libc-20030512cvs-1.i386.rpm \
- * avr-libc-docs-20030512cvs-1.i386.rpm \endcode
- *
- * If not done previously you may install uisp now.
- *
- * \code cd /cdrom/tools/linux/
- * tar -zxvf uisp-20030618.tar.gz -C ~/
- * cd ~/uisp-20030618/
- * ./configure
- * make
- * make install \endcode
- *
- * Finally install the Nut/OS and Nut/Net sources.
- *
- * \code cd /cdrom/ethernut/unix/
- * tar -zxvf ethernut-3.3.2.tar.gz -C ~/
- * cd ~/ethernut-3.3.2/nut/
- * ./configure \endcode
- *
- * The configure script will guide you through the final
- * steps, selecting the right CPU and the type of your
- * programming adapter.
- *
- * You may now rebuild the Nut/OS libraries by entering
- *
- * \code make clean
- * make install \endcode
- *
- * This step should be passed without any errors or even
- * warning. If not, you may have used the wrong compiler or
- * library version.
- *
- * Now you can check, if you are able to compile the http
- * daemon sample and upload the resulting binary to your
- * Ethernut board.
- *
- * \code cd app/httpd/
- * make burn \endcode
- *
- *
- * \section confwin Configuring the Nut/OS Development for Windows.
- *
- * After having choosen the compiler, you are ready to configure the
- * development environment. You should have installed your compiler
- * and Nut/OS. Open a command line window (DOS window) and change to
- * the Nut/OS installation directory.
- *
- * Now you need to set the correct path to the subdirectory, where all
- * the binaries of your compiler are installed.
- *
- * For ICCAVR you may enter something like
- *
- * \code SET PATH=C:\icc\bin;%PATH% \endcode
- *
- * The typical WinAVR installation may require
- *
- * \code SET PATH=C:\WinAVR\bin;C:\WinAVR\utils\bin;%PATH% \endcode
- *
- * Next enter
- *
- * \code nutconf \endcode
- *
- * which will start the configuration tool. Again select the right
- * compiler, the type of CPU and the programming adapter you are
- * using and press the Configure button. Confirm to rebuild the 
- * libraries. Nut/OS comes with ready build libraries, but when
- * using ICCAVR, these libraries need to be copied to the compiler's
- * lib directory. For AVRGCC there's no need to rebuild them, but
- * it didn't hurt.
- *
- * If you want to change the compiler or in case you modified
- * any part of the system, you can call nutconf again later to
- * change your settings and create a new library version.
- *
- * \section iccide Using the ImageCraft IDE.
- *
- * The ImageCraft IDE should be used for your application
- * code only. Compiling the Nut/OS libraries requires a command
- * line environment (see next section).
- *
- * Executing nutconf as described above copies all Nut/OS
- * libraries to the ImageCraft library directory.
- *
- * Before creating Nut/OS applications, you have to enter
- * some special settings in the ImageCraft Project. On the
- * first page of the Compiler Options Dialog you need to
- * add the Nut/OS include file path. Note, that the path
- * of your ImageCraft directory may differ.
- *
- * \code ..\..\include\;C:\icc\include\ \endcode
- *
- * On the second page the macro define
- *
- * \code  _MCU_enhanced \endcode
- *
- * has to be added if you are developing for the ATmega128.
- *
- * On the last page you must add the following additional libs.
- *
- * \code nutpro nutnet nutfs nutos nutdev nutcrt \endcode
- *
- * On the same page enter
- *
- * \code -ucrtnut.o c:\icc\lib\nutinit.o \endcode
- *
- * in the field named Other Options. Again, your path to the 
- * ImageCraft directory may differ. Please refer to the ICCAVR 
- * Online Manuals for further assistance.
- *
- * \section iccenv Command Line Environment for ICCAVR
- *
- * In case you avoid IDEs in general or if you want to make
- * your own modifications to Nut/OS libraries, then you must use
- * a shell, also known as the DOS window or command line.
- *
- * Change to the Nut/OS installation directory and make sure, 
- * that your PATH includes the ICCAVR bin directory.
- *
- * To rebuild the complete library, enter
- *
- * \code make clean \endcode
- *
- * followed by
- *
- * \code make install \endcode
- *
- * All Nut/OS and Nut/Net libraries should compile and link without 
- * problem and will be copied to the Nut/OS lib directory. The
- * configure tool will then copy these libraries to the ImageCraft
- * lib directory.
- *
- * Get yourself familiar with the GNU make utility.
- *
- * Most applications written for AVR-GCC will not run properly 
- * when compiled by ICCAVR. Specifically the macro PSTR() will not 
- * work with ICCAVR. For porting, refer to the samples in subdirectory 
- * appicc.
- *
- * \section gccenv Command Line Environment for WinAVR
- *
- * Open a shell and change to the directory, which contains your
- * application source code. Make sure, that your PATH includes the 
- * AVRGCC bin directory. WinAVR users must include two directories 
- * in their path.
- *
- * \code SET PATH=C:\WinAVR\bin;C:\WinAVR\utils\bin;%PATH% \endcode
- *
- * To build you application's hex file, simply enter
- *
- * \code make \endcode
- *
- * If you are using uisp for uploading the hex file to the target
- * system, you can enter
- *
- * \code make burn \endcode
- *
- * This will build your application and, if successful, automatically
- * program your target.
- * 
- * To rebuild the complete Nut/OS library, change to the Nut/OS 
- * installation directory and enter
- *
- * \code make clean \endcode
- *
- * followed by
- *
- * \code make install \endcode
- *
- * If successful, the new libraries will be copied to the Nut/OS lib
- * directory.
- */
-
-/*!
- * \page contribs How to contribute.
- *
- * Contributions to Nut/OS are most welcome. If you want to, please
- * try to follow some rules to keep the code consistent and easy to
- * read.
- *
- * - Use K&R indentation style. Use "indent -kr".
- * - Tab size is 8. This is very important.
- * - Try to follow the Doxygen inline documentation style. Otherwise your
- *   changes will not appear in this manual.
- * - Try to make sure that your code is working with all supported compilers.
- * - Compiler specific variations should be defined in compiler.h.
- * - Use BSD types in types.h.
- * - If you want to replace existing library functions, place them in the
- *   mod directory. This avoids breaking existing code.
- *
- * No one will reject your code, if you don't follow these rules. However,
- * it may take more time until it appears in an official release.
- */
-
 
 /*!
  * \page copyleft Copyright Statement
  *
  * Nut/OS and Nut/Net are
  *
- * Copyright (C) 2000-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2000-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -497,35 +229,49 @@
 /*!
  * \defgroup xgNutOS Nut/OS API
  *
- * \brief
- * Ethernut Operating System API.
+ * \brief Operating System API.
  *
- * Nut/OS is a small real time operating system aimed at 8-bit CPUs.
- *
- * It supports the following features:
- *    - Corporative multi-threading
+ * This API supports the following features:
+ *    - Cooperative multithreading
  *    - Synchronization mechanisms
  *    - Dynamic memory management
  *    - Asynchronous timers
- *    - Serial port character I/O
- *
- * A reasonably large hardware resource might be:
- *    - 0.5 kBytes RAM
- *    - 8 kBytes ROM
- *    - 1 MIPS CPU speed
- *
+ *    - I/O Drivers
  */
 /*@{*/
 
 /*!
  * \defgroup xgNutInit System Initialization
  * \brief Nut/OS initialization.
+ *
+ * System initialization is implemented in the architecture
+ * dependant parts. Applications do not need to call any
+ * specific routine. The system is automatically initialized
+ * before the application main routine starts running.
+ *
+ * Links to the architecture specific initialization
+ * - \ref xgNutArchAvrInit "AVR"
+ * - \ref xgNutArchArmInit "ARM"
+ * - \ref xgNutArchUnixInit "Emulator (UNIX)"
+ *
+ * A bare minimum code sample
+ * \code
+ * #include <compiler.h>
+ *
+ * int main(void)
+ * {
+ *     for (;;);
+ * } 
+ * \endcode
+ *
+ * Including compiler.h is currently required to fix a problem
+ * with GCC's special handling of main().
  */
 
 /*!
  * \defgroup xgThread Thread Management
  * \anchor xrThread
- * \brief Coperative multi-threading support.
+ * \brief Cooperative multi-threading support.
  *
  * Typically Nut/OS is at its most useful where there are several
  * concurrent tasks that need to be undertaken at the same time.
@@ -557,13 +303,38 @@
  * coorperative multithreading simplifies resource sharing
  * and results in faster and smaller code.
  *
+ * \todo Using the special priority 255 to kill a thread is not 
+ * required and should be removed.
+ *
+ * To specify a function named Back as an independant thread, one can write
+ * \code
+ * #include <sys/thread.h>
+ *
+ * THREAD(Back, arg)
+ * {
+ *     for (;;) {
+ *         NutSleep(1000);
+ *     }
+ * } 
+ * \endcode
+ *
+ * To start this thread, use
+ * \code
+ * #include <sys/thread.h>
+ *
+ * /* Other code here... */
+ *
+ * NutThreadCreate("Bg", Back, NULL, 512);
+ * /* Execution continues here and concurrently in the background thread.
+ * \endcode
+ *
+ * The functions listed below are hardware independant. Additional
+ * API calls are located in the architecture dependant sections.
+ * - \ref xgNutArchAvrOsContextGcc "AVR with GNU Compiler"
+ * - \ref xgNutArchAvrOsContextGcc "AVR with ImageCraft Compiler"
+ * - \ref xgNutArchArmOsContext "ARM"
+ * - \ref xgNutArchUnixOsContext "Emulator (UNIX)"
  */
-/*@{*/
-/*!
- * \defgroup xgThreadState Thread States
- * \brief Thread operating states.
- */
-/*@}*/
 
 /*!
  * \defgroup xgEvent Event Management
@@ -575,6 +346,8 @@
  *
  * Waiting threads line up in priority ordered queues,
  * so more than one thread may wait for the same event.
+ * A waiting queue is a simple linked list of waiting
+ * threads.
  *
  * Events are posted to a waiting queue, moving the
  * \ref xrThread "thread" from waiting (sleeping) state to ready-to-run
@@ -586,12 +359,95 @@
  * priority is equal or higher than the currently running
  * thread. However, events can be posted asynchronously,
  * in which case the posting thread continues to run.
- * Interrupt routines must always post events asynchronously.
  *
- * A waiting queue is a simple linked list of waiting
- * threads.
- *
+ * Interrupt can also post events, but have to use the
+ * specific function NutEventPostFromIrq().
+ */
+
+/*!
+ * \defgroup xgTimer Timer Management
+ * \brief Asynchronous timer support.
  * 
+ * The timer management provides functions to start and stop
+ * asynchronous timers, determine the CPU speed and let a
+ * thread give up the CPU for a specified time period.
+ */
+
+/*!
+ * \defgroup xgHeap Memory Management
+ * \brief Dynamic memory management.
+ *
+ * Dynamic memory allocations are made from the heap. The heap is a
+ * global resource containing all of the free memory in the system.
+ * The heap is handled as a linked list of unused blocks of memory,
+ * the so called free-list.
+ *
+ * The heap manager uses best fit, address ordered algorithm
+ * to keep the free-list as unfragmented as possible. This strategy
+ * is intended to ensure that more useful allocations can be made.
+ * We end up with relatively few large free blocks rather than lots
+ * of small ones.
+ */
+
+/*!
+ * \defgroup xgDevice Device Management
+ *
+ * \brief Device driver support.
+ */
+
+/*!
+ * \defgroup xgInterrupt Interrupt Management
+ * \brief Interrupt support
+ *
+ * Note, that it is not required to register interrupts with Nut/OS.
+ * Actually, this will route interrupts through the kernel, which
+ * results in performance degradation.
+ *
+ * If fast interrupt processing is required, drivers as well as
+ * applications should consider using native interrupt handlers.
+ * Your compiler documentation is the right source to check how 
+ * this can be done.
+ */
+
+/*!
+ * \defgroup xgNutVersion Version Information
+ * \brief Nut/OS version number
+ *
+ * The version number is divided into four parts:
+ *
+ * - Major version number
+ * - Minor version number
+ * - Release number
+ * - Build number
+ *
+ * The following code test for version 3.9.9.
+ * \code
+ * if (NutVersion() < 0x03090900UL) {
+ *     printf("Error: Nut/OS is too old\n");
+ * }
+ * \endcode
+ */
+
+/*!
+ * \defgroup xgAppSugar Application Candies
+ * \brief 
+ *
+ * In order to keep the kernel clean and small, it uses very basic functions
+ * only:
+ *
+ * - Events
+ * - Timers
+ * - Threads
+ * - Heaps
+ *
+ * However, application programmers wish to use more advanced RTOS functions.
+ * Several of them had been implemented.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgMessageQue Message Queues
+ * \brief Message Queue Support
  */
 
 /*!
@@ -617,25 +473,8 @@
  * 
  */
  
- 
 /*!
- * \defgroup xgHeap Heap Management
- * \brief Dynamic memory management.
- *
- * Dynamic memory allocations are made from the heap. The heap is a
- * global resource containing all of the free memory in the system.
- * The heap is handled as a linked list of unused blocks of memory,
- * the so called free-list.
- *
- * The heap manager uses best fit, address ordered algorithm
- * to keep the free-list as unfragmented as possible. This strategy
- * is intended to ensure that more useful allocations can be made.
- * We end up with relatively few large free blocks rather than lots
- * of small ones.
- */
-
-/*!
- * \defgroup xgBankMem Banked Memory Management
+ * \defgroup xgBankMem Banked Memory
  * \brief Banked RAM support.
  *
  * Even with a hardware decoder like the one used on the Medianut Board, 
@@ -674,32 +513,11 @@
  * Finally the segmented memory mamagement API can not only handle a continuos 
  * memory space, but also one that is divided into several segments. This is 
  * usefull with banked memory hardware provided by Ethernut 2 boards.
- */
-
-/*!
- * \defgroup xgIO I/O Management
  *
- * \brief Input and output device functions.
+ * \todo At least some parts should be moved to the device section.
  */
-
-/*@{*/
-
-/*!
- * \defgroup xgDevice Device I/O
- *
- * \brief Input and output device functions.
- */
-
-/*@}*/
-
-/*!
- * \defgroup xgTimer Timer Management
- * \brief Asynchronous timer support.
- * 
- * The timer management provides functions to start and stop
- * asynchronous timers, determine the CPU speed and let a
- * thread give up the CPU for a specified time period.
- */
+ 
+/*@} xgAppSugar */
 
 
 /*@}*/
@@ -728,19 +546,173 @@
 
 /*!
  * \defgroup xgSocket Socket API
+ *
+ * \brief Nut/Net Socket Interface
+ *
+ * Before using sockets, you must have setup the \ref xgIP "IP Interface".
+ *
+ * \todo An ICMP socket API would be nice.
  */
 /*@{*/
 
 /*!
  * \defgroup xgTcpSocket TCP Sockets
- * \brief TCP sockets.
+ * \brief Application interface for TCP sockets
+ *
+ * TCP clients typically use this order of API calls
+ * - NutTcpCreateSocket()
+ * - NutTcpConnect()
+ * - NutTcpSend(), NutTcpReceive()
+ * - NutTcpCloseSocket()
+ *
+ * This is quite similar to the traditional Berkley TCP Socket API 
+ * used on desktop PCs.
+ *
+ * The order of API calls for TCP servers is
+ * - NutTcpCreateSocket()
+ * - NutTcpAccept()
+ * - NutTcpSend(), NutTcpReceive()
+ * - NutTcpCloseSocket()
+ *
+ * Note, that this differs slightly from the Berkley API, where the
+ * initial socket is bound to a port and an additional socket is
+ * created when a connection is accepted. Nut/Net doesn't provide
+ * a bind call.
+ *
+ * Most Nut/OS applications make use of the ability to assign
+ * a TCP socket to a stream and replace the somewhat primitive
+ * functions NutTcpSend() and NutTcpReceive() with stdio calls
+ * like fprintf() or fscanf().
+ * \code
+ * #include <stdio.h>
+ * #include <sys/socket.h>
+ *
+ * ...
+ *
+ * TCPSOCKET *sock;
+ * FILE *stream;
+ *
+ * ...
+ *
+ * stream = _fdopen((int) sock, "r+b");
+ * fprintf(stream, "Hello peer\r\n");
+ * \endcode
+ *
+ * Remember, that Nut/OS streams are opened in text mode by
+ * default. Thus, we explicitly specify binary mode for the
+ * stream.
+ *
+ * The application programmer can modify some default values of
+ * the TCP stack by calling NutTcpSetSockOpt(). This could be
+ * useful to fine tune the stack for maximum performance at
+ * minimum resource usage. 
+ *
+ * In addition you may call NutTcpSetSockOpt() to set a receive
+ * timeout in order to detect broken connections. That's often
+ * required, because TCP relies on a gracefully closed connection
+ * on the remote side. If the remote crashes or if the physical
+ * connection breaks, then NutTcpReceive() will never return unless
+ * a receive timeout value had been set. At least this is true for
+ * Nut/Net, which currently doesn't support the #SO_KEEPALIVE option.
+ *
+ * \code
+ * #include <sys/socket.h>
+ *
+ * ...
+ *
+ * UDPSOCKET *sock;
+ * u_long tmo = 3000;
+ * int rc;
+ * char buff[128];
+ *
+ * ...
+ *
+ * NutTcpSetSockOpt(sock, SO_RCVTIMEO, &tmo, sizeof(tmo));
+ *
+ * ...
+ *
+ * rc = NutTcpReceive(sock, buff, sizeof(buf));
+ * if (rc == 0) {
+ *     /* 
+ *      * A timeout occured. We will now perform an application specific
+ *      * action to check wether our remote is still alive.
+ *      */
+ * ...
+ *
+ * }
+ * \endcode
+ *
+ * Note again the difference to the Berkley API, where select() is used
+ * to determine receive timeouts.
+ *
+ * Most socket API calls return -1 in case of a failure. The function 
+ * NutTcpError() can be used to query a more specific error code.
+ * \code
+ * #include <stdio.h>
+ * #include <sys/socket.h>
+ *
+ * ...
+ *
+ * TCPSOCKET *sock;
+ * u_long ip = inet_addr("192.168.1.100");
+ * u_short port = 20191;
+ * int tcperr;
+ *
+ * ...
+ *
+ * if (NutTcpConnect(sock, ip, port)) {
+ *     tcperr = NutTcpError(sock);
+ *     printf("TCP Error: ");
+ *     switch(tcperr) {
+ *     case EHOSTUNREACH:
+ *         printf("No route to %s\n", inet_ntoa(ip));
+ *         break;
+ *     default:
+ *         printf("%d\n", tcperr);
+ *         break;
+ *     }
+ * }
+ * \endcode
  */
 
 /*!
  * \defgroup xgUdpSocket UDP Sockets
- * \brief UDP sockets.
+ * \brief Application interface for UDP sockets
  *
- * Nut/Net supports connectionless UDP sockets only.
+ * UDP server and client applications typically use this order of API calls
+ * - NutUdpCreateSocket()
+ * - NutUdpSendTo(), NutUdpReceiveFrom()
+ * - NutUdpDestroySocket()
+ *
+ * Assigning a stream to a UDP socket is not supported. Applications
+ * must use NutUdpSendTo() and NutUdpReceiveFrom().
+ *
+ * For historical reasons, Nut/Net buffers only the last incoming UDP datagram
+ * for a specific port by default. Any previously received datagram will be 
+ * discarded, if it hasn't been passed to the application in the meantime.
+ * Most applications will run fine with this. But it will fail for example,
+ * if more than one response is expected on a previously broadcasted request.
+ * This problem can be solved by calling NutUdpSetSockOpt() to specify a receive 
+ * buffer size.
+ *
+ * \code
+ * #include <sys/socket.h>
+ *
+ * ...
+ *
+ * UDPSOCKET *sock;
+ * u_short udp_bufsiz = 1024;
+ *
+ * ...
+ *
+ * sock = NutUdpCreateSocket(20191);
+ * NutUdpSetSockOpt(sock, SO_RCVBUF, &udp_bufsiz, sizeof(udp_bufsiz));
+ * \endcode
+ *
+ * Nut/Net supports connectionless UDP sockets only. A Berkley like
+ * bind call is not available.
+ *
+ * \todo There is no similar call like NutTcpError() available for UDP.
  */
 
 /*@}*/
@@ -751,33 +723,12 @@
 /*@{*/
 
 /*!
- * \defgroup xgPro User Protocols
+ * \defgroup xgBasePro Base Protocols
  * \brief TCP/IP and UDP applications.
+ *
+ * \todo IGMP support.
  */
 /*@{*/
-
-/*!
- * \defgroup xgDHCPC DHCP
- * \brief Dynamic host configuration protocol.
- */
-
-/*!
- * \defgroup xgFTPD FTP
- * \brief File transfer protocol.
- */
-
-/*!
- * \defgroup xgHTTPD HTTP
- * \brief Hypertext transfer protocol.
- */
-
-/*!
- * \defgroup xgDNS DNS
- * \brief Domain name service protocol.
- */
-
-/*@}*/
-
 /*!
  * \defgroup xgTCP TCP
  * \brief RFC 793 Transmission Control Protocol
@@ -785,6 +736,12 @@
  * TCP provides reliable, in-sequence delivery of a full-duplex 
  * stream of octets. It is used by applications which need a
  * reliable, connection-oriented data transport.
+ *
+ * Applications should call the \ref xgTcpSocket "TCP Socket API"
+ * when using this protocol.
+ *
+ * \todo Use an indirect call for NutTcpInput(). Right now, the whole
+ *       TCP code is linked to any application, even if only UDP is used.
  */
 
 /*!
@@ -795,11 +752,26 @@
  * number. Therefore, an application program must deal directly with 
  * end-to-end communication problems like retransmission, flow
  * control etc., if required.
+ *
+ * Applications should call the \ref xgUdpSocket "UDP Socket API"
+ * when using this protocol.
  */
 
 /*!
  * \defgroup xgIP IP
  * \brief RFC 791 Internet protocol version 4.
+ *
+ * Before using IP based protocols, you must have registered a network 
+ * device driver like PPP or one of the supported Ethernet controller 
+ * drivers.
+ *
+ * You must also have configured the IP network interface with 
+ * NutDhcpIfConfig() or NutNetIfConfig().
+ *
+ * Typical applications do not use the IP layer directly, but 
+ * call the \ref xgUdpSocket "UDP Socket API" or the 
+ * \ref xgTcpSocket "TCP Socket API". A Raw IP API is currently
+ * not supported.
  *
  * \todo Configurable checksum calculation for incoming datagrams.
  */
@@ -811,6 +783,8 @@
  * Provides routing, diagnostic and error functionality for IP.
  * Although ICMP messages are encapsulated within IP datagrams, 
  * ICMP processing is considered to be part of the IP layer.
+ *
+ * There is currently no API support for this layer.
  */
 
 /*!
@@ -835,7 +809,140 @@
 /*!
  * \defgroup xgEthernet Ethernet
  * \brief RFC 894 IP over Ethernet.
+ *
+ * These routines link the IP layer to the Ethernet driver.
+ * Applications do not directly use this.
+ *
+ * \todo Multicast support.
  */
+
+/*@}*/
+
+/*!
+ * \defgroup xgUserPro User Protocols
+ * \brief TCP/IP and UDP applications.
+ *
+ * \todo Adding more protocols would be helpful, e.g. SMTP.
+ *       Right now, applications must implement them with the
+ *       \ref xgSocket "Socket API".
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgDHCPC DHCP
+ * \brief Dynamic host configuration protocol.
+ *
+ * Hosts running Nut/Net can make use of DHCP, if the local network
+ * provides this facility.
+ *
+ * To use this feature, applications must call NutDhcpIfConfig().
+ *
+ * \code
+ * #include <pro/dhcp.h>
+ *
+ * ...
+ *
+ * if(NutDhcpIfConfig("eth0", 0, 60000)) {
+ *     printf("IP interface not configured. Error %d\n", NutDhcpError());
+ * }
+ * \endcode
+ *
+ * Application programmers often get confused by the fact, that 
+ * NutDhcpIfConfig() is somewhat more general. It also checks
+ * non-volatile memory (e.g. EEPROM contents for the AVR devices).
+ * If a fixed IP address has been configured, it will use this
+ * and will not query DHCP for an IP configuration. The Ethernut
+ * Software Manual explains this in more detail.
+ *
+ * Typical DHCP servers offer more than just the IP configuration. 
+ * The following items are recognized by Nut/Net:
+ * - IP address
+ * - IP network mask
+ * - Default gateway IP
+ * - Broadcast IP
+ * - Primary and secondary DNS IP
+ * - Host name
+ * - Domain name
+ *
+ * However, only the first three are used for the Nut/Net IP configuration.
+ * The broadcast address is internally created by the IP layer.
+ *
+ * If provided by the DHCP server, the IP addresses of the primary and 
+ * the secondary DNS are passed by the DHCP client to NutDnsConfig2().
+ *
+ * The last two items, host and domain name, are currently discarded.
+ *
+ * When an application wants to shut down the system, it may call
+ * NutDhcpRelease(). This lowers the burden on some busy DHCP servers
+ * with long lease times.
+ *
+ * Applications doing their own IP configuration, e.g. using a user 
+ * interface for their configuration and storing the values in non-volatile 
+ * memory, may call NutDhcpInform() to inform DHCP servers about the 
+ * address allocation.
+ *
+ * The function NutDhcpStatus() is provided to enable applications to
+ * track the progress and the current status of the DHCP client.
+ */
+
+/*!
+ * \defgroup xgFTPD FTP
+ * \brief File transfer protocol
+ *
+ * Note, that FTP servers don't make much sense without a file system
+ * providing write access. Right now, FTP had been tested with the 
+ * PNUT file system only.
+ */
+
+/*!
+ * \defgroup xgHTTPD HTTP
+ * \brief Hypertext transfer protocol
+ *
+ * A read-only file system is sufficient to run an HTTP server.
+ */
+
+/*!
+ * \defgroup xgDNS DNS
+ * \brief Domain name service protocol
+ */
+
+/*!
+ * \defgroup xgSntp SNTP
+ * \brief Simple network time protocol
+ *
+ * \todo Enhance documentation.
+ */
+
+/*!
+ * \defgroup xgSyslog syslog
+ * \brief Syslog protocol support
+ *
+ */
+
+/*!
+ * \defgroup xgWins WINS
+ * \brief Netbios WINS Name Query (RFC 1002)
+ *
+ * Only Query Request Client Routine sending/Positive Name Query Response receiving
+ * are implemented.
+ *
+ * When the Netbios Name Query request UDP datagram is on the ethernet network, 
+ * asking "Who is 'name'?", NutWinsNameQuery() answers with the specified 'ipaddr' 
+ * Ethernut IP address. 
+ *
+ * Answer to Microsoft Windows/Internet Explorer calls by "http://name" command line
+ * (and even directly "name" as command line if "name" is not a shared folder). 
+ *
+ * Launch for example :
+ * \code
+ * THREAD(wins_deamon, arg)
+ * {
+ *     NutWinsNameQuery("myboard", inet_addr(MYIP));
+ * } 
+ * \endcode
+ */
+  
+/*@} xgUserPro */
 
 /*!
  * \defgroup xgPppProt PPP
@@ -863,15 +970,6 @@
  * \brief PPP Driver.
  */
 
-/*!
- * \defgroup xgAHDLC AHDLC
- * \brief AHDLC Driver.
- *
- * This driver has not been published yet. It will contain a modified UART
- * driver with some speed optimizations like table driven FCS calculation.
- * It will also implement simple modem handshaking (RTS, CTS and DTR).
- */
-
 
 /*@}*/
 
@@ -887,10 +985,26 @@
 /*@{*/
 
 /*!
- * \defgroup xgurom Micro-ROM File System.
- * \brief Simple program space file system.
+ * \defgroup xgFS Path Operations
+ * \brief Directory support
  */
-/*@}*/
+
+/*!
+ * \defgroup xgFSDir Directory Functions
+ * \brief Reading directories
+ */
+
+/*!
+ * \defgroup xgPNut Peanut
+ * \brief Volatile RAM file system.
+ */
+ 
+/*!
+ * \defgroup xgurom Micro-ROM
+ * \brief Very simple read-only file system.
+ */
+
+/*@} xgFileSystem */
 /* ======================================================================================= */
 
 /* =================================== Device Driver API ================================= */
@@ -898,6 +1012,9 @@
  * \defgroup xgDriver Device Driver API.
  *
  * \brief Input and output device functions.
+ *
+ * Device drivers are typically not accessed directly by an application.
+ * Instead they are used by the standard C library to perform data I/O.
  */
 /*@{*/
 
@@ -931,124 +1048,28 @@
  * Specification of RS232 handshake lines.
  */
 
-/*@}*/
+/*@} xgHardware */
 
 /*!
- * \defgroup xgDevSerial Serial communication devices.
+ * \defgroup xgDevSerial Serial Communication Devices
  * \brief Drivers for serial communication.
- *
- * Nut/OS currently supports two types of devices for
- * serial communication:
- *
- * - \ref xrUartAvr "AVR UART devices", the AVR on-chip UARTs.
- * - \ref xrUartSpi "SPI UART devices", additional AVR chips used
- * with add-on boards.
  */
 /*@{*/
 
 /*!
- * \defgroup xgUartAvr AVR UART Device Driver
- * \anchor xrUartAvr
- * \brief Device driver for ATmega On-Chip UART.
- *
- * This device driver writes data to and reads data from the UART on 
- * the ATmega128/103 chip. Both, input and output data is buffered and 
- * send resp. transmitted by interrupt routines.
- *
- * Not all ioctl() function are fully implemented. New applications
- * should use the \ref xrUsart "USART" device driver.
- *
- */
-
-/*@{*/
-/*!
- * \defgroup xgUartDev ATmega On-Chip UART Devices
- * \brief UART Device Structures.
- *
- */
-/*@}*/
-
-/*!
- * \defgroup xgUsart USART Device Driver
+ * \defgroup xgUsart USART Driver Frame
  * \anchor xrUsart
  * \brief Universal synchronous/asynchronous receiver/transmitter device driver.
  *
  * The USART device driver implements buffered, interrupt controlled
- * serial communication. In opposite to the 
- * \ref xrUartAvr "AVR UART Device Driver"
- * it supports software and hardware handshake, 9-bit communication, 
- * half duplex and synchronous operation.
+ * serial communication. It supports software and hardware handshake, 
+ * 9-bit communication, half duplex and synchronous operation.
  *
  * The driver's code is devided into a general part and a hardware 
  * dependant part, which simplifies porting it to different USART chips.
  * The \ref xrUsartAvr "AVR USART Devices" provide support for the
  * ATmega128/103 on-chip USARTs.
  */
-
-/*@{*/
-/*!
- * \defgroup xgUsartAvr AVR USART Devices
- * \anchor xrUsartAvr
- * \brief AVR USART hardware dependant implementation.
- *
- * A pointer to \ref devUsartAvr0 or \ref devUsartAvr1 must be passed to 
- * NutRegisterDevice() to bind the corresponding device driver to the 
- * Nut/OS kernel.
- * \code
- * NutRegisterDevice(&devUsartAvr0, 0, 0);
- * fp = fopen("uart0", "r+");
- * fprintf("Hello world!\n");
- * \endcode
- *
- * The AVR USART devices make use of the hardware independant
- * \ref xrUsart "USART Device Driver"
- */
-/*@}*/
-
-/*!
- * \defgroup xgDebugDev AVR UART Debug Device Driver
- * \brief Debug output driver for ATmega On-Chip UART.
- *
- * This stream device driver writes data to the internal UART of
- * the ATmega128/103 chip. The output is unbuffered and uses
- * polling. Therefore it can be used for standard I/O output
- * even within interrupt routines.
- */
-
-/*@{*/
-/*!
- * \defgroup xgDebugDev0 UART0 Debug Devices
- * \brief UART0 debug device structure.
- *
- */
-/*!
- * \defgroup xgDebugDev1 UART1 Debug Devices
- * \brief UART1 debug device structure.
- *
- */
-/*@}*/
-
-/*!
- * \defgroup xgUartSpi SPI UART Device Driver
- * \anchor xrUartSpi
- * \brief Serial communication device driver.
- *
- * This stream device driver writes data to and reads data
- * from an external device via the SPI bus. Both, input and
- * output data bytes are buffered and send resp. transmitted 
- * by interrupt routines.
- *
- * Up to eight additional UARTs are supported. All external 
- * AVRs, for which the AT90S2313 is a good low cost choice, 
- * are connected to the SPI of the main CPU.
- *
- */
-
-/*@{*/
-/*!
- * \defgroup xgUartsDev SPI UART Device
- */
-/*@}*/
 
 /*!
  * \defgroup xgUARTIOCTL UART I/O Control Functions
@@ -1058,56 +1079,15 @@
 /*!
  * \defgroup xgUARTStatus UART Status
  */
-/*@}*/
+/*@} xgUARTIOCTL */
 
-/*@}*/
+/*@} xgDevSerial */
 
 /*!
  * \defgroup xgDevNetwork Network device drivers.
  * \brief Ethernet controller drivers.
  */
 /*@{*/
-
-/*!
- * \defgroup xgNicRtl Realtek 8019AS device driver
- * \brief Ethernet device driver.
- *
- * The RTL8019AS chip is used on the Ethernut 1 board.
- */
-/*@{*/
-/*!
- * \defgroup xgEth0Dev Device eth0
- * \brief Realtek 8019AS Ethernet device
- */
-/*@}*/
-
-/*!
- * \defgroup xgNicLanc111 LAN91C111 device driver
- * \brief Ethernet device driver.
- *
- * The LAN91C111 chip is used on the Ethernut 2 board.
- */
-/*@{*/
-/*!
- * \defgroup xgSmscRegs LAN91C111 registers
- * \brief SMSC LAN91C111 register definitions.
- */
-/*!
- * \defgroup xgSmscDev Device eth0
- * \brief SMSC LAN91C111 Ethernet device
- */
-/*@}*/
-
-/*!
- * \defgroup xgNicCs8900 CS8900 device driver
- * \brief Ethernet device driver.
- */
-/*@{*/
-/*!
- * \defgroup xgCs8900Dev Device eth0
- * \brief CS8900 Ethernet device
- */
-/*@}*/
 
 
 /*!
@@ -1160,26 +1140,8 @@
  * \enddot
  */
 
-/*!
- * \defgroup xgSoStream Network Stream Device Driver
- * \brief Virtual TCP socket stream device.
- *
- * These function are deprecated for new applications. Use C stdio.
- */
+/*@} xgDevNetwork */
 
-/*@}*/
-
-/*!
- * \defgroup xgDevSound Sound device drivers.
- * \brief MP3 harware support.
- */
-/*@{*/
-
-/*!
- * \defgroup xgVs1001 VS1001K device driver.
- * \brief MP3 decoder driver.
- */
-/*@}*/
 
 /*!
  * \defgroup xgDevDisplay Display device drivers.
@@ -1198,7 +1160,7 @@
 /*!
  * \defgroup xgDisplay LC/VF Display Driver.
  */
-/*@}*/
+/*@} xgDevDisplay */
 
 
 
@@ -1207,21 +1169,12 @@
  * \brief Interrupt registration and handling.
  */
 
-/*! 
- * \defgroup xgSpiDigIo SPI Digital I/O
- * \brief SPI controlled digital input and output ports.
- *
- * This simple driver supports digital I/O ports like 
- * relay outputs and optocoupler inputs.
+/*!
+ * \defgroup xgCanDev CAN Driver Support
  */
 
-/*! 
- * \defgroup xgSpiFlash SPI Flash Devices
- * \brief Programs SPI attached flash devices.
- *
- * When AVR CPUs are attached to the SPI, then the
- * routines in this module can be used to write
- * to the flash ROM of these devices.
+/*!
+ * \defgroup xgIr IR Driver Support.
  */
 
 /*@}*/
@@ -1369,24 +1322,16 @@
 /*!
  * \defgroup xgCrtMisc Miscellaneous Functions
  * \brief Complementary runtime support.
- *
- *  
  */
 
-/*@}*/
-
 /*!
- * \defgroup xgMod Nut/OS Mods.
- * \brief Modifying system rotuines.
- *
- * The mod directory contains modified system modules. In order to
- * use these, link the object file before linking Nut/OS libraries.
+ * \defgroup xgCrtStdLib Standard Lib
+ * \brief C Standard Library
  */
-
-/*@{*/
+ 
 /*!
- * \defgroup xgModHeap Guarded heap routines.
- * \brief Contributed by Peter Scandrett.
+ * \defgroup xgCrtString Strings
+ * \brief C Standard String Library
  */
 
 /*@}*/
@@ -1394,8 +1339,393 @@
 /* ======================================================================================= */
 
 /*!
- * \defgroup xgUnixEmulation 
- * \brief Running Nut/OS Apps on a unix machine 
+ * \defgroup xgNutArch Architectures
+ * \brief Target devices
+ *
+ * Only the AVR platform can be considered stable. The H8/300
+ * support has come to halt long time ago and support for the
+ * M68K did not even start. The Emulator running on UNIX has
+ * not been extensively tested for some time. The port for
+ * the ARM7TDMI looks quite promissing, though.
+ */
+/*@{*/
+
+/* =================================== AVR Architectures ================================= */
+/*!
+ * \defgroup xgNutArchAvr AVR
+ * \brief 8 Bit RISC processor.
+ *
+ * Only the ATmega103 and ATmega128 are currently supported.
+ * Some porting work had been done for the AT90CAN128, but
+ * failed due to a bug in the chip, which causes stack corruption.
+ */
+ 
+/*@{*/
+ 
+/*!
+ * \defgroup xgNutArchAvrBoot Boot
+ * \brief Loading the code
+ */
+ 
+/*!
+ * \defgroup xgNutArchAvrInit Initialization
+ * \brief Starting Nut/OS
+ */
+ 
+/*!
+ * \defgroup xgNutArchAvrOs System Support
+ * \brief Hardware dependant functions used by Nut/OS.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchAvrOsContextGcc GCC Context Switch
+ * \brief Thread context switching for avr-gcc.
+ */
+ 
+/*!
+ * \defgroup xgNutArchAvrOsContextIcc ICC Context Switch
+ * \brief Thread context switching for ImageCraft ICCAVR.
+ */
+ 
+/*@} xgNutArchAvrOs */
+
+ 
+/*!
+ * \defgroup xgNutArchAvrDev Device Drivers
+ * \brief Hardware dependant device driver code
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchAvrDevSerial Serial
+ * \brief AVR drivers for serial communication.
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgDevDebugAvr Debug Device
+ * \brief Debug output driver for ATmega On-Chip UART.
+ *
+ * This stream device driver writes data to the internal UART of
+ * the ATmega128/103 chip. The output is unbuffered and uses
+ * polling. Therefore it can be used for standard I/O output
+ * even within interrupt routines.
+ */
+ 
+/*!
+ * \defgroup xgUartAvr UART Device
+ * \anchor xrUartAvr
+ * \brief Device driver for ATmega On-Chip UART.
+ *
+ * This device driver writes data to and reads data from the UART on 
+ * the ATmega128/103 chip. Both, input and output data is buffered and 
+ * send resp. transmitted by interrupt routines.
+ *
+ * Not all ioctl() function are fully implemented. New applications
+ * should use the \ref xrUsart "USART" device driver.
+ *
+ */
+
+/*!
+ * \defgroup xgUsartAvr USART Devices
+ * \anchor xrUsartAvr
+ * \brief AVR USART hardware dependant implementation.
+ *
+ * A pointer to \ref devUsartAvr0 or \ref devUsartAvr1 must be passed to 
+ * NutRegisterDevice() to bind the corresponding device driver to the 
+ * Nut/OS kernel.
+ * \code
+ * NutRegisterDevice(&devUsartAvr0, 0, 0);
+ * fp = fopen("uart0", "r+");
+ * fprintf(fp, "Hello world!\n");
+ * \endcode
+ *
+ * The AVR USART devices make use of the hardware independant
+ * \ref xrUsart "USART Device Driver"
+ */
+
+/*!
+ * \defgroup xgAhdlcAvr AHDLC
+ * \brief AHDLC Driver.
+ *
+ * This code contains a modified UART driver with some speed optimizations 
+ * for PPP, like table driven FCS calculation. It also implements simple modem 
+ * handshaking (RTS, CTS and DTR).
+ */
+
+/*@} xgNutArchAvrDevSerial */
+
+/*!
+ * \defgroup xgNutArchAvrDevEthernet Ethernet
+ * \brief Ethernet controller drivers.
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNicRtl Realtek RTL8019AS
+ * \brief 10 MBit NE2000 compatible controller.
+ *
+ * The RTL8019AS chip is used on the Ethernut 1 board.
+ */
+/*@{*/
+/*!
+ * \defgroup xgEth0Dev Device eth0
+ * \brief Realtek 8019AS Ethernet device
+ */
+/*@}*/
+
+/*!
+ * \defgroup xgNicLanc111 SMSC LAN91C111
+ * \brief 10/100 MBit Ethernet controller.
+ *
+ * The LAN91C111 chip is used on the Ethernut 2 board.
+ */
+/*@{*/
+/*!
+ * \defgroup xgSmscRegs LAN91C111 registers
+ * \brief SMSC LAN91C111 register definitions.
+ */
+/*@}*/
+
+/*!
+ * \defgroup xgNicCs8900 Crystal CS8900A
+ * \brief 10 MBit Ethernet controller.
+ *
+ * The device driver for the CS8900A is poorly supported. Be
+ * prepared that some debugging may be required when using
+ * it with the latest Nut/Net release.
+ */
+
+/*@} xgNutArchAvrDevEthernet */
+
+/*!
+ * \defgroup xgNutArchAvrDevDebug Debug
+ * \brief AVR debug output devices.
+ */
+/*@{*/
+/*@} xgNutArchAvrDevDebug */
+
+/*@} xgNutArchAvrDev */
+
+/*!
+ * \defgroup xgHardwareAvr Special Hardware
+ * \brief Support routines for direct hardware access.
+ *
+ * Not every hardware fits into I/O driver model. For
+ * example it would look at least a bit strange using
+ * printf() or _ioctl() to switch an LED on or off.
+ * Therefore several API calls had been added to deal
+ * with special hardware.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgAvrAdc A/D Converter
+ * \brief ATmega128 On-Chip ADC.
+ */
+ 
+/*!
+ * \defgroup xgCanSJA1000 SJA1000
+ * \brief CAN Bus Controller
+ */
+
+/*!
+ * \defgroup xgVs1001 VLSI VS1001K
+ * \brief MP3 Decoder
+ */
+
+/*!
+ * \defgroup xgIrSony Sony IR
+ * \brief Infrared Remote Control
+ */
+ 
+/*! 
+ * \defgroup xgSpiDigIo SPI Digital I/O
+ * \brief SPI controlled digital input and output ports.
+ *
+ * This simple driver supports digital I/O ports like 
+ * relay outputs and optocoupler inputs.
+ */
+
+/*! 
+ * \defgroup xgSpiFlash SPI Flash Devices
+ * \brief Programs SPI attached flash devices.
+ *
+ * When AVR CPUs are attached to the SPI, then the
+ * routines in this module can be used to write
+ * to the flash ROM of these devices.
+ *
+ * These routines are poorly supported and may not work as expected.
+ */
+
+/*@} xgHardwareAvr */
+
+/*!
+ * \defgroup xgConfigAvr Configuration
+ * \brief Hardware Settings.
+ */
+/*@{*/
+ 
+/*!
+ * \defgroup xgConfigPortsAvr Ports
+ * \brief Assigned port bits.
+ */
+
+/*!
+ * \defgroup xgMCanCfg MCAN Board
+ * \brief Microcontroller Board with CAN Bus
+ */
+
+/*@} xgConfigAvr */
+
+
+/*@} xgNutArchAvr */
+
+
+
+/* =================================== ARM Architectures ================================= */
+/*!
+ * \defgroup xgNutArchArm ARM
+ * \brief 32 Bit RISC processor.
+ *
+ * This port is experimental, but had been successfully tested
+ * on the AT91R40008 (including Nut/Net) and the GameBoy Advance
+ * (w/o Nut/Net).
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchArmBoot Boot
+ * \brief Loading the code
+ */ 
+ 
+/*!
+ * \defgroup xgNutArchArmInit Initialization
+ * \brief Starting Nut/OS
+ */ 
+
+/*!
+ * \defgroup xgNutArchArmOs System Support
+ * \brief Hardware dependant functions used by Nut/OS.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchArmOsContext Context Switching
+ * \brief Context Switching for GNUARM
+ *
+ * This code should work with other GCC distributions for the ARM CPU.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmOsTimerAt91 AT91 System Timer
+ * \brief Nut/OS System Timer implemented on the AT91
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmOsTimerGba GBA System Timer
+ * \brief Nut/OS System Timer implemented on the GBA
+ */
+ 
+/*@} xgNutArchArmOs */
+ 
+/*!
+ * \defgroup xgNutArchArmDev Device Drivers
+ * \brief Hardware dependant device driver code.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchArmDevIrq Interrupts
+ * \brief Interrupt handler routines
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchArmDevIrqAt91 AT91 Interrupts
+ * \brief Interrupt handler for the AT91
+ *
+ * Handling interrupts on the AT91 is still a miserable hack.
+ *
+ * \todo Handle AT91 interrupts nicely.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmDevIrqGba GBA Interrupts
+ * \brief Interrupt handler for the GameBoy Advance
+ *
+ */
+
+/*@} xgNutArchArmDevIrq */
+
+/*!
+ * \defgroup xgNutArchArmDevSerial Serial
+ * \brief ARM drivers for serial communication.
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgUartGba GBA UART
+ * \brief Gameboy Advance UART driver.
+ *
+ * This code doesn't work.
+ */
+ 
+/*@} xgNutArchArmDevSerial */
+
+/*!
+ * \defgroup xgNutArchArmDevEthernet Ethernet
+ * \brief Ethernet controller drivers.
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNicAsix Asix AX88796L
+ * \brief 10/100 MBit NE2000 compatible controller.
+ *
+ * Highly experimental.
+ */
+
+/*@} xgNutArchArmDevEthernet */
+
+/*!
+ * \defgroup xgNutArchArmDevDebug Debug
+ * \brief Debug output drivers
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgDevDebugAt91 AT91 Debug Device
+ * \brief Debug output driver for AT91 On-Chip UART.
+ *
+ * This stream device driver writes data to the internal UART.
+ * The output is unbuffered and uses polling. Therefore it can 
+ * be used for standard I/O output even within interrupt routines.
+ */
+
+/*!
+ * \defgroup xgDevDebugGba GBA Debug Output
+ * \brief Debug output driver for GBA LCD Screen.
+ */
+ 
+/*@} xgNutArchArmDevDebug */
+
+/*@} xgNutArchArmDev */
+
+
+/*@} xgNutArchArm */
+
+/* ================================= Emulator Architecture =============================== */
+/*!
+ * \defgroup xgNutArchUnix Emulator (UNIX)
+ * \brief Running Nut/OS Apps on a UNIX machine 
  *
  * Nut/OS can be compiled for a native unix target.
  *
@@ -1408,5 +1738,150 @@
  * The unix emulation provides a third uart for debugging purposes as devDebug2, devUsart2 and devUsartAvr2)
  * 
  */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchUnixInit Initialization
+ * \brief Starting Nut/OS
+ */ 
+
+/*!
+ * \defgroup xgNutArchUnixOs System Support
+ * \brief Hardware dependant functions used by Nut/OS.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchUnixOsContext Context Switching
+ * \brief Context Switching for the UNIX emulator.
+ */
+ 
+/*!
+ * \defgroup xgNutArchUnixOsTimer System Timer
+ * \brief Nut/OS System Timer
+ */
+ 
+/*@} xgNutArchUnixOs */
+
+/*@} xgNutArchUnix */
+
+/* ================================= H8/300H Architecture ================================ */
+/*!
+ * \defgroup xgNutArchH8300h H8/300H
+ * \brief Renesas 16 Bit CPU
+ *
+ * Poorly supported.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchH8300hBoot Boot
+ * \brief Loading the code
+ */ 
+ 
+/*!
+ * \defgroup xgNutArchH8300hInit Initialization
+ * \brief Starting Nut/OS
+ */ 
+
+/*!
+ * \defgroup xgNutArchH8300hOs System Support
+ * \brief Hardware dependant functions used by Nut/OS.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchH8300hOsContext Context Switching
+ * \brief Context Switching with GCC
+ */
+ 
+/*!
+ * \defgroup xgNutArchH8300hOsTimer System Timer
+ * \brief Nut/OS System Timer implemented on the H8/300H
+ */
+ 
+/*@} xgNutArchH8300hOs */
+ 
+/*!
+ * \defgroup xgNutArchH8300hDev Device Drivers
+ * \brief Hardware dependant device driver code.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchH8300hDevSerial Serial
+ * \brief ARM drivers for serial communication.
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgUartH8 UART
+ * \brief TODO
+ *
+ */
+
+/*!
+ * \defgroup xgUartDev UART
+ * \brief TODO
+ *
+ */
+ 
+/*@} xgNutArchH8300hDevSerial */
+
+/*!
+ * \defgroup xgNutArchH8300hDevEthernet Ethernet
+ * \brief Ethernet controller drivers.
+ *
+ */
+
+/*!
+ * \defgroup xgNutArchH8300hDevDebug Debug
+ * \brief Debug output drivers
+ *
+ */
+
+/*@} xgNutArchH8300hDev */
+
+ 
+/*!
+ * \defgroup xgRPortCfg RPort
+ * \brief RPort hardware specification.
+ */
+ 
+/*@} xgNutArchH8300h */
+
+/* ================================= M68K Architecture =================================== */
+/*!
+ * \defgroup xgNutArchM68k M68K
+ * \brief Freescale CISC Processor
+ *
+ * Not implemented. Nothing but a placeholder.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchM68kBoot Boot
+ * \brief Loading the code
+ */ 
+ 
+/*!
+ * \defgroup xgNutArchM68kInit Initialization
+ * \brief Starting Nut/OS
+ */ 
+
+/*@} xgNutArchM68k */
+
+/*@}*/
+  
+/* ================================= Directories ========================================= */
+/*!
+ * \dir nut/os/
+ * Nut/OS Kernel
+ */
+/* ======================================================================================= */
+
+
+
 
 

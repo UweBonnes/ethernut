@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:02:26  haraldkipp
  * Moved from dev.
  *
@@ -61,6 +64,11 @@
 #include <arch/at91eb40a.h> /* LED debug */
 #include <arch/at91.h>
 #include <dev/irqreg.h>
+
+/*!
+ * \addtogroup xgNutArchArmOsTimerAt91
+ */
+/*@{*/
 
 #define NutEnableTimerIrq()     NutEnterCritical()
 #define NutDisableTimerIrq()    NutExitCritical()
@@ -190,4 +198,5 @@ u_long NutTimerMillisToTicks(u_long ms)
     return ms * 1000L / NutGetTickClock();
 }
 
+/*@}*/
 

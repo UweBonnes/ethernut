@@ -31,8 +31,16 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/debug0.c
+ * \brief AVR debug output device.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -54,12 +62,13 @@
  * Revision 1.1  2003/04/07 12:15:37  harald
  * First release
  *
+ * \endverbatim
  */
 
 #include <dev/debug.h>
 
 /*!
- * \addtogroup xgDebugDev0
+ * \addtogroup xgDevDebugAvr
  */
 /*@{*/
 

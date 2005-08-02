@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -59,7 +62,7 @@
 #include <dev/uartavr.h>
 
 /*!
- * \addtogroup xgUartDev
+ * \addtogroup xgUartAvr
  */
 /*@{*/
 

@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.8  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -137,7 +140,7 @@ extern "C" {
 /*@}*/
 
 /*!
- * \addtogroup xgThreadState
+ * \addtogroup xgThread
  */
 /*@{*/
 #define TDS_TERM        0       /*!< Thread has exited. */

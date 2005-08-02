@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.13  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.12  2005/06/05 16:49:09  haraldkipp
  * Do not do ARP retries by default.
  *
@@ -373,7 +376,6 @@ static ARPENTRY *ArpCacheNew(IFNET * ifn, u_long ip, u_char * ha)
  * \param ip  Requested IP address in network byte order.
  * \param ha  Pointer to a buffer which receives the MAC address.
  *
- * \callgraph
  */
 void NutArpCacheUpdate(NUTDEVICE * dev, u_long ip, u_char * ha)
 {
@@ -429,8 +431,6 @@ void NutArpCacheUpdate(NUTDEVICE * dev, u_long ip, u_char * ha)
  * \param mac  Buffer for the retrieved MAC address.
  *
  * \return 0 if address resolved, -1 otherwise.
- *
- * \callgraph
  */
 int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
 {

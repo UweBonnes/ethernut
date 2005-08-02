@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.3  2004/07/30 19:10:42  drsung
  * First proposal to define some global ioctl commands.
  *
@@ -53,9 +56,19 @@
 #define IOCTL_SETOUTBUFSIZE             0x0006
 #define IOCTL_GETINBUFSIZE              0x0007
 #define IOCTL_SETINBUFSIZE              0x0008
+/*! \brief Flush the output buffer.
+ *
+ * Currently not provided by any known device.
+ */
 #define IOCTL_FLUSHOUTBUF               0x0009
+/*! \brief Return the number of bytes currently available in the input buffer.
+ */
 #define IOCTL_GETFILESIZE               0x000A
+/*! \brief Return the number of bytes currently available in the input buffer.
+ */
 #define IOCTL_GETOUTBUFCOUNT            0x000B
+/*! \brief Return the number of bytes currently available in the output buffer.
+ */
 #define IOCTL_GETINBUFCOUNT             0x000C
 
 

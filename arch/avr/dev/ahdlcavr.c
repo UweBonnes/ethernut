@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -92,6 +95,11 @@
 
 #include <stdio.h>
 
+/*!
+ * \addtogroup xgAhdlcAvr
+ */
+/*@{*/
+
 /*
  * FCS lookup table located in program memory space.
  */
@@ -137,11 +145,6 @@ static prog_char fcstab[512] = {
  * Checks the 32-bit ACCM to see if the byte needs un-escaping
  */
 #define IN_ACC_MAP(c, m) (( ((u_char) (c)) < 0x20)  && ((m) & (1UL << (c))) != 0)
-
-/*!
- * \addtogroup xAhdlcAvr
- */
-/*@{*/
 
 #ifndef NUT_THREAD_AHDLCRXSTACK
 #define NUT_THREAD_AHDLCRXSTACK     512

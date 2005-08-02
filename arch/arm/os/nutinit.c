@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.2  2005/07/26 16:17:03  haraldkipp
  * Use default stack sizes for main and idle, if none had been defined.
  *
@@ -64,6 +67,11 @@
 #include <arch/at91eb40a.h>
 #endif
 
+/*!
+ * \addtogroup xgNutArchArmInit
+ */
+/*@{*/
+
 #ifndef NUT_THREAD_MAINSTACK
 #define NUT_THREAD_MAINSTACK    768
 #endif
@@ -81,15 +89,11 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 extern void *__heap_start;
 
 /*!
- * \addtogroup xgNutInit
- */
-/*@{*/
-
-/*! \fn NutIdle(void *arg)
  * \brief Idle thread. 
  *
- * After initializing the timers, the idle thread switches to priority 254
- * and enters an endless loop.
+ * \param arg Ignored by the idle thread.
+ *
+ * This function runs in an endless loop as a lowest priority thread.
  */
 THREAD(NutIdle, arg)
 {

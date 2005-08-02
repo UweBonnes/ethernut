@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.10  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -63,11 +66,6 @@
 # define __END_DECLS
 #endif
 
-/*!
- * \addtogroup xgCrtMisc
- */
-/*@{*/
-
 #if defined(__AVR__) || defined(ATMEGA)
 #include <arch/avr.h>
 #elif defined(__arm__)
@@ -79,8 +77,5 @@
 #elif defined(__linux__) || defined (__APPLE__) || defined(__CYGWIN__)
 #include <arch/unix.h>
 #endif
-
-
-/*@}*/
 
 #endif

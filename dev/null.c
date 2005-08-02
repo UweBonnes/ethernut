@@ -48,6 +48,11 @@
 #include <sys/device.h>
 
 /*!
+ * \addtogroup xgDevice
+ */
+/*@{*/
+
+/*!
  * \brief Open UnixDev
  *
  * \return Pointer to a static NUTFILE structure.
@@ -114,7 +119,7 @@ static int NullClose(NUTFILE * nf)
 }
 
 /*!
- * \brief Perform USART control functions.
+ * \brief Perform control functions.
  *
  * This function is called by the ioctl() function of the C runtime
  * library.

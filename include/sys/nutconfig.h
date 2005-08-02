@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.4  2005/02/10 07:06:48  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
@@ -50,7 +53,7 @@
  */
 
 /*!
- * \file sys/config.h
+ * \file sys/nutconfig.h
  * \brief Hardware configuration.
  */
 

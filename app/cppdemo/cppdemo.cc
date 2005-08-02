@@ -1,5 +1,21 @@
 // Trivial C++ Demo for NutOS.
 
+/*!
+ * $Log: cppdemo.cc,v $
+ * Revision 1.2  2005/08/02 17:46:44  haraldkipp
+ * Major API documentation update.
+ *
+ */
+
+/*!
+ * \example cppdemo/cppdemo.cc
+ *
+ * This sample demonstrates the usage of Nut/OS with C++.
+ *
+ * You should carefully think about using C++ with tiny embedded systems. 
+ * This sample just proofs, that it basically works.
+ */
+
 #include <dev/uartavr.h>
 #include <sys/version.h>
 #include <inttypes.h>

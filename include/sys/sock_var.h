@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.7  2005/06/05 16:48:25  haraldkipp
  * Additional parameter enables NutUdpInput() to avoid responding to UDP
  * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
@@ -128,8 +131,10 @@ extern "C" {
 typedef struct udp_socket UDPSOCKET;
 
 /*!
- * \struct udp_socket socket.h sys/sock_var.h
  * \brief UDP socket information structure.
+ *
+ * Applications should not rely on the content of this structure.
+ * It may change without notice.
  */
 struct udp_socket {
     UDPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
@@ -161,8 +166,10 @@ extern int NutUdpOutput(UDPSOCKET *sock, u_long dest, u_short port, NETBUF *nb);
 typedef struct tcp_socket TCPSOCKET;
 
 /*!
- * \struct tcp_socket socket.h sys/sock_var.h
  * \brief TCP socket information structure.
+ *
+ * Applications should not rely on the content of this structure.
+ * It may change without notice.
  */
 struct tcp_socket {
     TCPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
@@ -223,10 +230,10 @@ struct tcp_socket {
 /*
  * TCP send flags.
  */
-#define SO_FIN      0x01    /*!< \brief Send FIN after all data has been transmitted. */
-#define SO_SYN      0x02    /*!< \brief Send SYN first. */
-#define SO_FORCE    0x08    /*!< \brief Force sending ACK. */
-#define SO_ACK      0x10    /*!< \brief Send ACK. */
+#define SO_FIN      0x01    /*!< \brief Socket transmit flag. Send FIN after all data has been transmitted. */
+#define SO_SYN      0x02    /*!< \brief Socket transmit flag. Send SYN first. */
+#define SO_FORCE    0x08    /*!< \brief Socket transmit flag. Force sending ACK. */
+#define SO_ACK      0x10    /*!< \brief Socket transmit flag. Send ACK. */
 
 /*@}*/
 

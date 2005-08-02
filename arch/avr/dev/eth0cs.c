@@ -68,6 +68,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:45  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -96,7 +99,7 @@ NICINFO dcb_eth0cs;
 extern int CSNicOutput(NUTDEVICE * dev, NETBUF * nb);
 extern int CSNicInit(NUTDEVICE * dev);
 
-/*!
+/*
  * \brief Network interface information structure.
  *
  * Used to call.
@@ -115,7 +118,7 @@ IFNET ifn_eth0cs = {
     NutEtherOutput              /*!< \brief Media output routine, if_output(). */
 };
 
-/*!
+/*
  * \brief Device information structure.
  *
  * Applications must pass this structure to NutRegisterDevice() 
@@ -144,4 +147,3 @@ NUTDEVICE devEth0cs = {
     0                           /*!< Request file size. */
 };
 
-/*@}*/

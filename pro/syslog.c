@@ -58,14 +58,23 @@
  * SUCH DAMAGE.
  */
 
-/*
+/*!
+ * \file pro/syslog.c
+ * \brief Syslog Client
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.3  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.2  2004/10/03 18:41:43  haraldkipp
  * RAM saving calls added
  *
  * Revision 1.1  2004/09/19 11:18:45  haraldkipp
  * Syslog client added
  *
+ * \endverbatim
  */
 
 #include <cfg/syslog.h>
@@ -87,6 +96,11 @@
 static UDPSOCKET *syslog_sock;
 
 #endif                          /* SYSLOG_PERROR_ONLY */
+
+/*!
+ * \addtogroup xgSyslog
+ */
+/*@{*/
 
 #ifndef SYSLOG_MAXBUF
 /*!
@@ -427,3 +441,6 @@ void closelog(void)
     }
 #endif
 }
+
+/*@}*/
+

@@ -38,7 +38,7 @@
  */
 
 /*!
- * \addtogroup xgAvrADC
+ * \addtogroup xgAvrAdc
  */
  
 /*@{*/ 

@@ -33,11 +33,14 @@
 
 /*!
  * \file pro/ftpd.c
- * \brief DHCP client.
+ * \brief FTP server.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.2  2005/02/07 18:57:51  haraldkipp
  * ICCAVR compile errors fixed
  *

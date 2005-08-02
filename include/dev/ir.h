@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:48  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -47,7 +50,7 @@
 #include <sys/types.h>
 
 /*!
- * \file sys/ir.h
+ * \file dev/ir.h
  * \brief Remote control definitions.
  */
 

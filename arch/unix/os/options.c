@@ -42,7 +42,7 @@
 
 /**
 
-\file os/arch/unix_options.c
+\file arch/unix/os/options.c
 
 \brief Parsing of command line options. NOTE: Unix emulation only!
 

@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.7  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.6  2004/10/14 16:43:00  drsung
  * Fixed compiler warning "comparison between signed and unsigned"
  *
@@ -179,7 +182,7 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
  * \return Returns a pointer to a structure of type ::tm. The fields of the returned 
  * structure hold the evaluated value of the timer argument in UTC rather than in local time. 
  *
- * \note This function is \m not thread safe, because it uses a static variable
+ * \note This function is not thread safe, because it uses a static variable
  * to store the calculated values. To be safe, you must surround the call to \b gmtime 
  * and the usage of the returned pointer with ::NutEnterCritical() and ::NutExitCritical()!
  *

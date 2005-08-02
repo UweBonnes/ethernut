@@ -93,8 +93,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:45  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/08/02 17:47:03  haraldkipp
+ * Major API documentation update.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:45  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.12  2003/03/31 14:53:28  harald
  * Prepare release 3.1
@@ -120,7 +123,7 @@
 /*@{*/
 
 /*!
- * \brief Send an UDP packet.
+ * \brief Send a UDP packet.
  *
  * \param sock  Socket descriptor. This pointer must have been 
  *              retrieved by calling NutUdpCreateSocket().

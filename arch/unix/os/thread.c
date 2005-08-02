@@ -42,6 +42,11 @@
 #include <pthread.h>
 #include <stdio.h>
 
+/*!
+ * \addtogroup xgNutArchUnixOsContext
+ */
+/*@{*/
+
 // prototypes
 extern void NutUnixThreadYieldHook(void);  // from unix_nutinit.c
 
@@ -276,3 +281,4 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     return td;
 }
 
+/*@}*/

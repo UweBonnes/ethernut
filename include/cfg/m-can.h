@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/08/02 17:46:48  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.2  2005/05/27 14:08:01  olereinhardt
  * Changed specs to new m-can board design (LCD controller)
  *
@@ -46,16 +49,14 @@
  */
 
 /*!
- * \file cfg/m-can.h
- * \brief RS232 handshake hardware specification.
- */
-
-/*!
- * \addtogroup xgMCANCfg
+ * \addtogroup xgMCanCfg
  */
 /*@{*/
 
-
+/*!
+ * \file cfg/m-can.h
+ * \brief MCAN Board Configuration
+ */
 
 /*
  * \brief Defines for CAN controller

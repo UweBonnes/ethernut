@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.14  2005/07/26 15:58:49  haraldkipp
  * Cygwin added.
  * Linux EEPROM support moved to dev.
@@ -105,6 +108,11 @@
 #include <string.h>
 
 /*!
+ * \addtogroup xgNutInit
+ */
+/*@{*/
+
+/*!
  * \brief System tick counter.
  *
  * For the time being we put this here to ensure that it will be placed
@@ -113,9 +121,11 @@
  * baudrate factors. If this counter would be placed in external RAM,
  * additional wait states may apply.
  *
- * \todo Layout for internal RAM and place this into a special link segment.
+ * \todo To be removed.
  */
 volatile u_char ms62_5 = 0;
+
+/*@}*/
 
 #if defined(__AVR__)
 #include "../arch/avr/os/nutinit.c"
@@ -133,4 +143,3 @@ volatile u_char ms62_5 = 0;
 #include "../arch/unix/dev/eeprom.c"
 #endif
 
-/*@}*/

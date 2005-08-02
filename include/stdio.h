@@ -81,6 +81,11 @@
 #include <stdarg.h>
 
 /*!
+ * \file stdio.h
+ * \brief C Standard I/O
+ */
+
+/*!
  * \addtogroup xgCrtStdio
  */
 /*@{*/

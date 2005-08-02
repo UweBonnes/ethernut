@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/02 17:46:48  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.4  2005/02/02 20:03:46  haraldkipp
  * All definitions had been moved to avrpio.h in order to fix the broken
  * port I/O without being forced to change other existing modules.
@@ -53,7 +56,7 @@
  */
 
 /*!
- * \addtogroup xgConfig
+ * \addtogroup xgConfigAvr
  */
 /*@{*/
 

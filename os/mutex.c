@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.3  2004/07/19 16:24:23  freckle
  * Code contained same bug as os/semaphore.c.
  * Unfortunately I didn't understand the other fix, but anyway made
@@ -141,3 +144,5 @@ int NutMutexDestroy(MUTEX * mutex) {
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.8  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -120,6 +123,7 @@ size_t available = 0;
 
 /*!
  * \brief Overhead for each allocated memory clock.
+ * \showinitializer
  */
 /* MEMOVHD = sizeof(HEAPNODE:hn_size) + sizeof(0xDEADBEEF) */
 #define MEMOVHD (sizeof(size_t) + sizeof(0xDEADBEEF))

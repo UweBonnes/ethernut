@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.259 2005/07/26 18:43:41 haraldkipp Exp $
+$Id: ChangeLog,v 1.260 2005/08/02 17:46:44 haraldkipp Exp $
+
+2005-08-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* doc/gen/nutdoc_en.txt: Major API documentation update.
+	This also includes the modification of a large number of 
+	source files. But only comment lines had been updated.
+	No code has been changed.
+
+	* doc/gen/nut_en.cfg.in: Added new items for Doxygen 1.4.4.
+	Event example and arch directory included.
+
 
 2005-07-26  Harald Kipp  <harald.kipp@egnite.de>
 

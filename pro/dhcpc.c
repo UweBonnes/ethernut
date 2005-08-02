@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.19  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.18  2005/04/05 17:44:57  haraldkipp
  * Made stack space configurable.
  *
@@ -1875,18 +1878,6 @@ static int DhcpKick(CONST char *name, u_char state, u_long timeout)
  *         returned if the interface configuration failed. In this case
  *         NutDhcpError() can be called to get a more specific error
  *         code.
- *
- * \par API Usage Example
- * The following code shows a typical usage of the DHCP API.
- *
- * \code
- * NutRegisterDevice(&DEV_ETHER, 0, 0);
- * if(NutDhcpIfConfig("eth0", 0, 60000)) {
- *     printf("Ethernet interface not configured. Error %d\n", NutDhcpError());
- * }
- * \endcode
- *
- * \callgraph
  */
 int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
 {

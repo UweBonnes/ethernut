@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.4  2005/04/05 17:38:45  haraldkipp
  * ARM7 memory alignment bugs fixed.
  *
@@ -124,7 +127,6 @@
 typedef struct __attribute__ ((packed)) ip IPHDR;
 
 /*!
- * \struct ip ip.h netinet/ip.h
  * \brief Structure of an internet header.
  */
 struct __attribute__ ((packed)) ip {

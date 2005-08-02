@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/02 17:46:47  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.1  2004/09/08 10:23:35  haraldkipp
  * Generic C stdlib added
  *
@@ -71,7 +74,7 @@
 #include <stdlib.h>
 
 /*!
- * \addtogroup xgCrtString
+ * \addtogroup xgCrtStdLib
  */
 /*@{*/
 
@@ -148,3 +151,5 @@ unsigned long strtoul(const char *nptr, char **endptr, int base)
         *endptr = (char *) (any ? s - 1 : nptr);
     return (acc);
 }
+
+/*@}*/

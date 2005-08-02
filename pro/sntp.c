@@ -31,8 +31,18 @@
  *
  * Thanks to Lars H. Andersson, who submitted the first idea of this simple function
  */
+
 /*
+/*!
+ * \file pro/sntp.c
+ * \brief Simple Network Time Protocol Client.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.7  2005/08/02 17:47:04  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.6  2005/04/08 15:20:51  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -52,7 +62,7 @@
  * Revision 1.1  2003/11/24 18:13:22  drsung
  * first release
  *
- *
+ * \endverbatim
  */
 
 #include <cfg/sntp.h>
@@ -67,6 +77,12 @@
 #include <sys/timer.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+
+/*!
+ * \addtogroup xgSntp
+ */
+/*@{*/
+
 #ifndef NUT_THREAD_SNTPSTACK
 #define NUT_THREAD_SNTPSTACK    256
 #endif
@@ -200,3 +216,5 @@ int NutSNTPStartThread(u_long server_addr, u_long interval)
         return -1;
     }
 }
+
+/*@}*/

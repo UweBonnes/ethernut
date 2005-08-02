@@ -68,6 +68,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2005/08/02 17:46:49  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.7  2005/02/03 14:34:05  haraldkipp
  * Several bug fixes and enhancements. The most important fix will
  * avoid hanging, when Ethernut is reset while ICMP pings are
@@ -274,7 +277,7 @@
 /*!
  * \brief DHCP transmit error.
  *
- * Failed to send an UDP datagram. The DHCP client considers it a fatal
+ * Failed to send a UDP datagram. The DHCP client considers it a fatal
  * error if NutUdpSendTo() to the broadcast address fails.
  */
 #define DHCPERR_TRANSMIT    19
@@ -282,7 +285,7 @@
 /*!
  * \brief DHCP receive error.
  *
- * Failed to receive an UDP datagram. The DHCP client considers it a fatal
+ * Failed to receive a UDP datagram. The DHCP client considers it a fatal
  * error if NutUdpReceiveFrom() fails.
  */
 #define DHCPERR_RECEIVE     20

@@ -62,6 +62,12 @@ NutWinsNameQuery  (  "myboard", inet_addr(MYIP) ) ;
 
 extern u_char toupper(u_char);
 /* ********************************************************* */
+
+/*!
+ * \addtogroup xgWins
+ */
+/*@{*/
+
 typedef struct {
     u_short id;
     u_short flags;

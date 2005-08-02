@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/08/02 17:47:03  haraldkipp
+ * Major API documentation update.
+ *
  * Revision 1.6  2005/04/08 15:20:51  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -143,11 +146,11 @@
 /*@{*/
 
 
-UDPSOCKET *udpSocketList;       /*!< Linked list of all UDP sockets. */
+UDPSOCKET *udpSocketList;       /*!< Global linked list of all UDP sockets. */
 static u_short last_local_port = 4096;  /* Unassigned local port. */
 
 /*!
- * \brief Create an UDP socket.
+ * \brief Create a UDP socket.
  *
  * \param  port Server applications provide the local port number
  *              with this parameter. Client applications should
@@ -184,7 +187,7 @@ UDPSOCKET *NutUdpCreateSocket(u_short port)
 }
 
 /*!
- * \brief Send an UDP datagram.
+ * \brief Send a UDP datagram.
  *
  * \param sock Socket descriptor. This pointer must have been 
  *             retrieved by calling NutUdpCreateSocket().
@@ -213,7 +216,7 @@ int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data, u_shor
 }
 
 /*!
- * \brief Receive an UDP datagram.
+ * \brief Receive a UDP datagram.
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutUdpCreateSocket().
@@ -333,7 +336,7 @@ UDPSOCKET *NutUdpFindSocket(u_short port)
  *
  * The following values can be set:
  *
- * - SO_RCVBUF   Socket input buffer size (#u_short).
+ * - #SO_RCVBUF   Socket input buffer size (#u_short).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutUdpCreateSocket().
@@ -369,7 +372,7 @@ int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optl
  *
  * The following values can be set:
  *
- * - SO_RCVBUF   Socket input buffer size (#u_short).
+ * - #SO_RCVBUF   Socket input buffer size (#u_short).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutUdpCreateSocket().
