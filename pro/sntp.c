@@ -32,7 +32,7 @@
  * Thanks to Lars H. Andersson, who submitted the first idea of this simple function
  */
 
-/*
+
 /*!
  * \file pro/sntp.c
  * \brief Simple Network Time Protocol Client.
@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2005/08/03 11:46:59  olereinhardt
+ * Removed unneeded comment line to fix compile bug
+ *
  * Revision 1.7  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
