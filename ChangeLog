@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.260 2005/08/02 17:46:44 haraldkipp Exp $
+$Id: ChangeLog,v 1.261 2005/08/03 14:43:54 freckle Exp $
+
+2005-08-03  Matthias Ringwald  <mringwal@inf.ethz.ch>
+
+    * os/timer.c: made nut_tick public
 
 2005-08-02  Harald Kipp  <harald.kipp@egnite.de>
 

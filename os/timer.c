@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.28  2005/08/03 14:43:54  freckle
+ * made nut_tick public
+ *
  * Revision 1.27  2005/07/26 16:01:19  haraldkipp
  * Cygwin added.
  * Platform dependent code is now located in arch/(target)/ostimer.c.
@@ -205,7 +208,7 @@ u_char volatile nutTimerStopped;
 /*!
 *  \brief System tick counter
  */
-static volatile u_long nut_ticks;
+volatile u_long nut_ticks;
 
 /*!
  *  \brief Time of last NutTimerProcessElapsed execution
@@ -215,7 +218,11 @@ static u_long nut_ticks_resume;
 /*!
  * \brief System timer interrupt handler.
  */
+#ifdef USE_TIMER
+SIGNAL( SIG_TIMER ) 
+#else
 static void NutTimerIntr(void *arg)
+#endif
 {
     nut_ticks++;
 }
