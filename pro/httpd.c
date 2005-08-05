@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/08/05 11:23:11  olereinhardt
+ * Added support to register a custom handler for mime types.
+ * Added Server side include support and ASP support.
+ *
  * Revision 1.8  2005/04/30 13:08:15  chaac
  * Added support for parsing Content-Length field in HTTP requests.
  *
@@ -96,17 +100,21 @@
 static struct {
     char *ext;
     char *type;
+    void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req);
 } mimeTypes[] = {
     {
-    ".txt", "text/plain"}, {
-    ".html", "text/html"}, {
-    ".htm", "text/html"}, {
-    ".gif", "image/gif"}, {
-    ".jpg", "image/jpeg"}, {
-    ".pdf", "application/pdf"}, {
-    ".js", "application/x-javascript"}, {
-    ".css", "text/css"}, {
-    ".xml", "text/xml"}
+    ".txt", "text/plain", NULL}, {
+    ".html", "text/html", NULL}, {
+    ".shtml", "text/html", NULL}, {    
+    ".asp", "text/html", NULL}, {
+    ".htm", "text/html", NULL}, {
+    ".gif", "image/gif", NULL}, {
+    ".jpg", "image/jpeg", NULL}, {
+    ".png", "image/png", NULL}, {    
+    ".pdf", "application/pdf", NULL}, {
+    ".js",  "application/x-javascript", NULL}, {
+    ".css", "text/css", NULL}, {
+    ".xml", "text/xml", NULL}
 };
 
 static char *http_root;
@@ -224,8 +232,9 @@ void NutHttpSendError(FILE * stream, REQUEST * req, int status)
  *         associated mime type description. If the extension
  *         is not registered, "text/plain; charset=iso-8859-1"
  *         is returned. If the filename is empty, then
- *         "text/hatml; charset=iso-8859-1" is returned.
+ *         "text/html; charset=iso-8859-1" is returned.
  */
+
 char *NutGetMimeType(char *name)
 {
     size_t i;
@@ -237,6 +246,65 @@ char *NutGetMimeType(char *name)
         if (strcasecmp(&(name[fl - strlen(mimeTypes[i].ext)]), mimeTypes[i].ext) == 0)
             return mimeTypes[i].type;
     return mimeTypes[0].type;
+}
+
+/*!
+ * \brief Return the mime type handler of a specified file name.
+ *
+ * This is the function that handles / sends a specific file type to the 
+ * client. Escpecialy used for server side includes (shtml files)
+ *
+ * \todo Function to register additional mime types. Currently only
+ *       .txt, .html, .gif and .jpg are supported.
+ *
+ * \param name Name of the file.
+ *
+ * \return A pointer to a function of the type void (u_char * filename)
+ *         If the extension is not registered, the handler for 
+ *         "text/plain; charset=iso-8859-1" is returned. 
+ *         If the filename is empty, then the handler for 
+ *         "text/html; charset=iso-8859-1" is returned.
+ */
+
+void *NutGetMimeHandler(char *name)
+{
+    size_t i;
+    int fl;
+
+    if (name == 0 || (fl = strlen(name)) == 0)
+        return mimeTypes[1].handler;
+    for (i = 0; i < sizeof(mimeTypes) / sizeof(*mimeTypes); i++)
+        if (strcasecmp(&(name[fl - strlen(mimeTypes[i].ext)]), mimeTypes[i].ext) == 0)
+            return mimeTypes[i].handler;
+    return mimeTypes[0].handler;
+}
+
+/*!
+ * \brief Set the mime type handler for a specified file extension.
+ *
+ * This is the function that handles / sends a specific file type to the 
+ * client. Escpecialy used for server side includes (shtml files)
+ *
+ * \todo Function to register additional mime types. Currently only
+ *       .txt, .html, .gif and .jpg are supported.
+ *
+ * \param extension Filename extension the handler should be registered for
+ * \param handler pointer to a function of the type void (u_char filename)
+ * \return 1 on error or 0 on success
+ */
+
+u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req))
+{
+    size_t i;
+
+    if (extension == NULL)
+        return 1;
+    for (i = 0; i < sizeof(mimeTypes) / sizeof(*mimeTypes); i++)
+        if (strcasecmp(extension, mimeTypes[i].ext) == 0) {
+            mimeTypes[i].handler = handler;
+            return 0;
+        }    
+    return 1;
 }
 
 /*!
@@ -333,7 +401,7 @@ void NutHttpURLDecode(char *str)
  * \param req Request object to parse
  */
 #ifndef ARM_GCC_NOLIBC
-static void NutHttpProcessQueryString(REQUEST * req)
+void NutHttpProcessQueryString(REQUEST * req)
 {
     register int i;
     register char *ptr;
@@ -446,7 +514,8 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     int size;
     long file_len;
     char *filename = NULL;
-
+    void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req);
+    
     /*
      * Validate authorization.
      */
@@ -473,11 +542,14 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         filename = NutHeapAlloc(strlen(req->req_url) + 6);
         strcpy(filename, "UROM:");
     }
+    
     strcat(filename, req->req_url);
+
+    handler = NutGetMimeHandler(filename);
 
     fd = _open(filename, _O_BINARY | _O_RDONLY);
     NutHeapFree(filename);
-    if (fd == -1) {
+    if (fd == -1) {                     // Search for index.html
         u_char *index;
         u_short urll;
 
@@ -504,30 +576,67 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
 
         NutHeapFree(index);
 
+        handler = NutGetMimeHandler(filename);
+
         fd = _open(filename, _O_BINARY | _O_RDONLY);
         NutHeapFree(filename);
-        if (fd == -1) {
-            NutHttpSendError(stream, req, 404);
-            return;
+        if (fd == -1) {                 // We have no index.html. But perhaps an index.shtml?
+            urll = strlen(req->req_url);
+            if ((index = NutHeapAllocClear(urll + 13)) == 0) {
+                NutHttpSendError(stream, req, 500);
+                return;
+            }
+            if (urll)
+                strcpy(index, req->req_url);
+            if (urll && index[urll - 1] != '/')
+                strcat(index, "/");
+            strcat(index, "index.shtml");
+    
+            if (http_root) {
+                filename = NutHeapAlloc(strlen(http_root) + strlen(index) + 1);
+                strcpy(filename, http_root);
+            } else {
+                filename = NutHeapAlloc(strlen(index) + 6);
+                strcpy(filename, "UROM:");
+            }
+            strcat(filename, index);
+    
+            NutHeapFree(index);
+
+            handler = NutGetMimeHandler(filename);
+
+            fd = _open(filename, _O_BINARY | _O_RDONLY);
+            NutHeapFree(filename);
+            if (fd == -1) {            // Non of both found... send a 404
+                NutHttpSendError(stream, req, 404);
+                return;
+            }
         }
     }
+    
     file_len = _filelength(fd);
-    NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, NutGetMimeType(req->req_url), file_len);
-    if (req->req_method != METHOD_HEAD) {
-        size = 512;
-        if ((data = NutHeapAlloc(size)) != 0) {
-            while (file_len) {
-                if (file_len < 512L)
-                    size = (int) file_len;
-
-                n = _read(fd, data, size);
-                if (fwrite(data, 1, n, stream) == 0)
-                    break;
-                file_len -= (long) n;
+    if (handler == NULL) {
+        NutHttpSendHeaderTop(stream, req, 200, "Ok");
+        NutHttpSendHeaderBot(stream, NutGetMimeType(req->req_url), file_len);
+        if (req->req_method != METHOD_HEAD) {
+            size = 512;                 // If we have not registered a mime handler handle default.
+            if ((data = NutHeapAlloc(size)) != 0) {
+                while (file_len) {
+                    if (file_len < 512L)
+                        size = (int) file_len;
+    
+                    n = _read(fd, data, size);
+                    if (fwrite(data, 1, n, stream) == 0)
+                        break;
+                    file_len -= (long) n;
+                }
+                NutHeapFree(data);
             }
-            NutHeapFree(data);
         }
+    } else {
+        NutHttpSendHeaderTop(stream, req, 200, "Ok");
+        NutHttpSendHeaderBot(stream, NutGetMimeType(req->req_url), -1);
+        handler(stream, fd, file_len, http_root, req);
     }
     _close(fd);
 }
@@ -748,11 +857,11 @@ void NutHttpProcessRequest(FILE * stream)
 
     NutHeapFree(method);
 
-    if (NutDecodePath(req->req_url) == 0)
+    if (NutDecodePath(req->req_url) == 0) {
         NutHttpSendError(stream, req, 400);
-    else
+    } else {
         NutHttpProcessFileRequest(stream, req);
-
+    }
     DestroyRequestInfo(req);
 }
 

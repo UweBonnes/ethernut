@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/08/05 11:23:11  olereinhardt
+ * Added support to register a custom handler for mime types.
+ * Added Server side include support and ASP support.
+ *
  * Revision 1.3  2005/06/26 13:35:26  chaac
  * Added forgotten prototype for NutRegisterHttpRoot, fixes bug #1215853. Also fixed some prototypes when compiling with C++.
  *
@@ -81,11 +85,13 @@ struct _REQUEST {
 __BEGIN_DECLS
 
 extern void NutHttpProcessRequest(FILE * stream);
-
+extern void NutHttpProcessQueryString(REQUEST * req);
 extern void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title);
 extern void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes);
 extern void NutHttpSendError(FILE * stream, REQUEST * req, int status);
 extern char *NutGetMimeType(char *name);
+extern void *NutGetMimeHandler(char *name);
+extern u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req));
 
 __END_DECLS
 
@@ -140,6 +146,7 @@ extern char *NutHttpGetParameter(REQUEST * req, char *name);
 extern int NutHttpGetParameterCount(REQUEST * req);
 extern char *NutHttpGetParameterName(REQUEST * req, int index);
 extern char *NutHttpGetParameterValue(REQUEST * req, int index);
+
 
 __END_DECLS
 /* */
