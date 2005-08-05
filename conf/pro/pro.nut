@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.7  2005/08/05 11:26:01  olereinhardt
+-- Added asp.c, ssi.c
+--
 -- Revision 1.6  2005/04/05 17:44:56  haraldkipp
 -- Made stack space configurable.
 --
@@ -207,7 +210,9 @@ nutpro =
             "auth.c",
             "cgi.c",
             "dencode.c",
-            "httpd.c"
+            "httpd.c",
+            "asp.c",
+            "ssi.c"
         }
     },
     {
