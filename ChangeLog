@@ -1,8 +1,33 @@
-$Id: ChangeLog,v 1.261 2005/08/03 14:43:54 freckle Exp $
+$Id: ChangeLog,v 1.262 2005/08/05 11:43:04 olereinhardt Exp $
+
+2005-07-05  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+        
+        * crt/Makefile, crt/seek.c, crt/tell.c, crt/fseek.c, crt/ftell.c
+          include/io.h
+        Added support for _seek, _tell, fseek, ftell functions
+        * include/stdio.h
+        Added defines: SEEK_SET, SEEK_CUR, SEEK_END
+        * fs/uromfs.c
+        Added IOCTL function with support for seek
+        * include/fs/fs.h
+        Corrected typo
+        * conf/crt/crt.nut
+        Added seek.c, tell.c
+        * pro/asp.c, pro/ssi.c, pro/httpd.c, pro/Makefile,
+          include/pro/httpd.h, include/pro/asp.h, include/pro/ssi.h
+        Added support to register a custom handler for mime types.
+        Added Server side include support and ASP support.
+        * conf/pro/pro.nut
+        Added asp.c, ssi.c 
+        * app/httpd/httpserv.c, app/httpd/sample/index.html,
+          app/httpd/sample/asp.asp, app/httpd/sample/ssi.shtml,
+          app/httpd/sample/include.inc
+        Added SSI and ASP sample 
+   
 
 2005-08-03  Matthias Ringwald  <mringwal@inf.ethz.ch>
 
-    * os/timer.c: made nut_tick public
+        * os/timer.c: made nut_tick public
 
 2005-08-02  Harald Kipp  <harald.kipp@egnite.de>
 
