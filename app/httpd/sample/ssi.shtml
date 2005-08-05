@@ -1,0 +1,15 @@
+<html>
+<head>
+</head>
+<body>
+
+<img src="enlogo.gif"><img src="entail.gif"><p>
+
+<h1>Server side include demo</h1>
+
+----- Included part start -----<br>
+<!-- #include virtual="/include.inc" -->
+----- Included part end   -----<br>
+
+</body>
+</html>

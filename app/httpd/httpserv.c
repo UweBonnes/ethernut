@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.10  2005/08/05 11:32:50  olereinhardt
+ * Added SSI and ASP sample
+ *
  * Revision 1.9  2005/04/05 18:04:17  haraldkipp
  * Support for ARM7 Wolf Board added.
  *
@@ -101,6 +104,8 @@
 
 #include <pro/httpd.h>
 #include <pro/dhcp.h>
+#include <pro/ssi.h>
+#include <pro/asp.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -108,6 +113,34 @@
 #endif
 
 static char *html_mt = "text/html";
+
+
+/**************************************************************/
+/*  ASPCallback                                               */
+/*                                                            */
+/* This routine must have been registered by                  */
+/* NutRegisterAspCallback() and is automatically called by    */
+/* NutHttpProcessFileRequest() when the server process a page */
+/* with an asp function.                                      */
+/*                                                            */
+/* Return 0 on success, -1 otherwise.                         */
+/**************************************************************/
+
+
+static int ASPCallback (char *pASPFunction, FILE *stream)
+{
+    if (strcmp(pASPFunction, "usr_date") == 0) {
+        fprintf(stream, "Dummy example: 01.01.2005");
+        return(0);
+    }
+                              
+    if (strcmp(pASPFunction, "usr_time") == 0) {
+        fprintf(stream, "Dummy example: 12:15:02");
+        return(0);
+    }
+                                                          
+    return (-1);
+}
 
 /*
  * CGI Sample: Show request parameters.
@@ -578,7 +611,13 @@ int main(void)
      * user and password.
      */
     NutRegisterAuth("cgi-bin", "root:root");
-
+    
+    /*
+     * Register SSI and ASP handler
+     */
+    NutRegisterSsi();
+    NutRegisterAsp(); 
+    NutRegisterAspCallback(ASPCallback);    
     /*
      * Start four server threads.
      */
