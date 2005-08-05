@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/05 11:18:00  olereinhardt
+ * Added support for _seek, _tell, fseek, ftell functions
+ *
  * Revision 1.4  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -79,6 +82,9 @@ extern int _write(int fd, CONST void *buffer, size_t count);
 #ifdef __HARVARD_ARCH__
 extern int _write_P(int fd, PGM_P buffer, size_t count);
 #endif
+extern int _seek(int fd, long offset, int origin);
+extern long _tell(int fd);
+
 extern int _ioctl(int fd, int cmd, void *buffer);
 extern long _filelength(int fd);
 

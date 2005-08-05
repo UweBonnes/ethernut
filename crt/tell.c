@@ -33,36 +33,55 @@
 
 /*
  * $Log$
- * Revision 1.2  2005/08/05 11:17:53  olereinhardt
+ * Revision 1.1  2005/08/05 11:17:53  olereinhardt
  * Added support for _seek, _tell, fseek, ftell functions
- *
- * Revision 1.1.1.1  2003/05/09 14:40:28  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/02/04 17:49:06  harald
- * *** empty log message ***
  *
  */
 
 #include "nut_io.h"
-#include <io.h>
 
+#include <sys/device.h>
+#include <fs/fs.h>
+#include <errno.h>
 /*!
- * \addtogroup xgCrtStdio
+ * \addtogroup xgCrtLowio
  */
 /*@{*/
-
+ 
 /*!
  * \brief Return the read/write position of a stream.
  *
- * \param stream Pointer to a previously opened stream.
+ * \param fd     Descriptor of a previously opened file, device or
+ *               connected socket.
  *
- * \return The current position.
+ * \return The current position or -1 on error.
  *
  */
-long ftell(FILE * stream)
+ 
+long _tell(int fd)
 {
-    return _tell(stream->iob_fd);
+    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
+    NUTDEVICE *dev = fp->nf_dev;
+    IOCTL_ARG3 conf;
+    
+    long offset = 0;
+    int  origin = SEEK_CUR;
+    
+    conf.arg1 = (void*) fp;
+    conf.arg2 = (void*) &offset;
+    conf.arg3 = (void*) origin;
+    
+    if (dev != 0) {
+        if ((*dev->dev_ioctl) (dev, FS_FILE_SEEK, &conf)) {
+            return offset;
+        } else {
+            errno = EINVAL;
+            return -1;
+        }
+    } else {
+        errno = EINVAL;
+        return -1;
+    }
 }
 
 /*@}*/

@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2005/08/05 11:17:53  olereinhardt
+# Added support for _seek, _tell, fseek, ftell functions
+#
 # Revision 1.8  2004/11/08 09:57:39  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -82,7 +85,7 @@ SRCC =  clrerr.c fclose.c fcloseall.c fdopen.c feof.c ferror.c fflush.c \
 	scanf.c sprintf.c sscanf.c ungetc.c vfprintf.c vfscanf.c vsprintf.c \
 	vsscanf.c close.c ioctl.c open.c read.c write.c filelength.c \
 	tzset.c gmtime.c mktime.c localtim.c time.c malloc.c strtok_r.c \
-	kbhit.c
+	kbhit.c tell.c seek.c
 
 SRCCP = fprintf_p.c fputs_p.c fscanf_p.c fwrite_p.c printf_p.c puts_p.c \
 	scanf_p.c sprintf_p.c sscanf_p.c vfprintf_p.c vfscanf_p.c \

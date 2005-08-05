@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:28  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/08/05 11:17:53  olereinhardt
+ * Added support for _seek, _tell, fseek, ftell functions
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:28  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:06  harald
  * *** empty log message ***
@@ -42,6 +45,7 @@
  */
 
 #include "nut_io.h"
+#include <io.h>
 
 /*!
  * \addtogroup xgCrtStdio
@@ -55,13 +59,12 @@
  * \param offset Number of bytes from initial position.
  * \param origin Initial position to seek from.
  *
- * \return 0 if no error occured.
+ * \return 0 if no error occured. -1 on error. Errno is set
  *
- * \bug The function does nothing and always returns -1.
  */
 int fseek(FILE * stream, long offset, int origin)
 {
-    return -1;
+    return _seek(stream->iob_fd, offset, origin);
 }
 
 /*@}*/
