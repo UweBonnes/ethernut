@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2005/08/05 11:28:25  olereinhardt
+ * Corrected typo
+ *
  * Revision 1.1  2005/02/05 20:37:18  haraldkipp
  * Peanut added
  *
@@ -118,7 +121,7 @@ typedef struct {
 /*!
  * \brief General structure for three arguments.
  *
- * Used to pass two arguments to an I/O control function.
+ * Used to pass three arguments to an I/O control function.
  */
 typedef struct {
     void *arg1;
@@ -129,4 +132,3 @@ typedef struct {
 /*@}*/
 
 #endif
-
