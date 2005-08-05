@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/05 11:29:07  olereinhardt
+ * Added IOCTL function with support for seek
+ *
  * Revision 1.4  2004/03/18 11:37:06  haraldkipp
  * Deprecated functions removed
  *
@@ -62,14 +65,17 @@
 
 #include <string.h>
 #include <errno.h>
+#include <stdio.h>
 
 #include <sys/heap.h>
 #include <sys/file.h>
 #include <sys/device.h>
 
+#include <fs/fs.h>
 #include <dev/urom.h>
 #include <fs/uromfs.h>
 
+/*
 static int UromRead(NUTFILE * fp, void *buffer, int size);
 static int UromWrite(NUTFILE * fp, CONST void *buffer, int len);
 #ifdef __HARVARD_ARCH__
@@ -79,37 +85,37 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
                          int acc);
 static int UromClose(NUTFILE * fp);
 static long UromSize(NUTFILE * fp);
-
+*/
 /*!
  * \addtogroup xgurom
  */
 /*@{*/
 
-/*!
- * \brief UROM device information structure.
- *
- * All this UROM stuff is so simple, that it even mimics
- * its own device driver.
- */
-NUTDEVICE devUrom = {
-    0,                          /*!< Pointer to next device. */
-    {'U', 'R', 'O', 'M', 0, 0, 0, 0, 0},        /*!< Unique device name. */
-    IFTYP_ROM,                  /*!< Type of device. Obsolete. */
-    0,                          /*!< Base address. Unused. */
-    0,                          /*!< First interrupt number. Unused. */
-    0,                          /*!< Interface control block. Unused. */
-    0,                          /*!< Driver control block. Unused. */
-    0,                          /*!< Driver initialization routine. Not supported. */
-    0,                          /*!< Driver specific control function. Not supported. */
-    UromRead,                   /*!< Read data from a file. */
-    UromWrite,                  /*!< Write data to a file. */
-#ifdef __HARVARD_ARCH__
-    UromWrite_P,                /*!< Write data from program space to a file. */
-#endif
-    UromOpen,                   /*!< Open a file. */
-    UromClose,                  /*!< Close a file. */
-    UromSize                    /*!< Return file size. */
-};
+static int UromSeek(NUTFILE * fp, long *pos, int whence)
+{
+    ROMFILE *romf = fp->nf_fcb;
+    ROMENTRY *rome = romf->romf_entry;
+
+    int rc = 0;
+    long npos = *pos;
+
+    switch (whence) {
+    case SEEK_CUR:
+        npos += romf->romf_pos;
+        break;
+    case SEEK_END:
+        npos += rome->rome_size;
+        break;
+    }
+
+    if (npos < 0 || npos > rome->rome_size) {
+        rc = EINVAL;
+    } else {
+        romf->romf_pos = npos;
+        *pos = npos;
+    }
+    return rc;
+}
 
 /*! 
  * \brief Read from device. 
@@ -127,7 +133,6 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
     }
     return size;
 }
-
 
 /*! 
  * \brief Write data to a file.
@@ -214,5 +219,49 @@ static long UromSize(NUTFILE * fp)
 
     return (long) rome->rome_size;
 }
+
+/*!
+ * \brief Device specific functions.
+ */
+int UromIOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = -1;
+
+    switch (req) {
+    case FS_FILE_SEEK:
+        UromSeek((NUTFILE *) ((IOCTL_ARG3 *) conf)->arg1,      /* */
+                     (long *) ((IOCTL_ARG3 *) conf)->arg2,      /* */
+                     (int) ((IOCTL_ARG3 *) conf)->arg3);
+        break;
+    }
+    return rc;
+}
+
+
+/*!
+ * \brief UROM device information structure.
+ *
+ * All this UROM stuff is so simple, that it even mimics
+ * its own device driver.
+ */
+NUTDEVICE devUrom = {
+    0,                          /*!< Pointer to next device. */
+    {'U', 'R', 'O', 'M', 0, 0, 0, 0, 0},        /*!< Unique device name. */
+    IFTYP_ROM,                  /*!< Type of device. Obsolete. */
+    0,                          /*!< Base address. Unused. */
+    0,                          /*!< First interrupt number. Unused. */
+    0,                          /*!< Interface control block. Unused. */
+    0,                          /*!< Driver control block. Unused. */
+    0,                          /*!< Driver initialization routine. Not supported. */
+    UromIOCtl,                  /*!< Driver specific control function. Not supported. */
+    UromRead,                   /*!< Read data from a file. */
+    UromWrite,                  /*!< Write data to a file. */
+#ifdef __HARVARD_ARCH__
+    UromWrite_P,                /*!< Write data from program space to a file. */
+#endif
+    UromOpen,                   /*!< Open a file. */
+    UromClose,                  /*!< Close a file. */
+    UromSize                    /*!< Return file size. */
+};
 
 /*@}*/
