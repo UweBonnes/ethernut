@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.8  2005/08/05 11:25:01  olereinhardt
+-- Added seek.c, tell.c
+--
 -- Revision 1.7  2005/06/26 11:33:31  chaac
 -- Added forgotten kbhit.c to build process.
 --
@@ -130,7 +133,9 @@ nutcrt =
             "fpurge.c",
             "freopen.c",
             "fseek.c",
-            "ftell.c"
+            "ftell.c",
+            "seek.c",
+            "tell.c"
         },
         options = 
         {
