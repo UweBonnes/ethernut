@@ -1,6 +1,10 @@
-$Id: ChangeLog,v 1.262 2005/08/05 11:43:04 olereinhardt Exp $
+$Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
-2005-07-05  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+2005-08-10  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+        * pro/asp.c
+        Corrected documentation
+
+2005-08-05  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         
         * crt/Makefile, crt/seek.c, crt/tell.c, crt/fseek.c, crt/ftell.c
           include/io.h
