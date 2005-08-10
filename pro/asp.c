@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/08/10 09:26:38  olereinhardt
+ * Corrected documentation
+ *
  * Revision 1.1  2005/08/05 11:21:02  olereinhardt
  * Added Michael Fischers ASP support. Initial checkin
  *
@@ -302,13 +305,11 @@ int NutRegisterAspCallback(int (*func) (char *, FILE *))
 }
 
 /*!
- * \brief Register SSI handler for shtml files.
- * 
- * shtml files may use the following ssi commands:
+ * \brief Register ASP handler for asp files.
  *
- * <!--#include virtual="/news/news.htm" -->
- * <!--#include file="UROM:/news/news.htm" -->
- * <!--#exec cgi="/cgi-bin/counter.cgi" -->
+ * asp files may use the following syntax:
+ *
+ * <%my_function%>
  */
 
 void NutRegisterAsp(void)
