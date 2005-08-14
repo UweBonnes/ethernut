@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.12  2005/08/14 16:10:18  christianwelzel
+ * Avoid compiler warnings under cygwin.
+ *
  * Revision 1.11  2005/07/26 16:39:09  haraldkipp
  * Do not store default values.
  *
@@ -627,12 +630,12 @@ private:
 
         wxFileInputStream f_source(source);
         if (!f_source.Ok()) {
-            wxLogMessage("Failed to read from %s", source);
+            wxLogMessage(wxT("Failed to read from %s"), source.c_str());
             return false;
         }
         wxFileOutputStream f_target(target);
         if (!f_target.Ok()) {
-            wxLogMessage("Failed to write to %s", target);
+            wxLogMessage(wxT("Failed to write to %s"), target.c_str());
             return false;
         }
 
@@ -686,12 +689,12 @@ private:
     {
         wxFileInputStream f_source(source);
         if (!f_source.Ok()) {
-            wxLogMessage("Failed to read from %s", source);
+            wxLogMessage(wxT("Failed to read from %s"), source.c_str());
             return false;
         }
         wxFileOutputStream f_target(target);
         if (!f_target.Ok()) {
-            wxLogMessage("Failed to write to %s", target);
+            wxLogMessage(wxT("Failed to write to %s"), target.c_str());
             return false;
         }
 
