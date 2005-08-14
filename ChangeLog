@@ -1,11 +1,15 @@
-$Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
+$Id: ChangeLog,v 1.264 2005/08/14 16:15:32 christianwelzel Exp $
 
+2005-08-14  Christian Welzel <christian.welzel@welzel-online.ch>
+        * tools/nutconf/nutconfdoc.cpp
+		Corrected wxLogMessages to avoid compiler warnings.
+		
 2005-08-10  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * pro/asp.c
         Corrected documentation
 
 2005-08-05  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-        
+
         * crt/Makefile, crt/seek.c, crt/tell.c, crt/fseek.c, crt/ftell.c
           include/io.h
         Added support for _seek, _tell, fseek, ftell functions
@@ -22,12 +26,12 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
         Added support to register a custom handler for mime types.
         Added Server side include support and ASP support.
         * conf/pro/pro.nut
-        Added asp.c, ssi.c 
+        Added asp.c, ssi.c
         * app/httpd/httpserv.c, app/httpd/sample/index.html,
           app/httpd/sample/asp.asp, app/httpd/sample/ssi.shtml,
           app/httpd/sample/include.inc
-        Added SSI and ASP sample 
-   
+        Added SSI and ASP sample
+
 
 2005-08-03  Matthias Ringwald  <mringwal@inf.ethz.ch>
 
@@ -36,7 +40,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 2005-08-02  Harald Kipp  <harald.kipp@egnite.de>
 
 	* doc/gen/nutdoc_en.txt: Major API documentation update.
-	This also includes the modification of a large number of 
+	This also includes the modification of a large number of
 	source files. But only comment lines had been updated.
 	No code has been changed.
 
@@ -54,7 +58,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* include/arch/arm/atom.h, include/arch/avr/atom.h,
 	include/arch/h8300h/atom.h, include/arch/m68k/atom.h:
-	AtomicInc() and AtomicDec() had been removed. This may break 
+	AtomicInc() and AtomicDec() had been removed. This may break
 	existing applications but simplifies portability.
 
 	* include/dev/irqreg.h: Several files were moved from dev
@@ -67,10 +71,10 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* include/arch/unix.h, include/compiler.h, include/dev/debug.h,
 	include/dev/uartavr.h, include/dev/usartavr.h, include/errno.h,
-	include/netdb.h, include/netinet/in.h, include/stdio.h, 
-	include/sys/atom.h, include/sys/nut_types.h, 
+	include/netdb.h, include/netinet/in.h, include/stdio.h,
+	include/sys/atom.h, include/sys/nut_types.h,
 	include/sys/socket.h, include/sys/thread.h, include/sys/types.h,
-	net/confnet.c, os/confos.c, os/heap.c, os/osdebug.c: 
+	net/confnet.c, os/confos.c, os/heap.c, os/osdebug.c:
 	Cygwin added.
 
 	* os/nutinit.c: Cygwin added. EEPROM support moved from os to
@@ -134,10 +138,10 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* include/cfg/arch/avrpio.h: Added missing SPIDIGIO_SIN_PORT
 	and SPIDIGIO_SIN_DDR.
 
-	* tools/nutconf/nutcomponent.c, tools/nutconf/nutcomponent.h: 
-	Version 1.2.3. Added new keyword "default" to specify default 
-	values. They will no longer appear in the conf files and we can 
-	remove the booldata flavor from most options. Bugfix: Options 
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutcomponent.h:
+	Version 1.2.3. Added new keyword "default" to specify default
+	values. They will no longer appear in the conf files and we can
+	remove the booldata flavor from most options. Bugfix: Options
 	will now be recognized in all sublevels.
 
 	* tools/nutconf/nutconf.h: Version 1.2.3.
@@ -146,10 +150,10 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* app/Makedefs.avr-dude: Wrong name removed. It's Makeburn.
 
-	* arch/arm/os/thread.c, arch/avr/os/thread.c: Moved to 
+	* arch/arm/os/thread.c, arch/avr/os/thread.c: Moved to
 	arch/(target)/os/context[_device].c.
 
-	* arch/arm/os/timer.c, arch/avr/os/timer.c, 
+	* arch/arm/os/timer.c, arch/avr/os/timer.c,
 	arch/h8300h/os/timer.c, arch/m68k/os/timer.c,
 	arch/unix/os/timer.c: Moved to arch/(target)/dev/ostimer.c.
 
@@ -158,8 +162,8 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* dev/irqreg.c: Previous platform distributor. No longer
 	required.
 
-	* dev/adc.c, dev/ahdlc0.c, dev/ahdlc1.c, dev/ahdlcavr.c, 
-	dev/cs8900.c, dev/cs8900.h, dev/debug0.c, dev/debug1.c, 
+	* dev/adc.c, dev/ahdlc0.c, dev/ahdlc1.c, dev/ahdlcavr.c,
+	dev/cs8900.c, dev/cs8900.h, dev/debug0.c, dev/debug1.c,
 	dev/eth0cs.c, dev/eth0rtl.c, dev/hd44780.c, dev/hd44780_bus.c,
 	dev/ide.c, dev/ir.c, dev/irsony.c, dev/ivect01.c, dev/ivect02.c,
 	dev/ivect03.c, dev/ivect04.c, dev/ivect05.c, dev/ivect06.c,
@@ -233,7 +237,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* arch/h8300h/dev/ihndlr.c, arch/h8300h/dev/mweeprom.c,
 	arch/h8300h/dev/nicrtl.c, arch/h8300h/dev/ostimer.c,
-	arch/h8300h/dev/s3c4510b_console.c, 
+	arch/h8300h/dev/s3c4510b_console.c,
 	arch/h8300h/dev/s3c4510b_irqreg.c,
 	arch/h8300h/dev/scih8.c, arch/h8300h/dev/scih8dbg.c,
 	arch/h8300h/dev/scih8devs.c, arch/h8300h/dev/uart_s3c4510b_dbg.c:
@@ -260,9 +264,9 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* app/Makefile, app/events/events.c, app/events/Makefile:
 	New sample demonstrates event queue handling.
 
-	* net/route.c: Removed unnecessary critical sections and atomic 
-	inc-/decrements. Fixed a bug in NutIpRouteList(), which filled 
-	the first entry only. Corrected the comment about unavailabilty 
+	* net/route.c: Removed unnecessary critical sections and atomic
+	inc-/decrements. Fixed a bug in NutIpRouteList(), which filled
+	the first entry only. Corrected the comment about unavailabilty
 	of removing routes.
 
 
@@ -275,7 +279,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	for building, searching and help. Searching not yet implemented.
 	Online help added.
 
-	* tools/nutconf/mainframe.h, tools/nutconf/nutconf.rc: 
+	* tools/nutconf/mainframe.h, tools/nutconf/nutconf.rc:
 	Accordingly updated.
 
 	* tools/nutconf/nutconf.cpp: Online help added and Copyright
@@ -319,7 +323,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 
 2005-07-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
-    
+
     * dev/usartavr.c, dev/usart0avr.c, dev/usart1avr.c: added experimental
     improvements to usart driver. they are off by defaut. to enable them define:
     - USE_USART[0|1] to bypass Nut/OS IRQ handler
@@ -333,7 +337,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
     * os/timer.c: rewrote timer handling. timer interrupt handler only update nut_ticks,
     NutTimerProcessElapsed uses diff to last execution to update timers accordingly.
     Calls to NutEnableTimerIrq and NutDisableTimerIrq removed.
-        
+
 2005-07-20  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * arch/unix/os/nutinit.c, include/arch/unix.h
         added saved_termios to emulation_options. On startup the terminal
@@ -354,7 +358,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* conf/c/c.nut, conf/c/stdlib.nut, conf/c/string.nut: Lua
 	scripts divided.
 
-	* os/event.c: I'd have prefered to use malloc() and free() 
+	* os/event.c: I'd have prefered to use malloc() and free()
 	instead of NutHeapAlloc() and NutHeapFree() in the kernel.
 	But sometimes this creates complicated dependencies. To
 	avoid these, let's stick with native Nut/OS heap routines.
@@ -377,7 +381,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* tools/nutconf/settings.cpp: Prepend current directory
 	to the default file paths.
 
-	* tools/nutconf/bitmaps/nutconf.bmp, 
+	* tools/nutconf/bitmaps/nutconf.bmp,
 	tools/nutconf/bitmaps/nutconf.ico: New artwork, more to come...
 
 2005-07-15  Matthias Ringwald  <mringwal@inf.ethz.ch>
@@ -388,15 +392,15 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
     * arch/avr/os/thread.c: Rewrote CS in NutThreadCreate
     * os/thread.c: Rewrote CS in NutThreadSetPriority
     * dev/uartavr.c: Rewrote CS in UartAvrInput
-    
+
 2005-07-13  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * os/event.c: Rewrote NutEventWait to gain short critical sections
-    
+
 2005-07-12  Ole Reinhardt <ole.reinhardt@embedded-it.de>
     * os/timer.c: Added NULL pointer check in NutTimerProcessElapsed
 
 2005-07-12  Matthias Ringwald  <mringwal@inf.ethz.ch>
-    * os/threads.c: Found and fixed this bug: 
+    * os/threads.c: Found and fixed this bug:
     http://permalink.gmane.org/gmane.comp.hardware.microcontrollers.ethernut/4023
     NutThreadWake changed readyQueue without critical section
     Improved docu on NutThreadRemoveQueue and NutThreadAddPriQueue
@@ -408,25 +412,25 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
     cause the same problems as the missing CS in NutThreadWake for the same
     reason.
     Removed unnecessary critical sections in NutEventPost, NutEventWait.
-    Reduced CS in NutEventWaitNext 
-    
-    * os /osdebug.c: removed critical sections from various functions 
+    Reduced CS in NutEventWaitNext
+
+    * os /osdebug.c: removed critical sections from various functions
     as thread and timer lists are not changed by IRQ anymore
-    
+
 2005-07-07  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * os/timer.c: Stopped timers are removed by NutTimerProcessElapsed
     now. NutTimerStopAsync does not set tn_ticks to zero and relies
     on NutTimerProcessElapsed to do so when removing the stopped timer.
     This assures that a stopped timer is removed on next thread switch
-    instead of staying in the nutTimerList until all previous timers 
+    instead of staying in the nutTimerList until all previous timers
     are elapsed.
-    
+
 2005-06-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * dev/null.c, include/dev/null.h: added /dev/null as devNull.
     write always returns len of bytes to write, read returns
     without read bytes and ioctl always returns ok.
     This can be used to discard output of printf statements.
-    
+
 2005-06-14  Matthias Ringwald  <mringwal@inf.ethz.ch>
  	* os/timer.c: Fixed NutTimerStopAsync(): it now removes
     callback ptr, which actually stops the timer
@@ -450,8 +454,8 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	contains all hardware dependent initialization previously
 	done by NutInit(). The latter had been moved to the hardware
 	independent part. The nominal timer granularity for the AVR
-	platform is now about one millisecond, even if NUT_CPU_FREQ has 
-	not been defined. Automatic calculation of the CPU clock will 
+	platform is now about one millisecond, even if NUT_CPU_FREQ has
+	not been defined. Automatic calculation of the CPU clock will
 	now also work for ICCAVR.
 
 	* os/timer.c: The most significant change had been done to the
@@ -469,7 +473,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	had been updated in interrupt context, is now derived from this
 	remaining counter. Finally one change may break existing
 	applications. Timer callbacks are not processed in interrupt
-	context and will not provide the exact timing you may expect. 
+	context and will not provide the exact timing you may expect.
 	We are working on this issue.
 
 	* include/sys/timer.h: Added NutTimerProcessElapsed() prototype.
@@ -512,7 +516,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* dev/hd44780.c: Fixed to re-enable ICCAVR compilation.
 
 	* include/sys/atom.h: Failed with building outside the
-	source tree. In addition all header files moved from 
+	source tree. In addition all header files moved from
 	arch/cpu/include to include/arch/cpu.
 
 
@@ -561,12 +565,12 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
           Added new Display sizes for hd44780 and hd44780_bus
           Ports used for display connection still need's to be added.
         * include/dev/hd44780.h, dev/hd44780.c
-	  Added support for new display sizes configurable by macros 
+	  Added support for new display sizes configurable by macros
           LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
-          LCD_1x20, LCD_1x16, LCD_1x8, KS0073_CONTROLLER (4x20)) 
+          LCD_1x20, LCD_1x16, LCD_1x8, KS0073_CONTROLLER (4x20))
           Also added support for different delay types.
-          For not to wait busy too long, I added support for busy bit 
-          read back and use NutSleep instead NutDelay if NUT_CPU_FREQ 
+          For not to wait busy too long, I added support for busy bit
+          read back and use NutSleep instead NutDelay if NUT_CPU_FREQ
           is defined.
           These changes hopefully should not break any existing code
 	* dev/hd44780_bus.c
@@ -580,7 +584,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 2005-05-26  Oliver Schulz  <olischulz@web.de>
 
-	* include/sys/atom.h: Moved all platform dependend code to 
+	* include/sys/atom.h: Moved all platform dependend code to
 	include/arch/*_atom.h, added some descriptions.
 
 	* include/arch/*_atom.h: Contains the code moved from atom.h
@@ -590,14 +594,14 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 2005-05-26  Harald Kipp  <harald.kipp@egnite.de>
 
-	* eboot/Makefile: Bootloader failed to compile because of 
+	* eboot/Makefile: Bootloader failed to compile because of
 	missing NutConf.mk. This and the following two eboot patches
 	had been contributed by David (Who?).
 
 	* eboot/ether.c: Get MAC from EEPROM instead of using a
 	default. Deprecated GCC port macros replaced.
 
-	* eboot/tftp.c: Now the bootloader will program the space 
+	* eboot/tftp.c: Now the bootloader will program the space
 	between 0x1E000 and 0x1EFFF.
 
 
@@ -637,7 +641,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* os/version.c: Build number incremented, 3.9.6.2.
 
-	* tools/crurom/dirent.h, tools/crurom/getopt.h, 
+	* tools/crurom/dirent.h, tools/crurom/getopt.h,
 	tools/nutconf/dirent.h, tools/nutconf/getopt.h: Moved to
 	tools/include/win32. Fixes #1205835.
 
@@ -661,7 +665,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	more general solutions. For now we go the pragmatic way to
 	get Nut/OS running on this board.
 
-	* fs/pnutfs.c, include/sys/bankmem.h: Added banking support 
+	* fs/pnutfs.c, include/sys/bankmem.h: Added banking support
 	for the Arthernet board.
 
 	* os/arch/avr_nutinit.c: Different wait states for Arthernet.
@@ -669,7 +673,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* os/arch/avr_timer.c: Alternative CPU clock detection for
 	Arthernet added.
 
-	* net/arpcache.c: Fixes #1202404. Thanks to Marek Pavlu and 
+	* net/arpcache.c: Fixes #1202404. Thanks to Marek Pavlu and
 	Dusan Ferbas.
 
 
@@ -683,8 +687,8 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 2005-05-09  Vesa Jaaskelainen  <chaac@.nic.fi>
 
-	* Makedefs.avr-gcc: Added workaround for too aggressive GCC 
-	optimizations. Now C and C++ compilers use flag 
+	* Makedefs.avr-gcc: Added workaround for too aggressive GCC
+	optimizations. Now C and C++ compilers use flag
 	-fno-delete-null-pointer-checks when compiling Nut/OS.
 
 	* app/Makerules.avr-gcc: Make sure that no EEPROM section is
@@ -698,10 +702,10 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	dev/ppp.c, include/dev/chat.h, mod/os/heap.c, net/arpcache.c,
 	net/ifconfig.c, net/pppin.c, net/pppout.c, net/pppsm.c,
 	net/route.c, net/tcpin.c, net/tcpout.c, net/tcpsm.c, net/tcpsock.c
-	os/heap.c, os/arch/avr_thread.c, os/arch/h8_thread.c, 
+	os/heap.c, os/arch/avr_thread.c, os/arch/h8_thread.c,
 	os/arch/m68k_thread.c, os/arch/unix_thread.c, os/arch/unix_timer.c
-	pro/resolv.c, pro/wins.c: Fixed bug in handling of NUTDEBUG. Added 
-	include for cfg/os.h. If NUTDEBUG is defined in NutConf, it will 
+	pro/resolv.c, pro/wins.c: Fixed bug in handling of NUTDEBUG. Added
+	include for cfg/os.h. If NUTDEBUG is defined in NutConf, it will
 	make effect where it is used.
 
 2005-04-30  Vesa Jaaskelainen  <chaac@.nic.fi>
@@ -711,8 +715,8 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 2005-04-28  Harald Kipp  <harald.kipp@egnite.de>
 
-	* configure.ac, Makefile.am, doc/Makefile.am, 
-	doc/gen/Makefile.am, tools/crurom/Makefile.am, 
+	* configure.ac, Makefile.am, doc/Makefile.am,
+	doc/gen/Makefile.am, tools/crurom/Makefile.am,
 	tools/nutconf/Makefile.am: Support for autoconf/automake
 	added. This is far from working perfect, but at least
 	builds an installation on Fedora Core 3.
@@ -736,7 +740,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	been moved to the lib subdirectory. If you are building in the
 	source tree, then you must cd to lib first before running make.
 
-	* tools/crurom/crurom.c, tools/nutconf/nutcomponent.c: 
+	* tools/crurom/crurom.c, tools/nutconf/nutcomponent.c:
 	Include autoheader file.
 
 	* nut/tools/nutconf/repoptdlg.cpp: No idea why OFN_HIDEREADONLY
@@ -745,10 +749,10 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 2005-04-26  Harald Kipp  <harald.kipp@egnite.de>
 
-	* tools/nutconf/enumeditctrl.cpp, tools/nutconf/enumeditctrl.h: 
+	* tools/nutconf/enumeditctrl.cpp, tools/nutconf/enumeditctrl.h:
 	Workaround for wxChoice focus bug on GTK+ added.
 
-	* tools/nutconf/scrolledtree.cpp, tools/nutconf/valuewindow.cpp: 
+	* tools/nutconf/scrolledtree.cpp, tools/nutconf/valuewindow.cpp:
 	Minor wxWidgets runtime warning avoided.
 
 
@@ -763,7 +767,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* app/Makeburn.avr-dude: Support for avrdude, kindly provided by
 	Martin Thomas.
 
-	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h: 
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
 	Version 1.2.1 can now run without GUI or with wxWidgets 2.5.5.
 
 	* tools/nutconf/appoptdlg.cpp, tools/nutconf/bldoptdlg.cpp,
@@ -772,7 +776,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	tools/nutconf/mainframe.cpp, tools/nutconf/propertylist.cpp,
 	tools/nutconf/repoptdlg.cpp, tools/nutconf/splitscroll.cpp,
 	tools/nutconf/texteditctrl.cpp, tools/nutconf/treecomp.cpp,
-	tools/nutconf/valuewindow.cp: Marked unused function parameters 
+	tools/nutconf/valuewindow.cp: Marked unused function parameters
 	to avoid compiler warnings.
 
 	* tools/nutconf/configitem.cpp, tools/nutconf/configtree.cpp,
@@ -807,26 +811,26 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* app/timers/timers.c: Description updated and ARM support added.
 
-	* crt/putf.c: Support for size_t modifier added. Thanks to Tom 
+	* crt/putf.c: Support for size_t modifier added. Thanks to Tom
 	Lynn.
 
 
 2005-04-15  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* dev/unix_devs.c
-        Changed the delimiting of the nativeName into ip and port. 
-        Now first check if nativeName == "stdio". Otherwise strtok will 
-        segfault. Strange... Perhaps a problem with the static declaration 
+        Changed the delimiting of the nativeName into ip and port.
+        Now first check if nativeName == "stdio". Otherwise strtok will
+        segfault. Strange... Perhaps a problem with the static declaration
         of the option strings? I don't know. Very mysterious.
 
 2005-04-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* net/arpin.c, net/arpout.c, net/ethin.c, net/ethout.c,
           net/ipcpin.c, net/ipcpout.c, net/ipout.c, net/lcpin.c,
           net/lcpout.c, net/papin.c, net/papout.c, net/pppdebug.c,
-          net/pppin.c, net/pppout.c, net/udpsock.c, net/tcpin.c, 
+          net/pppin.c, net/pppout.c, net/udpsock.c, net/tcpin.c,
 	  pro/sntp.c, pro/wins.c,
-	added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__) 
-	for htons and simmilar. 
-        Fixes to make the unix emulation compiling again. Hope this won't 
+	added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
+	for htons and simmilar.
+        Fixes to make the unix emulation compiling again. Hope this won't
 	break anything.
 
 2005-04-04  Matthias Ringwald <mringwal@inf.ethz.ch>
@@ -837,76 +841,76 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 2005-04-05  Harald Kipp  <harald.kipp@egnite.de>
 
 	* os/version.c: Updated for the next pre-release 3.9.6. Still
-	no version 4, because of several problems with ARM7 (see below). 
-	Anyway, most applications should now run on the ARM CPU with 
+	no version 4, because of several problems with ARM7 (see below).
+	Anyway, most applications should now run on the ARM CPU with
 	minor or no modification.
 
 	* include/netinet/if_ether.h, include/netinet/ip.h,
-	include/netinet/tcp.h: Finally the TCP/IP stack is running on 
-	the ARM7 platform. Added the 'packed' attribute to several 
+	include/netinet/tcp.h: Finally the TCP/IP stack is running on
+	the ARM7 platform. Added the 'packed' attribute to several
 	protocol structures.
 
-	* net/ipcsum.c, include/netinet/ipcsum.h: Northern hemisphere 
-	spring cleaning ;-). This part contained a lot of garbage and 
-	left overs. The AVRGCC inline assembly from Liquorice seemed to 
-	be buggy, the ImageCraft inline assembly didn't work better than 
-	compiled code, NutIpPseudoChkSum() was never called and nothing 
-	worked on 32 bit little endian machines. This whole mess had 
-	been radically replaced by a generic routine. Now we have room 
+	* net/ipcsum.c, include/netinet/ipcsum.h: Northern hemisphere
+	spring cleaning ;-). This part contained a lot of garbage and
+	left overs. The AVRGCC inline assembly from Liquorice seemed to
+	be buggy, the ImageCraft inline assembly didn't work better than
+	compiled code, NutIpPseudoChkSum() was never called and nothing
+	worked on 32 bit little endian machines. This whole mess had
+	been radically replaced by a generic routine. Now we have room
 	for new and clean optimizations.
 
-	* net/tcpout.c: Inclusion of stdio header removed. These headers 
-	are useful during debugging, but may cause a lot of trouble 
-	later, if you forget to remove all print statements. Without the 
-	stdio header file, the compiler takes care that all debug 
+	* net/tcpout.c: Inclusion of stdio header removed. These headers
+	are useful during debugging, but may cause a lot of trouble
+	later, if you forget to remove all print statements. Without the
+	stdio header file, the compiler takes care that all debug
 	outputs are removed.
 
-	* include/sys/atom.h: NutEnter/ExitCritical for ARM7 added. 
+	* include/sys/atom.h: NutEnter/ExitCritical for ARM7 added.
 	I missed to commit this earlier, sorry.
 
 	* conf/dev/dev.nut, conf/net/net.nut, conf/pro/pro.nut,
 	dev/ahdlcavr.c, net/pppsm.c, net/tcpsm.c, pro/dhcpc.c,
-	pro/sntp.c: Configurable stack sizes. Because of larger 
-	registers and memory alignment, ARM CPUs consume a lot more 
+	pro/sntp.c: Configurable stack sizes. Because of larger
+	registers and memory alignment, ARM CPUs consume a lot more
 	stack.
 
 	* include/cfg/ahdlc.h, include/cfg/ppp.h, include/cfg/sntp.h,
 	include/cfg/tcp.h: Placeholders added to allow building
 	in the source tree.
 
-	* conf/dev/dev.nut, dev/ax88796.c, dev/reg_ax88796.h, 
-	include/dev/ax88796.h: ARM7 Ethernet driver for Asix' AX88796 
+	* conf/dev/dev.nut, dev/ax88796.c, dev/reg_ax88796.h,
+	include/dev/ax88796.h: ARM7 Ethernet driver for Asix' AX88796
 	added. Many thanks to Marek Hummel for the initial work.
 
-	* dev/debug_at91.c, include/dev/debug.h: Hacked to make it work 
-	on USART0. Initialization had been removed too, because I do 
+	* dev/debug_at91.c, include/dev/debug.h: Hacked to make it work
+	on USART0. Initialization had been removed too, because I do
 	not have the time for a nicer porting. This probably breaks the
-	implementation for the AT91EB40A, but to my knowledge I'm to 
+	implementation for the AT91EB40A, but to my knowledge I'm to
 	only user. :)
 
-	* dev/debug_gba.c, os/arch/arm_timer.c, include/arch/gba.h: More 
+	* dev/debug_gba.c, os/arch/arm_timer.c, include/arch/gba.h: More
 	consistent register naming for the Gameboy Advance. The hardware
-	definitions are now in the central file gba.h. Additionally I 
+	definitions are now in the central file gba.h. Additionally I
 	cleaned up the AT91 timer handling.
 
 	* dev/irqreg.c, include/dev/irqreg.h, include/dev/irqreg_arm.h,
-	os/arch/arm_nutinit.c, dev/gba_irqreg.c: Implements conformant 
-	interrupt registration for the Gameboy Advance. Still no 
+	os/arch/arm_nutinit.c, dev/gba_irqreg.c: Implements conformant
+	interrupt registration for the Gameboy Advance. Still no
 	solution for the AT91.
 
 	* os/arch/arm_thread.c: ARM threads are now running in system
 	mode instead of very limited user mode. I alos removed some less
 	helpful debug outputs. The big problem with the initial port
 	still exists: It is not yet possible to pass a parameter to
-	another thread. Important note: Due to the mode change the 
-	Gameboy startup needs to be fixed. Again, since I'm the only 
+	another thread. Important note: Due to the mode change the
+	Gameboy startup needs to be fixed. Again, since I'm the only
 	user running Nut/OS on the GBA, who cares?
 
 	* pro/dhcpc.c: No parameter parsing to threads when running
 	on ARM. Using a global variable until this is fixed.
 
-	* include/arch/at91.h: Previous interrupt handling allowed 
-	nesting. This was nice, but regularly crashed the system. 
+	* include/arch/at91.h: Previous interrupt handling allowed
+	nesting. This was nice, but regularly crashed the system.
 	Nesting has been disabled.
 
 	* conf/fs/fs.nut: UROM file system isn't limited to AVR.
@@ -916,30 +920,30 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	included in the build.
 
 	* app/Makedefs.arm-gcc, crt/fwrite.c, net/tcpsock.c, pro/httpd.c:
-	No decision about ARM runtime lib, so we go without any. The main 
+	No decision about ARM runtime lib, so we go without any. The main
 	problem is integer division, which demands assembly language
 	routines. As a temporary solution these parts had been excluded
-	from the code. The result is, that fwrite will return the number 
-	of bytes instead of the number of items and that HTTP parameter 
+	from the code. The result is, that fwrite will return the number
+	of bytes instead of the number of items and that HTTP parameter
 	parsing is not available.
 
-	* arch/arm/init/crtwolf_ram.S, arch/arm/ldscripts/wolf_ram.ld, 
+	* arch/arm/init/crtwolf_ram.S, arch/arm/ldscripts/wolf_ram.ld,
 	app/httpd/httpserv.c, conf/wolf.conf, conf/repository.nut,
-	conf/tools.nut: Added support for the Wolf prototype board, which 
+	conf/tools.nut: Added support for the Wolf prototype board, which
 	uses the AT91R40008 CPU and the AX88796 Ethernet controller.
-	Right now there is no support for ROM-able applications. Our 
-	prototypes run 'armboot' from FLASH and load the Nut/OS 
-	application via TFTP into the internal RAM. Special thanks to 
-	Marek Hummel for providing this ported armboot and to hwgroup 
+	Right now there is no support for ROM-able applications. Our
+	prototypes run 'armboot' from FLASH and load the Nut/OS
+	application via TFTP into the internal RAM. Special thanks to
+	Marek Hummel for providing this ported armboot and to hwgroup
 	for the hardware.
 
-	* app/threads/threads.c, app/timers/timers.c: Applications can 
+	* app/threads/threads.c, app/timers/timers.c: Applications can
 	run on the Gameboy Advance.
 
-	* dev/uartgba.c, include/dev/uartgba.h: UART support for the 
+	* dev/uartgba.c, include/dev/uartgba.h: UART support for the
 	Gameboy Advance using MBV II hardware. Unfortunately it doesn't
-	work as expected. It sends and receives characters somehow, but 
-	the number of characters is quite random. If someone else with 
+	work as expected. It sends and receives characters somehow, but
+	the number of characters is quite random. If someone else with
 	some spare time is interested...
 
 
@@ -955,7 +959,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	to a TCP/IP socket using the "-u{0/1/2} hostname:port" command line option.
 
 	* os/arch/unix_options.c: clean up of usage message.
-	
+
 2005-03-30  Michael Jones <Michael.e.Jones@web.de>
 
 	* net/tcpsm.c: Defussed race condition in NutTcpStateActiveOpenEvent
@@ -985,7 +989,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* net/arpcache.c: If NutArpOutput() failed, then NutArpCacheQuery()
 	released the already released NETBUF. This bug had been fixed.
 	If NutArpAllocNetBuf() fails, the ARP entry will now be
-	removed immediately. Additional check for valid entry pointer 
+	removed immediately. Additional check for valid entry pointer
 	added. These modifications had been suggested by Dusan Ferbas.
 	Finally memcpy() has been replaced by a simple loop in order
 	to provide a work around for GCC Bug #18251.
@@ -1037,7 +1041,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* include/arch/avr.h: Added cpp test to guess avr-libc-version required
 	to specify twi.h include path.
-	
+
 2005-02-22  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 
 	* os/tracer.c
@@ -1104,7 +1108,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* os/thread.c, include/sys/thread.h: Removed volatile declarations of
 	runQueue since it is not touched from interrupt context.
-	Same for nutThreadList, runningThread and killedThreads.	
+	Same for nutThreadList, runningThread and killedThreads.
 
 	* os/thread.c: As runQueue is not modified by interrupts,
 	runningThread == runQueue always. Therefore removed obsolete
@@ -1115,7 +1119,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 	* os/event.c: In NutEventWait(), replaced NutThreadRemoveQueue by
 	direct removal of first thread in queue.
-	
+
 2005-02-16  Harald Kipp  <harald.kipp@egnite.de>
 
 	* os/event.c, os/thread.c, os/timer.c, os/arch/avr_thread.c,
@@ -1296,15 +1300,15 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 
 
 2005-01-26  Matthias Ringwald <mringwal@inf.ethz.ch>
-	
+
 	* os/tracer.c, include/sys/tracer.h: fixed includes
 	and prototypes
 
 2005-01-21  Matthias Ringwald <mringwal@inf.ethz.ch>
-	
+
 	* os/tracer.c, include/sys/tracer.h: new tracer for
 	profiling of nut/os and app functions by Philipp Blum
-	
+
 	* dev/usart0avr.c, dev/usart1avr.c, dev/usartavr.c,
 	include/sys/atom.h, os/arch/avr_timer.c, os/event.c,
 	thread.c, timer.c: enable profiling of AvrUsartTxEmpty,
@@ -1468,7 +1472,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* dev/ahdlcavr.c, dev/twif.c, dev/uartavr.c,
 	os/arch/avr_timer.c: Late increment fixes ICCAVR bug.
 	Thanks to Andreas Siebert and Michael Fischer.
-	
+
 	* conf/charon2.conf: Configuration for Charon II added.
 
 	* pro/httpd.c, include/pro/httpd.h: Added Mikael Adolfsson's
@@ -2181,7 +2185,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 2004-06-07  Ole Reinhardt  <ole.reinhardt@kernelconcepts.de>
 	* dev/sja1000.c, dev/can_dev.c
 	  include/dev/sja1000.h, include/dev/can_dev.h
-	
+
 	Initial checkin of a driver and a simple api for can-bus devices.
 	This driver is for the well known phillips sja1000 wich is connected
 	to the Memory bus and an external interrupt.
@@ -2232,7 +2236,7 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	cs8900 driver and hd44780_bus device.
 
 	* dev/cs8900.h, dev/cs8900.c
-	
+
 	CHANGED BEHAVIOR:
 	By default this driver will now retreive it's MAC Address from
 	EEPROM config. Also it will retreive it's base address by default
@@ -2677,17 +2681,17 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	* pro/dhcpc.c, include/pro/dhcp.h: Applied changes by Damian
 	Slee. Now it should be possible to obtain gateway and dns
 	server ip address from Win2k DHCP servers.
-	
+
 	* net/lcpin.c: Same bug fix like in IpcpRxConfReq applied
 	also to LcpRxConfReq.
-	
+
 	* dev/lanc111.c: Speed improvements for transfering bytes
 	from and to nic applied.
-	
+
 	* net/tcpsock.c: New TCP output buffering implemented. If not
 	configured, it works nearly like the old buffering. To
 	configure, use NutTcpSetSockOpt with new option SO_SNDBUF.
-	
+
 	* net/tcpsm.c: Now the retransmission timer is also
 	started on call of NutTcpConnect.
 
@@ -2746,8 +2750,8 @@ $Id: ChangeLog,v 1.263 2005/08/10 09:30:48 olereinhardt Exp $
 	space. Using still type character 'P', but also some heap
 	to store the string in RAM before the output function is
 	called.
-	
-	
+
+
 2003-12-06  Oliver Schulz  <olischulz@web.de>
 
 	* os/nutinit.c, os/init.c: Using __heap_start instead of
