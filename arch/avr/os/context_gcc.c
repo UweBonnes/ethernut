@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/08/18 15:36:36  christianwelzel
+ * Fixed bug in handling of NUTDEBUG.
+ *
  * Revision 1.2  2005/08/02 17:46:46  haraldkipp
  * Major API documentation update.
  *
@@ -83,6 +86,10 @@
 
 /* Support for separate irq stack only for avr-gcc */
 #include <dev/irqstack.h>
+
+#ifdef NUTDEBUG
+#include <sys/osdebug.h>
+#endif
 
 /*!
  * \addtogroup xgNutArchAvrOsContextGcc

@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.23  2005/08/18 15:33:54  christianwelzel
+ * Fixed bug in handling of NUTDEBUG.
+ *
  * Revision 1.22  2005/07/21 14:23:17  freckle
  * inlined NutEventPostFromIrq call in NutEventPostAsync to reduce CS
  *
@@ -283,6 +286,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
         static prog_char fmt1[] = "Rem<%p>";
         fprintf_P(__os_trs, fmt1, runningThread);
         NutDumpThreadList(__os_trs);
+    }
 #endif
     
     /*
