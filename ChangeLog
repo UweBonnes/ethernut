@@ -1,9 +1,13 @@
-$Id: ChangeLog,v 1.264 2005/08/14 16:15:32 christianwelzel Exp $
+$Id: ChangeLog,v 1.265 2005/08/18 15:37:49 christianwelzel Exp $
+
+2005-08-18  Christian Welzel <christian.welzel@welzel-online.ch>
+        * os/event.c, arch/avr/os/context_gcc.c
+        Fixed bug in handling of NUTDEBUG.
 
 2005-08-14  Christian Welzel <christian.welzel@welzel-online.ch>
         * tools/nutconf/nutconfdoc.cpp
-		Corrected wxLogMessages to avoid compiler warnings.
-		
+        Corrected wxLogMessages to avoid compiler warnings.
+
 2005-08-10  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * pro/asp.c
         Corrected documentation
