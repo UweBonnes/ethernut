@@ -1,5 +1,9 @@
-$Id: ChangeLog,v 1.265 2005/08/18 15:37:49 christianwelzel Exp $
+$Id: ChangeLog,v 1.266 2005/08/19 21:52:43 freckle Exp $
 
+2005-08-19  Matthias Ringwald  <mringwal@inf.ethz.ch>
+        * arch/avr/dev/adc.c: used 8-bit tail and head pointers. by this,
+        the critical section is not necessary anymore.
+        
 2005-08-18  Christian Welzel <christian.welzel@welzel-online.ch>
         * os/event.c, arch/avr/os/context_gcc.c
         Fixed bug in handling of NUTDEBUG.

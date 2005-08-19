@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/08/19 21:52:43  freckle
+ * use 8-bit buffer pointers, removed critical section from ADCRead
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -125,9 +128,9 @@ adc_mode_t current_mode;
 
 u_short *ADC_buffer;
 
-int ADCBufRead(u_short * buf, u_short * read)
+inline int ADCBufRead(u_short * buf, u_short * read)
 {
-    int tail, head;
+    u_char tail, head;
     tail = buf[_adc_buf_tail];
     head = buf[_adc_buf_head];
     if (head != tail) {
@@ -138,9 +141,9 @@ int ADCBufRead(u_short * buf, u_short * read)
     return 1;
 }
 
-int ADCBufWrite(u_short * buf, u_short * write)
+inline int ADCBufWrite(u_short * buf, u_short * write)
 {
-    int tail, head;
+    u_char tail, head;
     tail = buf[_adc_buf_tail];
     head = buf[_adc_buf_head];
     if ((head + 1) % ADC_BUF_SIZE != tail) {
@@ -335,15 +338,7 @@ void ADCStopConversion()
 
 u_char ADCRead(u_short * value)
 {
-    int retval;
-
-    NutEnterCritical();        /* Disable interrupts */
-
-    retval = ADCBufRead(ADC_buffer, value);
-
-    NutExitCritical();         /* Enable interrupts */
-
-    return retval;
+    return ADCBufRead(ADC_buffer, value);
 }
 
 inline adc_mode_t ADCGetMode(void)
