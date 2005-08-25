@@ -1,4 +1,7 @@
-$Id: ChangeLog,v 1.266 2005/08/19 21:52:43 freckle Exp $
+$Id: ChangeLog,v 1.267 2005/08/25 16:44:06 olereinhardt Exp $
+
+2005-ß8-25  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+        * arch/avr/dev/adc.c: Removed compute intensive % and replaced by an &
 
 2005-08-19  Matthias Ringwald  <mringwal@inf.ethz.ch>
         * arch/avr/dev/adc.c: used 8-bit tail and head pointers. by this,
