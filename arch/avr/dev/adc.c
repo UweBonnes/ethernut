@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/08/25 16:23:42  olereinhardt
+ * Removed compute intensive % and replaced by an &
+ *
  * Revision 1.3  2005/08/19 21:52:43  freckle
  * use 8-bit buffer pointers, removed critical section from ADCRead
  *
@@ -96,7 +99,7 @@
 #define ADC_INITIAL_PRESCALE ADC_PRESCALE_DIV64
 #endif
 
-#define ADC_BUF_SIZE 16
+#define ADC_BUF_SIZE 16 // this may only be a power of two
 
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
 u_char adc_sleep_mode = SLEEP_MODE_ADC;
@@ -135,7 +138,7 @@ inline int ADCBufRead(u_short * buf, u_short * read)
     head = buf[_adc_buf_head];
     if (head != tail) {
         *read = buf[tail];
-        buf[_adc_buf_tail] = (tail + 1) % ADC_BUF_SIZE;
+        buf[_adc_buf_tail] = (tail + 1) & (ADC_BUF_SIZE-1);
         return 0;
     }
     return 1;
@@ -148,7 +151,7 @@ inline int ADCBufWrite(u_short * buf, u_short * write)
     head = buf[_adc_buf_head];
     if ((head + 1) % ADC_BUF_SIZE != tail) {
         buf[head] = *write;
-        buf[_adc_buf_head] = (head + 1) % ADC_BUF_SIZE;
+        buf[_adc_buf_head] = (head + 1) & (ADC_BUF_SIZE-1);
         return 0;
     }
     return 1;
