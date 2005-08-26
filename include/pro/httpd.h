@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/08/26 14:12:39  olereinhardt
+ * Added NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
+ *
  * Revision 1.4  2005/08/05 11:23:11  olereinhardt
  * Added support to register a custom handler for mime types.
  * Added Server side include support and ASP support.
@@ -140,6 +143,7 @@ __BEGIN_DECLS
 extern int NutRegisterHttpRoot(char *path);
 extern int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *));
 extern void NutCgiProcessRequest(FILE * stream, REQUEST * req);
+extern void NutHttpProcessPostQuery(FILE *stream, REQUEST * req);
 extern char *NutHttpURLEncode(char *str);
 extern void NutHttpURLDecode(char *str);
 extern char *NutHttpGetParameter(REQUEST * req, char *name);

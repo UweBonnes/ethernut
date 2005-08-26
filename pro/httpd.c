@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/08/26 14:12:39  olereinhardt
+ * Added NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
+ *
  * Revision 1.9  2005/08/05 11:23:11  olereinhardt
  * Added support to register a custom handler for mime types.
  * Added Server side include support and ASP support.
@@ -443,6 +446,81 @@ void NutHttpProcessQueryString(REQUEST * req)
         NutHttpURLDecode(req->req_qptrs[i * 2]);
     }
 }
+
+/*!
+ * \brief Parses the QueryString
+ *
+ * Reads the query from input stream and parses it into
+ * name/value table. To save RAM, this method allocated ram and
+ * uses req_query to store the input data. Then it creates a table 
+ * of pointers into the req_query buffer.
+ *
+ * \param stream Input stream
+ * \param req Request object to parse
+ */
+
+void NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
+{
+    register int i;
+    register char *ptr;
+    
+    if (req->req_query != NULL)
+        return;
+    
+    if (!stream)
+        return;
+    
+    if (req->req_method == METHOD_POST) {
+        req->req_query = NutHeapAllocClear(req->req_length+1);
+        if (req->req_query == NULL) {
+            /* Out of memory */
+            req->req_numqptrs = 0;
+            NutHeapFree(req->req_query);    
+            return;            
+        }
+        i = 0;
+        while (i < req->req_length) {
+            i += fread(&req->req_query[i], 1, req->req_length-i, stream);
+        }
+    } else return;
+
+    req->req_numqptrs = 1;
+    for (ptr = req->req_query; *ptr; ptr++)
+        if (*ptr == '&')
+            req->req_numqptrs++;
+
+    req->req_qptrs = (char **) NutHeapAlloc(sizeof(char *) * (req->req_numqptrs * 2));
+    if (!req->req_qptrs) {
+        /* Out of memory */
+        req->req_numqptrs = 0;
+        NutHeapFree(req->req_query);    
+        return;
+    }
+    req->req_qptrs[0] = req->req_query;
+    req->req_qptrs[1] = 0;
+    for (ptr = req->req_query, i = 2; *ptr; ptr++) {
+        if (*ptr == '&') {
+            req->req_qptrs[i] = ptr + 1;
+            req->req_qptrs[i + 1] = 0;
+            *ptr = 0;
+            i += 2;
+        }
+    }
+
+    for (i = 0; i < req->req_numqptrs; i++) {
+        for (ptr = req->req_qptrs[i * 2]; *ptr; ptr++) {
+            if (*ptr == '=') {
+                req->req_qptrs[i * 2 + 1] = ptr + 1;
+                *ptr = 0;
+                NutHttpURLDecode(req->req_qptrs[i * 2 + 1]);
+                break;
+            }
+        }
+        NutHttpURLDecode(req->req_qptrs[i * 2]);
+    }
+}
+
+
 #endif
 
 /*!
