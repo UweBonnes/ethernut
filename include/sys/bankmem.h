@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2005/09/07 16:22:11  christianwelzel
+ * Added banking support for MMnet02
+ *
  * Revision 1.5  2005/05/16 08:35:32  haraldkipp
  * Added banking support for Arthernet.
  *
@@ -74,6 +77,9 @@
 #ifdef ARTHERNET1
 /* Arthernet uses a different banking. */
 #define NutSegBufEnable(bank) *(volatile u_char *)(NUTBANK_SR) = (((u_char)bank+1)<<4)
+#elif MMNET02
+/* MMnet02 uses a different banking. */
+#define NutSegBufEnable(bank) *((char *)(NUTBANK_SR)) = (bank)
 #else
 /* This is the Ethernut way. */
 #define NutSegBufEnable(bank) *((char *)(NUTBANK_SR) + (bank)) = (bank)
