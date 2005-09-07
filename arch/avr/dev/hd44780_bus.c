@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/09/07 16:23:11  christianwelzel
+ * Added support for MMnet02 display
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -124,7 +127,7 @@ static u_short lcd_base = 0x0000;
 
 static inline void LcdBusyWait(void)
 {
-//      volatile u_char count;
+#ifndef MMNET02
     // wait until LCD busy bit goes to zero
     // do a read from control register
     while (*(volatile u_char *) (LCD_CTRL_ADDR + LCD_READ_OFFSET) & 1 << LCD_BUSY)
@@ -141,6 +144,10 @@ static inline void LcdBusyWait(void)
     LCD_DELAY;
     LCD_DELAY;
     LCD_DELAY;
+#else
+    /* MMnet02 can not read the control register */
+    NutDelay(5);
+#endif
 }
 
 /*!
