@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/09/07 16:22:45  christianwelzel
+ * Added MMnet02 CPLD initialization
+ *
  * Revision 1.2  2005/08/02 17:46:46  haraldkipp
  * Major API documentation update.
  *
@@ -490,6 +493,21 @@ void NutInitHeap()
     }
 }
 
+#ifdef MMNET02
+/*
+ * MMnet02 CPLD initialization.
+ */
+#if defined(__GNUC__)
+static void MMInitCPLD(void) __attribute__ ((naked, section(".init5"), used));
+#endif
+void MMInitCPLD(void)
+{
+    volatile u_char *breg = (u_char *)((size_t)-1 & ~0xFF);
+
+    *(breg + 1) = 0x01; // Memory Mode 1, Banked Memory
+}
+#endif /* MMNET02 */
+
 /*!
  * \brief Nut/OS Initialization.
  *
@@ -550,7 +568,15 @@ void NutInit(void)
     /* Initialize the heap memory
      */
     NutInitHeap();
-#endif
+
+#ifdef MMNET02
+    /*
+     * MMnet02 CPLD initialization.
+     */
+    MMInitCPLD();
+#endif /* MMNET02 */
+
+#endif /* __GNUC__ */
 
     /*
      * Read eeprom configuration.
