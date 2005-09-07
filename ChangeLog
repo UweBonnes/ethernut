@@ -1,5 +1,26 @@
-$Id: ChangeLog,v 1.268 2005/08/26 14:14:18 olereinhardt Exp $
+$Id: ChangeLog,v 1.269 2005/09/07 16:24:55 christianwelzel Exp $
 
+2005-09-07  Christian Welzel <christian.welzel@welzel-online.ch>
+        
+        * conf/MMnet02.conf
+        Added configuration file for MMnet02
+        
+        * include/sys/bankmem.h
+        Added banking support for MMnet02
+        
+        * arch/avr/os/nutinit.c
+        Added MMnet02 CPLD initialization
+        
+        * arch/avr/dev/hd44780_bus.c
+        Added support for MMnet02 display
+        
+        * fs/pnutfs.c
+        Added support for MMnet02. Bankswitching is now handled in bankmem.h
+        
+        * tools/nutconf/nutcomponent.c
+        Changed handling of default parameters. Nutconf now creates all default
+        parameter defines within header files.
+        
 2005-08-26  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * pro/httpd.c, include/pro/httpd.h: 
         added NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
