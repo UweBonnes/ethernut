@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2005/09/07 16:23:41  christianwelzel
+ * Added support for MMnet02. Bankswitching is now handled in bankmem.h
+ *
  * Revision 1.5  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -66,6 +69,7 @@
 
 #include <sys/stat.h>
 #include <sys/file.h>
+#include <sys/bankmem.h>
 
 #include <fs/fs.h>
 #include <dev/pnut.h>
@@ -120,6 +124,9 @@
 #ifdef ARTHERNET1
 /* Default for Arthernet 1. */
 #define PNUTBANK_COUNT 15
+#elif MMNET02
+/* Default for MMnte02. */
+#define PNUTBANK_COUNT 6
 #else
 /* Default for Ethernet 2. */
 #define PNUTBANK_COUNT 30
@@ -310,14 +317,8 @@ void BankSelect(PNUT_BLKNUM blk)
 {
     int bank = blk / BLOCKS_PER_BANK;
 
-#ifdef ARTHERNET1
-    /* 16 pages supported on arthernet1, page 0 reserved for AVR bank0
-       AVR bank1 is mapped to page number in upper nibble of "NUTBANK_SR" */
-    bank++;
-    *((volatile u_char *) NUTBANK_SR) = (((u_char)bank)<<4);
-#else
-    *((u_char *) NUTBANK_SR + bank) = bank;
-#endif
+    // Bankswitching is now handled in bankmem.h
+    NutSegBufEnable(bank);
 }
 
 /*!
