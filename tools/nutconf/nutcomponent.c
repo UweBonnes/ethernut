@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.20  2005/09/07 16:24:23  christianwelzel
+ * Changed handling of default parameters. Nutconf now creates all default
+ * parameter defines within header files.
+ *
  * Revision 1.19  2005/07/26 15:55:36  haraldkipp
  * Version 1.2.3.
  * Added new keyword "default" to specify default values. They will no
@@ -1567,7 +1571,7 @@ NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
         opts = compo->nc_opts;
         while (opts) {
             if (opts->nco_file) {
-                if(opts->nco_enabled && opts->nco_active) {
+                if((opts->nco_enabled && opts->nco_active) || opts->nco_default != NULL) {
                     /* Do not save empty values. */
                     if (opts->nco_value == NULL) {
                         if (opts->nco_flavor && 
