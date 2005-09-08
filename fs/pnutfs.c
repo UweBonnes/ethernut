@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2005/09/08 10:12:44  olereinhardt
+ * Added #ifdef statement in NutSegBufEnable to avoid compiler warning
+ * if no banked mem is used.
+ *
  * Revision 1.6  2005/09/07 16:23:41  christianwelzel
  * Added support for MMnet02. Bankswitching is now handled in bankmem.h
  *
@@ -315,8 +319,12 @@ static PNUT_BLKNUM root;
  */
 void BankSelect(PNUT_BLKNUM blk)
 {
-    int bank = blk / BLOCKS_PER_BANK;
 
+// This is a hack to avoid compiler warning if no banking is enabled... 
+// But I don't like moving code to header files at all.. (Ole Reinhardt)
+#if NUTBANK_COUNT 
+    int bank = blk / BLOCKS_PER_BANK;
+#endif
     // Bankswitching is now handled in bankmem.h
     NutSegBufEnable(bank);
 }
