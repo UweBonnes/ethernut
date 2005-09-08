@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.269 2005/09/07 16:24:55 christianwelzel Exp $
+$Id: ChangeLog,v 1.270 2005/09/08 10:17:39 olereinhardt Exp $
+
+2005-09-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+        * fs/pnutfs.c
+        Added #ifdef statement in NutSegBufEnable to avoid compiler warning
+	if no banked mem is used. 
 
 2005-09-07  Christian Welzel <christian.welzel@welzel-online.ch>
         
