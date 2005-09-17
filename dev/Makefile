@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.22  2005/09/17 09:23:57  drsung
+# irqstack.c also moved to arch
+#
 # Revision 1.21  2005/07/26 16:08:26  haraldkipp
 # Target dependent modules moved to arch.
 #
@@ -153,7 +156,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS = ihndlr.c irqstack.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c
+SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c
 
 OBJS = $(SRCS:.c=.o)
 
