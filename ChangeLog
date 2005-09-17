@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.270 2005/09/08 10:17:39 olereinhardt Exp $
+$Id: ChangeLog,v 1.271 2005/09/17 09:42:20 drsung Exp $
+
+2005-09-17  Oliver Schulz  <olischulz@web.de>
+
+	* arch/avr/dev/irqstack.c: More program space saving implementation and 
+	moved from dev because it is avr platform specific.
+	
+	* include/dev/irqstack.h: More program space saving implementation.
+	
+	* conf/arch/avr.nut: Added irqstack.c to platform dependend sources.
+	
+	* dev/Makefile, arch/Makefile: Adjusted b/c of moved file irqstack.c.
+
 
 2005-09-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * fs/pnutfs.c
