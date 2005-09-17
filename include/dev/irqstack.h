@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/09/17 09:22:53  drsung
+ * More program space saving implementation
+ *
  * Revision 1.5  2005/02/05 20:39:43  haraldkipp
  * Force compiler error for leftover debug prints.
  *
@@ -58,90 +61,27 @@
 
 #include <sys/types.h>
 
-extern u_char _irq_stack[];
-extern u_char _irq_SPL;
-extern u_char _irq_SPH;
-extern u_char _irq_nesting;
-
-#define _SwitchToIrqStack	\
+#define _irq_prolog \
     asm volatile ("push r24" "\n\t"				/* save r24 to current stack */ \
-                  "in r24,__SREG__" "\n\t"			/* load SREG into r24 */ \
-                  "push r24" "\n\t"				/* and push it to current stack */ \
-                  "lds r24, _irq_nesting" "\n\t"		/* load _irq_nesting in r24 */ \
-                  "tst r24" "\n\t"				/* test for zero */ \
-                  "brne no_switch1" "\n\t"			/* jump to no_switch1 if not zero */ \
-                  "in r24, __SP_L__" "\n\t"			/* load SP_L into r24 */ \
-                  "sts _irq_SPL, r24" "\n\t"			/* and save it to _irq_SPL */ \
-                  "in r24, __SP_H__" "\n\t"			/* load SP_H into r24 */ \
-                  "sts _irq_SPH, r24" "\n\t");			/* and save it to _irq_SPH */ \
-    asm volatile ("ldi r24, lo8(%0)" "\n\t"			/* load lo addr of begin of irqstack to r24 */ \
-                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */ \
-                  "ldi r24, hi8(%0)" "\n\t"			/* load hi addr of begin of irqstack to r24 */ \
-                  "out __SP_H__, r24" "\n\t"			/* write it to SP_H */ \
-                  "lds r24, _irq_nesting" "\n\t"		/* load _irq_nesting to r24 */ \
-                  "no_switch1:" "\n\t"				/* jump label */ \
-                  "inc r24" "\n\t"				/* increment r24 */ \
-                  "sts _irq_nesting, r24" "\n\t"		/* save it back to _irq_nesting */ \
-                  ::					\
-                  "i" (_irq_stack+IRQSTACK_SIZE-1));
+                  "push r25" "\n\t"				/* save r25 to current stack */ \
+                  "in r24,__SREG__" "\n\t"		/* load SREG into r24 */ \
+                  "push r24" "\n\t");			/* and push it to current stack */ 
 
-#define _SwitchToAppStack	\
-    asm volatile ("cli" "\n\t"					/* disable interrupts */ \
-                  "lds r24, _irq_nesting" "\n\t"		/* load _irq_nesting in r24 */ \
-                  "dec r24" "\n\t"				/* decrement r24 */ \
-                  "sts _irq_nesting, r24" "\n\t"		/* save it back to _irq_nesting */ \
-                  "brne no_switch2" "\n\t"			/* jump to no_switch2 if not zero */ \
-                  "lds r24, _irq_SPL" "\n\t"			/* load _irq_SPL to r24 */ \
-                  "out __SP_L__, r24" "\n\t"			/* write it to SP_L */ \
-                  "lds r24, _irq_SPH" "\n\t"			/* load _irq_SPH to r24 */ \
-                  "out __SP_H__, r24" "\n\t");			/* write it to SP_H */ \
-    asm volatile ("no_switch2:" "\n\t"				/* jump label */ \
-                  "pop r24" "\n\t"				/* load byte from stack to r24 */ \
-                  "out __SREG__, r24" "\n\t"			/* write it to SREG */ \
-                  "pop r24" "\n\t");				/* restore r24 from stack */ \
-
-#define _SaveRegs	\
-    asm volatile ("push __tmp_reg__" "\n\t"	\
-                  "push __zero_reg__" "\n\t"	\
-                  "clr __zero_reg__" "\n\t"	\
-                  "push r18" "\n\t"		\
-                  "push r19" "\n\t"		\
-                  "push r20" "\n\t"		\
-                  "push r21" "\n\t"		\
-                  "push r22" "\n\t"		\
-                  "push r23" "\n\t"		\
-                  "push r25" "\n\t"		\
-                  "push r26" "\n\t"		\
-                  "push r27" "\n\t"		\
-                  "push r30" "\n\t"		\
-                  "push r31" "\n\t");
-
-
-#define _RestoreRegs	\
-    asm volatile ("pop r31" "\n\t"		\
-                  "pop r30" "\n\t"		\
-                  "pop r27" "\n\t"		\
-                  "pop r26" "\n\t"		\
-                  "pop r25" "\n\t"		\
-                  "pop r23" "\n\t"		\
-                  "pop r22" "\n\t"		\
-                  "pop r21" "\n\t"		\
-                  "pop r20" "\n\t"		\
-                  "pop r19" "\n\t"		\
-                  "pop r18" "\n\t"		\
-                  "pop __zero_reg__" "\n\t"	\
-                  "pop __tmp_reg__" "\n\t");
+#define _irq_epilog \
+    asm volatile ("pop r24" "\n\t"				/* restore r24 from stack */ \
+                  "out __SREG__, r24" "\n\t"	/* write it to SREG */ \
+                  "pop r25" "\n\t"				/* load byte from stack to r25 */ \
+                  "pop r24" "\n\t");			/* load byte from stack to r24 */
 
 #define NUTSIGNAL(signame,handler)		\
 void signame (void) __attribute__ ((naked));	\
 void signame (void)	\
 {				\
-   _SwitchToIrqStack		\
-   _SaveRegs			\
-   CallHandler (&handler);	\
-   _RestoreRegs			\
-   _SwitchToAppStack		\
-   asm ("reti");				/* will enable interrupts */ \
+   _irq_prolog \
+   asm volatile ("ldi r24, lo8(%0)" "\n\t" \
+                 "ldi r25, hi8(%0)" "\n\t" \
+                 "jmp _irq_interrupt" "\n\t" \
+                 :: "i" (&handler)); \
 }
 
 #else                           /* IRQSTACK_SIZE */
