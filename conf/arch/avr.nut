@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.2  2005/09/17 09:28:26  drsung
+-- Added irqstack.c to sources for avr target.
+--
 -- Revision 1.1  2005/07/26 15:41:06  haraldkipp
 -- All target dependent code is has been moved to a new library named
 -- libnutarch. Each platform got its own script.
@@ -154,7 +157,8 @@ nutarch_avr =
             "avr/dev/ivect33.c",
             "avr/dev/ivect34.c",
             "avr/dev/ivect35.c",
-            "avr/dev/ivect36.c"
+            "avr/dev/ivect36.c",
+            "avr/dev/irqstack.c"
         },
         options =
         {
