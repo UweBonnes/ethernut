@@ -1,45 +1,51 @@
-$Id: ChangeLog,v 1.271 2005/09/17 09:42:20 drsung Exp $
+$Id: ChangeLog,v 1.272 2005/09/21 10:44:38 christianwelzel Exp $
+
+2005-09-21  Christian Welzel <christian.welzel@welzel-online.ch>
+    
+    * tools/nutconf/iconlist.cpp, tools/nutconf/mainframe.cpp,
+      tools/nutconf/nutconfview.cpp
+    Replaced deprecated commands with newer ones.
 
 2005-09-17  Oliver Schulz  <olischulz@web.de>
 
-	* arch/avr/dev/irqstack.c: More program space saving implementation and 
+	* arch/avr/dev/irqstack.c: More program space saving implementation and
 	moved from dev because it is avr platform specific.
-	
+
 	* include/dev/irqstack.h: More program space saving implementation.
-	
+
 	* conf/arch/avr.nut: Added irqstack.c to platform dependend sources.
-	
+
 	* dev/Makefile, arch/Makefile: Adjusted b/c of moved file irqstack.c.
 
 
 2005-09-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * fs/pnutfs.c
         Added #ifdef statement in NutSegBufEnable to avoid compiler warning
-	if no banked mem is used. 
+	if no banked mem is used.
 
 2005-09-07  Christian Welzel <christian.welzel@welzel-online.ch>
-        
-        * conf/MMnet02.conf
-        Added configuration file for MMnet02
-        
-        * include/sys/bankmem.h
-        Added banking support for MMnet02
-        
-        * arch/avr/os/nutinit.c
-        Added MMnet02 CPLD initialization
-        
-        * arch/avr/dev/hd44780_bus.c
-        Added support for MMnet02 display
-        
-        * fs/pnutfs.c
-        Added support for MMnet02. Bankswitching is now handled in bankmem.h
-        
-        * tools/nutconf/nutcomponent.c
-        Changed handling of default parameters. Nutconf now creates all default
-        parameter defines within header files.
-        
+
+    * conf/MMnet02.conf
+    Added configuration file for MMnet02
+
+    * include/sys/bankmem.h
+    Added banking support for MMnet02
+
+    * arch/avr/os/nutinit.c
+    Added MMnet02 CPLD initialization
+
+    * arch/avr/dev/hd44780_bus.c
+    Added support for MMnet02 display
+
+    * fs/pnutfs.c
+    Added support for MMnet02. Bankswitching is now handled in bankmem.h
+
+    * tools/nutconf/nutcomponent.c
+    Changed handling of default parameters. Nutconf now creates all default
+    parameter defines within header files.
+
 2005-08-26  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-        * pro/httpd.c, include/pro/httpd.h: 
+        * pro/httpd.c, include/pro/httpd.h:
         added NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
 
 2005-08-25  Ole Reinhardt <ole.reinhardt@embedded-it.de>
@@ -48,7 +54,7 @@ $Id: ChangeLog,v 1.271 2005/09/17 09:42:20 drsung Exp $
 2005-08-19  Matthias Ringwald  <mringwal@inf.ethz.ch>
         * arch/avr/dev/adc.c: used 8-bit tail and head pointers. by this,
         the critical section is not necessary anymore.
-        
+
 2005-08-18  Christian Welzel <christian.welzel@welzel-online.ch>
         * os/event.c, arch/avr/os/context_gcc.c
         Fixed bug in handling of NUTDEBUG.
