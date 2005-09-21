@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.8  2005/09/21 10:44:15  christianwelzel
+ * Replaced deprecated commands with newer ones.
+ *
  * Revision 1.7  2005/07/22 18:46:25  haraldkipp
  * Added selectable toolbar button sizes, toolbar menu, more toolbar buttons
  * and online help.
@@ -456,15 +459,15 @@ void CMainFrame::OnSashDrag(wxSashEvent & event)
 
     wxLayoutAlgorithm layout;
     if (!layout.LayoutFrame(this)) {
-        wxNode *node = GetChildren().First();
+        wxNode *node = (wxNode *) GetChildren().GetFirst();
         while (node) {
-            wxWindow *win = (wxWindow *) node->Data();
+            wxWindow *win = (wxWindow *) node->GetData();
             if (win->IsKindOf(CLASSINFO(wxSashLayoutWindow))) {
                 wxSashLayoutWindow *sashWin = (wxSashLayoutWindow *) win;
                 wxSize sz = sashWin->GetSize();
                 sashWin->SetDefaultSize(sz);
             }
-            node = node->Next();
+            node = node->GetNext();
         }
     }
 }

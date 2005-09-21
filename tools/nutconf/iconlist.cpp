@@ -39,6 +39,9 @@
 
 /*
  * $Log: iconlist.cpp,v $
+ * Revision 1.3  2005/09/21 10:44:15  christianwelzel
+ * Replaced deprecated commands with newer ones.
+ *
  * Revision 1.2  2004/08/03 15:03:25  haraldkipp
  * Another change of everything
  *
@@ -74,12 +77,12 @@ bool CIconList::AddInfo(const wxString & name, const wxIcon & icon, int state, b
 
 CIconInfo *CIconList::FindInfo(const wxString & name) const
 {
-    wxNode *node = First();
+    wxNode *node = GetFirst();
     while (node) {
-        CIconInfo *info = (CIconInfo *) node->Data();
+        CIconInfo *info = (CIconInfo *) node->GetData();
         if (info->GetName() == name)
             return info;
-        node = node->Next();
+        node = node->GetNext();
     }
     return NULL;
 }

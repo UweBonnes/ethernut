@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfview.cpp,v $
+ * Revision 1.4  2005/09/21 10:44:15  christianwelzel
+ * Replaced deprecated commands with newer ones.
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -113,7 +116,7 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
         break;
 
     case nutAllSaved:
-        for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
+        for (nItem = 0; nItem < pDoc->GetItems().GetCount(); nItem++) {
             CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
             wxTreeItemId treeItem = pItem->GetTreeItem();
             if (treeItem) {
@@ -134,7 +137,7 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
 
     case nutNameFormatChanged:
         {
-            for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
+            for (nItem = 0; nItem < pDoc->GetItems().GetCount(); nItem++) {
                 CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
                 wxString strName(pItem->GetName());
                 treeCtrl->SetItemText(pItem->GetTreeItem(), strName);
@@ -186,7 +189,7 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
         break;
 
     case nutExternallyChanged:
-        for (nItem = 0; nItem < pDoc->GetItems().Number(); nItem++) {
+        for (nItem = 0; nItem < pDoc->GetItems().GetCount(); nItem++) {
             CConfigItem *pItem = (CConfigItem *) pDoc->GetItems()[nItem];
             pItem->UpdateTreeItem(*treeCtrl);
         }
