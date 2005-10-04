@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.3  2005/10/04 05:51:49  hwmaier
+-- Added CAN driver for AT90CAN128
+--
 -- Revision 1.2  2005/09/17 09:28:26  drsung
 -- Added irqstack.c to sources for avr target.
 --
@@ -70,7 +73,7 @@ nutarch_avr =
         },
         requires = { "TOOL_CC_AVR", "TOOL_ICC" },
     },
-    
+
     --
     -- Context Switching
     --
@@ -80,7 +83,7 @@ nutarch_avr =
         provides = { "NUT_CONTEXT_SWITCH" },
         requires = { "HW_MCU_AVR", "TOOL_GCC" },
         sources = { "avr/os/context_gcc.c" },
-    },    
+    },
     {
         name = "nutarch_avr_context_icc",
         brief = "Context Switching (ICCAVR)",
@@ -88,7 +91,7 @@ nutarch_avr =
         requires = { "HW_MCU_AVR", "TOOL_ICC" },
         sources = { "avr/os/context_icc.c" },
     },
-    
+
     --
     -- System Timer Hardware
     --
@@ -98,7 +101,7 @@ nutarch_avr =
         requires = { "HW_MCU_AVR" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "avr/dev/ostimer.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUT_CPU_FREQ",
@@ -111,7 +114,7 @@ nutarch_avr =
             }
         }
     },
-    
+
     --
     -- AVR interrupt handling.
     --
@@ -176,7 +179,7 @@ nutarch_avr =
             },
         }
     },
-    
+
     --
     -- Device Drivers
     --
@@ -187,7 +190,7 @@ nutarch_avr =
         requires = { "HW_UART_AVR", "NUT_EVENT" },
         provides = { "PROTO_HDLC" },
         sources = { "avr/dev/ahdlc0.c", "avr/dev/ahdlc1.c", "avr/dev/ahdlcavr.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUT_THREAD_AHDLCRXSTACK",
@@ -364,7 +367,7 @@ nutarch_avr =
         name = "nutarch_avr_lanc111",
         brief = "LAN91C111 Driver",
         description = "LAN driver for SMSC LAN91C111. ATmega128 only.",
-        requires = { "HW_MCU_ATMEGA128", "NUT_EVENT", "NUT_TIMER" },
+        requires = { "HW_MCU_AVR", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "avr/dev/lanc111.c" },
         options =
@@ -576,7 +579,7 @@ nutarch_avr =
         provides = { "NET_PHY" },
         sources = { "avr/dev/wlan.c", "avr/dev/wlandrv.c" }
     },
-    
+
     --
     -- Additional Hardware Support
     --
@@ -586,7 +589,7 @@ nutarch_avr =
         description = "Driver for the ATmega128 analog to digital converter.\n\n"..
                       "Only available for AVR-GCC.\n\n"..
                       "Contributed by Ole Reinhardt from www.kernelconcepts.de",
-        requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
+        requires = { "HW_MCU_AVR", "TOOL_GCC" },
         sources = { "avr/dev/adc.c" },
         options =
         {
@@ -636,7 +639,7 @@ nutarch_avr =
                 file = "include/cfg/arch/avrpio.h"
             },
         }
-    },    
+    },
     {
         name = "nutarch_avr_ir",
         brief = "IR Driver",
@@ -743,7 +746,7 @@ nutarch_avr =
                       "an address with an offset of two.\n\n"..
                       "Only available for AVR-GCC.\n\n"..
                       "Contributed by Ole Reinhardt from www.kernelconcepts.de",
-        requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
+        requires = { "HW_MCU_AVR", "TOOL_GCC" },
         provides = { "DEV_FILE", "DEV_WRITE" },
         sources = { "avr/dev/hd44780_bus.c" },
         options =
@@ -817,7 +820,8 @@ nutarch_avr =
                       "NutRegisterDevice().\n\n"..
                       "Only available for AVR-GCC.\n\n"..
                       "Contributed by Ole Reinhardt from www.kernelconcepts.de",
-        requires = { "HW_MCU_ATMEGA128", "TOOL_GCC" },
+        provides = { "DEV_CAN_SPECIFIC"},
+        requires = { "HW_MCU_AVR", "TOOL_GCC" },
         sources = { "avr/dev/sja1000.c" },
         options =
         {
@@ -842,6 +846,22 @@ nutarch_avr =
                               "to SJA_SIGNAL_BIT.",
                 file = "include/cfg/arch/avrpio.h"
             }
+        }
+    },
+    {
+        name = "nutarch_avr_atcan",
+        brief = "AT CAN Driver",
+        description = "Driver for Atmel's internal Full CAN controller "..
+                      "found in AT90 parts like the AT90CAN128 MCU.\n\n"..
+                      "Requires a fixed MCU clock setting of either 12 or 16 MHz. "..
+                      "Check setting in System Timer category.\n"..
+                      "Currently only available for AVR-GCC.\n\n"..
+                      "Contributed by Henrik Maier from www.proconx.com",
+        requires = { "HW_CAN_AVR", "TOOL_GCC"},
+        provides = { "DEV_CAN_SPECIFIC"},
+        sources = { "avr/dev/atcan.c" },
+        options =
+        {
         }
     },
     {

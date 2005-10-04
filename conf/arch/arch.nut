@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.12  2005/10/04 05:47:26  hwmaier
+-- Added CAN driver for AT90CAN128
+--
 -- Revision 1.11  2005/07/26 15:41:05  haraldkipp
 -- All target dependent code is has been moved to a new library named
 -- libnutarch. Each platform got its own script.
@@ -123,7 +126,13 @@ nutarch =
                 brief = "Atmel AT90CAN128",
                 description = "8-bit RISC microcontroller with 128K bytes flash, 4K bytes RAM, "..
                               "4K bytes EEPROM, 64K bytes data memory space, 2 USARTs, 4 timers, "..
-                              "8-channel ADC, SPI, TWI and CAN controller.",
+                              "8-channel ADC, SPI, TWI and CAN controller.\n"..
+                              "\n"..
+                              "Please configure appropriate stack settings in category "..
+                              "Memory Management. "..
+                              "Due to a bug for silicon revisions C of the AT90CAN128 MCU, "..
+                              "the code stack must reside in internal RAM. Refer to "..
+                              "AT90CAN128 Datasheet Rev. 4250F–CAN–04/05 - Errata Rev C ",
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR" },
@@ -133,9 +142,13 @@ nutarch =
                     "HW_MCU_AVR_ENHANCED",
                     "HW_NVMEM",
                     "HW_TIMER_AVR",
-                    "HW_UART_AVR"
+                    "HW_UART_AVR",
+                    "HW_CAN_AVR"
                 },
-                makedefs = { "MCU=at90can128", "HWDEF=-D__HARVARD_ARCH__" }
+                makedefs = { "MCU=at90can128", "HWDEF=-D__HARVARD_ARCH__" },
+                options =
+                {
+                }
             },
             {
                 macro = "MCU_AT91R40008",
@@ -245,5 +258,5 @@ nutarch =
         script = "arch/unix.nut"
     },
 
-    
+
 }

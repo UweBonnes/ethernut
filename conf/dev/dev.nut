@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.20  2005/10/04 05:48:11  hwmaier
+-- Added CAN driver for AT90CAN128
+--
 -- Revision 1.19  2005/07/26 15:41:06  haraldkipp
 -- All target dependent code is has been moved to a new library named
 -- libnutarch. Each platform got its own script.
@@ -166,6 +169,14 @@ nutdev =
         brief = "Network Buffers",
         provides = { "DEV_NETBUF" },
         sources = { "netbuf.c" }
+    },
+    {
+        name = "nutdev_can",
+        brief = "CAN Driver Framework",
+        description = "Generic CAN driver framework.",
+        requires = { "DEV_CAN_SPECIFIC" },
+        provides = { "DEV_CAN_GENERIC"},
+        sources = { "can_dev.c" },
     },
 
 
