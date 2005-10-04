@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2005/10/04 05:25:17  hwmaier
+ * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
+ *
  * Revision 1.9  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -190,6 +193,10 @@ void threadfn(void *arg) __attribute__ ((noreturn)); \
 void threadfn(void *arg)
 
     extern void DumpThreads(HANDLE handle);
+
+    extern void *NutStackAlloc(size_t size);
+    extern int NutStackFree(void *block);
+    extern void NutStackAdd(void *addr, size_t size);
 
 #ifdef __cplusplus
 }
