@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.4  2005/10/04 05:58:17  hwmaier
+# Added support for relocating the data segment
+#
 # Revision 1.3  2005/06/06 10:41:36  haraldkipp
 # Added Vesa's workaround for too aggressive GCC optimizations.
 #
@@ -70,7 +73,11 @@ BIN       = $(TRGT)objcopy
 BINDIR    = $(top_srcdir)/bin/$(MCU)
 
 CPFLAGS   = $(MCFLAGS) -Os -fno-delete-null-pointer-checks -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
-LDFLAGS   = $(MCFLAGS) -Wl,--defsym=main=0,-Map=$(PROJ).map,--cref -L$(LIBDIR) 
+LDFLAGS   = $(MCFLAGS) -Wl,--defsym=main=0,-Map=$(PROJ).map,--cref -L$(LIBDIR)
+
+ifdef DATA_SEG
+LDFLAGS += -Wl,-Tdata=$(subst 0x,0x80,$(DATA_SEG))
+endif
 
 ELFCOF    = $(BIN) --debugging \
 	--change-section-address .data-0x800000 \
