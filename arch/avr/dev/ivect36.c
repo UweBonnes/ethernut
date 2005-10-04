@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/04 05:23:37  hwmaier
+ * Updated interrupt hooks to reflect new CAN interrupt names of avr-lib 1.2.3
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -48,17 +51,17 @@
  */
 /*@{*/
 
-#if defined(SIG_CAN_OVRIT) || defined(iv_CAN_TIM_OVR)
+#if defined(SIG_CAN_OVERFLOW1) || defined(iv_CAN_TIM_OVR)
 
 IRQ_HANDLER sig_CAN_OVERRUN;
 
-/*! \fn SIG_CAN_OVRIT(void)
+/*! \fn SIG_CAN_OVERFLOW1(void)
  * \brief Store program memory interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_CAN_OVRIT:iv_CAN_TIM_OVR
+#pragma interrupt_handler SIG_CAN_OVERFLOW1:iv_CAN_TIM_OVR
 #endif
-NUTSIGNAL(SIG_CAN_OVRIT, sig_SPM_READY)
+NUTSIGNAL(SIG_CAN_OVERFLOW1, sig_CAN_OVERRUN)
 
 #endif
 

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/04 05:23:37  hwmaier
+ * Updated interrupt hooks to reflect new CAN interrupt names of avr-lib 1.2.3
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -48,17 +51,17 @@
  */
 /*@{*/
 
-#if defined(SIG_SIG_CANIT) || defined(iv_CAN_TRANSFER)
+#if defined(SIG_CAN_INTERRUPT1) || defined(iv_CAN_TRANSFER)
 
 IRQ_HANDLER sig_CAN_TRANSFER;
 
-/*! \fn SIG_SIG_CANIT(void)
+/*! \fn SIG_CAN_INTERRUPT1(void)
  * \brief Store program memory interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#pragma interrupt_handler SIG_SIG_CANIT:iv_CAN_TRANSFER
+#pragma interrupt_handler SIG_CAN_INTERRUPT1:iv_CAN_TRANSFER
 #endif
-NUTSIGNAL(SIG_SIG_CANIT, sig_CAN_TRANSFER)
+NUTSIGNAL(SIG_CAN_INTERRUPT1, sig_CAN_TRANSFER)
 
 #endif
 

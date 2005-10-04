@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/04 05:24:24  hwmaier
+ * Updated interrupt hooks to reflect new CAN interrupt names of avr-lib 1.2.3
+ *
  * Revision 1.1  2005/07/26 18:35:09  haraldkipp
  * First check in
  *
@@ -84,7 +87,7 @@ extern IRQ_HANDLER sig_2WIRE_SERIAL;
 extern IRQ_HANDLER sig_SPM_READY;
 #endif
 #if defined(__AVR_AT90CAN128__)
-extern IRQ_HANDLER sig_CAN_COMPLETE;
+extern IRQ_HANDLER sig_CAN_TRANSFER;
 extern IRQ_HANDLER sig_CAN_OVERRUN;
 #endif
 
