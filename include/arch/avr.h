@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/10/04 05:21:52  hwmaier
+ * Added TIFR definition for AT09CAN128
+ *
  * Revision 1.11  2005/08/02 17:46:48  haraldkipp
  * Major API documentation update.
  *
@@ -398,9 +401,13 @@ extern void *__heap_start;
 #ifndef TIMSK
 #define TIMSK   TIMSK0
 #endif
+#ifndef TIFR
+#define TIFR   TIFR0
 #endif
+#endif /* if defined(__AVR_AT90CAN128__) */
 
-#else
+#else /* ifdef __AVR_ENHANCED__ */
+
 #define RAMSTART    ((void *)0x60)
 
 #endif
