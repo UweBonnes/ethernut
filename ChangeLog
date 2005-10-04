@@ -1,7 +1,42 @@
-$Id: ChangeLog,v 1.272 2005/09/21 10:44:38 christianwelzel Exp $
+$Id: ChangeLog,v 1.273 2005/10/04 06:11:40 hwmaier Exp $
+
+2005-10-04 Henrik Maier  <henrik@proconx.com>
+
+        * arch/avr/dev/atcan.c, include/dev/atcan.h: Added AT90CAN128 CAN
+        driver
+
+        * ivect35.c, ivect36.c: Updated interrupt hooks to reflect
+        new CAN interrupt names of avr-lib 1.2.3.
+
+        * include/arch/avr.h: Added TIFR definition for AT90CAN128.
+
+        * os/thread.c: NutThreadDestroy calls NutStackFree instead
+        NutHeapFree if NUTMEM_STACKHEAP is defined. This solution is
+        considered a temporary measure until a better approach has been
+        found, but for now it helps to run Nut/OS on an AT90CAN128 MCU
+        which can only use internal memory for stack.
+
+        * arch/avr/os/context_gcc.c, arch/avr/os/context_icc.c: NutThreadCreate
+        calls NutStackAlloc instead of NutHeapAlloc if NUTMEM_STACKHEAP is
+        defined.
+
+        * arch/avr/os/nutinit.c: NutInitHeap calls NutStackAdd if
+        NUTMEM_STACKHEAP is defined.
+
+       * net/confnet.c: Removed preprocessor warning message for AT90CAN128 MCU
+       as this device is now supported by avr-libc.
+
+       * conf/dev/dev.nut, conf/arch/arch.nut, conf/arch/avr.nut: Added CAN
+       driver for AT90CAN128
+
+       * conf/os.nut: Added support for separating stack and conventional
+       heap as required by AT09CAN128 MCUs
+
+       * app/Makedefs.avr-gcc: Added support for relocating the data segment
+
 
 2005-09-21  Christian Welzel <christian.welzel@welzel-online.ch>
-    
+
     * tools/nutconf/iconlist.cpp, tools/nutconf/mainframe.cpp,
       tools/nutconf/nutconfview.cpp
     Replaced deprecated commands with newer ones.
