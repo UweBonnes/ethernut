@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/10/04 06:11:11  hwmaier
+ * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
+ *
  * Revision 1.3  2005/09/07 16:22:45  christianwelzel
  * Added MMnet02 CPLD initialization
  *
@@ -96,6 +99,7 @@
  *
  */
 
+#include <sys/thread.h>
 #include <cfg/memory.h>
 #include <cfg/os.h>
 #include <cfg/arch/avr.h>
@@ -469,10 +473,14 @@ THREAD(NutIdle, arg)
 static void NutInitSP(void) __attribute__ ((naked, section (".init5"), used));
 void NutInitSP(void)
 {
-    /* Initialize stack pointer to end of external RAM while starting up the system
-     * to avoid overwriting .data and .bss section.
-     */
+#if defined (__AVR_AT90CAN128__)
+    /* Stack must remain in internal RAM where avr-libc's runtime lib init placed it */
+#else
+   /* Initialize stack pointer to end of external RAM while starting up the system
+    * to avoid overwriting .data and .bss section.
+    */
     SP = (u_short)(NUTMEM_END);
+#endif
 }
 #endif
 
@@ -481,7 +489,9 @@ static void NutInitHeap(void) __attribute__ ((naked, section (".init5"), used));
 #endif
 void NutInitHeap()
 {
-
+#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
+    NutStackAdd((void *) NUTMEM_START, NUTMEM_STACKHEAP);
+#endif
     /* Then add the remaining RAM to heap.
      *
      * 20.Aug.2004 haraldkipp: This had been messed up somehow. It's nice to have
@@ -564,7 +574,7 @@ void NutInit(void)
      * to avoid overwriting .data and .bss section.
      */
     SP = (u_short)(NUTMEM_END);
-    
+
     /* Initialize the heap memory
      */
     NutInitHeap();
