@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2005/10/04 05:14:49  hwmaier
+ * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
+ *
  * Revision 1.21  2005/07/26 16:00:16  haraldkipp
  * Cygwin added.
  * Platform dependent part is now located in arch/(target)/context.c
@@ -143,6 +146,7 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/memory.h>
 
 #include <string.h>
 
@@ -481,7 +485,7 @@ u_char NutThreadSetPriority(u_char level)
 #endif
 #ifdef NUTTRACER
         TRACE_ADD_ITEM(TRACE_TAG_THREAD_SETPRIO,(int)runningThread);
-#endif		
+#endif
 
         NutEnterCritical();
         NutThreadSwitch();
@@ -515,7 +519,11 @@ void NutThreadExit(void)
 void NutThreadDestroy(void)
 {
     if (killedThread) {
+#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
+        NutStackFree(killedThread->td_memory);
+#else
         NutHeapFree(killedThread->td_memory);
+#endif
         killedThread = 0;
     }
 }
@@ -561,5 +569,55 @@ HANDLE GetThreadByName(u_char * name)
     }
     return NULL;
 }
+
+
+#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
+/*
+ * The following routines are wrappers around the standard heap
+ * allocation routines.  These wrappers tweak the free heap pointer to point
+ * to a second heap which is kept in internal memory and used only for a
+ * thread's stack.
+ */
+
+HEAPNODE* volatile stackHeapFreeList = 0; /* for special stack heap */
+
+void *NutStackAlloc(size_t size)
+{
+    void * result;
+    HEAPNODE* savedHeapNode;
+
+    savedHeapNode = heapFreeList;
+    heapFreeList = stackHeapFreeList;
+    result = NutHeapAlloc(size);
+    stackHeapFreeList = heapFreeList;
+    heapFreeList = savedHeapNode;
+    return result;
+}
+
+int NutStackFree(void *block)
+{
+    int result;
+    HEAPNODE* savedHeapNode;
+
+    savedHeapNode = heapFreeList;
+    heapFreeList = stackHeapFreeList;
+    result = NutHeapFree(block);
+    stackHeapFreeList = heapFreeList;
+    heapFreeList = savedHeapNode;
+    return result;
+}
+
+void NutStackAdd(void *addr, size_t size)
+{
+   HEAPNODE* savedHeapNode;
+
+   savedHeapNode = heapFreeList;
+   heapFreeList = stackHeapFreeList;
+   NutHeapAdd(addr, size);
+   stackHeapFreeList = heapFreeList;
+   heapFreeList = savedHeapNode;
+}
+
+#endif /* defined(NUTMEM_STACKHEAP) */
 
 /*@}*/

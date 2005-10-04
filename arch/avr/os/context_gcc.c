@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/10/04 05:17:15  hwmaier
+ * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
+ *
  * Revision 1.3  2005/08/18 15:36:36  christianwelzel
  * Fixed bug in handling of NUTDEBUG.
  *
@@ -77,6 +80,7 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/memory.h>
 
 #include <string.h>
 
@@ -286,7 +290,11 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     /*
      * Allocate stack and thread info structure in one block.
      */
+#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
+    if ((threadMem = NutStackAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
+#else
     if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
+#endif
         return 0;
     }
 
