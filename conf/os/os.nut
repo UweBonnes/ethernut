@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.11  2005/10/04 05:44:29  hwmaier
+-- Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
+--
 -- Revision 1.10  2005/07/26 16:13:24  haraldkipp
 -- Target dependent modules moved to arch.
 --
@@ -91,7 +94,7 @@ nutos =
         brief = "Memory management",
         provides = { "NUT_HEAPMEM" },
         sources = { "heap.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUTMEM_SIZE",
@@ -111,7 +114,7 @@ nutos =
             {
                 macro = "NUTMEM_START",
                 brief = "Memory Start",
-                description = "First address of fast data memory.", 
+                description = "First address of fast data memory.",
                 file = "include/cfg/memory.h"
             },
             {
@@ -124,7 +127,8 @@ nutos =
                               " is disabled.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                file = "include/cfg/memory.h"
+                file = "include/cfg/memory.h",
+                makedefs = { "NUTMEM_RESERVED" }
             },
             {
                 macro = "NUTXMEM_SIZE",
@@ -132,7 +136,7 @@ nutos =
                 description = "Number of bytes available in external data memory.\n\n"..
                               "The result of enabling this item is platform specific."..
                               "With AVR systems it will enable the external memory "..
-                              "interface of the CPU, even if the value is set to zero.", 
+                              "interface of the CPU, even if the value is set to zero.",
                 provides = { "NUTXDATAMEM_SIZE" },
                 flavor = "booldata",
                 file = "include/cfg/memory.h"
@@ -140,7 +144,7 @@ nutos =
             {
                 macro = "NUTXMEM_START",
                 brief = "Extended Memory Start",
-                description = "First address of external data memory.", 
+                description = "First address of external data memory.",
                 requires = { "NUTXDATAMEM_SIZE" },
                 file = "include/cfg/memory.h"
             },
@@ -177,7 +181,39 @@ nutos =
                 description = "Address of the bank select register.",
                 requires = { "NUTBANK_COUNT" },
                 file = "include/cfg/memory.h"
-            }
+            },
+            {
+                macro = "NUTMEM_STACKHEAP",
+                brief = "Separate heap for stack",
+                description = "This option enables use of a separate heap for stack.\n\n"..
+                              "When a thread is created with this option enabled, it's stack is "..
+                              "allocated on a special \"thread stack heap\" which is kept in "..
+                              "internal memory before the data segments instead of using the \"standard "..
+                              "heap\" which is typically located in external memory after the data segments. \n"..
+                              "\n"..
+                              "Using this option is a must for silicon revisions C of the AT90CAN128 MCU \n"..
+                              "as the device misfunctions when code stack is in XRAM.  Refer to \n"..
+                              "AT90CAN128 Datasheet Rev. 4250F–CAN–04/05 - Errata Rev C \n"..
+                              "\n"..
+                              "Use this option is conjunction with DATA_SEG for AT90CAN128 MCUs!",
+                requires = { "HW_MCU_AVR" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "DATA_SEG",
+                brief = "Start of data segment",
+                description = "This option relocates the data segment to a different address during the linking phase.\n\n"..
+                              "Leave this option empty to use the architecture's default setting.\n\n"..
+                              "Using this option is a must for silicon revisions C of the AT90CAN128 MCU \n"..
+                              "as the device misfunctions when code stack is in XRAM.  Refer to \n"..
+                              "AT90CAN128 Datasheet Rev. 4250F–CAN–04/05 - Errata Rev C \n"..
+                              "\n"..
+                              "Use this option is conjunction with NUTMEM_STACKHEAP for AT90CAN128 MCUs!",
+                requires = { "HW_MCU_AVR" },
+                flavor = "booldata",
+                makedefs = { "DATA_SEG" }
+            },
         }
     },
     {
@@ -200,7 +236,7 @@ nutos =
         requires = { "NUT_CONTEXT_SWITCH" },
         provides = { "NUT_THREAD" },
         sources = { "thread.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUT_THREAD_IDLESTACK",
@@ -228,7 +264,7 @@ nutos =
         requires = { "NUT_EVENT", "NUT_OSTIMER_DEV" },
         provides = { "NUT_TIMER" },
         sources = { "timer.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUT_CPU_FREQ",
@@ -270,7 +306,7 @@ nutos =
         description = "Initial configuration settings are stored in the AVR EEPROM",
         provides = { "NUT_OSCONFIG" },
         sources = { "confos.c" },
-        options = 
+        options =
         {
             {
                 macro = "CONFOS_EE_OFFSET",
@@ -287,7 +323,7 @@ nutos =
         name = "nutos_version",
         brief = "Version identifier",
         sources = { "version.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUT_VERSION_EXT",
@@ -339,7 +375,7 @@ nutos =
         requires = { "NUT_EVENT", "CRT_STREAM_WRITE" },
         provides = { "NUT_OSDEBUG" },
         sources = { "osdebug.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUTDEBUG",
@@ -360,7 +396,7 @@ nutos =
         requires = { "HW_MCU_AVR", "TOOL_GCC" },
         provides = { "NUT_OSTRACER" },
         sources = { "tracer.c" },
-        options = 
+        options =
         {
             {
                 macro = "NUTTRACER",
