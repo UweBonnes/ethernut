@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2005/10/04 05:37:34  hwmaier
+ * Removed preprocessor warning message for AT90CAN128 MCU as this device is now supported by avr-libc.
+ *
  * Revision 1.5  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -76,21 +79,11 @@ CONFNET confnet;
  */
 int NutNetLoadConfig(CONST char *name)
 {
-/*
- * Note: eeprom is currently disabled for AT90CAN128 MCU as the current
- * avr-libc 1.2 and earlier versions do not support this function!
- * Refer to: http://lists.gnu.org/archive/html/avr-libc-dev/2004-04/msg00108.html
- */
-#if defined(__AVR_AT90CAN128__)
-/* TODO FIXME ttt */
-#warning NutNetLoadConfig is not yet supported with this device!
-#else
 #if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
     eeprom_read_block(&confnet, (void *) CONFNET_EE_OFFSET, sizeof(CONFNET));
     if (confnet.cd_size == sizeof(CONFNET)
         && strcmp(confnet.cd_name, name) == 0)
         return 0;
-#endif
 #endif
     memset(&confnet, 0, sizeof(confnet));
 
@@ -111,15 +104,6 @@ int NutNetLoadConfig(CONST char *name)
  */
 int NutNetSaveConfig(void)
 {
-/*
- * Note: eeprom is currently disabled for AT90CAN128 MCU as the current
- * avr-libc 1.2 and earlier versions do not support this function!
- * Refer to: http://lists.gnu.org/archive/html/avr-libc-dev/2004-04/msg00108.html
- */
-#if defined(__AVR_AT90CAN128__)
-/* TODO FIXME ttt */
-#warning NutNetLoadConfig is not yet supported with this device!
-#else
 #if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
     u_char *cp;
     size_t i;
@@ -129,7 +113,6 @@ int NutNetSaveConfig(void)
         if (eeprom_read_byte((void *) (i + CONFNET_EE_OFFSET)) != *cp)
             eeprom_write_byte((void *) (i + CONFNET_EE_OFFSET), *cp);
 
-#endif
 #endif
     return 0;
 }
