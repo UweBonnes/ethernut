@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/07 22:01:27  hwmaier
+ * Obsolete dcb_baudSelect removed. Support for double speed (U2X) added (using same method as in usartavr.c).
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -113,7 +116,7 @@ static void TxComplete(void *arg)
 
     if (ifs->if_tx_idx != ifs->if_wr_idx) {
 #ifdef UDR1
-        if (dev->dev_base) 
+        if (dev->dev_base)
             UDR1 = ifs->if_tx_buf[ifs->if_tx_idx];
         else
 #endif
@@ -129,9 +132,9 @@ static void TxComplete(void *arg)
 /*
  * Handle AVR UART receive complete.
  *
- * Note, that this function modifies the receive index in 
- * interrupt context. This requires, that any non atomic 
- * access of this index requires interrupts being disabled. 
+ * Note, that this function modifies the receive index in
+ * interrupt context. This requires, that any non atomic
+ * access of this index requires interrupts being disabled.
  * Thanks to Mike Cornelius, who pointed this out.
  */
 static void RxComplete(void *arg)
@@ -141,7 +144,7 @@ static void RxComplete(void *arg)
     UARTDCB *dcb;
 
 #ifdef UDR1
-    if (dev->dev_base) 
+    if (dev->dev_base)
         ifs->if_rx_buf[ifs->if_rx_idx] = inp(UDR1);
     else
 #endif
@@ -159,8 +162,8 @@ static void RxComplete(void *arg)
  * \brief Wait for input.
  *
  * This function checks the input buffer for any data. If
- * the buffer is empty, the calling \ref xrThread "thread" 
- * will be blocked until at least one new character is 
+ * the buffer is empty, the calling \ref xrThread "thread"
+ * will be blocked until at least one new character is
  * received or a timeout occurs.
  *
  * \param dev Indicates the UART device.
@@ -177,27 +180,27 @@ int UartAvrInput(NUTDEVICE * dev)
     NutEnterCritical();
     empty = ifs->if_rd_idx == ifs->if_rx_idx;
     NutExitCritical();
-    
+
     if (empty) {
-        
+
         /*
-         * Changing if into a while loop fixes a serious bug: 
-         * Previous receiver events without any waiting thread 
+         * Changing if into a while loop fixes a serious bug:
+         * Previous receiver events without any waiting thread
          * set the event handle to the signaled state. So the
          * wait returns immediately. Unfortunately the calling
          * routines rely on a filled buffer when we return 0.
          * Thanks to Mike Cornelius, who found this bug.
-         * 
+         *
          * MR (2005-07-14): Reduced critical sections
          */
         do {
 
             rc = NutEventWait(&dcb->dcb_rx_rdy, dcb->dcb_rtimeout);
-            
+
             NutEnterCritical();
             empty = ifs->if_rd_idx == ifs->if_rx_idx;
             NutExitCritical();
-            
+
         } while (rc == 0 && empty);
     }
 
@@ -378,7 +381,7 @@ static void UartAvrDisable(u_short base)
  *             function.
  * \return 0 on success, -1 otherwise.
  *
- * \warning Timeout values are given in milliseconds and are limited to 
+ * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer. To disable timeout,
  *          set the parameter to NUT_WAIT_INFINITE.
  *
@@ -404,8 +407,24 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     switch (req) {
     case UART_SETSPEED:
         UartAvrDisable(devnum);
-        sv = (u_short) ((((2UL * NutGetCpuClock()) / (lv * 16UL)) +
-                         1UL) / 2UL) - 1;
+#ifdef __AVR_ENHANCED__
+        if (devnum) {
+            if (bit_is_set(UCSR1A, U2X)) {
+                lv <<= 2;
+            } else {
+                lv <<= 3;
+            }
+        } else {
+            if (bit_is_set(UCSR0A, U2X)) {
+                lv <<= 2;
+            } else {
+                lv <<= 3;
+            }
+        }
+#else
+        lv <<= 3;
+#endif
+        sv = (u_short) ((NutGetCpuClock() / lv + 1UL) / 2UL) - 1;
 #ifdef UBRR1H
         if (devnum) {
             UBRR1L = (u_char) sv;
@@ -422,14 +441,26 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_GETSPEED:
 #ifdef UBRR1H
-        if (devnum)
+        if (devnum) {
+            if (bit_is_set(UCSR1A, U2X))
+                lv = 8UL;
+            else
+                lv = 16UL;
             sv = (u_short) (UBRR1H) << 8 | UBRR1L;
+        }
         else
+        {
+            if (bit_is_set(UCSR0A, U2X))
+                lv = 8UL;
+            else
+                lv = 16UL;
             sv = (u_short) (UBRR0H) << 8 | UBRR0L;
+        }
 #else
         sv = UBRR;
+        lv = 16UL;
 #endif
-        *lvp = NutGetCpuClock() / (16UL * (u_long) (sv + 1));
+        *lvp = NutGetCpuClock() / (lv * (u_long) (sv + 1));
         break;
 
     case UART_SETDATABITS:
@@ -625,7 +656,6 @@ int UartAvrInit(NUTDEVICE * dev)
      */
     dcb = dev->dev_dcb;
     memset(dcb, 0, sizeof(UARTDCB));
-    dcb->dcb_baudSelect = 7;
     dcb->dcb_modeflags = UART_MF_NOBUFFER;
 
     /*
@@ -654,8 +684,8 @@ int UartAvrInit(NUTDEVICE * dev)
     return 0;
 }
 
-/*! 
- * \brief Read from device. 
+/*!
+ * \brief Read from device.
  */
 int UartAvrRead(NUTFILE * fp, void *buffer, int size)
 {
@@ -713,8 +743,8 @@ int UartAvrRead(NUTFILE * fp, void *buffer, int size)
     return rc;
 }
 
-/*! 
- * \brief Write to device. 
+/*!
+ * \brief Write to device.
  */
 int UartAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 {
@@ -790,7 +820,7 @@ int UartAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 }
 
 
-/*! 
+/*!
  * \brief Open a device or file.
  */
 NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
@@ -814,8 +844,8 @@ NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
- * \brief Close a device or file. 
+/*!
+ * \brief Close a device or file.
  */
 int UartAvrClose(NUTFILE * fp)
 {
@@ -824,7 +854,7 @@ int UartAvrClose(NUTFILE * fp)
     return 0;
 }
 
-/*! 
+/*!
  * \brief Request file size.
  */
 long UartAvrSize(NUTFILE * fp)
