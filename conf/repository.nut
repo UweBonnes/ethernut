@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.11  2005/10/07 22:10:29  hwmaier
+-- Added support for PLATFORM macro
+--
 -- Revision 1.10  2005/07/26 16:14:21  haraldkipp
 -- Better title for architecture.
 --
@@ -76,6 +79,26 @@ arm_ld_choice = { " ", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
 
 repository =
 {
+    {
+        name = "nuthardware",
+        brief = "Hardware Platform",
+        description = "Info about the target hadware",
+        options =
+        {
+            {
+                macro = "PLATFORM",
+                brief = "Platform Macro",
+                description = "String constant identifying the target hardware used.\n\n"..
+                      "Examples are ETHERNUT1, ETHERNUT2 etc. "..
+                      "This string constant is passed as a macro definition to "..
+                      "the Makefiles and allows conditional compilation "..
+                      "depending on the hardware used.",
+                flavor = "booldata",
+                file = "include/cfg/arch.h",
+                makedefs = { "PLATFORM", "HWDEF+=-D$(PLATFORM)" }
+            }
+        }
+    },
     {
         name = "nuttools",
         brief = "Tools",
