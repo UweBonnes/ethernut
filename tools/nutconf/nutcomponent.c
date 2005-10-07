@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.21  2005/10/07 22:11:59  hwmaier
+ * Changed LoadComponents to parse options in root level.
+ * Added bld_dir parameter to CreateSampleDirectory.
+ *
  * Revision 1.20  2005/09/07 16:24:23  christianwelzel
  * Changed handling of default parameters. Nutconf now creates all default
  * parameter defines within header files.
@@ -344,8 +348,8 @@ char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, s
 {
     /* Lua expects the named key into the table on top of the stack. */
     lua_pushstring(ls, name);
-    /* This puts the value of the named table entry on top of the stack. 
-       Note, that we have to adjust the index because we pushed the key 
+    /* This puts the value of the named table entry on top of the stack.
+       Note, that we have to adjust the index because we pushed the key
        on top. */
     lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
     /* Make sure that this is a string. */
@@ -375,7 +379,7 @@ char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, s
  * \param idx  Stack position of the table.
  * \param name Name of the table item.
  *
- * \return Pointer to an array of string pointers to the retrieved values 
+ * \return Pointer to an array of string pointers to the retrieved values
  *         or NULL, if there is no table item with the specified name.
  *         The string buffers as well as the array itself are allocated
  *         from heap.
@@ -458,7 +462,7 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
     lua_pushstring(ls, TKN_OPTIONS);
     lua_gettable(ls, -2);
 
-    /* 
+    /*
      * Now the option table should be on top of the stack.
      */
     if (lua_istable(ls, -1)) {
@@ -499,7 +503,7 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                 opts->nco_type = GetStringByNameFromTable(ls, -1, TKN_TYPE, NULL, 0);
                 /* Retrieve the option's data type. */
                 opts->nco_ctype = GetStringByNameFromTable(ls, -1, TKN_CTYPE, NULL, 0);
-                /* Retrieve the name of the file to store the option, 
+                /* Retrieve the name of the file to store the option,
                    typically a C header file. */
                 opts->nco_file = GetStringByNameFromTable(ls, -1, TKN_FILE, NULL, 0);
                 /* Retrieve possible choices of the option's value. */
@@ -522,10 +526,10 @@ void LoadOptions(lua_State * ls, NUTCOMPONENT * root, NUTCOMPONENT * compo)
     NUTCOMPONENT *subc;
     char *name;
 
-    
+
     while (compo) {
-        /* 
-         * Push the component array with the given name on top of the 
+        /*
+         * Push the component array with the given name on top of the
          * Lua stack and make sure we got a valid result.
          */
         lua_getglobal(ls, compo->nc_name);
@@ -543,10 +547,10 @@ void LoadOptions(lua_State * ls, NUTCOMPONENT * root, NUTCOMPONENT * compo)
              * to the stack.
              */
             while (lua_next(ls, -2)) {
-                /* 
+                /*
                  * Now the next value is on top and its key (array index) is below. Components
                  * are specified without a named index. Thus, they have a numeric index.
-                 */ 
+                 */
                 if (lua_isnumber(ls, -2)) {
                     name = GetStringByNameFromTable(ls, -1, TKN_NAME, NULL, 0);
                     if (name) {
@@ -606,7 +610,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
         return -1;
     }
 
-    /* 
+    /*
      * Let the interpreter load and parse the script file. In case of
      * an error, the error text is available on top of the Lua stack.
      */
@@ -624,7 +628,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
         return -1;
     }
 
-    /* 
+    /*
      * The component is defined by a Lua array, which name is the
      * name of the parent component. Push this array on top of the
      * Lua stack and make sure we got an array.
@@ -647,10 +651,10 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
      * to the stack.
      */
     while (lua_next(ls, -2)) {
-        /* 
+        /*
          * Now the next value is on top and its key (array index) is below. Components
          * are specified without a named index. Thus, they have a numeric index.
-         */ 
+         */
         if (lua_isnumber(ls, -2)) {
 
             /*
@@ -903,7 +907,7 @@ NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo)
     root = calloc(1, sizeof(NUTCOMPONENT));
     root->nc_name = strdup("repository");
 
-    /* 
+    /*
      * Collect the components first. As a result we will have a tree
      * structure of all components.
      */
@@ -915,10 +919,10 @@ NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo)
 
     /*
      * Now walk along the component tree and collect the options of
-     * all components.
+     * all components incl. root itself.
      */
     if(root) {
-        LoadOptions(ls, root, root->nc_child);
+        LoadOptions(ls, root, root);
     }
     return root;
 }
@@ -1232,7 +1236,7 @@ int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
  * \param fp Pointer to an opened file.
  * \param compo Pointer to a library component.
  *
- * \todo This is not yet finished. All 'name=value' pairs should 
+ * \todo This is not yet finished. All 'name=value' pairs should
  *       be collected and combined.
  */
 void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
@@ -1240,8 +1244,8 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
     NUTCOMPONENTOPTION *opts;
     int i;
 
-    /* 
-     * Loop through all components. 
+    /*
+     * Loop through all components.
      */
     while (compo) {
         /* If this component is enabled and contains Makefile macros,
@@ -1253,7 +1257,7 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
         }
 
         /*
-         * Loop through all options of this component. 
+         * Loop through all options of this component.
          */
         opts = compo->nc_opts;
         while (opts) {
@@ -1319,7 +1323,7 @@ void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
  * \param ifirst_dir Optional include directory. Header files will be included first
  *                   and thus may replace standard Nut/OS headers with the same name.
  * \param ilast_dir  Optional include directory. Header files will be included last.
- *                   This parameter is typically used to specify the compilers runtime 
+ *                   This parameter is typically used to specify the compilers runtime
  *                   library. Header files with the same name as Nut/OS standard headers
  *                   are ignored.
  * \param ins_dir    Final target directory of the Nut/OS libraries. Will be used with
@@ -1330,7 +1334,7 @@ void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
  * \todo This function's parameter list is a bit overloaded. Either split the function
  *       or use a parameter structure.
  */
-int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext, 
+int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext,
                      const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
 {
     FILE *fp;
@@ -1514,7 +1518,7 @@ NUTHEADERFILE *GetHeaderFileEntry(NUTHEADERFILE **nh_root, char *filename)
                 nhf->nhf_path = filename;
             }
         }
-    } 
+    }
     /* First entry, create list root. */
     else {
         nhf = calloc(1, sizeof(NUTHEADERFILE));
@@ -1548,7 +1552,7 @@ NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * o
                 nhm->nhm_value = opts->nco_value;
             }
         }
-    } 
+    }
 
     /* First entry of this header file. */
     else {
@@ -1561,7 +1565,7 @@ NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * o
 }
 
 /*!
- * \brief Create a linked list of header files and associated macros. 
+ * \brief Create a linked list of header files and associated macros.
  */
 NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
 {
@@ -1574,8 +1578,8 @@ NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
                 if((opts->nco_enabled && opts->nco_active) || opts->nco_default != NULL) {
                     /* Do not save empty values. */
                     if (opts->nco_value == NULL) {
-                        if (opts->nco_flavor && 
-                                 (strcasecmp(opts->nco_flavor, "boolean") == 0 || 
+                        if (opts->nco_flavor &&
+                                 (strcasecmp(opts->nco_flavor, "boolean") == 0 ||
                                  strcasecmp(opts->nco_flavor, "booldata") == 0)) {
                             nh_root = AddHeaderFileMacro(nh_root, opts);
                         }
@@ -1602,7 +1606,7 @@ NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
 }
 
 /*!
- * \brief Deletes a linked list of header files and associated macros. 
+ * \brief Deletes a linked list of header files and associated macros.
  */
 void ReleaseHeaderList(NUTHEADERFILE *nh_root)
 {
@@ -1631,7 +1635,7 @@ void ReleaseHeaderList(NUTHEADERFILE *nh_root)
  *
  * \param root    Pointer to the root component.
  * \param bld_dir Pathname of the top build directory.
- * 
+ *
  * \return 0 on success, otherwise return -1.
  *
  * \todo Release allocated heap space.
@@ -1705,10 +1709,11 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
  * \brief Create build directory for Nut/OS applications.
  *
  * This routine creates Makedefs and Makerules in the specified directory.
- * It will also create the NutConf.mk and UserConf.mk. Except for UserConf.mk, 
+ * It will also create the NutConf.mk and UserConf.mk. Except for UserConf.mk,
  * any existing file will be replaced.
  *
  * \param root       Pointer to the root component.
+ * \param bld_dir    Pathname of the top build directory.
  * \param app_dir    Pathname of the application build directory.
  * \param src_dir    Pathname of the top source directory.
  * \param lib_dir    Pathname of the directory containing the libraries.
@@ -1717,13 +1722,13 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
  * \param ifirst_dir Optional include directory. Header files will be included first
  *                   and thus may replace standard Nut/OS headers with the same name.
  * \param ilast_dir  Optional include directory. Header files will be included last.
- *                   This parameter is typically used to specify the compilers runtime 
+ *                   This parameter is typically used to specify the compilers runtime
  *                   library. Header files with the same name as Nut/OS standard headers
  *                   are ignored.
  *
  * \return 0 on success, otherwise return -1.
  */
-int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *src_dir, 
+int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *app_dir, const char *src_dir,
                           const char *lib_dir, const char *mak_ext, const char *prg_ext,
                           const char *ifirst_dir, const char *ilast_dir)
 {
@@ -1771,7 +1776,14 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
 				fprintf(fp, "top_srcdir = ../../%s\n", src_dir);
 			else
 				fprintf(fp, "top_srcdir = ../..\n");
-			
+
+            if (bld_dir[0] == '/' || bld_dir[1] == ':')
+                fprintf(fp, "top_blddir = %s\n\n", bld_dir);
+            else if (strlen(bld_dir))
+                fprintf(fp, "top_blddir = ../../%s\n", bld_dir);
+            else
+                fprintf(fp, "top_blddir = ../..\n");
+
 			//fprintf(fp, "top_appdir = %s\n", app_dir);
 			if (app_dir[0] == '/' || app_dir[1] == ':')
 				fprintf(fp, "top_appdir = %s\n", app_dir);
@@ -1783,14 +1795,16 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *
 			//fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
 			if (lib_dir[0] == '/' || lib_dir[1] == ':')
 				fprintf(fp, "LIBDIR = %s\n", lib_dir);
-			else if (strlen(app_dir))
+			else if (strlen(lib_dir))
 				fprintf(fp, "LIBDIR = ../../%s\n", lib_dir);
 			else
 				fprintf(fp, "LIBDIR = ../..\n");
 
+            fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
             if(ifirst_dir && *ifirst_dir) {
-                fprintf(fp, "INCFIRST = $(INCPRE)%s\n", ifirst_dir);
+                fprintf(fp, " $(INCPRE)%s", ifirst_dir);
             }
+            fputc('\n', fp);
             if(ilast_dir && *ilast_dir) {
                 fprintf(fp, "INCLAST = $(INCPRE)%s\n", ilast_dir);
             }
@@ -1934,7 +1948,7 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
         printf("Copying %s\n", src_dir);
     }
     while((dire = readdir(dir)) != NULL && rc == 0) {
-        if(dire->d_name[0] == '.' || 
+        if(dire->d_name[0] == '.' ||
            stricmp(dire->d_name, "cvs") == 0 ||
            strnicmp(dire->d_name, "Makeburn", 8) == 0 ||
            strnicmp(dire->d_name, "Makedefs", 8) == 0 ||
@@ -2102,14 +2116,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-apptree") == 0) {
-                    ifirst_dir = realloc(ifirst_dir, strlen(ifirst_dir) + strlen(bld_dir) + 10);
-                    if (strlen(ifirst_dir)) {
-                        strcat(ifirst_dir, ";");
-                    }
-                    strcat(ifirst_dir, bld_dir);
-                    strcat(ifirst_dir, "/include");
-
-                    if (CreateSampleDirectory(root, app_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
+                    if (CreateSampleDirectory(root, bld_dir, app_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }
