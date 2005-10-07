@@ -4,8 +4,7 @@
  *
  * This driver has been closely modeled after the existing Nut/OS SJA1000
  * driver and the buffer management and some code snippets have been borrowed
- * from sja1000.c.  We acknowledge the contribution of Ole Reinhard &
- * Kernelconcepts.
+ * from sja1000.c.
  *
  * Portions Copyright (C) 2004 by Ole Reinhardt <ole.reinhardt@kernelconcepts.de>,
  * Kernelconcepts http://www.kernelconcepts.de
@@ -48,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/07 22:02:33  hwmaier
+ * no message
+ *
  * Revision 1.1  2005/10/04 06:00:59  hwmaier
  * Added AT90CAN128 CAN driver
  *
@@ -62,7 +64,6 @@
 
 #include <cfg/os.h>
 #include <string.h>
-#include <stdio.h>
 #include <sys/event.h>
 #include <sys/heap.h>
 #include <sys/atom.h>
@@ -77,7 +78,20 @@
  *****************************************************************************/
 
 #define MAX_NO_MOB 15
-#define CAN_ILLEGAL_MOB (-1)
+
+/**
+ * CAN result codes
+ *
+ * @ingroup can
+ */
+enum CAN_RESULT
+{
+   CAN_SUCCESS       =  0,   ///< Successful operation
+   CAN_TXBUF_FULL    = -1,   ///< All TX message objects busy
+   CAN_RXBUF_EMPTY   = -2,   ///< All RX message objects busy
+   CAN_ILLEGAL_MOB   = -3,   ///< Message object index out of range
+   CAN_INVALID_SPEED = -4,   ///< Invalid baud rate parameter
+};
 
 #define RX_MOB 8
 
@@ -248,8 +262,8 @@ int8_t AtCanGetFreeMob(void)
  * @return Result code. See @ref CAN_RESULT
  */
 int8_t AtCanEnableMsgObj(uint8_t mob,
-                          uint32_t id, int8_t idIsExt, int8_t idRemTag,
-                          uint32_t mask, int8_t maskIsExt, int8_t maskRemTag)
+                         uint32_t id, int8_t idIsExt, int8_t idRemTag,
+                         uint32_t mask, int8_t maskIsExt, int8_t maskRemTag)
 {
     if (mob < MAX_NO_MOB)
     {
@@ -289,7 +303,7 @@ int8_t AtCanEnableMsgObj(uint8_t mob,
             CANIDM4 |= _BV(RTRMSK);
         // Enable reception
         CANCDMOB |= _BV(CONMOB1);
-        return CAN_OK;
+        return CAN_SUCCESS;
     }
     else
         return CAN_ILLEGAL_MOB;
@@ -316,8 +330,8 @@ int8_t AtCanEnableMsgObj(uint8_t mob,
  * @return Result code. See @ref CAN_RESULT
  */
 int8_t AtCanEnableRx(uint8_t noOfMsgObjs,
-                      uint32_t id, int8_t idIsExt, int8_t idRemTag,
-                      uint32_t mask, int8_t maskIsExt, int8_t maskRemTag)
+                     uint32_t id, int8_t idIsExt, int8_t idRemTag,
+                     uint32_t mask, int8_t maskIsExt, int8_t maskRemTag)
 {
     int8_t i;
     int8_t result;
@@ -325,10 +339,10 @@ int8_t AtCanEnableRx(uint8_t noOfMsgObjs,
     for (i = 0; i < noOfMsgObjs; i++)
     {
         result = AtCanEnableMsgObj(i, id, idIsExt, idRemTag, mask, maskIsExt, maskRemTag);
-        if (result != CAN_OK)
+        if (result != CAN_SUCCESS)
             return result;
     }
-    return CAN_OK;
+    return CAN_SUCCESS;
 }
 
 
@@ -372,7 +386,7 @@ int8_t AtCanSendMsg(CANFRAME *frame)
     // Enable transmission
     CANCDMOB |= _BV(CONMOB0);
 
-    return CAN_OK;
+    return CAN_SUCCESS;
 }
 
 
@@ -450,14 +464,13 @@ static void AtCanInterrupt(void *arg)
         }
         else
         {
-printf("OTHER\n");
             CANSTMOB = CANSTMOB & 0x80; // Data sheet requires r/m/w cycle on whole register
         }
     }
     else
     {
-printf("genralOTHER\n");
         // General CAN interrupt
+        // //ttt   TODO: Implement it!
         //ci->can_errors++;
         //ci->can_overruns++;
     }
@@ -553,7 +566,7 @@ void AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
 void AtCanSetAccCode(NUTDEVICE * dev, u_char * ac)
 {
     memcpy(((IFCAN *) (dev->dev_icb))->can_acc_code, ac, 4);
-    AtCanEnableRx(RX_MOB, 0, 0, 0, 0, 0, 0); ///ttt
+    AtCanEnableRx(RX_MOB, 0, 0, 0, 0, 0, 0); //ttt   TODO: Implement it!
 }
 
 
@@ -566,7 +579,7 @@ void AtCanSetAccCode(NUTDEVICE * dev, u_char * ac)
 void AtCanSetAccMask(NUTDEVICE * dev, u_char * am)
 {
     memcpy(((IFCAN *) (dev->dev_icb))->can_acc_mask, am, 4);
-    AtCanEnableRx(RX_MOB, 0, 0, 0, 0, 0, 0); //ttt
+    AtCanEnableRx(RX_MOB, 0, 0, 0, 0, 0, 0); //ttt   TODO: Implement it!
 }
 
 
@@ -712,10 +725,10 @@ int AtCanInit(NUTDEVICE * dev)
  * acceptance mask, acceptance code and callback handlers.
  */
 IFCAN ifc_atcan = {
-    CAN_IF_2B,                  /*!< \brief Interface type. */
-    CAN_SPEED_125K,             /*!< \brief Baudrate of device. */
-    {0xFF, 0xFF, 0xFF, 0xFF},   /*!< \brief Acceptance mask */
-    {0x00, 0x00, 0x00, 0x00},   /*!< \brief Acceptance code */
+    CAN_IF_2B,                 /*!< \brief Interface type. */
+    CAN_SPEED_125K,            /*!< \brief Baudrate of device. */
+    {0xFF, 0xFF, 0xFF, 0xFF},  /*!< \brief Acceptance mask */
+    {0x00, 0x00, 0x00, 0x00},  /*!< \brief Acceptance code */
     AtCanRxAvail,              /*!< \brief Data in RxBuffer available? */
     AtCanTxFree,               /*!< \brief TxBuffer free? */
     AtCanInput,                /*!< \brief CAN Input routine */
@@ -738,9 +751,9 @@ NUTDEVICE devAtCan = {
     IFTYP_CAN,                  /*!< Type of device. */
     0,                          /*!< Base address. */
     0,                          /*!< First interrupt number. */
-    &ifc_atcan,                /*!< Interface control block. */
-    &dcb_atcan,                /*!< Driver control block. */
-    AtCanInit,                 /*!< Driver initialization routine. */
+    &ifc_atcan,                 /*!< Interface control block. */
+    &dcb_atcan,                 /*!< Driver control block. */
+    AtCanInit,                  /*!< Driver initialization routine. */
     0,                          /*!< Driver specific control function. */
     0,                          /*!< Read from device. */
     0,                          /*!< Write to device. */
