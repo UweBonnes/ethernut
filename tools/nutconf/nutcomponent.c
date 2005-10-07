@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2005/10/07 22:36:00  hwmaier
+ * Removed generation of -DETHERNUT2 entry for UserConf.mk as this can now accomplished by the PLATFORM macro.
+ *
  * Revision 1.21  2005/10/07 22:11:59  hwmaier
  * Changed LoadComponents to parse options in root level.
  * Added bld_dir parameter to CreateSampleDirectory.
@@ -1759,7 +1762,6 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *
             if (fp) {
                 fprintf(fp, "# Automatically created on %s", asctime(ltime));
                 fprintf(fp, "#\n# You can use this file to modify values in NutConf.mk\n#\n\n");
-                fprintf(fp, "HWDEF += -DETHERNUT2\n\n");
                 fclose(fp);
             }
         }
