@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.13  2005/10/07 22:09:23  hwmaier
+-- Changed HWDEF= to HWDEF+= so more defs can be added to this macros from other LUA scripts.
+--
 -- Revision 1.12  2005/10/04 05:47:26  hwmaier
 -- Added CAN driver for AT90CAN128
 --
@@ -99,7 +102,7 @@ nutarch =
                 },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU=$(MCU_ATMEGA103)", "HWDEF=-D__HARVARD_ARCH__" }
+                makedefs = { "MCU=$(MCU_ATMEGA103)", "HWDEF+=-D__HARVARD_ARCH__" }
             },
             {
                 macro = "MCU_ATMEGA128",
@@ -119,7 +122,7 @@ nutarch =
                 },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF=-D__HARVARD_ARCH__" }
+                makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF+=-D__HARVARD_ARCH__" }
             },
             {
                 macro = "MCU_AT90CAN128",
@@ -145,7 +148,7 @@ nutarch =
                     "HW_UART_AVR",
                     "HW_CAN_AVR"
                 },
-                makedefs = { "MCU=at90can128", "HWDEF=-D__HARVARD_ARCH__" },
+                makedefs = { "MCU=at90can128", "HWDEF+=-D__HARVARD_ARCH__" },
                 options =
                 {
                 }
