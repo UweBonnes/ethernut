@@ -31,11 +31,11 @@
  * For additional information see http://www.ethernut.de/
  *
  */
- 
+
 /*!
  * \file include/dev/sja1000.h
  * \brief Header for SJA1000 CAN-Bus controller driver
- * 
+ *
  *
  * The SJA1000 controller is connected to the memory bus. It's base
  * address and interrupt is set by NutRegisterDevice.
@@ -46,14 +46,14 @@
 /*!
  * \addtogroup xgCanSJA1000
  */
-/*@{*/ 
+/*@{*/
 
 #ifndef _SJA1000_H_
 #define _SJA1000_H_
 
 //Register and bit definitions for the SJA1000
 
-// address and bit definitions for the Mode & Control Register 
+// address and bit definitions for the Mode & Control Register
 #define SJA1000_MODECTRL (*(volatile u_char*) (sja_base+0))
 #define RM_RR_Bit   0x01        // reset mode (request) bit
 
@@ -62,7 +62,7 @@
 #define AFM_Bit     0x08        // acceptance filter mode bit
 #define SM_Bit      0x10        // enter sleep mode bit
 
-// address and bit definitions for the Interrupt Enable & Control Register 
+// address and bit definitions for the Interrupt Enable & Control Register
 #define SJA1000_IEN (*(volatile u_char*) (sja_base+4))      // PeliCAN mode
 #define RIE_Bit     0x01        // receive interrupt enable bit
 #define TIE_Bit     0x02        // transmit interrupt enable bit
@@ -73,7 +73,7 @@
 #define ALIE_Bit    0x40        // arbitration lost interr. enable bit
 #define BEIE_Bit    0x80        // bus error interrupt enable bit
 
-// address and bit definitions for the Command Register 
+// address and bit definitions for the Command Register
 #define SJA1000_CMD (*(volatile u_char*) (sja_base+1))
 #define TR_Bit      0x01        // transmission request bit
 #define AT_Bit      0x02        // abort transmission bit
@@ -81,7 +81,7 @@
 #define CDO_Bit     0x08        // clear data overrun bit
 #define SRR_Bit     0x10        // self reception request bit
 
-// address and bit definitions for the Status Register 
+// address and bit definitions for the Status Register
 #define SJA1000_STATUS (*(volatile u_char*) (sja_base+2))
 #define RBS_Bit     0x01        // receive buffer status bit
 #define DOS_Bit     0x02        // data overrun status bit
@@ -92,7 +92,7 @@
 #define ES_Bit      0x40        // error status bit
 #define BS_Bit      0x80        // bus status bit
 
-// address and bit definitions for the Interrupt Register 
+// address and bit definitions for the Interrupt Register
 #define SJA1000_INT (*(volatile u_char*) (sja_base+3))
 #define RI_Bit      0x01        // receive interrupt bit
 #define TI_Bit      0x02        // transmit interrupt bit
@@ -104,33 +104,33 @@
 #define ALI_Bit     0x40        // arbitration lost interrupt bit
 #define BEI_Bit     0x80        // bus error interrupt bit
 
-// address and bit definitions for the Bus Timing Registers 
+// address and bit definitions for the Bus Timing Registers
 #define SJA1000_BT0 (*(volatile u_char*) (sja_base+6))
 #define SJA1000_BT1 (*(volatile u_char*) (sja_base+7))
 #define SAM_Bit     0x80        // sample mode bit
                                 //   1 == the bus is sampled 3 times
                                 //   0 == the bus is sampled once */
 
-// address and bit definitions for the Output Control Register 
+// address and bit definitions for the Output Control Register
 #define SJA1000_OUTCTRL (*(volatile u_char*) (sja_base+8))
-// OCMODE1, OCMODE0 
+// OCMODE1, OCMODE0
 #define BiPhaseMode 0x00        // bi-phase output mode
 #define NormalMode  0x02        // normal output mode
 #define ClkOutMode  0x03        // clock output mode
-// output pin configuration for TX1 
+// output pin configuration for TX1
 #define OCPOL1_Bit  0x20        // output polarity control bit
 #define Tx1Float    0x00        // configured as float
 #define Tx1PullDn   0x40        // configured as pull-down
 #define Tx1PullUp   0x80        // configured as pull-up
 #define Tx1PshPull  0xC0        // configured as push/pull
-// output configuration for TX0 
+// output configuration for TX0
 #define OCPOLO_Bit  0x04        // output polarity control bit
 #define Tx0Float    0x00        // configured as float
 #define Tx0PullDn   0x08        // configured as pull-down
 #define Tx0PullUp   0x10        // configured as pull-up
 #define Tx0PshPull  0x18        // configured as push/pull
 
-// address definitions of Acceptance Code & Mask Registers 
+// address definitions of Acceptance Code & Mask Registers
 #define SJA1000_AC0 (*(volatile u_char*) (sja_base+16))
 #define SJA1000_AC1 (*(volatile u_char*) (sja_base+17))
 #define SJA1000_AC2 (*(volatile u_char*) (sja_base+18))
@@ -140,7 +140,7 @@
 #define SJA1000_AM2 (*(volatile u_char*) (sja_base+22))
 #define SJA1000_AM3 (*(volatile u_char*) (sja_base+23))
 
-// address definitions of the Rx-Buffer 
+// address definitions of the Rx-Buffer
 #define SJA1000_RxFrameInfo (*(volatile u_char*) (sja_base+16))
 #define SJA1000_Rx1   (*(volatile u_char*) (sja_base+17))
 #define SJA1000_Rx2   (*(volatile u_char*) (sja_base+18))
@@ -155,7 +155,7 @@
 #define SJA1000_Rx11  (*(volatile u_char*) (sja_base+27))
 #define SJA1000_Rx12  (*(volatile u_char*) (sja_base+28))
 
-// address definitions of the Tx-Buffer 
+// address definitions of the Tx-Buffer
 /* write only addresses */
 #define TestReg (*(volatile u_char*) (sja_base+9))
 
@@ -188,7 +188,7 @@
 #define SJA1000_TxRd11 (*(volatile u_char*) (sja_base+107))
 #define SJA1000_TxRd12 (*(volatile u_char*) (sja_base+108))
 
-// address definitions of Other Registers 
+// address definitions of Other Registers
 #define SJA1000_ArbLostCap    (*(volatile u_char*) (sja_base+11))
 #define SJA1000_ErrCodeCap    (*(volatile u_char*) (sja_base+12))
 #define SJA1000_ErrWarnLimit  (*(volatile u_char*) (sja_base+13))
@@ -197,7 +197,7 @@
 #define SJA1000_RxMsgCount    (*(volatile u_char*) (sja_base+29))
 #define SJA1000_RxBufStartAdr (*(volatile u_char*) (sja_base+30))
 
-// address and bit definitions for the Clock Divider Register 
+// address and bit definitions for the Clock Divider Register
 #define SJA1000_CLK_DIV (*(volatile u_char*) (sja_base+31))
 #define DivBy1       0x07       // CLKOUT = oscillator frequency
 #define DivBy2       0x00       // CLKOUT = 1/2 oscillator frequency
@@ -207,14 +207,14 @@
 #define CANMode_Bit  0x80       // CAN mode definition bit
 #define ClkOutMode   0x03       // clock output mode
 
-// output pin configuration for TX1 
+// output pin configuration for TX1
 #define OCPOL1_Bit   0x20       // output polarity control bit
 #define Tx1Float     0x00       // configured as float
 #define Tx1PullDn    0x40       // configured as pull-down
 #define Tx1PullUp    0x80       // configured as pull-up
 #define Tx1PshPull   0xC0       // configured as push/pull
 
-// output pin configuration for TX0 
+// output pin configuration for TX0
 #define OCPOL0_Bit   0x04       // output polarity control bit
 #define Tx0Float     0x00       // configured as float
 #define Tx0PullDn    0x08       // configured as pull-down
@@ -225,7 +225,7 @@
      - bit-rate : 1 MBit/s
      - oscillator frequency : 16 MHz, 0,1%
      - maximum tolerated propagation delay : 623 ns
-     - minimum requested propagation delay : 23 ns 
+     - minimum requested propagation delay : 23 ns
 */
 
 #define Presc_MB_16  0x00       // baud rate prescaler : 1
@@ -233,18 +233,6 @@
 #define TSEG1_MB_16  0x04       // TSEG1 : 5
 #define TSEG2_MB_16  0x10       // TSEG2 : 2
 
-// Some speed constants
-
-#define CAN_SPEED_10K     0     //  5000m       87%
-#define CAN_SPEED_20K     1     //  2500m       87%             Has to be supported by all modules (CANopen)
-#define CAN_SPEED_50K     2     //  1000m       87%
-#define CAN_SPEED_100K    3     //  600m        87%             Not recommended for new applications (CANopen)
-#define CAN_SPEED_125K    4     //  500m        87%
-#define CAN_SPEED_250K    5     //  250m        87%
-#define CAN_SPEED_500K    6     //  100m        87%
-#define CAN_SPEED_800K    7     //  50m         80%
-#define CAN_SPEED_1M      8     //  25m         75%
-#define CAN_SPEED_MANUAL  255   //                              Manual setting with Btr0 & Btr1
 
 // Error codes
 

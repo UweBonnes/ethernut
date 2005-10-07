@@ -47,42 +47,6 @@
 
 #include <dev/can_dev.h>
 
-
-/*
- * CAN Baud rates
- */
-#define CAN_SPEED_10K      0   ///< 10 kbit/s, max. cable length 5000 m
-#define CAN_SPEED_20K      1   ///< 20 kbit/s, max. cable length 2500 m
-#define CAN_SPEED_50K      2   ///< 50 kbit/s, max. cable length 1000 m
-#define CAN_SPEED_100K     3   ///< 100 kbit/s, max. cable length 600 m
-#define CAN_SPEED_125K     4   ///< 125 kbit/s, max. cable length 500 m
-#define CAN_SPEED_250K     5   ///< 250 kbit/s, max. cable length 250 m
-#define CAN_SPEED_500K     6   ///< 500 kbit/s, max. cable length 100 m
-#define CAN_SPEED_800K     7   ///< 800 kbit/s, max. cable length 50 m
-#define CAN_SPEED_1M       8   ///< 1 Mbit/s, max. cable length 25 m
-#define CAN_SPEED_CUSTOM 255
-
-
-/*
- * CAN result codes
- */
-#define errCAN_INVALID_BAUD      7 //ttt ask ole about errCAN...
-#define CAN_OK                0
-#define CAN_ERR               1
-#define CAN_INIT_SPEED_ERR    1
-#define CAN_NOT_INITIATED     1
-#define CAN_NOT_STARTED       1
-#define CAN_TXBUF_FULL        2
-#define CAN_RXBUF_EMPTY       2
-#define CAN_INVALID_SPEED     7  ///< Invalid baud rate parameter
-                                 //
-                                 //
-                                 //
-
-
-                                 //ttt for ole: I suggest neagtive vaules
-//ttt for ole: I suggest continuous numbers
-
 extern NUTDEVICE devAtCan;
 
 #endif
