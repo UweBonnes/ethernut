@@ -35,13 +35,16 @@
 /*!
  * \file dev/can_dev.c
  * \brief Driver for CAN-Bus devices
- * 
+ *
  *
  */
 
 
 /*
  * $Log$
+ * Revision 1.5  2005/10/07 21:38:44  hwmaier
+ * CAN_SetSpeed function added.
+ *
  * Revision 1.4  2004/08/25 15:45:18  olereinhardt
  * Added function to set acceptance filter
  *
@@ -70,12 +73,17 @@
 #include <sys/device.h>
 #include <dev/can_dev.h>
 
+
+u_char CAN_SetSpeed(NUTDEVICE *dev, u_long baudrate)
+{
+    return (((IFCAN *)(dev->dev_icb))->can_set_baud)(dev, baudrate);
+}
+
 void CAN_SetFilter(NUTDEVICE *dev, u_char *ac, u_char *am)
 {
     (((IFCAN *)(dev->dev_icb))->can_set_ac)(dev, ac);
     (((IFCAN *)(dev->dev_icb))->can_set_am)(dev, am);
 }
-
 
 void CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
@@ -124,3 +132,4 @@ void keep_icc_happy(void)
 
 #endif
 /*@}*/
+
