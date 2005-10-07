@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.13  2005/10/07 22:12:28  hwmaier
+ * Added bld_dir parameter to CreateSampleDirectory.
+ *
  * Revision 1.12  2005/08/14 16:10:18  christianwelzel
  * Avoid compiler warnings under cygwin.
  *
@@ -197,8 +200,8 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
                     fprintf(fp, "%s = \"%s\"\n", opts->nco_name, opts->nco_value);
                 }
                 /* Do not save empty values. */
-                else if (opts->nco_flavor && 
-                         (strcasecmp(opts->nco_flavor, "boolean") == 0 || 
+                else if (opts->nco_flavor &&
+                         (strcasecmp(opts->nco_flavor, "boolean") == 0 ||
                          strcasecmp(opts->nco_flavor, "booldata") == 0)) {
                     fprintf(fp, "%s = \"\"\n", opts->nco_name);
                 }
@@ -529,7 +532,7 @@ wxString CNutConfDoc::GetInstallDir()
 bool CNutConfDoc::GenerateBuildTree()
 {
     CSettings *cfg = wxGetApp().GetSettings();
-    
+
     wxBusyCursor wait;
 
     wxString ins_dir(cfg->m_lib_dir);
@@ -537,8 +540,8 @@ bool CNutConfDoc::GenerateBuildTree()
         ins_dir = cfg->m_buildpath + wxT("/lib");
     }
     wxLogMessage("Creating Makefiles for %s in %s", cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
-    if(CreateMakeFiles(m_root, cfg->m_buildpath.c_str(), cfg->m_source_dir.c_str(), 
-                       cfg->m_platform.c_str(), cfg->m_firstidir.c_str(), cfg->m_lastidir.c_str(), 
+    if(CreateMakeFiles(m_root, cfg->m_buildpath.c_str(), cfg->m_source_dir.c_str(),
+                       cfg->m_platform.c_str(), cfg->m_firstidir.c_str(), cfg->m_lastidir.c_str(),
                        ins_dir.c_str())) {
         return false;
     }
@@ -554,7 +557,7 @@ bool CNutConfDoc::GenerateBuildTree()
 class CDirCopyTraverser : public wxDirTraverser
 {
 public:
-    CDirCopyTraverser(wxString source, wxString target) 
+    CDirCopyTraverser(wxString source, wxString target)
     : m_source(source)
     , m_target(target)
     {
@@ -591,7 +594,7 @@ private:
 class CDirIccAvrProjectTraverser : public wxDirTraverser
 {
 public:
-    CDirIccAvrProjectTraverser(wxString source, wxString target) 
+    CDirIccAvrProjectTraverser(wxString source, wxString target)
     : m_source(source)
     , m_target(target)
     {
@@ -721,7 +724,7 @@ private:
 bool CNutConfDoc::GenerateApplicationTree()
 {
     CSettings *cfg = wxGetApp().GetSettings();
-    
+
     wxBusyCursor wait;
 
     wxString src_dir = cfg->m_source_dir + wxT("/app");
@@ -745,12 +748,9 @@ bool CNutConfDoc::GenerateApplicationTree()
     if(lib_dir.IsEmpty()) {
         lib_dir = cfg->m_buildpath + "/lib";
     }
-    if(cfg_inc.IsEmpty()) {
-        cfg_inc = cfg->m_buildpath + "/include";
-    }
-    if(CreateSampleDirectory(m_root, cfg->m_app_dir.c_str(), cfg->m_source_dir.c_str(), 
+    if(CreateSampleDirectory(m_root, cfg->m_buildpath.c_str(), cfg->m_app_dir.c_str(), cfg->m_source_dir.c_str(),
                              lib_dir.c_str(), cfg->m_platform.c_str(), cfg->m_programmer.c_str(),
-                             cfg_inc, cfg->m_lastidir.c_str())) {
+                             cfg->m_firstidir.c_str(), cfg->m_lastidir.c_str())) {
         return false;
     }
     wxLogMessage("OK");

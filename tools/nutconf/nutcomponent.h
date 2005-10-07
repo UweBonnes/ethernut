@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2005/10/07 22:12:28  hwmaier
+ * Added bld_dir parameter to CreateSampleDirectory.
+ *
  * Revision 1.7  2005/07/26 15:52:15  haraldkipp
  * Default values will not be stored in conf files
  *
@@ -190,10 +193,10 @@ extern void CloseRepository(NUTREPOSITORY *repo);
 
 extern int RefreshComponents(NUTCOMPONENT *root);
 
-extern int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext, 
+extern int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext,
                      const char *ifirst_dir, const char *ilast_dir, const char *ins_dir);
 extern int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir);
-extern int CreateSampleDirectory(NUTCOMPONENT * root, const char *app_dir, const char *src_dir, 
+extern int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *app_dir, const char *src_dir,
                                  const char *lib_dir, const char *mak_ext, const char *prg_ext,
                                  const char *ifirst_dir, const char *ilast_dir);
 
