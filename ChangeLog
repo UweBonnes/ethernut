@@ -1,4 +1,45 @@
-$Id: ChangeLog,v 1.273 2005/10/04 06:11:40 hwmaier Exp $
+$Id: ChangeLog,v 1.274 2005/10/07 23:03:29 hwmaier Exp $
+
+2005-10-08 Henrik Maier  <henrik@proconx.com>
+
+        * uartavr.c, uartavr.h: Obsolete dcb_baudSelect removed.
+
+        * uartavr.c: Support for double speed (U2X) added
+        (using same method as in usartavr.c)
+
+        * arch/avr/dev/debug1.c, arch/avr/dev/twi.c, sys/thread.h,
+        arch/avr/dev/usartavr.c, arch/avr/dev/usart1avr.c:
+        Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to
+        support also AT90CAN128 MCU
+
+        * include/dev/sja1000.h, include/dev/can_dev.h: include/dev/atcan.h:
+        Moved CAN baudrate constants to can_dev.h as they are now considered
+        generic across different CAN hardware.
+        CAN_SPEED_MANUAL renamed to CAN_SPEED_CUSTOM.
+
+        * dev/can_dev.c, include/dev/can_dev.h: CAN_SetSpeed function added.
+
+        * tools/nutconf/nutcomponent.c, tools/nutconf/nutcomponent.h,
+        tools/nutconf/nutconfdoc.cpp: Changed method for inclusion of
+        header files for the samples; previous method did not add
+        the build dir path correctly and potentially wrong header files
+        were included. Added bld_dir parameter to CreateSampleDirectory.
+
+        * tools/nutconf/nutcomponent.c: Changed LoadComponents to parse
+        options in root level. Removed generation of -DETHERNUT2 entry
+        for UserConf.mk as this can now accomplished by the PLATFORM macro.
+
+        * arch/avr/include/irqreg.h, include/dev/irqreg_avr.h:
+        Removed test for __ATmega64__
+
+        * conf.arch.nut: Changed HWDEF= to HWDEF+= so more defs can be added
+        to this macros from other LUA scripts.
+
+        * conf/repository.nut: Added support for PLATFORM macro
+
+        * ethernut*.conf, charon2.conf, arthernut1.conf, mmnet02.conf,
+        stk501.conf: PLATFORM entry added.
+
 
 2005-10-04 Henrik Maier  <henrik@proconx.com>
 
