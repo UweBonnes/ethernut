@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/07 21:52:31  hwmaier
+ * Removed test for __ATmega64__
+ *
  * Revision 1.2  2005/10/04 05:24:24  hwmaier
  * Updated interrupt hooks to reflect new CAN interrupt names of avr-lib 1.2.3
  *
@@ -73,7 +76,7 @@ extern IRQ_HANDLER sig_UART0_RECV;
 extern IRQ_HANDLER sig_ADC;
 extern IRQ_HANDLER sig_EEPROM_READY;
 extern IRQ_HANDLER sig_COMPARATOR;
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega64__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__)
 extern IRQ_HANDLER sig_OUTPUT_COMPARE1C;
 extern IRQ_HANDLER sig_INPUT_CAPTURE3;
 extern IRQ_HANDLER sig_OUTPUT_COMPARE3A;
