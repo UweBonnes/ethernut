@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2005/10/07 21:53:15  hwmaier
+ * Obsolete dcb_baudSelect removed
+ *
  * Revision 1.6  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -133,11 +136,6 @@ typedef struct _UARTDCB UARTDCB;
  * \brief UART device control block structure.
  */
 struct _UARTDCB {
-    /*! \brief Baudrate selector.
-     *
-     * See the ATmega datasheet for further details.
-     */
-    u_char dcb_baudSelect;
 
     /*! \brief Read timeout.
      */
