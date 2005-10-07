@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/10/07 21:48:25  hwmaier
+ * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
+ *
  * Revision 1.10  2005/10/04 05:25:17  hwmaier
  * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
  *
@@ -164,7 +167,7 @@ extern "C" {
     extern void NutThreadInit(void);
 #endif
 
-#if defined(__GNUC__) && defined (__AVR_ATmega128__)
+#if defined(__GNUC__) && defined (__AVR_ENHANCED__)
     extern void NutThreadSetSleepMode(u_char mode);
 #endif
 
