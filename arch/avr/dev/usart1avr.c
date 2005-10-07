@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * The 9-bit communication had been contributed by Brett Abbott, 
+ * The 9-bit communication had been contributed by Brett Abbott,
  * Digital Telemetry Limited.
  *
  * Dave Smart contributed the synchronous mode support.
@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/07 22:05:00  hwmaier
+ * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -137,7 +140,7 @@
 #endif /* UART1_HDX_BIT */
 
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 
 /*
  * Local function prototypes.
@@ -204,7 +207,7 @@ static USARTDCB dcb_usart1 = {
 /*!
  * \brief USART1 device information structure.
  *
- * An application must pass a pointer to this structure to 
+ * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using the serial communication
  * driver of the AVR's on-chip USART1.
  *

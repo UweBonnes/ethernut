@@ -29,7 +29,7 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- * The 9-bit communication had been contributed by Brett Abbott, 
+ * The 9-bit communication had been contributed by Brett Abbott,
  * Digital Telemetry Limited.
  *
  * Dave Smart contributed the synchronous mode support.
@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/07 22:05:00  hwmaier
+ * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -133,7 +136,7 @@ static ureg_t tx_aframe;
 /*!
  * \brief Enables half duplex control if not equal zero.
  *
- * This variable exists only if the hardware configuration defines a 
+ * This variable exists only if the hardware configuration defines a
  * port bit to switch between receive and transmit mode.
  */
 static ureg_t hdx_control;
@@ -143,7 +146,7 @@ static ureg_t hdx_control;
 /*!
  * \brief Enables RTS control if not equal zero.
  *
- * This variable exists only if the hardware configuration defines a 
+ * This variable exists only if the hardware configuration defines a
  * port bit to control the RTS signal.
  */
 static ureg_t rts_control;
@@ -153,7 +156,7 @@ static ureg_t rts_control;
 /*!
  * \brief Enables CTS sense if not equal zero.
  *
- * This variable exists only if the hardware configuration defines a 
+ * This variable exists only if the hardware configuration defines a
  * port bit to sense the CTS signal.
  */
 static ureg_t cts_sense;
@@ -167,7 +170,7 @@ static ureg_t cts_sense;
  * Typical line drivers negate the signal, thus driving our port
  * low when CTS is active.
  *
- * This routine exists only if the hardware configuration defines a 
+ * This routine exists only if the hardware configuration defines a
  * port bit to sense the CTS signal.
  */
 static void AvrUsartCts(void *arg)
@@ -186,7 +189,7 @@ static void AvrUsartCts(void *arg)
  * Used with half duplex communication to switch from tranmit to receive
  * mode after the last character has been transmitted.
  *
- * This routine exists only if the hardware configuration defines a 
+ * This routine exists only if the hardware configuration defines a
  * port bit to switch between receive and transmit mode.
  *
  * \param arg Pointer to the transmitter ring buffer.
@@ -213,14 +216,14 @@ static void AvrUsartTxComplete(void *arg)
  */
 #ifdef USE_USART
 
-SIGNAL( SIG_UART_DATA ) { 
+SIGNAL( SIG_UART_DATA ) {
     register RINGBUF *rbf = &dcb_usart.dcb_tx_rbf;
-    
+
 #else
-    
+
 static void AvrUsartTxEmpty(void *arg) {
     register RINGBUF *rbf = (RINGBUF *) arg;
-        
+
 #endif
 
     register u_char *cp = rbf->rbf_tail;
@@ -228,7 +231,7 @@ static void AvrUsartTxEmpty(void *arg) {
 
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_TXEMPTY);
-#endif	
+#endif
 
 #ifndef UART_NO_SW_FLOWCONTROL
 
@@ -246,12 +249,12 @@ static void AvrUsartTxEmpty(void *arg) {
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
 #ifdef NUTTRACER
         TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_TXEMPTY);
-#endif        
+#endif
         return;
     }
 
     if (flow_control & XOFF_RCVD) {
-        /* 
+        /*
          * If XOFF has been received, we disable the transmit interrupts
          * and return without sending anything.
          */
@@ -262,11 +265,11 @@ static void AvrUsartTxEmpty(void *arg) {
         return;
 	}
 #endif /* UART_NO_SW_FLOWCONTROL */
-    
+
     if (rbf->rbf_cnt) {
 
 #ifdef UART_CTS_BIT
-        /* 
+        /*
          * If CTS has been disabled, we disable the transmit interrupts
          * and return without sending anything.
          */
@@ -280,9 +283,9 @@ static void AvrUsartTxEmpty(void *arg) {
         }
 #endif
         rbf->rbf_cnt--;
-        
+
         /*
-         * The data sheet doesn't exactly tell us, if this bit is retained 
+         * The data sheet doesn't exactly tell us, if this bit is retained
          * or cleared after the character has been sent out. So we do it
          * the save way.
          */
@@ -344,19 +347,19 @@ static void AvrUsartRxComplete(void *arg) {
     register size_t cnt;
     register u_char ch;
 
-        
+
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_ENTER,TRACE_INT_UART_RXCOMPL);
-#endif	
+#endif
 
 #ifdef UART_READMULTIBYTE
     register u_char postEvent = 0;
     do {
 #endif
-      
+
         /*
          * We read the received character as early as possible to avoid overflows
-         * caused by interrupt latency. However, reading the error flags must come 
+         * caused by interrupt latency. However, reading the error flags must come
          * first, because reading the ATmega128 data register clears the status.
          */
         rx_errors |= inb(UCSRnA);
@@ -375,7 +378,7 @@ static void AvrUsartRxComplete(void *arg) {
                 flow_control |= XOFF_RCVD;
 #ifdef NUTTRACER
                 TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
-#endif			
+#endif
                 return;
             }
             /* XON enables transmit interrupts. */
@@ -384,12 +387,12 @@ static void AvrUsartRxComplete(void *arg) {
                 flow_control &= ~XOFF_RCVD;
 #ifdef NUTTRACER
                 TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
-#endif			
+#endif
                 return;
             }
         }
 #endif
-        
+
         /*
          * Check buffer overflow.
          */
@@ -398,7 +401,7 @@ static void AvrUsartRxComplete(void *arg) {
             rx_errors |= _BV(DOR);
 #ifdef NUTTRACER
             TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
-#endif			
+#endif
             return;
         }
 
@@ -411,11 +414,11 @@ static void AvrUsartRxComplete(void *arg) {
             NutEventPostFromIrq(&rbf->rbf_que);
 #endif
         }
-        
+
 #ifndef UART_NO_SW_FLOWCONTROL
 
         /*
-         * Check the high watermark for software handshake. If the number of 
+         * Check the high watermark for software handshake. If the number of
          * buffered bytes is above this mark, then send XOFF.
          */
         else if (flow_control) {
@@ -432,11 +435,11 @@ static void AvrUsartRxComplete(void *arg) {
             }
         }
 #endif
-        
-        
+
+
 #ifdef UART_RTS_BIT
         /*
-         * Check the high watermark for hardware handshake. If the number of 
+         * Check the high watermark for hardware handshake. If the number of
          * buffered bytes is above this mark, then disable RTS.
          */
         else if (rts_control && cnt >= rbf->rbf_hwm) {
@@ -444,8 +447,8 @@ static void AvrUsartRxComplete(void *arg) {
         }
 #endif
 
-        /* 
-         * Store the character and increment and the ring buffer pointer. 
+        /*
+         * Store the character and increment and the ring buffer pointer.
          */
         *rbf->rbf_head++ = ch;
         if (rbf->rbf_head == rbf->rbf_last) {
@@ -456,12 +459,12 @@ static void AvrUsartRxComplete(void *arg) {
         rbf->rbf_cnt = cnt;
 #ifdef NUTTRACER
         TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
-#endif			
+#endif
 
 #ifdef UART_READMULTIBYTE
     } while ( inb(UCSRnA) & _BV(RXC) ); // byte in buffer?
 
-    // Eventually post event to wake thread 
+    // Eventually post event to wake thread
     if (postEvent)
         NutEventPostFromIrq(&rbf->rbf_que);
 #endif
@@ -520,7 +523,7 @@ static void AvrUsartDisable(void)
 /*!
  * \brief Query the USART hardware for the selected speed.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return The currently selected baudrate.
@@ -530,7 +533,7 @@ static u_long AvrUsartGetSpeed(void)
     u_long fct;
     u_short sv = (u_short) inb(UBRRnL);
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     sv |= ((u_short) inb(UBRRnH) << 8);
 
     /* Synchronous mode. */
@@ -557,7 +560,7 @@ static u_long AvrUsartGetSpeed(void)
 /*!
  * \brief Set the USART hardware bit rate.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param rate Number of bits per second.
@@ -570,10 +573,10 @@ static int AvrUsartSetSpeed(u_long rate)
 
     AvrUsartDisable();
 
-    /* 
+    /*
      * Modified Robert Hildebrand's refined calculation.
      */
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (bit_is_clear(UCSRnC, UMSEL)) {
         if (bit_is_set(UCSRnA, U2X)) {
             rate <<= 2;
@@ -587,7 +590,7 @@ static int AvrUsartSetSpeed(u_long rate)
     sv = (u_short) ((NutGetCpuClock() / rate + 1UL) / 2UL) - 1;
 
     outb(UBRRnL, (u_char) sv);
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     outb(UBRRnH, (u_char) (sv >> 8));
 #endif
     AvrUsartEnable();
@@ -598,7 +601,7 @@ static int AvrUsartSetSpeed(u_long rate)
 /*!
  * \brief Query the USART hardware for the number of data bits.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return The number of data bits set.
@@ -608,7 +611,7 @@ static u_char AvrUsartGetDataBits(void)
     if (bit_is_set(UCSRnB, UCSZ2)) {
         return 9;
     }
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnC, UCSZ1)) {
         if (bit_is_set(UCSRnC, UCSZ0)) {
             return 8;
@@ -627,7 +630,7 @@ static u_char AvrUsartGetDataBits(void)
 /*!
  * \brief Set the USART hardware to the number of data bits.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.
@@ -636,7 +639,7 @@ static int AvrUsartSetDataBits(u_char bits)
 {
     AvrUsartDisable();
     cbi(UCSRnB, UCSZ2);
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     cbi(UCSRnC, UCSZ0);
     cbi(UCSRnC, UCSZ1);
     switch (bits) {
@@ -670,14 +673,14 @@ static int AvrUsartSetDataBits(u_char bits)
 /*!
  * \brief Query the USART hardware for the parity mode.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return Parity mode, either 0 (disabled), 1 (odd) or 2 (even).
  */
 static u_char AvrUsartGetParity(void)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnC, UPM1)) {
         if (bit_is_set(UCSRnC, UPM0)) {
             return 1;
@@ -692,7 +695,7 @@ static u_char AvrUsartGetParity(void)
 /*!
  * \brief Set the USART hardware to the specified parity mode.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param mode 0 (disabled), 1 (odd) or 2 (even)
@@ -701,7 +704,7 @@ static u_char AvrUsartGetParity(void)
  */
 static int AvrUsartSetParity(u_char mode)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     AvrUsartDisable();
     switch (mode) {
     case 0:
@@ -732,14 +735,14 @@ static int AvrUsartSetParity(u_char mode)
 /*!
  * \brief Query the USART hardware for the number of stop bits.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return The number of stop bits set, either 1 or 2.
  */
 static u_char AvrUsartGetStopBits(void)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnC, USBS)) {
         return 2;
     }
@@ -750,14 +753,14 @@ static u_char AvrUsartGetStopBits(void)
 /*!
  * \brief Set the USART hardware to the number of stop bits.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.
  */
 static int AvrUsartSetStopBits(u_char bits)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     AvrUsartDisable();
     if (bits == 1) {
         cbi(UCSRnC, USBS);
@@ -794,7 +797,7 @@ static u_long AvrUsartGetStatus(void)
     if ((rx_errors & _BV(DOR)) != 0) {
         rc |= UART_OVERRUNERROR;
     }
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if ((rx_errors & _BV(UPE)) != 0) {
         rc |= UART_PARITYERROR;
     }
@@ -860,7 +863,7 @@ static u_long AvrUsartGetStatus(void)
         rc |= UART_TXNORMFRAME;
     }
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnA, MPCM)) {
         rc |= UART_RXADDRFRAME;
     } else {
@@ -891,7 +894,7 @@ static int AvrUsartSetStatus(u_long flags)
         NutEnterCritical();
 
         /*
-         * Enabling or disabling the receiver means to behave like 
+         * Enabling or disabling the receiver means to behave like
          * having sent a XON or XOFF character resp.
          */
         if (flags & UART_RXENABLED) {
@@ -901,7 +904,7 @@ static int AvrUsartSetStatus(u_long flags)
         }
 
         /*
-         * Enabling or disabling the transmitter means to behave like 
+         * Enabling or disabling the transmitter means to behave like
          * having received a XON or XOFF character resp.
          */
         if (flags & UART_TXENABLED) {
@@ -940,7 +943,7 @@ static int AvrUsartSetStatus(u_long flags)
     if (flags & UART_TXNORMFRAME) {
         tx_aframe = 0;
     }
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (flags & UART_RXADDRFRAME) {
         sbi(UCSRnA, MPCM);
     }
@@ -958,7 +961,7 @@ static int AvrUsartSetStatus(u_long flags)
     if (flags & UART_OVERRUNERROR) {
         rx_errors &= ~_BV(DOR);
     }
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (flags & UART_PARITYERROR) {
         rx_errors &= ~_BV(UPE);
     }
@@ -976,17 +979,17 @@ static int AvrUsartSetStatus(u_long flags)
 /*!
  * \brief Query the USART hardware for synchronous mode.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
- * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER, 
+ * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER,
  *         \ref UART_NCLOCK and \ref UART_HIGHSPEED.
  */
 static u_char AvrUsartGetClockMode(void)
 {
     u_char rc = 0;
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnC, UMSEL)) {
         rc |= UART_SYNC;
         if (bit_is_set(DDRE, 2)) {
@@ -1006,17 +1009,17 @@ static u_char AvrUsartGetClockMode(void)
 /*!
  * \brief Set asynchronous or synchronous mode.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param mode Must be an or-ed combination of USART_SYNC, USART_MASTER,
- *             USART_NCLOCK and USART_HIGHSPEED. 
+ *             USART_NCLOCK and USART_HIGHSPEED.
  *
  * \return 0 on success, -1 otherwise.
  */
 static int AvrUsartSetClockMode(u_char mode)
 {
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     AvrUsartDisable();
 
     /*
@@ -1074,7 +1077,7 @@ static int AvrUsartSetClockMode(u_char mode)
 /*!
  * \brief Query flow control mode.
  *
- * This routine is called by ioctl function of the upper level USART 
+ * This routine is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \return See UsartIOCtl().
@@ -1119,7 +1122,7 @@ static u_long AvrUsartGetFlowControl(void)
 /*!
  * \brief Set flow control mode.
  *
- * This function is called by ioctl function of the upper level USART 
+ * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
  * \param flags See UsartIOCtl().
@@ -1214,8 +1217,8 @@ static int AvrUsartSetFlowControl(u_long flags)
 /*!
  * \brief Start the USART transmitter hardware.
  *
- * The upper level USART driver will call this function through the 
- * USARTDCB jump table each time it added one or more bytes to the 
+ * The upper level USART driver will call this function through the
+ * USARTDCB jump table each time it added one or more bytes to the
  * transmit buffer.
  */
 static void AvrUsartTxStart(void)
@@ -1233,8 +1236,8 @@ static void AvrUsartTxStart(void)
 /*!
  * \brief Start the USART receiver hardware.
  *
- * The upper level USART driver will call this function through the 
- * USARTDCB jump table each time it removed enough bytes from the 
+ * The upper level USART driver will call this function through the
+ * USARTDCB jump table each time it removed enough bytes from the
  * receive buffer. Enough means, that the number of bytes left in
  * the buffer is below the low watermark.
  */
@@ -1265,7 +1268,7 @@ static void AvrUsartRxStart(void)
 /*
  * \brief Initialize the USART hardware driver.
  *
- * This function is called during device registration by the upper level 
+ * This function is called during device registration by the upper level
  * USART driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.
@@ -1289,7 +1292,7 @@ static int AvrUsartInit(void)
 /*
  * \brief Deinitialize the USART hardware driver.
  *
- * This function is called during device deregistration by the upper 
+ * This function is called during device deregistration by the upper
  * level USART driver through the USARTDCB jump table.
  *
  * \return 0 on success, -1 otherwise.

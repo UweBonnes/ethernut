@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/07 22:03:29  hwmaier
+ * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -83,7 +86,7 @@
 
 #include <dev/twif.h>
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 
 static volatile u_char tw_if_bsy;   /* Set while interface is busy. */
 
@@ -149,7 +152,7 @@ static void TwInterrupt(void *arg)
         tw_mr_idx = 0;
 
         /*
-         * If outgoing data is available, transmit SLA+W. Logic is in 
+         * If outgoing data is available, transmit SLA+W. Logic is in
          * master transmit mode.
          */
         if (tw_mt_len) {
@@ -157,7 +160,7 @@ static void TwInterrupt(void *arg)
         }
 
         /*
-         * If outgoing data not available, transmit SLA+R. Logic will 
+         * If outgoing data not available, transmit SLA+R. Logic will
          * switch to master receiver mode.
          */
         else {
@@ -173,7 +176,7 @@ static void TwInterrupt(void *arg)
     case TW_MT_SLA_ACK:
     case TW_MT_DATA_ACK:
         /*
-         * If outgoing data left to send, put the next byte in the data 
+         * If outgoing data left to send, put the next byte in the data
          * register.
          */
         if (tw_mt_idx < tw_mt_len) {
@@ -232,7 +235,7 @@ static void TwInterrupt(void *arg)
      */
     case TW_MT_ARB_LOST:
         /*
-         * The start condition will be automatically resend after 
+         * The start condition will be automatically resend after
          * the bus becomes available.
          */
         sbi(TWCR, TWSTA);
@@ -297,8 +300,8 @@ static void TwInterrupt(void *arg)
         break;
 
     /*
-     * 0x60: Own SLA+W has been received and acknowledged. 
-     * 0x68: Arbitration lost as master. Own SLA+W has been received 
+     * 0x60: Own SLA+W has been received and acknowledged.
+     * 0x68: Arbitration lost as master. Own SLA+W has been received
      *       and acknowledged.
      * 0x70: General call address has been received and acknowledged.
      * 0x78: Arbitration lost as master. General call address has been
@@ -309,8 +312,8 @@ static void TwInterrupt(void *arg)
     case TW_SR_GCALL_ACK:
     case TW_SR_ARB_LOST_GCALL_ACK:
         /*
-         * Do only acknowledge incoming data bytes, if we got receive 
-         * buffer space. Fetch the slave address from the data register 
+         * Do only acknowledge incoming data bytes, if we got receive
+         * buffer space. Fetch the slave address from the data register
          * and reset the receive index.
          */
         if (tw_sr_siz) {
@@ -332,7 +335,7 @@ static void TwInterrupt(void *arg)
 
     /*
      * 0x80: Data byte for own SLA has been received and acknowledged.
-     * 0x90: Data byte for general call address has been received and 
+     * 0x90: Data byte for general call address has been received and
      *       acknowledged.
      */
     case TW_SR_DATA_ACK:
@@ -360,7 +363,7 @@ static void TwInterrupt(void *arg)
 
     /*
      * 0x88: Data byte received, but not acknowledged.
-     * 0x98: Data byte for general call address received, but not 
+     * 0x98: Data byte for general call address received, but not
      *       acknowledged.
      */
     case TW_SR_DATA_NACK:
@@ -388,7 +391,7 @@ static void TwInterrupt(void *arg)
          */
         if (NutEventPostFromIrq(&tw_sr_que) == 0 || tw_sm_err) {
             /*
-             * If no one has been waiting on the queue, the application 
+             * If no one has been waiting on the queue, the application
              * probably gave up waiting. So we continue on our own, either
              * in idle mode or switching to master mode if a master
              * request is waiting.
@@ -409,7 +412,7 @@ static void TwInterrupt(void *arg)
 
     /*
      * 0xA8: Own SLA+R has been received and acknowledged.
-     * 0xB0: Arbitration lost in master mode. Own SLA has been received 
+     * 0xB0: Arbitration lost in master mode. Own SLA has been received
      *       and acknowledged.
      */
     case TW_ST_SLA_ACK:
@@ -424,7 +427,7 @@ static void TwInterrupt(void *arg)
      */
     case TW_ST_DATA_ACK:
         /*
-         * If outgoing data left to send, put the next byte in the 
+         * If outgoing data left to send, put the next byte in the
          * data register. Otherwise transmit a dummy byte.
          */
         if (tw_st_idx < tw_st_len) {
@@ -483,9 +486,9 @@ static void TwInterrupt(void *arg)
     }
 }
 
-#endif /* __AVR_ATmega128__ */
+#endif /* __AVR_ENHANCED__ */
 
-/*! 
+/*!
  * \brief Transmit and/or receive data as a master.
  *
  * The two-wire serial interface must have been initialized by calling
@@ -493,21 +496,21 @@ static void TwInterrupt(void *arg)
  *
  * \note This function is only available on ATmega128 systems.
  *
- * \param sla    Slave address of the destination. This slave address 
- *               must be specified as a 7-bit address. For example, the 
- *               PCF8574A may be configured to slave addresses from 0x38 
+ * \param sla    Slave address of the destination. This slave address
+ *               must be specified as a 7-bit address. For example, the
+ *               PCF8574A may be configured to slave addresses from 0x38
  *               to 0x3F.
- * \param txdata Points to the data to transmit. Ignored, if the number 
+ * \param txdata Points to the data to transmit. Ignored, if the number
  *               of data bytes to transmit is zero.
- * \param txlen  Number of data bytes to transmit. If zero, then the 
+ * \param txlen  Number of data bytes to transmit. If zero, then the
  *               interface will not send any data to the slave device
  *               and will directly enter the master receive mode.
  * \param rxdata Points to a buffer, where the received data will be
- *               stored. Ignored, if the maximum number of bytes to 
+ *               stored. Ignored, if the maximum number of bytes to
  *               receive is zero.
  * \param rxsiz  Maximum number of bytes to receive. Set to zero, if
  *               no bytes are expected from the slave device.
- * \param tmo    Timeout in milliseconds. To disable timeout, set this 
+ * \param tmo    Timeout in milliseconds. To disable timeout, set this
  *               parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
@@ -519,7 +522,7 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_sh
 {
     int rc = -1;
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
     /* This routine is marked reentrant, so lock the interface. */
     if(NutEventWait(&tw_mm_mutex, 500)) {
         tw_mm_err = TWERR_IF_LOCKED;
@@ -542,8 +545,8 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_sh
     tw_mr_buf = rxdata;
 
     /*
-     * Send a start condition if the interface is idle. If busy, then 
-     * the interrupt routine will automatically initiate the transfer 
+     * Send a start condition if the interface is idle. If busy, then
+     * the interrupt routine will automatically initiate the transfer
      * as soon as the interface becomes ready again.
      */
     if(tw_if_bsy == 0) {
@@ -587,7 +590,7 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_sh
      */
     NutEventPost(&tw_mm_mutex);
 
-#endif /* __AVR_ATmega128__ */
+#endif /* __AVR_ENHANCED__ */
     return rc;
 }
 
@@ -598,11 +601,11 @@ int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_sh
  * of an error after TwMasterTransact() failed.
  *
  * \note This function is only available on ATmega128 systems.
- * 
+ *
  */
 int TwMasterError(void)
 {
-#ifndef __AVR_ATmega128__
+#ifndef __AVR_ENHANCED__
     return -1;
 #else
     int rc = (int) tw_mm_error;
@@ -614,16 +617,16 @@ int TwMasterError(void)
 /*!
  * \brief Listen for incoming data from a master.
  *
- * If this function returns without error, the bus is blocked. The caller 
- * must immediately process the request and return a response by calling 
+ * If this function returns without error, the bus is blocked. The caller
+ * must immediately process the request and return a response by calling
  * TwSlaveRespond().
  *
  * \note This function is only available on ATmega128 systems. The
  *       function is not reentrant.
  *
- * \param sla    Points to a byte variable, which receives the slave 
- *               address sent by the master. This can be used by the 
- *               caller to determine whether the the interface has been 
+ * \param sla    Points to a byte variable, which receives the slave
+ *               address sent by the master. This can be used by the
+ *               caller to determine whether the the interface has been
  *               addressed by a general call or its individual address.
  * \param rxdata Points to a data buffer where the received data bytes
  *               are stored.
@@ -635,7 +638,7 @@ int TwMasterError(void)
  */
 int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
 {
-#ifndef __AVR_ATmega128__
+#ifndef __AVR_ENHANCED__
     return -1;
 #else
     int rc = -1;
@@ -648,7 +651,7 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
     tw_sr_buf = rxdata;
 
     /*
-     * If the interface is currently not busy then enable it for 
+     * If the interface is currently not busy then enable it for
      * address recognition.
      */
     if(tw_if_bsy == 0) {
@@ -686,14 +689,14 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
         *sla = tw_sm_sla;
     }
     return rc;
-#endif /* __AVR_ATmega128__ */
+#endif /* __AVR_ENHANCED__ */
 }
 
 /*!
  * \brief Send response to a master.
  *
  * This function must be called as soon as possible after TwSlaveListen()
- * returned successfully, even if no data needs to be returned. Not doing 
+ * returned successfully, even if no data needs to be returned. Not doing
  * so will completely block the bus.
  *
  * \note This function is only available on ATmega128 systems.
@@ -709,7 +712,7 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
 int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
 {
     int rc = -1;
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 
     /* The bus is blocked. No critical section required. */
     tw_st_buf = txdata;
@@ -742,7 +745,7 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
             rc = tw_st_idx;
         }
         NutExitCritical();
-    } 
+    }
 
     /*
      * Nothing to transmit.
@@ -752,7 +755,7 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
         u_char twsr;
         rc = 0;
         /* Release the bus, not accepting SLA+R. */
-        
+
         NutEnterCritical();
         twcr = inb(TWCR);
         twsr = inb(TWSR);
@@ -768,7 +771,7 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
 
         NutExitCritical();
     }
-#endif /* __AVR_ATmega128__ */
+#endif /* __AVR_ENHANCED__ */
     return rc;
 }
 
@@ -783,7 +786,7 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
  */
 int TwSlaveError(void)
 {
-#ifndef __AVR_ATmega128__
+#ifndef __AVR_ENHANCED__
     return -1;
 #else
     int rc = (int) tw_sm_error;
@@ -811,7 +814,7 @@ int TwSlaveError(void)
  */
 int TwIOCtl(int req, void *conf)
 {
-#ifndef __AVR_ATmega128__
+#ifndef __AVR_ENHANCED__
     return -1;
 #else
     int rc = 0;
@@ -866,7 +869,7 @@ int TwIOCtl(int req, void *conf)
         break;
     }
     return rc;
-#endif /* __AVR_ATmega128__ */
+#endif /* __AVR_ENHANCED__ */
 }
 
 /*!
@@ -883,7 +886,7 @@ int TwIOCtl(int req, void *conf)
  */
 int TwInit(u_char sla)
 {
-#ifndef __AVR_ATmega128__
+#ifndef __AVR_ENHANCED__
     return -1;
 #else
     u_long speed = 2400;
@@ -893,7 +896,7 @@ int TwInit(u_char sla)
     }
 
     /*
-     * Set address register, enable general call address, set transfer 
+     * Set address register, enable general call address, set transfer
      * speed and enable interface.
      */
     outb(TWAR, (sla << 1) | 1);
@@ -907,5 +910,5 @@ int TwInit(u_char sla)
     NutEventPost(&tw_mm_mutex);
 
     return 0;
-#endif /* __AVR_ATmega128__ */
+#endif /* __AVR_ENHANCED__ */
 }
