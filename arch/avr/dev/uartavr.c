@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/16 23:21:33  hwmaier
+ * Fixed compilation issue regards U2X macro with Imagecraft
+ *
  * Revision 1.2  2005/10/07 22:01:27  hwmaier
  * Obsolete dcb_baudSelect removed. Support for double speed (U2X) added (using same method as in usartavr.c).
  *
@@ -409,13 +412,13 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         UartAvrDisable(devnum);
 #ifdef __AVR_ENHANCED__
         if (devnum) {
-            if (bit_is_set(UCSR1A, U2X)) {
+            if (bit_is_set(UCSR1A, U2X1)) {
                 lv <<= 2;
             } else {
                 lv <<= 3;
             }
         } else {
-            if (bit_is_set(UCSR0A, U2X)) {
+            if (bit_is_set(UCSR0A, U2X0)) {
                 lv <<= 2;
             } else {
                 lv <<= 3;
@@ -442,7 +445,7 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     case UART_GETSPEED:
 #ifdef UBRR1H
         if (devnum) {
-            if (bit_is_set(UCSR1A, U2X))
+            if (bit_is_set(UCSR1A, U2X1))
                 lv = 8UL;
             else
                 lv = 16UL;
@@ -450,7 +453,7 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         }
         else
         {
-            if (bit_is_set(UCSR0A, U2X))
+            if (bit_is_set(UCSR0A, U2X0))
                 lv = 8UL;
             else
                 lv = 16UL;
