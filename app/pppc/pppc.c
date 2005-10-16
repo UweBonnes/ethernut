@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2005/10/16 23:22:44  hwmaier
+ * Commented out unreferenced include statement hd44780.h
+ *
  * Revision 1.5  2005/04/30 16:42:41  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -103,7 +106,7 @@
 
 #include <cfg/os.h>
 #include <dev/debug.h>
-#include <dev/hd44780.h>
+//#include <dev/hd44780.h>
 //#include <dev/ahdlcavr.h>
 #include <dev/uartavr.h>
 #include <dev/ppp.h>
