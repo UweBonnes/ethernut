@@ -1,0 +1,193 @@
+/*
+ * Copyright (c) 2005 FOCUS Software Engineering Pty Ltd <www.focus-sw.com>
+ * Copyright (c) 2005 proconX <www.proconx.com>
+ *
+ * $Id$
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holders nor the names of
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * For additional information see http://www.ethernut.de/
+ */
+
+
+#ifndef _CFG_XNUT_H_
+#define _CFG_XNUT_H_
+
+#ifndef _XNUT_XXX_H_INCLUDED
+#  define _XNUT_XXX_H_INCLUDED "cfg/xnut.h"
+#else
+#  error "Attempt to include more than one <xnut-xxx.h> file"
+#endif
+
+
+#include <cfg/os.h>
+#include <cfg/memory.h>
+#include <cfg/arch.h>
+#include <cfg/eeprom.h>
+#include <arch/avr.h>
+#include <cfg/arch/avrpio.h>
+
+/* Validate F_CPU setting */
+#if F_CPU == 1000000UL
+#  error "F_CPU is set to avr-lib default 1 MHz! Please include <avr/delay.h> after <xnut.h>"
+#endif
+#define F_CPU NUT_CPU_FREQ
+
+
+/*****************************************************************************
+ * LED control macros
+ *****************************************************************************/
+
+/**
+ * @defgroup led LED Functions
+ *
+ * @brief Functions to drive the XNUT status LED S1 (LED3) and S2 (LED4).
+ */
+//@{
+
+/** Switch LED S1 off */
+#define LED_S1_OFF()         PORTF &= ~_BV(2); PORTF &= ~_BV(3);
+/** Switch LED S1 red */
+#define LED_S1_RED()         PORTF &= ~_BV(2); PORTF |= _BV(3);
+/** Switch LED S1 green */
+#define LED_S1_GREEN()       PORTF |= _BV(2); PORTF &= ~_BV(3);
+
+/** Switch LED S2 off */
+#define LED_S2_OFF()         PORTF &= ~_BV(0); PORTF &= ~_BV(1);
+/** Switch LED S2 red */
+#define LED_S2_RED()         PORTF &= ~_BV(0); PORTF |= _BV(1);
+/** Switch LED S2 green */
+#define LED_S2_GREEN()       PORTF |= _BV(0); PORTF &= ~_BV(1);
+
+//@}
+
+
+/*****************************************************************************
+ * UART control macros
+ *****************************************************************************/
+
+/**
+ * @ingroup ser
+ */
+//@{
+
+/**
+ * Configure Ser 0 to operate in RS232 mode.
+ *
+ * In RS232 mode receiption from SUB-D connector J9 is enabled
+ * and the receiver on connector J6-2/3 is disabled.
+ */
+#define SER0_RS232_MODE()    (PORTB |= _BV(0))
+
+/**
+ * Configure Ser 0 to operate in RS485 mode.
+ *
+ * In RS485 mode receiption from connector J6-2/3 is enabled
+ * and the receiver on SUB-D connector J9 is disabled.
+ */
+#define SER0_RS485_MODE()    (PORTB &= ~_BV(0))
+
+/**
+ * Switches the RS485 line driver of Ser 0 on.
+ *
+ * RS485 is a half-duplex link and the line driver must be switched off to
+ * allow receiption of data.
+ */
+#define SER0_RS485_DRV_ON()   (PORTB |= _BV(1))
+
+/**
+ * Switches the RS485 line driver of Ser 0 off.
+ */
+#define SER0_RS485_DRV_OFF()  (PORTB &= ~_BV(1))
+
+/**
+ * Configure Ser 1 to operate in RS232 mode.
+ *
+ * In RS232 mode receiption from SUB-D connector J7 is enabled
+ * and the receiver on connector J6-5/6 is disabled.
+ */
+#define SER1_RS232_MODE()    (PORTB |= _BV(2))
+
+/**
+ * Configure Ser 1 to operate in RS485 mode.
+ *
+ * In RS485 mode receiption from connector J6-5/6 is enabled
+ * and the receiver on SUB-D connector J7 is disabled.
+ */
+#define SER1_RS485_MODE()    (PORTB &= ~_BV(2))
+
+/**
+ * Switches the RS485 line driver of Ser 1 on.
+ *
+ * RS485 is a half-duplex link and the line driver must be switched off to
+ * allow receiption of data.
+ */
+#define SER1_RS485_DRV_ON()   (PORTB |= _BV(3))
+
+/**
+ * Switches the RS485 line driver of Ser 1 off.
+ */
+#define SER1_RS485_DRV_OFF()  (PORTB &= ~_BV(3))
+
+/**
+ * Returns the status of the RS232 CD signal input
+ * of Ser 0 on SUB-D connector J9
+ *
+ * @return 1 if CD is asserted
+ */
+#define SER0_GET_CD()        bit_is_set(PINB, 6)
+
+/**
+ * Returns the status of the RS232 RI signal input
+ * of Ser 0 on SUB-D connector J9
+ *
+ * @return 1 if RI is asserted
+ */
+#define SER0_GET_RI()        bit_is_set(PINB, 7)
+
+/**
+ * Returns the status of the RS232 CTS signal input
+ * of Ser 0 on SUB-D connector J9
+ *
+ * @return 1 if CTS is asserted
+ */
+#define SER0_GET_CTS()       bit_is_set(PINE, 6)
+
+/**
+ * Asserts the RS232 RTS signal output of Ser 0 on SUB-D connector J9
+ */
+#define SER0_SET_RTS()       (PORTB |= _BV(4))
+
+/**
+ * Clears the RS232 RTS signal output of Ser 0 on SUB-D connector J9
+ */
+#define SER0_CLR_RTS()       (PORTB &= ~_BV(4))
+
+//@}
+
+#endif // ifdef ..._H_INCLUDED
+
