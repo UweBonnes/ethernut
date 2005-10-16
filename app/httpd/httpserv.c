@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.11  2005/10/16 23:22:20  hwmaier
+ * Removed unreferenced nutconfig.h include statement
+ *
  * Revision 1.10  2005/08/05 11:32:50  olereinhardt
  * Added SSI and ASP sample
  *
@@ -92,7 +95,6 @@
 #include <dev/debug.h>
 #include <dev/urom.h>
 
-#include <sys/nutconfig.h>
 #include <sys/version.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
@@ -133,12 +135,12 @@ static int ASPCallback (char *pASPFunction, FILE *stream)
         fprintf(stream, "Dummy example: 01.01.2005");
         return(0);
     }
-                              
+
     if (strcmp(pASPFunction, "usr_time") == 0) {
         fprintf(stream, "Dummy example: 12:15:02");
         return(0);
     }
-                                                          
+
     return (-1);
 }
 
@@ -611,13 +613,13 @@ int main(void)
      * user and password.
      */
     NutRegisterAuth("cgi-bin", "root:root");
-    
+
     /*
      * Register SSI and ASP handler
      */
     NutRegisterSsi();
-    NutRegisterAsp(); 
-    NutRegisterAspCallback(ASPCallback);    
+    NutRegisterAsp();
+    NutRegisterAspCallback(ASPCallback);
     /*
      * Start four server threads.
      */
