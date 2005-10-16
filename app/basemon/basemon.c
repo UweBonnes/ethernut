@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/10/16 23:28:37  hwmaier
+ * TestPorts() only executed for Ethernut 1/2 boards
+ *
  * Revision 1.10  2005/02/23 05:54:54  hwmaier
  * Changes in order to support AT90CAN128
  *
@@ -367,11 +370,14 @@ void BaseMon(void)
     }
 
     /*
-     * Test Ethernet controller hardware.
+     * Test I/O ports.
      */
+#if defined(ETHERNUT1) || defined(ETHERNUT2)
     printf("I/O Port Test...     ");
     if (TestPorts() == 0)
         puts("OK");
+#endif
+
     /*
      * Return if running without serial port.
      */
