@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.275 2005/10/17 08:47:51 hwmaier Exp $
+$Id: ChangeLog,v 1.276 2005/10/17 11:48:02 olereinhardt Exp $
+
+2005-10-17 Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* arch/Makefile
+	Added compilation of atcan.c if MCU=at90can128 is set
 
 2005-10-17 Henrik Maier  <henrik@proconx.com>
 
