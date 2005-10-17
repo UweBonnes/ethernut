@@ -1,4 +1,31 @@
-$Id: ChangeLog,v 1.274 2005/10/07 23:03:29 hwmaier Exp $
+$Id: ChangeLog,v 1.275 2005/10/17 08:47:51 hwmaier Exp $
+
+2005-10-17 Henrik Maier  <henrik@proconx.com>
+
+	* arch/avr/dev/debug0.c, arch/avr/dev/debug1.c:
+        Setting baudrate function changed: For CPUs w/ 12 and 16 MHz xtal
+        double rate mode is now used (only if set by NUT_CPU_FREQ).
+
+        * arch/avr/dev/uartavr.c: Fixed compilation issue regards U2X
+        macro with Imagecraft.
+
+        * nutinit.c: All platform specific initialisation (CPLD, IO pins etc.)
+        has been consolidated using the new PLATFORM macro into a new function
+        called NutCustomInit().
+
+        * app/httpd/httpserv.c: Removed unreferenced nutconfig.h include statement
+
+        * app/pppc/pppc.c: Commented out unreferenced include statement hd44780.h
+
+        * app/basemon/basemon.c: TestPorts() only executed for Ethernut 1/2
+        boards. Other platforms/boards will use I/O ports differently and
+        executing TestPorts will then fail or even cause damage.
+        Due to basemon's special init routine, AT90CAN128 CPUs can at this
+        stage not be supported by basemon without major changes. Hence we
+        introduced an error message if compiled for this CPU.
+
+        * apps/basemon/uart.c: Added 9600 baudrate setting for 12 MHz boards
+
 
 2005-10-08 Henrik Maier  <henrik@proconx.com>
 
@@ -35,10 +62,12 @@ $Id: ChangeLog,v 1.274 2005/10/07 23:03:29 hwmaier Exp $
         * conf.arch.nut: Changed HWDEF= to HWDEF+= so more defs can be added
         to this macros from other LUA scripts.
 
-        * conf/repository.nut: Added support for PLATFORM macro
+        * conf/repository.nut: Added support for PLATFORM macro (Requires
+        new nutconf executable w/ above changes applied)
 
         * ethernut*.conf, charon2.conf, arthernut1.conf, mmnet02.conf,
-        stk501.conf: PLATFORM entry added.
+        stk501.conf: PLATFORM entry added (Requires new nutconf executable
+        w/ above changes applied)
 
 
 2005-10-04 Henrik Maier  <henrik@proconx.com>
