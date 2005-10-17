@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/10/17 08:42:08  hwmaier
+ * Added error message when compiled for AT90CAN128 as this CPU is not fully supported by basemon yet
+ *
  * Revision 1.11  2005/10/16 23:28:37  hwmaier
  * TestPorts() only executed for Ethernut 1/2 boards
  *
@@ -309,6 +312,7 @@ void BaseMon(void)
 #elif defined(__AVR_ATmega103__)
     puts("ATmega103");
 #elif defined(__AVR_AT90CAN128__)
+#   error CPU needs special consideration for stack and heap and is currently not supported by basemon
     puts("AT90CAN128");
 #else
     puts("unknown");
