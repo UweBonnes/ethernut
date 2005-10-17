@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/17 08:46:53  hwmaier
+ * Setting baudrate function changed: For CPUs w/ 12 and 16 MHz xtal double rate mode is now used (only if set by NUT_CPU_FREQ)
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -57,15 +60,16 @@
  */
 
 #include <dev/debug.h>
-#include <sys/timer.h>
 
 /*!
  * \addtogroup xgDevDebugAvr
  */
 /*@{*/
 
-#ifdef __AVR_ATmega128__
+#ifdef __AVR_ENHANCED__
 
+#include <cfg/os.h>
+#include <sys/timer.h>
 #include <sys/device.h>
 #include <sys/file.h>
 
@@ -74,7 +78,15 @@ static NUTFILE dbgfile;
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
+#if defined(__AVR_ENHANCED__) && ((NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000))
+        /* On enhanced MCUs we use double rate mode, so we can use 115200 bps
+        * with 12.0 and 16.0 crystals.
+        */
+        sbi(UCSR1A, U2X1);
+        outb(UBRR1L, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 8UL)) + 1UL) / 2UL) - 1UL);
+#else
         outb(UBRR1L, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 16UL)) + 1UL) / 2UL) - 1UL);
+#endif
         return 0;
     }
     return -1;
@@ -82,7 +94,7 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 
 static int DebugInit(NUTDEVICE * dev)
 {
-    UBRR1L = 7;
+    /* Note: Default baudrate has been set in nutinit.c */
     UCSR1B = BV(RXEN) | BV(TXEN);
     return 0;
 }
@@ -91,7 +103,7 @@ static void DebugPut(char ch)
 {
     while((UCSR1A & BV(UDRE)) == 0);
     UDR1 = ch;
-    if(ch == '\n') 
+    if(ch == '\n')
         DebugPut('\r');
 }
 
@@ -126,8 +138,8 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return &dbgfile;
 }
 
-/*! 
- * \brief Close a device or file. 
+/*!
+ * \brief Close a device or file.
  */
 static int DebugClose(NUTFILE * fp)
 {

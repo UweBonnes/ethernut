@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/10/17 08:46:53  hwmaier
+ * Setting baudrate function changed: For CPUs w/ 12 and 16 MHz xtal double rate mode is now used (only if set by NUT_CPU_FREQ)
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -72,6 +75,7 @@
  */
 /*@{*/
 
+#include <cfg/os.h>
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
@@ -88,7 +92,16 @@ static NUTFILE dbgfile;
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
+#if defined(__AVR_ENHANCED__) && ((NUT_CPU_FREQ == 12000000) || (NUT_CPU_FREQ == 16000000))
+        /* On enhanced MCUs with 12.0 or 16.0 MHz we use double rate mode,
+         * so we can use 115200 bps with 12.0 MHz crystals
+         * and 57600 with 16.0 MHz crystals.
+         */
+        sbi(UCSR0A, U2X0);
+        outb(UBRR, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 8UL)) + 1UL) / 2UL) - 1UL);
+#else
         outb(UBRR, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 16UL)) + 1UL) / 2UL) - 1UL);
+#endif
         return 0;
     }
     return -1;
@@ -104,7 +117,7 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int DebugInit(NUTDEVICE * dev)
 {
-    UBRR = 7;
+    /* Note: Default baudrate has been set in nutinit.c */
     UCR = BV(RXEN) | BV(TXEN);
     return 0;
 }
@@ -112,21 +125,21 @@ static int DebugInit(NUTDEVICE * dev)
 /*!
  * \brief Send a single character to debug device 0.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  */
 static void DebugPut(char ch)
 {
     while((USR & BV(UDRE)) == 0);
     UDR = ch;
-    if(ch == '\n') 
+    if(ch == '\n')
         DebugPut('\r');
 }
 
 /*!
  * \brief Send characters to debug device 0.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -144,7 +157,7 @@ static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
 /*!
  * \brief Send characters from progam memory to debug device 0.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -175,7 +188,7 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return &dbgfile;
 }
 
-/*! 
+/*!
  * \brief Close debug device 0.
  *
  * \return Always 0.
