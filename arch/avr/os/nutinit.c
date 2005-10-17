@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/10/17 08:24:55  hwmaier
+ * All platform specific initialisation (CPLD, IO pins etc.) has been consolidated using the new PLATFORM macro into a new function called NutCustomInit()
+ *
  * Revision 1.4  2005/10/04 06:11:11  hwmaier
  * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
  *
@@ -103,6 +106,7 @@
 #include <cfg/memory.h>
 #include <cfg/os.h>
 #include <cfg/arch/avr.h>
+#include <cfg/arch.h>
 
 /*!
  * \addtogroup xgNutArchAvrInit
@@ -285,19 +289,7 @@ void NutInitXRAM(void)
     XMCRA = _BV(SRE) | _BV(SRW10); /* One wait state for the whole memory range */
 #endif
 
-
-#elif defined(__AVR_ATmega128__) || defined(__AVR_ATmega64__)
-
-#if defined(ARTHERNET1)
-    /* Arthernet1 memory setup - mt - TODO: check this
-   0x1100-0x14FF  CLPD area  -> use 3 Waitstates for 0x1100-0x1FFF (no Limit at 0x1500 available)
-   0x1500-0xFFFF  Heap/Stack -> use 1 Waitstate  for 0x2000-0xFFFF
-    */
-    MCUCR  = _BV(SRE); /* enable xmem-Interface */
-    XMCRA |= _BV(SRL0) | _BV(SRW01) | _BV(SRW00); /* sep. at 0x2000, 3WS for lower Sector */
-    XMCRB = 0;
-
-#else  /* !ARTHERNET1 */
+#elif defined(__AVR_ATmega128__)
 
     MCUCR = _BV(SRE) | _BV(SRW10);
 
@@ -305,13 +297,10 @@ void NutInitXRAM(void)
  * Upper sector = 0x8000 - 0xFFFF and run 3 wait states for the
  * upper sector (NIC), 1 wait state for lower sector (XRAM).
  */
-
 #ifdef NUT_3WAITSTATES
     XMCRA |= _BV(SRL2) | _BV(SRW00) | _BV(SRW11); /* SRW10 is set in MCUCR */
     XMCRB = 0;
 #endif
-
-#endif /* !ARTHERNET1 */
 
 #else  /* ATmega103 */
     MCUCR = _BV(SRE) | _BV(SRW);
@@ -320,17 +309,6 @@ void NutInitXRAM(void)
 
 #endif
 
-#ifdef ARTHERNET1
-/*
- * Arthernet CPLD initialization.
- */
-static void ANInitCPLD(void) __attribute__ ((naked, section(".init3"), used));
-void ANInitCPLD(void)
-{
-      *((volatile u_char *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
-      *((volatile u_char *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
-}
-#endif /* ARTHERNET1 */
 
 #if defined(RTL_EESK_BIT) && defined(__GNUC__) && defined(NUTXMEM_SIZE)
 /*
@@ -503,20 +481,98 @@ void NutInitHeap()
     }
 }
 
-#ifdef MMNET02
-/*
- * MMnet02 CPLD initialization.
- */
 #if defined(__GNUC__)
-static void MMInitCPLD(void) __attribute__ ((naked, section(".init5"), used));
+static void NutCustomInit(void) __attribute__ ((naked, section (".init1"), used));
 #endif
-void MMInitCPLD(void)
+/*!
+ * NutCustomInit is a container function for hardware specific init code.
+ *
+ * The hardware is selected with a PLATFORM macro definition.
+ *
+ * Typically this function configures CPLDs, enables chips,
+ * overwrites NutInitXRAM's default wait state settings, sets the default
+ * baudrate for NUDEBUG as they depend on the crystal frequency used, etc.
+ */
+void NutCustomInit(void)
+/*
+* MMnet02 CPLD initialization.
+*/
+#if defined(MMNET02)
 {
     volatile u_char *breg = (u_char *)((size_t)-1 & ~0xFF);
 
     *(breg + 1) = 0x01; // Memory Mode 1, Banked Memory
+
+    /* Assume 14.745600 MHz crystal, set to 115200bps */
+    outp(7, UBRR);
+    outp(7, UBRR1L);
 }
-#endif /* MMNET02 */
+/*
+ * Arthernet CPLD initialization.
+ */
+#elif defined(ARTHERNET1)
+{
+    /* Arthernet1 memory setup - mt - TODO: check this
+    Note: This overwrites the default settings of NutInitXRAM()!
+    0x1100-0x14FF  CLPD area  -> use 3 Waitstates for 0x1100-0x1FFF (no Limit at 0x1500 available)
+    0x1500-0xFFFF  Heap/Stack -> use 1 Waitstate  for 0x2000-0xFFFF
+    */
+    MCUCR  = _BV(SRE); /* enable xmem-Interface */
+    XMCRA |= _BV(SRL0) | _BV(SRW01) | _BV(SRW00); /* sep. at 0x2000, 3WS for lower Sector */
+    XMCRB = 0;
+
+    *((volatile u_char *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
+    *((volatile u_char *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
+
+    /* Assume standard Arthernet1 with 16 MHz crystal, set to 38400 bps */
+    outp(25, UBRR);
+    outp(25, UBRR1L);
+}
+/*
+* XNUT board initialization
+*/
+#elif defined(XNUT_100) || defined(XNUT_105)
+{
+    PORTB = 0b11110101;
+    DDRB  = 0b00111111;
+    PORTD = 0b01101100;
+    DDRD  = 0b10110000;
+    PORTE = 0b11011111;
+    DDRE  = 0b00000010;
+    PORTF = 0b11110000;
+    DDRF  = 0b00001111;
+    PORTG = 0b00011111;
+    DDRG  = 0b00000111;
+
+    ACSR |= _BV(ACD); /* Switch off analog comparator to reduce power consumption */
+
+    /* Init I2C bus w/ 100 kHz */
+    TWSR = 0;
+    TWBR = (NUT_CPU_FREQ / 100000UL - 16) / 2; /* 100 kHz I2C */
+
+    /* Set default baudrate */
+#if NUT_CPU_FREQ == 14745600
+    UBRR0L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
+    UBRR1L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
+#else
+    sbi(UCSR0A, U2X0);
+    sbi(UCSR1A, U2X1);
+    UBRR0L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
+    UBRR1L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
+#endif
+}
+/*
+ * Rest of the world and standard ETHERNUT 1/2
+ */
+#else
+{
+    /* Assume standard Ethernut with 14.745600 MHz crystal, set to 115200bps */
+    outp(7, UBRR);
+#ifdef __AVR_ENHANCED__
+    outp(7, UBRR1L);
+#endif
+}
+#endif
 
 /*!
  * \brief Nut/OS Initialization.
@@ -555,21 +611,15 @@ void NutInit(void)
     /*
      * We can't use local variables in naked functions.
      */
+
 #ifdef NUTDEBUG
-#ifdef NUT_CPU_FREQ
-    /* Configure baudrate register according to clock frequency for 115200bps */
-    outp((NUT_CPU_FREQ / (16 * 115200UL)) - 1, UBRR);
-#elif defined(ARTHERNET1)
-    /* Assume standard Arthernet1 with 16 MHz crystal, set to 38400 bps */
-    outp(25, UBRR);
-#else
-    /* Assume standard Ethernut with 14.745600 MHz crystal, set to 115200bps */
-    outp(7, UBRR);
-#endif
+    /* Note: The platform's default baudrate will be set in NutCustomInit() */
     outp(BV(RXEN) | BV(TXEN), UCR);
 #endif
 
 #ifndef __GNUC__
+    NutCustomInit();
+
     /* Initialize stack pointer to end of external RAM while starting up the system
      * to avoid overwriting .data and .bss section.
      */
@@ -578,14 +628,6 @@ void NutInit(void)
     /* Initialize the heap memory
      */
     NutInitHeap();
-
-#ifdef MMNET02
-    /*
-     * MMnet02 CPLD initialization.
-     */
-    MMInitCPLD();
-#endif /* MMNET02 */
-
 #endif /* __GNUC__ */
 
     /*
