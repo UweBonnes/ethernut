@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2005/10/17 11:45:20  olereinhardt
+# Added compilation of atcan.c if MCU=at90can128 is set
+#
 # Revision 1.3  2005/09/17 09:25:15  drsung
 # irqstack.c also moved to arch
 #
@@ -73,6 +76,11 @@ SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ivect01.c \
 	avr/dev/ir.c avr/dev/irsony.c avr/dev/hd44780.c avr/dev/hd44780_bus.c \
 	avr/dev/sja1000.c avr/dev/spidigio.c avr/dev/twif.c avr/dev/vs1001k.c \
 	avr/dev/pcmcia.c avr/dev/irqstack.c
+
+ifeq ($(MCU), at90can128)
+SRCS += avr/dev/atcan.c
+endif
+
 endif
 
 ifeq ($(ARCH), unix)
