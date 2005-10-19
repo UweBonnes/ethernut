@@ -58,12 +58,26 @@
 #define F_CPU NUT_CPU_FREQ
 
 
+/*!
+ * \defgroup xgXnutCfg XNUT-100 & XNUT-105 DIN-rail SBC
+ * \ingroup xgConfigAvr
+ * \brief DIN-rail mounted Single Board Computer in enclosure with
+ * 2 x RS-232, 2 x RS-485, 1 x RS-422 interfaces (software configurable),
+ * CAN port (XNUT-105) and 10-30 V (24 V) switch mode power supply.
+ * The <A href="http://www.proconx.com/xnut100">XNUT-100</A> and
+ * <A href="http://www.proconx.com/xnut105">XNUT-105</A>
+ * modules have been specifically designed for industrial communication
+ * tasks such as Monitoring & Controlling serial devices,
+ * gathering sensor data, Gateway Applications and Protocol Conversion.
+ */
+//@{
+
 /*****************************************************************************
  * LED control macros
  *****************************************************************************/
 
 /**
- * @defgroup led LED Functions
+ * @defgroup xnutLed LED Control Macros
  *
  * @brief Functions to drive the XNUT status LED S1 (LED3) and S2 (LED4).
  */
@@ -91,7 +105,9 @@
  *****************************************************************************/
 
 /**
- * @ingroup ser
+ * @defgroup xnutSer UART Control Macros
+ *
+ * @brief Functions to control UART modes
  */
 //@{
 
@@ -186,6 +202,8 @@
  * Clears the RS232 RTS signal output of Ser 0 on SUB-D connector J9
  */
 #define SER0_CLR_RTS()       (PORTB &= ~_BV(4))
+
+//@}
 
 //@}
 

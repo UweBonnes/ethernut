@@ -38,7 +38,9 @@
  */
 
 /*!
- * \addtogroup xgCanAvr
+ * \defgroup xgCanAvr AT90CAN128 CAN device
+ * \ingroup xgNutArchAvrDev
+ * \brief Driver for Atmel's internal Full CAN controller
  */
 /*@{*/
 
