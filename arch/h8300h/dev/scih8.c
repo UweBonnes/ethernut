@@ -18,17 +18,21 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JAN DUBIEC
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/19 09:34:25  hwmaier
+ * Changed doxygen group to xgUartH8 so it doesn't
+ * overload arch/avr/dev/usartavr.c's documentation
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -75,7 +79,7 @@
 #endif
 
 /*!
- * \addtogroup xgUartAvr
+ * \addtogroup xgUartH8
  */
 /*@{*/
 
@@ -159,9 +163,9 @@ static void TxComplete(void *arg)
 /*
  * Handle H8/300H SCI receive complete.
  *
- * Note, that this function modifies the receive index in 
- * interrupt context. This requires, that any non atomic 
- * access of this index requires interrupts being disabled. 
+ * Note, that this function modifies the receive index in
+ * interrupt context. This requires, that any non atomic
+ * access of this index requires interrupts being disabled.
  * Thanks to Mike Cornelius, who pointed this out.
  */
 static void RxComplete(void *arg)
@@ -184,8 +188,8 @@ static void RxComplete(void *arg)
  * \brief Wait for input.
  *
  * This function checks the input buffer for any data. If
- * the buffer is empty, the calling \ref xrThread "thread" 
- * will be blocked until at least one new character is 
+ * the buffer is empty, the calling \ref xrThread "thread"
+ * will be blocked until at least one new character is
  * received or a timeout occurs.
  *
  * \param dev Indicates the SCI device.
@@ -202,8 +206,8 @@ int SciH8Input(NUTDEVICE * dev)
     if (ifs->if_rd_idx == ifs->if_rx_idx) {
         dcb = dev->dev_dcb;
         /*
-         * Changing if into a while loop fixes a serious bug: 
-         * Previous receiver events without any waiting thread 
+         * Changing if into a while loop fixes a serious bug:
+         * Previous receiver events without any waiting thread
          * set the event handle to the signaled state. So the
          * wait returns immediately. Unfortunately the calling
          * routines rely on a filled buffer when we return 0.
@@ -384,7 +388,7 @@ static void SciH8Disable(u_short base)
  *             function.
  * \return 0 on success, -1 otherwise.
  *
- * \warning Timeout values are given in milliseconds and are limited to 
+ * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer.
  *
  * \bug For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
@@ -667,8 +671,8 @@ int SciH8Init(NUTDEVICE * dev)
     return 0;
 }
 
-/*! 
- * \brief Read from device. 
+/*!
+ * \brief Read from device.
  */
 int SciH8Read(NUTFILE * fp, void *buffer, int size)
 {
@@ -726,8 +730,8 @@ int SciH8Read(NUTFILE * fp, void *buffer, int size)
     return rc;
 }
 
-/*! 
- * \brief Write to device. 
+/*!
+ * \brief Write to device.
  */
 int SciH8Put(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 {
@@ -797,7 +801,7 @@ int SciH8Write(NUTFILE * fp, CONST void *buffer, int len)
     return SciH8Put(fp->nf_dev, buffer, len, 0);
 }
 
-/*! 
+/*!
  * \brief Open a device or file.
  */
 NUTFILE *SciH8Open(NUTDEVICE * dev, CONST char *name, int mode, int acc)
@@ -821,8 +825,8 @@ NUTFILE *SciH8Open(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
- * \brief Close a device or file. 
+/*!
+ * \brief Close a device or file.
  */
 int SciH8Close(NUTFILE * fp)
 {
