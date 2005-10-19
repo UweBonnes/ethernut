@@ -1,8 +1,15 @@
-$Id: ChangeLog,v 1.276 2005/10/17 11:48:02 olereinhardt Exp $
+$Id: ChangeLog,v 1.277 2005/10/19 09:34:57 hwmaier Exp $
+
+2005-10-19 Henrik Maier  <henrik@proconx.com>
+
+        arch/h8300/dev/scih8.c: Changed doxygen group to xgUartH8 so it doesn't
+        overload arch/avr/dev/usartavr.c's documentation
+
 
 2005-10-17 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* arch/Makefile
 	Added compilation of atcan.c if MCU=at90can128 is set
+
 
 2005-10-17 Henrik Maier  <henrik@proconx.com>
 
