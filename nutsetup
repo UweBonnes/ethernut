@@ -11,7 +11,7 @@ fi
 fi
 
 # Ask user which device to target
-
+unset HWDEF
 unset DEV
 
 while [ "x$DEV" = "x" ]
@@ -31,9 +31,9 @@ do
 	read answ
 
 	case "$answ" in
-	1) DEV=atmega128; ARCH=avr ;;
-	2) DEV=atmega103; ARCH=avr ;;
-	3) DEV=at90can128; ARCH=avr ;;
+	1) DEV=atmega128; ARCH=avr; CPU=m128 ;;
+	2) DEV=atmega103; ARCH=avr; CPU=m103 ;;
+	3) DEV=at90can128; ARCH=avr; CPU=c128; HWDEF="-DMCU_AT90CAN128 -DNUTMEM_STACKHEAP=4096" ;;
 	4) DEV=H8/3068F; ARCH=h8300h ;;
 	5) DEV=mac; ARCH=unix ;;
 #	6) DEV=H8/3069F; ARCH=h8300h ;; # just an example
@@ -74,6 +74,33 @@ if [ "$ARCH" = "avr" ]; then
 
     # Ask which isp programmer is being used
 
+    unset CRYSTAL
+    while [ "x$CLOCKSEL" = "x" ]
+    do 
+        echo "Do you want to set a fixed cpu clock?"
+        echo ""
+        echo "  1) don't set clock"
+        echo "  2)  7.3728 Mhz"
+        echo "  3)  8.0000 Mhz"
+        echo "  4) 12.0000 Mhz"
+        echo "  5) 14.7456 Mhz"
+        echo "  6) 16.0000 Mhz"
+        echo ""
+        echo -n "Selection -> "
+        read answ
+        
+        case "$answ" in
+        1) CLOCKSEL=1 ;;
+        2) CLOCKSEL=2 ; CLOCK=-DNUT_CPU_FREQ=7372800 ;;
+        3) CLOCKSEL=3 ; CLOCK=-DNUT_CPU_FREQ=8000000 ;;
+        4) CLOCKSEL=4 ; CLOCK=-DNUT_CPU_FREQ=12000000 ;;
+        5) CLOCKSEL=5 ; CLOCK=-DNUT_CPU_FREQ=14745600 ;;
+        6) CLOCKSEL=6 ; CLOCK=-DNUT_CPU_FREQ=16000000 ;;
+	    *)
+		    echo "invalid choice" ;;
+        esac
+    done
+
     unset UISP_PROG
     while [ "x$UISP_PROG" = "x" ]
     do
@@ -93,14 +120,33 @@ if [ "$ARCH" = "avr" ]; then
 	    esac
     done
 
+    unset PROGRAMMER
+    while [ "x$PROGRAMMER" = "x" ]
+    do
+        echo "Which programming software are you using?"
+        echo ""
+        echo "  1) uisp"
+        echo "  2) avrdude"
+        echo ""
+        echo -n "Selection -> "
+        read answ
+        
+        case "$answ" in
+        1) PROGRAMMER=usip ; BURNFLAGS="-dprog=$UISP_PROG --erase --upload --verify if=\$(TARG)" ;;
+        2) PROGRAMMER=avrdude ; BURNFLAGS="-p $CPU -c $UISP_PROG -U flash:w:\$(TARG) -E noreset" ;;
+        *)
+            echo "invalid choice" ;;
+        esac
+    done
+
     # Generate the config file
 
     cat <<EOF > UserConf.mk
 MCU=$DEV
 ARCH=$ARCH
-HWDEF=-D__HARVARD_ARCH__
-BURN=uisp
-BURNFLAGS=-dprog=$UISP_PROG --erase --upload --verify if=\$(TARG)
+HWDEF=-D__HARVARD_ARCH__ $CLOCK $HWDEF
+BURN=$PROGRAMMER
+BURNFLAGS=$BURNFLAGS
 CRUROM = \$(top_srcdir)/tools/crurom/crurom
 EOF
 
