@@ -1,8 +1,14 @@
-$Id: ChangeLog,v 1.277 2005/10/19 09:34:57 hwmaier Exp $
+$Id: ChangeLog,v 1.278 2005/10/21 11:22:19 olereinhardt Exp $
+
+2005-10-21 Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* nutsetup
+	Added some new configuration parameters to nutsetup and made
+	necessary additions to support at90can128 cpu
+
 
 2005-10-19 Henrik Maier  <henrik@proconx.com>
 
-        arch/h8300/dev/scih8.c: Changed doxygen group to xgUartH8 so it doesn't
+        * arch/h8300/dev/scih8.c: Changed doxygen group to xgUartH8 so it doesn't
         overload arch/avr/dev/usartavr.c's documentation
 
 
