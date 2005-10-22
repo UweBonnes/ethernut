@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/22 08:55:47  haraldkipp
+ * CPU specific headers moved to subdirectories for the CPU family.
+ *
  * Revision 1.1  2005/07/26 18:02:26  haraldkipp
  * Moved from dev.
  *
@@ -45,7 +48,7 @@
  *
  */
 
-#include <arch/at91.h>
+#include <arch/arm/at91.h>
 
 #include <string.h>
 //#include <stdio.h>
