@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.8  2005/10/24 10:06:21  haraldkipp
+-- New linker scripts added for AT91 apps running in RAM and ROM.
+--
 -- Revision 1.7  2005/06/05 16:57:00  haraldkipp
 -- ICC target corrected
 --
@@ -122,7 +125,9 @@ nuttools =
             {
                 macro = "ARM_LDSCRIPT",
                 brief = "ARM Linker Script",
-                description = "s3c4510b-ram\tSamsung's S3C4510B, code in RAM\n"..
+                description = "at91_boot\tAT91R40008, code copied from ROM to RAM\n"..
+                              "at91_ram\tAT91R40008, code in remapped RAM\n"..
+                              "s3c4510b-ram\tSamsung's S3C4510B, code in RAM\n"..
                               "eb40a_ram\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
                               "gba_xport2\tNintendo's Gameboy Advance\n"..
                               "wolf_ram\t\thwgroup's Wolf Module, code in RAM at 0x100\n",
