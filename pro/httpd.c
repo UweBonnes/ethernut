@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2005/10/24 11:02:28  haraldkipp
+ * Integer division hack for ARM without CRT removed.
+ *
  * Revision 1.10  2005/08/26 14:12:39  olereinhardt
  * Added NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
  *
@@ -322,7 +325,6 @@ u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, 
  * \note This is done in the simplies way, i.e. we
  * 	 encode everything that isn't alphanumeric.
  */
-#ifndef ARM_GCC_NOLIBC
 static char *hexdigits = "0123456789ABCDEF";
 
 char *NutHttpURLEncode(char *str)
@@ -359,7 +361,6 @@ char *NutHttpURLEncode(char *str)
     *ptr2++ = 0;
     return encstring;
 }
-#endif
 
 /*!
  * \brief URLDecodes a string
@@ -372,7 +373,6 @@ char *NutHttpURLEncode(char *str)
  * \warning To save RAM, the str parameter will be 
  * 	    overwritten with the encoded string.
  */
-#ifndef ARM_GCC_NOLIBC
 void NutHttpURLDecode(char *str)
 {
     register char *ptr1, *ptr2, ch;
@@ -391,7 +391,6 @@ void NutHttpURLDecode(char *str)
     }
     *ptr2 = 0;
 }
-#endif
 
 /*!
  * \brief Parses the QueryString
@@ -403,7 +402,6 @@ void NutHttpURLDecode(char *str)
  *
  * \param req Request object to parse
  */
-#ifndef ARM_GCC_NOLIBC
 void NutHttpProcessQueryString(REQUEST * req)
 {
     register int i;
@@ -519,9 +517,6 @@ void NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
         NutHttpURLDecode(req->req_qptrs[i * 2]);
     }
 }
-
-
-#endif
 
 /*!
  * \brief Gets a request parameter value by name
@@ -913,7 +908,6 @@ void NutHttpProcessRequest(FILE * stream)
     if (strcasecmp(protocol, "HTTP/0.9") == 0)
         req->req_version = 9;
 
-#ifndef ARM_GCC_NOLIBC
     if ((cp = strchr(path, '?')) != 0) {
         *cp++ = 0;
         if ((req->req_query = NutHeapAlloc(strlen(cp) + 1)) == 0) {
@@ -925,7 +919,7 @@ void NutHttpProcessRequest(FILE * stream)
 
         NutHttpProcessQueryString(req);
     }
-#endif
+
     if ((req->req_url = NutHeapAlloc(strlen(path) + 1)) == 0) {
         NutHeapFree(method);
         DestroyRequestInfo(req);
