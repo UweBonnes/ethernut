@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.7  2005/10/24 10:24:22  haraldkipp
+ * Documented AT91 support.
+ *
  * Revision 1.6  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -1591,12 +1594,85 @@
  * \defgroup xgNutArchArm ARM
  * \brief 32 Bit RISC processor.
  *
- * This port is experimental, but had been successfully tested
- * on the AT91R40008 (including Nut/Net) and the GameBoy Advance
- * (w/o Nut/Net).
+ * \code
+ * #include <arch/arm.h>
+ * \endcode
+ *
+ * This port had been successfully tested on the AT91R40008 
+ * (including Nut/Net) and the GameBoy Advance (w/o Nut/Net).
  */
 /*@{*/
 
+/*!
+ * \defgroup xgNutArchArmAt91 AT91
+ * \brief AT91 peripheral registers.
+ *
+ * The AT91 peripherals are connected to the 32-bit wide advanced peripheral bus.
+ * All registers are word accessible only.
+ */ 
+/*@{*/
+
+/*!
+ * \defgroup xgNutArchArmAt91Ebi Bus Interface
+ * \brief External bus interface registers.
+ */ 
+
+/*!
+ * \defgroup xgNutArchArmAt91Ps Power Saving
+ * \brief Power saving registers.
+ *
+ * The Power-saving feature optimizes power consumption, enabling the 
+ * software to stop the CPU clock and restarting it on interrupts or
+ * on reset. Also, the on-chip peripheral clocks can be enabled or 
+ * disabled individually.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Aic Interrupt Controller
+ * \brief Advanced interrupt controller registers.
+ *
+ * The AT91 series provides an 8-level priority, individually maskable, 
+ * vectored interrupt controller.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Pio Parallel I/O
+ * \brief Parallel I/O controller registers.
+ *
+ * Most parallel I/O lines are multiplexed with external signals of 
+ * other peripherals to optimize the use of available package pins.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Wd Watchdog
+ * \brief Watchdog timer registers.
+ *
+ * The Watch Dog is used to prevent system lock-up if the software becomes 
+ * trapped in a deadlock. It can generate an internal reset or interrupt.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Sf Special Function
+ * \brief Special function registers
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Us USART
+ * \brief Universal synchronous / asynchronous receiver / transmitter registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Tc Timer/Counter
+ * \brief Timer / Counter registers.
+ */
+ 
+/*@} xgNutArchArmAt91 */
+
+/*!
+ * \defgroup xgNutArchArmGba Gameboy Advance Support
+ * \brief Nintendo Gameboy Advance
+ */ 
+ 
 /*!
  * \defgroup xgNutArchArmBoot Boot
  * \brief Loading the code
