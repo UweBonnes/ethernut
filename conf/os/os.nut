@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.12  2005/10/24 09:58:21  haraldkipp
+-- Generalized description for NUT_CPU_FREQ.
+--
 -- Revision 1.11  2005/10/04 05:44:29  hwmaier
 -- Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
 --
@@ -269,9 +272,9 @@ nutos =
             {
                 macro = "NUT_CPU_FREQ",
                 brief = "Fixed MCU clock",
-                description = "Frequency of the MCU clock. If disabled, the system "..
-                              "will automatically determine this value during initialization "..
-                              "by using an additional 32 kHz crystal as a reference clock.",
+                description = "Frequency of the MCU clock. On some boards the system is able "..
+                              "to automatically determine this value during initialization "..
+                              "by using a reference clock. In this case the option may be disabled.",
                 flavor = "booldata",
                 file = "include/cfg/os.h"
             }
