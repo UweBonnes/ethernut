@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2005/10/24 10:50:49  haraldkipp
+ * New API functions added.
+ * Interrupt counting requires NUT_PERFMON to be defined.
+ *
  * Revision 1.11  2005/07/26 16:05:24  haraldkipp
  * Several files were moved from subdir dev to subdir arch.
  *
@@ -101,13 +105,34 @@
  */
 /*@{*/
 
+#define NUT_IRQCTL_INIT         0
+#define NUT_IRQCTL_CLEAR        1
+#define NUT_IRQCTL_STATUS       16
+#define NUT_IRQCTL_ENABLE       17
+#define NUT_IRQCTL_DISABLE      18
+#define NUT_IRQCTL_GETMODE      24
+#define NUT_IRQCTL_SETMODE      25
+#define NUT_IRQCTL_GETPRIO      32
+#define NUT_IRQCTL_SETPRIO      33
+#define NUT_IRQCTL_GETCOUNT     96
+#define NUT_IRQCTL_SETCOUNT     97
+
+#define NUT_IRQMODE_LOWLEVEL    1
+#define NUT_IRQMODE_HIGHLEVEL   2
+#define NUT_IRQMODE_FALLINGEDGE 5
+#define NUT_IRQMODE_RISINGEDGE  6
+#define NUT_IRQMODE_EDGE        7
+
 /*
  * Registered interrupt handler information structure.
  */
 typedef struct {
+#ifdef NUT_PERFMON
     u_long ir_count;
+#endif
     void *ir_arg;
     void (*ir_handler) (void *);
+    int (*ir_ctl) (int cmd, void *param);
 } IRQ_HANDLER;
 
 #if defined(__AVR__)
@@ -135,6 +160,9 @@ extern void CallHandler(IRQ_HANDLER * irh);
 extern int  NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg);
 #else
 extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);
+extern int NutIrqEnable(IRQ_HANDLER * irq);
+extern int NutIrqDisable(IRQ_HANDLER * irq);
+extern int NutIrqSetPriority(IRQ_HANDLER * irq, int level);
 #endif
 
 __END_DECLS
