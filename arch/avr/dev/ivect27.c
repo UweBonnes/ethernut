@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect27.c
+ * \brief Timer/Counter 3 compare match B interrupt.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:34:30  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -48,6 +57,7 @@
  * Revision 1.2  2003/03/31 14:53:07  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -59,7 +69,84 @@
 
 #if defined(SIG_OUTPUT_COMPARE3B) || defined(iv_TIMER3_COMPB)
 
-IRQ_HANDLER sig_OUTPUT_COMPARE3B;
+static int AvrTimer3CompBIrqCtl(int cmd, void *param);
+
+IRQ_HANDLER sig_OUTPUT_COMPARE3B = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrTimer3CompBIrqCtl        /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief Timer/Counter 3 compare match B interrupt control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_CLEAR Clear interrupt.
+ *              - NUT_IRQCTL_STATUS Query interrupt status.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrTimer3CompBIrqCtl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(ETIMSK, OCIE3B);
+
+    /* Disable interrupt. */
+    cbi(ETIMSK, OCIE3B);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+        enabled = 0;
+    case NUT_IRQCTL_CLEAR:
+        /* Clear any pending interrupt. */
+        outb(ETIFR, _BV(OCF3B));
+        break;
+    case NUT_IRQCTL_STATUS:
+        if (bit_is_set(ETIFR, OCF3B)) {
+            *ival = 1;
+        } else {
+            *ival = 0;
+        }
+        if (enabled) {
+            *ival |= 0x80;
+        }
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 11;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_OUTPUT_COMPARE3B.ir_count;
+        sig_OUTPUT_COMPARE3B.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(ETIMSK, OCIE3B);
+    }
+    return rc;
+}
 
 /*! \fn SIG_OUTPUT_COMPARE3B(void)
  * \brief Timer 3B output compare interrupt entry.
@@ -68,7 +155,5 @@ IRQ_HANDLER sig_OUTPUT_COMPARE3B;
 #pragma interrupt_handler SIG_OUTPUT_COMPARE3B:iv_TIMER3_COMPB
 #endif
 NUTSIGNAL(SIG_OUTPUT_COMPARE3B, sig_OUTPUT_COMPARE3B)
-
 #endif
-
 /*@}*/

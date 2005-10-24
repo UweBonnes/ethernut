@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect22.c
+ * \brief EEPROM ready interrupt.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:34:30  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -48,6 +57,7 @@
  * Revision 1.2  2003/03/31 14:53:07  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -57,7 +67,67 @@
  */
 /*@{*/
 
-IRQ_HANDLER sig_EEPROM_READY;
+static int AvrEepromRdyIrqCtl(int cmd, void *param);
+
+IRQ_HANDLER sig_EEPROM_READY = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrEepromRdyIrqCtl          /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief EEPROM ready interrupt control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrEepromRdyIrqCtl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(EECR, EERIE);
+
+    /* Disable interrupt. */
+    cbi(EECR, EERIE);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 0;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_EEPROM_READY.ir_count;
+        sig_EEPROM_READY.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(EECR, EERIE);
+    }
+    return rc;
+}
 
 #if defined(SIG_EEPROM_READY) || defined(iv_EE_READY)
 
@@ -68,7 +138,6 @@ IRQ_HANDLER sig_EEPROM_READY;
 #pragma interrupt_handler SIG_EEPROM_READY:iv_EE_READY
 #endif
 NUTSIGNAL(SIG_EEPROM_READY, sig_EEPROM_READY)
-
 #else
 
 /*! \fn SIG_EEPROM(void)
@@ -78,7 +147,5 @@ NUTSIGNAL(SIG_EEPROM_READY, sig_EEPROM_READY)
 #pragma interrupt_handler SIG_EEPROM:iv_EE_READY
 #endif
 NUTSIGNAL(SIG_EEPROM, sig_EEPROM_READY)
-
 #endif
-
 /*@}*/

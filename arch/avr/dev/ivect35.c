@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect35.c
+ * \brief CAN serial transfer interrupt.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.3  2005/10/24 09:35:48  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.2  2005/10/04 05:23:37  hwmaier
  * Updated interrupt hooks to reflect new CAN interrupt names of avr-lib 1.2.3
  *
@@ -42,6 +51,7 @@
  * Revision 1.1  2005/02/10 07:06:18  hwmaier
  * Changes to incorporate support for AT90CAN128 CPU
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -53,16 +63,36 @@
 
 #if defined(SIG_CAN_INTERRUPT1) || defined(iv_CAN_TRANSFER)
 
-IRQ_HANDLER sig_CAN_TRANSFER;
+static int AvrCanTxIrqCtl(int cmd, void *param);
+
+IRQ_HANDLER sig_CAN_TRANSFER = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrCanTxIrqCtl              /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief CAN serial transfer interrupt control.
+ *
+ * \param cmd   Control command.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrCanTxIrqCtl(int cmd, void *param)
+{
+    return -1;
+}
 
 /*! \fn SIG_CAN_INTERRUPT1(void)
- * \brief Store program memory interrupt entry.
+ * \brief CAN serial transfer interrupt entry.
  */
 #ifdef __IMAGECRAFT__
 #pragma interrupt_handler SIG_CAN_INTERRUPT1:iv_CAN_TRANSFER
 #endif
 NUTSIGNAL(SIG_CAN_INTERRUPT1, sig_CAN_TRANSFER)
-
 #endif
-
 /*@}*/

@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect33.c
+ * \brief Two wire serial transfer complete interrupt.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:35:48  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -48,6 +57,7 @@
  * Revision 1.2  2003/03/31 14:53:07  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -59,7 +69,87 @@
 
 #if defined(SIG_2WIRE_SERIAL) || defined(iv_TWI)
 
-IRQ_HANDLER sig_2WIRE_SERIAL;
+static int AvrTwiIrqCtl(int cmd, void *param);
+
+IRQ_HANDLER sig_2WIRE_SERIAL = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrTwiIrqCtl                /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief Two wire serial transfer complete interrupt control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_CLEAR Clear interrupt.
+ *              - NUT_IRQCTL_STATUS Query interrupt status.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrTwiIrqCtl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(TWCR, TWIE);
+    u_char bval;
+
+    /* Disable interrupt. */
+    cbi(TWCR, TWIE);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+        enabled = 0;
+    case NUT_IRQCTL_CLEAR:
+        /* Clear any pending interrupt. */
+        if (bit_is_set(SPSR, SPIF)) {
+            bval = inb(SPDR);
+        }
+        break;
+    case NUT_IRQCTL_STATUS:
+        if (bit_is_set(TWCR, TWINT)) {
+            *ival = 1;
+        } else {
+            *ival = 0;
+        }
+        if (enabled) {
+            *ival |= 0x80;
+        }
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 16;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_2WIRE_SERIAL.ir_count;
+        sig_2WIRE_SERIAL.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(TWCR, TWIE);
+    }
+    return rc;
+}
 
 /*! \fn SIG_2WIRE_SERIAL(void)
  * \brief Two-wire serial interface interrupt entry.
@@ -68,7 +158,5 @@ IRQ_HANDLER sig_2WIRE_SERIAL;
 #pragma interrupt_handler SIG_2WIRE_SERIAL:iv_TWI
 #endif
 NUTSIGNAL(SIG_2WIRE_SERIAL, sig_2WIRE_SERIAL)
-
 #endif
-
 /*@}*/

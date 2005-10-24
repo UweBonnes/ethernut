@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect19.c
+ * \brief USART0 data register empty interrupt.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:34:30  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -48,6 +57,7 @@
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -57,7 +67,81 @@
  */
 /*@{*/
 
-IRQ_HANDLER sig_UART0_DATA;
+static int AvrUart0TxDataIrqCtl(int cmd, void *param);
+
+IRQ_HANDLER sig_UART0_DATA = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrUart0TxDataIrqCtl        /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief USART0 data register empty interrupt control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_CLEAR Clear interrupt.
+ *              - NUT_IRQCTL_STATUS Query interrupt status.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrUart0TxDataIrqCtl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(UCSR0B, UDRIE0);
+
+    /* Disable interrupt. */
+    cbi(UCSR0B, UDRIE0);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_STATUS:
+        if (bit_is_set(UCSR0A, UDRE0)) {
+            *ival = 1;
+        } else {
+            *ival = 0;
+        }
+        if (enabled) {
+            *ival |= 0x80;
+        }
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 16;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_UART0_DATA.ir_count;
+        sig_UART0_DATA.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(UCSR0B, UDRIE0);
+    }
+    return rc;
+}
 
 #if defined(SIG_UART0_DATA) || defined(iv_USART0_UDRE)
 
@@ -68,7 +152,6 @@ IRQ_HANDLER sig_UART0_DATA;
 #pragma interrupt_handler SIG_UART0_DATA:iv_USART0_UDRE
 #endif
 NUTSIGNAL(SIG_UART0_DATA, sig_UART0_DATA)
-
 #else
 
 /*! \fn SIG_UART_DATA(void)
@@ -78,7 +161,5 @@ NUTSIGNAL(SIG_UART0_DATA, sig_UART0_DATA)
 #pragma interrupt_handler SIG_UART_DATA:iv_UART_UDRE
 #endif
 NUTSIGNAL(SIG_UART_DATA, sig_UART0_DATA)
-
 #endif
-
 /*@}*/

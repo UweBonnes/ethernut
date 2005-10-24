@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect06.c
+ * \brief AVR external interrupt 5.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:34:30  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -45,17 +54,128 @@
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
-
 
 /*!
  * \addtogroup xgIrqReg
  */
 /*@{*/
 
-IRQ_HANDLER sig_INTERRUPT5;
+static int AvrInterrupt5Ctl(int cmd, void *param);
+
+IRQ_HANDLER sig_INTERRUPT5 = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrInterrupt5Ctl            /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief External interrupt 5 control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_STATUS Query interrupt status.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETMODE Query interrupt mode.
+ *              - NUT_IRQCTL_SETMODE Set interrupt mode.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_SETPRIO Set interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrInterrupt5Ctl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(EIMSK, INT5);
+    u_char bval;
+
+    /* Disable interrupt. */
+    cbi(EIMSK, INT5);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+        /* Initialize to falling edge triggered. */
+        cbi(EICRB, ISC50);
+        sbi(EICRB, ISC51);
+    case NUT_IRQCTL_CLEAR:
+        /* Clear any pending interrupt. */
+        outb(EIFR, _BV(INTF5));
+        break;
+    case NUT_IRQCTL_STATUS:
+        if (bit_is_set(EIFR, INTF5)) {
+            *ival = 1;
+        } else {
+            *ival = 0;
+        }
+        if (enabled) {
+            *ival |= 0x80;
+        }
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_GETMODE:
+        bval = inb(EICR) & _BV(ISC51 | ISC50);
+        if (bval == _BV(ISC51)) {
+            *ival = NUT_IRQMODE_FALLINGEDGE;
+        } else if (bval == _BV(ISC50)) {
+            *ival = NUT_IRQMODE_EDGE;
+        } else if (bval == _BV(ISC51 | ISC50)) {
+            *ival = NUT_IRQMODE_RISINGEDGE;
+        } else {
+            *ival = NUT_IRQMODE_LOWLEVEL;
+        }
+        break;
+    case NUT_IRQCTL_SETMODE:
+        if (*ival == NUT_IRQMODE_LOWLEVEL) {
+            cbi(EICRB, ISC50);
+            cbi(EICRB, ISC51);
+        } else if (*ival == NUT_IRQMODE_EDGE) {
+            sbi(EICRB, ISC50);
+            cbi(EICRB, ISC51);
+        } else if (*ival == NUT_IRQMODE_FALLINGEDGE) {
+            cbi(EICRB, ISC50);
+            sbi(EICRB, ISC51);
+        } else if (*ival == NUT_IRQMODE_RISINGEDGE) {
+            sbi(EICRB, ISC50);
+            sbi(EICRB, ISC51);
+        } else {
+            rc = -1;
+        }
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 5;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_INTERRUPT5.ir_count;
+        sig_INTERRUPT5.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(EIMSK, INT5);
+    }
+    return rc;
+}
 
 /*! \fn SIG_INTERRUPT5(void)
  * \brief External interrupt 5 entry.

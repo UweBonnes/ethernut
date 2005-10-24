@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect17.c
+ * \brief SPI serial transfer complete interrupt.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:34:30  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -45,6 +54,7 @@
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -54,7 +64,87 @@
  */
 /*@{*/
 
-IRQ_HANDLER sig_SPI;
+static int AvrSpiIrqCtl(int cmd, void *param);
+
+IRQ_HANDLER sig_SPI = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrSpiIrqCtl                /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief SPI serial transfer complete interrupt control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_CLEAR Clear interrupt.
+ *              - NUT_IRQCTL_STATUS Query interrupt status.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrSpiIrqCtl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(SPCR, SPIE);
+    u_char bval;
+
+    /* Disable interrupt. */
+    cbi(SPCR, SPIE);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+        enabled = 0;
+    case NUT_IRQCTL_CLEAR:
+        /* Clear any pending interrupt. */
+        if (bit_is_set(SPSR, SPIF)) {
+            bval = inb(SPDR);
+        }
+        break;
+    case NUT_IRQCTL_STATUS:
+        if (bit_is_set(SPSR, SPIF)) {
+            *ival = 1;
+        } else {
+            *ival = 0;
+        }
+        if (enabled) {
+            *ival |= 0x80;
+        }
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 16;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_SPI.ir_count;
+        sig_SPI.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(SPCR, SPIE);
+    }
+    return rc;
+}
 
 /*! \fn SIG_SPI(void)
  * \brief SPI interrupt entry.

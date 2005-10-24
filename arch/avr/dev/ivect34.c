@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect34.c
+ * \brief Store program memory ready interrupt.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:35:48  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -48,6 +57,7 @@
  * Revision 1.2  2003/03/31 14:53:07  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -59,7 +69,67 @@
 
 #if defined(SIG_SPM_READY) || defined(iv_SPM_READY)
 
-IRQ_HANDLER sig_SPM_READY;
+static int AvrSpmRdyIrqCtl(int cmd, void *param);
+
+IRQ_HANDLER sig_SPM_READY = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrSpmRdyIrqCtl             /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief Store program memory ready interrupt control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrSpmRdyIrqCtl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(SPMCSR, SPMIE);
+
+    /* Disable interrupt. */
+    cbi(EECR, EERIE);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 0;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_SPM_READY.ir_count;
+        sig_SPM_READY.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(SPMCSR, SPMIE);
+    }
+    return rc;
+}
 
 /*! \fn SIG_SPM_READY(void)
  * \brief Store program memory interrupt entry.
@@ -68,7 +138,5 @@ IRQ_HANDLER sig_SPM_READY;
 #pragma interrupt_handler SIG_SPM_READY:iv_SPM_READY
 #endif
 NUTSIGNAL(SIG_SPM_READY, sig_SPM_READY)
-
 #endif
-
 /*@}*/

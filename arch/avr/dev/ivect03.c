@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,8 +31,17 @@
  *
  */
 
-/*
+/*!
+ * \file arch/avr/dev/ivect03.c
+ * \brief AVR external interrupt 2.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.2  2005/10/24 09:34:30  haraldkipp
+ * New interrupt control function added to allow future platform
+ * independant drivers.
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -45,6 +54,7 @@
  * Revision 1.2  2003/03/31 14:53:06  harald
  * Prepare release 3.1
  *
+ * \endverbatim
  */
 
 #include <dev/irqreg.h>
@@ -54,7 +64,113 @@
  */
 /*@{*/
 
-IRQ_HANDLER sig_INTERRUPT2;
+static int AvrInterrupt2Ctl(int cmd, void *param);
+
+IRQ_HANDLER sig_INTERRUPT2 = {
+#ifdef NUT_PERFMON
+    0,                          /* Interrupt counter, ir_count. */
+#endif
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    AvrInterrupt2Ctl            /* Interrupt control, ir_ctl. */
+};
+
+/*!
+ * \brief External interrupt 2 control.
+ *
+ * \param cmd   Control command.
+ *              - NUT_IRQCTL_INIT Initialize and disable interrupt.
+ *              - NUT_IRQCTL_STATUS Query interrupt status.
+ *              - NUT_IRQCTL_ENABLE Enable interrupt.
+ *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETMODE Query interrupt mode.
+ *              - NUT_IRQCTL_SETMODE Set interrupt mode.
+ *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
+ *              - NUT_IRQCTL_SETPRIO Set interrupt priority.
+ *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
+ * \param param Pointer to optional parameter.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int AvrInterrupt2Ctl(int cmd, void *param)
+{
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(EIMSK, INT2);
+    u_char bval;
+
+    /* Disable interrupt. */
+    cbi(EIMSK, INT2);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+        /* Initialize to falling edge triggered. */
+        cbi(EICRA, ISC20);
+        sbi(EICRA, ISC21);
+    case NUT_IRQCTL_CLEAR:
+        /* Clear any pending interrupt. */
+        outb(EIFR, _BV(INTF2));
+        break;
+    case NUT_IRQCTL_STATUS:
+        if (bit_is_set(EIFR, INTF2)) {
+            *ival = 1;
+        } else {
+            *ival = 0;
+        }
+        if (enabled) {
+            *ival |= 0x80;
+        }
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_GETMODE:
+        bval = inb(EICR) & _BV(ISC21 | ISC20);
+        if (bval == _BV(ISC21)) {
+            *ival = NUT_IRQMODE_FALLINGEDGE;
+        } else if (bval == _BV(ISC21 | ISC20)) {
+            *ival = NUT_IRQMODE_RISINGEDGE;
+        } else {
+            *ival = NUT_IRQMODE_LOWLEVEL;
+        }
+        break;
+    case NUT_IRQCTL_SETMODE:
+        if (*ival == NUT_IRQMODE_LOWLEVEL) {
+            cbi(EICRA, ISC20);
+            cbi(EICRA, ISC21);
+        } else if (*ival == NUT_IRQMODE_FALLINGEDGE) {
+            cbi(EICRA, ISC20);
+            sbi(EICRA, ISC21);
+        } else if (*ival == NUT_IRQMODE_RISINGEDGE) {
+            sbi(EICRA, ISC20);
+            sbi(EICRA, ISC21);
+        } else {
+            rc = -1;
+        }
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 2;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) sig_INTERRUPT2.ir_count;
+        sig_INTERRUPT2.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(EIMSK, INT2);
+    }
+    return rc;
+}
 
 /*! \fn SIG_INTERRUPT2(void)
  * \brief External interrupt 2 entry.
