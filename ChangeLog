@@ -1,6 +1,34 @@
-$Id: ChangeLog,v 1.279 2005/10/24 11:48:44 haraldkipp Exp $
+$Id: ChangeLog,v 1.280 2005/10/24 18:06:31 haraldkipp Exp $
 
 2005-10-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/debug_gba.c, arch/arm/dev/ihndlr_gba.c,
+	arch/arm/dev/ostimer_gba.c, arch/arm/dev/uartgba.c:
+	Include arm.h instead of gba.h.
+
+	* arch/avr/dev/adc.c: REFSx flags for ADMUX are not available
+	for ATmega103. I also moved local variable sleep_mode into
+	the __AVR_ENHANCED__ block to avoid a warning with non-
+	enhanced devices.
+
+	* arch/avr/dev/ivect01.c, arch/avr/dev/ivect02.c,
+	arch/avr/dev/ivect03.c, arch/avr/dev/ivect04.c:
+	ATmega103 cannot modify interrupt sensitivity for the
+	four high priority external interrupts.
+
+	* arch/avr/dev/ivect05.c, arch/avr/dev/ivect06.c,
+	arch/avr/dev/ivect07.c, arch/avr/dev/ivect08.c,
+	arch/avr/dev/ivect18.c, arch/avr/dev/ivect19.c,
+	arch/avr/dev/ivect20.c, arch/avr/dev/ivect21.c,
+	arch/avr/dev/ivect23.c, arch/avr/dev/lanc111.c,
+	arch/avr/dev/sja1000.c: Use generic port and flag names
+	to allow compilation for ATmega103.
+
+	* include/arch/arm.h: Header file for GameBoy added.
+
+	* include/arch/avr/icc.h: Duplicate macro definitions removed
+	and parameter order of cstrcmp() corrected. Thanks to Michael 
+	Fischer. Also added a few generic port and flag names.
 
 	* nut/dev/ihndlr.c, include/dev/irqreg.h: New API functions 
 	NutIrqEnable(), NutIrqDisable() and NutIrqSetPriority() added. 
