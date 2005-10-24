@@ -33,6 +33,10 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.2  2005/10/24 09:52:32  haraldkipp
+-- New AT91 interrupt handler routines.
+-- New DM9000E Ethernet driver for Ethernut 3 board.
+--
 -- Revision 1.1  2005/07/26 15:41:06  haraldkipp
 -- All target dependent code is has been moved to a new library named
 -- libnutarch. Each platform got its own script.
@@ -82,7 +86,7 @@ nutarch_arm =
     },
 
     --
-    -- AVR interrupt handling.
+    -- Interrupt handling.
     --
     {
         name = "nutarch_arm_irqgba",
@@ -90,6 +94,27 @@ nutarch_arm =
         requires = { "HW_MCU_GBA" },
         provides = { "DEV_IRQ_GBA" },
         sources = { "arm/dev/ihndlr_gba.c" },
+    },
+    {
+        name = "nutarch_arm_irqat91",
+        brief = "Interrupt Handler (AT91)",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_IRQ_AT91" },
+        sources =
+        {
+            "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91irq0.c",
+            "arm/dev/ih_at91irq1.c",
+            "arm/dev/ih_at91irq2.c",
+            "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91swirq.c",
+            "arm/dev/ih_at91tc0.c",
+            "arm/dev/ih_at91tc1.c",
+            "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91uart0.c",
+            "arm/dev/ih_at91uart1.c",
+            "arm/dev/ih_at91wdi.c"
+        },
     },
 
     --
@@ -116,6 +141,14 @@ nutarch_arm =
         requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/ax88796.c" },
+    },     
+    {
+        name = "nutarch_arm_dm9000e",
+        brief = "DM9000E Driver (AT91)",
+        description = "LAN driver for Davicom DM9000E. AT91 only.",
+        requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "arm/dev/dm9000e.c" },
     },     
 }
 
