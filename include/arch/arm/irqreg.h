@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/24 10:26:21  haraldkipp
+ * AT91 handlers added.
+ *
  * Revision 1.1  2005/07/26 18:35:09  haraldkipp
  * First check in
  *
@@ -72,6 +75,19 @@ extern IRQ_HANDLER sig_GAMEPAK;
 extern void InitIrqHandler(void);
 
 #elif defined(MCU_AT91R40008)
+
+extern IRQ_HANDLER sig_FIQ;
+extern IRQ_HANDLER sig_SWIRQ;
+extern IRQ_HANDLER sig_UART0;
+extern IRQ_HANDLER sig_UART1;
+extern IRQ_HANDLER sig_TC0;
+extern IRQ_HANDLER sig_TC1;
+extern IRQ_HANDLER sig_TC2;
+extern IRQ_HANDLER sig_WDI;
+extern IRQ_HANDLER sig_PIO;
+extern IRQ_HANDLER sig_INTERRUPT0;
+extern IRQ_HANDLER sig_INTERRUPT1;
+extern IRQ_HANDLER sig_INTERRUPT2;
 
 #else
 #warning "No MCU defined"
