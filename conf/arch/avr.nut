@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.4  2005/10/24 11:14:07  haraldkipp
+-- NUT_CPU_FREQ option removed. This is handled in os.nut.
+--
 -- Revision 1.3  2005/10/04 05:51:49  hwmaier
 -- Added CAN driver for AT90CAN128
 --
@@ -101,18 +104,6 @@ nutarch_avr =
         requires = { "HW_MCU_AVR" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "avr/dev/ostimer.c" },
-        options =
-        {
-            {
-                macro = "NUT_CPU_FREQ",
-                brief = "Fixed MCU clock",
-                description = "Frequency of the MCU clock. If disabled, the system "..
-                              "will automatically determine this value during initialization "..
-                              "by using an additional 32 kHz crystal as a reference clock.",
-                flavor = "booldata",
-                file = "include/cfg/os.h"
-            }
-        }
     },
 
     --
@@ -976,6 +967,7 @@ nutarch_avr =
         name = "nutarch_avr_twif",
         brief = "TWI Driver",
         requires = { "HW_MCU_AVR", "NUT_EVENT" },
+        provides = { "DEV_TWI" },
         sources = { "avr/dev/twif.c" }
     },
     {
