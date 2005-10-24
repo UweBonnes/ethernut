@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/24 18:02:34  haraldkipp
+ * Fixes for ATmega103.
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -165,19 +168,19 @@
 
 #elif (LANC111_SIGNAL_IRQ == INT4)
 #define LANC111_SIGNAL          sig_INTERRUPT4
-#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC40); sbi(EICRB, ISC41)
+#define LANC111_SIGNAL_MODE()   sbi(EICR, ISC40); sbi(EICR, ISC41)
 
 #elif (LANC111_SIGNAL_IRQ == INT6)
 #define LANC111_SIGNAL          sig_INTERRUPT6
-#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC60); sbi(EICRB, ISC61)
+#define LANC111_SIGNAL_MODE()   sbi(EICR, ISC60); sbi(EICR, ISC61)
 
 #elif (LANC111_SIGNAL_IRQ == INT7)
 #define LANC111_SIGNAL          sig_INTERRUPT7
-#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC70); sbi(EICRB, ISC71)
+#define LANC111_SIGNAL_MODE()   sbi(EICR, ISC70); sbi(EICR, ISC71)
 
 #else
 #define LANC111_SIGNAL          sig_INTERRUPT5
-#define LANC111_SIGNAL_MODE()   sbi(EICRB, ISC50); sbi(EICRB, ISC51)
+#define LANC111_SIGNAL_MODE()   sbi(EICR, ISC50); sbi(EICR, ISC51)
 
 #endif
 

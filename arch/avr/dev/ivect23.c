@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/10/24 18:02:34  haraldkipp
+ * Fixes for ATmega103.
+ *
  * Revision 1.2  2005/10/24 09:34:30  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -104,7 +107,7 @@ int AvrAnalogCompIrqCtl(int cmd, void *param)
         enabled = 0;
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
-        outb(ADCSRA, _BV(ADIF));
+        outb(ADCSR, _BV(ADIF));
         break;
     case NUT_IRQCTL_STATUS:
         if (bit_is_set(ACSR, ACI)) {

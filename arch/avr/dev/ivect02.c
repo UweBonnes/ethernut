@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/10/24 18:02:34  haraldkipp
+ * Fixes for ATmega103.
+ *
  * Revision 1.2  2005/10/24 09:34:30  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -97,26 +100,33 @@ int AvrInterrupt1Ctl(int cmd, void *param)
     int rc = 0;
     u_int *ival = (u_int *) param;
     int enabled = bit_is_set(EIMSK, INT1);
-    u_char bval;
 
     /* Disable interrupt. */
     cbi(EIMSK, INT1);
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
-        /* Initialize to falling edge triggered. */
+#ifdef __AVR_ENHANCED__
+        /* Initialize to low level triggered. */
         cbi(EICRA, ISC10);
-        sbi(EICRA, ISC11);
+        cbi(EICRA, ISC11);
+#endif
     case NUT_IRQCTL_CLEAR:
+#ifdef __AVR_ENHANCED__
         /* Clear any pending interrupt. */
         outb(EIFR, _BV(INTF1));
+#endif /* __AVR_ENHANCED__ */
         break;
     case NUT_IRQCTL_STATUS:
+#ifdef __AVR_ENHANCED__
         if (bit_is_set(EIFR, INTF1)) {
             *ival = 1;
         } else {
             *ival = 0;
         }
+#else /* !__AVR_ENHANCED__ */
+        *ival = 0;
+#endif /* __AVR_ENHANCED__ */
         if (enabled) {
             *ival |= 0x80;
         }
@@ -128,16 +138,23 @@ int AvrInterrupt1Ctl(int cmd, void *param)
         enabled = 0;
         break;
     case NUT_IRQCTL_GETMODE:
-        bval = inb(EICR) & _BV(ISC11 | ISC10);
-        if (bval == _BV(ISC11)) {
-            *ival = NUT_IRQMODE_FALLINGEDGE;
-        } else if (bval == _BV(ISC11 | ISC10)) {
-            *ival = NUT_IRQMODE_RISINGEDGE;
-        } else {
-            *ival = NUT_IRQMODE_LOWLEVEL;
+#ifdef __AVR_ENHANCED__
+        {
+            u_char bval = inb(EICRA) & (_BV(ISC11) | _BV(ISC10));
+            if (bval == _BV(ISC11)) {
+                *ival = NUT_IRQMODE_FALLINGEDGE;
+            } else if (bval == _BV(ISC11 | ISC10)) {
+                *ival = NUT_IRQMODE_RISINGEDGE;
+            } else {
+                *ival = NUT_IRQMODE_LOWLEVEL;
+            }
         }
+#else /* !__AVR_ENHANCED__ */
+        *ival = NUT_IRQMODE_LOWLEVEL;
+#endif /* __AVR_ENHANCED__ */
         break;
     case NUT_IRQCTL_SETMODE:
+#ifdef __AVR_ENHANCED__
         if (*ival == NUT_IRQMODE_LOWLEVEL) {
             cbi(EICRA, ISC10);
             cbi(EICRA, ISC11);
@@ -150,6 +167,11 @@ int AvrInterrupt1Ctl(int cmd, void *param)
         } else {
             rc = -1;
         }
+#else /* !__AVR_ENHANCED__ */
+        if (*ival != NUT_IRQMODE_LOWLEVEL) {
+            rc = -1;
+        }
+#endif /* __AVR_ENHANCED__ */
         break;
     case NUT_IRQCTL_GETPRIO:
         *ival = 1;

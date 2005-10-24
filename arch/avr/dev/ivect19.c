@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/10/24 18:02:34  haraldkipp
+ * Fixes for ATmega103.
+ *
  * Revision 1.2  2005/10/24 09:34:30  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -97,17 +100,17 @@ int AvrUart0TxDataIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(UCSR0B, UDRIE0);
+    int enabled = bit_is_set(UCR, UDRIE);
 
     /* Disable interrupt. */
-    cbi(UCSR0B, UDRIE0);
+    cbi(UCR, UDRIE);
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         enabled = 0;
         break;
     case NUT_IRQCTL_STATUS:
-        if (bit_is_set(UCSR0A, UDRE0)) {
+        if (bit_is_set(USR, UDRE)) {
             *ival = 1;
         } else {
             *ival = 0;
@@ -138,7 +141,7 @@ int AvrUart0TxDataIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        sbi(UCSR0B, UDRIE0);
+        sbi(UCR, UDRIE);
     }
     return rc;
 }

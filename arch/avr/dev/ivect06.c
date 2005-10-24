@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/10/24 18:02:34  haraldkipp
+ * Fixes for ATmega103.
+ *
  * Revision 1.2  2005/10/24 09:34:30  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -104,9 +107,9 @@ int AvrInterrupt5Ctl(int cmd, void *param)
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
-        /* Initialize to falling edge triggered. */
-        cbi(EICRB, ISC50);
-        sbi(EICRB, ISC51);
+        /* Initialize to low level triggered. */
+        cbi(EICR, ISC50);
+        cbi(EICR, ISC51);
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
         outb(EIFR, _BV(INTF5));
@@ -141,17 +144,17 @@ int AvrInterrupt5Ctl(int cmd, void *param)
         break;
     case NUT_IRQCTL_SETMODE:
         if (*ival == NUT_IRQMODE_LOWLEVEL) {
-            cbi(EICRB, ISC50);
-            cbi(EICRB, ISC51);
+            cbi(EICR, ISC50);
+            cbi(EICR, ISC51);
         } else if (*ival == NUT_IRQMODE_EDGE) {
-            sbi(EICRB, ISC50);
-            cbi(EICRB, ISC51);
+            sbi(EICR, ISC50);
+            cbi(EICR, ISC51);
         } else if (*ival == NUT_IRQMODE_FALLINGEDGE) {
-            cbi(EICRB, ISC50);
-            sbi(EICRB, ISC51);
+            cbi(EICR, ISC50);
+            sbi(EICR, ISC51);
         } else if (*ival == NUT_IRQMODE_RISINGEDGE) {
-            sbi(EICRB, ISC50);
-            sbi(EICRB, ISC51);
+            sbi(EICR, ISC50);
+            sbi(EICR, ISC51);
         } else {
             rc = -1;
         }

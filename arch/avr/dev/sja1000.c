@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/24 18:02:34  haraldkipp
+ * Fixes for ATmega103.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -721,11 +724,13 @@ int SJAInit(NUTDEVICE * dev)
     cbi(EIMSK, SJA_SIGNAL_BIT);
     if (SJA_SIGNAL_BIT < 4)     // Set corresponding interrupt to low
     {                           // level interrupt
+#ifdef __AVR_ENHANCED__
         cbi(EICRA, (SJA_SIGNAL_BIT << 1));
         cbi(EICRA, (SJA_SIGNAL_BIT << 1) + 1);
+#endif /* __AVR_ENHANCED__ */
     } else {
-        cbi(EICRB, ((SJA_SIGNAL_BIT - 4) << 1));
-        cbi(EICRB, ((SJA_SIGNAL_BIT - 4) << 1) + 1);
+        cbi(EICR, ((SJA_SIGNAL_BIT - 4) << 1));
+        cbi(EICR, ((SJA_SIGNAL_BIT - 4) << 1) + 1);
     }
     temp = SJA1000_INT;         // Read interrupt register to clear pendin bits    
     sbi(EIMSK, SJA_SIGNAL_BIT);
