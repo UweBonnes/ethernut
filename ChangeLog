@@ -1,4 +1,105 @@
-$Id: ChangeLog,v 1.278 2005/10/21 11:22:19 olereinhardt Exp $
+$Id: ChangeLog,v 1.279 2005/10/24 11:48:44 haraldkipp Exp $
+
+2005-10-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* nut/dev/ihndlr.c, include/dev/irqreg.h: New API functions 
+	NutIrqEnable(), NutIrqDisable() and NutIrqSetPriority() added. 
+	Hopefully this will help to create platform independant drivers.
+	Interrupt counter removed when NUT_PERFMON is undefined, which
+	will speed up interrupt handling.
+
+	* dev/cy2239x.c, include/dev/cy2239x.h: Simple support for 
+	Cypress CY22393/4/5 clock chips.
+
+	* dev/twbbif.c: Bit banging two wire interface (I2C).
+
+	* arch/avr/dev/twif.c, include/dev/twif.h: Added const modifier 
+	to transmit data pointer in TwMasterTransact().
+
+	* dev/x12rtc.c, include/dev/x12rtc.h: RTC and EEPROM routines 
+	for the Intersil/Xicor X1226 and X1286 real time clock chips.
+
+	* arch/arm/init/crtat91_boot.S, arch/arm/init/crtat91_ram.S,
+	arch/arm/ldscripts/at91_boot.ld, arch/arm/ldscripts/at91_ram.ld:
+	New startup files and linker scripts for AT91 apps stored in
+	ROM (boot) or directly loaded into RAM.
+
+	* arch/arm/dev/ih_at91fiq.c, arch/arm/dev/ih_at91irq0.c, 
+	arch/arm/dev/ih_at91irq1.c, arch/arm/dev/ih_at91irq2.c, 
+	arch/arm/dev/ih_at91pio.c, arch/arm/dev/ih_at91swirq.c, 
+	arch/arm/dev/ih_at91tc0.c, arch/arm/dev/ih_at91tc1.c, 
+	arch/arm/dev/ih_at91tc2.c, arch/arm/dev/ih_at91uart0.c, 
+	arch/arm/dev/ih_at91uart1.c, arch/arm/dev/ih_at91wdi.c,
+	conf/arch/arm.nut, include/arch/arm/irqreg.h:
+	New AT91 interrupt handler routines.
+
+	* arch/arm/dev/dm9000e.c, include/dev/dm9000e.h, 
+	conf/arch/arm.nut: New Ethernet driver for Ethernut 3 board.
+
+	* arch/arm/os/context.c: Switch frame reduced and NutThreadEntry
+	included in the execution path. The 'cc' globber had been
+	removed from the context switching asm macro, after Michael 
+	Fischer found out that this fixes a problem with optimized
+	compilation. Unfortunately, compiler optimized binaries
+	still seem to run unreliable.
+
+	* arch/arm/os/nutinit.c: Default idle thread stack size
+	increased from 384 to 512 bytes. Default main thread stack
+	size increased from 768 to 1024.
+
+	* arch/arm/dev/ostimer_at91.c, arch/arm/dev/ostimer_s3c4510b.c,
+	arch/arm/os/nutinit.c, include/arch/arm/at91.h,
+	include/arch/arm/at91eb40a.h, include/arch/arm/gba.h:
+	Moved family specific header files to arch subdirectory.
+
+	* include/arch/arm.h: Port I/O macros added.
+
+	* arch/arm/dev/ostimer_at91.c: New IRQ API added to allow
+	platform independant interrupt configuration.
+
+	* arch/arm/dev/debug_at91.c: Now uses AT91 header and enables
+	both USARTs.
+
+	* conf/repository.nut, conf/tools.nut: New linker scripts added for 
+	AT91 apps running in RAM and ROM.
+
+	* conf/ethernut30d.conf: New configuration file for Ethernut 3.
+
+	* arch/avr/dev/ivect01.c, arch/avr/dev/ivect02.c, 
+	arch/avr/dev/ivect03.c, arch/avr/dev/ivect04.c, 
+	arch/avr/dev/ivect05.c, arch/avr/dev/ivect06.c, 
+	arch/avr/dev/ivect07.c, arch/avr/dev/ivect08.c, 
+	arch/avr/dev/ivect09.c, arch/avr/dev/ivect10.c, 
+	arch/avr/dev/ivect11.c, arch/avr/dev/ivect12.c, 
+	arch/avr/dev/ivect13.c, arch/avr/dev/ivect14.c, 
+	arch/avr/dev/ivect15.c, arch/avr/dev/ivect16.c, 
+	arch/avr/dev/ivect17.c, arch/avr/dev/ivect18.c, 
+	arch/avr/dev/ivect19.c, arch/avr/dev/ivect20.c, 
+	arch/avr/dev/ivect21.c, arch/avr/dev/ivect22.c, 
+	arch/avr/dev/ivect23.c, arch/avr/dev/ivect24.c, 
+	arch/avr/dev/ivect25.c, arch/avr/dev/ivect26.c, 
+	arch/avr/dev/ivect27.c, arch/avr/dev/ivect28.c, 
+	arch/avr/dev/ivect29.c, arch/avr/dev/ivect30.c, 
+	arch/avr/dev/ivect31.c, arch/avr/dev/ivect32.c, 
+	arch/avr/dev/ivect33.c, arch/avr/dev/ivect34.c, 
+	arch/avr/dev/ivect35.c, arch/avr/dev/ivect36.c:
+	New interrupt control function added, which should allow platform
+	independant drivers in the future.
+
+	* include/arch/avr.h, include/arch/avr/gcc.h, include/arch/avr/icc.h: 
+	Compiler specific definitions moved from avr.h to new header files 
+	avr/icc.h and avr/gcc.h.
+
+	* conf/os/os.nut: Generalized description for NUT_CPU_FREQ.
+
+	* conf/arch/avr.nut: NUT_CPU_FREQ option removed. This is
+	handled in os.nut.
+
+	* crt/fwrite.c, net/tcpsock.c, pro/httpd.c: Integer division hack 
+	for ARM without CRT removed.
+
+	* doc/gen/nutdoc_en.txt: Documented AT91 support.
+
 
 2005-10-21 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* nutsetup
