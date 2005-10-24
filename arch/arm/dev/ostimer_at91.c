@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/24 08:34:13  haraldkipp
+ * Moved AT91 family specific header files to sbudir arm.
+ * Use new IRQ API.
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -60,9 +64,9 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/arch.h>
-#include <arch/at91eb40a.h> /* LED debug */
-#include <arch/at91.h>
+#include <arch/arm/at91.h>
 #include <dev/irqreg.h>
 
 /*!
@@ -74,16 +78,12 @@
 #define NutDisableTimerIrq()    NutExitCritical()
 
 #ifndef NUT_CPU_FREQ
-#define NUT_CPU_FREQ    1000000UL
+#define NUT_CPU_FREQ    73728000UL
 #endif
 
 #ifndef NUT_TICK_FREQ
 #define NUT_TICK_FREQ   1000UL
 #endif
-
-static int dummy;
-
-static void (*os_handler) (void *);
 
 /*!
  * \brief Loop for a specified number of milliseconds.
@@ -100,26 +100,13 @@ static void (*os_handler) (void *);
  */
 void NutDelay(u_char ms)
 {
-    u_short delay_cnt = 2400;   //*KU* for 14.745600 MHz Clock
-    u_short delay_cnt_buffer;
+    int i;
 
     while (ms--) {
-        delay_cnt_buffer = delay_cnt;
-        while (delay_cnt_buffer--);
+        for (i = 3200; i--; ) {
+            _NOP();
+        }
     }
-}
-
-
-/*!
- * \brief Timer 0 interrupt entry.
- */
-void Timer0Entry(void) __attribute__ ((naked));
-void Timer0Entry(void)
-{
-    IRQ_ENTRY();
-    dummy = inr(TC0_SR);
-    os_handler(0);
-    IRQ_EXIT();
 }
 
 /*!
@@ -132,12 +119,10 @@ void Timer0Entry(void)
  * Applications should not modify any registers of this
  * timer, but make use of the Nut/OS timer API. Timer 1
  * and timer 2 are available to applications.
- *
- * \todo Hardware stuff to be put in nutlibdev.
  */
 void NutRegisterTimer(void (*handler) (void *))
 {
-    os_handler = handler;
+    int dummy;
 
     /* Disable the Clock Counter */
     outr(TC0_CCR, TC_CLKDIS);
@@ -152,17 +137,14 @@ void NutRegisterTimer(void (*handler) (void *))
     /* Validate the RC compare interrupt */
     outr(TC0_IER, TC_CPCS);
 
-    /* Disable timer 0 interrupts. */
-    outr(AIC_IDCR, _BV(TC0_ID));
-    /* Set the TC0 IRQ handler address */
-    outr(AIC_SVR(4), (unsigned int)Timer0Entry);
-    /* Set the trigg and priority for timer 0 interrupt */
-    /* Level 7 is highest, level 0 lowest. */
-    outr(AIC_SMR(4), (AIC_SRCTYPE_INT_LEVEL_SENSITIVE | 0x4));
-    /* Clear timer 0 interrupt */
-    outr(AIC_ICCR, _BV(TC0_ID));
+    /* Register timer interrupt handler. */
+    NutRegisterIrqHandler(&sig_TC0, handler, 0);
+    /* Set to lowest priority. */
+    NutIrqSetPriority(&sig_TC0, 0);
+
     /* Enable timer 0 interrupts */
-    outr(AIC_IECR, _BV(TC0_ID));
+    NutIrqEnable(&sig_TC0);
+    //outr(AIC_IECR, _BV(TC0_ID));
 
     /* Set compare value for 1 ms. */
     outr(TC0_RC, 0x80F);
