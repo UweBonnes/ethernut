@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.21  2005/10/24 09:54:55  haraldkipp
+-- New i2C bit banging driver.
+-- New Xicor RTC driver.
+-- New Cypress programmable clock driver.
+--
 -- Revision 1.20  2005/10/04 05:48:11  hwmaier
 -- Added CAN driver for AT90CAN128
 --
@@ -179,6 +184,36 @@ nutdev =
         sources = { "can_dev.c" },
     },
 
+    --
+    -- Simple Interface Drivers.
+    --
+    {
+        name = "nutdev_twbbif",
+        brief = "Bit Banging Two Wire",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_TWI" },
+        sources = { "twbbif.c" }
+    },
+
+    --
+    -- Special Chip Drivers.
+    --
+    {
+        name = "nutdev_x12rtc",
+        brief = "X12xx Driver",
+        description = "Intersil X12xx RTC and EEPROM driver.",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_RTC" },
+        sources = { "x12rtc.c" }
+    },
+    {
+        name = "nutdev_cy2239x",
+        brief = "CY2239x Driver",
+        description = "Cypress CY22393/4/5 PLL clock.",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_PLL" },
+        sources = { "cy2239x.c" }
+    },
 
     --
     -- WAN Drivers.
