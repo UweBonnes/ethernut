@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/24 10:09:36  haraldkipp
+ * Integer division hack for ARM without CRT removed.
+ *
  * Revision 1.2  2005/04/05 17:58:02  haraldkipp
  * Avoid integer division on ARM platform as long as we run without crtlib.
  *
@@ -77,10 +80,8 @@ size_t fwrite(CONST void *data, size_t size, size_t count, FILE * stream)
         count *= size;
     if ((int) (rc = (size_t) _write(stream->iob_fd, data, count)) <= 0)
         return 0;
-#ifndef ARM_GCC_NOLIBC
     if (size > 1)
         rc /= size;
-#endif
     return rc;
 }
 
