@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/10/24 09:22:29  haraldkipp
+ * Default idle and main thread stack sizes increased.
+ * AT91 header file moved.
+ *
  * Revision 1.3  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -63,8 +67,7 @@
 #ifdef MCU_GBA
 #include <dev/irqreg.h>
 #else
-#include <arch/at91.h>
-#include <arch/at91eb40a.h>
+#include <arch/arm/at91.h>
 #endif
 
 /*!
@@ -73,11 +76,11 @@
 /*@{*/
 
 #ifndef NUT_THREAD_MAINSTACK
-#define NUT_THREAD_MAINSTACK    768
+#define NUT_THREAD_MAINSTACK    1024
 #endif
 
 #ifndef NUT_THREAD_IDLESTACK
-#define NUT_THREAD_IDLESTACK    384
+#define NUT_THREAD_IDLESTACK    512
 #endif
 
 /*!
@@ -127,7 +130,7 @@ THREAD(NutIdle, arg)
  */
 void NutInit(void)
 {
-    NutHeapAdd(&__heap_start, (uptr_t)(NUTMEM_END - 256 - (uptr_t)(&__heap_start)));
+    NutHeapAdd(&__heap_start, (uptr_t) (NUTMEM_END - 256 - (uptr_t) (&__heap_start)));
 
     /*
      * No EEPROM configuration.
