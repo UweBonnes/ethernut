@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/24 08:58:48  haraldkipp
+ * Header file moved.
+ *
  * Revision 1.1  2005/07/26 18:02:26  haraldkipp
  * Moved from dev.
  *
@@ -59,8 +62,7 @@
 
 #include <cfg/arch.h>
 #if defined(MCU_AT91R40008)
-#include <arch/at91eb40a.h> /* LED debug */
-#include <arch/at91.h>
+#include <arch/arm/at91.h>
 
 #elif defined(MCU_S3C4510B)
 #include <arch/arm.h>
