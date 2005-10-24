@@ -2,7 +2,7 @@
 #define _ARCH_ARM_H_
 
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/24 10:35:05  haraldkipp
+ * Port I/O macros added.
+ *
  * Revision 1.2  2004/09/08 10:24:26  haraldkipp
  * RAMSTART is too platform dependant
  *
@@ -46,7 +49,24 @@
  *
  */
 
+#ifdef MCU_AT91R40008
+#include <arch/arm/at91.h>
+#endif
+
 #include <dev/mweeprom.h>
+
+#define ARM_MODE_USER       0x10
+#define ARM_MODE_FIQ        0x11
+#define ARM_MODE_IRQ        0x12
+#define ARM_MODE_SVC        0x13
+#define ARM_MODE_ABORT      0x17
+#define ARM_MODE_UNDEF      0x1B
+#define ARM_MODE_SYS        0x1F
+
+#define I_BIT               0x80
+#define F_BIT               0x40
+#define T_BIT               0x20
+
 
 #define CONST      const
 #define INLINE     inline
@@ -64,7 +84,6 @@
 #define strlen_P(x)             strlen(x)
 #define strcpy_P(x,y)           strcpy(x,y)
 
-/* This will only work for equal/not equal comparisions. */
 #define strcmp_P(x, y)          strcmp(x, y)
 #define memcpy_P(x, y, z)       memcpy(x, y, z)
 
@@ -81,8 +100,18 @@ extern void *__bss_end;
  */
 extern void *__stack;
 
-/* #define RAMSTART    ((void *)0xffbf20) */
+#ifndef _NOP
+#define _NOP() __asm__ __volatile__ ("mov r0, r0")
+#endif
 
-/* #define RAMEND  (0xffbf20 + 0x4000) */
+#define outb(_reg, _val)  (*((volatile unsigned char *)(_reg)) = (_val))
+#define outw(_reg, _val)  (*((volatile unsigned short *)(_reg)) = (_val))
+#define outr(_reg, _val)  (*((volatile unsigned int *)(_reg)) = (_val))
+
+#define inb(_reg)   (*((volatile unsigned char *)(_reg)))
+#define inw(_reg)   (*((volatile unsigned short *)(_reg)))
+#define inr(_reg)   (*((volatile unsigned int *)(_reg)))
+
+#define _BV(bit)    (1 << bit)
 
 #endif
