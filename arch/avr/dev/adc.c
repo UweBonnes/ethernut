@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/10/24 17:59:55  haraldkipp
+ * Fixes for ATmega103
+ *
  * Revision 1.4  2005/08/25 16:23:42  olereinhardt
  * Removed compute intensive % and replaced by an &
  *
@@ -200,6 +203,7 @@ void ADCSetRef(adc_ref_t reference)
 {
     ADCStopConversion();
 
+#ifdef __AVR_ENHANCED__
     switch (reference) {
     case AVCC:
         cbi(ADMUX, REFS1);
@@ -214,6 +218,7 @@ void ADCSetRef(adc_ref_t reference)
         sbi(ADMUX, REFS0);
         break;
     }
+#endif /* __AVR_ENHANCED__ */
 
 }
 
@@ -308,18 +313,19 @@ void ADCStartConversion()
 
 void ADCStartLowNoiseConversion()
 {
-    u_char sleep_mode;
     ADCSetMode(SINGLE_CONVERSION);
 
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-    sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
-    set_sleep_mode(adc_sleep_mode);
-    /* Note:  avr-libc has a sleep_mode() function, but it's broken for
-    AT90CAN128 with avr-libc version earlier than 1.2 */
-    AVR_SLEEP_CTRL_REG |= _BV(SE);
-    __asm__ __volatile__ ("sleep" "\n\t" :: );
-    AVR_SLEEP_CTRL_REG &= ~_BV(SE);
-    set_sleep_mode(sleep_mode);
+    {
+        u_char sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
+        set_sleep_mode(adc_sleep_mode);
+        /* Note:  avr-libc has a sleep_mode() function, but it's broken for
+        AT90CAN128 with avr-libc version earlier than 1.2 */
+        AVR_SLEEP_CTRL_REG |= _BV(SE);
+        __asm__ __volatile__ ("sleep" "\n\t" :: );
+        AVR_SLEEP_CTRL_REG &= ~_BV(SE);
+        set_sleep_mode(sleep_mode);
+    }
 #else
     sbi(ADCSR, ADSC);
 #endif    
