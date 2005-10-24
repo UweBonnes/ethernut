@@ -2,7 +2,7 @@
 #define _DEV_TWIF_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:09  haraldkipp
- * Initial revision
+ * Revision 1.2  2005/10/24 10:56:30  haraldkipp
+ * Added const modifier to transmit data pointer in TwMasterTransact().
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:09  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/03/31 14:53:23  harald
  * Prepare release 3.1
@@ -76,7 +79,7 @@
 extern int TwInit(u_char sla);
 extern int TwIOCtl(int req, void *conf);
 
-extern int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo);
+extern int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo);
 extern int TwMasterError(void);
 
 extern int TwSlaveListen(u_char *sla, void *rxdata, u_short rxsiz, u_long tmo);

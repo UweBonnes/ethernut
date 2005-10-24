@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/24 10:56:30  haraldkipp
+ * Added const modifier to transmit data pointer in TwMasterTransact().
+ *
  * Revision 1.2  2005/10/07 22:03:29  hwmaier
  * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
  *
@@ -99,7 +102,7 @@ static u_char tw_mm_sla;            /* Destination slave address. */
 static volatile u_char tw_mm_err;   /* Current master mode error. */
 static u_char tw_mm_error;          /* Last master mode error. */
 
-static u_char *tw_mt_buf;           /* Pointer to the master transmit buffer. */
+static CONST u_char *tw_mt_buf;     /* Pointer to the master transmit buffer. */
 static volatile u_short tw_mt_len;  /* Number of bytes to transmit in master mode. */
 static volatile u_short tw_mt_idx;  /* Current master transmit buffer index. */
 
@@ -518,7 +521,7 @@ static void TwInterrupt(void *arg)
  * \bug Joel Dotreppe reported, that TwMasterTransact() doesn't work when
  *      passing 0 for txdata and txlen. Though, I'm not able to verify this.
  */
-int TwMasterTransact(u_char sla, void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
+int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
 {
     int rc = -1;
 
