@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/10/24 10:17:24  haraldkipp
+ * New API functions added to create platform independant drivers.
+ * Interrupt counting requires NUT_PERFMON to be defined.
+ *
  * Revision 1.3  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -55,7 +59,9 @@
  */
 void CallHandler(IRQ_HANDLER * irh)
 {
+#ifdef NUT_PERFMON
     irh->ir_count++;
+#endif
     if (irh->ir_handler)
         (irh->ir_handler) (irh->ir_arg);
 }
@@ -67,26 +73,92 @@ void CallHandler(IRQ_HANDLER * irh)
  * applications may also implement their local interrupt
  * handlers.
  *
- * \param irq     Interrupt number to be associated with this handler.
- * \param handler This routine will be called by Nut/OS, when the
+ * \param irq     Interrupt to be associated with this handler.
+ * \param handler This routine will be called by Nut/OS, when the 
  *                specified interrupt occurs.
  * \param arg     Argument to be passed to the interrupt handler.
  *
  * \return 0 on success, -1 otherwise.
  */
 #if !defined (__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
-int NutRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *),
-                          void *arg)
+int NutRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *), void *arg)
 {
-    NutEnterCritical();
+    int rc = 0;
 
+    /* Initialize this interrupt. */
+    if (irq->ir_ctl) {
+        rc = (irq->ir_ctl) (NUT_IRQCTL_INIT, NULL);
+    }
+
+    /* Set the interrupt handler. */
     irq->ir_arg = arg;
     irq->ir_handler = handler;
 
-    NutExitCritical();
-
-    return 0;
+    return rc;
 }
+
+/*!
+ * \brief Enable a specified interrupt.
+ *
+ * \param irq Interrupt to enable.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutIrqEnable(IRQ_HANDLER * irq)
+{
+    int rc = -1;
+
+    if (irq->ir_ctl) {
+        rc = (irq->ir_ctl) (NUT_IRQCTL_ENABLE, NULL);
+    }
+    return rc;
+}
+
+/*!
+ * \brief Disable a specified interrupt.
+ *
+ * \param irq Interrupt to disable.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutIrqDisable(IRQ_HANDLER * irq)
+{
+    int rc = -1;
+
+    if (irq->ir_ctl) {
+        rc = (irq->ir_ctl) (NUT_IRQCTL_DISABLE, NULL);
+    }
+    return rc;
+}
+
+/*!
+ * \brief Modify the priority level of an interrupt.
+ *
+ * The function returns the old priority, which makes it easy to 
+ * temporarily switch to another priority and later set back the 
+ * old one.
+ *
+ * \note Not all targets support dynamic interrupt prioritization.
+ *       Check the hardware data sheet for valid levels.
+ *
+ * \param irq   Interrupt to modify.
+ * \param level New priority level.
+ *
+ * \return Old priority level or -1 in case of an error.
+ */
+int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
+{
+    int rc = -1;
+
+    if (irq->ir_ctl) {
+        rc = (irq->ir_ctl) (NUT_IRQCTL_SETPRIO, &level);
+        if (rc == 0 && (rc = (irq->ir_ctl) (NUT_IRQCTL_GETPRIO, &level)) == 0) {
+            rc = level;
+        }
+    }
+    return rc;
+}
+
 #endif
 
 /*@}*/
