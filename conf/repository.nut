@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.12  2005/10/24 10:01:19  haraldkipp
+-- New linker scripts added for AT91 apps running in RAM and ROM.
+--
 -- Revision 1.11  2005/10/07 22:10:29  hwmaier
 -- Added support for PLATFORM macro
 --
@@ -75,7 +78,7 @@ avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG" }
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
-arm_ld_choice = { " ", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
+arm_ld_choice = { " ", "at91_boot", "at91_ram", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
 
 repository =
 {
