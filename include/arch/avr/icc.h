@@ -35,6 +35,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/24 18:04:25  haraldkipp
+ * Duplicate macro definitions removed.
+ * Parameter order of cstrcmp() corrected.
+ * Generic port and flag names added for ATmega103 support.
+ *
  * Revision 1.1  2005/10/24 10:46:05  haraldkipp
  * First check in.
  * Contents taken from avr.h in the parent directory.
@@ -112,13 +117,11 @@
 
 #define memcpy_P(dst, src_P, n) cmemcpy(dst, src_P, n)
 #define strcat_P(s1, s2_P)      cstrcat(s1, s2_P)
-#define strcmp_P(s1_P, s2)      cstrcmp(s1_P, s2)
+#define strcmp_P(s1_P, s2)      cstrcmp(s2, s1_P)   /* Thanks to Michael. */
 #define strlen_P(s_P)           cstrlen(s_P)
 #define strncat_P(s1, s2_P, n)  cstrncat(s1, s2_P, n)
 #define strncmp_P(s1_P, s2, n)  cstrncmp(s1_P, s2, n)
 #define strcpy_P(dst, src_P)    cstrcpy(dst, src_P)
-#define strlen_P(x)             cstrlen(x)
-#define strcpy_P(x,y)           cstrcpy(x,y)
 #define strncpy_P(x,y,z)        cstrncpy(x,y,z)
 
 /*!
@@ -222,6 +225,14 @@
 
 #ifndef SRW
 #define SRW  6
+#endif
+
+/* ICC doesn't define generic ports and flags. */
+#ifndef TXC
+#define TXC     TXC0
+#endif
+#ifndef ADCSR
+#define ADCSR   ADCSRA
 #endif
 
 /* Master */
