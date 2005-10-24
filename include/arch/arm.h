@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2005/10/24 18:03:02  haraldkipp
+ * GameBoy header file added.
+ *
  * Revision 1.3  2005/10/24 10:35:05  haraldkipp
  * Port I/O macros added.
  *
@@ -49,8 +52,11 @@
  *
  */
 
-#ifdef MCU_AT91R40008
+#include <cfg/arch.h>
+#if defined (MCU_AT91R40008)
 #include <arch/arm/at91.h>
+#elif defined (MCU_GBA)
+#include <arch/arm/gba.h>
 #endif
 
 #include <dev/mweeprom.h>
