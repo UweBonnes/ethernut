@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/10/24 17:59:19  haraldkipp
+ * Use correct header file, arm, not gba.
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -51,7 +54,7 @@
  */
 
 #include <dev/debug.h>
-#include <arch/gba.h>
+#include <arch/arm.h>
 
 /*!
  * \addtogroup xgDevDebugGba
