@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2005/10/24 11:00:16  haraldkipp
+ * Integer division hack for ARM without CRT removed again.
+ *
  * Revision 1.16  2005/08/02 17:47:03  haraldkipp
  * Major API documentation update.
  *
@@ -970,15 +973,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
          * bytes in buffer
          */
         if ((u_short) size >= sock->so_devobsz) {
-#ifdef ARM_GCC_NOLIBC
-            /* Little hacking to avoid integer divisions. */
-            rc = size;
-            while(rc >= sock->so_devobsz) {
-                rc -= sock->so_devobsz;
-            }
-#else
             rc = size % sock->so_devobsz;
-#endif
             if (SendBuffer(sock, buffer, size - rc) < 0)
                 return -1;
             buffer += size - rc;
@@ -1022,15 +1017,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
      */
     sz = size - sz;
     if (sz >= sock->so_devobsz) {
-#ifdef ARM_GCC_NOLIBC
-        /* Little hacking to avoid integer divisions. */
-        rc = size;
-        while(rc >= sock->so_devobsz) {
-            rc -= sock->so_devobsz;
-        }
-#else
         rc = size % sock->so_devobsz;
-#endif
         if (SendBuffer(sock, buffer, sz - rc) < 0) {
             NutHeapFree(sock->so_devobuf);
             sock->so_devocnt = 0;
