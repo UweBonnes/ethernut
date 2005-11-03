@@ -67,6 +67,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/11/03 15:10:29  haraldkipp
+ * Some globals replaced by CONF structures.
+ *
  * Revision 1.2  2004/02/20 12:31:36  haraldkipp
  * Ignore target IP if local IP is not configured
  *
@@ -163,13 +166,13 @@ int IpInput(u_char proto, u_short tms)
              * Accept this packet, if it is addressed to us.
              */
             rc = htons(ip->ip_len) - (ip->ip_hl * 4);
-            if (ip->ip_dst == INADDR_BROADCAST || my_ip == 0)
+            if (ip->ip_dst == INADDR_BROADCAST || confnet.cdn_ip_addr == 0)
                 break;
-            if (my_ip) {
-                if (ip->ip_dst == my_ip) {
+            if (confnet.cdn_ip_addr) {
+                if (ip->ip_dst == confnet.cdn_ip_addr) {
                     break;
                 }
-                if ((ip->ip_dst | my_netmask) == INADDR_BROADCAST) {
+                if ((ip->ip_dst | confnet.cdn_ip_mask) == INADDR_BROADCAST) {
                     break;
                 }
             }
@@ -212,7 +215,7 @@ int IpOutput(u_long dip, u_char proto, u_short len)
     ip->ip_ttl = 0x40;
     ip->ip_p = proto;
     ip->ip_dst = dip;
-    ip->ip_src = my_ip;
+    ip->ip_src = confnet.cdn_ip_addr;
     ip->ip_id++;
     ip->ip_sum = 0;
     ip->ip_sum = IpChkSum(ip, sizeof(IPHDR));
