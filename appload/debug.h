@@ -2,7 +2,7 @@
 #define _DEBUG_H
 
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 15:05:41  haraldkipp
+ * Debug output via macros avoids ifdef contamination.
+ * Output of longs added.
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -45,6 +49,19 @@
 extern void DebugInit(void);
 extern void Debug(char *cp);
 extern void DebugUShort(unsigned short val);
+extern void DebugULong(unsigned long val);
+
+#define DEBUGINIT()     DebugInit()
+#define DEBUG(s)        Debug(s)
+#define DEBUGUSHORT(v)  DebugUShort(v)
+#define DEBUGULONG(v)   DebugULong(v)
+
+#else
+
+#define DEBUGINIT()
+#define DEBUG(s)
+#define DEBUGUSHORT(v)
+#define DEBUGULONG(v)
 
 #endif
 
