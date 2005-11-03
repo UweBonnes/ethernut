@@ -264,7 +264,7 @@ int NicPhyConfig(void)
  *
  * \return 0 on success or -1 on timeout.
  */
-static inline int NicMmuWait(u_short tmo)
+static int NicMmuWait(u_short tmo)
 {
     while (tmo--) {
         if ((nic_inlb(NIC_MMUCR) & MMUCR_BUSY) == 0)
@@ -357,26 +357,22 @@ int EtherInit(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int EtherOutput(u_char * dmac, u_short type, u_short len)
+int EtherOutput(const u_char * dmac, u_short type, u_short len)
 {
     ETHERHDR *eh;
     u_char *cp;
-    u_short i;
 
     /*
      * Set the Ethernet header.
      */
     if (type == ETHERTYPE_ARP) {
-        
         cp = (u_char *) & arpframe;
     } else {
         cp = (u_char *) & sframe;
     }
     eh = (ETHERHDR *)cp;
-    for (i = 0; i < 6; i++) {
-        eh->ether_shost[i] = confnet.cdn_mac[i];
-        eh->ether_dhost[i] = dmac[i];
-    }
+    memcpy_(eh->ether_shost, confnet.cdn_mac, 6);
+    memcpy_(eh->ether_dhost, dmac, 6);
     eh->ether_type = type;
 
     /*
@@ -396,11 +392,9 @@ int EtherOutput(u_char * dmac, u_short type, u_short len)
         len++;
     }
 
-#ifdef NUTDEBUG
-    Debug(" Tx(");
-    DebugUShort(len);
-    Debug(")");
-#endif
+    DEBUG(" Tx(");
+    DEBUGUSHORT(len);
+    DEBUG(")");
 
     /* Allocate transmit packet buffer space. */
     nic_bs(2);
@@ -415,9 +409,7 @@ int EtherOutput(u_char * dmac, u_short type, u_short len)
      * very drastic, but OK for our sequential boot loader.
      */
     if ((nic_inlb(NIC_IST) & INT_ALLOC) == 0) {
-#ifdef NUTDEBUG
-        Debug("[MMURST]");
-#endif
+        DEBUG("[MMURST]");
         nic_outlb(NIC_MMUCR, MMU_RST);
         NicMmuWait(1000);
         nic_outlb(NIC_MMUCR, MMU_ALO);
@@ -501,11 +493,9 @@ int EtherInput(u_short type, u_short tms)
 
     /* Check for frame errors. */
     if ((fsw & 0xAC00) == 0) {
-#if NUTDEBUG
-        Debug("\nRx(");
-        DebugUShort(fbc);
-        Debug(")");
-#endif
+        DEBUG("\nRx(");
+        DEBUGUSHORT(fbc);
+        DEBUG(")");
         if(fbc > sizeof(rframe)) {
             fbc = sizeof(rframe);
         }
