@@ -32,6 +32,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/11/03 15:11:58  haraldkipp
+ * Make use of the new memset/memcpy routines.
+ * Some globals replaced by CONF structures.
+ * Use enut.bin as a default image name.
+ *
  * Revision 1.2  2004/01/30 18:18:55  haraldkipp
  * Bugfix. Loading programs > 64k failed
  *
@@ -111,22 +116,27 @@ int TftpRecv(void)
     u_char *cp1;
 
     /*
+     * Do nothing if there's no TFTP host configured.
+     */
+    if(confboot.cb_tftp_ip == 0) {
+        return 0;
+    }
+
+    /*
      * Prepare the transmit buffer for a file request.
      */
     sframe.u.tftp.th_opcode = TFTP_RRQ;
     slen = 2;
     cp = sframe.u.tftp.th_u.tu_stuff;
-    cp1 = bootfile;
+    cp1 = confboot.cb_image;
+    if (*cp1 == 0) {
+        cp1 = "enut.bin";
+    }
     do {
         *cp = *cp1++;
         slen++;
     } while (*cp++);
-    *cp++ = 'o';
-    *cp++ = 'c';
-    *cp++ = 't';
-    *cp++ = 'e';
-    *cp++ = 't';
-    *cp++ = 0;
+    memcpy_(cp, "octet", 6);
     slen += 6;
 
     /*
@@ -139,7 +149,7 @@ int TftpRecv(void)
          * a data block.
          */
         for (retry = 0; retry < 3; retry++) {
-            if (UdpOutput(server_ip, tport, SPORT, slen) >= 0) {
+            if (UdpOutput(confboot.cb_tftp_ip, tport, SPORT, slen) >= 0) {
                 if ((rlen = UdpInput(SPORT, 5000)) >= 4)
                     break;
             }
@@ -203,7 +213,7 @@ int TftpRecv(void)
     /*
      * Send the last ACK.
      */
-    UdpOutput(server_ip, tport, SPORT, slen);
+    UdpOutput(confboot.cb_tftp_ip, tport, SPORT, slen);
 
     return 0;
 }
