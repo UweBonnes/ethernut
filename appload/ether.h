@@ -54,6 +54,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 15:09:46  haraldkipp
+ * *** empty log message ***
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -74,7 +77,7 @@ typedef struct ether_header {
 } ETHERHDR;
 
 extern int EtherInit(void);
-extern int EtherOutput(u_char * dmac, u_short type, u_short len);
+extern int EtherOutput(const u_char * dmac, u_short type, u_short len);
 extern int EtherInput(u_short type, u_short tms);
 
 #endif
