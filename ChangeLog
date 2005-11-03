@@ -1,4 +1,49 @@
-$Id: ChangeLog,v 1.280 2005/10/24 18:06:31 haraldkipp Exp $
+$Id: ChangeLog,v 1.281 2005/11/03 15:17:46 haraldkipp Exp $
+
+2005-11-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* nut/appload/appload.c, nut/appload/Makedefs,
+	nut/appload/Makefile, nut/appload/Makerules,
+	nut/appload/appload.h, nut/appload/arp.c,
+	nut/appload/debug.c, nut/appload/debug.h,
+	nut/appload/dhcp.c, nut/appload/ether.c, nut/appload/ether.h,
+	nut/appload/ip.c, nut/appload/tftp.c, nut/appload/types.h,
+	nut/appload/config.c, nut/appload/config.h,
+	nut/appload/start.S, nut/appload/utils.c,
+	nut/appload/utils.h: Newer GCC versions change the
+	order of routines within modules. This breaks our code,
+	which depends on main() located at the very first
+	beginning. To avoid these problems in the future, I
+	created a specific startup file for the boot loader
+	and moved the runtime initialization to this assembly
+	language file.
+	Another problem was, that new compiler versions created
+	larger binaries, which didn't fit in 4 kBytes. I added
+	some optimizations and removed a few inline specifiers.
+	Finally I ended up with 4058 bytes.
+	Also GCC spits out a deprecated warning on casted lvalues.
+	I changed the prototype for DhcpSetOption(), but the
+	warning remains for IpChkSum().
+	Configurable EEPROM locations had been added and the
+	previous inline assembly code had been replaced by pur
+	C code. A new EEPROM configuration had been added to
+	setup the TFTPD IP address and the name of the boot
+	image without DHCP.
+	Some global variables had been removed. The configuration
+	structures are used instead.
+	memcpy() and memset() clones had been added. Actually
+	they didn't save that much space.
+	The optional debug output is now done with macros to
+	avoid all these #ifdefs within the code. A debug output
+	routine for longs had been added.
+	The TFTPD32 hack had been removed (disabled). Newer
+	versions of Philippe Jounin doesn't require it anymore.
+	Btw. appload had been tested with TFTPD32 2.80.
+	In general the code had been seperated in additional
+	modules.
+
+	* nut/appload/confnet.h: Replaced with config.h.
+
 
 2005-10-24  Harald Kipp  <harald.kipp@egnite.de>
 
