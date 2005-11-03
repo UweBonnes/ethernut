@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 15:02:34  haraldkipp
+ * Make use of the new memset/memcpy routines.
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -115,19 +118,14 @@ int ArpRequest(u_long dip, u_char * dmac)
     ETHERARP *ea = &arpframe.eth_arp;
     u_char retry;
     int rlen;
-    u_char i;
 
-    for (i = 0; i < 6; i++) {
-        dmac[i] = 0xFF;
-    }
+    memset_(dmac, 0xFF, 6);
     if (dip == INADDR_BROADCAST) {
         return 0;
     }
 
     if (dip == arptab_ip) {
-        for (i = 0; i < 6; i++) {
-            dmac[i] = arptab_ha[i];
-        }
+        memcpy_(dmac, arptab_ha, 6);
         return 0;
     }
 
@@ -139,11 +137,9 @@ int ArpRequest(u_long dip, u_char * dmac)
     ea->arp_hln = 6;
     ea->arp_pln = 4;
     ea->arp_op = ARPOP_REQUEST;
-    for (i = 0; i < 6; i++) {
-        ea->arp_sha[i] = confnet.cdn_mac[i];
-        ea->arp_tha[i] = 0xFF;
-    }
-    ea->arp_spa = my_ip;
+    memcpy_(ea->arp_sha, confnet.cdn_mac, 6);
+    memset_(ea->arp_tha, 0xFF, 6);
+    ea->arp_spa = confnet.cdn_ip_addr;
     ea->arp_tpa = dip;
 
 
@@ -165,11 +161,10 @@ int ArpRequest(u_long dip, u_char * dmac)
         /*
          * Check if the response contains the expected values.
          */
-        if (ea->arp_tpa == my_ip && ea->arp_op == ARPOP_REPLY && ea->arp_spa == dip) {
+        if (ea->arp_tpa == confnet.cdn_ip_addr && ea->arp_op == ARPOP_REPLY && ea->arp_spa == dip) {
             arptab_ip = dip;
-            for (i = 0; i < 6; i++) {
-                dmac[i] = arptab_ha[i] = ea->arp_sha[i];
-            }
+            memcpy_(arptab_ha, ea->arp_sha, 6);
+            memcpy_(dmac, ea->arp_sha, 6);
             return 0;
         }
     }
