@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -78,6 +78,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 15:07:42  haraldkipp
+ * New GCC versions warn about lvalue casts.
+ * Some globals replaced by CONF structures.
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -142,7 +146,7 @@ u_char DhcpGetOption(u_char opt, void *ptr, u_char size)
  *
  * \return Pointer to the option buffer to receive the next option.
  */
-u_char *DhcpSetOption(u_char * dst, u_char opt, void *src, u_char size)
+u_char *DhcpSetOption(u_char * dst, u_char opt, u_char *src, u_char size)
 {
     *dst++ = opt;
     *dst++ = size;
@@ -195,6 +199,7 @@ int DhcpTransact(u_short slen, u_char xtype)
         if (rframe.u.bootp.bp_xid == sframe.u.bootp.bp_xid && 
             DhcpGetOption(DHCPOPT_MSGTYPE, &type, 1) == 1 && 
             type == xtype) {
+            DEBUG("[DHCP]");
             break;
         }
     }
@@ -223,6 +228,15 @@ int DhcpQuery(void)
     register u_char *cp;
 
     /*
+     * Nothing to do if we got a fixed IP address.
+     */
+    if (confnet.cdn_cip_addr) {
+        confnet.cdn_ip_addr = confnet.cdn_cip_addr;
+        return 0;
+    }
+    confnet.cdn_ip_addr = 0;
+
+    /*
      * Setup bootp message.
      */
     bp = &sframe.u.bootp;
@@ -230,9 +244,7 @@ int DhcpQuery(void)
     bp->bp_xid = *((u_long *)&confnet.cdn_mac[2]);
     bp->bp_htype = 1;
     bp->bp_hlen = sizeof(confnet.cdn_mac);
-    for (i = 0; i < 6; i++) {
-        bp->bp_chaddr[i] = confnet.cdn_mac[i];
-    }
+    memcpy_(bp->bp_chaddr, confnet.cdn_mac, 6);
 
     /*
      * Add DHCP option for discover message.
@@ -257,10 +269,11 @@ int DhcpQuery(void)
     /*
      * Reuse the bootp structure and add DHCP options for request message.
      */
+    DEBUGULONG(rframe.u.bootp.bp_yiaddr);
     i = DHCP_REQUEST;
     cp = DhcpSetOption(bp->bp_options, DHCPOPT_MSGTYPE, &i, 1);
-    cp = DhcpSetOption(cp, DHCPOPT_REQUESTIP, &rframe.u.bootp.bp_yiaddr, 4);
-    DhcpSetOption(cp, DHCPOPT_SID, &sid, 4);
+    cp = DhcpSetOption(cp, DHCPOPT_REQUESTIP, (u_char *)&rframe.u.bootp.bp_yiaddr, 4);
+    DhcpSetOption(cp, DHCPOPT_SID, (u_char *)&sid, 4);
 
     /*
      * Send DHCP request and wait for ACK.
@@ -273,20 +286,22 @@ int DhcpQuery(void)
     /*
      * Retrieve local IP, bootp server IP, bootfile name and netmask.
      */
-    my_ip = rframe.u.bootp.bp_yiaddr;
-    server_ip = rframe.u.bootp.bp_siaddr;
-    for (cp = rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(bootfile) - 1; cp++, i++) {
-        bootfile[i] = *cp;
+    confnet.cdn_ip_addr = rframe.u.bootp.bp_yiaddr;
+    confboot.cb_tftp_ip = rframe.u.bootp.bp_siaddr;
+    for (cp = rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(confboot.cb_image) - 1; cp++, i++) {
+        confboot.cb_image[i] = *cp;
     }
-    bootfile[i] = 0;
-    DhcpGetOption(DHCPOPT_NETMASK, &my_netmask, 4);
+    confboot.cb_image[i] = 0;
+    DhcpGetOption(DHCPOPT_NETMASK, &confnet.cdn_ip_mask, 4);
 
+#if 0
     /*
      * I'd say that tftpd32 is buggy, because it sends siaddr
      * set to zero. This hack will fix it.
      */
-    if (server_ip == 0)
-        server_ip = rframe.ip_hdr.ip_src;
+    if (confboot.cb_tftp_ip == 0)
+        confboot.cb_tftp_ip = rframe.ip_hdr.ip_src;
+#endif
 
     return 0;
 }
