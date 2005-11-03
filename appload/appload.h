@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 14:59:16  haraldkipp
+ * Some globals replaced by CONF structures.
+ * Subroutines moved to new source files.
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -46,7 +50,8 @@
 #include "udp.h"
 #include "dhcp.h"
 #include "tftp.h"
-#include "confnet.h"
+#include "config.h"
+#include "utils.h"
 
 typedef struct {
     ETHERHDR eth_hdr;
@@ -67,15 +72,5 @@ extern BOOTFRAME sframe;
  * Incoming frame.
  */
 extern BOOTFRAME rframe;
-
-extern CONFNET confnet;
-
-extern u_long my_netmask;
-extern u_long my_ip;
-extern u_long server_ip;
-extern u_char bootfile[128];
-
-extern void MicroDelay(u_short nops);
-extern void Delay(u_char val);
 
 #endif
