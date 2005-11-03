@@ -1,8 +1,8 @@
-#ifndef _SYS_TYPES_H_
-#define _SYS_TYPES_H_
+#ifndef _TYPES_H_
+#define _TYPES_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 15:12:54  haraldkipp
+ * Byte swpa routines moved to new utils.h.
+ *
  * Revision 1.1  2003/11/03 16:19:38  haraldkipp
  * First release
  *
@@ -89,60 +92,5 @@ typedef unsigned long      u_long;
 typedef unsigned long long u_longlong;
 /*! \brief Void pointer */
 typedef void * HANDLE;
-
-/*
- * Conversion of 16 bit value to network order.
- */
-static inline u_short __byte_swap2(u_short val)
-{
-    asm volatile(
-        "mov __tmp_reg__, %A0\n\t"
-        "mov %A0, %B0\n\t"
-        "mov %B0, __tmp_reg__\n\t"
-        : "=r" (val)
-        : "0" (val)
-    );
-    return val;
-}
-
-/*
- * Conversion of 32 bit value to network order.
- */
-static inline u_long __byte_swap4(u_long val)
-{
-    asm volatile(
-        "mov __tmp_reg__, %A0\n\t"
-        "mov %A0, %D0\n\t"
-        "mov %D0, __tmp_reg__\n\t"
-        "mov __tmp_reg__, %B0\n\t"
-        "mov %B0, %C0\n\t"
-        "mov %C0, __tmp_reg__\n\t"
-        : "=r" (val)
-        : "0" (val)
-    );
-    return val;
-}
-
-/*!
- * \brief Convert short value from host to network byte order.
- */
-#define htons(x) __byte_swap2(x)
-
-/*!
- * \brief Convert long value from host to network byte order.
- */
-#define htonl(x) __byte_swap4(x)
-
-/*!
- * \brief Convert short value from network to host byte order.
- */
-#define ntohs(x) __byte_swap2(x)
-
-/*!
- * \brief Convert long value from network to host byte order.
- */
-#define ntohl(x) __byte_swap4(x)
-
-/*@}*/
 
 #endif
