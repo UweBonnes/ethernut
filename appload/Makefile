@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2005/11/03 14:54:47  haraldkipp
+# Source modules split. Startup file added.
+#
 # Revision 1.1  2003/11/03 16:19:38  haraldkipp
 # First release
 #
@@ -43,10 +46,10 @@ top_srcdir = ..
 
 include Makedefs
 
-SRCS =  $(PROJ).c dhcp.c tftp.c udp.c ip.c arp.c ether.c debug.c
+SRCS =  $(PROJ).c config.c dhcp.c tftp.c udp.c ip.c arp.c ether.c debug.c utils.c
 LIBS =  
 
-OBJS  = $(SRCS:.c=.o)
+OBJS  = start.o $(SRCS:.c=.o)
 TARG  = $(PROJ).hex
 BTARG = $(PROJ).bin
 
