@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2005/11/20 14:45:15  haraldkipp
+ * Define printf_P for non Harvard architectures.
+ *
  * Revision 1.4  2005/10/24 18:03:02  haraldkipp
  * GameBoy header file added.
  *
@@ -95,6 +98,7 @@
 
 #define fputs_P(x, y)           fputs(x, y)
 #define fprintf_P               fprintf
+#define printf_P                printf
 
 /*!
  * \brief End of uninitialised data segment. Defined in the linker script.
