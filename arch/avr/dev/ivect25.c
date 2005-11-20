@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/11/20 14:49:03  haraldkipp
+ * *** empty log message ***
+ *
  * Revision 1.2  2005/10/24 09:34:30  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -105,9 +108,6 @@ int AvrTimer3InCaptIrqCtl(int cmd, void *param)
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
-        /* Initialize to falling edge triggered. */
-        cbi(EICRA, ISC00);
-        sbi(EICRA, ISC01);
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
         outb(ETIFR, _BV(ICF3));
