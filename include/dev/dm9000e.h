@@ -2,6 +2,7 @@
 #define _DEV_DM9000E_H_
 
 #include <sys/device.h>
+#include <net/if_var.h>
 
 /*
  * Available drivers.
