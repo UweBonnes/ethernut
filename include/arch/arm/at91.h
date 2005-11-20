@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2005/11/20 14:44:14  haraldkipp
+ * Register offsets added.
+ *
  * Revision 1.1  2005/10/24 10:31:13  haraldkipp
  * Moved from parent directory.
  *
@@ -216,8 +219,9 @@
 
 /*! \name Mode Register */
 /*@{*/
-#define US0_MR      (USART0_BASE + 0x04)        /*!< \brief Channel 0 mode register address. */
-#define US1_MR      (USART1_BASE + 0x04)        /*!< \brief Channel 1 mode register address. */
+#define US_MR_OFF               0x00000004      /*!< \brief USART mode register offset. */
+#define US0_MR  (USART0_BASE + US_MR_OFF)       /*!< \brief Channel 0 mode register address. */
+#define US1_MR  (USART1_BASE + US_MR_OFF)       /*!< \brief Channel 1 mode register address. */
 
 #define US_CLKS                 0x00000030      /*!< \brief Clock selection mask. */
 #define US_CLKS_MCK             0x00000000      /*!< \brief Master clock. */
@@ -259,15 +263,21 @@
 
 /*! \name Status and Interrupt Register */
 /*@{*/
-#define US_CSR_OFF              0x00000014      /*!< \brief Channel status register offset. */
+#define US_CSR_OFF              0x00000014      /*!< \brief USART status register offset. */
 #define US0_CSR (USART0_BASE + US_CSR_OFF)      /*!< \brief Channel 0 status register address. */
 #define US1_CSR (USART1_BASE + US_CSR_OFF)      /*!< \brief Channel 1 status register address. */
-#define US0_IER     (USART0_BASE + 0x08)        /*!< \brief Interrupt enable register address. */
-#define US1_IER     (USART1_BASE + 0x08)        /*!< \brief Interrupt enable register address. */
-#define US0_IDR     (USART0_BASE + 0x0C)        /*!< \brief Interrupt disable register address. */
-#define US1_IDR     (USART1_BASE + 0x0C)        /*!< \brief Interrupt disable register address. */
-#define US0_IMR     (USART0_BASE + 0x10)        /*!< \brief Interrupt mask register address. */
-#define US1_IMR     (USART1_BASE + 0x10)        /*!< \brief Interrupt mask register address. */
+
+#define US_IER_OFF              0x00000008      /*!< \brief USART interrupt enable register offset. */
+#define US0_IER (USART0_BASE + US_IER_OFF)      /*!< \brief Channel 0 interrupt enable register address. */
+#define US1_IER (USART1_BASE + US_IER_OFF)      /*!< \brief Channel 1 interrupt enable register address. */
+
+#define US_IDR_OFF              0x0000000C      /*!< \brief USART interrupt disable register offset. */
+#define US0_IDR (USART0_BASE + US_IDR_OFF)      /*!< \brief Channel 0 interrupt disable register address. */
+#define US1_IDR (USART1_BASE + US_IDR_OFF)      /*!< \brief Channel 1 interrupt disable register address. */
+
+#define US_IMR_OFF              0x00000010      /*!< \brief USART interrupt mask register offset. */
+#define US0_IMR (USART0_BASE + US_IMR_OFF)      /*!< \brief Channel 0 interrupt mask register address. */
+#define US1_IMR (USART1_BASE + US_IMR_OFF)      /*!< \brief Channel 1 interrupt mask register address. */
 
 #define US_RXRDY                0x00000001      /*!< \brief Receiver ready */
 #define US_TXRDY                0x00000002      /*!< \brief Transmitter ready */
@@ -286,57 +296,65 @@
 
 /*! \name Receiver Holding Register */
 /*@{*/
-#define US0_RHR     (USART0_BASE + 0x18)        /*!< \brief USART 0 receiver holding register address. */
-#define US1_RHR     (USART1_BASE + 0x18)        /*!< \brief USART 1 receiver holding register address. */
+#define US_RHR_OFF              0x00000018      /*!< \brief USART receiver holding register offset. */
+#define US0_RHR (USART0_BASE + US_RHR_OFF)      /*!< \brief Channel 0 receiver holding register address. */
+#define US1_RHR (USART1_BASE + US_RHR_OFF)      /*!< \brief Channel 1 receiver holding register address. */
 /*@}*/
 
 /*! \name Transmitter Holding Register */
 /*@{*/
-#define US_THR_OFF              0x0000001C      /*!< \brief Transmitter holding register offset. */
-#define US0_THR (USART0_BASE + US_THR_OFF)      /*!< \brief USART 0 transmitter holding register address. */
-#define US1_THR (USART1_BASE + US_THR_OFF)      /*!< \brief USART 1 transmitter holding register address. */
+#define US_THR_OFF              0x0000001C      /*!< \brief USART transmitter holding register offset. */
+#define US0_THR (USART0_BASE + US_THR_OFF)      /*!< \brief Channel 0 transmitter holding register address. */
+#define US1_THR (USART1_BASE + US_THR_OFF)      /*!< \brief Channel 1 transmitter holding register address. */
 /*@}*/
 
 /*! \name Baud Rate Generator Register */
 /*@{*/
-#define US0_BRGR    (USART0_BASE + 0x20)        /*!< \brief USART 0 baud rate register address. */
-#define US1_BRGR    (USART1_BASE + 0x20)        /*!< \brief USART 1 baud rate register address. */
+#define US_BRGR_OFF             0x00000020      /*!< \brief USART baud rate register offset. */
+#define US0_BRGR (USART0_BASE + US_BRGR_OFF)    /*!< \brief Channel 0 baud rate register address. */
+#define US1_BRGR (USART1_BASE + US_BRGR_OFF)    /*!< \brief Channel 1 baud rate register address. */
 /*@}*/
 
 /*! \name Receiver Timeout Register */
 /*@{*/
-#define US0_RTOR    (USART0_BASE + 0x24)        /*!< \brief USART 0 receiver timeout register address. */
-#define US1_RTOR    (USART1_BASE + 0x24)        /*!< \brief USART 1 receiver timeout register address. */
+#define US_RTOR_OFF             0x00000024      /*!< \brief USART receiver timeout register offset. */
+#define US0_RTOR (USART0_BASE + US_RTOR_OFF)    /*!< \brief Channel 0 receiver timeout register address. */
+#define US1_RTOR (USART1_BASE + US_RTOR_OFF)    /*!< \brief Channel 1 receiver timeout register address. */
 /*@}*/
 
 /*! \name Transmitter Time Guard Register */
 /*@{*/
-#define US0_TTGR    (USART0_BASE + 0x28)        /*!< \brief USART 0 transmitter time guard register address. */
-#define US1_TTGR    (USART1_BASE + 0x28)        /*!< \brief USART 1 transmitter time guard register address. */
+#define US_TTGR_OFF             0x00000028      /*!< \brief USART transmitter time guard register offset. */
+#define US0_TTGR (USART0_BASE + US_TTGR_OFF)    /*!< \brief Channel 0 transmitter time guard register address. */
+#define US1_TTGR (USART1_BASE + US_TTGR_OFF)    /*!< \brief Channel 1 transmitter time guard register address. */
 /*@}*/
 
 /*! \name Receive Pointer Register */
 /*@{*/
-#define US0_RPR     (USART0_BASE + 0x30)        /*!< \brief Receive pointer register address. */
-#define US1_RPR     (USART1_BASE + 0x30)        /*!< \brief Receive pointer register address. */
+#define US_RPR_OFF              0x00000030      /*!< \brief USART receive pointer register offset. */
+#define US0_RPR (USART0_BASE + US_RPR_OFF)      /*!< \brief Channel 0 receive pointer register address. */
+#define US1_RPR (USART1_BASE + US_RPR_OFF)      /*!< \brief Channel 1 receive pointer register address. */
 /*@}*/
 
 /*! \name Receive Counter Register */
 /*@{*/
-#define US0_RCR     (USART0_BASE + 0x34)        /*!< \brief Receive counter register address. */
-#define US1_RCR     (USART1_BASE + 0x34)        /*!< \brief Receive counter register address. */
+#define US_RCR_OFF              0x00000034      /*!< \brief USART receive counter register offset. */
+#define US0_RCR (USART0_BASE + US_RCR_OFF)      /*!< \brief Channel 0 receive counter register address. */
+#define US1_RCR (USART1_BASE + US_RCR_OFF)      /*!< \brief Channel 1 receive counter register address. */
 /*@}*/
 
 /*! \name Transmit Pointer Register */
 /*@{*/
-#define US0_TPR     (USART0_BASE + 0x38)        /*!< \brief Transmit pointer register address. */
-#define US1_TPR     (USART1_BASE + 0x38)        /*!< \brief Transmit pointer register address. */
+#define US_TPR_OFF              0x00000038      /*!< \brief USART transmit pointer register offset. */
+#define US0_TPR (USART0_BASE + US_TPR_OFF)      /*!< \brief Channel 0 transmit pointer register address. */
+#define US1_TPR (USART1_BASE + US_TPR_OFF)      /*!< \brief Channel 1 transmit pointer register address. */
 /*@}*/
 
 /*! \name Transmit Counter Register */
 /*@{*/
-#define US0_TCR     (USART0_BASE + 0x3C)        /*!< \brief Transmit counter register address. */
-#define US1_TCR     (USART1_BASE + 0x3C)        /*!< \brief Transmit counter register address. */
+#define US_TCR_OFF              0x0000003C      /*!< \brief USART transmit counter register offset. */
+#define US0_TCR (USART0_BASE + US_TCR_OFF)      /*!< \brief Channel 0 transmit counter register address. */
+#define US1_TCR (USART1_BASE + US_TCR_OFF)      /*!< \brief Channel 1 transmit counter register address. */
 /*@}*/
 
 /*@} xgNutArchArmAt91Us */
