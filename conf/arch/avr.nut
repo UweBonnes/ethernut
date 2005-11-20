@@ -33,6 +33,10 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.5  2005/11/20 14:43:11  haraldkipp
+-- AHDLC driver and deprecated AVR UART driver temporarely removed from ICCAVR
+-- build. Will look into this later.
+--
 -- Revision 1.4  2005/10/24 11:14:07  haraldkipp
 -- NUT_CPU_FREQ option removed. This is handled in os.nut.
 --
@@ -178,7 +182,7 @@ nutarch_avr =
         name = "nutarch_avr_ahdlc",
         brief = "AHDLC Protocol",
         description = "HDLC driver, required for PPP.",
-        requires = { "HW_UART_AVR", "NUT_EVENT" },
+        requires = { "HW_UART_AVR", "NUT_EVENT", "TOOL_GCC" },
         provides = { "PROTO_HDLC" },
         sources = { "avr/dev/ahdlc0.c", "avr/dev/ahdlc1.c", "avr/dev/ahdlcavr.c" },
         options =
@@ -351,7 +355,7 @@ nutarch_avr =
         description = "Interrupt driven, buffered UART driver.\n"..
                       "Deprecated, use the USART driver.",
         sources = { "avr/dev/uart0.c", "avr/dev/uart1.c", "avr/dev/uartavr.c" },
-        requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM", "TOOL_GCC" },
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
     },
     {
