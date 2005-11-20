@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.3  2005/11/20 14:40:28  haraldkipp
+-- Added interrupt driven UART driver for AT91.
+--
 -- Revision 1.2  2005/10/24 09:52:32  haraldkipp
 -- New AT91 interrupt handler routines.
 -- New DM9000E Ethernet driver for Ethernut 3 board.
@@ -128,7 +131,25 @@ nutarch_arm =
         sources = { "arm/dev/debug_at91.c" }
     },
     {
-        name = "nutarch_arm_debug",
+        name = "nutarch_arm_usart0",
+        brief = "USART0 Driver",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
+        provides = { "DEV_UART_SPECIFIC" },
+        sources = { "arm/dev/usart0at91.c" },
+    },
+    {
+        name = "nutarch_arm_usart1",
+        brief = "USART1 Driver",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
+        provides = { "DEV_UART_SPECIFIC" },
+        sources = { "arm/dev/usart1at91.c" },
+    },
+    {
+        name = "nutarch_gba_debug",
         brief = "LCD Debug Output (GBA)",
         requires = { "HW_LCD_GBA" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
