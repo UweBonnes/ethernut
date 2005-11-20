@@ -1,4 +1,43 @@
-$Id: ChangeLog,v 1.281 2005/11/03 15:17:46 haraldkipp Exp $
+$Id: ChangeLog,v 1.282 2005/11/20 14:35:12 haraldkipp Exp $
+
+2005-11-20  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Version 4 release candidate is 3.9.9.1.
+
+	* app/Makedefs.avr-icc: Command line compilation failed with
+	ICCAVR V7. Fixed.
+
+	* appicc/basemon/basemon.prj, appicc/ftpd/ftpd.prj,
+	appicc/httpd/httpd.prj, appicc/inetq/inetq.prj,
+	appicc/logtime/logtime.prj, appicc/nutpiper/nutpiper.prj,
+	appicc/playmp3/playmp3.prj, appicc/portdio/portdio.prj,
+	appicc/pppc/pppc.prj, appicc/rs232d/rs232d.prj,
+	appicc/simple/simple.prj, appicc/tcps/tcps.prj,
+	appicc/threads/threads.prj, appicc/timers/timers.prj,
+	appicc/uart/uart.prj: Architecture library added.
+
+	* arch/arm/dev/usartat91.c, arch/arm/dev/usart0at91.c,
+	arch/arm/dev/usart1at91.c, conf/arch/arm.nut,
+	include/dev/usartat91.h: Interrupt driven UART driver for 
+	AT91 added.
+
+	* conf/arch/avr.nut: AHDLC driver and deprecated AVR UART
+	driver temporarely removed from ICCAVR build. Will look
+	into this later.
+
+	* conf/ethernut30d.conf: PLATFORM variable added.
+
+	* include/arch/arm/at91.h: Register offsets added.
+
+	* include/arch/arm.h: Compatibility macro printf_P added.
+
+	* include/dev/dm9000e.h: All other Ethernet drivers include
+	if_var header. Add it here too.
+
+	* include/dev/board.h: New include file simplifies target
+	independant applications. Right now devDebug, devEther and 
+	devUart are supported.
+
 
 2005-11-03  Harald Kipp  <harald.kipp@egnite.de>
 
