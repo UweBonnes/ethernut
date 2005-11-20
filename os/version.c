@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2005/11/20 14:36:07  haraldkipp
+ * Preparing last version 4 preview.
+ *
  * Revision 1.20  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -108,8 +111,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x03090802UL
-static CONST char os_version_string[] = "3.9.8.2";
+#define OS_VERSION_NUMBER  0x03090901UL
+static CONST char os_version_string[] = "3.9.9.1";
 
 /*!
  * \addtogroup xgNutVersion
