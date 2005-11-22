@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.23  2005/11/22 09:20:22  haraldkipp
+ * Removed modification of a relative top_blddir path.
+ *
  * Revision 1.22  2005/10/07 22:36:00  hwmaier
  * Removed generation of -DETHERNUT2 entry for UserConf.mk as this can now accomplished by the PLATFORM macro.
  *
@@ -1779,10 +1782,8 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *
 			else
 				fprintf(fp, "top_srcdir = ../..\n");
 
-            if (bld_dir[0] == '/' || bld_dir[1] == ':')
-                fprintf(fp, "top_blddir = %s\n\n", bld_dir);
-            else if (strlen(bld_dir))
-                fprintf(fp, "top_blddir = ../../%s\n", bld_dir);
+            if (bld_dir[0])
+                fprintf(fp, "top_blddir = %s\n", bld_dir);
             else
                 fprintf(fp, "top_blddir = ../..\n");
 
