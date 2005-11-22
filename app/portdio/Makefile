@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2005/11/22 09:15:34  haraldkipp
+# Library list re-ordered.
+#
 # Revision 1.4  2005/07/26 15:44:51  haraldkipp
 # Include new libnutarch into the build
 #
@@ -67,7 +70,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutarch -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutfs -lnutnet -lnutdev -lnutarch -lnutcrt -lnutnet -lnutdev -lnutos
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG)
