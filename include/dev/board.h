@@ -1,5 +1,5 @@
-#ifndef _DEV_ETHERNET_H_
-#define _DEV_ETHERNET_H_
+#ifndef _DEV_BOARD_H_
+#define _DEV_BOARD_H_
 
 /*
  * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/22 09:19:03  haraldkipp
+ * Include condition corrected.
+ *
  * Revision 1.1  2005/11/20 14:43:38  haraldkipp
  * First check-in
  *
