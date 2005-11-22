@@ -1,4 +1,40 @@
-$Id: ChangeLog,v 1.282 2005/11/20 14:35:12 haraldkipp Exp $
+$Id: ChangeLog,v 1.283 2005/11/22 09:12:15 haraldkipp Exp $
+
+2005-11-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/httpd/httpserv.c, app/inetq/inetq.c,
+	app/logtime/logtime.c, app/logtime/logtime.c,
+	app/rs232d/rs232d.c, app/tcps/tcps.c, app/uart/uart.c:
+	Replaced specific device names by generalized macros.
+
+	* app/logtime/Makefile: Added missing library nutarch.
+
+	* app/portdio/Makefile: Library list re-ordered.
+
+	* app/portdio/portdio.c: Replaced specific device names by 
+	generalized macros. Casting size_t to int to avoid compiler
+	warnings about printf format specifiers. Excluded hardware
+	specific statements for non-AVR targets. This way it will
+	not work on other targets, but at least compile without
+	error.
+
+	* app/threads/threads.c, app/timers/timers.c: Replaced 
+	specific device names by generalized macros. Thread stack 
+	size increased to get it running on ARM CPUs.
+
+	* conf/ethernut30d.conf: By default applications are
+	loaded in RAM.
+
+	* conf/wolf.conf: PLATFORM variable added.
+
+	* include/dev/board.h: Include condition corrected.
+
+	* tools/nutconf/nutcomponent.c: Prepending ../.. to a
+	relative top_blddir path broke my test configuration.
+	Can't think of any reason, why relative paths are modified.
+	If there is one, sorry for breaking your configuration.
+
+
 
 2005-11-20  Harald Kipp  <harald.kipp@egnite.de>
 
