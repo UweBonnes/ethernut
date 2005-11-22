@@ -32,6 +32,10 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2005/11/22 09:17:31  haraldkipp
+ * Replaced specific device names by generalized macros.
+ * Thread stack size increased to get it running on ARM CPUs.
+ *
  * Revision 1.4  2005/04/05 18:00:29  haraldkipp
  * Make it work on the Gameboy Advance.
  *
@@ -80,21 +84,8 @@
 #include <io.h>
 
 #include <cfg/arch.h>
-/* Only devDebug1 supported with AT91 */
-#ifdef MCU_AT91R40008
-#include <dev/debug.h>
-#define DEV_UART devDebug1
-#define DEV_UART_NAME "uart1"
-#elif defined(MCU_GBA)
-/* Only devDebug0 with name "con" supported with GBA */
-#include <dev/debug.h>
-#define DEV_UART devDebug0
-#define DEV_UART_NAME "con"
-#else
-#include <dev/usartavr.h>
-#define DEV_UART devUsartAvr0
-#define DEV_UART_NAME "uart0"
-#endif
+#include <dev/board.h>
+
 #include <sys/thread.h>
 #include <sys/timer.h>
 
@@ -149,8 +140,8 @@ int main(void)
      * Start two additional threads. All threads are started with 
      * priority 64.
      */
-    NutThreadCreate("t1", Thread1, 0, 192);
-    NutThreadCreate("t2", Thread2, 0, 192);
+    NutThreadCreate("t1", Thread1, 0, 512);
+    NutThreadCreate("t2", Thread2, 0, 512);
 
     /*
      * Endless loop in main thread.

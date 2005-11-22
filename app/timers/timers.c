@@ -32,6 +32,10 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2005/11/22 09:17:31  haraldkipp
+ * Replaced specific device names by generalized macros.
+ * Thread stack size increased to get it running on ARM CPUs.
+ *
  * Revision 1.4  2005/04/19 08:57:52  haraldkipp
  * Description updated and ARM support added
  *
@@ -112,15 +116,7 @@
 #include <io.h>
 
 #include <cfg/arch.h>
-#include <dev/debug.h>
-
-#ifdef MCU_GBA
-#define DEV_DEBUG_NAME "con"
-#else
-#define DEV_DEBUG_NAME "uart0"
-#endif
-
-#define DEV_DEBUG devDebug0
+#include <dev/board.h>
 
 #include <sys/thread.h>
 #include <sys/timer.h>
@@ -199,7 +195,7 @@ THREAD(Sleeper1, arg)
     NutThreadSetPriority(128);
     for (;;) {
         if (NutHeapAvailable() > 500)
-            printf("\n%u free ", NutHeapAvailable());
+            printf("\n%u free ", (u_int)NutHeapAvailable());
         else
             puts("Memory low");
         NutSleep(500);
@@ -274,15 +270,15 @@ int main(void)
            (int) (cpu_crystal / 1000000UL), (int) ((cpu_crystal - (cpu_crystal / 1000000UL) * 1000000UL) / 100)
         );
 
-    NutThreadCreate("tmr1", TimerEvent1, &event1, 256);
-    NutThreadCreate("tmr2", TimerEvent2, &event2, 256);
-    NutThreadCreate("tmr3", TimerEvent3, &event3, 256);
-    NutThreadCreate("tmr4", TimerEvent4, &event4, 256);
+    NutThreadCreate("tmr1", TimerEvent1, &event1, 512);
+    NutThreadCreate("tmr2", TimerEvent2, &event2, 512);
+    NutThreadCreate("tmr3", TimerEvent3, &event3, 512);
+    NutThreadCreate("tmr4", TimerEvent4, &event4, 512);
 
-    NutThreadCreate("slpr1", Sleeper1, 0, 256);
-    NutThreadCreate("slpr2", Sleeper2, 0, 256);
-    NutThreadCreate("slpr3", Sleeper3, 0, 256);
-    NutThreadCreate("slpr4", Sleeper4, 0, 256);
+    NutThreadCreate("slpr1", Sleeper1, 0, 512);
+    NutThreadCreate("slpr2", Sleeper2, 0, 512);
+    NutThreadCreate("slpr3", Sleeper3, 0, 512);
+    NutThreadCreate("slpr4", Sleeper4, 0, 512);
 
     /*
      * Endless application loop.
@@ -345,6 +341,6 @@ int main(void)
         }
         //printf("\nSleeping %u seconds ", (int)(sleep_ms / 1000UL));
         //NutSleep(sleep_ms);
-        printf("\n%u bytes free\n", NutHeapAvailable());
+        printf("\n%u bytes free\n", (u_int)NutHeapAvailable());
     }
 }
