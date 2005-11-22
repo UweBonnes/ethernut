@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.6  2005/11/22 16:42:39  haraldkipp
+-- ICCAVR fixed. Re-enabled AHDLC and old UART driver.
+--
 -- Revision 1.5  2005/11/20 14:43:11  haraldkipp
 -- AHDLC driver and deprecated AVR UART driver temporarely removed from ICCAVR
 -- build. Will look into this later.
@@ -182,7 +185,7 @@ nutarch_avr =
         name = "nutarch_avr_ahdlc",
         brief = "AHDLC Protocol",
         description = "HDLC driver, required for PPP.",
-        requires = { "HW_UART_AVR", "NUT_EVENT", "TOOL_GCC" },
+        requires = { "HW_UART_AVR", "NUT_EVENT" },
         provides = { "PROTO_HDLC" },
         sources = { "avr/dev/ahdlc0.c", "avr/dev/ahdlc1.c", "avr/dev/ahdlcavr.c" },
         options =
@@ -355,7 +358,7 @@ nutarch_avr =
         description = "Interrupt driven, buffered UART driver.\n"..
                       "Deprecated, use the USART driver.",
         sources = { "avr/dev/uart0.c", "avr/dev/uart1.c", "avr/dev/uartavr.c" },
-        requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM", "TOOL_GCC" },
+        requires = { "HW_MCU_AVR", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
     },
     {

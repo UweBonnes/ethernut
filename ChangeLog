@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.283 2005/11/22 09:12:15 haraldkipp Exp $
+$Id: ChangeLog,v 1.284 2005/11/22 16:42:38 haraldkipp Exp $
 
 2005-11-22  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -34,6 +34,8 @@ $Id: ChangeLog,v 1.283 2005/11/22 09:12:15 haraldkipp Exp $
 	Can't think of any reason, why relative paths are modified.
 	If there is one, sorry for breaking your configuration.
 
+	* conf/arch/avr.nut: ICCAVR 7.03C Beta2 fixes the compile
+	problem. I've enabled AHDLC and the old UART driver again.
 
 
 2005-11-20  Harald Kipp  <harald.kipp@egnite.de>
