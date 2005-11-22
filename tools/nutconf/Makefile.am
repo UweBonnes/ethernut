@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.4  2005/11/22 20:03:52  haraldkipp
+# Added missing bitmaps.
+#
 # Revision 1.3  2005/07/20 11:15:23  haraldkipp
 # Linux application icon added
 #
@@ -70,16 +73,21 @@ nutcomponent.h resource.h treecomp.h \
 bitmaps/application.xpm \
 bitmaps/checked_dis.xpm bitmaps/module.xpm \
 bitmaps/checked.xpm bitmaps/nutconf.xpm \
-bitmaps/closedfolder_dis.xpm bitmaps/open.xpm \
+bitmaps/closedfolder_dis.xpm \
 bitmaps/closedfolder.xpm bitmaps/radiooff_dis.xpm \
 bitmaps/copy.xpm bitmaps/radiooff.xpm \
 bitmaps/enumerated_dis.xpm bitmaps/radioon_dis.xpm \
 bitmaps/enumerated.xpm bitmaps/radioon.xpm \
-bitmaps/integer_dis.xpm bitmaps/save.xpm \
+bitmaps/integer_dis.xpm \
 bitmaps/integer.xpm bitmaps/text_dis.xpm \
 bitmaps/library_dis.xpm bitmaps/text.xpm \
 bitmaps/library.xpm bitmaps/unchecked_dis.xpm \
-bitmaps/module_dis.xpm bitmaps/unchecked.xpm
+bitmaps/module_dis.xpm bitmaps/unchecked.xpm \
+bitmaps/buildlibrary.xpm bitmaps/buildlibrary_large.xpm \
+bitmaps/help.xpm bitmaps/help_large.xpm \
+bitmaps/open.xpm bitmaps/open_large.xpm \
+bitmaps/save.xpm bitmaps/save_large.xpm \
+bitmaps/search.xpm bitmaps/search_large.xpm
 nutconf_CXXFLAGS = @WX_CXXFLAGS@
 nutconf_LDADD = $(WX_LIBS)
 
