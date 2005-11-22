@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2005/11/22 09:14:59  haraldkipp
+# Added missing library.
+#
 # Revision 1.2  2004/11/08 09:57:37  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -46,7 +49,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutnet -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutnet -lnutcrt -lnutos -lnutdev -lnutarch -lnutos -lnutdev -lnutnet
 TARG =  $(PROJ).hex
 PARM =  $(PROJ).eep
 
