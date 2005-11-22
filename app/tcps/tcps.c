@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2005/11/22 09:14:13  haraldkipp
+ * Replaced specific device names by generalized macros.
+ *
  * Revision 1.4  2005/04/30 16:42:41  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -82,12 +85,7 @@
 #include <stdio.h>
 #include <io.h>
 
-#ifdef ETHERNUT2
-#include <dev/lanc111.h>
-#else
-#include <dev/nicrtl.h>
-#endif
-#include <dev/debug.h>
+#include <dev/board.h>
 
 #include <sys/version.h>
 #include <sys/heap.h>
@@ -171,7 +169,7 @@ void ProcessRequests(FILE * stream)
          * Memory info.
          */
         if (strncmp(buff, "memory", got) == 0) {
-            fprintf_P(stream, mem_fmt_P, NutHeapAvailable());
+            fprintf_P(stream, mem_fmt_P, (u_int)NutHeapAvailable());
             continue;
         }
 
@@ -199,7 +197,7 @@ void ProcessRequests(FILE * stream)
                     fputs("\tSleep\t", stream);
                     break;
                 }
-                fprintf(stream, "%u\t%u", tdp->td_priority, (u_short) tdp->td_sp - (u_short) tdp->td_memory);
+                fprintf(stream, "%u\t%u", tdp->td_priority, (u_int) tdp->td_sp - (u_int) tdp->td_memory);
                 if (*((u_long *) tdp->td_memory) != DEADBEEF)
                     fputs("\tCorrupted\t", stream);
                 else
@@ -261,13 +259,13 @@ int main(void)
     /*
      * Register all devices used in our application.
      */
-    NutRegisterDevice(&devDebug0, 0, 0);
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
     NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
      * Assign stdout to the UART device.
      */
-    freopen("uart0", "w", stdout);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     printf_P(vbanner_P, NutVersionString());
 #ifdef NUTDEBUG
@@ -277,7 +275,7 @@ int main(void)
     NutTracePPP(stdout, 0);
 #endif
 
-    NutNetLoadConfig("eth0");
+    NutNetLoadConfig(DEV_ETHER_NAME);
     memcpy(confnet.cdn_mac, mac, 6);
     NutNetSaveConfig();
 

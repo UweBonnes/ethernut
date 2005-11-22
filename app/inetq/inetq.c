@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2005/11/22 09:14:13  haraldkipp
+ * Replaced specific device names by generalized macros.
+ *
  * Revision 1.3  2005/04/19 08:53:56  haraldkipp
  * Added more detailed description
  *
@@ -89,12 +92,7 @@
 #include <stdio.h>
 #include <io.h>
 
-#include <dev/debug.h>
-#ifdef ETHERNUT2
-#include <dev/lanc111.h>
-#else
-#include <dev/nicrtl.h>
-#endif
+#include <dev/board.h>
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -131,8 +129,8 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-    NutRegisterDevice(&devDebug0, 0, 0);
-    freopen("uart0", "w", stdout);
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("\nInetQuery 1.0");
 
@@ -140,7 +138,7 @@ int main(void)
      * Register Realtek controller at address 8300 hex and interrupt 5.
      */
     puts("Configuring Ethernet interface");
-    NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
+    NutRegisterDevice(&DEV_ETHER, 0, 0);
 
     /*
      * Try DHCP. First use MAC from EEPROM.

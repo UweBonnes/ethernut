@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2005/11/22 09:14:13  haraldkipp
+ * Replaced specific device names by generalized macros.
+ *
  * Revision 1.3  2004/09/10 10:26:35  haraldkipp
  * Removed old header files
  *
@@ -74,12 +77,7 @@
  *
  */
 
-#ifdef ETHERNUT2
-#include <dev/lanc111.h>
-#else
-#include <dev/nicrtl.h>
-#endif
-#include <dev/uartavr.h>
+#include <dev/board.h>
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -161,13 +159,13 @@ int main(void)
     /*
      * Register our devices.
      */
-    NutRegisterDevice(&devUart0, 0, 0);
+    NutRegisterDevice(&DEV_UART, 0, 0);
     NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
      * Setup the uart device.
      */
-    cd.cd_rs232 = fopen("uart0", "r+b");
+    cd.cd_rs232 = fopen(DEV_UART_NAME, "r+b");
     _ioctl(_fileno(cd.cd_rs232), UART_SETSPEED, &baud);
 
     /*
@@ -175,7 +173,7 @@ int main(void)
      * the first time boot with empty EEPROM and no DHCP server
      * was found, use hardcoded values.
      */
-    if (NutDhcpIfConfig("eth0", 0, 60000)) {
+    if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
         /* No valid EEPROM contents, use hard coded MAC. */
         u_char my_mac[] = { 0x00, 0x06, 0x98, 0x20, 0x00, 0x00 };
 

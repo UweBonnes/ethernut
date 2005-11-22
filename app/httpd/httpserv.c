@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.12  2005/11/22 09:14:13  haraldkipp
+ * Replaced specific device names by generalized macros.
+ *
  * Revision 1.11  2005/10/16 23:22:20  hwmaier
  * Removed unreferenced nutconfig.h include statement
  *
@@ -84,15 +87,7 @@
 #include <string.h>
 #include <io.h>
 
-#ifdef ETHERNUT2
-#include <dev/lanc111.h>
-#elif defined(WOLF)
-#include <dev/ax88796.h>
-#else
-#include <dev/nicrtl.h>
-#endif
-
-#include <dev/debug.h>
+#include <dev/board.h>
 #include <dev/urom.h>
 
 #include <sys/version.h>
@@ -540,13 +535,8 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-#if defined(__AVR__) || defined(WOLF)
-    NutRegisterDevice(&devDebug0, 0, 0);
-    freopen("uart0", "w", stdout);
-#else
-    NutRegisterDevice(&devDebug2, 0, 0);
-    freopen("sci2dbg", "w", stdout);
-#endif
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     NutSleep(200);
     printf("\n\nNut/OS %s HTTP Daemon...", NutVersionString());
@@ -561,14 +551,9 @@ int main(void)
     /*
      * Register Ethernet controller.
      */
-#if defined(__AVR__)
-    if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5))
-#elif defined(WOLF)
-    if (NutRegisterDevice(&DEV_ETHER, 0, 0))
-#else
-    if (NutRegisterDevice(&devEth0, NIC_IO_BASE, 0))
-#endif
+    if (NutRegisterDevice(&DEV_ETHER, 0, 0)) {
         puts("Registering device failed");
+    }
 
     /*
      * LAN configuration using EEPROM values or DHCP/ARP method.

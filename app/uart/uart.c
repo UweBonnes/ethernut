@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2005/11/22 09:14:13  haraldkipp
+ * Replaced specific device names by generalized macros.
+ *
  * Revision 1.3  2004/11/24 16:35:56  haraldkipp
  * Configurable floating point support
  *
@@ -83,7 +86,7 @@
 #include <stdio.h>
 #include <io.h>
 
-#include <dev/uartavr.h>
+#include <dev/board.h>
 #include <sys/timer.h>
 
 static char *banner = "\nNut/OS UART Sample\n";
@@ -118,14 +121,14 @@ int main(void)
      * has no configurable base address or interrupt and we set both 
      * parameters to zero.
      */
-    NutRegisterDevice(&devUart0, 0, 0);
+    NutRegisterDevice(&DEV_UART, 0, 0);
 
     /*
      * Now, as the device is registered, we can open it. The fopen()
      * function returns a pointer to a FILE structure, which we use 
      * for subsequent reading and writing.
      */
-    uart = fopen("uart0", "r+");
+    uart = fopen(DEV_UART_NAME, "r+");
 
     /*
      * Before doing the first read or write, we set the baudrate.

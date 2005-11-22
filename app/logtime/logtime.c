@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2005/11/22 09:14:13  haraldkipp
+ * Replaced specific device names by generalized macros.
+ *
  * Revision 1.1  2004/09/19 11:23:12  haraldkipp
  * Syslog/SNTP application added
  *
@@ -51,13 +54,7 @@
 #include <sys/heap.h>
 #include <sys/syslog.h>
 
-#ifdef ETHERNUT2
-#include <dev/lanc111.h>
-#else
-#include <dev/nicrtl.h>
-#endif
-#include <dev/debug.h>
-#include <dev/usartavr.h>
+#include <dev/board.h>
 
 /*!
  * \example logtime/logtime.c
@@ -101,7 +98,7 @@ static char *version = "1.0.1";
 #define MYBAUD  115200
 
 /*! \brief Output device. */
-#define MYDEV   devUsartAvr0
+#define MYDEV   DEV_UART
 
 /*! \brief Local timezone, -1 for Central Europe. */
 #define MYTZ    -1
