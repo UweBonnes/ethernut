@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,13 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2005/11/22 09:16:31  haraldkipp
+ * Replaced specific device names by generalized macros.
+ * Casting size_t to int to avoid compiler warnings about printf format
+ * specifiers.
+ * Excluded hardware specific statements for non-AVR targets. This way
+ * it will not work on other targets, but at least compile without error.
+ *
  * Revision 1.2  2003/11/04 17:46:52  haraldkipp
  * Adapted to Ethernut 2
  *
@@ -87,11 +94,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#ifdef ETHERNUT2
-#include <dev/lanc111.h>
-#else
-#include <dev/nicrtl.h>
-#endif
+#include <dev/board.h>
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -135,7 +138,7 @@ void ProcessRequests(FILE * stream)
          * Memory info.
          */
         if (strncmp(buff, "memory", strlen(buff)) == 0) {
-            fprintf(stream, "210 %u bytes RAM free\r\n", NutHeapAvailable());
+            fprintf(stream, "210 %u bytes RAM free\r\n", (u_int)NutHeapAvailable());
             continue;
         }
 
@@ -164,7 +167,7 @@ void ProcessRequests(FILE * stream)
                     fputs("\tSleep\t", stream);
                     break;
                 }
-                fprintf(stream, "%u\t%u", tdp->td_priority, (u_short) tdp->td_sp - (u_short) tdp->td_memory);
+                fprintf(stream, "%u\t%u", tdp->td_priority, (u_int) tdp->td_sp - (u_int) tdp->td_memory);
                 if (*((u_long *) tdp->td_memory) != DEADBEEF)
                     fputs("\tCorrupted\t", stream);
                 else
@@ -202,7 +205,9 @@ void ProcessRequests(FILE * stream)
          * Port status.
          */
         if (strncmp(buff, "query", strlen(buff)) == 0) {
-            stat = inp(PIND);
+#ifdef __AVR__
+            stat = inb(PIND);
+#endif
             fprintf(stream, "210 %02X\r\n", stat);
             continue;
         }
@@ -227,7 +232,9 @@ void ProcessRequests(FILE * stream)
                 break;
             }
             if (mask) {
-                outp(inp(PORTD) & ~mask, PORTD);
+#ifdef __AVR__
+                outb(PORTD, inb(PORTD) & ~mask);
+#endif
                 fputs("210 OK\r\n", stream);
             } else
                 fputs("410 Bad pin\r\n", stream);
@@ -254,7 +261,9 @@ void ProcessRequests(FILE * stream)
                 break;
             }
             if (mask) {
-                outp(inp(PORTD) | mask, PORTD);
+#ifdef __AVR__
+                outb(PORTD, inb(PORTD) | mask);
+#endif
                 fputs("210 OK\r\n", stream);
             } else
                 fputs("410 Bad pin\r\n", stream);
@@ -265,9 +274,11 @@ void ProcessRequests(FILE * stream)
          * wait for status change.
          */
         if (strncmp(buff, "wait", strlen(buff)) == 0) {
-            while (stat == inp(PIND))
+#ifdef __AVR__
+            while (stat == inb(PIND))
                 NutThreadYield();
-            stat = inp(PIND);
+            stat = inb(PIND);
+#endif
             fprintf(stream, "210 %02X\r\n", stat);
             continue;
         }
@@ -292,15 +303,17 @@ void ProcessRequests(FILE * stream)
  */
 void init_dio(void)
 {
+#ifdef __AVR__
     /*
      * Upper four pins are output pins.
      */
-    outp(0xf0, DDRD);
+    outb(DDRD, 0xf0);
 
     /*
      * Outputs to low and inputs pulled up.
      */
-    outp(0x0f, PORTD);
+    outb(PORTD, 0x0f);
+#endif
 }
 
 void service(void)
@@ -374,7 +387,7 @@ int main(void)
     /*
      * Configure lan interface. 
      */
-    if (NutDhcpIfConfig("eth0", 0, 60000) && NutDhcpIfConfig("eth0", my_mac, 60000)) {
+    if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000) && NutDhcpIfConfig("eth0", my_mac, 60000)) {
         /*
          * No DHCP server available. Use hard coded values.
          */
