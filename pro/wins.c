@@ -60,7 +60,7 @@ NutWinsNameQuery  (  "myboard", inet_addr(MYIP) ) ;
 #include <stdio.h>
 #endif
 
-extern u_char toupper(u_char);
+extern int toupper(int);
 /* ********************************************************* */
 
 /*!
