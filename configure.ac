@@ -34,6 +34,10 @@
 
 #
 # $Log$
+# Revision 1.7  2005/11/24 09:46:06  haraldkipp
+# Linker flags -lm and -ldl needed by lualib are not automatically applied
+# by configure. Checks added by Torben Mikael Hansen.
+#
 # Revision 1.6  2005/11/22 20:04:49  haraldkipp
 # New release.
 #
@@ -138,6 +142,8 @@ else
       if test "x$nutconf_tools_ok" = "xno"; then
         AC_MSG_WARN([Lua library missing, will not build configuration tools.])
       fi
+    AC_CHECK_FUNC(sin, LIBS=$LIBS, LIBS="-lm $LIBS")
+    AC_CHECK_LIB(dl, dlopen)
     fi
   fi
 fi
