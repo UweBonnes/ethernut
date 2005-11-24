@@ -39,6 +39,10 @@
 
 /*
  * $Log: appoptdlg.cpp,v $
+ * Revision 1.3  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.2  2005/04/22 15:06:12  haraldkipp
  * Avoid compiler warnings.
  *
@@ -145,7 +149,7 @@ void CAppOptionsDialog::PopulateProgrammer()
             wxString entry;
 
             m_cbxProgrammer->Clear();
-            bool cont = dir.GetFirst(&entry, "Makeburn.*");
+            bool cont = dir.GetFirst(&entry, wxT("Makeburn.*"));
             while (cont) {
                 m_cbxProgrammer->Append(entry.AfterLast('.'));
                 cont = dir.GetNext(&entry);

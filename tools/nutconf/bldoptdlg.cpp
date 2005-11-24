@@ -39,6 +39,10 @@
 
 /*
  * $Log: bldoptdlg.cpp,v $
+ * Revision 1.4  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.3  2005/04/22 15:07:12  haraldkipp
  * Avoid compiler warnings.
  *
@@ -229,7 +233,7 @@ void CBuildOptionsDialog::PopulatePlatform()
                 wxString entry;
 
                 m_cbxPlatform->Clear();
-                bool cont = dir.GetFirst(&entry, "Makedefs.*");
+                bool cont = dir.GetFirst(&entry, wxT("Makedefs.*"));
                 while (cont) {
                     m_cbxPlatform->Append(entry.AfterLast('.'));
                     cont = dir.GetNext(&entry);

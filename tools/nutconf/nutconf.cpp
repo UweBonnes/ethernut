@@ -32,6 +32,10 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.11  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.10  2005/07/22 18:47:15  haraldkipp
  * Online help added and Copyright year updated.
  *
@@ -160,7 +164,7 @@ bool NutConfApp::OnInit()
     /*
      * The document template defines the relationship between document and view.
      */
-    new wxDocTemplate(m_docManager, "Nut/OS Configuration", "*.conf", "", "conf", "NutconfDoc", "NutconfView",
+    new wxDocTemplate(m_docManager, wxT("Nut/OS Configuration"), wxT("*.conf"), wxT(""), wxT("conf"), wxT("NutconfDoc"), wxT("NutconfView"),
                                              CLASSINFO(CNutConfDoc), CLASSINFO(CNutConfView));
     m_docManager->SetMaxDocsOpen(1);
 
@@ -185,7 +189,7 @@ bool NutConfApp::OnInit()
     m_mainFrame->Show();
 
     if (!m_mainFrame->GetHelpController().Initialize(wxT("nutoshelp"))) {
-        wxLogMessage("Failed to load help file");
+        wxLogMessage(wxT("Failed to load help file"));
     }
 
     if(splash) {

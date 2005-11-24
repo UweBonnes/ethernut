@@ -39,6 +39,10 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.14  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.13  2005/10/07 22:12:28  hwmaier
  * Added bld_dir parameter to CreateSampleDirectory.
  *
@@ -220,7 +224,7 @@ bool CNutConfDoc::OnSaveDocument(const wxString& filename)
         return false;
     }
 
-    FILE *fp = fopen(filename, "w");
+    FILE *fp = fopen(filename.fn_str(), "w");
     if (fp) {
         SaveComponentOptions(fp, m_root->nc_child);
         fclose(fp);
@@ -272,19 +276,19 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
     wxGetApp().SetStatusText(str);
     wxLogMessage(wxT("%s"), str.c_str());
 
-    NUTREPOSITORY *repo = OpenRepository(repositoryname);
+    NUTREPOSITORY *repo = OpenRepository(repositoryname.fn_str());
     if(repo) {
         m_root = LoadComponents(repo);
         if(m_root) {
             str = wxT("Loading ") + configname;
             wxGetApp().SetStatusText(str);
             wxLogMessage(wxT("%s"), str.c_str());
-            if(ConfigureComponents(repo, m_root, configname)) {
+            if(ConfigureComponents(repo, m_root, configname.fn_str())) {
                 wxLogMessage(wxT("%s"), GetScriptErrorString());
             }
             else {
                 RefreshComponents(m_root);
-                wxLogMessage("OK");
+                wxLogMessage(wxT("OK"));
             }
         }
         else {
@@ -462,8 +466,8 @@ bool CNutConfDoc::SetValue(CConfigItem & item, long nValue)
             item.m_option->nco_value = NULL;
         }
         wxString str;
-        str.Printf("%ld", nValue);
-        item.m_option->nco_value = strdup(str);
+        str.Printf(wxT("%ld"), nValue);
+        item.m_option->nco_value = strdup(str.fn_str());
         Modify(true);
     }
     return true;
@@ -482,7 +486,7 @@ bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
             item.m_option->nco_value = NULL;
         }
         else {
-            item.m_option->nco_value = strdup(strValue);
+            item.m_option->nco_value = strdup(strValue.fn_str());
         }
         item.m_option->nco_active = 1;
         Modify(true);
@@ -539,18 +543,18 @@ bool CNutConfDoc::GenerateBuildTree()
     if(ins_dir.IsEmpty()) {
         ins_dir = cfg->m_buildpath + wxT("/lib");
     }
-    wxLogMessage("Creating Makefiles for %s in %s", cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
-    if(CreateMakeFiles(m_root, cfg->m_buildpath.c_str(), cfg->m_source_dir.c_str(),
-                       cfg->m_platform.c_str(), cfg->m_firstidir.c_str(), cfg->m_lastidir.c_str(),
-                       ins_dir.c_str())) {
+    wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
+    if(CreateMakeFiles(m_root, cfg->m_buildpath.fn_str(), cfg->m_source_dir.fn_str(),
+                       cfg->m_platform.fn_str(), cfg->m_firstidir.fn_str(), cfg->m_lastidir.fn_str(),
+                       ins_dir.fn_str())) {
         return false;
     }
 
-    wxLogMessage("Creating header files in %s", cfg->m_buildpath.c_str());
-    if(CreateHeaderFiles(m_root, cfg->m_buildpath.c_str())) {
+    wxLogMessage(wxT("Creating header files in %s"), cfg->m_buildpath.c_str());
+    if(CreateHeaderFiles(m_root, cfg->m_buildpath.fn_str())) {
         return false;
     }
-    wxLogMessage("OK");
+    wxLogMessage(wxT("OK"));
     return true;
 }
 
@@ -730,7 +734,7 @@ bool CNutConfDoc::GenerateApplicationTree()
     wxString src_dir = cfg->m_source_dir + wxT("/app");
     wxString cfg_inc = cfg->m_firstidir;
 
-    wxLogMessage("Copying samples from %s to %s", src_dir.c_str(), cfg->m_app_dir.c_str());
+    wxLogMessage(wxT("Copying samples from %s to %s"), src_dir.c_str(), cfg->m_app_dir.c_str());
     CDirCopyTraverser traverser(src_dir, cfg->m_app_dir);
     wxDir dir(src_dir);
     dir.Traverse(traverser);
@@ -743,16 +747,16 @@ bool CNutConfDoc::GenerateApplicationTree()
     icc_dir.Traverse(icc_traverser);
 #endif
 
-    wxLogMessage("Creating Makefiles for %s in %s", cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
+    wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
     wxString lib_dir(cfg->m_lib_dir);
     if(lib_dir.IsEmpty()) {
-        lib_dir = cfg->m_buildpath + "/lib";
+        lib_dir = cfg->m_buildpath + wxT("/lib");
     }
-    if(CreateSampleDirectory(m_root, cfg->m_buildpath.c_str(), cfg->m_app_dir.c_str(), cfg->m_source_dir.c_str(),
-                             lib_dir.c_str(), cfg->m_platform.c_str(), cfg->m_programmer.c_str(),
-                             cfg->m_firstidir.c_str(), cfg->m_lastidir.c_str())) {
+    if(CreateSampleDirectory(m_root, cfg->m_buildpath.fn_str(), cfg->m_app_dir.fn_str(), cfg->m_source_dir.fn_str(),
+                             lib_dir.fn_str(), cfg->m_platform.fn_str(), cfg->m_programmer.fn_str(),
+                             cfg->m_firstidir.fn_str(), cfg->m_lastidir.fn_str())) {
         return false;
     }
-    wxLogMessage("OK");
+    wxLogMessage(wxT("OK"));
     return true;
 }

@@ -39,6 +39,10 @@
 
 /*
  * $Log: settingsdlg.cpp,v $
+ * Revision 1.4  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.3  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
  *
@@ -80,8 +84,8 @@ CSettingsDialog::CSettingsDialog(wxWindow* parent)
 
     wxSizer *sizerBot = new wxBoxSizer(wxHORIZONTAL);
 
-    wxButton *okButton = new wxButton(this, wxID_OK, "&OK", wxDefaultPosition, wxDefaultSize, 0);
-    wxButton *cancelButton = new wxButton( this, wxID_CANCEL, "&Cancel", wxDefaultPosition, wxDefaultSize, 0);
+    wxButton *okButton = new wxButton(this, wxID_OK, wxT("&OK"), wxDefaultPosition, wxDefaultSize, 0);
+    wxButton *cancelButton = new wxButton( this, wxID_CANCEL, wxT("&Cancel"), wxDefaultPosition, wxDefaultSize, 0);
     sizerBot->Add(okButton, 0, wxALIGN_CENTRE | wxALL, 5);
     sizerBot->Add( cancelButton, 0, wxALIGN_CENTRE | wxALL, 5);
 

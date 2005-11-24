@@ -39,6 +39,10 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.7  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.6  2005/07/20 09:23:15  haraldkipp
  * Prepend current directory to the default file paths.
  *
@@ -98,17 +102,17 @@ CSettings::CSettings()
         wxString lastPath = pConfig->GetPath();
         pConfig->SetPath(wxT("/Settings"));
 
-        pConfig->Read("ConfigName", &m_configname, m_configname_default);
-        pConfig->Read("RepositoryName", &m_repositoryname, m_repositoryname_default);
-        pConfig->Read("BuildPath", &m_buildpath, m_buildpath_default);
-        pConfig->Read("FirstInclude", &m_firstidir, m_firstidir_default);
-        pConfig->Read("LastInclude", &m_lastidir, m_lastidir_default);
-        pConfig->Read("InstallPath", &m_lib_dir, m_lib_dir_default);
-        pConfig->Read("SourceDirectory", &m_source_dir, m_source_dir_default);
-        pConfig->Read("TargetPlatform", &m_platform, m_platform_default);
-        pConfig->Read("ToolPath", &m_toolpath, m_toolpath_default);
-        pConfig->Read("ApplicationDirectory", &m_app_dir, m_app_dir_default);
-        pConfig->Read("Programmer", &m_programmer, m_programmer_default);
+        pConfig->Read(wxT("ConfigName"), &m_configname, m_configname_default);
+        pConfig->Read(wxT("RepositoryName"), &m_repositoryname, m_repositoryname_default);
+        pConfig->Read(wxT("BuildPath"), &m_buildpath, m_buildpath_default);
+        pConfig->Read(wxT("FirstInclude"), &m_firstidir, m_firstidir_default);
+        pConfig->Read(wxT("LastInclude"), &m_lastidir, m_lastidir_default);
+        pConfig->Read(wxT("InstallPath"), &m_lib_dir, m_lib_dir_default);
+        pConfig->Read(wxT("SourceDirectory"), &m_source_dir, m_source_dir_default);
+        pConfig->Read(wxT("TargetPlatform"), &m_platform, m_platform_default);
+        pConfig->Read(wxT("ToolPath"), &m_toolpath, m_toolpath_default);
+        pConfig->Read(wxT("ApplicationDirectory"), &m_app_dir, m_app_dir_default);
+        pConfig->Read(wxT("Programmer"), &m_programmer, m_programmer_default);
 
         pConfig->SetPath(lastPath);
     }
@@ -127,17 +131,17 @@ bool CSettings::Save()
     if (pConfig) {
         wxString lastPath = pConfig->GetPath();
         pConfig->SetPath(wxT("/Settings"));
-        pConfig->Write("ConfigName", m_configname);
-        pConfig->Write("RepositoryName", m_repositoryname);
-        pConfig->Write("BuildPath", m_buildpath);
-        pConfig->Write("FirstInclude", m_firstidir);
-        pConfig->Write("LastInclude", m_lastidir);
-        pConfig->Write("InstallPath", m_lib_dir);
-        pConfig->Write("SourceDirectory", m_source_dir);
-        pConfig->Write("TargetPlatform", m_platform);
-        pConfig->Write("ToolPath", m_toolpath);
-        pConfig->Write("ApplicationDirectory", m_app_dir);
-        pConfig->Write("Programmer", m_programmer);
+        pConfig->Write(wxT("ConfigName"), m_configname);
+        pConfig->Write(wxT("RepositoryName"), m_repositoryname);
+        pConfig->Write(wxT("BuildPath"), m_buildpath);
+        pConfig->Write(wxT("FirstInclude"), m_firstidir);
+        pConfig->Write(wxT("LastInclude"), m_lastidir);
+        pConfig->Write(wxT("InstallPath"), m_lib_dir);
+        pConfig->Write(wxT("SourceDirectory"), m_source_dir);
+        pConfig->Write(wxT("TargetPlatform"), m_platform);
+        pConfig->Write(wxT("ToolPath"), m_toolpath);
+        pConfig->Write(wxT("ApplicationDirectory"), m_app_dir);
+        pConfig->Write(wxT("Programmer"), m_programmer);
         pConfig->SetPath(lastPath);
     }
     return true;

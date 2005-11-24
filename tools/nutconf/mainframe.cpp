@@ -39,6 +39,10 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.9  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.8  2005/09/21 10:44:15  christianwelzel
  * Replaced deprecated commands with newer ones.
  *
@@ -268,20 +272,20 @@ void CMainFrame::CreateNutToolBar()
         toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
         toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
         toolBar->AddSeparator();
-        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Search");
+        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
         toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
         toolBar->AddSeparator();
-        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Show help");
+        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Show help"));
     }
     /* Load large toolbar buttons. */
     else {
         toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
         toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
         toolBar->AddSeparator();
-        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Search");
+        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
         toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
         toolBar->AddSeparator();
-        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, "Show help");
+        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Show help"));
         toolBar->SetToolBitmapSize(wxSize(32, 32));
     }
     toolBar->Realize();
@@ -497,7 +501,7 @@ void CMainFrame::OnGenerateBuildTree(wxCommandEvent & WXUNUSED(event))
     str += cfg->m_buildpath;
     str += wxT("\nTarget platform: ");
     str += cfg->m_platform;
-    str += "\n\nDo you like to generate this build tree?\n";
+    str += wxT("\n\nDo you like to generate this build tree?\n");
     if(wxMessageBox(str, wxT("Generate Build"), wxOK | wxCANCEL | wxICON_QUESTION, this) == wxOK) {
         if (doc) {
             doc->GenerateBuildTree();
@@ -520,7 +524,7 @@ void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
         str += wxT("\nInstall directory: ");
         str += cfg->m_lib_dir;
     }
-    str += "\n\nDo you like to build the Nut/OS libraries?\n";
+    str += wxT("\n\nDo you like to build the Nut/OS libraries?\n");
     if(wxMessageBox(str, wxT("Build Nut/OS"), wxOK | wxCANCEL | wxICON_QUESTION, this) == wxOK) {
         if(!wxGetApp().Build(wxT("clean"))) {
             if(wxMessageBox(wxT("Cleaning build tree failed! Continue?"), wxT("Build"), 
@@ -561,7 +565,7 @@ void CMainFrame::OnCreateSampleDir(wxCommandEvent & WXUNUSED(event))
     str += cfg->m_app_dir;
     str += wxT("\nProgrammer ");
     str += cfg->m_programmer;
-    str += "\n\nDo you like to create the sample directory?\n";
+    str += wxT("\n\nDo you like to create the sample directory?\n");
     if(wxMessageBox(str, wxT("Creating samples"), wxOK | wxCANCEL | wxICON_QUESTION, this) == wxOK) {
         if (doc) {
             doc->GenerateApplicationTree();

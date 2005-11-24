@@ -39,6 +39,10 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.6  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.5  2005/04/22 15:08:10  haraldkipp
  * Avoid compiler warnings.
  * Upgraded to wxWidgets 2.5.5.
@@ -95,7 +99,7 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENT * compo)
 {
     m_compo = compo;
     m_option = NULL;
-    m_name = compo->nc_name;
+    m_name = wxString(compo->nc_name,wxConvLocal);
     if (compo->nc_child) {
         m_configType = nutLibrary;
     } else {
@@ -127,7 +131,7 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENTOPTION * option)
 {
     m_compo = NULL;
     m_option = option;
-    m_name = option->nco_name;
+    m_name = wxString(option->nco_name,wxConvLocal);
     m_configType = nutOption;
     m_optionType = nutString;
     m_parent = parent;
@@ -338,15 +342,15 @@ wxString CConfigItem::GetBriefDescription() const
 
     if (m_compo) {
         if (m_compo->nc_brief) {
-            str = m_compo->nc_brief;
+            str = wxString(m_compo->nc_brief,wxConvLocal);
         } else {
-            str = m_compo->nc_name;
+            str = wxString(m_compo->nc_name,wxConvLocal);
         }
     } else if (m_option) {
         if (m_option->nco_brief) {
-            str = m_option->nco_brief;
+            str = wxString(m_option->nco_brief,wxConvLocal);
         } else {
-            str = m_option->nco_name;
+            str = wxString(m_option->nco_name,wxConvLocal);
         }
     } else {
         str = wxT("Nut/OS Components");
@@ -359,9 +363,9 @@ wxString CConfigItem::GetName() const
     wxString str;
 
     if (m_compo) {
-        str = m_compo->nc_name;
+        str = wxString(m_compo->nc_name,wxConvLocal);
     } else if (m_option) {
-        str = m_option->nco_name;
+        str = wxString(m_option->nco_name,wxConvLocal);
     }
     return str;
 }
@@ -371,9 +375,9 @@ wxString CConfigItem::GetDescription() const
     wxString str;
 
     if (m_compo) {
-        str = m_compo->nc_description;
+        str = wxString(m_compo->nc_description,wxConvLocal);
     } else if (m_option) {
-        str = m_option->nco_description;
+        str = wxString(m_option->nco_description,wxConvLocal);
     }
     return str;
 }
@@ -434,11 +438,11 @@ wxString CConfigItem::StringValue() const
 {
     if (m_option) {
         if (m_option->nco_value) {
-            return wxString(m_option->nco_value);
+            return wxString(m_option->nco_value,wxConvLocal);
         }
         if (GetOptionType() == nutEnumerated) {
             if (m_option->nco_choices && m_option->nco_choices[0]) {
-                return wxString(m_option->nco_choices[0]);
+                return wxString(m_option->nco_choices[0],wxConvLocal);
             }
         }
     }
@@ -448,7 +452,7 @@ wxString CConfigItem::StringValue() const
 wxString CConfigItem::GetFilename() const
 {
     if (m_option &&  m_option->nco_file) {
-        return wxString(m_option->nco_file);
+        return wxString(m_option->nco_file,wxConvLocal);
     }
     return wxEmptyString;
 }
@@ -456,7 +460,7 @@ wxString CConfigItem::GetFilename() const
 wxString CConfigItem::GetMacro() const
 {
     if (m_option && m_option->nco_name) {
-        return wxString(m_option->nco_name);
+        return wxString(m_option->nco_name,wxConvLocal);
     }
     return wxEmptyString;
 }
@@ -470,7 +474,7 @@ wxString CConfigItem::GetRequirementList() const
             if(!str.IsEmpty()) {
                 str += wxT(", ");
             }
-            str += m_option->nco_requires[i];
+            str += wxString(m_option->nco_requires[i],wxConvLocal);
         }
     }
     if (m_compo && m_compo->nc_requires) {
@@ -478,7 +482,7 @@ wxString CConfigItem::GetRequirementList() const
             if(!str.IsEmpty()) {
                 str += wxT(", ");
             }
-            str += m_compo->nc_requires[i];
+            str += wxString(m_compo->nc_requires[i],wxConvLocal);
         }
     }
     return str;
@@ -493,7 +497,7 @@ wxString CConfigItem::GetProvisionList() const
             if(!str.IsEmpty()) {
                 str += wxT(", ");
             }
-            str += m_option->nco_provides[i];
+            str += wxString(m_option->nco_provides[i],wxConvLocal);
         }
     }
     if (m_compo && m_compo->nc_provides) {
@@ -501,7 +505,7 @@ wxString CConfigItem::GetProvisionList() const
             if(!str.IsEmpty()) {
                 str += wxT(", ");
             }
-            str += m_compo->nc_provides[i];
+            str += wxString(m_compo->nc_provides[i],wxConvLocal);
         }
     }
     return str;
@@ -511,7 +515,7 @@ int CConfigItem::GetEnumStrings(wxArrayString & arEnumStrings) const
 {
     if (m_option && m_option->nco_choices) {
         for (int i = 0; m_option->nco_choices[i]; i++) {
-            arEnumStrings.Add(m_option->nco_choices[i]);
+            arEnumStrings.Add(wxString(m_option->nco_choices[i],wxConvLocal));
         }
     }
     return arEnumStrings.GetCount();

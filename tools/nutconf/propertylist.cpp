@@ -39,6 +39,10 @@
 
 /*
  * $Log: propertylist.cpp,v $
+ * Revision 1.5  2005/11/24 09:44:30  haraldkipp
+ * wxWidget failed to built with unicode support, which results in a number
+ * of compile errors. Fixed by Torben Mikael Hansen.
+ *
  * Revision 1.4  2005/04/22 15:20:32  haraldkipp
  * Avoid compiler warnings.
  *
@@ -94,8 +98,8 @@ void CPropertyList::OnRightClick(wxMouseEvent & WXUNUSED(event))
 
 void CPropertyList::AddColumns()
 {
-    InsertColumn(0, "Property", wxLIST_FORMAT_LEFT, 100);
-    InsertColumn(1, "Value", wxLIST_FORMAT_LEFT, 300);
+    InsertColumn(0, wxT("Property"), wxLIST_FORMAT_LEFT, 100);
+    InsertColumn(1, wxT("Value"), wxLIST_FORMAT_LEFT, 300);
 }
 
 /*
