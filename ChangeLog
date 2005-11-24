@@ -1,4 +1,23 @@
-$Id: ChangeLog,v 1.284 2005/11/22 16:42:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.285 2005/11/24 09:42:39 haraldkipp Exp $
+
+2005-11-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac: Linker flags -lm and -ldl needed by lualib are 
+	not automatically applied by configure. Checks added. This
+	and the following two patches had been kindly contributed
+	by Torben Mikael Hansen.
+
+	* pro/wins.c: Function definition for toupper in conflicts
+	with GCC 4.0.2. Changed u_char types to int.
+
+	* tools/nutconf/appoptdlg.cpp, tools/nutconf/bldoptdlg.cpp,
+	tools/nutconf/configitem.cpp, tools/nutconf/mainframe.cpp,
+	tools/nutconf/nutconf.cpp, tools/nutconf/nutconfdoc.cpp,
+	tools/nutconf/propertylist.cpp, tools/nutconf/settings.cpp,
+	tools/nutconf/settingsdlg.cpp: wxWidget failed to built with 
+	unicode support, which results in a number of compile errors. 
+	Fixed.
+
 
 2005-11-22  Harald Kipp  <harald.kipp@egnite.de>
 
