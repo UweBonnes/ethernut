@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.7  2005/11/24 11:26:33  haraldkipp
+-- Added TLC16C550 driver.
+--
 -- Revision 1.6  2005/11/22 16:42:39  haraldkipp
 -- ICCAVR fixed. Re-enabled AHDLC and old UART driver.
 --
@@ -351,6 +354,16 @@ nutarch_avr =
                 file = "include/cfg/arch/avrpio.h"
             },
         }
+    },
+    {
+        name = "nutarch_avr_ace",
+        brief = "TL16C550 Driver",
+        description = "TL16C550 UART driver for ATmega128.\n"..
+                      "Initially contributed by William Basser and later "..
+                      "enhanced by Przemyslaw Rudy. Only available for GCC.",
+        sources = { "avr/dev/ace.c", "avr/dev/tlc16c550.c" },
+        requires = { "HW_MCU_ATMEGA128", "DEV_IRQ_AVR", "NUT_EVENT", "CRT_HEAPMEM", "TOOL_GCC" },
+        provides = { "DEV_FILE", "DEV_READ", "DEV_WRITE" },
     },
     {
         name = "nutarch_avr_uart",

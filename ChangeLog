@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.285 2005/11/24 09:42:39 haraldkipp Exp $
+$Id: ChangeLog,v 1.286 2005/11/24 11:26:33 haraldkipp Exp $
 
 2005-11-24  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -17,6 +17,12 @@ $Id: ChangeLog,v 1.285 2005/11/24 09:42:39 haraldkipp Exp $
 	tools/nutconf/settingsdlg.cpp: wxWidget failed to built with 
 	unicode support, which results in a number of compile errors. 
 	Fixed.
+
+	* arch/avr/dev/ace.c, arch/avr/dev/tlc16c550.c,
+	include/dev/ace.h, include/dev/tlc16c550.h, 
+	nut/conf/arch/avr.nut: Added driver for external 16550 UART.
+	Initially contributed by William Basser and later enhanced by 
+	Przemyslaw Rudy. Only available for ATmega128 and GCC.
 
 
 2005-11-22  Harald Kipp  <harald.kipp@egnite.de>
