@@ -1,0 +1,3 @@
+BURN=C:\proj\work\jtagomat\Release\jtagomat
+BURNMEMORY=FLASH
+BURNFLAGS=-DDEVICE=0x1F0F0F0F -DIMAGE=$(TARG) BATCH at91-upl.jom $(BURNMEMORY)
