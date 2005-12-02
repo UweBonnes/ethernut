@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.8  2005/12/02 11:36:12  haraldkipp
+# Release 4.0 scheduled
+#
 # Revision 1.7  2005/11/24 09:46:06  haraldkipp
 # Linker flags -lm and -ldl needed by lualib are not automatically applied
 # by configure. Checks added by Torben Mikael Hansen.
@@ -60,7 +63,7 @@
 #
 #
 
-AC_INIT(ethernut,3.9.9)
+AC_INIT(ethernut,3.9.99)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005 egnite Software GmbH])

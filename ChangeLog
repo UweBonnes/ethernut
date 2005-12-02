@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.286 2005/11/24 11:26:33 haraldkipp Exp $
+$Id: ChangeLog,v 1.287 2005/12/02 11:36:12 haraldkipp Exp $
+
+2005-12-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Release 4.0 scheduled.
+
+
+2005-11-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/Makeburn.arm-jom: Programming template for ARM using
+	jtag-o-mat.
+
 
 2005-11-24  Harald Kipp  <harald.kipp@egnite.de>
 
