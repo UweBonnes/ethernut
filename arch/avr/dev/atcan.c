@@ -39,14 +39,11 @@
  *
  */
 
-/*!
- * \file dev/atcan.c
- * \brief Driver for Atmel's internal Full CAN controller found in AVR
- * and AT89C51 devices
- */
-
 /*
  * $Log$
+ * Revision 1.3  2005/12/04 10:53:59  hwmaier
+ * no message
+ *
  * Revision 1.2  2005/10/07 22:02:33  hwmaier
  * no message
  *
