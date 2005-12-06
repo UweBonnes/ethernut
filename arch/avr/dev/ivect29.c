@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2005/12/06 23:20:17  hwmaier
+ * Changes to make register and flag names compatible with AT90CAN128 MCU
+ *
  * Revision 1.2  2005/10/24 09:35:48  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -61,6 +64,20 @@
  */
 
 #include <dev/irqreg.h>
+
+#ifdef MCU_AT90CAN128
+#define INT_MASK_REG    TIMSK3
+#define INT_STATUS_REG  TIFR3
+#define INT_ENABLE_BIT  OCIE3A
+#define INT_STATUS_BIT  OCF3A
+#define INT_PRIORITY    30
+#else
+#define INT_MASK_REG    ETIMSK
+#define INT_STATUS_REG  ETIFR
+#define INT_ENABLE_BIT  TOIE3
+#define INT_STATUS_BIT  TOV3
+#define INT_PRIORITY    28
+#endif
 
 /*!
  * \addtogroup xgIrqReg
@@ -99,20 +116,20 @@ int AvrTimer3OvfIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(ETIMSK, TOIE3);
+    int enabled = bit_is_set(INT_MASK_REG, INT_ENABLE_BIT);
 
     /* Disable interrupt. */
-    cbi(TIMSK, TOIE3);
+    cbi(INT_MASK_REG, INT_ENABLE_BIT);
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         enabled = 0;
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
-        outb(ETIFR, _BV(TOV3));
+        outb(INT_STATUS_REG, _BV(INT_STATUS_BIT));
         break;
     case NUT_IRQCTL_STATUS:
-        if (bit_is_set(ETIFR, TOV3)) {
+        if (bit_is_set(INT_STATUS_REG, INT_STATUS_BIT)) {
             *ival = 1;
         } else {
             *ival = 0;
@@ -128,7 +145,7 @@ int AvrTimer3OvfIrqCtl(int cmd, void *param)
         enabled = 0;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = 9;
+        *ival = INT_PRIORITY;
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -143,7 +160,7 @@ int AvrTimer3OvfIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        sbi(ETIMSK, TOIE3);
+        sbi(INT_MASK_REG, INT_ENABLE_BIT);
     }
     return rc;
 }

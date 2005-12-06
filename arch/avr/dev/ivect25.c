@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2005/12/06 23:20:17  hwmaier
+ * Changes to make register and flag names compatible with AT90CAN128 MCU
+ *
  * Revision 1.3  2005/11/20 14:49:03  haraldkipp
  * *** empty log message ***
  *
@@ -64,6 +67,20 @@
  */
 
 #include <dev/irqreg.h>
+
+#ifdef MCU_AT90CAN128
+#define INT_MASK_REG    TIMSK3
+#define INT_STATUS_REG  TIFR3
+#define INT_ENABLE_BIT  ICIE3
+#define INT_STATUS_BIT  ICF3
+#define INT_PRIORITY    0
+#else
+#define INT_MASK_REG    ETIMSK
+#define INT_STATUS_REG  ETIFR
+#define INT_ENABLE_BIT  TICIE3
+#define INT_STATUS_BIT  ICF3
+#define INT_PRIORITY    0
+#endif
 
 /*!
  * \addtogroup xgIrqReg
@@ -101,19 +118,19 @@ int AvrTimer3InCaptIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(ETIMSK, TICIE3);
+    int enabled = bit_is_set(INT_MASK_REG, INT_ENABLE_BIT);
 
     /* Disable interrupt. */
-    cbi(ETIMSK, TICIE3);
+    cbi(INT_MASK_REG, INT_ENABLE_BIT);
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
     case NUT_IRQCTL_CLEAR:
         /* Clear any pending interrupt. */
-        outb(ETIFR, _BV(ICF3));
+        outb(INT_STATUS_REG, _BV(INT_STATUS_BIT));
         break;
     case NUT_IRQCTL_STATUS:
-        if (bit_is_set(ETIFR, ICF3)) {
+        if (bit_is_set(INT_STATUS_REG, INT_STATUS_BIT)) {
             *ival = 1;
         } else {
             *ival = 0;
@@ -129,7 +146,7 @@ int AvrTimer3InCaptIrqCtl(int cmd, void *param)
         enabled = 0;
         break;
     case NUT_IRQCTL_GETPRIO:
-        *ival = 0;
+        *ival = INT_PRIORITY;
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -144,7 +161,7 @@ int AvrTimer3InCaptIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        sbi(ETIMSK, TICIE3);
+        sbi(INT_MASK_REG, INT_ENABLE_BIT);
     }
     return rc;
 }
