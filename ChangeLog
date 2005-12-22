@@ -1,6 +1,9 @@
-$Id: ChangeLog,v 1.288 2005/12/06 23:21:16 hwmaier Exp $
+$Id: ChangeLog,v 1.289 2005/12/22 09:36:25 freckle Exp $
 
-2005-10-19 Henrik Maier  <henrik@proconx.com>
+2005-12-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
+        * include/sys/mutex.h: added missing prototype for NutMutexDestroy. 
+        
+2005-12-06 Henrik Maier  <henrik@proconx.com>
 
         * arch/avr/dev/ivect09.c, arch/avr/dev/ivect11.c, arch/avr/dev/ivect15.c,
         arch/avr/dev/ivect24.c, arch/avr/dev/ivect25.c, arch/avr/dev/ivect26.c,

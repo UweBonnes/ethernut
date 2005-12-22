@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2005/12/22 09:36:25  freckle
+ * added missing prototype for NutMutexDestroy
+ *
  * Revision 1.3  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -81,7 +84,7 @@ extern "C" {
     extern void NutMutexLock(MUTEX * mutex);
     extern int NutMutexUnlock(MUTEX * mutex);
     extern int NutMutexTrylock(MUTEX * mutex);
-
+    extern int NutMutexDestroy(MUTEX * mutex);
 #ifdef __cplusplus
 }
 #endif
