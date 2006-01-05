@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.13  2006/01/05 16:44:58  haraldkipp
+-- PLL clock choices added.
+--
 -- Revision 1.12  2005/10/24 10:01:19  haraldkipp
 -- New linker scripts added for AT91 apps running in RAM and ROM.
 --
@@ -79,6 +82,8 @@ avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPOR
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
 arm_ld_choice = { " ", "at91_boot", "at91_ram", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
+
+pll_clk_choice = { " ", "0", "1", "2", "3", "4", "5" }
 
 repository =
 {
