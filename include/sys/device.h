@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/01/05 16:45:34  haraldkipp
+ * Added a new driver type IFTYP_FS.
+ *
  * Revision 1.5  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -120,6 +123,7 @@ __BEGIN_DECLS
 #define IFTYP_TCPSOCK	4	/*!< \brief TCP socket */
 #define IFTYP_CHAR      5	/*!< \brief Character stream device */
 #define IFTYP_CAN       6       /*!< \brief CAN device */
+#define IFTYP_FS       16   /*!< \brief file system device */
 
 /*!
  * \brief Device structure type.
