@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.5  2006/01/05 16:49:48  haraldkipp
+-- PHAT file system driver added.
+--
 -- Revision 1.4  2005/04/05 17:56:16  haraldkipp
 -- UROM file system is not platform dependant.
 --
@@ -82,6 +85,24 @@ nutfs =
         description = "Read only.",
         sources = { "uromfs.c" },
         makedefs = { "CRUROM=crurom" }
+    },
+    {
+        name = "nutfs_phatfs",
+        brief = "PHAT",
+        requires = { "DEV_BLOCK" },
+        provides = { "NUT_FS", "NUT_FS_READ", "NUT_FS_WRITE", "NUT_FS_DIR" },
+        description = "FAT compatible file system.",
+        sources = { 
+                "phatfs.c", 
+                "phatvol.c", 
+                "phatdir.c", 
+                "phatio.c", 
+                "phat12.c", 
+                "phat16.c", 
+                "phat32.c", 
+                "phatutil.c",
+                "phatdbg.c"
+        }
     },
     {
         name = "nutfs_pnutfs",
