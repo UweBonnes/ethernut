@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/01/05 16:46:25  haraldkipp
+ * Added support for CY22393 programmable clock chip.
+ *
  * Revision 1.3  2005/10/24 08:34:13  haraldkipp
  * Moved AT91 family specific header files to sbudir arm.
  * Use new IRQ API.
@@ -65,9 +68,19 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/clock.h>
 #include <cfg/arch.h>
 #include <arch/arm/at91.h>
 #include <dev/irqreg.h>
+
+#ifndef NUT_CPU_FREQ
+#ifdef NUT_PLL_CPUCLK
+#include <dev/cy2239x.h>
+#else /* !NUT_PLL_CPUCLK */
+#define NUT_CPU_FREQ    73728000UL
+#endif /* !NUT_PLL_CPUCLK */
+#endif /* !NUT_CPU_FREQ */
+
 
 /*!
  * \addtogroup xgNutArchArmOsTimerAt91
@@ -76,10 +89,6 @@
 
 #define NutEnableTimerIrq()     NutEnterCritical()
 #define NutDisableTimerIrq()    NutExitCritical()
-
-#ifndef NUT_CPU_FREQ
-#define NUT_CPU_FREQ    73728000UL
-#endif
 
 #ifndef NUT_TICK_FREQ
 #define NUT_TICK_FREQ   1000UL
@@ -159,7 +168,11 @@ void NutRegisterTimer(void (*handler) (void *))
  */
 u_long NutGetCpuClock(void)
 {
+#ifdef NUT_CPU_FREQ
     return NUT_CPU_FREQ;
+#else
+    return Cy2239xGetFreq(NUT_PLL_CPUCLK, 7);
+#endif
 }
 
 /*!
