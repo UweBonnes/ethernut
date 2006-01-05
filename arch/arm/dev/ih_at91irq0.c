@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/05 16:44:53  haraldkipp
+ * Edge and level trigger modes now configurable.
+ *
  * Revision 1.1  2005/10/24 08:56:09  haraldkipp
  * First check in.
  *
@@ -120,6 +123,33 @@ static int Interrupt0Ctl(int cmd, void *param)
         break;
     case NUT_IRQCTL_DISABLE:
         enabled = 0;
+        break;
+    case NUT_IRQCTL_GETMODE:
+        {
+            u_int val = inr(AIC_SMR(IRQ0_ID)) & AIC_SRCTYPE;
+            if (val == AIC_SRCTYPE_EXT_LOW_LEVEL) {
+                *ival = NUT_IRQMODE_LOWLEVEL;
+            } else if (val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
+                *ival = NUT_IRQMODE_LOWLEVEL;
+            } else if (val == AIC_SRCTYPE_EXT_POSITIVE_EDGE) {
+                *ival = NUT_IRQMODE_RISINGEDGE;
+            } else  {
+                *ival = NUT_IRQMODE_FALLINGEDGE;
+            }
+        }
+        break;
+    case NUT_IRQCTL_SETMODE:
+        if (*ival == NUT_IRQMODE_LOWLEVEL) {
+            outr(AIC_SMR(IRQ0_ID), (inr(AIC_SMR(IRQ0_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_LOW_LEVEL);
+        } else if (*ival == NUT_IRQMODE_HIGHLEVEL) {
+            outr(AIC_SMR(IRQ0_ID), (inr(AIC_SMR(IRQ0_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_HIGH_LEVEL);
+        } else if (*ival == NUT_IRQMODE_FALLINGEDGE) {
+            outr(AIC_SMR(IRQ0_ID), (inr(AIC_SMR(IRQ0_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_NEGATIVE_EDGE);
+        } else  if (*ival == NUT_IRQMODE_RISINGEDGE) {
+            outr(AIC_SMR(IRQ0_ID), (inr(AIC_SMR(IRQ0_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_POSITIVE_EDGE);
+        } else  {
+            rc = -1;
+        }
         break;
     case NUT_IRQCTL_GETPRIO:
         *ival = inr(AIC_SMR(IRQ0_ID)) & AIC_PRIOR;
