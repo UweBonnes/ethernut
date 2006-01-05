@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/05 16:52:49  haraldkipp
+ * Baudrate calculation is now based on NutGetCpuClock().
+ * The AT91_US_BAUD macro had been marked deprecated.
+ *
  * Revision 1.2  2005/11/20 14:44:14  haraldkipp
  * Register offsets added.
  *
@@ -290,7 +294,10 @@
 #define US_TIMEOUT              0x00000100      /*!< \brief Receiver timeout */
 #define US_TXEMPTY              0x00000200      /*!< \brief Transmitter empty */
 
-/*! \brief Baud rate calculation helper macro. */
+/*! \brief Baud rate calculation helper macro. 
+ *
+ * \deprecated Use NutGetCpuClock() and calculate the divider value locally.
+ */
 #define AT91_US_BAUD(baud) ((NUT_CPU_FREQ / (8 * (baud)) + 1) / 2)
 /*@}*/
 
