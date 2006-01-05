@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/05 16:52:23  haraldkipp
+ * The argument for the FS_STATUS ioctl now uses an individual structure.
+ *
  * Revision 1.1  2005/02/05 20:35:21  haraldkipp
  * Peanut added
  *
@@ -54,8 +57,6 @@
 #include <fs/fs.h>
 #include <unistd.h>
 #include <sys/stat.h>
-
-#include <stdio.h>
 
 /*!
  * \addtogroup xgFS
@@ -158,7 +159,7 @@ int stat(CONST char *path, struct stat *s)
     u_char dev_name[9];
     u_char nidx;
     CONST char *nptr = path;
-    IOCTL_ARG2 args;
+    FSCP_STATUS parms;
 
     /* Extract the device name. */
     for (nidx = 0; *nptr && *nptr != ':' && nidx < 8; nidx++) {
@@ -171,9 +172,9 @@ int stat(CONST char *path, struct stat *s)
         if (*nptr == ':') {
             nptr++;
         }
-        args.arg1 = (void *) nptr;
-        args.arg2 = s;
-        return (*dev->dev_ioctl) (dev, FS_STATUS, (void *) &args);
+        parms.par_path = nptr;
+        parms.par_stp = s;
+        return (*dev->dev_ioctl) (dev, FS_STATUS, (void *) &parms);
     }
     return -1;
 }
