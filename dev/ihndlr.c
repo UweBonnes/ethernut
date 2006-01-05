@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/01/05 16:51:54  haraldkipp
+ * NutIrqSetPriority() didn't correctly return the previous priority. This
+ * bug has been fixed.
+ * New function NutIrqSetMode() allows to modify the interrupt modes.
+ *
  * Revision 1.4  2005/10/24 10:17:24  haraldkipp
  * New API functions added to create platform independant drivers.
  * Interrupt counting requires NUT_PERFMON to be defined.
@@ -151,9 +156,41 @@ int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
     int rc = -1;
 
     if (irq->ir_ctl) {
-        rc = (irq->ir_ctl) (NUT_IRQCTL_SETPRIO, &level);
-        if (rc == 0 && (rc = (irq->ir_ctl) (NUT_IRQCTL_GETPRIO, &level)) == 0) {
-            rc = level;
+        int prev;
+
+        rc = (irq->ir_ctl) (NUT_IRQCTL_GETPRIO, &prev);
+        if (rc == 0 && (rc = (irq->ir_ctl) (NUT_IRQCTL_SETPRIO, &level)) == 0) {
+            rc = prev;
+        }
+    }
+    return rc;
+}
+
+/*!
+ * \brief Modify the interrupt mode.
+ *
+ * The function returns the old mode, which makes it easy to 
+ * temporarily switch to another mode and later set back the 
+ * old one.
+ *
+ * \note Not all targets support all modes. Check the hardware 
+ *       data sheet for valid levels.
+ *
+ * \param irq   Interrupt to modify.
+ * \param level New priority level.
+ *
+ * \return Old mode or -1 in case of an error.
+ */
+int NutIrqSetMode(IRQ_HANDLER * irq, int mode)
+{
+    int rc = -1;
+
+    if (irq->ir_ctl) {
+        int prev;
+
+        rc = (irq->ir_ctl) (NUT_IRQCTL_GETMODE, &prev);
+        if (rc == 0 && (rc = (irq->ir_ctl) (NUT_IRQCTL_SETMODE, &mode)) == 0) {
+            rc = prev;
         }
     }
     return rc;
