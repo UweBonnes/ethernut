@@ -33,6 +33,12 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.22  2006/01/05 16:49:06  haraldkipp
+-- Mulimedia Card Block Device Driver added.
+-- Programmable Logic Device added, which supports the CPLD
+-- implementation of the Ethernut 3 design.
+-- New options added for CY2239x support.
+--
 -- Revision 1.21  2005/10/24 09:54:55  haraldkipp
 -- New i2C bit banging driver.
 -- New Xicor RTC driver.
@@ -190,9 +196,24 @@ nutdev =
     {
         name = "nutdev_twbbif",
         brief = "Bit Banging Two Wire",
+        description = "Tested on AT91 only.",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_TWI" },
         sources = { "twbbif.c" }
+    },
+
+    --
+    -- Block Device Drivers.
+    --
+    {
+        name = "nutdev_mmcard",
+        brief = "Basic MMC Driver",
+        description = "Basic Multimedia card driver. To run this driver, a few low "..
+                      "level routines are required for direct hardware access. "..
+                      "Tested on AT91 only.",
+        requires = { "DEV_MMCLL" },
+        provides = { "DEV_BLOCK" },
+        sources = { "mmcard.c" }
     },
 
     --
@@ -201,7 +222,7 @@ nutdev =
     {
         name = "nutdev_x12rtc",
         brief = "X12xx Driver",
-        description = "Intersil X12xx RTC and EEPROM driver.",
+        description = "Intersil X12xx RTC and EEPROM driver. Tested on AT91 only.",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_RTC" },
         sources = { "x12rtc.c" }
@@ -209,10 +230,107 @@ nutdev =
     {
         name = "nutdev_cy2239x",
         brief = "CY2239x Driver",
-        description = "Cypress CY22393/4/5 PLL clock.",
+        description = "Cypress CY22393/4/5 PLL clock. Tested on AT91 only.",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_PLL" },
-        sources = { "cy2239x.c" }
+        sources = { "cy2239x.c" },
+        options =
+        {
+            {
+                macro = "NUT_PLL_FREF",
+                brief = "Reference Clock",
+                description = "Frequency of the PLL reference clock in Hz. If enabled and "..
+                              "if NUT_CPU_FREQ is not defined, this value will be used to "..
+                              "determine the CPU clock as well.",
+                flavor = "booldata",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUT_PLL_CPUCLK",
+                brief = "CPU Clock Output",
+                description = "PLL output used for the CPU Clock\n\n"..
+                              "If an output is selected and if NUT_CPU_FREQ is not defined, "..
+                              "then the CPU Clock Value will be queried from the PLL Clock "..
+                              "Chip.\n\n"..
+                              "Select\n"..
+                              "0 for for the XBUF Pin\n"..
+                              "1 for for the CLKA Pin\n"..
+                              "2 for for the CLKB Pin\n"..
+                              "3 for for the CLKC Pin (Ethernut 3 default)\n"..
+                              "4 for for the CLKD Pin\n"..
+                              "5 for for the CLKE Pin",
+                type = "enumerated",
+                choices = pll_clk_choice,
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "NUT_PLL_ETHCLK",
+                brief = "Ethernet Clock Output",
+                description = "PLL output used to drive the Ethernet Controller\n\n"..
+                              "Select\n"..
+                              "0 for for the XBUF Pin\n"..
+                              "1 for for the CLKA Pin (Ethernut 3 default)\n"..
+                              "2 for for the CLKB Pin\n"..
+                              "3 for for the CLKC Pin\n"..
+                              "4 for for the CLKD Pin\n"..
+                              "5 for for the CLKE Pin",
+                type = "enumerated",
+                choices = pll_clk_choice,
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "NUT_PLL_NPLCLK1",
+                brief = "NPL Clock 1 Output",
+                description = "PLL output connected to the CPLD GCK1 Pin\n\n"..
+                              "Select\n"..
+                              "0 for for the XBUF Pin\n"..
+                              "1 for for the CLKA Pin\n"..
+                              "2 for for the CLKB Pin (Ethernut 3 default)\n"..
+                              "3 for for the CLKC Pin\n"..
+                              "4 for for the CLKD Pin\n"..
+                              "5 for for the CLKE Pin",
+                type = "enumerated",
+                choices = pll_clk_choice,
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "NUT_PLL_NPLCLK3",
+                brief = "NPL Clock 3 Output",
+                description = "PLL output connected to the CPLD GCK3 Pin\n\n"..
+                              "Select\n"..
+                              "0 for for the XBUF Pin\n"..
+                              "1 for for the CLKA Pin\n"..
+                              "2 for for the CLKB Pin\n"..
+                              "3 for for the CLKC Pin\n"..
+                              "4 for for the CLKD Pin (Ethernut 3 default)\n"..
+                              "5 for for the CLKE Pin",
+                type = "enumerated",
+                choices = pll_clk_choice,
+                file = "include/cfg/clock.h"
+            }
+        }
+    },
+    {
+        name = "nutdev_npl",
+        brief = "Nut Programmable Logic",
+        description = "CPLD interrupt handling.\n"..
+                      "The CPLD on the Ethernut 3 reference design monitors "..
+                      "a number of status lines and activates IRQ0 on certain "..
+                      "status changes. This includes RS232 handshake inputs, "..
+                      "multimedia card detection, RTC alarms and LAN wakeup. "..
+                      "Tested on AT91 only.",
+        requires = { "DEV_IRQ_AT91" },
+        provides = { "DEV_NPL" },
+        sources = { "npl.c" },
+    },
+    {
+        name = "nutdev_nplmmc",
+        brief = "NPL Multimedia Card Access",
+        description = "CPLD implementation of a low level MMC interface. "..
+                      "Tested on AT91 only.",
+        requires = { "DEV_NPL" },
+        provides = { "DEV_MMCLL" },
+        sources = { "nplmmc.c" },
     },
 
     --
