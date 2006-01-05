@@ -68,6 +68,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/05 16:45:20  haraldkipp
+ * Dynamic NUTFILE allocation for detached block device.
+ *
  * Revision 1.2  2005/02/07 18:57:47  haraldkipp
  * ICCAVR compile errors fixed
  *
@@ -82,7 +85,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <errno.h>
 
 #include <fs/fs.h>
@@ -133,7 +135,15 @@ DIR *opendir(CONST char *name)
         return 0;
     }
     memset(dir, 0, sizeof(DIR));
-    dir->dd_fd.nf_dev = dev;
+
+    /* Allocate and initialize the file info. */
+    if ((dir->dd_fd = malloc(sizeof(NUTFILE))) == 0) {
+        free(dir);
+        errno = ENOMEM;
+        return 0;
+    }
+    memset(dir->dd_fd, 0, sizeof(NUTFILE));
+    dir->dd_fd->nf_dev = dev;
 
     /* Allocate and initialize the data buffer. */
     if ((dir->dd_len = strlen(name + 1)) < sizeof(struct dirent)) {
@@ -173,7 +183,7 @@ int closedir(DIR * dir)
     NUTDEVICE *dev;
 
     if (dir) {
-        dev = dir->dd_fd.nf_dev;
+        dev = dir->dd_fd->nf_dev;
         (*dev->dev_ioctl) (dev, FS_DIR_CLOSE, dir);
         if (dir->dd_buf) {
             free(dir->dd_buf);
@@ -193,7 +203,7 @@ int closedir(DIR * dir)
  */
 struct dirent *readdir(DIR * dir)
 {
-    NUTDEVICE *dev = dir->dd_fd.nf_dev;
+    NUTDEVICE *dev = dir->dd_fd->nf_dev;
 
     if ((*dev->dev_ioctl) (dev, FS_DIR_READ, dir)) {
         return 0;

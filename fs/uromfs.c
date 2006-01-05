@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/01/05 16:45:20  haraldkipp
+ * Dynamic NUTFILE allocation for detached block device.
+ *
  * Revision 1.5  2005/08/05 11:29:07  olereinhardt
  * Added IOCTL function with support for seek
  *
@@ -125,7 +128,7 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
     ROMFILE *romf = fp->nf_fcb;
     ROMENTRY *rome = romf->romf_entry;
 
-    if ((u_short) size > rome->rome_size - romf->romf_pos)
+    if ((u_int) size > rome->rome_size - romf->romf_pos)
         size = rome->rome_size - romf->romf_pos;
     if (size) {
         memcpy_P(buffer, rome->rome_data + romf->romf_pos, size);

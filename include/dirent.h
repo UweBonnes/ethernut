@@ -71,6 +71,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/05 16:45:20  haraldkipp
+ * Dynamic NUTFILE allocation for detached block device.
+ *
  * Revision 1.1  2005/02/05 20:37:17  haraldkipp
  * Peanut added
  *
@@ -123,7 +126,7 @@ struct dirent {
  * Applications should ignore its contents.
  */
 typedef struct _dirdesc {
-    NUTFILE dd_fd;              /*!< \brief File descriptor associated with directory */
+    NUTFILE *dd_fd;             /*!< \brief File descriptor associated with directory */
     char *dd_buf;               /*!< \brief Data buffer */
     size_t dd_len;              /*!< \brief Size of data buffer */
 } DIR;

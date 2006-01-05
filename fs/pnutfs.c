@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2006/01/05 16:45:20  haraldkipp
+ * Dynamic NUTFILE allocation for detached block device.
+ *
  * Revision 1.7  2005/09/08 10:12:44  olereinhardt
  * Added #ifdef statement in NutSegBufEnable to avoid compiler warning
  * if no banked mem is used.
@@ -692,7 +695,7 @@ static int PnutDirOpen(DIR * dir)
         else {
             fp->f_node = found.fr_node;
             fp->f_pos = 0;
-            dir->dd_fd.nf_fcb = fp;
+            dir->dd_fd->nf_fcb = fp;
             /* Keep track of the number of open calls. */
             BankNodePointer(fp->f_node)->node_refs++;
         }
@@ -705,7 +708,7 @@ static int PnutDirOpen(DIR * dir)
  */
 static int PnutDirClose(DIR * dir)
 {
-    PNUTFILE *fp = dir->dd_fd.nf_fcb;
+    PNUTFILE *fp = dir->dd_fd->nf_fcb;
 
     if (fp) {
         BankNodePointer(fp->f_node)->node_refs--;
@@ -724,7 +727,7 @@ static int PnutDirRead(DIR * dir)
     u_long pos;
     PNUT_DIRENTRY *entry;
     size_t size;
-    PNUTFILE *fp = dir->dd_fd.nf_fcb;
+    PNUTFILE *fp = dir->dd_fd->nf_fcb;
     struct dirent *ent = (struct dirent *) dir->dd_buf;
 
     ent->d_name[0] = 0;
@@ -1060,7 +1063,7 @@ static int PnutDelete(char *path)
  *
  * \return 0 on success. Otherwise -1 is returned.
  */
-static int PnutStatus(char *path, struct stat *status)
+static int PnutStatus(CONST char *path, struct stat *status)
 {
     int rc;
     PNUT_FINDRESULT found;
@@ -1225,8 +1228,11 @@ int PnutIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     switch (req) {
     case FS_STATUS:
-        rc = PnutStatus((char *) ((IOCTL_ARG2 *) conf)->arg1,   /* */
-                        (struct stat *) ((IOCTL_ARG2 *) conf)->arg2);
+        {
+            FSCP_STATUS *par = (FSCP_STATUS *) conf;
+
+            rc = PnutStatus(par->par_path, par->par_stp);
+        }
         break;
     case FS_DIR_CREATE:
         rc = PnutDirCreate((char *) conf);
