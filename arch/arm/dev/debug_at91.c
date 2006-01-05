@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/01/05 16:46:01  haraldkipp
+ * Baudrate calculation is now based on NutGetCpuClock().
+ * The AT91_US_BAUD macro had been marked deprecated.
+ *
  * Revision 1.3  2005/10/24 08:26:58  haraldkipp
  * Use AT91 header file. Allow to use both USARTs.
  *
@@ -60,6 +64,7 @@
 #include <dev/debug.h>
 #include <sys/device.h>
 #include <sys/file.h>
+#include <sys/timer.h>
 
 /*!
  * \addtogroup xgDevDebugAt91
@@ -100,7 +105,7 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(US0_RCR, 0);
     outr(US0_TCR, 0);
     /* Set UART baud rate generator register. */
-    outr(US0_BRGR, AT91_US_BAUD(115200));
+    outr(US0_BRGR, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(US0_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
@@ -128,7 +133,7 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(US1_RCR, 0);
     outr(US1_TCR, 0);
     /* Set UART baud rate generator register. */
-    outr(US1_BRGR, AT91_US_BAUD(115200));
+    outr(US1_BRGR, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(US1_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
