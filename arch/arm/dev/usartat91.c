@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/05 16:47:32  haraldkipp
+ * Baudrate calculation is now based on NutGetCpuClock().
+ *
  * Revision 1.1  2005/11/20 14:40:28  haraldkipp
  * Added interrupt driven UART driver for AT91.
  *
@@ -51,7 +54,7 @@
 #include <dev/usartat91.h>
 
 /*!
- * \addtogroup xgUsartAt91
+ * \addtogroup xgNutArchArmAt91Us
  */
 /*@{*/
 
@@ -462,7 +465,7 @@ static u_long At91UsartGetSpeed(void)
 static int At91UsartSetSpeed(u_long rate)
 {
     At91UsartDisable();
-    outr(USARTn_BASE + US_BRGR_OFF, AT91_US_BAUD(rate));
+    outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (rate)) + 1) / 2);
     At91UsartEnable();
 
     return 0;
@@ -1098,7 +1101,7 @@ static int At91UsartInit(void)
     outr(USARTn_BASE + US_RCR_OFF, 0);
     outr(USARTn_BASE + US_TCR_OFF, 0);
     /* Set UART baud rate generator register. */
-    outr(USARTn_BASE + US_BRGR_OFF, AT91_US_BAUD(115200));
+    outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(USARTn_BASE + US_MR_OFF, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
 

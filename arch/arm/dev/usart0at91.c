@@ -32,12 +32,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/05 16:46:52  haraldkipp
+ * Baudrate calculation is now based on NutGetCpuClock().
+ *
  * Revision 1.1  2005/11/20 14:40:28  haraldkipp
  * Added interrupt driven UART driver for AT91.
  *
  */
 
 #include <cfg/os.h>
+#include <cfg/clock.h>
 #include <cfg/arch.h>
 
 #include <string.h>
@@ -48,6 +52,14 @@
 
 #include <dev/irqreg.h>
 #include <dev/usartat91.h>
+
+#ifndef NUT_CPU_FREQ
+#ifdef NUT_PLL_CPUCLK
+#include <dev/cy2239x.h>
+#else /* !NUT_PLL_CPUCLK */
+#define NUT_CPU_FREQ    73728000UL
+#endif /* !NUT_PLL_CPUCLK */
+#endif /* !NUT_CPU_FREQ */
 
 /*
  * Local function prototypes.
@@ -72,7 +84,7 @@ static int At91UsartInit(void);
 static int At91UsartDeinit(void);
 
 /*!
- * \addtogroup xgUsartAt91
+ * \addtogroup xgNutArchArmAt91Us
  */
 /*@{*/
 
