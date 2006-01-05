@@ -33,8 +33,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:26  haraldkipp
- * Initial revision
+ * Revision 1.2  2006/01/05 16:50:13  haraldkipp
+ * Files opened with mode 'a' or 'w' will be created, if they didn't exist.
+ * Files opened with 'w' will be truncated, if they exist.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:26  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:05  harald
  * *** empty log message ***
@@ -65,10 +69,10 @@ int _fmode(CONST char *mode)
         mflags |= _O_RDONLY;
         break;
     case 'w':
-        mflags |= _O_WRONLY;
+        mflags |= _O_WRONLY | _O_CREAT | _O_TRUNC;
         break;
     case 'a':
-        mflags |= _O_APPEND;
+        mflags |= _O_APPEND | _O_CREAT;
         break;
     default:
         errno = EINVAL;
@@ -78,7 +82,7 @@ int _fmode(CONST char *mode)
         switch (*mode) {
         case '+':
             mflags &= ~(_O_RDONLY | _O_WRONLY);
-            mflags |= _O_RDWR;
+            mflags |= _O_RDWR | _O_CREAT | _O_TRUNC;
             break;
         case 'b':
             mflags &= ~_O_TEXT;
