@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/05 16:45:25  haraldkipp
+ * New ioctl functions.
+ *
  * Revision 1.2  2005/08/05 11:28:25  olereinhardt
  * Corrected typo
  *
@@ -50,6 +53,8 @@
  *
  * \endverbatim
  */
+
+#include <sys/file.h>
 
 /*!
  * \addtogroup xgFS
@@ -108,6 +113,13 @@
 
 /*@}*/
 
+#define FS_VOL_MOUNT         0x1130
+#define FS_VOL_UNMOUNT       0x1131
+#define FS_RENAME        0x1132
+#define NUTFS_UNLINK        0x1133
+#define NUTFS_MKDIR         0x1134
+#define NUTFS_RMDIR         0x1135
+
 /*!
  * \brief General structure for two arguments.
  *
@@ -128,6 +140,23 @@ typedef struct {
     void *arg2;
     void *arg3;
 } IOCTL_ARG3;
+
+typedef struct _FSCP_VOL_MOUNT {
+    /*! \brief Block device mount. */
+    NUTFILE *fscp_bmnt;
+    /*! \brief Partition type. */
+    u_char fscp_part_type;
+} FSCP_VOL_MOUNT;
+
+typedef struct _FSCP_RENAME {
+    char *par_old;
+    char *par_new;
+} FSCP_RENAME;
+
+typedef struct _FSCP_STATUS {
+    CONST char *par_path;
+    struct stat *par_stp;
+} FSCP_STATUS;
 
 /*@}*/
 
