@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.14  2006/01/05 16:45:04  haraldkipp
+-- ATmega2561 CPU added, but not yet supported.
+--
 -- Revision 1.13  2005/10/07 22:09:23  hwmaier
 -- Changed HWDEF= to HWDEF+= so more defs can be added to this macros from other LUA scripts.
 --
@@ -152,6 +155,26 @@ nutarch =
                 options =
                 {
                 }
+            },
+            {
+                macro = "MCU_ATMEGA2561",
+                brief = "Atmel ATmega 2561",
+                description = "8-bit RISC microcontroller with 256K bytes flash, 8K bytes RAM, "..
+                              "4K bytes EEPROM, 64K bytes data memory space, 2 USARTs, 6 timers, "..
+                              "8-channel ADC, SPI and TWI.",
+                requires = { "TOOL_CC_AVR" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR",
+                    "HW_MCU_AVR_ENHANCED",
+                    "HW_MCU_ATMEGA2561",
+                    "HW_NVMEM",
+                    "HW_TIMER_AVR",
+                    "HW_UART_AVR"
+                },
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+                makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF+=-D__HARVARD_ARCH__" }
             },
             {
                 macro = "MCU_AT91R40008",
