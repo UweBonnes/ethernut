@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.8  2006/01/05 16:45:11  haraldkipp
+ * File system docs added. NPL docs added.
+ *
  * Revision 1.7  2005/10/24 10:24:22  haraldkipp
  * Documented AT91 support.
  *
@@ -988,200 +991,87 @@
 /*@{*/
 
 /*!
- * \defgroup xgFS Path Operations
- * \brief Directory support
+ * \defgroup xgFS Special Functions.
+ * \brief UNIX compatible file system functions
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgFSDir Reading Directories
+ * \brief UNIX compatible directory read functions.
+ */
+/*@} xgFS */
+
+/*!
+ * \defgroup xgPhatFs PHAT File System
+ * \brief FAT12/16/32 compatible file system.
+ *
+ * \note This is alpha code and may contain severe bugs.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgPhatVol Volume Support
+ * \brief Dealing with volumes.
  */
 
 /*!
- * \defgroup xgFSDir Directory Functions
- * \brief Reading directories
+ * \defgroup xgPhatDir Directory Support
+ * \brief Routines for reading and writing directories.
  */
 
 /*!
- * \defgroup xgPNut Peanut
+ * \defgroup xgPhat12 PHAT12 Support
+ * \brief PHAT12 specific routines.
+ */
+
+/*!
+ * \defgroup xgPhat16 PHAT16 Support
+ * \brief PHAT16 specific routines.
+ */
+
+/*!
+ * \defgroup xgPhat32 PHAT32 Support
+ * \brief PHAT32 specific routines.
+ */
+
+/*!
+ * \defgroup xgPhatIo PHAT Block I/O
+ * \brief Reading and writing data blocks.
+ */
+
+/*!
+ * \defgroup xgPhatUtil PHAT Utilities
+ * \brief General utility routines used by the PHAT file system.
+ */
+
+/*!
+ * \defgroup xgPhatDbg PHAT Debugging Support
+ * \brief Listing various PHAT structures.
+ */
+
+
+/*@} xgPhatFs */
+ 
+/*!
+ * \defgroup xgPNut Peanut File System
  * \brief Volatile RAM file system.
  */
  
 /*!
- * \defgroup xgurom Micro-ROM
+ * \defgroup xgurom Micro-ROM File System
  * \brief Very simple read-only file system.
+ */
+
+/*!
+ * \defgroup xgPartition DOS Partitions
+ * \brief DOS partition layout.
  */
 
 /*@} xgFileSystem */
 /* ======================================================================================= */
 
-/* =================================== Device Driver API ================================= */
-/*!
- * \defgroup xgDriver Device Driver API.
- *
- * \brief Input and output device functions.
- *
- * Device drivers are typically not accessed directly by an application.
- * Instead they are used by the standard C library to perform data I/O.
- */
-/*@{*/
-
-/*!
- * \defgroup xgHardware Hardware Layout.
- * \brief Definitions of I/O ports.
- *
- * Each add-on board should provide its own include file.
- */
-/*@{*/
-
-/*!
- * \defgroup xgEthernutCfg Ethernut Hardware.
- * \brief Ethernut internal I/O port usage.
- *
- */
-
-/*!
- * \defgroup xgMedianutCfg Medianut Hardware.
- * \brief Ports used by the Medianut MP3 Add-On.
- *
- * Medianut is an add-on board and can be attached to the Ethernut
- * expansion port. It contains a VS1001K MP3 decoder, a LCD interface 
- * and an infrared receiver.
- */
-
-/*!
- * \defgroup xgModemCfg Modem Control.
- * \brief Modem hardware dependencies.
- *
- * Specification of RS232 handshake lines.
- */
-
-/*@} xgHardware */
-
-/*!
- * \defgroup xgDevSerial Serial Communication Devices
- * \brief Drivers for serial communication.
- */
-/*@{*/
-
-/*!
- * \defgroup xgUsart USART Driver Frame
- * \anchor xrUsart
- * \brief Universal synchronous/asynchronous receiver/transmitter device driver.
- *
- * The USART device driver implements buffered, interrupt controlled
- * serial communication. It supports software and hardware handshake, 
- * 9-bit communication, half duplex and synchronous operation.
- *
- * The driver's code is devided into a general part and a hardware 
- * dependant part, which simplifies porting it to different USART chips.
- * The \ref xrUsartAvr "AVR USART Devices" provide support for the
- * ATmega128/103 on-chip USARTs.
- */
-
-/*!
- * \defgroup xgUARTIOCTL UART I/O Control Functions
- */
-/*@{*/
-
-/*!
- * \defgroup xgUARTStatus UART Status
- */
-/*@} xgUARTIOCTL */
-
-/*@} xgDevSerial */
-
-/*!
- * \defgroup xgDevNetwork Network device drivers.
- * \brief Ethernet controller drivers.
- */
-/*@{*/
-
-
-/*!
- * \defgroup xgnetbuf Network Buffer
- * \brief Network buffer support.
- *
- * The network buffer handling is designed to make life easy when it
- * comes to handling ISO-layered communications. By this we're thinking
- * about communications structures that are hierarchically organized.
- *
- * The idea is that network buffer structures are allocated every time a new
- * packet is either received or ready for sending. The various fields
- * of the network buffer are then handled by matching layers within the
- * appropriate protocol stack.
- *
- * Linked list of NETBUF structures:
- *
- * \dot
- * digraph netbufs {
- *   bgcolor="#fafafa";
- *   size="7,3"; ratio=compress;
- *   node[fontname=Helvetica];
- *   NETBUF[shape=plaintext, label="NETBUF Structures"];
- *   NETBUF -> netb0[style=dotted, arrowhead=none];
- *   NETBUF -> netb1[style=dotted, arrowhead=none];
- *   {
- *     rank=same;
- *     netb0[shape=record, label="<nx>nb_next|nb_flags|{nb_dl|{sz|<dl>vp}}|{nb_nw|{sz|<nw>vp}}|{nb_tp|{sz|<tp>vp}}|{nb_ap|{sz|<ap>vp}}"];
- *     netb1[shape=record, label="<nx>nb_next|nb_flags|{nb_dl|{sz|<dl>vp}}|{nb_nw|{sz|<nw>vp}}|{nb_tp|{sz|<tp>vp}}|{nb_ap|{sz|<ap>vp}}"];
- *     netnul[shape=record, label="NULL"];
- *   }
- *   {
- *     rank=same;
- *     heap0[shape=record, label="<dl>datalink|<nw>network|<tp>transport|<ap>application"];
- *     heap1[shape=record, label="<dl>datalink|<nw>network|<tp>transport|<ap>application"];
- *   }
- *   netb0:dl -> heap0:dl;
- *   netb0:nw -> heap0:nw;
- *   netb0:tp -> heap0:tp;
- *   netb0:ap -> heap0:ap;
- *   netb1:dl -> heap1:dl;
- *   netb1:nw -> heap1:nw;
- *   netb1:tp -> heap1:tp;
- *   netb1:ap -> heap1:ap;
- *   netb0:nx -> netb1:nx -> netnul;
- *   DATABUF[shape=plaintext, label="Data Buffers"];
- *   heap0 -> DATABUF[style=dotted, arrowtail=none, dir=back];
- *   heap1 -> DATABUF[style=dotted, arrowtail=none, dir=back];
- * }
- * \enddot
- */
-
-/*@} xgDevNetwork */
-
-
-/*!
- * \defgroup xgDevDisplay Display device drivers.
- * \brief LCD/VFD hardware support.
- */
-/*@{*/
-
-/*!
- * \defgroup xgTerminal Terminal Emulator.
- * \brief Virtual terminal emulator.
- *
- * The virtual terminal driver allows to use a LC or VF display
- * for standard I/O. It supports VT52 control codes.
- */
-
-/*!
- * \defgroup xgDisplay LC/VF Display Driver.
- */
-/*@} xgDevDisplay */
-
-
-
-/*! 
- * \defgroup xgIrqReg Interrupt Management
- * \brief Interrupt registration and handling.
- */
-
-/*!
- * \defgroup xgCanDev CAN Driver Support
- */
-
-/*!
- * \defgroup xgIr IR Driver Support.
- */
-
-/*@}*/
-
+/* ===================================== C Runtime API =================================== */
 /*!
  * \defgroup xgCrt C Runtime Library.
  * \brief Complementary runtime support.
@@ -1338,6 +1228,251 @@
  */
 
 /*@}*/
+
+/* =================================== Device Driver API ================================= */
+/*!
+ * \defgroup xgDriver Device Driver API.
+ *
+ * \brief Input and output device functions.
+ *
+ * Device drivers are typically not accessed directly by an application.
+ * Instead they are used by the standard C library to perform data I/O.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgHardware Hardware Layout.
+ * \brief Definitions of I/O ports.
+ *
+ * Each add-on board should provide its own include file.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgEthernutCfg Ethernut Hardware.
+ * \brief Ethernut internal I/O port usage.
+ *
+ */
+
+/*!
+ * \defgroup xgMedianutCfg Medianut Hardware.
+ * \brief Ports used by the Medianut MP3 Add-On.
+ *
+ * Medianut is an add-on board and can be attached to the Ethernut
+ * expansion port. It contains a VS1001K MP3 decoder, a LCD interface 
+ * and an infrared receiver.
+ */
+
+/*!
+ * \defgroup xgModemCfg Modem Control.
+ * \brief Modem hardware dependencies.
+ *
+ * Specification of RS232 handshake lines.
+ */
+
+/*@} xgHardware */
+
+/*!
+ * \defgroup xgDevSerial USART Devices
+ * \brief Drivers for serial communication.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgUsart USART Driver Frame
+ * \anchor xrUsart
+ * \brief Universal synchronous/asynchronous receiver/transmitter device driver.
+ *
+ * The USART device driver implements buffered, interrupt controlled
+ * serial communication. It supports software and hardware handshake, 
+ * 9-bit communication, half duplex and synchronous operation.
+ *
+ * The driver's code is devided into a general part and a hardware 
+ * dependant part, which simplifies porting it to different USART chips.
+ * The \ref xrUsartAvr "AVR USART Devices" provide support for the
+ * ATmega128/103 on-chip USARTs.
+ */
+
+/*!
+ * \defgroup xgUARTIOCTL UART I/O Control Functions
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgUARTStatus UART Status
+ */
+/*@} xgUARTIOCTL */
+
+/*@} xgDevSerial */
+
+/*!
+ * \defgroup xgDevNetwork Network Devices
+ * \brief Ethernet controller drivers.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgnetbuf Network Buffer
+ * \brief Network buffer support.
+ *
+ * The network buffer handling is designed to make life easy when it
+ * comes to handling ISO-layered communications. By this we're thinking
+ * about communications structures that are hierarchically organized.
+ *
+ * The idea is that network buffer structures are allocated every time a new
+ * packet is either received or ready for sending. The various fields
+ * of the network buffer are then handled by matching layers within the
+ * appropriate protocol stack.
+ *
+ * Linked list of NETBUF structures:
+ *
+ * \dot
+ * digraph netbufs {
+ *   bgcolor="#fafafa";
+ *   size="7,3"; ratio=compress;
+ *   node[fontname=Helvetica];
+ *   NETBUF[shape=plaintext, label="NETBUF Structures"];
+ *   NETBUF -> netb0[style=dotted, arrowhead=none];
+ *   NETBUF -> netb1[style=dotted, arrowhead=none];
+ *   {
+ *     rank=same;
+ *     netb0[shape=record, label="<nx>nb_next|nb_flags|{nb_dl|{sz|<dl>vp}}|{nb_nw|{sz|<nw>vp}}|{nb_tp|{sz|<tp>vp}}|{nb_ap|{sz|<ap>vp}}"];
+ *     netb1[shape=record, label="<nx>nb_next|nb_flags|{nb_dl|{sz|<dl>vp}}|{nb_nw|{sz|<nw>vp}}|{nb_tp|{sz|<tp>vp}}|{nb_ap|{sz|<ap>vp}}"];
+ *     netnul[shape=record, label="NULL"];
+ *   }
+ *   {
+ *     rank=same;
+ *     heap0[shape=record, label="<dl>datalink|<nw>network|<tp>transport|<ap>application"];
+ *     heap1[shape=record, label="<dl>datalink|<nw>network|<tp>transport|<ap>application"];
+ *   }
+ *   netb0:dl -> heap0:dl;
+ *   netb0:nw -> heap0:nw;
+ *   netb0:tp -> heap0:tp;
+ *   netb0:ap -> heap0:ap;
+ *   netb1:dl -> heap1:dl;
+ *   netb1:nw -> heap1:nw;
+ *   netb1:tp -> heap1:tp;
+ *   netb1:ap -> heap1:ap;
+ *   netb0:nx -> netb1:nx -> netnul;
+ *   DATABUF[shape=plaintext, label="Data Buffers"];
+ *   heap0 -> DATABUF[style=dotted, arrowtail=none, dir=back];
+ *   heap1 -> DATABUF[style=dotted, arrowtail=none, dir=back];
+ * }
+ * \enddot
+ */
+
+/*!
+ * \defgroup xgNicDm9000e Davicom DM9000E
+ * \brief 100 MBit Ethernet controller.
+ *
+ * The DM9000E chip is used in the Ethernut 3 reference design.
+ */
+/*@{*/
+/*!
+ * \defgroup xgDm9000eRegs DM9000E Registers
+ * \brief Register definitions.
+ */
+/*@} xgNicDm9000e */
+
+/*@} xgDevNetwork */
+
+
+/*!
+ * \defgroup xgDevDisplay Display Devices
+ * \brief LCD/VFD hardware support.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgTerminal Terminal Emulator.
+ * \brief Virtual terminal emulator.
+ *
+ * The virtual terminal driver allows to use a LC or VF display
+ * for standard I/O. It supports VT52 control codes.
+ */
+
+/*!
+ * \defgroup xgDisplay LC/VF Display Driver.
+ */
+/*@} xgDevDisplay */
+
+
+
+/*! 
+ * \defgroup xgIrqReg Interrupt Management
+ * \brief Interrupt registration and handling.
+ */
+
+/*!
+ * \defgroup xgCanDev CAN Devices
+ */
+
+/*!
+ * \defgroup xgIr IR Devices
+ */
+
+/*!
+ * \defgroup xgBlockDev Block Devices
+ * \brief Mass storage block device driver.
+ *
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgMmCard Multimedia Card Driver
+ * \brief Block device driver for MM/SD Cards.
+ */
+ 
+/*@} xgBlockDev */
+
+/*!
+ * \defgroup xgDevTiming Clock Devices
+ * \brief Programmable Clock Support.
+ */
+/*@{*/
+/*!
+ * \defgroup xgCy2239x Cypress CY2239x
+ * \brief Programmable clock generator with three PLLs.
+ *
+ * \code
+ * #include <dev/cy2239x.h>
+ * \endcode
+ *
+ * The CY22393 chip is used in the Ethernut 3 reference design.
+ * It provides three unique frequencies on six outputs, with
+ * an additional divider at five outputs.
+ *
+ * The following outputs are used on Ethernut 3:
+ *
+ * - Clock A: 25 MHz, used by the Ethernet Controller.
+ * - Clock B: Disabled, connected to the GCK1 pin of the CPLD.
+ * - Clock C: 73.7288 MHz, used as the main CPU clock.
+ * - Clock D: Disabled, connected to the GCK3 pin of the CPLD.
+ */
+/*@} xgDevTiming */
+
+/*!
+ * \defgroup xgDevLogic CPLD Based Devices
+ * \brief CPLD implementation drivers.
+ */
+/*@{*/
+/*!
+ * \defgroup xgNpl Nut Programmable Logic
+ * \brief Routines for using the Ethernut CPLD.
+ *
+ * The CPLD on Ethernut 3 contains a set of registers, which can
+ * be used to control various system functions.
+ */
+
+/*!
+ * \defgroup xgNplMmc Low Level MMC Interface.
+ * \brief Routines for using the SPI interface of the Ethernut CPLD.
+ */
+/*@} xgDevLogic */
+
+/*@}*/
+ 
+/* ======================================================================================= */
 
 /* ======================================================================================= */
 
