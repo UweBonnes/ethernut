@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2006/01/05 16:53:56  haraldkipp
+ * New function NutIrqSetMode() allows to modify the interrupt mode.
+ *
  * Revision 1.12  2005/10/24 10:50:49  haraldkipp
  * New API functions added.
  * Interrupt counting requires NUT_PERFMON to be defined.
@@ -163,6 +166,7 @@ extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), vo
 extern int NutIrqEnable(IRQ_HANDLER * irq);
 extern int NutIrqDisable(IRQ_HANDLER * irq);
 extern int NutIrqSetPriority(IRQ_HANDLER * irq, int level);
+extern int NutIrqSetMode(IRQ_HANDLER * irq, int mode);
 #endif
 
 __END_DECLS
