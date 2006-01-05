@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/01/05 16:45:29  haraldkipp
+ * Size and pos types changed to support 32 bit targets.
+ *
  * Revision 1.3  2004/03/18 11:38:09  haraldkipp
  * Deprecated functions removed
  *
@@ -83,14 +86,14 @@ typedef struct _ROMENTRY ROMENTRY;
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
     const u_char *rome_name;/*!< Filename. */
-    u_short   rome_size;    /*!< File size. */
+    u_int rome_size;        /*!< File size. */
     const char *rome_data;  /*!< File data. */
 };
 #else
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
     prog_char *rome_name;   /*!< Filename. */
-    u_short   rome_size;    /*!< File size. */
+    u_int rome_size;        /*!< File size. */
     prog_char *rome_data;   /* __attribute__ ((progmem));  !< File data. */
 };
 #endif
@@ -106,7 +109,7 @@ typedef struct _ROMFILE ROMFILE;
  */
 struct _ROMFILE {
     ROMENTRY *romf_entry;   /*!< Points to ROMENTRY */
-    u_short  romf_pos;      /*!< Current read position. */
+    u_int romf_pos;      /*!< Current read position. */
 };
 
 /*!
