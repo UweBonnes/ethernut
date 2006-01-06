@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/01/06 09:19:42  haraldkipp
+ * NutHttpURLEncode() no longer encodes everything that isn't alphanumeric.
+ * See RFC2396. Thanks to Lloyd Bailey for this update.
+ *
  * Revision 1.11  2005/10/24 11:02:28  haraldkipp
  * Integer division hack for ARM without CRT removed.
  *
@@ -318,12 +322,10 @@ u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, 
  *
  * \param str String to encode
  *
- * \return A new allocated encoded string, or NULL if
- * 	   str is null, or if there's not enough RAM
- *         for the new string.
+ * \return A new allocated encoded string, or NULL if str is null, or 
+ *         if there's not enough memory for the new string.
  *
- * \note This is done in the simplies way, i.e. we
- * 	 encode everything that isn't alphanumeric.
+ * \note Remember to free() to the returned string.
  */
 static char *hexdigits = "0123456789ABCDEF";
 
@@ -338,7 +340,8 @@ char *NutHttpURLEncode(char *str)
 
     /* Calculate how many characters we need to encode */
     for (ptr1 = str; *ptr1; ptr1++) {
-        if (!isalnum(*ptr1) || *ptr1 == ' ')
+        if (!isalnum(*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' || 
+		*ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
             numEncs++;
     }
     /* Now we can calculate the encoded string length */
@@ -348,9 +351,8 @@ char *NutHttpURLEncode(char *str)
      * and ptr2 refers to the new string. */
     ptr2 = encstring;
     for (ptr1 = str; *ptr1; ptr1++) {
-        if (*ptr1 == ' ')
-            *ptr2++ = '+';
-        else if (isalnum(*ptr1))
+		if (isalnum(*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' || 
+		*ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
             *ptr2++ = *ptr1;
         else {
             *ptr2++ = '%';
