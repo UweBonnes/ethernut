@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.290 2006/01/05 16:44:46 haraldkipp Exp $
+$Id: ChangeLog,v 1.291 2006/01/06 09:20:41 haraldkipp Exp $
+
+2006-01-06  Harald Kipp  <harald.kipp@egnite.de>
+
+	* doc/gen/nutdoc_en.txt: Version information changed.
+
+	* nut/pro/httpd.c: NutHttpURLEncode() no longer encodes 
+	everything that isn't alphanumeric. See RFC2396. Thanks
+	to Lloyd Bailey for this update.
+
 
 2006-01-05  Harald Kipp  <harald.kipp@egnite.de>
 
