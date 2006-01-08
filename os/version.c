@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.24  2006/01/08 11:55:52  haraldkipp
+ * Prepare preview snapshot.
+ *
  * Revision 1.23  2005/12/04 18:42:21  haraldkipp
  * Release branch X.Y created.
  *
@@ -117,8 +120,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010000UL
-static CONST char os_version_string[] = "4.1.0.0";
+#define OS_VERSION_NUMBER  0x04010100UL
+static CONST char os_version_string[] = "4.1.1.0";
 
 /*!
  * \addtogroup xgNutVersion

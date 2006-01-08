@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.10  2006/01/08 11:55:52  haraldkipp
+ * Prepare preview snapshot.
+ *
  * Revision 1.9  2006/01/06 09:20:20  haraldkipp
  * Version information changed.
  *
@@ -429,9 +432,9 @@
  * - Release number
  * - Build number
  *
- * The following code test for version 3.9.9.
+ * The following code test for version 4.0.1.
  * \code
- * if (NutVersion() < 0x03090900UL) {
+ * if (NutVersion() < 0x04000100UL) {
  *     printf("Error: Nut/OS is too old\n");
  * }
  * \endcode
