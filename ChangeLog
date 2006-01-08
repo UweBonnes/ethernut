@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.291 2006/01/06 09:20:41 haraldkipp Exp $
+$Id: ChangeLog,v 1.292 2006/01/08 11:57:40 haraldkipp Exp $
+
+2006-01-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* doc/gen/nutdoc_en.txt, doc/gen/nutfoot.html, os/version.c: 
+	Version information changed.
+
 
 2006-01-06  Harald Kipp  <harald.kipp@egnite.de>
 
