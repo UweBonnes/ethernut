@@ -1,8 +1,20 @@
-$Id: ChangeLog,v 1.292 2006/01/08 11:57:40 haraldkipp Exp $
+$Id: ChangeLog,v 1.293 2006/01/11 08:33:48 hwmaier Exp $
+
+2006-01-11 Henrik Maier  <henrik@proconx.com>
+
+        * include/arch/avr/gcc.h: Support for avr-libc >= 1.4.x
+
+        * app/httpd/httpserv.c: Added explicit type casts to silence
+        a few avr-gcc 3.4.3 warning messages.
+
+        * arch/avr/dev/nicctrl.c: Changes to make receiver thread's stack
+        size configurable and honour the NUT_THREAD_NICRXSTACK configuration
+        setting.
+
 
 2006-01-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* doc/gen/nutdoc_en.txt, doc/gen/nutfoot.html, os/version.c: 
+	* doc/gen/nutdoc_en.txt, doc/gen/nutfoot.html, os/version.c:
 	Version information changed.
 
 
@@ -10,7 +22,7 @@ $Id: ChangeLog,v 1.292 2006/01/08 11:57:40 haraldkipp Exp $
 
 	* doc/gen/nutdoc_en.txt: Version information changed.
 
-	* nut/pro/httpd.c: NutHttpURLEncode() no longer encodes 
+	* nut/pro/httpd.c: NutHttpURLEncode() no longer encodes
 	everything that isn't alphanumeric. See RFC2396. Thanks
 	to Lloyd Bailey for this update.
 
@@ -22,12 +34,12 @@ $Id: ChangeLog,v 1.292 2006/01/08 11:57:40 haraldkipp Exp $
 	fs/phatvol.c, include/fs/phat12.h, include/fs/phat16.h,
 	include/fs/phat32.h, include/fs/phatdbg.h, include/fs/phatdir.h,
 	include/fs/phatfs.h, include/fs/phatio.h, include/fs/phatutil.h,
-	include/fs/phatvol.h, conf/fs/fs.nut: PHAT file system driver 
-	added. This is a FAT12/16/32 compatible file system with read 
+	include/fs/phatvol.h, conf/fs/fs.nut: PHAT file system driver
+	added. This is a FAT12/16/32 compatible file system with read
 	and write access. The code is in alpha stage.
 
-	* crt/fmode.c: Files opened with mode 'a' or 'w' will be 
-	created, if they didn't exist. Files opened with 'w' will be 
+	* crt/fmode.c: Files opened with mode 'a' or 'w' will be
+	created, if they didn't exist. Files opened with 'w' will be
 	truncated, if they exist.
 
 	* fs/dirent.c, include/dirent.h, fs/pnutfs.c, fs/uromfs.c:
@@ -35,30 +47,30 @@ $Id: ChangeLog,v 1.292 2006/01/08 11:57:40 haraldkipp Exp $
 	change is required to seperate the file system from the
 	block device driver code.
 
-	* include/fs/uromfs.h: Changed the type of the size and file 
-	position values in the directory entry from u_short to u_int 
+	* include/fs/uromfs.h: Changed the type of the size and file
+	position values in the directory entry from u_short to u_int
 	in order to better support 32 bit targets.
 
-	* fs/pathops.c, fs/pnutfs.c: The argument for the FS_STATUS 
+	* fs/pathops.c, fs/pnutfs.c: The argument for the FS_STATUS
 	ioctl now uses an individual structure.
 
-	* include/fs/fs.h: Added ioctl functions to mount volumes, 
+	* include/fs/fs.h: Added ioctl functions to mount volumes,
 	rename files, remove files and create or remove directories.
 
-	* dev/mmcard.c, dev/nplmmc.c, conf/dev/dev.nut, 
-	include/dev/blockdev.h, include/dev/mmcard.h, 
-	include/dev/nplmmc.h, include/fs/dospart.h: Mulimedia Card 
+	* dev/mmcard.c, dev/nplmmc.c, conf/dev/dev.nut,
+	include/dev/blockdev.h, include/dev/mmcard.h,
+	include/dev/nplmmc.h, include/fs/dospart.h: Mulimedia Card
 	Block Device Driver added.
 
 	* include/sys/device.h: Added a new driver type IFTYP_FS.
 
-	* dev/npl.c, conf/dev/dev.nut, include/dev/npl.h: Nut 
+	* dev/npl.c, conf/dev/dev.nut, include/dev/npl.h: Nut
 	Programmable Logic Device added, which supports the CPLD
 	implementation of the Ethernut 3 design.
 
 	* conf/dev/dev.nut: New options added for CY2239x support.
 
-	* dev/cy2239x.c, include/dev/cy2239x.h: Several new functions 
+	* dev/cy2239x.c, include/dev/cy2239x.h: Several new functions
 	added to query and modify the clock settings.
 
 	* conf/ethernut30d.conf: New default values added for
@@ -72,12 +84,12 @@ $Id: ChangeLog,v 1.292 2006/01/08 11:57:40 haraldkipp Exp $
 	Baudrate calculation is now based on NutGetCpuClock().
 	The AT91_US_BAUD macro had been marked deprecated.
 
-	* dev/ihndlr.c, include/dev/irqreg.h: NutIrqSetPriority() didn't 
+	* dev/ihndlr.c, include/dev/irqreg.h: NutIrqSetPriority() didn't
 	correctly return the previous priority. This bug has been fixed.
 	New function NutIrqSetMode() allows to modify the interrupt
 	mode.
 
-	* arch/arm/dev/ih_at91irq0.c: Implemented configuration of edge 
+	* arch/arm/dev/ih_at91irq0.c: Implemented configuration of edge
 	and level trigger modes.
 
 	* conf/arch/arch.nut: ATmega2561 CPU added, but not yet supported.
@@ -88,8 +100,8 @@ $Id: ChangeLog,v 1.292 2006/01/08 11:57:40 haraldkipp Exp $
 
 
 2005-12-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
-        * include/sys/mutex.h: added missing prototype for NutMutexDestroy. 
-        
+        * include/sys/mutex.h: added missing prototype for NutMutexDestroy.
+
 2005-12-06 Henrik Maier  <henrik@proconx.com>
 
         * arch/avr/dev/ivect09.c, arch/avr/dev/ivect11.c, arch/avr/dev/ivect15.c,
