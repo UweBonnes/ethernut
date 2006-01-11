@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/11 08:32:21  hwmaier
+ * Support for avr-libc >= 1.4.x
+ *
  * Revision 1.1  2005/10/24 10:46:05  haraldkipp
  * First check in.
  * Contents taken from avr.h in the parent directory.
@@ -53,7 +56,9 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#if __AVR_LIBC_VERSION__ < 10400UL
 #include <avr/signal.h>
+#endif
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
 #include <avr/sleep.h>
