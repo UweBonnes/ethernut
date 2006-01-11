@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.13  2006/01/11 08:32:57  hwmaier
+ * Added explicit type casts to silence a few avr-gcc 3.4.3 warning messages
+ *
  * Revision 1.12  2005/11/22 09:14:13  haraldkipp
  * Replaced specific device names by generalized macros.
  *
@@ -338,40 +341,40 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
         switch (ts->so_state) {
         case TCPS_LISTEN:
-            st_P = st_listen;
+            st_P = (prog_char *) st_listen;
             break;
         case TCPS_SYN_SENT:
-            st_P = st_synsent;
+            st_P = (prog_char *) st_synsent;
             break;
         case TCPS_SYN_RECEIVED:
-            st_P = st_synrcvd;
+            st_P = (prog_char *) st_synrcvd;
             break;
         case TCPS_ESTABLISHED:
-            st_P = st_estab;
+            st_P = (prog_char *) st_estab;
             break;
         case TCPS_FIN_WAIT_1:
-            st_P = st_finwait1;
+            st_P = (prog_char *) st_finwait1;
             break;
         case TCPS_FIN_WAIT_2:
-            st_P = st_finwait2;
+            st_P = (prog_char *) st_finwait2;
             break;
         case TCPS_CLOSE_WAIT:
-            st_P = st_closewait;
+            st_P = (prog_char *) st_closewait;
             break;
         case TCPS_CLOSING:
-            st_P = st_closing;
+            st_P = (prog_char *) st_closing;
             break;
         case TCPS_LAST_ACK:
-            st_P = st_lastack;
+            st_P = (prog_char *) st_lastack;
             break;
         case TCPS_TIME_WAIT:
-            st_P = st_timewait;
+            st_P = (prog_char *) st_timewait;
             break;
         case TCPS_CLOSED:
-            st_P = st_closed;
+            st_P = (prog_char *) st_closed;
             break;
         default:
-            st_P = st_unknown;
+            st_P = (prog_char *) st_unknown;
             break;
         }
         /*
