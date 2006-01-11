@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/01/11 16:34:44  freckle
+ * ADCInit can be called multiple times (makes life easier)
+ *
  * Revision 1.5  2005/10/24 17:59:55  haraldkipp
  * Fixes for ATmega103
  *
@@ -132,7 +135,7 @@ adc_mode_t current_mode;
 #define _adc_buf_head ADC_BUF_SIZE
 #define _adc_buf_tail ADC_BUF_SIZE+1
 
-u_short *ADC_buffer;
+u_short *ADC_buffer = NULL;
 
 inline int ADCBufRead(u_short * buf, u_short * read)
 {
@@ -180,6 +183,8 @@ static void ADCInterrupt(void *arg)
 
 void ADCInit()
 {
+    if (ADC_buffer) return;
+
     ADCSetChannel(ADC_INITIAL_CHANNEL);
     ADCSetRef(ADC_INITIAL_REF);
     ADCSetMode(ADC_INITIAL_MODE);
@@ -189,7 +194,7 @@ void ADCInit()
     ADCBufInit(ADC_buffer);
 
     if (NutRegisterIrqHandler(&sig_ADC, ADCInterrupt, NULL)) {
-//        NutExitCritical();
+        // MR 2006-01-11: we do not free buffer as this would cost ROM and is not likely
         return;
     }
     // Enable ADC
