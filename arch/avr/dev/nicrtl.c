@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/11 08:33:30  hwmaier
+ * Changes to make receiver thread's stack size configurable and honour the NUT_THREAD_NICRXSTACK configuration setting
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -118,6 +121,10 @@
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #include <net/netdebug.h>
+#endif
+
+#ifndef NUT_THREAD_NICRXSTACK
+#define NUT_THREAD_NICRXSTACK   640
 #endif
 
 /*
@@ -1355,7 +1362,7 @@ int NicInit(NUTDEVICE * dev)
     /*
      * Start the receiver thread.
      */
-    NutThreadCreate("rxi5", NicRx, dev, 640);
+    NutThreadCreate("rxi5", NicRx, dev, NUT_THREAD_NICRXSTACK);
     NutSleep(WAIT500);
 
     /*
