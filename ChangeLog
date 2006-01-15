@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.294 2006/01/11 16:34:44 freckle Exp $
+$Id: ChangeLog,v 1.295 2006/01/15 03:01:02 hwmaier Exp $
+
+2006-01-15 Henrik Maier  <henrik@proconx.com>
+
+       * app/Makedefs.avr-gcc: Changed linker option from -Tdata= to
+       --section-start=.data= as -Tdata is broken in binutils 2.16
+       for the AVR target (refer to posts in avr-gcc mailing list)
+
 
 2006-01-11  Matthias Ringwald  <mringwal@inf.ethz.ch>
         * arch/avr/dev/adc.c: ADCInit can be called multiple times
