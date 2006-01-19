@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/19 18:40:08  haraldkipp
+ * Timeouts increased and long time sleeps decreased for better performance.
+ *
  * Revision 1.1  2006/01/05 16:30:49  haraldkipp
  * First check-in.
  *
@@ -115,7 +118,7 @@ typedef struct _MMCFCB {
  */
 static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
 {
-    u_int tmo = 512;
+    u_int tmo = 1024;
     u_char ch;
 
     /* Enable card select. */
@@ -133,7 +136,7 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
             break;
         }
         if (tmo < 256) {
-            NutSleep(2);
+            NutSleep(1);
         }
     }
     /* Send command and parameter. */
@@ -382,12 +385,12 @@ static int MmCardWrite(MMCIFC * ifc, u_long blk, CONST u_char * buf)
             // (*ifc->mmcifc_io)(0xFF);
             // (*ifc->mmcifc_io)(0xFF);
             if ((rsp = MmCardRxR1(ifc)) == 0xE5) {
-                for (tmo = 0; tmo < 512; tmo++) {
+                for (tmo = 0; tmo < 1024; tmo++) {
                     if ((*ifc->mmcifc_io) (0xFF) == 0xFF) {
                         break;
                     }
-                    if (tmo > 256) {
-                        NutSleep(2);
+                    if (tmo > 1000) {
+                        NutSleep(1);
                     }
                 }
                 if (tmo) {
