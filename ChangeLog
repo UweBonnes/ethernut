@@ -1,4 +1,25 @@
-$Id: ChangeLog,v 1.295 2006/01/15 03:01:02 hwmaier Exp $
+$Id: ChangeLog,v 1.296 2006/01/19 18:38:04 haraldkipp Exp $
+
+2006-01-19  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Pre-release 4.1.2.
+
+	* dev/mmcard.c: Timeouts increased and long time sleeps
+	decreased for better performance.
+
+	* dev/nplmmc.c: MMC clock rate now uses the CY2239x driver
+	routines to calculate a configurable value. Additional
+	NOPs had been added to the SPI I/O, which seems to make
+	the driver more stable.
+
+	* dev/x12rtc.c: Bugfix. The driver used binary instead of
+	BCD format to verify the year 1900 or 2000. Even worse,
+	it didn't read the upper register values, So the year
+	calculation was completely broken.
+
+	* include/dev/x12rtc.h: time.h is now included in case the
+	application won't do it for us.
+
 
 2006-01-15 Henrik Maier  <henrik@proconx.com>
 
@@ -24,7 +45,7 @@ $Id: ChangeLog,v 1.295 2006/01/15 03:01:02 hwmaier Exp $
 
 2006-01-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* doc/gen/nutdoc_en.txt, doc/gen/nutfoot.html, os/version.c:
+	* doc/gen/nutdoc_en.txt, doc/gen/nutfoot.html, os/version.c: 
 	Version information changed.
 
 
