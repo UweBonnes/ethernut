@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/19 18:41:34  haraldkipp
+ * Year translation was completely broken. Fixed.
+ *
  * Revision 1.1  2005/10/24 10:21:57  haraldkipp
  * Initial check in.
  *
@@ -175,16 +178,16 @@ int X12RtcWrite(int nv, CONST u_char *buff, size_t cnt)
 int X12RtcGetClock(struct _tm *tm)
 {
     int rc;
-    u_char data[6];
+    u_char data[8];
 
-    if ((rc = X12RtcReadRegs(0x30, data, 6)) == 0) {
+    if ((rc = X12RtcReadRegs(0x30, data, 8)) == 0) {
         tm->tm_sec = BCD2BIN(data[0]);
         tm->tm_min = BCD2BIN(data[1]);
         tm->tm_hour = BCD2BIN(data[2] & 0x3F);
         tm->tm_mday = BCD2BIN(data[3]);
         tm->tm_mon = BCD2BIN(data[4]) - 1;
         tm->tm_year = BCD2BIN(data[5]) + 100;
-        if (BCD2BIN(data[7]) > 19) {
+        if (BCD2BIN(data[7]) > 0x19) {
             tm->tm_year += 100;
         }
         tm->tm_wday = data[6];
@@ -216,11 +219,11 @@ int X12RtcSetClock(CONST struct _tm *tm)
         data[6] = BIN2BCD(tm->tm_mon + 1);
         if (tm->tm_year > 99) {
             data[7] = BIN2BCD(tm->tm_year - 100);
-            data[9] = 20;
+            data[9] = 0x20;
         }
         else {
             data[7] = BIN2BCD(tm->tm_year);
-            data[9] = 19;
+            data[9] = 0x19;
         }
         data[8] = tm->tm_wday;
     }
