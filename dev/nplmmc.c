@@ -42,6 +42,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/19 18:40:47  haraldkipp
+ * MMC clock rate now uses the CY2239x driver routines to calculate a
+ * configurable value. Additional NOPs had been added to the SPI I/O,
+ * which seems to make the driver more stable.
+ *
  * Revision 1.1  2006/01/05 16:31:02  haraldkipp
  * First check-in.
  *
@@ -54,7 +59,13 @@
 #include <dev/twif.h>
 #include <dev/npl.h>
 #include <dev/mmcard.h>
+#include <dev/cy2239x.h>
 #include <dev/nplmmc.h>
+
+#if !defined(NPL_MMC_CLOCK) || (NPL_MMC_CLOCK < 1000)
+#undef NPL_MMC_CLOCK
+#define NPL_MMC_CLOCK   12500000
+#endif
 
 #if 0
 /* Use for local debugging. */
@@ -135,8 +146,14 @@ static u_char NplMmCard0Io(u_char val)
         }
     }
 
+    _NOP();
+    _NOP();
     rc = inb(NPL_MMCDR);
+    _NOP();
+    _NOP();
     outb(NPL_MMCDR, val);
+    _NOP();
+    _NOP();
 
 #ifdef NUTDEBUG
     putchar('[');
@@ -228,16 +245,28 @@ static void NplMmCard0RemIrq(void *arg)
 static int NplMmcIfcInit(NUTDEVICE * dev)
 {
     int rc;
-    u_char clk_reg[9];
+    //u_char clk_reg[9];
+    u_long val;
 
     /* Disable card select. */
     NplMmCard0Select(0);
 
-    /* Set SPI speed in the PLL clock chip. */
-    clk_reg[0] = 0x08;
-    if (TwMasterTransact(I2C_SLA_PLL, clk_reg, 1, clk_reg + 1, 8, NUT_WAIT_INFINITE) == 8) {
-        clk_reg[4] = 0x05;
-        TwMasterTransact(I2C_SLA_PLL, clk_reg, 9, 0, 0, NUT_WAIT_INFINITE);
+    /* Query the PLL number routed to Clock B. */
+    val = Cy2239xGetPll(CY2239X_CLKB);
+    /* Get the frequency of this PLL. */
+    val = Cy2239xPllGetFreq((int)val, 7);
+    /* Calculate the required divider value. */
+    val = (val + NPL_MMC_CLOCK - 10) / NPL_MMC_CLOCK;
+    /* 
+     * Not sure about the Cy-routines. The DIVSEL bit specifies which
+     * divider is used, which is indirectly connected to S2, which is
+     * high by default. For now set both dividers. 
+     */
+    if (Cy2239xSetDivider(CY2239X_CLKB, 1, (int)val)) {
+        return -1;
+    }
+    if (Cy2239xSetDivider(CY2239X_CLKB, 0, (int)val)) {
+        return -1;
     }
 
     /* Initialize the CPLD SPI register. */
