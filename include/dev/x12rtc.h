@@ -35,12 +35,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/19 18:42:21  haraldkipp
+ * Make it compile even if the calling module doesn't include time.h.
+ *
  * Revision 1.1  2005/10/24 11:41:39  haraldkipp
  * Initial check-in.
  *
  */
 
 #include <sys/types.h>
+#include <time.h>
 
 #define RTC_STATUS_PF       0x01
 #define RTC_STATUS_AL0      0x20
