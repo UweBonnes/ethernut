@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/22 17:42:08  haraldkipp
+ * Now file delete requests fail if used on directory entries.
+ *
  * Revision 1.1  2006/01/05 16:31:39  haraldkipp
  * First check-in.
  *
@@ -442,7 +445,9 @@ static NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int ac
          */
         else {
             ffcb->f_dirent = srch->phfind_ent;
-            PhatFilePosSet(nfp, ffcb->f_dirent.dent_fsize + 1);
+            if (ffcb->f_dirent.dent_fsize) {
+                PhatFilePosSet(nfp, ffcb->f_dirent.dent_fsize + 1);
+            }
         }
     }
     free(srch);
@@ -466,7 +471,6 @@ static NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int ac
 #ifdef NUTDEBUG
     PhatDbgFileInfo(stdout, "File opened", ffcb);
 #endif
-
     return nfp;
 }
 
@@ -746,7 +750,7 @@ static int PhatIOCtl(NUTDEVICE * dev, int req, void *conf)
         /* TODO */
         break;
     case FS_FILE_DELETE:
-        rc = PhatDirDelEntry(dev, (char *) conf, PHAT_FATTR_FILEMASK);
+        rc = PhatDirDelEntry(dev, (char *) conf, PHAT_FATTR_FILEMASK & ~PHAT_FATTR_DIR);
         break;
     case FS_FILE_SEEK:
         /* TODO */
@@ -766,6 +770,10 @@ static int PhatIOCtl(NUTDEVICE * dev, int req, void *conf)
             FSCP_VOL_MOUNT *par = (FSCP_VOL_MOUNT *) conf;
 
             rc = PhatVolMount(dev, par->fscp_bmnt, par->fscp_part_type);
+            if (rc) {
+                /* Release resources on failures. */
+                PhatVolUnmount(dev);
+            }
         }
         break;
     case FS_VOL_UNMOUNT:
