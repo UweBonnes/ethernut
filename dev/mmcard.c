@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/22 17:36:31  haraldkipp
+ * Some cards need more time to enter idle state.
+ * Card access now returns an error after card change detection.
+ *
  * Revision 1.2  2006/01/19 18:40:08  haraldkipp
  * Timeouts increased and long time sleeps decreased for better performance.
  *
@@ -295,7 +299,7 @@ static int MmCardInit(MMCIFC * ifc)
      * Wait for a really long time until card is initialized
      * and enters idle state.
      */
-    for (i = 0; i < 2048; i++) {
+    for (i = 0; i < 512; i++) {
         /*
          * In SPI mode SEND_OP_COND is a dummy, used to poll the card
          * for initialization finished. Thus, there are no parameters
@@ -306,6 +310,9 @@ static int MmCardInit(MMCIFC * ifc)
         (*ifc->mmcifc_cs) (0);
         if (rsp == MMR1_IDLE_STATE) {
             return 0;
+        }
+        if (i > 128) {
+            NutSleep(1);
         }
     }
     return -1;
@@ -432,7 +439,7 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
     //printf("[RB%lu]", blk);
-    if ((*ifc->mmcifc_cd) () == 0) {
+    if ((*ifc->mmcifc_cd) () != 1) {
         return -1;
     }
     if (buffer == 0) {
@@ -486,7 +493,7 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
     //printf("[WB%lu]", blk);
-    if ((*ifc->mmcifc_cd) () == 0) {
+    if ((*ifc->mmcifc_cd) () != 1) {
         return -1;
     }
     if (buffer == 0) {
@@ -697,7 +704,7 @@ int MmCardUnmount(NUTFILE * nfp)
     NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
-    if ((*ifc->mmcifc_cd) () == 0) {
+    if ((*ifc->mmcifc_cd) () != 1) {
         return -1;
     }
     rc = fcb->fcb_fsdev->dev_ioctl(fcb->fcb_fsdev, FS_VOL_UNMOUNT, NULL);
