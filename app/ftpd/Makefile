@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2006/01/22 17:34:38  haraldkipp
+# Added support for Ethernut 3, PHAT file system and realtime clock.
+#
 # Revision 1.2  2005/07/26 15:44:50  haraldkipp
 # Include new libnutarch into the build
 #
@@ -46,7 +49,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutfs -lnutarch -lnutnet -lnutos -lnutdev -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutfs -lnutarch -lnutnet -lnutos -lnutdev -lnutarch -lnutcrt
 TARG =  $(PROJ).hex
 PARM =  $(PROJ).eep
 
