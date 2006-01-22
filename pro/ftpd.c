@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/01/22 17:45:29  haraldkipp
+ * CreateFullPathName() partly returned double slashes or empty paths.
+ *
  * Revision 1.3  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -321,52 +324,81 @@ char *CreateFullPathName(char *root, char *work, char *path)
 {
     char *full;
     char *cp;
+    size_t rl = root ? strlen(root) : 0;
+    size_t wl = work ? strlen(work) : 0;
+    size_t pl = path ? strlen(path) : 0;
 
-    if (root == 0 || work == 0 || path == 0) {
-        return 0;
+    /* Ignore trailing slashes in root and work. */
+    if (rl && *(root + rl - 1) == '/') {
+        rl--;
     }
-    if ((full = malloc(strlen(root) + strlen(work) + strlen(path) + 1)) != 0) {
-        cp = strcpy(full, root);
-        cp += strlen(cp);
+    if (wl && *(work + wl - 1) == '/') {
+        wl--;
+    }
 
-        /* Ignore working directory if specified path is absolute. */
-        if (*path == '/') {
-            work = cp;
-        } else {
-            work = strcpy(cp, work);
-            cp += strlen(cp);
+    if ((full = malloc(rl + wl + pl + 3)) != NULL) {
+        /* Put the root in front. */
+        cp = full;
+        if (rl) {
+            cp = strcpy(full, root) + rl;
         }
 
-        while (*path) {
-            if (*path == '/') {
-                path++;
-                continue;
-            }
-            if (*path == '.') {
-                path++;
-                if (*path == '/' || *path == 0) {
-                    /* Skip references to the current directory. */
-                    continue;
+        /* If path is relative, prepend the working directory. */
+        if(pl == 0 || *path != '/') {
+            if (wl) {
+                if (*work != '/') {
+                    *cp++ = '/';
                 }
+                cp = strcpy(cp, work) + wl;
+            }
+            *cp++ = '/';
+            rl++;
+        }
+
+        if (pl) {
+            *cp = 0;
+            work = full + rl;
+
+            while (*path) {
+                /* Ingore duplicate slashes. */
+                if (*path == '/') {
+                    *cp++ = *path++;
+                    while (*path == '/') {
+                        path++;
+                    }
+                }
+                /* Ignore single dots. */
                 if (*path == '.') {
                     path++;
-                    if (*path == '/' || *path == 0) {
-                        /* Go up one level. */
-                        if ((cp = strrchr(work, '/')) == 0) {
-                            cp = work;
-                        }
-                        *cp = 0;
+                    if (*path == '/') {
+                        path++;
                         continue;
+                    }
+                    if (*path == 0) {
+                        break;
+                    }
+                    if (*path == '.') {
+                        path++;
+                        if (*path == '/' || *path == 0) {
+                            if (cp != work) {
+                                cp--;
+                                while (cp != work) {
+                                    cp--;
+                                    if (*cp == '/') {
+                                        break;
+                                    }
+                                }
+                            }
+                            continue;
+                        }
+                        path--;
                     }
                     path--;
                 }
-                path--;
-            }
-            if (*(cp - 1) != '/') {
-                *cp++ = '/';
-            }
-            while (*path && *path != '/') {
-                *cp++ = *path++;
+                /* Copy the current path component. */
+                while (*path && *path != '/') {
+                    *cp++ = *path++;
+                }
             }
         }
         *cp = 0;
@@ -580,19 +612,20 @@ void NutFtpCloseSession(FTPSESSION * session)
 int NutFtpProcessCwd(FTPSESSION * session, char *path)
 {
     struct stat st;
-    char *cp;
+    char *cp = path + strlen(ftp_root);
 
-    /*
-     * Check, if the path exists and if this is a directory. 
-     */
-    if (stat(path, &st) || st.st_mode == 0) {
-        return NutFtpRespondBad(session, 550);
+    if (*cp && strcmp(cp, "/")) {
+        /*
+         * Check, if the path exists and if this is a directory. 
+         */
+        if (stat(path, &st) || st.st_mode == 0) {
+            return NutFtpRespondBad(session, 550);
+        }
     }
 
     /*
      * Store the new working directory excluding our root part.
      */
-    cp = path + strlen(ftp_root);
     if (*cp == 0) {
         cp = "/";
     }
