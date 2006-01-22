@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.10  2006/01/22 17:46:18  haraldkipp
+# Pre-release 4.1.3
+#
 # Revision 1.9  2005/12/04 18:42:19  haraldkipp
 # Release branch X.Y created.
 #
@@ -66,7 +69,7 @@
 #
 #
 
-AC_INIT(ethernut,4.1.1)
+AC_INIT(ethernut,4.1.3)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005 egnite Software GmbH])
