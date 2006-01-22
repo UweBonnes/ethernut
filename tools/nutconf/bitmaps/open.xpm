@@ -1,5 +1,5 @@
 /* XPM */
-static char * open_xpm[] = {
+static char * TBB_OPEN_xpm[] = {
 "16 15 129 2",
 "  	c #C0C0C0",
 ". 	c #C7C7BF",

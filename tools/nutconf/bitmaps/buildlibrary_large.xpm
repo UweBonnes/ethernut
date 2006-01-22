@@ -1,5 +1,5 @@
 /* XPM */
-static char * buildlibrary_large_xpm[] = {
+static char * TBB_BUILDLIBRARY_LARGE_xpm[] = {
 "32 32 538 2",
 "  	c #C0C0C0",
 ". 	c #BEBFBE",

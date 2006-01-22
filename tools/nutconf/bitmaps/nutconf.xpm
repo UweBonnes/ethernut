@@ -1,5 +1,5 @@
 /* XPM */
-static char * nutconf_xpm[] = {
+static char * SSB_NUTCONF_xpm[] = {
 "400 300 14370 3",
 "   	c #E5E5E5",
 ".  	c #E4E4E4",

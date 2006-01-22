@@ -1,5 +1,5 @@
 /* XPM */
-static char * save_large_xpm[] = {
+static char * TBB_SAVE_LARGE_xpm[] = {
 "32 32 301 2",
 "  	c #C0C0C0",
 ". 	c #CAC8BF",

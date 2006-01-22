@@ -1,5 +1,5 @@
 /* XPM */
-static char * help_xpm[] = {
+static char * TBB_HELP_xpm[] = {
 "16 15 126 2",
 "  	c #C0C0C0",
 ". 	c #C1C0C0",

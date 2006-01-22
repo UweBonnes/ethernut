@@ -1,5 +1,5 @@
 /* XPM */
-static char * search_large_xpm[] = {
+static char * TBB_SEARCH_LARGE_xpm[] = {
 "32 32 453 2",
 "  	c #C0C0C0",
 ". 	c #BFBFC0",
