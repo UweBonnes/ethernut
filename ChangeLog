@@ -1,6 +1,20 @@
-$Id: ChangeLog,v 1.297 2006/01/22 17:33:40 haraldkipp Exp $
+$Id: ChangeLog,v 1.298 2006/01/22 19:10:23 haraldkipp Exp $
 
 2006-01-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/bitmaps/buildlibrary.bmp,
+	tools/nutconf/bitmaps/buildlibrary_large.bmp,
+	tools/nutconf/bitmaps/closedfolder.ico,
+	tools/nutconf/bitmaps/help.bmp,
+	tools/nutconf/bitmaps/help_large.bmp,
+	tools/nutconf/bitmaps/library.ico,
+	tools/nutconf/bitmaps/module.ico,
+	tools/nutconf/bitmaps/module_dis.ico,
+	tools/nutconf/bitmaps/nutconf.bmp,
+	tools/nutconf/bitmaps/nutconf.ico,
+	tools/nutconf/bitmaps/save.bmp,
+	tools/nutconf/bitmaps/search.bmp,
+	tools/nutconf/bitmaps/search_large.bmp: Artwork updated.
 
 	* configure.ac, os/version.c: Pre-release 4.1.3.
 
