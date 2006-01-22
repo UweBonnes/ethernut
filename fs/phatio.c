@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/22 17:38:43  haraldkipp
+ * *** empty log message ***
+ *
  * Revision 1.1  2006/01/05 16:31:45  haraldkipp
  * First check-in.
  *
@@ -108,12 +111,15 @@ int PhatSectorRead(NUTFILE * blkmnt, u_long sect, u_char * buf)
     BLKPAR_SEEK pars;
     NUTDEVICE *blkdev = blkmnt->nf_dev;
 
+    /* Set the block device's sector position. */
     pars.par_nfp = blkmnt;
     pars.par_blknum = sect;
     if ((*blkdev->dev_ioctl) (blkdev, NUTBLKDEV_SEEK, &pars)) {
         errno = EIO;
         return -1;
     }
+
+    /* Read a single block from the device. */
     if ((*blkdev->dev_read) (blkmnt, buf, 1) != 1) {
         errno = EIO;
         return -1;
