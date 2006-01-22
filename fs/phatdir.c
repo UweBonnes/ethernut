@@ -37,6 +37,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/22 17:40:51  haraldkipp
+ * Now mkdir() fails, if the directory exists already.
+ * Now rmdir() returns an error when trying to delete subdirectories, which
+ * are not empty.
+ * Now PhatDirEntryStatus() sets correct errno value, if out of memory.
+ *
  * Revision 1.1  2006/01/05 16:31:32  haraldkipp
  * First check-in.
  *
@@ -671,7 +677,7 @@ int PhatDirCreate(NUTDEVICE * dev, char *path)
     u_long sect;
     u_long clust;
 
-    if ((ndp = (*dev->dev_open) (dev, path, _O_CREAT | _O_RDWR, PHAT_FATTR_DIR)) == NUTFILE_EOF) {
+    if ((ndp = (*dev->dev_open) (dev, path, _O_CREAT | _O_RDWR | _O_EXCL, PHAT_FATTR_DIR)) == NUTFILE_EOF) {
         return -1;
     }
     dfcb = ndp->nf_fcb;
@@ -780,11 +786,11 @@ int PhatDirRemove(NUTDEVICE * dev, char *path)
                 break;
             }
             /* Skip removed entries. */
-            if (entry->dent_name[0] != PHAT_REM_DIRENT) {
+            if (entry->dent_name[0] == PHAT_REM_DIRENT) {
                 continue;
             }
             /* Ignore entries which are not files. */
-            if ((entry->dent_attr | PHAT_FATTR_FILEMASK) == PHAT_FATTR_FILEMASK) {
+            if ((entry->dent_attr | PHAT_FATTR_FILEMASK) != PHAT_FATTR_FILEMASK) {
                 continue;
             }
             /* Ignore dot and double dot entries. */
@@ -842,7 +848,7 @@ int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *stp)
 
     if ((srch = malloc(sizeof(PHATFIND))) == NULL) {
         (*dev->dev_close) (ndp);
-        errno = EINVAL;
+        errno = ENOMEM;
         return -1;
     }
     if ((rc = PhatDirEntryFind(ndp, fname, PHAT_FATTR_FILEMASK, srch)) == 0) {
