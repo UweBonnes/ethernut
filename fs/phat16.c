@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/22 17:43:46  haraldkipp
+ * Bugfix. Deleting files sometimes corrupted a volume.
+ *
  * Revision 1.1  2006/01/05 16:31:17  haraldkipp
  * First check-in.
  *
@@ -147,23 +150,20 @@ int Phat16ReleaseChain(NUTDEVICE * dev, u_long first)
     u_long next;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
-    for (;;) {
+    while (first < (PHATEOC & PHAT16CMASK)) {
         if (Phat16GetClusterLink(dev, first, &next)) {
+            /* Read error. */
             return -1;
         }
         if (next < 2) {
+            /* Incomplete chain, should not happen. */
             break;
         }
         if (Phat16SetClusterLink(dev, first, 0)) {
+            /* Write error. */
             return -1;
         }
         vol->vol_numfree++;
-        if (next >= (PHATEOC & PHAT16CMASK)) {
-            if (Phat16SetClusterLink(dev, next, 0)) {
-                return -1;
-            }
-            break;
-        }
         first = next;
     }
     return 0;
