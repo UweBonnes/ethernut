@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.14  2006/01/22 17:35:22  haraldkipp
+-- Baudrate calculation for Ethernut 3 failed if MCU Clock was not specified.
+--
 -- Revision 1.13  2006/01/05 16:44:58  haraldkipp
 -- PLL clock choices added.
 --
@@ -83,7 +86,7 @@ avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", 
 
 arm_ld_choice = { " ", "at91_boot", "at91_ram", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
 
-pll_clk_choice = { " ", "0", "1", "2", "3", "4", "5" }
+pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
 
 repository =
 {

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.23  2006/01/22 17:35:22  haraldkipp
+-- Baudrate calculation for Ethernut 3 failed if MCU Clock was not specified.
+--
 -- Revision 1.22  2006/01/05 16:49:06  haraldkipp
 -- Mulimedia Card Block Device Driver added.
 -- Programmable Logic Device added, which supports the CPLD
@@ -253,12 +256,11 @@ nutdev =
                               "then the CPU Clock Value will be queried from the PLL Clock "..
                               "Chip.\n\n"..
                               "Select\n"..
-                              "0 for for the XBUF Pin\n"..
-                              "1 for for the CLKA Pin\n"..
-                              "2 for for the CLKB Pin\n"..
-                              "3 for for the CLKC Pin (Ethernut 3 default)\n"..
-                              "4 for for the CLKD Pin\n"..
-                              "5 for for the CLKE Pin",
+                              "0 for for the CLKA Pin\n"..
+                              "1 for for the CLKB Pin\n"..
+                              "2 for for the CLKC Pin (Ethernut 3 default)\n"..
+                              "3 for for the CLKD Pin\n"..
+                              "4 for for the CLKE Pin",
                 type = "enumerated",
                 choices = pll_clk_choice,
                 file = "include/cfg/clock.h"
@@ -268,12 +270,11 @@ nutdev =
                 brief = "Ethernet Clock Output",
                 description = "PLL output used to drive the Ethernet Controller\n\n"..
                               "Select\n"..
-                              "0 for for the XBUF Pin\n"..
-                              "1 for for the CLKA Pin (Ethernut 3 default)\n"..
-                              "2 for for the CLKB Pin\n"..
-                              "3 for for the CLKC Pin\n"..
-                              "4 for for the CLKD Pin\n"..
-                              "5 for for the CLKE Pin",
+                              "0 for for the CLKA Pin (Ethernut 3 default)\n"..
+                              "1 for for the CLKB Pin\n"..
+                              "2 for for the CLKC Pin\n"..
+                              "3 for for the CLKD Pin\n"..
+                              "4 for for the CLKE Pin",
                 type = "enumerated",
                 choices = pll_clk_choice,
                 file = "include/cfg/clock.h"
@@ -283,12 +284,11 @@ nutdev =
                 brief = "NPL Clock 1 Output",
                 description = "PLL output connected to the CPLD GCK1 Pin\n\n"..
                               "Select\n"..
-                              "0 for for the XBUF Pin\n"..
-                              "1 for for the CLKA Pin\n"..
-                              "2 for for the CLKB Pin (Ethernut 3 default)\n"..
-                              "3 for for the CLKC Pin\n"..
-                              "4 for for the CLKD Pin\n"..
-                              "5 for for the CLKE Pin",
+                              "0 for for the CLKA Pin\n"..
+                              "1 for for the CLKB Pin (Ethernut 3 default)\n"..
+                              "2 for for the CLKC Pin\n"..
+                              "3 for for the CLKD Pin\n"..
+                              "4 for for the CLKE Pin",
                 type = "enumerated",
                 choices = pll_clk_choice,
                 file = "include/cfg/clock.h"
@@ -298,12 +298,11 @@ nutdev =
                 brief = "NPL Clock 3 Output",
                 description = "PLL output connected to the CPLD GCK3 Pin\n\n"..
                               "Select\n"..
-                              "0 for for the XBUF Pin\n"..
-                              "1 for for the CLKA Pin\n"..
-                              "2 for for the CLKB Pin\n"..
-                              "3 for for the CLKC Pin\n"..
-                              "4 for for the CLKD Pin (Ethernut 3 default)\n"..
-                              "5 for for the CLKE Pin",
+                              "0 for for the CLKA Pin\n"..
+                              "1 for for the CLKB Pin\n"..
+                              "2 for for the CLKC Pin\n"..
+                              "3 for for the CLKD Pin (Ethernut 3 default)\n"..
+                              "4 for for the CLKE Pin",
                 type = "enumerated",
                 choices = pll_clk_choice,
                 file = "include/cfg/clock.h"
