@@ -40,6 +40,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/22 17:38:06  haraldkipp
+ * If mounting fails, the occupied resources are no longer released in
+ * PhatVolMount(). Instead the caller, PhatIOCtl() in this case, calls
+ * PhatVolUnmount(). This reduces the code size and makes sure, the all
+ * resources are released in all cases.
+ *
  * Revision 1.1  2006/01/05 16:31:56  haraldkipp
  * First check-in.
  *
@@ -144,11 +150,11 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     /*
      * Allocate the volume information structure 
      */
-    if ((vol = malloc(sizeof(PHATVOL))) == 0) {
+    if ((dev->dev_dcb = malloc(sizeof(PHATVOL))) == 0) {
         errno = ENOMEM;
         return -1;
     }
-    memset(vol, 0, sizeof(PHATVOL));
+    vol = (PHATVOL *) memset(dev->dev_dcb, 0, sizeof(PHATVOL));
 
     /*
      * Determine the PHAT type.
@@ -169,7 +175,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     }
     if (vol->vol_type == 0) {
         /* Unknown partition type. */
-        PhatVolUnmount(dev);
         errno = ENODEV;
         return -1;
     }
@@ -179,7 +184,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      */
     pari.par_nfp = blkmnt;
     if ((*blkdev->dev_ioctl) (blkdev, NUTBLKDEV_INFO, &pari)) {
-        PhatVolUnmount(dev);
         errno = ENODEV;
         return -1;
     }
@@ -190,7 +194,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      * very first read to properly initialize the caching status.
      */
     if (PhatSectorRead(blkmnt, 0, vol->vol_buf)) {
-        PhatVolUnmount(dev);
         return -1;
     }
     vol->vol_bufsect = 0;
@@ -210,7 +213,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      */
     if (vol->vol_buf[510] != 0x55 || vol->vol_buf[511] != 0xAA) {
         errno = ENODEV;
-        PhatVolUnmount(dev);
         return -1;
     }
 
@@ -219,7 +221,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      */
     if (vbr->bios_media != 0xF0 && vbr->bios_media < 0xF8) {
         errno = ENODEV;
-        PhatVolUnmount(dev);
         return -1;
     }
 
@@ -230,13 +231,11 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     vol->vol_sectsz = vbr->bios_sectsz;
     if (vol->vol_sectsz < 512 || vol->vol_sectsz & 0xFF) {
         errno = ENODEV;
-        PhatVolUnmount(dev);
         return -1;
     }
     /* Sectors per cluster. */
     if ((vol->vol_clustsz = vbr->bios_clustsz) == 0) {
         errno = ENODEV;
-        PhatVolUnmount(dev);
         return -1;
     }
     /* Allocation table size and position. */
@@ -268,7 +267,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     /* First cluster number is 2. */
     vol->vol_last_clust += 2;
 
-    dev->dev_dcb = vol;
     dev->dev_icb = blkmnt;
 
     vol->vol_numfree = PhatCountFreeClusters(dev);
