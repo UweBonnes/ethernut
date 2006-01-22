@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/22 17:44:20  haraldkipp
+ * ICCAVR failed to find local header files.
+ *
  * Revision 1.1  2006/01/05 16:32:57  haraldkipp
  * First check-in.
  *
@@ -134,9 +137,9 @@ typedef struct _PHATFILE {
 /*@}*/
 
 
-#include "phat12.h"
-#include "phat16.h"
-#include "phat32.h"
+#include <fs/phat12.h>
+#include <fs/phat16.h>
+#include <fs/phat32.h>
 
 extern NUTDEVICE devPhat0;
 
