@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/01/23 19:50:48  haraldkipp
+ * Dummy NVMEM configuration for GBA added.
+ *
  * Revision 1.7  2006/01/23 17:26:17  haraldkipp
  * Platform independant routines added, which provide generic access to
  * non-volatile memory.
@@ -77,7 +80,7 @@ CONFOS confos;
  */
 int NutLoadConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(MCU_GBA)
     if (NutNvMemLoad(CONFOS_EE_OFFSET, &confos, sizeof(CONFOS))) {
         return -1;
     }
@@ -95,7 +98,7 @@ int NutLoadConfig(void)
  */
 int NutSaveConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(MCU_GBA)
     confos.size = sizeof(CONFOS);
     confos.magic[0] = 'O';
     confos.magic[1] = 'S';

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.16  2006/01/23 19:50:48  haraldkipp
+-- Dummy NVMEM configuration for GBA added.
+--
 -- Revision 1.15  2006/01/23 17:28:30  haraldkipp
 -- HW_NVMEM is now provided by specific modules.
 --
@@ -204,7 +207,8 @@ nutarch =
                     "HW_MCU_ARM",
                     "HW_MCU_GBA",
                     "HW_TIMER_GBA",
-                    "HW_LCD_GBA"
+                    "HW_LCD_GBA",
+                    "DEV_NVMEM"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
