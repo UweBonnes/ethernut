@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.6  2006/01/23 17:30:25  haraldkipp
+-- Configurable offset into non-volatile memory for network parameters.
+--
 -- Revision 1.5  2005/04/05 17:44:56  haraldkipp
 -- Made stack space configurable.
 --
@@ -217,10 +220,23 @@ nutnet =
     },
     {
         name = "nutnet_conf",
-        brief = "Network parameters",
-        requires = { "HW_NVMEM" },
+        brief = "Network Configuration",
+        description = "Initial configuration settings are stored in non-volatile memory.",
+        requires = { "DEV_NVMEM" },
         provides = { "NET_PARMS" },
-        sources = { "confnet.c" }
+        sources = { "confnet.c" },
+        options =
+        {
+            {
+                macro = "CONFNET_EE_OFFSET",
+                brief = "Location",
+                description = "This is the first non-volatile memory address, where Nut/OS "..
+                              "expects its configuration",
+                default = "64",
+                type = "integer",
+                file = "include/cfg/eeprom.h"
+            }
+        }
     },
     {
         name = "nutnet_debug",
