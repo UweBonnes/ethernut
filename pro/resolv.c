@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/01/23 19:52:10  haraldkipp
+ * Added required typecasts before left shift.
+ *
  * Revision 1.9  2006/01/23 17:33:47  haraldkipp
  * Avoid memory alignment errors.
  *
@@ -182,7 +185,7 @@ static u_short AddName(u_char * cp, CONST u_char * name)
 
 static u_short ScanShort(u_char * cp, u_short * val)
 {
-    *val = (*cp++) << 8;
+    *val = (u_short)(*cp++) << 8;
     *val |= *cp;
 
     return 2;
@@ -528,9 +531,9 @@ u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type)
                 }
                 if (dor->dor_len == 4) {
                     ip = *dor->dor_data;
-                    ip += *(dor->dor_data + 1) << 8;
-                    ip += *(dor->dor_data + 2) << 16;
-                    ip += *(dor->dor_data + 3) << 24;
+                    ip += (u_long)(*(dor->dor_data + 1)) << 8;
+                    ip += (u_long)(*(dor->dor_data + 2)) << 16;
+                    ip += (u_long)(*(dor->dor_data + 3)) << 24;
                     break;
                 }
                 /* TBD: 18.3.2004 - for MX requests authoritative rrs should be skipped + additional rrs should be searched for IP address */

@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/23 19:52:10  haraldkipp
+ * Added required typecasts before left shift.
+ *
  * Revision 1.2  2006/01/22 17:43:46  haraldkipp
  * Bugfix. Deleting files sometimes corrupted a volume.
  *
@@ -111,7 +114,7 @@ int Phat12GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
         }
         pos = 0;
     }
-    *link += vol->vol_buf[pos] << 8;
+    *link += (u_long)(vol->vol_buf[pos]) << 8;
 
     /* Adjust the 12 bit position within the 16 bit result. */
     if (clust & 1) {
@@ -151,12 +154,12 @@ int Phat12SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
          * old value and keep the upper or lower 4 bit part. */
         tval = vol->vol_buf[pos];
         if (pos + 1 < vol->vol_sectsz) {
-            tval += vol->vol_buf[pos + 1] << 8;
+            tval += (u_long)(vol->vol_buf[pos + 1]) << 8;
         } else {
             if (PhatSectorLoad(dev, sect + 1)) {
                 return -1;
             }
-            tval += vol->vol_buf[0] << 8;
+            tval += (u_long)(vol->vol_buf[0]) << 8;
         }
 
         link &= PHAT12CMASK;

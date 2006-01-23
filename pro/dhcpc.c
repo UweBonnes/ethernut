@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.21  2006/01/23 19:52:10  haraldkipp
+ * Added required typecasts before left shift.
+ *
  * Revision 1.20  2006/01/23 17:35:54  haraldkipp
  * BOOTP and DYNCFG structures must be packed.
  * Fixed memory alignment bug, which retrieved wrong values from DHCP options.
@@ -735,9 +738,9 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
         else if (ol >= 4) {
             /* Preset most often used long value. */
             u_long lval = *(op + 2);
-            lval += *(op + 3) << 8;
-            lval += *(op + 4) << 16;
-            lval += *(op + 5) << 24;
+            lval += (u_long)(*(op + 3)) << 8;
+            lval += (u_long)(*(op + 4)) << 16;
+            lval += (u_long)(*(op + 5)) << 24;
 
             /* Our IP network mask. */
             if (*op == DHCPOPT_NETMASK) {
@@ -759,9 +762,9 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
                 cfgp->dyn_pdns = lval;
                 if (ol >= 8) {
                     cfgp->dyn_sdns = *(op + 6);
-                    cfgp->dyn_sdns += *(op + 7) << 8;
-                    cfgp->dyn_sdns += *(op + 8) << 16;
-                    cfgp->dyn_sdns += *(op + 9) << 24;
+                    cfgp->dyn_sdns += (u_long)(*(op + 7)) << 8;
+                    cfgp->dyn_sdns += (u_long)(*(op + 8)) << 16;
+                    cfgp->dyn_sdns += (u_long)(*(op + 9)) << 24;
                 }
             }
             /* Server identifier. */

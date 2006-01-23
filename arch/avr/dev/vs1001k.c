@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/23 19:52:10  haraldkipp
+ * Added required typecasts before left shift.
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -312,7 +315,7 @@ static u_short VsRegRead(u_char reg)
 
     VsSciPutByte(VS_OPCODE_READ);
     VsSciPutByte(reg);
-    data = VsSciGetByte() << 8;
+    data = (u_short)VsSciGetByte() << 8;
     data |= VsSciGetByte();
 
 #ifndef VS_NOSPI

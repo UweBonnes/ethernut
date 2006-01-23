@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/01/23 19:52:10  haraldkipp
+ * Added required typecasts before left shift.
+ *
  * Revision 1.3  2006/01/23 17:33:47  haraldkipp
  * Avoid memory alignment errors.
  *
@@ -107,9 +110,9 @@ int Phat32GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
 
     /* Get the 32 bit link value. */
     *link = vol->vol_buf[pos];
-    *link += vol->vol_buf[pos + 1] << 8;
-    *link += vol->vol_buf[pos + 2] << 16;
-    *link += vol->vol_buf[pos + 3] << 24;
+    *link += (u_long)(vol->vol_buf[pos + 1]) << 8;
+    *link += (u_long)(vol->vol_buf[pos + 2]) << 16;
+    *link += (u_long)(vol->vol_buf[pos + 3]) << 24;
 
     return 0;
 }
