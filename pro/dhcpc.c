@@ -83,6 +83,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.20  2006/01/23 17:35:54  haraldkipp
+ * BOOTP and DYNCFG structures must be packed.
+ * Fixed memory alignment bug, which retrieved wrong values from DHCP options.
+ *
  * Revision 1.19  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -500,9 +504,14 @@ static u_char __tcp_trf = 1;
 /*@}*/
 
 /*!
+ * \brief BOOTP message structure type.
+ */
+typedef struct __attribute__ ((packed)) bootp BOOTP;
+
+/*!
  * \brief BOOTP message structure.
  */
-struct bootp {
+struct __attribute__ ((packed)) bootp {
     u_char bp_op;               /*!< \brief Packet opcode type: 1=request, 2=reply */
     u_char bp_htype;            /*!< \brief Hardware address type: 1=Ethernet */
     u_char bp_hlen;             /*!< \brief Hardware address length: 6 for Ethernet */
@@ -523,12 +532,12 @@ struct bootp {
 /*!
  * \brief Dynamic configuration structure type.
  */
-typedef struct dyn_cfg DYNCFG;
+typedef struct __attribute__ ((packed)) dyn_cfg DYNCFG;
 
 /*!
  * \brief Dynamic configuration structure.
  */
-struct dyn_cfg {
+struct __attribute__ ((packed)) dyn_cfg {
     u_char dyn_msgtyp;          /*!< \brief DHCP message type */
     u_long dyn_yiaddr;          /*!< \brief Offered IP address. */
     u_long dyn_netmask;         /*!< \brief Local IP netmask. */
@@ -664,7 +673,7 @@ static void ReleaseDynCfg(DYNCFG * dyncfg)
  * \return Pointer to config structure. Must be released by the caller.
  *         NULL is returned in case of parsing errors.
  */
-static DYNCFG *ParseReply(struct bootp *bp, int len)
+static DYNCFG *ParseReply(BOOTP *bp, int len)
 {
     u_char *op;
     int left;
@@ -725,7 +734,10 @@ static DYNCFG *ParseReply(struct bootp *bp, int len)
         /* All remaining options require at least 4 octets. */
         else if (ol >= 4) {
             /* Preset most often used long value. */
-            u_long lval = *((u_long *) (op + 2));
+            u_long lval = *(op + 2);
+            lval += *(op + 3) << 8;
+            lval += *(op + 4) << 16;
+            lval += *(op + 5) << 24;
 
             /* Our IP network mask. */
             if (*op == DHCPOPT_NETMASK) {
@@ -746,7 +758,10 @@ static DYNCFG *ParseReply(struct bootp *bp, int len)
             else if (*op == DHCPOPT_DNS) {
                 cfgp->dyn_pdns = lval;
                 if (ol >= 8) {
-                    cfgp->dyn_sdns = *((u_long *) (op + 6));
+                    cfgp->dyn_sdns = *(op + 6);
+                    cfgp->dyn_sdns += *(op + 7) << 8;
+                    cfgp->dyn_sdns += *(op + 8) << 16;
+                    cfgp->dyn_sdns += *(op + 9) << 24;
                 }
             }
             /* Server identifier. */
@@ -899,7 +914,7 @@ static size_t DhcpAddParmReqOption(u_char * op)
  *
  * \return Total number of octets added.
  */
-static u_int DhcpPrepHeader(struct bootp *bp, u_char msgtyp, u_long xid, u_long ciaddr, u_short secs)
+static u_int DhcpPrepHeader(BOOTP *bp, u_char msgtyp, u_long xid, u_long ciaddr, u_short secs)
 {
     u_char *op;
 
@@ -955,14 +970,14 @@ static u_int DhcpPrepHeader(struct bootp *bp, u_char msgtyp, u_long xid, u_long 
  * \return 0 on success. On errors -1 is returned and \ref dhcpError will
  *         be set to \ref DHCPERR_TRANSMIT.
  */
-static int DhcpSendMessage(UDPSOCKET * sock, u_long addr, struct bootp *bp, size_t len)
+static int DhcpSendMessage(UDPSOCKET * sock, u_long addr, BOOTP *bp, size_t len)
 {
     /* Add 'end of options'. */
     bp->bp_options[len++] = DHCPOPT_END;
 
     /* Maintain a BOOTP compatible minimum packet size of 300 octets. 
        Thanks to Tomohiro Haraikawa. */
-    if ((len += sizeof(struct bootp) - sizeof(bp->bp_options)) < MIN_DHCP_MSGSIZE) {
+    if ((len += sizeof(BOOTP) - sizeof(bp->bp_options)) < MIN_DHCP_MSGSIZE) {
         len = MIN_DHCP_MSGSIZE;
     }
 #ifdef NUTDEBUG
@@ -990,7 +1005,7 @@ static int DhcpSendMessage(UDPSOCKET * sock, u_long addr, struct bootp *bp, size
  *         value -1 indicates an error, in which case dhcpError is
  *         set to an error code. On timeout 0 is returned.
  */
-static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, struct bootp *bp, u_long tmo)
+static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, BOOTP *bp, u_long tmo)
 {
     int rc;
     u_short port;
@@ -1003,7 +1018,7 @@ static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, struct bootp *bp, u_lon
     /* Set the initial receive timeout. */
     wtim = tmo;
     for (;;) {
-        rc = NutUdpReceiveFrom(sock, &addr, &port, bp, sizeof(struct bootp), wtim);
+        rc = NutUdpReceiveFrom(sock, &addr, &port, bp, sizeof(BOOTP), wtim);
 #ifdef NUTDEBUG
         if (__tcp_trf) {
             if (rc > 0) {
@@ -1024,7 +1039,7 @@ static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, struct bootp *bp, u_lon
         }
         /* The message must at least include the BOOTP header plus five 
            bytes of options (magic and end). We are quite liberal here. */
-        if (rc > sizeof(struct bootp) - sizeof(bp->bp_options) + 5) {
+        if (rc > sizeof(BOOTP) - sizeof(bp->bp_options) + 5) {
             /* The message must be a BOOTP reply with the expected XID. */
             if (bp->bp_op == 2 && bp->bp_xid == xid) {
                 /* Message is acceptable. */
@@ -1058,7 +1073,7 @@ static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, struct bootp *bp, u_lon
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpBroadcastDiscover(UDPSOCKET * sock, struct bootp *bp, u_long xid, u_long raddr, u_short secs)
+static int DhcpBroadcastDiscover(UDPSOCKET * sock, BOOTP *bp, u_long xid, u_long raddr, u_short secs)
 {
     size_t optlen;
     int len;
@@ -1108,7 +1123,7 @@ static int DhcpBroadcastDiscover(UDPSOCKET * sock, struct bootp *bp, u_long xid,
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpSendRequest(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long xid,        /* */
+static int DhcpSendRequest(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid,        /* */
                            u_long caddr, u_long raddr, u_long sid, u_short secs)
 {
     size_t optlen;
@@ -1155,7 +1170,7 @@ static int DhcpSendRequest(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_l
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpBroadcastRequest(UDPSOCKET * sock, struct bootp *bp, u_long xid, /* */
+static int DhcpBroadcastRequest(UDPSOCKET * sock, BOOTP *bp, u_long xid, /* */
                                 u_long caddr, u_long raddr, u_long sid, u_short secs)
 {
     return DhcpSendRequest(sock, INADDR_BROADCAST, bp, xid, caddr, raddr, sid, secs);
@@ -1176,7 +1191,7 @@ static int DhcpBroadcastRequest(UDPSOCKET * sock, struct bootp *bp, u_long xid, 
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpSendRelease(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long xid, u_long caddr, u_long sid)
+static int DhcpSendRelease(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid, u_long caddr, u_long sid)
 {
     size_t optlen;
     u_char *op = bp->bp_options;
@@ -1203,7 +1218,7 @@ static int DhcpSendRelease(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_l
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpSendInform(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_long xid, u_long caddr)
+static int DhcpSendInform(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid, u_long caddr)
 {
     size_t optlen;
     size_t len;
@@ -1238,7 +1253,7 @@ static int DhcpSendInform(UDPSOCKET * sock, u_long daddr, struct bootp *bp, u_lo
  *
  * \return Updated configuration.
  */
-static DYNCFG *CheckOffer(DYNCFG * dyncfg, struct bootp *bp, size_t len)
+static DYNCFG *CheckOffer(DYNCFG * dyncfg, BOOTP *bp, size_t len)
 {
     DYNCFG *offer;
 
@@ -1303,7 +1318,7 @@ THREAD(NutDhcpClient, arg)
 {
     DYNCFG *reply = 0;
     UDPSOCKET *sock = 0;
-    struct bootp *bp = 0;
+    BOOTP *bp = 0;
     int n;
     u_long xid;
     IFNET *nif;
@@ -1482,7 +1497,7 @@ THREAD(NutDhcpClient, arg)
                     sock = NutUdpCreateSocket(DHCP_CLIENTPORT);
                 }
                 if (bp == 0) {
-                    bp = malloc(sizeof(struct bootp));
+                    bp = malloc(sizeof(BOOTP));
                 }
                 if (sock == 0 || bp == 0) {
                     /* Looks like we are out of memory. */
