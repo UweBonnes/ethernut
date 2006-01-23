@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/01/23 17:27:47  haraldkipp
+ * Previous hack to fix missing network configuration routines disabled
+ * non-volatile memory access for ARM.
+ *
  * Revision 1.2  2005/10/22 08:55:47  haraldkipp
  * CPU specific headers moved to subdirectories for the CPU family.
  *
@@ -912,18 +916,6 @@ int AsixOutput(NUTDEVICE * dev, NETBUF * nb)
         rc = 0;
     }
     return rc;
-}
-
-CONFNET confnet;
-
-int NutNetSaveConfig(void)
-{
-    return 0;
-}
-
-int NutNetLoadConfig(CONST char *name)
-{
-    return -1;
 }
 
 //==============================================================================
