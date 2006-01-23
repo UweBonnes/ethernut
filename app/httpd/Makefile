@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.6  2006/01/23 19:49:17  haraldkipp
+# Re-arranging library list. Again!
+#
 # Revision 1.5  2005/07/26 15:44:50  haraldkipp
 # Include new libnutarch into the build
 #
@@ -82,7 +85,7 @@ include ../Makedefs
 SRCS =  $(PROJ).c $(WEBFILE)
 OBJS =  $(SRCS:.c=.o)
 #MODS =  $(MODDIR)/dev/lanc111.o
-LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutpro -lnutos -lnutarch -lnutdev -lnutnet -lnutfs -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutpro -lnutos -lnutarch -lnutdev -lnutarch -lnutnet -lnutfs -lnutcrt
 TARG =  $(PROJ).hex
 
 ifneq (, $(findstring h8300, $(ARCH)))

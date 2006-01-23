@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2006/01/23 19:49:17  haraldkipp
+# Re-arranging library list. Again!
+#
 # Revision 1.6  2005/07/26 15:44:38  haraldkipp
 # Include new libnutarch into the build
 #
@@ -82,7 +85,7 @@ WEBFILE= urom.c
 include ../Makedefs
 
 SRCS =  $(PROJ).c xmemtest.c dataflash.c realtek.c smsc.c uart.c webdemo.c utils.c $(WEBFILE)
-LIBS =  -lnutnet -lnutpro -lnutfs -lnutos -lnutarch -lnutdev -lnutnet -lnutcrt
+LIBS =  -lnutnet -lnutpro -lnutfs -lnutos -lnutarch -lnutdev -lnutarch -lnutnet -lnutcrt
 
 OBJS =  $(SRCS:.c=.o)
 TARG =  $(PROJ).hex
