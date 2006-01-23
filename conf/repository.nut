@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.15  2006/01/23 17:31:36  haraldkipp
+-- Enhanced description of dev library.
+--
 -- Revision 1.14  2006/01/22 17:35:22  haraldkipp
 -- Baudrate calculation for Ethernut 3 failed if MCU Clock was not specified.
 --
@@ -133,8 +136,11 @@ repository =
     },
     {
         name = "nutdev",
-        brief = "Device drivers",
-        description = "Hardware device drivers",
+        brief = "Device Drivers",
+        description = "This library contains architecture independant...\n"..
+                      "... hardware device drivers, typically supporting external chips.\n"..
+                      "... device driver frameworks, which provide the hardware independant part of a driver\n"..
+                      "... helper routines, which are of general use for device drivers.",
         requires = { "HW_TARGET" },
         subdir = "dev",
         script = "dev/dev.nut"
