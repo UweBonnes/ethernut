@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/23 17:32:11  haraldkipp
+ * Avoid hang-ups caused by debug leftovers.
+ *
  * Revision 1.2  2006/01/05 16:51:06  haraldkipp
  * Several new functions added to query and modify the clock settings.
  *
@@ -51,8 +54,6 @@
 #include <sys/event.h>
 #include <dev/twif.h>
 #include <dev/cy2239x.h>
-
-#include <stdio.h>
 
 /*!
  * \addtogroup xgCy2239x
