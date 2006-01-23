@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.24  2006/01/23 17:29:14  haraldkipp
+-- X1226/X1286 EEPROM now available for system configuration storage.
+--
 -- Revision 1.23  2006/01/22 17:35:22  haraldkipp
 -- Baudrate calculation for Ethernut 3 failed if MCU Clock was not specified.
 --
@@ -192,6 +195,14 @@ nutdev =
         provides = { "DEV_CAN_GENERIC"},
         sources = { "can_dev.c" },
     },
+    {
+        name = "nutdev_nvmem",
+        brief = "Non Volatile Memory",
+        description = "General read/write access to non volatile memory.",
+        requires = { "HW_NVMEM" },
+        provides = { "DEV_NVMEM"},
+        sources = { "nvmem.c" },
+    },
 
     --
     -- Simple Interface Drivers.
@@ -228,7 +239,19 @@ nutdev =
         description = "Intersil X12xx RTC and EEPROM driver. Tested on AT91 only.",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_RTC" },
-        sources = { "x12rtc.c" }
+        sources = { "x12rtc.c" },
+        options =
+        {
+            {
+                macro = "NUT_CONFIG_X12RTC",
+                brief = "System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in this chip.",
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+        },
     },
     {
         name = "nutdev_cy2239x",
