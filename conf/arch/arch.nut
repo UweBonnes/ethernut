@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.15  2006/01/23 17:28:30  haraldkipp
+-- HW_NVMEM is now provided by specific modules.
+--
 -- Revision 1.14  2006/01/05 16:45:04  haraldkipp
 -- ATmega2561 CPU added, but not yet supported.
 --
@@ -99,7 +102,6 @@ nutarch =
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_AVR",
-                    "HW_NVMEM",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR"
                 },
@@ -119,7 +121,6 @@ nutarch =
                     "HW_MCU_AVR",
                     "HW_MCU_AVR_ENHANCED",
                     "HW_MCU_ATMEGA128",
-                    "HW_NVMEM",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR"
                 },
@@ -146,7 +147,6 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_AVR",
                     "HW_MCU_AVR_ENHANCED",
-                    "HW_NVMEM",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
                     "HW_CAN_AVR"
@@ -168,7 +168,6 @@ nutarch =
                     "HW_MCU_AVR",
                     "HW_MCU_AVR_ENHANCED",
                     "HW_MCU_ATMEGA2561",
-                    "HW_NVMEM",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR"
                 },

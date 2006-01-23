@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.8  2006/01/23 17:28:30  haraldkipp
+-- HW_NVMEM is now provided by specific modules.
+--
 -- Revision 1.7  2005/11/24 11:26:33  haraldkipp
 -- Added TLC16C550 driver.
 --
@@ -1001,5 +1004,12 @@ nutarch_avr =
         brief = "PCMCIA Driver",
         requires = { "HW_MCU_AVR" },
         sources = { "avr/dev/pcmcia.c" },
+    },
+    {
+        name = "nutarch_avr_eeprom",
+        brief = "EEPROM Access",
+        requires = { "HW_MCU_AVR" },
+        provides = { "HW_NVMEM" },
+        sources = { "avr/dev/eeprom.c" }
     },
 }
