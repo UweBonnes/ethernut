@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.6  2006/01/23 19:54:50  haraldkipp
+# logtime app added
+#
 # Revision 1.5  2005/07/23 13:53:34  haraldkipp
 # Event queue sample added.
 #
@@ -64,6 +67,7 @@ all:
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
 	$(MAKE) -C inetq
+	$(MAKE) -C logtime
 	$(MAKE) -C nutpiper
 	$(MAKE) -C portdio
 	$(MAKE) -C pppc
@@ -80,6 +84,7 @@ install:
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
 	$(MAKE) -C inetq install
+	$(MAKE) -C logtime install
 	$(MAKE) -C nutpiper install
 	$(MAKE) -C portdio install
 	$(MAKE) -C pppc install
@@ -96,6 +101,7 @@ clean:
 	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C inetq clean
+	$(MAKE) -C logtime clean
 	$(MAKE) -C nutpiper clean
 	$(MAKE) -C portdio clean
 	$(MAKE) -C pppc clean
