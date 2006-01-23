@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.13  2006/01/23 17:31:07  haraldkipp
+-- Dependency added to system configuration.
+--
 -- Revision 1.12  2005/10/24 09:58:21  haraldkipp
 -- Generalized description for NUT_CPU_FREQ.
 --
@@ -306,7 +309,8 @@ nutos =
     {
         name = "nutos_confos",
         brief = "Configuration",
-        description = "Initial configuration settings are stored in the AVR EEPROM",
+        description = "Initial configuration settings are stored in non volatile memory.",
+        requires = { "DEV_NVMEM" },
         provides = { "NUT_OSCONFIG" },
         sources = { "confos.c" },
         options =
