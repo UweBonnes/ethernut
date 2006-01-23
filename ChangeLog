@@ -1,6 +1,62 @@
-$Id: ChangeLog,v 1.298 2006/01/22 19:10:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.299 2006/01/23 17:37:08 haraldkipp Exp $
+
+2006-01-23  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Build number incremented.
+
+	* os/confos.c, net/confnet.c, dev/nvmem.c, include/dev/nvmem.h:
+	Platform independant routines added, which provide generic 
+	access to non-volatile memory.
+
+	* arch/avr/dev/eeprom.c: AVR specific routines for EEPROM access
+	added.
+
+	* arch/arm/dev/ax88796.c: Previous hack to fix missing network
+	configuration routines disabled non-volatile memory access for
+	ARM.
+
+	* conf/arch/arch.nut, conf/arch/avr.nut: HW_NVMEM is now provided 
+	by a specific module.
+
+	* conf/dev/dev.nut: X1226/X1286 EEPROM can be enabled for system
+	configuration storage.
+
+	* conf/ethernut30d.conf: Ethernut 3 uses X1226 EEPROM to store
+	system configuration.
+
+	* conf/net/net.nut: Configurable offset into non-volatile memory
+	for network parameters added.
+
+	* conf/os/os.nut: Dependency added to system configuration.
+
+	* conf/repository.nut: Enhanced description of dev library.
+
+	* dev/cy2239x.c: Including stdio header removed to avoid
+	hang-ups caused by debug leftovers.
+
+	* dev/twbbif.c: Automatic initialization added.
+
+	* arch/arm/dev/dm9000e.c: Possible memory alignment problem
+	may start network interface too early.
+
+	* fs/phat16.c, fs/phat32.c, net/tcpout.c, pro/resolv.c: Avoid 
+	memory alignment errors.
+
+	* include/sys/confnet.h, include/sys/confos.h: Added attribute 
+	'packed' to configuration structures.
+
+	* net/confnet.c, os/confos.c: Using new routines for non-volatile 
+	memory access.
+
+	* pro/dhcpc.c: Attribute 'packed' added to BOOTP (new typedef) 
+	and DYNCFG structures. 
+	Fixed memory alignment bug, which retrieved wrong values from
+	DHCP options.
+
 
 2006-01-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* bin/arm7tdmi: Target directory added.
 
 	* tools/nutconf/bitmaps/buildlibrary.bmp,
 	tools/nutconf/bitmaps/buildlibrary_large.bmp,

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.27  2006/01/23 17:37:08  haraldkipp
+ * Mostly memory alignment fixes.
+ *
  * Revision 1.26  2006/01/22 17:46:18  haraldkipp
  * Pre-release 4.1.3
  *
@@ -126,8 +129,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010300UL
-static CONST char os_version_string[] = "4.1.3.0 pre";
+#define OS_VERSION_NUMBER  0x04010301UL
+static CONST char os_version_string[] = "4.1.3.1 pre";
 
 /*!
  * \addtogroup xgNutVersion
