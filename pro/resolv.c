@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/01/23 17:33:47  haraldkipp
+ * Avoid memory alignment errors.
+ *
  * Revision 1.8  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -524,7 +527,10 @@ u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type)
                         break;
                 }
                 if (dor->dor_len == 4) {
-                    ip = *((u_long *) (dor->dor_data));
+                    ip = *dor->dor_data;
+                    ip += *(dor->dor_data + 1) << 8;
+                    ip += *(dor->dor_data + 2) << 16;
+                    ip += *(dor->dor_data + 3) << 24;
                     break;
                 }
                 /* TBD: 18.3.2004 - for MX requests authoritative rrs should be skipped + additional rrs should be searched for IP address */

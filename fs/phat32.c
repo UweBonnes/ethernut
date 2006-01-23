@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/23 17:33:47  haraldkipp
+ * Avoid memory alignment errors.
+ *
  * Revision 1.2  2006/01/22 17:43:46  haraldkipp
  * Bugfix. Deleting files sometimes corrupted a volume.
  *
@@ -103,7 +106,10 @@ int Phat32GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
     }
 
     /* Get the 32 bit link value. */
-    *link = *((u_long *) & vol->vol_buf[pos]);
+    *link = vol->vol_buf[pos];
+    *link += vol->vol_buf[pos + 1] << 8;
+    *link += vol->vol_buf[pos + 2] << 16;
+    *link += vol->vol_buf[pos + 3] << 24;
 
     return 0;
 }

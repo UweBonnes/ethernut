@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/01/23 17:33:47  haraldkipp
+ * Avoid memory alignment errors.
+ *
  * Revision 1.5  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -237,6 +240,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
      */
     if (sock->so_tx_flags & SO_SYN) {
         u_char *cp;
+        u_short n_mss = htons(sock->so_mss);
 
         th->th_flags |= TH_SYN;
         sock->so_tx_flags &= ~SO_SYN;
@@ -245,7 +249,8 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
         cp = (u_char *) (th + 1);
         *cp++ = TCPOPT_MAXSEG;
         *cp++ = TCPOLEN_MAXSEG;
-        *((u_short *) cp) = htons(sock->so_mss);
+        *cp++ = *(u_char *)&n_mss;
+        *cp = *((u_char *)(&n_mss) + 1);
     }
 
     /*
