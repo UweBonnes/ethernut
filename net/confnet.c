@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/01/23 17:26:18  haraldkipp
+ * Platform independant routines added, which provide generic access to
+ * non-volatile memory.
+ *
  * Revision 1.6  2005/10/04 05:37:34  hwmaier
  * Removed preprocessor warning message for AT90CAN128 MCU as this device is now supported by avr-libc.
  *
@@ -62,11 +66,12 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <sys/confnet.h>
+#include <dev/nvmem.h>
 
 CONFNET confnet;
 
 /*!
- * \brief Load network configuration from EEPROM.
+ * \brief Load network configuration from non volatile memory.
  *
  * If no configuration is available in EEPROM, all configuration
  * parameters are cleared to zero. Except the MAC address, which
@@ -80,10 +85,12 @@ CONFNET confnet;
 int NutNetLoadConfig(CONST char *name)
 {
 #if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
-    eeprom_read_block(&confnet, (void *) CONFNET_EE_OFFSET, sizeof(CONFNET));
-    if (confnet.cd_size == sizeof(CONFNET)
-        && strcmp(confnet.cd_name, name) == 0)
+    if (NutNvMemLoad(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
+        return -1;
+    }
+    if (confnet.cd_size == sizeof(CONFNET) && strcmp(confnet.cd_name, name) == 0) {
         return 0;
+    }
 #endif
     memset(&confnet, 0, sizeof(confnet));
 
@@ -98,21 +105,17 @@ int NutNetLoadConfig(CONST char *name)
 }
 
 /*!
- * \brief Save network configuration in EEPROM.
+ * \brief Save network configuration in non volatile memory.
  *
- * \return Allways 0.
+ * \return 0 if OK, -1 on failures.
  */
 int NutNetSaveConfig(void)
 {
 #if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
-    u_char *cp;
-    size_t i;
-
     confnet.cd_size = sizeof(CONFNET);
-    for (cp = (u_char *) & confnet, i = 0; i < sizeof(CONFNET); cp++, i++)
-        if (eeprom_read_byte((void *) (i + CONFNET_EE_OFFSET)) != *cp)
-            eeprom_write_byte((void *) (i + CONFNET_EE_OFFSET), *cp);
-
+    if (NutNvMemSave(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
+        return -1;
+    }
 #endif
     return 0;
 }

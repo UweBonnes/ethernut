@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,77 +31,71 @@
  *
  */
 
-/*
+/*!
+ * \file dev/nvmem.c
+ * \brief Non volatile memory access.
+ *
+ * \verbatim
+ *
  * $Log$
- * Revision 1.7  2006/01/23 17:26:17  haraldkipp
+ * Revision 1.1  2006/01/23 17:26:19  haraldkipp
  * Platform independant routines added, which provide generic access to
  * non-volatile memory.
  *
- * Revision 1.6  2005/07/26 15:49:59  haraldkipp
- * Cygwin support added.
  *
- * Revision 1.5  2004/09/08 10:24:34  haraldkipp
- * No EEPROM support for AT91
- *
- * Revision 1.4  2004/04/07 12:13:58  haraldkipp
- * Matthias Ringwald's *nix emulation added
- *
- * Revision 1.3  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.2  2004/03/03 17:42:19  drsung
- * Bugfix in NutSaveConfig. Write only to eeprom if actual byte in
- * eeprom differs from byte to write.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:46  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/02/04 18:17:07  harald
- * Version 3 released
- *
+ * \endverbatim
  */
 
-#include <cfg/arch.h>
-#include <sys/confos.h>
 #include <dev/nvmem.h>
 
-CONFOS confos;
+#if defined(NUT_CONFIG_X12RTC)
+#include <dev/x12rtc.h>
+#endif
 
 /*!
- * \brief Load Nut/OS configuration from non volatile memory.
- *
- * This routine is automatically called during system
- * initialization.
- *
- * \return 0 if OK, -1 if configuration isn't available.
+ * \addtogroup xgNutNvMem
  */
-int NutLoadConfig(void)
+/*@{*/
+
+/*!
+ * \brief Read data from non volatile memory.
+ *
+ * \param addr Location to read from.
+ * \param buff Pointer to a buffer that receives the data.
+ * \param siz  Number of bytes to read.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+int NutNvMemLoad(u_int addr, void *buff, size_t siz)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
-    if (NutNvMemLoad(CONFOS_EE_OFFSET, &confos, sizeof(CONFOS))) {
-        return -1;
-    }
-    if (confos.size != sizeof(CONFOS) || confos.magic[0] != 'O' || confos.magic[1] != 'S') {
-        return -1;
-    }
+#if defined(NUT_CONFIG_X12RTC)
+    return X12EepromRead(addr, buff, siz);
+#elif defined(__AVR__)
+    return OnChipNvMemLoad(addr, buff, siz);
+#else
+    return -1;
 #endif
-    return 0;
 }
 
 /*!
- * \brief Save Nut/OS configuration in non volatile memory.
+ * \brief Save data in non volatile memory.
  *
- * \return 0 if OK, -1 on failures.
+ * \param addr Location to write to.
+ * \param buff Pointer to a buffer that contains the data.
+ * \param len  Number of bytes to write.
+ *
+ * \return 0 on success, -1 otherwise.
  */
-int NutSaveConfig(void)
+int NutNvMemSave(u_int addr, CONST void *buff, size_t len)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
-    confos.size = sizeof(CONFOS);
-    confos.magic[0] = 'O';
-    confos.magic[1] = 'S';
-    if (NutNvMemSave(CONFOS_EE_OFFSET, &confos, sizeof(CONFOS))) {
-        return -1;
-    }
+#if defined(NUT_CONFIG_X12RTC)
+    return X12EepromWrite(addr, buff, len);
+#elif defined(__AVR__)
+    return OnChipNvMemSave(addr, buff, len);
+#else
+    return -1;
 #endif
-    return 0;
 }
+
+
+/*@}*/
