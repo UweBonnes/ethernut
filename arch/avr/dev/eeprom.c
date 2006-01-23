@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/23 19:50:02  haraldkipp
+ * Wrong parameters in ImageCraft call corrected.
+ *
  * Revision 1.1  2006/01/23 17:27:08  haraldkipp
  * AVR specific routines for EEPROM access.
  *
@@ -61,7 +64,7 @@
 int OnChipNvMemLoad(u_int addr, void *buff, size_t siz)
 {
 #if defined(__IMAGECRAFT__)
-    EEPROMReadBytes((int)addr, dst, size);
+    EEPROMReadBytes((int)addr, buff, siz);
 #elif defined(__GNUC__)
     eeprom_read_block (buff, (void *)addr, siz);
 #endif
