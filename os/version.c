@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.28  2006/01/23 19:53:33  haraldkipp
+ * Minor fixes
+ *
  * Revision 1.27  2006/01/23 17:37:08  haraldkipp
  * Mostly memory alignment fixes.
  *
@@ -129,8 +132,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010301UL
-static CONST char os_version_string[] = "4.1.3.1 pre";
+#define OS_VERSION_NUMBER  0x04010302UL
+static CONST char os_version_string[] = "4.1.3.2 pre";
 
 /*!
  * \addtogroup xgNutVersion

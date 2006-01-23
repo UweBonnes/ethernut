@@ -1,8 +1,27 @@
-$Id: ChangeLog,v 1.299 2006/01/23 17:37:08 haraldkipp Exp $
+$Id: ChangeLog,v 1.300 2006/01/23 19:53:33 haraldkipp Exp $
 
 2006-01-23  Harald Kipp  <harald.kipp@egnite.de>
 
-	* os/version.c: Build number incremented.
+	* app/basemon/Makefile, app/events/Makefile, app/httpd/Makefile,
+	app/inetq/Makefile, app/nutpiper/Makefile, app/pppc/Makefile,
+	app/rs232d/Makefile, app/simple/Makefile, app/tcps/Makefile,
+	app/threads/Makefile, app/timers/Makefile, app/uart/Makefile:
+	The boring game with GCC libraries continues, sigh! Note, that
+	this version may also break your application build. Please
+	add another -lnutarch at the end of your LIBS list in the
+	Makefile.
+
+	* arch/avr/dev/eeprom.c: Wrong parameters in ImageCraft call
+	corrected.
+
+	* arch/avr/dev/vs1001k.c, fs/phat12.c, fs/phat16.c, fs/phat32.c,
+	pro/dhcpc.c, pro/resolv.c: Added required typecasts before
+	left shift.
+
+	* conf/arch/arch.nut, os/confos.c: Dummy NVMEM configuration 
+	for GBA added.
+
+	* os/version.c: Build number incremented. Twice.
 
 	* os/confos.c, net/confnet.c, dev/nvmem.c, include/dev/nvmem.h:
 	Platform independant routines added, which provide generic 
