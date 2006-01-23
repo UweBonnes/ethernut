@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/23 17:33:14  haraldkipp
+ * Possible memory alignment problem may start network interface too early.
+ *
  * Revision 1.1  2005/10/24 08:49:05  haraldkipp
  * Initial check in.
  *
@@ -780,7 +783,14 @@ THREAD(NicRxLanc, arg)
      * set.
      */
     for (;;) {
-        if (*((u_long *) (ifn->if_mac)) && *((u_long *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
+        int i;
+
+        for (i = 0; i < sizeof(ifn->if_mac); i++) {
+            if (ifn->if_mac[i] && ifn->if_mac[i] != 0xFF) {
+                break;
+            }
+        }
+        if (i < sizeof(ifn->if_mac)) {
             break;
         }
         NutSleep(63);
