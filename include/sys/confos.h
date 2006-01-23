@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/01/23 17:34:29  haraldkipp
+ * Configuration structures must be packed.
+ *
  * Revision 1.3  2005/07/26 16:02:57  haraldkipp
  * Avoid redefinition of CONFOS_EE_OFFSET.
  *
@@ -69,14 +72,14 @@
 /*!
  * \brief Operating system configuration type.
  */
-typedef struct _CONFOS CONFOS;
+typedef struct __attribute__ ((packed)) _CONFOS CONFOS;
 
 /*!
  * \struct _CONFOS confos.h sys/confos.h
  * \brief Operating system configuration structure.
  *
  */
-struct _CONFOS {
+struct __attribute__ ((packed)) _CONFOS {
     u_char size;            /*!< \brief Size of this structure. */
     u_char magic[2];        /*!< \brief Magic cookie. */
     u_char hostname[16];    /*!< \brief host name of the system. */

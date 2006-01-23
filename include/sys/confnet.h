@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:18  haraldkipp
- * Initial revision
+ * Revision 1.2  2006/01/23 17:34:29  haraldkipp
+ * Configuration structures must be packed.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:18  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.4  2003/02/04 18:00:52  harald
  * Version 3 released
@@ -63,14 +66,14 @@ extern "C" {
 /*!
  * \brief Network configuration type.
  */
-typedef struct _CONFNET CONFNET;
+typedef struct __attribute__ ((packed)) _CONFNET CONFNET;
 
 /*!
  * \struct _CONFNET confnet.h sys/confnet.h
  * \brief Network configuration structure.
  *
  */
-struct _CONFNET {
+struct __attribute__ ((packed)) _CONFNET {
     u_char cd_size;         /*!< \brief Size of this structure. */
     u_char cd_name[9];      /*!< \brief Magic cookie. */
     u_char cdn_mac[6];      /*!< \brief Ethernet MAC address. */
