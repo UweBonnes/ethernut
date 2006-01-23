@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/01/23 17:32:35  haraldkipp
+ * Automatic initialization added.
+ *
  * Revision 1.1  2005/10/24 10:21:57  haraldkipp
  * Initial check in.
  *
@@ -170,6 +173,7 @@ cbi(TWI_SCL_PORT, TWI_SCL_BIT);
 #endif
 
 static u_char tw_mm_error;      /* Last master mode error. */
+static int twibb_initialized;
 
 /*
  * Short delay. 
@@ -338,6 +342,9 @@ int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata
     int rc = 0;
     u_char *cp;
 
+    if (!twibb_initialized) {
+        TwInit(0);
+    }
 
     if (txlen) {
         TwStart();
@@ -491,6 +498,7 @@ int TwInit(u_char sla)
     SDA_HIGH();
     SCL_HIGH();
     TWI_ENABLE();
+    twibb_initialized = 1;
 
     return 0;
 }
