@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.300 2006/01/23 19:53:33 haraldkipp Exp $
+$Id: ChangeLog,v 1.301 2006/01/24 09:20:45 haraldkipp Exp $
+
+2006-01-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/npluled.c, include/dev/npluled.h: Controls the green
+	LED on Ethernut 3. Kindly provided by Kroum Vassilev.
+
 
 2006-01-23  Harald Kipp  <harald.kipp@egnite.de>
 
