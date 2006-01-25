@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.303 2006/01/25 12:51:40 freckle Exp $
+$Id: ChangeLog,v 1.304 2006/01/25 18:48:11 haraldkipp Exp $
 
 2006-01-25  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * arch/avr/dev/uartavr: minimized critical section in UartAvrFlush()
@@ -25,6 +25,15 @@ $Id: ChangeLog,v 1.303 2006/01/25 12:51:40 freckle Exp $
 	arch/avr/dev/ivect33.c, arch/avr/dev/ivect34.c,
 	arch/avr/dev/ivect35.c, arch/avr/dev/ivect36.c:
 	Applied Thiago A. Correa's patch to fix ICC warnings.
+
+	* app/Makeburn.arm-jom, app/Makerules.arm-gcc: Old 'make burn' 
+	should now work with the jtagomat.
+
+	* fs/phatdir.c: PhatDirEntryRead() returns -1 if the end of
+	the directory is reached. This fixes the wrong implementation
+	of readdir() and simplifies the code. Thanks to Jesper Hansen.
+
+	* pro/ftpd.c: No need to specially handle the directory end.
 
 
 2006-01-24  Harald Kipp  <harald.kipp@egnite.de>
