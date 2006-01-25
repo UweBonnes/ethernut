@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/25 09:38:51  haraldkipp
+ * Applied Thiago A. Correa's patch to fix ICC warnings.
+ *
  * Revision 1.2  2005/10/24 09:35:48  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -93,7 +96,7 @@ IRQ_HANDLER sig_SPM_READY = {
  *
  * \return 0 on success, -1 otherwise.
  */
-int AvrSpmRdyIrqCtl(int cmd, void *param)
+static int AvrSpmRdyIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;

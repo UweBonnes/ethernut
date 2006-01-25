@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/01/25 09:38:51  haraldkipp
+ * Applied Thiago A. Correa's patch to fix ICC warnings.
+ *
  * Revision 1.3  2005/10/24 09:35:48  haraldkipp
  * New interrupt control function added to allow future platform
  * independant drivers.
@@ -82,7 +85,7 @@ IRQ_HANDLER sig_CAN_TRANSFER = {
  *
  * \return 0 on success, -1 otherwise.
  */
-int AvrCanTxIrqCtl(int cmd, void *param)
+static int AvrCanTxIrqCtl(int cmd, void *param)
 {
     return -1;
 }

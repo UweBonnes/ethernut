@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/01/25 09:38:50  haraldkipp
+ * Applied Thiago A. Correa's patch to fix ICC warnings.
+ *
  * Revision 1.3  2005/12/06 23:20:17  hwmaier
  * Changes to make register and flag names compatible with AT90CAN128 MCU
  *
@@ -112,7 +115,7 @@ IRQ_HANDLER sig_OUTPUT_COMPARE3A = {
  *
  * \return 0 on success, -1 otherwise.
  */
-int AvrTimer3CompAIrqCtl(int cmd, void *param)
+static int AvrTimer3CompAIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;

@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/01/25 09:38:50  haraldkipp
+ * Applied Thiago A. Correa's patch to fix ICC warnings.
+ *
  * Revision 1.3  2005/10/24 18:02:34  haraldkipp
  * Fixes for ATmega103.
  *
@@ -95,7 +98,7 @@ IRQ_HANDLER sig_INTERRUPT2 = {
  *
  * \return 0 on success, -1 otherwise.
  */
-int AvrInterrupt2Ctl(int cmd, void *param)
+static int AvrInterrupt2Ctl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
