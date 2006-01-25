@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.3  2006/01/25 18:44:27  haraldkipp
+# Now 'make burn' is working on ARM.
+#
 # Revision 1.2  2004/09/08 10:53:24  haraldkipp
 # os/timer.c
 #
@@ -60,7 +63,7 @@ include $(top_srcdir)/Makerules.arm-gcc
 %eep: %elf
 	$(BIN) -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex $< $@
 
-burn: $(TARG)
+burn: $(TARG) $(ITARG)
 	$(BURN) $(BURNFLAGS)
 
 install: $(TARG) $(ITARG)
