@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/01/25 18:47:42  haraldkipp
+ * Fixes wrong implementation of readdir() and simplifies the code.
+ * Thanks to Jesper Hansen.
+ *
  * Revision 1.4  2006/01/22 17:45:29  haraldkipp
  * CreateFullPathName() partly returned double slashes or empty paths.
  *
@@ -776,9 +780,6 @@ int NutFtpTransferDirectory(FTPSESSION * session, char *path)
             if ((fp = _fdopen((int) sock, "r+b")) != 0) {
                 ec = 0;
                 while ((d_ent = readdir(dir)) != 0) {
-                    if (d_ent->d_name[0] == 0) {
-                        break;
-                    }
                     if (d_ent->d_name[0] == '.') {
                         continue;
                     }

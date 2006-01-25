@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/01/25 18:47:42  haraldkipp
+ * Fixes wrong implementation of readdir() and simplifies the code.
+ * Thanks to Jesper Hansen.
+ *
  * Revision 1.2  2006/01/22 17:40:51  haraldkipp
  * Now mkdir() fails, if the directory exists already.
  * Now rmdir() returns an error when trying to delete subdirectories, which
@@ -272,24 +276,24 @@ static int PhatDirEntryRead(NUTFILE * ndp, PHATFIND * srch)
     for (;;) {
         /* Read next entry. */
         if ((*dev->dev_read) (ndp, entry, sizeof(PHATDIRENT)) != sizeof(PHATDIRENT)) {
-            return -1;
+            break;
         }
         /* Skip volume IDs. */
         if ((entry->dent_attr & PHAT_FATTR_VOLID) == 0) {
             /* Skip removed entries. */
             if (entry->dent_name[0] != PHAT_REM_DIRENT) {
-                if (entry->dent_name[0]) {
-                    srch->phfind_pos = fcb->f_pos - sizeof(PHATDIRENT);
-                    MakeVisibleName(entry->dent_name, srch->phfind_name);
-                } else {
-                    /* End marker found. */
-                    srch->phfind_name[0] = 0;
+                /* Stop searching if last entry reached. */
+                if (entry->dent_name[0] == 0) {
+                    break;
                 }
-                break;
+                /* Valid entry found. Return success. */
+                srch->phfind_pos = fcb->f_pos - sizeof(PHATDIRENT);
+                MakeVisibleName(entry->dent_name, srch->phfind_name);
+                return 0;
             }
         }
     }
-    return 0;
+    return -1;
 }
 
 /*!
@@ -306,7 +310,7 @@ static int PhatDirEntryRead(NUTFILE * ndp, PHATFIND * srch)
  */
 int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, u_long attmsk, PHATFIND * srch)
 {
-    int rc = -1;
+    int rc;
     PHATFIND *temps;
 
     /* Allocate a temporary structure to store the search result. */
@@ -321,11 +325,6 @@ int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, u_long attmsk, PHATFIND * 
      */
     PhatFilePosSet(ndp, 0);
     while ((rc = PhatDirEntryRead(ndp, temps)) == 0) {
-        if (temps->phfind_name[0] == 0) {
-            /* Reached the end of the directory. */
-            rc = -1;
-            break;
-        }
         if ((temps->phfind_ent.dent_attr | attmsk) == attmsk) {
             if (stricmp(temps->phfind_name, spec) == 0) {
                 /* Specified entry found. */
