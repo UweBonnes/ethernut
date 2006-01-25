@@ -1,5 +1,9 @@
-$Id: ChangeLog,v 1.302 2006/01/25 09:38:49 haraldkipp Exp $
+$Id: ChangeLog,v 1.303 2006/01/25 12:51:40 freckle Exp $
 
+2006-01-25  Matthias Ringwald  <mringwal@inf.ethz.ch>
+    * arch/avr/dev/uartavr: minimized critical section in UartAvrFlush()
+    * arch/avr/dev/adc.c, include/dev/adc.h: added explicit off mode
+    
 2006-01-25  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/avr/dev/ivect01.c, arch/avr/dev/ivect02.c,
@@ -27,7 +31,6 @@ $Id: ChangeLog,v 1.302 2006/01/25 09:38:49 haraldkipp Exp $
 
 	* dev/npluled.c, include/dev/npluled.h: Controls the green
 	LED on Ethernut 3. Kindly provided by Kroum Vassilev.
-
 
 2006-01-23  Harald Kipp  <harald.kipp@egnite.de>
 

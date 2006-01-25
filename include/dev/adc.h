@@ -71,7 +71,8 @@ typedef enum adc_ref_type adc_ref_t;
 
 enum adc_mode_type
 {
-    FREE_RUNNING=0,
+    ADC_OFF,
+    FREE_RUNNING,
     SINGLE_CONVERSION
 };
 

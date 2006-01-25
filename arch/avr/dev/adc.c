@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/01/25 12:51:40  freckle
+ * added explicit off mode
+ *
  * Revision 1.6  2006/01/11 16:34:44  freckle
  * ADCInit can be called multiple times (makes life easier)
  *
@@ -121,7 +124,7 @@ u_char adc_sleep_mode = SLEEP_MODE_ADC;
 
 
 /********** DRIVER GLOBALS **********/
-adc_mode_t current_mode;
+adc_mode_t current_mode = ADC_OFF;
 
 // The buffers are FIFO buffers implemented as char
 // arrays with head and tail pointers.
@@ -234,13 +237,14 @@ void ADCSetMode(adc_mode_t mode)
     switch (mode) {
     case FREE_RUNNING:
         sbi(ADCSR, ADFR);
-        current_mode = mode;
         break;
     case SINGLE_CONVERSION:
         cbi(ADCSR, ADFR);
-        current_mode = mode;
         break;
+    case ADC_OFF:
+    		break;
     }
+  	current_mode = mode;
 }
 
 u_char ADCSetPrescale(u_char prescalar)
@@ -338,7 +342,7 @@ void ADCStartLowNoiseConversion()
 
 void ADCStopConversion()
 {
-    if (current_mode == SINGLE_CONVERSION) {
+    if (current_mode != FREE_RUNNING) {
         // Send warning message
         return;
     }
