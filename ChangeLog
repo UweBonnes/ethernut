@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.304 2006/01/25 18:48:11 haraldkipp Exp $
+$Id: ChangeLog,v 1.305 2006/01/26 15:44:43 going_nuts Exp $
+
+2006-01-26  Urs Zurbuchen  <going_nuts@myredirect.net>
+	* arch/unix/dev/ostimer.c, arch/unix/os/nutinit.c,
+	arch/unix/os/thread.c, arch/unix/Makefile,
+	include/arch/unix/atom.h, include/arch/unix/irqreg.h,
+	include/arch/unix/timer.h, os/timer.c, os/thread.c:
+	adapted to new interrupt handling scheme for unix emulation
+	now uses Unix timer and runs without interrupts unless you
+	emulate other hardware
+	arch/os/thread.c separated from os/thread.c, compiles as
+	its own module now
 
 2006-01-25  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * arch/avr/dev/uartavr: minimized critical section in UartAvrFlush()
