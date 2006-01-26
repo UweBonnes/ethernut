@@ -35,17 +35,28 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/26 15:34:49  going_nuts
+ * adapted to new interrupt handling scheme for unix emulation
+ * now uses Unix timer and runs without interrupts unless you emulate other hardware
+ *
  * Revision 1.1  2005/07/26 18:35:10  haraldkipp
  * First check in
  *
  */
 
 /*
- * No idea how to block specific interrupts in the
- * UNIX emulation. For now this should help.
+ * This will need work to individually enable/disable single interrupts
+ * For now, this feature is not supported.
  */
-#define NutEnableTimerIrq()     NutEnterCritical()
-#define NutDisableTimerIrq()    NutExitCritical()
+#define NutEnableTimerIrq()    
+#define NutDisableTimerIrq()    
 
+/*
+ * Previously, the following two setting were used:
+ * #define NutEnableTimerIrq()     NutEnterCritical()
+ * #define NutDisableTimerIrq()    NutExitCritical()
+ * That doesn't work as our NutEnterCritical() disables all interrupts.
+ * Anyway, I think it should have been reversed anyway.
+ */
 #endif
 

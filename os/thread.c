@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.23  2006/01/26 15:34:49  going_nuts
+ * adapted to new interrupt handling scheme for unix emulation
+ * now uses Unix timer and runs without interrupts unless you emulate other hardware
+ *
  * Revision 1.22  2005/10/04 05:14:49  hwmaier
  * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
  *
@@ -173,7 +177,8 @@
 /*@{*/
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-#include "../arch/unix/os/thread.c"
+// prototype
+extern void NutUnixThreadYieldHook(void);  // from unix_nutinit.c
 #endif
 
 /*!

@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/26 15:34:49  going_nuts
+ * adapted to new interrupt handling scheme for unix emulation
+ * now uses Unix timer and runs without interrupts unless you emulate other hardware
+ *
  * Revision 1.1  2005/07/26 18:35:10  haraldkipp
  * First check in
  *
@@ -49,12 +53,11 @@
 __BEGIN_DECLS
 
 extern u_char irq_processed;
-extern pthread_mutex_t irq_mutex;
 extern pthread_cond_t irq_cv;
 extern sigset_t irq_signal;
 
-extern void NutIRQTrigger(u_char);
 extern void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue );
+extern void NutUnixRaiseInterrupt(int irq);
 
 __END_DECLS
 

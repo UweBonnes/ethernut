@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2006/01/26 15:31:24  going_nuts
+# adapted to new interrupt handling scheme for unix emulation
+# now uses Unix timer and runs without interrupts unless you emulate other hardware
+#
 # Revision 1.4  2005/10/17 11:45:20  olereinhardt
 # Added compilation of atcan.c if MCU=at90can128 is set
 #
@@ -100,7 +104,7 @@ endif
 endif
 
 ifeq ($(ARCH), unix)
-SRCS = unix/dev/ostimer.c unix/dev/unix_devs.c
+SRCS = unix/dev/ostimer.c unix/dev/unix_devs.c unix/os/thread.c
 endif
 
 OBJS = $(SRCS:.c=.o)

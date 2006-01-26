@@ -64,32 +64,37 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 /* our IRQ signal */
 sigset_t irq_signal;
 
-/* IRQ dispatcher thread */
-pthread_t irq_thread;
+/* our emulated interrupt enabled/disabled flag */
+u_short int_disabled;
 
-/* our simulated interrupt flag. to trigger an interrupt this needs to be owned */
+/* number of interrupts that can be outstanding before one is lost */
+#define MAX_IRQ_SLOTS 3
+
+/* type of raised interrupt (timer, usart, ...) */
+int interrupts_pending[MAX_IRQ_SLOTS];
+
+/* index to first, next free, and first unsignalled interrupt type */
+int irq_current = 0;
+int irq_slot = 0;
+int irq_sent = 0;
+
+/* interrupt thread, signalling Nut threads */
+static pthread_t interrupt_thread;
+
+/* mutex and condition variable used to signal that a new interrupt is pending */
+pthread_mutex_t pending_mutex;
+pthread_cond_t pending_cv;
+
+/* mutex and condition variable used to signal that interrupts have been re-enabled */
 pthread_mutex_t irq_mutex;
-
-/* used to signal NutIRQSimulation */
 pthread_cond_t irq_cv;
-
-/* interrupt event happend */
-u_char irq_vect[IRQ_MAX];
 
 /* interrupt handler routines */
 IRQ_HANDLER irq_handlers[IRQ_MAX];
 
-/* irq number to process */
-u_char irq_nr;
-
-/* used to ack interrupt processing  */
-u_char irq_processed;
-
-/* used to check (not-)allowed IRQ/signaled recursion */
-static int irq_inside;
-
-/* queue to signal at next NutThreadYield() */
+/* event queues to signal from non-Nut thread */
 HANDLE *irq_eventqueues[IRQ_MAX];
+
 
 /*!
  * \brief Register an interrupt handler.
@@ -103,15 +108,15 @@ HANDLE *irq_eventqueues[IRQ_MAX];
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg)
+int NutRegisterIrqHandler(u_char irq, void (*handler) (void *), void *arg)
 {
-    if (irq_nr >= IRQ_MAX)
+    if (irq >= IRQ_MAX)
         return -1;
 
     NutEnterCritical();
 
-    irq_handlers[irq_nr].ir_arg = arg;
-    irq_handlers[irq_nr].ir_handler = handler;
+    irq_handlers[irq].ir_arg = arg;
+    irq_handlers[irq].ir_handler = handler;
 
     NutExitCritical();
 
@@ -119,165 +124,22 @@ int NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg)
 }
 
 
-/*
- * IRQ simulation, simulate IRQ caused 
- */
-void NutIRQTrigger(u_char);
-void NutIRQTrigger(u_char irq_nr)
-{
-    if (irq_nr >= IRQ_MAX)
-        return;
-
-    // signal this interrupt
-    pthread_mutex_lock(&irq_mutex);
-    irq_vect[irq_nr] = 1;
-    pthread_cond_broadcast(&irq_cv);
-    pthread_mutex_unlock(&irq_mutex);
-}
-
-/*
- * Signal handler calling IRQ handler
- */
-
-void NutUnixIntr(int);
-void NutUnixIntr(int signal)
-{
-    // check: recursively entered ?
-    if (irq_inside == 1) {
-        printf("ERROR: NutTimer0Intr recursively entered\n");
-        exit(1);
-    }
-    // we're inside a IRQ handler
-    irq_inside = 1;
-
-    // check: entered although thread in critical section
-    if (runningThread) {
-        if (runningThread->td_cs_level) {
-            printf("ERROR: NutTimer0Intr: CS = %d running %s.>\n", runningThread->td_cs_level, runningThread->td_name);
-            exit(1);
-        }
-    }
-    // We're in a critical section. prevent NutExitCritical() to unblock signals
-    if (runningThread)
-        runningThread->td_cs_level++;
-    else
-        main_cs_level++;
-
-    // printf("NutUnixIntr: calling IRQ %d\n", irq_nr);
-
-
-    // call IRQ_handler (if set)
-    if (irq_nr < IRQ_MAX) {
-        if (irq_handlers[irq_nr].ir_handler) {
-            irq_handlers[irq_nr].ir_handler(irq_handlers[irq_nr].ir_arg);
-        }
-    }
-    // End of this special critical section.
-    if (runningThread)
-        runningThread->td_cs_level--;
-    else
-        main_cs_level--;
-
-
-    // IRQ handler finished
-    irq_inside = 0;
-
-    irq_processed = 1;
-}
-
-
-/*!
- * Interrupt Dispatcher Thread
- *
- * we use an extra thread to
- *  a) be able to seperate irq cause and processing
- *  b) allow a correct dispatching
- *  c) allow to use busy wait until IRQ is finished
- */
-
-void *NutIRQSimulation(void *arg)
-{
-
-    // non-nut thread => block IRQ signals
-    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
-
-    while (1) {
-
-        // lock the irq_mutex and wait for interrupts
-        pthread_mutex_lock(&irq_mutex);
-
-        // printf("NutIRQSimulation: mutex locked\n");
-
-        // check if irq already set
-        for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++) {
-
-            if (irq_vect[irq_nr]) {
-                break;
-            }
-        }
-
-        // if none set, wait for next one to occure
-        if (irq_nr >= IRQ_MAX)
-            pthread_cond_wait(&irq_cv, &irq_mutex);
-
-        // printf("NutIRQSimulation: IRQ received\n");
-
-        // get first pending IRQ
-        for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++) {
-
-            if (irq_vect[irq_nr]) {
-
-                // clear its flag
-                irq_vect[irq_nr] = 0;
-
-                // handshake
-                irq_processed = 0;
-
-                // printf("NutIRQSimulation: IRQ signaling nr %d \n", irq_nr);
-
-                // signal to running thread
-                kill(-getpgrp(), SIGUSR1);
-                break;
-            }
-        }
-
-        // unlock the irq_mutex
-        pthread_mutex_unlock(&irq_mutex);
-
-        // printf("NutIRQSimulation: mutex unlocked\n");
-
-        // if irq found and signaled, wait until irq processed
-        if (irq_nr < IRQ_MAX) {
-
-            while (1) {
-
-                if (irq_processed)
-                    break;
-
-                usleep(1000);
-
-            }
-        }
-        // printf("NutIRQSimulation: IRQ processed\n");
-    }
-}
-
 /*!
  * \brief Register NutEventPostAsync for next NutThreadYield
  * 
  * Store responsible IRQ and queue to signal in list
  *
- * \param irq_nr responsible IRQ
+ * \param irq responsible IRQ
  * \param queue to signal
  *
  * this is added to allow an non-nut thread to post events without
  * introducing a race-condition
  *
  */
-void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue)
+void NutUnixIrqEventPostAsync(u_char irq, HANDLE * queue)
 {
-    if (irq_nr < IRQ_MAX)
-        irq_eventqueues[irq_nr] = queue;
+    if (irq < IRQ_MAX)
+        irq_eventqueues[irq] = queue;
 }
 
 /*!
@@ -291,23 +153,23 @@ void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue)
 void NutUnixThreadYieldHook(void);
 void NutUnixThreadYieldHook()
 {
-    u_char irq_nr;
-    for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++) {
-        if (irq_eventqueues[irq_nr] != 0) {
-            // printf("NutUnixThreadYield posting event nr %d\n\r", irq_nr);
-            NutEventPostFromIrq(irq_eventqueues[irq_nr]);
-            irq_eventqueues[irq_nr] = 0;
+    u_char irq;
+    for (irq = 0; irq < IRQ_MAX; irq++) {
+        if (irq_eventqueues[irq] != 0) {
+            // printf("NutUnixThreadYield posting event nr %d\n\r", irq);
+            NutEventPostFromIrq(irq_eventqueues[irq]);
+            irq_eventqueues[irq] = 0;
         }
     }
 }
 
 
 /*
- * Init IRQ handling
+ * Handles SIGINT
  *
  */
-void NutUnixControlC(int);
-void NutUnixControlC(int signal)
+static void NutUnixControlC(int);
+static void NutUnixControlC(int signal)
 {
     printf("CTRL-C! Abort application.\n\r");
     tcsetattr(fileno(stdout), TCSANOW, &emulation_options.saved_termios);
@@ -315,37 +177,180 @@ void NutUnixControlC(int signal)
 }
 
 /*
+ * Signal handler for SIGUSR1
+ * emulates interrupt hardware
+ * serializes all interrupts and calls their corresponding handlers
+ * 
+ * all IRQs are multiplexed through the same signal handler (using only SIGUSR1)
+ * a global array is used to keep track of the interrupts that have been raised
+ * further signals are block until interrupt handling has finished
+ * thus, it may happen that an interrupt signal is silently ignored and never arrives here
+ * the corresponding irq would never happen.
+ * to avoid this, all interrupts marked in the interrupts_pending table are handled upon before
+ * control is relinquished.
+ * thus, an interrupt may be handled upon before it corresponding signal is received
+ * and its "real" signal is processed - too early, so to say.
+ * it doesn't matter, even if the signal is still received as the interrupts_pending table
+ * will be empty.
+ * 
+ */
+
+static void NutUnixInterruptScheduler(int);
+static void NutUnixInterruptScheduler(int signal)
+{
+    int irq;
+
+    // disable interrupts for interrupt processing
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
+
+    // call interrupt handler
+    if (irq_current != irq_slot) {
+        irq = interrupts_pending[irq_current];
+        if (++irq_current >= MAX_IRQ_SLOTS)
+            irq_current = 0;
+        if (irq < IRQ_MAX) {
+            if (irq_handlers[irq].ir_handler) {
+                irq_handlers[irq].ir_handler(irq_handlers[irq].ir_arg);
+            }
+        }
+    }
+    // re-enable interrupts
+    pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);
+}
+
+
+/*!
+ * \brief Emulate a Nut hardware interrupt on Unix
+ * 
+ * Add new interrupt to list of pending interrupts.
+ * 
+ * \param irq IRQ raised
+ *
+ * This is a support function which just maintains the table
+ * listing raised interrupts. It is called by the non-Nut thread
+ * emulating the hardware (e.g. the timer).
+ * 
+ * Sending the interrupt to the Nut threads is done by
+ * NutInterruptEmulation().
+ */
+extern u_long nut_ticks;
+void NutUnixRaiseInterrupt(int);
+void NutUnixRaiseInterrupt(int irq)
+{
+    int r;
+
+
+    // is there a slot available in our list of pending interrupts?
+    // if so, let signal handler know the type of interrupt
+    if ((irq_current == 0 && irq_slot != MAX_IRQ_SLOTS - 1) || (irq_current != 0 && irq_slot != irq_current - 1)) {
+        // make sure we're the only one manipulating the IRQ table
+        pthread_mutex_lock(&pending_mutex);
+
+        interrupts_pending[irq_slot] = irq;
+        if (++irq_slot >= MAX_IRQ_SLOTS) {
+            irq_slot = 0;
+        }
+if( (nut_ticks % 1000) == 0 )
+        printf( "%ld\n", nut_ticks );
+        
+        pthread_mutex_unlock(&pending_mutex);
+
+        // signal interrupt thread to interrupt Nut threads
+        r = pthread_cond_signal(&pending_cv);
+    }
+}
+
+
+/*!
+ * \brief Send emulated interrupt signal to Nut threads
+ * 
+ * Hardware devices, such as timer, usart, etc., raise interrupts
+ * to get serviced by NutOS. This function does the same for
+ * devices on Unix emulation.
+ *
+ * \param irq IRQ raised
+ *
+ * The Nut thread is interrupted using the SIGUSR1 signal.
+ * The corresponding signal handler dispatches to the respective
+ * interrupt handler. All IRQs are multiplexed through the same signal handler.
+ * 
+ * Signalling the interrupt is done in a separate thread so that
+ * the "calling/interrupting" thread can go back to emulate the hardware.
+ * Otherwise, in case of disabled interrupts, it would be hanging and waiting
+ * for interrupts to be re-enabled.
+ * 
+ * This thread here does nothing but signal interrupts and can safely hang
+ * it they are disabled (by NutEnterCritical, for example).
+ *
+ */
+void *NutInterruptEmulation(void *);
+void *NutInterruptEmulation(void *unused_arg)
+{
+    // non-nut thread => not interested in SIGUSR1 (IRQ signals)
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
+
+    for (;;) {
+        pthread_mutex_lock(&pending_mutex);
+        while (irq_slot == irq_sent) {
+            // instead of busy waiting, let interrupting thread wake us
+            pthread_cond_wait(&pending_cv, &pending_mutex);
+        }
+        pthread_mutex_unlock(&pending_mutex);
+
+        // interrupt pending ?
+        if (irq_slot != irq_sent) {
+            pthread_mutex_lock(&irq_mutex);
+            // instead of busy waiting, let Nut thread wake us once interrupts have been re-enabled
+            while (int_disabled == 1) {
+                pthread_cond_wait(&irq_cv, &irq_mutex);
+            }
+            // signal NUT thread, same effect as hardware interrupt
+            kill(-getpgrp(), SIGUSR1);
+            irq_sent = irq_slot;
+            pthread_mutex_unlock(&irq_mutex);
+        }
+    }
+}
+
+/*
  * Init IRQ handling
  *
  */
 
-void NutIRQInit(void);
-void NutIRQInit()
+static void NutIRQInit(void);
+static void NutIRQInit()
 {
-    /* Init interrupts */
-    irq_inside = 0;
+    int irq;
 
-    for (irq_nr = 0; irq_nr < IRQ_MAX; irq_nr++)
-        irq_eventqueues[irq_nr] = 0;
+    /* enable interrupts */
+    int_disabled = 0;
 
-    // no irq pending
-    irq_nr = IRQ_MAX;
+    // initialize interrupt type table
+    irq_current = 0;
+    irq_slot = 0;
+    irq_sent = 0;
+
+    // clear async event postings
+    for (irq = 0; irq < IRQ_MAX; irq++)
+        irq_eventqueues[irq] = 0;
 
     // define our IRQ signal
     sigemptyset(&irq_signal);
     sigaddset(&irq_signal, SIGUSR1);
 
-    // so far IRQ are not allowed
-    // sigprocmask(SIG_BLOCK, &irq_signal, 0);
-
     // the signal/IRQ handler
-    signal(SIGUSR1, NutUnixIntr);
-    signal(SIGINT, NutUnixControlC);
+    signal(SIGUSR1, NutUnixInterruptScheduler);
+    signal(SIGINT, NutUnixControlC);    // catch SIGINT (abort) to restore terminal
 
     // synchronization tools
-    pthread_mutex_init(&irq_mutex, NULL);
-    pthread_cond_init(&irq_cv, NULL);
-    pthread_create(&irq_thread, NULL, NutIRQSimulation, (void *) NULL);
+    pthread_mutex_init(&irq_mutex, NULL);       // enable/disable interrupts
+    irq = pthread_cond_init(&irq_cv, NULL);
+
+    irq = pthread_mutex_init(&pending_mutex, NULL);     // maintenance of internal pending interrupts table
+    irq = pthread_cond_init(&pending_cv, NULL);
+
+    // start interrupt emulation thread
+    pthread_create(&interrupt_thread, NULL, NutInterruptEmulation, (void *) (void *) NULL);
 }
 
 /*!
@@ -361,7 +366,6 @@ void NutIRQInit()
  */
 THREAD(NutIdle, arg)
 {
-
     /* Initialize system timers. */
     NutTimerInit();
 
@@ -379,14 +383,7 @@ THREAD(NutIdle, arg)
         NutThreadYield();
         NutThreadDestroy();
 
-        // sleep(); ... sleeping would be fine. try to simulate this
-
-        // lock the irq_mutex and wait for interrupts
-        pthread_mutex_lock(&irq_mutex);
-        pthread_cond_wait(&irq_cv, &irq_mutex);
-
-        // unlock the irq_mutex
-        pthread_mutex_unlock(&irq_mutex);
+        // sleep(); ... sleeping would be fine.
     }
 }
 
@@ -409,7 +406,6 @@ extern NUTFILE *__iob[];
 
 int main(int argc, char *argv[])
 {
-
     tcgetattr(fileno(stdout), &emulation_options.saved_termios);
 
     /* get command line options */

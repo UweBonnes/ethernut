@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.29  2006/01/26 15:34:49  going_nuts
+ * adapted to new interrupt handling scheme for unix emulation
+ * now uses Unix timer and runs without interrupts unless you emulate other hardware
+ *
  * Revision 1.28  2005/08/03 14:43:54  freckle
  * made nut_tick public
  *
@@ -184,6 +188,12 @@
 #include <sys/tracer.h>
 #endif
 
+#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#include <sys/time.h>
+
+static struct timeval   timeStart;
+#endif
+
 /*!
  * \addtogroup xgTimer
  */
@@ -218,6 +228,7 @@ static u_long nut_ticks_resume;
 /*!
  * \brief System timer interrupt handler.
  */
+#if !(defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__))
 #ifdef USE_TIMER
 SIGNAL( SIG_TIMER ) 
 #else
@@ -226,6 +237,7 @@ static void NutTimerIntr(void *arg)
 {
     nut_ticks++;
 }
+#endif
 
 
 /*!
@@ -237,8 +249,12 @@ static void NutTimerIntr(void *arg)
  */
 void NutTimerInit(void)
 {
+#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+    gettimeofday( &timeStart, NULL );
+#else
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
+#endif
 }
 
 
@@ -412,7 +428,7 @@ HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void 
  */
 HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_char flags)
 {
-	return NutTimerStartTicks(NutTimerMillisToTicks(ms), callback, arg, flags);
+        return NutTimerStartTicks(NutTimerMillisToTicks(ms), callback, arg, flags);
 }
 
 /*!
@@ -539,9 +555,17 @@ u_long NutGetTickCount(void)
 {
     u_long rc;
 
+#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+    struct timeval   timeNow;
+
+    gettimeofday( &timeNow, NULL );
+    rc = (timeNow.tv_sec - timeStart.tv_sec) * 1000;
+    rc += (timeNow.tv_usec - timeStart.tv_usec) / 1000;
+#else
     NutEnterCritical();
     rc = nut_ticks;
     NutExitCritical();
+#endif
 
     return rc;
 }

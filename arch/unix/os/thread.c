@@ -42,15 +42,25 @@
 #include <pthread.h>
 #include <stdio.h>
 
+// #include <cfg/memory.h>
+
+#include <string.h>
+
+#include <sys/types.h>
+#include <sys/heap.h>
+#include <sys/atom.h>
+// #include <sys/timer.h>
+#include <sys/thread.h>
+
+#ifdef NUTDEBUG
+#include <sys/osdebug.h>
+#endif
+
+
 /*!
  * \addtogroup xgNutArchUnixOsContext
  */
 /*@{*/
-
-// prototypes
-extern void NutUnixThreadYieldHook(void);  // from unix_nutinit.c
-
-// global stuff 
 
 /* reused parameters for other calls */
 pthread_attr_t attr;
@@ -106,8 +116,7 @@ static void *NutThreadEntry(void *arg)
     // call real function
     td->td_fn(td->td_arg);
 
-    // 
-    NutExitCritical();
+    // NutExitCritical();
 
     // tell nut/os about it
     NutThreadExit();
@@ -181,7 +190,6 @@ void NutThreadSwitch(void)
  */
 HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
-
     NUTTHREADINFO *td;
     const uptr_t *paddr;
 
@@ -214,8 +222,9 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     td->td_timer = 0;
     td->td_queue = 0;
 #ifdef NUTDEBUG
-    if (__os_trf)
+    if (__os_trf) {
         fprintf(__os_trs, "Cre<%08lx>\n", (uptr_t) td);
+    }
 #endif
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
 #ifdef NUTDEBUG
@@ -238,7 +247,8 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     if (runningThread == 0) {
 
         // correct cs level counter
-        main_cs_level--;
+        // main_cs_level--;
+        NutExitCritical();
 
         // switching
         runningThread = runQueue;
@@ -252,7 +262,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
         fn(arg);
 
         printf("Nut/OS Application terminated.\n\r");
-        exit( 0 );
+        exit(0);
     };
 
     // lock mutex and start thread

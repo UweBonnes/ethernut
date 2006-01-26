@@ -50,12 +50,36 @@
 
 
 #ifndef NUT_CPU_FREQ
-#define NUT_CPU_FREQ    1000000UL
+#define NUT_CPU_FREQ    14000000UL
 #endif
 
+extern int timer_count;
 
 /* timer thread, generating ms ticks */
 static pthread_t timer_thread;
+
+/*!
+ * \brief Timer emulation
+ * 
+ * send interrupt signal to NUT thread on every 10ms tick
+ */
+
+#define SCALE   1
+
+void *NutTimerEmulation(void *);
+void *NutTimerEmulation(void *arg)
+{
+    u_char trigger_irq = (u_char) (uptr_t) arg;
+
+    // non-nut thread => not interested in SIGUSR1 (IRQ signals)
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
+
+    for( ;; ) {
+        usleep( 1000 * SCALE );
+
+        NutUnixRaiseInterrupt(trigger_irq);
+    }
+}
 
 /*!
  * \brief Loop for a specified number of milliseconds.
@@ -67,37 +91,16 @@ static pthread_t timer_thread;
  *
  * Use NutSleep() to avoid blocking the CPU, if no
  * exact timing is needed.
+ * 
+ * Not all Unix systems support milliseconds resolution.
  *
  * \param ms Delay time in milliseconds, maximum is 255.
  */
 void NutDelay(u_char ms)
 {
-    usleep(1000L * ms);
+        usleep( 1000 );
 }
 
-
-/*
- * Unix fake timer interrupt handle
- * arg: irq nummer to trigger
- */
-
-void *NutTimerSimulation(void *);
-void *NutTimerSimulation(void *arg)
-{
-    u_char irq_nr = (u_char) (uptr_t) arg;
-
-    // printf("NutTimerSimulation started\n");
-
-    // non-nut thread => block IRQ signals
-    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
-
-    while (1) {
-        usleep(1000);           // 100 ms
-
-        // printf("NutTimerSimulation tick\n");
-        NutIRQTrigger(irq_nr);
-    }
-}
 
 /*!
  * \brief Initialize system timer.
@@ -113,7 +116,7 @@ void NutRegisterTimer(void (*handler) (void *))
     NutRegisterIrqHandler(timerIrqNr, handler, (void *) 0);
 
     // create rtc timer simulation
-    pthread_create(&timer_thread, NULL, NutTimerSimulation, (void *) (uptr_t) timerIrqNr);
+    pthread_create(&timer_thread, NULL, NutTimerEmulation, (void *) (uptr_t) timerIrqNr);
 }
 
 /*!

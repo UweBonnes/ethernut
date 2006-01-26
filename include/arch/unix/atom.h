@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/01/26 15:34:49  going_nuts
+ * adapted to new interrupt handling scheme for unix emulation
+ * now uses Unix timer and runs without interrupts unless you emulate other hardware
+ *
  * Revision 1.1  2005/06/06 10:49:35  haraldkipp
  * Building outside the source tree failed. All header files moved from
  * arch/cpu/include to include/arch/cpu.
@@ -56,8 +60,11 @@ __BEGIN_DECLS
 #include <sys/thread.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 extern u_short main_cs_level;
 extern sigset_t irq_signal;
+extern pthread_cond_t irq_cv;
+extern u_short int_disabled;
 
 extern FILE *__os_trs;
 extern u_char __os_trf;
@@ -65,54 +72,72 @@ extern u_char __os_trf;
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))
 
-#define NutEnterCritical()					     \
-		pthread_sigmask(SIG_BLOCK, &irq_signal, 0);  \
-		if (runningThread){						 \
-			/* if (runningThread->td_cs_level==0)												    \
-				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name); */	\
-			runningThread->td_cs_level++;        \
-		} else {								 \
-			/* if (main_cs_level==0)												\
-				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT") */;	\
-			main_cs_level++;					 \
-		}										 \
+extern void NutExitCritical(void);
+extern void NutEnterCritical(void);
 
-#define NutExitCritical()									\
-		if (runningThread){									\
-			if (--runningThread->td_cs_level == 0) {		\
-				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	*/ \
-				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);   \
-			}												\
-		} else {											\
-			if (--main_cs_level == 0) {						\
-				/* printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	*/ \
-				pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);	\
-			}												\
-		}
 
-#if 0
+// uncommenting the following causes a segmentation fault because stdout isn't defined at startup.
+// #define CRITSECT_TRACE
 
-#define NutEnterCritical()					     \
-		if (runningThread){						 \
-			if (runningThread->td_cs_level==0)												\
-				printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
-			runningThread->td_cs_level++;        \
-		} else {								 \
-			if (main_cs_level==0)												\
-				printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
-			main_cs_level++;					 \
-		}										 \
+#ifndef CRITSECT_TRACE
+#define NutEnterCritical()                                                  \
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);         \
+    int_disabled = 1;                                   \
+    if (runningThread) {                                \
+        runningThread->td_cs_level++;                   \
+    } else {                                            \
+        main_cs_level++;                                \
+    }                                                   \
+    pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);
 
-#define NutExitCritical()									\
-		if (runningThread){									\
-			if (--runningThread->td_cs_level == 0) {		\
-				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);	\
-			}												\
-		} else {											\
-			if (--main_cs_level == 0) {						\
-				printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");	\
-			}												\
-		}
+
+#define NutExitCritical()                                                           \
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);         \
+    if (runningThread) {                                \
+        if (--runningThread->td_cs_level == 0) {        \
+            int_disabled = 0;                           \
+            pthread_cond_signal(&irq_cv);               \
+        }                                               \
+    } else {                                            \
+        if (--main_cs_level == 0) {                     \
+            int_disabled = 0;                           \
+            pthread_cond_signal(&irq_cv);               \
+        }                                               \
+    }                                                   \
+    pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);
+
+#else
+
+#define NutEnterCritical()                                           \
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);         \
+    int_disabled = 1;                                   \
+    if (runningThread) {                                \
+        if (runningThread->td_cs_level==0)                                              \
+            printf("Entered a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name);  \
+        runningThread->td_cs_level++;                   \
+    } else {                                            \
+        if (main_cs_level==0)                                               \
+            printf("Entered b: %s.%d - %s\n", __FILE__, __LINE__, "ROOT");  \
+        main_cs_level++;                                \
+    }                                                   \
+    pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);
+
+#define NutExitCritical()                                                                       \
+    pthread_sigmask(SIG_BLOCK, &irq_signal, 0);         \
+    if (runningThread) {                                \
+        if (--runningThread->td_cs_level == 0) {        \
+            int_disabled = 0;                           \
+            printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, runningThread->td_name); \
+            pthread_cond_signal(&irq_cv);               \
+        }                                               \
+    } else {                                            \
+        if (--main_cs_level == 0) {                     \
+            int_disabled = 0;                           \
+            printf("Left a: %s.%d - %s\n", __FILE__, __LINE__, "ROOT"); \
+            pthread_cond_signal(&irq_cv);               \
+        }                                               \
+    }                                                   \
+    pthread_sigmask(SIG_UNBLOCK, &irq_signal, 0);
 #endif
 
 #define NutJumpOutCritical() NutExitCritical()
