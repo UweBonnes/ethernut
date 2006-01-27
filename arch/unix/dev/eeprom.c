@@ -48,7 +48,7 @@
 #define NO_STDIO_NUT_WRAPPER
 
 #include <stdio.h>
-
+#include <sys/types.h>
 // eeprom image
 static FILE *eepromFile = 0;
 

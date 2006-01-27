@@ -1,5 +1,8 @@
-$Id: ChangeLog,v 1.305 2006/01/26 15:44:43 going_nuts Exp $
+$Id: ChangeLog,v 1.306 2006/01/27 21:57:45 freckle Exp $
 
+2006-01-27  Matthias Ringwald  <mringwal@inf.ethz.ch>
+	* arch/unix/eeprom.c: added #include <sys/types.h>
+	
 2006-01-26  Urs Zurbuchen  <going_nuts@myredirect.net>
 	* arch/unix/dev/ostimer.c, arch/unix/os/nutinit.c,
 	arch/unix/os/thread.c, arch/unix/Makefile,
@@ -1767,7 +1770,7 @@ $Id: ChangeLog,v 1.305 2006/01/26 15:44:43 going_nuts Exp $
 	* net/tcpsm.c: Defussed race condition in NutTcpStateActiveOpenEvent
 	where the NutEventWait would be called after sock->so_ac_tq had been
 	signaled and therefore the calling thread will hang due to usage of
-	NutEventBroadcast which will not ‘store’ the signaled state.
+	NutEventBroadcast which will not store the signaled state.
 	This condition can e.g. occur when attempting connection an
 	unconnected target port on an active host. The returning RST would
 	be processed and signaled before the NutEventWait is called.
