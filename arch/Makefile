@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.6  2006/02/02 11:32:15  olereinhardt
+# Added eeprom.c to avr target list
+#
 # Revision 1.5  2006/01/26 15:31:24  going_nuts
 # adapted to new interrupt handling scheme for unix emulation
 # now uses Unix timer and runs without interrupts unless you emulate other hardware
@@ -79,7 +82,7 @@ SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ivect01.c \
 	avr/dev/cs8900.c avr/dev/eth0cs.c avr/dev/wlan.c avr/dev/wlandrv.c avr/dev/adc.c \
 	avr/dev/ir.c avr/dev/irsony.c avr/dev/hd44780.c avr/dev/hd44780_bus.c \
 	avr/dev/sja1000.c avr/dev/spidigio.c avr/dev/twif.c avr/dev/vs1001k.c \
-	avr/dev/pcmcia.c avr/dev/irqstack.c
+	avr/dev/pcmcia.c avr/dev/irqstack.c avr/dev/eeprom.c
 
 ifeq ($(MCU), at90can128)
 SRCS += avr/dev/atcan.c
