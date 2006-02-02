@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.23  2006/02/02 11:30:48  olereinhardt
+# Added nvmem.c to target list
+#
 # Revision 1.22  2005/09/17 09:23:57  drsung
 # irqstack.c also moved to arch
 #
@@ -156,7 +159,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c
+SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c
 
 OBJS = $(SRCS:.c=.o)
 
