@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.306 2006/01/27 21:57:45 freckle Exp $
+$Id: ChangeLog,v 1.307 2006/02/02 11:33:40 olereinhardt Exp $
+
+2006-02-02  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* dev/Makefile:	Added nvmem.c to target list
+	* arch/Makefile: Added eeprom.c to avr target list
+
+
 
 2006-01-27  Matthias Ringwald  <mringwal@inf.ethz.ch>
 	* arch/unix/eeprom.c: added #include <sys/types.h>
