@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.24  2006/02/08 15:20:56  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.23  2006/01/26 15:34:49  going_nuts
  * adapted to new interrupt handling scheme for unix emulation
  * now uses Unix timer and runs without interrupts unless you emulate other hardware
@@ -154,9 +157,6 @@
 
 #include <string.h>
 
-#ifdef __IMAGECRAFT__
-#include <iom128v.h>
-#endif
 #include <sys/types.h>
 #include <sys/heap.h>
 #include <sys/atom.h>

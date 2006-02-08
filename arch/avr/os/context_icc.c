@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/02/08 15:20:21  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.3  2005/10/04 05:17:15  hwmaier
  * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
  *
@@ -109,6 +112,9 @@ typedef struct {
     u_char csf_r12;
     u_char csf_r11;
     u_char csf_r10;
+#ifdef __AVR_ATmega2561__
+    u_char csf_pcex;
+#endif
     u_char csf_pchi;
     u_char csf_pclo;
 } SWITCHFRAME;
@@ -129,6 +135,9 @@ typedef struct {
     u_char cef_rampz;
     u_char cef_sreg;
     u_char cef_r1;
+#ifdef __AVR_ATmega2561__
+    u_char cef_pcex;
+#endif
     u_char cef_pchi;
     u_char cef_pclo;
 } ENTERFRAME;
@@ -278,6 +287,9 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     /*
      * Setup entry frame to simulate C function entry.
      */
+#ifdef __AVR_ATmega2561__
+    ef->cef_pcex = 0;
+#endif
     ef->cef_pchi = (u_char) (*paddr >> 8);
     ef->cef_pclo = (u_char) (*paddr & 0xff);
     ef->cef_sreg = 0x80;
@@ -292,6 +304,9 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     ef->cef_ylo = (u_char) (yreg & 0xFF);
 
     paddr = (const u_short *) NutThreadEntry;
+#ifdef __AVR_ATmega2561__
+    sf->csf_pcex = 0;
+#endif
     sf->csf_pchi = (u_char) (*paddr >> 8);
     sf->csf_pclo = (u_char) (*paddr & 0xff);
 

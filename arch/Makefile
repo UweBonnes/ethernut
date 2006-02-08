@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2006/02/08 15:18:49  haraldkipp
+# ATmega2561 Support
+#
 # Revision 1.6  2006/02/02 11:32:15  olereinhardt
 # Added eeprom.c to avr target list
 #
@@ -66,16 +69,18 @@ include $(top_blddir)/UserConf.mk
 
 SRCS =
 ifeq ($(ARCH), avr)
-SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ivect01.c \
-	avr/dev/ivect02.c avr/dev/ivect03.c avr/dev/ivect04.c avr/dev/ivect05.c \
-	avr/dev/ivect06.c avr/dev/ivect07.c avr/dev/ivect08.c avr/dev/ivect09.c \
-	avr/dev/ivect10.c avr/dev/ivect11.c avr/dev/ivect12.c avr/dev/ivect13.c \
-	avr/dev/ivect14.c avr/dev/ivect15.c avr/dev/ivect16.c avr/dev/ivect17.c \
-	avr/dev/ivect18.c avr/dev/ivect19.c avr/dev/ivect20.c avr/dev/ivect21.c \
-	avr/dev/ivect22.c avr/dev/ivect23.c avr/dev/ivect24.c avr/dev/ivect25.c \
-	avr/dev/ivect26.c avr/dev/ivect27.c avr/dev/ivect28.c avr/dev/ivect29.c \
-	avr/dev/ivect30.c avr/dev/ivect31.c avr/dev/ivect32.c avr/dev/ivect33.c \
-	avr/dev/ivect34.c avr/dev/ivect35.c avr/dev/ivect36.c avr/dev/ahdlc0.c \
+SRCS = avr/os/context_icc.c avr/dev/ostimer.c avr/dev/ih_adc.c \
+	avr/dev/ih_analog_comp.c avr/dev/ih_canit.c avr/dev/ih_ee_ready.c avr/dev/ih_int0.c \
+	avr/dev/ih_int1.c avr/dev/ih_int2.c avr/dev/ih_int3.c avr/dev/ih_int4.c \
+	avr/dev/ih_int5.c avr/dev/ih_int6.c avr/dev/ih_int7.c avr/dev/ih_ovrit.c \
+	avr/dev/ih_spi_stc.c avr/dev/ih_spm_ready.c avr/dev/ih_timer0_comp.c \
+	avr/dev/ih_timer0_ovf.c avr/dev/ih_timer1_capt.c avr/dev/ih_timer1_compa.c \
+	avr/dev/ih_timer1_compb.c avr/dev/ih_timer1_compc.c avr/dev/ih_timer1_ovf.c \
+	avr/dev/ih_timer2_comp.c avr/dev/ih_timer2_ovf.c avr/dev/ih_timer3_capt.c \
+	avr/dev/ih_timer3_compa.c avr/dev/ih_timer3_compb.c avr/dev/ih_timer3_compc.c \
+	avr/dev/ih_timer3_ovf.c avr/dev/ih_twi.c avr/dev/ih_usart0_rx.c avr/dev/ih_usart0_tx.c \
+	avr/dev/ih_usart0_udre.c avr/dev/ih_usart1_rx.c avr/dev/ih_usart1_tx.c \
+	avr/dev/ih_usart1_udre.c avr/dev/ahdlc0.c \
 	avr/dev/ahdlc1.c avr/dev/ahdlcavr.c avr/dev/debug0.c avr/dev/debug1.c \
 	avr/dev/usart0avr.c avr/dev/usart1avr.c avr/dev/uart0.c avr/dev/uart1.c \
 	avr/dev/uartavr.c avr/dev/lanc111.c avr/dev/nicrtl.c avr/dev/eth0rtl.c avr/dev/ide.c \

@@ -1,4 +1,67 @@
-$Id: ChangeLog,v 1.307 2006/02/02 11:33:40 olereinhardt Exp $
+$Id: ChangeLog,v 1.308 2006/02/08 15:11:28 haraldkipp Exp $
+
+2006-01-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Pre-release 4.1.4 with limited support for
+	the ATmega256. This is for the ImageCraft Compiler only
+	and had been tested with V7.05BETA2 on a modified Ethernut 2.1
+	Board, replacing the ATmega128 by an ATmega2561. It is
+	unknown, if code will run in upper 128kB Flash Memory.
+	Not all ATmega256 interrupts are support yet. A big thank
+	you to Henrik Maier. His port for the AT90CAN128 made this
+	one very easy.
+
+	* app/Makedefs.avr-icc: LDFLAGS comment added for ATmega2561.
+
+	* arch/avr/dev/ostimer.c: Timer support for ATmega2561.
+
+	* arch/avr/dev/usart0avr.c, arch/avr/dev/usart1avr.c:
+	USART support for ATmega2561 (ICCAVR only).
+
+	* arch/avr/init/area.s: ICCAVR upgrade included.
+
+	* arch/avr/init/crtnutm256.s, arch/avr/init/extramm256:
+	ICCAVR runtime initialization for ATmega256 added.
+
+	* arch/avr/os/context_icc.c: Now supports ATmega2561 context 
+	switching for 3 byte program counter.
+
+	* conf/arch/arch.nut: ATmega2561 requires ICCAVR compiler.
+
+	* conf/arch/avr.nut: Added ATmega2561 initialization for
+	ICCAVR runtime.
+
+	* conf/tools.nut, conf/os/os.nut: ATmega2561 support (ICCAVR
+	only).
+
+	* include/arch/avr/icc.h, include/arch/avr/irqreg.h,
+	include/arch/avr/timer.h, include/arch/avr.h: ATmega2561 
+	added.
+
+	* os/thread.c: Removed unused ICCAVR header file.
+
+	* arch/avr/dev/ih_adc.c, arch/avr/dev/ih_analog_comp.c,
+	arch/avr/dev/ih_canit.c, arch/avr/dev/ih_ee_ready.c,
+	arch/avr/dev/ih_int0.c, arch/avr/dev/ih_int1.c,
+	arch/avr/dev/ih_int2.c arch/avr/dev/ih_int3.c, 
+	arch/avr/dev/ih_int4.c, arch/avr/dev/ih_int5.c,
+	arch/avr/dev/ih_int6.c, arch/avr/dev/ih_int7.c,
+	arch/avr/dev/ih_ovrit.c, arch/avr/dev/ih_spi_stc.c,
+	arch/avr/dev/ih_spm_ready.c, arch/avr/dev/ih_timer0_comp.c,
+	arch/avr/dev/ih_timer0_ovf.c, arch/avr/dev/ih_timer1_capt.c,
+	arch/avr/dev/ih_timer1_compa.c, arch/avr/dev/ih_timer1_compb.c,
+	arch/avr/dev/ih_timer1_compc.c, arch/avr/dev/ih_timer1_ovf.c,
+	arch/avr/dev/ih_timer2_comp.c, arch/avr/dev/ih_timer2_ovf.c,
+	arch/avr/dev/ih_timer3_capt.c, arch/avr/dev/ih_timer3_compa.c,
+	arch/avr/dev/ih_timer3_compb.c, arch/avr/dev/ih_timer3_compc.c,
+	arch/avr/dev/ih_timer3_ovf.c, arch/avr/dev/ih_twi.c,
+	arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c,
+	arch/avr/dev/ih_usart0_udre.c, arch/avr/dev/ih_usart1_rx.c,
+	arch/avr/dev/ih_usart1_tx.c, arch/avr/dev/ih_usart1_udre.c,
+	arch/Makefile: Using the vector number as a file name hasn't 
+	been a good idea. ivect01.c to ivect36.c had been moved to the 
+	proper name of the interrupt handler.
+
 
 2006-02-02  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* dev/Makefile:	Added nvmem.c to target list

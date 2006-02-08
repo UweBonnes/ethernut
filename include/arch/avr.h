@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2006/02/08 15:20:22  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.13  2005/10/24 10:42:48  haraldkipp
  * Definitions distributed to avr/icc.h and avr/gcc.h.
  *
@@ -186,7 +189,7 @@ extern void *__heap_start;
 
 /* Some ATC90CAN128 SFR names are different to ATMEGA128. Define some
    compatibilty macros. */
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
 #ifndef ADCW
 #define ADCW    ADC
 #endif
@@ -215,6 +218,7 @@ extern void *__heap_start;
 #define TIFR   TIFR0
 #endif
 #endif /* __AVR_AT90CAN128__ */
+
 
 #endif /* __AVR_ENHANCED__ */
 

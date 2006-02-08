@@ -8,6 +8,8 @@ __idata_start::
 __text_start::
 	.area data(ram)
 __data_start::
+	.area noinit(ram)
+__noinit_start::
 	.area bss(ram)
 __bss_start::
 

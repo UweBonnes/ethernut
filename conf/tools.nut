@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.9  2006/02/08 15:20:21  haraldkipp
+-- ATmega2561 Support
+--
 -- Revision 1.8  2005/10/24 10:06:21  haraldkipp
 -- New linker scripts added for AT91 apps running in RAM and ROM.
 --
@@ -108,7 +111,7 @@ nuttools =
             macro = "ICCAVR",
             flavor = "boolean",
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
+            makedefs = { "MCU_ATMEGA2561=enhanced", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
         }
     },
     {

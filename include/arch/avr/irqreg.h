@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/02/08 15:20:56  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.3  2005/10/07 21:52:31  hwmaier
  * Removed test for __ATmega64__
  *
@@ -76,7 +79,11 @@ extern IRQ_HANDLER sig_UART0_RECV;
 extern IRQ_HANDLER sig_ADC;
 extern IRQ_HANDLER sig_EEPROM_READY;
 extern IRQ_HANDLER sig_COMPARATOR;
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__)
+
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega2561__)
+#define sig_USART0_RECV sig_UART0_RECV
+#define sig_USART0_DATA sig_UART0_DATA
+#define sig_USART0_TRANS sig_UART0_TRANS
 extern IRQ_HANDLER sig_OUTPUT_COMPARE1C;
 extern IRQ_HANDLER sig_INPUT_CAPTURE3;
 extern IRQ_HANDLER sig_OUTPUT_COMPARE3A;
@@ -86,12 +93,35 @@ extern IRQ_HANDLER sig_OVERFLOW3;
 extern IRQ_HANDLER sig_UART1_RECV;
 extern IRQ_HANDLER sig_UART1_DATA;
 extern IRQ_HANDLER sig_UART1_TRANS;
+#define sig_USART1_RECV sig_UART1_RECV
+#define sig_USART1_DATA sig_UART1_DATA
+#define sig_USART1_TRANS sig_UART1_TRANS
 extern IRQ_HANDLER sig_2WIRE_SERIAL;
 extern IRQ_HANDLER sig_SPM_READY;
 #endif
+
 #if defined(__AVR_AT90CAN128__)
 extern IRQ_HANDLER sig_CAN_TRANSFER;
 extern IRQ_HANDLER sig_CAN_OVERRUN;
+#endif
+
+#if defined(__AVR_ATmega2561__)
+extern IRQ_HANDLER sig_PIN_CHANGE0;
+extern IRQ_HANDLER sig_PIN_CHANGE1;
+extern IRQ_HANDLER sig_WATCHDOG_TIMEOUT;
+#define sig_OUTPUT_COMPARE2A sig_OUTPUT_COMPARE2
+extern IRQ_HANDLER sig_OUTPUT_COMPARE2B;
+#define sig_OUTPUT_COMPARE0A sig_OUTPUT_COMPARE0
+extern IRQ_HANDLER sig_OUTPUT_COMPARE0B;
+extern IRQ_HANDLER sig_OUTPUT_COMPARE4A;
+extern IRQ_HANDLER sig_OUTPUT_COMPARE4B;
+extern IRQ_HANDLER sig_OUTPUT_COMPARE4C;
+extern IRQ_HANDLER sig_OVERFLOW4;
+extern IRQ_HANDLER sig_OUTPUT_COMPARE5A;
+extern IRQ_HANDLER sig_OUTPUT_COMPARE5B;
+extern IRQ_HANDLER sig_OUTPUT_COMPARE5C;
+extern IRQ_HANDLER sig_OVERFLOW5;
+
 #endif
 
 #endif

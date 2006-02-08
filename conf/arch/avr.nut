@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.9  2006/02/08 15:20:22  haraldkipp
+-- ATmega2561 Support
+--
 -- Revision 1.8  2006/01/23 17:28:30  haraldkipp
 -- HW_NVMEM is now provided by specific modules.
 --
@@ -74,18 +77,21 @@ nutarch_avr =
                       "crtenut.s, same as above but including EEPROM emulation.\n"..
                       "crtnutram.s, if globals and static variables use more than 4kB.\n"..
                       "crtenutram.s, same as above but including EEPROM emulation.\n\n"..
+                      "crtnutm256.s, for the ATmega2560 and ATmega2561.\n\n"..
                       "Ethernut 1.3 Rev-G boards require EEPROM emulation.",
         sources = {
             "avr/init/crtnut.s",
             "avr/init/crtnutram.s",
             "avr/init/crtenut.s",
-            "avr/init/crtenutram.s"
+            "avr/init/crtenutram.s",
+            "avr/init/crtnutm256.s"
         },
         targets = {
             "avr/init/crtnut.o",
             "avr/init/crtnutram.o",
             "avr/init/crtenut.o",
-            "avr/init/crtenutram.o"
+            "avr/init/crtenutram.o",
+            "avr/init/crtnutm256.o"
         },
         requires = { "TOOL_CC_AVR", "TOOL_ICC" },
     },
@@ -129,42 +135,42 @@ nutarch_avr =
         provides = { "DEV_IRQ_AVR" },
         sources =
         {
-            "avr/dev/ivect01.c",
-            "avr/dev/ivect02.c",
-            "avr/dev/ivect03.c",
-            "avr/dev/ivect04.c",
-            "avr/dev/ivect05.c",
-            "avr/dev/ivect06.c",
-            "avr/dev/ivect07.c",
-            "avr/dev/ivect08.c",
-            "avr/dev/ivect09.c",
-            "avr/dev/ivect10.c",
-            "avr/dev/ivect11.c",
-            "avr/dev/ivect12.c",
-            "avr/dev/ivect13.c",
-            "avr/dev/ivect14.c",
-            "avr/dev/ivect15.c",
-            "avr/dev/ivect16.c",
-            "avr/dev/ivect17.c",
-            "avr/dev/ivect18.c",
-            "avr/dev/ivect19.c",
-            "avr/dev/ivect20.c",
-            "avr/dev/ivect21.c",
-            "avr/dev/ivect22.c",
-            "avr/dev/ivect23.c",
-            "avr/dev/ivect24.c",
-            "avr/dev/ivect25.c",
-            "avr/dev/ivect26.c",
-            "avr/dev/ivect27.c",
-            "avr/dev/ivect28.c",
-            "avr/dev/ivect29.c",
-            "avr/dev/ivect30.c",
-            "avr/dev/ivect31.c",
-            "avr/dev/ivect32.c",
-            "avr/dev/ivect33.c",
-            "avr/dev/ivect34.c",
-            "avr/dev/ivect35.c",
-            "avr/dev/ivect36.c",
+            "avr/dev/ih_adc.c",
+            "avr/dev/ih_analog_comp.c",
+            "avr/dev/ih_canit.c",
+            "avr/dev/ih_ee_ready.c",
+            "avr/dev/ih_int0.c",
+            "avr/dev/ih_int1.c",
+            "avr/dev/ih_int2.c",
+            "avr/dev/ih_int3.c",
+            "avr/dev/ih_int4.c",
+            "avr/dev/ih_int5.c",
+            "avr/dev/ih_int6.c",
+            "avr/dev/ih_int7.c",
+            "avr/dev/ih_ovrit.c",
+            "avr/dev/ih_spi_stc.c",
+            "avr/dev/ih_spm_ready.c",
+            "avr/dev/ih_timer0_comp.c",
+            "avr/dev/ih_timer0_ovf.c",
+            "avr/dev/ih_timer1_capt.c",
+            "avr/dev/ih_timer1_compa.c",
+            "avr/dev/ih_timer1_compb.c",
+            "avr/dev/ih_timer1_compc.c",
+            "avr/dev/ih_timer1_ovf.c",
+            "avr/dev/ih_timer2_comp.c",
+            "avr/dev/ih_timer2_ovf.c",
+            "avr/dev/ih_timer3_capt.c",
+            "avr/dev/ih_timer3_compa.c",
+            "avr/dev/ih_timer3_compb.c",
+            "avr/dev/ih_timer3_compc.c",
+            "avr/dev/ih_timer3_ovf.c",
+            "avr/dev/ih_twi.c",
+            "avr/dev/ih_usart0_rx.c",
+            "avr/dev/ih_usart0_tx.c",
+            "avr/dev/ih_usart0_udre.c",
+            "avr/dev/ih_usart1_rx.c",
+            "avr/dev/ih_usart1_tx.c",
+            "avr/dev/ih_usart1_udre.c",        
             "avr/dev/irqstack.c"
         },
         options =
@@ -380,7 +386,7 @@ nutarch_avr =
     {
         name = "nutarch_avr_lanc111",
         brief = "LAN91C111 Driver",
-        description = "LAN driver for SMSC LAN91C111. ATmega128 only.",
+        description = "LAN driver for SMSC LAN91C111. AVR only.",
         requires = { "HW_MCU_AVR", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "avr/dev/lanc111.c" },
@@ -600,7 +606,7 @@ nutarch_avr =
     {
         name = "nutarch_avr_adc",
         brief = "ADC Driver",
-        description = "Driver for the ATmega128 analog to digital converter.\n\n"..
+        description = "Driver for the ATmega analog to digital converter.\n\n"..
                       "Only available for AVR-GCC.\n\n"..
                       "Contributed by Ole Reinhardt from www.kernelconcepts.de",
         requires = { "HW_MCU_AVR", "TOOL_GCC" },

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/02/08 15:18:49  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -120,8 +123,11 @@
 
 
 #ifdef NUT_CPU_FREQ             /* ----- NUT_CPU_FREQ */
-#if defined(MCU_AT90CAN128)     /* MCU_AT90CAN128 */
+#if defined(MCU_AT90CAN128)
 #define TCCR_FLAGS  (_BV(CS20) | _BV(CS22) | _BV(WGM21))
+#elif defined(MCU_ATMEGA2561)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
 #elif defined(MCU_ATMEGA103)    /* MCU_ATMEGA103 */
 #define TCCR_FLAGS  (_BV(CS00) | _BV(CS02) | _BV(CTC0))
 #else                           /* MCU_ATMEGA128 */
@@ -143,7 +149,7 @@
 #endif
 #endif                          /* ----- NUT_CPU_FREQ */
 
-#ifdef MCU_AT90CAN128
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2561)
 #define TCCRx       TCCR2A
 #define TCNTx       TCNT2
 #define OCRx        OCR2A
@@ -337,6 +343,9 @@ void NutRegisterTimer(void (*handler) (void *))
 
     /* Set CTC mode and prescaler. */
     outb(TCCRx, TCCR_FLAGS);
+#ifdef TCCR2B_FLAGS
+    outb(TCCR2B, TCCR2B_FLAGS);
+#endif
 
     /* Set output compare register. */
     outb(OCRx, OCR_VALUE);

@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.4  2006/02/08 15:18:04  haraldkipp
+# ATmega2561 Support
+#
 # Revision 1.3  2005/11/20 14:37:15  haraldkipp
 # Command line compilation failed with ICCAVR V7. Fixed.
 #
@@ -53,5 +56,8 @@ BIN       = $(TRGT)objcopy
 
 BINDIR    = $(top_srcdir)/bin/$(MCU)
 
-LDFLAGS   = -L$(LIBDIR) -m -g -ucrtenutram.o -dram_end:0x7fff -bdata:0x100.0x7fff -dFRAM:1 -bfunc_lit:0x8c.0x20000 -dhwstk_size:16 -beeprom:1.4096 -fihx_coff $(LIBS)
+# ATmega2561
+#LDFLAGS   = -L$(LIBDIR) -m -g -dFRAM:1 -xcall -ucrtnutm256.o -dram_end:0x7fff -bdata:0x200.0x7fff -bfunc_lit:0x198.0x40000 -dhwstk_size:16 -beeprom:0.4096 -fihx_coff $(LIBS)
 
+# ATmega128
+LDFLAGS   = -L$(LIBDIR) -m -g -ucrtenutram.o -dram_end:0x7fff -bdata:0x100.0x7fff -dFRAM:1 -bfunc_lit:0x8c.0x20000 -dhwstk_size:16 -beeprom:1.4096 -fihx_coff $(LIBS)

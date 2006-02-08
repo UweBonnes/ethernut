@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/02/08 15:18:49  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -329,7 +332,11 @@ NUTDEVICE devUsartAvr0 = {
 
 #ifdef __IMAGECRAFT__
 #define TXB8    TXB80
+#ifdef ATMega2561
+#define UMSEL   UMSEL00
+#else
 #define UMSEL   UMSEL0
+#endif
 #define U2X     U2X0
 #define UCSZ2   UCSZ02
 #define UCSZ1   UCSZ01

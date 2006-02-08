@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/02/08 15:20:56  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.2  2005/10/24 18:04:25  haraldkipp
  * Duplicate macro definitions removed.
  * Parameter order of cstrcmp() corrected.
@@ -216,8 +219,13 @@
 
 #ifdef _MCU_enhanced
 
+#ifdef ATMega2561
+#include <iom2561v.h>
+#define __AVR_ATmega2561__
+#else
 #include <iom128v.h>
 #define __AVR_ATmega128__
+#endif
 
 #ifndef RAMEND
 #define RAMEND  0x10FF

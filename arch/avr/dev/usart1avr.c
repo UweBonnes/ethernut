@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/02/08 15:20:06  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.2  2005/10/07 22:05:00  hwmaier
  * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
  *
@@ -327,7 +330,11 @@ NUTDEVICE devUsartAvr1 = {
 
 #ifdef __IMAGECRAFT__
 #define TXB8    TXB81
+#ifdef ATMega2561
+#define UMSEL   UMSEL01
+#else
 #define UMSEL   UMSEL1
+#endif
 #define U2X     U2X1
 #define UCSZ2   UCSZ12
 #define UCSZ1   UCSZ11

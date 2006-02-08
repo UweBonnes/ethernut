@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.14  2006/02/08 15:20:22  haraldkipp
+-- ATmega2561 Support
+--
 -- Revision 1.13  2006/01/23 17:31:07  haraldkipp
 -- Dependency added to system configuration.
 --
@@ -113,7 +116,7 @@ nutos =
                               "variables and static data. Any remaining space will "..
                               "be added to the Nut/OS heap during system initialization.\n"..
                               "When running on an AVR MCU, set this to size of the "..
-                              "on-chip SRAM, e.g. 4096 for the ATmega128.",
+                              "on-chip SRAM, e.g. 4096 for the ATmega128 and 8192 for the ATmega2561.",
                 default = "4096",
                 file = "include/cfg/memory.h"
             },

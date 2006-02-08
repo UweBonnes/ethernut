@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.17  2006/02/08 15:20:21  haraldkipp
+-- ATmega2561 Support
+--
 -- Revision 1.16  2006/01/23 19:50:48  haraldkipp
 -- Dummy NVMEM configuration for GBA added.
 --
@@ -165,7 +168,7 @@ nutarch =
                 description = "8-bit RISC microcontroller with 256K bytes flash, 8K bytes RAM, "..
                               "4K bytes EEPROM, 64K bytes data memory space, 2 USARTs, 6 timers, "..
                               "8-channel ADC, SPI and TWI.",
-                requires = { "TOOL_CC_AVR" },
+                requires = { "TOOL_CC_AVR", "TOOL_ICC" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_AVR",
@@ -176,7 +179,7 @@ nutarch =
                 },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF+=-D__HARVARD_ARCH__" }
+                makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561" }
             },
             {
                 macro = "MCU_AT91R40008",

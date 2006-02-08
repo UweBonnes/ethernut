@@ -35,12 +35,15 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/02/08 15:20:56  haraldkipp
+ * ATmega2561 Support
+ *
  * Revision 1.1  2005/07/26 18:35:09  haraldkipp
  * First check in
  *
  */
 
-#ifdef MCU_AT90CAN128
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2561)
 #define NutEnableTimerIrq()     sbi(TIMSK2, OCIE2A)
 #define NutDisableTimerIrq()    cbi(TIMSK2, OCIE2A)
 #else
