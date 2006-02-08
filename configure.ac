@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.11  2006/02/08 15:17:35  haraldkipp
+# Bugs fixed.
+#
 # Revision 1.10  2006/01/22 17:46:18  haraldkipp
 # Pre-release 4.1.3
 #
@@ -69,7 +72,7 @@
 #
 #
 
-AC_INIT(ethernut,4.1.3)
+AC_INIT(ethernut,4.1.4)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005 egnite Software GmbH])
