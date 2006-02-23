@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/02/23 15:43:56  haraldkipp
+ * Timeout value increased. Some cards have long write latencies.
+ *
  * Revision 1.3  2006/01/22 17:36:31  haraldkipp
  * Some cards need more time to enter idle state.
  * Card access now returns an error after card change detection.
@@ -140,7 +143,7 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
             break;
         }
         if (tmo < 256) {
-            NutSleep(1);
+            NutSleep(10);
         }
     }
     /* Send command and parameter. */
