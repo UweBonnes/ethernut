@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/02/23 15:48:08  haraldkipp
+ * Added missing file truncation flag for overriding existing files.
+ *
  * Revision 1.5  2006/01/25 18:47:42  haraldkipp
  * Fixes wrong implementation of readdir() and simplifies the code.
  * Thanks to Jesper Hansen.
@@ -693,7 +696,7 @@ int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
     }
     /* Open the file to receive. */
     else {
-        fh = _open(path, _O_CREAT);
+        fh = _open(path, _O_CREAT | _O_TRUNC);
     }
 
     if (fh != -1) {
