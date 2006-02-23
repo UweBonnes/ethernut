@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.4  2006/02/23 15:41:40  haraldkipp
+-- Added support for AT91 watchdog timer.
+--
 -- Revision 1.3  2005/11/20 14:40:28  haraldkipp
 -- Added interrupt driven UART driver for AT91.
 --
@@ -171,5 +174,17 @@ nutarch_arm =
         provides = { "NET_PHY" },
         sources = { "arm/dev/dm9000e.c" },
     },     
+    
+    --
+    -- Special Functions
+    --
+    {
+        name = "nutarch__arm_wdtat91",
+        brief = "Watchdog Timer (AT91)",
+        description = "The AT91 watchdog timer prevents system lock-up.",
+        requires = { "HW_MCU_AT91", "NUT_OSTIMER_DEV" },
+        provides = { "NUT_WATCHDOG" },
+        sources = { "arm/dev/wdt_at91.c" },
+    },
 }
 
