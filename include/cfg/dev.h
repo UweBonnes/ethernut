@@ -1,5 +1,5 @@
-#ifndef _CFG_OS_H_
-#define _CFG_OS_H_
+#ifndef _CFG_DEV_H_
+#define _CFG_DEV_H_
 
 /*
  * Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2006/02/23 15:46:15  haraldkipp
+ * Including this one may have exclude cfg/os.h.
+ *
  * Revision 1.1  2004/09/22 08:18:58  haraldkipp
  * More configurable ports
  *
