@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/02/23 15:39:35  haraldkipp
+ * Typo corrected.
+ *
  * Revision 1.1  2005/05/27 17:41:52  drsung
  * Moved the file.
  *
@@ -60,7 +63,7 @@ __BEGIN_DECLS
 
 #define NutExitCritical() \
         asm volatile (             \
-                "@ NutEnterCritical"      "\n\t"      \
+                "@ NutExitCritical"      "\n\t"      \
                 "mrs r0, cpsr"      "\n\t"      \
                 "bic r0, r0, #0x80" "\n\t"  \
                 "msr cpsr, r0"      "\n\t"  \
