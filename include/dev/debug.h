@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/02/23 15:34:00  haraldkipp
+ * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
+ * Many thanks to Michael Fischer for this port.
+ *
  * Revision 1.8  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -96,6 +100,9 @@ extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;
+#elif defined(MCU_LPC2XXX)
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
 #endif
 #elif defined(__m68k__)
 #endif

@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/02/23 15:33:59  haraldkipp
+ * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
+ * Many thanks to Michael Fischer for this port.
+ *
  * Revision 1.2  2005/10/24 10:26:21  haraldkipp
  * AT91 handlers added.
  *
@@ -87,6 +91,18 @@ extern IRQ_HANDLER sig_WDI;
 extern IRQ_HANDLER sig_PIO;
 extern IRQ_HANDLER sig_INTERRUPT0;
 extern IRQ_HANDLER sig_INTERRUPT1;
+extern IRQ_HANDLER sig_INTERRUPT2;
+
+#elif defined(MCU_LPC2XXX)
+
+extern IRQ_HANDLER sig_UART0;
+extern IRQ_HANDLER sig_UART1;
+extern IRQ_HANDLER sig_TC0;
+extern IRQ_HANDLER sig_TC1;
+extern IRQ_HANDLER sig_WDI;
+extern IRQ_HANDLER sig_INTERRUPT0;
+extern IRQ_HANDLER sig_INTERRUPT1;
+extern IRQ_HANDLER sig_INTERRUPT2;
 extern IRQ_HANDLER sig_INTERRUPT2;
 
 #else

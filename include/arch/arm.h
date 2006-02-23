@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/02/23 15:34:00  haraldkipp
+ * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
+ * Many thanks to Michael Fischer for this port.
+ *
  * Revision 1.5  2005/11/20 14:45:15  haraldkipp
  * Define printf_P for non Harvard architectures.
  *
@@ -60,6 +64,8 @@
 #include <arch/arm/at91.h>
 #elif defined (MCU_GBA)
 #include <arch/arm/gba.h>
+#elif defined (MCU_LPC2XXX)
+#include <arch/arm/lpc2xxx.h>
 #endif
 
 #include <dev/mweeprom.h>

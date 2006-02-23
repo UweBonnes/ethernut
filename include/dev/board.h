@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/02/23 15:34:00  haraldkipp
+ * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
+ * Many thanks to Michael Fischer for this port.
+ *
  * Revision 1.2  2005/11/22 09:19:03  haraldkipp
  * Include condition corrected.
  *
@@ -50,6 +54,11 @@
 
 #if defined(GBA)
 #define DEV_DEBUG_NAME  "con"
+#endif
+
+#if defined(OLIMEX_LPCE2294)
+#define DEV_DEBUG       devDebug1
+#define DEV_DEBUG_NAME  "uart1"
 #endif
 
 #ifndef DEV_DEBUG
@@ -103,6 +112,8 @@
 #include <dev/dm9000e.h>
 #elif defined(WOLF)
 #include <dev/ax88796.h>
+#elif defined(OLIMEX_LPCE2294)
+#include <dev/cs8900a.h>
 #endif
 
 #ifndef DEV_ETHER

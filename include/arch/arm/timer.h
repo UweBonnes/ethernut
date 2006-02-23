@@ -35,13 +35,22 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/02/23 15:33:59  haraldkipp
+ * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
+ * Many thanks to Michael Fischer for this port.
+ *
  * Revision 1.1  2005/07/26 18:35:09  haraldkipp
  * First check in
  *
  */
 
+#ifdef MCU_LPC2XXX
+void NutEnableTimerIrq (void);
+void NutDisableTimerIrq (void);
+#else
 #define NutEnableTimerIrq()     NutEnterCritical()
 #define NutDisableTimerIrq()    NutExitCritical()
+#endif
 
 #endif
 

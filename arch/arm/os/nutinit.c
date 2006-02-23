@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/02/23 15:34:00  haraldkipp
+ * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
+ * Many thanks to Michael Fischer for this port.
+ *
  * Revision 1.4  2005/10/24 09:22:29  haraldkipp
  * Default idle and main thread stack sizes increased.
  * AT91 header file moved.
@@ -66,6 +70,8 @@
 #include <cfg/os.h>
 #ifdef MCU_GBA
 #include <dev/irqreg.h>
+#elif defined(MCU_LPC2XXX)
+#include <arch/arm/lpc2xxx.h>
 #else
 #include <arch/arm/at91.h>
 #endif
@@ -83,13 +89,43 @@
 #define NUT_THREAD_IDLESTACK    512
 #endif
 
+#ifdef __CROSSWORKS4ARM__
+extern void *__unused_start__;
+/*
+ * Michael, Why does Crossworks needs this one. Is memory configurable
+ * with the Configurator?
+ */
+extern void *__External_SRAM_segment_end__;
+
+#define HEAP_START  &__unused_start__
+#define HEAP_SIZE  ((uptr_t)(&__External_SRAM_segment_end__ - 1) - (uptr_t)(HEAP_START) - 256)
+#else   /* GCC */
 /*!
  * \brief Last memory address.
  */
 #define NUTMEM_END (uptr_t)(NUTMEM_START + NUTMEM_SIZE - 1U)
+extern void *__heap_start;
+
+#define HEAP_START  &__heap_start
+#define HEAP_SIZE  ((uptr_t) (NUTMEM_END - 256 - (uptr_t) (&__heap_start)))
+#endif
 
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
-extern void *__heap_start;
+
+
+#if defined(OLIMEX_LPCE2294)
+/*
+ * InitHW for OLIMEX LPC-E2294
+ */
+static void InitHW (void)
+{
+  PINSEL0  = 0;
+  PINSEL1  = 0;
+
+  BCFG2    = 0x03501;
+  PINSEL2 |= 0x00804000;
+} /* InitHW */
+#endif
 
 /*!
  * \brief Idle thread. 
@@ -100,7 +136,7 @@ extern void *__heap_start;
  */
 THREAD(NutIdle, arg)
 {
-#ifdef MCU_GBA
+#if defined(MCU_GBA) || defined(MCU_LPC2XXX)
     InitIrqHandler();
 #endif
     /* Initialize system timers. */
@@ -130,7 +166,11 @@ THREAD(NutIdle, arg)
  */
 void NutInit(void)
 {
-    NutHeapAdd(&__heap_start, (uptr_t) (NUTMEM_END - 256 - (uptr_t) (&__heap_start)));
+#if defined(OLIMEX_LPCE2294)
+    InitHW();
+#endif
+
+    NutHeapAdd(HEAP_START, HEAP_SIZE);
 
     /*
      * No EEPROM configuration.
