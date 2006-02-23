@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/02/23 15:47:18  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ *
  * Revision 1.1  2006/01/05 16:33:06  haraldkipp
  * First check-in.
  *
@@ -47,7 +50,7 @@
  * \endverbatim
  */
 
-#include "phatfs.h"
+#include <fs/phatfs.h>
 
 __BEGIN_DECLS
 /* Prototypes */

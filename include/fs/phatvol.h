@@ -40,12 +40,17 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/02/23 15:47:18  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ *
  * Revision 1.1  2006/01/05 16:33:10  haraldkipp
  * First check-in.
  *
  *
  * \endverbatim
  */
+
+#include <cfg/fs.h>
 
 #include <sys/types.h>
 #include <sys/file.h>
@@ -153,6 +158,18 @@ typedef struct __attribute__ ((packed)) _PHATVBR {
 } PHATVBR;
 
 /*!
+ * \brief Sector buffer structure.
+ */
+typedef struct _PHATSECTBUF {
+    /*! \brief Sector data buffer. */
+    u_char *sect_data;
+    /*! \brief Sector currently stored in the buffer. */
+    u_long sect_num;
+    /*! \brief If not zero, buffer needs to be written. */
+    int sect_dirty;
+} PHATSECTBUF;
+
+/*!
  * \brief Volume info structure.
  */
 typedef struct _PHATVOL {
@@ -165,16 +182,14 @@ typedef struct _PHATVOL {
     u_long vol_numfree;
     /*! \brief Possibly next free cluster. */
     u_long vol_nxtfree;
-    /*! \brief Sector buffer of this volume.
-     *
-     * Points to the block device driver's buffer.
-     */
-    u_char *vol_buf;
-    /*! \brief Sector currently stored in the buffer. */
-    u_long vol_bufsect;
-    /*! \brief If not zero, buffer needs to be written. */
-    int vol_bufdirty;
-
+    /*! \brief Sector buffer of this volume. */
+#if PHAT_SECTOR_BUFFERS
+    PHATSECTBUF vol_buf[PHAT_SECTOR_BUFFERS];
+    /*! \brief Next buffer to use. Simple round robin scheme. */
+    int vol_usenext;
+#else
+    PHATSECTBUF vol_buf[1];
+#endif
     /*! \brief Bytes per sector. */
     u_int vol_sectsz;
     /*! \brief Sectors per cluster. */

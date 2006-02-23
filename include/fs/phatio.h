@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/02/23 15:47:18  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ *
  * Revision 1.1  2006/01/05 16:33:02  haraldkipp
  * First check-in.
  *
@@ -54,7 +57,7 @@ __BEGIN_DECLS
 /* Prototypes */
 extern int PhatSectorRead(NUTFILE * blkmnt, u_long sect, u_char * buf);
 extern int PhatSectorLoad(NUTDEVICE * dev, u_long sect);
-extern int PhatSectorFlush(NUTDEVICE * dev);
+extern int PhatSectorFlush(NUTDEVICE * dev, int bufnum);
 
 __END_DECLS
 /* End of prototypes */

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.6  2006/02/23 15:43:08  haraldkipp
+-- PHAT file system now supports configurable number of sector buffers.
+--
 -- Revision 1.5  2006/01/05 16:49:48  haraldkipp
 -- PHAT file system driver added.
 --
@@ -102,7 +105,23 @@ nutfs =
                 "phat32.c", 
                 "phatutil.c",
                 "phatdbg.c"
-        }
+        },
+        options =
+        {
+            {
+                macro = "PHAT_SECTOR_BUFFERS",
+                brief = "Sector Buffers",
+                description = "Number of sector buffers.\n\n"..
+                              "These buffers will be allocated from heap memory. Thus, you "..
+                              "need to make sure that enough heap memory is available.\n"..
+                              "If this option is disabled, the file system will use "..
+                              "a single sector buffer, which is typically provided by the "..
+                              "block device itself.",
+                type = "integer",
+                flavor = "booldata",
+                file = "include/cfg/fs.h"
+            },
+        },
     },
     {
         name = "nutfs_pnutfs",
