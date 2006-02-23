@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.18  2006/02/23 15:40:59  haraldkipp
+-- GPIO provision added for all MCUs except Gameboy Advance.
+--
 -- Revision 1.17  2006/02/08 15:20:21  haraldkipp
 -- ATmega2561 Support
 --
@@ -109,7 +112,8 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_AVR",
                     "HW_TIMER_AVR",
-                    "HW_UART_AVR"
+                    "HW_UART_AVR",
+                    "HW_GPIO"
                 },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
@@ -128,7 +132,8 @@ nutarch =
                     "HW_MCU_AVR_ENHANCED",
                     "HW_MCU_ATMEGA128",
                     "HW_TIMER_AVR",
-                    "HW_UART_AVR"
+                    "HW_UART_AVR",
+                    "HW_GPIO"
                 },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
@@ -155,7 +160,8 @@ nutarch =
                     "HW_MCU_AVR_ENHANCED",
                     "HW_TIMER_AVR",
                     "HW_UART_AVR",
-                    "HW_CAN_AVR"
+                    "HW_CAN_AVR",
+                    "HW_GPIO"
                 },
                 makedefs = { "MCU=at90can128", "HWDEF+=-D__HARVARD_ARCH__" },
                 options =
@@ -175,7 +181,8 @@ nutarch =
                     "HW_MCU_AVR_ENHANCED",
                     "HW_MCU_ATMEGA2561",
                     "HW_TIMER_AVR",
-                    "HW_UART_AVR"
+                    "HW_UART_AVR",
+                    "HW_GPIO"
                 },
                 flavor = "boolean",
                 file = "include/cfg/arch.h",
@@ -194,7 +201,8 @@ nutarch =
                     "HW_MCU_ARM",
                     "HW_MCU_AT91",
                     "HW_TIMER_AT91",
-                    "HW_UART_AT91"
+                    "HW_UART_AT91",
+                    "HW_GPIO"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
