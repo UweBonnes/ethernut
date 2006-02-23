@@ -1,6 +1,49 @@
-$Id: ChangeLog,v 1.308 2006/02/08 15:11:28 haraldkipp Exp $
+$Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 
-2006-01-25  Harald Kipp  <harald.kipp@egnite.de>
+2006-02-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/include/atom.h: Typo corrected.
+
+	* arch/arm/dev/wdt_at91.c, include/dev/watchdog.h, 
+	conf/arch/arm.nut: Added support for AT91 watchdog timer.
+
+	* dev/sbimmc.c, conf/dev/dev.nut: MMC low level bit banging SPI 
+	added. Compiles on all platforms, but tested with AT91 only.
+
+	* conf/dev/arch.nut: GPIO provision added for all MCUs except
+	Gameboy Advance.
+
+	* dev/mmcard.c: Timeout value increased. Some cards have
+	long write latencies.
+
+	* fs/phatfs.c, fs/phat12.c, fs/phat16.c, fs/phat32.c, 
+	fs/phatdir.c, fs/phatvol.c, fs/phatio.c, include/fs/phatvol.h, 
+	include/fs/phatio.h, include/cfg/fs.h, conf/fs/fs.nut: 
+	PHAT file system now supports configurable number of sector 
+	buffers. This dramatically increased write rates of no-name 
+	cards.
+
+	* include/cfg/dev.h: Including this one may have exclude 
+	cfg/os.h. Preprocessor macro corrected.
+
+	* fs/phatdir.c, fs/phatfs.c, fs/phatutil.c, fs/phatutil.h,
+	fs/phatvol.h: AVR compile errors corrected.
+
+	* pro/ftpd.c: Added missing file truncation flag for 
+	overriding existing files.
+
+	* conf/repository.nut: Added choice for 32 bit ports.
+
+	* arch/arm/os/nutinit.c, arch/arm/dev/cs8900a.c, 
+	arch/arm/dev/debug_lpc2xxx.c, arch/arm/dev/ihndlr_lpc2xxx.c,
+	arch/arm/dev/ostimer_lpc2xxx.c, include/dev/board.h,
+	include/dev/cs8900a.h, include/dev/debug.h, include/arch/arm.h,
+	include/arch/arm/lpc2xxx.h, include/arch/arm/irqreg.h,
+	include/arch/arm/timer.h: Added Michael Fischer's support for 
+	the Philips LPC2xxx Family and the LPC-E2294 Board from Olimex.
+
+
+2006-01-08  Harald Kipp  <harald.kipp@egnite.de>
 
 	* os/version.c: Pre-release 4.1.4 with limited support for
 	the ATmega256. This is for the ImageCraft Compiler only
