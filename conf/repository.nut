@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.16  2006/02/23 15:40:09  haraldkipp
+-- Added choice for 32 bit ports.
+--
 -- Revision 1.15  2006/01/23 17:31:36  haraldkipp
 -- Enhanced description of dev library.
 --
@@ -87,6 +90,13 @@ avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG" }
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
+mcu_32bit_choice = { " ", 
+                     "0", "1", "2", "3", "4", "5", "6", "7",
+                     "8", "9", "10", "11", "12", "13", "14", "15",
+                     "16", "17", "18", "19", "20", "21", "22", "23",
+                     "24", "25", "26", "27", "28", "29", "30", "31"
+                   }
+                   
 arm_ld_choice = { " ", "at91_boot", "at91_ram", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
 
 pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
