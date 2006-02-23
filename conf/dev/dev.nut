@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.25  2006/02/23 15:42:26  haraldkipp
+-- MMC low level bit banging SPI added.
+--
 -- Revision 1.24  2006/01/23 17:29:14  haraldkipp
 -- X1226/X1286 EEPROM now available for system configuration storage.
 --
@@ -353,6 +356,100 @@ nutdev =
         requires = { "DEV_NPL" },
         provides = { "DEV_MMCLL" },
         sources = { "nplmmc.c" },
+    },
+    {
+        name = "nutdev_sbimmc",
+        brief = "Bit Banging Multimedia Card Access",
+        description = "Bit banging implementation of a low level MMC interface. "..
+                      "Tested on AT91 only.",
+        requires = { "HW_GPIO" },                                    
+        provides = { "DEV_MMCLL" },
+        sources = { "sbimmc.c" },
+        options =
+        {
+            {
+                macro = "SPI0_CS_BIT",
+                brief = "SPI0 Chip Select (AT91)",
+                description = "Bit number of the chip select line.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SPI0_CLK_BIT",
+                brief = "SPI0 Clock (AT91)",
+                description = "Bit number of the clock line.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SPI0_MOSI_BIT",
+                brief = "SPI0 MOSI (AT91)",
+                description = "Bit number of the MOSI line.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SPI0_MISO_BIT",
+                brief = "SPI0 MISO (AT91)",
+                description = "Bit number of the MISO line.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            
+            {
+                macro = "SPI0_PORT",
+                brief = "SPI0 Port (AVR)",
+                description = "Port register name, AVRPORTB by default.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPI0_CS_BIT",
+                brief = "SPI0 Chip Select (AVR)",
+                description = "Bit number of the chip select line.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },            
+            {
+                macro = "SPI0_CLK_BIT",
+                brief = "SPI0 Clock (AVR)",
+                description = "Bit number of the clock line.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPI0_MOSI_BIT",
+                brief = "SPI0 MOSI (AVR)",
+                description = "Bit number of the MOSI line.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPI0_MISO_BIT",
+                brief = "SPI0 MISO (AVR)",
+                description = "Bit number of the MISO line.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+        },
     },
 
     --
