@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/02/23 15:45:21  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.3  2006/01/25 18:47:42  haraldkipp
  * Fixes wrong implementation of readdir() and simplifies the code.
  * Thanks to Jesper Hansen.
@@ -54,18 +59,18 @@
  * \endverbatim
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <time.h>
-
 #include <fs/fs.h>
 #include <fs/phatfs.h>
 #include <fs/phatvol.h>
 #include <fs/phatio.h>
 #include <fs/phatutil.h>
 #include <fs/phatdir.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <time.h>
 
 #if 0
 /* Use for local debugging. */
@@ -235,6 +240,7 @@ int PhatDirEntryCreate(NUTFILE * ndp, CONST char *name, int acc, PHATDIRENT * di
  */
 int PhatDirEntryUpdate(NUTFILE * nfp)
 {
+    int sbn;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
     PHATFILE *fcb = nfp->nf_fcb;
@@ -248,11 +254,11 @@ int PhatDirEntryUpdate(NUTFILE * nfp)
 #ifdef NUTDEBUG
             PhatDbgDirEntry(stdout, "PhatDirEntryUpdate", &fcb->f_dirent);
 #endif
-            if (PhatSectorLoad(dev, fcb->f_de_sect)) {
+            if ((sbn = PhatSectorLoad(dev, fcb->f_de_sect)) < 0) {
                 return -1;
             }
-            memcpy(vol->vol_buf + fcb->f_de_offs, &fcb->f_dirent, sizeof(PHATDIRENT));
-            vol->vol_bufdirty = 1;
+            memcpy(vol->vol_buf[sbn].sect_data + fcb->f_de_offs, &fcb->f_dirent, sizeof(PHATDIRENT));
+            vol->vol_buf[sbn].sect_dirty = 1;
             fcb->f_de_dirty = 0;
         }
     }
@@ -326,7 +332,7 @@ int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, u_long attmsk, PHATFIND * 
     PhatFilePosSet(ndp, 0);
     while ((rc = PhatDirEntryRead(ndp, temps)) == 0) {
         if ((temps->phfind_ent.dent_attr | attmsk) == attmsk) {
-            if (stricmp(temps->phfind_name, spec) == 0) {
+            if (strcasecmp(temps->phfind_name, spec) == 0) {
                 /* Specified entry found. */
                 if (srch) {
                     *srch = *temps;
@@ -351,7 +357,7 @@ int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, u_long attmsk, PHATFIND * 
  */
 int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_path)
 {
-    int rc;
+    int rc = -1;
     char *parent;
     CONST char *fname;
     NUTFILE *old_ndp;
@@ -374,8 +380,6 @@ int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_pa
         errno = ENOMEM;
     } else {
         if ((rc = PhatDirEntryFind(old_ndp, fname, PHAT_FATTR_FILEMASK, srch)) == 0) {
-            rc = -1;
-
             if ((parent = GetParentPath(new_path, &fname)) == NULL) {
                 errno = ENOMEM;
             } else {

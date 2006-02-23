@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/02/23 15:45:21  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.4  2006/01/23 19:52:10  haraldkipp
  * Added required typecasts before left shift.
  *
@@ -96,6 +101,7 @@ int Phat16GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
 {
     u_long sect;
     u_long pos;
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     /* Do not seek beyond the end of the chain. */
@@ -105,13 +111,13 @@ int Phat16GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
 
     /* Load the sector that contains the table entry. */
     PhatTableLoc(vol, clust, 0, &sect, &pos);
-    if (PhatSectorLoad(dev, sect)) {
+    if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
         return -1;
     }
 
     /* Get the 16 bit link value. */
-    *link = vol->vol_buf[pos];
-    *link += (u_long)(vol->vol_buf[pos + 1]) << 8;
+    *link = vol->vol_buf[sbn].sect_data[pos];
+    *link += (u_long)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
 
     return 0;
 }
@@ -130,16 +136,17 @@ int Phat16SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
     int tabnum;
     u_long sect;
     u_long pos;
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     for (tabnum = 0; tabnum < 2 && vol->vol_tab_sect[tabnum]; tabnum++) {
         PhatTableLoc(vol, clust, tabnum, &sect, &pos);
-        if (PhatSectorLoad(dev, sect)) {
+        if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
             return -1;
         }
-        vol->vol_buf[pos] = (u_char) link;
-        vol->vol_buf[pos + 1] = (u_char) (link >> 8);
-        vol->vol_bufdirty = 1;
+        vol->vol_buf[sbn].sect_data[pos] = (u_char) link;
+        vol->vol_buf[sbn].sect_data[pos + 1] = (u_char) (link >> 8);
+        vol->vol_buf[sbn].sect_dirty = 1;
     }
     return 0;
 }

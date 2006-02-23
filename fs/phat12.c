@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/02/23 15:45:21  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.3  2006/01/23 19:52:10  haraldkipp
  * Added required typecasts before left shift.
  *
@@ -93,6 +98,7 @@ int Phat12GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
 {
     u_long sect;
     u_long pos;
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     /* Do not seek beyond the end of the chain. */
@@ -102,19 +108,19 @@ int Phat12GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
 
     /* Load the sector that contains the table entry. */
     PhatTableLoc(vol, clust, 0, &sect, &pos);
-    if (PhatSectorLoad(dev, sect)) {
+    if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
         return -1;
     }
 
     /* Read the link value. Be aware, that entries may cross sector boundaries. */
-    *link = vol->vol_buf[pos++];
+    *link = vol->vol_buf[sbn].sect_data[pos++];
     if (pos >= vol->vol_sectsz) {
-        if (PhatSectorLoad(dev, sect + 1)) {
+        if ((sbn = PhatSectorLoad(dev, sect + 1)) < 0) {
             return -1;
         }
         pos = 0;
     }
-    *link += (u_long)(vol->vol_buf[pos]) << 8;
+    *link += (u_long)(vol->vol_buf[sbn].sect_data[pos]) << 8;
 
     /* Adjust the 12 bit position within the 16 bit result. */
     if (clust & 1) {
@@ -140,26 +146,27 @@ int Phat12SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
     u_long sect;
     u_long pos;
     u_long tval;
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     for (tabnum = 0; tabnum < 2 && vol->vol_tab_sect[tabnum]; tabnum++) {
 
         /* Load the sector containing the table entry to set. */
         PhatTableLoc(vol, clust, tabnum, &sect, &pos);
-        if (PhatSectorLoad(dev, sect)) {
+        if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
             return -1;
         }
 
         /* The new value is 12 bit only. Thus we must load the
          * old value and keep the upper or lower 4 bit part. */
-        tval = vol->vol_buf[pos];
+        tval = vol->vol_buf[sbn].sect_data[pos];
         if (pos + 1 < vol->vol_sectsz) {
-            tval += (u_long)(vol->vol_buf[pos + 1]) << 8;
+            tval += (u_long)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
         } else {
-            if (PhatSectorLoad(dev, sect + 1)) {
+            if ((sbn = PhatSectorLoad(dev, sect + 1)) < 0) {
                 return -1;
             }
-            tval += (u_long)(vol->vol_buf[0]) << 8;
+            tval += (u_long)(vol->vol_buf[sbn].sect_data[0]) << 8;
         }
 
         link &= PHAT12CMASK;
@@ -173,16 +180,16 @@ int Phat12SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
 
         /* Save the modified entry. Again maintain sector boundaries. */
         if (pos + 1 < vol->vol_sectsz) {
-            vol->vol_buf[pos + 1] = (u_char) (tval >> 8);
+            vol->vol_buf[sbn].sect_data[pos + 1] = (u_char) (tval >> 8);
         } else {
-            vol->vol_buf[0] = (u_char) (tval >> 8);
-            vol->vol_bufdirty = 1;
-            if (PhatSectorLoad(dev, sect)) {
+            vol->vol_buf[sbn].sect_data[0] = (u_char) (tval >> 8);
+            vol->vol_buf[sbn].sect_dirty = 1;
+            if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
                 return -1;
             }
         }
-        vol->vol_buf[pos] = (u_char) tval;
-        vol->vol_bufdirty = 1;
+        vol->vol_buf[sbn].sect_data[pos] = (u_char) tval;
+        vol->vol_buf[sbn].sect_dirty = 1;
     }
 
     return 0;

@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/02/23 15:45:22  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.2  2006/01/22 17:38:43  haraldkipp
  * *** empty log message ***
  *
@@ -71,28 +76,45 @@
  * \brief Flush sector buffers.
  *
  * \param dev Specifies the file system device.
+ * \param bufnum The buffer number to flush. If -1, all buffers are flushed.
  *
  * \return 0 on success, -1 on failures.
  */
-int PhatSectorFlush(NUTDEVICE * dev)
+int PhatSectorFlush(NUTDEVICE * dev, int bufnum)
 {
     BLKPAR_SEEK pars;
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
     NUTFILE *blkmnt = dev->dev_icb;
     NUTDEVICE *blkdev = blkmnt->nf_dev;
 
-    if (vol->vol_bufdirty) {
-        pars.par_nfp = blkmnt;
-        pars.par_blknum = vol->vol_bufsect;
-        if ((*blkdev->dev_ioctl) (blkdev, NUTBLKDEV_SEEK, &pars)) {
-            errno = EIO;
-            return -1;
+    if (bufnum < 0) {
+        sbn = 0;
+#if PHAT_SECTOR_BUFFERS
+        bufnum = PHAT_SECTOR_BUFFERS - 1;
+#else
+        bufnum = 0;
+#endif
+    }
+    else {
+        sbn = bufnum;
+    }
+
+    while (sbn <= bufnum) {
+        if (vol->vol_buf[sbn].sect_dirty) {
+            pars.par_nfp = blkmnt;
+            pars.par_blknum = vol->vol_buf[sbn].sect_num;
+            if ((*blkdev->dev_ioctl) (blkdev, NUTBLKDEV_SEEK, &pars)) {
+                errno = EIO;
+                return -1;
+            }
+            if ((*blkdev->dev_write) (blkmnt, vol->vol_buf[sbn].sect_data, 1) != 1) {
+                errno = EIO;
+                return -1;
+            }
+            vol->vol_buf[sbn].sect_dirty = 0;
         }
-        if ((*blkdev->dev_write) (blkmnt, vol->vol_buf, 1) != 1) {
-            errno = EIO;
-            return -1;
-        }
-        vol->vol_bufdirty = 0;
+        sbn++;
     }
     return 0;
 }
@@ -129,22 +151,43 @@ int PhatSectorRead(NUTFILE * blkmnt, u_long sect, u_char * buf)
 
 /*
  * \param dev Specifies the file system device.
- * \return 0 on success, -1 on failures.
+ * \return Buffer number on success, -1 on failures.
  */
 int PhatSectorLoad(NUTDEVICE * dev, u_long sect)
 {
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
-    if (vol->vol_bufsect != sect) {
-        if (PhatSectorFlush(dev)) {
-            return -1;
+#if PHAT_SECTOR_BUFFERS
+    for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
+        if (vol->vol_buf[sbn].sect_num == sect) {
+            vol->vol_usenext = sbn;
+            return sbn;
         }
-        if (PhatSectorRead(dev->dev_icb, sect, vol->vol_buf)) {
-            return -1;
-        }
-        vol->vol_bufsect = sect;
     }
-    return 0;
+
+    /* Sector not loaded. Use round robin to select a buffer. */
+    vol->vol_usenext++;
+    if (vol->vol_usenext >= PHAT_SECTOR_BUFFERS) {
+        vol->vol_usenext = 0;
+    }
+    sbn = vol->vol_usenext;
+#else
+    sbn = 0;
+    if (vol->vol_buf[sbn].sect_num == sect) {
+        return sbn;
+    }
+#endif
+
+    if (PhatSectorFlush(dev, sbn)) {
+        return -1;
+    }
+    if (PhatSectorRead(dev->dev_icb, sect, vol->vol_buf[sbn].sect_data)) {
+        return -1;
+    }
+    vol->vol_buf[sbn].sect_num = sect;
+
+    return sbn;
 }
 
 /*@}*/

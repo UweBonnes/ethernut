@@ -40,6 +40,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/02/23 15:45:22  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.2  2006/01/22 17:38:06  haraldkipp
  * If mounting fails, the occupied resources are no longer released in
  * PhatVolMount(). Instead the caller, PhatIOCtl() in this case, calls
@@ -145,6 +150,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     PHATVOL *vol;
     PHATVBR *vbr;
     BLKPAR_INFO pari;
+    int sbn;
     NUTDEVICE *blkdev = blkmnt->nf_dev;
 
     /*
@@ -187,17 +193,28 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
         errno = ENODEV;
         return -1;
     }
-    vol->vol_buf = pari.par_blkbp;
+#if PHAT_SECTOR_BUFFERS
+    for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
+        if ((vol->vol_buf[sbn].sect_data = malloc(pari.par_blksz)) == NULL) {
+            errno = ENOMEM;
+            return -1;
+        }
+        vol->vol_buf[sbn].sect_num = (u_long)-1;
+    }
+#else
+    vol->vol_buf[0].sect_data = pari.par_blkbp;
+#endif
+    sbn = 0;
 
     /*
      * We use PhatSectorRead() instead of PhatSectorLoad() for our 
      * very first read to properly initialize the caching status.
      */
-    if (PhatSectorRead(blkmnt, 0, vol->vol_buf)) {
+    if (PhatSectorRead(blkmnt, 0, vol->vol_buf[sbn].sect_data)) {
         return -1;
     }
-    vol->vol_bufsect = 0;
-    vbr = (PHATVBR *) vol->vol_buf;
+    vol->vol_buf[sbn].sect_num = 0;
+    vbr = (PHATVBR *) vol->vol_buf[sbn].sect_data;
 
     /* Convert to the PHAT32 layout. */
     if (vol->vol_type != 32) {
@@ -211,7 +228,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     /*
      * Verify the VBR signature.
      */
-    if (vol->vol_buf[510] != 0x55 || vol->vol_buf[511] != 0xAA) {
+    if (vol->vol_buf[sbn].sect_data[510] != 0x55 || vol->vol_buf[sbn].sect_data[511] != 0xAA) {
         errno = ENODEV;
         return -1;
     }

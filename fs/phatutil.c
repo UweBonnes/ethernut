@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/02/23 15:45:22  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.1  2006/01/05 16:31:50  haraldkipp
  * First check-in.
  *
@@ -44,16 +49,16 @@
  * \endverbatim
  */
 
+#include <fs/phatfs.h>
+#include <fs/phatvol.h>
+#include <fs/phatdir.h>
+#include <fs/phatutil.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
 #include <errno.h>
-
-#include <fs/phatfs.h>
-#include <fs/phatvol.h>
-#include <fs/phatdir.h>
-#include <fs/phatutil.h>
 
 #if 0
 /* Use for local debugging. */
@@ -117,7 +122,7 @@ int MakePhatName(CONST char *src, u_char * dst)
     }
 
     /* Convert the special token of removed entries. */
-    if (*src == PHAT_REM_DIRENT) {
+    if (*src == (char)PHAT_REM_DIRENT) {
         dst[0] = PHAT_REM_NAMENT;
         src++;
     } else {

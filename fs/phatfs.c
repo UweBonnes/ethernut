@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/02/23 15:45:22  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.2  2006/01/22 17:42:08  haraldkipp
  * Now file delete requests fail if used on directory entries.
  *
@@ -47,10 +52,6 @@
  * \endverbatim
  */
 
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
 #include <fs/fs.h>
 
 #include <dirent.h>
@@ -62,6 +63,11 @@
 #include <fs/phatio.h>
 #include <fs/phatutil.h>
 #include <fs/phatdir.h>
+
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
 
 #if 0
 /* Use for local debugging. */
@@ -250,7 +256,7 @@ static int PhatFileFlush(NUTFILE * nfp)
         return -1;
     }
     /* Flush sector buffers. */
-    return PhatSectorFlush(nfp->nf_dev);
+    return PhatSectorFlush(nfp->nf_dev, -1);
 }
 
 /*!
@@ -491,6 +497,7 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
     int rc;
     int step;
     u_long clust;
+    int sbn;
     u_char *buf = (u_char *) buffer;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATFILE *fcb = nfp->nf_fcb;
@@ -581,7 +588,7 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
             }
         }
         /* Load the sector we want to write to. */
-        if (PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) {
+        if ((sbn = PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) < 0) {
             rc = -1;
             break;
         }
@@ -591,8 +598,8 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
             step = len - rc;
         }
         /* Copy data to this sector. */
-        memcpy(&vol->vol_buf[fcb->f_sect_pos], &buf[rc], step);
-        vol->vol_bufdirty = 1;
+        memcpy(&vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], &buf[rc], step);
+        vol->vol_buf[sbn].sect_dirty = 1;
         /* Advance file pointers. */
         fcb->f_pos += step;
         fcb->f_sect_pos += step;
@@ -632,7 +639,9 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
  * \return The number of bytes written. A return value of -1 indicates an 
  *         error.
  */
-static int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len) return -1;
+static int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
+{
+    return -1;
 }
 #endif
 
@@ -651,6 +660,7 @@ static int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
 {
     int rc;
     int step;
+    int sbn;
     u_char *buf = (u_char *) buffer;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -693,7 +703,7 @@ static int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
         }
 
         /* Make sure that the required sector is loaded. */
-        if (PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) {
+        if ((sbn = PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) < 0) {
             rc = -1;
             break;
         }
@@ -701,7 +711,7 @@ static int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
         if (step > size - rc) {
             step = size - rc;
         }
-        memcpy(&buf[rc], &vol->vol_buf[fcb->f_sect_pos], step);
+        memcpy(&buf[rc], &vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], step);
         fcb->f_pos += step;
         fcb->f_sect_pos += step;
     }

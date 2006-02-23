@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/02/23 15:45:21  haraldkipp
+ * PHAT file system now supports configurable number of sector buffers.
+ * This dramatically increased write rates of no-name cards.
+ * AVR compile errors corrected.
+ *
  * Revision 1.4  2006/01/23 19:52:10  haraldkipp
  * Added required typecasts before left shift.
  *
@@ -95,6 +100,7 @@ static void PhatTableLoc(PHATVOL * vol, u_long clust, int tabnum, u_long * sect,
 int Phat32GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
 {
     u_long sect, pos;
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     /* Do not seek beyond the end of the chain. */
@@ -104,15 +110,15 @@ int Phat32GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
 
     /* Load the sector that contains the table entry. */
     PhatTableLoc(vol, clust, 0, &sect, &pos);
-    if (PhatSectorLoad(dev, sect)) {
+    if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
         return -1;
     }
 
     /* Get the 32 bit link value. */
-    *link = vol->vol_buf[pos];
-    *link += (u_long)(vol->vol_buf[pos + 1]) << 8;
-    *link += (u_long)(vol->vol_buf[pos + 2]) << 16;
-    *link += (u_long)(vol->vol_buf[pos + 3]) << 24;
+    *link = vol->vol_buf[sbn].sect_data[pos];
+    *link += (u_long)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
+    *link += (u_long)(vol->vol_buf[sbn].sect_data[pos + 2]) << 16;
+    *link += (u_long)(vol->vol_buf[sbn].sect_data[pos + 3]) << 24;
 
     return 0;
 }
@@ -131,20 +137,21 @@ int Phat32SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
     int tabnum;
     u_long sect;
     u_long pos;
+    int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     for (tabnum = 0; tabnum < 2 && vol->vol_tab_sect[tabnum]; tabnum++) {
         link &= PHAT32CMASK;
 
         PhatTableLoc(vol, clust, tabnum, &sect, &pos);
-        if (PhatSectorLoad(dev, sect)) {
+        if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
             return -1;
         }
-        vol->vol_buf[pos] = (u_char) link;
-        vol->vol_buf[pos + 1] = (u_char) (link >> 8);
-        vol->vol_buf[pos + 2] = (u_char) (link >> 16);
-        vol->vol_buf[pos + 3] = (u_char) (link >> 24);
-        vol->vol_bufdirty = 1;
+        vol->vol_buf[sbn].sect_data[pos] = (u_char) link;
+        vol->vol_buf[sbn].sect_data[pos + 1] = (u_char) (link >> 8);
+        vol->vol_buf[sbn].sect_data[pos + 2] = (u_char) (link >> 16);
+        vol->vol_buf[sbn].sect_data[pos + 3] = (u_char) (link >> 24);
+        vol->vol_buf[sbn].sect_dirty = 1;
     }
     return 0;
 }
