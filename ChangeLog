@@ -1,13 +1,23 @@
-$Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
+$Id: ChangeLog,v 1.310 2006/02/28 02:19:55 hwmaier Exp $
+
+2006-02-28 Henrik Maier  <henrik@proconx.com>
+
+        * arch/avr/dev/ih_ovrit.c, arch/avr/dev/ih_canit.c: Added
+        implementation for IrqCtl function.
+
+        * dev/sbimmc.c: Added macro definition MCU_AT90CAN128
+
+        * include/dev/atcan.h: Prototype for AtCanEnableRx added.
+
 
 2006-02-22  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/arm/include/atom.h: Typo corrected.
 
-	* arch/arm/dev/wdt_at91.c, include/dev/watchdog.h, 
+	* arch/arm/dev/wdt_at91.c, include/dev/watchdog.h,
 	conf/arch/arm.nut: Added support for AT91 watchdog timer.
 
-	* dev/sbimmc.c, conf/dev/dev.nut: MMC low level bit banging SPI 
+	* dev/sbimmc.c, conf/dev/dev.nut: MMC low level bit banging SPI
 	added. Compiles on all platforms, but tested with AT91 only.
 
 	* conf/dev/arch.nut: GPIO provision added for all MCUs except
@@ -16,30 +26,30 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	* dev/mmcard.c: Timeout value increased. Some cards have
 	long write latencies.
 
-	* fs/phatfs.c, fs/phat12.c, fs/phat16.c, fs/phat32.c, 
-	fs/phatdir.c, fs/phatvol.c, fs/phatio.c, include/fs/phatvol.h, 
-	include/fs/phatio.h, include/cfg/fs.h, conf/fs/fs.nut: 
-	PHAT file system now supports configurable number of sector 
-	buffers. This dramatically increased write rates of no-name 
+	* fs/phatfs.c, fs/phat12.c, fs/phat16.c, fs/phat32.c,
+	fs/phatdir.c, fs/phatvol.c, fs/phatio.c, include/fs/phatvol.h,
+	include/fs/phatio.h, include/cfg/fs.h, conf/fs/fs.nut:
+	PHAT file system now supports configurable number of sector
+	buffers. This dramatically increased write rates of no-name
 	cards.
 
-	* include/cfg/dev.h: Including this one may have exclude 
+	* include/cfg/dev.h: Including this one may have exclude
 	cfg/os.h. Preprocessor macro corrected.
 
 	* fs/phatdir.c, fs/phatfs.c, fs/phatutil.c, fs/phatutil.h,
 	fs/phatvol.h: AVR compile errors corrected.
 
-	* pro/ftpd.c: Added missing file truncation flag for 
+	* pro/ftpd.c: Added missing file truncation flag for
 	overriding existing files.
 
 	* conf/repository.nut: Added choice for 32 bit ports.
 
-	* arch/arm/os/nutinit.c, arch/arm/dev/cs8900a.c, 
+	* arch/arm/os/nutinit.c, arch/arm/dev/cs8900a.c,
 	arch/arm/dev/debug_lpc2xxx.c, arch/arm/dev/ihndlr_lpc2xxx.c,
 	arch/arm/dev/ostimer_lpc2xxx.c, include/dev/board.h,
 	include/dev/cs8900a.h, include/dev/debug.h, include/arch/arm.h,
 	include/arch/arm/lpc2xxx.h, include/arch/arm/irqreg.h,
-	include/arch/arm/timer.h: Added Michael Fischer's support for 
+	include/arch/arm/timer.h: Added Michael Fischer's support for
 	the Philips LPC2xxx Family and the LPC-E2294 Board from Olimex.
 
 
@@ -66,7 +76,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	* arch/avr/init/crtnutm256.s, arch/avr/init/extramm256:
 	ICCAVR runtime initialization for ATmega256 added.
 
-	* arch/avr/os/context_icc.c: Now supports ATmega2561 context 
+	* arch/avr/os/context_icc.c: Now supports ATmega2561 context
 	switching for 3 byte program counter.
 
 	* conf/arch/arch.nut: ATmega2561 requires ICCAVR compiler.
@@ -78,7 +88,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	only).
 
 	* include/arch/avr/icc.h, include/arch/avr/irqreg.h,
-	include/arch/avr/timer.h, include/arch/avr.h: ATmega2561 
+	include/arch/avr/timer.h, include/arch/avr.h: ATmega2561
 	added.
 
 	* os/thread.c: Removed unused ICCAVR header file.
@@ -86,7 +96,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	* arch/avr/dev/ih_adc.c, arch/avr/dev/ih_analog_comp.c,
 	arch/avr/dev/ih_canit.c, arch/avr/dev/ih_ee_ready.c,
 	arch/avr/dev/ih_int0.c, arch/avr/dev/ih_int1.c,
-	arch/avr/dev/ih_int2.c arch/avr/dev/ih_int3.c, 
+	arch/avr/dev/ih_int2.c arch/avr/dev/ih_int3.c,
 	arch/avr/dev/ih_int4.c, arch/avr/dev/ih_int5.c,
 	arch/avr/dev/ih_int6.c, arch/avr/dev/ih_int7.c,
 	arch/avr/dev/ih_ovrit.c, arch/avr/dev/ih_spi_stc.c,
@@ -101,8 +111,8 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c,
 	arch/avr/dev/ih_usart0_udre.c, arch/avr/dev/ih_usart1_rx.c,
 	arch/avr/dev/ih_usart1_tx.c, arch/avr/dev/ih_usart1_udre.c,
-	arch/Makefile: Using the vector number as a file name hasn't 
-	been a good idea. ivect01.c to ivect36.c had been moved to the 
+	arch/Makefile: Using the vector number as a file name hasn't
+	been a good idea. ivect01.c to ivect36.c had been moved to the
 	proper name of the interrupt handler.
 
 
@@ -114,7 +124,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 
 2006-01-27  Matthias Ringwald  <mringwal@inf.ethz.ch>
 	* arch/unix/eeprom.c: added #include <sys/types.h>
-	
+
 2006-01-26  Urs Zurbuchen  <going_nuts@myredirect.net>
 	* arch/unix/dev/ostimer.c, arch/unix/os/nutinit.c,
 	arch/unix/os/thread.c, arch/unix/Makefile,
@@ -129,7 +139,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 2006-01-25  Matthias Ringwald  <mringwal@inf.ethz.ch>
     * arch/avr/dev/uartavr: minimized critical section in UartAvrFlush()
     * arch/avr/dev/adc.c, include/dev/adc.h: added explicit off mode
-    
+
 2006-01-25  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/avr/dev/ivect01.c, arch/avr/dev/ivect02.c,
@@ -152,7 +162,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	arch/avr/dev/ivect35.c, arch/avr/dev/ivect36.c:
 	Applied Thiago A. Correa's patch to fix ICC warnings.
 
-	* app/Makeburn.arm-jom, app/Makerules.arm-gcc: Old 'make burn' 
+	* app/Makeburn.arm-jom, app/Makerules.arm-gcc: Old 'make burn'
 	should now work with the jtagomat.
 
 	* fs/phatdir.c: PhatDirEntryRead() returns -1 if the end of
@@ -185,13 +195,13 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	pro/dhcpc.c, pro/resolv.c: Added required typecasts before
 	left shift.
 
-	* conf/arch/arch.nut, os/confos.c: Dummy NVMEM configuration 
+	* conf/arch/arch.nut, os/confos.c: Dummy NVMEM configuration
 	for GBA added.
 
 	* os/version.c: Build number incremented. Twice.
 
 	* os/confos.c, net/confnet.c, dev/nvmem.c, include/dev/nvmem.h:
-	Platform independant routines added, which provide generic 
+	Platform independant routines added, which provide generic
 	access to non-volatile memory.
 
 	* arch/avr/dev/eeprom.c: AVR specific routines for EEPROM access
@@ -201,7 +211,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	configuration routines disabled non-volatile memory access for
 	ARM.
 
-	* conf/arch/arch.nut, conf/arch/avr.nut: HW_NVMEM is now provided 
+	* conf/arch/arch.nut, conf/arch/avr.nut: HW_NVMEM is now provided
 	by a specific module.
 
 	* conf/dev/dev.nut: X1226/X1286 EEPROM can be enabled for system
@@ -225,17 +235,17 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	* arch/arm/dev/dm9000e.c: Possible memory alignment problem
 	may start network interface too early.
 
-	* fs/phat16.c, fs/phat32.c, net/tcpout.c, pro/resolv.c: Avoid 
+	* fs/phat16.c, fs/phat32.c, net/tcpout.c, pro/resolv.c: Avoid
 	memory alignment errors.
 
-	* include/sys/confnet.h, include/sys/confos.h: Added attribute 
+	* include/sys/confnet.h, include/sys/confos.h: Added attribute
 	'packed' to configuration structures.
 
-	* net/confnet.c, os/confos.c: Using new routines for non-volatile 
+	* net/confnet.c, os/confos.c: Using new routines for non-volatile
 	memory access.
 
-	* pro/dhcpc.c: Attribute 'packed' added to BOOTP (new typedef) 
-	and DYNCFG structures. 
+	* pro/dhcpc.c: Attribute 'packed' added to BOOTP (new typedef)
+	and DYNCFG structures.
 	Fixed memory alignment bug, which retrieved wrong values from
 	DHCP options.
 
@@ -268,7 +278,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	achieved by using goto statements, but I try to avoid them.
 
 	* fs/phat12.c, fs/phat16.c, fs/phat32.c: Deleting files
-	results in writing to a wrong sector, which probably corrupted 
+	results in writing to a wrong sector, which probably corrupted
 	the volume.
 
 	* fs/phatdir.c: Added _O_EXCL to open call in PhatDirCreate()
@@ -278,7 +288,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 	empty or was buggy. Now rmdir() correctly returns an error
 	when trying to delete subdirectories, which are not empty.
 
-	* pro/ftpd.c: CreateFullPathName() partly returned double 
+	* pro/ftpd.c: CreateFullPathName() partly returned double
 	slashes or empty paths. This had been corrected.
 
 	* fs/phatdir.c: PhatDirEntryStatus() set wrong errno value
@@ -304,7 +314,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 
 	* app/ftpd/Makefile: Library list corrected.
 
-	* app/ftpd/ftpserv.c: Added support for Ethernut 3, PHAT file 
+	* app/ftpd/ftpserv.c: Added support for Ethernut 3, PHAT file
 	system and realtime clock.
 
 
@@ -353,7 +363,7 @@ $Id: ChangeLog,v 1.309 2006/02/23 15:49:19 haraldkipp Exp $
 
 2006-01-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* doc/gen/nutdoc_en.txt, doc/gen/nutfoot.html, os/version.c: 
+	* doc/gen/nutdoc_en.txt, doc/gen/nutfoot.html, os/version.c:
 	Version information changed.
 
 
