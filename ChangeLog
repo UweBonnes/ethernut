@@ -1,8 +1,9 @@
-$Id: ChangeLog,v 1.311 2006/02/28 09:14:34 hwmaier Exp $
+$Id: ChangeLog,v 1.312 2006/02/28 09:22:20 hwmaier Exp $
 
 2006-02-28 Henrik Maier  <henrik@proconx.com>
 
-        * app/canbus/candemo.c: Added CAN example for AT90CAN128 MCU,
+        * app/canbus/candemo.c, doc/gen/nut_en.cfg.in: Added CAN example
+        for AT90CAN128 MCU.
 
         * arch/avr/dev/ih_ovrit.c, arch/avr/dev/ih_canit.c: Added
         implementation for IrqCtl function.
