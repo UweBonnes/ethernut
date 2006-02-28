@@ -29,6 +29,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/02/28 16:16:04  freckle
+ * terminating \0 in thread name
+ *
  * Revision 1.1  2005/05/27 17:18:41  drsung
  * Moved the file.
  *
@@ -168,6 +171,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));
 
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
+    td->td_name[sizeof(td->td_name) - 1] = 0;
     td->td_sp = (uptr_t) sf;
     td->td_memory = threadMem;
     *((u_long *) threadMem) = DEADBEEF;
