@@ -33,15 +33,18 @@
 /*!
  * \brief Low Level Multimedia Card Access.
  *
- * Low level MMC hardware routines for SPI emulation by software 
+ * Low level MMC hardware routines for SPI emulation by software
  * (bit banging).
  *
- * These routines support SPI mode only and are required by the 
+ * These routines support SPI mode only and are required by the
  * basic MMC driver.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/02/28 02:16:12  hwmaier
+ * Added macro definition MCU_AT90CAN128
+ *
  * Revision 1.1  2006/02/23 15:38:03  haraldkipp
  * MMC low level bit banging SPI added. Compiles on all supported platforms,
  * but tested with AT91 only.
@@ -125,7 +128,7 @@
 #define SPI0_ODS_REG PIO_ODSR
 #endif
 
-#elif defined(MCU_ATMEGA2561) || defined(MCU_ATMEGA128) || defined(MCU_ATMEGA103) /* MCU */
+#elif defined(MCU_ATMEGA2561) || defined(MCU_AT90CAN128) || defined(MCU_ATMEGA128) || defined(MCU_ATMEGA103) /* MCU */
 
 #ifndef inr
 #define inr(a)  inb(a)
@@ -401,7 +404,7 @@ static void SbiMmCard0RemIrq(void *arg)
 /*!
  * \brief Initialize MMC hardware interface.
  *
- * This function is automatically executed during during device 
+ * This function is automatically executed during during device
  * registration via NutRegisterDevice().
  *
  * \param dev Identifies the device to initialize.
@@ -420,11 +423,11 @@ static int SbiMmcIfcInit(NUTDEVICE * dev)
     outr(SPI0_OD_REG, _BV(SPI0_MISO_BIT));
 #else
     /*
-     * If this CPU hasn't got a specific output disable register, we 
-     * assume that inputs are enabled by clearing the corresponding bit 
+     * If this CPU hasn't got a specific output disable register, we
+     * assume that inputs are enabled by clearing the corresponding bit
      * in the output enable register.
      */
-    outr(SPI0_OE_REG, (inr(SPI0_OE_REG) & ~_BV(SPI0_MISO_BIT)) 
+    outr(SPI0_OE_REG, (inr(SPI0_OE_REG) & ~_BV(SPI0_MISO_BIT))
         | _BV(SPI0_CLK_BIT) | _BV(SPI0_MOSI_BIT) | _BV(SPI0_CS_BIT));
 #endif
 
@@ -456,13 +459,13 @@ static MMCIFC mmc0_ifc = {
 /*!
  * \brief Multimedia card device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
- * to bind this driver to the Nut/OS kernel. An application may then 
+ * A pointer to this structure must be passed to NutRegisterDevice()
+ * to bind this driver to the Nut/OS kernel. An application may then
  * call
  * /verbatim
  * _open("MMC0:", _O_RDWR | _O_BINARY);
  * /endverbatim
- * to mount the first active primary partition with any previously 
+ * to mount the first active primary partition with any previously
  * registered file system driver (typically devPhat0).
  */
 NUTDEVICE devSbiMmc0 = {
