@@ -32,12 +32,15 @@
  */
 
 /*!
- * \file arch/avr/dev/ivect35.c
+ * \file arch/avr/dev/ih_ovrit.c
  * \brief CAN overflow interrupt.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/02/28 02:16:56  hwmaier
+ * Implemented AvrCanOvrIrqCtl function.
+ *
  * Revision 1.1  2006/02/08 15:14:21  haraldkipp
  * Using the vector number as a file name wasn't a good idea.
  * Moved from ivect*.c
@@ -91,7 +94,40 @@ IRQ_HANDLER sig_CAN_OVERRUN = {
  */
 static int AvrCanOvrIrqCtl(int cmd, void *param)
 {
-    return -1;
+    int rc = 0;
+    u_int *ival = (u_int *) param;
+    int enabled = bit_is_set(CANGIE, ENOVRT);
+
+    /* Disable interrupt. */
+    cbi(CANGIE, ENOVRT);
+
+    switch (cmd) {
+    case NUT_IRQCTL_INIT:
+    case NUT_IRQCTL_DISABLE:
+        enabled = 0;
+        break;
+    case NUT_IRQCTL_ENABLE:
+        enabled = 1;
+        break;
+    case NUT_IRQCTL_GETPRIO:
+        *ival = 0;
+        break;
+#ifdef NUT_PERFMON
+    case NUT_IRQCTL_GETCOUNT:
+        *ival = (u_int) SIG_CAN_OVERFLOW1.ir_count;
+        SIG_CAN_OVERFLOW1.ir_count = 0;
+        break;
+#endif
+    default:
+        rc = -1;
+        break;
+    }
+
+    /* Enable interrupt. */
+    if (enabled) {
+        sbi(CANGIE, ENOVRT);
+    }
+    return rc;
 }
 
 /*! \fn SIG_CAN_OVERFLOW1(void)
