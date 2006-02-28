@@ -51,6 +51,10 @@
 
 extern NUTDEVICE devAtCan;
 
+int8_t AtCanEnableRx(uint8_t noOfMsgObjs,
+                     uint32_t id, int8_t idIsExt, int8_t idRemTag,
+                     uint32_t mask, int8_t maskIsExt, int8_t maskRemTag);
+
 #endif
 /*@}*/
 
