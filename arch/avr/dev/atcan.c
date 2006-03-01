@@ -41,6 +41,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/03/01 02:15:29  hwmaier
+ * Error check for NutHeapAlloc added
+ *
  * Revision 1.3  2005/12/04 10:53:59  hwmaier
  * no message
  *
@@ -665,6 +668,8 @@ int AtCanInit(NUTDEVICE * dev)
 
     // Init receive buffer
     canRxBuf.dataptr = NutHeapAlloc(CAN_BUF_SIZE * sizeof(CANFRAME));
+    if (canRxBuf.dataptr == 0)
+        return -1;
     canRxBuf.size = CAN_BUF_SIZE;
     canRxBuf.dataindex = 0;
     canRxBuf.datalength = 0;
