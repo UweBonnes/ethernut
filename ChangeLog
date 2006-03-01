@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.312 2006/02/28 09:22:20 hwmaier Exp $
+$Id: ChangeLog,v 1.313 2006/03/01 02:15:50 hwmaier Exp $
+
+2006-03-01 Henrik Maier  <henrik@proconx.com>
+
+        * nut/app/Makerules.avr-gcc: -Wl,--start-group and -Wl,--end-group
+        options added to solve circular reference issue with libraries.
+        With these option it is not necessary to list them multiple times
+        or order them in some magic way.
+
+        * arch/avr/dev/atcan.c: Error check for NutHeapAlloc added
+
 
 2006-02-28 Henrik Maier  <henrik@proconx.com>
 
