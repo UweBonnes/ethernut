@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.3  2006/03/01 02:11:44  hwmaier
+# -Wl,--start-group and -Wl,--end-group options added to solve circular reference issue with libraries. With these option it is not necessary to list them multiple times or order them in some magic way.
+#
 # Revision 1.2  2005/05/09 17:17:28  chaac
 # Make sure that no EEPROM section is written to .HEX file if eeprom sections
 # are defined in source files. EEPROM sections should only be in .EEP files.
@@ -44,7 +47,7 @@
 include $(top_srcdir)/Makerules.avr-gcc
 
 %elf: $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CC) $(OBJS) $(LDFLAGS) -Wl,--start-group $(LIBS) -Wl,--end-group -o $@
 
 %cof: %elf
 	$(ELFCOF) -O coff-ext-avr $< $@
