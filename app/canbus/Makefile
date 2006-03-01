@@ -1,7 +1,7 @@
 #
 # Makefile - Simple Makefile for Nut/OS example programs
 #
-# $Id: Makefile,v 1.1 2006/02/28 09:12:19 hwmaier Exp $
+# $Id: Makefile,v 1.2 2006/03/01 02:17:18 hwmaier Exp $
 #
 
 
@@ -11,7 +11,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -Wl,--start-group -lnutpro -lnutos -lnutarch -lnutdev -lnutnet -lnutfs -lnutcrt -Wl,--end-group
+LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutos -lnutarch -lnutdev -lnutnet -lnutfs -lnutcrt
 
 TARG =  $(PROJ).hex
 
