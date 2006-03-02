@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/02 19:57:33  haraldkipp
+ * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -57,7 +60,7 @@ static int _sputb(int fd, CONST void *buffer, size_t count)
 {
     char **spp = (char **) ((uptr_t) fd);
 
-    memcpy(*spp, buffer, count);
+    memcpy(*spp, (void *)buffer, count);
     *spp += count;
 
     return count;

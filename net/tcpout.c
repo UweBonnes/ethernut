@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/03/02 19:57:34  haraldkipp
+ * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
+ *
  * Revision 1.6  2006/01/23 17:33:47  haraldkipp
  * Avoid memory alignment errors.
  *
@@ -261,7 +264,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
             sock->so_last_error = ENOBUFS;
             return -1;
         }
-        memcpy(nb->nb_ap.vp, data, size);
+        memcpy(nb->nb_ap.vp, (void *)data, size);
         sock->so_tx_nxt += size;
         th->th_flags |= TH_PUSH;
     }

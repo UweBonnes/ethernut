@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/03/02 19:59:56  haraldkipp
+ * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
+ *
  * Revision 1.2  2006/02/23 15:45:22  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  * This dramatically increased write rates of no-name cards.
@@ -244,7 +247,7 @@ char *GetParentPath(CONST char *path, CONST char **comp)
         errno = ENOMEM;
         return NULL;
     }
-    memcpy(parent, path, len - 1);
+    memcpy(parent, (void *)path, len - 1);
     parent[len - 1] = 0;
 
     return parent;

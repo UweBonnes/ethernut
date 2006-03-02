@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/03/02 19:57:34  haraldkipp
+ * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
+ *
  * Revision 1.2  2006/01/19 18:41:34  haraldkipp
  * Year translation was completely broken. Fixed.
  *
@@ -416,7 +419,7 @@ int X12EepromWrite(u_int addr, CONST void *buff, size_t len)
         }
         wbuf[0] = (u_char)(addr >> 8);
         wbuf[1] = (u_char)addr;
-        memcpy(wbuf + 2, wp, wlen);
+        memcpy(wbuf + 2, (void *)wp, wlen);
 
         /* Enable EEPROM write access and send the write buffer. */
         if ((rc = X12WriteEnable(1)) == 0) {

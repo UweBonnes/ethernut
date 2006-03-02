@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/03/02 19:57:34  haraldkipp
+ * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
+ *
  * Revision 1.6  2006/01/05 16:45:20  haraldkipp
  * Dynamic NUTFILE allocation for detached block device.
  *
@@ -131,7 +134,7 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
     if ((u_int) size > rome->rome_size - romf->romf_pos)
         size = rome->rome_size - romf->romf_pos;
     if (size) {
-        memcpy_P(buffer, rome->rome_data + romf->romf_pos, size);
+        memcpy_P(buffer, (void *)(rome->rome_data + romf->romf_pos), size);
         romf->romf_pos += size;
     }
     return size;
