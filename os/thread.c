@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.25  2006/03/02 23:57:54  hwmaier
+ * Fixed bug NutStackHeap* functions. The availabe variable was not
+ * taken into account.
+ *
  * Revision 1.24  2006/02/08 15:20:56  haraldkipp
  * ATmega2561 Support
  *
@@ -585,17 +589,31 @@ HANDLE GetThreadByName(u_char * name)
  */
 
 HEAPNODE* volatile stackHeapFreeList = 0; /* for special stack heap */
+u_short stackHeapAvailable = 0;
+extern u_short available;
 
 void *NutStackAlloc(size_t size)
 {
     void * result;
     HEAPNODE* savedHeapNode;
+    u_short savedAvailable;
 
+    // Save current real heap context
     savedHeapNode = heapFreeList;
+    savedAvailable = available;
+    // Restore stack-heap context
     heapFreeList = stackHeapFreeList;
+    available = stackHeapAvailable;
+
     result = NutHeapAlloc(size);
+
+    // Save stack-heap context
     stackHeapFreeList = heapFreeList;
+    stackHeapAvailable = available;
+    // Restore real heap context
     heapFreeList = savedHeapNode;
+    available = savedAvailable;
+
     return result;
 }
 
@@ -603,24 +621,47 @@ int NutStackFree(void *block)
 {
     int result;
     HEAPNODE* savedHeapNode;
+    u_short savedAvailable;
 
+    // Save current real heap context
     savedHeapNode = heapFreeList;
+    savedAvailable = available;
+    // Restore stack-heap context
     heapFreeList = stackHeapFreeList;
+    available = stackHeapAvailable;
+
     result = NutHeapFree(block);
+
+    // Save stack-heap context
     stackHeapFreeList = heapFreeList;
+    stackHeapAvailable = available;
+    // Restore real heap context
     heapFreeList = savedHeapNode;
+    available = savedAvailable;
+
     return result;
 }
 
 void NutStackAdd(void *addr, size_t size)
 {
    HEAPNODE* savedHeapNode;
+   u_short savedAvailable;
 
+   // Save current real heap context
    savedHeapNode = heapFreeList;
+   savedAvailable = available;
+   // Restore stack-heap context
    heapFreeList = stackHeapFreeList;
+   available = stackHeapAvailable;
+
    NutHeapAdd(addr, size);
+
+   // Save stack-heap context
    stackHeapFreeList = heapFreeList;
+   stackHeapAvailable = available;
+   // Restore real heap context
    heapFreeList = savedHeapNode;
+   available = savedAvailable;
 }
 
 #endif /* defined(NUTMEM_STACKHEAP) */
