@@ -33,8 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/02 23:57:12  hwmaier
+ * Include cfg/dev.h added
+ *
  * Revision 1.2  2006/01/11 08:33:30  hwmaier
- * Changes to make receiver thread's stack size configurable and honour the NUT_THREAD_NICRXSTACK configuration setting
+ * Changes to make receiver thread's stack size configurable and honour
+ * the NUT_THREAD_NICRXSTACK configuration setting
  *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
@@ -101,6 +105,7 @@
 
 #include <cfg/os.h>
 #include <cfg/arch/avr.h>
+#include <cfg/dev.h>
 
 #include <string.h>
 
