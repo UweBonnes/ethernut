@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/02 19:51:16  haraldkipp
+ * Replaced GCC specific inline specifications with their portable
+ * counterparts.
+ *
  * Revision 1.2  2006/01/23 17:33:14  haraldkipp
  * Possible memory alignment problem may start network interface too early.
  *
@@ -313,13 +317,13 @@ typedef struct _NICINFO NICINFO;
 /*@{*/
 
 
-static inline void nic_outb(u_char reg, u_char val)
+static INLINE void nic_outb(u_char reg, u_char val)
 {
     outb(NIC_BASE_ADDR, reg);
     outb(NIC_DATA_ADDR, val);
 }
 
-static inline u_char nic_inb(u_short reg)
+static INLINE u_char nic_inb(u_short reg)
 {
     outb(NIC_BASE_ADDR, reg);
     return inb(NIC_DATA_ADDR);
