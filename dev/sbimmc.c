@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/03/02 19:58:16  haraldkipp
+ * Too lazy to port the inline assembly to ICCARM.
+ *
  * Revision 1.2  2006/02/28 02:16:12  hwmaier
  * Added macro definition MCU_AT90CAN128
  *
@@ -285,7 +288,7 @@ static u_char SbiMmCard0Io(u_char val)
     }
 #endif
 
-#ifdef MCU_AT91R40008
+#if defined(MCU_AT91R40008) && defined(__GNUC__)
     /* ARM assembly version, tested on AT91R40008 only. */
     asm volatile (
         "\nspi_tran_l:\n\t"
