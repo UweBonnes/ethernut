@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/03/02 19:59:05  haraldkipp
+ * Added implementation of dev_size makes _filelength() work, which in turn
+ * enables the use of these file systems in pro/httpd.c.
+ *
  * Revision 1.3  2006/02/23 15:45:22  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  * This dramatically increased write rates of no-name cards.
@@ -719,6 +723,24 @@ static int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
 }
 
 /*!
+ * \brief Retrieve the size of a previously opened file.
+ *
+ * This function is called by the low level size routine of the C runtime 
+ * library, using the _NUTDEVICE::dev_size entry.
+ *
+ * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a 
+ *            previous call to PhatFileOpen().
+ *
+ * \return Size of the file.
+ */
+static long PhatFileSize(NUTFILE *nfp)
+{
+    PHATFILE *fcb = nfp->nf_fcb;
+
+    return fcb->f_dirent.dent_fsize;
+}
+
+/*!
  * \brief File system specific functions.
  * \param dev Specifies the file system device.
  */
@@ -839,7 +861,7 @@ NUTDEVICE devPhat0 = {
 #endif
     PhatFileOpen,               /*!< Open a file, dev_open. */
     PhatFileClose,              /*!< Close a file, dev_close. */
-    0                           /*!< Return file size, dev_size. */
+    PhatFileSize                /*!< Return file size, dev_size. */
 };
 
 /*@}*/
