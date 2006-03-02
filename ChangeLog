@@ -1,4 +1,56 @@
-$Id: ChangeLog,v 1.313 2006/03/01 02:15:50 hwmaier Exp $
+$Id: ChangeLog,v 1.314 2006/03/02 20:06:01 haraldkipp Exp $
+
+2006-03-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/tools.nut, conf/arch/arm.nut: First attempt to compile 
+	with ICCARM. All compile errors fixed, but not a finished 
+	port yet. Many things are missing.
+
+	* crt/vsprintf.c, dev/x12rtc.c, fs/phatutil.c, fs/uromfs.c,
+	net/tcpout.c: ICCARM insists on a (void *) typecast for the 
+	second parameter of memcpy().
+
+	* dev/sbimmc.c: Too lazy to port the inline assembly to 
+	ICCARM.
+
+	* include/arch/arm/at91.h: Added ICCARM interrupt entry
+	code. Probably not working, because excluded an immediate
+	load.
+
+	* include/arch/arm/atom.h: Added ICCARM inline assembly
+	for NutEnter/ExitCritical(). Also fixed SF 1440949 (FIQ
+	never enabled).
+
+	* include/arch/arm.h: Added a few macros to allow compilation
+	with ICCARM. These are well known from the AVR target.
+	Wish we could have a more general include file for compiler
+	related macros.
+
+	* include/sys/types.h: ICCARM doesn't know __PTRDIFF_TYPE__.
+
+	* arch/arm/dev/at91init.c, arch/arm/os/nutinit.c,
+	conf/arch/arm.nut, include/arch/arm/at91.h: Added MCU specific 
+	hardware initialization routine. This should be done later for 
+	all MCUs to avoid contaminating NutInit() with MCU specific 
+	stuff. For the AT91 the spurious interrupt handler has
+	been added, which fixes SF 1440948.
+
+	* arch/arm/dev/ax88796.c: Replaced inline assembly nops
+	with their portable counterparts.
+
+	* arch/arm/dev/dm9000e.c: Replaced GCC specific inline
+	specifications with their portable counterparts.
+
+	* arch/arm/dev/ostimer_at91.c: Bugfix. The system timer
+	configuration was based on a fixed MCU clock of 66.6 MHz.
+	Now it uses the actual frequency.
+
+	* fs/phatfs.c, fs/pnutfs.c: Added implementation of dev_size 
+	makes _filelength() work, which in turn enables the use of 
+	these file systems in pro/httpd.c.
+
+	* app/httpd/httpserv.c: Can use MMC.
+
 
 2006-03-01 Henrik Maier  <henrik@proconx.com>
 
