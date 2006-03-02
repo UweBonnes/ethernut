@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/03/02 20:04:11  haraldkipp
+ * ICCARM doesn't know __PTRDIFF_TYPE__.
+ *
  * Revision 1.9  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -219,11 +222,13 @@ extern "C" {
  */
 #if defined(__AVR__)
     typedef unsigned short uptr_t;
-#else
+#elif defined(__GNUC__)
 /*
  * For remaining MCUs GCC is assumed where __PTRDIFF_TYPE__ macro is defined
  */
     typedef unsigned __PTRDIFF_TYPE__ uptr_t;
+#else
+    typedef unsigned int uptr_t;
 #endif
 
 #define __byte_swap2(val)           \
