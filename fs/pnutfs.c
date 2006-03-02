@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/03/02 20:01:17  haraldkipp
+ * Added implementation of dev_size makes _filelength() work, which in turn
+ * enables the use of this file system in pro/httpd.c.
+ *
  * Revision 1.8  2006/01/05 16:45:20  haraldkipp
  * Dynamic NUTFILE allocation for detached block device.
  *
@@ -1265,6 +1269,24 @@ int PnutIOCtl(NUTDEVICE * dev, int req, void *conf)
     return rc;
 }
 
+/*!
+ * \brief Retrieve the size of a previously opened file.
+ *
+ * This function is called by the low level size routine of the C runtime 
+ * library, using the _NUTDEVICE::dev_size entry.
+ *
+ * \param nfp Pointer to a \ref _NUTFILE structure, obtained by a 
+ *            previous call to PhatFileOpen().
+ *
+ * \return Size of the file.
+ */
+static long PnutFileSize(NUTFILE *nfp)
+{
+    PNUTFILE *fp = nfp->nf_fcb;
+
+    return BankNodePointer(fp->f_node)->node_size;
+}
+
 /* ------------------------ Initialization ------------------------ */
 
 /*!
@@ -1323,7 +1345,7 @@ NUTDEVICE devPnut = {
 #endif
     PnutFileOpen,               /*!< Open a file, dev_open. */
     PnutFileClose,              /*!< Close a file, dev_close. */
-    0                           /*!< Return file size, dev_size. */
+    PnutFileSize                /*!< Return file size, dev_size. */
 };
 
 /*@}*/
