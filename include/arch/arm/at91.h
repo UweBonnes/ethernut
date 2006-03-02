@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/03/02 20:02:56  haraldkipp
+ * Added ICCARM interrupt entry code. Probably not working, because I
+ * excluded an immediate load.
+ *
  * Revision 1.3  2006/01/05 16:52:49  haraldkipp
  * Baudrate calculation is now based on NutGetCpuClock().
  * The AT91_US_BAUD macro had been marked deprecated.
@@ -791,6 +795,8 @@
 #define AIC_SPU     (AIC_BASE + 0x134)  /*!< \brief Spurious vector register address. */
 /*@}*/
 
+#ifdef __GNUC__
+
 /*!
  * \brief Interrupt entry.
  */
@@ -810,6 +816,23 @@
                  "str   r0, [r0, #0x130]"   "\n\t"  /* */ \
                  "ldmfd sp!, {r0-r12, pc}^" "\n\t")     /* Restore registers and return. */
 
+
+#else /* __IMAGECRAFT__ */
+
+#define IRQ_ENTRY() \
+    asm("sub   lr, lr,#4\n" \
+        "stmfd sp!,{r0-r12,lr}\n" \
+        "mrs   r1, spsr\n" \
+        "stmfd sp!,{r1}\n")
+
+#define IRQ_EXIT() \
+    asm("ldmfd sp!, {r1}\n" \
+        "msr   spsr_c, r1\n" \
+        ";ldr   r0, =0xFFFFF000\n" /* ICCARM: FIXME! */ \
+        "str   r0, [r0, #0x130]\n" \
+        "ldmfd sp!, {r0-r12, pc}^")
+
+#endif
 
 /*@} xgNutArchArmAt91Aic */
 
@@ -832,5 +855,7 @@
 #define IRQ2_ID     18          /*!< \brief External interrupt 2 ID. */
 /*@}*/
 /*@} xgNutArchArmAt91 */
+
+extern void McuInit(void);
 
 #endif                          /* _ARCH_ARM_AT91_H_ */
