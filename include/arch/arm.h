@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/03/02 20:02:05  haraldkipp
+ * Added a few macros to allow compilation with ICCARM.
+ *
  * Revision 1.6  2006/02/23 15:34:00  haraldkipp
  * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
  * Many thanks to Michael Fischer for this port.
@@ -82,9 +85,17 @@
 #define F_BIT               0x40
 #define T_BIT               0x20
 
-
+#ifdef __GNUC__
 #define CONST      const
 #define INLINE     inline
+#else
+#ifndef CONST
+#define CONST      const
+#endif
+#ifndef INLINE
+#define INLINE
+#endif
+#endif
 
 #define PSTR(p)    (p)
 #define PRG_RDB(p) (*((const char *)(p)))
@@ -117,7 +128,11 @@ extern void *__bss_end;
 extern void *__stack;
 
 #ifndef _NOP
+#ifdef __GNUC__
 #define _NOP() __asm__ __volatile__ ("mov r0, r0")
+#else
+#define _NOP() asm("mov r0, r0")
+#endif
 #endif
 
 #define outb(_reg, _val)  (*((volatile unsigned char *)(_reg)) = (_val))
@@ -129,5 +144,9 @@ extern void *__stack;
 #define inr(_reg)   (*((volatile unsigned int *)(_reg)))
 
 #define _BV(bit)    (1 << bit)
+
+#ifdef __IMAGECRAFT__
+#define __attribute__(x)
+#endif
 
 #endif
