@@ -1,16 +1,26 @@
-$Id: ChangeLog,v 1.314 2006/03/02 20:06:01 haraldkipp Exp $
+$Id: ChangeLog,v 1.315 2006/03/02 23:59:23 hwmaier Exp $
+
+2006-03-03 Henrik Maier  <henrik@proconx.com>
+
+        * os/thread.c: Fixed bug NutStackHeap* functions. The availabe
+        variable was not taken into account.
+
+        * conf/arch/avr.nut: NUT_THREAD_NICRXSTACK entry added.
+
+        * arch/avr/dev/nicctrl.c: Include cfg/dev.h added
+
 
 2006-03-02  Harald Kipp  <harald.kipp@egnite.de>
 
-	* conf/tools.nut, conf/arch/arm.nut: First attempt to compile 
-	with ICCARM. All compile errors fixed, but not a finished 
+	* conf/tools.nut, conf/arch/arm.nut: First attempt to compile
+	with ICCARM. All compile errors fixed, but not a finished
 	port yet. Many things are missing.
 
 	* crt/vsprintf.c, dev/x12rtc.c, fs/phatutil.c, fs/uromfs.c,
-	net/tcpout.c: ICCARM insists on a (void *) typecast for the 
+	net/tcpout.c: ICCARM insists on a (void *) typecast for the
 	second parameter of memcpy().
 
-	* dev/sbimmc.c: Too lazy to port the inline assembly to 
+	* dev/sbimmc.c: Too lazy to port the inline assembly to
 	ICCARM.
 
 	* include/arch/arm/at91.h: Added ICCARM interrupt entry
@@ -29,9 +39,9 @@ $Id: ChangeLog,v 1.314 2006/03/02 20:06:01 haraldkipp Exp $
 	* include/sys/types.h: ICCARM doesn't know __PTRDIFF_TYPE__.
 
 	* arch/arm/dev/at91init.c, arch/arm/os/nutinit.c,
-	conf/arch/arm.nut, include/arch/arm/at91.h: Added MCU specific 
-	hardware initialization routine. This should be done later for 
-	all MCUs to avoid contaminating NutInit() with MCU specific 
+	conf/arch/arm.nut, include/arch/arm/at91.h: Added MCU specific
+	hardware initialization routine. This should be done later for
+	all MCUs to avoid contaminating NutInit() with MCU specific
 	stuff. For the AT91 the spurious interrupt handler has
 	been added, which fixes SF 1440948.
 
@@ -45,8 +55,8 @@ $Id: ChangeLog,v 1.314 2006/03/02 20:06:01 haraldkipp Exp $
 	configuration was based on a fixed MCU clock of 66.6 MHz.
 	Now it uses the actual frequency.
 
-	* fs/phatfs.c, fs/pnutfs.c: Added implementation of dev_size 
-	makes _filelength() work, which in turn enables the use of 
+	* fs/phatfs.c, fs/pnutfs.c: Added implementation of dev_size
+	makes _filelength() work, which in turn enables the use of
 	these file systems in pro/httpd.c.
 
 	* app/httpd/httpserv.c: Can use MMC.
