@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/03/02 19:48:19  haraldkipp
+ * Replaced inline assembly nops with their portable counterparts.
+ *
  * Revision 1.3  2006/01/23 17:27:47  haraldkipp
  * Previous hack to fix missing network configuration routines disabled
  * non-volatile memory access for ARM.
@@ -143,22 +146,22 @@ struct nic_pkt_header {
  */
 void Delay16Cycles(void)
 {
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
-    asm volatile ("nop");
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
+    _NOP();
 }
 
 //==============================================================================
