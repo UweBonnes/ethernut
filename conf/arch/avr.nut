@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.10  2006/03/02 23:56:53  hwmaier
+-- NUT_THREAD_NICRXSTACK entry added
+--
 -- Revision 1.9  2006/02/08 15:20:22  haraldkipp
 -- ATmega2561 Support
 --
@@ -170,7 +173,7 @@ nutarch_avr =
             "avr/dev/ih_usart0_udre.c",
             "avr/dev/ih_usart1_rx.c",
             "avr/dev/ih_usart1_tx.c",
-            "avr/dev/ih_usart1_udre.c",        
+            "avr/dev/ih_usart1_udre.c",
             "avr/dev/irqstack.c"
         },
         options =
@@ -575,6 +578,14 @@ nutarch_avr =
                 type = "enumerated",
                 choices = avr_port_choice,
                 file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "NUT_THREAD_NICRXSTACK",
+                brief = "Receiver Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the NIC receive thread.",
+                default = "640",
+                type = "integer",
+                file = "include/cfg/dev.h"
             }
 
         }
