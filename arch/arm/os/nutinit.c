@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/03/02 19:43:11  haraldkipp
+ * Added MCU specific hardware initialization routine. This should be done
+ * later for all MCUs to avoid contaminating NutInit() with MCU specific
+ * stuff. For the AT91 the spurious interrupt handler has been added,
+ * which fixes SF 1440948.
+ *
  * Revision 1.5  2006/02/23 15:34:00  haraldkipp
  * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
  * Many thanks to Michael Fischer for this port.
@@ -168,6 +174,8 @@ void NutInit(void)
 {
 #if defined(OLIMEX_LPCE2294)
     InitHW();
+#elif defined(MCU_AT91R40008)
+    McuInit();
 #endif
 
     NutHeapAdd(HEAP_START, HEAP_SIZE);
