@@ -33,6 +33,10 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.10  2006/03/02 19:54:48  haraldkipp
+-- First attempt to compile with ICCARM. All compile errors fixed, but not
+-- a finished port yet. Many things are missing.
+--
 -- Revision 1.9  2006/02/08 15:20:21  haraldkipp
 -- ATmega2561 Support
 --
@@ -106,12 +110,20 @@ nuttools =
         },
         {
             brief = "ImageCraft for AVR",
-            description = "Make sure you have deselected all othe compilers.",
+            description = "Make sure you have deselected all other compilers.",
             provides = { "TOOL_CC_AVR", "TOOL_ICC" },
             macro = "ICCAVR",
             flavor = "boolean",
             file = "include/cfg/arch.h",
             makedefs = { "MCU_ATMEGA2561=enhanced", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
+        },
+        {
+            brief = "ImageCraft for ARM",
+            description = "Make sure you have deselected all other compilers.",
+            provides = { "TOOL_CC_ARM", "TOOL_ICC" },
+            macro = "ICCARM",
+            flavor = "boolean",
+            file = "include/cfg/arch.h",
         }
     },
     {
