@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.14  2006/03/02 19:44:03  haraldkipp
+ * MMC and PHAT enabled.
+ *
  * Revision 1.13  2006/01/11 08:32:57  hwmaier
  * Added explicit type casts to silence a few avr-gcc 3.4.3 warning messages
  *
@@ -85,13 +88,30 @@
 #define MYIP    "192.168.192.100"
 #define MYMASK  "255.255.255.0"
 
+#if 1
+/* Default configuration uses UROM. */
+#define MY_FSDEV        devUrom
+#else
+/* Alternate configuration for PHAT on MMC. */
+#define MY_FSDEV        devPhat0
+#define MY_FSDEV_NAME   "PHAT0" 
+#define MY_BLKDEV       devSbiMmc0
+#define MY_BLKDEV_NAME  "MMC0"
+#define MY_HTTPROOT     MY_FSDEV_NAME ":/" 
+#endif
+
+
 #include <cfg/os.h>
 
 #include <string.h>
 #include <io.h>
+#include <fcntl.h>
 
 #include <dev/board.h>
 #include <dev/urom.h>
+#include <dev/nplmmc.h>
+#include <dev/sbimmc.h>
+#include <fs/phatfs.h>
 
 #include <sys/version.h>
 #include <sys/thread.h>
@@ -575,7 +595,35 @@ int main(void)
     /*
      * Register our device for the file system.
      */
-    NutRegisterDevice(&devUrom, 0, 0);
+    NutRegisterDevice(&MY_FSDEV, 0, 0);
+
+#ifdef MY_BLKDEV
+    /* Register block device. */
+    printf("Registering block device '" MY_BLKDEV_NAME "'...");
+    if (NutRegisterDevice(&MY_BLKDEV, 0, 0)) {
+        puts("failed");
+        for (;;);
+    }
+    puts("OK");
+
+    /* Mount partition. */
+    printf("Mounting block device '" MY_BLKDEV_NAME ":1/" MY_FSDEV_NAME "'...");
+    if (_open(MY_BLKDEV_NAME ":1/" MY_FSDEV_NAME, _O_RDWR | _O_BINARY) == -1) {
+        puts("failed");
+        for (;;);
+    }
+    puts("OK");
+#endif
+
+#ifdef MY_HTTPROOT
+    /* Register root path. */
+    printf("Registering HTTP root '" MY_HTTPROOT "'...");
+    if (NutRegisterHttpRoot(MY_HTTPROOT)) {
+        puts("failed");
+        for (;;);
+    }
+    puts("OK");
+#endif
 
     /*
      * Register our CGI sample. This will be called
@@ -622,6 +670,7 @@ int main(void)
      * We could do something useful here, like serving a watchdog.
      */
     NutThreadSetPriority(254);
-    for (;;)
+    for (;;) {
         NutSleep(60000);
+    }
 }
