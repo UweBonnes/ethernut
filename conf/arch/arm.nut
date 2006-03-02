@@ -33,6 +33,12 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.5  2006/03/02 19:56:10  haraldkipp
+-- First attempt to compile with ICCARM. All compile errors fixed, but not
+-- a finished port yet. Many things are missing.
+-- Added MCU specific hardware initialization routine. For the AT91 the
+-- spurious interrupt handler has been added, which fixes SF 1440948.
+--
 -- Revision 1.4  2006/02/23 15:41:40  haraldkipp
 -- Added support for AT91 watchdog timer.
 --
@@ -59,7 +65,8 @@ nutarch_arm =
         brief = "ARM-GCC Startup",
         sources = { "arm/init/crt$(LDNAME).S" },
         targets = { "arm/init/crt$(LDNAME).o" },
-        requires = { "TOOL_CC_ARM" },
+        -- ICCARM: FIXME!
+        requires = { "TOOL_CC_ARM", "TOOL_GCC" },
     },
     
     --
@@ -178,6 +185,13 @@ nutarch_arm =
     --
     -- Special Functions
     --
+    {
+        name = "nutarch__arm_init",
+        brief = "AT91 Initialization",
+        description = "Contains spurious interrupt handler.",
+        requires = { "HW_MCU_AT91" },
+        sources = { "arm/dev/at91init.c" },
+    },
     {
         name = "nutarch__arm_wdtat91",
         brief = "Watchdog Timer (AT91)",
