@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/02 20:03:39  haraldkipp
+ * Added ICCARM inline assembly for NutEnter/ExitCritical(). Also fixed
+ * SF 1440949 (FIQ never enabled).
+ *
  * Revision 1.2  2005/07/26 15:47:06  haraldkipp
  * AtomicInc() and AtomicDec() are no longer required by Nut/Net.
  * Removed to simplify the porting job. Broken applications should
@@ -55,6 +59,8 @@
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
 
+#ifdef __GNUC__
+
 #define NutEnterCritical() \
         asm volatile (             \
                 "@ NutEnterCritical"      "\n\t"      \
@@ -67,9 +73,24 @@
         asm volatile (             \
                 "@ NutExitCritical"      "\n\t"      \
                 "mrs r0, cpsr"      "\n\t"      \
-                "bic r0, r0, #0x80" "\n\t"  \
+                "bic r0, r0, #0xC0" "\n\t"  \
                 "msr cpsr, r0"      "\n\t"  \
                 ::: "r0" )
 
 #define NutJumpOutCritical()    NutExitCritical()
 
+#else /* __IMAGECRAFT__ */
+
+#define NutEnterCritical() \
+        asm("; NutEnterCritical\n" \
+            "mrs r12, cpsr\n" \
+            "orr r12, r12, #0xC0\n" \
+            "msr cpsr_c, r12")
+
+#define NutExitCritical() \
+        asm("; NutExitCritical\n" \
+            "mrs r12, cpsr\n" \
+            "bic r12, r12, #0xC0\n" \
+            "msr cpsr_c, r12")
+
+#endif
