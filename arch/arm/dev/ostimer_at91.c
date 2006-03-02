@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/03/02 19:53:01  haraldkipp
+ * Bugfix. The system timer configuration was based on a fixed MCU clock
+ * of 66.6 MHz. Now it uses the actual frequency.
+ *
  * Revision 1.4  2006/01/05 16:46:25  haraldkipp
  * Added support for CY22393 programmable clock chip.
  *
@@ -72,6 +76,7 @@
 #include <cfg/arch.h>
 #include <arch/arm/at91.h>
 #include <dev/irqreg.h>
+#include <sys/timer.h>
 
 #ifndef NUT_CPU_FREQ
 #ifdef NUT_PLL_CPUCLK
@@ -156,7 +161,8 @@ void NutRegisterTimer(void (*handler) (void *))
     //outr(AIC_IECR, _BV(TC0_ID));
 
     /* Set compare value for 1 ms. */
-    outr(TC0_RC, 0x80F);
+    outr(TC0_RC, NutGetCpuClock() / (32 * NUT_TICK_FREQ));
+
     /* Software trigger starts the clock. */
     outr(TC0_CCR, TC_SWTRG);
 }
