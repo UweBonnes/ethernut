@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.7  2006/03/16 19:03:17  haraldkipp
+# Compiler optimization enabled.
+#
 # Revision 1.6  2005/07/20 09:15:48  haraldkipp
 # Use GNUARM stdlibs
 #
@@ -72,7 +75,7 @@ BIN       = $(TRGT)objcopy
 
 BINDIR    = $(top_srcdir)/bin/$(MCU)
 
-CPFLAGS   = $(MCFLAGS) -O0 -mthumb-interwork -fomit-frame-pointer -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
+CPFLAGS   = $(MCFLAGS) -Os -mthumb-interwork -fomit-frame-pointer -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 LDFLAGS   = $(MCFLAGS) -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
 
 
