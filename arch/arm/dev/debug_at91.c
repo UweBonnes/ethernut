@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/03/16 19:03:48  haraldkipp
+ * Added ioctl to set baudrate.
+ *
  * Revision 1.4  2006/01/05 16:46:01  haraldkipp
  * Baudrate calculation is now based on NutGetCpuClock().
  * The AT91_US_BAUD macro had been marked deprecated.
@@ -77,12 +80,32 @@ static NUTFILE dbgfile1;
 /*!
  * \brief Handle I/O controls for debug device 0.
  *
- * The debug device doesn't support any.
+ * The debug device supports UART_SETSPEED only.
  *
- * \return Always -1.
+ * \return 0 on success, -1 otherwise.
  */
-static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
+static int Debug0IOCtl(NUTDEVICE * dev, int req, void *conf)
 {
+    if(req == UART_SETSPEED) {
+        outr(US0_BRGR, (NutGetCpuClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+        return 0;
+    }
+    return -1;
+}
+
+/*!
+ * \brief Handle I/O controls for debug device 1.
+ *
+ * The debug device supports UART_SETSPEED only.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+static int Debug1IOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    if(req == UART_SETSPEED) {
+        outr(US1_BRGR, (NutGetCpuClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+        return 0;
+    }
     return -1;
 }
 
@@ -215,7 +238,7 @@ NUTDEVICE devDebug0 = {
     0,                          /*!< Interface control block, dev_icb. */
     &dbgfile0,                  /*!< Driver control block, dev_dcb. */
     Debug0Init,                 /*!< Driver initialization routine, dev_init. */
-    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
+    Debug0IOCtl,                /*!< Driver specific control function, dev_ioctl. */
     0,                          /*!< dev_read. */
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
@@ -236,7 +259,7 @@ NUTDEVICE devDebug1 = {
     0,                          /*!< Interface control block, dev_icb. */
     &dbgfile1,                  /*!< Driver control block, dev_dcb. */
     Debug1Init,                 /*!< Driver initialization routine, dev_init. */
-    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
+    Debug1IOCtl,                /*!< Driver specific control function, dev_ioctl. */
     0,                          /*!< dev_read. */
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
