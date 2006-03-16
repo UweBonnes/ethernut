@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/03/16 15:25:38  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.5  2004/03/16 16:48:46  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -91,7 +95,7 @@ static prog_char base64dtab[96] = {
  * be at most 3/4 the size of the encoded, and may be smaller if there
  * are padding characters (blanks, newlines).
  */
-char *NutDecodeBase64(u_char * str)
+char *NutDecodeBase64(char * str)
 {
     /* bug fix from Damian Slee. */
     char code;

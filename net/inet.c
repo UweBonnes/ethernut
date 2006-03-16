@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/16 15:25:35  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.2  2005/08/02 17:47:03  haraldkipp
  * Major API documentation update.
  *
@@ -121,7 +125,7 @@
  *
  * \return IP address in network byte order.
  */
-u_long inet_addr(CONST u_char * str)
+u_long inet_addr(CONST char * str)
 {
     u_short num;
     u_long addr = 0;
@@ -165,11 +169,11 @@ u_long inet_addr(CONST u_char * str)
  * \return Pointer to a static buffer containing the 
  *         ASCII representation.
  */
-u_char *inet_ntoa(u_long addr)
+char *inet_ntoa(u_long addr)
 {
-    static u_char str[16];
-    u_char inv[3];
-    u_char *rp;
+    static char str[16];
+    char inv[3];
+    char *rp;
     u_char *ap;
     u_char rem;
     u_char n;

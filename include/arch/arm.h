@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/03/16 15:25:26  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.7  2006/03/02 20:02:05  haraldkipp
  * Added a few macros to allow compilation with ICCARM.
  *
@@ -107,13 +111,13 @@
 
 #define main       NutAppMain
 
-#define strlen_P(x)             strlen(x)
-#define strcpy_P(x,y)           strcpy(x,y)
+#define strlen_P(x)             strlen((char *)(x))
+#define strcpy_P(x,y)           strcpy(x,(char *)(y))
 
-#define strcmp_P(x, y)          strcmp(x, y)
+#define strcmp_P(x, y)          strcmp((char *)(x), (char *)(y))
 #define memcpy_P(x, y, z)       memcpy(x, y, z)
 
-#define fputs_P(x, y)           fputs(x, y)
+#define fputs_P(x, y)           fputs((char *)(x), y)
 #define fprintf_P               fprintf
 #define printf_P                printf
 

@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.13  2006/03/16 15:25:38  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.12  2006/01/06 09:19:42  haraldkipp
  * NutHttpURLEncode() no longer encodes everything that isn't alphanumeric.
  * See RFC2396. Thanks to Lloyd Bailey for this update.
@@ -110,7 +114,7 @@
 static struct {
     char *ext;
     char *type;
-    void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req);
+    void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
 } mimeTypes[] = {
     {
     ".txt", "text/plain", NULL}, {
@@ -303,7 +307,7 @@ void *NutGetMimeHandler(char *name)
  * \return 1 on error or 0 on success
  */
 
-u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req))
+u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req))
 {
     size_t i;
 
@@ -589,7 +593,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     int size;
     long file_len;
     char *filename = NULL;
-    void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req);
+    void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
     
     /*
      * Validate authorization.
@@ -625,7 +629,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     fd = _open(filename, _O_BINARY | _O_RDONLY);
     NutHeapFree(filename);
     if (fd == -1) {                     // Search for index.html
-        u_char *index;
+        char *index;
         u_short urll;
 
 

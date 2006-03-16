@@ -41,6 +41,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/03/16 15:25:24  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.2  2006/01/05 16:52:23  haraldkipp
  * The argument for the FS_STATUS ioctl now uses an individual structure.
  *
@@ -66,7 +70,7 @@
 static int PathOperation(CONST char *path, int opcode)
 {
     NUTDEVICE *dev;
-    u_char dev_name[9];
+    char dev_name[9];
     u_char nidx;
     CONST char *nptr = path;
 
@@ -156,7 +160,7 @@ int unlink(CONST char *path)
 int stat(CONST char *path, struct stat *s)
 {
     NUTDEVICE *dev;
-    u_char dev_name[9];
+    char dev_name[9];
     u_char nidx;
     CONST char *nptr = path;
     FSCP_STATUS parms;

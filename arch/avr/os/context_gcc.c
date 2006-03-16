@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/03/16 15:25:09  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.4  2005/10/04 05:17:15  hwmaier
  * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
  *
@@ -274,7 +278,7 @@ void NutThreadSwitch(void)
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
  *         error.
  */
-HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t stackSize)
+HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     u_char *threadMem;
     SWITCHFRAME *sf;

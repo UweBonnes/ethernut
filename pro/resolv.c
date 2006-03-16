@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.11  2006/03/16 15:25:39  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.10  2006/01/23 19:52:10  haraldkipp
  * Added required typecasts before left shift.
  *
@@ -164,7 +168,7 @@ static u_short AddShort(u_char * cp, u_short val)
 static u_short AddName(u_char * cp, CONST u_char * name)
 {
     u_char *lcp;
-    u_short rc = strlen(name) + 2;
+    u_short rc = strlen((char *)name) + 2;
 
     lcp = cp++;
     *lcp = 0;
@@ -218,7 +222,7 @@ static u_short ScanName(u_char * cp, u_char ** npp)
     if ((*cp & 0xC0) == 0xC0)
         return 2;
 
-    rc = strlen(cp) + 1;
+    rc = strlen((char *)cp) + 1;
     np = *npp = NutHeapAlloc(rc);
     len = *cp++;
     while (len) {
@@ -295,8 +299,8 @@ static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, CONST u_char * name, u_
     if (doq) {
         if (doq->doq_name)
             NutHeapFree(doq->doq_name);
-        doq->doq_name = NutHeapAlloc(strlen(name) + 1);
-        strcpy(doq->doq_name, name);
+        doq->doq_name = NutHeapAlloc(strlen((char *)name) + 1);
+        strcpy((char *)doq->doq_name, (char *)name);
         doq->doq_type = type;
         doq->doq_class = 1;
     }
@@ -385,12 +389,12 @@ void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdn
         doc.doc_domain = 0;
     }
     if (hostname) {
-        doc.doc_hostname = NutHeapAlloc(strlen(hostname) + 1);
-        strcpy(doc.doc_hostname, hostname);
+        doc.doc_hostname = NutHeapAlloc(strlen((char *)hostname) + 1);
+        strcpy((char *)doc.doc_hostname, (char *)hostname);
     }
     if (domain) {
-        doc.doc_domain = NutHeapAlloc(strlen(domain) + 1);
-        strcpy(doc.doc_domain, domain);
+        doc.doc_domain = NutHeapAlloc(strlen((char *)domain) + 1);
+        strcpy((char *)doc.doc_domain, (char *)domain);
     }
     doc.doc_ip1 = pdnsip;
     doc.doc_ip2 = sdnsip;

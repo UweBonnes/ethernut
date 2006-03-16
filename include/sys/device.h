@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/03/16 15:25:34  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.6  2006/01/05 16:45:34  haraldkipp
  * Added a new driver type IFTYP_FS.
  *
@@ -154,7 +158,7 @@ struct _NUTDEVICE {
     /*! 
      * \brief Unique device name. 
      */
-    u_char dev_name[9];
+    char dev_name[9];
 
     /*! 
      * \brief Type of interface. 

@@ -188,7 +188,7 @@ void NutThreadSwitch(void)
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
  *         error.
  */
-HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t stackSize)
+HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     NUTTHREADINFO *td;
     const uptr_t *paddr;

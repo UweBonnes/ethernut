@@ -36,8 +36,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:12  haraldkipp
- * Initial revision
+ * Revision 1.2  2006/03/16 15:25:33  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:12  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/05/06 18:45:34  harald
  * PPP debug functions added
@@ -73,7 +77,7 @@ extern void NutTraceTcp(FILE *stream, u_char flags);
 extern void NutTracePPP(FILE *stream, u_char flags);
 
 extern void NutDumpTcpHeader(FILE *stream, u_char *ds, TCPSOCKET *sock, NETBUF *nb);
-extern void NutDumpSockState(FILE *stream, u_char state, u_char *lead, u_char *trail);
+extern void NutDumpSockState(FILE *stream, u_char state, char *lead, char *trail);
 extern void NutDumpSocketList(FILE *stream);
 
 extern void NutDumpLcpOption(FILE * stream, NETBUF * nb);

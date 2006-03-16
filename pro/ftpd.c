@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2006/03/16 15:25:38  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.6  2006/02/23 15:48:08  haraldkipp
  * Added missing file truncation flag for overriding existing files.
  *
@@ -160,7 +164,7 @@ static prog_char rep_banner[] = "220 Nut/OS FTP %s ready at %.3s%3d %02d:%02d:%0
  *             Trailing carriage return or linefeed characters are
  *             cut off.
  */
-static void SplitCmdArg(u_char * line, u_char ** cmd, u_char ** args)
+static void SplitCmdArg(char * line, char ** cmd, char ** args)
 {
     /* Skip leading spaces. */
     while (*line && *line <= ' ') {
@@ -211,7 +215,7 @@ static void SplitCmdArg(u_char * line, u_char ** cmd, u_char ** args)
  *
  * \return The number of converted byte values. Should be 6.
  */
-static int ParseIpPort(CONST u_char * arg, u_long * ip, u_short * port)
+static int ParseIpPort(CONST char * arg, u_long * ip, u_short * port)
 {
     int rc;
 
@@ -1040,8 +1044,8 @@ int NutFtpProcessUser(FTPSESSION * session, char *user)
 int NutFtpProcessRequest(FTPSESSION * session, char *request)
 {
     int rc = 0;
-    u_char *cmd;
-    u_char *args;
+    char *cmd;
+    char *args;
 
     /* Split the line into command and argument part. */
     SplitCmdArg(request, &cmd, &args);

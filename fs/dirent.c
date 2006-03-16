@@ -68,6 +68,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/03/16 15:25:24  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.3  2006/01/05 16:45:20  haraldkipp
  * Dynamic NUTFILE allocation for detached block device.
  *
@@ -113,7 +117,7 @@ DIR *opendir(CONST char *name)
 {
     DIR *dir = 0;
     NUTDEVICE *dev;
-    u_char dev_name[9];
+    char dev_name[9];
     u_char nidx;
     CONST char *nptr = name;
 

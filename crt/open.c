@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/03/16 15:25:20  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.3  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -79,7 +83,7 @@
 int _open(CONST char *name, int mode)
 {
     NUTDEVICE *dev;
-    u_char dev_name[9];
+    char dev_name[9];
     u_char nidx;
     CONST char *nptr = name;
 

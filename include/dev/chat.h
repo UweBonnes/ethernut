@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/03/16 15:25:32  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.8  2005/04/30 16:42:41  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -98,9 +102,9 @@ typedef struct {
     int chat_fd;
     u_char chat_arg;
     u_char chat_aborts;
-    u_char *chat_abort[CHAT_MAX_ABORTS];
+    char *chat_abort[CHAT_MAX_ABORTS];
     u_char chat_abomat[CHAT_MAX_ABORTS];
-    u_char *chat_report_search;
+    char *chat_report_search;
     u_char chat_repmat;
     char chat_report_state;
 } NUTCHAT;

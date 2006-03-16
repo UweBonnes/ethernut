@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/03/16 15:25:34  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.5  2005/08/26 14:12:39  olereinhardt
  * Added NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
  *
@@ -94,7 +98,7 @@ extern void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes);
 extern void NutHttpSendError(FILE * stream, REQUEST * req, int status);
 extern char *NutGetMimeType(char *name);
 extern void *NutGetMimeHandler(char *name);
-extern u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req));
+extern u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req));
 
 __END_DECLS
 

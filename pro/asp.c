@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/16 15:25:38  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.2  2005/08/10 09:26:38  olereinhardt
  * Corrected documentation
  *
@@ -140,7 +144,7 @@ static void ProcessAspFunction(char *pASPFunction, FILE * stream)
 /************************************************************/
 /*  NutHttpCheckAsp                                         */
 /************************************************************/
-void NutHttpProcessAsp(FILE * stream, int fd, int file_len, u_char* http_root, REQUEST *req)
+void NutHttpProcessAsp(FILE * stream, int fd, int file_len, char* http_root, REQUEST *req)
 {
     int n;
     char *pReadBuffer = NULL;

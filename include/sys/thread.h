@@ -51,6 +51,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/03/16 15:25:34  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.11  2005/10/07 21:48:25  hwmaier
  * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
  *
@@ -128,7 +132,7 @@ extern "C" {
     struct _NUTTHREADINFO {
         NUTTHREADINFO *volatile td_next;        /*!< \brief Linked list of all threads. */
         NUTTHREADINFO *td_qnxt; /*!< \brief Linked list of all queued thread. */
-        u_char td_name[9];      /*!< \brief Name of this thread. */
+        char td_name[9];        /*!< \brief Name of this thread. */
         u_char td_state;        /*!< \brief Operating state. One of TDS_ */
         uptr_t td_sp;           /*!< \brief Stack pointer. */
         u_char td_priority;     /*!< \brief Priority level. 0 is highest priority. */
@@ -171,7 +175,7 @@ extern "C" {
     extern void NutThreadSetSleepMode(u_char mode);
 #endif
 
-    extern HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t stackSize);
+    extern HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize);
     extern u_char NutThreadSetPriority(u_char level);
 
     extern void NutThreadKill(void);
@@ -186,7 +190,7 @@ extern "C" {
     extern void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp);
 
     extern void NutThreadSwitch(void);
-    extern HANDLE GetThreadByName(u_char * name);
+    extern HANDLE GetThreadByName(char * name);
 
 /*!
  * \brief Macro for thread entry definitions.

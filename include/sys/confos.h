@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/03/16 15:25:34  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.4  2006/01/23 17:34:29  haraldkipp
  * Configuration structures must be packed.
  *
@@ -82,7 +86,7 @@ typedef struct __attribute__ ((packed)) _CONFOS CONFOS;
 struct __attribute__ ((packed)) _CONFOS {
     u_char size;            /*!< \brief Size of this structure. */
     u_char magic[2];        /*!< \brief Magic cookie. */
-    u_char hostname[16];    /*!< \brief host name of the system. */
+    char hostname[16];      /*!< \brief host name of the system. */
 };
 
 extern CONFOS confos;

@@ -89,7 +89,7 @@ typedef struct {
 
 /* ********************************************************* */
 /* name : netbios label (15 chars max), ipaddr : network ordered IP address bytes */
-int NutWinsNameQuery(u_char * name, u_long ipaddr)
+int NutWinsNameQuery(char * name, u_long ipaddr)
 {
     WINSHEADER *pkt = NULL;
     u_char *encoded = NULL;
@@ -129,7 +129,7 @@ int NutWinsNameQuery(u_char * name, u_long ipaddr)
             (pkt->namelen != 0x20) ||   /* */
             (ntohs(pkt->type) != 32) || /* */
             (ntohs(pkt->class) != 1) || /* */
-            (strcmp(pkt->name, encoded)))
+            (strcmp((char *)pkt->name, (char *)encoded)))
             continue;           /* bad request, try again */
          /* printf("Name=%s recognized\r\n", name); */
         /* build RFC1002 Positive Name Query Response */

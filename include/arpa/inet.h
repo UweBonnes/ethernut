@@ -36,8 +36,12 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:03  haraldkipp
- * Initial revision
+ * Revision 1.2  2006/03/16 15:25:29  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:03  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/05/06 18:38:50  harald
  * Cleanup
@@ -61,8 +65,8 @@ __BEGIN_DECLS
  * \file arpa/inet.h
  * \brief Internet address conversion.
  */
-extern u_long inet_addr(CONST  u_char *str);
-extern u_char *inet_ntoa(u_long addr);
+extern u_long inet_addr(CONST char *str);
+extern char *inet_ntoa(u_long addr);
 
 __END_DECLS
 

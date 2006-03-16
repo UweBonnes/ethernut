@@ -33,6 +33,10 @@
  
 /*
  * $Log$
+ * Revision 1.2  2006/03/16 15:25:39  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.1  2005/08/05 11:22:14  olereinhardt
  * Added Server side include support. Initial checkin
  *
@@ -81,7 +85,7 @@
  * \param filename Name of the included file. e.g."UROM:test.txt"
  */
 
-static void NutSsiProcessFile(FILE * stream, u_char *filename)
+static void NutSsiProcessFile(FILE * stream, char *filename)
 {
     int fd;
     int n;
@@ -147,7 +151,7 @@ static void DestroyRequestInfo(REQUEST * req)
  * \param orig_req The http request struct of the top most http_request
  */
 
-static void NutSsiProcessVirtual(FILE * stream, u_char *url, u_char* http_root, REQUEST *orig_req)
+static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQUEST *orig_req)
 {
     int fd;
     int n;
@@ -155,7 +159,7 @@ static void NutSsiProcessVirtual(FILE * stream, u_char *url, u_char* http_root, 
     int size;
     long file_len;
     char *filename = NULL;
-    void (*handler)(FILE *stream, int fd, int file_len, u_char *http_root, REQUEST *req);
+    void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
     
     
     char *cp;
@@ -235,7 +239,7 @@ static void NutSsiProcessVirtual(FILE * stream, u_char *url, u_char* http_root, 
     fd = _open(filename, _O_BINARY | _O_RDONLY);
     NutHeapFree(filename);
     if (fd == -1) {                     // Search for index.html
-        u_char *index;
+        char *index;
         u_short urll;
 
 
@@ -357,10 +361,10 @@ static void NutSsiSkipWhitespace(char *buffer, u_short *pos, u_short end)
  * \param req    The http request struct of the top most http_request
  */
 
-static u_char NutSsiCheckForSsi(FILE *stream, char *buffer, u_short end, u_char* http_root, REQUEST *req)
+static u_char NutSsiCheckForSsi(FILE *stream, char *buffer, u_short end, char* http_root, REQUEST *req)
 {
     u_short pos = 4; // First character after comment start
-    u_char * filename;
+    char * filename;
     u_char type;
 
     pos = 4;
@@ -447,14 +451,14 @@ static u_char NutSsiCheckForSsi(FILE *stream, char *buffer, u_short end, u_char*
  */
 
 
-static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, u_char* http_root, REQUEST *req)
+static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_root, REQUEST *req)
 {
-    u_char * buffer;
+    char * buffer;
     u_char in_comment;
     int buffsize;
     int fpos;
     int n;
-    u_char *index;
+    char *index;
     u_char found;
     buffsize = MIN(BUFSIZE, file_len);
     buffer = NutHeapAlloc(buffsize+1);

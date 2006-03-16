@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/16 15:25:34  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.2  2006/01/23 17:34:29  haraldkipp
  * Configuration structures must be packed.
  *
@@ -75,8 +79,8 @@ typedef struct __attribute__ ((packed)) _CONFNET CONFNET;
  */
 struct __attribute__ ((packed)) _CONFNET {
     u_char cd_size;         /*!< \brief Size of this structure. */
-    u_char cd_name[9];      /*!< \brief Magic cookie. */
-    u_char cdn_mac[6];      /*!< \brief Ethernet MAC address. */
+    char cd_name[9];      /*!< \brief Magic cookie. */
+    u_char cdn_mac[6];        /*!< \brief Ethernet MAC address. */
     u_long cdn_ip_addr;     /*!< \brief Last used IP address. */
     u_long cdn_ip_mask;     /*!< \brief IP netmask. */
     u_long cdn_gateway;     /*!< \brief Default route. */

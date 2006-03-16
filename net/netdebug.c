@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/03/16 15:25:35  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.6  2005/01/13 18:48:53  haraldkipp
  * Compiler warnings avoided.
  *
@@ -101,7 +105,7 @@ void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock, NETBUF * nb)
     fputs("\n", stream);
 }
 
-void NutDumpSockState(FILE * stream, u_char state, u_char * lead, u_char * trail)
+void NutDumpSockState(FILE * stream, u_char state, char * lead, char * trail)
 {
     if (lead)
         fputs(lead, stream);

@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/03/16 15:25:34  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.1  2005/02/05 20:38:51  haraldkipp
  * First release
  *
@@ -51,7 +55,7 @@
 
 __BEGIN_DECLS
 /* Function prototypes. */
-extern int NutWinsNameQuery(u_char * name, u_long ipaddr);
+extern int NutWinsNameQuery(char * name, u_long ipaddr);
 
 __END_DECLS
 /* */

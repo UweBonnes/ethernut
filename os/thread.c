@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.26  2006/03/16 15:25:36  haraldkipp
+ * Changed human readable strings from u_char to char to stop GCC 4 from
+ * nagging about signedness.
+ *
  * Revision 1.25  2006/03/02 23:57:54  hwmaier
  * Fixed bug NutStackHeap* functions. The availabe variable was not
  * taken into account.
@@ -568,7 +572,7 @@ void NutThreadKill(void)
     killedThread = runningThread;
 }
 
-HANDLE GetThreadByName(u_char * name)
+HANDLE GetThreadByName(char * name)
 {
     NUTTHREADINFO *tdp;
 

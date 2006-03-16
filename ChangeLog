@@ -1,4 +1,19 @@
-$Id: ChangeLog,v 1.315 2006/03/02 23:59:23 hwmaier Exp $
+$Id: ChangeLog,v 1.316 2006/03/16 15:24:55 haraldkipp Exp $
+
+2006-03-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/os/context.c, arch/avr/os/context_gcc.c,
+	arch/unix/os/thread.c, crt/open.c, fs/dirent.c, fs/pathops.c,
+	include/arch/arm.h, include/arpa/inet.h, include/dev/chat.h,
+	include/net/netdebug.h, include/pro/httpd.h, include/pro/wins.h,
+	include/sys/confnet.h, include/sys/confos.h, include/sys/device.h,
+	include/sys/thread.h, net/inet.c, net/netdebug.c, os/thread.c,
+	pro/asp.c, pro/dencode.c, pro/dencode.h, pro/ftpd.c, pro/httpd.c,
+	pro/resolv.c, pro/ssi.c, pro/wins.c: Mainly all human readable 
+	strings like names of threads, devices or files had been changed 
+	from u_char to char. They are now compatible with standard C 
+	string functions and stop GCC 4 from nagging about signedness.
+	
 
 2006-03-03 Henrik Maier  <henrik@proconx.com>
 
@@ -128,7 +143,7 @@ $Id: ChangeLog,v 1.315 2006/03/02 23:59:23 hwmaier Exp $
 	the Philips LPC2xxx Family and the LPC-E2294 Board from Olimex.
 
 
-2006-01-08  Harald Kipp  <harald.kipp@egnite.de>
+2006-02-08  Harald Kipp  <harald.kipp@egnite.de>
 
 	* os/version.c: Pre-release 4.1.4 with limited support for
 	the ATmega256. This is for the ImageCraft Compiler only
