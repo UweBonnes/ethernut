@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/03/16 19:06:16  haraldkipp
+ * Use link register to jump into thread and use dedicated routine to
+ * jump into the idle thread. The way we did start the idle thread
+ * before, jumping into the middle of NutThreadSwitch(), doesn't work
+ * with optimized code.
+ *
  * Revision 1.4  2006/03/16 15:25:00  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -128,7 +134,7 @@ static void NutThreadEntry(void) __attribute__ ((naked));
 void NutThreadEntry(void)
 {
     /* Load argument in r0 and jump to thread entry. */
-    asm volatile ("ldmfd   sp!, {r0, pc}");
+    asm volatile ("ldmfd   sp!, {r0, lr}\n\tbx lr":::"r0", "lr");
 }
 
 
@@ -155,9 +161,6 @@ void NutThreadSwitch(void)
                      "str     sp, %0"   /* Save stack pointer. */
                      ::"m" (runningThread->td_sp)       /* */
         );
-
-    /* Entry point for newly created threads. */
-    asm volatile (".global thread_start\n" "thread_start:");
 
     /* Select thread on top of the run queue. */
     runningThread = runQueue;
@@ -283,7 +286,19 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
      */
     if (runningThread == 0) {
         /* This will never return. */
-        asm volatile ("\n\tb thread_start\n\t");
+        runningThread = runQueue;
+        runningThread->td_state = TDS_RUNNING;
+        /* Restore context. */
+        __asm__ __volatile__(       /* */
+                            "@ Load context\n\t"        /* */
+                            "ldr     sp, %0\n\t"        /* Restore stack pointer. */
+                            "ldmfd   sp!, {r4}\n\t"     /* Get saved status... */
+                            "bic     r4, r4, #0xC0" "\n\t"      /* ...enable interrupts */
+                            "msr     spsr, r4\n\t"      /* ...and save in spsr. */
+                            "ldmfd   sp!, {r4-r11, lr}\n\t"     /* Restore registers. */
+                            "movs    pc, lr"    /* Restore status and return. */
+                            ::"m"(runningThread->td_sp) /* */
+                            );
     }
 
     /*
