@@ -1,6 +1,6 @@
-$Id: ChangeLog,v 1.316 2006/03/16 15:24:55 haraldkipp Exp $
+$Id: ChangeLog,v 1.317 2006/03/16 19:09:09 haraldkipp Exp $
 
-2006-03-02  Harald Kipp  <harald.kipp@egnite.de>
+2006-03-16  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/arm/os/context.c, arch/avr/os/context_gcc.c,
 	arch/unix/os/thread.c, crt/open.c, fs/dirent.c, fs/pathops.c,
@@ -13,7 +13,30 @@ $Id: ChangeLog,v 1.316 2006/03/16 15:24:55 haraldkipp Exp $
 	strings like names of threads, devices or files had been changed 
 	from u_char to char. They are now compatible with standard C 
 	string functions and stop GCC 4 from nagging about signedness.
-	
+
+	* arch/arm/dev/debug_at91.c: Added ioctl to set baudrate.
+
+	* arch/arm/dev/dm9000e.c: Adding a short delay before reading 
+	the status word makes it work with compiler optimization.
+	On receiver overflow interrupts the chip is declared insane.
+	The output routine will no more enter NutEventWait() on
+	insane chips.
+
+	* Makedefs.arm-gcc, app/Makedefs.arm-gcc: Compiler optimization
+	-Os enabled.
+
+	* arch/arm/include/atom.h: Removed. This had been a left over,
+	the correct one is in include/arch/arm/.
+
+	* arch/arm/os/context.c: Use link register to jump into thread
+	and use dedicated routine to jump into the idle thread. The
+	way we did start the idle thread before, jumping into the middle
+	of NutThreadSwitch(), doesn't work with optimized code. We
+	should correct this for the AVR target as well.
+
+	* dev/sbimmc.c: No idea why the inline assembly routine for
+	ARM bit banging SPI stopped working. Disabled.
+
 
 2006-03-03 Henrik Maier  <henrik@proconx.com>
 
