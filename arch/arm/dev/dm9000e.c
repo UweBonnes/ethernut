@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/03/16 19:04:48  haraldkipp
+ * Adding a short delay before reading the status word makes it work with
+ * compiler optimization. On receiver overflow interrupts the chip is
+ * declared insane. The output routine will no more enter NutEventWait()
+ * on insane chips.
+ *
  * Revision 1.3  2006/03/02 19:51:16  haraldkipp
  * Replaced GCC specific inline specifications with their portable
  * counterparts.
@@ -300,7 +306,7 @@ struct _NICINFO {
     HANDLE ni_mutex;            /*!< Access mutex semaphore. */
     volatile int ni_tx_queued;  /*!< Number of packets in transmission queue. */
     volatile int ni_tx_quelen;  /*!< Number of bytes in transmission queue not sent. */
-    int ni_insane;              /*!< Set by error detection. */
+    volatile int ni_insane;     /*!< Set by error detection. */
     int ni_iomode;              /*!< 8 or 16 bit access. 32 bit is not supported. */
 };
 
@@ -446,6 +452,7 @@ static void NicInterrupt(void *arg)
     /* Receiver overflow interrupt. */
     if (isr & NIC_ISR_ROS) {
         nic_outb(NIC_ISR, NIC_ISR_ROS);
+        ni->ni_insane = 1;
         NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
 
@@ -545,9 +552,11 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
         outb(NIC_BASE_ADDR, NIC_MRCMD);
         if (ni->ni_iomode == NIC_ISR_M16) {
             fsw = inw(NIC_DATA_ADDR);
+            _NOP(); _NOP(); _NOP(); _NOP();
             fbc = inw(NIC_DATA_ADDR);
         } else {
             fsw = inb(NIC_DATA_ADDR) + ((u_short) inb(NIC_DATA_ADDR) << 8);
+            _NOP(); _NOP(); _NOP(); _NOP();
             fbc = inb(NIC_DATA_ADDR) + ((u_short) inb(NIC_DATA_ADDR) << 8);
         }
 
@@ -876,6 +885,9 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
      * the PHY a chance to establish an Ethernet link.
      */
     while (rc) {
+        if (ni->ni_insane) {
+            break;
+        }
         if (NutEventWait(&ni->ni_mutex, mx_wait)) {
             break;
         }
