@@ -42,6 +42,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/03/16 19:07:36  haraldkipp
+ * Disabled inline assembly routine for ARM bit banging SPI. Stopped working
+ * with optimizing compiler.
+ *
  * Revision 1.3  2006/03/02 19:58:16  haraldkipp
  * Too lazy to port the inline assembly to ICCARM.
  *
@@ -288,7 +292,7 @@ static u_char SbiMmCard0Io(u_char val)
     }
 #endif
 
-#if defined(MCU_AT91R40008) && defined(__GNUC__)
+#if defined(MCU_AT91R40008) && defined(__GNUC__) && 0
     /* ARM assembly version, tested on AT91R40008 only. */
     asm volatile (
         "\nspi_tran_l:\n\t"
