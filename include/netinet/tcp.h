@@ -78,6 +78,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/03/21 21:22:18  drsung
+ * Enhancement made to TCP state machine. Now TCP options
+ * are read from peer and at least the maximum segment size is stored.
+ *
  * Revision 1.4  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -159,9 +163,9 @@ typedef struct __attribute__ ((packed)) tcphdr {
 #define TCPOPT_EOL                  0   /*!< \brief End of options. */
 #define TCPOPT_NOP                  1   /*!< \brief Nothing. */
 #define TCPOPT_MAXSEG               2   /*!< \brief Maximum segment size. */
-#define    TCPOLEN_MAXSEG           4   /*!< \brief Maximum segment size length. */
+#define TCPOLEN_MAXSEG              4   /*!< \brief Maximum segment size length. */
 #define TCPOPT_WINDOW               3   /*!< \brief Receive window. */
-#define    TCPOLEN_WINDOW           3   /*!< \brief Receive window length. */
+#define TCPOLEN_WINDOW              3   /*!< \brief Receive window length. */
 
 /*!
  * \struct _TCPPSEUDOHDR tcp.h netinet/tcp.h

@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.20  2006/03/21 21:22:19  drsung
+ * Enhancement made to TCP state machine. Now TCP options
+ * are read from peer and at least the maximum segment size is stored.
+ *
  * Revision 1.19  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -238,11 +242,47 @@ static HANDLE tcpThread = 0;
  * ================================================================
  */
 
-/*
- * Nothing done yet.
+/*!
+ * \brief Reads TCP option fields if any, and writes the data to
+ *        the socket descriptor if important for us.
+ *
+ * \param sock Socket descriptor. This pointer must have been 
+ *             retrieved by calling NutTcpCreateSocket().
+ * \param nb   Network buffer structure containing a TCP segment.
  */
 static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
 {
+    u_char *cp;
+    u_short s;
+    
+    /* any options there? */
+    if (nb->nb_tp.sz <= sizeof (TCPHDR))
+        return;
+    
+    /* loop through available options */
+    for (cp = ((u_char*) nb->nb_tp.vp) + sizeof(TCPHDR); (*cp != TCPOPT_EOL) 
+       && ((void*)cp - nb->nb_tp.vp < (int)nb->nb_tp.sz); )
+    {
+        switch (*cp)
+        {
+            /* On NOP just proceed to next option */
+            case TCPOPT_NOP:
+                cp++;
+                continue;
+                
+            /* Read MAXSEG option */
+            case TCPOPT_MAXSEG:
+                s = ntohs(*(u_short*) (cp + 2));
+                if (s < sock->so_mss)
+                    sock->so_mss = s;
+                cp += TCPOLEN_MAXSEG;
+                break;
+            /* Ignore any other options */
+            default:
+                cp += *(u_char*) (cp + 1);
+                break;
+        }
+    }
 }
 
 /*!

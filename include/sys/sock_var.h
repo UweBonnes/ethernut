@@ -63,6 +63,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/03/21 21:22:19  drsung
+ * Enhancement made to TCP state machine. Now TCP options
+ * are read from peer and at least the maximum segment size is stored.
+ *
  * Revision 1.8  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -177,7 +181,9 @@ struct tcp_socket {
     u_char so_devtype;	    /*!< \brief Device type, always IFTYP_TCPSOCK. */
     int (*so_devread) (TCPSOCKET *, void *, int); /*!< \brief Read from device. */
     int (*so_devwrite) (TCPSOCKET *, CONST void *, int); /*!< \brief Write to device. */
+#ifdef __HARVARD_ARCH__
     int (*so_devwrite_P) (TCPSOCKET *, PGM_P, int); /*!< \brief Write to device. */
+#endif
     int (*so_devioctl) (TCPSOCKET *, int, void *); /*!< \brief Driver control function. */
     
     u_short so_devocnt;     /*!< \brief Number of data bytes in output buffer. */

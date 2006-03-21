@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.18  2006/03/21 21:22:20  drsung
+ * Enhancement made to TCP state machine. Now TCP options
+ * are read from peer and at least the maximum segment size is stored.
+ *
  * Revision 1.17  2005/10/24 11:00:16  haraldkipp
  * Integer division hack for ARM without CRT removed again.
  *
@@ -358,7 +362,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
 #endif
             sock->so_devioctl = NutTcpDeviceIOCtl;
 
-            sock->so_tx_isn = 1000000;  /* 0x00a8393a; */
+            sock->so_tx_isn = NutGetTickCount();  /* Generate the ISN from the nut_ticks counter */
             sock->so_tx_una = sock->so_tx_isn;
             sock->so_tx_nxt = sock->so_tx_isn;
             sock->so_rx_bsz = sock->so_rx_win = TCP_WINSIZE;
@@ -381,7 +385,8 @@ TCPSOCKET *NutTcpCreateSocket(void)
  *
  * The following values can be set:
  *
- * - #TCP_MAXSEG  Maximum segment size (#u_short).
+ * - #TCP_MAXSEG  Maximum segment size (#u_short). Can only be set if
+                  socket is not yet connected.
  * - #SO_SNDTIMEO Socket send timeout (#u_long).
  * - #SO_RCVTIMEO Socket receive timeout (#u_long).
  * - #SO_SNDBUF   Socket output buffer size (#u_short).
@@ -405,6 +410,8 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
     case TCP_MAXSEG:
         if (optval == 0 || optlen != sizeof(u_short))
             sock->so_last_error = EINVAL;
+        else if (sock->so_state != TCPS_CLOSED) 
+        	sock->so_last_error = EISCONN;
         else {
             sock->so_mss = *((u_short *) optval);
             rc = 0;
