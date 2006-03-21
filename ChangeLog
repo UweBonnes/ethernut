@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.317 2006/03/16 19:09:09 haraldkipp Exp $
+$Id: ChangeLog,v 1.318 2006/03/21 21:24:17 drsung Exp $
+
+2006-03-21  Oliver Schulz  <olischulz@web.de>
+
+	* Enhancement made to TCP state machine. Now TCP options  are read from peer 
+	and at least the maximum segment size is stored.
+
 
 2006-03-16  Harald Kipp  <harald.kipp@egnite.de>
 
