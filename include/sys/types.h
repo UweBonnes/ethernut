@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2006/03/27 09:34:05  freckle
+ * added u_longlong and longlong for emulation
+ *
  * Revision 1.10  2006/03/02 20:04:11  haraldkipp
  * ICCARM doesn't know __PTRDIFF_TYPE__.
  *
@@ -129,6 +132,11 @@
 //              a) the native types headers and libs and
 #include <sys/types_orig.h>
 //              b) the additional nut os header and implementation
+
+/*! \brief 64-bit values */
+typedef unsigned long long u_longlong;
+typedef long long longlong;
+
 #endif
 
 #ifndef _SYS_TYPES_H
