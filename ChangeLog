@@ -1,7 +1,7 @@
-$Id: ChangeLog,v 1.320 2006/03/28 23:34:25 olereinhardt Exp $
+$Id: ChangeLog,v 1.321 2006/03/28 23:54:11 olereinhardt Exp $
 
 2006-03-29  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-        * include/sys/tracer.h, os/tracer.c: Signednes of strings
+        * include/sys/tracer.h, os/tracer.c, fs/fat.c: Signednes of strings
 
 2006-03-27  Matthias Ringwald  <mringwal@inf.ethz.ch>
 	* include/sys/type.h: added u_longlong and longlong for emulation
