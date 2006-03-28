@@ -682,7 +682,7 @@ static DWORD FindFileATAPI(DRIVE_INFO * pDrive,
                 //
                 if (((pDirEntry->bFlags & 0x03) == bSearchFlags) &&
                     (pDirEntry->bIdentifierLength >= bLongNameLen) &&
-                    (strncmp(&pDirEntry->bName[0], pLongName, bLongNameLen) == 0)) {
+                    (strncmp((char*)&pDirEntry->bName[0], pLongName, bLongNameLen) == 0)) {
                     //
                     // We have found the file :-)
                     // 
