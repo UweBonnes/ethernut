@@ -200,7 +200,7 @@ extern void NutTracePrint(int size);
  * - size <size> restarts tracing in the current mode, using a buffer of length <size>
  * - stop stops tracing
  */
-extern void NutTraceTerminal(u_char* arg);
+extern void NutTraceTerminal(char* arg);
 /*******************************************************************************
  * NutTraceGetPC
  ******************************************************************************/

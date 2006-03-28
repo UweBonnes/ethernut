@@ -179,7 +179,7 @@ void NutTraceStop()
     trace_mode = TRACE_MODE_OFF;
 }
 
-void NutTraceTerminal(u_char* arg)
+void NutTraceTerminal(char* arg)
 {
     int val;
 
