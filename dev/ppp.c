@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/03/29 01:23:52  olereinhardt
+ *  Signednes of strings
+ *
  * Revision 1.7  2005/04/30 16:42:41  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -248,7 +251,7 @@ static NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
         if (i) {
             dcb->dcb_user = NutHeapAlloc(i + 1);
-            for (sp = dcb->dcb_user; *cp && *cp != '/';)
+            for (sp = (char*)dcb->dcb_user; *cp && *cp != '/';)
                 *sp++ = *cp++;
             *sp = 0;
         }
@@ -256,7 +259,7 @@ static NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
             for (sp = ++cp, i = 0; *sp && *sp != '/'; sp++, i++);
             if (i) {
                 dcb->dcb_pass = NutHeapAlloc(i + 1);
-                for (sp = dcb->dcb_pass; *cp && *cp != '/';)
+                for (sp = (char*)dcb->dcb_pass; *cp && *cp != '/';)
                     *sp++ = *cp++;
                 *sp = 0;
             }

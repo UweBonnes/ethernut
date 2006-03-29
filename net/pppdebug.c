@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/03/29 01:23:52  olereinhardt
+ *  Signednes of strings
+ *
  * Revision 1.4  2005/04/08 15:20:51  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -194,7 +197,7 @@ void NutDumpLcp(FILE * stream, NETBUF * nb)
 
 void NutDumpPapOption(FILE * stream, NETBUF * nb)
 {
-    u_char *xcpo;
+    char *xcpo;
     u_short len;
     u_char i;
 

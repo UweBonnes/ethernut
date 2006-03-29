@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/03/29 01:23:52  olereinhardt
+ *  Signednes of strings
+ *
  * Revision 1.3  2005/04/08 15:20:51  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -178,17 +181,17 @@ void PapTxAuthReq(NUTDEVICE *dev, u_char id)
      */
     len = 2;
     if(dcb->dcb_user)
-        len += strlen(dcb->dcb_user);
+        len += strlen((char*)dcb->dcb_user);
     if(dcb->dcb_pass)
-        len += strlen(dcb->dcb_pass);
+        len += strlen((char*)dcb->dcb_pass);
     if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, len)) != 0) {
         cp = nb->nb_ap.vp;
-        *cp = dcb->dcb_user ? (char)strlen(dcb->dcb_user) : 0;
+        *cp = dcb->dcb_user ? (char)strlen((char*)dcb->dcb_user) : 0;
         if(*cp)
             memcpy(cp + 1, dcb->dcb_user, *cp);
 
         cp += *cp + 1;
-        *cp = dcb->dcb_pass ? (char)strlen(dcb->dcb_pass) : 0;
+        *cp = dcb->dcb_pass ? (char)strlen((char*)dcb->dcb_pass) : 0;
         if(*cp)
             memcpy(cp + 1, dcb->dcb_pass, *cp);
 
