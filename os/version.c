@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.30  2006/04/07 13:59:55  haraldkipp
+ * Pre-release 4.1.5.4.
+ *
  * Revision 1.29  2006/02/08 15:20:56  haraldkipp
  * ATmega2561 Support
  *
@@ -135,8 +138,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010401UL
-static CONST char os_version_string[] = "4.1.4.1 pre";
+#define OS_VERSION_NUMBER  0x04010504UL
+static CONST char os_version_string[] = "4.1.5.4 pre";
 
 /*!
  * \addtogroup xgNutVersion
