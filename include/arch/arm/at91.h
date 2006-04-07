@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/04/07 12:57:00  haraldkipp
+ * Fast interrupt doesn't require to store R8-R12.
+ *
  * Revision 1.4  2006/03/02 20:02:56  haraldkipp
  * Added ICCARM interrupt entry code. Probably not working, because I
  * excluded an immediate load.
@@ -816,6 +819,24 @@
                  "str   r0, [r0, #0x130]"   "\n\t"  /* */ \
                  "ldmfd sp!, {r0-r12, pc}^" "\n\t")     /* Restore registers and return. */
 
+/*!
+ * \brief Fast interrupt entry.
+ */
+#define FIQ_ENTRY() \
+    asm volatile("sub   lr, lr,#4"          "\n\t"  /* Adjust LR */ \
+                 "stmfd sp!,{r0-r7,lr}"    "\n\t"  /* Save registers on IRQ stack. */ \
+                 "mrs   r1, spsr"           "\n\t"  /* Save SPSR */ \
+                 "stmfd sp!,{r1}"           "\n\t")     /* */
+
+/*!
+ * \brief Fast interrupt exit.
+ */
+#define FIQ_EXIT() \
+    asm volatile("ldmfd sp!, {r1}"          "\n\t"  /* Restore SPSR */ \
+                 "msr   spsr_c, r1"         "\n\t"  /* */ \
+                 "ldr   r0, =0xFFFFF000"    "\n\t"  /* End of interrupt. */ \
+                 "str   r0, [r0, #0x130]"   "\n\t"  /* */ \
+                 "ldmfd sp!, {r0-r7, pc}^" "\n\t")     /* Restore registers and return. */
 
 #else /* __IMAGECRAFT__ */
 
@@ -831,6 +852,19 @@
         ";ldr   r0, =0xFFFFF000\n" /* ICCARM: FIXME! */ \
         "str   r0, [r0, #0x130]\n" \
         "ldmfd sp!, {r0-r12, pc}^")
+
+#define FIQ_ENTRY() \
+    asm("sub   lr, lr,#4\n" \
+        "stmfd sp!,{r0-r7,lr}\n" \
+        "mrs   r1, spsr\n" \
+        "stmfd sp!,{r1}\n")
+
+#define FIQ_EXIT() \
+    asm("ldmfd sp!, {r1}\n" \
+        "msr   spsr_c, r1\n" \
+        ";ldr   r0, =0xFFFFF000\n" /* ICCARM: FIXME! */ \
+        "str   r0, [r0, #0x130]\n" \
+        "ldmfd sp!, {r0-r7, pc}^")
 
 #endif
 
