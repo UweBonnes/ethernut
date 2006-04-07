@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/04/07 12:08:18  haraldkipp
+ * Compiler warning fixed.
+ *
  * Revision 1.3  2005/10/24 17:59:19  haraldkipp
  * Use correct header file, arm, not gba.
  *
@@ -236,7 +239,7 @@ static void DebugPut(char ch)
 {
     u_char i;
     u_short *vid = (u_short *)(VIDRAM_BASE + 0x4000);
-    u_short pos;
+    u_short pos = 0;
 
     if (ch == '\r') {
         pos_x = 0;
