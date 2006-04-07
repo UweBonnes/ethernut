@@ -93,7 +93,7 @@ INPUT                  = @srcdir@/nutdoc_en.txt \
                          @top_srcdir@/app/ftpd \
                          @top_srcdir@/app/httpd \
                          @top_srcdir@/app/inetq \
-                         @top_srcdir@/app/playmp3\
+                         @top_srcdir@/app/playmp3 \
                          @top_srcdir@/app/canbus
 FILE_PATTERNS          = *.c \
                          *.h
