@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/04/07 12:23:18  haraldkipp
+ * Target specific delay defaults moved from global header to AVR specific
+ * file.
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -109,6 +113,14 @@
  * \addtogroup xgDisplay
  */
 /*@{*/
+
+#ifndef LCD_SHORT_DELAY
+#define LCD_SHORT_DELAY 1
+#endif
+
+#ifndef LCD_LONG_DELAY
+#define LCD_LONG_DELAY  2
+#endif
 
 /*!
  * \brief Wait until controller will be ready again
