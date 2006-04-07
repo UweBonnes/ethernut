@@ -40,6 +40,13 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/04/07 12:50:20  haraldkipp
+ * Added additional delays in TwAck.
+ * Clock and data forced to high before switching to input gives better
+ * waveforms.
+ * Additional delay added to set clock to 50% duty cycle. The PCF8563
+ * seems to fail, if the clock's high time is much longer than the low time.
+ *
  * Revision 1.2  2006/01/23 17:32:35  haraldkipp
  * Automatic initialization added.
  *
@@ -73,6 +80,9 @@
 #ifndef TWI_SDA_COD_REG
 #define TWI_SDA_COD_REG PIO_CODR
 #endif
+#ifndef TWI_SDA_SOD_REG
+#define TWI_SDA_SOD_REG PIO_SODR
+#endif
 #ifndef TWI_SDA_PDS_REG
 #define TWI_SDA_PDS_REG PIO_PDSR
 #endif
@@ -92,6 +102,9 @@
 #ifndef TWI_SCL_COD_REG
 #define TWI_SCL_COD_REG PIO_CODR
 #endif
+#ifndef TWI_SCL_SOD_REG
+#define TWI_SCL_SOD_REG PIO_SODR
+#endif
 
 #define TWI_ENABLE() { \
     outr(TWI_SDA_COD_REG, _BV(TWI_SDA_BIT)); \
@@ -100,12 +113,27 @@
     outr(TWI_SCL_PE_REG, _BV(TWI_SCL_BIT)); \
 }
 
-#define SDA_LOW()       outr(TWI_SDA_OE_REG, _BV(TWI_SDA_BIT))
-#define SDA_HIGH()      outr(TWI_SDA_OD_REG, _BV(TWI_SDA_BIT))
+#define SDA_LOW() { \
+    outr(TWI_SDA_COD_REG, _BV(TWI_SDA_BIT)); \
+    outr(TWI_SDA_OE_REG, _BV(TWI_SDA_BIT)); \
+}
+
+#define SDA_HIGH() { \
+    outr(TWI_SDA_SOD_REG, _BV(TWI_SDA_BIT)); \
+    outr(TWI_SDA_OD_REG, _BV(TWI_SDA_BIT)); \
+}
+
 #define SDA_STAT()      (inr(TWI_SDA_PDS_REG) & _BV(TWI_SDA_BIT))
 
-#define SCL_LOW()       outr(TWI_SCL_OE_REG, _BV(TWI_SCL_BIT))
-#define SCL_HIGH()      outr(TWI_SCL_OD_REG, _BV(TWI_SCL_BIT))
+#define SCL_LOW() { \
+    outr(TWI_SCL_COD_REG, _BV(TWI_SCL_BIT)); \
+    outr(TWI_SCL_OE_REG, _BV(TWI_SCL_BIT)); \
+}
+
+#define SCL_HIGH() { \
+    outr(TWI_SCL_SOD_REG, _BV(TWI_SCL_BIT)); \
+    outr(TWI_SCL_OD_REG, _BV(TWI_SCL_BIT)); \
+}
 
 #elif defined(__AVR__)
 
@@ -249,6 +277,7 @@ static int TwPut(u_char octet)
         SCL_HIGH();
         TwDelay(2 * TWI_DELAY);
         SCL_LOW();
+        TwDelay(TWI_DELAY);
     }
 
     /* Set data line high to receive the ACK bit. */
@@ -280,7 +309,7 @@ static u_char TwGet(void)
 
     /* SDA is input. */
     SDA_HIGH();
-
+    TwDelay(TWI_DELAY);
     for (i = 0x80; i; i >>= 1) {
         TwDelay(TWI_DELAY);
         /* Data should appear shortly after the clock's rising edge. */
@@ -304,9 +333,11 @@ static u_char TwGet(void)
 static void TwAck(void)
 {
     SDA_LOW();
+    TwDelay(TWI_DELAY);
     SCL_HIGH();
     TwDelay(2 * TWI_DELAY);
     SCL_LOW();
+    TwDelay(TWI_DELAY);
     SDA_HIGH();
 }
 
