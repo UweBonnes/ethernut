@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.26  2006/04/07 12:26:59  haraldkipp
+-- Removing requirement for non-volatile hardware solves link problem
+-- if no such hardware is available.
+--
 -- Revision 1.25  2006/02/23 15:42:26  haraldkipp
 -- MMC low level bit banging SPI added.
 --
@@ -202,7 +206,6 @@ nutdev =
         name = "nutdev_nvmem",
         brief = "Non Volatile Memory",
         description = "General read/write access to non volatile memory.",
-        requires = { "HW_NVMEM" },
         provides = { "DEV_NVMEM"},
         sources = { "nvmem.c" },
     },
@@ -236,6 +239,89 @@ nutdev =
     --
     -- Special Chip Drivers.
     --
+    {
+        name = "nutdev_at49bv",
+        brief = "AT49BV Flash Memory",
+        description = "Currently supports a single chip only.\n\n"..
+                      "Tested with AT49BV322A and AT49BV002A.",
+        sources = { "at49bv.c" },
+        options =
+        {
+            {
+                macro = "FLASH_CHIP_BASE",
+                brief = "Base Address",
+                description = "First memory address of the chip.",
+                default = "0x10000000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_8BIT",
+                brief = "8-Bit Flash",
+                description = "If enabled, flash is driven in 8-bit mode. "..
+                              "By default Nut/OS supports 16-bit flash.",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_ERASE_WAIT",
+                brief = "Max. Sector Erase Wait Time",
+                description = "Maximum number of milliseconds to wait until the chip "..
+                              "becomes ready again after a sector erase command.",
+                default = "3000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_CHIP_ERASE_WAIT",
+                brief = "Max. Chip Erase Wait Time",
+                description = "Maximum number of milliseconds to wait until the chip "..
+                              "becomes ready again after a chip erase command.",
+                default = "50000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_WRITE_POLLS",
+                brief = "Max. Write Poll Number",
+                description = "Maximum number of polling loops for a byte/word write.",
+                default = "1000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_CONF_SECTOR",
+                brief = "Configuration Sector Address",
+                default = "0x6000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_CONF_SIZE",
+                brief = "Configuration Area Size",
+                description = "During write operations a buffer with this size is allocated "..
+                              "from heap and may cause memory problems with large sectors. "..
+                              "Thus, this value may be less than the size of the configuration ".. 
+                              "sector, in which case the rest of the sector is unused.",
+                provides = { "HW_FLASH_PARAM_SECTOR" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT49BV",
+                brief = "System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in this chip.",
+                provides = { "HW_FLASH_PARAM_SECTOR" },
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+        },
+    },    
+    {
+        name = "nutdev_pcf8563",
+        brief = "PCF8563 Driver",
+        description = "Philips PCF8563 RTC driver. Tested on AT91 only.",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_RTC" },
+        sources = { "pcf8563.c" },
+    },
     {
         name = "nutdev_x12rtc",
         brief = "X12xx Driver",
@@ -370,7 +456,8 @@ nutdev =
             {
                 macro = "SPI0_CS_BIT",
                 brief = "SPI0 Chip Select (AT91)",
-                description = "Bit number of the chip select line.",
+                description = "Bit number of the chip select line.\n"..
+                              "SD-Card Pin 1, DAT3",
                 requires = { "HW_MCU_AT91" },
                 type = "enumerated",
                 choices = mcu_32bit_choice,
@@ -379,7 +466,8 @@ nutdev =
             {
                 macro = "SPI0_CLK_BIT",
                 brief = "SPI0 Clock (AT91)",
-                description = "Bit number of the clock line.",
+                description = "Bit number of the clock line.\n"..
+                              "SD-Card Pin 5, CLK",
                 requires = { "HW_MCU_AT91" },
                 type = "enumerated",
                 choices = mcu_32bit_choice,
@@ -388,7 +476,8 @@ nutdev =
             {
                 macro = "SPI0_MOSI_BIT",
                 brief = "SPI0 MOSI (AT91)",
-                description = "Bit number of the MOSI line.",
+                description = "Bit number of the MOSI line.\n"..
+                              "SD-Card Pin 2, CMD",
                 requires = { "HW_MCU_AT91" },
                 type = "enumerated",
                 choices = mcu_32bit_choice,
@@ -397,7 +486,29 @@ nutdev =
             {
                 macro = "SPI0_MISO_BIT",
                 brief = "SPI0 MISO (AT91)",
-                description = "Bit number of the MISO line.",
+                description = "Bit number of the MISO line.\n"..
+                              "SD-Card Pin 7, DAT0",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "MMC0_CD_BIT",
+                brief = "MMC0 Card Detect (AT91)",
+                description = "Bit number of the card detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "MMC0_WP_BIT",
+                brief = "MMC0 Write Protect (AT91)",
+                description = "Bit number of the write protect line.\n"..
+                              "Currently ignored.",
                 requires = { "HW_MCU_AT91" },
                 type = "enumerated",
                 choices = mcu_32bit_choice,
