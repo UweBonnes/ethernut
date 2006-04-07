@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/04/07 12:52:24  haraldkipp
+ * Memory hole fixed. Flag for normal / directory files now set correctly.
+ *
  * Revision 1.4  2006/02/23 15:45:21  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  * This dramatically increased write rates of no-name cards.
@@ -624,6 +627,7 @@ NUTFILE *PhatDirOpen(NUTDEVICE * dev, char *dpath)
             dfcb->f_clust_prv = 0;
             dfcb->f_mode = _O_RDONLY;
         }
+        free(srch);
         free(comp);
     }
     return ndp;
@@ -646,6 +650,7 @@ int PhatDirRead(DIR * dir)
         return -1;
     }
     if (PhatDirEntryRead(dir->dd_fd, srch)) {
+        free(srch);
         return -1;
     }
 #ifdef NUTDEBUG
@@ -653,8 +658,13 @@ int PhatDirRead(DIR * dir)
 #endif
 
     ent = (struct dirent *) dir->dd_buf;
+    memset(dir->dd_buf, 0, sizeof(struct dirent));
     ent->d_namlen = (u_char) strlen(srch->phfind_name);
     strcpy(ent->d_name, srch->phfind_name);
+    if (srch->phfind_ent.dent_attr & PHAT_FATTR_DIR) {
+        ent->d_type = 1;
+    }
+    free(srch);
 
     return 0;
 }
