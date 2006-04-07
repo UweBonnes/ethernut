@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/04/07 12:56:18  haraldkipp
+ * Several memory holes fixed.
+ *
  * Revision 1.3  2006/02/23 15:45:22  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  * This dramatically increased write rates of no-name cards.
@@ -181,6 +184,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     }
     if (vol->vol_type == 0) {
         /* Unknown partition type. */
+        free(vol);
         errno = ENODEV;
         return -1;
     }
@@ -190,12 +194,14 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      */
     pari.par_nfp = blkmnt;
     if ((*blkdev->dev_ioctl) (blkdev, NUTBLKDEV_INFO, &pari)) {
+        free(vol);
         errno = ENODEV;
         return -1;
     }
 #if PHAT_SECTOR_BUFFERS
     for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
         if ((vol->vol_buf[sbn].sect_data = malloc(pari.par_blksz)) == NULL) {
+            PhatVolUnmount(dev);
             errno = ENOMEM;
             return -1;
         }
@@ -211,6 +217,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      * very first read to properly initialize the caching status.
      */
     if (PhatSectorRead(blkmnt, 0, vol->vol_buf[sbn].sect_data)) {
+        PhatVolUnmount(dev);
         return -1;
     }
     vol->vol_buf[sbn].sect_num = 0;
@@ -229,6 +236,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      * Verify the VBR signature.
      */
     if (vol->vol_buf[sbn].sect_data[510] != 0x55 || vol->vol_buf[sbn].sect_data[511] != 0xAA) {
+        PhatVolUnmount(dev);
         errno = ENODEV;
         return -1;
     }
@@ -237,6 +245,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      * Make sure we got a valid media type.
      */
     if (vbr->bios_media != 0xF0 && vbr->bios_media < 0xF8) {
+        PhatVolUnmount(dev);
         errno = ENODEV;
         return -1;
     }
@@ -247,11 +256,13 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     /* Bytes per sector. */
     vol->vol_sectsz = vbr->bios_sectsz;
     if (vol->vol_sectsz < 512 || vol->vol_sectsz & 0xFF) {
+        PhatVolUnmount(dev);
         errno = ENODEV;
         return -1;
     }
     /* Sectors per cluster. */
     if ((vol->vol_clustsz = vbr->bios_clustsz) == 0) {
+        PhatVolUnmount(dev);
         errno = ENODEV;
         return -1;
     }
@@ -306,6 +317,15 @@ int PhatVolUnmount(NUTDEVICE * dev)
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     if (vol) {
+#if PHAT_SECTOR_BUFFERS
+        int sbn;
+
+        for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
+            if (vol->vol_buf[sbn].sect_data) {
+                free(vol->vol_buf[sbn].sect_data);
+            }
+        }
+#endif
         free(vol);
     }
     return 0;
