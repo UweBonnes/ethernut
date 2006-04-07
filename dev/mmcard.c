@@ -39,6 +39,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/04/07 12:29:03  haraldkipp
+ * Number of read retries increased. Memory hole fixed.
+ * Added ioctl(NUTBLKDEV_MEDIAAVAIL).
+ * Card change ioctl() will also return 1 if no card is available.
+ *
  * Revision 1.4  2006/02/23 15:43:56  haraldkipp
  * Timeout value increased. Some cards have long write latencies.
  *
@@ -294,6 +299,9 @@ static int MmCardInit(MMCIFC * ifc)
      */
     if (MmCardReset(ifc)) {
         if (MmCardReset(ifc)) {
+#ifdef NUTDEBUG
+                printf("[CardReset failed]");
+#endif
             return -1;
         }
     }
@@ -312,12 +320,18 @@ static int MmCardInit(MMCIFC * ifc)
         rsp = MmCardRxR1(ifc);
         (*ifc->mmcifc_cs) (0);
         if (rsp == MMR1_IDLE_STATE) {
+#ifdef NUTDEBUG
+            printf("[CardIdle]");
+#endif
             return 0;
         }
         if (i > 128) {
             NutSleep(1);
         }
     }
+#ifdef NUTDEBUG
+    printf("[CardInit failed]");
+#endif
     return -1;
 }
 
@@ -334,7 +348,7 @@ static int MmCardInit(MMCIFC * ifc)
 static int MmCardReadOrVerify(MMCIFC * ifc, u_long blk, u_char * buf, int vflg)
 {
     int rc = -1;
-    int retries = 32;
+    int retries = 64;
     int i;
     u_char rsp;
 
@@ -495,7 +509,6 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
     NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
-    //printf("[WB%lu]", blk);
     if ((*ifc->mmcifc_cd) () != 1) {
         return -1;
     }
@@ -591,6 +604,7 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 
     /* Return an error if no card is detected. */
     if ((*ifc->mmcifc_cd) () == 0) {
+        errno = ENODEV;
         return NUTFILE_EOF;
     }
 
@@ -684,9 +698,7 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     mparm.fscp_bmnt = nfp;
     mparm.fscp_part_type = fcb->fcb_part.part_type;
     if (fsdev->dev_ioctl(fsdev, FS_VOL_MOUNT, &mparm)) {
-        NutHeapFree(nfp->nf_fcb);
-        NutHeapFree(nfp);
-        errno = ENOMEM;
+        MmCardUnmount(nfp);
         return NUTFILE_EOF;
     }
     return nfp;
@@ -702,17 +714,22 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  */
 int MmCardUnmount(NUTFILE * nfp)
 {
-    int rc;
-    MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
-    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
-    MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
+    int rc = -1;
 
-    if ((*ifc->mmcifc_cd) () != 1) {
-        return -1;
+    if (nfp) {
+        MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
+
+        if (fcb) {
+            NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
+            MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
+
+            if ((*ifc->mmcifc_cd) () == 1) {
+                rc = fcb->fcb_fsdev->dev_ioctl(fcb->fcb_fsdev, FS_VOL_UNMOUNT, NULL);
+            }
+            NutHeapFree(fcb);
+        }
+        NutHeapFree(nfp);
     }
-    rc = fcb->fcb_fsdev->dev_ioctl(fcb->fcb_fsdev, FS_VOL_UNMOUNT, NULL);
-    NutHeapFree(nfp);
-
     return rc;
 }
 
@@ -788,10 +805,16 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
     switch (req) {
+    case NUTBLKDEV_MEDIAAVAIL:
+        {
+            int *flg = (int *) conf;
+            *flg = (*ifc->mmcifc_cd) ();
+        }
+        break;
     case NUTBLKDEV_MEDIACHANGE:
         {
             int *flg = (int *) conf;
-            if ((*ifc->mmcifc_cd) () == 2) {
+            if ((*ifc->mmcifc_cd) () != 1) {
                 *flg = 1;
             } else {
                 *flg = 0;
