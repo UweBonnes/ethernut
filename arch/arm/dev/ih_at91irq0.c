@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/04/07 12:20:55  haraldkipp
+ * Fixed wrong setting of high level sense.
+ *
  * Revision 1.2  2006/01/05 16:44:53  haraldkipp
  * Edge and level trigger modes now configurable.
  *
@@ -130,7 +133,7 @@ static int Interrupt0Ctl(int cmd, void *param)
             if (val == AIC_SRCTYPE_EXT_LOW_LEVEL) {
                 *ival = NUT_IRQMODE_LOWLEVEL;
             } else if (val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
-                *ival = NUT_IRQMODE_LOWLEVEL;
+                *ival = NUT_IRQMODE_HIGHLEVEL;
             } else if (val == AIC_SRCTYPE_EXT_POSITIVE_EDGE) {
                 *ival = NUT_IRQMODE_RISINGEDGE;
             } else  {
