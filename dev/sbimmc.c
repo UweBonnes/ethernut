@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/04/07 12:48:41  haraldkipp
+ * Port configuration is now honored.
+ *
  * Revision 1.4  2006/03/16 19:07:36  haraldkipp
  * Disabled inline assembly routine for ARM bit banging SPI. Stopped working
  * with optimizing compiler.
@@ -61,8 +64,10 @@
  */
 
 #include <cfg/arch.h>
+#include <cfg/arch/gpio.h>
 
 #include <sys/event.h>
+#include <dev/irqreg.h>
 #include <dev/mmcard.h>
 #include <dev/sbimmc.h>
 
@@ -105,6 +110,13 @@
 #define SPI0_PE_REG  PIO_PER
 #endif
 
+#ifndef SPI0_PD_REG
+/*! \brief SPI port disable register.
+ */
+#define SPI0_PD_REG  PIO_PDR
+#endif
+
+
 #ifndef SPI0_OE_REG
 /*! \brief SPI output enable register. */
 #define SPI0_OE_REG  PIO_OER
@@ -133,6 +145,19 @@
 #ifndef SPI0_ODS_REG
 /*! \brief SPI port output status register. */
 #define SPI0_ODS_REG PIO_ODSR
+#endif
+
+#ifdef MMC0_CD_BIT
+#if MMC0_CD_BIT == 9
+#define SIG_MMC0DETECT   sig_INTERRUPT0
+#elif MMC0_CD_BIT == 10
+#define SIG_MMC0DETECT   sig_INTERRUPT1
+#elif MMC0_CD_BIT == 11
+#define SIG_MMC0DETECT   sig_INTERRUPT2
+#else
+#warning "No external interrupt for card detect"
+#undef MMC0_CD_BIT
+#endif
 #endif
 
 #elif defined(MCU_ATMEGA2561) || defined(MCU_AT90CAN128) || defined(MCU_ATMEGA128) || defined(MCU_ATMEGA103) /* MCU */
@@ -381,7 +406,7 @@ int SbiMmCard0WrProt(void)
     return 0;
 }
 
-#if 0
+#ifdef MMC0_CD_BIT
 /*!
  * \brief Card slot 0 insertion interrupt routine.
  *
@@ -389,22 +414,18 @@ int SbiMmCard0WrProt(void)
  *
  * \param arg Pointer to the device information structure.
  */
-static void SbiMmCard0InsIrq(void *arg)
+static void SbiMmCard0DetectIrq(void *arg)
 {
-    mmc0_dcb.dcb_avail = 1;
-    mmc0_dcb.dcb_changed = 1;
-}
+    int mode = NutIrqSetMode(&SIG_MMC0DETECT, NUT_IRQMODE_LOWLEVEL);
 
-/*!
- * \brief Card slot 0 removal interrupt routine.
- *
- * \todo A different routine is required to support multiple cards.
- *
- * \param arg Pointer to the device information structure.
- */
-static void SbiMmCard0RemIrq(void *arg)
-{
-    mmc0_dcb.dcb_avail = 0;
+    if (mode == NUT_IRQMODE_HIGHLEVEL) {
+        mmc0_dcb.dcb_avail = 0;
+    }
+    else {
+        NutIrqSetMode(&SIG_MMC0DETECT, NUT_IRQMODE_HIGHLEVEL);
+        mmc0_dcb.dcb_avail = 1;
+    }
+    mmc0_dcb.dcb_changed = 1;
 }
 #endif
 
@@ -419,7 +440,7 @@ static void SbiMmCard0RemIrq(void *arg)
 static int SbiMmcIfcInit(NUTDEVICE * dev)
 {
 #ifdef SPI0_PE_REG
-    /* Enable all ports, if a port enable register is defined. */
+    /* Enable all SPI ports, if a port enable register is defined. */
     outr(SPI0_PE_REG, _BV(SPI0_CLK_BIT) | _BV(SPI0_MOSI_BIT) | _BV(SPI0_CS_BIT) | _BV(SPI0_MISO_BIT));
 #endif
 
@@ -441,16 +462,24 @@ static int SbiMmcIfcInit(NUTDEVICE * dev)
     /* Set all outputs high. */
     outr(SPI0_SOD_REG, _BV(SPI0_CLK_BIT) | _BV(SPI0_MOSI_BIT) | _BV(SPI0_CS_BIT));
 
-#if 0
+#ifdef MMC0_CD_BIT
+#ifdef SPI0_PD_REG
+    outr(SPI0_PD_REG, _BV(MMC0_CD_BIT));
+#endif
+
     /* Register card detection interrupts. */
-    if ((rc = SbiRegisterIrqHandler(&sig_MMCD, SbiMmCard0InsIrq, 0)) == 0) {
-        rc = SbiRegisterIrqHandler(&sig_NMMCD, SbiMmCard0RemIrq, 0);
+    if (NutRegisterIrqHandler(&SIG_MMC0DETECT, SbiMmCard0DetectIrq, 0)) {
+        mmc0_dcb.dcb_avail = 1;
     }
-    SbiIrqEnable(&sig_MMCD);
+    else {
+        mmc0_dcb.dcb_avail = 0;
+        NutIrqSetMode(&SIG_MMC0DETECT, NUT_IRQMODE_LOWLEVEL);
+        NutIrqEnable(&SIG_MMC0DETECT);
+    }
 #else
     mmc0_dcb.dcb_avail = 1;
+#endif /* MMC0_CD_BIT */
     mmc0_dcb.dcb_changed = 0;
-#endif
 
     return MmCardDevInit(dev);
 }
