@@ -1,7 +1,7 @@
 #ifndef _DEV_HD44780_H_
 #define _DEV_HD44780_H_
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,6 +55,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/04/07 12:58:34  haraldkipp
+ * Target specific delay defaults moved from global header to AVR specific
+ * file.
+ *
  * Revision 1.2  2005/05/27 14:02:01  olereinhardt
  * Added support for new display sizes configurable by macros
  * LCD_4x20, LCD_4x16, LCD_2x40, LCD_2x20, LCD_2x16, LCD_2x8,
@@ -111,14 +115,6 @@
 #define LCD_DDRAM           7      // DB7: set DD RAM address
 // reading:
 #define LCD_BUSY            7      // DB7: LCD is busy
-
-#ifndef LCD_SHORT_DELAY
-#define LCD_SHORT_DELAY 1
-#endif
-
-#ifndef LCD_LONG_DELAY
-#define LCD_LONG_DELAY  2
-#endif
 
 /*@}*/
 
