@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/04/07 12:57:48  haraldkipp
+ * Added ioctl(NUTBLKDEV_MEDIAAVAIL).
+ *
  * Revision 1.1  2006/01/05 16:32:05  haraldkipp
  * First check-in.
  *
@@ -60,6 +63,8 @@
  */
 /*@{*/
 
+/*! \brief Query for media change. */
+#define NUTBLKDEV_MEDIAAVAIL   0x1200
 /*! \brief Query for media change. */
 #define NUTBLKDEV_MEDIACHANGE  0x1201
 /*! \brief Retrieve device information. */
