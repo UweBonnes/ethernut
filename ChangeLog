@@ -1,4 +1,71 @@
-$Id: ChangeLog,v 1.322 2006/03/29 01:24:18 olereinhardt Exp $
+$Id: ChangeLog,v 1.323 2006/04/07 13:46:58 haraldkipp Exp $
+
+2006-04-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/ih_at91fiq.c: Fast interrupts are now enabled 
+	correctly. Mode set/get ioctl added and priority set/get removed. 
+	Interrupt entry will no longer push R8-R12 on stack.
+
+	* arch/arm/at91.h: Fast interrupt doesn't require to store R8-R12.
+
+	* dev/twbbif.c: Data had not been forced to high before switching
+	to output as claimed in the last change log. Now it is. Added
+	additional delays in TwAck.
+
+	* arch/avr/dev/hd44780.c, include/dev/hd44780.h: Target specific 
+	delay defaults moved from global header to AVR specific file.
+
+	* include/cfg/lcd.h: Added for platform independent LCD 
+	configurations.
+
+	* arch/arm/dev/hd44780_at91.c, conf/arch/arm.nut: ARM driver for 
+	HD44780 LCD controller added.
+
+	* conf/dev/dev.nut: Removed requirement for non-volatile hardware
+	solves link problem if no such hardware is available.
+
+	* dev/at49bv.c, conf/dev/dev.nut, dev/nvmem.c, include/dev/at49bv.h: 
+	AT49BV flash memory support added. A single sector may be used to 
+	store system configurations in case there is no EEPROM available.
+
+	* include/cfg/arch/armpio.h, include/cfg/arch/gpio.h:
+	Added port configuration header file for ARM.
+
+	* conf/dev/dev.nut, dev/pcf8563.c, include/dev/pcf8563.h: 
+	PCF8563 RTC driver added.
+
+	* conf/dev/dev.nut: Added description of SD Card Pins. Added
+	settings for MMC card change detect and write protect.
+
+	* include/dev/blockdev.h: Added ioctl(NUTBLKDEV_MEDIAAVAIL).
+
+	* arch/arm/dev/ih_at91irq0.c: Fixed wrong setting of high level
+	sense.
+
+	* arch/arm/dev/ih_at91irq1.c, arch/arm/dev/ih_at91irq1.c: 
+	Added missing IRQ sense settings.
+
+	* dev/sbimmc.c: Port configuration is now honored.
+
+	* nut/dev/mmcard.c: Number of read retries increased. Memory
+	hole fixed. Added ioctl(NUTBLKDEV_MEDIAAVAIL). Card change
+	ioctl() will also return 1 if no card is available.
+
+	* fs/dirent.c: Memory hole fixed.
+
+	* fs/phatdir.c: Memory hole fixed. Flag for normal / directory
+	files now set correctly.
+
+	* fs/phatvol.c: Several memory holes fixed.
+
+	* dev/twbbif.c: Clock and data forced to high before switching to 
+	input gives better waveforms. Additional delay added to set
+	clock to 50% duty cycle. The PCF8563 seems to fail, if the
+	clock's high time is much longer than the low time.
+
+	* dev/genchar.c, include/dev/genchar.h: Generic character driver 
+	sample added.
+
 
 2006-03-29  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * include/sys/tracer.h, os/tracer.c, fs/fat.c: Signednes of strings
