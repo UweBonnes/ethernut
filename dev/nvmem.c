@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/04/07 12:29:42  haraldkipp
+ * AT49BV flash memory support added. A single sector may be used to
+ * store system configurations in case there is no EEPROM available.
+ *
  * Revision 1.1  2006/01/23 17:26:19  haraldkipp
  * Platform independant routines added, which provide generic access to
  * non-volatile memory.
@@ -50,6 +54,8 @@
 
 #if defined(NUT_CONFIG_X12RTC)
 #include <dev/x12rtc.h>
+#elif defined(NUT_CONFIG_AT49BV)
+#include <dev/at49bv.h>
 #endif
 
 /*!
@@ -70,6 +76,8 @@ int NutNvMemLoad(u_int addr, void *buff, size_t siz)
 {
 #if defined(NUT_CONFIG_X12RTC)
     return X12EepromRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_AT49BV)
+    return At49bvParamRead(addr, buff, siz);
 #elif defined(__AVR__)
     return OnChipNvMemLoad(addr, buff, siz);
 #else
@@ -90,6 +98,8 @@ int NutNvMemSave(u_int addr, CONST void *buff, size_t len)
 {
 #if defined(NUT_CONFIG_X12RTC)
     return X12EepromWrite(addr, buff, len);
+#elif defined(NUT_CONFIG_AT49BV)
+    return At49bvParamWrite(addr, buff, len);
 #elif defined(__AVR__)
     return OnChipNvMemSave(addr, buff, len);
 #else
