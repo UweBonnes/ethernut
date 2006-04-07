@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/04/07 12:19:51  haraldkipp
+ * Fast interrupts are now enabled correctly.
+ * Mode set/get ioctl added and priority set/get removed.
+ * Interrupt entry will no longer push R8-R12 on stack.
+ *
  * Revision 1.1  2005/10/24 08:56:09  haraldkipp
  * First check in.
  *
@@ -64,14 +69,14 @@ IRQ_HANDLER sig_FIQ = {
 static void FastIrqEntry(void) __attribute__ ((naked));
 void FastIrqEntry(void)
 {
-    IRQ_ENTRY();
+    FIQ_ENTRY();
 #ifdef NUT_PERFMON
     sig_FIQ.ir_count++;
 #endif
     if (sig_FIQ.ir_handler) {
         (sig_FIQ.ir_handler) (sig_FIQ.ir_arg);
     }
-    IRQ_EXIT();
+    FIQ_EXIT();
 }
 
 /*!
@@ -123,11 +128,32 @@ static int FastIrqCtl(int cmd, void *param)
     case NUT_IRQCTL_DISABLE:
         enabled = 0;
         break;
-    case NUT_IRQCTL_GETPRIO:
-        *ival = inr(AIC_SMR(FIQ_ID)) & AIC_PRIOR;
+    case NUT_IRQCTL_GETMODE:
+        {
+            u_int val = inr(AIC_SMR(FIQ_ID)) & AIC_SRCTYPE;
+            if (val == AIC_SRCTYPE_EXT_LOW_LEVEL) {
+                *ival = NUT_IRQMODE_LOWLEVEL;
+            } else if (val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
+                *ival = NUT_IRQMODE_HIGHLEVEL;
+            } else if (val == AIC_SRCTYPE_EXT_POSITIVE_EDGE) {
+                *ival = NUT_IRQMODE_RISINGEDGE;
+            } else  {
+                *ival = NUT_IRQMODE_FALLINGEDGE;
+            }
+        }
         break;
-    case NUT_IRQCTL_SETPRIO:
-        outr(AIC_SMR(FIQ_ID), (inr(AIC_SMR(FIQ_ID)) & ~AIC_PRIOR) | *ival);
+    case NUT_IRQCTL_SETMODE:
+        if (*ival == NUT_IRQMODE_LOWLEVEL) {
+            outr(AIC_SMR(FIQ_ID), (inr(AIC_SMR(FIQ_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_LOW_LEVEL);
+        } else if (*ival == NUT_IRQMODE_HIGHLEVEL) {
+            outr(AIC_SMR(FIQ_ID), (inr(AIC_SMR(FIQ_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_HIGH_LEVEL);
+        } else if (*ival == NUT_IRQMODE_FALLINGEDGE) {
+            outr(AIC_SMR(FIQ_ID), (inr(AIC_SMR(FIQ_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_NEGATIVE_EDGE);
+        } else  if (*ival == NUT_IRQMODE_RISINGEDGE) {
+            outr(AIC_SMR(FIQ_ID), (inr(AIC_SMR(FIQ_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_EXT_POSITIVE_EDGE);
+        } else  {
+            rc = -1;
+        }
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
@@ -142,7 +168,7 @@ static int FastIrqCtl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-        outr(AIC_IECR, _BV(PIO_ID));
+        outr(AIC_IECR, _BV(FIQ_ID));
     }
     return rc;
 }
