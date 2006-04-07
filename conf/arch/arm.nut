@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.6  2006/04/07 12:24:12  haraldkipp
+-- ARM driver for HD44780 LCD controller added.
+--
 -- Revision 1.5  2006/03/02 19:56:10  haraldkipp
 -- First attempt to compile with ICCARM. All compile errors fixed, but not
 -- a finished port yet. Many things are missing.
@@ -157,6 +160,94 @@ nutarch_arm =
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "arm/dev/usart1at91.c" },
+    },
+    {
+        name = "nutarch_at91_hd44780",
+        brief = "HD44780 LCD Driver (AT91)",
+        description = "Only 4 bit interfaces are currently supported.\n"..
+                      "Tested on the AT91R40008 with 2x16 character LCD.",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_FILE", "DEV_WRITE" },
+        sources = { "arm/dev/hd44780_at91.c" },
+        options =
+        {
+            {
+                macro = "LCD_ROWS",
+                brief = "Rows",
+                description = "The number of available display rows, either 1, 2 or 4.",
+                default = "2",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_COLS",
+                brief = "Columns",
+                description = "The number of available display colums, either 8, 16, 20 or 40.",
+                default = "16",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_SHORT_DELAY",
+                brief = "Short Delay",
+                description = "The number of dummy loops executed after LCD enable goes up.",
+                default = "10",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_LONG_DELAY",
+                brief = "Long Delay",
+                description = "The number of loops executed after sending a command to the LCD "..
+                              "controller. If a R/W line is speicifed, then the driver will queries "..
+                              "the LCD status and terminates the loop as soon as the LCD busy "..
+                              "flag has been cleared.",
+                default = "1000",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_DATA_LSB",
+                brief = "Least Significant Data Bit",
+                description = "Bit number of the least significant data bit. The remaining "..
+                              "data bits must be connected to the following port bits.",
+                default = "0",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_ENABLE_BIT",
+                brief = "Enable Bit",
+                description = "Port bit of the LCD enable line. "..
+                              "This line must be exclusively reserved.",
+                default = "4",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_REGSEL_BIT",
+                brief = "Register Select Bit",
+                description = "Port bit of the LCD register select line. "..
+                              "May be shared.",
+                default = "7",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_RW_BIT",
+                brief = "Read/Write Bit",
+                description = "Optional port bit of the LCD register select line. "..
+                              "If not specified, the driver will use the maximum delay. "..
+                              "May be shared.",
+                type = "enumerated",
+                flavor = "booldata",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+        },
     },
     {
         name = "nutarch_gba_debug",
