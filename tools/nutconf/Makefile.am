@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.5  2006/04/07 18:48:59  haraldkipp
+# Added maintainer-clean targets
+#
 # Revision 1.4  2005/11/22 20:03:52  haraldkipp
 # Added missing bitmaps.
 #
@@ -48,6 +51,8 @@
 # First check in
 #
 #
+
+MAINTAINERCLEANFILES = Makefile.in
 
 if BUILD_NUTCONF_TOOLS
 

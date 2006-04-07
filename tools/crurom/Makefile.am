@@ -34,10 +34,15 @@
 
 #
 # $Log$
+# Revision 1.2  2006/04/07 18:48:59  haraldkipp
+# Added maintainer-clean targets
+#
 # Revision 1.1  2005/04/28 15:07:49  haraldkipp
 # First check in
 #
 #
+
+MAINTAINERCLEANFILES = Makefile.in
 
 bin_PROGRAMS = crurom
 crurom_SOURCES = crurom.c

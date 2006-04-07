@@ -34,10 +34,15 @@
 
 #
 # $Log$
+# Revision 1.2  2006/04/07 18:48:58  haraldkipp
+# Added maintainer-clean targets
+#
 # Revision 1.1  2005/04/28 14:50:14  haraldkipp
 # First check in
 #
 #
+
+MAINTAINERCLEANFILES = Makefile.in
 
 SUBDIRS = gen
 EXTRA_DIST = copying-gpl.txt copying-liquorice.txt images/logo_ethernut_239x57.gif

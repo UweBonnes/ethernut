@@ -34,10 +34,15 @@
 
 #
 # $Log$
+# Revision 1.2  2006/04/07 18:48:58  haraldkipp
+# Added maintainer-clean targets
+#
 # Revision 1.1  2005/04/28 14:50:47  haraldkipp
 # First check in
 #
 #
+
+MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = nutdoc_en.txt nut_en.cfg.in nut_en.css nutfoot.html nuthead.html
 
