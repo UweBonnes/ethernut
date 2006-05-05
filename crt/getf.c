@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/05/05 15:43:07  freckle
+ * Fixes for bugs #1477658 and #1477676
+ *
  * Revision 1.3  2004/11/24 15:24:07  haraldkipp
  * Floating point configuration works again.
  *
@@ -105,6 +108,7 @@
  */
 int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
 {
+
     u_char cf;                  /* Character from format. */
     u_char ch;                  /* Character from input. */
     size_t width;               /* Field width. */
@@ -115,7 +119,9 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
     u_char acnt = 0;            /* Number of fields assigned. */
     char buf[16];               /* Temporary buffer. */
     char *cp;                   /* Temporary pointer. */
-
+    u_char ch_ready = 0;        /* Character available from previous peek
+                                   This is necessary as a hack to get around a missing ungetc */
+    
     for (;;) {
         cf = *fmt++;
         if (cf == 0)
@@ -128,8 +134,10 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
             for (;;) {
                 if (_getb(fd, &ch, 1) != 1)
                     break;
-                if (!isspace(ch))
+                if (!isspace(ch)) {
+                    ch_ready = 1; /* character avail without read */
                     break;
+                }
             }
             continue;
         }
@@ -138,10 +146,11 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
          * Match literals.
          */
         if (cf != '%') {
-            if (_getb(fd, &ch, 1) != 1)
+            if (!ch_ready && _getb(fd, &ch, 1) != 1)
                 return ccnt ? acnt : EOF;
             if (ch != cf)
                 return acnt;
+            ch_ready = 0; /* character used now */
             continue;
         }
 
@@ -150,10 +159,11 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
          * Check for a '%' literal.
          */
         if (cf == '%') {
-            if (_getb(fd, &ch, 1) != 1)
+            if (!ch_ready && _getb(fd, &ch, 1) != 1)
                 return ccnt ? acnt : EOF;
             if (ch != cf)
                 return acnt;
+            ch_ready = 0; /* character used now */
             continue;
         }
 
@@ -219,18 +229,19 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
                 width = 1;
             if (flags & CF_SUPPRESS) {
                 while (width > sizeof(buf)) {
-                    if (_getb(fd, buf, sizeof(buf)) <= 0)
+                    if (!ch_ready && _getb(fd, buf, sizeof(buf)) <= 0)
                         return ccnt ? acnt : EOF;
                     width -= sizeof(buf);
                 }
                 if (width)
-                    if (_getb(fd, &buf, width) <= 0)
+                    if (!ch_ready && _getb(fd, &buf, width) <= 0)
                         return ccnt ? acnt : EOF;
             } else {
-                if (_getb(fd, (void *) va_arg(ap, char *), width) <= 0)
+                if (!ch_ready && _getb(fd, (void *) va_arg(ap, char *), width) <= 0)
                      return ccnt ? acnt : EOF;
                 acnt++;
             }
+            ch_ready = 0; /* character used now */
             ccnt++;
             continue;
         }
@@ -238,8 +249,9 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
         /*
          * Skip whitespaces.
          */
-        if (_getb(fd, &ch, 1) != 1)
+        if (!ch_ready && _getb(fd, &ch, 1) != 1)
             return ccnt ? acnt : EOF;
+        ch_ready = 0; /* no character ready anymore */
         while (isspace(ch)) {
             if (_getb(fd, &ch, 1) != 1)
                 return ccnt ? acnt : EOF;

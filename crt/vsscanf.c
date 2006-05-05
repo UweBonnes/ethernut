@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/05/05 15:43:07  freckle
+ * Fixes for bugs #1477658 and #1477676
+ *
  * Revision 1.3  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -60,11 +63,16 @@
 static int _sgetb(int fd, void *buffer, size_t count)
 {
     char **spp = (char **) ((uptr_t) fd);
-
-    memcpy(buffer, *spp, count);
-    *spp += count;
-
-    return count;
+    char  *dst = (char*) buffer;
+    size_t result = 0;
+    
+    while( count > 0 && **spp != 0) {
+        *dst++ = *(*spp)++;  // increment not spp but *spp
+        count--;
+        result++;
+    }
+    
+    return result;
 }
 
 /*!
