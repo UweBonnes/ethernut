@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/05/15 11:49:47  haraldkipp
+ * Added support for media formats without partition table like USB sticks.
+ *
  * Revision 1.4  2006/04/07 12:56:18  haraldkipp
  * Several memory holes fixed.
  *
@@ -182,12 +185,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
         vol->vol_type = 12;
         break;
     }
-    if (vol->vol_type == 0) {
-        /* Unknown partition type. */
-        free(vol);
-        errno = ENODEV;
-        return -1;
-    }
 
     /*
      * Query information from the block device driver.
@@ -222,6 +219,18 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     }
     vol->vol_buf[sbn].sect_num = 0;
     vbr = (PHATVBR *) vol->vol_buf[sbn].sect_data;
+
+    if (vol->vol_type == 0) {
+        if (vbr->bios_rootsz) {
+            vol->vol_type = 16;
+        }
+        else {
+            vol->vol_type = 32;
+        }
+    }
+#ifdef NUTDEBUG
+    printf("FAT%d\n", vol->vol_type);
+#endif
 
     /* Convert to the PHAT32 layout. */
     if (vol->vol_type != 32) {
