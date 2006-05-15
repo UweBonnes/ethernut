@@ -1,11 +1,15 @@
-$Id: ChangeLog,v 1.326 2006/05/15 11:43:16 haraldkipp Exp $
+$Id: ChangeLog,v 1.327 2006/05/15 12:49:54 haraldkipp Exp $
 
 2006-05-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Prepare pre-release 4.1.6.
+
+	* net/tcpsm.c: ICCAVR doesn't accept void pointer calculation.
 
 	* arch/arm/dev/hd44780_at91.c: Added delays for more reliable
 	initialization.
 
-	* arch/avr/dev/vs1001k.c, nut/include/dev/vs1001k.h: Bug 
+	* arch/avr/dev/vs1001k.c, include/dev/vs1001k.h: Bug 
 	corrected, which stopped player on flush. Now flushing plays 
 	the remaining bytes in the buffer.
 	VS1001 ports are now fully configurable.
@@ -19,10 +23,10 @@ $Id: ChangeLog,v 1.326 2006/05/15 11:43:16 haraldkipp Exp $
 
 	* fs/phatfs.c: Added support for file seek.
 
-	* fs/phatfs.c, nut/include/fs/phatfs.h: A second PHAT file system 
+	* fs/phatfs.c, include/fs/phatfs.h: A second PHAT file system 
 	instance enables us to concurrently mount a second volume.
 
-	* fs/phatvol.c: Added support for medias formats without partition 
+	* fs/phatvol.c: Added support for media formats without partition 
 	table like USB sticks, AKA super floppies.
 
 	* app/basemon/basemon.c, app/basemon/smsc.c, app/basemon/uart.c,

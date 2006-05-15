@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.13  2006/05/15 12:48:49  haraldkipp
+# Prepare pre-release 4.1.6.
+#
 # Revision 1.12  2006/04/07 13:59:54  haraldkipp
 # Pre-release 4.1.5.4.
 #
@@ -75,7 +78,7 @@
 #
 #
 
-AC_INIT(ethernut,4.1.5)
+AC_INIT(ethernut,4.1.6)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005 egnite Software GmbH])
