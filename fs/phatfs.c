@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/05/15 11:47:18  haraldkipp
+ * Added support for file seek.
+ *
  * Revision 1.4  2006/03/02 19:59:05  haraldkipp
  * Added implementation of dev_size makes _filelength() work, which in turn
  * enables the use of these file systems in pro/httpd.c.
@@ -78,6 +81,12 @@
 #define NUTDEBUG
 #include <stdio.h>
 #include <fs/phatdbg.h>
+#endif
+
+#ifndef SEEK_SET
+#  define SEEK_SET        0     /* Seek from beginning of file.  */
+#  define SEEK_CUR        1     /* Seek from current position.  */
+#  define SEEK_END        2     /* Set file pointer to EOF plus "offset" */
 #endif
 
 /*!
@@ -740,6 +749,30 @@ static long PhatFileSize(NUTFILE *nfp)
     return fcb->f_dirent.dent_fsize;
 }
 
+static int PhatFileSeek(NUTFILE * nfp, long *pos, int whence)
+{
+    int rc = 0;
+    long npos = *pos;
+    PHATFILE *fcb = nfp->nf_fcb;
+
+    switch (whence) {
+    case SEEK_CUR:
+        npos += fcb->f_pos;
+        break;
+    case SEEK_END:
+        npos += PhatFileSize(nfp);
+        break;
+    }
+
+    if (npos < 0 || npos > PhatFileSize(nfp)) {
+        rc = EINVAL;
+    } else {
+        rc = PhatFilePosSet(nfp, npos);
+        *pos = fcb->f_pos;
+    }
+    return rc;
+}
+
 /*!
  * \brief File system specific functions.
  * \param dev Specifies the file system device.
@@ -785,7 +818,9 @@ static int PhatIOCtl(NUTDEVICE * dev, int req, void *conf)
         rc = PhatDirDelEntry(dev, (char *) conf, PHAT_FATTR_FILEMASK & ~PHAT_FATTR_DIR);
         break;
     case FS_FILE_SEEK:
-        /* TODO */
+        PhatFileSeek((NUTFILE *) ((IOCTL_ARG3 *) conf)->arg1,  /* */
+                     (long *) ((IOCTL_ARG3 *) conf)->arg2,      /* */
+                     (int) ((IOCTL_ARG3 *) conf)->arg3);
         break;
     case FS_RENAME:
         /* Rename an existing file or directory. */
@@ -846,6 +881,27 @@ static int PhatInit(NUTDEVICE * dev)
 NUTDEVICE devPhat0 = {
     0,                          /*!< Pointer to next device, dev_next. */
     {'P', 'H', 'A', 'T', '0', 0, 0, 0, 0}
+    ,                           /*!< Unique device name, dev_name. */
+    IFTYP_FS,                   /*!< Type of device, dev_type. Obsolete. */
+    0,                          /*!< Base address, dev_base. Unused. */
+    0,                          /*!< First interrupt number, dev_irq. Unused. */
+    0,                          /*!< Mounted block device partition, dev_icb. */
+    0,                          /*!< Volume information, dev_dcb. */
+    PhatInit,                   /*!< Driver initialization routine, dev_init. */
+    PhatIOCtl,                  /*!< Driver specific control function, dev_ioctl. */
+    PhatFileRead,               /*!< Read data from a file, dev_read. */
+    PhatFileWrite,              /*!< Write data to a file, dev_write. */
+#ifdef __HARVARD_ARCH__
+    PhatFileWrite_P,            /*!< Write data from program space to a file, dev_write_P. */
+#endif
+    PhatFileOpen,               /*!< Open a file, dev_open. */
+    PhatFileClose,              /*!< Close a file, dev_close. */
+    PhatFileSize                /*!< Return file size, dev_size. */
+};
+
+NUTDEVICE devPhat1 = {
+    0,                          /*!< Pointer to next device, dev_next. */
+    {'P', 'H', 'A', 'T', '1', 0, 0, 0, 0}
     ,                           /*!< Unique device name, dev_name. */
     IFTYP_FS,                   /*!< Type of device, dev_type. Obsolete. */
     0,                          /*!< Base address, dev_base. Unused. */
