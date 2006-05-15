@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2003-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2006/05/15 11:51:44  haraldkipp
+# Remove unused network libraries.
+#
 # Revision 1.3  2004/11/08 09:57:38  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -52,7 +55,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c $(WEBFILE)
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutnet -lnutpro -lnutfs -lnutos -lnutdev -lnutnet -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutfs -lnutos -lnutcrt -lnutdev -lnutarch
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG)
