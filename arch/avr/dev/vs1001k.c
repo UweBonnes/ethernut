@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2003 by Pavel Chromy. All rights reserved.
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,14 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/05/15 11:46:00  haraldkipp
+ * Bug corrected, which stopped player on flush. Now flushing plays
+ * the remaining bytes in the buffer.
+ * VS1001 ports are now fully configurable.
+ * Several changes had been added to adapt the code to newer
+ * Nut/OS style, like replacing outp with outb and using API
+ * routines for interrupt control.
+ *
  * Revision 1.2  2006/01/23 19:52:10  haraldkipp
  * Added required typecasts before left shift.
  *
@@ -114,6 +122,12 @@
  *
  */
 
+/*
+ * This header file specifies the hardware port bits. You
+ * need to change or replace it, if your hardware differs.
+ */
+#include <cfg/arch/avr.h>
+
 #include <sys/atom.h>
 #include <sys/event.h>
 #include <sys/timer.h>
@@ -131,11 +145,248 @@
  */
 /*@{*/
 
+#ifndef VS_SCK_BIT
+/*! 
+ * \brief VS1001 serial control interface clock input bit. 
+ *
+ * The first rising clock edge after XCS has gone low marks the first 
+ * bit to be written to the decoder.
+ */
+#define VS_SCK_BIT      0
+#endif
+
+#if !defined(VS_SCK_AVRPORT) || (VS_SCK_AVRPORT == AVRPORTB)
+#define VS_SCK_PORT PORTB   /*!< Port register of \ref VS_SCK_BIT. */
+#define VS_SCK_DDR  DDRB    /*!< Data direction register of \ref VS_SCK_BIT. */
+#elif (VS_SCK_AVRPORT == AVRPORTD)
+#define VS_SCK_PORT PORTD
+#define VS_SCK_DDR  DDRD
+#elif (VS_SCK_AVRPORT == AVRPORTE)
+#define VS_SCK_PORT PORTE
+#define VS_SCK_DDR  DDRE
+#elif (VS_SCK_AVRPORT == AVRPORTF)
+#define VS_SCK_PORT PORTF
+#define VS_SCK_DDR  DDRF
+#else
+#warning "Bad SCK port specification"
+#endif
+
+#ifndef VS_SS_BIT
+/*!
+ * \brief VS1001 serial data interface clock input bit. 
+ */
+#define VS_SS_BIT       1       
+#endif
+
+#if !defined(VS_SS_AVRPORT) || (VS_SS_AVRPORT == AVRPORTB)
+#define VS_SS_PORT  PORTB   /*!< Port output register of \ref VS_SS_BIT. */
+#define VS_SS_DDR   DDRB    /*!< Data direction register of \ref VS_SS_BIT. */
+#elif (VS_SS_AVRPORT == AVRPORTD)
+#define VS_SS_PORT  PORTD
+#define VS_SS_DDR   DDRD
+#elif (VS_SS_AVRPORT == AVRPORTE)
+#define VS_SS_PORT  PORTE
+#define VS_SS_DDR   DDRE
+#elif (VS_SS_AVRPORT == AVRPORTF)
+#define VS_SS_PORT  PORTF
+#define VS_SS_DDR   DDRF
+#else
+#warning "Bad SS port specification"
+#endif
+
+#ifndef VS_SI_BIT
+/*!
+ * \brief VS1001 serial control interface data input.
+ *
+ * The decoder samples this input on the rising edge of SCK if XCS is low.
+ */
+#define VS_SI_BIT       2       
+#endif
+
+#if !defined(VS_SI_AVRPORT) || (VS_SI_AVRPORT == AVRPORTB)
+#define VS_SI_PORT  PORTB   /*!< Port output register of \ref VS_SI_BIT. */
+#define VS_SI_DDR   DDRB    /*!< Data direction register of \ref VS_SI_BIT. */
+#elif (VS_SI_AVRPORT == AVRPORTD)
+#define VS_SI_PORT  PORTD
+#define VS_SI_DDR   DDRD
+#elif (VS_SI_AVRPORT == AVRPORTE)
+#define VS_SI_PORT  PORTE
+#define VS_SI_DDR   DDRE
+#elif (VS_SI_AVRPORT == AVRPORTF)
+#define VS_SI_PORT  PORTF
+#define VS_SI_DDR   DDRF
+#else
+#warning "Bad SI port specification"
+#endif
+
+#ifndef VS_SO_BIT
+/*!
+ * \brief VS1001 serial control interface data output. 
+ *
+ * If data is transfered from the decoder, bits are shifted out on the 
+ * falling SCK edge. If data is transfered to the decoder, SO is at a 
+ * high impedance state.
+ */
+#define VS_SO_BIT       3
+#endif
+
+#if !defined(VS_SO_AVRPORT) || (VS_SO_AVRPORT == AVRPORTB)
+#define VS_SO_PIN   PINB    /*!< Port input register of \ref VS_SO_BIT. */
+#define VS_SO_DDR   DDRB    /*!< Data direction register of \ref VS_SO_BIT. */
+#elif (VS_SO_AVRPORT == AVRPORTD)
+#define VS_SO_PIN   PIND
+#define VS_SO_DDR   DDRD
+#elif (VS_SO_AVRPORT == AVRPORTE)
+#define VS_SO_PIN   PINE
+#define VS_SO_DDR   DDRE
+#elif (VS_SO_AVRPORT == AVRPORTF)
+#define VS_SO_PIN   PINF
+#define VS_SO_DDR   DDRF
+#else
+#warning "Bad SO port specification"
+#endif
+
+#ifndef VS_XCS_BIT
+/*!
+ * \brief VS1001 active low chip select input. 
+ *
+ * A high level forces the serial interface into standby mode, ending 
+ * the current operation. A high level also forces serial output (SO) 
+ * to high impedance state.
+ */
+#define VS_XCS_BIT      4
+#endif
+
+#if !defined(VS_XCS_AVRPORT) || (VS_XCS_AVRPORT == AVRPORTB)
+#define VS_XCS_PORT PORTB   /*!< Port output register of \ref VS_XCS_BIT. */
+#define VS_XCS_DDR  DDRB    /*!< Data direction register of \ref VS_XCS_BIT. */
+#elif (VS_XCS_AVRPORT == AVRPORTD)
+#define VS_XCS_PORT PORTD
+#define VS_XCS_DDR  DDRD
+#elif (VS_XCS_AVRPORT == AVRPORTE)
+#define VS_XCS_PORT PORTE
+#define VS_XCS_DDR  DDRE
+#elif (VS_XCS_AVRPORT == AVRPORTF)
+#define VS_XCS_PORT PORTF
+#define VS_XCS_DDR  DDRF
+#else
+#warning "Bad XCS port specification"
+#endif
+
+#ifndef VS_BSYNC_BIT
+/*!
+ * \brief VS1001 serial data interface bit sync. 
+ *
+ * The first DCLK sampling edge, during which BSYNC is high, marks the 
+ * first bit of a data byte.
+ */
+#define VS_BSYNC_BIT    5
+#endif
+
+#if !defined(VS_BSYNC_AVRPORT) || (VS_BSYNC_AVRPORT == AVRPORTB)
+#define VS_BSYNC_PORT   PORTB   /*!< Port output register of \ref VS_BSYNC_BIT. */
+#define VS_BSYNC_DDR    DDRB    /*!< Data direction register of \ref VS_BSYNC_BIT. */
+#elif (VS_BSYNC_AVRPORT == AVRPORTD)
+#define VS_BSYNC_PORT   PORTD
+#define VS_BSYNC_DDR    DDRD
+#elif (VS_BSYNC_AVRPORT == AVRPORTE)
+#define VS_BSYNC_PORT   PORTE
+#define VS_BSYNC_DDR    DDRE
+#elif (VS_BSYNC_AVRPORT == AVRPORTF)
+#define VS_BSYNC_PORT   PORTF
+#define VS_BSYNC_DDR    DDRF
+#else
+#warning "Bad BSYNC port specification"
+#endif
+
+#ifndef VS_RESET_BIT
+/*!
+ * \brief VS1001 hardware reset input. 
+ */
+#define VS_RESET_BIT    7       
+#endif
+
+#if !defined(VS_RESET_AVRPORT) || (VS_RESET_AVRPORT == AVRPORTB)
+#define VS_RESET_PORT   PORTB   /*!< Port output register of \ref VS_RESET_BIT. */
+#define VS_RESET_DDR    DDRB    /*!< Data direction register of \ref VS_RESET_BIT. */
+#elif (VS_RESET_AVRPORT == AVRPORTD)
+#define VS_RESET_PORT   PORTD
+#define VS_RESET_DDR    DDRD
+#elif (VS_RESET_AVRPORT == AVRPORTE)
+#define VS_RESET_PORT   PORTE
+#define VS_RESET_DDR    DDRE
+#elif (VS_RESET_AVRPORT == AVRPORTF)
+#define VS_RESET_PORT   PORTF
+#define VS_RESET_DDR    DDRF
+#else
+#warning "Bad RESET port specification"
+#endif
+
+#ifndef VS_SIGNAL_IRQ
+/*!
+ * \brief VS1001 data request interrupt. 
+ */
+#define VS_SIGNAL       sig_INTERRUPT6
+#define VS_DREQ_BIT     6
+#define VS_DREQ_PORT    PORTE   /*!< Port output register of \ref VS_DREQ_BIT. */
+#define VS_DREQ_PIN     PINE    /*!< Port input register of \ref VS_DREQ_BIT. */
+#define VS_DREQ_DDR     DDRE    /*!< Data direction register of \ref VS_DREQ_BIT. */
+
+#elif (VS_SIGNAL_IRQ == INT0)
+#define VS_SIGNAL       sig_INTERRUPT0
+#define VS_DREQ_BIT     0
+#define VS_DREQ_PORT    PORTD
+#define VS_DREQ_PIN     PIND
+#define VS_DREQ_DDR     DDRD
+
+#elif (VS_SIGNAL_IRQ == INT1)
+#define VS_SIGNAL       sig_INTERRUPT1
+#define VS_DREQ_BIT     1
+#define VS_DREQ_PORT    PORTD
+#define VS_DREQ_PIN     PIND
+#define VS_DREQ_DDR     DDRD
+
+#elif (VS_SIGNAL_IRQ == INT2)
+#define VS_SIGNAL       sig_INTERRUPT2
+#define VS_DREQ_BIT     2
+#define VS_DREQ_PORT    PORTD
+#define VS_DREQ_PIN     PIND
+#define VS_DREQ_DDR     DDRD
+
+#elif (VS_SIGNAL_IRQ == INT3)
+#define VS_SIGNAL       sig_INTERRUPT3
+#define VS_DREQ_BIT     3
+#define VS_DREQ_PORT    PORTD
+#define VS_DREQ_PIN     PIND
+#define VS_DREQ_DDR     DDRD
+
+#elif (VS_SIGNAL_IRQ == INT4)
+#define VS_SIGNAL       sig_INTERRUPT4
+#define VS_DREQ_BIT     4
+#define VS_DREQ_PORT    PORTE
+#define VS_DREQ_PIN     PINE
+#define VS_DREQ_DDR     DDRE
+
+#elif (VS_SIGNAL_IRQ == INT5)
+#define VS_SIGNAL       sig_INTERRUPT5
+#define VS_DREQ_BIT     5
+#define VS_DREQ_PORT    PORTE
+#define VS_DREQ_PIN     PINE
+#define VS_DREQ_DDR     DDRE
+
+#elif (VS_SIGNAL_IRQ == INT7)
+#define VS_SIGNAL       sig_INTERRUPT7
+#define VS_DREQ_BIT     7
+#define VS_DREQ_PORT    PORTE
+#define VS_DREQ_PIN     PINE
+#define VS_DREQ_DDR     DDRE
+
+#else
+#warning "Bad interrupt specification"
+#endif
 
 static volatile u_char vs_status = VS_STATUS_STOPPED;
 static volatile u_short vs_flush;
-
-
 
 /*
  * \brief Write a byte to the VS1001 data interface.
@@ -165,7 +416,7 @@ static INLINE void VsSdiPutByte(u_char b)
     /* Wait for previous SPI transfer to finish. */
     loop_until_bit_is_set(SPSR, SPIF);
     sbi(VS_BSYNC_PORT, VS_BSYNC_BIT);
-    outp(b, SPDR);
+    outb(SPDR, b);
     _NOP();
     _NOP();
     _NOP();
@@ -286,8 +537,8 @@ static void VsRegWrite(u_char reg, u_short data)
 
 #ifndef VS_NOSPI
     /* Re-enable SPI. Hint given by Jesper Hansen. */
-    outp(BV(MSTR) | BV(SPE), SPCR);
-    outp(inp(SPSR), SPSR);
+    outb(SPCR, BV(MSTR) | BV(SPE));
+    outb(SPSR, inp(SPSR));
 #endif
 
     /* Deselect chip. */
@@ -320,8 +571,8 @@ static u_short VsRegRead(u_char reg)
 
 #ifndef VS_NOSPI
     /* Re-enable SPI. Changed due to a hint by Jesper. */
-    outp(BV(MSTR) | BV(SPE), SPCR);
-    outp(inp(SPSR), SPSR);
+    outb(SPCR, BV(MSTR) | BV(SPE));
+    outb(SPSR, inp(SPSR));
 #endif
 
     /* Deselect chip and enable interrupts. */
@@ -343,15 +594,17 @@ static u_short VsRegRead(u_char reg)
  */
 u_char VsPlayerInterrupts(u_char enable)
 {
+    static u_char is_enabled = 0;
     u_char rc;
 
-    NutEnterCritical();
-    rc = (inb(EIMSK) & _BV(VS_DREQ_BIT)) != 0;
-    if(enable)
-        sbi(EIMSK, VS_DREQ_BIT);
-    else
-        cbi(EIMSK, VS_DREQ_BIT);
-    NutExitCritical();
+    rc = is_enabled;
+    if(enable) {
+        NutIrqEnable(&VS_SIGNAL);
+    }
+    else {
+        NutIrqDisable(&VS_SIGNAL);
+    }
+    is_enabled = enable;
 
     return rc;
 }
@@ -367,10 +620,11 @@ static void VsPlayerFeed(void *arg)
 {
     u_char ief;
     u_char j = 32;
+    size_t total = 0;
 
-    /* Cancel interrupt if not running. */
-    if (vs_status != VS_STATUS_RUNNING || bit_is_clear(VS_DREQ_PIN, VS_DREQ_BIT))
+    if (bit_is_clear(VS_DREQ_PIN, VS_DREQ_BIT)) {
         return;
+    }
 
     /*
      * We are hanging around here some time and may block other important
@@ -380,27 +634,9 @@ static void VsPlayerFeed(void *arg)
     sei();
 
     /* 
-     * Flush the internal VS buffer. 
-     */
-    if(vs_flush) {
-        do {
-            VsSdiPutByte(0);
-            if (--vs_flush == 0) {
-                /* Decoder internal buffer is flushed. */
-                vs_status = VS_STATUS_EMPTY;
-                break;
-            }
-            /* Allow 32 bytes to be sent as long as DREQ is set, This includes
-               the one in progress. */
-            if (bit_is_set(VS_DREQ_PIN, VS_DREQ_BIT))
-                j = 32;
-        } while(j--);
-    }
-
-    /* 
      * Feed the decoder until its buffer is full or we ran out of data.
      */
-    else {
+    if (vs_status == VS_STATUS_RUNNING) {
         char *bp = 0;
         size_t consumed = 0;
         size_t available = 0;
@@ -423,6 +659,11 @@ static void VsPlayerFeed(void *arg)
             VsSdiPutByte(*bp);
             bp++;
             consumed++;
+            total++;
+            if (total > 4096) {
+                vs_status = VS_STATUS_EOF;
+                break;
+            }
 
             /* Allow 32 bytes to be sent as long as DREQ is set, This includes
                the one in progress. */
@@ -432,6 +673,24 @@ static void VsPlayerFeed(void *arg)
 
         /* Finally re-enable the producer buffer. */
         NutSegBufReadLast(consumed);
+    }
+
+    /* 
+     * Flush the internal VS buffer. 
+     */
+    if(vs_status != VS_STATUS_RUNNING && vs_flush) {
+        do {
+            VsSdiPutByte(0);
+            if (--vs_flush == 0) {
+                /* Decoder internal buffer is flushed. */
+                vs_status = VS_STATUS_EMPTY;
+                break;
+            }
+            /* Allow 32 bytes to be sent as long as DREQ is set, This includes
+               the one in progress. */
+            if (bit_is_set(VS_DREQ_PIN, VS_DREQ_BIT))
+                j = 32;
+        } while(j--);
     }
     VsPlayerInterrupts(ief);
 }
@@ -474,8 +733,9 @@ int VsPlayerStop(void)
 
     ief = VsPlayerInterrupts(0);
     /* Check whether we need to stop at all to not overwrite other than running status */
-    if (vs_status == VS_STATUS_RUNNING)
+    if (vs_status == VS_STATUS_RUNNING) {
         vs_status = VS_STATUS_STOPPED;
+    }
     VsPlayerInterrupts(ief);
 
     return 0;
@@ -555,18 +815,19 @@ int VsPlayerInit(void)
          * make sure SPIF is set. Note, that the decoder reset line is still
          * active.
          */
-        outp(BV(MSTR) | BV(SPE), SPCR);
+        outb(SPCR, BV(MSTR) | BV(SPE));
         dummy = inp(SPSR);
-        outp(0, SPDR);
+        outb(SPDR, 0);
     }
 #endif
 
-    /* Rising edge will generate interrupts. */
-    sbi(EICR, 5);
-    sbi(EICR, 4);
-
     /* Register the interrupt routine */
-    NutRegisterIrqHandler(&sig_INTERRUPT6, VsPlayerFeed, NULL);
+    if (NutRegisterIrqHandler(&VS_SIGNAL, VsPlayerFeed, NULL)) {
+        return -1;
+    }
+
+    /* Rising edge will generate interrupts. */
+    NutIrqSetMode(&VS_SIGNAL, NUT_IRQMODE_RISINGEDGE);
 
     /* Release decoder reset line. */
     sbi(VS_RESET_PORT, VS_RESET_BIT);
@@ -578,7 +839,7 @@ int VsPlayerInit(void)
     NutDelay(200);
 
     /* Clear any spurious interrupt. */
-    outp(BV(VS_DREQ_BIT), EIFR);
+    outb(EIFR, BV(VS_DREQ_BIT));
 
     return 0;
 }
@@ -632,7 +893,7 @@ int VsPlayerReset(u_short mode)
     NutDelay(2);
 
     /* Clear any spurious interrupts. */
-    outp(BV(VS_DREQ_BIT), EIFR);
+    outb(EIFR, BV(VS_DREQ_BIT));
 
     return 0;
 }

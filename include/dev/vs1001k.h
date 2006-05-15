@@ -53,6 +53,14 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/05/15 11:46:00  haraldkipp
+ * Bug corrected, which stopped player on flush. Now flushing plays
+ * the remaining bytes in the buffer.
+ * VS1001 ports are now fully configurable.
+ * Several changes had been added to adapt the code to newer
+ * Nut/OS style, like replacing outp with outb and using API
+ * routines for interrupt control.
+ *
  * Revision 1.3  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -85,7 +93,6 @@
  *
  */
 
-#include <sys/nutconfig.h>
 #include <sys/types.h>
 
 /*!
@@ -183,9 +190,8 @@ typedef struct {
 } VS_HEADERINFO;
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+__BEGIN_DECLS
+/* Function prototypes */
 
 extern int VsPlayerInit(void);
 extern int VsPlayerReset(u_short mode);
@@ -213,8 +219,7 @@ extern int VsBeep(u_char fsin, u_char ms);
 
 /*@}*/
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
+/* End of prototypes */
 
 #endif
