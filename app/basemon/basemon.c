@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2006/05/15 11:51:07  haraldkipp
+ * Added support for external watchdog hardware.
+ *
  * Revision 1.12  2005/10/17 08:42:08  hwmaier
  * Added error message when compiled for AT90CAN128 as this CPU is not fully supported by basemon yet
  *
@@ -160,7 +163,7 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.1.3";
+static char *version = "4.1.4";
 static size_t sram;
 static u_char banks;
 static size_t banksize;
@@ -180,8 +183,12 @@ THREAD(idle, arg)
     NutTimerInit();
     NutThreadCreate("main", WebDemo, 0, 1384);
     NutThreadSetPriority(254);
-    for (;;)
+    for (;;) {
+#ifdef HEARTBEAT_BIT
+        HeartBeat();
+#endif
         NutThreadYield();
+    }
 }
 
 /*
@@ -216,6 +223,7 @@ int TestPorts(void)
     if (bpat)
         printf("PORTB bits 0x%02X\n\x07", bpat);
 
+#ifndef INTECH21
     /*
      * Port D.
      */
@@ -274,6 +282,7 @@ int TestPorts(void)
     if (fpat)
         printf("PORTF bits 0x%02X\n\x07", fpat);
 #endif
+#endif /* INTECH21 */
 
     if (bpat || dpat || epat || fpat)
         return -1;
@@ -300,6 +309,9 @@ void BaseMon(void)
      * Print banner.
      */
     printf("\n\nBaseMon %s\nNut/OS %s\n", version, NutVersionString());
+#ifdef INTECH21
+    puts("Customized for Intech21");
+#endif
     printf("Compiled by ");
 #ifdef __IMAGECRAFT__
     printf("ICCAVR");
@@ -469,11 +481,17 @@ void BaseMon(void)
     confnet.cdn_ip_mask = inet_addr(my_mask);
     confnet.cdn_gateway = inet_addr(my_gate);
     memcpy(confnet.cdn_mac, my_mac, sizeof(confnet.cdn_mac));
+#ifdef HEARTBEAT_BIT
+    HeartBeat();
+#endif
     NutNetSaveConfig();
     if (strlen(hostname) > 0) {
         strncpy(confos.hostname, hostname, sizeof(confos.hostname) - 1);
         confos.hostname[sizeof(confos.hostname) - 1] = 0;
     }
+#ifdef HEARTBEAT_BIT
+    HeartBeat();
+#endif
     NutSaveConfig();
 }
 
@@ -532,8 +550,12 @@ void NutInit(void)
     }
 
     NutThreadSetPriority(128);
-    for (;;)
-        NutSleep(1000);
+    for (;;) {
+#ifdef HEARTBEAT_BIT
+        HeartBeat();
+#endif
+        NutSleep(500);
+    }
 }
 
 #ifdef __IMAGECRAFT__
