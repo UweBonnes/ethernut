@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2006/05/15 11:53:15  haraldkipp
+ * Now a buffer flush will completely transfer the MP3 file to the decoder.
+ *
  * Revision 1.1  2003/11/21 17:00:15  haraldkipp
  * First release
  *
@@ -221,8 +224,8 @@ static int PlayMp3File(char *path)
      */
     printf("[P.FLUSH]");
     VsPlayerFlush();
-    while (VsGetStatus() == VS_STATUS_RUNNING) {
-        NutSleep(63);
+    while (VsGetStatus() != VS_STATUS_EMPTY) {
+        NutSleep(1);
     }
 
     /*
