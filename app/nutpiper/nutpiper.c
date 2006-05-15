@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2006/05/15 12:51:47  haraldkipp
+ * Player start timeout increased.
+ *
  * Revision 1.3  2004/05/11 17:22:12  drsung
  * Deprecated header file removed.
  *
@@ -128,7 +131,7 @@ static TCPSOCKET *ConnectStation(RADIOSTATION * rsp)
         /* Process header from server. */
         if (ScanStreamHeader(sock, rsp) == 0) {
             /* TODO: Failed to start the player is fatal. */
-            if (PlayerStart(sock, rsp->rs_metaint, 3000)) {
+            if (PlayerStart(sock, rsp->rs_metaint, 30000)) {
                 NutTcpCloseSocket(sock);
                 sock = 0;
             }
