@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2006/05/15 12:49:12  haraldkipp
+ * ICCAVR doesn't accept void pointer calculation.
+ *
  * Revision 1.20  2006/03/21 21:22:19  drsung
  * Enhancement made to TCP state machine. Now TCP options
  * are read from peer and at least the maximum segment size is stored.
@@ -261,7 +264,7 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
     
     /* loop through available options */
     for (cp = ((u_char*) nb->nb_tp.vp) + sizeof(TCPHDR); (*cp != TCPOPT_EOL) 
-       && ((void*)cp - nb->nb_tp.vp < (int)nb->nb_tp.sz); )
+       && (cp - (u_char *)nb->nb_tp.vp < (int)nb->nb_tp.sz); )
     {
         switch (*cp)
         {
