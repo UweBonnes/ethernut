@@ -1,4 +1,41 @@
-$Id: ChangeLog,v 1.325 2006/05/05 15:43:07 freckle Exp $
+$Id: ChangeLog,v 1.326 2006/05/15 11:43:16 haraldkipp Exp $
+
+2006-05-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/hd44780_at91.c: Added delays for more reliable
+	initialization.
+
+	* arch/avr/dev/vs1001k.c, nut/include/dev/vs1001k.h: Bug 
+	corrected, which stopped player on flush. Now flushing plays 
+	the remaining bytes in the buffer.
+	VS1001 ports are now fully configurable.
+	Several changes had been added to adapt the code to newer
+	Nut/OS style, like replacing outp with outb and using API
+	routines for interrupt control.
+
+	* arch/avr/os/nutinit.c: Added heartbeat port bit, which is
+	regularly toggled by the idle thread. Helps to develop on
+	boards with external watchdog hardware that can't be disabled.
+
+	* fs/phatfs.c: Added support for file seek.
+
+	* fs/phatfs.c, nut/include/fs/phatfs.h: A second PHAT file system 
+	instance enables us to concurrently mount a second volume.
+
+	* fs/phatvol.c: Added support for medias formats without partition 
+	table like USB sticks, AKA super floppies.
+
+	* app/basemon/basemon.c, app/basemon/smsc.c, app/basemon/uart.c,
+	app/basemon/utils.c, app/basemon/utils.h: Will run on boards with 
+	external watchdog hardware.
+
+	* app/playmp3/Makefile: Network libraries not used. Removed from the
+	library list.
+
+	* app/playmp3/playmp3.c: Bugfix. Instead of waiting for player
+	not running, wait for buffer empty. Now all sound samples are
+	completely transferred to the decoder.
+
 
 2006-04-28  Matthias Ringwald  <mringwal@inf.ethz.ch>
 	* crt/vsscanf.c, crt/vsscanf_P.c: Made _sgetb aware of string delimiter.
