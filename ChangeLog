@@ -1,4 +1,7 @@
-$Id: ChangeLog,v 1.327 2006/05/15 12:49:54 haraldkipp Exp $
+$Id: ChangeLog,v 1.328 2006/05/15 15:31:10 freckle Exp $
+
+2006-05-15  Matthias Ringwald  <mringwal@inf.ethz.ch>
+        * crt/getf.c: Take care of first character after integer, too.
 
 2006-05-15  Harald Kipp  <harald.kipp@egnite.de>
 

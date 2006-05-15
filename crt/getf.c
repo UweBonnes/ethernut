@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/05/15 15:31:11  freckle
+ * Take care of first character after integer
+ *
  * Revision 1.4  2006/05/05 15:43:07  freckle
  * Fixes for bugs #1477658 and #1477676
  *
@@ -328,8 +331,10 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
                         break;
                     base = 16;
                     flags &= ~CF_PFXOK;
-                } else
+                } else {
+                    ch_ready = 1; /* character avail without read */
                     break;
+                }
                 *cp++ = ch;
                 if (width > 1) {
                     if (_getb(fd, &ch, 1) != 1)
@@ -373,8 +378,10 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
                     if ((flags & (CF_NDIGITS | CF_EXPOK)) != CF_EXPOK)
                         break;
                     flags = (flags & ~(CF_EXPOK | CF_DPTOK)) | CF_SIGNOK | CF_NDIGITS;
-                } else
+                } else {
+                    ch_ready = 1; /* character avail without read */
                     break;
+                }
                 *cp++ = ch;
                 if (_getb(fd, &ch, 1) != 1)
                     break;
