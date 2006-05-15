@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/05/15 11:44:06  haraldkipp
+ * Added delays for more reliable initialization.
+ *
  * Revision 1.1  2006/04/07 13:50:15  haraldkipp
  * ARM driver for HD44780 LCD controller added.
  *
@@ -316,7 +319,9 @@ static void LcdInit(NUTDEVICE * dev)
 #endif
     outr(PIO_PER, LCD_EN | LCD_RS | LCD_DATA);
     LcdClrBits(LCD_DATA | LCD_RS);
+    LcdDelay(LCD_LONG_DELAY);
     LcdClrBits(LCD_EN);
+    LcdDelay(LCD_LONG_DELAY);
 
     /* Initialize for 4-bit operation. */
     LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
