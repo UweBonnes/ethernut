@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/05/15 11:46:49  haraldkipp
+ * Added heartbeat port bit, which is regularly toggled by the idle thread.
+ * Helps to develop on boards with external watchdog hardware that can't be
+ * disabled.
+ *
  * Revision 1.5  2005/10/17 08:24:55  hwmaier
  * All platform specific initialisation (CPLD, IO pins etc.) has been consolidated using the new PLATFORM macro into a new function called NutCustomInit()
  *
@@ -416,6 +421,10 @@ THREAD(NutIdle, arg)
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
     u_char sleep_mode;
 #endif
+#ifdef IDLE_HEARTBEAT_BIT
+    u_char beat = 0;
+#endif
+
     /* Initialize system timers. */
     NutTimerInit();
 
@@ -431,6 +440,17 @@ THREAD(NutIdle, arg)
     for (;;) {
         NutThreadYield();
         NutThreadDestroy();
+
+#ifdef IDLE_HEARTBEAT_BIT
+        if ((beat = !beat) == 0) {
+            //UDR = '*';
+            cbi(IDLE_HEARTBEAT_PORT, IDLE_HEARTBEAT_BIT);
+        }
+        else {
+            sbi(IDLE_HEARTBEAT_PORT, IDLE_HEARTBEAT_BIT);
+        }
+        sbi(IDLE_HEARTBEAT_DDR, IDLE_HEARTBEAT_BIT);
+#endif
 
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
         if (idle_sleep_mode != SLEEP_MODE_NONE) {
