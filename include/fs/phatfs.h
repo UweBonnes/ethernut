@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/05/15 11:48:38  haraldkipp
+ * Added a second PHAT file system instance.
+ *
  * Revision 1.2  2006/01/22 17:44:20  haraldkipp
  * ICCAVR failed to find local header files.
  *
@@ -142,6 +145,7 @@ typedef struct _PHATFILE {
 #include <fs/phat32.h>
 
 extern NUTDEVICE devPhat0;
+extern NUTDEVICE devPhat1;
 
 extern u_long AllocFirstCluster(NUTFILE * nfp);
 
