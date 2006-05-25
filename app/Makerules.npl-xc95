@@ -1,0 +1,94 @@
+#
+# Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. All advertising materials mentioning features or use of this
+#    software must display the following acknowledgement:
+#
+#    This product includes software developed by egnite Software GmbH
+#    and its contributors.
+#
+# THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+# SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+# OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+# AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+# THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+#
+# For additional information see http://www.ethernut.de/
+#
+# $Log$
+# Revision 1.1  2006/05/25 09:24:55  haraldkipp
+# For building XSVF files from Verilog sources.
+#
+#
+#
+
+.SUFFIXES: .ngc .ngd .ucf .jed .svf .xsvf
+
+#
+# Create the netlist from Verilog sources.
+#
+%.ngc: %.prj
+	$(XST) $(XSTFLAGS) -ifn $(XSTSCRIPT) -ofn $(XSTLOG)
+
+#
+# Create a native generic database file from the netlist.
+#
+%.ngd: %.ngc
+	$(NGDBUILD) $(NGDBFLAGS) -uc $(NPL_UCF) -p $(NPL_PART) $< $@
+
+#
+# Create a CPLD design file from the native generic database file.
+#
+%.vm6: %.ngd
+	$(CPLDFIT) $(FITFLAGS) $<
+
+#
+# Create a JEDEC file from the CPLD desgin file.
+#
+%.jed: %.vm6
+	$(HPREP6) $(PREPFLAGS) -i $<
+
+%.xsvf: %.jed
+	$(IMPACT) -batch $(IMPSCRIPT)
+
+.PHONY: npl_clean
+npl_clean:
+	-$(RM) $(XSTLOG)
+	-$(RM) $(FITLOG)
+	-$(RM) netlist.lst
+	-$(RM) $(NPL_PROJ).ngc
+	-$(RM) $(NPL_PROJ).lso
+	-$(RM) $(NPL_PROJ).bld
+	-$(RM) $(NPL_PROJ).ngd
+	-$(RM) $(NPL_PROJ).ngc
+	-$(RM) $(NPL_PROJ)_pad.csv
+	-$(RM) $(NPL_PROJ).gyd
+	-$(RM) $(NPL_PROJ).mfd
+	-$(RM) $(NPL_PROJ).pad
+	-$(RM) $(NPL_PROJ).pnx
+	-$(RM) $(NPL_PROJ).rpt
+	-$(RM) $(NPL_PROJ).tspec
+	-$(RM) $(NPL_PROJ).vm6
+	-$(RM) $(NPL_PROJ).xml
+	-$(RM) $(NPL_PROJ)_build.xml
+	-$(RM) $(NPL_PROJ)_vhdl.prj
+	-$(RM) _impact.cmd
+	-$(RM) _impactbatch.log
+	-$(RM) tmperr.err
+	-$(RM) -r xst
