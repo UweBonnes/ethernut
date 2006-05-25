@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/05/25 09:18:28  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.8  2006/01/23 19:50:48  haraldkipp
  * Dummy NVMEM configuration for GBA added.
  *
@@ -68,10 +71,21 @@
 #include <sys/confos.h>
 #include <dev/nvmem.h>
 
+/*!
+ * \addtogroup xgConfOs
+ */
+/*@{*/
+
+/*!
+ * \brief Global system configuration structure.
+ *
+ * Contains the current system configuration. Nut/OS will load
+ * this structure from non-volatile memory during initialization.
+ */
 CONFOS confos;
 
 /*!
- * \brief Load Nut/OS configuration from non volatile memory.
+ * \brief Load Nut/OS configuration from non-volatile memory.
  *
  * This routine is automatically called during system
  * initialization.
@@ -92,7 +106,7 @@ int NutLoadConfig(void)
 }
 
 /*!
- * \brief Save Nut/OS configuration in non volatile memory.
+ * \brief Save Nut/OS configuration in non-volatile memory.
  *
  * \return 0 if OK, -1 on failures.
  */
@@ -108,3 +122,5 @@ int NutSaveConfig(void)
 #endif
     return 0;
 }
+
+/*@}*/

@@ -2,7 +2,7 @@
 #define _SYS_CONFOS_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,8 +33,16 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
+/*!
+ * \file sys/confos.h
+ * \brief Header file for global system configuration.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.6  2006/05/25 09:18:28  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.5  2006/03/16 15:25:34  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -57,16 +65,23 @@
  * Revision 1.3  2002/06/26 17:29:28  harald
  * First pre-release with 2.4 stack
  *
+ * \endverbatim
  */
 
 #include <sys/types.h>
 #include <cfg/eeprom.h>
 
 /*!
- * \file sys/confos.h
- * \brief Nut/OS configuration.
+ * \addtogroup xgConfOs
  */
+/*@{*/
 
+/*!
+ * \brief Non-volatile memory location.
+ *
+ * Offset into non-volatile memory, where Nut/OS stores the system
+ * configuration. The default may be overridden by the Configurator.
+ */
 #ifndef CONFOS_EE_OFFSET
 #define CONFOS_EE_OFFSET    0
 #endif
@@ -82,11 +97,26 @@ typedef struct __attribute__ ((packed)) _CONFOS CONFOS;
  * \struct _CONFOS confos.h sys/confos.h
  * \brief Operating system configuration structure.
  *
+ * Applications may directly access the global variable \ref confos to
+ * read or modify the current configuration.
  */
 struct __attribute__ ((packed)) _CONFOS {
-    u_char size;            /*!< \brief Size of this structure. */
-    u_char magic[2];        /*!< \brief Magic cookie. */
-    char hostname[16];      /*!< \brief host name of the system. */
+    /*! \brief Size of this structure.
+     *
+     * Used by Nut/Net to verify, that the structure contents is valid
+     * after reading it from non-volatile memory.
+     */
+    u_char size;
+
+    /*! \brief Magic cookie.
+     *
+     * Contains CONFOS_EE_MAGIC.
+     */
+    u_char magic[2];
+
+    /*! \brief Host name of the system. 
+     */
+    char hostname[16];
 };
 
 extern CONFOS confos;
@@ -99,5 +129,7 @@ extern int NutSaveConfig(void);
 
 __END_DECLS
 /* End of prototypes */
+
+/*@}*/
 
 #endif

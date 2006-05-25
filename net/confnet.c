@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/05/25 09:18:28  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.7  2006/01/23 17:26:18  haraldkipp
  * Platform independant routines added, which provide generic access to
  * non-volatile memory.
@@ -68,10 +71,21 @@
 #include <sys/confnet.h>
 #include <dev/nvmem.h>
 
+/*!
+ * \addtogroup xgConfNet
+ */
+/*@{*/
+
+/*!
+ * \brief Global network configuration structure.
+ *
+ * Contains the current network configuration. Nut/Net will load
+ * this structure from non-volatile memory during initialization.
+ */
 CONFNET confnet;
 
 /*!
- * \brief Load network configuration from non volatile memory.
+ * \brief Load network configuration from non-volatile memory.
  *
  * If no configuration is available in EEPROM, all configuration
  * parameters are cleared to zero. Except the MAC address, which
@@ -105,7 +119,7 @@ int NutNetLoadConfig(CONST char *name)
 }
 
 /*!
- * \brief Save network configuration in non volatile memory.
+ * \brief Save network configuration in non-volatile memory.
  *
  * \return 0 if OK, -1 on failures.
  */
@@ -119,3 +133,5 @@ int NutNetSaveConfig(void)
 #endif
     return 0;
 }
+
+/*@}*/
