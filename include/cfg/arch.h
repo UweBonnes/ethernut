@@ -2,7 +2,7 @@
 #define _CFG_ARCH_H_
 
 /*
- * Copyright (C) 2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,10 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2006/05/25 09:22:47  haraldkipp
+ * The PLATFORM definition broke source tree building.
+ * Fixed for Ethernut Boards.
+ *
  * Revision 1.1  2004/09/19 12:31:52  haraldkipp
  * Configuration placeholders added
  *
@@ -46,5 +50,49 @@
  * configuration and is currently used as a placeholder 
  * when not using the Configurator.
  */
+
+#if defined(ETHERNUT1)
+
+#ifndef PLATFORM
+#define PLATFORM ETHERNUT1
+#endif
+
+#ifndef AVR_GCC
+#define AVR_GCC
+#endif
+
+#ifndef MCU_ATMEGA128
+#define MCU_ATMEGA128
+#endif
+
+#elif defined(ETHERNUT2)
+
+#ifndef PLATFORM
+#define PLATFORM ETHERNUT2
+#endif
+
+#ifndef AVR_GCC
+#define AVR_GCC
+#endif
+
+#ifndef MCU_ATMEGA128
+#define MCU_ATMEGA128
+#endif
+
+#elif defined(ETHERNUT3)
+
+#ifndef PLATFORM
+#define PLATFORM ETHERNUT3
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91R40008
+#define MCU_AT91R40008
+#endif
+
+#endif /* ETHERNUT3 */
 
 #endif
