@@ -32,6 +32,12 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2006/05/25 09:26:46  haraldkipp
+# ICCAVR context switch replaced with the one for GCC.
+# Added all AT91 specific sources to support building for ARM in the
+# source tree.
+# Corrected a typo, which checked for unix, but should check for arm.
+#
 # Revision 1.7  2006/02/08 15:18:49  haraldkipp
 # ATmega2561 Support
 #
@@ -69,7 +75,7 @@ include $(top_blddir)/UserConf.mk
 
 SRCS =
 ifeq ($(ARCH), avr)
-SRCS = avr/os/context_icc.c avr/dev/ostimer.c avr/dev/ih_adc.c \
+SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ih_adc.c \
 	avr/dev/ih_analog_comp.c avr/dev/ih_canit.c avr/dev/ih_ee_ready.c avr/dev/ih_int0.c \
 	avr/dev/ih_int1.c avr/dev/ih_int2.c avr/dev/ih_int3.c avr/dev/ih_int4.c \
 	avr/dev/ih_int5.c avr/dev/ih_int6.c avr/dev/ih_int7.c avr/dev/ih_ovrit.c \
@@ -95,12 +101,17 @@ endif
 
 endif
 
-ifeq ($(ARCH), unix)
+ifeq ($(ARCH), arm)
 
 SRCS = arm/os/context.c
 
 ifeq ($(DEVICE), at91r40008)
-SRCS += arm/dev/ostimer_at91.c arm/dev/debug_at91.c arm/dev/ax88796.c
+SRCS += arm/dev/ostimer_at91.c arm/dev/ih_at91fiq.c \
+         arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c arm/dev/ih_at91pio.c \
+         arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c \
+         arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/ih_at91wdi.c arm/dev/debug_at91.c \
+         arm/dev/usart0at91.c arm/dev/usart1at91.c arm/dev/ax88796.c arm/dev/dm9000e.c \
+         arm/dev/at91init.c arm/dev/wdt_at91.c
 OBJ1 = arm/init/crt$(LDNAME).o
 endif
 
