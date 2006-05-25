@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/05/25 09:33:35  haraldkipp
+ * Bugfix. At49bvParamWrite() returned an error when flash sector contents
+ * was equal to the contents to write.
+ *
  * Revision 1.1  2006/04/07 13:51:36  haraldkipp
  * AT49BV flash memory support added. A single sector may be used to
  * store system configurations in case there is no EEPROM available.
@@ -267,7 +271,7 @@ int At49bvParamWrite(u_int pos, CONST void *data, u_int len)
 
     /* Load the complete configuration area. */
     if ((buff = malloc(FLASH_CONF_SIZE)) != 0) {
-        At49bvSectorRead(FLASH_CONF_SECTOR, buff, FLASH_CONF_SIZE);
+        rc = At49bvSectorRead(FLASH_CONF_SECTOR, buff, FLASH_CONF_SIZE);
         /* Compare old with new contents. */
         if (memcmp(buff + pos, data, len)) {
             /* New contents differs. Copy it into the sector buffer. */
