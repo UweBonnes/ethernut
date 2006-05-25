@@ -2,7 +2,7 @@
 #define _ARCH_ARM_H_
 
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/05/25 09:35:27  haraldkipp
+ * Dummy macros added to support the avr-libc special function register
+ * definitions.
+ *
  * Revision 1.8  2006/03/16 15:25:26  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -152,5 +156,8 @@ extern void *__stack;
 #ifdef __IMAGECRAFT__
 #define __attribute__(x)
 #endif
+
+#define _SFR_MEM8(addr)     (addr)
+#define _SFR_MEM16(addr)    (addr)
 
 #endif

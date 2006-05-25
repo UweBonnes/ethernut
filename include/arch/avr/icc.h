@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/05/25 09:35:27  haraldkipp
+ * Dummy macros added to support the avr-libc special function register
+ * definitions.
+ *
  * Revision 1.3  2006/02/08 15:20:56  haraldkipp
  * ATmega2561 Support
  *
@@ -183,11 +187,42 @@
 /* To be sorted out.                                                */
 /* ================================================================ */
 
+#define wdt_enable(tmo) \
+{ \
+    register u_char s = _BV(WDCE) | _BV(WDE); \
+    register u_char r = tmo | _BV(WDE); \
+    asm("in R0, 0x3F\n"     \
+        "cli\n"             \
+        "wdr\n"             \
+        "out 0x21, %s\n"    \
+        "out 0x21, %r\n"    \
+        "out 0x3F, R0\n");  \
+}
+
+#define wdt_disable() \
+{ \
+    register u_char s = _BV(WDCE) | _BV(WDE); \
+    register u_char r = 0;  \
+    asm("in R0, $3F\n"      \
+        "cli\n"             \
+        "out 0x21, %s\n"    \
+        "out 0x21, %r\n"    \
+        "out 0x3F, R0\n");  \
+}
+
+#define wdt_reset() \
+{ \
+    _WDR(); \
+}
+
 
 #define __SFR_OFFSET 0
 #define SFR_IO_ADDR(sfr) ((sfr) - __SFR_OFFSET)
 #define SFR_MEM_ADDR(sfr) (sfr)
 #define SFR_IO_REG_P(sfr) ((sfr) < 0x40 + __SFR_OFFSET)
+
+#define _SFR_MEM8(addr)     (addr)
+#define _SFR_MEM16(addr)    (addr)
 
 #define BV(x)       BIT(x)
 #define _BV(x)      BIT(x)
@@ -290,6 +325,10 @@
 
 #ifndef RAMEND
 #define RAMEND  0x0FFF
+#endif
+
+#ifndef WDCE
+#define WDCE    WDTOE
 #endif
 
 #endif
