@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.11  2006/05/25 09:27:42  haraldkipp
+-- Watchdog API for AVR added.
+--
 -- Revision 1.10  2006/03/02 23:56:53  hwmaier
 -- NUT_THREAD_NICRXSTACK entry added
 --
@@ -126,6 +129,12 @@ nutarch_avr =
         requires = { "HW_MCU_AVR" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "avr/dev/ostimer.c" },
+    },
+    {
+        name = "nutarch_avr_wdt",
+        brief = "Watchdog Timer (AVR)",
+        requires = { "HW_MCU_AVR" },
+        sources = { "avr/dev/wdt_avr.c" },
     },
 
     --
