@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.8  2006/05/25 09:31:48  haraldkipp
+# Include UserConf.mk for correct building in source tree.
+#
 # Revision 1.7  2006/03/16 19:03:17  haraldkipp
 # Compiler optimization enabled.
 #
@@ -64,6 +67,11 @@ endif
 
 ifeq ($(top_blddir),)
 top_blddir = ../..
+endif
+
+ifeq ($(MCU),)
+include $(top_srcdir)/UserConf.mk
+LIBDIR = $(top_blddir)/lib
 endif
 
 include $(top_srcdir)/Makedefs.arm-gcc
