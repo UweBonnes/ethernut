@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.14  2006/05/25 09:37:40  haraldkipp
+# *** empty log message ***
+#
 # Revision 1.13  2006/05/15 12:48:49  haraldkipp
 # Prepare pre-release 4.1.6.
 #
@@ -81,7 +84,7 @@
 AC_INIT(ethernut,4.1.6)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (C) 2005 egnite Software GmbH])
+AC_COPYRIGHT([Copyright (C) 2005-2006 egnite Software GmbH])
 AC_REVISION($Revision$)
 
 # Make sure we got a valid path to the sources.
