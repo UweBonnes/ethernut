@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/05/25 09:34:21  haraldkipp
+ * Added mutual exclusion lock for multithreaded access.
+ *
  * Revision 1.5  2006/04/07 12:29:03  haraldkipp
  * Number of read retries increased. Memory hole fixed.
  * Added ioctl(NUTBLKDEV_MEDIAAVAIL).
@@ -73,6 +76,7 @@
 
 #include <sys/heap.h>
 #include <sys/timer.h>
+#include <sys/event.h>
 #include <fs/dospart.h>
 #include <fs/fs.h>
 
@@ -121,6 +125,8 @@ typedef struct _MMCFCB {
     u_char fcb_blkbuf[MMC_BLOCK_SIZE];
 } MMCFCB;
 
+static HANDLE mutex;
+
 /*!
  * \brief Send command to multimedia card.
  *
@@ -132,6 +138,9 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
 {
     u_int tmo = 1024;
     u_char ch;
+
+    /* Gain mutex access. */
+    NutEventWait(&mutex, 0);
 
     /* Enable card select. */
     (*ifc->mmcifc_cs) (1);
@@ -163,6 +172,9 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
      * fixed parameter value of zero, which results in a fixed CRC value
      */
     (*ifc->mmcifc_io) (MMCMD_RESET_CRC);
+
+    /* Release mutex access. */
+    NutEventPost(&mutex);
 }
 
 /*!
@@ -293,6 +305,9 @@ static int MmCardInit(MMCIFC * ifc)
     int i;
     u_char rsp;
 
+    /* Initialize MMC access mutex semaphore. */
+    NutEventPost(&mutex);
+
     /*
      * Try to switch to SPI mode. Looks like a retry helps to fix
      * certain synchronization problems.
@@ -397,6 +412,9 @@ static int MmCardWrite(MMCIFC * ifc, u_long blk, CONST u_char * buf)
     int i;
     u_char rsp;
 
+    /* Gain mutex access. */
+    NutEventWait(&mutex, 0);
+
     while (retries--) {
         MmCardTxCmd(ifc, MMCMD_WRITE_BLOCK, blk << 9);
         if ((rsp = MmCardRxR1(ifc)) == 0x00) {
@@ -429,6 +447,9 @@ static int MmCardWrite(MMCIFC * ifc, u_long blk, CONST u_char * buf)
         (*ifc->mmcifc_cs) (0);
     }
     (*ifc->mmcifc_cs) (0);
+
+    /* Release mutex access. */
+    NutEventPost(&mutex);
 
     return rc;
 }
