@@ -36,6 +36,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/05/25 09:30:23  haraldkipp
+ * Compiles for AVR. Still not tested, though.
+ *
  * Revision 1.1  2006/01/05 16:30:57  haraldkipp
  * First check-in.
  *
@@ -268,7 +271,9 @@ int NplRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *), void *arg
 
         if (!npl_registered) {
             npl_registered = 1;
+#if defined(ETHERNUT3)
             outr(PIO_PDR, _BV(9));
+#endif
             if ((rc = NutRegisterIrqHandler(&sig_INTERRUPT0, NplInterrupt, NULL)) == 0) {
                 NutIrqSetMode(&sig_INTERRUPT0, NUT_IRQMODE_LOWLEVEL);
                 NutIrqEnable(&sig_INTERRUPT0);

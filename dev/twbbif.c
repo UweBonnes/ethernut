@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/05/25 09:30:23  haraldkipp
+ * Compiles for AVR. Still not tested, though.
+ *
  * Revision 1.3  2006/04/07 12:50:20  haraldkipp
  * Added additional delays in TwAck.
  * Clock and data forced to high before switching to input gives better
@@ -140,16 +143,13 @@
 /*
  * AVR not yet tested.
  */
+#include <cfg/arch/avr.h>
 
 #ifndef TWI_SDA_BIT
 #define TWI_SDA_BIT     0
 #endif
 
-#if (TWI_SDA_AVRPORT == AVRPORTB)
-#define TWI_SDA_PORT    PORTB
-#define TWI_SDA_PIN     PINB
-#define TWI_SDA_DDR     DDRB
-#elif (TWI_SDA_AVRPORT == AVRPORTD)
+#if (TWI_SDA_AVRPORT == AVRPORTD)
 #define TWI_SDA_PORT    PORTD
 #define TWI_SDA_PIN     PIND
 #define TWI_SDA_DDR     DDRD
@@ -161,16 +161,17 @@
 #define TWI_SDA_PORT    PORTF
 #define TWI_SDA_PIN     PINF
 #define TWI_SDA_DDR     DDRF
+#else
+#define TWI_SDA_PORT    PORTB
+#define TWI_SDA_PIN     PINB
+#define TWI_SDA_DDR     DDRB
 #endif
 
 #ifndef TWI_SCL_BIT
 #define TWI_SCL_BIT     1
 #endif
 
-#if (TWI_SCL_AVRPORT == AVRPORTB)
-#define TWI_SCL_PORT    PORTB
-#define TWI_SCL_DDR     DDRB
-#elif (TWI_SCL_AVRPORT == AVRPORTD)
+#if (TWI_SCL_AVRPORT == AVRPORTD)
 #define TWI_SCL_PORT    PORTD
 #define TWI_SCL_DDR     DDRD
 #elif (TWI_SCL_AVRPORT == AVRPORTE)
@@ -179,11 +180,14 @@
 #elif (TWI_SCL_AVRPORT == AVRPORTF)
 #define TWI_SCL_PORT    PORTF
 #define TWI_SCL_DDR     DDRF
+#else
+#define TWI_SCL_PORT    PORTB
+#define TWI_SCL_DDR     DDRB
 #endif
 
-#define TWI_ENABLE() {
-cbi(TWI_SDA_PORT, TWI_SDA_BIT);
-cbi(TWI_SCL_PORT, TWI_SCL_BIT);
+#define TWI_ENABLE() {              \
+    cbi(TWI_SDA_PORT, TWI_SDA_BIT); \
+    cbi(TWI_SCL_PORT, TWI_SCL_BIT); \
 }
 
 #define SDA_LOW()   sbi(TWI_SDA_DDR, TWI_SDA_BIT)
