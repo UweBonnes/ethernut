@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/05/25 09:09:57  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.5  2006/04/07 12:57:00  haraldkipp
  * Fast interrupt doesn't require to store R8-R12.
  *
@@ -149,14 +152,14 @@
 #define SF_EXID         (SF_BASE + 0x04)        /*!< \brief Chip ID extension register address. */
 #define SF_VERSION              0x0000001F      /*!< \brief Version number mask. */
 
-#define SF_NVPSIZ               0x00000F00      /*!< \brief Masks non volatile program memory size. */
+#define SF_NVPSIZ               0x00000F00      /*!< \brief Masks non-volatile program memory size. */
 #define SF_NVPSIZ_NONE          0x00000000      /*!< \brief No NV program memory. */
 #define SF_NVPSIZ_32K           0x00000300      /*!< \brief 32 kBytes NV program memory. */
 #define SF_NVPSIZ_64K           0x00000500      /*!< \brief 64 kBytes NV program memory. */
 #define SF_NVPSIZ_128K          0x00000700      /*!< \brief 128 kBytes NV program memory. */
 #define SF_NVPSIZ_256K          0x00000900      /*!< \brief 256 kBytes NV program memory. */
 
-#define SF_NVDSIZ               0x0000F000      /*!< \brief Masks non volatile data memory size. */
+#define SF_NVDSIZ               0x0000F000      /*!< \brief Masks non-volatile data memory size. */
 #define SF_NVDSIZ_NONE          0x00000000      /*!< \brief No NV data memory. */
 
 #define SF_VDSIZ                0x000F0000      /*!< \brief Masks volatile data memory size. */
@@ -171,7 +174,7 @@
 #define SF_ARCH_AT91x55         0x05500000      /*!< \brief AT91x55 architecture. */
 #define SF_ARCH_AT91x63         0x06300000      /*!< \brief AT91x63 architecture. */
 
-#define SF_NVPTYP               0x70000000      /*!< \brief Masks non volatile program memory type. */
+#define SF_NVPTYP               0x70000000      /*!< \brief Masks non-volatile program memory type. */
 #define SF_NVPTYP_M             0x01000000      /*!< \brief M or F series. */
 #define SF_NVPTYP_C             0x02000000      /*!< \brief C series. */
 #define SF_NVPTYP_S             0x03000000      /*!< \brief S series. */

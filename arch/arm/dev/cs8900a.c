@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/05/25 09:09:57  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.1  2006/02/23 15:33:59  haraldkipp
  * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
  * Many thanks to Michael Fischer for this port.
@@ -181,7 +184,12 @@
 #define	CS_IEEE_ADDR	0x0158
 
 /*!
- * \struct _NICINFO lanc111.h dev/lanc111.h
+ * \addtogroup xgNicCs8900
+ */
+/*@{*/
+
+/*!
+ * \struct _NICINFO
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {

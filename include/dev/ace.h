@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/05/25 09:09:57  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.1  2005/11/24 11:24:06  haraldkipp
  * Initial check-in.
  * Many thanks to William Basser for this code and also to Przemyslaw Rudy
@@ -50,7 +53,7 @@
  */
 
 /*!
- * \addtogroup
+ * \addtogroup xgAceDriver
  *
  * \brief ACE _ioctl() commands.
  *

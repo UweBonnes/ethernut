@@ -35,11 +35,14 @@
 
 /*!
  * \file dev/nvmem.h
- * \brief Header file for non volatile memory access.
+ * \brief Header file for non-volatile memory access.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/05/25 09:09:57  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.1  2006/01/23 17:26:19  haraldkipp
  * Platform independant routines added, which provide generic access to
  * non-volatile memory.

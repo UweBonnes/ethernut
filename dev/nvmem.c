@@ -33,11 +33,14 @@
 
 /*!
  * \file dev/nvmem.c
- * \brief Non volatile memory access.
+ * \brief Non-volatile memory access.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/05/25 09:09:57  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.2  2006/04/07 12:29:42  haraldkipp
  * AT49BV flash memory support added. A single sector may be used to
  * store system configurations in case there is no EEPROM available.
@@ -64,7 +67,10 @@
 /*@{*/
 
 /*!
- * \brief Read data from non volatile memory.
+ * \brief Read data from non-volatile memory.
+ *
+ * This routine provides platform independent access to non-volatile
+ * configuration data.
  *
  * \param addr Location to read from.
  * \param buff Pointer to a buffer that receives the data.
@@ -86,7 +92,10 @@ int NutNvMemLoad(u_int addr, void *buff, size_t siz)
 }
 
 /*!
- * \brief Save data in non volatile memory.
+ * \brief Save data in non-volatile memory.
+ *
+ * This routine provides platform independent access to non-volatile
+ * configuration data.
  *
  * \param addr Location to write to.
  * \param buff Pointer to a buffer that contains the data.

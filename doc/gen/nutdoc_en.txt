@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.11  2006/05/25 09:09:57  haraldkipp
+ * API documentation updated and corrected.
+ *
  * Revision 1.10  2006/01/08 11:55:52  haraldkipp
  * Prepare preview snapshot.
  *
@@ -281,6 +284,11 @@
  */
 
 /*!
+ * \defgroup xgConfOs System Configuration
+ * \brief Nut/OS configuration structure.
+ */
+ 
+/*!
  * \defgroup xgThread Thread Management
  * \anchor xrThread
  * \brief Cooperative multi-threading support.
@@ -556,6 +564,11 @@
  */
 /*@{*/
 
+/*!
+ * \defgroup xgConfNet Network Configuration
+ * \brief Nut/Nut configuration structure.
+ */
+ 
 /*!
  * \defgroup xgSocket Socket API
  *
@@ -1247,36 +1260,13 @@
 /*@{*/
 
 /*!
- * \defgroup xgHardware Hardware Layout.
- * \brief Definitions of I/O ports.
+ * \defgroup xgDevGenChar Generic Character Device
+ * \brief Character Device Driver Template.
  *
- * Each add-on board should provide its own include file.
+ * Extensively commented source code of a Nut/OS character device driver.
+ * It doesn't drive any specific device, but can be used as a template
+ * when adding new device drivers.
  */
-/*@{*/
-
-/*!
- * \defgroup xgEthernutCfg Ethernut Hardware.
- * \brief Ethernut internal I/O port usage.
- *
- */
-
-/*!
- * \defgroup xgMedianutCfg Medianut Hardware.
- * \brief Ports used by the Medianut MP3 Add-On.
- *
- * Medianut is an add-on board and can be attached to the Ethernut
- * expansion port. It contains a VS1001K MP3 decoder, a LCD interface 
- * and an infrared receiver.
- */
-
-/*!
- * \defgroup xgModemCfg Modem Control.
- * \brief Modem hardware dependencies.
- *
- * Specification of RS232 handshake lines.
- */
-
-/*@} xgHardware */
 
 /*!
  * \defgroup xgDevSerial USART Devices
@@ -1428,6 +1418,11 @@
  * \defgroup xgMmCard Multimedia Card Driver
  * \brief Block device driver for MM/SD Cards.
  */
+
+/*!
+ * \defgroup xgSbiMmc Low Level MMC Interface
+ * \brief Bit banging SPI for MMC.
+ */
  
 /*@} xgBlockDev */
 
@@ -1458,6 +1453,14 @@
 /*@} xgDevTiming */
 
 /*!
+ * \defgroup xgWatchDog Watchdogs
+ * \brief Watchdog Support.
+ *
+ * Platform independent watchdog support is available for the
+ * AVR platform and the AT91R40008 MCU.
+ */
+
+/*!
  * \defgroup xgDevLogic CPLD Based Devices
  * \brief CPLD implementation drivers.
  */
@@ -1471,10 +1474,62 @@
  */
 
 /*!
- * \defgroup xgNplMmc Low Level MMC Interface.
+ * \defgroup xgNplMmc Low Level MMC Interface
  * \brief Routines for using the SPI interface of the Ethernut CPLD.
  */
 /*@} xgDevLogic */
+
+/*!
+ * \defgroup xgNutNvMem Non-Volatile Memory
+ * \brief Read data from and write data to non-volatile memory.
+ *
+ * Non-volatile data memory is typically used to store configuration 
+ * settings. Nut/OS currently supports three types of non-volatile 
+ * storage:
+ * - Intersil X12xx EEPROM, if NUT_CONFIG_X12RTC is defined.
+ * - AT49BV flash sector, if NUT_CONFIG_AT49BV is defined.
+ * - AVR on-chip EEPROM, if Nut/OS has been build for this platform if 
+ * none of the macros listed above is defined.
+ *
+ * Nut/OS uses non-volatile memory to store the _CONFOS structure at
+ * location CONFNET_EE_OFFSET and the _CONFNET structure at location 
+ * CONFNET_EE_OFFSET.
+ */
+/*@{*/
+/*@} xgNutNvMem */
+
+/*!
+ * \defgroup xgHardware Hardware Layout
+ * \brief Definitions of I/O ports.
+ *
+ * Each add-on board should provide its own include file.
+ */
+/*@{*/
+
+/*!
+ * \defgroup xgEthernutCfg Ethernut Hardware
+ * \brief Ethernut internal I/O port usage.
+ *
+ */
+
+/*!
+ * \defgroup xgMedianutCfg Medianut Hardware.
+ * \brief Ports used by the Medianut MP3 Add-On.
+ *
+ * Medianut is an add-on board and can be attached to the Ethernut
+ * expansion port. It contains a VS1001K MP3 decoder, a LCD interface 
+ * and an infrared receiver.
+ */
+
+/*!
+ * \defgroup xgModemCfg Modem Control.
+ * \brief Modem hardware dependencies.
+ *
+ * Specification of RS232 handshake lines.
+ */
+
+/*@} xgHardware */
+
 
 /*@}*/
  
@@ -1486,11 +1541,10 @@
  * \defgroup xgNutArch Architectures
  * \brief Target devices
  *
- * Only the AVR platform can be considered stable. The H8/300
+ * Only the AVR and ARM7TDMI platforms can be considered stable. The H8/300
  * support has come to halt long time ago and support for the
  * M68K did not even start. The Emulator running on UNIX has
- * not been extensively tested for some time. The port for
- * the ARM7TDMI looks quite promissing, though.
+ * not been extensively tested for some time.
  */
 /*@{*/
 
@@ -1599,6 +1653,11 @@
  * handshaking (RTS, CTS and DTR).
  */
 
+/*!
+ * \defgroup xgAceDriver TLC16C550
+ * \brief TLC16C550 UART driver.
+ */
+
 /*@} xgNutArchAvrDevSerial */
 
 /*!
@@ -1705,6 +1764,11 @@
  * These routines are poorly supported and may not work as expected.
  */
 
+/*!
+ * \defgroup xgNutArchAvrDevWatchDog Watchdog
+ * \brief ATmega128 on-chip watchdog.
+ */
+ 
 /*@} xgHardwareAvr */
 
 /*!
@@ -1785,13 +1849,18 @@
  */
  
 /*!
- * \defgroup xgNutArchArmAt91Wd Watchdog
+ * \defgroup xgNutArchArmAt91Wd Watchdog Registers
  * \brief Watchdog timer registers.
  *
  * The Watch Dog is used to prevent system lock-up if the software becomes 
  * trapped in a deadlock. It can generate an internal reset or interrupt.
  */
- 
+
+/*!
+ * \defgroup xgNutArchAt91DevWatchDog Watchdog Functions
+ * \brief AT91 on-chip watchdog timer.
+ */
+  
 /*!
  * \defgroup xgNutArchArmAt91Sf Special Function
  * \brief Special function registers
@@ -2043,18 +2112,18 @@
  * \brief TODO
  *
  */
+
+/*!
+ * \defgroup xgNutArchH8300hDevDebug Debug
+ * \brief Debug output drivers
+ *
+ */
  
 /*@} xgNutArchH8300hDevSerial */
 
 /*!
  * \defgroup xgNutArchH8300hDevEthernet Ethernet
  * \brief Ethernet controller drivers.
- *
- */
-
-/*!
- * \defgroup xgNutArchH8300hDevDebug Debug
- * \brief Debug output drivers
  *
  */
 
