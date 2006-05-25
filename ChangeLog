@@ -1,7 +1,75 @@
-$Id: ChangeLog,v 1.328 2006/05/15 15:31:10 freckle Exp $
+$Id: ChangeLog,v 1.329 2006/05/25 09:39:56 haraldkipp Exp $
+
+2006-05-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/cs8900a.c, dev/nvmem.c, include/arch/arm/at91.h,
+	include/dev/ace.h, include/dev/nvmem.h, include/dev/tlc16c550.h,
+	include/sys/confnet.h, include/sys/confos.h, net/confnet.c,
+	os/confos.c, doc/gen/nutdoc_en.txt: API documentation updated or 
+	corrected.
+
+	* arch/arm/dev/wdt_at91.c, conf/arch/arm.nut: Replaced platform 
+	independent functions by AT91 specific.
+
+	* include/dev/watchdog.h: Platform dependent function prototypes
+	added.
+
+	* arch/avr/dev/wdt_avr.c, conf/arch/avr.nut: Watchdog API for 
+	AVR added.
+
+	* dev/watchdog.c, conf/dev/dev.nut: Platform independent watchdog 
+	API added.
+
+	* include/arch/avr/icc.h: Watchdog routines for ICCAVR added.
+
+	* dev/at49bv.c: Bugfix. At49bvParamWrite() returned an error
+	when flash sector contents was equal to the contents to write.
+
+	* dev/mmcard.c: Added mutual exclusion lock for multithreaded
+	access.
+
+	* include/sys/confnet.h: Allow configuration of location used in
+	non-volatile memory.
+
+	* app/Makedefs.npl-xc95, app/Makerules.npl-xc95: New. For
+	building XSVF files from Verilog sources.
+
+	* lib/Makefile: Include UserConf.mk to determine architecture.
+
+	* app/Makefile: Exclude those applications from ARM build, which
+	do not support this architecture.
+
+	* arch/Makefile: ICCAVR context switch replaced with the one for
+	GCC. Imagecraft users will most likely use GUI tools. Added
+	all AT91 specific sources to support building for ARM in the
+	source tree. Corrected a typo, which checked for unix, but
+	should check for arm.
+
+	* crt/Makefile: Incomplete source list results in a bunch of
+	linker errors when building in source tree.
+
+	* dev/Makefile, fs/Makefile: Latest sources added, so building in 
+	the source tree will create complete libraries.
+
+	* app/Makedefs.arm-gcc: Include UserConf.mk for correct building
+	in source tree.
+
+	* dev/npl.c, dev/twbbif.c: At least compiles for AVR now.
+
+	* include/arch/arm.h, include/arch/avr/icc.h: Dummy macros added 
+	to support the avr-libc special function register definitions.
+
+	* include/dev/npl.h: Use the AVR way of defining memory mapped I/O.
+
+	* include/cfg/arch.h: The PLATFORM definition broke source tree
+	building. Fixed for Ethernut Boards.
+
+	* nutsetup: Mainly fixed ARM support and PLATFORM macro.
+
 
 2006-05-15  Matthias Ringwald  <mringwal@inf.ethz.ch>
         * crt/getf.c: Take care of first character after integer, too.
+
 
 2006-05-15  Harald Kipp  <harald.kipp@egnite.de>
 
