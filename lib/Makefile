@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.3  2006/05/25 09:36:09  haraldkipp
+# Include UserConf.mk to determine architecture.
+#
 # Revision 1.2  2005/07/26 15:44:38  haraldkipp
 # Include new libnutarch into the build
 #
@@ -105,6 +108,7 @@
 #
 
 top_srcdir = ..
+include $(top_srcdir)/UserConf.mk
 
 all:
 ifneq (, $(findstring h8300, $(ARCH)))
@@ -117,7 +121,9 @@ endif
 	$(MAKE) -C $(top_srcdir)/net
 	$(MAKE) -C $(top_srcdir)/pro
 	$(MAKE) -C $(top_srcdir)/crt
+ifeq ($(ARCH), avr)
 	$(MAKE) -C $(top_srcdir)/cpp
+endif
 
 install:
 ifneq (, $(findstring h8300, $(ARCH)))
@@ -130,7 +136,9 @@ endif
 	$(MAKE) -C $(top_srcdir)/net install
 	$(MAKE) -C $(top_srcdir)/pro install
 	$(MAKE) -C $(top_srcdir)/crt install
+ifeq ($(ARCH), avr)
 	$(MAKE) -C $(top_srcdir)/cpp install
+endif
 
 clean:
 ifneq (, $(findstring h8300, $(ARCH)))
