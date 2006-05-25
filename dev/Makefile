@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.24  2006/05/25 09:28:54  haraldkipp
+# Latest sources added, so building in the source tree will create complete
+# libraries.
+#
 # Revision 1.23  2006/02/02 11:30:48  olereinhardt
 # Added nvmem.c to target list
 #
@@ -159,7 +163,8 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c
+SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c \
+       twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c sbimmc.c
 
 OBJS = $(SRCS:.c=.o)
 

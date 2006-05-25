@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2006/05/25 09:28:54  haraldkipp
+# Latest sources added, so building in the source tree will create complete
+# libraries.
+#
 # Revision 1.7  2005/02/05 20:35:21  haraldkipp
 # Peanut added
 #
@@ -83,7 +87,9 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS = pathops.c dirent.c fat.c uromfs.c pnutfs.c
+SRCS = pathops.c dirent.c fat.c uromfs.c pnutfs.c \
+       phatfs.c phatvol.c phatdir.c phatio.c \
+       phat12.c phat16.c phat32.c phatutil.c phatdbg.c
 
 OBJS = $(SRCS:.c=.o)
 
