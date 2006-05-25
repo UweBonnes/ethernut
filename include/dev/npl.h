@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/05/25 09:38:40  haraldkipp
+ * Use the AVR way of defining memory mapped I/O.
+ *
  * Revision 1.1  2006/01/05 16:32:16  haraldkipp
  * First check-in.
  *
@@ -62,12 +65,16 @@
  * startup file.
  */
 #ifndef NPL_BASE
+#if defined(ETHERNUT3)
 #define NPL_BASE        0x21000000
+#else
+#define NPL_BASE        0xFF00
+#endif
 #endif
 
 /*! \brief RS232 command register.
  */
-#define NPL_RSCR        (NPL_BASE + 0x00)
+#define NPL_RSCR        _SFR_MEM8(NPL_BASE + 0x00)
 
 #define NPL_RSFON       0x0001  /*!< \brief Force on. */
 #define NPL_RSFOFF      0x0002  /*!< \brief Force off. */
@@ -79,15 +86,15 @@
 
 /*! \brief Interrupt mask register.
  */
-#define NPL_IMR         (NPL_BASE + 0x04)
+#define NPL_IMR         _SFR_MEM16(NPL_BASE + 0x04)
 
 /*! \brief Signal latch register.
  */
-#define NPL_SLR         (NPL_BASE + 0x0C)
+#define NPL_SLR         _SFR_MEM16(NPL_BASE + 0x0C)
 
 /*! \brief Signal clear register.
  */
-#define NPL_SCR         (NPL_BASE + 0x10)
+#define NPL_SCR         _SFR_MEM16(NPL_BASE + 0x10)
 
 #define NPL_RSCTS       0x0001  /*!< \brief RS232 CTS interrupt. */
 #define NPL_RSDSR       0x0002  /*!< \brief RS232 DSR interrupt. */
@@ -104,11 +111,11 @@
 
 /*! \brief MMC data register.
  */
-#define NPL_MMCDR       (NPL_BASE + 0x14)
+#define NPL_MMCDR       _SFR_MEM8(NPL_BASE + 0x14)
 
 /*! \brief External enable register.
  */
-#define NPL_XER         (NPL_BASE + 0x18)
+#define NPL_XER         _SFR_MEM8(NPL_BASE + 0x18)
 
 #define NPL_MMCS        0x0001  /*!< \brief MMC select. */
 #define NPL_PANCS       0x0002  /*!< \brief Panel select. */
@@ -116,7 +123,7 @@
 
 /*! \brief Version identifier register.
  */
-#define NPL_VIDR        (NPL_BASE + 0x1C)
+#define NPL_VIDR        _SFR_MEM8(NPL_BASE + 0x1C)
 
 extern IRQ_HANDLER sig_RSCTS;
 extern IRQ_HANDLER sig_RSDSR;
