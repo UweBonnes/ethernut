@@ -26,6 +26,7 @@ do
 #	echo "  6) Renesas H8/3069F" # just an example
 #	echo "  7) Renesas H8S/2676F" # just an example
 #	echo "  8) OKI ML67Q5003" # just an example
+        echo "  a) AT91R40008"
 	echo ""
 	echo -n "Selection -> "
 	read answ
@@ -39,6 +40,7 @@ do
 #	6) DEV=H8/3069F; ARCH=h8300h ;; # just an example
 #	7) DEV=H8S/2676F; ARCH=h8300s ;; # just an example
 #	8) DEV=ML67Q5003; ARCH=arm ;; # just an example
+        a) DEV=AT91R40008; ARCH=arm ;;
 	*)
 		echo "invalid choice" ;;
 	esac
@@ -69,10 +71,31 @@ if [ "$ARCH" = "avr" ]; then
     ln -s -f Makedefs.avr-gcc Makedefs
     ln -s -f Makerules.avr-gcc Makerules
 
-    ln -s -f Makedefs.avr-gcc app/Makedefs
-    ln -s -f Makerules.avr-gcc app/Makerules
+    ln -s -f app/Makedefs.avr-gcc app/Makedefs
+    ln -s -f app/Makerules.avr-gcc app/Makerules
 
     # Ask which isp programmer is being used
+
+    unset PLATFORM
+    while [ "x$PLATFORM" = "x" ]
+    do 
+        echo "Do you use a standard Ethernut board?"
+        echo ""
+        echo "  0) No standard"
+        echo "  1) Ethernut 1 (10 Mbit Realtek RTL8019AS)"
+        echo "  2) Ethernut 2 (10/100 Mbit SMSC LAN91C111)"
+        echo ""
+        echo -n "Selection -> "
+        read answ
+        
+        case "$answ" in
+        0) ;;
+        1) PLATFORM=ETHERNUT1 ;;
+        2) PLATFORM=ETHERNUT2 ;;
+	    *)
+		    echo "invalid choice" ;;
+        esac
+    done
 
     unset CRYSTAL
     while [ "x$CLOCKSEL" = "x" ]
@@ -142,16 +165,18 @@ if [ "$ARCH" = "avr" ]; then
     # Generate the config file
 
     cat <<EOF > UserConf.mk
+PLATFORM=$PLATFORM
 MCU=$DEV
 ARCH=$ARCH
-HWDEF=-D__HARVARD_ARCH__ $CLOCK $HWDEF
+HWDEF=-D__HARVARD_ARCH__ $CLOCK -D\$(PLATFORM) $HWDEF
 BURN=$PROGRAMMER
 BURNFLAGS=$BURNFLAGS
-CRUROM = \$(top_srcdir)/tools/crurom/crurom
+CRUROM=crurom
 EOF
 
     echo "Your system is now configured to build for $DEV."
-    echo "Type \`make\` to build the system."
+    echo "Change to subdirectory lib and type \`make clean\` "
+    echo "and \`make install\` to build the system."
 
     exit 0
 
@@ -257,12 +282,12 @@ if [ "$ARCH" = "arm" ]; then
 
     # Verify if arm-elf-gcc is in the users PATH
 
-    if ! h8300-elf-gcc --version >/dev/null 2>&1
+    if ! arm-elf-gcc --version >/dev/null 2>&1
     then
 	    echo "Can't find ARM gcc. :-("
 	    echo ""
 	    echo "This could mean either of the following:"
-	    echo "  1: You don't have ARM gcc installed. Go to http://armoid.com/gnuarm"
+	    echo "  1: You don't have ARM gcc installed. Go to http://www.gnuarm.org"
 	    echo "  2: You don't have your PATH environment variable set right."
 	    echo "Here is your PATH variable:"
 	    echo ""
@@ -292,18 +317,17 @@ if [ "$ARCH" = "arm" ]; then
 
     # Select whether code is to be executed from ROM or RAM
 
-    CODEMEM="rom"
+    CODEMEM="ram"
     unset RUNFLAG
     echo "Ethernut code can be run from RAM. This is useful when you are"
     echo "debugging your application. Remember that your hardware must"
     echo "have enough RAM to store data and program code."
     echo ""
-    echo -n "Should Ethernut be executed from RAM (default=No)? Y(es)/N(o) "
+    echo -n "Should Nut/OS be executed from RAM (default=Yes)? Y(es)/N(o) "
     read answ
 
-    if [ "$answ" = "y" -o "$answ" = "Y" ]; then
-	RUNFLAG="-DTEXT_IN_RAM"
-	CODEMEM="ram"
+    if [ "$answ" = "n" -o "$answ" = "N" ]; then
+	CODEMEM="boot"
     fi
     echo ""
 
@@ -318,25 +342,29 @@ if [ "$ARCH" = "arm" ]; then
     ln -s -f Makedefs.arm-gcc Makedefs
     ln -s -f Makerules.arm-gcc Makerules
 
-    ln -s -f Makedefs.arm-gcc app/Makedefs
-    ln -s -f Makerules.arm-gcc app/Makerules
+    ln -s -f app/Makedefs.arm-gcc app/Makedefs
+    ln -s -f app/Makerules.arm-gcc app/Makerules
 
     # Generate config file
     cat <<EOF > UserConf.mk
-DEVICE=$DEV # for future use
-MCU=$ARCH
+PLATFORM=ETHERNUT3
+HWDEF+=-D\$(PLATFORM)
+DEVICE=at91r40008
+MCU=arm7tdmi
 ARCH=$ARCH
 MCUOPTS=$MCUOPTS
 RUNFLAG=$RUNFLAG
-LDSCRIPT=\$(top_srcdir)/arch/$ARCH/ldscripts/$LDSCRIPT
+LDNAME=at91_$CODEMEM
+LDSCRIPT=\$(top_srcdir)/arch/arm/ldscripts/\$(LDNAME).ld
 #LDDIRS=$LDDIRS
 #BURN=h8write
 #BURNFLAGS=\$(TARG)
-CRUROM = \$(top_srcdir)/crurom/crurom
+CRUROM=crurom
 EOF
 
     echo "Your system is now configured to build for $DEV."
-    echo "Type \`make\` to build the system."
+    echo "Change to subdirectory lib and type \`make clean\` "
+    echo "and \`make install\` to build the system."
 
     exit 0
 fi
