@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.7  2006/05/25 09:20:38  haraldkipp
+# Excluded those applications from ARM build, which currently do not support
+# this architecture.
+#
 # Revision 1.6  2006/01/23 19:54:50  haraldkipp
 # logtime app added
 #
@@ -62,38 +66,46 @@
 #
 
 all:
-	$(MAKE) -C basemon
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
 	$(MAKE) -C inetq
 	$(MAKE) -C logtime
-	$(MAKE) -C nutpiper
 	$(MAKE) -C portdio
-	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
 	$(MAKE) -C simple
 	$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
+ifeq ($(ARCH), avr)
+	$(MAKE) -C basemon
+	$(MAKE) -C cppdemo
+	$(MAKE) -C nutpiper
+	$(MAKE) -C playmp3
+	$(MAKE) -C pppc
 	$(MAKE) -C uart
+endif
 
 install:
-	$(MAKE) -C basemon install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
 	$(MAKE) -C inetq install
 	$(MAKE) -C logtime install
-	$(MAKE) -C nutpiper install
 	$(MAKE) -C portdio install
-	$(MAKE) -C pppc install
 	$(MAKE) -C rs232d install
 	$(MAKE) -C simple install
 	$(MAKE) -C tcps install
 	$(MAKE) -C threads install
 	$(MAKE) -C timers install
+ifeq ($(ARCH), avr)
+	$(MAKE) -C basemon install
+	$(MAKE) -C cppdemo install
+	$(MAKE) -C nutpiper install
+	$(MAKE) -C playmp3 install
+	$(MAKE) -C pppc install
 	$(MAKE) -C uart install
+endif
 
 clean:
 	$(MAKE) -C basemon clean
