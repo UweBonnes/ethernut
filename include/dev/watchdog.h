@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/05/25 09:13:23  haraldkipp
+ * Platform independent watchdog API added.
+ *
  * Revision 1.1  2006/02/23 15:36:35  haraldkipp
  * Added support for AT91 watchdog timer.
  *
@@ -134,6 +137,18 @@ extern void NutWatchDogDisable(void);
  * function does nothing.
  */
 extern void NutWatchDogEnable(void);
+
+#if defined(__AVR__)
+extern u_long AvrWatchDogStart(u_long ms);
+extern void AvrWatchDogRestart(void);
+extern void AvrWatchDogDisable(void);
+extern void AvrWatchDogEnable(void);
+#elif defined(MCU_AT91R40008)
+extern u_long At91WatchDogStart(u_long ms, u_long xmode);
+extern void At91WatchDogRestart(void);
+extern void At91WatchDogDisable(void);
+extern void At91WatchDogEnable(void);
+#endif
 
 __END_DECLS
 /* End of prototypes */

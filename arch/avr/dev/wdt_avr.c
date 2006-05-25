@@ -33,111 +33,95 @@
 
 /*
  * $Log$
- * Revision 1.2  2006/05/25 09:13:22  haraldkipp
+ * Revision 1.1  2006/05/25 09:13:23  haraldkipp
  * Platform independent watchdog API added.
- *
- * Revision 1.1  2006/02/23 15:36:35  haraldkipp
- * Added support for AT91 watchdog timer.
  *
  */
 
+#if defined(__GNUC__)
+#include <avr/wdt.h>
+#endif
 #include <sys/timer.h>
 #include <dev/watchdog.h>
 
 /*!
- * \addtogroup xgNutArchAt91DevWatchDog
+ * \addtogroup xgNutArchAvrDevWatchDog
  */
 /*@{*/
 
+/*!
+ * \brief Watchdog oscillator frequency.
+ */
+#ifndef NUT_WDT_FREQ
+#define NUT_WDT_FREQ    1165000
+#endif
+
 static ureg_t nested;
+static u_char wdt_div;
+
 
 /*!
- * \brief Start the AT91 hardware watch dog timer.
+ * \brief Start the AVR hardware watch dog timer.
  *
  * For portability, applications should use the platform independent 
  * \ref xgWatchDog "Watchdog Driver API".
+ *
+ * \param ms Desired watchdog timeout in milliseconds.
+ *
+ * \return The actual watchdog timeout.
  */
-u_long At91WatchDogStart(u_long ms, u_long xmode)
+u_long AvrWatchDogStart(u_long ms)
 {
-    u_int cmval;
+    u_long ticks;
 
-    At91WatchDogDisable();
+    wdt_reset();
 
-    /*
-     * The watchdog counts down a 16 bit value, of which the upper
-     * 4 bits are configurable and the lower 12 bits are set to 1.
-     * Calculate the number of cycles required to count down the
-     * upper 4 bits.
-     */
-    cmval = ((NutGetCpuClock() / 1000) * ms) >> 13;
+    ticks = ((NUT_WDT_FREQ / 1000UL) * ms) >> 14;
+    for (wdt_div = 0; wdt_div < 7 && ticks; wdt_div++) {
+        ticks >>= 1;
+    }
+    wdt_enable(wdt_div);
     
-    /* Check if MCK/8 is slow enough. */
-    if (cmval < WD_HPCV) {
-        cmval = (cmval & WD_HPCV) | WD_WDCLKS_MCK8;
-    }
-    /* Check if MCK/32 is slow enough. */
-    else if ((cmval >>= 2) < WD_HPCV) {
-        cmval = (cmval & WD_HPCV) | WD_WDCLKS_MCK32;
-    }
-    /* Check if MCK/128 is slow enough. */
-    else if ((cmval >>= 2) < WD_HPCV) {
-        cmval = (cmval & WD_HPCV) | WD_WDCLKS_MCK128;
-    }
-    /* Check if MCK/1024 is slow enough. */
-    else if ((cmval >>= 3) < WD_HPCV) {
-        cmval = (cmval & WD_HPCV) | WD_WDCLKS_MCK1024;
-    }
-    /* Use maximum. */
-    else {
-        cmval = WD_HPCV | WD_WDCLKS_MCK1024;
-    }
-    outr(WD_CMR, WD_CKEY | cmval);
-    if (xmode == 0) {
-        xmode |= WD_RSTEN;
-    }
-    At91WatchDogRestart();
-    outr(WD_OMR, WD_OKEY | WD_WDEN | xmode);
     nested = 1;
 
-    return ms;
+    return (16384UL << wdt_div) / (NUT_WDT_FREQ / 1000UL);
 }
 
 /*!
- * \brief Re-start the AT91 hardware watch dog timer.
+ * \brief Re-start the AVR hardware watch dog timer.
  *
  * For portability, applications should use the platform independent 
  * \ref xgWatchDog "Watchdog Driver API".
  */
-void At91WatchDogRestart(void)
+void AvrWatchDogRestart(void)
 {
-    outr(WD_CR, WD_RSTKEY);
+    wdt_reset();
 }
 
 /*!
- * \brief Disable the AT91 hardware watch dog timer.
+ * \brief Disable the AVR hardware watch dog timer.
  *
  * For portability, applications should use the platform independent 
  * \ref xgWatchDog "Watchdog Driver API".
  */
-void At91WatchDogDisable(void)
+void AvrWatchDogDisable(void)
 {
     if (nested) {
         nested++;
     }
-    outr(WD_OMR, WD_OKEY | (inr(WD_OMR) & ~WD_WDEN));
+    wdt_disable();
 }
 
 /*!
- * \brief Enable the AT91 hardware watch dog timer.
+ * \brief Enable the AVR hardware watch dog timer.
  *
  * For portability, applications should use the platform independent 
  * \ref xgWatchDog "Watchdog Driver API".
  */
-void At91WatchDogEnable(void)
+void AvrWatchDogEnable(void)
 {
     if (nested > 1 && --nested == 1) {
-        At91WatchDogRestart();
-        outr(WD_OMR, WD_OKEY | inr(WD_OMR) | WD_WDEN);
+        wdt_enable(wdt_div);
     }
 }
 

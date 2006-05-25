@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.7  2006/05/25 09:13:22  haraldkipp
+-- Platform independent watchdog API added.
+--
 -- Revision 1.6  2006/04/07 12:24:12  haraldkipp
 -- ARM driver for HD44780 LCD controller added.
 --
@@ -99,6 +102,12 @@ nutarch_arm =
         requires = { "HW_TIMER_GBA" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "arm/dev/ostimer_gba.c" },
+    },
+    {
+        name = "nutarch_wdt_at91",
+        brief = "Watchdog Timer (AT91)",
+        requires = { "HW_MCU_AT91" },
+        sources = { "arm/dev/wdt_at91.c" },
     },
 
     --
@@ -282,14 +291,6 @@ nutarch_arm =
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_AT91" },
         sources = { "arm/dev/at91init.c" },
-    },
-    {
-        name = "nutarch__arm_wdtat91",
-        brief = "Watchdog Timer (AT91)",
-        description = "The AT91 watchdog timer prevents system lock-up.",
-        requires = { "HW_MCU_AT91", "NUT_OSTIMER_DEV" },
-        provides = { "NUT_WATCHDOG" },
-        sources = { "arm/dev/wdt_at91.c" },
     },
 }
 

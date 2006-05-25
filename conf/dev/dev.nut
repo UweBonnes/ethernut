@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.27  2006/05/25 09:13:23  haraldkipp
+-- Platform independent watchdog API added.
+--
 -- Revision 1.26  2006/04/07 12:26:59  haraldkipp
 -- Removing requirement for non-volatile hardware solves link problem
 -- if no such hardware is available.
@@ -208,6 +211,13 @@ nutdev =
         description = "General read/write access to non volatile memory.",
         provides = { "DEV_NVMEM"},
         sources = { "nvmem.c" },
+    },
+    {
+        name = "nutdev_watchdog",
+        brief = "Watchdog Timer",
+        description = "Platform independent watchdog API.\n\n"..
+                      "The watchdog timer prevents system lock-up.",
+        sources = { "watchdog.c" },
     },
 
     --
