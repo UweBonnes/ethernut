@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.10  2006/05/25 09:32:37  haraldkipp
+# Incomplete source list results in a bunch of linker errors when building
+# in source tree.
+#
 # Revision 1.9  2005/08/05 11:17:53  olereinhardt
 # Added support for _seek, _tell, fseek, ftell functions
 #
@@ -78,14 +82,13 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCC =  clrerr.c fclose.c fcloseall.c fdopen.c feof.c ferror.c fflush.c \
-	fgetc.c fgets.c fileno.c flushall.c fmode.c fopen.c fprintf.c \
-	fputc.c fputs.c fread.c freopen.c fpurge.c fscanf.c fseek.c ftell.c \
-	fwrite.c getc.c getchar.c gets.c printf.c putc.c putchar.c puts.c \
-	scanf.c sprintf.c sscanf.c ungetc.c vfprintf.c vfscanf.c vsprintf.c \
-	vsscanf.c close.c ioctl.c open.c read.c write.c filelength.c \
-	tzset.c gmtime.c mktime.c localtim.c time.c malloc.c strtok_r.c \
-	kbhit.c tell.c seek.c
+SRCC =  close.c clrerr.c ioctl.c open.c getf.c read.c putf.c write.c fclose.c \
+        fcloseall.c fdopen.c feof.c ferror.c fflush.c filelength.c fileno.c flushall.c \
+        fmode.c fopen.c fpurge.c freopen.c fseek.c ftell.c seek.c tell.c fgetc.c fgets.c \
+        fread.c fscanf.c getc.c getchar.c gets.c kbhit.c scanf.c ungetc.c vfscanf.c \
+        fprintf.c fputc.c fputs.c fwrite.c printf.c putc.c putchar.c puts.c vfprintf.c \
+        sprintf.c sscanf.c vsprintf.c vsscanf.c gmtime.c localtim.c mktime.c time.c \
+        tzset.c errno.c malloc.c
 
 SRCCP = fprintf_p.c fputs_p.c fscanf_p.c fwrite_p.c printf_p.c puts_p.c \
 	scanf_p.c sprintf_p.c sscanf_p.c vfprintf_p.c vfscanf_p.c \
