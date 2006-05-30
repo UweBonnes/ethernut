@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/05/30 18:34:46  beutel
+ * added #include <cfg/os.h> in compliance with usart0avr.c
+ *
  * Revision 1.3  2006/02/08 15:20:06  haraldkipp
  * ATmega2561 Support
  *
@@ -74,8 +77,8 @@
  *
  */
 
+#include <cfg/os.h>
 #include <cfg/arch/avr.h>
-
 
 #include <string.h>
 
