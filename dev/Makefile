@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.25  2006/06/18 16:33:59  haraldkipp
+# Watchdog module added.
+#
 # Revision 1.24  2006/05/25 09:28:54  haraldkipp
 # Latest sources added, so building in the source tree will create complete
 # libraries.
@@ -164,7 +167,7 @@ include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c \
-       twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c sbimmc.c
+       twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c sbimmc.c watchdog.c
 
 OBJS = $(SRCS:.c=.o)
 
