@@ -1,4 +1,40 @@
-$Id: ChangeLog,v 1.329 2006/05/25 09:39:56 haraldkipp Exp $
+$Id: ChangeLog,v 1.330 2006/06/18 16:31:09 haraldkipp Exp $
+
+2006-06-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* fs/phatdir.c: No need to set errno after GetParentPath() returns
+	an error.
+
+	* fs/phatutil.c: File modification date changed from GMT to local
+	time for Windows compatibility.
+
+	* fs/phatdir.c, fs/phatfs.c, fs/phatutil.c, fs/phatvol.c: 
+	No need to set errno after malloc failed.
+
+	* fs/phatdir.c: New local helper function PhatOpenParentPath() 
+	reduces code size.
+
+	* fs/phatdir.c, fs/phatfs.c, fs/phatutil.c, include/fs/phatdir.h,
+	 include/fs/phatfs.h: Support for long filenames (VFAT) added.
+
+	* fs/phatdir.c, fs/phatfs.c, include/fs/phatdir.h: New function 
+	PhatDirReleaseChain() simplifies code.
+
+	* fs/phatdir.c, include/fs/phatdir.h: Static function 
+	PhatDirOpenParentPath() replaced by global PhatDirOpenParent().
+	Added const attribute to path parameter of PhatDirOpen().
+
+	* fs/phatdir.c: Now PhatDirEntryUpdate() clears the dirty flag 
+	for the root directory. Calls to PhatFilePosSet() with position 
+	zero replaced by calls to PhatFilePosRewind().
+
+	* fs/phatfs.c, fs/phatutil.c: Fixed positioning bug, which caused
+	several problems like limiting directories to one cluster.
+
+	* crt/malloc.c: Set errno to ENOMEM if heap allocation fails.
+
+	* dev/mmcard.c: Mutex deadlock fixed.
+
 
 2006-05-24  Harald Kipp  <harald.kipp@egnite.de>
 
