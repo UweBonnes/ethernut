@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/06/18 16:32:18  haraldkipp
+ * Set errno on allocation failure.
+ *
  * Revision 1.4  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -53,6 +56,7 @@
 #include <sys/heap.h>
 
 #include <stdlib.h>
+#include <errno.h>
 
 /*!
  * \addtogroup xgHeap
@@ -74,7 +78,12 @@
  */
 void *malloc(size_t len)
 {
-    return NutHeapAlloc(len);
+    void *p;
+
+    if ((p = NutHeapAlloc(len)) == NULL) {
+        errno = ENOMEM;
+    }
+    return p;
 }
 
 /*!
@@ -89,8 +98,7 @@ void *malloc(size_t len)
  */
 void free(void *p)
 {
-    //if (p > RAMSTART)
-        NutHeapFree(p);
+    NutHeapFree(p);
 }
 
 /*@}*/
