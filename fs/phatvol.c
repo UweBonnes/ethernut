@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/06/18 16:40:34  haraldkipp
+ * No need to set errno after malloc failed.
+ *
  * Revision 1.5  2006/05/15 11:49:47  haraldkipp
  * Added support for media formats without partition table like USB sticks.
  *
@@ -163,7 +166,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
      * Allocate the volume information structure 
      */
     if ((dev->dev_dcb = malloc(sizeof(PHATVOL))) == 0) {
-        errno = ENOMEM;
         return -1;
     }
     vol = (PHATVOL *) memset(dev->dev_dcb, 0, sizeof(PHATVOL));
@@ -199,7 +201,6 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
         if ((vol->vol_buf[sbn].sect_data = malloc(pari.par_blksz)) == NULL) {
             PhatVolUnmount(dev);
-            errno = ENOMEM;
             return -1;
         }
         vol->vol_buf[sbn].sect_num = (u_long)-1;
@@ -343,8 +344,8 @@ int PhatVolUnmount(NUTDEVICE * dev)
 /*
  * \brief Get first sector of a specified cluster.
  *
- * \param nfp
- * \param clust
+ * \param nfp   File descriptor.
+ * \param clust Specified cluster.
  */
 u_long PhatClusterSector(NUTFILE * nfp, u_long clust)
 {
