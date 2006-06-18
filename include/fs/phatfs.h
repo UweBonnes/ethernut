@@ -2,7 +2,7 @@
 #define FS_PHATFS_H_
 
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/06/18 16:42:50  haraldkipp
+ * Support for long filenames (VFAT) added.
+ *
  * Revision 1.3  2006/05/15 11:48:38  haraldkipp
  * Added a second PHAT file system instance.
  *
@@ -134,6 +137,9 @@ typedef struct _PHATFILE {
  */
 #define PHAT_FATTR_ARCHIV    0x20
 
+/*! Long filename entry. */
+#define PHAT_FATTR_LFN      (PHAT_FATTR_RDONLY | PHAT_FATTR_HIDDEN | PHAT_FATTR_SYSTEM | PHAT_FATTR_VOLID)
+
 /*! Only these flags are allowed for files and directories. */
 #define PHAT_FATTR_FILEMASK  0x37
 
@@ -148,6 +154,5 @@ extern NUTDEVICE devPhat0;
 extern NUTDEVICE devPhat1;
 
 extern u_long AllocFirstCluster(NUTFILE * nfp);
-
 
 #endif
