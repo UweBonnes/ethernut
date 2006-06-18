@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,14 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/06/18 16:39:46  haraldkipp
+ * File modification date changed from GMT to local time for Windows
+ * compatibility.
+ * No need to set errno after malloc failed.
+ * Support for long filenames (VFAT) added.
+ * Fixed positioning bug, which caused several problems like limiting
+ * directories to one cluster.
+ *
  * Revision 1.3  2006/03/02 19:59:56  haraldkipp
  * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
  *
@@ -87,7 +95,7 @@ void GetDosTimeStamp(u_short * dostim, u_short * dosdat)
     struct _tm *gmt;
 
     time(&now);
-    gmt = gmtime(&now);
+    gmt = localtime(&now);
 
     if (dosdat) {
         *dosdat = (u_short) (gmt->tm_mday | ((gmt->tm_mon + 1) << 5) | ((gmt->tm_year - 80) << 9));
@@ -244,7 +252,6 @@ char *GetParentPath(CONST char *path, CONST char **comp)
         len = 2;
     }
     if ((parent = malloc(len)) == NULL) {
-        errno = ENOMEM;
         return NULL;
     }
     memcpy(parent, (void *)path, len - 1);
@@ -286,11 +293,15 @@ int IsFixedRootDir(NUTFILE * ndp)
  */
 void PhatFilePosRewind(PHATFILE * fcb)
 {
+    /* Reset current pointer into the file. */
     fcb->f_pos = 0;
+    /* Reset current cluster to the first cluster. */
     fcb->f_clust = fcb->f_dirent.dent_clusthi;
     fcb->f_clust <<= 16;
     fcb->f_clust += fcb->f_dirent.dent_clust;
+    /* Reset position (sector number) within the cluster. */
     fcb->f_clust_pos = 0;
+    /* Reset current position into the current sector. */
     fcb->f_sect_pos = 0;
 }
 
@@ -302,17 +313,14 @@ void PhatFilePosRewind(PHATFILE * fcb)
  * \param nfp File descriptor.
  * \param pos Requested file position.
  *
- * \return 0 on success, -1 otherwise.
+ * \return 0 on success, -1 otherwise. In the latter case the position
+ *         is unspecified.
  */
 int PhatFilePosSet(NUTFILE * nfp, u_long pos)
 {
     u_long dist;
     u_long step;
     u_long clust;
-    u_long clust_pos;
-    u_long clust_prv;
-    u_long clust_lnk;
-    u_long sect_pos;
     PHATFILE *fcb = nfp->nf_fcb;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -340,64 +348,69 @@ int PhatFilePosSet(NUTFILE * nfp, u_long pos)
         dist = pos - fcb->f_pos;
     }
 
-    /*
-     * Use local values. If the seek fails, then the original values are
-     * untouched.
-     */
-    clust = fcb->f_clust;
-    clust_pos = fcb->f_clust_pos;
-    sect_pos = fcb->f_sect_pos;
-    clust_prv = fcb->f_clust_prv;
-
-    while (dist) {
-        if (sect_pos >= vol->vol_sectsz) {
-            /* 
-             * We reached the end of the current sector. Move to the 
-             * next sector of the current cluster.
-             */
-            if (clust_pos + 1 >= vol->vol_clustsz) {
-                /*
-                 * We reached the end of the current cluster. Move to 
-                 * the next cluster.
-                 */
-                if (vol->vol_type == 32) {
-                    if (Phat32GetClusterLink(dev, clust, &clust_lnk)) {
-                        break;
-                    }
-                } else if (vol->vol_type == 16) {
-                    if (Phat16GetClusterLink(dev, clust, &clust_lnk)) {
-                        break;
-                    }
-                } else if (Phat12GetClusterLink(dev, clust, &clust_lnk)) {
+    for (;;) {
+        if (fcb->f_sect_pos >= vol->vol_sectsz) {
+            if (IsFixedRootDir(nfp)) {
+                if (fcb->f_clust_pos + 1 >= vol->vol_rootsz) {
+                    /* End of root directory, abort reading. */
                     break;
                 }
-                clust_pos = 0;
-                clust_prv = clust;
-                clust = clust_lnk;
-            } else {
-                clust_pos++;
+                fcb->f_clust_pos++;
             }
-            sect_pos = 0;
+            else {
+
+                /* 
+                * We reached the end of the current sector. Move to the 
+                * next sector of the current cluster.
+                */
+                if (fcb->f_clust_pos + 1 >= vol->vol_clustsz) {
+                    /*
+                    * We reached the end of the current cluster. Move to 
+                    * the next cluster.
+                    */
+                    if (vol->vol_type == 32) {
+                        if (Phat32GetClusterLink(dev, fcb->f_clust, &clust)) {
+                            break;
+                        }
+                        if (clust >= (PHATEOC & PHAT32CMASK)) {
+                            break;
+                        }
+                    } else if (vol->vol_type == 16) {
+                        if (Phat16GetClusterLink(dev, fcb->f_clust, &clust)) {
+                            break;
+                        }
+                        if (clust >= (PHATEOC & PHAT16CMASK)) {
+                            break;
+                        }
+                    } else if (Phat12GetClusterLink(dev, fcb->f_clust, &clust)) {
+                        break;
+                    }
+                    else if (clust >= (PHATEOC & PHAT12CMASK)) {
+                        break;
+                    }
+                    fcb->f_clust_pos = 0;
+                    fcb->f_clust_prv = fcb->f_clust;
+                    fcb->f_clust = clust;
+                } else {
+                    fcb->f_clust_pos++;
+                }
+            }
+            fcb->f_sect_pos = 0;
+        }
+        if (dist == 0) {
+            break;
         }
 
         /* Calculate the number of bytes available in the current sector. */
-        step = vol->vol_sectsz - sect_pos;
+        step = vol->vol_sectsz - fcb->f_sect_pos;
         if (step > dist) {
             step = dist;
         }
-        sect_pos += step;
+        fcb->f_sect_pos += step;
+        fcb->f_pos += step;
         dist -= step;
     }
-    if (dist > 1) {
-        return -1;
-    }
-    fcb->f_clust = clust;
-    fcb->f_clust_pos = clust_pos;
-    fcb->f_clust_prv = clust_prv;
-    fcb->f_sect_pos = sect_pos;
-    fcb->f_pos = pos;
-
-    return 0;
+    return fcb->f_pos == pos ? 0 : -1;
 }
 
 /*@}*/
