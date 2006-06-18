@@ -37,6 +37,13 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/06/18 16:38:28  haraldkipp
+ * No need to set errno after malloc failed.
+ * Support for long filenames (VFAT) added.
+ * New function PhatDirReleaseChain() simplifies code.
+ * Fixed positioning bug, which caused several problems like limiting
+ * directories to one cluster.
+ *
  * Revision 1.5  2006/05/15 11:47:18  haraldkipp
  * Added support for file seek.
  *
@@ -187,6 +194,7 @@ u_long AllocFirstCluster(NUTFILE * nfp)
         return 0;
     }
 
+    /* Set the pointer to the first cluster in out directory entry. */
     fcb->f_dirent.dent_clusthi = (u_short) (clust >> 16);
     fcb->f_dirent.dent_clust = (u_short) clust;
     fcb->f_de_dirty = 1;
@@ -316,24 +324,14 @@ static int PhatFileClose(NUTFILE * nfp)
 static NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
 {
     NUTFILE *nfp = NUTFILE_EOF;
-    NUTFILE *ndp;
+    NUTFILE *ndp = NUTFILE_EOF;
     PHATFILE *ffcb;
     PHATFILE *dfcb;
     PHATFIND *srch;
-    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
-    char *parent;
     CONST char *fname;
-    u_long clust;
 
-    /* Chop off the file name, if one is specified. */
-    if ((parent = GetParentPath(path, &fname)) == NULL) {
-        return NUTFILE_EOF;
-    }
-
-    /* Open the target directory. */
-    ndp = PhatDirOpen(dev, parent);
-    free(parent);
-    if (ndp == NUTFILE_EOF) {
+    /* Open the parent directory and return the basename. */
+    if ((ndp = PhatDirOpenParent(dev, path, &fname)) == NUTFILE_EOF) {
         return NUTFILE_EOF;
     }
 
@@ -365,7 +363,6 @@ static NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int ac
         if (srch) {
             free(srch);
         }
-        errno = ENOMEM;
         return NUTFILE_EOF;
     }
 
@@ -425,30 +422,11 @@ static NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int ac
             /*
              * Relase all clusters allocated by this entry.
              */
-            clust = srch->phfind_ent.dent_clusthi;
-            clust <<= 16;
-            clust += srch->phfind_ent.dent_clust;
-            if (clust) {
-                if (vol->vol_type == 32) {
-                    if (Phat32ReleaseChain(dev, clust)) {
-                        PhatFileClose(ndp);
-                        PhatFileClose(nfp);
-                        free(srch);
-                        return NUTFILE_EOF;
-                    }
-                } else if (vol->vol_type == 16) {
-                    if (Phat16ReleaseChain(dev, clust)) {
-                        PhatFileClose(ndp);
-                        PhatFileClose(nfp);
-                        free(srch);
-                        return NUTFILE_EOF;
-                    }
-                } else if (Phat12ReleaseChain(dev, clust)) {
-                    PhatFileClose(ndp);
-                    PhatFileClose(nfp);
-                    free(srch);
-                    return NUTFILE_EOF;
-                }
+            if (PhatDirReleaseChain(dev, &srch->phfind_ent)) {
+                PhatFileClose(ndp);
+                PhatFileClose(nfp);
+                free(srch);
+                return NUTFILE_EOF;
             }
             memset(ffcb, 0, sizeof(PHATFILE));
             memcpy(ffcb->f_dirent.dent_name, srch->phfind_ent.dent_name, sizeof(ffcb->f_dirent.dent_name));
@@ -551,6 +529,7 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
         }
     }
 
+
     /*
      * Write the data.
      */
@@ -558,10 +537,16 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
         /* Did we reach the end of a sector? */
         if (fcb->f_sect_pos >= vol->vol_sectsz) {
             /* Move to the next sector within the cluster. */
-            fcb->f_sect_pos = 0;
-            fcb->f_clust_pos++;
-            if (!IsFixedRootDir(nfp)) {
-                if (fcb->f_clust_pos >= vol->vol_clustsz) {
+            if (IsFixedRootDir(nfp)) {
+                if (fcb->f_clust_pos + 1 >= vol->vol_rootsz) {
+                    /* End of root directory, abort writing. */
+                    break;
+                }
+                fcb->f_clust_pos++;
+            }
+            else {
+                /* Did we reach the last sector of this cluster? */
+                if (fcb->f_clust_pos  + 1 >= vol->vol_clustsz) {
                     /* Move to the next cluster. */
                     if (vol->vol_type == 32) {
                         if (Phat32GetClusterLink(dev, fcb->f_clust, &clust)) {
@@ -598,8 +583,13 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
                     fcb->f_clust_prv = fcb->f_clust;
                     fcb->f_clust = clust;
                 }
+                else {
+                    fcb->f_clust_pos++;
+                }
             }
+            fcb->f_sect_pos = 0;
         }
+
         /* Load the sector we want to write to. */
         if ((sbn = PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) < 0) {
             rc = -1;
@@ -686,33 +676,51 @@ static int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
         }
     }
     for (rc = 0, step = 0; rc < size; rc += step) {
-
         /* Did we reach the end of a sector? */
         if (fcb->f_sect_pos >= vol->vol_sectsz) {
-            /* Move to the next sector within the cluster. */
-            fcb->f_sect_pos = 0;
-            fcb->f_clust_pos++;
-
-            if (!IsFixedRootDir(nfp)) {
+            /* Move to the next sector. */
+            if (IsFixedRootDir(nfp)) {
+                if (fcb->f_clust_pos + 1 >= vol->vol_rootsz) {
+                    /* End of root directory, abort reading. */
+                    break;
+                }
+                fcb->f_clust_pos++;
+            }
+            else {
                 /* Did we reach the last sector of this cluster? */
-                if (fcb->f_clust_pos >= vol->vol_clustsz) {
+                if (fcb->f_clust_pos + 1 >= vol->vol_clustsz) {
                     /* Move to the next cluster. */
-                    fcb->f_clust_pos = 0;
-                    fcb->f_clust_prv = fcb->f_clust;
+                    u_long clust;
 
                     if (vol->vol_type == 32) {
-                        if (Phat32GetClusterLink(dev, fcb->f_clust, &fcb->f_clust)) {
+                        if (Phat32GetClusterLink(dev, fcb->f_clust, &clust)) {
+                            break;
+                        }
+                        if (clust >= (PHATEOC & PHAT32CMASK)) {
                             break;
                         }
                     } else if (vol->vol_type == 16) {
-                        if (Phat16GetClusterLink(dev, fcb->f_clust, &fcb->f_clust)) {
+                        if (Phat16GetClusterLink(dev, fcb->f_clust, &clust)) {
                             break;
                         }
-                    } else if (Phat12GetClusterLink(dev, fcb->f_clust, &fcb->f_clust)) {
+                        if (clust >= (PHATEOC & PHAT16CMASK)) {
+                            break;
+                        }
+                    } else if (Phat12GetClusterLink(dev, fcb->f_clust, &clust)) {
                         break;
                     }
+                    else if (clust >= (PHATEOC & PHAT12CMASK)) {
+                        break;
+                    }
+                    fcb->f_clust_pos = 0;
+                    fcb->f_clust_prv = fcb->f_clust;
+                    fcb->f_clust = clust;
+                }
+                else {
+                    fcb->f_clust_pos++;
                 }
             }
+            fcb->f_sect_pos = 0;
         }
 
         /* Make sure that the required sector is loaded. */
