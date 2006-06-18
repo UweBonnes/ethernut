@@ -2,7 +2,7 @@
 #define FS_PHATDIR_H_
 
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,6 +40,13 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/06/18 16:41:55  haraldkipp
+ * Support for long filenames (VFAT) added.
+ * New function PhatDirReleaseChain() simplifies code.
+ * Static function PhatDirOpenParentPath() replaced by global
+ * PhatDirOpenParent().
+ * Added const attribute to path parameter of PhatDirOpen().
+ *
  * Revision 1.1  2006/01/05 16:32:52  haraldkipp
  * First check-in.
  *
@@ -107,11 +114,36 @@ typedef struct __attribute__ ((packed)) _PHATDIRENT {
     u_long dent_fsize;
 } PHATDIRENT;
 
+/*!
+ * \brief Structure of an extended directory entry.
+ *
+ * Used for long filenames.
+ */
+typedef struct __attribute__ ((packed)) _PHATXDIRENT {
+    /*! \brief Sequence number. */
+    u_char xdent_seq;
+    /*! \brief Unicode characters 1-5. */
+    u_short xdent_uname_1_5[5];
+    /*! \brief Attribut. */
+    u_char xdent_attr;
+    /*! \brief Type. */
+    u_char xdent_rsvd;
+    /*! \brief Checksum. */
+    u_char xdent_cks;
+    /*! \brief Unicode characters 6-11. */
+    u_short xdent_uname_6_11[6];
+    /*! \brief Starting cluster. */
+    u_short xdent_clust;
+    /*! \brief Unicode characters 12-13. */
+    u_short xdent_uname_12_13[2];
+} PHATXDIRENT;
 
 typedef struct _PHATFIND {
     PHATDIRENT phfind_ent;
     u_long phfind_pos;
-    char phfind_name[14];
+    /*! Number of entries used for the long filename. */
+    int phfind_xcnt;
+    char phfind_name[255];
 } PHATFIND;
 
 /*@}*/
@@ -122,11 +154,13 @@ extern int PhatDirEntryCreate(NUTFILE * ndp, CONST char *name, int acc, PHATDIRE
 
 extern int PhatDirEntryUpdate(NUTFILE * ndp);
 
+extern int PhatDirReleaseChain(NUTDEVICE * dev, PHATDIRENT * dent);
 
 extern int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, u_long flags);
 extern int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_path);
 
-extern NUTFILE *PhatDirOpen(NUTDEVICE * dev, char *dpath);
+extern NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath);
+extern NUTFILE *PhatDirOpenParent(NUTDEVICE * dev, CONST char *path, CONST char **basename);
 extern int PhatDirEntryFind(NUTFILE * nfp, CONST char *spec, u_long flags, PHATFIND * srch);
 extern int PhatDirRead(DIR * dir);
 
