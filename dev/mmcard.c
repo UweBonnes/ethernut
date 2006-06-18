@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2006/06/18 16:34:46  haraldkipp
+ * Mutex deadlock fixed.
+ *
  * Revision 1.6  2006/05/25 09:34:21  haraldkipp
  * Added mutual exclusion lock for multithreaded access.
  *
@@ -125,6 +128,11 @@ typedef struct _MMCFCB {
     u_char fcb_blkbuf[MMC_BLOCK_SIZE];
 } MMCFCB;
 
+/*
+ * Several routines call NutSleep, which results in a context switch.
+ * This mutual exclusion semaphore takes care, that multiple threads
+ * do not interfere with each other.
+ */
 static HANDLE mutex;
 
 /*!
@@ -138,9 +146,6 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
 {
     u_int tmo = 1024;
     u_char ch;
-
-    /* Gain mutex access. */
-    NutEventWait(&mutex, 0);
 
     /* Enable card select. */
     (*ifc->mmcifc_cs) (1);
@@ -172,9 +177,6 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
      * fixed parameter value of zero, which results in a fixed CRC value
      */
     (*ifc->mmcifc_io) (MMCMD_RESET_CRC);
-
-    /* Release mutex access. */
-    NutEventPost(&mutex);
 }
 
 /*!
@@ -305,9 +307,6 @@ static int MmCardInit(MMCIFC * ifc)
     int i;
     u_char rsp;
 
-    /* Initialize MMC access mutex semaphore. */
-    NutEventPost(&mutex);
-
     /*
      * Try to switch to SPI mode. Looks like a retry helps to fix
      * certain synchronization problems.
@@ -315,7 +314,7 @@ static int MmCardInit(MMCIFC * ifc)
     if (MmCardReset(ifc)) {
         if (MmCardReset(ifc)) {
 #ifdef NUTDEBUG
-                printf("[CardReset failed]");
+            printf("[CardReset failed]");
 #endif
             return -1;
         }
@@ -338,6 +337,8 @@ static int MmCardInit(MMCIFC * ifc)
 #ifdef NUTDEBUG
             printf("[CardIdle]");
 #endif
+            /* Initialize MMC access mutex semaphore. */
+            NutEventPost(&mutex);
             return 0;
         }
         if (i > 128) {
@@ -367,6 +368,9 @@ static int MmCardReadOrVerify(MMCIFC * ifc, u_long blk, u_char * buf, int vflg)
     int i;
     u_char rsp;
 
+    /* Gain mutex access. */
+    NutEventWait(&mutex, 0);
+
     while (retries--) {
         MmCardTxCmd(ifc, MMCMD_READ_SINGLE_BLOCK, blk << 9);
         if ((rsp = MmCardRxR1(ifc)) == 0x00) {
@@ -387,11 +391,16 @@ static int MmCardReadOrVerify(MMCIFC * ifc, u_long blk, u_char * buf, int vflg)
                 }
                 (*ifc->mmcifc_io) (0xff);
                 (*ifc->mmcifc_io) (0xff);
+                (*ifc->mmcifc_cs) (0);
                 break;
             }
         }
         (*ifc->mmcifc_cs) (0);
     }
+
+    /* Release mutex access. */
+    NutEventPost(&mutex);
+
     return rc;
 }
 
@@ -476,7 +485,6 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
     NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
-    //printf("[RB%lu]", blk);
     if ((*ifc->mmcifc_cd) () != 1) {
         return -1;
     }
@@ -771,6 +779,9 @@ static int MmCardGetReg(MMCIFC * ifc, u_char cmd, u_char * rbp, int siz)
     int retries = 512;
     int i;
 
+    /* Gain mutex access. */
+    NutEventWait(&mutex, 0);
+
     while (retries--) {
         /* Send the command to the card. This will select the card. */
         MmCardTxCmd(ifc, cmd, 0);
@@ -794,6 +805,10 @@ static int MmCardGetReg(MMCIFC * ifc, u_char cmd, u_char * rbp, int siz)
         /* De-activate card selection. */
         (*ifc->mmcifc_cs) (0);
     }
+
+    /* Release mutex access. */
+    NutEventPost(&mutex);
+
     return rc;
 }
 
@@ -864,15 +879,27 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
         {
             u_short *s = (u_short *) conf;
 
+            /* Gain mutex access. */
+            NutEventWait(&mutex, 0);
+
             MmCardTxCmd(ifc, MMCMD_SEND_STATUS, 0);
             *s = MmCardRxR2(ifc);
+
+            /* Release mutex access. */
+            NutEventPost(&mutex);
         }
         break;
     case MMCARD_GETOCR:
+        /* Gain mutex access. */
+        NutEventWait(&mutex, 0);
+
         MmCardTxCmd(ifc, MMCMD_READ_OCR, 0);
         if (MmCardRxR3(ifc, (u_long *) conf) != MMR1_IDLE_STATE) {
             rc = -1;
         }
+
+        /* Release mutex access. */
+        NutEventPost(&mutex);
         break;
     case MMCARD_GETCID:
         rc = MmCardGetReg(ifc, MMCMD_SEND_CID, (u_char *) conf, sizeof(MMC_CID));
