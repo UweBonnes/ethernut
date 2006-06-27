@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.330 2006/06/18 16:31:09 haraldkipp Exp $
+$Id: ChangeLog,v 1.331 2006/06/27 01:44:19 hwmaier Exp $
+
+2006-06-27 Henrik Maier  <henrik@proconx.com>
+
+        * arch/avr/dev/nicrtl.c: Fixed bug related to edge triggered interrupt 
+        mode (RTL_IRQ_RISING_EDGE) in ISR.
+
 
 2006-06-18  Harald Kipp  <harald.kipp@egnite.de>
 
