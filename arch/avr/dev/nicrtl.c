@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/06/27 01:42:56  hwmaier
+ * Fixed bug related to edge triggered interrupt mode (RTL_IRQ_RISING_EDGE) in ISR.
+ *
  * Revision 1.3  2006/03/02 23:57:12  hwmaier
  * Include cfg/dev.h added
  *
@@ -1207,6 +1210,10 @@ static void NicInterrupt(void *arg)
 
     ni->ni_interrupts++;
 
+#ifdef RTL_IRQ_RISING_EDGE
+    do
+    {
+#endif 
     isr = NICINB(NIC_PG0_ISR);
     NICOUTB(NIC_PG0_ISR, isr);
 
@@ -1250,6 +1257,15 @@ static void NicInterrupt(void *arg)
             ni->ni_rx_missed_errors += NICINB(NIC_PG0_CNTR2);
         }
     }
+#ifdef RTL_IRQ_RISING_EDGE
+    /* Check that all unmasked interrupts are cleared before we
+    * leave the ISR to assert the INT line goes back to low
+    * and a new interrupt edge will be generated for following
+    * interrupts.
+    */
+    }
+    while (bit_is_set(PINE, RTL_SIGNAL_IRQ));
+#endif
 }
 
 /*! \fn NicRx(void *arg)
