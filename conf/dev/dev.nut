@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.28  2006/06/28 14:31:55  haraldkipp
+-- Null device added to Configurator build.
+--
 -- Revision 1.27  2006/05/25 09:13:23  haraldkipp
 -- Platform independent watchdog API added.
 --
@@ -232,6 +235,18 @@ nutdev =
         sources = { "twbbif.c" }
     },
 
+    --
+    -- Character Device Drivers.
+    --
+    {
+        name = "nutdev_null",
+        brief = "Null",
+        description = "This can be useful if your application might write unwanted "..
+                      "output to stdout. With this deveice you can redirect stdout "..
+                      "to the nullDev which discards any output.",
+        sources = { "null.c" }
+    },
+    
     --
     -- Block Device Drivers.
     --
