@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2006/06/28 17:24:29  haraldkipp
+ * Bugfix. Directories with long filename entries may not expand when
+ * crossing cluster boundaries.
+ *
  * Revision 1.6  2006/06/18 16:37:10  haraldkipp
  * No need to set errno after GetParentPath() returns an error.
  * No need to set errno after malloc failed.
@@ -329,7 +333,9 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
             free(temp);
             /* End of directory reached and expanded by a new cluster. */
             if (sect == 0) {
-                pos = npos;
+                if (ngot == 0) {
+                    pos = npos;
+                }
                 rc = 0;
             }
             break;
