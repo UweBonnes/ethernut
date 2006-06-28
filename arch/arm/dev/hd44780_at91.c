@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/06/28 17:23:19  haraldkipp
+ * Significantly extend delay time to allow running slow 3.3V LCDs with fast
+ * CPUs. Not a nice fix, but it works.
+ *
  * Revision 1.2  2006/05/15 11:44:06  haraldkipp
  * Added delays for more reliable initialization.
  *
@@ -140,7 +144,18 @@
 static void LcdDelay(u_int cycles)
 {
     while (cycles--) {
-        _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
+        _NOP(); _NOP(); _NOP(); _NOP();
     }
 }
 
