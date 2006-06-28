@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/06/28 17:22:34  haraldkipp
+ * Make it compile for AT91SAM7X256.
+ *
  * Revision 1.5  2006/04/07 12:48:41  haraldkipp
  * Port configuration is now honored.
  *
@@ -102,7 +105,7 @@
 #define SPI0_MISO_BIT    3
 #endif
 
-#ifdef MCU_AT91R40008 /* MCU ---------------------- */
+#if defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X256) /* MCU ---------------------- */
 
 #ifndef SPI0_PE_REG
 /*! \brief SPI port enable register.

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/06/28 17:22:34  haraldkipp
+ * Make it compile for AT91SAM7X256.
+ *
  * Revision 1.9  2006/05/25 09:35:27  haraldkipp
  * Dummy macros added to support the avr-libc special function register
  * definitions.
@@ -71,7 +74,7 @@
  */
 
 #include <cfg/arch.h>
-#if defined (MCU_AT91R40008)
+#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256)
 #include <arch/arm/at91.h>
 #elif defined (MCU_GBA)
 #include <arch/arm/gba.h>

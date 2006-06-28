@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.8  2006/06/28 17:22:34  haraldkipp
+-- Make it compile for AT91SAM7X256.
+--
 -- Revision 1.7  2006/05/25 09:13:22  haraldkipp
 -- Platform independent watchdog API added.
 --
@@ -106,7 +109,7 @@ nutarch_arm =
     {
         name = "nutarch_wdt_at91",
         brief = "Watchdog Timer (AT91)",
-        requires = { "HW_MCU_AT91" },
+        requires = { "HW_WDOG_AT91" },
         sources = { "arm/dev/wdt_at91.c" },
     },
 
@@ -175,7 +178,7 @@ nutarch_arm =
         brief = "HD44780 LCD Driver (AT91)",
         description = "Only 4 bit interfaces are currently supported.\n"..
                       "Tested on the AT91R40008 with 2x16 character LCD.",
-        requires = { "HW_MCU_AT91" },
+        requires = { "HW_MCU_AT91R40008" },
         provides = { "DEV_FILE", "DEV_WRITE" },
         sources = { "arm/dev/hd44780_at91.c" },
         options =
@@ -269,7 +272,7 @@ nutarch_arm =
         name = "nutarch_arm_ax88796",
         brief = "AX88796 Driver (AT91)",
         description = "LAN driver for Asix 88796. AT91 only.",
-        requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
+        requires = { "HW_MCU_AT91R40008", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/ax88796.c" },
     },     
@@ -277,7 +280,7 @@ nutarch_arm =
         name = "nutarch_arm_dm9000e",
         brief = "DM9000E Driver (AT91)",
         description = "LAN driver for Davicom DM9000E. AT91 only.",
-        requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
+        requires = { "HW_MCU_AT91R40008", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/dm9000e.c" },
     },     

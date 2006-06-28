@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.29  2006/06/28 17:22:34  haraldkipp
+-- Make it compile for AT91SAM7X256.
+--
 -- Revision 1.28  2006/06/28 14:31:55  haraldkipp
 -- Null device added to Configurator build.
 --
@@ -230,7 +233,7 @@ nutdev =
         name = "nutdev_twbbif",
         brief = "Bit Banging Two Wire",
         description = "Tested on AT91 only.",
-        requires = { "HW_MCU_AT91" },
+        requires = { "HW_MCU_AT91R40008" },
         provides = { "DEV_TWI" },
         sources = { "twbbif.c" }
     },
@@ -473,7 +476,7 @@ nutdev =
         brief = "Bit Banging Multimedia Card Access",
         description = "Bit banging implementation of a low level MMC interface. "..
                       "Tested on AT91 only.",
-        requires = { "HW_GPIO" },                                    
+        requires = { "HW_GPIO", "HW_MCU_AT91R40008" },                                    
         provides = { "DEV_MMCLL" },
         sources = { "sbimmc.c" },
         options =

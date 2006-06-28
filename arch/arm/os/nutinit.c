@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/06/28 17:22:34  haraldkipp
+ * Make it compile for AT91SAM7X256.
+ *
  * Revision 1.6  2006/03/02 19:43:11  haraldkipp
  * Added MCU specific hardware initialization routine. This should be done
  * later for all MCUs to avoid contaminating NutInit() with MCU specific
@@ -174,7 +177,7 @@ void NutInit(void)
 {
 #if defined(OLIMEX_LPCE2294)
     InitHW();
-#elif defined(MCU_AT91R40008)
+#elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X256)
     McuInit();
 #endif
 

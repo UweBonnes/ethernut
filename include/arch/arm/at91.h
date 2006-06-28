@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2006/06/28 17:22:34  haraldkipp
+ * Make it compile for AT91SAM7X256.
+ *
  * Revision 1.6  2006/05/25 09:09:57  haraldkipp
  * API documentation updated and corrected.
  *
@@ -68,6 +71,8 @@
  * \addtogroup xgNutArchArmAt91Ebi
  */
 /*@{*/
+
+#if defined (MCU_AT91R40008)
 
 #define EBI_BASE                0xFFE00000      /*!< \brief EBI base address. */
 
@@ -137,12 +142,16 @@
 #define EBI_DRP_EARLY           0x00000010      /*!< \brief Early read protocol. */
 /*@}*/
 
+#endif  /* MCU_AT91R40008 */
+
 /*@} xgNutArchArmAt91Ebi */
 
 /*!
  * \addtogroup xgNutArchArmAt91Sf
  */
 /*@{*/
+
+#if defined (MCU_AT91R40008)
 
 #define SF_BASE                 0xFFF00000      /*!< \brief Special function register base address. */
 
@@ -203,6 +212,8 @@
 #define SF_AIC                  0x00000020      /*!< \brief AIC runs in protect mode. */
 /*@}*/
 
+#endif  /* MCU_AT91R40008 */
+
 /*@} xgNutArchArmAt91Sf */
 
 /*!
@@ -210,8 +221,13 @@
  */
 /*@{*/
 
+#if defined (MCU_AT91R40008)
 #define USART1_BASE             0xFFFCC000      /*!< \brief USART 1 base address. */
 #define USART0_BASE             0xFFFD0000      /*!< \brief USART 0 base address. */
+#elif defined (MCU_AT91SAM7X256)
+#define USART1_BASE             0xFFFC4000      /*!< \brief USART 1 base address. */
+#define USART0_BASE             0xFFFC0000      /*!< \brief USART 0 base address. */
+#endif
 
 /*! \name USART Control Register */
 /*@{*/
@@ -380,7 +396,11 @@
  * \addtogroup xgNutArchArmAt91Tc
  */
 /*@{*/
+#if defined (MCU_AT91R40008)
 #define TC_BASE                 0xFFFE0000      /*!< \brief TC base address. */
+#elif defined (MCU_AT91SAM7X256)
+#define TC_BASE                 0xFFFA0000      /*!< \brief TC base address. */
+#endif
 
 /*! \name Timer Counter Control Register */
 /*@{*/
@@ -601,6 +621,7 @@
  * \addtogroup xgNutArchArmAt91Pio
  */
 /*@{*/
+#if defined (MCU_AT91R40008)
 #define PIO_BASE    0xFFFF0000  /*!< \brief PIO base address. */
 #define PIO_PER     (PIO_BASE + 0x00)   /*!< \brief PIO enable register. */
 #define PIO_PDR     (PIO_BASE + 0x04)   /*!< \brief PIO disable register. */
@@ -619,6 +640,8 @@
 #define PIO_IDR     (PIO_BASE + 0x44)   /*!< \brief Interrupt disable register. */
 #define PIO_IMR     (PIO_BASE + 0x48)   /*!< \brief Interrupt mask register. */
 #define PIO_ISR     (PIO_BASE + 0x4C)   /*!< \brief Interrupt status register. */
+#elif defined (MCU_AT91SAM7X256)
+#endif
 
 /*@} xgNutArchArmAt91Pio */
 

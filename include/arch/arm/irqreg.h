@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/06/28 17:22:34  haraldkipp
+ * Make it compile for AT91SAM7X256.
+ *
  * Revision 1.3  2006/02/23 15:33:59  haraldkipp
  * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
  * Many thanks to Michael Fischer for this port.
@@ -104,6 +107,14 @@ extern IRQ_HANDLER sig_INTERRUPT0;
 extern IRQ_HANDLER sig_INTERRUPT1;
 extern IRQ_HANDLER sig_INTERRUPT2;
 extern IRQ_HANDLER sig_INTERRUPT2;
+
+#elif defined(MCU_AT91SAM7X256)
+
+extern IRQ_HANDLER sig_UART0;
+extern IRQ_HANDLER sig_UART1;
+extern IRQ_HANDLER sig_TC0;
+extern IRQ_HANDLER sig_INTERRUPT0;
+extern IRQ_HANDLER sig_INTERRUPT1;
 
 #else
 #warning "No MCU defined"

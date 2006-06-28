@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.19  2006/06/28 17:22:34  haraldkipp
+-- Make it compile for AT91SAM7X256.
+--
 -- Revision 1.18  2006/02/23 15:40:59  haraldkipp
 -- GPIO provision added for all MCUs except Gameboy Advance.
 --
@@ -189,6 +192,24 @@ nutarch =
                 makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561" }
             },
             {
+                macro = "MCU_AT91SAM7X256",
+                brief = "Atmel AT91SAM7X256",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
+                              "64K bytes RAM, Ethernet MAC, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_TIMER_AT91",
+                    "HW_UART_AT91",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
                 macro = "MCU_AT91R40008",
                 brief = "Atmel AT91R40008",
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes RAM, "..
@@ -200,8 +221,10 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_ARM",
                     "HW_MCU_AT91",
+                    "HW_MCU_AT91R40008",
                     "HW_TIMER_AT91",
                     "HW_UART_AT91",
+                    "HW_WDOG_AT91",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=arm7tdmi" }
