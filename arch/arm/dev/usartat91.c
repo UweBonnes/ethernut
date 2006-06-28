@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/06/28 17:18:40  haraldkipp
+ * Temporarly exclude AT91R40008 specific register settings from building
+ * for AT91SAM7X.
+ *
  * Revision 1.2  2006/01/05 16:47:32  haraldkipp
  * Baudrate calculation is now based on NutGetCpuClock().
  *
@@ -1089,10 +1093,13 @@ static int At91UsartInit(void)
         return -1;
     }
 
+#if defined (MCU_AT91R40008)
     /* Enable UART clock. */
     outr(PS_PCER, _BV(US_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, US_GPIO_PINS);
+#elif defined (MCU_AT91SAM7X256)
+#endif
     /* Reset UART. */
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
@@ -1125,10 +1132,13 @@ static int At91UsartDeinit(void)
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(USARTn_BASE + US_IDR_OFF, 0xFFFFFFFF);
+#if defined (MCU_AT91R40008)
     /* Disable UART clock. */
     outr(PS_PCDR, _BV(US_ID));
     /* Enable GPIO on UART tx/rx pins. */
     outr(PIO_PER, US_GPIO_PINS);
+#elif defined (MCU_AT91SAM7X256)
+#endif
 
     /*
      * Disabling flow control shouldn't be required here, because it's up

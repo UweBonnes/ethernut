@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/06/28 17:18:40  haraldkipp
+ * Temporarly exclude AT91R40008 specific register settings from building
+ * for AT91SAM7X.
+ *
  * Revision 1.5  2006/03/16 19:03:48  haraldkipp
  * Added ioctl to set baudrate.
  *
@@ -116,10 +120,13 @@ static int Debug1IOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int Debug0Init(NUTDEVICE * dev)
 {
+#if defined (MCU_AT91R40008)
     /* Enable UART clock. */
     outr(PS_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(14) | _BV(15));
+#elif defined (MCU_AT91SAM7X256)
+#endif
     /* Reset UART. */
     outr(US0_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
@@ -144,10 +151,13 @@ static int Debug0Init(NUTDEVICE * dev)
  */
 static int Debug1Init(NUTDEVICE * dev)
 {
+#if defined (MCU_AT91R40008)
     /* Enable UART clock. */
     outr(PS_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(21) | _BV(22));
+#elif defined (MCU_AT91SAM7X256)
+#endif
     /* Reset UART. */
     outr(US1_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
