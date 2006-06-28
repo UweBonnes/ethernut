@@ -1,8 +1,41 @@
-$Id: ChangeLog,v 1.332 2006/06/28 14:28:59 haraldkipp Exp $
+$Id: ChangeLog,v 1.333 2006/06/28 17:05:44 haraldkipp Exp $
 
 2006-06-28  Harald Kipp  <harald.kipp@egnite.de>
 
 	* os/version.c: Release candidate 4.1.9.
+
+	* include/dev/board.h: Added initial support for Atmel's
+	AT91SAM7X-EK.
+
+	* arch/arm/dev/at91init.c, arch/arm/dev/ax88796.c,
+	arch/arm/dev/dm9000e.c, arch/arm/dev/ih_at91fiq.c, 
+	arch/arm/dev/ih_at91irq0.c, arch/arm/dev/ih_at91irq1.c,
+	arch/arm/dev/ih_at91irq2.c, arch/arm/dev/ih_at91pio.c,
+	arch/arm/dev/ih_at91swirq.c, arch/arm/dev/ih_at91tc0.c,
+	arch/arm/dev/ih_at91tc1.c, arch/arm/dev/ih_at91tc2.c,
+	arch/arm/dev/ih_at91uart0.c, arch/arm/dev/ih_at91uart1.c,
+	arch/arm/dev/ih_at91wdi.c, arch/arm/dev/ostimer_at91.c,
+	dev/twbbif.c: Include header arch/arm.h instead of 
+	arch/arm/at91.h.
+
+	* arch/arm/dev/debug_at91.c, arch/arm/dev/usartat91.c:
+	Temporarly exclude AT91R40008 specific register settings from
+	building for AT91SAM7X.
+
+	* conf/arch/arch.nut, conf/arch/arm.nut, arch/arm/os/nutinit.c,
+	conf/dev/dev.nut, dev/sbimmc.c, include/arch/arm/at91.h,
+	include/arch/arm/irqreg.h, include/arch/arm.h, 
+	include/dev/at91sam7x_mac.h, conf/at91sam7x-ek.conf: Make it compile 
+	for AT91SAM7X256. Just that. Nothing works so far.
+
+	* arch/arm/dev/hd44780_at91.c: Significantly extend delay time
+	to allow running slow 3.3V LCDs with fast CPUs. Not a nice fix,
+	but it works.
+
+	* dev/pcf8563.c: Bugfix. PcfRtcGetClock() returned wrong century.
+
+	* fs/phatdir.c: Bugfix. Directories with long filename entries may 
+	not expand while crossing cluster boundaries.
 
 	* os/event.c, os/thread.c, os/timer.c, include/sys/event.h,
 	include/sys/timer.h, include/sys/thread.h:
