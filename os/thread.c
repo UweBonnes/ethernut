@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -46,8 +46,19 @@
  * "copying-liquorice.txt" for details.
  */
 
-/*
+/*!
+ * \file os/thread.c
+ * \brief Multi-threading support.
+ *
+ * This kernel module implements the platform independent part of the Nut/OS 
+ * cooperative multi-threading.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.27  2006/06/28 14:39:41  haraldkipp
+ * Event and timer handling re-design, again.
+ *
  * Revision 1.26  2006/03/16 15:25:36  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -158,6 +169,7 @@
  * Revision 1.17  2002/06/26 17:29:44  harald
  * First pre-release with 2.4 stack
  *
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -169,6 +181,7 @@
 #include <sys/heap.h>
 #include <sys/atom.h>
 #include <sys/timer.h>
+#include <sys/event.h>
 #include <sys/thread.h>
 
 #ifdef NUTDEBUG
@@ -216,18 +229,11 @@ NUTTHREADINFO * killedThread;
 NUTTHREADINFO * nutThreadList;
 
 /*!
- * \brief List of threads to resume.
- *
- * Unordered linked list of NUTTHREADINFO structures of all threads which
- * are ready to run but haven't been added to the runQueue yet.
- */
-NUTTHREADINFO *volatile readyQueue;
-
-/*!
  * \brief List of ready-to-run threads.
  *
  * Priority ordered linked list of NUTTHREADINFO structures
- * of all threads which are ready to run.
+ * of all threads which are ready to run. The idle thread
+ * will always remain at the end of this list.
  */
 NUTTHREADINFO * runQueue;
 
@@ -239,32 +245,48 @@ NUTTHREADINFO * runQueue;
  * Insert the thread into a specified queue behind
  * the last thread with lower or equal priority.
  *
- * \note Depending on the given queue, CPU interrupts must have
- * been disabled before calling this function.
- *
  * \param td   Pointer to NUTTHREADINFO of the thread to be
  *             inserted in the queue.
  * \param tqpp Pointer to the root of the queue.
  */
-void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO ** tqpp)
+void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 {
     NUTTHREADINFO *tqp;
-#ifdef NUTDEBUG
-    NUTTHREADINFO **dump = tqpp;
-#endif
 
-    td->td_queue = tqpp;
+    td->td_queue = (HANDLE) tqpp;
+    td->td_qpec = 0;			// start with clean event count
+
+    /*
+     * Be most careful not to override an intermediate event from interrupt 
+     * context, which may change a queue from empty to signaled state. Many 
+     * thanks to Michael Jones, who detected and corrected this bug.
+     */
+    NutEnterCritical();
     tqp = *tqpp;
-    while (tqp && (tqp->td_priority <= td->td_priority)) {
-        tqpp = &tqp->td_qnxt;
-        tqp = tqp->td_qnxt;
+
+    if (tqp == SIGNALED) {
+        tqp = 0;
+        td->td_qpec++;			// transfer the signaled state 
+    } else if (tqp) {
+        NutExitCritical();		// there are other threads in queue
+						// so its save to leave critical.          
+
+        while (tqp && tqp->td_priority <= td->td_priority) {
+            tqpp = &tqp->td_qnxt;
+            tqp = tqp->td_qnxt;
+        }
+
+        NutEnterCritical();		// back into critical
     }
+
     td->td_qnxt = tqp;
+
     *tqpp = td;
-#ifdef NUTDEBUG
-    if (__os_trf)
-        NutDumpThreadQueue(__os_trs, *dump);
-#endif
+    if (td->td_qnxt && td->td_qnxt->td_qpec) {
+        td->td_qpec += td->td_qnxt->td_qpec; // don't overwrite count
+        td->td_qnxt->td_qpec = 0;
+    }
+    NutExitCritical();
 }
 
 /*!
@@ -280,74 +302,82 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO ** tqpp)
 void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 {
     NUTTHREADINFO *tqp;
-#ifdef NUTDEBUG
-    NUTTHREADINFO *volatile *dump = tqpp;
-#endif
 
+    NutEnterCritical();
     tqp = *tqpp;
-    while (tqp) {
-        if (tqp == td) {
-            *tqpp = td->td_qnxt;
-            td->td_qnxt = 0;
-            td->td_queue = 0;
-            break;
+    NutExitCritical();
+
+    if (tqp != SIGNALED) {
+        while (tqp) {
+            if (tqp == td) {
+                NutEnterCritical();
+                *tqpp = td->td_qnxt;
+                if (td->td_qpec) {
+                    if (td->td_qnxt) {
+                        td->td_qnxt->td_qpec = td->td_qpec;
+                    }
+                    td->td_qpec = 0;
+                }
+                NutExitCritical();
+
+                td->td_qnxt = 0;
+                td->td_queue = 0;
+                break;
+            }
+            tqpp = &tqp->td_qnxt;
+            tqp = tqp->td_qnxt;
         }
-        tqpp = &tqp->td_qnxt;
-        tqp = tqp->td_qnxt;
     }
-#ifdef NUTDEBUG
-    if (__os_trf)
-        NutDumpThreadQueue(__os_trs, *dump);
-#endif
 }
 
 /*!
  * \brief Continue with the highest priority thread, which is ready to run.
  *
- * All threads, which had been woken up in interrupt context, will be
- * inserted into the priority ordered queue of ready-to-run threads.
  * If the currently running thread lost its top position in the queue
  * of ready-to-run threads, then the context will be switched.
+ *
+ * \todo Removing a single thread from a wait queue only improves context
+ *       switching, but may result in an event time-out for remaining 
+ *       threads, although events had been posted already.
  */
 void NutThreadResume(void)
 {
     NUTTHREADINFO *td;
+    NUTTHREADINFO **qhp;
+    NUTTHREADINFO *tqp;
+    u_int cnt;
 
     /*
-     * Firste process elapsed timers
+     * Process events that have been posted from interrupt context.
+     */
+    td = nutThreadList;
+    while (td) {
+        NutEnterCritical();
+        cnt = td->td_qpec;
+        NutExitCritical();
+        if (cnt) {
+            /* In order to reduce context switching time, it is sufficient 
+             * to remove the thread on top of the priority ordered list. */
+            qhp = (NUTTHREADINFO **)(td->td_queue);
+            NutEnterCritical();
+            td->td_qpec--;
+            tqp = *qhp;
+            NutExitCritical();
+            if (tqp != SIGNALED) {
+                NutEventPostAsync((HANDLE *)qhp);
+            }
+        }
+        td = td->td_next;
+    }
+
+    /*
+     * Process elapsed timers. Must be done after processing the
+     * events from interupt routines.
      */
     NutTimerProcessElapsed();
 
-    /*
-     * Then process all entries of the readyQueue.
-     */
-    do {
-        /* Protect access to the readyQueue. */
-        NutEnterCritical();
-
-        /* Remove the top entry from the woken up threads. */
-        if ((td = readyQueue) != 0) {
-            readyQueue = td->td_qnxt;
-        }
-
-        NutExitCritical();
-
-        /* Add the thread to the runQueue. */
-        if (td) {
-            td->td_state = TDS_READY;
-            NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
-        }
-    } while (td);
-
-
     /* Check for context switch. */
     if (runningThread != runQueue) {
-#ifdef NUTDEBUG
-        if (__os_trf) {
-            static prog_char fmt2[] = "SW<%p %p>";
-            fprintf_P(__os_trs, fmt2, runningThread, runQueue);
-        }
-#endif
 #ifdef NUTTRACER
         TRACE_ADD_ITEM(TRACE_TAG_THREAD_YIELD,(int)runningThread);
 #endif
@@ -374,18 +404,16 @@ void NutThreadResume(void)
  *
  * \param timer Handle of the elapsed timer.
  * \param th    Handle of the thread to wake up.
+ *
+ * \todo Used by the timer module. Should be moved there, because not all
+ *       applications will use of NutSleep().
  */
 void NutThreadWake(HANDLE timer, HANDLE th)
 {
     /* clear pointer on timer and waiting queue */
     ((NUTTHREADINFO *) th)->td_timer = 0;
-    ((NUTTHREADINFO *) th)->td_queue = 0;
-
-    /* protected move into readyQueue */
-    NutEnterCritical();
-    ((NUTTHREADINFO *) th)->td_qnxt = readyQueue;
-    readyQueue = (NUTTHREADINFO *)th;
-    NutExitCritical();
+    ((NUTTHREADINFO *) th)->td_state = TDS_READY;
+    NutThreadAddPriQueue(th, (NUTTHREADINFO **) & runQueue);
 }
 
 /*!
@@ -411,19 +439,8 @@ void NutThreadYield(void)
      * never be removed.
      */
     if (runningThread->td_qnxt) {
-#ifdef NUTDEBUG
-        if (__os_trf) {
-            static prog_char fmt1[] = "Yld<%p>";
-            fprintf_P(__os_trs, fmt1, runningThread);
-        }
-#endif
-        runQueue = runningThread->td_qnxt;
-        runningThread->td_qnxt = 0;
+        NutThreadRemoveQueue(runningThread, (NUTTHREADINFO **) & runQueue);
         NutThreadAddPriQueue(runningThread, (NUTTHREADINFO **) & runQueue);
-#ifdef NUTDEBUG
-        if (__os_trf)
-            NutDumpThreadList(__os_trs);
-#endif
     }
 
     /* Continue with the highest priority thread, which is ready to run. */
@@ -447,20 +464,19 @@ void NutThreadYield(void)
  * easy to temporarily switch to another priority and
  * later set back the old one.
  *
- * \param level New priority level or 255 to kill the thread.
+ * \param level New priority level or 255 to kill the thread. Zero
+ *              specifies the highest priority. The idle thread is
+ *              running at level 254 (lowest priority). Application 
+ *              threads should use levels from 32 to 253.
  *
  * \return The old priority of this thread.
+ *
+ * \todo Using a specific priority level for killing a thread is actually
+ *       not the best idea. NutThreadKill() can be used instead.
  */
 u_char NutThreadSetPriority(u_char level)
 {
     u_char last = runningThread->td_priority;
-
-#ifdef NUTDEBUG
-    if (__os_trf) {
-        static prog_char fmt1[] = "Pri%u<%p>";
-        fprintf_P(__os_trs, fmt1, level, runningThread);
-    }
-#endif
 
     /*
      * Remove the thread from the run queue and re-insert it with a new
@@ -475,13 +491,6 @@ u_char NutThreadSetPriority(u_char level)
         NutThreadKill();
     }
 
-#ifdef NUTDEBUG
-    if (__os_trf) {
-        NutDumpThreadList(__os_trs);
-        NutDumpThreadQueue(__os_trs, runQueue);
-    }
-#endif
-
     /*
      * Are we still on top of the queue? If yes, then change our status
      * back to running, otherwise do a context switch.
@@ -490,12 +499,6 @@ u_char NutThreadSetPriority(u_char level)
         runningThread->td_state = TDS_RUNNING;
     } else {
         runningThread->td_state = TDS_READY;
-#ifdef NUTDEBUG
-        if (__os_trf) {
-            static prog_char fmt2[] = "SWC<%p %p>";
-            fprintf_P(__os_trs, fmt2, runningThread, runQueue);
-        }
-#endif
 #ifdef NUTTRACER
         TRACE_ADD_ITEM(TRACE_TAG_THREAD_SETPRIO,(int)runningThread);
 #endif
@@ -514,6 +517,9 @@ u_char NutThreadSetPriority(u_char level)
  * Terminates the current thread, in due course the memory associated
  * with the thread will be released back to the OS this is done by the
  * idle thread.
+ *
+ * \todo NutThreadKill() can be used instead of setting the priority level
+ *       to 255.
  */
 void NutThreadExit(void)
 {
@@ -546,7 +552,7 @@ void NutThreadDestroy(void)
  *
  * The thread is moved from the schedule que and
  *
- * Applications generally do not call this function
+ * Applications generally do not call this function.
  */
 void NutThreadKill(void)
 {
@@ -572,6 +578,15 @@ void NutThreadKill(void)
     killedThread = runningThread;
 }
 
+/*!
+ * \brief Query handle of a thread with a specific name.
+ *
+ * \param name Case sensitive symbolic name of the thread.
+ *
+ * \return Handle of the thread, if it exists. Otherwise NULL is returned.
+ *
+ * \todo Rarely used helper function. Should be placed in a seperate module.
+ */
 HANDLE GetThreadByName(char * name)
 {
     NUTTHREADINFO *tdp;
