@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/06/28 14:30:19  haraldkipp
+ * Post to the event queue on overflow interrupts.
+ * Transmit event queue removed, because no one is listening.
+ *
  * Revision 1.3  2005/10/24 18:02:34  haraldkipp
  * Fixes for ATmega103.
  *
@@ -514,7 +518,6 @@
  */
 struct _NICINFO {
     HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
-    HANDLE volatile ni_tx_rdy;  /*!< Transmitter event queue. */
     u_short ni_tx_cnt;          /*!< Number of bytes in transmission queue. */
     u_long ni_rx_packets;       /*!< Number of packets received. */
     u_long ni_tx_packets;       /*!< Number of packets sent. */
@@ -904,7 +907,6 @@ static void NicInterrupt(void *arg)
     if (isr & INT_TX_EMPTY) {
         nic_outlb(NIC_ACK, INT_TX_EMPTY);
         imr &= ~INT_TX_EMPTY;
-        NutEventPostFromIrq(&ni->ni_tx_rdy);
     }
     /* Transmit error. */
     else if (isr & INT_TX) {
@@ -915,8 +917,6 @@ static void NicInterrupt(void *arg)
         nic_outlb(NIC_ACK, INT_TX);
         /* kill the packet */
         nic_outlb(NIC_MMUCR, MMU_PKT);
-
-        NutEventPostFromIrq(&ni->ni_tx_rdy);
     }
 
 
@@ -927,6 +927,7 @@ static void NicInterrupt(void *arg)
     if (isr & INT_RX_OVRN) {
         nic_outlb(NIC_ACK, INT_RX_OVRN);
         //nic_outlb(NIC_MMUCR, MMU_TOP);
+        NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
     if (isr & INT_ERCV) {
         nic_outlb(NIC_ACK, INT_ERCV);
