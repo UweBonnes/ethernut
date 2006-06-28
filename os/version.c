@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.32  2006/06/28 14:43:06  haraldkipp
+ * Release candidate prepared.
+ *
  * Revision 1.31  2006/05/15 12:48:49  haraldkipp
  * Prepare pre-release 4.1.6.
  *
@@ -141,8 +144,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010601UL
-static CONST char os_version_string[] = "4.1.6.1 pre";
+#define OS_VERSION_NUMBER  0x04010901UL
+static CONST char os_version_string[] = "4.1.9.1 rc";
 
 /*!
  * \addtogroup xgNutVersion
