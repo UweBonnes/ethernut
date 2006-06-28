@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/06/28 14:31:24  haraldkipp
+ * NutEventPostFromIrq() doesn't return a result anymore. We directly
+ * inspect the queue's root.
+ *
  * Revision 1.3  2005/10/24 10:56:30  haraldkipp
  * Added const modifier to transmit data pointer in TwMasterTransact().
  *
@@ -392,7 +396,7 @@ static void TwInterrupt(void *arg)
          * must now setup the transmit buffer and re-enable the
          * interface.
          */
-        if (NutEventPostFromIrq(&tw_sr_que) == 0 || tw_sm_err) {
+        if (tw_sr_que == 0 || tw_sm_err) {
             /*
              * If no one has been waiting on the queue, the application
              * probably gave up waiting. So we continue on our own, either
@@ -408,6 +412,7 @@ static void TwInterrupt(void *arg)
             tw_if_bsy = 0;
         }
         else {
+            NutEventPostFromIrq(&tw_sr_que);
             tw_sr_siz = 0;
             outb(TWCR, twcr & ~(_BV(TWINT) | _BV(TWIE)));
         }
