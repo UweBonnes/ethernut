@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,26 +28,30 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
  */
 
-/*
+/*!
+ * \file os/timer.c
+ * \brief System timer support.
+ *
+ * This kernel module contains the hardware independent system timer routines.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.30  2006/06/28 14:42:28  haraldkipp
+ * Event and timer handling re-design, again.
+ * Time-out timers are now released early.
+ * The timer list is now double linked to reduce removal time.
+ * Internally timeout condition is now flagged by setting the timer handle
+ * to SIGNALED.
+ * The documentation had been updated.
+ * NUTDEBUG code requires some updates. Temporarly removed.
+ * LGPL copyright removed after all the initial sources had been finally
+ * replaced by BSDL'ed code.
+ * Variable nut_ticks_resume is used in NutTimerProcessElapsed() only. Moved
+ * there.
+ *
  * Revision 1.29  2006/01/26 15:34:49  going_nuts
  * adapted to new interrupt handling scheme for unix emulation
  * now uses Unix timer and runs without interrupts unless you emulate other hardware
@@ -169,6 +173,7 @@
  * Revision 1.16  2002/06/26 17:29:45  harald
  * First pre-release with 2.4 stack
  *
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -200,30 +205,14 @@ static struct timeval   timeStart;
 /*@{*/
 
 /*!
- * \brief Linked list of all system timers.
+ * \brief Double linked list of all system timers.
  */
-NUTTIMERINFO *volatile nutTimerList;
-
-/*!
-* \brief Flag to indicate that a timer was stopped.
- */
-u_char volatile nutTimerStopped;
-
-/*!
- * \brief Pointer to the timer, which is currently processed by the timer
- *        interrupt handler.
- */
-// NUTTIMERINFO *volatile runningTimer;
+NUTTIMERINFO *nutTimerList;
 
 /*!
 *  \brief System tick counter
  */
 volatile u_long nut_ticks;
-
-/*!
- *  \brief Time of last NutTimerProcessElapsed execution
- */
-static u_long nut_ticks_resume;
 
 /*!
  * \brief System timer interrupt handler.
@@ -260,44 +249,51 @@ void NutTimerInit(void)
 
 /*!
  * \brief Insert a new timer in the global timer list.
+ *
+ * Applications should not call this function.
+ *
+ * \param tn Pointer to the timer structure to insert.
+ *
+ * \todo Make this local function static.
  */
 void NutTimerInsert(NUTTIMERINFO * tn)
 {
-    NUTTIMERINFO **tnpp;
     NUTTIMERINFO *tnp;
 
-#ifdef NUTDEBUG
-    if (__os_trf) {
-        static prog_char fmt[] = "InsTmr<%p>\n";
-        fprintf_P(__os_trs, fmt, tn);
-    }
-#endif
-
-    tnpp = (NUTTIMERINFO **) & nutTimerList;
+    tn->tn_prev = NULL;
     for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
         if (tn->tn_ticks_left < tnp->tn_ticks_left) {
             tnp->tn_ticks_left -= tn->tn_ticks_left;
             break;
         }
         tn->tn_ticks_left -= tnp->tn_ticks_left;
-        tnpp = &tnp->tn_next;
+        tn->tn_prev = tnp;
     }
     tn->tn_next = tnp;
-    *tnpp = tn;
-
-#ifdef NUTDEBUG
-    if (__os_trf)
-        NutDumpTimerList(__os_trs);
-#endif
+    if (tn->tn_next) {
+        tn->tn_next->tn_prev = tn;
+    }
+    if (tn->tn_prev) {
+        tn->tn_prev->tn_next = tn;
+    }
+    else {
+        nutTimerList = tn;
+    }
 }
 
+/*!
+ * \brief Process elapsed timers.
+ *
+ * This routine is called during context switch processing.
+ * Applications should not use this function.
+ */
 void NutTimerProcessElapsed(void)
 {
-    NUTTIMERINFO *tn, *nexttn;
-    u_char tempTimerStopped;
+    static u_long nut_ticks_resume; /* Time of last execution. */
+    NUTTIMERINFO *tn;
     u_long ticks;
     u_long ticks_new;
-    
+
     // calculate ticks since last call
     ticks = NutGetTickCount();
     ticks_new = ticks - nut_ticks_resume;
@@ -320,49 +316,44 @@ void NutTimerProcessElapsed(void)
         // elapsed
         if (tn->tn_ticks_left == 0){
 
-            // remove from list
-            nutTimerList = nutTimerList->tn_next;
-
             // callback
             if (tn->tn_callback) {
                 (*tn->tn_callback) (tn, (void *) tn->tn_arg);
             }
-            // re-insert
-            if ((tn->tn_ticks_left = tn->tn_ticks) != 0) {
-                NutTimerInsert(tn);
-            } else {
-                NutHeapFree(tn);
+            if ((tn->tn_ticks_left = tn->tn_ticks) == 0) {
+                NutTimerStop(tn);
             }
-        }
-    }
-
-    // some timers stopped by NutTimerStopAsync?
-    NutEnterCritical();
-    tempTimerStopped = nutTimerStopped;
-    nutTimerStopped  = 0;
-    NutExitCritical();
-
-    // remove stopped timers, if nutTimerStopped
-    if ( (nutTimerList && tempTimerStopped) ){
-        tn = nutTimerList;
-        while ((tn) && (tn->tn_next)) {
-            nexttn = tn->tn_next;
-            if (nexttn->tn_callback == 0) {
-                // remove entry from linked list and update ticks
-                if (nexttn->tn_next) {
-                    nexttn->tn_next->tn_ticks_left += nexttn->tn_ticks_left;
+            else {
+                // remove from list
+                nutTimerList = nutTimerList->tn_next;
+                if (nutTimerList) {
+                    nutTimerList->tn_prev = 0;
                 }
-                tn->tn_next = nexttn->tn_next;
-                NutHeapFree(nexttn);
+                // re-insert
+                NutTimerInsert(tn);
             }
-            tn = tn->tn_next;
         }
     }
 }
 
-
 /*!
-* \brief Create a new timer.
+ * \brief Create a new system timer.
+ *
+ * Applications should not call this function.
+ *
+ * \param ticks    Specifies the timer interval in system ticks.
+ * \param callback Identifies the function to be called on each
+ *                 timer interval.
+ * \param arg      The argument passed to the callback function.
+ * \param flags    If set to TM_ONESHOT, the timer will be stopped
+ *                 after the first interval. Set to 0 for periodic
+ *                 timers.
+ *
+ * \return Timer handle if successfull, 0 otherwise. The handle
+ *         may be used to release the timer by calling TimerStop.
+ *
+ * \todo Make this local function static or directly integrate it into
+ *       NutTimerStartTicks().
  */
 NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
 {
@@ -389,7 +380,32 @@ NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), v
     return tn;    
 }
 
-
+/*!
+ * \brief Start a system timer.
+ *
+ * The function returns immediately, while the timer runs asynchronously in 
+ * the background.
+ *
+ * The timer counts for a specified number of ticks, then calls the callback 
+ * routine with a given argument.
+ *
+ * Even after the timer elapsed, the callback function is not executed
+ * before the currently running thread is ready to give up the CPU. Thus,
+ * system timers may not fulfill the required accuracy. For precise or
+ * high resolution timing, native timer interrupt routines are a better
+ * choice.
+ *
+ * \param ticks    Specifies the timer interval in system ticks.
+ * \param callback Identifies the function to be called on each
+ *                 timer interval.
+ * \param arg      The argument passed to the callback function.
+ * \param flags    If set to TM_ONESHOT, the timer will be stopped
+ *                 after the first interval. Set to 0 for periodic
+ *                 timers.
+ *
+ * \return Timer handle if successfull, 0 otherwise. The handle
+ *         may be used to stop the timer by calling TimerStop.
+ */
 HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
 {
     NUTTIMERINFO *tn;
@@ -403,7 +419,7 @@ HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void 
 }
 
 /*!
- * \brief Create an asynchronous timer.
+ * \brief Start a system timer.
  *
  * The function returns immediately, while the timer runs
  * asynchronously in the background.
@@ -411,11 +427,15 @@ HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void 
  * The timer counts for a specified number of milliseconds,
  * then calls the callback routine with a given argument.
  *
- * The callback function is executed in interrupt context
- * at a very high priority. It can call only a limited set
- * of functions and must return as soon as possible.
+ * Even after the timer elapsed, the callback function is not executed
+ * before the currently running thread is ready to give up the CPU. Thus,
+ * system timers may not fulfill the required accuracy. For precise or
+ * high resolution timing, native timer interrupt routines are a better
+ * choice.
  *
- * \param ms       Specifies the timer interval in milliseconds.
+ * \param ms       Specifies the timer interval in milliseconds. The
+ *                 resolution is limited to the granularity of the system 
+ *                 timer.
  * \param callback Identifies the function to be called on each
  *                 timer interval.
  * \param arg      The argument passed to the callback function.
@@ -446,7 +466,11 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_
  *       with higher or equal priority, which are ready to run.
  *
  * \param ms Milliseconds to sleep. If 0, the current thread will not 
- *           sleep, but may give up the CPU.
+ *           sleep, but may give up the CPU. The resolution is limited 
+ *           to the granularity of the system timer.
+ *
+ * \todo Code size can be reduced by trying to create the timer before
+ *       removing the thread from the run queue.
  */
 void NutSleep(u_long ms)
 {
@@ -457,20 +481,6 @@ void NutSleep(u_long ms)
         runningThread->td_state = TDS_SLEEP;
 
         if ((runningThread->td_timer = NutTimerStart(ms, NutThreadWake, runningThread, TM_ONESHOT)) != 0) {
-#ifdef NUTDEBUG
-            if (__os_trf) {
-                static prog_char fmt1[] = "Rem<%p>\n";
-                fprintf_P(__os_trs, fmt1, runningThread);
-            }
-#endif
-#ifdef NUTDEBUG
-            if (__os_trf) {
-                static prog_char fmt2[] = "SWS<%p %p>\n";
-                NutDumpThreadList(__os_trs);
-                //NutDumpThreadQueue(__os_trs, runQueue);
-                fprintf_P(__os_trs, fmt2, runningThread, runQueue);
-            }
-#endif
 #ifdef NUTTRACER
             TRACE_ADD_ITEM(TRACE_TAG_THREAD_SLEEP,(int)runningThread);
 #endif
@@ -488,46 +498,6 @@ void NutSleep(u_long ms)
 }
 
 /*!
- * \brief Asynchronously stop a specified timer.
- *
- * Stops one-shot and periodic timers.
- *
- * \note It is save to call this function from within an interrupt
- *       handler.
- *
- * \param handle Identifies the timer to be stopped. This handle
- *               must have been created by calling NutTimerStart().
- *
- */
-void NutTimerStopAsync(HANDLE handle)
-{
-    NUTTIMERINFO *tn = (NUTTIMERINFO *)handle;
-
-#ifdef NUTDEBUG
-    if (__os_trf) {
-        static prog_char fmt[] = "StpTmr<%p>\r\n";
-        fprintf_P(__os_trs, fmt, (uptr_t) handle);
-    }
-#endif
-
-    /* MR (20050707) moved this commented code to NutTimerProcessElapsed
-     if (tn->tn_next) {
-        tn->tn_next->tn_ticks_left += tn->tn_ticks_left;
-        tn->tn_ticks_left = 0;
-    }
-    */
-
-    tn->tn_ticks = 0;
-    tn->tn_callback = 0;
-    nutTimerStopped = 1; // set flag for NutTimerProcessElapsed
-
-#ifdef NUTDEBUG
-    if (__os_trf)
-        NutDumpTimerList(__os_trs);
-#endif
-}
-
-/*!
  * \brief Stop a specified timer.
  *
  * Only periodic timers need to be stopped. One-shot timers
@@ -535,19 +505,32 @@ void NutTimerStopAsync(HANDLE handle)
  * ther first timer interval. Anyway, long running one-shot
  * timers may be stopped to release the occupied memory.
  *
- * \param handle Identifies the timer to be stopped. This handle
- *               must have been created by calling NutTimerStart().
+ * \param handle Identifies the timer to be stopped. This handle must 
+ *               have been created by calling NutTimerStart() or
+ *               NutTimerStartTicks().
  */
 void NutTimerStop(HANDLE handle)
 {
-    NutTimerStopAsync(handle);
+    NUTTIMERINFO *tn = (NUTTIMERINFO *)handle;
+
+    if (tn->tn_prev) {
+        tn->tn_prev->tn_next = tn->tn_next;
+    }
+    else {
+        nutTimerList = tn->tn_next;
+    }
+    if (tn->tn_next) {
+        tn->tn_next->tn_prev = tn->tn_prev;
+        tn->tn_next->tn_ticks_left += tn->tn_ticks_left;
+    }
+    NutHeapFree(tn);
 }
 
 /*!
- * \brief Return the number of timer ticks.
+ * \brief Return the number of system timer ticks.
  *
- * This function returns the TickCount since the system was started. It
- * is limited to the resolution of the system timer.
+ * This function returns the number of system ticks since the system was 
+ * started.
  *
  * \return Number of ticks.
  */
