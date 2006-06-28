@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/06/28 17:10:15  haraldkipp
+ * Include more general header file for ARM.
+ *
  * Revision 1.1  2006/03/02 19:43:11  haraldkipp
  * Added MCU specific hardware initialization routine. This should be done
  * later for all MCUs to avoid contaminating NutInit() with MCU specific
@@ -41,7 +44,7 @@
  *
  */
 
-#include <arch/arm/at91.h>
+#include <arch/arm.h>
 #include <dev/irqreg.h>
 
 /*!

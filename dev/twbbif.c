@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/06/28 17:10:35  haraldkipp
+ * Include more general header file for ARM.
+ *
  * Revision 1.4  2006/05/25 09:30:23  haraldkipp
  * Compiles for AVR. Still not tested, though.
  *
@@ -66,7 +69,7 @@
 
 #if defined(__arm__)
 
-#include <arch/arm/at91.h>
+#include <arch/arm.h>
 
 #ifndef TWI_SDA_BIT
 #define TWI_SDA_BIT     16

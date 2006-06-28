@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/06/28 17:10:35  haraldkipp
+ * Include more general header file for ARM.
+ *
  * Revision 1.5  2006/03/02 19:53:01  haraldkipp
  * Bugfix. The system timer configuration was based on a fixed MCU clock
  * of 66.6 MHz. Now it uses the actual frequency.
@@ -73,8 +76,7 @@
 
 #include <cfg/os.h>
 #include <cfg/clock.h>
-#include <cfg/arch.h>
-#include <arch/arm/at91.h>
+#include <arch/arm.h>
 #include <dev/irqreg.h>
 #include <sys/timer.h>
 

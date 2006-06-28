@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/06/28 17:10:15  haraldkipp
+ * Include more general header file for ARM.
+ *
  * Revision 1.4  2006/03/02 19:48:19  haraldkipp
  * Replaced inline assembly nops with their portable counterparts.
  *
@@ -55,7 +58,7 @@
  *
  */
 
-#include <arch/arm/at91.h>
+#include <arch/arm.h>
 
 #include <string.h>
 //#include <stdio.h>

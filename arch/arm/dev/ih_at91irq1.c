@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/06/28 17:10:15  haraldkipp
+ * Include more general header file for ARM.
+ *
  * Revision 1.2  2006/04/07 12:21:43  haraldkipp
  * Added missing IRQ sense settings.
  *
@@ -41,7 +44,7 @@
  *
  */
 
-#include <arch/arm/at91.h>
+#include <arch/arm.h>
 #include <dev/irqreg.h>
 
 #ifndef NUT_IRQPRI_IRQ1

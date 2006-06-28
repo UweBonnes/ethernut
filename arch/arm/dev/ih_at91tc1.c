@@ -33,12 +33,15 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/06/28 17:10:27  haraldkipp
+ * Include more general header file for ARM.
+ *
  * Revision 1.1  2005/10/24 08:56:09  haraldkipp
  * First check in.
  *
  */
 
-#include <arch/arm/at91.h>
+#include <arch/arm.h>
 #include <dev/irqreg.h>
 
 #ifndef NUT_IRQPRI_TC1

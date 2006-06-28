@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/06/28 17:10:15  haraldkipp
+ * Include more general header file for ARM.
+ *
  * Revision 1.4  2006/03/16 19:04:48  haraldkipp
  * Adding a short delay before reading the status word makes it work with
  * compiler optimization. On receiver overflow interrupts the chip is
@@ -52,7 +55,7 @@
  */
 
 #include <cfg/os.h>
-#include <arch/arm/at91.h>
+#include <arch/arm.h>
 
 #include <string.h>
 
