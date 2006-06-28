@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/06/28 17:23:47  haraldkipp
+ * Bugfix. PcfRtcGetClock() returned wrong century.
+ *
  * Revision 1.1  2006/04/07 13:54:17  haraldkipp
  * PCF8563 RTC driver added.
  *
@@ -122,7 +125,7 @@ int PcfRtcGetClock(struct _tm *tm)
         tm->tm_mday = BCD2BIN(data[3] & 0x3F);
         tm->tm_mon = BCD2BIN(data[5] & 0x1F) - 1;
         tm->tm_year = BCD2BIN(data[6]);
-        if ((data[5] & 0x80) == 0) {
+        if (data[5] & 0x80) {
             tm->tm_year += 100;
         }
         tm->tm_wday = data[4] & 0x07;
