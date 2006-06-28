@@ -1,9 +1,67 @@
-$Id: ChangeLog,v 1.331 2006/06/27 01:44:19 hwmaier Exp $
+$Id: ChangeLog,v 1.332 2006/06/28 14:28:59 haraldkipp Exp $
+
+2006-06-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Release candidate 4.1.9.
+
+	* os/event.c, os/thread.c, os/timer.c, include/sys/event.h,
+	include/sys/timer.h, include/sys/thread.h:
+	Event and timer handling re-design, again. This fixes a bug, which
+	possibly existed since version 3.9.8 and freezes threads under heavy
+	load. After several people reported this problem, Michael Jones and
+	Henrik Maier finally detected the cause and came up with a solution.
+	However, this fix let interrupt latency times depend on the number
+	of running threads again and a new solution was implemented, which
+	not only avoids this problem but further decreases interrupt latencies
+	by adding an event post counter to the THREADINFO structure. This
+	counter frees the interrupt routines from dealing with linked lists
+	and frees the kernel from dealing with linked lists concurrently
+	modified by interrupts. Furthermore, timeout timers are now released
+	early. Michael Jones reported, that previous versions suffer from low
+	memory situations while processing many events within short periods. 
+	The timer list is now double linked to reduce removal time. Internally 
+	timeout condition is now flagged by setting the timer handle to 
+	SIGNALED.
+	Unfortunately new bugs were introduced with this re-design. Special 
+	thanks to Michael Jones, who located the "exact spot of the crime" and 
+	proofed, that his final fixes let Nut/OS behave quite well under heavy 
+	traffic storms. This new version will probably help also, if you
+	experienced long term instability.
+	Last not least the documentation had been updated.
+
+	* include/sys/event.h: A new macro NutEventPostFromIrq() replaces
+	the routine with the same name. In opposite to the previous routine, 
+	no result will be returned by this macro, which may break your
+	existing code.
+	The SIGNALED definition had been replaced by a less platform
+	dependent variant.
+
+	* include/sys/thread.h: Code indention corrected. Volatile attribute
+	removed from THREADINFO link pointer.
+
+	* os/thread.c, os/timer.c: NUTDEBUG code requires some updates. 
+	Temporarly removed.
+
+	* os/event.c, os/timer.c: LGPL copyright removed after all the initial 
+	sources had been finally replaced by BSDL'ed code.
+
+	* os/timer.c: Variable nut_ticks_resume is used in 
+	NutTimerProcessElapsed() only. Moved there.
+
+	* arch/avr/dev/lanc111.c: Post to the event queue on overflow 
+	interrupts. Transmit event queue removed, because no one is listening.
+
+	* arch/avr/dev/twif.c: NutEventPostFromIrq() doesn't return a result
+	anymore. We directly inspect the queue's root. I'd say, that the whole
+	code needs to be reviewed.
+
+	* conf/dev/dev.nut: Null device added to Configurator build.
+
 
 2006-06-27 Henrik Maier  <henrik@proconx.com>
 
-        * arch/avr/dev/nicrtl.c: Fixed bug related to edge triggered interrupt 
-        mode (RTL_IRQ_RISING_EDGE) in ISR.
+	* arch/avr/dev/nicrtl.c: Fixed bug related to edge triggered interrupt 
+	mode (RTL_IRQ_RISING_EDGE) in ISR.
 
 
 2006-06-18  Harald Kipp  <harald.kipp@egnite.de>
