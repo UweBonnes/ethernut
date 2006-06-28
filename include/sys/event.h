@@ -2,7 +2,7 @@
 #define _SYS_EVENT_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,6 +51,14 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/06/28 14:34:02  haraldkipp
+ * Event/thread/timer re-design.
+ * A new macro NutEventPostFromIrq() replaces the routine with the same name.
+ * In opposite to the previous routine, no result will be returned by this
+ * macro, which may break your existing code.
+ * The SIGNALED definition had been replaced by a less platform dependent
+ * variant.
+ *
  * Revision 1.5  2005/01/24 21:11:46  freckle
  * renamed NutEventPostFromIRQ into NutEventPostFromIrq
  *
@@ -77,32 +85,84 @@
  *
  */
 
-#include <sys/types.h>
+#include <sys/thread.h>
 
 /*!
  * \file sys/event.h
  * \brief Event management definitions.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/*!
+ * \addtogroup xgEvent
+ */
+/*@{*/
 
-#define SIGNALED    (void *)0xffff
+/*!
+ * \brief Signaled state definition.
+ *
+ * The root of an event queue is set to this value if an event
+ * is posted to an empty queue. As this may happen during
+ * interrupts, the root of an event queue must be considered
+ * volatile.
+ *
+ * Timer handles in the THREADINFO structure are set to this value
+ * if a timeout occured while waiting for an event.
+ */
+#define SIGNALED    ((void *)-1)
 
+/*!
+ * \brief Infinite waiting time definition.
+ *
+ * Applications should use this value to disable timeout monitoring
+ * while waiting for an event.
+ */
 #define NUT_WAIT_INFINITE   0
 
+/*!
+ * \brief Post an event to a specified queue from interrupt context.
+ *
+ * Wake up the thread with the highest priority waiting on the
+ * specified queue. This function is explicitly provided for IRQ
+ * handlers to wakeup waiting user threads.
+ *
+ * Internally a counter is used to keep track of the posted events.
+ * This counter will be examined when the currently running thread is 
+ * ready to release the CPU.
+ *
+ * \note When calling this function, interrupt routines will change
+ *       the root of an empty event queue to SIGNALED.
+ *
+ * \todo Avoid counter overrun.
+ *
+ * \param qp Identifies the queue an event is posted to.
+ *
+ */
+#define NutEventPostFromIrq(qp)     \
+{                                   \
+    if (*qp == 0) {                 \
+        *qp = SIGNALED;             \
+    }                               \
+    else if (*qp != SIGNALED) {     \
+        NUTTHREADINFO *tp = *qp;    \
+        tp->td_qpec++;              \
+    }                               \
+}
+
+/*@}*/
+
+__BEGIN_DECLS
+/* Function prototypes. */
+
 extern void NutEventTimeout(HANDLE timer, void *arg);
+
 extern int NutEventWait(volatile HANDLE *qhp, u_long ms);
 extern int NutEventWaitNext(volatile HANDLE *qhp, u_long ms);
-extern int NutEventPostAsync(HANDLE volatile *qhp);
-extern int NutEventPostFromIrq(HANDLE volatile *qhp);
-extern int NutEventPost(HANDLE *qhp);
-extern int NutEventBroadcastAsync(HANDLE *qhp);
-extern int NutEventBroadcast(HANDLE *qhp);
+extern int NutEventPostAsync(volatile HANDLE *qhp);
+extern int NutEventPost(volatile HANDLE *qhp);
+extern int NutEventBroadcastAsync(volatile HANDLE *qhp);
+extern int NutEventBroadcast(volatile HANDLE *qhp);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
+/* */
 
 #endif
