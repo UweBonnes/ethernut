@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,26 +28,43 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
  */
 
-/*
+/*!
+ * \file os/event.c
+ * \brief Event management routines.
+ *
+ * This kernel module provides thread synchronization.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.24  2006/06/28 14:38:34  haraldkipp
+ * Event and timer handling re-design, again. This fixes a bug, which
+ * possibly existed since version 3.9.8 and freezes threads under heavy
+ * load. After several people reported this problem, Michael Jones and
+ * Henrik Maier finally detected the cause and came up with a solution.
+ * However, this fix let interrupt latency times depend on the number
+ * of running threads again and a new solution was implemented, which
+ * not only avoids this problem but further decreases interrupt latencies
+ * by adding an event post counter to the THREADINFO structure. This
+ * counter frees the interrupt routines from dealing with linked lists
+ * and frees the kernel from dealing with linked lists concurrently
+ * modified by interrupts. Furthermore, timeout timers are now released
+ * early. Michael Jones reported, that previous versions suffer from low
+ * memory situations while processing many events within short periods.
+ * The timer list is now double linked to reduce removal time. Internally
+ * timeout condition is now flagged by setting the timer handle to
+ * SIGNALED.
+ * Unfortunately new bugs were introduced with this re-design. Special
+ * thanks to Michael Jones, who located the "exact spot of the crime" and
+ * proofed, that his final fixes let Nut/OS behave quite well under heavy
+ * traffic storms. This new version will probably help also, if you
+ * experienced long term instability.
+ * LGPL copyright removed after all the initial sources had been finally
+ * replaced by BSDL'ed code.
+ * Last not least the documentation had been updated.
+ *
  * Revision 1.23  2005/08/18 15:33:54  christianwelzel
  * Fixed bug in handling of NUTDEBUG.
  *
@@ -132,6 +149,7 @@
  * Revision 1.16  2002/06/26 17:29:44  harald
  * First pre-release with 2.4 stack
  *
+ * \endverbatim
  */
 
 #include <cfg/os.h>
@@ -161,6 +179,9 @@
 /*!
  * \brief Timer callback in case of event timeout.
  *
+ * Applications should not call this function. It is provided as a global
+ * to enable debugging code inspecting the callbacks in the timer list.
+ *
  * \param timer Handle of the elapsed timeout timer.
  * \param arg   Handle of an event queue.
  *
@@ -170,11 +191,16 @@ void NutEventTimeout(HANDLE timer, void *arg)
     NUTTHREADINFO *tqp;
     NUTTHREADINFO *volatile *tqpp = arg;
 
+    /* Get the queue's root atomically. */
+    NutEnterCritical();
+    tqp = *tqpp;
+    NutExitCritical();
+
     /*
      * A signaled queue is an empty queue. So our
      * thread already left this queue.
      */
-    if ((tqp = *tqpp) != SIGNALED) {
+    if (tqp != SIGNALED) {
 
         /*
          * Walk down the linked list and identify
@@ -183,20 +209,29 @@ void NutEventTimeout(HANDLE timer, void *arg)
          */
         while (tqp) {
             if (tqp->td_timer == timer) {
-                /* Found the thread. Remove it from the event queue and
-                   add it to the queue of threads, which are waiting to
-                   become ready at the next context switch. */
-                *tqpp = tqp->td_qnxt;
-                /* protected access to readyList */
+                /* Found the thread. Remove it from the event queue. */
+                   
                 NutEnterCritical();
-                tqp->td_qnxt = readyQueue;
-                readyQueue = tqp;
+                *tqpp = tqp->td_qnxt;
+                if (tqp->td_qpec) {
+                    if (tqp->td_qnxt) {
+                        tqp->td_qnxt->td_qpec = tqp->td_qpec;
+                    }
+                    else {
+                        *tqpp = SIGNALED;
+                    }
+                    tqp->td_qpec = 0;
+                }
                 NutExitCritical();
-                
-                /* Clear the timer entry in the thread's info structure.
+
+                /* Add it to the queue of threads, which are ready to run. */
+                tqp->td_state = TDS_READY;
+                NutThreadAddPriQueue(tqp, (NUTTHREADINFO **) & runQueue);
+
+                /* Signal the timer entry in the thread's info structure.
                    This will tell the waiting thread, that it has been
                    woken up by a timeout. */
-                tqp->td_timer = 0;
+                tqp->td_timer = SIGNALED;
                 break;
             }
             tqpp = &tqp->td_qnxt;
@@ -208,8 +243,8 @@ void NutEventTimeout(HANDLE timer, void *arg)
 /*!
  * \brief Wait for an event in a specified queue.
  *
- * Give up the CPU until another thread posts an event to this queue 
- * or until a time-out occurs, whichever comes first.
+ * Give up the CPU until another thread or an interrupt routine posts an 
+ * event to this queue or until a time-out occurs, whichever comes first.
  *
  * If previously an event had been posted to this queue without any 
  * thread waiting, then the thread will not wait for a new event,
@@ -226,95 +261,57 @@ void NutEventTimeout(HANDLE timer, void *arg)
  */
 int NutEventWait(volatile HANDLE * qhp, u_long ms)
 {
-    u_long ticks;
-    NUTTIMERINFO *tn;
+    NUTTHREADINFO *tdp;
     
-    /*
-     * If a timeout value had been given, create
-     * a oneshot timer.
-     */
-    if (ms) {
-        ticks = NutTimerMillisToTicks(ms);
-        tn = NutTimerCreate(ticks, NutEventTimeout, (void *) qhp, TM_ONESHOT);
-    } else
-        tn = 0;
-
+    /* Get the queue's root atomically. */
     NutEnterCritical();
+    tdp = *qhp;
+    NutExitCritical();
 
     /*
      * Check for posts on a previously empty queue. 
      */
-    if (*qhp == SIGNALED) {
+    if (tdp == SIGNALED) {
+        /* Clear the singaled state. */
+        NutEnterCritical();
+        *qhp = 0;
+        NutExitCritical();
+        
         /*
          * Even if already signaled, switch to any other thread, which 
          * is ready to run and has the same or higher priority.
          */
-        *qhp = 0;
-        NutJumpOutCritical();
-        
-        /* but free previously allocated timer first */
-        if (tn)
-            NutHeapFree(tn);
-
         NutThreadYield();
         return 0;
     }
 
     /*
-     * Remove the current thread from the list
-     * of running threads and add it to the
-     * specified queue.
+     * Remove the current thread from the list of running threads 
+     * and add it to the specified queue.
      */
-
-    // NutThreadRemoveQueue(runningThread, &runQueue); basically would do the following:
-    runQueue = runQueue->td_qnxt;
-    runningThread->td_qnxt = 0;
-    runningThread->td_queue = 0;
-
+    NutThreadRemoveQueue(runningThread, &runQueue);
     NutThreadAddPriQueue(runningThread, (NUTTHREADINFO **) qhp);
 
-    NutExitCritical();
-
-    /* update our thread's state (sleeping + timer) */
+    /* Update our thread's state (sleeping + timer) */
     runningThread->td_state = TDS_SLEEP;
-    runningThread->td_timer = tn;
-    if (tn)
-        NutTimerInsert(tn);
+    if (ms) {
+        runningThread->td_timer = NutTimerStart(ms, NutEventTimeout, (void *) qhp, TM_ONESHOT);
+    }
+    else {
+        runningThread->td_timer = 0;
+    }
 
-#ifdef NUTDEBUG
-    if (__os_trf) {
-        static prog_char fmt1[] = "Rem<%p>";
-        fprintf_P(__os_trs, fmt1, runningThread);
-        NutDumpThreadList(__os_trs);
-    }
-#endif
-    
     /*
-     * Switch to the next thread, which is ready
-     * to run.
+     * Switch to the next thread, which is ready to run.
      */
-#ifdef NUTDEBUG
-    if (__os_trf) {
-        static prog_char fmt2[] = "SWW<%p %p>";
-        fprintf_P(__os_trs, fmt2, runningThread, runQueue);
-    }
-#endif
 #ifdef NUTTRACER
     TRACE_ADD_ITEM(TRACE_TAG_THREAD_WAIT,(int)runningThread);
 #endif
-
     NutThreadResume();
 
-    /*
-     * If our timer handle is still set, we were
-     * woken up by an event. If the handle is
-     * cleared and a timeout value had been
-     * specified, then we know that a timeout
-     * occured.
-     */
-    if (runningThread->td_timer)
+    /* If our timer handle is signaled, we were woken up by a timeout. */
+    if (runningThread->td_timer == SIGNALED) {
         runningThread->td_timer = 0;
-    else if (ms) {
         return -1;
     }
     return 0;
@@ -323,15 +320,17 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
 /*!
  * \brief Wait for a new event in a specified queue.
  *
- * Give up the CPU until another thread posts an event to this
- * queue or until a time-out occurs, whichever comes first.
+ * Give up the CPU until another thread or an interrupt routine posts 
+ * an event to this queue or until a time-out occurs, whichever comes 
+ * first.
  *
- * This call is similar to NutEventWait(), but will ignore the
- * signaled state of the queue. This way, previously posted events to 
- * an empty queue are not considered.
+ * This call is similar to NutEventWait(), but will ignore the SIGNALED 
+ * state of the queue. This way, previously posted events to an empty 
+ * queue are not considered.
  *
  * \param qhp Identifies the queue to wait on.
- * \param ms  Maximum wait time in milliseconds.
+ * \param ms  Maximum wait time in milliseconds. To disable timeout,
+ *            set this parameter to NUT_WAIT_INFINITE.
  *
  * \return 0 if event received, -1 on timeout.
  *
@@ -339,14 +338,12 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
  */
 int NutEventWaitNext(volatile HANDLE * qhp, u_long ms)
 {
-    NutEnterCritical();
-
     /*
      * Check for posts on a previously empty queue. 
      */
+    NutEnterCritical();
     if (*qhp == SIGNALED)
         *qhp = 0;
-
     NutExitCritical();
 
     return NutEventWait(qhp, ms);
@@ -360,102 +357,61 @@ int NutEventWaitNext(volatile HANDLE * qhp, u_long ms)
  * higher than the current thread's priority, the current one 
  * continues running.
  *
- * If no thread is waiting, then the queue will be set to the signaled
+ * If no thread is waiting, then the queue will be set to the SIGNALED
  * state. 
+ *
+ * \note Interrupts must not call this function but use NutEventPostFromIrq()
+ *       to post events to specific queues.
  *
  * \param qhp Identifies the queue an event is posted to.
  *
  * \return The number of threads woken up, either 0 or 1.
  *
  */
-int NutEventPostAsync(HANDLE volatile *qhp)
+int NutEventPostAsync(volatile HANDLE * qhp)
 {
-    /*
-     * so far, the code is identical to NutEventPostIrq
-     * but has to use Critical Sections
-     */ 
-    
     NUTTHREADINFO *td;
     
     NutEnterCritical();
-
-    /* Ignore signaled queues. */
-    if (*qhp != SIGNALED) {
-        
-        /* A thread is waiting. */
-        if ((td = *qhp) != 0) {
-            /* Remove the thread from the wait queue. */
-            *qhp = td->td_qnxt;
-            /* Stop any running timeout timer. */
-            if (td->td_timer) {
-                NutTimerStopAsync(td->td_timer);
-            }
-            /* Add the thread to the ready queue. */
-            td->td_qnxt = readyQueue;
-            readyQueue = td;
-            
-            NutJumpOutCritical();
-
-            return 1;
-        }
-        
-        /* No thread is waiting. Mark the queue signaled. */
-        else {
-            *qhp = SIGNALED;
-        }
-    }
-    
+    td = *qhp;
     NutExitCritical();
 
-    return 0;
-}
-
-
-/*!
-* \brief Asynchronously post an event to a specified queue from IRQ.
- *
- * Wake up the thread with the highest priority waiting on the 
- * specified queue. This function is explicitly provided for IRQ
- * handlers to wakeup waiting user threads
- *
- * \note It is save to call this function from within an interrupt
- *       handler.
- *
- * \param qhp Identifies the queue an event is posted to.
- *
- * \return The number of threads woken up, either 0 or 1.
- *
- */
-int NutEventPostFromIrq(HANDLE volatile *qhp)
-{
-    /*
-     * so far, the code is identical to NutEventPostAsync
-     * but has to no Critical Sections
-     */ 
-
-    NUTTHREADINFO *td;
-
     /* Ignore signaled queues. */
-    if (*qhp != SIGNALED) {
-
+    if (td != SIGNALED) {
+        
         /* A thread is waiting. */
-        if ((td = *qhp) != 0) {
+        if (td) {
             /* Remove the thread from the wait queue. */
+            NutEnterCritical();
             *qhp = td->td_qnxt;
+            if (td->td_qpec) {
+                if (td->td_qnxt) {
+                    td->td_qnxt->td_qpec = td->td_qpec;
+                }
+                else {
+                    *qhp = SIGNALED;
+                }
+                td->td_qpec = 0;
+            }
+            NutExitCritical();
+
             /* Stop any running timeout timer. */
             if (td->td_timer) {
-                NutTimerStopAsync(td->td_timer);
+                NutTimerStop(td->td_timer);
+                td->td_timer = 0;
             }
-            /* Add the thread to the ready queue. */
-            td->td_qnxt = readyQueue;
-            readyQueue = td;
+            /* The thread is ready to run. */
+            td->td_state = TDS_READY;
+            NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
 
             return 1;
         }
-
+        
         /* No thread is waiting. Mark the queue signaled. */
         else {
+            NutEnterCritical();
             *qhp = SIGNALED;
+            NutExitCritical();
         }
     }
     return 0;
@@ -472,12 +428,15 @@ int NutEventPostFromIrq(HANDLE volatile *qhp)
  * If no thread is waiting, the queue will be set to the signaled
  * state. 
  *
+ * \note Interrupts must not call this function but use NutEventPostFromIrq()
+ *       to post events to specific queues.
+ *
  * \param qhp Identifies the queue an event is posted to.
  *
  * \return The number of threads woken up, either 0 or 1.
  *
  */
-int NutEventPost(HANDLE * qhp)
+int NutEventPost(volatile HANDLE * qhp)
 {
     int rc;
 
@@ -504,24 +463,35 @@ int NutEventPost(HANDLE * qhp)
  * call to make sure, that a queue is cleared before initiating some 
  * event triggering action.
  *
- * \note It is save to call this function from within an interrupt
- *       handler. 
- *
  * \param qhp Identifies the queue an event is broadcasted to.
  *
  * \return The number of threads woken up.
  *
  */
-int NutEventBroadcastAsync(HANDLE * qhp)
+int NutEventBroadcastAsync(volatile HANDLE * qhp)
 {
     int rc = 0;
+    NUTTHREADINFO *tdp;
 
-    if (*qhp == SIGNALED)
+    /* Get the queue's root atomically. */
+    NutEnterCritical();
+    tdp = *qhp;
+    NutExitCritical();
+
+    if (tdp == SIGNALED) {
+        NutEnterCritical();
         *qhp = 0;
-    else
-        while (*qhp)
+        NutExitCritical();
+    }
+    else if (tdp) {
+        do {
             rc += NutEventPostAsync(qhp);
-
+            /* Get the queue's updated root atomically. */
+            NutEnterCritical();
+            tdp = *qhp;
+            NutExitCritical();
+        } while (tdp && tdp != SIGNALED);
+    }
     return rc;
 }
 
@@ -543,15 +513,11 @@ int NutEventBroadcastAsync(HANDLE * qhp)
  * \return The number of threads woken up.
  *
  */
-int NutEventBroadcast(HANDLE * qhp)
+int NutEventBroadcast(volatile HANDLE * qhp)
 {
-    int rc = 0;
+    int rc = NutEventBroadcastAsync(qhp);
 
-    if (*qhp == SIGNALED)
-        *qhp = 0;
-    else
-        while (*qhp)
-            rc += NutEventPost(qhp);
+    NutThreadYield();
 
     return rc;
 }
