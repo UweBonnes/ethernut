@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/06/28 17:17:50  haraldkipp
+ * Added initial support for Atmel's AT91SAM7X-EK.
+ *
  * Revision 1.3  2006/02/23 15:34:00  haraldkipp
  * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
  * Many thanks to Michael Fischer for this port.
@@ -78,7 +81,7 @@
 #define DEV_UART1       devUsartAvr1
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF)
+#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK)
 
 #include <dev/usartat91.h>
 #define DEV_UART0       devUsartAt910
@@ -114,6 +117,8 @@
 #include <dev/ax88796.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
+#elif defined(AT91SAM7X_EK)
+#include <dev/at91sam7x_mac.h>
 #endif
 
 #ifndef DEV_ETHER
