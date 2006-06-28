@@ -2,7 +2,7 @@
 #define _SYS_TIMER_H
 
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/06/28 14:36:34  haraldkipp
+ * Event/thread/timer re-design.
+ *
  * Revision 1.9  2005/07/26 16:04:02  haraldkipp
  * Hardware dependent timer code moved to nutlibarch.
  *
@@ -110,6 +113,9 @@ struct _NUTTIMERINFO {
     /*! \brief Link to next timer. 
      */
     NUTTIMERINFO *tn_next;          
+    /*! \brief Link to previous timer. 
+     */
+    NUTTIMERINFO *tn_prev;          
     /*! \brief Number of system ticks. 
      *  Set to zero on one-shot timers.
      */
@@ -125,8 +131,7 @@ struct _NUTTIMERINFO {
     volatile void *tn_arg;          
 };
 
-extern NUTTIMERINFO* volatile nutTimerList;
-extern NUTTIMERINFO* volatile nutTimerPool;
+extern NUTTIMERINFO* nutTimerList;
 
 #define TM_ONESHOT  0x01
 
@@ -153,7 +158,6 @@ extern u_long NutGetMillis(void);
 extern HANDLE NutTimerStart(u_long ms, void (*callback)(HANDLE, void *), void *arg, u_char flags);
 extern HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
 extern void NutTimerStop(HANDLE handle);
-extern void NutTimerStopAsync(HANDLE handle);
 
 __END_DECLS
 /* End of prototypes */
