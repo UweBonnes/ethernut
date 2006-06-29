@@ -56,6 +56,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.14  2006/06/29 03:52:19  hwmaier
+ * Added include statement for cfg/memory.h so the macro
+ * NUTMEM_STACKHEAP is found when compiling for the
+ * AT90CAN128.
+ *
  * Revision 1.13  2006/06/28 14:35:31  haraldkipp
  * Event/thread/timer re-design.
  * Code indention corrected.
@@ -112,6 +117,7 @@
  */
 
 #include <sys/types.h>
+#include <cfg/memory.h>
 
 #define DEADBEEF    0xDEADBEEF
 
