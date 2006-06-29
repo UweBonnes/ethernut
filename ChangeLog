@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.333 2006/06/28 17:05:44 haraldkipp Exp $
+$Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
+
+2006-06-29 Henrik Maier  <henrik@proconx.com>
+
+        * include/sys/thread.h: Added an include statement for cfg/memory.h
+        so the macro NUTMEM_STACKHEAP is found when compiling for the 
+        AT90CAN128.
+
 
 2006-06-28  Harald Kipp  <harald.kipp@egnite.de>
 
