@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.26  2006/06/30 22:06:56  christianwelzel
+# DS1307 RTC Driver added.
+#
 # Revision 1.25  2006/06/18 16:33:59  haraldkipp
 # Watchdog module added.
 #
@@ -167,7 +170,8 @@ include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c \
-       twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c sbimmc.c watchdog.c
+       twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c sbimmc.c watchdog.c \
+	   ds1307rtc.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -185,7 +189,7 @@ install: $(TARG)
 ifeq ($(ARCH), unix)
 	$(RANLIB) $(LIBDIR)/$(TARG)
 endif
-	
+
 clean:
 	-rm -f $(OBJS)
 	-rm -f $(TARG)

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.30  2006/06/30 22:08:23  christianwelzel
+-- DS1307 RTC Driver added.
+--
 -- Revision 1.29  2006/06/28 17:22:34  haraldkipp
 -- Make it compile for AT91SAM7X256.
 --
@@ -245,11 +248,11 @@ nutdev =
         name = "nutdev_null",
         brief = "Null",
         description = "This can be useful if your application might write unwanted "..
-                      "output to stdout. With this deveice you can redirect stdout "..
+                      "output to stdout. With this device you can redirect stdout "..
                       "to the nullDev which discards any output.",
         sources = { "null.c" }
     },
-    
+
     --
     -- Block Device Drivers.
     --
@@ -324,7 +327,7 @@ nutdev =
                 brief = "Configuration Area Size",
                 description = "During write operations a buffer with this size is allocated "..
                               "from heap and may cause memory problems with large sectors. "..
-                              "Thus, this value may be less than the size of the configuration ".. 
+                              "Thus, this value may be less than the size of the configuration "..
                               "sector, in which case the rest of the sector is unused.",
                 provides = { "HW_FLASH_PARAM_SECTOR" },
                 flavor = "booldata",
@@ -341,7 +344,15 @@ nutdev =
                 file = "include/cfg/eeprom.h"
             },
         },
-    },    
+    },
+    {
+        name = "nutdev_ds1307",
+        brief = "DS1307 Driver",
+        description = "Dallas DS1307 RTC driver. Tested on AVR (MMnet02) only.",
+        requires = { "HW_MCU_AVR" },
+        provides = { "DEV_RTC" },
+        sources = { "ds1307rtc.c" },
+    },
     {
         name = "nutdev_pcf8563",
         brief = "PCF8563 Driver",
@@ -476,7 +487,7 @@ nutdev =
         brief = "Bit Banging Multimedia Card Access",
         description = "Bit banging implementation of a low level MMC interface. "..
                       "Tested on AT91 only.",
-        requires = { "HW_GPIO", "HW_MCU_AT91R40008" },                                    
+        requires = { "HW_GPIO", "HW_MCU_AT91R40008" },
         provides = { "DEV_MMCLL" },
         sources = { "sbimmc.c" },
         options =
@@ -542,7 +553,7 @@ nutdev =
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
-            
+
             {
                 macro = "SPI0_PORT",
                 brief = "SPI0 Port (AVR)",
@@ -560,7 +571,7 @@ nutdev =
                 type = "enumerated",
                 choices = avr_bit_choice,
                 file = "include/cfg/arch/avrpio.h"
-            },            
+            },
             {
                 macro = "SPI0_CLK_BIT",
                 brief = "SPI0 Clock (AVR)",
