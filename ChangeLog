@@ -1,9 +1,17 @@
-$Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
+$Id: ChangeLog,v 1.335 2006/06/30 22:08:55 christianwelzel Exp $
+
+2006-06-30  Christian Welzel <christian.welzel@welzel-online.ch>
+
+	* dev/ds1307rtc.c, include/dev/ds1307rtc.h: RTC and RAM routines
+	for the Dallas DS1307 real time clock chip.
+	
+	* conf/dev/dev.nut: DS1307 Driver included.
+
 
 2006-06-29 Henrik Maier  <henrik@proconx.com>
 
         * include/sys/thread.h: Added an include statement for cfg/memory.h
-        so the macro NUTMEM_STACKHEAP is found when compiling for the 
+        so the macro NUTMEM_STACKHEAP is found when compiling for the
         AT90CAN128.
 
 
@@ -15,14 +23,14 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	AT91SAM7X-EK.
 
 	* arch/arm/dev/at91init.c, arch/arm/dev/ax88796.c,
-	arch/arm/dev/dm9000e.c, arch/arm/dev/ih_at91fiq.c, 
+	arch/arm/dev/dm9000e.c, arch/arm/dev/ih_at91fiq.c,
 	arch/arm/dev/ih_at91irq0.c, arch/arm/dev/ih_at91irq1.c,
 	arch/arm/dev/ih_at91irq2.c, arch/arm/dev/ih_at91pio.c,
 	arch/arm/dev/ih_at91swirq.c, arch/arm/dev/ih_at91tc0.c,
 	arch/arm/dev/ih_at91tc1.c, arch/arm/dev/ih_at91tc2.c,
 	arch/arm/dev/ih_at91uart0.c, arch/arm/dev/ih_at91uart1.c,
 	arch/arm/dev/ih_at91wdi.c, arch/arm/dev/ostimer_at91.c,
-	dev/twbbif.c: Include header arch/arm.h instead of 
+	dev/twbbif.c: Include header arch/arm.h instead of
 	arch/arm/at91.h.
 
 	* arch/arm/dev/debug_at91.c, arch/arm/dev/usartat91.c:
@@ -31,8 +39,8 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 
 	* conf/arch/arch.nut, conf/arch/arm.nut, arch/arm/os/nutinit.c,
 	conf/dev/dev.nut, dev/sbimmc.c, include/arch/arm/at91.h,
-	include/arch/arm/irqreg.h, include/arch/arm.h, 
-	include/dev/at91sam7x_mac.h, conf/at91sam7x-ek.conf: Make it compile 
+	include/arch/arm/irqreg.h, include/arch/arm.h,
+	include/dev/at91sam7x_mac.h, conf/at91sam7x-ek.conf: Make it compile
 	for AT91SAM7X256. Just that. Nothing works so far.
 
 	* arch/arm/dev/hd44780_at91.c: Significantly extend delay time
@@ -41,7 +49,7 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 
 	* dev/pcf8563.c: Bugfix. PcfRtcGetClock() returned wrong century.
 
-	* fs/phatdir.c: Bugfix. Directories with long filename entries may 
+	* fs/phatdir.c: Bugfix. Directories with long filename entries may
 	not expand while crossing cluster boundaries.
 
 	* os/event.c, os/thread.c, os/timer.c, include/sys/event.h,
@@ -58,19 +66,19 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	and frees the kernel from dealing with linked lists concurrently
 	modified by interrupts. Furthermore, timeout timers are now released
 	early. Michael Jones reported, that previous versions suffer from low
-	memory situations while processing many events within short periods. 
-	The timer list is now double linked to reduce removal time. Internally 
-	timeout condition is now flagged by setting the timer handle to 
+	memory situations while processing many events within short periods.
+	The timer list is now double linked to reduce removal time. Internally
+	timeout condition is now flagged by setting the timer handle to
 	SIGNALED.
-	Unfortunately new bugs were introduced with this re-design. Special 
-	thanks to Michael Jones, who located the "exact spot of the crime" and 
-	proofed, that his final fixes let Nut/OS behave quite well under heavy 
+	Unfortunately new bugs were introduced with this re-design. Special
+	thanks to Michael Jones, who located the "exact spot of the crime" and
+	proofed, that his final fixes let Nut/OS behave quite well under heavy
 	traffic storms. This new version will probably help also, if you
 	experienced long term instability.
 	Last not least the documentation had been updated.
 
 	* include/sys/event.h: A new macro NutEventPostFromIrq() replaces
-	the routine with the same name. In opposite to the previous routine, 
+	the routine with the same name. In opposite to the previous routine,
 	no result will be returned by this macro, which may break your
 	existing code.
 	The SIGNALED definition had been replaced by a less platform
@@ -79,16 +87,16 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	* include/sys/thread.h: Code indention corrected. Volatile attribute
 	removed from THREADINFO link pointer.
 
-	* os/thread.c, os/timer.c: NUTDEBUG code requires some updates. 
+	* os/thread.c, os/timer.c: NUTDEBUG code requires some updates.
 	Temporarly removed.
 
-	* os/event.c, os/timer.c: LGPL copyright removed after all the initial 
+	* os/event.c, os/timer.c: LGPL copyright removed after all the initial
 	sources had been finally replaced by BSDL'ed code.
 
-	* os/timer.c: Variable nut_ticks_resume is used in 
+	* os/timer.c: Variable nut_ticks_resume is used in
 	NutTimerProcessElapsed() only. Moved there.
 
-	* arch/avr/dev/lanc111.c: Post to the event queue on overflow 
+	* arch/avr/dev/lanc111.c: Post to the event queue on overflow
 	interrupts. Transmit event queue removed, because no one is listening.
 
 	* arch/avr/dev/twif.c: NutEventPostFromIrq() doesn't return a result
@@ -100,7 +108,7 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 
 2006-06-27 Henrik Maier  <henrik@proconx.com>
 
-	* arch/avr/dev/nicrtl.c: Fixed bug related to edge triggered interrupt 
+	* arch/avr/dev/nicrtl.c: Fixed bug related to edge triggered interrupt
 	mode (RTL_IRQ_RISING_EDGE) in ISR.
 
 
@@ -112,24 +120,24 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	* fs/phatutil.c: File modification date changed from GMT to local
 	time for Windows compatibility.
 
-	* fs/phatdir.c, fs/phatfs.c, fs/phatutil.c, fs/phatvol.c: 
+	* fs/phatdir.c, fs/phatfs.c, fs/phatutil.c, fs/phatvol.c:
 	No need to set errno after malloc failed.
 
-	* fs/phatdir.c: New local helper function PhatOpenParentPath() 
+	* fs/phatdir.c: New local helper function PhatOpenParentPath()
 	reduces code size.
 
 	* fs/phatdir.c, fs/phatfs.c, fs/phatutil.c, include/fs/phatdir.h,
 	 include/fs/phatfs.h: Support for long filenames (VFAT) added.
 
-	* fs/phatdir.c, fs/phatfs.c, include/fs/phatdir.h: New function 
+	* fs/phatdir.c, fs/phatfs.c, include/fs/phatdir.h: New function
 	PhatDirReleaseChain() simplifies code.
 
-	* fs/phatdir.c, include/fs/phatdir.h: Static function 
+	* fs/phatdir.c, include/fs/phatdir.h: Static function
 	PhatDirOpenParentPath() replaced by global PhatDirOpenParent().
 	Added const attribute to path parameter of PhatDirOpen().
 
-	* fs/phatdir.c: Now PhatDirEntryUpdate() clears the dirty flag 
-	for the root directory. Calls to PhatFilePosSet() with position 
+	* fs/phatdir.c: Now PhatDirEntryUpdate() clears the dirty flag
+	for the root directory. Calls to PhatFilePosSet() with position
 	zero replaced by calls to PhatFilePosRewind().
 
 	* fs/phatfs.c, fs/phatutil.c: Fixed positioning bug, which caused
@@ -145,19 +153,19 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	* arch/arm/dev/cs8900a.c, dev/nvmem.c, include/arch/arm/at91.h,
 	include/dev/ace.h, include/dev/nvmem.h, include/dev/tlc16c550.h,
 	include/sys/confnet.h, include/sys/confos.h, net/confnet.c,
-	os/confos.c, doc/gen/nutdoc_en.txt: API documentation updated or 
+	os/confos.c, doc/gen/nutdoc_en.txt: API documentation updated or
 	corrected.
 
-	* arch/arm/dev/wdt_at91.c, conf/arch/arm.nut: Replaced platform 
+	* arch/arm/dev/wdt_at91.c, conf/arch/arm.nut: Replaced platform
 	independent functions by AT91 specific.
 
 	* include/dev/watchdog.h: Platform dependent function prototypes
 	added.
 
-	* arch/avr/dev/wdt_avr.c, conf/arch/avr.nut: Watchdog API for 
+	* arch/avr/dev/wdt_avr.c, conf/arch/avr.nut: Watchdog API for
 	AVR added.
 
-	* dev/watchdog.c, conf/dev/dev.nut: Platform independent watchdog 
+	* dev/watchdog.c, conf/dev/dev.nut: Platform independent watchdog
 	API added.
 
 	* include/arch/avr/icc.h: Watchdog routines for ICCAVR added.
@@ -188,7 +196,7 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	* crt/Makefile: Incomplete source list results in a bunch of
 	linker errors when building in source tree.
 
-	* dev/Makefile, fs/Makefile: Latest sources added, so building in 
+	* dev/Makefile, fs/Makefile: Latest sources added, so building in
 	the source tree will create complete libraries.
 
 	* app/Makedefs.arm-gcc: Include UserConf.mk for correct building
@@ -196,7 +204,7 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 
 	* dev/npl.c, dev/twbbif.c: At least compiles for AVR now.
 
-	* include/arch/arm.h, include/arch/avr/icc.h: Dummy macros added 
+	* include/arch/arm.h, include/arch/avr/icc.h: Dummy macros added
 	to support the avr-libc special function register definitions.
 
 	* include/dev/npl.h: Use the AVR way of defining memory mapped I/O.
@@ -220,8 +228,8 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	* arch/arm/dev/hd44780_at91.c: Added delays for more reliable
 	initialization.
 
-	* arch/avr/dev/vs1001k.c, include/dev/vs1001k.h: Bug 
-	corrected, which stopped player on flush. Now flushing plays 
+	* arch/avr/dev/vs1001k.c, include/dev/vs1001k.h: Bug
+	corrected, which stopped player on flush. Now flushing plays
 	the remaining bytes in the buffer.
 	VS1001 ports are now fully configurable.
 	Several changes had been added to adapt the code to newer
@@ -234,14 +242,14 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 
 	* fs/phatfs.c: Added support for file seek.
 
-	* fs/phatfs.c, include/fs/phatfs.h: A second PHAT file system 
+	* fs/phatfs.c, include/fs/phatfs.h: A second PHAT file system
 	instance enables us to concurrently mount a second volume.
 
-	* fs/phatvol.c: Added support for media formats without partition 
+	* fs/phatvol.c: Added support for media formats without partition
 	table like USB sticks, AKA super floppies.
 
 	* app/basemon/basemon.c, app/basemon/smsc.c, app/basemon/uart.c,
-	app/basemon/utils.c, app/basemon/utils.h: Will run on boards with 
+	app/basemon/utils.c, app/basemon/utils.h: Will run on boards with
 	external watchdog hardware.
 
 	* app/playmp3/Makefile: Network libraries not used. Removed from the
@@ -255,16 +263,16 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 2006-04-28  Matthias Ringwald  <mringwal@inf.ethz.ch>
 	* crt/vsscanf.c, crt/vsscanf_P.c: Made _sgetb aware of string delimiter.
 	This fixes bug #1477658
-    
+
 	* crt/getf.c: Take care of first character after whitespace.
 	This fixes bug #1477676
-    
+
 2006-04-07  Harald Kipp  <harald.kipp@egnite.de>
 
 	* configure.ac, os/version.c: Pre-release 4.1.5.4.
 
-	* arch/arm/dev/ih_at91fiq.c: Fast interrupts are now enabled 
-	correctly. Mode set/get ioctl added and priority set/get removed. 
+	* arch/arm/dev/ih_at91fiq.c: Fast interrupts are now enabled
+	correctly. Mode set/get ioctl added and priority set/get removed.
 	Interrupt entry will no longer push R8-R12 on stack.
 
 	* arch/arm/at91.h: Fast interrupt doesn't require to store R8-R12.
@@ -273,26 +281,26 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	to output as claimed in the last change log. Now it is. Added
 	additional delays in TwAck.
 
-	* arch/avr/dev/hd44780.c, include/dev/hd44780.h: Target specific 
+	* arch/avr/dev/hd44780.c, include/dev/hd44780.h: Target specific
 	delay defaults moved from global header to AVR specific file.
 
-	* include/cfg/lcd.h: Added for platform independent LCD 
+	* include/cfg/lcd.h: Added for platform independent LCD
 	configurations.
 
-	* arch/arm/dev/hd44780_at91.c, conf/arch/arm.nut: ARM driver for 
+	* arch/arm/dev/hd44780_at91.c, conf/arch/arm.nut: ARM driver for
 	HD44780 LCD controller added.
 
 	* conf/dev/dev.nut: Removed requirement for non-volatile hardware
 	solves link problem if no such hardware is available.
 
-	* dev/at49bv.c, conf/dev/dev.nut, dev/nvmem.c, include/dev/at49bv.h: 
-	AT49BV flash memory support added. A single sector may be used to 
+	* dev/at49bv.c, conf/dev/dev.nut, dev/nvmem.c, include/dev/at49bv.h:
+	AT49BV flash memory support added. A single sector may be used to
 	store system configurations in case there is no EEPROM available.
 
 	* include/cfg/arch/armpio.h, include/cfg/arch/gpio.h:
 	Added port configuration header file for ARM.
 
-	* conf/dev/dev.nut, dev/pcf8563.c, include/dev/pcf8563.h: 
+	* conf/dev/dev.nut, dev/pcf8563.c, include/dev/pcf8563.h:
 	PCF8563 RTC driver added.
 
 	* conf/dev/dev.nut: Added description of SD Card Pins. Added
@@ -303,7 +311,7 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	* arch/arm/dev/ih_at91irq0.c: Fixed wrong setting of high level
 	sense.
 
-	* arch/arm/dev/ih_at91irq1.c, arch/arm/dev/ih_at91irq1.c: 
+	* arch/arm/dev/ih_at91irq1.c, arch/arm/dev/ih_at91irq1.c:
 	Added missing IRQ sense settings.
 
 	* dev/sbimmc.c: Port configuration is now honored.
@@ -319,12 +327,12 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 
 	* fs/phatvol.c: Several memory holes fixed.
 
-	* dev/twbbif.c: Clock and data forced to high before switching to 
+	* dev/twbbif.c: Clock and data forced to high before switching to
 	input gives better waveforms. Additional delay added to set
 	clock to 50% duty cycle. The PCF8563 seems to fail, if the
 	clock's high time is much longer than the low time.
 
-	* dev/genchar.c, include/dev/genchar.h: Generic character driver 
+	* dev/genchar.c, include/dev/genchar.h: Generic character driver
 	sample added.
 
 
@@ -337,7 +345,7 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 
 2006-03-21  Oliver Schulz  <olischulz@web.de>
 
-	* Enhancement made to TCP state machine. Now TCP options  are read from peer 
+	* Enhancement made to TCP state machine. Now TCP options  are read from peer
 	and at least the maximum segment size is stored.
 
 
@@ -350,14 +358,14 @@ $Id: ChangeLog,v 1.334 2006/06/29 03:51:07 hwmaier Exp $
 	include/sys/confnet.h, include/sys/confos.h, include/sys/device.h,
 	include/sys/thread.h, net/inet.c, net/netdebug.c, os/thread.c,
 	pro/asp.c, pro/dencode.c, pro/dencode.h, pro/ftpd.c, pro/httpd.c,
-	pro/resolv.c, pro/ssi.c, pro/wins.c: Mainly all human readable 
-	strings like names of threads, devices or files had been changed 
-	from u_char to char. They are now compatible with standard C 
+	pro/resolv.c, pro/ssi.c, pro/wins.c: Mainly all human readable
+	strings like names of threads, devices or files had been changed
+	from u_char to char. They are now compatible with standard C
 	string functions and stop GCC 4 from nagging about signedness.
 
 	* arch/arm/dev/debug_at91.c: Added ioctl to set baudrate.
 
-	* arch/arm/dev/dm9000e.c: Adding a short delay before reading 
+	* arch/arm/dev/dm9000e.c: Adding a short delay before reading
 	the status word makes it work with compiler optimization.
 	On receiver overflow interrupts the chip is declared insane.
 	The output routine will no more enter NutEventWait() on
