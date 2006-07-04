@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.335 2006/06/30 22:08:55 christianwelzel Exp $
+$Id: ChangeLog,v 1.336 2006/07/04 03:39:56 hwmaier Exp $
+
+2006-07-04 Henrik Maier  <henrik@proconx.com>
+
+        * arch/avr/os/nutinit.c: Changed binary constants to hex 
+        constants in XNUT board initialization code.
+
 
 2006-06-30  Christian Welzel <christian.welzel@welzel-online.ch>
 
