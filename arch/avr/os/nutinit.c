@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/07/04 03:38:56  hwmaier
+ * Changed binary constants to hex constants in XNUT board
+ * initialization code.
+ *
  * Revision 1.6  2006/05/15 11:46:49  haraldkipp
  * Added heartbeat port bit, which is regularly toggled by the idle thread.
  * Helps to develop on boards with external watchdog hardware that can't be
@@ -553,16 +557,16 @@ void NutCustomInit(void)
 */
 #elif defined(XNUT_100) || defined(XNUT_105)
 {
-    PORTB = 0b11110101;
-    DDRB  = 0b00111111;
-    PORTD = 0b01101100;
-    DDRD  = 0b10110000;
-    PORTE = 0b11011111;
-    DDRE  = 0b00000010;
-    PORTF = 0b11110000;
-    DDRF  = 0b00001111;
-    PORTG = 0b00011111;
-    DDRG  = 0b00000111;
+    PORTB = 0xF5; /* 0b11110101 */
+    DDRB  = 0x3F; /* 0b00111111 */
+    PORTD = 0x6C; /* 0b01101100 */
+    DDRD  = 0xB0; /* 0b10110000 */
+    PORTE = 0xDF; /* 0b11011111 */
+    DDRE  = 0x02; /* 0b00000010 */
+    PORTF = 0xF0; /* 0b11110000 */
+    DDRF  = 0x0F; /* 0b00001111 */
+    PORTG = 0x1F; /* 0b00011111 */
+    DDRG  = 0x07; /* 0b00000111 */
 
     ACSR |= _BV(ACD); /* Switch off analog comparator to reduce power consumption */
 
