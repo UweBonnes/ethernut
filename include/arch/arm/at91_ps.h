@@ -1,8 +1,8 @@
-#ifndef _DEV_NVMEM_H_
-#define _DEV_NVMEM_H_
+#ifndef _ARCH_ARM_AT91_PS_H_
+#define _ARCH_ARM_AT91_PS_H_
 
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,42 +34,47 @@
  */
 
 /*!
- * \file dev/nvmem.h
- * \brief Header file for non-volatile memory access.
+ * \file arch/arm/at91_ps.h
+ * \brief AT91 peripherals.
  *
  * \verbatim
  *
  * $Log$
- * Revision 1.3  2006/07/05 07:45:29  haraldkipp
+ * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
- *
- * Revision 1.2  2006/05/25 09:09:57  haraldkipp
- * API documentation updated and corrected.
- *
- * Revision 1.1  2006/01/23 17:26:19  haraldkipp
- * Platform independant routines added, which provide generic access to
- * non-volatile memory.
  *
  *
  * \endverbatim
  */
 
-#include <cfg/eeprom.h>
-#include <sys/types.h>
+/*!
+ * \addtogroup xgNutArchArmAt91Ps
+ */
+/*@{*/
 
-__BEGIN_DECLS
-/* Function prototypes */
+/*!
+ * \name PS Control Register
+ */
+/*@{*/
 
-extern int NutNvMemLoad(u_int addr, void *buff, size_t siz);
-extern int NutNvMemSave(u_int addr, CONST void *buff, size_t len);
+/*! \brief Register address.
+ *
+ * This register allows to stop the CPU clock. The clock is automatically
+ * enabled after reset and by any interrupt.
+ */
+#define PS_CR       (PS_BASE + 0x00)
+/*@}*/
 
-extern int OnChipNvMemLoad(u_int addr, void *buff, size_t siz);
-extern int OnChipNvMemSave(u_int addr, CONST void *buff, size_t len);
+/*!
+ * \name Peripheral Clock Control Registers
+ */
+/*@{*/
+#define PS_PCER     (PS_BASE + 0x04)    /*!< \brief Peripheral clock enable register address. */
+#define PS_PCDR     (PS_BASE + 0x08)    /*!< \brief Peripheral clock disable register address. */
+#define PS_PCSR     (PS_BASE + 0x0C)    /*!< \brief Peripheral clock status register address. */
+/*@}*/
 
-extern int NutNvMemLock(void);
-extern int NutNvMemUnlock(void);
+/*@} xgNutArchArmAt91Ps */
 
-__END_DECLS
-/* End of prototypes */
+#endif                          /* _ARCH_ARM_AT91_PS_H_ */
 
-#endif

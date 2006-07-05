@@ -1,5 +1,5 @@
-#ifndef _ARCH_ARM_AT91_H_
-#define _ARCH_ARM_AT91_H_
+#ifndef _ARCH_ARM_AT91X40_H_
+#define _ARCH_ARM_AT91X40_H_
 
 /*
  * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
@@ -40,7 +40,7 @@
  * \verbatim
  *
  * $Log$
- * Revision 1.8  2006/07/05 07:45:25  haraldkipp
+ * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
  * Revision 1.7  2006/06/28 17:22:34  haraldkipp
@@ -70,87 +70,58 @@
  * \endverbatim
  */
 
+
+#define EBI_BASE                0xFFE00000      /*!< \brief EBI base address. */
+#define SF_BASE                 0xFFF00000      /*!< \brief Special function register base address. */
 #if defined (MCU_AT91R40008)
-#include <arch/arm/at91x40.h>
+#define USART1_BASE             0xFFFCC000      /*!< \brief USART 1 base address. */
+#define USART0_BASE             0xFFFD0000      /*!< \brief USART 0 base address. */
 #elif defined (MCU_AT91SAM7X256)
-#include <arch/arm/at91sam7x.h>
+#define USART1_BASE             0xFFFC4000      /*!< \brief USART 1 base address. */
+#define USART0_BASE             0xFFFC0000      /*!< \brief USART 0 base address. */
 #endif
+#if defined (MCU_AT91R40008)
+#define TC_BASE                 0xFFFE0000      /*!< \brief TC base address. */
+#elif defined (MCU_AT91SAM7X256)
+#define TC_BASE                 0xFFFA0000      /*!< \brief TC base address. */
+#endif
+#if defined (MCU_AT91R40008)
+#define PIO_BASE    0xFFFF0000  /*!< \brief PIO base address. */
+#elif defined (MCU_AT91SAM7X256)
+#endif
+#define PS_BASE     0xFFFF4000  /*!< \brief PS base address. */
+#define WD_BASE     0xFFFF8000  /*!< \brief Watch Dog register base address. */
+#define AIC_BASE    0xFFFFF000  /*!< AIC base address. */
+
+#include <arch/arm/at91_ebi.h>
+#include <arch/arm/at91_sf.h>
+#include <arch/arm/at91_us.h>
+#include <arch/arm/at91_tc.h>
+#include <arch/arm/at91_pio.h>
+#include <arch/arm/at91_ps.h>
+#include <arch/arm/at91_wd.h>
+#include <arch/arm/at91_aic.h>
 
 /*! \addtogroup xgNutArchArmAt91 */
 /*@{*/
 
-#ifdef __GNUC__
-
-/*!
- * \brief Interrupt entry.
- */
-#define IRQ_ENTRY() \
-    asm volatile("sub   lr, lr,#4"          "\n\t"  /* Adjust LR */ \
-                 "stmfd sp!,{r0-r12,lr}"    "\n\t"  /* Save registers on IRQ stack. */ \
-                 "mrs   r1, spsr"           "\n\t"  /* Save SPSR */ \
-                 "stmfd sp!,{r1}"           "\n\t")     /* */
-
-/*!
- * \brief Interrupt exit.
- */
-#define IRQ_EXIT() \
-    asm volatile("ldmfd sp!, {r1}"          "\n\t"  /* Restore SPSR */ \
-                 "msr   spsr_c, r1"         "\n\t"  /* */ \
-                 "ldr   r0, =0xFFFFF000"    "\n\t"  /* End of interrupt. */ \
-                 "str   r0, [r0, #0x130]"   "\n\t"  /* */ \
-                 "ldmfd sp!, {r0-r12, pc}^" "\n\t")     /* Restore registers and return. */
-
-/*!
- * \brief Fast interrupt entry.
- */
-#define FIQ_ENTRY() \
-    asm volatile("sub   lr, lr,#4"          "\n\t"  /* Adjust LR */ \
-                 "stmfd sp!,{r0-r7,lr}"    "\n\t"  /* Save registers on IRQ stack. */ \
-                 "mrs   r1, spsr"           "\n\t"  /* Save SPSR */ \
-                 "stmfd sp!,{r1}"           "\n\t")     /* */
-
-/*!
- * \brief Fast interrupt exit.
- */
-#define FIQ_EXIT() \
-    asm volatile("ldmfd sp!, {r1}"          "\n\t"  /* Restore SPSR */ \
-                 "msr   spsr_c, r1"         "\n\t"  /* */ \
-                 "ldr   r0, =0xFFFFF000"    "\n\t"  /* End of interrupt. */ \
-                 "str   r0, [r0, #0x130]"   "\n\t"  /* */ \
-                 "ldmfd sp!, {r0-r7, pc}^" "\n\t")     /* Restore registers and return. */
-
-#else /* __IMAGECRAFT__ */
-
-#define IRQ_ENTRY() \
-    asm("sub   lr, lr,#4\n" \
-        "stmfd sp!,{r0-r12,lr}\n" \
-        "mrs   r1, spsr\n" \
-        "stmfd sp!,{r1}\n")
-
-#define IRQ_EXIT() \
-    asm("ldmfd sp!, {r1}\n" \
-        "msr   spsr_c, r1\n" \
-        ";ldr   r0, =0xFFFFF000\n" /* ICCARM: FIXME! */ \
-        "str   r0, [r0, #0x130]\n" \
-        "ldmfd sp!, {r0-r12, pc}^")
-
-#define FIQ_ENTRY() \
-    asm("sub   lr, lr,#4\n" \
-        "stmfd sp!,{r0-r7,lr}\n" \
-        "mrs   r1, spsr\n" \
-        "stmfd sp!,{r1}\n")
-
-#define FIQ_EXIT() \
-    asm("ldmfd sp!, {r1}\n" \
-        "msr   spsr_c, r1\n" \
-        ";ldr   r0, =0xFFFFF000\n" /* ICCARM: FIXME! */ \
-        "str   r0, [r0, #0x130]\n" \
-        "ldmfd sp!, {r0-r7, pc}^")
-
-#endif
-
+/*! \name Peripheral Identifiers and Interrupts */
+/*@{*/
+#define FIQ_ID      0           /*!< \brief Fast interrupt ID. */
+#define SWIRQ_ID    1           /*!< \brief Software interrupt ID. */
+#define US0_ID      2           /*!< \brief USART 0 ID. */
+#define US1_ID      3           /*!< \brief USART 1 ID. */
+#define TC0_ID      4           /*!< \brief Timer 0 ID. */
+#define TC1_ID      5           /*!< \brief Timer 1 ID. */
+#define TC2_ID      6           /*!< \brief Timer 2 ID. */
+#define WDI_ID      7           /*!< \brief Watchdog interrupt ID. */
+#define PIO_ID      8           /*!< \brief Parallel I/O controller ID. */
+#define IRQ0_ID     16          /*!< \brief External interrupt 0 ID. */
+#define IRQ1_ID     17          /*!< \brief External interrupt 1 ID. */
+#define IRQ2_ID     18          /*!< \brief External interrupt 2 ID. */
+/*@}*/
 /*@} xgNutArchArmAt91 */
 
 extern void McuInit(void);
 
-#endif                          /* _ARCH_ARM_AT91_H_ */
+#endif                          /* _ARCH_ARM_AT91X40_H_ */

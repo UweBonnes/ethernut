@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2006/07/05 07:45:25  haraldkipp
+ * Split on-chip interface definitions.
+ *
  * Revision 1.10  2006/06/28 17:22:34  haraldkipp
  * Make it compile for AT91SAM7X256.
  *
@@ -115,6 +118,7 @@
 #define PGM_P      prog_char *
 
 #define SIGNAL(x)  __attribute__((interrupt_handler)) void x(void)
+#define RAMFUNC __attribute__ ((long_call, section (".ramfunc")))
 
 #define main       NutAppMain
 

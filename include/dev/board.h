@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/07/05 07:45:29  haraldkipp
+ * Split on-chip interface definitions.
+ *
  * Revision 1.4  2006/06/28 17:17:50  haraldkipp
  * Added initial support for Atmel's AT91SAM7X-EK.
  *
@@ -62,6 +65,11 @@
 #if defined(OLIMEX_LPCE2294)
 #define DEV_DEBUG       devDebug1
 #define DEV_DEBUG_NAME  "uart1"
+#endif
+
+#if defined(MCU_AT91SAM7X256)
+#define DEV_DEBUG       devDebug2
+#define DEV_DEBUG_NAME  "dbgu"
 #endif
 
 #ifndef DEV_DEBUG
@@ -118,7 +126,7 @@
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK)
-#include <dev/at91sam7x_mac.h>
+#include <dev/at91sam7x_emac.h>
 #endif
 
 #ifndef DEV_ETHER

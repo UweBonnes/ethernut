@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/07/05 07:45:29  haraldkipp
+ * Split on-chip interface definitions.
+ *
  * Revision 1.9  2006/02/23 15:34:00  haraldkipp
  * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
  * Many thanks to Michael Fischer for this port.
@@ -98,6 +101,12 @@ extern NUTDEVICE devDebug2;
 #ifdef MCU_AT91R40008
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
+#elif defined(MCU_AT91SAM7X256)
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
+extern NUTDEVICE devDebug2;
+/* devDebug2 maps to DBGU. */
+#define devDbgu     devDebug2
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;
 #elif defined(MCU_LPC2XXX)
