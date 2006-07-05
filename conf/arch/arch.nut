@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.20  2006/07/05 08:01:56  haraldkipp
+-- SAM7 EMAC attribute added.
+--
 -- Revision 1.19  2006/06/28 17:22:34  haraldkipp
 -- Make it compile for AT91SAM7X256.
 --
@@ -203,8 +206,10 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_ARM",
                     "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7X",
                     "HW_TIMER_AT91",
                     "HW_UART_AT91",
+                    "HW_EMAC_SAM7X",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=arm7tdmi" }
