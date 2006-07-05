@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/07/05 07:57:52  haraldkipp
+ * Daidai's support for AT91SAM7X added. Possibly taken from Atmel.
+ * May require new coding from ground up in order to not conflict with
+ * original copyright.
+ * Nevertheless, many thanks to Daidai for providing his adaption.
+ *
  * Revision 1.7  2006/06/28 17:22:34  haraldkipp
  * Make it compile for AT91SAM7X256.
  *
@@ -134,7 +140,41 @@ static void InitHW (void)
   BCFG2    = 0x03501;
   PINSEL2 |= 0x00804000;
 } /* InitHW */
-#endif
+
+#elif defined(MCU_AT91SAM7X256)
+
+/*!
+ * \fn    Sam7xLowLevelInit
+ * \brief This function performs very low level HW initialization.
+ *
+ * This function may use the stack, depending the compiler optimization.
+ *
+ * \todo This is GCC only.
+ */
+void Sam7xLowLevelInit(void) __attribute__ ((naked)) __attribute__ ((section (".init1")));
+
+void Sam7xLowLevelInit(void)
+{
+    /* Enable external reset key. */
+    outr(RSTC_MR, RSTC_KEY | RSTC_URSTEN);
+
+    /* Reset AIC(useful for debugging w/o hw reset operation). */
+    outr(AIC_EOICR, 1);
+    outr(AIC_IDCR, 0xFFFFFFFF);
+    
+    /* Set Flash Waite state. */
+	outr(MC_FMR, ((((NUT_CPU_FREQ + NUT_CPU_FREQ/2) / 1000000UL) & 0xFF) << 16) | MC_FWS_0FWS);
+
+    /* Watchdog disable */
+    outr(WDT_WDMR, WDT_WDDIS);
+
+	/* Set main Oscillator. */
+    outr(CKGR_MOR, ((CKGR_OSCOUNT & (0x06 <<8)) | CKGR_MOSCEN ));
+    while((inr(PMC_SR) & PMC_MOSCS) == 0);
+ 	outr(PMC_MCKR, PMC_CSS_MAIN_CLK | PMC_PRES_CLK);
+    while((inr(PMC_SR) & PMC_MCKRDY) == 0);
+}
+#endif /* MCU_AT91SAM7X256 */
 
 /*!
  * \brief Idle thread. 
@@ -161,6 +201,14 @@ THREAD(NutIdle, arg)
      */
     NutThreadSetPriority(254);
     for (;;) {
+#ifdef MCU_AT91SAM7X256
+        /*
+         * We have only one chance to disable the WDT by writing WDT_MR.  This
+         * may cause trouble when debug in RAM.  If code burned in flash enabled
+         * WDT, we have no idea to disable but clear it.
+         */
+        outr(WDT_WDCR, 0xA5000000 | WDT_WDRSTT);
+#endif
         NutThreadYield();
         NutThreadDestroy();
     }
@@ -177,7 +225,7 @@ void NutInit(void)
 {
 #if defined(OLIMEX_LPCE2294)
     InitHW();
-#elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X256)
+#elif defined(MCU_AT91R40008)
     McuInit();
 #endif
 
