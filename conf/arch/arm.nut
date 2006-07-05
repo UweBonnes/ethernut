@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.9  2006/07/05 08:02:17  haraldkipp
+-- SAM7X interrupt and EMAC support added.
+--
 -- Revision 1.8  2006/06/28 17:22:34  haraldkipp
 -- Make it compile for AT91SAM7X256.
 --
@@ -124,9 +127,9 @@ nutarch_arm =
         sources = { "arm/dev/ihndlr_gba.c" },
     },
     {
-        name = "nutarch_arm_irqat91",
+        name = "nutarch_arm_irqat91x40",
         brief = "Interrupt Handler (AT91)",
-        requires = { "HW_MCU_AT91" },
+        requires = { "HW_MCU_AT91R40008" },
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
@@ -141,6 +144,28 @@ nutarch_arm =
             "arm/dev/ih_at91tc2.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
+            "arm/dev/ih_at91wdi.c"
+        },
+    },
+    {
+        name = "nutarch_arm_irqat91sam7x",
+        brief = "Interrupt Handler (AT91)",
+        requires = { "HW_MCU_AT91SAM7X" },
+        provides = { "DEV_IRQ_AT91" },
+        sources =
+        {
+            "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91irq0.c",
+            "arm/dev/ih_at91irq1.c",
+            "arm/dev/ih_at91irq2.c",
+            "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91swirq.c",
+            "arm/dev/ih_at91tc0.c",
+            "arm/dev/ih_at91tc1.c",
+            "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91uart0.c",
+            "arm/dev/ih_at91uart1.c",
+            "arm/dev/ih_at91emac.c",
             "arm/dev/ih_at91wdi.c"
         },
     },
@@ -283,6 +308,14 @@ nutarch_arm =
         requires = { "HW_MCU_AT91R40008", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/dm9000e.c" },
+    },     
+    {
+        name = "nutarch_arm_at91sam7x_emac",
+        brief = "AT91SAM7X EMAC Driver",
+        description = "LAN driver for AT91SAM7X.",
+        requires = { "HW_EMAC_SAM7X", "NUT_EVENT", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "arm/dev/at91sam7x_emac.c" },
     },     
     
     --
