@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2006/07/05 08:03:12  haraldkipp
+ * Bugfix. Trailing slash in mount path not properly handled.
+ * Thanks to Michael Fischer.
+ *
  * Revision 1.7  2006/06/18 16:34:46  haraldkipp
  * Mutex deadlock fixed.
  *
@@ -650,7 +654,7 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
             name++;
         } while (*name && *name != '/');
         if (*name == '/') {
-            *name++;
+            name++;
         }
     }
 
