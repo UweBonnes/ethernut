@@ -37,6 +37,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2006/07/05 16:00:30  haraldkipp
+ * Two bugs fixed. Renaming a file's path (including directory change) failed.
+ * Thanks to Dirk Boecker, who reported this.
+ * The second bug was a memory hole, which had been discovered by
+ * Ralf Spettel.
+ *
  * Revision 1.7  2006/06/28 17:24:29  haraldkipp
  * Bugfix. Directories with long filename entries may not expand when
  * crossing cluster boundaries.
@@ -276,7 +282,8 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
         return -1;
     }
     if (rc == 0) {
-        char vname[12];
+        char vname[16];
+
         MakeVisibleName(entry->dent_name, vname);
         if (strcmp(fname, vname)) {
             rc = 1;
@@ -390,13 +397,15 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
             }
             if ((*dev->dev_write) (ndp, xdent, sizeof(PHATXDIRENT)) < 0) {
                 /* Write error. */
-                return -1;
+                rc = -1;
+                break;
             }
         }
         if ((*dev->dev_write) (ndp, entry, sizeof(PHATDIRENT)) < 0) {
             /* Write error. */
             rc = -1;
         }
+        free(xdent);
     }
     return rc;
 }
