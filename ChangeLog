@@ -1,4 +1,76 @@
-$Id: ChangeLog,v 1.336 2006/07/04 03:39:56 hwmaier Exp $
+$Id: ChangeLog,v 1.337 2006/07/05 07:36:36 haraldkipp Exp $
+
+2006-07-04  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Release candidate 4.1.9.2.
+
+	* arch/arm/dev/at91sam7x_emac.c, include/dev/at91sam7x_emac.h: 
+	New Ethernet driver for the AT91SAM7X EMAC and the Davicom DM9161A. 
+	This driver is not yet finished. Ethernet link auto-negotiation works 
+	and receive interrupts are generated when sending packets to the 
+	board. But transmitting packets fails, nothing is sent out.
+
+	* ih_at91emac.c: Ethernet interrupt handler for the AT91SAM7X.
+
+	* arch/arm/os/nutinit.c: Daidai's support for AT91SAM7X added.
+	Possibly taken from Atmel. May require new coding from ground
+	up in order to not conflict with original source. Nevertheless,
+	many thanks to Daidai for providing his adaption.
+
+	* arch/arm/init/crtat91sam7x256_rom.S, 
+	arch/arm/ldscripts/at91sam7x256_rom.ld: AT91SAM7X256 startup code 
+	and linker script, contributed by Daidai.
+
+	* arch/arm/dev/debug_at91.c, arch/arm/dev/usart0at91.c,
+	arch/arm/dev/usart1at91.c, arch/arm/dev/usartat91.c: 
+	Daidai's support for AT91SAM7X added.
+
+	* arch/arm/dev/ih_at91irq2.c, arch/arm/dev/ih_at91pio.c,
+	arch/arm/dev/ih_at91swirq.c, arch/arm/dev/ih_at91wdi.c:
+	Interrupt handler will be included only, if the related interrupt
+	ID is defined in the platform specific header file.
+
+	* arch/arm/dev/ostimer_at91.c: Daidai's support for AT91SAM7X 
+	added.
+
+	* conf/arch/arch.nut: SAM7 EMAC attribute added.
+
+	* conf/arch/arm.nut: SAM7X interrupt and EMAC support added.
+
+	* conf/at91sam7x-ek.conf: Set fixed main clock. Changed
+	ARM_LDSCRIPT to at91sam7x256_rom.
+
+	* dev/mmcard.c: Bugfix. Trailing slash in mount path not
+	properly handled. Thanks to Michael Fischer.
+
+	* dev/nvmem.c, include/dev/at91_efc.h: 
+	Added Daidai's version of using the AT91SAM7X
+	on-chip flash for storing configuration data.
+
+	* include/arch/arm/at91.h, include/arch/arm/at91_aic.h,
+	include/arch/arm/at91_dbgu.h, include/arch/arm/at91_ebi.h,
+	include/arch/arm/at91_emac.h, include/arch/arm/at91_mc.h,
+	include/arch/arm/at91_pio.h, include/arch/arm/at91_pmc.h,
+	include/arch/arm/at91_ps.h, include/arch/arm/at91_rstc.h,
+	include/arch/arm/at91_sf.h, include/arch/arm/at91_tc.h,
+	include/arch/arm/at91_us.h, include/arch/arm/at91_wd.h,
+	include/arch/arm/at91_wdt.h, include/arch/arm/at91sam7x.h,
+	include/arch/arm/at91x40.h
+	Split on-chip interface definitions.
+
+	* include/arch/arm/irqreg.h: Added more SAM7X interrupts.
+	Thanks to Daidai.
+
+	* include/arch/arm.h: RAMFUNC macro added for specifying
+	routines running in RAM. Thanks to Daidai.
+
+	* include/dev/board.h: DBGU interface added. Thanks to Daidai.
+
+	* include/dev/debug.h: Daidai's SAM7X debug devices added.
+
+	* include/dev/nvmem.h: Added Daidai's routines for un-/locking 
+	flash memory.
+
 
 2006-07-04 Henrik Maier  <henrik@proconx.com>
 
