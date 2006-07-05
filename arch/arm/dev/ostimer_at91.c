@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/07/05 07:59:41  haraldkipp
+ * Daidai's support for AT91SAM7X added.
+ *
  * Revision 1.6  2006/06/28 17:10:35  haraldkipp
  * Include more general header file for ARM.
  *
@@ -139,6 +142,11 @@ void NutDelay(u_char ms)
 void NutRegisterTimer(void (*handler) (void *))
 {
     int dummy;
+
+#ifdef MCU_AT91SAM7X256
+    /* Enable TC0 clock. */
+    outr(PMC_PCER, _BV(TC0_ID));
+#endif
 
     /* Disable the Clock Counter */
     outr(TC0_CCR, TC_CLKDIS);

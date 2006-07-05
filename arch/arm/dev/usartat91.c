@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/07/05 07:55:23  haraldkipp
+ * Daidai's support for AT91SAM7X added.
+ *
  * Revision 1.3  2006/06/28 17:18:40  haraldkipp
  * Temporarly exclude AT91R40008 specific register settings from building
  * for AT91SAM7X.
@@ -1099,14 +1102,18 @@ static int At91UsartInit(void)
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, US_GPIO_PINS);
 #elif defined (MCU_AT91SAM7X256)
+    outr(PMC_PCER, _BV(US_ID));
+    outr(PIOA_PDR, US_GPIO_PINS);
 #endif
     /* Reset UART. */
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(USARTn_BASE + US_IDR_OFF, 0xFFFFFFFF);
+#if defined (MCU_AT91R40008)
     /* Clear UART counter registers. */
     outr(USARTn_BASE + US_RCR_OFF, 0);
     outr(USARTn_BASE + US_TCR_OFF, 0);
+#endif
     /* Set UART baud rate generator register. */
     outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
@@ -1138,6 +1145,8 @@ static int At91UsartDeinit(void)
     /* Enable GPIO on UART tx/rx pins. */
     outr(PIO_PER, US_GPIO_PINS);
 #elif defined (MCU_AT91SAM7X256)
+    outr(PMC_PCDR, _BV(US_ID));
+    outr(PIOA_PER, US_GPIO_PINS);
 #endif
 
     /*

@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/07/05 07:55:23  haraldkipp
+ * Daidai's support for AT91SAM7X added.
+ *
  * Revision 1.2  2006/01/05 16:47:08  haraldkipp
  * Baudrate calculation is now based on NutGetCpuClock().
  *
@@ -157,7 +160,11 @@ NUTDEVICE devUsartAt911 = {
 
 #define USARTn_BASE     USART1_BASE
 #define US_ID           US1_ID
+#ifdef MCU_AT91SAM7X256
+#define US_GPIO_PINS    0x00000060
+#else
 #define US_GPIO_PINS    0x00600000
+#endif
 #define SIG_UART        sig_UART1
 #define dcb_usart       dcb_usart1
 
