@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/07/05 07:56:34  haraldkipp
+ * Interrupt handler will be included only, if the related interrupt
+ * ID is defined in the platform specific header file.
+ *
  * Revision 1.3  2006/06/28 17:10:15  haraldkipp
  * Include more general header file for ARM.
  *
@@ -46,6 +50,8 @@
 
 #include <arch/arm.h>
 #include <dev/irqreg.h>
+
+#if defined (IRQ2_ID)
 
 #ifndef NUT_IRQPRI_IRQ2
 #define NUT_IRQPRI_IRQ2  4
@@ -179,3 +185,4 @@ static int Interrupt2Ctl(int cmd, void *param)
     return rc;
 }
 
+#endif /* IRQ2_ID */

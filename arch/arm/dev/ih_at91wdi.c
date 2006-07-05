@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/07/05 07:56:34  haraldkipp
+ * Interrupt handler will be included only, if the related interrupt
+ * ID is defined in the platform specific header file.
+ *
  * Revision 1.2  2006/06/28 17:10:35  haraldkipp
  * Include more general header file for ARM.
  *
@@ -43,6 +47,8 @@
 
 #include <arch/arm.h>
 #include <dev/irqreg.h>
+
+#if defined(WDI_ID)
 
 #ifndef NUT_IRQPRI_WDI
 #define NUT_IRQPRI_WDI  4
@@ -147,3 +153,5 @@ static int WatchdogIrqCtl(int cmd, void *param)
     }
     return rc;
 }
+
+#endif /* WDI_ID */
