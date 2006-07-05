@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2006/07/05 16:02:23  haraldkipp
+ * Typically Nut/OS doesn't check parameters, but this one is missed often,
+ * closing a file which points to NUTFILE_EOF.
+ *
  * Revision 1.6  2006/06/18 16:38:28  haraldkipp
  * No need to set errno after malloc failed.
  * Support for long filenames (VFAT) added.
@@ -291,7 +295,7 @@ static int PhatFileClose(NUTFILE * nfp)
 {
     int rc;
 
-    if (nfp == NULL) {
+    if (nfp == NULL || nfp == NUTFILE_EOF) {
         errno = EBADF;
         return -1;
     }
