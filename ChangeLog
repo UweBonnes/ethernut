@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.337 2006/07/05 07:36:36 haraldkipp Exp $
+$Id: ChangeLog,v 1.338 2006/07/05 15:59:21 haraldkipp Exp $
+
+2006-07-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* fs/phatdir.c: Two bugs fixed. Renaming a file's path (including
+	directory change) failed. Thanks to Dirk Boecker, who reported this.
+	The second bug was a memory hole, which had been discovered by
+	Ralf Spettel.
+
+	* fs/phatfs.c: Additionally check for NUTFILE_EOF before closing
+	a file.
+
 
 2006-07-04  Harald Kipp  <harald.kipp@egnite.de>
 
