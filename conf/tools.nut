@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.12  2006/07/10 14:27:31  haraldkipp
+-- Added ARM C++ support.
+--
 -- Revision 1.11  2006/07/10 08:48:03  haraldkipp
 -- Distinguish between enhanced and extended AVR.
 --
@@ -78,7 +81,7 @@ nuttools =
             brief = "GCC for ARM",
             description = "GNU Compiler Collection for ARM including libc."..
                           "Make sure you have deselected all other compilers.",
-            provides = { "TOOL_CC_ARM", "TOOL_GCC" },
+            provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX" },
             macro = "ARM_GCC",
             flavor = "boolean",
             file = "include/cfg/arch.h"
@@ -88,7 +91,7 @@ nuttools =
             description = "GNU Compiler Collection for ARM excluding libc."..
                           "Nut/OS provides all required C standard functions."..
                           "Make sure you have deselected all other compilers.",
-            provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_NOLIBC" },
+            provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
             macro = "ARM_GCC_NOLIBC",
             flavor = "boolean",
             file = "include/cfg/arch.h",
