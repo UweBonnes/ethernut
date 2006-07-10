@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/07/10 08:46:52  haraldkipp
+ * Properly set 3 byte return address for extended AVR.
+ *
  * Revision 1.4  2006/02/08 15:20:21  haraldkipp
  * ATmega2561 Support
  *
@@ -254,10 +257,8 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
     u_short yreg;
+    const u_char *paddr;
 
-    const u_short *paddr;
-    paddr = (const u_short *) fn;       // *KU* fn doesn't contain the entry address
-    // of the thread!
     /*
      * Allocate stack and thread info structure in one block.
      */
@@ -287,11 +288,12 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     /*
      * Setup entry frame to simulate C function entry.
      */
+    paddr = (const u_char *) fn;
+    ef->cef_pclo = *paddr;
+    ef->cef_pchi = *(paddr + 1);
 #ifdef __AVR_ATmega2561__
-    ef->cef_pcex = 0;
+    ef->cef_pcex = *(paddr + 2);
 #endif
-    ef->cef_pchi = (u_char) (*paddr >> 8);
-    ef->cef_pclo = (u_char) (*paddr & 0xff);
     ef->cef_sreg = 0x80;
     ef->cef_rampz = 0;
     ef->cef_r1 = 0;
@@ -303,12 +305,12 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     ef->cef_yhi = (u_char) (yreg >> 8);
     ef->cef_ylo = (u_char) (yreg & 0xFF);
 
-    paddr = (const u_short *) NutThreadEntry;
+    paddr = (const u_char *) NutThreadEntry;
+    sf->csf_pclo = *paddr;
+    sf->csf_pchi = *(paddr + 1);
 #ifdef __AVR_ATmega2561__
-    sf->csf_pcex = 0;
+    sf->csf_pcex = *(paddr + 2);
 #endif
-    sf->csf_pchi = (u_char) (*paddr >> 8);
-    sf->csf_pclo = (u_char) (*paddr & 0xff);
 
     /*
      * Insert into the thread list and the run queue.
