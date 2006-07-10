@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/07/10 17:46:59  haraldkipp
+ * Now really like Jan suggested to fix it.
+ *
  * Revision 1.5  2006/07/10 08:49:47  haraldkipp
  * Do not respond to broadcasts with unknown protocols. Many thanks to Jan.
  *
@@ -247,7 +250,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         /* Unkown protocol, send ICMP destination (protocol)
          * unreachable message.
          */
-        if (bcast && !NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PROTOCOL, 0, nb))
+        if (bcast || !NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PROTOCOL, 0, nb))
             NutNetBufFree(nb);
         break;
     }
