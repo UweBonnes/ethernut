@@ -1,5 +1,5 @@
 # Atmel JTAGICE Programmer (all COM ports are scanned)
-BURN="c:/Program Files/Atmel/AVR Tools/JTAGICE/jtagice.exe"
+BURN=jtagice
 BURNTARGET=$(MCU)
 BURNFLAGS=-d$(BURNTARGET) -e -pf -if$(TARG)
 
