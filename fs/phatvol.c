@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2006/07/10 08:48:47  haraldkipp
+ * Automatically detect FAT12 and FAT16 volumes when no partition table
+ * is provided.
+ *
  * Revision 1.6  2006/06/18 16:40:34  haraldkipp
  * No need to set errno after malloc failed.
  *
@@ -221,19 +225,17 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     vol->vol_buf[sbn].sect_num = 0;
     vbr = (PHATVBR *) vol->vol_buf[sbn].sect_data;
 
-    if (vol->vol_type == 0) {
-        if (vbr->bios_rootsz) {
-            vol->vol_type = 16;
-        }
-        else {
-            vol->vol_type = 32;
-        }
+    /*
+     * PHAT32 doesn't have a fixed root directory. At this point
+     * we reliably know wether we got PHAT32 or not. After having
+     * determined the total number of clusters later, we can check
+     * for PHAT12 or PHAT16.
+     */
+    if (vol->vol_type == 0 && vbr->bios_rootsz == 0) {
+        vol->vol_type = 32;
     }
-#ifdef NUTDEBUG
-    printf("FAT%d\n", vol->vol_type);
-#endif
 
-    /* Convert to the PHAT32 layout. */
+    /* Convert to PHAT12/PHAT16 layout. */
     if (vol->vol_type != 32) {
         memcpy(&vbr->boot_drive, &vbr->bios_tabsz_big, 26);
         memset(&vbr->bios_tabsz_big, 0, 28);
@@ -304,6 +306,22 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
     vol->vol_last_clust /= vol->vol_clustsz;
     /* First cluster number is 2. */
     vol->vol_last_clust += 2;
+
+    /* 
+     * Having calculated the total number of clusters allows us to 
+     * distinguish between PHAT12 and PHAT16. 
+     */
+    if (vol->vol_type == 0) {
+        if (vol->vol_last_clust > 4086) {
+            vol->vol_type = 16;
+        }
+        else {
+            vol->vol_type = 12;
+        }
+    }
+#ifdef NUTDEBUG
+    printf("\n%lu cluster -> PHAT%d\n", vol->vol_last_clust, vol->vol_type);
+#endif
 
     dev->dev_icb = blkmnt;
 
