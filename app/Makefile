@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2006/07/10 14:21:15  haraldkipp
+# C++ demo added to ARM build.
+#
 # Revision 1.7  2006/05/25 09:20:38  haraldkipp
 # Excluded those applications from ARM build, which currently do not support
 # this architecture.
@@ -66,6 +69,7 @@
 #
 
 all:
+	$(MAKE) -C cppdemo
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
@@ -79,7 +83,6 @@ all:
 	$(MAKE) -C timers
 ifeq ($(ARCH), avr)
 	$(MAKE) -C basemon
-	$(MAKE) -C cppdemo
 	$(MAKE) -C nutpiper
 	$(MAKE) -C playmp3
 	$(MAKE) -C pppc
@@ -87,6 +90,7 @@ ifeq ($(ARCH), avr)
 endif
 
 install:
+	$(MAKE) -C cppdemo install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
@@ -100,7 +104,6 @@ install:
 	$(MAKE) -C timers install
 ifeq ($(ARCH), avr)
 	$(MAKE) -C basemon install
-	$(MAKE) -C cppdemo install
 	$(MAKE) -C nutpiper install
 	$(MAKE) -C playmp3 install
 	$(MAKE) -C pppc install
@@ -109,6 +112,7 @@ endif
 
 clean:
 	$(MAKE) -C basemon clean
+	$(MAKE) -C cppdemo clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
