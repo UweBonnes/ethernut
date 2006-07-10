@@ -2,6 +2,10 @@
 
 /*!
  * $Log: cppdemo.cc,v $
+ * Revision 1.3  2006/07/10 14:24:11  haraldkipp
+ * Header files replaced by platform independent variants.
+ * Contributed by Matthias Wilde.
+ *
  * Revision 1.2  2005/08/02 17:46:44  haraldkipp
  * Major API documentation update.
  *
@@ -12,24 +16,23 @@
  *
  * This sample demonstrates the usage of Nut/OS with C++.
  *
- * You should carefully think about using C++ with tiny embedded systems. 
+ * You should carefully think about using C++ with tiny embedded systems.
  * This sample just proofs, that it basically works.
  */
-
-#include <dev/uartavr.h>
-#include <sys/version.h>
-#include <inttypes.h>
 
 #include <cpp/nutcpp.h>
 
 extern "C" {
+#include <dev/board.h>
+#include <sys/version.h>
+#include <inttypes.h>
 #include <io.h>
 #include <stdio.h>
 }
 
 
 
-template<class tp_type> class TemplateCounter 
+template<class tp_type> class TemplateCounter
 {
 protected:
     tp_type m_value;
@@ -43,7 +46,7 @@ public:
 
 
 
-class Counter: public TemplateCounter<uint8_t> 
+class Counter: public TemplateCounter<uint8_t>
 {
 public:
     void print(FILE *stream);
@@ -52,13 +55,13 @@ public:
 };
 
 
-void Counter::print(FILE* stream) 
+void Counter::print(FILE* stream)
 {
     fprintf(stream, "\nCounter value = %i\n", value());
 }
 
 
-Counter::Counter(uint8_t initValue) 
+Counter::Counter(uint8_t initValue)
 {
     m_value = initValue;
 }
@@ -68,8 +71,8 @@ Counter::Counter(uint8_t initValue)
 int main(void) {
     u_long baud = 115200;
 
-    NutRegisterDevice(&devUart0, 0, 0);
-    FILE *stream = fopen("uart0", "r+");
+    NutRegisterDevice(&DEV_UART0, 0, 0);
+    FILE *stream = fopen(DEV_UART0_NAME, "r+");
     _ioctl(_fileno(stream), UART_SETSPEED, &baud);
 
     fprintf(stream, "\n\nC++ Demo on Nut/OS %s ready.\n", NutVersionString());
@@ -94,8 +97,10 @@ int main(void) {
             counter.set(0);
             counter.print(stream);
             break;
-        default: 
+        default:
             fprintf(stream, "Unknown command.\n");
         }
     }
 }
+
+
