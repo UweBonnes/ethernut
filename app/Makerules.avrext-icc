@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2006/07/10 14:22:36  haraldkipp
+# Dirty hack to skip C++ with ICCAVR.
+#
 # Revision 1.1  2006/07/10 08:41:41  haraldkipp
 # New ImageCraft Makefiles for extended AVR devices like the ATmega2561.
 #
@@ -39,6 +42,11 @@
 
 %o : %c
 	$(CC) -c -g $(CPFLAGS) $< 
+
+%o : %cc
+	echo 0 > $(basename $@).o
+	echo 0 > $(basename $@).hex
+	echo 0 > $(basename $@).bin
 
 %hex: %o
 	$(CC) -o $@ $(LDFLAGS) $(OBJS) -lcatmega
