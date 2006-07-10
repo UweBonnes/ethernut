@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/07/10 14:27:03  haraldkipp
+ * C++ will use main instead of NutAppMain. Contributed by Matthias Wilde.
+ *
  * Revision 1.8  2006/07/05 07:57:52  haraldkipp
  * Daidai's support for AT91SAM7X added. Possibly taken from Atmel.
  * May require new coding from ground up in order to not conflict with
@@ -125,7 +128,11 @@ extern void *__heap_start;
 #define HEAP_SIZE  ((uptr_t) (NUTMEM_END - 256 - (uptr_t) (&__heap_start)))
 #endif
 
+#if !defined(__arm__) && !defined(__cplusplus)
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
+#else
+extern void main(void *);
+#endif
 
 
 #if defined(OLIMEX_LPCE2294)

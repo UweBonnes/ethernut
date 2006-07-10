@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/07/10 14:27:03  haraldkipp
+ * C++ will use main instead of NutAppMain. Contributed by Matthias Wilde.
+ *
  * Revision 1.11  2006/07/05 07:45:25  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -120,7 +123,9 @@
 #define SIGNAL(x)  __attribute__((interrupt_handler)) void x(void)
 #define RAMFUNC __attribute__ ((long_call, section (".ramfunc")))
 
+#if !defined(__arm__) && !defined(__cplusplus)
 #define main       NutAppMain
+#endif
 
 #define strlen_P(x)             strlen((char *)(x))
 #define strcpy_P(x,y)           strcpy(x,(char *)(y))
