@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.2  2006/07/10 14:23:20  haraldkipp
+# C++ lib added. Contributed by Matthias Wilde.
+#
 # Revision 1.1  2005/01/22 19:03:31  haraldkipp
 # Kindly contributed by Oliver Schulz (MDI)
 #
@@ -43,7 +46,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).cc
 OBJS =  $(SRCS:.cc=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutcpp -lnutos -lnutdev -lnutos -lnutcrt
+LIBS =   -lnutcpp $(LIBDIR)/nutinit.o $(MODS) -lnutcpp -lnutos -lnutcrt -lnutarch -lnutdev
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG)
