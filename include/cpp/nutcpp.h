@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/07/10 14:28:06  haraldkipp
+ * Defined functions for new and delete operator.
+ *
  * Revision 1.1  2005/01/22 19:10:54  haraldkipp
  * Added C++ support contributed by Oliver Schulz (MPI).
  *
@@ -66,8 +69,9 @@ int main(void);
 
 // == Define new and delete if needed =================================
 
-#if defined(__GNUC__) && defined(__AVR)
-inline void * operator new(unsigned int s) {
+#if defined(__GNUC__) && ((defined(__AVR) || defined(__arm__)))
+//inline void * operator new(unsigned int s) {
+inline void * operator new(size_t s) {
     return malloc(s);
 }
 
