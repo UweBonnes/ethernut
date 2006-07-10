@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/07/10 08:49:47  haraldkipp
+ * Do not respond to broadcasts with unknown protocols. Many thanks to Jan.
+ *
  * Revision 1.4  2005/06/05 16:48:26  haraldkipp
  * Additional parameter enables NutUdpInput() to avoid responding to UDP
  * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
@@ -244,7 +247,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         /* Unkown protocol, send ICMP destination (protocol)
          * unreachable message.
          */
-        if (!NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PROTOCOL, 0, nb))
+        if (bcast && !NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PROTOCOL, 0, nb))
             NutNetBufFree(nb);
         break;
     }
