@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.11  2006/07/10 08:48:03  haraldkipp
+-- Distinguish between enhanced and extended AVR.
+--
 -- Revision 1.10  2006/03/02 19:54:48  haraldkipp
 -- First attempt to compile with ICCARM. All compile errors fixed, but not
 -- a finished port yet. Many things are missing.
@@ -115,7 +118,7 @@ nuttools =
             macro = "ICCAVR",
             flavor = "boolean",
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA2561=enhanced", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
+            makedefs = { "MCU_ATMEGA2561=extended", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
         },
         {
             brief = "ImageCraft for ARM",

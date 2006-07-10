@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/07/10 08:48:03  haraldkipp
+ * Distinguish between enhanced and extended AVR.
+ *
  * Revision 1.4  2006/05/25 09:35:27  haraldkipp
  * Dummy macros added to support the avr-libc special function register
  * definitions.
@@ -67,7 +70,7 @@
  * _MCU_enhanced is defined.
  *
  */
-#ifdef _MCU_enhanced
+#if defined(_MCU_enhanced) || defined(_MCU_extended)
 #undef __AVR_ENHANCED__
 #define __AVR_ENHANCED__ /* Generic test for enhanced AVRs like ATMEGA128, AT09CAN128 */
 #endif
@@ -252,7 +255,7 @@
 
 #include <eeprom.h>
 
-#ifdef _MCU_enhanced
+#if defined(_MCU_enhanced) || defined(_MCU_extended)
 
 #ifdef ATMega2561
 #include <iom2561v.h>
