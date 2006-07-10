@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.5  2006/07/10 14:18:24  haraldkipp
+# Contributed by Matthias Wilde.
+# Added which compiler to use for cc files, added compiler and linker flags
+# for cc files especially fno-exceptions and -fno-rtti for C++.
+#
 # Revision 1.4  2006/03/16 19:02:37  haraldkipp
 # Compiler optimization enabled.
 #
@@ -52,6 +57,7 @@ INCDIR = $(top_srcdir)/include
 
 TRGT   = arm-elf-
 CC     = $(TRGT)gcc
+CXX    = $(TRGT)g++
 AR     = $(TRGT)ar
 CP     = cp
 AS     = $(TRGT)gcc -x assembler-with-cpp
@@ -59,6 +65,8 @@ RANLIN = $(TARG)ranlib
 
 MCFLAGS = -mcpu=$(MCU)
 CPFLAGS = $(MCFLAGS) -Os -mthumb-interwork -fomit-frame-pointer -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS) $(UCPFLAGS) 
+#CPFLAGS = $(MCFLAGS) -O0 -g -gdwarf-2 -mthumb-interwork -fomit-frame-pointer -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS) $(UCPFLAGS) 
+CXXFLAGS = $(MCFLAGS) -Os -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti -Wall -Wa,-ahlms=$(<F:.cc=.lst) $(DEFS) $(UCPFLAGS)
 LDFLAGS = $(MCFLAGS) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--relax,--sort-common,--strip-all,--cref -L$(LIBDIR)
 ARFLAGS = rsv
 ASFLAGS = $(MCFLAGS) -Wa,-amhls=$(<F:.S=.lst) $(DEFS) $(UASFLAG)
