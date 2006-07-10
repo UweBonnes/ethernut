@@ -1,4 +1,43 @@
-$Id: ChangeLog,v 1.339 2006/07/10 08:45:27 haraldkipp Exp $
+$Id: ChangeLog,v 1.340 2006/07/10 14:17:01 haraldkipp Exp $
+
+2006-07-10  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Release candidate 4.1.9.4. C++ support added.
+	These patches had been kindly contributed by Matthias Wilde.
+	Linking for pure virtual functions is not yet supported.
+
+	* Makedefs.arm-gcc: Added which compiler to use for cc files, added 
+	compiler and linker flags for cc files especially fno-exceptions and 
+	-fno-rtti for C++.
+
+	* Makefile: C++ libs added to ARM build.
+
+	* Makerules.arm-gcc: Added rule to compile objects from *.cc files.
+
+	* app/Makerules.avr-icc, app/Makerules.avrext-icc: Dirty hack
+	to skip C++ with ICCAVR.
+
+	* app/Makeburn.avr-jtagice, app/Makeburn.avr-jtagicemkii: Do not use 
+	absolute path for programmer executable.
+
+	* app/Makefile: C++ demo added to ARM build.
+
+	* app/cppdemo/Makefile: C++ lib added.
+
+	* app/cppdemo/cppdemo.cc: Header files replaced by platform
+	independent variants.
+
+	* arch/arm/ldscripts/at91_ram.ld: Adapted to support C++ 
+	requirements, with help of Martin Thomas (WinArm).
+
+	* arch/arm/os/nutinit.c, include/arch/arm.h: C++ will use main
+	instead of NutAppMain.
+
+	* include/cpp/nutcpp.h: Defined functions for new and delete 
+	operator.
+
+	* conf/tools.nut: Added ARM C++ support.
+
 
 2006-07-09  Harald Kipp  <harald.kipp@egnite.de>
 
