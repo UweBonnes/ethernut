@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/07/11 12:20:19  haraldkipp
+ * PHAT file system failed when accessed from multiple threads. A mutual
+ * exclusion semaphore fixes this.
+ *
  * Revision 1.3  2006/02/23 15:45:22  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  * This dramatically increased write rates of no-name cards.
@@ -61,6 +65,8 @@
 #include <dev/blockdev.h>
 #include <fs/phatio.h>
 
+#include <sys/event.h>
+
 #if 0
 /* Use for local debugging. */
 #define NUTDEBUG
@@ -74,6 +80,8 @@
 
 /*!
  * \brief Flush sector buffers.
+ *
+ * The volume must be locked before calling this function.
  *
  * \param dev Specifies the file system device.
  * \param bufnum The buffer number to flush. If -1, all buffers are flushed.
@@ -122,6 +130,8 @@ int PhatSectorFlush(NUTDEVICE * dev, int bufnum)
 /*!
  * \brief Read sector.
  *
+ * The volume must be locked before calling this function.
+ *
  * \param blkmnt Specifies the mounted block device partition.
  * \param sect   Sector to load.
  * \param buf    Points to a buffer which will receive the sector data.
@@ -158,10 +168,15 @@ int PhatSectorLoad(NUTDEVICE * dev, u_long sect)
     int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
+    /* Gain mutex access. */
+    NutEventWait(&vol->vol_iomutex, 0);
+
 #if PHAT_SECTOR_BUFFERS
     for (sbn = 0; sbn < PHAT_SECTOR_BUFFERS; sbn++) {
         if (vol->vol_buf[sbn].sect_num == sect) {
             vol->vol_usenext = sbn;
+            /* Release mutex access. */
+            NutEventPostAsync(&vol->vol_iomutex);
             return sbn;
         }
     }
@@ -175,17 +190,24 @@ int PhatSectorLoad(NUTDEVICE * dev, u_long sect)
 #else
     sbn = 0;
     if (vol->vol_buf[sbn].sect_num == sect) {
+        /* Release mutex access. */
+        NutEventPostAsync(&vol->vol_iomutex);
         return sbn;
     }
 #endif
 
     if (PhatSectorFlush(dev, sbn)) {
-        return -1;
+        sbn = -1;
     }
-    if (PhatSectorRead(dev->dev_icb, sect, vol->vol_buf[sbn].sect_data)) {
-        return -1;
+    else if (PhatSectorRead(dev->dev_icb, sect, vol->vol_buf[sbn].sect_data)) {
+        sbn = -1;
     }
-    vol->vol_buf[sbn].sect_num = sect;
+    else {
+        vol->vol_buf[sbn].sect_num = sect;
+    }
+
+    /* Release mutex access. */
+    NutEventPostAsync(&vol->vol_iomutex);
 
     return sbn;
 }

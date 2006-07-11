@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2006/07/11 12:20:19  haraldkipp
+ * PHAT file system failed when accessed from multiple threads. A mutual
+ * exclusion semaphore fixes this.
+ *
  * Revision 1.7  2006/07/10 08:48:47  haraldkipp
  * Automatically detect FAT12 and FAT16 volumes when no partition table
  * is provided.
@@ -72,6 +76,8 @@
  */
 
 #include <dev/blockdev.h>
+
+#include <sys/event.h>
 
 #include <fs/dospart.h>
 #include <fs/phatio.h>
@@ -324,6 +330,9 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
 #endif
 
     dev->dev_icb = blkmnt;
+
+    /* Initialize mutual exclusion semaphore. */
+    NutEventPost(&vol->vol_iomutex);
 
     vol->vol_numfree = PhatCountFreeClusters(dev);
 

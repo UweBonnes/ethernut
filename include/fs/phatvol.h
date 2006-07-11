@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/07/11 12:20:19  haraldkipp
+ * PHAT file system failed when accessed from multiple threads. A mutual
+ * exclusion semaphore fixes this.
+ *
  * Revision 1.2  2006/02/23 15:47:18  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  *
@@ -190,6 +194,8 @@ typedef struct _PHATVOL {
 #else
     PHATSECTBUF vol_buf[1];
 #endif
+    /*! \brief Mutual exclusion semaphore. */
+    HANDLE vol_iomutex;
     /*! \brief Bytes per sector. */
     u_int vol_sectsz;
     /*! \brief Sectors per cluster. */
