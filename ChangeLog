@@ -1,10 +1,10 @@
-$Id: ChangeLog,v 1.341 2006/07/11 12:17:36 haraldkipp Exp $
+$Id: ChangeLog,v 1.342 2006/07/11 12:22:03 haraldkipp Exp $
 
 2006-07-11  Harald Kipp  <harald.kipp@egnite.de>
 
-	* fs/phatio.c, fs/phatvol.c, fs/phatvol.h: PHAT file system failed 
-	when accessed from multiple threads. A mutual exclusion semaphore 
-	fixes this.
+	* fs/phatio.c, fs/phatvol.c, include/fs/phatvol.h: PHAT file system 
+	failed when accessed from multiple threads. A mutual exclusion 
+	semaphore fixes this.
 
 	* fs/phatfs.c: Added mutual exclusion protection during flush.
 	Honor Nut/OS file flushing, which uses a NULL pointer on read/write.
