@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2006/07/11 12:20:57  haraldkipp
+ * Added mutual exclusion protection during flush.
+ * Honor Nut/OS file flushing, which uses a NULL pointer on read/write.
+ *
  * Revision 1.7  2006/07/05 16:02:23  haraldkipp
  * Typically Nut/OS doesn't check parameters, but this one is missed often,
  * closing a file which points to NUTFILE_EOF.
@@ -75,6 +79,8 @@
 #include <dirent.h>
 
 #include <dev/blockdev.h>
+
+#include <sys/event.h>
 
 #include <fs/phatfs.h>
 #include <fs/phatvol.h>
@@ -276,12 +282,20 @@ static u_long AllocNextCluster(NUTFILE * nfp)
  */
 static int PhatFileFlush(NUTFILE * nfp)
 {
+    int rc;
+    NUTDEVICE *dev = nfp->nf_dev;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
     /* Update the file's directory entry. */
-    if (PhatDirEntryUpdate(nfp) < 0) {
-        return -1;
+    if ((rc = PhatDirEntryUpdate(nfp)) == 0) {
+        /* Gain mutex access. */
+        NutEventWait(&vol->vol_iomutex, 0);
+        /* Flush sector buffers. */
+        rc = PhatSectorFlush(nfp->nf_dev, -1);
+        /* Release mutex access. */
+        NutEventPost(&vol->vol_iomutex);
     }
-    /* Flush sector buffers. */
-    return PhatSectorFlush(nfp->nf_dev, -1);
+    return rc;
 }
 
 /*!
@@ -507,6 +521,13 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
     }
 
     /*
+     * Flush file if buffer is a NULL pointer.
+     */
+    if (buf == NULL || len == 0) {
+        return PhatFileFlush(nfp);
+    }
+
+    /*
      * In case of normal files, check for sufficient space.
      */
     if ((fcb->f_dirent.dent_attr & PHAT_FATTR_DIR) == 0) {
@@ -672,6 +693,13 @@ static int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
     PHATFILE *fcb = nfp->nf_fcb;
+
+    /*
+     * Ignore input flush.
+     */
+    if (buf == NULL || size == 0) {
+        return 0;
+    }
 
     /* Respect the end of normal files. */
     if ((fcb->f_dirent.dent_attr & PHAT_FATTR_DIR) == 0) {
