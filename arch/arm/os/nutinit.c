@@ -33,6 +33,13 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/07/15 11:13:30  haraldkipp
+ * CPU ran into the data pool of Sam7xLowLevelInit(). Temporarily
+ * fixed by Andras Albert with an additional global label in the
+ * startup code. Furthermore Andras changed the clock initialization.
+ * The CPU is now running at 47.9232 MHz and the MAC starts working.
+ * Great, TCP/IP is now running on the SAM7X.
+ *
  * Revision 1.9  2006/07/10 14:27:03  haraldkipp
  * C++ will use main instead of NutAppMain. Contributed by Matthias Wilde.
  *
@@ -168,19 +175,36 @@ void Sam7xLowLevelInit(void)
     /* Reset AIC(useful for debugging w/o hw reset operation). */
     outr(AIC_EOICR, 1);
     outr(AIC_IDCR, 0xFFFFFFFF);
-    
+
     /* Set Flash Waite state. */
-	outr(MC_FMR, ((((NUT_CPU_FREQ + NUT_CPU_FREQ/2) / 1000000UL) & 0xFF) << 16) | MC_FWS_0FWS);
+    outr(MC_FMR, ((((NUT_CPU_FREQ + NUT_CPU_FREQ/2) / 1000000UL) & 0xFF) << 16) | MC_FWS_1FWS);
 
     /* Watchdog disable */
     outr(WDT_WDMR, WDT_WDDIS);
 
-	/* Set main Oscillator. */
+    /* Set main Oscillator. */
     outr(CKGR_MOR, ((CKGR_OSCOUNT & (0x06 <<8)) | CKGR_MOSCEN ));
+    // Wait the startup time
     while((inr(PMC_SR) & PMC_MOSCS) == 0);
- 	outr(PMC_MCKR, PMC_CSS_MAIN_CLK | PMC_PRES_CLK);
+    //Set PLL + divider:
+    outr(PMC_MCKR, PMC_CSS_MAIN_CLK | PMC_PRES_CLK);
+    // Wait the startup time
     while((inr(PMC_SR) & PMC_MCKRDY) == 0);
+
+
+    outr(CKGR_PLLR, ((CKGR_DIV & 5) | (CKGR_PLLCOUNT & (28<<8)) |(CKGR_MUL & (25<<16))));
+    while((inr(PMC_SR) & PMC_LOCK) == 0);
+
+    // 4. Selection of Master Clock and Processor Clock
+    // select the PLL clock divided by 2
+    outr(PMC_MCKR, PMC_PRES_CLK_2);
+    while((inr(PMC_SR) & PMC_MCKRDY) == 0);
+    outr(PMC_MCKR, inr(PMC_MCKR)| PMC_CSS_PLL_CLK);
+    while((inr(PMC_SR) & PMC_MCKRDY) == 0);
+
+    asm volatile ("b __ContSam7xLowLevelInit");
 }
+
 #endif /* MCU_AT91SAM7X256 */
 
 /*!
