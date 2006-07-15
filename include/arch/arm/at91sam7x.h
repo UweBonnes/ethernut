@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/07/15 11:14:45  haraldkipp
+ * Missing base addresses and peripheral IDs added.
+ *
  * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -62,17 +65,29 @@
 #define FLASH_BASE      0x100000UL
 #define RAM_BASE        0x200000UL
 
-#define TC_BASE         0xFFFA0000      /*!< \brief TC base address. */
-#define USART1_BASE     0xFFFC4000      /*!< \brief USART 1 base address. */
+#define TC_BASE         0xFFFA0000      /*!< \brief Timer/counter base address. */
+#define UDP_BASE        0xFFFB0000      /*!< \brief USB device port base address. */
+#define TWI_BASE        0xFFFB8000      /*!< \brief Two-wire interface base address. */
 #define USART0_BASE     0xFFFC0000      /*!< \brief USART 0 base address. */
-#define DBGU_BASE       0xFFFFF200      /*!< \brief DBGU base address. */
+#define USART1_BASE     0xFFFC4000      /*!< \brief USART 1 base address. */
+#define PWMC_BASE       0xFFFCC000      /*!< \brief PWM controller base address. */
+#define CAN_BASE        0xFFFD0000      /*!< \brief CAN controller base address. */
+#define SSC_BASE        0xFFFD4000      /*!< \brief Serial synchronous controller base address. */
+#define ADC_BASE        0xFFFD8000      /*!< \brief ADC base address. */
 #define EMAC_BASE       0xFFFDC000      /*!< \brief EMAC base address. */
+#define SPI0_BASE       0xFFFE0000      /*!< \brief SPI0 base address. */
+#define SPI1_BASE       0xFFFE4000      /*!< \brief SPI0 base address. */
+
 #define AIC_BASE        0xFFFFF000      /*!< \brief AIC base address. */
+#define DBGU_BASE       0xFFFFF200      /*!< \brief DBGU base address. */
 #define PIOA_BASE       0xFFFFF400      /*!< \brief PIO A base address. */
 #define PIOB_BASE       0xFFFFF600      /*!< \brief PIO B base address. */
 #define PMC_BASE        0xFFFFFC00      /*!< \brief PMC base address. */
 #define RSTC_BASE       0xFFFFFD00      /*!< \brief Resect controller register base address. */
+#define RTT_BASE        0xFFFFFD20      /*!< \brief Realtime timer base address. */
+#define PIT_BASE        0xFFFFFD30      /*!< \brief Periodic interval timer base address. */
 #define WDT_BASE        0xFFFFFD40      /*!< \brief Watch Dog register base address. */
+#define VREG_BASE       0xFFFFFD60      /*!< \brief Voltage regulator mode controller base address. */
 #define MC_BASE         0xFFFFFF00      /*!< \brief Memory controller base. */
 
 #include <arch/arm/at91_tc.h>
@@ -106,6 +121,7 @@
 #define TC0_ID      12      /*!< \brief Timer 0 ID. */
 #define TC1_ID      13      /*!< \brief Timer 1 ID. */
 #define TC2_ID      14      /*!< \brief Timer 2 ID. */
+#define CAN_ID      15      /*!< \brief CAN controller ID. */
 #define EMAC_ID     16      /*!< \brief Ethernet MAC ID. */
 #define ADC_ID      17      /*!< \brief Analog to digital converter ID. */
 #define IRQ0_ID     30      /*!< \brief External interrupt 0 ID. */
