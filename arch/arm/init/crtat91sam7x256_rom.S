@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/07/15 11:12:51  haraldkipp
+ * CPU ran into the data pool of Sam7xLowLevelInit(). Temporarily
+ * fixed by Andras Albert with an additional global label.
+ *
  * Revision 1.1  2006/07/05 07:51:05  haraldkipp
  * AT91SAM7X256 startup code and linker script, contributed by Daidai.
  *
@@ -117,6 +121,8 @@ __set_stacks:
  * Section 2: Set stack pointers.
  */
         .section .init2,"ax",%progbits
+        .global __ContSam7xLowLevelInit
+__ContSam7xLowLevelInit:
         /*
          * Set exception stack pointers and enable interrupts.
          */
