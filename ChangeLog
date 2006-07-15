@@ -1,10 +1,36 @@
-$Id: ChangeLog,v 1.343 2006/07/13 05:12:12 hwmaier Exp $
+$Id: ChangeLog,v 1.344 2006/07/15 11:10:48 haraldkipp Exp $
+
+2006-07-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91sam7x_emac.c: PHY initialization disabled user 
+	reset. Packet receiver routine filled wrong buffer and always 
+	returned an error. Many thanks to Andras Albert for fixing this.
+
+	* arch/arm/init/crtat91sam7x256_rom.S, arch/arm/os/nutinit.c:
+	CPU ran into the data pool of Sam7xLowLevelInit(). Temporarily
+	fixed by Andras Albert with an additional global label in the
+	startup code. Furthermore Andras changed the clock initialization.
+	The CPU is now running at 47.9232 MHz and the MAC starts working.
+	Great, TCP/IP is now running on the SAM7X.
+
+	* conf/at91sam7x-ek.conf: Corrected memory settings to reflect
+	the real RAM of the SAM7X and adapted CPU clock setting to
+	Andras' changes.
+
+	* include/arch/arm/at91sam7x.h: Missing base addresses and
+	peripheral IDs added.
+
+	* arch/arm/dev/hd44780_at91.c: Initialization flag removed. It
+	is not required because the driver doesn't poll the busy flag
+	during initialization. Bug fixed, which let the driver fail
+	to properly initialize displays with two lines.
+
 
 2006-07-13 Henrik Maier  <henrik@proconx.com>
 
-        * arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c, 
-        arch/avr/dev/ih_usart1_tx.c: 
-        Fixed typing error for NUT_PERFMON counter variables.
+	* arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c, 
+	arch/avr/dev/ih_usart1_tx.c: 
+	Fixed typing error for NUT_PERFMON counter variables.
 
 
 2006-07-11  Harald Kipp  <harald.kipp@egnite.de>
