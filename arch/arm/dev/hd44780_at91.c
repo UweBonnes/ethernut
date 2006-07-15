@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/07/15 11:15:31  haraldkipp
+ * Initialization flag removed. It is not required because the driver doesn't
+ * poll the busy flag during initialization.
+ * Bug fixed, which let the driver fail to properly initialize displays with
+ * two lines.
+ *
  * Revision 1.3  2006/06/28 17:23:19  haraldkipp
  * Significantly extend delay time to allow running slow 3.3V LCDs with fast
  * CPUs. Not a nice fix, but it works.
@@ -173,8 +179,6 @@ static void INLINE LcdClrBits(u_int mask)
 
 #ifdef LCD_RW_BIT
 
-static u_int initialized;
-
 static u_int LcdReadNibble(void)
 {
     u_int rc;
@@ -213,7 +217,7 @@ static void LcdWaitReady(u_int delay)
 {
     while (delay--) {
 #if defined(LCD_RW_BIT)
-        if (initialized && (LcdReadStatus() & _BV(LCD_BUSY)) == 0) {
+        if ((LcdReadStatus() & _BV(LCD_BUSY)) == 0) {
             break;
         }
 #endif
@@ -343,11 +347,8 @@ static void LcdInit(NUTDEVICE * dev)
     NutSleep(1);
     LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
     NutSleep(1);
-    LcdWriteNibble(_BV(LCD_FUNCTION_2LINES) >> 4);
+    LcdWriteNibble(_BV(LCD_FUNCTION_2LINES));
     NutSleep(1);
-#ifdef LCD_RW_BIT
-    initialized = 1;
-#endif
 
     /* Clear display. */
     LcdClear();
