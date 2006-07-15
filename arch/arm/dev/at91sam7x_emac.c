@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/07/15 11:11:44  haraldkipp
+ * PHY initialization disabled user reset. Packet receiver routine filled
+ * wrong buffer and always returned an error.
+ * Many thanks to Andras Albert for fixing this.
+ *
  * Revision 1.1  2006/07/05 07:38:44  haraldkipp
  * New Ethernet driver for the AT91SAM7X EMAC and the Davicom DM9161A.
  * This driver is not yet finished. Ethernet link auto-negotiation works
@@ -281,7 +286,7 @@ static int EmacReset(void)
     outr(PIOB_CODR, _BV(PHY_PWRDN_BIT));
 
     /* Toggle external hardware reset pin. */
-    outr(RSTC_MR, RSTC_KEY | 0x00000100);
+    outr(RSTC_MR, RSTC_KEY | 0x00000100 | RSTC_URSTEN);
     outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
 
@@ -392,7 +397,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
         } else {
             *nbp = NutNetBufAlloc(0, NBAF_DATALINK, fbc);
             if (*nbp != NULL) {
-                u_char *bp = (u_char *) * nbp;
+                u_char *bp = (u_char *) (* nbp)->nb_dl.vp;
                 u_int len;
 
                 while (fbc) {
@@ -410,6 +415,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
                     fbc -= len;
                     bp += len;
                 }
+                rc = 0;
             }
         }
     }
