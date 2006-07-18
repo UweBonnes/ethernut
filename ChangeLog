@@ -1,4 +1,42 @@
-$Id: ChangeLog,v 1.344 2006/07/15 11:10:48 haraldkipp Exp $
+$Id: ChangeLog,v 1.345 2006/07/18 13:59:23 haraldkipp Exp $
+
+2006-07-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Makedefs.arm-gcc: Create listing in target directory, so
+	'make clean' will work properly.
+
+	* Makerules.arm-gcc: Cleaning ImageCraft output is not required.
+	Also clean up listings of OBJ1 and OBJ2 entries.
+
+	* arch/arm/dev/at91sam7x_emac.c: Transmitter buffer handling
+	was buggy and delayed any second packet. Added handling
+	of receiver overflow events.
+
+	* arch/arm/init/crtat91sam7x256_rom.S, arch/arm/os/nutinit.c:
+	Low level hardware initialization moved from nutinit.c to
+	crtat91sam7x256_rom.S. This avoids the ugly jump from C code
+	back into the runtime initialization.
+
+	* arch/arm/init/crtat91sam7x256_rom.S: All segment entry labels
+	moved into the specific segment. Still not sure how the linker
+	assembles segments. Possibly we need additional empty segments,
+	which may be filled from C code.
+
+	* include/arch/arm/at91_mc.h: Base address removed. Should be
+	specified in the upper level header.
+
+	* include/arch/arm/at91_pmc.h: Changed coding style to follow
+	existing headers.
+
+	* include/arch/arm/at91_wdt.h: Changed coding style to follow
+	existing headers. Removed old lines, which had been derived from 
+	at91_wd.h. Corrected register addresses, thanks to Jix.
+	Register names changed, now following the datasheet. This
+	may break your existing application.
+
+	* arch/arm/os/nutinit.c: Watchdog reset (tiger bell) removed
+	from idle thread.
+
 
 2006-07-15  Harald Kipp  <harald.kipp@egnite.de>
 
