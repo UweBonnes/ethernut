@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/07/18 14:01:38  haraldkipp
+ * Transmitter buffer handling was buggy and delayed any second packet.
+ * Added handling of receiver overflow events.
+ *
  * Revision 1.2  2006/07/15 11:11:44  haraldkipp
  * PHY initialization disabled user reset. Packet receiver routine filled
  * wrong buffer and always returned an error.
@@ -191,6 +195,7 @@ typedef struct _BufDescriptor {
 
 static volatile BufDescriptor txBufTab[2];
 static volatile u_char txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] __attribute__ ((aligned(8)));
+static u_int txBufIdx;
 
 static volatile BufDescriptor rxBufTab[EMAC_RX_BUFFERS];
 static volatile u_char rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(8)));
@@ -329,21 +334,19 @@ static int EmacReset(void)
 static void EmacInterrupt(void *arg)
 {
     u_int isr;
-    u_int rsr;
     EMACINFO *ni = (EMACINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     /* Read interrupt status and disable interrupts. */
     isr = inr(EMAC_ISR);
-    rsr = inr(EMAC_RSR);
 
     /* Receiver interrupt. */
-    if ((isr & EMAC_RCOMP) != 0 && (rsr & EMAC_REC) != 0) {
+    if ((isr & EMAC_RCOMP) != 0 || (isr & EMAC_ROVR) != 0 || (inr(EMAC_RSR) & EMAC_REC) != 0) {
         outr(EMAC_RSR, EMAC_REC);
         NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
 
     /* Transmitter interrupt. */
-    if (isr & EMAC_TCOMP) {
+    if ((isr & EMAC_TCOMP) != 0 || (inr(EMAC_TSR) & EMAC_COMP) != 0) {
         outr(EMAC_TSR, EMAC_COMP);
         NutEventPostFromIrq(&ni->ni_tx_rdy);
     }
@@ -584,7 +587,7 @@ THREAD(EmacRxThread, arg)
     NutThreadSetPriority(9);
 
     /* Enable receive interrupts. */
-    outr(EMAC_IER, EMAC_RCOMP | EMAC_TCOMP);
+    outr(EMAC_IER, EMAC_RCOMP | EMAC_TCOMP | EMAC_ROVR);
     NutIrqEnable(&sig_EMAC);
 
     for (;;) {
@@ -599,7 +602,6 @@ THREAD(EmacRxThread, arg)
          * them to the registered handler.
          */
         while (EmacGetPacket(ni, &nb) == 0) {
-
             /* Discard short packets. */
             if (nb->nb_dl.sz < 60) {
                 NutNetBufFree(nb);
@@ -653,21 +655,17 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         }
 
         /* Check for packet queue space. */
-        if ((txBufTab[0].stat & TXS_USED) == 0) {
-            if ((txBufTab[1].stat & TXS_USED) == 0) {
-                if (NutEventWait(&ni->ni_tx_rdy, 500)) {
-                    /* No queue space. Release the lock and give up. */
-                    NutEventPost(&ni->ni_mutex);
-                    break;
-                }
-            } else {
-                rc = EmacPutPacket(1, ni, nb);
+        if ((txBufTab[txBufIdx].stat & TXS_USED) == 0) {
+            if (NutEventWait(&ni->ni_tx_rdy, 500) && (txBufTab[txBufIdx].stat & TXS_USED) == 0) {
+                /* No queue space. Release the lock and give up. */
+                NutEventPost(&ni->ni_mutex);
+                break;
             }
         } else {
-            rc = EmacPutPacket(0, ni, nb);
-        }
-
-        if (rc == 0) {
+            if ((rc = EmacPutPacket(txBufIdx, ni, nb)) == 0) {
+                txBufIdx++;
+                txBufIdx &= 1;
+            }
         }
         NutEventPost(&ni->ni_mutex);
     }
