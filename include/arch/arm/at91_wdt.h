@@ -40,6 +40,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/07/18 14:06:18  haraldkipp
+ * Changed coding style to follow existing headers.
+ * Removed old lines, which had been derived from at91_wd.h.
+ * Corrected register addresses, thanks to Jix.
+ * Register names changed, now following the datasheet.
+ *
  * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -52,69 +58,36 @@
  */
 /*@{*/
 
-#define WDT_WDCR        (WDT_BASE + 0x00) /* Watchdog Control Register. */
-#define WDT_WDRSTT     ((unsigned int) 0x1 <<  0) /* Watchdog Restart. */
-#define WDT_KEY        ((unsigned int) 0xFF << 24) /* Watchdog KEY Password. */
-
-#define WDT_WDSR        (WDT_BASE + 0x04) /* Watchdog Status Register. */
-#define WDT_WDUNF      ((unsigned int) 0x1 <<  0) /* Watchdog Underflow. */
-#define WDT_WDERR      ((unsigned int) 0x1 <<  1) /* Watchdog Error. */
-
-#define WDT_WDMR        (WDT_BASE + 0x08) /* Watchdog Mode Register. */
-#define WDT_WDV        ((unsigned int) 0xFFF <<  0) /* Watchdog Timer Restart. */
-#define WDT_WDFIEN     ((unsigned int) 0x1 << 12) /* Watchdog Fault Interrupt Enable. */
-#define WDT_WDRSTEN    ((unsigned int) 0x1 << 13) /* Watchdog Reset Enable. */
-#define WDT_WDRPROC    ((unsigned int) 0x1 << 14) /* Watchdog Timer Restart. */
-#define WDT_WDDIS      ((unsigned int) 0x1 << 15) /* Watchdog Disable. */
-#define WDT_WDD        ((unsigned int) 0xFFF << 16) /* Watchdog Delta Value. */
-#define WDT_WDDBGHLT   ((unsigned int) 0x1 << 28) /* Watchdog Debug Halt. */
-#define WDT_WDIDLEHLT  ((unsigned int) 0x1 << 29) /* Watchdog Idle Halt. */
-
-/*@} xgNutArchArmAt91Wdt */
-
-
-
-
-
-
-
-
-/*! \name Watch Dog Overflow Mode Register */
-/*@{*/
-#define WD_OMR          (WD_BASE + 0x00)        /*!< \brief Overflow mode register address. */
-#define WD_WDEN                 0x00000001      /*!< \brief Watch Dog enable. */
-#define WD_RSTEN                0x00000002      /*!< \brief Internal reset enable. */
-#define WD_IRQEN                0x00000004      /*!< \brief Interrupt enable. */
-#define WD_EXTEN                0x00000008      /*!< \brief External signal enable. */
-#define WD_OKEY                 0x00002340      /*!< \brief Overflow mode register access key. */
-/*@}*/
-
-/*! \name Watch Dog Clock Register */
-/*@{*/
-#define WD_CMR          (WD_BASE + 0x04)        /*!< \brief Clock mode register address. */
-#define WD_WDCLKS               0x00000003      /*!< \brief Clock selection mask. */
-#define WD_WDCLKS_MCK8          0x00000000      /*!< \brief Selects MCK/8. */
-#define WD_WDCLKS_MCK32         0x00000001      /*!< \brief Selects MCK/32. */
-#define WD_WDCLKS_MCK128        0x00000002      /*!< \brief Selects MCK/128. */
-#define WD_WDCLKS_MCK1024       0x00000003      /*!< \brief Selects MCK/1024. */
-#define WD_HPCV                 0x0000003C      /*!< \brief High preload counter value. */
-#define WD_CKEY                 (0x06E<<7)      /*!< \brief Clock register access key. */
-/*@}*/
-
 /*! \name Watch Dog Control Register */
 /*@{*/
-#define WD_CR           (WD_BASE + 0x08)        /*!< \brief Control register address. */
-#define WD_RSTKEY               0x0000C071      /*!< \brief Watch Dog restart key. */
+#define WDT_CR_OFF          0x00000000  /*!< \brief Watchdog control register offset. */
+#define WDT_CR  (WDT_BASE + WDT_CR_OFF) /*!< \brief Watchdog control register address. */
+#define WDT_WDRSTT          0x00000001  /*!< \brief Watchdog restart. */
+#define WDT_KEY             0xA5000000  /*!< \brief Watchdog password. */
+/*@}*/
+
+/*! \name Watch Dog Mode Register */
+/*@{*/
+#define WDT_MR_OFF          0x00000004  /*!< \brief Mode register offset. */
+#define WDT_MR  (WDT_BASE + WDT_MR_OFF) /*!< \brief Mode register address. */
+#define WDT_WDV             0x00000FFF  /*!< \brief Counter value mask. */
+#define WDT_WDFIEN          0x00001000  /*!< \brief Fault interrupt enable. */
+#define WDT_WDRSTEN         0x00002000  /*!< \brief Reset enable. */
+#define WDT_WDRPROC         0x00004000  /*!< \brief Eset processor enable. */
+#define WDT_WDDIS           0x00008000  /*!< \brief Watchdog disable. */
+#define WDT_WDD             0x0FFF0000  /*!< \brief Delta value mask. */
+#define WDT_WDDBGHLT        0x10000000  /*!< \brief Watchdog debug halt. */
+#define WDT_WDIDLEHLT       0x20000000  /*!< \brief Watchdog idle halt. */
 /*@}*/
 
 /*! \name Watch Dog Status Register */
 /*@{*/
-#define WD_SR           (WD_BASE + 0x0C)        /*!< \brief Status register address. */
-#define WD_WDOVF                0x00000001      /*!< \brief Watch Dog overflow status. */
+#define WDT_SR_OFF          0x00000008  /*!< \brief Status register offset. */
+#define WDT_SR  (WDT_BASE + WDT_SR_OFF) /*!< \brief Status register address. */
+#define WDT_WDUNF           0x00000001  /*!< \brief Watchdog underflow. */
+#define WDT_WDERR           0x00000002  /*!< \brief Watchdog error. */
 /*@}*/
 
-/*@} xgNutArchArmAt91Wd */
+/*@} xgNutArchArmAt91Wdt */
 
 #endif                          /* _ARCH_ARM_AT91_WDT_H_ */
-
-
