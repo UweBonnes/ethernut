@@ -40,14 +40,15 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/07/18 14:04:55  haraldkipp
+ * Base address removed. Should be specified in the upper level header.
+ *
  * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
  *
  * \endverbatim
  */
-
-#define MC_BASE     0xFFFFFF00          /* Memory controller base. */
 
 #define MC_RCR      (MC_BASE + 0x00)    /* MC Remap Control Register. */
 #define MC_RCB          ((unsigned int) 0x1 <<  0) /* Remap Command Bit. */
