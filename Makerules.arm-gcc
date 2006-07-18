@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.5  2006/07/18 14:00:51  haraldkipp
+# Cleaning ImageCraft output is not required.
+# Also clean up listings of OBJ1 and OBJ2 entries.
+#
 # Revision 1.4  2006/07/10 14:19:22  haraldkipp
 # Contributed by Matthias Wilde.
 # Added rule to compile objects from *.cc files.
@@ -78,10 +82,7 @@
 cleancc:
 	-rm -f $(OBJS)
 	-rm -f $(TARG)
-	-rm -f $(SRCS:.c=.lst)
-	-rm -f $(SRCS:.c=.lis)
-	-rm -f $(SRCS:.c=.s)
-	-rm -f $(SRCS:.c=.i)
+	-rm -f $(OBJS:.o=.lst) $(OBJ1:.o=.lst) $(OBJ2:.o=.lst)
 
 .PHONY: cleanedit
 cleanedit:
