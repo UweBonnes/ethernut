@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.11  2006/07/18 14:04:10  haraldkipp
+ * Low level hardware initialization moved to crtat91sam7x256_rom.S. This
+ * avoids the ugly jump from C code back into the runtime initialization.
+ * Watchdog reset (tiger bell) removed from idle thread.
+ *
  * Revision 1.10  2006/07/15 11:13:30  haraldkipp
  * CPU ran into the data pool of Sam7xLowLevelInit(). Temporarily
  * fixed by Andras Albert with an additional global label in the
@@ -155,57 +160,9 @@ static void InitHW (void)
   PINSEL2 |= 0x00804000;
 } /* InitHW */
 
-#elif defined(MCU_AT91SAM7X256)
-
-/*!
- * \fn    Sam7xLowLevelInit
- * \brief This function performs very low level HW initialization.
- *
- * This function may use the stack, depending the compiler optimization.
- *
- * \todo This is GCC only.
- */
-void Sam7xLowLevelInit(void) __attribute__ ((naked)) __attribute__ ((section (".init1")));
-
-void Sam7xLowLevelInit(void)
-{
-    /* Enable external reset key. */
-    outr(RSTC_MR, RSTC_KEY | RSTC_URSTEN);
-
-    /* Reset AIC(useful for debugging w/o hw reset operation). */
-    outr(AIC_EOICR, 1);
-    outr(AIC_IDCR, 0xFFFFFFFF);
-
-    /* Set Flash Waite state. */
-    outr(MC_FMR, ((((NUT_CPU_FREQ + NUT_CPU_FREQ/2) / 1000000UL) & 0xFF) << 16) | MC_FWS_1FWS);
-
-    /* Watchdog disable */
-    outr(WDT_WDMR, WDT_WDDIS);
-
-    /* Set main Oscillator. */
-    outr(CKGR_MOR, ((CKGR_OSCOUNT & (0x06 <<8)) | CKGR_MOSCEN ));
-    // Wait the startup time
-    while((inr(PMC_SR) & PMC_MOSCS) == 0);
-    //Set PLL + divider:
-    outr(PMC_MCKR, PMC_CSS_MAIN_CLK | PMC_PRES_CLK);
-    // Wait the startup time
-    while((inr(PMC_SR) & PMC_MCKRDY) == 0);
+#endif /* OLIMEX_LPCE2294 */
 
 
-    outr(CKGR_PLLR, ((CKGR_DIV & 5) | (CKGR_PLLCOUNT & (28<<8)) |(CKGR_MUL & (25<<16))));
-    while((inr(PMC_SR) & PMC_LOCK) == 0);
-
-    // 4. Selection of Master Clock and Processor Clock
-    // select the PLL clock divided by 2
-    outr(PMC_MCKR, PMC_PRES_CLK_2);
-    while((inr(PMC_SR) & PMC_MCKRDY) == 0);
-    outr(PMC_MCKR, inr(PMC_MCKR)| PMC_CSS_PLL_CLK);
-    while((inr(PMC_SR) & PMC_MCKRDY) == 0);
-
-    asm volatile ("b __ContSam7xLowLevelInit");
-}
-
-#endif /* MCU_AT91SAM7X256 */
 
 /*!
  * \brief Idle thread. 
@@ -232,14 +189,6 @@ THREAD(NutIdle, arg)
      */
     NutThreadSetPriority(254);
     for (;;) {
-#ifdef MCU_AT91SAM7X256
-        /*
-         * We have only one chance to disable the WDT by writing WDT_MR.  This
-         * may cause trouble when debug in RAM.  If code burned in flash enabled
-         * WDT, we have no idea to disable but clear it.
-         */
-        outr(WDT_WDCR, 0xA5000000 | WDT_WDRSTT);
-#endif
         NutThreadYield();
         NutThreadDestroy();
     }
@@ -258,6 +207,9 @@ void NutInit(void)
     InitHW();
 #elif defined(MCU_AT91R40008)
     McuInit();
+#elif defined(MCU_AT91SAM7X256)
+    /* Set Flash Waite state. */
+    outr(MC_FMR, ((((NUT_CPU_FREQ + NUT_CPU_FREQ/2) / 1000000UL) & 0xFF) << 16) | MC_FWS_1FWS);
 #endif
 
     NutHeapAdd(HEAP_START, HEAP_SIZE);
