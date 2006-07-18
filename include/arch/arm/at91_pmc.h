@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/07/18 14:05:26  haraldkipp
+ * Changed coding style to follow existing headers.
+ *
  * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -51,73 +54,93 @@
  * \addtogroup xgNutArchArmAt91Pmc
  */
 /*@{*/
-#define PMC_SCER    (PMC_BASE + 0x00)   /*!< \brief System Clock Enable Register. */
-#define PMC_PCK         ((unsigned int) 0x1 <<  0) /*!< \brief Processor Clock. */
-#define PMC_UDP         ((unsigned int) 0x1 <<  7) /*!< \brief USB Device Port Clock. */
-#define PMC_PCK0        ((unsigned int) 0x1 <<  8) /*!< \brief Programmable Clock Output. */
-#define PMC_PCK1        ((unsigned int) 0x1 <<  9) /*!< \brief Programmable Clock Output. */
-#define PMC_PCK2        ((unsigned int) 0x1 << 10) /*!< \brief Programmable Clock Output. */
 
-#define PMC_SCDR    (PMC_BASE + 0x04)   /*!< \brief System Clock Disable Register. */
-#define PMC_SCSR    (PMC_BASE + 0x08)   /*!< \brief System Clock Status Register. */
-#define PMC_PCER    (PMC_BASE + 0x10)   /*!< \brief Peripheral Clock Enable Register. */
-#define PMC_PCDR    (PMC_BASE + 0x14)   /*!< \brief Peripheral Clock Disable Register. */
-#define PMC_PCSR    (PMC_BASE + 0x18)   /*!< \brief Peripheral Clock Status Register. */
+#define PMC_SCER_OFF                0x00000000  /*!< \brief System clock enable register offset. */
+#define PMC_SCER    (PMC_BASE + PMC_SCER_OFF)   /*!< \brief System clock enable register. */
+#define PMC_SCDR_OFF                0x00000004  /*!< \brief System clock disable register offset. */
+#define PMC_SCDR    (PMC_BASE + PMC_SCDR_OFF)   /*!< \brief System clock disable register. */
+#define PMC_SCSR_OFF                0x00000008  /*!< \brief System clock status register offset. */
+#define PMC_SCSR    (PMC_BASE + PMC_SCSR_OFF)   /*!< \brief System clock status register. */
+#define PMC_PCK                     0x00000001  /*!< \brief Processor clock. */
+#define PMC_UDP                     0x00000080  /*!< \brief USB device port clock. */
+#define PMC_PCK0                    0x00000100  /*!< \brief Programmable clock 0 output. */
+#define PMC_PCK1                    0x00000200  /*!< \brief Programmable clock 1 output. */
+#define PMC_PCK2                    0x00000400  /*!< \brief Programmable clock 2 output. */
+#define PMC_PCK3                    0x00000800  /*!< \brief Programmable clock 3 output. */
 
-#define CKGR_MOR        (PMC_BASE + 0x20)   /*!< \brief Main Oscillator Register. */
-#define CKGR_MOSCEN     ((unsigned int) 0x1 <<  0) /*!< \brief Main Oscillator Enable. */
-#define CKGR_OSCBYPASS  ((unsigned int) 0x1 <<  1) /*!< \brief Main Oscillator Bypass. */
-#define CKGR_OSCOUNT    ((unsigned int) 0xFF <<  8) /*!< \brief Main Oscillator Start-up Time. */
+#define PMC_PCER_OFF                0x00000010  /*!< \brief Peripheral clock enable register offset. */
+#define PMC_PCER    (PMC_BASE + PMC_PCER_OFF)   /*!< \brief Peripheral clock enable register. */
+#define PMC_PCDR_OFF                0x00000014  /*!< \brief Peripheral clock disable register offset. */
+#define PMC_PCDR    (PMC_BASE + PMC_PCDR_OFF)   /*!< \brief Peripheral clock disable register. */
+#define PMC_PCSR_OFF                0x00000018  /*!< \brief Peripheral clock status register offset. */
+#define PMC_PCSR    (PMC_BASE + PMC_PCSR_OFF)   /*!< \brief Peripheral clock status register. */
 
-#define CKGR_MCFR       (PMC_BASE + 0x24)   /*!< \brief Main Clock  Frequency Register. */
-#define CKGR_MAINF      ((unsigned int) 0xFFFF <<  0) /*!< \brief Main Clock Frequency. */
-#define CKGR_MAINRDY    ((unsigned int) 0x1 << 16) /*!< \brief Main Clock Ready. */
+#define CKGR_MOR_OFF                0x00000020  /*!< \brief Clock generator main oscillator register offset. */
+#define CKGR_MOR    (PMC_BASE + CKGR_MOR_OFF)   /*!< \brief Clock generator main oscillator register. */
+#define CKGR_MOSCEN                 0x00000001  /*!< \brief Main oscillator enable. */
+#define CKGR_OSCBYPASS              0x00000002  /*!< \brief Main oscillator bypass. */
+#define CKGR_OSCOUNT                0x0000FF00  /*!< \brief Main oscillator start-up time. */
 
-#define CKGR_PLLR       (PMC_BASE + 0x2C)   /*!< \brief PLL Register. */
-#define CKGR_DIV        ((unsigned int) 0xFF <<  0) /*!< \brief Divider Selected. */
-#define CKGR_DIV_0      ((unsigned int) 0x0) /*!< \brief Divider output is 0. */
-#define CKGR_DIV_BYPASS ((unsigned int) 0x1) /*!< \brief Divider is bypassed. */
-#define CKGR_PLLCOUNT   ((unsigned int) 0x3F <<  8) /*!< \brief PLL Counter. */
-#define CKGR_OUT        ((unsigned int) 0x3 << 14) /*!< \brief PLL Output Frequency Range. */
-#define CKGR_OUT_0      ((unsigned int) 0x0 << 14) /*!< \brief Please refer to the PLL datasheet. */
-#define CKGR_OUT_1      ((unsigned int) 0x1 << 14) /*!< \brief Please refer to the PLL datasheet. */
-#define CKGR_OUT_2      ((unsigned int) 0x2 << 14) /*!< \brief Please refer to the PLL datasheet. */
-#define CKGR_OUT_3      ((unsigned int) 0x3 << 14) /*!< \brief Please refer to the PLL datasheet. */
-#define CKGR_MUL        ((unsigned int) 0x7FF << 16) /*!< \brief PLL Multiplier. */
-#define CKGR_USBDIV     ((unsigned int) 0x3 << 28) /*!< \brief Divider for USB Clocks. */
-#define CKGR_USBDIV_0   ((unsigned int) 0x0 << 28) /*!< \brief Divider output is PLL clock output. */
-#define CKGR_USBDIV_1   ((unsigned int) 0x1 << 28) /*!< \brief Divider output is PLL clock output divided by 2. */
-#define CKGR_USBDIV_2   ((unsigned int) 0x2 << 28) /*!< \brief Divider output is PLL clock output divided by 4. */
+#define CKGR_MCFR_OFF               0x00000024  /*!< \brief Clock generator main clock frequency register offset. */
+#define CKGR_MCFR   (PMC_BASE + CKGR_MCFR_OFF)  /*!< \brief Clock generator main clock frequency register. */
+#define CKGR_MAINF                  0x0000FFFF  /*!< \brief Main clock frequency. */
+#define CKGR_MAINRDY                0x00010000  /*!< \brief Main clock ready. */
 
-#define PMC_MCKR    (PMC_BASE + 0x30)   /*!< \brief Master Clock Register. */
-#define PMC_CSS         ((unsigned int) 0x3 <<  0) /*!< \brief Programmable Clock Selection. */
-#define PMC_CSS_SLOW_CLK ((unsigned int) 0x0) /*!< \brief Slow Clock is selected. */
-#define PMC_CSS_MAIN_CLK ((unsigned int) 0x1) /*!< \brief Main Clock is selected. */
-#define PMC_CSS_PLL_CLK ((unsigned int) 0x3) /*!< \brief Clock from PLL is selected. */
-#define PMC_PRES        ((unsigned int) 0x7 <<  2) /*!< \brief Programmable Clock Prescaler. */
-#define PMC_PRES_CLK    ((unsigned int) 0x0 <<  2) /*!< \brief Selected clock. */
-#define PMC_PRES_CLK_2  ((unsigned int) 0x1 <<  2) /*!< \brief Selected clock divided by 2. */
-#define PMC_PRES_CLK_4  ((unsigned int) 0x2 <<  2) /*!< \brief Selected clock divided by 4. */
-#define PMC_PRES_CLK_8  ((unsigned int) 0x3 <<  2) /*!< \brief Selected clock divided by 8. */
-#define PMC_PRES_CLK_16 ((unsigned int) 0x4 <<  2) /*!< \brief Selected clock divided by 16. */
-#define PMC_PRES_CLK_32 ((unsigned int) 0x5 <<  2) /*!< \brief Selected clock divided by 32. */
-#define PMC_PRES_CLK_64 ((unsigned int) 0x6 <<  2) /*!< \brief Selected clock divided by 64. */
+#define CKGR_PLLR_OFF               0x0000002C  /*!< \brief Clock generator PLL register offset. */
+#define CKGR_PLLR   (PMC_BASE + CKGR_PLLR_OFF)  /*!< \brief Clock generator PLL register. */
+#define CKGR_DIV                    0x000000FF  /*!< \brief Divider. */
+#define CKGR_DIV_0                  0x00000000  /*!< \brief Divider output is 0. */
+#define CKGR_DIV_BYPASS             0x00000001  /*!< \brief Divider is bypassed. */
+#define CKGR_PLLCOUNT               0x00003F00  /*!< \brief PLL counter. */
+#define CKGR_OUT                    0x0000C000  /*!< \brief PLL output frequency range. */
+#define CKGR_OUT_0                  0x00000000  /*!< \brief Please refer to the PLL datasheet. */
+#define CKGR_OUT_1                  0x00004000  /*!< \brief Please refer to the PLL datasheet. */
+#define CKGR_OUT_2                  0x00008000  /*!< \brief Please refer to the PLL datasheet. */
+#define CKGR_OUT_3                  0x0000C000  /*!< \brief Please refer to the PLL datasheet. */
+#define CKGR_MUL                    0x07FF0000  /*!< \brief PLL multiplier. */
+#define CKGR_USBDIV                 0x30000000  /*!< \brief Divider for USB clocks. */
+#define CKGR_USBDIV_0               0x00000000  /*!< \brief Divider output is PLL clock output. */
+#define CKGR_USBDIV_1               0x10000000  /*!< \brief Divider output is PLL clock output divided by 2. */
+#define CKGR_USBDIV_2               0x20000000  /*!< \brief Divider output is PLL clock output divided by 4. */
 
-#define PMC_PCKR0   (PMC_BASE + 0x38)   /*!< \brief Programmable Clock Register. */
-#define PMC_PCKR1   (PMC_BASE + 0x3C)   /*!< \brief Programmable Clock Register. */
-#define PMC_PCKR2   (PMC_BASE + 0x40)   /*!< \brief Programmable Clock Register. */
-#define PMC_PCKR3   (PMC_BASE + 0x44)   /*!< \brief Programmable Clock Register. */
+#define PMC_MCKR_OFF                0x00000030  /*!< \brief Master clock register offset. */
+#define PMC_MCKR    (PMC_BASE + PMC_MCKR_OFF)   /*!< \brief Master clock register. */
+#define PMC_PCKR0_OFF               0x00000038  /*!< \brief Programmable clock 0 register offset. */
+#define PMC_PCKR0   (PMC_BASE + PMC_PCKR0_OFF)  /*!< \brief Programmable clock 0 register. */
+#define PMC_PCKR1_OFF               0x0000003C  /*!< \brief Programmable clock 1 register offset. */
+#define PMC_PCKR1   (PMC_BASE + PMC_PCKR1_OFF)  /*!< \brief Programmable clock 1 register. */
+#define PMC_PCKR2_OFF               0x00000040  /*!< \brief Programmable clock 2 register offset. */
+#define PMC_PCKR2   (PMC_BASE + PMC_PCKR2_OFF)  /*!< \brief Programmable clock 2 register. */
+#define PMC_PCKR3_OFF               0x00000044  /*!< \brief Programmable clock 3 register offset. */
+#define PMC_PCKR3   (PMC_BASE + PMC_PCKR3_OFF)  /*!< \brief Programmable clock 3 register. */
+#define PMC_CSS                     0x00000003  /*!< \brief Clock selection. */
+#define PMC_CSS_SLOW_CLK            0x00000000  /*!< \brief Slow clock selected. */
+#define PMC_CSS_MAIN_CLK            0x00000001  /*!< \brief Main clock selected. */
+#define PMC_CSS_PLL_CLK             0x00000003  /*!< \brief PLL clock selected. */
+#define PMC_PRES                    0x0000001C  /*!< \brief Clock prescaler. */
+#define PMC_PRES_CLK                0x00000000  /*!< \brief Selected clock, not divided. */
+#define PMC_PRES_CLK_2              0x00000004  /*!< \brief Selected clock divided by 2. */
+#define PMC_PRES_CLK_4              0x00000008  /*!< \brief Selected clock divided by 4. */
+#define PMC_PRES_CLK_8              0x0000000C  /*!< \brief Selected clock divided by 8. */
+#define PMC_PRES_CLK_16             0x00000010  /*!< \brief Selected clock divided by 16. */
+#define PMC_PRES_CLK_32             0x00000014  /*!< \brief Selected clock divided by 32. */
+#define PMC_PRES_CLK_64             0x00000018  /*!< \brief Selected clock divided by 64. */
 
-#define PMC_IER     (PMC_BASE + 0x60)   /*!< \brief Interrupt Enable Register. */
-#define PMC_IDR     (PMC_BASE + 0x64)   /*!< \brief Interrupt Disable Register. */
-#define PMC_SR      (PMC_BASE + 0x68)   /*!< \brief Status Register. */
-#define PMC_IMR     (PMC_BASE + 0x6C)   /*!< \brief Interrupt Mask Register. */
-#define PMC_MOSCS       ((unsigned int) 0x1 <<  0) /*!< \brief MOSC Status/Enable/Disable/Mask. */
-#define PMC_LOCK        ((unsigned int) 0x1 <<  2) /*!< \brief PLL Status/Enable/Disable/Mask. */
-#define PMC_MCKRDY      ((unsigned int) 0x1 <<  3) /*!< \brief MCK_RDY Status/Enable/Disable/Mask. */
-#define PMC_PCK0RDY     ((unsigned int) 0x1 <<  8) /*!< \brief PCK0_RDY Status/Enable/Disable/Mask. */
-#define PMC_PCK1RDY     ((unsigned int) 0x1 <<  9) /*!< \brief PCK1_RDY Status/Enable/Disable/Mask. */
-#define PMC_PCK2RDY     ((unsigned int) 0x1 << 10) /*!< \brief PCK2_RDY Status/Enable/Disable/Mask. */
+#define PMC_IER_OFF                 0x00000060  /*!< \brief PMC interrupt enable register offset. */
+#define PMC_IER     (PMC_BASE + PMC_IER_OFF)    /*!< \brief PMC interrupt enable register. */
+#define PMC_IDR_OFF                 0x00000064  /*!< \brief PMC interrupt disable register offset. */
+#define PMC_IDR     (PMC_BASE + PMC_IDR_OFF)    /*!< \brief PMC interrupt disable register. */
+#define PMC_SR_OFF                  0x00000068  /*!< \brief PMC status register offset. */
+#define PMC_SR      (PMC_BASE + PMC_SR_OFF)     /*!< \brief PMC status register. */
+#define PMC_IMR_OFF                 0x0000006C  /*!< \brief PMC interrupt mask register offset. */
+#define PMC_IMR     (PMC_BASE + PMC_IMR_OFF)    /*!< \brief PMC interrupt mask register. */
+#define PMC_MOSCS                   0x00000001  /*!< \brief Main oscillator. */
+#define PMC_LOCK                    0x00000004  /*!< \brief PLL lock. */
+#define PMC_MCKRDY                  0x00000008  /*!< \brief Master clock ready. */
+#define PMC_PCKRDY0                 0x00000100  /*!< \brief Programmable clock 0 ready. */
+#define PMC_PCKRDY1                 0x00000200  /*!< \brief Programmable clock 1 ready. */
+#define PMC_PCKRDY2                 0x00000400  /*!< \brief Programmable clock 2 ready. */
+#define PMC_PCKRDY3                 0x00000800  /*!< \brief Programmable clock 3 ready. */
 
 /*@} xgNutArchArmAt91Pmc */
 
