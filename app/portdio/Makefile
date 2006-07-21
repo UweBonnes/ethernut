@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.6  2006/07/21 09:13:59  haraldkipp
+# Added creation of *.elf for 'make all'.
+#
 # Revision 1.5  2005/11/22 09:15:34  haraldkipp
 # Library list re-ordered.
 #
@@ -73,14 +76,14 @@ OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutfs -lnutnet -lnutdev -lnutarch -lnutcrt -lnutnet -lnutdev -lnutos
 TARG =  $(PROJ).hex
 
-all: $(OBJS) $(TARG)
+all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
 
 include ../Makerules
 
 
 clean:
 	-rm -f $(OBJS)
-	-rm -f $(TARG)
+	-rm -f $(TARG) $(ITARG) $(DTARG)
 	-rm -f $(PROJ).eep
 	-rm -f $(PROJ).obj
 	-rm -f $(PROJ).map

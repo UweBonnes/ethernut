@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2006/07/21 09:13:59  haraldkipp
+# Added creation of *.elf for 'make all'.
+#
 # Revision 1.3  2004/09/08 10:17:52  haraldkipp
 # Dot-slash needed by Linux
 #
@@ -53,11 +56,11 @@ include ./Makedefs.isp
 
 SRCS =  $(PROJ).c $(ROMFILE)
 OBJS =  $(SRCS:.c=.o) sisp.o
-LIBS =  $(LIBDIR)/nutinit.o -lnutfs -lnutos -lnutdev -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o -lnutfs -lnutos -lnutdev -lnutcrt -lnutarch
 TARG =  $(PROJ).hex
 PARM =  $(PROJ).eep
 
-all: $(OBJS) $(TARG) $(ITARG) $(ROMDIR)/$(ISPTARG)
+all: $(OBJS) $(TARG) $(ITARG) $(DTARG) $(ROMDIR)/$(ISPTARG)
 
 $(ROMFILE): $(ISPTARG)
 	$(CP) $(ISPTARG) $(ROMDIR)/$(ISPTARG)
@@ -68,8 +71,7 @@ include ./Makerules.isp
 
 clean: cleanisp
 	-rm -f $(OBJS)
-	-rm -f $(TARG)
-	-rm -f $(ITARG)
+	-rm -f $(TARG) $(ITARG) $(DTARG)
 	-rm -f $(PROJ).eep
 	-rm -f $(PROJ).obj
 	-rm -f $(PROJ).map

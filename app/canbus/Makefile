@@ -1,7 +1,7 @@
 #
 # Makefile - Simple Makefile for Nut/OS example programs
 #
-# $Id: Makefile,v 1.2 2006/03/01 02:17:18 hwmaier Exp $
+# $Id: Makefile,v 1.3 2006/07/21 09:13:58 haraldkipp Exp $
 #
 
 
@@ -15,13 +15,13 @@ LIBS =  $(LIBDIR)/nutinit.o -lnutpro -lnutos -lnutarch -lnutdev -lnutnet -lnutfs
 
 TARG =  $(PROJ).hex
 
-all: $(OBJS) $(TARG)
+all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
 
 include ../Makerules
 
 clean:
 	-rm -f $(OBJS)
-	-rm -f $(TARG)
+	-rm -f $(TARG) $(ITARG) $(DTARG)
 	-rm -f $(PROJ).eep
 	-rm -f $(PROJ).obj
 	-rm -f $(PROJ).map

@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.9  2006/07/21 09:13:58  haraldkipp
+# Added creation of *.elf for 'make all'.
+#
 # Revision 1.8  2006/05/25 09:31:48  haraldkipp
 # Include UserConf.mk for correct building in source tree.
 #
@@ -78,6 +81,7 @@ include $(top_srcdir)/Makedefs.arm-gcc
 
 TARG      = $(PROJ).hex
 ITARG     = $(PROJ).bin
+DTARG     = $(PROJ).elf
 
 BIN       = $(TRGT)objcopy
 

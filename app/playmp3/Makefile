@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.5  2006/07/21 09:13:59  haraldkipp
+# Added creation of *.elf for 'make all'.
+#
 # Revision 1.4  2006/05/15 11:51:44  haraldkipp
 # Remove unused network libraries.
 #
@@ -58,7 +61,7 @@ OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutfs -lnutos -lnutcrt -lnutdev -lnutarch
 TARG =  $(PROJ).hex
 
-all: $(OBJS) $(TARG)
+all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
 
 $(WEBFILE): $(WEBDIR)/sound1a.mp3 $(WEBDIR)/sound2a.mp3 $(WEBDIR)/sound3a.mp3 $(WEBDIR)/sound4a.mp3
 	$(CRUROM) -r -o$(WEBFILE) $(WEBDIR)
@@ -67,7 +70,7 @@ include ../Makerules
 
 clean:
 	-rm -f $(OBJS)
-	-rm -f $(TARG)
+	-rm -f $(TARG) $(ITARG) $(DTARG)
 	-rm -f $(PROJ).eep
 	-rm -f $(PROJ).obj
 	-rm -f $(PROJ).map

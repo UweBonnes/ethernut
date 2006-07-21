@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.6  2006/07/21 09:13:58  haraldkipp
+# Added creation of *.elf for 'make all'.
+#
 # Revision 1.5  2006/01/15 03:00:31  hwmaier
 # Changed linker option from -Tdata= to --section-start=.data= as -Tdata is broken in binutils 2.16 for the AVR target (refer to posts in avr-gcc mailing list)
 #
@@ -70,6 +73,7 @@ include $(top_srcdir)/Makedefs.avr-gcc
 
 TARG      = $(PROJ).hex
 ITARG     = $(PROJ).bin
+DTARG     = $(PROJ).elf
 
 BIN       = $(TRGT)objcopy
 
