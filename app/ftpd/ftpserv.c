@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2006/07/21 09:07:19  haraldkipp
+ * Use dev/board.h to determine output device.
+ *
  * Revision 1.4  2006/01/22 17:34:38  haraldkipp
  * Added support for Ethernut 3, PHAT file system and realtime clock.
  *
@@ -106,19 +109,11 @@
  */
 
 /* 
- * Device for debug output. 
- */
-#define DBG_DEVICE devDebug0
-
-/* 
- * Device name for debug output. 
- */
-#define DBG_DEVNAME "uart0"
-
-/* 
  * Baudrate for debug output. 
  */
+#ifndef DBG_BAUDRATE
 #define DBG_BAUDRATE 115200
+#endif
 
 /*
  * Wether we should use DHCP.
@@ -200,6 +195,11 @@
  */
 #define BLKDEV      devNplMmc0
 #define FSDEV_NAME  "PHAT0" 
+
+#elif defined(AT91SAM7X_EK)
+
+#undef FSDEV
+#define FSDEV_NAME   "None"
 
 #else
 
@@ -302,8 +302,8 @@ void InitDebugDevice(void)
 {
     u_long baud = DBG_BAUDRATE;
 
-    NutRegisterDevice(&DBG_DEVICE, 0, 0);
-    freopen(DBG_DEVNAME, "w", stdout);
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 }
 
@@ -468,6 +468,7 @@ int main(void)
         printf("Time: %02u:%02u:%02u\n", lot->tm_hour, lot->tm_min, lot->tm_sec);
     }
 
+#ifdef FSDEV
     /* Initialize the file system. */
     printf("Register file system...");
     if (NutRegisterDevice(&FSDEV, 0, 0)) {
@@ -475,6 +476,7 @@ int main(void)
         for (;;);
     }
     puts("OK");
+#endif
 
 #ifdef BLKDEV
     /* Register block device. */
@@ -492,6 +494,8 @@ int main(void)
         for (;;);
     }
     puts("OK");
+#else
+    volid = 0;
 #endif
 
     /* Register root path. */

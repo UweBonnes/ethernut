@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2006/07/21 09:07:19  haraldkipp
+ * Use dev/board.h to determine output device.
+ *
  * Revision 1.1  2005/07/23 13:54:39  haraldkipp
  * First check in
  *
@@ -55,16 +58,7 @@
 #include <stdio.h>
 #include <io.h>
 
-#include <cfg/arch.h>
-#include <dev/debug.h>
-
-#ifdef MCU_GBA
-#define DEV_DEBUG_NAME "con"
-#else
-#define DEV_DEBUG_NAME "uart0"
-#endif
-
-#define DEV_DEBUG devDebug0
+#include <dev/board.h>
 
 #include <sys/thread.h>
 #include <sys/timer.h>
