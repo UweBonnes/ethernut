@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2006/07/21 09:07:48  haraldkipp
+ * Fixed warnings about wrong signedness.
+ *
  * Revision 1.4  2005/11/22 09:14:13  haraldkipp
  * Replaced specific device names by generalized macros.
  *
@@ -106,7 +109,7 @@
 
 #include <pro/dhcp.h>
 
-static u_char buff[1024];
+static char buff[1024];
 static u_char my_mac[] = MY_MAC;
 
 /*
