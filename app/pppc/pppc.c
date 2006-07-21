@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.7  2006/07/21 09:08:19  haraldkipp
+ * Use devAhdlc0 instead of devUart0. The latter will not work.
+ *
  * Revision 1.6  2005/10/16 23:22:44  hwmaier
  * Commented out unreferenced include statement hd44780.h
  *
@@ -70,6 +73,8 @@
  * \bug Not working with ATmega103. Debug output needs to be removed.
  */
 
+#include <cfg/arch.h>
+
 /*
  * PPP user and password.
  */
@@ -92,8 +97,12 @@
 /*
  * PPP device settings.
  */
-//#define PPPDEV      devAhdlc0   /* Use HDLC driver. */
-#define PPPDEV      devUart0    /* Use standard UART driver. */
+#if defined(__AVR__)
+#define PPPDEV      devAhdlc0   /* Use HDLC driver. */
+//#define PPPDEV      devUart0    /* Use standard UART driver. */
+#else
+#warning "Works on ATmega128 only."
+#endif
 #define PPPCOM      "uart0"     /* Physical device name. */
 #define PPPSPEED    115200      /* Baudrate. */
 #define PPPRXTO     1000        /* Character receive timeout. */
@@ -107,8 +116,8 @@
 #include <cfg/os.h>
 #include <dev/debug.h>
 //#include <dev/hd44780.h>
-//#include <dev/ahdlcavr.h>
-#include <dev/uartavr.h>
+#include <dev/ahdlcavr.h>
+//#include <dev/uartavr.h>
 #include <dev/ppp.h>
 #include <dev/chat.h>
 
@@ -300,8 +309,10 @@ int main(void)
 #ifdef __AVR_ENHANCED__
     NutRegisterDevice(&DBGDEV, 0, 0);
 #endif
+#ifdef PPPDEV
     NutRegisterDevice(&PPPDEV, 0, 0);
     NutRegisterDevice(&devPpp, 0, 0);
+#endif
 
     /*
      * Open debug device for standard output.
@@ -333,6 +344,7 @@ int main(void)
     }
     puts("done");
 
+#ifdef PPPDEV
     /*
      * Set PPP line speed.
      */
@@ -456,4 +468,5 @@ int main(void)
             printf("%u bytes free\n", NutHeapAvailable());
         }
     }
+#endif /* PPPDEV */
 }
