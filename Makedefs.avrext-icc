@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2006/07/21 09:15:33  haraldkipp
+# Added current directory to include path.
+#
 # Revision 1.1  2006/07/10 08:41:41  haraldkipp
 # New ImageCraft Makefiles for extended AVR devices like the ATmega2561.
 #
@@ -49,7 +52,7 @@ AR  = ilibw
 CP  = cp
 AS  = iccavr
 
-CPFLAGS = $(INCFIRST) $(INCDIR) $(INCLAST) -e $(DEFS) -l -g -Mavr_$(MCU)
+CPFLAGS = $(INCFIRST) $(INCPRE). $(INCDIR) $(INCLAST) -e $(DEFS) -l -g -Mavr_$(MCU)
 LDFLAGS = -m -Wl,-Map=$(PROJ).map,--cref
 ARFLAGS = -a
 ASFLAGS = $(INCLAST) -e -l -g -Wa-W -Wa-n
