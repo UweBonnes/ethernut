@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2006/07/21 09:08:58  haraldkipp
+ * Map puts_P to puts and _write_P to _write for non-Harvard architectures.
+ *
  * Revision 1.12  2006/07/10 14:27:03  haraldkipp
  * C++ will use main instead of NutAppMain. Contributed by Matthias Wilde.
  *
@@ -134,8 +137,10 @@
 #define memcpy_P(x, y, z)       memcpy(x, y, z)
 
 #define fputs_P(x, y)           fputs((char *)(x), y)
+#define puts_P(x)               puts((char *)(x))
 #define fprintf_P               fprintf
 #define printf_P                printf
+#define _write_P                _write
 
 /*!
  * \brief End of uninitialised data segment. Defined in the linker script.
