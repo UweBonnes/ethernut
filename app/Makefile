@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2006/07/21 09:16:29  haraldkipp
+# All samples must be build for all platforms. Running the targets is a
+# different story.
+#
 # Revision 1.8  2006/07/10 14:21:15  haraldkipp
 # C++ demo added to ARM build.
 #
@@ -69,49 +73,48 @@
 #
 
 all:
+	$(MAKE) -C basemon
+	$(MAKE) -C canbus
 	$(MAKE) -C cppdemo
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
 	$(MAKE) -C inetq
 	$(MAKE) -C logtime
+	$(MAKE) -C nutpiper
+	$(MAKE) -C playmp3
 	$(MAKE) -C portdio
+	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
 	$(MAKE) -C simple
 	$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
-ifeq ($(ARCH), avr)
-	$(MAKE) -C basemon
-	$(MAKE) -C nutpiper
-	$(MAKE) -C playmp3
-	$(MAKE) -C pppc
 	$(MAKE) -C uart
-endif
 
 install:
+	$(MAKE) -C basemon install
+	$(MAKE) -C canbus install
 	$(MAKE) -C cppdemo install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
 	$(MAKE) -C inetq install
 	$(MAKE) -C logtime install
+	$(MAKE) -C nutpiper install
+	$(MAKE) -C playmp3 install
 	$(MAKE) -C portdio install
+	$(MAKE) -C pppc install
 	$(MAKE) -C rs232d install
 	$(MAKE) -C simple install
 	$(MAKE) -C tcps install
 	$(MAKE) -C threads install
 	$(MAKE) -C timers install
-ifeq ($(ARCH), avr)
-	$(MAKE) -C basemon install
-	$(MAKE) -C nutpiper install
-	$(MAKE) -C playmp3 install
-	$(MAKE) -C pppc install
 	$(MAKE) -C uart install
-endif
 
 clean:
 	$(MAKE) -C basemon clean
+	$(MAKE) -C canbus clean
 	$(MAKE) -C cppdemo clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
@@ -119,6 +122,7 @@ clean:
 	$(MAKE) -C inetq clean
 	$(MAKE) -C logtime clean
 	$(MAKE) -C nutpiper clean
+	$(MAKE) -C playmp3 clean
 	$(MAKE) -C portdio clean
 	$(MAKE) -C pppc clean
 	$(MAKE) -C rs232d clean
