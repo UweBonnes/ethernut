@@ -1,4 +1,51 @@
-$Id: ChangeLog,v 1.345 2006/07/18 13:59:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.346 2006/07/21 09:20:49 haraldkipp Exp $
+
+2006-07-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/Makedefs.arm-gcc, app/Makedefs.avr-gcc, app/basemon/Makefile,
+	app/canbus/Makefile, app/cppdemo/Makefile, app/events/Makefile,
+	app/ftpd/Makefile, app/httpd/Makefile, app/inetq/Makefile,
+	app/isp2/Makefile, app/logtime/Makefile, app/nutpiper/Makefile,
+	app/playmp3/Makefile, app/portdio/Makefile, app/pppc/Makefile,
+	app/rs232d/Makefile, app/simple/Makefile, app/tcps/Makefile,
+	app/threads/Makefile, app/timers/Makefile, app/uart/Makefile: 
+	Added creation of *.elf for 'make all'.
+
+	* Makedefs.avr-icc, Makedefs.avrext-icc: Added current directory
+	to include path.
+
+	* app/Makefile: All samples must be build for all platforms.
+	Running the targets is a different story.
+
+	* app/Makerules.arm-gcc: Added start-group and end-group to solve
+	circular reference issue with libraries.
+
+	* app/basemon/basemon.c, app/basemon/dataflash.c, 
+	app/basemon/realtek.c, app/basemon/smsc.c, app/basemon/uart.c,
+	app/basemon/webdemo.c, app/basemon/xmemtest.c,
+	app/basemon/xmemtest.h, app/canbus/candemo.c, app/nutpiper/config.c,
+	app/nutpiper/nutpiper.c, app/nutpiper/player.c, 
+	app/playmp3/playmp3.c: Exclude AVR specific parts from building
+	for other platforms. This does not imply, that they are
+	working on these platforms.
+
+	* app/events/events.c, app/ftpd/ftpserv.c: Use dev/board.h to 
+	determine output device.
+
+	* app/inetq/inetq.c: Fixed warnings about wrong signedness.
+
+	* app/pppc/pppc.c: Use devAhdlc0 instead of devUart0. The latter
+	will not work.
+
+	* include/arch/arm.h: Map puts_P to puts and _write_P to _write
+	for non-Harvard architectures.
+
+	* include/dev/atcan.h: Excluded function prototypes for non-AVR
+	targets. Parameter types are unknown to GNUARM.
+
+	* include/arch/arm/at91sam7x.h, include/arch/arm/at91_spi.h:
+	Added SPI support, kindly contributed by Andras Albert.
+
 
 2006-07-16  Harald Kipp  <harald.kipp@egnite.de>
 
