@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.2  2006/05/15 11:53:15  haraldkipp
  * Now a buffer flush will completely transfer the MP3 file to the decoder.
  *
@@ -106,6 +110,8 @@ int main(void)
      */
     printf("\n\nPlay MP3 files on Nut/OS %s\n", NutVersionString());
 
+#if defined(__AVR__)
+
     /*
      * Initialize the MP3 buffer. The NutSegBuf routines provide a global
      * system buffer, which works with banked and non-banked systems.
@@ -143,8 +149,12 @@ int main(void)
         PlayMp3File("UROM:sound4a.mp3");
         NutSleep(1000);
     }
+#else /* !__AVR__ */
+    for (;;);
+#endif /* !__AVR__ */
 }
 
+#if defined(__AVR__)
 
 /*
  * Play MP3 file from local file system.
@@ -237,3 +247,5 @@ static int PlayMp3File(char *path)
     printf("\nDone, %u bytes free\n", NutHeapAvailable());
     return 0;
 }
+
+#endif /* !__AVR__ */

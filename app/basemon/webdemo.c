@@ -1,3 +1,43 @@
+/*
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holders nor the names of
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * For additional information see http://www.ethernut.de/
+ */
+
+/*
+ * $Log$
+ * Revision 1.5  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
+ */
+
 #include <stdio.h>
 #include <string.h>
 
@@ -178,7 +218,7 @@ void DoCheckboxes(FILE * stream, u_char * name, u_char val)
     fprintf_P(stream, ttop_P, name);
     for (i = 8; i-- > 0;) {
         fprintf_P(stream, tfmt_P, name, i);
-        if (val & BV(i))
+        if (val & _BV(i))
             fputs_P(tchk_P, stream);
         fputs("></td>\r\n", stream);
     }
@@ -202,6 +242,8 @@ static int ShowPorts(FILE * stream, REQUEST * req)
     NutHttpSendHeaderBot(stream, "text/html", -1);
 
     fputs_P(ttop_P, stream);
+
+#if defined (__AVR__)
     DoCheckboxes(stream, "DDRA", inb(DDRA));
     DoCheckboxes(stream, "PINA", inb(PINA));
     DoCheckboxes(stream, "PORTA", inb(PORTA));
@@ -226,6 +268,7 @@ static int ShowPorts(FILE * stream, REQUEST * req)
 
     fputs_P(trow_P, stream);
     DoCheckboxes(stream, "PINF", inb(PINF));
+#endif
 
     fputs_P(tbot_P, stream);
     fflush(stream);
@@ -247,11 +290,13 @@ THREAD(WebDemo, arg)
      * Register Realtek controller at address 8300 hex
      * and interrupt 5.
      */
+#if defined(__AVR__)
     if(nic == 1)
         NutRegisterDevice(&devEth0, 0x8300, 5);
 #ifdef __AVR_ATmega128__
     else
         NutRegisterDevice(&devSmsc111, 0, 0);
+#endif
 #endif
 
     /*
@@ -265,8 +310,10 @@ THREAD(WebDemo, arg)
                 for (;;)
                     NutSleep(1000);
             } else {
+#if defined (__AVR__)
                 asm("cli");
                 asm("call 0");
+#endif
             }
         }
     } else if (NutDhcpIfConfig("eth0", my_mac, 60000)) {
@@ -275,8 +322,10 @@ THREAD(WebDemo, arg)
             for (;;)
                 NutSleep(1000);
         } else {
+#if defined (__AVR__)
             asm("cli");
             asm("call 0");
+#endif
         }
     }
 
@@ -292,16 +341,20 @@ THREAD(WebDemo, arg)
     if (inet_addr(my_ip) && inet_addr(my_gate)) {
         if (uart_bs >= 0)
             printf("\nAdd gateway %s", my_gate);
+#if defined (__AVR__)
         NutIpRouteAdd(0, 0, inet_addr(my_gate), &devEth0);
+#endif
     }
 
     else if (confnet.cdn_gateway && uart_bs >= 0)
         printf("\nGate %s", inet_ntoa(confnet.cdn_gateway));
+#if defined (__AVR__)
     if(nic == 1)
         ifn = (IFNET *) (devEth0.dev_icb);
 #ifdef __AVR_ATmega128__
     else
         ifn = (IFNET *) (devSmsc111.dev_icb);
+#endif
 #endif
     printf("\nHTTP server running. URL http://%s/\n", inet_ntoa(ifn->if_local_ip));
 

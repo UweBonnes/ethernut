@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.3  2006/05/15 11:51:07  haraldkipp
  * Added support for external watchdog hardware.
  *
@@ -326,6 +330,7 @@ static int SmscTestInterrupt(void)
 {
     u_char tmo;
 
+#if defined (__AVR__)
     /*
      * Set PE5 to input. This is our interrupt signal line.
      */
@@ -340,6 +345,7 @@ static int SmscTestInterrupt(void)
         puts("IRQ stuck");
         return -1;
     }
+#endif
 
     /* Enable receiver. */
     nic_bs(3);
@@ -374,10 +380,12 @@ static int SmscTestInterrupt(void)
         }
         Delay(2000);
     }
+#if defined (__AVR__)
     if(bit_is_clear(PINE, 5)) {
         puts("no IRQ");
         return -1;
     }
+#endif
     return 0;
 }
 

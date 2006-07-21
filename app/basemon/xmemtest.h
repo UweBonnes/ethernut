@@ -2,7 +2,7 @@
 #define _XMEMTEST_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,12 +35,20 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.1  2003/11/03 16:07:40  haraldkipp
  * Completely rewritten to support Ethernut 2
  *
  */
 
 #include <sys/types.h>
+
+#ifndef RAMEND
+#define RAMEND  0x1100
+#endif
 
 __BEGIN_DECLS
 

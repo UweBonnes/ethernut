@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.2  2005/02/07 19:05:19  haraldkipp
  * ATmega 103 compile errors fixed
  *
@@ -39,6 +43,7 @@
 
 #include "dataflash.h"
 
+#if defined (__AVR__)
 /*!
  * \brief Exchange SPI byte.
  *
@@ -141,6 +146,8 @@ static int SpiMemInit(u_short *pages, u_short *pagesize)
     return -1;
 }
 
+#endif  /* __AVR__ */
+
 /*
  * \return Number of bytes.
  */
@@ -149,10 +156,12 @@ long SpiMemTest(void)
     u_short pages = 0;
     u_short pagesize = 0;
 
+#if defined (__AVR__)
     SpiMemInit(&pages, &pagesize);
 
     /* Disable SPI */
     outb(SPCR, 0);
+#endif  /* __AVR__ */
 
     return (long)pages * (long)pagesize;
 }

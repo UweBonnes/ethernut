@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.14  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.13  2006/05/15 11:51:07  haraldkipp
  * Added support for external watchdog hardware.
  *
@@ -154,7 +158,7 @@
 #include "uart.h"
 #include "utils.h"
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__AVR__)
 void NutInit(void) __attribute__ ((naked)) __attribute__ ((section(".init8")));
 extern int NutAppMain(void) __attribute__ ((noreturn));
 #endif
@@ -196,6 +200,7 @@ THREAD(idle, arg)
  */
 int TestPorts(void)
 {
+#if defined(__AVR__)
     u_char pat;
     u_char ipat;
     u_char val;
@@ -286,6 +291,7 @@ int TestPorts(void)
 
     if (bpat || dpat || epat || fpat)
         return -1;
+#endif /* __AVR__ */
     return 0;
 }
 
@@ -342,13 +348,13 @@ void BaseMon(void)
      */
     printf("External RAM Test... ");
     sram = XMemTest();
-    printf("%u bytes\n", sram);
+    printf("%u bytes\n", (u_int)sram);
 
     printf("Banked RAM Test...   ");
     banksize = sram;
     banks = XMemBankTest(&banksize);
     if (banks)
-        printf("%u banks, %u bytes ea.\n", banks, banksize);
+        printf("%u banks, %u bytes ea.\n", banks, (u_int)banksize);
     else
         puts("none");
 
@@ -424,7 +430,9 @@ void BaseMon(void)
                 }
             } else if (ch == 'j' || ch == 'J') {
                 puts("Booting...");
+#if defined(__AVR__)
                 asm("jmp 0x1F000");
+#endif
             } else if (ch == 's' || ch == 'S')
                 LoopSRAM();
         }
@@ -499,17 +507,12 @@ void NutInit(void)
 {
     extern void *__bss_end;
     /*
-     * Switch off analog comparator to reduce power
-     * consumption. The comparator is switched on
-     * after CPU reset.
-     */
-    sbi(ACSR, ACD);
-    /*
      * Use the rest of our internal RAM for our heap. Re-opening
      * standard output will use malloc. We do not use any external
      * RAM before passing the memory test.
      */
     NutHeapAdd(&__bss_end, (uptr_t) RAMEND - 256 - (uptr_t) (&__bss_end));
+
     /*
      * Use the debug UART driver for output. In opposite
      * to the standard UART driver, it uses non-buffered

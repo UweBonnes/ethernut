@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.4  2006/05/15 11:51:07  haraldkipp
  * Added support for external watchdog hardware.
  *
@@ -60,9 +64,13 @@ u_char GetChar(void)
 #ifdef HEARTBEAT_BIT
     HeartBeat();
 #endif
-    if ((inb(USR) & BV(RXC)) == 0)
+#if defined (__AVR__)
+    if ((inb(USR) & _BV(RXC)) == 0)
         return 0;
     ch = inb(UDR);
+#else
+    ch = 0;
+#endif
     return ch;
 }
 
@@ -119,6 +127,7 @@ u_char *GetIP(u_char * prompt, u_char * value)
  */
 int DetectSpeed(void)
 {
+#if defined (__AVR__)
     u_char bstab[] = {
         1,      /* 115200 @  3.6864 */
         7,      /* 115200 @ 14.7456 */
@@ -152,7 +161,7 @@ int DetectSpeed(void)
     /*
      * Enable UART transmitter and receiver.
      */
-    outb(UCR, BV(RXEN) | BV(TXEN));
+    outb(UCR, _BV(RXEN) | _BV(TXEN));
 
     /*
      * Sixteen retries.
@@ -165,24 +174,24 @@ int DetectSpeed(void)
              * Set baudrate selector.
              */
             Delay(1000);
-            if ((inb(USR) & BV(RXC)) != 0)
+            if ((inb(USR) & _BV(RXC)) != 0)
                 ict = inb(UDR);
             outb(UBRR, (u_char) bs);
             Delay(1000);
-            if ((inb(USR) & BV(RXC)) != 0)
+            if ((inb(USR) & _BV(RXC)) != 0)
                 ict = inb(UDR);
 
             /*
              * Now wait for some time for a character received.
              */
             for (i = 0; i < 40; i++) {
-                if ((inb(USR) & BV(RXC)) != 0)
+                if ((inb(USR) & _BV(RXC)) != 0)
                     break;
                 Delay(1000);
             }
             rec = 0;
             for (i = 1; i; i++) {
-                if ((inb(USR) & BV(RXC)) != 0) {
+                if ((inb(USR) & _BV(RXC)) != 0) {
                     if (inb(UDR) == 32) {
                         if (rec++)
                             return bs;
@@ -197,6 +206,7 @@ int DetectSpeed(void)
         }
     }
     outb(UBRR, 23);
+#endif
     return -1;
 }
 

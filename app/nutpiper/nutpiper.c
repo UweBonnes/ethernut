@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.4  2006/05/15 12:51:47  haraldkipp
  * Player start timeout increased.
  *
@@ -85,6 +89,8 @@
 #include "display.h"
 #include "scanner.h"
 #include "player.h"
+
+#if defined(__AVR__)
 
 /*
  * TCP buffer size.
@@ -374,6 +380,8 @@ static void UserInterface(void)
     }
 }
 
+#endif /* __AVR__ */
+
 /*
  * Main entry of the Internet Radio Application.
  */
@@ -403,6 +411,7 @@ int main(void)
     if (ConfigLoad())
         ConfigResetFactory();
 
+#if defined(__AVR__)
     /*
      * Initialize the MP3 device early to avoid noice, caused
      * by floating, tri-stated port lines.
@@ -454,6 +463,7 @@ int main(void)
     for (;;) {
         UserInterface();
     }
+#endif /* __AVR__ */
 
     for (;;)
         NutSleep(1000);

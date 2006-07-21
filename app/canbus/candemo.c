@@ -66,7 +66,6 @@
 #include <net/errno.h>
 #include <dev/atcan.h>
 
-
 /*****************************************************************************
  * Main
  *****************************************************************************/
@@ -87,6 +86,8 @@ int main(void)
    freopen("uart0", "w", stdout);
 
    printf("CAN driver test program");
+
+#if defined(MCU_AT90CAN128)
 
    // Init AT90CAN128 CAN controller
    result = NutRegisterDevice(&devAtCan, 0, 0);
@@ -138,5 +139,11 @@ int main(void)
                 canInfoPtr->can_overruns);
       }
    }
+#else   /* MCU_AT90CAN128 */
+#warning "This sample requires an AT90CAN128 MCU"
+   i = 0;
+   result = 0;
+   for (;;);
+#endif  /* MCU_AT90CAN128 */
 }
 

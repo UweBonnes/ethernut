@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.3  2004/05/11 17:23:05  drsung
  * Advanced radio stations are now used depending of macro ETHERNUT2.
  *
@@ -75,9 +79,11 @@ static int ConfigSaveBinary(int addr, void *val, size_t len)
     size_t i;
     u_char *cp = val;
 
+#if defined(__AVR__)
     for (i = 0; i < len; cp++, i++)
         if (eeprom_read_byte((void *) (addr + i)) != *cp)
             eeprom_write_byte((void *) (addr + i), *cp);
+#endif /* __AVR__ */
 
     return len;
 }
@@ -89,11 +95,13 @@ static int ConfigSaveString(int addr, u_char * str)
 {
     int rc = 0;
 
+#if defined(__AVR__)
     do {
         if (eeprom_read_byte((void *) (addr + rc)) != *str)
             eeprom_write_byte((void *) (addr + rc), *str);
         rc++;
     } while (*str++);
+#endif /* __AVR__ */
 
     return rc;
 }
@@ -105,12 +113,15 @@ static size_t ConfigLoadString(int addr, u_char * str, size_t size)
 {
     size_t rc = 0;
 
+#if defined(__AVR__)
     while (rc < size) {
         *str = eeprom_read_byte((void *) (addr + rc));
         rc++;
         if (*str++ == 0)
             break;
     }
+#endif /* __AVR__ */
+
     return rc;
 }
 
@@ -122,8 +133,10 @@ static int ConfigLoadBinary(int addr, void *val, size_t len)
     size_t i;
     u_char *cp = val;
 
+#if defined(__AVR__)
     for (i = 0; i < len; cp++, i++)
         *cp = eeprom_read_byte((void *) (addr + i));
+#endif /* __AVR__ */
 
     return len;
 }

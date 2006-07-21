@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2006/07/21 09:06:36  haraldkipp
+ * Exclude AVR specific parts from building for other platforms. This does
+ * not imply, that all samples are working on all platforms.
+ *
  * Revision 1.2  2003/09/29 16:34:26  haraldkipp
  * Include file sequence changed
  *
@@ -61,6 +65,8 @@
 
 
 PLAYERINFO player;
+
+#if defined(__AVR__)
 
 /*
  * Process embedded meta data.
@@ -387,3 +393,5 @@ int PlayerStart(TCPSOCKET * sock, u_long metaint, u_long tmo)
     }
     return 0;
 }
+
+#endif /* __AVR__ */
