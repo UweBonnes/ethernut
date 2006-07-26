@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,8 +33,8 @@
 
 /*!
  * $Log$
- * Revision 1.5  2006/07/21 09:07:19  haraldkipp
- * Use dev/board.h to determine output device.
+ * Revision 1.6  2006/07/26 11:22:55  haraldkipp
+ * Added support for AT91SAM7X-EK.
  *
  * Revision 1.4  2006/01/22 17:34:38  haraldkipp
  * Added support for Ethernut 3, PHAT file system and realtime clock.
@@ -59,6 +59,8 @@
 #include <dev/debug.h>
 #include <dev/pnut.h>
 #include <dev/nplmmc.h>
+#include <dev/sbimmc.h>
+#include <dev/spimmc_at91.h>
 #include <dev/x12rtc.h>
 #include <fs/phatfs.h>
 
@@ -184,22 +186,23 @@
 
 #if defined(ETHERNUT3)
 
-/*
- * Ethernut 3 File system
- */
+/* Ethernut 3 file system. */
 #define FSDEV       devPhat0
-#define BLKDEV_NAME "MMC0"
-
-/*
- * Block device.
- */
-#define BLKDEV      devNplMmc0
 #define FSDEV_NAME  "PHAT0" 
+
+/* Ethernut 3 block device interface. */
+#define BLKDEV      devNplMmc0
+#define BLKDEV_NAME "MMC0"
 
 #elif defined(AT91SAM7X_EK)
 
-#undef FSDEV
-#define FSDEV_NAME   "None"
+/* SAM7X-EK file system. */
+#define FSDEV       devPhat0
+#define FSDEV_NAME  "PHAT0" 
+
+/* SAM7X-EK block device interface. */
+#define BLKDEV      devAt91SpiMmc0
+#define BLKDEV_NAME "MMC0"
 
 #else
 
