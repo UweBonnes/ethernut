@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.35  2006/07/26 11:14:52  haraldkipp
+ * Release candidate 6
+ *
  * Revision 1.34  2006/07/10 14:29:03  haraldkipp
  * Release candidate 4.1.9.4.
  * C++ support added. These patches had been kindly contributed by
@@ -152,8 +155,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010904UL
-static CONST char os_version_string[] = "4.1.9.4 rc";
+#define OS_VERSION_NUMBER  0x04010906UL
+static CONST char os_version_string[] = "4.1.9.6 rc";
 
 /*!
  * \addtogroup xgNutVersion

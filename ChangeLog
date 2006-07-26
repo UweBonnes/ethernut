@@ -1,4 +1,36 @@
-$Id: ChangeLog,v 1.346 2006/07/21 09:20:49 haraldkipp Exp $
+$Id: ChangeLog,v 1.347 2006/07/26 11:14:52 haraldkipp Exp $
+
+2006-07-26  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Release candidate 6.
+
+	* os/timer.c: NutSleep() doesn't take the difference between
+	timer creation time and last timer elapsed processing into
+	account. This may resulted in shorter sleep time. Thanks to
+	Andras Albert for this fix.
+
+	* arch/arm/dev/ostimer_at91.c, arch/arm/os/nutinit.c,
+	conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam7x-ek.conf:
+	Defining AT91_PLL_MAINCK will automatically determine SAM7X 
+	clock by reading PLL settings.
+
+	* arch/arm/dev/spimmc_at91.c, conf/arch/arch.nut, conf/arch/arm.nut, 
+	conf/at91sam7x-ek.conf, include/dev/spimmc_at91.h:
+	Added MMC/SD-Card support for AT91SAM7X Evaluation Kit.
+
+	* arch/arm/dev/at91_efc.c, dev/nvmem.c, include/arch/arm/at91_efc.h:
+	Added non-volatile configuration memory support for SAM7X,
+	using upper 16k region of on-chip flash.
+
+	* include/arch/arm/at91_mc.h: Made it usable for assembler.
+
+	* include/arch/arm/at91_pmc.h: Added shift values for multi-bit 
+	parameters.
+
+	* include/arch/arm/at91_spi.h: Added missing bit definitions.
+
+	* app/ftpd/ftpserv.c: Added support for AT91SAM7X-EK.
+
 
 2006-07-17  Harald Kipp  <harald.kipp@egnite.de>
 
