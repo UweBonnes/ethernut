@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/07/26 11:21:35  haraldkipp
+ * Made it usable for assembler.
+ *
  * Revision 1.2  2006/07/18 14:04:55  haraldkipp
  * Base address removed. Should be specified in the upper level header.
  *
@@ -50,77 +53,83 @@
  * \endverbatim
  */
 
-#define MC_RCR      (MC_BASE + 0x00)    /* MC Remap Control Register. */
-#define MC_RCB          ((unsigned int) 0x1 <<  0) /* Remap Command Bit. */
+#define MC_RCR_OFF              0x00000000      /*!< \brief MC remap control register offset. */
+#define MC_RCR      (MC_BASE + MC_RCR_OFF)      /*!< \brief MC remap control register address. */
+#define MC_RCB                  0x00000001      /*!< \brief Remap command. */
 
-#define MC_ASR      (MC_BASE + 0x04)    /* MC Abort Status Register. */
-#define MC_UNDADD       ((unsigned int) 0x1 <<  0) /* Undefined Addess Abort Status. */
-#define MC_MISADD       ((unsigned int) 0x1 <<  1) /* Misaligned Addess Abort Status. */
-#define MC_ABTSZ        ((unsigned int) 0x3 <<  8) /* Abort Size Status. */
-#define MC_ABTSZ_BYTE   ((unsigned int) 0x0 <<  8) /* Byte. */
-#define MC_ABTSZ_HWORD  ((unsigned int) 0x1 <<  8) /* Half-word. */
-#define MC_ABTSZ_WORD   ((unsigned int) 0x2 <<  8) /* Word. */
-#define MC_ABTTYP       ((unsigned int) 0x3 << 10) /* Abort Type Status. */
-#define MC_ABTTYP_DATAR ((unsigned int) 0x0 << 10) /* Data Read. */
-#define MC_ABTTYP_DATAW ((unsigned int) 0x1 << 10) /* Data Write. */
-#define MC_ABTTYP_FETCH ((unsigned int) 0x2 << 10) /* Code Fetch. */
-#define MC_MST0         ((unsigned int) 0x1 << 16) /* Master 0 Abort Source. */
-#define MC_MST1         ((unsigned int) 0x1 << 17) /* Master 1 Abort Source. */
-#define MC_SVMST0       ((unsigned int) 0x1 << 24) /* Saved Master 0 Abort Source. */
-#define MC_SVMST1       ((unsigned int) 0x1 << 25) /* Saved Master 1 Abort Source. */
+#define MC_ASR_OFF              0x00000004      /*!< \brief MC abort status register offset. */
+#define MC_ASR      (MC_BASE + MC_ASR_OFF)      /*!< \brief MC abort status register address. */
+#define MC_UNDADD               0x00000001      /*!< \brief Undefined Addess Abort status. */
+#define MC_MISADD               0x00000002      /*!< \brief Misaligned Addess Abort status. */
+#define MC_ABTSZ_MASK           0x00000300      /*!< \brief Abort size status mask. */
+#define MC_ABTSZ_BYTE           0x00000000      /*!< \brief Byte size abort. */
+#define MC_ABTSZ_HWORD          0x00000100      /*!< \brief Half-word size abort. */
+#define MC_ABTSZ_WORD           0x00000200      /*!< \brief Word size abort. */
+#define MC_ABTTYP_MASK          0x00000C00      /*!< \brief Abort type status mask. */
+#define MC_ABTTYP_DATAR         0x00000000      /*!< \brief Data read abort. */
+#define MC_ABTTYP_DATAW         0x00000400      /*!< \brief Data write abort. */
+#define MC_ABTTYP_FETCH         0x00000800      /*!< \brief Code fetch abort. */
+#define MC_MST_EMAC             0x00010000      /*!< \brief EMAC abort source. */
+#define MC_MST_PDC              0x00020000      /*!< \brief PDC abort source. */
+#define MC_MST_ARM              0x00040000      /*!< \brief ARM abort source. */
+#define MC_SVMST_EMAC           0x01000000      /*!< \brief Saved EMAC abort source. */
+#define MC_SVMST_PDC            0x02000000      /*!< \brief Saved PDC abort source. */
+#define MC_SVMST_ARM            0x04000000      /*!< \brief Saved ARM abort source. */
 
-#define MC_AASR     (MC_BASE + 0x08)    /* MC Abort Address Status Register. */
+#define MC_AASR_OFF             0x00000008      /*!< \brief MC abort address status register offset. */
+#define MC_AASR     (MC_BASE + MC_AASR_OFF)     /*!< \brief MC abort address status register address. */
 
-#define MC_FMR      (MC_BASE + 0x60)    /* MC Flash Mode Register. */
-#define MC_FRDY         ((unsigned int) 0x1 <<  0) /* Flash Ready. */
-#define MC_LOCKE        ((unsigned int) 0x1 <<  2) /* Lock Error. */
-#define MC_PROGE        ((unsigned int) 0x1 <<  3) /* Programming Error. */
-#define MC_NEBP         ((unsigned int) 0x1 <<  7) /* No Erase Before Programming. */
-#define MC_FWS          ((unsigned int) 0x3 <<  8) /* Flash Wait State. */
-#define MC_FWS_0FWS     ((unsigned int) 0x0 <<  8) /* 1 cycle for Read, 2 for Write operations. */
-#define MC_FWS_1FWS     ((unsigned int) 0x1 <<  8) /* 2 cycles for Read, 3 for Write operations. */
-#define MC_FWS_2FWS     ((unsigned int) 0x2 <<  8) /* 3 cycles for Read, 4 for Write operations. */
-#define MC_FWS_3FWS     ((unsigned int) 0x3 <<  8) /* 4 cycles for Read, 4 for Write operations. */
-#define MC_FMCN         ((unsigned int) 0xFF << 16)/* Flash Microsecond Cycle Number. */
+#define MC_FMR_OFF              0x00000060      /*!< \brief MC flash mode register offset. */
+#define MC_FMR      (MC_BASE + MC_FMR_OFF)      /*!< \brief MC flash mode register address. */
+#define MC_FRDY                 0x00000001      /*!< \brief Flash ready. */
+#define MC_LOCKE                0x00000004      /*!< \brief Lock error. */
+#define MC_PROGE                0x00000008      /*!< \brief Programming error. */
+#define MC_NEBP                 0x00000080      /*!< \brief No erase before programming. */
+#define MC_FWS_MASK             0x00000300      /*!< \brief Flash wait state mask. */
+#define MC_FWS_1R2W             0x00000000      /*!< \brief 1 cycle for read, 2 for write operations. */
+#define MC_FWS_2R3W             0x00000100      /*!< \brief 2 cycles for read, 3 for write operations. */
+#define MC_FWS_3R4W             0x00000200      /*!< \brief 3 cycles for read, 4 for write operations. */
+#define MC_FWS_4R4W             0x00000300      /*!< \brief 4 cycles for read and write operations. */
+#define MC_FMCN_MASK            0x00FF0000      /*!< \brief Flash microsecond cycle number mask. */
 
-#define MC_FCR      (MC_BASE + 0x64)    /* MC Flash Command Register. */
-#define MC_FCMD         ((unsigned int) 0xF <<  0) /* Flash Command. */
-#define MC_FCMD_START_PROG ((unsigned int) 0x1) /* Starts the programming of th epage specified by PAGEN.. */
-#define MC_FCMD_LOCK       ((unsigned int) 0x2) /* Starts a lock sequence of the sector defined by the bits 4 to 7 of the field PAGEN.. */
-#define MC_FCMD_PROG_AND_LOCK ((unsigned int) 0x3) /* The lock sequence automatically happens after the programming sequence is completed.. */
-#define MC_FCMD_UNLOCK     ((unsigned int) 0x4) /* Starts an unlock sequence of the sector defined by the bits 4 to 7 of the field PAGEN.. */
-#define MC_FCMD_ERASE_ALL  ((unsigned int) 0x8) /* Starts the erase of the entire flash.If at least a page is locked, the command is cancelled.. */
-#define MC_FCMD_SET_GP_NVM ((unsigned int) 0xB) /* Set General Purpose NVM bits.. */
-#define MC_FCMD_CLR_GP_NVM ((unsigned int) 0xD) /* Clear General Purpose NVM bits.. */
-#define MC_FCMD_SET_SECURITY ((unsigned int) 0xF) /* Set Security Bit.. */
-#define MC_PAGEN        ((unsigned int) 0x3FF <<  8) /* Page Number. */
-#define MC_KEY          ((unsigned int) 0xFF << 24) /* Writing Protect Key. */
+#define MC_FCR_OFF              0x00000064      /*!< \brief MC flash command register offset. */
+#define MC_FCR      (MC_BASE + MC_FCR_OFF)      /*!< \brief MC flash command register address. */
+#define MC_FCMD_MASK            0x0000000F      /*!< \brief Flash command mask. */
+#define MC_FCMD_NOP             0x00000000      /*!< \brief No command. */
+#define MC_FCMD_WP              0x00000001      /*!< \brief Write page. */
+#define MC_FCMD_SLB             0x00000002      /*!< \brief Set lock bit. */
+#define MC_FCMD_WPL             0x00000003      /*!< \brief Write page and lock. */
+#define MC_FCMD_CLB             0x00000004      /*!< \brief Clear lock bit. */
+#define MC_FCMD_EA              0x00000008      /*!< \brief Erase all. */
+#define MC_FCMD_SGPB            0x0000000B      /*!< \brief Set general purpose NVM bit. */
+#define MC_FCMD_CGPB            0x0000000D      /*!< \brief Clear general purpose NVM bit. */
+#define MC_FCMD_SSB             0x0000000F      /*!< \brief Set security bit. */
+#define MC_PAGEN_MASK           0x0003FF00      /*!< \brief Page number mask. */
+#define MC_KEY                  0x5A000000      /*!< \brief Writing protect key. */
 
-#define MC_FSR      (MC_BASE + 0x68)    /* MC Flash Status Register. */
-#define MC_SECURITY     ((unsigned int) 0x1 <<  4) /* Security Bit Status. */
-#define MC_GPNVM0       ((unsigned int) 0x1 <<  8) /* Sector 0 Lock Status. */
-#define MC_GPNVM1       ((unsigned int) 0x1 <<  9) /* Sector 1 Lock Status. */
-#define MC_GPNVM2       ((unsigned int) 0x1 << 10) /* Sector 2 Lock Status. */
-#define MC_GPNVM3       ((unsigned int) 0x1 << 11) /* Sector 3 Lock Status. */
-#define MC_GPNVM4       ((unsigned int) 0x1 << 12) /* Sector 4 Lock Status. */
-#define MC_GPNVM5       ((unsigned int) 0x1 << 13) /* Sector 5 Lock Status. */
-#define MC_GPNVM6       ((unsigned int) 0x1 << 14) /* Sector 6 Lock Status. */
-#define MC_GPNVM7       ((unsigned int) 0x1 << 15) /* Sector 7 Lock Status. */
-#define MC_LOCKS0       ((unsigned int) 0x1 << 16) /* Sector 0 Lock Status. */
-#define MC_LOCKS1       ((unsigned int) 0x1 << 17) /* Sector 1 Lock Status. */
-#define MC_LOCKS2       ((unsigned int) 0x1 << 18) /* Sector 2 Lock Status. */
-#define MC_LOCKS3       ((unsigned int) 0x1 << 19) /* Sector 3 Lock Status. */
-#define MC_LOCKS4       ((unsigned int) 0x1 << 20) /* Sector 4 Lock Status. */
-#define MC_LOCKS5       ((unsigned int) 0x1 << 21) /* Sector 5 Lock Status. */
-#define MC_LOCKS6       ((unsigned int) 0x1 << 22) /* Sector 6 Lock Status. */
-#define MC_LOCKS7       ((unsigned int) 0x1 << 23) /* Sector 7 Lock Status. */
-#define MC_LOCKS8       ((unsigned int) 0x1 << 24) /* Sector 8 Lock Status. */
-#define MC_LOCKS9       ((unsigned int) 0x1 << 25) /* Sector 9 Lock Status. */
-#define MC_LOCKS10      ((unsigned int) 0x1 << 26) /* Sector 10 Lock Status. */
-#define MC_LOCKS11      ((unsigned int) 0x1 << 27) /* Sector 11 Lock Status. */
-#define MC_LOCKS12      ((unsigned int) 0x1 << 28) /* Sector 12 Lock Status. */
-#define MC_LOCKS13      ((unsigned int) 0x1 << 29) /* Sector 13 Lock Status. */
-#define MC_LOCKS14      ((unsigned int) 0x1 << 30) /* Sector 14 Lock Status. */
-#define MC_LOCKS15      ((unsigned int) 0x1 << 31) /* Sector 15 Lock Status. */
+#define MC_FSR_OFF              0x00000068      /*!< \brief MC flash status register offset. */
+#define MC_FSR      (MC_BASE + MC_FSR_OFF)      /*!< \brief MC flash status register address. */
+#define MC_SECURITY             0x00000010      /*!< \brief Security bit status. */
+
+#define MC_GPNVM0               0x00000100      /*!< \brief General purpose NVM bit 0. */
+#define MC_GPNVM1               0x00000200      /*!< \brief General purpose NVM bit 1. */
+#define MC_GPNVM2               0x00000400      /*!< \brief General purpose NVM bit 2. */
+
+#define MC_LOCKS0               0x00010000      /*!< \brief Lock region 0 lock status. */
+#define MC_LOCKS1               0x00020000      /*!< \brief Lock region 1 lock status. */
+#define MC_LOCKS2               0x00040000      /*!< \brief Lock region 2 lock status. */
+#define MC_LOCKS3               0x00080000      /*!< \brief Lock region 3 lock status. */
+#define MC_LOCKS4               0x00100000      /*!< \brief Lock region 4 lock status. */
+#define MC_LOCKS5               0x00200000      /*!< \brief Lock region 5 lock status. */
+#define MC_LOCKS6               0x00400000      /*!< \brief Lock region 6 lock status. */
+#define MC_LOCKS7               0x00800000      /*!< \brief Lock region 7 lock status. */
+#define MC_LOCKS8               0x01000000      /*!< \brief Lock region 8 lock status. */
+#define MC_LOCKS9               0x02000000      /*!< \brief Lock region 9 lock status. */
+#define MC_LOCKS10              0x04000000      /*!< \brief Lock region 10 lock status. */
+#define MC_LOCKS11              0x08000000      /*!< \brief Lock region 11 lock status. */
+#define MC_LOCKS12              0x10000000      /*!< \brief Lock region 12 lock status. */
+#define MC_LOCKS13              0x20000000      /*!< \brief Lock region 13 lock status. */
+#define MC_LOCKS14              0x40000000      /*!< \brief Lock region 14 lock status. */
+#define MC_LOCKS15              0x80000000      /*!< \brief Lock region 15 lock status. */
 
 #endif                          /* _ARCH_ARM_AT91_MC_H_ */
