@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/07/26 11:22:05  haraldkipp
+ * Added shift values for multi-bit parameters.
+ *
  * Revision 1.2  2006/07/18 14:05:26  haraldkipp
  * Changed coding style to follow existing headers.
  *
@@ -89,6 +92,7 @@
 #define CKGR_PLLR_OFF               0x0000002C  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLR   (PMC_BASE + CKGR_PLLR_OFF)  /*!< \brief Clock generator PLL register. */
 #define CKGR_DIV                    0x000000FF  /*!< \brief Divider. */
+#define CKGR_DIV_LSB                        0   /*!< \brief Least significant bit of the divider. */
 #define CKGR_DIV_0                  0x00000000  /*!< \brief Divider output is 0. */
 #define CKGR_DIV_BYPASS             0x00000001  /*!< \brief Divider is bypassed. */
 #define CKGR_PLLCOUNT               0x00003F00  /*!< \brief PLL counter. */
@@ -98,6 +102,7 @@
 #define CKGR_OUT_2                  0x00008000  /*!< \brief Please refer to the PLL datasheet. */
 #define CKGR_OUT_3                  0x0000C000  /*!< \brief Please refer to the PLL datasheet. */
 #define CKGR_MUL                    0x07FF0000  /*!< \brief PLL multiplier. */
+#define CKGR_MUL_LSB                        16  /*!< \brief Least significant bit of the PLL multiplier. */
 #define CKGR_USBDIV                 0x30000000  /*!< \brief Divider for USB clocks. */
 #define CKGR_USBDIV_0               0x00000000  /*!< \brief Divider output is PLL clock output. */
 #define CKGR_USBDIV_1               0x10000000  /*!< \brief Divider output is PLL clock output divided by 2. */
@@ -113,11 +118,13 @@
 #define PMC_PCKR2   (PMC_BASE + PMC_PCKR2_OFF)  /*!< \brief Programmable clock 2 register. */
 #define PMC_PCKR3_OFF               0x00000044  /*!< \brief Programmable clock 3 register offset. */
 #define PMC_PCKR3   (PMC_BASE + PMC_PCKR3_OFF)  /*!< \brief Programmable clock 3 register. */
-#define PMC_CSS                     0x00000003  /*!< \brief Clock selection. */
+#define PMC_CSS                     0x00000003  /*!< \brief Clock selection mask. */
+#define PMC_CSS_LSB                         0   /*!< \brief Least significant bit of the clock selection. */
 #define PMC_CSS_SLOW_CLK            0x00000000  /*!< \brief Slow clock selected. */
 #define PMC_CSS_MAIN_CLK            0x00000001  /*!< \brief Main clock selected. */
 #define PMC_CSS_PLL_CLK             0x00000003  /*!< \brief PLL clock selected. */
-#define PMC_PRES                    0x0000001C  /*!< \brief Clock prescaler. */
+#define PMC_PRES                    0x0000001C  /*!< \brief Clock prescaler mask. */
+#define PMC_PRES_LSB                        2   /*!< \brief Clock prescaler's least signigifcant bit. */
 #define PMC_PRES_CLK                0x00000000  /*!< \brief Selected clock, not divided. */
 #define PMC_PRES_CLK_2              0x00000004  /*!< \brief Selected clock divided by 2. */
 #define PMC_PRES_CLK_4              0x00000008  /*!< \brief Selected clock divided by 4. */
