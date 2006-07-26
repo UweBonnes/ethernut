@@ -12,6 +12,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/07/26 11:22:31  haraldkipp
+ * Added missing bit definitions.
+ *
  * Revision 1.1  2006/07/21 09:03:56  haraldkipp
  * Added SPI support, kindly contributed by Andras Albert.
  *
@@ -72,6 +75,52 @@
 #define SPI1_CSR3	(SPI1_BASE + 0x3C)  /*!< \brief SPI Chip Select Register 3 Read/Write Reset=0x0. */
 #endif
 
-/*@} xgNutArchArmAt91Pio */
+#define SPI_SPIEN           0x00000001  /*!< \brief SPI enable. */
+#define SPI_SPIDIS          0x00000002  /*!< \brief SPI disable. */
+#define SPI_SWRST           0x00000080  /*!< \brief Software reset. */
+#define SPI_LASTXFER        0x01000000  /*!< \brief Last transfer. */
+
+#define SPI_MSTR            0x00000001  /*!< \brief Master mode. */
+#define SPI_PS              0x00000002  /*!< \brief Peripheral select. */
+#define SPI_PCSDEC          0x00000004  /*!< \brief Chip select decode. */
+#define SPI_FDIV            0x00000008  /*!< \brief Clock selection. */
+#define SPI_MODFDIS         0x00000010  /*!< \brief Mode fault detection. */
+#define SPI_LLB             0x00000080  /*!< \brief Local loopback enable. */
+#define SPI_PCS             0x000F0000  /*!< \brief Peripheral chip select mask. */
+#define SPI_PCS_LSB                 16  /*!< \brief Least significant bit of peripheral chip select. */
+#define SPI_DLYBCS          0xFF000000  /*!< \brief Mask for delay between chip selects. */
+#define SPI_DLYBCS_LSB              24  /*!< \brief Least significant bit of delay between chip selects. */
+
+#define SPI_RD              0x0000FFFF  /*!< \brief Receive data mask. */
+#define SPI_RD_LSB                  0   /*!< \brief Least significant bit of receive data. */
+
+#define SPI_TD              0x0000FFFF  /*!< \brief Transmit data mask. */
+#define SPI_TD_LSB                  0   /*!< \brief Least significant bit of transmit data. */
+
+#define SPI_RDRF            0x00000001  /*!< \brief Receive data register full. */
+#define SPI_TDRE            0x00000002  /*!< \brief Transmit data register empty. */
+#define SPI_MODF            0x00000004  /*!< \brief Mode fault error. */
+#define SPI_OVRES           0x00000008  /*!< \brief Overrun error status. */
+#define SPI_ENDRX           0x00000010  /*!< \brief End of RX buffer. */
+#define SPI_ENDTX           0x00000020  /*!< \brief End of TX buffer. */
+#define SPI_RXBUFF          0x00000040  /*!< \brief RX buffer full. */
+#define SPI_TXBUFE          0x00000080  /*!< \brief TX buffer empty. */
+#define SPI_NSSR            0x00000100  /*!< \brief NSS rising. */
+#define SPI_TXEMPTY         0x00000200  /*!< \brief Transmission register empty. */
+#define SPI_SPIENS          0x00010000  /*!< \brief SPI enable status. */
+
+#define SPI_CPOL            0x00000001  /*!< \brief Clock polarity. */
+#define SPI_NCPHA           0x00000002  /*!< \brief Clock phase. */
+#define SPI_CSAAT           0x00000008  /*!< \brief Chip select active after transfer. */
+#define SPI_BITS            0x000000F0  /*!< \brief Bits per transfer mask. */
+#define SPI_BITS_LSB                4   /*!< \brief Least significant bit of bits per transfer. */
+#define SPI_SCBR            0x0000FF00  /*!< \brief Serial clock baud rate mask. */
+#define SPI_SCBR_LSB                8   /*!< \brief Least significant bit of serial clock baud rate. */
+#define SPI_DLYBS           0x00FF0000  /*!< \brief Delay before SPCK mask. */
+#define SPI_DLYBS_LSB               16  /*!< \brief Least significant bit of delay before SPCK. */
+#define SPI_DLYBCT          0xFF000000  /*!< \brief Delay between consecutive transfers mask. */
+#define SPI_DLYBCT_LSB              24  /*!< \brief Least significant bit of delay between consecutive transfers. */
+
+/*@} xgNutArchArmAt91Spi */
 
 #endif                          /* _ARCH_ARM_AT91_SPI_H_ */
