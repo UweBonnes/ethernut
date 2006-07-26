@@ -39,6 +39,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.31  2006/07/26 11:16:12  haraldkipp
+ * NutSleep() didn't take the difference between timer creation time and
+ * last timer elapsed processing into account. This may resulted in shorter
+ * sleep time. Thanks to Andras Albert for this fix.
+ *
  * Revision 1.30  2006/06/28 14:42:28  haraldkipp
  * Event and timer handling re-design, again.
  * Time-out timers are now released early.
@@ -209,6 +214,11 @@ static struct timeval   timeStart;
  */
 NUTTIMERINFO *nutTimerList;
 
+/*
+ * Last processing time of elapsed timers. 
+ */
+static u_long nut_ticks_resume; 
+
 /*!
 *  \brief System tick counter
  */
@@ -289,7 +299,6 @@ void NutTimerInsert(NUTTIMERINFO * tn)
  */
 void NutTimerProcessElapsed(void)
 {
-    static u_long nut_ticks_resume; /* Time of last execution. */
     NUTTIMERINFO *tn;
     u_long ticks;
     u_long ticks_new;
@@ -361,7 +370,7 @@ NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), v
     
     tn = NutHeapAlloc(sizeof(NUTTIMERINFO));
     if (tn) {
-        tn->tn_ticks_left = ticks;
+        tn->tn_ticks_left = ticks + NutGetTickCount() - nut_ticks_resume;
         
         /*
          * Periodic timers will reload the tick counter on each timer 
@@ -370,7 +379,7 @@ NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), v
         if (flags & TM_ONESHOT) {
             tn->tn_ticks = 0;
         } else {
-            tn->tn_ticks = tn->tn_ticks_left;
+            tn->tn_ticks = ticks;
         }
         
         /* Set callback and callback argument. */
