@@ -33,6 +33,11 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.10  2006/07/26 11:19:06  haraldkipp
+-- Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
+-- reading PLL settings.
+-- Added MMC/SD-Card support for AT91SAM7X Evaluation Kit.
+--
 -- Revision 1.9  2006/07/05 08:02:17  haraldkipp
 -- SAM7X interrupt and EMAC support added.
 --
@@ -101,6 +106,21 @@ nutarch_arm =
         requires = { "HW_TIMER_AT91" },
         provides = { "NUT_OSTIMER_DEV" },
         sources = { "arm/dev/ostimer_at91.c" },
+        options =
+        {
+            {
+                macro = "AT91_PLL_MAINCK",
+                brief = "AT91 Main Clock (SAM7X)",
+                description = "Frequency of the external crystal. If this option is "..
+                              "enabled and NUT_CPU_FREQ is not enabled, then the "..
+                              "specified value will be used together with "..
+                              "the PLL register settings to determine the CPU master clock. "..
+                              "Otherwise you must specify NUT_CPU_FREQ.",
+                requires = { "HW_PLL_AT91" },
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+        },
     },
     {
         name = "nutarch_ostimer_gba",
@@ -317,6 +337,14 @@ nutarch_arm =
         provides = { "NET_PHY" },
         sources = { "arm/dev/at91sam7x_emac.c" },
     },     
+    {
+        name = "nutarch_arm_spimmc_at91",
+        brief = "AT91 SPI MMC Access",
+        description = "Low level MMC interface for AT91SAM7X.",
+        requires = { "HW_SPI_AT91" },
+        provides = { "DEV_MMCLL" },
+        sources = { "arm/dev/spimmc_at91.c" },
+    },     
     
     --
     -- Special Functions
@@ -327,6 +355,25 @@ nutarch_arm =
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_AT91" },
         sources = { "arm/dev/at91init.c" },
+    },
+    {
+        name = "nutarch__arm_at91efc",
+        brief = "AT91 Embedded Flash",
+        description = "Routines for reading and writing embedded flash memory.",
+        requires = { "HW_MCU_AT91SAM7X" },
+        sources = { "arm/dev/at91_efc.c" },
+        options =
+        {
+            {
+                macro = "NUT_CONFIG_AT91EFC",
+                brief = "System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                provides = { "HW_FLASH_PARAM_SECTOR" },
+                flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+        },
     },
 }
 

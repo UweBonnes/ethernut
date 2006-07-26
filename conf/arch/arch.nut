@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.21  2006/07/26 11:19:06  haraldkipp
+-- Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
+-- reading PLL settings.
+-- Added MMC/SD-Card support for AT91SAM7X Evaluation Kit.
+--
 -- Revision 1.20  2006/07/05 08:01:56  haraldkipp
 -- SAM7 EMAC attribute added.
 --
@@ -208,8 +213,10 @@ nutarch =
                     "HW_MCU_AT91",
                     "HW_MCU_AT91SAM7X",
                     "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
                     "HW_UART_AT91",
                     "HW_EMAC_SAM7X",
+                    "HW_SPI_AT91",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=arm7tdmi" }
