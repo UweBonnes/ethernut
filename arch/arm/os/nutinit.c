@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/07/26 11:17:16  haraldkipp
+ * Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
+ * reading PLL settings.
+ *
  * Revision 1.11  2006/07/18 14:04:10  haraldkipp
  * Low level hardware initialization moved to crtat91sam7x256_rom.S. This
  * avoids the ugly jump from C code back into the runtime initialization.
@@ -208,8 +212,11 @@ void NutInit(void)
 #elif defined(MCU_AT91R40008)
     McuInit();
 #elif defined(MCU_AT91SAM7X256)
-    /* Set Flash Waite state. */
-    outr(MC_FMR, ((((NUT_CPU_FREQ + NUT_CPU_FREQ/2) / 1000000UL) & 0xFF) << 16) | MC_FWS_1FWS);
+    {
+        u_long freq = NutGetCpuClock();
+        /* Set Flash Waite state. */
+        outr(MC_FMR, ((((freq + freq / 2) / 1000000UL) & 0xFF) << 16) | MC_FWS_2R3W);
+    }
 #endif
 
     NutHeapAdd(HEAP_START, HEAP_SIZE);

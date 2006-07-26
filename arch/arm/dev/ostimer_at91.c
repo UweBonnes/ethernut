@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/07/26 11:17:16  haraldkipp
+ * Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
+ * reading PLL settings.
+ *
  * Revision 1.7  2006/07/05 07:59:41  haraldkipp
  * Daidai's support for AT91SAM7X added.
  *
@@ -86,9 +90,9 @@
 #ifndef NUT_CPU_FREQ
 #ifdef NUT_PLL_CPUCLK
 #include <dev/cy2239x.h>
-#else /* !NUT_PLL_CPUCLK */
+#elif !defined(AT91_PLL_MAINCK)
 #define NUT_CPU_FREQ    73728000UL
-#endif /* !NUT_PLL_CPUCLK */
+#endif /* !AT91_PLL_MAINCK */
 #endif /* !NUT_CPU_FREQ */
 
 
@@ -177,6 +181,59 @@ void NutRegisterTimer(void (*handler) (void *))
     outr(TC0_CCR, TC_SWTRG);
 }
 
+#if defined(AT91_PLL_MAINCK)
+#if !defined(AT91_SLOW_CLOCK)
+/* This is just a guess and my be completely wrong. */
+#define AT91_SLOW_CLOCK 32000
+#endif
+
+static u_int At91GetPllClock(void)
+{
+    u_int rc = AT91_PLL_MAINCK;
+    u_int pllr = inr(CKGR_PLLR);
+    u_int divider = (pllr & CKGR_DIV) >> CKGR_DIV_LSB;
+
+    if (divider) {
+        rc *= ((pllr & CKGR_MUL) >> CKGR_MUL_LSB) + 1;
+        rc /= divider;
+    }
+    return rc;
+}
+
+static u_long At91GetMasterClock(void)
+{
+    u_int rc = 0;
+    u_int mckr = inr(PMC_MCKR);
+
+    /* Determine the clock source. */
+    switch((mckr & PMC_CSS) >> PMC_CSS_LSB) {
+    case 0:
+        /* Slow clock selected. */
+        rc = AT91_SLOW_CLOCK;
+        break;
+    case 1:
+        /* Main clock selected. */
+        rc = AT91_PLL_MAINCK;
+        break;
+    case 3:
+        /* PLL clock selected. */
+        rc = At91GetPllClock();
+        break;
+    }
+
+    /* Handle pre-scaling. */
+    mckr &= PMC_PRES;
+    mckr >>= PMC_PRES_LSB;
+    if (mckr < 7) {
+        rc /= _BV(mckr);
+    }
+    else {
+        rc = 0;
+    }
+    return rc;
+}
+#endif
+
 /*!
  * \brief Return the CPU clock in Hertz.
  *
@@ -184,10 +241,12 @@ void NutRegisterTimer(void (*handler) (void *))
  */
 u_long NutGetCpuClock(void)
 {
-#ifdef NUT_CPU_FREQ
-    return NUT_CPU_FREQ;
-#else
+#if defined(AT91_PLL_MAINCK)
+    return At91GetMasterClock();
+#elif defined(NUT_PLL_CPUCLK)
     return Cy2239xGetFreq(NUT_PLL_CPUCLK, 7);
+#else
+    return NUT_CPU_FREQ;
 #endif
 }
 
