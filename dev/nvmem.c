@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/07/27 07:15:34  haraldkipp
+ * Final SAM7X support added.
+ *
  * Revision 1.4  2006/07/05 07:52:31  haraldkipp
  * Added Daidai's version of using the AT91SAM7X
  * on-chip flash for storing configuration data.
@@ -63,8 +66,8 @@
 #include <dev/x12rtc.h>
 #elif defined(NUT_CONFIG_AT49BV)
 #include <dev/at49bv.h>
-#elif defined(NUT_EE_SAM7X_FLASH)
-#include <dev/at91_efc.h>
+#elif defined(NUT_CONFIG_AT91EFC)
+#include <arch/arm/at91_efc.h>
 #endif
 
 /*!
@@ -92,8 +95,8 @@ int NutNvMemLoad(u_int addr, void *buff, size_t siz)
     return At49bvParamRead(addr, buff, siz);
 #elif defined(__AVR__)
     return OnChipNvMemLoad(addr, buff, siz);
-#elif defined(NUT_EE_SAM7X_FLASH)
-    return OnChipFlashLoad(NUT_EE_SAM7X_FLASH+addr, buff, siz);
+#elif defined(NUT_CONFIG_AT91EFC)
+    return At91EfcParamRead(addr, buff, siz);
 #else
     return -1;
 #endif
@@ -119,36 +122,8 @@ int NutNvMemSave(u_int addr, CONST void *buff, size_t len)
     return At49bvParamWrite(addr, buff, len);
 #elif defined(__AVR__)
     return OnChipNvMemSave(addr, buff, len);
-#elif defined(NUT_EE_SAM7X_FLASH)
-    return OnChipFlashSave(NUT_EE_SAM7X_FLASH+addr, buff, len);
-#else
-    return -1;
-#endif
-}
-
-/*!
- * \brief Lock data in non volatile memory.
- *
- * \return 0 on success, -1 otherwise.
- */
-int NutNvMemLock(void)
-{
-#if defined(NUT_EE_SAM7X_FLASH)
-    return LockFlashArea(NUT_EE_SAM7X_FLASH);
-#else
-    return -1;
-#endif
-}
-
-/*!
- * \brief Unlock data in non volatile memory.
- *
- * \return 0 on success, -1 otherwise.
- */
-int NutNvMemUnlock(void)
-{
-#if defined(NUT_EE_SAM7X_FLASH)
-    return UnlockFlashArea(NUT_EE_SAM7X_FLASH);
+#elif defined(NUT_CONFIG_AT91EFC)
+    return At91EfcParamWrite(addr, buff, len);
 #else
     return -1;
 #endif
