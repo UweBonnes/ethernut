@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,13 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2006/08/01 07:43:48  haraldkipp
+ * PNUT file system failed after some modifications done previously for the
+ * PHAT file system. During directory open, the NUTFILE structure must be
+ * allocated in the file system driver. PnutDirRead() must return -1 if the
+ * end of a directory is reached. Reading unused directory entries must update
+ * the file position pointer.
+ *
  * Revision 1.9  2006/03/02 20:01:17  haraldkipp
  * Added implementation of dev_size makes _filelength() work, which in turn
  * enables the use of this file system in pro/httpd.c.
@@ -655,7 +662,7 @@ static int PnutDirFindPath(PNUT_BLKNUM node, CONST char *path, PNUT_FINDRESULT *
         /* Move forward to the next path component. */
         node = result->fr_node;
         path += len;
-        if (*path == '/') {
+        while (*path == '/') {
             path++;
         }
     }
@@ -666,13 +673,14 @@ static int PnutDirFindPath(PNUT_BLKNUM node, CONST char *path, PNUT_FINDRESULT *
 /*!
  * \brief Open a directory.
  *
+ * \param dev Specifies the file system device.
  * \param dir Pointer to the internal directory information structure.
  *            The pathname of the directory to open must have been
  *            copied to the data buffer prior calling this routine.
  *
  * \return 0 on success, -1 otherwise.
  */
-static int PnutDirOpen(DIR * dir)
+static int PnutDirOpen(NUTDEVICE * dev, DIR * dir)
 {
     PNUTFILE *fp;
     PNUT_FINDRESULT found;
@@ -689,7 +697,6 @@ static int PnutDirOpen(DIR * dir)
         }
         /* Allocate a PNUT file descriptor. */
         else if ((fp = malloc(sizeof(PNUTFILE))) == 0) {
-            errno = ENOMEM;
             rc = -1;
         }
         /* 
@@ -699,9 +706,18 @@ static int PnutDirOpen(DIR * dir)
         else {
             fp->f_node = found.fr_node;
             fp->f_pos = 0;
-            dir->dd_fd->nf_fcb = fp;
-            /* Keep track of the number of open calls. */
-            BankNodePointer(fp->f_node)->node_refs++;
+
+            if ((dir->dd_fd = malloc(sizeof(NUTFILE))) == 0) {
+                free(fp);
+                rc = -1;
+            }
+            else {
+                memset(dir->dd_fd, 0, sizeof(NUTFILE));
+                dir->dd_fd->nf_dev = dev;
+                dir->dd_fd->nf_fcb = fp;
+                /* Keep track of the number of open calls. */
+                BankNodePointer(fp->f_node)->node_refs++;
+            }
         }
     }
     return rc;
@@ -712,11 +728,14 @@ static int PnutDirOpen(DIR * dir)
  */
 static int PnutDirClose(DIR * dir)
 {
-    PNUTFILE *fp = dir->dd_fd->nf_fcb;
+    if (dir && dir->dd_fd) {
+        if (dir->dd_fd->nf_fcb) {
+            PNUTFILE *fp = dir->dd_fd->nf_fcb;
 
-    if (fp) {
-        BankNodePointer(fp->f_node)->node_refs--;
-        free(fp);
+            BankNodePointer(fp->f_node)->node_refs--;
+            free(fp);
+        }
+        free(dir->dd_fd);
         return 0;
     }
     return EINVAL;
@@ -727,7 +746,7 @@ static int PnutDirClose(DIR * dir)
  */
 static int PnutDirRead(DIR * dir)
 {
-    int rc = 0;
+    int rc = -1;
     u_long pos;
     PNUT_DIRENTRY *entry;
     size_t size;
@@ -740,15 +759,17 @@ static int PnutDirRead(DIR * dir)
         rc = PnutNodeGetDataPtr(fp->f_node, pos, (void *) &entry, &size, 0);
         if (rc || size == 0) {
             /* No more entries. */
+            rc = -1;
             break;
         }
+        fp->f_pos = pos + PNUT_DIRENT_SIZE;
+
         /* Skip entries across block boundaries and unused entires. */
         if (size >= PNUT_DIRENT_SIZE && entry->dir_inuse) {
             memset(ent, 0, sizeof(struct dirent));
             ent->d_fileno = entry->dir_node;
             ent->d_namlen = (u_char) strlen(entry->dir_name);
             strcpy(ent->d_name, entry->dir_name);
-            fp->f_pos = pos + PNUT_DIRENT_SIZE;
             break;
         }
     }
@@ -1245,7 +1266,7 @@ int PnutIOCtl(NUTDEVICE * dev, int req, void *conf)
         rc = PnutDelete((char *) conf);
         break;
     case FS_DIR_OPEN:
-        rc = PnutDirOpen((DIR *) conf);
+        rc = PnutDirOpen(dev, (DIR *) conf);
         break;
     case FS_DIR_CLOSE:
         rc = PnutDirClose((DIR *) conf);
