@@ -78,6 +78,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/08/01 07:41:01  haraldkipp
+ * New functions ether_aton() and ether_ntoa() added. They convert the ASCII
+ * representation of an Ethernet MAC address to its binary form and vice versa.
+ *
  * Revision 1.3  2005/04/05 17:38:45  haraldkipp
  * ARM7 memory alignment bugs fixed.
  *
@@ -130,6 +134,10 @@ typedef struct __attribute__((packed)) ether_header {
 #define ETHERMTU    1500        /*!< \brief Ethernet maximum transfer unit. */
 //#define ETHERMTU    576           /*!< \brief Ethernet maximum transfer unit. */
 #define ETHERMIN    (60-14)     /*!< \brief Ethernet minimum transfer unit. */
+
+extern u_char *ether_aton(CONST char *str);
+extern char *ether_ntoa(CONST u_char *mac);
+
 
 /*!
  * \struct ether_arp if_ether.h netinet/if_ether.h

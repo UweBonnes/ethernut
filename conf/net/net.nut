@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.7  2006/08/01 07:41:01  haraldkipp
+-- New functions ether_aton() and ether_ntoa() added. They convert the ASCII
+-- representation of an Ethernet MAC address to its binary form and vice versa.
+--
 -- Revision 1.6  2006/01/23 17:30:25  haraldkipp
 -- Configurable offset into non-volatile memory for network parameters.
 --
@@ -175,7 +179,8 @@ nutnet =
         sources = 
         { 
             "ethin.c",
-            "ethout.c"
+            "ethout.c",
+            "ether_addr.c"
         }
     },
     {
