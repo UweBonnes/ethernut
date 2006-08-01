@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.17  2006/08/01 07:34:16  haraldkipp
+-- New linker script and new startup file support applications running in
+-- flash memory.
+--
 -- Revision 1.16  2006/02/23 15:40:09  haraldkipp
 -- Added choice for 32 bit ports.
 --
@@ -97,7 +101,7 @@ mcu_32bit_choice = { " ",
                      "24", "25", "26", "27", "28", "29", "30", "31"
                    }
                    
-arm_ld_choice = { " ", "at91_boot", "at91_ram", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
+arm_ld_choice = { " ", "at91_boot", "at91_ram", "at91_rom", "s3c4510b-ram", "eb40a_ram", "gbaxport2", "wolf_ram" }
 
 pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
 

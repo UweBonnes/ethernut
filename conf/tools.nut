@@ -33,6 +33,10 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.13  2006/08/01 07:34:16  haraldkipp
+-- New linker script and new startup file support applications running in
+-- flash memory.
+--
 -- Revision 1.12  2006/07/10 14:27:31  haraldkipp
 -- Added ARM C++ support.
 --
@@ -146,8 +150,9 @@ nuttools =
             {
                 macro = "ARM_LDSCRIPT",
                 brief = "ARM Linker Script",
-                description = "at91_boot\tAT91R40008, code copied from ROM to RAM\n"..
-                              "at91_ram\tAT91R40008, code in remapped RAM\n"..
+                description = "at91_boot\tAT91R40008, code in ROM, copied to and running in RAM\n"..
+                              "at91_ram\t\tAT91R40008, code loaded in RAM by bootloader\n"..
+                              "at91_rom\t\tAT91R40008, code running in ROM\n"..
                               "s3c4510b-ram\tSamsung's S3C4510B, code in RAM\n"..
                               "eb40a_ram\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
                               "gba_xport2\tNintendo's Gameboy Advance\n"..
