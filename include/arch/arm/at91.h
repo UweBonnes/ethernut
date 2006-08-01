@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/08/01 07:35:59  haraldkipp
+ * Exclude function prototypes when included by assembler.
+ *
  * Revision 1.8  2006/07/05 07:45:25  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -151,6 +154,8 @@
 
 /*@} xgNutArchArmAt91 */
 
+#ifndef __ASSEMBLER__
 extern void McuInit(void);
+#endif
 
 #endif                          /* _ARCH_ARM_AT91_H_ */

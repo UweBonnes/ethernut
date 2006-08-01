@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2006/08/01 07:35:59  haraldkipp
+ * Exclude function prototypes when included by assembler.
+ *
  * Revision 1.13  2006/07/21 09:08:58  haraldkipp
  * Map puts_P to puts and _write_P to _write for non-Harvard architectures.
  *
@@ -91,7 +94,9 @@
 #include <arch/arm/lpc2xxx.h>
 #endif
 
+#ifndef __ASSEMBLER__
 #include <dev/mweeprom.h>
+#endif
 
 #define ARM_MODE_USER       0x10
 #define ARM_MODE_FIQ        0x11
@@ -100,6 +105,7 @@
 #define ARM_MODE_ABORT      0x17
 #define ARM_MODE_UNDEF      0x1B
 #define ARM_MODE_SYS        0x1F
+#define ARM_MODE_MASK       0x1F
 
 #define I_BIT               0x80
 #define F_BIT               0x40
@@ -142,6 +148,7 @@
 #define printf_P                printf
 #define _write_P                _write
 
+#ifndef __ASSEMBLER__
 /*!
  * \brief End of uninitialised data segment. Defined in the linker script.
  */
@@ -151,6 +158,7 @@ extern void *__bss_end;
  * \brief Begin of the stack segment. Defined in the linker script.
  */
 extern void *__stack;
+#endif
 
 #ifndef _NOP
 #ifdef __GNUC__
