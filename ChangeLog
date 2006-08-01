@@ -1,4 +1,65 @@
-$Id: ChangeLog,v 1.347 2006/07/26 11:14:52 haraldkipp Exp $
+$Id: ChangeLog,v 1.348 2006/08/01 07:48:03 haraldkipp Exp $
+
+2006-07-31  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Release candidate 7. I'm really sick of this.
+	Will we ever reach 4.2?
+
+	* conf/repository.nut, conf/tools.nut, arch/arm/init/crtat91_rom.S,
+	arch/arm/ldscripts/at91_rom.ld: New linker script and new startup
+	file support applications running in flash memory.
+
+	* Makerules.arm-gcc: Include paths added to ASM flags. Now the
+	preprocessor handles constants and configuration items in
+	assembly files.
+
+	* include/arch/arm/at91.h, include/arch/arm/at91x40.h,
+	include/arch/arm.h: Exclude function prototypes when
+	included by assembler.
+
+	* app/Makeburn.arm-jom: Added support for all four flash memory 
+	sections, which can be moved by S2. Default application section 
+	is now the one that negates A20 and A21. This preserves the boot 
+	loader. The traditional 'make burn' should work now for Ethernut 3.
+
+	* conf/ethernut30d.conf: Default to 6 PHAT sector buffers.
+
+
+2006-07-30  Harald Kipp  <harald.kipp@egnite.de>
+
+	* pro/dhcpc.c: DHCP client failed because of alignment errors.
+	Removed the dispensable 'packed' attribute from the dyn_cfg
+	structure.
+
+	* include/sys/event.h: Missing typecast in NutEventPostFromIrq()
+	fixed. Thanks to Matthias Wilde.
+
+	* net/ether_addr.c, include/netinet/if_ether.h, conf/net/net.nut: 
+	New functions ether_aton() and ether_ntoa() added. They convert
+	the ASCII representation of an Ethernet MAC address to its
+	binary form and vice versa.
+
+	* fs/basename.c, fs/dirname.c, include/libgen.h, conf/fs/fs.nut: 
+	New functions extract last component and parent directory from 
+	pathnames.
+
+	* fs/pnutfs.c: PNUT file system failed after some modifications 
+	done previously for the PHAT file system. During directory open,
+	the NUTFILE structure must be allocated in the file system
+	driver. PnutDirRead() must return -1 if the end of a directory
+	is reached. Reading unused directory entries must update the
+	file position pointer.
+
+	* fs/dirent.c: Already disabled NUTFILE structure allocation
+	finally removed from opendir().
+
+
+2006-07-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac: Additional spaces at some line ends let Autoconf on 
+	Windows fail with 'already registered with AC_CONFIG_FILES'. Thanks
+	to Andras Albert, who detected and fixed it.
+
 
 2006-07-26  Harald Kipp  <harald.kipp@egnite.de>
 
