@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/08/01 07:39:12  haraldkipp
+ * Missing typecast in NutEventPostFromIrq() fixed. Thanks to Matthias Wilde.
+ *
  * Revision 1.6  2006/06/28 14:34:02  haraldkipp
  * Event/thread/timer re-design.
  * A new macro NutEventPostFromIrq() replaces the routine with the same name.
@@ -143,7 +146,7 @@
         *qp = SIGNALED;             \
     }                               \
     else if (*qp != SIGNALED) {     \
-        NUTTHREADINFO *tp = *qp;    \
+        NUTTHREADINFO *tp = (NUTTHREADINFO *)(*qp);    \
         tp->td_qpec++;              \
     }                               \
 }
