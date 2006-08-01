@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.7  2006/08/01 07:42:56  haraldkipp
+-- New functions extract last component and parent directory from pathnames.
+--
 -- Revision 1.6  2006/02/23 15:43:08  haraldkipp
 -- PHAT file system now supports configurable number of sector buffers.
 --
@@ -63,6 +66,13 @@ nutfs =
         description = "Standard file system functions:\n"..
                       "mkdir()\nstat()\nfstat()\nunlink()\nrmdir()\nlseek()\n",
         sources = { "pathops.c" },
+    },
+    {
+        name = "nutfs_pathnames",
+        brief = "Pathname Operations",
+        description = "Standard pathname functions:\n"..
+                      "basename()\ndirname()\n",
+        sources = { "basename.c", "dirname.c" },
     },
     {
         name = "nutfs_dirent",
