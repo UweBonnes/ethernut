@@ -68,6 +68,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/08/01 07:44:22  haraldkipp
+ * Already disabled NUTFILE structure allocation finally removed from
+ * opendir().
+ *
  * Revision 1.5  2006/04/07 12:51:04  haraldkipp
  * Memory hole fixed.
  *
@@ -142,17 +146,6 @@ DIR *opendir(CONST char *name)
         return 0;
     }
     memset(dir, 0, sizeof(DIR));
-
-#if 0
-    /* Allocate and initialize the file info. */
-    if ((dir->dd_fd = malloc(sizeof(NUTFILE))) == 0) {
-        free(dir);
-        errno = ENOMEM;
-        return 0;
-    }
-    memset(dir->dd_fd, 0, sizeof(NUTFILE));
-    dir->dd_fd->nf_dev = dev;
-#endif
 
     /* Allocate and initialize the data buffer. */
     if ((dir->dd_len = strlen(name + 1)) < sizeof(struct dirent)) {
