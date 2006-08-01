@@ -34,6 +34,11 @@
 
 #
 # $Log$
+# Revision 1.15  2006/08/01 07:47:25  haraldkipp
+# Additional spaces at some line ends let Autoconf on Windows fail with
+# 'already registered with AC_CONFIG_FILES'. Thanks to Andras Albert,
+# who detected and fixed it.
+#
 # Revision 1.14  2006/05/25 09:37:40  haraldkipp
 # *** empty log message ***
 #
@@ -81,7 +86,7 @@
 #
 #
 
-AC_INIT(ethernut,4.1.6)
+AC_INIT(ethernut,4.1.9)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2006 egnite Software GmbH])
@@ -208,12 +213,12 @@ fi
 AM_CONDITIONAL(BUILD_NUTCONF_GUI, test x$nutconf_ok = xyes)
 
 AC_CONFIG_FILES([
-	Makefile 
+	Makefile
 	tools/crurom/Makefile
 	tools/nutconf/Makefile
 	tools/packaging/ethernut.spec
-	doc/Makefile 
-	doc/gen/Makefile 
+	doc/Makefile
+	doc/gen/Makefile
 	doc/gen/nut_en.cfg
 	])
 AC_OUTPUT
