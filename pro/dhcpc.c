@@ -83,6 +83,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.22  2006/08/01 07:38:41  haraldkipp
+ * DHCP client failed because of alignment errors. Removed the dispensable
+ * 'packed' attribute from the dyn_cfg structure.
+ *
  * Revision 1.21  2006/01/23 19:52:10  haraldkipp
  * Added required typecasts before left shift.
  *
@@ -535,12 +539,12 @@ struct __attribute__ ((packed)) bootp {
 /*!
  * \brief Dynamic configuration structure type.
  */
-typedef struct __attribute__ ((packed)) dyn_cfg DYNCFG;
+typedef struct dyn_cfg DYNCFG;
 
 /*!
  * \brief Dynamic configuration structure.
  */
-struct __attribute__ ((packed)) dyn_cfg {
+struct dyn_cfg {
     u_char dyn_msgtyp;          /*!< \brief DHCP message type */
     u_long dyn_yiaddr;          /*!< \brief Offered IP address. */
     u_long dyn_netmask;         /*!< \brief Local IP netmask. */
