@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/08/05 11:55:30  haraldkipp
+ * PDC registers are now configurable in the parent header file.
+ *
  * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -185,33 +188,57 @@
 #define US1_TTGR (USART1_BASE + US_TTGR_OFF)    /*!< \brief Channel 1 transmitter time guard register address. */
 /*@}*/
 
+#if defined(USART_HAS_PDC)
+
 /*! \name Receive Pointer Register */
 /*@{*/
-#define US_RPR_OFF              0x00000030      /*!< \brief USART receive pointer register offset. */
-#define US0_RPR (USART0_BASE + US_RPR_OFF)      /*!< \brief Channel 0 receive pointer register address. */
-#define US1_RPR (USART1_BASE + US_RPR_OFF)      /*!< \brief Channel 1 receive pointer register address. */
+#define US0_RPR (USART0_BASE + PERIPH_RPR_OFF)      /*!< \brief Channel 0 receive pointer register address. */
+#define US1_RPR (USART1_BASE + PERIPH_RPR_OFF)      /*!< \brief Channel 1 receive pointer register address. */
 /*@}*/
 
 /*! \name Receive Counter Register */
 /*@{*/
-#define US_RCR_OFF              0x00000034      /*!< \brief USART receive counter register offset. */
-#define US0_RCR (USART0_BASE + US_RCR_OFF)      /*!< \brief Channel 0 receive counter register address. */
-#define US1_RCR (USART1_BASE + US_RCR_OFF)      /*!< \brief Channel 1 receive counter register address. */
+#define US0_RCR (USART0_BASE + PERIPH_RCR_OFF)      /*!< \brief Channel 0 receive counter register address. */
+#define US1_RCR (USART1_BASE + PERIPH_RCR_OFF)      /*!< \brief Channel 1 receive counter register address. */
 /*@}*/
 
 /*! \name Transmit Pointer Register */
 /*@{*/
-#define US_TPR_OFF              0x00000038      /*!< \brief USART transmit pointer register offset. */
-#define US0_TPR (USART0_BASE + US_TPR_OFF)      /*!< \brief Channel 0 transmit pointer register address. */
-#define US1_TPR (USART1_BASE + US_TPR_OFF)      /*!< \brief Channel 1 transmit pointer register address. */
+#define US0_TPR (USART0_BASE + PERIPH_TPR_OFF)      /*!< \brief Channel 0 transmit pointer register address. */
+#define US1_TPR (USART1_BASE + PERIPH_TPR_OFF)      /*!< \brief Channel 1 transmit pointer register address. */
 /*@}*/
 
 /*! \name Transmit Counter Register */
 /*@{*/
-#define US_TCR_OFF              0x0000003C      /*!< \brief USART transmit counter register offset. */
-#define US0_TCR (USART0_BASE + US_TCR_OFF)      /*!< \brief Channel 0 transmit counter register address. */
-#define US1_TCR (USART1_BASE + US_TCR_OFF)      /*!< \brief Channel 1 transmit counter register address. */
+#define US0_TCR (USART0_BASE + PERIPH_TCR_OFF)      /*!< \brief Channel 0 transmit counter register address. */
+#define US1_TCR (USART1_BASE + PERIPH_TCR_OFF)      /*!< \brief Channel 1 transmit counter register address. */
 /*@}*/
+
+#if defined(PERIPH_RNPR_OFF) && defined(PERIPH_RNCR_OFF)
+#define US0_RNPR   (USART0_BASE + PERIPH_RNPR_OFF)  /*!< \brief PDC channel 0 receive next pointer register. */
+#define US1_RNPR   (USART1_BASE + PERIPH_RNPR_OFF)  /*!< \brief PDC channel 1 receive next pointer register. */
+#define US0_RNCR   (USART0_BASE + PERIPH_RNCR_OFF)  /*!< \brief PDC channel 0 receive next counter register. */
+#define US1_RNCR   (USART1_BASE + PERIPH_RNCR_OFF)  /*!< \brief PDC channel 1 receive next counter register. */
+#endif
+
+#if defined(PERIPH_TNPR_OFF) && defined(PERIPH_TNCR_OFF)
+#define US0_TNPR   (USART0_BASE + PERIPH_TNPR_OFF)  /*!< \brief PDC channel 0 transmit next pointer register. */
+#define US1_TNPR   (USART1_BASE + PERIPH_TNPR_OFF)  /*!< \brief PDC channel 1 transmit next pointer register. */
+#define US0_TNCR   (USART0_BASE + PERIPH_TNCR_OFF)  /*!< \brief PDC channel 0 transmit next counter register. */
+#define US1_TNCR   (USART1_BASE + PERIPH_TNCR_OFF)  /*!< \brief PDC channel 1 transmit next counter register. */
+#endif
+
+#if defined(PERIPH_PTCR_OFF)
+#define US0_PTCR   (USART0_BASE + PERIPH_PTCR_OFF)  /*!< \brief PDC channel 0 transfer control register. */
+#define US1_PTCR   (USART1_BASE + PERIPH_PTCR_OFF)  /*!< \brief PDC channel 1 transfer control register. */
+#endif
+
+#if defined(PERIPH_PTSR_OFF)
+#define US0_PTSR   (USART0_BASE + PERIPH_PTSR_OFF)  /*!< \brief PDC channel 0 transfer status register. */
+#define US1_PTSR   (USART1_BASE + PERIPH_PTSR_OFF)  /*!< \brief PDC channel 1 transfer status register. */
+#endif
+
+#endif  /* USART_HAS_PDC */
 
 /*@} xgNutArchArmAt91Us */
 
