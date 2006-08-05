@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.31  2006/08/05 12:00:39  haraldkipp
+-- Added clock settings for Ethernut 3.0 Rev-E.
+--
 -- Revision 1.30  2006/06/30 22:08:23  christianwelzel
 -- DS1307 RTC Driver added.
 --
@@ -408,8 +411,8 @@ nutdev =
                               "Chip.\n\n"..
                               "Select\n"..
                               "0 for for the CLKA Pin\n"..
-                              "1 for for the CLKB Pin\n"..
-                              "2 for for the CLKC Pin (Ethernut 3 default)\n"..
+                              "1 for for the CLKB Pin (Ethernut 3.0 Rev-E)\n"..
+                              "2 for for the CLKC Pin (Ethernut 3.0 Rev-D)\n"..
                               "3 for for the CLKD Pin\n"..
                               "4 for for the CLKE Pin",
                 type = "enumerated",
@@ -421,9 +424,9 @@ nutdev =
                 brief = "Ethernet Clock Output",
                 description = "PLL output used to drive the Ethernet Controller\n\n"..
                               "Select\n"..
-                              "0 for for the CLKA Pin (Ethernut 3 default)\n"..
+                              "0 for for the CLKA Pin (Ethernut 3.0 Rev-D)\n"..
                               "1 for for the CLKB Pin\n"..
-                              "2 for for the CLKC Pin\n"..
+                              "2 for for the CLKC Pin (Ethernut 3.0 Rev-E)\n"..
                               "3 for for the CLKD Pin\n"..
                               "4 for for the CLKE Pin",
                 type = "enumerated",
@@ -435,8 +438,8 @@ nutdev =
                 brief = "NPL Clock 1 Output",
                 description = "PLL output connected to the CPLD GCK1 Pin\n\n"..
                               "Select\n"..
-                              "0 for for the CLKA Pin\n"..
-                              "1 for for the CLKB Pin (Ethernut 3 default)\n"..
+                              "0 for for the CLKA Pin (Ethernut 3.0 Rev-E)\n"..
+                              "1 for for the CLKB Pin (Ethernut 3.0 Rev-D)\n"..
                               "2 for for the CLKC Pin\n"..
                               "3 for for the CLKD Pin\n"..
                               "4 for for the CLKE Pin",
@@ -452,7 +455,7 @@ nutdev =
                               "0 for for the CLKA Pin\n"..
                               "1 for for the CLKB Pin\n"..
                               "2 for for the CLKC Pin\n"..
-                              "3 for for the CLKD Pin (Ethernut 3 default)\n"..
+                              "3 for for the CLKD Pin (Ethernut 3.0)\n"..
                               "4 for for the CLKE Pin",
                 type = "enumerated",
                 choices = pll_clk_choice,
