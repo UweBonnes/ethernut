@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/08/05 11:54:45  haraldkipp
+ * PDC registers added.
+ *
  * Revision 1.1  2006/07/05 07:45:25  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -70,6 +73,19 @@
 
 #define DBGU_FNR_OFF            0x00000048      /*!< \brief DBGU force NTRST register offset. */
 #define DBGU_FNR    (DBGU_BASE + DBGU_FNR_OFF)  /*!< \brief DBGU force NTRST register. */
+
+#if defined(DBGU_HAS_PDC)
+#define DBGU_RPR    (DBGU_BASE + PERIPH_RPR_OFF)    /*!< \brief PDC receive pointer register. */
+#define DBGU_RCR    (DBGU_BASE + PERIPH_RCR_OFF)    /*!< \brief PDC receive counter register. */
+#define DBGU_TPR    (DBGU_BASE + PERIPH_TPR_OFF)    /*!< \brief PDC transmit pointer register. */
+#define DBGU_TCR    (DBGU_BASE + PERIPH_TCR_OFF)    /*!< \brief PDC transmit counter register. */
+#define DBGU_RNPR   (DBGU_BASE + PERIPH_RNPR_OFF)   /*!< \brief PDC receive next pointer register. */
+#define DBGU_RNCR   (DBGU_BASE + PERIPH_RNCR_OFF)   /*!< \brief PDC receive next counter register. */
+#define DBGU_TNPR   (DBGU_BASE + PERIPH_TNPR_OFF)   /*!< \brief PDC transmit next pointer register. */
+#define DBGU_TNCR   (DBGU_BASE + PERIPH_TNCR_OFF)   /*!< \brief PDC transmit next counter register. */
+#define DBGU_PTCR   (DBGU_BASE + PERIPH_PTCR_OFF)   /*!< \brief PDC transfer control register. */
+#define DBGU_PTSR   (DBGU_BASE + PERIPH_PTSR_OFF)   /*!< \brief PDC transfer status register. */
+#endif
 
 /*@} xgNutArchArmAt91Dbgu */
 

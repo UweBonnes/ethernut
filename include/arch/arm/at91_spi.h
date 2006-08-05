@@ -12,6 +12,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/08/05 11:54:45  haraldkipp
+ * PDC registers added.
+ *
  * Revision 1.2  2006/07/26 11:22:31  haraldkipp
  * Added missing bit definitions.
  *
@@ -120,6 +123,29 @@
 #define SPI_DLYBS_LSB               16  /*!< \brief Least significant bit of delay before SPCK. */
 #define SPI_DLYBCT          0xFF000000  /*!< \brief Delay between consecutive transfers mask. */
 #define SPI_DLYBCT_LSB              24  /*!< \brief Least significant bit of delay between consecutive transfers. */
+
+#if defined(SPI_HAS_PDC)
+#define SPI0_RPR    (SPI0_BASE + PERIPH_RPR_OFF)   /*!< \brief PDC channel 0 receive pointer register. */
+#define SPI1_RPR    (SPI1_BASE + PERIPH_RPR_OFF)   /*!< \brief PDC channel 1 receive pointer register. */
+#define SPI0_RCR    (SPI0_BASE + PERIPH_RCR_OFF)   /*!< \brief PDC channel 0 receive counter register. */
+#define SPI1_RCR    (SPI1_BASE + PERIPH_RCR_OFF)   /*!< \brief PDC channel 1 receive counter register. */
+#define SPI0_TPR    (SPI0_BASE + PERIPH_TPR_OFF)   /*!< \brief PDC channel 0 transmit pointer register. */
+#define SPI1_TPR    (SPI1_BASE + PERIPH_TPR_OFF)   /*!< \brief PDC channel 1 transmit pointer register. */
+#define SPI0_TCR    (SPI0_BASE + PERIPH_TCR_OFF)   /*!< \brief PDC channel 0 transmit counter register. */
+#define SPI1_TCR    (SPI1_BASE + PERIPH_TCR_OFF)   /*!< \brief PDC channel 1 transmit counter register. */
+#define SPI0_RNPR   (SPI0_BASE + PERIPH_RNPR_OFF)  /*!< \brief PDC channel 0 receive next pointer register. */
+#define SPI1_RNPR   (SPI1_BASE + PERIPH_RNPR_OFF)  /*!< \brief PDC channel 1 receive next pointer register. */
+#define SPI0_RNCR   (SPI0_BASE + PERIPH_RNCR_OFF)  /*!< \brief PDC channel 0 receive next counter register. */
+#define SPI1_RNCR   (SPI1_BASE + PERIPH_RNCR_OFF)  /*!< \brief PDC channel 1 receive next counter register. */
+#define SPI0_TNPR   (SPI0_BASE + PERIPH_TNPR_OFF)  /*!< \brief PDC channel 0 transmit next pointer register. */
+#define SPI1_TNPR   (SPI1_BASE + PERIPH_TNPR_OFF)  /*!< \brief PDC channel 1 transmit next pointer register. */
+#define SPI0_TNCR   (SPI0_BASE + PERIPH_TNCR_OFF)  /*!< \brief PDC channel 0 transmit next counter register. */
+#define SPI1_TNCR   (SPI1_BASE + PERIPH_TNCR_OFF)  /*!< \brief PDC channel 1 transmit next counter register. */
+#define SPI0_PTCR   (SPI0_BASE + PERIPH_PTCR_OFF)  /*!< \brief PDC channel 0 transfer control register. */
+#define SPI1_PTCR   (SPI1_BASE + PERIPH_PTCR_OFF)  /*!< \brief PDC channel 1 transfer control register. */
+#define SPI0_PTSR   (SPI0_BASE + PERIPH_PTSR_OFF)  /*!< \brief PDC channel 0 transfer status register. */
+#define SPI1_PTSR   (SPI1_BASE + PERIPH_PTSR_OFF)  /*!< \brief PDC channel 1 transfer status register. */
+#endif
 
 /*@} xgNutArchArmAt91Spi */
 
