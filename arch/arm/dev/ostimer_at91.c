@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/08/05 12:00:01  haraldkipp
+ * NUT_CPU_FREQ did not override AT91_PLL_MAINCK or NUT_PLL_CPUCLK. Fixed.
+ *
  * Revision 1.8  2006/07/26 11:17:16  haraldkipp
  * Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
  * reading PLL settings.
@@ -241,12 +244,15 @@ static u_long At91GetMasterClock(void)
  */
 u_long NutGetCpuClock(void)
 {
-#if defined(AT91_PLL_MAINCK)
+#if defined(NUT_CPU_FREQ)
+    return NUT_CPU_FREQ;
+#elif defined(AT91_PLL_MAINCK)
     return At91GetMasterClock();
 #elif defined(NUT_PLL_CPUCLK)
     return Cy2239xGetFreq(NUT_PLL_CPUCLK, 7);
 #else
-    return NUT_CPU_FREQ;
+#warning "No CPU Clock defined"
+    return 0;
 #endif
 }
 
