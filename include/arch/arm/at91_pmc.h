@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/08/05 11:59:23  haraldkipp
+ * Wrong PMC register offsets fixed.
+ *
  * Revision 1.3  2006/07/26 11:22:05  haraldkipp
  * Added shift values for multi-bit parameters.
  *
@@ -110,13 +113,15 @@
 
 #define PMC_MCKR_OFF                0x00000030  /*!< \brief Master clock register offset. */
 #define PMC_MCKR    (PMC_BASE + PMC_MCKR_OFF)   /*!< \brief Master clock register. */
-#define PMC_PCKR0_OFF               0x00000038  /*!< \brief Programmable clock 0 register offset. */
+#define PMC_ACKR_OFF                0x00000034  /*!< \brief Application clock register offset. */
+#define PMC_ACKR    (PMC_BASE + PMC_ACKR_OFF)   /*!< \brief Application clock register. */
+#define PMC_PCKR0_OFF               0x00000040  /*!< \brief Programmable clock 0 register offset. */
 #define PMC_PCKR0   (PMC_BASE + PMC_PCKR0_OFF)  /*!< \brief Programmable clock 0 register. */
-#define PMC_PCKR1_OFF               0x0000003C  /*!< \brief Programmable clock 1 register offset. */
+#define PMC_PCKR1_OFF               0x00000044  /*!< \brief Programmable clock 1 register offset. */
 #define PMC_PCKR1   (PMC_BASE + PMC_PCKR1_OFF)  /*!< \brief Programmable clock 1 register. */
-#define PMC_PCKR2_OFF               0x00000040  /*!< \brief Programmable clock 2 register offset. */
+#define PMC_PCKR2_OFF               0x00000048  /*!< \brief Programmable clock 2 register offset. */
 #define PMC_PCKR2   (PMC_BASE + PMC_PCKR2_OFF)  /*!< \brief Programmable clock 2 register. */
-#define PMC_PCKR3_OFF               0x00000044  /*!< \brief Programmable clock 3 register offset. */
+#define PMC_PCKR3_OFF               0x0000004C  /*!< \brief Programmable clock 3 register offset. */
 #define PMC_PCKR3   (PMC_BASE + PMC_PCKR3_OFF)  /*!< \brief Programmable clock 3 register. */
 #define PMC_CSS                     0x00000003  /*!< \brief Clock selection mask. */
 #define PMC_CSS_LSB                         0   /*!< \brief Least significant bit of the clock selection. */
