@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/08/05 11:56:29  haraldkipp
+ * Old SAM7X leftovers finally removed.
+ * PDC register configuration added.
+ *
  * Revision 1.2  2006/08/01 07:35:59  haraldkipp
  * Exclude function prototypes when included by assembler.
  *
@@ -73,38 +77,6 @@
  * \endverbatim
  */
 
-
-#define EBI_BASE                0xFFE00000      /*!< \brief EBI base address. */
-#define SF_BASE                 0xFFF00000      /*!< \brief Special function register base address. */
-#if defined (MCU_AT91R40008)
-#define USART1_BASE             0xFFFCC000      /*!< \brief USART 1 base address. */
-#define USART0_BASE             0xFFFD0000      /*!< \brief USART 0 base address. */
-#elif defined (MCU_AT91SAM7X256)
-#define USART1_BASE             0xFFFC4000      /*!< \brief USART 1 base address. */
-#define USART0_BASE             0xFFFC0000      /*!< \brief USART 0 base address. */
-#endif
-#if defined (MCU_AT91R40008)
-#define TC_BASE                 0xFFFE0000      /*!< \brief TC base address. */
-#elif defined (MCU_AT91SAM7X256)
-#define TC_BASE                 0xFFFA0000      /*!< \brief TC base address. */
-#endif
-#if defined (MCU_AT91R40008)
-#define PIO_BASE    0xFFFF0000  /*!< \brief PIO base address. */
-#elif defined (MCU_AT91SAM7X256)
-#endif
-#define PS_BASE     0xFFFF4000  /*!< \brief PS base address. */
-#define WD_BASE     0xFFFF8000  /*!< \brief Watch Dog register base address. */
-#define AIC_BASE    0xFFFFF000  /*!< AIC base address. */
-
-#include <arch/arm/at91_ebi.h>
-#include <arch/arm/at91_sf.h>
-#include <arch/arm/at91_us.h>
-#include <arch/arm/at91_tc.h>
-#include <arch/arm/at91_pio.h>
-#include <arch/arm/at91_ps.h>
-#include <arch/arm/at91_wd.h>
-#include <arch/arm/at91_aic.h>
-
 /*! \addtogroup xgNutArchArmAt91 */
 /*@{*/
 
@@ -123,6 +95,33 @@
 #define IRQ1_ID     17          /*!< \brief External interrupt 1 ID. */
 #define IRQ2_ID     18          /*!< \brief External interrupt 2 ID. */
 /*@}*/
+
+#define EBI_BASE        0xFFE00000      /*!< \brief EBI base address. */
+#define SF_BASE         0xFFF00000      /*!< \brief Special function register base address. */
+#define USART1_BASE     0xFFFCC000      /*!< \brief USART 1 base address. */
+#define USART0_BASE     0xFFFD0000      /*!< \brief USART 0 base address. */
+#define TC_BASE         0xFFFE0000      /*!< \brief TC base address. */
+#define PIO_BASE        0xFFFF0000      /*!< \brief PIO base address. */
+#define PS_BASE         0xFFFF4000      /*!< \brief PS base address. */
+#define WD_BASE         0xFFFF8000      /*!< \brief Watch Dog register base address. */
+#define AIC_BASE        0xFFFFF000      /*!< AIC base address. */
+
+#define PERIPH_RPR_OFF  0x00000030      /*!< \brief Receive pointer register offset. */
+#define PERIPH_RCR_OFF  0x00000034      /*!< \brief Receive counter register offset. */
+#define PERIPH_TPR_OFF  0x00000038      /*!< \brief Transmit pointer register offset. */
+#define PERIPH_TCR_OFF  0x0000003C      /*!< \brief Transmit counter register offset. */
+
+#define USART_HAS_PDC
+
+#include <arch/arm/at91_ebi.h>
+#include <arch/arm/at91_sf.h>
+#include <arch/arm/at91_us.h>
+#include <arch/arm/at91_tc.h>
+#include <arch/arm/at91_pio.h>
+#include <arch/arm/at91_ps.h>
+#include <arch/arm/at91_wd.h>
+#include <arch/arm/at91_aic.h>
+
 /*@} xgNutArchArmAt91 */
 
 #ifndef __ASSEMBLER__
