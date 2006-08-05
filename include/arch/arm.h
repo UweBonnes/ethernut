@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2006/08/05 11:58:22  haraldkipp
+ * Missing brackets may result in unexpected expansion of the _BV() macro.
+ *
  * Revision 1.14  2006/08/01 07:35:59  haraldkipp
  * Exclude function prototypes when included by assembler.
  *
@@ -176,7 +179,7 @@ extern void *__stack;
 #define inw(_reg)   (*((volatile unsigned short *)(_reg)))
 #define inr(_reg)   (*((volatile unsigned int *)(_reg)))
 
-#define _BV(bit)    (1 << bit)
+#define _BV(bit)    (1 << (bit))
 
 #ifdef __IMAGECRAFT__
 #define __attribute__(x)
