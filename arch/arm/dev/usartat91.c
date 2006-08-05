@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/08/05 11:54:06  haraldkipp
+ * Special register functions should not be based on MCU definitions but on
+ * register definitions.
+ *
  * Revision 1.4  2006/07/05 07:55:23  haraldkipp
  * Daidai's support for AT91SAM7X added.
  *
@@ -1109,9 +1113,11 @@ static int At91UsartInit(void)
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(USARTn_BASE + US_IDR_OFF, 0xFFFFFFFF);
-#if defined (MCU_AT91R40008)
     /* Clear UART counter registers. */
+#if defined (US_RCR_OFF)
     outr(USARTn_BASE + US_RCR_OFF, 0);
+#endif
+#if defined (US_TCR_OFF)
     outr(USARTn_BASE + US_TCR_OFF, 0);
 #endif
     /* Set UART baud rate generator register. */

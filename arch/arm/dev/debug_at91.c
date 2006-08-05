@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2006/08/05 11:54:06  haraldkipp
+ * Special register functions should not be based on MCU definitions but on
+ * register definitions.
+ *
  * Revision 1.7  2006/07/05 07:55:23  haraldkipp
  * Daidai's support for AT91SAM7X added.
  *
@@ -159,7 +163,7 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(US0_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(US0_IDR, 0xFFFFFFFF);
-#if defined (MCU_AT91R40008)
+#if defined (US0_RCR) && defined(US0_TCR)
     /* Clear UART counter registers. */
     outr(US0_RCR, 0);
     outr(US0_TCR, 0);
@@ -196,7 +200,7 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(US1_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(US1_IDR, 0xFFFFFFFF);
-#if defined (MCU_AT91R40008)
+#if defined (US1_RCR) && defined(US1_TCR)
     /* Clear UART counter registers. */
     outr(US1_RCR, 0);
     outr(US1_TCR, 0);
