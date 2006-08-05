@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/08/05 11:53:02  haraldkipp
+ * Half duplex flow control used the wrong buffer. Many thanks to
+ * Andrej Taran for fixing this bug.
+ *
  * Revision 1.2  2005/10/07 22:05:00  hwmaier
  * Using __AVR_ENHANCED__ macro instead of __AVR_ATmega128__ to support also AT90CAN128 MCU
  *
@@ -1186,7 +1190,7 @@ static int AvrUsartSetFlowControl(u_long flags)
      */
     if (flags & USART_MF_HALFDUPLEX) {
         /* Register transmit complete interrupt. */
-        if (NutRegisterIrqHandler(&sig_UART_TRANS, AvrUsartTxComplete, &dcb_usart.dcb_rx_rbf)) {
+        if (NutRegisterIrqHandler(&sig_UART_TRANS, AvrUsartTxComplete, &dcb_usart.dcb_tx_rbf)) {
             return -1;
         }
         /* Initially enable the receiver. */
