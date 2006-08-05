@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/08/05 12:01:05  haraldkipp
+ * Hard coded PLL selections replaced by configurable definitions.
+ *
  * Revision 1.2  2006/01/19 18:40:47  haraldkipp
  * MMC clock rate now uses the CY2239x driver routines to calculate a
  * configurable value. Additional NOPs had been added to the SPI I/O,
@@ -53,6 +56,8 @@
  *
  * \endverbatim
  */
+
+#include <cfg/clock.h>
 
 #include <sys/event.h>
 
@@ -245,29 +250,33 @@ static void NplMmCard0RemIrq(void *arg)
 static int NplMmcIfcInit(NUTDEVICE * dev)
 {
     int rc;
-    //u_char clk_reg[9];
-    u_long val;
 
     /* Disable card select. */
     NplMmCard0Select(0);
 
-    /* Query the PLL number routed to Clock B. */
-    val = Cy2239xGetPll(CY2239X_CLKB);
-    /* Get the frequency of this PLL. */
-    val = Cy2239xPllGetFreq((int)val, 7);
-    /* Calculate the required divider value. */
-    val = (val + NPL_MMC_CLOCK - 10) / NPL_MMC_CLOCK;
-    /* 
-     * Not sure about the Cy-routines. The DIVSEL bit specifies which
-     * divider is used, which is indirectly connected to S2, which is
-     * high by default. For now set both dividers. 
-     */
-    if (Cy2239xSetDivider(CY2239X_CLKB, 1, (int)val)) {
-        return -1;
+#if defined(NUT_PLL_NPLCLK1)
+    {
+        u_long val;
+
+        /* Query the PLL number routed to Clock B. */
+        val = Cy2239xGetPll(NUT_PLL_NPLCLK1);
+        /* Get the frequency of this PLL. */
+        val = Cy2239xPllGetFreq((int)val, 7);
+        /* Calculate the required divider value. */
+        val = (val + NPL_MMC_CLOCK - 10) / NPL_MMC_CLOCK;
+        /* 
+         * Not sure about the Cy-routines. The DIVSEL bit specifies which
+         * divider is used, which is indirectly connected to S2, which is
+         * high by default. For now set both dividers. 
+         */
+        if (Cy2239xSetDivider(NUT_PLL_NPLCLK1, 1, (int)val)) {
+            return -1;
+        }
+        if (Cy2239xSetDivider(NUT_PLL_NPLCLK1, 0, (int)val)) {
+            return -1;
+        }
     }
-    if (Cy2239xSetDivider(CY2239X_CLKB, 0, (int)val)) {
-        return -1;
-    }
+#endif
 
     /* Initialize the CPLD SPI register. */
     inb(NPL_MMCDR);
