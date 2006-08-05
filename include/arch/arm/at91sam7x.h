@@ -42,6 +42,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/08/05 11:57:38  haraldkipp
+ * PDC register configuration added.
+ * Added register definitions for synchronous serial controller.
+ *
  * Revision 1.3  2006/07/21 09:03:56  haraldkipp
  * Added SPI support, kindly contributed by Andras Albert.
  *
@@ -93,6 +97,27 @@
 #define VREG_BASE       0xFFFFFD60      /*!< \brief Voltage regulator mode controller base address. */
 #define MC_BASE         0xFFFFFF00      /*!< \brief Memory controller base. */
 
+#define PERIPH_RPR_OFF  0x00000100      /*!< \brief Receive pointer register offset. */
+#define PERIPH_RCR_OFF  0x00000104      /*!< \brief Receive counter register offset. */
+#define PERIPH_TPR_OFF  0x00000108      /*!< \brief Transmit pointer register offset. */
+#define PERIPH_TCR_OFF  0x0000010C      /*!< \brief Transmit counter register offset. */
+#define PERIPH_RNPR_OFF 0x00000110      /*!< \brief Receive next pointer register offset. */
+#define PERIPH_RNCR_OFF 0x00000114      /*!< \brief Receive next counter register offset. */
+#define PERIPH_TNPR_OFF 0x00000118      /*!< \brief Transmit next pointer register offset. */
+#define PERIPH_TNCR_OFF 0x0000011C      /*!< \brief Transmit next counter register offset. */
+#define PERIPH_PTCR_OFF 0x00000120      /*!< \brief PDC transfer control register offset. */
+#define PERIPH_PTSR_OFF 0x00000124      /*!< \brief PDC transfer status register offset. */
+
+#define PDC_RXTEN       0x00000001      /*!< \brief Receiver transfer enable. */
+#define PDC_RXTDIS      0x00000002      /*!< \brief Receiver transfer disable. */
+#define PDC_TXTEN       0x00000100      /*!< \brief Transmitter transfer enable. */
+#define PDC_TXTDIS      0x00000200      /*!< \brief Transmitter transfer disable. */
+
+#define DBGU_HAS_PDC
+#define SPI_HAS_PDC
+#define SSC_HAS_PDC
+#define USART_HAS_PDC
+
 #include <arch/arm/at91_tc.h>
 #include <arch/arm/at91_us.h>
 #include <arch/arm/at91_dbgu.h>
@@ -104,6 +129,7 @@
 #include <arch/arm/at91_rstc.h>
 #include <arch/arm/at91_wdt.h>
 #include <arch/arm/at91_mc.h>
+#include <arch/arm/at91_ssc.h>
 
 /*! \addtogroup xgNutArchArmAt91 */
 /*@{*/
