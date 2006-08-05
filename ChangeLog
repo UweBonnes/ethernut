@@ -1,4 +1,39 @@
-$Id: ChangeLog,v 1.348 2006/08/01 07:48:03 haraldkipp Exp $
+$Id: ChangeLog,v 1.349 2006/08/05 12:02:22 haraldkipp Exp $
+
+2006-08-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/avr/dev/usartavr.c: Half duplex flow control used the
+	wrong buffer. Many thanks to Andrej Taran for fixing this bug.
+
+	* arch/arm/dev/debug_at91.c, arch/arm/dev/usartat91.c: Special 
+	register functions should not be based on MCU definitions but on 
+	register definitions.
+
+	* include/arch/arm/at91_dbgu.h, include/arch/arm/at91_spi.h:
+	PDC registers added.
+
+	* include/arch/arm/at91_us.h, include/arch/arm/at91sam7x.h,
+	include/arch/arm/at91x40.h: PDC registers are now configurable 
+	in the parent header file.
+
+	* include/arch/arm/at91x40.h: Old SAM7X leftovers finally removed.
+
+	* include/arch/arm.h: Missing brackets may result in unexpected
+	expansion of the _BV() macro.
+
+	* include/arch/arm/at91sam7x.h, include/arch/arm/at91_ssc.h: 
+	Added register definitions for synchronous serial controller.
+
+	* include/arch/arm/at91_pmc.h: Wrong PMC register offsets fixed.
+
+	* arch/arm/dev/ostimer_at91.c: NUT_CPU_FREQ did not override
+	AT91_PLL_MAINCK or NUT_PLL_CPUCLK. Fixed.
+
+	* conf/dev/dev.nut: Added clock settings for Ethernut 3.0E.
+
+	* dev/nplmmc.c: Hard coded PLL selections replaced by
+	configurable definitions.
+
 
 2006-07-31  Harald Kipp  <harald.kipp@egnite.de>
 
