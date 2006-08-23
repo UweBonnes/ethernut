@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/08/23 09:20:47  freckle
+ * fix bug #1541139
+ *
  * Revision 1.5  2004/10/14 16:43:06  drsung
  * Fixed compiler warning "comparison between signed and unsigned"
  *
@@ -135,7 +138,6 @@ static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm
     }
 
     /* Update ring buffer status. */
-    memset(rbf, 0, sizeof(RINGBUF));
     if (size) {
         rbf->rbf_start = xbp;
         rbf->rbf_head = xbp;
@@ -143,6 +145,7 @@ static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm
         rbf->rbf_last = xbp + size;
         rbf->rbf_lwm = lowm;
         rbf->rbf_hwm = hiwm;
+        rbf->rbf_cnt = 0;
 
         /* Re-enable buffer usage. */
         NutEnterCritical();

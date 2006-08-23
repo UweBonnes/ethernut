@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.349 2006/08/05 12:02:22 haraldkipp Exp $
+$Id: ChangeLog,v 1.350 2006/08/23 09:20:47 freckle Exp $
+
+2006-08-23  Matthias Ringwald  <mringwal@inf.ethz.ch>
+    * dev/usart.c: UsartResetBuffer() cleared rbf_que without reason.
+	This fixes bug #1541139. Thanks to Kevin Martin for fixing.
+    
 
 2006-08-05  Harald Kipp  <harald.kipp@egnite.de>
 
