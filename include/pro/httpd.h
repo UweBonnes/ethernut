@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/08/25 13:42:16  olereinhardt
+ * added NutClearAuth(void); Thanks to Peter Sondermanns
+ *
  * Revision 1.6  2006/03/16 15:25:34  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -121,6 +124,7 @@ __BEGIN_DECLS
 
 extern int NutHttpAuthValidate(REQUEST * req);
 extern int NutRegisterAuth(CONST char *dirname, CONST char *login);
+extern void NutClearAuth(void);
 
 __END_DECLS
 

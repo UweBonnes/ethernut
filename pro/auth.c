@@ -32,8 +32,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:56  haraldkipp
- * Initial revision
+ * Revision 1.2  2006/08/25 13:42:16  olereinhardt
+ * added NutClearAuth(void); Thanks to Peter Sondermanns
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:56  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/02/04 18:17:31  harald
  * Version 3 released
@@ -100,6 +103,23 @@ int NutRegisterAuth(CONST char *dirname, CONST char *login)
     authList = auth;
 
     return 0;
+}
+
+
+/*!
+ * \brief Clear all authorization entries.
+ *
+ * Clears all authorization entries and frees the used ressouces.
+ *
+ */
+void NutClearAuth(void)
+{
+    AUTHINFO *auth;
+
+    for (auth = authList; auth->auth_next; auth = auth->auth_next) {
+        NutHeapFree(auth);
+    }
+    authList = NULL;
 }
 
 /*!
