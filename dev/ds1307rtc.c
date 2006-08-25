@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/08/25 13:42:55  olereinhardt
+ * avr-gcc 3.4 does not understand binary representation of numbers,
+ * changed to hex
+ *
  * Revision 1.1  2006/06/30 22:05:51  christianwelzel
  * Initial check in.
  *
@@ -219,14 +223,14 @@ int DS1307Init(void)
         // Enable Oszillator
         if ((rc = DS1307RtcReadRegs(0x00, &data, 1)) == 0) {
             buff[0] = 0x00;
-            buff[1] = data & 0b01111111;
+            buff[1] = data & 0x7F; //0b01111111;
             rc = DS1307RtcWrite(buff, 2);
         }
 
         // Enable 24h Mode
         if ((rc = DS1307RtcReadRegs(0x02, &data, 1)) == 0) {
             buff[0] = 0x02;
-            buff[1] = data & 0b10111111;
+            buff[1] = data & 0xBF; //0b10111111;
             rc = DS1307RtcWrite(buff, 2);
         }
     }
