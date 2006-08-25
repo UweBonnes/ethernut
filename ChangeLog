@@ -1,9 +1,14 @@
-$Id: ChangeLog,v 1.350 2006/08/23 09:20:47 freckle Exp $
+$Id: ChangeLog,v 1.351 2006/08/25 13:43:14 olereinhardt Exp $
+
+2006-08-24  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* dev/ds1307rtc.c: avr-gcc 3.4 does not understand binary
+          representation of numbers, changed to hex
+	* pro/auth.c, include/pro/httpd.h: added NutClearAuth(void); 
+	  Thanks to Peter Sondermanns
 
 2006-08-23  Matthias Ringwald  <mringwal@inf.ethz.ch>
-    * dev/usart.c: UsartResetBuffer() cleared rbf_que without reason.
+        * dev/usart.c: UsartResetBuffer() cleared rbf_que without reason.
 	This fixes bug #1541139. Thanks to Kevin Martin for fixing.
-    
 
 2006-08-05  Harald Kipp  <harald.kipp@egnite.de>
 
