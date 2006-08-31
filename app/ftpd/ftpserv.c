@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.7  2006/08/31 19:15:30  haraldkipp
+ * Dummy file system name added to SAM9260 to let it pass the compiler.
+ * The application will not yet run on this platform.
+ *
  * Revision 1.6  2006/07/26 11:22:55  haraldkipp
  * Added support for AT91SAM7X-EK.
  *
@@ -203,6 +207,10 @@
 /* SAM7X-EK block device interface. */
 #define BLKDEV      devAt91SpiMmc0
 #define BLKDEV_NAME "MMC0"
+
+#elif defined(AT91SAM9260_EK)
+
+#define FSDEV_NAME  "NONE" 
 
 #else
 
