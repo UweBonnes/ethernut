@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/08/31 19:04:08  haraldkipp
+ * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
+ *
  * Revision 1.5  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -112,6 +115,20 @@ extern IRQ_HANDLER sig_INTERRUPT2;
 extern IRQ_HANDLER sig_INTERRUPT2;
 
 #elif defined(MCU_AT91SAM7X256)
+
+extern IRQ_HANDLER sig_FIQ;
+extern IRQ_HANDLER sig_UART0;
+extern IRQ_HANDLER sig_UART1;
+extern IRQ_HANDLER sig_TC0;
+extern IRQ_HANDLER sig_TC1;
+extern IRQ_HANDLER sig_TC2;
+extern IRQ_HANDLER sig_INTERRUPT0;
+extern IRQ_HANDLER sig_INTERRUPT1;
+extern IRQ_HANDLER sig_EMAC;
+extern IRQ_HANDLER sig_PIO;
+extern IRQ_HANDLER sig_SWIRQ;
+
+#elif defined(MCU_AT91SAM9260)
 
 extern IRQ_HANDLER sig_FIQ;
 extern IRQ_HANDLER sig_UART0;

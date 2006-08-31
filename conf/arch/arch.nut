@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.22  2006/08/31 19:04:08  haraldkipp
+-- Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
+--
 -- Revision 1.21  2006/07/26 11:19:06  haraldkipp
 -- Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
 -- reading PLL settings.
@@ -200,6 +203,31 @@ nutarch =
                 makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561" }
             },
             {
+                macro = "MCU_AT91SAM9260",
+                brief = "Atmel AT91SAM9260",
+                description = "ARM926EJ-S RISC microcontroller with Ethernet MAC, "..
+                              "one USB Device Port, and a USB Host controller. "..
+                              "It also integrates several standard peripherals, "..
+                              "such as the USART, SPI, TWI, Timer Counters, Synchronous "..
+                              "Serial Controller, ADC and MultiMedia Card Interface.\n\n"..
+                              "Experimental port.",
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM9260",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_UART_AT91",
+                    "HW_EMAC_AT91",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=arm9" }
+            },
+            {
                 macro = "MCU_AT91SAM7X256",
                 brief = "Atmel AT91SAM7X256",
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
@@ -215,7 +243,7 @@ nutarch =
                     "HW_TIMER_AT91",
                     "HW_PLL_AT91",
                     "HW_UART_AT91",
-                    "HW_EMAC_SAM7X",
+                    "HW_EMAC_AT91",
                     "HW_SPI_AT91",
                     "HW_GPIO"
                 },

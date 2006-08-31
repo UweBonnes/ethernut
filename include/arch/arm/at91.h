@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2006/08/31 19:04:08  haraldkipp
+ * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
+ *
  * Revision 1.9  2006/08/01 07:35:59  haraldkipp
  * Exclude function prototypes when included by assembler.
  *
@@ -77,6 +80,8 @@
 #include <arch/arm/at91x40.h>
 #elif defined (MCU_AT91SAM7X256)
 #include <arch/arm/at91sam7x.h>
+#elif defined (MCU_AT91SAM9260)
+#include <arch/arm/at91sam9260.h>
 #endif
 
 /*! \addtogroup xgNutArchArmAt91 */

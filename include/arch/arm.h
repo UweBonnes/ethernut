@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2006/08/31 19:04:08  haraldkipp
+ * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
+ *
  * Revision 1.15  2006/08/05 11:58:22  haraldkipp
  * Missing brackets may result in unexpected expansion of the _BV() macro.
  *
@@ -89,7 +92,7 @@
  */
 
 #include <cfg/arch.h>
-#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256)
+#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
 #include <arch/arm/at91.h>
 #elif defined (MCU_GBA)
 #include <arch/arm/gba.h>

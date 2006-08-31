@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.11  2006/08/31 19:04:08  haraldkipp
+-- Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
+--
 -- Revision 1.10  2006/07/26 11:19:06  haraldkipp
 -- Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
 -- reading PLL settings.
@@ -110,7 +113,7 @@ nutarch_arm =
         {
             {
                 macro = "AT91_PLL_MAINCK",
-                brief = "AT91 Main Clock (SAM7X)",
+                brief = "AT91 Main Clock",
                 description = "Frequency of the external crystal. If this option is "..
                               "enabled and NUT_CPU_FREQ is not enabled, then the "..
                               "specified value will be used together with "..
@@ -148,7 +151,7 @@ nutarch_arm =
     },
     {
         name = "nutarch_arm_irqat91x40",
-        brief = "Interrupt Handler (AT91)",
+        brief = "Interrupt Handler (AT91R40XX)",
         requires = { "HW_MCU_AT91R40008" },
         provides = { "DEV_IRQ_AT91" },
         sources =
@@ -169,7 +172,7 @@ nutarch_arm =
     },
     {
         name = "nutarch_arm_irqat91sam7x",
-        brief = "Interrupt Handler (AT91)",
+        brief = "Interrupt Handler (SAM7X)",
         requires = { "HW_MCU_AT91SAM7X" },
         provides = { "DEV_IRQ_AT91" },
         sources =
@@ -187,6 +190,27 @@ nutarch_arm =
             "arm/dev/ih_at91uart1.c",
             "arm/dev/ih_at91emac.c",
             "arm/dev/ih_at91wdi.c"
+        },
+    },
+    {
+        name = "nutarch_arm_irqat91sam7x",
+        brief = "Interrupt Handler (SAM926X)",
+        requires = { "HW_MCU_AT91SAM9260" },
+        provides = { "DEV_IRQ_AT91" },
+        sources =
+        {
+            "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91irq0.c",
+            "arm/dev/ih_at91irq1.c",
+            "arm/dev/ih_at91irq2.c",
+            "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91swirq.c",
+            "arm/dev/ih_at91tc0.c",
+            "arm/dev/ih_at91tc1.c",
+            "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91uart0.c",
+            "arm/dev/ih_at91uart1.c",
+            "arm/dev/ih_at91emac.c"
         },
     },
 
@@ -333,9 +357,9 @@ nutarch_arm =
         name = "nutarch_arm_at91sam7x_emac",
         brief = "AT91SAM7X EMAC Driver",
         description = "LAN driver for AT91SAM7X.",
-        requires = { "HW_EMAC_SAM7X", "NUT_EVENT", "NUT_TIMER" },
+        requires = { "HW_EMAC_AT91", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
-        sources = { "arm/dev/at91sam7x_emac.c" },
+        sources = { "arm/dev/at91_emac.c" },
     },     
     {
         name = "nutarch_arm_spimmc_at91",
