@@ -38,6 +38,13 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/08/31 19:01:08  haraldkipp
+ * Using devDebug2 for the DBGU output was a bad idea. Some AT91 chips
+ * provide more than two UARTs. We now use devDebug to specify the DBGU
+ * device. Baudrate calculations failed on CPUs running on a processor
+ * clock, which differs from a futher divided main clock. This had been
+ * fixed.
+ *
  * Revision 1.8  2006/08/05 11:54:06  haraldkipp
  * Special register functions should not be based on MCU definitions but on
  * register definitions.
@@ -75,21 +82,73 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/clock.h>
+
 #include <dev/debug.h>
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
+
+#define static
 
 /*!
  * \addtogroup xgDevDebugAt91
  */
 /*@{*/
 
+#if defined(DBGU_BASE)
+static NUTFILE dbgfile;
+#else
 static NUTFILE dbgfile0;
 static NUTFILE dbgfile1;
-#ifdef MCU_AT91SAM7X256
-static NUTFILE dbgfile2;
 #endif
+
+#if defined(DBGU_BASE)
+/*!
+ * \brief Handle I/O controls for debug device 2.
+ *
+ * The debug device supports UART_SETSPEED only.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    if(req == UART_SETSPEED) {
+#if defined(AT91_PLL_MAINCK)
+        outr(DBGU_BRGR, (At91GetMasterClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+#else
+        outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+#endif
+        return 0;
+    }
+    return -1;
+}
+
+/*!
+ * \brief Initialize debug device 2.
+ *
+ * \return Always 0.
+ */
+static int DebugInit(NUTDEVICE * dev)
+{
+#if defined (MCU_AT91SAM7X256)
+    /* Disable GPIO on UART tx/rx pins. */
+    outr(PIOA_PDR, _BV(27) | _BV(28));
+    /* Reset UART. */
+    outr(DBGU_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
+    /* Disable all UART interrupts. */
+    outr(DBGU_IDR, 0xFFFFFFFF);
+    /* Set UART baud rate generator register. */
+    outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
+    /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
+    outr(DBGU_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
+    /* Enable UART receiver and transmitter. */
+    outr(DBGU_CR, US_RXEN | US_TXEN);
+#endif
+    return 0;
+}
+
+#else /* !DBGU_BASE */
 
 /*!
  * \brief Handle I/O controls for debug device 0.
@@ -123,24 +182,6 @@ static int Debug1IOCtl(NUTDEVICE * dev, int req, void *conf)
     return -1;
 }
 
-#ifdef MCU_AT91SAM7X256
-/*!
- * \brief Handle I/O controls for debug device 2.
- *
- * The debug device supports UART_SETSPEED only.
- *
- * \return 0 on success, -1 otherwise.
- */
-static int Debug2IOCtl(NUTDEVICE * dev, int req, void *conf)
-{
-    if(req == UART_SETSPEED) {
-        outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (*((u_long *)conf))) + 1) / 2);
-        return 0;
-    }
-    return -1;
-}
-#endif
-
 /*!
  * \brief Initialize debug device 0.
  *
@@ -153,7 +194,7 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(14) | _BV(15));
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
@@ -190,7 +231,7 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(21) | _BV(22));
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */
@@ -215,30 +256,8 @@ static int Debug1Init(NUTDEVICE * dev)
     return 0;
 }
 
-/*!
- * \brief Initialize debug device 2.
- *
- * \return Always 0.
- */
-#if defined (MCU_AT91SAM7X256)
-static int Debug2Init(NUTDEVICE * dev)
-{
-    /* Disable GPIO on UART tx/rx pins. */
-    outr(PIOA_PDR, _BV(27) | _BV(28));
-    /* Reset UART. */
-    outr(DBGU_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
-    /* Disable all UART interrupts. */
-    outr(DBGU_IDR, 0xFFFFFFFF);
-    /* Set UART baud rate generator register. */
-    outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
-    /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
-    outr(DBGU_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
-    /* Enable UART receiver and transmitter. */
-    outr(DBGU_CR, US_RXEN | US_TXEN);
-
-    return 0;
-}
 #endif
+
 
 /*!
  * \brief Send a single character to debug device 0.
@@ -300,6 +319,31 @@ static int DebugClose(NUTFILE * fp)
     return 0;
 }
 
+#if defined(DBGU_BASE)
+
+/*!
+ * \brief Debug device information structure.
+ */
+NUTDEVICE devDebug = {
+    0,                          /*!< Pointer to next device, dev_next. */
+    {'d', 'b', 'g', 'u', 0, 0, 0, 0, 0}
+    ,                           /*!< Unique device name, dev_name. */
+    0,                          /*!< Type of device, dev_type. */
+    DBGU_BASE,                  /*!< Base address, dev_base. */
+    0,                          /*!< First interrupt number, dev_irq. */
+    0,                          /*!< Interface control block, dev_icb. */
+    &dbgfile,                   /*!< Driver control block, dev_dcb. */
+    DebugInit,                  /*!< Driver initialization routine, dev_init. */
+    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
+    0,                          /*!< dev_read. */
+    DebugWrite,                 /*!< dev_write. */
+    DebugOpen,                  /*!< dev_opem. */
+    DebugClose,                 /*!< dev_close. */
+    0                           /*!< dev_size. */
+};
+
+#else   /* !DBGU_BASE */
+
 /*!
  * \brief Debug device 0 information structure.
  */
@@ -342,27 +386,6 @@ NUTDEVICE devDebug1 = {
     0                           /*!< dev_size. */
 };
 
-#ifdef MCU_AT91SAM7X256
-/*!
- * \brief Debug device 2 information structure.
- */
-NUTDEVICE devDebug2 = {
-    0,                          /*!< Pointer to next device, dev_next. */
-    {'d', 'b', 'g', 'u', 0, 0, 0, 0, 0}
-    ,                           /*!< Unique device name, dev_name. */
-    0,                          /*!< Type of device, dev_type. */
-    DBGU_BASE,                  /*!< Base address, dev_base. */
-    0,                          /*!< First interrupt number, dev_irq. */
-    0,                          /*!< Interface control block, dev_icb. */
-    &dbgfile2,                  /*!< Driver control block, dev_dcb. */
-    Debug2Init,                 /*!< Driver initialization routine, dev_init. */
-    Debug2IOCtl,                /*!< Driver specific control function, dev_ioctl. */
-    0,                          /*!< dev_read. */
-    DebugWrite,                 /*!< dev_write. */
-    DebugOpen,                  /*!< dev_opem. */
-    DebugClose,                 /*!< dev_close. */
-    0                           /*!< dev_size. */
-};
-#endif
+#endif  /* !DBGU_BASE */
 
 /*@}*/

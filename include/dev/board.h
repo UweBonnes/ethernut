@@ -35,6 +35,13 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/08/31 19:01:08  haraldkipp
+ * Using devDebug2 for the DBGU output was a bad idea. Some AT91 chips
+ * provide more than two UARTs. We now use devDebug to specify the DBGU
+ * device. Baudrate calculations failed on CPUs running on a processor
+ * clock, which differs from a futher divided main clock. This had been
+ * fixed.
+ *
  * Revision 1.5  2006/07/05 07:45:29  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -67,8 +74,8 @@
 #define DEV_DEBUG_NAME  "uart1"
 #endif
 
-#if defined(MCU_AT91SAM7X256)
-#define DEV_DEBUG       devDebug2
+#if defined(DBGU_BASE)
+#define DEV_DEBUG       devDebug
 #define DEV_DEBUG_NAME  "dbgu"
 #endif
 
@@ -89,7 +96,7 @@
 #define DEV_UART1       devUsartAvr1
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK)
+#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK)
 
 #include <dev/usartat91.h>
 #define DEV_UART0       devUsartAt910
@@ -125,7 +132,7 @@
 #include <dev/ax88796.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
-#elif defined(AT91SAM7X_EK)
+#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK)
 #include <dev/at91sam7x_emac.h>
 #endif
 
