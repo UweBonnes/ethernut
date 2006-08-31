@@ -1,4 +1,74 @@
-$Id: ChangeLog,v 1.351 2006/08/25 13:43:14 olereinhardt Exp $
+$Id: ChangeLog,v 1.352 2006/08/31 18:56:05 haraldkipp Exp $
+
+2006-08-31  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_emac.c, include/dev/at91_emac.h: More 
+	general AT91 MAC driver replaces the SAM7X specific version. 
+	This had been tested on the SAM9260, but loses Ethernet 
+	packets for a yet unknown reason.
+
+	* arch/arm/dev/ostimer_at91.c, include/arch/arm/timer.h: 
+	Added support for the AT91SAM9260. We now determine between 
+	processor and master clock. A new API function
+	At91GetMasterClock() had been added to query the latter.
+
+	* arch/arm/dev/debug_at91.c, include/dev/board.h,
+	include/dev/debug.h: Using devDebug2 for the DBGU output
+	was a bad idea. Some AT91 chips provide more than two UARTs.
+	We now use devDebug to specify the DBGU device. Baudrate
+	calculations failed on CPUs running on a processor clock, which
+	differs from a futher divided main clock. This had been
+	fixed.
+
+	* arch/arm/dev/usartat91.c:
+	Using the processor clock for baud rate calculations failed
+	on the SAM9, if the master clock is further divided. This
+	had been fixed.
+
+	* arch/arm/dev/hd44780_at91.c: Added support for AT91SAM9260.
+	Some displays fail after reset. An additional nibble sent
+	during 4-bit initialization seems to fix this. However,
+	a user reported that his 3.3V driven LCD now fails during
+	power on.
+
+	* conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam9260-ek.conf,
+	include/arch/arm/at91.h, include/arch/arm/at91sam9260.h,
+	include/arch/arm/irqreg.h, include/arch/arm.h, include/dev/board.h,
+	at91sam9260_ram.ld: Added support for the AT91SAM9260 and Atmel's 
+	AT91SAM9260 Evaluation Kit.
+
+	* include/arch/arm/at91_aic.h, include/arch/arm/at91_pmc.h: 
+	Defining register offsets simplifies assembly programming.
+
+	* include/arch/arm/at91_ccfg.h, include/arch/arm/at91_matrix.h, 
+	include/arch/arm/at91_mci.h, include/arch/arm: at91_sdramc.h,
+	include/arch/arm/at91_smc.h: New peripheral register definitions
+	for the AT91SAM9260.
+
+	* include/arch/arm/at91_pio.h: Added register definitions for
+	PIOC.
+
+	* include/arch/arm/at91_spi.h: Bits per transfer definitions added.
+
+	* include/arch/arm/at91_ssc.h: Frame sync definitions added.
+
+	* include/arch/arm/at91_us.h: Added additional registers found 
+	on the AT91SAM9260.
+
+	* include/arch/arm/at91_rstc.h: Wakeup bit and LSB of external
+	reset length added.
+
+	* include/arch/arm/at91_wdt.h: Added LSB definitions for counter
+	and delta values.
+
+	* app/basemon/basemon.c, app/canbus/candemo.c, 
+	app/nutpiper/nutpiper.c, app/playmp3/playmp3.c: Not all platforms
+	do have devDebug0. Use board.h to determine the correct driver.
+
+	* app/ftpd/ftpserv.c: Dummy file system name added to SAM9260
+	to let it pass the compiler. The application will not run on
+	this platform.
+
 
 2006-08-24  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* dev/ds1307rtc.c: avr-gcc 3.4 does not understand binary
