@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/08/31 19:11:18  haraldkipp
+ * Added register definitions for PIOC.
+ *
  * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -134,6 +137,38 @@
 #define PIOB_OWER   (PIOB_BASE + 0xA0)  /*!< \brief PIO output write enable register. */
 #define PIOB_OWDR   (PIOB_BASE + 0xA4)  /*!< \brief PIO output write disable register. */
 #define PIOB_OWSR   (PIOB_BASE + 0xA8)  /*!< \brief PIO output write status register. */
+#endif
+
+#if defined(PIOC_BASE)
+#define PIOC_PER    (PIOC_BASE + 0x00)  /*!< \brief PIO enable register. */
+#define PIOC_PDR    (PIOC_BASE + 0x04)  /*!< \brief PIO disable register. */
+#define PIOC_PSR    (PIOC_BASE + 0x08)  /*!< \brief PIO status register. */
+#define PIOC_OER    (PIOC_BASE + 0x10)  /*!< \brief Output enable register. */
+#define PIOC_ODR    (PIOC_BASE + 0x14)  /*!< \brief Output disable register. */
+#define PIOC_OSR    (PIOC_BASE + 0x18)  /*!< \brief Output status register. */
+#define PIOC_IFER   (PIOC_BASE + 0x20)  /*!< \brief Input filter enable register. */
+#define PIOC_IFDR   (PIOC_BASE + 0x24)  /*!< \brief Input filter disable register. */
+#define PIOC_IFSR   (PIOC_BASE + 0x28)  /*!< \brief Input filter status register. */
+#define PIOC_SODR   (PIOC_BASE + 0x30)  /*!< \brief Set output data register. */
+#define PIOC_CODR   (PIOC_BASE + 0x34)  /*!< \brief Clear output data register. */
+#define PIOC_ODSR   (PIOC_BASE + 0x38)  /*!< \brief Output data status register. */
+#define PIOC_PDSR   (PIOC_BASE + 0x3C)  /*!< \brief Pin data status register. */
+#define PIOC_IER    (PIOC_BASE + 0x40)  /*!< \brief Interrupt enable register. */
+#define PIOC_IDR    (PIOC_BASE + 0x44)  /*!< \brief Interrupt disable register. */
+#define PIOC_IMR    (PIOC_BASE + 0x48)  /*!< \brief Interrupt mask register. */
+#define PIOC_ISR    (PIOC_BASE + 0x4C)  /*!< \brief Interrupt status register. */
+#define PIOC_MDER   (PIOC_BASE + 0x50)  /*!< \brief Multi-driver enable register. */
+#define PIOC_MDDR   (PIOC_BASE + 0x54)  /*!< \brief Multi-driver disable register. */
+#define PIOC_MDSR   (PIOC_BASE + 0x58)  /*!< \brief Multi-driver status register. */
+#define PIOC_PUDR   (PIOC_BASE + 0x60)  /*!< \brief Pull-up disable register. */
+#define PIOC_PUER   (PIOC_BASE + 0x64)  /*!< \brief Pull-up enable register. */
+#define PIOC_PUSR   (PIOC_BASE + 0x68)  /*!< \brief Pull-up status register. */
+#define PIOC_ASR    (PIOC_BASE + 0x70)  /*!< \brief PIO peripheral A select register. */
+#define PIOC_BSR    (PIOC_BASE + 0x74)  /*!< \brief PIO peripheral B select register. */
+#define PIOC_ABSR   (PIOC_BASE + 0x78)  /*!< \brief PIO peripheral AB status register. */
+#define PIOC_OWER   (PIOC_BASE + 0xA0)  /*!< \brief PIO output write enable register. */
+#define PIOC_OWDR   (PIOC_BASE + 0xA4)  /*!< \brief PIO output write disable register. */
+#define PIOC_OWSR   (PIOC_BASE + 0xA8)  /*!< \brief PIO output write status register. */
 #endif
 
 /*@} xgNutArchArmAt91Pio */
