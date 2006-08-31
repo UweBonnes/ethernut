@@ -37,6 +37,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/08/31 19:01:44  haraldkipp
+ * Using the processor clock for baud rate calculations failed
+ * on the SAM9, if the master clock is further divided. This
+ * had been fixed.
+ *
  * Revision 1.5  2006/08/05 11:54:06  haraldkipp
  * Special register functions should not be based on MCU definitions but on
  * register definitions.
@@ -55,6 +60,8 @@
  * Added interrupt driven UART driver for AT91.
  *
  */
+
+#include <cfg/clock.h>
 
 #include <sys/atom.h>
 #include <sys/event.h>
@@ -451,13 +458,15 @@ static u_long At91UsartGetSpeed(void)
     ureg_t cs = inr(USARTn_BASE + US_MR_OFF);
     u_long clk;
 
-    if ((cs & US_CLKS) == US_CLKS_MCK) {
-        clk = NutGetCpuClock();
+#if defined(AT91_PLL_MAINCK)
+    clk = At91GetMasterClock();
+#else
+    clk = NutGetCpuClock();
+#endif
+    if ((cs & US_CLKS) == US_CLKS_MCK8) {
+        clk /= 8;
     }
-    else if ((cs & US_CLKS) == US_CLKS_MCK8) {
-        clk = NutGetCpuClock() / 8;
-    }
-    else {
+    else if ((cs & US_CLKS) != US_CLKS_MCK) {
         clk = 0;
     }
     return clk / (16UL * (inr(USARTn_BASE + US_BRGR_OFF) & 0xFFFF));
@@ -476,7 +485,11 @@ static u_long At91UsartGetSpeed(void)
 static int At91UsartSetSpeed(u_long rate)
 {
     At91UsartDisable();
+#if defined(AT91_PLL_MAINCK)
+    outr(USARTn_BASE + US_BRGR_OFF, (At91GetMasterClock() / (8 * (rate)) + 1) / 2);
+#else
     outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (rate)) + 1) / 2);
+#endif
     At91UsartEnable();
 
     return 0;
@@ -1121,7 +1134,11 @@ static int At91UsartInit(void)
     outr(USARTn_BASE + US_TCR_OFF, 0);
 #endif
     /* Set UART baud rate generator register. */
+#if defined(AT91_PLL_MAINCK)
+    outr(USARTn_BASE + US_BRGR_OFF, (At91GetMasterClock() / (8 * (115200)) + 1) / 2);
+#else
     outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
+#endif
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(USARTn_BASE + US_MR_OFF, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
 
