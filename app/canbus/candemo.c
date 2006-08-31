@@ -82,7 +82,9 @@ int main(void)
    unsigned long i;
    int result;
 
+#if defined(__AVR__)
    NutRegisterDevice(&devDebug0, 0, 0);
+#endif
    freopen("uart0", "w", stdout);
 
    printf("CAN driver test program");

@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2006/08/31 19:14:44  haraldkipp
+ * Not all platforms do have devDebug0. Use board.h to determine the
+ * correct driver.
+ *
  * Revision 1.5  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -62,6 +66,7 @@
 #include <stdio.h>
 #include <io.h>
 
+#include <dev/board.h>
 #include <dev/debug.h>
 #include <dev/term.h>
 #include <dev/hd44780.h>
@@ -401,8 +406,8 @@ int main(void)
     /*
      * Assign stdout to the debug device.
      */
-    NutRegisterDevice(&devDebug0, 0, 0);
-    freopen("uart0", "w", stdout);
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     /*
