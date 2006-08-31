@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/08/31 19:19:55  haraldkipp
+ * No time to write comments. ;-)
+ *
  * Revision 1.3  2006/07/18 14:01:38  haraldkipp
  * Transmitter buffer handling was buggy and delayed any second packet.
  * Added handling of receiver overflow events.
@@ -747,7 +750,7 @@ static IFNET ifn_eth0 = {
  * of this driver to initialize the network interface.
  * 
  */
-NUTDEVICE devSam7xEmac = {
+NUTDEVICE devAt91Emac = {
     0,                          /*!< \brief Pointer to next device. */
     {'e', 't', 'h', '0', 0, 0, 0, 0, 0},        /*!< \brief Unique device name. */
     IFTYP_NET,                  /*!< \brief Type of device. */

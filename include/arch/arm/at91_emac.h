@@ -2,7 +2,7 @@
 #define _ARCH_ARM_AT91_EMAC_H_
 
 /*
- * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,9 +40,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/08/31 19:19:55  haraldkipp
+ * No time to write comments. ;-)
+ *
  * Revision 1.1  2006/07/05 07:45:25  haraldkipp
  * Split on-chip interface definitions.
- *
  *
  * \endverbatim
  */
@@ -52,147 +54,256 @@
  */
 /*@{*/
 
-#define EMAC_NCR    (EMAC_BASE + 0x00)    /*!< \brief Network Control Register. */
-#define EMAC_LB         ((unsigned int) 0x1 <<  0) /*!< \brief  Loopback. Optional. When set, loopback signal is at high level. */
-#define EMAC_LLB        ((unsigned int) 0x1 <<  1) /*!< \brief  Loopback local. */
-#define EMAC_RE         ((unsigned int) 0x1 <<  2) /*!< \brief  Receive enable. */
-#define EMAC_TE         ((unsigned int) 0x1 <<  3) /*!< \brief  Transmit enable. */
-#define EMAC_MPE        ((unsigned int) 0x1 <<  4) /*!< \brief  Management port enable. */
-#define EMAC_CLRSTAT    ((unsigned int) 0x1 <<  5) /*!< \brief  Clear statistics registers. */
-#define EMAC_INCSTAT    ((unsigned int) 0x1 <<  6) /*!< \brief  Increment statistics registers. */
-#define EMAC_WESTAT     ((unsigned int) 0x1 <<  7) /*!< \brief  Write enable for statistics registers. */
-#define EMAC_BP         ((unsigned int) 0x1 <<  8) /*!< \brief  Back pressure. */
-#define EMAC_TSTART     ((unsigned int) 0x1 <<  9) /*!< \brief  Start Transmission. */
-#define EMAC_THALT      ((unsigned int) 0x1 << 10) /*!< \brief  Transmission Halt. */
-#define EMAC_TPFR       ((unsigned int) 0x1 << 11) /*!< \brief  Transmit pause frame. */
-#define EMAC_TZQ        ((unsigned int) 0x1 << 12) /*!< \brief  Transmit zero quantum pause frame. */
+/*! \name Network Control Register */
+/*@{*/
+#define EMAC_NCR_OFF                0x00000000  /*!< \brief Network control register offset. */
+#define EMAC_NCR    (EMAC_BASE + EMAC_NCR_OFF)  /*!< \brief Network Control register address. */
 
-#define EMAC_NCFGR  (EMAC_BASE + 0x04)    /*!< \brief Network Configuration Register. */
-#define EMAC_SPD        ((unsigned int) 0x1 <<  0) /*!< \brief  Speed. */
-#define EMAC_FD         ((unsigned int) 0x1 <<  1) /*!< \brief  Full duplex. */
-#define EMAC_JFRAME     ((unsigned int) 0x1 <<  3) /*!< \brief  Jumbo Frames. */
-#define EMAC_CAF        ((unsigned int) 0x1 <<  4) /*!< \brief  Copy all frames. */
-#define EMAC_NBC        ((unsigned int) 0x1 <<  5) /*!< \brief  No broadcast. */
-#define EMAC_MTI        ((unsigned int) 0x1 <<  6) /*!< \brief  Multicast hash event enable. */
-#define EMAC_UNI        ((unsigned int) 0x1 <<  7) /*!< \brief  Unicast hash enable. */
-#define EMAC_BIG        ((unsigned int) 0x1 <<  8) /*!< \brief  Receive 1522 bytes. */
-#define EMAC_EAE        ((unsigned int) 0x1 <<  9) /*!< \brief  External address match enable. */
-#define EMAC_CLK        ((unsigned int) 0x3 << 10) /*!< \brief . */
-#define EMAC_CLK_HCLK_8     ((unsigned int) 0x0 << 10) /*!< \brief  HCLK divided by 8. */
-#define EMAC_CLK_HCLK_16    ((unsigned int) 0x1 << 10) /*!< \brief  HCLK divided by 16. */
-#define EMAC_CLK_HCLK_32    ((unsigned int) 0x2 << 10) /*!< \brief  HCLK divided by 32. */
-#define EMAC_CLK_HCLK_64    ((unsigned int) 0x3 << 10) /*!< \brief  HCLK divided by 64. */
-#define EMAC_RTY        ((unsigned int) 0x1 << 12) /*!< \brief  . */
-#define EMAC_PAE        ((unsigned int) 0x1 << 13) /*!< \brief  . */
-#define EMAC_RBOF       ((unsigned int) 0x3 << 14) /*!< \brief  . */
-#define EMAC_RBOF_OFFSET_0  ((unsigned int) 0x0 << 14) /*!< \brief  no offset from start of receive buffer. */
-#define EMAC_RBOF_OFFSET_1  ((unsigned int) 0x1 << 14) /*!< \brief  one byte offset from start of receive buffer. */
-#define EMAC_RBOF_OFFSET_2  ((unsigned int) 0x2 << 14) /*!< \brief  two bytes offset from start of receive buffer. */
-#define EMAC_RBOF_OFFSET_3  ((unsigned int) 0x3 << 14) /*!< \brief  three bytes offset from start of receive buffer. */
-#define EMAC_RLCE       ((unsigned int) 0x1 << 16) /*!< \brief  Receive Length field Checking Enable. */
-#define EMAC_DRFCS      ((unsigned int) 0x1 << 17) /*!< \brief  Discard Receive FCS. */
-#define EMAC_EFRHD      ((unsigned int) 0x1 << 18) /*!< \brief  . */
-#define EMAC_IRXFCS     ((unsigned int) 0x1 << 19) /*!< \brief  Ignore RX FCS. */
+#define EMAC_LB                     0x00000001  /*!< \brief PHY loopback. */
+#define EMAC_LLB                    0x00000002  /*!< \brief EMAC loopback. */
+#define EMAC_RE                     0x00000004  /*!< \brief Receive enable. */
+#define EMAC_TE                     0x00000008  /*!< \brief Transmit enable. */
+#define EMAC_MPE                    0x00000010  /*!< \brief Management port enable. */
+#define EMAC_CLRSTAT                0x00000020  /*!< \brief Clear statistics registers. */
+#define EMAC_INCSTAT                0x00000040  /*!< \brief Increment statistics registers. */
+#define EMAC_WESTAT                 0x00000080  /*!< \brief Write enable for statistics registers. */
+#define EMAC_BP                     0x00000100  /*!< \brief Back pressure. */
+#define EMAC_TSTART                 0x00000200  /*!< \brief Start Transmission. */
+#define EMAC_THALT                  0x00000400  /*!< \brief Transmission halt. */
+#define EMAC_TPFR                   0x00000800  /*!< \brief Transmit pause frame. */
+#define EMAC_TZQ                    0x00001000  /*!< \brief Transmit zero quantum pause frame. */
+/*@}*/
 
-#define EMAC_NSR    (EMAC_BASE + 0x08)    /*!< \brief Network Status Register. */
-#define EMAC_LINKR      ((unsigned int) 0x1 <<  0) /*!< \brief  . */
-#define EMAC_MDIO       ((unsigned int) 0x1 <<  1) /*!< \brief  . */
-#define EMAC_IDLE       ((unsigned int) 0x1 <<  2) /*!< \brief  . */
+/*! \name Network Configuration Register */
+/*@{*/
+#define EMAC_NCFGR_OFF              0x00000004  /*!< \brief Network configuration register offset. */
+#define EMAC_NCFGR (EMAC_BASE + EMAC_NCFGR_OFF) /*!< \brief Network configuration register address. */
 
-#define EMAC_TSR    (EMAC_BASE + 0x14)    /*!< \brief Transmit Status Register. */
-#define EMAC_UBR        ((unsigned int) 0x1 <<  0) /*!< \brief  . */
-#define EMAC_COL        ((unsigned int) 0x1 <<  1) /*!< \brief  . */
-#define EMAC_RLES       ((unsigned int) 0x1 <<  2) /*!< \brief  . */
-#define EMAC_TGO        ((unsigned int) 0x1 <<  3) /*!< \brief  Transmit Go. */
-#define EMAC_BEX        ((unsigned int) 0x1 <<  4) /*!< \brief  Buffers exhausted mid frame. */
-#define EMAC_COMP       ((unsigned int) 0x1 <<  5) /*!< \brief  . */
-#define EMAC_UND        ((unsigned int) 0x1 <<  6) /*!< \brief  . */
+#define EMAC_SPD                    0x00000001  /*!< \brief Speed, set for 100Mb. */
+#define EMAC_FD                     0x00000002  /*!< \brief Full duplex. */
+#define EMAC_JFRAME                 0x00000008  /*!< \brief Jumbo Frames. */
+#define EMAC_CAF                    0x00000010  /*!< \brief Copy all frames. */
+#define EMAC_NBC                    0x00000020  /*!< \brief No broadcast. */
+#define EMAC_MTI                    0x00000040  /*!< \brief Multicast hash event enable. */
+#define EMAC_UNI                    0x00000080  /*!< \brief Unicast hash enable. */
+#define EMAC_BIG                    0x00000100  /*!< \brief Receive 1522 bytes. */
+#define EMAC_EAE                    0x00000200  /*!< \brief External address match enable. */
+#define EMAC_CLK                    0x00000C00  /*!< \brief Clock divider mask. */
+#define EMAC_CLK_HCLK_8             0x00000000  /*!< \brief HCLK divided by 8. */
+#define EMAC_CLK_HCLK_16            0x00000400  /*!< \brief HCLK divided by 16. */
+#define EMAC_CLK_HCLK_32            0x00000800  /*!< \brief HCLK divided by 32. */
+#define EMAC_CLK_HCLK_64            0x00000C00  /*!< \brief HCLK divided by 64. */
+#define EMAC_RTY                    0x00001000  /*!< \brief Retry test. */
+#define EMAC_PAE                    0x00002000  /*!< \brief Pause enable. */
+#define EMAC_RBOF                   0x0000C000  /*!< \brief Receive buffer offset. */
+#define EMAC_RBOF_OFFSET_0          0x00000000  /*!< \brief No offset from start of receive buffer. */
+#define EMAC_RBOF_OFFSET_1          0x00004000  /*!< \brief One byte offset from start of receive buffer. */
+#define EMAC_RBOF_OFFSET_2          0x00008000  /*!< \brief Two bytes offset from start of receive buffer. */
+#define EMAC_RBOF_OFFSET_3          0x0000C000  /*!< \brief Three bytes offset from start of receive buffer. */
+#define EMAC_RLCE                   0x00010000  /*!< \brief Receive length field checking enable. */
+#define EMAC_DRFCS                  0x00020000  /*!< \brief Discard receive FCS. */
+#define EMAC_EFRHD                  0x00040000  /*!< \brief Allow receive during transmit in half duplex. */
+#define EMAC_IRXFCS                 0x00080000  /*!< \brief Ignore received FCS. */
+/*@}*/
 
-#define EMAC_RBQP   (EMAC_BASE + 0x18)    /*!< \brief Receive Buffer Queue Pointer. */
+/*! \name Network Status Register */
+/*@{*/
+#define EMAC_NSR_OFF                0x00000008  /*!< \brief Network Status register offset. */
+#define EMAC_NSR    (EMAC_BASE + EMAC_NSR_OFF)  /*!< \brief Network Status register address. */
+#define EMAC_LINKR                  0x00000001  /*!< \brief . */
+#define EMAC_MDIO                   0x00000002  /*!< \brief Status of MDIO input pin. */
+#define EMAC_IDLE                   0x00000004  /*!< \brief Set when PHY is running. */
+/*@}*/
 
-#define EMAC_TBQP   (EMAC_BASE + 0x1C)    /*!< \brief Transmit Buffer Queue Pointer. */
+/*! \name Transmit Status Register */
+/*@{*/
+#define EMAC_TSR_OFF                0x00000014  /*!< \brief Transmit Status register offset. */
+#define EMAC_TSR    (EMAC_BASE + EMAC_TSR_OFF)  /*!< \brief Transmit Status register address. */
 
-#define EMAC_RSR    (EMAC_BASE + 0x20)    /*!< \brief Receive Status Register. */
-#define EMAC_BNA        ((unsigned int) 0x1 <<  0) /*!< \brief  . */
-#define EMAC_REC        ((unsigned int) 0x1 <<  1) /*!< \brief  . */
-#define EMAC_OVR        ((unsigned int) 0x1 <<  2) /*!< \brief  . */
+#define EMAC_UBR                    0x00000001  /*!< \brief Used bit read. */
+#define EMAC_COL                    0x00000002  /*!< \brief Collision occurred. */
+#define EMAC_RLES                   0x00000004  /*!< \brief Retry limit exceeded. */
+#define EMAC_TGO                    0x00000008  /*!< \brief Transmit active. */
+#define EMAC_BEX                    0x00000010  /*!< \brief Buffers exhausted mid frame. */
+#define EMAC_COMP                   0x00000020  /*!< \brief Transmit complete. */
+#define EMAC_UND                    0x00000040  /*!< \brief Transmit underrun. */
+/*@}*/
 
-#define EMAC_ISR    (EMAC_BASE + 0x24)    /*!< \brief Interrupt Status Register. */
-#define EMAC_MFD        ((unsigned int) 0x1 <<  0) /*!< \brief  . */
-#define EMAC_RCOMP      ((unsigned int) 0x1 <<  1) /*!< \brief  . */
-#define EMAC_RXUBR      ((unsigned int) 0x1 <<  2) /*!< \brief  . */
-#define EMAC_TXUBR      ((unsigned int) 0x1 <<  3) /*!< \brief  . */
-#define EMAC_TUNDR      ((unsigned int) 0x1 <<  4) /*!< \brief  . */
-#define EMAC_RLEX       ((unsigned int) 0x1 <<  5) /*!< \brief  . */
-#define EMAC_TXERR      ((unsigned int) 0x1 <<  6) /*!< \brief  . */
-#define EMAC_TCOMP      ((unsigned int) 0x1 <<  7) /*!< \brief  . */
-#define EMAC_LINK       ((unsigned int) 0x1 <<  9) /*!< \brief  . */
-#define EMAC_ROVR       ((unsigned int) 0x1 << 10) /*!< \brief  . */
-#define EMAC_HRESP      ((unsigned int) 0x1 << 11) /*!< \brief  . */
-#define EMAC_PFRE       ((unsigned int) 0x1 << 12) /*!< \brief  . */
-#define EMAC_PTZ        ((unsigned int) 0x1 << 13) /*!< \brief  . */
+/*! \name Buffer Queue Pointer Register */
+/*@{*/
+#define EMAC_RBQP_OFF               0x00000018  /*!< \brief Receive buffer queue pointer. */
+#define EMAC_RBQP   (EMAC_BASE + EMAC_RBQP_OFF) /*!< \brief Receive buffer queue pointer. */
+#define EMAC_TBQP_OFF               0x0000001C  /*!< \brief Transmit buffer queue pointer. */
+#define EMAC_TBQP   (EMAC_BASE + EMAC_TBQP_OFF) /*!< \brief Transmit buffer queue pointer. */
+/*@}*/
 
-#define EMAC_IER    (EMAC_BASE + 0x28)    /*!< \brief Interrupt Enable Register. */
-#define EMAC_IDR    (EMAC_BASE + 0x2C)    /*!< \brief Interrupt Disable Register. */
-#define EMAC_IMR    (EMAC_BASE + 0x30)    /*!< \brief Interrupt Mask Register. */
-#define EMAC_MAN    (EMAC_BASE + 0x34)    /*!< \brief PHY Maintenance Register. */
-#define EMAC_DATA       ((unsigned int) 0xFFFF <<  0) /*!< \brief  . */
-#define EMAC_CODE       ((unsigned int) 0x3 << 16) /*!< \brief  . */
-#define EMAC_REGA       ((unsigned int) 0x1F << 18) /*!< \brief  . */
-#define EMAC_PHYA       ((unsigned int) 0x1F << 23) /*!< \brief  . */
-#define EMAC_RW         ((unsigned int) 0x3 << 28) /*!< \brief  . */
-#define EMAC_SOF        ((unsigned int) 0x3 << 30) /*!< \brief  . */
+/*! \name Receive Status Register */
+/*@{*/
+#define EMAC_RSR_OFF                0x00000020  /*!< \brief Receive status register offset. */
+#define EMAC_RSR    (EMAC_BASE + EMAC_RSR_OFF)  /*!< \brief Receive status register address. */
 
-#define EMAC_PTR    (EMAC_BASE + 0x38)    /*!< \brief Pause Time Register. */
-#define EMAC_PFR    (EMAC_BASE + 0x3C)    /*!< \brief Pause Frames received Register. */
-#define EMAC_FTO    (EMAC_BASE + 0x40)    /*!< \brief Frames Transmitted OK Register. */
-#define EMAC_SCF    (EMAC_BASE + 0x44)    /*!< \brief Single Collision Frame Register. */
-#define EMAC_MCF    (EMAC_BASE + 0x48)    /*!< \brief Multiple Collision Frame Register. */
-#define EMAC_FRO    (EMAC_BASE + 0x4C)    /*!< \brief Frames Received OK Register. */
-#define EMAC_FCSE   (EMAC_BASE + 0x50)    /*!< \brief Frame Check Sequence Error Register. */
-#define EMAC_ALE    (EMAC_BASE + 0x54)    /*!< \brief Alignment Error Register. */
-#define EMAC_DTF    (EMAC_BASE + 0x58)    /*!< \brief Deferred Transmission Frame Register. */
-#define EMAC_LCOL   (EMAC_BASE + 0x5C)    /*!< \brief Late Collision Register. */
-#define EMAC_ECOL   (EMAC_BASE + 0x60)    /*!< \brief Excessive Collision Register. */
-#define EMAC_TUND   (EMAC_BASE + 0x64)    /*!< \brief Transmit Underrun Error Register. */
-#define EMAC_CSE    (EMAC_BASE + 0x68)    /*!< \brief Carrier Sense Error Register. */
-#define EMAC_RRE    (EMAC_BASE + 0x6C)    /*!< \brief Receive Ressource Error Register. */
-#define EMAC_ROV    (EMAC_BASE + 0x70)    /*!< \brief Receive Overrun Errors Register. */
-#define EMAC_RSE    (EMAC_BASE + 0x74)    /*!< \brief Receive Symbol Errors Register. */
-#define EMAC_ELE    (EMAC_BASE + 0x78)    /*!< \brief Excessive Length Errors Register. */
-#define EMAC_RJA    (EMAC_BASE + 0x7C)    /*!< \brief Receive Jabbers Register. */
-#define EMAC_USF    (EMAC_BASE + 0x80)    /*!< \brief Undersize Frames Register. */
-#define EMAC_STE    (EMAC_BASE + 0x84)    /*!< \brief SQE Test Error Register. */
-#define EMAC_RLE    (EMAC_BASE + 0x88)    /*!< \brief Receive Length Field Mismatch Register. */
-#define EMAC_TPF    (EMAC_BASE + 0x8C)    /*!< \brief Transmitted Pause Frames Register. */
-#define EMAC_HRB    (EMAC_BASE + 0x90)    /*!< \brief Hash Address Bottom[31:0]. */
-#define EMAC_HRT    (EMAC_BASE + 0x94)    /*!< \brief Hash Address Top[63:32]. */
-#define EMAC_SA1L   (EMAC_BASE + 0x98)    /*!< \brief Specific Address 1 Bottom, First 4 bytes. */
-#define EMAC_SA1H   (EMAC_BASE + 0x9C)    /*!< \brief Specific Address 1 Top, Last 2 bytes. */
-#define EMAC_SA2L   (EMAC_BASE + 0xA0)    /*!< \brief Specific Address 2 Bottom, First 4 bytes. */
-#define EMAC_SA2H   (EMAC_BASE + 0xA4)    /*!< \brief Specific Address 2 Top, Last 2 bytes. */
-#define EMAC_SA3L   (EMAC_BASE + 0xA8)    /*!< \brief Specific Address 3 Bottom, First 4 bytes. */
-#define EMAC_SA3H   (EMAC_BASE + 0xAC)    /*!< \brief Specific Address 3 Top, Last 2 bytes. */
-#define EMAC_SA4L   (EMAC_BASE + 0xB0)    /*!< \brief Specific Address 4 Bottom, First 4 bytes. */
-#define EMAC_SA4H   (EMAC_BASE + 0xB4)    /*!< \brief Specific Address 4 Top, Last 2 bytes. */
-#define EMAC_TID    (EMAC_BASE + 0xB8)    /*!< \brief Type ID Checking Register. */
-#define EMAC_TPQ    (EMAC_BASE + 0xBC)    /*!< \brief Transmit Pause Quantum Register. */
+#define EMAC_BNA                    0x00000001  /*!< \brief Buffer not available. */
+#define EMAC_REC                    0x00000002  /*!< \brief Frame received. */
+#define EMAC_OVR                    0x00000004  /*!< \brief Receive overrun. */
+/*@}*/
 
-#define EMAC_USRIO  (EMAC_BASE + 0xC0)    /*!< \brief USER Input/Output Register. */
-#define EMAC_RMII           0x00000001    /*!< \brief Enable reduced MII. */
-#define EMAC_CLKEN          0x00000002    /*!< \brief Enable tranceiver input clock. */
+/*! \name Interrupt Registers */
+/*@{*/
+#define EMAC_ISR_OFF                0x00000024  /*!< \brief Status register offset. */
+#define EMAC_ISR    (EMAC_BASE + EMAC_ISR_OFF)  /*!< \brief Status register address. */
+#define EMAC_IER_OFF                0x00000028  /*!< \brief Enable register offset. */
+#define EMAC_IER    (EMAC_BASE + EMAC_IER_OFF)  /*!< \brief Enable register address. */
+#define EMAC_IDR_OFF                0x0000002C  /*!< \brief Disable register offset. */
+#define EMAC_IDR    (EMAC_BASE + EMAC_IDR_OFF)  /*!< \brief Disable register address. */
+#define EMAC_IMR_OFF                0x00000030  /*!< \brief Mask register offset. */
+#define EMAC_IMR    (EMAC_BASE + EMAC_IMR_OFF)  /*!< \brief Mask register address. */
 
-#define EMAC_WOL    (EMAC_BASE + 0xC4)    /*!< \brief Wake On LAN Register. */
-#define EMAC_IP         ((unsigned int) 0xFFFF <<  0) /*!< \brief  ARP request IP address. */
-#define EMAC_MAG        ((unsigned int) 0x1 << 16) /*!< \brief  Magic packet event enable. */
-#define EMAC_ARP        ((unsigned int) 0x1 << 17) /*!< \brief  ARP request event enable. */
-#define EMAC_SA1        ((unsigned int) 0x1 << 18) /*!< \brief  Specific address register 1 event enable. */
+#define EMAC_MFD                    0x00000001  /*!< \brief Management frame done. */
+#define EMAC_RCOMP                  0x00000002  /*!< \brief Receive complete. */
+#define EMAC_RXUBR                  0x00000004  /*!< \brief Receive used bit read. */
+#define EMAC_TXUBR                  0x00000008  /*!< \brief Transmit used bit read. */
+#define EMAC_TUND                   0x00000010  /*!< \brief Ethernet transmit buffer underrun. */
+#define EMAC_RLEX                   0x00000020  /*!< \brief Retry limit exceeded. */
+#define EMAC_TXERR                  0x00000040  /*!< \brief Transmit error. */
+#define EMAC_TCOMP                  0x00000080  /*!< \brief Transmit complete. */
+#define EMAC_LINK                   0x00000200  /*!< \brief . */
+#define EMAC_ROVR                   0x00000400  /*!< \brief Receive overrun. */
+#define EMAC_HRESP                  0x00000800  /*!< \brief DMA bus error. */
+#define EMAC_PFR                    0x00001000  /*!< \brief Pause frame received. */
+#define EMAC_PTZ                    0x00002000  /*!< \brief Pause time zero. */
+/*@}*/
 
-#define EMAC_REV    (EMAC_BASE + 0xFC)    /*!< \brief Revision Register. */
-#define EMAC_REVREF     ((unsigned int) 0xFFFF <<  0) /*!< \brief  . */
-#define EMAC_PARTREF    ((unsigned int) 0xFFFF << 16) /*!< \brief  . */
+/*! \name PHY Maintenance Register */
+/*@{*/
+#define EMAC_MAN_OFF                0x00000034  /*!< \brief PHY maintenance register offset. */
+#define EMAC_MAN    (EMAC_BASE + EMAC_MAN_OFF)  /*!< \brief PHY maintenance register address. */
+
+#define EMAC_DATA                   0x0000FFFF  /*!< \brief PHY data mask. */
+#define EMAC_DATA_LSB                       0   /*!< \brief PHY data LSB. */
+#define EMAC_CODE                   0x00020000  /*!< \brief Fixed value. */
+#define EMAC_REGA                   0x007C0000  /*!< \brief PHY register address mask. */
+#define EMAC_REGA_LSB                       18  /*!< \brief PHY register address LSB. */
+#define EMAC_PHYA                   0x0F800000  /*!< \brief PHY address mask. */
+#define EMAC_PHYA_LSB                       23  /*!< \brief PHY address LSB. */
+#define EMAC_RW                     0x30000000  /*!< \brief PHY read/write command mask. */
+#define EMAC_RW_READ                0x20000000  /*!< \brief PHY read command. */
+#define EMAC_RW_WRITE               0x10000000  /*!< \brief PHY write command. */
+#define EMAC_SOF                    0x40000000  /*!< \brief Fixed value. */
+/*@}*/
+
+/*! \name Pause Time Register */
+/*@{*/
+#define EMAC_PTR_OFF                0x00000038  /*!< \brief Pause time register offset. */
+#define EMAC_PTR    (EMAC_BASE + EMAC_PTR_OFF)  /*!< \brief Pause time register address. */
+
+#define EMAC_PTIME                  0x0000FFFF  /*!< \brief Pause time mask. */
+/*@}*/
+
+/*! \name Statistics Registers */
+/*@{*/
+#define EMAC_PFRR_OFF               0x0000003C  /*!< \brief Pause frames received register offset. */
+#define EMAC_PFRR  (EMAC_BASE + EMAC_PFRR_OFF)  /*!< \brief Pause frames received register address. */
+#define EMAC_FTO_OFF                0x00000040  /*!< \brief Frames transmitted OK register offset. */
+#define EMAC_FTO    (EMAC_BASE + EMAC_FTO_OFF)  /*!< \brief Frames transmitted OK register address. */
+#define EMAC_SCF_OFF                0x00000044  /*!< \brief Single collision frame register offset. */
+#define EMAC_SCF    (EMAC_BASE + EMAC_SCF_OFF)  /*!< \brief Single collision frame register address. */
+#define EMAC_MCF_OFF                0x00000048  /*!< \brief Multiple collision frame register offset. */
+#define EMAC_MCF    (EMAC_BASE + EMAC_MCF_OFF)  /*!< \brief Multiple collision frame register address. */
+#define EMAC_FRO_OFF                0x0000004C  /*!< \brief Frames received OK register offset. */
+#define EMAC_FRO    (EMAC_BASE + EMAC_FRO_OFF)  /*!< \brief Frames received OK register address. */
+#define EMAC_FCSE_OFF               0x00000050  /*!< \brief Frame check sequence error register offset. */
+#define EMAC_FCSE   (EMAC_BASE + EMAC_FCSE_OFF) /*!< \brief Frame check sequence error register address. */
+#define EMAC_ALE_OFF                0x00000054  /*!< \brief Alignment error register offset. */
+#define EMAC_ALE    (EMAC_BASE + EMAC_ALE_OFF)  /*!< \brief Alignment error register address. */
+#define EMAC_DTF_OFF                0x00000058  /*!< \brief Deferred transmission frame register offset. */
+#define EMAC_DTF    (EMAC_BASE + EMAC_DTF_OFF)  /*!< \brief Deferred transmission frame register address. */
+#define EMAC_LCOL_OFF               0x0000005C  /*!< \brief Late collision register offset. */
+#define EMAC_LCOL   (EMAC_BASE + EMAC_LCOL_OFF) /*!< \brief Late collision register address. */
+#define EMAC_ECOL_OFF               0x00000060  /*!< \brief Excessive collision register offset. */
+#define EMAC_ECOL   (EMAC_BASE + EMAC_ECOL_OFF) /*!< \brief Excessive collision register address. */
+#define EMAC_TUNDR_OFF              0x00000064  /*!< \brief Transmit underrun error register offset. */
+#define EMAC_TUNDR (EMAC_BASE + EMAC_TUNDR_OFF) /*!< \brief Transmit underrun error register address. */
+#define EMAC_CSE_OFF                0x00000068  /*!< \brief Carrier sense error register offset. */
+#define EMAC_CSE    (EMAC_BASE + EMAC_CSE_OFF)  /*!< \brief Carrier sense error register address. */
+#define EMAC_RRE_OFF                0x0000006C  /*!< \brief Receive resource error register offset. */
+#define EMAC_RRE    (EMAC_BASE + EMAC_RRE_OFF)  /*!< \brief Receive resource error register address. */
+#define EMAC_ROV_OFF                0x00000070  /*!< \brief Receive overrun errors register offset. */
+#define EMAC_ROV    (EMAC_BASE + EMAC_ROV_OFF)  /*!< \brief Receive overrun errors register address. */
+#define EMAC_RSE_OFF                0x00000074  /*!< \brief Receive symbol errors register offset. */
+#define EMAC_RSE    (EMAC_BASE + EMAC_RSE_OFF)  /*!< \brief Receive symbol errors register address. */
+#define EMAC_ELE_OFF                0x00000078  /*!< \brief Excessive length errors register offset. */
+#define EMAC_ELE    (EMAC_BASE + EMAC_ELE_OFF)  /*!< \brief Excessive length errors register address. */
+#define EMAC_RJA_OFF                0x0000007C  /*!< \brief Receive jabbers register offset. */
+#define EMAC_RJA    (EMAC_BASE + EMAC_RJA_OFF)  /*!< \brief Receive jabbers register address. */
+#define EMAC_USF_OFF                0x00000080  /*!< \brief Undersize frames register offset. */
+#define EMAC_USF    (EMAC_BASE + EMAC_USF_OFF)  /*!< \brief Undersize frames register address. */
+#define EMAC_STE_OFF                0x00000084  /*!< \brief SQE test error register offset. */
+#define EMAC_STE    (EMAC_BASE + EMAC_STE_OFF)  /*!< \brief SQE test error register address. */
+#define EMAC_RLE_OFF                0x00000088  /*!< \brief Receive length field mismatch register offset. */
+#define EMAC_RLE    (EMAC_BASE + EMAC_RLE_OFF)  /*!< \brief Receive length field mismatch register address. */
+#define EMAC_TPF_OFF                0x0000008C  /*!< \brief Transmitted pause frames register offset. */
+#define EMAC_TPF    (EMAC_BASE + EMAC_TPF_OFF)  /*!< \brief Transmitted pause frames register address. */
+/*@}*/
+
+/*! \name MAC Adressing Registers */
+/*@{*/
+#define EMAC_HRB_OFF                0x00000090  /*!< \brief Hash address bottom[31:0]. */
+#define EMAC_HRB    (EMAC_BASE + EMAC_HRB_OFF)  /*!< \brief Hash address bottom[31:0]. */
+#define EMAC_HRT_OFF                0x00000094  /*!< \brief Hash address top[63:32]. */
+#define EMAC_HRT    (EMAC_BASE + EMAC_HRT_OFF)  /*!< \brief Hash address top[63:32]. */
+#define EMAC_SA1L_OFF               0x00000098  /*!< \brief Specific address 1 bottom, first 4 bytes. */
+#define EMAC_SA1L   (EMAC_BASE + EMAC_SA1L_OFF) /*!< \brief Specific address 1 bottom, first 4 bytes. */
+#define EMAC_SA1H_OFF               0x0000009C  /*!< \brief Specific address 1 top, last 2 bytes. */
+#define EMAC_SA1H   (EMAC_BASE + EMAC_SA1H_OFF) /*!< \brief Specific address 1 top, last 2 bytes. */
+#define EMAC_SA2L_OFF               0x000000A0  /*!< \brief Specific address 2 bottom, first 4 bytes. */
+#define EMAC_SA2L   (EMAC_BASE + EMAC_SA2L_OFF) /*!< \brief Specific address 2 bottom, first 4 bytes. */
+#define EMAC_SA2H_OFF               0x000000A4  /*!< \brief Specific address 2 top, last 2 bytes. */
+#define EMAC_SA2H   (EMAC_BASE + EMAC_SA2H_OFF) /*!< \brief Specific address 2 top, last 2 bytes. */
+#define EMAC_SA3L_OFF               0x000000A8  /*!< \brief Specific address 3 bottom, first 4 bytes. */
+#define EMAC_SA3L   (EMAC_BASE + EMAC_SA3L_OFF) /*!< \brief Specific address 3 bottom, first 4 bytes. */
+#define EMAC_SA3H_OFF               0x000000AC  /*!< \brief Specific address 3 top, last 2 bytes. */
+#define EMAC_SA3H   (EMAC_BASE + EMAC_SA3H_OFF) /*!< \brief Specific address 3 top, last 2 bytes. */
+#define EMAC_SA4L_OFF               0x000000B0  /*!< \brief Specific address 4 bottom, first 4 bytes. */
+#define EMAC_SA4L   (EMAC_BASE + EMAC_SA4L_OFF) /*!< \brief Specific address 4 bottom, first 4 bytes. */
+#define EMAC_SA4H_OFF               0x000000B4  /*!< \brief Specific address 4 top, last 2 bytes. */
+#define EMAC_SA4H   (EMAC_BASE + EMAC_SA4H_OFF) /*!< \brief Specific address 4 top, last 2 bytes. */
+/*@}*/
+
+/*! \name Type ID Register */
+/*@{*/
+#define EMAC_TID_OFF                0x000000B8  /*!< \brief Type ID checking register offset. */
+#define EMAC_TID    (EMAC_BASE + EMAC_TID_OFF)  /*!< \brief Type ID checking register address. */
+#define EMAC_TPQ_OFF                0x000000BC  /*!< \brief Transmit pause quantum register offset. */
+#define EMAC_TPQ    (EMAC_BASE + EMAC_TPQ_OFF)  /*!< \brief Transmit pause quantum register address. */
+/*@}*/
+
+/*! \name User Input/Output Register */
+/*@{*/
+#define EMAC_USRIO_OFF              0x000000C0  /*!< \brief User input/output register offset. */
+#define EMAC_USRIO (EMAC_BASE + EMAC_USRIO_OFF) /*!< \brief User input/output register address. */
+
+#define EMAC_RMII                   0x00000001  /*!< \brief Enable reduced MII. */
+#define EMAC_CLKEN                  0x00000002  /*!< \brief Enable tranceiver input clock. */
+/*@}*/
+
+/*! \name Wake On LAN Register */
+/*@{*/
+#define EMAC_WOL_OFF                0x000000C4  /*!< \brief Wake On LAN register offset. */
+#define EMAC_WOL    (EMAC_BASE + EMAC_WOL_OFF)  /*!< \brief Wake On LAN register address. */
+#define EMAC_IP                     0x0000FFFF  /*!< \brief ARP request IP address mask. */
+#define EMAC_MAG                    0x00010000  /*!< \brief Magic packet event enable. */
+#define EMAC_ARP                    0x00020000  /*!< \brief ARP request event enable. */
+#define EMAC_SA1                    0x00040000  /*!< \brief Specific address register 1 event enable. */
+/*@}*/
+
+/*! \name Revision Register */
+/*@{*/
+#define EMAC_REV_OFF                0x000000FC  /*!< \brief Revision register offset. */
+#define EMAC_REV    (EMAC_BASE + EMAC_REV_OFF)  /*!< \brief Revision register address. */
+#define EMAC_REVREF                 0x0000FFFF  /*!< \brief Revision. */
+#define EMAC_PARTREF                0xFFFF0000  /*!< \brief Part. */
+/*@}*/
 
 /*@} xgNutArchArmAt91Emac */
 
 #endif                          /* _ARCH_ARM_AT91_EMAC_H_ */
-

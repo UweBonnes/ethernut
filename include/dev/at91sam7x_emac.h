@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/08/31 19:19:55  haraldkipp
+ * No time to write comments. ;-)
+ *
  * Revision 1.1  2006/07/05 07:38:44  haraldkipp
  * New Ethernet driver for the AT91SAM7X EMAC and the Davicom DM9161A.
  * This driver is not yet finished. Ethernet link auto-negotiation works
@@ -49,14 +52,14 @@
 /*
  * Available drivers.
  */
-extern NUTDEVICE devSam7xEmac;
+extern NUTDEVICE devAt91Emac;
 
 #ifndef DEV_ETHER
-#define DEV_ETHER   devSam7xEmac
+#define DEV_ETHER   devAt91Emac
 #endif
 
 #ifndef devEth0
-#define devEth0   devSam7xEmac
+#define devEth0   devAt91Emac
 #endif
 
 #endif
