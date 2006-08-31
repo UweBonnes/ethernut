@@ -33,6 +33,13 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/08/31 19:02:25  haraldkipp
+ * Added support for AT91SAM9260.
+ * Some displays fail after reset. An additional nibble sent
+ * during 4-bit initialization seems to fix this. However,
+ * a user reported that his 3.3V driven LCD now fails during
+ * power on.
+ *
  * Revision 1.4  2006/07/15 11:15:31  haraldkipp
  * Initialization flag removed. It is not required because the driver doesn't
  * poll the busy flag during initialization.
@@ -343,6 +350,8 @@ static void LcdInit(NUTDEVICE * dev)
     LcdDelay(LCD_LONG_DELAY);
 
     /* Initialize for 4-bit operation. */
+    LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
+    NutSleep(1);
     LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
     NutSleep(1);
     LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
