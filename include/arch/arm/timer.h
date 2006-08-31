@@ -35,6 +35,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/08/31 18:59:50  haraldkipp
+ * Added support for the AT91SAM9260. We now determine between processor and
+ * master clock. A new API function At91GetMasterClock() had been added to
+ * query the latter.
+ *
  * Revision 1.2  2006/02/23 15:33:59  haraldkipp
  * Support for Philips LPC2xxx Family and LPC-E2294 Board from Olimex added.
  * Many thanks to Michael Fischer for this port.
@@ -50,6 +55,10 @@ void NutDisableTimerIrq (void);
 #else
 #define NutEnableTimerIrq()     NutEnterCritical()
 #define NutDisableTimerIrq()    NutExitCritical()
+#endif
+
+#if defined(AT91_PLL_MAINCK)
+extern u_long At91GetMasterClock(void);
 #endif
 
 #endif

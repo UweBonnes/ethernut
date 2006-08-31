@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/08/31 18:59:50  haraldkipp
+ * Added support for the AT91SAM9260. We now determine between processor and
+ * master clock. A new API function At91GetMasterClock() had been added to
+ * query the latter.
+ *
  * Revision 1.9  2006/08/05 12:00:01  haraldkipp
  * NUT_CPU_FREQ did not override AT91_PLL_MAINCK or NUT_PLL_CPUCLK. Fixed.
  *
@@ -150,7 +155,7 @@ void NutRegisterTimer(void (*handler) (void *))
 {
     int dummy;
 
-#ifdef MCU_AT91SAM7X256
+#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260)
     /* Enable TC0 clock. */
     outr(PMC_PCER, _BV(TC0_ID));
 #endif
@@ -178,23 +183,47 @@ void NutRegisterTimer(void (*handler) (void *))
     //outr(AIC_IECR, _BV(TC0_ID));
 
     /* Set compare value for 1 ms. */
+#if defined(AT91_PLL_MAINCK)
+    outr(TC0_RC, At91GetMasterClock() / (32 * NUT_TICK_FREQ));
+#else
     outr(TC0_RC, NutGetCpuClock() / (32 * NUT_TICK_FREQ));
+#endif
 
     /* Software trigger starts the clock. */
     outr(TC0_CCR, TC_SWTRG);
 }
 
 #if defined(AT91_PLL_MAINCK)
+
 #if !defined(AT91_SLOW_CLOCK)
-/* This is just a guess and my be completely wrong. */
+/* This is just a guess and may be completely wrong. */
 #define AT91_SLOW_CLOCK 32000
 #endif
 
-static u_int At91GetPllClock(void)
+/*!
+ * \brief Determine the PLL output clock frequency.
+ *
+ * \param plla Specifies the PLL, 0 for default, 1 for alternate.
+ *
+ * \return Frequency of the selected PLL in Hertz.
+ */
+static u_int At91GetPllClock(int plla)
 {
-    u_int rc = AT91_PLL_MAINCK;
-    u_int pllr = inr(CKGR_PLLR);
-    u_int divider = (pllr & CKGR_DIV) >> CKGR_DIV_LSB;
+    u_int rc;
+    u_int pllr;
+    u_int divider;
+
+    /* 
+     * The main oscillator clock frequency is specified by the
+     * configuration. It's usually equal to the on-board crystal.
+     */
+    rc = AT91_PLL_MAINCK;
+
+    /* Retrieve the clock generator register of the selected PLL. */
+    pllr = plla ? inr(CKGR_PLLAR) : inr(CKGR_PLLR);
+
+    /* Extract the divider value. */
+    divider = (pllr & CKGR_DIV) >> CKGR_DIV_LSB;
 
     if (divider) {
         rc *= ((pllr & CKGR_MUL) >> CKGR_MUL_LSB) + 1;
@@ -203,24 +232,33 @@ static u_int At91GetPllClock(void)
     return rc;
 }
 
-static u_long At91GetMasterClock(void)
+/*!
+ * \brief Determine the processor clock frequency.
+ *
+ * \return CPU clock frequency in Hertz.
+ */
+static u_long At91GetProcessorClock(void)
 {
     u_int rc = 0;
     u_int mckr = inr(PMC_MCKR);
 
     /* Determine the clock source. */
-    switch((mckr & PMC_CSS) >> PMC_CSS_LSB) {
-    case 0:
+    switch(mckr & PMC_CSS) {
+    case PMC_CSS_SLOW_CLK:
         /* Slow clock selected. */
         rc = AT91_SLOW_CLOCK;
         break;
-    case 1:
+    case PMC_CSS_MAIN_CLK:
         /* Main clock selected. */
         rc = AT91_PLL_MAINCK;
         break;
-    case 3:
-        /* PLL clock selected. */
-        rc = At91GetPllClock();
+    case PMC_CSS_PLLA_CLK:
+        /* PLL A clock selected. */
+        rc = At91GetPllClock(1);
+        break;
+    case PMC_CSS_PLLB_CLK:
+        /* PLL (B) clock selected. */
+        rc = At91GetPllClock(0);
         break;
     }
 
@@ -235,10 +273,35 @@ static u_long At91GetMasterClock(void)
     }
     return rc;
 }
-#endif
+
+/*!
+ * \brief Determine the master clock frequency.
+ *
+ * \return Master clock frequency in Hertz.
+ */
+u_long At91GetMasterClock(void)
+{
+    u_long rc = At91GetProcessorClock();
+
+    switch(inr(PMC_MCKR) & PMC_MDIV) {
+    case PMC_MDIV_2:
+        rc /= 2;
+        break;
+    case PMC_MDIV_4:
+        rc /= 4;
+        break;
+    }
+    return rc;
+}
+
+#endif /* AT91_PLL_MAINCK */
 
 /*!
  * \brief Return the CPU clock in Hertz.
+ *
+ * On several AT91 CPUs the processor clock may differ from the clock 
+ * driving the peripherals. In this case At91GetMasterClock() will 
+ * provide the correct master clock.
  *
  * \return CPU clock frequency in Hertz.
  */
@@ -247,7 +310,7 @@ u_long NutGetCpuClock(void)
 #if defined(NUT_CPU_FREQ)
     return NUT_CPU_FREQ;
 #elif defined(AT91_PLL_MAINCK)
-    return At91GetMasterClock();
+    return At91GetProcessorClock();
 #elif defined(NUT_PLL_CPUCLK)
     return Cy2239xGetFreq(NUT_PLL_CPUCLK, 7);
 #else
