@@ -12,6 +12,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/08/31 19:11:46  haraldkipp
+ * Bits per transfer definitions added.
+ *
  * Revision 1.3  2006/08/05 11:54:45  haraldkipp
  * PDC registers added.
  *
@@ -116,6 +119,15 @@
 #define SPI_NCPHA           0x00000002  /*!< \brief Clock phase. */
 #define SPI_CSAAT           0x00000008  /*!< \brief Chip select active after transfer. */
 #define SPI_BITS            0x000000F0  /*!< \brief Bits per transfer mask. */
+#define SPI_BITS_8          0x00000000  /*!< \brief 8 bits per transfer. */
+#define SPI_BITS_9          0x00000010  /*!< \brief 9 bits per transfer. */
+#define SPI_BITS_10         0x00000020  /*!< \brief 10 bits per transfer. */
+#define SPI_BITS_11         0x00000030  /*!< \brief 11 bits per transfer. */
+#define SPI_BITS_12         0x00000040  /*!< \brief 12 bits per transfer. */
+#define SPI_BITS_13         0x00000050  /*!< \brief 13 bits per transfer. */
+#define SPI_BITS_14         0x00000060  /*!< \brief 14 bits per transfer. */
+#define SPI_BITS_15         0x00000070  /*!< \brief 15 bits per transfer. */
+#define SPI_BITS_16         0x00000080  /*!< \brief 16 bits per transfer. */
 #define SPI_BITS_LSB                4   /*!< \brief Least significant bit of bits per transfer. */
 #define SPI_SCBR            0x0000FF00  /*!< \brief Serial clock baud rate mask. */
 #define SPI_SCBR_LSB                8   /*!< \brief Least significant bit of serial clock baud rate. */
