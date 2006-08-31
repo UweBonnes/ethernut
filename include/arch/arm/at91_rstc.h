@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/08/31 19:13:15  haraldkipp
+ * Wakeup bit and LSB of external reset length added.
+ *
  * Revision 1.1  2006/07/05 07:45:28  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -68,6 +71,7 @@
 #define RSTC_BODSTS             0x00000002      /*!< \brief Brownout detection status. */
 #define RSTC_RSTTYP             0x00000700      /*!< \brief Reset type. */
 #define RSTC_RSTTYP_POWERUP     0x00000000      /*!< \brief Power-up reset. */
+#define RSTC_RSTTYP_WAKEUP      0x00000100      /*!< \brief VDDCORE rising. */
 #define RSTC_RSTTYP_WATCHDOG    0x00000200      /*!< \brief Watchdog reset. */
 #define RSTC_RSTTYP_SOFTWARE    0x00000300      /*!< \brief Software reset. */
 #define RSTC_RSTTYP_USER        0x00000400      /*!< \brief User reset. */
@@ -82,6 +86,7 @@
 #define RSTC_URSTEN             0x00000001      /*!< \brief User reset enable. */
 #define RSTC_URSTIEN            0x00000010      /*!< \brief User reset interrupt enable. */
 #define RSTC_ERSTL              0x00000F00      /*!< \brief External reset length. */
+#define RSTC_ERSTL_LSB                  8       /*!< \brief Least significant bit of external reset length. */
 #define RSTC_BODIEN             0x00010000      /*!< \brief Brown-out detection interrupt enable. */
 /*@}*/
 
