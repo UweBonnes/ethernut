@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/08/31 19:12:13  haraldkipp
+ * Frame sync definitions added.
+ *
  * Revision 1.1  2006/08/05 11:58:54  haraldkipp
  * First release.
  *
@@ -110,11 +113,20 @@
 #define SSC_RFMR_OFF                0x00000014  /*!< \brief Receive frame mode register offset. */
 #define SSC_RFMR    (SSC_BASE + SSC_RFMR_OFF)   /*!< \brief Receive frame mode register address. */
 #define SSC_DATLEN                  0x0000001F  /*!< \brief Data length. */
+#define SSC_DATLEN_LSB                      0   /*!< \brief Least significant bit of data length. */
 #define SSC_LOOP                    0x00000020  /*!< \brief Loop mode. */
 #define SSC_MSBF                    0x00000080  /*!< \brief Most significant bit first. */
 #define SSC_DATNB                   0x00000F00  /*!< \brief Data number per frame. */
+#define SSC_DATNB_LSB                       8   /*!< \brief Least significant bit of data number per frame. */
 #define SSC_FSLEN                   0x000F0000  /*!< \brief Receive frame sync. length. */
+#define SSC_FSLEN_LSB                       16  /*!< \brief Least significant bit of receive frame sync. length. */
 #define SSC_FSOS                    0x00700000  /*!< \brief Receive frame sync. output selection. */
+#define SSC_FSOS_NONE               0x00000000  /*!< \brief No frame sync. Line set to input. */
+#define SSC_FSOS_NEGATIVE           0x00100000  /*!< \brief Negative pulse. */
+#define SSC_FSOS_POSITIVE           0x00200000  /*!< \brief Positive pulse. */
+#define SSC_FSOS_LOW                0x00300000  /*!< \brief Low during transfer. */
+#define SSC_FSOS_HIGH               0x00400000  /*!< \brief High during transfer. */
+#define SSC_FSOS_TOGGLE             0x00500000  /*!< \brief Toggling at each start. */
 #define SSC_FSEDGE                  0x01000000  /*!< \brief Frame sync. edge detection. */
 /*@}*/
 
