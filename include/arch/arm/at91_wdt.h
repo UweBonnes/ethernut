@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/08/31 19:13:44  haraldkipp
+ * Added LSB definitions for counter and delta values.
+ *
  * Revision 1.2  2006/07/18 14:06:18  haraldkipp
  * Changed coding style to follow existing headers.
  * Removed old lines, which had been derived from at91_wd.h.
@@ -71,11 +74,13 @@
 #define WDT_MR_OFF          0x00000004  /*!< \brief Mode register offset. */
 #define WDT_MR  (WDT_BASE + WDT_MR_OFF) /*!< \brief Mode register address. */
 #define WDT_WDV             0x00000FFF  /*!< \brief Counter value mask. */
+#define WDT_WDV_LSB                 0   /*!< \brief Counter value LSB. */
 #define WDT_WDFIEN          0x00001000  /*!< \brief Fault interrupt enable. */
 #define WDT_WDRSTEN         0x00002000  /*!< \brief Reset enable. */
 #define WDT_WDRPROC         0x00004000  /*!< \brief Eset processor enable. */
 #define WDT_WDDIS           0x00008000  /*!< \brief Watchdog disable. */
 #define WDT_WDD             0x0FFF0000  /*!< \brief Delta value mask. */
+#define WDT_WDD_LSB                 16  /*!< \brief Delta value LSB. */
 #define WDT_WDDBGHLT        0x10000000  /*!< \brief Watchdog debug halt. */
 #define WDT_WDIDLEHLT       0x20000000  /*!< \brief Watchdog idle halt. */
 /*@}*/
