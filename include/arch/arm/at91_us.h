@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/08/31 19:12:43  haraldkipp
+ * Added additional registers found on the AT91SAM9260.
+ *
  * Revision 1.2  2006/08/05 11:55:30  haraldkipp
  * PDC registers are now configurable in the parent header file.
  *
@@ -186,6 +189,27 @@
 #define US_TTGR_OFF             0x00000028      /*!< \brief USART transmitter time guard register offset. */
 #define US0_TTGR (USART0_BASE + US_TTGR_OFF)    /*!< \brief Channel 0 transmitter time guard register address. */
 #define US1_TTGR (USART1_BASE + US_TTGR_OFF)    /*!< \brief Channel 1 transmitter time guard register address. */
+/*@}*/
+
+/*! \name FI DI Ratio Register */
+/*@{*/
+#define US_FIDI_OFF             0x00000040      /*!< \brief USART FI DI ratio register offset. */
+#define US0_FIDI (USART0_BASE + US_FIDI_OFF)    /*!< \brief Channel 0 FI DI ratio register address. */
+#define US1_FIDI (USART1_BASE + US_FIDI_OFF)    /*!< \brief Channel 1 FI DI ratio register address. */
+/*@}*/
+
+/*! \name Error Counter Register */
+/*@{*/
+#define US_NER_OFF              0x00000044      /*!< \brief USART error counter register offset. */
+#define US0_NER  (USART0_BASE + US_NER_OFF)     /*!< \brief Channel 0 error counter register address. */
+#define US1_NER  (USART1_BASE + US_NER_OFF)     /*!< \brief Channel 1 error counter register address. */
+/*@}*/
+
+/*! \name IrDA Filter Register */
+/*@{*/
+#define US_IF_OFF               0x0000004C      /*!< \brief USART IrDA filter register offset. */
+#define US0_IF (USART0_BASE + US_IF_OFF)        /*!< \brief Channel 0 IrDA filter register address. */
+#define US1_IF (USART1_BASE + US_IF_OFF)        /*!< \brief Channel 1 IrDA filter register address. */
 /*@}*/
 
 #if defined(USART_HAS_PDC)
