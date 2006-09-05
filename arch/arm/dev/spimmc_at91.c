@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/09/05 12:27:55  haraldkipp
+ * Added support for the AT91SAM9260.
+ *
  * Revision 1.1  2006/07/26 11:20:08  haraldkipp
  * Added MMC/SD-Card support for AT91SAM7X Evaluation Kit.
  *
@@ -65,6 +68,93 @@
  */
 /*@{*/
 
+#if defined(MCU_AT91SAM9260)
+
+#ifndef MMC_CS_BIT
+#define MMC_CS_BIT      PA3_SPI0_NPCS0_A
+#endif
+#define MMC_DATAOUT_BIT PA0_SPI0_MISO_A
+#define MMC_DATAIN_BIT  PA1_SPI0_MOSI_A
+#define MMC_CLK_BIT     PA2_SPI0_SPCK_A
+
+#elif defined(MCU_AT91SAM7X256)
+
+#ifndef MMC_CS_BIT
+#define MMC_CS_BIT      SPI0_NPCS1_PA13A
+#endif
+#define MMC_DATAOUT_BIT SPI0_MISO_PA16A
+#define MMC_DATAIN_BIT  SPI0_MOSI_PA17A
+#define MMC_CLK_BIT     SPI0_SPCK_PA18A
+
+#else   /* MCU_AT91SAM7X256 */
+#warning "MMC SPI mode not supported on this MCU"
+#endif
+
+#ifndef MMC_PIO_ASR
+#define MMC_PIO_ASR     PIOA_ASR
+#endif
+
+#ifndef MMC_PIO_BSR
+#define MMC_PIO_BSR     PIOA_BSR
+#endif
+
+#ifndef MMC_PIO_PDR
+#define MMC_PIO_PDR     PIOA_PDR
+#endif
+
+#ifndef MMC_PINS_A
+#define MMC_PINS_A      (_BV(MMC_DATAOUT_BIT) | _BV(MMC_DATAIN_BIT) | _BV(MMC_CLK_BIT))
+#endif
+
+#ifndef MMC_PINS_B
+#define MMC_PINS_B      0
+#endif
+
+#ifndef MMC_CS_PER
+#define MMC_CS_PER      PIOA_PER
+#endif
+
+#ifndef MMC_CS_OER
+#define MMC_CS_OER      PIOA_OER
+#endif
+
+#ifndef MMC_CS_SODR
+#define MMC_CS_SODR     PIOA_SODR
+#endif
+
+#ifndef MMC_CS_CODR
+#define MMC_CS_CODR     PIOA_CODR
+#endif
+
+#ifndef MMC_SPI_CR
+#define MMC_SPI_CR      SPI0_CR
+#endif
+
+#ifndef MMC_SPI_MR
+#define MMC_SPI_MR      SPI0_MR
+#endif
+
+#ifndef MMC_SPI_RDR
+#define MMC_SPI_RDR     SPI0_RDR
+#endif
+
+#ifndef MMC_SPI_TDR
+#define MMC_SPI_TDR     SPI0_TDR
+#endif
+
+#ifndef MMC_SPI_SR
+#define MMC_SPI_SR      SPI0_SR
+#endif
+
+#ifndef MMC_SPI_CSR1
+#define MMC_SPI_CSR1    SPI0_CSR1
+#endif
+
+#ifndef MMC_SPI_ID
+#define MMC_SPI_ID      SPI0_ID
+#endif
+
+
 /*!
  * \brief Initialize the card in slot 0.
  *
@@ -88,13 +178,13 @@ static int At91SpiMmCard0Init(void)
  */
 static int At91SpiMmCard0Select(int on)
 {
-    int rc = (inr(PIOA_ODSR) & _BV(SPI0_NPCS1_PA13A)) == 0;
+    int rc = (inr(PIOA_ODSR) & _BV(MMC_CS_BIT)) == 0;
 
     /* MMC select is low active. */
     if (on == 1) {
-        outr(PIOA_CODR, _BV(SPI0_NPCS1_PA13A));
+        outr(MMC_CS_CODR, _BV(MMC_CS_BIT));
     } else if (on == 0) {
-        outr(PIOA_SODR, _BV(SPI0_NPCS1_PA13A));
+        outr(MMC_CS_SODR, _BV(MMC_CS_BIT));
     }
     return rc;
 }
@@ -116,11 +206,11 @@ static u_char At91SpiMmCard0Io(u_char val)
 #endif
 
     /* Transmission is started by writing the transmit data. */
-    outr(SPI0_TDR, val);
+    outr(MMC_SPI_TDR, val);
     /* Wait for receiver data register full. */
-    while((inr(SPI0_SR) & SPI_RDRF) == 0);
+    while((inr(MMC_SPI_SR) & SPI_RDRF) == 0);
     /* Read data. */
-    val = (u_char)inr(SPI0_RDR);
+    val = (u_char)inr(MMC_SPI_RDR);
 
 #ifdef NUTDEBUG
     if (val != 0xFF) {
@@ -169,27 +259,28 @@ int At91SpiMmCard0WrProt(void)
 static int At91SpiMmcIfcInit(NUTDEVICE * dev)
 {
     /* Disable PIO lines used for SPI. */
-    outr(PIOA_PDR, _BV(SPI0_MISO_PA16A) | _BV(SPI0_MOSI_PA17A) | _BV(SPI0_SPCK_PA18A));
-    /* SPI is in peripheral group A. Enable it. */
-    outr(PIOA_ASR, _BV(SPI0_MISO_PA16A) | _BV(SPI0_MOSI_PA17A) | _BV(SPI0_SPCK_PA18A));
+    outr(MMC_PIO_PDR, MMC_PINS_A | MMC_PINS_B);
+    /* Enable peripherals. */
+    outr(MMC_PIO_ASR, MMC_PINS_A);
+    outr(MMC_PIO_BSR, MMC_PINS_B);
 
     /* MMC chip select is manually controlled. */
-    outr(PIOA_PER, _BV(SPI0_NPCS1_PA13A));
-	outr(PIOA_SODR, _BV(SPI0_NPCS1_PA13A));
-	outr(PIOA_OER, _BV(SPI0_NPCS1_PA13A));
+    outr(MMC_CS_PER, _BV(MMC_CS_BIT));
+	outr(MMC_CS_SODR, _BV(MMC_CS_BIT));
+	outr(MMC_CS_OER, _BV(MMC_CS_BIT));
 
     /* Enable SPI clock. */
-    outr(PMC_PCER, _BV(SPI0_ID));
+    outr(PMC_PCER, _BV(MMC_SPI_ID));
 
     /* SPI enable and reset. */
-    outr(SPI0_CR, SPI_SPIEN | SPI_SWRST);
-    outr(SPI0_CR, SPI_SPIEN);
+    outr(MMC_SPI_CR, SPI_SPIEN | SPI_SWRST);
+    outr(MMC_SPI_CR, SPI_SPIEN);
 
     /* Set SPI to master mode, fixed peripheral at CS1, fault detection disabled. */
-    outr(SPI0_MR, (1 << SPI_PCS_LSB) | SPI_MODFDIS | SPI_MSTR);
+    outr(MMC_SPI_MR, (1 << SPI_PCS_LSB) | SPI_MODFDIS | SPI_MSTR);
 
     /* Data changes during clock low and will be sampled on rising edges. */
-    outr(SPI0_CSR1, (3 << SPI_SCBR_LSB) | SPI_CPOL);
+    outr(MMC_SPI_CSR1, (3 << SPI_SCBR_LSB) | SPI_CPOL);
 
     return MmCardDevInit(dev);
 }
