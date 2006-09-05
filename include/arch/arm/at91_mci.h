@@ -40,6 +40,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/09/05 12:32:13  haraldkipp
+ * Timeout multiplier settings renamed to follow Atmel's convention.
+ * 4-bit bus SDC setting corrected.
+ * Several comments added or corrected.
+ *
  * Revision 1.1  2006/08/31 19:10:37  haraldkipp
  * New peripheral register definitions for the AT91SAM9260.
  *
@@ -91,10 +96,10 @@
 #define MCI_DTOMUL_16           0x00000010      /*!< \brief Data timeout multiplier 16. */
 #define MCI_DTOMUL_128          0x00000020      /*!< \brief Data timeout multiplier 128. */
 #define MCI_DTOMUL_256          0x00000030      /*!< \brief Data timeout multiplier 256. */
-#define MCI_DTOMUL_1024         0x00000040      /*!< \brief Data timeout multiplier 1024. */
-#define MCI_DTOMUL_4096         0x00000050      /*!< \brief Data timeout multiplier 4096. */
-#define MCI_DTOMUL_65536        0x00000060      /*!< \brief Data timeout multiplier 65536. */
-#define MCI_DTOMUL_1048576      0x00000070      /*!< \brief Data timeout multiplier 1048576. */
+#define MCI_DTOMUL_1K           0x00000040      /*!< \brief Data timeout multiplier 1024. */
+#define MCI_DTOMUL_4K           0x00000050      /*!< \brief Data timeout multiplier 4096. */
+#define MCI_DTOMUL_64K          0x00000060      /*!< \brief Data timeout multiplier 65536. */
+#define MCI_DTOMUL_1M           0x00000070      /*!< \brief Data timeout multiplier 1048576. */
 /*@}*/
 
 /*! \name MMC SDCard/SDIO Register */
@@ -104,7 +109,7 @@
 #define MCI_SDCSEL              0x00000003      /*!< \brief SDC/SDIO slot mask. */
 #define MCI_SDCSEL_SLOTA        0x00000000      /*!< \brief Slot A selected. */
 #define MCI_SDCSEL_SLOTB        0x00000001      /*!< \brief Slot B selected. */
-#define MCI_SDCBUS              0x00000000      /*!< \brief SDC/SDIO 4-bit bus. */
+#define MCI_SDCBUS              0x00000080      /*!< \brief SDC/SDIO 4-bit bus. */
 /*@}*/
 
 /*! \name MMC Argument Register */
@@ -150,30 +155,28 @@
 
 /*! \name MMC Block Register */
 /*@{*/
-#define MCI_BLKR_OFF            0x00000018      /*!< \brief register offset. */
-#define MCI_BLKR    (MCI_BASE + MCI_BLKR_OFF)   /*!< \brief register address. */
+#define MCI_BLKR_OFF            0x00000018      /*!< \brief Block register offset. */
+#define MCI_BLKR    (MCI_BASE + MCI_BLKR_OFF)   /*!< \brief Block register address. */
 #define MCI_BCNT                0x0000FFFF      /*!< \brief MMC/SDIO block count or SDIO byte count mask. */
 #define MCI_BCNT_LSB                    0       /*!< \brief MMC/SDIO block count or SDIO byte count LSB. */
-#define MCI_BLKLEN              0xFFFF0000      /*!< \brief Data block length mask. */
-#define MCI_BLKLEN_LSB                  16      /*!< \brief Data block length mask LSB. */
 /*@}*/
 
 /*! \name MMC Response Register */
 /*@{*/
-#define MCI_RSPR_OFF            0x00000020      /*!< \brief register offset. */
-#define MCI_RSPR    (MCI_BASE + MCI_RSPR_OFF)   /*!< \brief register address. */
+#define MCI_RSPR_OFF            0x00000020      /*!< \brief Response register offset. */
+#define MCI_RSPR    (MCI_BASE + MCI_RSPR_OFF)   /*!< \brief Response register address. */
 /*@}*/
 
 /*! \name MMC Receive Data Register */
 /*@{*/
-#define MCI_RDR_OFF             0x00000030      /*!< \brief register offset. */
-#define MCI_RDR     (MCI_BASE + MCI_RDR_OFF)    /*!< \brief register address. */
+#define MCI_RDR_OFF             0x00000030      /*!< \brief Receive data register offset. */
+#define MCI_RDR     (MCI_BASE + MCI_RDR_OFF)    /*!< \brief Receive data register address. */
 /*@}*/
 
 /*! \name MMC Transmit Data Register */
 /*@{*/
-#define MCI_TDR_OFF             0x00000034      /*!< \brief register offset. */
-#define MCI_TDR     (MCI_BASE + MCI_TDR_OFF)    /*!< \brief register address. */
+#define MCI_TDR_OFF             0x00000034      /*!< \brief Transmit data register offset. */
+#define MCI_TDR     (MCI_BASE + MCI_TDR_OFF)    /*!< \brief Transmit data register address. */
 /*@}*/
 
 /*! \name MMC Interrupt and Status Registers */
@@ -181,14 +184,14 @@
 #define MCI_SR_OFF              0x00000040      /*!< \brief Status register offset. */
 #define MCI_SR      (MCI_BASE + MCI_SR_OFF)     /*!< \brief Status register address. */
 
-#define MCI_IER_OFF             0x00000044      /*!< \brief register offset. */
-#define MCI_IER     (MCI_BASE + MCI_IER_OFF)    /*!< \brief register address. */
+#define MCI_IER_OFF             0x00000044      /*!< \brief Enable register offset. */
+#define MCI_IER     (MCI_BASE + MCI_IER_OFF)    /*!< \brief Enable register address. */
 
-#define MCI_IDR_OFF             0x00000048      /*!< \brief register offset. */
-#define MCI_IDR     (MCI_BASE + MCI_IDR_OFF)    /*!< \brief register address. */
+#define MCI_IDR_OFF             0x00000048      /*!< \brief Disable register offset. */
+#define MCI_IDR     (MCI_BASE + MCI_IDR_OFF)    /*!< \brief Disable register address. */
 
-#define MCI_IMR_OFF             0x0000004C      /*!< \brief register offset. */
-#define MCI_IMR     (MCI_BASE + MCI_IMR_OFF)    /*!< \brief register address. */
+#define MCI_IMR_OFF             0x0000004C      /*!< \brief Mask register offset. */
+#define MCI_IMR     (MCI_BASE + MCI_IMR_OFF)    /*!< \brief Mask register address. */
 
 #define MCI_CMDRDY              0x00000001      /*!< \brief Command ready. */
 #define MCI_RXRDY               0x00000002      /*!< \brief Receiver ready. */
