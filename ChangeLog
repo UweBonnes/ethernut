@@ -1,4 +1,57 @@
-$Id: ChangeLog,v 1.352 2006/08/31 18:56:05 haraldkipp Exp $
+$Id: ChangeLog,v 1.353 2006/09/05 12:25:12 haraldkipp Exp $
+
+2006-09-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Release candidate 8.
+
+	* app/ftpd/ftpserv.c: Added support for ARM9 MMC. DHCP enabled
+	by default.
+
+	* arch/arm/dev/ostimer_at91.c: PLL clock calculation re-arranged
+	to prevent 32-bit overflow. NutTimerMillisToTicks() returned
+	wrong result. Shane Buckham reported this long time ago. Many
+	thanks. Needs to be fixed for other platforms too.
+
+	* arch/arm/dev/spimmc_at91.c: Added support for the AT91SAM9260.
+
+	* arch/arm/init/crtat91sam9260_ram.S: Dedicated loops for
+	each exception allows to determine its type. Applications
+	fail to run when laoded via SAM-BA fro two reasons. First,
+	internal RAM was not mapped to address 0x00000000. Second,
+	interrupts were disabled.
+
+	* conf/arch/arch.nut, conf/arch/arm.nut: SPI and MCI support 
+	added for SAM9260.
+
+	* conf/repository.nut, conf/tools.nut: Added missing linker 
+	script for SAM9260 applications running in external RAM.
+
+	* include/arch/arm/at91_mci.h: Timeout multiplier settings
+	renamed to follow Atmel's convention. 4-bit bus SDC
+	setting corrected. Several comments added or corrected.
+
+	* include/arch/arm/at91sam9260.h: MIC base address corrected.
+
+	* include/arch/arm/irqreg.h, arch/arm/dev/ih_at91ssc.c: 
+	SSC interrupt handler added.
+
+	* include/dev/at91_mci.h, arch/arm/dev/at91_mci.c: 
+	Support for hardware MultiMedia Card interface added.
+	SD Cards are currently not supported.
+
+	* include/dev/mmcard.h: Added commands for native MMC interface.
+
+	* conf/net/net.nut, include/cfg/ip.h, net/ipin.c:
+	DHCP servers may probe an IP/MAC relationship by sending an
+	ICMP request. This triggered the Nut/Net ARP method and
+	terminated the DHCP client, leaving the system with default
+	configurations of the network mask (255.255.255.0) and
+	default gateway (none). The rarely used ARP method is now 
+	disabled by default.
+
+	* conf/ethernut30e.conf: Default configuration added for
+	Ethernut 3.0 Rev-E.
+
 
 2006-08-31  Harald Kipp  <harald.kipp@egnite.de>
 
