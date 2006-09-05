@@ -33,6 +33,10 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.14  2006/09/05 12:31:34  haraldkipp
+-- Added missing linker script for SAM9260 applications running in external
+-- RAM.
+--
 -- Revision 1.13  2006/08/01 07:34:16  haraldkipp
 -- New linker script and new startup file support applications running in
 -- flash memory.
@@ -150,13 +154,15 @@ nuttools =
             {
                 macro = "ARM_LDSCRIPT",
                 brief = "ARM Linker Script",
-                description = "at91_boot\tAT91R40008, code in ROM, copied to and running in RAM\n"..
-                              "at91_ram\t\tAT91R40008, code loaded in RAM by bootloader\n"..
-                              "at91_rom\t\tAT91R40008, code running in ROM\n"..
-                              "s3c4510b-ram\tSamsung's S3C4510B, code in RAM\n"..
-                              "eb40a_ram\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
-                              "gba_xport2\tNintendo's Gameboy Advance\n"..
-                              "wolf_ram\t\thwgroup's Wolf Module, code in RAM at 0x100\n",
+                description = "at91_boot\t\tAT91R40008, code in ROM, copied to and running in RAM\n"..
+                              "at91_ram\t\t\tAT91R40008, code loaded in RAM by bootloader\n"..
+                              "at91_rom\t\t\tAT91R40008, code running in FLASH\n"..
+                              "at91sam7x256_rom\t\tAT91SAM7X, code running in FLASH\n"..
+                              "at91sam9260_ram\t\tAT91SAM9260, code running in external RAM\n"..
+                              "s3c4510b-ram\t\tSamsung's S3C4510B, code in RAM (unsupported)\n"..
+                              "eb40a_ram\t\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
+                              "gba_xport2\t\tNintendo's Gameboy Advance\n"..
+                              "wolf_ram\t\t\thwgroup's Wolf Module, code in RAM at 0x100 (unsupported)\n",
                 requires = { "TOOL_CC_ARM", "TOOL_GCC" },
                 flavor = "booldata",
                 type = "enumerated",
