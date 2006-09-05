@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.8  2006/09/05 12:26:35  haraldkipp
+ * Added support for SAM9 MMC.
+ * DHCP enabled by default.
+ *
  * Revision 1.7  2006/08/31 19:15:30  haraldkipp
  * Dummy file system name added to SAM9260 to let it pass the compiler.
  * The application will not yet run on this platform.
@@ -65,6 +69,7 @@
 #include <dev/nplmmc.h>
 #include <dev/sbimmc.h>
 #include <dev/spimmc_at91.h>
+#include <dev/at91_mci.h>
 #include <dev/x12rtc.h>
 #include <fs/phatfs.h>
 
@@ -93,16 +98,12 @@
 #if defined(__AVR__)
 #define CC_STRING   "AVRGCC"
 #elif defined(__arm__)
-#define CC_STRING   "GNUARM"
+#define CC_STRING   "ARMGCC"
 #else
 #define CC_STRING   "GCC"
 #endif
 #else
 #define CC_STRING   "Compiler unknown"
-#endif
-
-#if !defined(ETHERNUT2) && !defined(ETHERNUT3)
-#warning Requires Ethernut 2 or 3
 #endif
 
 /*!
@@ -124,7 +125,7 @@
 /*
  * Wether we should use DHCP.
  */
-//#define USE_DHCP
+#define USE_DHCP
 
 /* 
  * Unique MAC address of the Ethernut Board. 
@@ -210,15 +211,25 @@
 
 #elif defined(AT91SAM9260_EK)
 
-#define FSDEV_NAME  "NONE" 
+/* SAM9260-EK file system. */
+#define FSDEV       devPhat0
+#define FSDEV_NAME  "PHAT0" 
 
-#else
+/* SAM9260-EK block device interface. */
+#define BLKDEV      devAt91Mci0
+#define BLKDEV_NAME "MCI0"
+
+#elif defined(ETHERNUT2)
 
 /*
  * Ethernut 2 File system
  */
 #define FSDEV       devPnut
 #define FSDEV_NAME  "PNUT" 
+
+#else
+
+#define FSDEV_NAME  "NONE" 
 
 #endif
 
