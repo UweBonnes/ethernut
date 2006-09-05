@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/09/05 12:32:56  haraldkipp
+ * MIC base address corrected.
+ *
  * Revision 1.1  2006/08/31 19:04:08  haraldkipp
  * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
  *
@@ -51,7 +54,7 @@
 
 #define TC_BASE         0xFFFA0000      /*!< \brief Timer/counter base address. */
 #define UDP_BASE        0xFFFA4000      /*!< \brief USB device port base address. */
-#define MCI_BASE        0xFFFA800       /*!< \brief MMC/SDCard interface base address. */
+#define MCI_BASE        0xFFFA8000      /*!< \brief MMC/SDCard interface base address. */
 #define TWI_BASE        0xFFFAC000      /*!< \brief Two-wire interface base address. */
 #define USART0_BASE     0xFFFB0000      /*!< \brief USART 0 base address. */
 #define USART1_BASE     0xFFFB4000      /*!< \brief USART 1 base address. */
