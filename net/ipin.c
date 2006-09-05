@@ -93,6 +93,14 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/09/05 12:35:39  haraldkipp
+ * DHCP servers may probe an IP/MAC relationship by sending an
+ * ICMP request. This triggered the Nut/Net ARP method and
+ * terminated the DHCP client, leaving the system with default
+ * configurations of the network mask (255.255.255.0) and
+ * default gateway (none). The rarely used ARP method is now
+ * disabled by default.
+ *
  * Revision 1.6  2006/07/10 17:46:59  haraldkipp
  * Now really like Jan suggested to fix it.
  *
@@ -125,6 +133,8 @@
  * First pre-release with 2.4 stack
  *
  */
+
+#include <cfg/ip.h>
 
 #include <net/route.h>
 #include <netinet/in.h>
@@ -211,15 +221,15 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     } else {
         bcast = 0;
 
-        if (nif->if_local_ip == 0 && ip->ip_p == IPPROTO_ICMP && (dst & 0xff000000) != 0xff000000 && (dst & 0xff000000) != 0) {
-            NutNetIfSetup(dev, dst, 0, 0);
-        }
-
         /*
          * Silently discard datagrams for other destinations.
          * However, if we haven't got an IP address yet, we
-         * allow ICMP datagrams to support dynamic IP ARP method.
+         * allow ICMP datagrams to support dynamic IP ARP method,
+         * if this option had been enabled.
          */
+        if (nif->if_local_ip == 0 && ip->ip_p == IPPROTO_ICMP && (dst & 0xff000000) != 0xff000000 && (dst & 0xff000000) != 0) {
+            NutNetIfSetup(dev, dst, 0, 0);
+        }
         if (nif->if_local_ip && (dst == 0 || dst != nif->if_local_ip)) {
             NutNetBufFree(nb);
             return;

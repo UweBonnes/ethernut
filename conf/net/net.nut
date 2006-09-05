@@ -33,6 +33,14 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.8  2006/09/05 12:35:39  haraldkipp
+-- DHCP servers may probe an IP/MAC relationship by sending an
+-- ICMP request. This triggered the Nut/Net ARP method and
+-- terminated the DHCP client, leaving the system with default
+-- configurations of the network mask (255.255.255.0) and
+-- default gateway (none). The rarely used ARP method is now
+-- disabled by default.
+--
 -- Revision 1.7  2006/08/01 07:41:01  haraldkipp
 -- New functions ether_aton() and ether_ntoa() added. They convert the ASCII
 -- representation of an Ethernet MAC address to its binary form and vice versa.
@@ -106,7 +114,17 @@ nutnet =
             "ipin.c",
             "ipout.c",
             "route.c"
-        }
+        },
+        options = 
+        {
+            {
+                macro = "NUTIPCONF_ICMP_ARPMETHOD",
+                brief = "Enable ARM Method",
+                description = "Allow IP configuration using ARP method. ",
+                flavor = "booldata",
+                file = "include/cfg/ip.h"
+            },
+        }        
     },
     {
         name = "nutnet_icmp",
