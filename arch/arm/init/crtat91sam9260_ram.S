@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/09/05 12:29:17  haraldkipp
+ * Dedicated loops for each exception allows to determine its type.
+ * Applications fail to run when laoded via SAM-BA fro two reasons.
+ * First, internal RAM was not mapped to address 0x00000000.
+ * Second, interrupts were disabled.
+ *
  * Revision 1.1  2006/08/31 19:19:55  haraldkipp
  * No time to write comments. ;-)
  *
@@ -57,7 +63,7 @@ __vectors:
         ldr     pc, [pc, #24]   /* Software interrupt */
         ldr     pc, [pc, #24]   /* Prefetch abort */
         ldr     pc, [pc, #24]   /* Data abort */
-        .word   0x100000        /* Size of the boot image */
+        .word   0x00001000      /* Size of the boot image will go here */
 
         /*
          * On IRQ the PC will be loaded from AIC_IVR, which
@@ -75,17 +81,29 @@ __vectors:
         .word   __data_abort
 
         .weak   __undef
-        .set    __undef, __xcpt_dummy
+        .set    __undef, __undef_stop
         .weak   __swi
-        .set    __swi, __xcpt_dummy
+        .set    __swi, __swi_stop
         .weak   __prefetch_abort
-        .set    __prefetch_abort, __xcpt_dummy
+        .set    __prefetch_abort, __prefetch_stop
         .weak   __data_abort
-        .set    __data_abort, __xcpt_dummy
+        .set    __data_abort, __data_stop
 
-        .global __xcpt_dummy
-__xcpt_dummy:
-        b       __xcpt_dummy
+        .global __undef_stop
+__undef_stop:
+        b       __undef_stop
+
+        .global __swi_stop
+__swi_stop:
+        b       __swi_stop
+
+        .global __prefetch_stop
+__prefetch_stop:
+        b       __prefetch_stop
+
+        .global __data_stop
+__data_stop:
+        b       __data_stop
 
         .ltorg
 /*
@@ -190,15 +208,19 @@ wait_mckrdy:
         ldr     r1, =RSTC_MR
         str     r0, [r1, #0]
 
-/*
- * Move vectors from Flash to RAM.
- */
-ldr     r0, =__vectors
-mov     r1, #0
-ldmia   r0!, {r2-r9}
-stmia   r1!, {r2-r9}
-ldmia   r0!, {r2-r9}
-stmia   r1!, {r2-r9}
+        /*
+         * Remap internal RAM to address 0 and copy vectors to this loacation.
+         */
+        mov     r0, #(MATRIX_MRCR_RCB0 | MATRIX_MRCR_RCB1)
+        ldr     r1, =MATRIX_BASE
+        str     r0, [r1, #MATRIX_MRCR_OFF]
+
+        ldr     r0, =__vectors
+        mov     r1, #0
+        ldmia   r0!, {r2-r9}
+        stmia   r1!, {r2-r9}
+        ldmia   r0!, {r2-r9}
+        stmia   r1!, {r2-r9}
         
         b       __set_stacks
 
@@ -228,21 +250,31 @@ __set_stacks:
         msr     CPSR_c, #ARM_MODE_UNDEF | 0xC0
         mov     r13, r0
         sub     r0, r0, #UND_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_SVC | 0xC0
+        msr     CPSR_c, #ARM_MODE_SVC
         mov     r13, r0
         b       __enter_mode
         
         .ltorg
 
 /*
- * Section 3: Enter supervisory mode.
+ * Section 3: Set ARM specific modes.
  */
         .section .init3,"ax",%progbits
 
         .global __enter_mode
 __enter_mode:
 
-@        msr     CPSR_c, #ARM_MODE_SVC
+        /*
+         * Set CP15 register 1.
+         */
+//        mrc     p15, 0, r0, c1, c0, 0
+//        ldr     r3, =0xC0001080
+//        ldr     r4, =0xC0004000
+//    ldr     r3, =0xC0001084
+//    ldr     r4, =0x40004000
+//        bic     r0, r0, r3
+//        orr     r0, r0, r4
+//        mcr     p15, 0, r0, c1, c0, 0
 
         b       __clear_bss
 
@@ -259,10 +291,10 @@ __clear_bss:
         ldr     r2, =__bss_end
         ldr     r3, =0
 
-_40:
+__next_bss:
         cmp     r1, r2
         strne   r3, [r1], #+4
-        bne     _40
+        bne     __next_bss
 
         /*
          * Initialize user stack pointer.
@@ -286,7 +318,8 @@ __call_rtos:
         mov     lr, pc
         bx      r0
 
-End:
-        b       End
+        .global __exit_loop
+__exit_loop:
+        b       __exit_loop
 
         .ltorg
