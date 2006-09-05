@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.23  2006/09/05 12:29:59  haraldkipp
+-- SPI and MCI support added for SAM9260.
+--
 -- Revision 1.22  2006/08/31 19:04:08  haraldkipp
 -- Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
 --
@@ -223,6 +226,8 @@ nutarch =
                     "HW_PLL_AT91",
                     "HW_UART_AT91",
                     "HW_EMAC_AT91",
+                    "HW_SPI_AT91",
+                    "HW_MCI_AT91",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=arm9" }

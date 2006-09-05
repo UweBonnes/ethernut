@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.12  2006/09/05 12:29:59  haraldkipp
+-- SPI and MCI support added for SAM9260.
+--
 -- Revision 1.11  2006/08/31 19:04:08  haraldkipp
 -- Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
 --
@@ -204,6 +207,7 @@ nutarch_arm =
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
             "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91ssc.c",
             "arm/dev/ih_at91swirq.c",
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
@@ -364,10 +368,18 @@ nutarch_arm =
     {
         name = "nutarch_arm_spimmc_at91",
         brief = "AT91 SPI MMC Access",
-        description = "Low level MMC interface for AT91SAM7X.",
+        description = "Low level MMC interface for AT91.",
         requires = { "HW_SPI_AT91" },
         provides = { "DEV_MMCLL" },
         sources = { "arm/dev/spimmc_at91.c" },
+    },     
+    {
+        name = "nutarch_arm_mci_at91",
+        brief = "AT91 MCI Device",
+        description = "MCI based block device for AT91SAM9260.",
+        requires = { "HW_MCI_AT91", "HW_MCU_AT91SAM9260" },
+        provides = { "DEV_BLOCK" },
+        sources = { "arm/dev/at91_mci.c" },
     },     
     
     --
