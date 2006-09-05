@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.11  2006/09/05 12:27:25  haraldkipp
+ * PLL clock calculation re-arranged to prevent 32-bit overflow.
+ * NutTimerMillisToTicks() returned wrong result. Shane Buckham reported
+ * this long time ago. Many thanks. Needs to be fixed for other platforms too.
+ *
  * Revision 1.10  2006/08/31 18:59:50  haraldkipp
  * Added support for the AT91SAM9260. We now determine between processor and
  * master clock. A new API function At91GetMasterClock() had been added to
@@ -226,8 +231,8 @@ static u_int At91GetPllClock(int plla)
     divider = (pllr & CKGR_DIV) >> CKGR_DIV_LSB;
 
     if (divider) {
-        rc *= ((pllr & CKGR_MUL) >> CKGR_MUL_LSB) + 1;
         rc /= divider;
+        rc *= ((pllr & CKGR_MUL) >> CKGR_MUL_LSB) + 1;
     }
     return rc;
 }
@@ -283,6 +288,7 @@ u_long At91GetMasterClock(void)
 {
     u_long rc = At91GetProcessorClock();
 
+#if defined(MCU_AT91SAM9260)
     switch(inr(PMC_MCKR) & PMC_MDIV) {
     case PMC_MDIV_2:
         rc /= 2;
@@ -291,6 +297,7 @@ u_long At91GetMasterClock(void)
         rc /= 4;
         break;
     }
+#endif
     return rc;
 }
 
@@ -326,6 +333,15 @@ u_long NutGetCpuClock(void)
  */
 u_long NutGetTickClock(void)
 {
+    u_int rc = inr(TC0_RC) * 32;
+
+    if (rc) {
+#if defined(AT91_PLL_MAINCK)
+        return At91GetMasterClock() / rc;
+#else
+        return NutGetCpuClock() / rc;
+#endif
+    }
     return NUT_TICK_FREQ;
 }
 
@@ -334,7 +350,7 @@ u_long NutGetTickClock(void)
  */
 u_long NutTimerMillisToTicks(u_long ms)
 {
-    return ms * 1000L / NutGetTickClock();
+    return (ms * NutGetTickClock()) / 1000;
 }
 
 /*@}*/
