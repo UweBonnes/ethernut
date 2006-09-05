@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/09/05 12:33:45  haraldkipp
+ * SSC interrupt handler added.
+ *
  * Revision 1.6  2006/08/31 19:04:08  haraldkipp
  * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
  *
@@ -141,6 +144,7 @@ extern IRQ_HANDLER sig_INTERRUPT1;
 extern IRQ_HANDLER sig_EMAC;
 extern IRQ_HANDLER sig_PIO;
 extern IRQ_HANDLER sig_SWIRQ;
+extern IRQ_HANDLER sig_SSC;
 
 #else
 #warning "No MCU defined"
