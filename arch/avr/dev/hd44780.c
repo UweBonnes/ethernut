@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/09/07 15:53:27  olereinhardt
+ * Added LCD timing patch from Uwe Bonnes
+ *
  * Revision 1.2  2006/04/07 12:23:18  haraldkipp
  * Target specific delay defaults moved from global header to AVR specific
  * file.
@@ -134,7 +137,7 @@
  */
 
 static u_char during_init = 1;
-#define LCD_DELAY _NOP(); _NOP()
+#define LCD_DELAY _NOP(); _NOP(); _NOP(); _NOP() /*Three Nops would fit too */
 
 #ifdef LCD_RW_BIT
 
@@ -146,6 +149,7 @@ static INLINE u_char LcdReadNibble(void)
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY;
     cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
+    LCD_DELAY;
     return inp(LCD_DATA_PIN) & LCD_DATA_BITS;
 }
 
@@ -154,12 +158,9 @@ static INLINE u_char LcdReadByte(void)
     u_char data;
 #if LCD_DATA_BITS == 0x0F
     data = LcdReadNibble();
-    LCD_DELAY;
     data = data | (LcdReadNibble() << 4);
-    LCD_DELAY;
 #elif LCD_DATA_BITS == 0xF0
     data = LcdReadNibble() >> 4;
-    LCD_DELAY;
     data |= LcdReadNibble();
 #elif LCD_DATA_BITS == 0xFF
     data = LcdReadNibble();
@@ -220,6 +221,7 @@ static INLINE void LcdSendNibble(u_char nib)
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY; 
     cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT); 
+    LCD_DELAY; 
 }
 
 /*!
