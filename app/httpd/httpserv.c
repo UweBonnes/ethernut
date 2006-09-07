@@ -33,6 +33,12 @@
 
 /*!
  * $Log$
+ * Revision 1.15  2006/09/07 09:01:36  haraldkipp
+ * Discovery registration added.
+ * Re-arranged network interface setup to exclude DHCP code from ICCAVR
+ * builds and make it work with the demo compiler. Unfinished.
+ * Added PHAT file system support. Untested.
+ *
  * Revision 1.14  2006/03/02 19:44:03  haraldkipp
  * MMC and PHAT enabled.
  *
@@ -83,20 +89,87 @@
  * Simple multithreaded HTTP daemon.
  */
 
-/* These values are used if there is no valid configuration in EEPROM. */
-#define MYMAC   0x00, 0x06, 0x98, 0x00, 0x00, 0x00
-#define MYIP    "192.168.192.100"
-#define MYMASK  "255.255.255.0"
+/* 
+ * Unique MAC address of the Ethernut Board. 
+ *
+ * Ignored if EEPROM contains a valid configuration.
+ */
+#define MY_MAC  "\x00\x06\x98\x30\x00\x35"
 
-#if 1
-/* Default configuration uses UROM. */
+/* 
+ * Unique IP address of the Ethernut Board. 
+ *
+ * Ignored if DHCP is used. 
+ */
+#define MY_IPADDR "192.168.192.35"
+
+/* 
+ * IP network mask of the Ethernut Board.
+ *
+ * Ignored if DHCP is used. 
+ */
+#define MY_IPMASK "255.255.255.0"
+
+/* 
+ * Gateway IP address for the Ethernut Board.
+ *
+ * Ignored if DHCP is used. 
+ */
+#define MY_IPGATE "192.168.192.1"
+
+/* ICCAVR Demo is limited. Try to use the bare minimum. */
+#if !defined(__IMAGECRAFT__)
+
+/* Wether we should use DHCP. */
+#define USE_DHCP
+/* Wether we should run a discovery responder. */
+#define USE_DISCOVERY
+/* Wether to use PHAT file system. */
+//#define USE_PHAT
+
+#endif /* __IMAGECRAFT__ */
+
+
+#ifdef USE_PHAT
+
+#if defined(ETHERNUT3)
+
+/* Ethernut 3 file system. */
+#define MY_FSDEV       devPhat0
+#define MY_FSDEV_NAME  "PHAT0" 
+
+/* Ethernut 3 block device interface. */
+#define MY_BLKDEV      devNplMmc0
+#define MY_BLKDEV_NAME "MMC0"
+
+#elif defined(AT91SAM7X_EK)
+
+/* SAM7X-EK file system. */
+#define MY_FSDEV       devPhat0
+#define MY_FSDEV_NAME  "PHAT0" 
+
+/* SAM7X-EK block device interface. */
+#define MY_BLKDEV      devAt91SpiMmc0
+#define MY_BLKDEV_NAME "MMC0"
+
+#elif defined(AT91SAM9260_EK)
+
+/* SAM9260-EK file system. */
+#define MY_FSDEV       devPhat0
+#define MY_FSDEV_NAME  "PHAT0" 
+
+/* SAM9260-EK block device interface. */
+#define MY_BLKDEV      devAt91Mci0
+#define MY_BLKDEV_NAME "MCI0"
+
+#endif
+#endif /* USE_PHAT */
+
+#ifndef MY_FSDEV
 #define MY_FSDEV        devUrom
-#else
-/* Alternate configuration for PHAT on MMC. */
-#define MY_FSDEV        devPhat0
-#define MY_FSDEV_NAME   "PHAT0" 
-#define MY_BLKDEV       devSbiMmc0
-#define MY_BLKDEV_NAME  "MMC0"
+#endif
+
+#ifdef MY_FSDEV_NAME
 #define MY_HTTPROOT     MY_FSDEV_NAME ":/" 
 #endif
 
@@ -121,11 +194,13 @@
 #include <sys/socket.h>
 
 #include <arpa/inet.h>
+#include <net/route.h>
 
 #include <pro/httpd.h>
 #include <pro/dhcp.h>
 #include <pro/ssi.h>
 #include <pro/asp.h>
+#include <pro/discover.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -578,19 +653,55 @@ int main(void)
         puts("Registering device failed");
     }
 
-    /*
-     * LAN configuration using EEPROM values or DHCP/ARP method.
-     * If it fails, use fixed values.
-     */
-    if (NutDhcpIfConfig("eth0", 0, 60000)) {
-        u_char mac[] = { MYMAC };
-        u_long ip_addr = inet_addr(MYIP);
-        u_long ip_mask = inet_addr(MYMASK);
+    printf("Configure %s...", DEV_ETHER_NAME);
+    if (NutNetLoadConfig(DEV_ETHER_NAME)) {
+        u_char mac[] = MY_MAC;
 
-        puts("EEPROM/DHCP/ARP config failed");
-        NutNetIfConfig("eth0", mac, ip_addr, ip_mask);
+        printf("initial boot...");
+#ifdef USE_DHCP
+        if (NutDhcpIfConfig(DEV_ETHER_NAME, mac, 60000)) 
+#endif
+        {
+            u_long ip_addr = inet_addr(MY_IPADDR);
+            u_long ip_mask = inet_addr(MY_IPMASK);
+            u_long ip_gate = inet_addr(MY_IPGATE);
+
+            printf("No DHCP...");
+            if (NutNetIfConfig(DEV_ETHER_NAME, mac, ip_addr, ip_mask) == 0) {
+                /* Without DHCP we had to set the default gateway manually.*/
+                if(ip_gate) {
+                    printf("hard coded gate...");
+                    NutIpRouteAdd(0, 0, ip_gate, &DEV_ETHER);
+                }
+                puts("OK");
+            }
+            else {
+                puts("failed");
+            }
+        }
+    }
+    else {
+#ifdef USE_DHCP
+        if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
+            puts("failed");
+        }
+        else {
+            puts("OK");
+        }
+#else
+        if (NutNetIfConfig(DEV_ETHER_NAME, 0, 0, confnet.cdn_ip_mask)) {
+            puts("failed");
+        }
+        else {
+            puts("OK");
+        }
+#endif
     }
     printf("%s ready\n", inet_ntoa(confnet.cdn_ip_addr));
+
+#ifdef USE_DISCOVERY
+    NutRegisterDiscovery((u_long)-1, 0, DISF_INITAL_ANN);
+#endif
 
     /*
      * Register our device for the file system.
