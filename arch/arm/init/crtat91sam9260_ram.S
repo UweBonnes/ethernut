@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/09/07 09:02:27  haraldkipp
+ * Instruction cache is now enabled. Many thanks to Dany Nativel for
+ * providing this patch.
+ *
  * Revision 1.2  2006/09/05 12:29:17  haraldkipp
  * Dedicated loops for each exception allows to determine its type.
  * Applications fail to run when laoded via SAM-BA fro two reasons.
@@ -265,16 +269,12 @@ __set_stacks:
 __enter_mode:
 
         /*
-         * Set CP15 register 1.
+         * Enable the instruction cache.
          */
-//        mrc     p15, 0, r0, c1, c0, 0
-//        ldr     r3, =0xC0001080
-//        ldr     r4, =0xC0004000
-//    ldr     r3, =0xC0001084
-//    ldr     r4, =0x40004000
-//        bic     r0, r0, r3
-//        orr     r0, r0, r4
-//        mcr     p15, 0, r0, c1, c0, 0
+        mrc     p15, 0, r0, c1, c0, 0
+        ldr     r3, =0xC0001000
+        orr     r0, r0, r3
+        mcr     p15, 0, r0, c1, c0, 0
 
         b       __clear_bss
 
