@@ -33,6 +33,11 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.13  2006/09/07 09:03:43  haraldkipp
+-- Corrected descriptions. SAM7X and SAM9260 are both using the same
+-- Ethernet driver source. at91sam7x_emac.c will become obsolete.
+-- SSC driver code added to SAM7X build.
+--
 -- Revision 1.12  2006/09/05 12:29:59  haraldkipp
 -- SPI and MCI support added for SAM9260.
 --
@@ -358,9 +363,9 @@ nutarch_arm =
         sources = { "arm/dev/dm9000e.c" },
     },     
     {
-        name = "nutarch_arm_at91sam7x_emac",
-        brief = "AT91SAM7X EMAC Driver",
-        description = "LAN driver for AT91SAM7X.",
+        name = "nutarch_arm_at91_emac",
+        brief = "AT91 EMAC Driver",
+        description = "LAN driver for AT91SAM7X and AT91SAM9260.",
         requires = { "HW_EMAC_AT91", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/at91_emac.c" },
