@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.9  2006/09/07 09:00:19  haraldkipp
+ * Discovery registration added. Enabled by default on ARM targets only to
+ * avoid blowing up AVR code.
+ *
  * Revision 1.8  2006/09/05 12:26:35  haraldkipp
  * Added support for SAM9 MMC.
  * DHCP enabled by default.
@@ -86,6 +90,7 @@
 #include <pro/ftpd.h>
 #include <pro/wins.h>
 #include <pro/sntp.h>
+#include <pro/discover.h>
 
 /* Determine the compiler. */
 #if defined(__IMAGECRAFT__)
@@ -126,6 +131,13 @@
  * Wether we should use DHCP.
  */
 #define USE_DHCP
+
+/*
+ * Wether we should run a discovery responder.
+ */
+#if defined(__arm__)
+#define USE_DISCOVERY
+#endif
 
 /* 
  * Unique MAC address of the Ethernut Board. 
@@ -481,6 +493,17 @@ int main(void)
     printf("IP Mask: %s\n", inet_ntoa(confnet.cdn_ip_mask));
     NutIpRouteQuery(0, &ipgate);
     printf("IP Gate: %s\n", inet_ntoa(ipgate));
+
+#ifdef USE_DISCOVERY
+    /* Register a discovery responder. */
+    printf("Start Responder...");
+    if (NutRegisterDiscovery((u_long)-1, 0, DISF_INITAL_ANN)) {
+        puts("failed");
+    }
+    else {
+        puts("OK");
+    }
+#endif
 
     /* Initialize system clock and calendar. */
     if (InitTimeAndDate() == 0) {
