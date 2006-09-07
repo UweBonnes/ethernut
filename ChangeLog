@@ -1,4 +1,45 @@
-$Id: ChangeLog,v 1.353 2006/09/05 12:25:12 haraldkipp Exp $
+$Id: ChangeLog,v 1.354 2006/09/07 09:11:45 haraldkipp Exp $
+
+2006-09-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/init/crtat91sam9260_ram.S: Instruction cache is
+	now enabled. Many thanks to Dany Nativel for providing this
+	patch.
+
+	* conf/pro/pro.nut, pro/discover.c, include/pro/discover.h,
+	tools/nutdisc/discovery.h, tools/nutdisc/mainframe.cpp,
+	tools/nutdisc/mainframe.h, tools/nutdisc/nutdisc.cpp,
+	tools/nutdisc/nutdisc.h, tools/nutdisc/nutdisc.rc,
+	tools/nutdisc/propdialog.cpp, tools/nutdisc/propdialog.h,
+	tools/nutdisc/resource.h, tools/nutdisc/setup.cpp,
+	tools/nutdisc/setup.h, tools/nutdisc/udpthread.cpp,
+	tools/nutdisc/udpthread.h, tools/nutdisc/version.h,
+	tools/nutdisc/bitmaps/nutdisc.ico: Discovery service added. 
+	A new GUI tool nutdisc will allow to scan the local network 
+	for Nut/OS nodes. You can even change the network configuration 
+	remotely. Note, that the GUI tool is GPL'ed. It had been tested 
+	on Win32 only, but should work on Linux as well with a few 
+	modifications.
+
+	* app/ftpd/ftpserv.c: Discovery registration added. Enabled
+	by default on ARM targets only to avoid blowing up AVR code.
+
+	* app/httpd/httpserv.c: Discovery registration added.
+	re-arranged network interface setup to exclude DHCP code
+	from ICCAVR builds and make it work with the demo compiler.
+	Added PHAT file system support. Still untested and unfinished.
+
+	* conf/arch/arm.nut: Corrected descriptions. SAM7X and SAM9260
+	are both using the same driver source. at91sam7x_emac.c will
+	become obsolete. SSC driver added to SAM7X.
+
+	* include/arch/arm/irqreg.h: sig_SSC added to SAM7X declarations.
+
+	* include/arch/arm/at91sam7x.h: Added missing definitions for 
+	peripheral multiplexing. Now following the same naming
+	conventions like those for the SAM9260 (using copy and paste
+	from the datasheet ;-)).
+
 
 2006-09-05  Harald Kipp  <harald.kipp@egnite.de>
 
