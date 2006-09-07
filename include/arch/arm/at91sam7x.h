@@ -42,6 +42,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/09/07 09:09:06  haraldkipp
+ * Added missing definitions for peripheral multiplexing. Now following the
+ * same naming conventions like those for the SAM9260.
+ *
  * Revision 1.4  2006/08/05 11:57:38  haraldkipp
  * PDC register configuration added.
  * Added register definitions for synchronous serial controller.
@@ -158,7 +162,7 @@
 #define IRQ1_ID     31      /*!< \brief External interrupt 1 ID. */
 /*@}*/
 
-/*! \name SPI0 peripheral multiplexing */
+/*! \name Historical SPI0 Peripheral Multiplexing Names */
 /*@{*/
 #define SPI0_NPCS0_PA12A	12	/*!< \brief Port bit number on PIO-A Perpheral A. */
 #define SPI0_NPCS1_PA13A	13	/*!< \brief Port bit number on PIO-A Perpheral A. */
@@ -174,6 +178,163 @@
 #define SPI0_MOSI_PA17A		17	/*!< \brief Port bit number on PIO-A Perpheral A. */
 #define SPI0_SPCK_PA18A		18	/*!< \brief Port bit number on PIO-A Perpheral A. */
 /*@}*/
+
+/*! \name USART Peripheral Multiplexing */
+/*@{*/
+#define PA0_RXD0_A          0
+#define PA1_TXD0_A          1
+#define PA2_SCK0_A          2
+#define PA3_RTS0_A          3
+#define PA4_CTS0_A          4
+
+#define PA5_RXD1_A          5
+#define PA6_TXD1_A          6
+#define PA7_SCK1_A          7
+#define PA8_RTS1_A          8
+#define PA9_CTS1_A          9
+#define PB23_DCD1_B         23
+#define PB24_DSR1_B         24
+#define PB25_DTR1_B         25
+#define PB26_RI1_B          26
+/*@}*/
+
+/*! \name SPI Peripheral Multiplexing */
+/*@{*/
+#define PA16_SPI0_MISO_A    16
+#define PA17_SPI0_MOSI_A    17
+#define PA18_SPI0_SPCK_A    18
+#define PA12_SPI0_NPCS0_A   12
+#define PA13_SPI0_NPCS1_A   13
+#define PA7_SPI0_NPCS1_B    7
+#define PA14_SPI0_NPCS2_A   14
+#define PB14_SPI0_NPCS2_B   14
+#define PA8_SPI0_NPCS2_B    8
+#define PA15_SPI0_NPCS3_A   15
+#define PA9_SPI0_NPCS3_B    9
+
+#define PA24_SPI1_MISO_B    24
+#define PA23_SPI1_MOSI_B    23
+#define PA22_SPI1_SPCK_B    22
+#define PA21_SPI1_NPCS0_B   21
+#define PA25_SPI1_NPCS1_B   25
+#define PB13_SPI0_NPCS1_B   13
+#define PA2_SPI1_NPCS1_B    2
+#define PB10_SPI1_NPCS1_B   10
+#define PA26_SPI1_NPCS2_B   26
+#define PA3_SPI1_NPCS2_B    3
+#define PB11_SPI1_NPCS2_B   11
+#define PB17_SPI0_NPCS3_B   17
+#define PA4_SPI1_NPCS3_B    4
+#define PA29_SPI1_NPCS3_B   29
+#define PB16_SPI1_NPCS3_B   16
+/*@}*/
+
+/*! \name EMAC Interface Peripheral Multiplexing */
+/*@{*/
+#define PB0_ETXCK_EREFCK_A  0
+#define PB1_ETXEN_A         1
+#define PB2_ETX0_A          2
+#define PB3_ETX1_A          3
+#define PB4_ECRS_A          4
+#define PB5_ERX0_A          5
+#define PB6_ERX1_A          6
+#define PB7_ERXER_A         7
+#define PB8_EMDC_A          8
+#define PB9_EMDIO_A         9
+#define PB10_ETX2_A         10
+#define PB11_ETX3_A         11
+#define PB12_ETXER_A        12
+#define PB13_ERX2_A         13
+#define PB14_ERX3_A         14
+#define PB15_ERXDV_ECRSDV_A 15
+#define PB16_ECOL_A         16
+#define PB17_ERXCK_A        17
+#define PB18_EF100_A        18
+/*@}*/
+
+/*! \name Debug Unit Peripheral Multiplexing */
+/*@{*/
+#define PA27_DRXD_A         27
+#define PA28_DTXD_A         28
+/*@}*/
+
+/*! \name Synchronous Serial Controller Peripheral Multiplexing */
+/*@{*/
+#define PA23_TD_A           23  /*!< \brief Transmit data pin. */
+#define PA24_RD_A           24  /*!< \brief Receive data pin. */
+#define PA22_TK_A           22  /*!< \brief Transmit clock pin. */
+#define PA25_RK_A           25  /*!< \brief Receive clock pin. */
+#define PA21_TF_A           21  /*!< \brief Transmit frame sync. pin. */
+#define PA26_RF_A           26  /*!< \brief Receive frame sync. pin. */
+/*@}*/
+
+/*! \name Two Wire Interface Peripheral Multiplexing */
+/*@{*/
+#define PA10_TWD_A          10  /*!< \brief Two wire serial data pin. */
+#define PA11_TWCK_A         11  /*!< \brief Two wire serial clock pin. */
+/*@}*/
+
+/*! \name Timer/Counter Peripheral Multiplexing */
+/*@{*/
+#define PB23_TIOA0_A        23
+#define PB24_TIOB0_A        24
+#define PB12_TCLK0_B        12
+
+#define PB25_TIOA1_A        25
+#define PB26_TIOB1_A        26
+#define PB19_TCLK1_B        19
+
+#define PB27_TIOA2_A        27
+#define PB28_TIOB2_A        28
+#define PA15_TCLK2_B        15
+/*@}*/
+
+/*! \name Clocks, Oscillators and PLLs Peripheral Multiplexing */
+/*@{*/
+#define PB0_PCK0_B          0
+#define PB20_PCK0_B         20
+#define PA13_PCK1_B         13
+#define PB29_PCK1_A         29
+#define PB21_PCK1_B         21
+#define PA30_PCK2_B         30
+#define PB30_PCK2_A         30
+#define PB22_PCK2_B         22
+#define PA27_PCK3_B         27
+/*@}*/
+
+/*! \name Advanced Interrupt Controller Peripheral Multiplexing */
+/*@{*/
+#define PA29_FIQ_A          29
+#define PA30_IRQ0_A         30
+#define PA14_IRQ1_B         14
+/*@}*/
+
+/*! \name ADC Interface Peripheral Multiplexing */
+/*@{*/
+#define PB18_ADTRG_B        18  /*!< \brief ADC trigger pin. */
+/*@}*/
+
+/*! \name CAN Interface Peripheral Multiplexing */
+/*@{*/
+#define PA19_CANRX_A        19
+#define PA20_CANTX_A        20
+/*@}*/
+
+/*! \name PWM Peripheral Multiplexing */
+/*@{*/
+#define PB19_PWM0_A         19
+#define PB27_PWM0_B         27
+#define PB20_PWM1_A         20
+#define PB28_PWM1_B         28
+#define PB21_PWM2_A         21
+#define PB29_PWM2_B         29
+#define PB22_PWM3_A         22
+#define PB30_PWM3_B         30
+/*@}*/
+
+
+
+
 
 /*@} xgNutArchArmAt91 */
 
