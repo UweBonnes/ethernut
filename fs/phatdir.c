@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/09/08 16:48:28  haraldkipp
+ * Directory entries honor daylight saving time. Thanks to Dirk Boecker for
+ * this fix.
+ *
  * Revision 1.8  2006/07/05 16:00:30  haraldkipp
  * Two bugs fixed. Renaming a file's path (including directory change) failed.
  * Thanks to Dirk Boecker, who reported this.
@@ -1149,6 +1153,7 @@ int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *stp)
             t.tm_mon--;
         }
         t.tm_year = ((val >> 9) & 0x7F) + 80;
+        t.tm_isdst = _daylight; 
         stp->st_mtime = mktime(&t);
 
         stp->st_ino = 0;
