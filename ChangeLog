@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.354 2006/09/07 09:11:45 haraldkipp Exp $
+$Id: ChangeLog,v 1.355 2006/09/08 16:49:14 haraldkipp Exp $
+
+2006-09-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arch/arm.nut, include/arch/arm/irqreg.h: For some 
+	reason the SSC driver for SAM7X had not been included.
+
+	* fs/phatdir.c: Directory entries honor daylight saving
+	time. Thanks to Dirk Boecker for this fix.
+
 
 2006-09-07  Harald Kipp  <harald.kipp@egnite.de>
 
