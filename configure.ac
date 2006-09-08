@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.16  2006/09/08 16:02:29  haraldkipp
+# Release candidate 9
+#
 # Revision 1.15  2006/08/01 07:47:25  haraldkipp
 # Additional spaces at some line ends let Autoconf on Windows fail with
 # 'already registered with AC_CONFIG_FILES'. Thanks to Andras Albert,
@@ -86,7 +89,7 @@
 #
 #
 
-AC_INIT(ethernut,4.1.9)
+AC_INIT(ethernut,4.1.9-rc9)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2006 egnite Software GmbH])
