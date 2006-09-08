@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.14  2006/09/08 16:47:24  haraldkipp
+-- For some reason the SSC driver for SAM7X had not been included.
+--
 -- Revision 1.13  2006/09/07 09:03:43  haraldkipp
 -- Corrected descriptions. SAM7X and SAM9260 are both using the same
 -- Ethernet driver source. at91sam7x_emac.c will become obsolete.
@@ -190,6 +193,7 @@ nutarch_arm =
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
             "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91ssc.c",
             "arm/dev/ih_at91swirq.c",
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
@@ -201,7 +205,7 @@ nutarch_arm =
         },
     },
     {
-        name = "nutarch_arm_irqat91sam7x",
+        name = "nutarch_arm_irqat91sam926x",
         brief = "Interrupt Handler (SAM926X)",
         requires = { "HW_MCU_AT91SAM9260" },
         provides = { "DEV_IRQ_AT91" },

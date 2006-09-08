@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/09/08 16:47:49  haraldkipp
+ * For some reason the SSC driver for SAM7X had not been included.
+ *
  * Revision 1.7  2006/09/05 12:33:45  haraldkipp
  * SSC interrupt handler added.
  *
@@ -130,6 +133,7 @@ extern IRQ_HANDLER sig_INTERRUPT1;
 extern IRQ_HANDLER sig_EMAC;
 extern IRQ_HANDLER sig_PIO;
 extern IRQ_HANDLER sig_SWIRQ;
+extern IRQ_HANDLER sig_SSC;
 
 #elif defined(MCU_AT91SAM9260)
 
