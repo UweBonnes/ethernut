@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/09/11 09:13:18  olereinhardt
+ * Another timing patch from Uwe Bonnes
+ *
  * Revision 1.3  2006/09/07 15:53:27  olereinhardt
  * Added LCD timing patch from Uwe Bonnes
  *
@@ -144,13 +147,15 @@ static u_char during_init = 1;
 static INLINE u_char LcdReadNibble(void)
 {
 
+    u_char ret;
     sbi(LCD_RW_PORT, LCD_RW_BIT);
     outp(inp(LCD_DATA_DDR) & ~LCD_DATA_BITS, LCD_DATA_DDR);   // enable data input
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY;
+    ret = inp(LCD_DATA_PIN) & LCD_DATA_BITS;
     cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY;
-    return inp(LCD_DATA_PIN) & LCD_DATA_BITS;
+    return ret;
 }
 
 static INLINE u_char LcdReadByte(void)
