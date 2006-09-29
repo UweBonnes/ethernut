@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/09/29 12:39:23  haraldkipp
+ * Added support for ATmega2561.
+ *
  * Revision 1.7  2006/07/04 03:38:56  hwmaier
  * Changed binary constants to hex constants in XNUT board
  * initialization code.
@@ -287,7 +290,7 @@ extern void main(void *);
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
 /*
  * Note: Register structure of ATCAN128 differs from ATMEGA128 in regards
  * to wait states.
