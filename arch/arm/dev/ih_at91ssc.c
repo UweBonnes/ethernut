@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/09/29 12:36:02  haraldkipp
+ * Default interrupt priority changed from 4 to 5. Usually this is used for
+ * high speed links.
+ *
  * Revision 1.1  2006/09/05 12:33:45  haraldkipp
  * SSC interrupt handler added.
  *
@@ -42,7 +46,7 @@
 #include <dev/irqreg.h>
 
 #ifndef NUT_IRQPRI_SSC
-#define NUT_IRQPRI_SSC  4
+#define NUT_IRQPRI_SSC  5
 #endif
 
 static int SyncSerialIrqCtl(int cmd, void *param);
