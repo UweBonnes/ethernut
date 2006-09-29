@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/09/29 12:29:16  haraldkipp
+ * Several fixes to make it running reliably on the AT91SAM9260.
+ *
  * Revision 1.1  2006/08/31 18:58:47  haraldkipp
  * More general AT91 MAC driver replaces the SAM7X specific version.
  * This had been tested on the SAM9260, but loses Ethernet packets
@@ -474,14 +477,16 @@ static void EmacInterrupt(void *arg)
     isr = inr(EMAC_ISR);
 
     /* Receiver interrupt. */
-    if ((isr & EMAC_RCOMP) != 0 || (isr & EMAC_ROVR) != 0 || (inr(EMAC_RSR) & EMAC_REC) != 0) {
-        outr(EMAC_RSR, EMAC_REC);
+    //if ((isr & EMAC_RCOMP) != 0 || (isr & EMAC_ROVR) != 0 || (inr(EMAC_RSR) & EMAC_REC) != 0) {
+    if ((isr & (EMAC_RCOMP | EMAC_ROVR | EMAC_RXUBR)) != 0) {
+        //outr(EMAC_RSR, EMAC_REC);
+        outr(EMAC_IDR, EMAC_RCOMP | EMAC_ROVR | EMAC_RXUBR);
         NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
 
     /* Transmitter interrupt. */
     if ((isr & EMAC_TCOMP) != 0 || (inr(EMAC_TSR) & EMAC_COMP) != 0) {
-        outr(EMAC_TSR, EMAC_COMP);
+        //outr(EMAC_TSR, EMAC_COMP);
         NutEventPostFromIrq(&ni->ni_tx_rdy);
     }
 }
@@ -494,9 +499,8 @@ static void EmacInterrupt(void *arg)
 static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 {
     int rc = -1;
-    u_short fbc = 0;
+    u_int fbc = 0;
     u_int i;
-
     *nbp = NULL;
 
     /*
@@ -515,6 +519,16 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
      */
     i = rxBufIdx;
     while (rxBufTab[i].addr & RXBUF_OWNERSHIP) {
+        if (i != rxBufIdx && (rxBufTab[i].stat & RXS_SOF) != 0) {
+            do {
+                rxBufTab[rxBufIdx].addr &= ~(RXBUF_OWNERSHIP);
+                rxBufIdx++;
+                if (rxBufIdx >= EMAC_RX_BUFFERS) {
+                    rxBufIdx = 0;
+                }
+            } while ((rxBufTab[rxBufIdx].addr & RXBUF_OWNERSHIP) != 0 && (rxBufTab[rxBufIdx].stat & RXS_SOF) == 0);
+            break;
+        }
         if ((fbc = rxBufTab[i].stat & RXS_LENGTH_FRAME) != 0) {
             break;
         }
@@ -529,10 +543,10 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
          * Receiving long packets is unexpected. Let's declare the 
          * chip insane. Short packets will be handled by the caller.
          */
-        if (fbc > EMAC_TX_BUFSIZ) {
+        if (fbc > 1536) {
             ni->ni_insane = 1;
         } else {
-            *nbp = NutNetBufAlloc(0, NBAF_DATALINK, fbc);
+            *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (u_short)fbc);
             if (*nbp != NULL) {
                 u_char *bp = (u_char *) (* nbp)->nb_dl.vp;
                 u_int len;
@@ -720,8 +734,8 @@ THREAD(EmacRxThread, arg)
     /* Run at high priority. */
     NutThreadSetPriority(9);
 
-    /* Enable receive interrupts. */
-    outr(EMAC_IER, EMAC_RCOMP | EMAC_TCOMP | EMAC_ROVR);
+    /* Enable receive and transmit interrupts. */
+    outr(EMAC_IER, EMAC_ROVR | EMAC_TCOMP | EMAC_TUND | EMAC_RXUBR | EMAC_RCOMP);
     NutIrqEnable(&sig_EMAC);
 
     for (;;) {
@@ -744,6 +758,7 @@ THREAD(EmacRxThread, arg)
                 (*ifn->if_recv) (dev, nb);
             }
         }
+        outr(EMAC_IER, EMAC_ROVR | EMAC_RXUBR | EMAC_RCOMP);
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
@@ -800,6 +815,14 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
                 break;
             }
         } else {
+            if (inr(EMAC_TSR) & EMAC_UND) {
+                txBufIdx = 0;
+	            outr(EMAC_TSR, EMAC_UND);
+	        }
+            if (inr(EMAC_TSR) & EMAC_COMP) {
+	            outr(EMAC_TSR, EMAC_COMP);
+	        }
+
             if ((rc = EmacPutPacket(txBufIdx, ni, nb)) == 0) {
                 txBufIdx++;
                 txBufIdx &= 1;
