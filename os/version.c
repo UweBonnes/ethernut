@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.38  2006/09/29 12:19:34  haraldkipp
+ * RC10
+ *
  * Revision 1.37  2006/08/31 19:19:55  haraldkipp
  * No time to write comments. ;-)
  *
@@ -161,8 +164,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010908UL
-static CONST char os_version_string[] = "4.1.9.8 rc";
+#define OS_VERSION_NUMBER  0x0401090AUL
+static CONST char os_version_string[] = "4.1.9.10 rc";
 
 /*!
  * \addtogroup xgNutVersion
