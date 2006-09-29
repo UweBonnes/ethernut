@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2006/09/29 12:39:51  haraldkipp
+ * Spurious interrupt handling on all supported AT91 devices.
+ *
  * Revision 1.12  2006/07/26 11:17:16  haraldkipp
  * Defining AT91_PLL_MAINCK will automatically determine SAM7X clock by
  * reading PLL settings.
@@ -209,9 +212,10 @@ void NutInit(void)
 {
 #if defined(OLIMEX_LPCE2294)
     InitHW();
-#elif defined(MCU_AT91R40008)
+#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
     McuInit();
-#elif defined(MCU_AT91SAM7X256)
+#endif
+#if defined(MCU_AT91SAM7X256)
     {
         u_long freq = NutGetCpuClock();
         /* Set Flash Waite state. */
