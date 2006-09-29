@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/09/29 12:45:35  haraldkipp
+ * Include clock configuration.
+ *
  * Revision 1.3  2006/08/31 18:59:50  haraldkipp
  * Added support for the AT91SAM9260. We now determine between processor and
  * master clock. A new API function At91GetMasterClock() had been added to
@@ -48,6 +51,8 @@
  * First check in
  *
  */
+
+#include <cfg/clock.h>
 
 #ifdef MCU_LPC2XXX
 void NutEnableTimerIrq (void);
