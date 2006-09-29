@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/09/29 12:44:17  haraldkipp
+ * Just sorted lines a bit.
+ *
  * Revision 1.2  2006/08/31 19:12:13  haraldkipp
  * Frame sync definitions added.
  *
@@ -74,10 +77,13 @@
 #define SSC_DIV                     0x00000FFF  /*!< \brief Clock divider. */
 /*@}*/
 
-/*! \name SSC Receive Clock Mode Register */
+/*! \name SSC Receive/Transmit Clock Mode Register */
 /*@{*/
 #define SSC_RCMR_OFF                0x00000010  /*!< \brief Receive clock mode register offset. */
 #define SSC_RCMR    (SSC_BASE + SSC_RCMR_OFF)   /*!< \brief Receive clock mode register address. */
+#define SSC_TCMR_OFF                0x00000018  /*!< \brief Transmit clock mode register offset. */
+#define SSC_TCMR    (SSC_BASE + SSC_TCMR_OFF)   /*!< \brief Transmit clock mode register address. */
+
 #define SSC_CKS                     0x00000003  /*!< \brief Receive clock selection. */
 #define SSC_CKS_DIV                 0x00000000  /*!< \brief Divided clock. */
 #define SSC_CKS_TK                  0x00000001  /*!< \brief TK clock signal. */
@@ -108,10 +114,13 @@
 #define SSC_PERIOD_LSB                      24  /*!< \brief Least significant bit of receive period divider selection. */
 /*@}*/
 
-/*! \name SSC Receive Frame Mode Register */
+/*! \name SSC Receive/Transmit Frame Mode Registers */
 /*@{*/
 #define SSC_RFMR_OFF                0x00000014  /*!< \brief Receive frame mode register offset. */
 #define SSC_RFMR    (SSC_BASE + SSC_RFMR_OFF)   /*!< \brief Receive frame mode register address. */
+#define SSC_TFMR_OFF                0x0000001C  /*!< \brief Transmit frame mode register offset. */
+#define SSC_TFMR    (SSC_BASE + SSC_TFMR_OFF)   /*!< \brief Transmit frame mode register address. */
+
 #define SSC_DATLEN                  0x0000001F  /*!< \brief Data length. */
 #define SSC_DATLEN_LSB                      0   /*!< \brief Least significant bit of data length. */
 #define SSC_LOOP                    0x00000020  /*!< \brief Loop mode. */
@@ -128,18 +137,6 @@
 #define SSC_FSOS_HIGH               0x00400000  /*!< \brief High during transfer. */
 #define SSC_FSOS_TOGGLE             0x00500000  /*!< \brief Toggling at each start. */
 #define SSC_FSEDGE                  0x01000000  /*!< \brief Frame sync. edge detection. */
-/*@}*/
-
-/*! \name SSC Transmit Clock Mode Register */
-/*@{*/
-#define SSC_TCMR_OFF                0x00000018  /*!< \brief Transmit clock mode register offset. */
-#define SSC_TCMR    (SSC_BASE + SSC_TCMR_OFF)   /*!< \brief Transmit clock mode register address. */
-/*@}*/
-
-/*! \name SSC Transmit Frame Mode Register */
-/*@{*/
-#define SSC_TFMR_OFF                0x0000001C  /*!< \brief Transmit frame mode register offset. */
-#define SSC_TFMR    (SSC_BASE + SSC_TFMR_OFF)   /*!< \brief Transmit frame mode register address. */
 /*@}*/
 
 /*! \name SSC Receive Holding Register */
