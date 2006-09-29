@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/09/29 12:27:31  haraldkipp
+ * All code should use dedicated stack allocation routines. For targets
+ * allocating stack from the normal heap the API calls are remapped by
+ * preprocessor macros.
+ *
  * Revision 1.5  2006/07/10 08:46:52  haraldkipp
  * Properly set 3 byte return address for extended AVR.
  *
@@ -262,11 +267,7 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     /*
      * Allocate stack and thread info structure in one block.
      */
-#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
     if ((threadMem = NutStackAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
-#else
-    if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
-#endif
         return 0;
     }
 

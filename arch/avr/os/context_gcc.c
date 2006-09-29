@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/09/29 12:27:31  haraldkipp
+ * All code should use dedicated stack allocation routines. For targets
+ * allocating stack from the normal heap the API calls are remapped by
+ * preprocessor macros.
+ *
  * Revision 1.5  2006/03/16 15:25:09  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -294,11 +299,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     /*
      * Allocate stack and thread info structure in one block.
      */
-#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
     if ((threadMem = NutStackAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
-#else
-    if ((threadMem = NutHeapAlloc(stackSize + sizeof(NUTTHREADINFO))) == 0) {
-#endif
         return 0;
     }
 
