@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.32  2006/09/29 12:41:55  haraldkipp
+-- Added support for AT45 serial DataFlash memory chips. Currently limited
+-- to AT91 builds.
+--
 -- Revision 1.31  2006/08/05 12:00:39  haraldkipp
 -- Added clock settings for Ethernut 3.0 Rev-E.
 --
@@ -273,6 +277,70 @@ nutdev =
     --
     -- Special Chip Drivers.
     --
+    
+    {
+        name = "nutdev_at45db",
+        brief = "AT45DB Serial DataFlash Memory",
+        description = "Supports multiple chips.\n\n"..
+                      "Tested with AT91SAM9260-EK.",
+        sources = { "at45db.c" },
+        requires = { "HW_MCU_AT91", "HW_SPI_AT91" },
+        options =
+        {
+            {
+                macro = "MAX_AT45_DEVICES",
+                brief = "Number of Chips",
+                description = "Maximum number of chips, which can be used concurrently.",
+                default = "1",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "AT45_ERASE_WAIT",
+                brief = "Max. Page Erase Wait Time",
+                description = "Maximum number of milliseconds to wait until the chip "..
+                              "becomes ready again after a sector erase command.",
+                default = "3000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "AT45_CHIP_ERASE_WAIT",
+                brief = "Max. Chip Erase Wait Time",
+                description = "Maximum number of milliseconds to wait until the chip "..
+                              "becomes ready again after a chip erase command.",
+                default = "50000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "AT45_WRITE_POLLS",
+                brief = "Max. Write Poll Number",
+                description = "Maximum number of polling loops for page write.",
+                default = "1000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "AT45_CONF_SIZE",
+                brief = "Configuration Area Size",
+                description = "During write operations a buffer with this size is allocated "..
+                              "from heap and may cause memory problems with large sectors. "..
+                              "Thus, this value may be less than the size of the configuration "..
+                              "sector, in which case the rest of the sector is unused.",
+                provides = { "HW_FLASH_PARAM_SECTOR" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45DB",
+                brief = "System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in this chip.",
+                provides = { "HW_FLASH_PARAM_SECTOR" },
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+        },
+    },
+    
     {
         name = "nutdev_at49bv",
         brief = "AT49BV Flash Memory",
