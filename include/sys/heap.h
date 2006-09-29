@@ -51,6 +51,15 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/09/29 12:26:14  haraldkipp
+ * All code should use dedicated stack allocation routines. For targets
+ * allocating stack from the normal heap the API calls are remapped by
+ * preprocessor macros.
+ * Stack allocation code moved from thread module to heap module.
+ * Adding static attribute to variable 'available' will avoid interference
+ * with application code. The ugly format macros had been replaced by
+ * converting all platform specific sizes to unsigned integers.
+ *
  * Revision 1.2  2004/03/16 16:48:44  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -105,6 +114,21 @@ extern void *NutHeapAllocClear(size_t size);
 extern int NutHeapFree(void *block);
 extern void NutHeapAdd(void *addr, size_t size);
 extern size_t NutHeapAvailable(void);
+
+#if defined (NUTMEM_STACKHEAP)
+
+/* Dedicated stack memory. */
+extern void *NutStackAlloc(size_t size);
+extern int NutStackFree(void *block);
+extern void NutStackAdd(void *addr, size_t size);
+
+#else /* !NUTMEM_STACKHEAP */
+
+/* Thread stacks resides in normal heap. */
+#define NutStackAlloc(size)     NutHeapAlloc(size)
+#define NutStackFree(block)     NutHeapFree(block)
+
+#endif /* !NUTMEM_STACKHEAP */
 
 #ifdef __cplusplus
 }

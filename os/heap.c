@@ -48,6 +48,15 @@
 
 /*
  * $Log$
+ * Revision 1.10  2006/09/29 12:26:14  haraldkipp
+ * All code should use dedicated stack allocation routines. For targets
+ * allocating stack from the normal heap the API calls are remapped by
+ * preprocessor macros.
+ * Stack allocation code moved from thread module to heap module.
+ * Adding static attribute to variable 'available' will avoid interference
+ * with application code. The ugly format macros had been replaced by
+ * converting all platform specific sizes to unsigned integers.
+ *
  * Revision 1.9  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -114,12 +123,12 @@
 /*!
  * \brief List of free nodes.
  */
-HEAPNODE *volatile heapFreeList = 0;
+HEAPNODE *volatile heapFreeList;
 
 /*!
  * \brief Number of bytes available.
  */
-size_t available = 0;
+static size_t available;
 
 /*!
  * \brief Overhead for each allocated memory clock.
@@ -161,13 +170,6 @@ size_t available = 0;
  */
 void *NutHeapAlloc(size_t size)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt[] = "\n[H%lx,A%09ld/%ld] ";
-#else
-    static prog_char fmt[] = "\n[H%x,A%04d/%d] ";
-#endif
-#endif
     HEAPNODE *node;
     HEAPNODE **npp;
     HEAPNODE *fit = 0;
@@ -252,8 +254,9 @@ void *NutHeapAlloc(size_t size)
         fit = (HEAPNODE *) & fit->hn_next;
     }
 #ifdef NUTDEBUG
-    if (__heap_trf)
-        fprintf_P(__heap_trs, fmt, (uptr_t) fit, ((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size, size);
+    if (__heap_trf) {
+        fprintf_P(__heap_trs, "\n[H%x,A%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size), (int)size);
+    }
 #endif
     return fit;
 }
@@ -301,18 +304,10 @@ void *NutHeapAllocClear(size_t size)
  */
 int NutHeapFree(void *block)
 {
-#ifdef NUTDEBUG
-#ifdef ARCH_32BIT
-    static prog_char fmt[] = "\n[H%lx,F%09ld] ";
-#else
-    static prog_char fmt[] = "\n[H%x,F%04d] ";
-#endif
-#endif
     HEAPNODE *node;
     HEAPNODE **npp;
     HEAPNODE *fnode;
 
-    //NutEnterCritical();
 #ifdef NUTDEBUG
     if (__heap_trf) {
         if (block) {
@@ -333,7 +328,7 @@ int NutHeapFree(void *block)
 
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf_P(__heap_trs, fmt, (uptr_t) block, fnode->hn_size);
+        fprintf_P(__heap_trs, "\n[H%x,F%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
 #endif
     available += fnode->hn_size;
 
@@ -401,7 +396,6 @@ int NutHeapFree(void *block)
         fnode->hn_next = node;
         *npp = fnode;
     }
-    //NutExitCritical();
     return 0;
 }
 
@@ -432,5 +426,91 @@ size_t NutHeapAvailable(void)
 {
     return available;
 }
+
+
+#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
+/*
+ * The following routines are wrappers around the standard heap
+ * allocation routines.  These wrappers tweak the free heap pointer to point
+ * to a second heap which is kept in internal memory and used only for a
+ * thread's stack.
+ */
+
+static HEAPNODE* volatile stackHeapFreeList; /* for special stack heap */
+static u_short stackHeapAvailable;
+
+void *NutStackAlloc(size_t size)
+{
+    void * result;
+    HEAPNODE* savedHeapNode;
+    u_short savedAvailable;
+
+    // Save current real heap context
+    savedHeapNode = heapFreeList;
+    savedAvailable = available;
+    // Restore stack-heap context
+    heapFreeList = stackHeapFreeList;
+    available = stackHeapAvailable;
+
+    result = NutHeapAlloc(size);
+
+    // Save stack-heap context
+    stackHeapFreeList = heapFreeList;
+    stackHeapAvailable = available;
+    // Restore real heap context
+    heapFreeList = savedHeapNode;
+    available = savedAvailable;
+
+    return result;
+}
+
+int NutStackFree(void *block)
+{
+    int result;
+    HEAPNODE* savedHeapNode;
+    u_short savedAvailable;
+
+    // Save current real heap context
+    savedHeapNode = heapFreeList;
+    savedAvailable = available;
+    // Restore stack-heap context
+    heapFreeList = stackHeapFreeList;
+    available = stackHeapAvailable;
+
+    result = NutHeapFree(block);
+
+    // Save stack-heap context
+    stackHeapFreeList = heapFreeList;
+    stackHeapAvailable = available;
+    // Restore real heap context
+    heapFreeList = savedHeapNode;
+    available = savedAvailable;
+
+    return result;
+}
+
+void NutStackAdd(void *addr, size_t size)
+{
+   HEAPNODE* savedHeapNode;
+   u_short savedAvailable;
+
+   // Save current real heap context
+   savedHeapNode = heapFreeList;
+   savedAvailable = available;
+   // Restore stack-heap context
+   heapFreeList = stackHeapFreeList;
+   available = stackHeapAvailable;
+
+   NutHeapAdd(addr, size);
+
+   // Save stack-heap context
+   stackHeapFreeList = heapFreeList;
+   stackHeapAvailable = available;
+   // Restore real heap context
+   heapFreeList = savedHeapNode;
+   available = savedAvailable;
+}
+
+#endif /* defined(NUTMEM_STACKHEAP) */
 
 /*@}*/
