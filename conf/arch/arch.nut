@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.24  2006/09/29 12:40:36  haraldkipp
+-- PDC provision added for AT91 devices.
+--
 -- Revision 1.23  2006/09/05 12:29:59  haraldkipp
 -- SPI and MCI support added for SAM9260.
 --
@@ -227,6 +230,7 @@ nutarch =
                     "HW_UART_AT91",
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
+                    "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO"
                 },
