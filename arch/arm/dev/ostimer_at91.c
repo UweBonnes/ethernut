@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/09/29 12:37:36  haraldkipp
+ * Now working correctly, if the CPU is running on the second PLL.
+ *
  * Revision 1.11  2006/09/05 12:27:25  haraldkipp
  * PLL clock calculation re-arranged to prevent 32-bit overflow.
  * NutTimerMillisToTicks() returned wrong result. Shane Buckham reported
@@ -225,7 +228,11 @@ static u_int At91GetPllClock(int plla)
     rc = AT91_PLL_MAINCK;
 
     /* Retrieve the clock generator register of the selected PLL. */
-    pllr = plla ? inr(CKGR_PLLAR) : inr(CKGR_PLLR);
+#if defined(CKGR_PLLAR) && defined(CKGR_PLLBR)
+    pllr = plla ? inr(CKGR_PLLAR) : inr(CKGR_PLLBR);
+#else
+    pllr = inr(CKGR_PLLR);
+#endif
 
     /* Extract the divider value. */
     divider = (pllr & CKGR_DIV) >> CKGR_DIV_LSB;
@@ -257,14 +264,23 @@ static u_long At91GetProcessorClock(void)
         /* Main clock selected. */
         rc = AT91_PLL_MAINCK;
         break;
+#if defined(PMC_CSS_PLLA_CLK)
     case PMC_CSS_PLLA_CLK:
         /* PLL A clock selected. */
         rc = At91GetPllClock(1);
         break;
+#endif
+#if defined(PMC_CSS_PLLB_CLK)
     case PMC_CSS_PLLB_CLK:
         /* PLL (B) clock selected. */
         rc = At91GetPllClock(0);
         break;
+#elif defined(PMC_CSS_PLL_CLK)
+    case PMC_CSS_PLL_CLK:
+        /* PLL (B) clock selected. */
+        rc = At91GetPllClock(0);
+        break;
+#endif
     }
 
     /* Handle pre-scaling. */
