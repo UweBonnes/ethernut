@@ -56,6 +56,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.15  2006/09/29 12:24:14  haraldkipp
+ * Stack allocation code moved from thread module to heap module.
+ * All code should use dedicated stack allocation routines. For targets
+ * allocating stack from the normal heap the API calls are remapped by
+ * preprocessor macros.
+ *
  * Revision 1.14  2006/06/29 03:52:19  hwmaier
  * Added include statement for cfg/memory.h so the macro
  * NUTMEM_STACKHEAP is found when compiling for the
@@ -209,13 +215,6 @@ extern HANDLE GetThreadByName(char *name);
 #define THREAD(threadfn, arg) \
 void threadfn(void *arg) __attribute__ ((noreturn)); \
 void threadfn(void *arg)
-
-#if defined (NUTMEM_STACKHEAP)
-/* Stack resides in internal memory */
-extern void *NutStackAlloc(size_t size);
-extern int NutStackFree(void *block);
-extern void NutStackAdd(void *addr, size_t size);
-#endif
 
 __END_DECLS
 /* */

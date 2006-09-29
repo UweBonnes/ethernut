@@ -56,6 +56,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.28  2006/09/29 12:24:14  haraldkipp
+ * Stack allocation code moved from thread module to heap module.
+ * All code should use dedicated stack allocation routines. For targets
+ * allocating stack from the normal heap the API calls are remapped by
+ * preprocessor macros.
+ *
  * Revision 1.27  2006/06/28 14:39:41  haraldkipp
  * Event and timer handling re-design, again.
  *
@@ -538,11 +544,7 @@ void NutThreadExit(void)
 void NutThreadDestroy(void)
 {
     if (killedThread) {
-#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
         NutStackFree(killedThread->td_memory);
-#else
-        NutHeapFree(killedThread->td_memory);
-#endif
         killedThread = 0;
     }
 }
@@ -597,92 +599,5 @@ HANDLE GetThreadByName(char * name)
     }
     return NULL;
 }
-
-
-#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
-/*
- * The following routines are wrappers around the standard heap
- * allocation routines.  These wrappers tweak the free heap pointer to point
- * to a second heap which is kept in internal memory and used only for a
- * thread's stack.
- */
-
-HEAPNODE* volatile stackHeapFreeList = 0; /* for special stack heap */
-u_short stackHeapAvailable = 0;
-extern u_short available;
-
-void *NutStackAlloc(size_t size)
-{
-    void * result;
-    HEAPNODE* savedHeapNode;
-    u_short savedAvailable;
-
-    // Save current real heap context
-    savedHeapNode = heapFreeList;
-    savedAvailable = available;
-    // Restore stack-heap context
-    heapFreeList = stackHeapFreeList;
-    available = stackHeapAvailable;
-
-    result = NutHeapAlloc(size);
-
-    // Save stack-heap context
-    stackHeapFreeList = heapFreeList;
-    stackHeapAvailable = available;
-    // Restore real heap context
-    heapFreeList = savedHeapNode;
-    available = savedAvailable;
-
-    return result;
-}
-
-int NutStackFree(void *block)
-{
-    int result;
-    HEAPNODE* savedHeapNode;
-    u_short savedAvailable;
-
-    // Save current real heap context
-    savedHeapNode = heapFreeList;
-    savedAvailable = available;
-    // Restore stack-heap context
-    heapFreeList = stackHeapFreeList;
-    available = stackHeapAvailable;
-
-    result = NutHeapFree(block);
-
-    // Save stack-heap context
-    stackHeapFreeList = heapFreeList;
-    stackHeapAvailable = available;
-    // Restore real heap context
-    heapFreeList = savedHeapNode;
-    available = savedAvailable;
-
-    return result;
-}
-
-void NutStackAdd(void *addr, size_t size)
-{
-   HEAPNODE* savedHeapNode;
-   u_short savedAvailable;
-
-   // Save current real heap context
-   savedHeapNode = heapFreeList;
-   savedAvailable = available;
-   // Restore stack-heap context
-   heapFreeList = stackHeapFreeList;
-   available = stackHeapAvailable;
-
-   NutHeapAdd(addr, size);
-
-   // Save stack-heap context
-   stackHeapFreeList = heapFreeList;
-   stackHeapAvailable = available;
-   // Restore real heap context
-   heapFreeList = savedHeapNode;
-   available = savedAvailable;
-}
-
-#endif /* defined(NUTMEM_STACKHEAP) */
 
 /*@}*/
