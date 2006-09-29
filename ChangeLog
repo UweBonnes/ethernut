@@ -1,4 +1,83 @@
-$Id: ChangeLog,v 1.356 2006/09/11 09:15:29 olereinhardt Exp $
+$Id: ChangeLog,v 1.357 2006/09/29 12:16:53 haraldkipp Exp $
+
+2006-09-29  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Zombies never pass away. 4.1.9.10.
+
+	* app/basemon/basemon.c, app/basemon/dataflash.c,
+	app/basemon/realtek.c, app/basemon/webdemo.c,
+	app/basemon/xmemtest.c, app/basemon/xmemtest.h,
+	arch/avr/os/nutinit.c,: Added support for ATmega2561.
+
+	* conf/at91sam9260-ek.conf: Corrected memory size.
+
+	* include/arch/avr/icc.h: Corrected internal RAM size and check 
+	compiler environment for ATmega2561.
+
+	* os/thread.c, arch/avr/os/context_gcc.c, arch/avr/os/context_icc.c,
+	include/sys/heap.h: All code should use dedicated stack allocation 
+	routines. For targets allocating stack from the normal heap the API 
+	calls are remapped by preprocessor macros.
+
+	* os/heap.c, os/thread.c, include/sys/heap.h, include/sys/thread.h:
+	Stack allocation code moved from thread module to heap module.
+
+	* os/heap.c: Adding static attribute to variable 'available' will 
+	avoid interference with application code. The ugly format macros 
+	had been replaced by converting all platform specific sizes to 
+	unsigned integers.
+
+
+
+2006-09-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_emac.c: Several fixes to make it running
+	reliably on the AT91SAM9260.
+
+	* arch/arm/dev/at91_spi.c, arch/arm/dev/ih_at91spi0.c,
+	arch/arm/dev/ih_at91spi1.c, conf/arch/arm.nut,
+	include/arch/arm/irqreg.h, include/dev/at91_spi.h: 
+	Basic AT91 SPI support added.
+
+	* arch/arm/dev/ih_at91ssc.c: Default interrupt priority 
+	changed from 4 to 5. Usually this is used for high speed links.
+
+	* arch/arm/dev/ih_at91tc0.c: Default interrupt priority
+	changed from 4 to 0. As this is typically used by the system 
+	timer, lowest priority is fine.
+
+	* arch/arm/dev/ostimer_at91.c: Now working correctly, if the
+	CPU is running on the second PLL.
+
+	* arch/arm/os/nutinit.c: Spurious interrupt handling on all
+	supported AT91 devices.
+
+	* conf/arch/arch.nut: PDC provision added for AT91 devices.
+
+	* conf/at91sam9260-ek.conf: Configuration stored in serial
+	Dataflash.
+
+	* conf/dev/dev.nut, dev/at45db.c, dev/nvmem.c, 
+	include/dev/at45db.h: Added support for AT45 serial DataFlash 
+	memory chips. Currently limited to AT91 builds.
+
+	* include/arch/arm/at91_pio.h: Register offsets added, which
+	are quite useful for assembler programming. Added some
+	special PIO features, which are available on the AT91SAM92xx
+	series.
+
+	* include/arch/arm/at91_pmc.h: Excluded second PLL from
+	SAM7X builds. Corrected USB divider names.
+
+	* include/arch/arm/at91_spi.h: Register offsets added.
+
+	* include/arch/arm/at91_ssc.h: Just sorted lines a bit.
+
+	* include/arch/arm/at91sam7x.h, include/arch/arm/at91sam9260.h: 
+	Added PIO features and SPI peripheral selections.
+
+	* include/arch/arm/timer.h: Include clock configuration.
+
 
 2006-09-11  Ole Reinhardt <ole.reinhardt@embeddet-it.de>
         * arch/avr/dev/hd44780.c: Added another LCD timing patch from Uwe Bonnes
