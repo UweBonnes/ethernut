@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/09/29 12:45:08  haraldkipp
+ * Added PIO features and SPI peripheral selections.
+ *
  * Revision 1.2  2006/09/05 12:32:56  haraldkipp
  * MIC base address corrected.
  *
@@ -106,6 +109,11 @@
 #define SSC_HAS_PDC
 #define USART_HAS_PDC
 #define MCI_HAS_PDC
+
+#define PIO_HAS_MULTIDRIVER
+#define PIO_HAS_PULLUP
+#define PIO_HAS_PERIPHERALSELECT
+#define PIO_HAS_OUTPUTWRITEENABLE
 
 #include <arch/arm/at91_tc.h>
 #include <arch/arm/at91_us.h>
@@ -210,6 +218,18 @@
 #define PC16_SPI0_NPCS2_B   16  /*!< \brief Channel 0 chip select 2 pin. */
 #define PC17_SPI0_NPCS3_B   17  /*!< \brief Channel 0 chip select 3 pin. */
 
+#define SPI0_PINS           _BV(PA0_SPI0_MISO_A) | _BV(PA1_SPI0_MOSI_A) | _BV(PA2_SPI0_SPCK_A)
+#define SPI0_PIO_BASE       PIOA_BASE
+#define SPI0_PSR_OFF        PIO_ASR_OFF
+
+#define SPI0_CS0_PIN        _BV(PA3_SPI0_NPCS0_A)
+#define SPI0_CS0_PIO_BASE   PIOA_BASE
+#define SPI0_CS0_PSR_OFF    PIO_ASR_OFF
+
+#define SPI0_CS1_PIN        _BV(PC11_SPI0_NPCS1_B)
+#define SPI0_CS1_PIO_BASE   PIOC_BASE
+#define SPI0_CS1_PSR_OFF    PIO_BSR_OFF
+
 #define PB0_SPI1_MISO_A     0   /*!< \brief Channel 1 master input slave output pin. */
 #define PB1_SPI1_MOSI_A     1   /*!< \brief Channel 1 master output slave input pin. */
 #define PB2_SPI1_SPCK_A     2   /*!< \brief Channel 1 serial clock pin. */
@@ -220,6 +240,21 @@
 #define PC19_SPI1_NPCS2_B   19  /*!< \brief Channel 1 chip select 2 pin. */
 #define PC3_SPI1_NPCS3_B    3   /*!< \brief Channel 1 chip select 3 pin. */
 #define PC20_SPI1_NPCS3_B   20  /*!< \brief Channel 1 chip select 3 pin. */
+
+#define SPI1_PINS           _BV(PB0_SPI1_MISO_A) | _BV(PB1_SPI1_MOSI_A) | _BV(PB2_SPI1_SPCK_A)
+#define SPI1_PIO_BASE       PIOB_BASE
+#define SPI1_PSR_OFF        PIO_ASR_OFF
+
+#define SPI1_CS0_PIN        _BV(PB3_SPI1_NPCS0_A)
+#define SPI1_CS0_PIO_BASE   PIOB_BASE
+#define SPI1_CS0_PSR_OFF    PIO_ASR_OFF
+
+#ifndef SPI1_CS3_PIN
+#define SPI1_CS3_PIN        _BV(PC3_SPI1_NPCS3_B)
+#define SPI1_CS3_PIO_BASE   PIOC_BASE
+#define SPI1_CS3_PSR_OFF    PIO_BSR_OFF
+#endif
+
 /*@}*/
 
 /*! \name Image Sensor Interface Peripheral Multiplexing */

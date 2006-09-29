@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/09/29 12:45:08  haraldkipp
+ * Added PIO features and SPI peripheral selections.
+ *
  * Revision 1.5  2006/09/07 09:09:06  haraldkipp
  * Added missing definitions for peripheral multiplexing. Now following the
  * same naming conventions like those for the SAM9260.
@@ -121,6 +124,11 @@
 #define SPI_HAS_PDC
 #define SSC_HAS_PDC
 #define USART_HAS_PDC
+
+#define PIO_HAS_MULTIDRIVER
+#define PIO_HAS_PULLUP
+#define PIO_HAS_PERIPHERALSELECT
+#define PIO_HAS_OUTPUTWRITEENABLE
 
 #include <arch/arm/at91_tc.h>
 #include <arch/arm/at91_us.h>
@@ -212,6 +220,32 @@
 #define PA15_SPI0_NPCS3_A   15
 #define PA9_SPI0_NPCS3_B    9
 
+#define SPI0_PINS           _BV(PA16_SPI0_MISO_A) | _BV(PA17_SPI0_MOSI_A) | _BV(PA18_SPI0_SPCK_A)
+#define SPI0_PIO_BASE       PIOA_BASE
+#define SPI0_PSR_OFF        PIO_ASR_OFF
+
+#define SPI0_CS0_PIN        _BV(PA12_SPI0_NPCS0_A)
+#define SPI0_CS0_PIO_BASE   PIOA_BASE
+#define SPI0_CS0_PSR_OFF    PIO_ASR_OFF
+
+#ifndef SPI0_CS1_PIN
+#define SPI0_CS1_PIN        _BV(PA13_SPI0_NPCS1_A)
+#define SPI0_CS1_PIO_BASE   PIOA_BASE
+#define SPI0_CS1_PSR_OFF    PIO_ASR_OFF
+#endif
+
+#ifndef SPI0_CS2_PIN
+#define SPI0_CS2_PIN        _BV(PA14_SPI0_NPCS2_A)
+#define SPI0_CS2_PIO_BASE   PIOA_BASE
+#define SPI0_CS2_PSR_OFF    PIO_ASR_OFF
+#endif
+
+#ifndef SPI0_CS3_PIN
+#define SPI0_CS3_PIN        _BV(PA15_SPI0_NPCS3_A)
+#define SPI0_CS3_PIO_BASE   PIOA_BASE
+#define SPI0_CS3_PSR_OFF    PIO_ASR_OFF
+#endif
+
 #define PA24_SPI1_MISO_B    24
 #define PA23_SPI1_MOSI_B    23
 #define PA22_SPI1_SPCK_B    22
@@ -227,6 +261,33 @@
 #define PA4_SPI1_NPCS3_B    4
 #define PA29_SPI1_NPCS3_B   29
 #define PB16_SPI1_NPCS3_B   16
+
+#define SPI1_PINS           _BV(PA24_SPI1_MISO_B) | _BV(PA23_SPI1_MOSI_B) | _BV(PA22_SPI1_SPCK_B)
+#define SPI1_PIO_BASE       PIOA_BASE
+#define SPI1_PSR_OFF        PIO_BSR_OFF
+
+#define SPI1_CS0_PIN        _BV(PA21_SPI1_NPCS0_B)
+#define SPI1_CS0_PIO_BASE   PIOA_BASE
+#define SPI1_CS0_PSR_OFF    PIO_BSR_OFF
+
+#ifndef SPI1_CS1_PIN
+#define SPI1_CS1_PIN        _BV(PA25_SPI1_NPCS1_B)
+#define SPI1_CS1_PIO_BASE   PIOA_BASE
+#define SPI1_CS1_PSR_OFF    PIO_BSR_OFF
+#endif
+
+#ifndef SPI1_CS2_PIN
+#define SPI1_CS2_PIN        _BV(PA26_SPI1_NPCS2_B)
+#define SPI1_CS2_PIO_BASE   PIOA_BASE
+#define SPI1_CS2_PSR_OFF    PIO_BSR_OFF
+#endif
+
+#ifndef SPI1_CS3_PIN
+#define SPI1_CS3_PIN        _BV(PA29_SPI1_NPCS3_B)
+#define SPI1_CS3_PIO_BASE   PIOA_BASE
+#define SPI1_CS3_PSR_OFF    PIO_BSR_OFF
+#endif
+
 /*@}*/
 
 /*! \name EMAC Interface Peripheral Multiplexing */
@@ -331,10 +392,6 @@
 #define PB22_PWM3_A         22
 #define PB30_PWM3_B         30
 /*@}*/
-
-
-
-
 
 /*@} xgNutArchArmAt91 */
 
