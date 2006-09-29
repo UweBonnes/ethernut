@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/09/29 12:36:48  haraldkipp
+ * Default interrupt priority changed from 4 to 0. As this is typically used
+ * by the system timer, lowest priority is fine.
+ *
  * Revision 1.2  2006/06/28 17:10:27  haraldkipp
  * Include more general header file for ARM.
  *
@@ -45,7 +49,7 @@
 #include <dev/irqreg.h>
 
 #ifndef NUT_IRQPRI_TC0
-#define NUT_IRQPRI_TC0  4
+#define NUT_IRQPRI_TC0  0
 #endif
 
 static int TimerCounter0IrqCtl(int cmd, void *param);
