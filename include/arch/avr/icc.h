@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/09/29 12:22:07  haraldkipp
+ * Corrected internal RAM size and check compiler environment for ATmega2561.
+ *
  * Revision 1.5  2006/07/10 08:48:03  haraldkipp
  * Distinguish between enhanced and extended AVR.
  *
@@ -260,13 +263,20 @@
 #ifdef ATMega2561
 #include <iom2561v.h>
 #define __AVR_ATmega2561__
+#ifndef _EE_EXTIO
+#error "Looks like wrong platform. Select avrext-icc, not avr-icc."
+#endif
 #else
 #include <iom128v.h>
 #define __AVR_ATmega128__
 #endif
 
 #ifndef RAMEND
+#ifdef ATMega2561
+#define RAMEND  0x21FF
+#else
 #define RAMEND  0x10FF
+#endif
 #endif
 
 #ifndef SRW
