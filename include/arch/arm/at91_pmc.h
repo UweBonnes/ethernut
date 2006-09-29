@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/09/29 12:43:44  haraldkipp
+ * Excluded second PLL from SAM7X builds. Corrected USB divider names.
+ *
  * Revision 1.5  2006/08/31 19:08:14  haraldkipp
  * Defining register offsets simplifies assembly programming.
  *
@@ -115,12 +118,15 @@
 
 /*! \name PLL Registers */
 /*@{*/
+#if defined (MCU_AT91SAM9260)
 #define CKGR_PLLAR_OFF              0x00000028  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLAR  (PMC_BASE + CKGR_PLLAR_OFF) /*!< \brief Clock generator PLL register address. */
 #define CKGR_PLLBR_OFF              0x0000002C  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLBR  (PMC_BASE + CKGR_PLLBR_OFF) /*!< \brief Clock generator PLL register address. */
+#elif defined (MCU_AT91SAM7X256)
 #define CKGR_PLLR_OFF               0x0000002C  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLR   (PMC_BASE + CKGR_PLLR_OFF)  /*!< \brief Clock generator PLL register address. */
+#endif
 
 #define CKGR_DIV                    0x000000FF  /*!< \brief Divider. */
 #define CKGR_DIV_LSB                        0   /*!< \brief Least significant bit of the divider. */
@@ -136,9 +142,9 @@
 #define CKGR_MUL                    0x07FF0000  /*!< \brief PLL multiplier. */
 #define CKGR_MUL_LSB                        16  /*!< \brief Least significant bit of the PLL multiplier. */
 #define CKGR_USBDIV                 0x30000000  /*!< \brief Divider for USB clocks. */
-#define CKGR_USBDIV_0               0x00000000  /*!< \brief Divider output is PLL clock output. */
-#define CKGR_USBDIV_1               0x10000000  /*!< \brief Divider output is PLL clock output divided by 2. */
-#define CKGR_USBDIV_2               0x20000000  /*!< \brief Divider output is PLL clock output divided by 4. */
+#define CKGR_USBDIV_1               0x00000000  /*!< \brief Divider output is PLL clock output. */
+#define CKGR_USBDIV_2               0x10000000  /*!< \brief Divider output is PLL clock output divided by 2. */
+#define CKGR_USBDIV_4               0x20000000  /*!< \brief Divider output is PLL clock output divided by 4. */
 /*@}*/
 
 /*! \name Master Clock Register */
@@ -159,9 +165,12 @@
 #define PMC_CSS                     0x00000003  /*!< \brief Clock selection mask. */
 #define PMC_CSS_SLOW_CLK            0x00000000  /*!< \brief Slow clock selected. */
 #define PMC_CSS_MAIN_CLK            0x00000001  /*!< \brief Main clock selected. */
+#if defined (MCU_AT91SAM9260)
 #define PMC_CSS_PLLA_CLK            0x00000002  /*!< \brief PLL A clock selected. */
 #define PMC_CSS_PLLB_CLK            0x00000003  /*!< \brief PLL B clock selected. */
+#elif defined (MCU_AT91SAM7X256)
 #define PMC_CSS_PLL_CLK             0x00000003  /*!< \brief PLL clock selected. */
+#endif
 #define PMC_PRES                    0x0000001C  /*!< \brief Clock prescaler mask. */
 #define PMC_PRES_LSB                        2   /*!< \brief Clock prescaler LSB. */
 #define PMC_PRES_CLK                0x00000000  /*!< \brief Selected clock, not divided. */
@@ -171,10 +180,12 @@
 #define PMC_PRES_CLK_16             0x00000010  /*!< \brief Selected clock divided by 16. */
 #define PMC_PRES_CLK_32             0x00000014  /*!< \brief Selected clock divided by 32. */
 #define PMC_PRES_CLK_64             0x00000018  /*!< \brief Selected clock divided by 64. */
+#if defined (MCU_AT91SAM9260)
 #define PMC_MDIV                    0x00000300  /*!< \brief Master clock division mask. */
 #define PMC_MDIV_1                  0x00000000  /*!< \brief Processor clock, not divided. */
 #define PMC_MDIV_2                  0x00000100  /*!< \brief Processor clock divided by 2. */
 #define PMC_MDIV_4                  0x00000200  /*!< \brief Processor clock divided by 4. */
+#endif
 /*@}*/
 
 /*! \name Power Management Status and Interrupt Registers */
@@ -189,9 +200,12 @@
 #define PMC_IMR     (PMC_BASE + PMC_IMR_OFF)    /*!< \brief Interrupt mask register address. */
 
 #define PMC_MOSCS                   0x00000001  /*!< \brief Main oscillator. */
+#if defined (MCU_AT91SAM9260)
 #define PMC_LOCKA                   0x00000002  /*!< \brief PLL A lock. */
 #define PMC_LOCKB                   0x00000004  /*!< \brief PLL B lock. */
+#elif defined (MCU_AT91SAM7X256)
 #define PMC_LOCK                    0x00000004  /*!< \brief PLL lock. */
+#endif
 #define PMC_MCKRDY                  0x00000008  /*!< \brief Master clock ready. */
 #define PMC_OSC_SEL                 0x00000080  /*!< \brief Slow clock oscillator selection. */
 #define PMC_PCKRDY0                 0x00000100  /*!< \brief Programmable clock 0 ready. */
