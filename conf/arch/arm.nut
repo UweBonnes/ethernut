@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.15  2006/09/29 12:34:59  haraldkipp
+-- Basic AT91 SPI support added.
+--
 -- Revision 1.14  2006/09/08 16:47:24  haraldkipp
 -- For some reason the SSC driver for SAM7X had not been included.
 --
@@ -211,11 +214,14 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
+            "arm/dev/ih_at91emac.c",
             "arm/dev/ih_at91fiq.c",
             "arm/dev/ih_at91irq0.c",
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
             "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91spi0.c",
+            "arm/dev/ih_at91spi1.c",
             "arm/dev/ih_at91ssc.c",
             "arm/dev/ih_at91swirq.c",
             "arm/dev/ih_at91tc0.c",
@@ -223,7 +229,6 @@ nutarch_arm =
             "arm/dev/ih_at91tc2.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
-            "arm/dev/ih_at91emac.c"
         },
     },
 
@@ -400,6 +405,13 @@ nutarch_arm =
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_AT91" },
         sources = { "arm/dev/at91init.c" },
+    },
+    {
+        name = "nutarch__arm_at91spi",
+        brief = "AT91 SPI Support",
+        description = "Preliminary SPI routines.",
+        requires = { "HW_SPI_AT91", "HW_PDC_AT91" },
+        sources = { "arm/dev/at91_spi.c" },
     },
     {
         name = "nutarch__arm_at91efc",

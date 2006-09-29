@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/09/29 12:34:59  haraldkipp
+ * Basic AT91 SPI support added.
+ *
  * Revision 1.8  2006/09/08 16:47:49  haraldkipp
  * For some reason the SSC driver for SAM7X had not been included.
  *
@@ -149,6 +152,8 @@ extern IRQ_HANDLER sig_EMAC;
 extern IRQ_HANDLER sig_PIO;
 extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
+extern IRQ_HANDLER sig_SPI0;
+extern IRQ_HANDLER sig_SPI1;
 
 #else
 #warning "No MCU defined"
