@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/09/29 12:18:35  haraldkipp
+ * Added support for ATmega2561.
+ *
  * Revision 1.3  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -86,7 +89,7 @@ static void SpiInit(void)
     /* Enable MISO pullup. */
     sbi(PORTB, 3);
 
-#ifdef __AVR_ATmega128__
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega2561__)
     /* Set double speed. */
     outb(SPSR, _BV(SPI2X));
 #endif

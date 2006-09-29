@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/09/29 12:18:35  haraldkipp
+ * Added support for ATmega2561.
+ *
  * Revision 1.4  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -81,7 +84,7 @@ void XMemDisable(void)
 {
 #if defined (__AVR__)
     /* Disable external memory bus. */
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
     cbi(XMCRA, SRE);
 #else
     cbi(MCUCR, SRE);
@@ -292,9 +295,10 @@ size_t XMemTest(void)
     u_char pattern[] = { 0x00, 0xFF, 0x55, 0xAA };
     u_char *last = (u_char *)-1;
 
-#ifdef __AVR_ENHANCED__
+#if defined(__AVR_ENHANCED__) && !defined(__AVR_ATmega2561__)
     /*
      * Test external memory bus on ATmega128 systems.
+     * Fails on the ATmega2561. Why?
      */
     if(XMemTestBus()) {
         return 0;
@@ -304,7 +308,7 @@ size_t XMemTest(void)
     /*
      * Enable external RAM.
      */
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
     outb(XMCRA, _BV(SRE));
 #elif defined (__AVR__)
     outb(MCUCR, _BV(SRE));

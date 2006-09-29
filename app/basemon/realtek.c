@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/09/29 12:18:35  haraldkipp
+ * Added support for ATmega2561.
+ *
  * Revision 1.5  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -130,7 +133,7 @@ static int DetectNicEeprom(void)
     /*
      * No external memory access beyond this point.
      */
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
     cbi(XMCRA, SRE);
 #else
     cbi(MCUCR, SRE);
@@ -150,7 +153,7 @@ static int DetectNicEeprom(void)
     /*
      * Enable memory interface.
      */
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
     sbi(XMCRA, SRE);
 #else
     sbi(MCUCR, SRE);
@@ -227,7 +230,7 @@ static void EmulateNicEeprom(void)
     /*
      * No external memory access beyond this point.
      */
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
     cbi(XMCRA, SRE);
 #else
     cbi(MCUCR, SRE);
@@ -288,7 +291,7 @@ static void EmulateNicEeprom(void)
     /*
      * Enable memory interface.
      */
-#if defined(__AVR_AT90CAN128__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
     sbi(XMCRA, SRE);
 #else
     sbi(MCUCR, SRE);

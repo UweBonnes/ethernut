@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/09/29 12:18:35  haraldkipp
+ * Added support for ATmega2561.
+ *
  * Revision 1.2  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -47,7 +50,11 @@
 #include <sys/types.h>
 
 #ifndef RAMEND
+#if defined(__AVR_ATmega2561__)
+#define RAMEND  0x2200
+#else
 #define RAMEND  0x1100
+#endif
 #endif
 
 __BEGIN_DECLS

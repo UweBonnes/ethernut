@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/09/29 12:18:35  haraldkipp
+ * Added support for ATmega2561.
+ *
  * Revision 1.5  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -293,7 +296,7 @@ THREAD(WebDemo, arg)
 #if defined(__AVR__)
     if(nic == 1)
         NutRegisterDevice(&devEth0, 0x8300, 5);
-#ifdef __AVR_ATmega128__
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega2561__)
     else
         NutRegisterDevice(&devSmsc111, 0, 0);
 #endif
@@ -351,7 +354,7 @@ THREAD(WebDemo, arg)
 #if defined (__AVR__)
     if(nic == 1)
         ifn = (IFNET *) (devEth0.dev_icb);
-#ifdef __AVR_ATmega128__
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega2561__)
     else
         ifn = (IFNET *) (devSmsc111.dev_icb);
 #endif

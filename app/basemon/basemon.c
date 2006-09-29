@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2006/09/29 12:18:35  haraldkipp
+ * Added support for ATmega2561.
+ *
  * Revision 1.15  2006/08/31 19:14:44  haraldkipp
  * Not all platforms do have devDebug0. Use board.h to determine the
  * correct driver.
@@ -171,7 +174,7 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.1.4";
+static char *version = "4.2.0";
 static size_t sram;
 static u_char banks;
 static size_t banksize;
@@ -189,7 +192,7 @@ volatile u_char ms62_5;
 THREAD(idle, arg)
 {
     NutTimerInit();
-    NutThreadCreate("main", WebDemo, 0, 1384);
+    NutThreadCreate("main", WebDemo, 0, 768);
     NutThreadSetPriority(254);
     for (;;) {
 #ifdef HEARTBEAT_BIT
@@ -237,7 +240,7 @@ int TestPorts(void)
      * Port D.
      */
     for (pat = 1; pat; pat <<= 1) {
-#ifdef __AVR_ATmega128__
+#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega2561__)
         /* Exclude PD5 used for RS485 direction select. */
         if (pat & 0x20) {
             continue;
@@ -336,6 +339,8 @@ void BaseMon(void)
 #elif defined(__AVR_AT90CAN128__)
 #   error CPU needs special consideration for stack and heap and is currently not supported by basemon
     puts("AT90CAN128");
+#elif defined(__AVR_ATmega2561__)
+    puts("ATmega2561");
 #else
     puts("unknown");
 #endif
@@ -510,6 +515,14 @@ void BaseMon(void)
 void NutInit(void)
 {
     extern void *__bss_end;
+
+    /*
+     * Make sure that stack pointer points into internal RAM.
+     */
+#if defined(__AVR__)
+    outb(SPH, inb(SPH) & (RAMEND >> 8));
+#endif
+
     /*
      * Use the rest of our internal RAM for our heap. Re-opening
      * standard output will use malloc. We do not use any external
