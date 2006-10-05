@@ -32,6 +32,10 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2006/10/05 17:20:13  haraldkipp
+ * Standard C functions now support hardware RTC.
+ * Ugly type conversion replaced.
+ *
  * Revision 1.3  2003/12/19 22:26:38  drsung
  * Dox written.
  *
@@ -47,6 +51,9 @@
 #include <time.h>
 #include <sys/timer.h>
 #include <sys/atom.h>
+#include <stdlib.h>
+
+#include <dev/rtc.h>
 
 static u_long epo_offs = 0;
 
@@ -69,14 +76,24 @@ static u_long epo_offs = 0;
  */
 time_t time(time_t * timer)
 {
-    u_long r;
+    time_t r;
+    struct _tm *tm;
 
-    NutEnterCritical();
-    r = epo_offs + NutGetSeconds();
-    NutExitCritical();
-
-    if (timer)
+    /* Try to get time from hardware clock. */
+    tm = malloc(sizeof(struct _tm));
+    if (tm && NutRtcGetTime(tm) == 0) {
+        r = mktime(tm);
+    } 
+    /* No hardware clock. Use internal seconds counter. */
+    else {
+        r = epo_offs + NutGetSeconds();
+    }
+    if (tm) {
+        free(tm);
+    }
+    if (timer) {
         *timer = r;
+    }
     return r;
 }
 
@@ -89,9 +106,11 @@ time_t time(time_t * timer)
  */
 int stime(time_t * timer)
 {
-    NutEnterCritical();
-    epo_offs = *(u_long *) timer - NutGetSeconds();
-    NutExitCritical();
+    /* Try to set hardware clock. */
+    NutRtcSetTime(gmtime(timer));
+    /* Set internal seconds counter. */
+    epo_offs = (u_long)(*timer) - NutGetSeconds();
+
     return 0;
 }
 
