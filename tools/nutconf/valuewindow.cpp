@@ -39,6 +39,9 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.7  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.6  2005/04/26 12:49:36  haraldkipp
  * Minor wxWidgets runtime warning avoided.
  *
@@ -188,6 +191,12 @@ void CValueWindow::PositionEditWindow()
     m_editWindow->SetSize(0, itemRect.y, clientSize.x, sz.y);
 }
 
+/*!
+ * \brief Stop editing.
+ *
+ * Retrieve the current value from the edit control and destroy
+ * the control.
+ */
 bool CValueWindow::EndEditing()
 {
     if (m_configItem) {
@@ -248,61 +257,6 @@ bool CValueWindow::BeginEditing(CConfigItem * item)
         m_configItem = NULL;
         return false;
     }
-}
-
-bool CConfigItem::TransferDataToWindow(wxWindow * window)
-{
-    if (window->IsKindOf(CLASSINFO(CTextEditCtrl))) {
-        CTextEditCtrl *win = (CTextEditCtrl *) window;
-        win->SetValue(GetDisplayValue());
-    } else if (window->IsKindOf(CLASSINFO(CEnumEditCtrl))) {
-        CEnumEditCtrl *win = (CEnumEditCtrl *) window;
-        win->SetStringSelection(GetDisplayValue());
-    } else if (window->IsKindOf(CLASSINFO(CIntEditCtrl))) {
-        CIntEditCtrl *win = (CIntEditCtrl *) window;
-        long i;
-        CUtils::StrToItemIntegerType(StringValue(), i);
-
-        wxString val;
-        val.Printf(wxT("%ld"), i);
-
-        win->SetValue(val);
-    }
-    return true;
-}
-
-bool CConfigItem::TransferDataFromWindow(wxWindow * window)
-{
-    CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
-    wxASSERT(doc != NULL);
-
-    if (!doc)
-        return false;
-
-    if (window->IsKindOf(CLASSINFO(CTextEditCtrl))) {
-        CTextEditCtrl *win = (CTextEditCtrl *) window;
-
-        wxASSERT(GetOptionType() == nutString);
-
-        // TODO: do checking
-        doc->SetValue(*this, win->GetValue().Trim(false));
-    } else if (window->IsKindOf(CLASSINFO(CEnumEditCtrl))) {
-        CEnumEditCtrl *win = (CEnumEditCtrl *) window;
-
-        wxASSERT(GetOptionType() == nutEnumerated);
-
-        // TODO: do checking
-        doc->SetValue(*this, win->GetStringSelection().Trim(false));
-    } else if (window->IsKindOf(CLASSINFO(CIntEditCtrl))) {
-        CIntEditCtrl *win = (CIntEditCtrl *) window;
-
-        wxASSERT(GetOptionType() == nutInteger);
-
-        // TODO: do checking
-        doc->SetValue(*this, (long) win->GetValue());
-    }
-
-    return true;
 }
 
 

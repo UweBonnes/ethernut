@@ -39,6 +39,9 @@
 
 /*
  * $Log: texteditctrl.cpp,v $
+ * Revision 1.3  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.2  2005/04/22 15:28:10  haraldkipp
  * Avoid compiler warnings.
  *
@@ -62,12 +65,18 @@ CTextEditCtrl::CTextEditCtrl(wxWindow * parent, wxWindowID id, const wxPoint & p
 {
 }
 
+/*!
+ * \brief End editing if the user pressed the enter key.
+ */
 void CTextEditCtrl::OnEnter(wxCommandEvent & WXUNUSED(event))
 {
     CValueWindow *parent = (CValueWindow *) GetParent();
     parent->EndEditing();
 }
 
+/*!
+ * \brief End editing if the control loses the foucs.
+ */
 void CTextEditCtrl::OnKillFocus(wxFocusEvent & WXUNUSED(event))
 {
     CValueWindow *parent = (CValueWindow *) GetParent();

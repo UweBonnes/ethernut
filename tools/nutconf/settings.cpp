@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.8  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.7  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -63,39 +66,118 @@
  *
  */
 
+#include <wx/filename.h>
+
 #include "nutconf.h"
 #include "settings.h"
 
 IMPLEMENT_DYNAMIC_CLASS(CSettings, wxObject)
+
+wxString CSettings::FindAbsoluteDir(wxString refPathName)
+{
+    int i = 4;
+    size_t len = refPathName.Len();
+    wxString sep(wxFileName::GetPathSeparator());
+
+#ifdef __WXMSW__
+    refPathName.Replace(wxT("/"), wxT("\\"));
+#endif
+    if (!wxFileName::FileExists(refPathName)) {
+        while (i--) {
+            if (wxFileName::DirExists(wxT("nut") + sep)) {
+                refPathName.Prepend(wxT("nut") + sep);
+            }
+            else {
+                refPathName.Prepend(wxT("..") + sep);
+            }
+            if (wxFileName::FileExists(refPathName)) {
+                break;
+            }
+        }
+        if (i < 0) {
+            return wxString(wxT("."));
+        }
+    }
+
+    wxFileName fn(refPathName);
+    fn.MakeAbsolute();
+    refPathName = fn.GetFullPath();
+    refPathName.Truncate(refPathName.Len() - len);
+#ifdef __WXMSW__
+    refPathName.Replace(wxT("\\"), wxT("/"));
+#endif
+    if (refPathName.Last() == '/') {
+        refPathName.RemoveLast();
+    }
+
+    return refPathName;
+}
+
+wxString CSettings::FindRelativeDir(wxString refPathName)
+{
+
+    refPathName = FindAbsoluteDir(refPathName);
+
+#ifdef __WXMSW__
+    refPathName.Replace(wxT("/"), wxT("\\"));
+#endif
+    wxFileName fn(refPathName + wxT("\\dummy"));
+    fn.MakeRelativeTo(::wxGetCwd());
+    refPathName = fn.GetPath();
+    if (refPathName.IsEmpty()) {
+        return wxString(wxT("."));
+    }
+#ifdef __WXMSW__
+    refPathName.Replace(wxT("\\"), wxT("/"));
+#endif
+
+    return refPathName;
+}
 
 /*!
  * \brief Default constructor.
  */
 CSettings::CSettings()
 {
-    int idx;
-    wxString cwd = ::wxGetCwd();
-
-#ifdef __WXMSW__
-    cwd.Replace(wxT("\\"), wxT("/"));
+    /* Get source path, which is relative to our working directory. */
+    m_relsrcpath = FindRelativeDir(wxT("os/version.c"));
+    
+    /* Get absolute tools path. */
+    wxFileName fn(m_relsrcpath + wxT("/dummy"));
+    fn.AppendDir("tools");
+#ifdef _WIN32
+    fn.AppendDir("win32");
+#else
+    fn.AppendDir("linux");
 #endif
-    if((idx = cwd.Find(wxT("/nut/"))) > -1) {
-        cwd = cwd.Left(idx);
+    fn.MakeAbsolute();
+    wxString toolPath = fn.GetPath();
+
+    /* Get source path component. */
+    m_source_dir_default = fn.GetFullPath(wxPATH_UNIX);
+    if (!m_source_dir_default.Contains("/nut/")) {
+        m_source_dir_default = m_source_dir_default.BeforeLast('/');
+        m_source_dir_default = m_source_dir_default.BeforeLast('/');
+        m_source_dir_default = m_source_dir_default.BeforeLast('/');
+        m_source_dir_default = m_source_dir_default.AfterLast('/');
+        m_buildpath_default = m_source_dir_default + wxT("-bld");
+        m_app_dir_default = m_source_dir_default + wxT("-app");
     }
-    if(cwd.Length() > 1 && cwd.Last() == '/') {
-        cwd = cwd.BeforeLast('/');
+    else {
+        m_source_dir_default = wxString(wxT("nut"));
+        m_buildpath_default = wxString(wxT("nutbld"));
+        m_app_dir_default = wxString(wxT("nutapp"));
     }
-    m_configname_default = cwd + wxT("/nut/conf/ethernut21.conf");
-    m_repositoryname_default = cwd + wxT("/nut/conf/repository.nut");
+    m_lib_dir_default = m_buildpath_default + wxT("/lib");
+
+    m_configname_default = m_relsrcpath + wxT("/conf/ethernut21.conf");
+    m_repositoryname_default = m_relsrcpath + wxT("/conf/repository.nut");
+
     m_firstidir_default = wxEmptyString;
     m_lastidir_default = wxEmptyString;
-    m_buildpath_default = cwd + wxT("/nutbld");
-    m_lib_dir_default = cwd + wxT("/nutbld/lib");
-    m_source_dir_default = cwd + wxT("/nut");
-    m_platform_default = wxT("Select one");
-    m_app_dir_default = cwd + wxT("/nutapp");
+    m_platform_default = wxT("(Select)");
     m_programmer_default = wxT("avr-uisp-stk500");
-    m_toolpath_default = cwd + wxT("/nut/tools/win32;\"(Add compiler paths here)\";");
+    m_toolpath_default = toolPath + wxT(";\"(Add compiler paths here)\";");
 
     wxConfigBase *pConfig = wxConfigBase::Get();
     if (pConfig) {
@@ -104,6 +186,7 @@ CSettings::CSettings()
 
         pConfig->Read(wxT("ConfigName"), &m_configname, m_configname_default);
         pConfig->Read(wxT("RepositoryName"), &m_repositoryname, m_repositoryname_default);
+
         pConfig->Read(wxT("BuildPath"), &m_buildpath, m_buildpath_default);
         pConfig->Read(wxT("FirstInclude"), &m_firstidir, m_firstidir_default);
         pConfig->Read(wxT("LastInclude"), &m_lastidir, m_lastidir_default);
@@ -131,8 +214,10 @@ bool CSettings::Save()
     if (pConfig) {
         wxString lastPath = pConfig->GetPath();
         pConfig->SetPath(wxT("/Settings"));
+
         pConfig->Write(wxT("ConfigName"), m_configname);
         pConfig->Write(wxT("RepositoryName"), m_repositoryname);
+
         pConfig->Write(wxT("BuildPath"), m_buildpath);
         pConfig->Write(wxT("FirstInclude"), m_firstidir);
         pConfig->Write(wxT("LastInclude"), m_lastidir);

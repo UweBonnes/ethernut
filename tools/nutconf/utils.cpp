@@ -39,6 +39,9 @@
 
 /*
  * $Log: utils.cpp,v $
+ * Revision 1.3  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.2  2005/02/06 20:00:44  haraldkipp
  * Missing errno included.
  *
@@ -60,4 +63,29 @@ bool CUtils::StrToItemIntegerType(const wxString & str, long &d)
 
     d = wxStrtol(str, &pEnd, bHex ? 16 : 10);
     return (errno == 0 && (*pEnd == wxT('\0')));
+}
+
+bool CUtils::FindString(const wxString& findIn, const wxString& findWhat, bool wholeWord)
+{
+    wxString remain(findIn);
+
+    if (wholeWord) {
+        size_t s = findWhat.Length();
+
+        while (!remain.IsEmpty()) {
+            int i = remain.Find(findWhat);
+
+            if (i == wxNOT_FOUND) {
+                break;
+            }
+            if ((i == 0 || !wxIsalnum(remain[i - 1])) && (i + s == remain.Length() || !wxIsalnum(remain[i + s]))) {
+                return true;
+            }
+            remain = remain.Mid(i + 1);
+        }
+    }
+    else if (remain.Find(findWhat) != wxNOT_FOUND) {
+        return true;
+    }
+    return false;
 }

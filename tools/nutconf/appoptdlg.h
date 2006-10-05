@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:04:45  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.1  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -50,6 +53,9 @@
 #include <wx/wx.h>
 #include <wx/config.h>
 
+/*!
+ * \brief Settings dialog for application tree options.
+ */
 class CAppOptionsDialog: public wxPanel
 {
 DECLARE_CLASS(CAppOptionsDialog)

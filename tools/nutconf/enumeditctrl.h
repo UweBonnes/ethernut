@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.2  2005/04/26 12:48:28  haraldkipp
  * Workaround for wxChoice focus bug on GTK+.
  *
@@ -52,6 +55,12 @@
 
 #include <wx/wx.h>
 
+/*!
+ * \brief Specialized wxChoice control.
+ *
+ * The control will be automatically destroyed when it loses the focus
+ * or when the enter key is pressed.
+ */
 class CEnumEditCtrl:public wxChoice {
     DECLARE_CLASS(CEnumEditCtrl)
 private:

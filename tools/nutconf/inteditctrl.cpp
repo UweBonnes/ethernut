@@ -39,6 +39,9 @@
 
 /*
  * $Log: inteditctrl.cpp,v $
+ * Revision 1.3  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.2  2005/04/22 15:13:52  haraldkipp
  * Avoid compiler warnings.
  *
@@ -62,12 +65,18 @@ CIntEditCtrl::CIntEditCtrl(wxWindow * parent, wxWindowID id, const wxPoint & pos
 {
 }
 
+/*!
+ * \brief Enter key pressed in edit control.
+ */
 void CIntEditCtrl::OnEnter(wxCommandEvent & WXUNUSED(event))
 {
     CValueWindow *parent = (CValueWindow *) GetParent();
     parent->EndEditing();
 }
 
+/*!
+ * \brief Edit control loses focus.
+ */
 void CIntEditCtrl::OnKillFocus(wxFocusEvent & WXUNUSED(event))
 {
     CValueWindow *parent = (CValueWindow *) GetParent();

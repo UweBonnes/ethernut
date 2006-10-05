@@ -39,6 +39,9 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.7  2006/10/05 17:04:45  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.6  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -99,7 +102,11 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENT * compo)
 {
     m_compo = compo;
     m_option = NULL;
-    m_name = wxString(compo->nc_name,wxConvLocal);
+
+    /* Convert the name from the one in the C structure. */
+    m_name = wxString(compo->nc_name, wxConvLocal);
+
+    /* Libraries contain modules. */
     if (compo->nc_child) {
         m_configType = nutLibrary;
     } else {
@@ -109,19 +116,7 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENT * compo)
     m_parent = parent;
     m_hint = nutHintNone;
     m_itemId = wxTreeItemId();
-
-    switch (m_optionType) {
-    case nutString:
-    case nutEnumerated:
-        m_value = wxEmptyString;
-        break;
-    case nutInteger:
-        m_value = (long) 0;
-        break;
-    case nutBool:
-        m_value = false;
-        break;
-    }
+    m_value = wxEmptyString;
 }
 
 /*!
@@ -131,11 +126,20 @@ CConfigItem::CConfigItem(CConfigItem * parent, NUTCOMPONENTOPTION * option)
 {
     m_compo = NULL;
     m_option = option;
-    m_name = wxString(option->nco_name,wxConvLocal);
+
+    /* Convert the name from the one in the C structure. */
+    m_name = wxString(option->nco_name, wxConvLocal);
     m_configType = nutOption;
     m_optionType = nutString;
     m_parent = parent;
-    m_hint = nutHintNone;
+
+    if (m_option && m_option->nco_exclusivity) {
+        m_hint = nutHintRadio;
+    }
+    else {
+        m_hint = nutHintNone;
+    }
+
     m_itemId = wxTreeItemId();
 
     switch (m_optionType) {
@@ -304,7 +308,17 @@ void CConfigItem::OnIconLeftDown(CConfigTree & WXUNUSED(treeCtrl))
     case nutFlavorBool:
     case nutFlavorBoolData:
         if (IsEnabled()) {
-            wxGetApp().GetNutConfDoc()->SetActive(*this, !IsActive());
+            CNutConfDoc *pDoc = wxGetApp().GetNutConfDoc();
+
+            if (m_option && m_option->nco_exclusivity) {
+                if(!IsActive()) {
+                    pDoc->DeactivateOptionList(m_option->nco_exclusivity);
+                    pDoc->SetActive(*this, true);
+                }
+            }
+            else {
+                pDoc->SetActive(*this, !IsActive());
+            }
         }
     default:
         break;
@@ -511,6 +525,29 @@ wxString CConfigItem::GetProvisionList() const
     return str;
 }
 
+wxString CConfigItem::GetExclusivityList() const
+{
+    wxString str;
+
+    if (m_option && m_option->nco_exclusivity) {
+        for (int i = 0; m_option->nco_exclusivity[i]; i++) {
+            if(!str.IsEmpty()) {
+                str += wxT(", ");
+            }
+            str += wxString(m_option->nco_exclusivity[i], wxConvLocal);
+        }
+    }
+    if (m_compo && m_compo->nc_exclusivity) {
+        for (int i = 0; m_compo->nc_exclusivity[i]; i++) {
+            if(!str.IsEmpty()) {
+                str += wxT(", ");
+            }
+            str += wxString(m_compo->nc_exclusivity[i], wxConvLocal);
+        }
+    }
+    return str;
+}
+
 int CConfigItem::GetEnumStrings(wxArrayString & arEnumStrings) const
 {
     if (m_option && m_option->nco_choices) {
@@ -597,3 +634,86 @@ bool CConfigItem::CanEdit() const
 
     return true;
 }
+
+/*!
+ * \brief Set value of an edit control.
+ *
+ * Called when editing the value of an item has started.
+ *
+ * \param window The edit control.
+ */
+bool CConfigItem::TransferDataToWindow(wxWindow * window)
+{
+    /* Set value of a text edit control. */
+    if (window->IsKindOf(CLASSINFO(CTextEditCtrl))) {
+        CTextEditCtrl *win = (CTextEditCtrl *) window;
+        win->SetValue(GetDisplayValue());
+    } 
+
+    /* Set value of an enumerated edit control. */
+    else if (window->IsKindOf(CLASSINFO(CEnumEditCtrl))) {
+        CEnumEditCtrl *win = (CEnumEditCtrl *) window;
+        win->SetStringSelection(GetDisplayValue());
+    } 
+
+    /* Set value of an integer edit control. */
+    else if (window->IsKindOf(CLASSINFO(CIntEditCtrl))) {
+        CIntEditCtrl *win = (CIntEditCtrl *) window;
+        long i;
+        CUtils::StrToItemIntegerType(StringValue(), i);
+
+        wxString val;
+        val.Printf(wxT("%ld"), i);
+
+        win->SetValue(val);
+    }
+    return true;
+}
+
+/*!
+ * \brief Retrieve value from an edit control.
+ *
+ * Called when editing the value of an item has stopped.
+ *
+ * \param window The edit control.
+ */
+bool CConfigItem::TransferDataFromWindow(wxWindow * window)
+{
+    CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
+    wxASSERT(doc != NULL);
+
+    if (!doc)
+        return false;
+
+    /* Retrieve value from text edit control. */
+    if (window->IsKindOf(CLASSINFO(CTextEditCtrl))) {
+        CTextEditCtrl *win = (CTextEditCtrl *) window;
+
+        wxASSERT(GetOptionType() == nutString);
+
+        // TODO: do checking
+        doc->SetValue(*this, win->GetValue().Trim(false));
+    } 
+
+    /* Retrieve value from enumerated edit control. */
+    else if (window->IsKindOf(CLASSINFO(CEnumEditCtrl))) {
+        CEnumEditCtrl *win = (CEnumEditCtrl *) window;
+
+        wxASSERT(GetOptionType() == nutEnumerated);
+
+        // TODO: do checking
+        doc->SetValue(*this, win->GetStringSelection().Trim(false));
+    } 
+    
+    /* Retrieve value from integer edit control. */
+    else if (window->IsKindOf(CLASSINFO(CIntEditCtrl))) {
+        CIntEditCtrl *win = (CIntEditCtrl *) window;
+
+        wxASSERT(GetOptionType() == nutInteger);
+
+        // TODO: do checking
+        doc->SetValue(*this, (long) win->GetValue());
+    }
+    return true;
+}
+

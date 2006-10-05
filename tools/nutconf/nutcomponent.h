@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.8  2005/10/07 22:12:28  hwmaier
  * Added bld_dir parameter to CreateSampleDirectory.
  *
@@ -122,6 +125,7 @@ struct _NUTCOMPONENTOPTION {
     char *nco_file;
     /*! \brief Makefile macros. */
     char **nco_makedefs;
+    char **nco_exclusivity;
 };
 
 typedef struct _NUTCOMPONENT NUTCOMPONENT;
@@ -163,6 +167,8 @@ struct _NUTCOMPONENT {
     char **nc_targets;
     /*! \brief Additional lines added to NutConf.mk. */
     char **nc_makedefs;
+    /*! \brief Exclusivity list. */
+    char **nc_exclusivity;
 };
 
 typedef struct _NUTREPOSITORY NUTREPOSITORY;

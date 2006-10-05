@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -96,13 +99,13 @@ class CNutConfDoc:public wxDocument {
 
     wxString GetInstallDir();
 
+    NUTCOMPONENTOPTION *FindOptionByName(NUTCOMPONENT * compo, char *name);
     bool IsOptionActive(char *name);
-
+    void DeactivateOptionList(char **exlist);
 
   protected:
     NUTCOMPONENT *m_root;
     wxList m_items;
-    NUTCOMPONENTOPTION *FindOptionByName(NUTCOMPONENT * compo, char *name);
     bool IsRequirementProvided(NUTCOMPONENT *compo, char *requirement);
     bool IsRequirementProvided(char *requirement);
     void SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo);

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/05 17:04:45  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -120,7 +123,7 @@ class CConfigItem:public wxObject {
     int GetEnumStrings(wxArrayString & arEnumStrings) const;
     wxString GetRequirementList() const;
     wxString GetProvisionList() const;
-
+    wxString GetExclusivityList() const;
 
     void SetActive(bool ena);
     bool IsActive() const;
@@ -152,9 +155,23 @@ class CConfigItem:public wxObject {
     NUTCOMPONENTOPTION *m_option;
 
     wxString m_name;
+    /*! 
+     * \brief Component type of this item.
+     *
+     * Either library, module or option.
+     */
     nutComponentType m_configType;
+    /*!
+     * \brief Option type of this item.
+     *
+     * If this item is an option, then it is either a string,
+     * an integer, a boolean or an enumerated value.
+     */
     nutOptionType m_optionType;
     nutUIHint m_hint;
+    /*!
+     * \brief Value of this item.
+     */
     wxVariant m_value;
 };
 

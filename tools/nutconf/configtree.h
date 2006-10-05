@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -65,6 +68,8 @@ class CConfigTree:public CScrolledTreeCtrl {
     void OnMouseEvent(wxMouseEvent & event);
     void OnSelChanged(wxTreeEvent & event);
     void OnScroll(wxScrollWinEvent & event);
+    wxTreeItemId FindNextItemId(wxTreeItemId treeItemId, const wxString& text,
+        bool checkFirst, bool matchCase, bool matchWord);
 
     CIconList & GetIconDB();
 

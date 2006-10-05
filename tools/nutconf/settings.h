@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.3  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
  *
@@ -65,26 +68,42 @@ public:
 
     bool Save();
 
+    wxString FindAbsoluteDir(wxString refPathName);
+    wxString FindRelativeDir(wxString refPathName);
+
+    /*! \brief Relative path to the top source directory. */
+    wxString m_relsrcpath;
+    /*! \brief Path to board specific configuration file. */
     wxString m_configname;
     wxString m_configname_default;
+    /*! \brief Path to our main repository file. */
     wxString m_repositoryname;
     wxString m_repositoryname_default;
+    /*! \brief First include directory path. */
     wxString m_firstidir;
     wxString m_firstidir_default;
+    /*! \brief Last include directory path. */
     wxString m_lastidir;
     wxString m_lastidir_default;
+    /*! \brief Path to the Nut/OS build tree. */
     wxString m_buildpath;
     wxString m_buildpath_default;
+    /*! \brief Path to the Nut/OS libraries. */
     wxString m_lib_dir;
     wxString m_lib_dir_default;
+    /*! \brief Path to the Nut/OS source tree. */
     wxString m_source_dir;
     wxString m_source_dir_default;
+    /*! \brief Target platform. */
     wxString m_platform;
     wxString m_platform_default;
+    /*! \brief Path to our build tools. */
     wxString m_toolpath;
     wxString m_toolpath_default;
+    /*! \brief Path to the Nut/OS application tree. */
     wxString m_app_dir;
     wxString m_app_dir_default;
+    /*! \brief Target programming tool. */
     wxString m_programmer;
     wxString m_programmer_default;
 };

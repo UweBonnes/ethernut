@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfview.cpp,v $
+ * Revision 1.5  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.4  2005/09/21 10:44:15  christianwelzel
  * Replaced deprecated commands with newer ones.
  *
@@ -71,14 +74,14 @@ CNutConfView::CNutConfView()
 
 // What to do when a view is created. Creates actual
 // windows for displaying the view.
-bool CNutConfView::OnCreate(wxDocument * doc, long WXUNUSED(flags))
+bool CNutConfView::OnCreate(wxDocument * WXUNUSED(doc), long WXUNUSED(flags))
 {
     wxGetApp().GetDocManager()->ActivateView(this, true);
 
     return true;
 }
 
-void CNutConfView::OnDraw(wxDC * dc)
+void CNutConfView::OnDraw(wxDC * WXUNUSED(dc))
 {
 }
 
@@ -86,7 +89,7 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
 {
     CNutConfDoc *pDoc = (CNutConfDoc *) GetDocument();
     CConfigTree *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
-    int nItem;
+    size_t nItem;
 
     wxASSERT(pDoc);
 
@@ -204,7 +207,7 @@ void CNutConfView::OnUpdate(wxView * WXUNUSED(sender), wxObject * hintObj)
 }
 
 // Clean up windows used for displaying the view.
-bool CNutConfView::OnClose(bool deleteWindow)
+bool CNutConfView::OnClose(bool WXUNUSED(deleteWindow))
 {
     CNutConfHint hint(NULL, nutClear);
     GetDocument()->UpdateAllViews(NULL, &hint);
@@ -233,10 +236,10 @@ void CNutConfView::OnChangeFilename()
     }
 }
 
-void CNutConfView::Refresh(const wxString & macroName)
+void CNutConfView::Refresh(const wxString & WXUNUSED(macroName))
 {
 }
 
-void CNutConfView::Refresh(wxTreeItemId h)
+void CNutConfView::Refresh(wxTreeItemId WXUNUSED(h))
 {
 }

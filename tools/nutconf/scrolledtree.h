@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.3  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -56,6 +59,9 @@
 #include <wx/wx.h>
 #include <wx/treectrl.h>
 
+/*!
+ * \brief Specialized wxTreeCtrl with a companion window.
+ */
 class CScrolledTreeCtrl:public wxTreeCtrl {
     DECLARE_CLASS(CScrolledTreeCtrl)
   public:

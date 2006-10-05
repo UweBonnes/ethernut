@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -58,7 +61,7 @@ class CUtils {
   public:
 
     static bool StrToItemIntegerType(const wxString & str, long &d);
-
+    static bool FindString(const wxString& findIn, const wxString& findWhat, bool wholeWord);
 };
 
 

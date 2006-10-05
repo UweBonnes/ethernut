@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.4  2005/07/22 18:46:25  haraldkipp
  * Added selectable toolbar button sizes, toolbar menu, more toolbar buttons
  * and online help.
@@ -71,6 +74,7 @@
 #include "splitscroll.h"
 #include "infowindow.h"
 #include "propertylist.h"
+#include "finddlg.h"
 
 #if !wxUSE_DOC_VIEW_ARCHITECTURE
 #error You must set wxUSE_DOC_VIEW_ARCHITECTURE to 1 in setup.h!
@@ -95,6 +99,9 @@ class CMainFrame:public wxDocParentFrame {
 
     wxHelpController& GetHelpController() { return m_help; }
 
+    CFindDialog *GetFindDialog() const;
+    void SetFindDialog(CFindDialog * dlg);
+
     /* ---------- Menu Event Handlers ---------- */
     void OnQuit(wxCommandEvent & event);
     void OnGenerateBuildTree(wxCommandEvent & event);
@@ -105,6 +112,8 @@ class CMainFrame:public wxDocParentFrame {
     void OnToggleToolbar(wxCommandEvent& event);
     void OnToggleToolbarSize(wxCommandEvent& event);
     void OnHelp(wxCommandEvent& event);
+    void OnFind(wxCommandEvent& event);
+    void OnAbout(wxCommandEvent& event);
 
   protected:
     void CreateNutMenuBar();
@@ -132,6 +141,7 @@ class CMainFrame:public wxDocParentFrame {
 
   private:
     wxHelpController m_help;
+    CFindDialog* m_findDlg;
 
     DECLARE_EVENT_TABLE()
 

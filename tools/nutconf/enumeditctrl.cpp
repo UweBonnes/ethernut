@@ -39,6 +39,9 @@
 
 /*
  * $Log: enumeditctrl.cpp,v $
+ * Revision 1.4  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.3  2005/04/26 12:48:28  haraldkipp
  * Workaround for wxChoice focus bug on GTK+.
  *
@@ -79,6 +82,9 @@ void CEnumEditCtrl::OnChar(wxKeyEvent & event)
     }
 }
 
+/*!
+ * \brief Edit control loses focus.
+ */
 void CEnumEditCtrl::OnKillFocus(wxFocusEvent &event)
 {
     if (!m_mouseIsOver) {
@@ -90,12 +96,22 @@ void CEnumEditCtrl::OnKillFocus(wxFocusEvent &event)
     }
 }
 
+/*!
+ * \brief Called when the mouse leaves the control.
+ *
+ * Used to fix a bug in the GTK version of wxWidgets 2.6.0.
+ */
 void CEnumEditCtrl::OnMouseEnter(wxMouseEvent& event)
 {
     m_mouseIsOver = true;
     event.Skip();
 }
 
+/*!
+ * \brief Called when the mouse leaves the control.
+ *
+ * Used to fix a bug in the GTK version of wxWidgets 2.6.0.
+ */
 void CEnumEditCtrl::OnMouseLeave(wxMouseEvent& event)
 {
     m_mouseIsOver = false;

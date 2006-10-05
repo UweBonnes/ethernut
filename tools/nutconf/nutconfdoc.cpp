@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.15  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.14  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -135,13 +138,14 @@ bool CNutConfDoc::OnCreate(const wxString & path, long flags)
 {
     bool rc = false;
     wxString normPath(path);
+    CSettings *cfg = wxGetApp().GetSettings();
 
     normPath.Replace(wxT("\\"), wxT("/"));
-    wxGetApp().GetSettings()->m_configname = normPath;
+    cfg->m_configname = normPath;
 
     wxGetApp().m_currentDoc = this;
 
-    if ((rc = ReadRepository(wxGetApp().GetSettings()->m_repositoryname, normPath)) == true) {
+    if ((rc = ReadRepository(cfg->m_repositoryname, normPath)) == true) {
         Modify(false);
         SetDocumentSaved(false);
 
@@ -217,7 +221,13 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
     }
 }
 
-
+/*!
+ * \brief Save the config file.
+ *
+ * \param filename Name of the config file including path.
+ *
+ * \return true on success, otherwise false is returned.
+ */
 bool CNutConfDoc::OnSaveDocument(const wxString& filename)
 {
     if (filename.IsEmpty()) {
@@ -228,16 +238,17 @@ bool CNutConfDoc::OnSaveDocument(const wxString& filename)
     if (fp) {
         SaveComponentOptions(fp, m_root->nc_child);
         fclose(fp);
+        Modify(false);
+        SetFilename(filename);
+        return true;
     }
-
-    Modify(false);
-    SetFilename(filename);
-
-    return true;
+    return false;
 }
 
 /*!
  * \brief Close the document.
+ *
+ * \return true on success, otherwise false is returned.
  */
 bool CNutConfDoc::OnCloseDocument()
 {
@@ -267,6 +278,14 @@ void CNutConfDoc::DeleteItems()
     }
 }
 
+/*!
+ * \brief Read the Configurator's repository.
+ *
+ * \param repositoryname Pathname of the repository file.
+ * \param configname     Pathname of the configuration file.
+ *
+ * \return true on success, otherwise false is returned.
+ */
 bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString & configname)
 {
     wxBusyCursor wait;
@@ -307,7 +326,9 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
     return true;
 }
 
-
+/*!
+ *
+ */
 void CNutConfDoc::AddChildItems(NUTCOMPONENT * compo, wxTreeItemId parent)
 {
     CConfigTree *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
@@ -389,6 +410,9 @@ CConfigItem *CNutConfDoc::GetItem(size_t i)
  */
 NUTCOMPONENTOPTION *CNutConfDoc::FindOptionByName(NUTCOMPONENT * compo, char *name)
 {
+    if (compo == NULL && m_root) {
+        compo = m_root->nc_child;
+    }
     while (compo) {
         NUTCOMPONENTOPTION *opts = compo->nc_opts;
         while (opts) {
@@ -397,7 +421,7 @@ NUTCOMPONENTOPTION *CNutConfDoc::FindOptionByName(NUTCOMPONENT * compo, char *na
             }
             opts = opts->nco_nxt;
         }
-        if ((opts = FindOptionByName(compo->nc_child, name)) != NULL) {
+        if (compo->nc_child && (opts = FindOptionByName(compo->nc_child, name)) != NULL) {
             return opts;
         }
         compo = compo->nc_nxt;
@@ -453,6 +477,18 @@ bool CNutConfDoc::IsRequirementProvided(NUTCOMPONENT *compo, char *requirement)
 bool CNutConfDoc::IsRequirementProvided(char *requirement)
 {
     return IsRequirementProvided(m_root, requirement);
+}
+
+void CNutConfDoc::DeactivateOptionList(char **exlist)
+{
+    if (exlist) {
+        for (int i = 0; exlist[i]; i++) {
+            NUTCOMPONENTOPTION *opt = FindOptionByName(m_root->nc_child, exlist[i]);
+            if (opt) {
+                opt->nco_active = 0;
+            }
+        }
+    }
 }
 
 /*!
@@ -571,9 +607,12 @@ public:
     {
         wxString sub = filename.Mid(m_source.Length());
         wxFileName name(m_target + sub);
+
+        /* Do not copy Makefiles for source tree builds. */
         if(!name.GetName().IsSameAs(wxT("Makedefs"), false) &&
             !name.GetName().IsSameAs(wxT("Makerules"), false) &&
-            !name.GetName().IsSameAs(wxT("Makeburn"), false)) {
+            !name.GetName().IsSameAs(wxT("Makeburn"), false) &&
+            !name.FileExists()) { /* Do not overwrite any existing source file. */
             ::wxCopyFile(filename, name.GetFullPath());
         }
         return wxDIR_CONTINUE;

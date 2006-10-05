@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.10  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.9  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -104,13 +107,14 @@ BEGIN_EVENT_TABLE(CMainFrame, wxDocParentFrame)
     EVT_MENU(ID_TOOLBARS, CMainFrame::OnToggleToolbar)
     EVT_MENU(ID_TOOLBARSIZE, CMainFrame::OnToggleToolbarSize)
     EVT_MENU(ID_NUTOS_HELP, CMainFrame::OnHelp)
-
-
-    END_EVENT_TABLE();
+    EVT_MENU(wxID_FIND, CMainFrame::OnFind)
+    EVT_MENU(ID_HELP_ABOUT, CMainFrame::OnAbout)
+END_EVENT_TABLE();
 
 CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
 :wxDocParentFrame(manager, (wxFrame *) NULL, ID_MAIN_FRAME, title)
 , m_smallToolbar(true)
+, m_findDlg(NULL)
 {
     SetIcon(wxICON(application));
 
@@ -271,20 +275,17 @@ void CMainFrame::CreateNutToolBar()
     if (m_smallToolbar) {
         toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
         toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
-        toolBar->AddSeparator();
-        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
         toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
-        toolBar->AddSeparator();
+        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
         toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Show help"));
     }
     /* Load large toolbar buttons. */
     else {
         toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
         toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
-        toolBar->AddSeparator();
-        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
+        //toolBar->AddSeparator();
         toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
-        toolBar->AddSeparator();
+        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
         toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Show help"));
         toolBar->SetToolBitmapSize(wxSize(32, 32));
     }
@@ -306,6 +307,11 @@ void CMainFrame::CreateNutWindows()
     int w;
     int h;
 
+    Show();
+    /*
+     * Create the bottom sash. Its client is a multiline text control,
+     * which acts as a log output window. 
+     */
     m_outputSashWindow = new wxSashLayoutWindow(this, ID_OUTPUT_SASH_WINDOW);
     m_outputSashWindow->SetOrientation(wxLAYOUT_HORIZONTAL);
     m_outputSashWindow->SetAlignment(wxLAYOUT_BOTTOM);
@@ -320,28 +326,42 @@ void CMainFrame::CreateNutWindows()
     wxLogMessage(wxT("Nut/OS Configurator Version %s"), wxT(VERSION));
     wxLogMessage(wxT("Linked to %s"), wxVERSION_STRING);
     wxLogMessage(wxT("Running on %s"), wxGetOsDescription().c_str());
+    wxLogMessage(wxT("Working in %s"), ::wxGetCwd().c_str());
+    m_outputWindow->ShowPosition(m_outputWindow->GetLastPosition());
 
+    /*
+     * Create the left sash.
+     */
     wxLogVerbose(wxT("Create ConfigSash"));
     m_configSashWindow = new wxSashLayoutWindow(this, ID_CONFIG_SASH_WINDOW);
     m_configSashWindow->SetOrientation(wxLAYOUT_VERTICAL);
     m_configSashWindow->SetAlignment(wxLAYOUT_LEFT);
     m_configSashWindow->SetSashVisible(wxSASH_RIGHT, true);
 
+    /*
+     * Create the top right sash. Its client is a property list.
+     */
     wxLogVerbose(wxT("Create PropertySash"));
     m_propertiesSashWindow = new wxSashLayoutWindow(this, ID_PROPERTIES_SASH_WINDOW);
     m_propertiesSashWindow->SetOrientation(wxLAYOUT_HORIZONTAL);
     m_propertiesSashWindow->SetAlignment(wxLAYOUT_TOP);
     m_propertiesSashWindow->SetSashVisible(wxSASH_BOTTOM, true);
 
+    wxLogVerbose(wxT("Create CPropertyList"));
+    m_propertyListWindow = new CPropertyList(m_propertiesSashWindow, ID_PROPERTIES_WINDOW,
+                                             wxDefaultPosition, wxDefaultSize,
+                                             wxLC_REPORT | wxCLIP_CHILDREN | wxLC_VRULES | wxLC_HRULES | wxSUNKEN_BORDER);
+
+    /*
+     * Create the bottom right sash. Its client is a multiline
+     * text control to display the description of a selected
+     * tree item.
+     */
     wxLogVerbose(wxT("Create InfoSash"));
     m_infoSashWindow = new wxSashLayoutWindow(this, ID_SHORT_DESCR_SASH_WINDOW);
     m_infoSashWindow->SetOrientation(wxLAYOUT_HORIZONTAL);
     m_infoSashWindow->SetAlignment(wxLAYOUT_TOP);
 
-    wxLogVerbose(wxT("Create CPropertyList"));
-    m_propertyListWindow = new CPropertyList(m_propertiesSashWindow, ID_PROPERTIES_WINDOW,
-                                             wxDefaultPosition, wxDefaultSize,
-                                             wxLC_REPORT | wxCLIP_CHILDREN | wxLC_VRULES | wxLC_HRULES | wxSUNKEN_BORDER);
     wxLogVerbose(wxT("Create CInfoWindow"));
     m_infoWindow =
         new CInfoWindow(m_infoSashWindow, ID_SHORT_DESCR_WINDOW, wxDefaultPosition, wxDefaultSize,
@@ -435,6 +455,16 @@ CPropertyList *CMainFrame::GetPropertyListWindow() const
     return m_propertyListWindow;
 }
 
+CFindDialog *CMainFrame::GetFindDialog() const
+{ 
+    return m_findDlg; 
+}
+
+void CMainFrame::SetFindDialog(CFindDialog * dlg)
+{ 
+    m_findDlg = dlg;
+}
+
 void CMainFrame::OnSize(wxSizeEvent & WXUNUSED(event))
 {
     wxLayoutAlgorithm layout;
@@ -448,15 +478,18 @@ void CMainFrame::OnSashDrag(wxSashEvent & event)
 
     switch (event.GetId()) {
     case ID_CONFIG_SASH_WINDOW:
+        /* Vertical sash dragged. */
         m_configSashWindow->SetDefaultSize(wxSize(event.GetDragRect().width, 2000));
         break;
     case ID_PROPERTIES_SASH_WINDOW:
+        /* Right horizontal sash dragged. */
         m_propertiesSashWindow->SetDefaultSize(wxSize(2000, event.GetDragRect().height));
         break;
     case ID_SHORT_DESCR_SASH_WINDOW:
         m_infoSashWindow->SetDefaultSize(wxSize(2000, event.GetDragRect().height));
         break;
     case ID_OUTPUT_SASH_WINDOW:
+        /* Lower horizontal sash dragged. */
         m_outputSashWindow->SetDefaultSize(wxSize(2000, event.GetDragRect().height));
         break;
     }
@@ -489,6 +522,41 @@ void CMainFrame::OnSettings(wxCommandEvent& WXUNUSED(event))
     dialog.ShowModal();
 }
 
+void CMainFrame::OnFind(wxCommandEvent& WXUNUSED(event))
+{
+    if (m_findDlg) {
+        m_findDlg->Raise();
+    }
+    else {
+        int style = wxFR_NOUPDOWN;
+        int flags = wxFR_DOWN;
+        bool val;
+
+        wxConfigBase *pConfig = wxConfigBase::Get();
+        if (pConfig) {
+            wxString lastPath = pConfig->GetPath();
+            pConfig->SetPath(wxT("/FindDialog"));
+
+        pConfig->Read(wxT("case"), &val, false);
+        if (val) {
+            flags |= wxFR_MATCHCASE;
+        }
+        pConfig->Read(wxT("word"), &val, false);
+        if (val) {
+            flags |= wxFR_WHOLEWORD;
+        }
+
+        pConfig->SetPath(lastPath);
+    }
+
+#if 0
+        ctFindReplaceDialog::sm_findData.SetFlags(flags);
+#endif
+        m_findDlg = new CFindDialog(this, wxT("Find text"), style);
+        m_findDlg->Show(true);
+    }
+}
+
 void CMainFrame::OnGenerateBuildTree(wxCommandEvent & WXUNUSED(event))
 {
     CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
@@ -509,11 +577,18 @@ void CMainFrame::OnGenerateBuildTree(wxCommandEvent & WXUNUSED(event))
     }
 }
 
+/*!
+ * \brief Building Nut/OS event.
+ */
 void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
 {
     CSettings *cfg = wxGetApp().GetSettings();
     wxString str;
     
+    /*
+     * Create a message box containing all relevant information and
+     * let the user decide if he really wants that.
+     */
     str += wxT("\nSource directory: ");
     str += cfg->m_source_dir;
     str += wxT("\nBuild directory: ");
@@ -526,21 +601,24 @@ void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
     }
     str += wxT("\n\nDo you like to build the Nut/OS libraries?\n");
     if(wxMessageBox(str, wxT("Build Nut/OS"), wxOK | wxCANCEL | wxICON_QUESTION, this) == wxOK) {
+        /* Clean up any previous build. */
         if(!wxGetApp().Build(wxT("clean"))) {
             if(wxMessageBox(wxT("Cleaning build tree failed! Continue?"), wxT("Build"), 
-                wxYES_NO | wxICON_HAND) != wxYES) {
+                wxYES_NO | wxNO_DEFAULT | wxICON_HAND) != wxYES) {
                 return;
             }
         }
+        /* Start the new build. */
         if(!wxGetApp().Build()) {
             if(wxMessageBox(wxT("Building Nut/OS failed! Continue?"), wxT("Build"), 
-                wxYES_NO | wxICON_HAND) != wxYES) {
+                wxYES_NO | wxNO_DEFAULT | wxICON_HAND) != wxYES) {
                 return;
             }
         }
         if(!cfg->m_lib_dir.IsEmpty()) {
+            /* Install new libraries. */
             if(!wxGetApp().Build(wxT("install"))) {
-                wxMessageBox(wxT("Installing Nut/OS failed!"), wxT("Build"), wxYES_NO | wxICON_HAND);
+                wxMessageBox(wxT("Installing Nut/OS failed!"), wxT("Build"), wxCANCEL | wxICON_HAND);
             }
         }
     }
@@ -565,7 +643,7 @@ void CMainFrame::OnCreateSampleDir(wxCommandEvent & WXUNUSED(event))
     str += cfg->m_app_dir;
     str += wxT("\nProgrammer ");
     str += cfg->m_programmer;
-    str += wxT("\n\nDo you like to create the sample directory?\n");
+    str += wxT("\n\nDo you like to create or update the sample directory?\n");
     if(wxMessageBox(str, wxT("Creating samples"), wxOK | wxCANCEL | wxICON_QUESTION, this) == wxOK) {
         if (doc) {
             doc->GenerateApplicationTree();
@@ -599,8 +677,13 @@ void CMainFrame::OnToggleToolbarSize(wxCommandEvent& WXUNUSED(event))
     CreateNutToolBar();
 }
 
-void CMainFrame::OnHelp(wxCommandEvent& event)
+void CMainFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
 {
     m_help.DisplayContents();
+}
+
+void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
+{
+    wxMessageBox(wxT("Nut/OS Configurator " VERSION), wxT("About"), wxOK | wxICON_INFORMATION, this);
 }
 

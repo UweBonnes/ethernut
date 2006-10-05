@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.24  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.23  2005/11/22 09:20:22  haraldkipp
  * Removed modification of a relative top_blddir path.
  *
@@ -126,7 +129,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "1.2.3"
+#define NUT_CONFIGURE_VERSION   "1.3.1"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -159,6 +162,7 @@
 #endif
 
 #include <lua.h>
+#include <lualib.h>
 #include <lauxlib.h>
 
 #ifdef NUT_CONFIGURE_EXEC
@@ -245,6 +249,10 @@
 /*! \brief
  */
 #define TKN_MAKEDEFS "makedefs"
+
+/*! \brief
+ */
+#define TKN_EXCLUSIVITY "exclusivity"
 
 static char errtxt[1024];
 
@@ -336,6 +344,111 @@ const char *GetScriptErrorString(void)
 }
 
 /*!
+ * Lua callable.
+ */
+static const int lkey_repo = 0;
+
+static int l_repo_path(lua_State *ls) 
+{
+    NUTREPOSITORY *repo;
+
+    lua_pushlightuserdata(ls, (void *)&lkey_repo);
+    lua_gettable(ls, LUA_REGISTRYINDEX);
+    repo = (NUTREPOSITORY *)lua_topointer(ls, -1);
+
+    /* push result */
+    if (repo) {
+        lua_pushstring(ls, repo->nr_dir);
+    }
+    else {
+        lua_pushnil(ls);
+        lua_pushstring(ls, "Internal registry error");
+    }
+    /* number of results */
+    return 1;
+}
+
+static const struct luaL_reg nutcomp_lib[] = {
+    { "c_repo_path", l_repo_path },
+    { NULL, NULL }
+};
+
+int luaopen_nutcomp_lib(lua_State *ls) 
+{
+    luaL_openlib(ls, "nutcomp_lib", nutcomp_lib, 0);
+
+    return 1;
+}
+
+void RegisterLuaExtension(lua_State *ls, const luaL_reg *reg) 
+{
+    for (; reg->name; reg++) {
+        lua_pushcfunction(ls, reg->func);
+        lua_setglobal(ls, reg->name);
+   }
+}
+
+int CountLuaChunkResults(lua_State * ls, char *chunk)
+{
+    int ec;
+    int rc = lua_gettop(ls);
+
+    /* Compile the chunk and push it on top of the stack. */
+    ec = luaL_loadbuffer(ls, chunk, strlen(chunk), "name");
+    if (ec) {
+        strcpy(errtxt, lua_tostring(ls, -1));
+        lua_pop(ls, 1);
+        return 0;
+    }
+    /* Execute the function on top of the stack and remove it. */
+    ec = lua_pcall(ls, 0, LUA_MULTRET, 0);
+    if (ec) {
+        strcpy(errtxt, lua_tostring(ls, -1));
+        lua_pop(ls, 1);
+        return 0;
+    }
+    rc = lua_gettop(ls) - rc;
+
+    /* Re-balance the stack. */
+    lua_pop(ls, rc);
+
+    return rc;
+}
+
+char **ExecuteLuaChunk(lua_State * ls, char *chunk)
+{
+    int ec;
+    char **result = NULL;
+    int n = lua_gettop(ls);
+    int i;
+
+    /* Compile the chunk and push it on top of the stack. */
+    ec = luaL_loadbuffer(ls, chunk, strlen(chunk), "name");
+    if (ec) {
+        strcpy(errtxt, lua_tostring(ls, -1));
+        lua_pop(ls, 1);
+        return NULL;
+    }
+    /* Execute the function on top of the stack and remove it. */
+    ec = lua_pcall(ls, 0, LUA_MULTRET, 0);
+    if (ec) {
+        strcpy(errtxt, lua_tostring(ls, -1));
+        lua_pop(ls, 1);
+        return NULL;
+    }
+    n = lua_gettop(ls) - n;
+
+    result = calloc(n + 1, sizeof(char *));
+    for (i = 0; n--; ) {
+        if (lua_isstring(ls, -1)) {
+            result[i++] = strdup(lua_tostring(ls, -1));
+        }
+        lua_pop(ls, 1);
+    }
+    return result;
+}
+
+/*!
  * \brief Get a string value from a named item of a table.
  *
  * The table is expected at a specified position of the Lua stack.
@@ -352,6 +465,9 @@ const char *GetScriptErrorString(void)
  */
 char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, size_t siz)
 {
+    int i;
+    char *str;
+
     /* Lua expects the named key into the table on top of the stack. */
     lua_pushstring(ls, name);
     /* This puts the value of the named table entry on top of the stack.
@@ -360,10 +476,28 @@ char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, s
     lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
     /* Make sure that this is a string. */
     if (lua_isstring(ls, -1)) {
+        str = strdup(lua_tostring(ls, -1));
+        /* Is this a script? If yes, execute it and add the results. */
+        if (strlen(str) > 3 && str[0] == '-' && str[1] == '-'&& str[2] == '\n') {
+            char **script_result = ExecuteLuaChunk(ls, str);
+            free(str);
+            str = NULL;
+            /* Add chunk results to array. */
+            if (script_result) {
+                /* Retrieve the result that had been pushed last. */
+                str = script_result[0];
+                /* Discard any remaining results. */
+                for (i = 1; script_result[i]; i++) {
+                    free(script_result[i]);
+                }
+                free(script_result);
+            }
+        }
         if (dst == NULL) {
-            dst = strdup(lua_tostring(ls, -1));
-        } else if (lua_strlen(ls, -1) < siz) {
-            strcpy(dst, lua_tostring(ls, -1));
+            dst = str;
+        } else if (str && strlen(str) < siz) {
+            strcpy(dst, str);
+            free(str);
         } else {
             dst = NULL;
         }
@@ -394,6 +528,9 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
 {
     int cnt = 0;
     char **result = NULL;
+    char *str;
+    char **script_result;
+    int i;
 
     /* Lua expects the named key into the table on top of the stack. */
     lua_pushstring(ls, name);
@@ -406,7 +543,15 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
         lua_pushnil(ls);
         while (lua_next(ls, -2)) {
             if (lua_isstring(ls, -1)) {
-                cnt++;
+                str = strdup(lua_tostring(ls, -1));
+                /* Is this a script? If yes, count the number of results. */
+                if (strlen(str) > 3 && str[0] == '-' && str[1] == '-'&& str[2] == '\n') {
+                    cnt += CountLuaChunkResults(ls, str);
+                }
+                else {
+                    cnt++;
+                }
+                free(str);
             }
             lua_pop(ls, 1);
         }
@@ -426,7 +571,22 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
             lua_pushnil(ls);
             while (lua_next(ls, -2)) {
                 if (lua_isstring(ls, -1)) {
-                    result[cnt++] = strdup(lua_tostring(ls, -1));
+                    str = strdup(lua_tostring(ls, -1));
+                    /* Is this a script? If yes, execute it and add the results. */
+                    if (strlen(str) > 3 && str[0] == '-' && str[1] == '-'&& str[2] == '\n') {
+                        script_result = ExecuteLuaChunk(ls, str);
+                        /* Add chunk results to array. */
+                        if (script_result) {
+                            for (i = 0; script_result[i]; i++) {
+                                result[cnt++] = script_result[i];
+                            }
+                            free(script_result);
+                        }
+                        free(str);
+                    }
+                    else {
+                        result[cnt++] = str;
+                    }
                 }
                 lua_pop(ls, 1);
             }
@@ -492,7 +652,7 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                 opts->nco_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
                 /* Retrieve the option's long description. */
                 opts->nco_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
-                /* Retrieve the option's default seeting. */
+                /* Retrieve the option's default setting. */
                 opts->nco_default = GetStringByNameFromTable(ls, -1, TKN_DEFAULT, NULL, 0);
                 if (opts->nco_default && opts->nco_value == NULL) {
                     opts->nco_value = strdup(opts->nco_default);
@@ -516,6 +676,8 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                 opts->nco_choices = GetStringArrayByNameFromTable(ls, -1, TKN_CHOICES);
                 /* Retrieve the Makefile macros for this option. */
                 opts->nco_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
+                /* Retrieve exclusivity of the option's value. */
+                opts->nco_exclusivity = GetStringArrayByNameFromTable(ls, -1, TKN_EXCLUSIVITY);
             }
             lua_pop(ls, 1);
         }
@@ -707,6 +869,8 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
                 compo->nc_targets = GetStringArrayByNameFromTable(ls, -1, TKN_TARGETS);
                 /* Retrieve the Makefile macros for this component. */
                 compo->nc_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
+                /* Retrieve exclusivity list for this component. */
+                compo->nc_exclusivity = GetStringArrayByNameFromTable(ls, -1, TKN_EXCLUSIVITY);
 
                 /* If this component got any subcomponent, then load it now. */
                 if (GetStringByNameFromTable(ls, -1, TKN_SCRIPT, script, sizeof(script))) {
@@ -719,7 +883,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
 
         /*
          * Remove the value from stack, so the next lua_next will find the
-         * key (arry index) on top.
+         * key (array index) on top.
          */
         lua_pop(ls, 1);
     }
@@ -742,14 +906,33 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
         while (opts) {
             lua_getglobal(ls, opts->nco_name);
             if (lua_isstring(ls, -1)) {
+
+                char *str = strdup(lua_tostring(ls, -1));
+                /* Is this a script? If yes, execute it and use the result. */
+                if (strlen(str) > 3 && str[0] == '-' && str[1] == '-'&& str[2] == '\n') {
+                    char **script_result = ExecuteLuaChunk(ls, str);
+                    free(str);
+                    str = NULL;
+                    /* Add chunk results to array. */
+                    if (script_result) {
+                        int i;
+                        /* Retrieve the result that had been pushed last. */
+                        str = script_result[0];
+                        /* Discard any remaining results. */
+                        for (i = 1; script_result[i]; i++) {
+                            free(script_result[i]);
+                        }
+                        free(script_result);
+                    }
+                }
+                if (str && str[0] == '\0' || str[0] == ' ') {
+                    free(str);
+                    str = NULL;
+                }
                 if (opts->nco_value) {
                     free(opts->nco_value);
                 }
-                opts->nco_value = strdup(lua_tostring(ls, -1));
-                if (opts->nco_value[0] == '\0' || opts->nco_value[0] == ' ') {
-                    free(opts->nco_value);
-                    opts->nco_value = NULL;
-                }
+                opts->nco_value = str;
                 opts->nco_active = 1;
             }
             lua_pop(ls, 1);
@@ -772,7 +955,7 @@ int LuaPanic(lua_State *ls)
 int LuaError(lua_State *ls)
 {
     return -1;
-    exit(0);
+    //exit(0);
 }
 #endif
 
@@ -812,9 +995,36 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
          * Create a LUA state.
          */
         repo->nr_ls = lua_open();
+        if (repo->nr_ls) {
+            //lua_atpanic(repo->nr_ls, LuaPanic);
+            //lua_cpcall(repo->nr_ls, LuaError, NULL);
 
-        //lua_atpanic(repo->nr_ls, LuaPanic);
-        //lua_cpcall(repo->nr_ls, LuaError, NULL);
+            //luaL_openlibs(repo->nr_ls);
+            luaopen_base(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_table(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_io(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_string(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_math(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_debug(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_loadlib(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+
+            /*
+            * Store pointer to C repository structure in Lua registry.
+            */
+            lua_pushlightuserdata(repo->nr_ls, (void *)&lkey_repo);
+            lua_pushlightuserdata(repo->nr_ls, (void *)repo);
+            lua_settable(repo->nr_ls, LUA_REGISTRYINDEX);
+
+            RegisterLuaExtension(repo->nr_ls, nutcomp_lib) ;
+        }
+
     }
     return repo;
 }
@@ -866,6 +1076,7 @@ void ReleaseComponentOptions(NUTCOMPONENTOPTION *opts)
         if (opts->nco_value) free(opts->nco_value);
         if (opts->nco_file) free(opts->nco_file);
         if (opts->nco_makedefs) ReleaseStringArray(opts->nco_makedefs);
+        if (opts->nco_exclusivity) ReleaseStringArray(opts->nco_exclusivity);
 
 		free(opts);
 		opts = c;
@@ -893,6 +1104,7 @@ void ReleaseComponents(NUTCOMPONENT *comp)
     if (comp->nc_sources) ReleaseStringArray(comp->nc_sources);
     if (comp->nc_targets) ReleaseStringArray(comp->nc_targets);
     if (comp->nc_makedefs) ReleaseStringArray(comp->nc_makedefs);
+    if (comp->nc_exclusivity) ReleaseStringArray(comp->nc_exclusivity);
 	if (comp->nc_opts) ReleaseComponentOptions(comp->nc_opts);
 	free (comp);
 }
@@ -1136,6 +1348,37 @@ static int CreateDirectoryPath(const char *path)
         }
     }
     return 0;
+}
+
+static const char *MakeTargetPath(const char *dir, const char *path)
+{
+    static char result[_MAX_PATH];
+
+    /* Immediately return absolute paths. */
+    if (dir[0] == '/' || dir[1] == ':') {
+        const char *sp = dir;
+        char *dp = result;
+
+        /* I generally hate to have spaces in directories, but in case
+           of some weird Win32 paths. */
+        while (*sp) {
+            if (*sp == ' ') {
+                *dp++ = '\\';
+            }
+            *dp++ = *sp++;
+        }
+        *dp = 0;
+
+        return result;
+    }
+
+    /* Relative path. */
+    strcpy(result, path);
+    if (*dir) {
+        strcat(result, "/");
+        strcat(result, dir);
+    }
+    return result;
 }
 
 int AddMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir, int *lpos)
@@ -1404,19 +1647,8 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                 if (fp) {
                     fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
                     fprintf(fp, "PROJ =\tlib%s\n\n", compo->nc_name);
-					if (src_dir[0] == '/' || src_dir[1] == ':')
-						fprintf(fp, "top_srcdir = %s\n", src_dir);
-					else if (strlen(src_dir))
-						fprintf(fp, "top_srcdir = ../../%s\n", src_dir);
-					else
-						fprintf(fp, "top_srcdir = ../..\n");
-
-					if (bld_dir[0] == '/' || bld_dir[1] == ':')
-						fprintf(fp, "top_blddir = %s\n\n", bld_dir);
-					else if (strlen(bld_dir))
-						fprintf(fp, "top_blddir = ../../%s\n\n", bld_dir);
-					else
-						fprintf(fp, "top_blddir = ../..\n\n");
+					fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
+					fprintf(fp, "top_blddir = %s\n\n", MakeTargetPath(bld_dir, "../.."));
 
                     fprintf(fp, "VPATH = $(top_srcdir)/%s\n\n", compo->nc_subdir);
 
@@ -1455,10 +1687,7 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
                             fprintf(fp, " $(OBJ%d)", i + 1);
                         }
 
-						if (ins_dir[0] == '/' || ins_dir[1] == ':')
-							strcpy (path, ins_dir);
-						else
-							sprintf(path, "../../%s", ins_dir);
+						strcpy (path, MakeTargetPath(ins_dir, "../.."));
 
                         fprintf(fp, "\n\t$(CP) $(PROJ).a %s/$(PROJ).a\n", path);
                         for(i = 0; i < targets; i++) {
@@ -1774,34 +2003,15 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *
         if ((fp = fopen(path, "w")) != 0) {
             fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
 
-            //fprintf(fp, "top_srcdir = %s\n", src_dir);
-			if (src_dir[0] == '/' || src_dir[1] == ':')
-				fprintf(fp, "top_srcdir = %s\n", src_dir);
-			else if (strlen(src_dir))
-				fprintf(fp, "top_srcdir = ../../%s\n", src_dir);
-			else
-				fprintf(fp, "top_srcdir = ../..\n");
+		    fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
+		    fprintf(fp, "top_blddir = %s\n", MakeTargetPath(bld_dir, "../.."));
 
-            if (bld_dir[0])
-                fprintf(fp, "top_blddir = %s\n", bld_dir);
-            else
-                fprintf(fp, "top_blddir = ../..\n");
 
 			//fprintf(fp, "top_appdir = %s\n", app_dir);
-			if (app_dir[0] == '/' || app_dir[1] == ':')
-				fprintf(fp, "top_appdir = %s\n", app_dir);
-			else if (strlen(app_dir))
-				fprintf(fp, "top_appdir = ../../%s\n", app_dir);
-			else
-				fprintf(fp, "top_appdir = ../..\n");
+            fprintf(fp, "top_appdir = %s\n\n", MakeTargetPath(app_dir, "../.."));
 
 			//fprintf(fp, "LIBDIR = %s\n\n", lib_dir);
-			if (lib_dir[0] == '/' || lib_dir[1] == ':')
-				fprintf(fp, "LIBDIR = %s\n", lib_dir);
-			else if (strlen(lib_dir))
-				fprintf(fp, "LIBDIR = ../../%s\n", lib_dir);
-			else
-				fprintf(fp, "LIBDIR = ../..\n");
+            fprintf(fp, "LIBDIR = %s\n", MakeTargetPath(lib_dir, "../.."));
 
             fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
             if(ifirst_dir && *ifirst_dir) {
@@ -1927,7 +2137,7 @@ int copy_file(char *src_path, char *dst_path, int quiet)
  * \brief Copy directory with application samples.
  *
  * \param src_dir Source directory.
- * \param dst_dir Desitnation directory.
+ * \param dst_dir Destination directory.
  * \param quiet   If not 0, then progress and error output will be suppressed.
  *
  * \return 0 on success, -1 otherwise.
@@ -1951,6 +2161,7 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
         printf("Copying %s\n", src_dir);
     }
     while((dire = readdir(dir)) != NULL && rc == 0) {
+        /* Do not copy dot files or Makefiles for source tree builds. */
         if(dire->d_name[0] == '.' ||
            stricmp(dire->d_name, "cvs") == 0 ||
            strnicmp(dire->d_name, "Makeburn", 8) == 0 ||
@@ -1971,7 +2182,8 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
         if(statbuf.st_mode & S_IFDIR) {
             rc = copy_appdir(src_path, dst_path, quiet);
         }
-        else if(statbuf.st_mode & S_IFREG) {
+        /* Regular file. Do not overwrite any existing source file. */
+        else if((statbuf.st_mode & S_IFREG) == S_IFREG && access(dst_path, 0) != 0) {
             copy_file(src_path, dst_path, quiet);
         }
     }

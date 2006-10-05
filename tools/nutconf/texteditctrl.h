@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.1  2004/06/07 16:13:15  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -49,6 +52,12 @@
 
 #include <wx/wx.h>
 
+/*!
+ * \brief Specialized wxTextCtrl.
+ *
+ * The control will be automatically destroyed when it loses the focus
+ * or when the enter key is pressed.
+ */
 class CTextEditCtrl:public wxTextCtrl {
     DECLARE_CLASS(CTextEditCtrl)
   public:

@@ -39,6 +39,9 @@
 
 /*
  * $Log: propertylist.cpp,v $
+ * Revision 1.6  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.5  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -66,6 +69,7 @@ const wxChar *CPropertyList::m_propertyName[nutMAXFIELDTYPE] = {
     wxT("Active"),
     wxT("Requires"), 
     wxT("Provides"), 
+    wxT("Exclusivity"), 
     wxT("Type"), 
     wxT("File"), 
     wxT("Macro"), 
@@ -134,6 +138,9 @@ void CPropertyList::Fill(CConfigItem * pti)
         }
         if (!m_pti->GetProvisionList().IsEmpty()) {
             SetItem(nutProvides, m_pti->GetProvisionList());
+        }
+        if (!m_pti->GetExclusivityList().IsEmpty()) {
+            SetItem(nutExclusivity, m_pti->GetExclusivityList());
         }
 
         /*

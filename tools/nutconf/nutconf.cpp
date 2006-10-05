@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.12  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.11  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -111,6 +114,7 @@ IMPLEMENT_APP(NutConfApp);
 bool NutConfApp::OnInit()
 {
     m_docManager = NULL;
+    m_currentDoc = NULL;
     wxString settings_name(wxT("NutConf"));
     wxString settings_ext;
 
@@ -124,7 +128,7 @@ bool NutConfApp::OnInit()
 
     wxCmdLineParser parser(cmdLineDesc, argc, argv);
     parser.SetLogo(_T("Nut/OS Configurator\n" VERSION
-                      "Copyright (c) 2004-2005 by egnite Software GmbH\n"
+                      "Copyright (c) 2004-2006 by egnite Software GmbH\n"
                       "Copyright (C) 1998, 1999, 2000 Red Hat, Inc."));
     if(parser.Parse()) {
         return false;
@@ -135,6 +139,20 @@ bool NutConfApp::OnInit()
     else {
         wxLog::GetActiveTarget()->SetVerbose(false);
     }
+
+    /*
+     * Splash display.
+     */
+    wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
+    wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_SCREEN, 
+                0, NULL, -1, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER | wxSTAY_ON_TOP);
+
+    wxImage::AddHandler(new wxGIFHandler);
+    wxImage::AddHandler(new wxPNGHandler);
+    wxFileSystem::AddHandler(new wxZipFSHandler);
+
+    wxYield();
+    wxSleep(1);
 
     /*
      * Load settings early.
@@ -159,7 +177,6 @@ bool NutConfApp::OnInit()
      * The document manager will handle non application specific menu commands.
      */
     m_docManager = new wxDocManager;
-    m_currentDoc = NULL;
 
     /*
      * The document template defines the relationship between document and view.
@@ -169,21 +186,6 @@ bool NutConfApp::OnInit()
     m_docManager->SetMaxDocsOpen(1);
 
     m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configurator"));
-    //2.5.5 SendIdleEvents();
-
-    /*
-     * Splash display.
-     */
-    wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
-    wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_PARENT, 
-                0, m_mainFrame, -1, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER | wxSTAY_ON_TOP);
-
-    wxImage::AddHandler(new wxGIFHandler);
-    wxImage::AddHandler(new wxPNGHandler);
-    wxFileSystem::AddHandler(new wxZipFSHandler);
-
-    wxYield();
-    wxSleep(1);
 
     SetTopWindow(m_mainFrame);
     m_mainFrame->Show();
@@ -195,6 +197,32 @@ bool NutConfApp::OnInit()
     if(splash) {
         delete splash;
     }
+
+    /* 
+     * Detect directory change (version upgrade). 
+     */
+    wxString initWork = m_settings->FindAbsoluteDir(wxT("conf/repository.nut"));
+    m_docManager->SetLastDirectory(initWork + wxT("/conf"));
+    if (::wxIsAbsolutePath(m_settings->m_configname)) {
+        if (!m_settings->m_configname.StartsWith(initWork)) {
+            if (wxMessageBox(wxT("Configuration path has changed. Do you want to use relative paths?"), 
+                wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
+                    m_settings->m_configname = m_settings->m_relsrcpath + wxString(wxT("/conf/")) + m_settings->m_configname.AfterLast('/');
+                    m_settings->m_repositoryname = m_settings->m_repositoryname_default;
+                    m_settings->Save();
+            }
+        }
+    }
+    if (::wxIsAbsolutePath(m_settings->m_repositoryname)) {
+        if (!m_settings->m_repositoryname.StartsWith(initWork)) {
+            if (wxMessageBox(wxT("Repository path has changed. Do you want to use relative paths?"), 
+                wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
+                    m_settings->m_repositoryname = m_settings->m_repositoryname_default;
+                    m_settings->Save();
+            }
+        }
+    }
+
     /*
      * Create the document. 
      */
@@ -301,13 +329,18 @@ bool NutConfApp::Build(const wxString &target)
      * Change working directory to the top build directory.
      */
     wxString initialCwd = wxFileName::GetCwd();
-    if(!m_settings->m_buildpath.IsEmpty()) {
+    if (::wxIsAbsolutePath(m_settings->m_buildpath)) {
         wxFileName::SetCwd(m_settings->m_buildpath);
+    }
+    else {
+        wxFileName::SetCwd(m_settings->m_relsrcpath + wxString(wxT("/../")) + m_settings->m_buildpath);
     }
 
     /* Add tool directories to the PATH. */
 #ifdef _WIN32
     wxString newPath(m_settings->m_toolpath);
+    newPath.Replace(wxT("/"), wxT("\\"));
+    newPath += wxT(";");
     newPath += m_initialPath;
     wxSetEnv(wxT("PATH"), newPath);
 #endif
@@ -322,6 +355,19 @@ bool NutConfApp::Build(const wxString &target)
      * in string arrays. Not very nice here, but works for now.
      */
     wxLogMessage(wxT("----- Running '%s' -----"), cmd.c_str());
+
+#ifdef _WIN32
+    wxPathList exePaths;
+    wxString exePathName;
+
+    exePaths.AddEnvList(wxT("PATH"));
+    exePathName = exePaths.FindAbsoluteValidPath("make.exe");
+    if (exePathName.IsEmpty()) {
+        wxLogMessage(wxT("Make tool not found in ") + newPath);
+    }
+    wxLogMessage(wxT("Located ") + exePathName);
+#endif
+
     wxBusyInfo wait(wxT("Please wait, running '") + cmd + wxT("'..."));
     wxArrayString output, errors;
     int code = wxExecute(cmd, output, errors);
@@ -339,12 +385,14 @@ bool NutConfApp::Build(const wxString &target)
             for (i = 0; i < count; i++) {
                 outwin->AppendText(output[i]);
                 outwin->AppendText(wxT("\n"));
+                outwin->ShowPosition(outwin->GetLastPosition());
             }
         }
         count = errors.GetCount();
         for (i = 0; i < count; i++) {
             outwin->AppendText(errors[i]);
             outwin->AppendText(wxT("\n"));
+            outwin->ShowPosition(outwin->GetLastPosition());
         }
     }
     if(code) {

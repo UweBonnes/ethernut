@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:04:46  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.1  2004/06/07 16:11:22  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -50,7 +53,12 @@
 #include <wx/wx.h>
 #include <wx/spinctrl.h>
 
-
+/*!
+ * \brief Specialized wxSpinCtrl.
+ *
+ * The control will be automatically destroyed when it loses the focus
+ * or when the enter key is pressed.
+ */
 class CIntEditCtrl:public wxSpinCtrl {
     DECLARE_CLASS(CIntEditCtrl)
   public:

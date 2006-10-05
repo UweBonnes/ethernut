@@ -39,6 +39,9 @@
 
 /*
  * $Log: configtree.cpp,v $
+ * Revision 1.5  2006/10/05 17:04:45  haraldkipp
+ * Heavily revised and updated version 1.3
+ *
  * Revision 1.4  2005/04/25 08:35:31  haraldkipp
  * Upgrade to wxWidgets 6.0
  *
@@ -55,6 +58,7 @@
  */
 
 #include "nutconf.h"
+#include "utils.h"
 #include "treeitemdata.h"
 #include "nutconfhint.h"
 #include "configitem.h"
@@ -170,4 +174,62 @@ void CConfigTree::OnScroll(wxScrollWinEvent & event)
 {
     wxLogVerbose(wxT("  CConfigTree::OnScroll"));
     CScrolledTreeCtrl::OnScroll(event);
+}
+
+wxTreeItemId CConfigTree::FindNextItemId(wxTreeItemId treeItemId, const wxString& text,
+    bool checkFirst, bool matchCase, bool matchWord)
+{
+    wxString ctext(text);
+    if (!matchCase) {
+        ctext.MakeLower();
+    }
+
+    wxTreeItemId found;
+    wxTreeItemId id;
+    wxTreeItemId currentId = treeItemId;
+    CConfigItem *item = NULL;
+    wxTreeItemIdValue dummy;
+
+    while (currentId.IsOk()) {
+        if (checkFirst) {
+            CTreeItemData *data = (CTreeItemData *)GetItemData(currentId);
+            if (data) {
+                if ((item = data->GetConfigItem()) != NULL) {
+                    wxString name = item->GetName();
+                    wxString brief = item->GetBriefDescription();
+                    wxString desc = item->GetDescription();
+
+                    if (!matchCase) {
+                        name.MakeLower();
+                        brief.MakeLower();
+                        desc.MakeLower();
+                    }
+                    if (CUtils::FindString(name, ctext, matchWord) ||
+                        CUtils::FindString(brief, ctext, matchWord) ||
+                        CUtils::FindString(desc, ctext, matchWord)) {
+                        found = currentId;
+                        break;
+                    }
+                }
+            }
+        }
+        checkFirst = true;
+
+        id = GetFirstChild(currentId, dummy);
+        if (!id.IsOk()) {
+            id = GetNextSibling(currentId);
+            if (!id.IsOk()) {
+                wxTreeItemId parentId = currentId;
+                do {
+                    parentId = GetItemParent(parentId);
+                    if (!parentId.IsOk()) {
+                        break;
+                    }
+                    id = GetNextSibling(parentId);
+                } while (!id.IsOk());
+            }
+        }
+        currentId = id;
+    }
+    return found;
 }
