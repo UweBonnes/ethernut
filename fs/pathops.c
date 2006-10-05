@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/10/05 17:22:35  haraldkipp
+ * Fixes bug #1281167. Thanks to Jukka Holappa.
+ *
  * Revision 1.3  2006/03/16 15:25:24  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -153,7 +156,7 @@ int unlink(CONST char *path)
 
 
 /*!
- * \brief Remove a directory.
+ * \brief Get information about a specified file.
  *
  * \return 0 if the query succeeds, otherwise -1 is returned.
  */
@@ -184,7 +187,7 @@ int stat(CONST char *path, struct stat *s)
 }
 
 /*!
- * \brief Remove a directory.
+ * \brief Get information about an opened file.
  *
  * \return Always -1 due to missing implementation.
  */
