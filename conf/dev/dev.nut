@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.33  2006/10/05 17:16:50  haraldkipp
+-- Hardware independant RTC layer added.
+--
 -- Revision 1.32  2006/09/29 12:41:55  haraldkipp
 -- Added support for AT45 serial DataFlash memory chips. Currently limited
 -- to AT91 builds.
@@ -275,6 +278,54 @@ nutdev =
     },
 
     --
+    -- RTC Support.
+    --
+
+    {
+        name = "nutdev_rtc",
+        brief = "RTC API",
+        description = "Hardware independant RTC routines.",
+        provides = { "DEV_RTC" },
+        sources = { "rtc.c" },
+    },
+    {
+        name = "nutdev_ds1307",
+        brief = "DS1307 Driver",
+        description = "Dallas DS1307 RTC driver. Tested on AVR (MMnet02) only.",
+        requires = { "HW_MCU_AVR" },
+        provides = { "DEV_RTC" },
+        sources = { "ds1307rtc.c" },
+    },
+    {
+        name = "nutdev_pcf8563",
+        brief = "PCF8563 Driver",
+        description = "Philips PCF8563 RTC driver. Tested on AT91 only.",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_RTC" },
+        sources = { "pcf8563.c" },
+    },
+    {
+        name = "nutdev_x12rtc",
+        brief = "X12xx Driver",
+        description = "Intersil X12xx RTC and EEPROM driver. Tested on AT91 only.",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_RTC" },
+        sources = { "x12rtc.c" },
+        options =
+        {
+            {
+                macro = "NUT_CONFIG_X12RTC",
+                brief = "System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in this chip.",
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+        },
+    },
+
+    --
     -- Special Chip Drivers.
     --
     
@@ -410,42 +461,6 @@ nutdev =
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
                               "be stored in this chip.",
                 provides = { "HW_FLASH_PARAM_SECTOR" },
-                provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                file = "include/cfg/eeprom.h"
-            },
-        },
-    },
-    {
-        name = "nutdev_ds1307",
-        brief = "DS1307 Driver",
-        description = "Dallas DS1307 RTC driver. Tested on AVR (MMnet02) only.",
-        requires = { "HW_MCU_AVR" },
-        provides = { "DEV_RTC" },
-        sources = { "ds1307rtc.c" },
-    },
-    {
-        name = "nutdev_pcf8563",
-        brief = "PCF8563 Driver",
-        description = "Philips PCF8563 RTC driver. Tested on AT91 only.",
-        requires = { "HW_MCU_AT91" },
-        provides = { "DEV_RTC" },
-        sources = { "pcf8563.c" },
-    },
-    {
-        name = "nutdev_x12rtc",
-        brief = "X12xx Driver",
-        description = "Intersil X12xx RTC and EEPROM driver. Tested on AT91 only.",
-        requires = { "HW_MCU_AT91" },
-        provides = { "DEV_RTC" },
-        sources = { "x12rtc.c" },
-        options =
-        {
-            {
-                macro = "NUT_CONFIG_X12RTC",
-                brief = "System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in this chip.",
                 provides = { "HW_NVMEM" },
                 flavor = "boolean",
                 file = "include/cfg/eeprom.h"

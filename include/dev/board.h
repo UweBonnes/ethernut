@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/10/05 17:18:49  haraldkipp
+ * Hardware independant RTC layer added.
+ *
  * Revision 1.6  2006/08/31 19:01:08  haraldkipp
  * Using devDebug2 for the DBGU output was a bad idea. Some AT91 chips
  * provide more than two UARTs. We now use devDebug to specify the DBGU
@@ -142,6 +145,12 @@
 #ifndef DEV_ETHER_NAME
 #define DEV_ETHER_NAME  "eth0"
 #endif
+
+/*
+ * RTC chip.
+ */
+#define RTC_CHIP rtcX12x6
+#include <dev/x12rtc.h>
 
 #endif
 

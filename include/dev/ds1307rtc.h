@@ -36,17 +36,18 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:18:49  haraldkipp
+ * Hardware independant RTC layer added.
+ *
  * Revision 1.1  2006/06/30 22:07:43  christianwelzel
  * Initial check in.
  *
  *
  */
 
-#include <sys/types.h>
-#include <time.h>
+#include <dev/rtc.h>
 
-#define BCD2BIN(x) ((((u_char)x) >> 4) * 10 + ((x) & 0x0F))
-#define BIN2BCD(x) (((((u_char)x) / 10) << 4) + (x) % 10)
+extern NUTRTC rtcDs1307;
 
 __BEGIN_DECLS
 /* Prototypes */

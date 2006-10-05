@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/10/05 17:18:49  haraldkipp
+ * Hardware independant RTC layer added.
+ *
  * Revision 1.2  2006/08/25 13:42:55  olereinhardt
  * avr-gcc 3.4 does not understand binary representation of numbers,
  * changed to hex
@@ -236,3 +239,13 @@ int DS1307Init(void)
     }
     return rc;
 }
+
+NUTRTC rtcDs1307 = {
+    DS1307Init,         /*!< Hardware initializatiuon, rtc_init */
+    DS1307RtcGetClock,  /*!< Read date and time, rtc_gettime */
+    DS1307RtcSetClock,  /*!< Set date and time, rtc_settime */
+    NULL,               /*!< Read alarm date and time, rtc_getalarm */
+    NULL,               /*!< Set alarm date and time, rtc_setalarm */
+    NULL,               /*!< Read status flags, rtc_getstatus */
+    NULL                /*!< Clear status flags, rtc_clrstatus */
+};

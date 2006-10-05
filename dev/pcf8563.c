@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/10/05 17:18:49  haraldkipp
+ * Hardware independant RTC layer added.
+ *
  * Revision 1.2  2006/06/28 17:23:47  haraldkipp
  * Bugfix. PcfRtcGetClock() returned wrong century.
  *
@@ -58,9 +61,6 @@
 #include <string.h>
 
 #include <dev/pcf8563.h>
-
-#define BCD2BIN(x) ((((u_char)x) >> 4) * 10 + ((x) & 0x0F))
-#define BIN2BCD(x) (((((u_char)x) / 10) << 4) + (x) % 10)
 
 #ifndef I2C_SLA_RTC
 #define I2C_SLA_RTC     0x51
@@ -203,7 +203,7 @@ int PcfRtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcSetAlarm(int idx, struct _tm *tm, int aflgs)
+int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
 {
     return -1;
 }
@@ -263,3 +263,12 @@ int PcfRtcInit(void)
     return rc;
 }
 
+NUTRTC rtcPcf8563 = {
+    PcfRtcInit,         /*!< Hardware initializatiuon, rtc_init */
+    PcfRtcGetClock,     /*!< Read date and time, rtc_gettime */
+    PcfRtcSetClock,     /*!< Set date and time, rtc_settime */
+    PcfRtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+    PcfRtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+    PcfRtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+    PcfRtcClearStatus   /*!< Clear status flags, rtc_clrstatus */
+};
