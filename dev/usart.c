@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/10/05 17:20:54  haraldkipp
+ * Added a comment to warn the user about ioctl() functions, that may not be
+ * supported.
+ *
  * Revision 1.6  2006/08/23 09:20:47  freckle
  * fix bug #1541139
  *
@@ -642,6 +646,11 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  *             the given control function or receives data from that
  *             function.
  * \return 0 on success, -1 otherwise.
+ *
+ * \note Not all control functions may be supported on all platforms.
+ *       In any case applications should check the returned result.
+ *
+ * \todo Hardware handshake is not available with AT91 targets.
  *
  * \warning Timeout values are given in milliseconds and are limited to 
  *          the granularity of the system timer. To disable timeout,
