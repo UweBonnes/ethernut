@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2006/10/05 17:23:14  haraldkipp
+ * Fixes bug #1571269. Thanks to Dirk Boecker for reporting this.
+ *
  * Revision 1.9  2006/09/08 16:48:28  haraldkipp
  * Directory entries honor daylight saving time. Thanks to Dirk Boecker for
  * this fix.
@@ -695,6 +698,7 @@ int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_pa
 
     if ((srch = malloc(sizeof(PHATFIND))) != NULL) {
         if ((rc = PhatDirEntryFind(old_ndp, fname, PHAT_FATTR_FILEMASK, srch)) == 0) {
+            rc = -1;
             if ((new_ndp = PhatDirOpenParent(dev, new_path, &fname)) != NUTFILE_EOF) {
                 if (PhatDirEntryFind(new_ndp, fname, PHAT_FATTR_FILEMASK, NULL) == 0) {
                     errno = EEXIST;
@@ -705,6 +709,9 @@ int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_pa
                 }
                 (*dev->dev_close) (new_ndp);
             }
+        }
+        else {
+            errno = ENOENT;
         }
         free(srch);
     }
