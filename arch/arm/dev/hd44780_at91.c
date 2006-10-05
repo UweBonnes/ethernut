@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/05 17:11:16  haraldkipp
+ * Fixes bug #1567813. Should now work after power on and after reset without
+ * power loss. Many thanks to Klaus-Dieter Sohn.
+ *
  * Revision 1.5  2006/08/31 19:02:25  haraldkipp
  * Added support for AT91SAM9260.
  * Some displays fail after reset. An additional nibble sent
@@ -349,18 +353,33 @@ static void LcdInit(NUTDEVICE * dev)
     LcdClrBits(LCD_EN);
     LcdDelay(LCD_LONG_DELAY);
 
-    /* Initialize for 4-bit operation. */
+    /* Initial delay. Actually only required after power on. */
+    NutSleep(16);
+
+    /* This initialization will make sure, that the LCD is switched
+       to 4-bit mode, no matter which mode we start from. */
+    LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT)) >> 4);
+    NutSleep(5);
+    LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT)) >> 4);
+    NutSleep(2);
+    LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT)) >> 4);
+    NutSleep(2);
     LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
-    NutSleep(1);
-    LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
-    NutSleep(1);
-    LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
-    NutSleep(1);
-    LcdWriteNibble(_BV(LCD_FUNCTION_2LINES));
-    NutSleep(1);
+    NutSleep(2);
+
+    /* Set number of lines and font. Can't be changed later. */
+    LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_2LINES)) >> 4);
+    LcdWriteNibble(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_2LINES));
+    NutSleep(2);
+
+    /* Switch display and cursor off. */
+    LcdWriteNibble(_BV(LCD_ON_CTRL) >> 4);
+    LcdWriteNibble(_BV(LCD_ON_CTRL));
+    NutSleep(2);
 
     /* Clear display. */
     LcdClear();
+
     /* Set entry mode. */
     LcdWriteCmd(_BV(LCD_ENTRY_MODE) | _BV(LCD_ENTRY_INC));
     /* Switch display on. */
