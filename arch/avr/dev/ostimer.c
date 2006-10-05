@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/05 17:13:12  haraldkipp
+ * Fixes bug #1567730. The problem had been reported by several people.
+ * Lars Andersson provided the most complete solution, IMHO.
+ *
  * Revision 1.2  2006/02/08 15:18:49  haraldkipp
  * ATmega2561 Support
  *
@@ -116,10 +120,10 @@
 #endif                          /* ----- NUT_CPU_FREQ */
 
 /* Output compare register value. */
-#define OCR_VALUE       ((2 * NUT_TIMER_CRYSTAL / (NUT_TIMER_PRESCALE * NUT_TICK_NFREQ) + 1) / 2)
+#define OCR_VALUE       (((2 * NUT_TIMER_CRYSTAL / (NUT_TIMER_PRESCALE * NUT_TICK_NFREQ) + 1) / 2) - 1)
 
-/* Calucalted number of timer ticks per second. */
-#define NUT_TICK_FREQ   ((2 * NUT_TIMER_CRYSTAL / OCR_VALUE / NUT_TIMER_PRESCALE + 1) / 2)
+/* Calculated number of timer ticks per second. */
+#define NUT_TICK_FREQ   ((2 * NUT_TIMER_CRYSTAL / (OCR_VALUE + 1) / NUT_TIMER_PRESCALE + 1) / 2)
 
 
 #ifdef NUT_CPU_FREQ             /* ----- NUT_CPU_FREQ */
