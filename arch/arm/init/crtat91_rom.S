@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:12:36  haraldkipp
+ * Bug #1497065 fixed. Stack sizes increased.
+ *
  * Revision 1.1  2006/08/01 07:34:16  haraldkipp
  * New linker script and new startup file support applications running in
  * flash memory.
@@ -41,10 +44,10 @@
 
 #include <arch\arm.h>
 
-IRQ_STACK_SIZE = (3*8*4)     @ 3 words per interrupt priority level
-FIQ_STACK_SIZE = (3*4)       @ 3 words
-ABT_STACK_SIZE = (1*4)       @ 1 word
-UND_STACK_SIZE = (1*4)       @ 1 word
+IRQ_STACK_SIZE = (128*4)
+FIQ_STACK_SIZE = (64*4)
+ABT_STACK_SIZE = (16*4)
+UND_STACK_SIZE = (16*4)
 
         /* We start in ARM mode. */
         .arm

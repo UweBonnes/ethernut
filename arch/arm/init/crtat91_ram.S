@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:12:35  haraldkipp
+ * Bug #1497065 fixed. Stack sizes increased.
+ *
  * Revision 1.1  2005/10/24 11:30:48  haraldkipp
  * Initial check in.
  *
@@ -51,10 +54,10 @@ RAM_BASE  = 0x00000000
 RAM_LIMIT = 0x00000100
 RAM_SIZE  = (256*1024)
 
-IRQ_STACK_SIZE = (3*8*4)     @ 3 words per interrupt priority level
-FIQ_STACK_SIZE = (3*4)       @ 3 words
-ABT_STACK_SIZE = (1*4)       @ 1 word
-UND_STACK_SIZE = (1*4)       @ 1 word
+IRQ_STACK_SIZE = (128*4)
+FIQ_STACK_SIZE = (64*4)
+ABT_STACK_SIZE = (16*4)
+UND_STACK_SIZE = (16*4)
 
 ARM_MODE_USER = 0x10
 ARM_MODE_FIQ = 0x11

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/05 17:12:36  haraldkipp
+ * Bug #1497065 fixed. Stack sizes increased.
+ *
  * Revision 1.3  2006/07/18 14:02:55  haraldkipp
  * Low level hardware initialization moved from nutinit.c to
  * crtat91sam7x256_rom.S. This avoids the ugly jump from C code back into
@@ -188,7 +191,8 @@ wait_moscs:
          * Thus, the resulting frequency is 95.8464 MHz.
          * Wait 28 clock cycles until PLL is locked.
          */
-        ldr     r0, =((25 << 16) | (28 << 8) | 5)
+@        ldr     r0, =((25 << 16) | (28 << 8) | 5)
+        ldr     r0, =((48 << 16) | (28 << 8) | 10)
         str     r0, [r1, #CKGR_PLLR_OFF]
 wait_lock:
         ldr     r0, [r1, #PMC_SR_OFF]
