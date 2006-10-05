@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/10/05 17:21:53  haraldkipp
+ * Hardware specific functions marked deprecated.
+ * Hardcoded register addresses and values replaced by macros.
+ *
  * Revision 1.3  2006/03/02 19:57:34  haraldkipp
  * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
  *
@@ -173,6 +177,8 @@ int X12RtcWrite(int nv, CONST u_char *buff, size_t cnt)
 /*!
  * \brief Get date and time from an X12xx hardware clock.
  *
+ * \deprecated New applications must use NutRtcGetTime().
+ *
  * \param tm Points to a structure that receives the date and time 
  *           information.
  *
@@ -183,7 +189,7 @@ int X12RtcGetClock(struct _tm *tm)
     int rc;
     u_char data[8];
 
-    if ((rc = X12RtcReadRegs(0x30, data, 8)) == 0) {
+    if ((rc = X12RtcReadRegs(X12RTC_SC, data, 8)) == 0) {
         tm->tm_sec = BCD2BIN(data[0]);
         tm->tm_min = BCD2BIN(data[1]);
         tm->tm_hour = BCD2BIN(data[2] & 0x3F);
@@ -201,6 +207,8 @@ int X12RtcGetClock(struct _tm *tm)
 /*!
  * \brief Set an X12xx hardware clock.
  *
+ * \deprecated New applications must use NutRtcSetTime().
+ *
  * New time will be taken over at the beginning of the next second.
  *
  * \param tm Points to a structure which contains the date and time
@@ -214,7 +222,7 @@ int X12RtcSetClock(CONST struct _tm *tm)
 
     memset(data, 0, sizeof(data));
     if (tm) {
-        data[1] = 0x30;
+        data[1] = X12RTC_SC;
         data[2] = BIN2BCD(tm->tm_sec);
         data[3] = BIN2BCD(tm->tm_min);
         data[4] = BIN2BCD(tm->tm_hour) | 0x80;
@@ -236,6 +244,8 @@ int X12RtcSetClock(CONST struct _tm *tm)
 /*!
  * \brief Get alarm date and time of an X12xx hardware clock.
  *
+ * \deprecated New applications must use NutRtcGetAlarm().
+ *
  * \param idx   Zero based index. Two alarms are supported.
  * \param tm    Points to a structure that receives the date and time 
  *              information.
@@ -252,27 +262,27 @@ int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
     *aflgs = 0;
     memset(tm, 0, sizeof(struct _tm));
     if ((rc = X12RtcReadRegs(idx * 8, data, 8)) == 0) {
-        if (data[0] & 0x80) {
+        if (data[0] & X12RTC_SCA_ESC) {
             *aflgs |= RTC_ALARM_SECOND;
             tm->tm_sec = BCD2BIN(data[0] & 0x7F);
         }
-        if (data[1] & 0x80) {
+        if (data[1] & X12RTC_MNA_EMN) {
             *aflgs |= RTC_ALARM_MINUTE;
             tm->tm_min = BCD2BIN(data[1]);
         }
-        if (data[2] & 0x80) {
+        if (data[2] & X12RTC_HRA_EHR) {
             *aflgs |= RTC_ALARM_HOUR;
             tm->tm_hour = BCD2BIN(data[2] & ~0x80);
         }
-        if (data[3] & 0x80) {
+        if (data[3] & X12RTC_DTA_EDT) {
             *aflgs |= RTC_ALARM_MDAY;
             tm->tm_mday = BCD2BIN(data[3]);
         }
-        if (data[4] & 0x80) {
+        if (data[4] & X12RTC_MOA_EMO) {
             *aflgs |= RTC_ALARM_MONTH;
             tm->tm_mon = BCD2BIN(data[4]) - 1;
         }
-        if (data[6] & 0x80) {
+        if (data[6] & X12RTC_DWA_EDW) {
             *aflgs |= RTC_ALARM_WDAY;
             tm->tm_wday = BCD2BIN(data[6]);
         }
@@ -282,6 +292,8 @@ int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
 
 /*!
  * \brief Set alarm of an X12xx hardware clock.
+ *
+ * \deprecated New applications must use NutRtcSetAlarm().
  *
  * \param idx   Zero based index. Two alarms are supported.
  * \param tm    Points to a structure which contains the date and time
@@ -296,7 +308,7 @@ int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcSetAlarm(int idx, struct _tm *tm, int aflgs)
+int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
 {
     u_char data[10];
 
@@ -304,22 +316,22 @@ int X12RtcSetAlarm(int idx, struct _tm *tm, int aflgs)
     data[1] = idx * 8;
     if (tm) {
         if (aflgs & RTC_ALARM_SECOND) {
-            data[2] = BIN2BCD(tm->tm_sec) | 0x80;
+            data[2] = BIN2BCD(tm->tm_sec) | X12RTC_SCA_ESC;
         }
         if (aflgs & RTC_ALARM_MINUTE) {
-            data[3] = BIN2BCD(tm->tm_min) | 0x80;
+            data[3] = BIN2BCD(tm->tm_min) | X12RTC_MNA_EMN;
         }
         if (aflgs & RTC_ALARM_HOUR) {
-            data[4] = BIN2BCD(tm->tm_hour) | 0x80;
+            data[4] = BIN2BCD(tm->tm_hour) | X12RTC_HRA_EHR;
         }
         if (aflgs & RTC_ALARM_MDAY) {
-            data[5] = BIN2BCD(tm->tm_mday) | 0x80;
+            data[5] = BIN2BCD(tm->tm_mday) | X12RTC_DTA_EDT;
         }
         if (aflgs & RTC_ALARM_MONTH) {
-            data[6] = BIN2BCD(tm->tm_mon + 1) | 0x80;
+            data[6] = BIN2BCD(tm->tm_mon + 1) | X12RTC_MOA_EMO;
         }
         if (aflgs & RTC_ALARM_WDAY) {
-            data[8] = BIN2BCD(tm->tm_wday) | 0x80;
+            data[8] = BIN2BCD(tm->tm_wday) | X12RTC_DWA_EDW;
         }
     }
     return X12RtcWrite(1, data, 10);
@@ -327,6 +339,8 @@ int X12RtcSetAlarm(int idx, struct _tm *tm, int aflgs)
 
 /*!
  * \brief Query RTC status flags.
+ *
+ * \deprecated New applications must use NutRtcGetStatus().
  *
  * \param sflgs Points to an unsigned long that receives the status flags.
  *              - Bit 0: Power fail.
@@ -340,7 +354,7 @@ int X12RtcGetStatus(u_long *sflgs)
     int rc;
     u_char data;
 
-    if ((rc = X12RtcReadRegs(0x3F, &data, 1)) == 0) {
+    if ((rc = X12RtcReadRegs(X12RTC_SR, &data, 1)) == 0) {
         rtc_status |= data;
         *sflgs = rtc_status;
     }
@@ -349,6 +363,8 @@ int X12RtcGetStatus(u_long *sflgs)
 
 /*!
  * \brief Clear RTC status flags.
+ *
+ * \deprecated New applications must use NutRtcClearStatus().
  *
  * \param sflgs Status flags to clear.
  *
@@ -360,6 +376,17 @@ int X12RtcClearStatus(u_long sflgs)
 
     return 0;
 }
+
+NUTRTC rtcX12x6 = {
+    X12Init,            /*!< Hardware initializatiuon, rtc_init */
+    X12RtcGetClock,     /*!< Read date and time, rtc_gettime */
+    X12RtcSetClock,     /*!< Set date and time, rtc_settime */
+    X12RtcGetAlarm,     /*!< Read alarm date and time, rtc_getalarm */
+    X12RtcSetAlarm,     /*!< Set alarm date and time, rtc_setalarm */
+    X12RtcGetStatus,    /*!< Read status flags, rtc_getstatus */
+    X12RtcClearStatus   /*!< Clear status flags, rtc_clrstatus */
+};
+
 
 /*!
  * \brief Read contents from non-volatile EEPROM.
@@ -447,6 +474,8 @@ int X12EepromWrite(u_int addr, CONST void *buff, size_t len)
 
 /*!
  * \brief Initialize the interface to an Intersil X12xx hardware clock.
+ *
+ * \deprecated New applications must use NutRegisterRtc().
  *
  * \return 0 on success or -1 in case of an error.
  *
