@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.19  2006/10/05 17:14:03  haraldkipp
+-- Added script, which extracts version information from C source file.
+-- This demonstrates the new scripting capabilities of the Configurator.
+--
 -- Revision 1.18  2006/09/05 12:31:34  haraldkipp
 -- Added missing linker script for SAM9260 applications running in external
 -- RAM.
@@ -123,9 +127,14 @@ pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
 repository =
 {
     {
-        name = "nuthardware",
-        brief = "Hardware Platform",
-        description = "Info about the target hadware",
+        name = "nutinfo",
+        brief = "--\n".. -- Strings starting with this sequence are executed.
+                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
+        description = "The version info was read from os/version.c in the current source "..
+                      "tree by a Lua script defined in the configuration file.\n\n"..
+                      "Also added here to demonstrate the capabilities of Lua as a "..
+                      "configuration language.\n\n"..
+                      "See http://www.lua.org.\n\n",
         options =
         {
             {
@@ -145,13 +154,13 @@ repository =
     {
         name = "nuttools",
         brief = "Tools",
-        description = "Select one only.",
+        description = "Tool selection.",
         script = "tools.nut"
     },
     {
         name = "nutarch",
         brief = "Architecture",
-        description = "Select one only.",
+        description = "Target selection.",
         subdir = "arch",
         script = "arch/arch.nut"
     },
@@ -223,3 +232,24 @@ repository =
         script = "cpp/cpp.nut"
     }
 }
+
+--
+-- Read OS Version from C source file.
+--
+function GetNutOsVersion()
+    local fp, buf, p1, p2, vers
+
+    -- Retrieve the repository path by calling a C function provided
+    -- by the Configurator and read the Nut/OS version file.
+    fp = io.open(c_repo_path() .. "/../os/version.c", "r")
+    if fp == nil then
+        return nil
+    end
+    buf = fp:read(8192)
+    fp:close()
+
+    -- Extract the version string.
+    p1, p2, vers = string.find(buf, "os_version_string.+\"(.+)\"")
+    
+    return vers or "unknown"
+end
