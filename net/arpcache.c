@@ -83,6 +83,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.14  2006/10/05 17:24:41  haraldkipp
+ * On ARP transmit errors the incomplete cache entry is not removed.
+ * Subsequent queries will never send out new ARP requests. Many thanks
+ * to Michael Jones for providing a first solution. I added a check,
+ * which avoids to remove an already completed entry. Fixes bug #1567783.
+ *
  * Revision 1.13  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -497,9 +503,14 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
         if (retries-- == 0) {
             break;
         }
-        /* Mark buffer released on transmit errors. */
+        /* Mark buffer released and remove incomplete entry on transmit errors. */
         if (nb && NutArpOutput(dev, nb)) {
             nb = 0;
+            /* Even if the transmit failed, we may have received a response in the meantime. */
+            if ((entry = ArpCacheLookup(ifn, ip)) != NULL && (entry->ae_flags & ATF_COM) == 0) {
+                entry->ae_flags |= ATF_REM;
+                ArpCacheFlush(ifn);
+            }
             break;
         }
         /* Sleep until woken up by an update of this ARP entry
