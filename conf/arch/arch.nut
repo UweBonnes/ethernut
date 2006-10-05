@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.25  2006/10/05 17:16:04  haraldkipp
+-- Added exclusivity attribute.
+--
 -- Revision 1.24  2006/09/29 12:40:36  haraldkipp
 -- PDC provision added for AT91 devices.
 --
@@ -136,6 +139,10 @@ nutarch =
                     "HW_GPIO"
                 },
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 makedefs = { "MCU=$(MCU_ATMEGA103)", "HWDEF+=-D__HARVARD_ARCH__" }
             },
@@ -156,6 +163,10 @@ nutarch =
                     "HW_GPIO"
                 },
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF+=-D__HARVARD_ARCH__" }
             },
@@ -172,6 +183,10 @@ nutarch =
                               "the code stack must reside in internal RAM. Refer to "..
                               "AT90CAN128 Datasheet Rev. 4250F–CAN–04/05 - Errata Rev C ",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR" },
                 provides = {
@@ -205,6 +220,10 @@ nutarch =
                     "HW_GPIO"
                 },
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561" }
             },
@@ -218,6 +237,10 @@ nutarch =
                               "Serial Controller, ADC and MultiMedia Card Interface.\n\n"..
                               "Experimental port.",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -242,6 +265,10 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
                               "64K bytes RAM, Ethernet MAC, USB, 2 USARTs and more. ",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -264,6 +291,10 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes RAM, "..
                               "64M bytes address space, 2 USARTs and 3 timers. ",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -283,6 +314,10 @@ nutarch =
                 brief = "Nintendo GBA",
                 description = "ARM7TDMI 16/32-bit RISC microcontroller",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -299,6 +334,10 @@ nutarch =
                 macro = "MCU_LINUX_EMU",
                 brief = "Linux Emulator",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_LINUX" },
                 provides = { "HW_TARGET", "HW_NVMEM", "HW_EMU_LINUX" }
@@ -307,6 +346,10 @@ nutarch =
                 macro = "MCU_H8_3068",
                 brief = "Renesas H8/3068",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_H8300" },
                 provides = {
@@ -323,6 +366,10 @@ nutarch =
                               "HDLC protocol, 64M bytes address space, I2C, 2 UARTs and "..
                               "2 timers.",
                 flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {

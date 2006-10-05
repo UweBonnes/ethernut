@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.12  2006/10/05 17:16:04  haraldkipp
+-- Added exclusivity attribute.
+--
 -- Revision 1.11  2006/05/25 09:27:42  haraldkipp
 -- Watchdog API for AVR added.
 --
@@ -699,52 +702,88 @@ nutarch_avr =
                 macro = "LCD_4x20",
                 brief = "LCD 4x20",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_4x16",
                 brief = "LCD 4x16",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },            {
                 macro = "LCD_2x40",
                 brief = "LCD 2x40",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_2x20",
                 brief = "LCD 2x20",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_2x16",
                 brief = "LCD 2x16",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_2x8",
                 brief = "LCD 2x8",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },            {
                 macro = "LCD_1x20",
                 brief = "LCD 1x20",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_1x16",
                 brief = "LCD 1x16",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_1x8",
                 brief = "LCD 1x8",
                 flavor = "boolean",
+                exclusivity = { 
+                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
+                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
+                },
                 file = "include/cfg/arch/avrpio.h"
             },
             {

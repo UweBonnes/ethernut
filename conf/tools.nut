@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.15  2006/10/05 17:14:45  haraldkipp
+-- Added exclusivity attribute.
+--
 -- Revision 1.14  2006/09/05 12:31:34  haraldkipp
 -- Added missing linker script for SAM9260 applications running in external
 -- RAM.
@@ -87,56 +90,60 @@ nuttools =
     {
         {
             brief = "GCC for ARM",
-            description = "GNU Compiler Collection for ARM including libc."..
-                          "Make sure you have deselected all other compilers.",
+            description = "GNU Compiler Collection for ARM including libc.",
             provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX" },
             macro = "ARM_GCC",
             flavor = "boolean",
+            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h"
         },
         {
             brief = "GCC for ARM (no libc)",
             description = "GNU Compiler Collection for ARM excluding libc."..
-                          "Nut/OS provides all required C standard functions."..
-                          "Make sure you have deselected all other compilers.",
+                          "Nut/OS provides all required C standard functions.",
             provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
             macro = "ARM_GCC_NOLIBC",
             flavor = "boolean",
+            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
             makedefs = { "ADDLIBS = -lnutc" }
         },
         {
             brief = "GCC for AVR",
-            description = "Make sure you have deselected all other compilers.",
+            description = "GNU Compiler Collection for ARM including avr-libc.",
             provides = { "TOOL_CC_AVR", "TOOL_GCC", "TOOL_CXX" },
             macro = "AVR_GCC",
             flavor = "boolean",
+            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
             makedefs = { "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
         },
         {
             brief = "GCC for Linux",
-            description = "Make sure you have deselected all other compilers.",
+            description = "Linux emulation.",
             provides = { "TOOL_CC_LINUX", "TOOL_GCC" },
             macro = "LINUX_GCC",
             flavor = "boolean",
+            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h"
         },
         {
             brief = "ImageCraft for AVR",
-            description = "Make sure you have deselected all other compilers.",
+            description = "www.imagecraft.com",
             provides = { "TOOL_CC_AVR", "TOOL_ICC" },
             macro = "ICCAVR",
             flavor = "boolean",
+            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
             makedefs = { "MCU_ATMEGA2561=extended", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
         },
         {
             brief = "ImageCraft for ARM",
-            description = "Make sure you have deselected all other compilers.",
+            description = "www.imagecraft.com",
             provides = { "TOOL_CC_ARM", "TOOL_ICC" },
             macro = "ICCARM",
             flavor = "boolean",
+            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
         }
     },
