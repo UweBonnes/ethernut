@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/05 17:10:37  haraldkipp
+ * Link detection was unreliable. This also caused bug #1567785.
+ * Now NutRegisterDevice will return an error, if there is no
+ * link available. Applications may then call NutRegisterDevice again.
+ *
  * Revision 1.2  2006/09/29 12:29:16  haraldkipp
  * Several fixes to make it running reliably on the AT91SAM9260.
  *
@@ -413,6 +418,12 @@ static int EmacReset(u_long tmo)
     phy_inw(NIC_PHY_BMCR);
     phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
 #endif
+
+    /* For some unknown reason it seems to be required to read the ID registers first. */
+    if (phy_inw(NIC_PHY_ID1) != 0x0181 || (phy_inw(NIC_PHY_ID2) & 0xFFF0) != 0xB8A0) {
+        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+        return -1;
+    }
 
     /* Handle auto negotiation if configured. */
     phyval = phy_inw(NIC_PHY_BMCR);
@@ -860,7 +871,9 @@ int EmacInit(NUTDEVICE * dev)
 
     /* Reset the controller. */
     if (EmacReset(0xFFFF)) {
-        return -1;
+        if (EmacReset(0xFFFFF)) {
+            return -1;
+        }
     }
 
     /* Clear EMACINFO structure. */
