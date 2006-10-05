@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/05 17:25:41  haraldkipp
+ * Avoid possible alignment errors. Fixes bug #1567748.
+ *
  * Revision 1.5  2006/03/29 01:23:52  olereinhardt
  *  Signednes of strings
  *
@@ -377,8 +380,9 @@ void NutDumpPpp(FILE * stream, NETBUF * nb)
             ppp_header_sz = 1;
             protocol = *(u_char *) nb->nb_dl.vp;
         } else {
+            char *cp = (char *)nb->nb_dl.vp;
             ppp_header_sz = 2;
-            protocol = ntohs(*(u_short *) nb->nb_dl.vp);
+            protocol = ntohs(((u_short)cp[0] << 8) | cp[1]);
         }
     } else {
         ppp_header_sz = sizeof(PPPHDR);

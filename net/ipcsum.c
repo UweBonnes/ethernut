@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/05 17:25:41  haraldkipp
+ * Avoid possible alignment errors. Fixes bug #1567748.
+ *
  * Revision 1.4  2005/04/05 17:39:56  haraldkipp
  * Replaced all this awful crap by a simple generic routine.
  *
@@ -139,20 +142,25 @@
 u_short NutIpChkSumPartial(u_short ics, CONST void *buf, size_t len)
 {
     register u_long sum = ics;
-    register u_short *wp = (u_short *) buf;
+    register u_char *cp = (u_char *) buf;
 
     /* Sum up 16 bit values. */
     while (len > 1) {
-        sum += *wp++;
+#ifdef __BIG_ENDIAN__
+        sum += ((u_short)*cp << 8) | *(cp + 1);
+#else
+        sum += ((u_short)*(cp + 1) << 8) | *cp;
+#endif
+        cp += 2;
         len -= 2;
     }
 
     /* Add remaining byte on odd lengths. */
     if (len) {
 #ifdef __BIG_ENDIAN__
-        sum += ((u_short) (*(u_char *) wp)) << 8;
+        sum += (u_short)*cp << 8;
 #else
-        sum += *(u_char *) wp;
+        sum += *cp;
 #endif
     }
 

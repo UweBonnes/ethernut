@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2006/10/05 17:25:41  haraldkipp
+ * Avoid possible alignment errors. Fixes bug #1567748.
+ *
  * Revision 1.21  2006/05/15 12:49:12  haraldkipp
  * ICCAVR doesn't accept void pointer calculation.
  *
@@ -275,7 +278,7 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
                 
             /* Read MAXSEG option */
             case TCPOPT_MAXSEG:
-                s = ntohs(*(u_short*) (cp + 2));
+                s = ntohs(((u_short)cp[2] << 8) | cp[3]);
                 if (s < sock->so_mss)
                     sock->so_mss = s;
                 cp += TCPOLEN_MAXSEG;

@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/10/05 17:25:41  haraldkipp
+ * Avoid possible alignment errors. Fixes bug #1567748.
+ *
  * Revision 1.7  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -164,8 +167,9 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
             protocolsz = 1;
             protocol = *(u_char *) nb->nb_dl.vp;
         } else {
+            char *cp = (char *)nb->nb_dl.vp;
             protocolsz = 2;
-            protocol = ntohs(*(u_short *) nb->nb_dl.vp);
+            protocol = ntohs(((u_short)cp[0] << 8) | cp[1]);
         }
 
         /*
