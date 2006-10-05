@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/05 17:09:40  haraldkipp
+ * Signed mismatches corrected.
+ *
  * Revision 1.1  2003/11/03 16:07:40  haraldkipp
  * Completely rewritten to support Ethernut 2
  *
@@ -49,8 +52,8 @@ __BEGIN_DECLS
 
 extern int DetectSpeed(void);
 extern u_char GetChar(void);
-extern int GetLine(u_char * line, int size);
-extern u_char *GetIP(u_char * prompt, u_char * value);
+extern int GetLine(char * line, int size);
+extern char *GetIP(char * prompt, char * value);
 
 __END_DECLS
 

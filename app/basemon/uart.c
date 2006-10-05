@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/05 17:09:40  haraldkipp
+ * Signed mismatches corrected.
+ *
  * Revision 1.5  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -77,7 +80,7 @@ u_char GetChar(void)
 /*
  * Get a line of input.
  */
-int GetLine(u_char * line, int size)
+int GetLine(char * line, int size)
 {
     int cnt = 0;
     u_char ch;
@@ -102,7 +105,7 @@ int GetLine(u_char * line, int size)
 /*
  * Get a line of input.
  */
-u_char *GetIP(u_char * prompt, u_char * value)
+char *GetIP(char * prompt, char * value)
 {
     static prog_char badip_P[] = "Bad IP address";
 

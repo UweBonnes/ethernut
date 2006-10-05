@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2006/10/05 17:09:40  haraldkipp
+ * Signed mismatches corrected.
+ *
  * Revision 1.6  2006/09/29 12:18:35  haraldkipp
  * Added support for ATmega2561.
  *
@@ -90,10 +93,10 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 
     fputs_P(ttop_P, stream);
     while (tdp) {
-        fprintf_P(stream, tfmt_P, tdp, tdp->td_name, tdp->td_priority,
-                  states[tdp->td_state], tdp->td_queue, tdp->td_timer,
-                  tdp->td_sp,
-                  (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory, *((u_long *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
+        fprintf_P(stream, tfmt_P, (u_int)tdp, tdp->td_name, tdp->td_priority,
+                  states[tdp->td_state], (u_int)tdp->td_queue, (u_int)tdp->td_timer,
+                  (u_int)tdp->td_sp,
+                  (u_int) tdp->td_sp - (u_int) tdp->td_memory, *((u_long *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
         tdp = tdp->td_next;
     }
     fputs_P(tbot_P, stream);
@@ -130,7 +133,7 @@ static int ShowTimer(FILE * stream, REQUEST * req)
         ticks_left = 0;
         while (tnp) {
             ticks_left += tnp->tn_ticks_left;
-            fprintf_P(stream, tfmt_P, tnp, ticks_left, tnp->tn_ticks, tnp->tn_callback, tnp->tn_arg);
+            fprintf_P(stream, tfmt_P, (u_int)tnp, ticks_left, tnp->tn_ticks, (u_int)tnp->tn_callback, (u_int)tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
@@ -162,7 +165,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
 
     NutEnterCritical();
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
-        fprintf_P(stream, fmt1_P, ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
+        fprintf_P(stream, fmt1_P, (u_int)ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf_P(stream, fmt2_P, inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
         switch (ts->so_state) {
         case TCPS_LISTEN:
@@ -238,7 +241,9 @@ static int ShowPorts(FILE * stream, REQUEST * req)
         "<form action=\"cgi-bin/setports.cgi\" "
         "enctype=\"text/plain\"> <TABLE BORDER>"
         "<tr><td>Bit</td><td>7</td><td>6</td>" "<td>5</td><td>4</td><td>3</td><td>2</td>" "<td>1</td><td>0</td></tr>\r\n";
+#if defined (__AVR__)
     static prog_char trow_P[] = "<tr></tr>";
+#endif
     static prog_char tbot_P[] = "</table></form>\r\n</body>\r\n</html>";
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");

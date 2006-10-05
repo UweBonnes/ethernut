@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/05 17:09:40  haraldkipp
+ * Signed mismatches corrected.
+ *
  * Revision 1.5  2006/09/29 12:18:35  haraldkipp
  * Added support for ATmega2561.
  *
@@ -487,7 +490,7 @@ int XMemBankTest(size_t *xramsize)
  */
 void LoopSRAM(void)
 {
-    register u_short pattern;
+    register u_int pattern;
     volatile u_char *mem;
     uptr_t faddr = 0xFFFF;
     puts("Check address and data bus.");
@@ -510,7 +513,7 @@ void LoopSRAM(void)
         }
         Delay(5000);
         if (GetChar()) {
-            printf("No RAM at 0x%04X\n", faddr);
+            printf("No RAM at 0x%04X\n", (u_int)faddr);
             return;
         }
     }
