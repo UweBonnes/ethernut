@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2006/10/05 17:26:15  haraldkipp
+ * Fixes bug #1567729. Thanks to Ashley Duncan.
+ *
  * Revision 1.10  2006/09/29 12:26:14  haraldkipp
  * All code should use dedicated stack allocation routines. For targets
  * allocating stack from the normal heap the API calls are remapped by
@@ -255,7 +258,7 @@ void *NutHeapAlloc(size_t size)
     }
 #ifdef NUTDEBUG
     if (__heap_trf) {
-        fprintf_P(__heap_trs, "\n[H%x,A%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size), (int)size);
+        fprintf(__heap_trs, "\n[H%x,A%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size), (int)size);
     }
 #endif
     return fit;
@@ -307,6 +310,7 @@ int NutHeapFree(void *block)
     HEAPNODE *node;
     HEAPNODE **npp;
     HEAPNODE *fnode;
+    size_t size;
 
 #ifdef NUTDEBUG
     if (__heap_trf) {
@@ -328,9 +332,9 @@ int NutHeapFree(void *block)
 
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf_P(__heap_trs, "\n[H%x,F%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
+        fprintf(__heap_trs, "\n[H%x,F%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
 #endif
-    available += fnode->hn_size;
+    size = fnode->hn_size;
 
     /*
      * Walk through the linked list of free nodes and try
@@ -396,6 +400,8 @@ int NutHeapFree(void *block)
         fnode->hn_next = node;
         *npp = fnode;
     }
+    available += size;
+
     return 0;
 }
 
