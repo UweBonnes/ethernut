@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.25  2006/10/06 17:49:57  haraldkipp
+ * MAX_PATH is unknown to Linux.
+ *
  * Revision 1.24  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -1352,7 +1355,7 @@ static int CreateDirectoryPath(const char *path)
 
 static const char *MakeTargetPath(const char *dir, const char *path)
 {
-    static char result[_MAX_PATH];
+    static char result[255];
 
     /* Immediately return absolute paths. */
     if (dir[0] == '/' || dir[1] == ':') {
