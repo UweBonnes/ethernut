@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/06 23:19:08  hwmaier
+ * Added include statement for cfg/memory.h so the macro NUTMEM_STACKHEAP is found when compiling for the AT90CAN128.
+ *
  * Revision 1.3  2006/09/29 12:26:14  haraldkipp
  * All code should use dedicated stack allocation routines. For targets
  * allocating stack from the normal heap the API calls are remapped by
@@ -74,6 +77,7 @@
  *
  */
 
+#include <cfg/memory.h>
 #include <sys/types.h>
 
 /*!
