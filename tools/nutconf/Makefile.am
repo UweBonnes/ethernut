@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.6  2006/10/06 17:51:02  haraldkipp
+# *** empty log message ***
+#
 # Revision 1.5  2006/04/07 18:48:59  haraldkipp
 # Added maintainer-clean targets
 #
@@ -67,15 +70,16 @@ configitem.cpp configtree.cpp enumeditctrl.cpp iconinfo.cpp iconlist.cpp \
 infowindow.cpp inteditctrl.cpp mainframe.cpp nutconfdoc.cpp nutconfhint.cpp \
 nutconfview.cpp propertylist.cpp repoptdlg.cpp scrolledtree.cpp settings.cpp \
 settingsdlg.cpp splitscroll.cpp texteditctrl.cpp tooloptdlg.cpp treecomp.cpp \
-treeitemdata.cpp utils.cpp valuewindow.cpp \
+treeitemdata.cpp utils.cpp valuewindow.cpp finddlg.cpp \
 appoptdlg.h iconinfo.h nutconfdoc.h scrolledtree.h treeitemdata.h \
 bldoptdlg.h iconlist.h nutconf.h settingsdlg.h utils.h \
 configitem.h ids.h nutconfhint.h settings.h valuewindow.h \
 configtree.h infowindow.h nutconfview.h splitscroll.h \
 inteditctrl.h propertylist.h texteditctrl.h \
 enumeditctrl.h mainframe.h repoptdlg.h tooloptdlg.h \
-nutcomponent.h resource.h treecomp.h \
+nutcomponent.h resource.h treecomp.h finddlg.h \
 bitmaps/application.xpm \
+bitmaps/building_large.xpm bitmaps/building.xpm \
 bitmaps/checked_dis.xpm bitmaps/module.xpm \
 bitmaps/checked.xpm bitmaps/nutconf.xpm \
 bitmaps/closedfolder_dis.xpm \

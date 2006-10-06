@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.17  2006/10/06 17:51:32  haraldkipp
+# *** empty log message ***
+#
 # Revision 1.16  2006/09/08 16:02:29  haraldkipp
 # Release candidate 9
 #
@@ -89,7 +92,7 @@
 #
 #
 
-AC_INIT(ethernut,4.1.9-rc9)
+AC_INIT(ethernut,4.1.99-rc)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2006 egnite Software GmbH])
