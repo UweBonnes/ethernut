@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2006/10/07 00:24:14  hwmaier
+ * Include of sys/heap.h added.
+ *
  * Revision 1.8  2006/09/29 12:39:23  haraldkipp
  * Added support for ATmega2561.
  *
@@ -115,6 +118,7 @@
  */
 
 #include <sys/thread.h>
+#include <sys/heap.h>
 #include <cfg/memory.h>
 #include <cfg/os.h>
 #include <cfg/arch/avr.h>
@@ -560,16 +564,16 @@ void NutCustomInit(void)
 */
 #elif defined(XNUT_100) || defined(XNUT_105)
 {
-    PORTB = 0xF5; /* 0b11110101 */
-    DDRB  = 0x3F; /* 0b00111111 */
-    PORTD = 0x6C; /* 0b01101100 */
-    DDRD  = 0xB0; /* 0b10110000 */
-    PORTE = 0xDF; /* 0b11011111 */
-    DDRE  = 0x02; /* 0b00000010 */
-    PORTF = 0xF0; /* 0b11110000 */
-    DDRF  = 0x0F; /* 0b00001111 */
-    PORTG = 0x1F; /* 0b00011111 */
-    DDRG  = 0x07; /* 0b00000111 */
+    PORTB = 0x35;
+    DDRB  = 0x3F;
+    PORTD = 0xE8;
+    DDRD  = 0xB0;
+    PORTE = 0x0E;
+    DDRE  = 0x02;
+    PORTF = 0xF0;
+    DDRF  = 0x0F;
+    PORTG = 0x1F;
+    DDRG  = 0x07;
 
     ACSR |= _BV(ACD); /* Switch off analog comparator to reduce power consumption */
 
