@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.358 2006/10/05 17:02:15 haraldkipp Exp $
+$Id: ChangeLog,v 1.359 2006/10/07 00:25:05 hwmaier Exp $
+
+
+2006-10-07 Henrik Maier  <henrik@proconx.com>
+
+        * arch/avr/os/nutinit.c: include of sys/heap.h added.
+        
+        * include/sys/heap.h: Added an include statement for cfg/memory.h
+        so the macro NUTMEM_STACKHEAP is found when compiling for the
+        AT90CAN128.
+
 
 2006-10-05  Harald Kipp  <harald.kipp@egnite.de>
 
