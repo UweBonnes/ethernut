@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2006/03/29 01:23:52  olereinhardt
  *  Signednes of strings
  *
@@ -140,6 +143,8 @@
  * \note Applications typically do not call this function.
  *
  * \param dev   Identifies the device to use.
+ * \param code  Type subcode.
+ * \param id    Exchange identifier.
  * \param nb    Network buffer structure containing the packet to send
  *              or null if the packet contains no information.
  *              The structure must have been allocated by a previous

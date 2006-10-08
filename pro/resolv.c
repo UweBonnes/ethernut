@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.11  2006/03/16 15:25:39  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -421,6 +424,7 @@ void NutDnsConfig(u_char * hostname, u_char * domain, u_long dnsip)
  * any other resource information than the IP address.
  *
  * \param hostname Fully qualified domain name of the host.
+ * \param type     Request type.
  *
  * \return IP address, which is zero, if the name could not
  *         be resolved.

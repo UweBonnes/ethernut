@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2006/09/05 12:34:55  haraldkipp
  * Added commands for native MMC interface.
  *
@@ -62,15 +65,15 @@
  * \brief Low level access information structure.
  */
 typedef struct _MMCIFC {
-    /*!< Initialize the card. */
+    /*! Initialize the card. */
     int (*mmcifc_in) (void);
-    /*!< Read received byte and transmit a new one. */
+    /*! Read received byte and transmit a new one. */
      u_char(*mmcifc_io) (u_char);
-    /*!< Select or deselect the card. */
+    /*! Select or deselect the card. */
     int (*mmcifc_cs) (int);
-    /*!< Query card detect. */
+    /*! Query card detect. */
     int (*mmcifc_cd) (void);
-    /*!< Query write protect. */
+    /*! Query write protect. */
     int (*mmcifc_wp) (void);
 } MMCIFC;
 
@@ -321,9 +324,11 @@ typedef struct __attribute__ ((packed)) _MMC_CSD {
     u_char mmcsd_rfld[8];
     /*! \brief Programmable field. */
     u_char mmcsd_pfld;
-    /*! \brief . */
+    /*! \brief Checksum. */
     u_char mmcsd_crc;
 } MMC_CSD;
+
+/*@}*/
 
 __BEGIN_DECLS
 /* Prototypes */

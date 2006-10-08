@@ -33,12 +33,15 @@
  */
 
 /*!
- * \file arch/arm/at45db.h
+ * \file dev/at45db.h
  * \brief Dataflash helper routines.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/09/29 12:41:55  haraldkipp
  * Added support for AT45 serial DataFlash memory chips. Currently limited
  * to AT91 builds.

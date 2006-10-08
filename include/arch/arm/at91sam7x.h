@@ -36,12 +36,15 @@
  * Change to sam7x.h
  *     By HU Daoxu, 2006/05/26
  *
- * \file arch/arm/at91.h
+ * \file arch/arm/at91sam7x.h
  * \brief AT91 peripherals.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.6  2006/09/29 12:45:08  haraldkipp
  * Added PIO features and SPI peripheral selections.
  *
@@ -143,7 +146,7 @@
 #include <arch/arm/at91_mc.h>
 #include <arch/arm/at91_ssc.h>
 
-/*! \addtogroup xgNutArchArmAt91 */
+/*! \addtogroup xgNutArchArmAt91Sam7x */
 /*@{*/
 
 /*! \name Peripheral Identifiers and Interrupts */

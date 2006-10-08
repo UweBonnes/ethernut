@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.13  2006/03/16 15:25:38  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -237,9 +240,6 @@ void NutHttpSendError(FILE * stream, REQUEST * req, int status)
  *
  * The mime type returned is based on the file extension.
  *
- * \todo Function to register additional mime types. Currently only
- *       .txt, .html, .gif and .jpg are supported.
- *
  * \param name Name of the file.
  *
  * \return A pointer to a static string, containing the
@@ -268,9 +268,6 @@ char *NutGetMimeType(char *name)
  * This is the function that handles / sends a specific file type to the 
  * client. Escpecialy used for server side includes (shtml files)
  *
- * \todo Function to register additional mime types. Currently only
- *       .txt, .html, .gif and .jpg are supported.
- *
  * \param name Name of the file.
  *
  * \return A pointer to a function of the type void (u_char * filename)
@@ -298,9 +295,6 @@ void *NutGetMimeHandler(char *name)
  *
  * This is the function that handles / sends a specific file type to the 
  * client. Escpecialy used for server side includes (shtml files)
- *
- * \todo Function to register additional mime types. Currently only
- *       .txt, .html, .gif and .jpg are supported.
  *
  * \param extension Filename extension the handler should be registered for
  * \param handler pointer to a function of the type void (u_char filename)

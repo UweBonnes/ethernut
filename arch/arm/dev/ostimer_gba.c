@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.3  2005/10/24 17:59:19  haraldkipp
  * Use correct header file, arm, not gba.
  *
@@ -93,6 +96,8 @@ static void (*os_handler) (void *);
  * Use NutSleep() to avoid blocking the CPU, if no
  * exact timing is needed.
  *
+ * \bug This function is a miserable hack.
+ *
  * \param ms Delay time in milliseconds, maximum is 255.
  */
 void NutDelay(u_char ms)
@@ -126,8 +131,6 @@ void Timer3Entry(void *arg)
  * Applications should not modify any registers of this
  * timer, but make use of the Nut/OS timer API. Timer 1
  * and timer 2 are available to applications.
- *
- * \todo Hardware stuff to be put in nutlibdev.
  */
 void NutRegisterTimer(void (*handler) (void *))
 {

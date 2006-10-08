@@ -32,12 +32,15 @@
  */
 
 /*!
- * \file arch/avr/dev/ivect13.c
+ * \file arch/avr/dev/ih_timer1_compb.c
  * \brief Timer/Counter 1 compare match B interrupt.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/02/08 15:14:21  haraldkipp
  * Using the vector number as a file name wasn't a good idea.
  * Moved from ivect*.c

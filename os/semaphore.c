@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.7  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.6  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -80,7 +83,7 @@ extern "C" {
  *  If the semaphore value is currently zero, then the calling thread will not
  *  return from the call to sem_wait() the semaphore becomes available
  *
- * \Note: Should not be called from interrupt context
+ * \note: Should not be called from interrupt context
  */ void NutSemWait(SEM * sem) {
         sem->value--;
         if (sem->value < 0)
@@ -92,7 +95,7 @@ extern "C" {
 /*!
  * \brief Unlock a sempahore.
  *
- * \Note: Should not be called from interrupt context
+ * \note: Should not be called from interrupt context
  */
     void NutSemPost(SEM * sem) {
         sem->value++;
@@ -106,7 +109,7 @@ extern "C" {
  * \brief Attempt to lock a semaphore without blocking
  *
  * Return zero, if successful, otherwise the sempahore is already locked
- * \Note: Should not be called from interrupt context
+ * \note: Should not be called from interrupt context
  */
 
     int NutSemTryWait(SEM * sem) {

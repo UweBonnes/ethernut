@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2004/09/08 10:24:00  haraldkipp
  * Generic C string library added
  *
@@ -72,15 +75,6 @@
  * \addtogroup xgCrtString
  */
 /*@{*/
-
-/*!
- * \brief 
- * 
- *
- * \param 
- *
- * \return 
- */
 
 typedef unsigned char u_char;
 
@@ -161,6 +155,7 @@ int stricmp(CONST char *s1, CONST char *s2)
  *
  * \param s1 Pointer to the first string.
  * \param s2 Pointer to the second string.
+ * \param n  Number of bytes to compare.
  *
  * \return An integer greater than, equal to, or less than 0, according
  *         to whether the first string is greater than, equal to, or less 

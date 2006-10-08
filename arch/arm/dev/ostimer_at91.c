@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.12  2006/09/29 12:37:36  haraldkipp
  * Now working correctly, if the CPU is running on the second PLL.
  *
@@ -134,6 +137,8 @@
  *
  * Use NutSleep() to avoid blocking the CPU, if no
  * exact timing is needed.
+ *
+ * \bug This function is a miserable hack.
  *
  * \param ms Delay time in milliseconds, maximum is 255.
  */

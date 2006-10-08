@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.3  2005/10/16 23:21:33  hwmaier
  * Fixed compilation issue regards U2X macro with Imagecraft
  *
@@ -388,7 +391,7 @@ static void UartAvrDisable(u_short base)
  *          the granularity of the system timer. To disable timeout,
  *          set the parameter to NUT_WAIT_INFINITE.
  *
- * \bug For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
+ * \note For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
  *
  */
 int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)

@@ -32,12 +32,15 @@
  */
 
 /*!
- * \file arch/avr/dev/ivect17.c
+ * \file arch/avr/dev/ih_spi_stc.c
  * \brief SPI serial transfer complete interrupt.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/02/08 15:14:21  haraldkipp
  * Using the vector number as a file name wasn't a good idea.
  * Moved from ivect*.c

@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2006/10/05 17:22:35  haraldkipp
  * Fixes bug #1281167. Thanks to Jukka Holappa.
  *
@@ -133,7 +136,7 @@ long lseek(int fh, long pos, int whence)
 /*!
  * \brief Remove a directory.
  *
- * \param name Pathname of the directory. Must be the full pathname
+ * \param path Pathname of the directory. Must be the full pathname
  *             including the device, because Nut/OS doesn't support 
  *             relative paths.
  *

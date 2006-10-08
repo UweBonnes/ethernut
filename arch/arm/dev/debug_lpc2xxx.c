@@ -210,5 +210,3 @@ NUTDEVICE devDebug1 = {
   DebugClose,                 /*!< dev_close. */
   0                           /*!< dev_size. */
 };
-
-/*@}*/

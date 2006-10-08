@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -79,18 +82,15 @@
 /*@{*/
 
 /*!
- * \brief 
+ * \brief Convert a string to long integer.
  *
  * 
- * \param
+ * \param nptr   Points to a character string to convert.
+ * \param endptr Is a result parameter that, if not NULL, returns a string 
+ *               beginning with the first character not converted.
+ * \param base   Number base of the string.
  *
- * \return
- */
-/*
- * Convert a string to a long integer.
- *
- * Ignores `locale' stuff.  Assumes that the upper and lower case
- * alphabets and digits are each contiguous.
+ * \return Converted value.
  */
 long strtol(const char *nptr, char **endptr, int base)
 {

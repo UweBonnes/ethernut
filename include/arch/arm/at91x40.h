@@ -34,12 +34,15 @@
  */
 
 /*!
- * \file arch/arm/at91.h
+ * \file arch/arm/at91x40.h
  * \brief AT91 peripherals.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.3  2006/08/05 11:56:29  haraldkipp
  * Old SAM7X leftovers finally removed.
  * PDC register configuration added.
@@ -77,7 +80,7 @@
  * \endverbatim
  */
 
-/*! \addtogroup xgNutArchArmAt91 */
+/*! \addtogroup xgNutArchArmAt91x40 */
 /*@{*/
 
 /*! \name Peripheral Identifiers and Interrupts */

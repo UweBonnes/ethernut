@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.7  2006/03/16 15:25:38  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -1039,6 +1042,8 @@ int NutFtpProcessUser(FTPSESSION * session, char *user)
  *
  * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
  *                previous call to NutFtpOpenSession().
+ * \param request Request string.
+ *
  * \return -1 if the session ended. Otherwise 0 is returned.
  */
 int NutFtpProcessRequest(FTPSESSION * session, char *request)

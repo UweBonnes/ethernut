@@ -32,8 +32,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:56  haraldkipp
- * Initial revision
+ * Revision 1.2  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:56  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/02/04 18:17:31  harald
  * Version 3 released
@@ -58,7 +61,7 @@ CGIFUNCTION *volatile cgiFunctionList = 0;
 /*!
  * \brief Register a CGI function.
  *
- * \bug Duplicate names not checked.
+ * \todo Duplicate names not checked.
  *
  * \param name Name of this CGI function.
  * \param func The function to be called, if the

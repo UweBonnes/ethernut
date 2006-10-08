@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2006/05/25 09:33:35  haraldkipp
  * Bugfix. At49bvParamWrite() returned an error when flash sector contents
  * was equal to the contents to write.
@@ -245,7 +248,7 @@ int At49bvSectorWrite(u_int off, CONST void *data, u_int len)
  * \brief Load configuration parameters from flash memory.
  *
  * \param pos   Start location within configuration sector.
- * \param buff  Points to a buffer that receives the contents.
+ * \param data  Points to a buffer that receives the contents.
  * \param len   Number of bytes to read.
  *
  * \return Always 0.

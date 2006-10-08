@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.359 2006/10/07 00:25:05 hwmaier Exp $
+$Id: ChangeLog,v 1.360 2006/10/08 16:48:07 haraldkipp Exp $
 
 
 2006-10-07 Henrik Maier  <henrik@proconx.com>
@@ -8,6 +8,34 @@ $Id: ChangeLog,v 1.359 2006/10/07 00:25:05 hwmaier Exp $
         * include/sys/heap.h: Added an include statement for cfg/memory.h
         so the macro NUTMEM_STACKHEAP is found when compiling for the
         AT90CAN128.
+
+
+2006-10-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Fixed problems with Doxygen tags in a large number of files.
+
+	* dev/ds1307rtc.c: Corrected range check in DS1307RamRead().
+	Thanks to Helmut Holbach.
+
+	* conf/arch/avr.nut, conf/repository.nut, arch/avr/dev/hd44780.c: 
+	Many thanks to Thiago Correa for adding LCD port configuration.
+
+	* arch/arm/ldscripts/at91_rom.ld: Matthias Wilde's enhancements
+	for C++ support should allow to run C++ programs in ROM/FLASH.
+
+	* arch/arm/dev/at91_emac.c, conf/arch/arm.nut: PHY address and 
+	power down bit are now configurable.
+
+	* fs/phatdir.c, fs/phatfs.c, fs/phatvol.c, include/fs/phatdir.h,
+	include/fs/phatfs.h, include/fs/phatvol.h: Not optimal, but
+	simple and reliable exclusive access implemented. Fixes bug
+	#1486539. Furthermore, bug #1567790, which had been rejected,
+	had been reported correctly and is now fixed.
+
+	* pro/auth.c, include/pro/httpd.h: Authentication info
+	depended on static memory kept by the caller. Now a
+	local copy is held and NutClearAuth (which should have been
+	named NutHttpAuthClear, btw.) works correctly.
 
 
 2006-10-05  Harald Kipp  <harald.kipp@egnite.de>

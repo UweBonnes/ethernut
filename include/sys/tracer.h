@@ -194,10 +194,10 @@ extern void NutTracePrint(int size);
  * Commands to manipulate the tracing facility
  * 
  * @param arg String containing the commands
- * - print <size> calls NutPrintTrace
+ * - print &lt;size&gt; calls NutPrintTrace
  * - oneshot restarts tracing in the oneshot mode
  * - circular restarts tracing in the ciruclar mode
- * - size <size> restarts tracing in the current mode, using a buffer of length <size>
+ * - size &lt;size&gt; restarts tracing in the current mode, using a buffer of length &lt;size&gt;
  * - stop stops tracing
  */
 extern void NutTraceTerminal(char* arg);

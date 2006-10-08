@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/07/26 11:20:57  haraldkipp
  * Added non-volatile configuration memory support for SAM7X, using upper
  * 16k region of on-chip flash.
@@ -52,6 +55,11 @@
 #include <dev/nvmem.h>
 
 #include <arch/arm/at91_efc.h>
+
+/*!
+ * \addtogroup xgAt91Efc
+ */
+/*@{*/
 
 /*! \brief Base address of the flash memory chip.
  */
@@ -234,7 +242,7 @@ int At91EfcRegionUnlock(u_int off)
  * Applications should call NutNvMemLoad().
  *
  * \param pos   Start location within configuration sector.
- * \param buff  Points to a buffer that receives the contents.
+ * \param data  Points to a buffer that receives the contents.
  * \param len   Number of bytes to read.
  *
  * \return Always 0.

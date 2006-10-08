@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2006/06/18 16:39:46  haraldkipp
  * File modification date changed from GMT to local time for Windows
  * compatibility.
@@ -194,7 +197,7 @@ int MakePhatName(CONST char *src, u_char * dst)
  * \brief Convert a directory entry name to a visible file name.
  *
  * \param src Original name in the format 'name    ext'.
- * \param src Converted name in the format 'name.ext'.
+ * \param dst Converted name in the format 'name.ext'.
  *
  * \return 0 on success, 1 if the name contains wildcards or
  *         -1 if the name is malformed.

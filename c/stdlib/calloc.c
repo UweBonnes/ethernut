@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -79,12 +82,13 @@
 /*@{*/
 
 /*!
- * \brief 
+ * \brief Allocate space for an array.
  *
- * 
- * \param
+ * \param num  Number of elements.
+ * \param size Size of a single element.
  *
- * \return
+ * \return A pointer to the allocated space or a null pointer if 
+ *         not enough memory space is available.
  */
 
 void *calloc(size_t num, size_t size)

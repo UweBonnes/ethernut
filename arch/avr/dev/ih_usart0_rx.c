@@ -32,12 +32,15 @@
  */
 
 /*!
- * \file arch/avr/dev/ivect20.c
+ * \file arch/avr/dev/ih_usart0_rx.c
  * \brief USART0 receive complete interrupt.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2006/07/13 05:05:43  hwmaier
  * Fixed typing error for NUT_PERFMON counter
  *

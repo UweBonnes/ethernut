@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -769,7 +772,7 @@ static void AhdlcAvrDisable(u_short base)
  * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer.
  *
- * \bug For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
+ * \note For ATmega103, only 8 data bits, 1 stop bit and no parity are allowed.
  *
  */
 int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)

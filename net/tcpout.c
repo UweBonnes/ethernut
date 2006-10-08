@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.7  2006/03/02 19:57:34  haraldkipp
  * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
  *
@@ -184,6 +187,8 @@
  *
  * \param sock  Socket descriptor. This pointer must have been retrieved 
  *              by calling NutTcpCreateSocket().
+ * \param data  Pointer to TCP segment contents.
+ * \param size  TCP segment length.
  *
  * \return 0 on success, -1 otherwise. Returning 0 does not imply that 
  *         the data has been successfully delivered, because flow control 

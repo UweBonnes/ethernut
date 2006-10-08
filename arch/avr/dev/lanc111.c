@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2006/06/28 14:30:19  haraldkipp
  * Post to the event queue on overflow interrupts.
  * Transmit event queue removed, because no one is listening.
@@ -311,7 +314,7 @@
 /*!
  * \brief Bank 2 - Allocation result register.
  *
- * This byte register is updated upon a \ref MMU_ALO command.
+ * This byte register is updated upon a MMU_ALO command.
  */
 #define NIC_ARR         (LANC111_BASE_ADDR + 0x03)
 
@@ -353,14 +356,14 @@
  */
 #define NIC_MSK         (LANC111_BASE_ADDR + 0x0D)
 
-#define INT_MD          0x80    /*!< \ref PHY state change interrupt bit mask. */
-#define INT_ERCV        0x40    /*!< \ref Early receive interrupt bit mask. */
-#define INT_EPH         0x20    /*!< \ref Ethernet protocol interrupt bit mask. */
-#define INT_RX_OVRN     0x10    /*!< \ref Receive overrun interrupt bit mask. */
-#define INT_ALLOC       0x08    /*!< \ref Transmit allocation interrupt bit mask. */
-#define INT_TX_EMPTY    0x04    /*!< \ref Transmitter empty interrupt bit mask. */
-#define INT_TX          0x02    /*!< \ref Transmit complete interrupt bit mask. */
-#define INT_RCV         0x01    /*!< \ref Receive interrupt bit mask. */
+#define INT_MD          0x80    /*!< \brief PHY state change interrupt bit mask. */
+#define INT_ERCV        0x40    /*!< \brief Early receive interrupt bit mask. */
+#define INT_EPH         0x20    /*!< \brief Ethernet protocol interrupt bit mask. */
+#define INT_RX_OVRN     0x10    /*!< \brief Receive overrun interrupt bit mask. */
+#define INT_ALLOC       0x08    /*!< \brief Transmit allocation interrupt bit mask. */
+#define INT_TX_EMPTY    0x04    /*!< \brief Transmitter empty interrupt bit mask. */
+#define INT_TX          0x02    /*!< \brief Transmit complete interrupt bit mask. */
+#define INT_RCV         0x01    /*!< \brief Receive interrupt bit mask. */
 
 /*!
  * \brief Bank 3 - Multicast table register.

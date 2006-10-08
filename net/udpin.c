@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.5  2005/06/05 16:48:32  haraldkipp
  * Additional parameter enables NutUdpInput() to avoid responding to UDP
  * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
@@ -137,7 +140,8 @@
  *       incoming UDP packets. Applications typically do
  *       not call this function.
  *
- * \param nb  Network buffer structure containing the UDP packet.
+ * \param nb    Network buffer structure containing the UDP packet.
+ * \param bcast Broadcast flag.
  */
  /* @@@ 2003-10-24: modified by OS for udp packet queue */
 void NutUdpInput(NETBUF * nb, ureg_t bcast)

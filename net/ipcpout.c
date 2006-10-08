@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -90,6 +93,8 @@
  * \note Applications typically do not call this function.
  *
  * \param dev   Identifies the device to use.
+ * \param code  Type subcode.
+ * \param id    Exchange identifier.
  * \param nb    Network buffer structure containing the packet to send
  *              or null if the packet contains no information.
  *              The structure must have been allocated by a previous

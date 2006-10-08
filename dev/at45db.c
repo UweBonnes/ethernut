@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/09/29 12:41:55  haraldkipp
  * Added support for AT45 serial DataFlash memory chips. Currently limited
  * to AT91 builds.
@@ -261,6 +264,7 @@ int At45dbPageRead(int dd, u_long pgn, void *data, u_int len)
  *
  * The related sector must have been erased before calling this function.
  *
+ * \param dd   Device descriptor.
  * \param pgn  Start location within the chip, starting at 0.
  * \param data Points to a buffer that contains the bytes to be written.
  * \param len  Number of bytes to write.
@@ -314,7 +318,7 @@ int At45dbParamSize(void)
  * \brief Load configuration parameters from flash memory.
  *
  * \param pos  Start location within configuration sector.
- * \param buff Points to a buffer that receives the contents.
+ * \param data Points to a buffer that receives the contents.
  * \param len  Number of bytes to read.
  *
  * \return Always 0.

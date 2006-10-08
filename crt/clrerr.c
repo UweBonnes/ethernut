@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:24  haraldkipp
- * Initial revision
+ * Revision 1.2  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:24  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:04  harald
  * *** empty log message ***
@@ -53,7 +56,7 @@
  *
  * \param stream Pointer to a previously opened stream.
  *
- * \bug This function does nothing.
+ * \note This function does nothing.
  */
 void clearerr(FILE * stream)
 {

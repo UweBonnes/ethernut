@@ -32,12 +32,15 @@
  */
 
 /*!
- * \file dev/pcf8563.c
+ * \file dev/rtc.c
  * \brief RTC for Philips PCF8563 clock chip.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
@@ -111,10 +114,10 @@ int NutRtcSetTime(CONST struct _tm *tm)
 /*!
  * \brief Get alarm date and time from the registered RTC.
  *
- * \param idx   Zero based index. Two alarms are supported.
- * \param tm    Points to a structure that receives the date and time 
- *              information.
- * \param aflgs Points to an unsigned long that receives the enable flags.
+ * \param idx    Zero based index. Two alarms are supported.
+ * \param tm     Points to a structure that receives the date and time 
+ *               information.
+ * \param aflags Points to an unsigned long that receives the enable flags.
  *
  * \return 0 on success or -1 in case of an error.
  *
@@ -130,16 +133,16 @@ int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags)
 /*!
  * \brief Set alarm date and time of the registered RTC.
  *
- * \param idx   Zero based index. Two alarms are supported.
- * \param tm    Points to a structure which contains the date and time
- *              information. May be NULL to clear the alarm.
- * \param aflgs Each bit enables a specific comparision.
- *              - Bit 0: Seconds
- *              - Bit 1: Minutes
- *              - Bit 2: Hours
- *              - Bit 3: Day of month
- *              - Bit 4: Month
- *              - Bit 7: Day of week (Sunday is zero)
+ * \param idx    Zero based index. Two alarms are supported.
+ * \param tm     Points to a structure which contains the date and time
+ *               information. May be NULL to clear the alarm.
+ * \param aflags Each bit enables a specific comparision.
+ *               - Bit 0: Seconds
+ *               - Bit 1: Minutes
+ *               - Bit 2: Hours
+ *               - Bit 3: Day of month
+ *               - Bit 4: Month
+ *               - Bit 7: Day of week (Sunday is zero)
  *
  * \return 0 on success or -1 in case of an error.
  */
@@ -154,10 +157,10 @@ int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags)
 /*!
  * \brief Query status flags from the registered RTC.
  *
- * \param sflgs Points to an unsigned long that receives the status flags.
- *              - Bit 0: Power fail.
- *              - Bit 5: Alarm 0 occured.
- *              - Bit 6: Alarm 1 occured.
+ * \param sflags Points to an unsigned long that receives the status flags.
+ *               - Bit 0: Power fail.
+ *               - Bit 5: Alarm 0 occured.
+ *               - Bit 6: Alarm 1 occured.
  *
  * \return 0 on success or -1 in case of an error.
  */
@@ -172,7 +175,7 @@ int NutRtcGetStatus(u_long * sflags)
 /*!
  * \brief Clear status flags of the registered RTC.
  *
- * \param sflgs Status flags to clear.
+ * \param sflags Status flags to clear.
  *
  * \return Always 0.
  */

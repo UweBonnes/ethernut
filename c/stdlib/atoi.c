@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -76,12 +79,11 @@
 /*@{*/
 
 /*!
- * \brief 
+ * \brief Convert string to integer.
  *
- * 
- * \param
+ * \param str Pointer to the string.
  *
- * \return
+ * \return Converted value.
  */
 int atoi(const char *str)
 {

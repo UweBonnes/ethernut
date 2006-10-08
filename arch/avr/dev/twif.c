@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2006/06/28 14:31:24  haraldkipp
  * NutEventPostFromIrq() doesn't return a result anymore. We directly
  * inspect the queue's root.
@@ -522,9 +525,6 @@ static void TwInterrupt(void *arg)
  *               parameter to NUT_WAIT_INFINITE.
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
- *
- * \bug Joel Dotreppe reported, that TwMasterTransact() doesn't work when
- *      passing 0 for txdata and txlen. Though, I'm not able to verify this.
  */
 int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
 {
@@ -638,7 +638,7 @@ int TwMasterError(void)
  *               addressed by a general call or its individual address.
  * \param rxdata Points to a data buffer where the received data bytes
  *               are stored.
- * \param rxsize Specifies the maximum number of data bytes to receive.
+ * \param rxsiz  Specifies the maximum number of data bytes to receive.
  * \param tmo	 Timeout in milliseconds. To disable timeout,
  *               set this parameter to NUT_WAIT_INFINITE.
  *

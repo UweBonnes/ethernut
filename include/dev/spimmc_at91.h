@@ -34,12 +34,15 @@
  */
 
 /*!
- * \file dev/spimmc.h
+ * \file dev/spimmc_at91.h
  * \brief Header file for AT91 SPI multimedia card interface.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/07/26 11:20:08  haraldkipp
  * Added MMC/SD-Card support for AT91SAM7X Evaluation Kit.
  *

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2006/04/07 12:08:18  haraldkipp
  * Compiler warning fixed.
  *
@@ -59,13 +62,13 @@
 #include <dev/debug.h>
 #include <arch/arm.h>
 
+#include <sys/device.h>
+#include <sys/file.h>
+
 /*!
  * \addtogroup xgDevDebugGba
  */
 /*@{*/
-
-#include <sys/device.h>
-#include <sys/file.h>
 
 #define PALRAM_BASE     0x05000000
 #define VIDRAM_BASE     0x06000000

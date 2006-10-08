@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.5  2006/06/28 17:10:35  haraldkipp
  * Include more general header file for ARM.
  *
@@ -448,7 +451,7 @@ int TwMasterError(void)
  *               addressed by a general call or its individual address.
  * \param rxdata Points to a data buffer where the received data bytes
  *               are stored.
- * \param rxsize Specifies the maximum number of data bytes to receive.
+ * \param rxsiz  Specifies the maximum number of data bytes to receive.
  * \param tmo	 Timeout in milliseconds. To disable timeout,
  *               set this parameter to NUT_WAIT_INFINITE.
  *

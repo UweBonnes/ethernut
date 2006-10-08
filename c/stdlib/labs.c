@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -76,12 +79,11 @@
 /*@{*/
 
 /*!
- * \brief 
- *
+ * \brief Get absolute value of a long integer.
  * 
- * \param
+ * \param j Long integer.
  *
- * \return
+ * \return Absolute value.
  */
 long labs(long j)
 {

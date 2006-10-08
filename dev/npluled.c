@@ -57,7 +57,7 @@
 /*!
  * \brief User LED control routine.
  *
- * \param on ULED_ON of ULED_OFF
+ * \param status ULED_ON of ULED_OFF
  *
  */
 
@@ -87,5 +87,3 @@ int NplUledStatus(void)
 
     return rc;
 }
-
-/*@}*/

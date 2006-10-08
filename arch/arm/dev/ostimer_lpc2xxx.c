@@ -258,5 +258,3 @@ void NutDisableTimerIrq (void)
     VICIntEnClr = (1 << VIC_TIMER0);
 }
 
-/*@}*/
-

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.3  2005/10/17 08:46:53  hwmaier
  * Setting baudrate function changed: For CPUs w/ 12 and 16 MHz xtal double rate mode is now used (only if set by NUT_CPU_FREQ)
  *
@@ -61,17 +64,17 @@
 
 #include <dev/debug.h>
 
+#include <cfg/os.h>
+#include <sys/timer.h>
+#include <sys/device.h>
+#include <sys/file.h>
+
 /*!
  * \addtogroup xgDevDebugAvr
  */
 /*@{*/
 
 #ifdef __AVR_ENHANCED__
-
-#include <cfg/os.h>
-#include <sys/timer.h>
-#include <sys/device.h>
-#include <sys/file.h>
 
 static NUTFILE dbgfile;
 

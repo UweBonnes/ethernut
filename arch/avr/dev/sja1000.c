@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2005/10/24 18:02:34  haraldkipp
  * Fixes for ATmega103.
  *
@@ -238,7 +241,7 @@ inline u_char SJARxAvail(NUTDEVICE * dev)
 }
 
 /*!
- * \fn    SJATxAvail(NUTDEVICE * dev)
+ * \fn    SJATxFree(NUTDEVICE * dev)
  * \brief checks if there's still space in output buffer
  *
  * \param dev Pointer to the device structure

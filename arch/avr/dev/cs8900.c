@@ -132,6 +132,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -431,8 +434,8 @@ int CSNicOutput(NUTDEVICE * dev, NETBUF * nb)
 
 
 
-/*! \fn PPPRx(void *arg)
- * \brief PPP receiver thread.
+/*! \fn CSNICrx(void *arg)
+ * \brief NIC receiver thread.
  *
  * 
  * It runs with high priority.

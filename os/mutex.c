@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -82,7 +85,7 @@ void NutMutexInit(MUTEX * mutex) {
  * If the mutex is already locked by another thread,
  * the thread will block until the mutex becomes available
  *
- * \Note: Should not be called from interrupt context
+ * \note: Should not be called from interrupt context
  */
  
 void NutMutexLock(MUTEX * mutex) {
@@ -99,7 +102,7 @@ void NutMutexLock(MUTEX * mutex) {
  *
  * Return zero, if successful, otherwise the mutex is already locked
  * by another thread
- * \Note: Should not be called from interrupt context
+ * \note: Should not be called from interrupt context
  */
  
 int NutMutexTrylock(MUTEX * mutex) {
@@ -114,7 +117,7 @@ int NutMutexTrylock(MUTEX * mutex) {
  *
  * Return zero, if successful, otherwise the current thread does not
  * hold a lock on mutex.
- * \Note: Should not be called from interrupt context
+ * \note: Should not be called from interrupt context
  */
  
 int NutMutexUnlock(MUTEX * mutex) {

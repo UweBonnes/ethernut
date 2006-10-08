@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/09/29 12:34:59  haraldkipp
  * Basic AT91 SPI support added.
  *
@@ -222,8 +225,6 @@ int At91Spi1Enable(void)
  *
  * \param base    Interface base address, either SPI_BASE, SPI0_BASE 
  *                or SPI1_BASE.
- * \param cs_mask Chip selects to use. Set bit 0 for NPCS0, bit 1
- *                for NPCS1 and so on.
  *
  * \return 0 on success or -1 if SPI is not available.
  */
@@ -264,8 +265,6 @@ int At91SpiDisable(u_int base)
  *
  * \param base    Interface base address, either SPI_BASE, SPI0_BASE 
  *                or SPI1_BASE.
- * \param cs      Chip selects to use. Set bit 0 for NPCS0, bit 1
- *                for NPCS1 and so on.
  *
  * \return 0 on success or -1 if SPI is not available.
  */
@@ -319,6 +318,8 @@ int At91SpiInitChipSelects(u_int base, u_int mask)
 /*!
  * \brief Configure the SPI rate.
  *
+ * \param base SPI register base.
+ * \param cs   Chip select line.
  * \param rate Baudrate. The maximum is MCK/1 and the minimum is MCK/255.
  *             If the specified rate is above the maximum or below the
  *             minimum, the maximum or minimum value resp. will be set.
@@ -395,17 +396,16 @@ u_long At91SpiGetModeFlags(u_int base, u_int cs)
 /*!
  * \brief Configure the SPI operation mode.
  *
- * \param rate Baudrate. The maximum is MCK/1 and the minimum is MCK/255.
- *             If the specified rate is above the maximum or below the
- *             minimum, the maximum or minimum value resp. will be set.
- *
- * - SPIMF_MASTER   Master mode.
- * - SPIMF_PCSDEC   Decoded chip selects.
- * - SPIMF_MFDETECT Mode fault detection.
- * - SPIMF_LOOPBACK Loopback mode.
- * - SPIMF_SCKIAHI  Clock is high when inactive.
- * - SPIMF_CAPRISE  Data cpatured on rising edge.
- * - SPIMF_KEEPCS   Chip select remains active after transfer.
+ * \param base SPI register base.
+ * \param cs   Chip select line.
+ * \param mode Any of the following
+ *              - SPIMF_MASTER   Master mode.
+ *              - SPIMF_PCSDEC   Decoded chip selects.
+ *              - SPIMF_MFDETECT Mode fault detection.
+ *              - SPIMF_LOOPBACK Loopback mode.
+ *              - SPIMF_SCKIAHI  Clock is high when inactive.
+ *              - SPIMF_CAPRISE  Data cpatured on rising edge.
+ *              - SPIMF_KEEPCS   Chip select remains active after transfer.
  */
 int At91SpiSetModeFlags(u_int base, u_int cs, u_long mode)
 {

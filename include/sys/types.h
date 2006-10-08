@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.11  2006/03/27 09:34:05  freckle
  * added u_longlong and longlong for emulation
  *
@@ -162,7 +165,11 @@ extern "C" {
 
 #if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
 
-/*! \brief Unsigned 8-bit value. */
+/*! \brief Unsigned 8-bit value. 
+ *
+ * \todo We should switch to stdint.h as suggested by Dirk Kaufmann. See
+ *       feature request #1282721.
+ */
     typedef unsigned char u_char;
 
 /*! \brief Unsigned 16-bit value. */

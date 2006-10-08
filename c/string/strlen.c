@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2004/09/08 10:24:00  haraldkipp
  * Generic C string library added
  *
@@ -76,7 +79,7 @@
 /*!
  * \brief Compute the length of a NUL terminated string.
  * 
- * \param Pointer to the string.
+ * \param str Pointer to the string.
  *
  * \return The number of characters that precede the terminating NUL
  *         character.

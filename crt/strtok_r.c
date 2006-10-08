@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.5  2004/07/27 19:28:51  drsung
  * Implementation of strtok_r adjusted to the POSIX 1c standard.
  *
@@ -138,14 +141,14 @@ char *strsep_rs(char **pp_str, CONST char *p_delim, char *p_sep)
  * \brief Thread safe version of strsep.
  *
  * This function locates, in the string referenced by *str, the first occurrence of 
- * any character in the string delim (or the terminating `\0' character) and 
- * replaces it with a `\0'. The location of the next character after the delimiter 
+ * any character in the string delim (or the terminating `\\0' character) and 
+ * replaces it with a `\\0'. The location of the next character after the delimiter 
  * character (or NULL, if the end of the string was reached) is stored in *str. 
  * The original value of *str is returned.
  *
  * An "empty" field, i.e. one caused by two adjacent delimiter characters, can be 
  * detected by comparing the location referenced by the pointer returned in *str 
- * to `\0'.
+ * to `\\0'.
  *
  * If *str is initially NULL, strsep_r() returns NULL. 
  *
@@ -161,8 +164,8 @@ char *strsep_r(char **pp_str, CONST char *p_delim)
  * \brief Thread safe version of strtok.
  *
  * This function locates, in the string referenced by *s, the occurrence of 
- * any character in the string delim (or the terminating `\0' character) and 
- * replaces them with a `\0'. The location of the next character after the 
+ * any character in the string delim (or the terminating `\\0' character) and 
+ * replaces them with a `\\0'. The location of the next character after the 
  * delimiter character (or NULL, if the end of the string was reached) is 
  * stored in *save_ptr. The first character not a delimiter character from 
  * the original value of *s is returned.
@@ -180,7 +183,7 @@ char *strsep_r(char **pp_str, CONST char *p_delim)
 	x = strtok_r(s, "-", &sp);	// x = "abc", sp = "=-def"
 	x = strtok_r(NULL, "-=", &sp);	// x = "def", sp = NULL
 	x = strtok_r(NULL, "=", &sp);	// x = NULL
-		// s = "abc\0-def\0"
+		// s = "abc\\0-def\\0"
 */
 char *strtok_r(char *s, CONST char *delim, char **save_ptr)
 {

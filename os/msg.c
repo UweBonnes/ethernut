@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.4  2005/01/21 16:49:44  freckle
  * Seperated calls to NutEventPostAsync between Threads and IRQs
  *
@@ -140,7 +143,7 @@ int NutMsgQBroadcast(u_char id, int param, void *data)
 /*!
  * \brief Send a message to a que and return immediately
  *
- * \param q the que to send to
+ * \param que the que to send to
  * \param id the id of the sent message
  * \param param the param of the sent message
  * \param data the data of the sent message
@@ -180,7 +183,7 @@ int NutMsgQPost(NUTMSGQ * que, u_char id, int param, void *data)
  *
  * The sending thread should have a lower priority than the receiver thread
  *
- * \param q the que to send to
+ * \param que the que to send to
  * \param id the id of the sent message
  * \param param the param of the sent message
  * \param data the data of the sent message
@@ -237,7 +240,6 @@ static void NutMsgQTimerCb(HANDLE hndl, void *arg)
  *
  * \param que the que to send to
  * \param ms timeout length of the timer
- * \param id the id of the sent message
  * \param param the param of the sent message
  * \param data the data of the sent message
  * \param flags 0 or TM_ONESHOT

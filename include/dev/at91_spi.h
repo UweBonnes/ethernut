@@ -33,12 +33,15 @@
  */
 
 /*!
- * \file arch/arm/at91_spi.h
+ * \file dev/at91_spi.h
  * \brief AT91 peripherals.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/09/29 12:34:59  haraldkipp
  * Basic AT91 SPI support added.
  *

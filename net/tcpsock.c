@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.18  2006/03/21 21:22:20  drsung
  * Enhancement made to TCP state machine. Now TCP options
  * are read from peer and at least the maximum segment size is stored.
@@ -873,7 +876,7 @@ int NutTcpCloseSocket(TCPSOCKET * sock)
  *       error code if NutTcpCloseSocket() or NutTcpDestroySocket()
  *       failed.
  *
- * \bug  Not all error codes are properly set right now. Some socket
+ * \todo Not all error codes are properly set right now. Some socket
  *       functions return an error without setting an error code.
  */
 int NutTcpError(TCPSOCKET * sock)

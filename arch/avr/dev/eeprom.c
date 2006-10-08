@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2006/01/23 19:50:02  haraldkipp
  * Wrong parameters in ImageCraft call corrected.
  *
@@ -55,6 +58,11 @@
 #endif
 
 #include <dev/nvmem.h>
+
+/*!
+ * \addtogroup xgArchAvrDevEeprom
+ */
+/*@{*/
 
 /*!
  * \brief Load data from AVR EEPROM.

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.5  2006/01/05 16:51:54  haraldkipp
  * NutIrqSetPriority() didn't correctly return the previous priority. This
  * bug has been fixed.
@@ -176,8 +179,8 @@ int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
  * \note Not all targets support all modes. Check the hardware 
  *       data sheet for valid levels.
  *
- * \param irq   Interrupt to modify.
- * \param level New priority level.
+ * \param irq  Interrupt to modify.
+ * \param mode New priority level.
  *
  * \return Old mode or -1 in case of an error.
  */

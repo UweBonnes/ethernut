@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.3  2005/08/02 17:46:48  haraldkipp
  * Major API documentation update.
  *
@@ -83,7 +86,7 @@
 #define LCD_DATA_PORT   PORTB   /*!< Port output register of \ref LCD_DATA_BITS. */
 #define LCD_DATA_DDR    DDRB    /*!< Data direction register of \ref LCD_DATA_BITS. */
 #define LCD_DATA_BITS   0xFF    /*!< \brief LCD data lines, either upper or lower 4 bits. */
-#define LCD_DATA_PIN    PINB    /*!< Port input register of \ref LCD_DARA_BITS. */
+#define LCD_DATA_PIN    PINB    /*!< Port input register of \ref LCD_DATA_BITS. */
 
 #undef  LCD_ENABLE_PORT
 #undef  LCD_ENABLE_DDR

@@ -32,12 +32,15 @@
  */
 
 /*!
- * \file arch/avr/dev/ivect31.c
+ * \file arch/avr/dev/ih_usart1_udre.c
  * \brief USART1 data register empty interrupt.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2006/10/08 16:48:08  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.1  2006/02/08 15:14:21  haraldkipp
  * Using the vector number as a file name wasn't a good idea.
  * Moved from ivect*.c

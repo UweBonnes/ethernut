@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.5  2005/08/05 11:18:00  olereinhardt
  * Added support for _seek, _tell, fseek, ftell functions
  *
@@ -47,6 +50,11 @@
  */
 
 #include <sys/types.h>
+
+/*!
+ * \addtogroup xgCrtLowio
+ */
+/*@{*/
 
 /* 
  * Some global definitions for ioctl commands.
@@ -74,6 +82,7 @@
  */
 #define IOCTL_GETINBUFCOUNT             0x000C
 
+/*@}*/
 
 extern int _close(int fd);
 extern int _open(CONST char *name, int mode);

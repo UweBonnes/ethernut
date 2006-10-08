@@ -68,6 +68,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.8  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -203,7 +206,7 @@
  * elapsed. It will broadcast a request to extend its lease.
  *
  * If no acknowledge is received until the lease time elapsed,
- * the client will move to \ref DHCPST_START.
+ * the client will move to \ref DHCPST_INIT.
  */
 #define DHCPST_REBINDING    7
 

@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/10/08 16:48:22  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.7  2006/08/01 07:39:12  haraldkipp
  * Missing typecast in NutEventPostFromIrq() fixed. Thanks to Matthias Wilde.
  *
@@ -134,8 +137,6 @@
  *
  * \note When calling this function, interrupt routines will change
  *       the root of an empty event queue to SIGNALED.
- *
- * \todo Avoid counter overrun.
  *
  * \param qp Identifies the queue an event is posted to.
  *

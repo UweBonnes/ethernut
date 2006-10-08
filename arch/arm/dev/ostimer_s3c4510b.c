@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:48:07  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.2  2005/10/24 08:58:48  haraldkipp
  * Header file moved.
  *
@@ -150,8 +153,6 @@ void Timer3Entry(void *arg)
  * Applications should not modify any registers of this
  * timer, but make use of the Nut/OS timer API. Timer 1
  * and timer 2 are available to applications.
- *
- * \todo Hardware stuff to be put in nutlibdev.
  */
 void NutRegisterTimer(void (*handler) (void *))
 {

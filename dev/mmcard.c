@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/10/08 16:48:09  haraldkipp
+ * Documentation fixed
+ *
  * Revision 1.8  2006/07/05 08:03:12  haraldkipp
  * Bugfix. Trailing slash in mount path not properly handled.
  * Thanks to Michael Fischer.
@@ -585,7 +588,7 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
  * Applications should not call this function directly, but use the
  * stdio interface.
  *
- * \param fp     File pointer to a previously opened device.
+ * \param nfp    File pointer to a previously opened device.
  * \param buffer Pointer to the data bytes in program space to be written.
  * \param num    Maximum number of blocks to write. However, writing
  *               multiple blocks is not yet supported by this driver.
