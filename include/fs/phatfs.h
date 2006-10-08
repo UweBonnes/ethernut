@@ -34,12 +34,17 @@
  */
 
 /*!
- * \file fs/phat.h
+ * \file fs/phatfs.h
  * \brief PHAT file system.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2006/10/08 16:42:56  haraldkipp
+ * Not optimal, but simple and reliable exclusive access implemented.
+ * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
+ * had been reported correctly and is now fixed.
+ *
  * Revision 1.4  2006/06/18 16:42:50  haraldkipp
  * Support for long filenames (VFAT) added.
  *
@@ -66,16 +71,6 @@
  * \addtogroup xgPhatFs
  */
 /*@{*/
-
-/*!
- * \brief Maximum length of a full path name.
- */
-#define PHAT_MAX_PATHLEN    255
-
-/*!
- * \brief Maximum length of a base file name.
- */
-#define PHAT_MAX_NAMELEN    12
 
 /*!
  * \brief PHAT file descriptor structure.
@@ -154,5 +149,13 @@ extern NUTDEVICE devPhat0;
 extern NUTDEVICE devPhat1;
 
 extern u_long AllocFirstCluster(NUTFILE * nfp);
+
+extern NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc);
+extern int PhatFileClose(NUTFILE * nfp);
+extern int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len);
+#ifdef __HARVARD_ARCH__
+extern int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
+#endif
+extern int PhatFileRead(NUTFILE * nfp, void *buffer, int size);
 
 #endif

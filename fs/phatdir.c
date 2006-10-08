@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2006/10/08 16:42:56  haraldkipp
+ * Not optimal, but simple and reliable exclusive access implemented.
+ * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
+ * had been reported correctly and is now fixed.
+ *
  * Revision 1.10  2006/10/05 17:23:14  haraldkipp
  * Fixes bug #1571269. Thanks to Dirk Boecker for reporting this.
  *
@@ -153,7 +158,6 @@ static int GenShortName(NUTFILE * ndp, CONST char *lfn, char *sfn)
     int i;
     int got;
     PHATDIRENT *entry;
-    NUTDEVICE *dev = ndp->nf_dev;
     char *xp;
 
     /* Fill the buffer with spaces. */
@@ -225,7 +229,7 @@ static int GenShortName(NUTFILE * ndp, CONST char *lfn, char *sfn)
             PhatFilePosRewind((PHATFILE *)ndp->nf_fcb);
             for (;;) {
                 /* Read next entry. */
-                if ((got = (*dev->dev_read) (ndp, entry, sizeof(PHATDIRENT))) != sizeof(PHATDIRENT)) {
+                if ((got = PhatFileRead(ndp, entry, sizeof(PHATDIRENT))) != sizeof(PHATDIRENT)) {
                     if (got) {
                         /* Read error, stop searching. */
                         i = 9;
@@ -318,7 +322,7 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
     for (;;) {
         /* Memorize the current position and try to read the next entry. */
         npos = dfcb->f_pos;
-        if ((got = (*dev->dev_read) (ndp, dent, sizeof(PHATDIRENT))) < 0) {
+        if ((got = PhatFileRead(ndp, dent, sizeof(PHATDIRENT))) < 0) {
             /* Read failed. */
             break;
         }
@@ -339,7 +343,7 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
             }
             memset(temp, 0, vol->vol_sectsz);
             for (sect = vol->vol_clustsz; sect; sect--) {
-                if ((*dev->dev_write) (ndp, temp, vol->vol_sectsz) < 0) {
+                if (PhatFileWrite(ndp, temp, vol->vol_sectsz) < 0) {
                     /* Write failed. */
                     break;
                 }
@@ -402,13 +406,13 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
                     }
                 }
             }
-            if ((*dev->dev_write) (ndp, xdent, sizeof(PHATXDIRENT)) < 0) {
+            if (PhatFileWrite(ndp, xdent, sizeof(PHATXDIRENT)) < 0) {
                 /* Write error. */
                 rc = -1;
                 break;
             }
         }
-        if ((*dev->dev_write) (ndp, entry, sizeof(PHATDIRENT)) < 0) {
+        if (PhatFileWrite(ndp, entry, sizeof(PHATDIRENT)) < 0) {
             /* Write error. */
             rc = -1;
         }
@@ -431,18 +435,17 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
  */
 static int PhatDirEntryRelease(NUTFILE * ndp, u_long pos, int lfncnt)
 {
-    NUTDEVICE *dev = ndp->nf_dev;
     u_char ch = PHAT_REM_DIRENT;
     int i;
 
     for (i = lfncnt; i; i--) {
         PhatFilePosSet(ndp, pos - i * sizeof(PHATXDIRENT));
-        if ((*dev->dev_write) (ndp, &ch, 1) < 0) {
+        if (PhatFileWrite(ndp, &ch, 1) < 0) {
             return -1;
         }
     }
     PhatFilePosSet(ndp, pos);
-    if ((*dev->dev_write) (ndp, &ch, 1) < 0) {
+    if (PhatFileWrite(ndp, &ch, 1) < 0) {
         return -1;
     }
     return 0;
@@ -520,7 +523,6 @@ int PhatDirEntryUpdate(NUTFILE * nfp)
 static int PhatDirEntryRead(NUTFILE * ndp, PHATFIND * srch)
 {
     PHATDIRENT *entry = &srch->phfind_ent;
-    NUTDEVICE *dev = ndp->nf_dev;
     PHATFILE *fcb = ndp->nf_fcb;
     PHATXDIRENT *xentry;
     char *lfn = NULL;
@@ -531,7 +533,7 @@ static int PhatDirEntryRead(NUTFILE * ndp, PHATFIND * srch)
 
     for (;;) {
         /* Read next entry. */
-        if ((*dev->dev_read) (ndp, entry, sizeof(PHATDIRENT)) != sizeof(PHATDIRENT)) {
+        if (PhatFileRead(ndp, entry, sizeof(PHATDIRENT)) != sizeof(PHATDIRENT)) {
             break;
         }
         /* Skip removed entries. */
@@ -549,9 +551,13 @@ static int PhatDirEntryRead(NUTFILE * ndp, PHATFIND * srch)
             if ((nxtseq == 0 && (xentry->xdent_seq & 0x40) != 0) || nxtseq == lfnpos) {
                 nxtseq = --lfnpos;
                 lfnpos *= 13;
+                if (lfnpos + 13 > PHAT_MAX_NAMELEN) {
+                    errno = EINVAL;
+                    break;
+                }
                 if (xentry->xdent_seq & 0x40) {
                     if (lfn == NULL) {
-                        lfn = malloc(255);
+                        lfn = malloc(PHAT_MAX_NAMELEN + 1);
                     }
                     lfn[lfnpos + 13] = 0;
                     lfncnt = 0;
@@ -654,7 +660,6 @@ int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, u_long attmsk, PHATFIND * 
  *
  * \param dev      Specifies the file system device.
  * \param path     Full path.
- * \param mode     Operation mode.
  * \param basename Points to a pointer which will be set to the last component
  *                 within the full path.
  *
@@ -707,7 +712,7 @@ int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_pa
                         rc = PhatDirEntryRelease(old_ndp, srch->phfind_pos, srch->phfind_xcnt);
                     }
                 }
-                (*dev->dev_close) (new_ndp);
+                PhatFileClose(new_ndp);
             }
         }
         else {
@@ -715,7 +720,7 @@ int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_pa
         }
         free(srch);
     }
-    (*dev->dev_close) (old_ndp);
+    PhatFileClose(old_ndp);
 
     return rc;
 }
@@ -793,7 +798,7 @@ int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, u_long flags)
             }
             free(srch);
         }
-        (*dev->dev_close) (ndp);
+        PhatFileClose(ndp);
     }
     return rc;
 }
@@ -813,6 +818,7 @@ NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath)
     PHATFIND *srch;
     char *comp;
     char *cp;
+    int sz;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     /* Make sure the volume is mounted. */
@@ -867,9 +873,13 @@ NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath)
         while (*dpath) {
             /* Fetch the next component from the path. */
             cp = comp;
+            sz = 0;
             while (*dpath) {
                 if (*dpath == '/') {
                     dpath++;
+                    break;
+                }
+                if (++sz > PHAT_MAX_NAMELEN) {
                     break;
                 }
                 *cp++ = *dpath++;
@@ -877,7 +887,7 @@ NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath)
             *cp = 0;
 
             /* Search component's entry in the current directory. */
-            if (PhatDirEntryFind(ndp, comp, PHAT_FATTR_FILEMASK, srch)) {
+            if (sz > PHAT_MAX_NAMELEN || PhatDirEntryFind(ndp, comp, PHAT_FATTR_FILEMASK, srch)) {
                 errno = ENOENT;
                 free(dfcb);
                 free(ndp);
@@ -983,7 +993,10 @@ int PhatDirCreate(NUTDEVICE * dev, char *path)
     u_long sect;
     u_long clust;
 
-    if ((ndp = (*dev->dev_open) (dev, path, _O_CREAT | _O_RDWR | _O_EXCL, PHAT_FATTR_DIR)) == NUTFILE_EOF) {
+    /*
+     * Create the new directory like a normal file with a special attribute.
+     */
+    if ((ndp = PhatFileOpen(dev, path, _O_CREAT | _O_RDWR | _O_EXCL, PHAT_FATTR_DIR)) == NUTFILE_EOF) {
         return -1;
     }
     dfcb = ndp->nf_fcb;
@@ -992,21 +1005,21 @@ int PhatDirCreate(NUTDEVICE * dev, char *path)
      * Allocate a first cluster and initialize it with zeros.
      */
     if ((clust = AllocFirstCluster(ndp)) < 2) {
-        (*dev->dev_close) (ndp);
+        PhatFileClose(ndp);
         return -1;
     }
     dfcb->f_clust_prv = clust;
     dfcb->f_clust = clust;
     if ((buf = malloc(vol->vol_sectsz)) == NULL) {
-        (*dev->dev_close) (ndp);
+        PhatFileClose(ndp);
         return -1;
     }
     memset(buf, 0, vol->vol_sectsz);
     for (sect = vol->vol_clustsz; sect; sect--) {
-        if ((*dev->dev_write) (ndp, buf, vol->vol_sectsz) < 0) {
+        if (PhatFileWrite(ndp, buf, vol->vol_sectsz) < 0) {
             /* Write failed. */
             free(buf);
-            (*dev->dev_close) (ndp);
+            PhatFileClose(ndp);
             return -1;
         }
     }
@@ -1020,8 +1033,8 @@ int PhatDirCreate(NUTDEVICE * dev, char *path)
     memset(entry->dent_name, ' ', sizeof(entry->dent_name));
     entry->dent_name[0] = '.';
     PhatFilePosRewind(dfcb);
-    if ((*dev->dev_write) (ndp, entry, sizeof(PHATDIRENT)) != sizeof(PHATDIRENT)) {
-        (*dev->dev_close) (ndp);
+    if (PhatFileWrite(ndp, entry, sizeof(PHATDIRENT)) != sizeof(PHATDIRENT)) {
+        PhatFileClose(ndp);
         free(entry);
         return -1;
     }
@@ -1039,14 +1052,14 @@ int PhatDirCreate(NUTDEVICE * dev, char *path)
         entry->dent_clusthi = dfcb->f_pde_clusthi;
     }
     entry->dent_name[1] = '.';
-    if ((*dev->dev_write) (ndp, entry, sizeof(PHATDIRENT)) != sizeof(PHATDIRENT)) {
-        (*dev->dev_close) (ndp);
+    if (PhatFileWrite(ndp, entry, sizeof(PHATDIRENT)) != sizeof(PHATDIRENT)) {
+        PhatFileClose(ndp);
         free(entry);
         return -1;
     }
     free(entry);
 
-    return (*dev->dev_close) (ndp);
+    return PhatFileClose(ndp);
 }
 
 /*!
@@ -1077,10 +1090,10 @@ int PhatDirRemove(NUTDEVICE * dev, char *path)
      * Make sure, that the directory we want to remove is empty. The dot 
      * and double dot entries are ignored.
      */
-    if ((ndp = (*dev->dev_open) (dev, path, _O_RDONLY, 0)) != NUTFILE_EOF) {
+    if ((ndp = PhatFileOpen(dev, path, _O_RDONLY, 0)) != NUTFILE_EOF) {
         rc = 0;
         for (;;) {
-            rc = (*dev->dev_read) (ndp, entry, sizeof(PHATDIRENT));
+            rc = PhatFileRead(ndp, entry, sizeof(PHATDIRENT));
             if (rc < 0) {
                 break;
             }
@@ -1108,7 +1121,7 @@ int PhatDirRemove(NUTDEVICE * dev, char *path)
             rc = -1;
             break;
         }
-        (*dev->dev_close) (ndp);
+        PhatFileClose(ndp);
     }
     free(entry);
 
@@ -1142,7 +1155,7 @@ int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *stp)
     }
 
     if ((srch = malloc(sizeof(PHATFIND))) == NULL) {
-        (*dev->dev_close) (ndp);
+        PhatFileClose(ndp);
         return -1;
     }
     if ((rc = PhatDirEntryFind(ndp, fname, PHAT_FATTR_FILEMASK, srch)) == 0) {
@@ -1169,7 +1182,7 @@ int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *stp)
         stp->st_size = srch->phfind_ent.dent_fsize;
     }
     free(srch);
-    (*dev->dev_close) (ndp);
+    PhatFileClose(ndp);
 
     return rc;
 }

@@ -40,6 +40,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2006/10/08 16:42:56  haraldkipp
+ * Not optimal, but simple and reliable exclusive access implemented.
+ * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
+ * had been reported correctly and is now fixed.
+ *
  * Revision 1.2  2006/06/18 16:41:55  haraldkipp
  * Support for long filenames (VFAT) added.
  * New function PhatDirReleaseChain() simplifies code.
@@ -61,6 +66,13 @@
  * \addtogroup xgPhatDir
  */
 /*@{*/
+
+/*!
+ * \brief Maximum length of a base file name.
+ */
+#ifndef PHAT_MAX_NAMELEN
+#define PHAT_MAX_NAMELEN    255
+#endif
 
 #define PHAT_REM_DIRENT  0xE5
 #define PHAT_REM_NAMENT  0x05
@@ -143,7 +155,7 @@ typedef struct _PHATFIND {
     u_long phfind_pos;
     /*! Number of entries used for the long filename. */
     int phfind_xcnt;
-    char phfind_name[255];
+    char phfind_name[PHAT_MAX_NAMELEN];
 } PHATFIND;
 
 /*@}*/

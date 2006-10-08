@@ -37,6 +37,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/10/08 16:42:56  haraldkipp
+ * Not optimal, but simple and reliable exclusive access implemented.
+ * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
+ * had been reported correctly and is now fixed.
+ *
  * Revision 1.8  2006/07/11 12:20:57  haraldkipp
  * Added mutual exclusion protection during flush.
  * Honor Nut/OS file flushing, which uses a NULL pointer on read/write.
@@ -188,7 +193,7 @@ static u_long AllocCluster(NUTDEVICE * dev)
 /*!
  * \brief Allocate the first cluster of a file.
  *
- * \param  The file for which a cluster is allocated.
+ * \param nfp The file for which a cluster is allocated.
  *
  * \return Number of the allocated cluster, which is not lower than 2.
  *         Any value lower than 2 indicates an error.
@@ -305,7 +310,7 @@ static int PhatFileFlush(NUTFILE * nfp)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int PhatFileClose(NUTFILE * nfp)
+int PhatFileClose(NUTFILE * nfp)
 {
     int rc;
 
@@ -339,7 +344,7 @@ static int PhatFileClose(NUTFILE * nfp)
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
  */
-static NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
 {
     NUTFILE *nfp = NUTFILE_EOF;
     NUTFILE *ndp = NUTFILE_EOF;
@@ -501,7 +506,7 @@ static NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int ac
  * \return The number of bytes written. A return value of -1 indicates an 
  *         error.
  */
-static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
 {
     int rc;
     int step;
@@ -667,7 +672,7 @@ static int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
  * \return The number of bytes written. A return value of -1 indicates an 
  *         error.
  */
-static int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
+int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
 {
     return -1;
 }
@@ -679,12 +684,12 @@ static int PhatFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
  * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data buffer to fill.
- * \param len    Maximum number of bytes to read.
+ * \param size   Maximum number of bytes to read.
  *
  * \return The number of bytes actually read. A return value of -1 indicates 
  *         an error.
  */
-static int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
+int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
 {
     int rc;
     int step;
@@ -907,6 +912,123 @@ static int PhatInit(NUTDEVICE * dev)
 }
 
 /*!
+ * \brief Reentrant variant of PhatFileOpen().
+ */
+static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
+{
+    NUTFILE *rc;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    /* Lock filesystem access. */
+    NutEventWait(&vol->vol_fsmutex, 0);
+    /* Call worker routine. */
+    rc = PhatFileOpen(dev, path, mode, acc);
+    /* Release filesystem lock. */
+    NutEventPost(&vol->vol_fsmutex);
+
+    return rc;
+}
+
+/*!
+ * \brief Reentrant variant of PhatFileClose().
+ */
+static int PhatApiFileClose(NUTFILE * nfp)
+{
+    int rc;
+    NUTDEVICE *dev = nfp->nf_dev;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    /* Lock filesystem access. */
+    NutEventWait(&vol->vol_fsmutex, 0);
+    /* Call worker routine. */
+    rc = PhatFileClose(nfp);
+    /* Release filesystem lock. */
+    NutEventPost(&vol->vol_fsmutex);
+
+    return rc;
+}
+
+/*!
+ * \brief Reentrant variant of PhatFileWrite().
+ */
+static int PhatApiFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
+{
+    int rc;
+    NUTDEVICE *dev = nfp->nf_dev;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    /* Lock filesystem access. */
+    NutEventWait(&vol->vol_fsmutex, 0);
+    /* Call worker routine. */
+    rc = PhatFileWrite(nfp, buffer, len);
+    /* Release filesystem lock. */
+    NutEventPost(&vol->vol_fsmutex);
+
+    return rc;
+}
+
+#ifdef __HARVARD_ARCH__
+/*!
+ * \brief Reentrant variant of PhatFileWrite_P().
+ */
+static int PhatApiFileWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
+{
+    int rc;
+    NUTDEVICE *dev = nfp->nf_dev;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    /* Lock filesystem access. */
+    NutEventWait(&vol->vol_fsmutex, 0);
+    /* Call worker routine. */
+    rc = PhatFileWrite_P(nfp, buffer, len);
+    /* Release filesystem lock. */
+    NutEventPost(&vol->vol_fsmutex);
+
+    return rc;
+}
+#endif
+
+/*!
+ * \brief Reentrant variant of PhatFileRead().
+ */
+static int PhatApiFileRead(NUTFILE * nfp, void *buffer, int size)
+{
+    int rc;
+    NUTDEVICE *dev = nfp->nf_dev;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    /* Lock filesystem access. */
+    NutEventWait(&vol->vol_fsmutex, 0);
+    /* Call worker routine. */
+    rc = PhatFileRead(nfp, buffer, size);
+    /* Release filesystem lock. */
+    NutEventPost(&vol->vol_fsmutex);
+
+    return rc;
+}
+
+/*!
+ * \brief Reentrant variant of PhatIOCtl().
+ */
+static int PhatApiIOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc;
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    /* Lock filesystem access. */
+    if (req != FS_VOL_MOUNT && vol) {
+        NutEventWait(&vol->vol_fsmutex, 0);
+    }
+    /* Call worker routine. */
+    rc = PhatIOCtl(dev, req, conf);
+    /* Release filesystem lock. */
+    if (req != FS_VOL_MOUNT && req != FS_VOL_UNMOUNT && vol) {
+        NutEventPost(&vol->vol_fsmutex);
+    }
+    return rc;
+}
+
+/*!
  * \brief PHAT file system driver information structure.
  *
  * A pointer to this structure must be passed to NutRegisterDevice() 
@@ -928,14 +1050,14 @@ NUTDEVICE devPhat0 = {
     0,                          /*!< Mounted block device partition, dev_icb. */
     0,                          /*!< Volume information, dev_dcb. */
     PhatInit,                   /*!< Driver initialization routine, dev_init. */
-    PhatIOCtl,                  /*!< Driver specific control function, dev_ioctl. */
-    PhatFileRead,               /*!< Read data from a file, dev_read. */
-    PhatFileWrite,              /*!< Write data to a file, dev_write. */
+    PhatApiIOCtl,               /*!< Driver specific control function, dev_ioctl. */
+    PhatApiFileRead,            /*!< Read data from a file, dev_read. */
+    PhatApiFileWrite,           /*!< Write data to a file, dev_write. */
 #ifdef __HARVARD_ARCH__
-    PhatFileWrite_P,            /*!< Write data from program space to a file, dev_write_P. */
+    PhatApiFileWrite_P,         /*!< Write data from program space to a file, dev_write_P. */
 #endif
-    PhatFileOpen,               /*!< Open a file, dev_open. */
-    PhatFileClose,              /*!< Close a file, dev_close. */
+    PhatApiFileOpen,            /*!< Open a file, dev_open. */
+    PhatApiFileClose,           /*!< Close a file, dev_close. */
     PhatFileSize                /*!< Return file size, dev_size. */
 };
 
@@ -949,14 +1071,14 @@ NUTDEVICE devPhat1 = {
     0,                          /*!< Mounted block device partition, dev_icb. */
     0,                          /*!< Volume information, dev_dcb. */
     PhatInit,                   /*!< Driver initialization routine, dev_init. */
-    PhatIOCtl,                  /*!< Driver specific control function, dev_ioctl. */
-    PhatFileRead,               /*!< Read data from a file, dev_read. */
-    PhatFileWrite,              /*!< Write data to a file, dev_write. */
+    PhatApiIOCtl,               /*!< Driver specific control function, dev_ioctl. */
+    PhatApiFileRead,            /*!< Read data from a file, dev_read. */
+    PhatApiFileWrite,           /*!< Write data to a file, dev_write. */
 #ifdef __HARVARD_ARCH__
-    PhatFileWrite_P,            /*!< Write data from program space to a file, dev_write_P. */
+    PhatApiFileWrite_P,         /*!< Write data from program space to a file, dev_write_P. */
 #endif
-    PhatFileOpen,               /*!< Open a file, dev_open. */
-    PhatFileClose,              /*!< Close a file, dev_close. */
+    PhatApiFileOpen,            /*!< Open a file, dev_open. */
+    PhatApiFileClose,           /*!< Close a file, dev_close. */
     PhatFileSize                /*!< Return file size, dev_size. */
 };
 

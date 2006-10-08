@@ -40,6 +40,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2006/10/08 16:42:56  haraldkipp
+ * Not optimal, but simple and reliable exclusive access implemented.
+ * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
+ * had been reported correctly and is now fixed.
+ *
  * Revision 1.8  2006/07/11 12:20:19  haraldkipp
  * PHAT file system failed when accessed from multiple threads. A mutual
  * exclusion semaphore fixes this.
@@ -159,8 +164,15 @@ static u_long PhatCountFreeClusters(NUTDEVICE * dev)
  * The routine may also initializes any caching mechanism. Thus, it must
  * be called before any other read or write access.
  *
- * \param dev    Specifies the file system device.
- * \param blkmnt Handle of the block device's partition mount.
+ * \param dev       Specifies the file system device.
+ * \param blkmnt    Handle of the block device's partition mount.
+ * \param part_type Partition type:
+ *                  - PTYPE_FAT32
+ *                  - PTYPE_FAT32_LBA
+ *                  - PTYPE_FAT16
+ *                  - PTYPE_FAT16_BIG
+ *                  - PTYPE_FAT16_LBA
+ *                  - PTYPE_FAT12
  *
  * \return 0 on success or -1 in case of an error.
  */
@@ -331,7 +343,8 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
 
     dev->dev_icb = blkmnt;
 
-    /* Initialize mutual exclusion semaphore. */
+    /* Initialize mutual exclusion semaphores. */
+    NutEventPost(&vol->vol_fsmutex);
     NutEventPost(&vol->vol_iomutex);
 
     vol->vol_numfree = PhatCountFreeClusters(dev);

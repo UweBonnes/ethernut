@@ -40,6 +40,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/10/08 16:42:56  haraldkipp
+ * Not optimal, but simple and reliable exclusive access implemented.
+ * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
+ * had been reported correctly and is now fixed.
+ *
  * Revision 1.3  2006/07/11 12:20:19  haraldkipp
  * PHAT file system failed when accessed from multiple threads. A mutual
  * exclusion semaphore fixes this.
@@ -194,7 +199,9 @@ typedef struct _PHATVOL {
 #else
     PHATSECTBUF vol_buf[1];
 #endif
-    /*! \brief Mutual exclusion semaphore. */
+    /*! \brief Mutual exclusion filesystem access semaphore. */
+    HANDLE vol_fsmutex;
+    /*! \brief Mutual exclusion I/O semaphore. */
     HANDLE vol_iomutex;
     /*! \brief Bytes per sector. */
     u_int vol_sectsz;
