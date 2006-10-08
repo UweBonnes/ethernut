@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2006/10/08 16:40:56  haraldkipp
+ * Matthias Wilde's enhancements for C++ support should allow to run
+ * C++ programs in ROM/FLASH.
+ *
  * Revision 1.1  2006/08/01 07:34:16  haraldkipp
  * New linker script and new startup file support applications running in
  * flash memory.
@@ -67,6 +71,7 @@ SECTIONS
     . = ALIGN(4);
     *(.init5);
     . = ALIGN(4);
+    /*
     *(.text);
     . = ALIGN(4);
     *(.rodata*);
@@ -75,6 +80,13 @@ SECTIONS
     . = ALIGN(4);
     *(.glue_7);
     . = ALIGN(4);
+    */
+    	*(.text .text.*)
+	*(.gnu.linkonce.t.*)
+	*(.glue_7t .glue_7)
+	KEEP(*(.fini))
+	*(.gcc_except_table)
+	. = ALIGN(4);
     _mdata = .;
     . = ALIGN(4);
     etext = .;
@@ -82,6 +94,25 @@ SECTIONS
     . = ALIGN(4);
     __data_load_start = .;
   } > rom
+
+  .ctors :
+  {
+	PROVIDE(__ctors_start__ = .);
+	KEEP(*(SORT(.ctors.*)))
+	KEEP(*(.ctors))
+	PROVIDE(__ctors_end__ = .);
+	. = ALIGN(4);
+  } > ram
+
+  .dtors :
+  {
+	PROVIDE(__dtors_start__ = .);
+	KEEP(*(SORT(.dtors.*)))
+	KEEP(*(.dtors))
+	PROVIDE(__dtors_end__ = .);
+	. = ALIGN(4);
+  } > ram
+
 
   .data : AT (__data_load_start)
   {
