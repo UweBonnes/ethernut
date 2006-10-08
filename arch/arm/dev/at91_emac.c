@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/08 16:41:34  haraldkipp
+ * PHY address and power down bit are now configurable.
+ *
  * Revision 1.3  2006/10/05 17:10:37  haraldkipp
  * Link detection was unreliable. This also caused bug #1567785.
  * Now NutRegisterDevice will return an error, if there is no
@@ -50,6 +53,7 @@
 
 #include <cfg/os.h>
 #include <arch/arm.h>
+#include <cfg/arch/gpio.h>
 
 #include <string.h>
 
@@ -137,7 +141,9 @@
  *
  * Found by trial and error.
  */
+#ifndef NIC_PHY_ADDR
 #define NIC_PHY_ADDR	        8
+#endif
 
 //#define EMAC_PIO_PER            PIOA_PER
 //#define EMAC_PIO_OER            PIOA_OER
@@ -197,7 +203,9 @@
 
 #elif defined (MCU_AT91SAM7X256)
 
+#ifndef NIC_PHY_ADDR
 #define NIC_PHY_ADDR	        31
+#endif
 
 #define EMAC_PIO_PER            PIOB_PER
 #define EMAC_PIO_OER            PIOB_OER
@@ -226,7 +234,9 @@
 #define PHY_RXDV_TESTMODE_BIT   15
 #define PHY_COL_RMII_BIT        16
 #define PHY_RXCLK_10BTSER_BIT   17
+#ifndef PHY_PWRDN_BIT
 #define PHY_PWRDN_BIT           18
+#endif
 #define PHY_MDINTR_BIT          26
 
 #define PHY_MII_PINS_A 0 \
@@ -393,7 +403,11 @@ static int EmacReset(u_long tmo)
     /* Disable PHY power down. */
     outr(EMAC_PIO_PER, _BV(PHY_PWRDN_BIT));
     outr(EMAC_PIO_OER, _BV(PHY_PWRDN_BIT));
+#ifdef PHY_PWRDN_NEGPOL
+    outr(EMAC_PIO_SODR, _BV(PHY_PWRDN_BIT));
+#else
     outr(EMAC_PIO_CODR, _BV(PHY_PWRDN_BIT));
+#endif
 #endif
 
     /* Toggle external hardware reset pin. */
@@ -787,8 +801,6 @@ THREAD(EmacRxThread, arg)
 
 /*!
  * \brief Send Ethernet packet.
- *
- * \todo This routine does not work.
  *
  * \param dev Identifies the device to use.
  * \param nb  Network buffer structure containing the packet to be sent.

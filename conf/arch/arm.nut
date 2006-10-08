@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.16  2006/10/08 16:41:34  haraldkipp
+-- PHY address and power down bit are now configurable.
+--
 -- Revision 1.15  2006/09/29 12:34:59  haraldkipp
 -- Basic AT91 SPI support added.
 --
@@ -378,7 +381,43 @@ nutarch_arm =
         requires = { "HW_EMAC_AT91", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/at91_emac.c" },
-    },     
+        options =
+        {
+            {
+                macro = "NIC_PHY_ADDR",
+                brief = "PHY Address",
+                description = "Default is 31 for SAM7X and 8 for SAM9260 boards.\n\n",
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "PHY_PWRDN_BIT",
+                brief = "PHY Power Down Bit",
+                description = "For the SAM7X default is 18.\n\n",
+                provides = { "PHY_PWRDN_CONTROL" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "PHY_PWRDN_NEGPOL",
+                brief = "PHY Power Down Polarity",
+                description = "Select this, if the PHY is powered down by a low signal.",
+                requires = { "PHY_PWRDN_CONTROL" },
+                flavor = "boolean",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "NUT_THREAD_NICRXSTACK",
+                brief = "Receiver Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the NIC receive thread.",
+                default = "768",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            }
+        }
+    },
     {
         name = "nutarch_arm_spimmc_at91",
         brief = "AT91 SPI MMC Access",
