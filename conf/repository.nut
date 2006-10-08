@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.20  2006/10/08 16:40:17  haraldkipp
+-- Many thanks to Thiago Correa for adding LCD port configuration.
+--
 -- Revision 1.19  2006/10/05 17:14:03  haraldkipp
 -- Added script, which extracts version information from C source file.
 -- This demonstrates the new scripting capabilities of the Configurator.
@@ -123,6 +126,8 @@ arm_ld_choice = {
                 }
 
 pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
+
+hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
 
 repository =
 {

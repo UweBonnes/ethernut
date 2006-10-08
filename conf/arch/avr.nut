@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.13  2006/10/08 16:40:17  haraldkipp
+-- Many thanks to Thiago Correa for adding LCD port configuration.
+--
 -- Revision 1.12  2006/10/05 17:16:04  haraldkipp
 -- Added exclusivity attribute.
 --
@@ -807,6 +810,70 @@ nutarch_avr =
                 flavor = "booldata",
                 type = "integer",
                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_DATA_AVRPORT",
+                 brief = "Data port",
+                 description = "Port of the databits to use",
+                 type = "enumerated",
+                 choices = avr_port_choice,
+                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_DATA_BITS",
+                 brief = "Bits Data Port",
+                 description = "Choose between 4 bits mode (upper or lower) and 8 bits mode",
+                 type = "enumerated",
+                 choices = hd44780_databits_choice,
+                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_ENABLE_AVRPORT",
+                 brief = "Enable Port",
+                 description = "Choose port used for the enable line",
+                 type = "enumerated",
+                 choices = avr_port_choice,
+                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_ENABLE_BIT",
+                 brief = "Enable Bit",
+                 description = "Choose bit used for the enable line",
+                 type = "enumerated",
+                 choices = avr_bit_choice,
+                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_REGSEL_AVRPORT",
+                 brief = "RS Port",
+                 description = "Choose port for the Register Select line",
+                 type = "enumerated",
+                 choices = avr_port_choice,
+                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_REGSEL_BIT",
+                 brief = "RS Bit",
+                 description = "Choose bit for the Register Select line",
+                 type = "enumerated",
+                 choices = avr_bit_choice,
+                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_RW_AVRPORT",
+                 brief = "RW Port",
+                 description = "Choose port for the Read Write line",
+                 type = "enumerated",
+                 choices = avr_port_choice,
+                 file = "include/cfg/arch/avrpio.h"
+             },
+             {
+                 macro = "LCD_RW_BIT",
+                 brief = "RW Bit",
+                 description = "Choose bit for the Read Write line",
+                 type = "enumerated",
+                 choices = avr_bit_choice,
+                 file = "include/cfg/arch/avrpio.h"
             }
 
         }

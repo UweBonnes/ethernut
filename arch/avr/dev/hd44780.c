@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/08 16:40:17  haraldkipp
+ * Many thanks to Thiago Correa for adding LCD port configuration.
+ *
  * Revision 1.4  2006/09/11 09:13:18  olereinhardt
  * Another timing patch from Uwe Bonnes
  *
@@ -89,7 +92,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <sys/nutconfig.h>
+#include <cfg/arch/avr.h>
 #include <dev/hd44780.h>
 #include <dev/term.h>
 #include <sys/timer.h>
@@ -115,6 +118,155 @@
 #endif
 #endif
 #endif
+
+/*
+ * Many thanks to Thiago Correa for adding LCD port configuration.
+ */
+
+/* LCD_DATA_PORT and LCD_DATA_DDR switches */
+#if ( LCD_DATA_AVRPORT == AVRPORTA )
+#define LCD_DATA_PORT PORTA
+#define LCD_DATA_PIN PINA
+#define LCD_DATA_DDR DDRA
+
+#elif ( LCD_DATA_AVRPORT == AVRPORTB )
+#define LCD_DATA_PORT PORTB
+#define LCD_DATA_PIN PINB
+#define LCD_DATA_DDR DDRB
+
+#elif ( LCD_DATA_AVRPORT == AVRPORTC )
+#define LCD_DATA_PORT PORTC
+#define LCD_DATA_PIN PINC
+#define LCD_DATA_DDR DDRC
+
+#elif ( LCD_DATA_AVRPORT == AVRPORTE )
+#define LCD_DATA_PORT PORTE
+#define LCD_DATA_PIN PINE
+#define LCD_DATA_DDR DDRE
+
+#elif ( LCD_DATA_AVRPORT == AVRPORTF )
+#define LCD_DATA_PORT PORTF
+#define LCD_DATA_PIN PINF
+#define LCD_DATA_DDR DDRF
+
+#elif ( LCD_DATA_AVRPORT == AVRPORTG )
+#define LCD_DATA_PORT PORTG
+#define LCD_DATA_PIN PING
+#define LCD_DATA_DDR DDRG
+
+#else
+#define LCD_DATA_PORT PORTD
+#define LCD_DATA_PIN PIND
+#define LCD_DATA_DDR DDRD
+
+#endif
+
+#ifndef LCD_DATA_BITS
+#define LCD_DATA_BITS   0xF0
+#endif
+
+/* LCD_ENABLE_PORT switches */
+#if ( LCD_ENABLE_AVRPORT == AVRPORTA )
+#define LCD_ENABLE_PORT PORTA
+#define LCD_ENABLE_DDR DDRA
+
+#elif ( LCD_ENABLE_AVRPORT == AVRPORTB )
+#define LCD_ENABLE_PORT PORTB
+#define LCD_ENABLE_DDR DDRB
+
+#elif ( LCD_ENABLE_AVRPORT == AVRPORTC )
+#define LCD_ENABLE_PORT PORTC
+#define LCD_ENABLE_DDR DDRC
+
+#elif ( LCD_ENABLE_AVRPORT == AVRPORTD )
+#define LCD_ENABLE_PORT PORTD
+#define LCD_ENABLE_DDR DDRD
+
+#elif ( LCD_ENABLE_AVRPORT == AVRPORTF )
+#define LCD_ENABLE_PORT PORTF
+#define LCD_ENABLE_DDR DDRF
+
+#elif ( LCD_ENABLE_AVRPORT == AVRPORTG )
+#define LCD_ENABLE_PORT PORTG
+#define LCD_ENABLE_DDR DDRG
+
+#else
+#define LCD_ENABLE_PORT PORTE
+#define LCD_ENABLE_DDR DDRE
+
+#endif
+
+#ifndef LCD_ENABLE_BIT
+#define LCD_ENABLE_BIT  3       /*!< \brief LCD enable output. */
+#endif
+
+/* LCD_REGSEL_PORT switches */
+#if ( LCD_REGSEL_AVRPORT == AVRPORTA )
+#define LCD_REGSEL_PORT PORTA
+#define LCD_REGSEL_DDR DDRA
+
+#elif ( LCD_REGSEL_AVRPORT == AVRPORTB )
+#define LCD_REGSEL_PORT PORTB
+#define LCD_REGSEL_DDR DDRB
+
+#elif ( LCD_REGSEL_AVRPORT == AVRPORTC )
+#define LCD_REGSEL_PORT PORTC
+#define LCD_REGSEL_DDR DDRC
+
+#elif ( LCD_REGSEL_AVRPORT == AVRPORTD )
+#define LCD_REGSEL_PORT PORTD
+#define LCD_REGSEL_DDR DDRD
+
+#elif ( LCD_REGSEL_AVRPORT == AVRPORTF )
+#define LCD_REGSEL_PORT PORTF
+#define LCD_REGSEL_DDR DDRF
+
+#elif ( LCD_REGSEL_AVRPORT == AVRPORTG )
+#define LCD_REGSEL_PORT PORTG
+#define LCD_REGSEL_DDR DDRG
+
+#else
+#define LCD_REGSEL_PORT PORTE
+#define LCD_REGSEL_DDR DDRE
+
+#endif
+
+#ifndef LCD_REGSEL_BIT
+#define LCD_REGSEL_BIT  2       /*!< \brief LCD register select output. */
+#endif
+
+/* LCD_RW_PORT switches */
+#if ( LCD_RW_AVRPORT == AVRPORTA )
+#define LCD_RW_PORT PORTA
+#define LCD_RW_DDR DDRA
+
+#elif ( LCD_RW_AVRPORT == AVRPORTB )
+#define LCD_RW_PORT PORTB
+#define LCD_RW_DDR DDRB
+
+#elif ( LCD_RW_AVRPORT == AVRPORTC )
+#define LCD_RW_PORT PORTC
+#define LCD_RW_DDR DDRC
+
+#elif ( LCD_RW_AVRPORT == AVRPORTD )
+#define LCD_RW_PORT PORTD
+#define LCD_RW_DDR DDRD
+
+#elif ( LCD_RW_AVRPORT == AVRPORTE )
+#define LCD_RW_PORT PORTE
+#define LCD_RW_DDR DDRE
+
+#elif ( LCD_RW_AVRPORT == AVRPORTF )
+#define LCD_RW_PORT PORTF
+#define LCD_RW_DDR DDRF
+
+#elif ( LCD_RW_AVRPORT == AVRPORTG )
+#define LCD_RW_PORT PORTG
+#define LCD_RW_DDR DDRG
+#endif
+
+
+
 /*!
  * \addtogroup xgDisplay
  */
