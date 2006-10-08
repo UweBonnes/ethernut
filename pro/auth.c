@@ -32,6 +32,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/08 16:43:53  haraldkipp
+ * Authentication info depended on static memory kept by the caller. Now a
+ * local copy is held and NutClearAuth (which should have been named
+ * NutHttpAuthClear, btw.) works correctly.
+ *
  * Revision 1.2  2006/08/25 13:42:16  olereinhardt
  * added NutClearAuth(void); Thanks to Peter Sondermanns
  *
@@ -95,14 +100,25 @@ int NutRegisterAuth(CONST char *dirname, CONST char *login)
 {
     AUTHINFO *auth;
 
-    if ((auth = NutHeapAlloc(sizeof(AUTHINFO))) == 0)
-        return -1;
-    auth->auth_next = authList;
-    auth->auth_dirname = dirname;
-    auth->auth_login = login;
-    authList = auth;
-
-    return 0;
+    /* Allocate a new list element. */
+    if ((auth = NutHeapAlloc(sizeof(AUTHINFO))) != NULL) {
+        auth->auth_next = authList;
+        /* Allocate the path component. */
+        if ((auth->auth_dirname = NutHeapAlloc(strlen(dirname) + 1)) != NULL) {
+            strcpy(auth->auth_dirname, dirname);
+            /* Allocate the login component. */
+            if ((auth->auth_login = NutHeapAlloc(strlen(login) + 1)) != NULL) {
+                strcpy(auth->auth_login, login);
+                /* Success. Add element to the list and return. */
+                authList = auth;
+                return 0;
+            }
+            /* Allocation failed. */
+            NutHeapFree(auth->auth_dirname);
+        }
+        NutHeapFree(auth);
+    }
+    return -1;
 }
 
 
@@ -116,10 +132,13 @@ void NutClearAuth(void)
 {
     AUTHINFO *auth;
 
-    for (auth = authList; auth->auth_next; auth = auth->auth_next) {
+    while (authList) {
+        auth = authList;
+        authList = auth->auth_next;
+        NutHeapFree(auth->auth_dirname);
+        NutHeapFree(auth->auth_login);
         NutHeapFree(auth);
     }
-    authList = NULL;
 }
 
 /*!

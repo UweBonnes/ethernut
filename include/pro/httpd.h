@@ -35,6 +35,11 @@
 
 /*
  * $Log$
+ * Revision 1.8  2006/10/08 16:43:53  haraldkipp
+ * Authentication info depended on static memory kept by the caller. Now a
+ * local copy is held and NutClearAuth (which should have been named
+ * NutHttpAuthClear, btw.) works correctly.
+ *
  * Revision 1.7  2006/08/25 13:42:16  olereinhardt
  * added NutClearAuth(void); Thanks to Peter Sondermanns
  *
@@ -115,9 +120,9 @@ typedef struct _AUTHINFO AUTHINFO;
  * \brief HTTP authorization information structure.
  */
 struct _AUTHINFO {
-    AUTHINFO *auth_next;        /*!< \brief Link to next AUTHINFO structure */
-    CONST char *auth_dirname;   /*!< \brief Pathname of protected directory */
-    CONST char *auth_login;     /*!< \brief Login user and password, separated by a colon. */
+    AUTHINFO *auth_next;    /*!< \brief Link to next AUTHINFO structure */
+    char *auth_dirname;     /*!< \brief Pathname of protected directory */
+    char *auth_login;       /*!< \brief Login user and password, separated by a colon. */
 };
 
 __BEGIN_DECLS
