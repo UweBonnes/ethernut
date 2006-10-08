@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2006/10/08 16:39:33  haraldkipp
+ * Corrected range check in DS1307RamRead(). Thanks to Helmut Holbach.
+ *
  * Revision 1.3  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
@@ -162,7 +165,7 @@ int DS1307RtcSetClock(CONST struct _tm *tm)
  *
  * \param addr  Start location.
  * \param buff  Points to a buffer that receives the contents.
- * \param len   Number of bytes to read.
+ * \param cnt   Number of bytes to read.
  *
  * \return 0 on success or -1 in case of an error.
  */
@@ -171,7 +174,7 @@ int DS1307RamRead(u_char addr, u_char *buff, size_t cnt)
     int rc = -1;
 
     // Range check
-    if ((addr>=0x08) || (addr<=0x3F)) {
+    if ((addr>=0x08) && (addr<=0x3F)) {
         rc = DS1307RtcReadRegs(addr, buff, cnt);
     }
 
