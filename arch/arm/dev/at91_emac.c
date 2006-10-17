@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/17 11:06:12  haraldkipp
+ * Number of loops waiting for links increased to 10000 and NIC resets
+ * reduced. This will help to link to auto MDIX via direct cable.
+ *
  * Revision 1.4  2006/10/08 16:41:34  haraldkipp
  * PHY address and power down bit are now configurable.
  *
@@ -87,6 +91,10 @@
 #define EMAC_TX_BUFFERS         2
 #ifndef EMAC_TX_BUFSIZ
 #define EMAC_TX_BUFSIZ          1536
+#endif
+
+#ifndef EMAC_LINK_LOOPS
+#define EMAC_LINK_LOOPS         1000000
 #endif
 
 /*!
@@ -675,10 +683,6 @@ static int EmacStart(CONST u_char * mac)
 {
     u_int i;
 
-    if (EmacReset(0xFFFF)) {
-        return -1;
-    }
-
     /* Set local MAC address. */
     outr(EMAC_SA1L, (mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
     outr(EMAC_SA1H, (mac[5] << 8) | mac[4]);
@@ -750,6 +754,7 @@ THREAD(EmacRxThread, arg)
      * in.
      */
     while (EmacStart(ifn->if_mac)) {
+        EmacReset(EMAC_LINK_LOOPS);
         NutSleep(1000);
     }
 
@@ -787,6 +792,7 @@ THREAD(EmacRxThread, arg)
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
+            EmacReset(EMAC_LINK_LOOPS);
             if (EmacStart(ifn->if_mac) == 0) {
                 ni->ni_insane = 0;
                 ni->ni_tx_queued = 0;
@@ -882,8 +888,8 @@ int EmacInit(NUTDEVICE * dev)
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 
     /* Reset the controller. */
-    if (EmacReset(0xFFFF)) {
-        if (EmacReset(0xFFFFF)) {
+    if (EmacReset(EMAC_LINK_LOOPS)) {
+        if (EmacReset(EMAC_LINK_LOOPS)) {
             return -1;
         }
     }
