@@ -1,4 +1,17 @@
-$Id: ChangeLog,v 1.360 2006/10/08 16:48:07 haraldkipp Exp $
+$Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
+
+
+2006-10-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Branch created for version 4.2.
+
+	* arch/arm/dev/at91_emac.c: Number of loops waiting for links
+	increased to 10000 and NIC resets reduced. This will help to
+	link to auto MDIX via direct cable. Thanks to Dany Nativel for
+	all the testing.
+
+	* net/ipout.c: Failed ARP requests are no longer classified
+	as fatal transmission errors.
 
 
 2006-10-07 Henrik Maier  <henrik@proconx.com>

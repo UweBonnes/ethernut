@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.40  2006/10/17 11:26:02  haraldkipp
+ * Release branch 4.2 created.
+ *
  * Revision 1.39  2006/10/05 17:26:58  haraldkipp
  * Follows unofficial rc10.
  *
@@ -167,8 +170,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04010963UL
-static CONST char os_version_string[] = "4.1.9.99 rc";
+#define OS_VERSION_NUMBER  0x04030000UL
+static CONST char os_version_string[] = "4.3.0.0";
 
 /*!
  * \addtogroup xgNutVersion
