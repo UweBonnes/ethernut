@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/17 11:05:03  haraldkipp
+ * Failed ARP requests are no longer classified as fatal transmission errors.
+ *
  * Revision 1.4  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -258,8 +261,10 @@ int NutIpOutput(u_char proto, u_long dest, NETBUF * nb)
         if ((gate == 0) && ((dest | nif->if_mask) == 0xffffffff)) {
             memset(ha, 0xff, sizeof(ha));
         } else if (NutArpCacheQuery(dev, gate ? gate : dest, ha)) {
-            NutNetBufFree(nb);
-            return -1;
+            /* Note, that a failed ARP request is not considered a 
+               transmission error. It might be caused by a simple 
+               packet loss. */
+            return 0;
         }
         return (*nif->if_output) (dev, ETHERTYPE_IP, ha, nb);
     } else if (nif->if_type == IFT_PPP)
