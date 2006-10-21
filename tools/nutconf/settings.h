@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/21 12:48:18  christianwelzel
+ * Added support for multiple configurations / settings
+ *
  * Revision 1.4  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -66,7 +69,8 @@ public:
     CSettings();
     ~CSettings();
 
-    bool Save();
+    bool Load(wxString ConfigFileName);
+    bool Save(wxString ConfigFileName);
 
     wxString FindAbsoluteDir(wxString refPathName);
     wxString FindRelativeDir(wxString refPathName);
@@ -79,6 +83,9 @@ public:
     /*! \brief Path to our main repository file. */
     wxString m_repositoryname;
     wxString m_repositoryname_default;
+    /*! \brief Flag for multiple configurations. */
+    bool m_mulConfig;
+    bool m_mulConfig_default;
     /*! \brief First include directory path. */
     wxString m_firstidir;
     wxString m_firstidir_default;

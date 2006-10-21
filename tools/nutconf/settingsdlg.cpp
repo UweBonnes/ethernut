@@ -39,6 +39,9 @@
 
 /*
  * $Log: settingsdlg.cpp,v $
+ * Revision 1.5  2006/10/21 12:48:18  christianwelzel
+ * Added support for multiple configurations / settings
+ *
  * Revision 1.4  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -164,7 +167,7 @@ bool CSettingsDialog::TransferDataFromWindow()
     m_toolOptions->TransferDataFromWindow();
     m_appOptions->TransferDataFromWindow();
 
-    wxGetApp().GetSettings()->Save();
+    wxGetApp().GetSettings()->Save(wxGetApp().GetSettings()->m_configname);
 
     return true;
 }

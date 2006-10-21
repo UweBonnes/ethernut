@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.9  2006/10/21 12:48:18  christianwelzel
+ * Added support for multiple configurations / settings
+ *
  * Revision 1.8  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -139,6 +142,18 @@ wxString CSettings::FindRelativeDir(wxString refPathName)
  */
 CSettings::CSettings()
 {
+    Load("");
+}
+
+/*!
+ * \brief Default destructor.
+ */
+CSettings::~CSettings()
+{
+}
+
+bool CSettings::Load(wxString ConfigFileName)
+{
     /* Get source path, which is relative to our working directory. */
     m_relsrcpath = FindRelativeDir(wxT("os/version.c"));
     
@@ -170,8 +185,17 @@ CSettings::CSettings()
     }
     m_lib_dir_default = m_buildpath_default + wxT("/lib");
 
-    m_configname_default = m_relsrcpath + wxT("/conf/ethernut21.conf");
+    wxFileName fname(ConfigFileName);
+    wxString ConfigName = fname.GetFullName();
+    if (ConfigName == "") {
+        m_configname_default = m_relsrcpath + wxT("/conf/ethernut21.conf");
+    }
+    else {
+        m_configname_default = m_relsrcpath + wxT("/conf/") + ConfigName;
+    }
+    
     m_repositoryname_default = m_relsrcpath + wxT("/conf/repository.nut");
+    m_mulConfig_default = false;
 
     m_firstidir_default = wxEmptyString;
     m_lastidir_default = wxEmptyString;
@@ -182,9 +206,19 @@ CSettings::CSettings()
     wxConfigBase *pConfig = wxConfigBase::Get();
     if (pConfig) {
         wxString lastPath = pConfig->GetPath();
+        
         pConfig->SetPath(wxT("/Settings"));
-
         pConfig->Read(wxT("ConfigName"), &m_configname, m_configname_default);
+        if (ConfigFileName != "") {
+            m_configname = ConfigFileName;
+        }
+        pConfig->Read(wxT("MulConfigurations"), &m_mulConfig, m_mulConfig_default);
+        
+        if (m_mulConfig == true) {
+            pConfig->SetPath(lastPath);
+            pConfig->SetPath(wxT("/Settings/") + ConfigName);
+        }
+        
         pConfig->Read(wxT("RepositoryName"), &m_repositoryname, m_repositoryname_default);
 
         pConfig->Read(wxT("BuildPath"), &m_buildpath, m_buildpath_default);
@@ -199,23 +233,26 @@ CSettings::CSettings()
 
         pConfig->SetPath(lastPath);
     }
+    return true;
 }
 
-/*!
- * \brief Default destructor.
- */
-CSettings::~CSettings()
-{
-}
-
-bool CSettings::Save()
+bool CSettings::Save(wxString ConfigFileName)
 {
     wxConfigBase *pConfig = wxConfigBase::Get();
     if (pConfig) {
         wxString lastPath = pConfig->GetPath();
-        pConfig->SetPath(wxT("/Settings"));
 
-        pConfig->Write(wxT("ConfigName"), m_configname);
+        pConfig->SetPath(wxT("/Settings"));
+        pConfig->Write(wxT("ConfigName"), ConfigFileName);
+        pConfig->Write(wxT("MulConfigurations"), m_mulConfig);
+        
+        if (m_mulConfig == true) {
+            wxFileName fname(ConfigFileName);
+            wxString ConfigName = fname.GetFullName();
+            pConfig->SetPath(lastPath);
+            pConfig->SetPath(wxT("/Settings/") + ConfigName);
+        }
+        
         pConfig->Write(wxT("RepositoryName"), m_repositoryname);
 
         pConfig->Write(wxT("BuildPath"), m_buildpath);

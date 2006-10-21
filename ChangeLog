@@ -1,5 +1,13 @@
-$Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
+$Id: ChangeLog,v 1.362 2006/10/21 12:48:50 christianwelzel Exp $
 
+
+2006-10-21  Christian Welzel <christian.welzel@welzel-online.ch>
+	* tools/nutconf/nutconf.cpp, tools/nutconf/nutconfdoc.cpp,
+	tools/nutconf/repoptdlg.cpp, tools/nutconf/repoptdlg.h,
+	tools/nutconf/settings.cpp, tools/nutconf/settings.h,
+	tools/nutconf/settingsdlg.cpp: Added support for multiple
+	configurations / settings
+	
 
 2006-10-17  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -17,7 +25,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 2006-10-07 Henrik Maier  <henrik@proconx.com>
 
         * arch/avr/os/nutinit.c: include of sys/heap.h added.
-        
+
         * include/sys/heap.h: Added an include statement for cfg/memory.h
         so the macro NUTMEM_STACKHEAP is found when compiling for the
         AT90CAN128.
@@ -30,13 +38,13 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* dev/ds1307rtc.c: Corrected range check in DS1307RamRead().
 	Thanks to Helmut Holbach.
 
-	* conf/arch/avr.nut, conf/repository.nut, arch/avr/dev/hd44780.c: 
+	* conf/arch/avr.nut, conf/repository.nut, arch/avr/dev/hd44780.c:
 	Many thanks to Thiago Correa for adding LCD port configuration.
 
 	* arch/arm/ldscripts/at91_rom.ld: Matthias Wilde's enhancements
 	for C++ support should allow to run C++ programs in ROM/FLASH.
 
-	* arch/arm/dev/at91_emac.c, conf/arch/arm.nut: PHY address and 
+	* arch/arm/dev/at91_emac.c, conf/arch/arm.nut: PHY address and
 	power down bit are now configurable.
 
 	* fs/phatdir.c, fs/phatfs.c, fs/phatvol.c, include/fs/phatdir.h,
@@ -62,7 +70,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	current working directory and path to the make tool. The
 	default action on failures is now not to continue. Modified
 	source files in the sample directory are no more overwritten.
-	On startup, the Configurator will now check for a path 
+	On startup, the Configurator will now check for a path
 	mismatch, which typically appears after upgrading or
 	downgrading the Nut/OS release. The user will be warned and
 	a change to relative paths is offered. A few more cosmetics
@@ -73,7 +81,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	functions. As a sample demo the configuration tree will now
 	show the Nut/OS version number, which is extracted from
 	os/version.c. Lua may also call C functions provided by the
-	Configurator. For now, only a single function (l_repo_path) is 
+	Configurator. For now, only a single function (l_repo_path) is
 	available, which returns the path to the current repository.
 	All Lua standard libraries are now registered.
 	The new Configurator version is 1.3.1.
@@ -90,11 +98,11 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* include/dev/rtc.h, conf/dev/dev.nut, dev/ds1307rtc.c,
 	dev/pcf8563.c, include/dev/board.h, include/dev/ds1307rtc.h,
-	include/dev/pcf8563.h, include/dev/x12rtc.h: Hardware 
+	include/dev/pcf8563.h, include/dev/x12rtc.h: Hardware
 	independant RTC layer added.
 
-	* dev/x12rtc.c, include/dev/x12rtc.h: Hardware specific functions 
-	marked deprecated. Hardcoded register addresses and values 
+	* dev/x12rtc.c, include/dev/x12rtc.h: Hardware specific functions
+	marked deprecated. Hardcoded register addresses and values
 	replaced by macros.
 
 	* os/heap.c: Fixes bug #1567729. Thanks to Ashley Duncan.
@@ -114,7 +122,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	Many thanks to Klaus-Dieter Sohn.
 
 	* net/tcpsm.c, net/pppin.c, net/pppdebug.c, net/ipcsum.c:
-	Avoid possible alignment errors. Fixes bug #1567748. Many 
+	Avoid possible alignment errors. Fixes bug #1567748. Many
 	thanks to Ben Hoyt.
 
 	* fs/pathops.c: Fixes bug #1281167. Thanks to Jukka Holappa.
@@ -131,7 +139,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* dev/usart.c: Added a comment to warn the user about ioctl()
 	functions, that may not be supported.
 
-	* fs/phatdir.c: Fixes bug #1571269. Thanks to Dirk Boecker for 
+	* fs/phatdir.c: Fixes bug #1571269. Thanks to Dirk Boecker for
 	reporting this.
 
 
@@ -146,20 +154,20 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* conf/at91sam9260-ek.conf: Corrected memory size.
 
-	* include/arch/avr/icc.h: Corrected internal RAM size and check 
+	* include/arch/avr/icc.h: Corrected internal RAM size and check
 	compiler environment for ATmega2561.
 
 	* os/thread.c, arch/avr/os/context_gcc.c, arch/avr/os/context_icc.c,
-	include/sys/heap.h: All code should use dedicated stack allocation 
-	routines. For targets allocating stack from the normal heap the API 
+	include/sys/heap.h: All code should use dedicated stack allocation
+	routines. For targets allocating stack from the normal heap the API
 	calls are remapped by preprocessor macros.
 
 	* os/heap.c, os/thread.c, include/sys/heap.h, include/sys/thread.h:
 	Stack allocation code moved from thread module to heap module.
 
-	* os/heap.c: Adding static attribute to variable 'available' will 
-	avoid interference with application code. The ugly format macros 
-	had been replaced by converting all platform specific sizes to 
+	* os/heap.c: Adding static attribute to variable 'available' will
+	avoid interference with application code. The ugly format macros
+	had been replaced by converting all platform specific sizes to
 	unsigned integers.
 
 
@@ -171,14 +179,14 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* arch/arm/dev/at91_spi.c, arch/arm/dev/ih_at91spi0.c,
 	arch/arm/dev/ih_at91spi1.c, conf/arch/arm.nut,
-	include/arch/arm/irqreg.h, include/dev/at91_spi.h: 
+	include/arch/arm/irqreg.h, include/dev/at91_spi.h:
 	Basic AT91 SPI support added.
 
-	* arch/arm/dev/ih_at91ssc.c: Default interrupt priority 
+	* arch/arm/dev/ih_at91ssc.c: Default interrupt priority
 	changed from 4 to 5. Usually this is used for high speed links.
 
 	* arch/arm/dev/ih_at91tc0.c: Default interrupt priority
-	changed from 4 to 0. As this is typically used by the system 
+	changed from 4 to 0. As this is typically used by the system
 	timer, lowest priority is fine.
 
 	* arch/arm/dev/ostimer_at91.c: Now working correctly, if the
@@ -192,8 +200,8 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* conf/at91sam9260-ek.conf: Configuration stored in serial
 	Dataflash.
 
-	* conf/dev/dev.nut, dev/at45db.c, dev/nvmem.c, 
-	include/dev/at45db.h: Added support for AT45 serial DataFlash 
+	* conf/dev/dev.nut, dev/at45db.c, dev/nvmem.c,
+	include/dev/at45db.h: Added support for AT45 serial DataFlash
 	memory chips. Currently limited to AT91 builds.
 
 	* include/arch/arm/at91_pio.h: Register offsets added, which
@@ -208,7 +216,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* include/arch/arm/at91_ssc.h: Just sorted lines a bit.
 
-	* include/arch/arm/at91sam7x.h, include/arch/arm/at91sam9260.h: 
+	* include/arch/arm/at91sam7x.h, include/arch/arm/at91sam9260.h:
 	Added PIO features and SPI peripheral selections.
 
 	* include/arch/arm/timer.h: Include clock configuration.
@@ -219,7 +227,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 2006-09-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* conf/arch/arm.nut, include/arch/arm/irqreg.h: For some 
+	* conf/arch/arm.nut, include/arch/arm/irqreg.h: For some
 	reason the SSC driver for SAM7X had not been included.
 
 	* fs/phatdir.c: Directory entries honor daylight saving
@@ -242,11 +250,11 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	tools/nutdisc/resource.h, tools/nutdisc/setup.cpp,
 	tools/nutdisc/setup.h, tools/nutdisc/udpthread.cpp,
 	tools/nutdisc/udpthread.h, tools/nutdisc/version.h,
-	tools/nutdisc/bitmaps/nutdisc.ico: Discovery service added. 
-	A new GUI tool nutdisc will allow to scan the local network 
-	for Nut/OS nodes. You can even change the network configuration 
-	remotely. Note, that the GUI tool is GPL'ed. It had been tested 
-	on Win32 only, but should work on Linux as well with a few 
+	tools/nutdisc/bitmaps/nutdisc.ico: Discovery service added.
+	A new GUI tool nutdisc will allow to scan the local network
+	for Nut/OS nodes. You can even change the network configuration
+	remotely. Note, that the GUI tool is GPL'ed. It had been tested
+	on Win32 only, but should work on Linux as well with a few
 	modifications.
 
 	* app/ftpd/ftpserv.c: Discovery registration added. Enabled
@@ -263,7 +271,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* include/arch/arm/irqreg.h: sig_SSC added to SAM7X declarations.
 
-	* include/arch/arm/at91sam7x.h: Added missing definitions for 
+	* include/arch/arm/at91sam7x.h: Added missing definitions for
 	peripheral multiplexing. Now following the same naming
 	conventions like those for the SAM9260 (using copy and paste
 	from the datasheet ;-)).
@@ -289,10 +297,10 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	internal RAM was not mapped to address 0x00000000. Second,
 	interrupts were disabled.
 
-	* conf/arch/arch.nut, conf/arch/arm.nut: SPI and MCI support 
+	* conf/arch/arch.nut, conf/arch/arm.nut: SPI and MCI support
 	added for SAM9260.
 
-	* conf/repository.nut, conf/tools.nut: Added missing linker 
+	* conf/repository.nut, conf/tools.nut: Added missing linker
 	script for SAM9260 applications running in external RAM.
 
 	* include/arch/arm/at91_mci.h: Timeout multiplier settings
@@ -301,10 +309,10 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* include/arch/arm/at91sam9260.h: MIC base address corrected.
 
-	* include/arch/arm/irqreg.h, arch/arm/dev/ih_at91ssc.c: 
+	* include/arch/arm/irqreg.h, arch/arm/dev/ih_at91ssc.c:
 	SSC interrupt handler added.
 
-	* include/dev/at91_mci.h, arch/arm/dev/at91_mci.c: 
+	* include/dev/at91_mci.h, arch/arm/dev/at91_mci.c:
 	Support for hardware MultiMedia Card interface added.
 	SD Cards are currently not supported.
 
@@ -315,7 +323,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	ICMP request. This triggered the Nut/Net ARP method and
 	terminated the DHCP client, leaving the system with default
 	configurations of the network mask (255.255.255.0) and
-	default gateway (none). The rarely used ARP method is now 
+	default gateway (none). The rarely used ARP method is now
 	disabled by default.
 
 	* conf/ethernut30e.conf: Default configuration added for
@@ -324,13 +332,13 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 2006-08-31  Harald Kipp  <harald.kipp@egnite.de>
 
-	* arch/arm/dev/at91_emac.c, include/dev/at91_emac.h: More 
-	general AT91 MAC driver replaces the SAM7X specific version. 
-	This had been tested on the SAM9260, but loses Ethernet 
+	* arch/arm/dev/at91_emac.c, include/dev/at91_emac.h: More
+	general AT91 MAC driver replaces the SAM7X specific version.
+	This had been tested on the SAM9260, but loses Ethernet
 	packets for a yet unknown reason.
 
-	* arch/arm/dev/ostimer_at91.c, include/arch/arm/timer.h: 
-	Added support for the AT91SAM9260. We now determine between 
+	* arch/arm/dev/ostimer_at91.c, include/arch/arm/timer.h:
+	Added support for the AT91SAM9260. We now determine between
 	processor and master clock. A new API function
 	At91GetMasterClock() had been added to query the latter.
 
@@ -356,13 +364,13 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam9260-ek.conf,
 	include/arch/arm/at91.h, include/arch/arm/at91sam9260.h,
 	include/arch/arm/irqreg.h, include/arch/arm.h, include/dev/board.h,
-	at91sam9260_ram.ld: Added support for the AT91SAM9260 and Atmel's 
+	at91sam9260_ram.ld: Added support for the AT91SAM9260 and Atmel's
 	AT91SAM9260 Evaluation Kit.
 
-	* include/arch/arm/at91_aic.h, include/arch/arm/at91_pmc.h: 
+	* include/arch/arm/at91_aic.h, include/arch/arm/at91_pmc.h:
 	Defining register offsets simplifies assembly programming.
 
-	* include/arch/arm/at91_ccfg.h, include/arch/arm/at91_matrix.h, 
+	* include/arch/arm/at91_ccfg.h, include/arch/arm/at91_matrix.h,
 	include/arch/arm/at91_mci.h, include/arch/arm: at91_sdramc.h,
 	include/arch/arm/at91_smc.h: New peripheral register definitions
 	for the AT91SAM9260.
@@ -374,7 +382,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* include/arch/arm/at91_ssc.h: Frame sync definitions added.
 
-	* include/arch/arm/at91_us.h: Added additional registers found 
+	* include/arch/arm/at91_us.h: Added additional registers found
 	on the AT91SAM9260.
 
 	* include/arch/arm/at91_rstc.h: Wakeup bit and LSB of external
@@ -383,7 +391,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* include/arch/arm/at91_wdt.h: Added LSB definitions for counter
 	and delta values.
 
-	* app/basemon/basemon.c, app/canbus/candemo.c, 
+	* app/basemon/basemon.c, app/canbus/candemo.c,
 	app/nutpiper/nutpiper.c, app/playmp3/playmp3.c: Not all platforms
 	do have devDebug0. Use board.h to determine the correct driver.
 
@@ -395,7 +403,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 2006-08-24  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* dev/ds1307rtc.c: avr-gcc 3.4 does not understand binary
           representation of numbers, changed to hex
-	* pro/auth.c, include/pro/httpd.h: added NutClearAuth(void); 
+	* pro/auth.c, include/pro/httpd.h: added NutClearAuth(void);
 	  Thanks to Peter Sondermanns
 
 2006-08-23  Matthias Ringwald  <mringwal@inf.ethz.ch>
@@ -407,15 +415,15 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* arch/avr/dev/usartavr.c: Half duplex flow control used the
 	wrong buffer. Many thanks to Andrej Taran for fixing this bug.
 
-	* arch/arm/dev/debug_at91.c, arch/arm/dev/usartat91.c: Special 
-	register functions should not be based on MCU definitions but on 
+	* arch/arm/dev/debug_at91.c, arch/arm/dev/usartat91.c: Special
+	register functions should not be based on MCU definitions but on
 	register definitions.
 
 	* include/arch/arm/at91_dbgu.h, include/arch/arm/at91_spi.h:
 	PDC registers added.
 
 	* include/arch/arm/at91_us.h, include/arch/arm/at91sam7x.h,
-	include/arch/arm/at91x40.h: PDC registers are now configurable 
+	include/arch/arm/at91x40.h: PDC registers are now configurable
 	in the parent header file.
 
 	* include/arch/arm/at91x40.h: Old SAM7X leftovers finally removed.
@@ -423,7 +431,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* include/arch/arm.h: Missing brackets may result in unexpected
 	expansion of the _BV() macro.
 
-	* include/arch/arm/at91sam7x.h, include/arch/arm/at91_ssc.h: 
+	* include/arch/arm/at91sam7x.h, include/arch/arm/at91_ssc.h:
 	Added register definitions for synchronous serial controller.
 
 	* include/arch/arm/at91_pmc.h: Wrong PMC register offsets fixed.
@@ -454,9 +462,9 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	include/arch/arm.h: Exclude function prototypes when
 	included by assembler.
 
-	* app/Makeburn.arm-jom: Added support for all four flash memory 
-	sections, which can be moved by S2. Default application section 
-	is now the one that negates A20 and A21. This preserves the boot 
+	* app/Makeburn.arm-jom: Added support for all four flash memory
+	sections, which can be moved by S2. Default application section
+	is now the one that negates A20 and A21. This preserves the boot
 	loader. The traditional 'make burn' should work now for Ethernut 3.
 
 	* conf/ethernut30d.conf: Default to 6 PHAT sector buffers.
@@ -471,16 +479,16 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* include/sys/event.h: Missing typecast in NutEventPostFromIrq()
 	fixed. Thanks to Matthias Wilde.
 
-	* net/ether_addr.c, include/netinet/if_ether.h, conf/net/net.nut: 
+	* net/ether_addr.c, include/netinet/if_ether.h, conf/net/net.nut:
 	New functions ether_aton() and ether_ntoa() added. They convert
 	the ASCII representation of an Ethernet MAC address to its
 	binary form and vice versa.
 
-	* fs/basename.c, fs/dirname.c, include/libgen.h, conf/fs/fs.nut: 
-	New functions extract last component and parent directory from 
+	* fs/basename.c, fs/dirname.c, include/libgen.h, conf/fs/fs.nut:
+	New functions extract last component and parent directory from
 	pathnames.
 
-	* fs/pnutfs.c: PNUT file system failed after some modifications 
+	* fs/pnutfs.c: PNUT file system failed after some modifications
 	done previously for the PHAT file system. During directory open,
 	the NUTFILE structure must be allocated in the file system
 	driver. PnutDirRead() must return -1 if the end of a directory
@@ -493,7 +501,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 2006-07-28  Harald Kipp  <harald.kipp@egnite.de>
 
-	* configure.ac: Additional spaces at some line ends let Autoconf on 
+	* configure.ac: Additional spaces at some line ends let Autoconf on
 	Windows fail with 'already registered with AC_CONFIG_FILES'. Thanks
 	to Andras Albert, who detected and fixed it.
 
@@ -509,10 +517,10 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* arch/arm/dev/ostimer_at91.c, arch/arm/os/nutinit.c,
 	conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam7x-ek.conf:
-	Defining AT91_PLL_MAINCK will automatically determine SAM7X 
+	Defining AT91_PLL_MAINCK will automatically determine SAM7X
 	clock by reading PLL settings.
 
-	* arch/arm/dev/spimmc_at91.c, conf/arch/arch.nut, conf/arch/arm.nut, 
+	* arch/arm/dev/spimmc_at91.c, conf/arch/arch.nut, conf/arch/arm.nut,
 	conf/at91sam7x-ek.conf, include/dev/spimmc_at91.h:
 	Added MMC/SD-Card support for AT91SAM7X Evaluation Kit.
 
@@ -522,7 +530,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* include/arch/arm/at91_mc.h: Made it usable for assembler.
 
-	* include/arch/arm/at91_pmc.h: Added shift values for multi-bit 
+	* include/arch/arm/at91_pmc.h: Added shift values for multi-bit
 	parameters.
 
 	* include/arch/arm/at91_spi.h: Added missing bit definitions.
@@ -538,7 +546,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	app/isp2/Makefile, app/logtime/Makefile, app/nutpiper/Makefile,
 	app/playmp3/Makefile, app/portdio/Makefile, app/pppc/Makefile,
 	app/rs232d/Makefile, app/simple/Makefile, app/tcps/Makefile,
-	app/threads/Makefile, app/timers/Makefile, app/uart/Makefile: 
+	app/threads/Makefile, app/timers/Makefile, app/uart/Makefile:
 	Added creation of *.elf for 'make all'.
 
 	* Makedefs.avr-icc, Makedefs.avrext-icc: Added current directory
@@ -550,16 +558,16 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* app/Makerules.arm-gcc: Added start-group and end-group to solve
 	circular reference issue with libraries.
 
-	* app/basemon/basemon.c, app/basemon/dataflash.c, 
+	* app/basemon/basemon.c, app/basemon/dataflash.c,
 	app/basemon/realtek.c, app/basemon/smsc.c, app/basemon/uart.c,
 	app/basemon/webdemo.c, app/basemon/xmemtest.c,
 	app/basemon/xmemtest.h, app/canbus/candemo.c, app/nutpiper/config.c,
-	app/nutpiper/nutpiper.c, app/nutpiper/player.c, 
+	app/nutpiper/nutpiper.c, app/nutpiper/player.c,
 	app/playmp3/playmp3.c: Exclude AVR specific parts from building
 	for other platforms. This does not imply, that they are
 	working on these platforms.
 
-	* app/events/events.c, app/ftpd/ftpserv.c: Use dev/board.h to 
+	* app/events/events.c, app/ftpd/ftpserv.c: Use dev/board.h to
 	determine output device.
 
 	* app/inetq/inetq.c: Fixed warnings about wrong signedness.
@@ -606,7 +614,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	existing headers.
 
 	* include/arch/arm/at91_wdt.h: Changed coding style to follow
-	existing headers. Removed old lines, which had been derived from 
+	existing headers. Removed old lines, which had been derived from
 	at91_wd.h. Corrected register addresses, thanks to Jix.
 	Register names changed, now following the datasheet. This
 	may break your existing application.
@@ -617,8 +625,8 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 2006-07-15  Harald Kipp  <harald.kipp@egnite.de>
 
-	* arch/arm/dev/at91sam7x_emac.c: PHY initialization disabled user 
-	reset. Packet receiver routine filled wrong buffer and always 
+	* arch/arm/dev/at91sam7x_emac.c: PHY initialization disabled user
+	reset. Packet receiver routine filled wrong buffer and always
 	returned an error. Many thanks to Andras Albert for fixing this.
 
 	* arch/arm/init/crtat91sam7x256_rom.S, arch/arm/os/nutinit.c:
@@ -643,15 +651,15 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 2006-07-13 Henrik Maier  <henrik@proconx.com>
 
-	* arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c, 
-	arch/avr/dev/ih_usart1_tx.c: 
+	* arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c,
+	arch/avr/dev/ih_usart1_tx.c:
 	Fixed typing error for NUT_PERFMON counter variables.
 
 
 2006-07-11  Harald Kipp  <harald.kipp@egnite.de>
 
-	* fs/phatio.c, fs/phatvol.c, include/fs/phatvol.h: PHAT file system 
-	failed when accessed from multiple threads. A mutual exclusion 
+	* fs/phatio.c, fs/phatvol.c, include/fs/phatvol.h: PHAT file system
+	failed when accessed from multiple threads. A mutual exclusion
 	semaphore fixes this.
 
 	* fs/phatfs.c: Added mutual exclusion protection during flush.
@@ -664,8 +672,8 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	These patches had been kindly contributed by Matthias Wilde.
 	Linking for pure virtual functions is not yet supported.
 
-	* Makedefs.arm-gcc: Added which compiler to use for cc files, added 
-	compiler and linker flags for cc files especially fno-exceptions and 
+	* Makedefs.arm-gcc: Added which compiler to use for cc files, added
+	compiler and linker flags for cc files especially fno-exceptions and
 	-fno-rtti for C++.
 
 	* Makefile: C++ libs added to ARM build.
@@ -675,7 +683,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* app/Makerules.avr-icc, app/Makerules.avrext-icc: Dirty hack
 	to skip C++ with ICCAVR.
 
-	* app/Makeburn.avr-jtagice, app/Makeburn.avr-jtagicemkii: Do not use 
+	* app/Makeburn.avr-jtagice, app/Makeburn.avr-jtagicemkii: Do not use
 	absolute path for programmer executable.
 
 	* app/Makefile: C++ demo added to ARM build.
@@ -685,13 +693,13 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* app/cppdemo/cppdemo.cc: Header files replaced by platform
 	independent variants.
 
-	* arch/arm/ldscripts/at91_ram.ld: Adapted to support C++ 
+	* arch/arm/ldscripts/at91_ram.ld: Adapted to support C++
 	requirements, with help of Martin Thomas (WinArm).
 
 	* arch/arm/os/nutinit.c, include/arch/arm.h: C++ will use main
 	instead of NutAppMain.
 
-	* include/cpp/nutcpp.h: Defined functions for new and delete 
+	* include/cpp/nutcpp.h: Defined functions for new and delete
 	operator.
 
 	* conf/tools.nut: Added ARM C++ support.
@@ -701,7 +709,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* os/version.c: Release candidate 4.1.9.3.
 
-	* Makedefs.avrext-icc, Makerules.avrext-icc, app/Makedefs.avrext-icc, 
+	* Makedefs.avrext-icc, Makerules.avrext-icc, app/Makedefs.avrext-icc,
 	app/Makerules.avrext-icc: New ImageCraft Makefiles for extended AVR
 	devices like the ATmega2561.
 
@@ -712,7 +720,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* arch/avr/os/context_icc.c: Properly set 3 byte return address
 	for extended AVR.
 
-	* conf/tools.nut, include/arch/avr/icc.h: Distinguish between 
+	* conf/tools.nut, include/arch/avr/icc.h: Distinguish between
 	enhanced and extended AVR.
 
 	* fs/phatvol.c: Automatically detect FAT12 and FAT16 volumes
@@ -742,10 +750,10 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* os/version.c: Release candidate 4.1.9.2.
 
-	* arch/arm/dev/at91sam7x_emac.c, include/dev/at91sam7x_emac.h: 
-	New Ethernet driver for the AT91SAM7X EMAC and the Davicom DM9161A. 
-	This driver is not yet finished. Ethernet link auto-negotiation works 
-	and receive interrupts are generated when sending packets to the 
+	* arch/arm/dev/at91sam7x_emac.c, include/dev/at91sam7x_emac.h:
+	New Ethernet driver for the AT91SAM7X EMAC and the Davicom DM9161A.
+	This driver is not yet finished. Ethernet link auto-negotiation works
+	and receive interrupts are generated when sending packets to the
 	board. But transmitting packets fails, nothing is sent out.
 
 	* ih_at91emac.c: Ethernet interrupt handler for the AT91SAM7X.
@@ -755,12 +763,12 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	up in order to not conflict with original source. Nevertheless,
 	many thanks to Daidai for providing his adaption.
 
-	* arch/arm/init/crtat91sam7x256_rom.S, 
-	arch/arm/ldscripts/at91sam7x256_rom.ld: AT91SAM7X256 startup code 
+	* arch/arm/init/crtat91sam7x256_rom.S,
+	arch/arm/ldscripts/at91sam7x256_rom.ld: AT91SAM7X256 startup code
 	and linker script, contributed by Daidai.
 
 	* arch/arm/dev/debug_at91.c, arch/arm/dev/usart0at91.c,
-	arch/arm/dev/usart1at91.c, arch/arm/dev/usartat91.c: 
+	arch/arm/dev/usart1at91.c, arch/arm/dev/usartat91.c:
 	Daidai's support for AT91SAM7X added.
 
 	* arch/arm/dev/ih_at91irq2.c, arch/arm/dev/ih_at91pio.c,
@@ -768,7 +776,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	Interrupt handler will be included only, if the related interrupt
 	ID is defined in the platform specific header file.
 
-	* arch/arm/dev/ostimer_at91.c: Daidai's support for AT91SAM7X 
+	* arch/arm/dev/ostimer_at91.c: Daidai's support for AT91SAM7X
 	added.
 
 	* conf/arch/arch.nut: SAM7 EMAC attribute added.
@@ -781,7 +789,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 	* dev/mmcard.c: Bugfix. Trailing slash in mount path not
 	properly handled. Thanks to Michael Fischer.
 
-	* dev/nvmem.c, include/dev/at91_efc.h: 
+	* dev/nvmem.c, include/dev/at91_efc.h:
 	Added Daidai's version of using the AT91SAM7X
 	on-chip flash for storing configuration data.
 
@@ -806,13 +814,13 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* include/dev/debug.h: Daidai's SAM7X debug devices added.
 
-	* include/dev/nvmem.h: Added Daidai's routines for un-/locking 
+	* include/dev/nvmem.h: Added Daidai's routines for un-/locking
 	flash memory.
 
 
 2006-07-04 Henrik Maier  <henrik@proconx.com>
 
-        * arch/avr/os/nutinit.c: Changed binary constants to hex 
+        * arch/avr/os/nutinit.c: Changed binary constants to hex
         constants in XNUT board initialization code.
 
 
@@ -820,7 +828,7 @@ $Id: ChangeLog,v 1.361 2006/10/17 11:26:02 haraldkipp Exp $
 
 	* dev/ds1307rtc.c, include/dev/ds1307rtc.h: RTC and RAM routines
 	for the Dallas DS1307 real time clock chip.
-	
+
 	* conf/dev/dev.nut: DS1307 Driver included.
 
 

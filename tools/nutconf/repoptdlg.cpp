@@ -39,6 +39,9 @@
 
 /*
  * $Log: repoptdlg.cpp,v $
+ * Revision 1.5  2006/10/21 12:48:18  christianwelzel
+ * Added support for multiple configurations / settings
+ *
  * Revision 1.4  2005/04/28 16:21:10  haraldkipp
  * Failed to compile on Fedora
  *
@@ -77,11 +80,20 @@ CRepositoryOptionsDialog::CRepositoryOptionsDialog(wxWindow* parent)
     wxButton *btnBrowse = new wxButton(this, ID_BROWSE_REPOPATH, wxT("&Browse..."));
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
-    wxSizer *sizerGroup = new wxStaticBoxSizer(groupPath, wxHORIZONTAL);
+    
+    wxSizer *sizerGroup = new wxStaticBoxSizer(groupPath, wxVERTICAL);
 
     sizerGroup->Add(m_entryPath, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
     sizerGroup->Add(btnBrowse, 0, wxALIGN_RIGHT | wxALL, 5);
     sizerTop->Add(sizerGroup, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
+
+    wxStaticBox *groupConfig = new wxStaticBox(this, -1, wxT("Configurations"));
+    m_chkBoxConfig = new wxCheckBox(this, -1, wxT("Enable multiple configurations"), wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_mulConfig));
+
+    wxSizer *sizerConfig = new wxStaticBoxSizer(groupConfig, wxHORIZONTAL);
+    sizerConfig->Add(m_chkBoxConfig, 1, wxALIGN_LEFT | wxGROW | wxALL, 5);
+
+    sizerTop->Add(sizerConfig, 0, wxGROW | wxALIGN_CENTRE | wxALL, 5);
 
     SetAutoLayout(true);
     SetSizer(sizerTop);

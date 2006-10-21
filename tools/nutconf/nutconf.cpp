@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.13  2006/10/21 12:48:17  christianwelzel
+ * Added support for multiple configurations / settings
+ *
  * Revision 1.12  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -209,7 +212,7 @@ bool NutConfApp::OnInit()
                 wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
                     m_settings->m_configname = m_settings->m_relsrcpath + wxString(wxT("/conf/")) + m_settings->m_configname.AfterLast('/');
                     m_settings->m_repositoryname = m_settings->m_repositoryname_default;
-                    m_settings->Save();
+                    m_settings->Save(m_settings->m_configname);
             }
         }
     }
@@ -218,7 +221,7 @@ bool NutConfApp::OnInit()
             if (wxMessageBox(wxT("Repository path has changed. Do you want to use relative paths?"), 
                 wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
                     m_settings->m_repositoryname = m_settings->m_repositoryname_default;
-                    m_settings->Save();
+                    m_settings->Save(m_settings->m_configname);
             }
         }
     }

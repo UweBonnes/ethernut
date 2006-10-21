@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.16  2006/10/21 12:48:18  christianwelzel
+ * Added support for multiple configurations / settings
+ *
  * Revision 1.15  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -146,6 +149,9 @@ bool CNutConfDoc::OnCreate(const wxString & path, long flags)
     wxGetApp().m_currentDoc = this;
 
     if ((rc = ReadRepository(cfg->m_repositoryname, normPath)) == true) {
+        CSettings *cfg = wxGetApp().GetSettings();
+        cfg->Load(cfg->m_configname);
+        
         Modify(false);
         SetDocumentSaved(false);
 

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/21 12:48:18  christianwelzel
+ * Added support for multiple configurations / settings
+ *
  * Revision 1.2  2004/08/18 13:34:20  haraldkipp
  * Now working on Linux
  *
@@ -66,6 +69,8 @@ private:
 
     wxString m_repositoryPath;
     wxTextCtrl *m_entryPath;
+    wxCheckBox *m_chkBoxConfig;
+
 
     DECLARE_EVENT_TABLE()
 
