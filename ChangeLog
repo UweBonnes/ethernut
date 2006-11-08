@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.362 2006/10/21 12:48:50 christianwelzel Exp $
+$Id: ChangeLog,v 1.363 2006/11/08 08:54:45 haraldkipp Exp $
+
+
+2006-11-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Bugfix, kindly provided by Steve Venroy. Already released request 
+	structure was passed to NutHttpSendError().
 
 
 2006-10-21  Christian Welzel <christian.welzel@welzel-online.ch>
