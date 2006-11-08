@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.15  2006/11/08 08:52:31  haraldkipp
+ * Bugfix, kindly provided by Steve Venroy. Already released request
+ * structure was passed to NutHttpSendError().
+ *
  * Revision 1.14  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -893,14 +897,14 @@ void NutHttpProcessRequest(FILE * stream)
         req->req_method = METHOD_POST;
     else {
         NutHeapFree(method);
-        DestroyRequestInfo(req);
         NutHttpSendError(stream, req, 501);
+        DestroyRequestInfo(req);
         return;
     }
     if (*path == 0 || *protocol == 0) {
         NutHeapFree(method);
-        DestroyRequestInfo(req);
         NutHttpSendError(stream, req, 400);
+        DestroyRequestInfo(req);
         return;
     }
 
