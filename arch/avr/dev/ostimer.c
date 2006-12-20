@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2006/12/20 15:14:41  freckle
+ * corrected millisecond to nut ticks . Same bug as fixed at 2006-09-05
+ *
  * Revision 1.3  2006/10/05 17:13:12  haraldkipp
  * Fixes bug #1567730. The problem had been reported by several people.
  * Lars Andersson provided the most complete solution, IMHO.
@@ -391,6 +394,13 @@ u_long NutGetTickClock(void)
  */
 u_long NutTimerMillisToTicks(u_long ms)
 {
-    return ms * 1000L / NutGetTickClock();
+    u_long x;
+    
+    x = ms * NutGetTickClock() / 1000UL;
+    if (x == 0) {
+        x = 1;
+    }
+    
+    return (x);
 }
 
