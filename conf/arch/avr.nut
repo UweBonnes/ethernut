@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.14  2007/01/18 15:37:54  thiagocorrea
+-- Fixed macro for enabling CTS on the second USART port from the nutconf program
+--
 -- Revision 1.13  2006/10/08 16:40:17  haraldkipp
 -- Many thanks to Thiago Correa for adding LCD port configuration.
 --
@@ -357,7 +360,7 @@ nutarch_avr =
                               "Short JP1 pins 7 and 8 to select INT7.",
                 flavor = "booldata",
                 type = "enumerated",
-                choices = avr_bit_choice,
+                choices = avr_irq_choice,
                 file = "include/cfg/arch/avrpio.h"
             },
             {
