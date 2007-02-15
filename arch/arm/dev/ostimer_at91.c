@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2007/02/15 16:14:39  haraldkipp
+ * Periodic interrupt timer can be used as a system clock.
+ *
  * Revision 1.13  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -166,6 +169,24 @@ void NutDelay(u_char ms)
  */
 void NutRegisterTimer(void (*handler) (void *))
 {
+#if defined(NUT_TICK_AT91PIT)
+
+    /* Set compare value for the specified tick frequency. */
+#if defined(AT91_PLL_MAINCK)
+    outr(PIT_MR, (At91GetMasterClock() / (16 * NUT_TICK_FREQ) - 1) << PIT_PIV_LSB);
+#else
+    outr(PIT_MR, (NutGetCpuClock() / (16 * NUT_TICK_FREQ) - 1) << PIT_PIV_LSB);
+#endif
+
+    /* Register system interrupt handler. */
+    NutRegisterSysIrqHandler(&syssig_PIT, handler, NULL);
+    /* Enable interval timer and interval timer interrupts */
+    outr(PIT_MR, inr(PIT_MR) | PIT_PITEN | PIT_PITIEN);
+    NutSysIrqEnable(&syssig_PIT);
+    inr(PIT_PIVR);
+
+#else   /* NUT_TICK_AT91PIT */
+
     int dummy;
 
 #if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260)
@@ -204,6 +225,8 @@ void NutRegisterTimer(void (*handler) (void *))
 
     /* Software trigger starts the clock. */
     outr(TC0_CCR, TC_SWTRG);
+
+#endif  /* NUT_TICK_AT91PIT */
 }
 
 #if defined(AT91_PLL_MAINCK)
@@ -354,7 +377,13 @@ u_long NutGetCpuClock(void)
  */
 u_long NutGetTickClock(void)
 {
-    u_int rc = inr(TC0_RC) * 32;
+    u_int rc;
+
+#if defined(NUT_TICK_AT91PIT)
+    rc = ((inr(PIT_MR) & PIT_PIV) + 1) * 16;
+#else
+    rc = inr(TC0_RC) * 32;
+#endif
 
     if (rc) {
 #if defined(AT91_PLL_MAINCK)
