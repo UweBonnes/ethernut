@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.366 2007/02/15 16:30:40 haraldkipp Exp $
+$Id: ChangeLog,v 1.367 2007/02/15 19:30:56 haraldkipp Exp $
 
 2007-02-15  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -43,6 +43,17 @@ $Id: ChangeLog,v 1.366 2007/02/15 16:30:40 haraldkipp Exp $
 
 	* include/arch/arm/at91_ssc.h: Wrong SSC clock broke external clock
 	feeding. Fixed.
+
+	* tools/nutconf/mainframe.cpp, tools/nutconf/nutcomponent.c,
+	tools/nutconf/nutconf.h, tools/nutconf/nutconf.cpp,
+	tools/nutconf/repoptdlg.cpp, tools/nutconf/settings.cpp:
+	Version 1.4.1 works with wxWidgets 2.8.0. Wide character issues 
+	fixed.
+
+	* tools/nutconf/settingsdlg.h: Missing notebook.h added.
+
+	* tools/nutconf/nutconfdoc.cpp: Wide character issues fixed.
+	Mkdir no more creates the full path without trailing separator.
 
 
 2006-12-20  Matthias Ringwald <mringwal@inf.ethz.ch>
