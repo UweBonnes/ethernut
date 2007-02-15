@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/02/15 16:18:22  haraldkipp
+ * Configurable runtime initialization.
+ *
  * Revision 1.4  2006/10/05 17:12:36  haraldkipp
  * Bug #1497065 fixed. Stack sizes increased.
  *
@@ -53,51 +56,51 @@
  *
  */
 
-IRQ_STACK_SIZE = (128*4)        @ 128 words for interrupt nesting
-FIQ_STACK_SIZE = (64*4)         @ 64 words
-ABT_STACK_SIZE = (32*4)         @ 16 word
-UND_STACK_SIZE = (32*4)         @ 16 word
+#include <cfg\clock.h>
+#include <cfg\memory.h>
 
-ARM_MODE_USER = 0x10
-ARM_MODE_FIQ = 0x11
-ARM_MODE_IRQ = 0x12
-ARM_MODE_SVC = 0x13
-ARM_MODE_ABORT = 0x17
-ARM_MODE_UNDEF = 0x1B
-ARM_MODE_SYS = 0x1F
+#include <arch\arm.h>
 
-AIC_BASE = 0xFFFFF000
-AIC_EOICR_OFF = 0x130
-AIC_IDCR_OFF = 0x124
+#ifndef PLL_MUL_VAL
+#define PLL_MUL_VAL 72
+#endif
 
-PMC_BASE = 0xFFFFFC00
+#ifndef PLL_DIV_VAL
+#define PLL_DIV_VAL 14
+#endif
 
-CKGR_MOR_OFF = 0x00000020
-CKGR_MOSCEN = 0x00000001
+#if MASTER_CLOCK_PRES == 1
+#define AT91MCK_PRES    PMC_PRES_CLK
+#elif MASTER_CLOCK_PRES == 4
+#define AT91MCK_PRES    PMC_PRES_CLK_4
+#elif MASTER_CLOCK_PRES == 8
+#define AT91MCK_PRES    PMC_PRES_CLK_8
+#elif MASTER_CLOCK_PRES == 16
+#define AT91MCK_PRES    PMC_PRES_CLK_16
+#elif MASTER_CLOCK_PRES == 32
+#define AT91MCK_PRES    PMC_PRES_CLK_32
+#elif MASTER_CLOCK_PRES == 64
+#define AT91MCK_PRES    PMC_PRES_CLK_64
+#else
+#define AT91MCK_PRES    PMC_PRES_CLK_2
+#endif
 
-CKGR_PLLR_OFF = 0x0000002C
+#ifndef IRQ_STACK_SIZE
+#define IRQ_STACK_SIZE  512
+#endif
 
-PMC_MCKR_OFF = 0x00000030
-PMC_CSS_MAIN_CLK = 0x00000001
-PMC_CSS_PLL_CLK = 0x00000003
-PMC_PRES_CLK_2 = 0x00000004
+#ifndef FIQ_STACK_SIZE
+#define FIQ_STACK_SIZE  256
+#endif
 
-PMC_SR_OFF = 0x00000068
-PMC_MOSCS = 0x00000001
-PMC_MCKRDY = 0x00000008
-PMC_LOCK = 0x00000004
+#ifndef ABT_STACK_SIZE
+#define ABT_STACK_SIZE  128
+#endif
 
-RSTC_MR = 0xFFFFFD08
-RSTC_KEY = 0xA5000000
-RSTC_URSTEN = 0x00000001
+#ifndef UND_STACK_SIZE
+#define UND_STACK_SIZE  128
+#endif
 
-WDT_BASE = 0xFFFFFD40
-WDT_MR_OFF = 0x00000004
-WDT_WDDIS = 0x00008000
-
-MC_BASE = 0xFFFFFF00
-MC_FMR_OFF = 0x00000060
-MC_FWS_1FWS = 0x00000100
 
 /*
  * Section 0: Vector table and reset entry.
@@ -153,7 +156,7 @@ _start:
          * Use 2 cycles for flash access.
          */
         ldr     r1, =MC_BASE
-        mov     r0, #MC_FWS_1FWS
+        mov     r0, #MC_FWS_2R3W
         str     r0, [r1, #MC_FMR_OFF]
 
         /*
@@ -187,12 +190,10 @@ wait_moscs:
         /*
          * Set PLL:
          * PLLfreq = crystal / divider * (multiplier + 1)
-         * Crystal is 18.432 MHz, divider is 5 and multiplier is 25.
-         * Thus, the resulting frequency is 95.8464 MHz.
          * Wait 28 clock cycles until PLL is locked.
          */
-@        ldr     r0, =((25 << 16) | (28 << 8) | 5)
-        ldr     r0, =((48 << 16) | (28 << 8) | 10)
+        ldr     r0, =((PLL_MUL_VAL << CKGR_MUL_LSB) | (28 << CKGR_PLLCOUNT_LSB) | (PLL_DIV_VAL << CKGR_DIV_LSB))
+
         str     r0, [r1, #CKGR_PLLR_OFF]
 wait_lock:
         ldr     r0, [r1, #PMC_SR_OFF]
@@ -200,10 +201,9 @@ wait_lock:
         beq     wait_lock
 
         /*
-         * Set prescaler to 2 and switch to PLL clock, resulting in a 
-         * final master clock of 47.9232 MHz.
+         * Set master clock prescaler.
          */
-        mov     r0, #PMC_PRES_CLK_2
+        mov     r0, #AT91MCK_PRES
         str     r0, [r1, #PMC_MCKR_OFF]
 wait_presrdy:
         ldr     r0, [r1, #PMC_SR_OFF]
@@ -270,8 +270,6 @@ __set_stacks:
 
         .global __enter_mode
 __enter_mode:
-
-@        msr     CPSR_c, #ARM_MODE_USER
 
         b       __clear_bss
 

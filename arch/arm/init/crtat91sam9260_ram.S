@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/02/15 16:18:22  haraldkipp
+ * Configurable runtime initialization.
+ *
  * Revision 1.3  2006/09/07 09:02:27  haraldkipp
  * Instruction cache is now enabled. Many thanks to Dany Nativel for
  * providing this patch.
@@ -48,12 +51,36 @@
  *
  */
 
+#include <cfg\clock.h>
+#include <cfg\memory.h>
+
 #include <arch\arm.h>
 
-IRQ_STACK_SIZE = (128*4)        @ 128 words for interrupt nesting
-FIQ_STACK_SIZE = (64*4)         @ 64 words
-ABT_STACK_SIZE = (32*4)         @ 32 word
-UND_STACK_SIZE = (32*4)         @ 32 word
+#ifndef PLL_MUL_VAL
+//#define PLL_MUL_VAL 72
+#define PLL_MUL_VAL 391 //48=90MHz 97=180MHz
+#endif
+
+#ifndef PLL_DIV_VAL
+//#define PLL_DIV_VAL 14
+#define PLL_DIV_VAL 80 //10
+#endif
+
+#ifndef IRQ_STACK_SIZE
+#define IRQ_STACK_SIZE  512
+#endif
+
+#ifndef FIQ_STACK_SIZE
+#define FIQ_STACK_SIZE  256
+#endif
+
+#ifndef ABT_STACK_SIZE
+#define ABT_STACK_SIZE  128
+#endif
+
+#ifndef UND_STACK_SIZE
+#define UND_STACK_SIZE  128
+#endif
 
 /*
  * Section 0: Vector table and reset entry.
@@ -181,27 +208,30 @@ wait_moscs:
          * For USB the deviation is less than the required 0.25%.
          * Wait max clock cycles until PLL is locked.
          */
-	.global set_pllb
+        .global set_pllb
 set_pllb:
-        ldr     r0, =(CKGR_USBDIV_1 | CKGR_OUT_0 | CKGR_PLLCOUNT | (72 << CKGR_MUL_LSB) | (14 << CKGR_DIV_LSB))
-        str     r0, [r1, #CKGR_PLLBR_OFF]
+//        ldr     r0, =(CKGR_USBDIV_1 | CKGR_OUT_0 | CKGR_PLLCOUNT | (72 << CKGR_MUL_LSB) | (14 << CKGR_DIV_LSB)) */
+        ldr     r0, =(_BV(29) | CKGR_OUT_0 | CKGR_PLLCOUNT | (PLL_MUL_VAL << CKGR_MUL_LSB) | (PLL_DIV_VAL << CKGR_DIV_LSB))
+        str     r0, [r1, #CKGR_PLLAR_OFF]
 wait_lock:
         ldr     r0, [r1, #PMC_SR_OFF]
-        and     r0, r0, #PMC_LOCKB
+        and     r0, r0, #PMC_LOCKA
         cmp     r0, #0
         beq     wait_lock
 
         /*
-         * Select PLL B for the processor clock (PCK) and set the master 
-         * clock divider to 2, which results in a master clock frequency
-         * of 48.055 MHz.
+         * Select PLL for the processor clock (PCK) and set the master 
+         * clock divider, which results in a master clock frequency
+         * of 48.055 MHz).
          */
-        ldr     r0, =(PMC_CSS_PLLB_CLK | PMC_MDIV_2)
+//        ldr     r0, =(PMC_CSS_PLLB_CLK | PMC_MDIV_2)
+        ldr     r0, =(PMC_CSS_PLLA_CLK | PMC_PRES_CLK | PMC_MDIV_1) //90 MHz
+//        ldr     r0, =(PMC_CSS_PLLA_CLK | PMC_PRES_CLK | PMC_MDIV_2) //180MHz
         str     r0, [r1, #PMC_MCKR_OFF]
-	.global	wait_mckrdy
+        .global wait_mckrdy
 wait_mckrdy:
         ldr     r0, [r1, #PMC_SR_OFF]
-        and     r0, r0, #8
+        and     r0, r0, #PMC_MCKRDY
         cmp     r0, #0
         beq     wait_mckrdy
 
