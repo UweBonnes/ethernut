@@ -39,6 +39,10 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.17  2007/02/15 19:36:03  haraldkipp
+ * Wide character issues fixed.
+ * Mkdir no more creates the full path without trailing separator.
+ *
  * Revision 1.16  2006/10/21 12:48:18  christianwelzel
  * Added support for multiple configurations / settings
  *
@@ -240,7 +244,7 @@ bool CNutConfDoc::OnSaveDocument(const wxString& filename)
         return false;
     }
 
-    FILE *fp = fopen(filename.fn_str(), "w");
+    FILE *fp = fopen(filename.mb_str(), "w");
     if (fp) {
         SaveComponentOptions(fp, m_root->nc_child);
         fclose(fp);
@@ -301,14 +305,14 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
     wxGetApp().SetStatusText(str);
     wxLogMessage(wxT("%s"), str.c_str());
 
-    NUTREPOSITORY *repo = OpenRepository(repositoryname.fn_str());
+    NUTREPOSITORY *repo = OpenRepository(repositoryname.mb_str());
     if(repo) {
         m_root = LoadComponents(repo);
         if(m_root) {
             str = wxT("Loading ") + configname;
             wxGetApp().SetStatusText(str);
             wxLogMessage(wxT("%s"), str.c_str());
-            if(ConfigureComponents(repo, m_root, configname.fn_str())) {
+            if(ConfigureComponents(repo, m_root, configname.mb_str())) {
                 wxLogMessage(wxT("%s"), GetScriptErrorString());
             }
             else {
@@ -509,7 +513,7 @@ bool CNutConfDoc::SetValue(CConfigItem & item, long nValue)
         }
         wxString str;
         str.Printf(wxT("%ld"), nValue);
-        item.m_option->nco_value = strdup(str.fn_str());
+        item.m_option->nco_value = strdup(str.mb_str());
         Modify(true);
     }
     return true;
@@ -528,7 +532,7 @@ bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
             item.m_option->nco_value = NULL;
         }
         else {
-            item.m_option->nco_value = strdup(strValue.fn_str());
+            item.m_option->nco_value = strdup(strValue.mb_str());
         }
         item.m_option->nco_active = 1;
         Modify(true);
@@ -586,14 +590,14 @@ bool CNutConfDoc::GenerateBuildTree()
         ins_dir = cfg->m_buildpath + wxT("/lib");
     }
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
-    if(CreateMakeFiles(m_root, cfg->m_buildpath.fn_str(), cfg->m_source_dir.fn_str(),
-                       cfg->m_platform.fn_str(), cfg->m_firstidir.fn_str(), cfg->m_lastidir.fn_str(),
-                       ins_dir.fn_str())) {
+    if(CreateMakeFiles(m_root, cfg->m_buildpath.mb_str(), cfg->m_source_dir.mb_str(),
+                       cfg->m_platform.mb_str(), cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str(),
+                       ins_dir.mb_str())) {
         return false;
     }
 
     wxLogMessage(wxT("Creating header files in %s"), cfg->m_buildpath.c_str());
-    if(CreateHeaderFiles(m_root, cfg->m_buildpath.fn_str())) {
+    if(CreateHeaderFiles(m_root, cfg->m_buildpath.mb_str())) {
         return false;
     }
     wxLogMessage(wxT("OK"));
@@ -627,8 +631,8 @@ public:
     virtual wxDirTraverseResult OnDir(const wxString& dirname)
     {
         wxString sub = dirname.Mid(m_source.Length());
-        wxFileName name(m_target + sub);
-        if(!name.GetName().IsSameAs(wxT("CVS"), true)) {
+        wxFileName name(m_target + sub, wxEmptyString);
+        if(!name.GetFullPath().EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator())) {
             name.Mkdir(0777, wxPATH_MKDIR_FULL);
             return wxDIR_CONTINUE;
         }
@@ -786,7 +790,7 @@ bool CNutConfDoc::GenerateApplicationTree()
 
 #ifdef _WIN32
     src_dir = cfg->m_source_dir + wxT("/appicc");
-    wxLogMessage("Translating ICCAVR projects from %s to %s", src_dir.c_str(), cfg->m_app_dir.c_str());
+    wxLogMessage(wxT("Translating ICCAVR projects from %s to %s"), src_dir.c_str(), cfg->m_app_dir.c_str());
     CDirIccAvrProjectTraverser icc_traverser(src_dir, cfg->m_app_dir);
     wxDir icc_dir(src_dir);
     icc_dir.Traverse(icc_traverser);
@@ -797,9 +801,9 @@ bool CNutConfDoc::GenerateApplicationTree()
     if(lib_dir.IsEmpty()) {
         lib_dir = cfg->m_buildpath + wxT("/lib");
     }
-    if(CreateSampleDirectory(m_root, cfg->m_buildpath.fn_str(), cfg->m_app_dir.fn_str(), cfg->m_source_dir.fn_str(),
-                             lib_dir.fn_str(), cfg->m_platform.fn_str(), cfg->m_programmer.fn_str(),
-                             cfg->m_firstidir.fn_str(), cfg->m_lastidir.fn_str())) {
+    if(CreateSampleDirectory(m_root, cfg->m_buildpath.mb_str(), cfg->m_app_dir.mb_str(), cfg->m_source_dir.mb_str(),
+                             lib_dir.mb_str(), cfg->m_platform.mb_str(), cfg->m_programmer.mb_str(),
+                             cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str())) {
         return false;
     }
     wxLogMessage(wxT("OK"));
