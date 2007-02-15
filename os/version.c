@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.41  2007/02/15 15:59:12  haraldkipp
+ * First 4.3 Beta Release
+ *
  * Revision 1.40  2006/10/17 11:26:02  haraldkipp
  * Release branch 4.2 created.
  *
@@ -170,8 +173,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04030000UL
-static CONST char os_version_string[] = "4.3.0.0";
+#define OS_VERSION_NUMBER  0x04030100UL
+static CONST char os_version_string[] = "4.3.1.0";
 
 /*!
  * \addtogroup xgNutVersion
