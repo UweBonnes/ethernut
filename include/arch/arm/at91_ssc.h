@@ -2,7 +2,7 @@
 #define _ARCH_ARM_AT91_SSC_H_
 
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2007/02/15 16:20:38  haraldkipp
+ * Wrong SSC clock naming broke external clock feeding. Fixed.
+ *
  * Revision 1.3  2006/09/29 12:44:17  haraldkipp
  * Just sorted lines a bit.
  *
@@ -86,8 +89,8 @@
 
 #define SSC_CKS                     0x00000003  /*!< \brief Receive clock selection. */
 #define SSC_CKS_DIV                 0x00000000  /*!< \brief Divided clock. */
-#define SSC_CKS_TK                  0x00000001  /*!< \brief TK clock signal. */
-#define SSC_CKS_RK                  0x00000002  /*!< \brief RK pin. */
+#define SSC_CKS_RK                  0x00000001  /*!< \brief RK clock signal. */
+#define SSC_CKS_TK                  0x00000002  /*!< \brief TK pin. */
 #define SSC_CKO                     0x0000001C  /*!< \brief Receive clock output mode selection. */
 #define SSC_CKO_NONE                0x00000000  /*!< \brief None. */
 #define SSC_CKO_CONT                0x00000004  /*!< \brief Continous receive clock. */
