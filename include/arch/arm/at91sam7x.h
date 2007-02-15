@@ -1,7 +1,7 @@
 #ifndef _ARCH_ARM_SAM7X_H_
 #define _ARCH_ARM_SAM7X_H_
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2007/02/15 16:11:14  haraldkipp
+ * Support for system controller interrupts added.
+ *
  * Revision 1.7  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -143,6 +146,7 @@
 #include <arch/arm/at91_pmc.h>
 #include <arch/arm/at91_rstc.h>
 #include <arch/arm/at91_wdt.h>
+#include <arch/arm/at91_pit.h>
 #include <arch/arm/at91_mc.h>
 #include <arch/arm/at91_ssc.h>
 
@@ -152,7 +156,7 @@
 /*! \name Peripheral Identifiers and Interrupts */
 /*@{*/
 #define FIQ_ID      0       /*!< \brief Fast interrupt ID. */
-#define SYSIRQ_ID   1       /*!< \brief System interrupt ID. */
+#define SYSC_ID     1       /*!< \brief System controller interrupt. */
 #define PIOA_ID     2       /*!< \brief Parallel I/O controller ID. */
 #define PIOB_ID     3       /*!< \brief Parallel I/O controller ID. */
 #define SPI0_ID     4       /*!< \brief Serial peripheral interface 0 ID. */
