@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/02/15 16:19:14  haraldkipp
+ * Can use PORTG for half duplex control.
+ *
  * Revision 1.4  2006/05/30 18:34:46  beutel
  * added #include <cfg/os.h> in compliance with usart0avr.c
  *
@@ -139,6 +142,10 @@
 #elif (UART1_HDX_AVRPORT == AVRPORTF)
 #define UART_HDX_PORT   PORTF
 #define UART_HDX_DDR    DDRF
+
+#elif (UART0_HDX_AVRPORT == AVRPORTG)
+#define UART_HDX_PORT  PORTG
+#define UART_HDX_DDR   DDRG
 
 #endif /* UART1_HDX_AVRPORT */
 #define UART_HDX_BIT    UART1_HDX_BIT
