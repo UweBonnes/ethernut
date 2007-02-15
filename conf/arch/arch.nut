@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.26  2007/02/15 16:24:34  haraldkipp
+-- Now the periodic interrupt timer may become the system clock.
+--
 -- Revision 1.25  2006/10/05 17:16:04  haraldkipp
 -- Added exclusivity attribute.
 --
@@ -278,6 +281,7 @@ nutarch =
                     "HW_MCU_AT91SAM7X",
                     "HW_TIMER_AT91",
                     "HW_PLL_AT91",
+                    "HW_PIT_AT91",
                     "HW_UART_AT91",
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
