@@ -1,4 +1,48 @@
-$Id: ChangeLog,v 1.364 2006/12/20 15:14:40 freckle Exp $
+$Id: ChangeLog,v 1.365 2007/02/15 15:58:17 haraldkipp Exp $
+
+2007-02-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: Beta release 4.3.1.
+
+	* net/tcpsm.c: Serious bug in the TCP state machine froze socket
+	connection on 32-bit platforms.
+
+	* arch/arm/dev/at91_emac.c, conf/arch/arm.nut: Configurable buffer 
+	usage and link timeout.
+
+	* arch/arm/dev/hd44780_at91.c, conf/arch/arm.nut: Port usage is 
+	now configurable. Data bits no longer need four consecutive port bits. 
+	Added delays in read for better reliability with some slow displays.
+
+	* arch/arm/dev/st7036_at91.c, include/dev/st7036.h, conf/arch/arm.nut:
+	Added support for ST7036 based interrupts. Tested with EA DOG-M LCDs.
+
+	* conf/arch/arm.nut, include/arch/arm/at91sam7x.h, 
+	arch/arm/dev/ih_at91sys.c: Support for system controller 
+	interrupts added.
+
+	* arch/arm/dev/ostimer_at91.c, include/arch/arm/at91_pit.h,
+	conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam7x-ek.conf, 
+	include/arch/arm/at91sam7x.h: Now the periodic interrupt timer 
+	may be used for the system clock.
+
+	* conf/dev/dev.nut, conf/ethernut30e.conf, dev/twbbif.c,
+	include/cfg/twi.h: Configurable port bits for bit-banging I2C. 
+	Should work now on all AT91 MCUs. Make sure to update your
+	configuration file.
+
+	* arch/arm/init/crtat91sam7x256_rom.S, conf/arch/arm.nut,
+	arch/arm/init/crtat91sam9260_ram.S: Configurable runtime 
+	initialization.
+
+	* arch/avr/dev/usart0avr.c, arch/avr/dev/usart1avr.c: PORTG
+	was rejected for half duplex control. Thanks to Andreas Siebert.
+
+	* conf/repository.nut: PIO ID list added.
+
+	* include/arch/arm/at91_ssc.h: Wrong SSC clock broke external clock
+	feeding. Fixed.
+
 
 2006-12-20  Matthias Ringwald <mringwal@inf.ethz.ch>
     * arch/avr/dev/ostimer.c: corrected millisecond to nut ticks
