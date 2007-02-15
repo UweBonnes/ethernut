@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,15 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.17  2007/02/15 16:04:34  haraldkipp
+-- Configurable AT91 EMAC buffer usage and link timeout.
+-- Port usage for HD44780 is now configurable. Data bits no longer need four
+-- consecutive port bits.
+-- Added support for ST7036 based displays. Tested with EA DOG-M LCDs.
+-- Support for AT91 system controller interrupts added.
+-- Support for AT91 periodic interval timer added.
+-- Configurable SAM7 and SAM9 runtime initialization.
+--
 -- Revision 1.16  2006/10/08 16:41:34  haraldkipp
 -- PHY address and power down bit are now configurable.
 --
@@ -104,6 +113,77 @@ nutarch_arm =
         targets = { "arm/init/crt$(LDNAME).o" },
         -- ICCARM: FIXME!
         requires = { "TOOL_CC_ARM", "TOOL_GCC" },
+        options =
+        {
+            {
+                macro = "IRQ_STACK_SIZE",
+                brief = "IRQ Stack Size",
+                description = "Number of bytes reserved for interrupt stack\n"..
+                              "Default is 512 (128 words).",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FIQ_STACK_SIZE",
+                brief = "FIQ Stack Size",
+                description = "Number of bytes reserved for fast interrupt stack\n"..
+                              "Default is 256 (64 words).",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "ABT_STACK_SIZE",
+                brief = "ABT Stack Size",
+                description = "Number of bytes reserved for abort exception stack\n"..
+                              "Default is 128 (32 words).",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "UND_STACK_SIZE",
+                brief = "UND Stack Size",
+                description = "Number of bytes reserved for undefined exception stack\n"..
+                              "Default is 128 (32 words).",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "PLL_DIV_VAL",
+                brief = "PLL Divider",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "The main clock (crystal) will be divided by this value "..
+                              "and multiplied by the PLL multiplier value plus 1 to "..
+                              "generate the PLL output frequency.\n\n"..
+                              "Default values are\n"..
+                              "SAM7X: 14\n"..
+                              "SAM9260: 14\n",
+                requires = { "HW_PLL_AT91" },
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_MUL_VAL",
+                brief = "PLL Multiplier",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "The main clock (crystal) will be divided by the PLL "..
+                              "divider value and multiplied by the specified multiplier "..
+                              " value plus 1 to generate the PLL output frequency.\n\n"..
+                              "Default values are\n"..
+                              "SAM7X: 72\n"..
+                              "SAM9260: 72\n",
+                requires = { "HW_PLL_AT91" },
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "MASTER_CLOCK_PRES",
+                brief = "Master Clock Prescaler",
+                description = "The selected clock will be divided by this value to generate "..
+                              "the master clock. Possible values are 1, 2 (default), 4, 8, 16, 32 or 64.",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+        },
     },
     
     --
@@ -137,6 +217,15 @@ nutarch_arm =
                               "the PLL register settings to determine the CPU master clock. "..
                               "Otherwise you must specify NUT_CPU_FREQ.",
                 requires = { "HW_PLL_AT91" },
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "NUT_TICK_AT91PIT",
+                brief = "Use PIT",
+                description = "If selected, the AT91 periodic interval timer is used "..
+                              "to generate system ticks. Otherwise timer 0 is used. ",
+                requires = { "HW_PIT_AT91" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
@@ -195,6 +284,7 @@ nutarch_arm =
         sources =
         {
             "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91sys.c",
             "arm/dev/ih_at91irq0.c",
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
@@ -268,7 +358,7 @@ nutarch_arm =
         brief = "HD44780 LCD Driver (AT91)",
         description = "Only 4 bit interfaces are currently supported.\n"..
                       "Tested on the AT91R40008 with 2x16 character LCD.",
-        requires = { "HW_MCU_AT91R40008" },
+        requires = { "HW_MCU_AT91" },
         provides = { "DEV_FILE", "DEV_WRITE" },
         sources = { "arm/dev/hd44780_at91.c" },
         options =
@@ -313,7 +403,37 @@ nutarch_arm =
                 brief = "Least Significant Data Bit",
                 description = "Bit number of the least significant data bit. The remaining "..
                               "data bits must be connected to the following port bits.",
-                default = "0",
+                type = "enumerated",
+                flavor = "booldata",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_DATA_BIT0",
+                brief = "Data Bit 0",
+                description = "Port bit connected to LCD data bit 0.\n"..
+                              "Not used if LCD_DATA_LSB is defined.\n",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_DATA_BIT1",
+                brief = "Data Bit 1",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_DATA_BIT2",
+                brief = "Data Bit 2",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_DATA_BIT3",
+                brief = "Data Bit 3",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
@@ -350,6 +470,79 @@ nutarch_arm =
                 file = "include/cfg/arch/armpio.h"
             },
         },
+    },
+    {
+        name = "nutarch_at91_st7036",
+        brief = "ST7036 LCD Driver (AT91)",
+        description = "Bit banging SPI mode\n"..
+                      "Tested on Ethernut 3 with 2x16 character LCD.",
+        requires = { "HW_MCU_AT91" },
+        provides = { "DEV_FILE", "DEV_WRITE" },
+        sources = { "arm/dev/st7036_at91.c" },
+        options =
+        {
+            {
+                macro = "LCD_SHORT_DELAY",
+                brief = "Short Delay",
+                description = "The number of dummy loops executed after LCD enable goes up.",
+                default = "10",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_LONG_DELAY",
+                brief = "Long Delay",
+                description = "The number of loops executed after sending a command to the LCD "..
+                              "controller. If a R/W line is speicifed, then the driver will queries "..
+                              "the LCD status and terminates the loop as soon as the LCD busy "..
+                              "flag has been cleared.",
+                default = "1000",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_PIO_ID",
+                brief = "GPIO Register ID",
+                description = "All signals must be connected to the same GPIO port.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_CS_BIT",
+                brief = "LCD CS Bit",
+                description = "Bit number of the chip select line.",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_CLK_BIT",
+                brief = "LCD CLK Bit",
+                description = "Bit number of the clock line.",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_MOSI_BIT",
+                brief = "LCD MOSI Bit",
+                description = "Bit number of the data line.",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_RS_BIT",
+                brief = "LCD RS Bit",
+                description = "Bit number of the register select line.",
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+        }
+        
     },
     {
         name = "nutarch_gba_debug",
@@ -415,7 +608,42 @@ nutarch_arm =
                 default = "768",
                 type = "integer",
                 file = "include/cfg/dev.h"
-            }
+            },
+            {
+                macro = "EMAC_RX_BUFFERS",
+                brief = "Receive Buffers",
+                description = "Number of 128 byte receive buffers.\n"..
+                              "Increase to handle high traffic situations.\n"..
+                              "Decrease to handle low memory situations.\n"..
+                              "Default is 32.\n",
+                flavor = "booldata",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_TX_BUFSIZ",
+                brief = "Transmit Buffer Size",
+                description = "The driver will allocate two transmit buffers.\n"..
+                              "Can be decreased in low memory situations. Be aware, "..
+                              "that this may break your network application. Do not "..
+                              "change this without exactly knowing the consequences.\n"..
+                              "Default is 1536.\n",
+                flavor = "booldata",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "EMAC_LINK_LOOPS",
+                brief = "Link Polling Loops",
+                description = "This simple implementation runs a dumb polling loop "..
+                              "while waiting for the Ethernet link status.\n"..
+                              "If you experience link problems, increasing this value "..
+                              "may help.\n"..
+                              "Default is 10000.\n",
+                flavor = "booldata",
+                type = "integer",
+                file = "include/cfg/dev.h"
+            },
         }
     },
     {
