@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/02/15 16:00:45  haraldkipp
+ * Configurable buffer usage and link timeout.
+ *
  * Revision 1.5  2006/10/17 11:06:12  haraldkipp
  * Number of loops waiting for links increased to 10000 and NIC resets
  * reduced. This will help to link to auto MDIX via direct cable.
@@ -56,6 +59,7 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/dev.h>
 #include <arch/arm.h>
 #include <cfg/arch/gpio.h>
 
