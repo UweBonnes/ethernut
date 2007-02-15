@@ -1,7 +1,7 @@
 #ifndef _ARCH_ARM_SAM9260_H_
 #define _ARCH_ARM_SAM9260_H_
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2007/02/15 16:28:07  haraldkipp
+ * Support for system controller interrupts added.
+ *
  * Revision 1.3  2006/09/29 12:45:08  haraldkipp
  * Added PIO features and SPI peripheral selections.
  *
@@ -139,7 +142,6 @@
 /*! \name Peripheral Identifiers and Interrupts */
 /*@{*/
 #define FIQ_ID      0           /*!< \brief Fast interrupt. */
-#define SYSC_ID     1           /*!< \brief System controller interrupt. */
 #define PIOA_ID     2           /*!< \brief Parallel I/O controller A. */
 #define PIOB_ID     3           /*!< \brief Parallel I/O controller B. */
 #define PIOC_ID     4           /*!< \brief Parallel I/O controller C. */

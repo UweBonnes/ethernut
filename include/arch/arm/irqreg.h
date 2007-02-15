@@ -2,7 +2,7 @@
 #define _DEV_IRQREG_ARM_H_
 
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/02/15 16:29:23  haraldkipp
+ * Support for system controller interrupts added.
+ *
  * Revision 1.9  2006/09/29 12:34:59  haraldkipp
  * Basic AT91 SPI support added.
  *
@@ -74,6 +77,7 @@
  *
  *
  */
+
 #ifdef S3C4510B
 #include "s3c4510b_irqreg.h"
 
@@ -126,6 +130,7 @@ extern IRQ_HANDLER sig_INTERRUPT2;
 #elif defined(MCU_AT91SAM7X256)
 
 extern IRQ_HANDLER sig_FIQ;
+extern IRQ_HANDLER sig_SYS;
 extern IRQ_HANDLER sig_UART0;
 extern IRQ_HANDLER sig_UART1;
 extern IRQ_HANDLER sig_TC0;
@@ -137,6 +142,27 @@ extern IRQ_HANDLER sig_EMAC;
 extern IRQ_HANDLER sig_PIO;
 extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
+
+/*
+ * Registered system interrupt handler information structure.
+ */
+typedef struct {
+    void *sir_arg;
+    void (*sir_handler) (void *);
+    int sir_enabled;
+} SYSIRQ_HANDLER;
+
+extern SYSIRQ_HANDLER syssig_DBGU;
+extern SYSIRQ_HANDLER syssig_MC;
+extern SYSIRQ_HANDLER syssig_PIT;
+extern SYSIRQ_HANDLER syssig_PMC;
+extern SYSIRQ_HANDLER syssig_RSTC;
+extern SYSIRQ_HANDLER syssig_RTT;
+extern SYSIRQ_HANDLER syssig_WDT;
+
+extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (void *), void *arg);
+extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
+extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
 
 #elif defined(MCU_AT91SAM9260)
 
