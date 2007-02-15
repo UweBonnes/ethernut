@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2007/02/15 16:25:40  haraldkipp
+ * Configurable port bits. Should work now on all AT91 MCUs.
+ *
  * Revision 1.6  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -67,6 +70,8 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/twi.h>
+#include <cfg/arch/gpio.h>
 
 #include <dev/twif.h>
 
@@ -74,9 +79,185 @@
 
 #include <arch/arm.h>
 
-#ifndef TWI_SDA_BIT
-#define TWI_SDA_BIT     16
+/*!
+ * \brief GPIO controller ID.
+ *
+ * Target specific defaults are set if the ID is not specified elsewhere.
+ */
+#if !defined(TWI_PIO_ID)
+#if defined(MCU_AT91SAM7X256)
+#define TWI_PIO_ID  PIOA_ID
+#elif defined(MCU_AT91SAM9260)
+#define TWI_PIO_ID  PIOB_ID
+#else
+#define TWI_PIO_ID  PIO_ID
 #endif
+#endif
+
+/*!
+ * \brief GPIO bit of bit banging TWI data line.
+ *
+ * Target specific defaults are used if the bit is not specified elsewhere.
+ */
+#ifndef TWI_SDA_BIT
+#if defined(MCU_AT91SAM9260)
+#define TWI_SDA_BIT     12
+#else
+#define TWI_SDA_BIT     10
+#endif
+#endif
+
+/*!
+ * \brief Clock delay.
+ */
+#ifndef TWI_DELAY
+#if defined(MCU_AT91SAM9260)
+#define TWI_DELAY   16
+#else
+#define TWI_DELAY   8
+#endif
+#endif
+
+/*!
+ * \brief GPIO bit of bit banging TWI clock line.
+ *
+ * Target specific defaults are used if the bit is not specified elsewhere.
+ */
+#ifndef TWI_SCL_BIT
+#if defined(MCU_AT91SAM9260)
+#define TWI_SCL_BIT     13
+#else
+#define TWI_SCL_BIT     11
+#endif
+#endif
+
+/*!
+ * \brief Bit banging TWI GPIO registers.
+ *
+ * Based on the GPIO controller ID.
+ */
+#if TWI_PIO_ID == PIOA_ID
+
+#ifndef TWI_SDA_PE_REG
+#define TWI_SDA_PE_REG  PIOA_PER
+#endif
+#ifndef TWI_SDA_OE_REG
+#define TWI_SDA_OE_REG  PIOA_OER
+#endif
+#ifndef TWI_SDA_OD_REG
+#define TWI_SDA_OD_REG  PIOA_ODR
+#endif
+#ifndef TWI_SDA_COD_REG
+#define TWI_SDA_COD_REG PIOA_CODR
+#endif
+#ifndef TWI_SDA_SOD_REG
+#define TWI_SDA_SOD_REG PIOA_SODR
+#endif
+#ifndef TWI_SDA_PDS_REG
+#define TWI_SDA_PDS_REG PIOA_PDSR
+#endif
+
+#ifndef TWI_SCL_PE_REG
+#define TWI_SCL_PE_REG  PIOA_PER
+#endif
+#ifndef TWI_SCL_OE_REG
+#define TWI_SCL_OE_REG  PIOA_OER
+#endif
+#ifndef TWI_SCL_OD_REG
+#define TWI_SCL_OD_REG  PIOA_ODR
+#endif
+#ifndef TWI_SCL_COD_REG
+#define TWI_SCL_COD_REG PIOA_CODR
+#endif
+#ifndef TWI_SCL_SOD_REG
+#define TWI_SCL_SOD_REG PIOA_SODR
+#endif
+#ifndef TWI_SCL_PDS_REG
+#define TWI_SCL_PDS_REG PIOA_PDSR
+#endif
+
+#elif TWI_PIO_ID == PIOB_ID
+
+#ifndef TWI_SDA_PE_REG
+#define TWI_SDA_PE_REG  PIOB_PER
+#endif
+#ifndef TWI_SDA_OE_REG
+#define TWI_SDA_OE_REG  PIOB_OER
+#endif
+#ifndef TWI_SDA_OD_REG
+#define TWI_SDA_OD_REG  PIOB_ODR
+#endif
+#ifndef TWI_SDA_COD_REG
+#define TWI_SDA_COD_REG PIOB_CODR
+#endif
+#ifndef TWI_SDA_SOD_REG
+#define TWI_SDA_SOD_REG PIOB_SODR
+#endif
+#ifndef TWI_SDA_PDS_REG
+#define TWI_SDA_PDS_REG PIOB_PDSR
+#endif
+
+#ifndef TWI_SCL_PE_REG
+#define TWI_SCL_PE_REG  PIOB_PER
+#endif
+#ifndef TWI_SCL_OE_REG
+#define TWI_SCL_OE_REG  PIOB_OER
+#endif
+#ifndef TWI_SCL_OD_REG
+#define TWI_SCL_OD_REG  PIOB_ODR
+#endif
+#ifndef TWI_SCL_COD_REG
+#define TWI_SCL_COD_REG PIOB_CODR
+#endif
+#ifndef TWI_SCL_SOD_REG
+#define TWI_SCL_SOD_REG PIOB_SODR
+#endif
+#ifndef TWI_SCL_PDS_REG
+#define TWI_SCL_PDS_REG PIOB_PDSR
+#endif
+
+#elif TWI_PIO_ID == PIOC_ID
+
+#ifndef TWI_SDA_PE_REG
+#define TWI_SDA_PE_REG  PIOC_PER
+#endif
+#ifndef TWI_SDA_OE_REG
+#define TWI_SDA_OE_REG  PIOC_OER
+#endif
+#ifndef TWI_SDA_OD_REG
+#define TWI_SDA_OD_REG  PIOC_ODR
+#endif
+#ifndef TWI_SDA_COD_REG
+#define TWI_SDA_COD_REG PIOC_CODR
+#endif
+#ifndef TWI_SDA_SOD_REG
+#define TWI_SDA_SOD_REG PIOC_SODR
+#endif
+#ifndef TWI_SDA_PDS_REG
+#define TWI_SDA_PDS_REG PIOC_PDSR
+#endif
+
+#ifndef TWI_SCL_PE_REG
+#define TWI_SCL_PE_REG  PIOC_PER
+#endif
+#ifndef TWI_SCL_OE_REG
+#define TWI_SCL_OE_REG  PIOC_OER
+#endif
+#ifndef TWI_SCL_OD_REG
+#define TWI_SCL_OD_REG  PIOC_ODR
+#endif
+#ifndef TWI_SCL_COD_REG
+#define TWI_SCL_COD_REG PIOC_CODR
+#endif
+#ifndef TWI_SCL_SOD_REG
+#define TWI_SCL_SOD_REG PIOC_SODR
+#endif
+#ifndef TWI_SCL_PDS_REG
+#define TWI_SCL_PDS_REG PIOC_PDSR
+#endif
+
+#else
+
 #ifndef TWI_SDA_PE_REG
 #define TWI_SDA_PE_REG  PIO_PER
 #endif
@@ -96,9 +277,6 @@
 #define TWI_SDA_PDS_REG PIO_PDSR
 #endif
 
-#ifndef TWI_SCL_BIT
-#define TWI_SCL_BIT     17
-#endif
 #ifndef TWI_SCL_PE_REG
 #define TWI_SCL_PE_REG  PIO_PER
 #endif
@@ -113,6 +291,11 @@
 #endif
 #ifndef TWI_SCL_SOD_REG
 #define TWI_SCL_SOD_REG PIO_SODR
+#endif
+#ifndef TWI_SCL_PDS_REG
+#define TWI_SCL_PDS_REG PIO_PDSR
+#endif
+
 #endif
 
 #define TWI_ENABLE() { \
@@ -205,10 +388,6 @@
 
 #endif                          /* __AVR__ */
 
-
-#ifndef TWI_DELAY
-#define TWI_DELAY   8
-#endif
 
 static u_char tw_mm_error;      /* Last master mode error. */
 static int twibb_initialized;
