@@ -39,6 +39,10 @@
 
 /*
  * $Log: repoptdlg.cpp,v $
+ * Revision 1.6  2007/02/15 19:33:45  haraldkipp
+ * Version 1.4.1 works with wxWidgets 2.8.0.
+ * Several wide character issues fixed.
+ *
  * Revision 1.5  2006/10/21 12:48:18  christianwelzel
  * Added support for multiple configurations / settings
  *
@@ -118,7 +122,7 @@ void CRepositoryOptionsDialog::OnBrowseRepositoryFile(wxCommandEvent& WXUNUSED(e
     wxFileName fname(m_entryPath->GetValue());
 
     wxFileDialog dlg(this, wxT("Choose a repository file"), fname.GetPath(), fname.GetFullName(), 
-        wxT("Nut/OS Repository (*.nut)|*.nut"), wxOPEN);
+        wxT("Nut/OS Repository (*.nut)|*.nut"), wxFD_OPEN);
 
     if (dlg.ShowModal() == wxID_OK) {
         m_repositoryPath = dlg.GetPath();

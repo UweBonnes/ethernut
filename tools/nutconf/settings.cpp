@@ -39,6 +39,10 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.10  2007/02/15 19:33:45  haraldkipp
+ * Version 1.4.1 works with wxWidgets 2.8.0.
+ * Several wide character issues fixed.
+ *
  * Revision 1.9  2006/10/21 12:48:18  christianwelzel
  * Added support for multiple configurations / settings
  *
@@ -142,7 +146,7 @@ wxString CSettings::FindRelativeDir(wxString refPathName)
  */
 CSettings::CSettings()
 {
-    Load("");
+    Load(wxT(""));
 }
 
 /*!
@@ -159,18 +163,18 @@ bool CSettings::Load(wxString ConfigFileName)
     
     /* Get absolute tools path. */
     wxFileName fn(m_relsrcpath + wxT("/dummy"));
-    fn.AppendDir("tools");
+    fn.AppendDir(wxT("tools"));
 #ifdef _WIN32
-    fn.AppendDir("win32");
+    fn.AppendDir(wxT("win32"));
 #else
-    fn.AppendDir("linux");
+    fn.AppendDir(wxT("linux"));
 #endif
     fn.MakeAbsolute();
     wxString toolPath = fn.GetPath();
 
     /* Get source path component. */
     m_source_dir_default = fn.GetFullPath(wxPATH_UNIX);
-    if (!m_source_dir_default.Contains("/nut/")) {
+    if (!m_source_dir_default.Contains(wxT("/nut/"))) {
         m_source_dir_default = m_source_dir_default.BeforeLast('/');
         m_source_dir_default = m_source_dir_default.BeforeLast('/');
         m_source_dir_default = m_source_dir_default.BeforeLast('/');
@@ -187,7 +191,7 @@ bool CSettings::Load(wxString ConfigFileName)
 
     wxFileName fname(ConfigFileName);
     wxString ConfigName = fname.GetFullName();
-    if (ConfigName == "") {
+    if (ConfigName == wxEmptyString) {
         m_configname_default = m_relsrcpath + wxT("/conf/ethernut21.conf");
     }
     else {
@@ -209,7 +213,7 @@ bool CSettings::Load(wxString ConfigFileName)
         
         pConfig->SetPath(wxT("/Settings"));
         pConfig->Read(wxT("ConfigName"), &m_configname, m_configname_default);
-        if (ConfigFileName != "") {
+        if (ConfigFileName != wxEmptyString) {
             m_configname = ConfigFileName;
         }
         pConfig->Read(wxT("MulConfigurations"), &m_mulConfig, m_mulConfig_default);

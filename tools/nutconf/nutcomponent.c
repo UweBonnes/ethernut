@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.26  2007/02/15 19:33:45  haraldkipp
+ * Version 1.4.1 works with wxWidgets 2.8.0.
+ * Several wide character issues fixed.
+ *
  * Revision 1.25  2006/10/06 17:49:57  haraldkipp
  * MAX_PATH is unknown to Linux.
  *
@@ -132,7 +136,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "1.3.1"
+#define NUT_CONFIGURE_VERSION   "1.4.1"
 
 #include <stdio.h>
 #include <stdlib.h>

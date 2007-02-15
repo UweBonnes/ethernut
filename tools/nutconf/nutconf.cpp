@@ -32,6 +32,10 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.14  2007/02/15 19:33:45  haraldkipp
+ * Version 1.4.1 works with wxWidgets 2.8.0.
+ * Several wide character issues fixed.
+ *
  * Revision 1.13  2006/10/21 12:48:17  christianwelzel
  * Added support for multiple configurations / settings
  *
@@ -130,9 +134,9 @@ bool NutConfApp::OnInit()
     };
 
     wxCmdLineParser parser(cmdLineDesc, argc, argv);
-    parser.SetLogo(_T("Nut/OS Configurator\n" VERSION
-                      "Copyright (c) 2004-2006 by egnite Software GmbH\n"
-                      "Copyright (C) 1998, 1999, 2000 Red Hat, Inc."));
+    parser.SetLogo(_T("Nut/OS Configurator\n") _T(VERSION)
+                      _T("Copyright (c) 2004-2006 by egnite Software GmbH\n")
+                      _T("Copyright (C) 1998, 1999, 2000 Red Hat, Inc."));
     if(parser.Parse()) {
         return false;
     }
@@ -364,7 +368,7 @@ bool NutConfApp::Build(const wxString &target)
     wxString exePathName;
 
     exePaths.AddEnvList(wxT("PATH"));
-    exePathName = exePaths.FindAbsoluteValidPath("make.exe");
+    exePathName = exePaths.FindAbsoluteValidPath(_T("make.exe"));
     if (exePathName.IsEmpty()) {
         wxLogMessage(wxT("Make tool not found in ") + newPath);
     }

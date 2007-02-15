@@ -42,6 +42,10 @@
 
 /*
  * $Log$
+ * Revision 1.14  2007/02/15 19:33:45  haraldkipp
+ * Version 1.4.1 works with wxWidgets 2.8.0.
+ * Several wide character issues fixed.
+ *
  * Revision 1.13  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -88,7 +92,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.3.1"
+#define VERSION "1.4.1"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

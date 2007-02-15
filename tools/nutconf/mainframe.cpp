@@ -39,6 +39,10 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.11  2007/02/15 19:33:45  haraldkipp
+ * Version 1.4.1 works with wxWidgets 2.8.0.
+ * Several wide character issues fixed.
+ *
  * Revision 1.10  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -684,6 +688,6 @@ void CMainFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
 
 void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-    wxMessageBox(wxT("Nut/OS Configurator " VERSION), wxT("About"), wxOK | wxICON_INFORMATION, this);
+    wxMessageBox(wxT("Nut/OS Configurator ") wxT(VERSION), wxT("About"), wxOK | wxICON_INFORMATION, this);
 }
 
