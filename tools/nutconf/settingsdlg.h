@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/02/15 19:34:27  haraldkipp
+ * Works with wxWidgets 2.8.0
+ *
  * Revision 1.3  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
  *
@@ -55,6 +58,7 @@
 
 #include <wx/wx.h>
 #include <wx/config.h>
+#include <wx/notebook.h>
 
 #include "repoptdlg.h"
 #include "bldoptdlg.h"
