@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.365 2007/02/15 15:58:17 haraldkipp Exp $
+$Id: ChangeLog,v 1.366 2007/02/15 16:30:40 haraldkipp Exp $
 
 2007-02-15  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -15,21 +15,22 @@ $Id: ChangeLog,v 1.365 2007/02/15 15:58:17 haraldkipp Exp $
 	Added delays in read for better reliability with some slow displays.
 
 	* arch/arm/dev/st7036_at91.c, include/dev/st7036.h, conf/arch/arm.nut:
-	Added support for ST7036 based interrupts. Tested with EA DOG-M LCDs.
+	Added support for ST7036 based displays. Tested with EA DOG-M LCDs.
 
 	* conf/arch/arm.nut, include/arch/arm/at91sam7x.h, 
-	arch/arm/dev/ih_at91sys.c: Support for system controller 
-	interrupts added.
+	include/arch/arm/at91sam9260.h, arch/arm/dev/ih_at91sys.c,
+	include/arch/arm/irqreg.h: Support for system controller interrupts 
+	added.
 
 	* arch/arm/dev/ostimer_at91.c, include/arch/arm/at91_pit.h,
 	conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam7x-ek.conf, 
 	include/arch/arm/at91sam7x.h: Now the periodic interrupt timer 
 	may be used for the system clock.
 
-	* conf/dev/dev.nut, conf/ethernut30e.conf, dev/twbbif.c,
-	include/cfg/twi.h: Configurable port bits for bit-banging I2C. 
-	Should work now on all AT91 MCUs. Make sure to update your
-	configuration file.
+	* conf/dev/dev.nut, conf/ethernut30e.conf, conf/ethernut30d.conf, 
+	dev/twbbif.c, include/cfg/twi.h: Configurable port bits for 
+	bit-banging I2C. Should work now on all AT91 MCUs. Make sure to 
+	update your configuration file.
 
 	* arch/arm/init/crtat91sam7x256_rom.S, conf/arch/arm.nut,
 	arch/arm/init/crtat91sam9260_ram.S: Configurable runtime 
