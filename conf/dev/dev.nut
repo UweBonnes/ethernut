@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.34  2007/02/15 16:17:27  haraldkipp
+-- Configurable port bits for bit-banging I2C. Should work now on all
+-- AT91 MCUs.
+--
 -- Revision 1.33  2006/10/05 17:16:50  haraldkipp
 -- Hardware independant RTC layer added.
 --
@@ -246,9 +250,47 @@ nutdev =
         name = "nutdev_twbbif",
         brief = "Bit Banging Two Wire",
         description = "Tested on AT91 only.",
-        requires = { "HW_MCU_AT91R40008" },
+        requires = { "HW_MCU_AT91" },
         provides = { "DEV_TWI" },
-        sources = { "twbbif.c" }
+        sources = { "twbbif.c" },
+        options =
+        {
+            {
+                macro = "TWI_PIO_ID",
+                brief = "GPIO ID (AT91)",
+                description = "Data and clock line must be connected to the same GPIO port.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "TWI_SDA_BIT",
+                brief = "GPIO Data Bit (AT91)",
+                description = "Port bit number of the TWI data line.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "TWI_SCL_BIT",
+                brief = "GPIO Clock Bit (AT91)",
+                description = "Port bit number of the TWI clock line.\n",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "TWI_DELAY",
+                brief = "Delay Loops",
+                description = "The number of dummy loops executed after falling and raising clock.",
+                default = "16",
+                flavor = "integer",
+                file = "include/cfg/twi.h"
+            },
+        },
     },
 
     --
