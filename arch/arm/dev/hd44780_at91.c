@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.7  2007/02/15 16:05:29  haraldkipp
+ * Port usage is now configurable. Data bits no longer need four consecutive
+ * port bits. Added delays in read for better reliability with some slow
+ * displays.
+ *
  * Revision 1.6  2006/10/05 17:11:16  haraldkipp
  * Fixes bug #1567813. Should now work after power on and after reset without
  * power loss. Many thanks to Klaus-Dieter Sohn.
@@ -115,11 +120,126 @@
 #endif
 #endif                          /* LCD_COLS */
 
+/*!
+ * \brief GPIO controller ID.
+ */
+#if !defined(LCD_PIO_ID)
+#if defined(MCU_AT91SAM7X256)
+#define LCD_PIO_ID  PIOA_ID
+#elif defined(MCU_AT91SAM9260)
+#define LCD_PIO_ID  PIOB_ID
+#else
+#define LCD_PIO_ID  PIO_ID
+#endif
+#endif
 
-#ifndef LCD_DATA_LSB
+/*!
+ * \brief LCD GPIO enable register.
+ */
+#if !defined(LCD_PIO_PE_REG)
+#if LCD_PIO_ID == PIOA_ID
+#define LCD_PIO_PE_REG  PIOA_PER
+#elif LCD_PIO_ID == PIOB_ID
+#define LCD_PIO_PE_REG  PIOB_PER
+#elif LCD_PIO_ID == PIOC_ID
+#define LCD_PIO_PE_REG  PIOC_PER
+#else
+#define LCD_PIO_PE_REG  PIO_PER
+#endif
+#endif
+
+/*!
+ * \brief LCD GPIO output enable register.
+ */
+#if !defined(LCD_PIO_OE_REG)
+#if LCD_PIO_ID == PIOA_ID
+#define LCD_PIO_OE_REG  PIOA_OER
+#elif LCD_PIO_ID == PIOB_ID
+#define LCD_PIO_OE_REG  PIOB_OER
+#elif LCD_PIO_ID == PIOC_ID
+#define LCD_PIO_OE_REG  PIOC_OER
+#else
+#define LCD_PIO_OE_REG  PIO_OER
+#endif
+#endif
+
+/*!
+ * \brief LCD GPIO output disable register.
+ */
+#ifdef LCD_RW_BIT
+#if !defined(LCD_PIO_OD_REG)
+#if LCD_PIO_ID == PIOA_ID
+#define LCD_PIO_OD_REG  PIOA_ODR
+#elif LCD_PIO_ID == PIOB_ID
+#define LCD_PIO_OD_REG  PIOB_ODR
+#elif LCD_PIO_ID == PIOC_ID
+#define LCD_PIO_OD_REG  PIOC_ODR
+#else
+#define LCD_PIO_OD_REG  PIO_ODR
+#endif
+#endif
+#endif /* LCD_RW_BIT */
+
+/*!
+ * \brief LCD GPIO set output data register.
+ */
+#if !defined(LCD_PIO_SOD_REG)
+#if LCD_PIO_ID == PIOA_ID
+#define LCD_PIO_SOD_REG PIOA_SODR
+#elif LCD_PIO_ID == PIOB_ID
+#define LCD_PIO_SOD_REG PIOB_SODR
+#elif LCD_PIO_ID == PIOC_ID
+#define LCD_PIO_SOD_REG PIOC_SODR
+#else
+#define LCD_PIO_SOD_REG PIO_SODR
+#endif
+#endif
+
+/*!
+ * \brief LCD GPIO clear output data register.
+ */
+#if !defined(LCD_PIO_COD_REG)
+#if LCD_PIO_ID == PIOA_ID
+#define LCD_PIO_COD_REG PIOA_CODR
+#elif LCD_PIO_ID == PIOB_ID
+#define LCD_PIO_COD_REG PIOB_CODR
+#elif LCD_PIO_ID == PIOC_ID
+#define LCD_PIO_COD_REG PIOC_CODR
+#else
+#define LCD_PIO_COD_REG PIO_CODR
+#endif
+#endif
+
+/*!
+ * \brief LCD GPIO pin data status register.
+ */
+#ifdef LCD_RW_BIT
+#if !defined(LCD_PIO_PDS_REG)
+#if LCD_PIO_ID == PIOA_ID
+#define LCD_PIO_PDS_REG PIOA_PDSR
+#elif LCD_PIO_ID == PIOB_ID
+#define LCD_PIO_PDS_REG PIOB_PDSR
+#elif LCD_PIO_ID == PIOC_ID
+#define LCD_PIO_PDS_REG PIOC_PDSR
+#else
+#define LCD_PIO_PDS_REG PIO_PDSR
+#endif
+#endif
+#endif /* LCD_RW_BIT */
+
+#if !defined(LCD_DATA_LSB) && !defined(LCD_DATA_BIT0)
 #define LCD_DATA_LSB    0
 #endif
+
+#ifdef LCD_DATA_LSB
 #define LCD_DATA    (0xF << LCD_DATA_LSB)
+#else
+#define LCD_D0      _BV(LCD_DATA_BIT0)
+#define LCD_D1      _BV(LCD_DATA_BIT1)
+#define LCD_D2      _BV(LCD_DATA_BIT2)
+#define LCD_D3      _BV(LCD_DATA_BIT3)
+#define LCD_DATA    (LCD_D0 | LCD_D1 | LCD_D2 | LCD_D3)
+#endif
 
 #ifndef LCD_ENABLE_BIT
 #define LCD_ENABLE_BIT  4
@@ -178,14 +298,14 @@ static void LcdDelay(u_int cycles)
 
 static void INLINE LcdSetBits(u_int mask)
 {
-    outr(PIO_SODR, mask);
-    outr(PIO_OER, mask);
+    outr(LCD_PIO_SOD_REG, mask);
+    outr(LCD_PIO_OE_REG, mask);
 }
 
 static void INLINE LcdClrBits(u_int mask)
 {
-    outr(PIO_CODR, mask);
-    outr(PIO_OER, mask);
+    outr(LCD_PIO_COD_REG, mask);
+    outr(LCD_PIO_OE_REG, mask);
 }
 
 #ifdef LCD_RW_BIT
@@ -196,10 +316,32 @@ static u_int LcdReadNibble(void)
 
     LcdSetBits(LCD_EN);
     LcdDelay(LCD_SHORT_DELAY);
-    rc = inr(PIO_PDSR) & LCD_DATA;
+    rc = inr(LCD_PIO_PDS_REG) & LCD_DATA;
     LcdClrBits(LCD_EN);
+    LcdDelay(LCD_SHORT_DELAY);
 
-    return rc >> LCD_DATA_LSB;
+#ifdef LCD_DATA_LSB
+    rc >>= LCD_DATA_LSB
+#else
+    {
+        u_int val = 0;
+
+        if (rc & LCD_D0) {
+            val |= 0x01;
+        }
+        if (rc & LCD_D1) {
+            val |= 0x02;
+        }
+        if (rc & LCD_D2) {
+            val |= 0x04;
+        }
+        if (rc & LCD_D3) {
+            val |= 0x08;
+        }
+        rc = val;
+    }
+#endif
+    return rc;
 }
 
 /*!
@@ -207,8 +349,10 @@ static u_int LcdReadNibble(void)
  */
 static u_int LcdReadByte(void)
 {
-    outr(PIO_ODR, LCD_DATA);
+    outr(LCD_PIO_OD_REG, LCD_DATA);
+    LcdDelay(LCD_SHORT_DELAY);
     LcdSetBits(LCD_RW);
+    LcdDelay(LCD_SHORT_DELAY);
     return (LcdReadNibble() << 4) | LcdReadNibble();
 }
 
@@ -243,13 +387,34 @@ static void LcdWaitReady(u_int delay)
  */
 static void LcdWriteNibble(u_int nib)
 {
+#ifdef LCD_DATA_LSB
     nib <<= LCD_DATA_LSB;
+#else
+    {
+        u_int val = 0;
+        if (nib & 0x01) {
+            val |= LCD_D0;
+        }
+        if (nib & 0x02) {
+            val |= LCD_D1;
+        }
+        if (nib & 0x04) {
+            val |= LCD_D2;
+        }
+        if (nib & 0x08) {
+            val |= LCD_D3;
+        }
+        nib = val;
+    }
+#endif
     LcdSetBits(nib & LCD_DATA);
     LcdClrBits(~nib & LCD_DATA);
 
+    LcdDelay(LCD_SHORT_DELAY);
     LcdSetBits(LCD_EN);
     LcdDelay(LCD_SHORT_DELAY);
     LcdClrBits(LCD_EN);
+    LcdDelay(LCD_SHORT_DELAY);
 }
 
 /*!
@@ -342,12 +507,16 @@ static void LcdCursorMode(u_char on)
 
 static void LcdInit(NUTDEVICE * dev)
 {
+#if defined(PMC_PCER)
+    outr(PMC_PCER, _BV(LCD_PIO_ID));
+#endif
+
     /* Initialize GPIO lines. */
 #ifdef LCD_RW_BIT
-    outr(PIO_PER, LCD_RW);
+    outr(LCD_PIO_PE_REG, LCD_RW);
     LcdClrBits(LCD_RW);
 #endif
-    outr(PIO_PER, LCD_EN | LCD_RS | LCD_DATA);
+    outr(LCD_PIO_PE_REG, LCD_EN | LCD_RS | LCD_DATA);
     LcdClrBits(LCD_DATA | LCD_RS);
     LcdDelay(LCD_LONG_DELAY);
     LcdClrBits(LCD_EN);
