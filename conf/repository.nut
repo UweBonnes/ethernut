@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.21  2007/02/15 16:19:44  haraldkipp
+-- AT91 PIO IDs added.
+--
 -- Revision 1.20  2006/10/08 16:40:17  haraldkipp
 -- Many thanks to Thiago Correa for adding LCD port configuration.
 --
@@ -111,6 +114,8 @@ mcu_32bit_choice = { " ",
                      "16", "17", "18", "19", "20", "21", "22", "23",
                      "24", "25", "26", "27", "28", "29", "30", "31"
                    }
+
+at91_pio_id_choice = { "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
                    
 arm_ld_choice = { 
                     " ", 
