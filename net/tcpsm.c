@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.23  2007/02/15 15:59:59  haraldkipp
+ * Serious bug in the TCP state machine froze socket connection on 32-bit
+ * platforms.
+ *
  * Revision 1.22  2006/10/05 17:25:41  haraldkipp
  * Avoid possible alignment errors. Fixes bug #1567748.
  *
@@ -1631,7 +1635,7 @@ THREAD(NutTcpSm, arg)
                  * Process retransmit timer.
                  */
                 if (sock->so_tx_nbq && sock->so_retran_time) {
-                    if ((u_short) NutGetMillis() - sock->so_retran_time > sock->so_rtto) {
+                    if ((u_short)((u_short)NutGetMillis() - sock->so_retran_time) > sock->so_rtto) {
                         NutTcpStateRetranTimeout(sock);
                     }
                 }
