@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/02/16 15:55:29  haraldkipp
+ * Class specifier causes compile error. Fixed.
+ *
  * Revision 1.4  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -75,7 +78,7 @@ class CNutConfDoc:public wxDocument {
 
     virtual bool OnCreate(const wxString & path, long flags);
     virtual bool OnOpenDocument(const wxString & filename);
-    virtual bool CNutConfDoc::OnSaveDocument(const wxString& filename);
+    virtual bool OnSaveDocument(const wxString& filename);
     virtual bool OnNewDocument();
     virtual bool OnCloseDocument();
 
