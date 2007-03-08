@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/03/08 16:59:01  freckle
+ * moved Exit Tracer event to end of IRQ
+ *
  * Revision 1.3  2006/08/05 11:53:02  haraldkipp
  * Half duplex flow control used the wrong buffer. Many thanks to
  * Andrej Taran for fixing this bug.
@@ -461,9 +464,6 @@ static void AvrUsartRxComplete(void *arg) {
 
         /* Update the ring buffer counter. */
         rbf->rbf_cnt = cnt;
-#ifdef NUTTRACER
-        TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
-#endif
 
 #ifdef UART_READMULTIBYTE
     } while ( inb(UCSRnA) & _BV(RXC) ); // byte in buffer?
@@ -473,6 +473,10 @@ static void AvrUsartRxComplete(void *arg) {
         NutEventPostFromIrq(&rbf->rbf_que);
 #endif
 
+#ifdef NUTTRACER
+    TRACE_ADD_ITEM(TRACE_TAG_INTERRUPT_EXIT,TRACE_INT_UART_RXCOMPL);
+#endif
+    
 }
 
 
