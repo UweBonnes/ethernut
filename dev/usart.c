@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/03/17 14:33:21  haraldkipp
+ * Workaround for AVRGCC 4.1.1 bug, which failed to compile UsartIOCtl().
+ *
  * Revision 1.7  2006/10/05 17:20:54  haraldkipp
  * Added a comment to warn the user about ioctl() functions, that may not be
  * supported.
@@ -697,22 +700,21 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_SETSTATUS:
+        /*
+         * We are not changing the buffer size. Thus, we can safely ignore the
+         * result of UsartResetBuffer(). This way we found a work around for
+         * the AVRGCC 4.1.1 bug, which appeared here previously.
+         */
         if (lv & UART_RXBUFFEREMPTY) {
             rbf = &dcb->dcb_rx_rbf;
-            rc = UsartResetBuffer(rbf, rbf->rbf_siz, rbf->rbf_lwm, rbf->rbf_hwm);
-            if (rc == 0) {
-                (*dcb->dcb_rx_start) ();
-            }
+            UsartResetBuffer(rbf, rbf->rbf_siz, rbf->rbf_lwm, rbf->rbf_hwm);
+            (*dcb->dcb_rx_start) ();
         }
         if (lv & UART_TXBUFFEREMPTY) {
             rbf = &dcb->dcb_tx_rbf;
-            if (rc == 0) {
-                rc = UsartResetBuffer(rbf, rbf->rbf_siz, rbf->rbf_lwm, rbf->rbf_hwm);
-            }
+            UsartResetBuffer(rbf, rbf->rbf_siz, rbf->rbf_lwm, rbf->rbf_hwm);
         }
-        if (rc == 0) {
-            rc = (*dcb->dcb_set_status) (lv & ~(UART_RXBUFFEREMPTY | UART_TXBUFFEREMPTY));
-        }
+        rc = (*dcb->dcb_set_status) (lv & ~(UART_RXBUFFEREMPTY | UART_TXBUFFEREMPTY));
         break;
     case UART_GETSTATUS:
         *lvp = (*dcb->dcb_get_status) ();

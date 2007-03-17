@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.368 2007/03/08 16:56:50 freckle Exp $
+$Id: ChangeLog,v 1.369 2007/03/17 14:33:21 haraldkipp Exp $
+
+2007-03-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* nut/dev/usart.c: Workaround for AVRGCC 4.1.1 bug, which failed
+	to compile UsartIOCtl().
+
 
 2007-03-08  Matthias Ringwald <mringwal@inf.ethz.ch>
     * arch/avr/dev/usartavr.c: moved Exit Tracer event to end of IRQ
