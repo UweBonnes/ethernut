@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.35  2007/03/22 08:23:41  haraldkipp
+-- Added the user (green) LED settings for Ethernut 3.0.
+--
 -- Revision 1.34  2007/02/15 16:17:27  haraldkipp
 -- Configurable port bits for bit-banging I2C. Should work now on all
 -- AT91 MCUs.
@@ -609,6 +612,15 @@ nutdev =
         requires = { "DEV_NPL" },
         provides = { "DEV_MMCLL" },
         sources = { "nplmmc.c" },
+    },
+    {
+        name = "nutdev_npluled",
+        brief = "NPL User (green) LED Access",
+        description = "CPLD implementation of a user (green) LED interface. "..
+                      "Tested on AT91 only.",
+        requires = { "DEV_NPL" },
+        provides = { "DEV_NPLULED" },
+        sources = { "npluled.c" },
     },
     {
         name = "nutdev_sbimmc",
