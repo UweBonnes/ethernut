@@ -1,8 +1,16 @@
-$Id: ChangeLog,v 1.369 2007/03/17 14:33:21 haraldkipp Exp $
+$Id: ChangeLog,v 1.370 2007/03/23 13:18:12 haraldkipp Exp $
+
+2007-03-23  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/ipin.c: ARP method wasn't actually disabled by default. Fixed.
+
+	* conf/net/net.nut: Added more detailed information about the ARP
+	method.
+
 
 2007-03-17  Harald Kipp  <harald.kipp@egnite.de>
 
-	* nut/dev/usart.c: Workaround for AVRGCC 4.1.1 bug, which failed
+	* dev/usart.c: Workaround for AVRGCC 4.1.1 bug, which failed
 	to compile UsartIOCtl().
 
 
