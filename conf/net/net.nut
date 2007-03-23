@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.9  2007/03/23 12:41:37  haraldkipp
+-- Added more detailed information about the ARP method.
+--
 -- Revision 1.8  2006/09/05 12:35:39  haraldkipp
 -- DHCP servers may probe an IP/MAC relationship by sending an
 -- ICMP request. This triggered the Nut/Net ARP method and
@@ -120,7 +123,12 @@ nutnet =
             {
                 macro = "NUTIPCONF_ICMP_ARPMETHOD",
                 brief = "Enable ARM Method",
-                description = "Allow IP configuration using ARP method. ",
+                description = "Allow IP configuration using ARP method.\n\n"..
+                              "When enabling this function, be aware that DHCP servers "..
+                              "may probe an IP/MAC relationship by sending an ICMP request. "..
+                              "This triggers the Nut/Net ARP method and terminates the DHCP "..
+                              "client, leaving the system with default configurations of "..
+                              "the network mask (255.255.255.0) and default gateway (none).",
                 flavor = "booldata",
                 file = "include/cfg/ip.h"
             },
