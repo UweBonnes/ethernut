@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/03/23 12:43:50  haraldkipp
+ * ARP method wasn't actually disabled by default. Fixed.
+ *
  * Revision 1.7  2006/09/05 12:35:39  haraldkipp
  * DHCP servers may probe an IP/MAC relationship by sending an
  * ICMP request. This triggered the Nut/Net ARP method and
@@ -221,6 +224,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     } else {
         bcast = 0;
 
+#ifdef NUTIPCONF_ICMP_ARPMETHOD
         /*
          * Silently discard datagrams for other destinations.
          * However, if we haven't got an IP address yet, we
@@ -230,6 +234,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         if (nif->if_local_ip == 0 && ip->ip_p == IPPROTO_ICMP && (dst & 0xff000000) != 0xff000000 && (dst & 0xff000000) != 0) {
             NutNetIfSetup(dev, dst, 0, 0);
         }
+#endif
         if (nif->if_local_ip && (dst == 0 || dst != nif->if_local_ip)) {
             NutNetBufFree(nb);
             return;
