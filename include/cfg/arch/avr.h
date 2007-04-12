@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/04/12 09:10:29  haraldkipp
+ * PORTH added.
+ *
  * Revision 1.5  2005/08/02 17:46:48  haraldkipp
  * Major API documentation update.
  *
@@ -73,6 +76,7 @@
 #define AVRPORTE    5
 #define AVRPORTF    6
 #define AVRPORTG    7
+#define AVRPORTH    8
 
 #include <cfg/arch/avrpio.h>
 
