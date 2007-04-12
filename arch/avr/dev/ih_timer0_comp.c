@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2007/04/12 09:23:15  haraldkipp
+ * ATmega2561 uses different interrupt vector names. One day we should
+ * switch to the new names used by avr-libc.
+ *
  * Revision 1.2  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -179,8 +183,14 @@ static int AvrTimer0CompIrqCtl(int cmd, void *param)
 #else
 #pragma interrupt_handler SIG_OUTPUT_COMPARE0:iv_TIMER0_COMP
 #endif
-#endif
 NUTSIGNAL(SIG_OUTPUT_COMPARE0, sig_OUTPUT_COMPARE0)
+#else
+#if defined(MCU_ATMEGA2561)
+NUTSIGNAL(SIG_OUTPUT_COMPARE0A, sig_OUTPUT_COMPARE0)
+#else
+NUTSIGNAL(SIG_OUTPUT_COMPARE0, sig_OUTPUT_COMPARE0)
+#endif
+#endif
 
 
 /*@}*/

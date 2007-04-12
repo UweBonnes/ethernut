@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2007/04/12 09:23:15  haraldkipp
+ * ATmega2561 uses different interrupt vector names. One day we should
+ * switch to the new names used by avr-libc.
+ *
  * Revision 1.3  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -173,6 +177,10 @@ static int AvrUart0RxIrqCtl(int cmd, void *param)
 #pragma interrupt_handler SIG_UART0_RECV:iv_USART0_RX
 #endif
 NUTSIGNAL(SIG_UART0_RECV, sig_UART0_RECV)
+#elif defined(SIG_USART0_RECV)
+
+NUTSIGNAL(SIG_USART0_RECV, sig_UART0_RECV)
+
 #else
 
 /*! \fn SIG_UART_RECV(void)
