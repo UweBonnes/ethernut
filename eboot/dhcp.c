@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/04/12 09:17:25  haraldkipp
+ * Compiles with avr-gcc 4.1.1, but unfortunately doesn't fit in 8kB.
+ *
  * Revision 1.2  2004/09/10 10:10:17  haraldkipp
  * Removed unused bootp parameters
  *
@@ -135,12 +138,12 @@ u_char DhcpGetOption(u_char opt, void *ptr, u_char size)
     return 0;
 }
 
-u_char *DhcpSetOption(u_char *dst, u_char opt, void *src, u_char size)
+u_char *DhcpSetOption(u_char *dst, u_char opt, u_char *src, u_char size)
 {
     *dst++ = opt;
     *dst++ = size;
     while(size--)
-        *dst++ = *((u_char *)src)++;
+        *dst++ = *src++;
     *dst = DHCPOPT_END;
 
     return dst;
@@ -223,8 +226,8 @@ int DhcpQuery(void)
      */
     i = DHCP_REQUEST;
     cp = DhcpSetOption(bp->bp_options, DHCPOPT_MSGTYPE, &i, 1);
-    cp = DhcpSetOption(cp, DHCPOPT_REQUESTIP, &rframe.u.bootp.bp_yiaddr, 4);
-    cp = DhcpSetOption(cp, DHCPOPT_SID, &sid, 4);
+    cp = DhcpSetOption(cp, DHCPOPT_REQUESTIP, (u_char *)&rframe.u.bootp.bp_yiaddr, 4);
+    cp = DhcpSetOption(cp, DHCPOPT_SID, (u_char *)&sid, 4);
 
     slen = sizeof(BOOTPHDR) - sizeof(sframe.u.bootp.bp_options) + 16;
     if(DhcpTransact(slen, DHCP_ACK) <= 0)
@@ -240,7 +243,7 @@ int DhcpQuery(void)
     if(server_ip == 0)
         server_ip = rframe.ip_hdr.ip_src;
 
-    for (cp = rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(bootfile) - 1; cp++, i++)
+    for (cp = (u_char *)rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(bootfile) - 1; cp++, i++)
         bootfile[i] = *cp;
     bootfile[i] = 0;
 

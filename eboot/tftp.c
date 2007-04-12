@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/04/12 09:17:25  haraldkipp
+ * Compiles with avr-gcc 4.1.1, but unfortunately doesn't fit in 8kB.
+ *
  * Revision 1.2  2005/05/26 13:12:46  haraldkipp
  * Bugfix: Never programmed flash between 0x1E000 and 0x1EFFF.
  *
@@ -109,7 +112,7 @@ int TftpRecv(void)
      */
     sframe.u.tftp.th_opcode = htons(TFTP_RRQ);
     slen = 2;
-    cp = sframe.u.tftp.th_u.tu_stuff;
+    cp = (u_char *)sframe.u.tftp.th_u.tu_stuff;
     cp1 = bootfile;
     do {
         *cp = *cp1++;

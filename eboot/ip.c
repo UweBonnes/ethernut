@@ -67,6 +67,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/04/12 09:17:25  haraldkipp
+ * Compiles with avr-gcc 4.1.1, but unfortunately doesn't fit in 8kB.
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -89,14 +92,15 @@
  *
  * \return The checksum in network byte order.
  */
-static u_short IpChkSum(const void *data, u_short size)
+static u_short IpChkSum(const u_char *data, u_short size)
 {
     register u_long sum = 0;
 
     for (;;) {
         if (size < 2)
             break;
-        sum += *((u_short *) data)++;
+        sum += *((u_short *) data);
+        data += 2;
         size -= 2;
     }
     if (size)
@@ -205,7 +209,7 @@ int IpOutput(u_long dip, u_char proto, u_short len)
     ip->ip_src = local_ip;
     ip->ip_id++;
     ip->ip_sum = 0;
-    ip->ip_sum = IpChkSum(ip, sizeof(IPHDR));
+    ip->ip_sum = IpChkSum((u_char *)ip, sizeof(IPHDR));
 
     return EtherOutput(dmac, ETHERTYPE_IP, sizeof(IPHDR) + len);
 }
