@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2007/04/12 09:03:48  haraldkipp
+ * Miserable delay routine will now honor milliseconds on a 73 MHz ARM.
+ *
  * Revision 1.14  2007/02/15 16:14:39  haraldkipp
  * Periodic interrupt timer can be used as a system clock.
  *
@@ -150,7 +153,7 @@ void NutDelay(u_char ms)
     int i;
 
     while (ms--) {
-        for (i = 3200; i--; ) {
+        for (i = 14600; i--; ) {
             _NOP();
         }
     }
