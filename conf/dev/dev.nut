@@ -33,6 +33,15 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.36  2007/04/12 08:57:19  haraldkipp
+-- New VS10XX decoder support. It will replace the old VS1001K driver, but
+-- hasn't been tested for this chip yet. For the time being, please add the
+-- vs10xx.c to your application code when using the VS1011E.
+-- New API added, which allows to program external AVR devices via SPI.
+-- Configurable SPI support added. Polled hardware SPI only, which is
+-- currently limited to AVR. Header files are available for up to 4 software
+-- SPI devices, but the API routines had been implemented for device 0 only.
+--
 -- Revision 1.35  2007/03/22 08:23:41  haraldkipp
 -- Added the user (green) LED settings for Ethernut 3.0.
 --
@@ -247,8 +256,1805 @@ nutdev =
     },
 
     --
-    -- Simple Interface Drivers.
+    -- Simple Interface Drivers.    
     --
+    {
+        name = "nutdev_sbbif0",
+        brief = "Serial Bit Banged Interface 0",
+        description = "Software SPI0, master mode only.",
+        provides = { "DEV_SPI" },
+        sources = { "sbbif0.c" },
+        options =
+        {
+            {
+                macro = "SBBI0_SCK_AVRPORT",
+                brief = "SCK Port (AVR)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_SCK_BIT",
+                brief = "SCK Port Bit (AVR)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_MOSI_AVRPORT",
+                brief = "MOSI Port (AVR)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_MOSI_BIT",
+                brief = "MOSI Port Bit (AVR)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_MISO_AVRPORT",
+                brief = "MISO Port (AVR)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_MISO_BIT",
+                brief = "MISO Port Bit (AVR)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS0_AVRPORT",
+                brief = "CS0 Port (AVR)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS0_BIT",
+                brief = "CS0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS1_AVRPORT",
+                brief = "CS1 Port (AVR)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS1_BIT",
+                brief = "CS1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS2_AVRPORT",
+                brief = "CS2 Port (AVR)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS2_BIT",
+                brief = "CS2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS3_AVRPORT",
+                brief = "CS3 Port (AVR)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_CS3_BIT",
+                brief = "CS3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST0_AVRPORT",
+                brief = "RESET0 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST0_BIT",
+                brief = "RESET0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST1_AVRPORT",
+                brief = "RESET1 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST1_BIT",
+                brief = "RESET1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST2_AVRPORT",
+                brief = "RESET2 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST2_BIT",
+                brief = "RESET2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST3_AVRPORT",
+                brief = "RESET3 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_RST3_BIT",
+                brief = "RESET3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI0_SCK_PIO_ID",
+                brief = "SCK GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_SCK_BIT",
+                brief = "SCK GPIO Bit (AT91)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_MOSI_PIO_ID",
+                brief = "MOSI GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_MOSI_BIT",
+                brief = "MOSI GPIO Bit (AT91)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_MISO_PIO_ID",
+                brief = "MISO GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_MISO_BIT",
+                brief = "MISO GPIO Bit (AT91)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS0_PIO_ID",
+                brief = "CS0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS0_BIT",
+                brief = "CS0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS1_PIO_ID",
+                brief = "CS1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS1_BIT",
+                brief = "CS1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS2_PIO_ID",
+                brief = "CS2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS2_BIT",
+                brief = "CS2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS3_PIO_ID",
+                brief = "CS3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_CS3_BIT",
+                brief = "CS3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST0_PIO_ID",
+                brief = "RESET0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST0_BIT",
+                brief = "RESET0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST1_PIO_ID",
+                brief = "RESET1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST1_BIT",
+                brief = "RESET1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST2_PIO_ID",
+                brief = "RESET2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST2_BIT",
+                brief = "RESET2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST3_PIO_ID",
+                brief = "RESET3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI0_RST3_BIT",
+                brief = "RESET3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+        },
+    },
+    {
+        name = "nutdev_sbbif1",
+        brief = "Serial Bit Banged Interface 1",
+        description = "Software SPI1, master mode only.",
+        provides = { "DEV_SPI" },
+        options =
+        {
+            {
+                macro = "SBBI1_SCK_AVRPORT",
+                brief = "SCK Port (AVR)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_SCK_BIT",
+                brief = "SCK Port Bit (AVR)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_MOSI_AVRPORT",
+                brief = "MOSI Port (AVR)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_MOSI_BIT",
+                brief = "MOSI Port Bit (AVR)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_MISO_AVRPORT",
+                brief = "MISO Port (AVR)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_MISO_BIT",
+                brief = "MISO Port Bit (AVR)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS0_AVRPORT",
+                brief = "CS0 Port (AVR)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS0_BIT",
+                brief = "CS0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS1_AVRPORT",
+                brief = "CS1 Port (AVR)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS1_BIT",
+                brief = "CS1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS2_AVRPORT",
+                brief = "CS2 Port (AVR)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS2_BIT",
+                brief = "CS2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS3_AVRPORT",
+                brief = "CS3 Port (AVR)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_CS3_BIT",
+                brief = "CS3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST0_AVRPORT",
+                brief = "RESET0 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST0_BIT",
+                brief = "RESET0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST1_AVRPORT",
+                brief = "RESET1 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST1_BIT",
+                brief = "RESET1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST2_AVRPORT",
+                brief = "RESET2 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST2_BIT",
+                brief = "RESET2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST3_AVRPORT",
+                brief = "RESET3 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_RST3_BIT",
+                brief = "RESET3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI1_SCK_PIO_ID",
+                brief = "SCK GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_SCK_BIT",
+                brief = "SCK GPIO Bit (AT91)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_MOSI_PIO_ID",
+                brief = "MOSI GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_MOSI_BIT",
+                brief = "MOSI GPIO Bit (AT91)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_MISO_PIO_ID",
+                brief = "MISO GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_MISO_BIT",
+                brief = "MISO GPIO Bit (AT91)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS0_PIO_ID",
+                brief = "CS0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS0_BIT",
+                brief = "CS0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS1_PIO_ID",
+                brief = "CS1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS1_BIT",
+                brief = "CS1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS2_PIO_ID",
+                brief = "CS2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS2_BIT",
+                brief = "CS2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS3_PIO_ID",
+                brief = "CS3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_CS3_BIT",
+                brief = "CS3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST0_PIO_ID",
+                brief = "RESET0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST0_BIT",
+                brief = "RESET0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST1_PIO_ID",
+                brief = "RESET1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST1_BIT",
+                brief = "RESET1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST2_PIO_ID",
+                brief = "RESET2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST2_BIT",
+                brief = "RESET2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST3_PIO_ID",
+                brief = "RESET3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI1_RST3_BIT",
+                brief = "RESET3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+        },
+    },
+    {
+        name = "nutdev_sbbif2",
+        brief = "Serial Bit Banged Interface 2",
+        description = "Software SPI2, master mode only.",
+        provides = { "DEV_SPI" },
+        options =
+        {
+            {
+                macro = "SBBI2_SCK_AVRPORT",
+                brief = "SCK Port (AVR)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_SCK_BIT",
+                brief = "SCK Port Bit (AVR)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_MOSI_AVRPORT",
+                brief = "MOSI Port (AVR)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_MOSI_BIT",
+                brief = "MOSI Port Bit (AVR)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_MISO_AVRPORT",
+                brief = "MISO Port (AVR)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_MISO_BIT",
+                brief = "MISO Port Bit (AVR)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS0_AVRPORT",
+                brief = "CS0 Port (AVR)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS0_BIT",
+                brief = "CS0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS1_AVRPORT",
+                brief = "CS1 Port (AVR)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS1_BIT",
+                brief = "CS1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS2_AVRPORT",
+                brief = "CS2 Port (AVR)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS2_BIT",
+                brief = "CS2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS3_AVRPORT",
+                brief = "CS3 Port (AVR)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_CS3_BIT",
+                brief = "CS3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST0_AVRPORT",
+                brief = "RESET0 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST0_BIT",
+                brief = "RESET0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST1_AVRPORT",
+                brief = "RESET1 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST1_BIT",
+                brief = "RESET1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST2_AVRPORT",
+                brief = "RESET2 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST2_BIT",
+                brief = "RESET2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST3_AVRPORT",
+                brief = "RESET3 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_RST3_BIT",
+                brief = "RESET3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI2_SCK_PIO_ID",
+                brief = "SCK GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_SCK_BIT",
+                brief = "SCK GPIO Bit (AT91)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_MOSI_PIO_ID",
+                brief = "MOSI GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_MOSI_BIT",
+                brief = "MOSI GPIO Bit (AT91)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_MISO_PIO_ID",
+                brief = "MISO GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_MISO_BIT",
+                brief = "MISO GPIO Bit (AT91)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS0_PIO_ID",
+                brief = "CS0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS0_BIT",
+                brief = "CS0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS1_PIO_ID",
+                brief = "CS1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS1_BIT",
+                brief = "CS1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS2_PIO_ID",
+                brief = "CS2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS2_BIT",
+                brief = "CS2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS3_PIO_ID",
+                brief = "CS3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_CS3_BIT",
+                brief = "CS3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST0_PIO_ID",
+                brief = "RESET0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST0_BIT",
+                brief = "RESET0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST1_PIO_ID",
+                brief = "RESET1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST1_BIT",
+                brief = "RESET1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST2_PIO_ID",
+                brief = "RESET2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST2_BIT",
+                brief = "RESET2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST3_PIO_ID",
+                brief = "RESET3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI2_RST3_BIT",
+                brief = "RESET3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+        },
+    },
+    {
+        name = "nutdev_sbbif3",
+        brief = "Serial Bit Banged Interface 3",
+        description = "Software SPI3, master mode only.",
+        provides = { "DEV_SPI" },
+        options =
+        {
+            {
+                macro = "SBBI3_SCK_AVRPORT",
+                brief = "SCK Port (AVR)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_SCK_BIT",
+                brief = "SCK Port Bit (AVR)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_MOSI_AVRPORT",
+                brief = "MOSI Port (AVR)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_MOSI_BIT",
+                brief = "MOSI Port Bit (AVR)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_MISO_AVRPORT",
+                brief = "MISO Port (AVR)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_MISO_BIT",
+                brief = "MISO Port Bit (AVR)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS0_AVRPORT",
+                brief = "CS0 Port (AVR)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS0_BIT",
+                brief = "CS0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS1_AVRPORT",
+                brief = "CS1 Port (AVR)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS1_BIT",
+                brief = "CS1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS2_AVRPORT",
+                brief = "CS2 Port (AVR)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS2_BIT",
+                brief = "CS2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS3_AVRPORT",
+                brief = "CS3 Port (AVR)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_CS3_BIT",
+                brief = "CS3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST0_AVRPORT",
+                brief = "RESET0 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST0_BIT",
+                brief = "RESET0 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST1_AVRPORT",
+                brief = "RESET1 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST1_BIT",
+                brief = "RESET1 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST2_AVRPORT",
+                brief = "RESET2 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST2_BIT",
+                brief = "RESET2 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST3_AVRPORT",
+                brief = "RESET3 Port (AVR)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_RST3_BIT",
+                brief = "RESET3 Port Bit (AVR)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SBBI3_SCK_PIO_ID",
+                brief = "SCK GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_SCK_BIT",
+                brief = "SCK GPIO Bit (AT91)",
+                description = "Port bit used for SPI clock.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_MOSI_PIO_ID",
+                brief = "MOSI GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_MOSI_BIT",
+                brief = "MOSI GPIO Bit (AT91)",
+                description = "Port bit used for SPI data output.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_MISO_PIO_ID",
+                brief = "MISO GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_MISO_BIT",
+                brief = "MISO GPIO Bit (AT91)",
+                description = "Port bit used for SPI data input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS0_PIO_ID",
+                brief = "CS0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS0_BIT",
+                brief = "CS0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS1_PIO_ID",
+                brief = "CS1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS1_BIT",
+                brief = "CS1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS2_PIO_ID",
+                brief = "CS2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS2_BIT",
+                brief = "CS2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS3_PIO_ID",
+                brief = "CS3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_CS3_BIT",
+                brief = "CS3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip select 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST0_PIO_ID",
+                brief = "RESET0 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST0_BIT",
+                brief = "RESET0 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 0.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST1_PIO_ID",
+                brief = "RESET1 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST1_BIT",
+                brief = "RESET1 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 1.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST2_PIO_ID",
+                brief = "RESET2 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST2_BIT",
+                brief = "RESET2 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 2.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST3_PIO_ID",
+                brief = "RESET3 GPIO Port ID (AT91)",
+                description = "ID of the port used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "SBBI3_RST3_BIT",
+                brief = "RESET3 GPIO Bit (AT91)",
+                description = "Port bit used for SPI chip reset 3.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+        },
+    },
     {
         name = "nutdev_twbbif",
         brief = "Bit Banging Two Wire",
@@ -295,7 +2101,7 @@ nutdev =
             },
         },
     },
-
+    
     --
     -- Character Device Drivers.
     --
@@ -373,7 +2179,635 @@ nutdev =
     --
     -- Special Chip Drivers.
     --
+
+    {
+        name = "nutdev_vs10xx",
+        brief = "VS10XX Audio Decoder",
+        description = "Tested with Medianut 2 attached to Ethernut 3.\n\n"..
+                      "In the current implementation this file may conflict with "..
+                      "the previous VS1001K driver. For now add this to your "..
+                      "application's Makefile. ",
+        -- sources = { "vs10xx.c" },
+        requires = { "DEV_SPI" },
+        options =
+        {
+            {
+                macro = "AUDIO_VS1001K",
+                brief = "VS1001K",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO_VS1001K",
+                    "AUDIO_VS1011E",
+                    "AUDIO_VS1002D",
+                    "AUDIO_VS1003B",
+                    "AUDIO_VS1033C"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO_VS1011E",
+                brief = "VS1011E",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO_VS1001K",
+                    "AUDIO_VS1011E",
+                    "AUDIO_VS1002D",
+                    "AUDIO_VS1003B",
+                    "AUDIO_VS1033C"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO_VS1002D",
+                brief = "VS1002D",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO_VS1001K",
+                    "AUDIO_VS1011E",
+                    "AUDIO_VS1002D",
+                    "AUDIO_VS1003B",
+                    "AUDIO_VS1033C"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO_VS1003B",
+                brief = "VS1003B",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO_VS1001K",
+                    "AUDIO_VS1011E",
+                    "AUDIO_VS1002D",
+                    "AUDIO_VS1003B",
+                    "AUDIO_VS1033C"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO_VS1033C",
+                brief = "VS1033C",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO_VS1001K",
+                    "AUDIO_VS1011E",
+                    "AUDIO_VS1002D",
+                    "AUDIO_VS1003B",
+                    "AUDIO_VS1033C"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_FREQ",
+                brief = "Crystal Clock Frequency",
+                description = "Frequency of the crystal clock in Hz.\n\n"..
+                              "The clock doubler will be enabled if this value is "..
+                              "lower than 20,000,000 Hz.",
+                default = "12288000",                              
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SCI_SPI0_DEVICE",
+                brief = "Command Hardware SPI (AVR)",
+                description = "Hardware SPI 0 device index (chip select) used for command channel.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.\n\n"..
+                              "Currently supported on the AVR platform only.",
+                requires = { "HW_MCU_AVR" },
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SCI_SPI0_DEVICE",
+                    "VS10XX_SCI_SBBI0_DEVICE",
+                    "VS10XX_SCI_SBBI1_DEVICE",
+                    "VS10XX_SCI_SBBI2_DEVICE",
+                    "VS10XX_SCI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SCI_SBBI0_DEVICE",
+                brief = "Command Software SPI0",
+                description = "Software SPI 0 device index (chip select) used for command channel.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.\n\n"..
+                              "Currently supported on the AVR platform only.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SCI_SPI0_DEVICE",
+                    "VS10XX_SCI_SBBI0_DEVICE",
+                    "VS10XX_SCI_SBBI1_DEVICE",
+                    "VS10XX_SCI_SBBI2_DEVICE",
+                    "VS10XX_SCI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SCI_SBBI1_DEVICE",
+                brief = "Command Software SPI1",
+                description = "Software SPI 1 device index (chip select) used for command channel.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.\n\n"..
+                              "Currently supported on the AVR platform only.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SCI_SPI0_DEVICE",
+                    "VS10XX_SCI_SBBI0_DEVICE",
+                    "VS10XX_SCI_SBBI1_DEVICE",
+                    "VS10XX_SCI_SBBI2_DEVICE",
+                    "VS10XX_SCI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SCI_SBBI2_DEVICE",
+                brief = "Command Software SPI2",
+                description = "Software SPI 2 device index (chip select) used for command channel.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.\n\n"..
+                              "Currently supported on the AVR platform only.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SCI_SPI0_DEVICE",
+                    "VS10XX_SCI_SBBI0_DEVICE",
+                    "VS10XX_SCI_SBBI1_DEVICE",
+                    "VS10XX_SCI_SBBI2_DEVICE",
+                    "VS10XX_SCI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SCI_SBBI3_DEVICE",
+                brief = "Command Software SPI3",
+                description = "Software SPI 3 device index (chip select) used for command channel.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.\n\n"..
+                              "Currently supported on the AVR platform only.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SCI_SPI0_DEVICE",
+                    "VS10XX_SCI_SBBI0_DEVICE",
+                    "VS10XX_SCI_SBBI1_DEVICE",
+                    "VS10XX_SCI_SBBI2_DEVICE",
+                    "VS10XX_SCI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SCI_MODE",
+                brief = "Command SPI Mode",
+                description = "SPI mode of command channel, 0 is default.\n\n"..
+                              "Mode 0: Leading edge is rising, data sampled on rising edge.\n"..
+                              "Mode 1: Leading edge is rising, data sampled on falling edge.\n"..
+                              "Mode 2: Leading edge is falling, data sampled on falling edge.\n"..
+                              "Mode 3: Leading edge is falling, data sampled on rising edge.\n",
+                type = "integer",
+                default = "0",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SCI_RATE",
+                brief = "Command SPI Bitrate",
+                description = "Interface speed in bits per second, default is VS10XX_FREQ/4.\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SDI_SPI0_DEVICE",
+                brief = "Data Hardware SPI (AVR)",
+                description = "Use hardware SPI for data channel.\n\n"..
+                              "Currently supported on the AVR platform only.",
+                requires = { "HW_MCU_AVR" },
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SDI_SPI0_DEVICE",
+                    "VS10XX_SDI_SBBI0_DEVICE",
+                    "VS10XX_SDI_SBBI1_DEVICE",
+                    "VS10XX_SDI_SBBI2_DEVICE",
+                    "VS10XX_SDI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SDI_SBBI0_DEVICE",
+                brief = "Data Software SPI0",
+                description = "Use software SPI 0 for data channel.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SDI_SPI0_DEVICE",
+                    "VS10XX_SDI_SBBI0_DEVICE",
+                    "VS10XX_SDI_SBBI1_DEVICE",
+                    "VS10XX_SDI_SBBI2_DEVICE",
+                    "VS10XX_SDI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SDI_SBBI1_DEVICE",
+                brief = "Data Software SPI1",
+                description = "Use software SPI 1 for data channel.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SDI_SPI0_DEVICE",
+                    "VS10XX_SDI_SBBI0_DEVICE",
+                    "VS10XX_SDI_SBBI1_DEVICE",
+                    "VS10XX_SDI_SBBI2_DEVICE",
+                    "VS10XX_SDI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SDI_SBBI2_DEVICE",
+                brief = "Data Software SPI2",
+                description = "Use software SPI 2 for data channel.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SDI_SPI0_DEVICE",
+                    "VS10XX_SDI_SBBI0_DEVICE",
+                    "VS10XX_SDI_SBBI1_DEVICE",
+                    "VS10XX_SDI_SBBI2_DEVICE",
+                    "VS10XX_SDI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SDI_SBBI3_DEVICE",
+                brief = "Data Software SPI3",
+                description = "Use software SPI 3 for data channel.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "VS10XX_SDI_SPI0_DEVICE",
+                    "VS10XX_SDI_SBBI0_DEVICE",
+                    "VS10XX_SDI_SBBI1_DEVICE",
+                    "VS10XX_SDI_SBBI2_DEVICE",
+                    "VS10XX_SDI_SBBI3_DEVICE"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SDI_MODE",
+                brief = "Data SPI Mode",
+                description = "SPI mode of data channel, 0 is default.\n\n"..
+                              "Mode 0: Leading edge is rising, data sampled on rising edge.\n"..
+                              "Mode 1: Leading edge is rising, data sampled on falling edge.\n"..
+                              "Mode 2: Leading edge is falling, data sampled on falling edge.\n"..
+                              "Mode 3: Leading edge is falling, data sampled on rising edge.\n",
+                type = "integer",
+                default = "0",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SDI_RATE",
+                brief = "Data SPI Bitrate",
+                description = "Interface speed in bits per second, default is VS10XX_FREQ/4.\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SELECT_ACTIVE_HIGH",
+                brief = "Active High Chip Select",
+                description = "Select this option if the chip select is active high.", 
+                flavor = "boolean",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_RESET_ACTIVE_HIGH",
+                brief = "Active High Reset",
+                description = "Select this option if the reset is active high.", 
+                flavor = "boolean",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SIGNAL_IRQ",
+                brief = "Decoder Interrupt",
+                description = "Audio decoder interrupt, default is INT6.",
+                requires = { "HW_MCU_AVR" },
+                default = "INT6",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "VS10XX_XCS_AVRPORT",
+                brief = "XCS Port (AVR)",
+                description = "ID of the port used for VS10XX XCS.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "VS10XX_XCS_BIT",
+                brief = "XCS Port Bit (AVR)",
+                description = "Port bit used for VS10XX XCS.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "VS10XX_XDCS_AVRPORT",
+                brief = "XDCS Port (AVR)",
+                description = "ID of the port used for VS10XX XDCS.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "VS10XX_XDCS_BIT",
+                brief = "XDCS Port Bit (AVR)",
+                description = "Port bit used for VS10XX XDCS.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "VS10XX_BSYNC_AVRPORT",
+                brief = "BSYNC Port (AVR)",
+                description = "ID of the port used for optional VS10XX BSYNC.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "VS10XX_BSYNC_BIT",
+                brief = "BSYNC Port Bit (AVR)",
+                description = "Port bit used for optional VS10XX BSYNC.\n\n"..
+                              "Required for the VS1001. Other decoders are driven "..
+                              "in VS1001 mode, if this bit is defined. However, "..
+                              "it is recommended to use this option for the VS1001 "..
+                              "only and run newer chips in so called VS1002 native mode.",
+                requires = { "HW_MCU_AVR" },
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "VS10XX_DREQ_PIO_ID",
+                brief = "DREQ GPIO Port ID (AT91)",
+                description = "ID of the port used for VS10XX DREQ.\n\n"..
+                              "Must specify an interrupt input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_DREQ_BIT",
+                brief = "DREQ GPIO Bit (AT91)",
+                description = "Port bit used for VS10XX DREQ.\n\n"..
+                              "Must specify an interrupt input.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_XCS_PIO_ID",
+                brief = "XCS GPIO Port ID (AT91)",
+                description = "ID of the port used for VS10XX XCS.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_XCS_BIT",
+                brief = "XCS GPIO Bit (AT91)",
+                description = "Port bit used for VS10XX XCS.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_XDCS_PIO_ID",
+                brief = "XDCS GPIO Port ID (AT91)",
+                description = "ID of the port used for VS10XX XDCS.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_XDCS_BIT",
+                brief = "XDCS GPIO Bit (AT91)",
+                description = "Port bit used for VS10XX XDCS.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_BSYNC_PIO_ID",
+                brief = "BSYNC GPIO Port ID (AT91)",
+                description = "ID of the port used for optional VS10XX BSYNC.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_BSYNC_BIT",
+                brief = "BSYNC GPIO Bit (AT91)",
+                description = "Port bit used for optional VS10XX BSYNC.\n\n"..
+                              "Required for the VS1001. Other decoders are driven "..
+                              "in VS1001 mode, if this bit is defined. However, "..
+                              "it is recommended to use this option for the VS1001 "..
+                              "only and run newer chips in so called VS1002 native mode.",
+                requires = { "HW_MCU_AT91" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "VS10XX_HWRST_DURATION",
+                brief = "Hardware Reset Duration",
+                description = "Minimum time in milliseconds to held hardware reset low.",
+                default = "1",
+                flavor = "integer",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_HWRST_RECOVER",
+                brief = "Hardware Reset Recover",
+                description = "Milliseconds to wait after hardware reset.",
+                default = "4",
+                flavor = "integer",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VS10XX_SWRST_RECOVER",
+                brief = "Software Reset Recover",
+                description = "Milliseconds to wait after software reset.",
+                default = "2",
+                flavor = "integer",
+                file = "include/cfg/audio.h"
+            },
+            
+        },
+    },
     
+    {
+        name = "nutdev_avrtarget",
+        brief = "AVR Serial Programming",
+        description = "Routines for programming AVR targets via SPI.\n",
+        provides = { "DEV_SPI" },
+        sources = { "avrtarget.c" },
+        options =
+        {
+            {
+                macro = "AVRTARGET_PAGESIZE",
+                brief = "Program Flash Page Size",
+                description = "Specify the number of bytes.\n\n"..
+                              "Later we will determine this automatically.",
+                type = "integer",
+                default = "128",
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_CHIPERASE_TIMEOUT",
+                brief = "Chip Erase Timeout",
+                description = "Specify the number of milliseconds.\n\n"..
+                              "Later we will determine this automatically.",
+                type = "integer",
+                default = "200",
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_PAGEWRITE_TIMEOUT",
+                brief = "Page Write Timeout",
+                description = "Specify the number of milliseconds.\n\n"..
+                              "Later we will determine this automatically.",
+                type = "integer",
+                default = "10",
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SPI0_DEVICE",
+                brief = "Polled Hardware SPI0 Device (AVR)",
+                description = "Use hardware SPI0 for programming.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.",
+                requires = { "HW_MCU_AVR" },
+                flavor = "booldata",
+                exclusivity = { 
+                    "AVRTARGET_SPI",
+                    "AVRTARGET_SBBI0",
+                    "AVRTARGET_SBBI1",
+                    "AVRTARGET_SBBI2",
+                    "AVRTARGET_SBBI3"
+                },
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SBBI0_DEVICE",
+                brief = "Software SPI0 Device",
+                description = "Use software SPI 0 for programming.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "AVRTARGET_SPI",
+                    "AVRTARGET_SBBI0",
+                    "AVRTARGET_SBBI1",
+                    "AVRTARGET_SBBI2",
+                    "AVRTARGET_SBBI3"
+                },
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SBBI1_DEVICE",
+                brief = "Software SPI1 Device",
+                description = "Use software SPI 1 for programming.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "AVRTARGET_SPI",
+                    "AVRTARGET_SBBI0",
+                    "AVRTARGET_SBBI1",
+                    "AVRTARGET_SBBI2",
+                    "AVRTARGET_SBBI3"
+                },
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SBBI2_DEVICE",
+                brief = "Software SPI2 Device",
+                description = "Use software SPI 2 for programming.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "AVRTARGET_SPI",
+                    "AVRTARGET_SBBI0",
+                    "AVRTARGET_SBBI1",
+                    "AVRTARGET_SBBI2",
+                    "AVRTARGET_SBBI3"
+                },
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SBBI3_DEVICE",
+                brief = "Software SPI3 Device",
+                description = "Use software SPI 3 for programming.\n\n"..
+                              "Specify device index 0, 1, 2 or 3.",
+                flavor = "booldata",
+                exclusivity = { 
+                    "AVRTARGET_SPI",
+                    "AVRTARGET_SBBI0",
+                    "AVRTARGET_SBBI1",
+                    "AVRTARGET_SBBI2",
+                    "AVRTARGET_SBBI3"
+                },
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SELECT_ACTIVE_HIGH",
+                brief = "Active High Chip Select",
+                description = "Select this option if the chip select is active high.", 
+                flavor = "boolean",
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_RESET_ACTIVE_HIGH",
+                brief = "Active High Reset",
+                description = "Select this option if the reset is active high.", 
+                flavor = "boolean",
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SPI_MODE",
+                brief = "SPI Mode",
+                description = "SPI mode, 0 is default.\n\n"..
+                              "Mode 0: Leading edge is rising, data sampled on rising edge.\n"..
+                              "Mode 1: Leading edge is rising, data sampled on falling edge.\n"..
+                              "Mode 2: Leading edge is falling, data sampled on falling edge.\n"..
+                              "Mode 3: Leading edge is falling, data sampled on rising edge.\n",
+                type = "integer",
+                default = "0",
+                file = "include/cfg/progif.h"
+            },
+            {
+                macro = "AVRTARGET_SPI_RATE",
+                brief = "SPI Bitrate",
+                description = "Interface speed in bits per second, default is 500000.\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                default = "500000",                              
+                file = "include/cfg/progif.h"
+            },
+        },
+    },
     {
         name = "nutdev_at45db",
         brief = "AT45DB Serial DataFlash Memory",
