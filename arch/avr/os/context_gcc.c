@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2007/04/12 09:19:00  haraldkipp
+ * Added extended program counter byte for the ATmega2561. Code above 128k not
+ * working, though.
+ *
  * Revision 1.6  2006/09/29 12:27:31  haraldkipp
  * All code should use dedicated stack allocation routines. For targets
  * allocating stack from the normal heap the API calls are remapped by
@@ -145,6 +149,9 @@ typedef struct {
     u_char csf_r4;
     u_char csf_r3;
     u_char csf_r2;
+#ifdef __AVR_ATmega2561__
+    u_char csf_pcex;
+#endif
     u_char csf_pchi;
     u_char csf_pclo;
 } SWITCHFRAME;
@@ -160,6 +167,9 @@ typedef struct {
     u_char cef_rampz;
     u_char cef_sreg;
     u_char cef_r1;
+#ifdef __AVR_ATmega2561__
+    u_char cef_pcex;
+#endif
     u_char cef_pchi;
     u_char cef_pclo;
 } ENTERFRAME;
@@ -321,6 +331,9 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     /*
      * Setup entry frame to simulate C function entry.
      */
+#ifdef __AVR_ATmega2561__
+    ef->cef_pcex = 0;
+#endif
     ef->cef_pchi = (u_char) (((u_short) fn) >> 8);
     ef->cef_pclo = (u_char) (((u_short) fn) & 0xff);
     ef->cef_sreg = 0x80;
@@ -330,6 +343,9 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     ef->cef_arglo = (u_char) (((u_short) arg) & 0xff);
     ef->cef_arghi = (u_char) (((u_short) arg) >> 8);
 
+#ifdef __AVR_ATmega2561__
+    ef->cef_pcex = 0;
+#endif
     sf->csf_pchi = (u_char) (((u_short) NutThreadEntry) >> 8);
     sf->csf_pclo = (u_char) (((u_short) NutThreadEntry) & 0xff);
 
