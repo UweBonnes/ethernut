@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2007/04/12 09:13:10  haraldkipp
+ * Bugfix: PHY initialization may fail with pull-ups enabled.
+ *
  * Revision 1.6  2007/02/15 16:00:45  haraldkipp
  * Configurable buffer usage and link timeout.
  *
@@ -160,6 +163,7 @@
 //#define EMAC_PIO_PER            PIOA_PER
 //#define EMAC_PIO_OER            PIOA_OER
 //#define EMAC_PIO_CODR           PIOA_CODR
+#define EMAC_PIO_PUER           PIOA_PUER
 #define EMAC_PIO_PUDR           PIOA_PUDR
 #define EMAC_PIO_ASR            PIOA_ASR
 #define EMAC_PIO_BSR            PIOA_BSR
@@ -180,12 +184,13 @@
 #define PHY_TXD2_BIT            PA10_ETX2_B     /*!< \brief Transmit data bit 2 pin. */
 #define PHY_TXD3_BIT            PA11_ETX3_B     /*!< \brief Transmit data bit 3 pin. */
 #define PHY_TXER_TXD4_BIT       PA22_ETXER_B    /*!< \brief Transmit error pin. */
-#define PHY_RXD2_AD2_BIT        PA25_ERX2_B     /*!< \brief Receive data bit 2 pin. */
-#define PHY_RXD3_AD3_BIT        PA26_ERX3_B     /*!< \brief Receive data bit 3 pin. */
 #define PHY_RXCLK_10BTSER_BIT   PA27_ERXCK_B    /*!< \brief Receive clock pin. */
-#define PHY_CRS_AD4_BIT         PA28_ECRS_B     /*!< \brief Carrier sense pin. */
 #define PHY_COL_RMII_BIT        PA29_ECOL_B     /*!< \brief Collision detect pin. */
 #endif
+
+#define PHY_RXD2_AD2_BIT        PA25_ERX2_B     /*!< \brief Receive data bit 2 pin. */
+#define PHY_RXD3_AD3_BIT        PA26_ERX3_B     /*!< \brief Receive data bit 3 pin. */
+#define PHY_CRS_AD4_BIT         PA28_ECRS_B     /*!< \brief Carrier sense pin. */
 
 #define PHY_MII_PINS_A 0 \
     | _BV(PHY_TXD0_BIT) \
@@ -222,6 +227,7 @@
 #define EMAC_PIO_PER            PIOB_PER
 #define EMAC_PIO_OER            PIOB_OER
 #define EMAC_PIO_CODR           PIOB_CODR
+#define EMAC_PIO_PUER           PIOB_PUER
 #define EMAC_PIO_PUDR           PIOB_PUDR
 #define EMAC_PIO_ASR            PIOB_ASR
 #define EMAC_PIO_BSR            PIOB_BSR
@@ -406,8 +412,16 @@ static int EmacReset(u_long tmo)
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
 
-#ifndef PHY_MODE_RMII
-    /* Disable RMII and TESTMODE by disabling pull-ups. */
+    /* Disable TESTMODE and set PHY address 0 and by disabling pull-ups. */
+#ifdef PHY_MODE_RMII
+    outr(EMAC_PIO_PUDR, _BV(PHY_RXDV_TESTMODE_BIT) | 
+        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
+        | _BV(PHY_RXD2_AD2_BIT) /* | _BV(PHY_RXD3_AD3_BIT) /*/ | _BV(PHY_CRS_AD4_BIT));
+#else
+    /* Additionally disable RMII, if not configured. */
+    outr(EMAC_PIO_PUDR, _BV(PHY_COL_RMII_BIT) | _BV(PHY_RXDV_TESTMODE_BIT) |
+        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) | 
+        _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
     outr(EMAC_PIO_PUDR, _BV(PHY_COL_RMII_BIT) | _BV(PHY_RXDV_TESTMODE_BIT));
 #endif
 
@@ -426,6 +440,17 @@ static int EmacReset(u_long tmo)
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB) | RSTC_URSTEN);
     outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
+
+    /* Re-enable pull-ups. */
+#ifdef PHY_MODE_RMII
+    outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) |
+        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
+        | _BV(PHY_RXD2_AD2_BIT) /* | _BV(PHY_RXD3_AD3_BIT) */ | _BV(PHY_CRS_AD4_BIT));
+#else
+    outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) |
+        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
+        | _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
+#endif
 
     /* Configure MII port. */
     outr(EMAC_PIO_ASR, PHY_MII_PINS_A);
