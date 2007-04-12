@@ -67,6 +67,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/04/12 09:18:01  haraldkipp
+ * Compiles with avr-gcc 4.1.1.
+ *
  * Revision 1.3  2005/11/03 15:10:29  haraldkipp
  * Some globals replaced by CONF structures.
  *
@@ -98,14 +101,15 @@
  *
  * \return The checksum in network byte order.
  */
-u_short IpChkSum(const void *data, u_short size)
+u_short IpChkSum(const u_char *data, u_short size)
 {
     register u_long sum = 0;
 
     for (;;) {
         if (size < 2)
             break;
-        sum += *((u_short *) data)++;
+        sum += *((u_short *) data);
+        data += 2;
         size -= 2;
     }
     if (size)
