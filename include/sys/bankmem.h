@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.7  2007/04/12 09:08:57  haraldkipp
+ * Segmented buffer routines ported to ARM.
+ *
  * Revision 1.6  2005/09/07 16:22:11  christianwelzel
  * Added banking support for MMnet02
  *
@@ -97,10 +100,10 @@ extern char *NutSegBufReset(void);
 extern char *NutSegBufInit(size_t size);
 extern char *NutSegBufWriteRequest(size_t * bcp);
 extern char *NutSegBufReadRequest(size_t * bcp);
-extern char *NutSegBufWriteCommit(u_short bc);
+extern char *NutSegBufWriteCommit(size_t bc);
 extern char *NutSegBufReadCommit(size_t bc);
-extern void NutSegBufWriteLast(u_short bc);
-extern void NutSegBufReadLast(u_short bc);
+extern void NutSegBufWriteLast(size_t bc);
+extern void NutSegBufReadLast(size_t bc);
 extern u_long NutSegBufAvailable(void);
 extern u_long NutSegBufUsed(void);
 /* */

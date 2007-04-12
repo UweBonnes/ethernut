@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.15  2007/04/12 09:08:57  haraldkipp
+-- Segmented buffer routines ported to ARM.
+--
 -- Revision 1.14  2006/02/08 15:20:22  haraldkipp
 -- ATmega2561 Support
 --
@@ -227,11 +230,11 @@ nutos =
     },
     {
         name = "nutos_bankmem",
-        brief = "Segmented Buffer (AVR)",
+        brief = "Segmented Buffer",
         description = "The segmented buffer API can either handle a continuos "..
                       "memory space automatically allocated from heap or it can "..
                       "use banked memory hardware.",
-        requires = { "HW_MCU_AVR" },
+        -- requires = { "HW_MCU_AVR" },
         provides = { "NUT_SEGBUF" },
         sources = { "bankmem.c" }
     },

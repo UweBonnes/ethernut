@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2007/04/12 09:08:57  haraldkipp
+ * Segmented buffer routines ported to ARM.
+ *
  * Revision 1.3  2004/12/17 15:28:33  haraldkipp
  * Bugfix. Comparison of the read and write pointers now includes the segments.
  * Thanks to Pete Allinson and Johan van der Stoel.
@@ -173,7 +176,7 @@ char *NutSegBufReadRequest(size_t * bcp)
  *
  * \return Pointer to the next write position.
  */
-char *NutSegBufWriteCommit(u_short bc)
+char *NutSegBufWriteCommit(size_t bc)
 {
     if (bc) {
         segbuf_wp += bc;
@@ -181,8 +184,10 @@ char *NutSegBufWriteCommit(u_short bc)
         segbuf_used += bc;
         if (segbuf_wp == segbuf_end) {
             segbuf_wp = segbuf_start;
+#if NUTBANK_COUNT > 0
             if (++segbuf_ws >= NUTBANK_COUNT)
                 segbuf_ws = 0;
+#endif
             NutSegBufEnable(segbuf_ws);
         }
     }
@@ -207,8 +212,10 @@ char *NutSegBufReadCommit(size_t bc)
         segbuf_used -= bc;
         if (segbuf_rp == segbuf_end) {
             segbuf_rp = segbuf_start;
+#if NUTBANK_COUNT > 0
             if (++segbuf_rs >= NUTBANK_COUNT)
                 segbuf_rs = 0;
+#endif
             NutSegBufEnable(segbuf_rs);
         }
         if (segbuf_rp == segbuf_wp  && segbuf_rs == segbuf_ws)
@@ -227,7 +234,7 @@ char *NutSegBufReadCommit(size_t bc)
  *
  * \param bc Number of bytes to commit.
  */
-void NutSegBufWriteLast(u_short bc)
+void NutSegBufWriteLast(size_t bc)
 {
     if (bc) {
         segbuf_wp += bc;
@@ -235,8 +242,10 @@ void NutSegBufWriteLast(u_short bc)
         segbuf_empty = 0;
         if (segbuf_wp == segbuf_end) {
             segbuf_wp = segbuf_start;
+#if NUTBANK_COUNT > 0
             if (++segbuf_ws >= NUTBANK_COUNT)
                 segbuf_ws = 0;
+#endif
         }
     }
     NutSegBufEnable(segbuf_rs);
@@ -251,15 +260,17 @@ void NutSegBufWriteLast(u_short bc)
  *
  * \param bc Number of bytes to commit.
  */
-void NutSegBufReadLast(u_short bc)
+void NutSegBufReadLast(size_t bc)
 {
     if (bc) {
         segbuf_rp += bc;
         segbuf_used -= bc;
         if (segbuf_rp == segbuf_end) {
             segbuf_rp = segbuf_start;
+#if NUTBANK_COUNT > 0
             if (++segbuf_rs >= NUTBANK_COUNT)
                 segbuf_rs = 0;
+#endif
         }
         if (segbuf_rp == segbuf_wp && segbuf_rs == segbuf_ws)
             segbuf_empty = 1;
