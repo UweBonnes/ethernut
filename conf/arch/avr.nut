@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.15  2007/04/12 09:07:54  haraldkipp
+-- Configurable SPI added.
+--
 -- Revision 1.14  2007/01/18 15:37:54  thiagocorrea
 -- Fixed macro for enabling CTS on the second USART port from the nutconf program
 --
@@ -1013,6 +1016,162 @@ nutarch_avr =
         {
         }
     },
+    {
+        name = "nutdev_sppif0",
+        brief = "Polled SPI0 (AVR)",
+        description = "Polling hardware SPI driver, AVR and master mode only.",
+        requires = { "HW_MCU_AVR" },
+        provides = { "DEV_SPI" },
+        sources = { "avr/dev/sppif0.c" },
+        options =
+        {
+            {
+                macro = "SPPI0_CS0_AVRPORT",
+                brief = "CS0 Port",
+                description = "ID of the port used for SPI chip select 0.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_CS0_BIT",
+                brief = "CS0 Port Bit",
+                description = "Port bit used for SPI chip select 0.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_CS1_AVRPORT",
+                brief = "CS1 Port",
+                description = "ID of the port used for SPI chip select 1.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_CS1_BIT",
+                brief = "CS1 Port Bit",
+                description = "Port bit used for SPI chip select 1.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_CS2_AVRPORT",
+                brief = "CS2 Port",
+                description = "ID of the port used for SPI chip select 2.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_CS2_BIT",
+                brief = "CS2 Port Bit",
+                description = "Port bit used for SPI chip select 2.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_CS3_AVRPORT",
+                brief = "CS3 Port",
+                description = "ID of the port used for SPI chip select 3.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_CS3_BIT",
+                brief = "CS3 Port Bit",
+                description = "Port bit used for SPI chip select 3.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST0_AVRPORT",
+                brief = "RESET0 Port",
+                description = "ID of the port used for SPI chip reset 0.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST0_BIT",
+                brief = "RESET0 Port Bit",
+                description = "Port bit used for SPI chip reset 0.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST1_AVRPORT",
+                brief = "RESET1 Port",
+                description = "ID of the port used for SPI chip reset 1.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST1_BIT",
+                brief = "RESET1 Port Bit",
+                description = "Port bit used for SPI chip reset 1.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST2_AVRPORT",
+                brief = "RESET2 Port",
+                description = "ID of the port used for SPI chip reset 2.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST2_BIT",
+                brief = "RESET2 Port Bit",
+                description = "Port bit used for SPI chip reset 2.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST3_AVRPORT",
+                brief = "RESET3 Port",
+                description = "ID of the port used for SPI chip reset 3.",
+                type = "enumerated",
+                choices = avr_port_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "SPPI0_RST3_BIT",
+                brief = "RESET3 Port Bit",
+                description = "Port bit used for SPI chip reset 3.",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/avrpio.h"
+            },
+        },
+    },
+    
     {
         name = "nutarch_avr_spidigio",
         brief = "Shift Register I/O",
