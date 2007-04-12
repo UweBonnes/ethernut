@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2007/04/12 09:21:10  haraldkipp
+ * Added ATmega2561 definitions for Ethernut 1 and 2.
+ *
  * Revision 1.2  2006/05/25 09:22:47  haraldkipp
  * The PLATFORM definition broke source tree building.
  * Fixed for Ethernut Boards.
@@ -61,8 +64,12 @@
 #define AVR_GCC
 #endif
 
-#ifndef MCU_ATMEGA128
+#if !defined(MCU_ATMEGA128) && !defined(MCU_ATMEGA2561)
+#if defined(__AVR_ATmega2561__) || defined(ATMega2561)
+#define MCU_ATMEGA2561
+#else
 #define MCU_ATMEGA128
+#endif
 #endif
 
 #elif defined(ETHERNUT2)
@@ -75,8 +82,12 @@
 #define AVR_GCC
 #endif
 
-#ifndef MCU_ATMEGA128
+#if !defined(MCU_ATMEGA128) && !defined(MCU_ATMEGA2561)
+#if defined(__AVR_ATmega2561__) || defined(ATMega2561)
+#define MCU_ATMEGA2561
+#else
 #define MCU_ATMEGA128
+#endif
 #endif
 
 #elif defined(ETHERNUT3)
