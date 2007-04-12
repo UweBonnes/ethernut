@@ -34,6 +34,10 @@
 
 #
 # $Log$
+# Revision 1.19  2007/04/12 08:54:38  haraldkipp
+# Supports configurable SPI, VS10XX MP3 decoder chips and Mega256 for
+# avr-gcc 4.1.1.
+#
 # Revision 1.18  2006/10/17 11:26:02  haraldkipp
 # Release branch 4.2 created.
 #
@@ -95,10 +99,10 @@
 #
 #
 
-AC_INIT(ethernut,4.3.1)
+AC_INIT(ethernut,4.3.2)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (C) 2005-2006 egnite Software GmbH])
+AC_COPYRIGHT([Copyright (C) 2005-2007 egnite Software GmbH])
 AC_REVISION($Revision$)
 
 # Make sure we got a valid path to the sources.

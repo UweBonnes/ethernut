@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.42  2007/04/12 08:54:39  haraldkipp
+ * Supports configurable SPI, VS10XX MP3 decoder chips and Mega256 for
+ * avr-gcc 4.1.1.
+ *
  * Revision 1.41  2007/02/15 15:59:12  haraldkipp
  * First 4.3 Beta Release
  *
@@ -173,8 +177,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04030100UL
-static CONST char os_version_string[] = "4.3.1.0";
+#define OS_VERSION_NUMBER  0x04030201UL
+static CONST char os_version_string[] = "4.3.2.1 beta";
 
 /*!
  * \addtogroup xgNutVersion
