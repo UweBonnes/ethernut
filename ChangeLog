@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.372 2007/04/12 08:54:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.373 2007/04/12 09:24:03 haraldkipp Exp $
 
 2007-04-11  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -13,7 +13,7 @@ $Id: ChangeLog,v 1.372 2007/04/12 08:54:38 haraldkipp Exp $
 	For the time being, please add the vs10xx.c to your application
 	code when using the VS1011E.
 
-	* conf/dev/dev.nut, dev/avrtarget.c, include/cfg: progif.h,
+	* conf/dev/dev.nut, dev/avrtarget.c, include/cfg/progif.h,
 	include/dev/avrtarget.h: New API added, which allows to program 
 	external AVR devices via SPI.
 
