@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:25  haraldkipp
- * Initial revision
+ * Revision 1.2  2007/04/12 09:09:57  haraldkipp
+ * Support for feof() and ferror() was missing.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:25  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/04/21 17:33:28  harald
  * Return correct result for character 0xFF
@@ -48,7 +51,6 @@
 
 #include <io.h>
 
-
 /*!
  * \addtogroup xgCrtStdio
  */
@@ -59,7 +61,9 @@
  *
  * \param stream Pointer to a previously opened stream.
  *
- * \return Character read or EOF to indicate an error or end of file.
+ * \return Character read or EOF to indicate an error or end of file. In 
+ *         the latter case feof() or ferror() can be used to determine
+ *         the cause of the failure.
  *
  * \warning The function will not check, if the stream pointer points
  *          to a valid stream.
@@ -67,14 +71,23 @@
 int fgetc(FILE * stream)
 {
     u_char ch;
+    int rc;
 
     if (stream->iob_flags & _IOUNG) {
         stream->iob_flags &= ~_IOUNG;
         return stream->iob_unget;
     }
-    if (_read(stream->iob_fd, &ch, 1) != 1)
+    if ((rc = _read(stream->iob_fd, &ch, 1)) != 1) {
+        if (rc) {
+            /* Error. */
+            stream->iob_flags |= _IOERR;
+        }
+        else {
+            /* Time out or end of file. */
+            stream->iob_flags |= _IOEOF;
+        }
         return EOF;
-
+    }
     return (int) ch;
 }
 
