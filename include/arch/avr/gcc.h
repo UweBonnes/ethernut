@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/04/12 09:20:34  haraldkipp
+ * Added new register bit names for the ATmega2561.
+ *
  * Revision 1.2  2006/01/11 08:32:21  hwmaier
  * Support for avr-libc >= 1.4.x
  *
@@ -73,6 +76,49 @@
 #include <avr/twi.h>
 #else
 #include <compat/twi.h>
+#endif
+
+#if defined(__AVR_ATmega2561__)
+#if !defined(TXC)
+#define TXC     TXC0
+#endif
+#if !defined(TXB8)
+#define TXB8     TXB80
+#endif
+#if !defined(UMSEL)
+#define UMSEL     UMSEL00
+#endif
+#if !defined(U2X)
+#define U2X     U2X0
+#endif
+#if !defined(UCSZ0)
+#define UCSZ0     UCSZ00
+#endif
+#if !defined(UCSZ1)
+#define UCSZ1     UCSZ01
+#endif
+#if !defined(UCSZ2)
+#define UCSZ2     UCSZ02
+#endif
+#if !defined(UPM0)
+#define UPM0     UPM00
+#endif
+#if !defined(UPM1)
+#define UPM1     UPM01
+#endif
+
+#if !defined(USBS)
+#define USBS     USBS0
+#endif
+#if !defined(UPE)
+#define UPE     UPE0
+#endif
+#if !defined(MPCM)
+#define MPCM     MPCM0
+#endif
+#if !defined(UCPOL)
+#define UCPOL     UCPOL0
+#endif
 #endif
 
 #ifndef __SFR_OFFSET
