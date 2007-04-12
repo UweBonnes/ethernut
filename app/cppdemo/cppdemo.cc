@@ -2,6 +2,9 @@
 
 /*!
  * $Log: cppdemo.cc,v $
+ * Revision 1.4  2007/04/12 09:15:39  haraldkipp
+ * Now compiles on avr-gcc 4.1.1.
+ *
  * Revision 1.3  2006/07/10 14:24:11  haraldkipp
  * Header files replaced by platform independent variants.
  * Contributed by Matthias Wilde.
@@ -101,6 +104,7 @@ int main(void) {
             fprintf(stream, "Unknown command.\n");
         }
     }
+    return 0;
 }
 
 
