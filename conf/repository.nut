@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.22  2007/04/12 09:09:27  haraldkipp
+-- Allow to select empty entry for AT91 ports.
+--
 -- Revision 1.21  2007/02/15 16:19:44  haraldkipp
 -- AT91 PIO IDs added.
 --
@@ -115,7 +118,7 @@ mcu_32bit_choice = { " ",
                      "24", "25", "26", "27", "28", "29", "30", "31"
                    }
 
-at91_pio_id_choice = { "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
+at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
                    
 arm_ld_choice = { 
                     " ", 
