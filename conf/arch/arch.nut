@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.27  2007/04/12 09:20:00  haraldkipp
+-- ATmega2561 no longer bound to ICCAVR.
+--
 -- Revision 1.26  2007/02/15 16:24:34  haraldkipp
 -- Now the periodic interrupt timer may become the system clock.
 --
@@ -212,7 +215,7 @@ nutarch =
                 description = "8-bit RISC microcontroller with 256K bytes flash, 8K bytes RAM, "..
                               "4K bytes EEPROM, 64K bytes data memory space, 2 USARTs, 6 timers, "..
                               "8-channel ADC, SPI and TWI.",
-                requires = { "TOOL_CC_AVR", "TOOL_ICC" },
+                requires = { "TOOL_CC_AVR" },
                 provides = {
                     "HW_TARGET",
                     "HW_MCU_AVR",

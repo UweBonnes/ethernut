@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.16  2007/04/12 09:20:00  haraldkipp
+-- ATmega2561 no longer bound to ICCAVR.
+--
 -- Revision 1.15  2006/10/05 17:14:45  haraldkipp
 -- Added exclusivity attribute.
 --
@@ -116,7 +119,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
+            makedefs = { "MCU_ATMEGA2561=atmega2561", "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
         },
         {
             brief = "GCC for Linux",
