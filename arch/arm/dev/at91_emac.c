@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/04/20 13:06:08  haraldkipp
+ * Previous change failed on SAM7X-EK. We are now using PHY address 0 by
+ * default and disable all pull-ups during PHY reset.
+ *
  * Revision 1.7  2007/04/12 09:13:10  haraldkipp
  * Bugfix: PHY initialization may fail with pull-ups enabled.
  *
@@ -142,6 +146,17 @@
 
 /*@}*/
 
+
+/*!
+ * \brief PHY address.
+ *
+ * Any other than 0 seems to create problems with Atmel's evaluation kits.
+ */
+#ifndef NIC_PHY_ADDR
+#define NIC_PHY_ADDR	        0
+#endif
+
+
 #if defined (MCU_AT91SAM9260)
 
 /*!
@@ -150,15 +165,6 @@
  * handled by the Configurator.
  */
 #define PHY_MODE_RMII
-
-/*!
- * \brief PHY address.
- *
- * Found by trial and error.
- */
-#ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR	        8
-#endif
 
 //#define EMAC_PIO_PER            PIOA_PER
 //#define EMAC_PIO_OER            PIOA_OER
@@ -219,10 +225,6 @@
 #endif
 
 #elif defined (MCU_AT91SAM7X256)
-
-#ifndef NIC_PHY_ADDR
-#define NIC_PHY_ADDR	        31
-#endif
 
 #define EMAC_PIO_PER            PIOB_PER
 #define EMAC_PIO_OER            PIOB_OER
@@ -416,7 +418,7 @@ static int EmacReset(u_long tmo)
 #ifdef PHY_MODE_RMII
     outr(EMAC_PIO_PUDR, _BV(PHY_RXDV_TESTMODE_BIT) | 
         _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
-        | _BV(PHY_RXD2_AD2_BIT) /* | _BV(PHY_RXD3_AD3_BIT) /*/ | _BV(PHY_CRS_AD4_BIT));
+        | _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
 #else
     /* Additionally disable RMII, if not configured. */
     outr(EMAC_PIO_PUDR, _BV(PHY_COL_RMII_BIT) | _BV(PHY_RXDV_TESTMODE_BIT) |
@@ -445,7 +447,7 @@ static int EmacReset(u_long tmo)
 #ifdef PHY_MODE_RMII
     outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) |
         _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
-        | _BV(PHY_RXD2_AD2_BIT) /* | _BV(PHY_RXD3_AD3_BIT) */ | _BV(PHY_CRS_AD4_BIT));
+        | _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
 #else
     outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) |
         _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
