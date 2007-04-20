@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.373 2007/04/12 09:24:03 haraldkipp Exp $
+$Id: ChangeLog,v 1.374 2007/04/20 13:07:23 haraldkipp Exp $
+
+2007-04-20  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_emac.c: Previous change failed on SAM7X-EK.
+	We are now using PHY address 0 by default and disable all pull-ups
+	during PHY reset.
+
 
 2007-04-11  Harald Kipp  <harald.kipp@egnite.de>
 
