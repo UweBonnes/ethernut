@@ -2,7 +2,7 @@
 #define SETTINGSDLG_H_
 
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -42,6 +42,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/04/25 16:04:26  haraldkipp
+ * Transfer functions return the accumulated result of the pages.
+ * New validation routine switches to the page and the field with
+ * invalid contents.
+ *
  * Revision 1.4  2007/02/15 19:34:27  haraldkipp
  * Works with wxWidgets 2.8.0
  *
@@ -82,6 +87,8 @@ protected:
 
     virtual bool TransferDataToWindow();
     virtual bool TransferDataFromWindow();
+    virtual bool Validate();
+
 };
 
 #endif

@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,11 @@
 
 /*
  * $Log: settingsdlg.cpp,v $
+ * Revision 1.6  2007/04/25 16:04:26  haraldkipp
+ * Transfer functions return the accumulated result of the pages.
+ * New validation routine switches to the page and the field with
+ * invalid contents.
+ *
  * Revision 1.5  2006/10/21 12:48:18  christianwelzel
  * Added support for multiple configurations / settings
  *
@@ -152,22 +157,43 @@ CSettingsDialog::~CSettingsDialog()
 
 bool CSettingsDialog::TransferDataToWindow()
 {
-    m_repositoryOptions->TransferDataToWindow();
-    m_buildOptions->TransferDataToWindow();
-    m_toolOptions->TransferDataToWindow();
-    m_appOptions->TransferDataToWindow();
+    bool rc = m_repositoryOptions->TransferDataToWindow();
+    rc = rc && m_buildOptions->TransferDataToWindow();
+    rc = rc && m_toolOptions->TransferDataToWindow();
+    rc = rc && m_appOptions->TransferDataToWindow();
 
-    return true;
+    return rc;
 }
 
 bool CSettingsDialog::TransferDataFromWindow()
 {
-    m_repositoryOptions->TransferDataFromWindow();
-    m_buildOptions->TransferDataFromWindow();
-    m_toolOptions->TransferDataFromWindow();
-    m_appOptions->TransferDataFromWindow();
+    bool rc = m_repositoryOptions->TransferDataFromWindow();
+    rc = rc && m_buildOptions->TransferDataFromWindow();
+    rc = rc && m_toolOptions->TransferDataFromWindow();
+    rc = rc && m_appOptions->TransferDataFromWindow();
 
     wxGetApp().GetSettings()->Save(wxGetApp().GetSettings()->m_configname);
 
+    return rc;
+}
+
+bool CSettingsDialog::Validate()
+{
+    m_notebook->SetSelection(0);
+    if (!m_repositoryOptions->Validate()) {
+        return false;
+    }
+    m_notebook->SetSelection(1);
+    if (!m_buildOptions->Validate()) {
+        return false;
+    }
+    m_notebook->SetSelection(2);
+    if (!m_toolOptions->Validate()) {
+        return false;
+    }
+    m_notebook->SetSelection(3);
+    if (!m_appOptions->Validate()) {
+        return false;
+    }
     return true;
 }
