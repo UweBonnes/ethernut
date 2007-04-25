@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004-2005 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: appoptdlg.cpp,v $
+ * Revision 1.4  2007/04/25 16:01:38  haraldkipp
+ * Path entry validator added.
+ * Transfer functions return actual result.
+ *
  * Revision 1.3  2005/11/24 09:44:30  haraldkipp
  * wxWidget failed to built with unicode support, which results in a number
  * of compile errors. Fixed by Torben Mikael Hansen.
@@ -60,6 +64,7 @@
 
 #include "ids.h"
 #include "nutconf.h"
+#include "pathvalidator.h"
 #include "appoptdlg.h"
 
 IMPLEMENT_CLASS(CAppOptionsDialog, wxPanel)
@@ -74,9 +79,10 @@ CAppOptionsDialog::CAppOptionsDialog(wxWindow* parent)
 : wxPanel(parent, ID_SETTINGS_BUILD)
 {
     CSettings *opts = wxGetApp().GetSettings();
+    CPathValidator appDirValid(VALIDPATH_NOT_EMPTY | VALIDPATH_IS_DIRECTORY | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_app_dir);
 
     wxStaticBox *grpApp = new wxStaticBox(this, -1, wxT("Application Directory"));
-    m_entAppDir = new wxTextCtrl(this, ID_ENTRY_APPDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_app_dir));
+    m_entAppDir = new wxTextCtrl(this, ID_ENTRY_APPDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, appDirValid);
     wxButton *btnAppDir = new wxButton(this, ID_BROWSE_APPDIR, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
     wxStaticText *lblProgrammer = new wxStaticText(this, -1, wxT("Programmer"));
     m_cbxProgrammer = new wxComboBox(this, ID_COMBO_APPDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0, wxGenericValidator(&opts->m_programmer));
@@ -106,16 +112,12 @@ CAppOptionsDialog::CAppOptionsDialog(wxWindow* parent)
 
 bool CAppOptionsDialog::TransferDataToWindow()
 {
-    wxPanel::TransferDataToWindow();
-
-    return true;
+    return wxPanel::TransferDataToWindow();
 }
 
 bool CAppOptionsDialog::TransferDataFromWindow()
 {
-    wxPanel::TransferDataFromWindow();
-
-    return true;
+    return wxPanel::TransferDataFromWindow();
 }
 
 void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& WXUNUSED(event))

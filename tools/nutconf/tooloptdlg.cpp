@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: tooloptdlg.cpp,v $
+ * Revision 1.2  2007/04/25 16:01:42  haraldkipp
+ * Path entry validator added.
+ * Transfer functions return actual result.
+ *
  * Revision 1.1  2004/09/17 13:03:48  haraldkipp
  * New settings page for tool options
  *
@@ -49,6 +53,7 @@
 
 #include "ids.h"
 #include "nutconf.h"
+#include "pathvalidator.h"
 #include "tooloptdlg.h"
 
 IMPLEMENT_CLASS(CToolOptionsDialog, wxPanel)
@@ -57,9 +62,10 @@ CToolOptionsDialog::CToolOptionsDialog(wxWindow* parent)
 : wxPanel(parent, ID_SETTINGS_REPOSITORY)
 {
     CSettings *opts = wxGetApp().GetSettings();
+    CPathValidator toolPathValid(VALIDPATH_LIST | VALIDPATH_IS_DIRECTORY | VALIDPATH_EXISTS | VALIDPATH_SHOW_NATIVE, &opts->m_toolpath);
 
     wxStaticBox *groupPath = new wxStaticBox(this, -1, wxT("Tool Paths"));
-    m_entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_toolpath));
+    m_entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, toolPathValid);
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
     wxSizer *sizerGroup = new wxStaticBoxSizer(groupPath, wxHORIZONTAL);
@@ -73,15 +79,11 @@ CToolOptionsDialog::CToolOptionsDialog(wxWindow* parent)
 
 bool CToolOptionsDialog::TransferDataToWindow()
 {
-    wxPanel::TransferDataToWindow();
-
-    return true;
+    return wxPanel::TransferDataToWindow();
 }
 
 bool CToolOptionsDialog::TransferDataFromWindow()
 {
-    wxPanel::TransferDataFromWindow();
-
-    return true;
+    return wxPanel::TransferDataFromWindow();
 }
 

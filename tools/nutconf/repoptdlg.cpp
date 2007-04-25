@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004-2005 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: repoptdlg.cpp,v $
+ * Revision 1.7  2007/04/25 16:01:41  haraldkipp
+ * Path entry validator added.
+ * Transfer functions return actual result.
+ *
  * Revision 1.6  2007/02/15 19:33:45  haraldkipp
  * Version 1.4.1 works with wxWidgets 2.8.0.
  * Several wide character issues fixed.
@@ -66,6 +70,7 @@
 
 #include "ids.h"
 #include "nutconf.h"
+#include "pathvalidator.h"
 #include "repoptdlg.h"
 
 IMPLEMENT_CLASS(CRepositoryOptionsDialog, wxPanel)
@@ -78,9 +83,10 @@ CRepositoryOptionsDialog::CRepositoryOptionsDialog(wxWindow* parent)
 : wxPanel(parent, ID_SETTINGS_REPOSITORY)
 {
     CSettings *opts = wxGetApp().GetSettings();
+    CPathValidator repoValid(VALIDPATH_IS_PLAIN_FILE | VALIDPATH_EXISTS | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_repositoryname);
 
     wxStaticBox *groupPath = new wxStaticBox(this, -1, wxT("Repository File"));
-    m_entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&opts->m_repositoryname));
+    m_entryPath = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, repoValid);
     wxButton *btnBrowse = new wxButton(this, ID_BROWSE_REPOPATH, wxT("&Browse..."));
 
     wxSizer *sizerTop = new wxBoxSizer(wxVERTICAL);
@@ -105,16 +111,12 @@ CRepositoryOptionsDialog::CRepositoryOptionsDialog(wxWindow* parent)
 
 bool CRepositoryOptionsDialog::TransferDataToWindow()
 {
-    wxPanel::TransferDataToWindow();
-
-    return true;
+    return wxPanel::TransferDataToWindow();
 }
 
 bool CRepositoryOptionsDialog::TransferDataFromWindow()
 {
-    wxPanel::TransferDataFromWindow();
-
-    return true;
+    return wxPanel::TransferDataFromWindow();
 }
 
 void CRepositoryOptionsDialog::OnBrowseRepositoryFile(wxCommandEvent& WXUNUSED(event))
@@ -126,7 +128,7 @@ void CRepositoryOptionsDialog::OnBrowseRepositoryFile(wxCommandEvent& WXUNUSED(e
 
     if (dlg.ShowModal() == wxID_OK) {
         m_repositoryPath = dlg.GetPath();
-        m_repositoryPath.Replace(wxT("\\"), wxT("/"));
+        m_repositoryPath.Replace(wxString(wxFileName::GetPathSeparator()), wxT("/"));
         m_entryPath->SetValue(m_repositoryPath);
     }
 }
