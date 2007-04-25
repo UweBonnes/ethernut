@@ -1,4 +1,30 @@
-$Id: ChangeLog,v 1.374 2007/04/20 13:07:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.375 2007/04/25 15:58:10 haraldkipp Exp $
+
+2007-04-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
+	Version 1.4.2 had been tested with wxWidgets 2.8.3.
+
+	* tools/nutconf/pathvalidator.cpp, tools/nutconf/pathvalidator.h:
+	New path validator class allows to check file and directory paths.
+	It further provides automatic slash / backslash translation.
+
+	* tools/nutconf/appoptdlg.cpp, tools/nutconf/bldoptdlg.cpp,
+	tools/nutconf/repoptdlg.cpp, tools/nutconf/tooloptdlg.cpp:
+	Path entry validator added. Transfer functions return actual result.
+
+	* tools/nutconf/mainframe.cpp: Adding 3D style to sash in component 
+	tree fixes repaint problems. Further added live update and sash 
+	gravity attributes for easier resizing.
+
+	* tools/nutconf/nutconfdoc.cpp: Configurator failed to create
+	application directories containing subdirs. Fixed.
+
+	* tools/nutconf/settingsdlg.cpp, tools/nutconf/settingsdlg.h: 
+	Transfer functions return the accumulated result of the pages. 
+	New validation routine switches to the page and the field with 
+	invalid contents.
+
 
 2007-04-20  Harald Kipp  <harald.kipp@egnite.de>
 
