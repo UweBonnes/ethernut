@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004-2005 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.12  2007/04/25 16:02:27  haraldkipp
+ * Adding 3D style to sash in component tree fixes repaint problems.
+ * Further added live update and sash gravity attributes for easier resizing.
+ *
  * Revision 1.11  2007/02/15 19:33:45  haraldkipp
  * Version 1.4.1 works with wxWidgets 2.8.0.
  * Several wide character issues fixed.
@@ -385,7 +389,7 @@ void CMainFrame::CreateNutWindows()
                                         wxSize(250, 150), wxNO_BORDER | wxCLIP_CHILDREN | wxVSCROLL);
     wxLogVerbose(wxT("Create wxSplitterWindow"));
     m_splitter = new wxSplitterWindow(m_scrolledWindow, ID_SPLITTER_WINDOW, wxDefaultPosition,
-                                      wxSize(240, 130), wxSP_3DBORDER | wxCLIP_CHILDREN);
+                                      wxSize(240, 130), wxSP_LIVE_UPDATE | wxSP_3D | wxCLIP_CHILDREN);
     wxLogVerbose(wxT("Create CConfigTree"));
     m_treeWindow = new CConfigTree(m_splitter, ID_TREE_CTRL, wxDefaultPosition, wxSize(120, 120), 
                              wxTR_HAS_BUTTONS | /* wxTR_NO_LINES | */ wxTR_ROW_LINES | wxNO_BORDER);
@@ -394,6 +398,7 @@ void CMainFrame::CreateNutWindows()
                                      wxSize(120, 120), wxNO_BORDER);
     m_splitter->SplitVertically(m_treeWindow, m_valueWindow);
     m_splitter->SetMinimumPaneSize(100);
+    m_splitter->SetSashGravity(0.5);
 
     /* Scrolling is done on the tree. */
     //m_scrolledWindow->SetTargetWindow(m_treeWindow);
@@ -688,6 +693,6 @@ void CMainFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
 
 void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-    wxMessageBox(wxT("Nut/OS Configurator ") wxT(VERSION), wxT("About"), wxOK | wxICON_INFORMATION, this);
+    wxMessageBox(wxT("Nut/OS Configurator " VERSION), wxT("About"), wxOK | wxICON_INFORMATION, this);
 }
 
