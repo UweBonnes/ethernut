@@ -2,7 +2,7 @@
 #define _NUTCONF_H_
 
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2007/04/25 15:59:17  haraldkipp
+ * Version 1.4.2 had been tested with wxWidgets 2.8.3.
+ *
  * Revision 1.14  2007/02/15 19:33:45  haraldkipp
  * Version 1.4.1 works with wxWidgets 2.8.0.
  * Several wide character issues fixed.
@@ -92,7 +95,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.4.1"
+#define VERSION "1.4.2"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

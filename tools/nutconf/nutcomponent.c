@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.27  2007/04/25 15:59:17  haraldkipp
+ * Version 1.4.2 had been tested with wxWidgets 2.8.3.
+ *
  * Revision 1.26  2007/02/15 19:33:45  haraldkipp
  * Version 1.4.1 works with wxWidgets 2.8.0.
  * Several wide character issues fixed.
@@ -136,7 +139,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "1.4.1"
+#define NUT_CONFIGURE_VERSION   "1.4.2"
 
 #include <stdio.h>
 #include <stdlib.h>
