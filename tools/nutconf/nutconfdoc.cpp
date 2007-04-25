@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004-2005 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,6 +39,10 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.18  2007/04/25 16:03:33  haraldkipp
+ * Bugfix: Configurator failed to create application directories containing
+ * subdirs.
+ *
  * Revision 1.17  2007/02/15 19:36:03  haraldkipp
  * Wide character issues fixed.
  * Mkdir no more creates the full path without trailing separator.
@@ -631,7 +635,7 @@ public:
     virtual wxDirTraverseResult OnDir(const wxString& dirname)
     {
         wxString sub = dirname.Mid(m_source.Length());
-        wxFileName name(m_target + sub, wxEmptyString);
+        wxFileName name(m_target + sub + wxFileName::GetPathSeparator(), wxEmptyString);
         if(!name.GetFullPath().EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator())) {
             name.Mkdir(0777, wxPATH_MKDIR_FULL);
             return wxDIR_CONTINUE;
@@ -669,8 +673,8 @@ public:
     virtual wxDirTraverseResult OnDir(const wxString& dirname)
     {
         wxString sub = dirname.Mid(m_source.Length());
-        wxFileName name(m_target + sub);
-        if(!name.GetName().IsSameAs(wxT("CVS"), true)) {
+        wxFileName name(m_target + sub + wxFileName::GetPathSeparator(), wxEmptyString);
+        if(!name.GetFullPath().EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator())) {
             name.Mkdir(0777, wxPATH_MKDIR_FULL);
             return wxDIR_CONTINUE;
         }
