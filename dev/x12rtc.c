@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2007/05/02 11:29:25  haraldkipp
+ * Failed to store more than one EEPROM page. Removing NutSleep() from
+ * X12WaitReady() fixes this. Why?
+ *
  * Revision 1.4  2006/10/05 17:21:53  haraldkipp
  * Hardware specific functions marked deprecated.
  * Hardcoded register addresses and values replaced by macros.
@@ -116,12 +120,14 @@ static int X12WriteEnable(int on)
 static int X12WaitReady(void)
 {
     u_char poll;
-    int cnt = 20;
+    int cnt = 200; /* Ethernut 3 needs about 50 loops, so this is quite save. */
 
-    /* Poll for write cycle finished. */
-    while (--cnt && TwMasterTransact(I2C_SLA_EEPROM, 0, 0, &poll, 1, NUT_WAIT_INFINITE) == -1) {
-        NutSleep(1);
-    }
+    /* 
+     * Poll for write cycle finished. We can't use a sleep here, because our
+     * X12xx routines are not re-entrant.
+     */
+    while (--cnt && TwMasterTransact(I2C_SLA_EEPROM, 0, 0, &poll, 1, NUT_WAIT_INFINITE) == -1);
+
     return cnt ? 0 : -1;
 }
 
