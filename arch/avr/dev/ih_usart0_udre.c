@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2007/05/02 11:23:52  haraldkipp
+ * ATmega256x used wrong interrupt handler. Typo corrected.
+ *
  * Revision 1.3  2007/04/12 09:23:15  haraldkipp
  * ATmega2561 uses different interrupt vector names. One day we should
  * switch to the new names used by avr-libc.
@@ -171,7 +174,7 @@ static int AvrUart0TxDataIrqCtl(int cmd, void *param)
 NUTSIGNAL(SIG_UART0_DATA, sig_UART0_DATA)
 #elif defined(SIG_USART0_DATA)
 
-NUTSIGNAL(SIG_USART0_DATA, sig_UART0_TRANS)
+NUTSIGNAL(SIG_USART0_DATA, sig_USART0_DATA)
 
 #else
 
