@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2007/05/02 11:32:50  haraldkipp
+# IGMP added.
+#
 # Revision 1.7  2004/11/08 09:57:40  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -74,7 +77,8 @@ SRC2 =  ipin.c ipout.c ipcsum.c route.c inet.c \
 	netdebug.c pppdebug.c \
 	arpin.c arpout.c arpcache.c \
 	ethin.c ethout.c ifconfig.c confnet.c \
-	pppin.c pppout.c lcpout.c ipcpout.c
+	pppin.c pppout.c lcpout.c ipcpout.c \
+	igmp.c igmpin.c igmpout.c
 
 OBJ1 = $(SRC1:.c=.o)
 OBJ2 = $(SRC2:.c=.o)
