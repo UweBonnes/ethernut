@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2007/05/02 11:32:07  haraldkipp
+ * Mapping of Harvard specific stdio functions moved to stdio.h and io.h.
+ *
  * Revision 1.16  2006/08/31 19:04:08  haraldkipp
  * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
  *
@@ -147,12 +150,6 @@
 
 #define strcmp_P(x, y)          strcmp((char *)(x), (char *)(y))
 #define memcpy_P(x, y, z)       memcpy(x, y, z)
-
-#define fputs_P(x, y)           fputs((char *)(x), y)
-#define puts_P(x)               puts((char *)(x))
-#define fprintf_P               fprintf
-#define printf_P                printf
-#define _write_P                _write
 
 #ifndef __ASSEMBLER__
 /*!
