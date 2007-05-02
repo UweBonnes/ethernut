@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/05/02 11:22:51  haraldkipp
+ * Added multicast table entry.
+ *
  * Revision 1.5  2005/02/04 15:08:37  haraldkipp
  * ARP redesign requires removal flag.
  *
@@ -142,6 +145,20 @@ struct _ARPENTRY {
  */
 /*@{*/
 
+/*!
+ * \brief Multicast address entry type.
+ */
+typedef struct _MCASTENTRY MCASTENTRY;
+
+/*!
+ * \struct _MCASTENTRY if_var.h net/if_var.h
+ * \brief Multicast entry structure.
+ */
+struct _MCASTENTRY {
+    MCASTENTRY *mca_next;
+    u_char mca_ha[6];
+    u_long mca_ip;
+};
 
 /*!
  * \brief Network interface type.
@@ -165,9 +182,11 @@ struct ifnet {
     u_short if_mtu;             /*!< \brief Maximum size of a transmission unit. */
     u_short if_pkt_id;          /*!< \brief Packet identifier. */
     ARPENTRY *arpTable;         /*!< \brief Linked list of arp entries. */
+    MCASTENTRY *if_mcast;       /*!< \brief Linked list of multicast address entries. */
     void (*if_recv) (NUTDEVICE *, NETBUF *);			    /*!< \brief Receive routine. */
     int (*if_send) (NUTDEVICE *, NETBUF *);			    /*!< \brief Send routine. */
     int (*if_output) (NUTDEVICE *, u_short, u_char *, NETBUF *);    /*!< \brief Media output routine. */
+    int (*if_ioctl) (NUTDEVICE *, int, void *);    /*!< \brief Interface specific control function. */
 };
 
 /*@}*/

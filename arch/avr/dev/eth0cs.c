@@ -68,6 +68,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/05/02 11:22:51  haraldkipp
+ * Added multicast table entry.
+ *
  * Revision 1.2  2005/08/02 17:46:45  haraldkipp
  * Major API documentation update.
  *
@@ -113,6 +116,7 @@ IFNET ifn_eth0cs = {
     567,                        /*!< \brief Maximum size of a transmission unit. */
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */
+    0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     CSNicOutput,                /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput              /*!< \brief Media output routine, if_output(). */

@@ -80,6 +80,7 @@ static IFNET ifn_eth0 = {
     ETHERMTU,                   /*!< \brief Maximum size of a transmission unit. */
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */
+    0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     WlanOutput,                 /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput              /*!< \brief Media output routine, if_output(). */

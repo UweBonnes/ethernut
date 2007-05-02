@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/05/02 11:22:51  haraldkipp
+ * Added multicast table entry.
+ *
  * Revision 1.5  2006/06/28 17:10:15  haraldkipp
  * Include more general header file for ARM.
  *
@@ -98,6 +101,7 @@ static IFNET ifn_eth0 = {
     ETHERMTU,                   /*!< \brief Maximum size of a transmission unit. */
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */
+    0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     AsixOutput,                 /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput              /*!< \brief Media output routine, if_output(). */

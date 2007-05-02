@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2007/05/02 11:22:51  haraldkipp
+ * Added multicast table entry.
+ *
  * Revision 1.8  2006/03/29 01:23:52  olereinhardt
  *  Signednes of strings
  *
@@ -318,6 +321,7 @@ IFNET ifn_ppp = {
     PPP_MRU,                    /*!< \brief Maximum size of a transmission unit. */
     0,                          /*!< \brief Packet identifier. */
     0,                          /*!< \brief Linked list of arp entries. */
+    0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutPppInput,                /*!< \brief Routine to pass received data to, if_recv(). */
     0,                          /*!< \brief Dynamically attached driver output routine, if_send(). */
     NutPppOutput                /*!< \brief Media output routine, if_output(). */
