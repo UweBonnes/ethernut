@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2007/05/02 11:30:33  haraldkipp
+ * Mapped _write_P to _write for non Harvard architectures.
+ *
  * Revision 1.6  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -90,6 +93,8 @@ extern int _read(int fd, void *buffer, size_t count);
 extern int _write(int fd, CONST void *buffer, size_t count);
 #ifdef __HARVARD_ARCH__
 extern int _write_P(int fd, PGM_P buffer, size_t count);
+#else
+#define _write_P(fd, buffer, count) _write(fd, buffer, count)
 #endif
 extern int _seek(int fd, long offset, int origin);
 extern long _tell(int fd);
