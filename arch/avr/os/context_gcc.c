@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/05/02 11:25:08  haraldkipp
+ * Minor typo with big impact. Extended PC never set in context switch
+ * frame.
+ * Replaced __AVR_ATmega2561__ by __AVR_3_BYTE_PC__.
+ * Removed unused local variable paddr.
+ *
  * Revision 1.7  2007/04/12 09:19:00  haraldkipp
  * Added extended program counter byte for the ATmega2561. Code above 128k not
  * working, though.
@@ -149,7 +155,7 @@ typedef struct {
     u_char csf_r4;
     u_char csf_r3;
     u_char csf_r2;
-#ifdef __AVR_ATmega2561__
+#ifdef __AVR_3_BYTE_PC__
     u_char csf_pcex;
 #endif
     u_char csf_pchi;
@@ -167,13 +173,19 @@ typedef struct {
     u_char cef_rampz;
     u_char cef_sreg;
     u_char cef_r1;
-#ifdef __AVR_ATmega2561__
+#ifdef __AVR_3_BYTE_PC__
     u_char cef_pcex;
 #endif
     u_char cef_pchi;
     u_char cef_pclo;
 } ENTERFRAME;
 
+#define LONG_PTR_P(lp, mem_p) \
+    __asm__ __volatile__("ldi %A0, lo8("#mem_p ")" "\n\t" \
+                         "ldi %B0, hi8("#mem_p ")" "\n\t" \
+                         "ldi %C0, hh8("#mem_p ")" "\n\t" \
+                         "clr %D0" \
+                         :"=d" (lp))
 
 /*
  * This code is executed when entering a thread.
@@ -303,9 +315,6 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     if (stackSize > _irqstackdec + 128) stackSize -= _irqstackdec;
 #endif
 
-    const u_short *paddr;
-    paddr = (const u_short *) fn;       // *KU* fn doesn't contain the entry address
-    // of the thread!
     /*
      * Allocate stack and thread info structure in one block.
      */
@@ -331,7 +340,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     /*
      * Setup entry frame to simulate C function entry.
      */
-#ifdef __AVR_ATmega2561__
+#ifdef __AVR_3_BYTE_PC__
     ef->cef_pcex = 0;
 #endif
     ef->cef_pchi = (u_char) (((u_short) fn) >> 8);
@@ -343,8 +352,8 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     ef->cef_arglo = (u_char) (((u_short) arg) & 0xff);
     ef->cef_arghi = (u_char) (((u_short) arg) >> 8);
 
-#ifdef __AVR_ATmega2561__
-    ef->cef_pcex = 0;
+#ifdef __AVR_3_BYTE_PC__
+    sf->csf_pcex = 0;
 #endif
     sf->csf_pchi = (u_char) (((u_short) NutThreadEntry) >> 8);
     sf->csf_pclo = (u_char) (((u_short) NutThreadEntry) & 0xff);
