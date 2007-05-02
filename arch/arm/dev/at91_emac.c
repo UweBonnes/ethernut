@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2007/05/02 11:20:26  haraldkipp
+ * Pull-up enable/disable simplified.
+ * Added multicast table entry.
+ *
  * Revision 1.8  2007/04/20 13:06:08  haraldkipp
  * Previous change failed on SAM7X-EK. We are now using PHY address 0 by
  * default and disable all pull-ups during PHY reset.
@@ -415,17 +419,14 @@ static int EmacReset(u_long tmo)
     outr(PMC_PCER, _BV(EMAC_ID));
 
     /* Disable TESTMODE and set PHY address 0 and by disabling pull-ups. */
-#ifdef PHY_MODE_RMII
-    outr(EMAC_PIO_PUDR, _BV(PHY_RXDV_TESTMODE_BIT) | 
-        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
-        | _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
-#else
-    /* Additionally disable RMII, if not configured. */
-    outr(EMAC_PIO_PUDR, _BV(PHY_COL_RMII_BIT) | _BV(PHY_RXDV_TESTMODE_BIT) |
-        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) | 
-        _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
-    outr(EMAC_PIO_PUDR, _BV(PHY_COL_RMII_BIT) | _BV(PHY_RXDV_TESTMODE_BIT));
+    outr(EMAC_PIO_PUDR,
+#if !defined(PHY_MODE_RMII)
+        /* Additionally disable RMII, if not configured. */
+        _BV(PHY_COL_RMII_BIT) | 
 #endif
+        _BV(PHY_RXDV_TESTMODE_BIT) | 
+        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) |
+        _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
 
 #ifdef PHY_PWRDN_BIT
     /* Disable PHY power down. */
@@ -444,15 +445,9 @@ static int EmacReset(u_long tmo)
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
 
     /* Re-enable pull-ups. */
-#ifdef PHY_MODE_RMII
-    outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) |
-        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
-        | _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
-#else
-    outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) |
-        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT)
-        | _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
-#endif
+    outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) | 
+        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) |
+        _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
 
     /* Configure MII port. */
     outr(EMAC_PIO_ASR, PHY_MII_PINS_A);
@@ -956,6 +951,7 @@ static IFNET ifn_eth0 = {
     ETHERMTU,                   /*!< \brief Maximum size of a transmission unit, if_mtu. */
     0,                          /*!< \brief Packet identifier, if_pkt_id. */
     0,                          /*!< \brief Linked list of arp entries, arpTable. */
+    0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     EmacOutput,                 /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput              /*!< \brief Media output routine, if_output(). */
