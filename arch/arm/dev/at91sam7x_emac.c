@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/05/02 11:28:47  haraldkipp
+ * Added multicast table entry.
+ *
  * Revision 1.4  2006/08/31 19:19:55  haraldkipp
  * No time to write comments. ;-)
  *
@@ -736,6 +739,7 @@ static IFNET ifn_eth0 = {
     ETHERMTU,                   /*!< \brief Maximum size of a transmission unit, if_mtu. */
     0,                          /*!< \brief Packet identifier, if_pkt_id. */
     0,                          /*!< \brief Linked list of arp entries, arpTable. */
+    0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     EmacOutput,                 /*!< \brief Driver output routine, if_send(). */
     NutEtherOutput              /*!< \brief Media output routine, if_output(). */
