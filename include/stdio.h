@@ -177,22 +177,50 @@ extern int vsprintf(char *buffer, CONST char *fmt, va_list ap);
 extern int vsscanf(CONST char *string, CONST char *fmt, va_list ap);
 
 #ifdef __HARVARD_ARCH__
-extern int fprintf_P(FILE * stream, PGM_P fmt, ...);
+/* Strings in program space need special handling for Harvard architectures. */
+extern int fprintf_P(FILE * stream, PGM_P fmt, ...) __attribute__((format(printf, 2, 3)));
 extern int fputs_P(PGM_P string, FILE * stream);
-extern int fscanf_P(FILE * stream, PGM_P fmt, ...);
+extern int fscanf_P(FILE * stream, PGM_P fmt, ...) __attribute__((format(scanf, 2, 3)));
 extern size_t fwrite_P(PGM_P data, size_t size, size_t count, FILE * stream);
-extern int printf_P(PGM_P fmt, ...);
+extern int printf_P(PGM_P fmt, ...) __attribute__((format(printf, 1, 2)));
 extern int puts_P(PGM_P string);
-extern int scanf_P(PGM_P fmt, ...);
-extern int sprintf_P(char *buffer, PGM_P fmt, ...);
-extern int sscanf_P(CONST char *string, CONST char *fmt, ...);
+extern int scanf_P(PGM_P fmt, ...) __attribute__((format(scanf, 1, 2)));
+extern int sprintf_P(char *buffer, PGM_P fmt, ...) __attribute__((format(printf, 2, 3)));
+extern int sscanf_P(CONST char *string, CONST char *fmt, ...) __attribute__((format(scanf, 2, 3)));
 extern int vfprintf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vfscanf_P(FILE * stream, PGM_P fmt, va_list ap);
 extern int vsprintf_P(char *buffer, PGM_P fmt, va_list ap);
 extern int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap);
-#endif
 
-#endif
+#else /* __HARVARD_ARCH__ */
+/* Map to standard functions, if program and data space are equally accessable. */
+#define fputs_P(string, stream) fputs(string, stream)
+#define fwrite_P(data, size, count, stream) fwrite(data, size, count, stream)
+#define puts_P(string) puts(string)
+#define vfprintf_P(stream, fmt, ap) vfprintf(stream, fmt, ap)
+#define vfscanf_P(stream, fmt, ap) vfscanf(stream, fmt, ap)
+#define vsprintf_P(buffer, fmt, ap) vsprintf(buffer, fmt, ap)
+#define vsscanf_P(string, fmt, ap) vsscanf(string, fmt, ap)
+
+#if defined(__GNUC__)
+#define fprintf_P(...)  fprintf(__VA_ARGS__)
+#define fscanf_P(...)   fscanf(__VA_ARGS__)
+#define printf_P(...)   printf(__VA_ARGS__)
+#define scanf_P(...)    scanf(__VA_ARGS__)
+#define sprintf_P(...)  sprintf(__VA_ARGS__)
+#define sscanf_P(...)   sscanf(__VA_ARGS__)
+#else /* __GNUC__ */
+#define fprintf_P       fprintf
+#define fscanf_P        fscanf
+#define printf_P        printf
+#define scanf_P         scanf
+#define sprintf_P       sprintf
+#define sscanf_P        sscanf
+#endif /* __GNUC__ */
+
+#endif /* __HARVARD_ARCH__ */
+
+#endif /* NO_STDIO_NUT_WRAPPER */
 
 #endif                          /* _STDIO_VIRTUAL_H_ */
 
