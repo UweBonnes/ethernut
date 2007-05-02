@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.7  2007/05/02 13:16:06  haraldkipp
+# *** empty log message ***
+#
 # Revision 1.6  2006/10/06 17:51:02  haraldkipp
 # *** empty log message ***
 #
@@ -70,14 +73,14 @@ configitem.cpp configtree.cpp enumeditctrl.cpp iconinfo.cpp iconlist.cpp \
 infowindow.cpp inteditctrl.cpp mainframe.cpp nutconfdoc.cpp nutconfhint.cpp \
 nutconfview.cpp propertylist.cpp repoptdlg.cpp scrolledtree.cpp settings.cpp \
 settingsdlg.cpp splitscroll.cpp texteditctrl.cpp tooloptdlg.cpp treecomp.cpp \
-treeitemdata.cpp utils.cpp valuewindow.cpp finddlg.cpp \
+treeitemdata.cpp utils.cpp valuewindow.cpp finddlg.cpp pathvalidator.cpp \
 appoptdlg.h iconinfo.h nutconfdoc.h scrolledtree.h treeitemdata.h \
 bldoptdlg.h iconlist.h nutconf.h settingsdlg.h utils.h \
 configitem.h ids.h nutconfhint.h settings.h valuewindow.h \
 configtree.h infowindow.h nutconfview.h splitscroll.h \
 inteditctrl.h propertylist.h texteditctrl.h \
 enumeditctrl.h mainframe.h repoptdlg.h tooloptdlg.h \
-nutcomponent.h resource.h treecomp.h finddlg.h \
+nutcomponent.h resource.h treecomp.h finddlg.h pathvalidator.h \
 bitmaps/application.xpm \
 bitmaps/building_large.xpm bitmaps/building.xpm \
 bitmaps/checked_dis.xpm bitmaps/module.xpm \
