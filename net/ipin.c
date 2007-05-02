@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2007/05/02 11:18:32  haraldkipp
+ * IGMP support added. Incomplete.
+ *
  * Revision 1.8  2007/03/23 12:43:50  haraldkipp
  * ARP method wasn't actually disabled by default. Fixed.
  *
@@ -144,6 +147,7 @@
 #include <netinet/ip.h>
 #include <netinet/icmp.h>
 #include <netinet/ip_icmp.h>
+#include <netinet/igmp.h>
 #include <netinet/udp.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -207,7 +211,15 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         return;
     }
 
+    /*
+     * IP header length is given in 32-bit fields. Calculate the size in
+     * bytes and make sure that the header we know will fit in.
+     */
     ip_hdrlen = ip->ip_hl * 4;
+    if (ip_hdrlen < sizeof(IPHDR)) {
+        NutNetBufFree(nb);
+        return;
+    }
 
     /*
      * No checksum calculation on incoming datagrams!
@@ -219,9 +231,33 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     dst = ip->ip_dst;
     nif = dev->dev_icb;
 
-    if (dst == 0xffffffff || (nif->if_local_ip && nif->if_mask != 0xffffffff && (dst | nif->if_mask) == 0xffffffff)) {
+    if (dst == INADDR_BROADCAST || 
+        (nif->if_local_ip && nif->if_mask != INADDR_BROADCAST && (dst | nif->if_mask) == INADDR_BROADCAST)) {
         bcast = 1;
-    } else {
+    }
+
+    /*
+     * Check for multicast.
+     */
+    else if (IN_MULTICAST(dst)) {
+        MCASTENTRY *mca;
+
+        for (mca = nif->if_mcast; mca; mca = mca->mca_next) {
+            if (dst == mca->mca_ip) {
+                break;
+            }
+        }
+		if (mca == NULL) {
+            NutNetBufFree(nb);
+			return;
+		}
+        bcast = 2;
+    }
+
+    /*
+     * Packet is unicast.
+     */
+    else {
         bcast = 0;
 
 #ifdef NUTIPCONF_ICMP_ARPMETHOD
@@ -260,6 +296,9 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
             NutNetBufFree(nb);
         else
             NutTcpInput(nb);
+        break;
+    case IPPROTO_IGMP:
+        NutIgmpInput(dev, nb);
         break;
     default:
         /* Unkown protocol, send ICMP destination (protocol)

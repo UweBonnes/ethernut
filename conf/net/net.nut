@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.10  2007/05/02 11:18:32  haraldkipp
+-- IGMP support added. Incomplete.
+--
 -- Revision 1.9  2007/03/23 12:41:37  haraldkipp
 -- Added more detailed information about the ARP method.
 --
@@ -143,6 +146,17 @@ nutnet =
         { 
             "icmpin.c",
             "icmpout.c"
+        }
+    },
+    {
+        name = "nutnet_igmp",
+        brief = "IGMP",
+        requires = { "NET_LINK" },
+        provides = { "NET_IGMP" },
+        sources = 
+        { 
+            "igmpin.c",
+            "igmpout.c"
         }
     },
     {

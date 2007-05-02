@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/05/02 11:18:32  haraldkipp
+ * IGMP support added. Incomplete.
+ *
  * Revision 1.5  2006/10/17 11:05:03  haraldkipp
  * Failed ARP requests are no longer classified as fatal transmission errors.
  *
@@ -195,7 +198,11 @@ int NutIpOutput(u_char proto, u_long dest, NETBUF * nb)
     ip->ip_tos = 0;
     ip->ip_len = htons(nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz);
     ip->ip_off = 0;
-    ip->ip_ttl = 0x40;
+    if (proto == IPPROTO_IGMP) {
+        ip->ip_ttl = 1;
+    } else {
+        ip->ip_ttl = 0x40;
+    }
     ip->ip_p = proto;
     ip->ip_dst = dest;
 
