@@ -193,6 +193,8 @@ extern int vsprintf_P(char *buffer, PGM_P fmt, va_list ap);
 extern int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap);
 
 #else /* __HARVARD_ARCH__ */
+
+#if !defined(NUT_STDIO_PREFIXED)
 /* Map to standard functions, if program and data space are equally accessable. */
 #define fputs_P(string, stream) fputs(string, stream)
 #define fwrite_P(data, size, count, stream) fwrite(data, size, count, stream)
@@ -217,6 +219,8 @@ extern int vsscanf_P(CONST char *string, PGM_P fmt, va_list ap);
 #define sprintf_P       sprintf
 #define sscanf_P        sscanf
 #endif /* __GNUC__ */
+
+#endif /* NUT_STDIO_PREFIXED */
 
 #endif /* __HARVARD_ARCH__ */
 
