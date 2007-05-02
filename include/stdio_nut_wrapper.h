@@ -3,9 +3,6 @@
 // rename FILE to NUT_FILE 
 #define FILE NUT_FILE
 
-// take care of _P calls
-#define _write_P(...) _write(__VA_ARGS__)
-
 // 
 #define NUT_STDIO_PREFIXED
 

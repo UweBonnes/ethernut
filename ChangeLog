@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.376 2007/05/02 11:35:25 haraldkipp Exp $
+$Id: ChangeLog,v 1.377 2007/05/02 15:47:01 freckle Exp $
+
+2007-05-02  Matthias Ringwald <mringwal@inf.ethz.ch>
+        * include/stdio_nut_wrapper: Removed mapping of _write_P to _write
+        for non Harvard architectures (is now already done in include/io.h)
 
 2007-05-02  Harald Kipp  <harald.kipp@egnite.de>
 
