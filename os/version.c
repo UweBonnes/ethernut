@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.43  2007/05/02 11:35:25  haraldkipp
+ * ATmega2561 and other fixes.
+ * IGMP support started, but not finished.
+ * Socket ioctl started, but not finished.
+ *
  * Revision 1.42  2007/04/12 08:54:39  haraldkipp
  * Supports configurable SPI, VS10XX MP3 decoder chips and Mega256 for
  * avr-gcc 4.1.1.
@@ -177,8 +182,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04030201UL
-static CONST char os_version_string[] = "4.3.2.1 beta";
+#define OS_VERSION_NUMBER  0x04030301UL
+static CONST char os_version_string[] = "4.3.3.1 alpha";
 
 /*!
  * \addtogroup xgNutVersion

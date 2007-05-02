@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -34,6 +34,11 @@
 
 #
 # $Log$
+# Revision 1.20  2007/05/02 11:35:25  haraldkipp
+# ATmega2561 and other fixes.
+# IGMP support started, but not finished.
+# Socket ioctl started, but not finished.
+#
 # Revision 1.19  2007/04/12 08:54:38  haraldkipp
 # Supports configurable SPI, VS10XX MP3 decoder chips and Mega256 for
 # avr-gcc 4.1.1.
@@ -99,7 +104,7 @@
 #
 #
 
-AC_INIT(ethernut,4.3.2)
+AC_INIT(ethernut,4.3.3)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2007 egnite Software GmbH])

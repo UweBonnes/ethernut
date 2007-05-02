@@ -1,4 +1,56 @@
-$Id: ChangeLog,v 1.375 2007/04/25 15:58:10 haraldkipp Exp $
+$Id: ChangeLog,v 1.376 2007/05/02 11:35:25 haraldkipp Exp $
+
+2007-05-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Pre-release 4.3.3 alpha.
+
+	* Makedefs.avr-gccdbg, Makerules.avr-gccdbg, 
+	app/Makedefs.avr-gccdbg, app/Makerules.avr-gccdbg: Enables AVR 
+	debugging. Same ugly solution which I already used for the ARM.
+
+	* arch/avr/dev/ih_usart0_udre.c: ATmega256x used wrong interrupt 
+	handler.
+
+	* arch/avr/os/context_gcc.c: Minor typo with big impact.
+	Extended PC never set in context switch frame. Additionally
+	replaced __AVR_ATmega2561__ by __AVR_3_BYTE_PC__ and removed
+	unused local variable paddr.
+
+	* include/stdio.h: Added GCC format attributes to program space
+	variants to enable compiler warnings at format/argument mismatch.
+	Added mapping to standard functions for non Harvard architectures.
+
+	* include/io.h: Added mapping of _write_P to _write for non Harvard 
+	architectures.
+
+	* include/arch/arm.h: Mapping of Harvard specific stdio functions
+	removed.
+
+	* arch/arm/dev/at91_emac.c: Pull-up enable/disable simplified.
+	Added multicast table entry.
+
+	* arm/dev/at91sam7x_emac.c, arch/arm/dev/ax88796.c,
+	arch/arm/dev/cs8900a.c, arch/arm/dev/dm9000e.c, 
+	arch/avr/dev/eth0cs.c, arch/avr/dev/eth0rtl.c, 
+	arch/avr/dev/lanc111.c, arch/avr/dev/wlan.c, dev/ppp.c, 
+	include/net/if_var.h: Added multicast table entry.
+
+	* include/net/if.h: Socket ioctl functions added. More
+	had to be done to make it work.
+	
+	* include/sys/sockio.h: Socket ioctls.
+
+	* net/igmp.c, net/igmpin.c, net/igmpout.c,
+	conf/net/net.nut, include/netinet/in.h, net/ipin.c,
+	net/ipout.c, include/netinet/igmp.h: IGMP template added. 
+	Not working yet.
+
+	* dev/x12rtc.c: Failed to store more than one EEPROM page.
+	Removing NutSleep() from X12WaitReady() fixes this. Why?
+
+	* conf/ethernut13h-256gcc.conf, conf/ethernut21b-256gcc.conf:
+	Configuration files for Ethernut 1 and 2 with mega2561 MCU.
+
 
 2007-04-25  Harald Kipp  <harald.kipp@egnite.de>
 
