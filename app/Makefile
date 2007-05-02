@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.10  2007/05/02 11:19:39  haraldkipp
+# Added special XNut target for excluding not working apps.
+#
 # Revision 1.9  2006/07/21 09:16:29  haraldkipp
 # All samples must be build for all platforms. Running the targets is a
 # different story.
@@ -131,3 +134,23 @@ clean:
 	$(MAKE) -C threads clean
 	$(MAKE) -C timers clean
 	$(MAKE) -C uart clean
+
+at90can:
+#	$(MAKE) -C basemon
+	$(MAKE) -C canbus
+	$(MAKE) -C cppdemo
+	$(MAKE) -C events
+	$(MAKE) -C ftpd
+	$(MAKE) -C httpd
+	$(MAKE) -C inetq
+	$(MAKE) -C logtime
+	$(MAKE) -C nutpiper
+	$(MAKE) -C playmp3
+	$(MAKE) -C portdio
+	$(MAKE) -C pppc
+	$(MAKE) -C rs232d
+	$(MAKE) -C simple
+	$(MAKE) -C tcps
+	$(MAKE) -C threads
+	$(MAKE) -C timers
+	$(MAKE) -C uart
