@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/05/24 07:27:38  haraldkipp
+ * Added two more interfaces. Updated by Przemyslaw Rudy.
+ *
  * Revision 1.1  2005/11/24 11:24:06  haraldkipp
  * Initial check-in.
  * Many thanks to William Basser for this code and also to Przemyslaw Rudy
@@ -58,7 +61,7 @@ NUTDEVICE devAce0 = {
     0,                          /*!< Pointer to next device. */
     {'a', 'c', 'e', '0', 0, 0, 0, 0, 0},        /*!< Unique device name. */
     IFTYP_STREAM,               /*!< Type of device. */
-    0xc040,                     /*!< Base address. */
+    0x8c00,                     /*!< Base address. */
     4,                          /*!< First interrupt number. */
     &ifs_ace0,                  /*!< Interface control block. */
     &dcb_ace0,                  /*!< Driver control block. */
@@ -82,10 +85,58 @@ NUTDEVICE devAce1 = {
     0,                          /*!< Pointer to next device. */
     {'a', 'c', 'e', '1', 0, 0, 0, 0, 0},        /*!< Unique device name. */
     IFTYP_STREAM,               /*!< Type of device. */
-    0xc048,                     /*!< Base address. */
+    0x8c08,                     /*!< Base address. */
     4,                          /*!< First interrupt number. */
     &ifs_ace1,                  /*!< Interface control block. */
     &dcb_ace1,                  /*!< Driver control block. */
+    AceInit,                    /*!< Driver initialization routine. */
+    AceIOCtl,                   /*!< Driver specific control function. */
+    AceRead,                    /*!< Read from device. */
+    AceWrite,                   /*!< Write to device. */
+    AceWrite_P,                 /*!< Write to device from program space. */
+    AceOpen,                    /*!< Open a device or file. */
+    AceClose,                   /*!< Close a device or file. */
+    AceSize                     /*!< Request file size. */
+};
+
+static ACEDCB dcb_ace2;
+static IFSTREAM ifs_ace2;
+
+/*!
+ * \brief ACE 2 Device information structure.
+ */
+NUTDEVICE devAce2 = {
+    0,                          /*!< Pointer to next device. */
+    {'a', 'c', 'e', '2', 0, 0, 0, 0, 0},        /*!< Unique device name. */
+    IFTYP_STREAM,               /*!< Type of device. */
+    0x8c10,                     /*!< Base address. */
+    4,                          /*!< First interrupt number. */
+    &ifs_ace2,                  /*!< Interface control block. */
+    &dcb_ace2,                  /*!< Driver control block. */
+    AceInit,                    /*!< Driver initialization routine. */
+    AceIOCtl,                   /*!< Driver specific control function. */
+    AceRead,                    /*!< Read from device. */
+    AceWrite,                   /*!< Write to device. */
+    AceWrite_P,                 /*!< Write to device from program space. */
+    AceOpen,                    /*!< Open a device or file. */
+    AceClose,                   /*!< Close a device or file. */
+    AceSize                     /*!< Request file size. */
+};
+
+static ACEDCB dcb_ace3;
+static IFSTREAM ifs_ace3;
+
+/*!
+ * \brief ACE 3 Device information structure.
+ */
+NUTDEVICE devAce3 = {
+    0,                          /*!< Pointer to next device. */
+    {'a', 'c', 'e', '3', 0, 0, 0, 0, 0},        /*!< Unique device name. */
+    IFTYP_STREAM,               /*!< Type of device. */
+    0x8c18,                     /*!< Base address. */
+    4,                          /*!< First interrupt number. */
+    &ifs_ace3,                  /*!< Interface control block. */
+    &dcb_ace3,                  /*!< Driver control block. */
     AceInit,                    /*!< Driver initialization routine. */
     AceIOCtl,                   /*!< Driver specific control function. */
     AceRead,                    /*!< Read from device. */
