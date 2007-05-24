@@ -1,4 +1,30 @@
-$Id: ChangeLog,v 1.377 2007/05/02 15:47:01 freckle Exp $
+$Id: ChangeLog,v 1.378 2007/05/24 07:43:27 haraldkipp Exp $
+
+2007-05-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/avr/dev/irblast.c, include/dev/irblast.h: New driver from 
+	Przemyslaw Rudy sends modulated infrared remote control codes 
+	using a simple IR LED. Cool.
+
+
+2007-05-23  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/avr/dev/ace.c: Added two more interfaces. Thanks to
+	Przemyslaw Rudy.
+
+	* arch/avr/dev/tlc16c550.c, include/dev/tlc16c550.h: Update 
+	provided by Przemyslaw Rudy.
+
+
+2007-05-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/dm9000e.c: Added some delay befor reading the status 
+	of the received packet. Fixes bug #1672527, thanks to Andreas Helmcke.
+
+	* dev/npluled.c: NplUledStatus was looking at the MMC line not the 
+	LED line when returning the status. Fixes bug #1711622, thanks to
+	Douglas Pearless.
+
 
 2007-05-02  Matthias Ringwald <mringwal@inf.ethz.ch>
         * include/stdio_nut_wrapper: Removed mapping of _write_P to _write
