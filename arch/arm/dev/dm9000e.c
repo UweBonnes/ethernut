@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2007/05/24 07:26:44  haraldkipp
+ * Added some delay befor reading the status of the received packet. Fixes
+ * bug #1672527, thanks to Andreas Helmcke.
+ *
  * Revision 1.6  2007/05/02 11:22:51  haraldkipp
  * Added multicast table entry.
  *
@@ -550,6 +554,8 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
      * indicates a weird chip crying for reset.
      */
     nic_inb(NIC_MRCMDX);
+    /* Add some delay befor reading the status of the received packet. */
+    _NOP(); _NOP(); _NOP(); _NOP();
     fsw = inb(NIC_DATA_ADDR);
     if (fsw > 1) {
         ni->ni_insane = 1;
