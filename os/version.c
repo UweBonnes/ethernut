@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.44  2007/05/24 07:30:48  haraldkipp
+ * Bugfixes for preparing release candidate.
+ *
  * Revision 1.43  2007/05/02 11:35:25  haraldkipp
  * ATmega2561 and other fixes.
  * IGMP support started, but not finished.
@@ -182,8 +185,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04030301UL
-static CONST char os_version_string[] = "4.3.3.1 alpha";
+#define OS_VERSION_NUMBER  0x04030401UL
+static CONST char os_version_string[] = "4.3.4.1 beta";
 
 /*!
  * \addtogroup xgNutVersion
