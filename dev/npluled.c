@@ -83,7 +83,7 @@ void NplUledCntl(int status)
 
 int NplUledStatus(void)
 {
-    int rc = (inb(NPL_XER) & NPL_MMCS) == NPL_USRLED;
+    int rc = (inb(NPL_XER) & NPL_USRLED) == NPL_USRLED;
 
     return rc;
 }
