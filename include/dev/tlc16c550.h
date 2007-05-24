@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/05/24 07:29:10  haraldkipp
+ * Update provided by Przemyslaw Rudy.
+ *
  * Revision 1.2  2006/05/25 09:09:57  haraldkipp
  * API documentation updated and corrected.
  *
@@ -86,6 +89,8 @@
 
 #define ACE_MF_XONXOFF		0x00000400UL    /*!< Software handshake. */
 
+#define ACE_MF_HALFDUPLEX   0x00000800UL    /*!< Half duplex bit control */
+
 #define ACE_MF_LOCALECHO	0x00010000UL    /*!< Should be used in stream, not device. */
 #define ACE_MF_COOKEDMODE	0x00020000UL    /*!< Should be used in stream, not device. */
 
@@ -111,7 +116,33 @@
 
 #define ACE_HS_XONXOFF	    0x00000400UL        /*!< Software handshake. */
 
-#define ACE_CLOCK           1843200     /* in MHz - common for all devices (should be ok) */
+#ifndef ACE_CLOCK
+    #define ACE_CLOCK           14745600UL     /* in Hz - common for all devices (should be ok) */
+#endif
+
+#define ACE_FIFO_SIZE	16 /* hardware fifo size */
+
+/* define ACE_HDX_LINE to DTR or RTS to use HDX functionality */
+#ifdef ACE_HDX_LINE
+#undef ACE_HDX_LINE
+#endif
+#ifdef ACE_HDX_USE_RTS
+	#define ACE_HDX_LINE MCR_RTS_MSK
+#endif
+#ifdef ACE_HDX_USE_DTR
+	#define ACE_HDX_LINE MCR_DTR_MSK
+#endif	
+#ifdef ACE_HDX_LINE
+    #ifdef ACE_HDX_LINE_FLIP
+        #define ACE_HDX_RECEIVE(base) *(u_char *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
+        #define ACE_HDX_TRANSMIT(base) *(u_char *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
+		#define ACE_HDX_IS_TRANSMIT(base) (*(u_char *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE)
+    #else
+        #define ACE_HDX_RECEIVE(base) *(u_char *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
+        #define ACE_HDX_TRANSMIT(base) *(u_char *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
+		#define ACE_HDX_IS_TRANSMIT(base) (!(*(u_char *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE))
+    #endif
+#endif
 
 /*!
  * ACE device control block type.
@@ -157,6 +188,15 @@ struct _ACEDCB {
     /*! \brief Free space in the output fifo since the last write operation.
      */
     u_char dcb_wfifo;
+#ifdef ACE_HDX_LINE
+    /*! \brief One byte time delay after which HDX pin will be off, in OCR register format.
+     */	 
+	u_int hdxByteTime;
+	
+    /*! \brief OCR register value at which HDX pin will be off, 0 if not used.
+     */	 
+	u_int hdxOcrTime;
+#endif
 };
 
 /*@}*/
