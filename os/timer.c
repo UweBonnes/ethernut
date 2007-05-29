@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.32  2007/05/29 16:31:25  freckle
+ * corrected comment
+ *
  * Revision 1.31  2006/07/26 11:16:12  haraldkipp
  * NutSleep() didn't take the difference between timer creation time and
  * last timer elapsed processing into account. This may resulted in shorter
@@ -224,6 +227,8 @@ static u_long nut_ticks_resume;
  */
 volatile u_long nut_ticks;
 
+// volatile u_long nut_tick_dist[32];
+
 /*!
  * \brief System timer interrupt handler.
  */
@@ -235,6 +240,7 @@ static void NutTimerIntr(void *arg)
 #endif
 {
     nut_ticks++;
+    // nut_tick_dist[TCNT0]++;
 }
 #endif
 
@@ -586,7 +592,7 @@ u_long NutGetSeconds(void)
  *
  * This function returns the value of a counter, which is incremented
  * every system timer tick. During system start, the counter is cleared
- * to zero and will overflow with the 64 bit tick counter (4294967296).
+ * to zero and will overflow with the 32 bit tick counter (4294967296).
  * With the default 1024 ticks/s this will happen after 7.9 years.
  * The resolution is also given by the system ticks.
  *
@@ -599,7 +605,7 @@ u_long NutGetSeconds(void)
  */
 u_long NutGetMillis(void)
 {
-    // carefully stay within 64 bit values
+    // carefully stay within 32 bit values
     u_long ticks   = NutGetTickCount();
     u_long seconds = ticks / NutGetTickClock();
     ticks         -= seconds * NutGetTickClock();
