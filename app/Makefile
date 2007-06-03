@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.11  2007/06/03 08:48:17  haraldkipp
+# New application sample demonstrates calendar functions.
+#
 # Revision 1.10  2007/05/02 11:19:39  haraldkipp
 # Added special XNut target for excluding not working apps.
 #
@@ -77,6 +80,7 @@
 
 all:
 	$(MAKE) -C basemon
+	$(MAKE) -C caltime
 	$(MAKE) -C canbus
 	$(MAKE) -C cppdemo
 	$(MAKE) -C events
@@ -97,6 +101,7 @@ all:
 
 install:
 	$(MAKE) -C basemon install
+	$(MAKE) -C caltime install
 	$(MAKE) -C canbus install
 	$(MAKE) -C cppdemo install
 	$(MAKE) -C events install
@@ -117,6 +122,7 @@ install:
 
 clean:
 	$(MAKE) -C basemon clean
+	$(MAKE) -C caltime clean
 	$(MAKE) -C canbus clean
 	$(MAKE) -C cppdemo clean
 	$(MAKE) -C events clean
@@ -137,6 +143,7 @@ clean:
 
 at90can:
 #	$(MAKE) -C basemon
+	$(MAKE) -C caltime
 	$(MAKE) -C canbus
 	$(MAKE) -C cppdemo
 	$(MAKE) -C events
