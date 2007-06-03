@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,6 +38,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2007/06/03 08:50:38  haraldkipp
+ * Automatic detection of X1226 or X1286.
+ * Fixed wrong century determination for X1226.
+ * Debugging output added.
+ *
  * Revision 1.5  2007/05/02 11:29:25  haraldkipp
  * Failed to store more than one EEPROM page. Removing NutSleep() from
  * X12WaitReady() fixes this. Why?
@@ -70,6 +75,12 @@
 
 #include <dev/x12rtc.h>
 
+#if 0
+/* Use for local debugging. */
+#define NUTDEBUG
+#include <stdio.h>
+#endif
+
 #ifndef I2C_SLA_RTC
 #define I2C_SLA_RTC     0x6F
 #endif
@@ -82,6 +93,7 @@
 #define EEPROM_PAGE_SIZE    64
 #endif
 
+static u_char rtc_chip;
 static u_long rtc_status;
 
 /*!
@@ -127,6 +139,9 @@ static int X12WaitReady(void)
      * X12xx routines are not re-entrant.
      */
     while (--cnt && TwMasterTransact(I2C_SLA_EEPROM, 0, 0, &poll, 1, NUT_WAIT_INFINITE) == -1);
+#ifdef NUTDEBUG
+    printf("[RtcRdy:%d]", 200 - cnt);
+#endif
 
     return cnt ? 0 : -1;
 }
@@ -148,6 +163,13 @@ int X12RtcReadRegs(u_char reg, u_char *buff, size_t cnt)
     wbuf[0] = 0;
     wbuf[1] = reg;
     if (TwMasterTransact(I2C_SLA_RTC, wbuf, 2, buff, cnt, NUT_WAIT_INFINITE) == cnt) {
+#ifdef NUTDEBUG
+        printf("[Rtc$%02x>", reg);
+        while(cnt--) {
+            printf(" %02x", *buff++);
+        }
+        putchar(']');
+#endif
         rc = 0;
     }
     return rc;
@@ -176,6 +198,14 @@ int X12RtcWrite(int nv, CONST u_char *buff, size_t cnt)
             rc = X12WaitReady();
         }
         X12WriteEnable(0);
+#ifdef NUTDEBUG
+        printf("[Rtc$%02X<", *++buff);
+        cnt -= 2;
+        while(cnt--) {
+            printf(" %02x", *++buff);
+        }
+        putchar(']');
+#endif
     }
     return rc;
 }
@@ -201,9 +231,14 @@ int X12RtcGetClock(struct _tm *tm)
         tm->tm_hour = BCD2BIN(data[2] & 0x3F);
         tm->tm_mday = BCD2BIN(data[3]);
         tm->tm_mon = BCD2BIN(data[4]) - 1;
-        tm->tm_year = BCD2BIN(data[5]) + 100;
-        if (BCD2BIN(data[7]) > 0x19) {
-            tm->tm_year += 100;
+        if (rtc_chip) {
+            tm->tm_year = BCD2BIN(data[5]) + 100;
+        }
+        else {
+            tm->tm_year = BCD2BIN(data[5]);
+            if (data[7] == 0x20) {
+                tm->tm_year += 100;
+            }
         }
         tm->tm_wday = data[6];
     }
@@ -234,7 +269,13 @@ int X12RtcSetClock(CONST struct _tm *tm)
         data[4] = BIN2BCD(tm->tm_hour) | 0x80;
         data[5] = BIN2BCD(tm->tm_mday);
         data[6] = BIN2BCD(tm->tm_mon + 1);
-        if (tm->tm_year > 99) {
+
+        if (rtc_chip) {
+            /* X1286. */
+            data[7] = BIN2BCD(tm->tm_year % 100);
+        }
+        /* X1226. */
+        else if (tm->tm_year > 99) {
             data[7] = BIN2BCD(tm->tm_year - 100);
             data[9] = 0x20;
         }
@@ -490,10 +531,32 @@ int X12Init(void)
 {
     int rc;
     u_long tmp;
+    u_char data[2];
 
+    /* Initialize I2C bus. */
     if ((rc = TwInit(0)) == 0) {
-        rc = X12RtcGetStatus(&tmp);
+        /* Query RTC status. */
+        if ((rc = X12RtcGetStatus(&tmp)) == 0) {
+            /*
+             * If I2C initialization and RTC status query succeeded, try
+             * to determine the chip we got. On Ethernut 3.0 Rev-D the
+             * X1226 had been mounted, while the X1286 is used on Rev-E
+             * boards. We read register address 0x0037, which is the
+             * century on the X1226, but the hundreds of seconds on the
+             * X1286. Thus, the register contents on the latter will cange
+             * every 10 milliseconds, while it is fixed to 19 or 20 on
+             * the first one.
+             */
+            X12RtcReadRegs(X128xRTC_SSEC, &data[0], 1);
+            NutSleep(20);
+            X12RtcReadRegs(X128xRTC_SSEC, &data[1], 1);
+            if (data[0] != data[1]) {
+                rtc_chip = 1;
+            }
+#ifdef NUTDEBUG
+            printf("[RTC=X12%c6]", rtc_chip ? '8' : '2');
+#endif
+        }
     }
     return rc;
 }
-
