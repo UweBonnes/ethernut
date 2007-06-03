@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2007/06/03 08:49:56  haraldkipp
+ * Bug #1724015 fixed. Simplified code in time().
+ *
  * Revision 1.4  2006/10/05 17:20:13  haraldkipp
  * Standard C functions now support hardware RTC.
  * Ugly type conversion replaced.
@@ -55,7 +58,7 @@
 
 #include <dev/rtc.h>
 
-static u_long epo_offs = 0;
+static u_long epo_offs;
 
 /*!
  * \addtogroup xgCrtTime
@@ -76,21 +79,21 @@ static u_long epo_offs = 0;
  */
 time_t time(time_t * timer)
 {
-    time_t r;
     struct _tm *tm;
+    /* Initially use internal seconds counter. */
+    time_t r = epo_offs + NutGetSeconds();
 
     /* Try to get time from hardware clock. */
-    tm = malloc(sizeof(struct _tm));
-    if (tm && NutRtcGetTime(tm) == 0) {
-        r = mktime(tm);
-    } 
-    /* No hardware clock. Use internal seconds counter. */
-    else {
-        r = epo_offs + NutGetSeconds();
-    }
-    if (tm) {
+    if ((tm = malloc(sizeof(struct _tm))) != NULL) {
+        tm->tm_isdst = -1;
+        if (NutRtcGetTime(tm) == 0) {
+            /* Success. */
+            r = _mkgmtime(tm);
+        }
         free(tm);
     }
+
+    /* Return result. */
     if (timer) {
         *timer = r;
     }
