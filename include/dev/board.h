@@ -2,7 +2,7 @@
 #define _DEV_BOARD_H_
 
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/06/03 08:51:30  haraldkipp
+ * RTC_CHIP definition now visible for ETHERNUT3 and MMNET02 only.
+ *
  * Revision 1.7  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
@@ -149,8 +152,12 @@
 /*
  * RTC chip.
  */
+#if defined(ETHERNUT3)
 #define RTC_CHIP rtcX12x6
 #include <dev/x12rtc.h>
+#elif defined(MMNET02)
+#define RTC_CHIP rtcDs1307
+#endif
 
 #endif
 
