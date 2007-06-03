@@ -2,7 +2,7 @@
 #define	_DEV_X12RTC_H_
 
 /*
- * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/06/03 08:52:16  haraldkipp
+ * Wrong watchdog mode bit fixed.
+ *
  * Revision 1.3  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
@@ -85,11 +88,11 @@
 /*@{*/
 #define X12RTC_BL           0x10    /*!< \brief Block protection and watchdog register. */
 
-#define X12RTC_BL_WD        0x14    /*!< \brief Watchdog configuration. */
+#define X12RTC_BL_WD        0x18    /*!< \brief Watchdog configuration. */
 #define X12RTC_BL_WD_1750   0x00    /*!< \brief Timeout after 1.75 seconds. */
-#define X12RTC_BL_WD_750    0x04    /*!< \brief Timeout after 750 milliseconds. */
+#define X12RTC_BL_WD_750    0x08    /*!< \brief Timeout after 750 milliseconds. */
 #define X12RTC_BL_WD_250    0x10    /*!< \brief Timeout after 250 milliseconds. */
-#define X12RTC_BL_WD_OFF    0x14    /*!< \brief Disabled. */
+#define X12RTC_BL_WD_OFF    0x18    /*!< \brief Disabled. */
 
 #define X12RTC_BL_BP        0xE0    /*!< \brief Block protection. */
 #define X12RTC_BL_BP_NONE   0x00    /*!< \brief No protection. */
