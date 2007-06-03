@@ -1,4 +1,24 @@
-$Id: ChangeLog,v 1.378 2007/05/24 07:43:27 haraldkipp Exp $
+$Id: ChangeLog,v 1.379 2007/06/03 08:54:04 haraldkipp Exp $
+
+2007-06-01  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/caltime/caltime.c, app/caltime/Makefile, app/Makefile:
+	New application sample demonstrates calendar functions.
+
+	* conf/ethernut30d.conf: Rev-D boards failed to work with latest
+	Nut/OS release.
+
+	* crt/time.c: Bug #1724015 fixed. Thanks to Andreas Helmcke.
+	Simplified code in time().
+
+	* dev/x12rtc.c: Automatic detection of X1226 or X1286. Fixed
+	wrong century determination for X1226. Debugging output added.
+
+	* include/dev/board.h: RTC_CHIP definition now visible for
+	ETHERNUT3 and MMNET02 only. 
+
+	* include/dev/x12rtc.h: Wrong watchdog mode bit fixed.
+
 
 2007-05-24  Harald Kipp  <harald.kipp@egnite.de>
 
