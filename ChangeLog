@@ -1,6 +1,6 @@
-$Id: ChangeLog,v 1.380 2007/06/14 07:24:32 freckle Exp $
+$Id: ChangeLog,v 1.381 2007/06/14 07:32:52 freckle Exp $
 
-2007-05-02  Matthias Ringwald <mringwal@inf.ethz.ch>
+2007-14-06  Matthias Ringwald <mringwal@inf.ethz.ch>
 	* include/sys/thread.c, arch/avr/os/nutinit.c: NutThreadSetSleepMode
 	now returns previous sleep mode
     
