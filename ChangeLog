@@ -1,5 +1,12 @@
-$Id: ChangeLog,v 1.379 2007/06/03 08:54:04 haraldkipp Exp $
+$Id: ChangeLog,v 1.380 2007/06/14 07:24:32 freckle Exp $
 
+2007-05-02  Matthias Ringwald <mringwal@inf.ethz.ch>
+	* include/sys/thread.c, arch/avr/os/nutinit.c: NutThreadSetSleepMode
+	now returns previous sleep mode
+    
+	* arch/avr/os/nutinit.c: Disable ADC and buskeeper during idle thread
+	sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined.
+     
 2007-06-01  Harald Kipp  <harald.kipp@egnite.de>
 
 	* app/caltime/caltime.c, app/caltime/Makefile, app/Makefile:

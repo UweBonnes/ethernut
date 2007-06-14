@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.16  2007/06/14 07:24:38  freckle
+ * Disable ADC and buskeeper during idle thread sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined
+ *
  * Revision 1.15  2006/09/29 12:24:14  haraldkipp
  * Stack allocation code moved from thread module to heap module.
  * All code should use dedicated stack allocation routines. For targets
@@ -189,7 +192,7 @@ extern void NutThreadInit(void);
 #endif
 
 #if defined(__GNUC__) && defined (__AVR_ENHANCED__)
-extern void NutThreadSetSleepMode(u_char mode);
+extern u_char NutThreadSetSleepMode(u_char mode);
 #endif
 
 extern HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackSize);

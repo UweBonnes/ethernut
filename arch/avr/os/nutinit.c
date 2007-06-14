@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/06/14 07:24:38  freckle
+ * Disable ADC and buskeeper during idle thread sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined
+ *
  * Revision 1.9  2006/10/07 00:24:14  hwmaier
  * Include of sys/heap.h added.
  *
@@ -407,18 +410,22 @@ void FakeNicEeprom(void)
 #endif /* RTL_EESK_BIT && __GNUC__ && NUTXMEM_SIZE */
 
 /*! \fn NutThreadSetSleepMode(u_char mode)
- * \brief Sets the sleep mode to enter in Idle thread
+ * \brief Sets the sleep mode to enter in Idle thread.
  *
  * If the idle thread is running, no other thread is active
  * so we can safely put the mcu to sleep.
  *
  * \param mode one of the sleep modes defined in avr/sleep.h or
  *             sleep_mode_none (don't enter sleep mode)
+ *
+ * \return previous sleep mode 
  */
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-void NutThreadSetSleepMode(u_char mode)
+u_char NutThreadSetSleepMode(u_char mode)
 {
+    u_char old_mode = idle_sleep_mode;
     idle_sleep_mode = mode;
+    return old_mode;
 }
 #endif
 
@@ -467,11 +474,29 @@ THREAD(NutIdle, arg)
         if (idle_sleep_mode != SLEEP_MODE_NONE) {
             sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
             set_sleep_mode(idle_sleep_mode);
+#ifdef IDLE_THREAD_ADC_OFF
+            u_char adc = bit_is_set(ADCSR, ADEN);
+            cbi(ADCSR, ADEN); // disable ADC
+#endif
+#ifdef IDLE_THREAD_BUSKEEPER_OFF
+            u_char bitkeeper = bit_is_set(XMCRB, XMBK);
+            cbi(XMCRB, XMBK); // disable buskeeper
+#endif
             /* Note:  avr-libc has a sleep_mode() function, but it's broken for
             AT90CAN128 with avr-libc version earlier than 1.2 */
             AVR_SLEEP_CTRL_REG |= _BV(SE);
             __asm__ __volatile__ ("sleep" "\n\t" :: );
             AVR_SLEEP_CTRL_REG &= ~_BV(SE);
+#ifdef IDLE_THREAD_ADC_OFF
+            if (bitkeeper) {
+                sbi(XMCRB, XMBK); // re-enable buskeeper
+            }
+#endif
+#ifdef IDLE_THREAD_BUSKEEPER_OFF
+            if (adc) {
+                sbi(ADCSR, ADEN); // re-enable ADC
+            }
+#endif
             set_sleep_mode(sleep_mode);
         }
 #endif
