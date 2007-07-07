@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/07/07 22:51:47  olereinhardt
+ * Corrected inlude path names. Changed backslash to slash
+ *
  * Revision 1.5  2007/02/15 16:18:22  haraldkipp
  * Configurable runtime initialization.
  *
@@ -56,10 +59,10 @@
  *
  */
 
-#include <cfg\clock.h>
-#include <cfg\memory.h>
+#include <cfg/clock.h>
+#include <cfg/memory.h>
 
-#include <arch\arm.h>
+#include <arch/arm.h>
 
 #ifndef PLL_MUL_VAL
 #define PLL_MUL_VAL 72
