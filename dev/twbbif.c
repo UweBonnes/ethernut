@@ -40,6 +40,13 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2007/07/09 13:38:50  olereinhardt
+ * 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ *         * dev/twbbif.c: Added default TWI_DELAY for avr architecture
+ *         to allow in-tree compilation
+ *         * net/Makefile: Commented out igmp support as long as it does
+ *         not exists to allow in-tree compilation
+ *
  * Revision 1.7  2007/02/15 16:25:40  haraldkipp
  * Configurable port bits. Should work now on all AT91 MCUs.
  *
@@ -385,6 +392,10 @@
 
 #define SCL_LOW()   sbi(TWI_SCL_DDR, TWI_SCL_BIT)
 #define SCL_HIGH()  cbi(TWI_SCL_DDR, TWI_SCL_BIT)
+
+#ifndef TWI_DELAY
+#define TWI_DELAY   8
+#endif
 
 #endif                          /* __AVR__ */
 

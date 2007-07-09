@@ -32,6 +32,13 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2007/07/09 13:38:50  olereinhardt
+# 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+#         * dev/twbbif.c: Added default TWI_DELAY for avr architecture
+#         to allow in-tree compilation
+#         * net/Makefile: Commented out igmp support as long as it does
+#         not exists to allow in-tree compilation
+#
 # Revision 1.8  2007/05/02 11:32:50  haraldkipp
 # IGMP added.
 #
@@ -78,7 +85,7 @@ SRC2 =  ipin.c ipout.c ipcsum.c route.c inet.c \
 	arpin.c arpout.c arpcache.c \
 	ethin.c ethout.c ifconfig.c confnet.c \
 	pppin.c pppout.c lcpout.c ipcpout.c \
-	igmp.c igmpin.c igmpout.c
+#	igmp.c igmpin.c igmpout.c
 
 OBJ1 = $(SRC1:.c=.o)
 OBJ2 = $(SRC2:.c=.o)
