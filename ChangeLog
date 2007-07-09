@@ -1,10 +1,11 @@
-$Id: ChangeLog,v 1.382 2007/07/09 13:38:50 olereinhardt Exp $
+$Id: ChangeLog,v 1.383 2007/07/09 16:00:22 olereinhardt Exp $
 
 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* dev/twbbif.c: Added default TWI_DELAY for avr architecture 
         to allow in-tree compilation
 	* net/Makefile:	Commented out igmp support as long as it does 
         not exists to allow in-tree compilation
+        * net/ipin.c: Commented out igmp support as long as it does not compile
 
 2007-06-14  Matthias Ringwald <mringwal@inf.ethz.ch>
 	* include/sys/thread.c, arch/avr/os/nutinit.c: NutThreadSetSleepMode
