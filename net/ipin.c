@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/07/09 15:59:00  olereinhardt
+ * 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ * 	* ipin.c: commented out igmp support as long as it does not compile
+ *
  * Revision 1.9  2007/05/02 11:18:32  haraldkipp
  * IGMP support added. Incomplete.
  *
@@ -298,7 +302,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
             NutTcpInput(nb);
         break;
     case IPPROTO_IGMP:
-        NutIgmpInput(dev, nb);
+//        NutIgmpInput(dev, nb);
         break;
     default:
         /* Unkown protocol, send ICMP destination (protocol)
