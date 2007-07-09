@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.383 2007/07/09 16:00:22 olereinhardt Exp $
+$Id: ChangeLog,v 1.384 2007/07/09 16:20:18 olereinhardt Exp $
+
+2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* net/Makefile:	Commented in igmp_in.c and igmp_out.c again 
+        * net/ipin.c: igmp support reenabled
 
 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* dev/twbbif.c: Added default TWI_DELAY for avr architecture 
