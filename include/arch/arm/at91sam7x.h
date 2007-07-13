@@ -42,6 +42,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2007/07/13 15:21:36  olereinhardt
+ * 2007-07-13  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ *         * include/arch/arm/at91sam7x.h: Added UDP support
+ *         * include/arch/arm/at91_udp.h: Defines for arm7 UDP controller
+ *
  * Revision 1.8  2007/02/15 16:11:14  haraldkipp
  * Support for system controller interrupts added.
  *
@@ -149,6 +154,7 @@
 #include <arch/arm/at91_pit.h>
 #include <arch/arm/at91_mc.h>
 #include <arch/arm/at91_ssc.h>
+#include <arch/arm/at91_udp.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam7x */
 /*@{*/

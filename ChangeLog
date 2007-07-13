@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.385 2007/07/09 16:24:32 olereinhardt Exp $
+$Id: ChangeLog,v 1.386 2007/07/13 15:21:37 olereinhardt Exp $
+
+2007-07-13  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* include/arch/arm/at91sam7x.h: Added UDP support
+        * include/arch/arm/at91_udp.h: Defines for arm7 UDP controller
 
 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* net/Makefile:	Commented in igmp_in.c and igmp_out.c again 
