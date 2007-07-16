@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2007/07/16 15:51:01  haraldkipp
+ * Default PIO base address added.
+ *
  * Revision 1.4  2007/02/15 16:28:07  haraldkipp
  * Support for system controller interrupts added.
  *
@@ -83,6 +86,7 @@
 #define AIC_BASE        0xFFFFF000      /*!< \brief AIC base address. */
 #define DBGU_BASE       0xFFFFF200      /*!< \brief DBGU base address. */
 #define PIOA_BASE       0xFFFFF400      /*!< \brief PIO A base address. */
+#define PIO_BASE        PIOA_BASE
 #define PIOB_BASE       0xFFFFF600      /*!< \brief PIO B base address. */
 #define PIOC_BASE       0xFFFFF800      /*!< \brief PIO C base address. */
 #define PMC_BASE        0xFFFFFC00      /*!< \brief PMC base address. */
