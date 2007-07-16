@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.11  2007/07/16 15:52:31  haraldkipp
+# Missing discovery support added.
+#
 # Revision 1.10  2005/08/05 11:23:11  olereinhardt
 # Added support to register a custom handler for mime types.
 # Added Server side include support and ASP support.
@@ -96,7 +99,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS =  dhcpc.c resolv.c httpd.c ssi.c asp.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c wins.c
+SRCS =  dhcpc.c resolv.c httpd.c ssi.c asp.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c wins.c discover.c
 
 OBJS = $(SRCS:.c=.o)
 
