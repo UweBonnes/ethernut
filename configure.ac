@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.21  2007/07/16 15:48:33  haraldkipp
+# Supports latest autoconf.
+#
 # Revision 1.20  2007/05/02 11:35:25  haraldkipp
 # ATmega2561 and other fixes.
 # IGMP support started, but not finished.
@@ -116,8 +119,9 @@ AC_CONFIG_SRCDIR([tools/nutconf/nutcomponent.c])
 AM_INIT_AUTOMAKE([dist-bzip2])
 
 # Check for programs.
-AC_PROG_CC
+#AC_PROG_CC
 AC_PROG_CXX
+AM_PROG_CC_C_O
 
 AC_ARG_ENABLE(html-docs,
   AS_HELP_STRING([--disable-html-docs],[disable generation of API documents]),
