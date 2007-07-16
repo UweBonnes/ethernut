@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2007/07/16 15:51:53  haraldkipp
+ * Missing default delay added.
+ *
  * Revision 1.1  2007/02/15 16:17:28  haraldkipp
  * Configurable port bits for bit-banging I2C. Should work now on all
  * AT91 MCUs.
@@ -46,4 +49,7 @@
  * This file is reserved for platform independent TWI configurations.
  */
 
+#ifndef TWI_DELAY
+#define TWI_DELAY  16
+#endif
 #endif
