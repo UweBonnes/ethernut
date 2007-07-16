@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.386 2007/07/13 15:21:37 olereinhardt Exp $
+$Id: ChangeLog,v 1.387 2007/07/16 15:53:27 haraldkipp Exp $
+
+2007-07-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac: Supports latest autoconf.
+
+	* dev/Makefile: RTC support was missing.
+
+	* include/arch/arm/at91sam9260.h: Default PIO_BASE added.
+
+	* include/cfg/twi.h: Missing default delay added.
+
+	* pro/Makefile: Missing discovery support added.
 
 2007-07-13  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* include/arch/arm/at91sam7x.h: Added UDP support
