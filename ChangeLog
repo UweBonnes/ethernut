@@ -1,6 +1,22 @@
-$Id: ChangeLog,v 1.388 2007/07/17 18:07:44 haraldkipp Exp $
+$Id: ChangeLog,v 1.389 2007/07/17 18:40:47 haraldkipp Exp $
 
 2007-07-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/httpd/httpserv.c: Server thread names not unique on SAM7X.
+	Fixed by Marti Raudsepp.
+
+	* arch/arm/dev/at91_spi.c: At91SpiTransfer2() documentation added.
+
+	* arch/unix/dev/ostimer.c, arch/unix/os/nutinit.c: Added 'noreturn'
+	attribute to NutTimerEmulation() and NutInterruptEmulation()
+	to avoid compiler warnings. Thanks to Michael Mueller for his
+	Ubuntu Emulation How-To.
+
+	* net/netdebug.c, include/net/netdebug.h: Output strings must be
+	signed characters. Fixed provided by Michael Mueller.
+
+	* dev/ppp.c: Fixed bug #1369171, memory leak in NutPppClose().
+	Thanks to Sergey Danilov.
 
 	* nutsetup, arch/Makefile, include/cfg/arch.h: 
 	Building in the source tree should work again for AT91 devices.
