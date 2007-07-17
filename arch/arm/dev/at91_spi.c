@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/07/17 18:30:08  haraldkipp
+ * Documentation added.
+ *
  * Revision 1.2  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -576,6 +579,18 @@ int At91SpiSetCsDelay(u_int base, u_int dly)
     return 0;
 }
 
+/*!
+ * \brief Transfer two SPI buffers.
+ *
+ * \param base   SPI port base address.
+ * \param cs     SPI device chip select.
+ * \param txbuf  First transmit buffer.
+ * \param rxbuf  First receive buffer.
+ * \param xlen   Length of first transfer.
+ * \param txnbuf Second transmit buffer.
+ * \param rxnbuf Second receive buffer.
+ * \param xnlen  Length of second transfer.
+ */
 int At91SpiTransfer2(u_int base, u_int cs, CONST void *txbuf, void *rxbuf, int xlen, CONST void *txnbuf, void *rxnbuf, int xnlen)
 {
     int rc = -1;
@@ -601,18 +616,18 @@ int At91SpiTransfer2(u_int base, u_int cs, CONST void *txbuf, void *rxbuf, int x
     }
     outr(base + SPI_MR_OFF, flags);
 
-    /* Set transmit pointer and counter. */
+    /* Set first transmit pointer and counter. */
     outr(base + PERIPH_TPR_OFF, (u_int) txbuf);
     outr(base + PERIPH_TCR_OFF, (u_int) xlen);
-    /* Set receive pointer and counter. */
+    /* Set first receive pointer and counter. */
     outr(base + PERIPH_RPR_OFF, (u_int) rxbuf);
     outr(base + PERIPH_RCR_OFF, (u_int) xlen);
 
-    /* Set transmit pointer and counter. */
+    /* Set second transmit pointer and counter. */
     outr(base + PERIPH_TNPR_OFF, (u_int) txnbuf);
     outr(base + PERIPH_TNCR_OFF, (u_int) xnlen);
 
-    /* Set receive pointer and counter. */
+    /* Set second receive pointer and counter. */
     outr(base + PERIPH_RNPR_OFF, (u_int) rxnbuf);
     outr(base + PERIPH_RNCR_OFF, (u_int) xnlen);
 
