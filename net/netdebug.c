@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/07/17 18:31:44  haraldkipp
+ * Output strings must be signed characters. Fixed provided by Michael Mueller.
+ *
  * Revision 1.7  2006/03/16 15:25:35  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -84,7 +87,7 @@ extern UDPSOCKET *udpSocketList;
 FILE *__tcp_trs;                /*!< \brief TCP trace output stream. */
 u_char __tcp_trf;               /*!< \brief TCP trace flags. */
 
-void NutDumpTcpHeader(FILE * stream, u_char * ds, TCPSOCKET * sock, NETBUF * nb)
+void NutDumpTcpHeader(FILE * stream, char * ds, TCPSOCKET * sock, NETBUF * nb)
 {
     static prog_char fmt[] = "%s%p[%u]-SEQ(%lx)";
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;

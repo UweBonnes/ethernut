@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/07/17 18:31:44  haraldkipp
+ * Output strings must be signed characters. Fixed provided by Michael Mueller.
+ *
  * Revision 1.2  2006/03/16 15:25:33  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -76,7 +79,7 @@ extern u_char __ppp_trf;
 extern void NutTraceTcp(FILE *stream, u_char flags);
 extern void NutTracePPP(FILE *stream, u_char flags);
 
-extern void NutDumpTcpHeader(FILE *stream, u_char *ds, TCPSOCKET *sock, NETBUF *nb);
+extern void NutDumpTcpHeader(FILE *stream, char *ds, TCPSOCKET *sock, NETBUF *nb);
 extern void NutDumpSockState(FILE *stream, u_char state, char *lead, char *trail);
 extern void NutDumpSocketList(FILE *stream);
 
