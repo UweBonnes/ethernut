@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.16  2007/07/17 18:29:30  haraldkipp
+ * Server thread names not unique on SAM7X. Fixed by Marti Raudsepp.
+ *
  * Revision 1.15  2006/09/07 09:01:36  haraldkipp
  * Discovery registration added.
  * Re-arranged network interface setup to exclude DHCP code from ICCAVR
@@ -771,7 +774,7 @@ int main(void)
      * Start four server threads.
      */
     for (i = 1; i <= 4; i++) {
-        char *thname = "httpd0";
+        char thname[] = "httpd0";
 
         thname[5] = '0' + i;
         NutThreadCreate(thname, Service, (void *) (uptr_t) i, NUT_THREAD_MAINSTACK);
