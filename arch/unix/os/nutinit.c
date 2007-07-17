@@ -283,7 +283,7 @@ if( (nut_ticks % 1000) == 0 )
  * it they are disabled (by NutEnterCritical, for example).
  *
  */
-void *NutInterruptEmulation(void *);
+void *NutInterruptEmulation(void *) __attribute__ ((noreturn));
 void *NutInterruptEmulation(void *unused_arg)
 {
     // non-nut thread => not interested in SIGUSR1 (IRQ signals)

@@ -66,7 +66,7 @@ static pthread_t timer_thread;
 
 #define SCALE   1
 
-void *NutTimerEmulation(void *);
+void *NutTimerEmulation(void *) __attribute__ ((noreturn));
 void *NutTimerEmulation(void *arg)
 {
     u_char trigger_irq = (u_char) (uptr_t) arg;
