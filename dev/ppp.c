@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/07/17 18:32:27  haraldkipp
+ * Fixed bug #1369171, memory leak in NutPppClose(). Thanks to Sergey Danilov.
+ *
  * Revision 1.9  2007/05/02 11:22:51  haraldkipp
  * Added multicast table entry.
  *
@@ -284,6 +287,8 @@ static int NutPppClose(NUTFILE * fp)
     PPPDCB *dcb = fp->nf_dev->dev_dcb;
 
     IpcpClose(fp->nf_dev);
+    _close(dcb->dcb_fd);
+
     if (dcb->dcb_user)
         NutHeapFree(dcb->dcb_user);
     if (dcb->dcb_pass)
