@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.387 2007/07/16 15:53:27 haraldkipp Exp $
+$Id: ChangeLog,v 1.388 2007/07/17 18:07:44 haraldkipp Exp $
+
+2007-07-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* nutsetup, arch/Makefile, include/cfg/arch.h: 
+	Building in the source tree should work again for AT91 devices.
+
 
 2007-07-16  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -11,6 +17,7 @@ $Id: ChangeLog,v 1.387 2007/07/16 15:53:27 haraldkipp Exp $
 	* include/cfg/twi.h: Missing default delay added.
 
 	* pro/Makefile: Missing discovery support added.
+
 
 2007-07-13  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* include/arch/arm/at91sam7x.h: Added UDP support

@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2007/07/17 18:07:44  haraldkipp
+ * Building in the source tree should work again for AT91 devices.
+ *
  * Revision 1.3  2007/04/12 09:21:10  haraldkipp
  * Added ATmega2561 definitions for Ethernut 1 and 2.
  *
@@ -104,6 +107,35 @@
 #define MCU_AT91R40008
 #endif
 
-#endif /* ETHERNUT3 */
+#elif defined(AT91SAM7X_EK)
+
+#ifndef PLATFORM
+#define PLATFORM AT91SAM7X_EK
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91SAM7X256
+#define MCU_AT91SAM7X256
+#endif
+
+
+#elif defined(AT91SAM9260_EK)
+
+#ifndef PLATFORM
+#define PLATFORM AT91SAM9260_EK
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91SAM9260
+#define MCU_AT91SAM9260
+#endif
+
+#endif
 
 #endif

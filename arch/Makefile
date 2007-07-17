@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2007/07/17 18:07:44  haraldkipp
+# Building in the source tree should work again for AT91 devices.
+#
 # Revision 1.8  2006/05/25 09:26:46  haraldkipp
 # ICCAVR context switch replaced with the one for GCC.
 # Added all AT91 specific sources to support building for ARM in the
@@ -105,20 +108,40 @@ ifeq ($(ARCH), arm)
 
 SRCS = arm/os/context.c
 
-ifeq ($(DEVICE), at91r40008)
-SRCS += arm/dev/ostimer_at91.c arm/dev/ih_at91fiq.c \
-         arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c arm/dev/ih_at91pio.c \
-         arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c \
-         arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/ih_at91wdi.c arm/dev/debug_at91.c \
-         arm/dev/usart0at91.c arm/dev/usart1at91.c arm/dev/ax88796.c arm/dev/dm9000e.c \
-         arm/dev/at91init.c arm/dev/wdt_at91.c
-OBJ1 = arm/init/crt$(LDNAME).o
+ifeq ($(DEVICE), AT91R40008)
+SRCS +=	 arm/dev/ostimer_at91.c arm/dev/wdt_at91.c \
+	 arm/dev/ih_at91fiq.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
+	 arm/dev/ih_at91pio.c arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c \
+	 arm/dev/ih_at91tc2.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/ih_at91wdi.c \
+	 arm/dev/debug_at91.c arm/dev/usart0at91.c arm/dev/usart1at91.c arm/dev/hd44780_at91.c \
+	 arm/dev/st7036_at91.c arm/dev/ax88796.c arm/dev/dm9000e.c arm/dev/at91init.c
+endif
+
+ifeq ($(DEVICE), AT91SAM7X256)
+SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91fiq.c \
+	 arm/dev/ih_at91sys.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
+	 arm/dev/ih_at91pio.c arm/dev/ih_at91ssc.c arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c \
+	 arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c \
+	 arm/dev/ih_at91emac.c arm/dev/ih_at91wdi.c arm/dev/debug_at91.c arm/dev/usart0at91.c \
+	 arm/dev/usart1at91.c arm/dev/at91_emac.c arm/dev/spimmc_at91.c arm/dev/at91init.c \
+	 arm/dev/at91_efc.c
+endif
+
+ifeq ($(DEVICE), AT91SAM9260)
+SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91emac.c \
+	 arm/dev/ih_at91fiq.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
+	 arm/dev/ih_at91pio.c arm/dev/ih_at91spi0.c arm/dev/ih_at91spi1.c arm/dev/ih_at91ssc.c \
+	 arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c \
+	 arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/debug_at91.c arm/dev/usart0at91.c \
+	 arm/dev/usart1at91.c arm/dev/hd44780_at91.c arm/dev/st7036_at91.c arm/dev/at91_emac.c \
+	 arm/dev/spimmc_at91.c arm/dev/at91_mci.c arm/dev/at91init.c arm/dev/at91_spi.c
 endif
 
 ifeq ($(DEVICE), gba)
 SRCS += arm/dev/ostimer_gba.c arm/dev/ihndlr_gba.c arm/dev/debug_gba.c
-OBJ1 = arm/init/crt$(LDNAME).o
 endif
+
+OBJ1 = arm/init/crt$(LDNAME).o
 
 endif
 
