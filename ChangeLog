@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.389 2007/07/17 18:40:47 haraldkipp Exp $
+$Id: ChangeLog,v 1.390 2007/07/18 11:44:23 haraldkipp Exp $
+
+2007-07-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, tools/nutconf/Makefile.am: Automatically
+	determine Lua header directory.
+
 
 2007-07-17  Harald Kipp  <harald.kipp@egnite.de>
 

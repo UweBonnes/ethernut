@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.8  2007/07/18 11:44:23  haraldkipp
+# Automatically determine Lua header directory.
+#
 # Revision 1.7  2007/05/02 13:16:06  haraldkipp
 # *** empty log message ***
 #
@@ -100,12 +103,13 @@ bitmaps/help.xpm bitmaps/help_large.xpm \
 bitmaps/open.xpm bitmaps/open_large.xpm \
 bitmaps/save.xpm bitmaps/save_large.xpm \
 bitmaps/search.xpm bitmaps/search_large.xpm
-nutconf_CXXFLAGS = @WX_CXXFLAGS@
+nutconf_CXXFLAGS = @WX_CXXFLAGS@ 
+nutconf_CPPFLAGS = -I$(LUA_HEADERS)
 nutconf_LDADD = $(WX_LIBS)
 
 endif
 
 nutconfigure_SOURCES = nutcomponent.c nutcomponent.h
-nutconfigure_CPPFLAGS = -DNUT_CONFIGURE_EXEC
+nutconfigure_CPPFLAGS = -DNUT_CONFIGURE_EXEC -I$(LUA_HEADERS)
 
 endif

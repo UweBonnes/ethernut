@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.22  2007/07/18 11:44:23  haraldkipp
+# Automatically determine Lua header directory.
+#
 # Revision 1.21  2007/07/16 15:48:33  haraldkipp
 # Supports latest autoconf.
 #
@@ -186,9 +189,12 @@ else
       nutconf_tools_ok=no
     else
       AC_SEARCH_LIBS([lua_open], [lua lua50], [nutconf_tools_ok="yes"], [nutconf_tools_ok="no"])
-      AC_SEARCH_LIBS([luaL_loadfile], [lualib lualib50], [nutconf_tools_ok="yes"], [nutconf_tools_ok="no"],[-lm -ldl])
+      AC_SEARCH_LIBS([luaL_loadfile], [lualib lualib50],, [nutconf_tools_ok="no"],[-lm -ldl])
       if test "x$nutconf_tools_ok" = "xno"; then
         AC_MSG_WARN([Lua library missing, will not build configuration tools.])
+      else
+        AC_CHECK_HEADERS(/usr/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/include/lua50"))
+        AC_CHECK_HEADERS(/usr/local/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/local/include/lua50"))
       fi
     AC_CHECK_FUNC(sin, LIBS=$LIBS, LIBS="-lm $LIBS")
     AC_CHECK_LIB(dl, dlopen)
