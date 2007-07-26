@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/07/26 13:03:05  freckle
+ * Reduced critical section in TwSlaveListen
+ *
  * Revision 1.5  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -678,6 +681,8 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
         tw_sr_que = 0;
     }
 
+    NutExitCritical();
+
     /* Wait for a frame on the slave mode queue. */
     if (NutEventWait(&tw_sr_que, tmo)) {
         NutEnterCritical();
@@ -685,7 +690,6 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
         tw_sr_siz = 0;
         NutExitCritical();
     }
-    NutExitCritical();
 
     /*
      * Return the number of bytes received and the destination slave

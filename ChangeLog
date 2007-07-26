@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.390 2007/07/18 11:44:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.391 2007/07/26 13:02:51 freckle Exp $
+
+2007-07-26  Matthias Ringwald <mringwal@inf.ethz.ch>
+	* arch/avr/dev/twif.c: Reduced critical section in TwSlaveListen
+	
 
 2007-07-18  Harald Kipp  <harald.kipp@egnite.de>
 
