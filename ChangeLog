@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.391 2007/07/26 13:02:51 freckle Exp $
+$Id: ChangeLog,v 1.392 2007/07/30 10:00:06 olereinhardt Exp $
+
+2007-07-30  Ole Reinhardt <ole.reinhardt@embedded.it.de>
+	* eboot/Makedefs: Added support for ATMega2561. Needs to be enabled
+        by uncommenting LDFLAGS line and commenting out the one for
+ 	ATMega128
+        * eboot/arp.c: Added korrekt arp response code
+        * eboot/eboot.c, eboot/ether.c, eboot/tftp.c eboot/util.c 
+          eboot/tftpc: Added ATMega2561 support
 
 2007-07-26  Matthias Ringwald <mringwal@inf.ethz.ch>
 	* arch/avr/dev/twif.c: Reduced critical section in TwSlaveListen
