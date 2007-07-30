@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.392 2007/07/30 10:00:06 olereinhardt Exp $
+$Id: ChangeLog,v 1.393 2007/07/30 15:14:52 olereinhardt Exp $
+
+
+2007-07-30  Ole Reinhardt <ole.reinhardt@embedded.it.de>
+	* eboot/eboot.c: Unlike ATMega128 the ATMega2561 does not
+          disbale the watchdog after a reset, so we need to do this 
 
 2007-07-30  Ole Reinhardt <ole.reinhardt@embedded.it.de>
 	* eboot/Makedefs: Added support for ATMega2561. Needs to be enabled
