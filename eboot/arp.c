@@ -78,6 +78,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/07/30 09:47:55  olereinhardt
+ * ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
+ * line and comment out LDFLAGS for mega128
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -168,6 +172,7 @@ int ArpRequest(u_long dip, u_char * dmac)
  * The incoming IP and hardware address pair is stored. This routine 
  * does not respond to ARP requests.
  */
+
 void ArpRespond(void)
 {
     u_char i;
@@ -180,6 +185,31 @@ void ArpRespond(void)
             ae.ae_ip = ea->arp_spa;
             for (i = 0; i < 6; i++)
                 ae.ae_ha[i] = ea->arp_sha[i];
+        } 
+    } else 
+    if (ea->arp_spa == local_ip) {
+        if (htons(ea->arp_op) == ARPOP_REQUEST) {          
+            /*
+             * Set ARP header.
+             */
+            ea->arp_hrd = htons(ARPHRD_ETHER);
+            ea->arp_pro = ETHERTYPE_IP;
+            ea->arp_hln = 6;
+            ea->arp_pln = 4;
+            ea->arp_op = htons(ARPOP_REPLY);
+    
+            /*
+             * Set ARP destination data.
+             */
+            for (i = 0; i < 6; i++) 
+                ea->arp_tha[i] = ea->arp_sha[i];
+            ea->arp_tpa = ea->arp_spa;
+            
+            for (i = 0; i < 6; i++)
+                ea->arp_sha[i] = mac[i];
+            ea->arp_spa = local_ip;
+
+            EtherOutput(0, ETHERTYPE_ARP, sizeof(ETHERARP));
         }
     }
 }

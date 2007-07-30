@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/07/30 09:47:55  olereinhardt
+ * ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
+ * line and comment out LDFLAGS for mega128
+ *
  * Revision 1.3  2007/04/12 09:17:25  haraldkipp
  * Compiles with avr-gcc 4.1.1, but unfortunately doesn't fit in 8kB.
  *
@@ -59,11 +63,19 @@
 /*!
  * \brief Erase and program a page in the flash ROM.
  *
- * \param page The page number to program, 0..479.
+ * \param page The page number to program, 0..479. (0..991 on ATMega2561)
  * \param data Pointer to the new page contents.
  * \param len  Number of bytes to program. If this is less than 256, 
  *             then the remaining bytes will be filled with 0xFF.
  */
+
+#if defined(__AVR_ATmega2561__)
+#define MAXPAGE 992
+#else
+#define MAXPAGE 480
+#endif
+
+
 static void FlashPage(u_short page, void *data, u_short len)
 {
     u_short i;
@@ -72,15 +84,13 @@ static void FlashPage(u_short page, void *data, u_short len)
     if (len > 256)
         len = 256;
 
-    if (page >= 256) {
-        if (page >= 496)
-            return;
-        RAMPZ = 1;
-    } else
-        RAMPZ = 0;
+    if (page >= MAXPAGE)
+        return;
+
+    RAMPZ = page >> 8;  // page / 256 = RAMPZ  
     page <<= 8;
 
-    SpmCommand(page, (1 << PGERS) | (1 << SPMEN));
+    SpmCommand(page, (1 << PGERS) | (1 << SPMEN));    
     SpmCommand(0, (1 << RWWSRE) | (1 << SPMEN));
 
     for (i = 0; i < len; i += 2, wp++)
@@ -146,7 +156,7 @@ int TftpRecv(void)
          * Can't reach the TFTP server or got a malformed
          * repsonse.
          */
-        if (rlen < 4)
+        if ((retry >= 3) || (rlen < 4))
             return -1;
 
 

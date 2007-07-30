@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/07/30 09:47:55  olereinhardt
+ * ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
+ * line and comment out LDFLAGS for mega128
+ *
  * Revision 1.1  2004/04/15 09:34:45  haraldkipp
  * Checked in
  *
@@ -61,7 +65,11 @@ void Delay(long ms)
 void Debug(char *cp)
 {
     while(*cp) {
+#if defined(__AVR_ATmega2561__)    
+        while((UCSR0A & (1<<UDRE0)) == 0);
+#else
         while((UCSR0A & (1<<UDRE)) == 0);
+#endif
         UDR0 = *cp;
         cp++;
     }

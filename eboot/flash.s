@@ -42,13 +42,22 @@
 
 ;
 ; $Log$
+; Revision 1.2  2007/07/30 09:47:55  olereinhardt
+; ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
+; line and comment out LDFLAGS for mega128
+;
 ; Revision 1.1  2004/04/15 10:42:39  haraldkipp
 ; Checked in
 ;
 ;
 
 #define RAMPZ   0x3B
-#define SPMCR   0x68
+
+#if defined(__AVR_ATmega2561__)
+#define SPMCSR  0x37
+#else 
+#define SPMCSR  0x68
+#endif
 
         .global SpmBufferFill
         .global SpmCommand
@@ -63,14 +72,22 @@ SpmBufferFill:
         ldi     r22, 1          ; SPMEN bit
 
 DoSpm:
-        sts     SPMCR, r22      ; Store function in SPMCR
+#if defined(__AVR_ATmega2561__)
+        out     SPMCSR, r22     ; Store function in SPMCR
+#else
+        sts     SPMCSR, r22     ; Store function in SPMCR
+#endif
         spm                     ; store program memory
 
 WaitSpm:
-        lds     r22, SPMCR      ; Loop until SPMEN in SPMCR is cleared
+#if defined(__AVR_ATmega2561__)
+        in      r22, SPMCSR     ; Loop until SPMEN in SPMCR is cleared
+#else
+        lds     r22, SPMCSR     ; Loop until SPMEN in SPMCR is cleared
+#endif
         sbrc    r22, 0
         rjmp    WaitSpm
 
-	clr     r1	        ; Compiler depends on R1 set to zero.
+        clr     r1              ; Compiler depends on R1 set to zero.
         ret
 

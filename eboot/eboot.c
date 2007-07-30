@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/07/30 09:47:55  olereinhardt
+ * ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
+ * line and comment out LDFLAGS for mega128
+ *
  * Revision 1.2  2004/09/10 10:10:17  haraldkipp
  * Removed unused bootp parameters
  *
@@ -85,8 +89,11 @@ int main(void)
     u_long pp;
 
     UBRR0L = 7;
+#if defined(__AVR_ATmega2561__)
+    UCSR0B = (1<<RXEN0) | (1<<TXEN0);
+#else 
     UCSR0B = (1<<RXEN) | (1<<TXEN);
-
+#endif
     /*
      * We are without runtime library, so we have
      * to initialize everything.

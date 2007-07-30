@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makedefs,v $
+# Revision 1.3  2007/07/30 09:47:55  olereinhardt
+# ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
+# line and comment out LDFLAGS for mega128
+#
 # Revision 1.2  2007/04/12 09:17:25  haraldkipp
 # Compiles with avr-gcc 4.1.1, but unfortunately doesn't fit in 8kB.
 #
@@ -61,3 +65,5 @@ MCFLAGS   = -mmcu=$(MCU)
 CPFLAGS   = $(MCFLAGS) -Os -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 ASFLAGS   = -Wa,-gstabs,-ahlms=$(<:.s=.lst) $(MCFLAGS)
 LDFLAGS   = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref,--defsym,__stack=0x10FF -nostartfiles -nodefaultlibs -Ttext=0x1E000
+#for ATMega2561 use the following line:
+#LDFLAGS   = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref,--defsym,__stack=0x21FF -nostartfiles -nodefaultlibs -Ttext=0x3E000

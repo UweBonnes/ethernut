@@ -51,6 +51,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/07/30 09:47:55  olereinhardt
+ * ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
+ * line and comment out LDFLAGS for mega128
+ *
  * Revision 1.3  2005/05/26 13:11:14  haraldkipp
  * Get MAC from EEPROM instead of using a default.
  * Deprecated GCC port macros replaced.
@@ -88,15 +92,18 @@
 
 unsigned char EEPROM_read(unsigned int uiAddress)
 {
-       /* Wait for completion of previous write */
-       while(EECR & (1<<EEWE))
-               ;
-       /* Set up address register */
-       EEAR = uiAddress;
-       /* Start eeprom read by writing EERE */
-       EECR |= (1<<EERE);
-       /* Return data from data register */
-       return EEDR;
+    /* Wait for completion of previous write */
+#if defined(__AVR_ATmega2561__)
+    while(EECR & (1<<EEPE));
+#else
+    while(EECR & (1<<EEWE));
+#endif
+    /* Set up address register */
+    EEAR = uiAddress;
+    /* Start eeprom read by writing EERE */
+    EECR |= (1<<EERE);
+    /* Return data from data register */
+    return EEDR;
 }
 
 /*!
@@ -176,7 +183,11 @@ void NicInit(void)
      * Enable external data and address
      * bus.
      */
+#if defined(__AVR_ATmega2561__)
+    XMCRA = (_BV(SRE) | _BV(SRW10));
+#else
     MCUCR = (_BV(SRE) | _BV(SRW));
+#endif
 
     c = NIC_RESET;
     Delay(5);
