@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/07/30 15:13:08  olereinhardt
+ * Disable watchdog after reset for ATMega2561
+ *
  * Revision 1.3  2007/07/30 09:47:55  olereinhardt
  * ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
  * line and comment out LDFLAGS for mega128
@@ -94,6 +97,16 @@ int main(void)
 #else 
     UCSR0B = (1<<RXEN) | (1<<TXEN);
 #endif
+
+
+#if defined(__AVR_ATmega2561__)
+    /* unlike ATMega128 the ATMega2561 does not disbale the watchdog */
+    /* after a reset, so we need to do this here                     */
+ 
+    MCUSR = 0;
+    wdt_disable();
+#endif
+
     /*
      * We are without runtime library, so we have
      * to initialize everything.
