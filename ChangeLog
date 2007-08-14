@@ -1,9 +1,12 @@
-$Id: ChangeLog,v 1.393 2007/07/30 15:14:52 olereinhardt Exp $
+$Id: ChangeLog,v 1.394 2007/08/14 12:31:43 freckle Exp $
 
+
+2007-08-14  Matthias Ringwald <mringwal@inf.ethz.ch>
+	* arch/unix/dev/unix_devs.c: fixed check if socket address is given
 
 2007-07-30  Ole Reinhardt <ole.reinhardt@embedded.it.de>
 	* eboot/eboot.c: Unlike ATMega128 the ATMega2561 does not
-          disbale the watchdog after a reset, so we need to do this 
+          disable the watchdog after a reset, so we need to do this 
 
 2007-07-30  Ole Reinhardt <ole.reinhardt@embedded.it.de>
 	* eboot/Makedefs: Added support for ATMega2561. Needs to be enabled
@@ -15,7 +18,6 @@ $Id: ChangeLog,v 1.393 2007/07/30 15:14:52 olereinhardt Exp $
 
 2007-07-26  Matthias Ringwald <mringwal@inf.ethz.ch>
 	* arch/avr/dev/twif.c: Reduced critical section in TwSlaveListen
-	
 
 2007-07-18  Harald Kipp  <harald.kipp@egnite.de>
 

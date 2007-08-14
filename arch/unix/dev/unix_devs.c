@@ -465,7 +465,7 @@ static NUTFILE *UnixDevOpen(NUTDEVICE * dev, const char *name, int mode, int acc
         remote_ip = resolve ( ip );
         remote_port = atoi( port );
         
-        if ( (int) ip != -1) {
+        if ( ip ) {
         
             NutEnterCritical();
 
