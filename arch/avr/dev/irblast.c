@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/08/17 11:16:29  haraldkipp
+ * Flush timeout fixed. Thanks to Przemek.
+ *
  * Revision 1.1  2007/05/24 07:42:42  haraldkipp
  * New driver from Przemyslaw Rudy sends modulated infrared remote control
  * codes using a simple IR LED. Cool.
@@ -254,7 +257,7 @@ static int IrblastFlush(NUTDEVICE * dev)
     IrblastOutput(dev);
 
     /* Wait until output buffer empty */
-    if (dcb->if_tx_idx != dcb->if_wr_idx) {
+    while (dcb->if_tx_idx != dcb->if_wr_idx) {
         NutEventWaitNext(&dcb->dcb_tx_rdy, 100);
     }
 
