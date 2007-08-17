@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/08/17 11:34:00  haraldkipp
+ * Default timeout needs to be multiplied by 1000.
+ *
  * Revision 1.7  2005/04/30 16:42:41  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -464,7 +467,7 @@ int NutChatSend(NUTCHAT * ci, char *str)
 
         lv = atol(str) * 1000L;
         if (lv <= 0)
-            lv = CHAT_DEFAULT_TIMEOUT;
+            lv = CHAT_DEFAULT_TIMEOUT * 1000L;
 
         _ioctl(ci->chat_fd, UART_SETREADTIMEOUT, &lv);
 
