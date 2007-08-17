@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2007/08/17 10:45:21  haraldkipp
+ * Enhanced documentation.
+ *
  * Revision 1.2  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -88,12 +91,132 @@
 #define AT45_WRITE_POLLS        1000
 #endif
 
-#define DFCMD_READ_PAGE         0xD2    /* Read main memory page. */
-#define DFCMD_READ_STATUS       0xD7    /* Read status register. */
-#define DFCMD_CONT_READ         0xE8    /* Continuos read. */
-#define DFCMD_PAGE_ERASE        0x81    /* Page erase. */
-#define DFCMD_BUF1_WRITE        0x84    /* Buffer 1 write. */
-#define DFCMD_BUF1_FLASH        0x83    /* Buffer 1 flash with page erase. */
+/*!
+ * \name AT45 DataFlash Commands
+ */
+/*@{*/
+/*! \brief Continuos read (low frequency). 
+ *
+ * Reads a continous stream in low speed mode. Automatically switches 
+ * to the the page and wraps to the first page after the last has been 
+ * read. Note, that the data buffers are not used for this operation.
+ */
+#define DFCMD_CONT_READ_LF      0x03
+/*! \brief Continuos read (high frequency).
+ *
+ * Reads a continous stream in high speed mode. Automatically switches 
+ * to the the page and wraps to the first page after the last has been 
+ * read. Note, that the data buffers are not used for this operation.
+ */
+#define DFCMD_CONT_READ_HF      0x0B
+/*! \brief Block erase. 
+ */
+#define DFCMD_BLOCK_ERASE       0x50
+/*! \brief Sector erase. 
+ */
+#define DFCMD_SECTOR_ERASE      0x7C
+/*! \brief Page erase. 
+ */
+#define DFCMD_PAGE_ERASE        0x81
+/*! \brief Main memory page program through buffer 1. 
+ */
+#define DFCMD_BUF1_PROG         0x82
+/*! \brief Buffer 1 flash with page erase. 
+ */
+#define DFCMD_BUF1_FLASH        0x83
+/*! \brief Buffer 1 write. 
+ */
+#define DFCMD_BUF1_WRITE        0x84
+/*! \brief Main memory page program through buffer 2.
+ */
+#define DFCMD_BUF2_PROG         0x85
+/*! \brief Buffer 2 flash with page erase. 
+ */
+#define DFCMD_BUF2_FLASH        0x86
+/*! \brief Buffer 2 write. 
+ */
+#define DFCMD_BUF2_WRITE        0x87
+/*! \brief Buffer 1 flash without page erase. 
+ */
+#define DFCMD_BUF1_FLASH_NE     0x88
+/*! \brief Buffer 2 flash without page erase. 
+ */
+#define DFCMD_BUF2_FLASH_NE     0x89
+/*! \brief Chip erase. 
+ */
+#define DFCMD_CHIP_ERASE        0xC7
+/*! \brief Buffer 1 read (low frequency).
+ */
+#define DFCMD_BUF1_READ_LF      0xD1
+/*! \brief Read main memory page.
+ *
+ * Automatically wraps to the first byte of the same page after
+ * the last byte had been read. The data buffers are left unchanged.
+ */
+#define DFCMD_READ_PAGE         0xD2
+/*! \brief Buffer 2 read (low frequency).
+ */
+#define DFCMD_BUF2_READ_LF      0xD3
+/*! \brief Buffer 1 read.
+ */
+#define DFCMD_BUF1_READ         0xD4
+/*! \brief Buffer 2 read.
+ */
+#define DFCMD_BUF2_READ         0xD6
+/*! \brief Read status register. 
+ */
+#define DFCMD_READ_STATUS       0xD7
+/*! \brief Continuos read (legacy).
+ *
+ * Reads a continous stream. Automatically switches to the the page
+ * and wraps to the first page after the last has been read. Note,
+ * that the data buffers are not used for this operation.
+ */
+#define DFCMD_CONT_READ         0xE8
+/*@}*/
+
+#define AT45DB_AT91
+
+
+#if defined(AT45DB_SPI0_DEVICE)
+
+#include <dev/sppif0.h>
+#if defined(AT45DB_RESET_ACTIVE_HIGH)
+#define SpiReset(act)       Sppi0ChipReset(AT45DB_SPI0_DEVICE, act)
+#else
+#define SpiReset(act)       Sppi0ChipReset(AT45DB_SPI0_DEVICE, !act)
+#endif
+#define SpiSetMode()        Sppi0SetMode(AT45DB_SPI0_DEVICE, AT45DB_SPI_MODE)
+#define SpiSetSpeed()       Sppi0SetSpeed(AT45DB_SPI0_DEVICE, AT45DB_SPI_RATE)
+#if defined(AT45DB_SELECT_ACTIVE_HIGH)
+#define SpiSelect()         Sppi0SelectDevice(AT45DB_SPI0_DEVICE)
+#define SpiDeselect()       Sppi0DeselectDevice(AT45DB_SPI0_DEVICE)
+#else
+#define SpiSelect()         Sppi0NegSelectDevice(AT45DB_SPI0_DEVICE)
+#define SpiDeselect()       Sppi0NegDeselectDevice(AT45DB_SPI0_DEVICE)
+#endif
+#define SpiByte             Sppi0Byte
+
+#elif defined(AT45DB_SBBI0_DEVICE)
+
+#include <dev/sbbif0.h>
+#if defined(VS10XX_RESET_ACTIVE_HIGH)
+#define SpiReset(act)       Sbbi0ChipReset(AT45DB_SBBI0_DEVICE, act)
+#else
+#define SpiReset(act)       Sbbi0ChipReset(AT45DB_SBBI0_DEVICE, !act)
+#endif
+#define SpiSetMode()        Sbbi0SetMode(AT45DB_SBBI0_DEVICE, AT45DB_SPI_MODE)
+#define SpiSetSpeed()       Sbbi0SetSpeed(AT45DB_SBBI0_DEVICE, AT45DB_SPI_RATE)
+#if defined(VS10XX_SELECT_ACTIVE_HIGH)
+#define SpiSelect()         Sbbi0SelectDevice(AT45DB_SBBI0_DEVICE)
+#define SpiDeselect()       Sbbi0DeselectDevice(AT45DB_SBBI0_DEVICE)
+#else
+#define SpiSelect()         Sbbi0NegSelectDevice(AT45DB_SBBI0_DEVICE)
+#define SpiDeselect()       Sbbi0NegDeselectDevice(AT45DB_SBBI0_DEVICE)
+#endif
+#define SpiByte             Sbbi0Byte
+
+#endif
 
 /*!
  * \brief Known device type entry.
@@ -141,6 +264,17 @@ static int dcbnum;
 /* Chip used for parameter storage. */
 static int dd_param = -1;
 
+/*!
+ * \brief Send DataFlash command.
+ *
+ * \param dd      Device descriptor.
+ * \param op      Command operation code.
+ * \param parm    Command parameter.
+ * \param len     Command length.
+ * \param tdata   Transmit data.
+ * \param rdata   Receive data buffer.
+ * \param datalen Data length.
+ */
 int At45dbSendCmd(int dd, u_char op, u_long parm, int len, CONST void *tdata, void *rdata, int datalen)
 {
     u_char *cb = dcbtab[dd].dcb_cmdbuf;
@@ -190,6 +324,12 @@ int At45dbWaitReady(int dd, u_long tmo, int poll)
 
 /*!
  * \brief Initialize dataflash at specified interface and chip select.
+ *
+ * \param spibas Interface base address. For ARM MCUs this may be the
+ *               I/O base address of the hardware SPI.
+ * \param spipcs Device chip select.
+ *
+ * \return Device descriptor or -1 in case of an error.
  */
 int At45dbInit(u_int spibas, u_int spipcs)
 {
@@ -207,11 +347,14 @@ int At45dbInit(u_int spibas, u_int spipcs)
         return -1;
     }
 
+#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260)
     At91SpiInit(spibas);
     At91SpiReset(spibas);
     At91SpiInitChipSelects(spibas, _BV(spipcs));
     At91SpiSetRate(spibas, spipcs, 1000000);
     At91SpiSetModeFlags(spibas, spipcs, SPIMF_MASTER | SPIMF_SCKIAHI | SPIMF_CAPRISE);
+#elif defined(MCU_AT91R40008)
+#endif
 
     dcbtab[dcbnum].dcb_spibas = spibas;
     dcbtab[dcbnum].dcb_spipcs = spipcs;
@@ -299,6 +442,17 @@ u_long At45dbParamPage(void)
 #endif
 }
 
+/*!
+ * \brief Get size of configuration area.
+ *
+ * A part of the DataFlash may be used to store configuration parameters,
+ * like the network interface MAC address, the local hostname etc. The
+ * size of this area may be configured by defining AT45_CONF_SIZE.
+ * Otherwise one full page is used.
+ *
+ * \return The number of bytes available for configuration data. In case of
+ *         an error, -1 is returned.
+ */
 int At45dbParamSize(void)
 {
     int rc;
