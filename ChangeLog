@@ -1,4 +1,24 @@
-$Id: ChangeLog,v 1.394 2007/08/14 12:31:43 freckle Exp $
+$Id: ChangeLog,v 1.395 2007/08/17 10:42:44 haraldkipp Exp $
+
+
+2007-08-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/arch/arm/atom.h: Fixes a long existing and severe 
+	porting bug (#1757410). NutEnter/ExitCritical destroyed r0! 
+	While this is a temporary register on avr-gcc, arm-elf-gcc
+	uses it for passing the first function parameter. This new
+	version now also allows nesting by saving the current status 
+	register on the stack.
+
+	* arch/arm/include/atom.h: Removed. Had been replaced by
+	include/arch/arm/atom.h some time ago.
+
+	* arch/arm/dev/ostimer_at91.c, arch/arm/dev/ostimer_lpc2xxx.c,
+	arch/arm/dev/ostimer_s3c4510b.c, include/arch/arm/timer.h:
+	Timer enable/disable macro replaces previous global interrupt
+	enable/disable or function calling (LPC).
+
+	* dev/at45db.c: Documentation updated.
 
 
 2007-08-14  Matthias Ringwald <mringwal@inf.ethz.ch>
