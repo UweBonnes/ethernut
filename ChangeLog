@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.395 2007/08/17 10:42:44 haraldkipp Exp $
+$Id: ChangeLog,v 1.396 2007/08/17 11:45:35 haraldkipp Exp $
 
 
 2007-08-17  Harald Kipp  <harald.kipp@egnite.de>
@@ -19,6 +19,12 @@ $Id: ChangeLog,v 1.395 2007/08/17 10:42:44 haraldkipp Exp $
 	enable/disable or function calling (LPC).
 
 	* dev/at45db.c: Documentation updated.
+
+	* dev/chat.c: Default timeout value specifies seconds, but sets
+	timeout in milliseconds. Missing factor 1000 added. Thanks to
+	Alex from brumer.com.
+
+	* arch/arm/dev/dm9000e.c: Enable multicast. Thanks to Joerg Krein.
 
 
 2007-08-14  Matthias Ringwald <mringwal@inf.ethz.ch>
