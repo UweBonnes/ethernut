@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/08/17 10:47:03  haraldkipp
+ * Bug #1757410 fixed. NutEnter/ExitCritical destroyed ARM register R0.
+ *
  * Revision 1.3  2006/03/02 20:03:39  haraldkipp
  * Added ICCARM inline assembly for NutEnter/ExitCritical(). Also fixed
  * SF 1440949 (FIQ never enabled).
@@ -62,20 +65,26 @@
 #ifdef __GNUC__
 
 #define NutEnterCritical() \
-        asm volatile (             \
-                "@ NutEnterCritical"      "\n\t"      \
-                "mrs r0, cpsr"      "\n\t"      \
-                "orr r0, r0, #0xC0" "\n\t"  \
-                "msr cpsr, r0"      "\n\t"  \
-                ::: "r0" )
+{ \
+    int temp_; \
+    asm volatile (             \
+            "@ NutEnterCritical"    "\n\t" \
+            "mrs     %0, cpsr"      "\n\t" \
+            "stmfd   sp!, {%0}"     "\n\t" \
+            "orr     %0, %0, #0xC0" "\n\t" \
+            "msr     cpsr, %0"      "\n\t" \
+            : "=r" (temp_) : ); \
+}
 
 #define NutExitCritical() \
-        asm volatile (             \
-                "@ NutExitCritical"      "\n\t"      \
-                "mrs r0, cpsr"      "\n\t"      \
-                "bic r0, r0, #0xC0" "\n\t"  \
-                "msr cpsr, r0"      "\n\t"  \
-                ::: "r0" )
+{ \
+    int temp_; \
+    asm volatile (             \
+            "@ NutExitCritical" "\n\t" \
+            "ldmfd   sp!, {%0}" "\n\t" \
+            "msr     cpsr, %0"  "\n\t" \
+            : "=r" (temp_) : ); \
+}
 
 #define NutJumpOutCritical()    NutExitCritical()
 
