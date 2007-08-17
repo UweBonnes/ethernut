@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.16  2007/08/17 10:44:37  haraldkipp
+ * Timer enable/disable macro replaces previous global interrupt
+ * enable/disable or function calling.
+ *
  * Revision 1.15  2007/04/12 09:03:48  haraldkipp
  * Miserable delay routine will now honor milliseconds on a 73 MHz ARM.
  *
@@ -125,9 +129,6 @@
  * \addtogroup xgNutArchArmOsTimerAt91
  */
 /*@{*/
-
-#define NutEnableTimerIrq()     NutEnterCritical()
-#define NutDisableTimerIrq()    NutExitCritical()
 
 #ifndef NUT_TICK_FREQ
 #define NUT_TICK_FREQ   1000UL

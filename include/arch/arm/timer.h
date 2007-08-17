@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/08/17 10:44:38  haraldkipp
+ * Timer enable/disable macro replaces previous global interrupt
+ * enable/disable or function calling.
+ *
  * Revision 1.4  2006/09/29 12:45:35  haraldkipp
  * Include clock configuration.
  *
@@ -54,13 +58,27 @@
 
 #include <cfg/clock.h>
 
-#ifdef MCU_LPC2XXX
-void NutEnableTimerIrq (void);
-void NutDisableTimerIrq (void);
-#else
-#define NutEnableTimerIrq()     NutEnterCritical()
-#define NutDisableTimerIrq()    NutExitCritical()
-#endif
+#if defined(MCU_LPC2XXX) /* MCU */
+
+#define NutEnableTimerIrq()    VICIntEnable  = (1 << VIC_TIMER0)
+#define NutDisableTimerIrq()   VICIntEnClr = (1 << VIC_TIMER0)
+
+#elif defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)  /* MCU */
+
+#if defined(NUT_TICK_AT91PIT)
+#define NutEnableTimerIrq()    NutSysIrqEnable(&syssig_PIT)
+#define NutDisableTimerIrq()   NutSysIrqDisable(&syssig_PIT)
+#else /* NUT_TICK_AT91PIT */
+#define NutEnableTimerIrq()    NutIrqEnable(&sig_TC0)
+#define NutDisableTimerIrq()   NutIrqDisable(&sig_TC0)
+#endif /* NUT_TICK_AT91PIT */
+
+#else /* MCU */
+
+#define NutEnableTimerIrq()
+#define NutDisableTimerIrq()
+
+#endif /* MCU */
 
 #if defined(AT91_PLL_MAINCK)
 extern u_long At91GetMasterClock(void);

@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/08/17 10:44:37  haraldkipp
+ * Timer enable/disable macro replaces previous global interrupt
+ * enable/disable or function calling.
+ *
  * Revision 1.3  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -77,9 +81,6 @@
 #include <dev/irqreg.h>
 
 #endif
-
-#define NutEnableTimerIrq()     NutEnterCritical()
-#define NutDisableTimerIrq()    NutExitCritical()
 
 #ifndef NUT_CPU_FREQ
 #define NUT_CPU_FREQ    1000000UL

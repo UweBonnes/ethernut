@@ -241,20 +241,3 @@ u_long NutTimerMillisToTicks(u_long ms)
     
     return (x);
 }
-
-/*
- * Enable timer interrupt.
- */
-void NutEnableTimerIrq (void)
-{
-    VICIntEnable  = (1 << VIC_TIMER0);
-}
-
-/*
- * Disable timer interrupt.
- */
-void NutDisableTimerIrq (void)
-{
-    VICIntEnClr = (1 << VIC_TIMER0);
-}
-
