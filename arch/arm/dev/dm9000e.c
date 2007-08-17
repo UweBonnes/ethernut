@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2007/08/17 11:43:46  haraldkipp
+ * Enable multicast.
+ *
  * Revision 1.7  2007/05/24 07:26:44  haraldkipp
  * Added some delay befor reading the status of the received packet. Fixes
  * bug #1672527, thanks to Andreas Helmcke.
@@ -194,6 +197,7 @@
 #define NIC_RCR     0x05        /* RX control register (0x00). */
 #define NIC_RCR_DIS_LONG 0x20   /* Discard long packets. */
 #define NIC_RCR_DIS_CRC 0x10    /* Discard CRC error packets. */
+#define NIC_RCR_ALL		0x08    /* Pass all multicast */
 #define NIC_RCR_PRMSC   0x02    /* Enable promiscuous mode. */
 #define NIC_RCR_RXEN    0x01    /* Enable receiver. */
 
@@ -768,7 +772,7 @@ static int NicStart(CONST u_char * mac)
     nic_outb(NIC_ISR, NIC_ISR_ROOS | NIC_ISR_ROS | NIC_ISR_PTS | NIC_ISR_PRS);
 
     /* Enable receiver. */
-    nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN);
+    nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN | NIC_RCR_ALL);
 
     /* Wait for link. */
     for (link_wait = 20;; link_wait--) {
