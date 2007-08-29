@@ -86,7 +86,6 @@ INPUT                  = @srcdir@/nutdoc_en.txt \
                          @top_srcdir@/app/isp2 \
                          @top_srcdir@/app/logtime \
                          @top_srcdir@/app/nutpiper \
-                         @top_srcdir@/app/ostracer \
                          @top_srcdir@/app/playmp3 \
                          @top_srcdir@/app/portdio \
                          @top_srcdir@/app/pppc \
