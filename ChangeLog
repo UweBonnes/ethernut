@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.398 2007/08/29 13:35:18 haraldkipp Exp $
+$Id: ChangeLog,v 1.399 2007/08/29 15:10:19 haraldkipp Exp $
 
 2007-08-29  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -9,6 +9,10 @@ $Id: ChangeLog,v 1.398 2007/08/29 13:35:18 haraldkipp Exp $
 
 	* fs/pathops.c, include/fs/fs.h, include/stdio.h: Added missing 
 	rename() function call, kindly provided by Andrew Zacharias.
+
+	* Makefile.am: New boot directory for bootloader code.
+
+	* doc/gen/nut_en.cfg.in: Removed non-existing ostracer app.
 
 
 2007-08-28  Harald Kipp  <harald.kipp@egnite.de>
