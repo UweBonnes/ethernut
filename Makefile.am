@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.2  2007/08/29 15:05:27  haraldkipp
+# New directory for bootloaders.
+#
 # Revision 1.1  2005/04/28 14:43:43  haraldkipp
 # First check in
 #
@@ -57,6 +60,8 @@ dist-hook:
 	cp -R $(srcdir)/arch/* $(distdir)/arch
 	mkdir -p $(distdir)/bin
 	cp -R $(srcdir)/bin/* $(distdir)/bin
+	mkdir -p $(distdir)/boot
+	cp -R $(srcdir)/boot/* $(distdir)/boot
 	mkdir -p $(distdir)/c
 	cp -R $(srcdir)/c/* $(distdir)/c
 	mkdir -p $(distdir)/conf
