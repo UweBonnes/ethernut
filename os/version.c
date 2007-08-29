@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.45  2007/08/29 13:35:19  haraldkipp
+ * Announcing release branch 4.4.
+ *
  * Revision 1.44  2007/05/24 07:30:48  haraldkipp
  * Bugfixes for preparing release candidate.
  *
@@ -185,8 +188,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04030401UL
-static CONST char os_version_string[] = "4.3.4.1 beta";
+#define OS_VERSION_NUMBER  0x04039900UL
+static CONST char os_version_string[] = "4.3.99.0 pre";
 
 /*!
  * \addtogroup xgNutVersion

@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.23  2007/08/29 13:35:18  haraldkipp
+# Announcing release branch 4.4.
+#
 # Revision 1.22  2007/07/18 11:44:23  haraldkipp
 # Automatically determine Lua header directory.
 #
@@ -110,7 +113,7 @@
 #
 #
 
-AC_INIT(ethernut,4.3.3)
+AC_INIT(ethernut,4.3.99)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2007 egnite Software GmbH])

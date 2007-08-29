@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.397 2007/08/29 07:43:52 haraldkipp Exp $
+$Id: ChangeLog,v 1.398 2007/08/29 13:35:18 haraldkipp Exp $
+
+2007-08-29  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c, configure.ac: Announcing release branch 4.4.
+
+	* arch/avr/include/atom.h: Removed. Had been replaced by
+	include/arch/avr/atom.h some time ago.
+
+	* fs/pathops.c, include/fs/fs.h, include/stdio.h: Added missing 
+	rename() function call, kindly provided by Andrew Zacharias.
 
 
 2007-08-28  Harald Kipp  <harald.kipp@egnite.de>
