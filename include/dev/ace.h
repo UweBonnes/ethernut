@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.2  2006/05/25 09:09:57  haraldkipp
  * API documentation updated and corrected.
  *
@@ -426,6 +429,8 @@
  * receiver and do the read again. This will send out another XON.
  */
 #define ACE_HS_SOFT        0x0020
+
+/*@}*/
 
 /*@}*/
 

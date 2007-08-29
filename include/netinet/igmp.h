@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/08/29 07:43:54  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.1  2007/05/02 11:18:32  haraldkipp
  * IGMP support added. Incomplete.
  *
@@ -79,7 +82,7 @@
  */
 
 /*!
- * \addtogroup xgIgmp
+ * \addtogroup xgIGMP
  */
 /*@{*/
 

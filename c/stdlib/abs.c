@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.2  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -76,12 +79,12 @@
 /*@{*/
 
 /*!
- * \brief 
+ * \brief Compute absolute value of an integer.
  *
  * 
- * \param j
+ * \param j The integer value.
  *
- * \return 
+ * \return The absolute value.
  */
 
 int abs(int j)

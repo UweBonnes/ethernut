@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.2  2007/05/24 07:27:38  haraldkipp
  * Added two more interfaces. Updated by Przemyslaw Rudy.
  *
@@ -46,7 +49,7 @@
 #include <dev/tlc16c550.h>
 
 /*!
- * \addtogroup
+ * \addtogroup xgNutArchAvrAce
  */
 /*@{*/
 

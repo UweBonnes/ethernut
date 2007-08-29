@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2007/08/29 07:43:54  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.4  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -70,8 +73,8 @@ extern "C" {
     typedef struct _SEM SEM;
 
 /*!
- * \struct _mutex mutex.h sys/mutex.h
- * \brief Recursive mutex.
+ * \struct _SEM semaphore.h sys/semaphore.h
+ * \brief Semaphore.
  *
  */
     struct _SEM {

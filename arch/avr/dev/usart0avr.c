@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.3  2007/02/15 16:19:14  haraldkipp
  * Can use PORTG for half duplex control.
  *
@@ -92,7 +95,7 @@
 /*!
  * \name UART0 RTS Handshake Control
  *
- * \ref UART0_RTS_BIT must be defined in arch/avr.h
+ * UART0_RTS_BIT must be defined in arch/avr.h
  */
 #ifdef UART0_RTS_BIT
 
@@ -120,7 +123,7 @@
 /*!
  * \name UART0 Half Duplex Control
  *
- * \ref UART0_HDX_BIT must be defined in arch/avr.h
+ * UART0_HDX_BIT must be defined in arch/avr.h
  */
 #ifdef UART0_HDX_BIT
 
@@ -399,5 +402,7 @@ NUTDEVICE devUsartAvr0 = {
 #ifdef UART0_NO_SW_FLOWCONTROL
 #define UART_NO_SW_FLOWCONTROL
 #endif
+
+/*@}*/
 
 #include "usartavr.c"

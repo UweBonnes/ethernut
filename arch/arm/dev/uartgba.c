@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/08/29 07:43:52  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.3  2005/10/24 17:59:19  haraldkipp
  * Use correct header file, arm, not gba.
  *
@@ -822,4 +825,5 @@ NUTDEVICE devUartGba = {
 };
 #endif
 
+/*@}*/
 /*@}*/

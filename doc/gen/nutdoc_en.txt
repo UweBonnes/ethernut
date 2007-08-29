@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.12  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.11  2006/05/25 09:09:57  haraldkipp
  * API documentation updated and corrected.
  *
@@ -72,11 +75,6 @@
  *
  * \section intro Introduction
  *
- * This is a beta preview of the upcoming version 4.2.
- *
- * For latest information please visit
- * http://www.ethernut.de
- *
  * Ethernut is an Open Source Hardware and Software Project for building 
  * Embedded Ethernet Devices.
  *
@@ -102,9 +100,17 @@
 /*!
  * \page copyleft Copyright Statement
  *
+ * This software includes original and modified code from a number of
+ * sources, using different licenses. Nevertheless, special care had been 
+ * taken to maintain compatibility to the BSD license, under which all
+ * new firmware code is released by default. It allows to use the firmware
+ * in commercial products without the need to disclose any source code.
+ * This is specifically true for the GNU Lesser General Public License (LGPL), 
+ * but is definitely not true for the GNU General Public License (GPL).
+ *
  * Nut/OS and Nut/Net are
  *
- * Copyright (C) 2000-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2000-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -115,11 +121,9 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this
- *    software must display the following acknowledgement:
- *
- *    This product includes software developed by egnite Software GmbH
- *    and its contributors.
+ * 3. Neither the name of the copyright holders nor the names of
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -160,11 +164,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -253,10 +253,10 @@
  *    - Asynchronous timers
  *    - I/O Drivers
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutInit System Initialization
+ * \ingroup xgNutOS
  * \brief Nut/OS initialization.
  *
  * System initialization is implemented in the architecture
@@ -285,11 +285,13 @@
 
 /*!
  * \defgroup xgConfOs System Configuration
+ * \ingroup xgNutOS
  * \brief Nut/OS configuration structure.
  */
  
 /*!
  * \defgroup xgThread Thread Management
+ * \ingroup xgNutOS
  * \anchor xrThread
  * \brief Cooperative multi-threading support.
  *
@@ -358,6 +360,7 @@
 
 /*!
  * \defgroup xgEvent Event Management
+ * \ingroup xgNutOS
  * \brief Thread synchronization support.
  *
  * Threads may wait for events from other threads or
@@ -386,6 +389,7 @@
 
 /*!
  * \defgroup xgTimer Timer Management
+ * \ingroup xgNutOS
  * \brief Asynchronous timer support.
  * 
  * The timer management provides functions to start and stop
@@ -395,6 +399,7 @@
 
 /*!
  * \defgroup xgHeap Memory Management
+ * \ingroup xgNutOS
  * \brief Dynamic memory management.
  *
  * Dynamic memory allocations are made from the heap. The heap is a
@@ -411,12 +416,14 @@
 
 /*!
  * \defgroup xgDevice Device Management
+ * \ingroup xgNutOS
  *
  * \brief Device driver support.
  */
 
 /*!
  * \defgroup xgInterrupt Interrupt Management
+ * \ingroup xgNutOS
  * \brief Interrupt support
  *
  * Note, that it is not required to register interrupts with Nut/OS.
@@ -431,6 +438,7 @@
 
 /*!
  * \defgroup xgNutVersion Version Information
+ * \ingroup xgNutOS
  * \brief Nut/OS version number
  *
  * The version number is divided into four parts:
@@ -450,6 +458,7 @@
 
 /*!
  * \defgroup xgAppSugar Application Candies
+ * \ingroup xgNutOS
  * \brief 
  *
  * In order to keep the kernel clean and small, it uses very basic functions
@@ -463,15 +472,16 @@
  * However, application programmers wish to use more advanced RTOS functions.
  * Several of them had been implemented.
  */
-/*@{*/
 
 /*!
  * \defgroup xgMessageQue Message Queues
+ * \ingroup xgAppSugar
  * \brief Message Queue Support
  */
 
 /*!
  * \defgroup xgMutex Recursive Mutex 
+ * \ingroup xgAppSugar
  * \brief Thread synchronization support.
  *
  * In addition to posting and waiting for events, Threads
@@ -485,6 +495,7 @@
 
 /*!
  * \defgroup xgSemaphore Semaphore
+ * \ingroup xgAppSugar
  * \brief Thread synchronization support.
  *
  * In addition to posting and waiting for events, Threads
@@ -495,6 +506,7 @@
  
 /*!
  * \defgroup xgBankMem Banked Memory
+ * \ingroup xgAppSugar
  * \brief Banked RAM support.
  *
  * Even with a hardware decoder like the one used on the Medianut Board, 
@@ -537,11 +549,6 @@
  * \todo At least some parts should be moved to the device section.
  */
  
-/*@} xgAppSugar */
-
-
-/*@}*/
-
 /* ====================================== Nut/Net ==================================== */
 /*!
  * \defgroup xgNutNet Nut/Net API
@@ -562,15 +569,16 @@
  * In a small system this design reduces memory requirements, eliminates
  * expensive queueing and threading operations.
  */
-/*@{*/
 
 /*!
  * \defgroup xgConfNet Network Configuration
+ * \ingroup xgNutNet
  * \brief Nut/Nut configuration structure.
  */
  
 /*!
  * \defgroup xgSocket Socket API
+ * \ingroup xgNutNet
  *
  * \brief Nut/Net Socket Interface
  *
@@ -578,10 +586,10 @@
  *
  * \todo An ICMP socket API would be nice.
  */
-/*@{*/
 
 /*!
  * \defgroup xgTcpSocket TCP Sockets
+ * \ingroup xgSocket
  * \brief Application interface for TCP sockets
  *
  * TCP clients typically use this order of API calls
@@ -702,6 +710,7 @@
 
 /*!
  * \defgroup xgUdpSocket UDP Sockets
+ * \ingroup xgSocket
  * \brief Application interface for UDP sockets
  *
  * UDP server and client applications typically use this order of API calls
@@ -740,22 +749,22 @@
  * \todo There is no similar call like NutTcpError() available for UDP.
  */
 
-/*@}*/
-
 /*!
  * \defgroup xgProtos Protocols
+ * \ingroup xgNutNet
  */
-/*@{*/
 
 /*!
  * \defgroup xgBasePro Base Protocols
+ * \ingroup xgProtos
  * \brief TCP/IP and UDP applications.
  *
  * \todo IGMP support.
  */
-/*@{*/
+
 /*!
  * \defgroup xgTCP TCP
+ * \ingroup xgBasePro
  * \brief RFC 793 Transmission Control Protocol
  *
  * TCP provides reliable, in-sequence delivery of a full-duplex 
@@ -771,6 +780,7 @@
 
 /*!
  * \defgroup xgUDP UDP
+ * \ingroup xgBasePro
  * \brief RFC 768 user datagram protocol.
  *
  * UDP only provides checksumming of data and multiplexing by port
@@ -784,6 +794,7 @@
 
 /*!
  * \defgroup xgIP IP
+ * \ingroup xgBasePro
  * \brief RFC 791 Internet protocol version 4.
  *
  * Before using IP based protocols, you must have registered a network 
@@ -803,6 +814,7 @@
 
 /*!
  * \defgroup xgICMP ICMP
+ * \ingroup xgBasePro
  * \brief RFC 792 Internet Control Message Protocol.
  *
  * Provides routing, diagnostic and error functionality for IP.
@@ -813,7 +825,15 @@
  */
 
 /*!
+ * \defgroup xgIGMP IGMP
+ * \ingroup xgBasePro
+ * \brief RFC 2236 Internet Group Management Protocol.
+ *
+ */
+ 
+/*!
  * \defgroup xgARP ARP
+ * \ingroup xgBasePro
  * \brief RFC 826 address resolution protocol.
  *
  * ARP is used to map IP addresses to hardware addresses.
@@ -833,6 +853,7 @@
 
 /*!
  * \defgroup xgEthernet Ethernet
+ * \ingroup xgBasePro
  * \brief RFC 894 IP over Ethernet.
  *
  * These routines link the IP layer to the Ethernet driver.
@@ -841,20 +862,19 @@
  * \todo Multicast support.
  */
 
-/*@}*/
-
 /*!
  * \defgroup xgUserPro User Protocols
+ * \ingroup xgProtos
  * \brief TCP/IP and UDP applications.
  *
  * \todo Adding more protocols would be helpful, e.g. SMTP.
  *       Right now, applications must implement them with the
  *       \ref xgSocket "Socket API".
  */
-/*@{*/
 
 /*!
  * \defgroup xgDHCPC DHCP
+ * \ingroup xgUserPro
  * \brief Dynamic host configuration protocol.
  *
  * Hosts running Nut/Net can make use of DHCP, if the local network
@@ -911,7 +931,14 @@
  */
 
 /*!
+ * \defgroup xgDiscover Discover
+ * \ingroup xgUserPro
+ * \brief Discovering Nut/Net nodes.
+ */
+ 
+/*!
  * \defgroup xgFTPD FTP
+ * \ingroup xgUserPro
  * \brief File transfer protocol
  *
  * Note, that FTP servers don't make much sense without a file system
@@ -921,6 +948,7 @@
 
 /*!
  * \defgroup xgHTTPD HTTP
+ * \ingroup xgUserPro
  * \brief Hypertext transfer protocol
  *
  * A read-only file system is sufficient to run an HTTP server.
@@ -928,11 +956,13 @@
 
 /*!
  * \defgroup xgDNS DNS
+ * \ingroup xgUserPro
  * \brief Domain name service protocol
  */
 
 /*!
  * \defgroup xgSntp SNTP
+ * \ingroup xgUserPro
  * \brief Simple network time protocol
  *
  * \todo Enhance documentation.
@@ -940,12 +970,14 @@
 
 /*!
  * \defgroup xgSyslog syslog
+ * \ingroup xgUserPro
  * \brief Syslog protocol support
  *
  */
 
 /*!
  * \defgroup xgWins WINS
+ * \ingroup xgUserPro
  * \brief Netbios WINS Name Query (RFC 1002)
  *
  * Only Query Request Client Routine sending/Positive Name Query Response receiving
@@ -967,127 +999,129 @@
  * \endcode
  */
   
-/*@} xgUserPro */
-
 /*!
  * \defgroup xgPppProt PPP
+ * \ingroup xgProtos
  * \brief Point to point protocol.
  */
-/*@{*/
 
 /*!
  * \defgroup xgLCP LCP
+ * \ingroup xgPppProt
  * \brief Link control protocol.
  */
 
 /*!
  * \defgroup xgPAP PAP
+ * \ingroup xgPppProt
  * \brief Password authentication protocol.
  */
 
 /*!
  * \defgroup xgIPCP IPCP
+ * \ingroup xgPppProt
  * \brief IP control protocol.
  */
 
 /*!
  * \defgroup xgPPP PPP
+ * \ingroup xgPppProt
  * \brief PPP Driver.
  */
 
-
-/*@}*/
-
-
-/*@}*/
-
-/*@}*/
 
 /* ====================================== File System ==================================== */
 /*!
  * \defgroup xgFileSystem File System API.
  */
-/*@{*/
 
 /*!
  * \defgroup xgFS Special Functions.
+ * \ingroup xgFileSystem
  * \brief UNIX compatible file system functions
  */
-/*@{*/
 
 /*!
  * \defgroup xgFSDir Reading Directories
+ * \ingroup xgFS
  * \brief UNIX compatible directory read functions.
  */
-/*@} xgFS */
 
 /*!
  * \defgroup xgPhatFs PHAT File System
+ * \ingroup xgFileSystem
  * \brief FAT12/16/32 compatible file system.
  *
  * \note This is alpha code and may contain severe bugs.
  */
-/*@{*/
 
 /*!
  * \defgroup xgPhatVol Volume Support
+ * \ingroup xgPhatFs
  * \brief Dealing with volumes.
  */
 
 /*!
  * \defgroup xgPhatDir Directory Support
+ * \ingroup xgPhatFs
  * \brief Routines for reading and writing directories.
  */
 
 /*!
  * \defgroup xgPhat12 PHAT12 Support
+ * \ingroup xgPhatFs
  * \brief PHAT12 specific routines.
  */
 
 /*!
  * \defgroup xgPhat16 PHAT16 Support
+ * \ingroup xgPhatFs
  * \brief PHAT16 specific routines.
  */
 
 /*!
  * \defgroup xgPhat32 PHAT32 Support
+ * \ingroup xgPhatFs
  * \brief PHAT32 specific routines.
  */
 
 /*!
  * \defgroup xgPhatIo PHAT Block I/O
+ * \ingroup xgPhatFs
  * \brief Reading and writing data blocks.
  */
 
 /*!
  * \defgroup xgPhatUtil PHAT Utilities
+ * \ingroup xgPhatFs
  * \brief General utility routines used by the PHAT file system.
  */
 
 /*!
  * \defgroup xgPhatDbg PHAT Debugging Support
+ * \ingroup xgPhatFs
  * \brief Listing various PHAT structures.
  */
 
-
-/*@} xgPhatFs */
  
 /*!
  * \defgroup xgPNut Peanut File System
+ * \ingroup xgFileSystem
  * \brief Volatile RAM file system.
  */
  
 /*!
  * \defgroup xgurom Micro-ROM File System
+ * \ingroup xgFileSystem
  * \brief Very simple read-only file system.
  */
 
 /*!
  * \defgroup xgPartition DOS Partitions
+ * \ingroup xgFileSystem
  * \brief DOS partition layout.
  */
 
-/*@} xgFileSystem */
 /* ======================================================================================= */
 
 /* ===================================== C Runtime API =================================== */
@@ -1108,10 +1142,9 @@
  *          before the compiler's standard libraries.
  */
 
-/*@{*/
-
 /*!
  * \defgroup xgCrtStdio Standard I/O
+ * \ingroup xgCrt
  * \brief Standard stream interface to Nut/OS devices. 
  *
  * \code #include <stdio.h> \endcode
@@ -1214,6 +1247,7 @@
 
 /*!
  * \defgroup xgCrtLowio Low Level I/O
+ * \ingroup xgCrt
  * \anchor xrCrtLowio
  * \brief Low level input and output operations.
  *
@@ -1224,6 +1258,7 @@
 
 /*!
  * \defgroup xgCrtTime Time handling Functions
+ * \ingroup xgCrt
  * \brief Implements some standard C time functions.
  *
  * Use these functions to get the current time and convert, 
@@ -1233,20 +1268,21 @@
 
 /*!
  * \defgroup xgCrtMisc Miscellaneous Functions
+ * \ingroup xgCrt
  * \brief Complementary runtime support.
  */
 
 /*!
  * \defgroup xgCrtStdLib Standard Lib
+ * \ingroup xgCrt
  * \brief C Standard Library
  */
  
 /*!
  * \defgroup xgCrtString Strings
+ * \ingroup xgCrt
  * \brief C Standard String Library
  */
-
-/*@}*/
 
 /* =================================== Device Driver API ================================= */
 /*!
@@ -1257,10 +1293,10 @@
  * Device drivers are typically not accessed directly by an application.
  * Instead they are used by the standard C library to perform data I/O.
  */
-/*@{*/
 
 /*!
  * \defgroup xgDevGenChar Generic Character Device
+ * \ingroup xgDriver
  * \brief Character Device Driver Template.
  *
  * Extensively commented source code of a Nut/OS character device driver.
@@ -1270,12 +1306,13 @@
 
 /*!
  * \defgroup xgDevSerial USART Devices
+ * \ingroup xgDriver
  * \brief Drivers for serial communication.
  */
-/*@{*/
 
 /*!
  * \defgroup xgUsart USART Driver Frame
+ * \ingroup xgDevSerial
  * \anchor xrUsart
  * \brief Universal synchronous/asynchronous receiver/transmitter device driver.
  *
@@ -1291,24 +1328,23 @@
 
 /*!
  * \defgroup xgUARTIOCTL UART I/O Control Functions
+ * \ingroup xgUsart
  */
-/*@{*/
 
 /*!
  * \defgroup xgUARTStatus UART Status
+ * \ingroup xgUARTIOCTL
  */
-/*@} xgUARTIOCTL */
-
-/*@} xgDevSerial */
 
 /*!
  * \defgroup xgDevNetwork Network Devices
+ * \ingroup xgDriver
  * \brief Ethernet controller drivers.
  */
-/*@{*/
 
 /*!
  * \defgroup xgnetbuf Network Buffer
+ * \ingroup xgDevNetwork
  * \brief Network buffer support.
  *
  * The network buffer handling is designed to make life easy when it
@@ -1359,28 +1395,28 @@
 
 /*!
  * \defgroup xgNicDm9000e Davicom DM9000E
+ * \ingroup xgDevNetwork
  * \brief 100 MBit Ethernet controller.
  *
  * The DM9000E chip is used in the Ethernut 3 reference design.
  */
-/*@{*/
+
 /*!
  * \defgroup xgDm9000eRegs DM9000E Registers
+ * \ingroup xgNicDm9000e
  * \brief Register definitions.
  */
-/*@} xgNicDm9000e */
-
-/*@} xgDevNetwork */
 
 
 /*!
  * \defgroup xgDevDisplay Display Devices
+ * \ingroup xgDriver
  * \brief LCD/VFD hardware support.
  */
-/*@{*/
 
 /*!
  * \defgroup xgTerminal Terminal Emulator.
+ * \ingroup xgDevDisplay
  * \brief Virtual terminal emulator.
  *
  * The virtual terminal driver allows to use a LC or VF display
@@ -1389,50 +1425,59 @@
 
 /*!
  * \defgroup xgDisplay LC/VF Display Driver.
+ * \ingroup xgDevDisplay
  */
-/*@} xgDevDisplay */
 
+/*!
+ * \defgroup xgST7036 ST7036 Display Driver.
+ * \ingroup xgDevDisplay
+ */
 
 
 /*! 
  * \defgroup xgIrqReg Interrupt Management
+ * \ingroup xgDriver
  * \brief Interrupt registration and handling.
  */
 
 /*!
  * \defgroup xgCanDev CAN Devices
+ * \ingroup xgDriver
  */
 
 /*!
  * \defgroup xgIr IR Devices
+ * \ingroup xgDriver
  */
 
 /*!
  * \defgroup xgBlockDev Block Devices
+ * \ingroup xgDriver
  * \brief Mass storage block device driver.
  *
  */
-/*@{*/
 
 /*!
  * \defgroup xgMmCard Multimedia Card Driver
+ * \ingroup xgBlockDev
  * \brief Block device driver for MM/SD Cards.
  */
 
 /*!
  * \defgroup xgSbiMmc Low Level MMC Interface
+ * \ingroup xgBlockDev
  * \brief Bit banging SPI for MMC.
  */
  
-/*@} xgBlockDev */
-
 /*!
  * \defgroup xgDevTiming Clock Devices
+ * \ingroup xgDriver
  * \brief Programmable Clock Support.
  */
-/*@{*/
+
 /*!
  * \defgroup xgCy2239x Cypress CY2239x
+ * \ingroup xgDevTiming
  * \brief Programmable clock generator with three PLLs.
  *
  * \code
@@ -1450,10 +1495,10 @@
  * - Clock C: 73.7288 MHz, used as the main CPU clock.
  * - Clock D: Disabled, connected to the GCK3 pin of the CPLD.
  */
-/*@} xgDevTiming */
 
 /*!
  * \defgroup xgWatchDog Watchdogs
+ * \ingroup xgDriver
  * \brief Watchdog Support.
  *
  * Platform independent watchdog support is available for the
@@ -1462,11 +1507,13 @@
 
 /*!
  * \defgroup xgDevLogic CPLD Based Devices
+ * \ingroup xgDriver
  * \brief CPLD implementation drivers.
  */
-/*@{*/
+
 /*!
  * \defgroup xgNpl Nut Programmable Logic
+ * \ingroup xgDevLogic
  * \brief Routines for using the Ethernut CPLD.
  *
  * The CPLD on Ethernut 3 contains a set of registers, which can
@@ -1475,12 +1522,13 @@
 
 /*!
  * \defgroup xgNplMmc Low Level MMC Interface
+ * \ingroup xgDevLogic
  * \brief Routines for using the SPI interface of the Ethernut CPLD.
  */
-/*@} xgDevLogic */
 
 /*!
  * \defgroup xgNutNvMem Non-Volatile Memory
+ * \ingroup xgDriver
  * \brief Read data from and write data to non-volatile memory.
  *
  * Non-volatile data memory is typically used to store configuration 
@@ -1495,25 +1543,32 @@
  * location CONFNET_EE_OFFSET and the _CONFNET structure at location 
  * CONFNET_EE_OFFSET.
  */
-/*@{*/
-/*@} xgNutNvMem */
+
+/*!
+ * \defgroup xgArchAvrDevEeprom AVR EEPROM
+ * \ingroup xgNutNvMem
+ * \brief AVR on-chip EEPROM support.
+ *
+ */
 
 /*!
  * \defgroup xgHardware Hardware Layout
+ * \ingroup xgDriver
  * \brief Definitions of I/O ports.
  *
  * Each add-on board should provide its own include file.
  */
-/*@{*/
 
 /*!
  * \defgroup xgEthernutCfg Ethernut Hardware
+ * \ingroup xgHardware
  * \brief Ethernut internal I/O port usage.
  *
  */
 
 /*!
  * \defgroup xgMedianutCfg Medianut Hardware.
+ * \ingroup xgHardware
  * \brief Ports used by the Medianut MP3 Add-On.
  *
  * Medianut is an add-on board and can be attached to the Ethernut
@@ -1523,16 +1578,13 @@
 
 /*!
  * \defgroup xgModemCfg Modem Control.
+ * \ingroup xgHardware
  * \brief Modem hardware dependencies.
  *
  * Specification of RS232 handshake lines.
  */
 
-/*@} xgHardware */
 
-
-/*@}*/
- 
 /* ======================================================================================= */
 
 /* ======================================================================================= */
@@ -1541,69 +1593,81 @@
  * \defgroup xgNutArch Architectures
  * \brief Target devices
  *
- * Only the AVR and ARM7TDMI platforms can be considered stable. The H8/300
+ * Only the AVR and ARM platforms can be considered stable. The H8/300
  * support has come to halt long time ago and support for the
- * M68K did not even start. The Emulator running on UNIX has
- * not been extensively tested for some time.
+ * M68K did not even start. 
+ *
+ * The Emulator running on UNIX has been recently updated and should
+ * work again.
  */
-/*@{*/
 
 /* =================================== AVR Architectures ================================= */
 /*!
  * \defgroup xgNutArchAvr AVR
+ * \ingroup xgNutArch
  * \brief 8 Bit RISC processor.
  *
- * Only the ATmega103 and ATmega128 are currently supported.
- * Some porting work had been done for the AT90CAN128, but
- * failed due to a bug in the chip, which causes stack corruption.
+ * The ATmega103, ATmega128, AT90CAN128 and the ATmega256 are currently supported.
+ * 
+ * Due to a bug in the chip, the AT90CAN128 stack must be located in internal
+ * memory. Nut/OS automatically takes care of this when built for that device.
+ * However, be aware that the stack space for threads is quite limited.
  */
- 
-/*@{*/
- 
+  
 /*!
  * \defgroup xgNutArchAvrBoot Boot
+ * \ingroup xgNutArchAvr
  * \brief Loading the code
  */
  
 /*!
  * \defgroup xgNutArchAvrInit Initialization
+ * \ingroup xgNutArchAvr
  * \brief Starting Nut/OS
  */
  
 /*!
  * \defgroup xgNutArchAvrOs System Support
+ * \ingroup xgNutArchAvr
  * \brief Hardware dependant functions used by Nut/OS.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchAvrOsContextGcc GCC Context Switch
+ * \ingroup xgNutArchAvrOs
  * \brief Thread context switching for avr-gcc.
  */
  
 /*!
  * \defgroup xgNutArchAvrOsContextIcc ICC Context Switch
+ * \ingroup xgNutArchAvrOs
  * \brief Thread context switching for ImageCraft ICCAVR.
  */
  
-/*@} xgNutArchAvrOs */
-
- 
 /*!
  * \defgroup xgNutArchAvrDev Device Drivers
+ * \ingroup xgNutArchAvr
  * \brief Hardware dependant device driver code
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchAvrDevSerial Serial
+ * \ingroup xgNutArchAvrDev
  * \brief AVR drivers for serial communication.
  *
  */
-/*@{*/
 
 /*!
+ * \defgroup xgNutArchAvrAce ACE Driver
+ * \ingroup xgNutArchAvrDevSerial
+ * \brief ACE driver.
+ *
+ * Proper documentation is missing.
+ */
+ 
+/*!
  * \defgroup xgDevDebugAvr Debug Device
+ * \ingroup xgNutArchAvrDevSerial
  * \brief Debug output driver for ATmega On-Chip UART.
  *
  * This stream device driver writes data to the internal UART of
@@ -1614,6 +1678,7 @@
  
 /*!
  * \defgroup xgUartAvr UART Device
+ * \ingroup xgNutArchAvrDevSerial
  * \anchor xrUartAvr
  * \brief Device driver for ATmega On-Chip UART.
  *
@@ -1628,6 +1693,7 @@
 
 /*!
  * \defgroup xgUsartAvr USART Devices
+ * \ingroup xgNutArchAvrDevSerial
  * \anchor xrUsartAvr
  * \brief AVR USART hardware dependant implementation.
  *
@@ -1646,6 +1712,7 @@
 
 /*!
  * \defgroup xgAhdlcAvr AHDLC
+ * \ingroup xgNutArchAvrDevSerial
  * \brief AHDLC Driver.
  *
  * This code contains a modified UART driver with some speed optimizations 
@@ -1655,46 +1722,48 @@
 
 /*!
  * \defgroup xgAceDriver TLC16C550
+ * \ingroup xgNutArchAvrDevSerial
  * \brief TLC16C550 UART driver.
  */
 
-/*@} xgNutArchAvrDevSerial */
-
 /*!
  * \defgroup xgNutArchAvrDevEthernet Ethernet
+ * \ingroup xgNutArchAvrDev
  * \brief Ethernet controller drivers.
  *
  */
-/*@{*/
 
 /*!
  * \defgroup xgNicRtl Realtek RTL8019AS
+ * \ingroup xgNutArchAvrDevEthernet
  * \brief 10 MBit NE2000 compatible controller.
  *
  * The RTL8019AS chip is used on the Ethernut 1 board.
  */
-/*@{*/
+
 /*!
  * \defgroup xgEth0Dev Device eth0
+ * \ingroup xgNicRtl
  * \brief Realtek 8019AS Ethernet device
  */
-/*@}*/
 
 /*!
  * \defgroup xgNicLanc111 SMSC LAN91C111
+ * \ingroup xgNutArchAvrDevEthernet
  * \brief 10/100 MBit Ethernet controller.
  *
  * The LAN91C111 chip is used on the Ethernut 2 board.
  */
-/*@{*/
+
 /*!
  * \defgroup xgSmscRegs LAN91C111 registers
+ * \ingroup xgNicLanc111
  * \brief SMSC LAN91C111 register definitions.
  */
-/*@}*/
 
 /*!
  * \defgroup xgNicCs8900 Crystal CS8900A
+ * \ingroup xgNutArchAvrDevEthernet
  * \brief 10 MBit Ethernet controller.
  *
  * The device driver for the CS8900A is poorly supported. Be
@@ -1702,19 +1771,16 @@
  * it with the latest Nut/Net release.
  */
 
-/*@} xgNutArchAvrDevEthernet */
 
 /*!
  * \defgroup xgNutArchAvrDevDebug Debug
+ * \ingroup xgNutArchAvrDev
  * \brief AVR debug output devices.
  */
-/*@{*/
-/*@} xgNutArchAvrDevDebug */
-
-/*@} xgNutArchAvrDev */
 
 /*!
  * \defgroup xgHardwareAvr Special Hardware
+ * \ingroup xgNutArchAvr
  * \brief Support routines for direct hardware access.
  *
  * Not every hardware fits into I/O driver model. For
@@ -1723,30 +1789,40 @@
  * Therefore several API calls had been added to deal
  * with special hardware.
  */
-/*@{*/
 
 /*!
  * \defgroup xgAvrAdc A/D Converter
+ * \ingroup xgHardwareAvr
  * \brief ATmega128 On-Chip ADC.
  */
  
 /*!
  * \defgroup xgCanSJA1000 SJA1000
+ * \ingroup xgHardwareAvr
  * \brief CAN Bus Controller
  */
 
 /*!
  * \defgroup xgVs1001 VLSI VS1001K
+ * \ingroup xgHardwareAvr
+ * \brief MP3 Decoder
+ */
+
+/*!
+ * \defgroup xgVs10xx VLSI VS10XX
+ * \ingroup xgHardwareAvr
  * \brief MP3 Decoder
  */
 
 /*!
  * \defgroup xgIrSony Sony IR
+ * \ingroup xgHardwareAvr
  * \brief Infrared Remote Control
  */
  
 /*! 
  * \defgroup xgSpiDigIo SPI Digital I/O
+ * \ingroup xgHardwareAvr
  * \brief SPI controlled digital input and output ports.
  *
  * This simple driver supports digital I/O ports like 
@@ -1755,6 +1831,7 @@
 
 /*! 
  * \defgroup xgSpiFlash SPI Flash Devices
+ * \ingroup xgHardwareAvr
  * \brief Programs SPI attached flash devices.
  *
  * When AVR CPUs are attached to the SPI, then the
@@ -1766,64 +1843,159 @@
 
 /*!
  * \defgroup xgNutArchAvrDevWatchDog Watchdog
+ * \ingroup xgHardwareAvr
  * \brief ATmega128 on-chip watchdog.
  */
  
-/*@} xgHardwareAvr */
-
+/*!
+ * \defgroup xgAvrTarget AVR Target Programming
+ * \ingroup xgHardwareAvr
+ * \brief AVR target programming via SPI.
+ */
+ 
 /*!
  * \defgroup xgConfigAvr Configuration
+ * \ingroup xgNutArchAvr
  * \brief Hardware Settings.
  */
-/*@{*/
  
 /*!
  * \defgroup xgConfigPortsAvr Ports
+ * \ingroup xgConfigAvr
  * \brief Assigned port bits.
  */
 
 /*!
  * \defgroup xgMCanCfg MCAN Board
+ * \ingroup xgConfigAvr
  * \brief Microcontroller Board with CAN Bus
  */
-
-/*@} xgConfigAvr */
-
-
-/*@} xgNutArchAvr */
-
 
 
 /* =================================== ARM Architectures ================================= */
 /*!
  * \defgroup xgNutArchArm ARM
+ * \ingroup xgNutArch
  * \brief 32 Bit RISC processor.
  *
  * \code
  * #include <arch/arm.h>
  * \endcode
  *
- * This port had been successfully tested on the AT91R40008 
- * (including Nut/Net) and the GameBoy Advance (w/o Nut/Net).
+ * Nut/OS had been successfully tested on some Atmel AT91 and Philips LPC devices and on 
+ * the GameBoy Advance.
  */
-/*@{*/
 
 /*!
- * \defgroup xgNutArchArmAt91 AT91
+ * \defgroup xgNutArchArmBoot Boot
+ * \ingroup xgNutArchArm
+ * \brief Loading the code
+ */ 
+ 
+/*!
+ * \defgroup xgNutArchArmInit Initialization
+ * \ingroup xgNutArchArm
+ * \brief Starting Nut/OS
+ */ 
+
+/*!
+ * \defgroup xgNutArchArmAt91 AT91 Support
+ * \ingroup xgNutArchArm
  * \brief AT91 peripheral registers.
+ *
+ * AT91 is a family of microcontrollers manufactured by Atmel. They are based on the 
+ * 32-bit RISC microprocessors from ARM. The following members had been tested with
+ * Nut/OS:
+ *
+ * - AT91R40008
+ * - AT91SAM7XC256
+ * - AT91SAM9260
  *
  * The AT91 peripherals are connected to the 32-bit wide advanced peripheral bus.
  * All registers are word accessible only.
  */ 
-/*@{*/
 
 /*!
+ * \defgroup xgNutArchArmAt91Aic AIC: Interrupt Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief Advanced interrupt controller registers.
+ *
+ * The AT91 series provides an 8-level priority, individually maskable, 
+ * vectored interrupt controller.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Ccfg Chip Configuration
+ * \ingroup xgNutArchArmAt91
+ * \brief Chip configuration register.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Dbgu Debug Unit
+ * \ingroup xgNutArchArmAt91
+ * \brief Debug unit registers.
+ */
+ 
+/*!
  * \defgroup xgNutArchArmAt91Ebi Bus Interface
+ * \ingroup xgNutArchArmAt91
  * \brief External bus interface registers.
  */ 
 
 /*!
+ * \defgroup xgAt91Efc Embedded Flash Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief Embedded flash controller registers.
+ */ 
+
+/*!
+ * \defgroup xgNutArchArmAt91Emac EMAC Module
+ * \ingroup xgNutArchArmAt91
+ * \brief Ethernet MAC module registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Matrix Bus Matrix
+ * \ingroup xgNutArchArmAt91
+ * \brief Bus matrix registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Mci Multimedia Card
+ * \ingroup xgNutArchArmAt91
+ * \brief Multimedia card registers.
+ */
+ 
+/*!
+ * \defgroup xgAt91Mci MCI Multimedia Card Interface
+ * \ingroup xgNutArchArmAt91
+ * \brief Multimedia card interface registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Pio Parallel I/O
+ * \ingroup xgNutArchArmAt91
+ * \brief Parallel I/O controller registers.
+ *
+ * Most parallel I/O lines are multiplexed with external signals of 
+ * other peripherals to optimize the use of available package pins.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Pit Periodic Interval Timer
+ * \ingroup xgNutArchArmAt91
+ * \brief Periodic interval timer registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Pmc Power Management Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief Power management controller registers.
+ */
+ 
+/*!
  * \defgroup xgNutArchArmAt91Ps Power Saving
+ * \ingroup xgNutArchArmAt91
  * \brief Power saving registers.
  *
  * The Power-saving feature optimizes power consumption, enabling the 
@@ -1833,23 +2005,101 @@
  */
 
 /*!
- * \defgroup xgNutArchArmAt91Aic Interrupt Controller
- * \brief Advanced interrupt controller registers.
- *
- * The AT91 series provides an 8-level priority, individually maskable, 
- * vectored interrupt controller.
+ * \defgroup xgNutArchArmAt91x40 AT91x40
+ * \ingroup xgNutArchArmAt91
+ * \brief Register definitions.
  */
 
 /*!
- * \defgroup xgNutArchArmAt91Pio Parallel I/O
- * \brief Parallel I/O controller registers.
- *
- * Most parallel I/O lines are multiplexed with external signals of 
- * other peripherals to optimize the use of available package pins.
+ * \defgroup xgNutArchArmAt91Rstc Reset Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief Reset controller registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Sam7x AT91SAM7X
+ * \ingroup xgNutArchArmAt91
+ * \brief Register definitions.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Sam9260 AT91SAM9260
+ * \ingroup xgNutArchArmAt91
+ * \brief Register definitions.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Sdramc SDRAM Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief SDRAM controller registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Sf Special Function
+ * \ingroup xgNutArchArmAt91
+ * \brief Special function registers
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Smc Static Memory Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief Static memory controller registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Spi Serial Peripheral Interface
+ * \ingroup xgNutArchArmAt91
+ * \brief Serial peripheral interface registers.
+ */
+
+/*!
+ * \defgroup xgAt91SpiMmc SPI Mode MMC Interface
+ * \ingroup xgNutArchArmAt91
+ * \brief SPI mode MMC interface registers.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Ssc Serial Synchronous Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief Serial synchronous controller registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Tc Timer/Counter
+ * \ingroup xgNutArchArmAt91
+ * \brief Timer / Counter registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Twi Two Wire Interface
+ * \ingroup xgNutArchArmAt91
+ * \brief Two wire interface registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Udp USB Device Port
+ * \ingroup xgNutArchArmAt91
+ * \brief Universal serial bus device registers.
+ */
+ 
+/*!
+ * \defgroup xgNutArchArmAt91Us USART
+ * \ingroup xgNutArchArmAt91
+ * \brief Universal synchronous / asynchronous receiver / transmitter registers.
  */
  
 /*!
  * \defgroup xgNutArchArmAt91Wd Watchdog Registers
+ * \ingroup xgNutArchArmAt91
+ * \brief Watchdog timer registers.
+ *
+ * The Watch Dog is used to prevent system lock-up if the software becomes 
+ * trapped in a deadlock. It can generate an internal reset or interrupt.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Wdt Watchdog Registers
+ * \ingroup xgNutArchArmAt91
  * \brief Watchdog timer registers.
  *
  * The Watch Dog is used to prevent system lock-up if the software becomes 
@@ -1858,49 +2108,37 @@
 
 /*!
  * \defgroup xgNutArchAt91DevWatchDog Watchdog Functions
+ * \ingroup xgNutArchArmAt91
  * \brief AT91 on-chip watchdog timer.
  */
-  
-/*!
- * \defgroup xgNutArchArmAt91Sf Special Function
- * \brief Special function registers
- */
- 
-/*!
- * \defgroup xgNutArchArmAt91Us USART
- * \brief Universal synchronous / asynchronous receiver / transmitter registers.
- */
- 
-/*!
- * \defgroup xgNutArchArmAt91Tc Timer/Counter
- * \brief Timer / Counter registers.
- */
- 
-/*@} xgNutArchArmAt91 */
 
 /*!
+ * \defgroup xgDm9161aRegs Davicom DM9161A
+ * \ingroup xgNutArchArmAt91
+ * \brief Davicom DM9161A registers.
+ */
+ 
+/*!
+ * \defgroup xgEmacSam7x SAM7X EMAC
+ * \ingroup xgNutArchArmAt91
+ * \brief SAM7X EMAC registers.
+ */
+ 
+/*!
  * \defgroup xgNutArchArmGba Gameboy Advance Support
+ * \ingroup xgNutArchArm
  * \brief Nintendo Gameboy Advance
  */ 
  
 /*!
- * \defgroup xgNutArchArmBoot Boot
- * \brief Loading the code
- */ 
- 
-/*!
- * \defgroup xgNutArchArmInit Initialization
- * \brief Starting Nut/OS
- */ 
-
-/*!
  * \defgroup xgNutArchArmOs System Support
+ * \ingroup xgNutArchArm
  * \brief Hardware dependant functions used by Nut/OS.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchArmOsContext Context Switching
+ * \ingroup xgNutArchArmOs
  * \brief Context Switching for GNUARM
  *
  * This code should work with other GCC distributions for the ARM CPU.
@@ -1908,31 +2146,32 @@
  
 /*!
  * \defgroup xgNutArchArmOsTimerAt91 AT91 System Timer
+ * \ingroup xgNutArchArmOs
  * \brief Nut/OS System Timer implemented on the AT91
  */
  
 /*!
  * \defgroup xgNutArchArmOsTimerGba GBA System Timer
+ * \ingroup xgNutArchArmOs
  * \brief Nut/OS System Timer implemented on the GBA
  */
  
-/*@} xgNutArchArmOs */
- 
 /*!
  * \defgroup xgNutArchArmDev Device Drivers
+ * \ingroup xgNutArchArm
  * \brief Hardware dependant device driver code.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchArmDevIrq Interrupts
+ * \ingroup xgNutArchArmDev
  * \brief Interrupt handler routines
  *
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchArmDevIrqAt91 AT91 Interrupts
+ * \ingroup xgNutArchArmDevIrq
  * \brief Interrupt handler for the AT91
  *
  * Handling interrupts on the AT91 is still a miserable hack.
@@ -1942,53 +2181,51 @@
  
 /*!
  * \defgroup xgNutArchArmDevIrqGba GBA Interrupts
+ * \ingroup xgNutArchArmDevIrq
  * \brief Interrupt handler for the GameBoy Advance
  *
  */
 
-/*@} xgNutArchArmDevIrq */
-
 /*!
  * \defgroup xgNutArchArmDevSerial Serial
+ * \ingroup xgNutArchArmDev
  * \brief ARM drivers for serial communication.
  *
  */
-/*@{*/
 
 /*!
  * \defgroup xgUartGba GBA UART
+ * \ingroup xgNutArchArmDevSerial
  * \brief Gameboy Advance UART driver.
  *
  * This code doesn't work.
  */
  
-/*@} xgNutArchArmDevSerial */
-
 /*!
  * \defgroup xgNutArchArmDevEthernet Ethernet
+ * \ingroup xgNutArchArmDev
  * \brief Ethernet controller drivers.
  *
  */
-/*@{*/
 
 /*!
  * \defgroup xgNicAsix Asix AX88796L
+ * \ingroup xgNutArchArmDevEthernet
  * \brief 10/100 MBit NE2000 compatible controller.
  *
  * Highly experimental.
  */
 
-/*@} xgNutArchArmDevEthernet */
-
 /*!
  * \defgroup xgNutArchArmDevDebug Debug
+ * \ingroup xgNutArchArmDev
  * \brief Debug output drivers
  *
  */
-/*@{*/
 
 /*!
  * \defgroup xgDevDebugAt91 AT91 Debug Device
+ * \ingroup xgNutArchArmDevDebug
  * \brief Debug output driver for AT91 On-Chip UART.
  *
  * This stream device driver writes data to the internal UART.
@@ -1998,19 +2235,14 @@
 
 /*!
  * \defgroup xgDevDebugGba GBA Debug Output
+ * \ingroup xgNutArchArmDevDebug
  * \brief Debug output driver for GBA LCD Screen.
  */
  
-/*@} xgNutArchArmDevDebug */
-
-/*@} xgNutArchArmDev */
-
-
-/*@} xgNutArchArm */
-
 /* ================================= Emulator Architecture =============================== */
 /*!
  * \defgroup xgNutArchUnix Emulator (UNIX)
+ * \ingroup xgNutArch
  * \brief Running Nut/OS Apps on a UNIX machine 
  *
  * Nut/OS can be compiled for a native unix target.
@@ -2024,145 +2256,142 @@
  * The unix emulation provides a third uart for debugging purposes as devDebug2, devUsart2 and devUsartAvr2)
  * 
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchUnixInit Initialization
+ * \ingroup xgNutArchUnix
  * \brief Starting Nut/OS
  */ 
 
 /*!
  * \defgroup xgNutArchUnixOs System Support
+ * \ingroup xgNutArchUnix
  * \brief Hardware dependant functions used by Nut/OS.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchUnixOsContext Context Switching
+ * \ingroup xgNutArchUnixOs
  * \brief Context Switching for the UNIX emulator.
  */
  
 /*!
  * \defgroup xgNutArchUnixOsTimer System Timer
+ * \ingroup xgNutArchUnixOs
  * \brief Nut/OS System Timer
  */
  
-/*@} xgNutArchUnixOs */
-
-/*@} xgNutArchUnix */
-
 /* ================================= H8/300H Architecture ================================ */
 /*!
  * \defgroup xgNutArchH8300h H8/300H
+ * \ingroup xgNutArch
  * \brief Renesas 16 Bit CPU
  *
  * Poorly supported.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchH8300hBoot Boot
+ * \ingroup xgNutArchH8300h
  * \brief Loading the code
  */ 
  
 /*!
  * \defgroup xgNutArchH8300hInit Initialization
+ * \ingroup xgNutArchH8300h
  * \brief Starting Nut/OS
  */ 
 
 /*!
  * \defgroup xgNutArchH8300hOs System Support
+ * \ingroup xgNutArchH8300h
  * \brief Hardware dependant functions used by Nut/OS.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchH8300hOsContext Context Switching
+ * \ingroup xgNutArchH8300hOs
  * \brief Context Switching with GCC
  */
  
 /*!
  * \defgroup xgNutArchH8300hOsTimer System Timer
+ * \ingroup xgNutArchH8300hOs
  * \brief Nut/OS System Timer implemented on the H8/300H
  */
  
-/*@} xgNutArchH8300hOs */
  
 /*!
  * \defgroup xgNutArchH8300hDev Device Drivers
+ * \ingroup xgNutArchH8300h
  * \brief Hardware dependant device driver code.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchH8300hDevSerial Serial
+ * \ingroup xgNutArchH8300hDev
  * \brief ARM drivers for serial communication.
  *
  */
-/*@{*/
 
 /*!
  * \defgroup xgUartH8 UART
+ * \ingroup xgNutArchH8300hDevSerial
  * \brief TODO
  *
  */
 
 /*!
  * \defgroup xgUartDev UART
+ * \ingroup xgNutArchH8300hDevSerial
  * \brief TODO
  *
  */
 
 /*!
  * \defgroup xgNutArchH8300hDevDebug Debug
+ * \ingroup xgNutArchH8300hDevSerial
  * \brief Debug output drivers
  *
  */
  
-/*@} xgNutArchH8300hDevSerial */
-
 /*!
  * \defgroup xgNutArchH8300hDevEthernet Ethernet
+ * \ingroup xgNutArchH8300hDev
  * \brief Ethernet controller drivers.
  *
  */
-
-/*@} xgNutArchH8300hDev */
-
  
 /*!
  * \defgroup xgRPortCfg RPort
+ * \ingroup xgNutArchH8300h
  * \brief RPort hardware specification.
  */
  
-/*@} xgNutArchH8300h */
-
 /* ================================= M68K Architecture =================================== */
 /*!
  * \defgroup xgNutArchM68k M68K
+ * \ingroup xgNutArch
  * \brief Freescale CISC Processor
  *
  * Not implemented. Nothing but a placeholder.
  */
-/*@{*/
 
 /*!
  * \defgroup xgNutArchM68kBoot Boot
+ * \ingroup xgNutArchM68k
  * \brief Loading the code
  */ 
  
 /*!
  * \defgroup xgNutArchM68kInit Initialization
+ * \ingroup xgNutArchM68k
  * \brief Starting Nut/OS
  */ 
 
-/*@} xgNutArchM68k */
-
-/*@}*/
-  
 /* ================================= Directories ========================================= */
-/*!
- * \dir nut/os/
+/*
+ * \dir os/
  * Nut/OS Kernel
  */
 /* ======================================================================================= */

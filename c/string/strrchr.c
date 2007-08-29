@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.1  2004/09/08 10:24:10  haraldkipp
  * Generic C string library added
  *
@@ -73,14 +76,6 @@
  */
 /*@{*/
 
-/*!
- * \brief 
- * 
- *
- * \param 
- *
- * \return 
- */
 /*!
  * \brief Locate the last occurrence of a character in a NUL terminated string.
  * 

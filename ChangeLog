@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.396 2007/08/17 11:45:35 haraldkipp Exp $
+$Id: ChangeLog,v 1.397 2007/08/29 07:43:52 haraldkipp Exp $
+
+
+2007-08-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_emac.c, arch/arm/dev/uartgba.c,
+	arch/avr/dev/ace.c, arch/avr/dev/usart0avr.c, 
+	arch/avr/dev/usart1avr.c, c/stdlib/abs.c, c/string/strrchr.c, 
+	include/dev/ace.h, include/dev/hd44780.h, include/dev/hd44780_bus.h, 
+	include/dev/sbbif3.h, include/fs/phatfs.h, include/netinet/igmp.h,
+	include/sys/mutex.h, include/sys/semaphore.h, include/sys/sock_var.h, 
+	doc/gen/nutdoc_en.txt, doc/gen/nut_en.cfg.in: Moved to Doxygen 1.5.3. 
+	Several documentation typos fixed.
 
 
 2007-08-17  Harald Kipp  <harald.kipp@egnite.de>
@@ -25,6 +37,8 @@ $Id: ChangeLog,v 1.396 2007/08/17 11:45:35 haraldkipp Exp $
 	Alex from brumer.com.
 
 	* arch/arm/dev/dm9000e.c: Enable multicast. Thanks to Joerg Krein.
+
+	* boot/bootmon: Checked in Ethernut 3 boot loader.
 
 
 2007-08-14  Matthias Ringwald <mringwal@inf.ethz.ch>

@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2007/08/29 07:43:54  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.5  2006/10/08 16:42:56  haraldkipp
  * Not optimal, but simple and reliable exclusive access implemented.
  * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
@@ -138,6 +141,7 @@ typedef struct _PHATFILE {
 /*! Only these flags are allowed for files and directories. */
 #define PHAT_FATTR_FILEMASK  0x37
 
+/*@}*/
 /*@}*/
 
 

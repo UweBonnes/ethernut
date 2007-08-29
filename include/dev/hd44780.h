@@ -55,6 +55,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.3  2006/04/07 12:58:34  haraldkipp
  * Target specific delay defaults moved from global header to AVR specific
  * file.
@@ -83,7 +86,7 @@
 
 
 /*!
- * \addgroup xgDevDisplay
+ * \addtogroup xgDevDisplay
  */
 /*@{*/
 

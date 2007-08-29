@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2007/08/29 07:43:54  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.4  2005/12/22 09:36:25  freckle
  * added missing prototype for NutMutexDestroy
  *
@@ -70,7 +73,7 @@ extern "C" {
     typedef struct _MUTEX MUTEX;
 
 /*!
- * \struct _mutex mutex.h sys/mutex.h
+ * \struct _MUTEX mutex.h sys/mutex.h
  * \brief Recursive mutex.
  *
  */

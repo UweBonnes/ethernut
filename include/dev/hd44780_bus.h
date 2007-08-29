@@ -37,6 +37,9 @@
  
 /*
  * $Log$
+ * Revision 1.4  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.3  2004/05/27 15:03:54  olereinhardt
  * Changed copyright notice
  *
@@ -49,7 +52,7 @@
 
 
 /*!
- * \addgroup xgDevDisplay
+ * \addtogroup xgDevDisplay
  */
 /*@{*/
 

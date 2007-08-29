@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/08/29 07:43:52  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.9  2007/05/02 11:20:26  haraldkipp
  * Pull-up enable/disable simplified.
  * Added multicast table entry.
@@ -363,7 +366,7 @@ static u_int rxBufIdx;
 
 
 /*!
- * \addtogroup xgEmacSam7x
+ * \addtogroup xgNutArchArmAt91Emac
  */
 /*@{*/
 

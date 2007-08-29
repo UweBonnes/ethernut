@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.5  2007/02/15 16:19:14  haraldkipp
  * Can use PORTG for half duplex control.
  *
@@ -95,7 +98,7 @@
 /*!
  * \name UART1 RTS Handshake Control
  *
- * \ref UART1_RTS_BIT must be defined in arch/avr.h
+ * UART1_RTS_BIT must be defined in arch/avr.h
  */
 #ifdef UART1_RTS_BIT
 
@@ -123,7 +126,7 @@
 /*!
  * \name UART1 Half Duplex Control
  *
- * \ref UART1_HDX_BIT must be defined in arch/avr.h
+ * UART1_HDX_BIT must be defined in arch/avr.h
  */
 #ifdef UART1_HDX_BIT
 

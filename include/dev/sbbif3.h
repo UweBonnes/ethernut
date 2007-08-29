@@ -33,12 +33,15 @@
  */
 
 /*!
- * \file dev/sbbi3.h
+ * \file dev/sbbif3.h
  * \brief Serial bit banged interface 3.
  *
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2007/08/29 07:43:53  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.1  2007/04/12 09:07:54  haraldkipp
  * Configurable SPI added.
  *

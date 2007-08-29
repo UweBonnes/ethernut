@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/08/29 07:43:54  haraldkipp
+ * Documentation updated and corrected.
+ *
  * Revision 1.9  2006/03/21 21:22:19  drsung
  * Enhancement made to TCP state machine. Now TCP options
  * are read from peer and at least the maximum segment size is stored.
@@ -125,7 +128,7 @@ extern "C" {
 \*********************************************************************/
 
 /*!
- * \addgroup xgUdpSocket
+ * \addtogroup xgUdpSocket
  */
 /*@{*/
 
