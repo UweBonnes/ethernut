@@ -175,6 +175,7 @@ extern int vfprintf(FILE * stream, CONST char *fmt, va_list ap);
 extern int vfscanf(FILE * stream, CONST char *fmt, va_list ap);
 extern int vsprintf(char *buffer, CONST char *fmt, va_list ap);
 extern int vsscanf(CONST char *string, CONST char *fmt, va_list ap);
+extern int rename(CONST char *old_name, CONST char *new_name);
 
 #ifdef __HARVARD_ARCH__
 /* Strings in program space need special handling for Harvard architectures. */

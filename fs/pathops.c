@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
  *
  * Copyright (c) 1991
  *      The Regents of the University of California.  All rights reserved.
@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2007/08/29 13:34:13  haraldkipp
+ * Added function for renaming files (contrib by ZACK).
+ *
  * Revision 1.5  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -63,6 +66,7 @@
 
 #include <errno.h>
 #include <sys/device.h>
+#include <string.h>
 
 #include <fs/fs.h>
 #include <unistd.h>
@@ -207,6 +211,67 @@ int fstat(int fh, struct stat *s)
 int mkdir(CONST char *path, int mode)
 {
     return PathOperation(path, FS_DIR_CREATE);
+}
+
+/*!
+  * \brief Rename a file.
+  *
+  * New and old filename must contain the name of a registered device, 
+  * followed by a colon and a filename. Moving a file from one device
+  * to another is not supported.
+  *
+  * \param old_name Pathname of an existing file.
+  * \param new_name New pathname.
+  *
+  * \return 0 for success or -1 to indicate an error.
+  */
+int rename(CONST char *old_name, CONST char *new_name)
+{
+    int rc = -1;
+    NUTDEVICE *dev;
+    char old_devname[9];
+    char new_devname[9];
+    u_char nidx;
+    CONST char *nptr;
+    FSCP_RENAME parms;   /* Structure used for renaming files. */
+
+    /* Extract old file's device name. */
+    nptr = old_name;
+    for (nidx = 0; *nptr && *nptr != ':' && nidx < 8; nidx++, nptr++) {
+        old_devname[nidx] = *nptr;
+    }
+    old_devname[nidx] = 0;
+
+    /* Make sure a colon follows the device name. */
+    if (*nptr++ == ':') {
+        /* Assign the old file's name to the file rename structure. */
+        parms.par_old = nptr;
+
+        /* Extract new device name. */
+        nptr = new_name;
+
+        for (nidx = 0; *nptr && *nptr != ':' && nidx < 8; nidx++, nptr++) {
+            new_devname[nidx] = *nptr;
+        }
+        new_devname[nidx] = 0;
+
+        /* Make sure a colon follows the device name. */
+        if (*nptr++ == ':') {
+            /* Assign the new file's name to the file rename structure. */
+            parms.par_new = nptr;
+
+            /* Make sure both device names are the same. */
+            if (strcmp(new_devname, old_devname) == 0) {
+                /* Get device structure of registered device. */
+                if ((dev = NutDeviceLookup(old_devname)) == 0) {
+                    errno = ENOENT;
+                } else {
+                    rc = (*dev->dev_ioctl) (dev, FS_RENAME, (void *) &parms);
+                }
+            }
+        }
+    }
+    return rc;
 }
 
 /*@}*/

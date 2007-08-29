@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2007/08/29 13:34:14  haraldkipp
+ * Added function for renaming files (contrib by ZACK).
+ *
  * Revision 1.3  2006/01/05 16:45:25  haraldkipp
  * New ioctl functions.
  *
@@ -149,8 +152,8 @@ typedef struct _FSCP_VOL_MOUNT {
 } FSCP_VOL_MOUNT;
 
 typedef struct _FSCP_RENAME {
-    char *par_old;
-    char *par_new;
+    CONST char *par_old;
+    CONST char *par_new;
 } FSCP_RENAME;
 
 typedef struct _FSCP_STATUS {
