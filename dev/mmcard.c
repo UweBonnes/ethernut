@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2007/08/30 12:15:06  haraldkipp
+ * Configurable MMC timings.
+ *
  * Revision 1.9  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -74,6 +77,8 @@
  * \endverbatim
  */
 
+#include <cfg/mmci.h>
+
 #if 0
 /* Use for local debugging. */
 #define NUTDEBUG
@@ -99,7 +104,91 @@
 /*@{*/
 
 #ifndef MMC_BLOCK_SIZE
-#define MMC_BLOCK_SIZE  512
+/*!
+ * \brief Block size.
+ *
+ * Block size in bytes. Do not change unless you are sure that both, 
+ * the file system and the hardware support it.
+ */
+#define MMC_BLOCK_SIZE          512
+#endif
+
+#ifndef MMC_MAX_INIT_POLLS
+/*!
+ * \brief Card init timeout.
+ *
+ * Max. number of loops waiting for card's idle mode after initialization. 
+ * An additional delay of 1 ms is added to each loop after one quarter of 
+ * this value elapsed.
+ */
+#define MMC_MAX_INIT_POLLS      512
+#endif
+
+#ifndef MMC_MAX_RESET_POLLS
+/*!
+ * \brief Card reset timeout.
+ *
+ * Max. number of loops waiting for card's idle mode after resetting it.
+ */
+#define MMC_MAX_RESET_POLLS     255
+#endif
+
+#ifndef MMC_MAX_WRITE_POLLS
+/*!
+ * \brief Card write timeout.
+ *
+ * Max. number of loops waiting for card's idle mode after resetting it. 
+ * An additional delay of 1 ms is added to each loop after 31/32 of this 
+ * value elapsed.
+ */
+#define MMC_MAX_WRITE_POLLS     1024
+#endif
+
+#ifndef MMC_MAX_WRITE_RETRIES
+/*!
+ * \brief Card write retries.
+ *
+ * Max. number of retries while writing.
+ */
+#define MMC_MAX_WRITE_RETRIES   32
+#endif
+
+#ifndef MMC_MAX_READ_RETRIES
+/*!
+ * \brief Card read retries.
+ *
+ * Max. number of retries while reading.
+ */
+#define MMC_MAX_READ_RETRIES    8
+#endif
+
+#ifndef MMC_MAX_REG_POLLS
+/*!
+ * \brief Register read timeout.
+ *
+ * Max. number of loops while reading a card's register.
+ */
+#define MMC_MAX_REG_POLLS       512
+#endif
+
+#ifndef MMC_MAX_CMDACK_POLLS
+/*!
+ * \brief Command acknowledge timeout.
+ *
+ * Max. number of loops waiting for card's acknowledge of a command. 
+ * An additional delay of 1 ms is added to each loop after three quarter 
+ * of this value elapsed.
+ */
+#define MMC_MAX_CMDACK_POLLS    1024
+#endif
+
+#ifndef MMC_MAX_R1_POLLS
+/*!
+ * \brief R1 response timeout.
+ *
+ * Max. number of loops waiting for card's R1 response.
+ */
+#define MMC_MAX_R1_POLLS        1024
 #endif
 
 /*!
@@ -151,7 +240,7 @@ static HANDLE mutex;
  */
 static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
 {
-    u_int tmo = 1024;
+    u_int tmo = MMC_MAX_CMDACK_POLLS;
     u_char ch;
 
     /* Enable card select. */
@@ -168,8 +257,8 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
 #endif
             break;
         }
-        if (tmo < 256) {
-            NutSleep(10);
+        if (tmo < MMC_MAX_CMDACK_POLLS / 4) {
+            NutSleep(1);
         }
     }
     /* Send command and parameter. */
@@ -201,7 +290,7 @@ static u_char MmCardRxR1(MMCIFC * ifc)
     u_char rc;
     int i;
 
-    for (i = 0; i < 255; i++) {
+    for (i = 0; i < MMC_MAX_R1_POLLS; i++) {
         if ((rc = (*ifc->mmcifc_io) (0xFF)) != 0xFF) {
             break;
         }
@@ -288,7 +377,7 @@ static int MmCardReset(MMCIFC * ifc)
      * Switch to idle state and wait until initialization is running
      * or idle state is reached.
      */
-    for (i = 0; i < 255; i++) {
+    for (i = 0; i < MMC_MAX_RESET_POLLS; i++) {
         MmCardTxCmd(ifc, MMCMD_GO_IDLE_STATE, 0);
         rsp = MmCardRxR1(ifc);
         (*ifc->mmcifc_cs) (0);
@@ -331,7 +420,7 @@ static int MmCardInit(MMCIFC * ifc)
      * Wait for a really long time until card is initialized
      * and enters idle state.
      */
-    for (i = 0; i < 512; i++) {
+    for (i = 0; i < MMC_MAX_INIT_POLLS; i++) {
         /*
          * In SPI mode SEND_OP_COND is a dummy, used to poll the card
          * for initialization finished. Thus, there are no parameters
@@ -348,7 +437,7 @@ static int MmCardInit(MMCIFC * ifc)
             NutEventPost(&mutex);
             return 0;
         }
-        if (i > 128) {
+        if (i > MMC_MAX_INIT_POLLS / 4) {
             NutSleep(1);
         }
     }
@@ -384,14 +473,14 @@ static int MmCardReadOrVerify(MMCIFC * ifc, u_long blk, u_char * buf, int vflg)
             if ((rsp = MmCardRxR1(ifc)) == 0xFE) {
                 rc = 0;
                 if (vflg) {
-                    for (i = 0; i < 512; i++) {
+                    for (i = 0; i < MMC_BLOCK_SIZE; i++) {
                         if (*buf != (*ifc->mmcifc_io) (0xFF)) {
                             rc = -1;
                         }
                         buf++;
                     }
                 } else {
-                    for (i = 0; i < 512; i++) {
+                    for (i = 0; i < MMC_BLOCK_SIZE; i++) {
                         *buf = (*ifc->mmcifc_io) (0xFF);
                         buf++;
                     }
@@ -423,7 +512,7 @@ static int MmCardReadOrVerify(MMCIFC * ifc, u_long blk, u_char * buf, int vflg)
 static int MmCardWrite(MMCIFC * ifc, u_long blk, CONST u_char * buf)
 {
     int rc = -1;
-    int retries = 32;
+    int retries = MMC_MAX_WRITE_RETRIES;
     int tmo;
     int i;
     u_char rsp;
@@ -436,18 +525,18 @@ static int MmCardWrite(MMCIFC * ifc, u_long blk, CONST u_char * buf)
         if ((rsp = MmCardRxR1(ifc)) == 0x00) {
             (*ifc->mmcifc_io) (0xFF);
             (*ifc->mmcifc_io) (0xFE);
-            for (i = 0; i < 512; i++) {
+            for (i = 0; i < MMC_BLOCK_SIZE; i++) {
                 (*ifc->mmcifc_io) (*buf);
                 buf++;
             }
             // (*ifc->mmcifc_io)(0xFF);
             // (*ifc->mmcifc_io)(0xFF);
             if ((rsp = MmCardRxR1(ifc)) == 0xE5) {
-                for (tmo = 0; tmo < 1024; tmo++) {
+                for (tmo = 0; tmo < MMC_MAX_WRITE_POLLS; tmo++) {
                     if ((*ifc->mmcifc_io) (0xFF) == 0xFF) {
                         break;
                     }
-                    if (tmo > 1000) {
+                    if (tmo > MMC_MAX_WRITE_POLLS - MMC_MAX_WRITE_POLLS / 32) {
                         NutSleep(1);
                     }
                 }
@@ -507,7 +596,7 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
          * It would be much better to verify the checksum than to re-read
          * and verify the data block.
          */
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < MMC_MAX_READ_RETRIES; i++) {
             if (MmCardReadOrVerify(ifc, blk, buffer, 0) == 0) {
                 if (MmCardReadOrVerify(ifc, blk, buffer, 1) == 0) {
                     return 1;
@@ -557,7 +646,7 @@ int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
     {
         int i;
 
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < MMC_MAX_READ_RETRIES; i++) {
             if (MmCardWrite(ifc, blk, buffer) == 0) {
                 if (MmCardReadOrVerify(ifc, blk, (void *) buffer, 1) == 0) {
                     return 1;
@@ -783,7 +872,7 @@ int MmCardUnmount(NUTFILE * nfp)
 static int MmCardGetReg(MMCIFC * ifc, u_char cmd, u_char * rbp, int siz)
 {
     int rc = -1;
-    int retries = 512;
+    int retries = MMC_MAX_REG_POLLS;
     int i;
 
     /* Gain mutex access. */

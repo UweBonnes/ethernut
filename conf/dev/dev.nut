@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.37  2007/08/30 12:15:06  haraldkipp
+-- Configurable MMC timings.
+--
 -- Revision 1.36  2007/04/12 08:57:19  haraldkipp
 -- New VS10XX decoder support. It will replace the old VS1001K driver, but
 -- hasn't been tested for this chip yet. For the time being, please add the
@@ -2125,7 +2128,103 @@ nutdev =
                       "Tested on AT91 only.",
         requires = { "DEV_MMCLL" },
         provides = { "DEV_BLOCK" },
-        sources = { "mmcard.c" }
+        sources = { "mmcard.c" },
+        options =
+        {
+            {
+                macro = "MMC_BLOCK_SIZE",
+                brief = "Block Size",
+                description = "Block size in bytes. Do not change unless you are "..
+                              "sure that both, the file system and the hardware support it.",
+                default = "512",                              
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_VERIFY_AFTER",
+                brief = "Verify Read/Write",
+                description = "If enabled, an additional read will be done to verify "..
+                              "each read or written sector. This is useful for testing.",
+                flavor = "boolean",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_INIT_POLLS",
+                brief = "Card Init Timeout",
+                description = "Max. number of loops waiting for card's idle mode "..
+                              "after initialization. An additional delay of 1 ms is "..
+                              "added to each loop after one quarter of this value "..
+                              "elapsed.",
+                default = "512",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_RESET_POLLS",
+                brief = "Card Reset Timeout",
+                description = "Max. number of loops waiting for card's idle mode "..
+                              "after resetting it.",
+                default = "255",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_WRITE_POLLS",
+                brief = "Card Write Timeout",
+                description = "Max. number of loops waiting for card's idle mode "..
+                              "after resetting it. An additional delay of 1 ms is "..
+                              "added to each loop after 31/32 of this value "..
+                              "elapsed.",
+                default = "1024",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_WRITE_RETRIES",
+                brief = "Card Write Retries",
+                description = "Max. number of retries while writing.",
+                default = "32",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_READ_RETRIES",
+                brief = "Card Read Retries",
+                description = "Max. number of retries while reading.",
+                default = "8",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_REG_POLLS",
+                brief = "Register Read Timeout",
+                description = "Max. number of loops while reading a card's register.",
+                default = "512",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_CMDACK_POLLS",
+                brief = "Command Acknowledge Timeout",
+                description = "Max. number of loops waiting for card's acknowledge "..
+                              "of a command. An additional delay of 1 ms is "..
+                              "added to each loop after three quarter of this value "..
+                              "elapsed.",
+                default = "1024",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_MAX_R1_POLLS",
+                brief = "R1 Response Timeout",
+                description = "Max. number of loops waiting for card's R1 response. "..
+                              "Increase on fast systems and old cards, decrease for "..
+                              "faster timeout. ",
+                default = "1024",
+                flavor = "integer",
+                file = "include/cfg/mmci.h"
+            },
+        },
     },
 
     --

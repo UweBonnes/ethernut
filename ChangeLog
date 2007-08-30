@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.399 2007/08/29 15:10:19 haraldkipp Exp $
+$Id: ChangeLog,v 1.400 2007/08/30 12:15:05 haraldkipp Exp $
+
+2007-08-30  Harald Kipp  <harald.kipp@egnite.de>
+
+	* dev/mmcard.c, include/cfg/mmci.h, conf/dev/dev.nut:
+	Timing configuration added. Fixes bug #1723331. Thanks to
+	Marti Raudsepp.
+
 
 2007-08-29  Harald Kipp  <harald.kipp@egnite.de>
 
