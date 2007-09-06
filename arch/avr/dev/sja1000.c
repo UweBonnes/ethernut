@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/09/06 19:02:48  olereinhardt
+ * Corrected handling of 11bit standard IDs
+ *
  * Revision 1.3  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -98,6 +101,7 @@
 #include <dev/irqreg.h>
 #include <dev/can_dev.h>
 #include <dev/sja1000.h>
+#include <cfg/arch/avr.h>
 
 
 #ifndef SJA_SIGNAL
@@ -455,14 +459,14 @@ void SJATxFrame(CANFRAME * CAN_frame)
 {
     u_long temp_id;
 
-    temp_id = CAN_frame->id << 3;
 
     if (CAN_frame->ext) {
+	temp_id = CAN_frame->id << 3;
         SJA1000_TxFrameInfo = CAN_frame->len | CAN_29 | (CAN_frame->rtr ? CAN_RTR : 0);
 
         SJA1000_Tx1 = (uint8_t) (temp_id >> 24);        // load High Byte
         SJA1000_Tx2 = (uint8_t) (temp_id >> 16);        // load High Byte
-        SJA1000_Tx3 = (uint8_t) (temp_id >> 8); // load High Byte
+        SJA1000_Tx3 = (uint8_t) (temp_id >> 8); 	// load High Byte
         SJA1000_Tx4 = (uint8_t) (temp_id & 0x00F8);     // Low Byte and ignore bit 0-2
 
         SJA1000_Tx5 = CAN_frame->byte[0];
@@ -475,10 +479,11 @@ void SJATxFrame(CANFRAME * CAN_frame)
         SJA1000_Tx12 = CAN_frame->byte[7];
 
     } else {
+	temp_id = CAN_frame->id << 21;
         SJA1000_TxFrameInfo = CAN_frame->len | (CAN_frame->rtr ? CAN_RTR : 0);
 
-        SJA1000_Tx1 = (uint8_t) ((CAN_frame->id) >> 24);        // load High Byte
-        SJA1000_Tx2 = (uint8_t) ((CAN_frame->id) >> 16) & 0xE0; // Low Byte and ignore bit 0-4
+        SJA1000_Tx1 = (uint8_t) (temp_id >> 24);        // load High Byte
+        SJA1000_Tx2 = (uint8_t) (temp_id >> 16) & 0xE0; // Low Byte and ignore bit 0-4
 
         SJA1000_Tx3 = CAN_frame->byte[0];
         SJA1000_Tx4 = CAN_frame->byte[1];
@@ -524,7 +529,7 @@ void SJARxFrame(CANFRAME * CAN_frame)
         CAN_frame->byte[7] = SJA1000_Rx12;      // just fill the whole struct, less CPU cycles
     } else {
         CAN_frame->id = (((uint32_t) SJA1000_Rx1 << 24) | 
-                          (uint32_t) SJA1000_Rx2 << 16) >> 3;   // id_h and id_l
+                          (uint32_t) SJA1000_Rx2 << 16) >> 21;   // id_h and id_l
 
         CAN_frame->byte[0] = SJA1000_Rx3;
         CAN_frame->byte[1] = SJA1000_Rx4;
@@ -606,14 +611,14 @@ static void SJAInterrupt(void *arg)
         }
     }
 
-    if ((irq & EI_Bit) == EI_Bit)       //Error IRQ fired
+    if ((irq & EI_Bit) == EI_Bit)               //Error IRQ fired
     {
         ci->can_errors++;
         // TODO: Handle error
     } else if ((irq & DOI_Bit) == DOI_Bit)      //Error IRQ fired
     {
         ci->can_overruns++;
-        SJA1000_CMD = CDO_Bit;          // Clear DO status;
+        SJA1000_CMD = CDO_Bit;                  // Clear DO status;
         // TODO: Handle overrun
     }
 }
