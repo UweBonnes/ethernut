@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2007/09/06 19:46:47  olereinhardt
+ * Added interrupt definitions for SPI/TWI
+ *
  * Revision 1.10  2007/02/15 16:29:23  haraldkipp
  * Support for system controller interrupts added.
  *
@@ -142,6 +145,9 @@ extern IRQ_HANDLER sig_EMAC;
 extern IRQ_HANDLER sig_PIO;
 extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
+extern IRQ_HANDLER sig_SPI0;
+extern IRQ_HANDLER sig_SPI1;
+extern IRQ_HANDLER sig_TWI;
 
 /*
  * Registered system interrupt handler information structure.
