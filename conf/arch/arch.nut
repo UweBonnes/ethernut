@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.28  2007/09/06 19:41:30  olereinhardt
+-- Added HW_PDC_AT91 to AT91SAM7X256 platform
+--
 -- Revision 1.27  2007/04/12 09:20:00  haraldkipp
 -- ATmega2561 no longer bound to ICCAVR.
 --
@@ -288,6 +291,7 @@ nutarch =
                     "HW_UART_AT91",
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
+		    "HW_PDC_AT91",
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=arm7tdmi" }
