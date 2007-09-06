@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.400 2007/08/30 12:15:05 haraldkipp Exp $
+$Id: ChangeLog,v 1.401 2007/09/06 19:05:23 olereinhardt Exp $
+
+2007-09-06  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* arch/avr/dev/sja1000.c:
+        Corrected handling of 11bit standard IDs
 
 2007-08-30  Harald Kipp  <harald.kipp@egnite.de>
 
