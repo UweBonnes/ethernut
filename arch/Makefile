@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.10  2007/09/06 19:32:49  olereinhardt
+# Added at91_twi driver
+#
 # Revision 1.9  2007/07/17 18:07:44  haraldkipp
 # Building in the source tree should work again for AT91 devices.
 #
@@ -121,10 +124,10 @@ ifeq ($(DEVICE), AT91SAM7X256)
 SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91fiq.c \
 	 arm/dev/ih_at91sys.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
 	 arm/dev/ih_at91pio.c arm/dev/ih_at91ssc.c arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c \
-	 arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c \
-	 arm/dev/ih_at91emac.c arm/dev/ih_at91wdi.c arm/dev/debug_at91.c arm/dev/usart0at91.c \
-	 arm/dev/usart1at91.c arm/dev/at91_emac.c arm/dev/spimmc_at91.c arm/dev/at91init.c \
-	 arm/dev/at91_efc.c
+	 arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c arm/dev/ih_at91twi.c arm/dev/ih_at91uart0.c \
+         arm/dev/ih_at91uart1.c arm/dev/ih_at91emac.c arm/dev/ih_at91wdi.c arm/dev/debug_at91.c \
+         arm/dev/usart0at91.c arm/dev/usart1at91.c arm/dev/at91_emac.c arm/dev/spimmc_at91.c \
+         arm/dev/at91init.c arm/dev/at91_efc.c arm/dev/at91_twi.c
 endif
 
 ifeq ($(DEVICE), AT91SAM9260)
