@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.23  2007/09/06 19:54:31  olereinhardt
+-- Added ld script selection for eb40a_redboot_ram (EB40A Eval board with
+-- redboot bootloader running, changed load address)
+--
 -- Revision 1.22  2007/04/12 09:09:27  haraldkipp
 -- Allow to select empty entry for AT91 ports.
 --
@@ -128,7 +132,8 @@ arm_ld_choice = {
                     "at91sam7x256_rom", 
                     "at91sam9260_ram", 
                     "s3c4510b-ram", 
-                    "eb40a_ram", 
+                    "eb40a_ram",
+	            "eb40a_redboot_ram", 
                     "gbaxport2", 
                     "wolf_ram" 
                 }
