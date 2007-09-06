@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.18  2007/09/06 19:43:19  olereinhardt
+-- Added support for AT91 TWI driver
+--
 -- Revision 1.17  2007/02/15 16:04:34  haraldkipp
 -- Configurable AT91 EMAC buffer usage and link timeout.
 -- Port usage for HD44780 is now configurable. Data bits no longer need four
@@ -294,6 +297,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
             "arm/dev/ih_at91emac.c",
@@ -646,6 +650,14 @@ nutarch_arm =
             },
         }
     },
+    {
+        name = "nutarch_arm_twi_at91",
+        brief = "AT91 TWI",
+        description = "TWI interface for AT91 (currently SAM7 only).",
+        requires = { "HW_MCU_AT91SAM7X" },
+        provides = { "DEV_TWI" },
+        sources = { "arm/dev/at91_twi.c" },
+    },     
     {
         name = "nutarch_arm_spimmc_at91",
         brief = "AT91 SPI MMC Access",
