@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2007/09/06 19:45:16  olereinhardt
+ * include/arch/arm/at91sam7x.h
+ *
  * Revision 1.9  2007/07/13 15:21:36  olereinhardt
  * 2007-07-13  Ole Reinhardt <ole.reinhardt@embedded-it.de>
  *         * include/arch/arm/at91sam7x.h: Added UDP support
@@ -155,6 +158,7 @@
 #include <arch/arm/at91_mc.h>
 #include <arch/arm/at91_ssc.h>
 #include <arch/arm/at91_udp.h>
+#include <arch/arm/at91_twi.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam7x */
 /*@{*/
