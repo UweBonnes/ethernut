@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2007/09/06 20:07:24  olereinhardt
+ * Changed phy detection and added support for micel phy (SAM7-EX256 Board)
+ *
  * Revision 1.10  2007/08/29 07:43:52  haraldkipp
  * Documentation updated and corrected.
  *
@@ -236,6 +239,7 @@
 #define EMAC_PIO_PER            PIOB_PER
 #define EMAC_PIO_OER            PIOB_OER
 #define EMAC_PIO_CODR           PIOB_CODR
+#define EMAC_PIO_SODR           PIOB_SODR
 #define EMAC_PIO_PUER           PIOB_PUER
 #define EMAC_PIO_PUDR           PIOB_PUDR
 #define EMAC_PIO_ASR            PIOB_ASR
@@ -470,11 +474,39 @@ static int EmacReset(u_long tmo)
     phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
 #endif
 
-    /* For some unknown reason it seems to be required to read the ID registers first. */
-    if (phy_inw(NIC_PHY_ID1) != 0x0181 || (phy_inw(NIC_PHY_ID2) & 0xFFF0) != 0xB8A0) {
-        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-        return -1;
-    }
+//    /* For some unknown reason it seems to be required to read the ID registers first. */
+//    if (phy_inw(NIC_PHY_ID1) != 0x0181 || (phy_inw(NIC_PHY_ID2) & 0xFFF0) != 0xB8A0) {
+//        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+//        return -1;
+//    }
+
+// TODO: Make phy id configurable
+/* PHY ID */
+#define MII_DM9161_ID_H     0x0181
+#define MII_DM9161_ID_L     0xb8a0
+
+#define MII_AM79C875_ID_H   0x0022
+#define MII_AM79C875_ID_L   0x5540      
+
+#define MII_MICREL_ID_H     0x0022
+#define MII_MICREL_ID_L     0x1610
+
+     /* For some unknown reason it seems to be required to read the ID 
+registers first. */
+
+     // Check for DM PHY (as used on the ATMEL EK)
+     if (phy_inw(NIC_PHY_ID1) != MII_DM9161_ID_H ||
+        (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_DM9161_ID_L) {
+     // Check for MICREL PHY (as used on the Olimex SAM7-EX256)         
+         if (phy_inw(NIC_PHY_ID1) != MII_MICREL_ID_H ||
+           (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_MICREL_ID_L) {
+            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+            return -1;
+         }
+     }
+
+
+// TODO: END
 
     /* Handle auto negotiation if configured. */
     phyval = phy_inw(NIC_PHY_BMCR);
