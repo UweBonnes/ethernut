@@ -1,8 +1,26 @@
-$Id: ChangeLog,v 1.401 2007/09/06 19:05:23 olereinhardt Exp $
+$Id: ChangeLog,v 1.402 2007/09/06 20:09:05 olereinhardt Exp $
 
 2007-09-06  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* arch/avr/dev/sja1000.c:
         Corrected handling of 11bit standard IDs
+	* arch/Makefile: Added at91_twi driver
+        * arch/arm/dev/at91_twi.c, arch/arm/dev/ih_at91twi.c: First checkin
+        * conf/arch/arch.nut: Added HW_PDC_AT91 to AT91SAM7X256 platform
+        * conf/arch/arm.nut: Added support for AT91 TWI driver
+        * include/arch/arm/at91sam7x.h: Added support for AT91 TWI driver
+        * include/arch/arm/irqreg.h: Added interrupt definitions for SPI/TWI
+        * conf/olimex-sam7-ex256.conf: First checkin
+        * conf/repository.nut: 
+        Added ld script selection for eb40a_redboot_ram (EB40A Eval board 
+        with redboot bootloader running, changed load address)
+        * conf/at91eb40a_redboot.conf: First checkin, New config for
+	AT91EB40A eval board with redboot bootloader running
+	* arch/arm/ldscrips/eb40a_redboot_ram.ld: First checkin, support for
+	AT91EB40A eval board with redboot bootloader running
+	* arch/arm/dev/at91_emac.c: Changed phy detection and added support
+	for micel phy (SAM7-EX256 Board). Still needs work: Make phy id 
+        configurable in configurator.
+
 
 2007-08-30  Harald Kipp  <harald.kipp@egnite.de>
 
