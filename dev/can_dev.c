@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/09/08 03:01:11  hwmaier
+ * Changes to support RX time-out, CAN_SetRxTimeout() added.
+ *
  * Revision 1.5  2005/10/07 21:38:44  hwmaier
  * CAN_SetSpeed function added.
  *
@@ -104,9 +107,9 @@ u_char CAN_TxFree(NUTDEVICE *dev)
     return ((IFCAN *)(dev->dev_icb))->can_txfree(dev);
 }
 
-void CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame)
+u_char CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
-    (((IFCAN *)(dev->dev_icb))->can_recv)(dev, frame);
+  return (((IFCAN *)(dev->dev_icb))->can_recv)(dev, frame);
 }
 
 u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame)
@@ -121,6 +124,21 @@ u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame)
 u_char CAN_RxAvail(NUTDEVICE *dev)
 {
     return ((IFCAN *)(dev->dev_icb))->can_rxavail(dev);
+}
+
+/*!
+ * Sets the CAN receive timeout
+ *
+ * \param dev Pointer to the device structure
+ * \param timeout Timeout in milliseconds, NUT_WAIT_INFINITE = no time-out
+ 
+ * \warning Timeout values are given in milliseconds and are limited to 
+ *          the granularity of the system timer. To disable timeout,
+ *          set the parameter to NUT_WAIT_INFINITE.
+ */
+void CAN_SetRxTimeout(NUTDEVICE *dev, u_long timeout)
+{
+    ((IFCAN *)(dev->dev_icb))->can_rtimeout = timeout;
 }
 
 

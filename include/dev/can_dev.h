@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/09/08 03:01:11  hwmaier
+ * Changes to support RX time-out, CAN_SetRxTimeout() added.
+ *
  * Revision 1.5  2005/10/07 21:44:22  hwmaier
  * CAN_SetSpeed function added. Baudrates moved here.
  *
@@ -135,14 +138,15 @@ struct ifcan {
     u_long can_baudrate;        /*!< \brief Baudrate of device */
     u_char can_acc_mask[4];     /*!< \brief Acceptance mask */
     u_char can_acc_code[4];     /*!< \brief Acceptance code */
+    u_long can_rtimeout;        /*!< \brief Timout for receiving */
 
-    u_char (*can_rxavail) (NUTDEVICE *);          /*!< \brief Receive buffer data available? */
-    u_char (*can_txfree) (NUTDEVICE *);           /*!< \brief Transmit buffer free? */
-    void   (*can_recv) (NUTDEVICE *, CANFRAME *); /*!< \brief Receive routine. */
-    void   (*can_send) (NUTDEVICE *, CANFRAME *); /*!< \brief Send routine. */
-    void   (*can_set_ac) (NUTDEVICE *, u_char*);  /*!< \brief Set accaptance code */
-    void   (*can_set_am) (NUTDEVICE *, u_char*);  /*!< \brief Set accaptance mask */
-    u_char (*can_set_baud) (NUTDEVICE *, u_long); /*!< \brief Set speed */
+    u_char (*can_rxavail) (NUTDEVICE *);           /*!< \brief Receive buffer data available? */
+    u_char (*can_txfree) (NUTDEVICE *);            /*!< \brief Transmit buffer free? */
+    u_char (*can_recv) (NUTDEVICE *, CANFRAME *);  /*!< \brief Receive routine. */
+    void   (*can_send) (NUTDEVICE *, CANFRAME *);  /*!< \brief Send routine. */
+    void   (*can_set_ac) (NUTDEVICE *, u_char*);   /*!< \brief Set accaptance code */
+    void   (*can_set_am) (NUTDEVICE *, u_char*);   /*!< \brief Set accaptance mask */
+    u_char (*can_set_baud) (NUTDEVICE *, u_long);  /*!< \brief Set speed */
 };
 
 /*!
@@ -157,9 +161,10 @@ void   CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_TxFree(NUTDEVICE *dev);
 
-void   CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame);
+u_char CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame);
 u_char CAN_RxAvail(NUTDEVICE *dev);
+void   CAN_SetRxTimeout(NUTDEVICE *dev, u_long timeout);
 
 /*@}*/
 
