@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2005 FOCUS Software Engineering Pty Ltd <www.focus-sw.com>
- * Copyright (c) 2005 proconX <www.proconx.com>
+ * Copyright (c) 2005-2007 proconX Pty Ltd <www.proconx.com>
  *
  * This driver has been closely modeled after the existing Nut/OS SJA1000
  * driver and the buffer management and some code snippets have been borrowed
@@ -41,6 +40,18 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/09/08 03:00:52  hwmaier
+ * Optional time-out for receiving added, more robust handling of error interrupts.
+ *
+ * Revision 1.3  2007/05/24 00:55:43  henrik
+ * no message
+ *
+ * Revision 1.2  2007/03/11 08:59:47  henrik
+ * no message
+ *
+ * Revision 1.1  2006/11/17 01:44:00  henrik
+ * no message
+ *
  * Revision 1.4  2006/03/01 02:15:29  hwmaier
  * Error check for NutHeapAlloc added
  *
@@ -76,22 +87,6 @@
 /*****************************************************************************
  * Definitions
  *****************************************************************************/
-
-#define MAX_NO_MOB 15
-
-/**
- * CAN result codes
- *
- * @ingroup can
- */
-enum CAN_RESULT
-{
-   CAN_SUCCESS       =  0,   ///< Successful operation
-   CAN_TXBUF_FULL    = -1,   ///< All TX message objects busy
-   CAN_RXBUF_EMPTY   = -2,   ///< All RX message objects busy
-   CAN_ILLEGAL_MOB   = -3,   ///< Message object index out of range
-   CAN_INVALID_SPEED = -4,   ///< Invalid baud rate parameter
-};
 
 #define RX_MOB 8
 
@@ -212,7 +207,7 @@ typedef struct _CANBuffer CANBuffer;
  * Driver data
  *****************************************************************************/
 
-CANBuffer canRxBuf;
+static CANBuffer canRxBuf;
 CANINFO dcb_atcan;
 IFCAN ifc_atcan;
 NUTDEVICE devAtCan;
@@ -221,6 +216,25 @@ NUTDEVICE devAtCan;
 /*****************************************************************************
  * Low level functions
  *****************************************************************************/
+
+/**
+ * Returns the state of this CAN node.
+ * Refer to state diagram in AT90CAN128 dataheet chapter 20.7 "Error
+ * Management"
+ * 
+ * @retval CAN_SUCCESS if CAN node is in ACTIVE state
+ * @retval CAN_PASSIVE if CAN node is in PASSIVE state
+ * @retval CAN_BUS_OFF if CAN node is in BUS OFF state
+ */
+int8_t AtCanGetBusState(void)
+{
+   if (CANGSTA & _BV(BOFF))
+       return CAN_BUS_OFF;
+   if (CANGSTA & _BV(ERRP))
+       return CAN_PASSIVE;
+   return CAN_SUCCESS;
+}
+
 
 /**
  * @internal
@@ -232,7 +246,7 @@ int8_t AtCanGetFreeMob(void)
    int8_t mob;
    uint8_t ctrlReg;
 
-   for (mob = 0; mob < MAX_NO_MOB; mob++)
+   for (mob = 0; mob < ATCAN_MAX_MOB; mob++)
    {
       CANPAGE = mob << 4;
       ctrlReg = CANCDMOB & (_BV(CONMOB1) | _BV(CONMOB0));
@@ -265,11 +279,11 @@ int8_t AtCanEnableMsgObj(uint8_t mob,
                          uint32_t id, int8_t idIsExt, int8_t idRemTag,
                          uint32_t mask, int8_t maskIsExt, int8_t maskRemTag)
 {
-    if (mob < MAX_NO_MOB)
+    if (mob < ATCAN_MAX_MOB)
     {
-        // Select MOB
+        // Select MOb
         CANPAGE = mob << 4;
-        // Abort MOB
+        // Abort MOb
         CANCDMOB = 0;
         // Set identifier and mask
         if (idIsExt)
@@ -402,7 +416,7 @@ static void AtCanInterrupt(void *arg)
     ci->can_interrupts++;
 
     //
-    // Check for MOB interrupt
+    // Check for MOb interrupt
     //
     if ((CANHPMOB & 0xF0) != 0xF0)
     {
@@ -439,17 +453,11 @@ static void AtCanInterrupt(void *arg)
                 // Increment buffer length
                 canRxBuf.datalength++;
                 NutEventPostFromIrq(&ci->can_rx_rdy);
-                CANSTMOB = CANSTMOB & ~_BV(RXOK); // Data sheet requires r/m/w cycle on whole register
-                // Re-enable MOB for reception
-                CANCDMOB |= _BV(CONMOB1);
                 // Stat houskeeping
                 ci->can_rx_frames++;
             }
             else
             {
-                CANSTMOB = CANSTMOB & ~_BV(RXOK); // Data sheet requires r/m/w cycle on whole register
-                // Re-enable MOB for reception
-                CANCDMOB |= _BV(CONMOB1);
                 // Stat houskeeping
                 ci->can_overruns++;
             }
@@ -458,21 +466,35 @@ static void AtCanInterrupt(void *arg)
         else if (bit_is_set(CANSTMOB, TXOK))
         {
             NutEventPostFromIrq(&ci->can_tx_rdy);
-            CANSTMOB = CANSTMOB & ~_BV(TXOK); // Data sheet requires r/m/w cycle on whole register
-            // Re-claim MOB
-            CANCDMOB &= ~(_BV(CONMOB1) | _BV(CONMOB0));
+            ci->can_tx_frames++;
         }
-        else
+        // Error interrupts ?
+        else 
         {
-            CANSTMOB = CANSTMOB & 0x80; // Data sheet requires r/m/w cycle on whole register
+           // Stat houskeeping
+           ci->can_errors++;
         }
+        
+        //
+        // Acknowledge all MOB interrupts and manage MObs
+        //
+        CANSTMOB = CANSTMOB & ~(_BV(TXOK) | _BV(RXOK) | _BV(BERR) | 
+                                _BV(SERR) | _BV(CERR) | _BV(FERR) | _BV(AERR));
+        
+        if (bit_is_set(CANCDMOB, CONMOB1))
+           // Re-enable MOb for reception by re-writing CONMOB1 bit
+           CANCDMOB |= _BV(CONMOB1);
+        else
+           // Re-claim MOb as send buffer
+           CANCDMOB &= ~(_BV(CONMOB1) | _BV(CONMOB0));
+
     }
     else
     {
-        // General CAN interrupt
-        // //ttt   TODO: Implement it!
-        //ci->can_errors++;
-        //ci->can_overruns++;
+        // Acknowledge general CAN interrupt
+        CANGIT = _BV(BOFFIT) | _BV(BXOK) | _BV(SERG) | _BV(CERG) | _BV(FERG) | _BV(AERG);
+        // Stat houskeeping
+        ci->can_errors++;
     }
     CANPAGE = savedCanPage; // Restore CAN page register
 }
@@ -523,8 +545,6 @@ void AtCanOutput(NUTDEVICE * dev, CANFRAME * frame)
     {
         NutEventWait(&ci->can_tx_rdy, NUT_WAIT_INFINITE);
     };
-    // Increment counter
-    ci->can_tx_frames++;
 }
 
 
@@ -532,18 +552,23 @@ void AtCanOutput(NUTDEVICE * dev, CANFRAME * frame)
  * Reads a frame from input buffer
  *
  * This function reads a frame from the input buffer. If the input buffer
- * is empty the function will block unitl new frames are received.
+ * is empty the function will block unitl new frames are received, 
+ * or the timeout is reached.
  *
  * \param dev Pointer to the device structure
  * \param frame Pointer to the receive frame
+ * \return 1 if timeout, 0 otherwise 
  */
-void AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
+u_char AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
 {
     CANINFO * ci = (CANINFO *) dev->dev_dcb;
 
     while (canRxBuf.datalength == 0)
     {
-        NutEventWait(&ci->can_rx_rdy, NUT_WAIT_INFINITE);
+        u_long timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
+        
+        if (NutEventWait(&ci->can_rx_rdy, timeout)) 
+            return 1;
     }
     NutEnterCritical();
     // Get the first frame from buffer
@@ -554,6 +579,8 @@ void AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
         canRxBuf.dataindex %= canRxBuf.size;
     canRxBuf.datalength--;
     NutExitCritical();
+    
+    return 0;
 }
 
 
@@ -584,10 +611,10 @@ void AtCanSetAccMask(NUTDEVICE * dev, u_char * am)
 
 
 /*!
- * Sets the CAN baudrate
+ * Sets the CAN baud rate
  *
  * \param dev Pointer to the device structure
- * \param baudrate Baudrate (One of the defined baudrates. See AtCan.h)
+ * \param baudrate Baud rate (One of the defined baud rates. See AtCan.h)
  * \return 0 for success
  */
 u_char AtCanSetBaudrate(NUTDEVICE * dev, u_long baudrate)
@@ -640,7 +667,7 @@ u_char AtCanSetBaudrate(NUTDEVICE * dev, u_long baudrate)
             CANBT3 = CAN_BT3_1M;
         break;
         case CAN_SPEED_CUSTOM:
-            // Do nothing, user sets baudrate directly but don't report an error
+            // Do nothing, user sets baud rate directly but don't report an error
         break;
         default:
         return 1;
@@ -678,8 +705,8 @@ int AtCanInit(NUTDEVICE * dev)
     CANGCON &= ~_BV(ENASTB);
     loop_until_bit_is_clear(CANGSTA, ENFG);
 
-    // Clear all MOBs
-    for (mob = 0; mob < MAX_NO_MOB; mob++)
+    // Clear all MObs
+    for (mob = 0; mob < ATCAN_MAX_MOB; mob++)
     {
         CANPAGE = mob << 4;
         CANSTMOB = 0; // Clear status register
@@ -705,10 +732,10 @@ int AtCanInit(NUTDEVICE * dev)
     // Install IRQ handler
     if (NutRegisterIrqHandler(&sig_CAN_TRANSFER, AtCanInterrupt, dev))
         return -1;
-    // Enable all MOB interrupts and RX, TX etc
+    // Enable all interrupts
     CANIE1 = 0x7F;
     CANIE2 = 0xFF;
-    CANGIE = _BV(ENIT)| _BV(ENRX) | _BV(ENTX) ;
+    CANGIE = 0xFE; // All interrupts except OVRTIM
     // Enable receiving MOBs
     AtCanEnableRx(RX_MOB, 0, 0, 0, 0, 0, 0);
 
@@ -731,13 +758,14 @@ IFCAN ifc_atcan = {
     CAN_SPEED_125K,            /*!< \brief Baudrate of device. */
     {0xFF, 0xFF, 0xFF, 0xFF},  /*!< \brief Acceptance mask */
     {0x00, 0x00, 0x00, 0x00},  /*!< \brief Acceptance code */
+    NUT_WAIT_INFINITE,         /*!< \brief Receive time-out */
     AtCanRxAvail,              /*!< \brief Data in RxBuffer available? */
     AtCanTxFree,               /*!< \brief TxBuffer free? */
     AtCanInput,                /*!< \brief CAN Input routine */
     AtCanOutput,               /*!< \brief CAN Output routine */
     AtCanSetAccCode,           /*!< \brief Set acceptance code */
     AtCanSetAccMask,           /*!< \brief Set acceptance mask */
-    AtCanSetBaudrate           /*!< \brief Set baudrate */
+    AtCanSetBaudrate,          /*!< \brief Set baudrate */
 };
 
 
