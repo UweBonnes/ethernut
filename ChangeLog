@@ -1,4 +1,20 @@
-$Id: ChangeLog,v 1.402 2007/09/06 20:09:05 olereinhardt Exp $
+$Id: ChangeLog,v 1.403 2007/09/08 03:02:29 hwmaier Exp $
+
+2006-09-08 Henrik Maier  <henrik@proconx.com>
+
+        * dev/can_dev.c, include/dev/can_dev.h: Changes to support RX time-out, 
+        CAN_SetRxTimeout() added.
+        
+	* arch/avr/dev/sja1000.c: Optional time-out for receiving added
+        
+        * arch/avr/dev/atcan.c: Optional time-out for receiving added, 
+        more robust handling of error interrupts. 
+        
+	* arch/avr/dev/atcan.c, include/dev/atcan.h: AtCanGetBusState() added.
+        
+        * include/cfg/xnut.h: Wrapped LED macros in braces. Corrected serial 
+        port control macros.
+
 
 2007-09-06  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* arch/avr/dev/sja1000.c:
