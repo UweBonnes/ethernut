@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2005 FOCUS Software Engineering Pty Ltd <www.focus-sw.com>
- * Copyright (c) 2005 proconX <www.proconx.com>
+ * Copyright (c) 2005-2007 proconX Pty Ltd <www.proconx.com>
  *
  * $Id$
  *
@@ -84,18 +83,30 @@
 //@{
 
 /** Switch LED S1 off */
-#define LED_S1_OFF()         PORTF &= ~_BV(2); PORTF &= ~_BV(3);
+#define LED_S1_OFF()         do {PORTF &= ~_BV(2); PORTF &= ~_BV(3);} while(0)
 /** Switch LED S1 red */
-#define LED_S1_RED()         PORTF &= ~_BV(2); PORTF |= _BV(3);
+#define LED_S1_RED()         do {PORTF &= ~_BV(2); PORTF |= _BV(3);} while(0)
+/** Toggle LED S1 between red and off */
+#define LED_S1_RED_TOGGLE()  do {PORTF &= ~_BV(2); PORTF ^= _BV(3);} while(0)
 /** Switch LED S1 green */
-#define LED_S1_GREEN()       PORTF |= _BV(2); PORTF &= ~_BV(3);
+#define LED_S1_GREEN()       do {PORTF |= _BV(2); PORTF &= ~_BV(3);} while(0)
+/** Toggle LED S1 between green and off */
+#define LED_S1_GREEN_TOGGLE() do {PORTF ^= _BV(2); PORTF &= ~_BV(3);} while(0)
+#define LED_S1_RED_GREEN_TOGGLE() do {PORTF ^= _BV(2); if (bit_is_set(PORTF, 2)) \
+   PORTF &= ~_BV(3); else PORTF |= _BV(3);} while(0)
 
 /** Switch LED S2 off */
-#define LED_S2_OFF()         PORTF &= ~_BV(0); PORTF &= ~_BV(1);
+#define LED_S2_OFF()         do {PORTF &= ~_BV(0); PORTF &= ~_BV(1);} while(0)
 /** Switch LED S2 red */
-#define LED_S2_RED()         PORTF &= ~_BV(0); PORTF |= _BV(1);
+#define LED_S2_RED()         do {PORTF &= ~_BV(0); PORTF |= _BV(1);} while(0)
+/** Toggle LED S2 between red and off */
+#define LED_S2_RED_TOGGLE()  do {PORTF &= ~_BV(0); PORTF ^= _BV(1);} while(0)
 /** Switch LED S2 green */
-#define LED_S2_GREEN()       PORTF |= _BV(0); PORTF &= ~_BV(1);
+#define LED_S2_GREEN()       do {PORTF |= _BV(0); PORTF &= ~_BV(1);} while(0)
+/** Toggle LED S2 between green and off */
+#define LED_S2_GREEN_TOGGLE() do {PORTF ^= _BV(0); PORTF &= ~_BV(1);} while(0)
+#define LED_S2_RED_GREEN_TOGGLE() do {PORTF ^= _BV(0); if (bit_is_set(PORTF, 0)) \
+   PORTF &= ~_BV(1); else PORTF |= _BV(1);} while(0)
 
 //@}
 
@@ -183,7 +194,7 @@
  *
  * @return 1 if RI is asserted
  */
-#define SER0_GET_RI()        bit_is_set(PINB, 7)
+#define SER0_GET_RI()        bit_is_clear(PINB, 7)
 
 /**
  * Returns the status of the RS232 CTS signal input
@@ -191,17 +202,46 @@
  *
  * @return 1 if CTS is asserted
  */
-#define SER0_GET_CTS()       bit_is_set(PINE, 6)
+#define SER0_GET_CTS()       bit_is_clear(PINE, 6)
+
+/**
+ * Returns the status of the RS232 DSR signal input of Ser 0 on
+ * SUB-D connector J9
+ * 
+ * @note Feature only available for devices with serial number
+ *       224 upwards (since PCB Revision C)
+ * @return 1 if DSR is asserted
+ */
+#define SER0_GET_DSR()       bit_is_clear(PINE, 4)
+
 
 /**
  * Asserts the RS232 RTS signal output of Ser 0 on SUB-D connector J9
  */
-#define SER0_SET_RTS()       (PORTB |= _BV(4))
+#define SER0_SET_RTS()       (PORTB &= ~_BV(4))
 
 /**
  * Clears the RS232 RTS signal output of Ser 0 on SUB-D connector J9
  */
-#define SER0_CLR_RTS()       (PORTB &= ~_BV(4))
+#define SER0_CLR_RTS()       (PORTB |= _BV(4))
+
+/**
+ * Asserts the RS232 DTR signal output of Ser 0 on SUB-D
+ * connector J9
+ * 
+ * @note Feature only available for devices with serial number
+ *       224 upwards (since PCB Revision C)
+ */
+#define SER0_SET_DTR()       (PORTB &= ~_BV(5))
+
+/**
+ * Clears the RS232 DTR signal output of Ser 0 on SUB-D
+ * connector J9
+ * 
+ * @note Feature only available for devices with serial number
+ *       224 upwards (since PCB Revision C)
+ */
+#define SER0_CLR_DTR()       (PORTB |= _BV(5))
 
 //@}
 
