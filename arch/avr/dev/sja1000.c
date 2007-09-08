@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/09/08 03:00:17  hwmaier
+ * Optional time-out for receiving added
+ *
  * Revision 1.4  2007/09/06 19:02:48  olereinhardt
  * Corrected handling of 11bit standard IDs
  *
@@ -288,10 +291,11 @@ void SJAOutput(NUTDEVICE * dev, CANFRAME * frame)
  * \param dev Pointer to the device structure
  * 
  * \param frame Pointer to the receive frame
+ * \return 1 if timeout, 0 otherwise 
  */
 
 
-void SJAInput(NUTDEVICE * dev, CANFRAME * frame)
+u_char SJAInput(NUTDEVICE * dev, CANFRAME * frame)
 {
     u_char ready = 0;
     CANINFO *ci;
@@ -300,7 +304,12 @@ void SJAInput(NUTDEVICE * dev, CANFRAME * frame)
     while (!ready)
     {
         if (CAN_RX_BUF.datalength==0) 
-            NutEventWait(&ci->can_rx_rdy, NUT_WAIT_INFINITE);
+        {
+           u_long timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
+
+           if (NutEventWait(&ci->can_rx_rdy, timeout)) 
+               return 1;
+        }
         NutEnterCritical();
         if (CAN_RX_BUF.datalength)
         {
@@ -310,6 +319,7 @@ void SJAInput(NUTDEVICE * dev, CANFRAME * frame)
         NutExitCritical();
     }
     SJA1000_IEN |= (RIE_Bit);       // enables IRQ since buffer has space
+    return 0;
 }
 
 /*!
@@ -766,6 +776,7 @@ IFCAN ifc_sja1000 = {
     ,                           /*!< \brief Acceptance mask */
     {0x00, 0x00, 0x00, 0x00}
     ,                           /*!< \brief Acceptance code */
+    NUT_WAIT_INFINITE,         /*!< \brief Receive time-out */
     SJARxAvail,                 /*!< \brief Data in RxBuffer available? */
     SJATxFree,                  /*!< \brief TxBuffer free? */
     SJAInput,                   /*!< \brief CAN Input routine */
