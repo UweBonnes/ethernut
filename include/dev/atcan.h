@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2005 FOCUS Software Engineering Pty Ltd <www.focus-sw.com>
- * Copyright (c) 2005 proconX <www.proconx.com>
+ * Copyright (c) 2005-2007 proconX Pty Ltd <www.proconx.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,8 +50,28 @@
 
 extern NUTDEVICE devAtCan;
 
-#if defined(__AVR_AT90CAN128__)
-/* Fails to compile on ARM and ICCAVR. */
+#if defined(__AVR_AT90CAN128__) /* Fails to compile on ARM and ICCAVR. */
+
+#define ATCAN_MAX_MOB   15   ///< Number of messages objects
+
+/**
+ * CAN result codes
+ *
+ * @ingroup can
+ */
+enum CAN_RESULT
+{
+   CAN_SUCCESS       =  0,   ///< Successful operation
+   CAN_TXBUF_FULL    = -1,   ///< All TX message objects busy
+   CAN_RXBUF_EMPTY   = -2,   ///< All RX message objects busy
+   CAN_ILLEGAL_MOB   = -3,   ///< Message object index out of range
+   CAN_INVALID_SPEED = -4,   ///< Invalid baud rate parameter
+   CAN_PASSIVE       = -5,   ///< Bus is in passive state
+   CAN_BUS_OFF       = -6,   ///< Bus is bus-off
+};
+ 
+int8_t AtCanGetBusState(void);
+
 int8_t AtCanEnableRx(uint8_t noOfMsgObjs,
                      uint32_t id, int8_t idIsExt, int8_t idRemTag,
                      uint32_t mask, int8_t maskIsExt, int8_t maskRemTag);
