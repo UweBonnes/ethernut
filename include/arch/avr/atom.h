@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/09/11 13:41:23  haraldkipp
+ * NutEnter/ExitCritical destroyed R0 (ICCAVR).
+ *
  * Revision 1.2  2005/07/26 15:47:06  haraldkipp
  * AtomicInc() and AtomicDec() are no longer required by Nut/Net.
  * Removed to simplify the porting job. Broken applications should
@@ -57,17 +60,38 @@
 
 #ifdef __IMAGECRAFT__
 
+/*!
+ * \brief Enter critical section.
+ *
+ * Disables context switching until NutExitCritical() is called.
+ * In Nut/OS only interrupt routines can preempt the currently running
+ * thread. Thus, this routine simply disables CPU interrupts. However,
+ * in order to allow nesting, the current interrupt enable status is
+ * saved on the stack.
+ *
+ * Note, that after calling NutEnterCritical(), a corresponding 
+ * NutExitCritical() must be called before returning from the
+ * currently running subroutine.
+ */
 #define NutEnterCritical()  \
 {                           \
-    asm("in R0, 0x3F\n"     \
-        "cli\n"             \
-        "push R0\n");       \
+    register u_char sreg = inb(SREG);   \
+    asm("cli\n"             \
+        "push %sreg\n");    \
 }
 
+/*!
+ * \brief Exit critical section.
+ *
+ * Retrieves the interrupt enable status that has been previously
+ * saved on the stack by NutEnterCritical().
+ */
 #define NutExitCritical()   \
 {                           \
-    asm("pop R0\n"          \
-        "out 0x3F, R0\n");  \
+    /* Set to 0 to force register allocation. */ \
+    register u_char sreg = 0;   \
+    asm("pop %sreg\n");     \
+    outb(SREG, sreg);       \
 }
 
 #else
