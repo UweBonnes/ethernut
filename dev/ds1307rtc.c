@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2007/09/11 17:32:30  haraldkipp
+ * Last minute fix (bug #1786271)
+ *
  * Revision 1.4  2006/10/08 16:39:33  haraldkipp
  * Corrected range check in DS1307RamRead(). Thanks to Helmut Holbach.
  *
@@ -151,7 +154,7 @@ int DS1307RtcSetClock(CONST struct _tm *tm)
         data[0] = 0x00;     // adress 0
         data[1] = BIN2BCD(tm->tm_sec);
         data[2] = BIN2BCD(tm->tm_min);
-        data[3] = BIN2BCD(tm->tm_hour) | 0x40;  // 24 hour mode
+        data[3] = BIN2BCD(tm->tm_hour) & 0x3f; // 24 hour mode
         data[5] = BIN2BCD(tm->tm_mday);
         data[6] = BIN2BCD(tm->tm_mon + 1);
         data[7] = BIN2BCD(tm->tm_year - 100);
