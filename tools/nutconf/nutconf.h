@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2007/09/11 14:23:13  haraldkipp
+ * Version 1.4.3: Mainly ICCAVR fixes and enhancements.
+ *
  * Revision 1.15  2007/04/25 15:59:17  haraldkipp
  * Version 1.4.2 had been tested with wxWidgets 2.8.3.
  *
@@ -95,7 +98,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.4.2"
+#define VERSION "1.4.3"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
