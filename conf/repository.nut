@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.24  2007/09/11 13:39:45  haraldkipp
+-- Configurable startup file for ICCAVR.
+--
 -- Revision 1.23  2007/09/06 19:54:31  olereinhardt
 -- Added ld script selection for eb40a_redboot_ram (EB40A Eval board with
 -- redboot bootloader running, changed load address)
@@ -114,6 +117,8 @@
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG" }
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
+
+iccavr_startup_choice = { "crtenutram", "crtenut", "crtnutram", "crtnut", "crtnutm256" }
 
 mcu_32bit_choice = { " ", 
                      "0", "1", "2", "3", "4", "5", "6", "7",

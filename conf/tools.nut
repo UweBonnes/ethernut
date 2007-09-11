@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.17  2007/09/11 13:39:45  haraldkipp
+-- Configurable startup file for ICCAVR.
+--
 -- Revision 1.16  2007/04/12 09:20:00  haraldkipp
 -- ATmega2561 no longer bound to ICCAVR.
 --
@@ -142,7 +145,7 @@ nuttools =
         },
         {
             brief = "ImageCraft for ARM",
-            description = "www.imagecraft.com",
+            description = "Not yet supported",
             provides = { "TOOL_CC_ARM", "TOOL_ICC" },
             macro = "ICCARM",
             flavor = "boolean",
@@ -156,11 +159,6 @@ nuttools =
         requires = { "TOOL_GCC" },
         options = 
         {
-            {
-                brief = "Include debug info",
-                flavor = "booldata",
-                macro = "GCC_DEBUG"
-            },
             {
                 macro = "ARM_LDSCRIPT",
                 brief = "ARM Linker Script",
@@ -182,13 +180,35 @@ nuttools =
                     "LDNAME", 
                     "LDSCRIPT=$(top_srcdir)/arch/arm/ldscripts/$(LDNAME).ld" 
                 }
-            },
+            }
         }
     },
     {
         name = "nuttools_iccopt",
         brief = "ImageCraft AVR Settings",
-        requires = { "TOOL_ICC" }
+        requires = { "TOOL_CC_AVR", "TOOL_ICC" },
+        options = 
+        {
+            {
+                macro = "ICCAVR_STARTUP",
+                brief = "Startup File",
+                description = "Select one of the following:\n\n"..
+                              "crtnut, if globals and static variables use less than 4kB.\n"..
+                              "crtenut, same as above but including EEPROM emulation.\n"..
+                              "crtnutram, if globals and static variables use more than 4kB.\n"..
+                              "crtenutram, same as above but including EEPROM emulation.\n"..
+                              "crtnutm256, for the ATmega2560 and ATmega2561.\n\n"..
+                              "Ethernut 1 up to 1.3 Rev-F and all Ethernut 2 boards as well as most "..
+                              "compatible boards require crtnutram.\n\n"..
+                              "Ethernut 1.3 Rev-G and Rev-H boards need crtenutram. This startup "..
+                              "should also work for all other boards with ATmega103/128 CPUs, but "..
+                              "requires slightly more code than crtnutram.\n\n"..
+                              "Use crtnutm256 for Ethernut and compatible boards with ATmega256 CPU.\n",
+                type = "enumerated",
+                choices = iccavr_startup_choice,
+                makedefs = { "CRTNAME" }
+            }
+        }
     }
 
     --
