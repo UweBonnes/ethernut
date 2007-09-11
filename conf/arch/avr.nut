@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.16  2007/09/11 13:40:37  haraldkipp
+-- Typo corrected.
+--
 -- Revision 1.15  2007/04/12 09:07:54  haraldkipp
 -- Configurable SPI added.
 --
@@ -90,7 +93,7 @@ nutarch_avr =
     {
         name = "nutarch_avr_cstartup_icc",
         brief = "ICCAVR Startup",
-        description = "There are four different ICCAVR startup files available.\n\n"..
+        description = "There are five different ICCAVR startup files available.\n\n"..
                       "crtnut.s, if globals and static variables use less than 4kB.\n"..
                       "crtenut.s, same as above but including EEPROM emulation.\n"..
                       "crtnutram.s, if globals and static variables use more than 4kB.\n"..
