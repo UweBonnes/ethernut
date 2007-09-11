@@ -39,6 +39,11 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.11  2007/09/11 13:42:17  haraldkipp
+ * When multiple configurations is enabled, the repository name is now
+ * still stored in the root. This seems to solve a lot of problems with
+ * lost configurations.
+ *
  * Revision 1.10  2007/02/15 19:33:45  haraldkipp
  * Version 1.4.1 works with wxWidgets 2.8.0.
  * Several wide character issues fixed.
@@ -189,8 +194,7 @@ bool CSettings::Load(wxString ConfigFileName)
     }
     m_lib_dir_default = m_buildpath_default + wxT("/lib");
 
-    wxFileName fname(ConfigFileName);
-    wxString ConfigName = fname.GetFullName();
+	wxString ConfigName = wxFileName(ConfigFileName).GetFullName();
     if (ConfigName == wxEmptyString) {
         m_configname_default = m_relsrcpath + wxT("/conf/ethernut21.conf");
     }
@@ -204,7 +208,7 @@ bool CSettings::Load(wxString ConfigFileName)
     m_firstidir_default = wxEmptyString;
     m_lastidir_default = wxEmptyString;
     m_platform_default = wxT("(Select)");
-    m_programmer_default = wxT("avr-uisp-stk500");
+    m_programmer_default = wxT("avr-dude");
     m_toolpath_default = toolPath + wxT(";\"(Add compiler paths here)\";");
 
     wxConfigBase *pConfig = wxConfigBase::Get();
@@ -217,13 +221,11 @@ bool CSettings::Load(wxString ConfigFileName)
             m_configname = ConfigFileName;
         }
         pConfig->Read(wxT("MulConfigurations"), &m_mulConfig, m_mulConfig_default);
+        pConfig->Read(wxT("RepositoryName"), &m_repositoryname, m_repositoryname_default);
         
         if (m_mulConfig == true) {
-            pConfig->SetPath(lastPath);
             pConfig->SetPath(wxT("/Settings/") + ConfigName);
         }
-        
-        pConfig->Read(wxT("RepositoryName"), &m_repositoryname, m_repositoryname_default);
 
         pConfig->Read(wxT("BuildPath"), &m_buildpath, m_buildpath_default);
         pConfig->Read(wxT("FirstInclude"), &m_firstidir, m_firstidir_default);
@@ -249,16 +251,12 @@ bool CSettings::Save(wxString ConfigFileName)
         pConfig->SetPath(wxT("/Settings"));
         pConfig->Write(wxT("ConfigName"), ConfigFileName);
         pConfig->Write(wxT("MulConfigurations"), m_mulConfig);
+        pConfig->Write(wxT("RepositoryName"), m_repositoryname);
         
         if (m_mulConfig == true) {
-            wxFileName fname(ConfigFileName);
-            wxString ConfigName = fname.GetFullName();
-            pConfig->SetPath(lastPath);
-            pConfig->SetPath(wxT("/Settings/") + ConfigName);
+            pConfig->SetPath(wxT("/Settings/") + wxFileName(ConfigFileName).GetFullName());
         }
         
-        pConfig->Write(wxT("RepositoryName"), m_repositoryname);
-
         pConfig->Write(wxT("BuildPath"), m_buildpath);
         pConfig->Write(wxT("FirstInclude"), m_firstidir);
         pConfig->Write(wxT("LastInclude"), m_lastidir);
@@ -268,6 +266,7 @@ bool CSettings::Save(wxString ConfigFileName)
         pConfig->Write(wxT("ToolPath"), m_toolpath);
         pConfig->Write(wxT("ApplicationDirectory"), m_app_dir);
         pConfig->Write(wxT("Programmer"), m_programmer);
+
         pConfig->SetPath(lastPath);
     }
     return true;
