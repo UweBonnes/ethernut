@@ -1,4 +1,38 @@
-$Id: ChangeLog,v 1.403 2007/09/08 03:02:29 hwmaier Exp $
+$Id: ChangeLog,v 1.404 2007/09/11 14:24:26 haraldkipp Exp $
+
+2007-09-11  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/arch/avr/atom.h: NutEnter/ExitCritical destroyed R0.
+	Many thanks to Jean Pierre Gauthier for tracking this hidden bug.
+
+	* Makedefs.avrext-icc, app/Makedefs.avrext-icc: Updated compiler 
+	options for ATmega256.
+
+	* conf/arch/avr.nut: Typo corrected.
+
+	* conf/at91sam9260-ek.conf: Added missing LCD port definitions.
+
+	* conf/ethernut21b-256.conf, conf/repository.nut, conf/tools.nut:
+	Configurable startup file for ICCAVR.
+
+	* conf/tools.nut: Misleading GCC_DEBUG option removed.
+
+	* tools/nutconf/nutconf.h: New Configurator version 1.4.3.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/settings.cpp: Now 
+	avr-dude is the default.
+
+	* tools/nutconf/nutconf.cpp, tools/nutconf/nutconfdoc.cpp,
+	tools/nutconf/settings.h: Top installation directory will be used 
+	for ICCAVR project configuration. Re-building the application tree 
+	will no longer override existing project files. Probably no longer 
+	in use, but _MCU_enhanced will be replaced by _MCU_extended for 
+	ATmega256.
+
+	* tools/nutconf/settings.cpp: When multiple configurations is
+	enabled, the repository name is now still stored in the root.
+	This seems to solve a lot of problems with lost configurations.
+
 
 2006-09-08 Henrik Maier  <henrik@proconx.com>
 
