@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2007/09/11 13:38:10  haraldkipp
+# Compiler options updated for ICCAVR 7.14.
+#
 # Revision 1.1  2006/07/10 08:41:41  haraldkipp
 # New ImageCraft Makefiles for extended AVR devices like the ATmega2561.
 #
@@ -47,5 +50,34 @@ BIN       = $(TRGT)objcopy
 
 BINDIR    = $(top_srcdir)/bin/$(MCU)
 
-LDFLAGS   = -L$(LIBDIR) -v -m -g -dFRAM:1 -xcall -ucrtnutm256.o -dram_end:0x7fff -bdata:0x200.0x7fff -bfunc_lit:0xcc.0x3FFFF -bappcode:0x20000.0x3FFFF -dhwstk_size:16 -beeprom:0.4096 -fihx_coff $(LIBS)
+# -v      Verbose mode. Prints out each compiler pass as it is being executed.
+# -m      Generates a map file.
+# -g      Generates debug information. The debug file has the .DBG extension.
+# -L<dir> Specifies the library directory. Multiple directories may be 
+#         specified and they are searched in the reverse order 
+#         (i.e., last directory specified is searched first).
+# -u<crt> Use <crt> as the startup file. If the file is just a name without 
+#         path information, then it must be located in the library directory.
+# -dram_end:<address> Defines the end of the internal RAM area. This is used 
+#         by the Startup File to initialize the value of the hardware stack. 
+#         For the classic non-Mega devices, ram_end is the size of the SRAM 
+#         plus 96 bytes of IO and CPU registers minus one. For the Mega devices, 
+#         it is the size of the SRAM minus one. External SRAM does not affect 
+#         this value, since the hardware stack is always allocated in the 
+#         internal RAM for faster execution speed.
+# -bdata:<address ranges> Assigns the address ranges for the area or section 
+#         named data, which is the data memory on the AVR.
+# -bfunc_lit:<address ranges> Assigns the address ranges for the area named 
+#         func_lit. The format is <start address>[.<end address>], where 
+#         addresses are byte addresses. Any memory not used by this area will 
+#         be consumed by areas that follow it, so this effectively declares 
+#         the size of the FLASH memory.
+# -dhwstk_size:<size> Defines the size of the hardware stack. The hardware is 
+#         allocated at the top of SRAM, and then the software stack follows it.
+# -beeprom:<address ranges> Assigns the address ranges for the EEPROM. EEPROM 
+#         data is written to <output file>.eep as an Intel HEX file regardless 
+#         of the output file format. 
+# -fihx_coff Output format is both COFF and Intel HEX.
+# -S2     Generates COFF format compatible with AVR Studio 4.06+.
 
+LDFLAGS   = -L$(LIBDIR) -v -m -g -dFRAM:1 -xcall -u$(CRTNAME).o -dram_end:0x21ff -bdata:0x2200.0x7fff -bfunc_lit:0xcc.0x40000 -bappcode:0x20000.0x3FFFF -dhwstk_size:48 -beeprom:0.4096 -fihx_coff $(LIBS) -lcatm256 -S2
