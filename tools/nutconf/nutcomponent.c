@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.28  2007/09/11 14:19:50  haraldkipp
+ * Use avr-dude as default.
+ *
  * Revision 1.27  2007/04/25 15:59:17  haraldkipp
  * Version 1.4.2 had been tested with wxWidgets 2.8.3.
  *
@@ -2013,8 +2016,8 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *
         if ((fp = fopen(path, "w")) != 0) {
             fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
 
-		    fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
-		    fprintf(fp, "top_blddir = %s\n", MakeTargetPath(bld_dir, "../.."));
+            fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
+            fprintf(fp, "top_blddir = %s\n", MakeTargetPath(bld_dir, "../.."));
 
 
 			//fprintf(fp, "top_appdir = %s\n", app_dir);
@@ -2076,7 +2079,7 @@ void usage(void)
       "-j<dir>  last include path ()\n"
       "-l<dir>  library directory ()\n"
       "-m<type> target platform (avr-gcc)\n"
-      "-p<type> programming adapter (avr-uisp-stk500)\n"
+      "-p<type> programming adapter (avr-dude)\n"
       "-q       quiet (verbose)\n"
       "-s<dir>  source directory (./nut)\n"
       "-r<file> repository (./nut/conf/repository.nut)\n"
@@ -2218,7 +2221,7 @@ int main(int argc, char **argv)
     char *ilast_dir = strdup("");
     char *lib_dir = strdup("");
     char *mak_ext = strdup("avr-gcc");
-    char *prg_ext = strdup("avr-uisp-stk500");
+    char *prg_ext = strdup("avr-dude");
     char *src_dir = strdup("./nut");
     char *repo_name = strdup("./nut/conf/repository.nut");
     NUTREPOSITORY *repo;
