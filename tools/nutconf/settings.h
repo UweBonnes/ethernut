@@ -42,6 +42,12 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/09/11 13:43:22  haraldkipp
+ * Top installation directory will be used for ICCAVR project configuration.
+ * Re-building the application tree will no longer override existing project
+ * files. Probably no longer in use, but _MCU_enhanced will be replaced by
+ * _MCU_extended for ATmega256.
+ *
  * Revision 1.5  2006/10/21 12:48:18  christianwelzel
  * Added support for multiple configurations / settings
  *
@@ -75,6 +81,8 @@ public:
     wxString FindAbsoluteDir(wxString refPathName);
     wxString FindRelativeDir(wxString refPathName);
 
+    /*! \brief Top installation directory. */
+    wxString m_topdir;
     /*! \brief Relative path to the top source directory. */
     wxString m_relsrcpath;
     /*! \brief Path to board specific configuration file. */

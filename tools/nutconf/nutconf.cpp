@@ -32,6 +32,12 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.15  2007/09/11 13:43:22  haraldkipp
+ * Top installation directory will be used for ICCAVR project configuration.
+ * Re-building the application tree will no longer override existing project
+ * files. Probably no longer in use, but _MCU_enhanced will be replaced by
+ * _MCU_extended for ATmega256.
+ *
  * Revision 1.14  2007/02/15 19:33:45  haraldkipp
  * Version 1.4.1 works with wxWidgets 2.8.0.
  * Several wide character issues fixed.
@@ -135,7 +141,7 @@ bool NutConfApp::OnInit()
 
     wxCmdLineParser parser(cmdLineDesc, argc, argv);
     parser.SetLogo(_T("Nut/OS Configurator\n") _T(VERSION)
-                      _T("Copyright (c) 2004-2006 by egnite Software GmbH\n")
+                      _T("Copyright (c) 2004-2007 by egnite Software GmbH\n")
                       _T("Copyright (C) 1998, 1999, 2000 Red Hat, Inc."));
     if(parser.Parse()) {
         return false;
@@ -170,6 +176,7 @@ bool NutConfApp::OnInit()
     }
     SetAppName(settings_name);
     m_settings = new CSettings();
+    m_settings->m_topdir = ::wxGetCwd();
 
     /*
      * Create a wxConfig object early.
@@ -212,7 +219,8 @@ bool NutConfApp::OnInit()
     m_docManager->SetLastDirectory(initWork + wxT("/conf"));
     if (::wxIsAbsolutePath(m_settings->m_configname)) {
         if (!m_settings->m_configname.StartsWith(initWork)) {
-            if (wxMessageBox(wxT("Configuration path has changed. Do you want to use relative paths?"), 
+            if (wxMessageBox(wxT("Configuration path has changed.\n\nOld path was ") +
+                wxPathOnly(m_settings->m_configname) + wxT("\nNew path is ") + initWork + wxT("/conf\n\nSwitch to new path?"), 
                 wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
                     m_settings->m_configname = m_settings->m_relsrcpath + wxString(wxT("/conf/")) + m_settings->m_configname.AfterLast('/');
                     m_settings->m_repositoryname = m_settings->m_repositoryname_default;

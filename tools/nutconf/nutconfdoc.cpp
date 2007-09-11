@@ -39,6 +39,12 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.19  2007/09/11 13:43:22  haraldkipp
+ * Top installation directory will be used for ICCAVR project configuration.
+ * Re-building the application tree will no longer override existing project
+ * files. Probably no longer in use, but _MCU_enhanced will be replaced by
+ * _MCU_extended for ATmega256.
+ *
  * Revision 1.18  2007/04/25 16:03:33  haraldkipp
  * Bugfix: Configurator failed to create application directories containing
  * subdirs.
@@ -655,16 +661,18 @@ public:
     : m_source(source)
     , m_target(target)
     {
+        m_doc = wxGetApp().GetNutConfDoc();
     }
 
     virtual wxDirTraverseResult OnFile(const wxString& filename)
     {
         wxString sub = filename.Mid(m_source.Length());
         wxFileName name(m_target + sub);
-        if(name.GetExt().IsSameAs(wxT("src"), false)) {
+        /* Create project source list, but do not override exiting list. */
+        if(name.GetExt().IsSameAs(wxT("src"), false) && !name.FileExists()) {
             TransferSourcesFile(filename, name.GetFullPath());
         }
-        if(name.GetExt().IsSameAs(wxT("prj"), false)) {
+        if(name.GetExt().IsSameAs(wxT("prj"), false) && !name.FileExists()) {
             TransferProjectFile(filename, name.GetFullPath());
         }
         return wxDIR_CONTINUE;
@@ -683,6 +691,7 @@ public:
 private:
     wxString m_source;
     wxString m_target;
+    CNutConfDoc *m_doc;
 
     bool TransferProjectFile(wxString source, wxString target)
     {
@@ -712,13 +721,16 @@ private:
                 if (line.StartsWith(wxT("Edit1="))) {
                     line.Empty();
                     if(!cfg->m_firstidir.IsEmpty()) {
-                        line += cfg->m_firstidir;
+                        line += cfg->m_firstidir + wxT(";");
                     }
-                    if (!line.IsEmpty()) {
-                        line += wxT(";");
+                    if (!::wxIsAbsolutePath(cfg->m_buildpath)) {
+                        line += cfg->m_topdir + wxT("\\");
                     }
-                    line += cfg->m_buildpath + wxT("\\include");
-                    line += wxT(";") + cfg->m_source_dir + wxT("\\include");
+					line += cfg->m_buildpath + wxT("\\include;");
+                    if (!::wxIsAbsolutePath(cfg->m_source_dir)) {
+                        line += cfg->m_topdir + wxT("\\");
+                    }
+                    line += cfg->m_source_dir + wxT("\\include");
                     if(!cfg->m_lastidir.IsEmpty()) {
                         line += wxT(";") + cfg->m_lastidir;
                     }
@@ -726,14 +738,43 @@ private:
                     line.Replace(wxT("/"), wxT("\\"));
                 }
                 else if (line.StartsWith(wxT("Edit2="))) {
-                    line = wxT("Edit2=") + cfg->m_buildpath + wxT("\\lib");
+                    line = wxT("Edit2=");
+                    if (!::wxIsAbsolutePath(cfg->m_buildpath)) {
+                        line += cfg->m_topdir + wxT("\\");
+                    }
+                    line += cfg->m_buildpath + wxT("\\lib");
                     line.Replace(wxT("/"), wxT("\\"));
                 }
                 else if (line.StartsWith(wxT("Edit3="))) {
-                    line = wxT("Edit3=ETHERNUT2 _MCU_enhanced __HARVARD_ARCH__");
+                    NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, wxT("PLATFORM"));
+                    line = wxT("Edit3=");
+                    if (opt && opt->nco_enabled && opt->nco_active && opt->nco_value[0]) {
+                        line += wxString(opt->nco_value, wxConvLocal) + wxT(" ");
+                    }
+                    opt = m_doc->FindOptionByName(NULL, wxT("MCU_ATMEGA2561"));
+                    if (opt && opt->nco_enabled && opt->nco_active) {
+                        line += wxT("_MCU_extended");
+                    }
+                    else {
+                        line += wxT("_MCU_enhanced");
+                    }
+                    line += wxT(" __HARVARD_ARCH__");
+                }
+                else if (line.StartsWith(wxT("Edit13="))) {
+                    NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, wxT("ICCAVR_STARTUP"));
+                    line = wxT("Edit13=");
+                    if (opt && opt->nco_enabled && opt->nco_active && opt->nco_value[0]) {
+                        line += wxString(opt->nco_value, wxConvLocal) + wxT(".o");
+                    } else {
+                        line += wxT("crtenutram.o");
+                    }
                 }
                 else if (line.StartsWith(wxT("Edit27="))) {
-                    line = wxT("Edit27=-ucrtnutram.o ") + cfg->m_buildpath + wxT("\\lib\\nutinit.o");
+                    line = wxT("Edit27=");
+                    if (!::wxIsAbsolutePath(cfg->m_buildpath)) {
+                        line += cfg->m_topdir + wxT("\\");
+                    }
+                    line += cfg->m_buildpath + wxT("\\lib\\nutinit.o");
                     line.Replace(wxT("/"), wxT("\\"));
                 }
             }
