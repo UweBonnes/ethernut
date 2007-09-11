@@ -1,6 +1,8 @@
-$Id: ChangeLog,v 1.404 2007/09/11 14:24:26 haraldkipp Exp $
+$Id: ChangeLog,v 1.405 2007/09/11 15:40:45 haraldkipp Exp $
 
 2007-09-11  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Branch 4.4 created. Head is now 4.5.
 
 	* include/arch/avr/atom.h: NutEnter/ExitCritical destroyed R0.
 	Many thanks to Jean Pierre Gauthier for tracking this hidden bug.

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.47  2007/09/11 15:40:45  haraldkipp
+ * Release branch 4.4 created
+ *
  * Revision 1.46  2007/08/30 12:15:06  haraldkipp
  * Configurable MMC timings.
  *
@@ -191,8 +194,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04039901UL
-static CONST char os_version_string[] = "4.3.99.1 pre";
+#define OS_VERSION_NUMBER  0x04050000UL
+static CONST char os_version_string[] = "4.5.0.0";
 
 /*!
  * \addtogroup xgNutVersion
