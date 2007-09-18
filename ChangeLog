@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.406 2007/09/11 17:32:30 haraldkipp Exp $
+$Id: ChangeLog,v 1.407 2007/09/18 00:41:20 hwmaier Exp $
+
+2006-09-18 Henrik Maier  <henrik@proconx.com>
+
+        * app/Makeburn.avr-dude: Using $(MCU) variable instead of hardcoded
+        processor.
+        
 
 2007-09-11  Harald Kipp  <harald.kipp@egnite.de>
 
