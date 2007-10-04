@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.19  2007/10/04 21:06:27  olereinhardt
+-- Support for SAM7S256 added
+--
 -- Revision 1.18  2007/09/06 19:43:19  olereinhardt
 -- Added support for AT91 TWI driver
 --
@@ -159,6 +162,7 @@ nutarch_arm =
                               "generate the PLL output frequency.\n\n"..
                               "Default values are\n"..
                               "SAM7X: 14\n"..
+                              "SAM7S: 14\n"..
                               "SAM9260: 14\n",
                 requires = { "HW_PLL_AT91" },
                 flavor = "booldata",
@@ -173,6 +177,7 @@ nutarch_arm =
                               " value plus 1 to generate the PLL output frequency.\n\n"..
                               "Default values are\n"..
                               "SAM7X: 72\n"..
+                              "SAM7S: 72\n"..
                               "SAM9260: 72\n",
                 requires = { "HW_PLL_AT91" },
                 flavor = "booldata",
@@ -301,6 +306,31 @@ nutarch_arm =
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
             "arm/dev/ih_at91emac.c",
+            "arm/dev/ih_at91wdi.c",
+            "arm/dev/ih_at91adc.c"
+        },
+    },
+    {
+        name = "nutarch_arm_irqat91sam7s",
+        brief = "Interrupt Handler (SAM7S)",
+        requires = { "HW_MCU_AT91SAM7S" },
+        provides = { "DEV_IRQ_AT91" }, 
+        sources =
+        {
+            "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91sys.c",
+            "arm/dev/ih_at91irq0.c",
+            "arm/dev/ih_at91irq1.c",
+            "arm/dev/ih_at91irq2.c",
+            "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91ssc.c",
+            "arm/dev/ih_at91swirq.c",
+            "arm/dev/ih_at91tc0.c",
+            "arm/dev/ih_at91tc1.c",
+            "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91twi.c",
+            "arm/dev/ih_at91uart0.c",
+            "arm/dev/ih_at91uart1.c",
             "arm/dev/ih_at91wdi.c"
         },
     },
@@ -652,11 +682,27 @@ nutarch_arm =
     },
     {
         name = "nutarch_arm_twi_at91",
-        brief = "AT91 TWI",
+        brief = "AT91 TWI (SAM7X)",
         description = "TWI interface for AT91 (currently SAM7 only).",
         requires = { "HW_MCU_AT91SAM7X" },
         provides = { "DEV_TWI" },
         sources = { "arm/dev/at91_twi.c" },
+    },     
+    {
+        name = "nutarch_arm_twi_at91_sam7s",
+        brief = "AT91 TWI (SAM7S)",
+        description = "TWI interface for AT91 (currently SAM7 only).",
+        requires = { "HW_MCU_AT91SAM7S" },
+        provides = { "DEV_TWI" },
+        sources = { "arm/dev/at91_twi.c" },
+    },   
+    {
+        name = "nutarch_arm_adc_at91",
+        brief = "AT91 ADC",
+        description = "ADC interface for AT91 (currently SAM7 only).",
+        requires = { "HW_MCU_AT91SAM7X" },
+        provides = { "DEV_ADC" },
+        sources = { "arm/dev/at91_adc.c" },
     },     
     {
         name = "nutarch_arm_spimmc_at91",
@@ -694,9 +740,28 @@ nutarch_arm =
     },
     {
         name = "nutarch__arm_at91efc",
-        brief = "AT91 Embedded Flash",
+        brief = "AT91 Embedded Flash (SAM7X)",
         description = "Routines for reading and writing embedded flash memory.",
         requires = { "HW_MCU_AT91SAM7X" },
+        sources = { "arm/dev/at91_efc.c" },
+        options =
+        {
+            {
+                macro = "NUT_CONFIG_AT91EFC",
+                brief = "System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                provides = { "HW_FLASH_PARAM_SECTOR" },
+                flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+        },
+    },
+    {
+        name = "nutarch__arm_at91efc_sam7s",
+        brief = "AT91 Embedded Flash (SAM7S)",
+        description = "Routines for reading and writing embedded flash memory.",
+        requires = { "HW_MCU_AT91SAM7S" },
         sources = { "arm/dev/at91_efc.c" },
         options =
         {

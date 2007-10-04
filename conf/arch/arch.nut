@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.29  2007/10/04 21:06:11  olereinhardt
+-- Support for SAM7S256 added
+--
 -- Revision 1.28  2007/09/06 19:41:30  olereinhardt
 -- Added HW_PDC_AT91 to AT91SAM7X256 platform
 --
@@ -150,7 +153,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 makedefs = { "MCU=$(MCU_ATMEGA103)", "HWDEF+=-D__HARVARD_ARCH__" }
@@ -174,7 +177,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 makedefs = { "MCU=$(MCU_ATMEGA128)", "HWDEF+=-D__HARVARD_ARCH__" }
@@ -194,7 +197,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR" },
@@ -231,7 +234,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561" }
@@ -248,7 +251,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
@@ -276,7 +279,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
@@ -297,6 +300,35 @@ nutarch =
                 makedefs = { "MCU=arm7tdmi" }
             },
             {
+                macro = "MCU_AT91SAM7S256",
+                brief = "Atmel AT91SAM7S256",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
+                    "64K bytes RAM, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = { 
+                    "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                },
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7S",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+
+
+            {
                 macro = "MCU_AT91R40008",
                 brief = "Atmel AT91R40008",
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes RAM, "..
@@ -304,7 +336,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
@@ -327,7 +359,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
@@ -347,7 +379,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_LINUX" },
@@ -359,7 +391,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_H8300" },
@@ -379,7 +411,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = { 
                     "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
-                    "MCU_AT91SAM7X256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
+                    "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91R40008", "MCU_GBA", "MCU_LINUX_EMU", "MCU_S3C4510B" 
                 },
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
