@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2007/10/04 20:31:00  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.4  2007/07/17 18:07:44  haraldkipp
  * Building in the source tree should work again for AT91 devices.
  *
@@ -121,6 +124,19 @@
 #define MCU_AT91SAM7X256
 #endif
 
+#elif defined(AT91SAM7S)
+
+#ifndef PLATFORM
+#define PLATFORM AT91SAM7S
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91SAM7S256
+#define MCU_AT91SAM7S256
+#endif
 
 #elif defined(AT91SAM9260_EK)
 

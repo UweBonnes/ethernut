@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2007/10/04 20:27:58  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.11  2007/09/06 19:46:47  olereinhardt
  * Added interrupt definitions for SPI/TWI
  *
@@ -147,6 +150,44 @@ extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
 extern IRQ_HANDLER sig_SPI0;
 extern IRQ_HANDLER sig_SPI1;
+extern IRQ_HANDLER sig_TWI;
+
+/*
+ * Registered system interrupt handler information structure.
+ */
+typedef struct {
+    void *sir_arg;
+    void (*sir_handler) (void *);
+    int sir_enabled;
+} SYSIRQ_HANDLER;
+
+extern SYSIRQ_HANDLER syssig_DBGU;
+extern SYSIRQ_HANDLER syssig_MC;
+extern SYSIRQ_HANDLER syssig_PIT;
+extern SYSIRQ_HANDLER syssig_PMC;
+extern SYSIRQ_HANDLER syssig_RSTC;
+extern SYSIRQ_HANDLER syssig_RTT;
+extern SYSIRQ_HANDLER syssig_WDT;
+
+extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (void *), void *arg);
+extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
+extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
+
+#elif defined(MCU_AT91SAM7S256)
+
+extern IRQ_HANDLER sig_FIQ;
+extern IRQ_HANDLER sig_SYS;
+extern IRQ_HANDLER sig_UART0;
+extern IRQ_HANDLER sig_UART1;
+extern IRQ_HANDLER sig_TC0;
+extern IRQ_HANDLER sig_TC1;
+extern IRQ_HANDLER sig_TC2;
+extern IRQ_HANDLER sig_INTERRUPT0;
+extern IRQ_HANDLER sig_INTERRUPT1;
+extern IRQ_HANDLER sig_PIO;
+extern IRQ_HANDLER sig_SWIRQ;
+extern IRQ_HANDLER sig_SSC;
+extern IRQ_HANDLER sig_SPI0;
 extern IRQ_HANDLER sig_TWI;
 
 /*

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2007/10/04 20:33:55  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.11  2006/08/31 19:01:08  haraldkipp
  * Using devDebug2 for the DBGU output was a bad idea. Some AT91 chips
  * provide more than two UARTs. We now use devDebug to specify the DBGU
@@ -108,7 +111,7 @@ extern NUTDEVICE devDebug2;
 #ifdef MCU_AT91R40008
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
-#elif defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260)
+#elif defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260)
 extern NUTDEVICE devDebug;
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2007/10/04 20:29:08  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.17  2007/05/02 11:32:07  haraldkipp
  * Mapping of Harvard specific stdio functions moved to stdio.h and io.h.
  *
@@ -95,7 +98,7 @@
  */
 
 #include <cfg/arch.h>
-#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
+#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256)
 #include <arch/arm/at91.h>
 #elif defined (MCU_GBA)
 #include <arch/arm/gba.h>

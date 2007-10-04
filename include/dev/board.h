@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2007/10/04 20:32:24  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.8  2007/06/03 08:51:30  haraldkipp
  * RTC_CHIP definition now visible for ETHERNUT3 and MMNET02 only.
  *
@@ -102,7 +105,7 @@
 #define DEV_UART1       devUsartAvr1
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK)
+#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S)
 
 #include <dev/usartat91.h>
 #define DEV_UART0       devUsartAt910

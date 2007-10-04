@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2007/10/04 20:26:26  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.6  2006/09/29 12:43:44  haraldkipp
  * Excluded second PLL from SAM7X builds. Corrected USB divider names.
  *
@@ -123,7 +126,7 @@
 #define CKGR_PLLAR  (PMC_BASE + CKGR_PLLAR_OFF) /*!< \brief Clock generator PLL register address. */
 #define CKGR_PLLBR_OFF              0x0000002C  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLBR  (PMC_BASE + CKGR_PLLBR_OFF) /*!< \brief Clock generator PLL register address. */
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
 #define CKGR_PLLR_OFF               0x0000002C  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLR   (PMC_BASE + CKGR_PLLR_OFF)  /*!< \brief Clock generator PLL register address. */
 #endif
@@ -168,7 +171,7 @@
 #if defined (MCU_AT91SAM9260)
 #define PMC_CSS_PLLA_CLK            0x00000002  /*!< \brief PLL A clock selected. */
 #define PMC_CSS_PLLB_CLK            0x00000003  /*!< \brief PLL B clock selected. */
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
 #define PMC_CSS_PLL_CLK             0x00000003  /*!< \brief PLL clock selected. */
 #endif
 #define PMC_PRES                    0x0000001C  /*!< \brief Clock prescaler mask. */
@@ -203,7 +206,7 @@
 #if defined (MCU_AT91SAM9260)
 #define PMC_LOCKA                   0x00000002  /*!< \brief PLL A lock. */
 #define PMC_LOCKB                   0x00000004  /*!< \brief PLL B lock. */
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
 #define PMC_LOCK                    0x00000004  /*!< \brief PLL lock. */
 #endif
 #define PMC_MCKRDY                  0x00000008  /*!< \brief Master clock ready. */
