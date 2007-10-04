@@ -1,10 +1,33 @@
-$Id: ChangeLog,v 1.407 2007/09/18 00:41:20 hwmaier Exp $
+$Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 
-2006-09-18 Henrik Maier  <henrik@proconx.com>
+2007-10-04 Ole Reinhardt <ole.reinhardt@embedded-it.de>
+
+	* include/arch/arm/at91sam7s.h, conf/at91sam7s.conf, 
+	  arch/arm/ldscripts/at91sam7s256_rom.ld, 
+	  arch/arm/init/crtat91sam7s256_rom.S: Initial checkin, Support for
+	  SAM7S256
+
+	* conf/arch/arch.nut, conf/arch/arm.nut, include/dev/debug.h,
+	  include/dev/board.h, include/cfg/arch.h, include/arch/arm.h,
+	  include/arch/arm/irqreg.h, include/arch/arm/at91_pmc.h,
+	  include/arch/arm/at91.h, dev/twbbif.c, conf/tools.nut, 
+	  arch/arm/os/nutinit.c, arch/arm/dev/usartat91.c,
+	  arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
+	  arch/arm/dev/st7036_at91.c, arch/arm/dev/ostimer_at91.c,
+	  arch/arm/dev/hd44780_at91.c, arch/arm/dev/debug_at91.c,
+	  arch/arm/dev/at91_twi.c: Support for SAM7S256 added
+
+	* arch/arm/dev/at91_spi.c: small bugfix for cpu with only one spi
+          channel
+
+	* conf/arch/avr.nut arch/avr/dev/sja1000.c
+	  SJA_BASE (base address for sja1000 driver) can now be set in
+	  configurator
+
+2007-09-18 Henrik Maier  <henrik@proconx.com>
 
         * app/Makeburn.avr-dude: Using $(MCU) variable instead of hardcoded
         processor.
-        
 
 2007-09-11  Harald Kipp  <harald.kipp@egnite.de>
 
