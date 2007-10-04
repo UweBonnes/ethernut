@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2007/10/04 20:16:57  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.8  2007/07/09 13:38:50  olereinhardt
  * 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
  *         * dev/twbbif.c: Added default TWI_DELAY for avr architecture
@@ -92,7 +95,7 @@
  * Target specific defaults are set if the ID is not specified elsewhere.
  */
 #if !defined(TWI_PIO_ID)
-#if defined(MCU_AT91SAM7X256)
+#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7S256)
 #define TWI_PIO_ID  PIOA_ID
 #elif defined(MCU_AT91SAM9260)
 #define TWI_PIO_ID  PIOB_ID
