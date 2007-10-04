@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/10/04 19:51:56  olereinhardt
+ * Support for sam7s added
+ *
  * Revision 1.1  2007/09/06 19:36:00  olereinhardt
  * First checkin, new twi driver for at91 (currently SAM7X256 is supported
  * only)
@@ -66,15 +69,19 @@ static u_char *tw_mr_buf;           /* Pointer to the master receive buffer. */
 static volatile u_short tw_mr_siz;  /* Size of the master receive buffer. */
 static volatile u_short tw_mr_idx;  /* Current master receive buffer index. */
 
-#if defined (MCU_AT91SAM7X256) 
+#if defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
 
 #define TWI_PIO_ASR PIOA_ASR
 #define TWI_PIO_PDR PIOA_PDR
 #define TWI_PIO_MDER PIOA_MDER
 
-#define TWI_TWD  PA10_TWD_A
-#define TWI_TWCK PA11_TWCK_A
-
+   #if defined (MCU_AT91SAM7X256)
+      #define TWI_TWD  PA10_TWD_A
+      #define TWI_TWCK PA11_TWCK_A
+   #elif defined (MCU_AT91SAM7S256)
+      #define TWI_TWD  PA3_TWD_A
+      #define TWI_TWCK PA4_TWCK_A
+   #endif
 #endif
 
 /*
