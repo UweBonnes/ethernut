@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/10/04 19:50:41  olereinhardt
+ * small bugfix for cpu with only one spi channel
+ *
  * Revision 1.3  2007/07/17 18:30:08  haraldkipp
  * Documentation added.
  *
@@ -55,7 +58,9 @@
 #include <dev/at91_spi.h>
 
 static HANDLE spi0_que;
+#if defined (SPI1_BASE)
 static HANDLE spi1_que;
+#endif
 
 /*!
  * \brief SPI0 interrupt handler.
