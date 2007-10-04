@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/10/04 19:32:52  olereinhardt
+ * SJA_BASE (base address for sja1000 driver) can now be set in configurator
+ *
  * Revision 1.5  2007/09/08 03:00:17  hwmaier
  * Optional time-out for receiving added
  *
@@ -117,6 +120,10 @@
 
 #ifndef SJA_SIGNAL_BIT
 #define SJA_SIGNAL_BIT 7
+#endif
+
+#ifndef SJA_BASE
+#define SJA_BASE 0x8800
 #endif
 
 CANINFO dcb_sja1000;
@@ -651,6 +658,8 @@ int SJAInit(NUTDEVICE * dev)
     volatile u_char temp;
 
     sja_base = dev->dev_base;
+
+    if (sja_base == 0x0000) sja_base = SJA_BASE;
 
     ifc = dev->dev_icb;
 

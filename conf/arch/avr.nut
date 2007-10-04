@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.17  2007/10/04 19:32:52  olereinhardt
+-- SJA_BASE (base address for sja1000 driver) can now be set in configurator
+--
 -- Revision 1.16  2007/09/11 13:40:37  haraldkipp
 -- Typo corrected.
 --
@@ -974,12 +977,18 @@ nutarch_avr =
                       "bus. It's base address and interrupt is set by "..
                       "NutRegisterDevice().\n\n"..
                       "Only available for AVR-GCC.\n\n"..
-                      "Contributed by Ole Reinhardt from www.kernelconcepts.de",
+                      "Contributed by Ole Reinhardt from www.embedded-it.de",
         provides = { "DEV_CAN_SPECIFIC"},
         requires = { "HW_MCU_AVR", "TOOL_GCC" },
         sources = { "avr/dev/sja1000.c" },
         options =
         {
+            {
+                macro = "SJA_BASE",
+                brief = "Base address of SJA1000 controller",
+                description = "Default is 0x8800."
+                file = "include/cfg/arch/avrpio.h"
+            },
             {
                 macro = "SJA_SIGNAL_BIT",
                 brief = "Interrupt Number",
