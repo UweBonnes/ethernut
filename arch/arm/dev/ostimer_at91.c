@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2007/10/04 19:59:47  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.16  2007/08/17 10:44:37  haraldkipp
  * Timer enable/disable macro replaces previous global interrupt
  * enable/disable or function calling.
@@ -193,7 +196,7 @@ void NutRegisterTimer(void (*handler) (void *))
 
     int dummy;
 
-#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260)
+#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260)
     /* Enable TC0 clock. */
     outr(PMC_PCER, _BV(TC0_ID));
 #endif

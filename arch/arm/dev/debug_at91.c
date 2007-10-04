@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2007/10/04 19:55:33  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.9  2006/08/31 19:01:08  haraldkipp
  * Using devDebug2 for the DBGU output was a bad idea. Some AT91 chips
  * provide more than two UARTs. We now use devDebug to specify the DBGU
@@ -131,9 +134,13 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int DebugInit(NUTDEVICE * dev)
 {
-#if defined (MCU_AT91SAM7X256)
+#if defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
     /* Disable GPIO on UART tx/rx pins. */
-    outr(PIOA_PDR, _BV(27) | _BV(28));
+    #if defined (MCU_AT91SAM7X256)
+       outr(PIOA_PDR, _BV(27) | _BV(28));
+    #elif defined (MCU_AT91SAM7S256)
+       outr(PIOA_PDR, _BV(9) | _BV(10));
+    #endif
     /* Reset UART. */
     outr(DBGU_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
@@ -145,6 +152,7 @@ static int DebugInit(NUTDEVICE * dev)
     /* Enable UART receiver and transmitter. */
     outr(DBGU_CR, US_RXEN | US_TXEN);
 #endif
+
     return 0;
 }
 
@@ -194,11 +202,15 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(14) | _BV(15));
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
-    outr(PIOA_PDR, _BV(0) | _BV(1));
+    #if defined (MCU_AT91SAM7S256)
+       outr(PIOA_PDR, _BV(5) | _BV(6));
+    #else
+       outr(PIOA_PDR, _BV(0) | _BV(1));
+    #endif
 #endif
     /* Reset UART. */
     outr(US0_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
@@ -231,11 +243,15 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(21) | _BV(22));
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */
-    outr(PIOA_PDR, _BV(5) | _BV(6));
+    #if defined (MCU_AT91SAM7S256)
+       outr(PIOA_PDR, _BV(21) | _BV(22));
+    #else
+       outr(PIOA_PDR, _BV(5) | _BV(6));
+    #endif
 #endif
     /* Reset UART. */
     outr(US1_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2007/10/04 20:08:00  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.13  2006/09/29 12:39:51  haraldkipp
  * Spurious interrupt handling on all supported AT91 devices.
  *
@@ -212,10 +215,10 @@ void NutInit(void)
 {
 #if defined(OLIMEX_LPCE2294)
     InitHW();
-#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
+#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM9260)
     McuInit();
 #endif
-#if defined(MCU_AT91SAM7X256)
+#if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
     {
         u_long freq = NutGetCpuClock();
         /* Set Flash Waite state. */

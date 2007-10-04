@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2007/10/04 20:05:51  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.6  2006/08/31 19:01:44  haraldkipp
  * Using the processor clock for baud rate calculations failed
  * on the SAM9, if the master clock is further divided. This
@@ -1118,7 +1121,7 @@ static int At91UsartInit(void)
     outr(PS_PCER, _BV(US_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, US_GPIO_PINS);
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
     outr(PMC_PCER, _BV(US_ID));
     outr(PIOA_PDR, US_GPIO_PINS);
 #endif
@@ -1167,7 +1170,7 @@ static int At91UsartDeinit(void)
     outr(PS_PCDR, _BV(US_ID));
     /* Enable GPIO on UART tx/rx pins. */
     outr(PIO_PER, US_GPIO_PINS);
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
     outr(PMC_PCDR, _BV(US_ID));
     outr(PIOA_PER, US_GPIO_PINS);
 #endif

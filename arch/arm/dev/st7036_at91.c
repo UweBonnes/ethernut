@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/10/04 20:01:50  olereinhardt
+ * Support for SAM7S256 added
+ *
  * Revision 1.1  2007/02/15 16:09:07  haraldkipp
  * Tested with EA DOG-M LCDs.
  *
@@ -97,6 +100,36 @@
 #endif
 #ifndef LCD_MOSI_BIT
 #define LCD_MOSI_BIT	17
+#endif
+
+#elif defined(AT91SAM7S)
+
+#ifndef LCD_CS_PIO_ID
+#define LCD_CS_PIO_ID   PIOA_ID
+#endif
+#ifndef LCD_CS_BIT
+#define LCD_CS_BIT	    28
+#endif
+
+#ifndef LCD_RS_PIO_ID
+#define LCD_RS_PIO_ID   PIOA_ID
+#endif
+#ifndef LCD_RS_BIT
+#define LCD_RS_BIT	    26
+#endif
+
+#ifndef LCD_CLK_PIO_ID
+#define LCD_CLK_PIO_ID  PIOA_ID
+#endif
+#ifndef LCD_CLK_BIT
+#define LCD_CLK_BIT	    14
+#endif
+
+#ifndef LCD_MOSI_PIO_ID
+#define LCD_MOSI_PIO_ID PIOA_ID
+#endif
+#ifndef LCD_MOSI_BIT
+#define LCD_MOSI_BIT	13
 #endif
 
 #elif defined(AT91SAM9260_EK)
