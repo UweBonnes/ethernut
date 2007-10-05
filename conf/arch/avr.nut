@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.18  2007/10/05 23:47:50  olereinhardt
+-- Added a missin colon :-)
+--
 -- Revision 1.17  2007/10/04 19:32:52  olereinhardt
 -- SJA_BASE (base address for sja1000 driver) can now be set in configurator
 --
@@ -986,7 +989,7 @@ nutarch_avr =
             {
                 macro = "SJA_BASE",
                 brief = "Base address of SJA1000 controller",
-                description = "Default is 0x8800."
+                description = "Default is 0x8800.",
                 file = "include/cfg/arch/avrpio.h"
             },
             {
