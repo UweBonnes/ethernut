@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2005 FOCUS Software Engineering Pty Ltd <www.focus-sw.com>
- * Copyright (c) 2005 proconX <www.proconx.com>
+ * Copyright (c) 2005 proconX Pty Ltd <www.proconx.com>
  *
  * $Id$
  *
@@ -41,7 +40,8 @@
  * on the <A href="http://www.proconx.com/xnut105"> XNUT-105 DIN rail single
  * board computer with CAN and embedded Ethernet</A>. The XNUT-105 module
  * features the AT90CAN128 AVR CPU with built-in CAN controller and is running
- * the Nut/OS.
+ * the Nut/OS. This demo also compiles for AVR ATmega128 designs with SJA1000
+ * CAN controller.
  *
  * This program receives CAN messages and logs them on the serial port via
  * devDebug0. It also continuously broadcasts a CAN frame.
@@ -54,17 +54,20 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
-#include <sys/heap.h>
 #include <sys/thread.h>
-#include <sys/timer.h>
-#include <sys/socket.h>
 #include <dev/debug.h>
-#include <dev/nicrtl.h>
 #include <dev/uartavr.h>
-#include <arpa/inet.h>
-#include <pro/dhcp.h>
-#include <net/errno.h>
-#include <dev/atcan.h>
+#include <dev/can_dev.h>
+#include <dev/board.h>
+
+#if defined(MCU_AT90CAN128) // Internal AVR MCU CAN controller
+#  include <dev/atcan.h>
+#  define DEV_CAN devAtCan
+#else
+#  include <dev/sja1000.h> // External SJA1000 CAN controller
+#  define DEV_CAN devSJA1000
+#endif
+
 
 /*****************************************************************************
  * Main
@@ -81,33 +84,32 @@ int main(void)
 {
    unsigned long i;
    int result;
+   u_long baud = 115200;
 
-#if defined(__AVR__)
    NutRegisterDevice(&devDebug0, 0, 0);
-#endif
-   freopen("uart0", "w", stdout);
+   freopen(DEV_UART_NAME, "w", stdout);
+   _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
-   printf("CAN driver test program");
+   printf("CAN driver test program\n");
+
+   // Init CAN controller
+   result = NutRegisterDevice(&DEV_CAN, 0, 0);
+   canInfoPtr = (CANINFO *) DEV_CAN.dev_dcb;
 
 #if defined(MCU_AT90CAN128)
-
-   // Init AT90CAN128 CAN controller
-   result = NutRegisterDevice(&devAtCan, 0, 0);
-   canInfoPtr = (CANINFO *) devAtCan.dev_dcb;
-
    // Re-configure receive message objects
    AtCanEnableRx(8, // 8 CAN objects as RX buffer, 7 remaining as TX buffer
-   				 0, // Acceptance code (0 = accept all IDs)
-				 1, // Flag if acceptance code is extended (0 = standard, 1 = extended)
-				 0, // Acceptance code's remote tag (0 or 1)
-				 0, // Acceptance mask
-				 0, // 0 to receive extended and standard frames, 1 if message ID type must match acceptance code flag
-				 0  // 0 to receive remote and standard frames, 1 if remote tag must match acceptance code's remote tag
+                 0, // Acceptance code (0 = accept all IDs)
+                 1, // Flag if acceptance code is extended (0 = standard, 1 = extended)
+                 0, // Acceptance code's remote tag (0 or 1)
+                 0, // Acceptance mask
+                 0, // 0 to receive extended and standard frames, 1 if message ID type must match acceptance code flag
+                 0  // 0 to receive remote and standard frames, 1 if remote tag must match acceptance code's remote tag
 				 ); 
+#endif
 
    // Set CAN bit rate
-   CAN_SetSpeed(&devAtCan, CAN_SPEED_125K);
-
+   CAN_SetSpeed(&DEV_CAN, CAN_SPEED_125K);
 
    printf("Starting CAN RX/TX loop...\n");
    for (i = 0;;i++)
@@ -116,7 +118,7 @@ int main(void)
       memset(&canFrame, 0, sizeof(canFrame));
       canFrame.id = 0x123;
       canFrame.len = 8;
-	  canFrame.ext = 0; // Set to 1 to send an extended frame
+      canFrame.ext = 0; // Set to 1 to send an extended frame
       canFrame.byte[0] = 0x11;
       canFrame.byte[1] = 0x22;
       canFrame.byte[2] = 0x33;
@@ -125,10 +127,10 @@ int main(void)
       canFrame.byte[5] = 0x66;
       canFrame.byte[6] = 0x77;
       canFrame.byte[7] = 0x88;
-      CAN_TxFrame(&devAtCan, &canFrame);
+      CAN_TxFrame(&DEV_CAN, &canFrame);
 
       // Check if we did receive a frame
-      if (CAN_TryRxFrame(&devAtCan, &canFrame) == 0)
+      if (CAN_TryRxFrame(&DEV_CAN, &canFrame) == 0)
       {
          int8_t j;
 
@@ -140,12 +142,7 @@ int main(void)
                 canInfoPtr->can_tx_frames,
                 canInfoPtr->can_overruns);
       }
+      NutThreadYield(); // Give receiver and transmitter thread CPU time
    }
-#else   /* MCU_AT90CAN128 */
-#warning "This sample requires an AT90CAN128 MCU"
-   i = 0;
-   result = 0;
-   for (;;);
-#endif  /* MCU_AT90CAN128 */
 }
 
