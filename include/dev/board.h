@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/10/08 06:37:51  hwmaier
+ * Added RTC DS1307 for XNUT-100 and XNUT-105 units
+ *
  * Revision 1.9  2007/10/04 20:32:24  olereinhardt
  * Support for SAM7S256 added
  *
@@ -158,8 +161,9 @@
 #if defined(ETHERNUT3)
 #define RTC_CHIP rtcX12x6
 #include <dev/x12rtc.h>
-#elif defined(MMNET02)
+#elif defined(MMNET02) || defined(XNUT_100) || defined(XNUT_105)
 #define RTC_CHIP rtcDs1307
+#include <dev/ds1307rtc.h>
 #endif
 
 #endif
