@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
+$Id: ChangeLog,v 1.409 2007/10/08 06:39:54 hwmaier Exp $
+
+2007-10-08 Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * app/canbus/candemo.c: Compiles now also for SJA1000 based designs
+        * include/dev/board.h: Added RTC DS1307 for XNUT-100 and XNUT-105 
+          units
+        
 
 2007-10-04 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 
@@ -20,11 +27,11 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	* arch/arm/dev/at91_spi.c: small bugfix for cpu with only one spi
           channel
 
-	* conf/arch/avr.nut arch/avr/dev/sja1000.c
+	* conf/arch/avr.nut, arch/avr/dev/sja1000.c
 	  SJA_BASE (base address for sja1000 driver) can now be set in
 	  configurator
 
-2007-09-18 Henrik Maier  <henrik@proconx.com>
+2007-09-18 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * app/Makeburn.avr-dude: Using $(MCU) variable instead of hardcoded
         processor.
@@ -68,7 +75,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	This seems to solve a lot of problems with lost configurations.
 
 
-2006-09-08 Henrik Maier  <henrik@proconx.com>
+2007-09-08 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * dev/can_dev.c, include/dev/can_dev.h: Changes to support RX time-out, 
         CAN_SetRxTimeout() added.
@@ -572,7 +579,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	as fatal transmission errors.
 
 
-2006-10-07 Henrik Maier  <henrik@proconx.com>
+2006-10-07 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * arch/avr/os/nutinit.c: include of sys/heap.h added.
 
@@ -1199,7 +1206,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	to properly initialize displays with two lines.
 
 
-2006-07-13 Henrik Maier  <henrik@proconx.com>
+2006-07-13 Henrik Maier  <hwmaier@users.sourceforge.net>
 
 	* arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c,
 	arch/avr/dev/ih_usart1_tx.c:
@@ -1368,7 +1375,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	flash memory.
 
 
-2006-07-04 Henrik Maier  <henrik@proconx.com>
+2006-07-04 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * arch/avr/os/nutinit.c: Changed binary constants to hex
         constants in XNUT board initialization code.
@@ -1382,7 +1389,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	* conf/dev/dev.nut: DS1307 Driver included.
 
 
-2006-06-29 Henrik Maier  <henrik@proconx.com>
+2006-06-29 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * include/sys/thread.h: Added an include statement for cfg/memory.h
         so the macro NUTMEM_STACKHEAP is found when compiling for the
@@ -1480,7 +1487,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	* conf/dev/dev.nut: Null device added to Configurator build.
 
 
-2006-06-27 Henrik Maier  <henrik@proconx.com>
+2006-06-27 Henrik Maier  <hwmaier@users.sourceforge.net>
 
 	* arch/avr/dev/nicrtl.c: Fixed bug related to edge triggered interrupt
 	mode (RTL_IRQ_RISING_EDGE) in ISR.
@@ -1761,7 +1768,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	ARM bit banging SPI stopped working. Disabled.
 
 
-2006-03-03 Henrik Maier  <henrik@proconx.com>
+2006-03-03 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * os/thread.c: Fixed bug NutStackHeap* functions. The availabe
         variable was not taken into account.
@@ -1823,7 +1830,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	* app/httpd/httpserv.c: Can use MMC.
 
 
-2006-03-01 Henrik Maier  <henrik@proconx.com>
+2006-03-01 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * nut/app/Makerules.avr-gcc: -Wl,--start-group and -Wl,--end-group
         options added to solve circular reference issue with libraries.
@@ -1833,7 +1840,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
         * arch/avr/dev/atcan.c: Error check for NutHeapAlloc added
 
 
-2006-02-28 Henrik Maier  <henrik@proconx.com>
+2006-02-28 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * app/canbus/candemo.c, doc/gen/nut_en.cfg.in: Added CAN example
         for AT90CAN128 MCU.
@@ -2175,7 +2182,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	application won't do it for us.
 
 
-2006-01-15 Henrik Maier  <henrik@proconx.com>
+2006-01-15 Henrik Maier  <hwmaier@users.sourceforge.net>
 
        * app/Makedefs.avr-gcc: Changed linker option from -Tdata= to
        --section-start=.data= as -Tdata is broken in binutils 2.16
@@ -2185,7 +2192,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 2006-01-11  Matthias Ringwald  <mringwal@inf.ethz.ch>
         * arch/avr/dev/adc.c: ADCInit can be called multiple times
 
-2006-01-11 Henrik Maier  <henrik@proconx.com>
+2006-01-11 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * include/arch/avr/gcc.h: Support for avr-libc >= 1.4.x
 
@@ -2287,7 +2294,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 2005-12-22  Matthias Ringwald  <mringwal@inf.ethz.ch>
         * include/sys/mutex.h: added missing prototype for NutMutexDestroy.
 
-2005-12-06 Henrik Maier  <henrik@proconx.com>
+2005-12-06 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * arch/avr/dev/ivect09.c, arch/avr/dev/ivect11.c, arch/avr/dev/ivect15.c,
         arch/avr/dev/ivect24.c, arch/avr/dev/ivect25.c, arch/avr/dev/ivect26.c,
@@ -2588,7 +2595,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	necessary additions to support at90can128 cpu
 
 
-2005-10-19 Henrik Maier  <henrik@proconx.com>
+2005-10-19 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * arch/h8300/dev/scih8.c: Changed doxygen group to xgUartH8 so it doesn't
         overload arch/avr/dev/usartavr.c's documentation
@@ -2599,7 +2606,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
 	Added compilation of atcan.c if MCU=at90can128 is set
 
 
-2005-10-17 Henrik Maier  <henrik@proconx.com>
+2005-10-17 Henrik Maier  <hwmaier@users.sourceforge.net>
 
 	* arch/avr/dev/debug0.c, arch/avr/dev/debug1.c:
         Setting baudrate function changed: For CPUs w/ 12 and 16 MHz xtal
@@ -2626,7 +2633,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
         * apps/basemon/uart.c: Added 9600 baudrate setting for 12 MHz boards
 
 
-2005-10-08 Henrik Maier  <henrik@proconx.com>
+2005-10-08 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * uartavr.c, uartavr.h: Obsolete dcb_baudSelect removed.
 
@@ -2669,7 +2676,7 @@ $Id: ChangeLog,v 1.408 2007/10/04 21:07:26 olereinhardt Exp $
         w/ above changes applied)
 
 
-2005-10-04 Henrik Maier  <henrik@proconx.com>
+2005-10-04 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * arch/avr/dev/atcan.c, include/dev/atcan.h: Added AT90CAN128 CAN
         driver
