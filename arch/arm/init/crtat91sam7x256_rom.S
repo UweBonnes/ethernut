@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.7  2007/10/12 17:31:33  haraldkipp
+ * When using a bootloader, applications may freeze while re-programming the
+ * PLL. It will now be switched to slow clock first before changing the
+ * settings.
+ *
  * Revision 1.6  2007/07/07 22:51:47  olereinhardt
  * Corrected inlude path names. Changed backslash to slash
  *
@@ -178,7 +183,7 @@ _start:
         str     r0, [r1, #WDT_MR_OFF]
 
         /*
-         * Enable the main oscillator. Set startup time of 6 * 8 slow 
+         * Enable the main oscillator. Set startup time of 6 * 8 slow
          * clock cycles and wait until oscillator is stabilized.
          */
         ldr     r1, =PMC_BASE
@@ -189,6 +194,19 @@ wait_moscs:
         ldr     r0, [r1, #PMC_SR_OFF]
         tst     r0, #PMC_MOSCS
         beq     wait_moscs
+
+        /*
+         * Switch to Slow clock in case PLL was already set up.
+         */
+        ldr     r0, [r1, #PMC_MCKR_OFF]
+        and   r0, r0, #~PMC_CSS
+        /* Slow Clock. The next statement really isn't needed. It is included for code clarity */
+        orr     r0, r0, #PMC_CSS_SLOW_CLK
+        str     r0, [r1, #PMC_MCKR_OFF]
+wait_slowsel:
+        ldr     r0, [r1, #PMC_SR_OFF]
+        tst     r0, #PMC_MCKRDY
+        beq   wait_slowsel
 
         /*
          * Set PLL:
