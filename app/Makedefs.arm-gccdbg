@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2007/10/12 17:22:32  haraldkipp
+# Compiler option -fomit-frame-pointer confuses gdb. Removed.
+#
 # Revision 1.1  2007/04/12 09:12:09  haraldkipp
 # Quick solution allows generating GCC debug code.
 #
@@ -60,7 +63,7 @@ BIN       = $(TRGT)objcopy
 
 BINDIR    = $(top_srcdir)/bin/$(MCU)
 
-CPFLAGS   = $(MCFLAGS) -O0 -gdwarf-2 -mthumb-interwork -fomit-frame-pointer -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
+CPFLAGS   = $(MCFLAGS) -O0 -gdwarf-2 -mthumb-interwork -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
 LDFLAGS   = $(MCFLAGS) -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
 
 

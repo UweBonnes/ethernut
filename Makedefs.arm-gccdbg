@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2007/10/12 17:22:32  haraldkipp
+# Compiler option -fomit-frame-pointer confuses gdb. Removed.
+#
 # Revision 1.1  2007/04/12 09:12:08  haraldkipp
 # Quick solution allows generating GCC debug code.
 #
@@ -51,7 +54,7 @@ AS     = $(TRGT)gcc -x assembler-with-cpp
 RANLIN = $(TARG)ranlib
 
 MCFLAGS = -mcpu=$(MCU)
-CPFLAGS = $(MCFLAGS) -O0 -g -gdwarf-2 -mthumb-interwork -fomit-frame-pointer -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS) $(UCPFLAGS) 
+CPFLAGS = $(MCFLAGS) -O0 -g -gdwarf-2 -mthumb-interwork -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS) $(UCPFLAGS) 
 CXXFLAGS = $(MCFLAGS) -O0 -g -gdwarf-2 -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti -Wall -Wa,-ahlms=$(<F:.cc=.lst) $(DEFS) $(UCPFLAGS)
 LDFLAGS = $(MCFLAGS) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--relax,--sort-common,--strip-all,--cref -L$(LIBDIR)
 ARFLAGS = rsv
