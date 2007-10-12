@@ -86,11 +86,13 @@ int main(void)
    int result;
    u_long baud = 115200;
 
-   NutRegisterDevice(&devDebug0, 0, 0);
+   NutRegisterDevice(&DEV_DEBUG, 0, 0);
    freopen(DEV_UART_NAME, "w", stdout);
    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
    printf("CAN driver test program\n");
+
+#if defined(__AVR__) && defined(__GNUC__)
 
    // Init CAN controller
    result = NutRegisterDevice(&DEV_CAN, 0, 0);
@@ -132,7 +134,7 @@ int main(void)
       // Check if we did receive a frame
       if (CAN_TryRxFrame(&DEV_CAN, &canFrame) == 0)
       {
-         int8_t j;
+         u_char j;
 
          printf("%ld ", canFrame.id);
          for (j = 0; j < canFrame.len; j++)
@@ -144,5 +146,8 @@ int main(void)
       }
       NutThreadYield(); // Give receiver and transmitter thread CPU time
    }
+#else /* __AVR__ && __GNUC__ */
+   puts("No CAN device available");
+#endif /* __AVR__ && __GNUC__ */
 }
 
