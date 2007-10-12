@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.409 2007/10/08 06:39:54 hwmaier Exp $
+$Id: ChangeLog,v 1.410 2007/10/12 17:34:56 haraldkipp Exp $
+
+2007-10-12  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Makedefs.arm-gccdbg, app/Makedefs.arm-gccdbg: Compiler option
+	-fomit-frame-pointer confuses gdb. Removed.
+
+	* app/canbus/candemo.c: Several portability issues fixed.
+
+	* arch/arm/init/crtat91sam7x256_rom.S: When using a bootloader,
+	applications may freeze while re-programming the PLL. The PLL
+	will now be switched to slow clock first before changing the
+	PLL settings. Thanks to Andrew Zacharias, who provided this
+	patch.
+
+	* conf/arch/arm.nut: Removed ADC interface configuration,
+	because the source code file is not yet available.
+
 
 2007-10-08 Henrik Maier  <hwmaier@users.sourceforge.net>
 
