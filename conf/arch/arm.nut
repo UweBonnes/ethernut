@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.20  2007/10/12 17:32:16  haraldkipp
+-- AT91 ADC code not yet available.
+--
 -- Revision 1.19  2007/10/04 21:06:27  olereinhardt
 -- Support for SAM7S256 added
 --
@@ -307,7 +310,6 @@ nutarch_arm =
             "arm/dev/ih_at91uart1.c",
             "arm/dev/ih_at91emac.c",
             "arm/dev/ih_at91wdi.c",
-            "arm/dev/ih_at91adc.c"
         },
     },
     {
@@ -696,14 +698,6 @@ nutarch_arm =
         provides = { "DEV_TWI" },
         sources = { "arm/dev/at91_twi.c" },
     },   
-    {
-        name = "nutarch_arm_adc_at91",
-        brief = "AT91 ADC",
-        description = "ADC interface for AT91 (currently SAM7 only).",
-        requires = { "HW_MCU_AT91SAM7X" },
-        provides = { "DEV_ADC" },
-        sources = { "arm/dev/at91_adc.c" },
-    },     
     {
         name = "nutarch_arm_spimmc_at91",
         brief = "AT91 SPI MMC Access",
