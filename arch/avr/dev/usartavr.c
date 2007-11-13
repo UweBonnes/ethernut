@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/11/13 20:16:33  thiagocorrea
+ * Fix a small documentation typo
+ *
  * Revision 1.4  2007/03/08 16:59:01  freckle
  * moved Exit Tracer event to end of IRQ
  *
@@ -483,7 +486,7 @@ static void AvrUsartRxComplete(void *arg) {
 /*!
  * \brief Carefully enable USART hardware functions.
  *
- * Always enabale transmitter and receiver, even on read-only or
+ * Always enable transmitter and receiver, even on read-only or
  * write-only mode. So we can support software flow control.
  */
 static void AvrUsartEnable(void)
