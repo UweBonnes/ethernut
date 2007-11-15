@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.410 2007/10/12 17:34:56 haraldkipp Exp $
+$Id: ChangeLog,v 1.411 2007/11/15 01:44:13 hwmaier Exp $
+
+2007-11-15 Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * eboot/flash.s: Uses avr/io.h include file for register definitions
+        so it works for ATmega128, AT90CAN128 and AT90CAN128 
+        
+        * eboot/eboot.c: Include wdt.h was missing to compile for ATmega2561.
+        
+	* eboot/ether.c: Added support for AT90CAN128 MCU. Fixed using SRE 
+        bit on MCUCR register for ATmega2561, must be XMCRA like AT90CAN128.
+        
 
 2007-10-12  Harald Kipp  <harald.kipp@egnite.de>
 
