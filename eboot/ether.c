@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/11/15 01:36:17  hwmaier
+ * Added support for AT90CAN128 MCU. Fixed using SRE bit on MCUCR register for ATmega2561, must be XMCRA like AT90CAN128.
+ *
  * Revision 1.4  2007/07/30 09:47:55  olereinhardt
  * ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
  * line and comment out LDFLAGS for mega128
@@ -136,7 +139,11 @@ static void EmulateNicEeprom(void)
     /*
      * No external memory access beyond this point.
      */
+#if defined(__AVR_ATmega2561__) || defined(__AVR_AT90CAN128__)
+    XMCRA &= ~_BV(SRE);
+#else
     MCUCR &= ~_BV(SRE);
+#endif
 
     /*
      * Loop until the chip stops toggling our EESK input.
@@ -154,7 +161,11 @@ static void EmulateNicEeprom(void)
     /*
      * Enable memory interface.
      */
+#if defined(__AVR_ATmega2561__) || defined(__AVR_AT90CAN128__)
+    XMCRA |= _BV(SRE);
+#else
     MCUCR |= _BV(SRE);
+#endif
 
     /* Reset port outputs to default. */
     PORTC = 0x00;
@@ -183,7 +194,7 @@ void NicInit(void)
      * Enable external data and address
      * bus.
      */
-#if defined(__AVR_ATmega2561__)
+#if defined(__AVR_ATmega2561__) || defined(__AVR_AT90CAN128__)
     XMCRA = (_BV(SRE) | _BV(SRW10));
 #else
     MCUCR = (_BV(SRE) | _BV(SRW));
