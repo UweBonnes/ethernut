@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2007/11/15 01:35:34  hwmaier
+ * Include wdt.h was missing to compile for ATmega2561
+ *
  * Revision 1.4  2007/07/30 15:13:08  olereinhardt
  * Disable watchdog after reset for ATMega2561
  *
@@ -50,6 +53,7 @@
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <avr/wdt.h>
 
 #include "ether.h"
 #include "dhcp.h"
