@@ -31,7 +31,7 @@
 ;
 ; For additional information see http://www.ethernut.de/
 ;
-;	
+;
 ; This file has its orgin in following sources:
 ;
 ;  - Jaroslaw Karwik's RS232 boot loader
@@ -42,6 +42,9 @@
 
 ;
 ; $Log$
+; Revision 1.3  2007/11/15 01:36:56  hwmaier
+; Uses avr/io.h include file for register definitions so it works for ATmega128, AT90CAN128 and AT90CAN128
+;
 ; Revision 1.2  2007/07/30 09:47:55  olereinhardt
 ; ATMega2561 port. Makedefs need to be modifies by hand (uncomment LDFLAGS
 ; line and comment out LDFLAGS for mega128
@@ -51,13 +54,7 @@
 ;
 ;
 
-#define RAMPZ   0x3B
-
-#if defined(__AVR_ATmega2561__)
-#define SPMCSR  0x37
-#else 
-#define SPMCSR  0x68
-#endif
+#include <avr/io.h>
 
         .global SpmBufferFill
         .global SpmCommand
