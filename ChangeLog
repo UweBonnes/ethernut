@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.411 2007/11/15 01:44:13 hwmaier Exp $
+$Id: ChangeLog,v 1.412 2007/11/16 03:18:40 hwmaier Exp $
+
+2007-11-16 Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * arch/avr/dev/atcan.c: Updated bit timing values for a sample 
+        point of 87.5% and a SJW of 2. Required for maximum bus 
+        length as per CiA DS-102.
+
 
 2007-11-15 Henrik Maier  <hwmaier@users.sourceforge.net>
 
