@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2007 proconX Pty Ltd <www.proconx.com>
+ * Copyright (c) 2005-2007 proconX Pty Ltd. All rights reserved. 
  *
  * This driver has been closely modeled after the existing Nut/OS SJA1000
  * driver and the buffer management and some code snippets have been borrowed
@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2007/11/16 03:17:26  hwmaier
+ * Updated bit timing values for a sample point of 87.5% and a SJW of 2. Required for maximum bus length as per CiA DS-102.
+ *
  * Revision 1.5  2007/09/08 03:00:52  hwmaier
  * Optional time-out for receiving added, more robust handling of error interrupts.
  *
@@ -98,90 +101,92 @@
 /*****************************************************************************
  * CAN baud rate table
  *
- * Sampling point is 75%, SJW = 1
+ * Tried to match as closely as possible a sampling point of 87.5 %
+ * which is recommended by CiA for CANOpen. DeviceNet specifies a 
+ * sampling point > 80%. SQW is 2.
  *****************************************************************************/
 
 //
 // 12.00 MHz
 //
 #if NUT_CPU_FREQ == 12000000
-// 10 kbit/s - brp=59 bits=20 Tprs=8 Tph1=6 Tph2=5 Tsjw=1
-#define CAN_BT1_10K  0x76
-#define CAN_BT2_10K  0x0E
-#define CAN_BT3_10K  0x4B
-// 20 kbit/s - brp=29 bits=20 Tprs=8 Tph1=6 Tph2=5 Tsjw=1
-#define CAN_BT1_20K  0x3A
-#define CAN_BT2_20K  0x0E
-#define CAN_BT3_20K  0x4B
-// 50 kbit/s - brp=19 bits=12 Tprs=5 Tph1=3 Tph2=3 Tsjw=1
-#define CAN_BT1_50K  0x26
-#define CAN_BT2_50K  0x08
-#define CAN_BT3_50K  0x25
-// 100 kbit/s - brp=9 bits=12 Tprs=5 Tph1=3 Tph2=3 Tsjw=1
-#define CAN_BT1_100K 0x12
-#define CAN_BT2_100K 0x08
-#define CAN_BT3_100K 0x25
-// 125 kbit/s - brp=5 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
+// 10 kbit/s 85.00% 20 quanta (BRP=59 Tprs=8 Tph1=8 Tph2=3 Tsjw=2)
+#define CAN_BT1_10K 0x76
+#define CAN_BT2_10K 0x2E
+#define CAN_BT3_10K 0x2E
+// 20 kbit/s 86.67% 15 quanta (BRP=39 Tprs=8 Tph1=4 Tph2=2 Tsjw=2)
+#define CAN_BT1_20K 0x4E
+#define CAN_BT2_20K 0x2E
+#define CAN_BT3_20K 0x16
+// 50 kbit/s 87.50% 16 quanta (BRP=14 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
+#define CAN_BT1_50K 0x1C
+#define CAN_BT2_50K 0x2E
+#define CAN_BT3_50K 0x18
+// 100 kbit/s 86.67% 15 quanta (BRP=7 Tprs=8 Tph1=4 Tph2=2 Tsjw=2)
+#define CAN_BT1_100K 0x0E
+#define CAN_BT2_100K 0x2E
+#define CAN_BT3_100K 0x16
+// 125 kbit/s 87.50% 16 quanta (BRP=5 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
 #define CAN_BT1_125K 0x0A
-#define CAN_BT2_125K 0x0C
-#define CAN_BT3_125K 0x37
-// 250 kbit/s - brp=2 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
+#define CAN_BT2_125K 0x2E
+#define CAN_BT3_125K 0x18
+// 250 kbit/s 87.50% 16 quanta (BRP=2 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
 #define CAN_BT1_250K 0x04
-#define CAN_BT2_250K 0x0C
-#define CAN_BT3_250K 0x37
-// 500 kbit/s - brp=1 bits=12 Tprs=5 Tph1=3 Tph2=3 Tsjw=1
+#define CAN_BT2_250K 0x2E
+#define CAN_BT3_250K 0x18
+// 500 kbit/s 83.33% 12 quanta (BRP=1 Tprs=7 Tph1=2 Tph2=2 Tsjw=2)
 #define CAN_BT1_500K 0x02
-#define CAN_BT2_500K 0x08
-#define CAN_BT3_500K 0x25
-// 800 kbit/s - brp=0 bits=15 Tprs=8 Tph1=3 Tph2=3 Tsjw=1
+#define CAN_BT2_500K 0x2C
+#define CAN_BT3_500K 0x12
+// 800 kbit/s 86.67% 15 quanta (BRP=0 Tprs=8 Tph1=4 Tph2=2 Tsjw=2)
 #define CAN_BT1_800K 0x00
-#define CAN_BT2_800K 0x0E
-#define CAN_BT3_800K 0x25
-// 1000 kbit/s - brp=0 bits=12 Tprs=5 Tph1=3 Tph2=3 Tsjw=1
-#define CAN_BT1_1M   0x00
-#define CAN_BT2_1M   0x08
-#define CAN_BT3_1M   0x25
+#define CAN_BT2_800K 0x2E
+#define CAN_BT3_800K 0x16
+// 1000 kbit/s 83.33% 12 quanta (BRP=0 Tprs=7 Tph1=2 Tph2=2 Tsjw=2)
+#define CAN_BT1_1M 0x00
+#define CAN_BT2_1M 0x2C
+#define CAN_BT3_1M 0x12
 
 //
 // 16.00 MHz
 //
 #elif NUT_CPU_FREQ == 16000000
-// 10 kbit/s - brp=63 bits=25 Tprs=8 Tph1=10 Tph2=6 Tsjw=1
-#define CAN_BT1_10K  0x7E
-#define CAN_BT2_10K  0x0E
-#define CAN_BT3_10K  0x53
-// 20 kbit/s - brp=39 bits=20 Tprs=8 Tph1=6 Tph2=5 Tsjw=1
-#define CAN_BT1_20K  0x4E
-#define CAN_BT2_20K  0x0E
-#define CAN_BT3_20K  0x4B
-// 50 kbit/s - brp=19 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
-#define CAN_BT1_50K  0x26
-#define CAN_BT2_50K  0x0C
-#define CAN_BT3_50K  0x37
-// 100 kbit/s - brp=9 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
+// 10 kbit/s 68.00% 25 quanta (BRP=63 Tprs=8 Tph1=8 Tph2=8 Tsjw=2)
+#define CAN_BT1_10K 0x7E
+#define CAN_BT2_10K 0x2E
+#define CAN_BT3_10K 0x7E
+// 20 kbit/s 87.50% 16 quanta (BRP=49 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
+#define CAN_BT1_20K 0x62
+#define CAN_BT2_20K 0x2E
+#define CAN_BT3_20K 0x18
+// 50 kbit/s 87.50% 16 quanta (BRP=19 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
+#define CAN_BT1_50K 0x26
+#define CAN_BT2_50K 0x2E
+#define CAN_BT3_50K 0x18
+// 100 kbit/s 87.50% 16 quanta (BRP=9 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
 #define CAN_BT1_100K 0x12
-#define CAN_BT2_100K 0x0C
-#define CAN_BT3_100K 0x37
-// 125 kbit/s - brp=7 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
+#define CAN_BT2_100K 0x2E
+#define CAN_BT3_100K 0x18
+// 125 kbit/s 87.50% 16 quanta (BRP=7 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
 #define CAN_BT1_125K 0x0E
-#define CAN_BT2_125K 0x0C
-#define CAN_BT3_125K 0x37
-// 250 kbit/s - brp=3 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
+#define CAN_BT2_125K 0x2E
+#define CAN_BT3_125K 0x18
+// 250 kbit/s 87.50% 16 quanta (BRP=3 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
 #define CAN_BT1_250K 0x06
-#define CAN_BT2_250K 0x0C
-#define CAN_BT3_250K 0x37
-// 500 kbit/s - brp=1 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
+#define CAN_BT2_250K 0x2E
+#define CAN_BT3_250K 0x18
+// 500 kbit/s 87.50% 16 quanta (BRP=1 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
 #define CAN_BT1_500K 0x02
-#define CAN_BT2_500K 0x0C
-#define CAN_BT3_500K 0x37
-// 800 kbit/s - brp=0 bits=20 Tprs=8 Tph1=6 Tph2=5 Tsjw=1
+#define CAN_BT2_500K 0x2E
+#define CAN_BT3_500K 0x18
+// 800 kbit/s 85.00% 20 quanta (BRP=0 Tprs=8 Tph1=8 Tph2=3 Tsjw=2)
 #define CAN_BT1_800K 0x00
-#define CAN_BT2_800K 0x0E
-#define CAN_BT3_800K 0x4B
-// 1000 kbit/s - brp=0 bits=16 Tprs=7 Tph1=4 Tph2=4 Tsjw=1
-#define CAN_BT1_1M   0x00
-#define CAN_BT2_1M   0x0C
-#define CAN_BT3_1M   0x37
+#define CAN_BT2_800K 0x2E
+#define CAN_BT3_800K 0x2E
+// 1000 kbit/s 87.50% 16 quanta (BRP=0 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
+#define CAN_BT1_1M 0x00
+#define CAN_BT2_1M 0x2E
+#define CAN_BT3_1M 0x18
 #else
 #  error Frequency not supported or not set to a Fixed MCU clock!
 #endif
