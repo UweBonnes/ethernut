@@ -1,7 +1,9 @@
-$Id: ChangeLog,v 1.412 2007/11/16 03:18:40 hwmaier Exp $
+$Id: ChangeLog,v 1.413 2007/11/16 04:11:59 hwmaier Exp $
 
 2007-11-16 Henrik Maier  <hwmaier@users.sourceforge.net>
 
+	* app/canbus/candemo.c: Added delay after send to avoid bus overflow
+        
         * arch/avr/dev/atcan.c: Updated bit timing values for a sample 
         point of 87.5% and a SJW of 2. Required for maximum bus 
         length as per CiA DS-102.
