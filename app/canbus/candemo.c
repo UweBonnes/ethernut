@@ -54,6 +54,7 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
+#include <sys/timer.h>
 #include <sys/thread.h>
 #include <dev/debug.h>
 #include <dev/uartavr.h>
@@ -144,7 +145,7 @@ int main(void)
                 canInfoPtr->can_tx_frames,
                 canInfoPtr->can_overruns);
       }
-      NutThreadYield(); // Give receiver and transmitter thread CPU time
+      NutSleep(10); // Don't overflow the bus and give time to other threads
    }
 #else /* __AVR__ && __GNUC__ */
    puts("No CAN device available");
