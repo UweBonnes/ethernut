@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/12/09 22:17:23  olereinhardt
+ * fixed typo
+ *
  * Revision 1.3  2007/12/09 21:52:27  olereinhardt
  * Added doxygen tags
  *
@@ -44,7 +47,7 @@
  * only)
  *
  */
-y
+
 #include <arch/arm.h>
 #include <dev/irqreg.h>
 
