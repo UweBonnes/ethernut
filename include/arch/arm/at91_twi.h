@@ -33,6 +33,13 @@
  * For additional information see http://www.ethernut.de/
  */
 
+/*
+ * $Log$
+ * Revision 1.2  2007/12/09 22:12:26  olereinhardt
+ * Added cvs log tag
+ *
+ */
+
 /*!
  * \file arch/arm/at91_twi.h
  * \brief AT91 two wire interface.
@@ -40,6 +47,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2007/12/09 22:12:26  olereinhardt
+ * Added cvs log tag
+ *
  * Revision 1.1  2006/08/31 19:19:55  haraldkipp
  * No time to write comments. ;-)
  *

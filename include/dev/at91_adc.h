@@ -32,6 +32,14 @@
  *
  */
  
+/*
+ * $Log$
+ * Revision 1.2  2007/12/09 22:12:05  olereinhardt
+ * Added cvs log tag
+ *
+ */
+
+
 /*!
  * \file include/dev/at91_adc.h
  * \brief Header for AT91 Adc driver

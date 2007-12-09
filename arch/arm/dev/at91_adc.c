@@ -31,6 +31,13 @@
  *
  */
 
+/*
+ * $Log$
+ * Revision 1.2  2007/12/09 22:13:08  olereinhardt
+ * Added cvs log tag
+ *
+ */
+
 #include <arch/arm.h>
 #include <dev/irqreg.h>
 

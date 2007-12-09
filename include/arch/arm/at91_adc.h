@@ -32,6 +32,13 @@
  *
  */
 
+/*
+ * $Log$
+ * Revision 1.2  2007/12/09 22:12:49  olereinhardt
+ * Added cvs log tag
+ *
+ */
+
 #ifndef _ARCH_ARM_AT91_ADC_H_
 #define _ARCH_ARM_AT91_ADC_H_
 
@@ -42,6 +49,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2007/12/09 22:12:49  olereinhardt
+ * Added cvs log tag
+ *
  * Revision 1.1  2007/12/09 21:37:14  olereinhardt
  * Initial checkin of adc driver
  *
