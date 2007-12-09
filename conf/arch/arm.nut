@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.21  2007/12/09 21:50:38  olereinhardt
+-- Added config options for at91 adc driver
+--
 -- Revision 1.20  2007/10/12 17:32:16  haraldkipp
 -- AT91 ADC code not yet available.
 --
@@ -305,6 +308,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
+	    "arm/dev/ih_at91adc.c",
             "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
@@ -330,6 +334,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
+	    "arm/dev/ih_at91adc.c",
             "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
@@ -697,6 +702,14 @@ nutarch_arm =
         requires = { "HW_MCU_AT91SAM7S" },
         provides = { "DEV_TWI" },
         sources = { "arm/dev/at91_twi.c" },
+    },
+    {
+        name = "nutarch_arm_adc_at91",
+        brief = "AT91 ADC",
+        description = "ADC interface for AT91 (currently SAM7 only).",
+        requires = { "HW_MCU_AT91SAM7X" },
+        provides = { "DEV_ADC" },
+        sources = { "arm/dev/at91_adc.c" },
     },   
     {
         name = "nutarch_arm_spimmc_at91",
