@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2007/12/09 21:29:14  olereinhardt
+ * Added adc support
+ *
  * Revision 1.5  2007/07/16 15:51:01  haraldkipp
  * Default PIO base address added.
  *
@@ -139,6 +142,7 @@
 #include <arch/arm/at91_matrix.h>
 #include <arch/arm/at91_ccfg.h>
 #include <arch/arm/at91_sdramc.h>
+#include <arch/arm/at91_adc.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam9260 */
 /*@{*/

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2007/12/09 21:29:33  olereinhardt
+ * Added adc support
+ *
  * Revision 1.12  2007/10/04 20:27:58  olereinhardt
  * Support for SAM7S256 added
  *
@@ -151,6 +154,7 @@ extern IRQ_HANDLER sig_SSC;
 extern IRQ_HANDLER sig_SPI0;
 extern IRQ_HANDLER sig_SPI1;
 extern IRQ_HANDLER sig_TWI;
+extern IRQ_HANDLER sig_ADC;
 
 /*
  * Registered system interrupt handler information structure.

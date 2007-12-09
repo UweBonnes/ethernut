@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2007/12/09 21:28:56  olereinhardt
+ * Added adc support
+ *
  * Revision 1.10  2007/09/06 19:45:16  olereinhardt
  * include/arch/arm/at91sam7x.h
  *
@@ -159,6 +162,7 @@
 #include <arch/arm/at91_ssc.h>
 #include <arch/arm/at91_udp.h>
 #include <arch/arm/at91_twi.h>
+#include <arch/arm/at91_adc.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam7x */
 /*@{*/
