@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.413 2007/11/16 04:11:59 hwmaier Exp $
+$Id: ChangeLog,v 1.414 2007/12/09 22:11:05 olereinhardt Exp $
+
+2007-12-09 Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* include/arch/arm/at91sam7x.h, include/arch/arm/at91sam9260.h,
+	  include/arch/arm/irqreg.h: Added adc support
+	* conf/arch/arm.nut: Added config options for at91 adc driver
+	* arch/arm/dev/at91_twi.c: Added doxygen tags
+	* arch/arm/dev/at91_adc.c, arch/arm/dev/ih_at91adc.c,
+	  include/arch/arm/at91_adc.h, include/dev/at91_adc.h:
+	  Initial checkin of at91_adc driver
+	* arch/Makefile: Support for at91_adc driver added
 
 2007-11-16 Henrik Maier  <hwmaier@users.sourceforge.net>
 
