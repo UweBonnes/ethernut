@@ -111,6 +111,7 @@
 #include <arch/arm/at91_mc.h>
 #include <arch/arm/at91_ssc.h>
 #include <arch/arm/at91_twi.h>
+#include <arch/arm/at91_adc.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam7x */
 /*@{*/
