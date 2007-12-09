@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/12/09 21:52:27  olereinhardt
+ * Added doxygen tags
+ *
  * Revision 1.2  2007/10/04 19:51:56  olereinhardt
  * Support for sam7s added
  *
@@ -41,8 +44,7 @@
  * only)
  *
  */
-
-#include <stdio.h>
+y
 #include <arch/arm.h>
 #include <dev/irqreg.h>
 
@@ -53,6 +55,11 @@
 #include <sys/heap.h>
 
 #include <dev/twif.h>
+
+/*!
+ * \addtogroup xgAt91Twi
+ */
+/*@{*/
 
 HANDLE tw_mm_mutex;                 /* Exclusive master access. */
 HANDLE tw_mm_que;                   /* Threads waiting for master transfer done. */
@@ -372,3 +379,4 @@ int TwInit(u_char sla)
 
     return 0;
 }
+/*@}*/
