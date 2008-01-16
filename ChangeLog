@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.415 2007/12/09 22:23:11 olereinhardt Exp $
+$Id: ChangeLog,v 1.416 2008/01/16 00:22:14 olereinhardt Exp $
+
+2008-01-16 Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* arch/arm/init/crtat91sam9260_ram.S, arch/arm/init/crtat91_rom.S:
+	  Changed backslash to slash in include path names 
 
 2007-12-09 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* include/arch/arm/at91sam7x.h, include/arch/arm/at91sam9260.h,
