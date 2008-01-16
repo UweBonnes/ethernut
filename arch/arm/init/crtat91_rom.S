@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/01/16 00:19:41  olereinhardt
+ * Changed backslash to slash in include path names
+ *
  * Revision 1.2  2006/10/05 17:12:36  haraldkipp
  * Bug #1497065 fixed. Stack sizes increased.
  *
@@ -42,7 +45,7 @@
  *
  */
 
-#include <arch\arm.h>
+#include <arch/arm.h>
 
 IRQ_STACK_SIZE = (128*4)
 FIQ_STACK_SIZE = (64*4)
