@@ -23,6 +23,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/01/28 16:43:11  haraldkipp
+ * Version 2.2
+ *
  * Revision 1.1  2006/09/07 08:58:27  haraldkipp
  * First check-in
  *
@@ -30,6 +33,7 @@
 
 #include <wx/listctrl.h>
 
+#include "taskbaricon.h"
 #include "discovery.h"
 
 class CUdpThread;
@@ -37,6 +41,9 @@ class CUdpThread;
 enum
 {
     ID_SCAN = 1,
+    ID_AUTOSCAN,
+    ID_HIDE,
+    ID_RESTORE,
     ID_ABOUT,
     ID_LIST
 };
@@ -57,12 +64,23 @@ public:
 
 protected:
     void OnScan(wxCommandEvent& event);
+    void OnAutoScan(wxCommandEvent& event);
+    void OnExit(wxCommandEvent& event);
+    void OnHide(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
+    void OnScanTimer(wxTimerEvent& event); 
 
 private:
     wxListCtrl *m_nutList;
 
     CUdpThread *m_thread;
+    wxTimer m_timer;
+
+protected:
+    CTaskBarIcon *m_taskBarIcon;
+#if defined(__WXCOCOA__)
+    CTaskBarIcon *m_dockIcon;
+#endif
 
     DECLARE_EVENT_TABLE()
 };

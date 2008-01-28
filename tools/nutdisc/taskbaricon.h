@@ -1,8 +1,8 @@
-#ifndef _NUTDISC_H_
-#define _NUTDISC_H_
+#ifndef _TASKBARICON_H_
+#define _TASKBARICON_H_
 
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2005-2006 by egnite Software GmbH
+ * Copyright (C) 2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -23,21 +23,30 @@
 
 /*
  * $Log$
- * Revision 1.2  2008/01/28 16:43:11  haraldkipp
+ * Revision 1.1  2008/01/28 16:43:11  haraldkipp
  * Version 2.2
- *
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
  *
  */
 
-class CApp : public wxApp
+#include <wx/taskbar.h>
+
+class CTaskBarIcon: public wxTaskBarIcon
 {
 public:
-    virtual bool OnInit();
-    virtual int OnExit();
-    wxFrame *m_frame;
-};
+#if defined(__WXCOCOA__)
+    CTaskBarIcon(wxFrame *frame, wxTaskBarIconType iconType = DEFAULT_TYPE);
+#else
+    CTaskBarIcon(wxFrame *frame);
+#endif
 
+    void OnLeftButtonDClick(wxTaskBarIconEvent&);
+    void OnMenuRestore(wxCommandEvent&);
+    void OnMenuExit(wxCommandEvent&);
+    virtual wxMenu *CreatePopupMenu();
+
+    wxFrame *m_frame;
+
+    DECLARE_EVENT_TABLE()
+};
 
 #endif

@@ -20,6 +20,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.2  2008/01/28 16:43:11  haraldkipp
+ * Version 2.2
+ *
  * Revision 1.1  2006/09/07 08:58:27  haraldkipp
  * First check-in
  *
@@ -35,6 +38,7 @@
 #include <wx/app.h>
 #include <wx/log.h>
 #include <wx/listbox.h>
+#include <wx/timer.h>
 #endif
 
 #include <wx/config.h>
@@ -50,8 +54,12 @@
 BEGIN_EVENT_TABLE(CMainFrame, wxFrame)
     EVT_LIST_ITEM_ACTIVATED(ID_LIST, CMainFrame::OnActivated)
     EVT_MENU(ID_SCAN, CMainFrame::OnScan)
+    EVT_MENU(ID_AUTOSCAN, CMainFrame::OnAutoScan)
+    EVT_MENU(wxID_EXIT, CMainFrame::OnExit)
+    EVT_MENU(ID_HIDE, CMainFrame::OnHide)
     EVT_MENU(ID_ABOUT, CMainFrame::OnAbout)
     EVT_MENU(UDP_EVENT, CMainFrame::OnUdpEvent)
+    EVT_TIMER(wxID_ANY, CMainFrame::OnScanTimer)
 END_EVENT_TABLE()
 
 #if 0
@@ -63,6 +71,7 @@ wxPropertyValidatorRegistry myListValidatorRegistry;
  */
 CMainFrame::CMainFrame(const wxString& title)
     : wxFrame(NULL, -1, title)
+    , m_timer(this)
 {
     SetIcon(wxICON(nutdisc));
 
@@ -83,12 +92,18 @@ CMainFrame::CMainFrame(const wxString& title)
      */
     wxMenu *menuAction = new wxMenu;
     menuAction->Append(ID_SCAN, wxT("&Scan"));
+    menuAction->AppendCheckItem(ID_AUTOSCAN, wxT("&Autoscan"));
+    menuAction->Append(wxID_EXIT, wxT("E&xit"));
+
+    wxMenu *menuView = new wxMenu;
+    menuView->Append(ID_HIDE, wxT("&Hide"));
 
     wxMenu *menuHelp = new wxMenu;
     menuHelp->Append(ID_ABOUT, wxT("&About"));
 
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(menuAction, wxT("&Action") );
+    menuBar->Append(menuView, wxT("&View") );
     menuBar->Append(menuHelp, wxT("&Help") );
     SetMenuBar(menuBar);
 
@@ -99,6 +114,14 @@ CMainFrame::CMainFrame(const wxString& title)
     pConfig->SetPath(wxT("/MainFrame"));
     Move(pConfig->Read(wxT("x"), 50), pConfig->Read(wxT("y"), 50));
     SetClientSize(pConfig->Read(wxT("w"), 350), pConfig->Read(wxT("h"), 200));
+
+    m_taskBarIcon = new CTaskBarIcon(this);
+#if defined(__WXCOCOA__)
+    m_dockIcon = new CTaskBarIcon(this, wxTaskBarIcon::DOCK);
+#endif
+    if (!m_taskBarIcon->SetIcon(wxICON(nutdisc), wxT("wxTaskBarIcon Sample"))) {
+        wxMessageBox(wxT("Could not set icon."));
+    }
 
     /*
      * Create the discovery thread.
@@ -132,6 +155,10 @@ CMainFrame::~CMainFrame()
         pConfig->Write(wxT("/MainFrame/w"), (long) w);
         pConfig->Write(wxT("/MainFrame/h"), (long) h);
     }
+    delete m_taskBarIcon;
+#if defined(__WXCOCOA__)
+    delete m_dockIcon;
+#endif
 }
 
 /*!
@@ -221,6 +248,29 @@ void CMainFrame::OnScan(wxCommandEvent& WXUNUSED(event))
     m_thread->Broadcast();
 }
 
+void CMainFrame::OnAutoScan(wxCommandEvent& event)
+{
+    if (event.IsChecked()) {
+        m_nutList->DeleteAllItems();
+        m_thread->Broadcast();
+        m_timer.Start(1000);
+    } else {
+        if (m_timer.IsRunning()) {
+            m_timer.Stop();
+        }
+    }
+}
+
+void CMainFrame::OnExit(wxCommandEvent& WXUNUSED(event))
+{
+    Close(true);
+}
+
+void CMainFrame::OnHide(wxCommandEvent& WXUNUSED(event))
+{
+    Show(false);
+}
+
 void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxString msg;
@@ -229,9 +279,15 @@ void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 #ifdef __WXDEBUG__
         wxT(" (debug)")
 #endif
-        wxT("\n\nCopyright 2004-2006 by egnite Software GmbH")
+        wxT("\n\nCopyright 2004-2007 by egnite GmbH")
         wxT("\n\nBuild with wxWidgets Version %s.\n\n"),
         wxT(VERSION), wxVERSION_STRING);
 
     wxMessageBox(msg, _T("About"), wxOK | wxICON_INFORMATION, this);
+}
+
+void CMainFrame::OnScanTimer(wxTimerEvent& WXUNUSED(event)) 
+{ 
+    m_nutList->DeleteAllItems();
+    m_thread->Broadcast();
 }

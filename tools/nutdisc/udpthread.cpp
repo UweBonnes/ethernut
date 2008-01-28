@@ -20,6 +20,9 @@
 
 /*
  * $Log: udpthread.cpp,v $
+ * Revision 1.2  2008/01/28 16:43:12  haraldkipp
+ * Version 2.2
+ *
  * Revision 1.1  2006/09/07 08:58:27  haraldkipp
  * First check-in
  *
@@ -37,6 +40,14 @@
 #endif
 
 #include <wx/thread.h>
+
+// linux
+#ifndef __WXMSW__
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+#endif
+
 
 #include "udpthread.h"
 #include "discovery.h"
@@ -84,8 +95,11 @@ bool CUdpThread::Broadcast(DISCOVERY_TELE *dist)
         memset(&dummy, 0, sizeof(dummy));
         sendto(sock, (char *)&dummy, sizeof(DISCOVERY_TELE), 0, (struct sockaddr *)&client, sizeof(client));
     }
+#if defined(__WXMSW__)
     closesocket(sock);
-
+#else
+    close(sock);
+#endif
     return true;
 }
 
@@ -95,7 +109,11 @@ void *CUdpThread::Entry()
     unsigned short lport = DISCOVERY_PORT;
     struct sockaddr_in server;
     struct sockaddr_in client;
+#if defined(__WXMSW__)
     int cl;
+#else
+    socklen_t cl;
+#endif
     int got;
     int on = 1;
     char buf[1500];

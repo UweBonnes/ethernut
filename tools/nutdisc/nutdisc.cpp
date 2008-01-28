@@ -20,6 +20,9 @@
 
 /*
  * $Log: nutdisc.cpp,v $
+ * Revision 1.2  2008/01/28 16:43:11  haraldkipp
+ * Version 2.2
+ *
  * Revision 1.1  2006/09/07 08:58:27  haraldkipp
  * First check-in
  *
@@ -55,13 +58,16 @@ IMPLEMENT_APP(CApp)
  */
 bool CApp::OnInit()
 {
+#if defined(__WXMSW__)
     WORD wVersionRequested;
     WSADATA wsaData;
+#endif
     int ec;
 
     SetVendorName(wxT("egnite"));
     SetAppName(wxT("nutdisc"));
 
+#if defined(__WXMSW__)
     // Initialize the socket interface.
     wVersionRequested = MAKEWORD(1, 1);
     if((ec = WSAStartup(wVersionRequested, &wsaData)) != 0) {
@@ -71,12 +77,13 @@ bool CApp::OnInit()
         WSACleanup();
         return 0;
     }
+#endif
 
     if (!wxApp::OnInit())
         return false;
 
-    wxFrame *frame = new CMainFrame(wxT("Nut/OS Discoverer"));
-    frame->Show();
+    m_frame = new CMainFrame(wxT("Nut/OS Discoverer"));
+    m_frame->Show();
 
     return true;
 }
@@ -84,9 +91,9 @@ bool CApp::OnInit()
 int CApp::OnExit()
 {
     delete wxConfigBase::Set((wxConfigBase *) NULL);
-
+    
+#if defined(__WXMSW__)
     WSACleanup();
-
+#endif
     return 0;
 }
-

@@ -23,11 +23,14 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/01/28 16:43:12  haraldkipp
+ * Version 2.2
+ *
  * Revision 1.1  2006/09/07 08:58:27  haraldkipp
  * First check-in
  *
  */
 
-#define VERSION "2.1.0"
+#define VERSION "2.2.0"
 
 #endif
