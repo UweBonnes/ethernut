@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.25  2008/01/28 16:39:28  haraldkipp
+# Added nutdisc build (Steffen Ritter).
+#
 # Revision 1.24  2007/09/11 15:40:45  haraldkipp
 # Release branch 4.4 created
 #
@@ -173,12 +176,38 @@ AC_HAVE_HEADERS(string.h fcntl.h)
 
 # Check for tools build.
 
+# Commandline arguments ###################################################################################
 AC_ARG_ENABLE(nutconf-tools,
   AS_HELP_STRING([--disable-nutconf-tools],[disable configuration tool build]),
   [],
   [enable_nutconf_tools=yes]
 )
 
+AC_ARG_ENABLE(nutconf-gui,
+  AS_HELP_STRING([--disable-nutconf-gui],[disable GUI configuration tool build]),
+  [],
+  [enable_nutconf_gui=yes]
+)
+
+AC_ARG_ENABLE(wxwidgets,
+  AS_HELP_STRING([--disable-wxwidgets],[disable wxWidgets]),
+  [],
+  [enable_wxwidgets=yes]
+)
+
+AC_ARG_ENABLE(wxpropgrid,
+  AS_HELP_STRING([--disable-wxpropgrid],[disable xwProperty Grid]),
+  [],
+  [enable_wxpropgrid=yes]
+)
+
+AC_ARG_ENABLE(nutdiscoverer,
+  AS_HELP_STRING([--disable-nutdisc],[disable NutOs Discoverer]),
+  [],
+  [enable_nutdisc=yes]
+)
+# END Commandline arguments ###############################################################################
+# nutconfigure ############################################################################################
 if test "x$enable_nutconf_tools" = "xno"; then
   nutconf_tools_ok=no
 else
@@ -207,49 +236,91 @@ else
     fi
   fi
 fi
-
-AM_CONDITIONAL(BUILD_NUTCONF_TOOLS, test x$nutconf_tools_ok = xyes)
-
-# Set wxWidgets environment
-
-AC_ARG_ENABLE(nutconf-gui,
-  AS_HELP_STRING([--disable-nutconf-gui],[disable GUI configuration tool build]),
-  [],
-  [enable_nutconf_gui=yes]
-)
-
-if test "x$nutconf_tools_ok" = "xno"; then
-  nutconf_ok=no
-else
-  if test "x$enable_nutconf_gui" = "xno"; then
-    nutconf_ok=no
+# END nutconfigure ########################################################################################
+# GUI tools ###############################################################################################
+# wxWidgets ###############################################################################################
+if test "x$enable_wxwidgets" = "xyes"; then
+  AC_MSG_NOTICE([wxWidgets enabled])
+  AC_MSG_NOTICE([checking for wxWidgets])
+  AC_PATH_PROG(WX_CONFIG, wx-config, no)
+  if [[ "$WX_CONFIG" = "no" ]] ; then
+    AC_MSG_WARN([wxWidgets not found, will not build the GUI tools])
+    wxwidgets_ok=no
   else
-    AC_PATH_PROG(WX_CONFIG, wx-config, no)
-    if [[ "$WX_CONFIG" = "no" ]] ; then
-        AC_MSG_WARN([wxWidgets not found, will not build the nutconf GUI tool])
-        nutconf_ok=no
+    wxwidgets_ver=`$WX_CONFIG --version`
+    wxwidgets_ver_major=`expr "$wxwidgets_ver" : '\(@<:@0-9@:>@\)\..*'`
+    wxwidgets_ver_minor=`expr "$wxwidgets_ver" : '@<:@0-9@:>@\.\(@<:@0-9@:>@\).*'`
+    if test $wxwidgets_ver_major -lt "2" -o $wxwidgets_ver_minor -lt "6" ; then
+      AC_MSG_WARN([wxWidgets $wxwidgets_ver is too old.])
+      wxwidgets_ok=no
     else
-      wxwidgets_ver=`$WX_CONFIG --version`
-      wxwidgets_ver_major=`expr "$wxwidgets_ver" : '\(@<:@0-9@:>@\)\..*'`
-      wxwidgets_ver_minor=`expr "$wxwidgets_ver" : '@<:@0-9@:>@\.\(@<:@0-9@:>@\).*'`
-      if test $wxwidgets_ver_major -lt "2" -o $wxwidgets_ver_minor -lt "6" ; then
-        AC_MSG_WARN([wxWidgets $wxwidgets_ver is too old.])
-        nutconf_ok=no
-      else
-        AC_SUBST(WX_CXXFLAGS,`wx-config --cxxflags`)
-        AC_SUBST(WX_LIBS,`wx-config --libs`)
-        nutconf_ok=yes
-      fi
+      AC_SUBST(WX_CXXFLAGS,`wx-config --cxxflags`)
+      AC_SUBST(WX_LIBS,`wx-config --libs`)
+      wxwidgets_ok=yes
     fi
   fi
 fi
+# END wxWidgets #########################################################################################
+# Property Grid #########################################################################################
+if test "x$wxwidgets_ok" = "xyes"; then 
+  AC_MSG_NOTICE([checking for propgrid])
+  if test "x$enable_wxpropgrid" = "xyes" ; then
+    AC_MSG_NOTICE([wxpropgrid enabled])
+    propgridpath1=/usr/include/wx-`wx-config --release`/wx/propgrid
+    propgridpath2=/usr/local/include/wx-`wx-config --release`/wx/propgrid
 
+    #exists wxpropgrid's propgrid.h
+    AC_CHECK_FILE($propgridpath1/propgrid.h,[propgrid_ok="yes"],[propgrid_ok="no"])
+    if test "x$propgrid_ok" = "xno"; then
+        AC_CHECK_FILE($propgridpath2/propgrid.h,[propgrid_ok="yes"],[propgrid_ok="no"])
+    fi
+  else
+    propgrid_ok=no
+    AC_MSG_WARN([wxpropgrid disabled])
+  fi
+fi
+# END Property Grid #####################################################################################
+# nutconfgui ############################################################################################
+if test "x$wxwidgets_ok" = "xyes"; then 
+  AC_MSG_NOTICE([checking for nutconfgui])
+  if test "x$nutconf_tools_ok" = "xno"; then
+    nutconf_ok=no
+    AC_MSG_WARN([nutconfigure wasn't build])
+  elif test "x$enable_nutconf_gui" = "xno"; then
+      nutconf_ok=no
+      AC_MSG_WARN([nutconfgui wasnt enabled])
+  else
+      AC_MSG_NOTICE([nutconfgui is enabled])
+      nutconf_ok=yes
+  fi
+fi
+# END nutconfgui ########################################################################################
+# nutdiscoverer #########################################################################################
+if test "x$wxwidgets_ok" = "xyes"; then 
+  AC_MSG_NOTICE([checking for nutdisc])
+  if test "x$enable_nutdisc" = "xno"; then
+    nutdisc_ok=no
+    AC_MSG_NOTICE([nutdisc disabled])
+  elif test "x$propgrid_ok" = "xno"; then
+    nutdisc_ok=no
+    AC_MSG_NOTICE([nutdisc requires propgrid])
+  else
+    nutdisc_ok=yes
+    AC_MSG_NOTICE([nutdisc enabled])
+  fi
+fi
+# END nutdiscoverer #####################################################################################
+# END GUI tools #########################################################################################
+
+AM_CONDITIONAL(BUILD_NUTCONF_TOOLS, test x$nutconf_tools_ok = xyes)
 AM_CONDITIONAL(BUILD_NUTCONF_GUI, test x$nutconf_ok = xyes)
+AM_CONDITIONAL(BUILD_NUTDISC, test x$nutdisc_ok = xyes)
 
 AC_CONFIG_FILES([
 	Makefile
 	tools/crurom/Makefile
 	tools/nutconf/Makefile
+	tools/nutdisc/Makefile
 	tools/packaging/ethernut.spec
 	doc/Makefile
 	doc/gen/Makefile
