@@ -33,6 +33,10 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.19  2008/01/31 09:22:32  haraldkipp
+-- Added first version of platform independent GPIO routines. Consider the
+-- AVR version untested.
+--
 -- Revision 1.18  2007/10/05 23:47:50  olereinhardt
 -- Added a missin colon :-)
 --
@@ -644,6 +648,13 @@ nutarch_avr =
     --
     -- Additional Hardware Support
     --
+    {
+        name = "nutarch_avr_gpio",
+        brief = "AVR GPIO",
+        requires = { "HW_MCU_AVR" },
+        description = "Generic GPIO API.",
+        sources = { "avr/dev/gpio_avr.c" }
+    },
     {
         name = "nutarch_avr_adc",
         brief = "ADC Driver",

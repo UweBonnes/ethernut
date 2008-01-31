@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.14  2008/01/31 09:22:32  haraldkipp
+ * Added first version of platform independent GPIO routines. Consider the
+ * AVR version untested.
+ *
  * Revision 1.13  2007/12/09 21:29:33  olereinhardt
  * Added adc support
  *
@@ -148,7 +152,9 @@ extern IRQ_HANDLER sig_TC2;
 extern IRQ_HANDLER sig_INTERRUPT0;
 extern IRQ_HANDLER sig_INTERRUPT1;
 extern IRQ_HANDLER sig_EMAC;
-extern IRQ_HANDLER sig_PIO;
+extern IRQ_HANDLER sig_PIOA;
+extern IRQ_HANDLER sig_PIOB;
+extern IRQ_HANDLER sig_PIOC;
 extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
 extern IRQ_HANDLER sig_SPI0;
@@ -188,7 +194,9 @@ extern IRQ_HANDLER sig_TC1;
 extern IRQ_HANDLER sig_TC2;
 extern IRQ_HANDLER sig_INTERRUPT0;
 extern IRQ_HANDLER sig_INTERRUPT1;
-extern IRQ_HANDLER sig_PIO;
+extern IRQ_HANDLER sig_PIOA;
+extern IRQ_HANDLER sig_PIOB;
+extern IRQ_HANDLER sig_PIOC;
 extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
 extern IRQ_HANDLER sig_SPI0;
@@ -226,7 +234,9 @@ extern IRQ_HANDLER sig_TC2;
 extern IRQ_HANDLER sig_INTERRUPT0;
 extern IRQ_HANDLER sig_INTERRUPT1;
 extern IRQ_HANDLER sig_EMAC;
-extern IRQ_HANDLER sig_PIO;
+extern IRQ_HANDLER sig_PIOA;
+extern IRQ_HANDLER sig_PIOB;
+extern IRQ_HANDLER sig_PIOC;
 extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
 extern IRQ_HANDLER sig_SPI0;

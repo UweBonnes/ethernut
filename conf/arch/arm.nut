@@ -33,6 +33,10 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.22  2008/01/31 09:22:32  haraldkipp
+-- Added first version of platform independent GPIO routines. Consider the
+-- AVR version untested.
+--
 -- Revision 1.21  2007/12/09 21:50:38  olereinhardt
 -- Added config options for at91 adc driver
 --
@@ -353,7 +357,9 @@ nutarch_arm =
             "arm/dev/ih_at91irq0.c",
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91pioa.c",
+            "arm/dev/ih_at91piob.c",
+            "arm/dev/ih_at91pioc.c",
             "arm/dev/ih_at91spi0.c",
             "arm/dev/ih_at91spi1.c",
             "arm/dev/ih_at91ssc.c",
@@ -737,6 +743,18 @@ nutarch_arm =
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_AT91" },
         sources = { "arm/dev/at91init.c" },
+    },
+    {
+        name = "nutarch__arm_gpio_at91",
+        brief = "AT91 GPIO",
+        description = "Generic port I/O API.",
+        requires = { "HW_MCU_AT91" },
+        sources = { 
+          "arm/dev/gpio_at91.c" ,
+          "arm/dev/gpioa_at91.c",
+          "arm/dev/gpiob_at91.c",
+          "arm/dev/gpioc_at91.c" 
+        },
     },
     {
         name = "nutarch__arm_at91spi",
