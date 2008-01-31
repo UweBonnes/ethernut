@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/01/31 09:32:16  haraldkipp
+ * Added ports H to L.
+ *
  * Revision 1.6  2007/04/12 09:10:29  haraldkipp
  * PORTH added.
  *
@@ -77,6 +80,10 @@
 #define AVRPORTF    6
 #define AVRPORTG    7
 #define AVRPORTH    8
+#define AVRPORTI    9
+#define AVRPORTJ    10
+#define AVRPORTK    11
+#define AVRPORTL    12
 
 #include <cfg/arch/avrpio.h>
 
