@@ -33,6 +33,10 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.19  2008/01/31 09:14:09  haraldkipp
+-- Added ability to upload AT91 flash image via HTTP. Many thanks to
+-- Matthias Wilde.
+--
 -- Revision 1.18  2007/10/04 20:15:26  olereinhardt
 -- Support for SAM7S256 added
 --
@@ -168,6 +172,7 @@ nuttools =
                 description = "at91_boot\t\tAT91R40008, code in ROM, copied to and running in RAM\n"..
                               "at91_ram\t\t\tAT91R40008, code loaded in RAM by bootloader\n"..
                               "at91_rom\t\t\tAT91R40008, code running in FLASH\n"..
+                              "at91_httprom\t\tAT91R40008, code running in FLASH. Use this with boothttp.\n"..
                               "at91sam7x256_rom\t\tAT91SAM7X, code running in FLASH\n"..
                               "at91sam7s256_rom\t\tAT91SAM7S, code running in FLASH\n"..
                               "at91sam9260_ram\t\tAT91SAM9260, code running in external RAM\n"..
