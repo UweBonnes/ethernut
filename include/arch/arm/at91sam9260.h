@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/01/31 09:35:46  haraldkipp
+ * Removed PIO_BASE definition, which conflicts with general GPIO.
+ *
  * Revision 1.6  2007/12/09 21:29:14  olereinhardt
  * Added adc support
  *
@@ -89,7 +92,6 @@
 #define AIC_BASE        0xFFFFF000      /*!< \brief AIC base address. */
 #define DBGU_BASE       0xFFFFF200      /*!< \brief DBGU base address. */
 #define PIOA_BASE       0xFFFFF400      /*!< \brief PIO A base address. */
-#define PIO_BASE        PIOA_BASE
 #define PIOB_BASE       0xFFFFF600      /*!< \brief PIO B base address. */
 #define PIOC_BASE       0xFFFFF800      /*!< \brief PIO C base address. */
 #define PMC_BASE        0xFFFFFC00      /*!< \brief PMC base address. */
