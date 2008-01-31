@@ -1,4 +1,87 @@
-$Id: ChangeLog,v 1.416 2008/01/16 00:22:14 olereinhardt Exp $
+$Id: ChangeLog,v 1.417 2008/01/31 09:41:25 haraldkipp Exp $
+
+2008-01-31  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/Makedefs.npl-xc95: Re-use existing macro names.
+
+	* app/Makerules.npl-xc95: XSTSCRIPT and IMPSCRIPT are created
+	dynamically. Macro PROJ renamed to NPL_PROJ. This way the XSVF
+	File and the XSVF Executor can be created in a single Makefile.
+
+	* conf/crt/crt.nut, crt/environ.c, crt/getenv.c, crt/putenv.c,
+	crt/setenv.c, include/sys/environ.h: Added stdlib environment.
+
+	* conf/repository.nut, conf/tools.nut,
+	arch/arm/init/crtat91_httprom.S, arch/arm/ldscripts/at91_httprom.ld:
+	Added ability to upload AT91 flash image via HTTP. Many thanks to 
+	Matthias Wilde for this cool feature.
+
+	* include/arch/arm/at91_twi.h: Removed duplicate Log tag. Ole is
+	getting old, isn't he? :-)
+
+	* include/unistd.h: Added sleep() prototype.
+
+	* arch/arm/dev/spimmc_at91.c: Failed to compile for SAM7S. Added
+	some default settings.
+
+	* configure.ac, tools/nutdisc/Makefile.am: Added build of Nut 
+	Discoverer.
+
+	* tools/nutdisc/nutdisc.cpp, tools/nutdisc/udpthread.cpp:
+	Added *nix socket support.
+
+	* tools/nutdisc/mainframe.cpp, tools/nutdisc/mainframe.h: Added 
+	autoscan and window hiding.
+
+	* tools/nutdisc/nutdisc.h: Make frame window public.
+
+	* tools/nutdisc/nutdisc.rc, tools/nutdisc/version.h: Version 2.2.
+
+	* tools/nutdisc/taskbaricon.cpp, tools/nutdisc/taskbaricon.h:
+	Taskbar added.
+
+	* conf/arch/arm.nut, conf/arch/avr.nut, include/arch/arm/irqreg.h,
+	arch/arm/dev/gpio_at91.c, arch/arm/dev/gpioa_at91.c,
+	arch/arm/dev/gpiob_at91.c, arch/arm/dev/gpioc_at91.c,
+	arch/avr/dev/gpio_avr.c, include/dev/gpio.h: Added first version 
+	of platform independent GPIO routines. Consider the AVR version 
+	untested.
+
+	* arch/arm/dev/ih_at91pioa.c, arch/arm/dev/ih_at91piob.c,
+	arch/arm/dev/ih_at91pioc.c: Added PIO interrupt handling for 
+	devices with more than one port.
+
+	* include/pro/httpd.h: Expanded REQUEST structure to handle
+	HTTP/1.1. Added MIMETYPES structure.
+
+	* include/pro/rfctime.h: RFC date and time conversion added.
+
+	* include/pro/asn1.h, include/pro/snmp_agent.h, 
+	include/pro/snmp_api.h, include/pro/snmp_auth.h,
+	include/pro/snmp_config.h, include/pro/snmp_mib.h,
+	include/pro/snmp.h: Added first SNMP support, still incomplete, 
+	possibly buggy.
+
+	* conf/repository.nut, include/cfg/arch/avr.h: Added ports H up 
+	to L.
+
+	* app/portdio/portdio.c: Now makes use of general GPIO routines 
+	to work on all platforms. Pre-configured for Ethernut 1, 2 and 3 
+	as well as Atmel's SAM7X and SAM9260 Evaluation Kits. Note, that 
+	the AVR version had been moved from PORTD to PORTB. This had been 
+	done to get the same expansion port pins on Ethernut 1/2 and 
+	Ethernut 3 without disturbing the TWI/I2C port. Removed system 
+	specific commands to keep it simple.
+
+	* include/arch/arm/at91sam9260.h: Removed PIO_BASE definition, 
+	which conflicts with general GPIO.
+
+	* app/canbus/candemo.c, app/events/events.c, app/ftpd/ftpserv.c,
+	app/logtime/logtime.c, app/pppc/pppc.c, app/rs232d/rs232d.c,
+	app/simple/simple.c, app/tcps/tcps.c, app/threads/threads.c,
+	app/timers/timers.c, app/uart/uart.c: Added return statement in 
+	main to avoid warnings with latest GCC.
+
 
 2008-01-16 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* arch/arm/init/crtat91sam9260_ram.S, arch/arm/init/crtat91_rom.S:
