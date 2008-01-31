@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2008/01/31 09:15:21  haraldkipp
+ * Added sleep() prototype.
+ *
  * Revision 1.5  2005/04/19 15:46:45  freckle
  * added #include <compiler.h> as the implicit ordering is not sufficient
  * on our red hat machines and the cruisecontrol build fails
@@ -80,6 +83,8 @@
 #define rmdir(...) NUT_rmdir(__VA_ARGS__)
 #define unlink(...) NUT_unlink(__VA_ARGS__)
 
+#define sleep(...) NUT_sleep(__VA_ARGS__)
+
 /* assure _UNISTD_H_ is set */
 #undef  _UNISTD_H_
 #define _UNISTD_H_
@@ -94,6 +99,8 @@ extern int access(CONST char *path, int what);
 extern long lseek(int fh, long pos, int whence);
 extern int rmdir(CONST char *path);
 extern int unlink(CONST char *path);
+
+extern unsigned int sleep(unsigned int);
 __END_DECLS
 /* */
 
