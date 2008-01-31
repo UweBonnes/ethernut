@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2008 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -32,6 +32,15 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2008/01/31 09:35:10  haraldkipp
+ * Now makes use of general GPIO routines to work on all platforms.
+ * Pre-configured for Ethernut 1, 2 and 3 as well as Atmel's SAM7X
+ * and SAM9260 Evaluation Kits. Note, that the AVR version had been
+ * moved from PORTD to PORTB. This had been done to get the same
+ * expansion port pins on Ethernut 1/2 and Ethernut 3 without
+ * disturbing the TWI/I2C port. Removed system specific commands to
+ * keep it simple.
+ *
  * Revision 1.3  2005/11/22 09:16:31  haraldkipp
  * Replaced specific device names by generalized macros.
  * Casting size_t to int to avoid compiler warnings about printf format
@@ -90,11 +99,13 @@
 #define MY_MAC          {0x00,0x06,0x98,0x20,0x00,0x00}
 #define MY_IP           "192.168.192.100"
 #define MY_MASK         "255.255.255.0"
+#define MY_PORT         12345
 
 #include <string.h>
 #include <stdio.h>
 
 #include <dev/board.h>
+#include <dev/gpio.h>
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -107,14 +118,98 @@
 
 #include <pro/dhcp.h>
 
+#if defined(ETHERNUT1) || defined(ETHERNUT2)
+#define INBANK      2    /* PORTB */
+#define INPIN1      0
+#define INPIN2      1
+#define INPIN3      2
+#define INPIN4      3
+#define OUTBANK     2    /* PORTB */
+#define OUTPIN1     4
+#define OUTPIN2     5
+#define OUTPIN3     6
+#define OUTPIN4     7
+#elif defined(ETHERNUT3)
+/* Uses same expansion port pins as Ethernut 1/2. */
+#define INBANK      0    /* PIO */
+#define INPIN1      0
+#define INPIN2      1
+#define INPIN3      2
+#define INPIN4      3
+#define OUTBANK     0    /* PIO */
+#define OUTPIN1     4
+#define OUTPIN2     5
+#define OUTPIN3     6
+#define OUTPIN4     7
+#elif defined(AT91SAM7X_EK)
+#define INBANK      1    /* PIOA Joystick */
+#define INPIN1      21
+#define INPIN2      22
+#define INPIN3      23
+#define INPIN4      24
+#define OUTBANK     2    /* PIOB User LEDs */
+#define OUTPIN1     19
+#define OUTPIN2     20
+#define OUTPIN3     21
+#define OUTPIN4     22
+#elif defined(AT91SAM9260_EK)
+#define INBANK      1   /* PIOA */
+#define INPIN1      30  /* Push button 3 */
+#define INPIN2      31  /* Push button 4 */
+#define OUTBANK     1   /* PIOA */
+#define OUTPIN1     6   /* User LED */
+#define OUTPIN2     9   /* Power LED */
+#endif
+
+/*
+ * Previous AVR versions read the full PIN register. Now each input
+ * and output pin is freely configurable (within a single port bank).
+ * This routine collects all pins as they would have been read
+ * from a single 8-bit register.
+ */
+static int PortStatus(void)
+{
+    int stat = 0;
+#ifdef INBANK
+#ifdef INPIN1
+    stat |= GpioPinGet(INBANK, INPIN1);
+#endif
+#ifdef INPIN2
+    stat |= GpioPinGet(INBANK, INPIN2) << 1;
+#endif
+#ifdef INPIN3
+    stat |= GpioPinGet(INBANK, INPIN3) << 2;
+#endif
+#ifdef INPIN4
+    stat |= GpioPinGet(INBANK, INPIN4) << 3;
+#endif
+#endif /* INBANK */
+
+#ifdef OUTBANK
+#ifdef OUTPIN1
+    stat |= GpioPinGet(OUTBANK, OUTPIN1) << 4;
+#endif
+#ifdef OUTPIN2
+    stat |= GpioPinGet(OUTBANK, OUTPIN2) << 5;
+#endif
+#ifdef OUTPIN3
+    stat |= GpioPinGet(OUTBANK, OUTPIN3) << 6;
+#endif
+#ifdef OUTPIN4
+    stat |= GpioPinGet(OUTBANK, OUTPIN4) << 7;
+#endif
+#endif /* OUTBANK */
+
+    return stat;
+}
 
 /*
  * Process client requests.
  */
 void ProcessRequests(FILE * stream)
 {
-    u_char buff[128];
-    u_char *cp;
+    char buff[128];
+    char *cp;
     int stat = -1;
 
     fputs("200 Welcome to portdio. Type help to get help.\r\n", stream);
@@ -142,99 +237,38 @@ void ProcessRequests(FILE * stream)
             continue;
         }
 
-        /*
-         * List threads.
-         */
-        if (strncmp(buff, "threads", strlen(buff)) == 0) {
-            NUTTHREADINFO *tdp;
-            NUTTIMERINFO *tnp;
-
-            fputs("220 List of threads with name,state,prio,stack,mem,timeout follows\r\n", stream);
-            for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
-                fputs(tdp->td_name, stream);
-                fputs("\t", stream);
-                switch (tdp->td_state) {
-                case TDS_TERM:
-                    fputs("\tTerm\t", stream);
-                    break;
-                case TDS_RUNNING:
-                    fputs("\tRun\t", stream);
-                    break;
-                case TDS_READY:
-                    fputs("\tReady\t", stream);
-                    break;
-                case TDS_SLEEP:
-                    fputs("\tSleep\t", stream);
-                    break;
-                }
-                fprintf(stream, "%u\t%u", tdp->td_priority, (u_int) tdp->td_sp - (u_int) tdp->td_memory);
-                if (*((u_long *) tdp->td_memory) != DEADBEEF)
-                    fputs("\tCorrupted\t", stream);
-                else
-                    fputs("\tOK\t", stream);
-
-                if ((tnp = (NUTTIMERINFO *) tdp->td_timer) != 0)
-                    fprintf(stream, "%lu", tnp->tn_ticks_left);
-                else
-                    fputs("None", stream);
-                fputs("\r\n", stream);
-            }
-            fputs(".\r\n", stream);
-            continue;
-        }
-
-        /*
-         * List timer.
-         */
-        if (strncmp(buff, "timers", strlen(buff)) == 0) {
-            NUTTIMERINFO *tnp;
-
-            fputs("221 List of timers with ticks left and interval follows\r\n", stream);
-            for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
-                fprintf(stream, "%lu", tnp->tn_ticks_left);
-                if (tnp->tn_ticks)
-                    fprintf(stream, "\t%lu\r\n", tnp->tn_ticks);
-                else
-                    fputs("\tOneshot\r\n", stream);
-            }
-            fputs(".\r\n", stream);
-            continue;
-        }
-
-        /*
-         * Port status.
-         */
-        if (strncmp(buff, "query", strlen(buff)) == 0) {
-#ifdef __AVR__
-            stat = inb(PIND);
-#endif
-            fprintf(stream, "210 %02X\r\n", stat);
-            continue;
-        }
-
+#ifdef OUTBANK
         /*
          * Reset output bit.
          */
         if (strlen(buff) > 1 && strncmp(buff, "reset", strlen(buff) - 1) == 0) {
-            int mask = 0;
+            int ok = 1;
             switch (buff[strlen(buff) - 1]) {
+#ifdef OUTPIN1
             case '1':
-                mask = 0x10;
+                GpioPinSetLow(OUTBANK, OUTPIN1);
                 break;
+#endif
+#ifdef OUTPIN2
             case '2':
-                mask = 0x20;
+                GpioPinSetLow(OUTBANK, OUTPIN2);
                 break;
+#endif
+#ifdef OUTPIN3
             case '3':
-                mask = 0x40;
+                GpioPinSetLow(OUTBANK, OUTPIN3);
                 break;
+#endif
+#ifdef OUTPIN4
             case '4':
-                mask = 0x80;
+                GpioPinSetLow(OUTBANK, OUTPIN4);
+                break;
+#endif
+            default:
+                ok = 0;
                 break;
             }
-            if (mask) {
-#ifdef __AVR__
-                outb(PORTD, inb(PORTD) & ~mask);
-#endif
+            if (ok) {
                 fputs("210 OK\r\n", stream);
             } else
                 fputs("410 Bad pin\r\n", stream);
@@ -245,28 +279,47 @@ void ProcessRequests(FILE * stream)
          * Set output bit.
          */
         if (strlen(buff) > 1 && strncmp(buff, "set", strlen(buff) - 1) == 0) {
-            int mask = 0;
+            int ok = 1;
             switch (buff[strlen(buff) - 1]) {
+#ifdef OUTPIN1
             case '1':
-                mask = 0x10;
+                GpioPinSetHigh(OUTBANK, OUTPIN1);
                 break;
+#endif
+#ifdef OUTPIN2
             case '2':
-                mask = 0x20;
+                GpioPinSetHigh(OUTBANK, OUTPIN2);
                 break;
+#endif
+#ifdef OUTPIN3
             case '3':
-                mask = 0x40;
+                GpioPinSetHigh(OUTBANK, OUTPIN3);
                 break;
+#endif
+#ifdef OUTPIN4
             case '4':
-                mask = 0x80;
+                GpioPinSetHigh(OUTBANK, OUTPIN4);
+                break;
+#endif
+            default:
+                ok = 0;
                 break;
             }
-            if (mask) {
-#ifdef __AVR__
-                outb(PORTD, inb(PORTD) | mask);
-#endif
+            if (ok) {
                 fputs("210 OK\r\n", stream);
             } else
                 fputs("410 Bad pin\r\n", stream);
+            continue;
+        }
+#endif /* OUTBANK */
+
+#ifdef INBANK
+        /*
+         * Port status.
+         */
+        if (strncmp(buff, "query", strlen(buff)) == 0) {
+            stat = PortStatus();
+            fprintf(stream, "210 %02X\r\n", stat);
             continue;
         }
 
@@ -274,26 +327,27 @@ void ProcessRequests(FILE * stream)
          * wait for status change.
          */
         if (strncmp(buff, "wait", strlen(buff)) == 0) {
-#ifdef __AVR__
-            while (stat == inb(PIND))
+            while (stat == PortStatus())
                 NutThreadYield();
-            stat = inb(PIND);
-#endif
+            stat = PortStatus();
             fprintf(stream, "210 %02X\r\n", stat);
             continue;
         }
+#endif /* INBANK */
 
         /*
          * Help.
          */
         fputs("400 List of commands follows\r\n", stream);
         fputs("memory\tQueries number of RAM bytes free\r\n", stream);
-        fputs("query\tQuery digital i/o status\r\n", stream);
+#if OUTBANK
         fputs("reset#\tSet output bit 1..4 low\r\n", stream);
         fputs("set#\tSet output bit 1..4 high\r\n", stream);
-        fputs("threads\tLists all created threads\r\n", stream);
-        fputs("timers\tLists all running timers\r\n", stream);
+#endif
+#if INBANK
+        fputs("query\tQuery digital i/o status\r\n", stream);
         fputs("wait\tWaits for digital i/o change\r\n", stream);
+#endif
         fputs(".\r\n", stream);
     }
 }
@@ -303,17 +357,41 @@ void ProcessRequests(FILE * stream)
  */
 void init_dio(void)
 {
-#ifdef __AVR__
-    /*
-     * Upper four pins are output pins.
-     */
-    outb(DDRD, 0xf0);
-
-    /*
-     * Outputs to low and inputs pulled up.
-     */
-    outb(PORTD, 0x0f);
+    /* Configure input pins, enable pull up. */
+#ifdef INBANK
+#ifdef INPIN1
+    GpioPinConfigSet(INBANK, INPIN1, GPIO_CFG_PULLUP);
 #endif
+#ifdef INPIN2
+    GpioPinConfigSet(INBANK, INPIN2, GPIO_CFG_PULLUP);
+#endif
+#ifdef INPIN3
+    GpioPinConfigSet(INBANK, INPIN3, GPIO_CFG_PULLUP);
+#endif
+#ifdef INPIN4
+    GpioPinConfigSet(INBANK, INPIN4, GPIO_CFG_PULLUP);
+#endif
+#endif /* INBANK */
+
+    /* Configure output pins, set to low. */
+#ifdef OUTBANK
+#ifdef OUTPIN1
+    GpioPinConfigSet(OUTBANK, OUTPIN1, GPIO_CFG_OUTPUT);
+    GpioPinSetLow(OUTBANK, OUTPIN1);
+#endif
+#ifdef OUTPIN2
+    GpioPinConfigSet(OUTBANK, OUTPIN2, GPIO_CFG_OUTPUT);
+    GpioPinSetLow(OUTBANK, OUTPIN2);
+#endif
+#ifdef OUTPIN3
+    GpioPinConfigSet(OUTBANK, OUTPIN3, GPIO_CFG_OUTPUT);
+    GpioPinSetLow(OUTBANK, OUTPIN3);
+#endif
+#ifdef OUTPIN4
+    GpioPinConfigSet(OUTBANK, OUTPIN4, GPIO_CFG_OUTPUT);
+    GpioPinSetLow(OUTBANK, OUTPIN4);
+#endif
+#endif /* OUTBANK */
 }
 
 void service(void)
@@ -331,10 +409,9 @@ void service(void)
         sock = NutTcpCreateSocket();
 
         /*
-         * Listen on port 12345. If we return,
-         * we got a client.
+         * Listen at the configured port. If we return, we got a client.
          */
-        NutTcpAccept(sock, 12345);
+        NutTcpAccept(sock, MY_PORT);
 
         /*
          * Create a stream from the socket.
@@ -403,4 +480,6 @@ int main(void)
 
     for (;;)
         service();
+
+    return 0;
 }
