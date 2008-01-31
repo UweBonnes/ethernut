@@ -2,7 +2,7 @@
 #define _PRO_HTTPD_H_
 
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,8 +33,16 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
+/*!
+ * \file pro/httpd.h
+ * \brief HTTP protocol definitions for daemons.
+ *
+ * \verbatim
+ *
  * $Log$
+ * Revision 1.9  2008/01/31 09:28:18  haraldkipp
+ * Expanded REQUEST structure to handle HTTP/1.1. Added MIMETYPES structure.
+ *
  * Revision 1.8  2006/10/08 16:43:53  haraldkipp
  * Authentication info depended on static memory kept by the caller. Now a
  * local copy is held and NutClearAuth (which should have been named
@@ -60,14 +68,11 @@
  * Revision 1.2  2004/12/16 10:17:18  haraldkipp
  * Added Mikael Adolfsson's excellent parameter parsing routines.
  *
+ * \endverbatim
  */
 
 #include <stdio.h>
-
-/*!
- * \file pro/httpd.h
- * \brief HTTP protocol definitions for daemons.
- */
+#include <time.h>
 
 /*!
  * \addtogroup xgHTTPD
@@ -78,6 +83,12 @@
 #define METHOD_POST 2
 #define METHOD_HEAD 3
 
+#define HTTP_CONN_CLOSE         1
+#define HTTP_CONN_KEEP_ALIVE    2
+
+#define HTTP_OF_USE_HOST_TIME   0x00000001UL
+#define HTTP_OF_USE_FILE_TIME   0x00000002UL
+
 typedef struct _REQUEST REQUEST;
 /*!
  * \struct _REQUEST httpd.h pro/httpd.h
@@ -85,8 +96,8 @@ typedef struct _REQUEST REQUEST;
  */
 struct _REQUEST {
     int req_method;             /*!< \brief Request method. */
-    int req_version;            /*!< \brief 11 = HTTP/1.1, 10 = HTTP/1.0, 9 = HTTP/0.9 */
-    int req_length;             /*!< \brief Content length */
+    int req_version;            /*!< \brief 11 = HTTP/1.1, 10 = HTTP/1.0 */
+    long req_length;            /*!< \brief Content length */
     char *req_url;              /*!< \brief URI portion of the GET or POST request line */
     char *req_query;            /*!< \brief Argument string. */
     char *req_type;             /*!< \brief Content type. */
@@ -95,6 +106,18 @@ struct _REQUEST {
     char *req_agent;            /*!< \brief User agent. */
     char **req_qptrs;           /*!< \brief Table of request parameters */
     int req_numqptrs;           /*!< \brief Number of request parameters */
+    time_t req_ims;             /*!< \brief If-modified-since condition. */
+    char *req_referer;          /*!< \brief Misspelled HTTP referrer. */
+    char *req_host;             /*!< \brief Server host. */
+    int req_connection;         /*!< \brief Connection type, HTTP_CONN_. */
+};
+
+typedef struct _MIMETYPES MIMETYPES;
+
+struct _MIMETYPES {
+    char *mtyp_ext;
+    char *mtyp_type;
+    void (*mtyp_handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
 };
 
 __BEGIN_DECLS
@@ -102,6 +125,7 @@ __BEGIN_DECLS
 extern void NutHttpProcessRequest(FILE * stream);
 extern void NutHttpProcessQueryString(REQUEST * req);
 extern void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title);
+extern void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long bytes);
 extern void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes);
 extern void NutHttpSendError(FILE * stream, REQUEST * req, int status);
 extern char *NutGetMimeType(char *name);
@@ -153,6 +177,8 @@ struct _CGIFUNCTION {
 __BEGIN_DECLS
 
 /* Function prototypes. */
+extern void NutHttpSetOptionFlags(u_long flags);
+extern u_long NutHttpGetOptionFlags(void);
 extern int NutRegisterHttpRoot(char *path);
 extern int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *));
 extern void NutCgiProcessRequest(FILE * stream, REQUEST * req);
