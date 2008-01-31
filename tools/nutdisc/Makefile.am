@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.2  2008/01/31 15:33:33  haraldkipp
+# Linux fixes.
+#
 # Revision 1.1  2008/01/28 16:43:11  haraldkipp
 # Version 2.2
 #
@@ -64,6 +67,8 @@
 #
 #
 
+PROPGRIDLIBNAME = libwx_gtk2_propgrid-2.8.a
+
 MAINTAINERCLEANFILES = Makefile.in
 
 if BUILD_NUTDISC
@@ -85,9 +90,13 @@ taskbaricon.h \
 udpthread.cpp \
 udpthread.h \
 version.h \
-bitmaps/nutdisc.ico
+bitmaps/nutdisc.xpm
 nutdisc_CXXFLAGS = @WX_CXXFLAGS@ 
 nutdisc_CPPFLAGS = -I$(LUA_HEADERS)
-nutdisc_LDADD = /usr/local/lib/libwx_gtk2_propgrid-2.8.a $(WX_LIBS)
+if PROPGRID_LOCAL
+nutdisc_LDADD = /usr/local/lib/$(PROPGRIDLIBNAME) $(WX_LIBS)
+else
+nutdisc_LDADD = /usr/lib/$(PROPGRIDLIBNAME) $(WX_LIBS)
+endif
 
 endif

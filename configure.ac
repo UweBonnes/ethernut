@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.26  2008/01/31 15:33:33  haraldkipp
+# Linux fixes.
+#
 # Revision 1.25  2008/01/28 16:39:28  haraldkipp
 # Added nutdisc build (Steffen Ritter).
 #
@@ -201,39 +204,61 @@ AC_ARG_ENABLE(wxpropgrid,
   [enable_wxpropgrid=yes]
 )
 
-AC_ARG_ENABLE(nutdiscoverer,
+AC_ARG_ENABLE(nutdisc,
   AS_HELP_STRING([--disable-nutdisc],[disable NutOs Discoverer]),
   [],
   [enable_nutdisc=yes]
 )
+
+AC_ARG_ENABLE(lua,
+  AS_HELP_STRING([--disable-lua],[disable lua]),
+  [],
+  [enable_lua=yes]
+)
 # END Commandline arguments ###############################################################################
-# nutconfigure ############################################################################################
-if test "x$enable_nutconf_tools" = "xno"; then
-  nutconf_tools_ok=no
+# lua #####################################################################################################
+if test "x$enable_lua" = "xno"; then
+  lua_ok=no
 else
   AC_PATH_PROG(LUA_EXEC, lua, no)
   if [[ "$LUA_EXEC" = "no" ]] ; then
     AC_MSG_WARN([Lua not found, will not build configuration tools])
-    nutconf_tools_ok=no
+    lua_ok=no
   else
     lua_ver="`$LUA_EXEC -v 2>&1`"
     lua_ver=`expr "$lua_ver" : '.*\(@<:@0-9@:>@.@<:@0-9@:>@\.@<:@0-9@:>@\).*'`
     lua_ver_major=`expr "$lua_ver" : '\(@<:@0-9@:>@\)\..*'`
     if test $lua_ver_major -lt "5" ; then
       AC_MSG_WARN([Lua $lua_ver is too old.])
-      nutconf_tools_ok=no
+      lua_ok=no
     else
-      AC_SEARCH_LIBS([lua_open], [lua lua50], [nutconf_tools_ok="yes"], [nutconf_tools_ok="no"])
-      AC_SEARCH_LIBS([luaL_loadfile], [lualib lualib50],, [nutconf_tools_ok="no"],[-lm -ldl])
-      if test "x$nutconf_tools_ok" = "xno"; then
+      AC_SEARCH_LIBS([lua_open], [lua lua50], [lua_ok="yes"], [lua_ok="no"])
+      AC_SEARCH_LIBS([luaL_loadfile], [lualib lualib50],, [lua_ok="no"],[-lm -ldl])
+      if test "x$lua_ok" = "xno"; then
         AC_MSG_WARN([Lua library missing, will not build configuration tools.])
       else
         AC_CHECK_HEADERS(/usr/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/include/lua50"))
         AC_CHECK_HEADERS(/usr/local/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/local/include/lua50"))
       fi
+#    AC_CHECK_FUNC(sin, LIBS=$LIBS, LIBS="-lm $LIBS")
+#    AC_CHECK_LIB(dl, dlopen)
+    fi
+  fi
+fi
+# END lua #################################################################################################
+# nutconfigure ############################################################################################
+if test "x$enable_nutconf_tools" = "xno"; then
+  AC_MSG_WARN(nutconf tools disabled)
+  nutconf_tools_ok=no
+else
+  if test "x$lua_ok" = "xno"; then
+    AC_MSG_WARN(lua disabled: required for nutconf tools)
+    nutconf_tools_ok=no
+  else
+    AC_MSG_NOTICE(nutconf tools enabled)
     AC_CHECK_FUNC(sin, LIBS=$LIBS, LIBS="-lm $LIBS")
     AC_CHECK_LIB(dl, dlopen)
-    fi
+    nutconf_tools_ok=yes
   fi
 fi
 # END nutconfigure ########################################################################################
@@ -266,13 +291,19 @@ if test "x$wxwidgets_ok" = "xyes"; then
   AC_MSG_NOTICE([checking for propgrid])
   if test "x$enable_wxpropgrid" = "xyes" ; then
     AC_MSG_NOTICE([wxpropgrid enabled])
+    AC_MSG_NOTICE([checking for wxpropgrid])
     propgridpath1=/usr/include/wx-`wx-config --release`/wx/propgrid
     propgridpath2=/usr/local/include/wx-`wx-config --release`/wx/propgrid
-
-    #exists wxpropgrid's propgrid.h
+    propgrid_local=no
     AC_CHECK_FILE($propgridpath1/propgrid.h,[propgrid_ok="yes"],[propgrid_ok="no"])
     if test "x$propgrid_ok" = "xno"; then
         AC_CHECK_FILE($propgridpath2/propgrid.h,[propgrid_ok="yes"],[propgrid_ok="no"])
+        propgrid_local=yes
+    fi
+    if test "x$propgrid_ok" = "xno"; then
+      AC_MSG_WARN(wxpropgrid not found)
+    else
+      AC_MSG_NOTICE(wxpropgrid enabled)
     fi
   else
     propgrid_ok=no
@@ -283,15 +314,17 @@ fi
 # nutconfgui ############################################################################################
 if test "x$wxwidgets_ok" = "xyes"; then 
   AC_MSG_NOTICE([checking for nutconfgui])
-  if test "x$nutconf_tools_ok" = "xno"; then
+  if test "x$enable_nutconf_gui" = "xno"; then
+    AC_MSG_NOTICE([nutconfgui wasnt enabled])
     nutconf_ok=no
-    AC_MSG_WARN([nutconfigure wasn't build])
-  elif test "x$enable_nutconf_gui" = "xno"; then
-      nutconf_ok=no
-      AC_MSG_WARN([nutconfgui wasnt enabled])
   else
+    if test "x$nutconf_tools_ok" = "xno"; then
+      AC_MSG_WARN([nutconfigure wasn't build])
+      nutconf_ok=no
+    else
       AC_MSG_NOTICE([nutconfgui is enabled])
       nutconf_ok=yes
+    fi
   fi
 fi
 # END nutconfgui ########################################################################################
@@ -299,14 +332,21 @@ fi
 if test "x$wxwidgets_ok" = "xyes"; then 
   AC_MSG_NOTICE([checking for nutdisc])
   if test "x$enable_nutdisc" = "xno"; then
-    nutdisc_ok=no
     AC_MSG_NOTICE([nutdisc disabled])
-  elif test "x$propgrid_ok" = "xno"; then
     nutdisc_ok=no
-    AC_MSG_NOTICE([nutdisc requires propgrid])
   else
-    nutdisc_ok=yes
-    AC_MSG_NOTICE([nutdisc enabled])
+    if test "x$lua_ok" = "xno"; then
+      AC_MSG_NOTICE([nutdisc requires lua])
+      nutdisc_ok=no
+    else
+      if test "x$propgrid_ok" = "xno"; then
+        AC_MSG_NOTICE([nutdisc requires propgrid])
+        nutdisc_ok=no
+      else
+        AC_MSG_NOTICE([nutdisc enabled])
+        nutdisc_ok=yes
+      fi
+    fi
   fi
 fi
 # END nutdiscoverer #####################################################################################
@@ -315,12 +355,13 @@ fi
 AM_CONDITIONAL(BUILD_NUTCONF_TOOLS, test x$nutconf_tools_ok = xyes)
 AM_CONDITIONAL(BUILD_NUTCONF_GUI, test x$nutconf_ok = xyes)
 AM_CONDITIONAL(BUILD_NUTDISC, test x$nutdisc_ok = xyes)
-
+AM_CONDITIONAL(PROPGRID_LOCAL, test x$propgrid_local = xyes)
 AC_CONFIG_FILES([
 	Makefile
 	tools/crurom/Makefile
 	tools/nutconf/Makefile
 	tools/nutdisc/Makefile
+	tools/linux/Makefile
 	tools/packaging/ethernut.spec
 	doc/Makefile
 	doc/gen/Makefile

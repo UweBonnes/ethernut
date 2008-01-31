@@ -20,6 +20,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.3  2008/01/31 15:33:33  haraldkipp
+ * Linux fixes.
+ *
  * Revision 1.2  2008/01/28 16:43:11  haraldkipp
  * Version 2.2
  *
@@ -50,6 +53,12 @@
 #include "propdialog.h"
 #include "udpthread.h"
 #include "mainframe.h"
+
+//new
+#if !defined(__WXMSW__)
+#include "bitmaps/nutdisc.xpm"
+#endif
+//
 
 BEGIN_EVENT_TABLE(CMainFrame, wxFrame)
     EVT_LIST_ITEM_ACTIVATED(ID_LIST, CMainFrame::OnActivated)

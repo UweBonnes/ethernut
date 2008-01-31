@@ -23,6 +23,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/01/31 15:33:33  haraldkipp
+ * Linux fixes.
+ *
  * Revision 1.1  2006/09/07 08:58:27  haraldkipp
  * First check-in
  *
@@ -39,8 +42,9 @@ public:
 
     virtual void *Entry();
     virtual void OnExit();
-
-    bool CUdpThread::Broadcast(DISCOVERY_TELE *dist = NULL);
+//new
+    bool Broadcast(DISCOVERY_TELE *dist = NULL);
+//new
 
 public:
     CMainFrame *m_frame;

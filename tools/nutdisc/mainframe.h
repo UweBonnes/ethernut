@@ -23,6 +23,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/01/31 15:33:33  haraldkipp
+ * Linux fixes.
+ *
  * Revision 1.2  2008/01/28 16:43:11  haraldkipp
  * Version 2.2
  *
@@ -32,6 +35,9 @@
  */
 
 #include <wx/listctrl.h>
+//new
+#include <wx/timer.h>
+//
 
 #include "taskbaricon.h"
 #include "discovery.h"

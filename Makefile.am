@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.3  2008/01/31 15:33:33  haraldkipp
+# Linux fixes.
+#
 # Revision 1.2  2007/08/29 15:05:27  haraldkipp
 # New directory for bootloaders.
 #
@@ -43,11 +46,14 @@
 #
 
 EXTRA_DIST = nutsetup reconf Makedefs.arm-gcc Makerules.arm-gcc \
-Makedefs.avr-gcc Makerules.avr-gcc Makedefs.avr-icc Makerules.avr-icc \
+Makedefs.arm-gccdbg Makerules.arm-gccdbg \
+Makedefs.avr-gcc Makerules.avr-gcc \
+Makedefs.avr-gccdbg Makerules.avr-gccdbg \
+Makedefs.avr-icc Makerules.avr-icc \
 Makedefs.gcc Makerules.gcc Makedefs.h8-gcc Makerules.h8-gcc \
 Makedefs.icc Makerules.icc Makedefs.unix-gcc Makerules.unix-gcc
 
-SUBDIRS = doc tools/crurom tools/nutconf
+SUBDIRS = doc tools/crurom tools/nutconf tools/nutdisc tools/linux
 
 dist-hook:
 	mkdir -p $(distdir)/app
@@ -89,3 +95,4 @@ dist-hook:
 	mkdir -p $(distdir)/pro
 	cp -R $(srcdir)/pro/* $(distdir)/pro
 	rm -rf `find $(distdir) -name CVS`
+

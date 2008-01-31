@@ -20,6 +20,9 @@
 
 /*
  * $Log: taskbaricon.cpp,v $
+ * Revision 1.2  2008/01/31 15:33:33  haraldkipp
+ * Linux fixes.
+ *
  * Revision 1.1  2008/01/28 16:43:11  haraldkipp
  * Version 2.2
  *
@@ -36,7 +39,9 @@
 #endif
 
 #include <wx/config.h>
-
+//new
+#include <wx/menu.h>
+//
 #include "mainframe.h"
 #include "taskbaricon.h"
 
