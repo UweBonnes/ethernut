@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.9  2008/01/31 09:09:07  haraldkipp
+-- Added stdlib environment.
+--
 -- Revision 1.8  2005/08/05 11:25:01  olereinhardt
 -- Added seek.c, tell.c
 --
@@ -284,6 +287,29 @@ nutcrt =
         requires = { "NUT_HEAPMEM" },
         provides = { "CRT_HEAPMEM" },
         sources = { "malloc.c" }
+    },
+
+    --
+    -- Environment
+    --
+    {
+        name = "nutcrt_environ",
+        brief = "Environment",
+        requires = { "NUT_HEAPMEM" },
+        provides = { "CRT_ENVIRON" },
+        sources = { "getenv.c", "putenv.c", "setenv.c", "environ.c" },
+        options =
+        {
+            {
+                macro = "ENVIRON_EE_OFFSET",
+                brief = "Location",
+                description = "This is the first non-volatile memory address, where Nut/OS "..
+                              "expects the list of environment variables.",
+                default = "256",
+                type = "integer",
+                file = "include/cfg/eeprom.h"
+            }
+        }
     },
 
     --
