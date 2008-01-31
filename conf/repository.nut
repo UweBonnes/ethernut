@@ -35,6 +35,11 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.25  2008/01/31 09:11:19  haraldkipp
+-- Added ability to upload AT91 flash image via HTTP. Many thanks to
+-- Matthias Wilde.
+-- Added AVR ports H up to L.
+--
 -- Revision 1.24  2007/09/11 13:39:45  haraldkipp
 -- Configurable startup file for ICCAVR.
 --
@@ -115,7 +120,7 @@
 --
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
-avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG" }
+avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG", "AVRPORTH", "AVRPORTI", "AVRPORTJ", "AVRPORTK", "AVRPORTL" }
 avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", "INT7" }
 
 iccavr_startup_choice = { "crtenutram", "crtenut", "crtnutram", "crtnut", "crtnutm256" }
@@ -134,6 +139,7 @@ arm_ld_choice = {
                     "at91_boot", 
                     "at91_ram", 
                     "at91_rom", 
+                    "at91_httprom", 
                     "at91sam7x256_rom", 
                     "at91sam9260_ram", 
                     "s3c4510b-ram", 
