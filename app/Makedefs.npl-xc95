@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2006-2008 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2008/01/31 09:04:46  haraldkipp
+# Re-use existing macro names.
+#
 # Revision 1.1  2006/05/25 09:24:55  haraldkipp
 # For building XSVF files from Verilog sources.
 #
@@ -44,12 +47,12 @@ NGDBUILD = ngdbuild
 CPLDFIT = cpldfit
 HPREP6 = hprep6
 
-XSTSCRIPT = xst.scr
-XSTLOG = xst.log
+XSTSCRIPT = $(XST).scr
+XSTLOG = $(XST).log
 
-FITLOG = cpldfit.log
+FITLOG = $(CPLDFIT).log
 
-IMPSCRIPT = impact.scr
+IMPSCRIPT = $(IMPACT).scr
 
 INTSTYLE = -intstyle silent
 
