@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2008/01/31 09:38:15  haraldkipp
+ * Added return statement in main to avoid warnings with latest GCC.
+ *
  * Revision 1.2  2006/07/21 09:07:19  haraldkipp
  * Use dev/board.h to determine output device.
  *
@@ -156,4 +159,5 @@ int main(void)
         }
         NutSleep(1000);
     }
+    return 0;
 }

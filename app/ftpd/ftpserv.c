@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.10  2008/01/31 09:38:15  haraldkipp
+ * Added return statement in main to avoid warnings with latest GCC.
+ *
  * Revision 1.9  2006/09/07 09:00:19  haraldkipp
  * Discovery registration added. Enabled by default on ARM targets only to
  * avoid blowing up AVR code.
@@ -562,4 +565,5 @@ int main(void)
 #endif
         FtpService();
     }
+    return 0;
 }

@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2008/01/31 09:38:15  haraldkipp
+ * Added return statement in main to avoid warnings with latest GCC.
+ *
  * Revision 1.1  2003/08/05 18:59:05  haraldkipp
  * Release 3.3 update
  *
@@ -69,4 +72,5 @@
 int main(void)
 {
     for (;;);
+    return 0;
 }

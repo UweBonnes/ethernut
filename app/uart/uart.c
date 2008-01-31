@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2008/01/31 09:38:15  haraldkipp
+ * Added return statement in main to avoid warnings with latest GCC.
+ *
  * Revision 1.4  2005/11/22 09:14:13  haraldkipp
  * Replaced specific device names by generalized macros.
  *
@@ -208,4 +211,5 @@ int main(void)
         fprintf(uart, "FP %f\n", dval);
 #endif
     }
+    return 0;
 }

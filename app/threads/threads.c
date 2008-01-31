@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2008/01/31 09:38:15  haraldkipp
+ * Added return statement in main to avoid warnings with latest GCC.
+ *
  * Revision 1.5  2005/11/22 09:17:31  haraldkipp
  * Replaced specific device names by generalized macros.
  * Thread stack size increased to get it running on ARM CPUs.
@@ -150,4 +153,5 @@ int main(void)
         putchar('M');
         NutSleep(125);
     }
+    return 0;
 }

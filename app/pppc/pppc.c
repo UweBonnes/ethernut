@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.8  2008/01/31 09:38:15  haraldkipp
+ * Added return statement in main to avoid warnings with latest GCC.
+ *
  * Revision 1.7  2006/07/21 09:08:19  haraldkipp
  * Use devAhdlc0 instead of devUart0. The latter will not work.
  *
@@ -469,4 +472,5 @@ int main(void)
         }
     }
 #endif /* PPPDEV */
+    return 0;
 }

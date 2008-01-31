@@ -150,5 +150,6 @@ int main(void)
 #else /* __AVR__ && __GNUC__ */
    puts("No CAN device available");
 #endif /* __AVR__ && __GNUC__ */
+   return 0;
 }
 

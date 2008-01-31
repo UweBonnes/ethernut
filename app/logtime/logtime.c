@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2008/01/31 09:38:15  haraldkipp
+ * Added return statement in main to avoid warnings with latest GCC.
+ *
  * Revision 1.2  2005/11/22 09:14:13  haraldkipp
  * Replaced specific device names by generalized macros.
  *
@@ -240,4 +243,5 @@ int main(void)
         syslog(LOG_DEBUG, "%d bytes free", NutHeapAvailable());
         NutSleep(60000);
     }
+    return 0;
 }
