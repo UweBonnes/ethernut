@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/01/31 09:16:03  haraldkipp
+ * Failed to compile for SAM7S. Added some default settings.
+ *
  * Revision 1.2  2006/09/05 12:27:55  haraldkipp
  * Added support for the AT91SAM9260.
  *
@@ -85,6 +88,15 @@
 #define MMC_DATAOUT_BIT SPI0_MISO_PA16A
 #define MMC_DATAIN_BIT  SPI0_MOSI_PA17A
 #define MMC_CLK_BIT     SPI0_SPCK_PA18A
+
+#elif defined(MCU_AT91SAM7S256)
+
+#ifndef MMC_CS_BIT
+#define MMC_CS_BIT      SPI0_NPCS0_PA11A
+#endif
+#define MMC_DATAOUT_BIT SPI0_MISO_PA12A
+#define MMC_DATAIN_BIT  SPI0_MOSI_PA13A
+#define MMC_CLK_BIT     SPI0_SPCK_PA14A
 
 #else   /* MCU_AT91SAM7X256 */
 #warning "MMC SPI mode not supported on this MCU"
