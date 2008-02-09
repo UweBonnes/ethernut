@@ -33,6 +33,11 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.23  2008/02/09 02:11:45  olereinhardt
+-- 2008-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+-- 	* conf/arch/arm.nut: Added ih_at91spi for sam7x, Support for
+--           at91sam7s added
+--
 -- Revision 1.22  2008/01/31 09:22:32  haraldkipp
 -- Added first version of platform independent GPIO routines. Consider the
 -- AVR version untested.
@@ -307,6 +312,8 @@ nutarch_arm =
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
             "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91spi0.c",
+            "arm/dev/ih_at91spi1.c",
             "arm/dev/ih_at91ssc.c",
             "arm/dev/ih_at91swirq.c",
             "arm/dev/ih_at91tc0.c",
@@ -333,6 +340,7 @@ nutarch_arm =
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
             "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91spi0.c",
             "arm/dev/ih_at91ssc.c",
             "arm/dev/ih_at91swirq.c",
             "arm/dev/ih_at91tc0.c",
