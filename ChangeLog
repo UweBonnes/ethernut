@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.417 2008/01/31 09:41:25 haraldkipp Exp $
+$Id: ChangeLog,v 1.418 2008/02/09 02:13:02 olereinhardt Exp $
+
+2008-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+        * arch/Makefile: Added ih_at91spi for sam7x, Support for 
+          at91sam7s added
+        * conf/arch/arm.nut: Added ih_at91spi for sam7x
+
 
 2008-01-31  Harald Kipp  <harald.kipp@egnite.de>
 
