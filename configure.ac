@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.27  2008/02/15 16:50:33  haraldkipp
+# Beta release 4.5.1.
+#
 # Revision 1.26  2008/01/31 15:33:33  haraldkipp
 # Linux fixes.
 #
@@ -122,7 +125,7 @@
 #
 #
 
-AC_INIT(ethernut,4.5.0)
+AC_INIT(ethernut,4.5.1)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2007 egnite Software GmbH])
