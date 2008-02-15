@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/02/15 16:51:21  haraldkipp
+ * Serious bug fix. Reconfigured FOPEN_MAX was not honored by all modules.
+ *
  * Revision 1.2  2004/04/15 10:23:24  haraldkipp
  * Distinguish between read error and end of file
  *
@@ -47,6 +50,7 @@
  *
  */
 
+#include <cfg/crt.h>
 #include <sys/types.h>
 
 #include <stdio.h>
