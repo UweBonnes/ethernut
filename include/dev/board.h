@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/02/15 17:09:44  haraldkipp
+ * Added support for the Elektor Internet Radio.
+ *
  * Revision 1.10  2007/10/08 06:37:51  hwmaier
  * Added RTC DS1307 for XNUT-100 and XNUT-105 units
  *
@@ -108,7 +111,7 @@
 #define DEV_UART1       devUsartAvr1
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S)
+#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) || defined(ELEKTOR_IR1)
 
 #include <dev/usartat91.h>
 #define DEV_UART0       devUsartAt910
@@ -138,7 +141,7 @@
 #include <dev/nicrtl.h>
 #elif defined(ETHERNUT2)
 #include <dev/lanc111.h>
-#elif defined(ETHERNUT3)
+#elif defined(ETHERNUT3) || defined(ELEKTOR_IR1)
 #include <dev/dm9000e.h>
 #elif defined(WOLF)
 #include <dev/ax88796.h>
@@ -164,6 +167,9 @@
 #elif defined(MMNET02) || defined(XNUT_100) || defined(XNUT_105)
 #define RTC_CHIP rtcDs1307
 #include <dev/ds1307rtc.h>
+#elif defined(ELEKTOR_IR1)
+#define RTC_CHIP rtcPcf8563
+#include <dev/pcf8563.h>
 #endif
 
 #endif

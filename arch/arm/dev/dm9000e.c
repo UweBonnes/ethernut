@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2008 by egnite GmbH. All rights reserved.
  * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/02/15 17:09:44  haraldkipp
+ * Added support for the Elektor Internet Radio.
+ *
  * Revision 1.8  2007/08/17 11:43:46  haraldkipp
  * Enable multicast.
  *
@@ -94,8 +98,46 @@
 /*
  * Determine ports, which had not been explicitely configured.
  */
+#if defined(ETHERNUT3)
+
 #ifndef NIC_BASE_ADDR
 #define NIC_BASE_ADDR   0x20000000
+#endif
+
+#ifndef NIC_SIGNAL_IRQ
+#define NIC_SIGNAL_IRQ  INT1
+#endif
+
+#ifndef NIC_SIGNAL_PDR
+#define NIC_SIGNAL_PDR  PIO_PDR
+#endif
+
+#ifndef NIC_SIGNAL_BIT
+#define NIC_SIGNAL_BIT  10
+#endif
+
+#elif defined(ELEKTOR_IR1)
+
+#ifndef NIC_BASE_ADDR
+#define NIC_BASE_ADDR   0x30000000
+#endif
+
+#ifndef NIC_SIGNAL_IRQ
+#define NIC_SIGNAL_IRQ  INT0
+#endif
+
+#ifndef NIC_SIGNAL_PDR
+#define NIC_SIGNAL_PDR  PIOB_PDR
+#endif
+
+#ifndef NIC_SIGNAL_XSR
+#define NIC_SIGNAL_XSR  PIOB_ASR
+#endif
+
+#ifndef NIC_SIGNAL_BIT
+#define NIC_SIGNAL_BIT  PB20_IRQ0_A
+#endif
+
 #endif
 
 #ifndef NIC_DATA_ADDR
@@ -110,10 +152,6 @@
 #define INT5    5
 #define INT6    6
 #define INT7    7
-
-#ifndef NIC_SIGNAL_IRQ
-#define NIC_SIGNAL_IRQ  INT1
-#endif
 
 #ifdef NIC_RESET_BIT
 
@@ -841,9 +879,20 @@ THREAD(NicRxLanc, arg)
     /* Run at high priority. */
     NutThreadSetPriority(9);
 
-    /* Enable interrupts for P10. */
-    outr(PIO_PDR, _BV(10));
+    /* Enable interrupts. */
+#ifdef NIC_SIGNAL_XSR
+    outr(NIC_SIGNAL_XSR, _BV(NIC_SIGNAL_BIT));
+#if defined(ELEKTOR_IR1)
+    /* Ugly code alarm: Should be configurable. */
+    outr(PMC_PCER, _BV(IRQ0_ID));
+#endif
+#endif
+    outr(NIC_SIGNAL_PDR, _BV(NIC_SIGNAL_BIT));
     NutIrqEnable(&NIC_SIGNAL);
+#if defined(ELEKTOR_IR1)
+    /* Ugly code alarm: Should be configurable. */
+    NutIrqSetMode(&NIC_SIGNAL, NUT_IRQMODE_HIGHLEVEL);
+#endif
 
     for (;;) {
         /*
@@ -954,6 +1003,23 @@ int DmInit(NUTDEVICE * dev)
 {
     u_long id;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
+
+#if defined(ELEKTOR_IR1)
+    outr(PIOA_BSR, _BV(PA20_NCS2_B));
+    outr(PIOA_PDR, _BV(PA20_NCS2_B));
+    outr(PIOC_BSR, _BV(PC16_NWAIT_B) | _BV(PC21_NWR0_B) | _BV(PC22_NRD_B));
+    outr(PIOC_PDR, _BV(PC16_NWAIT_B) | _BV(PC21_NWR0_B) | _BV(PC22_NRD_B));
+
+    outr(SMC_CSR(2)
+        , (1 << SMC_NWS_LSB)
+        | SMC_WSEN
+        | (2 << SMC_TDF_LSB)
+        | SMC_BAT
+        | SMC_DBW_16
+        | (1 << SMC_RWSETUP_LSB)
+        | (1 << SMC_RWHOLD_LSB)
+        );
+#endif
 
     /* Probe chip by verifying the identifier registers. */
     id = (u_long) nic_inb(NIC_VID);
