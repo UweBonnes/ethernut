@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.9  2008/02/15 17:20:05  haraldkipp
+-- XML streaming parser added.
+--
 -- Revision 1.8  2006/09/07 09:06:17  haraldkipp
 -- Discovery service added.
 --
@@ -216,15 +219,25 @@ nutpro =
             "discover.c",
             "httpd.c",
             "asp.c",
-            "ssi.c"
+            "ssi.c",
+            "rfctime.c"
         }
     },
     {
         name = "nutpro_snmp",
         brief = "SNMP Agent",
-        description = "Simple network management protocol. Not implemented.",
-        requires = { "NOT_AVAILABLE", "NET_UDP" },
-        sources =  { "snmp.c" }
+        description = "Simple network management protocol.",
+        requires = { "NET_UDP" },
+        sources =
+        { 
+            "snmp.c",
+            "snmp_agent.c",
+            "snmp_api.c",
+            "snmp_auth.c",
+            "snmp_config.c",
+            "snmp_mib.c",
+            "asn1.c"
+        }
     },
     {
         name = "nutpro_sntp",
@@ -292,5 +305,11 @@ nutpro =
                       "specified 'ipaddr' Ethernut IP address.",
         requires =  { "NET_UDP" },
         sources =  { "wins.c" }
+    },
+    {
+        name = "nutpro_uxml",
+        brief = "XML Stream Parser",
+        description = "Quite limited parser. See API documentation.",
+        sources =  { "uxmlparse.c", "uxmlstream.c", "uxmltree.c" }
     }    
 }
