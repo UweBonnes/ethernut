@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/02/15 16:59:11  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.4  2007/10/04 20:04:11  olereinhardt
  * Support for SAM7S256 added
  *
@@ -165,7 +168,7 @@ NUTDEVICE devUsartAt910 = {
 #define US_ID           US0_ID
 #if defined (MCU_AT91SAM7X256)
 #define US_GPIO_PINS    0x00000003
-#elif defined (MCU_AT91SAM7S256)
+#elif defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
 #define US_GPIO_PINS    0x00000060
 #else
 #define US_GPIO_PINS    0x0000C000

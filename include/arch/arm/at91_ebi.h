@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/02/15 16:59:42  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.1  2006/07/05 07:45:25  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -51,6 +54,19 @@
  * \addtogroup xgNutArchArmAt91Ebi
  */
 /*@{*/
+
+#if defined(EBI_HAS_CSA)
+
+#define EBI_CSA_OFF             0x00000000      /*!< \brief Chip select assignment register offset. */
+#define EBI_CSA     (EBI_BASE + EBI_CSA_OFF)    /*!< \brief Chip select assignment register address. */
+
+#define EBI_CS1A                0x00000002      /*!< \brief Chip select 1 assignment (SDRAM=1). */
+#define EBI_CS2A                0x00000004      /*!< \brief Chip select 2 assignment (CF2=1). */
+#define EBI_CS3A                0x00000008      /*!< \brief Chip select 3 assignment (NAND=1). */
+#define EBI_CS4A                0x00000010      /*!< \brief Chip select 4 assignment (CF1=1). */
+#define EBI_NWPC                0x00010000      /*!< \brief NWAIT pin enable. */
+
+#else /* EBI_HAS_CSA */
 
 /*! \name Chip Select Register */
 /*@{*/
@@ -117,6 +133,8 @@
 #define EBI_DRP_STANDARD        0x00000000      /*!< \brief Standard read protocol. */
 #define EBI_DRP_EARLY           0x00000010      /*!< \brief Early read protocol. */
 /*@}*/
+
+#endif
 
 /*@} xgNutArchArmAt91Ebi */
 

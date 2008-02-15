@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2008/02/15 17:00:24  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.18  2007/10/04 20:29:08  olereinhardt
  * Support for SAM7S256 added
  *
@@ -98,7 +101,7 @@
  */
 
 #include <cfg/arch.h>
-#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256)
+#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
 #include <arch/arm/at91.h>
 #elif defined (MCU_GBA)
 #include <arch/arm/gba.h>

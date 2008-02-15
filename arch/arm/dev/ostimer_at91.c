@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2008/02/15 16:58:41  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.17  2007/10/04 19:59:47  olereinhardt
  * Support for SAM7S256 added
  *
@@ -196,7 +199,7 @@ void NutRegisterTimer(void (*handler) (void *))
 
     int dummy;
 
-#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260)
+#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512)
     /* Enable TC0 clock. */
     outr(PMC_PCER, _BV(TC0_ID));
 #endif

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/02/15 16:58:41  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.8  2007/10/04 19:57:54  olereinhardt
  * Support for SAM7S256 added
  *
@@ -127,7 +130,7 @@
  * \brief GPIO controller ID.
  */
 #if !defined(LCD_PIO_ID)
-#if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
+#if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
 #define LCD_PIO_ID  PIOA_ID
 #elif defined(MCU_AT91SAM9260)
 #define LCD_PIO_ID  PIOB_ID

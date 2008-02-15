@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/02/15 17:00:08  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.1  2006/08/31 19:10:38  haraldkipp
  * New peripheral register definitions for the AT91SAM9260.
  *
@@ -51,6 +54,33 @@
  * \addtogroup xgNutArchArmAt91Smc
  */
 /*@{*/
+
+#if defined(EBI_HAS_CSA)
+
+#define SMC_CSR(cs)             (SMC_BASE + cs * 0x04)  /*!< \brief SMC chip select register address. */
+
+#define SMC_NWS                 0x0000007F  /*!< brief Number of wait states mask. */
+#define SMC_NWS_LSB                     0   /*!< brief Number of wait states LSB. */
+#define SMC_WSEN                0x00000080  /*!< brief Wait state enable. */
+#define SMC_TDF                 0x00000F00  /*!< brief Data float time mask. */
+#define SMC_TDF_LSB                     8   /*!< brief Data float time LSB. */
+#define SMC_BAT                 0x00001000  /*!< brief Byte access type (16 bit device = 1). */
+#define SMC_DBW                 0x00006000  /*!< brief Data bus width. */
+#define SMC_DBW_16              0x00002000  /*!< brief 16-bit data bus. */
+#define SMC_DBW_8               0x00004000  /*!< brief 8-bit data bus. */
+#define SMC_DRP                 0x00008000  /*!< brief Data read protocol (early read = 1). */
+#define SMC_ACSS                0x00030000  /*!< brief Address to chip select setup mask. */
+#define SMC_ACSS_LSB                    16  /*!< brief Address to chip select setup LSB. */
+#define SMC_ACSS_STANDARD       0x00000000  /*!< brief Standard, asserted at the beginning of the access and deasserted at the end. */
+#define SMC_ACSS_1_CYCLE        0x00010000  /*!< brief One cycle less at the beginning and the end of the access. */
+#define SMC_ACSS_2_CYCLES       0x00020000  /*!< brief Two cycles less at the beginning and the end of the access. */
+#define SMC_ACSS_3_CYCLES       0x00030000  /*!< brief Three cycles less at the beginning and the end of the access. */
+#define SMC_RWSETUP             0x07000000  /*!< brief Read and write signal setup time mask. */
+#define SMC_RWSETUP_LSB                 24  /*!< brief Read and write signal setup time LSB. */
+#define SMC_RWHOLD              0x70000000  /*!< brief Read and write signal hold time mask. */
+#define SMC_RWHOLD_LSB                  28  /*!< brief Read and write signal hold time LSB. */
+
+#else /* EBI_HAS_CSA */
 
 /*! \name SMC Setup Register */
 /*@{*/
@@ -111,6 +141,8 @@
 #define SMC_PS_16                           0x30000000  /*!< \brief 16-byte page. */
 #define SMC_PS_32                           0x30000000  /*!< \brief 32-byte page. */
 /*@}*/
+
+#endif /* EBI_HAS_CSA */
 
 /*@} xgNutArchArmAt91Smc */
 

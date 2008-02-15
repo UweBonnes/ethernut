@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/02/15 17:00:08  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.14  2008/01/31 09:22:32  haraldkipp
  * Added first version of platform independent GPIO routines. Consider the
  * AVR version untested.
@@ -183,7 +186,7 @@ extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (vo
 extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
 extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
 
-#elif defined(MCU_AT91SAM7S256)
+#elif defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
 
 extern IRQ_HANDLER sig_FIQ;
 extern IRQ_HANDLER sig_SYS;

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/02/15 17:00:24  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.12  2007/10/04 20:33:55  olereinhardt
  * Support for SAM7S256 added
  *
@@ -111,7 +114,7 @@ extern NUTDEVICE devDebug2;
 #ifdef MCU_AT91R40008
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
-#elif defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260)
+#elif defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512)
 extern NUTDEVICE devDebug;
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;

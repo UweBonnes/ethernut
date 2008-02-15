@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/02/15 16:59:02  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.2  2007/10/04 20:01:50  olereinhardt
  * Support for SAM7S256 added
  *
@@ -102,7 +105,7 @@
 #define LCD_MOSI_BIT	17
 #endif
 
-#elif defined(AT91SAM7S)
+#elif defined(AT91SAM7S) || defined(MCU_AT91SAM7SE512)
 
 #ifndef LCD_CS_PIO_ID
 #define LCD_CS_PIO_ID   PIOA_ID

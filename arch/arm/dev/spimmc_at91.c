@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/02/15 16:59:02  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.3  2008/01/31 09:16:03  haraldkipp
  * Failed to compile for SAM7S. Added some default settings.
  *
@@ -89,7 +92,7 @@
 #define MMC_DATAIN_BIT  SPI0_MOSI_PA17A
 #define MMC_CLK_BIT     SPI0_SPCK_PA18A
 
-#elif defined(MCU_AT91SAM7S256)
+#elif defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
 
 #ifndef MMC_CS_BIT
 #define MMC_CS_BIT      SPI0_NPCS0_PA11A

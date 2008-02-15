@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2008/02/15 17:00:24  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.5  2007/10/04 20:31:00  olereinhardt
  * Support for SAM7S256 added
  *
@@ -136,6 +139,34 @@
 
 #ifndef MCU_AT91SAM7S256
 #define MCU_AT91SAM7S256
+#endif
+
+#elif defined(AT91SAM7SE_EK)
+
+#ifndef PLATFORM
+#define PLATFORM AT91SAM7SE_EK
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91SAM7SE512
+#define MCU_AT91SAM7SE512
+#endif
+
+#elif defined(ELEKTOR_IR1)
+
+#ifndef PLATFORM
+#define PLATFORM ELEKTOR_IR1
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91SAM7SE512
+#define MCU_AT91SAM7SE512
 #endif
 
 #elif defined(AT91SAM9260_EK)

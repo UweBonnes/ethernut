@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/02/15 17:04:59  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.1  2006/08/31 19:10:38  haraldkipp
  * New peripheral register definitions for the AT91SAM9260.
  *
@@ -64,6 +67,9 @@
 #define SDRAMC_MODE_RFSH                0x00000004      /*!< \brief Issues a "Auto Refresh" command when accessed. */
 #define SDRAMC_MODE_EXT_LMR             0x00000005      /*!< \brief Issues a "Extended Load Mode Register" command when accessed. */
 #define SDRAMC_MODE_DEEP                0x00000006      /*!< \brief Enters deep power down mode. */
+#if defined(EBI_HAS_CSA)
+#define SDRAMC_DBW                      0x00000010      /*!< \brief Data bus width (16bits=1). */
+#endif
 /*@}*/
 
 /*! \name SDRAM Controller Refresh Timer Register */
@@ -91,6 +97,20 @@
 #define SDRAMC_CAS_1                    0x00000020      /*!< \brief CAS latency of 1 cycle. */
 #define SDRAMC_CAS_2                    0x00000040      /*!< \brief CAS latency of 2 cycles. */
 #define SDRAMC_CAS_3                    0x00000060      /*!< \brief CAS latency of 3 cycles. */
+#if defined(EBI_HAS_CSA)
+#define SDRAMC_TWR                      0x00000780      /*!< \brief Write recovery delay. */
+#define SDRAMC_TWR_LSB                          7       /*!< \brief Write recovery delay. */
+#define SDRAMC_TRC                      0x00007800      /*!< \brief Row cycle delay. */
+#define SDRAMC_TRC_LSB                          11      /*!< \brief Row cycle delay. */
+#define SDRAMC_TRP                      0x00078000      /*!< \brief Row precharge delay. */
+#define SDRAMC_TRP_LSB                          15      /*!< \brief Row precharge delay. */
+#define SDRAMC_TRCD                     0x00780000      /*!< \brief Row to column delay. */
+#define SDRAMC_TRCD_LSB                         19      /*!< \brief Row to column delay. */
+#define SDRAMC_TRAS                     0x07800000      /*!< \brief Active to precharge delay. */
+#define SDRAMC_TRAS_LSB                         23      /*!< \brief Active to precharge delay. */
+#define SDRAMC_TXSR                     0x78000000      /*!< \brief Exit self refresh to active delay. */
+#define SDRAMC_TXSR_LSB                         27      /*!< \brief Exit self refresh to active delay. */
+#else
 #define SDRAMC_DBW                      0x00000080      /*!< \brief 16-bit data bus. */
 #define SDRAMC_TWR                      0x00000F00      /*!< \brief Write recovery delay. */
 #define SDRAMC_TWR_LSB                          8       /*!< \brief Write recovery delay. */
@@ -104,6 +124,14 @@
 #define SDRAMC_TRAS_LSB                         24      /*!< \brief Active to precharge delay. */
 #define SDRAMC_TXSR                     0xF0000000      /*!< \brief Exit self refresh to active delay. */
 #define SDRAMC_TXSR_LSB                         28      /*!< \brief Exit self refresh to active delay. */
+#endif
+/*@}*/
+
+/*! \name SDRAM Controller Low Power Register */
+/*@{*/
+#define SDRAMC_SRR_OFF                  0x0000000C      /*!< \brief Self refresh register offset. */
+#define SDRAMC_SRR  (SDRAMC_BASE + SDRAMC_SRR_OFF)      /*!< \brief Self refresh register address. */
+#define SDRAMC_SRCB                     0x00000001      /*!< \brief Self refresh command bit. */
 /*@}*/
 
 /*! \name SDRAM Controller Low Power Register */

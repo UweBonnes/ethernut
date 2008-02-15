@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.12  2008/02/15 16:59:42  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.11  2007/10/04 20:25:26  olereinhardt
  * Support for SAM7S256 added
  *
@@ -85,6 +88,8 @@
 #include <arch/arm/at91sam7x.h>
 #elif defined (MCU_AT91SAM7S256)
 #include <arch/arm/at91sam7s.h>
+#elif defined (MCU_AT91SAM7SE512)
+#include <arch/arm/at91sam7se.h>
 #elif defined (MCU_AT91SAM9260)
 #include <arch/arm/at91sam9260.h>
 #endif

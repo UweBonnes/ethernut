@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/02/15 16:59:27  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.14  2007/10/04 20:08:00  olereinhardt
  * Support for SAM7S256 added
  *
@@ -215,10 +218,10 @@ void NutInit(void)
 {
 #if defined(OLIMEX_LPCE2294)
     InitHW();
-#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM9260)
+#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7SE512)
     McuInit();
 #endif
-#if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
+#if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
     {
         u_long freq = NutGetCpuClock();
         /* Set Flash Waite state. */

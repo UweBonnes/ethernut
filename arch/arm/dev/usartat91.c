@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/02/15 16:59:27  haraldkipp
+ * Spport for AT91SAM7SE512 added.
+ *
  * Revision 1.7  2007/10/04 20:05:51  olereinhardt
  * Support for SAM7S256 added
  *
@@ -1121,7 +1124,7 @@ static int At91UsartInit(void)
     outr(PS_PCER, _BV(US_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, US_GPIO_PINS);
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
     outr(PMC_PCER, _BV(US_ID));
     outr(PIOA_PDR, US_GPIO_PINS);
 #endif
@@ -1170,7 +1173,7 @@ static int At91UsartDeinit(void)
     outr(PS_PCDR, _BV(US_ID));
     /* Enable GPIO on UART tx/rx pins. */
     outr(PIO_PER, US_GPIO_PINS);
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
     outr(PMC_PCDR, _BV(US_ID));
     outr(PIOA_PER, US_GPIO_PINS);
 #endif
