@@ -1,4 +1,84 @@
-$Id: ChangeLog,v 1.418 2008/02/09 02:13:02 olereinhardt Exp $
+$Id: ChangeLog,v 1.419 2008/02/15 17:22:26 haraldkipp Exp $
+
+2008-02-13  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Second beta, version #4.5.1.
+
+	* crt/nut_io.h: Serious bug fix. Reconfigured FOPEN_MAX was 
+	not honored by all modules.
+
+	* dev/vscodec.c, include/dev/vscodec.h, conf/dev/dev.nut:
+	The old VS1001K support routine had been done in 2002 for the 
+	4MHz ATmega. In order to handle high bitrates, decoder feeding 
+	was done in interrupt context. With today's 16MHz AVRs, this
+	complicated processing is no longer required. Here we present a 
+	new character device driver for the VLSI decoders. Note, that 
+	most things are still hard coded for the AT91SAM7SE and the 
+	VS1033 or VS1053. The part we are missing most is a general SPI 
+	driver. Stay tuned.
+
+	* pro/uxmlparse.c, pro/uxmlstream.c, pro/uxmltree.c,
+	include/pro/uxml.h, conf/pro/pro.nut: Micro XML parser added. 
+	This is a very limited and probably incomplete parser. However, 
+	it allows to parse relatively large XML files on tiny systems.
+
+	* arch/arm/dev/at91_twi.c, arch/arm/dev/debug_at91.c,
+	arch/arm/dev/hd44780_at91.c, arch/arm/dev/ostimer_at91.c,
+	arch/arm/dev/spimmc_at91.c, arch/arm/dev/st7036_at91.c,
+	arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
+	arch/arm/dev/usartat91.c, arch/arm/os/nutinit.c,
+	conf/at91sam7se-ek.conf, conf/tools.nut, dev/twbbif.c,
+	include/arch/arm/at91.h, include/arch/arm/at91_ebi.h,
+	include/arch/arm/at91_pmc.h, include/arch/arm/at91_sdramc.h,
+	include/arch/arm/at91_smc.h, include/arch/arm/irqreg.h,
+	include/arch/arm.h, include/cfg/arch.h, include/dev/debug.h,
+	arch/arm/init/crtat91sam7se512_rom.S, include/arch/arm/at91sam7se.h,
+	arch/arm/ldscripts/at91sam7se512_rom.ld: AT91SAM7SE512 support added.
+
+	* conf/repository.nut, conf/arch/arch.nut, conf/arch/arm.nut:
+	AT91SAM7SE512 support added. Global MCU list simplifies exclusivity 
+	attribute. HW_EBI_AT91 added for MCUs with external bus interface.
+
+	* pro/resolv.c, include/netdb.h: Added NutDnsGetConfig2() to query 
+	DNS IP entries. Btw. all this network initialization stuff had 
+	become souu rotten over the time. Blame me for not providing a 
+	cleaner design in the early beginning.
+
+	* os/bankmem.c: Calling the initialization routine more than once 
+	is now possible. By default, half of the available memory will be 
+	allocated. Previous versions eat all free memory above 8k.
+
+	* pro/ssi.c: Quick hack provided by Niels. No idea what this is 
+	for, but according to the author it is a dirty solution. We 
+	urgently need it to get the Elektor Radio working. Sorry in 
+	advance for any trouble this change may cause.
+
+	* arch/arm/dev/dm9000e.c, include/dev/board.h, conf/eir10b.conf:
+	Added support for the Elektor Internet Radio.
+
+	* dev/at45db.c, include/dev/at45db.h: At45dbPageErase selected 
+	the wrong bank. Fixed. Parameter pgn (page number) of 
+	At45dbPageWrite() changed from unsigned int to unsigned long. 
+	New routines At45dbPages() and At45dbPageSize() allow to 
+	determine the chip's layout.
+
+	* pro/snmp.c, pro/snmp_agent.c, pro/snmp_api.c, pro/snmp_auth.c, 
+	pro/snmp_config.c, pro/snmp_mib.c: Added missing SNMP code files. 
+	SET command is still buggy and will crash.
+
+	* pro/rfctime.c: Missing code for RFC date and time conversion 
+	added.
+
+	* conf/arch/arch.nut, include/arch/arm/at91sam7s.h: Line endings 
+	fixed and TABs converted.
+
+	* c/stdlib/atoi.c, c/stdlib/atol.c, c/stdlib/strtol.c, 
+	c/stdlib/strtoul.c, c/string/memcpy.c, c/string/strcat.c, 
+	c/string/strchr.c, c/string/strncmp.c, c/string/strtok.c,
+	crt/strtok_r.c, include/pro/asn1.h, include/pro/snmp_auth.h,
+	include/pro/snmp_config.h: Replaced const with CONST. Some compilers 
+	for embedded systems use this attribute in a different way.
+
 
 2008-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
         * arch/Makefile: Added ih_at91spi for sam7x, Support for 
