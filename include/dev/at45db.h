@@ -39,6 +39,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/02/15 17:10:44  haraldkipp
+ * At45dbPageErase selected the wrong bank. Fixed. Parameter pgn (page number)
+ * of At45dbPageWrite() changed from unsigned int to unsigned long.
+ * New routines At45dbPages() and At45dbPageSize() allow to determine the
+ * chip's layout.
+ *
  * Revision 1.2  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -58,10 +64,12 @@ extern int At45dbSendCmd(int dd, u_char op, u_long parm, int len, CONST void *td
 extern u_char At45dbGetStatus(int dd);
 extern int At45dbWaitReady(int dd, u_long tmo, int poll);
 extern int At45dbInit(u_int spibas, u_int spipcs);
-extern int At45dbPageErase(int dd, u_int off);
+extern int At45dbPageErase(int dd, u_long pgn);
 extern int At45dbChipErase(void);
 extern int At45dbPageRead(int dd, u_long pgn, void *data, u_int len);
-extern int At45dbPageWrite(int dd, u_int off, CONST void *data, u_int len);
+extern int At45dbPageWrite(int dd, u_long pgn, CONST void *data, u_int len);
+extern u_long At45dbPages(int dd);
+extern u_int At45dbPageSize(int dd);
 extern int At45dbParamRead(u_int pos, void *data, u_int len);
 extern int At45dbParamWrite(u_int pos, CONST void *data, u_int len);
 

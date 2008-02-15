@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2008 by egnite GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +15,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -38,6 +39,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/02/15 17:10:43  haraldkipp
+ * At45dbPageErase selected the wrong bank. Fixed. Parameter pgn (page number)
+ * of At45dbPageWrite() changed from unsigned int to unsigned long.
+ * New routines At45dbPages() and At45dbPageSize() allow to determine the
+ * chip's layout.
+ *
  * Revision 1.3  2007/08/17 10:45:21  haraldkipp
  * Enhanced documentation.
  *
@@ -373,8 +380,9 @@ int At45dbInit(u_int spibas, u_int spipcs)
 /*!
  * \brief Erase sector at the specified offset.
  */
-int At45dbPageErase(int dd, u_int pgn)
+int At45dbPageErase(int dd, u_long pgn)
 {
+    pgn <<= dcbtab[dd].dcb_devt->devt_offs;
     return At45dbSendCmd(dd, DFCMD_PAGE_ERASE, pgn, 4, NULL, NULL, 0);
 }
 
@@ -414,7 +422,7 @@ int At45dbPageRead(int dd, u_long pgn, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbPageWrite(int dd, u_int pgn, CONST void *data, u_int len)
+int At45dbPageWrite(int dd, u_long pgn, CONST void *data, u_int len)
 {
     int rc = -1;
     void *rp;
@@ -431,6 +439,16 @@ int At45dbPageWrite(int dd, u_int pgn, CONST void *data, u_int len)
         free(rp);
     }
     return rc;
+}
+
+u_long At45dbPages(int dd)
+{
+    return dcbtab[dd].dcb_devt->devt_pages;
+}
+
+u_int At45dbPageSize(int dd)
+{
+    return dcbtab[dd].dcb_devt->devt_pagsiz;
 }
 
 u_long At45dbParamPage(void)
