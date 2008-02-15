@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/02/15 17:07:09  haraldkipp
+ * Added routine to query DNS IP settings.
+ *
  * Revision 1.12  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -415,6 +418,22 @@ void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdn
 void NutDnsConfig(u_char * hostname, u_char * domain, u_long dnsip)
 {
     NutDnsConfig2(hostname, domain, dnsip, 0);
+}
+
+void NutDnsGetConfig2(char ** hostname, char ** domain, u_long *pdnsip, u_long *sdnsip)
+{
+    if (hostname) {
+        *hostname = (char *)doc.doc_hostname;
+    }
+    if (domain) {
+        *domain = (char *)doc.doc_domain;
+    }
+    if (pdnsip) {
+        *pdnsip = doc.doc_ip1;
+    }
+    if (sdnsip) {
+        *sdnsip = doc.doc_ip2;
+    }
 }
 
 /*!

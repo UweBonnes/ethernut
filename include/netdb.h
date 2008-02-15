@@ -81,6 +81,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/02/15 17:07:09  haraldkipp
+ * Added routine to query DNS IP settings.
+ *
  * Revision 1.6  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -143,6 +146,7 @@ __END_DECLS
 __BEGIN_DECLS
 
 extern void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdnsip);
+extern void NutDnsGetConfig2(char ** hostname, char ** domain, u_long *pdnsip, u_long *sdnsip);
 extern void NutDnsConfig(CONST u_char *hostname, CONST u_char *domain, u_long dnsip);
 extern u_long NutDnsGetHostByName(CONST u_char *hostname);
 extern u_long NutDnsGetMxByDomain(CONST u_char * hostname);
