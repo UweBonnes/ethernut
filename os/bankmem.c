@@ -33,6 +33,11 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2008/02/15 17:08:05  haraldkipp
+ * Calling the initialization routine more than once is now possible.
+ * By default, half of the available memory will be allocated. Previous
+ * versions eat all free memory but 8k.
+ *
  * Revision 1.4  2007/04/12 09:08:57  haraldkipp
  * Segmented buffer routines ported to ARM.
  *
@@ -108,7 +113,10 @@ char *NutSegBufInit(size_t size)
     segbuf_total = (u_long) NUTBANK_COUNT *(u_long) NUTBANK_SIZE;
 #else
     if (size == 0)
-        size = NutHeapAvailable() - 8192;
+        size = NutHeapAvailable() / 2;
+    if (segbuf_start) {
+        NutHeapFree(segbuf_start);
+    }
     if ((segbuf_start = NutHeapAlloc(size)) != 0)
         segbuf_end = segbuf_start + size;
     segbuf_total = size;
