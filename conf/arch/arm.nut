@@ -33,9 +33,13 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.24  2008/02/15 17:05:53  haraldkipp
+-- AT91SAM7SE512 support added. Global MCU list simplifies exclusivity
+-- attribute. HW_EBI_AT91 added for MCUs with external bus interface.
+--
 -- Revision 1.23  2008/02/09 02:11:45  olereinhardt
 -- 2008-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
--- 	* conf/arch/arm.nut: Added ih_at91spi for sam7x, Support for
+--      * conf/arch/arm.nut: Added ih_at91spi for sam7x, Support for
 --           at91sam7s added
 --
 -- Revision 1.22  2008/01/31 09:22:32  haraldkipp
@@ -178,6 +182,7 @@ nutarch_arm =
                               "Default values are\n"..
                               "SAM7X: 14\n"..
                               "SAM7S: 14\n"..
+                              "SAM7SE: 14\n"..
                               "SAM9260: 14\n",
                 requires = { "HW_PLL_AT91" },
                 flavor = "booldata",
@@ -193,6 +198,7 @@ nutarch_arm =
                               "Default values are\n"..
                               "SAM7X: 72\n"..
                               "SAM7S: 72\n"..
+                              "SAM7SE: 72\n"..
                               "SAM9260: 72\n",
                 requires = { "HW_PLL_AT91" },
                 flavor = "booldata",
@@ -319,7 +325,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
-	    "arm/dev/ih_at91adc.c",
+            "arm/dev/ih_at91adc.c",
             "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
@@ -346,7 +352,32 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
-	    "arm/dev/ih_at91adc.c",
+            "arm/dev/ih_at91adc.c",
+            "arm/dev/ih_at91twi.c",
+            "arm/dev/ih_at91uart0.c",
+            "arm/dev/ih_at91uart1.c",
+            "arm/dev/ih_at91wdi.c"
+        },
+    },
+    {
+        name = "nutarch_arm_irqat91sam7se",
+        brief = "Interrupt Handler (SAM7SE)",
+        requires = { "HW_MCU_AT91SAM7SE" },
+        provides = { "DEV_IRQ_AT91" }, 
+        sources =
+        {
+            "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91sys.c",
+            "arm/dev/ih_at91irq0.c",
+            "arm/dev/ih_at91irq1.c",
+            "arm/dev/ih_at91irq2.c",
+            "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91ssc.c",
+            "arm/dev/ih_at91swirq.c",
+            "arm/dev/ih_at91tc0.c",
+            "arm/dev/ih_at91tc1.c",
+            "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91adc.c",
             "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
@@ -618,10 +649,30 @@ nutarch_arm =
         name = "nutarch_arm_dm9000e",
         brief = "DM9000E Driver (AT91)",
         description = "LAN driver for Davicom DM9000E. AT91 only.",
-        requires = { "HW_MCU_AT91R40008", "NUT_EVENT", "NUT_TIMER" },
+        requires = { "HW_EBI_AT91", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/dm9000e.c" },
-    },     
+        options =
+        {
+            {
+                macro = "NIC_BASE_ADDR",
+                brief = "Controller Base Address",
+                description = "The driver supports memory mapped controllers only, using "..
+                              "the specified based address.\n\n"..
+                              "The Ethernut 3 reference design uses 0x20000000.\n"..
+                              "The ELEKTOR Internet Radio uses 0x30000000.\n",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NIC_SIGNAL_IRQ",
+                brief = "Ethernet Interrupt",
+                description = "Ethernet controller interrupt.",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/armpio.h"
+            }
+        }
+    },
     {
         name = "nutarch_arm_at91_emac",
         brief = "AT91 EMAC Driver",
@@ -718,6 +769,14 @@ nutarch_arm =
         sources = { "arm/dev/at91_twi.c" },
     },
     {
+        name = "nutarch_arm_twi_at91_sam7se",
+        brief = "AT91 TWI (SAM7SE)",
+        description = "TWI interface for AT91 (currently SAM7 only).",
+        requires = { "HW_MCU_AT91SAM7SE" },
+        provides = { "DEV_TWI" },
+        sources = { "arm/dev/at91_twi.c" },
+    },
+    {
         name = "nutarch_arm_adc_at91",
         brief = "AT91 ADC",
         description = "ADC interface for AT91 (currently SAM7 only).",
@@ -809,5 +868,24 @@ nutarch_arm =
             },
         },
     },
+--    {
+--        name = "nutarch__arm_at91efc_sam7se",
+--        brief = "AT91 Embedded Flash (SAM7SE)",
+--        description = "Routines for reading and writing embedded flash memory.",
+--        requires = { "HW_MCU_AT91SAM7SE" },
+--        sources = { "arm/dev/at91_efc.c" },
+--        options =
+--        {
+--            {
+--                macro = "NUT_CONFIG_AT91EFC",
+--                brief = "System Configuration",
+--                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+--                              "be stored in on-chip flash memory.",
+--                provides = { "HW_FLASH_PARAM_SECTOR" },
+--                flavor = "boolean",
+--                file = "include/cfg/eeprom.h"
+--            },
+--        },
+--    },
 }
 

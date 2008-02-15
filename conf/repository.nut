@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.26  2008/02/15 17:05:52  haraldkipp
+-- AT91SAM7SE512 support added. Global MCU list simplifies exclusivity
+-- attribute. HW_EBI_AT91 added for MCUs with external bus interface.
+--
 -- Revision 1.25  2008/01/31 09:11:19  haraldkipp
 -- Added ability to upload AT91 flash image via HTTP. Many thanks to
 -- Matthias Wilde.
@@ -118,6 +122,10 @@
 -- First release
 --
 --
+
+mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", 
+              "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91SAM7SE512", "MCU_AT91R40008", "MCU_GBA", 
+              "MCU_LINUX_EMU", "MCU_S3C4510B" }
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG", "AVRPORTH", "AVRPORTI", "AVRPORTJ", "AVRPORTK", "AVRPORTL" }
