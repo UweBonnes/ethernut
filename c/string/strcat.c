@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/02/15 17:13:01  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.1  2004/09/08 10:23:52  haraldkipp
  * Generic C string library added
  *
@@ -85,7 +88,7 @@
  *
  * \return The original destination pointer.
  */
-char *strcat(char *dst, const char *src)
+char *strcat(char *dst, CONST char *src)
 {
     char *ret = dst;
 

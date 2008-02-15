@@ -102,32 +102,32 @@ typedef struct {
     u_long low;
 } UNSIGNED64;
 
-extern const u_char *AsnHeaderParse(const u_char *, size_t *, u_char *);
+extern CONST u_char *AsnHeaderParse(CONST u_char *, size_t *, u_char *);
 extern u_char *AsnHeaderBuild(u_char *, size_t *, u_char, size_t);
 
-extern const u_char * AsnSequenceParse(const u_char *, size_t *, u_char);
+extern CONST u_char * AsnSequenceParse(CONST u_char *, size_t *, u_char);
 extern u_char *AsnSequenceBuild(u_char *, size_t *, u_char, size_t);
 
-extern const u_char *AsnIntegerParse(const u_char *, size_t *, u_char *, long *);
+extern CONST u_char *AsnIntegerParse(CONST u_char *, size_t *, u_char *, long *);
 extern u_char *AsnIntegerBuild(u_char *, size_t *, u_char, long *);
 
-extern const u_char *AsnUnsignedParse(const u_char *, size_t *, u_char *, u_long *);
+extern CONST u_char *AsnUnsignedParse(CONST u_char *, size_t *, u_char *, u_long *);
 extern u_char *AsnUnsignedBuild(u_char *, size_t *, u_char, u_long *);
 
-extern const u_char *AsnOctetStringParse(const u_char *, size_t *, u_char *, u_char *, size_t *);
-extern u_char *AsnOctetStringBuild(u_char *, size_t *, u_char, const u_char *, size_t);
+extern CONST u_char *AsnOctetStringParse(CONST u_char *, size_t *, u_char *, u_char *, size_t *);
+extern u_char *AsnOctetStringBuild(u_char *, size_t *, u_char, CONST u_char *, size_t);
 
-extern const u_char *AsnOidParse(const u_char *, size_t *, u_char *, OID *, size_t *);
-extern u_char *AsnOidBuild(u_char *, size_t *, u_char, const OID *, size_t);
+extern CONST u_char *AsnOidParse(CONST u_char *, size_t *, u_char *, OID *, size_t *);
+extern u_char *AsnOidBuild(u_char *, size_t *, u_char, CONST OID *, size_t);
 
-extern const u_char *AsnNullParse(const u_char *, size_t *, u_char *);
+extern CONST u_char *AsnNullParse(CONST u_char *, size_t *, u_char *);
 extern u_char *AsnNullBuild(u_char *, size_t *, u_char);
 
-extern const u_char *AsnBitStringParse(const u_char *, size_t *, u_char *, u_char *, size_t *);
-extern u_char *AsnBitStringBuild(u_char *, size_t *, u_char, const u_char *, size_t);
+extern CONST u_char *AsnBitStringParse(CONST u_char *, size_t *, u_char *, u_char *, size_t *);
+extern u_char *AsnBitStringBuild(u_char *, size_t *, u_char, CONST u_char *, size_t);
 
-extern const u_char *AsnUnsigned64Parse(const u_char *, size_t *, u_char *, UNSIGNED64 *);
-extern u_char *AsnUnsigned64Build(u_char *, size_t *, u_char, const UNSIGNED64 *);
+extern CONST u_char *AsnUnsigned64Parse(CONST u_char *, size_t *, u_char *, UNSIGNED64 *);
+extern u_char *AsnUnsigned64Build(u_char *, size_t *, u_char, CONST UNSIGNED64 *);
 
 
 #endif

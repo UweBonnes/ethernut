@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/02/15 17:13:16  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.2  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -90,7 +93,7 @@
  *         than the second string after translation of each corresponding 
  *         character to lower-case.
  */
-int strncmp(const char *s1, const char *s2, size_t n)
+int strncmp(CONST char *s1, CONST char *s2, size_t n)
 {
 
     if (n == 0)

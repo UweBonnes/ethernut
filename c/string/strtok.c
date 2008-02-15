@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/02/15 17:13:16  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.1  2004/09/08 10:24:18  haraldkipp
  * Generic C string library added
  *
@@ -116,7 +119,7 @@ char *strtok(char *s, CONST char *delim)
  *         itself with a zero character. When no more tokens remain, 
  *         a null pointer is returned.
  */
-char *strtok_r(char *s, const char *delim, char **last)
+char *strtok_r(char *s, CONST char *delim, char **last)
 {
     char *spanp;
     int c, sc;

@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/02/15 17:13:01  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.3  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -85,7 +88,7 @@
  *
  * \return Converted value.
  */
-long atol(const char *str)
+long atol(CONST char *str)
 {
     return (strtol(str, (char **) NULL, 10));
 }

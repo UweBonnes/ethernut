@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/02/15 17:13:16  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.1  2004/09/08 10:23:52  haraldkipp
  * Generic C string library added
  *
@@ -83,7 +86,7 @@
  * \return A pointer to the located character or NULL if the character 
  *         does not appear in the string.
  */
-char *strchr(const char *p, int ch)
+char *strchr(CONST char *p, int ch)
 {
     for (;; ++p) {
         if (*p == ch)

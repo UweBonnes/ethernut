@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/02/15 17:13:01  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.3  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -92,9 +95,9 @@
  *
  * \return Converted value.
  */
-long strtol(const char *nptr, char **endptr, int base)
+long strtol(CONST char *nptr, char **endptr, int base)
 {
-    register const char *s;
+    register CONST char *s;
     register long acc, cutoff;
     register int c;
     register int neg, any, cutlim;

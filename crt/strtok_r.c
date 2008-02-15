@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/02/15 17:13:16  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.6  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -69,7 +72,7 @@
 
 static char *end_tok(char **pp_str, CONST char *p_delim, char *p_sep)
 {
-    register const char *sp;
+    register CONST char *sp;
     char *p_tok;
     char *p_ch;
 

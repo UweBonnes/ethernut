@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/02/15 17:13:01  haraldkipp
+ * Use configurable constant attribute.
+ *
  * Revision 1.2  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -111,7 +114,7 @@ typedef	long word;		/* "word" used for optimal copy speed */
 void *memcpy(void *dst0, CONST void *src0, size_t length)
 {
 	register char *dst = dst0;
-	register const char *src = src0;
+	register CONST char *src = src0;
 	register size_t t;
 
 	if (length == 0 || dst == src)		/* nothing to do */
