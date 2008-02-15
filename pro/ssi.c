@@ -33,6 +33,12 @@
  
 /*
  * $Log$
+ * Revision 1.3  2008/02/15 17:09:03  haraldkipp
+ * Quick hack provided by Niels. No idea what this is for, but
+ * according to the author it is a dirty solution. We urgently
+ * need it to get the Elektor Radio working. Sorry in advance
+ * for any trouble this change may cause.
+ *
  * Revision 1.2  2006/03/16 15:25:39  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -154,6 +160,7 @@ static void DestroyRequestInfo(REQUEST * req)
 static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQUEST *orig_req)
 {
     int fd;
+    int i;
     int n;
     char *data;
     int size;
@@ -200,13 +207,23 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         }
         if ((cp = strchr(url, '?')) != 0) {
             *cp++ = 0;
-            if ((req->req_query = NutHeapAlloc(strlen(cp) + 1)) == 0) {
+            if ((req->req_query = NutHeapAlloc(512)) == 0) {
                 fprintf_P(stream, PSTR("500 Internal error\n"));
                 DestroyRequestInfo(req);
                 return;
             }
             strcpy(req->req_query, cp);
-    
+            if (strcmp(req->req_query, "$QUERY_STRING") == 0){
+                req->req_query[0] = 0;
+                for (i = 0; i < (orig_req->req_numqptrs*2); i++) {
+                    if(i)
+                        strcat (req->req_query, "&");
+                    strcat (req->req_query, orig_req->req_qptrs[i]);
+                    strcat (req->req_query, "=");
+                    i++;
+                    strcat (req->req_query, orig_req->req_qptrs[i]);
+                }
+            }
             NutHttpProcessQueryString(req);
         }
         if ((req->req_url = NutHeapAlloc(strlen(url) + 1)) == 0) {
@@ -216,6 +233,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         }
         strcpy(req->req_url, url);
 
+	
         NutCgiProcessRequest(stream, req);
         DestroyRequestInfo(req);
         return;
