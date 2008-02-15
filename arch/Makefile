@@ -1,4 +1,5 @@
 #
+# Copyright (C) 2008 by egnite GmbH. All rights reserved.
 # Copyright (C) 2004-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.13  2008/02/15 17:29:59  haraldkipp
+# Added missing files. Hopefully not broken after late commit.
+#
 # Revision 1.12  2008/02/09 02:10:36  olereinhardt
 # 2008-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 # 	* arch/Makefile: Added ih_at91spi for sam7x, Support for
@@ -107,7 +111,8 @@ SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ih_adc.c \
 	avr/dev/cs8900.c avr/dev/eth0cs.c avr/dev/wlan.c avr/dev/wlandrv.c avr/dev/adc.c \
 	avr/dev/ir.c avr/dev/irsony.c avr/dev/hd44780.c avr/dev/hd44780_bus.c \
 	avr/dev/sja1000.c avr/dev/spidigio.c avr/dev/twif.c avr/dev/vs1001k.c \
-	avr/dev/pcmcia.c avr/dev/irqstack.c avr/dev/eeprom.c
+	avr/dev/pcmcia.c avr/dev/irqstack.c avr/dev/eeprom.c avr/dev/ace.c \
+	avr/dev/gpio_avr.c avr/dev/sppif0.c avr/dev/wdt_avr.c avr/dev/tlc16c550.c
 
 ifeq ($(MCU), at90can128)
 SRCS += avr/dev/atcan.c
@@ -125,7 +130,8 @@ SRCS +=	 arm/dev/ostimer_at91.c arm/dev/wdt_at91.c \
 	 arm/dev/ih_at91pio.c arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c \
 	 arm/dev/ih_at91tc2.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/ih_at91wdi.c \
 	 arm/dev/debug_at91.c arm/dev/usart0at91.c arm/dev/usart1at91.c arm/dev/hd44780_at91.c \
-	 arm/dev/st7036_at91.c arm/dev/ax88796.c arm/dev/dm9000e.c arm/dev/at91init.c
+	 arm/dev/st7036_at91.c arm/dev/ax88796.c arm/dev/dm9000e.c arm/dev/at91init.c \
+	 arm/dev/gpio_at91.c arm/dev/gpioa_at91.c
 endif
 
 ifeq ($(DEVICE), AT91SAM7X256)
@@ -136,7 +142,9 @@ SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91fiq.c \
 	 arm/dev/ih_at91twi.c arm/dev/ih_at91adc.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c \
 	 arm/dev/ih_at91emac.c arm/dev/ih_at91wdi.c arm/dev/debug_at91.c arm/dev/usart0at91.c \
 	 arm/dev/usart1at91.c arm/dev/at91_emac.c arm/dev/spimmc_at91.c arm/dev/at91init.c \
-	 arm/dev/at91_efc.c arm/dev/at91_twi.c arm/dev/at91_adc.c
+	 arm/dev/gpio_at91.c arm/dev/gpioa_at91.c arm/dev/gpiob_at91.c arm/dev/gpioc_at91.c \
+	 arm/dev/at91_efc.c arm/dev/at91_twi.c arm/dev/at91_adc.c arm/dev/hd44780_at91.c \
+	 arm/dev/st7036_at91.c
 endif
 
 ifeq ($(DEVICE), AT91SAM7S256)
@@ -157,7 +165,9 @@ SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91emac.c \
 	 arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c \
 	 arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/debug_at91.c arm/dev/usart0at91.c \
 	 arm/dev/usart1at91.c arm/dev/hd44780_at91.c arm/dev/st7036_at91.c arm/dev/at91_emac.c \
-	 arm/dev/spimmc_at91.c arm/dev/at91_mci.c arm/dev/at91init.c arm/dev/at91_spi.c
+	 arm/dev/spimmc_at91.c arm/dev/at91_mci.c arm/dev/at91init.c arm/dev/at91_spi.c \
+	 arm/dev/gpio_at91.c arm/dev/gpioa_at91.c arm/dev/gpiob_at91.c arm/dev/gpioc_at91.c \
+	 arm/dev/ih_at91pioa.c arm/dev/ih_at91piob.c arm/dev/ih_at91pioc.c
 endif
 
 ifeq ($(DEVICE), gba)

@@ -1,4 +1,5 @@
 #
+# Copyright (C) 2008 by egnite GmbH. All rights reserved.
 # Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.12  2008/02/15 17:30:00  haraldkipp
+# Added missing files. Hopefully not broken after late commit.
+#
 # Revision 1.11  2007/07/16 15:52:31  haraldkipp
 # Missing discovery support added.
 #
@@ -99,7 +103,8 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS =  dhcpc.c resolv.c httpd.c ssi.c asp.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c wins.c discover.c
+SRCS =  dhcpc.c resolv.c httpd.c ssi.c asp.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c wins.c discover.c \
+	snmp.c snmp_agent.c snmp_api.c snmp_auth.c snmp_config.c snmp_mib.c asn1.c
 
 OBJS = $(SRCS:.c=.o)
 

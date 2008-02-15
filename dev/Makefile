@@ -1,4 +1,5 @@
 #
+# Copyright (C) 2008 by egnite GmbH. All rights reserved.
 # Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.28  2008/02/15 17:30:00  haraldkipp
+# Added missing files. Hopefully not broken after late commit.
+#
 # Revision 1.27  2007/07/16 15:49:53  haraldkipp
 # RTC support was missing.
 #
@@ -173,8 +177,20 @@ include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
 SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c \
-       twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c sbimmc.c watchdog.c \
-	rtc.c ds1307rtc.c
+       twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c watchdog.c \
+	rtc.c ds1307rtc.c at49bv.c avrtarget.c sbbif0.c pcf8563.c
+
+ifeq ($(DEVICE), AT91R40008)
+SRCS += npluled.c sbimmc.c
+endif
+
+ifeq ($(DEVICE), AT91SAM7X256)
+SRCS += at45db.c
+endif
+
+ifeq ($(DEVICE), AT91SAM9260)
+SRCS += at45db.c
+endif
 
 OBJS = $(SRCS:.c=.o)
 

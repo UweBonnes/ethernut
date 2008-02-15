@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.419 2008/02/15 17:22:26 haraldkipp Exp $
+$Id: ChangeLog,v 1.420 2008/02/15 17:29:59 haraldkipp Exp $
+
+
+
+2008-02-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/Makefile, crt/Makefile, dev/Makefile, fs/Makefile,
+	net/Makefile, os/Makefile, pro/Makefile: Added missing files.
+	I missed to commit them in time. Hopefully I didn't break
+	anything.
+
 
 2008-02-13  Harald Kipp  <harald.kipp@egnite.de>
 

@@ -1,4 +1,5 @@
 #
+# Copyright (C) 2008 by egnite GmbH. All rights reserved.
 # Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.11  2008/02/15 17:29:59  haraldkipp
+# Added missing files. Hopefully not broken after late commit.
+#
 # Revision 1.10  2006/05/25 09:32:37  haraldkipp
 # Incomplete source list results in a bunch of linker errors when building
 # in source tree.
@@ -88,7 +92,7 @@ SRCC =  close.c clrerr.c ioctl.c open.c getf.c read.c putf.c write.c fclose.c \
         fread.c fscanf.c getc.c getchar.c gets.c kbhit.c scanf.c ungetc.c vfscanf.c \
         fprintf.c fputc.c fputs.c fwrite.c printf.c putc.c putchar.c puts.c vfprintf.c \
         sprintf.c sscanf.c vsprintf.c vsscanf.c gmtime.c localtim.c mktime.c time.c \
-        tzset.c errno.c malloc.c
+        tzset.c errno.c malloc.c environ.c getenv.c putenv.c setenv.c
 
 SRCCP = fprintf_p.c fputs_p.c fscanf_p.c fwrite_p.c printf_p.c puts_p.c \
 	scanf_p.c sprintf_p.c sscanf_p.c vfprintf_p.c vfscanf_p.c \

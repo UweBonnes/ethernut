@@ -1,4 +1,5 @@
 #
+# Copyright (C) 2008 by egnite GmbH. All rights reserved.
 # Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.9  2008/02/15 17:30:00  haraldkipp
+# Added missing files. Hopefully not broken after late commit.
+#
 # Revision 1.8  2006/05/25 09:28:54  haraldkipp
 # Latest sources added, so building in the source tree will create complete
 # libraries.
@@ -89,7 +93,8 @@ include $(top_srcdir)/Makedefs
 
 SRCS = pathops.c dirent.c fat.c uromfs.c pnutfs.c \
        phatfs.c phatvol.c phatdir.c phatio.c \
-       phat12.c phat16.c phat32.c phatutil.c phatdbg.c
+       phat12.c phat16.c phat32.c phatutil.c phatdbg.c \
+       basename.c dirname.c
 
 OBJS = $(SRCS:.c=.o)
 

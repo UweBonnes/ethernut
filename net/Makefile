@@ -1,4 +1,5 @@
 #
+# Copyright (C) 2008 by egnite GmbH. All rights reserved.
 # Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.11  2008/02/15 17:30:00  haraldkipp
+# Added missing files. Hopefully not broken after late commit.
+#
 # Revision 1.10  2007/07/09 16:20:19  olereinhardt
 # 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 #         * net/Makefile: Commented in igmp_in.c and igmp_out.c again
@@ -90,7 +94,7 @@ SRC2 =  ipin.c ipout.c ipcsum.c route.c inet.c \
 	arpin.c arpout.c arpcache.c \
 	ethin.c ethout.c ifconfig.c confnet.c \
 	pppin.c pppout.c lcpout.c ipcpout.c \
-	igmpin.c igmpout.c
+	igmpin.c igmpout.c ether_addr.c
 #       igmp.c
 
 OBJ1 = $(SRC1:.c=.o)

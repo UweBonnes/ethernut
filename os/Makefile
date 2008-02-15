@@ -1,4 +1,5 @@
 #
+# Copyright (C) 2008 by egnite GmbH. All rights reserved.
 # Copyright (C) 2001-2002 by egnite Software GmbH. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.12  2008/02/15 17:30:00  haraldkipp
+# Added missing files. Hopefully not broken after late commit.
+#
 # Revision 1.11  2004/11/08 09:57:40  drsung
 # Added rule to clean also intermediate files (*.i)
 #
@@ -116,7 +120,7 @@ include $(top_srcdir)/Makedefs
 
 SRC1 = 	nutinit.c
 SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
-	version.c semaphore.c mutex.c
+	version.c semaphore.c mutex.c tracer.c
 
 #Add support for memory banks on AVR architecture
 ifeq ($(ARCH), avr)
