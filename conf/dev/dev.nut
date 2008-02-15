@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.38  2008/02/15 16:55:43  haraldkipp
+-- Added support for VS1033/53 codec.
+--
 -- Revision 1.37  2007/08/30 12:15:06  haraldkipp
 -- Configurable MMC timings.
 --
@@ -2062,7 +2065,7 @@ nutdev =
         name = "nutdev_twbbif",
         brief = "Bit Banging Two Wire",
         description = "Tested on AT91 only.",
-        requires = { "HW_MCU_AT91" },
+        requires = { "HW_MCU_AT91R40008" },
         provides = { "DEV_TWI" },
         sources = { "twbbif.c" },
         options =
@@ -2117,6 +2120,15 @@ nutdev =
         sources = { "null.c" }
     },
 
+    {
+        name = "nutdev_vscodec",
+        brief = "VS10XX Audio Codec",
+        description = "Tested with VS1033 and VS1053 on a SAM7SE system. "..
+                      "Most options are currently hard coded.",
+        sources = { "vscodec.c" },
+        requires = { "HW_MCU_AT91SAM7SE" },
+    },
+    
     --
     -- Block Device Drivers.
     --
