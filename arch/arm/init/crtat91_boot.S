@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/03/17 10:14:44  haraldkipp
+ * Reduced wait states for Flash access from 8 to 4.
+ *
  * Revision 1.2  2006/10/05 17:12:35  haraldkipp
  * Bug #1497065 fixed. Stack sizes increased.
  *
@@ -199,7 +202,7 @@ _rmap_endp:
 
 _rmap_tab:
         /* Flash memory at 1000 0000. */
-        .long   0x10000000 | EBI_CSEN | EBI_PAGES_16M | EBI_WSE | EBI_NWS_8 | EBI_DBW_16
+        .long   0x10000000 | EBI_CSEN | EBI_PAGES_16M | EBI_WSE | EBI_NWS_4 | EBI_DBW_16
         /* Ethernet controller at 2000 0000 */
         .long   0x20000000 | EBI_CSEN | EBI_BAT_BYTE_SELECT | EBI_PAGES_1M | EBI_WSE | EBI_NWS_4 | EBI_DBW_16
         /* CPLD registers at 2100 0000 */
