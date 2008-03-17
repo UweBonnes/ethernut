@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/03/17 10:16:16  haraldkipp
+ * Tool version 1.5.0. Starts working on OS X, though, still
+ * problems with scrolling the split tree.
+ *
  * Revision 1.9  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -66,12 +70,14 @@
  */
 
 /* This construct avoids automatic indention. */
+#ifndef __BEGIN_DECLS
 #ifdef  __cplusplus
 # define __BEGIN_DECLS  extern "C" {
 # define __END_DECLS    }
 #else
 # define __BEGIN_DECLS
 # define __END_DECLS
+#endif
 #endif
 
 /*

@@ -42,6 +42,10 @@
 
 /*
  * $Log$
+ * Revision 1.17  2008/03/17 10:16:18  haraldkipp
+ * Tool version 1.5.0. Starts working on OS X, though, still
+ * problems with scrolling the split tree.
+ *
  * Revision 1.16  2007/09/11 14:23:13  haraldkipp
  * Version 1.4.3: Mainly ICCAVR fixes and enhancements.
  *
@@ -98,7 +102,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.4.3"
+#define VERSION "1.5.0"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
