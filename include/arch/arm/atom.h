@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/03/17 10:15:36  haraldkipp
+ * Added memory and cc clobbers to NutEnter/ExitCritical. This keeps
+ * compiler optimizations inside and outside of critical sections
+ * seperated.
+ *
  * Revision 1.4  2007/08/17 10:47:03  haraldkipp
  * Bug #1757410 fixed. NutEnter/ExitCritical destroyed ARM register R0.
  *
@@ -73,7 +78,7 @@
             "stmfd   sp!, {%0}"     "\n\t" \
             "orr     %0, %0, #0xC0" "\n\t" \
             "msr     cpsr, %0"      "\n\t" \
-            : "=r" (temp_) : ); \
+            : "=r" (temp_) : : "memory", "cc"); \
 }
 
 #define NutExitCritical() \
@@ -83,7 +88,7 @@
             "@ NutExitCritical" "\n\t" \
             "ldmfd   sp!, {%0}" "\n\t" \
             "msr     cpsr, %0"  "\n\t" \
-            : "=r" (temp_) : ); \
+            : "=r" (temp_) : : "memory", "cc"); \
 }
 
 #define NutJumpOutCritical()    NutExitCritical()
