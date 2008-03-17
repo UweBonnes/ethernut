@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.20  2008/03/17 10:19:06  haraldkipp
+ * Added Eclipse project file copying (experimental).
+ *
  * Revision 1.19  2007/09/11 13:43:22  haraldkipp
  * Top installation directory will be used for ICCAVR project configuration.
  * Re-building the application tree will no longer override existing project
@@ -819,6 +822,101 @@ private:
 };
 #endif
 
+class CDirEclipseProjectTraverser : public wxDirTraverser
+{
+public:
+    CDirEclipseProjectTraverser(wxString source, wxString target)
+    : m_source(source)
+    , m_target(target)
+    {
+        m_doc = wxGetApp().GetNutConfDoc();
+    }
+
+    virtual wxDirTraverseResult OnFile(const wxString& filename)
+    {
+        wxString sub = filename.Mid(m_source.Length());
+        wxFileName name(m_target + sub);
+        /* Create project source list, but do not override exiting list. */
+        if(name.GetFullName().IsSameAs(wxT(".cproject"), false) && !name.FileExists()) {
+            TransferSourcesFile(filename, name.GetFullPath());
+        }
+        if(name.GetFullName().IsSameAs(wxT(".project"), false) && !name.FileExists()) {
+            TransferProjectFile(filename, name.GetFullPath());
+        }
+        return wxDIR_CONTINUE;
+    }
+
+    virtual wxDirTraverseResult OnDir(const wxString& dirname)
+    {
+        wxString sub = dirname.Mid(m_source.Length());
+        wxFileName name(m_target + sub + wxFileName::GetPathSeparator(), wxEmptyString);
+        if(!name.GetFullPath().EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator())) {
+            name.Mkdir(0777, wxPATH_MKDIR_FULL);
+            return wxDIR_CONTINUE;
+        }
+        return wxDIR_IGNORE;
+    }
+private:
+    wxString m_source;
+    wxString m_target;
+    CNutConfDoc *m_doc;
+
+    bool TransferProjectFile(wxString source, wxString target)
+    {
+        wxFileInputStream f_source(source);
+        if (!f_source.Ok()) {
+            wxLogMessage(wxT("Failed to read from %s"), source.c_str());
+            return false;
+        }
+        wxFileOutputStream f_target(target);
+        if (!f_target.Ok()) {
+            wxLogMessage(wxT("Failed to write to %s"), target.c_str());
+            return false;
+        }
+
+        wxTextInputStream istream(f_source);
+        wxTextOutputStream ostream(f_target);
+        for(;;) {
+            wxString line = istream.ReadLine();
+
+            if (f_source.Eof() && line.IsEmpty()) {
+                break;
+            }
+            ostream.WriteString(line + wxT("\n"));
+        }
+        return true;
+    }
+
+    bool TransferSourcesFile(wxString source, wxString target)
+    {
+        wxFileInputStream f_source(source);
+        if (!f_source.Ok()) {
+            wxLogMessage(wxT("Failed to read from %s"), source.c_str());
+            return false;
+        }
+        wxFileOutputStream f_target(target);
+        if (!f_target.Ok()) {
+            wxLogMessage(wxT("Failed to write to %s"), target.c_str());
+            return false;
+        }
+
+        wxTextInputStream istream(f_source);
+        wxTextOutputStream ostream(f_target);
+        for(;;) {
+            wxString line = istream.ReadLine();
+            wxString rest;
+
+            if (f_source.Eof() && line.IsEmpty()) {
+                break;
+            }
+            ostream.WriteString(line + wxT("\n"));
+        }
+        return true;
+    }
+
+};
+
+
 bool CNutConfDoc::GenerateApplicationTree()
 {
     CSettings *cfg = wxGetApp().GetSettings();
@@ -840,6 +938,11 @@ bool CNutConfDoc::GenerateApplicationTree()
     wxDir icc_dir(src_dir);
     icc_dir.Traverse(icc_traverser);
 #endif
+    src_dir = cfg->m_source_dir + wxT("/appeclipse");
+    wxLogMessage(wxT("Translating Eclipse projects from %s to %s"), src_dir.c_str(), cfg->m_app_dir.c_str());
+    CDirEclipseProjectTraverser eclipse_traverser(src_dir, cfg->m_app_dir);
+    wxDir eclipse_dir(src_dir);
+    eclipse_dir.Traverse(eclipse_traverser);
 
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
     wxString lib_dir(cfg->m_lib_dir);
