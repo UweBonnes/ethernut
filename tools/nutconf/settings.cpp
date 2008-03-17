@@ -39,6 +39,12 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.12  2008/03/17 10:20:32  haraldkipp
+ * FindAbsoluteDir() now returns an empty string on failure. Previous versions
+ * returned the current directory (dot) without any chance for the caller to
+ * recognize the error condition. This should fix the forgotten path problem
+ * on Linux, but not sure if it works under all conditions.
+ *
  * Revision 1.11  2007/09/11 13:42:17  haraldkipp
  * When multiple configurations is enabled, the repository name is now
  * still stored in the root. This seems to solve a lot of problems with
@@ -107,7 +113,7 @@ wxString CSettings::FindAbsoluteDir(wxString refPathName)
             }
         }
         if (i < 0) {
-            return wxString(wxT("."));
+            return wxEmptyString;
         }
     }
 
@@ -129,6 +135,9 @@ wxString CSettings::FindRelativeDir(wxString refPathName)
 {
 
     refPathName = FindAbsoluteDir(refPathName);
+    if (refPathName.IsEmpty()) {
+        refPathName = wxT(".");
+    }
 
 #ifdef __WXMSW__
     refPathName.Replace(wxT("/"), wxT("\\"));
