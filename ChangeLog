@@ -1,5 +1,53 @@
-$Id: ChangeLog,v 1.420 2008/02/15 17:29:59 haraldkipp Exp $
+$Id: ChangeLog,v 1.421 2008/03/17 10:25:28 haraldkipp Exp $
 
+
+2008-03-17  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/init/crtat91_boot.S: Reduced wait states for
+	Flash access from 8 to 4.
+
+	* include/arch/arm/atom.h: Added memory and cc clobbers to 
+	NutEnter/ExitCritical. This keeps compiler optimizations
+	inside and outside of critical sections seperated. Many
+	thanks to Duane Ellis. Probably required for AVR too,
+	but not tested yet.
+
+	* tools/nutconf/nutcomponent.h, tools/nutconf/nutconf.h:
+	Tool version 1.5.0. Starts working on OS X, though, still
+	problems with scrolling the split tree.
+
+	* tools/nutconf/appoptdlg.cpp, tools/nutconf/appoptdlg.h,
+	tools/nutconf/bldoptdlg.cpp, tools/nutconf/bldoptdlg.h,
+	tools/nutconf/configitem.cpp, tools/nutconf/configitem.h,
+	tools/nutconf/mainframe.cpp, tools/nutconf/scrolledtree.h:
+	Added more comments.
+
+	* tools/nutconf/configtree.cpp, tools/nutconf/configtree.h,
+	tools/nutconf/treecomp.cpp, tools/nutconf/treecomp.h:
+	Removed dispensable scroll handlers.
+
+	* tools/nutconf/nutcomponent.h: Do not re-declare 
+	__BEGIN_DECLS. Avoids compiler warning on Mac OS X.
+
+	* tools/nutconf/nutconf.cpp: Splash screen must be destroyed, 
+	not deleted. Thanks to Steffen Ritter.
+
+	* tools/nutconf/nutconfdoc.cpp: Added Eclipse project file 
+	copying (experimental).
+
+	* tools/nutconf/scrolledtree.cpp: Get it run on OS X.
+
+	* tools/nutconf/settings.cpp: FindAbsoluteDir() now returns an 
+	empty string on failure. Previous versions returned the current 
+	directory (dot) without any chance for the caller to recognize 
+	the error condition. This should fix the forgotten path problem
+	on Linux, but not sure if it works under all conditions.
+
+	* tools/nutconf/splitscroll.cpp: OS X uses a different window 
+	hierarchy, so we need to search for the scrollbar instead of 
+	simply taking the first one.
+
+	* tools/nutconf/valuewindow.cpp: Fix OS X scrolling.
 
 
 2008-02-15  Harald Kipp  <harald.kipp@egnite.de>
