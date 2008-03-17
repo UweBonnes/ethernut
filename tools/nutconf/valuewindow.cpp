@@ -39,6 +39,9 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.8  2008/03/17 10:21:39  haraldkipp
+ * Fix OS X scrolling.
+ *
  * Revision 1.7  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -163,8 +166,7 @@ void CValueWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
 
 void CValueWindow::OnScroll(wxScrollWinEvent & event)
 {
-    CTreeCompWindow::OnScroll(event);
-
+    wxScrolledWindow::OnScroll(event);
     PositionEditWindow();
 }
 
