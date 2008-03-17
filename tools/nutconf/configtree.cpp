@@ -1,23 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004-2005 by egnite Software GmbH
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * ----------------------------------------------------------------------------
- * Parts are
- *
+ * Copyright (C) 2004-2007 by egnite Software GmbH
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -33,12 +15,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  * ----------------------------------------------------------------------------
  */
 
 /*
  * $Log: configtree.cpp,v $
+ * Revision 1.6  2008/03/17 10:17:18  haraldkipp
+ * Removed dispensable scroll handlers.
+ *
  * Revision 1.5  2006/10/05 17:04:45  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -92,7 +76,6 @@ IMPLEMENT_CLASS(CConfigTree, CScrolledTreeCtrl)
 BEGIN_EVENT_TABLE(CConfigTree, CScrolledTreeCtrl)
     EVT_MOUSE_EVENTS(CConfigTree::OnMouseEvent)
     EVT_TREE_SEL_CHANGED(-1, CConfigTree::OnSelChanged)
-    EVT_SCROLLWIN(CConfigTree::OnScroll)
 END_EVENT_TABLE();
 
 CConfigTree::CConfigTree(wxWindow * parent, wxWindowID id, const wxPoint & pt, const wxSize & sz, long style)
@@ -167,13 +150,6 @@ void CConfigTree::OnSelChanged(wxTreeEvent & WXUNUSED(event))
 CIconList & CConfigTree::GetIconDB()
 {
     return m_iconDB;
-}
-
-/* Debugging only. */
-void CConfigTree::OnScroll(wxScrollWinEvent & event)
-{
-    wxLogVerbose(wxT("  CConfigTree::OnScroll"));
-    CScrolledTreeCtrl::OnScroll(event);
 }
 
 wxTreeItemId CConfigTree::FindNextItemId(wxTreeItemId treeItemId, const wxString& text,

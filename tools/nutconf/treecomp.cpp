@@ -45,6 +45,9 @@
 
 /*
  * $Log: treecomp.cpp,v $
+ * Revision 1.4  2008/03/17 10:17:19  haraldkipp
+ * Removed dispensable scroll handlers.
+ *
  * Revision 1.3  2005/04/22 15:30:22  haraldkipp
  * Avoid compiler warnings.
  * Upgraded to wxWidgets 2.5.5.
@@ -63,13 +66,12 @@ IMPLEMENT_CLASS(CTreeCompWindow, wxWindow)
 
 BEGIN_EVENT_TABLE(CTreeCompWindow, wxWindow)
     EVT_PAINT(CTreeCompWindow::OnPaint)
-    EVT_SCROLLWIN(CTreeCompWindow::OnScroll)
     EVT_TREE_ITEM_EXPANDED(-1, CTreeCompWindow::OnExpand)
     EVT_TREE_ITEM_COLLAPSED(-1, CTreeCompWindow::OnExpand)
 END_EVENT_TABLE()
 
     CTreeCompWindow::CTreeCompWindow(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
-:wxWindow(parent, id, pos, sz, style)
+:wxScrolledWindow(parent, id, pos, sz, style)
 {
     m_treeCtrl = NULL;
 }
@@ -119,20 +121,6 @@ void CTreeCompWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
         cy = itemRect.GetBottom();
         dc.DrawLine(0, cy, clientSize.x, cy);
     }
-}
-
-void CTreeCompWindow::OnScroll(wxScrollWinEvent & event)
-{
-    wxLogVerbose(wxT("  CTreeCompWindow::OnScroll"));
-    if (event.GetOrientation() == wxHORIZONTAL) {
-        event.Skip();
-        return;
-    }
-    if (!m_treeCtrl) {
-        wxLogVerbose(wxT("No tree to scroll"));
-        return;
-    }
-    Refresh();
 }
 
 void CTreeCompWindow::OnExpand(wxTreeEvent & WXUNUSED(event))

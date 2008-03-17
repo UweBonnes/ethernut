@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/03/17 10:17:20  haraldkipp
+ * Removed dispensable scroll handlers.
+ *
  * Revision 1.1  2004/06/07 16:15:03  haraldkipp
  * Complete redesign based on eCos' configtool
  *
@@ -50,7 +53,7 @@
 #include <wx/wx.h>
 #include <wx/treectrl.h>
 
-class CTreeCompWindow:public wxWindow {
+class CTreeCompWindow:public wxScrolledWindow {
   public:
     DECLARE_CLASS(CTreeCompWindow)
 
@@ -60,7 +63,6 @@ class CTreeCompWindow:public wxWindow {
     virtual void DrawItem(wxDC & dc, wxTreeItemId id, const wxRect & rect);
 
     void OnPaint(wxPaintEvent & event);
-    void OnScroll(wxScrollWinEvent & event);
     void OnExpand(wxTreeEvent & event);
 
     wxTreeCtrl *GetTreeCtrl() const;
