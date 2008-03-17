@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.16  2008/03/17 10:18:27  haraldkipp
+ * Splash screen must be destroyed, not deleted.
+ *
  * Revision 1.15  2007/09/11 13:43:22  haraldkipp
  * Top installation directory will be used for ICCAVR project configuration.
  * Re-building the application tree will no longer override existing project
@@ -157,8 +160,7 @@ bool NutConfApp::OnInit()
      * Splash display.
      */
     wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
-    wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_SCREEN, 
-                0, NULL, -1, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER | wxSTAY_ON_TOP);
+    wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_SCREEN, 0, NULL, -1);
 
     wxImage::AddHandler(new wxGIFHandler);
     wxImage::AddHandler(new wxPNGHandler);
@@ -209,31 +211,33 @@ bool NutConfApp::OnInit()
     }
 
     if(splash) {
-        delete splash;
+        splash->Destroy();
     }
 
     /* 
      * Detect directory change (version upgrade). 
      */
     wxString initWork = m_settings->FindAbsoluteDir(wxT("conf/repository.nut"));
-    m_docManager->SetLastDirectory(initWork + wxT("/conf"));
-    if (::wxIsAbsolutePath(m_settings->m_configname)) {
-        if (!m_settings->m_configname.StartsWith(initWork)) {
-            if (wxMessageBox(wxT("Configuration path has changed.\n\nOld path was ") +
-                wxPathOnly(m_settings->m_configname) + wxT("\nNew path is ") + initWork + wxT("/conf\n\nSwitch to new path?"), 
-                wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
-                    m_settings->m_configname = m_settings->m_relsrcpath + wxString(wxT("/conf/")) + m_settings->m_configname.AfterLast('/');
-                    m_settings->m_repositoryname = m_settings->m_repositoryname_default;
-                    m_settings->Save(m_settings->m_configname);
+    if (!initWork.IsEmpty()) {
+        m_docManager->SetLastDirectory(initWork + wxT("/conf"));
+        if (::wxIsAbsolutePath(m_settings->m_configname)) {
+            if (!m_settings->m_configname.StartsWith(initWork)) {
+                if (wxMessageBox(wxT("Configuration path has changed.\n\nOld path was ") +
+                    wxPathOnly(m_settings->m_configname) + wxT("\nNew path is ") + initWork + wxT("/conf\n\nSwitch to new path?"), 
+                    wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
+                        m_settings->m_configname = m_settings->m_relsrcpath + wxString(wxT("/conf/")) + m_settings->m_configname.AfterLast('/');
+                        m_settings->m_repositoryname = m_settings->m_repositoryname_default;
+                        m_settings->Save(m_settings->m_configname);
+                }
             }
         }
-    }
-    if (::wxIsAbsolutePath(m_settings->m_repositoryname)) {
-        if (!m_settings->m_repositoryname.StartsWith(initWork)) {
-            if (wxMessageBox(wxT("Repository path has changed. Do you want to use relative paths?"), 
-                wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
-                    m_settings->m_repositoryname = m_settings->m_repositoryname_default;
-                    m_settings->Save(m_settings->m_configname);
+        if (::wxIsAbsolutePath(m_settings->m_repositoryname)) {
+            if (!m_settings->m_repositoryname.StartsWith(initWork)) {
+                if (wxMessageBox(wxT("Repository path has changed. Do you want to use relative paths?"), 
+                    wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
+                        m_settings->m_repositoryname = m_settings->m_repositoryname_default;
+                        m_settings->Save(m_settings->m_configname);
+                }
             }
         }
     }
