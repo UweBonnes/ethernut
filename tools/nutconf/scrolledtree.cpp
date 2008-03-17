@@ -1,5 +1,6 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2004 by egnite Software GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
+ * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -22,29 +23,13 @@
  * Julian Smart, wxWindows licence.
  *
  * ----------------------------------------------------------------------------
- * Parts are
- *
- * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * ----------------------------------------------------------------------------
  */
 
 /*
  * $Log: scrolledtree.cpp,v $
+ * Revision 1.6  2008/03/17 10:19:47  haraldkipp
+ * Get it run on OS X.
+ *
  * Revision 1.5  2005/04/26 12:49:36  haraldkipp
  * Minor wxWidgets runtime warning avoided.
  *
@@ -193,6 +178,14 @@ void CScrolledTreeCtrl::PrepareDC(wxDC & dc)
 #endif
 }
 
+/*!
+ * \brief Scroll to a given line.
+ *
+ * \param posHoriz Unused.
+ * \param posVert  The line number to scroll to.
+ *
+ * \todo posHoriz not used, should be removed.
+ */
 void CScrolledTreeCtrl::ScrollToLine(int posHoriz, int posVert)
 {
     wxLogVerbose(wxT("CScrolledTreeCtrl::ScrollToLine(%d,%d)"), posHoriz, posVert);
@@ -240,6 +233,7 @@ void CScrolledTreeCtrl::OnPaint(wxPaintEvent& event)
 
     wxTreeCtrl::OnPaint(event);
 
+#ifndef __WXMAC__
     if (! m_drawRowLines)
         return;
 
@@ -268,6 +262,7 @@ void CScrolledTreeCtrl::OnPaint(wxPaintEvent& event)
         cy = itemRect.GetBottom();
         dc.DrawLine(0, cy, clientSize.x, cy);
     }
+#endif
 }
 
 // Adjust the containing wxScrolledWindow's scrollbars appropriately
@@ -379,9 +374,17 @@ wxScrolledWindow *CScrolledTreeCtrl::GetScrolledWindow() const
     return NULL;
 }
 
+/*!
+ * \brief Process scroll event.
+ *
+ * \param event Event information.
+ */
 void CScrolledTreeCtrl::OnScroll(wxScrollWinEvent & event)
 {
-    wxLogVerbose(wxT("    CScrolledTreeCtrl::OnScroll"));
+    /*
+     * Horizontal scrolling events should be processed by the next
+     * event handler in the chain.
+     */
     int orient = event.GetOrientation();
     if (orient == wxHORIZONTAL) {
         event.Skip();
@@ -394,7 +397,6 @@ void CScrolledTreeCtrl::OnScroll(wxScrollWinEvent & event)
     int x, y;
     scrollWin->GetViewStart(&x, &y);
 
-    wxLogVerbose(wxT("  CScrolledTreeCtrl -> ScrollToLine()"));
     ScrollToLine(-1, y);
 }
 
