@@ -39,6 +39,10 @@
 
 /*
  * $Log: splitscroll.cpp,v $
+ * Revision 1.6  2008/03/17 10:21:12  haraldkipp
+ * OS X uses a different window hierarchy, so we need to search for the
+ * scrollbar instead of simply taking the first one.
+ *
  * Revision 1.5  2005/05/22 14:58:35  haraldkipp
  * Compile failed on OS X. MacUpdateImmediately() seems to be vanished.
  *
@@ -76,9 +80,17 @@ CSplitScroll::CSplitScroll(wxWindow * parent, wxWindowID id, const wxPoint & pos
 
 void CSplitScroll::OnSize(wxSizeEvent & WXUNUSED(event))
 {
+
     wxSize sz = GetClientSize();
-    if (GetChildren().GetFirst()) {
-        ((wxWindow *) GetChildren().GetFirst()->GetData())->SetSize(0, 0, sz.x, sz.y);
+
+    wxWindowList::compatibility_iterator node = GetChildren().GetFirst();
+    while (node) {
+        wxWindow* child = node->GetData();
+        if (!child->IsKindOf(CLASSINFO(wxScrollBar))) {
+            child->SetSize(0, 0, sz.x, sz.y);
+            break;
+        }
+        node = node->GetNext();
     }
 }
 
@@ -93,7 +105,7 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
     }
 
     /*
-     * Skip horizontal scrolling.
+     * Horizontal scrolling will be done by the next handler in the chain.
      */
     int orient = event.GetOrientation();
     if (orient == wxHORIZONTAL) {
@@ -102,7 +114,6 @@ void CSplitScroll::OnScroll(wxScrollWinEvent & event)
     }
 
     int nScrollInc = CalcScrollInc(event);
-    wxLogVerbose(wxT("CSplitScroll::OnScroll(%d)"), nScrollInc);
     if (nScrollInc == 0) {
         return;
     }
