@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.29  2008/03/17 10:22:49  haraldkipp
+ * Added more comments.
+ *
  * Revision 1.28  2007/09/11 14:19:50  haraldkipp
  * Use avr-dude as default.
  *
@@ -142,7 +145,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "1.4.2"
+#define NUT_CONFIGURE_VERSION   "1.5.0"
 
 #include <stdio.h>
 #include <stdlib.h>

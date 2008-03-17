@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.13  2008/03/17 10:22:48  haraldkipp
+ * Added more comments.
+ *
  * Revision 1.12  2007/04/25 16:02:27  haraldkipp
  * Adding 3D style to sash in component tree fixes repaint problems.
  * Further added live update and sash gravity attributes for easier resizing.
@@ -480,6 +483,11 @@ void CMainFrame::OnSize(wxSizeEvent & WXUNUSED(event))
     layout.LayoutFrame(this);
 }
 
+/*!
+ * \brief Process sash drag event.
+ *
+ * 
+ */
 void CMainFrame::OnSashDrag(wxSashEvent & event)
 {
     if (event.GetDragStatus() == wxSASH_STATUS_OUT_OF_RANGE)
@@ -546,17 +554,17 @@ void CMainFrame::OnFind(wxCommandEvent& WXUNUSED(event))
             wxString lastPath = pConfig->GetPath();
             pConfig->SetPath(wxT("/FindDialog"));
 
-        pConfig->Read(wxT("case"), &val, false);
-        if (val) {
-            flags |= wxFR_MATCHCASE;
-        }
-        pConfig->Read(wxT("word"), &val, false);
-        if (val) {
-            flags |= wxFR_WHOLEWORD;
-        }
+            pConfig->Read(wxT("case"), &val, false);
+            if (val) {
+                flags |= wxFR_MATCHCASE;
+            }
+            pConfig->Read(wxT("word"), &val, false);
+            if (val) {
+                flags |= wxFR_WHOLEWORD;
+            }
 
-        pConfig->SetPath(lastPath);
-    }
+            pConfig->SetPath(lastPath);
+        }
 
 #if 0
         ctFindReplaceDialog::sm_findData.SetFlags(flags);

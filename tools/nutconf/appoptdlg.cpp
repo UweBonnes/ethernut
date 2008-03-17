@@ -1,23 +1,5 @@
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004-2007 by egnite Software GmbH
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * ----------------------------------------------------------------------------
- * Parts are
- *
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -33,12 +15,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  * ----------------------------------------------------------------------------
  */
 
 /*
  * $Log: appoptdlg.cpp,v $
+ * Revision 1.5  2008/03/17 10:22:48  haraldkipp
+ * Added more comments.
+ *
  * Revision 1.4  2007/04/25 16:01:38  haraldkipp
  * Path entry validator added.
  * Transfer functions return actual result.
@@ -110,16 +94,31 @@ CAppOptionsDialog::CAppOptionsDialog(wxWindow* parent)
     PopulateProgrammer();
 }
 
+/*! 
+ * \brief Transfers values to child controls from data areas specified by their validators. 
+ *
+ * \return false if a transfer failed.
+ */
 bool CAppOptionsDialog::TransferDataToWindow()
 {
     return wxPanel::TransferDataToWindow();
 }
 
+/*!
+ * \brief Transfers values from child controls to data areas specified by their validators. 
+ *
+ * \return false if a transfer failed.
+ */
 bool CAppOptionsDialog::TransferDataFromWindow()
 {
     return wxPanel::TransferDataFromWindow();
 }
 
+/*! 
+ * \brief Executed when user clicks the browse button. 
+ *
+ * \param event Contains information about the command event.
+ */
 void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = m_entAppDir->GetValue();
@@ -135,10 +134,24 @@ void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+/*!
+ * \brief Executed when user presses ENTER in the programmer selection combo.
+ *
+ * \todo This routine doesn't do anything. Shall we remove it?
+ *
+ * \param event Contains information about the command event.
+ */
 void CAppOptionsDialog::OnProgrammerEnter(wxCommandEvent& WXUNUSED(event))
 {
 }
 
+/*!
+ * \brief Fills the programmer selection combo box.
+ *
+ * Scans subdirectory 'app' within the source tree for files with
+ * a base name of 'Makeburn'. The extensions of all files found are 
+ * added to the combo box.
+ */
 void CAppOptionsDialog::PopulateProgrammer()
 {
     CSettings *opts = wxGetApp().GetSettings();
@@ -163,6 +176,13 @@ void CAppOptionsDialog::PopulateProgrammer()
     }
 }
 
+/*! 
+ * \brief Handle sample directory changes.
+ * 
+ * Executed when text in the sample directory entry field changes. 
+ *
+ * \param event Contains information about the command event.
+ */
 void CAppOptionsDialog::OnAppDirChange(wxCommandEvent& WXUNUSED(event))
 {
     PopulateProgrammer();

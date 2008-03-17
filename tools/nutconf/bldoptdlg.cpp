@@ -1,23 +1,5 @@
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004-2007 by egnite Software GmbH
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * ----------------------------------------------------------------------------
- * Parts are
- *
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -33,12 +15,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  * ----------------------------------------------------------------------------
  */
 
 /*
  * $Log: bldoptdlg.cpp,v $
+ * Revision 1.6  2008/03/17 10:22:48  haraldkipp
+ * Added more comments.
+ *
  * Revision 1.5  2007/04/25 16:01:39  haraldkipp
  * Path entry validator added.
  * Transfer functions return actual result.
@@ -80,6 +64,11 @@ BEGIN_EVENT_TABLE(CBuildOptionsDialog, wxPanel)
     EVT_TEXT(ID_ENTRY_SRCDIR, CBuildOptionsDialog::OnSourceDirChange) 
 END_EVENT_TABLE()
 
+/*!
+ * \brief Create build option dialog.
+ *
+ * \param parent Parent window.
+ */
 CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
 : wxPanel(parent, ID_SETTINGS_BUILD)
 {
@@ -165,16 +154,33 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     PopulatePlatform();
 }
 
+/*!
+ * \brief Transfers values to child controls from data areas specified by their validators. 
+ *
+ * \return false if a transfer failed.
+ */
 bool CBuildOptionsDialog::TransferDataToWindow()
 {
     return wxPanel::TransferDataToWindow();
 }
 
+/*!
+ * \brief Transfers values from child controls to data areas specified by their validators. 
+ *
+ * \return false if a transfer failed.
+ */
 bool CBuildOptionsDialog::TransferDataFromWindow()
 {
     return wxPanel::TransferDataFromWindow();
 }
 
+/*!
+ * \brief Browse for the build directory.
+ *
+ * Executed when user clicks the browse button near the build directory entry.
+ *
+ * \param event Contains information about the command event.
+ */
 void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = ((wxTextCtrl*)FindWindow(ID_PATH_ENTRY))->GetValue();
@@ -190,6 +196,13 @@ void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+/*!
+ * \brief Browse for the source directory.
+ *
+ * Executed when user clicks the browse button near the source directory entry.
+ *
+ * \param event Contains information about the command event.
+ */
 void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = m_entSourceDir->GetValue();
@@ -205,6 +218,13 @@ void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+/*!
+ * \brief Browse for the install directory.
+ *
+ * Executed when user clicks the browse button near the install directory entry.
+ *
+ * \param event Contains information about the command event.
+ */
 void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& WXUNUSED(event))
 {
     wxString path = m_entInstallDir->GetValue();
@@ -220,11 +240,23 @@ void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& WXUNUSED(event))
     }
 }
 
-
+/*!
+ * \brief Executed when user presses ENTER in the platform selection combo.
+ *
+ * This routine doesn't do anything. Shall we remove it?
+ *
+ * \param event Contains information about the command event.
+ */
 void CBuildOptionsDialog::OnPlatformEnter(wxCommandEvent& WXUNUSED(event))
 {
 }
 
+/*!
+ * \brief Fills the platform selection combo box.
+ *
+ * Scans the source directory for files with a base name of 'Makedefs'. 
+ * The extensions of all files found are added to the combo box.
+ */
 void CBuildOptionsDialog::PopulatePlatform()
 {
     //CSettings *opts = wxGetApp().GetSettings();
@@ -252,6 +284,13 @@ void CBuildOptionsDialog::PopulatePlatform()
     }
 }
 
+/*!
+ * \brief Handle source directory changes.
+ * 
+ * Executed when text in the source directory entry field changes. 
+ *
+ * \param event Contains information about the command event.
+ */
 void CBuildOptionsDialog::OnSourceDirChange(wxCommandEvent& WXUNUSED(event))
 {
     PopulatePlatform();
