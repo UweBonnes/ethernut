@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/03/19 18:24:33  haraldkipp
+ * Added .ramfunc segment.
+ *
  * Revision 1.1  2008/01/31 09:14:09  haraldkipp
  * Added ability to upload AT91 flash image via HTTP. Many thanks to
  * Matthias Wilde.
@@ -112,6 +115,8 @@ SECTIONS
   {
     PROVIDE (__data_start = .);
     *(.data)
+    . = ALIGN(4);
+    *(.ramfunc)
     . = ALIGN(4);
     edata = .;
     _edata = .;

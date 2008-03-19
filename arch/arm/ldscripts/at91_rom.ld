@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/03/19 18:24:33  haraldkipp
+ * Added .ramfunc segment.
+ *
  * Revision 1.3  2007/04/12 09:04:34  haraldkipp
  * Last change reverted after problems with ROM-able code.
  *
@@ -96,6 +99,8 @@ SECTIONS
   {
     PROVIDE (__data_start = .);
     *(.data)
+    . = ALIGN(4);
+    *(.ramfunc)
     . = ALIGN(4);
     edata = .;
     _edata = .;
