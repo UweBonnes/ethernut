@@ -1,4 +1,38 @@
-$Id: ChangeLog,v 1.422 2008/03/19 18:24:32 haraldkipp Exp $
+$Id: ChangeLog,v 1.423 2008/04/01 10:17:25 haraldkipp Exp $
+
+
+2008-04-01  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Beta version 4.5.2.
+
+	* configure.ac: Bug #1892070 fixed. Indeed wxWidgets 2.8 is
+	required at least. Thanks to Moritz Struebe.
+
+	* conf/pro/pro.nut, pro/Makefile, pro/httpd.c, pro/httpopt.c:
+	Added the new, enhanced httpd API library. Includes the fixes 
+	from Piotr Szlachta, #1839026 and #1839029.
+
+	* conf/repository.nut: Added missing at91sam7s entries.
+
+	* conf/tools.nut: Beautified target list.
+
+	* crt/fmode.c: Code re-design. Fixes bug #1903303.
+
+	* include/netinet/ppp_fsm.h: Bug #1902993 fixed. XCPOPT must
+	be declared packed to work on 32-bit targets. Thanks to
+	Nicholas Preyss.
+
+	* fs/phatfs.c: Fixes bug #1903303. Still not fully correct,
+	because fopen(name, "a+") should set the read pointer at
+	position 0 while all writes should go to the end of the
+	file. But setting the write pointer at the end will work
+	for now.
+
+	* dev/vscodec.c: VS10xx ioctl() returned -1 on success. Fixed.
+
+	* fs/pathops.c, include/unistd.h: Implemented access().
+
+	* include/sys/stat.h, pro/ftpd.c: Added S_ISDIR and S_ISREG macro.
 
 
 2008-03-19  Harald Kipp  <harald.kipp@egnite.de>
