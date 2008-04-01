@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/04/01 10:13:15  haraldkipp
+ * Rewritten to fix bug #1903303.
+ *
  * Revision 1.2  2006/01/05 16:50:13  haraldkipp
  * Files opened with mode 'a' or 'w' will be created, if they didn't exist.
  * Files opened with 'w' will be truncated, if they exist.
@@ -62,17 +65,22 @@
  */
 int _fmode(CONST char *mode)
 {
-    int mflags = _O_TEXT;
+    int mflags;
+    int pflags;
+    int bflag = _O_TEXT;
 
     switch (*mode) {
     case 'r':
-        mflags |= _O_RDONLY;
+        mflags = _O_RDONLY;
+        pflags = _O_RDWR;
         break;
     case 'w':
-        mflags |= _O_WRONLY | _O_CREAT | _O_TRUNC;
+        mflags = _O_WRONLY | _O_CREAT | _O_TRUNC;
+        pflags = _O_RDWR | _O_CREAT | _O_TRUNC;
         break;
     case 'a':
-        mflags |= _O_APPEND | _O_CREAT;
+        mflags = _O_WRONLY | _O_CREAT | _O_APPEND;
+        pflags = _O_RDWR | _O_CREAT | _O_APPEND;
         break;
     default:
         errno = EINVAL;
@@ -81,19 +89,17 @@ int _fmode(CONST char *mode)
     while (*++mode) {
         switch (*mode) {
         case '+':
-            mflags &= ~(_O_RDONLY | _O_WRONLY);
-            mflags |= _O_RDWR | _O_CREAT | _O_TRUNC;
+            mflags = pflags;
             break;
         case 'b':
-            mflags &= ~_O_TEXT;
-            mflags |= _O_BINARY;
+            bflag = _O_BINARY;
             break;
         default:
             errno = EINVAL;
             return EOF;
         }
     }
-    return mflags;
+    return (mflags | bflag);
 }
 
 /*@}*/
