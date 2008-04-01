@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/04/01 10:16:02  haraldkipp
+ * Implemented access() function.
+ *
  * Revision 1.6  2008/01/31 09:15:21  haraldkipp
  * Added sleep() prototype.
  *
@@ -92,6 +95,16 @@
 #define _UNISTD_H_
 
 #endif /* unix emulation */
+
+/*!
+ * \name Access functions
+ */
+/*@{*/
+#define F_OK        0       /*!< \brief Test for existence of file. */
+#define X_OK        0x01    /*!< \brief Test for execute or search permission. */
+#define W_OK        0x02    /*!< \brief Test for write permission. */
+#define R_OK        0x04    /*!< \brief Test for read permission. */
+/*@}*/
 
 __BEGIN_DECLS
 /* */

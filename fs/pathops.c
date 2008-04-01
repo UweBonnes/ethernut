@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/04/01 10:16:02  haraldkipp
+ * Implemented access() function.
+ *
  * Revision 1.6  2007/08/29 13:34:13  haraldkipp
  * Added function for renaming files (contrib by ZACK).
  *
@@ -108,13 +111,24 @@ static int PathOperation(CONST char *path, int opcode)
  * \brief Check the accessibility of a file.
  *
  * \param path Pathname of the file to check.
- * \param what Access permission to check.
+ * \param what Access permission to check. Set to F_OK for existence
+ *             check or any of the following values or'ed:
+ *             - R_OK checks read permission
+ *             - W_OK checks write permission
+ *             - X_OK checks execute permission
  *
- * \return Always -1 due to missing implementation.
+ * \return 0 on success, otherwise -1 is returned.
+ *
+ * \note Access permissions are not supported by all file systems.
  */
 int access(CONST char *path, int what)
 {
-    return -1;
+    struct stat s;
+
+    if (stat(path, &s)) {
+        return -1;
+    }
+    return 0;
 }
 
 /*!
