@@ -37,6 +37,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2008/04/01 10:14:58  haraldkipp
+ * Fixes bug #1903303. Still not fully correct, because fopen(name, "a+")
+ * should set the read pointer at position 0 while all writes should go
+ * to the end of the file. But setting the write pointer at the end will
+ * work for now.
+ *
  * Revision 1.9  2006/10/08 16:42:56  haraldkipp
  * Not optimal, but simple and reliable exclusive access implemented.
  * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
@@ -343,6 +349,8 @@ int PhatFileClose(NUTFILE * nfp)
  * \param acc  File attribute.
  *
  * \return Pointer to a NUTFILE structure if successful or NUTFILE_EOF otherwise.
+ *
+ * \bug Append mode not working as expected.
  */
 NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
 {
@@ -466,7 +474,12 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
         else {
             ffcb->f_dirent = srch->phfind_ent;
             if (ffcb->f_dirent.dent_fsize) {
-                PhatFilePosSet(nfp, ffcb->f_dirent.dent_fsize + 1);
+                if (PhatFilePosSet(nfp, ffcb->f_dirent.dent_fsize)) {
+                    PhatFileClose(ndp);
+                    PhatFileClose(nfp);
+                    free(srch);
+                    return NUTFILE_EOF;
+                }
             }
         }
     }
@@ -647,7 +660,9 @@ int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
             GetDosTimeStamp(&fcb->f_dirent.dent_mtime, &fcb->f_dirent.dent_mdate);
             fcb->f_dirent.dent_adate = fcb->f_dirent.dent_mdate;
             fcb->f_dirent.dent_attr |= PHAT_FATTR_ARCHIV;
-            fcb->f_dirent.dent_fsize += rc;
+            if(fcb->f_dirent.dent_fsize < fcb->f_pos) {
+                fcb->f_dirent.dent_fsize = fcb->f_pos;
+            }
             fcb->f_de_dirty = 1;
         }
     }
