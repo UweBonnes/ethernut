@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/04/01 10:15:27  haraldkipp
+ * VS10xx ioctl() returned -1 on success. Fixed.
+ *
  * Revision 1.1  2008/02/15 16:45:41  haraldkipp
  * First release.
  *
@@ -690,7 +693,7 @@ static int VsPlayBufferInit(u_long size)
  */
 static int VsIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
-    int rc = -1;
+    int rc = 0;
     u_long *lvp = (u_long *) conf;
     int *ivp = (int *) conf;
     int iv = *ivp;
