@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.29  2008/04/01 12:07:58  haraldkipp
+# *** empty log message ***
+#
 # Revision 1.28  2008/04/01 10:09:25  haraldkipp
 # Beta version 4.5.2.
 # Bug #1892070 fixed. Indeed wxWidgets 2.8 is required at least.
@@ -129,7 +132,7 @@
 #
 #
 
-AC_INIT(ethernut,4.5.1)
+AC_INIT(ethernut,4.5.2)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2007 egnite Software GmbH])
