@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.10  2008/04/01 10:11:34  haraldkipp
+-- Added the new, enhanced httpd API library.
+-- Bugs #1839026 and #1839029 fixed.
+--
 -- Revision 1.9  2008/02/15 17:20:05  haraldkipp
 -- XML streaming parser added.
 --
@@ -218,6 +222,7 @@ nutpro =
             "dencode.c",
             "discover.c",
             "httpd.c",
+            "httpopt.c",
             "asp.c",
             "ssi.c",
             "rfctime.c"
