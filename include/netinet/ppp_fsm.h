@@ -85,6 +85,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/04/01 10:14:04  haraldkipp
+ * Bug #1902993 fixed. XCPOPT must be declared packed to work on 32-bit
+ * targets.
+ *
  * Revision 1.2  2004/03/08 11:19:55  haraldkipp
  * HDLC functions moved to async HDLC driver.
  *
@@ -140,7 +144,7 @@
 #define PAPCS_OPEN           4  /*!< \brief We've received an Ack */
 #define PAPCS_BADAUTH        5  /*!< \brief We've received a Nak */
 
-typedef struct {
+typedef struct __attribute__ ((packed)) {
     u_char xcpo_type;
     u_char xcpo_len;
     union {
