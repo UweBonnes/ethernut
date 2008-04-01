@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.21  2008/04/01 10:12:33  haraldkipp
+-- Beautified target list.
+--
 -- Revision 1.20  2008/02/15 17:04:48  haraldkipp
 -- Spport for AT91SAM7SE512 added.
 --
@@ -178,7 +181,7 @@ nuttools =
                               "at91_httprom\t\tAT91R40008, code running in FLASH. Use this with boothttp.\n"..
                               "at91sam7x256_rom\t\tAT91SAM7X, code running in FLASH\n"..
                               "at91sam7s256_rom\t\tAT91SAM7S, code running in FLASH\n"..
-                              "at91sam7se512_rom\t\tAT91SAM7SE512, code running in FLASH\n"..
+                              "at91sam7se512_rom\tAT91SAM7SE512, code running in FLASH\n"..
                               "at91sam9260_ram\t\tAT91SAM9260, code running in external RAM\n"..
                               "s3c4510b-ram\t\tSamsung's S3C4510B, code in RAM (unsupported)\n"..
                               "eb40a_ram\t\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
