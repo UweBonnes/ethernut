@@ -34,6 +34,10 @@
 
 #
 # $Log$
+# Revision 1.28  2008/04/01 10:09:25  haraldkipp
+# Beta version 4.5.2.
+# Bug #1892070 fixed. Indeed wxWidgets 2.8 is required at least.
+#
 # Revision 1.27  2008/02/15 16:50:33  haraldkipp
 # Beta release 4.5.1.
 #
@@ -278,7 +282,7 @@ if test "x$enable_wxwidgets" = "xyes"; then
     wxwidgets_ver=`$WX_CONFIG --version`
     wxwidgets_ver_major=`expr "$wxwidgets_ver" : '\(@<:@0-9@:>@\)\..*'`
     wxwidgets_ver_minor=`expr "$wxwidgets_ver" : '@<:@0-9@:>@\.\(@<:@0-9@:>@\).*'`
-    if test $wxwidgets_ver_major -lt "2" -o $wxwidgets_ver_minor -lt "6" ; then
+    if test $wxwidgets_ver_major -lt "2" -o $wxwidgets_ver_minor -lt "8" ; then
       AC_MSG_WARN([wxWidgets $wxwidgets_ver is too old.])
       wxwidgets_ok=no
     else
