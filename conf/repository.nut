@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.27  2008/04/01 10:12:08  haraldkipp
+-- Added missing at91sam7s entries.
+--
 -- Revision 1.26  2008/02/15 17:05:52  haraldkipp
 -- AT91SAM7SE512 support added. Global MCU list simplifies exclusivity
 -- attribute. HW_EBI_AT91 added for MCUs with external bus interface.
@@ -141,18 +144,21 @@ mcu_32bit_choice = { " ",
                    }
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
-                   
+
+
 arm_ld_choice = { 
                     " ", 
                     "at91_boot", 
                     "at91_ram", 
                     "at91_rom", 
                     "at91_httprom", 
+                    "at91sam7s256_rom",
+                    "at91sam7se512_rom",
                     "at91sam7x256_rom", 
                     "at91sam9260_ram", 
                     "s3c4510b-ram", 
                     "eb40a_ram",
-	            "eb40a_redboot_ram", 
+	                  "eb40a_redboot_ram", 
                     "gbaxport2", 
                     "wolf_ram" 
                 }
