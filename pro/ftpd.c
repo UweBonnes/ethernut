@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2008/04/01 10:16:35  haraldkipp
+ * Added S_ISDIR and S_ISREG macro.
+ *
  * Revision 1.8  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -632,7 +635,7 @@ int NutFtpProcessCwd(FTPSESSION * session, char *path)
         /*
          * Check, if the path exists and if this is a directory. 
          */
-        if (stat(path, &st) || st.st_mode == 0) {
+        if (stat(path, &st) || !S_ISDIR(st.st_mode)) {
             return NutFtpRespondBad(session, 550);
         }
     }
@@ -797,7 +800,7 @@ int NutFtpTransferDirectory(FTPSESSION * session, char *path)
                     if ((name = malloc(strlen(path) + strlen(d_ent->d_name) + 2)) != 0) {
                         sprintf(name, "%s/%s", path, d_ent->d_name);
                         if (stat(name, &st) == 0) {
-                            if (st.st_mode) {
+                            if (S_ISDIR(st.st_mode)) {
                                 fputc('d', fp);
                                 size = 0;
                             } else {

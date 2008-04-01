@@ -44,6 +44,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/04/01 10:16:35  haraldkipp
+ * Added S_ISDIR and S_ISREG macro.
+ *
  * Revision 1.1  2005/02/05 20:37:18  haraldkipp
  * Peanut added
  *
@@ -68,6 +71,9 @@ struct stat {
     u_long st_size;             /*!< \brief Size */
     time_t st_mtime;            /*!< \brief Time of last modification */
 };
+
+#define S_ISDIR(m)  ((m) != 0)  /*!< \brief Check for directory. */
+#define S_ISREG(m)  ((m) == 0)  /*!< \brief Check for regular file. */
 
 /*@}*/
 
