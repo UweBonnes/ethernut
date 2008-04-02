@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.30  2008/04/02 09:39:28  haraldkipp
+# Fixed another PHAT file pointer bug.
+#
 # Revision 1.29  2008/04/01 12:07:58  haraldkipp
 # *** empty log message ***
 #
@@ -132,7 +135,7 @@
 #
 #
 
-AC_INIT(ethernut,4.5.2)
+AC_INIT(ethernut,4.5.3)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2007 egnite Software GmbH])

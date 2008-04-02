@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2008/04/02 09:39:29  haraldkipp
+ * Fixed another PHAT file pointer bug.
+ *
  * Revision 1.10  2008/04/01 10:14:58  haraldkipp
  * Fixes bug #1903303. Still not fully correct, because fopen(name, "a+")
  * should set the read pointer at position 0 while all writes should go
@@ -468,12 +471,12 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
             ffcb->f_dirent.dent_cdate = srch->phfind_ent.dent_cdate;
             ffcb->f_de_dirty = 1;
         }
-        /*
-         * Append to an existing file.
-         */
         else {
             ffcb->f_dirent = srch->phfind_ent;
-            if (ffcb->f_dirent.dent_fsize) {
+            /*
+             * Append to an existing file.
+             */
+            if ((mode & _O_APPEND) != 0 && ffcb->f_dirent.dent_fsize) {
                 if (PhatFilePosSet(nfp, ffcb->f_dirent.dent_fsize)) {
                     PhatFileClose(ndp);
                     PhatFileClose(nfp);
