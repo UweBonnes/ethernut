@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.423 2008/04/01 10:17:25 haraldkipp Exp $
+$Id: ChangeLog,v 1.424 2008/04/02 09:40:53 haraldkipp Exp $
+
+
+2008-04-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Beta version 4.5.3.
+
+	* fs/phatfs.c: Fixing the last error exposed another hidden
+	one. After setting the file pointer had been corrected and
+	works, all open functions on existing files moved the file
+	pointer to the end. This one fixes it.
 
 
 2008-04-01  Harald Kipp  <harald.kipp@egnite.de>
