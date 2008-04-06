@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.424 2008/04/02 09:40:53 haraldkipp Exp $
+$Id: ChangeLog,v 1.425 2008/04/06 13:29:00 haraldkipp Exp $
+
+
+2008-04-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/tcpout.c, net/tcpsm.c: With unreliable connections or
+	high traffic networks connections may suddenly freeze. The
+	problem is, that during overflows (happening every 65s)
+	the retransmission timer may be loaded with 0, which in
+	turn disables all outstanding retransmission. Many thanks
+	to Erik Lindstein and Henrik Maier for spending a lot of time
+	to trace this nasty bug. Finally Henrik came up with the
+	solution.
 
 
 2008-04-02  Harald Kipp  <harald.kipp@egnite.de>

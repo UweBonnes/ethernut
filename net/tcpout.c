@@ -93,6 +93,12 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/04/06 13:29:01  haraldkipp
+ * In unreliable or high traffic networks connections may suddenly freeze.
+ * The problem is, that during overflows (happening every 65s) the
+ * retransmission timer may be loaded with 0, which in turn disables all
+ * outstanding retransmission. Applied fix contributed by Henrik Maier.
+ *
  * Revision 1.8  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -333,7 +339,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
              * carefully check later, if we can remove some in the
              * state machine.
              */
-            sock->so_retran_time = (u_short) NutGetMillis();
+            sock->so_retran_time = (u_short) NutGetMillis() | 1;
         }
         else {
             while (nbp->nb_next)
