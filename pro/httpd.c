@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.17  2008/04/15 05:13:30  hwmaier
+ * Fixed compilation error with avr-gcc 3.4.6
+ *
  * Revision 1.16  2008/04/01 10:11:35  haraldkipp
  * Added the new, enhanced httpd API library.
  * Bugs #1839026 and #1839029 fixed.
@@ -514,7 +517,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     char *data;
     long file_len;
     void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
-    char *filename;
+    char *filename = NULL;
     char *modstr = NULL;
     
     /*
