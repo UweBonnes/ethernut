@@ -1,5 +1,17 @@
-$Id: ChangeLog,v 1.425 2008/04/06 13:29:00 haraldkipp Exp $
+$Id: ChangeLog,v 1.426 2008/04/15 05:17:11 hwmaier Exp $
 
+
+2008-04-15 Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * pro/httpd.c: Fixed compilation error with avr-gcc 3.4.6
+        
+	* app/basemon/basemon.c: Removed error message when compiling for
+        AT90CAN128 CPU. Since the AT90CAN128 RevD silicon became 
+        available, basemon can be used with this CPU.
+        
+	* conf/xnut-105.conf: Renamed to xnut-105c.conf. Added new version of
+        xnut-105.conf with settings for AT90CAN128 RevD silicon.
+        
 
 2008-04-02  Harald Kipp  <harald.kipp@egnite.de>
 
