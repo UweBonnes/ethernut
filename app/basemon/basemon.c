@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2008/04/15 05:14:19  hwmaier
+ * Removed error message when compiling for AT90CAN128 CPU. Since the AT90CAN128 RevD silicon became available, basemon can be used with this CPU.
+ *
  * Revision 1.16  2006/09/29 12:18:35  haraldkipp
  * Added support for ATmega2561.
  *
@@ -337,7 +340,6 @@ void BaseMon(void)
 #elif defined(__AVR_ATmega103__)
     puts("ATmega103");
 #elif defined(__AVR_AT90CAN128__)
-#   error CPU needs special consideration for stack and heap and is currently not supported by basemon
     puts("AT90CAN128");
 #elif defined(__AVR_ATmega2561__)
     puts("ATmega2561");
