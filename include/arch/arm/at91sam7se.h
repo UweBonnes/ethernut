@@ -33,7 +33,7 @@
  */
 
 /*!
- * \file arch/arm/at91sam7s.h
+ * \file arch/arm/at91sam7se.h
  * \brief AT91 peripherals.
  *
  * \verbatim
@@ -118,8 +118,9 @@
 #include <arch/arm/at91_ssc.h>
 #include <arch/arm/at91_twi.h>
 #include <arch/arm/at91_adc.h>
+#include <arch/arm/at91_pwmc.h>
 
-/*! \addtogroup xgNutArchArmAt91Sam7x */
+/*! \addtogroup xgNutArchArmAt91Sam7se */
 /*@{*/
 
 /*! \name Peripheral Identifiers and Interrupts */
@@ -387,6 +388,6 @@
 #define PB14_PWM3_A         14
 /*@}*/
 
-/*@} xgNutArchArmAt91 */
+/*@} xgNutArchArmAt91se */
 
 #endif /* _ARCH_ARM_AT91SAM7SE_H_ */
