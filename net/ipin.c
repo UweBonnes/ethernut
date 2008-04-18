@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/04/18 13:13:11  haraldkipp
+ * Using fast ints.
+ *
  * Revision 1.11  2007/07/09 16:20:19  olereinhardt
  * 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
  *         * net/Makefile: Commented in igmp_in.c and igmp_out.c again
@@ -204,7 +207,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     IPHDR *ip;
     u_short ip_hdrlen;
     u_long dst;
-    ureg_t bcast;
+    uint_fast8_t bcast;
     IFNET *nif;
 
     ip = nb->nb_nw.vp;

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/04/18 13:13:11  haraldkipp
+ * Using fast ints.
+ *
  * Revision 1.6  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -144,7 +147,7 @@
  * \param bcast Broadcast flag.
  */
  /* @@@ 2003-10-24: modified by OS for udp packet queue */
-void NutUdpInput(NETBUF * nb, ureg_t bcast)
+void NutUdpInput(NETBUF * nb, uint_fast8_t bcast)
 {
     UDPHDR *uh;
     UDPSOCKET *sock;
