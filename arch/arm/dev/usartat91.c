@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/04/18 13:24:56  haraldkipp
+ * Added Szemzo Andras' RS485 patch.
+ *
  * Revision 1.8  2008/02/15 16:59:27  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -1146,7 +1149,12 @@ static int At91UsartInit(void)
     outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
 #endif
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
+
+#ifdef AT91_UART_RS485_MODE
+    outr(USARTn_BASE + US_MR_OFF, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1 | US_MODE_RS485);
+#else
     outr(USARTn_BASE + US_MR_OFF, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
+#endif
 
     return 0;
 }

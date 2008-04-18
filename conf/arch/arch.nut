@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.31  2008/04/18 13:24:57  haraldkipp
+-- Added Szemzo Andras' RS485 patch.
+--
 -- Revision 1.30  2008/02/15 17:05:53  haraldkipp
 -- AT91SAM7SE512 support added. Global MCU list simplifies exclusivity
 -- attribute. HW_EBI_AT91 added for MCUs with external bus interface.
@@ -256,7 +259,8 @@ nutarch =
                     "HW_SPI_AT91",
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_PDC_AT91"
                 },
                 makedefs = { "MCU=arm9" }
             },
@@ -281,7 +285,8 @@ nutarch =
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
                     "HW_PDC_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_PDC_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },

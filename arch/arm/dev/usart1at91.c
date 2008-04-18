@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/04/18 13:24:55  haraldkipp
+ * Added Szemzo Andras' RS485 patch.
+ *
  * Revision 1.5  2008/02/15 16:59:11  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -167,7 +170,13 @@ NUTDEVICE devUsartAt911 = {
 #define USARTn_BASE     USART1_BASE
 #define US_ID           US1_ID
 #if defined (MCU_AT91SAM7X256)
+#ifdef AT91_UART1_RS485
+#define US_GPIO_PINS    0x00000160
+#define AT91_UART_RS485_MODE
+#else /* AT91_UART1_RS485 */
 #define US_GPIO_PINS    0x00000060
+#undef AT91_UART_RS485_MODE
+#endif /* AT91_UART1_RS485 */
 #elif defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
 #define US_GPIO_PINS    0x00600000
 #else

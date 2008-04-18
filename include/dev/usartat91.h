@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/04/18 13:24:58  haraldkipp
+ * Added Szemzo Andras' RS485 patch.
+ *
  * Revision 1.1  2005/11/20 14:40:28  haraldkipp
  * Added interrupt driven UART driver for AT91.
  *
@@ -43,6 +46,33 @@
 #include <sys/device.h>
 #include <dev/uart.h>
 #include <dev/usart.h>
+
+#define UART_MF_RTSSENSE    0x00000001UL    /*!< DCE input, low on port bit is +12V, which means ON. */
+#define UART_MF_CTSCONTROL  0x00000002UL    /*!< DCE output. */
+#define UART_MF_DTRSENSE    0x00000004UL    /*!< DCE input. */
+#define UART_MF_DSRCONTROL  0x00000008UL    /*!< DCE output. */
+#define UART_MF_DCDCONTROL  0x00000010UL    /*!< DCE output. */
+
+#define UART_MF_RTSCONTROL  0x00000020UL    /*!< DTE output. */
+#define UART_MF_CTSSENSE    0x00000040UL    /*!< DTE input. */
+#define UART_MF_DTRCONTROL  0x00000080UL    /*!< DTE output. */
+#define UART_MF_DSRSENSE    0x00000100UL    /*!< DTE input. */
+#define UART_MF_DCDSENSE    0x00000200UL    /*!< DTE input. */
+
+#define UART_MF_SENSEMASK   0x0345	    	/*!< Handshake sense mask. */
+#define UART_MF_CONTROLMASK 0x00BC	    	/*!< Handshake control mask. */
+
+#define UART_MF_XONXOFF     0x00000400UL    /*!< Software handshake. */
+
+#define UART_MF_LOCALECHO   0x00010000UL    /*!< Should be used in stream, not device. */
+#define UART_MF_COOKEDMODE  0x00020000UL    /*!< Should be used in stream, not device. */
+
+#define UART_MF_NOBUFFER    0x00100000UL    /*!< No buffering. */
+#define UART_MF_LINEBUFFER  0x00200000UL    /*!< Line buffered. */
+#define UART_MF_BUFFERMASK  0x00300000UL    /*!< Masks buffering mode flags. */
+
+#define UART_MF_RAWMODE     0x00400000UL    /*!< Send data as raw, disables data encapsulation for device. */
+
 
 /*!
  * \file dev/usartat91.h

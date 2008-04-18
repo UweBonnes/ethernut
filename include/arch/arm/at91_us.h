@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/04/18 13:24:57  haraldkipp
+ * Added Szemzo Andras' RS485 patch.
+ *
  * Revision 1.3  2006/08/31 19:12:43  haraldkipp
  * Added additional registers found on the AT91SAM9260.
  *
@@ -115,6 +118,9 @@
 #define US_CHMODE_LOCAL_LOOPBACK    0x00008000  /*!< \brief Local loopback. */
 #define US_CHMODE_REMOTE_LOOPBACK   0x0000C000  /*!< \brief Remote loopback. */
 
+#define US_MODE_RS485           0x00000001      /*!< \brief Hardware RS485 mode */
+#define US_MODE_HWHANDSHAKE     0x00000002      /*!< \brief Hardware handshake mode */
+#define US_MODE_MODEM           0x00000003      /*!< \brief Full modem mode */
 #define US_MODE9                0x00020000      /*!< \brief 9 bit mode. */
 
 #define US_CLKO                 0x00040000      /*!< \brief Baud rate output enable */
@@ -148,6 +154,7 @@
 #define US_PARE                 0x00000080      /*!< \brief Parity error */
 #define US_TIMEOUT              0x00000100      /*!< \brief Receiver timeout */
 #define US_TXEMPTY              0x00000200      /*!< \brief Transmitter empty */
+#define US_RXBUFF               0x00001000      /*!< \brief Receive buffer full */
 
 /*! \brief Baud rate calculation helper macro. 
  *

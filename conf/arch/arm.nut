@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.25  2008/04/18 13:24:57  haraldkipp
+-- Added Szemzo Andras' RS485 patch.
+--
 -- Revision 1.24  2008/02/15 17:05:53  haraldkipp
 -- AT91SAM7SE512 support added. Global MCU list simplifies exclusivity
 -- attribute. HW_EBI_AT91 added for MCUs with external bus interface.
@@ -429,6 +432,18 @@ nutarch_arm =
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "arm/dev/usart0at91.c" },
+        options =
+        {
+            {
+                macro = "AT91_UART0_RS485",
+                brief = "USE HW RS485 on UART0",
+        description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
+                      "The UART0 RTS pin is used for RS485 direction switching.",
+                provides = { "AT91_UART0_RS485" },
+                flavor = "booldata",
+            },
+
+	},
     },
     {
         name = "nutarch_arm_usart1",
@@ -438,6 +453,45 @@ nutarch_arm =
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "arm/dev/usart1at91.c" },
+        options =
+        {
+            {
+                macro = "AT91_UART1_RS485",
+                brief = "USE HW RS485 on UART1",
+        description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
+                      "The UART1 RTS pin is used for RS485 direction switching.",
+                provides = { "AT91_UART1_RS485" },
+                flavor = "booldata",
+            },
+
+	},
+    },
+    {
+        name = "nutarch_arm_ahdlc",
+        brief = "AHDLC Protocol",
+        description = "HDLC driver, required for PPP. This is an EXPERIMENTAL driver!",
+        requires = { "HW_UART_AT91", "HW_PDC_AT91", "NUT_EVENT" },
+        provides = { "PROTO_HDLC" },
+        sources = { "arm/dev/at91_ahdlc.c" },
+        options =
+        {
+            {
+                macro = "NUT_THREAD_AHDLCRXSTACK",
+                brief = "Receiver Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the AHDLC receive thread.",
+                default = "1024",
+                type = "integer",
+                file = "include/cfg/ahdlc.h"
+            },
+            {
+                macro = "NUT_AHDLC_RECV_DMA_SIZE",
+                brief = "AT91 RXDMA Size",
+                description = "Number of bytes to be allocated for the USART receive DMA buffer.",
+                default = "64",
+                type = "integer",
+                file = "include/cfg/ahdlc.h"
+            }
+        }
     },
     {
         name = "nutarch_at91_hd44780",
