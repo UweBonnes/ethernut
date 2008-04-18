@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/04/18 13:33:14  haraldkipp
+ * Corrected definitions of clock selection bits. The new naming is required,
+ * but may break existing code.
+ *
  * Revision 1.4  2007/02/15 16:20:38  haraldkipp
  * Wrong SSC clock naming broke external clock feeding. Fixed.
  *
@@ -89,8 +93,8 @@
 
 #define SSC_CKS                     0x00000003  /*!< \brief Receive clock selection. */
 #define SSC_CKS_DIV                 0x00000000  /*!< \brief Divided clock. */
-#define SSC_CKS_RK                  0x00000001  /*!< \brief RK clock signal. */
-#define SSC_CKS_TK                  0x00000002  /*!< \brief TK pin. */
+#define SSC_CKS_CLK                 0x00000001  /*!< \brief RK/TK clock signal. */
+#define SSC_CKS_PIN                 0x00000002  /*!< \brief TK/RK pin. */
 #define SSC_CKO                     0x0000001C  /*!< \brief Receive clock output mode selection. */
 #define SSC_CKO_NONE                0x00000000  /*!< \brief None. */
 #define SSC_CKO_CONT                0x00000004  /*!< \brief Continous receive clock. */
@@ -126,7 +130,8 @@
 
 #define SSC_DATLEN                  0x0000001F  /*!< \brief Data length. */
 #define SSC_DATLEN_LSB                      0   /*!< \brief Least significant bit of data length. */
-#define SSC_LOOP                    0x00000020  /*!< \brief Loop mode. */
+#define SSC_LOOP                    0x00000020  /*!< \brief Receiver loop mode. */
+#define SSC_DATDEF                  0x00000020  /*!< \brief Transmit default value. */
 #define SSC_MSBF                    0x00000080  /*!< \brief Most significant bit first. */
 #define SSC_DATNB                   0x00000F00  /*!< \brief Data number per frame. */
 #define SSC_DATNB_LSB                       8   /*!< \brief Least significant bit of data number per frame. */
@@ -139,6 +144,7 @@
 #define SSC_FSOS_LOW                0x00300000  /*!< \brief Low during transfer. */
 #define SSC_FSOS_HIGH               0x00400000  /*!< \brief High during transfer. */
 #define SSC_FSOS_TOGGLE             0x00500000  /*!< \brief Toggling at each start. */
+#define SSC_FSDEN                   0x00800000  /*!< \brief Frame sync. data enable. */
 #define SSC_FSEDGE                  0x01000000  /*!< \brief Frame sync. edge detection. */
 /*@}*/
 
