@@ -1,4 +1,53 @@
-$Id: ChangeLog,v 1.427 2008/04/16 17:45:39 haraldkipp Exp $
+$Id: ChangeLog,v 1.428 2008/04/18 13:34:31 haraldkipp Exp $
+
+
+2008-04-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Beta version 4.5.4.
+
+	* net/ipin.c, net/udpin.c: Use fast ints.
+
+	* Makedefs.avr-icc7, Makerules.avr-icc7, app/Makedefs.avr-icc7, 
+	app/Makerules.avr-icc7, Makedefs.avrext-icc7, Makerules.avrext-icc7, 
+	app/Makedefs.avrext-icc7, app/Makerules.avrext-icc7: Added new 
+	Makefiles for ICCAVR V7. Since V7.15 Imagecraft gave up that 
+	incompatible interpretation of the const keyword. Not sure, 
+	how long we will be able to support ICCAVR V6.
+
+	* crt/putf.c, crt/sprintf_p.c, crt/sscanf_p.c, fs/uromfs.c:
+	Added type casts to fix ICCAVR V7.16 compile errors.
+
+	* pro/ssi.c: Fixed ICCAVR compile errors. No chance to implement
+	GCC's PSTR().
+
+	* Makedefs.avr-icc, include\crt\iccavr\stdint.h: New include 
+	directory adds support for stdint types to ICCAVR.
+
+	* arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
+	arch/arm/dev/usartat91.c, conf/arch/arm.nut, conf/arch/arch.nut,
+	include/arch/arm/at91_us.h, include/dev/usartat91.h:
+	Added Szemzo Andras' RS485 patch. Many thanks for this.
+
+	* arch/arm/dev/at91_ahdlc.c, include/dev/at91_ahdlc.h:
+	Thanks to Szemzo Andras for this first ARM implementation.
+	Hope I didn't forget anything.
+
+	* include/arch/arm/at91sam7se.h, include/arch/arm/at91_pwmc.h:
+	Missing PWM hardware support added.
+
+	* dev/netbuf.c, include/dev/netbuf.h, include/netinet/ipcsum.h,
+	include/sys/sock_var.h, include/sys/socket.h, net/ipcpout.c,
+	net/ipcsum.c, net/netdebug.c, net/papout.c, net/tcpsock.c,
+	net/udpout.c, net/udpsock.c, net/papout.c: Changed size parameter 
+	from u_short to int, which is easier to handle for 32-bit targets. 
+	You need to recompile your ARM code. No impact on AVR expected, 
+	except possible sign warnings. I changed u_int to int at some 
+	places to avoid warnings during compilation of the Nut/Net 
+	libs.
+
+	* include/arch/arm/at91_ssc.h: Corrected definitions of clock 
+	selection bits. The new naming is required, but may break existing 
+	code.
 
 
 2008-04-16  Harald Kipp  <harald.kipp@egnite.de>
