@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/04/18 13:22:26  haraldkipp
+ * Added type casts to fix ICCAVR V7.16 compile errors.
+ *
  * Revision 1.11  2005/04/19 10:21:30  haraldkipp
  * Support for size_t modifier added. Thanks to Tom Lynn
  *
@@ -262,9 +265,9 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
                 ch = 's';       /* manipulate ch, so 'free' is later not called */
                 goto putf_s;
             }
-            size = strlen_P(cp);        /* get length of string */
+            size = strlen_P((PGM_P)cp);        /* get length of string */
             xdigs = malloc(size + 1);   /* allocate buffer to store string */
-            strcpy_P(xdigs, cp);        /* copy the string to RAM */
+            strcpy_P(xdigs, (PGM_P)cp);        /* copy the string to RAM */
             cp = xdigs;         /* use cp for further processing */
             goto putf_s;        /* jump to std %s handling */
 #endif /* __HARVARD_ARCH__ */

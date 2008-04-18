@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/04/18 13:22:26  haraldkipp
+ * Added type casts to fix ICCAVR V7.16 compile errors.
+ *
  * Revision 1.2  2003/07/20 17:00:56  haraldkipp
  * Bugfix
  *
@@ -72,7 +75,7 @@ int sprintf_P(char *buffer, PGM_P fmt, ...)
 
     va_start(ap, fmt);
     /* Bugfix by Ralph Mason. */
-    rc = vsprintf_P(buffer, (char *) fmt, ap);
+    rc = vsprintf_P(buffer, fmt, ap);
     va_end(ap);
 
     return rc;

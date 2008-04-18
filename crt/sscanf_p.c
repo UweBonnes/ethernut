@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:33  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/04/18 13:22:27  haraldkipp
+ * Added type casts to fix ICCAVR V7.16 compile errors.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:33  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:09  harald
  * *** empty log message ***
@@ -68,7 +71,7 @@ int sscanf_P(CONST char *string, CONST char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    rc = vsscanf_P(string, fmt, ap);
+    rc = vsscanf_P(string, (PGM_P)fmt, ap);
     va_end(ap);
 
     return rc;

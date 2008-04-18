@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/04/18 13:22:27  haraldkipp
+ * Added type casts to fix ICCAVR V7.16 compile errors.
+ *
  * Revision 1.7  2006/03/02 19:57:34  haraldkipp
  * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
  *
@@ -134,7 +137,7 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
     if ((u_int) size > rome->rome_size - romf->romf_pos)
         size = rome->rome_size - romf->romf_pos;
     if (size) {
-        memcpy_P(buffer, (void *)(rome->rome_data + romf->romf_pos), size);
+        memcpy_P(buffer, (PGM_P)(rome->rome_data + romf->romf_pos), size);
         romf->romf_pos += size;
     }
     return size;
