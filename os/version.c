@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.51  2008/04/18 13:12:31  haraldkipp
+ * ICCAVR fixes, many shorts to int, PPP+RS485 for AT91.
+ *
  * Revision 1.50  2008/04/02 09:39:28  haraldkipp
  * Fixed another PHAT file pointer bug.
  *
@@ -203,8 +206,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04050301UL
-static CONST char os_version_string[] = "4.5.3.1";
+#define OS_VERSION_NUMBER  0x04050401UL
+static CONST char os_version_string[] = "4.5.4.1";
 
 /*!
  * \addtogroup xgNutVersion

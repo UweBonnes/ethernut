@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.31  2008/04/18 13:12:31  haraldkipp
+# ICCAVR fixes, many shorts to int, PPP+RS485 for AT91.
+#
 # Revision 1.30  2008/04/02 09:39:28  haraldkipp
 # Fixed another PHAT file pointer bug.
 #
@@ -135,10 +138,10 @@
 #
 #
 
-AC_INIT(ethernut,4.5.3)
+AC_INIT(ethernut,4.5.4)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (C) 2005-2007 egnite Software GmbH])
+AC_COPYRIGHT([Copyright (C) 2005-2008 egnite GmbH])
 AC_REVISION($Revision$)
 
 # Make sure we got a valid path to the sources.
