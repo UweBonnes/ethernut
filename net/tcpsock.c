@@ -93,6 +93,14 @@
 
 /*
  * $Log$
+ * Revision 1.20  2008/04/18 13:32:00  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.19  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -661,7 +669,7 @@ int NutTcpAccept(TCPSOCKET * sock, u_short port)
  *         bytes to send. The return value -1 indicates a fatal error.
  *         On time out, a value of 0 is returned.
  */
-int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
+int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
 {
     u_short unacked;
 
@@ -731,9 +739,9 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, u_short len)
  *         or broken connection. Call NutTcpError() to determine
  *         the specific error code.
  */
-int NutTcpReceive(TCPSOCKET * sock, void *data, u_short size)
+int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
 {
-    u_short i;
+    int i;
 
     NutThreadYield();
     /*

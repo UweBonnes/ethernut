@@ -62,6 +62,14 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/04/18 13:32:00  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.8  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -175,13 +183,13 @@ extern int NutTcpGetSockOpt(TCPSOCKET *sock, int optname, void *optval, int optl
 extern int NutTcpConnect(TCPSOCKET *sock, u_long addr, u_short port);
 extern int NutTcpAccept(TCPSOCKET *sock, u_short port);
 extern void NutTcpInput(NETBUF *nb);
-extern int NutTcpSend(TCPSOCKET *sock, CONST void *data, u_short len);
+extern int NutTcpSend(TCPSOCKET *sock, CONST void *data, int len);
 #ifdef __HARVARD_ARCH__
-extern int NutTcpSend_P(TCPSOCKET *sock, PGM_P data, u_short len);
+extern int NutTcpSend_P(TCPSOCKET *sock, PGM_P data, int len);
 #endif
 extern int NutTcpCloseSocket(TCPSOCKET *sock);
 extern void NutTcpDestroySocket(TCPSOCKET *sock);
-extern int NutTcpReceive(TCPSOCKET *sock, void *data, u_short size);
+extern int NutTcpReceive(TCPSOCKET *sock, void *data, int size);
 extern TCPSOCKET *NutTcpFindSocket(u_short lport, u_short rport, u_long raddr);
 extern int NutTcpError(TCPSOCKET *sock);
 extern int NutTcpAbortSocket(TCPSOCKET *sock, u_short last_error);
@@ -196,8 +204,8 @@ extern int NutTcpDeviceIOCtl(TCPSOCKET *sock, int cmd, void *param);
 extern int NutTcpDeviceClose(TCPSOCKET *sock);
 
 extern UDPSOCKET *NutUdpCreateSocket(u_short port);
-extern int NutUdpSendTo(UDPSOCKET *sock, u_long addr, u_short port, void *data, u_short len);
-extern int NutUdpReceiveFrom(UDPSOCKET *sock, u_long *addr, u_short *port, void *data, u_short size, u_long timeout);
+extern int NutUdpSendTo(UDPSOCKET *sock, u_long addr, u_short port, void *data, int len);
+extern int NutUdpReceiveFrom(UDPSOCKET *sock, u_long *addr, u_short *port, void *data, int size, u_long timeout);
 extern int NutUdpDestroySocket(UDPSOCKET *sock);
 extern UDPSOCKET *NutUdpFindSocket(u_short port);
 extern int NutUdpSetSockOpt(UDPSOCKET *sock, int optname, CONST void *optval, int optlen);

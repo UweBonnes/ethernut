@@ -63,6 +63,14 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/04/18 13:32:00  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.10  2007/08/29 07:43:54  haraldkipp
  * Documentation updated and corrected.
  *
@@ -111,6 +119,7 @@
  *
  */
 
+#include <stdint.h>
 #include <sys/types.h>
 #include <dev/netbuf.h>
 
@@ -148,13 +157,13 @@ struct udp_socket {
     u_short so_local_port;  /*!< \brief Local port number in net byte order. */
     NETBUF  *so_rx_nb;      /*!< \brief Received, but not read by application. */
     HANDLE  so_rx_rdy;      /*!< \brief Receiver event queue. */
-    u_short so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
-    u_short so_rx_bsz;      /*!< \brief Receive buffer size. */
+    int     so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
+    int     so_rx_bsz;      /*!< \brief Receive buffer size. */
 };
 
 /*@}*/
 
-extern void NutUdpInput(NETBUF *nb, ureg_t bcast);
+extern void NutUdpInput(NETBUF *nb, uint_fast8_t bcast);
 extern int NutUdpOutput(UDPSOCKET *sock, u_long dest, u_short port, NETBUF *nb);
 
 
@@ -213,9 +222,9 @@ struct tcp_socket {
     u_long  so_rx_isn;      /*!< \brief Initial sequence number of remote. */
     u_long  so_rx_nxt;      /*!< \brief Next sequence number to receive. */
     u_short so_rx_win;      /*!< \brief Local receive window. */
-    u_short so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
-    u_short so_rx_bsz;      /*!< \brief Receive buffer size. */
-    u_short so_rd_cnt;      /*!< \brief Number of bytes read from buffer top. */
+    int     so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
+    int     so_rx_bsz;      /*!< \brief Receive buffer size. */
+    int     so_rd_cnt;      /*!< \brief Number of bytes read from buffer top. */
     NETBUF  *so_rx_buf;     /*!< \brief Data waiting to be read by application. */
     HANDLE  so_rx_tq;       /*!< \brief Threads waiting for received data. */
     NETBUF  *so_rx_nbq;     /*!< \brief Network buffers received in advance. */

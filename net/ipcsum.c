@@ -78,6 +78,14 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/04/18 13:32:00  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.5  2006/10/05 17:25:41  haraldkipp
  * Avoid possible alignment errors. Fixes bug #1567748.
  *
@@ -139,7 +147,7 @@
  *
  * \return Partial checksum in network byte order.
  */
-u_short NutIpChkSumPartial(u_short ics, CONST void *buf, size_t len)
+u_short NutIpChkSumPartial(u_short ics, CONST void *buf, int len)
 {
     register u_long sum = ics;
     register u_char *cp = (u_char *) buf;
@@ -179,7 +187,7 @@ u_short NutIpChkSumPartial(u_short ics, CONST void *buf, size_t len)
  * Unlike the partial checksum in NutIpChkSumPartial(), this function takes
  * the one's complement of the final result, thus making it the full checksum.
  */
-u_short NutIpChkSum(u_short ics, CONST void *buf, size_t len)
+u_short NutIpChkSum(u_short ics, CONST void *buf, int len)
 {
     return ~NutIpChkSumPartial(ics, buf, len);
 }
@@ -200,7 +208,7 @@ struct __attribute__ ((packed)) pseudo_hdr {
  * \brief Calculates the partial IP pseudo checksum.
  *
  */
-u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, u_short len)
+u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, int len)
 {
     struct pseudo_hdr ph;
 

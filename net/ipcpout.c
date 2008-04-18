@@ -49,6 +49,14 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/04/18 13:32:00  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.5  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -131,7 +139,7 @@ void IpcpTxConfReq(NUTDEVICE *dev, u_char id)
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
     NETBUF *nb;
-    u_int len;
+    int len;
 
     /*
      * Not currently negotiating.

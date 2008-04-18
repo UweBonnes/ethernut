@@ -78,6 +78,14 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/04/18 13:31:59  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.2  2005/04/05 17:39:56  haraldkipp
  * Replaced all this awful crap by a simple generic routine.
  *
@@ -104,10 +112,10 @@
 
 __BEGIN_DECLS
 /* Prototypes */
-extern u_short NutIpChkSumPartial(u_short ics, CONST void *buf, size_t len);
-extern u_short NutIpChkSum(u_short ics, CONST void *buf, size_t len);
+extern u_short NutIpChkSumPartial(u_short ics, CONST void *buf, int len);
+extern u_short NutIpChkSum(u_short ics, CONST void *buf, int len);
 
-extern u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, u_short len);
+extern u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, int len);
 
 __END_DECLS
 /* */

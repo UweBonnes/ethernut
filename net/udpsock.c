@@ -93,6 +93,14 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/04/18 13:32:00  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.7  2005/08/02 17:47:03  haraldkipp
  * Major API documentation update.
  *
@@ -198,7 +206,7 @@ UDPSOCKET *NutUdpCreateSocket(u_short port)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data, u_short len)
+int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data, int len)
 {
     int rc;
     NETBUF *nb;
@@ -232,7 +240,7 @@ int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data, u_shor
  * \note Timeout is limited to the granularity of the system timer.
  */
  /* @@@ 2003-10-24: modified by OS for udp packet queue */
-int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port, void *data, u_short size, u_long timeout)
+int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port, void *data, int size, u_long timeout)
 {
     IPHDR *ip;
     UDPHDR *uh;

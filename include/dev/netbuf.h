@@ -78,8 +78,16 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:07  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/04/18 13:31:59  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:07  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.7  2003/05/06 18:43:03  harald
  * Cleanup
@@ -127,8 +135,8 @@ typedef struct _NBDATA NBDATA;
  * \brief Data part of a network buffer structure.
  */
 struct _NBDATA {
-    void   *vp; /*!< \brief Pointer to data buffer. */
-    u_short sz; /*!< \brief Size of data buffer. */
+    void *vp;   /*!< \brief Pointer to data buffer. */
+    int  sz;    /*!< \brief Size of data buffer. */
 };
 
 /*!
@@ -148,7 +156,7 @@ struct _NETBUF {
 
 __BEGIN_DECLS
 
-extern NETBUF *NutNetBufAlloc(NETBUF *nb, u_char type, u_short size);
+extern NETBUF *NutNetBufAlloc(NETBUF *nb, u_char type, int size);
 extern NETBUF *NutNetBufClone(NETBUF *nb);
 extern int NutNetBufFree(NETBUF *nb);
 

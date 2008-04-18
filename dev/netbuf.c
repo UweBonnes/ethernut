@@ -93,6 +93,14 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/04/18 13:31:59  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.3  2005/04/30 16:42:41  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -129,7 +137,7 @@
  */
 /*@{*/
 
-static int NutNetBufAllocData(NBDATA * nbd, u_short size)
+static int NutNetBufAllocData(NBDATA * nbd, int size)
 {
     if ((nbd->vp = NutHeapAlloc(size)) == 0) {
         nbd->sz = 0;
@@ -165,7 +173,7 @@ static void NutNetBufFreeData(NBDATA * nbd)
  *         pointer is returned if not enough memory is available and
  *         the whole structure is released.
  */
-NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, u_short size)
+NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, int size)
 {
     if (nb == 0) {
         nb = NutHeapAllocClear(sizeof(NETBUF));

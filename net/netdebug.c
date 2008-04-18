@@ -33,6 +33,14 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/04/18 13:32:00  haraldkipp
+ * Changed size parameter from u_short to int, which is easier to handle
+ * for 32-bit targets. You need to recompile your ARM code. No impact on
+ * AVR expected
+ * I changed u_int to int at some places to avoid some warnings during
+ * compilation of Nut/Net.
+ * libs.
+ *
  * Revision 1.8  2007/07/17 18:31:44  haraldkipp
  * Output strings must be signed characters. Fixed provided by Michael Mueller.
  *
@@ -92,7 +100,7 @@ void NutDumpTcpHeader(FILE * stream, char * ds, TCPSOCKET * sock, NETBUF * nb)
     static prog_char fmt[] = "%s%p[%u]-SEQ(%lx)";
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
-    fprintf_P(stream, fmt, ds, sock, nb->nb_ap.sz, ntohl(th->th_seq));
+    fprintf_P(stream, fmt, ds, sock, (u_int)nb->nb_ap.sz, ntohl(th->th_seq));
     if (th->th_flags & TH_ACK)
         fprintf(stream, "-ACK(%lx)", ntohl(th->th_ack));
     if (th->th_flags & TH_FIN)
