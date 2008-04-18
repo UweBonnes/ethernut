@@ -33,6 +33,9 @@
  
 /*
  * $Log$
+ * Revision 1.4  2008/04/18 13:22:57  haraldkipp
+ * Fixed ICCAVR compile errors. No chance to implement GCC's PSTR().
+ *
  * Revision 1.3  2008/02/15 17:09:03  haraldkipp
  * Quick hack provided by Niels. No idea what this is for, but
  * according to the author it is a dirty solution. We urgently
@@ -80,6 +83,9 @@
 #define SSI_TYPE_VIRTUAL 0x02
 #define SSI_TYPE_EXEC    0x03
 
+static prog_char rsp_not_found_P[] = "404 Not found: %s\r\n";
+static prog_char rsp_intern_err_P[] = "500 Internal error\r\n";
+static prog_char rsp_bad_req_P[] = "400 Bad request\r\n";
 
 /*!
  * \brief Send included file to the stream
@@ -102,7 +108,7 @@ static void NutSsiProcessFile(FILE * stream, char *filename)
     fd = _open(filename, _O_BINARY | _O_RDONLY);
 
     if (fd == -1) {                     // No such file found... send a 404 string.
-        fprintf_P(stream, PSTR("404 Not found: %s\n"), filename);
+        fprintf_P(stream, rsp_not_found_P, filename);
         return;
     }
     
@@ -173,7 +179,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     REQUEST * req;
 
     if (NutDecodePath(url) == 0) {
-        fprintf_P(stream, PSTR("400 Bead request\n"));
+        fprintf_P(stream, rsp_bad_req_P);
         return;
     }
     
@@ -182,7 +188,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
      */
     if (strncasecmp(url, "cgi-bin/", 8) == 0) {
         if ((req = NutHeapAllocClear(sizeof(REQUEST))) == 0) {
-            fprintf_P(stream, PSTR("500 Internal error\n"));
+            fprintf_P(stream, rsp_intern_err_P);
             return;
         }
         req->req_method = METHOD_GET;
@@ -191,7 +197,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         
         if (orig_req->req_agent != NULL) {
             if ((req->req_agent = NutHeapAlloc((strlen(orig_req->req_agent) + 1))) == 0) {
-                fprintf_P(stream, PSTR("500 Internal error\n"));
+                fprintf_P(stream, rsp_intern_err_P);
                 DestroyRequestInfo(req);
                 return;
             }
@@ -199,7 +205,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         }
         if (orig_req->req_cookie!= NULL) {
             if ((req->req_cookie = NutHeapAlloc((strlen(orig_req->req_cookie) + 1))) == 0) {
-                fprintf_P(stream, PSTR("500 Internal error\n"));
+                fprintf_P(stream, rsp_intern_err_P);
                 DestroyRequestInfo(req);
                 return;
             }
@@ -208,7 +214,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         if ((cp = strchr(url, '?')) != 0) {
             *cp++ = 0;
             if ((req->req_query = NutHeapAlloc(512)) == 0) {
-                fprintf_P(stream, PSTR("500 Internal error\n"));
+                fprintf_P(stream, rsp_intern_err_P);
                 DestroyRequestInfo(req);
                 return;
             }
@@ -227,7 +233,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             NutHttpProcessQueryString(req);
         }
         if ((req->req_url = NutHeapAlloc(strlen(url) + 1)) == 0) {
-            fprintf_P(stream, PSTR("500 Internal error\n"));
+            fprintf_P(stream, rsp_intern_err_P);
             DestroyRequestInfo(req);
             return;
         }
@@ -263,7 +269,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
 
         urll = strlen(url);
         if ((index = NutHeapAllocClear(urll + 12)) == 0) {
-            fprintf_P(stream, PSTR("500 Internal error\n"));
+            fprintf_P(stream, rsp_intern_err_P);
             return;
         }
         if (urll)
@@ -290,7 +296,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         if (fd == -1) {                 // We have no index.html. But perhaps an index.shtml?
             urll = strlen(url);
             if ((index = NutHeapAllocClear(urll + 13)) == 0) {
-                fprintf_P(stream, PSTR("500 Internal error\n"));
+                fprintf_P(stream, rsp_intern_err_P);
                 return;
             }
             if (urll)
@@ -315,7 +321,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             fd = _open(filename, _O_BINARY | _O_RDONLY);
             NutHeapFree(filename);
             if (fd == -1) {            // Non of both found... send a 404
-                fprintf_P(stream, PSTR("404 Not found: %s\n"), filename);
+                fprintf_P(stream, rsp_not_found_P, filename);
                 return;
             }
         }
