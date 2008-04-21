@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.16  2008/04/21 22:29:01  olereinhardt
+-- Added configuration options for condition variables
+--
 -- Revision 1.15  2007/04/12 09:08:57  haraldkipp
 -- Segmented buffer routines ported to ARM.
 --
@@ -378,6 +381,16 @@ nutos =
         provides = { "NUT_MQUEUE" },
         sources = { "msg.c" }
     },
+    {
+        name = "nutos_condition",
+        brief = "Condition variables",
+        description = "Condition variabled are not required by the kernel, but "..
+                      "may be useful for applications.",
+        requires = { "NUT_EVENT", "NUT_MUTEX"},
+        provides = { "NUT_CONDITION_VARIABLES" },
+        sources = { "condition.c" }
+    },
+
 
     --
     -- Debugging
