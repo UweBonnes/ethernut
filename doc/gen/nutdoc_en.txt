@@ -1,5 +1,8 @@
 /*
  * $Log: nutdoc_en.txt,v $
+ * Revision 1.13  2008/04/21 22:26:51  olereinhardt
+ * Added description of condition variables
+ *
  * Revision 1.12  2007/08/29 07:43:53  haraldkipp
  * Documentation updated and corrected.
  *
@@ -504,6 +507,54 @@
  * 
  */
  
+/*!
+ * \defgroup xgConditionVariables Condition Variables
+ * \ingroup xgAppSugar
+ * \brief Condition variable support.
+ *
+ * To avoid entering a busy waiting state, threads must be able to 
+ * signal each other about events of interest. This capability is 
+ * implemented as condition variables. When a function requires a 
+ * particular condition to be true before it can proceed, it waits 
+ * on an associated condition variable. By waiting, it gives up the 
+ * lock and is removed from the set of runnable threads. Any thread 
+ * that subsequently causes the condition to be true may then use the 
+ * condition variable to notify a thread waiting for the condition. 
+ * A thread that has been notified regains the lock and can proceed.
+ * 
+ * As an example look to the following code:
+ * 
+ * \code
+ * CONDITION cond = NULL;
+ * int *current_data = NULL;
+ *
+ * void push_data (int *data)
+ * {
+ *     NutConditionLock(cond);
+ *     current_data = data;
+ *     NutSonditionSignal(cond);
+ *     NutConditionUnlock(cond);
+ * }
+ *
+ * int* pop_data (void)
+ * {
+ *     int* data;
+ *
+ *     NutConditionLock(cond);
+ *     while (!current_data) {
+ *         g_cond_wait(cond);
+ *     }
+ *     data = current_data;
+ *     current_data = NULL;
+ *     NutConditionUnlock(cond);
+ *     return data;
+ * }
+ *
+ *
+ * \endcode
+ *
+ */
+
 /*!
  * \defgroup xgBankMem Banked Memory
  * \ingroup xgAppSugar
