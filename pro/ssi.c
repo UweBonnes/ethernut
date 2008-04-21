@@ -33,6 +33,11 @@
  
 /*
  * $Log$
+ * Revision 1.5  2008/04/21 22:16:25  olereinhardt
+ * 2008-04-21  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ *         * pro/ssi.c: Nicer Implement query string feature and save some
+ *           memory
+ *
  * Revision 1.4  2008/04/18 13:22:57  haraldkipp
  * Fixed ICCAVR compile errors. No chance to implement GCC's PSTR().
  *
@@ -213,22 +218,38 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         }
         if ((cp = strchr(url, '?')) != 0) {
             *cp++ = 0;
-            if ((req->req_query = NutHeapAlloc(512)) == 0) {
-                fprintf_P(stream, rsp_intern_err_P);
-                DestroyRequestInfo(req);
-                return;
-            }
-            strcpy(req->req_query, cp);
-            if (strcmp(req->req_query, "$QUERY_STRING") == 0){
+
+	    if (strcmp(req->req_query, "$QUERY_STRING") == 0) {
+                u_short size;
+	        size = 0;
+	        for (i = 0; i < orig_req->req_numqptrs*2; i ++) {
+		    size += strlen(orig_req->req_qptrs[i]) + 1;
+	        }
+
+	        if ((req->req_query = NutHeapAlloc(size)) == 0) {
+	            fprintf_P(stream, rsp_intern_err_P);
+	            DestroyRequestInfo(req);
+	            return;
+	        }
+
                 req->req_query[0] = 0;
-                for (i = 0; i < (orig_req->req_numqptrs*2); i++) {
-                    if(i)
+                for (i = 0; i < (orig_req->req_numqptrs * 2); i++) {
+                    if(i) {
                         strcat (req->req_query, "&");
+                    }
                     strcat (req->req_query, orig_req->req_qptrs[i]);
                     strcat (req->req_query, "=");
                     i++;
                     strcat (req->req_query, orig_req->req_qptrs[i]);
                 }
+
+	    } else {
+	        if ((req->req_query = NutHeapAlloc(strlen(orig_req->req_query) + 1)) == 0) {
+	            fprintf_P(stream, rsp_intern_err_P);
+	            DestroyRequestInfo(req);
+	            return;
+	        }
+            	strcpy(req->req_query, cp);
             }
             NutHttpProcessQueryString(req);
         }
