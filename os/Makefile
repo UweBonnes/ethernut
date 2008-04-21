@@ -33,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.13  2008/04/21 22:30:58  olereinhardt
+# Added condition.c
+#
 # Revision 1.12  2008/02/15 17:30:00  haraldkipp
 # Added missing files. Hopefully not broken after late commit.
 #
@@ -120,7 +123,7 @@ include $(top_srcdir)/Makedefs
 
 SRC1 = 	nutinit.c
 SRC2 =  devreg.c timer.c msg.c event.c thread.c heap.c osdebug.c confos.c \
-	version.c semaphore.c mutex.c tracer.c
+	version.c semaphore.c mutex.c tracer.c condition.c
 
 #Add support for memory banks on AVR architecture
 ifeq ($(ARCH), avr)
