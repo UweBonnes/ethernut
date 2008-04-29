@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/04/29 01:51:35  thiagocorrea
+ * Compile fix
+ *
  * Revision 1.1  2008/04/21 22:24:53  olereinhardt
  * Implemented condition variables to use with NutOS as an application candy
  *
@@ -41,6 +44,7 @@
 #include <sys/heap.h>
 #include <sys/event.h>
 #include <sys/atom.h>
+#include <sys/timer.h>
 #include <sys/thread.h>
 #include <sys/condition.h>
 #include <stddef.h> /* NULL definition */
@@ -58,7 +62,7 @@
 
 CONDITION NutConditionInit(void)
 {
-    CONDITION *cond;
+    CONDITION cond;
     cond = NutHeapAlloc(sizeof(cond));
     if (cond == NULL) return NULL;
     NutMutexInit(&cond->mutex);
@@ -123,9 +127,9 @@ void NutConditionUnlock(CONDITION cond)
 int NutConditionWait(CONDITION cond)
 {
     if (cond == NULL) return -1;
-    NutMutexUnlock(mutex);
-    NutEventWait(&cond->event, NUT_WAIT_INFINITE);
-    NutMutexLock(mutex);
+    NutMutexUnlock(&cond->mutex);
+    NutEventWait(cond->event, NUT_WAIT_INFINITE);
+    NutMutexLock(&cond->mutex);
     return 0;
 }
 
@@ -165,9 +169,9 @@ int NutConditionTimedWait(CONDITION cond, u_long abs_ms)
     ms = abs_ms - NutGetMillis();
     if (ms > 0x7FFFFFFF) return -1;
     
-    NutMutexUnlock(mutex);
+    NutMutexUnlock(&cond->mutex);
     NutEventWait(&cond->event, ms);
-    NutMutexLock(mutex);
+    NutMutexLock(&cond->mutex);
     return 0;
 }
   
@@ -204,7 +208,7 @@ int NutConditionSignal(CONDITION cond)
 int NutConditionBroadcast(CONDITION cond)
 {
     if (cond == NULL) return -1;
-    NutEventBroadcast(&cond->event);
+    return NutEventBroadcast(&cond->event);
 }
 
 /*!
@@ -212,7 +216,7 @@ int NutConditionBroadcast(CONDITION cond)
  *
  * \param cond Pointer to the condition
  */
-void NutConditionFree(CONDITON **cond)
+void NutConditionFree(CONDITION *cond)
 {
     NutMutexDestroy(&(*cond)->mutex);
     NutHeapFree(cond);

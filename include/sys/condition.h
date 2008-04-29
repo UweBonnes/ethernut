@@ -36,12 +36,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/04/29 01:51:52  thiagocorrea
+ * Compile fix
+ *
  * Revision 1.1  2008/04/21 22:24:53  olereinhardt
  * Implemented condition variables to use with NutOS as an application candy
  *
  */
 
 #include <sys/atom.h>
+#include <sys/mutex.h>
 
 /*!
  * \addtogroup xgConditionVariables
@@ -73,7 +77,7 @@ extern void NutConditionUnlock(CONDITION cond);
 extern int NutConditionWait(CONDITION cond);
 extern int NutConditionSignal(CONDITION cond);
 extern int NutConditionBroadcast(CONDITION cond);
-extern void NutConditionFree(CONDITON *cond);
+extern void NutConditionFree(CONDITION *cond);
 
 __END_DECLS
 
