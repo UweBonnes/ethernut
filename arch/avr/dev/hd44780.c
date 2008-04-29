@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/04/29 16:58:21  thiagocorrea
+ * Simplified HD44780 code for AVR based on the ARM driver.
+ *
  * Revision 1.5  2006/10/08 16:40:17  haraldkipp
  * Many thanks to Thiago Correa for adding LCD port configuration.
  *
@@ -97,27 +100,29 @@
 #include <dev/term.h>
 #include <sys/timer.h>
 
-#ifndef LCD_4x20
-#ifndef LCD_4x16
-#ifndef LCD_2x40
-#ifndef LCD_2x20
-#ifndef LCD_2x16
-#ifndef LCD_2x8
-#ifndef LCD_1x20
-#ifndef LCD_1x16
-#ifndef LCD_1x8
-#ifndef KS0073_CONTROLLER
-#define LCD_2x16
+/* Backward compatibility with old macros */
+#ifndef LCD_ROWS
+#if defined(LCD_4x20) || defined(LCD_4x16) || defined(KS0073_CONTROLLER)
+#define LCD_ROWS    4
+#elif defined(LCD_1x20) || defined(LCD_1x16) || defined(LCD_1x8)
+#define LCD_ROWS    1
+#else
+#define LCD_ROWS    2
 #endif
+#endif                          /* LCD_ROWS */
+
+/* Backward compatibility with old macros */
+#ifndef LCD_COLS
+#if defined(LCD_2x40)
+#define LCD_COLS    40
+#elif defined(LCD_4x20) || defined(LCD_2x20) || defined(LCD_1x20) || defined(KS0073_CONTROLLER)
+#define LCD_COLS    20
+#elif defined(LCD_2x8) || defined(LCD_1x8)
+#define LCD_COLS    8
+#else
+#define LCD_COLS    16
 #endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
+#endif                          /* LCD_COLS */
 
 /*
  * Many thanks to Thiago Correa for adding LCD port configuration.
@@ -430,51 +435,17 @@ static void LcdWriteCmd(u_char cmd, u_char xt)
 
 static void LcdSetCursor(u_char pos)
 {
-    u_char x = 0;
-    u_char y = 0;
-
+    u_char offset[] = {
 #ifdef KS0073_CONTROLLER
-    u_char  offset[4] = {0x00, 0x20, 0x40, 0x60};
-    y = pos / 20;
-    x = pos % 20;
-    if (y > 3) y = 3;
+        0x00, 0x20, 0x40, 0x60
+#elif LCD_COLS == 20
+        0x00, 0x40, 0x14, 0x54
+#else
+        0x00, 0x40, 0x10, 0x50
 #endif
+    };
 
-#if defined(LCD_2x40) 
-    u_char  offset  [2] = {0x00, 0x40};
-    y = pos / 40;
-    x = pos % 40;
-    if (y > 1) y = 1;
-#endif    
-    
-#if defined(LCD_4x20) || defined(LCD_2x20)
-    u_char  offset  [4] = {0x00, 0x40, 0x14, 0x54};
-    y = pos / 20;
-    x = pos % 20;
-    if (y>3) y=3;
-#endif    
-    
-#if defined(LCD_4x16) || defined(LCD_2x16)
-    u_char  offset  [4] = {0x00, 0x40, 0x10, 0x50};
-    y = pos / 16;
-    x = pos % 16;
-    if (y>3) y=3;
-#endif    
-
-#if defined(LCD_2x8)
-    u_char  offset  [2] = {0x00, 0x40};
-    y = pos / 8;
-    x = pos % 8;
-    if (y>1) y=1;
-#endif    
-
-#if defined(LCD_1x8) || defined(LCD_1x16) || defined(LCD_1x20)
-    u_char  offset  [1] = { 0x00 };
-    y = 0;
-    x = pos;
-#endif 
-    
-    pos = x + offset[y];
+    pos = offset[(pos / LCD_COLS) % LCD_ROWS] + pos % LCD_COLS;
     LcdWriteCmd(1 << LCD_DDRAM | pos, LCD_SHORT_DELAY);
 }
 
@@ -583,56 +554,9 @@ TERMDCB dcb_term = {
     LcdCursorMode,      /*!< \brief Switch cursor on/off, dss_cursor_mode. */
     0,                  /*!< \brief Mode flags. */
     0,                  /*!< \brief Status flags. */
-#ifdef KS0073_CONTROLLER
-    4,                  /*!< \brief Number of rows. */
-    20,                 /*!< \brief Number of columns per row. */
-    20,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_4x20
-    4,                  /*!< \brief Number of rows. */
-    20,                 /*!< \brief Number of columns per row. */
-    20,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_4x16
-    4,                  /*!< \brief Number of rows. */
-    16,                 /*!< \brief Number of columns per row. */
-    16,                 /*!< \brief Number of visible columns. */
-#endif    
-#ifdef LCD_2x40    
-    2,                  /*!< \brief Number of rows. */
-    40,                 /*!< \brief Number of columns per row. */
-    40,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_2x20    
-    2,                  /*!< \brief Number of rows. */
-    20,                 /*!< \brief Number of columns per row. */
-    20,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_2x16    
-    2,                  /*!< \brief Number of rows. */
-    16,                 /*!< \brief Number of columns per row. */
-    16,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_2x8    
-    2,                  /*!< \brief Number of rows. */
-    8,                 /*!< \brief Number of columns per row. */
-    8,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_1x20    
-    1,                  /*!< \brief Number of rows. */
-    20,                 /*!< \brief Number of columns per row. */
-    20,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_1x16    
-    1,                  /*!< \brief Number of rows. */
-    16,                 /*!< \brief Number of columns per row. */
-    16,                 /*!< \brief Number of visible columns. */
-#endif
-#ifdef LCD_1x8    
-    1,                  /*!< \brief Number of rows. */
-    8,                 /*!< \brief Number of columns per row. */
-    8,                 /*!< \brief Number of visible columns. */
-#endif
+    LCD_ROWS,           /*!< \brief Number of rows. */
+    LCD_COLS,           /*!< \brief Number of columns per row. */
+    LCD_COLS,           /*!< \brief Number of visible columns. */
     0,                  /*!< \brief Cursor row. */
     0,                  /*!< \brief Cursor column. */
     0                   /*!< \brief Display shadow memory. */

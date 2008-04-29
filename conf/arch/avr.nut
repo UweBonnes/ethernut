@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.21  2008/04/29 16:58:21  thiagocorrea
+-- Simplified HD44780 code for AVR based on the ARM driver.
+--
 -- Revision 1.20  2008/04/29 02:28:34  thiagocorrea
 -- Add configurable DTR pin to AVR USART driver.
 --
@@ -771,92 +774,20 @@ nutarch_avr =
         options =
         {
             {
-                macro = "LCD_4x20",
-                brief = "LCD 4x20",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
+                macro = "LCD_ROWS",
+                brief = "Rows",
+                description = "The number of available display rows, either 1, 2 or 4.",
+                default = "2",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
             },
             {
-                macro = "LCD_4x16",
-                brief = "LCD 4x16",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
-            },            {
-                macro = "LCD_2x40",
-                brief = "LCD 2x40",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "LCD_2x20",
-                brief = "LCD 2x20",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "LCD_2x16",
-                brief = "LCD 2x16",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "LCD_2x8",
-                brief = "LCD 2x8",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
-            },            {
-                macro = "LCD_1x20",
-                brief = "LCD 1x20",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "LCD_1x16",
-                brief = "LCD 1x16",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "LCD_1x8",
-                brief = "LCD 1x8",
-                flavor = "boolean",
-                exclusivity = { 
-                    "LCD_4x20", "LCD_4x16", "LCD_2x40", "LCD_2x20", "LCD_2x16", 
-                    "LCD_2x8", "LCD_1x20", "LCD_1x16", "LCD_1x8" 
-                },
-                file = "include/cfg/arch/avrpio.h"
+                macro = "LCD_COLS",
+                brief = "Columns",
+                description = "The number of available display colums, either 8, 16, 20 or 40.",
+                default = "16",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
             },
             {
                 macro = "KS0073_CONTROLLER",
