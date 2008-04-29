@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/04/29 02:28:34  thiagocorrea
+ * Add configurable DTR pin to AVR USART driver.
+ *
  * Revision 1.4  2007/08/29 07:43:53  haraldkipp
  * Documentation updated and corrected.
  *
@@ -114,11 +117,52 @@
 #elif (UART0_RTS_AVRPORT == AVRPORTF)
 #define UART_RTS_PORT  PORTF
 #define UART_RTS_DDR   DDRF
+
+#elif (UART0_RTS_AVRPORT == AVRPORTG)
+#define UART_RTS_PORT  PORTG
+#define UART_RTS_DDR   DDRG
+
+#elif (UART0_RTS_AVRPORT == AVRPORTH)
+#define UART_RTS_PORT  PORTH
+#define UART_RTS_DDR   DDRH
+
 #endif
 
 #define UART_RTS_BIT    UART0_RTS_BIT
 
 #endif /* UART0_RTS_BIT */
+
+#ifdef UART0_DTR_BIT
+
+#if (UART0_DTR_AVRPORT == AVRPORTB)
+#define UART_DTR_PORT  PORTB
+#define UART_DTR_DDR   DDRB
+
+#elif (UART0_DTR_AVRPORT == AVRPORTD)
+#define UART_DTR_PORT  PORTD
+#define UART_DTR_DDR   DDRD
+
+#elif (UART0_DTR_AVRPORT == AVRPORTE)
+#define UART_DTR_PORT  PORTE
+#define UART_DTR_DDR   DDRE
+
+#elif (UART0_DTR_AVRPORT == AVRPORTF)
+#define UART_DTR_PORT  PORTF
+#define UART_DTR_DDR   DDRF
+
+#elif (UART0_DTR_AVRPORT == AVRPORTG)
+#define UART_DTR_PORT  PORTG
+#define UART_DTR_DDR   DDRG
+
+#elif (UART0_DTR_AVRPORT == AVRPORTH)
+#define UART_DTR_PORT  PORTH
+#define UART_DTR_DDR   DDRH
+
+#endif
+
+#define UART_DTR_BIT    UART0_DTR_BIT
+
+#endif /* UART0_DTR_BIT */
 
 /*!
  * \name UART0 Half Duplex Control
@@ -146,6 +190,10 @@
 #elif (UART0_HDX_AVRPORT == AVRPORTG)
 #define UART_HDX_PORT  PORTG
 #define UART_HDX_DDR   DDRG
+
+#elif (UART0_HDX_AVRPORT == AVRPORTH)
+#define UART_HDX_PORT  PORTH
+#define UART_HDX_DDR   DDRH
 
 #endif
 #define UART_HDX_BIT    UART0_HDX_BIT

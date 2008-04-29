@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.20  2008/04/29 02:28:34  thiagocorrea
+-- Add configurable DTR pin to AVR USART driver.
+--
 -- Revision 1.19  2008/01/31 09:22:32  haraldkipp
 -- Added first version of platform independent GPIO routines. Consider the
 -- AVR version untested.
@@ -311,6 +314,26 @@ nutarch_avr =
                 file = "include/cfg/arch/avrpio.h"
             },
             {
+                macro = "UART0_DTR_BIT",
+                brief = "DTR Bit",
+                description = "Bit number of UART0 DTR handshake output. If enabled, "..
+                              "the driver provides RS 232 output hardware handshake.\n\n",
+                provides = { "UART0_DTR_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART0_DTR_AVRPORT",
+                brief = "DTR Port",
+                description = "Port register name of UART0 DTR handshake output.",
+                requires = { "UART0_DTR_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
                 macro = "UART0_HDX_BIT",
                 brief = "Half Duplex Bit",
                 description = "Bit number of UART0 half duplex control output. If enabled, "..
@@ -377,6 +400,26 @@ nutarch_avr =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = avr_irq_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART1_DTR_BIT",
+                brief = "DTR Bit",
+                description = "Bit number of UART1 DTR handshake output. If enabled, "..
+                              "the driver provides RS 232 input hardware handshake.\n\n",
+                provides = { "UART1_DTR_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART1_DTR_AVRPORT",
+                brief = "DTR Port",
+                description = "Port register name of UART1 DTR handshake output.",
+                requires = { "UART1_DTR_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
                 file = "include/cfg/arch/avrpio.h"
             },
             {

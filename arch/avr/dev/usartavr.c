@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/04/29 02:28:34  thiagocorrea
+ * Add configurable DTR pin to AVR USART driver.
+ *
  * Revision 1.5  2007/11/13 20:16:33  thiagocorrea
  * Fix a small documentation typo
  *
@@ -854,6 +857,17 @@ static u_long AvrUsartGetStatus(void)
     }
 #endif
 
+#ifdef UART_DTR_BIT
+	/*
+	* Determine DTS status.
+	*/
+	if ( bit_is_set( UART_DTR_PORT, UART_DTR_BIT ) ) {
+		rc |= UART_DTRENABLED;
+	} else {
+		rc |= UART_DTRDISABLED;
+	}
+#endif
+
     /*
      * If transmitter and receiver haven't been detected disabled by any
      * of the checks above, then they are probably enabled.
@@ -943,6 +957,17 @@ static int AvrUsartSetStatus(u_long flags)
     if (flags & UART_RTSENABLED) {
         cbi(UART_RTS_PORT, UART_RTS_BIT);
     }
+#endif
+
+#ifdef UART_DTR_BIT
+	if ( flags & UART_DTRDISABLED ) {
+		sbi(UART_DTR_DDR, UART_DTR_BIT);
+		sbi(UART_DTR_PORT, UART_DTR_BIT);
+	}
+	if ( flags & UART_DTRENABLED ) {
+		sbi(UART_DTR_DDR, UART_DTR_BIT);
+		cbi(UART_DTR_PORT, UART_DTR_BIT);
+	}
 #endif
 
     /*
@@ -1297,6 +1322,15 @@ static int AvrUsartInit(void)
         return -1;
     }
 #endif
+
+#ifdef UART_RTS_BIT
+	sbi(UART_RTS_DDR, UART_RTS_BIT);
+#endif
+
+#ifdef UART_DTR_BIT
+	sbi(UART_DTR_DDR, UART_DTR_BIT);
+#endif
+
     return 0;
 }
 
@@ -1344,6 +1378,10 @@ static int AvrUsartDeinit(void)
         rts_control = 0;
         cbi(UART_RTS_DDR, UART_RTS_BIT);
     }
+#endif
+
+#ifdef UART_DTR_BIT
+	cbi(UART_DTR_DDR, UART_DTR_BIT);
 #endif
 
     return 0;
