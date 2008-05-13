@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/05/13 21:46:06  thiagocorrea
+ * Fix a few documentation typos.
+ *
  * Revision 1.1  2008/04/01 10:11:35  haraldkipp
  * Added the new, enhanced httpd API library.
  * Bugs #1839026 and #1839029 fixed.
@@ -73,7 +76,7 @@ extern char *http_root;
  * \brief Set the mime type handler for a specified file extension.
  *
  * This is the function that handles / sends a specific file type to the 
- * client. Escpecialy used for server side includes (shtml files)
+ * client. Specially used for server side includes (shtml files)
  *
  * \param extension Filename extension the handler should be registered for
  * \param handler pointer to a function of the type void (u_char filename)
@@ -286,12 +289,12 @@ char *NutHttpGetParameterName(REQUEST * req, int index)
 }
 
 /*!
- * \brief Get the value of a request paramter
+ * \brief Get the value of a request parameter
  *
  * \param req Request object
  * \param index Index to the requested parameter.
  *
- * \return Pointer to the paramter value at the given index,
+ * \return Pointer to the parameter value at the given index,
  *         or NULL if index is out of range.
  */
 char *NutHttpGetParameterValue(REQUEST * req, int index)
