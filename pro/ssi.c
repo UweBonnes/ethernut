@@ -33,6 +33,9 @@
  
 /*
  * $Log$
+ * Revision 1.6  2008/05/13 21:24:55  thiagocorrea
+ * Fix a few documentation typos.
+ *
  * Revision 1.5  2008/04/21 22:16:25  olereinhardt
  * 2008-04-21  Ole Reinhardt <ole.reinhardt@embedded-it.de>
  *         * pro/ssi.c: Nicer Implement query string feature and save some
@@ -371,7 +374,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
 /*!
  * \brief Skip whitespaces in a string from the given position on
  *
- * Whitespaces are defined as \n \r \t and space. Pos will be set to the first charachter which is not a whitespace
+ * Whitespaces are defined as \n \r \t and space. Pos will be set to the first character which is not a whitespace
  *
  * \param buffer String to work on
  * \param pos    Start position of the search
@@ -392,7 +395,7 @@ static void NutSsiSkipWhitespace(char *buffer, u_short *pos, u_short end)
  * \brief Check if a comment is a ssi directive 
  *
  * Check if a comment is a ssi directive and replace the directive by the included data.
- * Allowed diretives are:
+ * Allowed directives are:
  * 
  * <!--#include virtual="/news/news.htm" -->
  * <!--#include file="UROM:/news/news.htm" -->
