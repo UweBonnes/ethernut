@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.17  2008/05/13 19:31:34  thiagocorrea
+ * NutHttpSendHeaderBot is marked as deprecated, use NutHttpSendHeaderBottom instead.
+ *
  * Revision 1.16  2007/07/17 18:29:30  haraldkipp
  * Server thread names not unique on SAM7X. Fixed by Marti Raudsepp.
  *
@@ -270,7 +273,7 @@ static int ShowQuery(FILE * stream, REQUEST * req)
 
     /* These useful API calls create a HTTP response for us. */
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, html_mt, -1);
+    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
 
     /* Send HTML header. */
     fputs_P(head, stream);
@@ -337,7 +340,7 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 
     /* Send HTTP response. */
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, html_mt, -1);
+    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
 
     /* Send HTML header. */
     fputs_P(head, stream);
@@ -375,7 +378,7 @@ static int ShowTimers(FILE * stream, REQUEST * req)
     u_long ticks_left;
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, html_mt, -1);
+    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
 
     /* Send HTML header. */
     fputs_P(head, stream);
@@ -432,7 +435,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     TCPSOCKET *ts;
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, html_mt, -1);
+    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
 
     /* Send HTML header. */
     fputs_P(head, stream);
@@ -506,7 +509,7 @@ int ShowForm(FILE * stream, REQUEST * req)
     static prog_char html_body[] = "<BR><BR><p><a href=\"../index.html\">return to main</a></BODY></HTML></p>";
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, html_mt, -1);
+    NutHttpSendHeaderBottom(stream, req, html_mt, -1);
 
     /* Send HTML header. */
     fputs_P(html_head, stream);
