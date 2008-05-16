@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/05/16 01:46:43  thiagocorrea
+ * Minor spellcheck fix on the documentation.
+ *
  * Revision 1.3  2006/03/16 15:25:38  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -131,7 +134,7 @@ static void ProcessAspFunction(char *pASPFunction, FILE * stream)
     }
 
     /*
-     * Check if the user has registerd an ASPCallback
+     * Check if the user has registered an ASPCallback
      */
     if (asp_callback != NULL) {
         asp_callback(pASPFunction, stream);
