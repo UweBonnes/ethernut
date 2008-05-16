@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.11  2008/05/16 03:39:31  thiagocorrea
+-- Revert httpd memory allocation calls to NutHeapAlloc for consistency and
+-- move DestroyRequestInfo to a shared file (reduces code size and remove duplicates
+-- from httpd.c and ssi.c)
+--
 -- Revision 1.10  2008/04/01 10:11:34  haraldkipp
 -- Added the new, enhanced httpd API library.
 -- Bugs #1839026 and #1839029 fixed.
@@ -222,6 +227,7 @@ nutpro =
             "dencode.c",
             "discover.c",
             "httpd.c",
+            "httpd_p.c",
             "httpopt.c",
             "asp.c",
             "ssi.c",

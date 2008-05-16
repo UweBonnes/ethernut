@@ -38,6 +38,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.18  2008/05/16 03:38:27  thiagocorrea
+ * Revert httpd memory allocation calls to NutHeapAlloc for consistency and
+ * move DestroyRequestInfo to a shared file (reduces code size and remove duplicates
+ * from httpd.c and ssi.c)
+ *
  * Revision 1.17  2008/04/15 05:13:30  hwmaier
  * Fixed compilation error with avr-gcc 3.4.6
  *
@@ -124,10 +129,12 @@
 #include <sys/heap.h>
 #include <sys/version.h>
 
-#include "dencode.h"
-
 #include <pro/rfctime.h>
 #include <pro/httpd.h>
+
+#include "dencode.h"
+#include "httpd_p.h"
+
 
 /*! \brief Local major HTTP version. */
 #ifndef HTTP_MAJOR_VERSION  
@@ -216,8 +223,8 @@ static u_long http_optflags;
  * \param stream Stream of the socket connection, previously opened for 
  *               binary read and write.
  * \param req    The associated client request.
- * \param status Response status, error code or 200, if no error occured.
- * \param title  Error text, or OK, if no error occured.
+ * \param status Response status, error code or 200, if no error occurred.
+ * \param title  Error text, or OK, if no error occurred.
  */
 void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
 {
@@ -235,7 +242,7 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
 /*!
  * \brief Send bottom lines of a standard HTML header.
  *
- * Sends Content-Type and Content-Lenght.
+ * Sends Content-Type and Content-Length.
  *
  * \deprecated Use NutHttpSendHeaderBottom().
  *
@@ -250,14 +257,7 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
  */
 void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
 {
-    static prog_char typ_fmt_P[] = "Content-Type: %s\r\n";
-    static prog_char len_fmt_P[] = "Content-Length: %ld\r\n";
-
-    if (mime_type)
-        fprintf_P(stream, typ_fmt_P, mime_type);
-    if (bytes >= 0)
-        fprintf_P(stream, len_fmt_P, bytes);
-    fputs("\r\n", stream);
+	NutHttpSendHeaderBottom( stream, 0, mime_type, bytes );
 }
 
 /*!
@@ -287,7 +287,7 @@ void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long
     if (bytes >= 0)
         fprintf_P(stream, len_fmt_P, bytes);
     fputs_P(con_str_P, stream);
-    if (req->req_connection == HTTP_CONN_KEEP_ALIVE) {
+    if ( req && req->req_connection == HTTP_CONN_KEEP_ALIVE) {
         fputs_P(cka_str_P, stream);
     }
     else {
@@ -387,7 +387,7 @@ char *NutGetMimeType(char *name)
  * \brief Return the mime type handler of a specified file name.
  *
  * This is the function that handles / sends a specific file type to the 
- * client. Escpecialy used for server side includes (shtml files)
+ * client. Specially used for server side includes (shtml files)
  *
  * \param name Name of the file.
  *
@@ -464,7 +464,7 @@ void NutHttpProcessQueryString(REQUEST * req)
         if (*ptr == '&')
             req->req_numqptrs++;
 
-    req->req_qptrs = (char **) malloc(sizeof(char *) * (req->req_numqptrs * 2));
+    req->req_qptrs = (char **) NutHeapAlloc(sizeof(char *) * (req->req_numqptrs * 2));
     if (req->req_qptrs == NULL) {
         /* Out of memory */
         req->req_numqptrs = 0;
@@ -498,7 +498,7 @@ static char *CreateFilePath(CONST char *url, CONST char *addon)
 {
     char *root = http_root ? http_root : HTTP_DEFAULT_ROOT;
     size_t urll = strlen(url);
-    char *path = malloc(strlen(root) + urll + strlen(addon) + 1);
+    char *path = NutHeapAlloc(strlen(root) + urll + strlen(addon) + 1);
 
     if (path) {
         strcpy(path, root);
@@ -550,7 +550,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         if ((fd = _open(filename, _O_BINARY | _O_RDONLY)) != -1) {
             break;
         }
-        free(filename);
+        NutHeapFree(filename);
     }
     if (fd == -1) {
         NutHttpSendError(stream, req, 404);
@@ -581,25 +581,25 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         if (req->req_ims && s.st_mtime <= req->req_ims) {
             _close(fd);
             NutHttpSendError(stream, req, 304);
-            free(filename);
+            NutHeapFree(filename);
             return;
         }
 
         /* Save static buffer contents. */
         time_str = Rfc1123TimeString(gmtime(&ftime));
-        if ((modstr = malloc(strlen(time_str) + 1)) != NULL) {
+        if ((modstr = NutHeapAlloc(strlen(time_str) + 1)) != NULL) {
             strcpy(modstr, time_str);
         }
     }
 #endif /* HTTPD_EXCLUDE_DATE */
 
     /* Filename no longer used. */
-    free(filename);
+    NutHeapFree(filename);
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
     if (modstr) {
         fprintf(stream, "Last-Modified: %s GMT\r\n", modstr);
-        free(modstr);
+        NutHeapFree(modstr);
     }
 
     file_len = _filelength(fd);
@@ -614,7 +614,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         if (req->req_method != METHOD_HEAD) {
             size_t size = HTTP_FILE_CHUNK_SIZE;
 
-            if ((data = malloc(size)) != NULL) {
+            if ((data = NutHeapAlloc(size)) != NULL) {
                 while (file_len) {
                     if (file_len < HTTP_FILE_CHUNK_SIZE)
                         size = (size_t) file_len;
@@ -629,7 +629,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
                     }
                     file_len -= (long) n;
                 }
-                free(data);
+                NutHeapFree(data);
             }
         }
     }
@@ -659,42 +659,10 @@ static REQUEST *CreateRequestInfo(void)
 {
     REQUEST *req;
 
-    if ((req = malloc(sizeof(REQUEST))) != NULL) {
-        memset(req, 0, sizeof(REQUEST));
+    if ((req = NutHeapAllocClear(sizeof(REQUEST))) != NULL) {
         req->req_version = HTTP_MAJOR_VERSION * 10 + HTTP_MINOR_VERSION;
     }
     return req;
-}
-
-/*!
- * \brief Release request info structure.
- *
- * \param req Pointer to the info structure. If NULL, nothing
- *            is released.
- */
-static void DestroyRequestInfo(REQUEST * req)
-{
-    if (req) {
-        if (req->req_url)
-            free(req->req_url);
-        if (req->req_query)
-            free(req->req_query);
-        if (req->req_type)
-            free(req->req_type);
-        if (req->req_cookie)
-            free(req->req_cookie);
-        if (req->req_auth)
-            free(req->req_auth);
-        if (req->req_agent)
-            free(req->req_agent);
-        if (req->req_qptrs)
-            free(req->req_qptrs);
-        if (req->req_referer)
-            free(req->req_referer);
-        if (req->req_host)
-            free(req->req_host);
-        free(req);
-    }
 }
 
 /*!
@@ -714,9 +682,9 @@ int NutRegisterHttpRoot(char *path)
     int len;
 
     if (http_root)
-        free(http_root);
+        NutHeapFree(http_root);
     if (path && (len = strlen(path)) != 0) {
-        if ((http_root = malloc(len + 1)) != NULL)
+        if ((http_root = NutHeapAlloc(len + 1)) != NULL)
             strcpy(http_root, path);
         else
             return -1;
@@ -758,7 +726,7 @@ u_long NutHttpGetOptionFlags(void)
  *             return immediately and will not extract any value. If it
  *             contains a NULL pointer on entry, the routine will allocate
  *             heap memory to store a copy of the extracted value. In this
- *             case the caller is responsibel to release the allocation.
+ *             case the caller is responsible to release the allocation.
  * \param str  Points into a request line, right after the colon. Leading
  *             spaces will be skipped before creating a copy.
  *
@@ -772,7 +740,7 @@ static int HeaderFieldValue(char **hfvp, CONST char *str)
         while (*str == ' ' || *str == '\t')
             str++;
         /* Allocate a string copy. */
-        if ((*hfvp = malloc(strlen(str) + 1)) == NULL)
+        if ((*hfvp = NutHeapAlloc(strlen(str) + 1)) == NULL)
             return -1;
         strcpy(*hfvp, str);
     }
@@ -804,10 +772,10 @@ void NutHttpProcessRequest(FILE * stream)
         if ((req = CreateRequestInfo()) == NULL)
             break;
         if (method)
-            free(method);
+            NutHeapFree(method);
 
         /* The first line contains method, path and protocol. */
-        if ((method = malloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
+        if ((method = NutHeapAlloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
             break;
         }
         if (fgets(method, HTTP_MAX_REQUEST_SIZE, stream) == NULL) {
@@ -821,7 +789,7 @@ void NutHttpProcessRequest(FILE * stream)
         /*
         * Parse remaining request header lines.
         */
-        if ((line = malloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
+        if ((line = NutHeapAlloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
             break;
         }
         for (;;) {
@@ -868,7 +836,7 @@ void NutHttpProcessRequest(FILE * stream)
                 }
             }
         }
-        free(line);
+        NutHeapFree(line);
 
         path = NextWord(method);
         protocol = NextWord(path);
@@ -902,7 +870,7 @@ void NutHttpProcessRequest(FILE * stream)
         }
 
         /* Limit the number of requests per connection. */
-        if (keep_alive_max) {
+        if (keep_alive_max > 0) {
             keep_alive_max--;
         }
         else {
@@ -911,7 +879,7 @@ void NutHttpProcessRequest(FILE * stream)
 
         if ((cp = strchr(path, '?')) != 0) {
             *cp++ = 0;
-            if ((req->req_query = malloc(strlen(cp) + 1)) == NULL) {
+            if ((req->req_query = NutHeapAlloc(strlen(cp) + 1)) == NULL) {
                 break;
             }
             strcpy(req->req_query, cp);
@@ -919,7 +887,7 @@ void NutHttpProcessRequest(FILE * stream)
             NutHttpProcessQueryString(req);
         }
 
-        if ((req->req_url = malloc(strlen(path) + 1)) == NULL) {
+        if ((req->req_url = NutHeapAlloc(strlen(path) + 1)) == NULL) {
             break;
         }
         strcpy(req->req_url, path);
@@ -937,7 +905,7 @@ void NutHttpProcessRequest(FILE * stream)
     }
     DestroyRequestInfo(req);
     if (method)
-        free(method);
+        NutHeapFree(method);
 }
 
 /*@}*/
