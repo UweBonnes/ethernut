@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.19  2008/05/21 14:10:19  thiagocorrea
+ * Workaround HTTP stall connections. Details in bug id 1968754
+ *
  * Revision 1.18  2008/05/16 03:38:27  thiagocorrea
  * Revert httpd memory allocation calls to NutHeapAlloc for consistency and
  * move DestroyRequestInfo to a shared file (reduces code size and remove duplicates
@@ -836,6 +839,12 @@ void NutHttpProcessRequest(FILE * stream)
                 }
             }
         }
+
+		// TODO: Find a way to fix Keep-Alive connections.
+		// Bug workaround: fread will stall the thread on Keep-Alive connections
+		// at the last browser request. 
+		req->req_connection = HTTP_CONN_CLOSE; 
+
         NutHeapFree(line);
 
         path = NextWord(method);
