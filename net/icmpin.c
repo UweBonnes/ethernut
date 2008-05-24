@@ -93,9 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/05/24 22:23:55  olereinhardt
+ * Fixed cvs log message
+ *
  * Revision 1.5  2008/05/24 22:22:26  olereinhardt
- * 2008-05-25  Ole Reinhardt <ole.reinhardt@embedded-it.de>
- *         * net/icmpin.c: Fixed size comparision in NutIcmpUnreach
+ * Fixed size comparision in NutIcmpUnreach
  *
  * Revision 1.4  2004/03/18 10:28:36  haraldkipp
  * Comments updated
