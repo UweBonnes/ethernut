@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.428 2008/04/18 13:34:31 haraldkipp Exp $
+$Id: ChangeLog,v 1.429 2008/05/24 22:25:41 olereinhardt Exp $
+
+2008-05-25  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* net/icmpin.c: Fixed size comparision in NutIcmpUnreach
+
+2008-04-21  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+	* pro/ssi.c: Nicer implement query string feature and save some
+          memory
+	
+	* os/condition.c, include/sys/condition.h: Implemented condition
+	  variables to use with NutOS as an application candy
+
+	* doc/gen/nutdoc_en.txt: Added description of condition variables 
+
+	* conf/os/os.nut: Added configuration options for condition variables
+
+	* os/Makefile: Added condition.c
+
 
 
 2008-04-18  Harald Kipp  <harald.kipp@egnite.de>
