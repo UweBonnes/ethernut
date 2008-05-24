@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/05/24 22:22:26  olereinhardt
+ * 2008-05-25  Ole Reinhardt <ole.reinhardt@embedded-it.de>
+ *         * net/icmpin.c: Fixed size comparision in NutIcmpUnreach
+ *
  * Revision 1.4  2004/03/18 10:28:36  haraldkipp
  * Comments updated
  *
@@ -155,7 +159,7 @@ static int NutIcmpUnreach(NETBUF * nb)
     TCPHDR *th;
     TCPSOCKET *sock;
 
-    if (nb->nb_ap.sz <= sizeof(IPHDR) + 8)
+    if (nb->nb_ap.sz < sizeof(IPHDR) + 8)
         return -1;
 
     ih = nb->nb_ap.vp;
