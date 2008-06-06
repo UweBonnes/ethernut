@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.26  2008/06/06 10:28:22  haraldkipp
+-- ST7036 LCD controller settings moved from source to configuration files.
+--
 -- Revision 1.25  2008/04/18 13:24:57  haraldkipp
 -- Added Szemzo Andras' RS485 patch.
 --
@@ -320,7 +323,9 @@ nutarch_arm =
             "arm/dev/ih_at91irq0.c",
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91pioa.c",
+            "arm/dev/ih_at91piob.c",
+            "arm/dev/ih_at91pioc.c",
             "arm/dev/ih_at91spi0.c",
             "arm/dev/ih_at91spi1.c",
             "arm/dev/ih_at91ssc.c",
@@ -622,28 +627,43 @@ nutarch_arm =
         options =
         {
             {
+                macro = "LCD_ROWS",
+                brief = "Rows",
+                description = "The number of available display rows, either 1, 2 or 4.",
+                default = "2",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_COLS",
+                brief = "Columns",
+                description = "The number of available display colums, either 8, 16, 20 or 40.",
+                default = "16",
+                flavor = "integer",
+                file = "include/cfg/lcd.h"
+            },
+            {
                 macro = "LCD_SHORT_DELAY",
                 brief = "Short Delay",
-                description = "The number of dummy loops executed after LCD enable goes up.",
-                default = "10",
+                description = "The number of dummy loops executed after each signal change.",
+                default = "100",
                 flavor = "integer",
                 file = "include/cfg/lcd.h"
             },
             {
                 macro = "LCD_LONG_DELAY",
                 brief = "Long Delay",
-                description = "The number of loops executed after sending a command to the LCD "..
-                              "controller. If a R/W line is speicifed, then the driver will queries "..
-                              "the LCD status and terminates the loop as soon as the LCD busy "..
-                              "flag has been cleared.",
+                description = "The number of loops executed after sending a data byte to the LCD "..
+                              "controller. Ten times of this delay will be additionally applied "..
+                              "after sending a command byte.",
                 default = "1000",
                 flavor = "integer",
                 file = "include/cfg/lcd.h"
             },
             {
-                macro = "LCD_PIO_ID",
-                brief = "GPIO Register ID",
-                description = "All signals must be connected to the same GPIO port.",
+                macro = "LCD_CS_PIO_ID",
+                brief = "LCD CS Port",
+                description = "Port ID of the chip select line.",
                 type = "enumerated",
                 choices = at91_pio_id_choice,
                 flavor = "integer",
@@ -652,31 +672,62 @@ nutarch_arm =
             {
                 macro = "LCD_CS_BIT",
                 brief = "LCD CS Bit",
-                description = "Bit number of the chip select line.",
+                description = "Bit number of the chip select line. "..
+                              "If not specified, no chip select will be generated.",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_CLK_PIO_ID",
+                brief = "LCD CLK Port",
+                description = "Port ID of the clock line.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
                 file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "LCD_CLK_BIT",
                 brief = "LCD CLK Bit",
-                description = "Bit number of the clock line.",
+                description = "Bit number of the clock line. "..
+                              "If not specified, no clock signal will be generated.",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_MOSI_PIO_ID",
+                brief = "LCD MOSI Port",
+                description = "Port ID of the data line.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
                 file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "LCD_MOSI_BIT",
                 brief = "LCD MOSI Bit",
-                description = "Bit number of the data line.",
+                description = "Bit number of the data line. "..
+                              "If not specified, no data will be sent to the LCD.",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
             {
+                macro = "LCD_RS_PIO_ID",
+                brief = "LCD RS Port",
+                description = "Port ID of the register select line.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
                 macro = "LCD_RS_BIT",
                 brief = "LCD RS Bit",
-                description = "Bit number of the register select line.",
+                description = "Bit number of the register select line. "..
+                              "If not specified, no register select will be generated.",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"

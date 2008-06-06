@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/06/06 10:28:21  haraldkipp
+ * ST7036 LCD controller settings moved from source to configuration files.
+ *
  * Revision 1.3  2008/02/15 16:59:02  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -72,137 +75,9 @@
 #define LCD_LONG_DELAY  1000
 #endif
 
-/*!
- * \brief GPIO controller ID.
- */
-#if defined(AT91SAM7X_EK)
 
-#ifndef LCD_CS_PIO_ID
-#define LCD_CS_PIO_ID   PIOB_ID
-#endif
-#ifndef LCD_CS_BIT
-#define LCD_CS_BIT	    24
-#endif
-
-#ifndef LCD_RS_PIO_ID
-#define LCD_RS_PIO_ID   PIOB_ID
-#endif
-#ifndef LCD_RS_BIT
-#define LCD_RS_BIT	    23
-#endif
-
-#ifndef LCD_CLK_PIO_ID
-#define LCD_CLK_PIO_ID  PIOA_ID
-#endif
-#ifndef LCD_CLK_BIT
-#define LCD_CLK_BIT	    18
-#endif
-
-#ifndef LCD_MOSI_PIO_ID
-#define LCD_MOSI_PIO_ID PIOA_ID
-#endif
-#ifndef LCD_MOSI_BIT
-#define LCD_MOSI_BIT	17
-#endif
-
-#elif defined(AT91SAM7S) || defined(MCU_AT91SAM7SE512)
-
-#ifndef LCD_CS_PIO_ID
-#define LCD_CS_PIO_ID   PIOA_ID
-#endif
-#ifndef LCD_CS_BIT
-#define LCD_CS_BIT	    28
-#endif
-
-#ifndef LCD_RS_PIO_ID
-#define LCD_RS_PIO_ID   PIOA_ID
-#endif
-#ifndef LCD_RS_BIT
-#define LCD_RS_BIT	    26
-#endif
-
-#ifndef LCD_CLK_PIO_ID
-#define LCD_CLK_PIO_ID  PIOA_ID
-#endif
-#ifndef LCD_CLK_BIT
-#define LCD_CLK_BIT	    14
-#endif
-
-#ifndef LCD_MOSI_PIO_ID
-#define LCD_MOSI_PIO_ID PIOA_ID
-#endif
-#ifndef LCD_MOSI_BIT
-#define LCD_MOSI_BIT	13
-#endif
-
-#elif defined(AT91SAM9260_EK)
-
-#ifndef LCD_CS_PIO_ID
-#define LCD_CS_PIO_ID   PIOB_ID
-#endif
-#ifndef LCD_CS_BIT
-#define LCD_CS_BIT	    11
-#endif
-
-#ifndef LCD_RS_PIO_ID
-#define LCD_RS_PIO_ID   PIOB_ID
-#endif
-#ifndef LCD_RS_BIT
-#define LCD_RS_BIT	    20
-#endif
-
-#ifndef LCD_CLK_PIO_ID
-#define LCD_CLK_PIO_ID  PIOB_ID
-#endif
-#ifndef LCD_CLK_BIT
-#define LCD_CLK_BIT	    2
-#endif
-
-#ifndef LCD_MOSI_PIO_ID
-#define LCD_MOSI_PIO_ID PIOB_ID
-#endif
-#ifndef LCD_MOSI_BIT
-#define LCD_MOSI_BIT	1
-#endif
-
-#else
-
-#ifndef LCD_CS_PIO_ID
-#define LCD_CS_PIO_ID   PIO_ID
-#endif
-#ifndef LCD_CS_BIT
-#define LCD_CS_BIT	    0
-#endif
-
-#ifndef LCD_RS_PIO_ID
-#define LCD_RS_PIO_ID   PIO_ID
-#endif
-#ifndef LCD_RS_BIT
-#define LCD_RS_BIT	    3
-#endif
-
-#ifndef LCD_CLK_PIO_ID
-#define LCD_CLK_PIO_ID  PIO_ID
-#endif
-#ifndef LCD_CLK_BIT
-#define LCD_CLK_BIT	    1
-#endif
-
-#ifndef LCD_MOSI_PIO_ID
-#define LCD_MOSI_PIO_ID PIO_ID
-#endif
-#ifndef LCD_MOSI_BIT
-#define LCD_MOSI_BIT	2
-#endif
-
-#endif
-
+#ifdef LCD_CS_BIT
 #define LCD_CS      _BV(LCD_CS_BIT)
-#define LCD_RS      _BV(LCD_RS_BIT)
-#define LCD_CLK     _BV(LCD_CLK_BIT)
-#define LCD_MOSI    _BV(LCD_MOSI_BIT)
-
-
 #if LCD_CS_PIO_ID == PIOA_ID
 #define LCD_CS_SET() { outr(PIOA_PER, LCD_CS); outr(PIOA_SODR, LCD_CS); outr(PIOA_OER, LCD_CS); }
 #define LCD_CS_CLR() { outr(PIOA_PER, LCD_CS); outr(PIOA_CODR, LCD_CS); outr(PIOA_OER, LCD_CS); }
@@ -215,8 +90,14 @@
 #else
 #define LCD_CS_SET() { outr(PIO_PER, LCD_CS); outr(PIO_SODR, LCD_CS); outr(PIO_OER, LCD_CS); }
 #define LCD_CS_CLR() { outr(PIO_PER, LCD_CS); outr(PIO_CODR, LCD_CS); outr(PIO_OER, LCD_CS); }
-#endif
+#endif /* LCD_CS_PIO_ID */
+#else /* LCD_CS_BIT */
+#define LCD_CS_SET()
+#define LCD_CS_CLR()
+#endif /* LCD_CS_BIT */
 
+#ifdef LCD_RS_BIT
+#define LCD_RS      _BV(LCD_RS_BIT)
 #if LCD_RS_PIO_ID == PIOA_ID
 #define LCD_RS_SET() { outr(PIOA_PER, LCD_RS); outr(PIOA_SODR, LCD_RS); outr(PIOA_OER, LCD_RS); }
 #define LCD_RS_CLR() { outr(PIOA_PER, LCD_RS); outr(PIOA_CODR, LCD_RS); outr(PIOA_OER, LCD_RS); }
@@ -229,8 +110,14 @@
 #else
 #define LCD_RS_SET() { outr(PIO_PER, LCD_RS); outr(PIO_SODR, LCD_RS); outr(PIO_OER, LCD_RS); }
 #define LCD_RS_CLR() { outr(PIO_PER, LCD_RS); outr(PIO_CODR, LCD_RS); outr(PIO_OER, LCD_RS); }
-#endif
+#endif /* LCD_RS_PIO_ID */
+#else /* LCD_RS_BIT */
+#define LCD_RS_SET()
+#define LCD_RS_CLR()
+#endif /* LCD_RS_BIT */
 
+#ifdef LCD_CLK_BIT
+#define LCD_CLK     _BV(LCD_CLK_BIT)
 #if LCD_CLK_PIO_ID == PIOA_ID
 #define LCD_CLK_SET() { outr(PIOA_PER, LCD_CLK); outr(PIOA_SODR, LCD_CLK); outr(PIOA_OER, LCD_CLK); }
 #define LCD_CLK_CLR() { outr(PIOA_PER, LCD_CLK); outr(PIOA_CODR, LCD_CLK); outr(PIOA_OER, LCD_CLK); }
@@ -243,8 +130,14 @@
 #else
 #define LCD_CLK_SET() { outr(PIO_PER, LCD_CLK); outr(PIO_SODR, LCD_CLK); outr(PIO_OER, LCD_CLK); }
 #define LCD_CLK_CLR() { outr(PIO_PER, LCD_CLK); outr(PIO_CODR, LCD_CLK); outr(PIO_OER, LCD_CLK); }
-#endif
+#endif /* LCD_CLK_PIO_ID */
+#else /* LCD_CLK_BIT */
+#define LCD_CLK_SET()
+#define LCD_CLK_CLR()
+#endif /* LCD_CLK_BIT */
 
+#ifdef LCD_MOSI_BIT
+#define LCD_MOSI    _BV(LCD_MOSI_BIT)
 #if LCD_MOSI_PIO_ID == PIOA_ID
 #define LCD_MOSI_SET() { outr(PIOA_PER, LCD_MOSI); outr(PIOA_SODR, LCD_MOSI); outr(PIOA_OER, LCD_MOSI); }
 #define LCD_MOSI_CLR() { outr(PIOA_PER, LCD_MOSI); outr(PIOA_CODR, LCD_MOSI); outr(PIOA_OER, LCD_MOSI); }
@@ -257,7 +150,11 @@
 #else
 #define LCD_MOSI_SET() { outr(PIO_PER, LCD_MOSI); outr(PIO_SODR, LCD_MOSI); outr(PIO_OER, LCD_MOSI); }
 #define LCD_MOSI_CLR() { outr(PIO_PER, LCD_MOSI); outr(PIO_CODR, LCD_MOSI); outr(PIO_OER, LCD_MOSI); }
-#endif
+#endif /* LCD_MOSI_PIO_ID */
+#else /* LCD_MOSI_BIT */
+#define LCD_MOSI_SET()
+#define LCD_MOSI_CLR()
+#endif /* LCD_MOSI_BIT */
 
 /*!
  * \addtogroup xgST7036
@@ -424,7 +321,20 @@ static void LcdCursorMode(u_char on)
 static void LcdInit(NUTDEVICE * dev)
 {
 #if defined(PMC_PCER)
-    outr(PMC_PCER, _BV(LCD_CS_PIO_ID) | _BV(LCD_RS_PIO_ID) | _BV(LCD_CLK_PIO_ID) | _BV(LCD_MOSI_PIO_ID));
+    u_int pcer = 0;
+#if defined(LCD_CS_PIO_ID)
+    pcer = _BV(LCD_CS_PIO_ID);
+#endif
+#if defined(LCD_RS_PIO_ID)
+    pcer |= _BV(LCD_RS_PIO_ID);
+#endif
+#if defined(LCD_CLK_PIO_ID)
+    pcer |= _BV(LCD_CLK_PIO_ID);
+#endif
+#if defined(LCD_MOSI_PIO_ID)
+    pcer |= _BV(LCD_MOSI_PIO_ID);
+#endif
+    outr(PMC_PCER, pcer);
 #endif
 
     /* Initialize GPIO lines. */

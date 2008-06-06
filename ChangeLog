@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.429 2008/05/24 22:25:41 olereinhardt Exp $
+$Id: ChangeLog,v 1.430 2008/06/06 10:28:21 haraldkipp Exp $
+
+2008-06-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/st7036_at91.c, conf/arch/arm.nut, 
+	conf/at91sam7x-ek-radio.conf, conf/at91sam7x-ek.conf,
+	conf/at91sam9260-ek-radio.conf, conf/at91sam9260-ek.conf,
+	conf/eir10b.conf: The port ID is now individually
+	configurable for each signal line. Thus, there is no need to set 
+	board specific defaults in the driver's source file. Settings had 
+	been moved to the configuration files. This change may break your 
+	existing LCD configuration.
+
 
 2008-05-25  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* net/icmpin.c: Fixed size comparision in NutIcmpUnreach
