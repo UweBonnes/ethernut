@@ -56,6 +56,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.17  2008/06/09 16:50:39  thiagocorrea
+ * NutHeapRealloc code contributed by Moritz Struebe. Thanks!
+ * Add realloc to override libc's realloc using NutHeapRealloc.
+ *
  * Revision 1.16  2007/06/14 07:24:38  freckle
  * Disable ADC and buskeeper during idle thread sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined
  *
@@ -129,6 +133,10 @@
 #include <cfg/memory.h>
 
 #define DEADBEEF    0xDEADBEEF
+#ifdef NUTMEM_THREAD
+#include <sys/heap.h>
+#endif
+
 
 
 /*!
@@ -159,6 +167,10 @@ struct _NUTTHREADINFO {
     u_char *td_memory;          /*!< \brief Pointer to heap memory used for stack. */
     HANDLE td_timer;            /*!< \brief Event timer. */
     volatile HANDLE td_queue;   /*!< \brief Root entry of the waiting queue. */
+#ifdef NUTMEM_THREAD
+    UHEAPNODE * td_heap;
+#endif
+
 #if defined (__APPLE__) || defined(__linux__) || defined(__CYGWIN__)
     pthread_t td_pthread;       /*!< \brief pthread for unix emulations. */
     void (*td_fn) (void *);     /*!< \brief thread function */

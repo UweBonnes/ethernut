@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/06/09 16:50:39  thiagocorrea
+ * NutHeapRealloc code contributed by Moritz Struebe. Thanks!
+ * Add realloc to override libc's realloc using NutHeapRealloc.
+ *
  * Revision 1.5  2006/06/18 16:32:18  haraldkipp
  * Set errno on allocation failure.
  *
@@ -99,6 +103,31 @@ void *malloc(size_t len)
 void free(void *p)
 {
     NutHeapFree(p);
+}
+
+/*!
+* \brief Reallocate a block from heap memory.
+*
+* This function simply calls NutHeapRealloc(). It overrides the function
+* of the runtime library, when the application is linked with nutcrt or
+* nutcrtf.
+*
+* \param ptr Pointer to memory block previously allocated with malloc to be reallocated.
+*            If this is NULL, a new block is allocated.
+* \param len Size of the requested memory block.
+*
+* \return Pointer to the reallocated memory block if the
+*         function is successful or NULL if the requested
+*         amount of memory is not available.
+*/
+void *realloc(void* ptr, size_t len)
+{
+	void *p;
+
+	if ((p = NutHeapRealloc(ptr, len)) == NULL) {
+		errno = ENOMEM;
+	}
+	return p;
 }
 
 /*@}*/
