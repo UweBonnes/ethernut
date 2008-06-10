@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/06/10 15:07:16  freckle
+ * added missing include for C99 types
+ *
  * Revision 1.5  2008/06/09 16:50:39  thiagocorrea
  * NutHeapRealloc code contributed by Moritz Struebe. Thanks!
  * Add realloc to override libc's realloc using NutHeapRealloc.
@@ -91,6 +94,7 @@
 
 #include <cfg/memory.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file sys/heap.h

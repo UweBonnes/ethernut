@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.430 2008/06/06 10:28:21 haraldkipp Exp $
+$Id: ChangeLog,v 1.431 2008/06/10 15:07:16 freckle Exp $
+
+2008-06-10  Matthias Ringwald <mringwal@inf.ethz.ch>
+        * include/sys/heap.h: added missing include for C99 type usage
+
+2008-06-09  Thiago A. Correa
+        * ${list of modified files goes here}: NutHeapRealloc code contributed by Moritz Struebe.
+        Add realloc to override libc's realloc using NutHeapRealloc
 
 2008-06-05  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -86,7 +93,7 @@ $Id: ChangeLog,v 1.430 2008/06/06 10:28:21 haraldkipp Exp $
 	SNMP agent sample. Be careful, this is alpha code.
 
 
-2008-04-15 Henrik Maier  <hwmaier@users.sourceforge.net>
+2008-04-15  Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * pro/httpd.c: Fixed compilation error with avr-gcc 3.4.6
         
