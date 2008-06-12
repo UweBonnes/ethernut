@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/06/12 09:59:59  beutel
+ * reverted MR change from last night (troubles with the btnut build system)
+ *
  * Revision 1.6  2008/06/10 15:07:16  freckle
  * added missing include for C99 types
  *
@@ -94,7 +97,6 @@
 
 #include <cfg/memory.h>
 #include <sys/types.h>
-#include <stdint.h>
 
 /*!
  * \file sys/heap.h
