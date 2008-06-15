@@ -56,9 +56,8 @@
  * \verbatim
  *
  * $Log$
- * Revision 1.29  2008/06/09 16:50:40  thiagocorrea
- * NutHeapRealloc code contributed by Moritz Struebe. Thanks!
- * Add realloc to override libc's realloc using NutHeapRealloc.
+ * Revision 1.30  2008/06/15 17:09:01  haraldkipp
+ * Rolled back to version 1.28.
  *
  * Revision 1.28  2006/09/29 12:24:14  haraldkipp
  * Stack allocation code moved from thread module to heap module.
@@ -279,7 +278,7 @@ void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
         td->td_qpec++;			// transfer the signaled state 
     } else if (tqp) {
         NutExitCritical();		// there are other threads in queue
-						// so its safe to leave critical.          
+						// so its save to leave critical.          
 
         while (tqp && tqp->td_priority <= td->td_priority) {
             tqpp = &tqp->td_qnxt;
@@ -548,20 +547,7 @@ void NutThreadExit(void)
 void NutThreadDestroy(void)
 {
     if (killedThread) {
-        
-#ifdef NUTMEM_THREAD
-        if(killedThread->td_heap){ //Thread wasn't freed correctly
-        	NUTTHREADINFO * backup;
-        	backup = runningThread;
-        	runningThread = killedThread;
-        	while(runningThread->td_heap){
-        		NutHeapFree((void *)(runningThread->td_heap + 1));
-        	}
-        	runningThread = backup;
-        }
-#endif     
         NutStackFree(killedThread->td_memory);
-        //No need to free the killedThread memory, as this is part of td_memory
         killedThread = 0;
     }
 }
