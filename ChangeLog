@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.431 2008/06/10 15:07:16 freckle Exp $
+$Id: ChangeLog,v 1.432 2008/06/15 17:23:05 haraldkipp Exp $
+
+2008-06-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/avr/os/context_gcc.c, arch/avr/os/context_icc.c,
+	crt/malloc.c, include/sys/heap.h, include/sys/thread.h,
+	os/heap.c, os/thread.c: Rolled back all changes done
+	after 2008-06-05. Parts of Moritz' code hadn't been well
+	tested and his contribution was meant as an RFC.
+
 
 2008-06-10  Matthias Ringwald <mringwal@inf.ethz.ch>
         * include/sys/heap.h: added missing include for C99 type usage
