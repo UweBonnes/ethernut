@@ -33,9 +33,8 @@
 
 /*
  * $Log$
- * Revision 1.9  2008/06/09 16:50:38  thiagocorrea
- * NutHeapRealloc code contributed by Moritz Struebe. Thanks!
- * Add realloc to override libc's realloc using NutHeapRealloc.
+ * Revision 1.10  2008/06/15 16:58:39  haraldkipp
+ * Rolled back to version 1.8.
  *
  * Revision 1.8  2007/05/02 11:25:08  haraldkipp
  * Minor typo with big impact. Extended PC never set in context switch
@@ -335,11 +334,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     td->td_name[sizeof(td->td_name) - 1] = 0;
     td->td_sp = (u_short) sf - 1;
     td->td_memory = threadMem;
-    
-#ifdef NUTMEM_THREAD
-	td->td_heap = NULL;
-#endif
-	*((u_long *) threadMem) = DEADBEEF;
+    *((u_long *) threadMem) = DEADBEEF;
     *((u_long *) (threadMem + 4)) = DEADBEEF;
     *((u_long *) (threadMem + 8)) = DEADBEEF;
     *((u_long *) (threadMem + 12)) = DEADBEEF;
