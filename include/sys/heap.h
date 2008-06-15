@@ -51,15 +51,8 @@
 
 /*
  * $Log$
- * Revision 1.7  2008/06/12 09:59:59  beutel
- * reverted MR change from last night (troubles with the btnut build system)
- *
- * Revision 1.6  2008/06/10 15:07:16  freckle
- * added missing include for C99 types
- *
- * Revision 1.5  2008/06/09 16:50:39  thiagocorrea
- * NutHeapRealloc code contributed by Moritz Struebe. Thanks!
- * Add realloc to override libc's realloc using NutHeapRealloc.
+ * Revision 1.8  2008/06/15 17:15:49  haraldkipp
+ * Rolled back to version 1.4.
  *
  * Revision 1.4  2006/10/06 23:19:08  hwmaier
  * Added include statement for cfg/memory.h so the macro NUTMEM_STACKHEAP is found when compiling for the AT90CAN128.
@@ -87,14 +80,6 @@
  *
  */
 
-#ifndef __ATTR_PURE__
-#ifdef __GNUC__
-#define __ATTR_PURE__ __attribute__((__pure__))
-#else
-#define __ATTR_PURE__
-#endif
-#endif /*#ifndef __ATTR_PURE__*/ 
-
 #include <cfg/memory.h>
 #include <sys/types.h>
 
@@ -120,12 +105,6 @@ typedef struct _HEAPNODE {
     struct _HEAPNODE *hn_next;  /*!< \brief Link to next free node. */
 } HEAPNODE;
 
-#ifndef NUTMEM_THREAD
-typedef  size_t UHEAPNODE;
-#else
-typedef HEAPNODE UHEAPNODE;
-#endif
-
 extern HEAPNODE* volatile heapFreeList;
 
 
@@ -136,38 +115,19 @@ extern HEAPNODE* volatile heapFreeList;
  * too many small nodes.
  */
 #define ALLOC_THRESHOLD 6
-#define REALLOC_THRESHOLD ALLOC_THRESHOLD 
 
-
-
-
-void *NutHeapAlloc_type(size_t size, uint8_t algo);
-void *NutHeapAllocClear(size_t size);
-int_fast8_t NutHeapFree(void *block);
-void * NutHeapRealloc( void * block, u_short size);
-void NutHeapAdd(void *addr, size_t size);
-
-extern inline void * NutHeapAlloc(size_t size){
-	return NutHeapAlloc_type(size, 0);
-};
-
-size_t NutHeapAvailable(void) __ATTR_PURE__;
-
-
-
-#ifdef NUTMEM_NAMED_MEM
-void * NutNmemGet(char * name, size_t * size) __ATTR_PURE__;
-void * NutNmemCreate(char * name, size_t size);
-int_fast8_t NutNmemFree(void * _shm);
-#endif /* NUTMEM_NAMED_MEM */
+extern void *NutHeapAlloc(size_t size);
+extern void *NutHeapAllocClear(size_t size);
+extern int NutHeapFree(void *block);
+extern void NutHeapAdd(void *addr, size_t size);
+extern size_t NutHeapAvailable(void);
 
 #if defined (NUTMEM_STACKHEAP)
 
 /* Dedicated stack memory. */
-void *NutStackAlloc(size_t size);
-int_fast8_t NutStackFree(void *block);
-void NutStackAdd(void *addr, size_t size);
-size_t NutStackAvailable(void) __ATTR_PURE__;
+extern void *NutStackAlloc(size_t size);
+extern int NutStackFree(void *block);
+extern void NutStackAdd(void *addr, size_t size);
 
 #else /* !NUTMEM_STACKHEAP */
 
