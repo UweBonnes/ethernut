@@ -48,9 +48,8 @@
 
 /*
  * $Log$
- * Revision 1.12  2008/06/09 16:50:39  thiagocorrea
- * NutHeapRealloc code contributed by Moritz Struebe. Thanks!
- * Add realloc to override libc's realloc using NutHeapRealloc.
+ * Revision 1.13  2008/06/15 17:07:15  haraldkipp
+ * Rolled back to version 1.11.
  *
  * Revision 1.11  2006/10/05 17:26:15  haraldkipp
  * Fixes bug #1567729. Thanks to Ashley Duncan.
@@ -112,54 +111,19 @@
 
 /*@{*/
 
-
-
-
 #include <cfg/os.h>
 #include <compiler.h>
 #include <string.h>
 
-
 #include <sys/atom.h>
 #include <sys/heap.h>
-#include <stddef.h>
-#include <stdio.h>
-
-
-
-#ifdef NUTMEM_NAMED_MEM
-#include <util/crc16.h>
-#endif
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #endif
 
-#ifdef NUTMEM_THREAD
-#include <sys/thread.h>
-#endif
-
-
 #if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 #define ARCH_32BIT
-#endif
-
-
-
-
-#ifdef NUTMEM_NAMED_MEM
-struct nmem_node_t{
-	union{
-		size_t size;
-		UHEAPNODE hn;
-	};
-	struct nmem_node_t * next;
-	char name[9];
-	uint8_t crc8;
-	
-};
-
-struct nmem_node_t * NutNmemRoot;
 #endif
 
 /*!
@@ -177,17 +141,7 @@ static size_t available;
  * \showinitializer
  */
 /* MEMOVHD = sizeof(HEAPNODE:hn_size) + sizeof(0xDEADBEEF) */
-#define MEMOVHD (sizeof(UHEAPNODE) + sizeof(0xDEADBEEF) + 2)
-
-static inline void setBeef(HEAPNODE * node){
-	*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
-}
-
-static inline char checkBeef(HEAPNODE * node){
-	return (*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
-}
-
-
+#define MEMOVHD (sizeof(size_t) + sizeof(0xDEADBEEF))
 
 /*!
  * \brief
@@ -220,13 +174,7 @@ static inline char checkBeef(HEAPNODE * node){
  *         function is successful or NULL if the requested
  *         amount of memory is not available.
  */
-void *NutHeapAlloc(size_t size){
-	return NutHeapAlloc_type(size, 0);
-}
-
-
-
-void *NutHeapAlloc_type(size_t size, uint8_t algo)
+void *NutHeapAlloc(size_t size)
 {
     HEAPNODE *node;
     HEAPNODE **npp;
@@ -235,7 +183,7 @@ void *NutHeapAlloc_type(size_t size, uint8_t algo)
 
 #if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
     /*
-     * Align to the word boundary
+     * Allign to the word boundary
      */
     while ((size & 0x03) != 0)
         size++;
@@ -246,7 +194,7 @@ void *NutHeapAlloc_type(size_t size, uint8_t algo)
         if (__heap_trf)
             fputs("MEMOVR\n", __heap_trs);
 #endif
-        return NULL;
+        return 0;
     }
 
     /*
@@ -263,34 +211,29 @@ void *NutHeapAlloc_type(size_t size, uint8_t algo)
     node = heapFreeList;
     npp = (HEAPNODE **) & heapFreeList;
     while (node) {
-        
+
         /*
-		 * Found a node that fits?
+         * Found a note that fits?
          */
         if (node->hn_size >= size) {
-        	if(algo == 0){ //best fit
-	            /*
-	             * If it's an exact match, we don't
-	             * search any further.
-	             */
-	            if (node->hn_size == size) {
-	                fit = node;
-	                fpp = npp;
-	                break;
-	            }
-	
-	            /*
-	             * Is it the first one we found
-	             * or was the previous one larger?
-	             */
-	            if (fit == 0 || (fit->hn_size > node->hn_size)) {
-	                fit = node;
-	                fpp = npp;
-	            }
-        	} else { //Last fit
-        		fit = node;
-        		fpp = npp;
-        	}
+            /*
+             * If it's an exact match, we don't
+             * search any further.
+             */
+            if (node->hn_size == size) {
+                fit = node;
+                fpp = npp;
+                break;
+            }
+
+            /*
+             * Is it the first one we found
+             * or was the previous one larger?
+             */
+            if (fit == 0 || (fit->hn_size > node->hn_size)) {
+                fit = node;
+                fpp = npp;
+            }
         }
         npp = &node->hn_next;
         node = node->hn_next;
@@ -304,49 +247,23 @@ void *NutHeapAlloc_type(size_t size, uint8_t algo)
          * we split it.
          */
         if (fit->hn_size > size + sizeof(HEAPNODE) + ALLOC_THRESHOLD) {
-        	if(algo == 0){
-	            node = (HEAPNODE *) ((uptr_t) fit + size);
-	            node->hn_size = fit->hn_size - size;
-	            node->hn_next = fit->hn_next;
-	            fit->hn_size = size;
-	            *fpp = node;
-	            
-        	} else {
-        		node = fit;
-        		fit = (HEAPNODE *)((uptr_t)fit + node->hn_size - size);
-            	node->hn_size -= size;
-	            //next can be cept.
-	            fit->hn_size = size;
-	            //*ffp does not have to modified either.
-        	}
-	         
-        } else {
+            node = (HEAPNODE *) ((uptr_t) fit + size);
+            node->hn_size = fit->hn_size - size;
+            node->hn_next = fit->hn_next;
+            fit->hn_size = size;
+            *fpp = node;
+        } else
             *fpp = fit->hn_next;
-        }
 
         available -= fit->hn_size;
-        setBeef(fit);
-        
-        
-        
-           
-#ifdef NUTMEM_THREAD
-        //Assign to thread;
-    	if(runningThread != NULL){
-        	fit->hn_next = runningThread->td_heap;
-        	runningThread->td_heap = fit;
-    	}
-#endif
-        fit =(HEAPNODE *) (((UHEAPNODE *) fit) + 1);
-
+        *((u_long *) (((char *) fit) + (fit->hn_size - 4))) = 0xDEADBEEF;
+        fit = (HEAPNODE *) & fit->hn_next;
     }
 #ifdef NUTDEBUG
     if (__heap_trf) {
         fprintf(__heap_trs, "\n[H%x,A%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size), (int)size);
     }
 #endif
-    
-
     return fit;
 }
 
@@ -391,67 +308,44 @@ void *NutHeapAllocClear(size_t size)
  * \return 0 on success, -1 if the caller tried to free
  *         a block which had been previously released.
  */
-int_fast8_t NutHeapFree(void *block)
+int NutHeapFree(void *block)
 {
     HEAPNODE *node;
     HEAPNODE **npp;
     HEAPNODE *fnode;
     size_t size;
 
-    /*
-     * Convert our block into a node.
-     */
-    
-    if(block == NULL) return -1;
-    
-    fnode = (HEAPNODE *) (((UHEAPNODE *) block) - 1);    
-    
-    
 #ifdef NUTDEBUG
     if (__heap_trf) {
         if (block) {
-            if (!checkBeef(fnode)){
-            	fputs("\nMEMCORR-", __heap_trs);  	
-            }
-        } else {
+            size_t size;
+            size = *(((uptr_t *) block) - 1);
+            if (*((u_long *) (((char *) block) + (size - MEMOVHD))) != 0xDEADBEEF)
+                fputs("\nMEMCORR-", __heap_trs);
+
+        } else
             fputs("\nMEMNULL", __heap_trs);
-        }
     }
 #endif
 
-    if(!checkBeef(fnode)) return -2;
-    
-
-#ifdef NUTMEM_THREAD
-	//Remove from thread;
-	if(runningThread != NULL){
-		HEAPNODE ** tnode;
-		tnode = &(runningThread->td_heap);
-		while(*tnode != NULL){
-			if(*tnode == fnode){
-				*tnode = fnode->hn_next;
-				break;
-			}
-			tnode = &((*tnode)->hn_next);
-		}
-		if(tnode == NULL){
-			/// \todo search other threads
-		}
-	}
-#endif
+    /*
+     * Convert our block into a node.
+     */
+    fnode = (HEAPNODE *) (((uptr_t *) block) - 1);
 
 #ifdef NUTDEBUG
     if (__heap_trf)
         fprintf(__heap_trs, "\n[H%x,F%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
 #endif
     size = fnode->hn_size;
+
     /*
      * Walk through the linked list of free nodes and try
      * to link us in.
      */
     node = heapFreeList;
     npp = (HEAPNODE **) & heapFreeList;
-    while (node) {	
+    while (node) {
         /*
          * If there' s a free node in front of us, merge it.
          */
@@ -468,13 +362,10 @@ int_fast8_t NutHeapFree(void *block)
             break;
         }
 
-
-        
-        
         /*
          * If we walked past our address, link us to the list.
          */
-        if ((uptr_t) node > (uptr_t) fnode) {    	
+        if ((uptr_t) node > (uptr_t) fnode) {
             *npp = fnode;
 
             /*
@@ -486,7 +377,7 @@ int_fast8_t NutHeapFree(void *block)
             } else
                 fnode->hn_next = node;
             break;
-        } 
+        }
 
         /*
          * If we are within a free node, somebody tried
@@ -497,10 +388,9 @@ int_fast8_t NutHeapFree(void *block)
             if (__heap_trf)
                 fputs("\nTWICE\n", __heap_trs);
 #endif
-            return -3;
+            //NutExitCritical();
+            return -1;
         }
-
-
 
         npp = &node->hn_next;
         node = node->hn_next;
@@ -510,198 +400,13 @@ int_fast8_t NutHeapFree(void *block)
      * If no link was found, put us at the end of the list
      */
     if (!node) {
-        fnode->hn_next = NULL;
+        fnode->hn_next = node;
         *npp = fnode;
     }
     available += size;
 
     return 0;
 }
-
-
-/**
- * \brief Change the size of a memory block. If more memory is 
- * 				requested than available at that block the data
- * 				is copied to a new, bigger block.
- * 
- * \param block Points to a memory block previously allocated
- *				through a call to NutHeapAlloc(). If block is 
- * 				NULL this call is equivalent to malloc.
- * \param size The size of the new allocated block.
- * 
- * \return > NULL A pointer to the memory block
- * \return NULL Reallocation has failed. The data is still 
- * 				available at the old address.
- * \todo see if we can do some code sharing with malloc
- * \todo add some checks like reallocating free mem, etc
- */
-void *NutHeapRealloc( void * block, u_short size)
-{
-	HEAPNODE *node;
-	HEAPNODE **npp;
-	HEAPNODE *fnode;
-	HEAPNODE *newNode;
-	size_t size_miss;
-	void * newmem;
-
-	
-	//basic forwarding
-	if(size == 0){
-		if( NutHeapFree(block) == 0){
-			return block;
-		} else {
-			return NULL;
-		} 
-	} else if(block == NULL){
-		return 	NutHeapAlloc(size);
-	}
-
-	/*
-	 * Convert our block into a node.
-	 */
-	fnode = (HEAPNODE *) (((UHEAPNODE *) block) - 1);
-	
-
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        
-        if (!checkBeef(fnode)){
-        	fputs("\nMEMCORR-", __heap_trs);  	
-        }
-        
-    }
-#endif
-
-	// Calculate minimum size
-	if ((size += MEMOVHD) < sizeof(HEAPNODE))
-		size = sizeof(HEAPNODE);
-
-
-
-
-#ifdef NUTDEBUG
-	if (__heap_trf)
-		fprintf(__heap_trs, "\n[H%x,R%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
-#endif
-	
-	if (size > fnode->hn_size){	 //More ram is needed
-
-
-		//Check whether there is a free node behind.
-		node = heapFreeList;
-		npp = (HEAPNODE **) & heapFreeList;
-		size_miss = size - fnode->hn_size;
-		//Find the first node behind the node to realloc
-		while(node != NULL && fnode < node){			 
-			npp = &node->hn_next;
-			node = node->hn_next;
-		} 
-		
-
-		if(node != NULL){ // There is a node behind the node
-			/*
-			 * If a free node is following us _and_ is big enaugh: use it!
-			 */
-			if (((uptr_t) fnode + fnode->hn_size) == (uptr_t) node &&  node->hn_size >= size_miss) {
-				if(node->hn_size + ALLOC_THRESHOLD >= size_miss){ //split next block
-		
-					
-					newNode = (HEAPNODE *) ((uptr_t) node + size_miss); //create new node;
-					//Memove seves difficulties when allocating less then HEAPNODE bytes
-					memmove(newNode, node, sizeof(HEAPNODE)); 
-					newNode->hn_size -= size_miss;
-					//newNode->hn_next is already ok.
-					*npp = newNode;	//link previous node to new node.
-					fnode->hn_size = size; //Adjust size of current node
-					available -= size_miss;
-				} else { //Fits nicely
-					*npp = node->hn_next;	//Link previus node 
-					fnode->hn_size += node->hn_size;
-					available -= node->hn_size;
-				}
-				setBeef(fnode);
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) ((UHEAPNODE *) fit - 1))->hn_size), (int)size);
-    }
-#endif
-				return block; 
-			}
-		}
-
-		
-		//Failed to resize -> move
-		
-		newmem = NutHeapAlloc(size);
-		if(newmem == NULL) return NULL; //Failed to allocate a big enough block.
-		memcpy(newmem, block, fnode->hn_size - MEMOVHD); //MWMOVHD must not to be moved!!!
-		NutHeapFree(block);
-		return newmem;
-		
-	} 
-	
-	
-	//The new size is smaller. 
-	if(size + REALLOC_THRESHOLD + MEMOVHD < fnode->hn_size){	
-		newNode = (HEAPNODE *) ((uptr_t) fnode + size); //behind realloc node
-		newNode->hn_size = fnode->hn_size - size; //set size of freed mem
-		fnode->hn_size = size; //Adjust the size of the realloc node
-		setBeef(fnode); //Add new beef to current node
-		NutHeapFree((void *)((UHEAPNODE *) newNode + 	1)); //Free the block				
-	}
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) ((UHEAPNODE *) fit - 1))->hn_size), (int)size);
-    }
-#endif
-	return block;
-}
-
-#ifdef NUTMEM_NAMED_MEM
-
-/**
- * Checks whether a shem node is valid.
- * \param addr Pointer to the node to check
- * \return 1 Node ok.
- * \return 0 Node not ok.
- */
-static inline int8_t NutNmem_node_chk(struct nmem_node_t * addr){
-	uint8_t * p;
-	uint8_t crc;
-	uint8_t i;
-	p = (uint8_t *) addr;
-	crc = 0xFF;
-	for(i = 0; i < offsetof(struct nmem_node_t, crc8); i++){
-		crc = _crc_ibutton_update(crc, *(p++)); 
-	} 
-	crc = ~crc;
-
-	if(*p == crc) return 1;
-	return 0;
-}
-
-/**
- * Calculates and sets the CRC of a node.
- * \param addr Pointer to the node to check
- */
-static inline void NutNmem_node_crcset(struct nmem_node_t * addr){
-	uint8_t * p;
-	uint8_t crc;
-	uint8_t i;
-	p = (uint8_t *) addr;
-	crc = 0xFF;
-	for(i = 0; i < offsetof(struct nmem_node_t, crc8); i++){
-		crc = _crc_ibutton_update(crc, *(p++)); 
-	} 
-	*p = ~crc;
-}
-
-
-
-#endif
-
-
-
 
 /*!
  * \brief
@@ -717,76 +422,8 @@ static inline void NutNmem_node_crcset(struct nmem_node_t * addr){
  */
 void NutHeapAdd(void *addr, size_t size)
 {
-#ifdef NUTMEM_NAMED_MEM
-	
-#if defined (NUTMEM_STACKHEAP)
-	if(heapFreeList != stackHeapFreeList){
-#else
-	{
-#endif
-		uptr_t start, end;
-		struct nmem_node_t *p;
-		uptr_t first;
-		if(NutNmemRoot == NULL){
-			size -= sizeof(struct nmem_node_t); //Make space for the Poiner
-			NutNmemRoot = (struct nmem_node_t *)((uptr_t)addr + size); //Place the root.
-		}
-		
-		//This gets optimized by the compiler. But it more easy to read this way.
-		start = (uptr_t)addr;	
-		end = (uptr_t)addr + size;
-		
-		//Let's see whether we get reasonable data
-		p = NutNmemRoot;
-		if(NutNmem_node_chk(p)== 0){
-			 /* This is ok, because it is not a normal node. Otherwise the size information needed
-			  * by the "normal" mem management would be overwritten */
-			memset((void*)p,0, sizeof(*p));
-			NutNmem_node_crcset(p);
-		} else {
-			while(p != NULL){
-				struct nmem_node_t * next;
-				next = p->next;
-				
-				//If it's the last segment there's noting to check;
-				if(next != NULL){
-					//Check wheter the node is valid; It's not possible to fix anything.
-					if(!NutNmem_node_chk(next)){
-						p->next = NULL;
-						NutNmem_node_crcset(p);
-					}
-				}
-				p = next;
-			}
-		}
-		/*The list seems ok. Now let's fee the mem in between*/
-		do{
-			struct nmem_node_t *p;
-			//Search the first node in unfreed mem, and free mem in front.
-			p = NutNmemRoot;
-			first = (uptr_t) NutNmemRoot;				
-			while(p != NULL){
-				if((uptr_t)p > start && (uptr_t)p < first) first = (uptr_t)p;
-				p = p->next;				
-			}
-			//Set free mem up to the first Nmem;
-			if(first > start){
-				*((uptr_t *) start) = first - start;
-				setBeef((HEAPNODE *)start);
-				NutHeapFree(((UHEAPNODE *) start) + 1); //Free the mem
-			}
-			start = first + ((struct nmem_node_t *)first)->size; //Now let's start behind the start-block
-			
-		} while(first != (uptr_t)NutNmemRoot);	
-		
-		return;
-	}
-#endif	//ifdef NUTMEM_NAMED_MEM
     *((uptr_t *) addr) = size;
-    setBeef((HEAPNODE *)addr);
-    NutHeapFree((UHEAPNODE *) addr + 1);
-    
-
+    NutHeapFree(((uptr_t *) addr) + 1);
 }
 
 /*!
@@ -799,105 +436,6 @@ size_t NutHeapAvailable(void)
     return available;
 }
 
-#ifdef NUTMEM_NAMED_MEM
-/*!
- * \breif Get an already crated shared memory
- * 
- * \param[out] size The size of the shared memory
- * \param[in] name Name of the shared memory
- * \return NULL No memory with that name found.
- * \return > NULL memory found. The size of the memory is returend in the size pointer.
- */
-
-void * NutNmemGet(char * name, size_t * size){
-	struct nmem_node_t * p;
-	p = NutNmemRoot;
-		
-	while(p != NULL){
-		if(strncmp(name,p->name,8) == 0){ //Is this the NutNmem we a looking for?
-			return (void *)(p + 1);
-		} 
-		p = p->next;
-	}
-	return NULL;
-}
-
-void * NutNmemCreate(char * name, size_t size){
-	struct nmem_node_t *p;
-	p = NutNmemRoot;
-	UHEAPNODE * temp;
-		
-	while(1){
-		
-		if(strcmp(name,p->name) == 0){ //Is this the NutNmem we a looking for?
-			return NULL; //It already exists.
-		}
-		if(p->next == NULL) break;
-		p = p->next;
-	}
-	//We need to allocate mem. The next two lines can be put into one, but why?
-	temp = (UHEAPNODE *) NutHeapAlloc_type(size + sizeof(struct nmem_node_t) - sizeof(UHEAPNODE), 1);
-	//Update the last node
-	p->next = (struct nmem_node_t *)(temp - 1);
-	NutNmem_node_crcset(p);
-	
-	//Update the new node
-	p = p->next;
-	p->next = 0;
-	memset(p->name, 0, 9);
-	strncpy(p->name, name, 8);
-	NutNmem_node_crcset(p);
-	p++; //Return a pointer to the memory behind the header
-	return (void *)p; 
-}
-
-
-/**
- * \brief Free a shared memory entry
- * \param name The name of the entry
- * \return 0 Free Successful
- * \return -1 No entry with this name found.
- * \return -2 Error freeing shared memory
- */  
-int_fast8_t NutNmemFree(void * _NutNmem){
-	struct nmem_node_t *p, *NutNmem_free;
-	
-	//Move address to the header.
-	NutNmem_free = (struct nmem_node_t *) _NutNmem - 1; 
-	
-	//Find previous list element.
-	p = NutNmemRoot;	
-	while(p->next != NutNmem_free){
-		p = p->next;
-		if(p == NULL) return -3;
-	}
-	
-	//Update previous element.
-	p->next = NutNmem_free->next;
-	NutNmem_node_crcset(p);
-	///\todo What shall be done if NutHeapFree fails? Unlikely but possible.
-	//Free memory
-	return NutHeapFree((UHEAPNODE *)NutNmem_free + 1 );
-	
-}
-
-
-	
-char * NutNmemRead(char * name){
-	struct nmem_node_t *p;
-	if(name == NULL) name = NutNmemRoot->name;
-	p = NutNmemRoot;	
-	while((uptr_t)p->name != (uptr_t)name){
-		p = p->next;
-		if(p == NULL) return NULL;
-	}
-	p = p->next;
-	if(p == NULL) return NULL;
-	return p->name;	
-}
-
-
-#endif //NUTMEM_NAMED_MEM
 
 #if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
 /*
@@ -935,7 +473,7 @@ void *NutStackAlloc(size_t size)
     return result;
 }
 
-int_fast8_t NutStackFree(void *block)
+int NutStackFree(void *block)
 {
     int result;
     HEAPNODE* savedHeapNode;
@@ -980,10 +518,6 @@ void NutStackAdd(void *addr, size_t size)
    // Restore real heap context
    heapFreeList = savedHeapNode;
    available = savedAvailable;
-}
-
-size_t NutStackAvailable(void){
-	return stackHeapAvailable;
 }
 
 #endif /* defined(NUTMEM_STACKHEAP) */
