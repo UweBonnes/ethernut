@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.8  2008/06/16 15:12:07  freckle
+ * fix bug in NutSemTryWait of os/semaphore.c
+ *
  * Revision 1.7  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -113,7 +116,7 @@ extern "C" {
  */
 
     int NutSemTryWait(SEM * sem) {
-        if (sem->value < 0)
+        if (sem->value <= 0)
             return -1;
         else
             NutSemWait(sem);

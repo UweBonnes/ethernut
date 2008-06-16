@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.433 2008/06/16 13:04:28 haraldkipp Exp $
+$Id: ChangeLog,v 1.434 2008/06/16 15:12:07 freckle Exp $
+
+2008-06-16 Matthias Ringwald <mringwal@inf.ethz.ch>
+        * os/semaphore.c: fix bug in NutSemTryWait. It would block
+        if sem->value == 0 instead of returning -1.
 
 2008-06-15  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -23,7 +27,8 @@ $Id: ChangeLog,v 1.433 2008/06/16 13:04:28 haraldkipp Exp $
         * include/sys/heap.h: added missing include for C99 type usage
 
 2008-06-09  Thiago A. Correa
-        * ${list of modified files goes here}: NutHeapRealloc code contributed by Moritz Struebe.
+        * ${list of modified files goes here}: NutHeapRealloc code
+        contributed by Moritz Struebe.
         Add realloc to override libc's realloc using NutHeapRealloc
 
 2008-06-05  Harald Kipp  <harald.kipp@egnite.de>
