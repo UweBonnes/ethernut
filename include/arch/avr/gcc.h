@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/06/16 13:03:37  haraldkipp
+ * Added Thiago's patch to fix _SLEEP_MODE_MASK problem, which is no longer
+ * public in the latest avrlibc.
+ *
  * Revision 1.3  2007/04/12 09:20:34  haraldkipp
  * Added new register bit names for the ATmega2561.
  *
@@ -161,6 +165,17 @@
 }
 
 #define main    NutAppMain
+
+/* Define internal _SLEEP_MODE_MASK that is no longer public in avrlibc. */
+#ifndef _SLEEP_MODE_MASK
+#if defined(SM) && !defined(SM0) && !defined(SM1) && !defined(SM2)
+#define _SLEEP_MODE_MASK _BV(SM)
+#elif !defined(SM) && defined(SM0) && defined(SM1) && !defined(SM2)
+#define _SLEEP_MODE_MASK (_BV(SM0) | _BV(SM1))
+#elif !defined(SM) && defined(SM0) && defined(SM1) && defined(SM2)
+#define _SLEEP_MODE_MASK (_BV(SM0) | _BV(SM1) | _BV(SM2))
+#endif
+#endif
 
 #endif /* _ARCH_AVR_GCC_H_ */
 
