@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.432 2008/06/15 17:23:05 haraldkipp Exp $
+$Id: ChangeLog,v 1.433 2008/06/16 13:04:28 haraldkipp Exp $
+
+2008-06-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arch/avr.nut, arch/Makefile: Temporarily removed wlandrv.c
+	from build due to GCC 4.3 warning.
+
+	* include/arch/avr/gcc.h: Added Thiago's patch to fix
+	_SLEEP_MODE_MASK problem, which is no longer public in
+	the latest avrlibc. 
+
 
 2008-06-15  Harald Kipp  <harald.kipp@egnite.de>
 
