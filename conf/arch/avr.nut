@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.22  2008/06/16 13:02:50  haraldkipp
+-- Temporarily removed wlandrv.c from build due to GCC 4.3 warnings.
+--
 -- Revision 1.21  2008/04/29 16:58:21  thiagocorrea
 -- Simplified HD44780 code for AVR based on the ARM driver.
 --
@@ -686,7 +689,8 @@ nutarch_avr =
     {
         name = "nutarch_avr_wlan",
         brief = "WLAN Driver",
-        requires = { "NUT_EVENT", "HW_MCU_AVR" },
+        description = "Not well maintained. Disabled after compile problems with latest GCC.",
+        requires = { "NOT_AVAILABLE", "NUT_EVENT", "HW_MCU_AVR" },
         provides = { "NET_PHY" },
         sources = { "avr/dev/wlan.c", "avr/dev/wlandrv.c" }
     },

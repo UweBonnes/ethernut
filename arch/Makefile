@@ -33,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.14  2008/06/16 13:02:49  haraldkipp
+# Temporarily removed wlandrv.c from build due to GCC 4.3 warnings.
+#
 # Revision 1.13  2008/02/15 17:29:59  haraldkipp
 # Added missing files. Hopefully not broken after late commit.
 #
@@ -108,7 +111,7 @@ SRCS = avr/os/context_gcc.c avr/dev/ostimer.c avr/dev/ih_adc.c \
 	avr/dev/ahdlc1.c avr/dev/ahdlcavr.c avr/dev/debug0.c avr/dev/debug1.c \
 	avr/dev/usart0avr.c avr/dev/usart1avr.c avr/dev/uart0.c avr/dev/uart1.c \
 	avr/dev/uartavr.c avr/dev/lanc111.c avr/dev/nicrtl.c avr/dev/eth0rtl.c avr/dev/ide.c \
-	avr/dev/cs8900.c avr/dev/eth0cs.c avr/dev/wlan.c avr/dev/wlandrv.c avr/dev/adc.c \
+	avr/dev/cs8900.c avr/dev/eth0cs.c avr/dev/wlan.c avr/dev/adc.c \
 	avr/dev/ir.c avr/dev/irsony.c avr/dev/hd44780.c avr/dev/hd44780_bus.c \
 	avr/dev/sja1000.c avr/dev/spidigio.c avr/dev/twif.c avr/dev/vs1001k.c \
 	avr/dev/pcmcia.c avr/dev/irqstack.c avr/dev/eeprom.c avr/dev/ace.c \
