@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/06/23 16:09:30  haraldkipp
+ * Bootmon version 1.5.0. User LED support added.
+ *
  * Revision 1.1  2007/08/17 13:16:31  haraldkipp
  * Checked in.
  *
@@ -53,12 +56,32 @@ static char my_gate[32];
 static char my_tftpd[32];
 static char my_image[64];
 
+#ifdef USRLED
+#include "npluled.h"
+
+void NplUledCntl(int status)
+{
+    if (status == ULED_ON) {
+        /*! \brief Activate negated chip select. */
+        outb(NPL_XER, inb(NPL_XER) & ~NPL_USRLED);
+    } else {
+        if (status == ULED_OFF) {
+            /*! \brief Deactivate negated chip select. */
+            outb(NPL_XER, inb(NPL_XER) | NPL_USRLED);
+        }
+    }
+}
+#else
+#define NplUledCntl(x)
+#endif
+
 static int UserEntry(void)
 {
     int n;
     unsigned char yn[3];
 
-    PutString("\nBootMon 1.0.4\n");
+    PutString("\nBootMon 1.0.5\n");
+    NplUledCntl(ULED_OFF);
 
     memcpy_(my_mac, confnet.cdn_mac, 6);
     strcpy_(my_ip, inet_ntoa(confnet.cdn_cip_addr));
@@ -121,6 +144,7 @@ int main(void)
     int i;
     unsigned long *flash_app = 0x10020000;
 
+    NplUledCntl(ULED_ON);
     /* Initialize RS232 port. */
     UartInit();
 
@@ -142,6 +166,7 @@ int main(void)
                 }
             }
         }
+        NplUledCntl(ULED_OFF);
 
         if (confboot.cb_tftp_ip == 0 && *flash_app == 0xE59FF018) {
             DEBUG("\nStarting Flashed Application\n");
@@ -170,6 +195,7 @@ int main(void)
         } else {
             DEBUG("No\n");
         }
+        NplUledCntl(ULED_ON);
     }
 #ifdef NUTDEBUG
     /* Avoids UART garbage. */

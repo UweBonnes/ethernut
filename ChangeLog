@@ -1,10 +1,22 @@
-$Id: ChangeLog,v 1.434 2008/06/16 15:12:07 freckle Exp $
+$Id: ChangeLog,v 1.435 2008/06/23 16:09:30 haraldkipp Exp $
+
+2008-06-23  Harald Kipp  <harald.kipp@egnite.de>
+
+	* boot/bootmon/Makedefs, boot/bootmon/bootmon.c, 
+	boot/bootmon/npluled.h: Version 1.5.0. User LED support added.
+
+	* boot/bootmon/tftp.c: Reduced retry time to become more responsive 
+	to space input via RS-232.
+
 
 2008-06-16 Matthias Ringwald <mringwal@inf.ethz.ch>
         * os/semaphore.c: fix bug in NutSemTryWait. It would block
         if sem->value == 0 instead of returning -1.
 
-2008-06-15  Harald Kipp  <harald.kipp@egnite.de>
+2008-06-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_spi.c: Fixes #1963841. Many thanks to Eric 
+	Haver (very sharp eyes).
 
 	* conf/arch/avr.nut, arch/Makefile: Temporarily removed wlandrv.c
 	from build due to GCC 4.3 warning.
