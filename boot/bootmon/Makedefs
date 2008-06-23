@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makedefs,v $
+# Revision 1.2  2008/06/23 17:11:04  haraldkipp
+# User LED support added.
+#
 # Revision 1.1  2007/08/17 13:16:31  haraldkipp
 # Checked in.
 #
@@ -40,6 +43,7 @@
 DEFS += -DEE_CONFNET=64
 DEFS += -DEE_CONFBOOT=128
 # DEFS += -DNUTDEBUG
+DEFS += -DUSRLED
 
 ENTRY = 0x1F000
 
