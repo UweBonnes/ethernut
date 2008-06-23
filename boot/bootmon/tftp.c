@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/06/23 16:08:37  haraldkipp
+ * Reduced retry time to become more responsive to space input via RS-232.
+ *
  * Revision 1.1  2007/08/17 13:16:33  haraldkipp
  * Checked in.
  *
@@ -127,7 +130,7 @@ int TftpRecv(void)
         for (retry = 0; retry < 3; retry++) {
             DEBUG("[RQ TFTP]");
             if (UdpOutput(confboot.cb_tftp_ip, tport, SPORT, slen) >= 0) {
-                if ((rlen = UdpInput(SPORT, 500)) >= 4)
+                if ((rlen = UdpInput(SPORT, 100)) >= 4)
                     break;
             }
         }
