@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/06/23 16:48:00  haraldkipp
+ * Bug #1963841 fixed.
+ *
  * Revision 1.4  2007/10/04 19:50:41  olereinhardt
  * small bugfix for cpu with only one spi channel
  *
@@ -287,7 +290,7 @@ int At91SpiReset(u_int base)
     outr(base + SPI_CR_OFF, SPI_SWRST);
 
     /* Set SPI to master mode, fixed peripheral at no chip select, fault detection disabled. */
-    outr(base + SPI_MR_OFF, (90 < SPI_DLYBCS_LSB) | SPI_PCS | SPI_MODFDIS | SPI_MSTR);
+    outr(base + SPI_MR_OFF, (90 << SPI_DLYBCS_LSB) | SPI_PCS | SPI_MODFDIS | SPI_MSTR);
 
     /* Enable SPI. */
     At91SpiEnable(base);
