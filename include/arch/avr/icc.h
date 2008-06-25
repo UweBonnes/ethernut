@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/06/25 08:37:56  freckle
+ * escape realloc for icc
+ *
  * Revision 1.6  2006/09/29 12:22:07  haraldkipp
  * Corrected internal RAM size and check compiler environment for ATmega2561.
  *
@@ -115,6 +118,7 @@
 #define scanf       scanf_M
 #define gets        gets_M
 #define malloc      malloc_M
+#define realloc     realloc_M
 #define free        free_M
 
 /*!
