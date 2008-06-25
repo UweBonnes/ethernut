@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2008/06/25 07:48:58  freckle
+ * extract methods: setBeef, checkBeef
+ *
  * Revision 1.13  2008/06/15 17:07:15  haraldkipp
  * Rolled back to version 1.11.
  *
@@ -142,6 +145,26 @@ static size_t available;
  */
 /* MEMOVHD = sizeof(HEAPNODE:hn_size) + sizeof(0xDEADBEEF) */
 #define MEMOVHD (sizeof(size_t) + sizeof(0xDEADBEEF))
+
+/*!
+ * \brief Set Beef to heapnode
+ * \param node A valid Heapnode without beef
+ */
+static inline void setBeef(HEAPNODE * node){
+	*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
+}
+
+
+/*!
+ * \brief Check Beef of an heapnode
+ * \param node A valid Heapnode with beef
+ * \return !0 Beef is ok
+ * \return 0 Beef is not ok
+ */
+static inline char checkBeef(HEAPNODE * node){
+	return (*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
+}
+
 
 /*!
  * \brief
@@ -256,7 +279,7 @@ void *NutHeapAlloc(size_t size)
             *fpp = fit->hn_next;
 
         available -= fit->hn_size;
-        *((u_long *) (((char *) fit) + (fit->hn_size - 4))) = 0xDEADBEEF;
+        setBeef(fit);
         fit = (HEAPNODE *) & fit->hn_next;
     }
 #ifdef NUTDEBUG
@@ -423,6 +446,7 @@ int NutHeapFree(void *block)
 void NutHeapAdd(void *addr, size_t size)
 {
     *((uptr_t *) addr) = size;
+	setBeef((HEAPNODE *)addr);
     NutHeapFree(((uptr_t *) addr) + 1);
 }
 
