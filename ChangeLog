@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.435 2008/06/23 16:09:30 haraldkipp Exp $
+$Id: ChangeLog,v 1.436 2008/06/25 08:39:03 freckle Exp $
+
+2008-06-25  Matthias Ringwald <mringwal@inf.ethz.ch>
+        * include/sys/heap.h, os/heap.c: Added NutHeapRealloc contributed
+        by Moritz 'Monty' Struebe. 
+        * include/arch/unix.h: escape realloc in unix emulation
+        * include/arch/icc.h:  escape realloc for icc
 
 2008-06-23  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -12,6 +18,7 @@ $Id: ChangeLog,v 1.435 2008/06/23 16:09:30 haraldkipp Exp $
 2008-06-16 Matthias Ringwald <mringwal@inf.ethz.ch>
         * os/semaphore.c: fix bug in NutSemTryWait. It would block
         if sem->value == 0 instead of returning -1.
+
 
 2008-06-16  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -37,6 +44,7 @@ $Id: ChangeLog,v 1.435 2008/06/23 16:09:30 haraldkipp Exp $
 
 2008-06-10  Matthias Ringwald <mringwal@inf.ethz.ch>
         * include/sys/heap.h: added missing include for C99 type usage
+
 
 2008-06-09  Thiago A. Correa
         * ${list of modified files goes here}: NutHeapRealloc code
