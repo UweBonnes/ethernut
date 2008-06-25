@@ -48,8 +48,8 @@
 
 /*
  * $Log$
- * Revision 1.14  2008/06/25 07:48:58  freckle
- * extract methods: setBeef, checkBeef
+ * Revision 1.15  2008/06/25 07:59:41  freckle
+ * more detailed error msgs for NutHeapFree
  *
  * Revision 1.13  2008/06/15 17:07:15  haraldkipp
  * Rolled back to version 1.11.
@@ -330,6 +330,9 @@ void *NutHeapAllocClear(size_t size)
  *
  * \return 0 on success, -1 if the caller tried to free
  *         a block which had been previously released.
+ * \return -1 if the caller tried to free a block which had been previously released.
+ * \return -2 if Beef is not valid. Block will not be freed
+ * \return -3 block is NULL
  */
 int NutHeapFree(void *block)
 {
@@ -338,23 +341,26 @@ int NutHeapFree(void *block)
     HEAPNODE *fnode;
     size_t size;
 
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        if (block) {
-            size_t size;
-            size = *(((uptr_t *) block) - 1);
-            if (*((u_long *) (((char *) block) + (size - MEMOVHD))) != 0xDEADBEEF)
-                fputs("\nMEMCORR-", __heap_trs);
-
-        } else
-            fputs("\nMEMNULL", __heap_trs);
-    }
-#endif
+    if(block == NULL) return -3;
 
     /*
      * Convert our block into a node.
      */
     fnode = (HEAPNODE *) (((uptr_t *) block) - 1);
+
+#ifdef NUTDEBUG
+    if (__heap_trf) {
+        if (block) {
+            if (!checkBeef(fnode)) {
+                fputs("\nMEMCORR-", __heap_trs);
+            }
+        } else {
+            fputs("\nMEMNULL", __heap_trs);
+        } 
+    }
+#endif
+
+    if(!checkBeef(fnode)) return -2;
 
 #ifdef NUTDEBUG
     if (__heap_trf)
@@ -411,7 +417,6 @@ int NutHeapFree(void *block)
             if (__heap_trf)
                 fputs("\nTWICE\n", __heap_trs);
 #endif
-            //NutExitCritical();
             return -1;
         }
 
