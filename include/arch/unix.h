@@ -105,6 +105,7 @@ enum {
 
 /* on linux our malloc function makes the init section crash, so we better rename it */
 #define malloc(...)		NUT_malloc(__VA_ARGS__)
+#define realloc(...)	NUT_realloc(__VA_ARGS__)
 #define free(...)		NUT_free(__VA_ARGS__)
 
 /* -------------------------------------------------------------------------
