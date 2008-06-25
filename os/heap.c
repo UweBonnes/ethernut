@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2008/06/25 08:28:39  freckle
+ * added new function NutHeapRealloc
+ *
  * Revision 1.15  2008/06/25 07:59:41  freckle
  * more detailed error msgs for NutHeapFree
  *
@@ -312,6 +315,128 @@ void *NutHeapAllocClear(size_t size)
 
     return ptr;
 }
+
+/**
+ * \brief Change the size of a memoryblock. If more memory is 
+ * 				requested than available at that block the data
+ * 				is copied to a new, bigger block.
+ * 
+ * \param block Points to a memory block previously allocated
+ *				through a call to NutHeapAlloc(). If block is 
+ * 				NULL this call is equivalent to malloc.
+ * \param size The size of the new allocated block.
+ * 
+ * \return > NULL A poiner to the memoryblock
+ * \return NULL Reallocation has faild. The data is still 
+ * 				available at the old address.
+ * \todo see if we can do some codesharing with malloc
+ * \todo add some checks like reallocating free mem, etc
+ */
+void * NutHeapRealloc( void * block, u_short size){
+	HEAPNODE *node;
+	HEAPNODE **npp;
+	HEAPNODE *fnode;
+	HEAPNODE *newNode;
+	size_t size_miss;
+	void * newmem;
+    
+	//basic forwarding
+	if(size == 0){
+		if( NutHeapFree(block) == 0){
+			return block;
+		} else {
+			return NULL;
+		} 
+	} else if(block == NULL){
+		return 	NutHeapAlloc(size);
+	}
+    
+	/*
+	 * Convert our block into a node.
+	 */
+	fnode = (HEAPNODE *) (((uptr_t *) block) - 1);
+    
+#ifdef NUTDEBUG
+    if (__heap_trf) {
+        if (!checkBeef(fnode)){
+            fputs("\nMEMCORR-", __heap_trs);  	
+        }
+    }
+#endif
+    
+	// Calculate minimum size
+	if ((size += MEMOVHD) < sizeof(HEAPNODE))
+		size = sizeof(HEAPNODE);
+    
+#ifdef NUTDEBUG
+	if (__heap_trf)
+		fprintf(__heap_trs, "\n[H%x,R%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
+#endif
+	
+	if (size > fnode->hn_size){	 //More ram is needed
+		//Check whether there is a free node behind.
+		node = heapFreeList;
+		npp = (HEAPNODE **) & heapFreeList;
+		size_miss = size - fnode->hn_size;
+		//Find the first node behind the node to realloc
+		while(node != NULL && fnode < node){			 
+			npp = &node->hn_next;
+			node = node->hn_next;
+		} 
+		
+		if(node != NULL){ // There is a node behind the node
+			/*
+			 * If a free node is following us _and_ is big enaugh: use it!
+			 */
+			if (((uptr_t) fnode + fnode->hn_size) == (uptr_t) node &&  node->hn_size >= size_miss) {
+				if(node->hn_size + ALLOC_THRESHOLD >= size_miss){ //split next block
+					newNode = (HEAPNODE *) ((uptr_t) node + size_miss); //create new node;
+					//Memove seves difficulties when allocating less then HEAPNODE bytes
+					memmove(newNode, node, sizeof(HEAPNODE)); 
+					newNode->hn_size -= size_miss;
+					//newNode->hn_next is already ok.
+					*npp = newNode;	//link previous node to new node.
+					fnode->hn_size = size; //Adjust size of current node
+					available -= size_miss;
+				} else { //Fits nicely
+					*npp = node->hn_next;	//Link previus node 
+					fnode->hn_size += node->hn_size;
+					available -= node->hn_size;
+				}
+				setBeef(fnode);
+#ifdef NUTDEBUG
+                if (__heap_trf) {
+                    fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
+                }
+#endif
+				return block; 
+			}
+		}
+        
+		//Failed to resize -> move
+		newmem = NutHeapAlloc(size);
+		if(newmem == NULL) return NULL; //Failed to allocate a big enaugh block.
+		memcpy(newmem, block, fnode->hn_size - MEMOVHD); //MWMOVHD must not to be moved!!!
+		NutHeapFree(block);
+		return newmem;
+	} 
+	
+	//The new size is smaller. 
+	if(size + REALLOC_THRESHOLD + MEMOVHD < fnode->hn_size){	
+		newNode = (HEAPNODE *) ((uptr_t) fnode + size); //behind realloc node
+		newNode->hn_size = fnode->hn_size - size; //set size of freed mem
+		fnode->hn_size = size; //Adjust the size of the realloc node
+		setBeef(fnode); //Add new beef to current node
+		NutHeapFree((void *)((size_t *) newNode + 1)); //Free the block				
+	}
+#ifdef NUTDEBUG
+    if (__heap_trf) {
+        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
+    }
+#endif
+	return block;
+}
+
 
 /*!
  * \brief Return a block to heap memory.
