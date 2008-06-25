@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/06/25 08:50:33  freckle
+ * added new function NutHeapRealloc
+ *
  * Revision 1.8  2008/06/15 17:15:49  haraldkipp
  * Rolled back to version 1.4.
  *
@@ -107,7 +110,6 @@ typedef struct _HEAPNODE {
 
 extern HEAPNODE* volatile heapFreeList;
 
-
 /*!
  * \brief Allocation threshold.
  *
@@ -115,10 +117,12 @@ extern HEAPNODE* volatile heapFreeList;
  * too many small nodes.
  */
 #define ALLOC_THRESHOLD 6
+#define REALLOC_THRESHOLD ALLOC_THRESHOLD 
 
 extern void *NutHeapAlloc(size_t size);
 extern void *NutHeapAllocClear(size_t size);
 extern int NutHeapFree(void *block);
+extern void * NutHeapRealloc( void * block, u_short size);
 extern void NutHeapAdd(void *addr, size_t size);
 extern size_t NutHeapAvailable(void);
 
