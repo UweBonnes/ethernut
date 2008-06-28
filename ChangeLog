@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.437 2008/06/28 07:49:31 haraldkipp Exp $
+$Id: ChangeLog,v 1.438 2008/06/28 08:35:38 haraldkipp Exp $
+
+2008-06-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/heap.c: ImageCraft doesn't support inline. Replaced this keyword
+	by macro INLINE.
+
 
 2008-06-27  Harald Kipp  <harald.kipp@egnite.de>
 

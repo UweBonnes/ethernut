@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2008/06/28 08:35:38  haraldkipp
+ * Replaced inline by INLINE.
+ *
  * Revision 1.16  2008/06/25 08:28:39  freckle
  * added new function NutHeapRealloc
  *
@@ -153,7 +156,7 @@ static size_t available;
  * \brief Set Beef to heapnode
  * \param node A valid Heapnode without beef
  */
-static inline void setBeef(HEAPNODE * node){
+static INLINE void setBeef(HEAPNODE * node){
 	*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
 }
 
@@ -164,7 +167,7 @@ static inline void setBeef(HEAPNODE * node){
  * \return !0 Beef is ok
  * \return 0 Beef is not ok
  */
-static inline char checkBeef(HEAPNODE * node){
+static INLINE char checkBeef(HEAPNODE * node){
 	return (*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
 }
 
