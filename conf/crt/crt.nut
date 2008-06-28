@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.10  2008/06/28 07:49:33  haraldkipp
+-- Added floating point support for stdio running on ARM.
+--
 -- Revision 1.9  2008/01/31 09:09:07  haraldkipp
 -- Added stdlib environment.
 --
@@ -287,6 +290,13 @@ nutcrt =
         requires = { "NUT_HEAPMEM" },
         provides = { "CRT_HEAPMEM" },
         sources = { "malloc.c" }
+    },
+    {
+        name = "nutcrt_sbrk",
+        brief = "Library Heap Support",
+        requires = { "NUT_HEAPMEM", "TOOL_ARMLIB" },
+        provides = { "CRT_SBRK" },
+        sources = { "sbrk.c" }
     },
 
     --

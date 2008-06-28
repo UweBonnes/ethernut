@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/06/28 07:49:33  haraldkipp
+ * Added floating point support for stdio running on ARM.
+ *
  * Revision 1.12  2008/04/18 13:22:26  haraldkipp
  * Added type casts to fix ICCAVR V7.16 compile errors.
  *
@@ -96,6 +99,18 @@
 #include <math.h>
 #define	BUF	16
 #define	DEFPREC	6
+
+#if defined(__arm__)
+/*
+ * Newlib needs _sbrk for floating point conversion. Because newlib 
+ * libraries are linked after Nut/OS libraries, this function is referenced 
+ * too late. So we include a reference here to force _sbrk inclusion.
+ * This reference should depend on newlib usage, not generally on ARM CPUs,
+ * but how to find out if we have newlib or not?
+ */
+extern char *_sbrk(size_t nbytes);
+char *(*sbrk_force)(size_t) = _sbrk;
+#endif
 
 #else
 
@@ -392,6 +407,60 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             /* cp = FormatFP_1(iccfmt, _double, 0, 1, prec); */
             cp = ftoa(_double, &fps);
             size = strlen(cp);
+            break;
+#elif defined(__arm__)
+        case 'g':
+        case 'G':
+        case 'e':
+        case 'E':
+        case 'f':
+            {
+                int decpt;
+                int sign;
+                char *rve = buf;
+                char *bp = buf;
+
+                if (prec == -1)
+                    prec = DEFPREC;
+                _double = va_arg(ap, double);
+                cp = _dtoa_r(_REENT, _double, 3, prec, &decpt, &sign, &rve);
+                if (decpt == 9999) {
+                    /* Infinite or invalid. */
+                    strcpy(bp, cp);
+                } else {
+                    /* Left of decimal dot. */
+                    if (decpt > 0) {
+                        while (*cp && decpt > 0) {
+                            *bp++ = *cp++;
+                            decpt--;
+                        }
+                        while (decpt > 0) {
+                            *bp++ = '0';
+                            decpt--;
+                        }
+                    } else {
+                        *bp++ = '0';
+                    }
+                    *bp++ = '.';
+                    /* Right of decimal dot. */
+                    while (decpt < 0 && prec > 0) {
+                        *bp++ = '0';
+                        decpt++;
+                        prec--;
+                    }
+                    while (*cp && prec > 0) {
+                        *bp++ = *cp++;
+                        prec--;
+                    }
+                    while (prec > 0) {
+                        *bp++ = '0';
+                        prec--;
+                    }
+                    *bp = 0;
+                }
+                cp = buf;
+                size = strlen(cp);
+            }
             break;
 #else
         case 'g':

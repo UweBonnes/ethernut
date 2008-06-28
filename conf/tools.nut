@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.22  2008/06/28 07:49:33  haraldkipp
+-- Added floating point support for stdio running on ARM.
+--
 -- Revision 1.21  2008/04/01 10:12:33  haraldkipp
 -- Beautified target list.
 --
@@ -110,7 +113,7 @@ nuttools =
         {
             brief = "GCC for ARM",
             description = "GNU Compiler Collection for ARM including libc.",
-            provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX" },
+            provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX", "TOOL_ARMLIB" },
             macro = "ARM_GCC",
             flavor = "boolean",
             exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },

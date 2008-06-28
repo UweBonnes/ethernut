@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.436 2008/06/25 08:39:03 freckle Exp $
+$Id: ChangeLog,v 1.437 2008/06/28 07:49:31 haraldkipp Exp $
+
+2008-06-27  Harald Kipp  <harald.kipp@egnite.de>
+
+	* crt/sbrk.c, conf/crt/crt.nut, conf/tools.nut, crt/putf.c:
+	Added floating point support for stdio running on ARM. This
+	is a dirty implementation and hadn't been tested very well.
+
 
 2008-06-25  Matthias Ringwald <mringwal@inf.ethz.ch>
         * include/sys/heap.h, os/heap.c: Added NutHeapRealloc contributed
