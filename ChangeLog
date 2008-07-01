@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.438 2008/06/28 08:35:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.439 2008/07/01 23:15:28 thiagocorrea Exp $
+
+2008-07-01  Thiago A. Correa  <thiago.correa@gmail.com>
+
+	* crt/malloc.c: Add realloc to override libc's realloc using 
+	NutHeapRealloc.
+
 
 2008-06-28  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -56,13 +62,15 @@ $Id: ChangeLog,v 1.438 2008/06/28 08:35:38 haraldkipp Exp $
 
 
 2008-06-10  Matthias Ringwald <mringwal@inf.ethz.ch>
-        * include/sys/heap.h: added missing include for C99 type usage
+    * include/sys/heap.h: added missing include for C99 type usage
 
 
 2008-06-09  Thiago A. Correa
-        * ${list of modified files goes here}: NutHeapRealloc code
-        contributed by Moritz Struebe.
-        Add realloc to override libc's realloc using NutHeapRealloc
+    * arch/avr/os/context_gcc.c, arch/avr/os/context_icc.c,
+	crt/malloc.c, include/sys/heap.h, include/sys/thread.h,
+	os/heap.c, os/thread.c: NutHeapRealloc code
+    contributed by Moritz Struebe.
+    Add realloc to override libc's realloc using NutHeapRealloc
 
 2008-06-05  Harald Kipp  <harald.kipp@egnite.de>
 

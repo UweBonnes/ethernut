@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/07/01 23:15:28  thiagocorrea
+ * Resubmit realloc code using NutHeapRealloc.
+ *
  * Revision 1.7  2008/06/15 17:01:50  haraldkipp
  * Rolled back to version 1.5.
  *
@@ -102,6 +105,31 @@ void *malloc(size_t len)
 void free(void *p)
 {
     NutHeapFree(p);
+}
+
+/*!
+* \brief Reallocate a block from heap memory.
+*
+* This function simply calls NutHeapRealloc(). It overrides the function
+* of the runtime library, when the application is linked with nutcrt or
+* nutcrtf.
+*
+* \param ptr Pointer to memory block previously allocated with malloc to be reallocated.
+*            If this is NULL, a new block is allocated.
+* \param len Size of the requested memory block.
+*
+* \return Pointer to the reallocated memory block if the
+*         function is successful or NULL if the requested
+*         amount of memory is not available.
+*/
+void *realloc(void* ptr, size_t len)
+{
+	void *p;
+
+	if ((p = NutHeapRealloc(ptr, len)) == NULL) {
+		errno = ENOMEM;
+	}
+	return p;
 }
 
 /*@}*/
