@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2008/07/07 07:39:10  haraldkipp
+ * Fixes data abort exception on ARM.
+ *
  * Revision 1.17  2008/06/28 08:35:38  haraldkipp
  * Replaced inline by INLINE.
  *
@@ -160,17 +163,18 @@ static INLINE void setBeef(HEAPNODE * node){
 	*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
 }
 
-
+#if !defined(ARCH_32BIT)
 /*!
  * \brief Check Beef of an heapnode
  * \param node A valid Heapnode with beef
  * \return !0 Beef is ok
  * \return 0 Beef is not ok
+ * \bug Results in data abort exception on ARM.
  */
 static INLINE char checkBeef(HEAPNODE * node){
 	return (*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
 }
-
+#endif
 
 /*!
  * \brief
@@ -210,7 +214,7 @@ void *NutHeapAlloc(size_t size)
     HEAPNODE *fit = 0;
     HEAPNODE **fpp = 0;
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#if defined(ARCH_32BIT)
     /*
      * Allign to the word boundary
      */
@@ -487,8 +491,11 @@ int NutHeapFree(void *block)
         } 
     }
 #endif
-
-    if(!checkBeef(fnode)) return -2;
+#if !defined(ARCH_32BIT)
+    if(!checkBeef(fnode)) {
+        return -2;
+    }
+#endif
 
 #ifdef NUTDEBUG
     if (__heap_trf)

@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.439 2008/07/01 23:15:28 thiagocorrea Exp $
+$Id: ChangeLog,v 1.440 2008/07/07 07:39:09 haraldkipp Exp $
+
+2008-07-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/heap.c: Throws data abort exception on ARM. Function checkBeef()
+	removed for 32 bit targets.
+
 
 2008-07-01  Thiago A. Correa  <thiago.correa@gmail.com>
 
