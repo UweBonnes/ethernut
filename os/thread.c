@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.31  2008/07/07 11:04:28  haraldkipp
+ * Configurable ways of handling critical sections for ARM targets.
+ *
  * Revision 1.30  2008/06/15 17:09:01  haraldkipp
  * Rolled back to version 1.28.
  *
@@ -205,6 +208,10 @@
  * \addtogroup xgThread
  */
 /*@{*/
+
+#if defined(NUT_CRITICAL_NESTING) && !defined(NUT_CRITICAL_NESTING_STACK)
+u_int critical_nesting_level;
+#endif
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 // prototype

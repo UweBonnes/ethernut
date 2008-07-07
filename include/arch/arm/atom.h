@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/07/07 11:04:27  haraldkipp
+ * Configurable ways of handling critical sections for ARM targets.
+ *
  * Revision 1.5  2008/03/17 10:15:36  haraldkipp
  * Added memory and cc clobbers to NutEnter/ExitCritical. This keeps
  * compiler optimizations inside and outside of critical sections
@@ -69,6 +72,10 @@
 
 #ifdef __GNUC__
 
+#if defined(NUT_CRITICAL_NESTING)
+
+#if defined(NUT_CRITICAL_NESTING_STACK)
+
 #define NutEnterCritical() \
 { \
     int temp_; \
@@ -90,6 +97,61 @@
             "msr     cpsr, %0"  "\n\t" \
             : "=r" (temp_) : : "memory", "cc"); \
 }
+
+#else /* NUT_CRITICAL_NESTING_STACK */
+
+extern u_int critical_nesting_level;
+
+#define NutEnterCritical() \
+if (critical_nesting_level++ == 0) { \
+    int temp_; \
+    asm volatile (             \
+            "@ NutEnterCritical"    "\n\t" \
+            "mrs     %0, cpsr"      "\n\t" \
+            "orr     %0, %0, #0xC0" "\n\t" \
+            "msr     cpsr, %0"      "\n\t" \
+            : "=r" (temp_) : : "cc"); \
+}
+
+#define NutExitCritical() \
+if (critical_nesting_level) { \
+    int temp_; \
+    asm volatile (             \
+            "@ NutExitCritical"     "\n\t" \
+            "mrs     %0, cpsr"      "\n\t" \
+            "bic     %0, %0, #0xC0" "\n\t" \
+            "msr     cpsr, %0"      "\n\t" \
+            : "=r" (temp_) : : "cc"); \
+    critical_nesting_level--; \
+}
+
+#endif /* NUT_CRITICAL_NESTING_STACK */
+
+#else /* NUT_CRITICAL_NESTING */
+
+#define NutEnterCritical() \
+{ \
+    int temp_; \
+    asm volatile (             \
+            "@ NutEnterCritical"    "\n\t" \
+            "mrs     %0, cpsr"      "\n\t" \
+            "orr     %0, %0, #0xC0" "\n\t" \
+            "msr     cpsr, %0"      "\n\t" \
+            : "=r" (temp_) : : "cc"); \
+}
+
+#define NutExitCritical() \
+{ \
+    int temp_; \
+    asm volatile (             \
+            "@ NutExitCritical"     "\n\t" \
+            "mrs     %0, cpsr"      "\n\t" \
+            "bic     %0, %0, #0xC0" "\n\t" \
+            "msr     cpsr, %0"      "\n\t" \
+            : "=r" (temp_) : : "cc"); \
+}
+
+#endif /* NUT_CRITICAL_NESTING */
 
 #define NutJumpOutCritical()    NutExitCritical()
 

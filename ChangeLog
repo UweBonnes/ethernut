@@ -1,6 +1,15 @@
-$Id: ChangeLog,v 1.440 2008/07/07 07:39:09 haraldkipp Exp $
+$Id: ChangeLog,v 1.441 2008/07/07 11:04:24 haraldkipp Exp $
 
 2008-07-07  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/os/context.c, conf/os/os.nut, include/arch/arm/atom.h,
+	os/thread.c: Three optional ways of handling critical sections are
+	now available for ARM targets. For fastest interrupt response,
+	critical section nesting should be disabled. This is the default
+	and compatible with version 4.4. Alternatively the nesting level
+	is trackes by either using the stack (fast, but may crash with
+	some compilers and optimization settings) or by using a global
+	variable (slow, but safe).
 
 	* os/heap.c: Throws data abort exception on ARM. Function checkBeef()
 	removed for 32 bit targets.

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/07/07 11:04:27  haraldkipp
+ * Configurable ways of handling critical sections for ARM targets.
+ *
  * Revision 1.5  2006/03/16 19:06:16  haraldkipp
  * Use link register to jump into thread and use dedicated routine to
  * jump into the idle thread. The way we did start the idle thread
@@ -177,6 +180,9 @@ void NutThreadSwitch(void)
                             "movs    pc, lr"    /* Restore status and return. */
                             ::"m"(runningThread->td_sp) /* */
         );
+#if defined(NUT_CRITICAL_NESTING) && !defined(NUT_CRITICAL_NESTING_STACK)
+        critical_nesting_level = 0;
+#endif
 }
 
 /*!

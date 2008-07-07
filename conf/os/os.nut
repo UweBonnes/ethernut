@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.17  2008/07/07 11:04:27  haraldkipp
+-- Configurable ways of handling critical sections for ARM targets.
+--
 -- Revision 1.16  2008/04/21 22:29:01  olereinhardt
 -- Added configuration options for condition variables
 --
@@ -265,6 +268,31 @@ nutos =
                 brief = "Main Thread Stack Size",
                 description = "Number of bytes to be allocated for the stack of the main thread.",
                 default = "768",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUT_CRITICAL_NESTING",
+                brief = "Critical Section Nesting",
+                description = "The kernel avoids nesting of critical sections, but applications "..
+                              "may want to use this feature. When enabled, a global counter keeps "..
+                              "track of the nesting level. Disadvantages are increased code "..
+                              "size and a significantly increased interrupt latency time.\n\n"..
+                              "This option is currently available for ARM targets only. "..
+                              "On the AVR, nesting of critical sections is available by default.",
+                flavor = "boolean",
+                requires = { "HW_MCU_ARM" },
+                provides = { "NUT_CRITNESTING" },
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUT_CRITICAL_NESTING_STACK",
+                brief = "Critical Section Nesting Uses Stack",
+                description = "Using the stack for critical section nesting results in better "..
+                              "interrupt responsiveness. However, most compilers are not able "..
+                              "to deal with stack modifications. Use this option with great care.\n\n"..
+                              "This option is ignored, if critical section nesting is disabled.",
+                flavor = "boolean",
+                requires = { "HW_MCU_ARM", "NUT_CRITNESTING" },
                 file = "include/cfg/os.h"
             },
         }
