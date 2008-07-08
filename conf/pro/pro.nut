@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.12  2008/07/08 13:27:55  haraldkipp
+-- Several HTTP server options are now configurable.
+-- Keepalive is now disabled by default to maintain backward compatibility.
+--
 -- Revision 1.11  2008/05/16 03:39:31  thiagocorrea
 -- Revert httpd memory allocation calls to NutHeapAlloc for consistency and
 -- move DestroyRequestInfo to a shared file (reduces code size and remove duplicates
@@ -232,6 +236,74 @@ nutpro =
             "asp.c",
             "ssi.c",
             "rfctime.c"
+        },
+        options = 
+        {
+            {
+                macro = "HTTP_MAJOR_VERSION",
+                brief = "Major Version",
+                description = "The major HTTP version number reported to the client.",
+                type = "integer",
+                default = "1",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MINOR_VERSION",
+                brief = "Minor Version",
+                description = "The minor HTTP version number reported to the client.",
+                type = "integer",
+                default = "1",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_DEFAULT_ROOT",
+                brief = "Default Root Directory",
+                description = 'The default root directory used by the server to locate '..
+                              'requested files. The value must be enclosed in double quotes. '..
+                              'Applications typically override this by calling '..
+                              'NutRegisterHttpRoot.\n\n',
+                default = '"UROM:"',
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MAX_REQUEST_SIZE",
+                brief = "Max. Request Line Size",
+                description = "HTTP request beyond this length will be discarded.",
+                type = "integer",
+                default = "256",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_FILE_CHUNK_SIZE",
+                brief = "Chunk Size",
+                description = "The number of bytes to be used for the file read buffer. "..
+                              "Reducing this value will save RAM, but degrade performance.",
+                type = "integer",
+                default = "512",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_KEEP_ALIVE_REQ",
+                brief = "Max. Requests per Connection",
+                description = "The server will close a connection after the specified "..
+                              "number of requests. Zero by default, which completely disables "..
+                              "the HTTP keepalive function.\n\n"..
+                              "Enabling keepalive will significantly increase the performance. "..
+                              "However, browsers may not properly close keepalive connections. "..
+                              "Thus, it is required to enable socket receive timeouts.",
+                type = "integer",
+                default = "0",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTPD_EXCLUDE_DATE",
+                brief = "Exclude Date Information",
+                description = "By default, the server includes file date information "..
+                              "in the response header. This may not always make sense "..
+                              "and some memory can be saved by enabling this option.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            }
         }
     },
     {

@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.20  2008/07/08 13:27:55  haraldkipp
+ * Several HTTP server options are now configurable.
+ * Keepalive is now disabled by default to maintain backward compatibility.
+ *
  * Revision 1.19  2008/05/21 14:10:19  thiagocorrea
  * Workaround HTTP stall connections. Details in bug id 1968754
  *
@@ -121,6 +125,7 @@
  */
 
 #include <cfg/arch.h>
+#include <cfg/http.h>
 
 #include <string.h>
 #include <io.h>
@@ -156,7 +161,7 @@
 
 /*! \brief Maximum number of requests per connection. */
 #ifndef HTTP_KEEP_ALIVE_REQ
-#define HTTP_KEEP_ALIVE_REQ 5
+#define HTTP_KEEP_ALIVE_REQ 0
 #endif
 
 /*! \brief Maximum size of an incoming request line. */
@@ -283,19 +288,23 @@ void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long
     static prog_char len_fmt_P[] = "Content-Length: %ld\r\n";
     static prog_char con_str_P[] = "Connection: ";
     static prog_char ccl_str_P[] = "close\r\n\r\n";
-    static prog_char cka_str_P[] = "Keep-Alive\r\n\r\n";
 
     if (mime_type)
         fprintf_P(stream, typ_fmt_P, mime_type);
     if (bytes >= 0)
         fprintf_P(stream, len_fmt_P, bytes);
     fputs_P(con_str_P, stream);
+#if HTTP_KEEP_ALIVE_REQ
     if ( req && req->req_connection == HTTP_CONN_KEEP_ALIVE) {
+        static prog_char cka_str_P[] = "Keep-Alive\r\n\r\n";
         fputs_P(cka_str_P, stream);
     }
     else {
         fputs_P(ccl_str_P, stream);
     }
+#else
+    fputs_P(ccl_str_P, stream);
+#endif
 }
 
 /*!
@@ -337,11 +346,11 @@ void NutHttpSendError(FILE * stream, REQUEST * req, int status)
         title = "Error";
         break;
     }
-
+#if HTTP_KEEP_ALIVE_REQ
     if (status >= 400) {
         req->req_connection = HTTP_CONN_CLOSE;
     }
-
+#endif
     NutHttpSendHeaderTop(stream, req, status, title);
     if (status == 401) {
         char *cp = 0;
@@ -767,7 +776,9 @@ void NutHttpProcessRequest(FILE * stream)
     char *line;
     char *protocol;
     char *cp;
+#if HTTP_KEEP_ALIVE_REQ
     int keep_alive_max = HTTP_KEEP_ALIVE_REQ;
+#endif
 
     for(;;) {
         /* Release resources used on the previous connect. */
@@ -830,7 +841,9 @@ void NutHttpProcessRequest(FILE * stream)
             } else if (strncasecmp(line, "Host:", 5) == 0) {
                 if (HeaderFieldValue(&req->req_host, line + 5))
                     break;
-            } else if (strncasecmp(line, "Connection:", 11) == 0) {
+            }
+#if HTTP_KEEP_ALIVE_REQ
+            else if (strncasecmp(line, "Connection:", 11) == 0) {
                 if (strncasecmp(line + 12, "close", 5) == 0) {
                     req->req_connection = HTTP_CONN_CLOSE;
                 }
@@ -838,15 +851,11 @@ void NutHttpProcessRequest(FILE * stream)
                     req->req_connection = HTTP_CONN_KEEP_ALIVE;
                 }
             }
+#endif
         }
-
-		// TODO: Find a way to fix Keep-Alive connections.
-		// Bug workaround: fread will stall the thread on Keep-Alive connections
-		// at the last browser request. 
-		req->req_connection = HTTP_CONN_CLOSE; 
-
-        NutHeapFree(line);
-
+        if (line) {
+            NutHeapFree(line);
+        }
         path = NextWord(method);
         protocol = NextWord(path);
         NextWord(protocol);
@@ -870,10 +879,13 @@ void NutHttpProcessRequest(FILE * stream)
         /* Determine the client's HTTP version. */
         if (strcasecmp(protocol, "HTTP/1.0") == 0) {
             req->req_version = 10;
+#if HTTP_KEEP_ALIVE_REQ
             if (req->req_connection != HTTP_CONN_KEEP_ALIVE) {
                 req->req_connection = HTTP_CONN_CLOSE;
             }
+#endif
         }
+#if HTTP_KEEP_ALIVE_REQ
         else if (req->req_connection != HTTP_CONN_CLOSE) {
             req->req_connection = HTTP_CONN_KEEP_ALIVE;
         }
@@ -885,6 +897,9 @@ void NutHttpProcessRequest(FILE * stream)
         else {
             req->req_connection = HTTP_CONN_CLOSE;
         }
+#else
+        req->req_connection = HTTP_CONN_CLOSE;
+#endif
 
         if ((cp = strchr(path, '?')) != 0) {
             *cp++ = 0;

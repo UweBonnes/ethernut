@@ -1,6 +1,14 @@
-$Id: ChangeLog,v 1.442 2008/07/08 08:25:03 haraldkipp Exp $
+$Id: ChangeLog,v 1.443 2008/07/08 13:27:49 haraldkipp Exp $
 
 2008-07-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/pro/pro.nut, pro/httpd.c: Several HTTP server options are 
+	now configurable. Keepalive is now disabled by default to maintain 
+	backward compatibility. Fixes bug #1968754.
+
+	* crt/putf.c: Starting from avr-libc 1.6.0 (WinAVR-20071221 and 
+	newer) declaration of dtostrf has changed. Many thanks to
+	Andrzej Lawrynowicz. Fixes bug #1871390.
 
 	* arch/arm/dev/ostimer_at91.c, arch/arm/dev/ostimer_gba.c,
 	arch/arm/dev/ostimer_lpc2xxx.c, arch/arm/dev/ostimer_s3c4510b.c,
@@ -10,6 +18,7 @@ $Id: ChangeLog,v 1.442 2008/07/08 08:25:03 haraldkipp Exp $
 	a more general one, which tries to automatically determine the
 	required number of loops during NutTimerInit. Alternatively this 
 	number is configurable. A new function NutMicroDelay has been added.
+	Somehow fixes bug #1567794.
 
 
 2008-07-07  Harald Kipp  <harald.kipp@egnite.de>
