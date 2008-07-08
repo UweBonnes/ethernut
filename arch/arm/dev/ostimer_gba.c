@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/07/08 08:25:04  haraldkipp
+ * NutDelay is no more architecture specific.
+ * Number of loops per millisecond is configurable or will be automatically
+ * determined.
+ * A new function NutMicroDelay provides shorter delays.
+ *
  * Revision 1.4  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -84,33 +90,6 @@
 #endif
 
 static void (*os_handler) (void *);
-
-/*!
- * \brief Loop for a specified number of milliseconds.
- *
- * This call will not release the CPU and will
- * not switch to another thread. However, because
- * of absent thread switching, this delay time is
- * very exact.
- *
- * Use NutSleep() to avoid blocking the CPU, if no
- * exact timing is needed.
- *
- * \bug This function is a miserable hack.
- *
- * \param ms Delay time in milliseconds, maximum is 255.
- */
-void NutDelay(u_char ms)
-{
-    u_short delay_cnt = 2400;   //*KU* for 14.745600 MHz Clock
-    u_short delay_cnt_buffer;
-
-    while (ms--) {
-        delay_cnt_buffer = delay_cnt;
-        while (delay_cnt_buffer--);
-    }
-}
-
 
 /*!
  * \brief Timer 0 interrupt entry.

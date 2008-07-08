@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.19  2008/07/08 08:25:04  haraldkipp
+ * NutDelay is no more architecture specific.
+ * Number of loops per millisecond is configurable or will be automatically
+ * determined.
+ * A new function NutMicroDelay provides shorter delays.
+ *
  * Revision 1.18  2008/02/15 16:58:41  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -139,32 +145,6 @@
 #ifndef NUT_TICK_FREQ
 #define NUT_TICK_FREQ   1000UL
 #endif
-
-/*!
- * \brief Loop for a specified number of milliseconds.
- *
- * This call will not release the CPU and will
- * not switch to another thread. However, because
- * of absent thread switching, this delay time is
- * very exact.
- *
- * Use NutSleep() to avoid blocking the CPU, if no
- * exact timing is needed.
- *
- * \bug This function is a miserable hack.
- *
- * \param ms Delay time in milliseconds, maximum is 255.
- */
-void NutDelay(u_char ms)
-{
-    int i;
-
-    while (ms--) {
-        for (i = 14600; i--; ) {
-            _NOP();
-        }
-    }
-}
 
 /*!
  * \brief Initialize system timer.

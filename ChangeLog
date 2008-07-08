@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.441 2008/07/07 11:04:24 haraldkipp Exp $
+$Id: ChangeLog,v 1.442 2008/07/08 08:25:03 haraldkipp Exp $
+
+2008-07-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/ostimer_at91.c, arch/arm/dev/ostimer_gba.c,
+	arch/arm/dev/ostimer_lpc2xxx.c, arch/arm/dev/ostimer_s3c4510b.c,
+	arch/avr/dev/ostimer.c, arch/unix/dev/ostimer.c, conf/os/os.nut,
+	include/arch/timer.h, include/sys/timer.h, os/timer.c:
+	Architecture specific implementations of NutDelay replaced by
+	a more general one, which tries to automatically determine the
+	required number of loops during NutTimerInit. Alternatively this 
+	number is configurable. A new function NutMicroDelay has been added.
+
 
 2008-07-07  Harald Kipp  <harald.kipp@egnite.de>
 

@@ -33,6 +33,12 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.18  2008/07/08 08:25:04  haraldkipp
+-- NutDelay is no more architecture specific.
+-- Number of loops per millisecond is configurable or will be automatically
+-- determined.
+-- A new function NutMicroDelay provides shorter delays.
+--
 -- Revision 1.17  2008/07/07 11:04:27  haraldkipp
 -- Configurable ways of handling critical sections for ARM targets.
 --
@@ -315,6 +321,16 @@ nutos =
                 description = "Frequency of the MCU clock. On some boards the system is able "..
                               "to automatically determine this value during initialization "..
                               "by using a reference clock. In this case the option may be disabled.",
+                flavor = "booldata",
+                file = "include/cfg/os.h"
+            },
+            {
+                macro = "NUT_DELAYLOOPS",
+                brief = "Loops per Millisecond",
+                description = "Number of loops to execute per millisecond in NutMicroDelay.\n\n"..
+                              "This value depends not only on the target hardware, but also on "..
+                              "compiler options. If not specified, the system will try to "..
+                              "determine a rough approximation.",
                 flavor = "booldata",
                 file = "include/cfg/os.h"
             }

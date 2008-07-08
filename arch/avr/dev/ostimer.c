@@ -33,6 +33,12 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/07/08 08:25:04  haraldkipp
+ * NutDelay is no more architecture specific.
+ * Number of loops per millisecond is configurable or will be automatically
+ * determined.
+ * A new function NutMicroDelay provides shorter delays.
+ *
  * Revision 1.4  2006/12/20 15:14:41  freckle
  * corrected millisecond to nut ticks . Same bug as fixed at 2006-09-05
  *
@@ -173,49 +179,6 @@
 #endif
 
 static u_long cpu_clock;
-
-
-/*!
- * \brief Loop for a specified number of milliseconds.
- *
- * This call will not release the CPU and will not switch to another 
- * thread. However, because of absent thread switching, this delay 
- * time is very exact.
- *
- * If no exact timing is needed, use NutSleep() to avoid blocking the 
- * CPU, 
- *
- * \note The timing may not work as expected. A better implementation
- *       is urgently required.
- *
- * \param ms Delay time in milliseconds, maximum is 255.
- */
-void NutDelay(u_char ms)
-{
-#ifdef __GNUC__
-    u_short cnt;
-    __asm__ __volatile__("L_dl1%=:     \n\t"    /* */
-                         "mov %A0, %A2 \n\t"    /* */
-                         "mov %B0, %B2 \n\n"    /* */
-                         "L_dl2%=:     \n\t"    /* */
-                         "sbiw %A0, 1  \n\t"    /* */
-                         "brne L_dl2%= \n\t"    /* */
-                         "dec %1       \n\t"    /* */
-                         "brne L_dl1%=     "    /* */
-                         :"=&w"(cnt)    /* Output %0 */
-                         :"r"(ms)       /* Input %1 */
-                         , "r"((u_short) (cpu_clock / 4000))    /* Input %2 */
-        );
-#else
-    u_short delay_cnt = 2400;   //*KU* for 14.745600 MHz Clock
-    u_short delay_cnt_buffer;
-
-    while (ms--) {
-        delay_cnt_buffer = delay_cnt;
-        while (delay_cnt_buffer--);
-    }
-#endif
-}
 
 /*! \fn CountCpuLoops(void)
  * \brief Count the number of code loops until timer overflows.

@@ -82,27 +82,6 @@ void *NutTimerEmulation(void *arg)
 }
 
 /*!
- * \brief Loop for a specified number of milliseconds.
- *
- * This call will not release the CPU and will
- * not switch to another thread. However, because
- * of absent thread switching, this delay time is
- * very exact.
- *
- * Use NutSleep() to avoid blocking the CPU, if no
- * exact timing is needed.
- * 
- * Not all Unix systems support milliseconds resolution.
- *
- * \param ms Delay time in milliseconds, maximum is 255.
- */
-void NutDelay(u_char ms)
-{
-        usleep( 1000 );
-}
-
-
-/*!
  * \brief Initialize system timer.
  *
  * This function is automatically called by Nut/OS

@@ -39,6 +39,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.33  2008/07/08 08:25:05  haraldkipp
+ * NutDelay is no more architecture specific.
+ * Number of loops per millisecond is configurable or will be automatically
+ * determined.
+ * A new function NutMicroDelay provides shorter delays.
+ *
  * Revision 1.32  2007/05/29 16:31:25  freckle
  * corrected comment
  *
@@ -230,6 +236,20 @@ volatile u_long nut_ticks;
 // volatile u_long nut_tick_dist[32];
 
 /*!
+ *  \brief Loops per microsecond.
+ */
+#if defined(NUT_DELAYLOOPS)
+volatile u_long nut_delay_loops = NUT_DELAYLOOPS;
+#else
+volatile u_long nut_delay_loops;
+#endif
+
+/*!
+ *  \brief Related CPU frequency for loops per microsecond.
+ */
+//Not Used u_long nut_delay_loops_clk;
+
+/*!
  * \brief System timer interrupt handler.
  */
 #if !(defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__))
@@ -259,9 +279,76 @@ void NutTimerInit(void)
 #else
     NutRegisterTimer(NutTimerIntr);
     NutEnableTimerIrq();
+//Not Used     /* Remember the CPU clock for which the loop counter is valid. */
+//Not Used     nut_delay_loops_clk = NutGetCpuClock();
+#if !defined(NUT_DELAYLOOPS)
+#ifndef NUT_TICK_FREQ
+#define NUT_TICK_FREQ   1000UL
+#endif
+    {
+        /* Wait for the next tick. */
+        u_long cnt = NutGetTickCount();
+        while (cnt == NutGetTickCount());
+        /* Wait for the next tick, counting loops. */
+        cnt = NutGetTickCount();
+        while (cnt == NutGetTickCount()) {
+            nut_delay_loops++;
+        }
+        /* 
+         * The loop above needs more cycles than the actual delay loop.
+         * Apply the correction found by trial and error. Works acceptable
+         * with GCC for Ethernut 1 and 3.
+         */
+        nut_delay_loops *= 103UL;
+        nut_delay_loops /= 26UL;
+    }
+#endif
 #endif
 }
 
+/*!
+ * \brief Loop for a specified number of microseconds.
+ *
+ * This call will not release the CPU and will not switch to another 
+ * thread. However, interrupts are not disabled and introduce some
+ * jitter. Furthermore, unless NUT_DELAYLOOPS is not defined, the 
+ * deviation may be greater than 10%.
+ *
+ * If you need exact timing, use timer/counter hardware instead.
+ *
+ * \param us Delay time in microseconds. Values above 255 milliseconds
+ *           may not work.
+ *
+ * \todo Overflow handling.
+ */
+void NutMicroDelay(u_long us)
+{
+#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+    usleep(us);
+#else
+    register u_long cnt = nut_delay_loops * us / 1000;
+
+    while (cnt--) {
+        _NOP();
+    }
+#endif
+}
+
+/*!
+ * \brief Loop for a specified number of milliseconds.
+ *
+ * This call will not release the CPU and will not switch to another 
+ * thread. Because of absent thread switching, the delay time is more 
+ * exact than with NutSleep().
+ *
+ * \param ms Delay time in milliseconds, maximum is 255.
+ *
+ * \deprecated New applications should use NutMicroDelay().
+ */
+void NutDelay(u_char ms)
+{
+    NutMicroDelay((u_long)ms * 1000);
+}
 
 /*!
  * \brief Insert a new timer in the global timer list.

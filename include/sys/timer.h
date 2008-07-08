@@ -51,6 +51,12 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/07/08 08:25:05  haraldkipp
+ * NutDelay is no more architecture specific.
+ * Number of loops per millisecond is configurable or will be automatically
+ * determined.
+ * A new function NutMicroDelay provides shorter delays.
+ *
  * Revision 1.10  2006/06/28 14:36:34  haraldkipp
  * Event/thread/timer re-design.
  *
@@ -150,6 +156,8 @@ extern void NutTimerProcessElapsed(void);
  * API declarations.
  */
 extern void NutSleep(u_long ms);
+extern void NutDelay(u_char ms);
+extern void NutMicroDelay(u_long us);
 
 extern u_long NutGetTickCount(void);
 extern u_long NutGetSeconds(void);
