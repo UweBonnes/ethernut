@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2008/07/08 13:26:58  haraldkipp
+ * Floating point bug with avr-libc 1.16 fixed (bug #1871390).
+ *
  * Revision 1.13  2008/06/28 07:49:33  haraldkipp
  * Added floating point support for stdio running on ARM.
  *
@@ -174,18 +177,25 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
     int size;                   /* size of converted field or string */
     char *xdigs;                /* digits for [xX] conversion */
     char buf[BUF];              /* space for %c, %[diouxX], %[eEfgG] */
+
 #ifdef STDIO_FLOATING_POINT
     double _double;             /* double precision arguments %[eEfgG] */
+
 #ifdef __IMAGECRAFT__
     int iccfmt;
     int fps;
     extern char *FormatFP_1(int format, float f, unsigned flag, int field_width, int prec);
     extern char *ftoa(float f, int *status);
-#else
+#else /* __IMAGECRAFT__ */
     char *dtostre(double f, char *str, u_char prec, u_char flags);
+#if __AVR_LIBC_VERSION__  >= 10600
+    char *dtostrf(double f, signed char width, unsigned char prec, char *str);
+#else /* __AVR_LIBC_VERSION__ */
     char *dtostrf(double f, char width, char prec, char *str);
-#endif
-#endif
+#endif /* __AVR_LIBC_VERSION__ */
+#endif /* __IMAGECRAFT__ */
+
+#endif /* STDIO_FLOATING_POINT */
 
     rc = 0;
 
