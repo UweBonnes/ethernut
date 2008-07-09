@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/07/09 14:23:49  haraldkipp
+ * Info about NutRegisterCgi's first parameter updated.
+ *
  * Revision 1.2  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -63,7 +66,12 @@ CGIFUNCTION *volatile cgiFunctionList = 0;
  *
  * \todo Duplicate names not checked.
  *
- * \param name Name of this CGI function.
+ * \param name Pointer to a buffer containing the name of this CGI function. 
+ *             The caller must make sure, that the buffer reamins valid
+ *             throughout the lifetime of the server. This can be done, for
+ *             example, by using a global variable or by allocating the
+ *             buffer from heap memory. Using string literals may not work
+ *             on all targets or with all compilers.
  * \param func The function to be called, if the
  *             client requests the specified name.
  *
