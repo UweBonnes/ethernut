@@ -1,11 +1,11 @@
-$Id: ChangeLog,v 1.445 2008/07/09 09:15:53 haraldkipp Exp $
+$Id: ChangeLog,v 1.446 2008/07/09 11:14:22 haraldkipp Exp $
 
 2008-07-09  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/arm/init/crtat91sam7se512_ram.S, conf/tools.nut, 
-	arch/arm/ldscripts/at91sam7se512_ram.ld: Added capability to load
-	the code directly into RAM for easier debugging. Contributed by
-	Michael Fischer.
+	arch/arm/ldscripts/at91sam7se512_ram.ld, conf/repository.nut: 
+	Added capability to load the code directly into RAM for easier 
+	debugging. Contributed by Michael Fischer.
 
 
 2008-07-08  Harald Kipp  <harald.kipp@egnite.de>

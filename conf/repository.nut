@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.28  2008/07/09 11:14:46  haraldkipp
+-- Changelog corrected, again.
+--
 -- Revision 1.27  2008/04/01 10:12:08  haraldkipp
 -- Added missing at91sam7s entries.
 --
@@ -154,6 +157,7 @@ arm_ld_choice = {
                     "at91_httprom", 
                     "at91sam7s256_rom",
                     "at91sam7se512_rom",
+                    "at91sam7se512_ram",
                     "at91sam7x256_rom", 
                     "at91sam9260_ram", 
                     "s3c4510b-ram", 
