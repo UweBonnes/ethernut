@@ -1,6 +1,17 @@
-$Id: ChangeLog,v 1.446 2008/07/09 11:14:22 haraldkipp Exp $
+$Id: ChangeLog,v 1.447 2008/07/09 14:27:07 haraldkipp Exp $
 
 2008-07-09  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/dev/dev.nut, dev/x12rtc.c: Made EEPROM_PAGE_SIZE configurable. 
+	I'm not convinced whether this makes sense, but it won't hurt.
+
+	* pro/cgi.c: Bug #1799374 fixed, without adding any code, as suggested
+	by Jason. I like these kind of code-size-aware enhancements.
+
+	* crt/getf.c: Added support for length modifier h. According
+	to C99, F, G and X type specifiers should work like f, g, and x.
+	Thanks to Martin Ludwig for his suggestions. Fixes bugs
+	#1711107 and #2003064.
 
 	* arch/arm/init/crtat91sam7se512_ram.S, conf/tools.nut, 
 	arch/arm/ldscripts/at91sam7se512_ram.ld, conf/repository.nut: 
