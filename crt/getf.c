@@ -39,6 +39,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/07/09 14:20:25  haraldkipp
+ * Added support for length modifier h. According to C99, F, G and X type
+ * specifiers should work like f, g, and x.
+ *
  * Revision 1.5  2006/05/15 15:31:11  freckle
  * Take care of first character after integer
  *
@@ -120,6 +124,7 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
     u_char base;                /* Conversion base. */
     u_char ccnt = 0;            /* Number of conversions. */
     u_char acnt = 0;            /* Number of fields assigned. */
+    u_char hcnt;                /* Number of 'half' specifiers. */
     char buf[16];               /* Temporary buffer. */
     char *cp;                   /* Temporary pointer. */
     u_char ch_ready = 0;        /* Character available from previous peek
@@ -175,11 +180,14 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
          */
         width = 0;
         flags = 0;
+        hcnt = 0;
         for (;;) {
             if (cf == '*')
                 flags |= CF_SUPPRESS;
             else if (cf == 'l')
                 flags |= CF_LONG;
+            else if (cf == 'h')
+                hcnt++;
             else if (cf >= '0' && cf <= '9')
                 width = width * 10 + cf - '0';
             else
@@ -212,13 +220,16 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
             base = 8;
             break;
         case 'x':
+        case 'X':
             flags |= CF_PFXOK;
             base = 16;
             break;
 #ifdef STDIO_FLOATING_POINT
         case 'e':
         case 'f':
+        case 'F':
         case 'g':
+        case 'G':
             ct = CT_FLOAT;
             break;
 #endif
@@ -352,6 +363,10 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
                 res = strtol(buf, 0, base);
                 if (flags & CF_LONG)
                     *va_arg(ap, long *) = res;
+                else if (hcnt == 1)
+                    *va_arg(ap, short *) = res;
+                else if (hcnt)
+                    *va_arg(ap, char *) = res;
                 else
                     *va_arg(ap, int *) = res;
                 acnt++;
