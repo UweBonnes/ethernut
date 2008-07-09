@@ -1,10 +1,10 @@
-$Id: ChangeLog,v 1.443 2008/07/08 13:27:49 haraldkipp Exp $
+$Id: ChangeLog,v 1.444 2008/07/09 08:39:39 haraldkipp Exp $
 
 2008-07-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* conf/pro/pro.nut, pro/httpd.c: Several HTTP server options are 
-	now configurable. Keepalive is now disabled by default to maintain 
-	backward compatibility. Fixes bug #1968754.
+	* conf/pro/pro.nut, include/cfg/http.h, pro/httpd.c: Several HTTP 
+	server options are now configurable. Keepalive is now disabled by 
+	default to maintain backward compatibility. Fixes bug #1968754.
 
 	* crt/putf.c: Starting from avr-libc 1.6.0 (WinAVR-20071221 and 
 	newer) declaration of dtostrf has changed. Many thanks to
