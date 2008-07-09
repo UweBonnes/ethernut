@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/07/09 14:25:06  haraldkipp
+ * Made EEPROM_PAGE_SIZE configurable. Does it really make sense?
+ *
  * Revision 1.6  2007/06/03 08:50:38  haraldkipp
  * Automatic detection of X1226 or X1286.
  * Fixed wrong century determination for X1226.
@@ -65,6 +68,8 @@
  */
 
 #include <cfg/os.h>
+#include <cfg/eeprom.h>
+
 #include <dev/twif.h>
 #include <sys/event.h>
 #include <sys/timer.h>

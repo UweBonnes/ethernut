@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.39  2008/07/09 14:25:06  haraldkipp
+-- Made EEPROM_PAGE_SIZE configurable. Does it really make sense?
+--
 -- Revision 1.38  2008/02/15 16:55:43  haraldkipp
 -- Added support for VS1033/53 codec.
 --
@@ -2282,6 +2285,14 @@ nutdev =
                               "be stored in this chip.",
                 provides = { "HW_NVMEM" },
                 flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "EEPROM_PAGE_SIZE",
+                brief = "EEPROM Page Size",
+                description = "If enabled, a different page size may be specified.\n\n"..
+                              "Do we really need this?",
+                flavor = "booldata",
                 file = "include/cfg/eeprom.h"
             },
         },
