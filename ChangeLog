@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.447 2008/07/09 14:27:07 haraldkipp Exp $
+$Id: ChangeLog,v 1.448 2008/07/10 12:09:38 haraldkipp Exp $
+
+2008-07-10  Harald Kipp  <harald.kipp@egnite.de>
+
+	* pro/httpd.c: Wrong mime type was returned for default files
+	within subdirectories. Thanks to Michael Fischer for this fix.
+	Put duplicate code in a new static function GetMimeEntry.
+
 
 2008-07-09  Harald Kipp  <harald.kipp@egnite.de>
 

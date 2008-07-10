@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.21  2008/07/10 12:09:39  haraldkipp
+ * Wrong mime type was returned for default files within subdirectories.
+ * Put duplicate code in a new static function GetMimeEntry.
+ *
  * Revision 1.20  2008/07/08 13:27:55  haraldkipp
  * Several HTTP server options are now configurable.
  * Keepalive is now disabled by default to maintain backward compatibility.
@@ -368,6 +372,22 @@ void NutHttpSendError(FILE * stream, REQUEST * req, int status)
     fprintf_P(stream, err_fmt_P, status, title, status, title);
 }
 
+static MIMETYPES *GetMimeEntry(char *name)
+{
+    MIMETYPES *rc;
+    int fl;
+
+    if (name == NULL || (fl = strlen(name)) == 0) {
+        return &mimeTypes[1];
+    }
+    for (rc = mimeTypes; rc->mtyp_ext; rc++) {
+        if (strcasecmp(&(name[fl - strlen(rc->mtyp_ext)]), rc->mtyp_ext) == 0) {
+            return rc;
+        }
+    }
+    return &mimeTypes[0];
+}
+
 /*!
  * \brief Return the mime type description of a specified file name.
  *
@@ -381,18 +401,9 @@ void NutHttpSendError(FILE * stream, REQUEST * req, int status)
  *         is returned. If the filename is empty, then
  *         "text/html; charset=iso-8859-1" is returned.
  */
-
 char *NutGetMimeType(char *name)
 {
-    size_t i;
-    int fl;
-
-    if (name == NULL || (fl = strlen(name)) == 0)
-        return mimeTypes[1].mtyp_type;
-    for (i = 0; mimeTypes[i].mtyp_ext; i++)
-        if (strcasecmp(&(name[fl - strlen(mimeTypes[i].mtyp_ext)]), mimeTypes[i].mtyp_ext) == 0)
-            return mimeTypes[i].mtyp_type;
-    return mimeTypes[0].mtyp_type;
+    return GetMimeEntry(name)->mtyp_type;
 }
 
 /*!
@@ -412,15 +423,7 @@ char *NutGetMimeType(char *name)
 
 void *NutGetMimeHandler(char *name)
 {
-    size_t i;
-    int fl;
-
-    if (name == NULL || (fl = strlen(name)) == 0)
-        return mimeTypes[1].mtyp_handler;
-    for (i = 0; mimeTypes[i].mtyp_ext; i++)
-        if (strcasecmp(&(name[fl - strlen(mimeTypes[i].mtyp_ext)]), mimeTypes[i].mtyp_ext) == 0)
-            return mimeTypes[i].mtyp_handler;
-    return mimeTypes[0].mtyp_handler;
+    return GetMimeEntry(name)->mtyp_handler;
 }
 
 /*!
@@ -529,6 +532,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     char *data;
     long file_len;
     void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
+    char *mime_type;
     char *filename = NULL;
     char *modstr = NULL;
     
@@ -569,7 +573,8 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         return;
     }
 
-    /* Check for mime handler. */
+    /* Check for mime type and handler. */
+    mime_type = NutGetMimeType(filename);
     handler = NutGetMimeHandler(filename);
 
 #if !defined(HTTPD_EXCLUDE_DATE)
@@ -617,12 +622,12 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     file_len = _filelength(fd);
     /* Use mime handler, if one has been registered. */
     if (handler) {
-        NutHttpSendHeaderBottom(stream, req, NutGetMimeType(req->req_url), -1);
+        NutHttpSendHeaderBottom(stream, req, mime_type, -1);
         handler(stream, fd, file_len, http_root, req);
     } 
     /* Use default transfer, if no registered mime handler is available. */
     else {
-        NutHttpSendHeaderBottom(stream, req, NutGetMimeType(req->req_url), file_len);
+        NutHttpSendHeaderBottom(stream, req, mime_type, file_len);
         if (req->req_method != METHOD_HEAD) {
             size_t size = HTTP_FILE_CHUNK_SIZE;
 
