@@ -1,6 +1,8 @@
-$Id: ChangeLog,v 1.448 2008/07/10 12:09:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.449 2008/07/10 12:17:41 haraldkipp Exp $
 
 2008-07-10  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Preparing beta version 4.5.5.
 
 	* pro/httpd.c: Wrong mime type was returned for default files
 	within subdirectories. Thanks to Michael Fischer for this fix.

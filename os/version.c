@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.52  2008/07/10 12:17:41  haraldkipp
+ * Preparing beta version 4.5.5.
+ *
  * Revision 1.51  2008/04/18 13:12:31  haraldkipp
  * ICCAVR fixes, many shorts to int, PPP+RS485 for AT91.
  *
@@ -206,8 +209,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04050401UL
-static CONST char os_version_string[] = "4.5.4.1";
+#define OS_VERSION_NUMBER  0x04050501UL
+static CONST char os_version_string[] = "4.5.5.1";
 
 /*!
  * \addtogroup xgNutVersion
