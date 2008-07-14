@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/07/14 13:09:30  haraldkipp
+ * Allow small MultiMedia Cards without partition table.
+ *
  * Revision 1.1  2006/01/05 16:32:26  haraldkipp
  * First check-in.
  *
@@ -110,7 +113,24 @@
 
 /*@}*/
 
+/*!
+ * \brief Position of the type specifier in the partition boot record.
+ *
+ * We expect the letters 'F', 'A' and 'T' at this position.
+ */
+#define DOSPART_TYPEPOS     54
+
+/*!
+ * \brief Position of the partition table in the master boot record.
+ */
 #define DOSPART_SECTORPOS   446
+
+/*!
+ * \brief Position of the cookie in the boot sector.
+ *
+ * We expect the byte values 0x55 and 0xAA at this position.
+ */
+#define DOSPART_MAGICPOS    510
 
 /*!
  * \brief Partition table entry.

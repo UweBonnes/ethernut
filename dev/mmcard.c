@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2008/07/14 13:09:30  haraldkipp
+ * Allow small MultiMedia Cards without partition table.
+ *
  * Revision 1.10  2007/08/30 12:15:06  haraldkipp
  * Configurable MMC timings.
  *
@@ -785,27 +788,42 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         NutHeapFree(fcb);
         return NUTFILE_EOF;
     }
-
-    /* Read partition table. */
-    part = (DOSPART *) & fcb->fcb_blkbuf[DOSPART_SECTORPOS];
-    for (i = 1; i <= 4; i++) {
-        if (partno) {
-            if (i == partno) {
-                /* Found specified partition number. */
+    /* Check for the cookie at the end of this sector. */
+	if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
+        NutHeapFree(fcb);
+        return NUTFILE_EOF;
+	}
+    /* Check for the partition table. */
+	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' && 
+       fcb->fcb_blkbuf[DOSPART_TYPEPOS + 1] == 'A' &&
+       fcb->fcb_blkbuf[DOSPART_TYPEPOS + 2] == 'T') {
+        /* No partition table. Assume FAT12 and 32MB size. */
+        fcb->fcb_part.part_type = PTYPE_FAT12;
+        fcb->fcb_part.part_sect_offs = 0;
+        fcb->fcb_part.part_sects = 65536; /* How to find out? */
+	}
+    else {
+        /* Read partition table. */
+        part = (DOSPART *) & fcb->fcb_blkbuf[DOSPART_SECTORPOS];
+        for (i = 1; i <= 4; i++) {
+            if (partno) {
+                if (i == partno) {
+                    /* Found specified partition number. */
+                    fcb->fcb_part = *part;
+                    break;
+                }
+            } else if (part->part_state & 0x80) {
+                /* Located first active partition. */
                 fcb->fcb_part = *part;
                 break;
             }
-        } else if (part->part_state & 0x80) {
-            /* Located first active partition. */
-            fcb->fcb_part = *part;
-            break;
+            part++;
         }
-        part++;
-    }
 
-    if (fcb->fcb_part.part_type == PTYPE_EMPTY) {
-        NutHeapFree(fcb);
-        return NUTFILE_EOF;
+        if (fcb->fcb_part.part_type == PTYPE_EMPTY) {
+            NutHeapFree(fcb);
+            return NUTFILE_EOF;
+        }
     }
 
     if ((nfp = NutHeapAlloc(sizeof(NUTFILE))) == 0) {
