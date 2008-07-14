@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/07/14 13:10:30  haraldkipp
+ * Added macros to determine Ethernet address types.
+ *
  * Revision 1.4  2006/08/01 07:41:01  haraldkipp
  * New functions ether_aton() and ether_ntoa() added. They convert the ASCII
  * representation of an Ethernet MAC address to its binary form and vice versa.
@@ -134,6 +137,46 @@ typedef struct __attribute__((packed)) ether_header {
 #define ETHERMTU    1500        /*!< \brief Ethernet maximum transfer unit. */
 //#define ETHERMTU    576           /*!< \brief Ethernet maximum transfer unit. */
 #define ETHERMIN    (60-14)     /*!< \brief Ethernet minimum transfer unit. */
+
+/*! 
+ * \brief Determine if a given Ethernet address is zero.
+ *
+ * \param ea Pointer to a character array containing the address.
+ *
+ * Return 1 if the address is zero. Otherwise 0 is returned.
+ */
+#define	ETHER_IS_ZERO(ea) (((ea)[0] | (ea)[1] | (ea)[2] | (ea)[3] | (ea)[4] | (ea)[5]) == 0)
+
+/*! 
+ * \brief Determine if a given Ethernet address is a broadcast address.
+ *
+ * \param ea Pointer to a character array containing the address.
+ *
+ * Return 1 if the address is a broadcast address. Otherwise 0 is returned.
+ */
+#define	ETHER_IS_BROADCAST(ea) (((ea)[0] & (ea)[1] & (ea)[2] & (ea)[3] & (ea)[4] & (ea)[5]) == 0xFF)
+
+/*! 
+ * \brief Determine if a given Ethernet address is a multicast address.
+ *
+ * The broadcast address is defined as a special multicast address.
+ *
+ * \param ea Pointer to a character array containing the address.
+ *
+ * Return 1 if the address is a multicast address. Otherwise 0 is returned.
+ */
+#define	ETHER_IS_MULTICAST(ea) ((ea)[0] & 1) 
+
+/*! 
+ * \brief Determine if a given Ethernet address is a unicast address.
+ *
+ * By definition, an address with all zeros is not a valid unicast address.
+ *
+ * \param ea Pointer to a character array containing the address.
+ *
+ * Return 1 if the address is a unicast address. Otherwise 0 is returned.
+ */
+#define	ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea)) 
 
 extern u_char *ether_aton(CONST char *str);
 extern char *ether_ntoa(CONST u_char *mac);

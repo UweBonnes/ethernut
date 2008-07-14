@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/07/14 13:10:31  haraldkipp
+ * Added macros to determine Ethernet address types.
+ *
  * Revision 1.8  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -147,6 +150,7 @@
 #include <net/route.h>
 #include <arpa/inet.h>
 #include <netinet/ppp_fsm.h>
+#include <netinet/if_ether.h>
 
 #include <sys/event.h>
 #include <dev/uart.h>
@@ -208,8 +212,8 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
      * Save configuration in EEPROM.
      */
     memcpy(confnet.cd_name, dev->dev_name, sizeof(confnet.cd_name));
-    /* Never save MAC address 0. */
-    if (nif->if_mac[0] || nif->if_mac[1] || nif->if_mac[2] || nif->if_mac[3] || nif->if_mac[4] || nif->if_mac[5]) {
+    /* Never save an invalid MAC address. */
+    if (ETHER_IS_UNICAST(nif->if_mac)) {
         memcpy(confnet.cdn_mac, nif->if_mac, sizeof(nif->if_mac));
     }
     confnet.cdn_ip_addr = ip_addr;
