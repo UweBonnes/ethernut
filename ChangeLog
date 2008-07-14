@@ -1,4 +1,50 @@
-$Id: ChangeLog,v 1.449 2008/07/10 12:17:41 haraldkipp Exp $
+$Id: ChangeLog,v 1.450 2008/07/14 13:14:38 haraldkipp Exp $
+
+2008-07-14  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/init/crtat91_boot.S, arch/arm/init/crtat91_rom.S,
+	boot/bootmon/start_rom.S, tools/win32/enut3ocd.ini,
+	tools/linux/enut3ocd.ini: Ethernut 3 chip selects and wait
+	states had been set inconsistently. We are now running
+	with minimum waits. You may have to add additional delays in 
+	your existing applications.
+
+	* arch/arm/init/crtat91_bootcrom.S, conf/repository.nut, 
+	arch/arm/ldscripts/at91_bootcrom.ld, conf/tools.nut:
+	New link option for Ethernut 3. After power up, the code
+	is copied from Flash to RAM similar to at91_boot, but the
+	the constant data remains in Flash memory. This way the
+	code runs much faster than with at91_rom, but applications 
+	with large constant data areas like a big UROM filesystem
+	will still fit.
+
+	* dev/mmcard.c, include/fs/dospart.h: Small MMC cards may
+	be formatted with FAT12 and without partition table. The
+	driver will now detect this and skip partition table read.
+	However, the file system type (FAT12) and the total number
+	of sectors (65536) are hard coded. Any idea how to determine
+	these values automatically?
+
+	* boot/bootmon/bootmon.c, boot/bootmon/config.c,
+	boot/bootmon/config.h, boot/bootmon/ether.c,
+	boot/bootmon/utils.c: Ethernut 3 boot loader version 1.0.6.
+	Re-read configuration on failures. Link wait time increased.
+	Delay time increased because of reduced wait states.
+
+	* include/netinet/if_ether.h: Added macros to determine
+	Ethernet address types.
+
+
+2008-07-11  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/version.c: New build 4.5.5.2.
+
+	* pro/httpd.c: Added file length check to avoid loading directories
+	when using PHAT. Thanks to Michael Fischer.
+
+	* dev/nplmmc.c: Added delays to make slow cards working.
+	Fixed and tested by Michael Fischer.
+
 
 2008-07-10  Harald Kipp  <harald.kipp@egnite.de>
 

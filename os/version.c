@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.53  2008/07/14 13:14:38  haraldkipp
+ * Second build of version 4.5.5.
+ *
  * Revision 1.52  2008/07/10 12:17:41  haraldkipp
  * Preparing beta version 4.5.5.
  *
@@ -209,8 +212,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04050501UL
-static CONST char os_version_string[] = "4.5.5.1";
+#define OS_VERSION_NUMBER  0x04050502UL
+static CONST char os_version_string[] = "4.5.5.2";
 
 /*!
  * \addtogroup xgNutVersion
