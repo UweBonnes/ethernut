@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/07/14 13:13:45  haraldkipp
+ * Added delays to make slow cards working.
+ *
  * Revision 1.3  2006/08/05 12:01:05  haraldkipp
  * Hard coded PLL selections replaced by configurable definitions.
  *
@@ -151,14 +154,11 @@ static u_char NplMmCard0Io(u_char val)
         }
     }
 
-    _NOP();
-    _NOP();
+    _NOP(); _NOP(); _NOP(); _NOP();
     rc = inb(NPL_MMCDR);
-    _NOP();
-    _NOP();
+    _NOP(); _NOP(); _NOP(); _NOP();
     outb(NPL_MMCDR, val);
-    _NOP();
-    _NOP();
+    _NOP(); _NOP(); _NOP(); _NOP();
 
 #ifdef NUTDEBUG
     putchar('[');
