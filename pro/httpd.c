@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.22  2008/07/14 13:11:15  haraldkipp
+ * Added file length check to avoid loading directories when using PHAT.
+ *
  * Revision 1.21  2008/07/10 12:09:39  haraldkipp
  * Wrong mime type was returned for default files within subdirectories.
  * Put duplicate code in a new static function GetMimeEntry.
@@ -552,19 +555,23 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         return;
     }
 
-    /*
-     * Process file.
-     * Note, that simple file systems may not provide stat() or access(),
-     * thus trying to open the file is the only way to check for existence.
-     */
     for (n = 0, fd = -1; default_files[n]; n++) {
         filename = CreateFilePath(req->req_url, default_files[n]);
         if (filename == NULL) {
             NutHttpSendError(stream, req, 500);
             return;
         }
+        /*
+         * Note, that simple file systems may not provide stat() or access(),
+         * thus trying to open the file is the only way to check for existence.
+         * Another problem is, that PHAT allows to open directories. We use
+         * the file length to ensure, that we got a normal file.
+         */
         if ((fd = _open(filename, _O_BINARY | _O_RDONLY)) != -1) {
-            break;
+            if (_filelength(fd)) {
+                break;
+            }
+            _close(fd);
         }
         NutHeapFree(filename);
     }
