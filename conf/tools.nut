@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.24  2008/07/14 13:04:28  haraldkipp
+-- New Ethernut 3 link option with code in RAM and constant data in ROM.
+--
 -- Revision 1.23  2008/07/09 09:15:56  haraldkipp
 -- EIR code running in RAM, contributed by Michael Fischer.
 --
@@ -182,6 +185,7 @@ nuttools =
                 macro = "ARM_LDSCRIPT",
                 brief = "ARM Linker Script",
                 description = "at91_boot\t\tAT91R40008, code in ROM, copied to and running in RAM\n"..
+                              "at91_bootcrom\t\tAT91R40008, code in ROM copied to RAM, but constant data remains in ROM.\n"..
                               "at91_ram\t\t\tAT91R40008, code loaded in RAM by bootloader\n"..
                               "at91_rom\t\t\tAT91R40008, code running in FLASH\n"..
                               "at91_httprom\t\tAT91R40008, code running in FLASH. Use this with boothttp.\n"..

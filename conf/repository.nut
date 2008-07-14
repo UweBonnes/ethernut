@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.29  2008/07/14 13:04:28  haraldkipp
+-- New Ethernut 3 link option with code in RAM and constant data in ROM.
+--
 -- Revision 1.28  2008/07/09 11:14:46  haraldkipp
 -- Changelog corrected, again.
 --
@@ -152,6 +155,7 @@ at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
 arm_ld_choice = { 
                     " ", 
                     "at91_boot", 
+                    "at91_bootcrom", 
                     "at91_ram", 
                     "at91_rom", 
                     "at91_httprom", 
