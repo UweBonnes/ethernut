@@ -36,6 +36,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/07/14 13:08:23  haraldkipp
+ * Boot loader version 1.0.6.
+ * Re-read configuration on failures. Link wait time increased.
+ * Delay time increased because of reduced wait states.
+ *
  * Revision 1.1  2007/08/17 13:16:32  haraldkipp
  * Checked in.
  *
@@ -70,7 +75,7 @@ typedef struct __attribute__ ((packed)) _CONFBOOT {
 
 extern CONFBOOT confboot;
 
-extern void BootConfigRead(void);
+extern int BootConfigRead(void);
 extern void BootConfigWrite(void);
 
 #endif

@@ -31,6 +31,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/07/14 13:08:22  haraldkipp
+ * Boot loader version 1.0.6.
+ * Re-read configuration on failures. Link wait time increased.
+ * Delay time increased because of reduced wait states.
+ *
  * Revision 1.1  2007/08/17 13:16:32  haraldkipp
  * Checked in.
  *
@@ -75,19 +80,22 @@ static unsigned char ConfigGet(unsigned int loc)
 /*!
  * \brief Read IP and boot configuration from non-volatile memory.
  */
-void BootConfigRead(void)
+int BootConfigRead(void)
 {
+    int rc;
+
 #ifdef EE_CONFNET
+    rc = -1;
     NvMemInit();
     DEBUG("CONFNET ");
     if (ConfigGet(EE_CONFNET) == sizeof(CONFNET)) {
         DEBUG("OK\n");
-        NvMemRead(EE_CONFNET, &confnet, sizeof(CONFNET));
+        rc = NvMemRead(EE_CONFNET, &confnet, sizeof(CONFNET));
 #ifdef EE_CONFBOOT
         DEBUG("CONFBOOT ");
-        if (ConfigGet(EE_CONFBOOT) == sizeof(CONFBOOT)) {
+        if (rc == 0 && ConfigGet(EE_CONFBOOT) == sizeof(CONFBOOT)) {
             DEBUG(" OK\n");
-            NvMemRead(EE_CONFBOOT, &confboot, sizeof(CONFBOOT));
+            rc = NvMemRead(EE_CONFBOOT, &confboot, sizeof(CONFBOOT));
         } else {
             DEBUG("No\n");
         }
@@ -95,7 +103,10 @@ void BootConfigRead(void)
     } else {
         DEBUG("No\n");
     }
+#else
+    rc = 0;
 #endif
+    return rc;
 }
 
 /*!

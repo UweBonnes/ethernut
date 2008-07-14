@@ -31,6 +31,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/07/14 13:08:23  haraldkipp
+ * Boot loader version 1.0.6.
+ * Re-read configuration on failures. Link wait time increased.
+ * Delay time increased because of reduced wait states.
+ *
  * Revision 1.1  2007/08/17 13:16:33  haraldkipp
  * Checked in.
  *
@@ -44,6 +49,7 @@
 void MicroDelay(unsigned int nops)
 {
     while (nops--) {
+        asm volatile ("nop");
         asm volatile ("nop");
     }
 }

@@ -32,6 +32,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/07/14 13:08:23  haraldkipp
+ * Boot loader version 1.0.6.
+ * Re-read configuration on failures. Link wait time increased.
+ * Delay time increased because of reduced wait states.
+ *
  * Revision 1.1  2007/08/17 13:16:32  haraldkipp
  * Checked in.
  *
@@ -408,7 +413,7 @@ int EtherInit(void)
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN);
 
     /* Wait for link. */
-    for (link_wait = 20;; link_wait--) {
+    for (link_wait = 50;; link_wait--) {
         unsigned short bmsr;
 
         bmsr = phy_inw(NIC_PHY_BMSR);

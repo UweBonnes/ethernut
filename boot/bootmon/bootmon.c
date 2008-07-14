@@ -31,6 +31,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/07/14 13:08:22  haraldkipp
+ * Boot loader version 1.0.6.
+ * Re-read configuration on failures. Link wait time increased.
+ * Delay time increased because of reduced wait states.
+ *
  * Revision 1.2  2008/06/23 16:09:30  haraldkipp
  * Bootmon version 1.5.0. User LED support added.
  *
@@ -80,7 +85,7 @@ static int UserEntry(void)
     int n;
     unsigned char yn[3];
 
-    PutString("\nBootMon 1.0.5\n");
+    PutString("\nBootMon 1.0.6\n");
     NplUledCntl(ULED_OFF);
 
     memcpy_(my_mac, confnet.cdn_mac, 6);
@@ -149,7 +154,10 @@ int main(void)
     UartInit();
 
     /* Read configuration from EEPROM. */
-    BootConfigRead();
+    if (BootConfigRead()) {
+        /* First trial failed, retry once more. */
+        BootConfigRead();
+    }
 
     /*
      * Loop until a valid image is loaded.
