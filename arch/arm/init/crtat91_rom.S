@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/07/14 13:06:46  haraldkipp
+ * Consistent chip selects and wait states.
+ *
  * Revision 1.3  2008/01/16 00:19:41  olereinhardt
  * Changed backslash to slash in include path names
  *
@@ -137,7 +140,7 @@ _rmap_tab:
         .long   0x10000000 | EBI_CSEN | EBI_PAGES_16M | EBI_WSE | EBI_NWS_4 | EBI_DBW_16
         /* 
          * Chip select NCS1 enables 16-bit Ethernet controller at 0x20000000.
-         * We need 4 wait states. 
+         * We need 2 wait states. 
          */
         .long   0x20000000 | EBI_CSEN | EBI_BAT_BYTE_SELECT | EBI_PAGES_1M | EBI_WSE | EBI_NWS_2 | EBI_DBW_16
         /* 
@@ -145,7 +148,7 @@ _rmap_tab:
          * The CPLD is quite fast and may run at one or zero wait states.
          * This pin is shared with GPIO pin 26.
          */
-        .long   0x21000000 | EBI_CSEN | EBI_TDF_7 | EBI_PAGES_1M | EBI_WSE | EBI_NWS_2 | EBI_DBW_8
+        .long   0x21000000 | EBI_CSEN | EBI_PAGES_1M | EBI_WSE | EBI_NWS_2 | EBI_DBW_8
         /*
          * Chip select NCS3 is not used.
          * This pin os shared with GPIO pin 27 and available at the expansion port.

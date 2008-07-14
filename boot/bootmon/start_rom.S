@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/07/14 13:06:47  haraldkipp
+ * Consistent chip selects and wait states.
+ *
  * Revision 1.1  2007/08/17 13:16:33  haraldkipp
  * Checked in.
  *
@@ -182,15 +185,14 @@ _rmap_endp:
 
 _rmap_tab:
         /* Flash memory at 1000 0000. */
-        .long   0x10000000 | EBI_CSEN | EBI_PAGES_16M | EBI_WSE | EBI_NWS_8 | EBI_DBW_16
+        .long   0x10000000 | EBI_CSEN | EBI_PAGES_16M | EBI_WSE | EBI_NWS_4 | EBI_DBW_16
         /* Ethernet controller at 2000 0000 */
-        .long   0x20000000 | EBI_CSEN | EBI_BAT_BYTE_SELECT | EBI_PAGES_1M | EBI_WSE | EBI_NWS_3 | EBI_DBW_16
+        .long   0x20000000 | EBI_CSEN | EBI_BAT_BYTE_SELECT | EBI_WSE | EBI_NWS_3 | EBI_DBW_16
         /* CPLD registers at 2100 0000 */
-@        .long   0x21000000 | EBI_CSEN | EBI_PAGES_1M | EBI_DBW_8
-        .long   0x21000000 | EBI_CSEN | EBI_PAGES_1M | EBI_WSE | EBI_NWS_8 | EBI_DBW_8
+        .long   0x21000000 | EBI_CSEN | EBI_WSE | EBI_NWS_2 | EBI_DBW_8
         .long   0x30000000                  /* r3: unused */
         /* CPLD expansion port */
-        .long   0x22000000 | EBI_CSEN | EBI_TDF_7 | EBI_PAGES_1M | EBI_WSE | EBI_NWS_8 | EBI_DBW_8
+        .long   0x22000000 | EBI_CSEN | EBI_TDF_7 | EBI_WSE | EBI_NWS_8 | EBI_DBW_8
         .long   0x50000000                  /* r5: unused */
         .long   0x60000000                  /* r6: unused */
         .long   0x70000000                  /* r7: unused */
