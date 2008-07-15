@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.450 2008/07/14 13:14:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.451 2008/07/15 02:33:20 hwmaier Exp $
+
+2008-07-15  Henrik Maier  <hwmaier@users.sourceforge.net>
+
+	* conf/xnut-105.conf: Renamed to xnut-105d.conf. 
+        
+        * conf/xnut-105d.conf, conf/xnut-100.conf: Added configuration item 
+        for DTR which is now supported by usart driver.
+
 
 2008-07-14  Harald Kipp  <harald.kipp@egnite.de>
 
