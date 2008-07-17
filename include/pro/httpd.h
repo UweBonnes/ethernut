@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2008/07/17 11:42:25  olereinhardt
+ * Added prototype for new functions in cgi.c
+ *
  * Revision 1.9  2008/01/31 09:28:18  haraldkipp
  * Expanded REQUEST structure to handle HTTP/1.1. Added MIMETYPES structure.
  *
@@ -168,7 +171,7 @@ typedef struct _CGIFUNCTION CGIFUNCTION;
  */
 struct _CGIFUNCTION {
     CGIFUNCTION *cgi_next;      /*!< \brief Link to next CGIFUNCTION structure */
-    CONST char *cgi_name;       /*!< \brief Name of this function */
+    char *cgi_name;             /*!< \brief Name of this function */
     int (*cgi_func) (FILE *, REQUEST *);        /*!< \brief Pointer to function code. */
 };
 
@@ -180,8 +183,10 @@ __BEGIN_DECLS
 extern void NutHttpSetOptionFlags(u_long flags);
 extern u_long NutHttpGetOptionFlags(void);
 extern int NutRegisterHttpRoot(char *path);
+extern void NutRegisterCgiBinPath(char *path);
 extern int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *));
-extern void NutCgiProcessRequest(FILE * stream, REQUEST * req);
+extern int NutCgiCheckRequest(FILE * stream, REQUEST * req);
+extern void NutCgiProcessRequest(FILE * stream, REQUEST * req, int name_pos);
 extern void NutHttpProcessPostQuery(FILE *stream, REQUEST * req);
 extern char *NutHttpURLEncode(char *str);
 extern void NutHttpURLDecode(char *str);
