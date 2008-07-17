@@ -33,6 +33,10 @@
  
 /*
  * $Log$
+ * Revision 1.7  2008/07/17 11:36:34  olereinhardt
+ * - Moved some functions used in httpd.c as well as in ssi.c into httpd_p.c
+ * - Implemeted $QUERY_STRING parameter in for CGIs included by a ssi file
+ *
  * Revision 1.6  2008/05/13 21:24:55  thiagocorrea
  * Fix a few documentation typos.
  *
@@ -71,16 +75,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <alloca.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-
 
 #include <sys/heap.h>
 #include <sys/version.h>
 
 #include <pro/httpd.h>
 #include <pro/ssi.h>
+#include "httpd_p.h"
 #include "dencode.h"
 
 #define BUFSIZE 512
@@ -94,6 +99,8 @@
 static prog_char rsp_not_found_P[] = "404 Not found: %s\r\n";
 static prog_char rsp_intern_err_P[] = "500 Internal error\r\n";
 static prog_char rsp_bad_req_P[] = "400 Bad request\r\n";
+
+extern char *cgiBinPath;
 
 /*!
  * \brief Send included file to the stream
@@ -139,24 +146,6 @@ static void NutSsiProcessFile(FILE * stream, char *filename)
     _close(fd);
 }
 
-static void DestroyRequestInfo(REQUEST * req)
-{
-    if (req->req_url)
-        NutHeapFree(req->req_url);
-    if (req->req_query)
-        NutHeapFree(req->req_query);
-    if (req->req_type)
-        NutHeapFree(req->req_type);
-    if (req->req_cookie)
-        NutHeapFree(req->req_cookie);
-    if (req->req_auth)
-        NutHeapFree(req->req_auth);
-    if (req->req_agent)
-        NutHeapFree(req->req_agent);
-    if (req->req_qptrs)
-        NutHeapFree(req->req_qptrs);
-    NutHeapFree(req);
-}
 
 /*!
  * \brief Send a file or cgi with a path relativ to http-root
@@ -181,188 +170,147 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     long file_len;
     char *filename = NULL;
     void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req);
-    
-    
     char *cp;
     REQUEST * req;
-
+    char * cgi_bin = "cgi-bin/";
+    char * tmp;
+    char * save_ptr = NULL;
+    
+    if (cgiBinPath != NULL) {
+        cgi_bin = cgiBinPath;
+    }    
+    tmp = alloca(strlen(cgi_bin) + 1);
+    strcpy(tmp, cgi_bin);
+    
     if (NutDecodePath(url) == 0) {
         fprintf_P(stream, rsp_bad_req_P);
         return;
     }
-    
+  
     /*
      * Process CGI.
      */
-    if (strncasecmp(url, "cgi-bin/", 8) == 0) {
-        if ((req = NutHeapAllocClear(sizeof(REQUEST))) == 0) {
-            fprintf_P(stream, rsp_intern_err_P);
-            return;
-        }
-        req->req_method = METHOD_GET;
-        req->req_version = orig_req->req_version;
-        req->req_length = 0;
-        
-        if (orig_req->req_agent != NULL) {
-            if ((req->req_agent = NutHeapAlloc((strlen(orig_req->req_agent) + 1))) == 0) {
+    tmp = strtok_r(tmp, ";", &save_ptr);
+    
+    do {
+        if ((tmp != NULL) && (strncasecmp(url, tmp, strlen(tmp)) == 0)) {
+            if ((req = NutHeapAllocClear(sizeof(REQUEST))) == 0) {
                 fprintf_P(stream, rsp_intern_err_P);
-                DestroyRequestInfo(req);
                 return;
             }
-            strcpy(req->req_agent, orig_req->req_agent);
-        }
-        if (orig_req->req_cookie!= NULL) {
-            if ((req->req_cookie = NutHeapAlloc((strlen(orig_req->req_cookie) + 1))) == 0) {
-                fprintf_P(stream, rsp_intern_err_P);
-                DestroyRequestInfo(req);
-                return;
-            }
-            strcpy(req->req_cookie, orig_req->req_cookie);
-        }
-        if ((cp = strchr(url, '?')) != 0) {
-            *cp++ = 0;
-
-	    if (strcmp(req->req_query, "$QUERY_STRING") == 0) {
-                u_short size;
-	        size = 0;
-	        for (i = 0; i < orig_req->req_numqptrs*2; i ++) {
-		    size += strlen(orig_req->req_qptrs[i]) + 1;
-	        }
-
-	        if ((req->req_query = NutHeapAlloc(size)) == 0) {
-	            fprintf_P(stream, rsp_intern_err_P);
-	            DestroyRequestInfo(req);
-	            return;
-	        }
-
-                req->req_query[0] = 0;
-                for (i = 0; i < (orig_req->req_numqptrs * 2); i++) {
-                    if(i) {
-                        strcat (req->req_query, "&");
-                    }
-                    strcat (req->req_query, orig_req->req_qptrs[i]);
-                    strcat (req->req_query, "=");
-                    i++;
-                    strcat (req->req_query, orig_req->req_qptrs[i]);
+            req->req_method = METHOD_GET;
+            req->req_version = orig_req->req_version;
+            req->req_length = 0;
+            
+            if (orig_req->req_agent != NULL) {
+                if ((req->req_agent = NutHeapAlloc((strlen(orig_req->req_agent) + 1))) == 0) {
+                    fprintf_P(stream, rsp_intern_err_P);
+                    DestroyRequestInfo(req);
+                    return;
                 }
-
-	    } else {
-	        if ((req->req_query = NutHeapAlloc(strlen(orig_req->req_query) + 1)) == 0) {
-	            fprintf_P(stream, rsp_intern_err_P);
-	            DestroyRequestInfo(req);
-	            return;
-	        }
-            	strcpy(req->req_query, cp);
+                strcpy(req->req_agent, orig_req->req_agent);
             }
-            NutHttpProcessQueryString(req);
-        }
-        if ((req->req_url = NutHeapAlloc(strlen(url) + 1)) == 0) {
-            fprintf_P(stream, rsp_intern_err_P);
+            if (orig_req->req_cookie!= NULL) {
+                if ((req->req_cookie = NutHeapAlloc((strlen(orig_req->req_cookie) + 1))) == 0) {
+                    fprintf_P(stream, rsp_intern_err_P);
+                    DestroyRequestInfo(req);
+                    return;
+                }
+                strcpy(req->req_cookie, orig_req->req_cookie);
+            }
+            if ((cp = strchr(url, '?')) != 0) {
+                *cp++ = 0;
+                if (strcmp(cp, "$QUERY_STRING") == 0) {
+                    u_short size;
+                    size = 0;
+                    for (i = 0; i < orig_req->req_numqptrs*2; i ++) {
+                        size += strlen(orig_req->req_qptrs[i]) + 1;
+                    }
+                    if ((req->req_query = NutHeapAlloc(size)) == 0) {
+                        fprintf_P(stream, rsp_intern_err_P);
+                        DestroyRequestInfo(req);
+                        return;
+                    }
+                    req->req_query[0] = 0;
+                    for (i = 0; i < (orig_req->req_numqptrs * 2); i++) {
+                        if(i) {
+                            strcat (req->req_query, "&");
+                        }
+                        strcat (req->req_query, orig_req->req_qptrs[i]);
+                        strcat (req->req_query, "=");
+                        i++;
+                        strcat (req->req_query, orig_req->req_qptrs[i]);
+                    }
+
+                } else {
+                    if ((req->req_query = NutHeapAlloc(strlen(cp) + 1)) == 0) {
+                        fprintf_P(stream, rsp_intern_err_P);
+                        DestroyRequestInfo(req);
+                        return;
+                    }
+                    strcpy(req->req_query, cp);
+                }
+                NutHttpProcessQueryString(req);
+            }
+            if ((req->req_url = NutHeapAlloc(strlen(url) + 1)) == 0) {
+                fprintf_P(stream, rsp_intern_err_P);
+                DestroyRequestInfo(req);
+                return;
+            }
+            strcpy(req->req_url, url);
+
+        
+            NutCgiProcessRequest(stream, req, strlen(tmp));
             DestroyRequestInfo(req);
             return;
         }
-        strcpy(req->req_url, url);
-
-	
-        NutCgiProcessRequest(stream, req);
-        DestroyRequestInfo(req);
-        return;
-    }
+        tmp = strtok_r(NULL, ";", &save_ptr);
+    } while (tmp != NULL);
     
     /*
      * Process file.
      */
-    if (http_root) {
-        filename = NutHeapAlloc(strlen(http_root) + strlen(url) + 1);
-        strcpy(filename, http_root);
-    } else {
-        filename = NutHeapAlloc(strlen(url) + 6);
-        strcpy(filename, "UROM:");
-    }
     
-    strcat(filename, url);
-
-    handler = NutGetMimeHandler(filename);
-
-    fd = _open(filename, _O_BINARY | _O_RDONLY);
-    NutHeapFree(filename);
-    if (fd == -1) {                     // Search for index.html
-        char *index;
-        u_short urll;
-
-
-        urll = strlen(url);
-        if ((index = NutHeapAllocClear(urll + 12)) == 0) {
+    for (n = 0, fd = -1; default_files[n]; n++) {
+        filename = CreateFilePath(url, default_files[n]);
+        if (filename == NULL) {
             fprintf_P(stream, rsp_intern_err_P);
             return;
         }
-        if (urll)
-            strcpy(index, url);
-        if (urll && index[urll - 1] != '/')
-            strcat(index, "/");
-        strcat(index, "index.html");
-
-        if (http_root) {
-            filename = NutHeapAlloc(strlen(http_root) + strlen(index) + 1);
-            strcpy(filename, http_root);
-        } else {
-            filename = NutHeapAlloc(strlen(index) + 6);
-            strcpy(filename, "UROM:");
+        /*
+         * Note, that simple file systems may not provide stat() or access(),
+         * thus trying to open the file is the only way to check for existence.
+         * Another problem is, that PHAT allows to open directories. We use
+         * the file length to ensure, that we got a normal file.
+         */
+        if ((fd = _open(filename, _O_BINARY | _O_RDONLY)) != -1) {
+            if (_filelength(fd)) {
+                break;
+            }
+            _close(fd);
         }
-        strcat(filename, index);
-
-        NutHeapFree(index);
-
-        handler = NutGetMimeHandler(filename);
-
-        fd = _open(filename, _O_BINARY | _O_RDONLY);
         NutHeapFree(filename);
-        if (fd == -1) {                 // We have no index.html. But perhaps an index.shtml?
-            urll = strlen(url);
-            if ((index = NutHeapAllocClear(urll + 13)) == 0) {
-                fprintf_P(stream, rsp_intern_err_P);
-                return;
-            }
-            if (urll)
-                strcpy(index, url);
-            if (urll && index[urll - 1] != '/')
-                strcat(index, "/");
-            strcat(index, "index.shtml");
-    
-            if (http_root) {
-                filename = NutHeapAlloc(strlen(http_root) + strlen(index) + 1);
-                strcpy(filename, http_root);
-            } else {
-                filename = NutHeapAlloc(strlen(index) + 6);
-                strcpy(filename, "UROM:");
-            }
-            strcat(filename, index);
-    
-            NutHeapFree(index);
-
-            handler = NutGetMimeHandler(filename);
-
-            fd = _open(filename, _O_BINARY | _O_RDONLY);
-            NutHeapFree(filename);
-            if (fd == -1) {            // Non of both found... send a 404
-                fprintf_P(stream, rsp_not_found_P, filename);
-                return;
-            }
-        }
+    }
+    if (fd == -1) {
+        fprintf_P(stream, rsp_not_found_P, filename);
+        return;
     }
     
     file_len = _filelength(fd);
+    handler = NutGetMimeHandler(filename);
     
     if (handler == NULL) {
         size = 512;                 // If we have not registered a mime handler handle default.
         if ((data = NutHeapAlloc(size)) != 0) {
             while (file_len) {
-                if (file_len < 512L)
+                if (file_len < 512L) {
                     size = (int) file_len;
+                }
 
                 n = _read(fd, data, size);
-                if (fwrite(data, 1, n, stream) == 0)
+                if (fwrite(data, 1, n, stream) == 0) {
                     break;
+                }
                 file_len -= (long) n;
             }
             NutHeapFree(data);

@@ -1,6 +1,8 @@
+#include <string.h>
+#include <cfg/http.h>
+#include <sys/heap.h>
 
 #include "httpd_p.h"
-#include <sys/heap.h>
 
 /*
  *  W A R N I N G
@@ -13,6 +15,55 @@
  * We mean it.
 */
 
+
+/*!
+ * \brief Default index files.
+ *
+ * The first entry must contain an empty string.
+ */
+
+/*! \brief Default file system. */
+#ifndef HTTP_DEFAULT_ROOT
+#define HTTP_DEFAULT_ROOT   "UROM:"
+#endif
+
+char *http_root;
+
+char *default_files[] = {
+    "",
+    "/index.html",
+    "/index.htm",
+    "/default.html",
+    "/default.htm",
+    "/index.shtml",
+    "/index.xhtml",
+    "/index.asp",
+    "/default.asp",
+    NULL
+};
+
+/*!
+* \brief Create a file path from an URL.
+* \internal
+* \param url Pointer to the URL string
+* \param addon Filename to be appended to the path
+*/
+
+char *CreateFilePath(CONST char *url, CONST char *addon)
+{
+    char *root = http_root ? http_root : HTTP_DEFAULT_ROOT;
+    size_t urll = strlen(url);
+    char *path = NutHeapAlloc(strlen(root) + urll + strlen(addon) + 1);
+
+    if (path) {
+        strcpy(path, root);
+        strcat(path, url);
+        if (*addon) {
+            strcat(path, addon + (urll == 0 || url[urll - 1] == '/'));
+        }
+    }
+    return path;
+}
 
 /*!
 * \brief Release request info structure.

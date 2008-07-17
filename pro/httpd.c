@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.23  2008/07/17 11:36:32  olereinhardt
+ * - Moved some functions used in httpd.c as well as in ssi.c into httpd_p.c
+ * - Implemeted $QUERY_STRING parameter in for CGIs included by a ssi file
+ *
  * Revision 1.22  2008/07/14 13:11:15  haraldkipp
  * Added file length check to avoid loading directories when using PHAT.
  *
@@ -161,11 +165,6 @@
 #define HTTP_MINOR_VERSION  1
 #endif
 
-/*! \brief Default file system. */
-#ifndef HTTP_DEFAULT_ROOT
-#define HTTP_DEFAULT_ROOT   "UROM:"
-#endif
-
 /*! \brief Maximum number of requests per connection. */
 #ifndef HTTP_KEEP_ALIVE_REQ
 #define HTTP_KEEP_ALIVE_REQ 0
@@ -206,27 +205,6 @@ MIMETYPES mimeTypes[] = {
     ".xml", "text/xml", NULL}, {
     NULL, NULL, NULL}
 };
-
-/*!
- * \brief Default index files.
- *
- * The first entry must contain an empty string.
- */
-static char *default_files[] = {
-    "",
-    "/index.html",
-    "/index.htm",
-    "/default.html",
-    "/default.htm",
-    "/index.shtml",
-    "/index.xhtml",
-    "/index.asp",
-    "/default.asp",
-    NULL
-};
-
-
-char *http_root;
 
 static u_long http_optflags;
 
@@ -512,22 +490,6 @@ void NutHttpProcessQueryString(REQUEST * req)
     }
 }
 
-static char *CreateFilePath(CONST char *url, CONST char *addon)
-{
-    char *root = http_root ? http_root : HTTP_DEFAULT_ROOT;
-    size_t urll = strlen(url);
-    char *path = NutHeapAlloc(strlen(root) + urll + strlen(addon) + 1);
-
-    if (path) {
-        strcpy(path, root);
-        strcat(path, url);
-        if (*addon) {
-            strcat(path, addon + (urll == 0 || url[urll - 1] == '/'));
-        }
-    }
-    return path;
-}
-
 static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
 {
     int fd;
@@ -550,10 +512,9 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     /*
      * Process CGI.
      */
-    if (strncasecmp(req->req_url, "cgi-bin/", 8) == 0) {
-        NutCgiProcessRequest(stream, req);
+    if (NutCgiCheckRequest(stream, req)) {
         return;
-    }
+    }    
 
     for (n = 0, fd = -1; default_files[n]; n++) {
         filename = CreateFilePath(req->req_url, default_files[n]);
