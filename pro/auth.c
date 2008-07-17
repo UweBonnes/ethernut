@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/07/17 11:29:15  olereinhardt
+ * Allow authentication for subdirectories
+ *
  * Revision 1.3  2006/10/08 16:43:53  haraldkipp
  * Authentication info depended on static memory kept by the caller. Now a
  * local copy is held and NutClearAuth (which should have been named
@@ -72,7 +75,7 @@ static AUTHINFO *NutHttpAuthLookup(CONST char *dirname, CONST char *login)
     AUTHINFO *auth;
 
     for (auth = authList; auth; auth = auth->auth_next) {
-        if (dirname && strcmp(dirname, auth->auth_dirname))
+        if (dirname && (strstr(dirname, auth->auth_dirname) != dirname))
             continue;
         if (login && strcmp(login, auth->auth_login))
             continue;
