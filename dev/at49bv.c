@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/07/17 11:51:18  olereinhardt
+ * Added function AT49bvReadProtectionRegister to read the 64bit factory
+ * or user id
+ *
  * Revision 1.3  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -159,6 +163,41 @@ unsigned long At49bvInit(void)
     id = chip[0];
     id <<= 16;
     id |= chip[1];
+    FLASH_UNLOCK(chip);
+    FLASH_COMMAND(chip, FLASH_CMD_EXIT_ID);
+
+    return id;
+}
+
+/*!
+ * \brief Read user or factory id from protection register.
+ * \param factory  If true, read factory id, otherwise read user id
+ *
+ * \return The ID read, 64 bit long!
+ */
+unsigned long long AT49bvReadProtectionRegister(int factory)
+{
+    unsigned long long id;
+
+    FLASH_UNLOCK(chip);
+    FLASH_COMMAND(chip, FLASH_CMD_ENTER_ID);
+    if (factory) {
+        id  = chip[0x81];
+        id <<= 16;
+        id |= chip[0x82];
+        id <<= 16;
+        id |= chip[0x83];
+        id <<= 16;
+        id |= chip[0x84];
+    } else {
+        id  = chip[0x85];
+        id <<= 16;
+        id |= chip[0x86];
+        id <<= 16;
+        id |= chip[0x87];
+        id <<= 16;
+        id |= chip[0x88];
+    }        
     FLASH_UNLOCK(chip);
     FLASH_COMMAND(chip, FLASH_CMD_EXIT_ID);
 

@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/07/17 11:51:19  olereinhardt
+ * Added function AT49bvReadProtectionRegister to read the 64bit factory
+ * or user id
+ *
  * Revision 1.1  2006/04/07 13:51:36  haraldkipp
  * AT49BV flash memory support added. A single sector may be used to
  * store system configurations in case there is no EEPROM available.
@@ -47,6 +51,7 @@ __BEGIN_DECLS
 /* Prototypes */
 
 extern unsigned long At49bvInit(void);
+extern unsigned long long AT49bvReadProtectionRegister(int factory);
 extern int At49bvChipErase(void);
 extern int At49bvSectorErase(u_int off);
 extern int At49bvSectorRead(u_int off, void *data, u_int len);
