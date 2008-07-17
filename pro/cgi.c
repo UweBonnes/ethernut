@@ -32,6 +32,12 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/07/17 11:33:32  olereinhardt
+ * - Check for unique cgi names
+ * - Alloc local copy of cgi name. Allows dynamicaly generated cgi names
+ * - Function to register a different cgi-bin path. Multiple path allowed.
+ *   See httpd demo for an example
+ *
  * Revision 1.3  2008/07/09 14:23:49  haraldkipp
  * Info about NutRegisterCgi's first parameter updated.
  *
@@ -50,6 +56,7 @@
  */
 
 #include <string.h>
+#include <alloca.h>
 #include <sys/heap.h>
 
 #include <pro/httpd.h>
@@ -60,18 +67,63 @@
 /*@{*/
 
 CGIFUNCTION *volatile cgiFunctionList = 0;
+char *cgiBinPath = NULL;
+
+/*!
+ * \brief Register a new cgi-bin path.
+ *
+ * This function allows to redfine the cgi-bin path. Default is "cgi-bin/"
+ * \param path New path.
+ */
+     
+void NutRegisterCgiBinPath(char *path)
+{
+    if (cgiBinPath) {
+        NutHeapFree(cgiBinPath);
+    }
+    
+    cgiBinPath = NutHeapAlloc(strlen(path) + 1);
+    strcpy(cgiBinPath, path);    
+}
+     
+/*!
+ * \brief Check if request is a cgi call.
+ *
+ * This functions checks the request if it's a cgi all and in case calls the cgi
+ *
+ * \param stream Stream of the socket connection, previously opened for 
+ *               binary read and write.
+ * \param req    Contains the HTTP request.  
+ */
+
+int NutCgiCheckRequest(FILE * stream, REQUEST * req)
+{
+    char * cgi_bin = "cgi-bin/";
+    char * tmp;
+    char * save_ptr = NULL;
+    
+    if (cgiBinPath != NULL) {
+        cgi_bin = cgiBinPath;
+    }
+    tmp = alloca(strlen(cgi_bin) + 1);
+    strcpy(tmp, cgi_bin);
+    
+    tmp = strtok_r(tmp, ";", &save_ptr);
+    
+    do {
+        if ((tmp != NULL) && (strncasecmp(req->req_url, tmp, strlen(tmp)) == 0)) {
+            NutCgiProcessRequest(stream, req, strlen(tmp));
+            return 1;
+        }    
+        tmp = strtok_r(NULL, ";", &save_ptr);
+    } while (tmp != NULL);
+    return 0;
+}
 
 /*!
  * \brief Register a CGI function.
  *
- * \todo Duplicate names not checked.
- *
- * \param name Pointer to a buffer containing the name of this CGI function. 
- *             The caller must make sure, that the buffer reamins valid
- *             throughout the lifetime of the server. This can be done, for
- *             example, by using a global variable or by allocating the
- *             buffer from heap memory. Using string literals may not work
- *             on all targets or with all compilers.
+ * \param name Name of this CGI function. No dublicates allowed
  * \param func The function to be called, if the
  *             client requests the specified name.
  *
@@ -79,12 +131,24 @@ CGIFUNCTION *volatile cgiFunctionList = 0;
  */
 int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *))
 {
+    int unique_name = 1;
     CGIFUNCTION *cgi;
-
-    if ((cgi = NutHeapAlloc(sizeof(CGIFUNCTION))) == 0)
+    
+    cgi = cgiFunctionList;
+    while (cgi != NULL) {
+        if (strcmp(name, cgi->cgi_name) == 0) {
+            unique_name = 0;
+            break;
+        }
+        cgi = cgi->cgi_next;
+    }
+    
+    if ((!unique_name) || ((cgi = NutHeapAlloc(sizeof(CGIFUNCTION))) == 0)) {
         return -1;
+    }
     cgi->cgi_next = cgiFunctionList;
-    cgi->cgi_name = name;
+    cgi->cgi_name = NutHeapAlloc(strlen(name)+1);
+    strcpy(cgi->cgi_name, name);
     cgi->cgi_func = func;
     cgiFunctionList = cgi;
 
@@ -101,16 +165,17 @@ int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *))
  *               binary read and write.
  * \param req    Contains the HTTP request.
  */
-void NutCgiProcessRequest(FILE * stream, REQUEST * req)
+void NutCgiProcessRequest(FILE * stream, REQUEST * req, int name_pos)
 {
     CGIFUNCTION *cgi;
-
+    
     if (req->req_method != METHOD_GET && req->req_method != METHOD_POST) {
         NutHttpSendError(stream, req, 501);
         return;
     }
+    
     for (cgi = cgiFunctionList; cgi; cgi = cgi->cgi_next) {
-        if (strcasecmp(cgi->cgi_name, req->req_url + 8) == 0)
+        if (strcasecmp(cgi->cgi_name, req->req_url + name_pos) == 0)
             break;
     }
     if (cgi == 0)
