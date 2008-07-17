@@ -33,6 +33,11 @@
 
 /*!
  * $Log$
+ * Revision 1.18  2008/07/17 11:56:20  olereinhardt
+ * Updated the webserver demo to show new webserver functions (different cgi
+ * pathes with seperate authentication, $QUERY_STRING parameter for ssi
+ * included CGIs)
+ *
  * Revision 1.17  2008/05/13 19:31:34  thiagocorrea
  * NutHttpSendHeaderBot is marked as deprecated, use NutHttpSendHeaderBottom instead.
  *
@@ -185,6 +190,7 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include <dev/board.h>
 #include <dev/urom.h>
@@ -263,7 +269,7 @@ static int ShowQuery(FILE * stream, REQUEST * req)
      */
     static prog_char head[] = "<HTML><HEAD><TITLE>Parameters</TITLE></HEAD><BODY><H1>Parameters</H1>";
     static prog_char foot[] = "</BODY></HTML>";
-    static prog_char req_fmt[] = "Method: %s<BR>\r\nVersion: HTTP/%d.%d<BR>\r\nContent length: %d<BR>\r\n";
+    static prog_char req_fmt[] = "Method: %s<BR>\r\nVersion: HTTP/%d.%d<BR>\r\nContent length: %ld<BR>\r\n";
     static prog_char url_fmt[] = "URL: %s<BR>\r\n";
     static prog_char query_fmt[] = "Argument: %s<BR>\r\n";
     static prog_char type_fmt[] = "Content type: %s<BR>\r\n";
@@ -542,6 +548,55 @@ int ShowForm(FILE * stream, REQUEST * req)
     return 0;
 }
 
+/*
+ * CGI Sample: Dynamic output cgi included by ssi.shtml file
+ *
+ * This routine must have been registered by NutRegisterCgi() and is
+ * automatically called by NutHttpProcessRequest() when the client
+ * request the URL 'cgi-bin/form.cgi'.
+ *
+ * Thanks to Tom Boettger, who provided this sample for ICCAVR.
+ */
+int SSIDemoCGI(FILE * stream, REQUEST * req)
+{
+    if (req->req_query) {
+        char *name;
+        char *value;
+        int i;
+        int count;
+
+        count = NutHttpGetParameterCount(req);
+        
+        /* Extract count parameters. */
+        fprintf_P(stream, "CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>");
+        for (i = 0; i < count; i++) {
+            name = NutHttpGetParameterName(req, i);
+            value = NutHttpGetParameterValue(req, i);
+
+            /* Send the parameters back to the client. */
+
+#ifdef __IMAGECRAFT__
+            fprintf(stream, "%s: %s<BR>\r\n", name, value);
+#else
+            fprintf_P(stream, PSTR("%s: %s<BR>\r\n"), name, value);
+#endif
+        }
+    } else {
+        time_t now;
+        tm     loc_time;
+        
+        /* Called without any parameter, show the current time */
+        now = time(NULL);
+        localtime_r(&now, &loc_time);
+        fprintf_P(stream, "CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n",
+                  loc_time.tm_mday, loc_time.tm_mon+1, loc_time.tm_year+1900, loc_time.tm_hour, loc_time.tm_min, loc_time.tm_sec);
+    }
+
+    fflush(stream);
+
+    return 0;
+}
+
 /*! \fn Service(void *arg)
  * \brief HTTP service thread.
  *
@@ -742,12 +797,23 @@ int main(void)
     puts("OK");
 #endif
 
+    NutRegisterCgiBinPath("cgi-bin/;user/cgi-bin/;admin/cgi-bin/");
+
+
     /*
      * Register our CGI sample. This will be called
      * by http://host/cgi-bin/test.cgi?anyparams
      */
     NutRegisterCgi("test.cgi", ShowQuery);
 
+    /* 
+     * Register a cgi included by the ssi demo. This will show how dynamic 
+     * content is included in a ssi page and how the request parameters for 
+     * a site are passed down to the included cgi.
+     */
+    
+    NutRegisterCgi("ssi-demo.cgi", SSIDemoCGI);
+    
     /*
      * Register some CGI samples, which display interesting
      * system informations.
@@ -765,7 +831,8 @@ int main(void)
      * Protect the cgi-bin directory with
      * user and password.
      */
-    NutRegisterAuth("cgi-bin", "root:root");
+    NutRegisterAuth("admin", "root:root");
+    NutRegisterAuth("user", "user:user");
 
     /*
      * Register SSI and ASP handler
