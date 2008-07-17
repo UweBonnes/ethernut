@@ -1,4 +1,35 @@
-$Id: ChangeLog,v 1.451 2008/07/15 02:33:20 hwmaier Exp $
+$Id: ChangeLog,v 1.452 2008/07/17 12:23:21 olereinhardt Exp $
+
+2008-07-17  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+
+	* pro/auth.c: Allow Authentication for subdirectories
+	
+	* pro/cgi.c: 
+	  - Check for unique cgi names
+	  - Alloc local copy of cgi name. Allows dynamicaly generated cgi 
+            names
+	  - Function to register a different cgi-bin path. Multiple path 
+	    allowed. See httpd demo for an example
+	
+	* pro/httpd.c pro/httpd_p.c pro/httpd_p.h pro/ssi.c:
+          - Implemented feature request #1667498
+	  - Moved some functions used in httpd.c as well as in ssi.c into
+	    httpd_p.c
+	  - Implemeted $QUERY_STRING parameter in for CGIs included by a 
+	    ssi file
+	
+	* include/pro/httpd.h: Added prototype for new functions in cgi.c
+
+	* dev/at49bv.c, include/dev/at49bv.h: Added function
+	  AT49bvReadProtectionRegister to read factory or user id
+
+	* app/httpd/httpserv.c, app/httpd/sample/form.html,
+	  app/httpd/sample/include.inc, app/httpd/sample/index.html,
+	  app/httpd/sample/ssi.shtml:
+	  Updated the webserver demo to show new webserver functions
+	  (different cgi pathes with seperate authentication, 
+	  $QUERY_STRING parameter for ssi included CGIs)
+
 
 2008-07-15  Henrik Maier  <hwmaier@users.sourceforge.net>
 
@@ -217,7 +248,6 @@ $Id: ChangeLog,v 1.451 2008/07/15 02:33:20 hwmaier Exp $
 	* conf/os/os.nut: Added configuration options for condition variables
 
 	* os/Makefile: Added condition.c
-
 
 
 2008-04-18  Harald Kipp  <harald.kipp@egnite.de>
