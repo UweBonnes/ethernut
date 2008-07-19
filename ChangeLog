@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.452 2008/07/17 12:23:21 olereinhardt Exp $
+$Id: ChangeLog,v 1.453 2008/07/19 02:54:52 thiagocorrea Exp $
+
+2008-07-18  Thiago A. Correa <thiago.correa@gmail.com>
+
+	* conf/arch/avr.nut: Fix LCD size configuration for AVR.
+	  Previously, LCD Bus config settings would be used instead
+	  of the actual LCD Driver config settings.
 
 2008-07-17  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 

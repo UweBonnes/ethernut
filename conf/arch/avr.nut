@@ -33,6 +33,11 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.23  2008/07/19 02:54:52  thiagocorrea
+-- 	* conf/arch/avr.nut: Fix LCD size configuration for AVR.
+-- 	  Previously, LCD Bus config settings would be used instead
+-- 	  of the actual LCD Driver config settings.
+--
 -- Revision 1.22  2008/06/16 13:02:50  haraldkipp
 -- Temporarily removed wlandrv.c from build due to GCC 4.3 warnings.
 --
@@ -783,7 +788,7 @@ nutarch_avr =
                 description = "The number of available display rows, either 1, 2 or 4.",
                 default = "2",
                 flavor = "integer",
-                file = "include/cfg/lcd.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "LCD_COLS",
@@ -791,7 +796,7 @@ nutarch_avr =
                 description = "The number of available display colums, either 8, 16, 20 or 40.",
                 default = "16",
                 flavor = "integer",
-                file = "include/cfg/lcd.h"
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "KS0073_CONTROLLER",
