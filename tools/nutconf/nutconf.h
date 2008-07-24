@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2008/07/24 15:39:59  haraldkipp
+ * Configurator version 2.0.
+ *
  * Revision 1.17  2008/03/17 10:16:18  haraldkipp
  * Tool version 1.5.0. Starts working on OS X, though, still
  * problems with scrolling the split tree.
@@ -102,7 +105,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "1.5.0"
+#define VERSION "2.0.0"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
