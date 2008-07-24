@@ -20,6 +20,9 @@
 
 /*
  * $Log: appoptdlg.cpp,v $
+ * Revision 1.6  2008/07/24 15:47:20  haraldkipp
+ * Use correct ifdefs for path separators.
+ *
  * Revision 1.5  2008/03/17 10:22:48  haraldkipp
  * Added more comments.
  *
@@ -127,7 +130,7 @@ void CAppOptionsDialog::OnBrowseAppDir(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() == wxID_OK) {
         wxString val = dlg.GetPath();
-#ifdef __WXMSW__
+#ifdef _WIN32
         val.Replace(wxT("\\"), wxT("/"));
 #endif
         m_entAppDir->SetValue(val);

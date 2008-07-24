@@ -20,6 +20,9 @@
 
 /*
  * $Log: bldoptdlg.cpp,v $
+ * Revision 1.7  2008/07/24 15:47:21  haraldkipp
+ * Use correct ifdefs for path separators.
+ *
  * Revision 1.6  2008/03/17 10:22:48  haraldkipp
  * Added more comments.
  *
@@ -189,7 +192,7 @@ void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() == wxID_OK) {
         wxString val = dlg.GetPath();
-#ifdef __WXMSW__
+#ifdef _WIN32
         val.Replace(wxT("\\"), wxT("/"));
 #endif
         ((wxTextCtrl*)FindWindow(ID_PATH_ENTRY))->SetValue(val);
@@ -211,7 +214,7 @@ void CBuildOptionsDialog::OnBrowseSourceDir(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() == wxID_OK) {
         wxString val = dlg.GetPath();
-#ifdef __WXMSW__
+#ifdef _WIN32
         val.Replace(wxT("\\"), wxT("/"));
 #endif
         m_entSourceDir->SetValue(val);
@@ -233,7 +236,7 @@ void CBuildOptionsDialog::OnBrowseInstallPath(wxCommandEvent& WXUNUSED(event))
 
     if (dlg.ShowModal() == wxID_OK) {
         wxString val = dlg.GetPath();
-#ifdef __WXMSW__
+#ifdef _WIN32
         val.Replace(wxT("\\"), wxT("/"));
 #endif
         m_entInstallDir->SetValue(val);
