@@ -20,6 +20,10 @@
 
 /*
  * $Log: configtree.cpp,v $
+ * Revision 1.7  2008/07/24 15:46:43  haraldkipp
+ * Simplyfied mouse event handling.
+ * Report dynamic script errors.
+ *
  * Revision 1.6  2008/03/17 10:17:18  haraldkipp
  * Removed dispensable scroll handlers.
  *
@@ -117,25 +121,31 @@ CConfigTree::CConfigTree(wxWindow * parent, wxWindowID id, const wxPoint & pt, c
 void CConfigTree::OnMouseEvent(wxMouseEvent & event)
 {
     int flags = 0;
-    wxTreeItemId item = HitTest(wxPoint(event.GetX(), event.GetY()), flags);
-
-    if (item == (wxTreeItemId)0L || !item.IsOk()) {
-        return;
-    }
+    wxTreeItemId item;
 
     if (event.LeftDown()) {
-        if (flags & wxTREE_HITTEST_ONITEMICON) {
-            CTreeItemData *data = (CTreeItemData *) GetItemData(item);
-            data->GetConfigItem()->OnIconLeftDown(*this);
+        item = HitTest(wxPoint(event.GetX(), event.GetY()), flags);
+        if (item.IsOk()) {
+            if (flags & wxTREE_HITTEST_ONITEMICON) {
+                CTreeItemData *data = (CTreeItemData *) GetItemData(item);
+                data->GetConfigItem()->OnIconLeftDown(*this);
+            }
         }
+        event.Skip();
     } else if (event.RightDown()) {
-        if ((flags & wxTREE_HITTEST_ONITEMBUTTON) ||
-            (flags & wxTREE_HITTEST_ONITEMICON) || (flags & wxTREE_HITTEST_ONITEMINDENT) || (flags & wxTREE_HITTEST_ONITEMLABEL)) {
-            SelectItem(item);
+        item = HitTest(wxPoint(event.GetX(), event.GetY()), flags);
+        if (item.IsOk()) {
+            if ((flags & wxTREE_HITTEST_ONITEMBUTTON) ||
+                (flags & wxTREE_HITTEST_ONITEMICON) || 
+                (flags & wxTREE_HITTEST_ONITEMINDENT) || 
+                (flags & wxTREE_HITTEST_ONITEMLABEL)) {
+                SelectItem(item);
+            }
         }
-        return;
     }
-    event.Skip();
+    else {
+        event.Skip();
+    }
 }
 
 void CConfigTree::OnSelChanged(wxTreeEvent & WXUNUSED(event))
@@ -144,6 +154,9 @@ void CConfigTree::OnSelChanged(wxTreeEvent & WXUNUSED(event))
     if (doc) {
         CNutConfHint hint(NULL, nutSelChanged);
         doc->UpdateAllViews(NULL, &hint);
+        if (GetScriptStatus()) {
+            wxLogMessage(wxT("%s"), GetScriptErrorString());
+        }
     }
 }
 
