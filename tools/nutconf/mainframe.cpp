@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.14  2008/07/24 15:44:22  haraldkipp
+ * Fixed initial window creation on Linux.
+ *
  * Revision 1.13  2008/03/17 10:22:48  haraldkipp
  * Added more comments.
  *
@@ -133,6 +136,8 @@ CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
     CreateNutToolBar();
     CreateNutStatusBar();
 
+    CreateNutWindows();
+
     /*
      * Restore frame position and size.
      */
@@ -140,7 +145,6 @@ CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
     Move(pConfig->Read(wxT("/MainFrame/x"), 50), pConfig->Read(wxT("/MainFrame/y"), 50));
     SetClientSize(pConfig->Read(wxT("/MainFrame/w"), 550), pConfig->Read(wxT("/MainFrame/h"), 350));
 
-    CreateNutWindows();
 }
 
 /*!
@@ -403,8 +407,6 @@ void CMainFrame::CreateNutWindows()
     m_splitter->SetMinimumPaneSize(100);
     m_splitter->SetSashGravity(0.5);
 
-    /* Scrolling is done on the tree. */
-    //m_scrolledWindow->SetTargetWindow(m_treeWindow);
     m_scrolledWindow->EnableScrolling(false, false);
 
     // Let the two controls know about each other
