@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/07/24 15:41:41  haraldkipp
+ * Dynamic configuration.
+ *
  * Revision 1.10  2008/03/17 10:16:16  haraldkipp
  * Tool version 1.5.0. Starts working on OS X, though, still
  * problems with scrolling the split tree.
@@ -92,49 +95,28 @@
  */
 
 typedef struct _NUTCOMPONENTOPTION NUTCOMPONENTOPTION;
+typedef struct _NUTCOMPONENT NUTCOMPONENT;
 
 struct _NUTCOMPONENTOPTION {
     /*! \brief Pointer to next option. */
     NUTCOMPONENTOPTION *nco_nxt;
     /*! \brief Pointer to previous option. */
     NUTCOMPONENTOPTION *nco_prv;
+    /*! \brief Component reference. */
+    NUTCOMPONENT *nco_compo;
     /*! \brief C macro name of this option. */
     char *nco_name;
-    /*! \brief Brief description. */
-    char *nco_brief;
-    /*! \brief Long description. */
-    char *nco_description;
-
     /*! \brief Enable flag. */
     int  nco_enabled;
     /*! \brief Active flag. */
     int  nco_active;
     /*! \brief Not yet used. */
     char *nco_active_if;
-    /*! \brief Array of requirement keywords. */
-    char **nco_requires;
-    /*! \brief Array of provision keywords. */
-    char **nco_provides;
-
-    /*! \brief Data flavour. */
-    char *nco_flavor;
-    /*! \brief Data type. */
-    char *nco_type;
-    /*! \brief Possible choices. */
-    char **nco_choices;
-    char *nco_ctype;
-    /*! \brief Data value. */
+    /*! \brief Edited data value. */
     char *nco_value;
-    /*! \brief Default value. */
-    char *nco_default;
-    /*! \brief Source file to store this option. */
-    char *nco_file;
-    /*! \brief Makefile macros. */
-    char **nco_makedefs;
+    /*! \brief Exclusivity list, static, deprecated. */
     char **nco_exclusivity;
 };
-
-typedef struct _NUTCOMPONENT NUTCOMPONENT;
 
 struct _NUTCOMPONENT {
     /*! \brief Pointer to next sibling component. */
@@ -149,31 +131,15 @@ struct _NUTCOMPONENT {
     NUTCOMPONENTOPTION *nc_opts;
     /*! \brief Name of this component. */
     char *nc_name;
-    /*! \brief Brief description. */
-    char *nc_brief;
-    /*! \brief Long description. */
-    char *nc_description;
     /*! \brief Enable flag.
      *
      * A component is enabled, if all requirements of this component and
      * all parent components are provided by other components or options.
      */
     int  nc_enabled;
-    /*! \brief Array of requirement keywords. */
-    char **nc_requires;
-    /*! \brief Array of provision keywords. */
-    char **nc_provides;
     /*! \brief Not yet used. */
     char *nc_active_if;
-    /*! \brief Subdirectory within the source tree. */
-    char *nc_subdir;
-    /*! \brief List of source files. */
-    char **nc_sources;
-    /*! \brief List of target files. */
-    char **nc_targets;
-    /*! \brief Additional lines added to NutConf.mk. */
-    char **nc_makedefs;
-    /*! \brief Exclusivity list. */
+    /*! \brief Exclusivity list, static, deprecated. */
     char **nc_exclusivity;
 };
 
@@ -197,21 +163,54 @@ struct _NUTREPOSITORY {
 __BEGIN_DECLS
 /* Function prototypes */
 extern NUTREPOSITORY *OpenRepository(const char *pathname);
+extern void CloseRepository(NUTREPOSITORY *repo);
+
+extern int RegisterSourcePath(NUTREPOSITORY *repo, const char *path);
+extern int RegisterBuildPath(NUTREPOSITORY *repo, const char *path);
+extern int RegisterLibPath(NUTREPOSITORY *repo, const char *path);
+extern int RegisterSamplePath(NUTREPOSITORY *repo, const char *path);
+extern int RegisterCompilerPlatform(NUTREPOSITORY *repo, const char *platform);
+
 extern NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo);
 extern void ReleaseComponents(NUTCOMPONENT *comp);
 
+extern void ReleaseStringArray(char **stringarray);
+
 extern int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pathname);
-extern void CloseRepository(NUTREPOSITORY *repo);
+extern char * GetComponentBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
+extern char * GetComponentDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
+extern char * GetComponentSubdir(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
+extern char **GetComponentRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
+extern char **GetComponentProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
+extern char **GetComponentSources(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
+extern char **GetComponentTargets(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
+extern char **GetComponentMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp);
 
-extern int RefreshComponents(NUTCOMPONENT *root);
+extern char * GetOptionBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char * GetOptionDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char * GetOptionDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char * GetOptionFile(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char * GetOptionFlavour(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char * GetOptionTypeString(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char **GetOptionRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char **GetOptionProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char **GetOptionChoices(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+extern char **GetOptionMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
 
-extern int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext,
-                     const char *ifirst_dir, const char *ilast_dir, const char *ins_dir);
-extern int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir);
-extern int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *app_dir, const char *src_dir,
-                                 const char *lib_dir, const char *mak_ext, const char *prg_ext,
+extern char * GetConfigValue(NUTREPOSITORY *repo, char * name);
+extern char * GetConfigValueOrDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name);
+
+
+extern int RefreshComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root);
+
+extern int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, 
+                           const char *mak_ext, const char *ifirst_dir, const char *ilast_dir, const char *ins_dir);
+extern int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir);
+extern int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir, 
+                                 const char *src_dir, const char *lib_dir, const char *mak_ext, const char *prg_ext,
                                  const char *ifirst_dir, const char *ilast_dir);
 
+const int GetScriptStatus(void);
 const char *GetScriptErrorString(void);
 
 __END_DECLS                     /* */

@@ -20,6 +20,9 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.9  2008/07/24 15:41:41  haraldkipp
+ * Dynamic configuration.
+ *
  * Revision 1.8  2008/03/17 10:22:48  haraldkipp
  * Added more comments.
  *
@@ -349,18 +352,23 @@ bool CConfigItem::ViewHeaderFile()
 wxString CConfigItem::GetBriefDescription() const
 {
     wxString str;
+    char *brief;
 
     if (m_compo) {
-        if (m_compo->nc_brief) {
-            str = wxString(m_compo->nc_brief,wxConvLocal);
+        brief = GetComponentBrief(wxGetApp().GetNutConfDoc()->GetRepository(), m_compo);
+        if (brief) {
+            str = wxString(brief, wxConvLocal);
+            free(brief);
         } else {
-            str = wxString(m_compo->nc_name,wxConvLocal);
+            str = wxString(m_compo->nc_name, wxConvLocal);
         }
     } else if (m_option) {
-        if (m_option->nco_brief) {
-            str = wxString(m_option->nco_brief,wxConvLocal);
+        brief = GetOptionBrief(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (brief) {
+            str = wxString(brief, wxConvLocal);
+            free(brief);
         } else {
-            str = wxString(m_option->nco_name,wxConvLocal);
+            str = wxString(m_option->nco_name, wxConvLocal);
         }
     } else {
         str = wxT("Nut/OS Components");
@@ -383,11 +391,16 @@ wxString CConfigItem::GetName() const
 wxString CConfigItem::GetDescription() const
 {
     wxString str;
+    char *desc = NULL;
 
     if (m_compo) {
-        str = wxString(m_compo->nc_description,wxConvLocal);
+        desc = GetComponentDescription(wxGetApp().GetNutConfDoc()->GetRepository(), m_compo);
     } else if (m_option) {
-        str = wxString(m_option->nco_description,wxConvLocal);
+        desc = GetOptionDescription(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+    }
+    if (desc) {
+        str = wxString(desc, wxConvLocal);
+        free(desc);
     }
     return str;
 }
@@ -395,13 +408,17 @@ wxString CConfigItem::GetDescription() const
 nutOptionFlavor CConfigItem::GetOptionFlavor() const
 {
     if (m_option) {
-        if (m_option->nco_flavor) {
-            if (strcasecmp(m_option->nco_flavor, "boolean") == 0) {
+        char *flavor = GetOptionFlavour(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (flavor) {
+            if (strcasecmp(flavor, "boolean") == 0) {
+                free(flavor);
                 return nutFlavorBool;
             }
-            if (strcasecmp(m_option->nco_flavor, "booldata") == 0) {
+            if (strcasecmp(flavor, "booldata") == 0) {
+                free(flavor);
                 return nutFlavorBoolData;
             }
+            free(flavor);
         }
         return nutFlavorData;
     }
@@ -410,21 +427,25 @@ nutOptionFlavor CConfigItem::GetOptionFlavor() const
 
 nutOptionType CConfigItem::GetOptionType() const
 {
+    nutOptionType rc = nutOptionTypeNone;
+
     if (m_option) {
-        if (m_option->nco_type) {
-            if (strcasecmp(m_option->nco_type, "integer") == 0) {
-                return nutInteger;
+        rc = nutString;
+        char *type = GetOptionTypeString(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (type) {
+            if (strcasecmp(type, "integer") == 0) {
+                rc = nutInteger;
             }
-            if (strcasecmp(m_option->nco_type, "bool") == 0) {
-                return nutBool;
+            else if (strcasecmp(type, "bool") == 0) {
+                rc = nutBool;
             }
-            if (strcasecmp(m_option->nco_type, "enumerated") == 0) {
-                return nutEnumerated;
+            else if (strcasecmp(type, "enumerated") == 0) {
+                rc = nutEnumerated;
             }
+            free(type);
         }
-        return nutString;
     }
-    return nutOptionTypeNone;
+    return rc;
 }
 
 wxString CConfigItem::GetDisplayValue() const
@@ -446,25 +467,49 @@ wxString CConfigItem::GetDisplayValue() const
  */
 wxString CConfigItem::StringValue() const
 {
+    wxString str;
+
     if (m_option) {
+        /* First try the edited value. */
         if (m_option->nco_value) {
-            return wxString(m_option->nco_value,wxConvLocal);
-        }
-        if (GetOptionType() == nutEnumerated) {
-            if (m_option->nco_choices && m_option->nco_choices[0]) {
-                return wxString(m_option->nco_choices[0],wxConvLocal);
+            str = wxString(m_option->nco_value, wxConvLocal);
+        } else {
+            /* Get either the configured value or its default. */
+            char *val = GetConfigValueOrDefault(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+            if (val) {
+                str = wxString(val, wxConvLocal);
+                free(val);
+            }
+            /* Return the first enumerated item, if no configured or default value. */
+            else if (GetOptionType() == nutEnumerated) {
+                char **choices = GetOptionChoices(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+                if (choices) {
+                    if (choices[0]) {
+                        str = wxString(choices[0], wxConvLocal);
+                    }
+                    for (int i = 0; choices[i]; i++) {
+                        free(choices[i]);
+                    }
+                    free(choices);
+                }
             }
         }
     }
-    return wxEmptyString;
+    return str;
 }
 
 wxString CConfigItem::GetFilename() const
 {
-    if (m_option &&  m_option->nco_file) {
-        return wxString(m_option->nco_file,wxConvLocal);
+    wxString str;
+
+    if (m_option) {
+        char *fname = GetOptionFile(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (fname) {
+            str = wxString(fname, wxConvLocal);
+            free(fname);
+        }
     }
-    return wxEmptyString;
+    return str;
 }
 
 wxString CConfigItem::GetMacro() const
@@ -479,20 +524,31 @@ wxString CConfigItem::GetRequirementList() const
 {
     wxString str;
 
-    if (m_option && m_option->nco_requires) {
-        for (int i = 0; m_option->nco_requires[i]; i++) {
-            if(!str.IsEmpty()) {
-                str += wxT(", ");
+    if (m_option) {
+        char **requires = GetOptionRequirements(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (requires) {
+            for (int i = 0; requires[i]; i++) {
+                if(!str.IsEmpty()) {
+                    str += wxT(", ");
+                }
+                str += wxString(requires[i], wxConvLocal);
+                free(requires[i]);
             }
-            str += wxString(m_option->nco_requires[i],wxConvLocal);
+            free(requires);
         }
     }
-    if (m_compo && m_compo->nc_requires) {
-        for (int i = 0; m_compo->nc_requires[i]; i++) {
-            if(!str.IsEmpty()) {
-                str += wxT(", ");
+    /* Do we need component requirements? */
+    if (m_compo) {
+        char **requires = GetComponentRequirements(wxGetApp().GetNutConfDoc()->GetRepository(), m_compo);
+        if (requires) {
+            for (int i = 0; requires[i]; i++) {
+                if(!str.IsEmpty()) {
+                    str += wxT(", ");
+                }
+                str += wxString(requires[i],wxConvLocal);
+                free(requires[i]);
             }
-            str += wxString(m_compo->nc_requires[i],wxConvLocal);
+            free(requires);
         }
     }
     return str;
@@ -501,21 +557,32 @@ wxString CConfigItem::GetRequirementList() const
 wxString CConfigItem::GetProvisionList() const
 {
     wxString str;
+    char **provides;
 
-    if (m_option && m_option->nco_provides) {
-        for (int i = 0; m_option->nco_provides[i]; i++) {
-            if(!str.IsEmpty()) {
-                str += wxT(", ");
+    if (m_option) {
+        provides = GetOptionProvisions(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (provides) {
+            for (int i = 0; provides[i]; i++) {
+                if(!str.IsEmpty()) {
+                    str += wxT(", ");
+                }
+                str += wxString(provides[i],wxConvLocal);
+                free(provides[i]);
             }
-            str += wxString(m_option->nco_provides[i],wxConvLocal);
+            free(provides);
         }
     }
-    if (m_compo && m_compo->nc_provides) {
-        for (int i = 0; m_compo->nc_provides[i]; i++) {
-            if(!str.IsEmpty()) {
-                str += wxT(", ");
+    if (m_compo) {
+        provides = GetComponentProvisions(wxGetApp().GetNutConfDoc()->GetRepository(), m_compo);
+        if (provides) {
+            for (int i = 0; provides[i]; i++) {
+                if(!str.IsEmpty()) {
+                    str += wxT(", ");
+                }
+                str += wxString(provides[i],wxConvLocal);
+                free(provides[i]);
             }
-            str += wxString(m_compo->nc_provides[i],wxConvLocal);
+            free(provides);
         }
     }
     return str;
@@ -546,9 +613,14 @@ wxString CConfigItem::GetExclusivityList() const
 
 int CConfigItem::GetEnumStrings(wxArrayString & arEnumStrings) const
 {
-    if (m_option && m_option->nco_choices) {
-        for (int i = 0; m_option->nco_choices[i]; i++) {
-            arEnumStrings.Add(wxString(m_option->nco_choices[i],wxConvLocal));
+    if (m_option) {
+        char **choices = GetOptionChoices(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (choices) {
+            for (int i = 0; choices[i]; i++) {
+                arEnumStrings.Add(wxString(choices[i], wxConvLocal));
+                free(choices[i]);
+            }
+            free(choices);
         }
     }
     return arEnumStrings.GetCount();
@@ -560,9 +632,14 @@ int CConfigItem::GetEnumStrings(wxArrayString & arEnumStrings) const
  */
 bool CConfigItem::HasBool() const
 {
-    if (m_option && m_option->nco_flavor) {
-        if (strcasecmp(m_option->nco_flavor, "boolean") == 0 || strcasecmp(m_option->nco_flavor, "booldata") == 0) {
+    if (m_option) {
+        char *flavor = GetOptionFlavour(wxGetApp().GetNutConfDoc()->GetRepository(), m_option->nco_compo, m_option->nco_name);
+        if (flavor && (strcasecmp(flavor, "boolean") == 0 || strcasecmp(flavor, "booldata") == 0)) {
+            free(flavor);
             return true;
+        }
+        if (flavor) {
+            free(flavor);
         }
     }
     return false;

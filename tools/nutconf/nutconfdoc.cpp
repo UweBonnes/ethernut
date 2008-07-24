@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.21  2008/07/24 15:41:41  haraldkipp
+ * Dynamic configuration.
+ *
  * Revision 1.20  2008/03/17 10:19:06  haraldkipp
  * Added Eclipse project file copying (experimental).
  *
@@ -125,6 +128,7 @@
 
 #ifdef __WXMSW__
 #define strcasecmp stricmp
+#define strncasecmp strnicmp
 #endif
 
 /*
@@ -145,6 +149,9 @@ CNutConfDoc::CNutConfDoc()
  */
 CNutConfDoc::~CNutConfDoc()
 {
+    if (m_repository) {
+        CloseRepository(m_repository);
+    }
     ReleaseRepository();
     DeleteItems();
 }
@@ -165,10 +172,13 @@ bool CNutConfDoc::OnCreate(const wxString & path, long flags)
 
     wxGetApp().m_currentDoc = this;
 
+    /*
+     * The repository may refer to certain configuration values. Thus, 
+     * it must be loaded before reading the repository.
+     */
+    cfg->Load(cfg->m_configname);
     if ((rc = ReadRepository(cfg->m_repositoryname, normPath)) == true) {
-        CSettings *cfg = wxGetApp().GetSettings();
-        cfg->Load(cfg->m_configname);
-        
+
         Modify(false);
         SetDocumentSaved(false);
 
@@ -226,15 +236,25 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
         NUTCOMPONENTOPTION *opts = compo->nc_opts;
         while (opts) {
             if(opts->nco_enabled && opts->nco_active) {
-                if(opts->nco_value &&
-                   (opts->nco_default == NULL || strcmp(opts->nco_value, opts->nco_default))) {
-                    fprintf(fp, "%s = \"%s\"\n", opts->nco_name, opts->nco_value);
+                char *value;
+                if (opts->nco_value) {
+                    /* Save edited value. */
+                    value = strdup(opts->nco_value);
+                } else {
+                    /* Save configured value. */
+                    value = GetConfigValue(m_repository, opts->nco_name);
                 }
-                /* Do not save empty values. */
-                else if (opts->nco_flavor &&
-                         (strcasecmp(opts->nco_flavor, "boolean") == 0 ||
-                         strcasecmp(opts->nco_flavor, "booldata") == 0)) {
-                    fprintf(fp, "%s = \"\"\n", opts->nco_name);
+                /* Do not save empty values, unless they are boolean. */
+                if (value && *value == '\0') {
+                    char *flavor = GetOptionFlavour(m_repository, opts->nco_compo, opts->nco_name);
+                    if (flavor == NULL || strncasecmp(flavor, "bool", 4)) {
+                        free(value);
+                        value = NULL;
+                    }
+                }
+                if (value) {
+                    fprintf(fp, "%s = \"%s\"\n", opts->nco_name, value);
+                    free(value);
                 }
             }
             opts = opts->nco_nxt;
@@ -318,25 +338,34 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
     wxGetApp().SetStatusText(str);
     wxLogMessage(wxT("%s"), str.c_str());
 
-    NUTREPOSITORY *repo = OpenRepository(repositoryname.mb_str());
-    if(repo) {
-        m_root = LoadComponents(repo);
+    m_repository = OpenRepository(repositoryname.mb_str());
+    if(m_repository) {
+        m_root = LoadComponents(m_repository);
         if(m_root) {
             str = wxT("Loading ") + configname;
             wxGetApp().SetStatusText(str);
             wxLogMessage(wxT("%s"), str.c_str());
-            if(ConfigureComponents(repo, m_root, configname.mb_str())) {
+            if(ConfigureComponents(m_repository, m_root, configname.mb_str())) {
                 wxLogMessage(wxT("%s"), GetScriptErrorString());
             }
             else {
-                RefreshComponents(m_root);
-                wxLogMessage(wxT("OK"));
+                CSettings *cfg = wxGetApp().GetSettings();
+                RegisterSourcePath(m_repository, cfg->m_source_dir.mb_str());
+                RegisterBuildPath(m_repository, cfg->m_buildpath.mb_str());
+                RegisterLibPath(m_repository, cfg->m_lib_dir.mb_str());
+                RegisterSamplePath(m_repository, cfg->m_app_dir.mb_str());
+                RegisterCompilerPlatform(m_repository, cfg->m_platform.mb_str());
+                if (RefreshComponents(m_repository, m_root)) {
+                    wxLogError(wxT("Conflicting configuration"));
+                } else {
+                    wxLogMessage(wxT("OK"));
+                }
             }
         }
         else {
             wxLogMessage(wxT("%s"), GetScriptErrorString());
         }
-        CloseRepository(repo);
+//        CloseRepository(m_repository);
     }
     else {
         wxLogError(wxT("Failed to open repository"));
@@ -347,6 +376,22 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
     wxGetApp().SetStatusText(wxEmptyString);
 
     return true;
+}
+
+/*!
+ * \brief Return the repository info.
+ */
+NUTREPOSITORY * CNutConfDoc::GetRepository()
+{
+    return m_repository;
+}
+
+/*!
+ * \brief Return the component root.
+ */
+NUTCOMPONENT * CNutConfDoc::GetRootComponent()
+{
+    return m_root;
 }
 
 /*!
@@ -471,20 +516,44 @@ bool CNutConfDoc::IsRequirementProvided(NUTCOMPONENT *compo, char *requirement)
 
     while (compo) {
         if(compo->nc_enabled) {
-            for (i = 0; compo->nc_provides[i]; i++) {
-                if(strcmp(compo->nc_provides[i], requirement) == 0) {
+            char **cprovides = GetComponentProvisions(m_repository, compo);
+            if (cprovides) {
+                for (i = 0; cprovides[i]; i++) {
+                    if(strcmp(cprovides[i], requirement) == 0) {
+                        break;
+                    }
+                    free(cprovides[i]);
+                }
+                if (cprovides[i]) {
+                    for (; cprovides[i]; i++) {
+                        free(cprovides[i]);
+                    }
+                    free(cprovides);
                     return true;
                 }
+                free(cprovides);
             }
 
             NUTCOMPONENTOPTION *opts = compo->nc_opts;
             while (opts) {
-                for (i = 0; opts->nco_provides[i]; i++) {
-                    if(strcmp(opts->nco_provides[i], requirement) == 0) {
-                        if(opts->nco_active) {
-                            return true;
+                char **provides = GetOptionProvisions(m_repository, opts->nco_compo, opts->nco_name);
+                if (provides) {
+                    for (i = 0; provides[i]; i++) {
+                        if(strcmp(provides[i], requirement) == 0) {
+                            if(opts->nco_active) {
+                                break;
+                            }
                         }
+                        free(provides[i]);
                     }
+                    if (provides[i]) {
+                        for (; provides[i]; i++) {
+                            free(provides[i]);
+                        }
+                        free(provides);
+                        return true;
+                    }
+                    free(provides);
                 }
                 opts = opts->nco_nxt;
             }
@@ -519,17 +588,9 @@ void CNutConfDoc::DeactivateOptionList(char **exlist)
  */
 bool CNutConfDoc::SetValue(CConfigItem & item, long nValue)
 {
-    if (item.m_option) {
-        if (item.m_option->nco_value) {
-            free(item.m_option->nco_value);
-            item.m_option->nco_value = NULL;
-        }
-        wxString str;
-        str.Printf(wxT("%ld"), nValue);
-        item.m_option->nco_value = strdup(str.mb_str());
-        Modify(true);
-    }
-    return true;
+    wxString str;
+    str.Printf(wxT("%ld"), nValue);
+    return SetValue(item, str);
 }
 
 /*!
@@ -538,20 +599,29 @@ bool CNutConfDoc::SetValue(CConfigItem & item, long nValue)
 bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
 {
     if (item.m_option) {
-        if (item.m_option->nco_value) {
-            free(item.m_option->nco_value);
-        }
-        if (strValue.IsEmpty()) {
-            item.m_option->nco_value = NULL;
-        }
-        else {
-            item.m_option->nco_value = strdup(strValue.mb_str());
-        }
-        item.m_option->nco_active = 1;
-        Modify(true);
+        char *newval = strdup(strValue.mb_str());
 
-        CNutConfHint hint(&item, nutValueChanged);
-        UpdateAllViews(NULL, &hint);
+        /* Check if edited value changed. */
+        if (item.m_option->nco_value == NULL || strcmp(item.m_option->nco_value, newval)) {
+            /* Remove any previously edited value. */
+            if (item.m_option->nco_value) {
+                free(item.m_option->nco_value);
+                item.m_option->nco_value = NULL;
+            }
+            /* Check if new value differs from configured value. */
+            char *cfgval = GetConfigValue(m_repository, item.m_option->nco_name);
+            if ((cfgval == NULL && *newval) || (cfgval && strcmp(cfgval, newval))) {
+                item.m_option->nco_value = newval;
+                item.m_option->nco_active = 1;
+                Modify(true);
+            } else {
+                free(newval);
+            }
+            CNutConfHint hint(&item, nutValueChanged);
+            UpdateAllViews(NULL, &hint);
+        } else {
+            free(newval);
+        }
     }
     return true;
 }
@@ -563,7 +633,14 @@ bool CNutConfDoc::SetActive(CConfigItem & item, bool bEnabled)
 {
     item.SetActive(bEnabled);
 
-    RefreshComponents(m_root);
+    CSettings *cfg = wxGetApp().GetSettings();
+    RegisterSourcePath(m_repository, cfg->m_source_dir.mb_str());
+    RegisterBuildPath(m_repository, cfg->m_buildpath.mb_str());
+    RegisterLibPath(m_repository, cfg->m_lib_dir.mb_str());
+    RegisterSamplePath(m_repository, cfg->m_app_dir.mb_str());
+    RegisterCompilerPlatform(m_repository, cfg->m_platform.mb_str());
+
+    RefreshComponents(m_repository, m_root);
     Modify(true);
     CNutConfHint hint(&item, nutExternallyChanged);
     UpdateAllViews(NULL, &hint);
@@ -603,14 +680,14 @@ bool CNutConfDoc::GenerateBuildTree()
         ins_dir = cfg->m_buildpath + wxT("/lib");
     }
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
-    if(CreateMakeFiles(m_root, cfg->m_buildpath.mb_str(), cfg->m_source_dir.mb_str(),
+    if(CreateMakeFiles(m_repository, m_root, cfg->m_buildpath.mb_str(), cfg->m_source_dir.mb_str(),
                        cfg->m_platform.mb_str(), cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str(),
                        ins_dir.mb_str())) {
         return false;
     }
 
     wxLogMessage(wxT("Creating header files in %s"), cfg->m_buildpath.c_str());
-    if(CreateHeaderFiles(m_root, cfg->m_buildpath.mb_str())) {
+    if(CreateHeaderFiles(m_repository, m_root, cfg->m_buildpath.mb_str())) {
         return false;
     }
     wxLogMessage(wxT("OK"));
@@ -751,8 +828,17 @@ private:
                 else if (line.StartsWith(wxT("Edit3="))) {
                     NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, wxT("PLATFORM"));
                     line = wxT("Edit3=");
-                    if (opt && opt->nco_enabled && opt->nco_active && opt->nco_value[0]) {
-                        line += wxString(opt->nco_value, wxConvLocal) + wxT(" ");
+                    if (opt && opt->nco_enabled && opt->nco_active) {
+                        if (opt->nco_value && opt->nco_value[0]) {
+                            line += wxString(opt->nco_value, wxConvLocal) + wxT(" ");
+                        }
+                    //TODO: Get repository reference.
+//                        else {
+//                        char * value = GetConfigValueOrDefault(m_repository, comp, opt->nco_name);
+//                        if (value) {
+//                            line += wxString(value, wxConvLocal) + wxT(" ");
+//                            free(value);
+//                        }
                     }
                     opt = m_doc->FindOptionByName(NULL, wxT("MCU_ATMEGA2561"));
                     if (opt && opt->nco_enabled && opt->nco_active) {
@@ -766,7 +852,7 @@ private:
                 else if (line.StartsWith(wxT("Edit13="))) {
                     NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, wxT("ICCAVR_STARTUP"));
                     line = wxT("Edit13=");
-                    if (opt && opt->nco_enabled && opt->nco_active && opt->nco_value[0]) {
+                    if (opt && opt->nco_enabled && opt->nco_active && opt->nco_value && opt->nco_value[0]) {
                         line += wxString(opt->nco_value, wxConvLocal) + wxT(".o");
                     } else {
                         line += wxT("crtenutram.o");
@@ -949,9 +1035,9 @@ bool CNutConfDoc::GenerateApplicationTree()
     if(lib_dir.IsEmpty()) {
         lib_dir = cfg->m_buildpath + wxT("/lib");
     }
-    if(CreateSampleDirectory(m_root, cfg->m_buildpath.mb_str(), cfg->m_app_dir.mb_str(), cfg->m_source_dir.mb_str(),
-                             lib_dir.mb_str(), cfg->m_platform.mb_str(), cfg->m_programmer.mb_str(),
-                             cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str())) {
+    if(CreateSampleDirectory(m_repository, m_root, cfg->m_buildpath.mb_str(), cfg->m_app_dir.mb_str(), 
+                             cfg->m_source_dir.mb_str(), lib_dir.mb_str(), cfg->m_platform.mb_str(), 
+                             cfg->m_programmer.mb_str(), cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str())) {
         return false;
     }
     wxLogMessage(wxT("OK"));

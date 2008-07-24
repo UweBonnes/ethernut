@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.30  2008/07/24 15:41:41  haraldkipp
+ * Dynamic configuration.
+ *
  * Revision 1.29  2008/03/17 10:22:49  haraldkipp
  * Added more comments.
  *
@@ -145,7 +148,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "1.5.0"
+#define NUT_CONFIGURE_VERSION   "2.0.0"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -153,7 +156,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 
 #include <io.h>
 #include <direct.h>
@@ -161,14 +164,13 @@
 #define mkdir(P, M) _mkdir(P)
 #define access _access
 #define strcasecmp stricmp
+#define strncasecmp strnicmp
 
 #else
 
 #include <unistd.h>
 #include <dirent.h>
 #include <errno.h>
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
 
 #endif
 
@@ -270,105 +272,174 @@
  */
 #define TKN_EXCLUSIVITY "exclusivity"
 
+static int errsts;
 static char errtxt[1024];
+
+#define LRK_NUTREPOSITORY       "nutconf.NUTREPOSITORY"
+#define LRK_NUTROOTCOMPONENT    "nutconf.NUTROOTCOMPONENT"
+#define LRK_NUTSOURCEPATH       "nutconf.NUTSOURCEPATH"
+#define LRK_NUTLIBPATH          "nutconf.NUTLIBPATH"
+#define LRK_NUTBUILDPATH        "nutconf.NUTSBUILDPATH"
+#define LRK_NUTSAMPLEPATH       "nutconf.NUTSAMPLEPATH"
+#define LRK_NUTCOMPILERPLATFORM "nutconf.NUTCOMPILERPLATFORM"
 
 #if 0
 
 /* Quite helpful during debugging. */
-void ShowStack(lua_State * ls)
+static void DumpStack(FILE *fp, char * pos, lua_State * ls)
 {
     int top;
     int i;
     int type;
+    FILE *fpl = fp;
 
-    printf("Stack:\n");
+    if (fpl == NULL) {
+        fpl = fopen("dump.log", "a");
+    }
+
+    fprintf(fpl, "Stack dump at %s\n", pos);
     top = lua_gettop(ls);
     for (i = top; i > 0; i--) {
         type = lua_type(ls, i);
-        printf("%d %s=", i, lua_typename(ls, type));
+        fprintf(fpl, "%d %s", i - top - 1, lua_typename(ls, type));
         switch (type) {
         case LUA_TNONE:
+            fprintf(fpl, "\n");
             break;
         case LUA_TNIL:
+            fprintf(fpl, "\n");
             break;
         case LUA_TBOOLEAN:
+            fprintf(fpl, "\n");
             break;
         case LUA_TLIGHTUSERDATA:
+            fprintf(fpl, "\n");
             break;
         case LUA_TNUMBER:
+            fprintf(fpl, "\n");
             break;
         case LUA_TSTRING:
-            printf("%s\n", lua_tostring(ls, -1));
+            fprintf(fpl, "=%s\n", lua_tostring(ls, i));
             break;
         case LUA_TTABLE:
-            printf("\n");
+            fprintf(fpl, "=\n");
             lua_pushnil(ls);
             while (lua_next(ls, i)) {
                 if (lua_type(ls, -2) == LUA_TSTRING) {
-                    printf("  %s - %s\n", lua_tostring(ls, -2), lua_typename(ls, lua_type(ls, -1)));
+                    fprintf(fpl, "  [%s] %s\n", lua_tostring(ls, -2), lua_typename(ls, lua_type(ls, -1)));
                 } else if (lua_type(ls, -2) == LUA_TNUMBER) {
-                    printf("  [%.0lf] %s\n", lua_tonumber(ls, -2), lua_typename(ls, lua_type(ls, -1)));
+                    fprintf(fpl, "  [%.0lf] %s\n", lua_tonumber(ls, -2), lua_typename(ls, lua_type(ls, -1)));
                 } else {
-                    printf("  %s - %s\n", lua_typename(ls, lua_type(ls, -2)), lua_typename(ls, lua_type(ls, -1)));
+                    fprintf(fpl, "  [%s] %s\n", lua_typename(ls, lua_type(ls, -2)), lua_typename(ls, lua_type(ls, -1)));
                 }
                 lua_pop(ls, 1);
             }
             break;
         case LUA_TFUNCTION:
+            fprintf(fpl, "\n");
             break;
         case LUA_TUSERDATA:
+            fprintf(fpl, "\n");
             break;
         case LUA_TTHREAD:
+            fprintf(fpl, "\n");
             break;
         }
-        printf("\n");
+    }
+    if (fp == NULL) {
+        fprintf(fpl, "--------------------------------------------------\n");
+        fclose(fpl);
     }
 }
 
-void ShowCompoTree(NUTCOMPONENT * compo, int level)
+static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
 {
     NUTCOMPONENTOPTION *opts;
     int i;
+    FILE *fpl = fp;
+
+    if (fpl == NULL) {
+        fpl = fopen("dump.log", "a");
+    }
 
     while (compo) {
         for (i = 0; i < level; i++) {
-            printf("  ");
+            fprintf(fpl, "  ");
         }
-        printf("%s\n", compo->nc_name);
+        fprintf(fpl, "%s\n", compo->nc_name);
         opts = compo->nc_opts;
         while (opts) {
             if (opts->nco_value) {
                 for (i = 0; i <= level; i++) {
-                    printf("  ");
+                    fprintf(fpl, "  ");
                 }
-                printf("%s = %s\n", opts->nco_name, opts->nco_value);
+                fprintf(fpl, "%s = %s\n", opts->nco_name, opts->nco_value);
             }
             opts = opts->nco_nxt;
         }
         if (compo->nc_child) {
-            ShowCompoTree(compo->nc_child, level + 1);
+            DumpCompoTree(fpl, compo->nc_child, level + 1);
         }
         compo = compo->nc_nxt;
     }
+    if (fp == NULL) {
+        fprintf(fpl, "--------------------------------------------------\n");
+        fclose(fpl);
+    }
 }
 
+#else
+static void DumpStack(FILE *fp, char * pos, lua_State * ls)
+{
+    if (fp && pos && ls);
+}
+static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
+{
+    if (fp && compo && level);
+}
 #endif
+
+const int GetScriptStatus(void)
+{
+    return errsts;
+}
 
 const char *GetScriptErrorString(void)
 {
+    errsts = 0;
     return errtxt;
+}
+
+int SetLuaRegString(lua_State *ls, char *key, char *value)
+{
+    lua_pushstring(ls, key);
+    lua_pushstring(ls, value);
+    lua_settable(ls, LUA_REGISTRYINDEX);
+
+    return 0;
+}
+
+const char * GetLuaRegString(lua_State *ls, char *key)
+{
+    const char *value;
+
+    lua_pushstring(ls, key);
+    lua_gettable(ls, LUA_REGISTRYINDEX);
+    value = lua_tostring(ls, -1);
+    lua_pop(ls, 1);
+
+    return value;
 }
 
 /*!
  * Lua callable.
  */
-static const int lkey_repo = 0;
-
 static int l_repo_path(lua_State *ls) 
 {
     NUTREPOSITORY *repo;
 
-    lua_pushlightuserdata(ls, (void *)&lkey_repo);
+    /* Retrieve pointer to repository path from Lua registry. */
+    lua_pushstring(ls, LRK_NUTREPOSITORY);
     lua_gettable(ls, LUA_REGISTRYINDEX);
     repo = (NUTREPOSITORY *)lua_topointer(ls, -1);
 
@@ -384,8 +455,247 @@ static int l_repo_path(lua_State *ls)
     return 1;
 }
 
+static int l_nut_source_path(lua_State *ls) 
+{
+    const char *str;
+
+    lua_pushstring(ls, LRK_NUTSOURCEPATH);
+    lua_gettable(ls, LUA_REGISTRYINDEX);
+    str = lua_tostring(ls, -1);
+
+    /* push result */
+    if (str) {
+        lua_pushstring(ls, str);
+    }
+    else {
+        lua_pushnil(ls);
+        lua_pushstring(ls, "Internal registry error");
+    }
+    /* number of results */
+    return 1;
+}
+
+static int l_nut_build_path(lua_State *ls) 
+{
+    const char *str;
+
+    lua_pushstring(ls, LRK_NUTBUILDPATH);
+    lua_gettable(ls, LUA_REGISTRYINDEX);
+    str = lua_tostring(ls, -1);
+
+    /* push result */
+    if (str) {
+        lua_pushstring(ls, str);
+    }
+    else {
+        lua_pushnil(ls);
+        lua_pushstring(ls, "Internal registry error");
+    }
+    /* number of results */
+    return 1;
+}
+
+static int l_nut_lib_path(lua_State *ls) 
+{
+    const char *str;
+
+    lua_pushstring(ls, LRK_NUTLIBPATH);
+    lua_gettable(ls, LUA_REGISTRYINDEX);
+    str = lua_tostring(ls, -1);
+
+    /* push result */
+    if (str) {
+        lua_pushstring(ls, str);
+    }
+    else {
+        lua_pushnil(ls);
+        lua_pushstring(ls, "Internal registry error");
+    }
+    /* number of results */
+    return 1;
+}
+
+static int l_nut_sample_path(lua_State *ls) 
+{
+    const char *str;
+
+    lua_pushstring(ls, LRK_NUTSAMPLEPATH);
+    lua_gettable(ls, LUA_REGISTRYINDEX);
+    str = lua_tostring(ls, -1);
+
+    /* push result */
+    if (str) {
+        lua_pushstring(ls, str);
+    }
+    else {
+        lua_pushnil(ls);
+        lua_pushstring(ls, "Internal registry error");
+    }
+    /* number of results */
+    return 1;
+}
+
+static int l_compiler_platform(lua_State *ls) 
+{
+    const char *str;
+
+    lua_pushstring(ls, LRK_NUTCOMPILERPLATFORM);
+    lua_gettable(ls, LUA_REGISTRYINDEX);
+    str = lua_tostring(ls, -1);
+
+    /* push result */
+    if (str) {
+        lua_pushstring(ls, str);
+    }
+    else {
+        lua_pushnil(ls);
+        lua_pushstring(ls, "Internal registry error");
+    }
+    /* number of results */
+    return 1;
+}
+
+static char * GetMacroEdit(NUTCOMPONENT *compo, const char *macro)
+{
+    char *rc = NULL;
+    NUTCOMPONENTOPTION *opts;
+
+    while (compo && rc == NULL) {
+        opts = compo->nc_opts;
+        while (opts && rc == NULL) {
+            if (strcmp(opts->nco_name, macro) == 0) {
+                rc = opts->nco_value;
+            }
+            opts = opts->nco_nxt;
+        }
+        if (rc == NULL) {
+            rc = GetMacroEdit(compo->nc_child, macro);
+        }
+        compo = compo->nc_nxt;
+    }
+    return rc;
+}
+
+static int GetActiveState(NUTCOMPONENT *compo, const char *name)
+{
+    int rc = 0;
+    int found = 0;
+    NUTCOMPONENTOPTION *opts;
+
+    while (!found && compo) {
+        opts = compo->nc_opts;
+        while (!found && opts) {
+            if (strcmp(opts->nco_name, name) == 0) {
+                found = 1;
+                rc = opts->nco_active;
+            }
+            opts = opts->nco_nxt;
+        }
+        if (!found) {
+            rc = GetActiveState(compo->nc_child, name);
+        }
+        compo = compo->nc_nxt;
+    }
+    return rc;
+}
+
+static int GetEnableState(NUTCOMPONENT *compo, const char *name)
+{
+    int rc = 0;
+    int found = 0;
+    NUTCOMPONENTOPTION *opts;
+
+    while (!found && compo) {
+        if (strcmp(compo->nc_name, name) == 0) {
+            found = 1;
+            rc = compo->nc_enabled;
+        }
+        opts = compo->nc_opts;
+        while (!found && opts) {
+            if (strcmp(opts->nco_name, name) == 0) {
+                found = 1;
+                rc = opts->nco_enabled;
+            }
+            opts = opts->nco_nxt;
+        }
+        if (!found) {
+            rc = GetEnableState(compo->nc_child, name);
+        }
+        compo = compo->nc_nxt;
+    }
+    return rc;
+}
+
+static int l_macro_edit(lua_State *ls) 
+{
+    char *value = NULL;
+    const char *macro = luaL_checkstring(ls, 1);
+
+    if (macro) {
+        NUTCOMPONENT *root;
+
+        /* Retrieve pointer to root component from Lua registry. */
+        lua_pushstring(ls, LRK_NUTROOTCOMPONENT);
+        lua_gettable(ls, LUA_REGISTRYINDEX);
+        root = (NUTCOMPONENT *)lua_topointer(ls, -1);
+        value = GetMacroEdit(root, macro);
+    }
+    if (value) {
+        lua_pushstring(ls, value);
+    } else {
+        lua_pushstring(ls, "");
+    }
+    return 1;
+}
+
+static int l_is_enabled(lua_State *ls) 
+{
+    int status = 0;
+    const char *name = luaL_checkstring(ls, 1);
+
+    if (name) {
+        NUTCOMPONENT *root;
+
+        /* Retrieve pointer to root component from Lua registry. */
+        lua_pushstring(ls, LRK_NUTROOTCOMPONENT);
+        lua_gettable(ls, LUA_REGISTRYINDEX);
+        root = (NUTCOMPONENT *)lua_topointer(ls, -1);
+        status = GetEnableState(root, name);
+    }
+    lua_pushboolean(ls, status);
+
+    return 1;
+}
+
+static int l_is_active(lua_State *ls) 
+{
+    int status = 0;
+    const char *name = luaL_checkstring(ls, 1);
+
+    if (name) {
+        NUTCOMPONENT *root;
+
+        /* Retrieve pointer to root component from Lua registry. */
+        lua_pushstring(ls, LRK_NUTROOTCOMPONENT);
+        lua_gettable(ls, LUA_REGISTRYINDEX);
+        root = (NUTCOMPONENT *)lua_topointer(ls, -1);
+        status = GetActiveState(root, name);
+    }
+    lua_pushboolean(ls, status);
+
+    return 1;
+}
+
 static const struct luaL_reg nutcomp_lib[] = {
     { "c_repo_path", l_repo_path },
+    { "c_nut_source_path", l_nut_source_path },
+    { "c_nut_build_path", l_nut_build_path },
+    { "c_nut_lib_path", l_nut_lib_path },
+    { "c_nut_sample_path", l_nut_sample_path },
+    { "c_compiler_platform", l_compiler_platform },
+    { "c_macro_edit", l_macro_edit },
+    { "c_is_enabled", l_is_enabled },
+    { "c_is_active", l_is_active },
     { NULL, NULL }
 };
 
@@ -404,6 +714,15 @@ void RegisterLuaExtension(lua_State *ls, const luaL_reg *reg)
    }
 }
 
+static int RegisterStringValue(lua_State *ls, const char *name, const char *str)
+{
+    lua_pushstring(ls, name);
+    lua_pushstring(ls, str);
+    lua_settable(ls, LUA_REGISTRYINDEX);
+
+    return 0;
+}
+
 int CountLuaChunkResults(lua_State * ls, char *chunk)
 {
     int ec;
@@ -413,6 +732,7 @@ int CountLuaChunkResults(lua_State * ls, char *chunk)
     ec = luaL_loadbuffer(ls, chunk, strlen(chunk), "name");
     if (ec) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         lua_pop(ls, 1);
         return 0;
     }
@@ -420,6 +740,7 @@ int CountLuaChunkResults(lua_State * ls, char *chunk)
     ec = lua_pcall(ls, 0, LUA_MULTRET, 0);
     if (ec) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         lua_pop(ls, 1);
         return 0;
     }
@@ -442,6 +763,7 @@ char **ExecuteLuaChunk(lua_State * ls, char *chunk)
     ec = luaL_loadbuffer(ls, chunk, strlen(chunk), "name");
     if (ec) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         lua_pop(ls, 1);
         return NULL;
     }
@@ -449,6 +771,7 @@ char **ExecuteLuaChunk(lua_State * ls, char *chunk)
     ec = lua_pcall(ls, 0, LUA_MULTRET, 0);
     if (ec) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         lua_pop(ls, 1);
         return NULL;
     }
@@ -479,10 +802,10 @@ char **ExecuteLuaChunk(lua_State * ls, char *chunk)
  * \return Pointer to the buffer containing the retrieved value or NULL,
  *         if there is no table item with the specified name.
  */
-char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, size_t siz)
+static char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, size_t siz)
 {
     int i;
-    char *str;
+    char *str = NULL;
 
     /* Lua expects the named key into the table on top of the stack. */
     lua_pushstring(ls, name);
@@ -490,7 +813,16 @@ char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, s
        Note, that we have to adjust the index because we pushed the key
        on top. */
     lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
-    /* Make sure that this is a string. */
+    /* Handle functions first. */
+    if (lua_isfunction(ls, -1)) {
+        if (lua_pcall(ls, 0, 1, 0)) {
+            strcpy(errtxt, lua_tostring(ls, -1));
+            errsts++;
+            lua_pop(ls, 1);
+            return NULL;
+        }
+    }
+    /* Handle string or number. */
     if (lua_isstring(ls, -1)) {
         str = strdup(lua_tostring(ls, -1));
         /* Is this a script? If yes, execute it and add the results. */
@@ -509,20 +841,20 @@ char *GetStringByNameFromTable(lua_State * ls, int idx, char *name, char *dst, s
                 free(script_result);
             }
         }
-        if (dst == NULL) {
-            dst = str;
-        } else if (str && strlen(str) < siz) {
-            strcpy(dst, str);
-            free(str);
-        } else {
-            dst = NULL;
-        }
     } else {
         dst = NULL;
     }
-    /* Remove the value to keep the stack unmodified. */
+    /* Remove the value to keep the stack balanced. */
     lua_pop(ls, 1);
 
+    if (dst == NULL) {
+        dst = str;
+    } else if (str && strlen(str) < siz) {
+        strcpy(dst, str);
+        free(str);
+    } else {
+        dst = NULL;
+    }
     return dst;
 }
 
@@ -553,12 +885,27 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
     /* Replaces the key by its value. */
     lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
 
+    /* Handle functions first. */
+    if (lua_isfunction(ls, -1)) {
+        if (lua_pcall(ls, 0, 1, 0)) {
+            strcpy(errtxt, lua_tostring(ls, -1));
+            errsts++;
+            lua_pop(ls, 1);
+            return NULL;
+        }
+    }
     /* Make sure we have a table on top of the stack and traverse the
        table, counting the number of strings in this table. */
     if (lua_istable(ls, -1)) {
         lua_pushnil(ls);
         while (lua_next(ls, -2)) {
-            if (lua_isstring(ls, -1)) {
+            if (lua_isfunction(ls, -1)) {
+                if (lua_pcall(ls, 0, 1, 0)) {
+                    strcpy(errtxt, lua_tostring(ls, -1));
+                    errsts++;
+                }
+            }
+            else if (lua_isstring(ls, -1)) {
                 str = strdup(lua_tostring(ls, -1));
                 /* Is this a script? If yes, count the number of results. */
                 if (strlen(str) > 3 && str[0] == '-' && str[1] == '-'&& str[2] == '\n') {
@@ -578,15 +925,29 @@ char **GetStringArrayByNameFromTable(lua_State * ls, int idx, char *name)
     /* If we found a table with one or more strings, then allocate a
        pointer array to store these strings. */
     if (cnt) {
-        result = calloc(cnt + 1, sizeof(char *));
-        cnt = 0;
         lua_pushstring(ls, name);
         lua_gettable(ls, idx < 0 ? idx - 1 : idx + 1);
+        if (lua_isfunction(ls, -1)) {
+            if (lua_pcall(ls, 0, 1, 0)) {
+                strcpy(errtxt, lua_tostring(ls, -1));
+                errsts++;
+                lua_pop(ls, 1);
+                return NULL;
+            }
+        }
         if (lua_istable(ls, -1)) {
+            result = calloc(cnt + 1, sizeof(char *));
+            cnt = 0;
             /* Traverse the table. */
             lua_pushnil(ls);
             while (lua_next(ls, -2)) {
-                if (lua_isstring(ls, -1)) {
+                if (lua_isfunction(ls, -1)) {
+                    if (lua_pcall(ls, 0, 1, 0)) {
+                        strcpy(errtxt, lua_tostring(ls, -1));
+                        errsts++;
+                    }
+                }
+                else if (lua_isstring(ls, -1)) {
                     str = strdup(lua_tostring(ls, -1));
                     /* Is this a script? If yes, execute it and add the results. */
                     if (strlen(str) > 3 && str[0] == '-' && str[1] == '-'&& str[2] == '\n') {
@@ -640,22 +1001,22 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
     char *name;
     NUTCOMPONENTOPTION *opts;
 
-    /* Push the option table on the stack. */
+    /* Push the option array on the stack. */
     lua_pushstring(ls, TKN_OPTIONS);
     lua_gettable(ls, -2);
-
-    /*
-     * Now the option table should be on top of the stack.
-     */
     if (lua_istable(ls, -1)) {
+        /* Move the structure pointer to the end of the linked list. */
         opts = compo->nc_opts;
         while (opts && opts->nco_nxt) {
             opts = opts->nco_nxt;
         }
+        /* Traverse the option table array. */
         lua_pushnil(ls);
         while (lua_next(ls, -2)) {
+            /* Next option table is on top of the stack, retrieve its name. */
             name = GetStringByNameFromTable(ls, -1, TKN_MACRO, NULL, 0);
             if (name) {
+                /* Create a new entry in the linked structure list. */
                 if (opts) {
                     opts->nco_nxt = calloc(1, sizeof(NUTCOMPONENTOPTION));
                     opts = opts->nco_nxt;
@@ -663,38 +1024,33 @@ void LoadComponentOptions(lua_State * ls, NUTCOMPONENT * compo)
                     opts = calloc(1, sizeof(NUTCOMPONENTOPTION));
                     compo->nc_opts = opts;
                 }
+                /* Set the option's name, which is the name of the C macro. */
                 opts->nco_name = name;
-                /* Retrieve the option's brief description. */
-                opts->nco_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
-                /* Retrieve the option's long description. */
-                opts->nco_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
-                /* Retrieve the option's default setting. */
-                opts->nco_default = GetStringByNameFromTable(ls, -1, TKN_DEFAULT, NULL, 0);
-                if (opts->nco_default && opts->nco_value == NULL) {
-                    opts->nco_value = strdup(opts->nco_default);
-                }
-                /* Retrieve the option's requirement keywords. */
-                opts->nco_requires = GetStringArrayByNameFromTable(ls, -1, TKN_REQUIRES);
-                /* Retrieve the option's provision keywords. */
-                opts->nco_provides = GetStringArrayByNameFromTable(ls, -1, TKN_PROVIDES);
+                /* Set a component reference. */
+                opts->nco_compo = compo;
                 /* Retrieve the option's activation requirements. */
                 opts->nco_active_if = GetStringByNameFromTable(ls, -1, TKN_ACTIF, NULL, 0);
-                /* Retrieve the option's data flavor. */
-                opts->nco_flavor = GetStringByNameFromTable(ls, -1, TKN_FLAVOR, NULL, 0);
-                /* Retrieve the option's data type. */
-                opts->nco_type = GetStringByNameFromTable(ls, -1, TKN_TYPE, NULL, 0);
-                /* Retrieve the option's data type. */
-                opts->nco_ctype = GetStringByNameFromTable(ls, -1, TKN_CTYPE, NULL, 0);
-                /* Retrieve the name of the file to store the option,
-                   typically a C header file. */
-                opts->nco_file = GetStringByNameFromTable(ls, -1, TKN_FILE, NULL, 0);
-                /* Retrieve possible choices of the option's value. */
-                opts->nco_choices = GetStringArrayByNameFromTable(ls, -1, TKN_CHOICES);
-                /* Retrieve the Makefile macros for this option. */
-                opts->nco_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
+                /*
+                 * If we do not have automatic activation and if this options
+                 * has a default value without boolean flavor, then activate it.
+                 */
+                if (opts->nco_active_if == NULL) {
+                    char *flavor = GetStringByNameFromTable(ls, -1, TKN_FLAVOR, NULL, 0);
+                    if (flavor == NULL || strncasecmp(flavor, "bool", 4)) {
+                        char *defval = GetStringByNameFromTable(ls, -1, TKN_DEFAULT, NULL, 0);
+                        if (defval) {
+                            opts->nco_active = 1;
+                            free(defval);
+                        }
+                    }
+                    if (flavor) {
+                        free(flavor);
+                    }
+                }
                 /* Retrieve exclusivity of the option's value. */
                 opts->nco_exclusivity = GetStringArrayByNameFromTable(ls, -1, TKN_EXCLUSIVITY);
             }
+            /* Remove the option table. */
             lua_pop(ls, 1);
         }
     }
@@ -791,6 +1147,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
     strcat(script, file);
     if (access(script, 0)) {
         sprintf(errtxt, "%s: Script not found", file);
+        errsts++;
         return -1;
     }
 
@@ -800,6 +1157,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
      */
     if ((rc = luaL_loadfile(ls, script)) != 0) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         return -1;
     }
 
@@ -809,6 +1167,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
      */
     if(lua_pcall(ls, 0, 0, 0)) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         return -1;
     }
 
@@ -820,6 +1179,7 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
     lua_getglobal(ls, parent->nc_name);
     if (!lua_istable(ls, -1)) {
         sprintf(errtxt, "%s: '%s' missing or not an array", file, parent->nc_name);
+        errsts++;
         lua_pop(ls, 1);
         return -1;
     }
@@ -867,24 +1227,8 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
                  */
                 compo->nc_parent = parent;
                 compo->nc_name = name;
-                /* Retrieve the component's brief description. */
-                compo->nc_brief = GetStringByNameFromTable(ls, -1, TKN_BRIEF, NULL, 0);
-                /* Retrieve the component's long description. */
-                compo->nc_description = GetStringByNameFromTable(ls, -1, TKN_DESC, NULL, 0);
-                /* Retrieve the component's requirement keywords. */
-                compo->nc_requires = GetStringArrayByNameFromTable(ls, -1, TKN_REQUIRES);
-                /* Retrieve the component's provision keywords. */
-                compo->nc_provides = GetStringArrayByNameFromTable(ls, -1, TKN_PROVIDES);
                 /* Retrieve the component's activation requirements. */
                 compo->nc_active_if = GetStringByNameFromTable(ls, -1, TKN_ACTIF, NULL, 0);
-                /* Retrieve the component's directory within the source tree. */
-                compo->nc_subdir = GetStringByNameFromTable(ls, -1, TKN_SUBDIR, NULL, 0);
-                /* Retrieve the component's source file. */
-                compo->nc_sources = GetStringArrayByNameFromTable(ls, -1, TKN_SOURCES);
-                /* Retrieve the optional targets of this component. */
-                compo->nc_targets = GetStringArrayByNameFromTable(ls, -1, TKN_TARGETS);
-                /* Retrieve the Makefile macros for this component. */
-                compo->nc_makedefs = GetStringArrayByNameFromTable(ls, -1, TKN_MAKEDEFS);
                 /* Retrieve exclusivity list for this component. */
                 compo->nc_exclusivity = GetStringArrayByNameFromTable(ls, -1, TKN_EXCLUSIVITY);
 
@@ -912,8 +1256,332 @@ int LoadComponentTree(lua_State * ls, NUTCOMPONENT * parent, const char *path, c
     return rc;
 }
 
+int CompareTableString(lua_State * ls, char *idx, char *str)
+{
+    int rc = -1;
 
-void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
+    if (lua_istable(ls, -1)) {
+        char *val = GetStringByNameFromTable(ls, -1, idx, NULL, 0);
+        rc = strcmp(str, val);
+        free(val);
+    }
+    return rc;
+}
+
+char * GetComponentValue(lua_State * ls, NUTCOMPONENT * compo, char * item)
+{
+    char *rc = NULL;
+    int found_comp = 0;
+
+    lua_getglobal(ls, compo->nc_name);
+    if (lua_istable(ls, -1)) {
+        rc = GetStringByNameFromTable(ls, -1, item, NULL, 0);
+    } 
+    if (rc == NULL && compo->nc_parent) {
+        lua_pop(ls, 1);
+        /* Get table of our parent component, which is hopefully global. */
+        lua_getglobal(ls, compo->nc_parent->nc_name);
+        if (lua_istable(ls, -1)) {
+            /* Traverse component array on top of stack. */
+            lua_pushnil(ls);
+            while (lua_next(ls, -2)) {
+                /* Check the name of this component. */
+                if (CompareTableString(ls, TKN_NAME, compo->nc_name) == 0) {
+                    found_comp = 1;
+                    /* Retrieve the wanted item. */
+                    rc = GetStringByNameFromTable(ls, -1, item, NULL, 0);
+                }
+                /* Remove the component array element. */
+                lua_pop(ls, 1);
+                if (found_comp) {
+                    /* Stop traversion the component array. */
+                    lua_pop(ls, 1);
+                    break;
+                }
+            }
+        }
+    }
+    /* Remove the table of the component's parent. */
+    lua_pop(ls, 1);
+
+    return rc;
+}
+
+static char ** GetComponentTableValues(lua_State * ls, NUTCOMPONENT * compo, char * item)
+{
+    char **rc = NULL;
+    int found_comp = 0;
+
+    lua_getglobal(ls, compo->nc_name);
+    if (lua_istable(ls, -1)) {
+        rc = GetStringArrayByNameFromTable(ls, -1, item);
+    } 
+    if (rc == NULL && compo->nc_parent) {
+        lua_pop(ls, 1);
+        /* Get table of our parent component, which is hopefully global. */
+        lua_getglobal(ls, compo->nc_parent->nc_name);
+        if (lua_istable(ls, -1)) {
+            /* Traverse component array on top of stack. */
+            lua_pushnil(ls);
+            while (lua_next(ls, -2)) {
+                /* Check the name of this component. */
+                if (CompareTableString(ls, TKN_NAME, compo->nc_name) == 0) {
+                    found_comp = 1;
+                    /* Retrieve the wanted item. */
+                    rc = GetStringArrayByNameFromTable(ls, -1, item);
+                }
+                /* Remove the component array element. */
+                lua_pop(ls, 1);
+                if (found_comp) {
+                    /* Stop traversion the component array. */
+                    lua_pop(ls, 1);
+                    break;
+                }
+            }
+        }
+    }
+    /* Remove the table of the component's parent. */
+    lua_pop(ls, 1);
+
+    return rc;
+}
+
+static char * GetOptionString(lua_State * ls, char * macro, char *item)
+{
+    int found = 0;
+    char *rc = NULL;
+
+    /* Get table of component options. */
+    lua_pushstring(ls, TKN_OPTIONS);
+    lua_gettable(ls, -2);
+    if (lua_istable(ls, -1)) {
+        /* Traverse option array on top of stack. */
+        lua_pushnil(ls);
+        while (lua_next(ls, -2)) {
+            /* Check the name of this option. */
+            if (CompareTableString(ls, TKN_MACRO, macro) == 0) {
+                found = 1;
+                /* Retrieve the wanted option item. */
+                rc = GetStringByNameFromTable(ls, -1, item, NULL, 0);
+            }
+            /* Remove the option array element. */
+            lua_pop(ls, 1);
+            if (found) {
+                /* Stop traversing the option array. */
+                lua_pop(ls, 1);
+                break;
+            }
+        }
+    }
+    /* Remove the component option table. */
+    lua_pop(ls, 1);
+
+    return rc;
+}
+
+/*!
+ * \brief Retrieve table from specified option item.
+ *
+ * The component table entry is expected at the Lua stack's top.
+ *
+ * \param ls    Lua state.
+ * \param macro Name of the macro option.
+ * \param item  Name of option's item to retrieve.
+ *
+ * \return Pointer to an array of strings, allocated from heap.
+ */
+static char ** GetOptionTableStrings(lua_State * ls, char * macro, char *item)
+{
+    int found = 0;
+    char ** rc = NULL;
+
+    /* Get table of component options. */
+    lua_pushstring(ls, TKN_OPTIONS);
+    lua_gettable(ls, -2);
+    if (lua_istable(ls, -1)) {
+        /* Traverse option array on top of stack. */
+        lua_pushnil(ls);
+        while (lua_next(ls, -2)) {
+            /* Check the name of this option. */
+            if (CompareTableString(ls, TKN_MACRO, macro) == 0) {
+                int cnt = 0;
+                found = 1;
+                /* Retrieve the wanted option item. */
+                lua_pushstring(ls, item);
+                lua_gettable(ls, -2);
+                if (lua_isfunction(ls, -1)) {
+                    if (lua_pcall(ls, 0, 1, 0)) {
+                        strcpy(errtxt, lua_tostring(ls, -1));
+                        errsts++;
+                    }
+                }
+                if (lua_istable(ls, -1)) {
+                    lua_pushnil(ls);
+                    while (lua_next(ls, -2)) {
+                        if (lua_isfunction(ls, -1) || lua_isstring(ls, -1)) {
+                            cnt++;
+                        }
+                        lua_pop(ls, 1);
+                    }
+                }
+
+                /* Re-balance the stack. */
+                lua_pop(ls, 1);
+
+                if (cnt) {
+                    rc = calloc(cnt + 1, sizeof(char *));
+                    cnt = 0;
+                    lua_pushstring(ls, item);
+                    lua_gettable(ls, -2);
+                    if (lua_isfunction(ls, -1)) {
+                        if (lua_pcall(ls, 0, 1, 0)) {
+                            strcpy(errtxt, lua_tostring(ls, -1));
+                            errsts++;
+                        }
+                    }
+                    if (lua_istable(ls, -1)) {
+                        /* Traverse the table. */
+                        lua_pushnil(ls);
+                        while (lua_next(ls, -2)) {
+                            if (lua_isstring(ls, -1)) {
+                                rc[cnt++] = strdup(lua_tostring(ls, -1));
+                            }
+                            lua_pop(ls, 1);
+                        }
+                    }
+                    rc[cnt] = NULL;
+                    /* Re-balance the stack. */
+                    lua_pop(ls, 1);
+                }
+            }
+            /* Remove the option array element. */
+            lua_pop(ls, 1);
+            if (found) {
+                /* Stop traversing the option array. */
+                lua_pop(ls, 1);
+                break;
+            }
+        }
+    }
+    /* Remove the component option table. */
+    lua_pop(ls, 1);
+
+    return rc;
+}
+
+static char * GetOptionStringValue(lua_State * ls, NUTCOMPONENT * compo, char * macro, char * item)
+{
+    char *rc = NULL;
+    int found = 0;
+
+    lua_getglobal(ls, compo->nc_name);
+    if (lua_istable(ls, -1)) {
+        rc = GetOptionString(ls, macro, item);
+    } 
+    if (rc == NULL && compo->nc_parent) {
+        lua_pop(ls, 1);
+        /* Get table of our parent component, which is hopefully global. */
+        lua_getglobal(ls, compo->nc_parent->nc_name);
+        if (lua_istable(ls, -1)) {
+            /* Traverse component array on top of stack. */
+            lua_pushnil(ls);
+            while (lua_next(ls, -2)) {
+                /* Check the name of this component. */
+                if (CompareTableString(ls, TKN_NAME, compo->nc_name) == 0) {
+                    found = 1;
+                    rc = GetOptionString(ls, macro, item);
+                }
+                /* Remove the component array element. */
+                lua_pop(ls, 1);
+                if (found) {
+                    /* Stop traversion the component array. */
+                    lua_pop(ls, 1);
+                    break;
+                }
+            }
+        }
+    }
+    /* Remove the table of the component's parent. */
+    lua_pop(ls, 1);
+
+    return rc;
+}
+
+/*!
+ * \brief Retrieve table from specified component option.
+ *
+ * The component table entry is expected at the Lua stack's top.
+ *
+ * \param ls    Lua state.
+ * \param compo Pointer to a library component.
+ * \param macro 
+ * \param item
+ *
+ * \return Pointer to an array of strings, allocated from heap.
+ */
+static char ** GetOptionTableValues(lua_State * ls, NUTCOMPONENT * compo, char * macro, char * item)
+{
+    char **rc = NULL;
+    int found_comp = 0;
+
+    lua_getglobal(ls, compo->nc_name);
+    if (lua_istable(ls, -1)) {
+        rc = GetOptionTableStrings(ls, macro, item);
+    } 
+    if (rc == NULL && compo->nc_parent) {
+        lua_pop(ls, 1);
+        /* Get table of our parent component, which is hopefully global. */
+        lua_getglobal(ls, compo->nc_parent->nc_name);
+        if (lua_istable(ls, -1)) {
+            /* Traverse component array on top of stack. */
+            lua_pushnil(ls);
+            while (lua_next(ls, -2)) {
+                /* Check the name of this component. */
+                if (CompareTableString(ls, TKN_NAME, compo->nc_name) == 0) {
+                    found_comp = 1;
+                    rc = GetOptionTableStrings(ls, macro, item);
+                }
+                /* Remove the component array element. */
+                lua_pop(ls, 1);
+                if (found_comp) {
+                    /* Stop traversion the component array. */
+                    lua_pop(ls, 1);
+                    break;
+                }
+            }
+        }
+    }
+    /* Remove the table of the component's parent. */
+    lua_pop(ls, 1);
+
+    return rc;
+}
+
+char * GetGlobalValue(lua_State * ls, char * name)
+{
+    char *str = NULL;
+
+    lua_getglobal(ls, name);
+    if (lua_isfunction(ls, -1)) {
+        if (lua_pcall(ls, 0, 1, 0)) {
+            strcpy(errtxt, lua_tostring(ls, -1));
+            errsts++;
+            lua_pop(ls, 1);
+            return NULL;
+        }
+    }
+    if (lua_isstring(ls, -1)) {
+        str = strdup(lua_tostring(ls, -1));
+    }
+    else if (lua_isboolean(ls, -1) && lua_toboolean(ls, -1)) {
+        str = strdup("");
+    }
+    lua_pop(ls, 1);
+
+    return str;
+}
+
+static int LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
 {
     NUTCOMPONENTOPTION *opts;
 
@@ -921,6 +1589,14 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
         opts = compo->nc_opts;
         while (opts) {
             lua_getglobal(ls, opts->nco_name);
+            if (lua_isfunction(ls, -1)) {
+                if (lua_pcall(ls, 0, 1, 0)) {
+                    strcpy(errtxt, lua_tostring(ls, -1));
+                    errsts++;
+                    lua_pop(ls, 1);
+                    return -1;
+                }
+            }
             if (lua_isstring(ls, -1)) {
 
                 char *str = strdup(lua_tostring(ls, -1));
@@ -941,24 +1617,36 @@ void LoadConfigValues(lua_State * ls, NUTCOMPONENT * compo)
                         free(script_result);
                     }
                 }
-                if (str && str[0] == '\0' || str[0] == ' ') {
+                /* 
+                 * For backward compatibility. Drop down boxes of enumerated
+                 * values didn't accept empty strings. To allow empty values,
+                 * we used a space instead, which was a bad hack. Sigh!
+                 */
+                if (str && (str[0] == '\0' || str[0] == ' ')) {
                     free(str);
                     str = NULL;
                 }
-                if (opts->nco_value) {
-                    free(opts->nco_value);
-                }
-                opts->nco_value = str;
+                /* Configured values are always active. */
                 opts->nco_active = 1;
+            }
+            else if (lua_isboolean(ls, -1)) {
+                /*
+                 * Starting from version 2 we should use booleans instead
+                 * of empty strings.
+                 */
+                opts->nco_active = lua_toboolean(ls, -1);
             }
             lua_pop(ls, 1);
             opts = opts->nco_nxt;
         }
         if (compo->nc_child) {
-            LoadConfigValues(ls, compo->nc_child);
+            if (LoadConfigValues(ls, compo->nc_child)) {
+                return -1;
+            }
         }
         compo = compo->nc_nxt;
     }
+    return 0;
 }
 
 #if 0
@@ -985,7 +1673,8 @@ int LuaError(lua_State *ls)
 NUTREPOSITORY *OpenRepository(const char *pathname)
 {
     char *cp;
-    NUTREPOSITORY *repo; //OS = malloc(sizeof(NUTREPOSITORY));
+    NUTREPOSITORY *repo;
+    lua_State * ls;
 
     if(pathname == NULL || access(pathname, 0)) {
         return NULL;
@@ -1010,35 +1699,34 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
         /*
          * Create a LUA state.
          */
-        repo->nr_ls = lua_open();
-        if (repo->nr_ls) {
-            //lua_atpanic(repo->nr_ls, LuaPanic);
-            //lua_cpcall(repo->nr_ls, LuaError, NULL);
+        ls = lua_open();
+        if (ls) {
+            repo->nr_ls = (void *)ls;
+            //lua_atpanic(ls, LuaPanic);
+            //lua_cpcall(ls, LuaError, NULL);
 
-            //luaL_openlibs(repo->nr_ls);
-            luaopen_base(repo->nr_ls);
-            lua_settop(repo->nr_ls, 0);
-            luaopen_table(repo->nr_ls);
-            lua_settop(repo->nr_ls, 0);
-            luaopen_io(repo->nr_ls);
-            lua_settop(repo->nr_ls, 0);
-            luaopen_string(repo->nr_ls);
-            lua_settop(repo->nr_ls, 0);
-            luaopen_math(repo->nr_ls);
-            lua_settop(repo->nr_ls, 0);
-            luaopen_debug(repo->nr_ls);
-            lua_settop(repo->nr_ls, 0);
-            luaopen_loadlib(repo->nr_ls);
-            lua_settop(repo->nr_ls, 0);
+            //luaL_openlibs(ls);
+            luaopen_base(ls);
+            lua_settop(ls, 0);
+            luaopen_table(ls);
+            lua_settop(ls, 0);
+            luaopen_io(ls);
+            lua_settop(ls, 0);
+            luaopen_string(ls);
+            lua_settop(ls, 0);
+            luaopen_math(ls);
+            lua_settop(ls, 0);
+            luaopen_debug(ls);
+            lua_settop(ls, 0);
+            luaopen_loadlib(ls);
+            lua_settop(ls, 0);
 
-            /*
-            * Store pointer to C repository structure in Lua registry.
-            */
-            lua_pushlightuserdata(repo->nr_ls, (void *)&lkey_repo);
-            lua_pushlightuserdata(repo->nr_ls, (void *)repo);
-            lua_settable(repo->nr_ls, LUA_REGISTRYINDEX);
+            /* Store pointer to C repository structure in Lua registry. */
+            lua_pushstring(ls, LRK_NUTREPOSITORY);
+            lua_pushlightuserdata(ls, (void *)repo);
+            lua_settable(ls, LUA_REGISTRYINDEX);
 
-            RegisterLuaExtension(repo->nr_ls, nutcomp_lib) ;
+            RegisterLuaExtension(ls, nutcomp_lib) ;
         }
 
     }
@@ -1063,6 +1751,31 @@ void CloseRepository(NUTREPOSITORY *repo)
     }
 }
 
+int RegisterSourcePath(NUTREPOSITORY *repo, const char *path) 
+{
+    return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTSOURCEPATH, path);
+}
+
+int RegisterBuildPath(NUTREPOSITORY *repo, const char *path) 
+{
+    return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTBUILDPATH, path);
+}
+
+int RegisterLibPath(NUTREPOSITORY *repo, const char *path) 
+{
+    return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTLIBPATH, path);
+}
+
+int RegisterSamplePath(NUTREPOSITORY *repo, const char *path) 
+{
+    return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTSAMPLEPATH, path);
+}
+
+int RegisterCompilerPlatform(NUTREPOSITORY *repo, const char *platform) 
+{
+    return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTCOMPILERPLATFORM, platform);
+}
+
 void ReleaseStringArray(char **stringarray)
 {
 	int cnt = 0;
@@ -1078,21 +1791,14 @@ void ReleaseComponentOptions(NUTCOMPONENTOPTION *opts)
 	{
 		c = opts->nco_nxt;
 
-		if (opts->nco_name) free(opts->nco_name);
-        if (opts->nco_brief) free(opts->nco_brief);
-        if (opts->nco_description) free(opts->nco_description);
-        if (opts->nco_active_if) free(opts->nco_active_if);
-        if (opts->nco_requires) ReleaseStringArray(opts->nco_requires);
-        if (opts->nco_provides) ReleaseStringArray(opts->nco_provides);
-        if (opts->nco_flavor) free(opts->nco_flavor);
-        if (opts->nco_type) free(opts->nco_type);
-        if (opts->nco_choices) ReleaseStringArray(opts->nco_choices);
-        if (opts->nco_ctype) free(opts->nco_ctype);
-        if (opts->nco_default) free(opts->nco_default);
-        if (opts->nco_value) free(opts->nco_value);
-        if (opts->nco_file) free(opts->nco_file);
-        if (opts->nco_makedefs) ReleaseStringArray(opts->nco_makedefs);
-        if (opts->nco_exclusivity) ReleaseStringArray(opts->nco_exclusivity);
+		if (opts->nco_name) 
+            free(opts->nco_name);
+        if (opts->nco_active_if) 
+            free(opts->nco_active_if);
+        if (opts->nco_value) 
+            free(opts->nco_value);
+        if (opts->nco_exclusivity) 
+            ReleaseStringArray(opts->nco_exclusivity);
 
 		free(opts);
 		opts = c;
@@ -1110,18 +1816,14 @@ void ReleaseComponents(NUTCOMPONENT *comp)
 		child = c;
 	}
 
-    if (comp->nc_name) free (comp->nc_name);
-	if (comp->nc_brief) free (comp->nc_brief);
-    if (comp->nc_description) free (comp->nc_description);
-    if (comp->nc_requires) ReleaseStringArray(comp->nc_requires);
-    if (comp->nc_provides) ReleaseStringArray(comp->nc_provides);
-    if (comp->nc_active_if) free(comp->nc_active_if);
-    if (comp->nc_subdir) free(comp->nc_subdir);
-    if (comp->nc_sources) ReleaseStringArray(comp->nc_sources);
-    if (comp->nc_targets) ReleaseStringArray(comp->nc_targets);
-    if (comp->nc_makedefs) ReleaseStringArray(comp->nc_makedefs);
-    if (comp->nc_exclusivity) ReleaseStringArray(comp->nc_exclusivity);
-	if (comp->nc_opts) ReleaseComponentOptions(comp->nc_opts);
+    if (comp->nc_name) 
+        free (comp->nc_name);
+    if (comp->nc_active_if) 
+        free(comp->nc_active_if);
+    if (comp->nc_exclusivity) 
+        ReleaseStringArray(comp->nc_exclusivity);
+	if (comp->nc_opts) 
+        ReleaseComponentOptions(comp->nc_opts);
 	free (comp);
 }
 
@@ -1157,6 +1859,10 @@ NUTCOMPONENT *LoadComponents(NUTREPOSITORY *repo)
      */
     if(root) {
         LoadOptions(ls, root, root);
+        /* Store pointer to C repository structure in Lua registry. */
+        lua_pushstring(ls, LRK_NUTROOTCOMPONENT);
+        lua_pushlightuserdata(ls, (void *)root);
+        lua_settable(ls, LUA_REGISTRYINDEX);
     }
     return root;
 }
@@ -1182,43 +1888,199 @@ int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pat
     /* Let the interpreter load the script file. */
     if ((rc = luaL_loadfile(ls, pathname)) != 0) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         return -1;
     }
     if(lua_pcall(ls, 0, 0, 0)) {
         strcpy(errtxt, lua_tostring(ls, -1));
+        errsts++;
         return -1;
     }
-    LoadConfigValues(ls, root);
-
-    return 0;
+    return LoadConfigValues(ls, root);
 }
 
-int IsProvided(NUTCOMPONENT *compo, char *requirement)
+char * GetComponentBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentValue(ls, comp, TKN_BRIEF);
+}
+
+char * GetComponentDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentValue(ls, comp, TKN_DESC);
+}
+
+char * GetComponentSubdir(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentValue(ls, comp, TKN_SUBDIR);
+}
+
+char **GetComponentRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentTableValues(ls, comp, TKN_REQUIRES);
+}
+
+char **GetComponentProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentTableValues(ls, comp, TKN_PROVIDES);
+}
+
+char **GetComponentSources(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentTableValues(ls, comp, TKN_SOURCES);
+}
+
+char **GetComponentTargets(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentTableValues(ls, comp, TKN_TARGETS);
+}
+
+char **GetComponentMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetComponentTableValues(ls, comp, TKN_MAKEDEFS);
+}
+
+char * GetOptionBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionStringValue(ls, comp, name, TKN_BRIEF);
+}
+
+char * GetOptionDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionStringValue(ls, comp, name, TKN_DESC);
+}
+
+char * GetOptionDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionStringValue(ls, comp, name, TKN_DEFAULT);
+}
+
+char * GetOptionFile(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionStringValue(ls, comp, name, TKN_FILE);
+}
+
+char * GetOptionFlavour(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionStringValue(ls, comp, name, TKN_FLAVOR);
+}
+
+char * GetOptionTypeString(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionStringValue(ls, comp, name, TKN_TYPE);
+}
+
+char **GetOptionRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionTableValues(ls, comp, name, TKN_REQUIRES);
+}
+
+char **GetOptionProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionTableValues(ls, comp, name, TKN_PROVIDES);
+}
+
+char **GetOptionChoices(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionTableValues(ls, comp, name, TKN_CHOICES);
+}
+
+char **GetOptionMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetOptionTableValues(ls, comp, name, TKN_MAKEDEFS);
+}
+
+char * GetConfigValue(NUTREPOSITORY *repo, char * name)
+{
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    return GetGlobalValue(ls, name);
+}
+
+char * GetConfigValueOrDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
+{
+    char *val;
+
+    lua_State *ls = (lua_State *)(repo->nr_ls);
+
+    /* Try configured value, which is always global. */
+    val = GetGlobalValue(ls, name);
+    if (val == NULL) {
+        /* Not configured, retrieve any default. */
+        val = GetOptionStringValue(ls, comp, name, TKN_DEFAULT);
+    }
+    return val;
+}
+
+int IsProvided(NUTREPOSITORY *repo, NUTCOMPONENT *compo, char *requirement)
 {
     NUTCOMPONENTOPTION *opts;
     int i;
 
     while (compo) {
         if(compo->nc_enabled) {
-            if(compo->nc_provides) {
-                for (i = 0; compo->nc_provides[i]; i++) {
-                    if(strcmp(compo->nc_provides[i], requirement) == 0) {
+            char **cprovides = GetComponentProvisions(repo, compo);
+            if(cprovides) {
+                for (i = 0; cprovides[i]; i++) {
+                    if(strcmp(cprovides[i], requirement) == 0) {
+                        ReleaseStringArray(cprovides);
                         return 1;
                     }
                 }
+                ReleaseStringArray(cprovides);
             }
             opts = compo->nc_opts;
             while (opts) {
-                if(opts->nco_enabled && opts->nco_active && opts->nco_provides) {
-                    for (i = 0; opts->nco_provides[i]; i++) {
-                        if(strcmp(opts->nco_provides[i], requirement) == 0) {
-                            return 1;
+                if(opts->nco_enabled && opts->nco_active) {
+                    char **oprovides = GetOptionProvisions(repo, compo, opts->nco_name);
+                    if (oprovides) {
+                        for (i = 0; oprovides[i]; i++) {
+                            if(strcmp(oprovides[i], requirement) == 0) {
+                                ReleaseStringArray(oprovides);
+                                return 1;
+                            }
                         }
+                        ReleaseStringArray(oprovides);
                     }
                 }
                 opts = opts->nco_nxt;
             }
-            if (IsProvided(compo->nc_child, requirement)) {
+            if (IsProvided(repo, compo->nc_child, requirement)) {
                 return 1;
             }
         }
@@ -1256,20 +2118,25 @@ void EnableComponentTree(NUTCOMPONENT *compo, int enable)
     EnableSubComponents(compo->nc_child, enable);
 }
 
-int RefreshComponentTree(NUTCOMPONENT *root, NUTCOMPONENT *compo)
+int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo)
 {
     int rc = 0;
     int i;
     NUTCOMPONENTOPTION *opts;
 
     while (compo) {
-        if(compo->nc_requires) {
+        char **crequires = GetComponentRequirements(repo, compo);
+        if(crequires) {
             int provided = 1;
-            for (i = 0; compo->nc_requires[i]; i++) {
-                if((provided = IsProvided(root, compo->nc_requires[i])) == 0) {
+            for (i = 0; crequires[i]; i++) {
+                if((provided = IsProvided(repo, root, crequires[i])) == 0) {
                     break;
                 }
             }
+            for (i = 0; crequires[i]; i++) {
+                free(crequires[i]);
+            }
+            free(crequires);
             if(provided != compo->nc_enabled) {
                 /* Update this component branch. */
                 //compo->nc_enabled = provided;
@@ -1279,13 +2146,18 @@ int RefreshComponentTree(NUTCOMPONENT *root, NUTCOMPONENT *compo)
         }
         opts = compo->nc_opts;
         while (opts) {
-            if(opts->nco_requires) {
+            char **orequires = GetOptionRequirements(repo, compo, opts->nco_name);
+            if (orequires) {
                 int provided = 1;
-                for (i = 0; opts->nco_requires[i]; i++) {
-                    if((provided = IsProvided(root, opts->nco_requires[i])) == 0) {
+                for (i = 0; orequires[i]; i++) {
+                    if((provided = IsProvided(repo, root, orequires[i])) == 0) {
                         break;
                     }
                 }
+                for (i = 0; orequires[i]; i++) {
+                    free(orequires[i]);
+                }
+                free(orequires);
                 if(provided != opts->nco_enabled) {
                     opts->nco_enabled = provided;
                     rc++;
@@ -1293,13 +2165,13 @@ int RefreshComponentTree(NUTCOMPONENT *root, NUTCOMPONENT *compo)
             }
             opts = opts->nco_nxt;
         }
-        rc += RefreshComponentTree(root, compo->nc_child);
+        rc += RefreshComponentTree(repo, root, compo->nc_child);
         compo = compo->nc_nxt;
     }
     return rc;
 }
 
-int RefreshComponents(NUTCOMPONENT *root)
+int RefreshComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root)
 {
     int i;
 
@@ -1307,7 +2179,7 @@ int RefreshComponents(NUTCOMPONENT *root)
     EnableComponentTree(root, 1);
 
     for(i = 0; i < 10; i++) {
-        if(RefreshComponentTree(root, root) == 0) {
+        if(RefreshComponentTree(repo, root, root) == 0) {
             return 0;
         }
     }
@@ -1356,6 +2228,7 @@ static int CreateDirectoryPath(const char *path)
                 if(access(subpath, 0)) {
                     if(mkdir(subpath, S_IRWXU)) {
                         sprintf(errtxt, "Failed to make %s", subpath);
+                        errsts++;
                         return -1;
                     }
                 }
@@ -1397,7 +2270,7 @@ static const char *MakeTargetPath(const char *dir, const char *path)
     return result;
 }
 
-int AddMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir, int *lpos)
+int AddMakeSources(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, const char *sub_dir, int *lpos)
 {
     int rc = 0;
     int i;
@@ -1405,35 +2278,37 @@ int AddMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir, int *lp
 
     while (cop) {
         if(cop->nc_enabled) {
-            if(cop->nc_sources) {
-                for (i = 0; cop->nc_sources[i]; i++) {
+            char **sources = GetComponentSources(repo, cop);
+            char **targets = GetComponentTargets(repo, cop);
+            if(sources) {
+                for (i = 0; sources[i]; i++) {
 
                     /*
                      * If sources are located in a subdirectory, make sure
                      * the same directory exists in the build tree.
                      */
-                    if(strchr(cop->nc_sources[i], '/')) {
+                    if(strchr(sources[i], '/')) {
                         char path[255];
-                        sprintf(path, "%s/%s", sub_dir, cop->nc_sources[i]);
+                        sprintf(path, "%s/%s", sub_dir, sources[i]);
                         CreateDirectoryPath(path);
                     }
 
                     /* Check if this source results in an explicit target. */
-                    if(cop->nc_targets && cop->nc_targets[i]) {
+                    if(targets && targets[i]) {
                         rc++;
                     }
                     else {
-                        *lpos += strlen(cop->nc_sources[i]);
+                        *lpos += strlen(sources[i]);
                         if (*lpos > 72) {
                             fprintf(fp, " \\\n\t");
                             *lpos = 8;
                         }
-                        fprintf(fp, " %s", cop->nc_sources[i]);
+                        fprintf(fp, " %s", sources[i]);
                     }
                 }
             }
             if (cop->nc_child) {
-                rc += AddMakeSources(fp, cop->nc_child, sub_dir, lpos);
+                rc += AddMakeSources(fp, repo, cop->nc_child, sub_dir, lpos);
             }
         }
         cop = cop->nc_nxt;
@@ -1441,7 +2316,7 @@ int AddMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir, int *lp
     return rc;
 }
 
-int AddMakeTargets(FILE * fp, NUTCOMPONENT * compo, int cnt)
+int AddMakeTargets(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, int cnt)
 {
     int i;
     int rc = 0;
@@ -1453,16 +2328,18 @@ int AddMakeTargets(FILE * fp, NUTCOMPONENT * compo, int cnt)
      */
     while (rc < cnt && cop) {
         if(cop->nc_enabled) {
-            if(cop->nc_sources) {
-                for (i = 0; cop->nc_sources[i]; i++) {
-                    if(cop->nc_targets && cop->nc_targets[i]) {
+            char **sources = GetComponentSources(repo, cop);
+            char **targets = GetComponentTargets(repo, cop);
+            if(sources) {
+                for (i = 0; sources[i]; i++) {
+                    if(targets && targets[i]) {
                         rc++;
-                        fprintf(fp, "OBJ%d = %s\n", rc, cop->nc_targets[i]);
+                        fprintf(fp, "OBJ%d = %s\n", rc, targets[i]);
                     }
                 }
             }
             if (cop->nc_child) {
-                rc += AddMakeTargets(fp, cop->nc_child, cnt);
+                rc += AddMakeTargets(fp, repo, cop->nc_child, cnt);
             }
         }
         cop = cop->nc_nxt;
@@ -1479,17 +2356,17 @@ int AddMakeTargets(FILE * fp, NUTCOMPONENT * compo, int cnt)
  *
  * \return Number of explicit target files.
  */
-int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
+int WriteMakeSources(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, const char *sub_dir)
 {
     int rc;
     int lpos;
 
     fprintf(fp, "SRCS =\t");
     lpos = 8;
-    rc = AddMakeSources(fp, compo, sub_dir, &lpos);
+    rc = AddMakeSources(fp, repo, compo, sub_dir, &lpos);
     fputc('\n', fp);
 
-    AddMakeTargets(fp, compo, rc);
+    AddMakeTargets(fp, repo, compo, rc);
     fputc('\n', fp);
 
     return rc;
@@ -1504,10 +2381,11 @@ int WriteMakeSources(FILE * fp, NUTCOMPONENT * compo, const char *sub_dir)
  * \todo This is not yet finished. All 'name=value' pairs should
  *       be collected and combined.
  */
-void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
+static void WriteMakedefLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo)
 {
     NUTCOMPONENTOPTION *opts;
     int i;
+    char *value;
 
     /*
      * Loop through all components.
@@ -1515,10 +2393,15 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
     while (compo) {
         /* If this component is enabled and contains Makefile macros,
            then simply print them to the file. */
-        if(compo->nc_enabled && compo->nc_makedefs) {
-            for (i = 0; compo->nc_makedefs[i]; i++) {
-                fprintf(fp, "%s\n", compo->nc_makedefs[i]);
+        if(compo->nc_enabled) {
+            char **cmakedefs = GetComponentMakedefs(repo, compo);
+            if (cmakedefs) {
+                for (i = 0; cmakedefs[i]; i++) {
+                    fprintf(fp, "%s\n", cmakedefs[i]);
+                }
+                free(cmakedefs[i]);
             }
+            free(cmakedefs);
         }
 
         /*
@@ -1526,22 +2409,32 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
          */
         opts = compo->nc_opts;
         while (opts) {
-            if (opts->nco_enabled && opts->nco_active && opts->nco_makedefs) {
-                for (i = 0; opts->nco_makedefs[i]; i++) {
-                    fprintf(fp, "%s", opts->nco_makedefs[i]);
-                    if(strchr(opts->nco_makedefs[i], '=') || opts->nco_value == NULL) {
-                        fputc('\n', fp);
+            if (opts->nco_enabled && opts->nco_active) {
+                char **makedefs = GetOptionMakedefs(repo, compo, opts->nco_name);
+                if (makedefs) {
+                    for (i = 0; makedefs[i]; i++) {
+                        fprintf(fp, "%s", makedefs[i]);
+                        /* Get edited, configured or default value, in this priority. */
+                        value = opts->nco_value;
+                        if (value == NULL) {
+                            value = GetConfigValueOrDefault(repo, compo, opts->nco_name);
+                        }
+                        if(strchr(makedefs[i], '=') || value == NULL) {
+                            fputc('\n', fp);
+                        }
+                        else {
+                            fprintf(fp, "=%s\n", value);
+                        }
+                        free(makedefs[i]);
                     }
-                    else {
-                        fprintf(fp, "=%s\n", opts->nco_value);
-                    }
+                    free(makedefs);
                 }
             }
             opts = opts->nco_nxt;
         }
         /* Recursively process the subcomponents. */
         if (compo->nc_child) {
-            WriteMakedefLines(fp, compo->nc_child);
+            WriteMakedefLines(fp, repo, compo->nc_child);
         }
         compo = compo->nc_nxt;
     }
@@ -1554,7 +2447,7 @@ void WriteMakedefLines(FILE * fp, NUTCOMPONENT * compo)
  * \param compo  Pointer to the first child of the root component.
  * \param target Makefile target, set to NULL for 'all'.
  */
-void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
+void WriteMakeRootLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, char *target)
 {
     if (target) {
         fprintf(fp, "%s:\n", target);
@@ -1562,8 +2455,9 @@ void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
         fprintf(fp, "all:\n");
     }
     while (compo) {
-        if (compo->nc_subdir) {
-            fprintf(fp, "\t$(MAKE) -C %s", compo->nc_subdir);
+        char *subdir = GetComponentSubdir(repo, compo);
+        if (subdir) {
+            fprintf(fp, "\t$(MAKE) -C %s", subdir);
             if (target) {
                 fprintf(fp, " %s", target);
             }
@@ -1599,8 +2493,8 @@ void WriteMakeRootLines(FILE * fp, NUTCOMPONENT * compo, char *target)
  * \todo This function's parameter list is a bit overloaded. Either split the function
  *       or use a parameter structure.
  */
-int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, const char *mak_ext,
-                     const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
+int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir, const char *src_dir, 
+                    const char *mak_ext, const char *ifirst_dir, const char *ilast_dir, const char *ins_dir)
 {
     FILE *fp;
     char path[255];
@@ -1620,7 +2514,7 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
         if (fp) {
             fprintf(fp, "# Automatically generated on %s", asctime(ltime));
             fprintf(fp, "#\n# Do not edit, modify UserConf.mk instead!\n#\n\n");
-            WriteMakedefLines(fp, root->nc_child);
+            WriteMakedefLines(fp, repo, root->nc_child);
 		    fprintf(fp, "\n\ninclude $(top_blddir)/UserConf.mk\n");
             fclose(fp);
         }
@@ -1643,11 +2537,11 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
         fp = fopen(path, "w");
         if (fp) {
             fprintf(fp, "# Do not edit! Automatically generated on %s\n", asctime(ltime));
-            WriteMakeRootLines(fp, root->nc_child, NULL);
+            WriteMakeRootLines(fp, repo, root->nc_child, NULL);
             if(ins_dir && *ins_dir) {
-                WriteMakeRootLines(fp, root->nc_child, "install");
+                WriteMakeRootLines(fp, repo, root->nc_child, "install");
             }
-            WriteMakeRootLines(fp, root->nc_child, "clean");
+            WriteMakeRootLines(fp, repo, root->nc_child, "clean");
             fclose(fp);
         }
     }
@@ -1655,8 +2549,9 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
     /* Create library Makefiles */
     compo = root->nc_child;
     while (compo) {
-        if (compo->nc_subdir) {
-            sprintf(path, "%s/%s", bld_dir, compo->nc_subdir);
+        char *subdir = GetComponentSubdir(repo, compo);
+        if (subdir) {
+            sprintf(path, "%s/%s", bld_dir, subdir);
             strcat(path, "/Makefile");
             if(CreateDirectoryPath(path) == 0) {
                 fp = fopen(path, "w");
@@ -1666,10 +2561,10 @@ int CreateMakeFiles(NUTCOMPONENT *root, const char *bld_dir, const char *src_dir
 					fprintf(fp, "top_srcdir = %s\n", MakeTargetPath(src_dir, "../.."));
 					fprintf(fp, "top_blddir = %s\n\n", MakeTargetPath(bld_dir, "../.."));
 
-                    fprintf(fp, "VPATH = $(top_srcdir)/%s\n\n", compo->nc_subdir);
+                    fprintf(fp, "VPATH = $(top_srcdir)/%s\n\n", subdir);
 
-                    sprintf(path, "%s/%s", bld_dir, compo->nc_subdir);
-                    targets = WriteMakeSources(fp, compo->nc_child, path);
+                    sprintf(path, "%s/%s", bld_dir, subdir);
+                    targets = WriteMakeSources(fp, repo, compo->nc_child, path);
 
                     fprintf(fp, "OBJS = $(SRCS:.c=.o)\n");
                     //for(i = 0; i < targets; i++) {
@@ -1766,14 +2661,14 @@ NUTHEADERFILE *GetHeaderFileEntry(NUTHEADERFILE **nh_root, char *filename)
             } else {
                 nhf->nhf_nxt = calloc(1, sizeof(NUTHEADERFILE));
                 nhf = nhf->nhf_nxt;
-                nhf->nhf_path = filename;
+                nhf->nhf_path = strdup(filename);
             }
         }
     }
     /* First entry, create list root. */
     else {
         nhf = calloc(1, sizeof(NUTHEADERFILE));
-        nhf->nhf_path = filename;
+        nhf->nhf_path = strdup(filename);
         *nh_root = nhf;
     }
     return nhf;
@@ -1782,25 +2677,25 @@ NUTHEADERFILE *GetHeaderFileEntry(NUTHEADERFILE **nh_root, char *filename)
 /*!
  * \brief Add header file and option to the header file list.
  */
-NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * opts)
+static NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, char *fname, char *macro, char *value)
 {
     NUTHEADERFILE *nhf;
     NUTHEADERMACRO *nhm;
 
-    /* Get the header file entry. */
-    nhf = GetHeaderFileEntry(&nh_root, opts->nco_file);
+    /* Get the linked list entry of this header file. */
+    nhf = GetHeaderFileEntry(&nh_root, fname);
 
     /* Add macro to existing header file entry. */
     if (nhf->nhf_macros) {
         nhm = nhf->nhf_macros;
-        while (strcasecmp(nhm->nhm_name, opts->nco_name)) {
+        while (strcasecmp(nhm->nhm_name, macro)) {
             if (nhm->nhm_nxt) {
                 nhm = nhm->nhm_nxt;
             } else {
                 nhm->nhm_nxt = calloc(1, sizeof(NUTHEADERMACRO));
                 nhm = nhm->nhm_nxt;
-                nhm->nhm_name = opts->nco_name;
-                nhm->nhm_value = opts->nco_value;
+                nhm->nhm_name = strdup(macro);
+                nhm->nhm_value = strdup(value);
             }
         }
     }
@@ -1808,8 +2703,8 @@ NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * o
     /* First entry of this header file. */
     else {
         nhm = calloc(1, sizeof(NUTHEADERMACRO));
-        nhm->nhm_name = opts->nco_name;
-        nhm->nhm_value = opts->nco_value;
+        nhm->nhm_name = strdup(macro);
+        nhm->nhm_value = strdup(value);
         nhf->nhf_macros = nhm;
     }
     return nh_root;
@@ -1818,38 +2713,39 @@ NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, NUTCOMPONENTOPTION * o
 /*!
  * \brief Create a linked list of header files and associated macros.
  */
-NUTHEADERFILE *CreateHeaderList(NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
+NUTHEADERFILE *CreateHeaderList(NUTREPOSITORY *repo, NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
 {
     NUTCOMPONENTOPTION *opts;
 
     while (compo) {
         opts = compo->nc_opts;
         while (opts) {
-            if (opts->nco_file) {
-                if((opts->nco_enabled && opts->nco_active) || opts->nco_default != NULL) {
-                    /* Do not save empty values. */
-                    if (opts->nco_value == NULL) {
-                        if (opts->nco_flavor &&
-                                 (strcasecmp(opts->nco_flavor, "boolean") == 0 ||
-                                 strcasecmp(opts->nco_flavor, "booldata") == 0)) {
-                            nh_root = AddHeaderFileMacro(nh_root, opts);
-                        }
-                        else {
-                            GetHeaderFileEntry(&nh_root, opts->nco_file);
-                        }
+            char *fname = GetOptionFile(repo, compo, opts->nco_name);
+            /* A file entry is required. */
+            if (fname) {
+                /* Do not store disabled or inactive items. */
+                if(opts->nco_enabled && opts->nco_active) {
+                    /* Get edited, configured or default value, in this priority. */
+                    char *value = opts->nco_value;
+                    if (value == NULL) {
+                        value = GetConfigValueOrDefault(repo, compo, opts->nco_name);
+                    }
+                    if (value) {
+                        nh_root = AddHeaderFileMacro(nh_root, fname, opts->nco_name, value);
                     }
                     else {
-                        nh_root = AddHeaderFileMacro(nh_root, opts);
+                        GetHeaderFileEntry(&nh_root, fname);
                     }
                 }
                 else {
-                    GetHeaderFileEntry(&nh_root, opts->nco_file);
+                    GetHeaderFileEntry(&nh_root, fname);
                 }
+                free(fname);
             }
             opts = opts->nco_nxt;
         }
         if (compo->nc_child) {
-            nh_root = CreateHeaderList(compo->nc_child, nh_root);
+            nh_root = CreateHeaderList(repo, compo->nc_child, nh_root);
         }
         compo = compo->nc_nxt;
     }
@@ -1866,13 +2762,21 @@ void ReleaseHeaderList(NUTHEADERFILE *nh_root)
 	while (nh_root)
 	{
 		nhm = nh_root->nhf_macros;
-		while (nhm)
-		{
+        while (nhm) {
+            if (nhm->nhm_name) {
+                free(nhm->nhm_name);
+            }
+            if (nhm->nhm_value) {
+                free(nhm->nhm_value);
+            }
 			c = nhm->nhm_nxt;
 			free (nhm);
 			nhm = c;
 		}
 		nhf = nh_root->nhf_nxt;
+        if (nh_root->nhf_path) {
+            free(nh_root->nhf_path);
+        }
 		free (nh_root);
 		nh_root = nhf;
 	}
@@ -1891,7 +2795,7 @@ void ReleaseHeaderList(NUTHEADERFILE *nh_root)
  *
  * \todo Release allocated heap space.
  */
-int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
+int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir)
 {
     NUTHEADERFILE *nh_root = NULL;
     NUTHEADERFILE *nhf;
@@ -1907,7 +2811,7 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
     ltime = localtime(&now);
 
     /* Create a linked list of header files with active component options. */
-    nh_root = CreateHeaderList(root->nc_child, nh_root);
+    nh_root = CreateHeaderList(repo, root->nc_child, nh_root);
 
     for (nhf = nh_root; nhf; nhf = nhf->nhf_nxt) {
         strcpy(path, bld_dir);
@@ -1948,6 +2852,7 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
             }
             else {
                 sprintf(errtxt, "Failed to create %s", path);
+                errsts++;
                 return -1;
             }
         }
@@ -1979,8 +2884,8 @@ int CreateHeaderFiles(NUTCOMPONENT * root, const char *bld_dir)
  *
  * \return 0 on success, otherwise return -1.
  */
-int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *app_dir, const char *src_dir,
-                          const char *lib_dir, const char *mak_ext, const char *prg_ext,
+int CreateSampleDirectory(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_dir, const char *app_dir, 
+                          const char *src_dir, const char *lib_dir, const char *mak_ext, const char *prg_ext,
                           const char *ifirst_dir, const char *ilast_dir)
 {
     FILE *fp;
@@ -1998,7 +2903,7 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *
         if (fp) {
             fprintf(fp, "# Automatically generated on %s", asctime(ltime));
             fprintf(fp, "#\n# Do not edit, modify UserConf.mk instead!\n#\n\n");
-            WriteMakedefLines(fp, root->nc_child);
+            WriteMakedefLines(fp, repo, root->nc_child);
             fprintf(fp, "\n\ninclude $(top_appdir)/UserConf.mk\n");
             fclose(fp);
         }
@@ -2044,6 +2949,7 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *
         }
         else {
             sprintf(errtxt, "Failed to create %s", path);
+            errsts++;
             return -1;
         }
 
@@ -2056,11 +2962,13 @@ int CreateSampleDirectory(NUTCOMPONENT * root, const char *bld_dir, const char *
         }
         else {
             sprintf(errtxt, "Failed to create %s", path);
+            errsts++;
             return -1;
         }
     }
     else {
         sprintf(errtxt, "Failed to create directory for %s", path);
+        errsts++;
         return -1;
     }
     return 0;
@@ -2179,10 +3087,10 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
     while((dire = readdir(dir)) != NULL && rc == 0) {
         /* Do not copy dot files or Makefiles for source tree builds. */
         if(dire->d_name[0] == '.' ||
-           stricmp(dire->d_name, "cvs") == 0 ||
-           strnicmp(dire->d_name, "Makeburn", 8) == 0 ||
-           strnicmp(dire->d_name, "Makedefs", 8) == 0 ||
-           strnicmp(dire->d_name, "Makerules", 9) == 0) {
+           strcasecmp(dire->d_name, "cvs") == 0 ||
+           strncasecmp(dire->d_name, "Makeburn", 8) == 0 ||
+           strncasecmp(dire->d_name, "Makedefs", 8) == 0 ||
+           strncasecmp(dire->d_name, "Makerules", 9) == 0) {
             continue;
         }
 
@@ -2314,7 +3222,12 @@ int main(int argc, char **argv)
                 if(!quiet) {
                     printf("OK\n");
                 }
-                RefreshComponents(root);
+                RegisterSourcePath(repo, src_dir);
+                RegisterBuildPath(repo, bld_dir);
+                RegisterLibPath(repo, lib_dir);
+                RegisterSamplePath(repo, app_dir);
+                RegisterCompilerPlatform(repo, mak_ext);
+                RefreshComponents(repo, root);
                 if(argc == 0) {
                     if(!quiet) {
                         printf("Nothing to do\n");
@@ -2324,7 +3237,7 @@ int main(int argc, char **argv)
                     if(!quiet) {
                         printf("Creating Makefiles for %s in %s...", mak_ext, bld_dir);
                     }
-                    if (CreateMakeFiles(root, bld_dir, src_dir, mak_ext, ifirst_dir, ilast_dir, lib_dir)) {
+                    if (CreateMakeFiles(repo, root, bld_dir, src_dir, mak_ext, ifirst_dir, ilast_dir, lib_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }
@@ -2333,7 +3246,7 @@ int main(int argc, char **argv)
                         if(!quiet) {
                             printf("OK\nCreating header files in %s...", bld_dir);
                         }
-                        if (CreateHeaderFiles(root, bld_dir)) {
+                        if (CreateHeaderFiles(repo, root, bld_dir)) {
                             if(!quiet) {
                                 printf("failed\n");
                             }
@@ -2347,7 +3260,7 @@ int main(int argc, char **argv)
                     }
                 }
                 else if(strcmp(argv[0], "create-apptree") == 0) {
-                    if (CreateSampleDirectory(root, bld_dir, app_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
+                    if (CreateSampleDirectory(repo, root, bld_dir, app_dir, src_dir, lib_dir, mak_ext, prg_ext, ifirst_dir, ilast_dir)) {
                         if(!quiet) {
                             printf("failed\n");
                         }

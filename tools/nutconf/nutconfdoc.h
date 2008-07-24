@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/07/24 15:41:41  haraldkipp
+ * Dynamic configuration.
+ *
  * Revision 1.5  2007/02/16 15:55:29  haraldkipp
  * Class specifier causes compile error. Fixed.
  *
@@ -84,6 +87,8 @@ class CNutConfDoc:public wxDocument {
 
     bool ReadRepository(const wxString & repositoryname, const wxString & configname);
     void ReleaseRepository();
+    NUTREPOSITORY * GetRepository();
+    NUTCOMPONENT * GetRootComponent();
 
     void DeleteItems();
     void AddAllItems();
@@ -107,6 +112,7 @@ class CNutConfDoc:public wxDocument {
     void DeactivateOptionList(char **exlist);
 
   protected:
+    NUTREPOSITORY *m_repository;
     NUTCOMPONENT *m_root;
     wxList m_items;
     bool IsRequirementProvided(NUTCOMPONENT *compo, char *requirement);
