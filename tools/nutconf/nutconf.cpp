@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.17  2008/07/24 15:45:59  haraldkipp
+ * More reliable splash screen appearance on Linux.
+ *
  * Revision 1.16  2008/03/17 10:18:27  haraldkipp
  * Splash screen must be destroyed, not deleted.
  *
@@ -161,13 +164,14 @@ bool NutConfApp::OnInit()
      */
     wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
     wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_SCREEN, 0, NULL, -1);
+    for (int i = 0; i < 5; i++) {
+        wxYield();
+        wxMilliSleep(100);
+    }
 
     wxImage::AddHandler(new wxGIFHandler);
     wxImage::AddHandler(new wxPNGHandler);
     wxFileSystem::AddHandler(new wxZipFSHandler);
-
-    wxYield();
-    wxSleep(1);
 
     /*
      * Load settings early.
@@ -206,12 +210,12 @@ bool NutConfApp::OnInit()
     SetTopWindow(m_mainFrame);
     m_mainFrame->Show();
 
-    if (!m_mainFrame->GetHelpController().Initialize(wxT("nutoshelp"))) {
-        wxLogMessage(wxT("Failed to load help file"));
-    }
-
     if(splash) {
         splash->Destroy();
+    }
+
+    if (!m_mainFrame->GetHelpController().Initialize(wxT("nutoshelp"))) {
+        wxLogMessage(wxT("Failed to load help file"));
     }
 
     /* 
