@@ -1,5 +1,5 @@
 /* XPM */
-static char * TBB_SEARCH_xpm[] = {
+static const char * TBB_SEARCH_xpm[] = {
 "16 15 123 2",
 "  	c None",
 ". 	c #AFC7DB",

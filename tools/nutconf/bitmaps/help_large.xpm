@@ -1,5 +1,5 @@
 /* XPM */
-static char * TBB_HELP_LARGE_xpm[] = {
+static const char * TBB_HELP_LARGE_xpm[] = {
 "32 32 276 2",
 "  	c None",
 ". 	c #CDD5E2",

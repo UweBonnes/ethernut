@@ -1,5 +1,5 @@
 /* XPM */
-static char * TBB_SEARCH_LARGE_xpm[] = {
+static const char * TBB_SEARCH_LARGE_xpm[] = {
 "32 32 418 2",
 "  	c None",
 ". 	c #A8B9CA",

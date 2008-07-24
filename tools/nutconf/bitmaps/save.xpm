@@ -1,5 +1,5 @@
 /* XPM */
-static char *TBB_SAVE_xpm[] = {
+static const char *TBB_SAVE_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "16 15 16 1",
 "  c black",
