@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.30  2008/07/24 17:05:12  haraldkipp
+-- Demonstrates some Configurator capabilities.
+--
 -- Revision 1.29  2008/07/14 13:04:28  haraldkipp
 -- New Ethernut 3 link option with code in RAM and constant data in ROM.
 --
@@ -179,8 +182,24 @@ repository =
 {
     {
         name = "nutinfo",
-        brief = "--\n".. -- Strings starting with this sequence are executed.
-                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
+-- First version of a dynamic item:
+-- The string contains a Lua script, which is compiled and executed by the Configurator.
+-- This version is deprecated.
+--        brief = "--\n".. -- Strings starting with this sequence are executed.
+--                "return 'Nut/OS ' .. GetNutOsVersion()\n", -- This is the executed script.
+
+-- Second version of a dynamic item:
+-- A function result is combined with a static string. Note, that the function
+-- is executed when this script file is loaded and must have been defined 
+-- previously.
+--        brief = "Nut/OS " .. GetNutOsVersion(),
+
+-- Third version of a dynamic item:
+-- The value is specified as a function returning a string. In this case any function
+-- used in our function body may be defined later.
+        brief = function() return "Nut/OS " .. GetNutOsVersion(); end,
+
+
         description = "The version info was read from os/version.c in the current source "..
                       "tree by a Lua script defined in the configuration file.\n\n"..
                       "Also added here to demonstrate the capabilities of Lua as a "..
@@ -304,3 +323,4 @@ function GetNutOsVersion()
     
     return vers or "unknown"
 end
+
