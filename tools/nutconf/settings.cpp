@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.13  2008/07/24 15:45:19  haraldkipp
+ * Fixed automatic repository path detection on Linux and OS X.
+ *
  * Revision 1.12  2008/03/17 10:20:32  haraldkipp
  * FindAbsoluteDir() now returns an empty string on failure. Previous versions
  * returned the current directory (dot) without any chance for the caller to
@@ -97,7 +100,7 @@ wxString CSettings::FindAbsoluteDir(wxString refPathName)
     size_t len = refPathName.Len();
     wxString sep(wxFileName::GetPathSeparator());
 
-#ifdef __WXMSW__
+#ifdef _WIN32
     refPathName.Replace(wxT("/"), wxT("\\"));
 #endif
     if (!wxFileName::FileExists(refPathName)) {
@@ -121,7 +124,7 @@ wxString CSettings::FindAbsoluteDir(wxString refPathName)
     fn.MakeAbsolute();
     refPathName = fn.GetFullPath();
     refPathName.Truncate(refPathName.Len() - len);
-#ifdef __WXMSW__
+#ifdef _WIN32
     refPathName.Replace(wxT("\\"), wxT("/"));
 #endif
     if (refPathName.Last() == '/') {
@@ -133,22 +136,23 @@ wxString CSettings::FindAbsoluteDir(wxString refPathName)
 
 wxString CSettings::FindRelativeDir(wxString refPathName)
 {
-
     refPathName = FindAbsoluteDir(refPathName);
     if (refPathName.IsEmpty()) {
         refPathName = wxT(".");
     }
 
-#ifdef __WXMSW__
+#ifdef _WIN32
     refPathName.Replace(wxT("/"), wxT("\\"));
-#endif
     wxFileName fn(refPathName + wxT("\\dummy"));
-    fn.MakeRelativeTo(::wxGetCwd());
+#else
+    wxFileName fn(refPathName + wxT("/dummy"));
+#endif
+    fn.MakeRelativeTo();
     refPathName = fn.GetPath();
     if (refPathName.IsEmpty()) {
         return wxString(wxT("."));
     }
-#ifdef __WXMSW__
+#ifdef _WIN32
     refPathName.Replace(wxT("\\"), wxT("/"));
 #endif
 
@@ -218,7 +222,13 @@ bool CSettings::Load(wxString ConfigFileName)
     m_lastidir_default = wxEmptyString;
     m_platform_default = wxT("(Select)");
     m_programmer_default = wxT("avr-dude");
+#ifdef _WIN32
+    /* Windows doesn't provide global bin directories. */
     m_toolpath_default = toolPath + wxT(";\"(Add compiler paths here)\";");
+#else
+    /* We assume proper installation on Unix like platforms. */
+    m_toolpath_default = wxEmptyString;
+#endif
 
     wxConfigBase *pConfig = wxConfigBase::Get();
     if (pConfig) {
