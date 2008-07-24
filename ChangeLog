@@ -1,4 +1,87 @@
-$Id: ChangeLog,v 1.453 2008/07/19 02:54:52 thiagocorrea Exp $
+$Id: ChangeLog,v 1.454 2008/07/24 15:53:33 haraldkipp Exp $
+
+2008-07-24  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/nutconf.h, tools/nutconf/bitmaps/nutconf.xpm,
+	tools/nutconf/bitmaps/nutconf.bmp: Configurator version 2.0 
+	with new splash screen.
+
+	* tools/nutconf/configitem.cpp, tools/nutconf/nutcomponent.c,
+	tools/nutconf/nutcomponent.h, tools/nutconf/nutconfdoc.cpp,
+	tools/nutconf/nutconfdoc.h: Allow dynamically changing configuration 
+	items. Values are no longer read during initialization, but 
+	retrieved from the repository when needed. You can even specify Lua 
+	functions instead of strings. A number of Lua extensions had been 
+	added to allow the script to retrieve values from the Configurator
+	GUI. On the downside, the Configurator GUI has become very slow
+	when values are changed. However, this should be acceptable for
+	now, because items are seldom changed. I'm also sure, that this
+	can be easily fixed later.
+
+	* tools/nutconf/scrolledtree.cpp, tools/nutconf/scrolledtree.h,
+	tools/nutconf/treecomp.cpp, tools/nutconf/treecomp.h: The component 
+	tree stopped working on Linux and OS X after wxWidgets implemented 
+	the wxScrollHelper. 
+	Although not fully fixed, it works acceptable again. The main 
+	problem is, that it seems to be impossible to have a scrolled 
+	window without vertical scrollbar. For now ignore the bar in the 
+	middle of the component tree.
+
+	* tools/nutconf/mainframe.cpp: Reorganized window initialization 
+	fixes bad client window after starting the Configurator on Linux 
+	and OS X.
+
+	* tools/nutconf/settings.cpp: Fixed a path separator bug, which 
+	prevents the Configurator from automatically finding the repository 
+	path. The best way is to create a new directory (e.g. ethernut), 
+	where you should unpack and install the source package. When done, 
+	create a link named nut/ to the unpacked directory ethernut-x.y.z. 
+	This way you will get the same directory structure as on Windows.
+
+	* tools/nutconf/nutconf.cpp: More reliable splash screen appearance 
+	on Linux. Also tried to fix help file loading, but still not working.
+
+	* tools/nutconf/configtree.cpp: Simplyfied mouse event handling. 
+	Reporting dynamic script errors.
+
+	* tools/nutconf/bitmaps/application.xpm,
+	tools/nutconf/bitmaps/buildlibrary.xpm,
+	tools/nutconf/bitmaps/buildlibrary_large.xpm,
+	tools/nutconf/bitmaps/checked.xpm,
+	tools/nutconf/bitmaps/checked_dis.xpm,
+	tools/nutconf/bitmaps/closedfolder.xpm,
+	tools/nutconf/bitmaps/closedfolder_dis.xpm,
+	tools/nutconf/bitmaps/enumerated.xpm,
+	tools/nutconf/bitmaps/enumerated_dis.xpm,
+	tools/nutconf/bitmaps/help.xpm,
+	tools/nutconf/bitmaps/help_large.xpm,
+	tools/nutconf/bitmaps/integer.xpm,
+	tools/nutconf/bitmaps/integer_dis.xpm,
+	tools/nutconf/bitmaps/library.xpm,
+	tools/nutconf/bitmaps/library_dis.xpm,
+	tools/nutconf/bitmaps/module.xpm,
+	tools/nutconf/bitmaps/module_dis.xpm,
+	tools/nutconf/bitmaps/open.xpm,
+	tools/nutconf/bitmaps/open_large.xpm,
+	tools/nutconf/bitmaps/radiooff.xpm,
+	tools/nutconf/bitmaps/radiooff_dis.xpm,
+	tools/nutconf/bitmaps/radioon.xpm,
+	tools/nutconf/bitmaps/radioon_dis.xpm,
+	tools/nutconf/bitmaps/save.xpm,
+	tools/nutconf/bitmaps/save_large.xpm,
+	tools/nutconf/bitmaps/search.xpm,
+	tools/nutconf/bitmaps/search_large.xpm,
+	tools/nutconf/bitmaps/text.xpm,
+	tools/nutconf/bitmaps/text_dis.xpm,
+	tools/nutconf/bitmaps/unchecked.xpm,
+	tools/nutconf/bitmaps/unchecked_dis.xpm: Avoid compiler warning.
+
+	* tools/nutconf/appoptdlg.cpp, tools/nutconf/bldoptdlg.cpp:
+	Use correct ifdefs for path separators.
+
+	* tools/nutconf/valuewindow.cpp: Use method IsOk() instead of 
+	simply checking the item handle.
+
 
 2008-07-18  Thiago A. Correa <thiago.correa@gmail.com>
 
