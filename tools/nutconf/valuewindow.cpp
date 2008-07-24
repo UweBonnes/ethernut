@@ -39,6 +39,9 @@
 
 /*
  * $Log: valuewindow.cpp,v $
+ * Revision 1.9  2008/07/24 15:48:01  haraldkipp
+ * Use method to check item validity.
+ *
  * Revision 1.8  2008/03/17 10:21:39  haraldkipp
  * Fix OS X scrolling.
  *
@@ -166,7 +169,12 @@ void CValueWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
 
 void CValueWindow::OnScroll(wxScrollWinEvent & event)
 {
+#if 1
+    CTreeCompWindow::Refresh();
+    (void)event;
+#else
     wxScrolledWindow::OnScroll(event);
+#endif
     PositionEditWindow();
 }
 
@@ -271,7 +279,7 @@ wxRect CValueWindow::GetItemRect(CConfigItem * item)
     wxRect itemRect;
     int cy = 0;
     wxTreeItemId h;
-    for (h = m_treeCtrl->GetFirstVisibleItem(); h; h = m_treeCtrl->GetNextVisible(h)) {
+    for (h = m_treeCtrl->GetFirstVisibleItem(); h.IsOk(); h = m_treeCtrl->GetNextVisible(h)) {
         CTreeItemData *data = (CTreeItemData *) m_treeCtrl->GetItemData(h);
         if (data->GetConfigItem() == item) {
             if (m_treeCtrl->GetBoundingRect(h, itemRect)) {
