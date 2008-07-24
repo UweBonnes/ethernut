@@ -27,6 +27,9 @@
 
 /*
  * $Log: scrolledtree.cpp,v $
+ * Revision 1.7  2008/07/24 15:43:43  haraldkipp
+ * Fixed component tree on Linux.
+ *
  * Revision 1.6  2008/03/17 10:19:47  haraldkipp
  * Get it run on OS X.
  *
@@ -50,17 +53,27 @@
 #include <math.h>
 
 #include "scrolledtree.h"
-#include "wx/generic/treectlg.h"
 
 #ifdef __WXMSW__
 #include <wx/msw/private.h>
 #include <wx/window.h>
 #endif
+#ifdef __WXGTK__
+#include <wx/generic/treectlg.h>
+#include <wx/scrolbar.h>
+#endif
 
-
+#ifdef __WXGTK__
+IMPLEMENT_CLASS(CScrolledTreeCtrl, wxGenericTreeCtrl)
+#else
 IMPLEMENT_CLASS(CScrolledTreeCtrl, wxTreeCtrl)
+#endif
 
+#ifdef __WXGTK__
+BEGIN_EVENT_TABLE(CScrolledTreeCtrl, wxGenericTreeCtrl)
+#else
 BEGIN_EVENT_TABLE(CScrolledTreeCtrl, wxTreeCtrl)
+#endif
     EVT_SIZE(CScrolledTreeCtrl::OnSize)
     EVT_TREE_ITEM_EXPANDED(-1, CScrolledTreeCtrl::OnExpand)
     EVT_TREE_ITEM_COLLAPSED(-1, CScrolledTreeCtrl::OnExpand)
@@ -70,7 +83,11 @@ END_EVENT_TABLE();
 
 CScrolledTreeCtrl::CScrolledTreeCtrl(wxWindow * parent, wxWindowID id, const wxPoint & pt,
      const wxSize & sz, long style)
+#ifdef __WXGTK__
+     :wxGenericTreeCtrl(parent, id, pt, sz, style & ~wxTR_ROW_LINES)
+#else
      :wxTreeCtrl(parent, id, pt, sz, style & ~wxTR_ROW_LINES)
+#endif
 {
     m_companionWindow = NULL;
     m_drawRowLines = (style & wxTR_ROW_LINES) != 0;
@@ -81,14 +98,12 @@ CScrolledTreeCtrl::~CScrolledTreeCtrl()
 {
 }
 
-
 void CScrolledTreeCtrl::HideVScrollbar()
 {
 #ifdef __WXMSW__
-    if (!IsKindOf(CLASSINFO(wxGenericTreeCtrl))) {
-        wxLogVerbose(wxT("-+-+- CScrolledTreeCtrl::HideVScrollbar"));
-        ::ShowScrollBar((HWND) GetHWND(), SB_VERT, false);
-    }
+    ::ShowScrollBar((HWND) GetHWND(), SB_VERT, false);
+#else
+    /* No idea how to remove the vertical scrollbar. */
 #endif
 }
 
@@ -96,37 +111,48 @@ void CScrolledTreeCtrl::SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY,
                                       int noUnitsX, int noUnitsY, 
                                       int xPos, int yPos, bool noRefresh)
 {
-#if !defined(__WXMSW__)
+#ifdef __WXGTK__
     if (IsKindOf(CLASSINFO(wxGenericTreeCtrl))) {
         wxGenericTreeCtrl *win = (wxGenericTreeCtrl *) this;
-        // Pass TRUE for noRefresh so that it doesn't
-        // draw part of the tree as if the scroll view is
-        // at zero vertically.
-        win->wxGenericTreeCtrl::SetScrollbars(pixelsPerUnitX, pixelsPerUnitY, noUnitsX, 0, xPos, 0, /* noRefresh */ true);
+        /*
+         * In the original code y-units and y-pos had been set
+         * to zero to remove the vertical scrollbar. However,
+         * since wxScrollHelper had been implemented, this
+         * doesn't work anymore. See wxWidgets ticket #4482.
+         */
+        win->wxGenericTreeCtrl::SetScrollbars(pixelsPerUnitX, pixelsPerUnitY, noUnitsX, noUnitsY, xPos, yPos, true);
 
         wxScrolledWindow *scrolledWindow = GetScrolledWindow();
         if (scrolledWindow) {
-            wxLogVerbose(wxT("  - >  CScrolledTreeCtrl::SetScrollbars"));
             scrolledWindow->SetScrollbars(0, pixelsPerUnitY, 0, noUnitsY, 0, yPos, noRefresh);
         }
     }
+#else
+    (void)pixelsPerUnitX; 
+    (void)pixelsPerUnitY;
+    (void)noUnitsX;
+    (void)noUnitsY;
+    (void)xPos; 
+    (void)yPos;
+    (void)noRefresh;
 #endif
 }
 
 int CScrolledTreeCtrl::GetScrollPos(int orient) const
 {
-#if !defined(__WXMSW__)
+#ifdef __WXGTK__
     wxScrolledWindow *scrolledWindow = GetScrolledWindow();
-
     if (IsKindOf(CLASSINFO(wxGenericTreeCtrl))) {
         wxGenericTreeCtrl *win = (wxGenericTreeCtrl *) this;
 
         if (orient == wxHORIZONTAL) {
             return win->wxGenericTreeCtrl::GetScrollPos(orient);
-        } else {
+        } else if (scrolledWindow) {
             return scrolledWindow->GetScrollPos(orient);
         }
     }
+#else
+    (void)orient;
 #endif
     return 0;
 }
@@ -135,7 +161,7 @@ void CScrolledTreeCtrl::GetViewStart(int *x, int *y) const
 {
     wxScrolledWindow *scrolledWindow = GetScrolledWindow();
 
-#if !defined(__WXMSW__)
+#ifdef __WXGTK__
     if (IsKindOf(CLASSINFO(wxGenericTreeCtrl)))
     {
         wxGenericTreeCtrl* win = (wxGenericTreeCtrl*) this;
@@ -160,8 +186,8 @@ void CScrolledTreeCtrl::GetViewStart(int *x, int *y) const
 
 void CScrolledTreeCtrl::PrepareDC(wxDC & dc)
 {
-#if !defined(__WXMSW__)
-    if (IsKindOf(CLASSINFO(wxTreeCtrl))) {
+#ifdef __WXGTK__
+    if (IsKindOf(CLASSINFO(wxGenericTreeCtrl))) {
         wxScrolledWindow *scrolledWindow = GetScrolledWindow();
 
         wxGenericTreeCtrl *win = (wxGenericTreeCtrl *) this;
@@ -175,6 +201,8 @@ void CScrolledTreeCtrl::PrepareDC(wxDC & dc)
 
         dc.SetDeviceOrigin(-startX * xppu1, -startY * yppu2);
     }
+#else
+    (void)dc;
 #endif
 }
 
@@ -195,7 +223,8 @@ void CScrolledTreeCtrl::ScrollToLine(int posHoriz, int posVert)
         HWND vertScrollBar = 0;
         MSWDefWindowProc((WXUINT) WM_VSCROLL, MAKELONG(sbCode, posVert), (WXLPARAM) vertScrollBar);
     }
-#else
+#endif
+#ifdef __WXGTK__
     wxGenericTreeCtrl *win = (wxGenericTreeCtrl *) this;
     win->Refresh();
 #endif
@@ -204,22 +233,19 @@ void CScrolledTreeCtrl::ScrollToLine(int posHoriz, int posVert)
 void CScrolledTreeCtrl::OnSize(wxSizeEvent & event)
 {
     wxLogVerbose(wxT("CScrolledTreeCtrl::OnSize"));
-    HideVScrollbar();
     AdjustRemoteScrollbars();
+    HideVScrollbar();
     event.Skip();
 }
 
 void CScrolledTreeCtrl::OnExpand(wxTreeEvent & event)
 {
-    wxLogVerbose(wxT("CScrolledTreeCtrl::OnExpand"));
     AdjustRemoteScrollbars();
-    event.Skip();
-
-    // If we don't have this, we get some bits of lines still remaining
-    if (event.GetEventType() == wxEVT_COMMAND_TREE_ITEM_COLLAPSED)
-        Refresh();
+    HideVScrollbar();
+    Refresh();
 
     // Pass on the event
+    event.Skip();
     if (m_companionWindow)
         m_companionWindow->GetEventHandler()->ProcessEvent(event);
 }
@@ -231,7 +257,11 @@ void CScrolledTreeCtrl::OnPaint(wxPaintEvent& event)
 {
     wxPaintDC dc(this);
 
+#ifdef __WXGTK__
+    wxGenericTreeCtrl::OnPaint(event);
+#else
     wxTreeCtrl::OnPaint(event);
+#endif
 
 #ifndef __WXMAC__
     if (! m_drawRowLines)
@@ -268,8 +298,7 @@ void CScrolledTreeCtrl::OnPaint(wxPaintEvent& event)
 // Adjust the containing wxScrolledWindow's scrollbars appropriately
 void CScrolledTreeCtrl::AdjustRemoteScrollbars()
 {
-    wxLogVerbose(wxT("CScrolledTreeCtrl::AdjustRemoteScrollbars"));
-#if !defined(__WXMSW__)
+#ifdef __WXGTK__
     if (IsKindOf(CLASSINFO(wxGenericTreeCtrl))) {
         // This is for the generic tree control.
         // It calls SetScrollbars which has been overridden
@@ -342,7 +371,6 @@ void CScrolledTreeCtrl::CalcTreeSize(wxRect & rect)
 
 void CScrolledTreeCtrl::CalcTreeSize(const wxTreeItemId & id, wxRect & rect)
 {
-    //wxLogVerbose(wxT("CScrolledTreeCtrl::CalcTreeSize"));
     // More efficient implementation would be to find the last item (but how?)
     // Q: is the bounding rect relative to the top of the virtual tree workspace
     // or the top of the window? How would we convert?
@@ -390,25 +418,29 @@ void CScrolledTreeCtrl::OnScroll(wxScrollWinEvent & event)
         event.Skip();
         return;
     }
+
+#ifdef __WXGTK__
+    int nScrollInc = CalcScrollInc(event);
+    m_yScrollPosition += nScrollInc;
+    SetScrollPos(wxVERTICAL, m_yScrollPosition, true);
+    wxGenericTreeCtrl *win = (wxGenericTreeCtrl *) this;
+    win->Refresh();
+#else
     wxScrolledWindow *scrollWin = GetScrolledWindow();
-    if (!scrollWin)
-        return;
-
-    int x, y;
-    scrollWin->GetViewStart(&x, &y);
-
-    ScrollToLine(-1, y);
+    if (scrollWin) {
+        int x, y;
+        scrollWin->GetViewStart(&x, &y);
+        ScrollToLine(-1, y);
+    }
+#endif
 }
 
 void CScrolledTreeCtrl::SetCompanionWindow(wxWindow * companion)
 {
-    wxLogVerbose(wxT("SetCompanionWindow"));
     m_companionWindow = companion;
 }
 
 wxWindow *CScrolledTreeCtrl::GetCompanionWindow() const
 {
-    wxLogVerbose(wxT("GetCompanionWindow"));
     return m_companionWindow;
 }
-

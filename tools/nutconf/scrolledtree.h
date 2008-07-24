@@ -23,6 +23,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/07/24 15:43:43  haraldkipp
+ * Fixed component tree on Linux.
+ *
  * Revision 1.5  2008/03/17 10:22:49  haraldkipp
  * Added more comments.
  *
@@ -46,7 +49,13 @@
 /*!
  * \brief Specialized wxTreeCtrl with a companion window.
  */
-class CScrolledTreeCtrl:public wxTreeCtrl {
+class CScrolledTreeCtrl
+#ifdef __WXGTK__
+    :public wxGenericTreeCtrl 
+#else
+    :public wxTreeCtrl 
+#endif
+{
     DECLARE_CLASS(CScrolledTreeCtrl)
   public:
     CScrolledTreeCtrl(wxWindow * parent, wxWindowID id = -1, const wxPoint & pt = wxDefaultPosition,
@@ -66,8 +75,6 @@ class CScrolledTreeCtrl:public wxTreeCtrl {
 
     void SetCompanionWindow(wxWindow * companion);
 
-     DECLARE_EVENT_TABLE()
-  protected:
     void AdjustRemoteScrollbars();
     wxScrolledWindow *GetScrolledWindow() const;
     void HideVScrollbar();
@@ -76,6 +83,8 @@ class CScrolledTreeCtrl:public wxTreeCtrl {
     void CalcTreeSize(wxRect & rect);
     void CalcTreeSize(const wxTreeItemId & id, wxRect & rect);
 
+    DECLARE_EVENT_TABLE()
+  protected:
     /*! \brief Companion window.
      *
      * Tree expansion events are passed to this window.

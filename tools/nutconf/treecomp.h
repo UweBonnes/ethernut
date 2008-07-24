@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/07/24 15:43:43  haraldkipp
+ * Fixed component tree on Linux.
+ *
  * Revision 1.2  2008/03/17 10:17:20  haraldkipp
  * Removed dispensable scroll handlers.
  *
@@ -52,8 +55,9 @@
 
 #include <wx/wx.h>
 #include <wx/treectrl.h>
+#include "scrolledtree.h"
 
-class CTreeCompWindow:public wxScrolledWindow {
+class CTreeCompWindow:public wxWindow {
   public:
     DECLARE_CLASS(CTreeCompWindow)
 
@@ -63,13 +67,14 @@ class CTreeCompWindow:public wxScrolledWindow {
     virtual void DrawItem(wxDC & dc, wxTreeItemId id, const wxRect & rect);
 
     void OnPaint(wxPaintEvent & event);
+    void OnScroll(wxScrollWinEvent& event);
     void OnExpand(wxTreeEvent & event);
 
-    wxTreeCtrl *GetTreeCtrl() const;
-    void SetTreeCtrl(wxTreeCtrl * treeCtrl);
+    CScrolledTreeCtrl *GetTreeCtrl() const;
+    void SetTreeCtrl(CScrolledTreeCtrl * treeCtrl);
 
   protected:
-     wxTreeCtrl * m_treeCtrl;
+     CScrolledTreeCtrl * m_treeCtrl;
 
      DECLARE_EVENT_TABLE()
 };

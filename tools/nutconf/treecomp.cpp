@@ -45,6 +45,9 @@
 
 /*
  * $Log: treecomp.cpp,v $
+ * Revision 1.5  2008/07/24 15:43:43  haraldkipp
+ * Fixed component tree on Linux.
+ *
  * Revision 1.4  2008/03/17 10:17:19  haraldkipp
  * Removed dispensable scroll handlers.
  *
@@ -66,12 +69,13 @@ IMPLEMENT_CLASS(CTreeCompWindow, wxWindow)
 
 BEGIN_EVENT_TABLE(CTreeCompWindow, wxWindow)
     EVT_PAINT(CTreeCompWindow::OnPaint)
+    EVT_SCROLLWIN(CTreeCompWindow::OnScroll)
     EVT_TREE_ITEM_EXPANDED(-1, CTreeCompWindow::OnExpand)
     EVT_TREE_ITEM_COLLAPSED(-1, CTreeCompWindow::OnExpand)
 END_EVENT_TABLE()
 
     CTreeCompWindow::CTreeCompWindow(wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & sz, long style)
-:wxScrolledWindow(parent, id, pos, sz, style)
+:wxWindow(parent, id, pos, sz, style)
 {
     m_treeCtrl = NULL;
 }
@@ -108,7 +112,7 @@ void CTreeCompWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
     wxRect itemRect;
     int cy;
     wxTreeItemId h, lastH;
-    for (h = m_treeCtrl->GetFirstVisibleItem(); h; h = m_treeCtrl->GetNextVisible(h)) {
+    for (h = m_treeCtrl->GetFirstVisibleItem(); h.IsOk(); h = m_treeCtrl->GetNextVisible(h)) {
         if (m_treeCtrl->GetBoundingRect(h, itemRect)) {
             cy = itemRect.GetTop();
             wxRect drawItemRect(0, cy, clientSize.x, itemRect.GetHeight());
@@ -123,19 +127,32 @@ void CTreeCompWindow::OnPaint(wxPaintEvent & WXUNUSED(event))
     }
 }
 
+void CTreeCompWindow::OnScroll(wxScrollWinEvent& event)
+{
+    int orient = event.GetOrientation();
+    if (orient == wxHORIZONTAL)
+    {
+        event.Skip();
+        return;
+    }
+    if (!m_treeCtrl)
+        return;
+
+    // TODO: scroll the window physically instead of just refreshing.
+    Refresh(true);
+}
+
 void CTreeCompWindow::OnExpand(wxTreeEvent & WXUNUSED(event))
 {
-    wxLogVerbose(wxT("CTreeCompWindow::OnExpand"));
     Refresh();
 }
 
-wxTreeCtrl *CTreeCompWindow::GetTreeCtrl() const
+CScrolledTreeCtrl *CTreeCompWindow::GetTreeCtrl() const
 {
     return m_treeCtrl;
 }
 
-void CTreeCompWindow::SetTreeCtrl(wxTreeCtrl * treeCtrl)
+void CTreeCompWindow::SetTreeCtrl(CScrolledTreeCtrl * treeCtrl)
 {
-    wxLogVerbose(wxT("CTreeCompWindow::SetTreeCtrl"));
     m_treeCtrl = treeCtrl;
 }
