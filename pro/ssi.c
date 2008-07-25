@@ -33,6 +33,10 @@
  
 /*
  * $Log$
+ * Revision 1.8  2008/07/25 12:17:26  olereinhardt
+ * Imagecraft compilers does not support alloca (to allocate memory from the
+ * stack). So we use NutHeapAlloc / NutHeapClear instead for Imagecraft.
+ *
  * Revision 1.7  2008/07/17 11:36:34  olereinhardt
  * - Moved some functions used in httpd.c as well as in ssi.c into httpd_p.c
  * - Implemeted $QUERY_STRING parameter in for CGIs included by a ssi file
@@ -75,7 +79,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#if !defined(__IMAGECRAFT__)
 #include <alloca.h>
+#endif
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -173,18 +179,25 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     char *cp;
     REQUEST * req;
     char * cgi_bin = "cgi-bin/";
+#if defined(__IMAGECRAFT__)    
+    char * tmp_buffer;
+#endif
     char * tmp;
     char * save_ptr = NULL;
     
     if (cgiBinPath != NULL) {
         cgi_bin = cgiBinPath;
     }    
+#if defined(__IMAGECRAFT__)    
+    tmp = tmp_str = NutHeapAlloc(strlen(cgi_bin) + 1);
+#else    
     tmp = alloca(strlen(cgi_bin) + 1);
+#endif
     strcpy(tmp, cgi_bin);
     
     if (NutDecodePath(url) == 0) {
         fprintf_P(stream, rsp_bad_req_P);
-        return;
+        goto out;
     }
   
     /*
@@ -196,7 +209,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         if ((tmp != NULL) && (strncasecmp(url, tmp, strlen(tmp)) == 0)) {
             if ((req = NutHeapAllocClear(sizeof(REQUEST))) == 0) {
                 fprintf_P(stream, rsp_intern_err_P);
-                return;
+                goto out;
             }
             req->req_method = METHOD_GET;
             req->req_version = orig_req->req_version;
@@ -206,7 +219,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                 if ((req->req_agent = NutHeapAlloc((strlen(orig_req->req_agent) + 1))) == 0) {
                     fprintf_P(stream, rsp_intern_err_P);
                     DestroyRequestInfo(req);
-                    return;
+                    goto out;
                 }
                 strcpy(req->req_agent, orig_req->req_agent);
             }
@@ -214,7 +227,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                 if ((req->req_cookie = NutHeapAlloc((strlen(orig_req->req_cookie) + 1))) == 0) {
                     fprintf_P(stream, rsp_intern_err_P);
                     DestroyRequestInfo(req);
-                    return;
+                    goto out;
                 }
                 strcpy(req->req_cookie, orig_req->req_cookie);
             }
@@ -229,7 +242,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                     if ((req->req_query = NutHeapAlloc(size)) == 0) {
                         fprintf_P(stream, rsp_intern_err_P);
                         DestroyRequestInfo(req);
-                        return;
+                        goto out;
                     }
                     req->req_query[0] = 0;
                     for (i = 0; i < (orig_req->req_numqptrs * 2); i++) {
@@ -246,7 +259,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                     if ((req->req_query = NutHeapAlloc(strlen(cp) + 1)) == 0) {
                         fprintf_P(stream, rsp_intern_err_P);
                         DestroyRequestInfo(req);
-                        return;
+                        goto out;
                     }
                     strcpy(req->req_query, cp);
                 }
@@ -255,14 +268,14 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             if ((req->req_url = NutHeapAlloc(strlen(url) + 1)) == 0) {
                 fprintf_P(stream, rsp_intern_err_P);
                 DestroyRequestInfo(req);
-                return;
+                goto out;
             }
             strcpy(req->req_url, url);
 
         
             NutCgiProcessRequest(stream, req, strlen(tmp));
             DestroyRequestInfo(req);
-            return;
+            goto out;
         }
         tmp = strtok_r(NULL, ";", &save_ptr);
     } while (tmp != NULL);
@@ -275,7 +288,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         filename = CreateFilePath(url, default_files[n]);
         if (filename == NULL) {
             fprintf_P(stream, rsp_intern_err_P);
-            return;
+            goto out;
         }
         /*
          * Note, that simple file systems may not provide stat() or access(),
@@ -293,7 +306,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     }
     if (fd == -1) {
         fprintf_P(stream, rsp_not_found_P, filename);
-        return;
+        goto out;
     }
     
     file_len = _filelength(fd);
@@ -317,6 +330,13 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         }
     } else handler(stream, fd, file_len, http_root, orig_req);
     _close(fd);
+out:    
+#if defined(__IMAGECRAFT__)    
+    if (tmp_buffer != NULL) {
+        NutHeapFree(tmp_buffer);
+    }
+#endif
+    return;
 }
 
 /*!

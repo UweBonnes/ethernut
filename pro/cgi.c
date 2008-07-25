@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/07/25 12:17:26  olereinhardt
+ * Imagecraft compilers does not support alloca (to allocate memory from the
+ * stack). So we use NutHeapAlloc / NutHeapClear instead for Imagecraft.
+ *
  * Revision 1.4  2008/07/17 11:33:32  olereinhardt
  * - Check for unique cgi names
  * - Alloc local copy of cgi name. Allows dynamicaly generated cgi names
@@ -56,7 +60,9 @@
  */
 
 #include <string.h>
+#if !defined(__IMAGECRAFT__)
 #include <alloca.h>
+#endif
 #include <sys/heap.h>
 
 #include <pro/httpd.h>
@@ -105,7 +111,11 @@ int NutCgiCheckRequest(FILE * stream, REQUEST * req)
     if (cgiBinPath != NULL) {
         cgi_bin = cgiBinPath;
     }
+#if defined(__IMAGECRAFT__)     
+    tmp = NutHeapAlloc(strlen(cgi_bin) + 1);
+#else    
     tmp = alloca(strlen(cgi_bin) + 1);
+#endif
     strcpy(tmp, cgi_bin);
     
     tmp = strtok_r(tmp, ";", &save_ptr);
@@ -113,10 +123,16 @@ int NutCgiCheckRequest(FILE * stream, REQUEST * req)
     do {
         if ((tmp != NULL) && (strncasecmp(req->req_url, tmp, strlen(tmp)) == 0)) {
             NutCgiProcessRequest(stream, req, strlen(tmp));
+#if defined(__IMAGECRAFT__)     
+            NutHeapFree(tmp);
+#endif
             return 1;
         }    
         tmp = strtok_r(NULL, ";", &save_ptr);
     } while (tmp != NULL);
+#if defined(__IMAGECRAFT__)     
+    NutHeapFree(tmp);
+#endif
     return 0;
 }
 
