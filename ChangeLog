@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.455 2008/07/24 17:06:07 haraldkipp Exp $
+$Id: ChangeLog,v 1.456 2008/07/25 12:18:09 olereinhardt Exp $
+
+2008-07-25  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* app/httpd/httpserv.c: Fixed compiler bug for Imagecraft compilers
+	  and added missing PSTR macro around prog_char strings
+
+	* pro/cgi.c, pro/ssi.c: Imagecraft compilers does not support alloca
+	  (to allocate memory from the stack). So we use 
+          NutHeapAlloc / NutHeapClear instead for Imagecraft.
 
 2008-07-24  Harald Kipp  <harald.kipp@egnite.de>
 
