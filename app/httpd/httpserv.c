@@ -33,6 +33,10 @@
 
 /*!
  * $Log$
+ * Revision 1.19  2008/07/25 10:20:12  olereinhardt
+ * Fixed compiler bug for AVR-ICC and added missing PSTR macro around
+ * prog_char strings
+ *
  * Revision 1.18  2008/07/17 11:56:20  olereinhardt
  * Updated the webserver demo to show new webserver functions (different cgi
  * pathes with seperate authentication, $QUERY_STRING parameter for ssi
@@ -568,7 +572,11 @@ int SSIDemoCGI(FILE * stream, REQUEST * req)
         count = NutHttpGetParameterCount(req);
         
         /* Extract count parameters. */
-        fprintf_P(stream, "CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>");
+#ifdef __IMAGECRAFT__        
+        fprintf(stream, "CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>");
+#else
+        fprintf_P(stream, PSTR("CGI ssi-demo.cgi called with parameters: These are the parameters\r\n<p>"));
+#endif
         for (i = 0; i < count; i++) {
             name = NutHttpGetParameterName(req, i);
             value = NutHttpGetParameterValue(req, i);
@@ -588,8 +596,13 @@ int SSIDemoCGI(FILE * stream, REQUEST * req)
         /* Called without any parameter, show the current time */
         now = time(NULL);
         localtime_r(&now, &loc_time);
-        fprintf_P(stream, "CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n",
+#ifdef __IMAGECRAFT__        
+        fprintf(stream, "CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n",
                   loc_time.tm_mday, loc_time.tm_mon+1, loc_time.tm_year+1900, loc_time.tm_hour, loc_time.tm_min, loc_time.tm_sec);
+#else 
+        fprintf_P(stream, PSTR("CGI ssi-demo.cgi called without any parameter.<br><br>Current time is: %02d.%02d.%04d -- %02d:%02d:%02d<br>\r\n"),
+                  loc_time.tm_mday, loc_time.tm_mon+1, loc_time.tm_year+1900, loc_time.tm_hour, loc_time.tm_min, loc_time.tm_sec);
+#endif
     }
 
     fflush(stream);
