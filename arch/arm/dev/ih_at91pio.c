@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/07/26 09:43:01  haraldkipp
+ * Added support for retrieving and setting the interrupt mode.
+ *
  * Revision 1.3  2006/07/05 07:56:34  haraldkipp
  * Interrupt handler will be included only, if the related interrupt
  * ID is defined in the platform specific header file.
@@ -89,6 +92,8 @@ void PortIoIrqEntry(void)
  *              - NUT_IRQCTL_STATUS Query interrupt status.
  *              - NUT_IRQCTL_ENABLE Enable interrupt.
  *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETMODE Query interrupt mode.
+ *              - NUT_IRQCTL_SETMODE Set interrupt mode (NUT_IRQMODE_LEVEL or NUT_IRQMODE_EDGE).
  *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
  *              - NUT_IRQCTL_SETPRIO Set interrupt priority.
  *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
@@ -129,6 +134,25 @@ static int PortIoIrqCtl(int cmd, void *param)
         break;
     case NUT_IRQCTL_DISABLE:
         enabled = 0;
+        break;
+    case NUT_IRQCTL_GETMODE:
+        {
+            u_int val = inr(AIC_SMR(PIO_ID)) & AIC_SRCTYPE;
+            if (val == AIC_SRCTYPE_INT_LEVEL_SENSITIVE || val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
+                *ival = NUT_IRQMODE_LEVEL;
+            } else  {
+                *ival = NUT_IRQMODE_EDGE;
+            }
+        }
+        break;
+    case NUT_IRQCTL_SETMODE:
+        if (*ival == NUT_IRQMODE_LEVEL) {
+            outr(AIC_SMR(PIO_ID), (inr(AIC_SMR(PIO_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_INT_LEVEL_SENSITIVE);
+        } else if (*ival == NUT_IRQMODE_EDGE) {
+            outr(AIC_SMR(PIO_ID), (inr(AIC_SMR(PIO_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_INT_EDGE_TRIGGERED);
+        } else  {
+            rc = -1;
+        }
         break;
     case NUT_IRQCTL_GETPRIO:
         *ival = inr(AIC_SMR(PIO_ID)) & AIC_PRIOR;

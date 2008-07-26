@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/07/26 09:43:01  haraldkipp
+ * Added support for retrieving and setting the interrupt mode.
+ *
  * Revision 1.3  2006/06/28 17:10:15  haraldkipp
  * Include more general header file for ARM.
  *
@@ -90,8 +93,8 @@ void FastIrqEntry(void)
  *              - NUT_IRQCTL_STATUS Query interrupt status.
  *              - NUT_IRQCTL_ENABLE Enable interrupt.
  *              - NUT_IRQCTL_DISABLE Disable interrupt.
- *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
- *              - NUT_IRQCTL_SETPRIO Set interrupt priority.
+ *              - NUT_IRQCTL_GETMODE Query interrupt mode.
+ *              - NUT_IRQCTL_SETMODE Set interrupt mode.
  *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
  * \param param Pointer to optional parameter.
  *
