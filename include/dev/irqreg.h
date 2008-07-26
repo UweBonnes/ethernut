@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2008/07/26 09:38:02  haraldkipp
+ * Added support for NUT_IRQMODE_NONE and NUT_IRQMODE_LEVEL.
+ *
  * Revision 1.13  2006/01/05 16:53:56  haraldkipp
  * New function NutIrqSetMode() allows to modify the interrupt mode.
  *
@@ -120,11 +123,13 @@
 #define NUT_IRQCTL_GETCOUNT     96
 #define NUT_IRQCTL_SETCOUNT     97
 
+#define NUT_IRQMODE_NONE        0
 #define NUT_IRQMODE_LOWLEVEL    1
 #define NUT_IRQMODE_HIGHLEVEL   2
 #define NUT_IRQMODE_FALLINGEDGE 5
 #define NUT_IRQMODE_RISINGEDGE  6
 #define NUT_IRQMODE_EDGE        7
+#define NUT_IRQMODE_LEVEL       8
 
 /*
  * Registered interrupt handler information structure.

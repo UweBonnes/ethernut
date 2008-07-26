@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/07/26 09:38:02  haraldkipp
+ * Added support for NUT_IRQMODE_NONE and NUT_IRQMODE_LEVEL.
+ *
  * Revision 1.6  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -180,7 +183,15 @@ int NutIrqSetPriority(IRQ_HANDLER * irq, int level)
  *       data sheet for valid levels.
  *
  * \param irq  Interrupt to modify.
- * \param mode New priority level.
+ * \param mode New interrupt mode:
+ *             - NUT_IRQMODE_NONE No change. Used to query current mode.
+ *             - NUT_IRQMODE_LOWLEVEL Low level sensitive.
+ *             - NUT_IRQMODE_HIGHLEVEL High level sensitive.
+ *             - NUT_IRQMODE_FALLINGEDGE Negative edge triggered.
+ *             - NUT_IRQMODE_RISINGEDGE Positive edge triggered.
+ *             - NUT_IRQMODE_EDGE Triggers on any edge or active internal edge.
+ *             - NUT_IRQMODE_LEVEL Triggers on level change or active internal level.
+ *
  *
  * \return Old mode or -1 in case of an error.
  */
@@ -192,7 +203,7 @@ int NutIrqSetMode(IRQ_HANDLER * irq, int mode)
         int prev;
 
         rc = (irq->ir_ctl) (NUT_IRQCTL_GETMODE, &prev);
-        if (rc == 0 && (rc = (irq->ir_ctl) (NUT_IRQCTL_SETMODE, &mode)) == 0) {
+        if (rc == 0 && (mode == NUT_IRQMODE_NONE || (rc = (irq->ir_ctl) (NUT_IRQCTL_SETMODE, &mode)) == 0)) {
             rc = prev;
         }
     }
