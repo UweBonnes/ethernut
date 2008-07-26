@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/07/26 09:42:21  haraldkipp
+ * Use level sensitive interrupts by default.
+ * Added support for retrieving and setting the interrupt mode.
+ *
  * Revision 1.2  2006/06/28 17:10:27  haraldkipp
  * Include more general header file for ARM.
  *
@@ -83,6 +87,8 @@ void Uart1IrqEntry(void)
  *              - NUT_IRQCTL_STATUS Query interrupt status.
  *              - NUT_IRQCTL_ENABLE Enable interrupt.
  *              - NUT_IRQCTL_DISABLE Disable interrupt.
+ *              - NUT_IRQCTL_GETMODE Query interrupt mode.
+ *              - NUT_IRQCTL_SETMODE Set interrupt mode (NUT_IRQMODE_LEVEL or NUT_IRQMODE_EDGE).
  *              - NUT_IRQCTL_GETPRIO Query interrupt priority.
  *              - NUT_IRQCTL_SETPRIO Set interrupt priority.
  *              - NUT_IRQCTL_GETCOUNT Query and clear interrupt counter.
@@ -106,7 +112,7 @@ static int Uart1IrqCtl(int cmd, void *param)
         /* Set the vector. */
         outr(AIC_SVR(US1_ID), (unsigned int)Uart1IrqEntry);
         /* Initialize to edge triggered with defined priority. */
-        outr(AIC_SMR(US1_ID), AIC_SRCTYPE_INT_EDGE_TRIGGERED | NUT_IRQPRI_UART1);
+        outr(AIC_SMR(US1_ID), AIC_SRCTYPE_INT_LEVEL_SENSITIVE | NUT_IRQPRI_UART1);
         /* Clear interrupt */
         outr(AIC_ICCR, _BV(US1_ID));
         break;
@@ -123,6 +129,25 @@ static int Uart1IrqCtl(int cmd, void *param)
         break;
     case NUT_IRQCTL_DISABLE:
         enabled = 0;
+        break;
+    case NUT_IRQCTL_GETMODE:
+        {
+            u_int val = inr(AIC_SMR(US1_ID)) & AIC_SRCTYPE;
+            if (val == AIC_SRCTYPE_INT_LEVEL_SENSITIVE || val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
+                *ival = NUT_IRQMODE_LEVEL;
+            } else  {
+                *ival = NUT_IRQMODE_EDGE;
+            }
+        }
+        break;
+    case NUT_IRQCTL_SETMODE:
+        if (*ival == NUT_IRQMODE_LEVEL) {
+            outr(AIC_SMR(US1_ID), (inr(AIC_SMR(US1_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_INT_LEVEL_SENSITIVE);
+        } else if (*ival == NUT_IRQMODE_EDGE) {
+            outr(AIC_SMR(US1_ID), (inr(AIC_SMR(US1_ID)) & ~AIC_SRCTYPE) | AIC_SRCTYPE_INT_EDGE_TRIGGERED);
+        } else  {
+            rc = -1;
+        }
         break;
     case NUT_IRQCTL_GETPRIO:
         *ival = inr(AIC_SMR(US1_ID)) & AIC_PRIOR;
