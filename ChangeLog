@@ -1,4 +1,30 @@
-$Id: ChangeLog,v 1.456 2008/07/25 12:18:09 olereinhardt Exp $
+$Id: ChangeLog,v 1.457 2008/07/26 09:39:16 haraldkipp Exp $
+
+2008-07-26  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Preparing 4.5.7 beta.
+
+	* arch/arm/dev/ih_at91adc.c, arch/arm/dev/ih_at91emac.c,
+	arch/arm/dev/ih_at91fiq.c, arch/arm/dev/ih_at91pio.c,
+	arch/arm/dev/ih_at91pioa.c, arch/arm/dev/ih_at91piob.c,
+	arch/arm/dev/ih_at91pioc.c, arm/dev/ih_at91spi0.c,
+	arm/dev/ih_at91spi1.c, arch/arm/dev/ih_at91ssc.c,
+	arch/arm/dev/ih_at91tc0.c, arch/arm/dev/ih_at91tc1.c,
+	arch/arm/dev/ih_at91tc2.c, arch/arm/dev/ih_at91twi.c,
+	arch/arm/dev/ih_at91uart0.c, arch/arm/dev/ih_at91uart1.c:
+	Added capability to set and retrieve the interrupt mode. 
+	The default mode for the UART had been switched from
+	edge triggered to level sensitive, as specified in the
+	AT91 datasheet. Many thanks to Tim DeBaillie for reporting 
+	these problems. And special thanks to Alain M. for tracking
+	them.
+
+	* dev/ihndlr.c, include/dev/irqreg.h: Allow to just query the 
+	current interrupt mode by calling NutIrqSetMode(&sig_, 
+	NUT_IRQMODE_NONE). Another new level specifier is
+	NUT_IRQMODE_LEVEL, which is used to specify level sensitive
+	interrupts for internal devices of the AT91 CPUs.
+
 
 2008-07-25  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* app/httpd/httpserv.c: Fixed compiler bug for Imagecraft compilers

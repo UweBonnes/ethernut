@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.34  2008/07/26 09:39:16  haraldkipp
+# Preparing 4.5.7 beta.
+#
 # Revision 1.33  2008/07/24 17:06:07  haraldkipp
 # Preparing 4.5.6 beta.
 #
@@ -144,7 +147,7 @@
 #
 #
 
-AC_INIT(ethernut,4.5.6)
+AC_INIT(ethernut,4.5.7)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2008 egnite GmbH])
