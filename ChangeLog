@@ -1,6 +1,11 @@
-$Id: ChangeLog,v 1.457 2008/07/26 09:39:16 haraldkipp Exp $
+$Id: ChangeLog,v 1.458 2008/07/26 14:09:29 haraldkipp Exp $
 
 2008-07-26  Harald Kipp  <harald.kipp@egnite.de>
+
+	* pro/cgi.c, pro/ssi.c: Thanks to Ole for quickly fixing bugs
+	#2026946 and #2026951. Unfortunately the bug report missed to
+	mention, that strtok_r() isn't available as well. Finally I
+	tried to fix this without breaking Ole's code. Sorry, if I did.
 
 	* configure.ac, os/version.c: Preparing 4.5.7 beta.
 

@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/07/26 14:09:29  haraldkipp
+ * Fixed another problem with ICCAVR.
+ *
  * Revision 1.5  2008/07/25 12:17:26  olereinhardt
  * Imagecraft compilers does not support alloca (to allocate memory from the
  * stack). So we use NutHeapAlloc / NutHeapClear instead for Imagecraft.
@@ -104,18 +107,19 @@ void NutRegisterCgiBinPath(char *path)
 
 int NutCgiCheckRequest(FILE * stream, REQUEST * req)
 {
+#ifdef __GNUC__
+    /*
+     * Ole's original version. Unfortunately the ImageCraft compiler neither
+     * supports alloca() nor strtok_r().
+     */
     char * cgi_bin = "cgi-bin/";
     char * tmp;
     char * save_ptr = NULL;
-    
+
     if (cgiBinPath != NULL) {
         cgi_bin = cgiBinPath;
     }
-#if defined(__IMAGECRAFT__)     
-    tmp = NutHeapAlloc(strlen(cgi_bin) + 1);
-#else    
     tmp = alloca(strlen(cgi_bin) + 1);
-#endif
     strcpy(tmp, cgi_bin);
     
     tmp = strtok_r(tmp, ";", &save_ptr);
@@ -123,15 +127,36 @@ int NutCgiCheckRequest(FILE * stream, REQUEST * req)
     do {
         if ((tmp != NULL) && (strncasecmp(req->req_url, tmp, strlen(tmp)) == 0)) {
             NutCgiProcessRequest(stream, req, strlen(tmp));
-#if defined(__IMAGECRAFT__)     
-            NutHeapFree(tmp);
-#endif
             return 1;
         }    
         tmp = strtok_r(NULL, ";", &save_ptr);
     } while (tmp != NULL);
-#if defined(__IMAGECRAFT__)     
-    NutHeapFree(tmp);
+#else
+    /*
+     * My version sticks with basic C routines. I hope, that it is also
+     * faster and uses less memory. But it hasn't been tested very well,
+     * so let's keep Ole's variant for GCC.
+     */
+    size_t len;
+    CONST char *cp;
+    CONST char *cgi_bin = cgiBinPath ? cgiBinPath : "cgi-bin/";
+
+    while (*cgi_bin) {
+        /* Skip leading path separators. */
+        while (*cgi_bin == ';')
+            cgi_bin++;
+        /* Determine the length of the next path component. */
+        for (len = 0, cp = cgi_bin; *cp && *cp != ';'; len++, cp++);
+        if (len) {
+            /* Check if the URL starts with this component. If yes, run the CGI. */
+            if (strncasecmp(req->req_url, cgi_bin, len) == 0) {
+                NutCgiProcessRequest(stream, req, len);
+                return 1;
+            }
+            /* Try the next path component. */
+            cgi_bin += len;
+        }
+    }
 #endif
     return 0;
 }
