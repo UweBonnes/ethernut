@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/07/27 11:43:22  haraldkipp
+ * Configurable TCP retransmissions.
+ *
  * Revision 1.2  2004/07/30 19:54:46  drsung
  * Some code of TCP stack redesigned. Round trip time calculation is now
  * supported. Fixed several bugs in TCP state machine. Now TCP connections
@@ -52,6 +55,8 @@
  *
  */
 
+#include <cfg/tcp.h>
+
 #include <netinet/tcputil.h>
 #include <sys/timer.h>
 #include <stdio.h>
@@ -61,6 +66,13 @@
  */
 /*@{*/
 
+/* Limit retransmission timeout to 200ms as lower and 20secs as upper boundary */
+#ifndef TCP_RTTO_MIN
+#define TCP_RTTO_MIN    200
+#endif
+#ifndef TCP_RTTO_MAX
+#define TCP_RTTO_MAX    20000
+#endif
 
 /*!
  * \brief Sequence number comparisons.
@@ -95,8 +107,7 @@ void NutTcpCalcRtt(TCPSOCKET * sock)
     delta = (u_short) NutGetMillis() - sock->so_retran_time;
     
     /* According to RFC793 (or STD007), page 41, we use 0.8 for ALPHA and 2.0 for BETA. */
-    /* Limit retransmission timeout to 200ms as lower and 20secs as upper boundary */
-    sock->so_rtto = min (20000, max(200, (delta * 4 + sock->so_rtto * 8) / 10));
+    sock->so_rtto = min (TCP_RTTO_MAX, max(TCP_RTTO_MIN, (delta * 4 + sock->so_rtto * 8) / 10));
     //@@@printf ("[%04X] new retran timeout: %u, delta: %u\n", (u_short) sock, sock->so_rtto, delta);
 }
 

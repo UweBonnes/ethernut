@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.11  2008/07/27 11:43:22  haraldkipp
+-- Configurable TCP retransmissions.
+--
 -- Revision 1.10  2007/05/02 11:18:32  haraldkipp
 -- IGMP support added. Incomplete.
 --
@@ -93,6 +96,36 @@ nutnet =
                 brief = "State Machine Stack",
                 description = "Number of bytes to be allocated for the stack of the TCP state machine thread.",
                 flavor = "booldata",
+                file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_RETRIES_MAX",
+                brief = "Max. Retransmissions",
+                description = "Maximum number of retries before aborting a connection. "..
+                              "Increase this value if connections are dropped prematurely. "..
+                              "On reliable networks you may reduce this value to discover broken "..
+                              "connections earlier.",
+                default = "7",
+                file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_RTTO_MIN",
+                brief = "Min. Retransmission Time",
+                description = "Lower bound of the retransmission timeout, given in milliseconds. "..
+                              "Increase this value if connections are dropped prematurely or if "..
+                              "retransmissions cause too much traffic."..
+                              "On reliable networks you may reduce this value to recover from "..
+                              "casual packet loss earlier.",
+                default = "200",
+                file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_RTTO_MAX",
+                brief = "Max. Retransmission Time",
+                description = "Lower bound of the retransmission timeout, given in milliseconds. "..
+                              "On reliable networks you may reduce this value to discover broken "..
+                              "connections earlier.",
+                default = "20000",
                 file = "include/cfg/tcp.h"
             }
         }

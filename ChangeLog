@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.458 2008/07/26 14:09:29 haraldkipp Exp $
+$Id: ChangeLog,v 1.459 2008/07/27 11:43:22 haraldkipp Exp $
+
+2008-07-27  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/net/net.nut, net/tcpsm.c, net/tcputil.c: Number of 
+	retransmissions and upper and lower bounds of timeouts made 
+	configurable. Many thanks to Szemzo Andras for pointing out,
+	that this is required on some networks (ADSL in his case).
+
 
 2008-07-26  Harald Kipp  <harald.kipp@egnite.de>
 

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.25  2008/07/27 11:43:22  haraldkipp
+ * Configurable TCP retransmissions.
+ *
  * Revision 1.24  2008/04/06 13:29:01  haraldkipp
  * In unreliable or high traffic networks connections may suddenly freeze.
  * The problem is, that during overflows (happening every 65s) the
@@ -239,6 +242,10 @@
 
 #ifndef NUT_THREAD_TCPSMSTACK
 #define NUT_THREAD_TCPSMSTACK   512
+#endif
+
+#ifndef TCP_RETRIES_MAX
+#define TCP_RETRIES_MAX         7
 #endif
 
 extern TCPSOCKET *tcpSocketList;
@@ -912,7 +919,7 @@ int NutTcpStateWindowEvent(TCPSOCKET * sock)
 int NutTcpStateRetranTimeout(TCPSOCKET * sock)
 {
     NETBUF *so_tx_next;
-    if (sock->so_retransmits++ > 7)
+    if (sock->so_retransmits++ > TCP_RETRIES_MAX)
     {
         /* Abort the socket */
         NutTcpAbortSocket(sock, ETIMEDOUT);
