@@ -39,6 +39,10 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.22  2008/07/28 08:40:20  haraldkipp
+ * Temporarly removed unsupported Eclipse project copying. We are testing a
+ * new setup for Eclipse.
+ *
  * Revision 1.21  2008/07/24 15:41:41  haraldkipp
  * Dynamic configuration.
  *
@@ -1024,12 +1028,13 @@ bool CNutConfDoc::GenerateApplicationTree()
     wxDir icc_dir(src_dir);
     icc_dir.Traverse(icc_traverser);
 #endif
+#if 0
     src_dir = cfg->m_source_dir + wxT("/appeclipse");
     wxLogMessage(wxT("Translating Eclipse projects from %s to %s"), src_dir.c_str(), cfg->m_app_dir.c_str());
     CDirEclipseProjectTraverser eclipse_traverser(src_dir, cfg->m_app_dir);
     wxDir eclipse_dir(src_dir);
     eclipse_dir.Traverse(eclipse_traverser);
-
+#endif
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
     wxString lib_dir(cfg->m_lib_dir);
     if(lib_dir.IsEmpty()) {
