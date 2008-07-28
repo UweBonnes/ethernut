@@ -20,6 +20,9 @@
 
 /*
  * $Log: bldoptdlg.cpp,v $
+ * Revision 1.8  2008/07/28 08:41:32  haraldkipp
+ * Configurator accepts empty install path for using the default.
+ *
  * Revision 1.7  2008/07/24 15:47:21  haraldkipp
  * Use correct ifdefs for path separators.
  *
@@ -80,17 +83,13 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     CPathValidator firstIncValid(VALIDPATH_LIST | VALIDPATH_IS_DIRECTORY | VALIDPATH_EXISTS | VALIDPATH_SHOW_NATIVE| VALIDPATH_TO_UNIX, &opts->m_firstidir);
     CPathValidator lastIncValid(VALIDPATH_LIST | VALIDPATH_IS_DIRECTORY | VALIDPATH_EXISTS | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_lastidir);
     CPathValidator bldDirValid(VALIDPATH_NOT_EMPTY | VALIDPATH_IS_DIRECTORY | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_buildpath);
-    CPathValidator libDirValid(VALIDPATH_NOT_EMPTY | VALIDPATH_IS_DIRECTORY | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_lib_dir);
+    CPathValidator libDirValid(VALIDPATH_IS_DIRECTORY | VALIDPATH_SHOW_NATIVE | VALIDPATH_TO_UNIX, &opts->m_lib_dir);
 
     wxStaticBox *grpSource = new wxStaticBox(this, -1, wxT("Source Directory"));
     m_entSourceDir = new wxTextCtrl(this, ID_ENTRY_SRCDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, srcDirValid);
     wxButton *btnSourceDir = new wxButton(this, ID_BROWSE_SRCDIR, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
     wxStaticText *lblPlatform = new wxStaticText(this, -1, wxT("Platform"));
     m_cbxPlatform = new wxComboBox(this, ID_COMBO_SRCDIR, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0, wxGenericValidator(&opts->m_platform));
-
-    wxStaticBox *grpBuild = new wxStaticBox(this, -1, wxT("Build Directory"));
-    m_entBuildDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, bldDirValid);
-    wxButton *btnBrowseBuild = new wxButton(this, ID_BROWSE_BUTTON, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
 
     wxStaticBox *grpInclude = new wxStaticBox(this, -1, wxT("Include Directories"));
     wxStaticText *lblFirst = new wxStaticText(this, -1, wxT("First"));
@@ -99,6 +98,10 @@ CBuildOptionsDialog::CBuildOptionsDialog(wxWindow* parent)
     wxStaticText *lblLast = new wxStaticText(this, -1, wxT("Last"));
     m_entInclLastDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, lastIncValid);
     wxButton *btnBrowseInclLast = new wxButton(this, ID_BROWSE_INCLLAST, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
+
+    wxStaticBox *grpBuild = new wxStaticBox(this, -1, wxT("Build Directory"));
+    m_entBuildDir = new wxTextCtrl(this, ID_PATH_ENTRY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, bldDirValid);
+    wxButton *btnBrowseBuild = new wxButton(this, ID_BROWSE_BUTTON, wxT("Browse..."), wxDefaultPosition, wxDefaultSize, 0);
 
     wxStaticBox *grpInstall = new wxStaticBox(this, -1, wxT("Install Directory"));
     m_entInstallDir = new wxTextCtrl(this, ID_PATH_INSTALL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, libDirValid);

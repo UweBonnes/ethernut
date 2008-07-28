@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.459 2008/07/27 11:43:22 haraldkipp Exp $
+$Id: ChangeLog,v 1.460 2008/07/28 08:41:32 haraldkipp Exp $
+
+2008-07-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/bldoptdlg.cpp, tools/nutconf/nutcomponent.c,
+	tools/nutconf/nutconf.h: Configurator version 2.0.1 accepts empty 
+	install path for using the default lib/ within the build tree.
+
+	* tools/nutconf/nutconfdoc.cpp: Temporarly removed unsupported 
+	Eclipse project copying. We are testing a new setup for Eclipse.
+
 
 2008-07-27  Harald Kipp  <harald.kipp@egnite.de>
 

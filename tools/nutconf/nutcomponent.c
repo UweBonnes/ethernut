@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.31  2008/07/28 08:41:32  haraldkipp
+ * Configurator accepts empty install path for using the default.
+ *
  * Revision 1.30  2008/07/24 15:41:41  haraldkipp
  * Dynamic configuration.
  *
@@ -148,7 +151,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.0"
+#define NUT_CONFIGURE_VERSION   "2.0.1"
 
 #include <stdio.h>
 #include <stdlib.h>

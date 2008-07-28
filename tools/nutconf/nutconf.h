@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2008/07/28 08:41:32  haraldkipp
+ * Configurator accepts empty install path for using the default.
+ *
  * Revision 1.18  2008/07/24 15:39:59  haraldkipp
  * Configurator version 2.0.
  *
@@ -105,7 +108,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.0"
+#define VERSION "2.0.1"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
