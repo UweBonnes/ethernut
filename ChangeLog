@@ -1,6 +1,8 @@
-$Id: ChangeLog,v 1.463 2008/07/29 12:13:36 haraldkipp Exp $
+$Id: ChangeLog,v 1.464 2008/07/29 13:04:17 haraldkipp Exp $
 
 2008-07-29  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Release 4.6.
 
 	* configure.ac, os/version.c: Last 4.5 beta.
 
