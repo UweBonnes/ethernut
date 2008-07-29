@@ -1,6 +1,8 @@
-$Id: ChangeLog,v 1.462 2008/07/29 07:58:27 haraldkipp Exp $
+$Id: ChangeLog,v 1.463 2008/07/29 12:13:36 haraldkipp Exp $
 
 2008-07-29  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Last 4.5 beta.
 
 	* conf/eir10b.conf, conf/eir10c.conf: Replaced the first by the
 	latter.
