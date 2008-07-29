@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.34  2008/07/29 07:28:17  haraldkipp
+ * Late timer destroy, hopefully solves bug #2029411.
+ *
  * Revision 1.33  2008/07/08 08:25:05  haraldkipp
  * NutDelay is no more architecture specific.
  * Number of loops per millisecond is configurable or will be automatically
@@ -422,15 +425,15 @@ void NutTimerProcessElapsed(void)
             if (tn->tn_callback) {
                 (*tn->tn_callback) (tn, (void *) tn->tn_arg);
             }
+            // remove from list
+            nutTimerList = nutTimerList->tn_next;
+            if (nutTimerList) {
+                nutTimerList->tn_prev = NULL;
+            }
             if ((tn->tn_ticks_left = tn->tn_ticks) == 0) {
-                NutTimerStop(tn);
+                NutHeapFree(tn);
             }
             else {
-                // remove from list
-                nutTimerList = nutTimerList->tn_next;
-                if (nutTimerList) {
-                    nutTimerList->tn_prev = 0;
-                }
                 // re-insert
                 NutTimerInsert(tn);
             }
@@ -615,17 +618,24 @@ void NutTimerStop(HANDLE handle)
 {
     NUTTIMERINFO *tn = (NUTTIMERINFO *)handle;
 
-    if (tn->tn_prev) {
-        tn->tn_prev->tn_next = tn->tn_next;
+    /* Disable periodic operation and callback. */
+    tn->tn_ticks = 0;
+    tn->tn_callback = NULL;
+    /* If not already elapsed, expire the timer. */
+    if (tn->tn_ticks_left) {
+        if (tn->tn_prev) {
+            tn->tn_prev->tn_next = tn->tn_next;
+        }
+        else {
+            nutTimerList = tn->tn_next;
+        }
+        if (tn->tn_next) {
+            tn->tn_next->tn_prev = tn->tn_prev;
+            tn->tn_next->tn_ticks_left += tn->tn_ticks_left;
+        }
+        tn->tn_ticks_left = 0;
+        NutTimerInsert(tn);
     }
-    else {
-        nutTimerList = tn->tn_next;
-    }
-    if (tn->tn_next) {
-        tn->tn_next->tn_prev = tn->tn_prev;
-        tn->tn_next->tn_ticks_left += tn->tn_ticks_left;
-    }
-    NutHeapFree(tn);
 }
 
 /*!
