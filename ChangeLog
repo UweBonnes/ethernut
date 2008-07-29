@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.461 2008/07/29 07:40:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.462 2008/07/29 07:58:27 haraldkipp Exp $
+
+2008-07-29  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/eir10b.conf, conf/eir10c.conf: Replaced the first by the
+	latter.
+
 
 2008-07-28  Harald Kipp  <harald.kipp@egnite.de>
 
