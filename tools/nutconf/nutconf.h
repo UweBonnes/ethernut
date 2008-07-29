@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2008/07/29 07:39:37  haraldkipp
+ * Fixed missing 'make install'. Bug was introduced in 2.0.1.
+ *
  * Revision 1.19  2008/07/28 08:41:32  haraldkipp
  * Configurator accepts empty install path for using the default.
  *
@@ -108,7 +111,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.1"
+#define VERSION "2.0.2"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.15  2008/07/29 07:39:37  haraldkipp
+ * Fixed missing 'make install'. Bug was introduced in 2.0.1.
+ *
  * Revision 1.14  2008/07/24 15:44:22  haraldkipp
  * Fixed initial window creation on Linux.
  *
@@ -603,6 +606,11 @@ void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
 {
     CSettings *cfg = wxGetApp().GetSettings();
     wxString str;
+
+    wxString lib_dir(cfg->m_lib_dir);
+    if(lib_dir.IsEmpty()) {
+        lib_dir = cfg->m_buildpath + wxT("/lib");
+    }
     
     /*
      * Create a message box containing all relevant information and
@@ -614,10 +622,8 @@ void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
     str += cfg->m_buildpath;
     str += wxT("\nTarget platform: ");
     str += cfg->m_platform;
-    if(!cfg->m_lib_dir.IsEmpty()) {
-        str += wxT("\nInstall directory: ");
-        str += cfg->m_lib_dir;
-    }
+    str += wxT("\nInstall directory: ");
+    str += lib_dir;
     str += wxT("\n\nDo you like to build the Nut/OS libraries?\n");
     if(wxMessageBox(str, wxT("Build Nut/OS"), wxOK | wxCANCEL | wxICON_QUESTION, this) == wxOK) {
         /* Clean up any previous build. */
@@ -634,11 +640,9 @@ void CMainFrame::OnBuildNutOS(wxCommandEvent & WXUNUSED(event))
                 return;
             }
         }
-        if(!cfg->m_lib_dir.IsEmpty()) {
-            /* Install new libraries. */
-            if(!wxGetApp().Build(wxT("install"))) {
-                wxMessageBox(wxT("Installing Nut/OS failed!"), wxT("Build"), wxCANCEL | wxICON_HAND);
-            }
+        /* Install new libraries. */
+        if(!wxGetApp().Build(wxT("install"))) {
+            wxMessageBox(wxT("Installing Nut/OS failed!"), wxT("Build"), wxCANCEL | wxICON_HAND);
         }
     }
 }
