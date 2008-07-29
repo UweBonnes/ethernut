@@ -1,6 +1,29 @@
-$Id: ChangeLog,v 1.460 2008/07/28 08:41:32 haraldkipp Exp $
+$Id: ChangeLog,v 1.461 2008/07/29 07:40:23 haraldkipp Exp $
 
 2008-07-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* os/heap.c: Nut/OS crashes on the Elektor Internet Radio. 
+	After removing setBeef() from NutHeapAdd, it worked again.
+
+	* os/timer.c: Late timer destroy, hopefully solves bug #2029411.
+
+	* tools/nutconf/configitem.cpp: Honor editing of boolean
+	settings.
+
+	* tools/nutconf/mainframe.cpp, tools/nutconf/nutconf.h,
+	tools/nutconf/nutconfdoc.cpp: Configurator 2.0.2 fixes missing 
+	'make install', introduced in 2.0.1.
+
+	* tools/nutconf/settings.cpp, tools/nutconf/settings.h:
+	The default installation path is an empty string.
+
+	* tools/nutconf/nutcomponent.c: Make sure that all children of 
+	a disabled parent are disabled too.
+
+	* conf/dev/dev.nut: Added VS1053B.
+
+	* conf/arch/arm.nut: Re-enabled NUT_CONFIG_AT91EFC for the
+	SAM7SE again. No idea why this had been removed.
 
 	* tools/nutconf/bldoptdlg.cpp, tools/nutconf/nutcomponent.c,
 	tools/nutconf/nutconf.h: Configurator version 2.0.1 accepts empty 
