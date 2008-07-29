@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.27  2008/07/29 07:31:40  haraldkipp
+-- Re-enabled NUT_CONFIG_AT91EFC for the SAM7SE.
+--
 -- Revision 1.26  2008/06/06 10:28:22  haraldkipp
 -- ST7036 LCD controller settings moved from source to configuration files.
 --
@@ -973,24 +976,24 @@ nutarch_arm =
             },
         },
     },
---    {
---        name = "nutarch__arm_at91efc_sam7se",
---        brief = "AT91 Embedded Flash (SAM7SE)",
---        description = "Routines for reading and writing embedded flash memory.",
---        requires = { "HW_MCU_AT91SAM7SE" },
---        sources = { "arm/dev/at91_efc.c" },
---        options =
---        {
---            {
---                macro = "NUT_CONFIG_AT91EFC",
---                brief = "System Configuration",
---                description = "If enabled, Nut/OS and Nut/Net configurations will "..
---                              "be stored in on-chip flash memory.",
---                provides = { "HW_FLASH_PARAM_SECTOR" },
---                flavor = "boolean",
---                file = "include/cfg/eeprom.h"
---            },
---        },
---    },
+    {
+        name = "nutarch__arm_at91efc_sam7se",
+        brief = "AT91 Embedded Flash (SAM7SE)",
+        description = "Routines for reading and writing embedded flash memory.",
+        requires = { "HW_MCU_AT91SAM7SE" },
+        sources = { "arm/dev/at91_efc.c" },
+        options =
+        {
+            {
+                macro = "NUT_CONFIG_AT91EFC",
+                brief = "System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                provides = { "HW_FLASH_PARAM_SECTOR" },
+                flavor = "boolean",
+                file = "include/cfg/eeprom.h"
+            },
+        },
+    },
 }
 
