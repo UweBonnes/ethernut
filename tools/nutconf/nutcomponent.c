@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.32  2008/07/29 07:30:30  haraldkipp
+ * Make sure that children of a disabled parents are disabled too.
+ *
  * Revision 1.31  2008/07/28 08:41:32  haraldkipp
  * Configurator accepts empty install path for using the default.
  *
@@ -151,7 +154,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.1"
+#define NUT_CONFIGURE_VERSION   "2.0.2"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -2121,54 +2124,56 @@ void EnableComponentTree(NUTCOMPONENT *compo, int enable)
     EnableSubComponents(compo->nc_child, enable);
 }
 
-int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo)
+int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo, int enable)
 {
     int rc = 0;
     int i;
     NUTCOMPONENTOPTION *opts;
 
     while (compo) {
-        char **crequires = GetComponentRequirements(repo, compo);
-        if(crequires) {
-            int provided = 1;
-            for (i = 0; crequires[i]; i++) {
-                if((provided = IsProvided(repo, root, crequires[i])) == 0) {
-                    break;
-                }
-            }
-            for (i = 0; crequires[i]; i++) {
-                free(crequires[i]);
-            }
-            free(crequires);
-            if(provided != compo->nc_enabled) {
-                /* Update this component branch. */
-                //compo->nc_enabled = provided;
-                EnableComponentTree(compo, provided);
-                rc++;
-            }
-        }
-        opts = compo->nc_opts;
-        while (opts) {
-            char **orequires = GetOptionRequirements(repo, compo, opts->nco_name);
-            if (orequires) {
-                int provided = 1;
-                for (i = 0; orequires[i]; i++) {
-                    if((provided = IsProvided(repo, root, orequires[i])) == 0) {
+        int provided = enable;
+        if (enable) {
+            char **crequires = GetComponentRequirements(repo, compo);
+            if(crequires) {
+                for (i = 0; crequires[i]; i++) {
+                    if((provided = IsProvided(repo, root, crequires[i])) == 0) {
                         break;
                     }
                 }
-                for (i = 0; orequires[i]; i++) {
-                    free(orequires[i]);
+                for (i = 0; crequires[i]; i++) {
+                    free(crequires[i]);
                 }
-                free(orequires);
+                free(crequires);
+            }
+        }
+        if(provided != compo->nc_enabled) {
+            /* Update this component branch. */
+            EnableComponentTree(compo, provided);
+            rc++;
+        }
+        if (provided) {
+            opts = compo->nc_opts;
+            while (opts) {
+                char **orequires = GetOptionRequirements(repo, compo, opts->nco_name);
+                if (orequires) {
+                    for (i = 0; orequires[i]; i++) {
+                        if((provided = IsProvided(repo, root, orequires[i])) == 0) {
+                            break;
+                        }
+                    }
+                    for (i = 0; orequires[i]; i++) {
+                        free(orequires[i]);
+                    }
+                    free(orequires);
+                }
                 if(provided != opts->nco_enabled) {
                     opts->nco_enabled = provided;
                     rc++;
                 }
+                opts = opts->nco_nxt;
             }
-            opts = opts->nco_nxt;
+            rc += RefreshComponentTree(repo, root, compo->nc_child, provided);
         }
-        rc += RefreshComponentTree(repo, root, compo->nc_child);
         compo = compo->nc_nxt;
     }
     return rc;
@@ -2182,7 +2187,7 @@ int RefreshComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root)
     EnableComponentTree(root, 1);
 
     for(i = 0; i < 10; i++) {
-        if(RefreshComponentTree(repo, root, root) == 0) {
+        if(RefreshComponentTree(repo, root, root, 1) == 0) {
             return 0;
         }
     }
