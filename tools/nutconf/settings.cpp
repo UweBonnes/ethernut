@@ -39,6 +39,9 @@
 
 /*
  * $Log: settings.cpp,v $
+ * Revision 1.14  2008/07/29 07:28:54  haraldkipp
+ * The default installation path is an empty string.
+ *
  * Revision 1.13  2008/07/24 15:45:19  haraldkipp
  * Fixed automatic repository path detection on Linux and OS X.
  *
@@ -205,7 +208,6 @@ bool CSettings::Load(wxString ConfigFileName)
         m_buildpath_default = wxString(wxT("nutbld"));
         m_app_dir_default = wxString(wxT("nutapp"));
     }
-    m_lib_dir_default = m_buildpath_default + wxT("/lib");
 
 	wxString ConfigName = wxFileName(ConfigFileName).GetFullName();
     if (ConfigName == wxEmptyString) {
@@ -249,7 +251,7 @@ bool CSettings::Load(wxString ConfigFileName)
         pConfig->Read(wxT("BuildPath"), &m_buildpath, m_buildpath_default);
         pConfig->Read(wxT("FirstInclude"), &m_firstidir, m_firstidir_default);
         pConfig->Read(wxT("LastInclude"), &m_lastidir, m_lastidir_default);
-        pConfig->Read(wxT("InstallPath"), &m_lib_dir, m_lib_dir_default);
+        pConfig->Read(wxT("InstallPath"), &m_lib_dir, wxEmptyString);
         pConfig->Read(wxT("SourceDirectory"), &m_source_dir, m_source_dir_default);
         pConfig->Read(wxT("TargetPlatform"), &m_platform, m_platform_default);
         pConfig->Read(wxT("ToolPath"), &m_toolpath, m_toolpath_default);

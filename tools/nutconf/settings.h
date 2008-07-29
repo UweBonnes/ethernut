@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/07/29 07:28:54  haraldkipp
+ * The default installation path is an empty string.
+ *
  * Revision 1.6  2007/09/11 13:43:22  haraldkipp
  * Top installation directory will be used for ICCAVR project configuration.
  * Re-building the application tree will no longer override existing project
@@ -105,7 +108,6 @@ public:
     wxString m_buildpath_default;
     /*! \brief Path to the Nut/OS libraries. */
     wxString m_lib_dir;
-    wxString m_lib_dir_default;
     /*! \brief Path to the Nut/OS source tree. */
     wxString m_source_dir;
     wxString m_source_dir_default;
