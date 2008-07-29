@@ -20,6 +20,9 @@
 
 /*
  * $Log: configitem.cpp,v $
+ * Revision 1.10  2008/07/29 07:29:36  haraldkipp
+ * Honor editing of boolean settings.
+ *
  * Revision 1.9  2008/07/24 15:41:41  haraldkipp
  * Dynamic configuration.
  *
@@ -691,6 +694,9 @@ void CConfigItem::SetActive(bool ena)
 {
     if (m_option) {
         m_option->nco_active = ena;
+        if (ena && m_option->nco_value == NULL) {
+            m_option->nco_value = strdup(wxT(""));
+        }
     }
 }
 
