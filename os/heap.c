@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2008/07/29 07:27:46  haraldkipp
+ * Removed setBeef from NutHeapAdd (crashes EIR).
+ *
  * Revision 1.18  2008/07/07 07:39:10  haraldkipp
  * Fixes data abort exception on ARM.
  *
@@ -160,10 +163,12 @@ static size_t available;
  * \param node A valid Heapnode without beef
  */
 static INLINE void setBeef(HEAPNODE * node){
+    // Shouldn't it be sizeof(u_long) instead of sizeof(0xDEADBEEF)? 
 	*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
 }
 
 #if !defined(ARCH_32BIT)
+// This crashed on AT91R40008 (Ethernut 3)
 /*!
  * \brief Check Beef of an heapnode
  * \param node A valid Heapnode with beef
@@ -586,7 +591,12 @@ int NutHeapFree(void *block)
 void NutHeapAdd(void *addr, size_t size)
 {
     *((uptr_t *) addr) = size;
+#if !defined(ARCH_32BIT)
+    // Bug #2030525
+    // This crashes on the EIR and may harm other 32-bit targets.
+    // What is this for?
 	setBeef((HEAPNODE *)addr);
+#endif
     NutHeapFree(((uptr_t *) addr) + 1);
 }
 
