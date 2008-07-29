@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.23  2008/07/29 07:32:25  haraldkipp
+ * Removed unsupported Eclipse project copying.
+ *
  * Revision 1.22  2008/07/28 08:40:20  haraldkipp
  * Temporarly removed unsupported Eclipse project copying. We are testing a
  * new setup for Eclipse.
@@ -665,7 +668,13 @@ wxString CNutConfDoc::GetBuildTree()
  */
 wxString CNutConfDoc::GetInstallDir()
 {
-    return wxGetApp().GetSettings()->m_lib_dir;
+    CSettings *cfg = wxGetApp().GetSettings();
+
+    wxString ins_dir(cfg->m_lib_dir);
+    if(ins_dir.IsEmpty()) {
+        ins_dir = cfg->m_buildpath + wxT("/lib");
+    }
+    return ins_dir;
 }
 
 /*!
@@ -679,14 +688,10 @@ bool CNutConfDoc::GenerateBuildTree()
 
     wxBusyCursor wait;
 
-    wxString ins_dir(cfg->m_lib_dir);
-    if(ins_dir.IsEmpty()) {
-        ins_dir = cfg->m_buildpath + wxT("/lib");
-    }
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
     if(CreateMakeFiles(m_repository, m_root, cfg->m_buildpath.mb_str(), cfg->m_source_dir.mb_str(),
                        cfg->m_platform.mb_str(), cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str(),
-                       ins_dir.mb_str())) {
+                       GetInstallDir().mb_str())) {
         return false;
     }
 
@@ -1036,12 +1041,8 @@ bool CNutConfDoc::GenerateApplicationTree()
     eclipse_dir.Traverse(eclipse_traverser);
 #endif
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
-    wxString lib_dir(cfg->m_lib_dir);
-    if(lib_dir.IsEmpty()) {
-        lib_dir = cfg->m_buildpath + wxT("/lib");
-    }
     if(CreateSampleDirectory(m_repository, m_root, cfg->m_buildpath.mb_str(), cfg->m_app_dir.mb_str(), 
-                             cfg->m_source_dir.mb_str(), lib_dir.mb_str(), cfg->m_platform.mb_str(), 
+                             cfg->m_source_dir.mb_str(), GetInstallDir().mb_str(), cfg->m_platform.mb_str(), 
                              cfg->m_programmer.mb_str(), cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str())) {
         return false;
     }
