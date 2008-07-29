@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.40  2008/07/29 07:30:57  haraldkipp
+-- Added VS1053B.
+--
 -- Revision 1.39  2008/07/09 14:25:06  haraldkipp
 -- Made EEPROM_PAGE_SIZE configurable. Does it really make sense?
 --
@@ -2322,7 +2325,8 @@ nutdev =
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
                     "AUDIO_VS1003B",
-                    "AUDIO_VS1033C"
+                    "AUDIO_VS1033C",
+                    "AUDIO_VS1053B"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2335,7 +2339,8 @@ nutdev =
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
                     "AUDIO_VS1003B",
-                    "AUDIO_VS1033C"
+                    "AUDIO_VS1033C",
+                    "AUDIO_VS1053B"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2348,7 +2353,8 @@ nutdev =
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
                     "AUDIO_VS1003B",
-                    "AUDIO_VS1033C"
+                    "AUDIO_VS1033C",
+                    "AUDIO_VS1053B"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2361,7 +2367,8 @@ nutdev =
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
                     "AUDIO_VS1003B",
-                    "AUDIO_VS1033C"
+                    "AUDIO_VS1033C",
+                    "AUDIO_VS1053B"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2374,7 +2381,22 @@ nutdev =
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
                     "AUDIO_VS1003B",
-                    "AUDIO_VS1033C"
+                    "AUDIO_VS1033C",
+                    "AUDIO_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO_VS1053B",
+                brief = "VS1053B",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO_VS1001K",
+                    "AUDIO_VS1011E",
+                    "AUDIO_VS1002D",
+                    "AUDIO_VS1003B",
+                    "AUDIO_VS1033C",
+                    "AUDIO_VS1053B"
                 },
                 file = "include/cfg/audio.h"
             },
