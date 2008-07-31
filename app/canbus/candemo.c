@@ -88,7 +88,7 @@ int main(void)
    u_long baud = 115200;
 
    NutRegisterDevice(&DEV_DEBUG, 0, 0);
-   freopen(DEV_UART_NAME, "w", stdout);
+   freopen(DEV_DEBUG_NAME, "w", stdout);
    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
    printf("CAN driver test program\n");
