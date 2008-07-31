@@ -1,4 +1,17 @@
-$Id: ChangeLog,v 1.465 2008/07/29 13:06:21 haraldkipp Exp $
+$Id: ChangeLog,v 1.466 2008/07/31 09:42:28 haraldkipp Exp $
+
+2008-07-31  Harald Kipp  <harald.kipp@egnite.de>
+
+	* app/canbus/candemo.c: Use the right device name to open.
+
+	* arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
+	arch/arm/dev/usartat91.c, include/arch/arm/at91x40.h: 
+	Initializing peripheral control registers in a more general 
+	way. Works now for AT91SAM9260 and fixes bug #2032960.
+
+	* conf/at91sam9260-ek.conf: Added PHY address. Fixes bug
+	#2032767.
+
 
 2008-07-29  Harald Kipp  <harald.kipp@egnite.de>
 
