@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/07/31 09:43:25  haraldkipp
+ * Initializing peripheral control registers in a more general way.
+ * Fixes bug #2032960.
+ *
  * Revision 1.9  2008/04/18 13:24:56  haraldkipp
  * Added Szemzo Andras' RS485 patch.
  *
@@ -1122,15 +1126,51 @@ static int At91UsartInit(void)
         return -1;
     }
 
-#if defined (MCU_AT91R40008)
     /* Enable UART clock. */
+#if defined(US_ID)
+#if defined(PS_PCER)
     outr(PS_PCER, _BV(US_ID));
-    /* Disable GPIO on UART tx/rx pins. */
-    outr(PIO_PDR, US_GPIO_PINS);
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
-    outr(PMC_PCER, _BV(US_ID));
-    outr(PIOA_PDR, US_GPIO_PINS);
 #endif
+#if defined(PMC_PCER)
+    outr(PMC_PCER, _BV(US_ID));
+#endif
+#endif
+
+    /* Disable GPIO on UART tx/rx pins. */
+#if defined(PIO_PDR) && defined(US_PIO_PINS)
+    outr(PIO_PDR, US_PIO_PINS);
+#endif
+
+#if defined(PIOA_PDR) && defined(US_PIOA_PINS)
+    outr(PIOA_PDR, US_PIOA_PINS);
+#endif
+#if defined(PIOA_ASR) && defined(US_PIOA_PINS_A)
+    outr(PIOA_ASR, US_PIOA_PINS_A);
+#endif
+#if defined(PIOA_BSR) && defined(US_PIOA_PINS_B)
+    outr(PIOA_BSR, US_PIOA_PINS_B);
+#endif
+
+#if defined(PIOB_PDR) && defined(US_PIOB_PINS)
+    outr(PIOB_PDR, US_PIOB_PINS);
+#endif
+#if defined(PIOB_ASR) && defined(US_PIOB_PINS_A)
+    outr(PIOB_ASR, US_PIOB_PINS_A);
+#endif
+#if defined(PIOB_BSR) && defined(US_PIOB_PINS_B)
+    outr(PIOB_BSR, US_PIOB_PINS_B);
+#endif
+
+#if defined(PIOC_PDR) && defined(US_PIOC_PINS)
+    outr(PIOC_PDR, US_PIOC_PINS);
+#endif
+#if defined(PIOC_ASR) && defined(US_PIOC_PINS_A)
+    outr(PIOC_ASR, US_PIOC_PINS_A);
+#endif
+#if defined(PIOC_BSR) && defined(US_PIOC_PINS_B)
+    outr(PIOC_BSR, US_PIOC_PINS_B);
+#endif
+
     /* Reset UART. */
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
@@ -1176,14 +1216,29 @@ static int At91UsartDeinit(void)
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(USARTn_BASE + US_IDR_OFF, 0xFFFFFFFF);
-#if defined (MCU_AT91R40008)
+
     /* Disable UART clock. */
+#if defined (US_ID)
+#if defined(PS_PCDR)
     outr(PS_PCDR, _BV(US_ID));
-    /* Enable GPIO on UART tx/rx pins. */
-    outr(PIO_PER, US_GPIO_PINS);
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#endif
+#if defined(PMC_PCDR)
     outr(PMC_PCDR, _BV(US_ID));
-    outr(PIOA_PER, US_GPIO_PINS);
+#endif
+#endif
+
+    /* Enable GPIO on UART tx/rx pins. */
+#if defined(PIO_PER) && defined(US_PIO_PINS)
+    outr(PIO_PER, US_PIO_PINS);
+#endif
+#if defined(PIOA_PER) && defined(US_PIOA_PINS)
+    outr(PIOA_PER, US_PIOA_PINS);
+#endif
+#if defined(PIOB_PER) && defined(US_PIOB_PINS)
+    outr(PIOB_PER, US_PIOB_PINS);
+#endif
+#if defined(PIOC_PER) && defined(US_PIOC_PINS)
+    outr(PIOC_PER, US_PIOC_PINS);
 #endif
 
     /*

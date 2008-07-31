@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/07/31 09:43:25  haraldkipp
+ * Initializing peripheral control registers in a more general way.
+ * Fixes bug #2032960.
+ *
  * Revision 1.4  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -124,6 +128,17 @@
 #include <arch/arm/at91_ps.h>
 #include <arch/arm/at91_wd.h>
 #include <arch/arm/at91_aic.h>
+
+/*! \name USART Peripheral Multiplexing */
+/*@{*/
+#define P15_RXD0            15
+#define P14_TXD0            14
+#define P13_SCK0            13
+
+#define P22_RXD1            22
+#define P21_TXD1            21
+#define P20_SCK1            20
+/*@}*/
 
 /*@} xgNutArchArmAt91 */
 

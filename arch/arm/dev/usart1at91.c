@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/07/31 09:43:24  haraldkipp
+ * Initializing peripheral control registers in a more general way.
+ * Fixes bug #2032960.
+ *
  * Revision 1.6  2008/04/18 13:24:55  haraldkipp
  * Added Szemzo Andras' RS485 patch.
  *
@@ -167,21 +171,33 @@ NUTDEVICE devUsartAt911 = {
 
 /*@}*/
 
-#define USARTn_BASE     USART1_BASE
-#define US_ID           US1_ID
-#if defined (MCU_AT91SAM7X256)
+#if defined(MCU_AT91SAM9260)
+#define US_PIOB_PINS_A  (_BV(PB6_TXD1_A) | _BV(PB7_RXD1_A))
+#define US_PIOB_PINS    US_PIOB_PINS_A
+#endif
+
+#if defined(MCU_AT91SAM7X256)
 #ifdef AT91_UART1_RS485
-#define US_GPIO_PINS    0x00000160
+#define US_PIOA_PINS_A  (_BV(PA5_RXD1_A) | _BV(PA6_TXD1_A) | _BV(PA8_RTS1_A))
 #define AT91_UART_RS485_MODE
 #else /* AT91_UART1_RS485 */
-#define US_GPIO_PINS    0x00000060
+#define US_PIOA_PINS_A  (_BV(PA5_RXD1_A) | _BV(PA6_TXD1_A))
 #undef AT91_UART_RS485_MODE
 #endif /* AT91_UART1_RS485 */
-#elif defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
-#define US_GPIO_PINS    0x00600000
-#else
-#define US_GPIO_PINS    0x00600000
+#define US_PIOA_PINS    US_PIOA_PINS_A
 #endif
+
+#if defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#define US_PIOA_PINS_A  (_BV(PA21_RXD1_A) | _BV(PA22_TXD1_A))
+#define US_PIO_PINS     US_PIOA_PINS_A
+#endif
+
+#if defined(MCU_AT91R40008)
+#define US_PIO_PINS     (_BV(P22_RXD1) | _BV(P21_TXD1))
+#endif
+
+#define USARTn_BASE     USART1_BASE
+#define US_ID           US1_ID
 #define SIG_UART        sig_UART1
 #define dcb_usart       dcb_usart1
 
