@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.466 2008/07/31 09:42:28 haraldkipp Exp $
+$Id: ChangeLog,v 1.467 2008/08/01 19:47:28 olereinhardt Exp $
+
+2008-08-01  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* tools/nutconf/configitem.cpp: Added cast to char* 
+	  in line 698 to avoid compiling bug on linux
 
 2008-07-31  Harald Kipp  <harald.kipp@egnite.de>
 
