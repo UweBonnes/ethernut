@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/08/06 12:43:41  haraldkipp
+ * First EMAC reset failed on power-up. Initialize EMAC clock and MII mode
+ * earlier.
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.11  2007/09/06 20:07:24  olereinhardt
  * Changed phy detection and added support for micel phy (SAM7-EX256 Board)
  *
@@ -167,7 +172,7 @@
 #endif
 
 
-#if defined (MCU_AT91SAM9260)
+#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 
 /*!
  * The AT91SAM9260-EK board is delivered with RMII by default. Thus.
@@ -425,6 +430,7 @@ static int EmacReset(u_long tmo)
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
 
+#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7X256)
     /* Disable TESTMODE and set PHY address 0 and by disabling pull-ups. */
     outr(EMAC_PIO_PUDR,
 #if !defined(PHY_MODE_RMII)
@@ -455,11 +461,19 @@ static int EmacReset(u_long tmo)
     outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) | 
         _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) |
         _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
+#endif /* MCU_AT91SAM9XE512 */
 
     /* Configure MII port. */
     outr(EMAC_PIO_ASR, PHY_MII_PINS_A);
     outr(EMAC_PIO_BSR, PHY_MII_PINS_B);
     outr(EMAC_PIO_PDR, PHY_MII_PINS_A | PHY_MII_PINS_B);
+
+    /* Enable receive and transmit clocks and set MII mode. */
+#ifdef PHY_MODE_RMII
+    outr(EMAC_USRIO, EMAC_RMII | EMAC_CLKEN);
+#else
+    outr(EMAC_USRIO, EMAC_CLKEN);
+#endif
 
     /* Enable management port. */
     outr(EMAC_NCR, inr(EMAC_NCR) | EMAC_MPE);
@@ -491,19 +505,25 @@ static int EmacReset(u_long tmo)
 #define MII_MICREL_ID_H     0x0022
 #define MII_MICREL_ID_L     0x1610
 
+#define MII_LAN8700_ID_H    0x0007
+#define MII_LAN8700_ID_L    0xc0c0
+
      /* For some unknown reason it seems to be required to read the ID 
 registers first. */
 
      // Check for DM PHY (as used on the ATMEL EK)
-     if (phy_inw(NIC_PHY_ID1) != MII_DM9161_ID_H ||
-        (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_DM9161_ID_L) {
+    if (phy_inw(NIC_PHY_ID1) != MII_DM9161_ID_H ||
+       (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_DM9161_ID_L) {
      // Check for MICREL PHY (as used on the Olimex SAM7-EX256)         
-         if (phy_inw(NIC_PHY_ID1) != MII_MICREL_ID_H ||
+        if (phy_inw(NIC_PHY_ID1) != MII_MICREL_ID_H ||
            (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_MICREL_ID_L) {
-            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-            return -1;
-         }
-     }
+            if (phy_inw(NIC_PHY_ID1) != MII_LAN8700_ID_H ||
+               (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_LAN8700_ID_L) {
+                outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+                return -1;
+            }
+        }
+    }
 
 
 // TODO: END
@@ -548,13 +568,6 @@ registers first. */
 
     /* Disable management port. */
     outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-
-    /* Enable receive and transmit clocks and set MII mode. */
-#ifdef PHY_MODE_RMII
-    outr(EMAC_USRIO, EMAC_RMII | EMAC_CLKEN);
-#else
-    outr(EMAC_USRIO, EMAC_CLKEN);
-#endif
 
     return 0;
 }
