@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.13  2008/08/06 12:51:10  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.12  2008/02/15 16:59:42  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -92,6 +95,8 @@
 #include <arch/arm/at91sam7se.h>
 #elif defined (MCU_AT91SAM9260)
 #include <arch/arm/at91sam9260.h>
+#elif defined(MCU_AT91SAM9XE512)
+#include <arch/arm/at91sam9xe.h>
 #endif
 
 /*! \addtogroup xgNutArchArmAt91 */

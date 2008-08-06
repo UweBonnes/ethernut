@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.28  2008/08/06 12:51:08  haraldkipp
+-- Added support for Ethernut 5 (AT91SAM9XE reference design).
+--
 -- Revision 1.27  2008/07/29 07:31:40  haraldkipp
 -- Re-enabled NUT_CONFIG_AT91EFC for the SAM7SE.
 --
@@ -399,6 +402,32 @@ nutarch_arm =
         name = "nutarch_arm_irqat91sam926x",
         brief = "Interrupt Handler (SAM926X)",
         requires = { "HW_MCU_AT91SAM9260" },
+        provides = { "DEV_IRQ_AT91" },
+        sources =
+        {
+            "arm/dev/ih_at91emac.c",
+            "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91irq0.c",
+            "arm/dev/ih_at91irq1.c",
+            "arm/dev/ih_at91irq2.c",
+            "arm/dev/ih_at91pioa.c",
+            "arm/dev/ih_at91piob.c",
+            "arm/dev/ih_at91pioc.c",
+            "arm/dev/ih_at91spi0.c",
+            "arm/dev/ih_at91spi1.c",
+            "arm/dev/ih_at91ssc.c",
+            "arm/dev/ih_at91swirq.c",
+            "arm/dev/ih_at91tc0.c",
+            "arm/dev/ih_at91tc1.c",
+            "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91uart0.c",
+            "arm/dev/ih_at91uart1.c",
+        },
+    },
+    {
+        name = "nutarch_arm_irqat91sam9xe",
+        brief = "Interrupt Handler (SAM9XE)",
+        requires = { "HW_MCU_AT91SAM9XE" },
         provides = { "DEV_IRQ_AT91" },
         sources =
         {

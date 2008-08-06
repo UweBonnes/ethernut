@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.12  2008/08/06 12:51:00  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.11  2008/02/15 16:58:41  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -205,7 +208,7 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(14) | _BV(15));
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
@@ -246,7 +249,7 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(21) | _BV(22));
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
+#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */

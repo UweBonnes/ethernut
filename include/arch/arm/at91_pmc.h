@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2008/08/06 12:51:10  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.8  2008/02/15 17:04:59  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -124,7 +127,7 @@
 
 /*! \name PLL Registers */
 /*@{*/
-#if defined (MCU_AT91SAM9260)
+#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 #define CKGR_PLLAR_OFF              0x00000028  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLAR  (PMC_BASE + CKGR_PLLAR_OFF) /*!< \brief Clock generator PLL register address. */
 #define CKGR_PLLBR_OFF              0x0000002C  /*!< \brief Clock generator PLL register offset. */
@@ -171,7 +174,7 @@
 #define PMC_CSS                     0x00000003  /*!< \brief Clock selection mask. */
 #define PMC_CSS_SLOW_CLK            0x00000000  /*!< \brief Slow clock selected. */
 #define PMC_CSS_MAIN_CLK            0x00000001  /*!< \brief Main clock selected. */
-#if defined (MCU_AT91SAM9260)
+#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 #define PMC_CSS_PLLA_CLK            0x00000002  /*!< \brief PLL A clock selected. */
 #define PMC_CSS_PLLB_CLK            0x00000003  /*!< \brief PLL B clock selected. */
 #elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
@@ -186,7 +189,7 @@
 #define PMC_PRES_CLK_16             0x00000010  /*!< \brief Selected clock divided by 16. */
 #define PMC_PRES_CLK_32             0x00000014  /*!< \brief Selected clock divided by 32. */
 #define PMC_PRES_CLK_64             0x00000018  /*!< \brief Selected clock divided by 64. */
-#if defined (MCU_AT91SAM9260)
+#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 #define PMC_MDIV                    0x00000300  /*!< \brief Master clock division mask. */
 #define PMC_MDIV_1                  0x00000000  /*!< \brief Processor clock, not divided. */
 #define PMC_MDIV_2                  0x00000100  /*!< \brief Processor clock divided by 2. */
@@ -206,7 +209,7 @@
 #define PMC_IMR     (PMC_BASE + PMC_IMR_OFF)    /*!< \brief Interrupt mask register address. */
 
 #define PMC_MOSCS                   0x00000001  /*!< \brief Main oscillator. */
-#if defined (MCU_AT91SAM9260)
+#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 #define PMC_LOCKA                   0x00000002  /*!< \brief PLL A lock. */
 #define PMC_LOCKB                   0x00000004  /*!< \brief PLL B lock. */
 #elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)

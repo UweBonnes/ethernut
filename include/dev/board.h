@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/08/06 12:51:12  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.11  2008/02/15 17:09:44  haraldkipp
  * Added support for the Elektor Internet Radio.
  *
@@ -111,7 +114,7 @@
 #define DEV_UART1       devUsartAvr1
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) || defined(ELEKTOR_IR1)
+#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) || defined(ELEKTOR_IR1) || defined(MCU_AT91SAM9XE512)
 
 #include <dev/usartat91.h>
 #define DEV_UART0       devUsartAt910
@@ -147,7 +150,7 @@
 #include <dev/ax88796.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
-#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK)
+#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5)
 #include <dev/at91sam7x_emac.h>
 #endif
 

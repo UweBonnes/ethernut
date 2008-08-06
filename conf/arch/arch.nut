@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.32  2008/08/06 12:51:08  haraldkipp
+-- Added support for Ethernut 5 (AT91SAM9XE reference design).
+--
 -- Revision 1.31  2008/04/18 13:24:57  haraldkipp
 -- Added Szemzo Andras' RS485 patch.
 --
@@ -241,6 +244,35 @@ nutarch =
                               "one USB Device Port, and a USB Host controller. "..
                               "It also integrates several standard peripherals, "..
                               "such as the USART, SPI, TWI, Timer Counters, Synchronous "..
+                              "Serial Controller, ADC and MultiMedia Card Interface.\n\n",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM9260",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_UART_AT91",
+                    "HW_EMAC_AT91",
+                    "HW_SPI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_MCI_AT91",
+                    "HW_GPIO",
+                    "HW_PDC_AT91"
+                },
+                makedefs = { "MCU=arm9" }
+            },
+            {
+                macro = "MCU_AT91SAM9XE512",
+                brief = "Atmel AT91SAM9XE512",
+                description = "ARM926EJ-S RISC microcontroller with Ethernet MAC, "..
+                              "one USB Device Port, and a USB Host controller. "..
+                              "It also integrates several standard peripherals, "..
+                              "such as the USART, SPI, TWI, Timer Counters, Synchronous "..
                               "Serial Controller, ADC and MultiMedia Card Interface.\n\n"..
                               "Experimental port.",
                 flavor = "boolean",
@@ -251,7 +283,7 @@ nutarch =
                     "HW_TARGET",
                     "HW_MCU_ARM",
                     "HW_MCU_AT91",
-                    "HW_MCU_AT91SAM9260",
+                    "HW_MCU_AT91SAM9XE",
                     "HW_TIMER_AT91",
                     "HW_PLL_AT91",
                     "HW_UART_AT91",

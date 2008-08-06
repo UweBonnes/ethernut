@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2008/08/06 12:51:09  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.19  2008/02/15 17:00:24  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -101,7 +104,7 @@
  */
 
 #include <cfg/arch.h>
-#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
 #include <arch/arm/at91.h>
 #elif defined (MCU_GBA)
 #include <arch/arm/gba.h>

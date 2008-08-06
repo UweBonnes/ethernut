@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2008/08/06 12:51:11  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.15  2008/02/15 17:00:08  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -226,7 +229,7 @@ extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (vo
 extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
 extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
 
-#elif defined(MCU_AT91SAM9260)
+#elif defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 
 extern IRQ_HANDLER sig_FIQ;
 extern IRQ_HANDLER sig_UART0;

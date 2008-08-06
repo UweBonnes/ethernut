@@ -1,4 +1,23 @@
-$Id: ChangeLog,v 1.467 2008/08/01 19:47:28 olereinhardt Exp $
+$Id: ChangeLog,v 1.468 2008/08/06 12:51:00 haraldkipp Exp $
+
+2008-08-06  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_emac.c: First EMAC reset failed on power-up.
+	Initialize EMAC clock and MII mode earlier. 
+
+	* arch/arm/dev/at91_emac.c, arch/arm/dev/debug_at91.c,
+	arch/arm/dev/hd44780_at91.c, arch/arm/dev/ostimer_at91.c,
+	arch/arm/dev/spimmc_at91.c, arch/arm/dev/usart0at91.c,
+	arch/arm/dev/usart1at91.c, arch/arm/os/nutinit.c,
+	conf/arch/arch.nut, conf/arch/arm.nut, conf/repository.nut,
+	conf/tools.nut, dev/at45db.c, include/arch/arm/at91.h,
+	include/arch/arm/at91_pmc.h, include/arch/arm/irqreg.h,
+	include/arch/arm/timer.h, include/arch/arm.h, include/dev/board.h,
+	include/dev/debug.h, arch/arm/init/crtat91sam9xe512_ram.S,
+	arch/arm/ldscripts/at91sam9xe512_iram.ld, conf/ethernut50c.conf,
+	include/arch/arm/at91sam9xe.h: Added support for Ethernut 5 
+	(AT91SAM9XE reference design).
+
 
 2008-08-01  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* tools/nutconf/configitem.cpp: Added cast to char* 

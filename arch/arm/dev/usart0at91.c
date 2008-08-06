@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/06 12:51:01  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.7  2008/07/31 09:43:24  haraldkipp
  * Initializing peripheral control registers in a more general way.
  * Fixes bug #2032960.
@@ -171,7 +174,7 @@ NUTDEVICE devUsartAt910 = {
 
 /*@}*/
 
-#if defined(MCU_AT91SAM9260)
+#if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 #define US_PIOB_PINS_A  (_BV(PB4_TXD0_A) | _BV(PB5_RXD0_A))
 #define US_PIOB_PINS    US_PIOB_PINS_A
 #endif

@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/06 12:51:09  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.4  2008/02/15 17:10:43  haraldkipp
  * At45dbPageErase selected the wrong bank. Fixed. Parameter pgn (page number)
  * of At45dbPageWrite() changed from unsigned int to unsigned long.
@@ -354,7 +357,7 @@ int At45dbInit(u_int spibas, u_int spipcs)
         return -1;
     }
 
-#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260)
+#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
     At91SpiInit(spibas);
     At91SpiReset(spibas);
     At91SpiInitChipSelects(spibas, _BV(spipcs));

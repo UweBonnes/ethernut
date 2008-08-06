@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2008/08/06 12:51:01  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.19  2008/07/08 08:25:04  haraldkipp
  * NutDelay is no more architecture specific.
  * Number of loops per millisecond is configurable or will be automatically
@@ -179,7 +182,7 @@ void NutRegisterTimer(void (*handler) (void *))
 
     int dummy;
 
-#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512)
+#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable TC0 clock. */
     outr(PMC_PCER, _BV(TC0_ID));
 #endif
@@ -322,7 +325,7 @@ u_long At91GetMasterClock(void)
 {
     u_long rc = At91GetProcessorClock();
 
-#if defined(MCU_AT91SAM9260)
+#if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
     switch(inr(PMC_MCKR) & PMC_MDIV) {
     case PMC_MDIV_2:
         rc /= 2;

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2008/08/06 12:51:12  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.13  2008/02/15 17:00:24  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -114,7 +117,7 @@ extern NUTDEVICE devDebug2;
 #ifdef MCU_AT91R40008
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
-#elif defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512)
+#elif defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
 extern NUTDEVICE devDebug;
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;

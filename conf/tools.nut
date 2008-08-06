@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.25  2008/08/06 12:51:07  haraldkipp
+-- Added support for Ethernut 5 (AT91SAM9XE reference design).
+--
 -- Revision 1.24  2008/07/14 13:04:28  haraldkipp
 -- New Ethernut 3 link option with code in RAM and constant data in ROM.
 --
@@ -194,6 +197,7 @@ nuttools =
                               "at91sam7se512_rom\tAT91SAM7SE512, code running in FLASH\n"..
                               "at91sam7se512_ram\tAT91SAM7SE512, code running in RAM (debugging)\n"..
                               "at91sam9260_ram\t\tAT91SAM9260, code running in external RAM\n"..
+                              "at91sam9xe512_ram\t\tAT91SAM9XE512, code running in external RAM\n"..
                               "s3c4510b-ram\t\tSamsung's S3C4510B, code in RAM (unsupported)\n"..
                               "eb40a_ram\t\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
                               "gba_xport2\t\tNintendo's Gameboy Advance\n"..

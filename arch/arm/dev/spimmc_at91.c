@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/06 12:51:01  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.4  2008/02/15 16:59:02  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -74,7 +77,7 @@
  */
 /*@{*/
 
-#if defined(MCU_AT91SAM9260)
+#if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 
 #ifndef MMC_CS_BIT
 #define MMC_CS_BIT      PA3_SPI0_NPCS0_A

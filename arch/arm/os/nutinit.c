@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2008/08/06 12:51:05  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.15  2008/02/15 16:59:27  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -218,7 +221,7 @@ void NutInit(void)
 {
 #if defined(OLIMEX_LPCE2294)
     InitHW();
-#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7SE512)
+#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     McuInit();
 #endif
 #if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/06 12:51:00  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
+ *
  * Revision 1.9  2008/02/15 16:58:41  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -132,7 +135,7 @@
 #if !defined(LCD_PIO_ID)
 #if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
 #define LCD_PIO_ID  PIOA_ID
-#elif defined(MCU_AT91SAM9260)
+#elif defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 #define LCD_PIO_ID  PIOB_ID
 #else
 #define LCD_PIO_ID  PIO_ID
