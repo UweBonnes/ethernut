@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/09 17:35:32  haraldkipp
+ * Simplified NETBUF allocation and release.
+ *
  * Revision 1.4  2008/04/18 13:31:59  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -128,9 +131,7 @@
 #include <sys/heap.h>
 #include <dev/netbuf.h>
 
-#ifdef NUTDEBUG
-#include <sys/osdebug.h>
-#endif
+#include <sys/nutdebug.h>
 
 /*!
  * \addtogroup xgnetbuf
@@ -139,19 +140,12 @@
 
 static int NutNetBufAllocData(NBDATA * nbd, int size)
 {
-    if ((nbd->vp = NutHeapAlloc(size)) == 0) {
-        nbd->sz = 0;
-        return -1;
+    nbd->vp = NutHeapAlloc(size);
+    if (nbd->vp) {
+        nbd->sz = size;
+        return 0;
     }
-    nbd->sz = size;
-    return 0;
-}
-
-static void NutNetBufFreeData(NBDATA * nbd)
-{
-    NutHeapFree(nbd->vp);
-    nbd->vp = 0;
-    nbd->sz = 0;
+    return -1;
 }
 
 /*!
@@ -175,87 +169,67 @@ static void NutNetBufFreeData(NBDATA * nbd)
  */
 NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, int size)
 {
-    if (nb == 0) {
+    NBDATA * nbd;
+
+    NUTASSERT(size > 0);
+    NUTASSERT(type == NBAF_DATALINK || 
+        type == NBAF_NETWORK || 
+        type == NBAF_TRANSPORT || 
+        type == NBAF_APPLICATION);
+
+    /* Allocate a new buffer, if the caller don't provide one. */
+    if (nb == NULL) {
         nb = NutHeapAllocClear(sizeof(NETBUF));
     }
-
-    if (nb && type) {
-        if (size) {
-            if (type & NBAF_DATALINK) {
-                if (nb->nb_flags & NBAF_DATALINK) {
-                    if (nb->nb_dl.sz < size) {
-                        NutNetBufFreeData(&nb->nb_dl);
-                        if (NutNetBufAllocData(&nb->nb_dl, size)) {
-                            NutNetBufFree(nb);
-                            return 0;
-                        }
-                    } else
-                        nb->nb_dl.sz = size;
-                } else if (NutNetBufAllocData(&nb->nb_dl, size)) {
-                    NutNetBufFree(nb);
-                    return 0;
-                }
+    /* Make sure, that the allocation above was successful. */
+    if (nb) {
+        /* Determine the data type. */
+        switch(type) {
+        case NBAF_DATALINK:
+            nbd = &nb->nb_dl;
+            break;
+        case NBAF_NETWORK:
+            nbd = &nb->nb_nw;
+            break;
+        case NBAF_TRANSPORT:
+            nbd = &nb->nb_tp;
+            break;
+        default:
+            nbd = &nb->nb_ap;
+            break;
+        }
+        /* Check previously allocated buffer. */
+        if (nb->nb_flags & type) {
+            if (nbd->sz < size) {
+                /* Existing buffer is too small. */
+                NutHeapFree(nbd->vp);
+                nbd->sz = 0;
+            } else {
+                /* 
+                 * Reduce the size. This is actually a bad idea, because
+                 * we may waste too much memory. One option would be to
+                 * use the new NutHeapRealloc, but not sure if it will
+                 * work for 32-bit CPUs after some crashes after its
+                 * introduction. Further, I'm not fully sure, if our
+                 * network routines actually re-use network buffers.
+                 */
+                nbd->sz = size;
             }
-
-            if (type & NBAF_NETWORK) {
-                if (nb->nb_flags & NBAF_NETWORK) {
-                    if (nb->nb_nw.sz < size) {
-                        NutNetBufFreeData(&nb->nb_nw);
-                        if (NutNetBufAllocData(&nb->nb_nw, size)) {
-                            NutNetBufFree(nb);
-                            return 0;
-                        }
-                    } else
-                        nb->nb_nw.sz = size;
-                } else if (NutNetBufAllocData(&nb->nb_nw, size)) {
-                    NutNetBufFree(nb);
-                    return 0;
-                }
-            }
-
-            if (type & NBAF_TRANSPORT) {
-                if (nb->nb_flags & NBAF_TRANSPORT) {
-                    if (nb->nb_tp.sz < size) {
-                        NutNetBufFreeData(&nb->nb_tp);
-                        if (NutNetBufAllocData(&nb->nb_tp, size)) {
-                            NutNetBufFree(nb);
-                            return 0;
-                        }
-                    } else
-                        nb->nb_tp.sz = size;
-                } else if (NutNetBufAllocData(&nb->nb_tp, size)) {
-                    NutNetBufFree(nb);
-                    return 0;
-                }
-            }
-
-            if (type & NBAF_APPLICATION) {
-                if (nb->nb_flags & NBAF_APPLICATION) {
-                    if (nb->nb_ap.sz < size) {
-                        NutNetBufFreeData(&nb->nb_ap);
-                        if (NutNetBufAllocData(&nb->nb_ap, size)) {
-                            NutNetBufFree(nb);
-                            return 0;
-                        }
-                    } else
-                        nb->nb_ap.sz = size;
-                } else if (NutNetBufAllocData(&nb->nb_ap, size)) {
-                    NutNetBufFree(nb);
-                    return 0;
-                }
-            }
-            nb->nb_flags |= type;
         } else {
-            type &= nb->nb_flags;
-            if (type & NBAF_DATALINK)
-                NutNetBufFreeData(&nb->nb_dl);
-            if (type & NBAF_NETWORK)
-                NutNetBufFreeData(&nb->nb_nw);
-            if (type & NBAF_TRANSPORT)
-                NutNetBufFreeData(&nb->nb_tp);
-            if (type & NBAF_APPLICATION)
-                NutNetBufFreeData(&nb->nb_ap);
-            nb->nb_flags &= ~type;
+            /* Buffer was not allocated from heap. */
+            nbd->sz = 0;
+        }
+        /* If the size is zero at this point, 
+           we need to allocate a new buffer. */
+        if (nbd->sz == 0) {
+            if (NutNetBufAllocData(nbd, size)) {
+                /* Out of memory, release the complete net buffer. */
+                NutNetBufFree(nb);
+                nb = NULL;
+            } else {
+                /* Success, mark the buffer allocated. */
+                nb->nb_flags |= type;
+            }
         }
     }
     return nb;
@@ -273,44 +247,40 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, int size)
  */
 NETBUF *NutNetBufClone(NETBUF * nb)
 {
-    NETBUF *clone;
+    NETBUF *cb = NutHeapAllocClear(sizeof(NETBUF));
+    
+    NUTASSERT(nb != NULL);
 
-    if ((clone = NutHeapAllocClear(sizeof(NETBUF))) == 0)
-        return 0;
+    if (cb) {
+        register int e = 0;
+        register int s;
 
-    if (nb->nb_dl.sz) {
-        if (NutNetBufAllocData(&clone->nb_dl, nb->nb_dl.sz)) {
-            NutNetBufFree(clone);
-            return 0;
+        s = nb->nb_dl.sz;
+        if (s && (e = NutNetBufAllocData(&cb->nb_dl, s)) == 0) {
+            memcpy(cb->nb_dl.vp, nb->nb_dl.vp, s);
+            cb->nb_flags |= NBAF_DATALINK;
         }
-        memcpy(clone->nb_dl.vp, nb->nb_dl.vp, nb->nb_dl.sz);
-        clone->nb_flags |= NBAF_DATALINK;
-    }
-    if (nb->nb_nw.sz) {
-        if (NutNetBufAllocData(&clone->nb_nw, nb->nb_nw.sz)) {
-            NutNetBufFree(clone);
-            return 0;
+        s = nb->nb_nw.sz;
+        if (s && e == 0 && (e = NutNetBufAllocData(&cb->nb_nw, s)) == 0) {
+            memcpy(cb->nb_nw.vp, nb->nb_nw.vp, s);
+            cb->nb_flags |= NBAF_NETWORK;
         }
-        memcpy(clone->nb_nw.vp, nb->nb_nw.vp, nb->nb_nw.sz);
-        clone->nb_flags |= NBAF_NETWORK;
-    }
-    if (nb->nb_tp.sz) {
-        if (NutNetBufAllocData(&clone->nb_tp, nb->nb_tp.sz)) {
-            NutNetBufFree(clone);
-            return 0;
+        s = nb->nb_tp.sz;
+        if (s && e == 0 && (e = NutNetBufAllocData(&cb->nb_tp, s)) == 0) {
+            memcpy(cb->nb_tp.vp, nb->nb_tp.vp, s);
+            cb->nb_flags |= NBAF_TRANSPORT;
         }
-        memcpy(clone->nb_tp.vp, nb->nb_tp.vp, nb->nb_tp.sz);
-        clone->nb_flags |= NBAF_TRANSPORT;
-    }
-    if (nb->nb_ap.sz) {
-        if (NutNetBufAllocData(&clone->nb_ap, nb->nb_ap.sz)) {
-            NutNetBufFree(clone);
-            return 0;
+        s = nb->nb_ap.sz;
+        if (s && e == 0 && (e = NutNetBufAllocData(&cb->nb_ap, s)) == 0) {
+            memcpy(cb->nb_ap.vp, nb->nb_ap.vp, s);
+            cb->nb_flags |= NBAF_APPLICATION;
         }
-        memcpy(clone->nb_ap.vp, nb->nb_ap.vp, nb->nb_ap.sz);
-        clone->nb_flags |= NBAF_APPLICATION;
+        if (e) {
+            NutNetBufFree(cb);
+            cb = NULL;
+        }
     }
-    return clone;
+    return cb;
 }
 
 /*!
@@ -322,19 +292,24 @@ NETBUF *NutNetBufClone(NETBUF * nb)
  * \param nb Points to an existing network buffer
  *           structure, previously allocated by
  *           NutNetBufAlloc().
- *
- * \return 0 if successfull or -1 if the structure
- *         contains previously released memory space.
  */
-int NutNetBufFree(NETBUF * nb)
+void NutNetBufFree(NETBUF * nb)
 {
-    if(nb) {
-        NutNetBufAlloc(nb, nb->nb_flags, 0);
-        if (NutHeapFree(nb)) {
-            return -1;
-        }
+    NUTASSERT(nb);
+
+    if (nb->nb_flags & NBAF_DATALINK) {
+        NutHeapFree(nb->nb_dl.vp);
     }
-    return 0;
+    if (nb->nb_flags & NBAF_NETWORK) {
+        NutHeapFree(nb->nb_nw.vp);
+    }
+    if (nb->nb_flags & NBAF_TRANSPORT) {
+        NutHeapFree(nb->nb_tp.vp);
+    }
+    if (nb->nb_flags & NBAF_APPLICATION) {
+        NutHeapFree(nb->nb_ap.vp);
+    }
+    NutHeapFree(nb);
 }
 
 /*@}*/

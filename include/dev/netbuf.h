@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/09 17:35:32  haraldkipp
+ * Simplified NETBUF allocation and release.
+ *
  * Revision 1.2  2008/04/18 13:31:59  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -158,7 +161,7 @@ __BEGIN_DECLS
 
 extern NETBUF *NutNetBufAlloc(NETBUF *nb, u_char type, int size);
 extern NETBUF *NutNetBufClone(NETBUF *nb);
-extern int NutNetBufFree(NETBUF *nb);
+extern void NutNetBufFree(NETBUF *nb);
 
 __END_DECLS
 
