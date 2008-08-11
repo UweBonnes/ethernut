@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.10  2006/08/01 07:43:48  haraldkipp
  * PNUT file system failed after some modifications done previously for the
  * PHAT file system. During directory open, the NUTFILE structure must be
@@ -185,8 +188,8 @@ typedef short PNUT_BLKNUM;
  * \note The node structure must fit into a block.
  */
 typedef struct {
-    u_char node_type;           /*!< Type of this node, 0=file, 1=dir */
-    u_char node_refs;           /*!< Reference counter: Number of active open calls. */
+    uint8_t node_type;           /*!< Type of this node, 0=file, 1=dir */
+    uint8_t node_refs;           /*!< Reference counter: Number of active open calls. */
     /*!
      * \brief Number of links.
      *
@@ -197,8 +200,8 @@ typedef struct {
      * For directory nodes the number represents the number
      * of subdirectories plus 2.
      */
-    u_short node_links;
-    u_long node_size;           /*!< Total size of the data area. */
+    uint16_t node_links;
+    uint32_t node_size;           /*!< Total size of the data area. */
     time_t node_mtime;          /*!< Time of last modification. */
     PNUT_BLKNUM node_blocks[PNUT_BLOCKS_PER_NODE];      /*!< Allocated data blocks. */
 } PNUT_NODE;
@@ -209,7 +212,7 @@ typedef struct {
  * This is a calculated value and depends on the definition of the
  * block size and the size of a directory entry.
  */
-#define PNUT_MAX_NAMELEN    (PNUT_DIRENT_SIZE - sizeof(PNUT_BLKNUM) - sizeof(u_char) - 1)
+#define PNUT_MAX_NAMELEN    (PNUT_DIRENT_SIZE - sizeof(PNUT_BLKNUM) - sizeof(uint8_t) - 1)
 
 /*!
  * \brief Directory entry structure.
@@ -231,7 +234,7 @@ typedef struct {
      *
      * Set to one if this entry is in use.
      */
-    u_char dir_inuse;
+    uint8_t dir_inuse;
     /*!
      * \brief Name of this entry.
      *
@@ -280,7 +283,7 @@ typedef struct _PNUTFILE PNUTFILE;
  */
 struct _PNUTFILE {
     PNUT_BLKNUM f_node;         /* Node of the file or directory. */
-    u_long f_pos;               /* Current file pointer position. */
+    uint32_t f_pos;               /* Current file pointer position. */
     u_int f_flag;               /* File mode. */
 };
 
@@ -418,7 +421,7 @@ static void PnutBlockRelease(PNUT_BLKNUM blk)
  *
  * \return Block index of this node or -1 if there are no more blocks.
  */
-static PNUT_BLKNUM PnutNodeAlloc(u_char type)
+static PNUT_BLKNUM PnutNodeAlloc(uint8_t type)
 {
     PNUT_BLKNUM node = PnutBlockAlloc();
 
@@ -480,7 +483,7 @@ static void PnutNodeRelease(PNUT_BLKNUM node)
  *
  * \return 0 on success, otherwise returns an error code.
  */
-static int PnutNodeGetDataPtr(PNUT_BLKNUM node, u_long pos, void **buffer, size_t * size, int create)
+static int PnutNodeGetDataPtr(PNUT_BLKNUM node, uint32_t pos, void **buffer, size_t * size, int create)
 {
     int blkidx;                 /* Number of full blocks */
     int rc = EINVAL;
@@ -526,7 +529,7 @@ static int PnutNodeGetDataPtr(PNUT_BLKNUM node, u_long pos, void **buffer, size_
 static int PnutDirIsEmpty(PNUT_BLKNUM node)
 {
     int rc = 1;
-    u_long pos;
+    uint32_t pos;
     size_t size;
     PNUT_DIRENTRY *entry;
 
@@ -566,7 +569,7 @@ static int PnutDirIsEmpty(PNUT_BLKNUM node)
 static int PnutDirFindEntry(PNUT_BLKNUM node, CONST char *path, size_t len, PNUT_DIRENTRY ** entry)
 {
     int rc = ENOENT;
-    u_long pos;
+    uint32_t pos;
     size_t size;
 
     /* Loop through the data blocks of this directory node. */
@@ -747,7 +750,7 @@ static int PnutDirClose(DIR * dir)
 static int PnutDirRead(DIR * dir)
 {
     int rc = -1;
-    u_long pos;
+    uint32_t pos;
     PNUT_DIRENTRY *entry;
     size_t size;
     PNUTFILE *fp = dir->dd_fd->nf_fcb;
@@ -768,7 +771,7 @@ static int PnutDirRead(DIR * dir)
         if (size >= PNUT_DIRENT_SIZE && entry->dir_inuse) {
             memset(ent, 0, sizeof(struct dirent));
             ent->d_fileno = entry->dir_node;
-            ent->d_namlen = (u_char) strlen(entry->dir_name);
+            ent->d_namlen = (uint8_t) strlen(entry->dir_name);
             strcpy(ent->d_name, entry->dir_name);
             break;
         }
@@ -788,7 +791,7 @@ static int PnutDirRead(DIR * dir)
 static int PnutDirAddEntry(PNUT_BLKNUM dnode, CONST char *name, PNUT_BLKNUM enode)
 {
     int rc = 0;
-    u_long pos = 0;
+    uint32_t pos = 0;
     size_t size;
     PNUT_DIRENTRY *entry;
     PNUT_NODE *np;
@@ -1141,7 +1144,7 @@ static int PnutFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
     int ec = 0;
     int rc = 0;
     PNUT_BLKNUM node = fp->f_node;
-    u_char *blkptr;
+    uint8_t *blkptr;
     size_t blksiz;
     CONST char *buf = buffer;
 
@@ -1193,7 +1196,7 @@ static int PnutFileRead(NUTFILE * nfp, void *buffer, int len)
     int ec = 0;
     int rc = 0;
     PNUT_BLKNUM node = fp->f_node;
-    u_char *blkptr;
+    uint8_t *blkptr;
     size_t blksiz;
     char *buf = buffer;
 

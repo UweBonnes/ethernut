@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 07:00:33  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -155,7 +158,7 @@
 
 
 UDPSOCKET *udpSocketList;       /*!< Global linked list of all UDP sockets. */
-static u_short last_local_port = 4096;  /* Unassigned local port. */
+static uint16_t last_local_port = 4096;  /* Unassigned local port. */
 
 /*!
  * \brief Create a UDP socket.
@@ -168,7 +171,7 @@ static u_short last_local_port = 4096;  /* Unassigned local port. */
  *         0 if there is not enough memory left.
  *
  */
-UDPSOCKET *NutUdpCreateSocket(u_short port)
+UDPSOCKET *NutUdpCreateSocket(uint16_t port)
 {
     UDPSOCKET *sock;
 
@@ -206,7 +209,7 @@ UDPSOCKET *NutUdpCreateSocket(u_short port)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data, int len)
+int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int len)
 {
     int rc;
     NETBUF *nb;
@@ -240,7 +243,7 @@ int NutUdpSendTo(UDPSOCKET * sock, u_long addr, u_short port, void *data, int le
  * \note Timeout is limited to the granularity of the system timer.
  */
  /* @@@ 2003-10-24: modified by OS for udp packet queue */
-int NutUdpReceiveFrom(UDPSOCKET * sock, u_long * addr, u_short * port, void *data, int size, u_long timeout)
+int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *data, int size, uint32_t timeout)
 {
     IPHDR *ip;
     UDPHDR *uh;
@@ -325,7 +328,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
  *
  * \return Socket descriptor.
  */
-UDPSOCKET *NutUdpFindSocket(u_short port)
+UDPSOCKET *NutUdpFindSocket(uint16_t port)
 {
     UDPSOCKET *sp;
     UDPSOCKET *sock = 0;
@@ -344,7 +347,7 @@ UDPSOCKET *NutUdpFindSocket(u_short port)
  *
  * The following values can be set:
  *
- * - #SO_RCVBUF   Socket input buffer size (#u_short).
+ * - #SO_RCVBUF   Socket input buffer size (#uint16_t).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutUdpCreateSocket().
@@ -362,8 +365,8 @@ int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optl
     switch (optname) {
 
     case SO_RCVBUF:
-        if (optval != 0 && optlen == sizeof(u_short)) {
-            sock->so_rx_bsz = *((u_short *) optval);
+        if (optval != 0 && optlen == sizeof(uint16_t)) {
+            sock->so_rx_bsz = *((uint16_t *) optval);
             rc = 0;
         }
         break;
@@ -380,7 +383,7 @@ int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optl
  *
  * The following values can be set:
  *
- * - #SO_RCVBUF   Socket input buffer size (#u_short).
+ * - #SO_RCVBUF   Socket input buffer size (#uint16_t).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutUdpCreateSocket().
@@ -399,8 +402,8 @@ int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
     switch (optname) {
 
     case SO_RCVBUF:
-        if (optval != 0 && optlen == sizeof(u_short)) {
-            *((u_short *) optval) = sock->so_rx_bsz;
+        if (optval != 0 && optlen == sizeof(uint16_t)) {
+            *((uint16_t *) optval) = sock->so_rx_bsz;
             rc = 0;
         }
         break;

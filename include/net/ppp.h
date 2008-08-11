@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:12  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 07:00:21  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:12  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:45:45  harald
  * Cleanup
@@ -62,7 +65,7 @@
 __BEGIN_DECLS
 
 extern void NutPppInput(NUTDEVICE *dev, NETBUF *nb);
-extern int NutPppOutput(NUTDEVICE *dev, u_short type, u_char *ha, NETBUF *nb);
+extern int NutPppOutput(NUTDEVICE *dev, uint16_t type, uint8_t *ha, NETBUF *nb);
 
 __END_DECLS
 

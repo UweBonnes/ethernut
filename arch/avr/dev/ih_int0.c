@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:15  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -108,8 +111,8 @@ IRQ_HANDLER sig_INTERRUPT0 = {
 static int AvrInterrupt0Ctl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(EIMSK, INT0);
+    unsigned int *ival = (unsigned int *) param;
+    int_fast8_t enabled = bit_is_set(EIMSK, INT0);
 
     /* Disable interrupt. */
     cbi(EIMSK, INT0);
@@ -150,7 +153,7 @@ static int AvrInterrupt0Ctl(int cmd, void *param)
     case NUT_IRQCTL_GETMODE:
 #ifdef __AVR_ENHANCED__
         {
-            u_char bval = inb(EICRA) & (_BV(ISC01) | _BV(ISC00));
+            uint8_t bval = inb(EICRA) & (_BV(ISC01) | _BV(ISC00));
             if (bval == 0) {
                 *ival = NUT_IRQMODE_LOWLEVEL;
             }
@@ -189,7 +192,7 @@ static int AvrInterrupt0Ctl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int) sig_INTERRUPT0.ir_count;
+        *ival = (unsigned int) sig_INTERRUPT0.ir_count;
         sig_INTERRUPT0.ir_count = 0;
         break;
 #endif

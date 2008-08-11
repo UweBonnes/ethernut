@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:34  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -69,7 +72,7 @@ struct _NUTMSGTMR {
     void *mt_data;
     HANDLE mt_handle;
     NUTMSGTMR *mt_next;
-    u_char mt_flags;
+    uint8_t mt_flags;
 };
 
 /*!
@@ -93,11 +96,11 @@ NUTMSGTMR *nutMsgFreeTimers;
  *
  * \note que size will be 2^bits
  */
-NUTMSGQ *NutMsgQCreate(u_char bits)
+NUTMSGQ *NutMsgQCreate(uint8_t bits)
 {
 
     NUTMSGQ *que;
-    u_char len = 1 << bits;
+    uint8_t len = 1 << bits;
 
     ASSERT(bits < 7);
     ASSERT(bits > 0);
@@ -126,7 +129,7 @@ NUTMSGQ *NutMsgQCreate(u_char bits)
  * \return 0 if sent to all ques, < 0 if one or more ques were full
  *
  */
-int NutMsgQBroadcast(u_char id, int param, void *data)
+int NutMsgQBroadcast(uint8_t id, int param, void *data)
 {
 
     NUTMSGQ *pCur = nutMsgQue;
@@ -151,7 +154,7 @@ int NutMsgQBroadcast(u_char id, int param, void *data)
  * \return 0 if sent, < 0 if the que is full
  *
  */
-int NutMsgQPost(NUTMSGQ * que, u_char id, int param, void *data)
+int NutMsgQPost(NUTMSGQ * que, uint8_t id, int param, void *data)
 {
     NUTMSG *cur;
     NutEnterCritical();
@@ -191,7 +194,7 @@ int NutMsgQPost(NUTMSGQ * que, u_char id, int param, void *data)
  * \return 0 if sent, < 0 if the que is full
  *
  */
-int NutMsgQSend(NUTMSGQ * que, u_char id, int param, void *data)
+int NutMsgQSend(NUTMSGQ * que, uint8_t id, int param, void *data)
 {
     if (NutMsgQPost(que, id, param, data) == 0) {
         NutThreadYield();
@@ -247,7 +250,7 @@ static void NutMsgQTimerCb(HANDLE hndl, void *arg)
  * \return HANDLE of the new timer
  *
  */
-HANDLE NutMsgQStartTimer(NUTMSGQ * que, u_long ms, int param, void *data, u_char flags)
+HANDLE NutMsgQStartTimer(NUTMSGQ * que, uint32_t ms, int param, void *data, uint8_t flags)
 {
     NUTMSGTMR *timer = nutMsgFreeTimers;
 
@@ -310,7 +313,7 @@ void NutMsgQStopTimer(HANDLE timer)
      */
     NutEnterCritical();
     {
-        u_char pos = que->mq_read;
+        uint8_t pos = que->mq_read;
 
         while (pos != que->mq_write) {
             if (que->mq_que[pos].id == MSG_TIMER && que->mq_que[pos].data == t) {
@@ -339,7 +342,7 @@ void NutMsgQStopTimer(HANDLE timer)
  * \return -1 on timeout, 0 if message retreived
  */
 
-int NutMsgQGetMessage(NUTMSGQ * que, NUTMSG * msg, u_long timeout)
+int NutMsgQGetMessage(NUTMSGQ * que, NUTMSG * msg, uint32_t timeout)
 {
     NutEnterCritical();
 

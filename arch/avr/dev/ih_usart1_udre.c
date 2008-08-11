@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2007/04/12 09:23:15  haraldkipp
  * ATmega2561 uses different interrupt vector names. One day we should
  * switch to the new names used by avr-libc.
@@ -113,7 +116,7 @@ static int AvrUart1TxDataIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(UCSR1B, UDRIE1);
+    int_fast8_t enabled = bit_is_set(UCSR1B, UDRIE1);
 
     /* Disable interrupt. */
     cbi(UCSR1B, UDRIE1);

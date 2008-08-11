@@ -52,6 +52,7 @@
 */
 
 #include <sys/types.h>
+#include <stdint.h>
 #include <sys/atom.h>
 
 /******************************************************************
@@ -110,7 +111,7 @@
 typedef struct _t_traceitem {
     /*! \brief Type of event
     */
-    u_char tag;
+    uint8_t tag;
     /*! \brief Additional information, depending on the type of the event
     */
     u_int  pc;

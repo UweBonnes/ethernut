@@ -63,8 +63,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:11  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:11  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.5  2003/02/04 18:00:42  harald
  * Version 3 released
@@ -75,6 +78,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file net/if_arp.h
@@ -101,15 +105,15 @@ extern "C" {
  * \brief ARP packet header type.
  */
 typedef struct arphdr {
-    u_short ar_hrd;    /*!< \brief Format of hardware address. 
+    uint16_t ar_hrd;    /*!< \brief Format of hardware address. 
                         *   Nut/Net supports ARPHRD_ETHER only. 
                         */
-    u_short ar_pro;    /*!< \brief Format of protocol address.
+    uint16_t ar_pro;    /*!< \brief Format of protocol address.
                         *   Only ETHERTYPE_IP is supported by Nut/Net.
                         */
-    u_char  ar_hln;    /*!< \brief Length of hardware address. */
-    u_char  ar_pln;    /*!< \brief Length of protocol address. */
-    u_short ar_op;     /*!< \brief ARP operation.
+    uint8_t  ar_hln;    /*!< \brief Length of hardware address. */
+    uint8_t  ar_pln;    /*!< \brief Length of protocol address. */
+    uint16_t ar_op;     /*!< \brief ARP operation.
                         *   May be either ARPOP_REQUEST or ARPOP_REPLY.
                         */
 } ARPHDR;

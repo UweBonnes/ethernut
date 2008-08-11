@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 06:59:07  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2008/02/15 17:09:44  haraldkipp
  * Added support for the Elektor Internet Radio.
  *
@@ -346,12 +349,12 @@
  */
 struct _NICINFO {
 #ifdef NUT_PERFMON
-    u_long ni_rx_packets;       /*!< Number of packets received. */
-    u_long ni_tx_packets;       /*!< Number of packets sent. */
-    u_long ni_overruns;         /*!< Number of packet overruns. */
-    u_long ni_rx_frame_errors;  /*!< Number of frame errors. */
-    u_long ni_rx_crc_errors;    /*!< Number of CRC errors. */
-    u_long ni_rx_missed_errors; /*!< Number of missed packets. */
+    uint32_t ni_rx_packets;       /*!< Number of packets received. */
+    uint32_t ni_tx_packets;       /*!< Number of packets sent. */
+    uint32_t ni_overruns;         /*!< Number of packet overruns. */
+    uint32_t ni_rx_frame_errors;  /*!< Number of frame errors. */
+    uint32_t ni_rx_crc_errors;    /*!< Number of CRC errors. */
+    uint32_t ni_rx_missed_errors; /*!< Number of missed packets. */
 #endif
     HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
     HANDLE volatile ni_tx_rdy;  /*!< Transmitter event queue. */
@@ -375,13 +378,13 @@ typedef struct _NICINFO NICINFO;
 /*@{*/
 
 
-static INLINE void nic_outb(u_char reg, u_char val)
+static INLINE void nic_outb(uint8_t reg, uint8_t val)
 {
     outb(NIC_BASE_ADDR, reg);
     outb(NIC_DATA_ADDR, val);
 }
 
-static INLINE u_char nic_inb(u_short reg)
+static INLINE uint8_t nic_inb(uint16_t reg)
 {
     outb(NIC_BASE_ADDR, reg);
     return inb(NIC_DATA_ADDR);
@@ -394,7 +397,7 @@ static INLINE u_char nic_inb(u_short reg)
  *
  * \return Contents of the specified register.
  */
-static u_short phy_inw(u_char reg)
+static uint16_t phy_inw(uint8_t reg)
 {
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
@@ -405,7 +408,7 @@ static u_short phy_inw(u_char reg)
     nic_outb(NIC_EPCR, 0x00);
 
     /* Get data from PHY data register. */
-    return ((u_short) nic_inb(NIC_EPDRH) << 8) | (u_short) nic_inb(NIC_EPDRL);
+    return ((uint16_t) nic_inb(NIC_EPDRH) << 8) | (uint16_t) nic_inb(NIC_EPDRL);
 }
 
 /*!
@@ -416,14 +419,14 @@ static u_short phy_inw(u_char reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-static void phy_outw(u_char reg, u_short val)
+static void phy_outw(uint8_t reg, uint16_t val)
 {
     /* Select PHY register */
     nic_outb(NIC_EPAR, 0x40 | reg);
 
     /* Store value in PHY data register. */
-    nic_outb(NIC_EPDRL, (u_char) val);
-    nic_outb(NIC_EPDRH, (u_char) (val >> 8));
+    nic_outb(NIC_EPDRL, (uint8_t) val);
+    nic_outb(NIC_EPDRH, (uint8_t) (val >> 8));
 
     /* PHY write command. */
     nic_outb(NIC_EPCR, 0x0A);
@@ -473,7 +476,7 @@ static int NicReset(void)
  */
 static void NicInterrupt(void *arg)
 {
-    u_char isr;
+    uint8_t isr;
     NICINFO *ni = (NICINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     /* Read interrupt status and disable interrupts. */
@@ -490,8 +493,8 @@ static void NicInterrupt(void *arg)
         if (ni->ni_tx_queued) {
             if (ni->ni_tx_quelen) {
                 /* Initiate transfer of a queued packet. */
-                nic_outb(NIC_TXPL, (u_char) ni->ni_tx_quelen);
-                nic_outb(NIC_TXPL + 1, (u_char) (ni->ni_tx_quelen >> 8));
+                nic_outb(NIC_TXPL, (uint8_t) ni->ni_tx_quelen);
+                nic_outb(NIC_TXPL + 1, (uint8_t) (ni->ni_tx_quelen >> 8));
                 ni->ni_tx_quelen = 0;
                 nic_outb(NIC_TCR, NIC_TCR_TXREQ);
             }
@@ -520,7 +523,7 @@ static void NicInterrupt(void *arg)
  *
  * NIC interrupts must be disabled when calling this function.
  */
-static void NicWrite8(u_char * buf, u_short len)
+static void NicWrite8(uint8_t * buf, uint16_t len)
 {
     while (len--) {
         outb(NIC_DATA_ADDR, *buf);
@@ -533,9 +536,9 @@ static void NicWrite8(u_char * buf, u_short len)
  *
  * NIC interrupts must be disabled when calling this function.
  */
-static void NicWrite16(u_char * buf, u_short len)
+static void NicWrite16(uint8_t * buf, uint16_t len)
 {
-    u_short *wp = (u_short *) buf;
+    uint16_t *wp = (uint16_t *) buf;
 
     len = (len + 1) / 2;
     while (len--) {
@@ -549,7 +552,7 @@ static void NicWrite16(u_char * buf, u_short len)
  *
  * NIC interrupts must be disabled when calling this function.
  */
-static void NicRead8(u_char * buf, u_short len)
+static void NicRead8(uint8_t * buf, uint16_t len)
 {
     while (len--) {
         *buf++ = inb(NIC_DATA_ADDR);
@@ -561,9 +564,9 @@ static void NicRead8(u_char * buf, u_short len)
  *
  * NIC interrupts must be disabled when calling this function.
  */
-static void NicRead16(u_char * buf, u_short len)
+static void NicRead16(uint8_t * buf, uint16_t len)
 {
-    u_short *wp = (u_short *) buf;
+    uint16_t *wp = (uint16_t *) buf;
 
     len = (len + 1) / 2;
     while (len--) {
@@ -582,8 +585,8 @@ static void NicRead16(u_char * buf, u_short len)
 static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
 {
     int rc = -1;
-    u_short fsw;
-    u_short fbc;
+    uint16_t fsw;
+    uint16_t fbc;
 
     *nbp = NULL;
 
@@ -609,9 +612,9 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
             _NOP(); _NOP(); _NOP(); _NOP();
             fbc = inw(NIC_DATA_ADDR);
         } else {
-            fsw = inb(NIC_DATA_ADDR) + ((u_short) inb(NIC_DATA_ADDR) << 8);
+            fsw = inb(NIC_DATA_ADDR) + ((uint16_t) inb(NIC_DATA_ADDR) << 8);
             _NOP(); _NOP(); _NOP(); _NOP();
-            fbc = inb(NIC_DATA_ADDR) + ((u_short) inb(NIC_DATA_ADDR) << 8);
+            fbc = inb(NIC_DATA_ADDR) + ((uint16_t) inb(NIC_DATA_ADDR) << 8);
         }
 
         /*
@@ -701,7 +704,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
 static int NicPutPacket(NICINFO * ni, NETBUF * nb)
 {
     int rc = -1;
-    u_short sz;
+    uint16_t sz;
 
     /*
      * Calculate the number of bytes to be send. Do not send packets 
@@ -740,8 +743,8 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
 
         /* If no packet is queued, start the transmission. */
         if (ni->ni_tx_queued == 0) {
-            nic_outb(NIC_TXPL, (u_char) sz);
-            nic_outb(NIC_TXPL + 1, (u_char) (sz >> 8));
+            nic_outb(NIC_TXPL, (uint8_t) sz);
+            nic_outb(NIC_TXPL + 1, (uint8_t) (sz >> 8));
             nic_outb(NIC_TCR, NIC_TCR_TXREQ);
         }
         /* ...otherwise mark this packet queued. */
@@ -773,7 +776,7 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST u_char * mac)
+static int NicStart(CONST uint8_t * mac)
 {
     int i;
     int link_wait = 20;
@@ -941,7 +944,7 @@ THREAD(NicRxLanc, arg)
  */
 int DmOutput(NUTDEVICE * dev, NETBUF * nb)
 {
-    static u_long mx_wait = 5000;
+    static uint32_t mx_wait = 5000;
     int rc = -1;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
@@ -1001,7 +1004,7 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
  */
 int DmInit(NUTDEVICE * dev)
 {
-    u_long id;
+    uint32_t id;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
 #if defined(ELEKTOR_IR1)
@@ -1022,10 +1025,10 @@ int DmInit(NUTDEVICE * dev)
 #endif
 
     /* Probe chip by verifying the identifier registers. */
-    id = (u_long) nic_inb(NIC_VID);
-    id |= (u_long) nic_inb(NIC_VID + 1) << 8;
-    id |= (u_long) nic_inb(NIC_PID) << 16;
-    id |= (u_long) nic_inb(NIC_PID + 1) << 24;
+    id = (uint32_t) nic_inb(NIC_VID);
+    id |= (uint32_t) nic_inb(NIC_VID + 1) << 8;
+    id |= (uint32_t) nic_inb(NIC_PID) << 16;
+    id |= (uint32_t) nic_inb(NIC_PID + 1) << 24;
     if (id != 0x90000A46) {
         return -1;
     }

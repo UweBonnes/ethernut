@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2007/08/17 11:16:29  haraldkipp
  * Flush timeout fixed. Thanks to Przemek.
  *
@@ -66,16 +69,16 @@
  *
  * 2. Code Trnasmit:
  * #define CODE_LENGTH 4
- * const u_short freqCode[CODE_LENGTH] PROGMEM = {100, 200, 200, 200};
- * u_short ocrCode[CODE_LENGTH];
- * u_long speed;
+ * const uint16_t freqCode[CODE_LENGTH] PROGMEM = {100, 200, 200, 200};
+ * uint16_t ocrCode[CODE_LENGTH];
+ * uint32_t speed;
  * 
- * speed = (u_long)IrblastFreq2Ocr(38);
+ * speed = (uint32_t)IrblastFreq2Ocr(38);
  * _ioctl(_fileno(irblast_hdl), IRBLAST_SETFREQ, &speed);
  * memcpy_P(ocrCode, freqCode, CODE_LENGTH<<1);
  * if(PwmPeriod2Ocr((u_char)38, CODE_LENGTH, ocrCode) == CODE_LENGTH)
  * {
- *    fwrite((u_short *)ocrCode, sizeof(u_short), CODE_LENGTH, irblast_hdl);
+ *    fwrite((uint16_t *)ocrCode, sizeof(uint16_t), CODE_LENGTH, irblast_hdl);
  *    fflush(irblast_hdl);
  * }
  *
@@ -89,13 +92,13 @@ struct _IRBLASTDCB {
     HANDLE dcb_tx_rdy;
 
     /* Next output index */
-    volatile u_char if_tx_idx;
+    volatile uint8_t if_tx_idx;
     /* Next write index */
-    u_char if_wr_idx;
+    uint8_t if_wr_idx;
     /* Set if transmitter running */
-    volatile u_char if_tx_act;
+    volatile uint8_t if_tx_act;
     /* Output buffer */
-    u_short if_tx_buf[256];     // 256*2 = 512 bytes...   
+    uint16_t if_tx_buf[256];     // 256*2 = 512 bytes...   
 };
 
 static IRBLASTDCB dcb_pwm0;
@@ -109,15 +112,15 @@ static NUTFILE file;
  *
  * \return OCR form of the frequency used by the driver or 0.
  */
-u_char IrblastFreq2Ocr(u_char freqKHz)
+uint8_t IrblastFreq2Ocr(uint8_t freqKHz)
 {
-    u_long div;
-    u_char ocr = 0;
+    uint32_t div;
+    uint8_t ocr = 0;
 
     if ((freqKHz >= 30) && (freqKHz <= 50)) {
         /* prescaler = f/1 */
-        div = 2000UL * (u_long) freqKHz;
-        ocr = (u_char) ((NutGetCpuClock() / div) & 0x000000ff) - 1;
+        div = 2000UL * (uint32_t) freqKHz;
+        ocr = (uint8_t) ((NutGetCpuClock() / div) & 0x000000ff) - 1;
     }
     return ocr;
 }
@@ -134,9 +137,9 @@ u_char IrblastFreq2Ocr(u_char freqKHz)
  *
  * \return number of entries properly converted or -1 on error.
  */
-int IrblastPeriod2Ocr(u_char freqKHz, int entries, u_short * pCode)
+int IrblastPeriod2Ocr(uint8_t freqKHz, int entries, uint16_t * pCode)
 {
-    u_long div, sClk, freq;
+    uint32_t div, sClk, freq;
     int i = -1;
 
     if ((freqKHz < 30) && (freqKHz > 50)) {
@@ -145,13 +148,13 @@ int IrblastPeriod2Ocr(u_char freqKHz, int entries, u_short * pCode)
 
     /* prescaler = f/8 */
     sClk = NutGetCpuClock() / 10UL;
-    freq = 800UL * (u_long) (freqKHz);
+    freq = 800UL * (uint32_t) (freqKHz);
 
     for (i = 0; i < entries; ++i) {
         if ((pCode[i] == 0) || (pCode[i] > 1000)) {
             return -1;
         }
-        div = sClk * (u_long) pCode[i];
+        div = sClk * (uint32_t) pCode[i];
         div = div / freq;
         pCode[i] = (u_int) (div & 0x0000ffff) - 1;
     }
@@ -292,8 +295,8 @@ static int IrblastPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 {
     int rc = 0;
     IRBLASTDCB *dcb = dev->dev_dcb;
-    CONST u_short *cp;
-    u_short ch;
+    CONST uint16_t *cp;
+    uint16_t ch;
 
     /* Call without data pointer starts transmission */
     if (buffer == 0) {
@@ -301,14 +304,14 @@ static int IrblastPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     }
 
     /* Put data in transmit buffer,
-       for us buffer points to table of 'u_short' type data */
+       for us buffer points to table of 'uint16_t' type data */
     cp = buffer;
 
     /* len is length in bytes, so it must be divided by 2 */
     len >>= 1;
 
     for (rc = 0; rc < len;) {
-        if ((u_char) (dcb->if_wr_idx + 1) == dcb->if_tx_idx) {
+        if ((uint8_t) (dcb->if_wr_idx + 1) == dcb->if_tx_idx) {
             IrblastFlush(dev);
         }
         ch = pflg ? PRG_RDB(cp) : *cp;
@@ -362,7 +365,7 @@ static int IrblastWrite_P(NUTFILE * fp, PGM_P buffer, int len)
  */
 static int IrblastIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
-    u_char *usp = (u_char *) conf;
+    uint8_t *usp = (uint8_t *) conf;
 
     switch (req) {
     case IRBLAST_SETFREQ:

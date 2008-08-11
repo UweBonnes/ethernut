@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/01/26 15:34:49  going_nuts
  * adapted to new interrupt handling scheme for unix emulation
  * now uses Unix timer and runs without interrupts unless you emulate other hardware
@@ -61,13 +64,13 @@ __BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 
-extern u_short main_cs_level;
+extern uint16_t main_cs_level;
 extern sigset_t irq_signal;
 extern pthread_cond_t irq_cv;
-extern u_short int_disabled;
+extern uint16_t int_disabled;
 
 extern FILE *__os_trs;
-extern u_char __os_trf;
+extern uint8_t __os_trf;
 
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))

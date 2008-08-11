@@ -298,62 +298,62 @@ void GpioPortSet(int bank, u_int value)
     switch(bank) {
 #ifdef PORTA
     case AVRPORTA:
-        outb(PORTA, (u_char)value);
+        outb(PORTA, (uint8_t)value);
         break;
 #endif
 #ifdef PORTB
     case AVRPORTB:
-        outb(PORTB, (u_char)value);
+        outb(PORTB, (uint8_t)value);
         break;
 #endif
 #ifdef PORTC
     case AVRPORTC:
-        outb(PORTC, (u_char)value);
+        outb(PORTC, (uint8_t)value);
         break;
 #endif
 #ifdef PORTD
     case AVRPORTD:
-        outb(PORTD, (u_char)value);
+        outb(PORTD, (uint8_t)value);
         break;
 #endif
 #ifdef PORTE
     case AVRPORTE:
-        outb(PORTE, (u_char)value);
+        outb(PORTE, (uint8_t)value);
         break;
 #endif
 #ifdef PORTF
     case AVRPORTF:
-        outb(PORTF, (u_char)value);
+        outb(PORTF, (uint8_t)value);
         break;
 #endif
 #ifdef PORTG
     case AVRPORTG:
-        outb(PORTG, (u_char)value);
+        outb(PORTG, (uint8_t)value);
         break;
 #endif
 #ifdef PORTH
     case AVRPORTH:
-        outb(PORTH, (u_char)value);
+        outb(PORTH, (uint8_t)value);
         break;
 #endif
 #ifdef PORTI
     case AVRPORTI:
-        outb(PORTI, (u_char)value);
+        outb(PORTI, (uint8_t)value);
         break;
 #endif
 #ifdef PORTJ
     case AVRPORTJ:
-        outb(PORTJ, (u_char)value);
+        outb(PORTJ, (uint8_t)value);
         break;
 #endif
 #ifdef PORTK
     case AVRPORTK:
-        outb(PORTK, (u_char)value);
+        outb(PORTK, (uint8_t)value);
         break;
 #endif
 #ifdef PORTL
     case AVRPORTL:
-        outb(PORTL, (u_char)value);
+        outb(PORTL, (uint8_t)value);
         break;
 #endif
     }
@@ -369,9 +369,9 @@ void GpioPortSetHigh(int bank, u_int mask)
     GpioPortSet(bank, GpioPortGet(bank) | mask);
 }
 
-u_long GpioPinConfigGet(int bank, int bit)
+uint32_t GpioPinConfigGet(int bank, int bit)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     switch(bank) {
 #ifdef DDRA
@@ -498,7 +498,7 @@ u_long GpioPinConfigGet(int bank, int bit)
     return rc;
 }
 
-int GpioPortConfigSet(int bank, u_int mask, u_long flags)
+int GpioPortConfigSet(int bank, u_int mask, uint32_t flags)
 {
     switch(bank) {
 #ifdef DDRA
@@ -697,7 +697,7 @@ int GpioPortConfigSet(int bank, u_int mask, u_long flags)
     return 0;
 }
 
-int GpioPinConfigSet(int bank, int bit, u_long flags)
+int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     switch(bank) {
 #ifdef DDRA

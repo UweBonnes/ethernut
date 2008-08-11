@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 07:00:30  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -98,16 +101,16 @@
 /*
  * Received Configure-Request.
  */
-void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
+void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     int rc = XCP_CONFACK;
     XCPOPT *xcpo;
-    u_short xcpl;
+    uint16_t xcpl;
     XCPOPT *xcpr;
-    u_short xcps;
-    u_short len = 0;
-    u_char i;
+    uint16_t xcps;
+    uint16_t len = 0;
+    uint_fast8_t i;
 
     switch (dcb->dcb_ipcp_state) {
     case PPPS_CLOSED:
@@ -252,11 +255,11 @@ void IpcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Configure-Ack received.
  */
-void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
+void IpcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
-    u_short xcpl;
+    uint16_t xcpl;
 
     /*
      * Ignore, if we are not expecting this id.
@@ -332,11 +335,11 @@ void IpcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Configure-Nak or Configure-Reject received.
  */
-static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rejected)
+static void IpcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
-    u_short xcpl;
+    uint16_t xcpl;
 
     /*
      * Ignore, if we are not expecting this id.
@@ -423,7 +426,7 @@ static void IpcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rej
 /*
  * \brief Terminate request received.
  */
-void IpcpRxTermReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
+void IpcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -445,7 +448,7 @@ void IpcpRxTermReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Terminate-Ack received.
  */
-void IpcpRxTermAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
+void IpcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -502,7 +505,7 @@ void IpcpRxProtRej(NUTDEVICE * dev)
 /*
  * Receive an Code-Reject.
  */
-static void IpcpRxCodeRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void IpcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -531,7 +534,7 @@ void NutIpcpInput(NUTDEVICE * dev, NETBUF * nb)
 {
     XCPHDR *xch;
     PPPDCB *dcb = dev->dev_dcb;
-    u_short len;
+    uint16_t len;
 
     /*
      * Discard packets with illegal lengths.

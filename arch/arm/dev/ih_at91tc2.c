@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:12  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2008/07/26 09:43:01  haraldkipp
  * Added support for retrieving and setting the interrupt mode.
  *
@@ -65,7 +68,7 @@ IRQ_HANDLER sig_TC2 = {
 /*!
  * \brief Timer/Counter 2 interrupt entry.
  */
-static u_int dummy;
+static unsigned int dummy;
 static void TimerCounter2IrqEntry(void) __attribute__ ((naked));
 void TimerCounter2IrqEntry(void)
 {
@@ -100,8 +103,8 @@ void TimerCounter2IrqEntry(void)
 static int TimerCounter2IrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *)param;
-    int enabled = inr(AIC_IMR) & _BV(TC2_ID);
+    unsigned int *ival = (unsigned int *)param;
+    int_fast8_t enabled = inr(AIC_IMR) & _BV(TC2_ID);
 
     /* Disable interrupt. */
     if (enabled) {
@@ -133,7 +136,7 @@ static int TimerCounter2IrqCtl(int cmd, void *param)
         break;
     case NUT_IRQCTL_GETMODE:
         {
-            u_int val = inr(AIC_SMR(TC2_ID)) & AIC_SRCTYPE;
+            unsigned int val = inr(AIC_SMR(TC2_ID)) & AIC_SRCTYPE;
             if (val == AIC_SRCTYPE_INT_LEVEL_SENSITIVE || val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
                 *ival = NUT_IRQMODE_LEVEL;
             } else  {
@@ -158,7 +161,7 @@ static int TimerCounter2IrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int)sig_TC2.ir_count;
+        *ival = (unsigned int)sig_TC2.ir_count;
         sig_TC2.ir_count = 0;
         break;
 #endif

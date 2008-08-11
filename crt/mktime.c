@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2003/12/19 22:26:37  drsung
  * Dox written.
  *
@@ -42,6 +45,8 @@
  *
  *
  */
+
+#include <stdint.h>
 
 #include <time.h>
 #include "ctime.h"

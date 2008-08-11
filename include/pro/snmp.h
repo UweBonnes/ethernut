@@ -184,7 +184,7 @@
 #define SNMP_ACT_ACTION      3
 #define SNMP_ACT_FREE        4
 
-extern CONST u_char *SnmpVarParse(CONST u_char *, size_t *, OID *, size_t *, u_char *, u_char **, size_t *);
-extern u_char *SnmpVarBuild(u_char *, size_t *, CONST OID *, size_t, u_char , CONST u_char *, size_t);
+extern CONST uint8_t *SnmpVarParse(CONST uint8_t *, size_t *, OID *, size_t *, uint8_t *, uint8_t **, size_t *);
+extern uint8_t *SnmpVarBuild(uint8_t *, size_t *, CONST OID *, size_t, uint8_t , CONST uint8_t *, size_t);
 
 #endif

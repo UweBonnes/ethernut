@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/08/11 06:59:04  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.12  2008/08/06 12:43:41  haraldkipp
  * First EMAC reset failed on power-up. Initialize EMAC clock and MII mode
  * earlier.
@@ -304,12 +307,12 @@
  */
 struct _EMACINFO {
 #ifdef NUT_PERFMON
-    u_long ni_rx_packets;       /*!< Number of packets received. */
-    u_long ni_tx_packets;       /*!< Number of packets sent. */
-    u_long ni_overruns;         /*!< Number of packet overruns. */
-    u_long ni_rx_frame_errors;  /*!< Number of frame errors. */
-    u_long ni_rx_crc_errors;    /*!< Number of CRC errors. */
-    u_long ni_rx_missed_errors; /*!< Number of missed packets. */
+    uint32_t ni_rx_packets;       /*!< Number of packets received. */
+    uint32_t ni_tx_packets;       /*!< Number of packets sent. */
+    uint32_t ni_overruns;         /*!< Number of packet overruns. */
+    uint32_t ni_rx_frame_errors;  /*!< Number of frame errors. */
+    uint32_t ni_rx_crc_errors;    /*!< Number of CRC errors. */
+    uint32_t ni_rx_missed_errors; /*!< Number of missed packets. */
 #endif
     HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
     HANDLE volatile ni_tx_rdy;  /*!< Transmitter event queue. */
@@ -336,11 +339,11 @@ typedef struct _BufDescriptor {
 } BufDescriptor;
 
 static volatile BufDescriptor txBufTab[EMAC_TX_BUFFERS];
-static volatile u_char txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] __attribute__ ((aligned(8)));
+static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] __attribute__ ((aligned(8)));
 static u_int txBufIdx;
 
 static volatile BufDescriptor rxBufTab[EMAC_RX_BUFFERS];
-static volatile u_char rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(8)));
+static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(8)));
 static u_int rxBufIdx;
 
 #define RXBUF_OWNERSHIP     0x00000001
@@ -386,7 +389,7 @@ static u_int rxBufIdx;
  *
  * \return Contents of the specified register.
  */
-static u_short phy_inw(u_char reg)
+static uint16_t phy_inw(uint8_t reg)
 {
     /* PHY read command. */
     outr(EMAC_MAN, EMAC_SOF | EMAC_RW_READ | EMAC_CODE | 
@@ -396,7 +399,7 @@ static u_short phy_inw(u_char reg)
     while ((inr(EMAC_NSR) & EMAC_IDLE) == 0);
 
     /* Get data from PHY maintenance register. */
-    return (u_short) (inr(EMAC_MAN) >> EMAC_DATA_LSB);
+    return (uint16_t) (inr(EMAC_MAN) >> EMAC_DATA_LSB);
 }
 
 #ifndef PHY_MODE_RMII
@@ -406,7 +409,7 @@ static u_short phy_inw(u_char reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-static void phy_outw(u_char reg, u_short val)
+static void phy_outw(uint8_t reg, uint16_t val)
 {
     /* PHY write command. */
     outr(EMAC_MAN, EMAC_SOF | EMAC_RW_WRITE | EMAC_CODE | 
@@ -422,9 +425,9 @@ static void phy_outw(u_char reg, u_short val)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int EmacReset(u_long tmo)
+static int EmacReset(uint32_t tmo)
 {
-    u_short phyval;
+    uint16_t phyval;
 
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
@@ -653,9 +656,9 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
         if (fbc > 1536) {
             ni->ni_insane = 1;
         } else {
-            *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (u_short)fbc);
+            *nbp = NutNetBufAlloc(0, NBAF_DATALINK, (uint16_t)fbc);
             if (*nbp != NULL) {
-                u_char *bp = (u_char *) (* nbp)->nb_dl.vp;
+                uint8_t *bp = (uint8_t *) (* nbp)->nb_dl.vp;
                 u_int len;
 
                 while (fbc) {
@@ -698,7 +701,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
 {
     int rc = -1;
     u_int sz;
-    u_char *buf;
+    uint8_t *buf;
 
     /*
      * Calculate the number of bytes to be send. Do not send packets 
@@ -719,7 +722,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
 
     /* TODO: Check for link. */
     if (ni->ni_insane == 0) {
-        buf = (u_char *) txBufTab[bufnum].addr;
+        buf = (uint8_t *) txBufTab[bufnum].addr;
         memcpy(buf, nb->nb_dl.vp, nb->nb_dl.sz);
         buf += nb->nb_dl.sz;
         memcpy(buf, nb->nb_nw.vp, nb->nb_nw.sz);
@@ -753,7 +756,7 @@ static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
  *
  * \param mac Six byte unique MAC address.
  */
-static int EmacStart(CONST u_char * mac)
+static int EmacStart(CONST uint8_t * mac)
 {
     u_int i;
 
@@ -891,7 +894,7 @@ THREAD(EmacRxThread, arg)
  */
 int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
 {
-    static u_long mx_wait = 5000;
+    static uint32_t mx_wait = 5000;
     int rc = -1;
     EMACINFO *ni = (EMACINFO *) dev->dev_dcb;
 

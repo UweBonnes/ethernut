@@ -44,6 +44,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 #ifndef MAX_OID_LEN
 #define MAX_OID_LEN     32
@@ -92,42 +93,42 @@
 
 #define ASN_BIT8        0x80
 
-typedef u_long OID;
+typedef uint32_t OID;
 
 /* 
  * Internal 64 bit representation.
  */
 typedef struct {
-    u_long high;
-    u_long low;
+    uint32_t high;
+    uint32_t low;
 } UNSIGNED64;
 
-extern CONST u_char *AsnHeaderParse(CONST u_char *, size_t *, u_char *);
-extern u_char *AsnHeaderBuild(u_char *, size_t *, u_char, size_t);
+extern CONST uint8_t *AsnHeaderParse(CONST uint8_t *, size_t *, uint8_t *);
+extern uint8_t *AsnHeaderBuild(uint8_t *, size_t *, uint8_t, size_t);
 
-extern CONST u_char * AsnSequenceParse(CONST u_char *, size_t *, u_char);
-extern u_char *AsnSequenceBuild(u_char *, size_t *, u_char, size_t);
+extern CONST uint8_t * AsnSequenceParse(CONST uint8_t *, size_t *, uint8_t);
+extern uint8_t *AsnSequenceBuild(uint8_t *, size_t *, uint8_t, size_t);
 
-extern CONST u_char *AsnIntegerParse(CONST u_char *, size_t *, u_char *, long *);
-extern u_char *AsnIntegerBuild(u_char *, size_t *, u_char, long *);
+extern CONST uint8_t *AsnIntegerParse(CONST uint8_t *, size_t *, uint8_t *, long *);
+extern uint8_t *AsnIntegerBuild(uint8_t *, size_t *, uint8_t, long *);
 
-extern CONST u_char *AsnUnsignedParse(CONST u_char *, size_t *, u_char *, u_long *);
-extern u_char *AsnUnsignedBuild(u_char *, size_t *, u_char, u_long *);
+extern CONST uint8_t *AsnUnsignedParse(CONST uint8_t *, size_t *, uint8_t *, uint32_t *);
+extern uint8_t *AsnUnsignedBuild(uint8_t *, size_t *, uint8_t, uint32_t *);
 
-extern CONST u_char *AsnOctetStringParse(CONST u_char *, size_t *, u_char *, u_char *, size_t *);
-extern u_char *AsnOctetStringBuild(u_char *, size_t *, u_char, CONST u_char *, size_t);
+extern CONST uint8_t *AsnOctetStringParse(CONST uint8_t *, size_t *, uint8_t *, uint8_t *, size_t *);
+extern uint8_t *AsnOctetStringBuild(uint8_t *, size_t *, uint8_t, CONST uint8_t *, size_t);
 
-extern CONST u_char *AsnOidParse(CONST u_char *, size_t *, u_char *, OID *, size_t *);
-extern u_char *AsnOidBuild(u_char *, size_t *, u_char, CONST OID *, size_t);
+extern CONST uint8_t *AsnOidParse(CONST uint8_t *, size_t *, uint8_t *, OID *, size_t *);
+extern uint8_t *AsnOidBuild(uint8_t *, size_t *, uint8_t, CONST OID *, size_t);
 
-extern CONST u_char *AsnNullParse(CONST u_char *, size_t *, u_char *);
-extern u_char *AsnNullBuild(u_char *, size_t *, u_char);
+extern CONST uint8_t *AsnNullParse(CONST uint8_t *, size_t *, uint8_t *);
+extern uint8_t *AsnNullBuild(uint8_t *, size_t *, uint8_t);
 
-extern CONST u_char *AsnBitStringParse(CONST u_char *, size_t *, u_char *, u_char *, size_t *);
-extern u_char *AsnBitStringBuild(u_char *, size_t *, u_char, CONST u_char *, size_t);
+extern CONST uint8_t *AsnBitStringParse(CONST uint8_t *, size_t *, uint8_t *, uint8_t *, size_t *);
+extern uint8_t *AsnBitStringBuild(uint8_t *, size_t *, uint8_t, CONST uint8_t *, size_t);
 
-extern CONST u_char *AsnUnsigned64Parse(CONST u_char *, size_t *, u_char *, UNSIGNED64 *);
-extern u_char *AsnUnsigned64Build(u_char *, size_t *, u_char, CONST UNSIGNED64 *);
+extern CONST uint8_t *AsnUnsigned64Parse(CONST uint8_t *, size_t *, uint8_t *, UNSIGNED64 *);
+extern uint8_t *AsnUnsigned64Build(uint8_t *, size_t *, uint8_t, CONST UNSIGNED64 *);
 
 
 #endif

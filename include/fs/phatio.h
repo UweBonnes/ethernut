@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/02/23 15:47:18  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  *
@@ -55,8 +58,8 @@
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int PhatSectorRead(NUTFILE * blkmnt, u_long sect, u_char * buf);
-extern int PhatSectorLoad(NUTDEVICE * dev, u_long sect);
+extern int PhatSectorRead(NUTFILE * blkmnt, uint32_t sect, uint8_t * buf);
+extern int PhatSectorLoad(NUTDEVICE * dev, uint32_t sect);
 extern int PhatSectorFlush(NUTDEVICE * dev, int bufnum);
 
 __END_DECLS

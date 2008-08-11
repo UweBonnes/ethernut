@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:13  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/08/06 12:51:01  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -214,7 +217,7 @@ static int At91SpiMmCard0Select(int on)
  *
  * \return Last byte received.
  */
-static u_char At91SpiMmCard0Io(u_char val)
+static uint8_t At91SpiMmCard0Io(uint8_t val)
 {
 #ifdef NUTDEBUG
     putchar('[');
@@ -228,7 +231,7 @@ static u_char At91SpiMmCard0Io(u_char val)
     /* Wait for receiver data register full. */
     while((inr(MMC_SPI_SR) & SPI_RDRF) == 0);
     /* Read data. */
-    val = (u_char)inr(MMC_SPI_RDR);
+    val = (uint8_t)inr(MMC_SPI_RDR);
 
 #ifdef NUTDEBUG
     if (val != 0xFF) {

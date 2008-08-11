@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.32  2008/08/11 07:00:34  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.31  2008/07/07 11:04:28  haraldkipp
  * Configurable ways of handling critical sections for ARM targets.
  *
@@ -490,9 +493,9 @@ void NutThreadYield(void)
  * \todo Using a specific priority level for killing a thread is actually
  *       not the best idea. NutThreadKill() can be used instead.
  */
-u_char NutThreadSetPriority(u_char level)
+uint8_t NutThreadSetPriority(uint8_t level)
 {
-    u_char last = runningThread->td_priority;
+    uint8_t last = runningThread->td_priority;
 
     /*
      * Remove the thread from the run queue and re-insert it with a new

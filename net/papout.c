@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -161,7 +164,7 @@
  *
  * \return 0 on success, -1 in case of any errors.
  */
-int NutPapOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb)
+int NutPapOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb)
 {
     XCPHDR *xch;
 
@@ -182,7 +185,7 @@ int NutPapOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb)
 /*
  * Send a Configure-Request.
  */
-void PapTxAuthReq(NUTDEVICE *dev, u_char id)
+void PapTxAuthReq(NUTDEVICE *dev, uint8_t id)
 {
     PPPDCB *dcb = dev->dev_dcb;
     NETBUF *nb;

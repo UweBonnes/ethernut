@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2008/08/11 07:00:24  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.15  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -97,6 +100,7 @@
 
 #include <cfg/os.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 #ifdef NUTTRACER_CRITICAL
 #include <sys/tracer.h>

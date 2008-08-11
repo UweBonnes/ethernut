@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
@@ -55,10 +58,10 @@ extern int PcfRtcGetClock(struct _tm *tm);
 extern int PcfRtcSetClock(CONST struct _tm *tm);
 extern int PcfRtcGetAlarm(int idx, struct _tm *tm, int *aflgs);
 extern int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs);
-extern int PcfRtcGetStatus(u_long *sflgs);
-extern int PcfRtcClearStatus(u_long sflgs);
-extern int PcfRtcReadRegs(u_char addr, u_char *buff, size_t len);
-extern int PcfRtcWrite(int nv, CONST u_char *buff, size_t len);
+extern int PcfRtcGetStatus(uint32_t *sflgs);
+extern int PcfRtcClearStatus(uint32_t sflgs);
+extern int PcfRtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
+extern int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t len);
 
 __END_DECLS
 /* End of prototypes */

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/08/11 06:59:39  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.10  2008/06/15 16:58:39  haraldkipp
  * Rolled back to version 1.8.
  *
@@ -130,7 +133,7 @@
  * remaining stack size is 128 bytes or greater.
  *
  */
-u_short _irqstackdec = 128;
+uint16_t _irqstackdec = 128;
 #endif /* #ifdef IRQSTACK_SIZE */
 
 /*!
@@ -140,29 +143,29 @@ u_short _irqstackdec = 128;
  * switched-out.
  */
 typedef struct {
-    u_char csf_r29;
-    u_char csf_r28;
-    u_char csf_r17;
-    u_char csf_r16;
-    u_char csf_r15;
-    u_char csf_r14;
-    u_char csf_r13;
-    u_char csf_r12;
-    u_char csf_r11;
-    u_char csf_r10;
-    u_char csf_r9;
-    u_char csf_r8;
-    u_char csf_r7;
-    u_char csf_r6;
-    u_char csf_r5;
-    u_char csf_r4;
-    u_char csf_r3;
-    u_char csf_r2;
+    uint8_t csf_r29;
+    uint8_t csf_r28;
+    uint8_t csf_r17;
+    uint8_t csf_r16;
+    uint8_t csf_r15;
+    uint8_t csf_r14;
+    uint8_t csf_r13;
+    uint8_t csf_r12;
+    uint8_t csf_r11;
+    uint8_t csf_r10;
+    uint8_t csf_r9;
+    uint8_t csf_r8;
+    uint8_t csf_r7;
+    uint8_t csf_r6;
+    uint8_t csf_r5;
+    uint8_t csf_r4;
+    uint8_t csf_r3;
+    uint8_t csf_r2;
 #ifdef __AVR_3_BYTE_PC__
-    u_char csf_pcex;
+    uint8_t csf_pcex;
 #endif
-    u_char csf_pchi;
-    u_char csf_pclo;
+    uint8_t csf_pchi;
+    uint8_t csf_pclo;
 } SWITCHFRAME;
 
 /*!
@@ -171,16 +174,16 @@ typedef struct {
  * This is the stack layout being build to enter a new thread.
  */
 typedef struct {
-    u_char cef_arghi;
-    u_char cef_arglo;
-    u_char cef_rampz;
-    u_char cef_sreg;
-    u_char cef_r1;
+    uint8_t cef_arghi;
+    uint8_t cef_arglo;
+    uint8_t cef_rampz;
+    uint8_t cef_sreg;
+    uint8_t cef_r1;
 #ifdef __AVR_3_BYTE_PC__
-    u_char cef_pcex;
+    uint8_t cef_pcex;
 #endif
-    u_char cef_pchi;
-    u_char cef_pclo;
+    uint8_t cef_pchi;
+    uint8_t cef_pclo;
 } ENTERFRAME;
 
 #define LONG_PTR_P(lp, mem_p) \
@@ -310,7 +313,7 @@ void NutThreadSwitch(void)
  */
 HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
-    u_char *threadMem;
+    uint8_t *threadMem;
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
@@ -326,18 +329,18 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     }
 
     td = (NUTTHREADINFO *) (threadMem + stackSize);
-    ef = (ENTERFRAME *) ((u_short) td - sizeof(ENTERFRAME));
-    sf = (SWITCHFRAME *) ((u_short) ef - sizeof(SWITCHFRAME));
+    ef = (ENTERFRAME *) ((uint16_t) td - sizeof(ENTERFRAME));
+    sf = (SWITCHFRAME *) ((uint16_t) ef - sizeof(SWITCHFRAME));
 
 
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
     td->td_name[sizeof(td->td_name) - 1] = 0;
-    td->td_sp = (u_short) sf - 1;
+    td->td_sp = (uint16_t) sf - 1;
     td->td_memory = threadMem;
-    *((u_long *) threadMem) = DEADBEEF;
-    *((u_long *) (threadMem + 4)) = DEADBEEF;
-    *((u_long *) (threadMem + 8)) = DEADBEEF;
-    *((u_long *) (threadMem + 12)) = DEADBEEF;
+    *((uint32_t *) threadMem) = DEADBEEF;
+    *((uint32_t *) (threadMem + 4)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 8)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 12)) = DEADBEEF;
     td->td_priority = 64;
 
     /*
@@ -346,20 +349,20 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
 #ifdef __AVR_3_BYTE_PC__
     ef->cef_pcex = 0;
 #endif
-    ef->cef_pchi = (u_char) (((u_short) fn) >> 8);
-    ef->cef_pclo = (u_char) (((u_short) fn) & 0xff);
+    ef->cef_pchi = (uint8_t) (((uint16_t) fn) >> 8);
+    ef->cef_pclo = (uint8_t) (((uint16_t) fn) & 0xff);
     ef->cef_sreg = 0x80;
     ef->cef_rampz = 0;
     ef->cef_r1 = 0;
 
-    ef->cef_arglo = (u_char) (((u_short) arg) & 0xff);
-    ef->cef_arghi = (u_char) (((u_short) arg) >> 8);
+    ef->cef_arglo = (uint8_t) (((uint16_t) arg) & 0xff);
+    ef->cef_arghi = (uint8_t) (((uint16_t) arg) >> 8);
 
 #ifdef __AVR_3_BYTE_PC__
     sf->csf_pcex = 0;
 #endif
-    sf->csf_pchi = (u_char) (((u_short) NutThreadEntry) >> 8);
-    sf->csf_pclo = (u_char) (((u_short) NutThreadEntry) & 0xff);
+    sf->csf_pchi = (uint8_t) (((uint16_t) NutThreadEntry) >> 8);
+    sf->csf_pclo = (uint8_t) (((uint16_t) NutThreadEntry) & 0xff);
 
     /*
      * Insert into the thread list and the run queue.

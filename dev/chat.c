@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2007/08/17 11:34:00  haraldkipp
  * Default timeout needs to be multiplied by 1000.
  *
@@ -60,12 +63,12 @@
 
 #include <dev/chat.h>
 
-u_char *chat_report;
+uint8_t *chat_report;
 
 #ifdef NUTDEBUG
 
 static FILE *__chat_trs;        /*!< \brief Chat trace output stream. */
-static u_char __chat_trf;       /*!< \brief Chat trace flags. */
+static uint8_t __chat_trf;       /*!< \brief Chat trace flags. */
 
 /*!
  * \brief Control chat tracing.
@@ -74,7 +77,7 @@ static u_char __chat_trf;       /*!< \brief Chat trace flags. */
  *               disable trace output.
  * \param flags  Flags to enable specific traces.
  */
-void NutTraceChat(FILE * stream, u_char flags)
+void NutTraceChat(FILE * stream, uint8_t flags)
 {
     if (stream)
         __chat_trs = stream;
@@ -119,8 +122,8 @@ static char *strechr(CONST char *str, int c)
 int NutChatExpectString(NUTCHAT * ci, char *str)
 {
     char ch;
-    u_char m;
-    u_char i;
+    uint8_t m;
+    uint8_t i;
     char *cp = str;
 
 #ifdef NUTDEBUG
@@ -248,8 +251,8 @@ int NutChatExpectString(NUTCHAT * ci, char *str)
 static int NutChatSendString(int fd, char *str)
 {
     int rc = 0;
-    u_char eol = 1;
-    u_char skip;
+    uint8_t eol = 1;
+    uint8_t skip;
     char ch;
 
 #ifdef NUTDEBUG
@@ -520,7 +523,7 @@ NUTCHAT *NutChatCreate(int fd)
  */
 void NutChatDestroy(NUTCHAT * ci)
 {
-    u_char i;
+    uint8_t i;
 
     if (ci) {
         for (i = 0; i < ci->chat_aborts; i++)
@@ -543,9 +546,9 @@ static int NutChatProc(int fd, char *script)
     char sendflg = 0;
     NUTCHAT *ci;
     char *arg;
-    u_long to;
-    u_long irto;
-    u_long iwto;
+    uint32_t to;
+    uint32_t irto;
+    uint32_t iwto;
 
     /*
      * Initialize the chat info structure.

@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:21  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2004/12/17 15:27:21  haraldkipp
  * Added Adam Pierce's routing management functions.
  *
@@ -111,18 +114,18 @@ typedef struct _RTENTRY RTENTRY;
  */
 struct _RTENTRY {
     RTENTRY *rt_next;           //!< \brief Link to next entry.
-    u_long rt_ip;               //!< \brief Destination ip address.
-    u_long rt_mask;             //!< \brief IP address mask, -1 on host routes.
-    u_long rt_gateway;          //!< \brief Gateway ip address.
+    uint32_t rt_ip;               //!< \brief Destination ip address.
+    uint32_t rt_mask;             //!< \brief IP address mask, -1 on host routes.
+    uint32_t rt_gateway;          //!< \brief Gateway ip address.
     NUTDEVICE *rt_dev;          //!< \brief Device to use.
 };
 
 __BEGIN_DECLS
 /* Function prototypes. */
-extern int NutIpRouteAdd(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev);
-extern NUTDEVICE *NutIpRouteQuery(u_long ip, u_long * gate);
+extern int NutIpRouteAdd(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev);
+extern NUTDEVICE *NutIpRouteQuery(uint32_t ip, uint32_t * gate);
 extern int NutIpRouteDelAll(NUTDEVICE * dev);
-extern int NutIpRouteDel(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev);
+extern int NutIpRouteDel(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev);
 extern RTENTRY *NutIpRouteList(int *numEntries);
 
 __END_DECLS

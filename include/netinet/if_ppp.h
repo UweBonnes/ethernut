@@ -83,6 +83,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:22  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2004/01/30 11:38:25  haraldkipp
  * Handle magic number rejects
  *
@@ -165,38 +168,38 @@
  * \brief PPP header type.
  */
 typedef struct ppp_header {
-    u_char address;		/*!< \brief HDLC Address. */
-    u_char control;		/*!< \brief HDLC Control. */
-    u_short prot_type;		/*!< \brief Protocol type. */
+    uint8_t address;		/*!< \brief HDLC Address. */
+    uint8_t control;		/*!< \brief HDLC Control. */
+    uint16_t prot_type;		/*!< \brief Protocol type. */
 } PPPHDR;
 
 typedef struct xcphdr {
     /*!< \brief Code. 
      */
-    u_char  xch_code;
+    uint8_t  xch_code;
 
     /*!< \brief Identifier 
      */
-    u_char  xch_id;
+    uint8_t  xch_id;
 
     /*!< \brief Length 
      */
-    u_short xch_len;
+    uint16_t xch_len;
 } XCPHDR;
 
 
 extern void NutLcpInput(NUTDEVICE * dev, NETBUF * nb);
-extern int NutLcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb);
-extern void LcpTxConfReq(NUTDEVICE *dev, u_char id, u_char rejected);
-extern void LcpTxProtRej(NUTDEVICE *dev, u_short protocol, NETBUF *nb);
+extern int NutLcpOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb);
+extern void LcpTxConfReq(NUTDEVICE *dev, uint8_t id, uint8_t rejected);
+extern void LcpTxProtRej(NUTDEVICE *dev, uint16_t protocol, NETBUF *nb);
 
 extern void NutPapInput(NUTDEVICE * dev, NETBUF * nb);
-extern int NutPapOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb);
-extern void PapTxAuthReq(NUTDEVICE *dev, u_char id);
+extern int NutPapOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb);
+extern void PapTxAuthReq(NUTDEVICE *dev, uint8_t id);
 
 extern void NutIpcpInput(NUTDEVICE * dev, NETBUF * nb);
-extern int NutIpcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb);
-extern void IpcpTxConfReq(NUTDEVICE *dev, u_char id);
+extern int NutIpcpOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb);
+extern void IpcpTxConfReq(NUTDEVICE *dev, uint8_t id);
 
 #endif
 

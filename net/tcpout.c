@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2008/04/06 13:29:01  haraldkipp
  * In unreliable or high traffic networks connections may suddenly freeze.
  * The problem is, that during overflows (happening every 65s) the
@@ -200,13 +203,13 @@
  *         the data has been successfully delivered, because flow control 
  *         and retransmission is still handled in the background.
  */
-int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
+int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
 {
     NETBUF *nb;
     NETBUF *nb_clone = 0;
     TCPHDR *th;
-    u_short csum;
-    u_char hlen;
+    uint16_t csum;
+    uint8_t hlen;
 
     /*
      * Check if anything to send at all.
@@ -253,18 +256,18 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
      * some old stacks.
      */
     if (sock->so_tx_flags & SO_SYN) {
-        u_char *cp;
-        u_short n_mss = htons(sock->so_mss);
+        uint8_t *cp;
+        uint16_t n_mss = htons(sock->so_mss);
 
         th->th_flags |= TH_SYN;
         sock->so_tx_flags &= ~SO_SYN;
         sock->so_tx_nxt++;
 
-        cp = (u_char *) (th + 1);
+        cp = (uint8_t *) (th + 1);
         *cp++ = TCPOPT_MAXSEG;
         *cp++ = TCPOLEN_MAXSEG;
-        *cp++ = *(u_char *)&n_mss;
-        *cp = *((u_char *)(&n_mss) + 1);
+        *cp++ = *(uint8_t *)&n_mss;
+        *cp = *((uint8_t *)(&n_mss) + 1);
     }
 
     /*
@@ -339,7 +342,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
              * carefully check later, if we can remove some in the
              * state machine.
              */
-            sock->so_retran_time = (u_short) NutGetMillis() | 1;
+            sock->so_retran_time = (uint16_t) NutGetMillis() | 1;
         }
         else {
             while (nbp->nb_next)
@@ -384,7 +387,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST u_char * data, u_short size)
  */
 int NutTcpReject(NETBUF * nb)
 {
-    u_short csum;
+    uint16_t csum;
     IPHDR *ih = (IPHDR *) nb->nb_nw.vp;
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 

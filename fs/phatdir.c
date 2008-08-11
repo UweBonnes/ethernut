@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.12  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.11  2006/10/08 16:42:56  haraldkipp
  * Not optimal, but simple and reliable exclusive access implemented.
  * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
@@ -130,13 +133,13 @@
  * The checksum is calculated by rotating the previous sum by one
  * bit and adding the next character.
  */
-static INLINE u_char GenShortNameChecksum(char *sfn)
+static INLINE uint8_t GenShortNameChecksum(char *sfn)
 {
-    u_char rc = 0;
+    uint8_t rc = 0;
     int i;
 
     for (i = 0; i < 11; i++) {
-        rc = ((rc >> 1) | ((rc & 1) << 7)) + (u_char)(sfn[i]);
+        rc = ((rc >> 1) | ((rc & 1) << 7)) + (uint8_t)(sfn[i]);
     }
     return rc;
 }
@@ -272,8 +275,8 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
     int rc;
     int pos = 0;
     int got;
-    u_char sect;
-    u_char *temp;
+    uint8_t sect;
+    uint8_t *temp;
     NUTDEVICE *dev = ndp->nf_dev;
     PHATFILE *dfcb = ndp->nf_fcb;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -284,7 +287,7 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
     int npos = 0;
     int i;
     int ci;
-    u_char cks = 0;
+    uint8_t cks = 0;
 
     /* Convert the dotted name to a space filled one. */
     if ((rc = MakePhatName(fname, entry->dent_name)) == 1) {
@@ -433,9 +436,9 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
  *
  * \return 0 on success, -1 otherwsie.
  */
-static int PhatDirEntryRelease(NUTFILE * ndp, u_long pos, int lfncnt)
+static int PhatDirEntryRelease(NUTFILE * ndp, uint32_t pos, int lfncnt)
 {
-    u_char ch = PHAT_REM_DIRENT;
+    uint8_t ch = PHAT_REM_DIRENT;
     int i;
 
     for (i = lfncnt; i; i--) {
@@ -463,7 +466,7 @@ static int PhatDirEntryRelease(NUTFILE * ndp, u_long pos, int lfncnt)
  */
 int PhatDirEntryCreate(NUTFILE * ndp, CONST char *name, int acc, PHATDIRENT * dirent)
 {
-    dirent->dent_attr = (u_char) acc;
+    dirent->dent_attr = (uint8_t) acc;
     GetDosTimeStamp(&dirent->dent_ctime, &dirent->dent_cdate);
     dirent->dent_adate = dirent->dent_cdate;
     dirent->dent_mtime = dirent->dent_ctime;
@@ -624,7 +627,7 @@ static int PhatDirEntryRead(NUTFILE * ndp, PHATFIND * srch)
  *
  * \return 0 if an entry was found, otherwise -1 is returned.
  */
-int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, u_long attmsk, PHATFIND * srch)
+int PhatDirEntryFind(NUTFILE * ndp, CONST char *spec, uint32_t attmsk, PHATFIND * srch)
 {
     int rc;
     PHATFIND *temps;
@@ -737,7 +740,7 @@ int PhatDirReleaseChain(NUTDEVICE * dev, PHATDIRENT *dent)
 {
     int rc = 0;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
-    u_long clust;
+    uint32_t clust;
 
     /* Do not remove clusters of files with RDONLY attribute. */
     if (dent->dent_attr & PHAT_FATTR_RDONLY) {
@@ -777,7 +780,7 @@ int PhatDirReleaseChain(NUTDEVICE * dev, PHATDIRENT *dent)
  *
  * \return 0 if successful. Otherwise returns an error code.
  */
-int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, u_long flags)
+int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, uint32_t flags)
 {
     int rc = -1;
     PHATFIND *srch;
@@ -845,8 +848,8 @@ NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath)
 
     /* We start at the root directory. */
     dfcb->f_clust = vol->vol_root_clust;
-    dfcb->f_dirent.dent_clusthi = (u_short) (vol->vol_root_clust >> 16);
-    dfcb->f_dirent.dent_clust = (u_short) vol->vol_root_clust;
+    dfcb->f_dirent.dent_clusthi = (uint16_t) (vol->vol_root_clust >> 16);
+    dfcb->f_dirent.dent_clust = (uint16_t) vol->vol_root_clust;
 
     if (*dpath == '/') {
         dpath++;
@@ -919,8 +922,8 @@ NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath)
                     if (vol->vol_type != 32) {
                         dfcb->f_de_sect = 0;
                     }
-                    dfcb->f_dirent.dent_clusthi = (u_short) (vol->vol_root_clust >> 16);
-                    dfcb->f_dirent.dent_clust = (u_short) vol->vol_root_clust;
+                    dfcb->f_dirent.dent_clusthi = (uint16_t) (vol->vol_root_clust >> 16);
+                    dfcb->f_dirent.dent_clust = (uint16_t) vol->vol_root_clust;
                 }
             }
 
@@ -962,7 +965,7 @@ int PhatDirRead(DIR * dir)
 
     ent = (struct dirent *) dir->dd_buf;
     memset(dir->dd_buf, 0, sizeof(struct dirent));
-    ent->d_namlen = (u_char) strlen(srch->phfind_name);
+    ent->d_namlen = (uint8_t) strlen(srch->phfind_name);
     strcpy(ent->d_name, srch->phfind_name);
     if (srch->phfind_ent.dent_attr & PHAT_FATTR_DIR) {
         ent->d_type = 1;
@@ -989,9 +992,9 @@ int PhatDirCreate(NUTDEVICE * dev, char *path)
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
     PHATFILE *dfcb;
     PHATDIRENT *entry;
-    u_char *buf;
-    u_long sect;
-    u_long clust;
+    uint8_t *buf;
+    uint32_t sect;
+    uint32_t clust;
 
     /*
      * Create the new directory like a normal file with a special attribute.
@@ -1043,7 +1046,7 @@ int PhatDirCreate(NUTDEVICE * dev, char *path)
      * Write the double dot entry. If it points to the root cluster,
      * then the cluster number in the directory entry must be zero.
      */
-    if ((u_short) vol->vol_root_clust == dfcb->f_pde_clust &&   /* */
+    if ((uint16_t) vol->vol_root_clust == dfcb->f_pde_clust &&   /* */
         vol->vol_root_clust >> 16 == dfcb->f_pde_clusthi) {
         entry->dent_clust = 0;
         entry->dent_clusthi = 0;

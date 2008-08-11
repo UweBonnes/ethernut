@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:15  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/09/07 16:23:11  christianwelzel
  * Added support for MMnet02 display
  *
@@ -88,7 +91,7 @@
 #include <dev/term.h>
 #include <sys/timer.h>
 
-static u_short lcd_base = 0x0000;
+static uint16_t lcd_base = 0x0000;
 
 #ifndef LCD_4x20
 #ifndef LCD_4x16
@@ -130,7 +133,7 @@ static inline void LcdBusyWait(void)
 #ifndef MMNET02
     // wait until LCD busy bit goes to zero
     // do a read from control register
-    while (*(volatile u_char *) (LCD_CTRL_ADDR + LCD_READ_OFFSET) & 1 << LCD_BUSY)
+    while (*(volatile uint8_t *) (LCD_CTRL_ADDR + LCD_READ_OFFSET) & 1 << LCD_BUSY)
         LCD_DELAY;
     LCD_DELAY;
     LCD_DELAY;
@@ -156,63 +159,63 @@ static inline void LcdBusyWait(void)
  * \param ch Byte to send.
  */
 
-static void LcdWriteData(u_char data)
+static void LcdWriteData(uint8_t data)
 {
     LcdBusyWait();              // wait until LCD not busy
-    *(volatile u_char *) (LCD_DATA_ADDR) = data;
+    *(volatile uint8_t *) (LCD_DATA_ADDR) = data;
 }
 
 /*!
  * \brief Write command byte to LCD controller.
  */
-static void LcdWriteCmd(u_char cmd, u_char delay)
+static void LcdWriteCmd(uint8_t cmd, uint8_t delay)
 {
     LcdBusyWait();              // wait until LCD not busy
-    *(volatile u_char *) (LCD_CTRL_ADDR) = cmd;
+    *(volatile uint8_t *) (LCD_CTRL_ADDR) = cmd;
 }
 
-static void LcdSetCursor(u_char pos)
+static void LcdSetCursor(uint8_t pos)
 {
-    u_char x = 0;
-    u_char y = 0;
+    uint8_t x = 0;
+    uint8_t y = 0;
 
 #ifdef KS0073_CONTROLLER
-    u_char  offset[4] = {0x00, 0x20, 0x40, 0x60};
+    uint8_t  offset[4] = {0x00, 0x20, 0x40, 0x60};
     y = pos / 20;
     x = pos % 20;
     if (y > 3) y = 3;
 #endif
 
 #if defined(LCD_2x40) 
-    u_char  offset  [2] = {0x00, 0x40};
+    uint8_t  offset  [2] = {0x00, 0x40};
     y = pos / 40;
     x = pos % 40;
     if (y > 1) y = 1;
 #endif    
     
 #if defined(LCD_4x20) || defined(LCD_2x20)
-    u_char  offset  [4] = {0x00, 0x40, 0x14, 0x54};
+    uint8_t  offset  [4] = {0x00, 0x40, 0x14, 0x54};
     y = pos / 20;
     x = pos % 20;
     if (y>3) y=3;
 #endif    
     
 #if defined(LCD_4x16) || defined(LCD_2x16)
-    u_char  offset  [4] = {0x00, 0x40, 0x10, 0x50};
+    uint8_t  offset  [4] = {0x00, 0x40, 0x10, 0x50};
     y = pos / 16;
     x = pos % 16;
     if (y>3) y=3;
 #endif    
 
 #if defined(LCD_2x8)
-    u_char  offset  [2] = {0x00, 0x40};
+    uint8_t  offset  [2] = {0x00, 0x40};
     y = pos / 8;
     x = pos % 8;
     if (y>1) y=1;
 #endif    
 
 #if defined(LCD_1x8) || defined(LCD_1x16) || defined(LCD_1x20)
-    u_char  offset  [1] = { 0x00 };
+    uint8_t  offset  [1] = { 0x00 };
     y = 0;
     x = pos;
 #endif 
@@ -241,7 +244,7 @@ static void LcdClear(void)
     LcdWriteCmd(1 << LCD_CLR, 0);
 }
 
-static void LcdCursorMode(u_char on)
+static void LcdCursorMode(uint8_t on)
 {
     LcdWriteCmd(1 << LCD_ON_CTRL | on ? 1 << LCD_ON_CURSOR : 0x00, 0);
 }

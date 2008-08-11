@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:20  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2007/07/17 18:31:44  haraldkipp
  * Output strings must be signed characters. Fixed provided by Michael Mueller.
  *
@@ -71,16 +74,16 @@ extern "C" {
 #endif
 
 extern FILE *__tcp_trs;
-extern u_char __tcp_trf;
+extern uint_fast8_t __tcp_trf;
 
 extern FILE *__ppp_trs;
-extern u_char __ppp_trf;
+extern uint_fast8_t __ppp_trf;
 
-extern void NutTraceTcp(FILE *stream, u_char flags);
-extern void NutTracePPP(FILE *stream, u_char flags);
+extern void NutTraceTcp(FILE *stream, uint8_t flags);
+extern void NutTracePPP(FILE *stream, uint8_t flags);
 
 extern void NutDumpTcpHeader(FILE *stream, char *ds, TCPSOCKET *sock, NETBUF *nb);
-extern void NutDumpSockState(FILE *stream, u_char state, char *lead, char *trail);
+extern void NutDumpSockState(FILE *stream, uint8_t state, char *lead, char *trail);
 extern void NutDumpSocketList(FILE *stream);
 
 extern void NutDumpLcpOption(FILE * stream, NETBUF * nb);

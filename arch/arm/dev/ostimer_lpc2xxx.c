@@ -64,14 +64,14 @@ static PFNCT NutOSTimerTickHandler = NULL;
 /*
  * Return the frequency of the peripheral clk
  */
-static u_long GetPeripheralClk (void)
+static uint32_t GetPeripheralClk (void)
 {
-    u_long          msel;
-    volatile u_long vpbdiv;
-    u_long          CPUClkFreq;
-    u_long          PeripheralClkFreq;
+    uint32_t          msel;
+    volatile uint32_t vpbdiv;
+    uint32_t          CPUClkFreq;
+    uint32_t          PeripheralClkFreq;
 
-    msel       = (u_long)(PLLCFG & 0x1F);
+    msel       = (uint32_t)(PLLCFG & 0x1F);
     CPUClkFreq = CLK_IN * (msel + 1);
 
     /*
@@ -82,8 +82,8 @@ static u_long GetPeripheralClk (void)
      *
      * VPBDIV.1 Incorrect read of VPBDIV
      */
-    vpbdiv = (u_long)(VPBDIV & 0x03);
-    vpbdiv = (u_long)(VPBDIV & 0x03);
+    vpbdiv = (uint32_t)(VPBDIV & 0x03);
+    vpbdiv = (uint32_t)(VPBDIV & 0x03);
     switch (vpbdiv) {
         case 0:  PeripheralClkFreq = CPUClkFreq / 4;  break;
         case 1:  PeripheralClkFreq = CPUClkFreq;      break;
@@ -171,7 +171,7 @@ void NutRegisterTimer(void (*handler) (void *))
     /* 
      * VIC TIMER #0 Initialization
      */
-    VICVectAddr2  = (u_long)TimerTickISRHandler;
+    VICVectAddr2  = (uint32_t)TimerTickISRHandler;
     VICVectCntl2  = 0x20 | VIC_TIMER0;
 }
 
@@ -181,12 +181,12 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return CPU clock frequency in Hertz.
  */
-u_long NutGetCpuClock(void)
+uint32_t NutGetCpuClock(void)
 {
-    u_long msel;
-    u_long CPUClkFreq;
+    uint32_t msel;
+    uint32_t CPUClkFreq;
 
-    msel       = (u_long)(PLLCFG & 0x1F);
+    msel       = (uint32_t)(PLLCFG & 0x1F);
     CPUClkFreq = CLK_IN * (msel + 1);
 
     return CPUClkFreq;
@@ -197,7 +197,7 @@ u_long NutGetCpuClock(void)
  *
  * \return System tick frequency in Hertz.
  */
-u_long NutGetTickClock(void)
+uint32_t NutGetTickClock(void)
 {
     return NUT_TICK_FREQ;
 }
@@ -205,9 +205,9 @@ u_long NutGetTickClock(void)
 /*!
  * \brief Calculate system ticks for a given number of milliseconds.
  */
-u_long NutTimerMillisToTicks(u_long ms)
+uint32_t NutTimerMillisToTicks(uint32_t ms)
 {
-    u_long x;
+    uint32_t x;
 
     x = ms * NutGetTickClock() / 1000UL;
     if (x == 0) {

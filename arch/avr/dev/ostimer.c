@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/07/08 08:25:04  haraldkipp
  * NutDelay is no more architecture specific.
  * Number of loops per millisecond is configurable or will be automatically
@@ -178,7 +181,7 @@
 #define sig_TIMER   sig_OUTPUT_COMPARE0
 #endif
 
-static u_long cpu_clock;
+static uint32_t cpu_clock;
 
 /*! \fn CountCpuLoops(void)
  * \brief Count the number of code loops until timer overflows.
@@ -186,10 +189,10 @@ static u_long cpu_clock;
  * \return The number of loops.
  */
 #ifndef NUT_CPU_FREQ
-static u_long CountCpuLoops(void)
+static uint32_t CountCpuLoops(void)
 {
 #ifdef __GNUC__
-    u_long rc = 1;
+    uint32_t rc = 1;
 
     __asm__ __volatile__("firstovf:              \n\t"  /* */
                          "in %D0,%1              \n\t"  /* */
@@ -213,7 +216,7 @@ static u_long CountCpuLoops(void)
         );
     return rc;
 #elif defined(__IMAGECRAFT__)
-    u_long rc;
+    uint32_t rc;
 
     asm("CLR  R0");
     asm("CLR  R16");
@@ -254,9 +257,9 @@ static u_long CountCpuLoops(void)
  *
  */
 #ifndef NUT_CPU_FREQ
-static u_long NutComputeCpuClock(void)
+static uint32_t NutComputeCpuClock(void)
 {
-    u_long rc;
+    uint32_t rc;
 
     /* Disable timer interrupts. */
     NutDisableTimerIrq();
@@ -337,7 +340,7 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return CPU clock frequency in Hertz.
  */
-u_long NutGetCpuClock(void)
+uint32_t NutGetCpuClock(void)
 {
     return cpu_clock;
 }
@@ -347,7 +350,7 @@ u_long NutGetCpuClock(void)
  *
  * \return System tick frequency in Hertz.
  */
-u_long NutGetTickClock(void)
+uint32_t NutGetTickClock(void)
 {
     return NUT_TICK_FREQ;
 }
@@ -355,9 +358,9 @@ u_long NutGetTickClock(void)
 /*!
  * \brief Calculate system ticks for a given number of milliseconds.
  */
-u_long NutTimerMillisToTicks(u_long ms)
+uint32_t NutTimerMillisToTicks(uint32_t ms)
 {
-    u_long x;
+    uint32_t x;
     
     x = ms * NutGetTickClock() / 1000UL;
     if (x == 0) {

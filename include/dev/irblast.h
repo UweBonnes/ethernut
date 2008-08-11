@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/05/24 07:42:42  haraldkipp
  * New driver from Przemyslaw Rudy sends modulated infrared remote control
  * codes using a simple IR LED. Cool.
@@ -40,13 +43,15 @@
 #ifndef _IRBLAST_H_
 #define _IRBLAST_H_
 
+#include <stdint.h>
+
 /* IOCTL commands */
 #define IRBLAST_SETFREQ  0x0A01   /*!< \brief Set carrier freq */
 #define IRBLAST_GETFREQ  0x0A02   /*!< \brief Query carrier freq */
 
 extern NUTDEVICE devIrblast0;
 
-u_char IrblastFreq2Ocr(u_char freqKHz);
-int IrblastPeriod2Ocr(u_char freqKHz, int entries, u_short *pCode);
+uint8_t IrblastFreq2Ocr(uint8_t freqKHz);
+int IrblastPeriod2Ocr(uint8_t freqKHz, int entries, uint16_t *pCode);
 
 #endif   /* _IRBLAST_H_ */

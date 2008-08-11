@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2008/08/11 07:00:35  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.13  2008/02/15 17:07:09  haraldkipp
  * Added routine to query DNS IP settings.
  *
@@ -106,36 +109,36 @@
 /*@{*/
 
 typedef struct {
-    u_char *doc_hostname;
-    u_char *doc_domain;
-    u_long doc_ip1;
-    u_long doc_ip2;
+    uint8_t *doc_hostname;
+    uint8_t *doc_domain;
+    uint32_t doc_ip1;
+    uint32_t doc_ip2;
 } DNSCONFIG;
 
 static DNSCONFIG doc;
 
 typedef struct {
-    u_short doh_id;
-    u_short doh_flags;
-    u_short doh_quests;
-    u_short doh_answers;
-    u_short doh_authrr;
-    u_short doh_addrr;
+    uint16_t doh_id;
+    uint16_t doh_flags;
+    uint16_t doh_quests;
+    uint16_t doh_answers;
+    uint16_t doh_authrr;
+    uint16_t doh_addrr;
 } DNSHEADER;
 
 typedef struct {
-    u_char *doq_name;
-    u_short doq_type;
-    u_short doq_class;
+    uint8_t *doq_name;
+    uint16_t doq_type;
+    uint16_t doq_class;
 } DNSQUESTION;
 
 typedef struct {
-    u_char *dor_name;
-    u_short dor_type;
-    u_short dor_class;
-    u_long dor_ttl;
-    u_short dor_len;
-    u_char *dor_data;
+    uint8_t *dor_name;
+    uint16_t dor_type;
+    uint16_t dor_class;
+    uint32_t dor_ttl;
+    uint16_t dor_len;
+    uint8_t *dor_data;
 } DNSRESOURCE;
 
 #ifdef NUTDEBUG
@@ -153,7 +156,7 @@ void DumpDnsQuestion(FILE * stream, DNSQUESTION * doq)
 
 void DumpDnsResource(FILE * stream, DNSRESOURCE * dor)
 {
-    u_short i;
+    uint16_t i;
 
     fprintf(stream, "RESOURCE: name='%s' type=%u class=%u ttl=%lu len=%u ",
             dor->dor_name, dor->dor_type, dor->dor_class, dor->dor_ttl, dor->dor_len);
@@ -163,18 +166,18 @@ void DumpDnsResource(FILE * stream, DNSRESOURCE * dor)
 }
 #endif
 
-static u_short AddShort(u_char * cp, u_short val)
+static uint16_t AddShort(uint8_t * cp, uint16_t val)
 {
-    *cp++ = (u_char) (val >> 8);
-    *cp++ = (u_char) val;
+    *cp++ = (uint8_t) (val >> 8);
+    *cp++ = (uint8_t) val;
 
     return 2;
 }
 
-static u_short AddName(u_char * cp, CONST u_char * name)
+static uint16_t AddName(uint8_t * cp, CONST uint8_t * name)
 {
-    u_char *lcp;
-    u_short rc = strlen((char *)name) + 2;
+    uint8_t *lcp;
+    uint16_t rc = strlen((char *)name) + 2;
 
     lcp = cp++;
     *lcp = 0;
@@ -193,15 +196,15 @@ static u_short AddName(u_char * cp, CONST u_char * name)
     return rc;
 }
 
-static u_short ScanShort(u_char * cp, u_short * val)
+static uint16_t ScanShort(uint8_t * cp, uint16_t * val)
 {
-    *val = (u_short)(*cp++) << 8;
+    *val = (uint16_t)(*cp++) << 8;
     *val |= *cp;
 
     return 2;
 }
 
-static u_short ScanLong(u_char * cp, u_long * val)
+static uint16_t ScanLong(uint8_t * cp, uint32_t * val)
 {
     *val = *cp++;
     *val <<= 8;
@@ -214,11 +217,11 @@ static u_short ScanLong(u_char * cp, u_long * val)
     return 4;
 }
 
-static u_short ScanName(u_char * cp, u_char ** npp)
+static uint16_t ScanName(uint8_t * cp, uint8_t ** npp)
 {
-    u_char len;
-    u_short rc;
-    u_char *np;
+    uint8_t len;
+    uint16_t rc;
+    uint8_t *np;
 
     if (*npp) {
         NutHeapFree(*npp);
@@ -242,7 +245,7 @@ static u_short ScanName(u_char * cp, u_char ** npp)
     return rc;
 }
 
-static u_short ScanBinary(u_char * cp, u_char ** npp, u_short len)
+static uint16_t ScanBinary(uint8_t * cp, uint8_t ** npp, uint16_t len)
 {
     if (*npp)
         NutHeapFree(*npp);
@@ -252,7 +255,7 @@ static u_short ScanBinary(u_char * cp, u_char ** npp, u_short len)
     return len;
 }
 
-static DNSHEADER *CreateDnsHeader(DNSHEADER * doh, u_short id)
+static DNSHEADER *CreateDnsHeader(DNSHEADER * doh, uint16_t id)
 {
     if (doh == 0)
         doh = NutHeapAllocClear(sizeof(DNSHEADER));
@@ -270,9 +273,9 @@ static void ReleaseDnsHeader(DNSHEADER * doh)
         NutHeapFree(doh);
 }
 
-static u_short EncodeDnsHeader(u_char * buf, DNSHEADER * doh)
+static uint16_t EncodeDnsHeader(uint8_t * buf, DNSHEADER * doh)
 {
-    u_short rc;
+    uint16_t rc;
 
     rc = AddShort(buf, doh->doh_id);
     rc += AddShort(buf + rc, doh->doh_flags);
@@ -284,9 +287,9 @@ static u_short EncodeDnsHeader(u_char * buf, DNSHEADER * doh)
     return rc;
 }
 
-static u_short DecodeDnsHeader(DNSHEADER * doh, u_char * buf)
+static uint16_t DecodeDnsHeader(DNSHEADER * doh, uint8_t * buf)
 {
-    u_short rc;
+    uint16_t rc;
 
     rc = ScanShort(buf, &doh->doh_id);
     rc += ScanShort(buf + rc, &doh->doh_flags);
@@ -298,7 +301,7 @@ static u_short DecodeDnsHeader(DNSHEADER * doh, u_char * buf)
     return rc;
 }
 
-static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, CONST u_char * name, u_short type)
+static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, CONST uint8_t * name, uint16_t type)
 {
     if (doq == 0)
         doq = NutHeapAllocClear(sizeof(DNSQUESTION));
@@ -322,9 +325,9 @@ static void ReleaseDnsQuestion(DNSQUESTION * doq)
     }
 }
 
-static u_short EncodeDnsQuestion(u_char * buf, DNSQUESTION * doq)
+static uint16_t EncodeDnsQuestion(uint8_t * buf, DNSQUESTION * doq)
 {
-    u_short rc;
+    uint16_t rc;
 
     rc = AddName(buf, doq->doq_name);
     rc += AddShort(buf + rc, doq->doq_type);
@@ -333,9 +336,9 @@ static u_short EncodeDnsQuestion(u_char * buf, DNSQUESTION * doq)
     return rc;
 }
 
-static u_short DecodeDnsQuestion(DNSQUESTION * doq, u_char * buf)
+static uint16_t DecodeDnsQuestion(DNSQUESTION * doq, uint8_t * buf)
 {
-    u_short rc;
+    uint16_t rc;
 
     rc = ScanName(buf, &doq->doq_name);
     rc += ScanShort(buf + rc, &doq->doq_type);
@@ -362,9 +365,9 @@ static void ReleaseDnsResource(DNSRESOURCE * dor)
     }
 }
 
-static u_short DecodeDnsResource(DNSRESOURCE * dor, u_char * buf)
+static uint16_t DecodeDnsResource(DNSRESOURCE * dor, uint8_t * buf)
 {
-    u_short rc;
+    uint16_t rc;
 
     rc = ScanName(buf, &dor->dor_name);
     rc += ScanShort(buf + rc, &dor->dor_type);
@@ -384,7 +387,7 @@ static u_short DecodeDnsResource(DNSRESOURCE * dor, u_char * buf)
  * \param pdnsip IP address of the primary DNS server.
  * \param sdnsip IP address of the secondary DNS server.
  */
-void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdnsip)
+void NutDnsConfig2(uint8_t * hostname, uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip)
 {
     if (doc.doc_hostname) {
         NutHeapFree(doc.doc_hostname);
@@ -415,12 +418,12 @@ void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdn
  * \param domain Name of the domain of the local host.
  * \param dnsip IP address of the DNS server.
  */
-void NutDnsConfig(u_char * hostname, u_char * domain, u_long dnsip)
+void NutDnsConfig(uint8_t * hostname, uint8_t * domain, uint32_t dnsip)
 {
     NutDnsConfig2(hostname, domain, dnsip, 0);
 }
 
-void NutDnsGetConfig2(char ** hostname, char ** domain, u_long *pdnsip, u_long *sdnsip)
+void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip)
 {
     if (hostname) {
         *hostname = (char *)doc.doc_hostname;
@@ -448,32 +451,32 @@ void NutDnsGetConfig2(char ** hostname, char ** domain, u_long *pdnsip, u_long *
  * \return IP address, which is zero, if the name could not
  *         be resolved.
  */
-u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type);
+uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type);
 
-u_long NutDnsGetHostByName(CONST u_char * hostname)
+uint32_t NutDnsGetHostByName(CONST uint8_t * hostname)
 {
     return NutDnsGetResource(hostname, 1);
 }
 
-u_long NutDnsGetMxByDomain(CONST u_char * hostname)
+uint32_t NutDnsGetMxByDomain(CONST uint8_t * hostname)
 {
     return NutDnsGetResource(hostname, 0x0F);
 }
 
-u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type)
+uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
 {
-    u_long ip = 0;
-    u_char *pkt;
-    u_short len;
-    u_short id = 0;
+    uint32_t ip = 0;
+    uint8_t *pkt;
+    uint16_t len;
+    uint16_t id = 0;
     UDPSOCKET *sock;
     DNSHEADER *doh = 0;
     DNSQUESTION *doq = 0;
     DNSRESOURCE *dor = 0;
     int n;
     int retries;
-    u_long raddr;
-    u_short rport;
+    uint32_t raddr;
+    uint16_t rport;
 
     /*
      * We need a configured DNS address.
@@ -558,9 +561,9 @@ u_long NutDnsGetResource(CONST u_char * hostname, CONST u_short type)
                 }
                 if (dor->dor_len == 4) {
                     ip = *dor->dor_data;
-                    ip += (u_long)(*(dor->dor_data + 1)) << 8;
-                    ip += (u_long)(*(dor->dor_data + 2)) << 16;
-                    ip += (u_long)(*(dor->dor_data + 3)) << 24;
+                    ip += (uint32_t)(*(dor->dor_data + 1)) << 8;
+                    ip += (uint32_t)(*(dor->dor_data + 2)) << 16;
+                    ip += (uint32_t)(*(dor->dor_data + 3)) << 24;
                     break;
                 }
                 /* TBD: 18.3.2004 - for MX requests authoritative rrs should be skipped + additional rrs should be searched for IP address */

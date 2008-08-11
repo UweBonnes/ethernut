@@ -57,11 +57,11 @@
  * \return Pointer to the first byte past the end of this name/value pair. 
  *         Returns NULL on any error.
  */
-CONST u_char *SnmpVarParse(CONST u_char * data, size_t * dlen, OID * name, size_t * nlen, u_char * type,
-                           u_char ** value, size_t * vlen)
+CONST uint8_t *SnmpVarParse(CONST uint8_t * data, size_t * dlen, OID * name, size_t * nlen, uint8_t * type,
+                           uint8_t ** value, size_t * vlen)
 {
-    CONST u_char *dp;
-    u_char vtype = ASN_SEQUENCE | ASN_CONSTRUCTOR;
+    CONST uint8_t *dp;
+    uint8_t vtype = ASN_SEQUENCE | ASN_CONSTRUCTOR;
     size_t len = *dlen;
 
     /* Get the object's length and check its type. */
@@ -73,11 +73,11 @@ CONST u_char *SnmpVarParse(CONST u_char * data, size_t * dlen, OID * name, size_
         return NULL;
     }
     /* Check the name's type. */
-    if (vtype != (u_char) (ASN_UNIVERSAL | ASN_PRIMITIVE | ASN_OBJECT_ID)) {
+    if (vtype != (uint8_t) (ASN_UNIVERSAL | ASN_PRIMITIVE | ASN_OBJECT_ID)) {
         return NULL;
     }
     /* Return a pointer to the value. */
-    *value = (u_char *) dp;
+    *value = (uint8_t *) dp;
     /* Find out what type of object this is. */
     if ((dp = AsnHeaderParse(dp, &len, type)) == NULL) {
         return NULL;
@@ -106,10 +106,10 @@ CONST u_char *SnmpVarParse(CONST u_char * data, size_t * dlen, OID * name, size_
  * \return Pointer to the first byte past the end of this name/value pair. 
  *         Returns NULL on any error.
  */
-u_char *SnmpVarBuild(u_char * data, size_t * dlen, CONST OID * name, size_t nlen, u_char type, CONST u_char * value, size_t vlen)
+uint8_t *SnmpVarBuild(uint8_t * data, size_t * dlen, CONST OID * name, size_t nlen, uint8_t type, CONST uint8_t * value, size_t vlen)
 {
     size_t headerLen = 4;
-    u_char *dp;
+    uint8_t *dp;
 
     /* 
      * The final length is not known now, thus the header will have to 
@@ -136,7 +136,7 @@ u_char *SnmpVarBuild(u_char * data, size_t * dlen, CONST OID * name, size_t nlen
     case ASN_COUNTER:
     case ASN_TIMETICKS:
     case ASN_UINTEGER:
-        dp = AsnUnsignedBuild(dp, dlen, type, (u_long *) value);
+        dp = AsnUnsignedBuild(dp, dlen, type, (uint32_t *) value);
         break;
     case ASN_COUNTER64:
         dp = AsnUnsigned64Build(dp, dlen, type, (UNSIGNED64 *) value);

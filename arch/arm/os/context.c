@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/07/07 11:04:27  haraldkipp
  * Configurable ways of handling critical sections for ARM targets.
  *
@@ -108,16 +111,16 @@
  * points to this structure.
  */
 typedef struct {
-    u_long csf_cpsr;
-    u_long csf_r4;
-    u_long csf_r5;
-    u_long csf_r6;
-    u_long csf_r7;
-    u_long csf_r8;
-    u_long csf_r9;
-    u_long csf_r10;
-    u_long csf_r11;             /* AKA fp */
-    u_long csf_lr;
+    uint32_t csf_cpsr;
+    uint32_t csf_r4;
+    uint32_t csf_r5;
+    uint32_t csf_r6;
+    uint32_t csf_r7;
+    uint32_t csf_r8;
+    uint32_t csf_r9;
+    uint32_t csf_r10;
+    uint32_t csf_r11;             /* AKA fp */
+    uint32_t csf_lr;
 } SWITCHFRAME;
 
 /*!
@@ -126,8 +129,8 @@ typedef struct {
  * This is the stack layout being build to enter a new thread.
  */
 typedef struct {
-    u_long cef_r0;
-    u_long cef_pc;
+    uint32_t cef_r0;
+    uint32_t cef_pc;
 } ENTERFRAME;
 
 /*!
@@ -207,7 +210,7 @@ void NutThreadSwitch(void)
  */
 HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
-    u_char *threadMem;
+    uint8_t *threadMem;
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
@@ -251,10 +254,10 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
      * Set predefined values at the stack bottom. May be used to detect
      * stack overflows.
      */
-    *((u_long *) threadMem) = DEADBEEF;
-    *((u_long *) (threadMem + 4)) = DEADBEEF;
-    *((u_long *) (threadMem + 8)) = DEADBEEF;
-    *((u_long *) (threadMem + 12)) = DEADBEEF;
+    *((uint32_t *) threadMem) = DEADBEEF;
+    *((uint32_t *) (threadMem + 4)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 8)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 12)) = DEADBEEF;
 
     /*
      * Setup the entry frame to simulate C function entry.

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -142,7 +145,7 @@ void NutTcpInput(NETBUF * nb)
 
     nb->nb_ap.sz = nb->nb_tp.sz - (th->th_off * 4);
     if (nb->nb_ap.sz)
-        nb->nb_ap.vp = ((u_long *) th) + th->th_off;
+        nb->nb_ap.vp = ((uint32_t *) th) + th->th_off;
     nb->nb_tp.sz = th->th_off * 4;
 
     /*

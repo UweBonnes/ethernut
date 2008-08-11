@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 07:00:00  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2007/06/03 08:52:16  haraldkipp
  * Wrong watchdog mode bit fixed.
  *
@@ -163,10 +166,10 @@ extern int X12RtcGetClock(struct _tm *tm);
 extern int X12RtcSetClock(CONST struct _tm *tm);
 extern int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs);
 extern int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs);
-extern int X12RtcGetStatus(u_long *sflgs);
-extern int X12RtcClearStatus(u_long sflgs);
-extern int X12RtcReadRegs(u_char addr, u_char *buff, size_t len);
-extern int X12RtcWrite(int nv, CONST u_char *buff, size_t len);
+extern int X12RtcGetStatus(uint32_t *sflgs);
+extern int X12RtcClearStatus(uint32_t sflgs);
+extern int X12RtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
+extern int X12RtcWrite(int nv, CONST uint8_t *buff, size_t len);
 
 extern int X12EepromRead(u_int addr, void *buff, size_t len);
 extern int X12EepromWrite(u_int addr, CONST void *buff, size_t len);

@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2005/06/26 12:40:59  chaac
  * Added support for raw mode to AHDLC driver.
  *
@@ -588,8 +591,8 @@ extern int UartAvrInput(NUTDEVICE * dev);
 extern int UartAvrOutput(NUTDEVICE * dev);
 extern int UartAvrFlush(NUTDEVICE * dev);
 
-extern int UartAvrGetRaw(u_char * cp);
-extern int UartAvrPutRaw(u_char ch);
+extern int UartAvrGetRaw(uint8_t * cp);
+extern int UartAvrPutRaw(uint8_t ch);
 
 extern int UartAvrRead(NUTFILE * fp, void *buffer, int size);
 extern int UartAvrWrite(NUTFILE * fp, CONST void *buffer, int len);

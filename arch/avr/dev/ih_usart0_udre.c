@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:16  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2007/05/02 11:23:52  haraldkipp
  * ATmega256x used wrong interrupt handler. Typo corrected.
  *
@@ -117,7 +120,7 @@ static int AvrUart0TxDataIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(UCR, UDRIE);
+    int_fast8_t enabled = bit_is_set(UCR, UDRIE);
 
     /* Disable interrupt. */
     cbi(UCR, UDRIE);

@@ -65,7 +65,7 @@ struct _UARTSDCB {
      *
      * See devices datasheet for further details.
      */
-    u_char dcb_baudSelect;
+    uint8_t dcb_baudSelect;
 
     /* \brief Mode.
      *  - xxxx xxx0  8 bit
@@ -74,29 +74,29 @@ struct _UARTSDCB {
      *  - xxxx x10x  Even parity
      *  - xxxx x11x  Odd parity
      */
-    u_char dcb_mode;
+    uint8_t dcb_mode;
 
     /* \brief Read timeout.
      */
-    u_long dcb_rtimeout;
+    uint32_t dcb_rtimeout;
 
     /* \brief Write timeout.
      */
-    u_long dcb_wtimeout;
+    uint32_t dcb_wtimeout;
 
     /* \brief Configuration flag.
      * Set if device has been configured.
      */
-    volatile u_char dcb_configured;
+    volatile uint8_t dcb_configured;
 
     /* \brief Configuration flag.
      * Set if device has been configured.
      */
-    u_long dcb_crystal;
+    uint32_t dcb_crystal;
 
     /* \brief Device firmware version.
      */
-    u_long dcb_version;
+    uint32_t dcb_version;
 
     /* \brief Queue of threads waiting for output buffer empty.
      *

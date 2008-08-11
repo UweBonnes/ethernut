@@ -78,8 +78,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:15  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:15  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/02/04 18:00:46  harald
  * Version 3 released
@@ -157,10 +160,10 @@ extern "C" {
  * \brief ICMP protocol header type.
  */
 typedef struct icmp {
-    u_char  icmp_type;      /*!< \brief Type of message. */
-    u_char  icmp_code;      /*!< \brief Type sub code. */
-    u_short icmp_cksum;     /*!< \brief Ones complement header checksum. */
-    u_long  icmp_spec;      /*!< \brief Type specific information. */
+    uint8_t  icmp_type;      /*!< \brief Type of message. */
+    uint8_t  icmp_code;      /*!< \brief Type sub code. */
+    uint16_t icmp_cksum;     /*!< \brief Ones complement header checksum. */
+    uint32_t  icmp_spec;      /*!< \brief Type specific information. */
 } ICMPHDR;
 
 #ifdef __cplusplus

@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -92,7 +95,7 @@
  * \param dostim Receives the time of day part. 
  * \param dosdat Receives the calendar date part.
  */
-void GetDosTimeStamp(u_short * dostim, u_short * dosdat)
+void GetDosTimeStamp(uint16_t * dostim, uint16_t * dosdat)
 {
     time_t now;
     struct _tm *gmt;
@@ -101,10 +104,10 @@ void GetDosTimeStamp(u_short * dostim, u_short * dosdat)
     gmt = localtime(&now);
 
     if (dosdat) {
-        *dosdat = (u_short) (gmt->tm_mday | ((gmt->tm_mon + 1) << 5) | ((gmt->tm_year - 80) << 9));
+        *dosdat = (uint16_t) (gmt->tm_mday | ((gmt->tm_mon + 1) << 5) | ((gmt->tm_year - 80) << 9));
     }
     if (dostim) {
-        *dostim = (u_short) ((gmt->tm_sec / 2) | (gmt->tm_min << 5) | (gmt->tm_hour << 11));
+        *dostim = (uint16_t) ((gmt->tm_sec / 2) | (gmt->tm_min << 5) | (gmt->tm_hour << 11));
     }
 }
 
@@ -117,7 +120,7 @@ void GetDosTimeStamp(u_short * dostim, u_short * dosdat)
  * \return 0 on success, 1 if the name contains wildcards or
  *         -1 if the name is malformed.
  */
-int MakePhatName(CONST char *src, u_char * dst)
+int MakePhatName(CONST char *src, uint8_t * dst)
 {
     int rc = 0;
     int i;
@@ -202,7 +205,7 @@ int MakePhatName(CONST char *src, u_char * dst)
  * \return 0 on success, 1 if the name contains wildcards or
  *         -1 if the name is malformed.
  */
-void MakeVisibleName(CONST u_char * src, char *dst)
+void MakeVisibleName(CONST uint8_t * src, char *dst)
 {
     int i;
 
@@ -319,11 +322,11 @@ void PhatFilePosRewind(PHATFILE * fcb)
  * \return 0 on success, -1 otherwise. In the latter case the position
  *         is unspecified.
  */
-int PhatFilePosSet(NUTFILE * nfp, u_long pos)
+int PhatFilePosSet(NUTFILE * nfp, uint32_t pos)
 {
-    u_long dist;
-    u_long step;
-    u_long clust;
+    uint32_t dist;
+    uint32_t step;
+    uint32_t clust;
     PHATFILE *fcb = nfp->nf_fcb;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/09/08 03:01:11  hwmaier
  * Changes to support RX time-out, CAN_SetRxTimeout() added.
  *
@@ -77,12 +80,12 @@
 #include <dev/can_dev.h>
 
 
-u_char CAN_SetSpeed(NUTDEVICE *dev, u_long baudrate)
+uint8_t CAN_SetSpeed(NUTDEVICE *dev, uint32_t baudrate)
 {
     return (((IFCAN *)(dev->dev_icb))->can_set_baud)(dev, baudrate);
 }
 
-void CAN_SetFilter(NUTDEVICE *dev, u_char *ac, u_char *am)
+void CAN_SetFilter(NUTDEVICE *dev, uint8_t *ac, uint8_t *am)
 {
     (((IFCAN *)(dev->dev_icb))->can_set_ac)(dev, ac);
     (((IFCAN *)(dev->dev_icb))->can_set_am)(dev, am);
@@ -93,7 +96,7 @@ void CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame)
     (((IFCAN *)(dev->dev_icb))->can_send)(dev, frame);
 }
 
-u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame)
+uint8_t CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
     if (((IFCAN *)(dev->dev_icb))->can_txfree(dev)) {
         (((IFCAN *)(dev->dev_icb))->can_send)(dev, frame);
@@ -102,17 +105,17 @@ u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame)
     return 1;
 }
 
-u_char CAN_TxFree(NUTDEVICE *dev)
+uint8_t CAN_TxFree(NUTDEVICE *dev)
 {
     return ((IFCAN *)(dev->dev_icb))->can_txfree(dev);
 }
 
-u_char CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame)
+uint8_t CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
   return (((IFCAN *)(dev->dev_icb))->can_recv)(dev, frame);
 }
 
-u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame)
+uint8_t CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame)
 {
     if (((IFCAN *)(dev->dev_icb))->can_rxavail(dev)) {
         (((IFCAN *)(dev->dev_icb))->can_recv)(dev, frame);
@@ -121,7 +124,7 @@ u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame)
     return 1;
 }
 
-u_char CAN_RxAvail(NUTDEVICE *dev)
+uint8_t CAN_RxAvail(NUTDEVICE *dev)
 {
     return ((IFCAN *)(dev->dev_icb))->can_rxavail(dev);
 }
@@ -136,7 +139,7 @@ u_char CAN_RxAvail(NUTDEVICE *dev)
  *          the granularity of the system timer. To disable timeout,
  *          set the parameter to NUT_WAIT_INFINITE.
  */
-void CAN_SetRxTimeout(NUTDEVICE *dev, u_long timeout)
+void CAN_SetRxTimeout(NUTDEVICE *dev, uint32_t timeout)
 {
     ((IFCAN *)(dev->dev_icb))->can_rtimeout = timeout;
 }

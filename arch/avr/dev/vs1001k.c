@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:18  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/05/15 11:46:00  haraldkipp
  * Bug corrected, which stopped player on flush. Now flushing plays
  * the remaining bytes in the buffer.
@@ -385,8 +388,8 @@
 #warning "Bad interrupt specification"
 #endif
 
-static volatile u_char vs_status = VS_STATUS_STOPPED;
-static volatile u_short vs_flush;
+static volatile uint8_t vs_status = VS_STATUS_STOPPED;
+static volatile uint16_t vs_flush;
 
 /*
  * \brief Write a byte to the VS1001 data interface.
@@ -396,10 +399,10 @@ static volatile u_short vs_flush;
  *
  * \param b Byte to be shifted to the decoder's data interface.
  */
-static INLINE void VsSdiPutByte(u_char b)
+static INLINE void VsSdiPutByte(uint8_t b)
 {
 #ifdef VS_NOSPI
-    u_char mask = 0x80;
+    uint8_t mask = 0x80;
     sbi(VS_BSYNC_PORT, VS_BSYNC_BIT);
     while (mask) {
         if (b & mask)
@@ -431,9 +434,9 @@ static INLINE void VsSdiPutByte(u_char b)
  * This function will check the DREQ line. Decoder interrupts must have 
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST u_char * data, u_short len)
+static int VsSdiWrite(CONST uint8_t * data, uint16_t len)
 {
-    u_short try = 5000;
+    uint16_t try = 5000;
 
     while (len--) {
         while (try-- && bit_is_clear(VS_DREQ_PIN, VS_DREQ_BIT));
@@ -450,9 +453,9 @@ static int VsSdiWrite(CONST u_char * data, u_short len)
  * This function is similar to VsSdiWrite() except that the data is 
  * located in program space.
  */
-static int VsSdiWrite_P(PGM_P data, u_short len)
+static int VsSdiWrite_P(PGM_P data, uint16_t len)
 {
-    u_short try = 5000;
+    uint16_t try = 5000;
 
     while (len--) {
         while (try-- && bit_is_clear(VS_DREQ_PIN, VS_DREQ_BIT));
@@ -468,9 +471,9 @@ static int VsSdiWrite_P(PGM_P data, u_short len)
  * Decoder interrupts must have been disabled and the decoder chip
  * select must have been enabled before calling this function.
  */
-static INLINE void VsSciPutByte(u_char data)
+static INLINE void VsSciPutByte(uint8_t data)
 {
-    u_char mask = 0x80;
+    uint8_t mask = 0x80;
 
     /*
      * Loop until all 8 bits are processed.
@@ -496,10 +499,10 @@ static INLINE void VsSciPutByte(u_char data)
  * Decoder interrupts must have been disabled and the decoder chip
  * select must have been enabled before calling this function.
  */
-static INLINE u_char VsSciGetByte(void)
+static INLINE uint8_t VsSciGetByte(void)
 {
-    u_char mask = 0x80;
-    u_char data = 0;
+    uint8_t mask = 0x80;
+    uint8_t data = 0;
 
     /*
      * Loop until all 8 bits are processed.
@@ -520,7 +523,7 @@ static INLINE u_char VsSciGetByte(void)
  *
  * Decoder interrupts must have been disabled before calling this function.
  */
-static void VsRegWrite(u_char reg, u_short data)
+static void VsRegWrite(uint8_t reg, uint16_t data)
 {
     /* Select chip. */
     cbi(VS_XCS_PORT, VS_XCS_BIT);
@@ -532,8 +535,8 @@ static void VsRegWrite(u_char reg, u_short data)
 
     VsSciPutByte(VS_OPCODE_WRITE);
     VsSciPutByte(reg);
-    VsSciPutByte((u_char) (data >> 8));
-    VsSciPutByte((u_char) data);
+    VsSciPutByte((uint8_t) (data >> 8));
+    VsSciPutByte((uint8_t) data);
 
 #ifndef VS_NOSPI
     /* Re-enable SPI. Hint given by Jesper Hansen. */
@@ -552,9 +555,9 @@ static void VsRegWrite(u_char reg, u_short data)
  * 
  * \return Register contents.
  */
-static u_short VsRegRead(u_char reg)
+static uint16_t VsRegRead(uint8_t reg)
 {
-    u_short data;
+    uint16_t data;
 
     /* Disable interrupts and select chip. */
     cbi(VS_XCS_PORT, VS_XCS_BIT);
@@ -566,7 +569,7 @@ static u_short VsRegRead(u_char reg)
 
     VsSciPutByte(VS_OPCODE_READ);
     VsSciPutByte(reg);
-    data = (u_short)VsSciGetByte() << 8;
+    data = (uint16_t)VsSciGetByte() << 8;
     data |= VsSciGetByte();
 
 #ifndef VS_NOSPI
@@ -592,10 +595,10 @@ static u_short VsRegRead(u_char reg)
  *
  * \return Zero if interrupts were disabled before this call.
  */
-u_char VsPlayerInterrupts(u_char enable)
+uint8_t VsPlayerInterrupts(uint8_t enable)
 {
-    static u_char is_enabled = 0;
-    u_char rc;
+    static uint8_t is_enabled = 0;
+    uint8_t rc;
 
     rc = is_enabled;
     if(enable) {
@@ -618,8 +621,8 @@ u_char VsPlayerInterrupts(u_char enable)
  */
 static void VsPlayerFeed(void *arg)
 {
-    u_char ief;
-    u_char j = 32;
+    uint8_t ief;
+    uint8_t j = 32;
     size_t total = 0;
 
     if (bit_is_clear(VS_DREQ_PIN, VS_DREQ_BIT)) {
@@ -729,7 +732,7 @@ int VsPlayerKick(void)
  */
 int VsPlayerStop(void)
 {
-    u_char ief;
+    uint8_t ief;
 
     ief = VsPlayerInterrupts(0);
     /* Check whether we need to stop at all to not overwrite other than running status */
@@ -807,7 +810,7 @@ int VsPlayerInit(void)
 
 #ifndef VS_NOSPI
     {
-        u_char dummy;           /* Required by some compilers. */
+        uint8_t dummy;           /* Required by some compilers. */
 
         /* 
          * Init SPI mode to no interrupts, enabled, MSB first, master mode, 
@@ -859,7 +862,7 @@ int VsPlayerInit(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int VsPlayerReset(u_short mode)
+int VsPlayerReset(uint16_t mode)
 {
     /* Disable decoder interrupts and feeding. */
     VsPlayerInterrupts(0);
@@ -910,9 +913,9 @@ int VsPlayerReset(u_short mode)
  *
  * \return 0 on success, -1 otherwise.
  */
-int VsPlayerSetMode(u_short mode)
+int VsPlayerSetMode(uint16_t mode)
 {
-    u_char ief;
+    uint8_t ief;
     
     ief = VsPlayerInterrupts(0);
     VsRegWrite(VS_MODE_REG, mode);
@@ -926,10 +929,10 @@ int VsPlayerSetMode(u_short mode)
  *
  * \return Play time since reset in seconds
  */
-u_short VsPlayTime(void)
+uint16_t VsPlayTime(void)
 {
-    u_short rc;
-    u_char ief;
+    uint16_t rc;
+    uint8_t ief;
 
     ief = VsPlayerInterrupts(0);
     rc = VsRegRead(VS_DECODE_TIME_REG);
@@ -947,7 +950,7 @@ u_short VsPlayTime(void)
  * - VS_STATUS_EOF Player has reached the end of a stream after VsPlayerFlush() has been called.
  * - VS_STATUS_EMPTY Player runs out of data. VsPlayerKick() will restart it.
  */
-u_char VsGetStatus(void)
+uint8_t VsGetStatus(void)
 {
     return vs_status;
 }
@@ -963,8 +966,8 @@ u_char VsGetStatus(void)
  */
 int VsGetHeaderInfo(VS_HEADERINFO * vshi)
 {
-    u_short *usp = (u_short *) vshi;
-    u_char ief;
+    uint16_t *usp = (uint16_t *) vshi;
+    uint8_t ief;
 
     ief = VsPlayerInterrupts(0);
     *usp = VsRegRead(VS_HDAT1_REG);
@@ -987,10 +990,10 @@ int VsGetHeaderInfo(VS_HEADERINFO * vshi)
  * - Bit 5: Good Instruction RAM (high)
  * - Bit 6: Good Instruction RAM (low)
  */
-u_short VsMemoryTest(void)
+uint16_t VsMemoryTest(void)
 {
-    u_short rc;
-    u_char ief;
+    uint16_t rc;
+    uint8_t ief;
     static prog_char mtcmd[] = { 0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00 };
 
     ief = VsPlayerInterrupts(0);
@@ -1010,12 +1013,12 @@ u_short VsMemoryTest(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int VsSetVolume(u_char left, u_char right)
+int VsSetVolume(uint8_t left, uint8_t right)
 {
-    u_char ief;
+    uint8_t ief;
 
     ief = VsPlayerInterrupts(0);
-    VsRegWrite(VS_VOL_REG, (((u_short) left) << 8) | (u_short) right);
+    VsRegWrite(VS_VOL_REG, (((uint16_t) left) << 8) | (uint16_t) right);
     VsPlayerInterrupts(ief);
 
     return 0;
@@ -1029,9 +1032,9 @@ int VsSetVolume(u_char left, u_char right)
  *
  * \return 0 on success, -1 otherwise.
  */
-int VsBeep(u_char fsin, u_char ms)
+int VsBeep(uint8_t fsin, uint8_t ms)
 {
-    u_char ief;
+    uint8_t ief;
     static prog_char on[] = { 0x53, 0xEF, 0x6E };
     static prog_char off[] = { 0x45, 0x78, 0x69, 0x74 };
     static prog_char end[] = { 0x00, 0x00, 0x00, 0x00 };

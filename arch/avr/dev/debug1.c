@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -86,9 +89,9 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
         * with 12.0 and 16.0 crystals.
         */
         sbi(UCSR1A, U2X1);
-        outb(UBRR1L, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 8UL)) + 1UL) / 2UL) - 1UL);
+        outb(UBRR1L, (uint8_t) ((((2UL * NutGetCpuClock()) / (*((uint32_t *)conf) * 8UL)) + 1UL) / 2UL) - 1UL);
 #else
-        outb(UBRR1L, (u_char) ((((2UL * NutGetCpuClock()) / (*((u_long *)conf) * 16UL)) + 1UL) / 2UL) - 1UL);
+        outb(UBRR1L, (uint8_t) ((((2UL * NutGetCpuClock()) / (*((uint32_t *)conf) * 16UL)) + 1UL) / 2UL) - 1UL);
 #endif
         return 0;
     }

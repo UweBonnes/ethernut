@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/06/27 01:42:56  hwmaier
  * Fixed bug related to edge triggered interrupt mode (RTL_IRQ_RISING_EDGE) in ISR.
  *
@@ -370,13 +373,13 @@ static INLINE void Delay16Cycles(void)
  * Realtek packet header.
  */
 struct nic_pkt_header {
-    u_char ph_status;           /*!< \brief Status, contents of RSR register */
-    u_char ph_nextpg;           /*!< \brief Page for next packet */
-    u_short ph_size;            /*!< \brief Size of header and packet in octets */
+    uint8_t ph_status;           /*!< \brief Status, contents of RSR register */
+    uint8_t ph_nextpg;           /*!< \brief Page for next packet */
+    uint16_t ph_size;            /*!< \brief Size of header and packet in octets */
 };
 
-#define NICINB(reg)         (*((volatile u_char *)RTL_BASE_ADDR + reg))
-#define NICOUTB(reg, val)   (*((volatile u_char *)RTL_BASE_ADDR + reg) = val)
+#define NICINB(reg)         (*((volatile uint8_t *)RTL_BASE_ADDR + reg))
+#define NICOUTB(reg, val)   (*((volatile uint8_t *)RTL_BASE_ADDR + reg) = val)
 
 /*!
  * \brief Reset the Ethernet controller.
@@ -384,8 +387,8 @@ struct nic_pkt_header {
  */
 static int NicReset(void)
 {
-    u_char i;
-    u_char j;
+    uint8_t i;
+    uint8_t j;
 
 /*
  * Toggle the hardware reset line. Since Ethernut version 1.3 the
@@ -543,9 +546,9 @@ static prog_char nic_eeprom[18] = {
 static void EmulateNicEeprom(void)
 {
 #ifdef RTL_EESK_BIT
-    register u_char clk;
-    register u_char cnt;
-    register u_char val;
+    register uint8_t clk;
+    register uint8_t cnt;
+    register uint8_t val;
 
     /*
      * Disable all interrupts. This routine requires critical timing
@@ -674,9 +677,9 @@ static void EmulateNicEeprom(void)
  * should have been disabled when calling this
  * function.
  */
-static int NicStart(CONST u_char * mac)
+static int NicStart(CONST uint8_t * mac)
 {
-    u_char i;
+    uint8_t i;
 
     if (NicReset()) {
         return -1;
@@ -824,7 +827,7 @@ static int NicStart(CONST u_char * mac)
  */
 static void NicCompleteDma(void)
 {
-    u_char i;
+    uint8_t i;
 
     /*
      * Complete remote dma.
@@ -847,11 +850,11 @@ static void NicCompleteDma(void)
 /*
  * Write data block to the NIC.
  */
-static void NicWrite(u_char * buf, u_short len)
+static void NicWrite(uint8_t * buf, uint16_t len)
 {
-    register u_short l = len - 1;
-    register u_char ih = (u_short) l >> 8;
-    register u_char il = (u_char) l;
+    register uint16_t l = len - 1;
+    register uint8_t ih = (uint16_t) l >> 8;
+    register uint8_t il = (uint8_t) l;
 
     if (!len)
         return;
@@ -866,11 +869,11 @@ static void NicWrite(u_char * buf, u_short len)
 /*
  * Read data block from the NIC.
  */
-static void NicRead(u_char * buf, u_short len)
+static void NicRead(uint8_t * buf, uint16_t len)
 {
-    register u_short l = len - 1;
-    register u_char ih = (u_short) l >> 8;
-    register u_char il = (u_char) l;
+    register uint16_t l = len - 1;
+    register uint8_t ih = (uint16_t) l >> 8;
+    register uint8_t il = (uint8_t) l;
 
     if (!len)
         return;
@@ -898,9 +901,9 @@ static void NicRead(u_char * buf, u_short len)
  */
 static int NicPutPacket(NETBUF * nb)
 {
-    u_short sz;
-    u_short i;
-    u_char padding = 0;
+    uint16_t sz;
+    uint16_t i;
+    uint8_t padding = 0;
 
     /*
      * Calculate the number of bytes to be send. Do not
@@ -920,7 +923,7 @@ static int NicPutPacket(NETBUF * nb)
      * so we have to do this.
      */
     if (sz < 60) {
-        padding = (u_char) (60 - sz);
+        padding = (uint8_t) (60 - sz);
         sz = 60;
     }
 
@@ -1004,13 +1007,13 @@ static NETBUF *NicGetPacket(void)
 {
     NETBUF *nb = 0;
     struct nic_pkt_header hdr;
-    u_short count;
-    u_char *buf;
-    u_char nextpg;
-    u_char bnry;
-    u_char curr;
-    u_short i;
-    u_char drop = 0;
+    uint16_t count;
+    uint8_t *buf;
+    uint8_t nextpg;
+    uint8_t bnry;
+    uint8_t curr;
+    uint16_t i;
+    uint8_t drop = 0;
 
     /* we don't want to be interrupted by NIC owerflow */
     cbi(EIMSK, RTL_SIGNAL_IRQ);
@@ -1044,7 +1047,7 @@ static NETBUF *NicGetPacket(void)
     NICOUTB(NIC_PG0_RBCR1, 0);
     NICOUTB(NIC_PG0_RSAR0, 0);
     NICOUTB(NIC_PG0_RSAR1, bnry);
-    buf = (u_char *) & hdr;
+    buf = (uint8_t *) & hdr;
     NICOUTB(NIC_CR, NIC_CR_STA | NIC_CR_RD0);
     Delay16Cycles();
     for (i = 0; i < sizeof(struct nic_pkt_header); i++)
@@ -1069,7 +1072,7 @@ static NETBUF *NicGetPacket(void)
         nextpg += NIC_FIRST_RX_PAGE;
     }
     if (nextpg != hdr.ph_nextpg) {
-        u_char nextpg1 = nextpg + 1;
+        uint8_t nextpg1 = nextpg + 1;
         if (nextpg1 >= NIC_STOP_PAGE) {
             nextpg1 -= NIC_STOP_PAGE;
             nextpg1 += NIC_FIRST_RX_PAGE;
@@ -1142,11 +1145,11 @@ static NETBUF *NicGetPacket(void)
  * to Bengt Florin for contributing his code, which provides much more
  * stability than its predecessor.
  */
-static u_char NicOverflow(void)
+static uint8_t NicOverflow(void)
 {
-    u_char cr;
-    u_char resend = 0;
-    u_char curr;
+    uint8_t cr;
+    uint8_t resend = 0;
+    uint8_t curr;
 
     /*
      * Wait for any transmission in progress. Save the command register,
@@ -1205,7 +1208,7 @@ static u_char NicOverflow(void)
  */
 static void NicInterrupt(void *arg)
 {
-    u_char isr;
+    uint8_t isr;
     NICINFO *ni = (NICINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     ni->ni_interrupts++;
@@ -1310,7 +1313,7 @@ THREAD(NicRx, arg)
 
             /* The sanity check may fail because the controller is too busy.
                restart the NIC. */
-            if ((u_short) nb == 0xFFFF) {
+            if ((uint16_t) nb == 0xFFFF) {
                 NicStart(ifn->if_mac);
                 ni->ni_rx_size_errors++;
             } else if (nb) {

@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:23  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 07:00:28  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:23  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 18:13:09  harald
  * Version 3 released
@@ -45,12 +48,13 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern u_long NutVersion(void);
+extern uint32_t NutVersion(void);
 extern CONST char *NutVersionString(void);
 
 #ifdef __cplusplus

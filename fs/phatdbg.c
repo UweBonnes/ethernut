@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/01/05 16:31:27  haraldkipp
  * First check-in.
  *
@@ -62,7 +65,7 @@
  */
 /*@{*/
 
-void PhatDbgAttrList(FILE * fp, u_char attr)
+void PhatDbgAttrList(FILE * fp, uint8_t attr)
 {
     if (attr & PHAT_FATTR_RDONLY) {
         fputc('R', fp);
@@ -92,7 +95,7 @@ void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent)
     fprintf(fp, "DentCTime: 0x%04X 0x%04X 0x%02X\n", dent->dent_cdate, dent->dent_ctime, dent->dent_ctsecs);
     fprintf(fp, "DentADate: 0x%04X\n", dent->dent_adate);
     fprintf(fp, "DentMTime: 0x%04X 0x%04X\n", dent->dent_mdate, dent->dent_mtime);
-    fprintf(fp, "DentClust: %lu\n", (u_long) dent->dent_clust + ((u_long) dent->dent_clusthi << 16));
+    fprintf(fp, "DentClust: %lu\n", (uint32_t) dent->dent_clust + ((uint32_t) dent->dent_clusthi << 16));
     fprintf(fp, "DentFSize: %lu\n", dent->dent_fsize);
 }
 
@@ -106,7 +109,7 @@ void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp)
     fprintf(fp, "Cluster Pos: %lu\n", nfp->f_clust_pos);
     fprintf(fp, "Sector Pos : %lu\n", nfp->f_sect_pos);
     PhatDbgDirEntry(fp, NULL, &nfp->f_dirent);
-    fprintf(fp, "Parent Clust: %lu\n", (u_long) nfp->f_pde_clust + ((u_long) nfp->f_pde_clusthi << 16));
+    fprintf(fp, "Parent Clust: %lu\n", (uint32_t) nfp->f_pde_clust + ((uint32_t) nfp->f_pde_clusthi << 16));
     fprintf(fp, "DirEnt Sect : %lu\n", nfp->f_de_sect);
     fprintf(fp, "DirEnt Offs : %lu\n", nfp->f_de_offs);
     fprintf(fp, "DirEnt Dirty: %u\n", nfp->f_de_dirty);
@@ -124,7 +127,7 @@ void PhatDbgVbr(FILE * fp, CONST char *title, PHATVBR * vbr)
     fprintf(fp, "Rsvd. sectors  : %u\n", vbr->bios_rsvd_sects);
     fprintf(fp, "Alloc. tables  : %u\n", vbr->bios_ntabs);
     fprintf(fp, "Root entries   : %u\n", vbr->bios_rootsz);
-    fprintf(fp, "Total sectors  : %lu\n", vbr->bios_volsz ? (u_long) vbr->bios_volsz : vbr->bios_volsz_big);
+    fprintf(fp, "Total sectors  : %lu\n", vbr->bios_volsz ? (uint32_t) vbr->bios_volsz : vbr->bios_volsz_big);
     fprintf(fp, "Media type     : 0x%02X\n", vbr->bios_media);
     fprintf(fp, "Sectors/table  : %u %lu\n", vbr->bios_tabsz, vbr->bios_tabsz_big);
     fprintf(fp, "Sectors/track  : %u\n", vbr->bios_sects_p_trk);

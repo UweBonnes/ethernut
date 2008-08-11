@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/07/26 15:47:06  haraldkipp
  * AtomicInc() and AtomicDec() are no longer required by Nut/Net.
  * Removed to simplify the porting job. Broken applications should
@@ -57,7 +60,7 @@
 
 #define NutEnterCritical()                     \
     {                                          \
-        u_char __ccr__;                        \
+        uint8_t __ccr__;                        \
         asm volatile(                          \
             "stc.b ccr, %0l"            "\n\t" \
             "orc.b #0xc0, ccr":"=r"(__ccr__):  \
@@ -76,7 +79,7 @@
 
 #define NutEnableInt(ccr)                      \
     {                                          \
-        u_char __ccr__;                        \
+        uint8_t __ccr__;                        \
         asm volatile(                          \
             "stc.b ccr, %0l"            "\n\t" \
             "andc.b #0x3f, ccr":"=r"(__ccr__): \

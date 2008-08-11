@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2007/05/24 07:29:10  haraldkipp
  * Update provided by Przemyslaw Rudy.
  *
@@ -149,8 +152,8 @@
 // define the irq structure
 typedef struct tagIRQDEFS {
     IRQ_HANDLER *pvIrq;
-    volatile u_char *pnIrqMskPort;
-    u_char nMask;
+    volatile uint8_t *pnIrqMskPort;
+    uint8_t nMask;
 } IRQDEFS;
 
 // define the interrupt handlers
@@ -168,7 +171,7 @@ static CONST PROGMEM IRQDEFS atIrqDefs[] = {
 // define the dcb's asigned to the interrupt to have more than one device on the same interrupt
 // NUT intrnal irq structure could be used instead but that would be a hack
 static NUTDEVICE *pIrqDev[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-static u_char irqMask = 0;
+static uint8_t irqMask = 0;
 #ifdef ACE_HDX_LINE
 static u_int ByteOcrTime(NUTDEVICE * dev);
 static void AceTmr3Init(void);
@@ -184,15 +187,15 @@ static void AceIrqHandler(void *arg)
     NUTDEVICE *dev = (NUTDEVICE *) arg;
     IFSTREAM *ifs;
     ACEDCB *dcb;
-    volatile u_char event;
-    u_char maxData;
+    volatile uint8_t event;
+    uint8_t maxData;
 
     do {
         ifs = dev->dev_icb;
         dcb = dev->dev_dcb;
 
         // get the interrupt source
-        while (((event = *(u_char *) (dev->dev_base + ACE_IIR_OFS)) & ~IIR_FIFO_MSK) != IIR_NON_MSK) {
+        while (((event = *(uint8_t *) (dev->dev_base + ACE_IIR_OFS)) & ~IIR_FIFO_MSK) != IIR_NON_MSK) {
             switch (event & ~IIR_FIFO_MSK) {
             case IIR_RDA_MSK:  // receive data available
             case IIR_TDA_MSK:  // timeout receive data available
@@ -200,9 +203,9 @@ static void AceIrqHandler(void *arg)
                  * reading incomming data all the time.
                  */
                 maxData = (dcb->dcb_rfifo == 0) ? 1 : dcb->dcb_rfifo;
-                for (; (*(u_char *) (dev->dev_base + ACE_LSR_OFS) & LSR_RDR_MSK) && (maxData > 0); --maxData) {
+                for (; (*(uint8_t *) (dev->dev_base + ACE_LSR_OFS) & LSR_RDR_MSK) && (maxData > 0); --maxData) {
                     // get the character and store it
-                    ifs->if_rx_buf[ifs->if_rx_idx] = *(u_char *) (dev->dev_base + ACE_RBR_OFS);
+                    ifs->if_rx_buf[ifs->if_rx_idx] = *(uint8_t *) (dev->dev_base + ACE_RBR_OFS);
                     /* if we have just received a first byte into the empty buffer */
                     if (ifs->if_rd_idx == ifs->if_rx_idx) {
                         NutEventPostFromIrq(&(dcb->dcb_rx_rdy));
@@ -218,7 +221,7 @@ static void AceIrqHandler(void *arg)
                     for (; (ifs->if_tx_idx != ifs->if_wr_idx) && (dcb->dcb_wfifo > 0); ++ifs->if_tx_idx) {
                         --dcb->dcb_wfifo;
                         // send a character
-                        *(u_char *) (dev->dev_base + ACE_THR_OFS) = ifs->if_tx_buf[ifs->if_tx_idx];
+                        *(uint8_t *) (dev->dev_base + ACE_THR_OFS) = ifs->if_tx_buf[ifs->if_tx_idx];
                     }
                 } else {
 #ifdef ACE_HDX_LINE
@@ -247,18 +250,18 @@ static void AceIrqHandler(void *arg)
 #ifdef ACE_HDX_LINE
 static u_int ByteOcrTime(NUTDEVICE * dev)
 {
-    u_char bv;
-    u_char tb = 14;             /* twice of 1 start 5 char min. 1 stop */
+    uint8_t bv;
+    uint8_t tb = 14;             /* twice of 1 start 5 char min. 1 stop */
     u_int sv;
-    u_long s, c;
+    uint32_t s, c;
 
     /* get speed */
-    *(u_char *) (dev->dev_base + ACE_LCR_OFS) |= LCR_ENB_MSK;
-    sv = *(u_char *) (dev->dev_base + ACE_DLL_OFS);
-    sv |= *(u_char *) (dev->dev_base + ACE_DLM_OFS) << 8;
-    *(u_char *) (dev->dev_base + ACE_LCR_OFS) &= (u_char) ~ LCR_ENB_MSK;
+    *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) |= LCR_ENB_MSK;
+    sv = *(uint8_t *) (dev->dev_base + ACE_DLL_OFS);
+    sv |= *(uint8_t *) (dev->dev_base + ACE_DLM_OFS) << 8;
+    *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) &= (uint8_t) ~ LCR_ENB_MSK;
 
-    bv = *(u_char *) (dev->dev_base + ACE_LCR_OFS);
+    bv = *(uint8_t *) (dev->dev_base + ACE_LCR_OFS);
 
     /* character length *2 */
     tb += (bv & (LCR_WS0_MSK | LCR_WS1_MSK)) << 1;
@@ -272,10 +275,10 @@ static u_int ByteOcrTime(NUTDEVICE * dev)
     tb += (!!(bv & LCR_PEN_MSK)) << 1;
 
     s = ACE_CLOCK * 8UL;
-    s = s / (u_long) (sv);
+    s = s / (uint32_t) (sv);
 
     c = NutGetCpuClock();
-    c = c * (u_long) tb;
+    c = c * (uint32_t) tb;
 
     sv = ((u_int) (c / s) & 0x0000ffff) - 1;
 
@@ -325,7 +328,7 @@ int AceOutput(NUTDEVICE * dev)
 {
     IFSTREAM *ifs = dev->dev_icb;
     ACEDCB *dcb = dev->dev_dcb;
-    volatile u_char tmp;
+    volatile uint8_t tmp;
 
     if ((ifs->if_tx_act == 0) && (ifs->if_tx_idx != ifs->if_wr_idx)) {
         ifs->if_tx_act = 1;
@@ -338,7 +341,7 @@ int AceOutput(NUTDEVICE * dev)
         }
 #endif
         // send a character
-        *(u_char *) (dev->dev_base + ACE_THR_OFS) = ifs->if_tx_buf[tmp];
+        *(uint8_t *) (dev->dev_base + ACE_THR_OFS) = ifs->if_tx_buf[tmp];
         // no need to enable an interrupt here as it should be enabled all the time
     }
 
@@ -382,13 +385,13 @@ int AceFlush(NUTDEVICE * dev)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AceGetStatus(NUTDEVICE * dev, u_long * status)
+static int AceGetStatus(NUTDEVICE * dev, uint32_t * status)
 {
     IFSTREAM *ifs = dev->dev_icb;
-    u_char us;
+    uint8_t us;
 
     *status = 0;
-    us = *(u_char *) (dev->dev_base + ACE_LSR_OFS);
+    us = *(uint8_t *) (dev->dev_base + ACE_LSR_OFS);
     if (us & LSR_FER_MSK)
         *status |= ACE_FRAMINGERROR;
     if (us & LSR_OVR_MSK)
@@ -403,30 +406,30 @@ static int AceGetStatus(NUTDEVICE * dev, u_long * status)
 /*
  * Carefully enable ACE functions.
  */
-static void AceEnable(u_short base)
+static void AceEnable(uint16_t base)
 {
-    /*volatile u_char* pnBase = *(volatile u_char* )base; */
+    /*volatile uint8_t* pnBase = *(volatile uint8_t* )base; */
 
     /*
      * Enable ACE interrupts.
      */
     NutEnterCritical();
-    *(u_char *) (base + ACE_IER_OFS) = IER_RDA_MSK | IER_THE_MSK;
+    *(uint8_t *) (base + ACE_IER_OFS) = IER_RDA_MSK | IER_THE_MSK;
     NutExitCritical();
 }
 
 /*
  * Carefully disable ACE functions.
  */
-static void AceDisable(u_short base)
+static void AceDisable(uint16_t base)
 {
-    /*volatile u_char* pnBase = *(volatile u_char* )base; */
+    /*volatile uint8_t* pnBase = *(volatile uint8_t* )base; */
 
     /*
      * Disable ACE interrupts.
      */
     NutEnterCritical();
-    *(u_char *) (base + ACE_IER_OFS) &= (u_char) ~ (IER_RDA_MSK);
+    *(uint8_t *) (base + ACE_IER_OFS) &= (uint8_t) ~ (IER_RDA_MSK);
     NutExitCritical();
 
     /*
@@ -442,26 +445,26 @@ static void AceDisable(u_short base)
  *             function.
  * \param req  Requested control function. May be set to one of the
  *             following constants:
- *             - ACE_SETSPEED, conf points to an u_long value containing the baudrate.
- *             - ACE_GETSPEED, conf points to an u_long value receiving the current baudrate.
- *             - ACE_SETDATABITS, conf points to an u_long value containing the number of data bits, 5, 6, 7 or 8.
- *             - ACE_GETDATABITS, conf points to an u_long value receiving the number of data bits, 5, 6, 7 or 8.
- *             - ACE_SETPARITY, conf points to an u_long value containing the parity, 0 (no), 1 (odd) or 2 (even).
- *             - ACE_GETPARITY, conf points to an u_long value receiving the parity, 0 (no), 1 (odd) or 2 (even).
- *             - ACE_SETSTOPBITS, conf points to an u_long value containing the number of stop bits 1 or 2.
- *             - ACE_GETSTOPBITS, conf points to an u_long value receiving the number of stop bits 1 or 2.
+ *             - ACE_SETSPEED, conf points to an uint32_t value containing the baudrate.
+ *             - ACE_GETSPEED, conf points to an uint32_t value receiving the current baudrate.
+ *             - ACE_SETDATABITS, conf points to an uint32_t value containing the number of data bits, 5, 6, 7 or 8.
+ *             - ACE_GETDATABITS, conf points to an uint32_t value receiving the number of data bits, 5, 6, 7 or 8.
+ *             - ACE_SETPARITY, conf points to an uint32_t value containing the parity, 0 (no), 1 (odd) or 2 (even).
+ *             - ACE_GETPARITY, conf points to an uint32_t value receiving the parity, 0 (no), 1 (odd) or 2 (even).
+ *             - ACE_SETSTOPBITS, conf points to an uint32_t value containing the number of stop bits 1 or 2.
+ *             - ACE_GETSTOPBITS, conf points to an uint32_t value receiving the number of stop bits 1 or 2.
  *             - ACE_SETSTATUS
  *             - ACE_GETSTATUS
- *             - ACE_SETREADTIMEOUT, conf points to an u_long value containing the read timeout.
- *             - ACE_GETREADTIMEOUT, conf points to an u_long value receiving the read timeout.
- *             - ACE_SETWRITETIMEOUT, conf points to an u_long value containing the write timeout.
- *             - ACE_GETWRITETIMEOUT, conf points to an u_long value receiving the write timeout.
- *             - ACE_SETLOCALECHO, conf points to an u_long value containing 0 (off) or 1 (on).
- *             - ACE_GETLOCALECHO, conf points to an u_long value receiving 0 (off) or 1 (on).
- *             - ACE_SETFLOWCONTROL, conf points to an u_long value containing combined ACE_FCR_ values.
- *             - ACE_GETFLOWCONTROL, conf points to an u_long value containing receiving ACE_FCR_ values.
- *             - ACE_SETCOOKEDMODE, conf points to an u_long value containing 0 (off) or 1 (on).
- *             - ACE_GETCOOKEDMODE, conf points to an u_long value receiving 0 (off) or 1 (on).
+ *             - ACE_SETREADTIMEOUT, conf points to an uint32_t value containing the read timeout.
+ *             - ACE_GETREADTIMEOUT, conf points to an uint32_t value receiving the read timeout.
+ *             - ACE_SETWRITETIMEOUT, conf points to an uint32_t value containing the write timeout.
+ *             - ACE_GETWRITETIMEOUT, conf points to an uint32_t value receiving the write timeout.
+ *             - ACE_SETLOCALECHO, conf points to an uint32_t value containing 0 (off) or 1 (on).
+ *             - ACE_GETLOCALECHO, conf points to an uint32_t value receiving 0 (off) or 1 (on).
+ *             - ACE_SETFLOWCONTROL, conf points to an uint32_t value containing combined ACE_FCR_ values.
+ *             - ACE_GETFLOWCONTROL, conf points to an uint32_t value containing receiving ACE_FCR_ values.
+ *             - ACE_SETCOOKEDMODE, conf points to an uint32_t value containing 0 (off) or 1 (on).
+ *             - ACE_GETCOOKEDMODE, conf points to an uint32_t value receiving 0 (off) or 1 (on).
  *
  * \param conf Points to a buffer that contains any data required for
  *             the given control function or receives data from that
@@ -479,12 +482,12 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
     int rc = 0;
     ACEDCB *dcb;
     IFSTREAM *ifs;
-    u_long *lvp = (u_long *) conf;
-    u_long lv = *lvp;
-    u_char bv = (u_char) lv;
-    u_short sv;
-    u_short devnum;
-    u_char tv;
+    uint32_t *lvp = (uint32_t *) conf;
+    uint32_t lv = *lvp;
+    uint8_t bv = (uint8_t) lv;
+    uint16_t sv;
+    uint16_t devnum;
+    uint8_t tv;
 
     if (dev == 0) {
         return -1;
@@ -496,11 +499,11 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
     switch (req) {
     case ACE_SETSPEED:
         AceDisable(devnum);
-        sv = (u_short) (ACE_CLOCK / (lv * 16UL));
-        *(u_char *) (dev->dev_base + ACE_LCR_OFS) |= LCR_ENB_MSK;
-        *(u_char *) (dev->dev_base + ACE_DLL_OFS) = (u_char) (sv & 0xFF);
-        *(u_char *) (dev->dev_base + ACE_DLM_OFS) = (u_char) (sv >> 8);
-        *(u_char *) (dev->dev_base + ACE_LCR_OFS) &= (u_char) ~ LCR_ENB_MSK;
+        sv = (uint16_t) (ACE_CLOCK / (lv * 16UL));
+        *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) |= LCR_ENB_MSK;
+        *(uint8_t *) (dev->dev_base + ACE_DLL_OFS) = (uint8_t) (sv & 0xFF);
+        *(uint8_t *) (dev->dev_base + ACE_DLM_OFS) = (uint8_t) (sv >> 8);
+        *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) &= (uint8_t) ~ LCR_ENB_MSK;
 #ifdef ACE_HDX_LINE
         dcb->hdxByteTime = ByteOcrTime(dev);
 #endif
@@ -508,21 +511,21 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case ACE_GETSPEED:
-        *(u_char *) (dev->dev_base + ACE_LCR_OFS) |= LCR_ENB_MSK;
-        sv = *(u_char *) (dev->dev_base + ACE_DLL_OFS);
-        sv |= *(u_char *) (dev->dev_base + ACE_DLM_OFS) << 8;
-        *(u_char *) (dev->dev_base + ACE_LCR_OFS) &= (u_char) ~ LCR_ENB_MSK;
-        *lvp = ACE_CLOCK / (16UL * (u_long) (sv));
+        *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) |= LCR_ENB_MSK;
+        sv = *(uint8_t *) (dev->dev_base + ACE_DLL_OFS);
+        sv |= *(uint8_t *) (dev->dev_base + ACE_DLM_OFS) << 8;
+        *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) &= (uint8_t) ~ LCR_ENB_MSK;
+        *lvp = ACE_CLOCK / (16UL * (uint32_t) (sv));
         break;
 
     case ACE_SETDATABITS:
         AceDisable(devnum);
         if ((bv >= 5) && (bv <= 8)) {
             bv -= 5;
-            tv = *(u_char *) (dev->dev_base + ACE_LCR_OFS);
-            tv &= (u_char) ~ (LCR_WS0_MSK | LCR_WS1_MSK);
+            tv = *(uint8_t *) (dev->dev_base + ACE_LCR_OFS);
+            tv &= (uint8_t) ~ (LCR_WS0_MSK | LCR_WS1_MSK);
             tv |= (bv & (LCR_WS0_MSK | LCR_WS1_MSK));
-            *(u_char *) (dev->dev_base + ACE_LCR_OFS) = tv;
+            *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) = tv;
 #ifdef ACE_HDX_LINE
             dcb->hdxByteTime = ByteOcrTime(dev);
 #endif
@@ -531,7 +534,7 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case ACE_GETDATABITS:
-        *lvp = *(u_char *) (dev->dev_base + ACE_LCR_OFS) & (LCR_WS0_MSK | LCR_WS1_MSK);
+        *lvp = *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) & (LCR_WS0_MSK | LCR_WS1_MSK);
         break;
 
     case ACE_SETPARITY:
@@ -558,10 +561,10 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
                 break;
             }
 
-            tv = *(u_char *) (dev->dev_base + ACE_LCR_OFS);
-            tv &= (u_char) ~ (LCR_PEN_MSK | LCR_PRE_MSK | LCR_PRS_MSK);
+            tv = *(uint8_t *) (dev->dev_base + ACE_LCR_OFS);
+            tv &= (uint8_t) ~ (LCR_PEN_MSK | LCR_PRE_MSK | LCR_PRS_MSK);
             tv |= bv;
-            *(u_char *) (dev->dev_base + ACE_LCR_OFS) = tv;
+            *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) = tv;
 #ifdef ACE_HDX_LINE
             dcb->hdxByteTime = ByteOcrTime(dev);
 #endif
@@ -570,7 +573,7 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case ACE_GETPARITY:
-        tv = *(u_char *) (dev->dev_base + ACE_LCR_OFS) & (LCR_PEN_MSK | LCR_PRE_MSK | LCR_PRS_MSK);
+        tv = *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) & (LCR_PEN_MSK | LCR_PRE_MSK | LCR_PRS_MSK);
         switch (tv) {
         case 0:
             *lvp = 0;           // no parity
@@ -593,10 +596,10 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
     case ACE_SETSTOPBITS:
         AceDisable(devnum);
         if (bv == 1 || bv == 2) {
-            tv = *(u_char *) (dev->dev_base + ACE_LCR_OFS);
-            tv &= (u_char) ~ (LCR_STB_MSK);
+            tv = *(uint8_t *) (dev->dev_base + ACE_LCR_OFS);
+            tv &= (uint8_t) ~ (LCR_STB_MSK);
             tv |= (bv == 2) ? LCR_STB_MSK : 0;
-            *(u_char *) (dev->dev_base + ACE_LCR_OFS) = tv;
+            *(uint8_t *) (dev->dev_base + ACE_LCR_OFS) = tv;
 #ifdef ACE_HDX_LINE
             dcb->hdxByteTime = ByteOcrTime(dev);
 #endif
@@ -605,7 +608,7 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case ACE_GETSTOPBITS:
-        tv = *(u_char *) (dev->dev_base + ACE_LCR_OFS);
+        tv = *(uint8_t *) (dev->dev_base + ACE_LCR_OFS);
         *lvp = (tv & LCR_STB_MSK) ? 2 : 1;
         break;
 
@@ -635,9 +638,9 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
             dcb->dcb_wfifo = 1;
             break;
         }
-        *(u_char *) (dev->dev_base + ACE_FCR_OFS) = tv;
+        *(uint8_t *) (dev->dev_base + ACE_FCR_OFS) = tv;
         /* if enabling then must write the level after */
-        *(u_char *) (dev->dev_base + ACE_FCR_OFS) = tv;
+        *(uint8_t *) (dev->dev_base + ACE_FCR_OFS) = tv;
         dcb->dcb_rfifo = bv;
 
         /* must signal any active and waiting writer, discard pending data */
@@ -651,7 +654,7 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case ACE_GETFIFO:
-        *lvp = (u_long) (dcb->dcb_rfifo);
+        *lvp = (uint32_t) (dcb->dcb_rfifo);
         break;
 
     case ACE_GETSTATUS:
@@ -702,7 +705,7 @@ int AceIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case ACE_GETFLOWCONTROL:
 #ifdef ACE_HDX_LINE
-        *lvp = (u_long) (dcb->dcb_modeflags & ACE_MF_HALFDUPLEX);
+        *lvp = (uint32_t) (dcb->dcb_modeflags & ACE_MF_HALFDUPLEX);
 #endif
         break;
 
@@ -737,15 +740,15 @@ int AceInit(NUTDEVICE * dev)
 {
     IFSTREAM *ifs;
     ACEDCB *dcb, *pFirstDcb;
-    u_long baudrate = 9600;
-    u_long databits = 8;
-    u_long parity = 0;
-    u_long stopbits = 1;
+    uint32_t baudrate = 9600;
+    uint32_t databits = 8;
+    uint32_t parity = 0;
+    uint32_t stopbits = 1;
     IRQ_HANDLER *irq;
-    u_char *pnPort;
-    u_char nMask;
+    uint8_t *pnPort;
+    uint8_t nMask;
 #ifdef ACE_HDX_LINE
-    u_long flowcontrol = 0;
+    uint32_t flowcontrol = 0;
 #endif
     /*
      * We only support character devices for on-chip ACEs.
@@ -802,7 +805,7 @@ int AceInit(NUTDEVICE * dev)
                 return -1;
             }
             // enable the interrupts
-            pnPort = (u_char *) pgm_read_word(&(atIrqDefs[dev->dev_irq].pnIrqMskPort));
+            pnPort = (uint8_t *) pgm_read_word(&(atIrqDefs[dev->dev_irq].pnIrqMskPort));
             nMask = pgm_read_byte(&(atIrqDefs[dev->dev_irq].nMask));
             *pnPort |= nMask;
             /* remember dcb of the recently initialized device */
@@ -839,9 +842,9 @@ int AceRead(NUTFILE * fp, void *buffer, int size)
     NUTDEVICE *dev;
     IFSTREAM *ifs;
     ACEDCB *dcb;
-    u_char elmode;
-    u_char ch;
-    u_char *cp = buffer;
+    uint8_t elmode;
+    uint8_t ch;
+    uint8_t *cp = buffer;
 
     dev = fp->nf_dev;
     ifs = (IFSTREAM *) dev->dev_icb;
@@ -899,10 +902,10 @@ int AcePut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     int rc;
     IFSTREAM *ifs;
     ACEDCB *dcb;
-    CONST u_char *cp;
-    u_char lbmode;
-    u_char elmode;
-    u_char ch;
+    CONST uint8_t *cp;
+    uint8_t lbmode;
+    uint8_t elmode;
+    uint8_t ch;
 
     ifs = dev->dev_icb;
     dcb = dev->dev_dcb;
@@ -930,7 +933,7 @@ int AcePut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
      */
     cp = buffer;
     for (rc = 0; rc < len;) {
-        if ((u_char) (ifs->if_wr_idx + 1) == ifs->if_tx_idx) {
+        if ((uint8_t) (ifs->if_wr_idx + 1) == ifs->if_tx_idx) {
             if (AceFlush(dev)) {
                 return -1;
             }
@@ -1012,7 +1015,7 @@ long AceSize(NUTFILE * fp)
 
     dev = fp->nf_dev;
     ifs = (IFSTREAM *) dev->dev_icb;
-    return ((u_char) (ifs->if_rx_idx - ifs->if_rd_idx));
+    return ((uint8_t) (ifs->if_rx_idx - ifs->if_rd_idx));
 }
 
 #ifdef ACE_HDX_LINE

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:04  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/02/15 16:58:41  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -70,17 +73,17 @@
 HANDLE tw_mm_mutex;                 /* Exclusive master access. */
 HANDLE tw_mm_que;                   /* Threads waiting for master transfer done. */
 
-static u_char tw_mm_sla;            /* Destination slave address. */
-static volatile u_char tw_mm_err;   /* Current master mode error. */
-static u_char tw_mm_error;          /* Last master mode error. */
+static uint8_t tw_mm_sla;            /* Destination slave address. */
+static volatile uint8_t tw_mm_err;   /* Current master mode error. */
+static uint8_t tw_mm_error;          /* Last master mode error. */
 
-static CONST u_char *tw_mt_buf;     /* Pointer to the master transmit buffer. */
-static volatile u_short tw_mt_len;  /* Number of bytes to transmit in master mode. */
-static volatile u_short tw_mt_idx;  /* Current master transmit buffer index. */
+static CONST uint8_t *tw_mt_buf;     /* Pointer to the master transmit buffer. */
+static volatile uint16_t tw_mt_len;  /* Number of bytes to transmit in master mode. */
+static volatile uint16_t tw_mt_idx;  /* Current master transmit buffer index. */
 
-static u_char *tw_mr_buf;           /* Pointer to the master receive buffer. */
-static volatile u_short tw_mr_siz;  /* Size of the master receive buffer. */
-static volatile u_short tw_mr_idx;  /* Current master receive buffer index. */
+static uint8_t *tw_mr_buf;           /* Pointer to the master receive buffer. */
+static volatile uint16_t tw_mr_siz;  /* Size of the master receive buffer. */
+static volatile uint16_t tw_mr_idx;  /* Current master receive buffer index. */
 
 #if defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
 
@@ -186,7 +189,7 @@ static void TwInterrupt(void *arg)
  * \return The number of bytes received, -1 in case of an error or timeout.
  */
 
-int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
+int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
 {
     int rc = -1;
 
@@ -285,8 +288,8 @@ int TwMasterError(void)
  *
  * \param req  Requested control function. May be set to one of the
  *	       following constants:
- *	       - TWI_SETSPEED, if conf points to an u_long value containing the bitrate.
- *	       - TWI_GETSPEED, if conf points to an u_long value receiving the current bitrate.
+ *	       - TWI_SETSPEED, if conf points to an uint32_t value containing the bitrate.
+ *	       - TWI_GETSPEED, if conf points to an uint32_t value receiving the current bitrate.
  * \param conf Points to a buffer that contains any data required for
  *	       the given control function or receives data from that
  *	       function.
@@ -304,7 +307,7 @@ int TwIOCtl(int req, void *conf)
 
     case TWI_SETSPEED:
         ckdiv=1 ;
-        twi_clk = *((u_long *) conf);
+        twi_clk = *((uint32_t *) conf);
 
         if (twi_clk > 400000) return -1;
         
@@ -326,12 +329,12 @@ int TwIOCtl(int req, void *conf)
 
     case TWI_GETSPEED:
         ckdiv=1 ;
-        twi_clk = *((u_long *) conf);
+        twi_clk = *((uint32_t *) conf);
         
         cldiv = inr(TWI_CWGR) & 0x000000FF;
         ckdiv = (inr(TWI_CWGR) >> 16) & 0x00000007;
             
-        *((u_long *) conf) = NutGetCpuClock() * ((cldiv * 2 << ckdiv) - 3);
+        *((uint32_t *) conf) = NutGetCpuClock() * ((cldiv * 2 << ckdiv) - 3);
         break;
 
     case TWI_GETSTATUS:
@@ -359,9 +362,9 @@ int TwIOCtl(int req, void *conf)
  *            always lower than 128.
  */
 
-int TwInit(u_char sla)
+int TwInit(uint8_t sla)
 {
-    u_long speed = 2400;
+    uint32_t speed = 2400;
 
     if (NutRegisterIrqHandler(&sig_TWI, TwInterrupt, 0)) {
         return -1;

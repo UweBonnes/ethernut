@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/01/05 16:45:29  haraldkipp
  * Size and pos types changed to support 32 bit targets.
  *
@@ -67,6 +70,7 @@
  */
 #include <stddef.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file fs/uromfs.h
@@ -85,7 +89,7 @@ typedef struct _ROMENTRY ROMENTRY;
 #ifdef __IMAGECRAFT__
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
-    const u_char *rome_name;/*!< Filename. */
+    const uint8_t *rome_name;/*!< Filename. */
     u_int rome_size;        /*!< File size. */
     const char *rome_data;  /*!< File data. */
 };

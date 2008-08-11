@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/10/24 10:56:30  haraldkipp
  * Added const modifier to transmit data pointer in TwMasterTransact().
  *
@@ -47,6 +50,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 #define TWI_SETSPEED		0x0401	/*!< \brief Set transfer speed. */
 #define TWI_GETSPEED		0x0402	/*!< \brief Query transfer speed. */
@@ -76,14 +80,14 @@
 #define TWSLA_HOST		16	/*!< \brief Host slave address. */
 #define TWSLA_DEFAULT		193	/*!< \brief Default slave address. */
 
-extern int TwInit(u_char sla);
+extern int TwInit(uint8_t sla);
 extern int TwIOCtl(int req, void *conf);
 
-extern int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo);
+extern int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo);
 extern int TwMasterError(void);
 
-extern int TwSlaveListen(u_char *sla, void *rxdata, u_short rxsiz, u_long tmo);
-extern int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo);
+extern int TwSlaveListen(uint8_t *sla, void *rxdata, uint16_t rxsiz, uint32_t tmo);
+extern int TwSlaveRespond(void *txdata, uint16_t txlen, uint32_t tmo);
 extern int TwSlaveError(void);
 
 

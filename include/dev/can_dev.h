@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/09/08 03:01:11  hwmaier
  * Changes to support RX time-out, CAN_SetRxTimeout() added.
  *
@@ -95,11 +98,11 @@
  */
 
 struct _CANFRAME {              // todo: Implement flags
-    u_long id;                  // Identifier
-    u_char len;                 // Length of frame, max = 8
-    u_char byte[8];
-    u_char ext;                 // Boolean, extendet frame
-    u_char rtr;                 // Boolean, remote transmition bit
+    uint32_t id;                  // Identifier
+    uint8_t len;                 // Length of frame, max = 8
+    uint8_t byte[8];
+    uint8_t ext;                 // Boolean, extendet frame
+    uint8_t rtr;                 // Boolean, remote transmition bit
 };
 
 /*!
@@ -115,11 +118,11 @@ typedef struct _CANFRAME CANFRAME;
 struct _CANINFO {
     HANDLE volatile can_rx_rdy;     /*!< Receiver event queue. */
     HANDLE volatile can_tx_rdy;     /*!< Transmitter event queue. */
-    u_long can_rx_frames;           /*!< Number of packets received. */
-    u_long can_tx_frames;           /*!< Number of packets sent. */
-    u_long can_interrupts;          /*!< Number of interrupts. */
-    u_long can_overruns;            /*!< Number of packet overruns. */
-    u_long can_errors;              /*!< Number of frame errors. */
+    uint32_t can_rx_frames;           /*!< Number of packets received. */
+    uint32_t can_tx_frames;           /*!< Number of packets sent. */
+    uint32_t can_interrupts;          /*!< Number of interrupts. */
+    uint32_t can_overruns;            /*!< Number of packet overruns. */
+    uint32_t can_errors;              /*!< Number of frame errors. */
 };
 
 /*!
@@ -134,19 +137,19 @@ typedef struct _CANINFO CANINFO;
  * Contains information about the CAN interface.
  */
 struct ifcan {
-    u_char can_type;            /*!< \brief Interface type. Either CAN_IF_2A or CAN_IF_2B. */
-    u_long can_baudrate;        /*!< \brief Baudrate of device */
-    u_char can_acc_mask[4];     /*!< \brief Acceptance mask */
-    u_char can_acc_code[4];     /*!< \brief Acceptance code */
-    u_long can_rtimeout;        /*!< \brief Timout for receiving */
+    uint8_t can_type;            /*!< \brief Interface type. Either CAN_IF_2A or CAN_IF_2B. */
+    uint32_t can_baudrate;        /*!< \brief Baudrate of device */
+    uint8_t can_acc_mask[4];     /*!< \brief Acceptance mask */
+    uint8_t can_acc_code[4];     /*!< \brief Acceptance code */
+    uint32_t can_rtimeout;        /*!< \brief Timout for receiving */
 
-    u_char (*can_rxavail) (NUTDEVICE *);           /*!< \brief Receive buffer data available? */
-    u_char (*can_txfree) (NUTDEVICE *);            /*!< \brief Transmit buffer free? */
-    u_char (*can_recv) (NUTDEVICE *, CANFRAME *);  /*!< \brief Receive routine. */
+    uint8_t (*can_rxavail) (NUTDEVICE *);           /*!< \brief Receive buffer data available? */
+    uint8_t (*can_txfree) (NUTDEVICE *);            /*!< \brief Transmit buffer free? */
+    uint8_t (*can_recv) (NUTDEVICE *, CANFRAME *);  /*!< \brief Receive routine. */
     void   (*can_send) (NUTDEVICE *, CANFRAME *);  /*!< \brief Send routine. */
-    void   (*can_set_ac) (NUTDEVICE *, u_char*);   /*!< \brief Set accaptance code */
-    void   (*can_set_am) (NUTDEVICE *, u_char*);   /*!< \brief Set accaptance mask */
-    u_char (*can_set_baud) (NUTDEVICE *, u_long);  /*!< \brief Set speed */
+    void   (*can_set_ac) (NUTDEVICE *, uint8_t*);   /*!< \brief Set accaptance code */
+    void   (*can_set_am) (NUTDEVICE *, uint8_t*);   /*!< \brief Set accaptance mask */
+    uint8_t (*can_set_baud) (NUTDEVICE *, uint32_t);  /*!< \brief Set speed */
 };
 
 /*!
@@ -154,17 +157,17 @@ struct ifcan {
  */
 typedef struct ifcan IFCAN;
 
-u_char CAN_SetSpeed(NUTDEVICE *dev, u_long baudrate);
-void   CAN_SetFilter(NUTDEVICE *dev, u_char *ac, u_char *am);
+uint8_t CAN_SetSpeed(NUTDEVICE *dev, uint32_t baudrate);
+void   CAN_SetFilter(NUTDEVICE *dev, uint8_t *ac, uint8_t *am);
 
 void   CAN_TxFrame(NUTDEVICE *dev, CANFRAME *frame);
-u_char CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame);
-u_char CAN_TxFree(NUTDEVICE *dev);
+uint8_t CAN_TryTxFrame(NUTDEVICE *dev, CANFRAME *frame);
+uint8_t CAN_TxFree(NUTDEVICE *dev);
 
-u_char CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame);
-u_char CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame);
-u_char CAN_RxAvail(NUTDEVICE *dev);
-void   CAN_SetRxTimeout(NUTDEVICE *dev, u_long timeout);
+uint8_t CAN_RxFrame(NUTDEVICE *dev, CANFRAME *frame);
+uint8_t CAN_TryRxFrame(NUTDEVICE *dev, CANFRAME *frame);
+uint8_t CAN_RxAvail(NUTDEVICE *dev);
+void   CAN_SetRxTimeout(NUTDEVICE *dev, uint32_t timeout);
 
 /*@}*/
 

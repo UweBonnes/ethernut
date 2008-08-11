@@ -32,6 +32,9 @@
  */
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2007/06/03 08:49:56  haraldkipp
  * Bug #1724015 fixed. Simplified code in time().
  *
@@ -51,6 +54,8 @@
  *
  */
 
+#include <stdint.h>
+
 #include <time.h>
 #include <sys/timer.h>
 #include <sys/atom.h>
@@ -58,7 +63,7 @@
 
 #include <dev/rtc.h>
 
-static u_long epo_offs;
+static uint32_t epo_offs;
 
 /*!
  * \addtogroup xgCrtTime
@@ -112,7 +117,7 @@ int stime(time_t * timer)
     /* Try to set hardware clock. */
     NutRtcSetTime(gmtime(timer));
     /* Set internal seconds counter. */
-    epo_offs = (u_long)(*timer) - NutGetSeconds();
+    epo_offs = (uint32_t)(*timer) - NutGetSeconds();
 
     return 0;
 }

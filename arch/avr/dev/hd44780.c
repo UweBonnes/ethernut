@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/04/29 16:58:21  thiagocorrea
  * Simplified HD44780 code for AVR based on the ARM driver.
  *
@@ -296,15 +299,15 @@
  * \param xt Delay time in milliseconds
  */
 
-static u_char during_init = 1;
+static uint8_t during_init = 1;
 #define LCD_DELAY _NOP(); _NOP(); _NOP(); _NOP() /*Three Nops would fit too */
 
 #ifdef LCD_RW_BIT
 
-static INLINE u_char LcdReadNibble(void)
+static INLINE uint8_t LcdReadNibble(void)
 {
 
-    u_char ret;
+    uint8_t ret;
     sbi(LCD_RW_PORT, LCD_RW_BIT);
     outp(inp(LCD_DATA_DDR) & ~LCD_DATA_BITS, LCD_DATA_DDR);   // enable data input
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
@@ -315,9 +318,9 @@ static INLINE u_char LcdReadNibble(void)
     return ret;
 }
 
-static INLINE u_char LcdReadByte(void)
+static INLINE uint8_t LcdReadByte(void)
 {    
-    u_char data;
+    uint8_t data;
 #if LCD_DATA_BITS == 0x0F
     data = LcdReadNibble();
     data = data | (LcdReadNibble() << 4);
@@ -336,7 +339,7 @@ static INLINE u_char LcdReadByte(void)
  * \brief Read command byte from LCD controller.
  */
 
-static u_char LcdReadCmd(void)
+static uint8_t LcdReadCmd(void)
 {
     sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
     cbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
@@ -346,7 +349,7 @@ static u_char LcdReadCmd(void)
 #endif
 
 
-static void LcdDelay(u_char xt) 
+static void LcdDelay(uint8_t xt) 
 {
     if (during_init) {
         NutDelay(xt);
@@ -373,7 +376,7 @@ static void LcdDelay(u_char xt)
     }
 }
 
-static INLINE void LcdSendNibble(u_char nib)
+static INLINE void LcdSendNibble(uint8_t nib)
 {
 #ifdef LCD_RW_BIT
     cbi(LCD_RW_PORT, LCD_RW_BIT);
@@ -395,7 +398,7 @@ static INLINE void LcdSendNibble(u_char nib)
  * \param ch Byte to send.
  * \param xt Delay time in milliseconds.
  */
-static INLINE void LcdSendByte(u_char ch, u_char xt)
+static INLINE void LcdSendByte(uint8_t ch, uint8_t xt)
 {    
 #if LCD_DATA_BITS == 0x0F
     LcdSendNibble(ch >> 4);
@@ -416,7 +419,7 @@ static INLINE void LcdSendByte(u_char ch, u_char xt)
         LcdDelay(xt);
 }
 
-static void LcdWriteData(u_char ch)
+static void LcdWriteData(uint8_t ch)
 {
     sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
     sbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
@@ -426,16 +429,16 @@ static void LcdWriteData(u_char ch)
 /*!
  * \brief Write command byte to LCD controller.
  */
-static void LcdWriteCmd(u_char cmd, u_char xt)
+static void LcdWriteCmd(uint8_t cmd, uint8_t xt)
 {
     sbi(LCD_REGSEL_DDR, LCD_REGSEL_BIT);
     cbi(LCD_REGSEL_PORT, LCD_REGSEL_BIT);
     LcdSendByte(cmd, xt);
 }
 
-static void LcdSetCursor(u_char pos)
+static void LcdSetCursor(uint8_t pos)
 {
-    u_char offset[] = {
+    uint8_t offset[] = {
 #ifdef KS0073_CONTROLLER
         0x00, 0x20, 0x40, 0x60
 #elif LCD_COLS == 20
@@ -469,7 +472,7 @@ static void LcdClear(void)
     LcdWriteCmd(1 << LCD_CLR, LCD_LONG_DELAY);
 }
 
-static void LcdCursorMode(u_char on)
+static void LcdCursorMode(uint8_t on)
 {
     LcdWriteCmd(1 << LCD_ON_CTRL | on ? 1 << LCD_ON_CURSOR : 0x00, LCD_LONG_DELAY);
 }

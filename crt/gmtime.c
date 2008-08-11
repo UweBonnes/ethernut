@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -57,6 +60,8 @@
  *
  *
  */
+
+#include <stdint.h>
 
 #include <time.h>
 #include "ctime.h"
@@ -95,8 +100,8 @@ int _days[] = {
 int gmtime_r(CONST time_t * timer, tm * ptm)
 {
     time_t ctimer = *timer;     /* var to calculate with */
-    u_char isleapyear = 0;      /* current year is leap year */
-    u_long tmptimer;
+    uint8_t isleapyear = 0;     /* current year is leap year */
+    uint32_t tmptimer;
     int *mdays;                 /* pointer to _numdayslp or _numdays */
 
     if (ptm == NULL)            /* check pointer */
@@ -107,7 +112,7 @@ int gmtime_r(CONST time_t * timer, tm * ptm)
        of leap year will be simple. Btw, because 2000 IS a leap year and
        2100 is out of range, this formula is so simple.
      */
-    tmptimer = (u_long) (ctimer / _FOUR_YEAR_SEC);
+    tmptimer = (uint32_t) (ctimer / _FOUR_YEAR_SEC);
     ctimer -= ((time_t) tmptimer * _FOUR_YEAR_SEC);
 
     /* Determine the correct year within the interval */

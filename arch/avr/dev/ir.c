@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -60,7 +63,7 @@
  *
  * \return The code received from an infrared decoder or -1 on timeout.
  */
-long NutIrGet(u_long tmo)
+long NutIrGet(uint32_t tmo)
 {
     if (NutEventWait(&nut_irqueue, tmo))
         return -1L;

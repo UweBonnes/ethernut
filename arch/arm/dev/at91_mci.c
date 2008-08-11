@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:04  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/09/05 12:34:21  haraldkipp
  * Support for hardware MultiMedia Card interface added.
  * SD Cards are currently not supported.
@@ -93,11 +96,11 @@
  */
 typedef struct _MCIFC {
     /*! \brief Operating conditions. */
-    u_long ifc_opcond;
+    uint32_t ifc_opcond;
     /*! \brief Relative card address. */
     u_int ifc_reladdr;
     /*! \brief Pointer to sector buffer. */
-    u_char *ifc_buff;
+    uint8_t *ifc_buff;
     /*! \brief MMC response. */
     u_int ifc_resp[4];
 } MCIFC;
@@ -121,7 +124,7 @@ typedef struct _MCIFCB {
      *
      * The number is partition relative.
      */
-    u_long fcb_blknum;
+    uint32_t fcb_blknum;
 
     /*! \brief Internal block buffer.
      *
@@ -132,7 +135,7 @@ typedef struct _MCIFCB {
      * device I/O lines, in which case the buffer must be located
      * in internal memory.
      */
-    u_char fcb_blkbuf[MMC_BLOCK_SIZE];
+    uint8_t fcb_blkbuf[MMC_BLOCK_SIZE];
 } MCIFCB;
 
 /*!
@@ -309,7 +312,7 @@ static int At91MciDiscover(MCIFC * ifc)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91MciReadSingle(MCIFC * ifc, u_long blk, u_char * buf)
+static int At91MciReadSingle(MCIFC * ifc, uint32_t blk, uint8_t * buf)
 {
     int rc = -1;
     u_int sr;
@@ -359,7 +362,7 @@ static int At91MciReadSingle(MCIFC * ifc, u_long blk, u_char * buf)
 static int At91MciBlockRead(NUTFILE * nfp, void *buffer, int num)
 {
     MCIFCB *fcb = (MCIFCB *) nfp->nf_fcb;
-    u_long blk = fcb->fcb_blknum;
+    uint32_t blk = fcb->fcb_blknum;
     NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
     MCIFC *ifc = (MCIFC *) dev->dev_icb;
 
@@ -611,7 +614,7 @@ static int At91MciIOCtrl(NUTDEVICE * dev, int req, void *conf)
         }
         break;
     case MMCARD_GETOCR:
-        *((u_long *) conf) = ifc->ifc_opcond;
+        *((uint32_t *) conf) = ifc->ifc_opcond;
         break;
     default:
         rc = -1;

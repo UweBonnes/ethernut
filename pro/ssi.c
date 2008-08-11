@@ -33,6 +33,9 @@
  
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 07:00:36  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2008/07/26 14:09:29  haraldkipp
  * Fixed another problem with ICCAVR.
  *
@@ -242,7 +245,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             if ((cp = strchr(url, '?')) != 0) {
                 *cp++ = 0;
                 if (strcmp(cp, "$QUERY_STRING") == 0) {
-                    u_short size;
+                    uint16_t size;
                     size = 0;
                     for (i = 0; i < orig_req->req_numqptrs*2; i ++) {
                         size += strlen(orig_req->req_qptrs[i]) + 1;
@@ -359,7 +362,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
  */
 
 
-static void NutSsiSkipWhitespace(char *buffer, u_short *pos, u_short end)
+static void NutSsiSkipWhitespace(char *buffer, uint16_t *pos, uint16_t end)
 {
     while ((*pos < end) && (
            (buffer[*pos] == '\n') || (buffer[*pos] == '\r') ||
@@ -385,11 +388,11 @@ static void NutSsiSkipWhitespace(char *buffer, u_short *pos, u_short end)
  * \param req    The http request struct of the top most http_request
  */
 
-static u_char NutSsiCheckForSsi(FILE *stream, char *buffer, u_short end, char* http_root, REQUEST *req)
+static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char* http_root, REQUEST *req)
 {
-    u_short pos = 4; // First character after comment start
+    uint16_t pos = 4; // First character after comment start
     char * filename;
-    u_char type;
+    uint8_t type;
 
     pos = 4;
     NutSsiSkipWhitespace(buffer, &pos, end);        // Skip whitespaces after comment start
@@ -478,12 +481,12 @@ static u_char NutSsiCheckForSsi(FILE *stream, char *buffer, u_short end, char* h
 static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_root, REQUEST *req)
 {
     char * buffer;
-    u_char in_comment;
+    uint8_t in_comment;
     int buffsize;
     int fpos;
     int n;
     char *index;
-    u_char found;
+    uint8_t found;
     buffsize = MIN(BUFSIZE, file_len);
     buffer = NutHeapAlloc(buffsize+1);
     in_comment = 0;

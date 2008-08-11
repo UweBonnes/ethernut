@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2004/11/12 11:55:39  freckle
  * marked rbf_blockcnt and rbf_blockptr as volatile
  *
@@ -140,21 +143,21 @@ struct _RINGBUF {
      *
      * Changed by the receiver interrupt.
      */
-    u_char * volatile rbf_head;
+    uint8_t * volatile rbf_head;
 
     /*! \brief Buffer tail pointer.
      *
      * Changed by the transmitter interrupt.
      */
-    u_char * volatile rbf_tail;
+    uint8_t * volatile rbf_tail;
 
     /*! \brief First buffer address.
      */
-    u_char *rbf_start;
+    uint8_t *rbf_start;
 
     /*! \brief Last buffer address.
      */
-    u_char *rbf_last;
+    uint8_t *rbf_last;
 
     /*! \brief Total buffer size.
      *
@@ -203,7 +206,7 @@ struct _RINGBUF {
      * If bf_blockbytes is not zero, incoming bytes are stored here
      * Changed by the receiver interrupt.
      */
-	u_char* volatile rbf_blockptr;
+	uint8_t* volatile rbf_blockptr;
 #endif
 
 };
@@ -272,19 +275,19 @@ struct _USARTDCB {
 
     /*! \brief Mode flags.
      */
-    u_long dcb_modeflags;
+    uint32_t dcb_modeflags;
 
     /*! \brief Status flags.
      */
-    u_long dcb_statusflags;
+    uint32_t dcb_statusflags;
 
     /*! \brief Read timeout.
      */
-    u_long dcb_rtimeout;
+    uint32_t dcb_rtimeout;
 
     /*! \brief Write timeout.
      */
-    u_long dcb_wtimeout;
+    uint32_t dcb_wtimeout;
 
     /*! \brief Output ring buffer.
      */
@@ -296,7 +299,7 @@ struct _USARTDCB {
 
     /*! \brief Last EOL character.
      */
-    u_char dcb_last_eol;
+    uint8_t dcb_last_eol;
 
     /*!
      * \fn dcb_init
@@ -322,72 +325,72 @@ struct _USARTDCB {
     /*!
      * \brief Set handshake mode.
      */
-    int (*dcb_set_flow_control) (u_long flags);
+    int (*dcb_set_flow_control) (uint32_t flags);
 
     /*!
      * \brief Get handshake mode.
      */
-     u_long(*dcb_get_flow_control) (void);
+     uint32_t(*dcb_get_flow_control) (void);
 
     /*!
      * \brief Set hardware speed.
      */
-    int (*dcb_set_speed) (u_long rate);
+    int (*dcb_set_speed) (uint32_t rate);
 
     /*!
      * \brief Get hardware speed.
      */
-     u_long(*dcb_get_speed) (void);
+     uint32_t(*dcb_get_speed) (void);
 
     /*!
      * \brief Set hardware data bits.
      */
-    int (*dcb_set_data_bits) (u_char bits);
+    int (*dcb_set_data_bits) (uint8_t bits);
 
     /*!
      * \brief Get hardware data bits.
      */
-     u_char(*dcb_get_data_bits) (void);
+     uint8_t(*dcb_get_data_bits) (void);
 
     /*!
      * \brief Set hardware parity mode.
      */
-    int (*dcb_set_parity) (u_char bits);
+    int (*dcb_set_parity) (uint8_t bits);
 
     /*!
      * \brief Get hardware parity mode.
      */
-     u_char(*dcb_get_parity) (void);
+     uint8_t(*dcb_get_parity) (void);
 
     /*!
      * \brief Set hardware stop bits.
      */
-    int (*dcb_set_stop_bits) (u_char bits);
+    int (*dcb_set_stop_bits) (uint8_t bits);
 
     /*!
      * \brief Get hardware stop bits.
      */
-     u_char(*dcb_get_stop_bits) (void);
+     uint8_t(*dcb_get_stop_bits) (void);
 
     /*!
      * \brief Set hardware status.
      */
-    int (*dcb_set_status) (u_long flags);
+    int (*dcb_set_status) (uint32_t flags);
 
     /*!
      * \brief Get hardware status.
      */
-     u_long(*dcb_get_status) (void);
+     uint32_t(*dcb_get_status) (void);
 
     /*!
      * \brief Set clock mode.
      */
-    int (*dcb_set_clock_mode) (u_char mode);
+    int (*dcb_set_clock_mode) (uint8_t mode);
 
     /*!
      * \brief Get clock mode.
      */
-     u_char(*dcb_get_clock_mode) (void);
+     uint8_t(*dcb_get_clock_mode) (void);
 };
 
 /*!

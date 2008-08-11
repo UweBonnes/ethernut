@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:07  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -79,14 +82,14 @@
 #define LCD_MCOLS   32  /* Buffer memory columns */
 #define LCD_MROWS   64  /* Buffer memory rows */
 
-static u_short pos_x;       /* Current column */
-static u_short pos_y;       /* Current row */
-static u_short pos_vofs;    /* Vertical offset */
+static uint16_t pos_x;       /* Current column */
+static uint16_t pos_y;       /* Current row */
+static uint16_t pos_vofs;    /* Vertical offset */
 
 static NUTFILE dbgfile;
 
 /* 8x8 character font, ASCII 32..127. */
-static u_char font8x8[]= {
+static uint8_t font8x8[]= {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x10, 0x10, 0x10, 0x10, 0x10, 0x00, 0x10, 0x00,
     0x28, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -204,23 +207,23 @@ int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 int DebugInit(NUTDEVICE * dev)
 {
-    register u_char ch;
-    u_short i;
-    u_short j;
-    u_short k;
-    u_short *pal;
-    u_short *vid;
+    register uint8_t ch;
+    uint_fast16_t i;
+    uint_fast16_t j;
+    uint_fast16_t k;
+    uint16_t *pal;
+    uint16_t *vid;
 
     outw(REG_DISPCNT, 0x0400);
     outw(REG_BG2CNT, 0xA880);
 
-    pal = (u_short *)PALRAM_BASE;
+    pal = (uint16_t *)PALRAM_BASE;
     for (i = 1; i < 256; i++) {
         pal[i] = 0x7FFF;
     }
     pal[0] = 0;
 
-    vid = (u_short *)VIDRAM_BASE + 1024;
+    vid = (uint16_t *)VIDRAM_BASE + 1024;
     for(i = 0; i < 96; i++) {
         for (j = 0; j < 8; j++) {
             ch = font8x8[i * 8 + j];
@@ -240,9 +243,9 @@ int DebugInit(NUTDEVICE * dev)
  */
 static void DebugPut(char ch)
 {
-    u_char i;
-    u_short *vid = (u_short *)(VIDRAM_BASE + 0x4000);
-    u_short pos = 0;
+    uint8_t i;
+    uint16_t *vid = (uint16_t *)(VIDRAM_BASE + 0x4000);
+    uint16_t pos = 0;
 
     if (ch == '\r') {
         pos_x = 0;

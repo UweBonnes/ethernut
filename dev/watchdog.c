@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/06/06 19:08:05  haraldkipp
  * First release
  *
@@ -44,7 +47,7 @@
 /*
  * Start the hardware watch dog timer.
  */
-u_long NutWatchDogStart(u_long ms, u_long xmode)
+uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode)
 {
 #if defined(__AVR__)
     return AvrWatchDogStart(ms);

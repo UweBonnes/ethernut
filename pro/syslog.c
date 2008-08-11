@@ -65,6 +65,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:36  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -109,11 +112,11 @@ static UDPSOCKET *syslog_sock;
 #define SYSLOG_MAXBUF 256
 #endif
 
-static u_short syslog_port = 514;
+static uint16_t syslog_port = 514;
 static int syslog_fac = LOG_USER;
 static int syslog_mask = 0xFF;
 
-static u_long syslog_server;
+static uint32_t syslog_server;
 static int syslog_stat;
 static size_t syslog_taglen;
 static char *syslog_tag;
@@ -351,9 +354,9 @@ int setlogmask(int logmask)
  *
  * \return Previous IP.
  */
-u_long setlogserver(u_long ip, u_short port)
+uint32_t setlogserver(uint32_t ip, uint16_t port)
 {
-    u_long rc = syslog_server;
+    uint32_t rc = syslog_server;
 
     syslog_server = ip;
     if (port) {

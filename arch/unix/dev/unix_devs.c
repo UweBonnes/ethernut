@@ -111,8 +111,8 @@ pthread_cond_t unix_devs_cv;
 /*
  * functions available on avr somehow -- not implemented properly here :(
  */
-char *dtostre(double f, char *str, u_char prec, u_char flags);
-char *dtostre(double f, char *str, u_char prec, u_char flags)
+char *dtostre(double f, char *str, uint8_t prec, uint8_t flags);
+char *dtostre(double f, char *str, uint8_t prec, uint8_t flags)
 {
     sprintf(str, "%e", f);
     return str;
@@ -781,8 +781,8 @@ static int UnixDevClose(NUTFILE * nf)
 int UnixDevIOCTL(NUTDEVICE * dev, int req, void *conf)
 {
     struct termios t;
-    u_long *lvp = (u_long *) conf;
-    u_long lv = *lvp;
+    uint32_t *lvp = (uint32_t *) conf;
+    uint32_t lv = *lvp;
     UNIXDCB * dcb = (UNIXDCB*) dev->dev_dcb;
     
     // printf("UnixDevIOCTL, native %x, req: %d, lv: %ld\n\r", dcb->dcb_fd , req, lv);

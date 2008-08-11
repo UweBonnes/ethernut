@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
@@ -66,7 +69,7 @@
 #define I2C_SLA_RTC     0x51
 #endif
 
-static u_long rtc_status;
+static uint32_t rtc_status;
 
 /*!
  * \brief Read RTC registers.
@@ -77,7 +80,7 @@ static u_long rtc_status;
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcReadRegs(u_char reg, u_char *buff, size_t cnt)
+int PcfRtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
 {
     int rc = -1;
 
@@ -100,7 +103,7 @@ int PcfRtcReadRegs(u_char reg, u_char *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcWrite(int nv, CONST u_char *buff, size_t cnt)
+int PcfRtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
 {
     return TwMasterTransact(I2C_SLA_RTC, buff, cnt, 0, 0, NUT_WAIT_INFINITE);
 }
@@ -116,7 +119,7 @@ int PcfRtcWrite(int nv, CONST u_char *buff, size_t cnt)
 int PcfRtcGetClock(struct _tm *tm)
 {
     int rc;
-    u_char data[7];
+    uint8_t data[7];
 
     if ((rc = PcfRtcReadRegs(0x02, data, 7)) == 0) {
         tm->tm_sec = BCD2BIN(data[0] & 0x7F);
@@ -145,7 +148,7 @@ int PcfRtcGetClock(struct _tm *tm)
  */
 int PcfRtcSetClock(CONST struct _tm *tm)
 {
-    u_char data[8];
+    uint8_t data[8];
 
     memset(data, 0, sizeof(data));
     if (tm) {
@@ -218,10 +221,10 @@ int PcfRtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PcfRtcGetStatus(u_long *sflgs)
+int PcfRtcGetStatus(uint32_t *sflgs)
 {
     int rc;
-    u_char data;
+    uint8_t data;
 
     if ((rc = PcfRtcReadRegs(0x02, &data, 1)) == 0) {
         if (data & 0x80) {
@@ -239,7 +242,7 @@ int PcfRtcGetStatus(u_long *sflgs)
  *
  * \return Always 0.
  */
-int PcfRtcClearStatus(u_long sflgs)
+int PcfRtcClearStatus(uint32_t sflgs)
 {
     rtc_status &= ~sflgs;
 
@@ -255,7 +258,7 @@ int PcfRtcClearStatus(u_long sflgs)
 int PcfRtcInit(void)
 {
     int rc;
-    u_long tmp;
+    uint32_t tmp;
 
     if ((rc = TwInit(0)) == 0) {
         rc = PcfRtcGetStatus(&tmp);

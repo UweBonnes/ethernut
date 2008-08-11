@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:11  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/07/05 07:56:34  haraldkipp
  * Interrupt handler will be included only, if the related interrupt
  * ID is defined in the platform specific header file.
@@ -99,8 +102,8 @@ void SoftwareIrqEntry(void)
 static int SoftwareIrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *)param;
-    int enabled = inr(AIC_IMR) & _BV(SWIRQ_ID);
+    unsigned int *ival = (unsigned int *)param;
+    int_fast8_t enabled = inr(AIC_IMR) & _BV(SWIRQ_ID);
 
     /* Disable interrupt. */
     if (enabled) {
@@ -138,7 +141,7 @@ static int SoftwareIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int)sig_SWIRQ.ir_count;
+        *ival = (unsigned int)sig_SWIRQ.ir_count;
         sig_SWIRQ.ir_count = 0;
         break;
 #endif

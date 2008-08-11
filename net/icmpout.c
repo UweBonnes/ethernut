@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2004/03/08 11:22:16  haraldkipp
  * Not all compilers like pointer calculation with void pointers
  *
@@ -153,10 +156,10 @@
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutIcmpOutput(u_char type, u_long dest, NETBUF * nb)
+int NutIcmpOutput(uint8_t type, uint32_t dest, NETBUF * nb)
 {
     ICMPHDR *icp;
-    u_short csum;
+    uint16_t csum;
 
     icp = (ICMPHDR *) nb->nb_tp.vp;
     icp->icmp_type = type;
@@ -183,7 +186,7 @@ int NutIcmpOutput(u_char type, u_long dest, NETBUF * nb)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutIcmpReply(u_char type, u_char code, u_long spec, u_long dest, NETBUF * nb)
+int NutIcmpReply(uint8_t type, uint8_t code, uint32_t spec, uint32_t dest, NETBUF * nb)
 {
     ICMPHDR *icp;
 
@@ -213,10 +216,10 @@ int NutIcmpReply(u_char type, u_char code, u_long spec, u_long dest, NETBUF * nb
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutIcmpResponse(u_char type, u_char code, u_long spec, NETBUF * nb)
+int NutIcmpResponse(uint8_t type, uint8_t code, uint32_t spec, NETBUF * nb)
 {
     IPHDR *ip;
-    u_long dest;
+    uint32_t dest;
 
     ip = nb->nb_nw.vp;
     dest = ip->ip_src;
@@ -225,7 +228,7 @@ int NutIcmpResponse(u_char type, u_char code, u_long spec, NETBUF * nb)
         return -1;
 
     memcpy(nb->nb_ap.vp, nb->nb_nw.vp, sizeof(IPHDR));
-    memcpy((u_char *)nb->nb_ap.vp + sizeof(IPHDR), nb->nb_tp.vp, 8);
+    memcpy((char *)nb->nb_ap.vp + sizeof(IPHDR), nb->nb_tp.vp, 8);
 
     return NutIcmpReply(type, code, spec, dest, nb);
 }

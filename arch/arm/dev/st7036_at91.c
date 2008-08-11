@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:13  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2008/06/06 10:28:21  haraldkipp
  * ST7036 LCD controller settings moved from source to configuration files.
  *
@@ -217,7 +220,7 @@ static void LcdWaitReady(u_int delay)
  */
 static void LcdWriteByte(u_int data)
 {
-    u_char msk = 0x80;
+    uint8_t msk = 0x80;
 
     while (msk) {
         LCD_CLK_CLR();
@@ -238,7 +241,7 @@ static void LcdWriteByte(u_int data)
  *
  * \param cmd Byte to send.
  */
-static void LcdWriteCmd(u_char cmd)
+static void LcdWriteCmd(uint8_t cmd)
 {
     /* RS low selects instruction register. */
     LCD_CS_CLR();
@@ -253,7 +256,7 @@ static void LcdWriteCmd(u_char cmd)
     LcdDelay(LCD_SHORT_DELAY);
 }
 
-static void LcdWriteInstruction(u_char cmd, u_char xt)
+static void LcdWriteInstruction(uint8_t cmd, uint8_t xt)
 {
     LcdWriteCmd(cmd);
 }
@@ -263,7 +266,7 @@ static void LcdWriteInstruction(u_char cmd, u_char xt)
  *
  * \param data Byte to send.
  */
-static void LcdWriteData(u_char data)
+static void LcdWriteData(uint8_t data)
 {
     /* RS high selects data register. */
 	LCD_CS_CLR();
@@ -276,9 +279,9 @@ static void LcdWriteData(u_char data)
     LcdDelay(LCD_SHORT_DELAY);
 }
 
-static void LcdSetCursor(u_char pos)
+static void LcdSetCursor(uint8_t pos)
 {
-    u_char offset[] = {
+    uint8_t offset[] = {
         0x00, 0x40, 0x10, 0x50
     };
 
@@ -308,7 +311,7 @@ static void LcdClear(void)
     LcdDelay(10 * LCD_LONG_DELAY);
 }
 
-static void LcdCursorMode(u_char on)
+static void LcdCursorMode(uint8_t on)
 {
     if (on) {
         LcdWriteCmd(0x0D);

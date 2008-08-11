@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:04  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -49,10 +52,12 @@
  * \endverbatim
  */
 
-#include <stdlib.h>
-#include <string.h>
 #include <sys/atom.h>
 #include <dev/nvmem.h>
+
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <arch/arm/at91_efc.h>
 
@@ -99,7 +104,7 @@
 #endif
 
 
-typedef u_long flashdat_t;
+typedef uint32_t flashdat_t;
 typedef unsigned long flashadr_t;
 typedef volatile flashdat_t *flashptr_t;
 
@@ -109,7 +114,7 @@ typedef volatile flashdat_t *flashptr_t;
  * This routine must not be located in internal flash memory.
  *
  */
-RAMFUNC int At91EfcCmd(u_int cmd, u_long tmo)
+RAMFUNC int At91EfcCmd(u_int cmd, uint32_t tmo)
 {
     int rc = 0;
     u_int fsr;
@@ -269,7 +274,7 @@ int At91EfcParamRead(u_int pos, void *data, u_int len)
 int At91EfcParamWrite(u_int pos, CONST void *data, u_int len)
 {
     int rc = -1;
-    u_char *buff;
+    uint8_t *buff;
 
     /* Load the complete configuration area. */
     if ((buff = malloc(FLASH_CONF_SIZE)) != NULL) {

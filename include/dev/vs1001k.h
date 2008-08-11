@@ -53,6 +53,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/05/15 11:46:00  haraldkipp
  * Bug corrected, which stopped player on flush. Now flushing plays
  * the remaining bytes in the buffer.
@@ -94,6 +97,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file dev/vs1001k.h
@@ -173,20 +177,20 @@
  */
 #ifdef __GNUC__
 typedef struct {
-    u_short vshi_no_crc:1;
-    u_short vshi_layer:2;
-    u_short vshi_id:2;
-    u_short vshi_syncword:11;
+    uint16_t vshi_no_crc:1;
+    uint16_t vshi_layer:2;
+    uint16_t vshi_id:2;
+    uint16_t vshi_syncword:11;
 
-    u_short vshi_emphasis:2;
-    u_short vshi_original:1;
-    u_short vshi_copyright:1;
-    u_short vshi_extension:2;
-    u_short vshi_mode:2;
-    u_short vshi_private_bit:1;
-    u_short vshi_pad_bit:1;
-    u_short vshi_sample_rate:2;
-    u_short vshi_bitrate:4;
+    uint16_t vshi_emphasis:2;
+    uint16_t vshi_original:1;
+    uint16_t vshi_copyright:1;
+    uint16_t vshi_extension:2;
+    uint16_t vshi_mode:2;
+    uint16_t vshi_private_bit:1;
+    uint16_t vshi_pad_bit:1;
+    uint16_t vshi_sample_rate:2;
+    uint16_t vshi_bitrate:4;
 } VS_HEADERINFO;
 #endif
 
@@ -194,28 +198,28 @@ __BEGIN_DECLS
 /* Function prototypes */
 
 extern int VsPlayerInit(void);
-extern int VsPlayerReset(u_short mode);
-extern int VsPlayerSetMode(u_short mode);
+extern int VsPlayerReset(uint16_t mode);
+extern int VsPlayerSetMode(uint16_t mode);
 extern int VsPlayerKick(void);
 extern int VsPlayerStop(void);
 extern int VsPlayerFlush(void);
-extern u_char VsPlayerInterrupts(u_char enable);
+extern uint8_t VsPlayerInterrupts(uint8_t enable);
 
-extern u_char *VsBufferInit(u_short size);
-extern u_char *VsBufferReset(void);
-extern u_char *VsBufferRequest(u_short *sizep);
-extern u_char *VsBufferAcknowledge(u_short nbytes);
+extern uint8_t *VsBufferInit(uint16_t size);
+extern uint8_t *VsBufferReset(void);
+extern uint8_t *VsBufferRequest(uint16_t *sizep);
+extern uint8_t *VsBufferAcknowledge(uint16_t nbytes);
 
-extern u_short VsBufferAvailable(void);
-extern u_short VsPlayTime(void);
-extern u_char VsGetStatus(void);
+extern uint16_t VsBufferAvailable(void);
+extern uint16_t VsPlayTime(void);
+extern uint8_t VsGetStatus(void);
 #ifdef __GNUC__
 extern int VsGetHeaderInfo(VS_HEADERINFO *vshi);
 #endif
-extern u_short VsMemoryTest(void);
+extern uint16_t VsMemoryTest(void);
 
-extern int VsSetVolume(u_char left, u_char right);
-extern int VsBeep(u_char fsin, u_char ms);
+extern int VsSetVolume(uint8_t left, uint8_t right);
+extern int VsBeep(uint8_t fsin, uint8_t ms);
 
 /*@}*/
 

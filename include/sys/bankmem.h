@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.8  2008/08/11 07:00:25  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2007/04/12 09:08:57  haraldkipp
  * Segmented buffer routines ported to ARM.
  *
@@ -60,6 +63,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 #include <cfg/bankmem.h>
 
 /*!
@@ -79,7 +83,7 @@
 
 #ifdef ARTHERNET1
 /* Arthernet uses a different banking. */
-#define NutSegBufEnable(bank) *(volatile u_char *)(NUTBANK_SR) = (((u_char)bank+1)<<4)
+#define NutSegBufEnable(bank) *(volatile uint8_t *)(NUTBANK_SR) = (((uint8_t)bank+1)<<4)
 #elif MMNET02
 /* MMnet02 uses a different banking. */
 #define NutSegBufEnable(bank) *((char *)(NUTBANK_SR)) = (bank)
@@ -104,8 +108,8 @@ extern char *NutSegBufWriteCommit(size_t bc);
 extern char *NutSegBufReadCommit(size_t bc);
 extern void NutSegBufWriteLast(size_t bc);
 extern void NutSegBufReadLast(size_t bc);
-extern u_long NutSegBufAvailable(void);
-extern u_long NutSegBufUsed(void);
+extern uint32_t NutSegBufAvailable(void);
+extern uint32_t NutSegBufUsed(void);
 /* */
 __END_DECLS
 #endif

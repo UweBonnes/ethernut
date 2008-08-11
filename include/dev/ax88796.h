@@ -12,17 +12,17 @@
 typedef struct {
     HANDLE volatile ni_rx_rdy;      /*!< Receiver event queue. */
     HANDLE volatile ni_tx_rdy;      /*!< Transmitter event queue. */
-    u_short ni_tx_cnt;              /*!< Number of bytes in transmission queue. */
-    u_long ni_rx_packets;           /*!< Number of packets received. */
-    u_long ni_tx_packets;           /*!< Number of packets sent. */
-    u_long ni_interrupts;           /*!< Number of interrupts. */
-    u_long ni_overruns;             /*!< Number of packet overruns. */
-    u_long ni_rx_frame_errors;      /*!< Number of frame errors. */
-    u_long ni_rx_crc_errors;        /*!< Number of CRC errors. */
-    u_long ni_rx_missed_errors;     /*!< Number of missed packets. */
-    u_char volatile ni_tx_bsy;      /*!< NIC transmitter busy flags. */
-    u_long ni_rx_pending;           /*!< Number of pending receiver interrupts. */
-    u_char ni_curr_page;            /*!< Current receive page. */
+    uint16_t ni_tx_cnt;              /*!< Number of bytes in transmission queue. */
+    uint32_t ni_rx_packets;           /*!< Number of packets received. */
+    uint32_t ni_tx_packets;           /*!< Number of packets sent. */
+    uint32_t ni_interrupts;           /*!< Number of interrupts. */
+    uint32_t ni_overruns;             /*!< Number of packet overruns. */
+    uint32_t ni_rx_frame_errors;      /*!< Number of frame errors. */
+    uint32_t ni_rx_crc_errors;        /*!< Number of CRC errors. */
+    uint32_t ni_rx_missed_errors;     /*!< Number of missed packets. */
+    uint8_t volatile ni_tx_bsy;      /*!< NIC transmitter busy flags. */
+    uint32_t ni_rx_pending;           /*!< Number of pending receiver interrupts. */
+    uint8_t ni_curr_page;            /*!< Current receive page. */
 }NICINFO;
 
 /*
@@ -60,8 +60,8 @@ extern NUTDEVICE devAx88796;
 
 extern int AsixInit(NUTDEVICE *dev);
 extern int AsixOutput(NUTDEVICE *dev, NETBUF *nb);
-void NicPhyWrite(u_char reg, u_short val);
-u_short NicPhyRead(u_char reg);
+void NicPhyWrite(uint8_t reg, uint16_t val);
+uint16_t NicPhyRead(uint8_t reg);
 
 #endif
 

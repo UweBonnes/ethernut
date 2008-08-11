@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.13  2008/08/11 06:59:07  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.12  2008/08/06 12:51:00  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -124,9 +127,9 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
 #if defined(AT91_PLL_MAINCK)
-        outr(DBGU_BRGR, (At91GetMasterClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+        outr(DBGU_BRGR, (At91GetMasterClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
 #else
-        outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+        outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
 #endif
         return 0;
     }
@@ -174,7 +177,7 @@ static int DebugInit(NUTDEVICE * dev)
 static int Debug0IOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outr(US0_BRGR, (NutGetCpuClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+        outr(US0_BRGR, (NutGetCpuClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
         return 0;
     }
     return -1;
@@ -190,7 +193,7 @@ static int Debug0IOCtl(NUTDEVICE * dev, int req, void *conf)
 static int Debug1IOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outr(US1_BRGR, (NutGetCpuClock() / (8 * (*((u_long *)conf))) + 1) / 2);
+        outr(US1_BRGR, (NutGetCpuClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
         return 0;
     }
     return -1;

@@ -68,6 +68,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/05/02 11:15:31  haraldkipp
  * Socket ioctl functions added. Untested.
  *
@@ -75,6 +78,7 @@
  * \endverbatim
  */
 
+#include <stdint.h>
 
 /*!
  * \brief Length of interface name, including terminating zero character.
@@ -119,11 +123,11 @@
 struct ifreq {
     char ifr_name[IF_NAMESIZE];
     union {
-        u_long ifru_addr;
-        u_long ifru_dstaddr;
-        u_long ifru_broadaddr;
-        u_short ifru_flags[2];
-        u_short ifru_index;
+        uint32_t ifru_addr;
+        uint32_t ifru_dstaddr;
+        uint32_t ifru_broadaddr;
+        uint16_t ifru_flags[2];
+        uint16_t ifru_index;
         int ifru_metric;
         int ifru_mtu;
         int ifru_phys;

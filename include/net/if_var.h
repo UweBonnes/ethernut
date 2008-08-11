@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:20  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/05/02 11:22:51  haraldkipp
  * Added multicast table entry.
  *
@@ -96,6 +99,8 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
+
 #include <sys/device.h>
 #include <dev/netbuf.h>
 #include <net/if_types.h>
@@ -131,10 +136,10 @@ typedef struct _ARPENTRY ARPENTRY;
  */
 struct _ARPENTRY {
     ARPENTRY *ae_next;          /*!< \brief Linked list chain. */
-    u_long ae_ip;               /*!< \brief IP address. */
-    u_char ae_ha[6];            /*!< \brief Hardware address. */
-    u_char ae_flags;            /*!< \brief Status flags, permanent and completed. */
-    u_char ae_outdated;         /*!< \brief Minutes since last use. */
+    uint32_t ae_ip;               /*!< \brief IP address. */
+    uint8_t ae_ha[6];            /*!< \brief Hardware address. */
+    uint8_t ae_flags;            /*!< \brief Status flags, permanent and completed. */
+    uint8_t ae_outdated;         /*!< \brief Minutes since last use. */
     HANDLE ae_tq;               /*!< \brief Threads waiting for entry to be completed. */
 };
 
@@ -156,8 +161,8 @@ typedef struct _MCASTENTRY MCASTENTRY;
  */
 struct _MCASTENTRY {
     MCASTENTRY *mca_next;
-    u_char mca_ha[6];
-    u_long mca_ip;
+    uint8_t mca_ha[6];
+    uint32_t mca_ip;
 };
 
 /*!
@@ -172,20 +177,20 @@ typedef struct ifnet IFNET;
  * Contains information about the network interface.
  */
 struct ifnet {
-    u_char if_type;             /*!< \brief Interface type.
+    uint8_t if_type;             /*!< \brief Interface type.
                                  *  Either IFT_ETHER or IFT_PPP.
                                  */
-    u_char if_mac[6];           /*!< \brief Hardware net address. */
-    u_long if_local_ip;         /*!< \brief IP address. */
-    u_long if_remote_ip;        /*!< \brief Remote IP address for point to point. */
-    u_long if_mask;             /*!< \brief IP network mask. */
-    u_short if_mtu;             /*!< \brief Maximum size of a transmission unit. */
-    u_short if_pkt_id;          /*!< \brief Packet identifier. */
+    uint8_t if_mac[6];           /*!< \brief Hardware net address. */
+    uint32_t if_local_ip;         /*!< \brief IP address. */
+    uint32_t if_remote_ip;        /*!< \brief Remote IP address for point to point. */
+    uint32_t if_mask;             /*!< \brief IP network mask. */
+    uint16_t if_mtu;             /*!< \brief Maximum size of a transmission unit. */
+    uint16_t if_pkt_id;          /*!< \brief Packet identifier. */
     ARPENTRY *arpTable;         /*!< \brief Linked list of arp entries. */
     MCASTENTRY *if_mcast;       /*!< \brief Linked list of multicast address entries. */
     void (*if_recv) (NUTDEVICE *, NETBUF *);			    /*!< \brief Receive routine. */
     int (*if_send) (NUTDEVICE *, NETBUF *);			    /*!< \brief Send routine. */
-    int (*if_output) (NUTDEVICE *, u_short, u_char *, NETBUF *);    /*!< \brief Media output routine. */
+    int (*if_output) (NUTDEVICE *, uint16_t, uint8_t *, NETBUF *);    /*!< \brief Media output routine. */
     int (*if_ioctl) (NUTDEVICE *, int, void *);    /*!< \brief Interface specific control function. */
 };
 
@@ -193,12 +198,12 @@ struct ifnet {
 
 __BEGIN_DECLS
 
-extern int NutNetIfConfig2(CONST char *name, void *mac_dev, u_long ip_addr,
-                          u_long ip_mask, u_long gateway);
-extern int NutNetIfConfig(CONST char *name, void *mac_dev, u_long ip_addr,
-                          u_long ip_mask);
-extern int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask,
-                         u_long gateway);
+extern int NutNetIfConfig2(CONST char *name, void *mac_dev, uint32_t ip_addr,
+                          uint32_t ip_mask, uint32_t gateway);
+extern int NutNetIfConfig(CONST char *name, void *mac_dev, uint32_t ip_addr,
+                          uint32_t ip_mask);
+extern int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask,
+                         uint32_t gateway);
 
 extern int NutNetLoadConfig(CONST char *name);
 extern int NutNetSaveConfig(void);

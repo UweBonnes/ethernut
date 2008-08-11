@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/04/12 09:01:38  haraldkipp
  * New API allows to program external AVR devices.
  *
@@ -280,15 +283,15 @@ void AvrTargetReset(ureg_t act)
  *
  * \return 4-byte response.
  */
-u_long AvrTargetCmd(u_long cmd)
+uint32_t AvrTargetCmd(uint32_t cmd)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 #if !defined(AVRTARGET_NO_SPI_DEVICE)
     ureg_t i;
 
     for (i = 0; i < 4; i++) {
         rc <<= 8;
-        rc |= SpiByte((u_char) (cmd >> 24));
+        rc |= SpiByte((uint8_t) (cmd >> 24));
         cmd <<= 8;
     }
 #endif
@@ -305,7 +308,7 @@ int AvrTargetProgEnable(void)
 #if defined(AVRTARGET_NO_SPI_DEVICE)
     return -1;
 #else
-    if ((u_char) (AvrTargetCmd(AVRCMD_PROG_ENABLE) >> 8) != 0x53) {
+    if ((uint8_t) (AvrTargetCmd(AVRCMD_PROG_ENABLE) >> 8) != 0x53) {
         return -1;
     }
     return 0;
@@ -317,15 +320,15 @@ int AvrTargetProgEnable(void)
  *
  * \return Signature in the 3 least significant bytes.
  */
-u_long AvrTargetSignature(void)
+uint32_t AvrTargetSignature(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 #if !defined(AVRTARGET_NO_SPI_DEVICE)
     ureg_t i;
 
     for (i = 0; i < 3; i++) {
         rc <<= 8;
-        rc |= (u_char) AvrTargetCmd(AVRCMD_READ_SIGNATURE_BYTE | ((u_long) i << 8));
+        rc |= (uint8_t) AvrTargetCmd(AVRCMD_READ_SIGNATURE_BYTE | ((uint32_t) i << 8));
     }
 #endif
     return rc;
@@ -336,15 +339,15 @@ u_long AvrTargetSignature(void)
  *
  * \return Fuse bits in the 3 least significant bytes.
  */
-u_long AvrTargetFusesRead(void)
+uint32_t AvrTargetFusesRead(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
-    rc = (u_char) AvrTargetCmd(AVRCMD_READ_FUSE_EXT_BITS);
+    rc = (uint8_t) AvrTargetCmd(AVRCMD_READ_FUSE_EXT_BITS);
     rc <<= 8;
-    rc |= (u_char) AvrTargetCmd(AVRCMD_READ_FUSE_HI_BITS);
+    rc |= (uint8_t) AvrTargetCmd(AVRCMD_READ_FUSE_HI_BITS);
     rc <<= 8;
-    rc |= (u_char) AvrTargetCmd(AVRCMD_READ_FUSE_BITS);
+    rc |= (uint8_t) AvrTargetCmd(AVRCMD_READ_FUSE_BITS);
 
     return rc;
 }
@@ -360,19 +363,19 @@ u_long AvrTargetFusesRead(void)
  *              Lower fuses in the LSB, followed by the high fuses and
  *              last no least the extended fuses.
  */
-u_long AvrTargetFusesWriteSafe(u_long fuses)
+uint32_t AvrTargetFusesWriteSafe(uint32_t fuses)
 {
-    u_long rc;
+    uint32_t rc;
 
     fuses |= AVR_FUSES_NEVER_PROG;
     fuses &= ~AVR_FUSES_ALWAYS_PROG;
     rc = fuses;
 
-    AvrTargetCmd(AVRCMD_WRITE_FUSE_BITS | (u_char)fuses);
+    AvrTargetCmd(AVRCMD_WRITE_FUSE_BITS | (uint8_t)fuses);
     fuses >>= 8;
-    AvrTargetCmd(AVRCMD_WRITE_FUSE_HI_BITS | (u_char)fuses);
+    AvrTargetCmd(AVRCMD_WRITE_FUSE_HI_BITS | (uint8_t)fuses);
     fuses >>= 8;
-    AvrTargetCmd(AVRCMD_WRITE_FUSE_EXT_BITS | (u_char)fuses);
+    AvrTargetCmd(AVRCMD_WRITE_FUSE_EXT_BITS | (uint8_t)fuses);
     fuses >>= 8;
 
     return rc;
@@ -425,7 +428,7 @@ int AvrTargetChipErase(void)
  * \param data Points to the data.
  *
  */
-void AvrTargetPageLoad(u_long page, CONST u_char * data)
+void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data)
 {
     ureg_t bc;
 
@@ -449,7 +452,7 @@ void AvrTargetPageLoad(u_long page, CONST u_char * data)
  *
  * \return 0 on success, -1 on time out.
  */
-int AvrTargetPageWrite(u_long page)
+int AvrTargetPageWrite(uint32_t page)
 {
     AvrTargetCmd(AVRCMD_WRITE_PROG_MEM_PAGE | (page << 14));
 
@@ -465,16 +468,16 @@ int AvrTargetPageWrite(u_long page)
  * \return 0 if the buffer contents equals the memory page contents or
  *         -1 if it doesn't.
  */
-int AvrTargetPageVerify(u_long page, CONST u_char * data)
+int AvrTargetPageVerify(uint32_t page, CONST uint8_t * data)
 {
-    u_long waddr = page << 6;
+    uint32_t waddr = page << 6;
     ureg_t bc;
 
     for (bc = 0; bc < (AVRTARGET_PAGESIZE / 2); bc++) {
-        if ((u_char) AvrTargetCmd(AVRCMD_READ_PROG_MEM_LO | (waddr << 8)) != *data++) {
+        if ((uint8_t) AvrTargetCmd(AVRCMD_READ_PROG_MEM_LO | (waddr << 8)) != *data++) {
             return -1;
         }
-        if ((u_char) AvrTargetCmd(AVRCMD_READ_PROG_MEM_HI | (waddr << 8)) != *data++) {
+        if ((uint8_t) AvrTargetCmd(AVRCMD_READ_PROG_MEM_HI | (waddr << 8)) != *data++) {
             return -1;
         }
         waddr++;

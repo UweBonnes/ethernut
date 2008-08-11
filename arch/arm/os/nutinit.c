@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.16  2008/08/06 12:51:05  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -226,7 +229,7 @@ void NutInit(void)
 #endif
 #if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
     {
-        u_long freq = NutGetCpuClock();
+        uint32_t freq = NutGetCpuClock();
         /* Set Flash Waite state. */
         outr(MC_FMR, ((((freq + freq / 2) / 1000000UL) & 0xFF) << 16) | MC_FWS_2R3W);
     }

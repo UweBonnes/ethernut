@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/08/11 07:00:28  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.11  2008/07/08 08:25:05  haraldkipp
  * NutDelay is no more architecture specific.
  * Number of loops per millisecond is configurable or will be automatically
@@ -101,6 +104,8 @@
 #include <sys/types.h>
 #include <arch/timer.h>
 
+#include <stdint.h>
+
 /*!
  * \file sys/timer.h
  * \brief Timer management definitions.
@@ -125,10 +130,10 @@ struct _NUTTIMERINFO {
     /*! \brief Number of system ticks. 
      *  Set to zero on one-shot timers.
      */
-    u_long tn_ticks;        
+    uint32_t tn_ticks;        
     /*! \brief Decremented by one on each system tick intervall. 
      */
-    u_long tn_ticks_left;   
+    uint32_t tn_ticks_left;   
     /*! \brief Callback function. 
      */
     void (*tn_callback)(HANDLE, void *);    
@@ -148,23 +153,23 @@ __BEGIN_DECLS
  * Functions used by the kernel.
  */
 extern void NutTimerInit(void);
-extern NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
+extern NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags);
 extern void NutTimerInsert(NUTTIMERINFO * tn);
 extern void NutTimerProcessElapsed(void);
 
 /*
  * API declarations.
  */
-extern void NutSleep(u_long ms);
-extern void NutDelay(u_char ms);
-extern void NutMicroDelay(u_long us);
+extern void NutSleep(uint32_t ms);
+extern void NutDelay(uint8_t ms);
+extern void NutMicroDelay(uint32_t us);
 
-extern u_long NutGetTickCount(void);
-extern u_long NutGetSeconds(void);
-extern u_long NutGetMillis(void);
+extern uint32_t NutGetTickCount(void);
+extern uint32_t NutGetSeconds(void);
+extern uint32_t NutGetMillis(void);
 
-extern HANDLE NutTimerStart(u_long ms, void (*callback)(HANDLE, void *), void *arg, u_char flags);
-extern HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags);
+extern HANDLE NutTimerStart(uint32_t ms, void (*callback)(HANDLE, void *), void *arg, uint8_t flags);
+extern HANDLE NutTimerStartTicks(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags);
 extern void NutTimerStop(HANDLE handle);
 
 __END_DECLS

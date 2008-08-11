@@ -85,6 +85,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2008/04/01 10:14:04  haraldkipp
  * Bug #1902993 fixed. XCPOPT must be declared packed to work on 32-bit
  * targets.
@@ -102,6 +105,8 @@
  * *** empty log message ***
  *
  */
+
+#include <stdint.h>
 
 /*!
  * \file netinet/ppp_fsm.h
@@ -145,12 +150,12 @@
 #define PAPCS_BADAUTH        5  /*!< \brief We've received a Nak */
 
 typedef struct __attribute__ ((packed)) {
-    u_char xcpo_type;
-    u_char xcpo_len;
+    uint8_t xcpo_type;
+    uint8_t xcpo_len;
     union {
-        u_short us;
-        u_long ul;
-        u_char uc[1];
+        uint16_t us;
+        uint32_t ul;
+        uint8_t uc[1];
     } xcpo_;
 } XCPOPT;
 

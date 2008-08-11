@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2005/07/23 14:30:40  haraldkipp
  * Removed unnecessary critical sections and atomic inc-/decrements.
  * Fixed a bug in NutIpRouteList(), which filled the first entry only.
@@ -158,7 +161,7 @@ RTENTRY *rteList;           /*!< Linked list of routing entries. */
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutIpRouteAdd(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev)
+int NutIpRouteAdd(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev)
 {
     int rc = -1;
     RTENTRY *rte;
@@ -229,7 +232,7 @@ int NutIpRouteDelAll(NUTDEVICE * dev)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutIpRouteDel(u_long ip, u_long mask, u_long gate, NUTDEVICE * dev)
+int NutIpRouteDel(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev)
 {
     int rc = -1;
     RTENTRY **rtpp;
@@ -296,7 +299,7 @@ RTENTRY *NutIpRouteList(int *numEntries)
  *              is not interested in this information.
  * \param level Recursion level.
  */
-static RTENTRY *NutIpRouteRecQuery(u_long ip, u_long * gate, u_char level)
+static RTENTRY *NutIpRouteRecQuery(uint32_t ip, uint32_t * gate, uint8_t level)
 {
     RTENTRY *rte = 0;
 
@@ -331,7 +334,7 @@ static RTENTRY *NutIpRouteRecQuery(u_long ip, u_long * gate, u_char level)
  * \return Pointer to the interface structure or NULL
  *         if no route was found.
  */
-NUTDEVICE *NutIpRouteQuery(u_long ip, u_long * gate)
+NUTDEVICE *NutIpRouteQuery(uint32_t ip, uint32_t * gate)
 {
     RTENTRY *rte;
 

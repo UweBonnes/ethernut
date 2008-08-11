@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:26  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:26  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:25:05  harald
  * Include not required
@@ -56,7 +59,7 @@
  */
 void _flushall(void)
 {
-    u_char i;
+    uint_fast8_t i;
 
     for (i = 0; i < FOPEN_MAX; i++)
         if (__iob[i])

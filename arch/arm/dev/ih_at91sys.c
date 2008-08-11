@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:11  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/02/15 16:11:14  haraldkipp
  * Support for system controller interrupts added.
  *
@@ -127,8 +130,8 @@ void SystemIrqEntry(void)
 static int SystemIrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *)param;
-    int enabled = inr(AIC_IMR) & _BV(SYSC_ID);
+    unsigned int *ival = (unsigned int *)param;
+    int_fast8_t enabled = inr(AIC_IMR) & _BV(SYSC_ID);
 
     /* Disable interrupt. */
     if (enabled) {
@@ -166,7 +169,7 @@ static int SystemIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int)sig_SYS.ir_count;
+        *ival = (unsigned int)sig_SYS.ir_count;
         sig_SYS.ir_count = 0;
         break;
 #endif

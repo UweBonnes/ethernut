@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/11/16 03:17:26  hwmaier
  * Updated bit timing values for a sample point of 87.5% and a SJW of 2. Required for maximum bus length as per CiA DS-102.
  *
@@ -515,7 +518,7 @@ static void AtCanInterrupt(void *arg)
  * \param dev Pointer to the device structure
  * \return Number of frames available
  */
-u_char AtCanRxAvail(NUTDEVICE * dev)
+uint8_t AtCanRxAvail(NUTDEVICE * dev)
 {
     return canRxBuf.datalength;
 }
@@ -527,7 +530,7 @@ u_char AtCanRxAvail(NUTDEVICE * dev)
  * \param dev Pointer to the device structure
  * \return 1 if space is available
  */
-u_char AtCanTxFree(NUTDEVICE * dev)
+uint8_t AtCanTxFree(NUTDEVICE * dev)
 {
     return (AtCanGetFreeMob() >= 0);
 }
@@ -564,13 +567,13 @@ void AtCanOutput(NUTDEVICE * dev, CANFRAME * frame)
  * \param frame Pointer to the receive frame
  * \return 1 if timeout, 0 otherwise 
  */
-u_char AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
+uint8_t AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
 {
     CANINFO * ci = (CANINFO *) dev->dev_dcb;
 
     while (canRxBuf.datalength == 0)
     {
-        u_long timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
+        uint32_t timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
         
         if (NutEventWait(&ci->can_rx_rdy, timeout)) 
             return 1;
@@ -595,7 +598,7 @@ u_char AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
  * \param dev Pointer to the device structure
  * \param ac 4 byte char array with the acceptance code
  */
-void AtCanSetAccCode(NUTDEVICE * dev, u_char * ac)
+void AtCanSetAccCode(NUTDEVICE * dev, uint8_t * ac)
 {
     memcpy(((IFCAN *) (dev->dev_icb))->can_acc_code, ac, 4);
     AtCanEnableRx(RX_MOB, 0, 0, 0, 0, 0, 0); //ttt   TODO: Implement it!
@@ -608,7 +611,7 @@ void AtCanSetAccCode(NUTDEVICE * dev, u_char * ac)
  * \param dev Pointer to the device structure
  * \param am 4 byte char array with the acceptance mask
  */
-void AtCanSetAccMask(NUTDEVICE * dev, u_char * am)
+void AtCanSetAccMask(NUTDEVICE * dev, uint8_t * am)
 {
     memcpy(((IFCAN *) (dev->dev_icb))->can_acc_mask, am, 4);
     AtCanEnableRx(RX_MOB, 0, 0, 0, 0, 0, 0); //ttt   TODO: Implement it!
@@ -622,7 +625,7 @@ void AtCanSetAccMask(NUTDEVICE * dev, u_char * am)
  * \param baudrate Baud rate (One of the defined baud rates. See AtCan.h)
  * \return 0 for success
  */
-u_char AtCanSetBaudrate(NUTDEVICE * dev, u_long baudrate)
+uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
 {
     switch (baudrate)
     {

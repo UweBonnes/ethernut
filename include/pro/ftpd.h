@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:24  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/02/05 20:38:51  haraldkipp
  * First release
  *
@@ -81,11 +84,11 @@ typedef struct {
     /*! \brief Current working directory for this session. */
     char *ftp_cwd;
     /*! \brief Target IP for data transfer. */
-    u_long ftp_data_ip;
+    uint32_t ftp_data_ip;
     /*! \brief TCP port for data transfer. */
-    u_short ftp_data_port;
+    uint16_t ftp_data_port;
     /*! \brief Maximum TCP segment size for data transfer. */
-    u_short ftp_maxseg;
+    uint16_t ftp_maxseg;
     /*! \brief Login status.
      *
      *  - 0: Not logged in.

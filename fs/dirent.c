@@ -68,6 +68,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2006/08/01 07:44:22  haraldkipp
  * Already disabled NUTFILE structure allocation finally removed from
  * opendir().
@@ -125,7 +128,7 @@ DIR *opendir(CONST char *name)
     DIR *dir = 0;
     NUTDEVICE *dev;
     char dev_name[9];
-    u_char nidx;
+    uint8_t nidx;
     CONST char *nptr = name;
 
     /* Extract the device name. */

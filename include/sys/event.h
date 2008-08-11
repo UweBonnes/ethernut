@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 07:00:25  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -159,8 +162,8 @@ __BEGIN_DECLS
 
 extern void NutEventTimeout(HANDLE timer, void *arg);
 
-extern int NutEventWait(volatile HANDLE *qhp, u_long ms);
-extern int NutEventWaitNext(volatile HANDLE *qhp, u_long ms);
+extern int NutEventWait(volatile HANDLE *qhp, uint32_t ms);
+extern int NutEventWaitNext(volatile HANDLE *qhp, uint32_t ms);
 extern int NutEventPostAsync(volatile HANDLE *qhp);
 extern int NutEventPost(volatile HANDLE *qhp);
 extern int NutEventBroadcastAsync(volatile HANDLE *qhp);

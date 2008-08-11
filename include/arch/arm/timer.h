@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/08/06 12:51:11  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -84,7 +87,7 @@
 #endif /* MCU */
 
 #if defined(AT91_PLL_MAINCK)
-extern u_long At91GetMasterClock(void);
+extern uint32_t At91GetMasterClock(void);
 #endif
 
 #endif

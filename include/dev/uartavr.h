@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2005/10/07 21:53:15  hwmaier
  * Obsolete dcb_baudSelect removed
  *
@@ -139,11 +142,11 @@ struct _UARTDCB {
 
     /*! \brief Read timeout.
      */
-    u_long dcb_rtimeout;
+    uint32_t dcb_rtimeout;
 
     /*! \brief Write timeout.
      */
-    u_long dcb_wtimeout;
+    uint32_t dcb_wtimeout;
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
@@ -159,7 +162,7 @@ struct _UARTDCB {
 
     /*! \brief Mode flags.
      */
-    u_long dcb_modeflags;
+    uint32_t dcb_modeflags;
 };
 
 /*@}*/

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -266,9 +269,9 @@ static INLINE void ShiftDigital(void)
  *         of bits are used. Bit 0 is the one, which has been shifted out
  *         last.
  */
-u_long SpiDigitalGet(ureg_t num)
+uint32_t SpiDigitalGet(ureg_t num)
 {
-    u_long bits = 0;
+    uint32_t bits = 0;
 
     cbi(SPIDIGIO_SOUT_PORT, SPIDIGIO_SOUT_BIT);
 
@@ -320,9 +323,9 @@ u_long SpiDigitalGet(ureg_t num)
  * \param bits The bit value to set. Only the number of bits specified are
  *             used, of which the most significant bit is shifted in first.
  */
-void SpiDigitalSet(ureg_t num, u_long bits)
+void SpiDigitalSet(ureg_t num, uint32_t bits)
 {
-    u_long mask;
+    uint32_t mask;
 
     /* Nothing to do, if the number of bits is zero. */
     if (num) {

@@ -35,12 +35,17 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
  */
 
 #include <sys/types.h>
+#include <stdint.h>
+
 #include <time.h>
 
 #define RTC_STATUS_PF       0x00000001
@@ -57,12 +62,12 @@
 /*!
  * \brief Convert binary coded decimal to binary value.
  */
-#define BCD2BIN(x) ((((u_char)(x)) >> 4) * 10 + ((x) & 0x0F))
+#define BCD2BIN(x) ((((uint8_t)(x)) >> 4) * 10 + ((x) & 0x0F))
 
 /*!
  * \brief Convert binary to binary coded decimal value.
  */
-#define BIN2BCD(x) (((((u_char)(x)) / 10) << 4) + (x) % 10)
+#define BIN2BCD(x) (((((uint8_t)(x)) / 10) << 4) + (x) % 10)
 
 /*!
  * \brief RTC device type.
@@ -78,8 +83,8 @@ struct _NUTRTC {
     int (*rtc_settime) (CONST struct _tm *);
     int (*rtc_getalarm) (int idx, struct _tm *, int *);
     int (*rtc_setalarm) (int idx, CONST struct _tm *, int);
-    int (*rtc_getstatus) (u_long *);
-    int (*rtc_clrstatus) (u_long);
+    int (*rtc_getstatus) (uint32_t *);
+    int (*rtc_clrstatus) (uint32_t);
 };
 
 __BEGIN_DECLS
@@ -92,8 +97,8 @@ extern int NutRtcSetTime(CONST struct _tm *tm);
 extern int NutRtcGetAlarm(int idx, struct _tm *tm, int *aflags);
 extern int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags);
 
-extern int NutRtcGetStatus(u_long *sflags);
-extern int NutRtcClearStatus(u_long sflags);
+extern int NutRtcGetStatus(uint32_t *sflags);
+extern int NutRtcClearStatus(uint32_t sflags);
 
 __END_DECLS
 /* End of prototypes */

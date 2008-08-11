@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 07:00:25  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2006/03/16 15:25:34  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -90,6 +93,8 @@
  */
 
 #include <sys/file.h>
+
+#include <stdint.h>
 
 /*!
  * \file sys/device.h
@@ -171,7 +176,7 @@ struct _NUTDEVICE {
      * - IFTYP_TCPSOCK
      * - IFTYP_CHAR
      */
-    u_char dev_type;
+    uint8_t dev_type;
 
     /*! 
      * \brief Hardware base address.
@@ -186,7 +191,7 @@ struct _NUTDEVICE {
      * Will be set by calling NutRegisterDevice(). On some device 
      * drivers the interrupt may be fixed.
      */
-    u_char dev_irq;
+    uint8_t dev_irq;
 
     /*! \brief Interface control block.
      *
@@ -261,7 +266,7 @@ typedef struct _NUTVIRTUALDEVICE NUTVIRTUALDEVICE;
 struct _NUTVIRTUALDEVICE {
     NUTVIRTUALDEVICE *vdv_next;
     NUTVIRTUALDEVICE *vdv_zero;
-    u_char vdv_type;
+    uint8_t vdv_type;
     int (*vdv_read) (void *, void *, int);
     int (*vdv_write) (void *, CONST void *, int);
 #ifdef __HARVARD_ARCH__
@@ -285,14 +290,14 @@ struct _IFSTREAM {
     int  (*if_input)(NUTDEVICE *);  /*!< \brief Wait for input. */
     int  (*if_output)(NUTDEVICE *); /*!< \brief Initiate output. */
     int  (*if_flush)(NUTDEVICE *);  /*!< \brief Wait until output buffer empty. */
-    volatile u_char if_rx_idx;      /*!< \brief Next input index. */
-    u_char if_rd_idx;               /*!< \brief Next read index. */
-    volatile u_char if_tx_idx;      /*!< \brief Next output index. */
-    u_char if_wr_idx;               /*!< \brief Next write index. */
-    volatile u_char if_tx_act;      /*!< \brief Set if transmitter running. */
-    u_char if_last_eol;             /*!< \brief Last end of line character read. */
-    u_char if_rx_buf[256];          /*!< \brief Input buffer. */
-    u_char if_tx_buf[256];          /*!< \brief Output buffer. */
+    volatile uint8_t if_rx_idx;      /*!< \brief Next input index. */
+    uint8_t if_rd_idx;               /*!< \brief Next read index. */
+    volatile uint8_t if_tx_idx;      /*!< \brief Next output index. */
+    uint8_t if_wr_idx;               /*!< \brief Next write index. */
+    volatile uint8_t if_tx_act;      /*!< \brief Set if transmitter running. */
+    uint8_t if_last_eol;             /*!< \brief Last end of line character read. */
+    uint8_t if_rx_buf[256];          /*!< \brief Input buffer. */
+    uint8_t if_tx_buf[256];          /*!< \brief Output buffer. */
 };
 
 /*@}*/
@@ -300,7 +305,7 @@ struct _IFSTREAM {
 
 extern NUTDEVICE *nutDeviceList;
 
-extern int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, u_char irq);
+extern int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, uint8_t irq);
 extern NUTDEVICE *NutDeviceLookup(CONST char *name);
 
 __END_DECLS

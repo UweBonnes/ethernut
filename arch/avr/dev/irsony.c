@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
@@ -80,12 +83,12 @@ HANDLE nut_irqueue;
  * Tick counter, incremented on each timer overflow and
  * cleared on each edge detection on the infrared signal.
  */
-static u_short irticks;
+static uint16_t irticks;
 
 /*
  * Number of bits received from infrared decoder.
  */
-static u_char irbitnum;
+static uint8_t irbitnum;
 
 /*! \fn SIG_OVERFLOW2(void)
  * \brief Timer 2 overflow handler.
@@ -110,11 +113,11 @@ SIGNAL(SIG_OVERFLOW2)
  */
 SIGNAL(SIG_INTERRUPT4)
 {
-    static u_short minset;      /* Min. length of bit value 1, calculated from start bit. */
-    static u_short ccode;       /* Current code. */
-    static u_short lcode;       /* Last code. */
-    static u_char ncode;        /* Number of equal codes. */
-    u_short bitlen = irticks;   /* Length of the current bit. */
+    static uint16_t minset;      /* Min. length of bit value 1, calculated from start bit. */
+    static uint16_t ccode;       /* Current code. */
+    static uint16_t lcode;       /* Last code. */
+    static uint8_t ncode;        /* Number of equal codes. */
+    uint16_t bitlen = irticks;   /* Length of the current bit. */
 
     irticks = 0;
 

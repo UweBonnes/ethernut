@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:30  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -147,17 +150,17 @@
  *
  * \return Partial checksum in network byte order.
  */
-u_short NutIpChkSumPartial(u_short ics, CONST void *buf, int len)
+uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
 {
-    register u_long sum = ics;
-    register u_char *cp = (u_char *) buf;
+    register uint32_t sum = ics;
+    register uint8_t *cp = (uint8_t *) buf;
 
     /* Sum up 16 bit values. */
     while (len > 1) {
 #ifdef __BIG_ENDIAN__
-        sum += ((u_short)*cp << 8) | *(cp + 1);
+        sum += ((uint16_t)*cp << 8) | *(cp + 1);
 #else
-        sum += ((u_short)*(cp + 1) << 8) | *cp;
+        sum += ((uint16_t)*(cp + 1) << 8) | *cp;
 #endif
         cp += 2;
         len -= 2;
@@ -166,7 +169,7 @@ u_short NutIpChkSumPartial(u_short ics, CONST void *buf, int len)
     /* Add remaining byte on odd lengths. */
     if (len) {
 #ifdef __BIG_ENDIAN__
-        sum += (u_short)*cp << 8;
+        sum += (uint16_t)*cp << 8;
 #else
         sum += *cp;
 #endif
@@ -174,9 +177,9 @@ u_short NutIpChkSumPartial(u_short ics, CONST void *buf, int len)
 
     /* Fold upper 16 bits to lower ones. */
     while (sum >> 16) {
-        sum = (u_short)sum + (sum >> 16);
+        sum = (uint16_t)sum + (sum >> 16);
     }
-    return (u_short) sum;
+    return (uint16_t) sum;
 }
 
 
@@ -187,7 +190,7 @@ u_short NutIpChkSumPartial(u_short ics, CONST void *buf, int len)
  * Unlike the partial checksum in NutIpChkSumPartial(), this function takes
  * the one's complement of the final result, thus making it the full checksum.
  */
-u_short NutIpChkSum(u_short ics, CONST void *buf, int len)
+uint16_t NutIpChkSum(uint16_t ics, CONST void *buf, int len)
 {
     return ~NutIpChkSumPartial(ics, buf, len);
 }
@@ -197,18 +200,18 @@ u_short NutIpChkSum(u_short ics, CONST void *buf, int len)
  * calculation of UDP and TCP header checksums.
  */
 struct __attribute__ ((packed)) pseudo_hdr {
-    u_long ph_src_addr;
-    u_long ph_dest_addr;
-    u_char ph_zero;
-    u_char ph_protocol;
-    u_short ph_len;
+    uint32_t ph_src_addr;
+    uint32_t ph_dest_addr;
+    uint8_t ph_zero;
+    uint8_t ph_protocol;
+    uint16_t ph_len;
 };
 
 /*!
  * \brief Calculates the partial IP pseudo checksum.
  *
  */
-u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, int len)
+uint32_t NutIpPseudoChkSumPartial(uint32_t src_addr, uint32_t dest_addr, uint8_t protocol, int len)
 {
     struct pseudo_hdr ph;
 

@@ -109,28 +109,28 @@ typedef enum {
 } WLAN_WEP;
 
 typedef struct _wlan_wep_key {
-  u_char  KeyLen;
-  u_char  Key[WLAN_WEP_MAX_KEY_SIZE];
+  uint8_t  KeyLen;
+  uint8_t  Key[WLAN_WEP_MAX_KEY_SIZE];
 } WLAN_WEP_KEY;
 
 typedef struct _wlan_config {
-  u_short       Size;
+  uint16_t       Size;
   WLAN_MODE     Mode;
   char          Networkname[WLAN_NETWORK_NAME_MAX_LEN];
   WLAN_WEP      UseWEP;
-  u_char        UseWEPTxKey;
+  uint8_t        UseWEPTxKey;
   WLAN_WEP_KEY  WEPKey[WLAN_WEP_MAX_KEY_COUNT];
 } WLAN_CONFIG;
 
 typedef struct _wlan_status {
-  u_char            Size;
+  uint8_t            Size;
   WLAN_STATUS_PORT  PortStatus;       // Current port status
-  u_char            BSSIDAddress[6];  // MAC address of the AP?
-  u_char            Channel;          // Current Channel
-  u_char            TxRate;           // Current TxRate
-  u_short           Quality;          // Quality in dBm
-  u_short           Signal;           // Signal in dBm negative value
-  u_short           Noise;            // Noise in dBm negative value
+  uint8_t            BSSIDAddress[6];  // MAC address of the AP?
+  uint8_t            Channel;          // Current Channel
+  uint8_t            TxRate;           // Current TxRate
+  uint16_t           Quality;          // Quality in dBm
+  uint16_t           Signal;           // Signal in dBm negative value
+  uint16_t           Noise;            // Noise in dBm negative value
 } WLAN_STATUS;
 
 /*-------------------------------------------------------------------------*/

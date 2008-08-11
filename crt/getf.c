@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/07/09 14:20:25  haraldkipp
  * Added support for length modifier h. According to C99, F, G and X type
  * specifiers should work like f, g, and x.
@@ -116,18 +119,18 @@
 int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
 {
 
-    u_char cf;                  /* Character from format. */
-    u_char ch;                  /* Character from input. */
+    uint8_t cf;                 /* Character from format. */
+    uint8_t ch;                 /* Character from input. */
     size_t width;               /* Field width. */
-    u_char flags;               /* CF_ flags. */
-    u_char ct;                  /* CT_ conversion type. */
-    u_char base;                /* Conversion base. */
-    u_char ccnt = 0;            /* Number of conversions. */
-    u_char acnt = 0;            /* Number of fields assigned. */
-    u_char hcnt;                /* Number of 'half' specifiers. */
+    uint8_t flags;              /* CF_ flags. */
+    uint8_t ct;                 /* CT_ conversion type. */
+    uint8_t base;               /* Conversion base. */
+    uint8_t ccnt = 0;           /* Number of conversions. */
+    uint8_t acnt = 0;           /* Number of fields assigned. */
+    uint8_t hcnt;               /* Number of 'half' specifiers. */
     char buf[16];               /* Temporary buffer. */
     char *cp;                   /* Temporary pointer. */
-    u_char ch_ready = 0;        /* Character available from previous peek
+    uint8_t ch_ready = 0;       /* Character available from previous peek
                                    This is necessary as a hack to get around a missing ungetc */
     
     for (;;) {
@@ -357,7 +360,7 @@ int _getf(int _getb(int, void *, size_t), int fd, CONST char *fmt, va_list ap)
                 return acnt;
 
             if ((flags & CF_SUPPRESS) == 0) {
-                u_long res;
+                uint32_t res;
 
                 *cp = 0;
                 res = strtol(buf, 0, base);

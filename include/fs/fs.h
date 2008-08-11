@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2007/08/29 13:34:14  haraldkipp
  * Added function for renaming files (contrib by ZACK).
  *
@@ -58,6 +61,7 @@
  */
 
 #include <sys/file.h>
+#include <stdint.h>
 
 /*!
  * \addtogroup xgFS
@@ -148,7 +152,7 @@ typedef struct _FSCP_VOL_MOUNT {
     /*! \brief Block device mount. */
     NUTFILE *fscp_bmnt;
     /*! \brief Partition type. */
-    u_char fscp_part_type;
+    uint8_t fscp_part_type;
 } FSCP_VOL_MOUNT;
 
 typedef struct _FSCP_RENAME {

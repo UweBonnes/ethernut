@@ -38,7 +38,7 @@
 /*
  * generic statistics counter functions 
  */
-static u_long statistics[SNMP_STAT_MAX];
+static uint32_t statistics[SNMP_STAT_MAX];
 
 
 /*!
@@ -180,7 +180,7 @@ void SnmpStatsInc(int which)
     }
 }
 
-u_long SnmpStatsGet(int which)
+uint32_t SnmpStatsGet(int which)
 {
     if (which >= 0 && which < SNMP_STAT_MAX) {
         return statistics[which];

@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2008/07/09 14:25:06  haraldkipp
  * Made EEPROM_PAGE_SIZE configurable. Does it really make sense?
  *
@@ -98,8 +101,8 @@
 #define EEPROM_PAGE_SIZE    64
 #endif
 
-static u_char rtc_chip;
-static u_long rtc_status;
+static uint8_t rtc_chip;
+static uint32_t rtc_status;
 
 /*!
  * \brief Enable or disable write access.
@@ -112,7 +115,7 @@ static u_long rtc_status;
 static int X12WriteEnable(int on)
 {
     int rc;
-    u_char buf[3];
+    uint8_t buf[3];
 
     buf[0] = 0;
     buf[1] = 0x3F;
@@ -136,7 +139,7 @@ static int X12WriteEnable(int on)
  */
 static int X12WaitReady(void)
 {
-    u_char poll;
+    uint8_t poll;
     int cnt = 200; /* Ethernut 3 needs about 50 loops, so this is quite save. */
 
     /* 
@@ -160,10 +163,10 @@ static int X12WaitReady(void)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcReadRegs(u_char reg, u_char *buff, size_t cnt)
+int X12RtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
 {
     int rc = -1;
-    u_char wbuf[2];
+    uint8_t wbuf[2];
 
     wbuf[0] = 0;
     wbuf[1] = reg;
@@ -193,7 +196,7 @@ int X12RtcReadRegs(u_char reg, u_char *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcWrite(int nv, CONST u_char *buff, size_t cnt)
+int X12RtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
 {
     int rc;
 
@@ -228,7 +231,7 @@ int X12RtcWrite(int nv, CONST u_char *buff, size_t cnt)
 int X12RtcGetClock(struct _tm *tm)
 {
     int rc;
-    u_char data[8];
+    uint8_t data[8];
 
     if ((rc = X12RtcReadRegs(X12RTC_SC, data, 8)) == 0) {
         tm->tm_sec = BCD2BIN(data[0]);
@@ -264,7 +267,7 @@ int X12RtcGetClock(struct _tm *tm)
  */
 int X12RtcSetClock(CONST struct _tm *tm)
 {
-    u_char data[10];
+    uint8_t data[10];
 
     memset(data, 0, sizeof(data));
     if (tm) {
@@ -309,7 +312,7 @@ int X12RtcSetClock(CONST struct _tm *tm)
 int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
 {
     int rc;
-    u_char data[8];
+    uint8_t data[8];
 
     *aflgs = 0;
     memset(tm, 0, sizeof(struct _tm));
@@ -362,7 +365,7 @@ int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs)
  */
 int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
 {
-    u_char data[10];
+    uint8_t data[10];
 
     memset(data, 0, sizeof(data));
     data[1] = idx * 8;
@@ -401,10 +404,10 @@ int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12RtcGetStatus(u_long *sflgs)
+int X12RtcGetStatus(uint32_t *sflgs)
 {
     int rc;
-    u_char data;
+    uint8_t data;
 
     if ((rc = X12RtcReadRegs(X12RTC_SR, &data, 1)) == 0) {
         rtc_status |= data;
@@ -422,7 +425,7 @@ int X12RtcGetStatus(u_long *sflgs)
  *
  * \return Always 0.
  */
-int X12RtcClearStatus(u_long sflgs)
+int X12RtcClearStatus(uint32_t sflgs)
 {
     rtc_status &= ~sflgs;
 
@@ -452,10 +455,10 @@ NUTRTC rtcX12x6 = {
 int X12EepromRead(u_int addr, void *buff, size_t len)
 {
     int rc = -1;
-    u_char wbuf[2];
+    uint8_t wbuf[2];
 
-    wbuf[0] = (u_char)(addr >> 8);
-    wbuf[1] = (u_char)addr;
+    wbuf[0] = (uint8_t)(addr >> 8);
+    wbuf[1] = (uint8_t)addr;
     if (TwMasterTransact(I2C_SLA_EEPROM, wbuf, 2, buff, len, NUT_WAIT_INFINITE) == len) {
         rc = 0;
     }
@@ -477,9 +480,9 @@ int X12EepromRead(u_int addr, void *buff, size_t len)
 int X12EepromWrite(u_int addr, CONST void *buff, size_t len)
 {
     int rc = 0;
-    u_char *wbuf;
+    uint8_t *wbuf;
     size_t wlen;
-    CONST u_char *wp = buff;
+    CONST uint8_t *wp = buff;
 
     /*
      * Loop for each page to be written to.
@@ -496,8 +499,8 @@ int X12EepromWrite(u_int addr, CONST void *buff, size_t len)
             rc = -1;
             break;
         }
-        wbuf[0] = (u_char)(addr >> 8);
-        wbuf[1] = (u_char)addr;
+        wbuf[0] = (uint8_t)(addr >> 8);
+        wbuf[1] = (uint8_t)addr;
         memcpy(wbuf + 2, (void *)wp, wlen);
 
         /* Enable EEPROM write access and send the write buffer. */
@@ -535,8 +538,8 @@ int X12EepromWrite(u_int addr, CONST void *buff, size_t len)
 int X12Init(void)
 {
     int rc;
-    u_long tmp;
-    u_char data[2];
+    uint32_t tmp;
+    uint8_t data[2];
 
     /* Initialize I2C bus. */
     if ((rc = TwInit(0)) == 0) {

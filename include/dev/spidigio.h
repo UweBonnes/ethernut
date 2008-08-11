@@ -53,9 +53,9 @@ extern "C" {
 
 /*@}*/
 
-extern void SpiDigitalInit(u_char *inputs, u_char *outputs);
-extern u_long SpiDigitalGet(u_char num);
-extern void SpiDigitalSet(u_char num, u_long bits);
+extern void SpiDigitalInit(uint8_t *inputs, uint8_t *outputs);
+extern uint32_t SpiDigitalGet(uint8_t num);
+extern void SpiDigitalSet(uint8_t num, uint32_t bits);
 
 #ifdef __cplusplus
 }

@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2006/06/28 17:22:34  haraldkipp
  * Make it compile for AT91SAM7X256.
  *
@@ -309,9 +312,9 @@ static int SbiMmCard0Select(int on)
  *
  * \return Last byte received.
  */
-static u_char SbiMmCard0Io(u_char val)
+static uint8_t SbiMmCard0Io(uint8_t val)
 {
-    u_char msk = 0x80;
+    uint8_t msk = 0x80;
 
 #ifdef NUTDEBUG
     putchar('[');

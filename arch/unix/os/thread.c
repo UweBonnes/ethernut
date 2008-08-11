@@ -72,7 +72,7 @@ pthread_mutex_t thread_mutex;
 pthread_cond_t main_cv;
 
 /* level of critical sections entered but not left outside a thread */
-u_short main_cs_level;
+uint16_t main_cs_level;
 
 /* has to be initialized once */
 void NutThreadInit()

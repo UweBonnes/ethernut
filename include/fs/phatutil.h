@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/02/23 15:47:18  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  *
@@ -54,17 +57,17 @@
 
 __BEGIN_DECLS
 /* Prototypes */
-extern void GetDosTimeStamp(u_short * dostim, u_short * dosdat);
+extern void GetDosTimeStamp(uint16_t * dostim, uint16_t * dosdat);
 
-extern int MakePhatName(CONST char *src, u_char * dst);
-extern void MakeVisibleName(CONST u_char * src, char *dst);
+extern int MakePhatName(CONST char *src, uint8_t * dst);
+extern void MakeVisibleName(CONST uint8_t * src, char *dst);
 
 extern char *GetParentPath(CONST char *path, CONST char **comp);
 
 extern int IsFixedRootDir(NUTFILE * ndp);
 
 extern void PhatFilePosRewind(PHATFILE * fcb);
-extern int PhatFilePosSet(NUTFILE * nfp, u_long pos);
+extern int PhatFilePosSet(NUTFILE * nfp, uint32_t pos);
 
 __END_DECLS
 /* End of prototypes */

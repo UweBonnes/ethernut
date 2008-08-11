@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:35  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/09/07 09:06:17  haraldkipp
  * Discovery service added.
  *
@@ -70,15 +73,15 @@
 #endif
 
 typedef struct {
-    u_long disopt_ipmask;
-    u_short disopt_port;
+    uint32_t disopt_ipmask;
+    uint16_t disopt_port;
     u_int disopt_flags;
 } DISCOVERY_OPTIONS;
 
 static DISCOVERY_OPTIONS disopt;
-static u_long xid;
+static uint32_t xid;
 
-static int NutDiscoveryHandler(u_long ip, u_short port, DISCOVERY_TELE * dist, int len);
+static int NutDiscoveryHandler(uint32_t ip, uint16_t port, DISCOVERY_TELE * dist, int len);
 static NutDiscoveryCallback discovery_callback = NutDiscoveryHandler;
 
 /*!
@@ -133,7 +136,7 @@ int NutDiscoveryAppConf(DISCOVERY_TELE * dist)
  * \param dtel  Pointer to the UDP telegram buffer.
  * \param len   UDP telegram size.
  */
-static int NutDiscoveryHandler(u_long ip, u_short port, DISCOVERY_TELE * dist, int len)
+static int NutDiscoveryHandler(uint32_t ip, uint16_t port, DISCOVERY_TELE * dist, int len)
 {
     int rc = -1;
 
@@ -157,8 +160,8 @@ THREAD(DiscoveryResponder, arg)
 {
     UDPSOCKET *sock;
     DISCOVERY_TELE *dist;
-    u_long raddr;
-    u_short rport;
+    uint32_t raddr;
+    uint16_t rport;
     int len;
 
     /* Insist on allocating a datagram buffer. */
@@ -173,7 +176,7 @@ THREAD(DiscoveryResponder, arg)
 
     /* Nut/Net doesn't provide UDP datagram buffering by default. */
     {
-        u_short max_ms = sizeof(DISCOVERY_TELE) * 3;
+        uint16_t max_ms = sizeof(DISCOVERY_TELE) * 3;
 
         NutUdpSetSockOpt(sock, SO_RCVBUF, &max_ms, sizeof(max_ms));
     }
@@ -249,7 +252,7 @@ NutDiscoveryCallback NutRegisterDiscoveryCallback(NutDiscoveryCallback func)
  *
  * \return 0 if a handler thread had been started, -1 otherwise.
  */
-int NutRegisterDiscovery(u_long ipmask, u_short port, u_int flags)
+int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, u_int flags)
 {
     static HANDLE tid = NULL;
 

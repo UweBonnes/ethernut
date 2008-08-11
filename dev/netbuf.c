@@ -93,11 +93,14 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/08/09 17:35:32  haraldkipp
  * Simplified NETBUF allocation and release.
  *
  * Revision 1.4  2008/04/18 13:31:59  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
+ * Changed size parameter from uint16_t to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
  * AVR expected
  * I changed u_int to int at some places to avoid some warnings during
@@ -167,7 +170,7 @@ static int NutNetBufAllocData(NBDATA * nbd, int size)
  *         pointer is returned if not enough memory is available and
  *         the whole structure is released.
  */
-NETBUF *NutNetBufAlloc(NETBUF * nb, u_char type, int size)
+NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 {
     NBDATA * nbd;
 

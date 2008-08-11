@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/06/05 16:45:32  haraldkipp
  * Duplicate prototype in sock_var.h.
  *
@@ -113,10 +116,10 @@ extern "C" {
  * \brief UDP protocol header type.
  */
 typedef struct udphdr {
-    u_short uh_sport;   /*!< \brief Source port */
-    u_short uh_dport;   /*!< \brief Destination port */
-    u_short uh_ulen;    /*!< \brief UDP length */
-    u_short uh_sum;     /*!< \brief UDP checksum */
+    uint16_t uh_sport;   /*!< \brief Source port */
+    uint16_t uh_dport;   /*!< \brief Destination port */
+    uint16_t uh_ulen;    /*!< \brief UDP length */
+    uint16_t uh_sum;     /*!< \brief UDP checksum */
 } UDPHDR;
 
 #ifdef __cplusplus

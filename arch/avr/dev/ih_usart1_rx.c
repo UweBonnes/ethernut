@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:16  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2007/04/12 09:23:15  haraldkipp
  * ATmega2561 uses different interrupt vector names. One day we should
  * switch to the new names used by avr-libc.
@@ -112,9 +115,9 @@ IRQ_HANDLER sig_UART1_RECV = {
 static int AvrUart1RxIrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(UCSR1B, RXCIE1);
-    u_char bval;
+    unsigned int *ival = (unsigned int *) param;
+    int_fast8_t enabled = bit_is_set(UCSR1B, RXCIE1);
+    uint8_t bval;
 
     /* Disable interrupt. */
     cbi(UCSR1B, RXCIE1);
@@ -148,7 +151,7 @@ static int AvrUart1RxIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int) sig_UART1_RECV.ir_count;
+        *ival = (unsigned int) sig_UART1_RECV.ir_count;
         sig_UART1_RECV.ir_count = 0;
         break;
 #endif

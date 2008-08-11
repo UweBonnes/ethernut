@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2008/08/09 17:35:32  haraldkipp
  * Simplified NETBUF allocation and release.
  *
@@ -104,6 +107,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file dev/netbuf.h
@@ -148,7 +152,7 @@ struct _NBDATA {
  */
 struct _NETBUF {
     NETBUF *nb_next;    /*!< \brief Link to next structure. */
-    u_char nb_flags;    /*!< \brief NBAF_ flags. */
+    uint8_t nb_flags;   /*!< \brief NBAF_ flags. */
     NBDATA nb_dl;       /*!< \brief Datalink buffer. */
     NBDATA nb_nw;       /*!< \brief Network buffer. */
     NBDATA nb_tp;       /*!< \brief Transport buffer. */
@@ -159,7 +163,7 @@ struct _NETBUF {
 
 __BEGIN_DECLS
 
-extern NETBUF *NutNetBufAlloc(NETBUF *nb, u_char type, int size);
+extern NETBUF *NutNetBufAlloc(NETBUF *nb, uint8_t type, int size);
 extern NETBUF *NutNetBufClone(NETBUF *nb);
 extern void NutNetBufFree(NETBUF *nb);
 

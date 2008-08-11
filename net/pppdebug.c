@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2006/10/05 17:25:41  haraldkipp
  * Avoid possible alignment errors. Fixes bug #1567748.
  *
@@ -66,9 +69,9 @@
 #include <netinet/if_ppp.h>
 #include <netinet/in.h>
 FILE *__ppp_trs;                /*!< \brief PPP trace output stream. */
-u_char __ppp_trf;               /*!< \brief PPP trace flags. */
+uint_fast8_t __ppp_trf;               /*!< \brief PPP trace flags. */
 
-static u_char ppp_header_sz;    /* Size of the PPP header. */
+static uint8_t ppp_header_sz;    /* Size of the PPP header. */
 
 static prog_char dbg_confreq[] = "[CONFREQ]";
 static prog_char dbg_confack[] = "[CONFACK]";
@@ -86,7 +89,7 @@ static prog_char dbg_discreq[] = "[DISCREQ]";
 void NutDumpLcpOption(FILE * stream, NETBUF * nb)
 {
     XCPOPT *xcpo;
-    u_short len;
+    uint16_t len;
 
     if ((len = nb->nb_ap.sz) != 0)
         xcpo = nb->nb_ap.vp;
@@ -131,7 +134,7 @@ void NutDumpLcpOption(FILE * stream, NETBUF * nb)
 void NutDumpLcp(FILE * stream, NETBUF * nb)
 {
     XCPHDR *lcp;
-    u_short len;
+    uint16_t len;
 
     if ((len = nb->nb_nw.sz) != 0) {
         len = nb->nb_nw.sz + nb->nb_ap.sz;
@@ -201,8 +204,8 @@ void NutDumpLcp(FILE * stream, NETBUF * nb)
 void NutDumpPapOption(FILE * stream, NETBUF * nb)
 {
     char *xcpo;
-    u_short len;
-    u_char i;
+    uint16_t len;
+    uint8_t i;
 
     if ((len = nb->nb_ap.sz) != 0)
         xcpo = nb->nb_ap.vp;
@@ -218,7 +221,7 @@ void NutDumpPapOption(FILE * stream, NETBUF * nb)
                 fputc(*(xcpo + i), stream);
             fputc(']', stream);
         }
-        if (len < (u_short) (*xcpo + 1)) {
+        if (len < (uint16_t) (*xcpo + 1)) {
             fputs("[LEN?]", stream);
             break;
         }
@@ -230,7 +233,7 @@ void NutDumpPapOption(FILE * stream, NETBUF * nb)
 void NutDumpPap(FILE * stream, NETBUF * nb)
 {
     XCPHDR *pap;
-    u_short len;
+    uint16_t len;
 
     if ((len = nb->nb_nw.sz) != 0)
         pap = nb->nb_nw.vp;
@@ -267,7 +270,7 @@ void NutDumpPap(FILE * stream, NETBUF * nb)
 void NutDumpIpcpOption(FILE * stream, NETBUF * nb)
 {
     XCPOPT *xcpo;
-    u_short len;
+    uint16_t len;
 
     if ((len = nb->nb_ap.sz) != 0)
         xcpo = nb->nb_ap.vp;
@@ -306,7 +309,7 @@ void NutDumpIpcpOption(FILE * stream, NETBUF * nb)
 void NutDumpIpcp(FILE * stream, NETBUF * nb)
 {
     XCPHDR *ipcp;
-    u_short len;
+    uint16_t len;
 
     if ((len = nb->nb_nw.sz) != 0)
         ipcp = nb->nb_nw.vp;
@@ -362,7 +365,7 @@ void NutDumpIpcp(FILE * stream, NETBUF * nb)
 void NutDumpPpp(FILE * stream, NETBUF * nb)
 {
     PPPHDR *ph = (PPPHDR *) nb->nb_dl.vp;
-    u_short protocol;
+    uint16_t protocol;
 
     fprintf(stream, "(%u)", nb->nb_dl.sz + nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz);
 
@@ -376,13 +379,13 @@ void NutDumpPpp(FILE * stream, NETBUF * nb)
          * Check for protocol compression.
          * LSB of 2nd octet for protocol is always 1.
          */
-        if (((u_char *) nb->nb_dl.vp)[0] & 0x01) {
+        if (((uint8_t *) nb->nb_dl.vp)[0] & 0x01) {
             ppp_header_sz = 1;
-            protocol = *(u_char *) nb->nb_dl.vp;
+            protocol = *(uint8_t *) nb->nb_dl.vp;
         } else {
             char *cp = (char *)nb->nb_dl.vp;
             ppp_header_sz = 2;
-            protocol = ntohs(((u_short)cp[0] << 8) | cp[1]);
+            protocol = ntohs(((uint16_t)cp[0] << 8) | cp[1]);
         }
     } else {
         ppp_header_sz = sizeof(PPPHDR);
@@ -423,7 +426,7 @@ void NutDumpPpp(FILE * stream, NETBUF * nb)
  *               disable trace output.
  * \param flags  Flags to enable specific traces.
  */
-void NutTracePPP(FILE * stream, u_char flags)
+void NutTracePPP(FILE * stream, uint8_t flags)
 {
     if (stream)
         __ppp_trs = stream;

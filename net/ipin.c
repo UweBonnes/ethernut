@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/08/11 07:00:30  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.12  2008/04/18 13:13:11  haraldkipp
  * Using fast ints.
  *
@@ -205,8 +208,8 @@ void NutIpSetInputFilter(NutIpFilterFunc callbackFunc)
 void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
 {
     IPHDR *ip;
-    u_short ip_hdrlen;
-    u_long dst;
+    uint16_t ip_hdrlen;
+    uint32_t dst;
     uint_fast8_t bcast;
     IFNET *nif;
 
@@ -290,7 +293,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     }
 
     nb->nb_nw.sz = ip_hdrlen;
-    nb->nb_tp.vp = ((u_char *) ip) + (ip_hdrlen);
+    nb->nb_tp.vp = ((char *) ip) + (ip_hdrlen);
     nb->nb_tp.sz = htons(ip->ip_len) - (ip_hdrlen);
 
     switch (ip->ip_p) {

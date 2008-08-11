@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2006/10/08 16:42:56  haraldkipp
  * Not optimal, but simple and reliable exclusive access implemented.
  * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
@@ -113,11 +116,11 @@
  *
  * \return The number of free clusters.
  */
-static u_long PhatCountFreeClusters(NUTDEVICE * dev)
+static uint32_t PhatCountFreeClusters(NUTDEVICE * dev)
 {
-    u_long rc = 0;
-    u_long i = 2;
-    u_long link;
+    uint32_t rc = 0;
+    uint32_t i = 2;
+    uint32_t link;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     if (vol->vol_type == 32) {
@@ -176,7 +179,7 @@ static u_long PhatCountFreeClusters(NUTDEVICE * dev)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
+int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, uint8_t part_type)
 {
     PHATVOL *vol;
     PHATVBR *vbr;
@@ -225,7 +228,7 @@ int PhatVolMount(NUTDEVICE * dev, NUTFILE * blkmnt, u_char part_type)
             PhatVolUnmount(dev);
             return -1;
         }
-        vol->vol_buf[sbn].sect_num = (u_long)-1;
+        vol->vol_buf[sbn].sect_num = (uint32_t)-1;
     }
 #else
     vol->vol_buf[0].sect_data = pari.par_blkbp;
@@ -387,7 +390,7 @@ int PhatVolUnmount(NUTDEVICE * dev)
  * \param nfp   File descriptor.
  * \param clust Specified cluster.
  */
-u_long PhatClusterSector(NUTFILE * nfp, u_long clust)
+uint32_t PhatClusterSector(NUTFILE * nfp, uint32_t clust)
 {
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;

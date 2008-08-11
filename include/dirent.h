@@ -71,6 +71,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/01/05 16:45:20  haraldkipp
  * Dynamic NUTFILE allocation for detached block device.
  *
@@ -81,6 +84,7 @@
  * \endverbatim
  */
 
+#include <stdint.h>
 #include <sys/file.h>
 
 /*!
@@ -113,10 +117,10 @@
  * for Nut/OS, but compatible to *nix systems.
  */
 struct dirent {
-    u_long d_fileno;            /*!< \brief File number, unused. */
-    u_short d_reclen;           /*!< \brief Record length, unused. */
-    u_char d_type;              /*!< \brief File type, 0=regular, 1=directory. */
-    u_char d_namlen;            /*!< \brief Length of string in d_name. */
+    uint32_t d_fileno;            /*!< \brief File number, unused. */
+    uint16_t d_reclen;           /*!< \brief Record length, unused. */
+    uint8_t d_type;              /*!< \brief File type, 0=regular, 1=directory. */
+    uint8_t d_namlen;            /*!< \brief Length of string in d_name. */
     char d_name[MAXNAMLEN + 1]; /*!< \brief Name of this entry. */
 };
 

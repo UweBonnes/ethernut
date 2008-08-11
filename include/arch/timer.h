@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2008/07/08 08:25:05  haraldkipp
  * NutDelay is no more architecture specific.
  * Number of loops per millisecond is configurable or will be automatically
@@ -45,6 +48,8 @@
  * First check in
  *
  */
+
+#include <stdint.h>
 
 #if defined(__AVR__)
 #include <arch/avr/timer.h>
@@ -65,9 +70,9 @@ __BEGIN_DECLS
  * Architecture dependent functions.
  */
 extern void NutRegisterTimer(void (*handler) (void *));
-extern u_long NutGetCpuClock(void);
-extern u_long NutGetTickClock(void);
-extern u_long NutTimerMillisToTicks(u_long ms);
+extern uint32_t NutGetCpuClock(void);
+extern uint32_t NutGetTickClock(void);
+extern uint32_t NutTimerMillisToTicks(uint32_t ms);
 
 __END_DECLS
 /* End of prototypes */

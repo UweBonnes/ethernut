@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2004/10/14 16:43:00  drsung
  * Fixed compiler warning "comparison between signed and unsigned"
  *
@@ -49,6 +52,7 @@
  *
  */
  
+#include <stdint.h>
 
 #include <time.h>
 #include "ctime.h"

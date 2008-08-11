@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2008/08/11 07:00:34  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.15  2005/08/02 17:47:04  haraldkipp
  * Major API documentation update.
  *
@@ -123,7 +126,7 @@
  *
  * \todo To be removed.
  */
-volatile u_char ms62_5 = 0;
+volatile uint8_t ms62_5 = 0;
 
 /*@}*/
 

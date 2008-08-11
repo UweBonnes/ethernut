@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.14  2008/07/08 13:26:58  haraldkipp
  * Floating point bug with avr-libc 1.16 fixed (bug #1871390).
  *
@@ -163,17 +166,17 @@ static void _putpad(int _putb(int fd, CONST void *, size_t), int fd, char *padch
  */
 int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list ap)
 {
-    u_char ch;                  /* character from fmt */
+    uint8_t ch;                 /* character from fmt */
     int n;                      /* handy integer (short term usage) */
     char *cp;                   /* handy char pointer (short term usage) */
-    u_char flags;               /* flags as above */
+    uint8_t flags;              /* flags as above */
     int rc;                     /* return value accumulator */
     int width;                  /* width from format (%8d), or 0 */
     int prec;                   /* precision from format (%.3d), or -1 */
     int dprec;                  /* a copy of prec if [diouxX], 0 otherwise */
     int realsz;                 /* field size expanded by dprec, sign, etc */
-    u_char sign;                /* sign prefix (' ', '+', '-', or \0) */
-    u_long ulval;               /* integer arguments %[diouxX] */
+    uint8_t sign;               /* sign prefix (' ', '+', '-', or \0) */
+    uint32_t ulval;               /* integer arguments %[diouxX] */
     int size;                   /* size of converted field or string */
     char *xdigs;                /* digits for [xX] conversion */
     char buf[BUF];              /* space for %c, %[diouxX], %[eEfgG] */
@@ -187,7 +190,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
     extern char *FormatFP_1(int format, float f, unsigned flag, int field_width, int prec);
     extern char *ftoa(float f, int *status);
 #else /* __IMAGECRAFT__ */
-    char *dtostre(double f, char *str, u_char prec, u_char flags);
+    char *dtostre(double f, char *str, uint8_t prec, uint8_t flags);
 #if __AVR_LIBC_VERSION__  >= 10600
     char *dtostrf(double f, signed char width, unsigned char prec, char *str);
 #else /* __AVR_LIBC_VERSION__ */
@@ -326,13 +329,13 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
         case 'i':
             /* Thanks to Ralph Mason for fixing the u_int bug. */
             if (flags & LONGINT)
-                ulval = va_arg(ap, u_long);
+                ulval = va_arg(ap, uint32_t);
             else if (ch == 'u')
                 ulval = va_arg(ap, u_int);
             else
                 ulval = va_arg(ap, int);
             if (ch != 'u' && (long) ulval < 0) {
-                ulval = (u_long) (-((long) ulval));
+                ulval = (uint32_t) (-((long) ulval));
                 sign = '-';
             }
             if ((dprec = prec) >= 0)
@@ -351,7 +354,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             break;
 
         case 'o':
-            ulval = (flags & LONGINT) ? va_arg(ap, u_long) : va_arg(ap, u_int);
+            ulval = (flags & LONGINT) ? va_arg(ap, uint32_t) : va_arg(ap, u_int);
             sign = 0;
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
@@ -375,7 +378,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
                 flags |= ALT;
                 ch = 'x';
             } else
-                ulval = (flags & LONGINT) ? va_arg(ap, u_long) : (u_long)
+                ulval = (flags & LONGINT) ? va_arg(ap, uint32_t) : (uint32_t)
                     va_arg(ap, u_int);
 
             sign = 0;

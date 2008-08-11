@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.14  2008/07/26 09:38:02  haraldkipp
  * Added support for NUT_IRQMODE_NONE and NUT_IRQMODE_LEVEL.
  *
@@ -98,6 +101,9 @@
  */
 
 #include <cfg/arch.h>
+
+#include <stdint.h>
+
 #include <sys/device.h>
 #include <dev/irqstack.h>
 
@@ -136,7 +142,7 @@
  */
 typedef struct {
 #ifdef NUT_PERFMON
-    u_long ir_count;
+    uint32_t ir_count;
 #endif
     void *ir_arg;
     void (*ir_handler) (void *);
@@ -165,7 +171,7 @@ __BEGIN_DECLS
 extern void CallHandler(IRQ_HANDLER * irh);
 
 #if defined (__linux__) || defined (__APPLE__) || defined(__CYGWIN__)
-extern int  NutRegisterIrqHandler(u_char irq_nr, void (*handler) (void *), void *arg);
+extern int  NutRegisterIrqHandler(uint8_t irq_nr, void (*handler) (void *), void *arg);
 #else
 extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);
 extern int NutIrqEnable(IRQ_HANDLER * irq);

@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2008/07/17 11:51:18  olereinhardt
  * Added function AT49bvReadProtectionRegister to read the 64bit factory
  * or user id
@@ -138,7 +141,7 @@ static flashptr_t chip = (flashptr_t) FLASH_CHIP_BASE;
  *
  * \return 0 on success or -1 in case of an error.
  */
-static int At49bvWaitReady(flashptr_t addr, flashdat_t data, u_long tmo, int poll)
+static int At49bvWaitReady(flashptr_t addr, flashdat_t data, uint32_t tmo, int poll)
 {
     while (*addr != data) {
         if (!poll) {
@@ -309,7 +312,7 @@ int At49bvParamRead(u_int pos, void *data, u_int len)
 int At49bvParamWrite(u_int pos, CONST void *data, u_int len)
 {
     int rc = -1;
-    u_char *buff;
+    uint8_t *buff;
 
     /* Load the complete configuration area. */
     if ((buff = malloc(FLASH_CONF_SIZE)) != 0) {

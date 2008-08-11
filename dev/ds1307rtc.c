@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2007/09/11 17:32:30  haraldkipp
  * Last minute fix (bug #1786271)
  *
@@ -83,10 +86,10 @@
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RtcReadRegs(u_char reg, u_char *buff, size_t cnt)
+int DS1307RtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
 {
     int rc = -1;
-    u_char wbuf[1];
+    uint8_t wbuf[1];
 
     wbuf[0] = reg;
     if (TwMasterTransact(I2C_SLA_RTC, wbuf, 1, buff, cnt, NUT_WAIT_INFINITE) == cnt) {
@@ -104,7 +107,7 @@ int DS1307RtcReadRegs(u_char reg, u_char *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RtcWrite(CONST u_char *buff, size_t cnt)
+int DS1307RtcWrite(CONST uint8_t *buff, size_t cnt)
 {
     int rc;
 
@@ -123,7 +126,7 @@ int DS1307RtcWrite(CONST u_char *buff, size_t cnt)
 int DS1307RtcGetClock(struct _tm *tm)
 {
     int rc;
-    u_char data[7];
+    uint8_t data[7];
 
     if ((rc = DS1307RtcReadRegs(0x00, data, 7)) == 0) {
         tm->tm_sec  = BCD2BIN(data[0]);
@@ -147,7 +150,7 @@ int DS1307RtcGetClock(struct _tm *tm)
  */
 int DS1307RtcSetClock(CONST struct _tm *tm)
 {
-    u_char data[8];
+    uint8_t data[8];
 
     memset(data, 0, sizeof(data));
     if (tm) {
@@ -172,7 +175,7 @@ int DS1307RtcSetClock(CONST struct _tm *tm)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RamRead(u_char addr, u_char *buff, size_t cnt)
+int DS1307RamRead(uint8_t addr, uint8_t *buff, size_t cnt)
 {
     int rc = -1;
 
@@ -193,11 +196,11 @@ int DS1307RamRead(u_char addr, u_char *buff, size_t cnt)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int DS1307RamWrite(u_char addr, CONST void *buff, size_t len)
+int DS1307RamWrite(uint8_t addr, CONST void *buff, size_t len)
 {
     int rc = 0;
-    u_char *wbuf;
-    CONST u_char *wp = buff;
+    uint8_t *wbuf;
+    CONST uint8_t *wp = buff;
 
     /* Allocate and set a TWI write buffer. */
     if ((wbuf = malloc(len + 1)) == 0) {
@@ -225,8 +228,8 @@ int DS1307RamWrite(u_char addr, CONST void *buff, size_t len)
 int DS1307Init(void)
 {
     int rc;
-    u_char data;
-    u_char buff[2];
+    uint8_t data;
+    uint8_t buff[2];
 
     if ((rc = TwInit(0)) == 0 ) {
         // Enable Oszillator

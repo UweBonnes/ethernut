@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:33  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/02/15 17:08:05  haraldkipp
  * Calling the initialization routine more than once is now possible.
  * By default, half of the available memory will be allocated. Previous
@@ -55,6 +58,8 @@
 
 #include <sys/heap.h>
 
+#include <stdint.h>
+
 /*!
  * \addtogroup xgBankMem
  */
@@ -64,8 +69,8 @@
 #include <sys/bankmem.h>
 
 static char segbuf_empty;
-static u_long segbuf_total;
-static u_long segbuf_used;
+static uint32_t segbuf_total;
+static uint32_t segbuf_used;
 
 static char *segbuf_start;
 static char *segbuf_end;
@@ -110,7 +115,7 @@ char *NutSegBufInit(size_t size)
 #if NUTBANK_COUNT
     segbuf_start = (char *)(NUTBANK_START);
     segbuf_end = (char *)(NUTBANK_START) + NUTBANK_SIZE;
-    segbuf_total = (u_long) NUTBANK_COUNT *(u_long) NUTBANK_SIZE;
+    segbuf_total = (uint32_t) NUTBANK_COUNT *(uint32_t) NUTBANK_SIZE;
 #else
     if (size == 0)
         size = NutHeapAvailable() / 2;
@@ -292,7 +297,7 @@ void NutSegBufReadLast(size_t bc)
  *
  * \return Total number of free bytes in the buffer.
  */
-u_long NutSegBufAvailable(void)
+uint32_t NutSegBufAvailable(void)
 {
     return segbuf_total - segbuf_used;
 }
@@ -302,7 +307,7 @@ u_long NutSegBufAvailable(void)
  *
  * \return Total number of used bytes in the buffer.
  */
-u_long NutSegBufUsed(void)
+uint32_t NutSegBufUsed(void)
 {
     return segbuf_used;
 }

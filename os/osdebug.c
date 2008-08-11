@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 07:00:34  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2005/07/26 15:50:00  haraldkipp
  * Cygwin support added.
  *
@@ -79,10 +82,10 @@
 
 
 FILE *__os_trs;
-u_char __os_trf;
+uint_fast8_t __os_trf;
 
 FILE *__heap_trs;
-u_char __heap_trf;
+uint_fast8_t __heap_trf;
 
 static char *states[] = { "TRM", "RUN", "RDY", "SLP" };
 
@@ -123,10 +126,10 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
                       states[tdp->td_state], (uptr_t) tdp->td_queue,
                       (uptr_t) tdp->td_timer, tdp->td_sp,
                       (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
-                      *((u_long *) tdp->td_memory) != DEADBEEF
-                      && *((u_long *) (tdp->td_memory + 4)) != DEADBEEF
-                      && *((u_long *) (tdp->td_memory + 8)) != DEADBEEF
-                      && *((u_long *) (tdp->td_memory + 12)) != DEADBEEF ? "FAIL" : "OK");
+                      *((uint32_t *) tdp->td_memory) != DEADBEEF
+                      && *((uint32_t *) (tdp->td_memory + 4)) != DEADBEEF
+                      && *((uint32_t *) (tdp->td_memory + 8)) != DEADBEEF
+                      && *((uint32_t *) (tdp->td_memory + 12)) != DEADBEEF ? "FAIL" : "OK");
 #endif
             tdp = tdp->td_qnxt;
 
@@ -166,7 +169,7 @@ void NutDumpThreadList(FILE * stream)
         fprintf_P(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
                   states[tdp->td_state], (uptr_t) tdp->td_queue,
                   (uptr_t) tdp->td_timer, tdp->td_sp,
-                  (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory, *((u_long *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
+                  (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory, *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
 #endif
         if (tdp->td_queue) {
             tqp = *(NUTTHREADINFO **) (tdp->td_queue);
@@ -219,7 +222,7 @@ void NutDumpTimerList(FILE * stream)
             else if (tnp->tn_callback == NutEventTimeout)
                 fputs_P(tname, stream);
             else
-                fprintf_P(stream, fmt2, (u_long) ((uptr_t) tnp->tn_callback) << 1);
+                fprintf_P(stream, fmt2, (uint32_t) ((uptr_t) tnp->tn_callback) << 1);
             fprintf_P(stream, fmt3, (uptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
@@ -233,7 +236,7 @@ void NutDumpTimerList(FILE * stream)
  *               a debug device or null to disable trace output.
  * \param flags  Flags to enable specific traces.
  */
-void NutTraceOs(FILE * stream, u_char flags)
+void NutTraceOs(FILE * stream, uint8_t flags)
 {
     if (stream)
         __os_trs = stream;
@@ -286,7 +289,7 @@ void NutDumpHeap(FILE * stream)
  *               disable trace output.
  * \param flags  Flags to enable specific traces.
  */
-void NutTraceHeap(FILE * stream, u_char flags)
+void NutTraceHeap(FILE * stream, uint8_t flags)
 {
     if (stream)
         __heap_trs = stream;

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.20  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -218,9 +221,9 @@
 
 TCPSOCKET *tcpSocketList = 0;   /*!< Global linked list of all TCP sockets. */
 
-static volatile u_short last_local_port = 4096; /* Unassigned local port. */
+static volatile uint16_t last_local_port = 4096; /* Unassigned local port. */
 
-static u_char tcpStateRunning = 0;
+static uint8_t tcpStateRunning = 0;
 
 void NutTcpDiscardBuffers(TCPSOCKET * sock)
 {
@@ -301,7 +304,7 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
  *
  * \return Socket descriptor.
  */
-TCPSOCKET *NutTcpFindSocket(u_short lport, u_short rport, u_long raddr)
+TCPSOCKET *NutTcpFindSocket(uint16_t lport, uint16_t rport, uint32_t raddr)
 {
     TCPSOCKET *sp;
     TCPSOCKET *sock = 0;
@@ -396,11 +399,11 @@ TCPSOCKET *NutTcpCreateSocket(void)
  *
  * The following values can be set:
  *
- * - #TCP_MAXSEG  Maximum segment size (#u_short). Can only be set if
+ * - #TCP_MAXSEG  Maximum segment size (#uint16_t). Can only be set if
                   socket is not yet connected.
- * - #SO_SNDTIMEO Socket send timeout (#u_long).
- * - #SO_RCVTIMEO Socket receive timeout (#u_long).
- * - #SO_SNDBUF   Socket output buffer size (#u_short).
+ * - #SO_SNDTIMEO Socket send timeout (#uint32_t).
+ * - #SO_RCVTIMEO Socket receive timeout (#uint32_t).
+ * - #SO_SNDBUF   Socket output buffer size (#uint16_t).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutTcpCreateSocket().
@@ -419,50 +422,50 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
     switch (optname) {
 
     case TCP_MAXSEG:
-        if (optval == 0 || optlen != sizeof(u_short))
+        if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
         else if (sock->so_state != TCPS_CLOSED) 
         	sock->so_last_error = EISCONN;
         else {
-            sock->so_mss = *((u_short *) optval);
+            sock->so_mss = *((uint16_t *) optval);
             rc = 0;
         }
         break;
 
     case SO_RCVBUF:
-        if (optval == 0 || optlen != sizeof(u_short))
+        if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
         else {
-            sock->so_rx_bsz = *((u_short *) optval);
+            sock->so_rx_bsz = *((uint16_t *) optval);
             sock->so_rx_win = sock->so_rx_bsz;
             rc = 0;
         }
         break;
 
     case SO_SNDTIMEO:
-        if (optval == 0 || optlen != sizeof(u_long))
+        if (optval == 0 || optlen != sizeof(uint32_t))
             sock->so_last_error = EINVAL;
         else {
-            sock->so_write_to = *((u_long *) optval);
+            sock->so_write_to = *((uint32_t *) optval);
             rc = 0;
         }
         break;
 
     case SO_RCVTIMEO:
-        if (optval == 0 || optlen != sizeof(u_long))
+        if (optval == 0 || optlen != sizeof(uint32_t))
             sock->so_last_error = EINVAL;
         else {
-            sock->so_read_to = *((u_long *) optval);
+            sock->so_read_to = *((uint32_t *) optval);
             rc = 0;
         }
         break;
 
     case SO_SNDBUF:
-        if (optval == 0 || optlen != sizeof(u_short))
+        if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
         else {
             NutTcpDeviceWrite(sock, 0, 0);
-            sock->so_devobsz = *((u_short *) optval);
+            sock->so_devobsz = *((uint16_t *) optval);
             rc = 0;
         }
         break;
@@ -479,10 +482,10 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
  *
  * The following values can be set:
  *
- * - #TCP_MAXSEG  Maximum segment size (#u_short).
- * - #SO_SNDTIMEO Socket send timeout (#u_long).
- * - #SO_RCVTIMEO Socket receive timeout (#u_long).
- * - #SO_SNDBUF   Socket output buffer size (#u_short).
+ * - #TCP_MAXSEG  Maximum segment size (#uint16_t).
+ * - #SO_SNDTIMEO Socket send timeout (#uint32_t).
+ * - #SO_RCVTIMEO Socket receive timeout (#uint32_t).
+ * - #SO_SNDBUF   Socket output buffer size (#uint16_t).
  *
  * \param sock    Socket descriptor. This pointer must have been 
  *                retrieved by calling NutTcpCreateSocket().
@@ -502,46 +505,46 @@ int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval, int optlen)
     switch (optname) {
 
     case TCP_MAXSEG:
-        if (optval == 0 || optlen != sizeof(u_short))
+        if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
         else {
-            *((u_short *) optval) = sock->so_mss;
+            *((uint16_t *) optval) = sock->so_mss;
             rc = 0;
         }
         break;
 
     case SO_RCVBUF:
-        if (optval == 0 || optlen != sizeof(u_short))
+        if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
         else {
-            *((u_short *) optval) = sock->so_rx_bsz;
+            *((uint16_t *) optval) = sock->so_rx_bsz;
             rc = 0;
         }
         break;
 
     case SO_SNDTIMEO:
-        if (optval == 0 || optlen != sizeof(u_long))
+        if (optval == 0 || optlen != sizeof(uint32_t))
             sock->so_last_error = EINVAL;
         else {
-            *((u_long *) optval) = sock->so_write_to;
+            *((uint32_t *) optval) = sock->so_write_to;
             rc = 0;
         }
         break;
 
     case SO_RCVTIMEO:
-        if (optval == 0 || optlen != sizeof(u_long))
+        if (optval == 0 || optlen != sizeof(uint32_t))
             sock->so_last_error = EINVAL;
         else {
-            *((u_long *) optval) = sock->so_read_to;
+            *((uint32_t *) optval) = sock->so_read_to;
             rc = 0;
         }
         break;
 
     case SO_SNDBUF:
-        if (optval == 0 || optlen != sizeof(u_short))
+        if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
         else {
-            *((u_short *) optval) = sock->so_devobsz;
+            *((uint16_t *) optval) = sock->so_devobsz;
             rc = 0;
         }
         break;
@@ -570,7 +573,7 @@ int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval, int optlen)
  * \return 0 on success, -1 otherwise. The specific error code
  *         can be retrieved by calling NutTcpError().
  */
-int NutTcpConnect(TCPSOCKET * sock, u_long addr, u_short port)
+int NutTcpConnect(TCPSOCKET * sock, uint32_t addr, uint16_t port)
 {
     TCPSOCKET *sp;
     NUTDEVICE *dev;
@@ -646,7 +649,7 @@ int NutTcpConnect(TCPSOCKET * sock, u_long addr, u_short port)
  * \return 0 on success, -1 otherwise. The specific error code
  *         can be retrieved by calling NutTcpError().
  */
-int NutTcpAccept(TCPSOCKET * sock, u_short port)
+int NutTcpAccept(TCPSOCKET * sock, uint16_t port)
 {
     sock->so_local_port = htons(port);
 
@@ -671,7 +674,7 @@ int NutTcpAccept(TCPSOCKET * sock, u_short port)
  */
 int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
 {
-    u_short unacked;
+    uint16_t unacked;
 
     /*
      * Check parameters.
@@ -773,10 +776,10 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
         size = sock->so_rx_cnt - sock->so_rd_cnt;
     if (size) {
         NETBUF *nb;
-        u_short rd_cnt;         /* Bytes read from NETBUF. */
-        u_short nb_cnt;         /* Bytes left in NETBUF. */
-        u_short ab_cnt;         /* Total bytes in app buffer. */
-        u_short mv_cnt;         /* Bytes to move to app buffer. */
+        uint16_t rd_cnt;         /* Bytes read from NETBUF. */
+        uint16_t nb_cnt;         /* Bytes left in NETBUF. */
+        uint16_t ab_cnt;         /* Total bytes in app buffer. */
+        uint16_t mv_cnt;         /* Bytes to move to app buffer. */
 
         rd_cnt = sock->so_rd_cnt;
 
@@ -924,7 +927,7 @@ static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
     int bite;
 
     for (rc = 0; rc < size; rc += bite) {
-        if ((bite = NutTcpSend(sock, (u_char *) buffer + rc, size - rc)) <= 0) {
+        if ((bite = NutTcpSend(sock, (uint8_t *) buffer + rc, size - rc)) <= 0) {
             return -1;
         }
     }
@@ -956,9 +959,9 @@ static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
 int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
 {
     int rc;
-    u_short sz;
+    uint16_t sz;
     /* hack alert for ICCAVR */
-    u_char *buffer = (u_char*) buf;
+    uint8_t *buffer = (uint8_t*) buf;
 
     /*
      * Check parameters.
@@ -990,7 +993,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
          * send first part of data to nic and store remaining
          * bytes in buffer
          */
-        if ((u_short) size >= sock->so_devobsz) {
+        if ((uint16_t) size >= sock->so_devobsz) {
             rc = size % sock->so_devobsz;
             if (SendBuffer(sock, buffer, size - rc) < 0)
                 return -1;
@@ -1121,7 +1124,7 @@ int NutTcpDeviceWrite_P(TCPSOCKET * sock, PGM_P buffer, int size)
  */
 int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
 {
-    u_long *lvp = (u_long *) param;
+    uint32_t *lvp = (uint32_t *) param;
     int rc = 0;
     
     switch (cmd) {

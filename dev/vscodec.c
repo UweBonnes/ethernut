@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2008/04/01 10:15:27  haraldkipp
  * VS10xx ioctl() returned -1 on success. Fixed.
  *
@@ -247,13 +250,13 @@
 
 typedef struct _VSDCB {
     int dcb_pbstat;     /*!< \brief Playback status. */
-    u_long dcb_scmd;    /*!< \brief Requested command flags, see VSREQ_ flags. */
+    uint32_t dcb_scmd;    /*!< \brief Requested command flags, see VSREQ_ flags. */
     int dcb_crvol;      /*!< \brief Current volume of right channel. */
     int dcb_srvol;      /*!< \brief Requested volume of right channel. */
     int dcb_clvol;      /*!< \brief Current volume of left channel. */
     int dcb_slvol;      /*!< \brief Requested volume of left channel. */
-    u_long dcb_pbwlo;   /*!< \brief Playback buffer low watermark. */
-    u_long dcb_pbwhi;   /*!< \brief Playback buffer high watermark. */
+    uint32_t dcb_pbwlo;   /*!< \brief Playback buffer low watermark. */
+    uint32_t dcb_pbwhi;   /*!< \brief Playback buffer high watermark. */
 } VSDCB;
 
 static VSDCB dcb;
@@ -263,14 +266,14 @@ static u_int vs_chip;
  * Interlink not ready yet. Provide some basic SPI routines.
  */
 
-static u_char SpiByte(u_char val)
+static uint8_t SpiByte(uint8_t val)
 {
     /* Transmission is started by writing the transmit data. */
     outr(SPI0_TDR, val);
     /* Wait for receiver data register full. */
     while((inr(SPI0_SR) & SPI_RDRF) == 0);
     /* Read data. */
-    val = (u_char)inr(SPI0_RDR);
+    val = (uint8_t)inr(SPI0_RDR);
 
     return val;
 }
@@ -312,7 +315,7 @@ static int VsWaitReady(void)
  * This function will check the DREQ line. Decoder interrupts must have 
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST u_char * data, size_t len)
+static int VsSdiWrite(CONST uint8_t * data, size_t len)
 {
     while (len--) {
         if (!VS10XX_DREQ_TST() && VsWaitReady()) {
@@ -348,14 +351,14 @@ static int VsSdiWrite_P(PGM_P data, size_t len)
  *
  * Decoder interrupts must have been disabled before calling this function.
  */
-static void VsRegWrite(ureg_t reg, u_short data)
+static void VsRegWrite(ureg_t reg, uint16_t data)
 {
     VsWaitReady();
     SciSelect();
     SpiByte(VS_OPCODE_WRITE);
-    SpiByte((u_char) reg);
-    SpiByte((u_char) (data >> 8));
-    SpiByte((u_char) data);
+    SpiByte((uint8_t) reg);
+    SpiByte((uint8_t) (data >> 8));
+    SpiByte((uint8_t) data);
     SciDeselect();
 }
 
@@ -366,15 +369,15 @@ static void VsRegWrite(ureg_t reg, u_short data)
  * 
  * \return Register contents.
  */
-static u_short VsRegRead(ureg_t reg)
+static uint16_t VsRegRead(ureg_t reg)
 {
-    u_short data;
+    uint16_t data;
 
     VsWaitReady();
     SciSelect();
     SpiByte(VS_OPCODE_READ);
-    SpiByte((u_char) reg);
-    data = (u_short)SpiByte(0) << 8;
+    SpiByte((uint8_t) reg);
+    data = (uint16_t)SpiByte(0) << 8;
     data |= SpiByte(0);
     SciDeselect();
 
@@ -391,7 +394,7 @@ static u_short VsRegRead(ureg_t reg)
  *
  * \return Always 0.
  */
-static int VsBeep(u_char fsin, u_char ms)
+static int VsBeep(uint8_t fsin, uint8_t ms)
 {
     static prog_char on[] = { 0x53, 0xEF, 0x6E };
     static prog_char off[] = { 0x45, 0x78, 0x69, 0x74 };
@@ -424,20 +427,20 @@ THREAD(FeederThread, arg)
     char *bp;
     size_t avail;
     int filled;
-    u_char crgain;
-    u_char srgain;
-    u_char clgain;
-    u_char slgain;
+    uint8_t crgain;
+    uint8_t srgain;
+    uint8_t clgain;
+    uint8_t slgain;
 
     NutSleep(500);
 
     dcb.dcb_slvol = dcb.dcb_clvol = -12;
     dcb.dcb_srvol = dcb.dcb_crvol = -12;
-    srgain = (u_char)(-2 * dcb.dcb_srvol);
+    srgain = (uint8_t)(-2 * dcb.dcb_srvol);
     crgain = 254;
-    slgain = (u_char)(-2 * dcb.dcb_slvol);
+    slgain = (uint8_t)(-2 * dcb.dcb_slvol);
     clgain = 254;
-    VsRegWrite(VS_VOL_REG, ((u_short)clgain << VS_VOL_LEFT_LSB) | ((u_short)crgain << VS_VOL_RIGHT_LSB));
+    VsRegWrite(VS_VOL_REG, ((uint16_t)clgain << VS_VOL_LEFT_LSB) | ((uint16_t)crgain << VS_VOL_RIGHT_LSB));
 
     /* Register the interrupt routine */
     while (NutRegisterIrqHandler(&VS10XX_SIGNAL, VsInterrupt, NULL)) {
@@ -468,7 +471,7 @@ THREAD(FeederThread, arg)
             dcb.dcb_pbstat = CODEC_STATUS_IDLE;
             if (crgain != 254) {
                 clgain = crgain = 254;
-                VsRegWrite(VS_VOL_REG, ((u_short)clgain << VS_VOL_LEFT_LSB) | ((u_short)crgain << VS_VOL_RIGHT_LSB));
+                VsRegWrite(VS_VOL_REG, ((uint16_t)clgain << VS_VOL_LEFT_LSB) | ((uint16_t)crgain << VS_VOL_RIGHT_LSB));
             }
             while (NutSegBufUsed() <  dcb.dcb_pbwhi) {
                 if (dcb.dcb_scmd) {
@@ -504,7 +507,7 @@ THREAD(FeederThread, arg)
                 dcb.dcb_pbstat = CODEC_STATUS_IDLE;
                 if (crgain != 254) {
                     clgain = crgain = 254;
-                    VsRegWrite(VS_VOL_REG, ((u_short)clgain << VS_VOL_LEFT_LSB) | ((u_short)crgain << VS_VOL_RIGHT_LSB));
+                    VsRegWrite(VS_VOL_REG, ((uint16_t)clgain << VS_VOL_LEFT_LSB) | ((uint16_t)crgain << VS_VOL_RIGHT_LSB));
                 }
                 break;
             }
@@ -520,8 +523,8 @@ THREAD(FeederThread, arg)
             NutSegBufReadLast(filled);
         }
         if (dcb.dcb_clvol != dcb.dcb_slvol || dcb.dcb_crvol != dcb.dcb_srvol) {
-            srgain = (u_char)(-2 * dcb.dcb_srvol);
-            slgain = (u_char)(-2 * dcb.dcb_slvol);
+            srgain = (uint8_t)(-2 * dcb.dcb_srvol);
+            slgain = (uint8_t)(-2 * dcb.dcb_slvol);
 
             dcb.dcb_clvol = dcb.dcb_slvol;
             dcb.dcb_crvol = dcb.dcb_srvol;
@@ -535,7 +538,7 @@ THREAD(FeederThread, arg)
             else if (diff < -4) {
                 diff = -4;
             }
-            crgain = (u_char)((int)crgain + diff);
+            crgain = (uint8_t)((int)crgain + diff);
 
             diff = (int)slgain - (int)clgain;
             if (diff > 4) {
@@ -544,8 +547,8 @@ THREAD(FeederThread, arg)
             else if (diff < -4) {
                 diff = -4;
             }
-            clgain = (u_char)((int)clgain + diff);
-            VsRegWrite(VS_VOL_REG, ((u_short)clgain << VS_VOL_LEFT_LSB) | ((u_short)crgain << VS_VOL_RIGHT_LSB));
+            clgain = (uint8_t)((int)clgain + diff);
+            VsRegWrite(VS_VOL_REG, ((uint16_t)clgain << VS_VOL_LEFT_LSB) | ((uint16_t)crgain << VS_VOL_RIGHT_LSB));
         }
     }
 }
@@ -658,7 +661,7 @@ static int VsClose(NUTFILE * nfp)
     return rc;
 }
 
-static int VsPlayBufferInit(u_long size)
+static int VsPlayBufferInit(uint32_t size)
 {
     if (dcb.dcb_pbstat != CODEC_STATUS_IDLE) {
         return -1;
@@ -694,7 +697,7 @@ static int VsPlayBufferInit(u_long size)
 static int VsIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     int rc = 0;
-    u_long *lvp = (u_long *) conf;
+    uint32_t *lvp = (uint32_t *) conf;
     int *ivp = (int *) conf;
     int iv = *ivp;
 
@@ -799,7 +802,7 @@ static int VsIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int VsInit(NUTDEVICE * dev)
 {
-    u_short mode;
+    uint16_t mode;
 
     /* Release reset line and read the status register. */
     outr(PIOB_PER, _BV(VS_XRESET_BIT));
@@ -815,9 +818,9 @@ static int VsInit(NUTDEVICE * dev)
     }
     vs_chip = (VsRegRead(VS_STATUS_REG) & VS_SS_VER) >> VS_SS_VER_LSB;
 #if VS10XX_FREQ < 20000000UL
-    VsRegWrite(VS_CLOCKF_REG, (u_short)(VS_CF_DOUBLER | (VS10XX_FREQ / 2000UL)));
+    VsRegWrite(VS_CLOCKF_REG, (uint16_t)(VS_CF_DOUBLER | (VS10XX_FREQ / 2000UL)));
 #else
-    VsRegWrite(VS_CLOCKF_REG, (u_short)(VS10XX_FREQ / 2000UL));
+    VsRegWrite(VS_CLOCKF_REG, (uint16_t)(VS10XX_FREQ / 2000UL));
 #endif
     if (vs_chip == 0) {
         /* Force frequency change (see datasheet). */

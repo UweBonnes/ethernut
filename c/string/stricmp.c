@@ -60,6 +60,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:39  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -76,14 +79,14 @@
  */
 /*@{*/
 
-typedef unsigned char u_char;
+typedef unsigned char uint8_t;
 
 /*
  * This array is designed for mapping upper and lower case letter
  * together for a case independent comparison.  The mappings are
  * based upon ascii character sequences.
  */
-static CONST u_char charmap[] = {
+static CONST uint8_t charmap[] = {
     '\000', '\001', '\002', '\003', '\004', '\005', '\006', '\007',
     '\010', '\011', '\012', '\013', '\014', '\015', '\016', '\017',
     '\020', '\021', '\022', '\023', '\024', '\025', '\026', '\027',
@@ -134,9 +137,9 @@ static CONST u_char charmap[] = {
  */
 int stricmp(CONST char *s1, CONST char *s2)
 {
-    CONST u_char *cm = charmap;
-    CONST u_char *us1 = (CONST u_char *) s1;
-    CONST u_char *us2 = (CONST u_char *) s2;
+    CONST uint8_t *cm = charmap;
+    CONST uint8_t *us1 = (CONST uint8_t *) s1;
+    CONST uint8_t *us2 = (CONST uint8_t *) s2;
 
     while (cm[*us1] == cm[*us2++]) {
         if (*us1++ == '\0') {
@@ -165,9 +168,9 @@ int stricmp(CONST char *s1, CONST char *s2)
 int strnicmp(CONST char *s1, CONST char *s2, size_t n)
 {
     if (n != 0) {
-        CONST u_char *cm = charmap;
-        CONST u_char *us1 = (CONST u_char *) s1;
-        CONST u_char *us2 = (CONST u_char *) s2;
+        CONST uint8_t *cm = charmap;
+        CONST uint8_t *us1 = (CONST uint8_t *) s1;
+        CONST uint8_t *us2 = (CONST uint8_t *) s2;
 
         do {
             if (cm[*us1] != cm[*us2++]) {

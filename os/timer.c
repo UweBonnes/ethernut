@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.35  2008/08/11 07:00:34  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.34  2008/07/29 07:28:17  haraldkipp
  * Late timer destroy, hopefully solves bug #2029411.
  *
@@ -229,28 +232,28 @@ NUTTIMERINFO *nutTimerList;
 /*
  * Last processing time of elapsed timers. 
  */
-static u_long nut_ticks_resume; 
+static uint32_t nut_ticks_resume; 
 
 /*!
 *  \brief System tick counter
  */
-volatile u_long nut_ticks;
+volatile uint32_t nut_ticks;
 
-// volatile u_long nut_tick_dist[32];
+// volatile uint32_t nut_tick_dist[32];
 
 /*!
  *  \brief Loops per microsecond.
  */
 #if defined(NUT_DELAYLOOPS)
-volatile u_long nut_delay_loops = NUT_DELAYLOOPS;
+volatile uint32_t nut_delay_loops = NUT_DELAYLOOPS;
 #else
-volatile u_long nut_delay_loops;
+volatile uint32_t nut_delay_loops;
 #endif
 
 /*!
  *  \brief Related CPU frequency for loops per microsecond.
  */
-//Not Used u_long nut_delay_loops_clk;
+//Not Used uint32_t nut_delay_loops_clk;
 
 /*!
  * \brief System timer interrupt handler.
@@ -290,7 +293,7 @@ void NutTimerInit(void)
 #endif
     {
         /* Wait for the next tick. */
-        u_long cnt = NutGetTickCount();
+        uint32_t cnt = NutGetTickCount();
         while (cnt == NutGetTickCount());
         /* Wait for the next tick, counting loops. */
         cnt = NutGetTickCount();
@@ -324,12 +327,12 @@ void NutTimerInit(void)
  *
  * \todo Overflow handling.
  */
-void NutMicroDelay(u_long us)
+void NutMicroDelay(uint32_t us)
 {
 #if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
     usleep(us);
 #else
-    register u_long cnt = nut_delay_loops * us / 1000;
+    register uint32_t cnt = nut_delay_loops * us / 1000;
 
     while (cnt--) {
         _NOP();
@@ -348,9 +351,9 @@ void NutMicroDelay(u_long us)
  *
  * \deprecated New applications should use NutMicroDelay().
  */
-void NutDelay(u_char ms)
+void NutDelay(uint8_t ms)
 {
-    NutMicroDelay((u_long)ms * 1000);
+    NutMicroDelay((uint32_t)ms * 1000);
 }
 
 /*!
@@ -396,8 +399,8 @@ void NutTimerInsert(NUTTIMERINFO * tn)
 void NutTimerProcessElapsed(void)
 {
     NUTTIMERINFO *tn;
-    u_long ticks;
-    u_long ticks_new;
+    uint32_t ticks;
+    uint32_t ticks_new;
 
     // calculate ticks since last call
     ticks = NutGetTickCount();
@@ -460,7 +463,7 @@ void NutTimerProcessElapsed(void)
  * \todo Make this local function static or directly integrate it into
  *       NutTimerStartTicks().
  */
-NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
+NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
 {
     NUTTIMERINFO *tn;
     
@@ -511,7 +514,7 @@ NUTTIMERINFO * NutTimerCreate(u_long ticks, void (*callback) (HANDLE, void *), v
  * \return Timer handle if successfull, 0 otherwise. The handle
  *         may be used to stop the timer by calling TimerStop.
  */
-HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void *arg, u_char flags)
+HANDLE NutTimerStartTicks(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
 {
     NUTTIMERINFO *tn;
 
@@ -551,7 +554,7 @@ HANDLE NutTimerStartTicks(u_long ticks, void (*callback) (HANDLE, void *), void 
  * \return Timer handle if successfull, 0 otherwise. The handle
  *         may be used to stop the timer by calling TimerStop.
  */
-HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_char flags)
+HANDLE NutTimerStart(uint32_t ms, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
 {
         return NutTimerStartTicks(NutTimerMillisToTicks(ms), callback, arg, flags);
 }
@@ -577,7 +580,7 @@ HANDLE NutTimerStart(u_long ms, void (*callback) (HANDLE, void *), void *arg, u_
  * \todo Code size can be reduced by trying to create the timer before
  *       removing the thread from the run queue.
  */
-void NutSleep(u_long ms)
+void NutSleep(uint32_t ms)
 {
     if (ms) {
 
@@ -646,9 +649,9 @@ void NutTimerStop(HANDLE handle)
  *
  * \return Number of ticks.
  */
-u_long NutGetTickCount(void)
+uint32_t NutGetTickCount(void)
 {
-    u_long rc;
+    uint32_t rc;
 
 #if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
     struct timeval   timeNow;
@@ -679,7 +682,7 @@ u_long NutGetTickCount(void)
  *
  * \return Value of the seconds counter.
  */
-u_long NutGetSeconds(void)
+uint32_t NutGetSeconds(void)
 {
     return NutGetTickCount() / NutGetTickClock();
 }
@@ -700,11 +703,11 @@ u_long NutGetSeconds(void)
  *
  * \return Value of the seconds counter.
  */
-u_long NutGetMillis(void)
+uint32_t NutGetMillis(void)
 {
     // carefully stay within 32 bit values
-    u_long ticks   = NutGetTickCount();
-    u_long seconds = ticks / NutGetTickClock();
+    uint32_t ticks   = NutGetTickCount();
+    uint32_t seconds = ticks / NutGetTickClock();
     ticks         -= seconds * NutGetTickClock();
     return seconds * 1000 + (ticks * 1000 ) / NutGetTickClock();
 }

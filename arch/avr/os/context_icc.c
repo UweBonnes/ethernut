@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 06:59:39  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2008/06/15 17:00:21  haraldkipp
  * Rolled back to version 1.6.
  *
@@ -111,23 +114,23 @@
  * switched-out.
  */
 typedef struct {
-    u_char csf_r29;
-    u_char csf_r28;
-    u_char csf_r23;
-    u_char csf_r22;
-    u_char csf_r21;
-    u_char csf_r20;
-    u_char csf_r15;
-    u_char csf_r14;
-    u_char csf_r13;
-    u_char csf_r12;
-    u_char csf_r11;
-    u_char csf_r10;
+    uint8_t csf_r29;
+    uint8_t csf_r28;
+    uint8_t csf_r23;
+    uint8_t csf_r22;
+    uint8_t csf_r21;
+    uint8_t csf_r20;
+    uint8_t csf_r15;
+    uint8_t csf_r14;
+    uint8_t csf_r13;
+    uint8_t csf_r12;
+    uint8_t csf_r11;
+    uint8_t csf_r10;
 #ifdef __AVR_ATmega2561__
-    u_char csf_pcex;
+    uint8_t csf_pcex;
 #endif
-    u_char csf_pchi;
-    u_char csf_pclo;
+    uint8_t csf_pchi;
+    uint8_t csf_pclo;
 } SWITCHFRAME;
 
 /*!
@@ -136,21 +139,21 @@ typedef struct {
  * This is the stack layout being build to enter a new thread.
  */
 typedef struct {
-    u_char cef_arghi;
-    u_char cef_arglo;
+    uint8_t cef_arghi;
+    uint8_t cef_arglo;
     /*!
      * \brief ImageCraft software stack.
      */
-    u_char cef_yhi;
-    u_char cef_ylo;
-    u_char cef_rampz;
-    u_char cef_sreg;
-    u_char cef_r1;
+    uint8_t cef_yhi;
+    uint8_t cef_ylo;
+    uint8_t cef_rampz;
+    uint8_t cef_sreg;
+    uint8_t cef_r1;
 #ifdef __AVR_ATmega2561__
-    u_char cef_pcex;
+    uint8_t cef_pcex;
 #endif
-    u_char cef_pchi;
-    u_char cef_pclo;
+    uint8_t cef_pchi;
+    uint8_t cef_pclo;
 } ENTERFRAME;
 
 
@@ -187,8 +190,8 @@ void NutThreadSwitch(void)
     /*
      * Save all CPU registers.
      */
-    register u_char i = 0;
-    register u_char j = 0;
+    register uint8_t i = 0;
+    register uint8_t j = 0;
 
     asm("push r10");
     asm("push r11");
@@ -205,7 +208,7 @@ void NutThreadSwitch(void)
     asm("in %i, $3D");          // SPL
     asm("in %j, $3E");          // SPH
 
-    runningThread->td_sp = (((u_short) j) << 8) & 0xFF00 | (i & 0xFF);
+    runningThread->td_sp = (((uint16_t) j) << 8) & 0xFF00 | (i & 0xFF);
 
     /*
      * This defines a global label, which may be called
@@ -221,8 +224,8 @@ void NutThreadSwitch(void)
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
 
-    i = (u_char) (runningThread->td_sp & 0xFF);
-    j = (u_char) ((runningThread->td_sp >> 8) & 0xFF);
+    i = (uint8_t) (runningThread->td_sp & 0xFF);
+    j = (uint8_t) ((runningThread->td_sp >> 8) & 0xFF);
 
     asm("out $3D, %i");         // SPL
     asm("out $3E, %j");         // SPH
@@ -258,14 +261,14 @@ void NutThreadSwitch(void)
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
  *         error.
  */
-HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t stackSize)
+HANDLE NutThreadCreate(uint8_t * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
-    u_char *threadMem;
+    uint8_t *threadMem;
     SWITCHFRAME *sf;
     ENTERFRAME *ef;
     NUTTHREADINFO *td;
-    u_short yreg;
-    const u_char *paddr;
+    uint16_t yreg;
+    const uint8_t *paddr;
 
     /*
      * Allocate stack and thread info structure in one block.
@@ -275,24 +278,24 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     }
 
     td = (NUTTHREADINFO *) (threadMem + stackSize);
-    ef = (ENTERFRAME *) ((u_short) td - sizeof(ENTERFRAME));
-    sf = (SWITCHFRAME *) ((u_short) ef - sizeof(SWITCHFRAME));
+    ef = (ENTERFRAME *) ((uint16_t) td - sizeof(ENTERFRAME));
+    sf = (SWITCHFRAME *) ((uint16_t) ef - sizeof(SWITCHFRAME));
 
 
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
     td->td_name[sizeof(td->td_name) - 1] = 0;
-    td->td_sp = (u_short) sf - 1;
+    td->td_sp = (uint16_t) sf - 1;
     td->td_memory = threadMem;
-    *((u_long *) threadMem) = DEADBEEF;
-    *((u_long *) (threadMem + 4)) = DEADBEEF;
-    *((u_long *) (threadMem + 8)) = DEADBEEF;
-    *((u_long *) (threadMem + 12)) = DEADBEEF;
+    *((uint32_t *) threadMem) = DEADBEEF;
+    *((uint32_t *) (threadMem + 4)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 8)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 12)) = DEADBEEF;
     td->td_priority = 64;
 
     /*
      * Setup entry frame to simulate C function entry.
      */
-    paddr = (const u_char *) fn;
+    paddr = (const uint8_t *) fn;
     ef->cef_pclo = *paddr;
     ef->cef_pchi = *(paddr + 1);
 #ifdef __AVR_ATmega2561__
@@ -302,14 +305,14 @@ HANDLE NutThreadCreate(u_char * name, void (*fn) (void *), void *arg, size_t sta
     ef->cef_rampz = 0;
     ef->cef_r1 = 0;
 
-    ef->cef_arglo = (u_char) (((u_short) arg) & 0xff);
-    ef->cef_arghi = (u_char) (((u_short) arg) >> 8);
+    ef->cef_arglo = (uint8_t) (((uint16_t) arg) & 0xff);
+    ef->cef_arghi = (uint8_t) (((uint16_t) arg) >> 8);
 
     yreg = td->td_sp - 40;
-    ef->cef_yhi = (u_char) (yreg >> 8);
-    ef->cef_ylo = (u_char) (yreg & 0xFF);
+    ef->cef_yhi = (uint8_t) (yreg >> 8);
+    ef->cef_ylo = (uint8_t) (yreg & 0xFF);
 
-    paddr = (const u_char *) NutThreadEntry;
+    paddr = (const uint8_t *) NutThreadEntry;
     sf->csf_pclo = *paddr;
     sf->csf_pchi = *(paddr + 1);
 #ifdef __AVR_ATmega2561__

@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:31  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/04/08 15:20:51  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -80,12 +83,12 @@
 /*
  * No server support.
  */
-void PapRxAuthReq(NUTDEVICE *dev, u_char id, NETBUF *nb)
+void PapRxAuthReq(NUTDEVICE *dev, uint8_t id, NETBUF *nb)
 {
     NutPapOutput(dev, XCP_CONFACK, id, nb);
 }
 
-void PapRxAuthAck(NUTDEVICE *dev, u_char id, NETBUF *nb)
+void PapRxAuthAck(NUTDEVICE *dev, uint8_t id, NETBUF *nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -98,7 +101,7 @@ void PapRxAuthAck(NUTDEVICE *dev, u_char id, NETBUF *nb)
     }
 }
 
-void PapRxAuthNak(NUTDEVICE *dev, u_char id, NETBUF *nb)
+void PapRxAuthNak(NUTDEVICE *dev, uint8_t id, NETBUF *nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -119,7 +122,7 @@ void PapRxAuthNak(NUTDEVICE *dev, u_char id, NETBUF *nb)
 void NutPapInput(NUTDEVICE * dev, NETBUF * nb)
 {
     XCPHDR *pap;
-    u_short len;
+    uint16_t len;
 
     /*
      * Drop packets with illegal lengths.

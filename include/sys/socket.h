@@ -62,6 +62,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 07:00:27  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -180,8 +183,8 @@ extern "C" {
 extern TCPSOCKET *NutTcpCreateSocket(void);
 extern int NutTcpSetSockOpt(TCPSOCKET *sock, int optname, CONST void *optval, int optlen);
 extern int NutTcpGetSockOpt(TCPSOCKET *sock, int optname, void *optval, int optlen);
-extern int NutTcpConnect(TCPSOCKET *sock, u_long addr, u_short port);
-extern int NutTcpAccept(TCPSOCKET *sock, u_short port);
+extern int NutTcpConnect(TCPSOCKET *sock, uint32_t addr, uint16_t port);
+extern int NutTcpAccept(TCPSOCKET *sock, uint16_t port);
 extern void NutTcpInput(NETBUF *nb);
 extern int NutTcpSend(TCPSOCKET *sock, CONST void *data, int len);
 #ifdef __HARVARD_ARCH__
@@ -190,9 +193,9 @@ extern int NutTcpSend_P(TCPSOCKET *sock, PGM_P data, int len);
 extern int NutTcpCloseSocket(TCPSOCKET *sock);
 extern void NutTcpDestroySocket(TCPSOCKET *sock);
 extern int NutTcpReceive(TCPSOCKET *sock, void *data, int size);
-extern TCPSOCKET *NutTcpFindSocket(u_short lport, u_short rport, u_long raddr);
+extern TCPSOCKET *NutTcpFindSocket(uint16_t lport, uint16_t rport, uint32_t raddr);
 extern int NutTcpError(TCPSOCKET *sock);
-extern int NutTcpAbortSocket(TCPSOCKET *sock, u_short last_error);
+extern int NutTcpAbortSocket(TCPSOCKET *sock, uint16_t last_error);
 extern void NutTcpDiscardBuffers(TCPSOCKET * sock);
 
 extern int NutTcpDeviceRead(TCPSOCKET *sock, void *buffer, int size);
@@ -203,11 +206,11 @@ extern int NutTcpDeviceWrite_P(TCPSOCKET *sock, PGM_P buffer, int size);
 extern int NutTcpDeviceIOCtl(TCPSOCKET *sock, int cmd, void *param);
 extern int NutTcpDeviceClose(TCPSOCKET *sock);
 
-extern UDPSOCKET *NutUdpCreateSocket(u_short port);
-extern int NutUdpSendTo(UDPSOCKET *sock, u_long addr, u_short port, void *data, int len);
-extern int NutUdpReceiveFrom(UDPSOCKET *sock, u_long *addr, u_short *port, void *data, int size, u_long timeout);
+extern UDPSOCKET *NutUdpCreateSocket(uint16_t port);
+extern int NutUdpSendTo(UDPSOCKET *sock, uint32_t addr, uint16_t port, void *data, int len);
+extern int NutUdpReceiveFrom(UDPSOCKET *sock, uint32_t *addr, uint16_t *port, void *data, int size, uint32_t timeout);
 extern int NutUdpDestroySocket(UDPSOCKET *sock);
-extern UDPSOCKET *NutUdpFindSocket(u_short port);
+extern UDPSOCKET *NutUdpFindSocket(uint16_t port);
 extern int NutUdpSetSockOpt(UDPSOCKET *sock, int optname, CONST void *optval, int optlen);
 extern int NutUdpGetSockOpt(UDPSOCKET *sock, int optname, void *optval, int optlen);
 

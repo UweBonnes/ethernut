@@ -46,6 +46,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/10/04 19:32:52  olereinhardt
  * SJA_BASE (base address for sja1000 driver) can now be set in configurator
  *
@@ -128,14 +131,14 @@
 
 CANINFO dcb_sja1000;
 
-volatile u_short sja_base = 0x0000;
+volatile uint16_t sja_base = 0x0000;
 
 
 struct _CANBuffer {
     CANFRAME *dataptr;          // the physical memory address where the buffer is stored
-    u_short size;               // the allocated size of the buffer
-    u_short datalength;         // the length of the data currently in the buffer
-    u_short dataindex;          // the index into the buffer where the data starts
+    uint16_t size;               // the allocated size of the buffer
+    uint16_t datalength;         // the length of the data currently in the buffer
+    uint16_t dataindex;          // the index into the buffer where the data starts
     SEM empty;
     SEM full;
 };
@@ -149,7 +152,7 @@ typedef struct _CANBuffer CANBuffer;
 CANBuffer CAN_RX_BUF;
 CANBuffer CAN_TX_BUF;
 
-void CANBufferInit(CANBuffer * buffer,u_short size)
+void CANBufferInit(CANBuffer * buffer,uint16_t size)
 {
     NutSemInit(&buffer->full, 0);
     NutSemInit(&buffer->empty, CAN_BufSize - 1);
@@ -235,7 +238,7 @@ void CANBufferPut(CANBuffer * buffer, CANFRAME * data)
     }
 }
 
-u_short CANBufferFree(CANBuffer * buffer)
+uint16_t CANBufferFree(CANBuffer * buffer)
 {
     // check to see if the buffer has room
     // return true if there is room
@@ -249,7 +252,7 @@ u_short CANBufferFree(CANBuffer * buffer)
  * \param dev Pointer to the device structure
  */
 
-inline u_char SJARxAvail(NUTDEVICE * dev)
+inline uint8_t SJARxAvail(NUTDEVICE * dev)
 {
     return CAN_RX_BUF.datalength;
 }
@@ -261,7 +264,7 @@ inline u_char SJARxAvail(NUTDEVICE * dev)
  * \param dev Pointer to the device structure
  */
 
-inline u_char SJATxFree(NUTDEVICE * dev)
+inline uint8_t SJATxFree(NUTDEVICE * dev)
 {
     return CANBufferFree(&CAN_TX_BUF);
 }
@@ -302,9 +305,9 @@ void SJAOutput(NUTDEVICE * dev, CANFRAME * frame)
  */
 
 
-u_char SJAInput(NUTDEVICE * dev, CANFRAME * frame)
+uint8_t SJAInput(NUTDEVICE * dev, CANFRAME * frame)
 {
-    u_char ready = 0;
+    uint8_t ready = 0;
     CANINFO *ci;
     
     ci = (CANINFO *) dev->dev_dcb;
@@ -312,7 +315,7 @@ u_char SJAInput(NUTDEVICE * dev, CANFRAME * frame)
     {
         if (CAN_RX_BUF.datalength==0) 
         {
-           u_long timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
+           uint32_t timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
 
            if (NutEventWait(&ci->can_rx_rdy, timeout)) 
                return 1;
@@ -330,7 +333,7 @@ u_char SJAInput(NUTDEVICE * dev, CANFRAME * frame)
 }
 
 /*!
- * \fn    SJASetAccCode(NUTDEVICE * dev, u_char * ac)
+ * \fn    SJASetAccCode(NUTDEVICE * dev, uint8_t * ac)
  * \brief Sets the acceptance code
  *
  *
@@ -341,7 +344,7 @@ u_char SJAInput(NUTDEVICE * dev, CANFRAME * frame)
 
 
 
-void SJASetAccCode(NUTDEVICE * dev, u_char * ac)
+void SJASetAccCode(NUTDEVICE * dev, uint8_t * ac)
 {
     memcpy(((IFCAN *) (dev->dev_icb))->can_acc_code, ac, 4);
 
@@ -363,7 +366,7 @@ void SJASetAccCode(NUTDEVICE * dev, u_char * ac)
 }
 
 /*!
- * \fn    SJASetAccMask(NUTDEVICE * dev, u_char * am)
+ * \fn    SJASetAccMask(NUTDEVICE * dev, uint8_t * am)
  * \brief Sets the acceptance mask
  *
  *
@@ -372,7 +375,7 @@ void SJASetAccCode(NUTDEVICE * dev, u_char * ac)
  * \param am 4 byte char array with the acceptance mask
  */
 
-void SJASetAccMask(NUTDEVICE * dev, u_char * am)
+void SJASetAccMask(NUTDEVICE * dev, uint8_t * am)
 {
     memcpy(((IFCAN *) (dev->dev_icb))->can_acc_mask, am, 4);
 
@@ -394,7 +397,7 @@ void SJASetAccMask(NUTDEVICE * dev, u_char * am)
 }
 
 /*!
- * \fn    SJASetBaudrate(NUTDEVICE * dev, u_long baudrate)
+ * \fn    SJASetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
  * \brief Sets the baudrate 
  *
  *
@@ -404,9 +407,9 @@ void SJASetAccMask(NUTDEVICE * dev, u_char * am)
  */
 
 
-u_char SJASetBaudrate(NUTDEVICE * dev, u_long baudrate)
+uint8_t SJASetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
 {
-    u_char result = 0;
+    uint8_t result = 0;
 
     ((IFCAN *) (dev->dev_icb))->can_baudrate = baudrate;
 
@@ -474,7 +477,7 @@ u_char SJASetBaudrate(NUTDEVICE * dev, u_long baudrate)
 
 void SJATxFrame(CANFRAME * CAN_frame)
 {
-    u_long temp_id;
+    uint32_t temp_id;
 
 
     if (CAN_frame->ext) {
@@ -524,7 +527,7 @@ void SJATxFrame(CANFRAME * CAN_frame)
 
 void SJARxFrame(CANFRAME * CAN_frame)
 {
-    u_char FrameInfo = SJA1000_RxFrameInfo;
+    uint8_t FrameInfo = SJA1000_RxFrameInfo;
     CAN_frame->len = FrameInfo & 0x0F;  // frame info mask off higher 4 bits
     CAN_frame->ext = FrameInfo & CAN_29 ? 1 : 0;
     CAN_frame->rtr = FrameInfo & CAN_RTR ? 1 : 0;
@@ -603,7 +606,7 @@ THREAD(CAN_Tx, arg)
 static void SJAInterrupt(void *arg)
 {
     CANINFO *ci;
-    volatile u_char irq = SJA1000_INT;
+    volatile uint8_t irq = SJA1000_INT;
     CANFRAME in_frame;
     
     ci = (CANINFO *) (((NUTDEVICE *) arg)->dev_dcb);
@@ -655,7 +658,7 @@ int SJAInit(NUTDEVICE * dev)
 {
     IFCAN *ifc;
     CANINFO *ci;
-    volatile u_char temp;
+    volatile uint8_t temp;
 
     sja_base = dev->dev_base;
 

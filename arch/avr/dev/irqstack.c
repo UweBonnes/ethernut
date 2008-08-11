@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/09/17 09:20:11  drsung
  * Moved from /dev
  *
@@ -65,11 +68,11 @@
 
 static struct
 {
-	u_char _nesting;
-	u_char _temp;
-	u_char _SPL;
-	u_char _SPH;
-	u_char _stack[IRQSTACK_SIZE];
+	uint8_t _nesting;
+	uint8_t _temp;
+	uint8_t _SPL;
+	uint8_t _SPH;
+	uint8_t _stack[IRQSTACK_SIZE];
 } _irq_stack; //__attribute__((section(".data.irqstack")));
 
 

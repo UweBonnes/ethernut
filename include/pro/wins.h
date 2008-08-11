@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:24  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/03/16 15:25:34  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -55,7 +58,7 @@
 
 __BEGIN_DECLS
 /* Function prototypes. */
-extern int NutWinsNameQuery(char * name, u_long ipaddr);
+extern int NutWinsNameQuery(char * name, uint32_t ipaddr);
 
 __END_DECLS
 /* */

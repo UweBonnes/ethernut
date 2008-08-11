@@ -322,9 +322,9 @@ void GpioPortSet(int bank, u_int value)
  *
  * \return Attribute flags of the pin.
  */
-u_long GpioPinConfigGet(int bank, int bit)
+uint32_t GpioPinConfigGet(int bank, int bit)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     switch(bank) {
     case 0:
@@ -472,7 +472,7 @@ u_long GpioPinConfigGet(int bank, int bit)
  *
  * \return Always 0.
  */
-int GpioPortConfigSet(int bank, u_int mask, u_long flags)
+int GpioPortConfigSet(int bank, u_int mask, uint32_t flags)
 {
     switch(bank) {
     case 0:
@@ -707,7 +707,7 @@ int GpioPortConfigSet(int bank, u_int mask, u_long flags)
  *
  * \return 0 if all attributes had been set, -1 otherwise.
  */
-int GpioPinConfigSet(int bank, int bit, u_long flags)
+int GpioPinConfigSet(int bank, int bit, uint32_t flags)
 {
     GpioPortConfigSet(bank, _BV(bit), flags);
 

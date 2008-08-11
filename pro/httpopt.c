@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:35  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2008/05/13 21:46:06  thiagocorrea
  * Fix a few documentation typos.
  *
@@ -83,7 +86,7 @@ extern char *http_root;
  * \return 1 on error or 0 on success
  */
 
-u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req))
+uint8_t NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req))
 {
     size_t i;
 

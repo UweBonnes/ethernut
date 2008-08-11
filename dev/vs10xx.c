@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/04/12 08:59:55  haraldkipp
  * VS10XX decoder support added.
  *
@@ -863,7 +866,7 @@ static int VsWaitReady(void)
  * This function will check the DREQ line. Decoder interrupts must have 
  * been disabled before calling this function.
  */
-static int VsSdiWrite(CONST u_char * data, size_t len)
+static int VsSdiWrite(CONST uint8_t * data, size_t len)
 {
     while (len--) {
         if (!VS10XX_DREQ_TST() && VsWaitReady()) {
@@ -899,7 +902,7 @@ static int VsSdiWrite_P(PGM_P data, size_t len)
  *
  * Decoder interrupts must have been disabled before calling this function.
  */
-static void VsRegWrite(ureg_t reg, u_short data)
+static void VsRegWrite(ureg_t reg, uint16_t data)
 {
     /* Select command channel. */
     VsWaitReady();
@@ -911,9 +914,9 @@ static void VsRegWrite(ureg_t reg, u_short data)
      * even on very fast CPUs.
      */
     SciByte(VS_OPCODE_WRITE);
-    SciByte((u_char) reg);
-    SciByte((u_char) (data >> 8));
-    SciByte((u_char) data);
+    SciByte((uint8_t) reg);
+    SciByte((uint8_t) (data >> 8));
+    SciByte((uint8_t) data);
 
     /* Re-select data channel. */
     VsSciSelect(0);
@@ -926,17 +929,17 @@ static void VsRegWrite(ureg_t reg, u_short data)
  * 
  * \return Register contents.
  */
-static u_short VsRegRead(ureg_t reg)
+static uint16_t VsRegRead(ureg_t reg)
 {
-    u_short data;
+    uint16_t data;
 
     /* Select command channel. */
     VsWaitReady();
     VsSciSelect(1);
 
     SciByte(VS_OPCODE_READ);
-    SciByte((u_char) reg);
-    data = (u_short)SciByte(0) << 8;
+    SciByte((uint8_t) reg);
+    data = (uint16_t)SciByte(0) << 8;
     data |= SciByte(0);
 
     /* Select data channel. */
@@ -1184,7 +1187,7 @@ int VsPlayerInit(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int VsPlayerReset(u_short mode)
+int VsPlayerReset(uint16_t mode)
 {
     /* Disable decoder interrupts and feeding. */
     VsPlayerInterrupts(0);
@@ -1224,9 +1227,9 @@ int VsPlayerReset(u_short mode)
     }
 
 #if VS10XX_FREQ < 20000000UL
-    VsRegWrite(VS_CLOCKF_REG, (u_short)(VS_CF_DOUBLER | (VS10XX_FREQ / 2000UL)));
+    VsRegWrite(VS_CLOCKF_REG, (uint16_t)(VS_CF_DOUBLER | (VS10XX_FREQ / 2000UL)));
 #else
-    VsRegWrite(VS_CLOCKF_REG, (u_short)(VS10XX_FREQ / 2000UL));
+    VsRegWrite(VS_CLOCKF_REG, (uint16_t)(VS10XX_FREQ / 2000UL));
 #endif
 #if defined(AUDIO_VS1001K)
     /* Force frequency change (see datasheet). */
@@ -1265,7 +1268,7 @@ int VsPlayerReset(u_short mode)
  *
  * \return Always 0.
  */
-int VsPlayerSetMode(u_short mode)
+int VsPlayerSetMode(uint16_t mode)
 {
     ureg_t ief;
 
@@ -1285,9 +1288,9 @@ int VsPlayerSetMode(u_short mode)
  *
  * \return Play time since reset in seconds
  */
-u_short VsPlayTime(void)
+uint16_t VsPlayTime(void)
 {
-    u_short rc;
+    uint16_t rc;
     ureg_t ief;
 
     ief = VsPlayerInterrupts(0);
@@ -1322,7 +1325,7 @@ u_int VsGetStatus(void)
  */
 int VsGetHeaderInfo(VS_HEADERINFO * vshi)
 {
-    u_short *usp = (u_short *) vshi;
+    uint16_t *usp = (uint16_t *) vshi;
     ureg_t ief;
 
     ief = VsPlayerInterrupts(0);
@@ -1346,9 +1349,9 @@ int VsGetHeaderInfo(VS_HEADERINFO * vshi)
  * - Bit 5: Good Instruction RAM (high)
  * - Bit 6: Good Instruction RAM (low)
  */
-u_short VsMemoryTest(void)
+uint16_t VsMemoryTest(void)
 {
-    u_short rc;
+    uint16_t rc;
     ureg_t ief;
     static prog_char mtcmd[] = { 0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00 };
 
@@ -1386,7 +1389,7 @@ int VsSetVolume(ureg_t left, ureg_t right)
     ureg_t ief;
 
     ief = VsPlayerInterrupts(0);
-    VsRegWrite(VS_VOL_REG, ((u_short)left << VS_VOL_LEFT_LSB) | ((u_short)right << VS_VOL_RIGHT_LSB));
+    VsRegWrite(VS_VOL_REG, ((uint16_t)left << VS_VOL_LEFT_LSB) | ((uint16_t)right << VS_VOL_RIGHT_LSB));
     VsPlayerInterrupts(ief);
 
     return 0;
@@ -1400,7 +1403,7 @@ int VsSetVolume(ureg_t left, ureg_t right)
  *
  * \return Always 0.
  */
-int VsBeep(u_char fsin, u_char ms)
+int VsBeep(uint8_t fsin, uint8_t ms)
 {
     ureg_t ief;
     static prog_char on[] = { 0x53, 0xEF, 0x6E };

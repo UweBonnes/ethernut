@@ -69,7 +69,7 @@ static pthread_t timer_thread;
 void *NutTimerEmulation(void *) __attribute__ ((noreturn));
 void *NutTimerEmulation(void *arg)
 {
-    u_char trigger_irq = (u_char) (uptr_t) arg;
+    uint8_t trigger_irq = (uint8_t) (uptr_t) arg;
 
     // non-nut thread => not interested in SIGUSR1 (IRQ signals)
     pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
@@ -89,7 +89,7 @@ void *NutTimerEmulation(void *arg)
  */
 void NutRegisterTimer(void (*handler) (void *))
 {
-    u_char timerIrqNr = IRQ_TIMER0;
+    uint8_t timerIrqNr = IRQ_TIMER0;
 
     // register irq handler
     NutRegisterIrqHandler(timerIrqNr, handler, (void *) 0);
@@ -103,7 +103,7 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return CPU clock frequency in Hertz.
  */
-u_long NutGetCpuClock(void)
+uint32_t NutGetCpuClock(void)
 {
     return NUT_CPU_FREQ;
 }
@@ -113,7 +113,7 @@ u_long NutGetCpuClock(void)
  *
  * \return System tick frequency in Hertz.
  */
-u_long NutGetTickClock(void)
+uint32_t NutGetTickClock(void)
 {
     return 1000UL;
 }
@@ -121,7 +121,7 @@ u_long NutGetTickClock(void)
 /*!
  * \brief Calculate system ticks for a given number of milliseconds.
  */
-u_long NutTimerMillisToTicks(u_long ms)
+uint32_t NutTimerMillisToTicks(uint32_t ms)
 {
     return ms;
 }

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 07:00:31  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -93,7 +96,7 @@ extern TCPSOCKET *tcpSocketList;
 extern UDPSOCKET *udpSocketList;
 
 FILE *__tcp_trs;                /*!< \brief TCP trace output stream. */
-u_char __tcp_trf;               /*!< \brief TCP trace flags. */
+uint_fast8_t __tcp_trf;               /*!< \brief TCP trace flags. */
 
 void NutDumpTcpHeader(FILE * stream, char * ds, TCPSOCKET * sock, NETBUF * nb)
 {
@@ -116,7 +119,7 @@ void NutDumpTcpHeader(FILE * stream, char * ds, TCPSOCKET * sock, NETBUF * nb)
     fputs("\n", stream);
 }
 
-void NutDumpSockState(FILE * stream, u_char state, char * lead, char * trail)
+void NutDumpSockState(FILE * stream, uint8_t state, char * lead, char * trail)
 {
     if (lead)
         fputs(lead, stream);
@@ -192,7 +195,7 @@ void NutDumpSocketList(FILE * stream)
  *               it unchanged.
  * \param flags  Flags to enable specific traces.
  */
-void NutTraceTcp(FILE * stream, u_char flags)
+void NutTraceTcp(FILE * stream, uint8_t flags)
 {
     if (stream)
         __tcp_trs = stream;

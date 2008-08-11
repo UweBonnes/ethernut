@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2008/04/29 02:28:34  thiagocorrea
  * Add configurable DTR pin to AVR USART driver.
  *
@@ -208,20 +211,20 @@
 /*
  * Local function prototypes.
  */
-static u_long AvrUsartGetSpeed(void);
-static int AvrUsartSetSpeed(u_long rate);
-static u_char AvrUsartGetDataBits(void);
-static int AvrUsartSetDataBits(u_char bits);
-static u_char AvrUsartGetParity(void);
-static int AvrUsartSetParity(u_char mode);
-static u_char AvrUsartGetStopBits(void);
-static int AvrUsartSetStopBits(u_char bits);
-static u_long AvrUsartGetFlowControl(void);
-static int AvrUsartSetFlowControl(u_long flags);
-static u_long AvrUsartGetStatus(void);
-static int AvrUsartSetStatus(u_long flags);
-static u_char AvrUsartGetClockMode(void);
-static int AvrUsartSetClockMode(u_char mode);
+static uint32_t AvrUsartGetSpeed(void);
+static int AvrUsartSetSpeed(uint32_t rate);
+static uint8_t AvrUsartGetDataBits(void);
+static int AvrUsartSetDataBits(uint8_t bits);
+static uint8_t AvrUsartGetParity(void);
+static int AvrUsartSetParity(uint8_t mode);
+static uint8_t AvrUsartGetStopBits(void);
+static int AvrUsartSetStopBits(uint8_t bits);
+static uint32_t AvrUsartGetFlowControl(void);
+static int AvrUsartSetFlowControl(uint32_t flags);
+static uint32_t AvrUsartGetStatus(void);
+static int AvrUsartSetStatus(uint32_t flags);
+static uint8_t AvrUsartGetClockMode(void);
+static int AvrUsartSetClockMode(uint8_t mode);
 static void AvrUsartTxStart(void);
 static void AvrUsartRxStart(void);
 static int AvrUsartInit(void);

@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2004/07/30 19:38:02  drsung
  * Added prototype of net function NutTcpCalcRtt.
  *
@@ -89,7 +92,7 @@
 extern "C" {
 #endif
 
-extern int IsInLimits(u_long x, u_long low, u_long high);
+extern int IsInLimits(uint32_t x, uint32_t low, uint32_t high);
 extern void NutTcpCalcRtt(TCPSOCKET * sock);
 
 #ifdef __cplusplus

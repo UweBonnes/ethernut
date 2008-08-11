@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.59  2008/08/11 07:00:34  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.58  2008/07/29 13:06:21  haraldkipp
  * Starting beta 4.7
  *
@@ -244,7 +247,7 @@ static CONST char os_version_string[] = "4.7.0.0";
  *         number, again followed by the release number and finally
  *         the build number in the least significant byte.
  */
-u_long NutVersion(void)
+uint32_t NutVersion(void)
 {
     return OS_VERSION_NUMBER;
 }

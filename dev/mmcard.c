@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.12  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.11  2008/07/14 13:09:30  haraldkipp
  * Allow small MultiMedia Cards without partition table.
  *
@@ -213,7 +216,7 @@ typedef struct _MMCFCB {
      *
      * The number is partition relative.
      */
-    u_long fcb_blknum;
+    uint32_t fcb_blknum;
 
     /*! \brief Internal block buffer.
      *
@@ -224,7 +227,7 @@ typedef struct _MMCFCB {
      * device I/O lines, in which case the buffer must be located
      * in internal memory.
      */
-    u_char fcb_blkbuf[MMC_BLOCK_SIZE];
+    uint8_t fcb_blkbuf[MMC_BLOCK_SIZE];
 } MMCFCB;
 
 /*
@@ -241,10 +244,10 @@ static HANDLE mutex;
  * \param cmd   Command code. See MMCMD_ macros.
  * \param param Optional command parameter.
  */
-static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
+static void MmCardTxCmd(MMCIFC * ifc, uint8_t cmd, uint32_t param)
 {
     u_int tmo = MMC_MAX_CMDACK_POLLS;
-    u_char ch;
+    uint8_t ch;
 
     /* Enable card select. */
     (*ifc->mmcifc_cs) (1);
@@ -266,10 +269,10 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
     }
     /* Send command and parameter. */
     (*ifc->mmcifc_io) (MMCMD_HOST | cmd);
-    (*ifc->mmcifc_io) ((u_char) (param >> 24));
-    (*ifc->mmcifc_io) ((u_char) (param >> 16));
-    (*ifc->mmcifc_io) ((u_char) (param >> 8));
-    (*ifc->mmcifc_io) ((u_char) param);
+    (*ifc->mmcifc_io) ((uint8_t) (param >> 24));
+    (*ifc->mmcifc_io) ((uint8_t) (param >> 16));
+    (*ifc->mmcifc_io) ((uint8_t) (param >> 8));
+    (*ifc->mmcifc_io) ((uint8_t) param);
     /*
      * We are running with CRC disabled. However, the reset command must
      * be send with a valid CRC. Fortunately this command is sent with a
@@ -288,9 +291,9 @@ static void MmCardTxCmd(MMCIFC * ifc, u_char cmd, u_long param)
  *
  * \return R1 response token or 0xFF on timeout.
  */
-static u_char MmCardRxR1(MMCIFC * ifc)
+static uint8_t MmCardRxR1(MMCIFC * ifc)
 {
-    u_char rc;
+    uint8_t rc;
     int i;
 
     for (i = 0; i < MMC_MAX_R1_POLLS; i++) {
@@ -311,9 +314,9 @@ static u_char MmCardRxR1(MMCIFC * ifc)
  *
  * \return R2 response token or 0xFFFF on timeout.
  */
-static u_short MmCardRxR2(MMCIFC * ifc)
+static uint16_t MmCardRxR2(MMCIFC * ifc)
 {
-    u_short rc;
+    uint16_t rc;
 
     rc = MmCardRxR1(ifc);
     rc <<= 8;
@@ -333,9 +336,9 @@ static u_short MmCardRxR2(MMCIFC * ifc)
  *
  * \return R1 response token or 0xFF on timeout.
  */
-static u_char MmCardRxR3(MMCIFC * ifc, u_long * ocr)
+static uint8_t MmCardRxR3(MMCIFC * ifc, uint32_t * ocr)
 {
-    u_char rc;
+    uint8_t rc;
     int i;
 
     /* The first byte is equal to the R1 response. */
@@ -358,7 +361,7 @@ static u_char MmCardRxR3(MMCIFC * ifc, u_long * ocr)
 static int MmCardReset(MMCIFC * ifc)
 {
     int i;
-    u_char rsp;
+    uint8_t rsp;
 
     /*
      * Initialize the low level card interface.
@@ -404,7 +407,7 @@ static int MmCardReset(MMCIFC * ifc)
 static int MmCardInit(MMCIFC * ifc)
 {
     int i;
-    u_char rsp;
+    uint8_t rsp;
 
     /*
      * Try to switch to SPI mode. Looks like a retry helps to fix
@@ -460,12 +463,12 @@ static int MmCardInit(MMCIFC * ifc)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int MmCardReadOrVerify(MMCIFC * ifc, u_long blk, u_char * buf, int vflg)
+static int MmCardReadOrVerify(MMCIFC * ifc, uint32_t blk, uint8_t * buf, int vflg)
 {
     int rc = -1;
     int retries = 64;
     int i;
-    u_char rsp;
+    uint8_t rsp;
 
     /* Gain mutex access. */
     NutEventWait(&mutex, 0);
@@ -512,13 +515,13 @@ static int MmCardReadOrVerify(MMCIFC * ifc, u_long blk, u_char * buf, int vflg)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int MmCardWrite(MMCIFC * ifc, u_long blk, CONST u_char * buf)
+static int MmCardWrite(MMCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
 {
     int rc = -1;
     int retries = MMC_MAX_WRITE_RETRIES;
     int tmo;
     int i;
-    u_char rsp;
+    uint8_t rsp;
 
     /* Gain mutex access. */
     NutEventWait(&mutex, 0);
@@ -580,7 +583,7 @@ static int MmCardWrite(MMCIFC * ifc, u_long blk, CONST u_char * buf)
 int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
-    u_long blk = fcb->fcb_blknum;
+    uint32_t blk = fcb->fcb_blknum;
     NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
@@ -633,7 +636,7 @@ int MmCardBlockRead(NUTFILE * nfp, void *buffer, int num)
 int MmCardBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
 {
     MMCFCB *fcb = (MMCFCB *) nfp->nf_fcb;
-    u_long blk = fcb->fcb_blknum;
+    uint32_t blk = fcb->fcb_blknum;
     NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
     MMCIFC *ifc = (MMCIFC *) dev->dev_icb;
 
@@ -887,7 +890,7 @@ int MmCardUnmount(NUTFILE * nfp)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int MmCardGetReg(MMCIFC * ifc, u_char cmd, u_char * rbp, int siz)
+static int MmCardGetReg(MMCIFC * ifc, uint8_t cmd, uint8_t * rbp, int siz)
 {
     int rc = -1;
     int retries = MMC_MAX_REG_POLLS;
@@ -991,7 +994,7 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
     case MMCARD_GETSTATUS:
         {
-            u_short *s = (u_short *) conf;
+            uint16_t *s = (uint16_t *) conf;
 
             /* Gain mutex access. */
             NutEventWait(&mutex, 0);
@@ -1008,7 +1011,7 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
         NutEventWait(&mutex, 0);
 
         MmCardTxCmd(ifc, MMCMD_READ_OCR, 0);
-        if (MmCardRxR3(ifc, (u_long *) conf) != MMR1_IDLE_STATE) {
+        if (MmCardRxR3(ifc, (uint32_t *) conf) != MMR1_IDLE_STATE) {
             rc = -1;
         }
 
@@ -1016,10 +1019,10 @@ int MmCardIOCtl(NUTDEVICE * dev, int req, void *conf)
         NutEventPost(&mutex);
         break;
     case MMCARD_GETCID:
-        rc = MmCardGetReg(ifc, MMCMD_SEND_CID, (u_char *) conf, sizeof(MMC_CID));
+        rc = MmCardGetReg(ifc, MMCMD_SEND_CID, (uint8_t *) conf, sizeof(MMC_CID));
         break;
     case MMCARD_GETCSD:
-        rc = MmCardGetReg(ifc, MMCMD_SEND_CSD, (u_char *) conf, sizeof(MMC_CSD));
+        rc = MmCardGetReg(ifc, MMCMD_SEND_CSD, (uint8_t *) conf, sizeof(MMC_CSD));
         break;
     default:
         rc = -1;

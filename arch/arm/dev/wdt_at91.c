@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:13  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/05/25 09:13:22  haraldkipp
  * Platform independent watchdog API added.
  *
@@ -57,7 +60,7 @@ static ureg_t nested;
  * For portability, applications should use the platform independent 
  * \ref xgWatchDog "Watchdog Driver API".
  */
-u_long At91WatchDogStart(u_long ms, u_long xmode)
+uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
 {
     u_int cmval;
 

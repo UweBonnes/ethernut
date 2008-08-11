@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -58,6 +61,8 @@
 #endif
 
 #include <dev/nvmem.h>
+
+#include <stdint.h>
 
 /*!
  * \addtogroup xgArchAvrDevEeprom
@@ -86,10 +91,10 @@ int OnChipNvMemLoad(u_int addr, void *buff, size_t siz)
  */
 int OnChipNvMemSave(u_int addr, CONST void *buff, size_t len)
 {
-    u_char *cp;
+    uint8_t *cp;
     size_t i;
 
-    for (cp = (u_char *) buff, i = 0; i < len; cp++, i++) {
+    for (cp = (uint8_t *) buff, i = 0; i < len; cp++, i++) {
 #if defined(__IMAGECRAFT__)
         if (EEPROMread((int) (addr + i)) != *cp) {
             EEPROMwrite((int) (addr + i), *cp);

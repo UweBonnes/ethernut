@@ -50,9 +50,9 @@
  * It is very ugly (shiffer), but may require some effort to transform
  * it into something local.
  */
-static u_char *packet_end;
+static uint8_t *packet_end;
 
-static void SetVariable(CONST u_char * var_val, u_char var_val_type, u_char * statP, size_t statLen)
+static void SetVariable(CONST uint8_t * var_val, uint8_t var_val_type, uint8_t * statP, size_t statLen)
 {
     size_t buffersize = 1000;
 
@@ -91,22 +91,22 @@ static void SetVariable(CONST u_char * var_val, u_char var_val_type, u_char * st
  * \return 0 on success. Otherwise an error code is returned.
  *
  */
-static int SnmpVarListParse(SNMP_SESSION * sess, CONST u_char * data, size_t length, u_char * out_data, size_t out_length,
+static int SnmpVarListParse(SNMP_SESSION * sess, CONST uint8_t * data, size_t length, uint8_t * out_data, size_t out_length,
                             long *index, int msgtype, int action)
 {
     OID var_name[MAX_OID_LEN];
     size_t var_name_len;
     size_t var_val_len;
-    u_char var_val_type;
-    u_char *var_val;
-    u_char statType;
-    u_char *statP;
+    uint8_t var_val_type;
+    uint8_t *var_val;
+    uint8_t statType;
+    uint8_t *statP;
     size_t statLen;
-    u_short acl;
+    uint16_t acl;
     int exact, err;
     WMETHOD *wmethod;
-    u_char *headerP;
-    u_char *var_list_start;
+    uint8_t *headerP;
+    uint8_t *var_list_start;
     size_t dummyLen;
     int noSuchObject = 0;
 
@@ -228,39 +228,39 @@ static int SnmpVarListParse(SNMP_SESSION * sess, CONST u_char * data, size_t len
  *
  * \return 0 upon success and -1 upon failure.
  */
-static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST u_char * snmp_in, u_char * snmp_out, size_t snmp_length, long errstat,
+static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST uint8_t * snmp_in, uint8_t * snmp_out, size_t snmp_length, long errstat,
                                long errindex)
 {
-    u_char *data;
-    u_char type;
+    uint8_t *data;
+    uint8_t type;
     long dummy;
     size_t length;
     size_t headerLength;
-    u_char *headerPtr;
-    CONST u_char *reqidPtr;
-    u_char *errstatPtr;
-    u_char *errindexPtr;
-    CONST u_char *varListPtr;
+    uint8_t *headerPtr;
+    CONST uint8_t *reqidPtr;
+    uint8_t *errstatPtr;
+    uint8_t *errindexPtr;
+    CONST uint8_t *varListPtr;
 
     /* Copy packet contents. */
     memcpy(snmp_out, snmp_in, snmp_length);
     length = snmp_length;
-    if ((headerPtr = (u_char *) SnmpAuthParse(snmp_out, &length, sess->sess_id, &sess->sess_id_len, &dummy)) == NULL) {
+    if ((headerPtr = (uint8_t *) SnmpAuthParse(snmp_out, &length, sess->sess_id, &sess->sess_id_len, &dummy)) == NULL) {
         return -1;
     }
     sess->sess_id[sess->sess_id_len] = 0;
 
-    if ((reqidPtr = AsnHeaderParse(headerPtr, &length, (u_char *) & dummy)) == NULL) {
+    if ((reqidPtr = AsnHeaderParse(headerPtr, &length, (uint8_t *) & dummy)) == NULL) {
         return -1;
     }
     headerLength = length;
 
     /* Request id. */
-    if ((errstatPtr = (u_char *) AsnIntegerParse(reqidPtr, &length, &type, &dummy)) == NULL) {
+    if ((errstatPtr = (uint8_t *) AsnIntegerParse(reqidPtr, &length, &type, &dummy)) == NULL) {
         return -1;
     }
     /* Error status. */
-    if ((errindexPtr = (u_char *) AsnIntegerParse(errstatPtr, &length, &type, &dummy)) == NULL) {
+    if ((errindexPtr = (uint8_t *) AsnIntegerParse(errstatPtr, &length, &type, &dummy)) == NULL) {
         return -1;
     }
     /* Error index. */
@@ -272,7 +272,7 @@ static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST u_char * snmp_in, u_ch
         return -1;
     }
     length = snmp_length;
-    type = (u_char) (ASN_UNIVERSAL | ASN_PRIMITIVE | ASN_INTEGER);
+    type = (uint8_t) (ASN_UNIVERSAL | ASN_PRIMITIVE | ASN_INTEGER);
     if ((data = AsnIntegerBuild(errstatPtr, &length, type, &errstat)) != errindexPtr) {
         return -1;
     }
@@ -298,19 +298,19 @@ static int SnmpCreateIdentical(SNMP_SESSION * sess, CONST u_char * snmp_in, u_ch
  *
  * \return 0 upon success and -1 upon failure.
  */
-int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST u_char * in_data, size_t in_len, u_char * out_data, size_t * out_len)
+int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST uint8_t * in_data, size_t in_len, uint8_t * out_data, size_t * out_len)
 {
     long zero = 0;
-    u_char msgtype;
-    u_char type;
+    uint8_t msgtype;
+    uint8_t type;
     long reqid;
     long errstat;
     long errindex;
     long dummyindex;
-    u_char *out_auth;
-    u_char *out_header;
-    u_char *out_reqid;
-    CONST u_char *data;
+    uint8_t *out_auth;
+    uint8_t *out_header;
+    uint8_t *out_reqid;
+    CONST uint8_t *data;
     size_t len;
 
     SnmpStatsInc(SNMP_STAT_INPKTS);
@@ -378,7 +378,7 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST u_char * in_data, size_t 
         return -1;
     }
     /* Return identical request ID. */
-    type = (u_char) (ASN_UNIVERSAL | ASN_PRIMITIVE | ASN_INTEGER);
+    type = (uint8_t) (ASN_UNIVERSAL | ASN_PRIMITIVE | ASN_INTEGER);
     if ((out_data = AsnIntegerBuild(out_reqid, out_len, type, &reqid)) == NULL) {
         return -1;
     }
@@ -462,11 +462,11 @@ int SnmpAgentProcessRequest(SNMP_SESSION * sess, CONST u_char * in_data, size_t 
 int SnmpAgent(UDPSOCKET * sock)
 {
     int rc = -1;
-    u_long raddr;
-    u_short rport;
+    uint32_t raddr;
+    uint16_t rport;
     size_t out_len;
-    u_char *in_data = malloc(SNMP_MAX_LEN);
-    u_char *out_data = malloc(SNMP_MAX_LEN);
+    uint8_t *in_data = malloc(SNMP_MAX_LEN);
+    uint8_t *out_data = malloc(SNMP_MAX_LEN);
     SNMP_SESSION *sess = malloc(sizeof(SNMP_SESSION));
 
     if (in_data && out_data && sess) {

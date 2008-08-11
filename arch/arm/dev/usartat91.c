@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/08/11 06:59:13  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.10  2008/07/31 09:43:25  haraldkipp
  * Initializing peripheral control registers in a more general way.
  * Fixes bug #2032960.
@@ -213,7 +216,7 @@ static void At91UsartTxEmpty(RINGBUF *rbf)
  */
 static void At91UsartTxReady(RINGBUF *rbf) 
 {
-    register u_char *cp = rbf->rbf_tail;
+    register uint8_t *cp = rbf->rbf_tail;
 
     /*
      * Process pending software flow controls first.
@@ -299,7 +302,7 @@ static void At91UsartTxReady(RINGBUF *rbf)
 static void At91UsartRxReady(RINGBUF *rbf) 
 {
     register size_t cnt;
-    register u_char ch;
+    register uint8_t ch;
 
     /*
      * We read the received character as early as possible to avoid overflows
@@ -466,10 +469,10 @@ static void At91UsartDisable(void)
  *
  * \return The currently selected baudrate.
  */
-static u_long At91UsartGetSpeed(void)
+static uint32_t At91UsartGetSpeed(void)
 {
     ureg_t cs = inr(USARTn_BASE + US_MR_OFF);
-    u_long clk;
+    uint32_t clk;
 
 #if defined(AT91_PLL_MAINCK)
     clk = At91GetMasterClock();
@@ -495,7 +498,7 @@ static u_long At91UsartGetSpeed(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91UsartSetSpeed(u_long rate)
+static int At91UsartSetSpeed(uint32_t rate)
 {
     At91UsartDisable();
 #if defined(AT91_PLL_MAINCK)
@@ -516,7 +519,7 @@ static int At91UsartSetSpeed(u_long rate)
  *
  * \return The number of data bits set.
  */
-static u_char At91UsartGetDataBits(void)
+static uint8_t At91UsartGetDataBits(void)
 {
     ureg_t val = inr(USARTn_BASE + US_MR_OFF);
 
@@ -538,7 +541,7 @@ static u_char At91UsartGetDataBits(void)
             val = 8;
         }
     }
-    return (u_char)val;
+    return (uint8_t)val;
 }
 
 /*!
@@ -549,7 +552,7 @@ static u_char At91UsartGetDataBits(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91UsartSetDataBits(u_char bits)
+static int At91UsartSetDataBits(uint8_t bits)
 {
     ureg_t val = inr(USARTn_BASE + US_MR_OFF);
 
@@ -594,7 +597,7 @@ static int At91UsartSetDataBits(u_char bits)
  *
  * \return Parity mode, either 0 (disabled), 1 (odd), 2 (even) or 9 (multidrop).
  */
-static u_char At91UsartGetParity(void)
+static uint8_t At91UsartGetParity(void)
 {
     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & US_PAR;
 
@@ -612,7 +615,7 @@ static u_char At91UsartGetParity(void)
             val = 0;
         }
     }
-    return (u_char)val;
+    return (uint8_t)val;
 }
 
 /*!
@@ -625,7 +628,7 @@ static u_char At91UsartGetParity(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91UsartSetParity(u_char mode)
+static int At91UsartSetParity(uint8_t mode)
 {
     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_PAR;
 
@@ -661,7 +664,7 @@ static int At91UsartSetParity(u_char mode)
  *
  * \return The number of stop bits set, either 1, 2 or 3 (1.5 bits).
  */
-static u_char At91UsartGetStopBits(void)
+static uint8_t At91UsartGetStopBits(void)
 {
     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & US_NBSTOP;
     if (val == US_NBSTOP_1) {
@@ -673,7 +676,7 @@ static u_char At91UsartGetStopBits(void)
     else {
         val = 3;
     }
-    return (u_char)val;
+    return (uint8_t)val;
 }
 
 /*!
@@ -684,7 +687,7 @@ static u_char At91UsartGetStopBits(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91UsartSetStopBits(u_char bits)
+static int At91UsartSetStopBits(uint8_t bits)
 {
     ureg_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_NBSTOP;
 
@@ -717,9 +720,9 @@ static int At91UsartSetStopBits(u_char bits)
  *
  * \return Status flags.
  */
-static u_long At91UsartGetStatus(void)
+static uint32_t At91UsartGetStatus(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     /*
      * Set receiver error flags.
@@ -803,7 +806,7 @@ static u_long At91UsartGetStatus(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91UsartSetStatus(u_long flags)
+static int At91UsartSetStatus(uint32_t flags)
 {
     /*
      * Process software handshake control.
@@ -889,9 +892,9 @@ static int At91UsartSetStatus(u_long flags)
  * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER,
  *         \ref UART_NCLOCK and \ref UART_HIGHSPEED.
  */
-static u_char At91UsartGetClockMode(void)
+static uint8_t At91UsartGetClockMode(void)
 {
-    u_char rc = 0;
+    uint8_t rc = 0;
 
     return rc;
 }
@@ -907,7 +910,7 @@ static u_char At91UsartGetClockMode(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91UsartSetClockMode(u_char mode)
+static int At91UsartSetClockMode(uint8_t mode)
 {
     /*
      * Verify the result.
@@ -926,9 +929,9 @@ static int At91UsartSetClockMode(u_char mode)
  *
  * \return See UsartIOCtl().
  */
-static u_long At91UsartGetFlowControl(void)
+static uint32_t At91UsartGetFlowControl(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     if (flow_control) {
         rc |= USART_MF_XONXOFF;
@@ -973,7 +976,7 @@ static u_long At91UsartGetFlowControl(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int At91UsartSetFlowControl(u_long flags)
+static int At91UsartSetFlowControl(uint32_t flags)
 {
     /*
      * Set software handshake mode.

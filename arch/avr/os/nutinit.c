@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/08/11 06:59:39  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.10  2007/06/14 07:24:38  freckle
  * Disable ADC and buskeeper during idle thread sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined
  *
@@ -136,7 +139,7 @@
 /*!
  * \brief Last memory address using external SRAM.
  */
-#define NUTMEM_END (u_short)(NUTXMEM_START + (u_short)NUTXMEM_SIZE - 1U)
+#define NUTMEM_END (uint16_t)(NUTXMEM_START + (uint16_t)NUTXMEM_SIZE - 1U)
 
 #else
 /*!
@@ -145,7 +148,7 @@
  * \todo Shall we support NUTRAMEND for backward compatibility? If, then
  *       let's do it in cfg/memory.h.
  */
-#define NUTMEM_END (u_short)(NUTMEM_START + (u_short)NUTMEM_SIZE - 1U)
+#define NUTMEM_END (uint16_t)(NUTMEM_START + (uint16_t)NUTMEM_SIZE - 1U)
 
 #endif
 
@@ -160,12 +163,12 @@
  * \todo Not a nice implementation but works as long as this module
  *       is linked first. Should be made a linker option.
  */
-u_char nutmem_onchip[NUTMEM_RESERVED];
+uint8_t nutmem_onchip[NUTMEM_RESERVED];
 #endif
 
 /* sleep mode to put avr in idle thread, SLEEP_MODE_NONE is used for for non sleeping */
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-u_char idle_sleep_mode = SLEEP_MODE_NONE;
+uint8_t idle_sleep_mode = SLEEP_MODE_NONE;
 
 /* AT90CAN128 uses a different register to enter sleep mode */
 #if defined(SMCR)
@@ -409,7 +412,7 @@ void FakeNicEeprom(void)
 
 #endif /* RTL_EESK_BIT && __GNUC__ && NUTXMEM_SIZE */
 
-/*! \fn NutThreadSetSleepMode(u_char mode)
+/*! \fn NutThreadSetSleepMode(uint8_t mode)
  * \brief Sets the sleep mode to enter in Idle thread.
  *
  * If the idle thread is running, no other thread is active
@@ -421,9 +424,9 @@ void FakeNicEeprom(void)
  * \return previous sleep mode 
  */
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-u_char NutThreadSetSleepMode(u_char mode)
+uint8_t NutThreadSetSleepMode(uint8_t mode)
 {
-    u_char old_mode = idle_sleep_mode;
+    uint8_t old_mode = idle_sleep_mode;
     idle_sleep_mode = mode;
     return old_mode;
 }
@@ -437,10 +440,10 @@ u_char NutThreadSetSleepMode(u_char mode)
 THREAD(NutIdle, arg)
 {
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-    u_char sleep_mode;
+    uint8_t sleep_mode;
 #endif
 #ifdef IDLE_HEARTBEAT_BIT
-    u_char beat = 0;
+    uint8_t beat = 0;
 #endif
 
     /* Initialize system timers. */
@@ -475,11 +478,11 @@ THREAD(NutIdle, arg)
             sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
             set_sleep_mode(idle_sleep_mode);
 #ifdef IDLE_THREAD_ADC_OFF
-            u_char adc = bit_is_set(ADCSR, ADEN);
+            uint8_t adc = bit_is_set(ADCSR, ADEN);
             cbi(ADCSR, ADEN); // disable ADC
 #endif
 #ifdef IDLE_THREAD_BUSKEEPER_OFF
-            u_char bitkeeper = bit_is_set(XMCRB, XMBK);
+            uint8_t bitkeeper = bit_is_set(XMCRB, XMBK);
             cbi(XMCRB, XMBK); // disable buskeeper
 #endif
             /* Note:  avr-libc has a sleep_mode() function, but it's broken for
@@ -513,7 +516,7 @@ void NutInitSP(void)
    /* Initialize stack pointer to end of external RAM while starting up the system
     * to avoid overwriting .data and .bss section.
     */
-    SP = (u_short)(NUTMEM_END);
+    SP = (uint16_t)(NUTMEM_END);
 #endif
 }
 #endif
@@ -532,8 +535,8 @@ void NutInitHeap()
      * one continuous heap area, but we lost the ability to have systems with
      * a gap between internal and external RAM.
      */
-    if ((u_short)NUTMEM_END - (u_short) (&__heap_start) > 384) {
-        NutHeapAdd(&__heap_start, (u_short) NUTMEM_END - 256 - (u_short) (&__heap_start));
+    if ((uint16_t)NUTMEM_END - (uint16_t) (&__heap_start) > 384) {
+        NutHeapAdd(&__heap_start, (uint16_t) NUTMEM_END - 256 - (uint16_t) (&__heap_start));
     }
 }
 
@@ -555,7 +558,7 @@ void NutCustomInit(void)
 */
 #if defined(MMNET02)
 {
-    volatile u_char *breg = (u_char *)((size_t)-1 & ~0xFF);
+    volatile uint8_t *breg = (uint8_t *)((size_t)-1 & ~0xFF);
 
     *(breg + 1) = 0x01; // Memory Mode 1, Banked Memory
 
@@ -577,8 +580,8 @@ void NutCustomInit(void)
     XMCRA |= _BV(SRL0) | _BV(SRW01) | _BV(SRW00); /* sep. at 0x2000, 3WS for lower Sector */
     XMCRB = 0;
 
-    *((volatile u_char *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
-    *((volatile u_char *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
+    *((volatile uint8_t *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
+    *((volatile uint8_t *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
 
     /* Assume standard Arthernet1 with 16 MHz crystal, set to 38400 bps */
     outp(25, UBRR);
@@ -679,7 +682,7 @@ void NutInit(void)
     /* Initialize stack pointer to end of external RAM while starting up the system
      * to avoid overwriting .data and .bss section.
      */
-    SP = (u_short)(NUTMEM_END);
+    SP = (uint16_t)(NUTMEM_END);
 
     /* Initialize the heap memory
      */

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/07/26 13:03:05  freckle
  * Reduced critical section in TwSlaveListen
  *
@@ -101,36 +104,36 @@
 
 #ifdef __AVR_ENHANCED__
 
-static volatile u_char tw_if_bsy;   /* Set while interface is busy. */
+static volatile uint8_t tw_if_bsy;   /* Set while interface is busy. */
 
 HANDLE tw_mm_mutex;          /* Exclusive master access. */
 HANDLE tw_mm_que;            /* Threads waiting for master transfer done. */
 HANDLE tw_sr_que;            /* Threads waiting for slave receive. */
 HANDLE tw_st_que;            /* Threads waiting for slave transmit done. */
 
-static u_char tw_mm_sla;            /* Destination slave address. */
-static volatile u_char tw_mm_err;   /* Current master mode error. */
-static u_char tw_mm_error;          /* Last master mode error. */
+static uint8_t tw_mm_sla;            /* Destination slave address. */
+static volatile uint8_t tw_mm_err;   /* Current master mode error. */
+static uint8_t tw_mm_error;          /* Last master mode error. */
 
-static CONST u_char *tw_mt_buf;     /* Pointer to the master transmit buffer. */
-static volatile u_short tw_mt_len;  /* Number of bytes to transmit in master mode. */
-static volatile u_short tw_mt_idx;  /* Current master transmit buffer index. */
+static CONST uint8_t *tw_mt_buf;     /* Pointer to the master transmit buffer. */
+static volatile uint16_t tw_mt_len;  /* Number of bytes to transmit in master mode. */
+static volatile uint16_t tw_mt_idx;  /* Current master transmit buffer index. */
 
-static u_char *tw_mr_buf;           /* Pointer to the master receive buffer. */
-static volatile u_short tw_mr_siz;  /* Size of the master receive buffer. */
-static volatile u_short tw_mr_idx;  /* Current master receive buffer index. */
+static uint8_t *tw_mr_buf;           /* Pointer to the master receive buffer. */
+static volatile uint16_t tw_mr_siz;  /* Size of the master receive buffer. */
+static volatile uint16_t tw_mr_idx;  /* Current master receive buffer index. */
 
-static volatile u_char tw_sm_sla;   /* Slave address received. */
-static volatile u_char tw_sm_err;   /* Current slave mode error. */
-static u_char tw_sm_error;          /* Last slave mode error. */
+static volatile uint8_t tw_sm_sla;   /* Slave address received. */
+static volatile uint8_t tw_sm_err;   /* Current slave mode error. */
+static uint8_t tw_sm_error;          /* Last slave mode error. */
 
-static u_char *tw_st_buf;           /* Pointer to the slave transmit buffer. */
-static volatile u_short tw_st_len;  /* Number of bytes to transmit in slave mode. */
-static volatile u_short tw_st_idx;  /* Current slave transmit buffer index. */
+static uint8_t *tw_st_buf;           /* Pointer to the slave transmit buffer. */
+static volatile uint16_t tw_st_len;  /* Number of bytes to transmit in slave mode. */
+static volatile uint16_t tw_st_idx;  /* Current slave transmit buffer index. */
 
-static u_char *tw_sr_buf;           /* Pointer to the slave receive buffer. */
-static volatile u_short tw_sr_siz;  /* Size of the master receive buffer. */
-static volatile u_short tw_sr_idx;  /* Current slave receive buffer index. */
+static uint8_t *tw_sr_buf;           /* Pointer to the slave receive buffer. */
+static volatile uint16_t tw_sr_siz;  /* Size of the master receive buffer. */
+static volatile uint16_t tw_sr_idx;  /* Current slave receive buffer index. */
 
 /*
 TWINT TWEA TWSTA TWSTO TWWC TWEN  0  TWIE
@@ -144,8 +147,8 @@ TWINT TWEA TWSTA TWSTO TWWC TWEN  0  TWIE
  */
 static void TwInterrupt(void *arg)
 {
-    u_char twsr;
-    register u_char twcr = inb(TWCR);
+    uint8_t twsr;
+    register uint8_t twcr = inb(TWCR);
 
     /*
      * Read the status and interpret its contents.
@@ -529,7 +532,7 @@ static void TwInterrupt(void *arg)
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
  */
-int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
+int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
 {
     int rc = -1;
 
@@ -561,8 +564,8 @@ int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata
      * as soon as the interface becomes ready again.
      */
     if(tw_if_bsy == 0) {
-        u_char twcr = inb(TWCR);
-        u_char twsr = inb(TWSR);
+        uint8_t twcr = inb(TWCR);
+        uint8_t twsr = inb(TWSR);
         if((twsr & 0xF8) == TW_NO_INFO) {
             if(tw_sr_siz) {
                 outb(TWCR, _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWSTA) | (twcr & _BV(TWSTO)));
@@ -647,7 +650,7 @@ int TwMasterError(void)
  *
  * \return The number of bytes received, -1 in case of an error or timeout.
  */
-int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
+int TwSlaveListen(uint8_t * sla, void *rxdata, uint16_t rxsiz, uint32_t tmo)
 {
 #ifndef __AVR_ENHANCED__
     return -1;
@@ -666,7 +669,7 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
      * address recognition.
      */
     if(tw_if_bsy == 0) {
-        u_char twsr = inb(TWSR);
+        uint8_t twsr = inb(TWSR);
         if((twsr & 0xF8) == TW_NO_INFO) {
             if(tw_mt_len || tw_mr_siz)
                 outb(TWCR, _BV(TWEA) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA));
@@ -721,7 +724,7 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
  *
  * \return The number of bytes transmitted, -1 in case of an error or timeout.
  */
-int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
+int TwSlaveRespond(void *txdata, uint16_t txlen, uint32_t tmo)
 {
     int rc = -1;
 #ifdef __AVR_ENHANCED__
@@ -763,8 +766,8 @@ int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
      * Nothing to transmit.
      */
     else {
-        u_char twcr;
-        u_char twsr;
+        uint8_t twcr;
+        uint8_t twsr;
         rc = 0;
         /* Release the bus, not accepting SLA+R. */
 
@@ -814,8 +817,8 @@ int TwSlaveError(void)
  *
  * \param req  Requested control function. May be set to one of the
  *	       following constants:
- *	       - TWI_SETSPEED, if conf points to an u_long value containing the bitrate.
- *	       - TWI_GETSPEED, if conf points to an u_long value receiving the current bitrate.
+ *	       - TWI_SETSPEED, if conf points to an uint32_t value containing the bitrate.
+ *	       - TWI_GETSPEED, if conf points to an uint32_t value receiving the current bitrate.
  * \param conf Points to a buffer that contains any data required for
  *	       the given control function or receives data from that
  *	       function.
@@ -830,18 +833,18 @@ int TwIOCtl(int req, void *conf)
     return -1;
 #else
     int rc = 0;
-    u_long lval;
+    uint32_t lval;
 
     switch (req) {
     case TWI_SETSLAVEADDRESS:
-        TWAR = (*((u_char *) conf) << 1) | 1;
+        TWAR = (*((uint8_t *) conf) << 1) | 1;
         break;
     case TWI_GETSLAVEADDRESS:
-        *((u_char *) conf) = TWAR;
+        *((uint8_t *) conf) = TWAR;
         break;
 
     case TWI_SETSPEED:
-        lval = ((2UL * NutGetCpuClock() / (*((u_long *) conf)) + 1UL) / 2UL - 16UL) / 2UL;
+        lval = ((2UL * NutGetCpuClock() / (*((uint32_t *) conf)) + 1UL) / 2UL - 16UL) / 2UL;
         if (lval > 1020UL) {
             lval /= 16UL;
             sbi(TWSR, TWPS1);
@@ -855,7 +858,7 @@ int TwIOCtl(int req, void *conf)
             cbi(TWSR, TWPS0);
         }
         if (lval > 9UL && lval < 256UL) {
-            outb(TWBR, (u_char) lval);
+            outb(TWBR, (uint8_t) lval);
         } else {
             rc = -1;
         }
@@ -868,7 +871,7 @@ int TwIOCtl(int req, void *conf)
         if (bit_is_set(TWSR, TWPS1)) {
             lval *= 16UL;
         }
-        *((u_long *) conf) = NutGetCpuClock() / (16UL + lval * (u_long) inb(TWBR));
+        *((uint32_t *) conf) = NutGetCpuClock() / (16UL + lval * (uint32_t) inb(TWBR));
         break;
 
     case TWI_GETSTATUS:
@@ -896,12 +899,12 @@ int TwIOCtl(int req, void *conf)
  * \param sla Slave address, must be specified as a 7-bit address,
  *            always lower than 128.
  */
-int TwInit(u_char sla)
+int TwInit(uint8_t sla)
 {
 #ifndef __AVR_ENHANCED__
     return -1;
 #else
-    u_long speed = 2400;
+    uint32_t speed = 2400;
 
     if (NutRegisterIrqHandler(&sig_2WIRE_SERIAL, TwInterrupt, 0)) {
         return -1;

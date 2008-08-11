@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/04/29 02:28:34  thiagocorrea
  * Add configurable DTR pin to AVR USART driver.
  *
@@ -239,7 +242,7 @@ static void AvrUsartTxEmpty(void *arg) {
 
 #endif
 
-    register u_char *cp = rbf->rbf_tail;
+    register uint8_t *cp = rbf->rbf_tail;
 
 
 #ifdef NUTTRACER
@@ -358,7 +361,7 @@ static void AvrUsartRxComplete(void *arg) {
 #endif
 
     register size_t cnt;
-    register u_char ch;
+    register uint8_t ch;
 
 
 #ifdef NUTTRACER
@@ -366,7 +369,7 @@ static void AvrUsartRxComplete(void *arg) {
 #endif
 
 #ifdef UART_READMULTIBYTE
-    register u_char postEvent = 0;
+    register uint8_t postEvent = 0;
     do {
 #endif
 
@@ -542,13 +545,13 @@ static void AvrUsartDisable(void)
  *
  * \return The currently selected baudrate.
  */
-static u_long AvrUsartGetSpeed(void)
+static uint32_t AvrUsartGetSpeed(void)
 {
-    u_long fct;
-    u_short sv = (u_short) inb(UBRRnL);
+    uint32_t fct;
+    uint16_t sv = (uint16_t) inb(UBRRnL);
 
 #ifdef __AVR_ENHANCED__
-    sv |= ((u_short) inb(UBRRnH) << 8);
+    sv |= ((uint16_t) inb(UBRRnH) << 8);
 
     /* Synchronous mode. */
     if (bit_is_set(UCSRnC, UMSEL)) {
@@ -568,7 +571,7 @@ static u_long AvrUsartGetSpeed(void)
     fct = 16UL;
 #endif
 
-    return NutGetCpuClock() / (fct * ((u_long) sv + 1UL));
+    return NutGetCpuClock() / (fct * ((uint32_t) sv + 1UL));
 }
 
 /*!
@@ -581,9 +584,9 @@ static u_long AvrUsartGetSpeed(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AvrUsartSetSpeed(u_long rate)
+static int AvrUsartSetSpeed(uint32_t rate)
 {
-    u_short sv;
+    uint16_t sv;
 
     AvrUsartDisable();
 
@@ -601,11 +604,11 @@ static int AvrUsartSetSpeed(u_long rate)
 #else
     rate <<= 3;
 #endif
-    sv = (u_short) ((NutGetCpuClock() / rate + 1UL) / 2UL) - 1;
+    sv = (uint16_t) ((NutGetCpuClock() / rate + 1UL) / 2UL) - 1;
 
-    outb(UBRRnL, (u_char) sv);
+    outb(UBRRnL, (uint8_t) sv);
 #ifdef __AVR_ENHANCED__
-    outb(UBRRnH, (u_char) (sv >> 8));
+    outb(UBRRnH, (uint8_t) (sv >> 8));
 #endif
     AvrUsartEnable();
 
@@ -620,7 +623,7 @@ static int AvrUsartSetSpeed(u_long rate)
  *
  * \return The number of data bits set.
  */
-static u_char AvrUsartGetDataBits(void)
+static uint8_t AvrUsartGetDataBits(void)
 {
     if (bit_is_set(UCSRnB, UCSZ2)) {
         return 9;
@@ -649,7 +652,7 @@ static u_char AvrUsartGetDataBits(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AvrUsartSetDataBits(u_char bits)
+static int AvrUsartSetDataBits(uint8_t bits)
 {
     AvrUsartDisable();
     cbi(UCSRnB, UCSZ2);
@@ -692,7 +695,7 @@ static int AvrUsartSetDataBits(u_char bits)
  *
  * \return Parity mode, either 0 (disabled), 1 (odd) or 2 (even).
  */
-static u_char AvrUsartGetParity(void)
+static uint8_t AvrUsartGetParity(void)
 {
 #ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnC, UPM1)) {
@@ -716,7 +719,7 @@ static u_char AvrUsartGetParity(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AvrUsartSetParity(u_char mode)
+static int AvrUsartSetParity(uint8_t mode)
 {
 #ifdef __AVR_ENHANCED__
     AvrUsartDisable();
@@ -754,7 +757,7 @@ static int AvrUsartSetParity(u_char mode)
  *
  * \return The number of stop bits set, either 1 or 2.
  */
-static u_char AvrUsartGetStopBits(void)
+static uint8_t AvrUsartGetStopBits(void)
 {
 #ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnC, USBS)) {
@@ -772,7 +775,7 @@ static u_char AvrUsartGetStopBits(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AvrUsartSetStopBits(u_char bits)
+static int AvrUsartSetStopBits(uint8_t bits)
 {
 #ifdef __AVR_ENHANCED__
     AvrUsartDisable();
@@ -798,9 +801,9 @@ static int AvrUsartSetStopBits(u_char bits)
  *
  * \return Status flags.
  */
-static u_long AvrUsartGetStatus(void)
+static uint32_t AvrUsartGetStatus(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     /*
      * Set receiver error flags.
@@ -908,7 +911,7 @@ static u_long AvrUsartGetStatus(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AvrUsartSetStatus(u_long flags)
+static int AvrUsartSetStatus(uint32_t flags)
 {
     /*
      * Process software handshake control.
@@ -1021,9 +1024,9 @@ static int AvrUsartSetStatus(u_long flags)
  * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER,
  *         \ref UART_NCLOCK and \ref UART_HIGHSPEED.
  */
-static u_char AvrUsartGetClockMode(void)
+static uint8_t AvrUsartGetClockMode(void)
 {
-    u_char rc = 0;
+    uint8_t rc = 0;
 
 #ifdef __AVR_ENHANCED__
     if (bit_is_set(UCSRnC, UMSEL)) {
@@ -1053,7 +1056,7 @@ static u_char AvrUsartGetClockMode(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AvrUsartSetClockMode(u_char mode)
+static int AvrUsartSetClockMode(uint8_t mode)
 {
 #ifdef __AVR_ENHANCED__
     AvrUsartDisable();
@@ -1118,9 +1121,9 @@ static int AvrUsartSetClockMode(u_char mode)
  *
  * \return See UsartIOCtl().
  */
-static u_long AvrUsartGetFlowControl(void)
+static uint32_t AvrUsartGetFlowControl(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     if (flow_control) {
         rc |= USART_MF_XONXOFF;
@@ -1165,7 +1168,7 @@ static u_long AvrUsartGetFlowControl(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AvrUsartSetFlowControl(u_long flags)
+static int AvrUsartSetFlowControl(uint32_t flags)
 {
     /*
      * Set software handshake mode.

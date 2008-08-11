@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/04/12 09:07:54  haraldkipp
  * Configurable SPI added.
  *
@@ -47,6 +50,7 @@
  */
 
 #include <cfg/arch/gpio.h>
+#include <stdint.h>
 
 /*!
  * \brief Maximum number of devices (chip selects).
@@ -1006,7 +1010,7 @@ __BEGIN_DECLS
 /* Function prototypes */
 
 extern int Sbbi0SetMode(ureg_t ix, ureg_t mode);
-extern void Sbbi0SetSpeed(ureg_t ix, u_long rate);
+extern void Sbbi0SetSpeed(ureg_t ix, uint32_t rate);
 extern void Sbbi0Enable(ureg_t ix);
 extern void Sbbi0ChipReset(ureg_t ix, ureg_t hi);
 extern void Sbbi0ChipSelect(ureg_t ix, ureg_t hi);
@@ -1014,7 +1018,7 @@ extern void Sbbi0SelectDevice(ureg_t ix);
 extern void Sbbi0DeselectDevice(ureg_t ix);
 extern void Sbbi0NegSelectDevice(ureg_t ix);
 extern void Sbbi0NegDeselectDevice(ureg_t ix);
-extern u_char Sbbi0Byte(u_char data);
+extern uint8_t Sbbi0Byte(uint8_t data);
 extern void Sbbi0Transact(CONST void *wdata, void *rdata, size_t len);
 
 __END_DECLS

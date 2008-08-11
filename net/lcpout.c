@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:30  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -92,7 +95,7 @@
  */
 /*@{*/
 
-extern u_long new_magic;
+extern uint32_t new_magic;
 
 /*!
  * \brief Send a LCP packet.
@@ -110,7 +113,7 @@ extern u_long new_magic;
  *
  * \return 0 on success, -1 in case of any errors.
  */
-int NutLcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb)
+int NutLcpOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb)
 {
     XCPHDR *lcp;
 
@@ -144,7 +147,7 @@ void LcpResetOptions(NUTDEVICE * dev)
 /*
  * Send a Configure-Request.
  */
-void LcpTxConfReq(NUTDEVICE * dev, u_char id, u_char rejected)
+void LcpTxConfReq(NUTDEVICE * dev, uint8_t id, uint8_t rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -192,11 +195,11 @@ void LcpTxConfReq(NUTDEVICE * dev, u_char id, u_char rejected)
 /*
  * Send a Protocol-Reject for some protocol.
  */
-void LcpTxProtRej(NUTDEVICE * dev, u_short protocol, NETBUF * nb)
+void LcpTxProtRej(NUTDEVICE * dev, uint16_t protocol, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     NETBUF *nbr;
-    u_short *sp;
+    uint16_t *sp;
 
     if ((nbr = NutNetBufAlloc(0, NBAF_APPLICATION, nb->nb_nw.sz)) != 0) {
         sp = nbr->nb_ap.vp;

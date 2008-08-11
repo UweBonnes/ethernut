@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:12  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2005/10/24 17:59:19  haraldkipp
  * Use correct header file, arm, not gba.
  *
@@ -73,7 +76,7 @@ IRQ_HANDLER sig_GAMEPAK;
 
 void IrqHandler(void)
 {
-    register u_short irqf = inw(REG_IF);
+    register uint16_t irqf = inw(REG_IF);
 
     if(irqf & INT_SIO) {
         CallHandler(&sig_SIO);
@@ -125,7 +128,7 @@ void IrqHandler(void)
 
 void InitIrqHandler(void)
 {
-    outdw(INT_VECTOR, (u_long)IrqHandler);
+    outdw(INT_VECTOR, (uint32_t)IrqHandler);
 }
 
 /*@}*/

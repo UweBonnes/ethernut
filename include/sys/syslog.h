@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:28  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2004/11/24 16:41:18  haraldkipp
  * Wrong prototypes for _P routines fixed
  *
@@ -156,7 +159,7 @@ __BEGIN_DECLS                   /* */
 extern void closelog(void);
 extern void openlog(CONST char *, int, int);
 extern int setlogmask(int);
-extern u_long setlogserver(u_long ip, u_short port);
+extern uint32_t setlogserver(uint32_t ip, uint16_t port);
 extern void syslog(int, CONST char *, ...);
 extern void vsyslog(int, CONST char *, va_list);
 #ifdef __HARVARD_ARCH__

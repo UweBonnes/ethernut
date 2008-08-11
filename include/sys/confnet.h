@@ -40,12 +40,15 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 07:00:25  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/05/25 09:17:28  haraldkipp
  * Allow configuration of location used in non-volatile memory.
  * API documentation updated and corrected.
  *
  * Revision 1.3  2006/03/16 15:25:34  haraldkipp
- * Changed human readable strings from u_char to char to stop GCC 4 from
+ * Changed human readable strings from uint8_t to char to stop GCC 4 from
  * nagging about signedness.
  *
  * Revision 1.2  2006/01/23 17:34:29  haraldkipp
@@ -65,6 +68,8 @@
 
 #include <sys/types.h>
 #include <cfg/eeprom.h>
+
+#include <stdint.h>
 
 /*!
  * \addtogroup xgConfNet
@@ -103,7 +108,7 @@ struct __attribute__ ((packed)) _CONFNET {
      * Used by Nut/Net to verify, that the structure contents is valid
      * after reading it from non-volatile memory.
      */
-    u_char cd_size;
+    uint8_t cd_size;
 
     /*! \brief Magic cookie.
      *
@@ -115,7 +120,7 @@ struct __attribute__ ((packed)) _CONFNET {
      *
      * Unique Ethernet address of the network interface.
      */
-    u_char cdn_mac[6];
+    uint8_t cdn_mac[6];
 
     /*! \brief Last used IP address. 
      *
@@ -126,28 +131,28 @@ struct __attribute__ ((packed)) _CONFNET {
      * contains 0.0.0.0) and if no DHCP server is available, then
      * Nut/Net will use this one, if it is not 0.0.0.0.
      */
-    u_long cdn_ip_addr;
+    uint32_t cdn_ip_addr;
 
     /*! \brief IP netmask.
      *
      * The netmask is used to determine which machines are
      * available in the local network.
      */
-    u_long cdn_ip_mask;
+    uint32_t cdn_ip_mask;
 
     /*! \brief Default route. 
      *
      * Nut/Net will redirect IP packets to this node, if the
      * target IP is not located in the local network.
      */
-    u_long cdn_gateway;
+    uint32_t cdn_gateway;
 
     /*! \brief Configured IP address. 
      *
      * If this address is set to 0.0.0.0, Nut/Net will try
      * to obtain one from the DHCP server.
      */
-    u_long cdn_cip_addr;
+    uint32_t cdn_cip_addr;
 };
 
 extern CONFNET confnet;

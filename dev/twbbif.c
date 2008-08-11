@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.10  2008/02/15 17:04:49  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -406,7 +409,7 @@
 #endif                          /* __AVR__ */
 
 
-static u_char tw_mm_error;      /* Last master mode error. */
+static uint8_t tw_mm_error;      /* Last master mode error. */
 static int twibb_initialized;
 
 /*
@@ -466,7 +469,7 @@ static void TwStop(void)
  * Entry: SCL low, SDA any
  * Exit: SCL low, SDA high
  */
-static int TwPut(u_char octet)
+static int TwPut(uint8_t octet)
 {
     int i;
 
@@ -508,9 +511,9 @@ static int TwPut(u_char octet)
  * Entry: SCL low, SDA any
  * Exit: SCL low, SDA high
  */
-static u_char TwGet(void)
+static uint8_t TwGet(void)
 {
-    u_char rc = 0;
+    uint8_t rc = 0;
     int i;
 
     /* SDA is input. */
@@ -574,10 +577,10 @@ static void TwAck(void)
  *
  * \note Timeout is not used in the bit banging version.
  */
-int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata, u_short rxsiz, u_long tmo)
+int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo)
 {
     int rc = 0;
-    u_char *cp;
+    uint8_t *cp;
 
     if (!twibb_initialized) {
         TwInit(0);
@@ -587,7 +590,7 @@ int TwMasterTransact(u_char sla, CONST void *txdata, u_short txlen, void *rxdata
         TwStart();
         /* Send SLA+W and check for ACK. */
         if ((rc = TwPut(sla << 1)) == 0) {
-            for (cp = (u_char *)txdata; txlen--; cp++) {
+            for (cp = (uint8_t *)txdata; txlen--; cp++) {
                 if ((rc = TwPut(*cp)) != 0) {
                     break;
                 }
@@ -654,7 +657,7 @@ int TwMasterError(void)
  * \return The number of bytes received, -1 in case of an error or timeout.
  *
  */
-int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
+int TwSlaveListen(uint8_t * sla, void *rxdata, uint16_t rxsiz, uint32_t tmo)
 {
     return -1;
 }
@@ -677,7 +680,7 @@ int TwSlaveListen(u_char * sla, void *rxdata, u_short rxsiz, u_long tmo)
  *
  * \return The number of bytes transmitted, -1 in case of an error or timeout.
  */
-int TwSlaveRespond(void *txdata, u_short txlen, u_long tmo)
+int TwSlaveRespond(void *txdata, uint16_t txlen, uint32_t tmo)
 {
     return -1;
 }
@@ -730,7 +733,7 @@ int TwIOCtl(int req, void *conf)
  * \note Slave mode is not implemented in the bit banging version.
  *       Thus the given slave address is ignored.
  */
-int TwInit(u_char sla)
+int TwInit(uint8_t sla)
 {
     SDA_HIGH();
     SCL_HIGH();

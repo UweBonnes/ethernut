@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2007/08/29 07:43:53  haraldkipp
  * Documentation updated and corrected.
  *
@@ -442,8 +445,8 @@ extern int AceInput(NUTDEVICE * dev);
 extern int AceOutput(NUTDEVICE * dev);
 extern int AceFlush(NUTDEVICE * dev);
 
-extern int AceGetRaw(u_char * cp);
-extern int AcePutRaw(u_char ch);
+extern int AceGetRaw(uint8_t * cp);
+extern int AcePutRaw(uint8_t ch);
 
 extern int AceRead(NUTFILE * fp, void *buffer, int size);
 extern int AceWrite(NUTFILE * fp, CONST void *buffer, int len);

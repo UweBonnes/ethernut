@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:30  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -111,7 +114,7 @@
  *
  * \return 0 on success, -1 in case of any errors.
  */
-int NutIpcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb)
+int NutIpcpOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb)
 {
     XCPHDR *xcp;
 
@@ -134,7 +137,7 @@ int NutIpcpOutput(NUTDEVICE * dev, u_char code, u_char id, NETBUF * nb)
  * Send a Configure-Request.
  * TODO: May use preconfigured addresses.
  */
-void IpcpTxConfReq(NUTDEVICE *dev, u_char id)
+void IpcpTxConfReq(NUTDEVICE *dev, uint8_t id)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;

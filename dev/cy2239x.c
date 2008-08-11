@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/01/23 17:32:11  haraldkipp
  * Avoid hang-ups caused by debug leftovers.
  *
@@ -83,14 +86,14 @@
  *
  * \return Frequency in Hertz.
  */
-static u_long PllFreq(u_char * reg)
+static uint32_t PllFreq(uint8_t * reg)
 {
-    u_long p;
-    u_long pt;
-    u_long qt;
+    uint32_t p;
+    uint32_t pt;
+    uint32_t qt;
 
     /* The 11-bit P value is stored in two registers. */
-    p = (u_long) (reg[2] & 0x03) << 8 | reg[1];
+    p = (uint32_t) (reg[2] & 0x03) << 8 | reg[1];
     /* Calculate Pt = (2 x (P + 3)) + PO. */
     pt = 2 * (p + 3) + ((reg[2] >> 2) & 1);
     /* Calculate Qt = Q + 2. */
@@ -117,8 +120,8 @@ static u_long PllFreq(u_char * reg)
 int Cy2239xGetPll(int clk)
 {
     int rc = -1;
-    u_char loc = 0x0E;
-    u_char reg;
+    uint8_t loc = 0x0E;
+    uint8_t reg;
 
     /* ClkE is fixed to PLL1. */
     if (clk == CY2239X_CLKE) {
@@ -151,8 +154,8 @@ int Cy2239xGetPll(int clk)
  */
 int Cy2239xSetPll(int clk, int pll)
 {
-    u_char reg[2];
-    u_char msk = 0x03;
+    uint8_t reg[2];
+    uint8_t msk = 0x03;
 
     /* ClkE is fixed to PLL1. */
     if (clk >= CY2239X_CLKE) {
@@ -193,8 +196,8 @@ int Cy2239xGetDivider(int clk, int fctrl)
 {
     int rc = -1;
     int idx;
-    u_char loc;
-    u_char reg;
+    uint8_t loc;
+    uint8_t reg;
 
     /*
      * Clock E has a simple divider only.
@@ -254,7 +257,7 @@ int Cy2239xGetDivider(int clk, int fctrl)
  */
 int Cy2239xSetDivider(int clk, int sel, int val)
 {
-    u_char reg[2];
+    uint8_t reg[2];
 
     /* Clock E has a simple divider only. */
     if (clk == CY2239X_CLKE) {
@@ -266,7 +269,7 @@ int Cy2239xSetDivider(int clk, int sel, int val)
             reg[0] = 0x0F;
             if (TwMasterTransact(I2C_SLA_PLL, reg, 1, &reg[1], 1, NUT_WAIT_INFINITE) == 1) {
                 reg[1] &= ~0x03;
-                reg[1] |= (u_char) val;
+                reg[1] |= (uint8_t) val;
                 TwMasterTransact(I2C_SLA_PLL, reg, 2, 0, 0, NUT_WAIT_INFINITE);
                 return 0;
             }
@@ -284,7 +287,7 @@ int Cy2239xSetDivider(int clk, int sel, int val)
         }
         if (TwMasterTransact(I2C_SLA_PLL, reg, 1, &reg[1], 1, NUT_WAIT_INFINITE) == 1) {
             reg[1] &= ~0x7F;
-            reg[1] |= (u_char) val;
+            reg[1] |= (uint8_t) val;
             TwMasterTransact(I2C_SLA_PLL, reg, 2, 0, 0, NUT_WAIT_INFINITE);
             return 0;
         }
@@ -321,7 +324,7 @@ int Cy2239xSetDivider(int clk, int sel, int val)
 int Cy2239xPllEnable(int pll, int fctrl, int ena)
 {
     int rc = -1;
-    u_char reg[2];
+    uint8_t reg[2];
 
     if (pll) {
         if (pll == CY2239X_PLL1) {
@@ -368,16 +371,16 @@ int Cy2239xPllEnable(int pll, int fctrl, int ena)
  *
  * Use the following code to retrieve the reference clock:
  * \code
- * u_long fref;
+ * uint32_t fref;
  *
  * fref = Cy2239xPllGetFreq(CY2239X_REF, 7);
  * \endcode
  */
-u_long Cy2239xPllGetFreq(int pll, int fctrl)
+uint32_t Cy2239xPllGetFreq(int pll, int fctrl)
 {
-    u_long rc = NUT_PLL_FREF;
-    u_char loc;
-    u_char reg[3];
+    uint32_t rc = NUT_PLL_FREF;
+    uint8_t loc;
+    uint8_t reg[3];
 
     if (pll) {
         if (pll == CY2239X_PLL1) {
@@ -432,7 +435,7 @@ u_long Cy2239xPllGetFreq(int pll, int fctrl)
  */
 int Cy2239xPllSetFreq(int pll, int fctrl, u_int pval, u_int poff, u_int qval, u_int fval)
 {
-    u_char reg[4];
+    uint8_t reg[4];
     int ena;
 
     if (pll) {
@@ -452,10 +455,10 @@ int Cy2239xPllSetFreq(int pll, int fctrl, u_int pval, u_int poff, u_int qval, u_
             /* The register is updated immediately. Disable the PLL to avoid
              * out of bounds settings. */
             if ((ena = Cy2239xPllEnable(pll, fctrl, 0)) >= 0) {
-                reg[1] = (u_char) qval;
-                reg[2] = (u_char) pval;
+                reg[1] = (uint8_t) qval;
+                reg[2] = (uint8_t) pval;
                 reg[3] &= 0x80; /* Clear all except the divider select. */
-                reg[3] |= (u_char)(pval >> 8) & 0x03;
+                reg[3] |= (uint8_t)(pval >> 8) & 0x03;
                 reg[3] |= (poff & 1) << 2;
                 reg[3] |= (fval & 7) << 3;
                 TwMasterTransact(I2C_SLA_PLL, reg, 4, 0, 0, NUT_WAIT_INFINITE);
@@ -491,19 +494,19 @@ int Cy2239xPllSetFreq(int pll, int fctrl, u_int pval, u_int poff, u_int qval, u_
  * The following code can be used to query the main CPU clock on the
  * Ethernut 3 board.
  * \code
- * u_long fcpu;
+ * uint32_t fcpu;
  *
  * fcpu = Cy2239xGetFreq(CY2239X_CLKC, 7);
  * \endcode
  */
-u_long Cy2239xGetFreq(int clk, int fctrl)
+uint32_t Cy2239xGetFreq(int clk, int fctrl)
 {
-    u_long rc;
-    u_long d;
-    u_char loc;
-    u_char reg;
-    u_char clk_reg[8];
-    u_char pll_reg[3];
+    uint32_t rc;
+    uint32_t d;
+    uint8_t loc;
+    uint8_t reg;
+    uint8_t clk_reg[8];
+    uint8_t pll_reg[3];
     int pll;
 
     /* Read clock registers 0x08 - 0x0F. */

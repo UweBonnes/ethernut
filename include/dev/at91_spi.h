@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -87,9 +90,9 @@ extern int At91SpiInit(u_int base);
 extern int At91SpiReset(u_int base);
 extern int At91SpiInitChipSelects(u_int base, u_int mask);
 
-extern int At91SpiSetRate(u_int base, u_int cs, u_long rate);
-extern u_long At91SpiGetModeFlags(u_int base, u_int cs);
-extern int At91SpiSetModeFlags(u_int base, u_int cs, u_long mode);
+extern int At91SpiSetRate(u_int base, u_int cs, uint32_t rate);
+extern uint32_t At91SpiGetModeFlags(u_int base, u_int cs);
+extern int At91SpiSetModeFlags(u_int base, u_int cs, uint32_t mode);
 extern u_int At91SpiGetBits(u_int base, u_int cs);
 extern int At91SpiSetBits(u_int base, u_int cs, u_int bits);
 extern u_int At91SpiGetSckDelay(u_int base, u_int cs);

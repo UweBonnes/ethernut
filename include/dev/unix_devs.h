@@ -43,6 +43,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2005/08/02 17:46:48  haraldkipp
  * Major API documentation update.
  *
@@ -116,23 +119,23 @@ struct _UNIXDCB {
 
     /*! \brief Mode flags.
      */
-    u_long dcb_modeflags;
+    uint32_t dcb_modeflags;
 
     /*! \brief Status flags.
      */
-    u_long dcb_statusflags;
+    uint32_t dcb_statusflags;
 
     /*! \brief Read timeout.
      */
-    u_long dcb_rtimeout;
+    uint32_t dcb_rtimeout;
 
     /*! \brief Write timeout.
      */
-    u_long dcb_wtimeout;
+    uint32_t dcb_wtimeout;
 
     /*! \brief Last EOL character.
      */
-    u_char dcb_last_eol;
+    uint8_t dcb_last_eol;
 
     /*! \brief Native file descriptor
     */
@@ -140,7 +143,7 @@ struct _UNIXDCB {
     
 	/*! \brief File is Socket 
 	*/
-	u_char dcb_socket;
+	uint8_t dcb_socket;
 
     /*! \brief Queue of threads waiting for a character in the input buffer.
      */

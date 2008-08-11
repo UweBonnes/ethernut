@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -138,7 +141,7 @@
  *
  * \return 0 on success, -1 in case of any errors.
  */
-int NutEtherOutput(NUTDEVICE * dev, u_short type, u_char * ha, NETBUF * nb)
+int NutEtherOutput(NUTDEVICE * dev, uint16_t type, uint8_t * ha, NETBUF * nb)
 {
     ETHERHDR *eh;
     IFNET *nif;

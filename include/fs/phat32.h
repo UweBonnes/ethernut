@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/01/05 16:32:41  haraldkipp
  * First check-in.
  *
@@ -58,9 +61,9 @@
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int Phat32GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link);
-extern int Phat32SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link);
-extern int Phat32ReleaseChain(NUTDEVICE * dev, u_long first);
+extern int Phat32GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link);
+extern int Phat32SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link);
+extern int Phat32ReleaseChain(NUTDEVICE * dev, uint32_t first);
 
 __END_DECLS
 /* End of prototypes */

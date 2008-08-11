@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2006/10/05 17:25:41  haraldkipp
  * Avoid possible alignment errors. Fixes bug #1567748.
  *
@@ -138,8 +141,8 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
 {
     PPPHDR *ph = (PPPHDR *) nb->nb_dl.vp;
     PPPDCB *dcb = dev->dev_dcb;
-    u_short protocol;
-    u_char protocolsz;
+    uint16_t protocol;
+    uint8_t protocolsz;
 
 #ifdef NUTDEBUG
     if (__ppp_trf) {
@@ -163,13 +166,13 @@ void NutPppInput(NUTDEVICE * dev, NETBUF * nb)
          * Check for protocol compression.
          * LSB of 2nd octet for protocol is always 1.
          */
-        if (((u_char *) nb->nb_dl.vp)[0] & 0x01) {
+        if (((uint8_t *) nb->nb_dl.vp)[0] & 0x01) {
             protocolsz = 1;
-            protocol = *(u_char *) nb->nb_dl.vp;
+            protocol = *(uint8_t *) nb->nb_dl.vp;
         } else {
             char *cp = (char *)nb->nb_dl.vp;
             protocolsz = 2;
-            protocol = ntohs(((u_short)cp[0] << 8) | cp[1]);
+            protocol = ntohs(((uint16_t)cp[0] << 8) | cp[1]);
         }
 
         /*

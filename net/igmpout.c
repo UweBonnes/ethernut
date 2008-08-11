@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/05/02 11:18:32  haraldkipp
  * IGMP support added. Incomplete.
  *
@@ -96,7 +99,7 @@
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutIgmpOutput(u_char type, u_long dest, NETBUF * nb)
+int NutIgmpOutput(uint8_t type, uint32_t dest, NETBUF * nb)
 {
     IGMP *igmp;
 

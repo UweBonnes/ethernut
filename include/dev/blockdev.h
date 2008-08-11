@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/04/07 12:57:48  haraldkipp
  * Added ioctl(NUTBLKDEV_MEDIAAVAIL).
  *
@@ -51,6 +54,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 #include <sys/file.h>
 
 /*!
@@ -77,14 +81,14 @@
 
 typedef struct _BLKPAR_SEEK {
     NUTFILE *par_nfp;
-    u_long par_blknum;
+    uint32_t par_blknum;
 } BLKPAR_SEEK;
 
 typedef struct _BLKPAR_INFO {
     NUTFILE *par_nfp;
-    u_long par_nblks;
-    u_long par_blksz;
-    u_char *par_blkbp;
+    uint32_t par_nblks;
+    uint32_t par_blksz;
+    uint8_t *par_blkbp;
 } BLKPAR_INFO;
 
 /*@}*/

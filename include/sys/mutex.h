@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:26  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2007/08/29 07:43:54  haraldkipp
  * Documentation updated and corrected.
  *
@@ -80,7 +83,7 @@ extern "C" {
     struct _MUTEX {
         HANDLE qhp;             /*!< \brief Queue to wait, if mutex is not free. */
         NUTTHREADINFO *thread;  /*!< \brief Thread who owns the mutex */
-        u_short count;          /*!< \brief Lock counter. */
+        uint16_t count;          /*!< \brief Lock counter. */
     };
 
     extern void NutMutexInit(MUTEX * mutex);

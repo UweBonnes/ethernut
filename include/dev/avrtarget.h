@@ -34,6 +34,7 @@
  */
 
 #include <cfg/progif.h>
+#include <stdint.h>
 
 /*!
  * \file avrtarget.h
@@ -42,6 +43,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/04/12 09:01:41  haraldkipp
  * New API allows to program external AVR devices.
  *
@@ -102,16 +106,16 @@ __BEGIN_DECLS
 extern int AvrTargetInit(void);
 extern void AvrTargetSelect(ureg_t act);
 extern void AvrTargetReset(ureg_t on);
-extern u_long AvrTargetCmd(u_long cmd);
-extern u_long AvrTargetSignature(void);
-extern u_long AvrTargetFusesRead(void);
-extern u_long AvrTargetFusesWriteSafe(u_long fuses);
+extern uint32_t AvrTargetCmd(uint32_t cmd);
+extern uint32_t AvrTargetSignature(void);
+extern uint32_t AvrTargetFusesRead(void);
+extern uint32_t AvrTargetFusesWriteSafe(uint32_t fuses);
 extern int AvrTargetProgEnable(void);
 extern int AvrTargetPollReady(u_int tmo);
 extern int AvrTargetChipErase(void);
-extern void AvrTargetPageLoad(u_long page, CONST u_char * data);
-extern int AvrTargetPageWrite(u_long page);
-extern int AvrTargetPageVerify(u_long page, CONST u_char * data);
+extern void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data);
+extern int AvrTargetPageWrite(uint32_t page);
+extern int AvrTargetPageVerify(uint32_t page, CONST uint8_t * data);
 
 __END_DECLS
 /* End of prototypes */

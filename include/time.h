@@ -35,6 +35,9 @@
  */
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2005/01/19 17:03:35  freckle
  * forget to check in other cygwin fixes
  *
@@ -126,7 +129,7 @@ time_t _mkgmtime(tm * timeptr);
  * Zero value to disable conversion.
  * Default is enabled.
  */
-extern u_char _daylight;
+extern int _daylight;
 
 /*!
  * \brief Defines your local timezone.

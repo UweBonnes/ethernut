@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:15  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/02/28 02:17:41  hwmaier
  * Implemented AvrCanTxIrqCtl function.
  *
@@ -96,7 +99,7 @@ static int AvrCanTxIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(CANGIE, ENIT);
+    int_fast8_t enabled = bit_is_set(CANGIE, ENIT);
 
     /* Disable interrupt. */
     cbi(CANGIE, ENIT);

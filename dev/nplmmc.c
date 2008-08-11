@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2008/07/14 13:13:45  haraldkipp
  * Added delays to make slow cards working.
  *
@@ -143,9 +146,9 @@ static int NplMmCard0Select(int on)
  *
  * \return Last byte received.
  */
-static u_char NplMmCard0Io(u_char val)
+static uint8_t NplMmCard0Io(uint8_t val)
 {
-    u_char rc;
+    uint8_t rc;
     u_int tmo = 255;
 
     while ((inb(NPL_SLR) & NPL_MMCREADY) == 0) {
@@ -256,7 +259,7 @@ static int NplMmcIfcInit(NUTDEVICE * dev)
 
 #if defined(NUT_PLL_NPLCLK1)
     {
-        u_long val;
+        uint32_t val;
 
         /* Query the PLL number routed to Clock B. */
         val = Cy2239xGetPll(NUT_PLL_NPLCLK1);

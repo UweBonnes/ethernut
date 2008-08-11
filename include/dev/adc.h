@@ -160,7 +160,7 @@ void ADCSetMode(adc_mode_t mode);
 // post: ADC conversion stopped and ADC prescalar
 //       set to desired choice
 
-u_char ADCSetPrescale(u_char prescalar);
+uint8_t ADCSetPrescale(uint8_t prescalar);
 
 
 // ADC_SetChannel
@@ -254,7 +254,7 @@ void ADCStopConversion(void);
 //       been read and placed in the variable pointed
 //       to by "value"
 
-u_char ADCRead(u_short *value);
+uint8_t ADCRead(uint16_t *value);
 
 // ADC_GetMode
 // returns current conversion mode

@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/01/26 15:34:49  going_nuts
  * adapted to new interrupt handling scheme for unix emulation
  * now uses Unix timer and runs without interrupts unless you emulate other hardware
@@ -52,11 +55,11 @@
 
 __BEGIN_DECLS
 
-extern u_char irq_processed;
+extern uint8_t irq_processed;
 extern pthread_cond_t irq_cv;
 extern sigset_t irq_signal;
 
-extern void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue );
+extern void NutUnixIrqEventPostAsync(uint8_t irq_nr, HANDLE * queue );
 extern void NutUnixRaiseInterrupt(int irq);
 
 __END_DECLS

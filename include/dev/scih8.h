@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -115,15 +118,15 @@ struct _UARTDCB {
      *
      * See the ATmega datasheet for further details.
      */
-    u_char dcb_baudSelect;
+    uint8_t dcb_baudSelect;
 
     /*! \brief Read timeout.
      */
-    u_long dcb_rtimeout;
+    uint32_t dcb_rtimeout;
 
     /*! \brief Write timeout.
      */
-    u_long dcb_wtimeout;
+    uint32_t dcb_wtimeout;
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
@@ -139,7 +142,7 @@ struct _UARTDCB {
 
     /*! \brief Mode flags.
      */
-    u_long dcb_modeflags;
+    uint32_t dcb_modeflags;
 };
 
 /*@}*/

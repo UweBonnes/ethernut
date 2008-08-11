@@ -102,10 +102,10 @@
 typedef struct _WINSIZE WINSIZE;
 
 struct _WINSIZE {
-    u_short ws_row;
-    u_short ws_col;
-    u_short ws_xpixel;
-    u_short ws_ypixel;
+    uint16_t ws_row;
+    uint16_t ws_col;
+    uint16_t ws_xpixel;
+    uint16_t ws_ypixel;
 };
 
 /*!
@@ -125,11 +125,11 @@ struct _TERMDCB {
 
     /*! \brief Write display character.
      */
-    void (*dss_write)(u_char);
+    void (*dss_write)(uint8_t);
 
     /*! \brief Write display command.
      */
-    void (*dss_command)(u_char, u_char);
+    void (*dss_command)(uint8_t, uint8_t);
 
     /*! \brief Clear display.
      */
@@ -137,7 +137,7 @@ struct _TERMDCB {
 
     /*! \brief Set display cursor.
      */
-    void (*dss_set_cursor)(u_char);
+    void (*dss_set_cursor)(uint8_t);
 
     /*! \brief Set display cursor home.
      */
@@ -153,46 +153,46 @@ struct _TERMDCB {
 
     /*! \brief Switch cursor on/off.
      */
-    void (*dss_cursor_mode)(u_char);
+    void (*dss_cursor_mode)(uint8_t);
 
     /*! \brief Mode flags.
      */
-    u_long dcb_modeflags;
+    uint32_t dcb_modeflags;
 
     /*! \brief Control sequence.
      */
-    u_char dcb_ctlseq;
+    uint8_t dcb_ctlseq;
 
     /*! \brief Number of rows.
      * Specifies the display height.
      */
-    u_char dcb_nrows;
+    uint8_t dcb_nrows;
 
     /*! \brief Total number of columns per row.
      * Used to calculate display memory addresses.
      */
-    u_char dcb_ncols;
+    uint8_t dcb_ncols;
 
     /*! \brief Number of visible columns.
      * Specifies the display width being updated.
      */
-    u_char dcb_vcols;
+    uint8_t dcb_vcols;
 
     /*! \brief Cursor row.
      */
-    u_char dcb_row;
+    uint8_t dcb_row;
 
     /*! \brief Cursor column.
      */
-    u_char dcb_col;
+    uint8_t dcb_col;
 
     /*! \brief Display shadow memory.
      */
-    u_char *dcb_smem;
+    uint8_t *dcb_smem;
 
     /*! \brief Display shadow memory.
      */
-    u_char *dcb_sptr;
+    uint8_t *dcb_sptr;
 };
 
 /*@}*/

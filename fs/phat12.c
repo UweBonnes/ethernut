@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/02/23 15:45:21  haraldkipp
  * PHAT file system now supports configurable number of sector buffers.
  * This dramatically increased write rates of no-name cards.
@@ -77,9 +80,9 @@
  * \param pos    Pointer to the variable that receives position within 
  *               the sector.
  */
-static void PhatTableLoc(PHATVOL * vol, u_long clust, int tabnum, u_long * sect, u_long * pos)
+static void PhatTableLoc(PHATVOL * vol, uint32_t clust, int tabnum, uint32_t * sect, uint32_t * pos)
 {
-    u_long tabpos = clust + (clust / 2);
+    uint32_t tabpos = clust + (clust / 2);
 
     *sect = vol->vol_tab_sect[tabnum] + tabpos / vol->vol_sectsz;
     *pos = tabpos % vol->vol_sectsz;
@@ -94,10 +97,10 @@ static void PhatTableLoc(PHATVOL * vol, u_long clust, int tabnum, u_long * sect,
  *
  * \return 0 on success or -1 on failure.
  */
-int Phat12GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
+int Phat12GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link)
 {
-    u_long sect;
-    u_long pos;
+    uint32_t sect;
+    uint32_t pos;
     int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
@@ -120,7 +123,7 @@ int Phat12GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
         }
         pos = 0;
     }
-    *link += (u_long)(vol->vol_buf[sbn].sect_data[pos]) << 8;
+    *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos]) << 8;
 
     /* Adjust the 12 bit position within the 16 bit result. */
     if (clust & 1) {
@@ -140,12 +143,12 @@ int Phat12GetClusterLink(NUTDEVICE * dev, u_long clust, u_long * link)
  *
  * \return 0 on success or -1 on failure.
  */
-int Phat12SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
+int Phat12SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
 {
     int tabnum;
-    u_long sect;
-    u_long pos;
-    u_long tval;
+    uint32_t sect;
+    uint32_t pos;
+    uint32_t tval;
     int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
@@ -161,12 +164,12 @@ int Phat12SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
          * old value and keep the upper or lower 4 bit part. */
         tval = vol->vol_buf[sbn].sect_data[pos];
         if (pos + 1 < vol->vol_sectsz) {
-            tval += (u_long)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
+            tval += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
         } else {
             if ((sbn = PhatSectorLoad(dev, sect + 1)) < 0) {
                 return -1;
             }
-            tval += (u_long)(vol->vol_buf[sbn].sect_data[0]) << 8;
+            tval += (uint32_t)(vol->vol_buf[sbn].sect_data[0]) << 8;
         }
 
         link &= PHAT12CMASK;
@@ -180,15 +183,15 @@ int Phat12SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
 
         /* Save the modified entry. Again maintain sector boundaries. */
         if (pos + 1 < vol->vol_sectsz) {
-            vol->vol_buf[sbn].sect_data[pos + 1] = (u_char) (tval >> 8);
+            vol->vol_buf[sbn].sect_data[pos + 1] = (uint8_t) (tval >> 8);
         } else {
-            vol->vol_buf[sbn].sect_data[0] = (u_char) (tval >> 8);
+            vol->vol_buf[sbn].sect_data[0] = (uint8_t) (tval >> 8);
             vol->vol_buf[sbn].sect_dirty = 1;
             if ((sbn = PhatSectorLoad(dev, sect)) < 0) {
                 return -1;
             }
         }
-        vol->vol_buf[sbn].sect_data[pos] = (u_char) tval;
+        vol->vol_buf[sbn].sect_data[pos] = (uint8_t) tval;
         vol->vol_buf[sbn].sect_dirty = 1;
     }
 
@@ -203,9 +206,9 @@ int Phat12SetClusterLink(NUTDEVICE * dev, u_long clust, u_long link)
  *
  * \return 0 on success or -1 on failure.
  */
-int Phat12ReleaseChain(NUTDEVICE * dev, u_long first)
+int Phat12ReleaseChain(NUTDEVICE * dev, uint32_t first)
 {
-    u_long next;
+    uint32_t next;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     while (first < (PHATEOC & PHAT12CMASK)) {

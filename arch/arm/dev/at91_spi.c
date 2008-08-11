@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:04  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/06/23 16:48:00  haraldkipp
  * Bug #1963841 fixed.
  *
@@ -335,7 +338,7 @@ int At91SpiInitChipSelects(u_int base, u_int mask)
  *             If the specified rate is above the maximum or below the
  *             minimum, the maximum or minimum value resp. will be set.
  */
-int At91SpiSetRate(u_int base, u_int cs, u_long rate)
+int At91SpiSetRate(u_int base, u_int cs, uint32_t rate)
 {
     int rc = 0;
     u_int divider;
@@ -373,9 +376,9 @@ int At91SpiSetRate(u_int base, u_int cs, u_long rate)
     return 0;
 }
 
-u_long At91SpiGetModeFlags(u_int base, u_int cs)
+uint32_t At91SpiGetModeFlags(u_int base, u_int cs)
 {
-    u_long rc = SPIMF_MFDETECT;
+    uint32_t rc = SPIMF_MFDETECT;
     u_int mv = inr(base + SPI_MR_OFF);
 
     if (mv & SPI_MSTR) {
@@ -418,7 +421,7 @@ u_long At91SpiGetModeFlags(u_int base, u_int cs)
  *              - SPIMF_CAPRISE  Data cpatured on rising edge.
  *              - SPIMF_KEEPCS   Chip select remains active after transfer.
  */
-int At91SpiSetModeFlags(u_int base, u_int cs, u_long mode)
+int At91SpiSetModeFlags(u_int base, u_int cs, uint32_t mode)
 {
     u_int mv;
 

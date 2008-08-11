@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:13  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2007/08/29 07:43:52  haraldkipp
  * Documentation updated and corrected.
  *
@@ -100,7 +103,7 @@ static USARTDCB dcb_uart;
  */
 static void GbaUartTxEmpty(RINGBUF * rbf)
 {
-    register u_char *cp = rbf->rbf_tail;
+    register uint8_t *cp = rbf->rbf_tail;
 
     /*
      * Process pending software flow controls first.
@@ -168,7 +171,7 @@ static void GbaUartTxEmpty(RINGBUF * rbf)
 static void GbaUartRxFull(RINGBUF * rbf)
 {
     register size_t cnt;
-    register u_char ch;
+    register uint8_t ch;
 
     /*
      * We read the received character as early as possible to avoid overflows
@@ -176,7 +179,7 @@ static void GbaUartRxFull(RINGBUF * rbf)
      * first, because reading the ATmega128 data register clears the status.
      */
     //TODO rx_errors |= inb(UCSRnA);
-    ch = (u_char) inw(REG_SIODATA8);
+    ch = (uint8_t) inw(REG_SIODATA8);
 
     /*
      * Handle software handshake. We have to do this before checking the
@@ -306,9 +309,9 @@ static void GbaUartDisable(void)
  *
  * \return The currently selected baudrate.
  */
-static u_long GbaUartGetSpeed(void)
+static uint32_t GbaUartGetSpeed(void)
 {
-    u_short sv = inw(REG_SIOCNT);
+    uint16_t sv = inw(REG_SIOCNT);
 
     if ((sv & SIO_BAUD_115200) == SIO_BAUD_115200) {
         return 115200UL;
@@ -332,9 +335,9 @@ static u_long GbaUartGetSpeed(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GbaUartSetSpeed(u_long rate)
+static int GbaUartSetSpeed(uint32_t rate)
 {
-    u_short sv;
+    uint16_t sv;
 
     GbaUartDisable();
     sv = inw(REG_SIOCNT) & ~SIO_BAUD_115200;
@@ -361,7 +364,7 @@ static int GbaUartSetSpeed(u_long rate)
  *
  * \return The number of data bits set.
  */
-static u_char GbaUartGetDataBits(void)
+static uint8_t GbaUartGetDataBits(void)
 {
     return 8;
 }
@@ -374,7 +377,7 @@ static u_char GbaUartGetDataBits(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GbaUartSetDataBits(u_char bits)
+static int GbaUartSetDataBits(uint8_t bits)
 {
     GbaUartDisable();
     GbaUartEnable();
@@ -396,7 +399,7 @@ static int GbaUartSetDataBits(u_char bits)
  *
  * \return Parity mode, either 0 (disabled), 1 (odd) or 2 (even).
  */
-static u_char GbaUartGetParity(void)
+static uint8_t GbaUartGetParity(void)
 {
     return 0;
 }
@@ -411,7 +414,7 @@ static u_char GbaUartGetParity(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GbaUartSetParity(u_char mode)
+static int GbaUartSetParity(uint8_t mode)
 {
     GbaUartDisable();
     GbaUartEnable();
@@ -433,7 +436,7 @@ static int GbaUartSetParity(u_char mode)
  *
  * \return The number of stop bits set, either 1 or 2.
  */
-static u_char GbaUartGetStopBits(void)
+static uint8_t GbaUartGetStopBits(void)
 {
     return 1;
 }
@@ -446,7 +449,7 @@ static u_char GbaUartGetStopBits(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GbaUartSetStopBits(u_char bits)
+static int GbaUartSetStopBits(uint8_t bits)
 {
     GbaUartDisable();
     GbaUartEnable();
@@ -465,9 +468,9 @@ static int GbaUartSetStopBits(u_char bits)
  *
  * \return Status flags.
  */
-static u_long GbaUartGetStatus(void)
+static uint32_t GbaUartGetStatus(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     /*
      * Set receiver error flags.
@@ -506,7 +509,7 @@ static u_long GbaUartGetStatus(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GbaUartSetStatus(u_long flags)
+static int GbaUartSetStatus(uint32_t flags)
 {
     /*
      * Process software handshake control.
@@ -556,7 +559,7 @@ static int GbaUartSetStatus(u_long flags)
  * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER, 
  *         \ref UART_NCLOCK and \ref UART_HIGHSPEED.
  */
-static u_char GbaUartGetClockMode(void)
+static uint8_t GbaUartGetClockMode(void)
 {
     return 0;
 }
@@ -572,7 +575,7 @@ static u_char GbaUartGetClockMode(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GbaUartSetClockMode(u_char mode)
+static int GbaUartSetClockMode(uint8_t mode)
 {
     /*
      * Verify the result.
@@ -591,9 +594,9 @@ static int GbaUartSetClockMode(u_char mode)
  *
  * \return See UsartIOCtl().
  */
-static u_long GbaUartGetFlowControl(void)
+static uint32_t GbaUartGetFlowControl(void)
 {
-    u_long rc = 0;
+    uint32_t rc = 0;
 
     if (flow_control) {
         rc |= USART_MF_XONXOFF;
@@ -614,7 +617,7 @@ static u_long GbaUartGetFlowControl(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int GbaUartSetFlowControl(u_long flags)
+static int GbaUartSetFlowControl(uint32_t flags)
 {
     /*
      * Set software handshake mode.
@@ -650,7 +653,7 @@ static int GbaUartSetFlowControl(u_long flags)
 static void GbaUartTxStart(void)
 {
     RINGBUF *rbf = &dcb_uart.dcb_tx_rbf;
-    register u_char *cp = rbf->rbf_tail;
+    register uint8_t *cp = rbf->rbf_tail;
 
     NutEnterCritical();
     if(tx_stop) {

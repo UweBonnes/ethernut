@@ -51,10 +51,12 @@
 #ifndef _SJA1000_H_
 #define _SJA1000_H_
 
+#include <stdint.h>
+
 //Register and bit definitions for the SJA1000
 
 // address and bit definitions for the Mode & Control Register
-#define SJA1000_MODECTRL (*(volatile u_char*) (sja_base+0))
+#define SJA1000_MODECTRL (*(volatile uint8_t*) (sja_base+0))
 #define RM_RR_Bit   0x01        // reset mode (request) bit
 
 #define LOM_Bit     0x02        // listen only mode bit
@@ -63,7 +65,7 @@
 #define SM_Bit      0x10        // enter sleep mode bit
 
 // address and bit definitions for the Interrupt Enable & Control Register
-#define SJA1000_IEN (*(volatile u_char*) (sja_base+4))      // PeliCAN mode
+#define SJA1000_IEN (*(volatile uint8_t*) (sja_base+4))      // PeliCAN mode
 #define RIE_Bit     0x01        // receive interrupt enable bit
 #define TIE_Bit     0x02        // transmit interrupt enable bit
 #define EIE_Bit     0x04        // error warning interrupt enable bit
@@ -74,7 +76,7 @@
 #define BEIE_Bit    0x80        // bus error interrupt enable bit
 
 // address and bit definitions for the Command Register
-#define SJA1000_CMD (*(volatile u_char*) (sja_base+1))
+#define SJA1000_CMD (*(volatile uint8_t*) (sja_base+1))
 #define TR_Bit      0x01        // transmission request bit
 #define AT_Bit      0x02        // abort transmission bit
 #define RRB_Bit     0x04        // release receive buffer bit
@@ -82,7 +84,7 @@
 #define SRR_Bit     0x10        // self reception request bit
 
 // address and bit definitions for the Status Register
-#define SJA1000_STATUS (*(volatile u_char*) (sja_base+2))
+#define SJA1000_STATUS (*(volatile uint8_t*) (sja_base+2))
 #define RBS_Bit     0x01        // receive buffer status bit
 #define DOS_Bit     0x02        // data overrun status bit
 #define TBS_Bit     0x04        // transmit buffer status bit
@@ -93,7 +95,7 @@
 #define BS_Bit      0x80        // bus status bit
 
 // address and bit definitions for the Interrupt Register
-#define SJA1000_INT (*(volatile u_char*) (sja_base+3))
+#define SJA1000_INT (*(volatile uint8_t*) (sja_base+3))
 #define RI_Bit      0x01        // receive interrupt bit
 #define TI_Bit      0x02        // transmit interrupt bit
 #define EI_Bit      0x04        // error warning interrupt bit
@@ -105,14 +107,14 @@
 #define BEI_Bit     0x80        // bus error interrupt bit
 
 // address and bit definitions for the Bus Timing Registers
-#define SJA1000_BT0 (*(volatile u_char*) (sja_base+6))
-#define SJA1000_BT1 (*(volatile u_char*) (sja_base+7))
+#define SJA1000_BT0 (*(volatile uint8_t*) (sja_base+6))
+#define SJA1000_BT1 (*(volatile uint8_t*) (sja_base+7))
 #define SAM_Bit     0x80        // sample mode bit
                                 //   1 == the bus is sampled 3 times
                                 //   0 == the bus is sampled once */
 
 // address and bit definitions for the Output Control Register
-#define SJA1000_OUTCTRL (*(volatile u_char*) (sja_base+8))
+#define SJA1000_OUTCTRL (*(volatile uint8_t*) (sja_base+8))
 // OCMODE1, OCMODE0
 #define BiPhaseMode 0x00        // bi-phase output mode
 #define NormalMode  0x02        // normal output mode
@@ -131,74 +133,74 @@
 #define Tx0PshPull  0x18        // configured as push/pull
 
 // address definitions of Acceptance Code & Mask Registers
-#define SJA1000_AC0 (*(volatile u_char*) (sja_base+16))
-#define SJA1000_AC1 (*(volatile u_char*) (sja_base+17))
-#define SJA1000_AC2 (*(volatile u_char*) (sja_base+18))
-#define SJA1000_AC3 (*(volatile u_char*) (sja_base+19))
-#define SJA1000_AM0 (*(volatile u_char*) (sja_base+20))
-#define SJA1000_AM1 (*(volatile u_char*) (sja_base+21))
-#define SJA1000_AM2 (*(volatile u_char*) (sja_base+22))
-#define SJA1000_AM3 (*(volatile u_char*) (sja_base+23))
+#define SJA1000_AC0 (*(volatile uint8_t*) (sja_base+16))
+#define SJA1000_AC1 (*(volatile uint8_t*) (sja_base+17))
+#define SJA1000_AC2 (*(volatile uint8_t*) (sja_base+18))
+#define SJA1000_AC3 (*(volatile uint8_t*) (sja_base+19))
+#define SJA1000_AM0 (*(volatile uint8_t*) (sja_base+20))
+#define SJA1000_AM1 (*(volatile uint8_t*) (sja_base+21))
+#define SJA1000_AM2 (*(volatile uint8_t*) (sja_base+22))
+#define SJA1000_AM3 (*(volatile uint8_t*) (sja_base+23))
 
 // address definitions of the Rx-Buffer
-#define SJA1000_RxFrameInfo (*(volatile u_char*) (sja_base+16))
-#define SJA1000_Rx1   (*(volatile u_char*) (sja_base+17))
-#define SJA1000_Rx2   (*(volatile u_char*) (sja_base+18))
-#define SJA1000_Rx3   (*(volatile u_char*) (sja_base+19))
-#define SJA1000_Rx4   (*(volatile u_char*) (sja_base+20))
-#define SJA1000_Rx5   (*(volatile u_char*) (sja_base+21))
-#define SJA1000_Rx6   (*(volatile u_char*) (sja_base+22))
-#define SJA1000_Rx7   (*(volatile u_char*) (sja_base+23))
-#define SJA1000_Rx8   (*(volatile u_char*) (sja_base+24))
-#define SJA1000_Rx9   (*(volatile u_char*) (sja_base+25))
-#define SJA1000_Rx10  (*(volatile u_char*) (sja_base+26))
-#define SJA1000_Rx11  (*(volatile u_char*) (sja_base+27))
-#define SJA1000_Rx12  (*(volatile u_char*) (sja_base+28))
+#define SJA1000_RxFrameInfo (*(volatile uint8_t*) (sja_base+16))
+#define SJA1000_Rx1   (*(volatile uint8_t*) (sja_base+17))
+#define SJA1000_Rx2   (*(volatile uint8_t*) (sja_base+18))
+#define SJA1000_Rx3   (*(volatile uint8_t*) (sja_base+19))
+#define SJA1000_Rx4   (*(volatile uint8_t*) (sja_base+20))
+#define SJA1000_Rx5   (*(volatile uint8_t*) (sja_base+21))
+#define SJA1000_Rx6   (*(volatile uint8_t*) (sja_base+22))
+#define SJA1000_Rx7   (*(volatile uint8_t*) (sja_base+23))
+#define SJA1000_Rx8   (*(volatile uint8_t*) (sja_base+24))
+#define SJA1000_Rx9   (*(volatile uint8_t*) (sja_base+25))
+#define SJA1000_Rx10  (*(volatile uint8_t*) (sja_base+26))
+#define SJA1000_Rx11  (*(volatile uint8_t*) (sja_base+27))
+#define SJA1000_Rx12  (*(volatile uint8_t*) (sja_base+28))
 
 // address definitions of the Tx-Buffer
 /* write only addresses */
-#define TestReg (*(volatile u_char*) (sja_base+9))
+#define TestReg (*(volatile uint8_t*) (sja_base+9))
 
-#define SJA1000_TxFrameInfo (*(volatile u_char*) (sja_base+16))
-#define SJA1000_Tx1   (*(volatile u_char*) (sja_base+17))
-#define SJA1000_Tx2   (*(volatile u_char*) (sja_base+18))
-#define SJA1000_Tx3   (*(volatile u_char*) (sja_base+19))
-#define SJA1000_Tx4   (*(volatile u_char*) (sja_base+20))
-#define SJA1000_Tx5   (*(volatile u_char*) (sja_base+21))
-#define SJA1000_Tx6   (*(volatile u_char*) (sja_base+22))
-#define SJA1000_Tx7   (*(volatile u_char*) (sja_base+23))
-#define SJA1000_Tx8   (*(volatile u_char*) (sja_base+24))
-#define SJA1000_Tx9   (*(volatile u_char*) (sja_base+25))
-#define SJA1000_Tx10  (*(volatile u_char*) (sja_base+26))
-#define SJA1000_Tx11  (*(volatile u_char*) (sja_base+27))
-#define SJA1000_Tx12  (*(volatile u_char*) (sja_base+28))
+#define SJA1000_TxFrameInfo (*(volatile uint8_t*) (sja_base+16))
+#define SJA1000_Tx1   (*(volatile uint8_t*) (sja_base+17))
+#define SJA1000_Tx2   (*(volatile uint8_t*) (sja_base+18))
+#define SJA1000_Tx3   (*(volatile uint8_t*) (sja_base+19))
+#define SJA1000_Tx4   (*(volatile uint8_t*) (sja_base+20))
+#define SJA1000_Tx5   (*(volatile uint8_t*) (sja_base+21))
+#define SJA1000_Tx6   (*(volatile uint8_t*) (sja_base+22))
+#define SJA1000_Tx7   (*(volatile uint8_t*) (sja_base+23))
+#define SJA1000_Tx8   (*(volatile uint8_t*) (sja_base+24))
+#define SJA1000_Tx9   (*(volatile uint8_t*) (sja_base+25))
+#define SJA1000_Tx10  (*(volatile uint8_t*) (sja_base+26))
+#define SJA1000_Tx11  (*(volatile uint8_t*) (sja_base+27))
+#define SJA1000_Tx12  (*(volatile uint8_t*) (sja_base+28))
 
 /* read only addresses */
-#define SJA1000_TxFrameInfoRd (*(volatile u_char*) (sja_base+96))
-#define SJA1000_TxRd1  (*(volatile u_char*) (sja_base+97))
-#define SJA1000_TxRd2  (*(volatile u_char*) (sja_base+98))
-#define SJA1000_TxRd3  (*(volatile u_char*) (sja_base+99))
-#define SJA1000_TxRd4  (*(volatile u_char*) (sja_base+100))
-#define SJA1000_TxRd5  (*(volatile u_char*) (sja_base+101))
-#define SJA1000_TxRd6  (*(volatile u_char*) (sja_base+102))
-#define SJA1000_TxRd7  (*(volatile u_char*) (sja_base+103))
-#define SJA1000_TxRd8  (*(volatile u_char*) (sja_base+104))
-#define SJA1000_TxRd9  (*(volatile u_char*) (sja_base+105))
-#define SJA1000_TxRd10 (*(volatile u_char*) (sja_base+106))
-#define SJA1000_TxRd11 (*(volatile u_char*) (sja_base+107))
-#define SJA1000_TxRd12 (*(volatile u_char*) (sja_base+108))
+#define SJA1000_TxFrameInfoRd (*(volatile uint8_t*) (sja_base+96))
+#define SJA1000_TxRd1  (*(volatile uint8_t*) (sja_base+97))
+#define SJA1000_TxRd2  (*(volatile uint8_t*) (sja_base+98))
+#define SJA1000_TxRd3  (*(volatile uint8_t*) (sja_base+99))
+#define SJA1000_TxRd4  (*(volatile uint8_t*) (sja_base+100))
+#define SJA1000_TxRd5  (*(volatile uint8_t*) (sja_base+101))
+#define SJA1000_TxRd6  (*(volatile uint8_t*) (sja_base+102))
+#define SJA1000_TxRd7  (*(volatile uint8_t*) (sja_base+103))
+#define SJA1000_TxRd8  (*(volatile uint8_t*) (sja_base+104))
+#define SJA1000_TxRd9  (*(volatile uint8_t*) (sja_base+105))
+#define SJA1000_TxRd10 (*(volatile uint8_t*) (sja_base+106))
+#define SJA1000_TxRd11 (*(volatile uint8_t*) (sja_base+107))
+#define SJA1000_TxRd12 (*(volatile uint8_t*) (sja_base+108))
 
 // address definitions of Other Registers
-#define SJA1000_ArbLostCap    (*(volatile u_char*) (sja_base+11))
-#define SJA1000_ErrCodeCap    (*(volatile u_char*) (sja_base+12))
-#define SJA1000_ErrWarnLimit  (*(volatile u_char*) (sja_base+13))
-#define SJA1000_RxErrCount    (*(volatile u_char*) (sja_base+14))
-#define SJA1000_TxErrCount    (*(volatile u_char*) (sja_base+15))
-#define SJA1000_RxMsgCount    (*(volatile u_char*) (sja_base+29))
-#define SJA1000_RxBufStartAdr (*(volatile u_char*) (sja_base+30))
+#define SJA1000_ArbLostCap    (*(volatile uint8_t*) (sja_base+11))
+#define SJA1000_ErrCodeCap    (*(volatile uint8_t*) (sja_base+12))
+#define SJA1000_ErrWarnLimit  (*(volatile uint8_t*) (sja_base+13))
+#define SJA1000_RxErrCount    (*(volatile uint8_t*) (sja_base+14))
+#define SJA1000_TxErrCount    (*(volatile uint8_t*) (sja_base+15))
+#define SJA1000_RxMsgCount    (*(volatile uint8_t*) (sja_base+29))
+#define SJA1000_RxBufStartAdr (*(volatile uint8_t*) (sja_base+30))
 
 // address and bit definitions for the Clock Divider Register
-#define SJA1000_CLK_DIV (*(volatile u_char*) (sja_base+31))
+#define SJA1000_CLK_DIV (*(volatile uint8_t*) (sja_base+31))
 #define DivBy1       0x07       // CLKOUT = oscillator frequency
 #define DivBy2       0x00       // CLKOUT = 1/2 oscillator frequency
 #define ClkOff_Bit   0x08       // clock off bit, control of the CLK OUT pin

@@ -49,6 +49,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:30  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -90,22 +93,22 @@
  */
 /*@{*/
 
-extern u_long new_magic;
+extern uint32_t new_magic;
 
 /*
  * Received Configure-Request.
  */
-static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     int rc = XCP_CONFACK;
     XCPOPT *xcpo;
-    u_short xcpl;
+    uint16_t xcpl;
     XCPOPT *xcpr;
-    u_short xcps;
-    u_short len = 0;
-    u_short sval;
-    u_char i;
+    uint16_t xcps;
+    uint16_t len = 0;
+    uint16_t sval;
+    uint_fast8_t i;
 
     switch (dcb->dcb_lcp_state) {
     case PPPS_CLOSED:
@@ -276,11 +279,11 @@ static void LcpRxConfReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
  * Configure-Ack received.
  * Never called in INITIAL or STARTING phase.
  */
-static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
-    u_short xcpl;
+    uint16_t xcpl;
 
     /*
      * Check if this is a valid ack.
@@ -378,12 +381,12 @@ static void LcpRxConfAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Configure-Nak or Configure-Reject received.
  */
-static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char rejected)
+static void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
     XCPOPT *xcpo;
-    u_short xcpl;
+    uint16_t xcpl;
 
     /*
      * Ignore, if we are not expecting this id.
@@ -442,7 +445,7 @@ static void LcpRxConfNakRej(NUTDEVICE * dev, u_char id, NETBUF * nb, u_char reje
 /*
  * Terminate-Request received.
  */
-static void LcpRxTermReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void LcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -465,7 +468,7 @@ static void LcpRxTermReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Terminate-Ack received.
  */
-static void LcpRxTermAck(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void LcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -524,7 +527,7 @@ void LcpRxProtRej(NUTDEVICE * dev)
 /*
  * Received a Code-Reject.
  */
-static void LcpRxCodeRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -537,7 +540,7 @@ static void LcpRxCodeRej(NUTDEVICE * dev, u_char id, NETBUF * nb)
 /*
  * Received an Echo-Request.
  */
-static void LcpRxEchoReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
+static void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -545,7 +548,7 @@ static void LcpRxEchoReq(NUTDEVICE * dev, u_char id, NETBUF * nb)
         NutNetBufFree(nb);
     } else {
         /* Use local magic number. */
-        memcpy(nb->nb_ap.vp, &dcb->dcb_loc_magic, sizeof(u_long));
+        memcpy(nb->nb_ap.vp, &dcb->dcb_loc_magic, sizeof(uint32_t));
         NutLcpOutput(dev, LCP_ERP, id, nb);
     }
 }
@@ -570,7 +573,7 @@ void NutLcpInput(NUTDEVICE * dev, NETBUF * nb)
 {
     XCPHDR *lcp;
     PPPDCB *dcb = dev->dev_dcb;
-    u_short len;
+    uint16_t len;
 
     /*
      * Discard packets with illegal lengths.

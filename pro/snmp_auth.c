@@ -46,9 +46,9 @@
  * \param slen    Length of the community string.
  * \param version Message version
  */
-CONST u_char *SnmpAuthParse(CONST u_char * data, size_t * length, u_char * sidp, size_t * slen, long *version)
+CONST uint8_t *SnmpAuthParse(CONST uint8_t * data, size_t * length, uint8_t * sidp, size_t * slen, long *version)
 {
-    u_char type = ASN_SEQUENCE | ASN_CONSTRUCTOR;
+    uint8_t type = ASN_SEQUENCE | ASN_CONSTRUCTOR;
 
     /* Check header type. */
     if ((data = AsnSequenceParse(data, length, type)) == NULL) {
@@ -73,7 +73,7 @@ CONST u_char *SnmpAuthParse(CONST u_char * data, size_t * length, u_char * sidp,
 /*!
  * \brief Build header of community string based message.
  */
-u_char *SnmpAuthBuild(SNMP_SESSION * session, u_char * data, size_t * length, size_t messagelen)
+uint8_t *SnmpAuthBuild(SNMP_SESSION * session, uint8_t * data, size_t * length, size_t messagelen)
 {
     data = AsnSequenceBuild(data, length, ASN_SEQUENCE | ASN_CONSTRUCTOR, messagelen + session->sess_id_len + 5);
     if (data == NULL) {

@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.12  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.11  2008/04/02 09:39:29  haraldkipp
  * Fixed another PHAT file pointer bug.
  *
@@ -135,11 +138,11 @@
  * \return Number of the free cluster found. If an error occured,  the
  *         returned value will be lower than the first cluster searched.
  */
-static u_long SearchFreeCluster(NUTDEVICE * dev, u_long first, u_long last)
+static uint32_t SearchFreeCluster(NUTDEVICE * dev, uint32_t first, uint32_t last)
 {
     int rc = -1;
-    u_long clust;
-    u_long link = 1;
+    uint32_t clust;
+    uint32_t link = 1;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     if (vol->vol_type == 32) {
@@ -176,9 +179,9 @@ static u_long SearchFreeCluster(NUTDEVICE * dev, u_long first, u_long last)
  * \return Number of the allocated cluster, which is not lower than 2.
  *         Any value lower than 2 indicates an error.
  */
-static u_long AllocCluster(NUTDEVICE * dev)
+static uint32_t AllocCluster(NUTDEVICE * dev)
 {
-    u_long clust;
+    uint32_t clust;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     /*
@@ -207,9 +210,9 @@ static u_long AllocCluster(NUTDEVICE * dev)
  * \return Number of the allocated cluster, which is not lower than 2.
  *         Any value lower than 2 indicates an error.
  */
-u_long AllocFirstCluster(NUTFILE * nfp)
+uint32_t AllocFirstCluster(NUTFILE * nfp)
 {
-    u_long clust;
+    uint32_t clust;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
     PHATFILE *fcb = nfp->nf_fcb;
@@ -219,8 +222,8 @@ u_long AllocFirstCluster(NUTFILE * nfp)
     }
 
     /* Set the pointer to the first cluster in out directory entry. */
-    fcb->f_dirent.dent_clusthi = (u_short) (clust >> 16);
-    fcb->f_dirent.dent_clust = (u_short) clust;
+    fcb->f_dirent.dent_clusthi = (uint16_t) (clust >> 16);
+    fcb->f_dirent.dent_clust = (uint16_t) clust;
     fcb->f_de_dirty = 1;
 
     /* The first cluster entry will be set to EOC. */
@@ -248,9 +251,9 @@ u_long AllocFirstCluster(NUTFILE * nfp)
  * \return Number of the allocated cluster, which is not lower than 2.
  *         Any value lower than 2 indicates an error.
  */
-static u_long AllocNextCluster(NUTFILE * nfp)
+static uint32_t AllocNextCluster(NUTFILE * nfp)
 {
-    u_long clust;
+    uint32_t clust;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATFILE *fcb = nfp->nf_fcb;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -526,9 +529,9 @@ int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
 {
     int rc;
     int step;
-    u_long clust;
+    uint32_t clust;
     int sbn;
-    u_char *buf = (u_char *) buffer;
+    uint8_t *buf = (uint8_t *) buffer;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATFILE *fcb = nfp->nf_fcb;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
@@ -553,9 +556,9 @@ int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
      */
     if ((fcb->f_dirent.dent_attr & PHAT_FATTR_DIR) == 0) {
         /* Bytes per cluster. */
-        u_long num = vol->vol_sectsz * vol->vol_clustsz;
+        uint32_t num = vol->vol_sectsz * vol->vol_clustsz;
         /* Number of clusters already used. */
-        u_long cur = (fcb->f_dirent.dent_fsize + num - 1) / num;
+        uint32_t cur = (fcb->f_dirent.dent_fsize + num - 1) / num;
 
         /* Number of clusters used after writing. */
         num = (fcb->f_pos + len + num - 1) / num;
@@ -712,7 +715,7 @@ int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
     int rc;
     int step;
     int sbn;
-    u_char *buf = (u_char *) buffer;
+    uint8_t *buf = (uint8_t *) buffer;
     NUTDEVICE *dev = nfp->nf_dev;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
     PHATFILE *fcb = nfp->nf_fcb;
@@ -745,7 +748,7 @@ int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
                 /* Did we reach the last sector of this cluster? */
                 if (fcb->f_clust_pos + 1 >= vol->vol_clustsz) {
                     /* Move to the next cluster. */
-                    u_long clust;
+                    uint32_t clust;
 
                     if (vol->vol_type == 32) {
                         if (Phat32GetClusterLink(dev, fcb->f_clust, &clust)) {

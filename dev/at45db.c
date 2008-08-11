@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/08/06 12:51:09  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -232,11 +235,11 @@
  * \brief Known device type entry.
  */
 typedef struct _AT45_DEVTAB {
-    u_long devt_pages;
+    uint32_t devt_pages;
     u_int devt_pagsiz;
     u_int devt_offs;
-    u_char devt_srmsk;
-    u_char devt_srval;
+    uint8_t devt_srmsk;
+    uint8_t devt_srval;
 } AT45_DEVTAB;
 
 /*!
@@ -246,7 +249,7 @@ typedef struct _AT45DB_DCB {
     AT45_DEVTAB *dcb_devt;
     u_int dcb_spibas;
     u_int dcb_spipcs;
-    u_char dcb_cmdbuf[MAX_AT45_CMDLEN];
+    uint8_t dcb_cmdbuf[MAX_AT45_CMDLEN];
 } AT45DB_DCB;
 
 /*!
@@ -269,7 +272,7 @@ AT45_DEVTAB at45_devt[] = {
 static AT45DB_DCB dcbtab[MAX_AT45_DEVICES];
 
 /* Number of active chips. */
-static int dcbnum;
+static uint_least8_t dcbnum;
 
 /* Chip used for parameter storage. */
 static int dd_param = -1;
@@ -285,9 +288,9 @@ static int dd_param = -1;
  * \param rdata   Receive data buffer.
  * \param datalen Data length.
  */
-int At45dbSendCmd(int dd, u_char op, u_long parm, int len, CONST void *tdata, void *rdata, int datalen)
+int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen)
 {
-    u_char *cb = dcbtab[dd].dcb_cmdbuf;
+    uint8_t *cb = dcbtab[dd].dcb_cmdbuf;
 
     if (len > MAX_AT45_CMDLEN) {
         return -1;
@@ -295,19 +298,19 @@ int At45dbSendCmd(int dd, u_char op, u_long parm, int len, CONST void *tdata, vo
     memset(cb, 0, len);
     cb[0] = op;
     if (parm) {
-        cb[1] = (u_char) (parm >> 16);
-        cb[2] = (u_char) (parm >> 8);
-        cb[3] = (u_char) parm;
+        cb[1] = (uint8_t) (parm >> 16);
+        cb[2] = (uint8_t) (parm >> 8);
+        cb[3] = (uint8_t) parm;
     }
     return At91SpiTransfer2(dcbtab[dd].dcb_spibas, dcbtab[dd].dcb_spipcs, cb, cb, len, tdata, rdata, datalen);
 }
 
-u_char At45dbGetStatus(int dd)
+uint8_t At45dbGetStatus(int dd)
 {
-    u_char buf[2] = { DFCMD_READ_STATUS, 0xFF };
+    uint8_t buf[2] = { DFCMD_READ_STATUS, 0xFF };
 
     if (At91SpiTransfer2(dcbtab[dd].dcb_spibas, dcbtab[dd].dcb_spipcs, buf, buf, 2, NULL, NULL, 0)) {
-        return (u_char) - 1;
+        return (uint8_t) - 1;
     }
     return buf[1];
 }
@@ -317,9 +320,9 @@ u_char At45dbGetStatus(int dd)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbWaitReady(int dd, u_long tmo, int poll)
+int At45dbWaitReady(int dd, uint32_t tmo, int poll)
 {
-    u_char sr;
+    uint8_t sr;
 
     while (((sr = At45dbGetStatus(dd)) & 0x80) == 0) {
         if (!poll) {
@@ -344,8 +347,8 @@ int At45dbWaitReady(int dd, u_long tmo, int poll)
 int At45dbInit(u_int spibas, u_int spipcs)
 {
     int dd = -1;
-    u_char sr;
-    int i;
+    uint8_t sr;
+    uint_fast8_t i;
 
     for (i = 0; i < dcbnum; i++) {
         if (dcbtab[i].dcb_spibas == spibas && dcbtab[i].dcb_spipcs == spipcs) {
@@ -383,7 +386,7 @@ int At45dbInit(u_int spibas, u_int spipcs)
 /*!
  * \brief Erase sector at the specified offset.
  */
-int At45dbPageErase(int dd, u_long pgn)
+int At45dbPageErase(int dd, uint32_t pgn)
 {
     pgn <<= dcbtab[dd].dcb_devt->devt_offs;
     return At45dbSendCmd(dd, DFCMD_PAGE_ERASE, pgn, 4, NULL, NULL, 0);
@@ -407,7 +410,7 @@ int At45dbChipErase(void)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbPageRead(int dd, u_long pgn, void *data, u_int len)
+int At45dbPageRead(int dd, uint32_t pgn, void *data, u_int len)
 {
     pgn <<= dcbtab[dd].dcb_devt->devt_offs;
     return At45dbSendCmd(dd, DFCMD_CONT_READ, pgn, 8, data, data, len);
@@ -425,7 +428,7 @@ int At45dbPageRead(int dd, u_long pgn, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbPageWrite(int dd, u_long pgn, CONST void *data, u_int len)
+int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, u_int len)
 {
     int rc = -1;
     void *rp;
@@ -444,7 +447,7 @@ int At45dbPageWrite(int dd, u_long pgn, CONST void *data, u_int len)
     return rc;
 }
 
-u_long At45dbPages(int dd)
+uint32_t At45dbPages(int dd)
 {
     return dcbtab[dd].dcb_devt->devt_pages;
 }
@@ -454,7 +457,7 @@ u_int At45dbPageSize(int dd)
     return dcbtab[dd].dcb_devt->devt_pagsiz;
 }
 
-u_long At45dbParamPage(void)
+uint32_t At45dbParamPage(void)
 {
 #ifdef AT45_CONF_PAGE
     return AT45_CONF_PAGE;
@@ -501,9 +504,9 @@ int At45dbParamSize(void)
 int At45dbParamRead(u_int pos, void *data, u_int len)
 {
     int rc = -1;
-    u_char *buff;
+    uint8_t *buff;
     int csize = At45dbParamSize();
-    u_long cpage = At45dbParamPage();
+    uint32_t cpage = At45dbParamPage();
 
     /* Load the complete configuration area. */
     if (csize > len && (buff = malloc(csize)) != NULL) {
@@ -527,9 +530,9 @@ int At45dbParamRead(u_int pos, void *data, u_int len)
 int At45dbParamWrite(u_int pos, CONST void *data, u_int len)
 {
     int rc = -1;
-    u_char *buff;
+    uint8_t *buff;
     int csize = At45dbParamSize();
-    u_long cpage = At45dbParamPage();
+    uint32_t cpage = At45dbParamPage();
 
     /* Load the complete configuration area. */
     if (csize > len && (buff = malloc(csize)) != NULL) {

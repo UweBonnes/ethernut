@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.23  2008/08/11 07:00:34  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.22  2006/08/01 07:38:41  haraldkipp
  * DHCP client failed because of alignment errors. Removed the dispensable
  * 'packed' attribute from the dyn_cfg structure.
@@ -205,7 +208,7 @@
 #define NUTDEBUG
 #include <stdio.h>
 #define __tcp_trs stdout
-static u_char __tcp_trf = 1;
+static uint_fast8_t __tcp_trf = 1;
 #endif
 
 /*!
@@ -519,21 +522,21 @@ typedef struct __attribute__ ((packed)) bootp BOOTP;
  * \brief BOOTP message structure.
  */
 struct __attribute__ ((packed)) bootp {
-    u_char bp_op;               /*!< \brief Packet opcode type: 1=request, 2=reply */
-    u_char bp_htype;            /*!< \brief Hardware address type: 1=Ethernet */
-    u_char bp_hlen;             /*!< \brief Hardware address length: 6 for Ethernet */
-    u_char bp_hops;             /*!< \brief Gateway hops */
-    u_long bp_xid;              /*!< \brief Transaction ID */
-    u_short bp_secs;            /*!< \brief Seconds since boot began */
-    u_short bp_flags;           /*!< \brief RFC1532 broadcast, etc. */
-    u_long bp_ciaddr;           /*!< \brief Client IP address */
-    u_long bp_yiaddr;           /*!< \brief 'Your' IP address */
-    u_long bp_siaddr;           /*!< \brief Server IP address */
-    u_long bp_giaddr;           /*!< \brief Gateway IP address */
-    u_char bp_chaddr[16];       /*!< \brief Client hardware address */
+    uint8_t bp_op;              /*!< \brief Packet opcode type: 1=request, 2=reply */
+    uint8_t bp_htype;           /*!< \brief Hardware address type: 1=Ethernet */
+    uint8_t bp_hlen;            /*!< \brief Hardware address length: 6 for Ethernet */
+    uint8_t bp_hops;            /*!< \brief Gateway hops */
+    uint32_t bp_xid;              /*!< \brief Transaction ID */
+    uint16_t bp_secs;            /*!< \brief Seconds since boot began */
+    uint16_t bp_flags;           /*!< \brief RFC1532 broadcast, etc. */
+    uint32_t bp_ciaddr;           /*!< \brief Client IP address */
+    uint32_t bp_yiaddr;           /*!< \brief 'Your' IP address */
+    uint32_t bp_siaddr;           /*!< \brief Server IP address */
+    uint32_t bp_giaddr;           /*!< \brief Gateway IP address */
+    uint8_t bp_chaddr[16];      /*!< \brief Client hardware address */
     char bp_sname[64];          /*!< \brief Server host name */
     char bp_file[128];          /*!< \brief Boot file name */
-    u_char bp_options[312];     /*!< \brief Vendor-specific area */
+    uint8_t bp_options[312];    /*!< \brief Vendor-specific area */
 };
 
 /*!
@@ -545,19 +548,19 @@ typedef struct dyn_cfg DYNCFG;
  * \brief Dynamic configuration structure.
  */
 struct dyn_cfg {
-    u_char dyn_msgtyp;          /*!< \brief DHCP message type */
-    u_long dyn_yiaddr;          /*!< \brief Offered IP address. */
-    u_long dyn_netmask;         /*!< \brief Local IP netmask. */
-    u_long dyn_broadcast;       /*!< \brief Local IP broadcast address. */
-    u_long dyn_gateway;         /*!< \brief Default gate IP address. */
-    u_long dyn_pdns;            /*!< \brief Primary DNS IP address. */
-    u_long dyn_sdns;            /*!< \brief Secondary DNS IP address. */
-    u_long dyn_sid;             /*!< \brief Server identifier. */
-    u_long dyn_renewalTime;     /*!< \brief Renewal time in seconds. */
-    u_long dyn_rebindTime;      /*!< \brief Rebind time in seconds. */
-    u_long dyn_leaseTime;       /*!< \brief Offered lease time in seconds. */
-    u_char *dyn_hostname;       /*!< \brief Local hostname. */
-    u_char *dyn_domain;         /*!< \brief Name of local domain. */
+    uint8_t dyn_msgtyp;         /*!< \brief DHCP message type */
+    uint32_t dyn_yiaddr;          /*!< \brief Offered IP address. */
+    uint32_t dyn_netmask;         /*!< \brief Local IP netmask. */
+    uint32_t dyn_broadcast;       /*!< \brief Local IP broadcast address. */
+    uint32_t dyn_gateway;         /*!< \brief Default gate IP address. */
+    uint32_t dyn_pdns;            /*!< \brief Primary DNS IP address. */
+    uint32_t dyn_sdns;            /*!< \brief Secondary DNS IP address. */
+    uint32_t dyn_sid;             /*!< \brief Server identifier. */
+    uint32_t dyn_renewalTime;     /*!< \brief Renewal time in seconds. */
+    uint32_t dyn_rebindTime;      /*!< \brief Rebind time in seconds. */
+    uint32_t dyn_leaseTime;       /*!< \brief Offered lease time in seconds. */
+    uint8_t *dyn_hostname;      /*!< \brief Local hostname. */
+    uint8_t *dyn_domain;        /*!< \brief Name of local domain. */
 };
 
 /*!
@@ -579,7 +582,7 @@ static HANDLE dhcpThread;
 /*!
  * \brief Current state of the DHCP client state machine.
  */
-static u_char dhcpState;
+static uint8_t dhcpState;
 
 /*!
  * \brief Latest DHCP error code.
@@ -605,7 +608,7 @@ static HANDLE dhcpDone;
  *
  * Specified by the application when calling the DHCP client API.
  */
-static u_long dhcpApiTimeout;
+static uint32_t dhcpApiTimeout;
 
 /*!
  * \brief Time at which the application started to wait.
@@ -613,7 +616,7 @@ static u_long dhcpApiTimeout;
  * Used in conjunction with \ref dhcpApiTimeout to limit the maximum 
  * wait time for server responses.
  */
-static u_long dhcpApiStart;
+static uint32_t dhcpApiStart;
 
 /*!
  * \brief DHCP device.
@@ -636,7 +639,7 @@ static NUTDEVICE *dhcpDev;
  * \param src The source string. No delimiter required.
  * \param len Length of the source string.
  */
-static void copy_str(u_char ** dst, void *src, int len)
+static void copy_str(uint8_t ** dst, void *src, int len)
 {
     if (*dst) {
         free(*dst);
@@ -682,7 +685,7 @@ static void ReleaseDynCfg(DYNCFG * dyncfg)
  */
 static DYNCFG *ParseReply(BOOTP *bp, int len)
 {
-    u_char *op;
+    uint8_t *op;
     int left;
     DYNCFG *cfgp;
 
@@ -703,7 +706,7 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
     op = bp->bp_options + 4;
     left = len - (sizeof(*bp) - sizeof(bp->bp_options)) - 4;
     while (*op != DHCPOPT_END && left > 0) {
-        u_char ol;
+        uint8_t ol;
 
 #ifdef NUTDEBUG
         if (__tcp_trf) {
@@ -741,10 +744,10 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
         /* All remaining options require at least 4 octets. */
         else if (ol >= 4) {
             /* Preset most often used long value. */
-            u_long lval = *(op + 2);
-            lval += (u_long)(*(op + 3)) << 8;
-            lval += (u_long)(*(op + 4)) << 16;
-            lval += (u_long)(*(op + 5)) << 24;
+            uint32_t lval = *(op + 2);
+            lval += (uint32_t)(*(op + 3)) << 8;
+            lval += (uint32_t)(*(op + 4)) << 16;
+            lval += (uint32_t)(*(op + 5)) << 24;
 
             /* Our IP network mask. */
             if (*op == DHCPOPT_NETMASK) {
@@ -766,9 +769,9 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
                 cfgp->dyn_pdns = lval;
                 if (ol >= 8) {
                     cfgp->dyn_sdns = *(op + 6);
-                    cfgp->dyn_sdns += (u_long)(*(op + 7)) << 8;
-                    cfgp->dyn_sdns += (u_long)(*(op + 8)) << 16;
-                    cfgp->dyn_sdns += (u_long)(*(op + 9)) << 24;
+                    cfgp->dyn_sdns += (uint32_t)(*(op + 7)) << 8;
+                    cfgp->dyn_sdns += (uint32_t)(*(op + 8)) << 16;
+                    cfgp->dyn_sdns += (uint32_t)(*(op + 9)) << 24;
                 }
             }
             /* Server identifier. */
@@ -831,7 +834,7 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
  *
  * \return Total number of octets added, include type and length.
  */
-static size_t DhcpAddOption(u_char * op, u_char ot, void *ov, u_char len)
+static size_t DhcpAddOption(uint8_t * op, uint8_t ot, void *ov, uint8_t len)
 {
     *op++ = ot;
     *op++ = len;
@@ -849,7 +852,7 @@ static size_t DhcpAddOption(u_char * op, u_char ot, void *ov, u_char len)
  *
  * \return Total number of octets added, include type and length.
  */
-static size_t DhcpAddByteOption(u_char * op, u_char ot, u_char ov)
+static size_t DhcpAddByteOption(uint8_t * op, uint8_t ot, uint8_t ov)
 {
     *op++ = ot;
     *op++ = 1;
@@ -868,7 +871,7 @@ static size_t DhcpAddByteOption(u_char * op, u_char ot, u_char ov)
  *
  * \return Total number of octets added, include type and length.
  */
-static size_t DhcpAddShortOption(u_char * op, u_char ot, u_short ov)
+static size_t DhcpAddShortOption(uint8_t * op, uint8_t ot, uint16_t ov)
 {
     *op++ = ot;
     *op++ = 2;
@@ -890,7 +893,7 @@ static size_t DhcpAddShortOption(u_char * op, u_char ot, u_short ov)
  *
  * \return Total number of octets added, include type and length.
  */
-static size_t DhcpAddParmReqOption(u_char * op)
+static size_t DhcpAddParmReqOption(uint8_t * op)
 {
     *op++ = DHCPOPT_PARAMREQUEST;
     *op++ = 3;                  /* Adjust when adding more options! */
@@ -921,9 +924,9 @@ static size_t DhcpAddParmReqOption(u_char * op)
  *
  * \return Total number of octets added.
  */
-static u_int DhcpPrepHeader(BOOTP *bp, u_char msgtyp, u_long xid, u_long ciaddr, u_short secs)
+static u_int DhcpPrepHeader(BOOTP *bp, uint8_t msgtyp, uint32_t xid, uint32_t ciaddr, uint16_t secs)
 {
-    u_char *op;
+    uint8_t *op;
 
     memset(bp, 0, sizeof(*bp));
     /* Clients send bootp requests (op code 1) only. */
@@ -977,7 +980,7 @@ static u_int DhcpPrepHeader(BOOTP *bp, u_char msgtyp, u_long xid, u_long ciaddr,
  * \return 0 on success. On errors -1 is returned and \ref dhcpError will
  *         be set to \ref DHCPERR_TRANSMIT.
  */
-static int DhcpSendMessage(UDPSOCKET * sock, u_long addr, BOOTP *bp, size_t len)
+static int DhcpSendMessage(UDPSOCKET * sock, uint32_t addr, BOOTP *bp, size_t len)
 {
     /* Add 'end of options'. */
     bp->bp_options[len++] = DHCPOPT_END;
@@ -1012,13 +1015,13 @@ static int DhcpSendMessage(UDPSOCKET * sock, u_long addr, BOOTP *bp, size_t len)
  *         value -1 indicates an error, in which case dhcpError is
  *         set to an error code. On timeout 0 is returned.
  */
-static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, BOOTP *bp, u_long tmo)
+static int DhcpRecvMessage(UDPSOCKET * sock, uint32_t xid, BOOTP *bp, uint32_t tmo)
 {
     int rc;
-    u_short port;
-    u_long addr;
-    u_long etim;
-    u_long wtim;
+    uint16_t port;
+    uint32_t addr;
+    uint32_t etim;
+    uint32_t wtim;
 
     /* Set our start time. */
     etim = NutGetMillis();
@@ -1080,11 +1083,11 @@ static int DhcpRecvMessage(UDPSOCKET * sock, u_long xid, BOOTP *bp, u_long tmo)
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpBroadcastDiscover(UDPSOCKET * sock, BOOTP *bp, u_long xid, u_long raddr, u_short secs)
+static int DhcpBroadcastDiscover(UDPSOCKET * sock, BOOTP *bp, uint32_t xid, uint32_t raddr, uint16_t secs)
 {
     size_t optlen;
     int len;
-    u_char *op = bp->bp_options;
+    uint8_t *op = bp->bp_options;
 
     optlen = DhcpPrepHeader(bp, DHCP_DISCOVER, xid, 0, secs);
 
@@ -1130,12 +1133,12 @@ static int DhcpBroadcastDiscover(UDPSOCKET * sock, BOOTP *bp, u_long xid, u_long
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpSendRequest(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid,        /* */
-                           u_long caddr, u_long raddr, u_long sid, u_short secs)
+static int DhcpSendRequest(UDPSOCKET * sock, uint32_t daddr, BOOTP *bp, uint32_t xid,        /* */
+                           uint32_t caddr, uint32_t raddr, uint32_t sid, uint16_t secs)
 {
     size_t optlen;
     int len;
-    u_char *op = bp->bp_options;
+    uint8_t *op = bp->bp_options;
 
     /* Initialize the BOOTP header. */
     optlen = DhcpPrepHeader(bp, DHCP_REQUEST, xid, caddr, secs);
@@ -1177,8 +1180,8 @@ static int DhcpSendRequest(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpBroadcastRequest(UDPSOCKET * sock, BOOTP *bp, u_long xid, /* */
-                                u_long caddr, u_long raddr, u_long sid, u_short secs)
+static int DhcpBroadcastRequest(UDPSOCKET * sock, BOOTP *bp, uint32_t xid, /* */
+                                uint32_t caddr, uint32_t raddr, uint32_t sid, uint16_t secs)
 {
     return DhcpSendRequest(sock, INADDR_BROADCAST, bp, xid, caddr, raddr, sid, secs);
 }
@@ -1198,10 +1201,10 @@ static int DhcpBroadcastRequest(UDPSOCKET * sock, BOOTP *bp, u_long xid, /* */
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpSendRelease(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid, u_long caddr, u_long sid)
+static int DhcpSendRelease(UDPSOCKET * sock, uint32_t daddr, BOOTP *bp, uint32_t xid, uint32_t caddr, uint32_t sid)
 {
     size_t optlen;
-    u_char *op = bp->bp_options;
+    uint8_t *op = bp->bp_options;
 
     /* Prepare BOOTP header. 'secs' is set to zero. */
     optlen = DhcpPrepHeader(bp, DHCP_RELEASE, xid, caddr, 0);
@@ -1225,11 +1228,11 @@ static int DhcpSendRelease(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid
  *
  * \return 0 on success, -1 if send failed.
  */
-static int DhcpSendInform(UDPSOCKET * sock, u_long daddr, BOOTP *bp, u_long xid, u_long caddr)
+static int DhcpSendInform(UDPSOCKET * sock, uint32_t daddr, BOOTP *bp, uint32_t xid, uint32_t caddr)
 {
     size_t optlen;
     size_t len;
-    u_char *op = bp->bp_options;
+    uint8_t *op = bp->bp_options;
 
     /* Prepare BOOTP header. 'secs' is set to zero. */
     optlen = DhcpPrepHeader(bp, DHCP_INFORM, xid, caddr, 0);
@@ -1327,16 +1330,16 @@ THREAD(NutDhcpClient, arg)
     UDPSOCKET *sock = 0;
     BOOTP *bp = 0;
     int n;
-    u_long xid;
+    uint32_t xid;
     IFNET *nif;
-    u_short secs = 0;
-    u_long aqsTime = NutGetSeconds();
-    u_long leaseTime = 0;
-    u_long napTime;
+    uint16_t secs = 0;
+    uint32_t aqsTime = NutGetSeconds();
+    uint32_t leaseTime = 0;
+    uint32_t napTime;
     ureg_t retries;
-    u_long tmo = MIN_DHCP_WAIT;
-    u_long last_ip = confnet.cdn_ip_addr;
-    u_long server_ip;
+    uint32_t tmo = MIN_DHCP_WAIT;
+    uint32_t last_ip = confnet.cdn_ip_addr;
+    uint32_t server_ip;
 
     /*
      * Hack alert: Our ARM port doesn't allow parameter
@@ -1440,7 +1443,7 @@ THREAD(NutDhcpClient, arg)
          * Keep track of the API timeout.
          */
         if (dhcpState != DHCPST_IDLE && dhcpApiTimeout != NUT_WAIT_INFINITE) {
-            u_long tt = NutGetMillis() - dhcpApiStart;
+            uint32_t tt = NutGetMillis() - dhcpApiStart;
 
             if (dhcpApiTimeout <= tt) {
                 dhcpError = DHCPERR_TIMEOUT;
@@ -1461,7 +1464,7 @@ THREAD(NutDhcpClient, arg)
                 if (NutGetSeconds() - aqsTime > 0xffffUL) {
                     secs = 0xffff;
                 } else {
-                    secs = (u_short) (NutGetSeconds() - aqsTime);
+                    secs = (uint16_t) (NutGetSeconds() - aqsTime);
                 }
             }
             /* For first transmissions make sure that secs is zero. */
@@ -1517,7 +1520,7 @@ THREAD(NutDhcpClient, arg)
                 }
 #if MAX_DHCP_BUFSIZE
                 {
-                    u_short max_ms = MAX_DHCP_BUFSIZE;
+                    uint16_t max_ms = MAX_DHCP_BUFSIZE;
                     NutUdpSetSockOpt(sock, SO_RCVBUF, &max_ms, sizeof(max_ms));
                 }
 #endif
@@ -1831,7 +1834,7 @@ THREAD(NutDhcpClient, arg)
  *                This value must be larger than 3 times of \ref MIN_DHCP_WAIT
  *                to enable collection of offers from multiple servers.
  */
-static int DhcpKick(CONST char *name, u_char state, u_long timeout)
+static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
 {
     NUTDEVICE *dev;
     IFNET *nif;
@@ -1901,10 +1904,10 @@ static int DhcpKick(CONST char *name, u_char state, u_long timeout)
  *         NutDhcpError() can be called to get a more specific error
  *         code.
  */
-int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
+int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
 {
-    u_char mac0[6];
-    u_char macF[6];
+    uint8_t mac0[6];
+    uint8_t macF[6];
     NUTDEVICE *dev;
     IFNET *nif;
 
@@ -2029,7 +2032,7 @@ int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutDhcpRelease(CONST char *name, u_long timeout)
+int NutDhcpRelease(CONST char *name, uint32_t timeout)
 {
     /* Check the state. */
     if (dhcpState != DHCPST_BOUND) {
@@ -2051,7 +2054,7 @@ int NutDhcpRelease(CONST char *name, u_long timeout)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutDhcpInform(CONST char *name, u_long timeout)
+int NutDhcpInform(CONST char *name, uint32_t timeout)
 {
     /* Check the state. */
     if (dhcpState != DHCPST_IDLE) {

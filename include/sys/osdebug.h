@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:20  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 07:00:27  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:20  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.4  2003/02/04 18:00:53  harald
  * Version 3 released
@@ -59,17 +62,17 @@ extern "C" {
 #endif
 
 extern FILE *__os_trs;
-extern u_char __os_trf;
+extern uint_fast8_t __os_trf;
 
-extern void NutTraceOs(FILE *stream, u_char flags);
+extern void NutTraceOs(FILE *stream, uint8_t flags);
 extern void NutDumpThreadQueue(FILE *stream, NUTTHREADINFO *tdp);
 extern void NutDumpThreadList(FILE *stream);
 extern void NutDumpTimerList(FILE *stream);
 
 extern FILE *__heap_trs;
-extern u_char __heap_trf;
+extern uint_fast8_t __heap_trf;
 
-extern void NutTraceHeap(FILE *stream, u_char flags);
+extern void NutTraceHeap(FILE *stream, uint8_t flags);
 extern void NutDumpHeap(FILE *stream);
 
 #ifdef __cplusplus

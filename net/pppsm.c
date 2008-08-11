@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2005/04/30 16:42:42  chaac
  * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
  * is defined in NutConf, it will make effect where it is used.
@@ -97,7 +100,7 @@
  */
 /*@{*/
 
-u_long new_magic = 0x12345678;
+uint32_t new_magic = 0x12345678;
 static HANDLE pppThread;
 
 
@@ -110,7 +113,7 @@ THREAD(NutPppSm, arg)
 {
     NUTDEVICE *dev = arg;
     PPPDCB *dcb = dev->dev_dcb;
-    u_char retries;
+    uint_fast8_t retries;
 
     for (;;) {
         NutSleep(5000);

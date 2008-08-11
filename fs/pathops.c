@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2008/04/01 10:16:02  haraldkipp
  * Implemented access() function.
  *
@@ -84,7 +87,7 @@ static int PathOperation(CONST char *path, int opcode)
 {
     NUTDEVICE *dev;
     char dev_name[9];
-    u_char nidx;
+    uint8_t nidx;
     CONST char *nptr = path;
 
     /*
@@ -185,7 +188,7 @@ int stat(CONST char *path, struct stat *s)
 {
     NUTDEVICE *dev;
     char dev_name[9];
-    u_char nidx;
+    uint8_t nidx;
     CONST char *nptr = path;
     FSCP_STATUS parms;
 
@@ -245,7 +248,7 @@ int rename(CONST char *old_name, CONST char *new_name)
     NUTDEVICE *dev;
     char old_devname[9];
     char new_devname[9];
-    u_char nidx;
+    uint8_t nidx;
     CONST char *nptr;
     FSCP_RENAME parms;   /* Structure used for renaming files. */
 

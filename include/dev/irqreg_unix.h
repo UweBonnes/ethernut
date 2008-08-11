@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/04/07 12:31:37  freckle
  * most unix emulation specific stuff now in irqreg_unix.h.
  * corrected #warning "MCU not defined"
@@ -45,13 +48,13 @@
 
 __BEGIN_DECLS
 
-extern u_char irq_processed;
+extern uint8_t irq_processed;
 extern pthread_mutex_t irq_mutex;
 extern pthread_cond_t irq_cv;
 extern sigset_t irq_signal;
 
-extern void NutIRQTrigger(u_char);
-extern void NutUnixIrqEventPostAsync(u_char irq_nr, HANDLE * queue );
+extern void NutIRQTrigger(uint8_t);
+extern void NutUnixIrqEventPostAsync(uint8_t irq_nr, HANDLE * queue );
 
 __END_DECLS
 

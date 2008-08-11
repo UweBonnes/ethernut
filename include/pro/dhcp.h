@@ -68,6 +68,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -113,6 +116,7 @@
 
 #include <cfg/dhcp.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \addtogroup xgDHCPC
@@ -299,9 +303,9 @@
 
 __BEGIN_DECLS
 /* Function prototypes. */
-extern int NutDhcpIfConfig(CONST char *name, u_char * mac, u_long timeout);
-extern int NutDhcpRelease(CONST char *name, u_long timeout);
-extern int NutDhcpInform(CONST char *name, u_long timeout);
+extern int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout);
+extern int NutDhcpRelease(CONST char *name, uint32_t timeout);
+extern int NutDhcpInform(CONST char *name, uint32_t timeout);
 extern int NutDhcpStatus(CONST char *name);
 extern int NutDhcpError(CONST char *name);
 

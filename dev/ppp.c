@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.10  2007/07/17 18:32:27  haraldkipp
  * Fixed bug #1369171, memory leak in NutPppClose(). Thanks to Sergey Danilov.
  *
@@ -219,7 +222,7 @@ static int NutPppIOCtl(NUTDEVICE * dev, int req, void *conf)
 static NUTFILE *NutPppOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 {
     NUTFILE *fp;
-    u_char i;
+    uint8_t i;
     char *cp;
     char *sp;
     char pdn[9];

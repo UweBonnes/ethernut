@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:33  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -146,10 +149,10 @@
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutUdpOutput(UDPSOCKET * sock, u_long daddr, u_short port, NETBUF * nb)
+int NutUdpOutput(UDPSOCKET * sock, uint32_t daddr, uint16_t port, NETBUF * nb)
 {
-    u_long saddr;
-    u_long csum;
+    uint32_t saddr;
+    uint32_t csum;
     UDPHDR *uh;
     NUTDEVICE *dev;
     IFNET *nif;
@@ -160,7 +163,7 @@ int NutUdpOutput(UDPSOCKET * sock, u_long daddr, u_short port, NETBUF * nb)
     uh = nb->nb_tp.vp;
     uh->uh_sport = sock->so_local_port;
     uh->uh_dport = htons(port);
-    uh->uh_ulen = htons((u_short)(nb->nb_tp.sz + nb->nb_ap.sz));
+    uh->uh_ulen = htons((uint16_t)(nb->nb_tp.sz + nb->nb_ap.sz));
 
     /*
      * Get local address for this destination.

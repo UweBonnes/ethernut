@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2006/01/25 12:51:40  freckle
  * added explicit off mode
  *
@@ -111,7 +114,7 @@
 #define ADC_BUF_SIZE 16 // this may only be a power of two
 
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-u_char adc_sleep_mode = SLEEP_MODE_ADC;
+uint8_t adc_sleep_mode = SLEEP_MODE_ADC;
 
 /* AT90CAN128 uses a different register to enter sleep mode */
 #if defined(SMCR)
@@ -138,11 +141,11 @@ adc_mode_t current_mode = ADC_OFF;
 #define _adc_buf_head ADC_BUF_SIZE
 #define _adc_buf_tail ADC_BUF_SIZE+1
 
-u_short *ADC_buffer = NULL;
+uint16_t *ADC_buffer = NULL;
 
-inline int ADCBufRead(u_short * buf, u_short * read)
+inline int ADCBufRead(uint16_t * buf, uint16_t * read)
 {
-    u_char tail, head;
+    uint8_t tail, head;
     tail = buf[_adc_buf_tail];
     head = buf[_adc_buf_head];
     if (head != tail) {
@@ -153,9 +156,9 @@ inline int ADCBufRead(u_short * buf, u_short * read)
     return 1;
 }
 
-inline int ADCBufWrite(u_short * buf, u_short * write)
+inline int ADCBufWrite(uint16_t * buf, uint16_t * write)
 {
-    u_char tail, head;
+    uint8_t tail, head;
     tail = buf[_adc_buf_tail];
     head = buf[_adc_buf_head];
     if ((head + 1) % ADC_BUF_SIZE != tail) {
@@ -166,7 +169,7 @@ inline int ADCBufWrite(u_short * buf, u_short * write)
     return 1;
 }
 
-void ADCBufInit(u_short * buf)
+void ADCBufInit(uint16_t * buf)
 {
     buf[_adc_buf_head] = 0;
     buf[_adc_buf_tail] = 0;
@@ -174,7 +177,7 @@ void ADCBufInit(u_short * buf)
 
 static void ADCInterrupt(void *arg)
 {
-    u_short ADC_value;
+    uint16_t ADC_value;
 
     ADC_value = inw(ADCW);
 
@@ -193,7 +196,7 @@ void ADCInit()
     ADCSetMode(ADC_INITIAL_MODE);
     ADCSetPrescale(ADC_INITIAL_PRESCALE);
 
-    ADC_buffer = NutHeapAlloc(sizeof(u_short) * ADC_BUF_SIZE + 2);
+    ADC_buffer = NutHeapAlloc(sizeof(uint16_t) * ADC_BUF_SIZE + 2);
     ADCBufInit(ADC_buffer);
 
     if (NutRegisterIrqHandler(&sig_ADC, ADCInterrupt, NULL)) {
@@ -247,7 +250,7 @@ void ADCSetMode(adc_mode_t mode)
   	current_mode = mode;
 }
 
-u_char ADCSetPrescale(u_char prescalar)
+uint8_t ADCSetPrescale(uint8_t prescalar)
 {
 
     ADCStopConversion();
@@ -303,7 +306,7 @@ u_char ADCSetPrescale(u_char prescalar)
 
 void ADCSetChannel(adc_channel_t adc_channel)
 {
-    u_char current_admux;
+    uint8_t current_admux;
 
     current_admux = inb(ADMUX) & 0xF8;
 
@@ -326,7 +329,7 @@ void ADCStartLowNoiseConversion()
 
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
     {
-        u_char sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
+        uint8_t sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
         set_sleep_mode(adc_sleep_mode);
         /* Note:  avr-libc has a sleep_mode() function, but it's broken for
         AT90CAN128 with avr-libc version earlier than 1.2 */
@@ -354,7 +357,7 @@ void ADCStopConversion()
     sbi(ADCSR, ADEN);
 }
 
-u_char ADCRead(u_short * value)
+uint8_t ADCRead(uint16_t * value)
 {
     return ADCBufRead(ADC_buffer, value);
 }

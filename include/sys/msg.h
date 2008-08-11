@@ -38,6 +38,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:25  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2004/03/08 11:20:36  haraldkipp
  * Not all compilers like arrays of size zero.
  *
@@ -48,6 +51,7 @@
  */
 
 #include <sys/timer.h>
+#include <stdint.h>
 
 #ifdef _PC
 #pragma warning (disable:4200)
@@ -55,7 +59,7 @@
 
 typedef struct _NUTMSG NUTMSG;
 struct _NUTMSG {
-    u_char id;
+    uint8_t id;
     int param;
     void *data;
 };
@@ -68,21 +72,21 @@ struct _NUTMSGQ {
     HANDLE mq_wait;             /* Wait for a message */
     NUTMSGTMR *mq_timers;
     NUTMSGQ *mq_next;
-    u_char mq_read;
-    u_char mq_write;
-    u_char mq_mask;
+    uint8_t mq_read;
+    uint8_t mq_write;
+    uint8_t mq_mask;
     NUTMSG mq_que[1];
 };
 
 
-extern NUTMSGQ *NutMsgQCreate(u_char len);
-extern int NutMsgQBroadcast(u_char id, int param, void *data);
-extern int NutMsgQPost(NUTMSGQ * que, u_char id, int param, void *data);
-extern int NutMsgQSend(NUTMSGQ * que, u_char id, int param, void *data);
-extern int NutMsgQGetMessage(NUTMSGQ * que, NUTMSG * msg, u_long timeout);
+extern NUTMSGQ *NutMsgQCreate(uint8_t len);
+extern int NutMsgQBroadcast(uint8_t id, int param, void *data);
+extern int NutMsgQPost(NUTMSGQ * que, uint8_t id, int param, void *data);
+extern int NutMsgQSend(NUTMSGQ * que, uint8_t id, int param, void *data);
+extern int NutMsgQGetMessage(NUTMSGQ * que, NUTMSG * msg, uint32_t timeout);
 extern int NutMsgQFull(NUTMSGQ * que);
 extern void NutMsgQFlush(NUTMSGQ * que);
-extern HANDLE NutMsgQStartTimer(NUTMSGQ * que, u_long ms, int param, void *data, u_char flags);
+extern HANDLE NutMsgQStartTimer(NUTMSGQ * que, uint32_t ms, int param, void *data, uint8_t flags);
 extern void NutMsgQStopTimer(HANDLE timer);
 
 #define MSG_TIMER	0xfe

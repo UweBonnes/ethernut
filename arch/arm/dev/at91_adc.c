@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:03  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2007/12/09 22:13:08  olereinhardt
  * Added cvs log tag
  *
@@ -68,7 +71,7 @@
 #define _adc_buf_head AT91_ADC_BUF_SIZE
 #define _adc_buf_tail AT91_ADC_BUF_SIZE+1
 
-u_short **ADC_Buffer = NULL;
+uint16_t **ADC_Buffer = NULL;
 
 /*!
  * \brief Reads data from the adc buffer
@@ -78,9 +81,9 @@ u_short **ADC_Buffer = NULL;
  * \return 0: data read succesfully, 1: no data available
  */
 
-int ADCBufRead(u_short channel, u_short * read)
+int ADCBufRead(uint16_t channel, uint16_t * read)
 {
-    u_short tail, head;
+    uint16_t tail, head;
     tail = ADC_Buffer[channel][_adc_buf_tail];
     head = ADC_Buffer[channel][_adc_buf_head];
     if (head != tail) {
@@ -93,9 +96,9 @@ int ADCBufRead(u_short channel, u_short * read)
 
 /* Store data in the buffer, called from interrupt */
 
-static inline int ADCBufWrite(u_short channel, u_short write)
+static inline int ADCBufWrite(uint16_t channel, uint16_t write)
 {
-    u_short tail, head;
+    uint16_t tail, head;
     tail = ADC_Buffer[channel][_adc_buf_tail];
     head = ADC_Buffer[channel][_adc_buf_head];
     if ((head + 1) % AT91_ADC_BUF_SIZE != tail) {
@@ -202,8 +205,8 @@ void ADCStartConversion(void)
 static void ADCInterrupt(void *arg)
 {
     register u_int adcsr = inr(ADC_SR);   
-    u_short ADC_Value;        
-    u_short channel;
+    uint16_t ADC_Value;        
+    uint16_t channel;
 
     for (channel = 0; channel < ADC_MAX_CHANNEL; channel ++) {
         if (adcsr & _BV(channel)) {
@@ -237,9 +240,9 @@ void ADCInit(void)
     ADCSetPrescale(AT91_ADC_INITIAL_PRESCALE);
 
     /* Init adc buffers. One for every channel as we can sample all by automatic sequence */
-    ADC_Buffer = NutHeapAlloc(sizeof(u_short *) * ADC_MAX_CHANNEL);
+    ADC_Buffer = NutHeapAlloc(sizeof(uint16_t *) * ADC_MAX_CHANNEL);
     for (channel = 0; channel < ADC_MAX_CHANNEL; channel ++) {
-        ADC_Buffer[channel] = NutHeapAlloc(sizeof(u_short) * AT91_ADC_BUF_SIZE + 2);
+        ADC_Buffer[channel] = NutHeapAlloc(sizeof(uint16_t) * AT91_ADC_BUF_SIZE + 2);
         ADC_Buffer[channel][_adc_buf_head] = 0;
         ADC_Buffer[channel][_adc_buf_tail] = 0;        
     }

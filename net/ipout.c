@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:30  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/05/02 11:18:32  haraldkipp
  * IGMP support added. Incomplete.
  *
@@ -176,13 +179,13 @@
  * \bug Broadcasts to multiple network devices will fail after the
  *      first device returns an error.
  */
-int NutIpOutput(u_char proto, u_long dest, NETBUF * nb)
+int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
 {
-    u_char ha[6];
+    uint8_t ha[6];
     IPHDR *ip;
     NUTDEVICE *dev;
     IFNET *nif;
-    u_long gate;
+    uint32_t gate;
     int rc;
 
     if ((nb = NutNetBufAlloc(nb, NBAF_NETWORK, sizeof(IPHDR))) == 0)

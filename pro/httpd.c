@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.24  2008/08/11 07:00:35  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.23  2008/07/17 11:36:32  olereinhardt
  * - Moved some functions used in httpd.c as well as in ssi.c into httpd_p.c
  * - Implemeted $QUERY_STRING parameter in for CGIs included by a ssi file
@@ -206,7 +209,7 @@ MIMETYPES mimeTypes[] = {
     NULL, NULL, NULL}
 };
 
-static u_long http_optflags;
+static uint32_t http_optflags;
 
 /*!
  * \brief Send top lines of a standard HTML header.
@@ -687,7 +690,7 @@ int NutRegisterHttpRoot(char *path)
  * - HTTP_OF_USE_FILE_TIME Handle file modification time.
  *
  */
-void NutHttpSetOptionFlags(u_long flags)
+void NutHttpSetOptionFlags(uint32_t flags)
 {
     http_optflags = flags;
 }
@@ -697,7 +700,7 @@ void NutHttpSetOptionFlags(u_long flags)
  *
  * \return Option flags.
  */
-u_long NutHttpGetOptionFlags(void)
+uint32_t NutHttpGetOptionFlags(void)
 {
     return http_optflags;
 }

@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2005/08/02 17:46:49  haraldkipp
  * Major API documentation update.
  *
@@ -135,22 +138,22 @@ struct __attribute__ ((packed)) ip {
     unsigned ip_hl:4,           /*!< \brief Header length. */
      ip_v:4;                    /*!< \brief Version. */
 #else
-    u_char ip_hl:4,             /*!< \brief Header length. */
+    uint8_t ip_hl:4,             /*!< \brief Header length. */
      ip_v:4;                    /*!< \brief Version. */
 #endif
 #else                           /* #ifndef __BIG_ENDIAN__ */
-    u_char ip_v:4,              /*!< \brief Version. */
+    uint8_t ip_v:4,              /*!< \brief Version. */
      ip_hl:4;                   /*!< \brief Header length. */
 #endif                          /* #ifndef __BIG_ENDIAN__ */
-    u_char ip_tos;              /*!< \brief Type of service. */
+    uint8_t ip_tos;              /*!< \brief Type of service. */
     short ip_len;               /*!< \brief Total length. */
-    u_short ip_id;              /*!< \brief Identification. */
+    uint16_t ip_id;              /*!< \brief Identification. */
     short ip_off;               /*!< \brief Fragment offset field. */
-    u_char ip_ttl;              /*!< \brief Time to live. */
-    u_char ip_p;                /*!< \brief Protocol. */
-    u_short ip_sum;             /*!< \brief Checksum. */
-    u_long ip_src;              /*!< \brief Source IP address. */
-    u_long ip_dst;              /*!< \brief Destination IP address. */
+    uint8_t ip_ttl;              /*!< \brief Time to live. */
+    uint8_t ip_p;                /*!< \brief Protocol. */
+    uint16_t ip_sum;             /*!< \brief Checksum. */
+    uint32_t ip_src;              /*!< \brief Source IP address. */
+    uint32_t ip_dst;              /*!< \brief Destination IP address. */
 };
 
 #define IPOPT_EOL       0       /*!< \brief End of option list. */
@@ -180,7 +183,7 @@ __BEGIN_DECLS
  * API declarations.
  */
 #include <dev/netbuf.h>
-extern int NutIpOutput(u_char proto, u_long dest, NETBUF * nb);
+extern int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb);
 
 /*
  * Kernel declarations.
@@ -191,7 +194,7 @@ extern void NutIpInput(NUTDEVICE * dev, NETBUF * nb);
 /*
  * Ip Filter declarations.
  */
-typedef int (*NutIpFilterFunc) (u_long);
+typedef int (*NutIpFilterFunc) (uint32_t);
 extern void NutIpSetInputFilter(NutIpFilterFunc callbackFunc);
 
 __END_DECLS

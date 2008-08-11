@@ -52,9 +52,9 @@ extern "C" {
 /*@}*/
 
 extern int SpiFlashEnable(void);
-extern void SpiFlashId(u_char *id);
-extern int SpiFlashWriteByte(u_char high, u_short addr, u_char data);
-extern int SpiFlashWriteWord(u_short addr, u_short data);
+extern void SpiFlashId(uint8_t *id);
+extern int SpiFlashWriteByte(uint8_t high, uint16_t addr, uint8_t data);
+extern int SpiFlashWriteWord(uint16_t addr, uint16_t data);
 extern void SpiFlashErase(void);
 
 #ifdef __cplusplus

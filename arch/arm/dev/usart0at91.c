@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 06:59:13  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2008/08/06 12:51:01  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -83,20 +86,20 @@
 /*
  * Local function prototypes.
  */
-static u_long At91UsartGetSpeed(void);
-static int At91UsartSetSpeed(u_long rate);
-static u_char At91UsartGetDataBits(void);
-static int At91UsartSetDataBits(u_char bits);
-static u_char At91UsartGetParity(void);
-static int At91UsartSetParity(u_char mode);
-static u_char At91UsartGetStopBits(void);
-static int At91UsartSetStopBits(u_char bits);
-static u_long At91UsartGetFlowControl(void);
-static int At91UsartSetFlowControl(u_long flags);
-static u_long At91UsartGetStatus(void);
-static int At91UsartSetStatus(u_long flags);
-static u_char At91UsartGetClockMode(void);
-static int At91UsartSetClockMode(u_char mode);
+static uint32_t At91UsartGetSpeed(void);
+static int At91UsartSetSpeed(uint32_t rate);
+static uint8_t At91UsartGetDataBits(void);
+static int At91UsartSetDataBits(uint8_t bits);
+static uint8_t At91UsartGetParity(void);
+static int At91UsartSetParity(uint8_t mode);
+static uint8_t At91UsartGetStopBits(void);
+static int At91UsartSetStopBits(uint8_t bits);
+static uint32_t At91UsartGetFlowControl(void);
+static int At91UsartSetFlowControl(uint32_t flags);
+static uint32_t At91UsartGetStatus(void);
+static int At91UsartSetStatus(uint32_t flags);
+static uint8_t At91UsartGetClockMode(void);
+static int At91UsartSetClockMode(uint8_t mode);
 static void At91UsartTxStart(void);
 static void At91UsartRxStart(void);
 static int At91UsartInit(void);

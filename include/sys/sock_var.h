@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/08/11 07:00:27  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.11  2008/04/18 13:32:00  haraldkipp
  * Changed size parameter from u_short to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
@@ -154,7 +157,7 @@ typedef struct udp_socket UDPSOCKET;
  */
 struct udp_socket {
     UDPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
-    u_short so_local_port;  /*!< \brief Local port number in net byte order. */
+    uint16_t so_local_port;  /*!< \brief Local port number in net byte order. */
     NETBUF  *so_rx_nb;      /*!< \brief Received, but not read by application. */
     HANDLE  so_rx_rdy;      /*!< \brief Receiver event queue. */
     int     so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
@@ -164,7 +167,7 @@ struct udp_socket {
 /*@}*/
 
 extern void NutUdpInput(NETBUF *nb, uint_fast8_t bcast);
-extern int NutUdpOutput(UDPSOCKET *sock, u_long dest, u_short port, NETBUF *nb);
+extern int NutUdpOutput(UDPSOCKET *sock, uint32_t dest, uint16_t port, NETBUF *nb);
 
 
 /*********************************************************************\
@@ -190,7 +193,7 @@ typedef struct tcp_socket TCPSOCKET;
 struct tcp_socket {
     TCPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
     void *so_device;	    /*!< \brief Always zero. */
-    u_char so_devtype;	    /*!< \brief Device type, always IFTYP_TCPSOCK. */
+    uint8_t so_devtype;	    /*!< \brief Device type, always IFTYP_TCPSOCK. */
     int (*so_devread) (TCPSOCKET *, void *, int); /*!< \brief Read from device. */
     int (*so_devwrite) (TCPSOCKET *, CONST void *, int); /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__
@@ -198,30 +201,30 @@ struct tcp_socket {
 #endif
     int (*so_devioctl) (TCPSOCKET *, int, void *); /*!< \brief Driver control function. */
     
-    u_short so_devocnt;     /*!< \brief Number of data bytes in output buffer. */
-    u_char *so_devobuf;     /*!< \brief Pointer to output buffer. */
-    u_short so_devobsz;     /*!< \brief Output buffer size. */
+    uint16_t so_devocnt;     /*!< \brief Number of data bytes in output buffer. */
+    uint8_t *so_devobuf;     /*!< \brief Pointer to output buffer. */
+    uint16_t so_devobsz;     /*!< \brief Output buffer size. */
 
-    volatile u_char  so_state;       /*!< \brief Connection state, see tcp_fsm.h */
-    u_long  so_local_addr;  /*!< \brief Local IP address in net byte order. */
-    u_short so_local_port;  /*!< \brief Local port number in net byte order. */
-    u_long  so_remote_addr; /*!< \brief Remote IP address in net byte order. */
-    u_short so_remote_port; /*!< \brief Remote port number in net byte order. */
+    volatile uint8_t  so_state;       /*!< \brief Connection state, see tcp_fsm.h */
+    uint32_t  so_local_addr;  /*!< \brief Local IP address in net byte order. */
+    uint16_t so_local_port;  /*!< \brief Local port number in net byte order. */
+    uint32_t  so_remote_addr; /*!< \brief Remote IP address in net byte order. */
+    uint16_t so_remote_port; /*!< \brief Remote port number in net byte order. */
 
-    u_char  so_tx_flags;    /*!< \brief Flags used during transmissions - see below */
-    u_long  so_tx_isn;      /*!< \brief Initial sequence number. */
-    u_long  so_tx_una;      /*!< \brief Unacknowledged sequence number. */
-    u_long  so_tx_nxt;      /*!< \brief Next sequence number to send. */
-    u_long  so_tx_wl1;      /*!< \brief Sequence number of last window update. */
-    u_long  so_tx_wl2;      /*!< \brief Acknowledged sequence of last window update. */
-    u_short so_tx_win;      /*!< \brief Peer's receive window. */
-    u_char  so_tx_dup;      /*!< \brief Duplicate ACK counter. */
+    uint8_t  so_tx_flags;    /*!< \brief Flags used during transmissions - see below */
+    uint32_t  so_tx_isn;      /*!< \brief Initial sequence number. */
+    uint32_t  so_tx_una;      /*!< \brief Unacknowledged sequence number. */
+    uint32_t  so_tx_nxt;      /*!< \brief Next sequence number to send. */
+    uint32_t  so_tx_wl1;      /*!< \brief Sequence number of last window update. */
+    uint32_t  so_tx_wl2;      /*!< \brief Acknowledged sequence of last window update. */
+    uint16_t so_tx_win;      /*!< \brief Peer's receive window. */
+    uint8_t  so_tx_dup;      /*!< \brief Duplicate ACK counter. */
     NETBUF  *so_tx_nbq;     /*!< \brief Network buffers waiting to be acknowledged. */
     HANDLE  so_tx_tq;       /*!< \brief Threads waiting for transmit buffer space. */
 
-    u_long  so_rx_isn;      /*!< \brief Initial sequence number of remote. */
-    u_long  so_rx_nxt;      /*!< \brief Next sequence number to receive. */
-    u_short so_rx_win;      /*!< \brief Local receive window. */
+    uint32_t  so_rx_isn;      /*!< \brief Initial sequence number of remote. */
+    uint32_t  so_rx_nxt;      /*!< \brief Next sequence number to receive. */
+    uint16_t so_rx_win;      /*!< \brief Local receive window. */
     int     so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
     int     so_rx_bsz;      /*!< \brief Receive buffer size. */
     int     so_rd_cnt;      /*!< \brief Number of bytes read from buffer top. */
@@ -229,20 +232,20 @@ struct tcp_socket {
     HANDLE  so_rx_tq;       /*!< \brief Threads waiting for received data. */
     NETBUF  *so_rx_nbq;     /*!< \brief Network buffers received in advance. */
 
-    u_short so_mss;         /*!< \brief MSS, limited by remote option or MTU. */
+    uint16_t so_mss;         /*!< \brief MSS, limited by remote option or MTU. */
 
-    u_long  so_rtt_seq;     /*!< \brief Sequence number for RTT calculation. */
-    u_short so_rtto;        /*!< \brief Current retransmission timeout. */
-    u_short so_retransmits; /*!< \brief Number of retransmits. */
-    u_short so_time_wait;   /*!< \brief Time wait counter. */
-    u_short so_retran_time; /*!< \brief Retransmit time counter. */
-    u_short so_last_error;  /*!< \brief Last error code. */
+    uint32_t  so_rtt_seq;     /*!< \brief Sequence number for RTT calculation. */
+    uint16_t so_rtto;        /*!< \brief Current retransmission timeout. */
+    uint16_t so_retransmits; /*!< \brief Number of retransmits. */
+    uint16_t so_time_wait;   /*!< \brief Time wait counter. */
+    uint16_t so_retran_time; /*!< \brief Retransmit time counter. */
+    uint16_t so_last_error;  /*!< \brief Last error code. */
     HANDLE  so_pc_tq;       /*!< \brief Listening thread. */
     HANDLE  so_ac_tq;       /*!< \brief Connecting thread. */
 
-    u_long  so_read_to;     /*!< \brief Read timeout. */
-    u_long  so_write_to;    /*!< \brief Write timeout. */
-    u_long  so_oos_drop;    /*!< \brief Out of sequence dropped. */
+    uint32_t  so_read_to;     /*!< \brief Read timeout. */
+    uint32_t  so_write_to;    /*!< \brief Write timeout. */
+    uint32_t  so_oos_drop;    /*!< \brief Out of sequence dropped. */
 };
 
 /*
@@ -257,7 +260,7 @@ struct tcp_socket {
 
 #include <netinet/tcp_fsm.h>
 
-extern int NutTcpOutput(TCPSOCKET *sock, CONST u_char *data, u_short size);
+extern int NutTcpOutput(TCPSOCKET *sock, CONST uint8_t *data, uint16_t size);
 extern int NutTcpReject(NETBUF *nb);
 
 #ifdef __cplusplus

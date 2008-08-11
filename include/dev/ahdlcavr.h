@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2004/03/16 16:48:28  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -65,8 +68,8 @@ extern int AhdlcAvrInput(NUTDEVICE *dev);
 extern int AhdlcAvrOutput(NUTDEVICE *dev);
 extern int AhdlcAvrFlush(NUTDEVICE *dev);
 
-extern int AhdlcAvrGetRaw(u_char *cp);
-extern int AhdlcAvrPutRaw(u_char ch);
+extern int AhdlcAvrGetRaw(uint8_t *cp);
+extern int AhdlcAvrPutRaw(uint8_t ch);
 
 extern int AhdlcAvrRead(NUTFILE *fp, void *buffer, int size);
 extern int AhdlcAvrWrite(NUTFILE *fp, CONST void *buffer, int len);

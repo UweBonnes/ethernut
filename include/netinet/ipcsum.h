@@ -78,8 +78,11 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2008/04/18 13:31:59  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
+ * Changed size parameter from uint16_t to int, which is easier to handle
  * for 32-bit targets. You need to recompile your ARM code. No impact on
  * AVR expected
  * I changed u_int to int at some places to avoid some warnings during
@@ -104,6 +107,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file netinet/ipcsum.h
@@ -112,10 +116,10 @@
 
 __BEGIN_DECLS
 /* Prototypes */
-extern u_short NutIpChkSumPartial(u_short ics, CONST void *buf, int len);
-extern u_short NutIpChkSum(u_short ics, CONST void *buf, int len);
+extern uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len);
+extern uint16_t NutIpChkSum(uint16_t ics, CONST void *buf, int len);
 
-extern u_long NutIpPseudoChkSumPartial(u_long src_addr, u_long dest_addr, u_char protocol, int len);
+extern uint32_t NutIpPseudoChkSumPartial(uint32_t src_addr, uint32_t dest_addr, uint8_t protocol, int len);
 
 __END_DECLS
 /* */

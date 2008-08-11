@@ -47,6 +47,7 @@
 #define _ATCAN_H_
 
 #include <dev/can_dev.h>
+#include <stdint.h>
 
 extern NUTDEVICE devAtCan;
 

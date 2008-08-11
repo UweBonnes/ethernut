@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/10/08 16:48:08  haraldkipp
  * Documentation fixed
  *
@@ -282,10 +285,10 @@ int UartAvrFlush(NUTDEVICE * dev)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int UartAvrGetStatus(NUTDEVICE * dev, u_long * status)
+static int UartAvrGetStatus(NUTDEVICE * dev, uint32_t * status)
 {
     IFSTREAM *ifs = dev->dev_icb;
-    u_char us;
+    uint8_t us;
 
     *status = 0;
 
@@ -309,7 +312,7 @@ static int UartAvrGetStatus(NUTDEVICE * dev, u_long * status)
 /*
  * Carefully enable UART functions.
  */
-static void UartAvrEnable(u_short base)
+static void UartAvrEnable(uint16_t base)
 {
     NutEnterCritical();
 #ifdef UCSR1B
@@ -324,7 +327,7 @@ static void UartAvrEnable(u_short base)
 /*
  * Carefully disable UART functions.
  */
-static void UartAvrDisable(u_short base)
+static void UartAvrDisable(uint16_t base)
 {
     /*
      * Disable UART interrupts.
@@ -361,26 +364,26 @@ static void UartAvrDisable(u_short base)
  *             function.
  * \param req  Requested control function. May be set to one of the
  *             following constants:
- *             - UART_SETSPEED, conf points to an u_long value containing the baudrate.
- *             - UART_GETSPEED, conf points to an u_long value receiving the current baudrate.
- *             - UART_SETDATABITS, conf points to an u_long value containing the number of data bits, 5, 6, 7 or 8.
- *             - UART_GETDATABITS, conf points to an u_long value receiving the number of data bits, 5, 6, 7 or 8.
- *             - UART_SETPARITY, conf points to an u_long value containing the parity, 0 (no), 1 (odd) or 2 (even).
- *             - UART_GETPARITY, conf points to an u_long value receiving the parity, 0 (no), 1 (odd) or 2 (even).
- *             - UART_SETSTOPBITS, conf points to an u_long value containing the number of stop bits 1 or 2.
- *             - UART_GETSTOPBITS, conf points to an u_long value receiving the number of stop bits 1 or 2.
+ *             - UART_SETSPEED, conf points to an uint32_t value containing the baudrate.
+ *             - UART_GETSPEED, conf points to an uint32_t value receiving the current baudrate.
+ *             - UART_SETDATABITS, conf points to an uint32_t value containing the number of data bits, 5, 6, 7 or 8.
+ *             - UART_GETDATABITS, conf points to an uint32_t value receiving the number of data bits, 5, 6, 7 or 8.
+ *             - UART_SETPARITY, conf points to an uint32_t value containing the parity, 0 (no), 1 (odd) or 2 (even).
+ *             - UART_GETPARITY, conf points to an uint32_t value receiving the parity, 0 (no), 1 (odd) or 2 (even).
+ *             - UART_SETSTOPBITS, conf points to an uint32_t value containing the number of stop bits 1 or 2.
+ *             - UART_GETSTOPBITS, conf points to an uint32_t value receiving the number of stop bits 1 or 2.
  *             - UART_SETSTATUS
  *             - UART_GETSTATUS
- *             - UART_SETREADTIMEOUT, conf points to an u_long value containing the read timeout.
- *             - UART_GETREADTIMEOUT, conf points to an u_long value receiving the read timeout.
- *             - UART_SETWRITETIMEOUT, conf points to an u_long value containing the write timeout.
- *             - UART_GETWRITETIMEOUT, conf points to an u_long value receiving the write timeout.
- *             - UART_SETLOCALECHO, conf points to an u_long value containing 0 (off) or 1 (on).
- *             - UART_GETLOCALECHO, conf points to an u_long value receiving 0 (off) or 1 (on).
- *             - UART_SETFLOWCONTROL, conf points to an u_long value containing combined UART_FCTL_ values.
- *             - UART_GETFLOWCONTROL, conf points to an u_long value containing receiving UART_FCTL_ values.
- *             - UART_SETCOOKEDMODE, conf points to an u_long value containing 0 (off) or 1 (on).
- *             - UART_GETCOOKEDMODE, conf points to an u_long value receiving 0 (off) or 1 (on).
+ *             - UART_SETREADTIMEOUT, conf points to an uint32_t value containing the read timeout.
+ *             - UART_GETREADTIMEOUT, conf points to an uint32_t value receiving the read timeout.
+ *             - UART_SETWRITETIMEOUT, conf points to an uint32_t value containing the write timeout.
+ *             - UART_GETWRITETIMEOUT, conf points to an uint32_t value receiving the write timeout.
+ *             - UART_SETLOCALECHO, conf points to an uint32_t value containing 0 (off) or 1 (on).
+ *             - UART_GETLOCALECHO, conf points to an uint32_t value receiving 0 (off) or 1 (on).
+ *             - UART_SETFLOWCONTROL, conf points to an uint32_t value containing combined UART_FCTL_ values.
+ *             - UART_GETFLOWCONTROL, conf points to an uint32_t value containing receiving UART_FCTL_ values.
+ *             - UART_SETCOOKEDMODE, conf points to an uint32_t value containing 0 (off) or 1 (on).
+ *             - UART_GETCOOKEDMODE, conf points to an uint32_t value receiving 0 (off) or 1 (on).
  *
  * \param conf Points to a buffer that contains any data required for
  *             the given control function or receives data from that
@@ -398,11 +401,11 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     int rc = 0;
     UARTDCB *dcb;
-    u_long *lvp = (u_long *) conf;
-    u_long lv = *lvp;
-    u_char bv = (u_char) lv;
-    u_short sv;
-    u_char devnum;
+    uint32_t *lvp = (uint32_t *) conf;
+    uint32_t lv = *lvp;
+    uint8_t bv = (uint8_t) lv;
+    uint16_t sv;
+    uint8_t devnum;
 
     if (dev == 0)
         dev = &devUart0;
@@ -430,17 +433,17 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 #else
         lv <<= 3;
 #endif
-        sv = (u_short) ((NutGetCpuClock() / lv + 1UL) / 2UL) - 1;
+        sv = (uint16_t) ((NutGetCpuClock() / lv + 1UL) / 2UL) - 1;
 #ifdef UBRR1H
         if (devnum) {
-            UBRR1L = (u_char) sv;
-            UBRR1H = (u_char) (sv >> 8);
+            UBRR1L = (uint8_t) sv;
+            UBRR1H = (uint8_t) (sv >> 8);
         } else {
-            UBRR0L = (u_char) sv;
-            UBRR0H = (u_char) (sv >> 8);
+            UBRR0L = (uint8_t) sv;
+            UBRR0H = (uint8_t) (sv >> 8);
         }
 #else
-        UBRR = (u_char) sv;
+        UBRR = (uint8_t) sv;
 #endif
         UartAvrEnable(devnum);
         break;
@@ -452,7 +455,7 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
                 lv = 8UL;
             else
                 lv = 16UL;
-            sv = (u_short) (UBRR1H) << 8 | UBRR1L;
+            sv = (uint16_t) (UBRR1H) << 8 | UBRR1L;
         }
         else
         {
@@ -460,13 +463,13 @@ int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
                 lv = 8UL;
             else
                 lv = 16UL;
-            sv = (u_short) (UBRR0H) << 8 | UBRR0L;
+            sv = (uint16_t) (UBRR0H) << 8 | UBRR0L;
         }
 #else
         sv = UBRR;
         lv = 16UL;
 #endif
-        *lvp = NutGetCpuClock() / (lv * (u_long) (sv + 1));
+        *lvp = NutGetCpuClock() / (lv * (uint32_t) (sv + 1));
         break;
 
     case UART_SETDATABITS:
@@ -639,7 +642,7 @@ int UartAvrInit(NUTDEVICE * dev)
 {
     IFSTREAM *ifs;
     UARTDCB *dcb;
-    u_long baudrate = 9600;
+    uint32_t baudrate = 9600;
 
     /*
      * We only support character devices for on-chip UARTs.
@@ -699,9 +702,9 @@ int UartAvrRead(NUTFILE * fp, void *buffer, int size)
     NUTDEVICE *dev;
     IFSTREAM *ifs;
     UARTDCB *dcb;
-    u_char elmode;
-    u_char ch;
-    u_char *cp = buffer;
+    uint8_t elmode;
+    uint8_t ch;
+    uint8_t *cp = buffer;
 
     dev = fp->nf_dev;
     ifs = (IFSTREAM *) dev->dev_icb;
@@ -757,10 +760,10 @@ int UartAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     int rc;
     IFSTREAM *ifs;
     UARTDCB *dcb;
-    CONST u_char *cp;
-    u_char lbmode;
-    u_char elmode;
-    u_char ch;
+    CONST uint8_t *cp;
+    uint8_t lbmode;
+    uint8_t elmode;
+    uint8_t ch;
 
     ifs = dev->dev_icb;
     dcb = dev->dev_dcb;
@@ -788,7 +791,7 @@ int UartAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
      */
     cp = buffer;
     for (rc = 0; rc < len;) {
-        if ((u_char) (ifs->if_wr_idx + 1) == ifs->if_tx_idx) {
+        if ((uint8_t) (ifs->if_wr_idx + 1) == ifs->if_tx_idx) {
             if (UartAvrFlush(dev)) {
                 return -1;
             }
@@ -870,7 +873,7 @@ long UartAvrSize(NUTFILE * fp)
 
     dev = fp->nf_dev;
     ifs = (IFSTREAM *) dev->dev_icb;
-    return ((u_char)(ifs->if_rx_idx - ifs->if_rd_idx));
+    return ((uint8_t)(ifs->if_rx_idx - ifs->if_rd_idx));
 }
 
 

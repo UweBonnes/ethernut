@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:32  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2008/07/27 11:43:22  haraldkipp
  * Configurable TCP retransmissions.
  *
@@ -80,7 +83,7 @@
  * Return true if x is between low and high inclusive,
  * false otherwise
  */
-int IsInLimits(u_long x, u_long low, u_long high)
+int IsInLimits(uint32_t x, uint32_t low, uint32_t high)
 {
     if (low <= high) {
         if (low <= x && x <= high)
@@ -99,12 +102,12 @@ int IsInLimits(u_long x, u_long low, u_long high)
  */
 void NutTcpCalcRtt(TCPSOCKET * sock)
 {
-    u_short delta;
+    uint16_t delta;
     
     if (sock->so_retran_time == 0)
         return;
         
-    delta = (u_short) NutGetMillis() - sock->so_retran_time;
+    delta = (uint16_t) NutGetMillis() - sock->so_retran_time;
     
     /* According to RFC793 (or STD007), page 41, we use 0.8 for ALPHA and 2.0 for BETA. */
     sock->so_rtto = min (TCP_RTTO_MAX, max(TCP_RTTO_MIN, (delta * 4 + sock->so_rtto * 8) / 10));

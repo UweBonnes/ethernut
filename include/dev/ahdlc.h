@@ -35,8 +35,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:05  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:05  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.2  2003/05/06 18:40:28  harald
  * Unused items removed
@@ -80,19 +83,19 @@ struct _AHDLCDCB {
     
     /*! \brief Mode flags.
      */
-    u_long dcb_modeflags;
+    uint32_t dcb_modeflags;
 
     /*! \brief Status flags.
      */
-    u_long dcb_statusflags;
+    uint32_t dcb_statusflags;
 
     /*! \brief Read timeout.
      */
-    u_long dcb_rtimeout;
+    uint32_t dcb_rtimeout;
 
     /*! \brief Write timeout.
      */
-    u_long dcb_wtimeout;
+    uint32_t dcb_wtimeout;
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
@@ -113,38 +116,38 @@ struct _AHDLCDCB {
      * This is a copy of the base address in the NUTDEVICE structure
      * and required by the interrupt routine.
      */
-    u_char dcb_base;
+    uint8_t dcb_base;
 
     /*! \brief Input buffer. 
      *
      * This buffer is filled by the the receiver interrupt, so the
      * contents of the buffer is volatile.
      */
-    volatile u_char *dcb_rx_buf;
+    volatile uint8_t *dcb_rx_buf;
     
     /*! \brief Input buffer index for next incoming byte.
      *
      * This volatile index is incremented by the receiver interrupt.
      */
-    volatile u_char dcb_rx_idx;
+    volatile uint8_t dcb_rx_idx;
 
     /*! \brief Input buffer index for next byte to read.
      */
-    u_char dcb_rd_idx;
+    uint8_t dcb_rd_idx;
 
     /*! \brief Output buffer. 
      */
-    u_char *dcb_tx_buf;
+    uint8_t *dcb_tx_buf;
 
     /*! \brief Output buffer index for next outgoing byte. 
      *
      * This volatile index is incremented by the transmit interrupt.
      */
-    volatile u_char dcb_tx_idx;
+    volatile uint8_t dcb_tx_idx;
 
     /*! \brief Output buffer index for next byte to write. 
      */
-    u_char dcb_wr_idx;
+    uint8_t dcb_wr_idx;
 
     /*! \brief HDLC mode change event queue.
      *
@@ -155,19 +158,19 @@ struct _AHDLCDCB {
 
     /*! \brief 32-bit receive ACCM.
      */
-    u_long dcb_rx_accm;         
+    uint32_t dcb_rx_accm;         
 
     /*! \brief 256-bit transmit ACCM.
      */
-    u_long dcb_tx_accm;
+    uint32_t dcb_tx_accm;
 
     /*! \brief Maximum receive MRU.
      */
-    u_short dcb_rx_mru;
+    uint16_t dcb_rx_mru;
 
     /*! \brief Maximum transmit MRU.
      */
-    u_short dcb_tx_mru;
+    uint16_t dcb_tx_mru;
 
 };
 

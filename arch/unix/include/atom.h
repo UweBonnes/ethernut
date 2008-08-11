@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:39  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/05/27 17:41:52  drsung
  * Moved the file.
  *
@@ -52,11 +55,12 @@ __BEGIN_DECLS
 #include <sys/thread.h>
 #include <stdio.h>
 #include <stdlib.h>
-extern u_short main_cs_level;
+#include <stdint.h>
+extern uint16_t main_cs_level;
 extern sigset_t irq_signal;
 
 extern FILE *__os_trs;
-extern u_char __os_trf;
+extern uint8_t __os_trf;
 
 #define AtomicInc(p)     (++(*p))
 #define AtomicDec(p)     (--(*p))

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:33  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2008/04/29 01:51:35  thiagocorrea
  * Compile fix
  *
@@ -161,9 +164,9 @@ int NutConditionWait(CONDITION cond)
  *
  */
 
-int NutConditionTimedWait(CONDITION cond, u_long abs_ms)
+int NutConditionTimedWait(CONDITION cond, uint32_t abs_ms)
 {
-    u_long ms;
+    uint32_t ms;
     
     if (cond == NULL) return -1;
     ms = abs_ms - NutGetMillis();

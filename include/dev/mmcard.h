@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -68,7 +71,7 @@ typedef struct _MMCIFC {
     /*! Initialize the card. */
     int (*mmcifc_in) (void);
     /*! Read received byte and transmit a new one. */
-     u_char(*mmcifc_io) (u_char);
+     uint8_t(*mmcifc_io) (uint8_t);
     /*! Select or deselect the card. */
     int (*mmcifc_cs) (int);
     /*! Query card detect. */
@@ -263,19 +266,19 @@ typedef struct _MMCIFC {
  */
 typedef struct __attribute__ ((packed)) _MMC_CID {
     /*! \brief Manufacturer identifier. */
-    u_char mmcid_mid;
+    uint8_t mmcid_mid;
     /*! \brief OEM/Application identifier. */
-    u_short mmcid_oid;
+    uint16_t mmcid_oid;
     /*! \brief Product name. */
-    u_char mmcid_pnm[6];
+    uint8_t mmcid_pnm[6];
     /*! \brief Product revision. */
-    u_char mmcid_rev;
+    uint8_t mmcid_rev;
     /*! \brief Serial number. */
-    u_long mmcid_psn;
+    uint32_t mmcid_psn;
     /*! \brief Manufacturing date code. */
-    u_char mmcid_mdt;
+    uint8_t mmcid_mdt;
     /*! \brief CRC7 checksum. */
-    u_char mmcid_crc;
+    uint8_t mmcid_crc;
 } MMC_CID;
 
 /*!
@@ -283,15 +286,15 @@ typedef struct __attribute__ ((packed)) _MMC_CID {
  */
 typedef struct __attribute__ ((packed)) _MMC_CSD {
     /*! \brief Card specification. */
-    u_char mmcsd_spec;
+    uint8_t mmcsd_spec;
     /*! \brief Data read access time. */
-    u_char mmcsd_taac;
+    uint8_t mmcsd_taac;
     /*! \brief Data read access time 2. */
-    u_char mmcsd_nsac;
+    uint8_t mmcsd_nsac;
     /*! \brief Maximum data transfer rate. */
-    u_char mmcsd_speed;
+    uint8_t mmcsd_speed;
     /*! \brief Card command classes and max. read block length. */
-    u_char mmcsd_ccc_bl[2];
+    uint8_t mmcsd_ccc_bl[2];
     /*! \brief Read-only fields. 
      *
      * - [0] 0..1 Device size bits 10..11.
@@ -321,11 +324,11 @@ typedef struct __attribute__ ((packed)) _MMC_CSD {
      * - [7] 5    Partial blocks for write allowed.
      * - [7] 6..7 Max. write data block length bits 0..1.
      */
-    u_char mmcsd_rfld[8];
+    uint8_t mmcsd_rfld[8];
     /*! \brief Programmable field. */
-    u_char mmcsd_pfld;
+    uint8_t mmcsd_pfld;
     /*! \brief Checksum. */
-    u_char mmcsd_crc;
+    uint8_t mmcsd_crc;
 } MMC_CSD;
 
 /*@}*/

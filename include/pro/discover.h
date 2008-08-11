@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/09/07 09:06:17  haraldkipp
  * Discovery service added.
  *
@@ -49,6 +52,7 @@
 
 
 #include <sys/types.h>
+#include <stdint.h>
 
 #define DISCOVERY_VERSION   0x10
 
@@ -59,21 +63,21 @@
 #define DISF_INITAL_ANN     0x0001
 
 typedef struct __attribute__ ((packed)) _DISCOVERY_TELE {
-    u_long dist_xid;            /*!< \brief Exchange identifier. */
-    u_char dist_type;           /*!< \brief Message type, 0=request, 1=announce, 2=apply. */
-    u_char dist_ver;            /*!< \brief Telegram version. */
-    u_char dist_mac[6];         /*!< \brief Ethernet MAC address. */
-    u_long dist_ip_addr;        /*!< \brief Last used IP address. */
-    u_long dist_ip_mask;        /*!< \brief IP netmask. */
-    u_long dist_gateway;        /*!< \brief Default route. */
-    u_long dist_cip_addr;       /*!< \brief Configured IP address. */
-    u_char dist_hostname[8];    /*!< \brief Host name of the system. */
-    u_char dist_custom[92];     /*!< \brief Bootfile to request. */
+    uint32_t dist_xid;            /*!< \brief Exchange identifier. */
+    uint8_t dist_type;           /*!< \brief Message type, 0=request, 1=announce, 2=apply. */
+    uint8_t dist_ver;            /*!< \brief Telegram version. */
+    uint8_t dist_mac[6];         /*!< \brief Ethernet MAC address. */
+    uint32_t dist_ip_addr;        /*!< \brief Last used IP address. */
+    uint32_t dist_ip_mask;        /*!< \brief IP netmask. */
+    uint32_t dist_gateway;        /*!< \brief Default route. */
+    uint32_t dist_cip_addr;       /*!< \brief Configured IP address. */
+    uint8_t dist_hostname[8];    /*!< \brief Host name of the system. */
+    uint8_t dist_custom[92];     /*!< \brief Bootfile to request. */
 } DISCOVERY_TELE;
 
-typedef int (*NutDiscoveryCallback) (u_long, u_short, DISCOVERY_TELE *, int);
+typedef int (*NutDiscoveryCallback) (uint32_t, uint16_t, DISCOVERY_TELE *, int);
 
-extern int NutRegisterDiscovery(u_long ipmask, u_short port, u_int flags);
+extern int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, u_int flags);
 extern NutDiscoveryCallback NutRegisterDiscoveryCallback(NutDiscoveryCallback func);
 
 extern int NutDiscoveryAnnTele(DISCOVERY_TELE *dist);

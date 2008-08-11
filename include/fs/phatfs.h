@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/08/29 07:43:54  haraldkipp
  * Documentation updated and corrected.
  *
@@ -80,17 +83,17 @@
  */
 typedef struct _PHATFILE {
     /*! \brief Current position into the file. */
-    u_long f_pos;
+    uint32_t f_pos;
     /*! \brief Current cluster. */
-    u_long f_clust;
+    uint32_t f_clust;
     /*! \brief Sector within the current cluster. */
-    u_long f_clust_pos;
+    uint32_t f_clust_pos;
     /*! \brief Position within the sector. */
-    u_long f_sect_pos;
+    uint32_t f_sect_pos;
     /*! \brief Previous cluster used, */
-    u_long f_clust_prv;
+    uint32_t f_clust_prv;
     /*! \brief File open mode flags. */
-    u_long f_mode;
+    uint32_t f_mode;
     /*! \brief Directory entry of this file. */
     PHATDIRENT f_dirent;
     /*! \brief Sector of the directory entry.
@@ -98,18 +101,18 @@ typedef struct _PHATFILE {
      * For the root directory this value is zero, because the root
      * doesn't have any entry in another directory.
      */
-    u_long f_de_sect;
+    uint32_t f_de_sect;
     /*! \brief Offset into the sector containing the directory entry. */
-    u_long f_de_offs;
+    uint32_t f_de_offs;
     /*! \brief Directory entry change marker. */
     u_int f_de_dirty;
     /*! \brief First cluster of the parent directory, low word. 
      *
      * Our directory entry is located in this cluster.
      */
-    u_short f_pde_clust;
+    uint16_t f_pde_clust;
     /*! \brief First cluster of the parent directory, high word. */
-    u_short f_pde_clusthi;
+    uint16_t f_pde_clusthi;
 } PHATFILE;
 
 /*! \brief Marks end of cluster chain. */
@@ -152,7 +155,7 @@ typedef struct _PHATFILE {
 extern NUTDEVICE devPhat0;
 extern NUTDEVICE devPhat1;
 
-extern u_long AllocFirstCluster(NUTFILE * nfp);
+extern uint32_t AllocFirstCluster(NUTFILE * nfp);
 
 extern NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc);
 extern int PhatFileClose(NUTFILE * nfp);

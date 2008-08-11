@@ -132,6 +132,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -222,26 +225,26 @@
 
 // Ethernet flags byte
 // Bit 0 = transmit byte flag
-u_char cs_flags;
-volatile u_short cs_base = 0x0000;
+uint8_t cs_flags;
+volatile uint16_t cs_base = 0x0000;
 
 
-void CSWrite16(u_short addr, u_short data)
+void CSWrite16(uint16_t addr, uint16_t data)
 {
-    u_short *p;
+    uint16_t *p;
 
-    p = (u_short *) addr;
+    p = (uint16_t *) addr;
     cli();
     *p = data;
     sei();
 }
 
-void CSWritePP16(u_short addr, u_short data)
+void CSWritePP16(uint16_t addr, uint16_t data)
 {
-    u_short *p;
+    uint16_t *p;
 
     cli();
-    p = (u_short *) CS_PP_PTR;
+    p = (uint16_t *) CS_PP_PTR;
     *p = addr;
 
     CSWrite16(CS_PP_DATA0, data);
@@ -249,39 +252,39 @@ void CSWritePP16(u_short addr, u_short data)
     return;
 }
 
-u_short CSRead16(u_short addr)
+uint16_t CSRead16(uint16_t addr)
 {
-    u_short *p;
-    u_short d;
+    uint16_t *p;
+    uint16_t d;
 
     cli();
-    p = (u_short *) addr;
+    p = (uint16_t *) addr;
     d = *p;
     sei();
 
     return d;
 }
 
-u_short CSReadPP16(u_short addr)
+uint16_t CSReadPP16(uint16_t addr)
 {
-    u_short *p;
+    uint16_t *p;
 
     cli();
-    p = (u_short *) CS_PP_PTR;
+    p = (uint16_t *) CS_PP_PTR;
     *p = addr;
 
     return CSRead16(CS_PP_DATA0);
 }
 
-u_long CSReadPP32(u_int addr)
+uint32_t CSReadPP32(u_int addr)
 {
-    u_long l;
-    u_long *p;
+    uint32_t l;
+    uint32_t *p;
 
     cli();
-    p = (u_long *) CS_PP_PTR;
+    p = (uint32_t *) CS_PP_PTR;
     *p = addr;
-    p = (u_long *) CS_PP_DATA0;
+    p = (uint32_t *) CS_PP_DATA0;
     l = *p;
     sei();
 
@@ -297,10 +300,10 @@ void CSBeginFrame(void)
 
 void CSEndFrame(void)
 {
-    u_char *p;
+    uint8_t *p;
 
     cli();
-    p = (u_char *) CS_DATA_P0 + 1;
+    p = (uint8_t *) CS_DATA_P0 + 1;
     sei();
 
     // If odd number of bytes in packet pad it out
@@ -308,14 +311,14 @@ void CSEndFrame(void)
         p = 0;
 }
 
-void CSWriteFrameByte(u_char data)
+void CSWriteFrameByte(uint8_t data)
 {
-    u_char *p;
+    uint8_t *p;
 
     if (cs_flags & 1)
-        p = (u_char *) CS_DATA_P0 + 1;
+        p = (uint8_t *) CS_DATA_P0 + 1;
     else
-        p = (u_char *) CS_DATA_P0;
+        p = (uint8_t *) CS_DATA_P0;
 
     *p = data;
     cs_flags ^= 1;
@@ -323,9 +326,9 @@ void CSWriteFrameByte(u_char data)
 
 static int CSEthPutPacket(NUTDEVICE * dev, NETBUF * nb)
 {
-    u_short i;
-    u_short sz;
-    u_char *p;
+    uint16_t i;
+    uint16_t sz;
+    uint8_t *p;
     NICINFO *ni;
 
     ni = (NICINFO *) dev->dev_dcb;
@@ -447,10 +450,10 @@ THREAD(CSNICrx, arg)
     IFNET *ifn;
     NICINFO *ni;
     NETBUF *nb;
-    u_char *p;
-    u_char *q;
-    u_short i, m;
-    volatile u_short l;
+    uint8_t *p;
+    uint8_t *q;
+    uint16_t i, m;
+    volatile uint16_t l;
 
     dev = arg;
     ifn = (IFNET *) dev->dev_icb;
@@ -485,8 +488,8 @@ THREAD(CSNICrx, arg)
             );
 #else
 
-        l = *(u_char *) (CS_DATA_P0 + 1) << 8 | *(u_char *) (CS_DATA_P0);
-        l = *(u_char *) (CS_DATA_P0 + 1) << 8 | *(u_char *) (CS_DATA_P0);
+        l = *(uint8_t *) (CS_DATA_P0 + 1) << 8 | *(uint8_t *) (CS_DATA_P0);
+        l = *(uint8_t *) (CS_DATA_P0 + 1) << 8 | *(uint8_t *) (CS_DATA_P0);
 #endif
         //NutPrintFormat_P(dev_debug,PSTR("RxLength = %x \r\n"), l);
         //NutPrintFlush(dev_debug);
@@ -502,18 +505,18 @@ THREAD(CSNICrx, arg)
         if (nb) {
             q = nb->nb_dl.vp;
             for (i = 0; i < m; i += 2) {
-                p = (u_char *) CS_DATA_P0;
+                p = (uint8_t *) CS_DATA_P0;
                 *q++ = *p;
-                p = (u_char *) CS_DATA_P0 + 1;
+                p = (uint8_t *) CS_DATA_P0 + 1;
                 *q++ = *p;
             }
 
             // Odd length packets
             if (m != l) {
-                p = (u_char *) CS_DATA_P0;
+                p = (uint8_t *) CS_DATA_P0;
                 *q++ = *p;
 
-                p = (u_char *) CS_DATA_P0 + 1;
+                p = (uint8_t *) CS_DATA_P0 + 1;
                 m = *p;
             }
             ni->ni_rx_packets++;
@@ -524,9 +527,9 @@ THREAD(CSNICrx, arg)
 
 void CSSoftwareWakeup(void)
 {
-    volatile u_short *p;
+    volatile uint16_t *p;
 
-    p = (u_short *) CS_PP_PTR;
+    p = (uint16_t *) CS_PP_PTR;
     *p = CS_SELF_CTRL;
 
     NutDelay(10);
@@ -535,11 +538,11 @@ void CSSoftwareWakeup(void)
 
 void CSSoftwareReset(void)
 {
-    volatile u_short *p;
+    volatile uint16_t *p;
 
-    p = (u_short *) CS_PP_PTR;
+    p = (uint16_t *) CS_PP_PTR;
     *p = CS_SELF_CTRL;
-    p = (u_short *) CS_DATA_P0;
+    p = (uint16_t *) CS_DATA_P0;
     *p = 0x0040;
 }
 
@@ -556,8 +559,8 @@ void CSSoftwareReset(void)
  */
 int CSNicInit(NUTDEVICE * dev)
 {
-    u_short i;
-    u_short j;
+    uint16_t i;
+    uint16_t j;
     IFNET *ifn;
     NICINFO *ni;
 

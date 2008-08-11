@@ -36,6 +36,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/05/25 09:30:23  haraldkipp
  * Compiles for AVR. Still not tested, though.
  *
@@ -66,7 +69,7 @@ static int npl_registered;
  */
 static void NplInterrupt(void *arg)
 {
-    u_short slr;
+    uint16_t slr;
 
     /* Read signal latch register and clear all enabled interrupts. */
     slr = inw(NPL_SLR) & inw(NPL_IMR);
@@ -144,7 +147,7 @@ static int NplIrqCtl(int cmd, void *param, IRQ_HANDLER * irq, u_int mask)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    u_short enabled = inw(NPL_IMR) & mask;
+    uint16_t enabled = inw(NPL_IMR) & mask;
 
     /* Disable interrupt. */
     if (enabled) {

@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:25  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2006/05/25 09:18:28  haraldkipp
  * API documentation updated and corrected.
  *
@@ -70,6 +73,8 @@
 
 #include <sys/types.h>
 #include <cfg/eeprom.h>
+
+#include <stdint.h>
 
 /*!
  * \addtogroup xgConfOs
@@ -106,13 +111,13 @@ struct __attribute__ ((packed)) _CONFOS {
      * Used by Nut/Net to verify, that the structure contents is valid
      * after reading it from non-volatile memory.
      */
-    u_char size;
+    uint8_t size;
 
     /*! \brief Magic cookie.
      *
      * Contains CONFOS_EE_MAGIC.
      */
-    u_char magic[2];
+    uint8_t magic[2];
 
     /*! \brief Host name of the system. 
      */

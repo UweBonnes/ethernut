@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2007/05/24 07:29:10  haraldkipp
  * Update provided by Przemyslaw Rudy.
  *
@@ -134,13 +137,13 @@
 #endif	
 #ifdef ACE_HDX_LINE
     #ifdef ACE_HDX_LINE_FLIP
-        #define ACE_HDX_RECEIVE(base) *(u_char *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
-        #define ACE_HDX_TRANSMIT(base) *(u_char *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
-		#define ACE_HDX_IS_TRANSMIT(base) (*(u_char *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE)
+        #define ACE_HDX_RECEIVE(base) *(uint8_t *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
+        #define ACE_HDX_TRANSMIT(base) *(uint8_t *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
+		#define ACE_HDX_IS_TRANSMIT(base) (*(uint8_t *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE)
     #else
-        #define ACE_HDX_RECEIVE(base) *(u_char *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
-        #define ACE_HDX_TRANSMIT(base) *(u_char *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
-		#define ACE_HDX_IS_TRANSMIT(base) (!(*(u_char *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE))
+        #define ACE_HDX_RECEIVE(base) *(uint8_t *) ((base) + ACE_MCR_OFS) |= ACE_HDX_LINE
+        #define ACE_HDX_TRANSMIT(base) *(uint8_t *) ((base) + ACE_MCR_OFS) &= ~ACE_HDX_LINE
+		#define ACE_HDX_IS_TRANSMIT(base) (!(*(uint8_t *) ((base) + ACE_MCR_OFS) & ACE_HDX_LINE))
     #endif
 #endif
 
@@ -159,11 +162,11 @@ struct _ACEDCB {
 
     /*! \brief Read timeout.
      */
-    u_long dcb_rtimeout;
+    uint32_t dcb_rtimeout;
 
     /*! \brief Write timeout.
      */
-    u_long dcb_wtimeout;
+    uint32_t dcb_wtimeout;
 
     /*! \brief Queue of threads waiting for output buffer empty.
      *
@@ -179,15 +182,15 @@ struct _ACEDCB {
 
     /*! \brief Mode flags.
      */
-    u_long dcb_modeflags;
+    uint32_t dcb_modeflags;
 
     /*! \brief Level of the fifo trigger, 0 if no fifo.
      */
-    u_char dcb_rfifo;
+    uint8_t dcb_rfifo;
 
     /*! \brief Free space in the output fifo since the last write operation.
      */
-    u_char dcb_wfifo;
+    uint8_t dcb_wfifo;
 #ifdef ACE_HDX_LINE
     /*! \brief One byte time delay after which HDX pin will be off, in OCR register format.
      */	 

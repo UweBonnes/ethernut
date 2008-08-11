@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2006/03/21 21:22:18  drsung
  * Enhancement made to TCP state machine. Now TCP options
  * are read from peer and at least the maximum segment size is stored.
@@ -109,6 +112,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file netinet/tcp.h
@@ -138,26 +142,26 @@ extern "C" {
  * \brief TCP protocol header type.
  */
 typedef struct __attribute__ ((packed)) tcphdr {
-    u_short th_sport;       /*!< \brief Source port. */
-    u_short th_dport;       /*!< \brief Destination port. */
-    u_long  th_seq;         /*!< \brief Sequence number of first octet in this segment. */
-    u_long  th_ack;         /*!< \brief Expected sequence number of next octet. */
+    uint16_t th_sport;       /*!< \brief Source port. */
+    uint16_t th_dport;       /*!< \brief Destination port. */
+    uint32_t  th_seq;         /*!< \brief Sequence number of first octet in this segment. */
+    uint32_t  th_ack;         /*!< \brief Expected sequence number of next octet. */
 #ifndef __BIG_ENDIAN__
 #ifdef __IMAGECRAFT__
     unsigned th_x2:4,
              th_off:4;
 #else /* #ifndef __BIG_ENDIAN__ */
-    u_char  th_x2:4,        /*!< \brief Unused. */
+    uint8_t  th_x2:4,        /*!< \brief Unused. */
             th_off:4;       /*!< \brief Data offset. */
 #endif
 #else /* #ifndef __BIG_ENDIAN__ */
-    u_char  th_off:4,       /*!< \brief Data offset. */
+    uint8_t  th_off:4,       /*!< \brief Data offset. */
 	    th_x2:4;        /*!< \brief Unused. */
 #endif
-    u_char  th_flags;       /*!< \brief Control flags. */
-    u_short th_win;         /*!< \brief Number of acceptable octects. */
-    u_short th_sum;         /*!< \brief 96 byte pseudo header checksum. */
-    u_short th_urp;         /*!< \brief Urgent data pointer. */
+    uint8_t  th_flags;       /*!< \brief Control flags. */
+    uint16_t th_win;         /*!< \brief Number of acceptable octects. */
+    uint16_t th_sum;         /*!< \brief 96 byte pseudo header checksum. */
+    uint16_t th_urp;         /*!< \brief Urgent data pointer. */
 } TCPHDR;
 
 #define TCPOPT_EOL                  0   /*!< \brief End of options. */
@@ -176,12 +180,12 @@ typedef struct __attribute__ ((packed)) tcphdr {
  * \brief TCP pseudo header type.
  */
 typedef struct _TCPPSEUDOHDR {
-    u_long  tph_src;    /*!< \brief IP address of sender. */
-    u_long  tph_dst;    /*!< \brief IP address of target. */
-    u_char  tph_mbz;    /*!< \brief mbz */
-    u_char  tph_p;      /*!< \brief p */
-    u_short tph_len;    /*!< \brief len */
-    u_short tph_sum;    /*!< \brief Checksum */
+    uint32_t  tph_src;    /*!< \brief IP address of sender. */
+    uint32_t  tph_dst;    /*!< \brief IP address of target. */
+    uint8_t  tph_mbz;    /*!< \brief mbz */
+    uint8_t  tph_p;      /*!< \brief p */
+    uint16_t tph_len;    /*!< \brief len */
+    uint16_t tph_sum;    /*!< \brief Checksum */
 } TCPPSEUDOHDR;
 
 

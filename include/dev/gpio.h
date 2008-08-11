@@ -106,9 +106,9 @@ extern GPIO_SIGNAL sig_GPIO3;
 __BEGIN_DECLS
 /* Prototypes */
 
-extern u_long GpioPinConfigGet(int bank, int bit);
-extern int GpioPinConfigSet(int bank, int bit, u_long flags);
-extern int GpioPortConfigSet(int bank, u_int mask, u_long flags);
+extern uint32_t GpioPinConfigGet(int bank, int bit);
+extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
+extern int GpioPortConfigSet(int bank, u_int mask, uint32_t flags);
 
 extern int GpioPinGet(int bank, int bit);
 extern void GpioPinSet(int bank, int bit, int value);

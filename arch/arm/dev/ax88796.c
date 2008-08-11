@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:07  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/05/02 11:22:51  haraldkipp
  * Added multicast table entry.
  *
@@ -137,9 +140,9 @@ NUTDEVICE devAx88796 = {
  * Asix packet header.
  */
 struct nic_pkt_header {
-    u_char ph_status;           /*!< \brief Status, contents of RSR register */
-    u_char ph_nextpg;           /*!< \brief Page for next packet */
-    u_short ph_size;            /*!< \brief Size of header and packet in octets */
+    uint8_t ph_status;           /*!< \brief Status, contents of RSR register */
+    uint8_t ph_nextpg;           /*!< \brief Page for next packet */
+    uint16_t ph_size;            /*!< \brief Size of header and packet in octets */
 };
 
 /*
@@ -177,11 +180,11 @@ void Delay16Cycles(void)
  *
  *
  */
-static u_short MIIPutGet(u_short data, u_char bitCount)
+static uint16_t MIIPutGet(uint16_t data, uint8_t bitCount)
 {
-    u_short rc = 0;
-    u_short mask;
-    u_char i;
+    uint16_t rc = 0;
+    uint16_t mask;
+    uint8_t i;
 
     mask = 1 << (bitCount - 1);
 
@@ -212,9 +215,9 @@ static u_short MIIPutGet(u_short data, u_char bitCount)
  *
  * \return Contents of the specified register.
  */
-u_short NicPhyRead(u_char reg)
+uint16_t NicPhyRead(uint8_t reg)
 {
-    u_short rc = 0;
+    uint16_t rc = 0;
 
     /* Select Bank 0. */
     Asix_Write(CR, (Asix_Read(CR) & ~(CR_PS0)));
@@ -247,7 +250,7 @@ u_short NicPhyRead(u_char reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-void NicPhyWrite(u_char reg, u_short val)
+void NicPhyWrite(uint8_t reg, uint16_t val)
 {
 
     /* Select Bank 0. */
@@ -277,7 +280,7 @@ void NicPhyWrite(u_char reg, u_short val)
  */
 static void NicCompleteDma(void)
 {
-    u_char i;
+    uint8_t i;
 
     /* Check that we have a DMA complete flag. */
     do {
@@ -303,7 +306,7 @@ static void NicCompleteDma(void)
 static int NicReset(void)
 {
     int tmp;
-    //u_short test;
+    //uint16_t test;
 
     //printf("NicReset()\n");
     outr(PIO_PER, _BV(ASIX_RESET_PIN));  /* Set PIO Enable Register */
@@ -343,9 +346,9 @@ static int NicReset(void)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST u_char * mac)
+static int NicStart(CONST uint8_t * mac)
 {
-    u_char i;
+    uint8_t i;
 
     //printf("NicStart()\n");
     if (NicReset())
@@ -423,9 +426,9 @@ static int NicStart(CONST u_char * mac)
 /*
  * Write data block to the NIC.
  */
-static void NicWrite(u_char * buf, u_short len)
+static void NicWrite(uint8_t * buf, uint16_t len)
 {
-    register u_short *wp = (u_short *) buf;
+    register uint16_t *wp = (uint16_t *) buf;
 
     if (len & 1)
         len++;
@@ -443,9 +446,9 @@ static void NicWrite(u_char * buf, u_short len)
 /*
  * Read data block from the NIC.
  */
-static void NicRead(u_char * buf, u_short len)
+static void NicRead(uint8_t * buf, uint16_t len)
 {
-    register u_short *wp = (u_short *) buf;
+    register uint16_t *wp = (uint16_t *) buf;
 
     if (len & 1)
         len++;
@@ -474,11 +477,11 @@ static NETBUF *NicGetPacket(void)
 {
     NETBUF *nb = 0;
     struct nic_pkt_header hdr;
-    u_short count;
-    u_char nextpg;
-    u_char bnry;
-    u_char curr;
-    u_char drop = 0;
+    uint16_t count;
+    uint8_t nextpg;
+    uint8_t bnry;
+    uint8_t curr;
+    uint8_t drop = 0;
 
     /* we don't want to be interrupted by NIC owerflow */
     NutEnterCritical();
@@ -515,7 +518,7 @@ static NETBUF *NicGetPacket(void)
     Asix_Write(CR, CR_START | CR_RD0);
     Delay16Cycles();
 
-    NicRead((u_char *) & hdr, sizeof(struct nic_pkt_header));
+    NicRead((uint8_t *) & hdr, sizeof(struct nic_pkt_header));
     NicCompleteDma();
     //printf("[S=%02X N=%02X L=%u]", hdr.ph_status, hdr.ph_nextpg, hdr.ph_size);
 
@@ -549,7 +552,7 @@ static NETBUF *NicGetPacket(void)
         nextpg += RXSTART_INIT;
     }
     if (nextpg != hdr.ph_nextpg) {
-        u_char nextpg1 = nextpg + 1;
+        uint8_t nextpg1 = nextpg + 1;
         if (nextpg1 >= RXSTOP_INIT) {
             nextpg1 -= RXSTOP_INIT;
             nextpg1 += RXSTART_INIT;
@@ -624,7 +627,7 @@ static NETBUF *NicGetPacket(void)
  * to Bengt Florin for contributing his code, which provides much more
  * stability than its predecessor.
  */
-static u_char NicOverflow(volatile u_char * base)
+static uint8_t NicOverflow(volatile uint8_t * base)
 {
     u_int cr;
     u_int resend = 0;
@@ -684,9 +687,9 @@ static u_char NicOverflow(volatile u_char * base)
 //==============================================================================
 static int NicPutPacket(NETBUF * nb)
 {
-    u_short sz;                 // packed size
-    u_short send_sz;            // send packed size, min 60
-    static u_char first_put = 0;
+    uint16_t sz;                 // packed size
+    uint16_t send_sz;            // send packed size, min 60
+    static uint8_t first_put = 0;
     int tmp;
 
 
@@ -792,7 +795,7 @@ THREAD(NicRxAsix, arg)
     ni = (NICINFO *) dev->dev_dcb;
 
     for (;;) {
-        if (*((u_long *) (ifn->if_mac)) && *((u_long *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
+        if (*((uint32_t *) (ifn->if_mac)) && *((uint32_t *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
             break;
         }
         NutSleep(63);
@@ -835,8 +838,8 @@ THREAD(NicRxAsix, arg)
  */
 static void NicInterrupt(void *arg)
 {
-    u_char isr;
-    volatile u_char *base = (u_char *) (((NUTDEVICE *) arg)->dev_base);
+    uint8_t isr;
+    volatile uint8_t *base = (uint8_t *) (((NUTDEVICE *) arg)->dev_base);
     NICINFO *ni = (NICINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     ni->ni_interrupts++;
@@ -880,7 +883,7 @@ static void NicInterrupt(void *arg)
          */
         if (isr & ISR_PRX) {
             ni->ni_rx_pending++;
-            //printf("Post %lX\n", (u_long) ni->ni_rx_rdy);
+            //printf("Post %lX\n", (uint32_t) ni->ni_rx_rdy);
             NutEventPostFromIrq(&ni->ni_rx_rdy);
         }
 

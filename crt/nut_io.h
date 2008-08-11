@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2008/02/15 16:51:21  haraldkipp
  * Serious bug fix. Reconfigured FOPEN_MAX was not honored by all modules.
  *
@@ -53,6 +56,7 @@
 #include <cfg/crt.h>
 #include <sys/types.h>
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -87,8 +91,8 @@
  */
 struct __iobuf {
     int     iob_fd;		/*!< \internal Associated file, device or socket descriptor. */
-    u_short iob_mode;		/*!< \internal Access mode, see fcntl.h. */
-    u_char  iob_flags;		/*!< \internal Status flags. */
+    uint16_t iob_mode;		/*!< \internal Access mode, see fcntl.h. */
+    uint8_t iob_flags;		/*!< \internal Status flags. */
     int     iob_unget;		/*!< \internal Unget buffer. */
 };
 

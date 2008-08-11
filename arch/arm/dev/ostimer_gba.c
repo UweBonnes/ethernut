@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:12  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/07/08 08:25:04  haraldkipp
  * NutDelay is no more architecture specific.
  * Number of loops per millisecond is configurable or will be automatically
@@ -137,7 +140,7 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return CPU clock frequency in Hertz, which is 16780000 for the GBA.
  */
-u_long NutGetCpuClock(void)
+uint32_t NutGetCpuClock(void)
 {
     return NUT_CPU_FREQ;
 }
@@ -147,7 +150,7 @@ u_long NutGetCpuClock(void)
  *
  * \return System tick frequency in Hertz.
  */
-u_long NutGetTickClock(void)
+uint32_t NutGetTickClock(void)
 {
     return NUT_TICK_FREQ;
 }
@@ -155,7 +158,7 @@ u_long NutGetTickClock(void)
 /*!
  * \brief Calculate system ticks for a given number of milliseconds.
  */
-u_long NutTimerMillisToTicks(u_long ms)
+uint32_t NutTimerMillisToTicks(uint32_t ms)
 {
     return ms * 1000L / NutGetTickClock();
 }

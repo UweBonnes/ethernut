@@ -45,17 +45,17 @@
 
 #include <pro/asn1.h>
 
-typedef int (WMETHOD)(int, u_char *, u_char, size_t, OID *, size_t);
+typedef int (WMETHOD)(int, uint8_t *, uint8_t, size_t, OID *, size_t);
 
 typedef struct _SNMPVAR {
     /*! \brief Internal magic identifier. */
-    u_char var_magic;
+    uint8_t var_magic;
     /*! \brief Type of this variable. */
     char var_type;
     /*! \brief Access control. */
-    u_short var_acl;
+    uint16_t var_acl;
     /*! \brief Variable access funtion. */
-    u_char *(*var_get)(CONST struct _SNMPVAR*, OID*, size_t*, int, size_t*, WMETHOD **);
+    uint8_t *(*var_get)(CONST struct _SNMPVAR*, OID*, size_t*, int, size_t*, WMETHOD **);
     /*! \brief Number of sub-IDs in the name. */
     size_t var_namelen;
     /*! \brief Name (object identifier) of the variable. */
@@ -63,6 +63,6 @@ typedef struct _SNMPVAR {
 } SNMPVAR;
 
 extern int SnmpMibRegister(OID[], size_t, SNMPVAR *, int);
-extern u_char *SnmpMibFind(OID *, size_t *, u_char *, size_t *, u_short *, int, WMETHOD **, int *);
+extern uint8_t *SnmpMibFind(OID *, size_t *, uint8_t *, size_t *, uint16_t *, int, WMETHOD **, int *);
 
 #endif

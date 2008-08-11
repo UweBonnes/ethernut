@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2007/03/17 14:33:21  haraldkipp
  * Workaround for AVRGCC 4.1.1 bug, which failed to compile UsartIOCtl().
  *
@@ -126,7 +129,7 @@ int UsartInit(NUTDEVICE * dev)
  */
 static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm)
 {
-    u_char *xbp = rbf->rbf_start;
+    uint8_t *xbp = rbf->rbf_start;
     size_t xsz = rbf->rbf_siz;
 
     /* Disable further buffer usage. */
@@ -193,8 +196,8 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
     size_t rc;
     size_t avail;
     size_t taken = 0;
-    u_char ch;
-    u_char *cp = buffer;
+    uint8_t ch;
+    uint8_t *cp = buffer;
     NUTDEVICE *dev = fp->nf_dev;
     USARTDCB *dcb = dev->dev_dcb;
     RINGBUF *rbf = &dcb->dcb_rx_rbf;
@@ -349,10 +352,10 @@ static size_t UsartFlushOutput(USARTDCB *dcb, size_t added, size_t left)
 static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 {
     int rc;
-    CONST u_char *cp;
-    u_char lbmode;
+    CONST uint8_t *cp;
+    uint8_t lbmode;
     ureg_t cooked;
-    u_char ch;
+    uint8_t ch;
     size_t cnt;
     size_t added;
     USARTDCB *dcb = dev->dev_dcb;
@@ -664,9 +667,9 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
     int rc = 0;
     USARTDCB *dcb;
     RINGBUF *rbf;
-    u_long *lvp = (u_long *) conf;
-    u_long lv = *lvp;
-    u_char bv = (u_char) lv;
+    uint32_t *lvp = (uint32_t *) conf;
+    uint32_t lv = *lvp;
+    uint8_t bv = (uint8_t) lv;
 
     dcb = dev->dev_dcb;
 

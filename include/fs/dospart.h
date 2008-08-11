@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2008/07/14 13:09:30  haraldkipp
  * Allow small MultiMedia Cards without partition table.
  *
@@ -51,6 +54,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \addtogroup xgPartition
@@ -139,17 +143,17 @@
  */
 typedef struct __attribute__ ((packed)) _DOSPART {
     /*! \brief Boot descriptor. */
-    u_char part_state;
+    uint8_t part_state;
     /*! \brief Partition start. */
-    u_char part_start[3];
+    uint8_t part_start[3];
     /*! \brief Partition type. See PTYPE_ definitions. */
-    u_char part_type;
+    uint8_t part_type;
     /*! \brief Partition end. */
-    u_char part_end[3];
+    uint8_t part_end[3];
     /*! \brief First linear block address of this partition. */
-    u_long part_sect_offs;
+    uint32_t part_sect_offs;
     /*! \brief Partition size in sectors. */
-    u_long part_sects;
+    uint32_t part_sects;
 } DOSPART;
 
 /*@}*/

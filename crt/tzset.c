@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:41  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2003/12/19 22:26:38  drsung
  * Dox written.
  *
@@ -42,6 +45,8 @@
  *
  *
  */
+
+#include <stdint.h>
 
 #include <time.h>
 #include "ctime.h"
@@ -57,7 +62,7 @@ typedef struct {
  */
 static transitiondate dststart = { -1, 0, 0L };
 static transitiondate dstend = { -1, 0, 0L };
-u_char _daylight = 1;                   /* daylight saving default enabled */
+int _daylight = 1;                   /* daylight saving default enabled */
 long _dstbias = -1 * 60L * 60L;         /* bias for daylight saving in seconds */
 long _timezone = 5L * 60L * 60L;        /* default time zone is EST = -05:00:00 */
 

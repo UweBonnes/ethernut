@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/05/25 09:13:23  haraldkipp
  * Platform independent watchdog API added.
  *
@@ -88,7 +91,7 @@ __BEGIN_DECLS
  * \note The AT91 implementation does not calculate the actual time out 
  *       value, but simply returns the specified number of milliseconds.
  */
-extern u_long NutWatchDogStart(u_long ms, u_long xmode);
+extern uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode);
 
 
 /*!
@@ -139,12 +142,12 @@ extern void NutWatchDogDisable(void);
 extern void NutWatchDogEnable(void);
 
 #if defined(__AVR__)
-extern u_long AvrWatchDogStart(u_long ms);
+extern uint32_t AvrWatchDogStart(uint32_t ms);
 extern void AvrWatchDogRestart(void);
 extern void AvrWatchDogDisable(void);
 extern void AvrWatchDogEnable(void);
 #elif defined(MCU_AT91R40008)
-extern u_long At91WatchDogStart(u_long ms, u_long xmode);
+extern uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode);
 extern void At91WatchDogRestart(void);
 extern void At91WatchDogDisable(void);
 extern void At91WatchDogEnable(void);

@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/03/16 15:25:29  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -58,6 +61,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 __BEGIN_DECLS
 
@@ -65,8 +69,8 @@ __BEGIN_DECLS
  * \file arpa/inet.h
  * \brief Internet address conversion.
  */
-extern u_long inet_addr(CONST char *str);
-extern char *inet_ntoa(u_long addr);
+extern uint32_t inet_addr(CONST char *str);
+extern char *inet_ntoa(uint32_t addr);
 
 __END_DECLS
 

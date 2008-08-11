@@ -64,6 +64,7 @@
  * ------------------------------------------------------------------------- */
 
 #include <sys/types.h>
+#include <stdint.h>
 #include <dev/mweeprom.h>
 #include <termios.h>
 #include <unistd_orig.h>
@@ -120,8 +121,8 @@ enum {
 typedef struct {
 
     char *device;
-    u_long bautrate;
-    u_char flowcontrol;
+    uint32_t bautrate;
+    uint8_t flowcontrol;
     signed char usbnum;
 } uart_options_t;
 
@@ -146,9 +147,9 @@ extern emulation_options_t emulation_options;
 void emulation_options_parse(int argc, char *argv[]);
 
 /** \name Backwards compatibility defines */
-#define eeprom_rb(addr) eeprom_read_byte       ((u_char  *)(u_long) (addr))
-#define eeprom_rw(addr) eeprom_read_word       ((u_short *)(u_long) (addr))
-#define eeprom_wb(addr, val) eeprom_write_byte ((u_char  *)(u_long) (addr), (val))
+#define eeprom_rb(addr) eeprom_read_byte       ((uint8_t  *)(uint32_t) (addr))
+#define eeprom_rw(addr) eeprom_read_word       ((uint16_t *)(uint32_t) (addr))
+#define eeprom_wb(addr, val) eeprom_write_byte ((uint8_t  *)(uint32_t) (addr), (val))
 // fake ATmega128 has 0xfff eeprom
 #define    E2END    0x0FFF
 

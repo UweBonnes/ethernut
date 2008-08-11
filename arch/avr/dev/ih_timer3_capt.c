@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:16  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -128,7 +131,7 @@ static int AvrTimer3InCaptIrqCtl(int cmd, void *param)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(INT_MASK_REG, INT_ENABLE_BIT);
+    int_fast8_t enabled = bit_is_set(INT_MASK_REG, INT_ENABLE_BIT);
 
     /* Disable interrupt. */
     cbi(INT_MASK_REG, INT_ENABLE_BIT);

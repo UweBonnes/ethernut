@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/04/07 13:52:52  haraldkipp
  * Generic character driver sample added.
  *
@@ -80,13 +83,13 @@
 typedef struct {
     HANDLE dcb_rrdy;        /*!< Receiver ready queue. */
     volatile int dcb_rcnt;  /*!< Number of bytes in the receive buffer. */
-    u_char dcb_rbuff[16];   /*!< Receive buffer. */
-    u_long dcb_rtimeout;    /*!< Read timeout. */
+    uint8_t dcb_rbuff[16];   /*!< Receive buffer. */
+    uint32_t dcb_rtimeout;    /*!< Read timeout. */
     HANDLE dcb_trdy;        /*!< Transmitter ready queue. */
     int    dcb_tlen;        /*!< Number of bytes in the transmit buffer. */
     volatile int dcb_tcnt;  /*!< Number of bytes already transmitted. */
-    u_char dcb_tbuff[16];   /*!< Transmit buffer. */
-    u_long dcb_ttimeout;    /*!< Write timeout. */
+    uint8_t dcb_tbuff[16];   /*!< Transmit buffer. */
+    uint32_t dcb_ttimeout;    /*!< Write timeout. */
 } DEVDCB;
 
 static DEVDCB devdcb;
@@ -100,7 +103,7 @@ static void GenCharInterrupt(void *arg)
 {
     NUTDEVICE *dev = (NUTDEVICE *)arg;
     DEVDCB *dcb = dev->dev_dcb;
-    u_char st = inr(GENDEV_SPORT);
+    uint8_t st = inr(GENDEV_SPORT);
 
     /* Receive interrupt. */
     if (st) {
@@ -147,7 +150,7 @@ static int GenCharIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     int rc = 0;
     DEVDCB *dcb = dev->dev_dcb;
-    u_long *lvp = (u_long *) conf;
+    uint32_t *lvp = (uint32_t *) conf;
 
     switch (req) {
     case DEV_SETREADTIMEOUT:

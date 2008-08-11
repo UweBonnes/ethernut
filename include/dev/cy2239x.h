@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/01/05 16:53:26  haraldkipp
  * Several new functions added to query and modify the clock settings.
  *
@@ -116,7 +119,7 @@
 __BEGIN_DECLS
 /* Prototypes */
 
-extern u_long Cy2239xGetFreq(int clk, int fctrl);
+extern uint32_t Cy2239xGetFreq(int clk, int fctrl);
 
 extern int Cy2239xGetPll(int clk);
 extern int Cy2239xSetPll(int clk, int pll);
@@ -126,7 +129,7 @@ extern int Cy2239xSetDivider(int clk, int sel, int val);
 
 extern int Cy2239xPllEnable(int pll, int fctrl, int ena);
 
-extern u_long Cy2239xPllGetFreq(int pll, int fctrl);
+extern uint32_t Cy2239xPllGetFreq(int pll, int fctrl);
 extern int Cy2239xPllSetFreq(int pll, int fctrl, u_int pval, u_int poff, u_int qval, u_int fval);
 
 __END_DECLS

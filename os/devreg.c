@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 07:00:33  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2004/09/08 10:24:26  haraldkipp
  * RAMSTART is too platform dependant
  *
@@ -115,7 +118,7 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
  *         structure is invalid or if the device initialization
  *         failed.
  */
-int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, u_char irq)
+int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, uint8_t irq)
 {
     int rc = -1;
 

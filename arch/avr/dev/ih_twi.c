@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:16  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -108,9 +111,9 @@ IRQ_HANDLER sig_2WIRE_SERIAL = {
 static int AvrTwiIrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *) param;
-    int enabled = bit_is_set(TWCR, TWIE);
-    u_char bval;
+    unsigned int *ival = (unsigned int *) param;
+    int_fast8_t enabled = bit_is_set(TWCR, TWIE);
+    uint8_t bval;
 
     /* Disable interrupt. */
     cbi(TWCR, TWIE);
@@ -145,7 +148,7 @@ static int AvrTwiIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int) sig_2WIRE_SERIAL.ir_count;
+        *ival = (unsigned int) sig_2WIRE_SERIAL.ir_count;
         sig_2WIRE_SERIAL.ir_count = 0;
         break;
 #endif

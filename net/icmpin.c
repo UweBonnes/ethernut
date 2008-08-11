@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2008/05/24 22:23:55  olereinhardt
  * Fixed cvs log message
  *
@@ -135,11 +138,11 @@
 /*
  * Send out ICMP echo response.
  */
-static int NutIcmpReflect(NUTDEVICE * dev, u_char type, NETBUF * nb)
+static int NutIcmpReflect(NUTDEVICE * dev, uint8_t type, NETBUF * nb)
 {
     IPHDR *ip;
     ICMPHDR *icmp;
-    u_long dest;
+    uint32_t dest;
     IFNET *nif;
 
     ip = nb->nb_nw.vp;
@@ -168,7 +171,7 @@ static int NutIcmpUnreach(NETBUF * nb)
     if (ih->ip_p != IPPROTO_TCP)
         return -1;
 
-    th = (TCPHDR *) ((u_char *) ih) + sizeof(IPHDR);
+    th = (TCPHDR *) ((char *) ih) + sizeof(IPHDR);
     sock = NutTcpFindSocket(th->th_dport, th->th_sport, ih->ip_src);
     if (sock == 0)
         return -1;
@@ -207,7 +210,7 @@ void NutIcmpInput(NUTDEVICE * dev, NETBUF * nb)
 
         if (nb->nb_tp.sz > sizeof(ICMPHDR)) {
             nb->nb_ap.sz = nb->nb_tp.sz - sizeof(ICMPHDR);
-            nb->nb_ap.vp = ((u_char *) icp) + sizeof(ICMPHDR);
+            nb->nb_ap.vp = ((char *) icp) + sizeof(ICMPHDR);
             nb->nb_tp.sz = sizeof(ICMPHDR);
         }
 

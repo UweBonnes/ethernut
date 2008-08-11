@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/08/02 17:46:48  haraldkipp
  * Major API documentation update.
  *
@@ -63,6 +66,6 @@ extern HANDLE nut_irqueue;
 
 __BEGIN_DECLS
 /* Prototypes */
-extern long NutIrGet(u_long tmo);
+extern long NutIrGet(uint32_t tmo);
 __END_DECLS
 #endif

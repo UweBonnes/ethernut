@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -135,7 +138,7 @@
  * \return Pointer to the allocated network buffer structure 
  *         or 0 on failure.
  */
-NETBUF *NutArpAllocNetBuf(u_short type, u_long ip, u_char * mac)
+NETBUF *NutArpAllocNetBuf(uint16_t type, uint32_t ip, uint8_t * mac)
 {
     NETBUF *nb;
     ETHERARP *ea;

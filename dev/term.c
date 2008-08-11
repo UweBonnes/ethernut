@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -80,10 +83,10 @@
 
 static prog_char termid[] = "Term 1.0";
 
-static void TermRefreshLineEnd(CONST TERMDCB * dcb, u_char row, u_char col)
+static void TermRefreshLineEnd(CONST TERMDCB * dcb, uint8_t row, uint8_t col)
 {
-    u_char i = col;
-    u_char *cp = dcb->dcb_smem + row * dcb->dcb_vcols + col;
+    uint8_t i = col;
+    uint8_t *cp = dcb->dcb_smem + row * dcb->dcb_vcols + col;
 
     /* Disable cursor to avoid flickering. */
     if (dcb->dcb_modeflags & LCD_MF_CURSORON)
@@ -109,7 +112,7 @@ static void TermRefreshLineEnd(CONST TERMDCB * dcb, u_char row, u_char col)
 
 void TermRefresh(TERMDCB * dcb)
 {
-    u_char ir;
+    uint8_t ir;
 
     for (ir = 0; ir < dcb->dcb_nrows; ir++)
         TermRefreshLineEnd(dcb, ir, 0);
@@ -124,10 +127,10 @@ static void TermClear(TERMDCB * dcb)
     (*dcb->dss_clear) ();
 }
 
-static void TermDeleteLine(TERMDCB * dcb, u_char row)
+static void TermDeleteLine(TERMDCB * dcb, uint8_t row)
 {
-    u_char i;
-    u_char *dcp;
+    uint8_t i;
+    uint8_t *dcp;
 
     for (i = row; i < dcb->dcb_nrows - 1; i++) {
         dcp = dcb->dcb_smem + i * dcb->dcb_vcols;
@@ -137,10 +140,10 @@ static void TermDeleteLine(TERMDCB * dcb, u_char row)
     TermRefresh(dcb);
 }
 
-static void TermInsertLine(TERMDCB * dcb, u_char row)
+static void TermInsertLine(TERMDCB * dcb, uint8_t row)
 {
-    u_char i;
-    u_char *dcp;
+    uint8_t i;
+    uint8_t *dcp;
 
     for (i = dcb->dcb_nrows - 1; i > row; i--) {
         dcp = dcb->dcb_smem + i * dcb->dcb_vcols;
@@ -193,7 +196,7 @@ static void TermReverseLinefeed(TERMDCB * dcb)
     }
 }
 
-static void TermEraseLineEnd(TERMDCB * dcb, u_char col)
+static void TermEraseLineEnd(TERMDCB * dcb, uint8_t col)
 {
     if (col < dcb->dcb_vcols) {
         memset(dcb->dcb_smem + dcb->dcb_row * dcb->dcb_vcols + col, ' ', dcb->dcb_vcols - col);
@@ -203,7 +206,7 @@ static void TermEraseLineEnd(TERMDCB * dcb, u_char col)
 
 static void TermEraseEnd(TERMDCB * dcb)
 {
-    u_char i;
+    uint8_t i;
 
     if (dcb->dcb_col < dcb->dcb_vcols)
         memset(dcb->dcb_smem + dcb->dcb_row * dcb->dcb_vcols + dcb->dcb_col, ' ', dcb->dcb_vcols - dcb->dcb_col);
@@ -222,7 +225,7 @@ static void TermEraseLineStart(TERMDCB * dcb)
 
 static void TermEraseStart(TERMDCB * dcb)
 {
-    u_char i;
+    uint8_t i;
 
     if (dcb->dcb_col)
         memset(dcb->dcb_smem + dcb->dcb_row * dcb->dcb_vcols, ' ', dcb->dcb_col);
@@ -231,10 +234,10 @@ static void TermEraseStart(TERMDCB * dcb)
     TermRefresh(dcb);
 }
 
-static void TermDeleteChar(TERMDCB * dcb, u_char col)
+static void TermDeleteChar(TERMDCB * dcb, uint8_t col)
 {
-    u_char i;
-    u_char *cp = dcb->dcb_smem + dcb->dcb_row * dcb->dcb_vcols + col;
+    uint8_t i;
+    uint8_t *cp = dcb->dcb_smem + dcb->dcb_row * dcb->dcb_vcols + col;
 
     for (i = col; i < dcb->dcb_vcols - 1; i++, cp++)
         *cp = *(cp + 1);
@@ -247,8 +250,8 @@ static void TermDeleteChar(TERMDCB * dcb, u_char col)
  */
 static void TermInsertSpace(TERMDCB * dcb)
 {
-    u_char i;
-    u_char *cp = dcb->dcb_smem + (dcb->dcb_row + 1) * dcb->dcb_vcols - 1;
+    uint8_t i;
+    uint8_t *cp = dcb->dcb_smem + (dcb->dcb_row + 1) * dcb->dcb_vcols - 1;
 
     for (i = dcb->dcb_col; i < dcb->dcb_vcols - 1; i++, cp--)
         *cp = *(cp - 1);
@@ -281,24 +284,24 @@ static void TermIdentify(TERMDCB * dcb)
  * - LCD_CMDBYTE     Send command byte to display. Parameter conf points 
  *                   to  an u_char value containing the command byte.
  * - LCD_CMDWORD16   Send 16 bit command word to display. Parameter conf 
- *                   points to an u_short value containing the command 
+ *                   points to an uint16_t value containing the command 
  *                   bytes. The most significant byte is send first.
  * - LCD_CMDWORD32   Send 32 bit command byte to display. Parameter conf 
- *                   points to an u_long value containing the command 
+ *                   points to an uint32_t value containing the command 
  *                   bytes. The most significant bytes are send first.
  * - LCD_DATABYTE    Send raw data byte to display. Parameter conf points 
  *                   to an u_char value containing the data byte.
  * - LCD_DATAWORD16  Send 16 bit raw data word to display. Parameter conf 
- *                   points to an u_short value containing the data 
+ *                   points to an uint16_t value containing the data 
  *                   bytes. The most significant byte is send first.
  * - LCD_DATAWORD32  Send 32 bit raw data word to display. Parameter conf 
- *                   points to an u_long value containing the data 
+ *                   points to an uint32_t value containing the data 
  *                   bytes. The most significant bytes are send first.
  * - LCD_SETCOOKEDMODE Set terminal control character mode. Parameter conf 
- *                     points to an u_long value containing 0 (off) or 1 
+ *                     points to an uint32_t value containing 0 (off) or 1 
  *                     (on).
  * - LCD_GETCOOKEDMODE Query terminal control character mode. Parameter 
- *                     conf points to an u_long value receiving 0 (off) 
+ *                     conf points to an uint32_t value receiving 0 (off) 
  *                     or 1 (on).
  *
  * \param conf Points to a buffer that contains any data required for
@@ -311,52 +314,52 @@ static void TermIdentify(TERMDCB * dcb)
 int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     TERMDCB *dcb = dev->dev_dcb;
-    u_short usv;
-    u_long ulv;
+    uint16_t usv;
+    uint32_t ulv;
     WINSIZE *win_size;
 
     switch (req) {
     case LCD_CMDBYTE:
-        (*dcb->dss_command) (*(u_char *)conf, 10);
+        (*dcb->dss_command) (*(uint8_t *)conf, 10);
         break;
     case LCD_CMDWORD16:
-        usv = *(u_short *)conf;
-        (*dcb->dss_command) ((u_char)(usv >> 8), 10);
-        (*dcb->dss_command) ((u_char)usv, 10);
+        usv = *(uint16_t *)conf;
+        (*dcb->dss_command) ((uint8_t)(usv >> 8), 10);
+        (*dcb->dss_command) ((uint8_t)usv, 10);
         break;
     case LCD_CMDWORD32:
-        ulv = *(u_long *)conf;
-        (*dcb->dss_command) ((u_char)(ulv >> 24), 10);
-        (*dcb->dss_command) ((u_char)(ulv >> 16), 10);
-        (*dcb->dss_command) ((u_char)(ulv >> 8), 10);
-        (*dcb->dss_command) ((u_char)ulv, 10);
+        ulv = *(uint32_t *)conf;
+        (*dcb->dss_command) ((uint8_t)(ulv >> 24), 10);
+        (*dcb->dss_command) ((uint8_t)(ulv >> 16), 10);
+        (*dcb->dss_command) ((uint8_t)(ulv >> 8), 10);
+        (*dcb->dss_command) ((uint8_t)ulv, 10);
         break;
     case LCD_DATABYTE:
-        (*dcb->dss_write) (*(u_char *)conf);
+        (*dcb->dss_write) (*(uint8_t *)conf);
         break;
     case LCD_DATAWORD16:
-        usv = *(u_short *)conf;
-        (*dcb->dss_write) ((u_char)(usv >> 8));
-        (*dcb->dss_write) ((u_char)usv);
+        usv = *(uint16_t *)conf;
+        (*dcb->dss_write) ((uint8_t)(usv >> 8));
+        (*dcb->dss_write) ((uint8_t)usv);
         break;
     case LCD_DATAWORD32:
-        ulv = *(u_long *)conf;
-        (*dcb->dss_write) ((u_char)(ulv >> 24));
-        (*dcb->dss_write) ((u_char)(ulv >> 16));
-        (*dcb->dss_write) ((u_char)(ulv >> 8));
-        (*dcb->dss_write) ((u_char)ulv);
+        ulv = *(uint32_t *)conf;
+        (*dcb->dss_write) ((uint8_t)(ulv >> 24));
+        (*dcb->dss_write) ((uint8_t)(ulv >> 16));
+        (*dcb->dss_write) ((uint8_t)(ulv >> 8));
+        (*dcb->dss_write) ((uint8_t)ulv);
         break;
     case LCD_SETCOOKEDMODE:
-        if (*(u_long *)conf)
+        if (*(uint32_t *)conf)
             dcb->dcb_modeflags |= LCD_MF_COOKEDMODE;
         else
             dcb->dcb_modeflags &= ~LCD_MF_COOKEDMODE;
         break;
     case LCD_GETCOOKEDMODE:
         if (dcb->dcb_modeflags & LCD_MF_COOKEDMODE)
-            *(u_long *)conf = 1;
+            *(uint32_t *)conf = 1;
         else
-            *(u_long *)conf = 0;
+            *(uint32_t *)conf = 0;
         break;
     case TIOCGWINSZ:
         win_size = (WINSIZE *)conf;
@@ -414,8 +417,8 @@ int TermInit(NUTDEVICE * dev)
 static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 {
     int rc;
-    CONST u_char *cp;
-    u_char ch;
+    CONST uint8_t *cp;
+    uint8_t ch;
     TERMDCB *dcb = dev->dev_dcb;
 
     /*

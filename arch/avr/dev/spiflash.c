@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2005/07/26 18:02:40  haraldkipp
  * Moved from dev.
  *
@@ -72,9 +75,9 @@
  * \brief Exchange SPI byte.
  */
 #ifdef __GNUC__
-static __inline u_char SpiByte(u_char c)
+static __inline uint8_t SpiByte(uint8_t c)
 #else
-static u_char SpiByte(u_char c)
+static uint8_t SpiByte(uint8_t c)
 #endif
 {
     outp(c, SPDR);
@@ -89,8 +92,8 @@ static u_char SpiByte(u_char c)
  */
 int SpiFlashEnable(void)
 {
-    u_char i;
-    u_char rc;
+    uint8_t i;
+    uint8_t rc;
 
     /*
      * PB0(O): SS
@@ -162,9 +165,9 @@ int SpiFlashEnable(void)
  * \param id Three byte character array, which receives
  *           the CPU ID.
  */
-void SpiFlashId(u_char * id)
+void SpiFlashId(uint8_t * id)
 {
-    u_char i;
+    uint8_t i;
 
     for (i = 0; i < 3; i++) {
         SpiByte(0x30);
@@ -187,9 +190,9 @@ void SpiFlashId(u_char * id)
  *
  * \return 0 on success, -1 otherwise.
  */
-int SpiFlashWriteByte(u_char high, u_short addr, u_char data)
+int SpiFlashWriteByte(uint8_t high, uint16_t addr, uint8_t data)
 {
-    u_char d;
+    uint8_t d;
 
     if (data != 0xff) {
         SpiByte(0x40 | high);
@@ -232,7 +235,7 @@ int SpiFlashWriteByte(u_char high, u_short addr, u_char data)
  *
  * \return 0 on success, -1 otherwise.
  */
-int SpiFlashWriteWord(u_short addr, u_short data)
+int SpiFlashWriteWord(uint16_t addr, uint16_t data)
 {
     if (SpiFlashWriteByte(0, addr, data & 0xFF))
         return -1;

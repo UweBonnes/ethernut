@@ -69,34 +69,34 @@ extern int toupper(int);
 /*@{*/
 
 typedef struct {
-    u_short id;
-    u_short flags;
-    u_short quests;
-    u_short answers;
-    u_short authrr;
-    u_short addrr;
-    u_char namelen;
-    u_char name[33];
-    u_short type;
-    u_short class;              /* end of request */
-    u_long ttl;
-    u_short len_rep;
-    u_char node_flags;
-    u_char node_type;
-    u_long ip_addr;             /* end of answer */
+    uint16_t id;
+    uint16_t flags;
+    uint16_t quests;
+    uint16_t answers;
+    uint16_t authrr;
+    uint16_t addrr;
+    uint8_t namelen;
+    uint8_t name[33];
+    uint16_t type;
+    uint16_t class;              /* end of request */
+    uint32_t ttl;
+    uint16_t len_rep;
+    uint8_t node_flags;
+    uint8_t node_type;
+    uint32_t ip_addr;             /* end of answer */
 } WINSHEADER;
 
 
 /* ********************************************************* */
 /* name : netbios label (15 chars max), ipaddr : network ordered IP address bytes */
-int NutWinsNameQuery(char * name, u_long ipaddr)
+int NutWinsNameQuery(char * name, uint32_t ipaddr)
 {
     WINSHEADER *pkt = NULL;
-    u_char *encoded = NULL;
+    uint8_t *encoded = NULL;
     UDPSOCKET *sock;
-    u_long raddr;
-    u_short rport;
-    u_char car;
+    uint32_t raddr;
+    uint16_t rport;
+    uint8_t car;
     int i, j;
     if (strlen(name) > 15)
         return -1;
@@ -135,7 +135,7 @@ int NutWinsNameQuery(char * name, u_long ipaddr)
         /* build RFC1002 Positive Name Query Response */
         pkt->flags = htons(0x8580);     /* Response flags */
         pkt->answers = htons(1);
-        pkt->ttl = htonl((u_long) 60);  /* 60 seconds validity */
+        pkt->ttl = htonl((uint32_t) 60);  /* 60 seconds validity */
         pkt->len_rep = htons(6);
         pkt->node_flags = pkt->node_type = pkt->quests = 0;     /* B-type node, etc... */
         pkt->ip_addr = ipaddr;  /* Returned IP Address, end of answer */

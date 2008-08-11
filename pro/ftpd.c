@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2008/08/11 07:00:35  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2008/04/01 10:16:35  haraldkipp
  * Added S_ISDIR and S_ISREG macro.
  *
@@ -180,8 +183,8 @@ static void SplitCmdArg(char * line, char ** cmd, char ** args)
     /* The first word is the command. Convert it to upper case. */
     *cmd = line;
     while (*line > ' ') {
-        if (*line >= (u_char) 'a' && *line <= (u_char) 'z') {
-            *line -= (u_char) 'a' - 'A';
+        if (*line >= (uint8_t) 'a' && *line <= (uint8_t) 'z') {
+            *line -= (uint8_t) 'a' - 'A';
         }
         line++;
     }
@@ -221,7 +224,7 @@ static void SplitCmdArg(char * line, char ** cmd, char ** args)
  *
  * \return The number of converted byte values. Should be 6.
  */
-static int ParseIpPort(CONST char * arg, u_long * ip, u_short * port)
+static int ParseIpPort(CONST char * arg, uint32_t * ip, uint16_t * port)
 {
     int rc;
 
@@ -713,8 +716,8 @@ int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
         /* File status OK, opening data connection */
         NutFtpSendMode(session, session->ftp_tran_mode);
         if ((sock = NutFtpDataConnect(session)) != 0) {
-            u_short mss = sock->so_mss;
-            u_char *buf;
+            uint16_t mss = sock->so_mss;
+            uint8_t *buf;
 
             if (mss < 256) {
                 mss = 256;
@@ -782,7 +785,7 @@ int NutFtpTransferDirectory(FTPSESSION * session, char *path)
     DIR *dir;
     struct dirent *d_ent;
     tm *gmt;
-    u_long size;
+    uint32_t size;
     int ec = 550;
     char *name;
 
@@ -890,12 +893,12 @@ int NutFtpProcessPass(FTPSESSION * session, char *pass)
  */
 int NutFtpProcessPassiv(FTPSESSION * session)
 {
-    u_long ip = session->ftp_sock->so_local_addr;
-    u_short port = 20;
+    uint32_t ip = session->ftp_sock->so_local_addr;
+    uint16_t port = 20;
 
     fprintf(session->ftp_stream, "227 Passive (%u,%u,%u,%u,%u,%u).\r\n",        /* */
-            (u_char) ip, (u_char) (ip >> 8), (u_char) (ip >> 16), (u_char) (ip >> 24),  /* */
-            (u_char) (port >> 8), (u_char) port);
+            (uint8_t) ip, (uint8_t) (ip >> 8), (uint8_t) (ip >> 16), (uint8_t) (ip >> 24),  /* */
+            (uint8_t) (port >> 8), (uint8_t) port);
     fflush(session->ftp_stream);
     session->ftp_passive = 1;
 

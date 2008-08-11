@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/08/11 07:00:28  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.12  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -261,7 +264,7 @@ extern "C" {
  * Conversion of 16 bit value to network order.
  */
 #undef __byte_swap2
-    static inline u_short __byte_swap2(u_short val) {
+    static inline uint16_t __byte_swap2(uint16_t val) {
         asm volatile ("mov __tmp_reg__, %A0\n\t" "mov %A0, %B0\n\t" "mov %B0, __tmp_reg__\n\t":"=r" (val)
                       :"0"(val)
             );
@@ -271,7 +274,7 @@ extern "C" {
  * Conversion of 32 bit value to network order.
  */
 #undef __byte_swap4
-    static inline u_long __byte_swap4(u_long val) {
+    static inline uint32_t __byte_swap4(uint32_t val) {
         asm volatile ("mov __tmp_reg__, %A0\n\t"
                       "mov %A0, %D0\n\t"
                       "mov %D0, __tmp_reg__\n\t" "mov __tmp_reg__, %B0\n\t" "mov %B0, %C0\n\t" "mov %C0, __tmp_reg__\n\t":"=r" (val)

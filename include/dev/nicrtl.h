@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2004/05/17 19:14:57  haraldkipp
  * Added Bengt Florin's RTL8019 driver mods
  *
@@ -68,15 +71,15 @@ extern "C" {
  */
 struct _NICINFO {
     HANDLE volatile ni_rx_rdy;      /*!< Receiver event queue. */
-    u_long ni_rx_packets;           /*!< Number of packets received. */
-    u_long ni_tx_packets;           /*!< Number of packets sent. */
-    u_long ni_interrupts;           /*!< Number of interrupts. */
-    u_long ni_rx_overruns;          /*!< Number of packet overruns. */
-    u_long ni_rx_frame_errors;      /*!< Number of frame errors. */
-    u_long ni_rx_crc_errors;        /*!< Number of CRC errors. */
-    u_long ni_rx_missed_errors;     /*!< Number of missed packets. */
-    u_long ni_rx_size_errors;       /*!< Number of size missmatch in NIC. */
-    u_long ni_tx_errors;            /*!< Number of NIC transmit errors. */
+    uint32_t ni_rx_packets;           /*!< Number of packets received. */
+    uint32_t ni_tx_packets;           /*!< Number of packets sent. */
+    uint32_t ni_interrupts;           /*!< Number of interrupts. */
+    uint32_t ni_rx_overruns;          /*!< Number of packet overruns. */
+    uint32_t ni_rx_frame_errors;      /*!< Number of frame errors. */
+    uint32_t ni_rx_crc_errors;        /*!< Number of CRC errors. */
+    uint32_t ni_rx_missed_errors;     /*!< Number of missed packets. */
+    uint32_t ni_rx_size_errors;       /*!< Number of size missmatch in NIC. */
+    uint32_t ni_tx_errors;            /*!< Number of NIC transmit errors. */
 };
 
 /*!

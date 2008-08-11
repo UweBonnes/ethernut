@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/10/08 16:42:56  haraldkipp
  * Not optimal, but simple and reliable exclusive access implemented.
  * Fixes bug #1486539. Furthermore, bug #1567790, which had been rejected,
@@ -85,22 +88,22 @@
  */
 typedef struct __attribute__ ((packed)) _PHATDIRENT {
     /*! \brief File name, padded with blanks. */
-    u_char dent_name[11];
+    uint8_t dent_name[11];
     /*! \brief File attributes. 
      *
      * See PHAT_FATTR_ flags. 
      */
-    u_char dent_attr;
+    uint8_t dent_attr;
     /*! \brief Reserved byte, possibly used by NT. */
-    u_char dent_rsvdnt;
+    uint8_t dent_rsvdnt;
     /*! \brief Hundredth of seconds of file creation time. */
-    u_char dent_ctsecs;
+    uint8_t dent_ctsecs;
     /*! \brief File creation time. */
-    u_short dent_ctime;
+    uint16_t dent_ctime;
     /*! \brief File creation date. */
-    u_short dent_cdate;
+    uint16_t dent_cdate;
     /*! \brief Last file access date. */
-    u_short dent_adate;
+    uint16_t dent_adate;
     /*! \brief High bytes of first cluster of this file.
      *
      * If used with the double dot entry, dent_clusthi and dent_clust
@@ -109,21 +112,21 @@ typedef struct __attribute__ ((packed)) _PHATDIRENT {
      * The same is true when pointing to a normal file with zero
      * length.
      */
-    u_short dent_clusthi;
+    uint16_t dent_clusthi;
     /*! \brief Last file modification time. */
-    u_short dent_mtime;
+    uint16_t dent_mtime;
     /*! \brief Last file modification date. */
-    u_short dent_mdate;
+    uint16_t dent_mdate;
     /*! \brief First cluster used.
      *
      * This is zero for empty files.
      */
-    u_short dent_clust;
+    uint16_t dent_clust;
     /*! \brief Size of the file in bytes. 
      *
      * For directories, this is always zero.
      */
-    u_long dent_fsize;
+    uint32_t dent_fsize;
 } PHATDIRENT;
 
 /*!
@@ -133,26 +136,26 @@ typedef struct __attribute__ ((packed)) _PHATDIRENT {
  */
 typedef struct __attribute__ ((packed)) _PHATXDIRENT {
     /*! \brief Sequence number. */
-    u_char xdent_seq;
+    uint8_t xdent_seq;
     /*! \brief Unicode characters 1-5. */
-    u_short xdent_uname_1_5[5];
+    uint16_t xdent_uname_1_5[5];
     /*! \brief Attribut. */
-    u_char xdent_attr;
+    uint8_t xdent_attr;
     /*! \brief Type. */
-    u_char xdent_rsvd;
+    uint8_t xdent_rsvd;
     /*! \brief Checksum. */
-    u_char xdent_cks;
+    uint8_t xdent_cks;
     /*! \brief Unicode characters 6-11. */
-    u_short xdent_uname_6_11[6];
+    uint16_t xdent_uname_6_11[6];
     /*! \brief Starting cluster. */
-    u_short xdent_clust;
+    uint16_t xdent_clust;
     /*! \brief Unicode characters 12-13. */
-    u_short xdent_uname_12_13[2];
+    uint16_t xdent_uname_12_13[2];
 } PHATXDIRENT;
 
 typedef struct _PHATFIND {
     PHATDIRENT phfind_ent;
-    u_long phfind_pos;
+    uint32_t phfind_pos;
     /*! Number of entries used for the long filename. */
     int phfind_xcnt;
     char phfind_name[PHAT_MAX_NAMELEN];
@@ -168,12 +171,12 @@ extern int PhatDirEntryUpdate(NUTFILE * ndp);
 
 extern int PhatDirReleaseChain(NUTDEVICE * dev, PHATDIRENT * dent);
 
-extern int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, u_long flags);
+extern int PhatDirDelEntry(NUTDEVICE * dev, CONST char *path, uint32_t flags);
 extern int PhatDirRenameEntry(NUTDEVICE * dev, CONST char *old_path, CONST char *new_path);
 
 extern NUTFILE *PhatDirOpen(NUTDEVICE * dev, CONST char *dpath);
 extern NUTFILE *PhatDirOpenParent(NUTDEVICE * dev, CONST char *path, CONST char **basename);
-extern int PhatDirEntryFind(NUTFILE * nfp, CONST char *spec, u_long flags, PHATFIND * srch);
+extern int PhatDirEntryFind(NUTFILE * nfp, CONST char *spec, uint32_t flags, PHATFIND * srch);
 extern int PhatDirRead(DIR * dir);
 
 extern int PhatDirCreate(NUTDEVICE * dev, char *path);

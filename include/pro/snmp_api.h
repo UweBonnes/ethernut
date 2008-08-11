@@ -89,6 +89,6 @@ extern int SnmpOidCmpIdx(CONST OID *name1, size_t len1, CONST OID *name2, size_t
 extern int SnmpOidEquals(CONST OID *, size_t, CONST OID *, size_t);
 
 extern void SnmpStatsInc(int);
-extern u_long SnmpStatsGet(int);
+extern uint32_t SnmpStatsGet(int);
 
 #endif

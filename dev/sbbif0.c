@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/04/12 09:07:54  haraldkipp
  * Configurable SPI added.
  *
@@ -89,9 +92,9 @@ int Sbbi0SetMode(ureg_t ix, ureg_t mode)
  * \param rate Transfer rate in bits per second.
  * 
  */
-void Sbbi0SetSpeed(ureg_t ix, u_long rate)
+void Sbbi0SetSpeed(ureg_t ix, uint32_t rate)
 {
-    u_long fosc = NutGetCpuClock() / 16;
+    uint32_t fosc = NutGetCpuClock() / 16;
 
     if (rate) {
         fosc /= rate;
@@ -318,7 +321,7 @@ void Sbbi0NegDeselectDevice(ureg_t ix)
  *
  * \return Received byte.
  */
-u_char Sbbi0Byte(u_char data)
+uint8_t Sbbi0Byte(uint8_t data)
 {
     ureg_t mask;
 
@@ -425,10 +428,10 @@ u_char Sbbi0Byte(u_char data)
  */
 void Sbbi0Transact(CONST void *wdata, void *rdata, size_t len)
 {
-    CONST u_char *wp = (CONST u_char *)wdata;
+    CONST uint8_t *wp = (CONST uint8_t *)wdata;
 
     if (rdata) {
-        u_char *rp = (u_char *)rdata;
+        uint8_t *rp = (uint8_t *)rdata;
 
         while(len--) {
             *rp++ = Sbbi0Byte(*wp);

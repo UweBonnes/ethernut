@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2008/08/11 06:59:12  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.20  2008/08/06 12:51:01  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -270,7 +273,7 @@ static u_int At91GetPllClock(int plla)
  *
  * \return CPU clock frequency in Hertz.
  */
-static u_long At91GetProcessorClock(void)
+static uint32_t At91GetProcessorClock(void)
 {
     u_int rc = 0;
     u_int mckr = inr(PMC_MCKR);
@@ -321,9 +324,9 @@ static u_long At91GetProcessorClock(void)
  *
  * \return Master clock frequency in Hertz.
  */
-u_long At91GetMasterClock(void)
+uint32_t At91GetMasterClock(void)
 {
-    u_long rc = At91GetProcessorClock();
+    uint32_t rc = At91GetProcessorClock();
 
 #if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
     switch(inr(PMC_MCKR) & PMC_MDIV) {
@@ -349,7 +352,7 @@ u_long At91GetMasterClock(void)
  *
  * \return CPU clock frequency in Hertz.
  */
-u_long NutGetCpuClock(void)
+uint32_t NutGetCpuClock(void)
 {
 #if defined(NUT_CPU_FREQ)
     return NUT_CPU_FREQ;
@@ -368,7 +371,7 @@ u_long NutGetCpuClock(void)
  *
  * \return System tick frequency in Hertz.
  */
-u_long NutGetTickClock(void)
+uint32_t NutGetTickClock(void)
 {
     u_int rc;
 
@@ -391,7 +394,7 @@ u_long NutGetTickClock(void)
 /*!
  * \brief Calculate system ticks for a given number of milliseconds.
  */
-u_long NutTimerMillisToTicks(u_long ms)
+uint32_t NutTimerMillisToTicks(uint32_t ms)
 {
     return (ms * NutGetTickClock()) / 1000;
 }

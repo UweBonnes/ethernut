@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:39  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2004/09/08 10:19:05  haraldkipp
  * Todo: We need a better check for stdio channels!
  *
@@ -69,7 +72,7 @@
 int fclose(FILE * stream)
 {
     int rc = EOF;
-    u_char i;
+    uint_fast8_t i;
 
     /*
      * Search the list first to detect bad stream pointer.

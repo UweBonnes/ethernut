@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2008/08/11 07:00:36  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.8  2005/08/03 11:46:59  olereinhardt
  * Removed unneeded comment line to fix compile bug
  *
@@ -92,21 +95,21 @@
 
 typedef struct _sntpframe sntpframe;
 struct _sntpframe {
-    u_char mode;
-    u_char stratum;
-    u_char poll;
-    u_char precision;
-    u_long root_delay;
-    u_long root_dispersion;
-    u_long reference_identifier;
-    u_long reference_ts_sec;
-    u_long reference_ts_frac;
-    u_long originate_ts_sec;
-    u_long originate_ts_frac;
-    u_long receive_ts_sec;
-    u_long receive_ts_frac;
-    u_long transmit_ts_sec;
-    u_long transmit_ts_frac;
+    uint8_t mode;
+    uint8_t stratum;
+    uint8_t poll;
+    uint8_t precision;
+    uint32_t root_delay;
+    uint32_t root_dispersion;
+    uint32_t reference_identifier;
+    uint32_t reference_ts_sec;
+    uint32_t reference_ts_frac;
+    uint32_t originate_ts_sec;
+    uint32_t originate_ts_frac;
+    uint32_t receive_ts_sec;
+    uint32_t receive_ts_frac;
+    uint32_t transmit_ts_sec;
+    uint32_t transmit_ts_frac;
 };
 
 
@@ -114,15 +117,15 @@ struct _sntpframe {
 #define SNTP_PORT NTP_PORT
 
 struct SNTP_resync_args {
-    u_long server_addr;
-    u_long interval;
+    uint32_t server_addr;
+    uint32_t interval;
 };
 
 THREAD(SNTP_resync, arg)
 {
-    u_long server_addr = ((struct SNTP_resync_args *) arg)->server_addr;
-    u_long interval = ((struct SNTP_resync_args *) arg)->interval;
-    u_long cur_server_addr = server_addr;
+    uint32_t server_addr = ((struct SNTP_resync_args *) arg)->server_addr;
+    uint32_t interval = ((struct SNTP_resync_args *) arg)->interval;
+    uint32_t cur_server_addr = server_addr;
     int retry = 0;
     time_t t;
 
@@ -149,17 +152,17 @@ THREAD(SNTP_resync, arg)
     }
 }
 
-int NutSNTPGetTime(u_long * server_adr, time_t * t)
+int NutSNTPGetTime(uint32_t * server_adr, time_t * t)
 {
     /*first check the pointers */
-    u_long rec_addr;
+    uint32_t rec_addr;
     UDPSOCKET *sock = NULL;     /* the udp socket */
     sntpframe *data;            /* we're using the heap to save stack space */
-    u_short port;               /* source port from incoming packet */
+    uint16_t port;               /* source port from incoming packet */
     int len;
     int result = -1;
     /* Set UDP input buffer to 256 bytes */
-    u_short bufsize = 256;
+    uint16_t bufsize = 256;
 
 
     if (t == NULL)
@@ -205,7 +208,7 @@ int NutSNTPGetTime(u_long * server_adr, time_t * t)
     return result;
 }
 
-int NutSNTPStartThread(u_long server_addr, u_long interval)
+int NutSNTPStartThread(uint32_t server_addr, uint32_t interval)
 {
     struct SNTP_resync_args *arg = NutHeapAlloc(sizeof(struct SNTP_resync_args));
     if (!arg)

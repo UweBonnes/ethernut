@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:14  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/10/08 16:48:07  haraldkipp
  * Documentation fixed
  *
@@ -147,7 +150,7 @@ static prog_char fcstab[512] = {
 /*!
  * Checks the 32-bit ACCM to see if the byte needs un-escaping
  */
-#define IN_ACC_MAP(c, m) (( ((u_char) (c)) < 0x20)  && ((m) & (1UL << (c))) != 0)
+#define IN_ACC_MAP(c, m) (( ((uint8_t) (c)) < 0x20)  && ((m) & (1UL << (c))) != 0)
 
 #ifndef NUT_THREAD_AHDLCRXSTACK
 #define NUT_THREAD_AHDLCRXSTACK     512
@@ -253,13 +256,13 @@ static void Rx1Complete(void *arg)
 /*
  * \return 0 on success, -1 in case of any errors.
  */
-static int SendRawByte(AHDLCDCB * dcb, u_char ch, u_char flush)
+static int SendRawByte(AHDLCDCB * dcb, uint8_t ch, uint8_t flush)
 {
     /*
      * If transmit buffer is full, wait until interrupt routine
      * signals an empty buffer or until a timeout occurs.
      */
-    while ((u_char) (dcb->dcb_wr_idx + 1) == dcb->dcb_tx_idx) {
+    while ((uint8_t) (dcb->dcb_wr_idx + 1) == dcb->dcb_tx_idx) {
         if (NutEventWait(&dcb->dcb_tx_rdy, dcb->dcb_wtimeout))
             break;
     }
@@ -267,7 +270,7 @@ static int SendRawByte(AHDLCDCB * dcb, u_char ch, u_char flush)
     /*
      * If transmit buffer is still full, we have a write timeout.
      */
-    if ((u_char) (dcb->dcb_wr_idx + 1) == dcb->dcb_tx_idx) {
+    if ((uint8_t) (dcb->dcb_wr_idx + 1) == dcb->dcb_tx_idx) {
         return -1;
     }
 
@@ -282,7 +285,7 @@ static int SendRawByte(AHDLCDCB * dcb, u_char ch, u_char flush)
      * If transmit buffer has become full and the transmitter
      * is not active, then activate it.
      */
-    if (flush || (u_char) (dcb->dcb_wr_idx + 1) == dcb->dcb_tx_idx) {
+    if (flush || (uint8_t) (dcb->dcb_wr_idx + 1) == dcb->dcb_tx_idx) {
 
         /*
          * TODO: Check handshake.
@@ -304,19 +307,19 @@ static int SendRawByte(AHDLCDCB * dcb, u_char ch, u_char flush)
  *
  * \return 0 on success, -1 in case of any errors.
  */
-static int SendHdlcData(AHDLCDCB * dcb, CONST u_char * data, u_short len, u_short * txfcs)
+static int SendHdlcData(AHDLCDCB * dcb, CONST uint8_t * data, uint16_t len, uint16_t * txfcs)
 {
-    u_short tbx;
-    register u_short fcs;
+    uint16_t tbx;
+    register uint16_t fcs;
 
     if (txfcs)
         fcs = *txfcs;
     else
         fcs = 0;
     while (len) {
-        tbx = (u_short) ((u_char) fcs ^ *data) << 1;
+        tbx = (uint16_t) ((uint8_t) fcs ^ *data) << 1;
         fcs >>= 8;
-        fcs ^= ((u_short) PRG_RDB(fcstab + tbx) << 8) | PRG_RDB(fcstab + tbx + 1);
+        fcs ^= ((uint16_t) PRG_RDB(fcstab + tbx) << 8) | PRG_RDB(fcstab + tbx + 1);
         if (IN_ACC_MAP(*data, dcb->dcb_tx_accm) || *data == AHDLC_FLAG || *data == AHDLC_ESCAPE) {
             if (SendRawByte(dcb, AHDLC_ESCAPE, 0))
                 return -1;
@@ -345,9 +348,9 @@ static int SendHdlcData(AHDLCDCB * dcb, CONST u_char * data, u_short len, u_shor
  */
 int AhdlcOutput(NUTDEVICE * dev, NETBUF * nb)
 {
-    u_short txfcs;
+    uint16_t txfcs;
     AHDLCDCB *dcb = dev->dev_dcb;
-    u_short sz;
+    uint16_t sz;
 
     /*
      * If we are in RAW mode we are not allowed to send AHDLC output.
@@ -385,7 +388,7 @@ int AhdlcOutput(NUTDEVICE * dev, NETBUF * nb)
 
     /* Send the checksum and the final flag. */
     txfcs ^= 0xffff;
-    if (SendHdlcData(dcb, (u_char *) & txfcs, 2, 0))
+    if (SendHdlcData(dcb, (uint8_t *) & txfcs, 2, 0))
         return -1;
     SendRawByte(dcb, AHDLC_FLAG, 1);
 
@@ -405,14 +408,14 @@ THREAD(AhdlcRx, arg)
     AHDLCDCB *dcb = dev->dev_dcb;
     IFNET *ifn;
     NETBUF *nb;
-    u_char *rxbuf;
-    u_char *rxptr;
-    u_short rxcnt;
-    u_char ch;
-    u_short tbx;
-    u_char inframe;
-    u_char escaped;
-    u_short rxfcs;
+    uint8_t *rxbuf;
+    uint8_t *rxptr;
+    uint16_t rxcnt;
+    uint8_t ch;
+    uint16_t tbx;
+    uint8_t inframe;
+    uint8_t escaped;
+    uint16_t rxfcs;
 
     NutThreadSetPriority(9);
     for (;;) {
@@ -514,9 +517,9 @@ THREAD(AhdlcRx, arg)
                      */
                     if (rxcnt++ < dcb->dcb_rx_mru) {
                         /* Update calculated checksum and store character in buffer. */
-                        tbx = (u_short) ((u_char) rxfcs ^ ch) << 1;
+                        tbx = (uint16_t) ((uint8_t) rxfcs ^ ch) << 1;
                         rxfcs >>= 8;
-                        rxfcs ^= ((u_short) PRG_RDB(fcstab + tbx) << 8) | PRG_RDB(fcstab + tbx + 1);
+                        rxfcs ^= ((uint16_t) PRG_RDB(fcstab + tbx) << 8) | PRG_RDB(fcstab + tbx + 1);
                         *rxptr++ = ch;
                     } else
                         inframe = 0;
@@ -564,10 +567,10 @@ THREAD(AhdlcRx, arg)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AhdlcAvrGetStatus(NUTDEVICE * dev, u_long * status)
+static int AhdlcAvrGetStatus(NUTDEVICE * dev, uint32_t * status)
 {
     AHDLCDCB *dcb = dev->dev_dcb;
-    u_char us;
+    uint8_t us;
 
     *status = 0;
 
@@ -632,7 +635,7 @@ static int AhdlcAvrGetStatus(NUTDEVICE * dev, u_long * status)
  *
  * \return 0 on success, -1 otherwise.
  */
-static int AhdlcAvrSetStatus(NUTDEVICE * dev, u_long status)
+static int AhdlcAvrSetStatus(NUTDEVICE * dev, uint32_t status)
 {
 #ifdef __AVR_ENHANCED__
     if (dev->dev_base) {
@@ -670,7 +673,7 @@ static int AhdlcAvrSetStatus(NUTDEVICE * dev, u_long status)
 /*
  * Carefully enable UART functions.
  */
-static void AhdlcAvrEnable(u_short base)
+static void AhdlcAvrEnable(uint16_t base)
 {
     NutEnterCritical();
 
@@ -694,7 +697,7 @@ static void AhdlcAvrEnable(u_short base)
 /*
  * Carefully disable UART functions.
  */
-static void AhdlcAvrDisable(u_short base)
+static void AhdlcAvrDisable(uint16_t base)
 {
     /*
      * Disable UART interrupts.
@@ -739,28 +742,28 @@ static void AhdlcAvrDisable(u_short base)
  *             function.
  * \param req  Requested control function. May be set to one of the
  *             following constants:
- *             - UART_SETSPEED, conf points to an u_long value containing the baudrate.
- *             - UART_GETSPEED, conf points to an u_long value receiving the current baudrate.
- *             - UART_SETDATABITS, conf points to an u_long value containing the number of data bits, 5, 6, 7 or 8.
- *             - UART_GETDATABITS, conf points to an u_long value receiving the number of data bits, 5, 6, 7 or 8.
- *             - UART_SETPARITY, conf points to an u_long value containing the parity, 0 (no), 1 (odd) or 2 (even).
- *             - UART_GETPARITY, conf points to an u_long value receiving the parity, 0 (no), 1 (odd) or 2 (even).
- *             - UART_SETSTOPBITS, conf points to an u_long value containing the number of stop bits 1 or 2.
- *             - UART_GETSTOPBITS, conf points to an u_long value receiving the number of stop bits 1 or 2.
- *             - UART_SETSTATUS, conf points to an u_long value containing the changes for the control lines.
- *             - UART_GETSTATUS, conf points to an u_long value receiving the state of the control lines and the device.
- *             - UART_SETREADTIMEOUT, conf points to an u_long value containing the read timeout.
- *             - UART_GETREADTIMEOUT, conf points to an u_long value receiving the read timeout.
- *             - UART_SETWRITETIMEOUT, conf points to an u_long value containing the write timeout.
- *             - UART_GETWRITETIMEOUT, conf points to an u_long value receiving the write timeout.
- *             - UART_SETLOCALECHO, conf points to an u_long value containing 0 (off) or 1 (on).
- *             - UART_GETLOCALECHO, conf points to an u_long value receiving 0 (off) or 1 (on).
- *             - UART_SETFLOWCONTROL, conf points to an u_long value containing combined UART_FCTL_ values.
- *             - UART_GETFLOWCONTROL, conf points to an u_long value containing receiving UART_FCTL_ values.
- *             - UART_SETCOOKEDMODE, conf points to an u_long value containing 0 (off) or 1 (on).
- *             - UART_GETCOOKEDMODE, conf points to an u_long value receiving 0 (off) or 1 (on).
- *             - UART_SETRAWMODE, conf points to an u_long value containing 0 (off) or 1 (on).
- *             - UART_GETRAWMODE, conf points to an u_long value receiving 0 (off) or 1 (on).
+ *             - UART_SETSPEED, conf points to an uint32_t value containing the baudrate.
+ *             - UART_GETSPEED, conf points to an uint32_t value receiving the current baudrate.
+ *             - UART_SETDATABITS, conf points to an uint32_t value containing the number of data bits, 5, 6, 7 or 8.
+ *             - UART_GETDATABITS, conf points to an uint32_t value receiving the number of data bits, 5, 6, 7 or 8.
+ *             - UART_SETPARITY, conf points to an uint32_t value containing the parity, 0 (no), 1 (odd) or 2 (even).
+ *             - UART_GETPARITY, conf points to an uint32_t value receiving the parity, 0 (no), 1 (odd) or 2 (even).
+ *             - UART_SETSTOPBITS, conf points to an uint32_t value containing the number of stop bits 1 or 2.
+ *             - UART_GETSTOPBITS, conf points to an uint32_t value receiving the number of stop bits 1 or 2.
+ *             - UART_SETSTATUS, conf points to an uint32_t value containing the changes for the control lines.
+ *             - UART_GETSTATUS, conf points to an uint32_t value receiving the state of the control lines and the device.
+ *             - UART_SETREADTIMEOUT, conf points to an uint32_t value containing the read timeout.
+ *             - UART_GETREADTIMEOUT, conf points to an uint32_t value receiving the read timeout.
+ *             - UART_SETWRITETIMEOUT, conf points to an uint32_t value containing the write timeout.
+ *             - UART_GETWRITETIMEOUT, conf points to an uint32_t value receiving the write timeout.
+ *             - UART_SETLOCALECHO, conf points to an uint32_t value containing 0 (off) or 1 (on).
+ *             - UART_GETLOCALECHO, conf points to an uint32_t value receiving 0 (off) or 1 (on).
+ *             - UART_SETFLOWCONTROL, conf points to an uint32_t value containing combined UART_FCTL_ values.
+ *             - UART_GETFLOWCONTROL, conf points to an uint32_t value containing receiving UART_FCTL_ values.
+ *             - UART_SETCOOKEDMODE, conf points to an uint32_t value containing 0 (off) or 1 (on).
+ *             - UART_GETCOOKEDMODE, conf points to an uint32_t value receiving 0 (off) or 1 (on).
+ *             - UART_SETRAWMODE, conf points to an uint32_t value containing 0 (off) or 1 (on).
+ *             - UART_GETRAWMODE, conf points to an uint32_t value receiving 0 (off) or 1 (on).
  *             - HDLC_SETIFNET, conf points to a pointer containing the address of the network device's NUTDEVICE structure.
  *             - HDLC_GETIFNET, conf points to a pointer receiving the address of the network device's NUTDEVICE structure.
  *
@@ -780,10 +783,10 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     int rc = 0;
     AHDLCDCB *dcb;
     void **ppv = (void **) conf;
-    u_long *lvp = (u_long *) conf;
-    u_char bv;
-    u_short sv;
-    u_char devnum;
+    uint32_t *lvp = (uint32_t *) conf;
+    uint8_t bv;
+    uint16_t sv;
+    uint8_t devnum;
 
     if (dev == 0)
         dev = &devUart0;
@@ -794,17 +797,17 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     switch (req) {
     case UART_SETSPEED:
         AhdlcAvrDisable(devnum);
-        sv = (u_short) ((((2UL * NutGetCpuClock()) / (*lvp * 16UL)) + 1UL) / 2UL) - 1;
+        sv = (uint16_t) ((((2UL * NutGetCpuClock()) / (*lvp * 16UL)) + 1UL) / 2UL) - 1;
 #ifdef __AVR_ENHANCED__
         if (devnum) {
-            outp((u_char) sv, UBRR1L);
-            outp((u_char) (sv >> 8), UBRR1H);
+            outp((uint8_t) sv, UBRR1L);
+            outp((uint8_t) (sv >> 8), UBRR1H);
         } else {
-            outp((u_char) sv, UBRR0L);
-            outp((u_char) (sv >> 8), UBRR0H);
+            outp((uint8_t) sv, UBRR0L);
+            outp((uint8_t) (sv >> 8), UBRR0H);
         }
 #else
-        outp((u_char) sv, UBRR);
+        outp((uint8_t) sv, UBRR);
 #endif
         AhdlcAvrEnable(devnum);
         break;
@@ -812,18 +815,18 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     case UART_GETSPEED:
 #ifdef __AVR_ENHANCED__
         if (devnum)
-            sv = (u_short) inp(UBRR1H) << 8 | inp(UBRR1L);
+            sv = (uint16_t) inp(UBRR1H) << 8 | inp(UBRR1L);
         else
-            sv = (u_short) inp(UBRR0H) << 8 | inp(UBRR0L);
+            sv = (uint16_t) inp(UBRR0H) << 8 | inp(UBRR0L);
 #else
         sv = inp(UBRR);
 #endif
-        *lvp = NutGetCpuClock() / (16UL * (u_long) (sv + 1));
+        *lvp = NutGetCpuClock() / (16UL * (uint32_t) (sv + 1));
         break;
 
     case UART_SETDATABITS:
         AhdlcAvrDisable(devnum);
-        bv = (u_char)(*lvp);
+        bv = (uint8_t)(*lvp);
 #ifdef __AVR_ENHANCED__
         if (bv >= 5 && bv <= 8) {
             bv = (bv - 5) << 1;
@@ -856,7 +859,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETPARITY:
         AhdlcAvrDisable(devnum);
-        bv = (u_char)(*lvp);
+        bv = (uint8_t)(*lvp);
 #ifdef __AVR_ENHANCED__
         if (bv <= 2) {
             if (bv == 1)
@@ -890,7 +893,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
 
     case UART_SETSTOPBITS:
         AhdlcAvrDisable(devnum);
-        bv = (u_char)(*lvp);
+        bv = (uint8_t)(*lvp);
 #ifdef __AVR_ENHANCED__
         if (bv == 1 || bv == 2) {
             bv = (bv - 1) << 3;
@@ -940,7 +943,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_SETLOCALECHO:
-        bv = (u_char)(*lvp);
+        bv = (uint8_t)(*lvp);
         if (bv)
             dcb->dcb_modeflags |= UART_MF_LOCALECHO;
         else
@@ -954,7 +957,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_SETFLOWCONTROL:
-        bv = (u_char)(*lvp);
+        bv = (uint8_t)(*lvp);
         if (bv)
             dcb->dcb_modeflags |= UART_MF_LOCALECHO;
         else
@@ -964,7 +967,7 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
 
     case UART_SETRAWMODE:
-        bv = (u_char)(*lvp);
+        bv = (uint8_t)(*lvp);
         if (bv)
             dcb->dcb_modeflags |= UART_MF_RAWMODE;
         else
@@ -1024,7 +1027,7 @@ int AhdlcAvrInit(NUTDEVICE * dev)
 {
     int rc = 0;
     AHDLCDCB *dcb;
-    u_long baudrate = 9600;
+    uint32_t baudrate = 9600;
 
     /* Disable UART. */
     AhdlcAvrDisable(dev->dev_base);
@@ -1162,7 +1165,7 @@ int AhdlcAvrRead(NUTFILE * fp, void *buffer, int size)
 {
     int rc = 0;
     AHDLCDCB *dcb = fp->nf_dev->dev_dcb;
-    u_char *cp = buffer;
+    uint8_t *cp = buffer;
 
     /*
      * Get characters from receive buffer.
@@ -1202,7 +1205,7 @@ int AhdlcAvrPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 {
     int rc = 0;
     AHDLCDCB *dcb = dev->dev_dcb;
-    CONST u_char *cp = buffer;
+    CONST uint8_t *cp = buffer;
 
     /*
      * Put characters in transmit buffer.

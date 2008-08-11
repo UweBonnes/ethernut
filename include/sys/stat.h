@@ -44,6 +44,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:27  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2008/04/01 10:16:35  haraldkipp
  * Added S_ISDIR and S_ISREG macro.
  *
@@ -54,6 +57,7 @@
  * \endverbatim
  */
 
+#include <stdint.h>
 #include <time.h>
 
 /*!
@@ -66,9 +70,9 @@
  */
 struct stat {
     short st_ino;               /*!< \brief Block number */
-    u_char st_mode;             /*!< \brief Mode flags */
-    u_short st_nlink;           /*!< \brief Number of links */
-    u_long st_size;             /*!< \brief Size */
+    uint8_t st_mode;             /*!< \brief Mode flags */
+    uint16_t st_nlink;           /*!< \brief Number of links */
+    uint32_t st_size;             /*!< \brief Size */
     time_t st_mtime;            /*!< \brief Time of last modification */
 };
 

@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/04/12 08:59:55  haraldkipp
  * VS10XX decoder support added.
  *
@@ -41,6 +44,7 @@
 
 #include <cfg/audio.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \file dev/vs10xx.h
@@ -568,20 +572,20 @@
  */
 #ifdef __GNUC__
 typedef struct __attribute__((packed)) {
-    u_short vshi_no_crc:1;
-    u_short vshi_layer:2;
-    u_short vshi_id:2;
-    u_short vshi_syncword:11;
+    uint16_t vshi_no_crc:1;
+    uint16_t vshi_layer:2;
+    uint16_t vshi_id:2;
+    uint16_t vshi_syncword:11;
 
-    u_short vshi_emphasis:2;
-    u_short vshi_original:1;
-    u_short vshi_copyright:1;
-    u_short vshi_extension:2;
-    u_short vshi_mode:2;
-    u_short vshi_private_bit:1;
-    u_short vshi_pad_bit:1;
-    u_short vshi_sample_rate:2;
-    u_short vshi_bitrate:4;
+    uint16_t vshi_emphasis:2;
+    uint16_t vshi_original:1;
+    uint16_t vshi_copyright:1;
+    uint16_t vshi_extension:2;
+    uint16_t vshi_mode:2;
+    uint16_t vshi_private_bit:1;
+    uint16_t vshi_pad_bit:1;
+    uint16_t vshi_sample_rate:2;
+    uint16_t vshi_bitrate:4;
 } VS_HEADERINFO;
 #endif
 
@@ -589,23 +593,23 @@ __BEGIN_DECLS
 /* Function prototypes */
 
 extern int VsPlayerInit(void);
-extern int VsPlayerReset(u_short mode);
-extern int VsPlayerSetMode(u_short mode);
+extern int VsPlayerReset(uint16_t mode);
+extern int VsPlayerSetMode(uint16_t mode);
 extern int VsPlayerKick(void);
 extern int VsPlayerStop(void);
 extern int VsPlayerFlush(void);
 extern ureg_t VsPlayerInterrupts(ureg_t enable);
 extern ureg_t VsPlayerThrottle(ureg_t on);
 
-extern u_short VsPlayTime(void);
+extern uint16_t VsPlayTime(void);
 extern u_int VsGetStatus(void);
 #ifdef __GNUC__
 extern int VsGetHeaderInfo(VS_HEADERINFO *vshi);
 #endif
-extern u_short VsMemoryTest(void);
+extern uint16_t VsMemoryTest(void);
 
 extern int VsSetVolume(ureg_t left, ureg_t right);
-extern int VsBeep(u_char fsin, u_char ms);
+extern int VsBeep(uint8_t fsin, uint8_t ms);
 
 /*@}*/
 

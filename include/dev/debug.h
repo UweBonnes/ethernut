@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.14  2008/08/06 12:51:12  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -90,6 +93,8 @@
 #include <cfg/arch.h>
 #include <sys/device.h>
 #include <dev/uart.h>
+
+#include <stdint.h>
 
 /*!
  * \file dev/debug.h

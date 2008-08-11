@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:18  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/05/25 09:13:23  haraldkipp
  * Platform independent watchdog API added.
  *
@@ -57,7 +60,7 @@
 #endif
 
 static ureg_t nested;
-static u_char wdt_div;
+static uint8_t wdt_div;
 
 
 /*!
@@ -70,9 +73,9 @@ static u_char wdt_div;
  *
  * \return The actual watchdog timeout.
  */
-u_long AvrWatchDogStart(u_long ms)
+uint32_t AvrWatchDogStart(uint32_t ms)
 {
-    u_long ticks;
+    uint32_t ticks;
 
     wdt_reset();
 

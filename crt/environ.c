@@ -32,6 +32,7 @@
 
 #include <dev/nvmem.h>
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -84,7 +85,7 @@ NUTENVIRONMENT *findenv(CONST char *name)
 
     if (nut_environ == NULL) {
         /* Load environment from non-volatile memory. */
-        u_long magic;
+        uint32_t magic;
         int addr = ENVIRON_EE_OFFSET;
         NUTENVIRONMENT *prvp = NULL;
 

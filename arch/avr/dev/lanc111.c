@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.6  2007/05/02 11:22:51  haraldkipp
  * Added multicast table entry.
  *
@@ -504,17 +507,17 @@
 
 #define MSBV(bit)       (1 << ((bit) - 8))
 
-#define nic_outlb(addr, val) (*(volatile u_char *)(addr) = (val))
-#define nic_outhb(addr, val) (*(volatile u_char *)((addr) + 1) = (val))
-#define nic_outwx(addr, val) (*(volatile u_short *)(addr) = (val))
+#define nic_outlb(addr, val) (*(volatile uint8_t *)(addr) = (val))
+#define nic_outhb(addr, val) (*(volatile uint8_t *)((addr) + 1) = (val))
+#define nic_outwx(addr, val) (*(volatile uint16_t *)(addr) = (val))
 #define nic_outw(addr, val) { \
-    *(volatile u_char *)(addr) = (u_char)(val); \
-    *((volatile u_char *)(addr) + 1) = (u_char)((val) >> 8); \
+    *(volatile uint8_t *)(addr) = (uint8_t)(val); \
+    *((volatile uint8_t *)(addr) + 1) = (uint8_t)((val) >> 8); \
 }
 
-#define nic_inlb(addr) (*(volatile u_char *)(addr))
-#define nic_inhb(addr) (*(volatile u_char *)((addr) + 1))
-#define nic_inw(addr) (*(volatile u_short *)(addr))
+#define nic_inlb(addr) (*(volatile uint8_t *)(addr))
+#define nic_inhb(addr) (*(volatile uint8_t *)((addr) + 1))
+#define nic_inw(addr) (*(volatile uint16_t *)(addr))
 
 #define nic_bs(bank)    nic_outlb(NIC_BSR, bank)
 
@@ -524,14 +527,14 @@
  */
 struct _NICINFO {
     HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
-    u_short ni_tx_cnt;          /*!< Number of bytes in transmission queue. */
-    u_long ni_rx_packets;       /*!< Number of packets received. */
-    u_long ni_tx_packets;       /*!< Number of packets sent. */
-    u_long ni_interrupts;       /*!< Number of interrupts. */
-    u_long ni_overruns;         /*!< Number of packet overruns. */
-    u_long ni_rx_frame_errors;  /*!< Number of frame errors. */
-    u_long ni_rx_crc_errors;    /*!< Number of CRC errors. */
-    u_long ni_rx_missed_errors; /*!< Number of missed packets. */
+    uint16_t ni_tx_cnt;          /*!< Number of bytes in transmission queue. */
+    uint32_t ni_rx_packets;       /*!< Number of packets received. */
+    uint32_t ni_tx_packets;       /*!< Number of packets sent. */
+    uint32_t ni_interrupts;       /*!< Number of interrupts. */
+    uint32_t ni_overruns;         /*!< Number of packet overruns. */
+    uint32_t ni_rx_frame_errors;  /*!< Number of frame errors. */
+    uint32_t ni_rx_crc_errors;    /*!< Number of CRC errors. */
+    uint32_t ni_rx_missed_errors; /*!< Number of missed packets. */
 };
 
 /*!
@@ -560,11 +563,11 @@ static HANDLE maq;
  *
  * \return Contents of the PHY interface rgister.
  */
-static u_char NicPhyRegSelect(u_char reg, u_char we)
+static uint8_t NicPhyRegSelect(uint8_t reg, uint8_t we)
 {
-    u_char rs;
-    u_char msk;
-    u_char i;
+    uint8_t rs;
+    uint8_t msk;
+    uint8_t i;
 
     nic_bs(3);
     rs = (nic_inlb(NIC_MGMT) & ~(MGMT_MCLK | MGMT_MDO)) | MGMT_MDOE;
@@ -624,11 +627,11 @@ static u_char NicPhyRegSelect(u_char reg, u_char we)
  *
  * \return Contents of the specified register.
  */
-static u_short NicPhyRead(u_char reg)
+static uint16_t NicPhyRead(uint8_t reg)
 {
-    u_short rc = 0;
-    u_char rs;
-    u_char i;
+    uint16_t rc = 0;
+    uint8_t rs;
+    uint8_t i;
 
     /* Select register for reading. */
     rs = NicPhyRegSelect(reg, 0);
@@ -660,10 +663,10 @@ static u_short NicPhyRead(u_char reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-static void NicPhyWrite(u_char reg, u_short val)
+static void NicPhyWrite(uint8_t reg, uint16_t val)
 {
-    u_short msk;
-    u_char rs;
+    uint16_t msk;
+    uint8_t rs;
 
     /* Select register for writing. */
     rs = NicPhyRegSelect(reg, 1);
@@ -696,10 +699,10 @@ static void NicPhyWrite(u_char reg, u_short val)
  */
 static int NicPhyConfig(void)
 {
-    u_short phy_sor;
-    u_short phy_sr;
-    u_short phy_to;
-    u_short mode;
+    uint16_t phy_sor;
+    uint16_t phy_sr;
+    uint16_t phy_to;
+    uint16_t mode;
 
     /* 
      * Reset the PHY and wait until this self clearing bit
@@ -786,7 +789,7 @@ static int NicPhyConfig(void)
  *
  * \return 0 on success or -1 on timeout.
  */
-static INLINE int NicMmuWait(u_short tmo)
+static INLINE int NicMmuWait(uint16_t tmo)
 {
     while (tmo--) {
         if ((nic_inlb(NIC_MMUCR) & MMUCR_BUSY) == 0)
@@ -850,9 +853,9 @@ static int NicReset(void)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST u_char * mac)
+static int NicStart(CONST uint8_t * mac)
 {
-    u_char i;
+    uint8_t i;
 
     if (NicReset())
         return -1;
@@ -889,8 +892,8 @@ static int NicStart(CONST u_char * mac)
  */
 static void NicInterrupt(void *arg)
 {
-    u_char isr;
-    u_char imr;
+    uint8_t isr;
+    uint8_t imr;
     NICINFO *ni = (NICINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     ni->ni_interrupts++;
@@ -956,11 +959,11 @@ static void NicInterrupt(void *arg)
 /*
  * Write data block to the NIC.
  */
-static void NicWrite(u_char * buf, u_short len)
+static void NicWrite(uint8_t * buf, uint16_t len)
 {
-    register u_short l = len - 1;
-    register u_char ih = (u_short) l >> 8;
-    register u_char il = (u_char) l;
+    register uint16_t l = len - 1;
+    register uint8_t ih = (uint16_t) l >> 8;
+    register uint8_t il = (uint8_t) l;
 
     if (!len)
         return;
@@ -975,11 +978,11 @@ static void NicWrite(u_char * buf, u_short len)
 /*
  * Read data block from the NIC.
  */
-static void NicRead(u_char * buf, u_short len)
+static void NicRead(uint8_t * buf, uint16_t len)
 {
-    register u_short l = len - 1;
-    register u_char ih = (u_short) l >> 8;
-    register u_char il = (u_char) l;
+    register uint16_t l = len - 1;
+    register uint8_t ih = (uint16_t) l >> 8;
+    register uint8_t il = (uint8_t) l;
 
     if (!len)
         return;
@@ -1004,9 +1007,9 @@ static void NicRead(u_char * buf, u_short len)
 static NETBUF *NicGetPacket(void)
 {
     NETBUF *nb = 0;
-    //u_char *buf;
-    u_short fsw;
-    u_short fbc;
+    //uint8_t *buf;
+    uint16_t fsw;
+    uint16_t fbc;
 
     /* Check the fifo empty bit. If it is set, then there is 
        nothing in the receiver fifo. */
@@ -1071,9 +1074,9 @@ static NETBUF *NicGetPacket(void)
  */
 static int NicPutPacket(NETBUF * nb)
 {
-    u_short sz;
-    u_char odd = 0;
-    u_char imsk;
+    uint16_t sz;
+    uint8_t odd = 0;
+    uint8_t imsk;
 
     //printf("[P]");
     /*
@@ -1171,7 +1174,7 @@ THREAD(NicRxLanc, arg)
     IFNET *ifn;
     NICINFO *ni;
     NETBUF *nb;
-    u_char imsk;
+    uint8_t imsk;
 
     dev = arg;
     ifn = (IFNET *) dev->dev_icb;
@@ -1183,7 +1186,7 @@ THREAD(NicRxLanc, arg)
      * set.
      */
     for (;;) {
-        if (*((u_long *) (ifn->if_mac)) && *((u_long *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
+        if (*((uint32_t *) (ifn->if_mac)) && *((uint32_t *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
             break;
         }
         NutSleep(63);
@@ -1243,7 +1246,7 @@ THREAD(NicRxLanc, arg)
  */
 int LancOutput(NUTDEVICE * dev, NETBUF * nb)
 {
-    static u_long mx_wait = 5000;
+    static uint32_t mx_wait = 5000;
     int rc = -1;
     NICINFO *ni;
 

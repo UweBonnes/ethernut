@@ -105,13 +105,13 @@ int SnmpMibRegister(OID basename[], size_t baselen, SNMPVAR * vars, int num)
  * \param wmethod
  * \param no_obj
  */
-u_char *SnmpMibFind(OID * name, size_t * namelen, u_char * type, size_t * len, u_short * acl, int exact, WMETHOD ** wmethod,
+uint8_t *SnmpMibFind(OID * name, size_t * namelen, uint8_t * type, size_t * len, uint16_t * acl, int exact, WMETHOD ** wmethod,
                     int *no_obj)
 {
     SUBTREE *tp;
     SNMPVAR *vp = 0;
     int i;
-    u_char *access = NULL;
+    uint8_t *access = NULL;
     int rc;
     OID *suffix;
     size_t sufflen;

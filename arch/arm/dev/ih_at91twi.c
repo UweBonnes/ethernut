@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:12  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2008/07/26 09:43:01  haraldkipp
  * Added support for retrieving and setting the interrupt mode.
  *
@@ -99,8 +102,8 @@ void TwoWireIrqEntry(void)
 static int TwoWireIrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *)param;
-    int enabled = inr(AIC_IMR) & _BV(TWI_ID);
+    unsigned int *ival = (unsigned int *)param;
+    int_fast8_t enabled = inr(AIC_IMR) & _BV(TWI_ID);
 
     /* Disable interrupt. */
     if (enabled) {
@@ -132,7 +135,7 @@ static int TwoWireIrqCtl(int cmd, void *param)
         break;
     case NUT_IRQCTL_GETMODE:
         {
-            u_int val = inr(AIC_SMR(TWI_ID)) & AIC_SRCTYPE;
+            unsigned int val = inr(AIC_SMR(TWI_ID)) & AIC_SRCTYPE;
             if (val == AIC_SRCTYPE_INT_LEVEL_SENSITIVE || val == AIC_SRCTYPE_EXT_HIGH_LEVEL) {
                 *ival = NUT_IRQMODE_LEVEL;
             } else  {
@@ -157,7 +160,7 @@ static int TwoWireIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int)sig_TWI.ir_count;
+        *ival = (unsigned int)sig_TWI.ir_count;
         sig_TWI.ir_count = 0;
         break;
 #endif

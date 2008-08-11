@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.15  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.14  2006/10/05 17:24:41  haraldkipp
  * On ARP transmit errors the incomplete cache entry is not removed.
  * Subsequent queries will never send out new ARP requests. Many thanks
@@ -166,7 +169,7 @@
 #define NUTDEBUG
 #include <stdio.h>
 #define __tcp_trs stdout
-static u_char __tcp_trf = 1;
+static uint_fast8_t __tcp_trf = 1;
 #endif
 
 /*!
@@ -259,7 +262,7 @@ static void ArpCacheFlush(IFNET * ifn)
  */
 static void ArpCacheAging(void)
 {
-    static u_long last_update;
+    static uint32_t last_update;
     NUTDEVICE *dev;
 
     if (NutGetSeconds() - last_update >= 60) {
@@ -277,7 +280,7 @@ static void ArpCacheAging(void)
                 /* Process Ethernet interfaces only. */
                 if (ifn && ifn->if_type == IFT_ETHER) {
                     ARPENTRY *ae;
-                    u_char rmf = 0;
+                    uint8_t rmf = 0;
 
                     /* Loop through all ARP entries of this interface. */
                     for (ae = ifn->arpTable; ae; ae = ae->ae_next) {
@@ -311,7 +314,7 @@ static void ArpCacheAging(void)
  * \return Pointer to the ARP cache entry, if found, or NULL if no 
  *         entry exists.
  */
-static ARPENTRY *ArpCacheLookup(IFNET * ifn, u_long ip)
+static ARPENTRY *ArpCacheLookup(IFNET * ifn, uint32_t ip)
 {
     ARPENTRY *entry;
 
@@ -336,7 +339,7 @@ static ARPENTRY *ArpCacheLookup(IFNET * ifn, u_long ip)
  * \return Pointer to the new entry or NULL if not enough memory is 
  *         available.
  */
-static ARPENTRY *ArpCacheNew(IFNET * ifn, u_long ip, u_char * ha)
+static ARPENTRY *ArpCacheNew(IFNET * ifn, uint32_t ip, uint8_t * ha)
 {
     ARPENTRY *entry;
 
@@ -383,7 +386,7 @@ static ARPENTRY *ArpCacheNew(IFNET * ifn, u_long ip, u_char * ha)
  * \param ha  Pointer to a buffer which receives the MAC address.
  *
  */
-void NutArpCacheUpdate(NUTDEVICE * dev, u_long ip, u_char * ha)
+void NutArpCacheUpdate(NUTDEVICE * dev, uint32_t ip, uint8_t * ha)
 {
     ARPENTRY *entry;
 
@@ -438,14 +441,14 @@ void NutArpCacheUpdate(NUTDEVICE * dev, u_long ip, u_char * ha)
  *
  * \return 0 if address resolved, -1 otherwise.
  */
-int NutArpCacheQuery(NUTDEVICE * dev, CONST u_long ip, u_char * mac)
+int NutArpCacheQuery(NUTDEVICE * dev, CONST uint32_t ip, uint8_t * mac)
 {
     int rc = -1;
     ARPENTRY *entry;
     IFNET *ifn = dev->dev_icb;
     NETBUF *nb = 0;
-    u_char retries = MAX_ARPREQUESTS;
-    u_long tmo = MIN_ARPWAIT;
+    uint_fast8_t retries = MAX_ARPREQUESTS;
+    uint32_t tmo = MIN_ARPWAIT;
 
     /* Aging the cache on each query adds some processing to the path 
      * which we want to be as fast as possible. But when calling this 

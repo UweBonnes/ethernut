@@ -242,7 +242,7 @@ void NutTraceStatusPrint(void)
 void NutTracePrint(int size)
 {
     int i,index;
-    u_long time;
+    uint32_t time;
     char mode;
     u_int micros, millis, secs;
 
@@ -275,7 +275,7 @@ void NutTracePrint(int size)
         if (index<0) {
             index += trace_size;
         }
-        time = ((u_long)trace_items[index].time_h)<<16 | trace_items[index].time_l;
+        time = ((uint32_t)trace_items[index].time_h)<<16 | trace_items[index].time_l;
         micros = (int)(time%1000);
         millis = (int)((time/1000)%1000);
         secs   = (int)(time/1000000);

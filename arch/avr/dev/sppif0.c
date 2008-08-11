@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 06:59:17  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2007/04/12 09:07:54  haraldkipp
  * Configurable SPI added.
  *
@@ -43,11 +46,11 @@
 #include <dev/sppif0.h>
 
 /* SPI control shadow registers. */
-static u_char sppi0_spcr[SPPI0_MAX_DEVICES];
+static uint8_t sppi0_spcr[SPPI0_MAX_DEVICES];
 
 /* SPI status shadow registers. Used to configure the double speed bit. */
 #ifdef SPI2X
-static u_char sppi0_spsr[SPPI0_MAX_DEVICES];
+static uint8_t sppi0_spsr[SPPI0_MAX_DEVICES];
 #endif
 
 /*!
@@ -70,7 +73,7 @@ static u_char sppi0_spsr[SPPI0_MAX_DEVICES];
  * \return 0, if the device index and the mode are both valid. Otherwise
  *         the return value will be -1.
  */
-int Sppi0SetMode(u_char ix, u_char mode)
+int Sppi0SetMode(uint8_t ix, uint8_t mode)
 {
     if (ix >= SPPI0_MAX_DEVICES || mode > 3) {
         return -1;
@@ -93,10 +96,10 @@ int Sppi0SetMode(u_char ix, u_char mode)
  * \param rate Transfer rate in bits per second.
  * 
  */
-void Sppi0SetSpeed(u_char ix, u_long rate)
+void Sppi0SetSpeed(uint8_t ix, uint32_t rate)
 {
-    u_long fosc;
-    u_char i;
+    uint32_t fosc;
+    uint8_t i;
 
     fosc = NutGetCpuClock();
 
@@ -134,7 +137,7 @@ void Sppi0SetSpeed(u_char ix, u_long rate)
  * \param ix The device index, starting at 0. The routine will not check 
  *           if this is valid.
  */
-void Sppi0Enable(u_char ix)
+void Sppi0Enable(uint8_t ix)
 {
     /*
      * When configured as SPI master, MOSI (PB2) and SCK (PB1) 
@@ -181,7 +184,7 @@ void Sppi0Enable(u_char ix)
  * \param hi If 0, the reset line is driven low. Otherwise the
  *           line is driven high.
  */
-void Sppi0ChipReset(u_char ix, u_char hi)
+void Sppi0ChipReset(uint8_t ix, uint8_t hi)
 {
 #if defined(SPPI0_RST0_BIT)
     if (ix == 0) {
@@ -236,7 +239,7 @@ void Sppi0ChipReset(u_char ix, u_char hi)
  * \param hi If 0, the chip select is driven low. Otherwise the
  *           line is driven high.
  */
-void Sppi0ChipSelect(u_char ix, u_char hi)
+void Sppi0ChipSelect(uint8_t ix, uint8_t hi)
 {
 #if defined(SPPI0_CS0_BIT)
     if (ix == 0) {
@@ -291,7 +294,7 @@ void Sppi0ChipSelect(u_char ix, u_char hi)
  * \param ix The device index, starting at 0. The routine will not 
  *           check if this is a valid number.
  */
-void Sppi0SelectDevice(u_char ix)
+void Sppi0SelectDevice(uint8_t ix)
 {
     Sppi0Enable(ix);
     Sppi0ChipSelect(ix, 1);
@@ -305,7 +308,7 @@ void Sppi0SelectDevice(u_char ix)
  * \param ix The device index, starting at 0. The routine will not 
  *           check if this is a valid number.
  */
-void Sppi0DeselectDevice(u_char ix)
+void Sppi0DeselectDevice(uint8_t ix)
 {
     Sppi0ChipSelect(ix, 0);
 }
@@ -321,7 +324,7 @@ void Sppi0DeselectDevice(u_char ix)
  * \param ix The device index, starting at 0. The routine will not 
  *           check if this is a valid number.
  */
-void Sppi0NegSelectDevice(u_char ix)
+void Sppi0NegSelectDevice(uint8_t ix)
 {
     Sppi0Enable(ix);
     Sppi0ChipSelect(ix, 0);
@@ -335,7 +338,7 @@ void Sppi0NegSelectDevice(u_char ix)
  * \param ix The device index, starting at 0. The routine will not 
  *           check if this is a valid number.
  */
-void Sppi0NegDeselectDevice(u_char ix)
+void Sppi0NegDeselectDevice(uint8_t ix)
 {
     Sppi0ChipSelect(ix, 1);
 }
@@ -347,7 +350,7 @@ void Sppi0NegDeselectDevice(u_char ix)
  *
  * \return Received byte.
  */
-u_char Sppi0Byte(u_char data)
+uint8_t Sppi0Byte(uint8_t data)
 {
     outb(SPDR, data);
     loop_until_bit_is_set(SPSR, SPIF);
@@ -373,10 +376,10 @@ u_char Sppi0Byte(u_char data)
  */
 void Sppi0Transact(CONST void *wdata, void *rdata, size_t len)
 {
-    CONST u_char *wp = (CONST u_char *)wdata;
+    CONST uint8_t *wp = (CONST uint8_t *)wdata;
 
     if (rdata) {
-        u_char *rp = (u_char *)rdata;
+        uint8_t *rp = (uint8_t *)rdata;
 
         while(len--) {
             *rp++ = Sppi0Byte(*wp);

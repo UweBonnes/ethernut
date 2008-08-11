@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 07:00:22  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2008/07/14 13:10:30  haraldkipp
  * Added macros to determine Ethernet address types.
  *
@@ -126,9 +129,9 @@ extern "C" {
  * \brief Ethernet protocol header type.
  */
 typedef struct __attribute__((packed)) ether_header {
-    u_char  ether_dhost[6];     /*!< \brief Destination MAC address. */
-    u_char  ether_shost[6];     /*!< \brief Source MAC address. */
-    u_short ether_type;         /*!< \brief Protocol type. */
+    uint8_t  ether_dhost[6];     /*!< \brief Destination MAC address. */
+    uint8_t  ether_shost[6];     /*!< \brief Source MAC address. */
+    uint16_t ether_type;         /*!< \brief Protocol type. */
 } ETHERHDR;
 
 #define ETHERTYPE_IP    0x0800  /*!< \brief IP protocol */
@@ -178,8 +181,8 @@ typedef struct __attribute__((packed)) ether_header {
  */
 #define	ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea)) 
 
-extern u_char *ether_aton(CONST char *str);
-extern char *ether_ntoa(CONST u_char *mac);
+extern uint8_t *ether_aton(CONST char *str);
+extern char *ether_ntoa(CONST uint8_t *mac);
 
 
 /*!
@@ -194,20 +197,20 @@ extern char *ether_ntoa(CONST u_char *mac);
  */
 typedef struct __attribute__((packed)) ether_arp {
     ARPHDR ea_hdr;     /*!< \brief Fixed-size header. */
-    u_char arp_sha[6]; /*!< \brief Source hardware address. */
-    u_long arp_spa;    /*!< \brief Source protocol address. */
-    u_char arp_tha[6]; /*!< \brief Target hardware address. */
-    u_long arp_tpa;    /*!< \brief Target protocol address. */
+    uint8_t arp_sha[6]; /*!< \brief Source hardware address. */
+    uint32_t arp_spa;    /*!< \brief Source protocol address. */
+    uint8_t arp_tha[6]; /*!< \brief Target hardware address. */
+    uint32_t arp_tpa;    /*!< \brief Target protocol address. */
 } ETHERARP;
 
 extern void NutArpInput(NUTDEVICE *dev, NETBUF *nb);
 
-extern NETBUF *NutArpAllocNetBuf(u_short type, u_long ip, u_char *mac);
+extern NETBUF *NutArpAllocNetBuf(uint16_t type, uint32_t ip, uint8_t *mac);
 extern int NutArpOutput(NUTDEVICE *dev, NETBUF *nb);
 
-extern void NutArpCacheUpdate(NUTDEVICE *dev, u_long ip, u_char *ha);
+extern void NutArpCacheUpdate(NUTDEVICE *dev, uint32_t ip, uint8_t *ha);
 
-extern int NutArpCacheQuery(NUTDEVICE *dev, u_long ip, u_char *mac);
+extern int NutArpCacheQuery(NUTDEVICE *dev, uint32_t ip, uint8_t *mac);
 
 #ifdef __cplusplus
 }

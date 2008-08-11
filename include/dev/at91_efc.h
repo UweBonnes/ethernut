@@ -8,19 +8,19 @@
  *
  * \return 0 on success, -1 otherwise.
  */
-extern int OnChipFlashLoad(u_long addr, void *buff, size_t siz);
+extern int OnChipFlashLoad(uint32_t addr, void *buff, size_t siz);
 
 /*!
  * \brief Save data to MCU on-chip flash.
  *
  * \return 0 on success, -1 otherwise.
  */
-extern int OnChipFlashSave(u_long addr, CONST void *buff, size_t len);
+extern int OnChipFlashSave(uint32_t addr, CONST void *buff, size_t len);
 
-extern int FlashAreaIsLock(u_long addr);
+extern int FlashAreaIsLock(uint32_t addr);
 
-extern int LockFlashArea(u_long addr);
+extern int LockFlashArea(uint32_t addr);
 
-extern int UnlockFlashArea(u_long addr);
+extern int UnlockFlashArea(uint32_t addr);
 
 #endif

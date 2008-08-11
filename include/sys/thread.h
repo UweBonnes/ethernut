@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.19  2008/08/11 07:00:28  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.18  2008/06/15 17:05:52  haraldkipp
  * Rolled back to version 1.16.
  *
@@ -131,6 +134,8 @@
 #include <sys/types.h>
 #include <cfg/memory.h>
 
+#include <stdint.h>
+
 #define DEADBEEF    0xDEADBEEF
 
 
@@ -156,10 +161,10 @@ struct _NUTTHREADINFO {
     NUTTHREADINFO *td_qnxt;     /*!< \brief Linked list of all queued thread. */
     volatile u_int td_qpec;     /*!< \brief Pending event counter. */
     char td_name[9];            /*!< \brief Name of this thread. */
-    u_char td_state;            /*!< \brief Operating state. One of TDS_ */
+    uint8_t td_state;            /*!< \brief Operating state. One of TDS_ */
     uptr_t td_sp;               /*!< \brief Stack pointer. */
-    u_char td_priority;         /*!< \brief Priority level. 0 is highest priority. */
-    u_char *td_memory;          /*!< \brief Pointer to heap memory used for stack. */
+    uint8_t td_priority;         /*!< \brief Priority level. 0 is highest priority. */
+    uint8_t *td_memory;          /*!< \brief Pointer to heap memory used for stack. */
     HANDLE td_timer;            /*!< \brief Event timer. */
     volatile HANDLE td_queue;   /*!< \brief Root entry of the waiting queue. */
 #if defined (__APPLE__) || defined(__linux__) || defined(__CYGWIN__)
@@ -167,7 +172,7 @@ struct _NUTTHREADINFO {
     void (*td_fn) (void *);     /*!< \brief thread function */
     void *td_arg;               /*!< \brief args given to NutCreateThread */
     pthread_cond_t td_cv;       /*!< \brief conditional variable for unix emulations. */
-    u_short td_cs_level;        /*! \brief number critical sections has been entered without leaving */
+    uint16_t td_cs_level;        /*! \brief number critical sections has been entered without leaving */
 #endif
 };
 /*@}*/
@@ -195,11 +200,11 @@ extern void NutThreadInit(void);
 #endif
 
 #if defined(__GNUC__) && defined (__AVR_ENHANCED__)
-extern u_char NutThreadSetSleepMode(u_char mode);
+extern uint8_t NutThreadSetSleepMode(uint8_t mode);
 #endif
 
 extern HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackSize);
-extern u_char NutThreadSetPriority(u_char level);
+extern uint8_t NutThreadSetPriority(uint8_t level);
 
 extern void NutThreadKill(void);
 extern void NutThreadDestroy(void);

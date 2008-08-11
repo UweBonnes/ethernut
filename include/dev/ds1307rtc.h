@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/05 17:18:49  haraldkipp
  * Hardware independant RTC layer added.
  *
@@ -55,11 +58,11 @@ extern int DS1307Init(void);
 
 extern int DS1307RtcGetClock(struct _tm *tm);
 extern int DS1307RtcSetClock(CONST struct _tm *tm);
-extern int DS1307RtcReadRegs(u_char addr, u_char *buff, size_t len);
-extern int DS1307RtcWrite(CONST u_char *buff, size_t len);
+extern int DS1307RtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
+extern int DS1307RtcWrite(CONST uint8_t *buff, size_t len);
 
-extern int DS1307RamRead(u_char addr, u_char *buff, size_t cnt);
-extern int DS1307RamWrite(u_char addr, CONST void *buff, size_t len);
+extern int DS1307RamRead(uint8_t addr, uint8_t *buff, size_t cnt);
+extern int DS1307RamWrite(uint8_t addr, CONST void *buff, size_t len);
 
 __END_DECLS
 /* End of prototypes */

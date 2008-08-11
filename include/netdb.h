@@ -81,6 +81,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2008/02/15 17:07:09  haraldkipp
  * Added routine to query DNS IP settings.
  *
@@ -125,6 +128,7 @@
 
 #define _NETDB_H_
 #include <sys/types.h>
+#include <stdint.h>
 
 __BEGIN_DECLS
 
@@ -145,11 +149,11 @@ __END_DECLS
 
 __BEGIN_DECLS
 
-extern void NutDnsConfig2(u_char * hostname, u_char * domain, u_long pdnsip, u_long sdnsip);
-extern void NutDnsGetConfig2(char ** hostname, char ** domain, u_long *pdnsip, u_long *sdnsip);
-extern void NutDnsConfig(CONST u_char *hostname, CONST u_char *domain, u_long dnsip);
-extern u_long NutDnsGetHostByName(CONST u_char *hostname);
-extern u_long NutDnsGetMxByDomain(CONST u_char * hostname);
+extern void NutDnsConfig2(uint8_t * hostname, uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
+extern void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip);
+extern void NutDnsConfig(CONST uint8_t *hostname, CONST uint8_t *domain, uint32_t dnsip);
+extern uint32_t NutDnsGetHostByName(CONST uint8_t *hostname);
+extern uint32_t NutDnsGetMxByDomain(CONST uint8_t * hostname);
 
 __END_DECLS
 

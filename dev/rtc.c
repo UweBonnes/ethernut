@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2006/10/08 16:48:09  haraldkipp
  * Documentation fixed
  *
@@ -164,7 +167,7 @@ int NutRtcSetAlarm(int idx, CONST struct _tm *tm, int aflags)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int NutRtcGetStatus(u_long * sflags)
+int NutRtcGetStatus(uint32_t * sflags)
 {
     if (reg_rtc && reg_rtc->rtc_getstatus) {
         return (*reg_rtc->rtc_getstatus) (sflags);
@@ -179,7 +182,7 @@ int NutRtcGetStatus(u_long * sflags)
  *
  * \return Always 0.
  */
-int NutRtcClearStatus(u_long sflags)
+int NutRtcClearStatus(uint32_t sflags)
 {
     if (reg_rtc && reg_rtc->rtc_clrstatus) {
         return (*reg_rtc->rtc_clrstatus) (sflags);

@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:21  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2004/02/02 17:51:10  drsung
  * gateway ip address was not set, if static network configuration from EEPROM is used.
  *
@@ -96,6 +99,8 @@
 #include <dev/netbuf.h>
 #include <net/if_var.h>
 
+#include <stdint.h>
+
 /*!
  * \file netinet/icmp.h
  * \brief ICMP protocol definitions.
@@ -106,9 +111,9 @@ extern "C" {
 #endif
 
 extern void NutIcmpInput(NUTDEVICE *dev, NETBUF *nb);
-extern int NutIcmpOutput(u_char type, u_long dest, NETBUF *nb);
-extern int NutIcmpReply(u_char type, u_char code, u_long spec, u_long dest, NETBUF *nb);
-extern int NutIcmpResponse(u_char type, u_char code, u_long spec, NETBUF * nb);
+extern int NutIcmpOutput(uint8_t type, uint32_t dest, NETBUF *nb);
+extern int NutIcmpReply(uint8_t type, uint8_t code, uint32_t spec, uint32_t dest, NETBUF *nb);
+extern int NutIcmpResponse(uint8_t type, uint8_t code, uint32_t spec, NETBUF * nb);
 
 #ifdef __cplusplus
 }

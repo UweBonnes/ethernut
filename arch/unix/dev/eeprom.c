@@ -85,22 +85,22 @@ void eeprom_write_byte(unsigned char *addr, unsigned char val)
     \c buf */
 void eeprom_read_block(void *buf, const void *addr, size_t n)
 {
-    u_short count;
+    uint16_t count;
     unix_eeprom_acces(addr);
     count = fread(buf, 1, n, eepromFile);
 
     // fill missing values
     while (count < n) {
-        ((u_char *) buf)[count++] = 0xff;
+        ((uint8_t *) buf)[count++] = 0xff;
     }
 }
 
 /** \ingroup unix_eeprom
     read one byte from EEPROM address \c addr */
-u_char eeprom_read_byte(const unsigned char *addr)
+uint8_t eeprom_read_byte(const unsigned char *addr)
 {
-    u_char result;
-    u_short count;
+    uint8_t result;
+    uint16_t count;
     unix_eeprom_acces(addr);
     count = fread(&result, 1, 1, eepromFile);
     if (count != 1)
@@ -110,10 +110,10 @@ u_char eeprom_read_byte(const unsigned char *addr)
 
 /** \ingroup unix_eeprom
     read one 16-bit word (little endian) from EEPROM address \c addr */
-u_short eeprom_read_word(const unsigned short *addr)
+uint16_t eeprom_read_word(const unsigned short *addr)
 {
-    u_short result;
-    u_short count;
+    uint16_t result;
+    uint16_t count;
     unix_eeprom_acces(addr);
     count = fread(&result, 1, 2, eepromFile);
     if (count != 2)

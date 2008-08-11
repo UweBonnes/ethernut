@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.25  2008/08/11 07:00:33  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.24  2006/06/28 14:38:34  haraldkipp
  * Event and timer handling re-design, again. This fixes a bug, which
  * possibly existed since version 3.9.8 and freezes threads under heavy
@@ -259,7 +262,7 @@ void NutEventTimeout(HANDLE timer, void *arg)
  *
  * \note Timeout is limited to the granularity of the system timer.
  */
-int NutEventWait(volatile HANDLE * qhp, u_long ms)
+int NutEventWait(volatile HANDLE * qhp, uint32_t ms)
 {
     NUTTHREADINFO *tdp;
     
@@ -336,7 +339,7 @@ int NutEventWait(volatile HANDLE * qhp, u_long ms)
  *
  * \note Timeout is limited to the granularity of the system timer.
  */
-int NutEventWaitNext(volatile HANDLE * qhp, u_long ms)
+int NutEventWaitNext(volatile HANDLE * qhp, uint32_t ms)
 {
     /*
      * Check for posts on a previously empty queue. 

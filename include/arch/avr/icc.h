@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.7  2008/06/25 08:37:56  freckle
  * escape realloc for icc
  *
@@ -199,8 +202,8 @@
 
 #define wdt_enable(tmo) \
 { \
-    register u_char s = _BV(WDCE) | _BV(WDE); \
-    register u_char r = tmo | _BV(WDE); \
+    register unsigned char s = _BV(WDCE) | _BV(WDE); \
+    register unsigned char r = tmo | _BV(WDE); \
     asm("in R0, 0x3F\n"     \
         "cli\n"             \
         "wdr\n"             \
@@ -211,8 +214,8 @@
 
 #define wdt_disable() \
 { \
-    register u_char s = _BV(WDCE) | _BV(WDE); \
-    register u_char r = 0;  \
+    register unsigned char s = _BV(WDCE) | _BV(WDE); \
+    register unsigned char r = 0;  \
     asm("in R0, $3F\n"      \
         "cli\n"             \
         "out 0x21, %s\n"    \

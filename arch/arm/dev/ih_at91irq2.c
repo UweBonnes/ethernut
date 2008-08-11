@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:10  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/07/05 07:56:34  haraldkipp
  * Interrupt handler will be included only, if the related interrupt
  * ID is defined in the platform specific header file.
@@ -102,8 +105,8 @@ void Interrupt2Entry(void)
 static int Interrupt2Ctl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *)param;
-    int enabled = inr(AIC_IMR) & _BV(IRQ2_ID);
+    unsigned int *ival = (unsigned int *)param;
+    int_fast8_t enabled = inr(AIC_IMR) & _BV(IRQ2_ID);
 
     /* Disable interrupt. */
     if (enabled) {
@@ -135,7 +138,7 @@ static int Interrupt2Ctl(int cmd, void *param)
         break;
     case NUT_IRQCTL_GETMODE:
         {
-            u_int val = inr(AIC_SMR(IRQ2_ID)) & AIC_SRCTYPE;
+            unsigned int val = inr(AIC_SMR(IRQ2_ID)) & AIC_SRCTYPE;
 
             if (val == AIC_SRCTYPE_EXT_LOW_LEVEL) {
                 *ival = NUT_IRQMODE_LOWLEVEL;
@@ -169,7 +172,7 @@ static int Interrupt2Ctl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int)sig_INTERRUPT2.ir_count;
+        *ival = (unsigned int)sig_INTERRUPT2.ir_count;
         sig_INTERRUPT2.ir_count = 0;
         break;
 #endif

@@ -48,7 +48,7 @@
 typedef struct {
     long sess_version;
     size_t sess_id_len;
-    u_char sess_id[MAX_SID_LEN + 1];
+    uint8_t sess_id[MAX_SID_LEN + 1];
     int sess_read_view;
     int sess_write_view;
 } SNMP_SESSION;

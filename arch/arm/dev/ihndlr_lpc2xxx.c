@@ -51,16 +51,16 @@
 /*
  * Take a look in the LPC2294 user manual (2004 May 03) page 52
  */
-#define UNDEFINED_INSTRUCTION_VECTOR_ADDR   (*(u_long *)0x00000004L)   
-#define SOFTWARE_INTERRUPT_VECTOR_ADDR      (*(u_long *)0x00000008L)
-#define PREFETCH_ABORT_VECTOR_ADDR          (*(u_long *)0x0000000CL)
-#define DATA_ABORT_VECTOR_ADDR              (*(u_long *)0x00000010L)
-#define IRQ_VECTOR_ADDR                     (*(u_long *)0x00000018L)
-#define FIQ_VECTOR_ADDR                     (*(u_long *)0x0000001CL)
+#define UNDEFINED_INSTRUCTION_VECTOR_ADDR   (*(uint32_t *)0x00000004L)   
+#define SOFTWARE_INTERRUPT_VECTOR_ADDR      (*(uint32_t *)0x00000008L)
+#define PREFETCH_ABORT_VECTOR_ADDR          (*(uint32_t *)0x0000000CL)
+#define DATA_ABORT_VECTOR_ADDR              (*(uint32_t *)0x00000010L)
+#define IRQ_VECTOR_ADDR                     (*(uint32_t *)0x00000018L)
+#define FIQ_VECTOR_ADDR                     (*(uint32_t *)0x0000001CL)
 
-#define DATA_ABORT_ISR_ADDR                 (*(u_long *)0x00000030L)
-#define IRQ_ISR_ADDR                        (*(u_long *)0x00000038L)
-#define FIQ_ISR_ADDR                        (*(u_long *)0x0000003CL)
+#define DATA_ABORT_ISR_ADDR                 (*(uint32_t *)0x00000030L)
+#define IRQ_ISR_ADDR                        (*(uint32_t *)0x00000038L)
+#define FIQ_ISR_ADDR                        (*(uint32_t *)0x0000003CL)
 
 typedef  void (*FNCPTR)(void);
 
@@ -114,7 +114,7 @@ static void ABORTHandler (void)
   /*
    * The next lines are only used for debugging purpose
    */
-  volatile u_long AbortCounter = 0;    
+  volatile uint32_t AbortCounter = 0;    
   
   AbortCounter++;  
 } /* ABORTHandler */
@@ -206,13 +206,13 @@ void InitIrqHandler (void)
    * Set IRQHandler
    */
   IRQ_VECTOR_ADDR = 0xE59FF018;           /* LDR PC,[PC,#0x18] instruction */
-  IRQ_ISR_ADDR    = (u_long)IRQHandler;   /* IRQ exception vector address  */
+  IRQ_ISR_ADDR    = (uint32_t)IRQHandler;   /* IRQ exception vector address  */
 
   /*
    * Set FIQHandler
    */
   FIQ_VECTOR_ADDR = 0xE59FF018;           /* LDR PC,[PC,#0x18] instruction */
-  FIQ_ISR_ADDR    = (u_long)FIQHandler;   /* FIQ exception vector address  */
+  FIQ_ISR_ADDR    = (uint32_t)FIQHandler;   /* FIQ exception vector address  */
 
   /*
    * We does not need the next interrupt sources in the moment,
@@ -229,7 +229,7 @@ void InitIrqHandler (void)
    */  
 #if 1
   DATA_ABORT_VECTOR_ADDR = 0xE59FF018;
-  DATA_ABORT_ISR_ADDR    = (u_long)ABORTHandler;
+  DATA_ABORT_ISR_ADDR    = (uint32_t)ABORTHandler;
 #endif  
 
   /*

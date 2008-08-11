@@ -34,6 +34,9 @@
  
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2007/12/09 22:12:05  olereinhardt
  * Added cvs log tag
  *
@@ -166,7 +169,7 @@ void ADCSetMode(TADCMode mode);
 // pre: Sample completed
 // post: Value will be removed from buffer
 
-int ADCBufRead(u_short channel, u_short * read);
+int ADCBufRead(uint16_t channel, uint16_t * read);
 
 #endif
 /*@}*/

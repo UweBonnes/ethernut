@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2008/08/11 07:00:24  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.10  2008/07/17 11:42:25  olereinhardt
  * Added prototype for new functions in cgi.c
  *
@@ -73,6 +76,8 @@
  *
  * \endverbatim
  */
+
+#include <stdint.h>
 
 #include <stdio.h>
 #include <time.h>
@@ -133,7 +138,7 @@ extern void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes);
 extern void NutHttpSendError(FILE * stream, REQUEST * req, int status);
 extern char *NutGetMimeType(char *name);
 extern void *NutGetMimeHandler(char *name);
-extern u_char NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req));
+extern uint8_t NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd, int file_len, char *http_root, REQUEST *req));
 
 __END_DECLS
 
@@ -180,8 +185,8 @@ struct _CGIFUNCTION {
 __BEGIN_DECLS
 
 /* Function prototypes. */
-extern void NutHttpSetOptionFlags(u_long flags);
-extern u_long NutHttpGetOptionFlags(void);
+extern void NutHttpSetOptionFlags(uint32_t flags);
+extern uint32_t NutHttpGetOptionFlags(void);
 extern int NutRegisterHttpRoot(char *path);
 extern void NutRegisterCgiBinPath(char *path);
 extern int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *));

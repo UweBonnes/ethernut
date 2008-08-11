@@ -66,6 +66,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/11 06:59:59  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.5  2005/08/02 17:46:48  haraldkipp
  * Major API documentation update.
  *
@@ -137,111 +140,111 @@ struct _PPPDCB {
 
     /*! \brief Current state of the link layer.
      */
-    u_char dcb_lcp_state;
+    uint8_t dcb_lcp_state;
     
     /*! \brief ID of our last request.
      */
-    u_char dcb_reqid;
+    uint8_t dcb_reqid;
 
     /*! \brief ID of our last reject.
      */
-    u_char dcb_rejid;
+    uint8_t dcb_rejid;
 
     /*! \brief Flag to remember ack received.
      */
-    u_char dcb_acked;
+    uint8_t dcb_acked;
 
     /*! \brief Maximum local receive unit.
      */
-    u_short dcb_loc_mru;
+    uint16_t dcb_loc_mru;
 
     /*! \brief Maximum remote receive unit.
      */
-    u_short dcb_rem_mru;
+    uint16_t dcb_rem_mru;
 
     /*! \brief Asynch control character map.
      * TODO: Pass to ahdlc driver.
      */
-    u_long dcb_accm;
+    uint32_t dcb_accm;
 
     /*! \brief Compression flags.
      * TODO: Pass to ahdlc driver. dcb_useACFC dcb_usePFC
      */
-    u_char dcb_compr;
+    uint8_t dcb_compr;
     
     /*! \brief Authentication type.
      */
-    u_short dcb_auth;
+    uint16_t dcb_auth;
 
     /*! \brief Magic number to negotiate.
      */
-    u_long dcb_neg_magic;
+    uint32_t dcb_neg_magic;
 
     /*! \brief Local magic number.
      * Used to detect loopback conditions.
      */
-    u_long dcb_loc_magic;
+    uint32_t dcb_loc_magic;
 
     /*! \brief Remote magic number.
      * Used to detect loopback conditions.
      */
-    u_long dcb_rem_magic;
+    uint32_t dcb_rem_magic;
 
     /*! \brief User authentication.
      */
-    u_char *dcb_user;
+    uint8_t *dcb_user;
 
     /*! \brief Password authentication.
      */
-    u_char *dcb_pass;
+    uint8_t *dcb_pass;
 
     /*! \brief Local IP address.
      */
-    u_long dcb_local_ip;
+    uint32_t dcb_local_ip;
 
     /*! \brief Remote IP address.
      */
-    u_long dcb_remote_ip;
+    uint32_t dcb_remote_ip;
 
     /*! \brief Negotiated IP mask.
      */
-    u_long dcb_ip_mask;
+    uint32_t dcb_ip_mask;
 
     /*! \brief Negotiated primary DNS.
      */
-    u_long dcb_ip_dns1;
+    uint32_t dcb_ip_dns1;
 
     /*! \brief Negotiated secondary DNS.
      */
-    u_long dcb_ip_dns2;
+    uint32_t dcb_ip_dns2;
 
     /*! \brief Rejected items.
      */
-    u_long dcb_rejects;
+    uint32_t dcb_rejects;
 
     /*! \brief LCP/IPCP retransmit counter.
      */
-    u_char dcb_retries;
+    uint8_t dcb_retries;
 
     /*! \brief LCP NAK counter, avoids endless loops. 
      */
-    u_char dcb_lcp_naks;
+    uint8_t dcb_lcp_naks;
 
     /*! \brief Identifier of our last LCP request.
      */
-    u_char dcb_lcp_reqid;
+    uint8_t dcb_lcp_reqid;
 
     /*! \brief Current state of the network layer.
      */
-    u_char dcb_ipcp_state;
+    uint8_t dcb_ipcp_state;
     
     /*! \brief LCP NAK counter, avoids endless loops. 
      */
-    u_char dcb_ipcp_naks;
+    uint8_t dcb_ipcp_naks;
 
     /*! \brief Current authentication state.
      */
-    u_char dcb_auth_state;
+    uint8_t dcb_auth_state;
 
     /*! \brief File descriptor of physical device.
      */

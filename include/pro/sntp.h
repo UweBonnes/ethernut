@@ -32,6 +32,9 @@
  */
 /*
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:24  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2003/11/24 18:11:36  drsung
  * first release
  *
@@ -40,10 +43,11 @@
 #define __SNTP_H_
 
 #include <sys/types.h>
+#include <stdint.h>
 #include <time.h>
 
-int NutSNTPGetTime(u_long * server_addr, time_t * uct);
-int NutSNTPStartThread(u_long server_addr, u_long interval);
+int NutSNTPGetTime(uint32_t * server_addr, time_t * uct);
+int NutSNTPStartThread(uint32_t server_addr, uint32_t interval);
 
 
 #endif                          /* __SNTP_H_  */

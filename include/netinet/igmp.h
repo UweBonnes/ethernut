@@ -64,6 +64,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.2  2007/08/29 07:43:54  haraldkipp
  * Documentation updated and corrected.
  *
@@ -99,46 +102,46 @@ igmp IGMP;
  */
 struct __attribute__ ((packed)) igmp
 {
-    u_char igmp_type;           /*!< \brief Version and type of IGMP message. */
-    u_char igmp_code;           /*!< \brief Subtype for routing messages. */
-    u_short igmp_cksum;         /*!< \brief IP-style checksum. */
-    u_long igmp_group;          /*!< \brief Group address being reported. */
+    uint8_t igmp_type;           /*!< \brief Version and type of IGMP message. */
+    uint8_t igmp_code;           /*!< \brief Subtype for routing messages. */
+    uint16_t igmp_cksum;         /*!< \brief IP-style checksum. */
+    uint32_t igmp_group;          /*!< \brief Group address being reported. */
 };
 
 /*!
  * \brief IGMPv3 query format
  */
 struct __attribute__ ((packed)) igmpv3 {
-    u_char igmp_type;           /*!< \brief Version and type of IGMP message. */
-    u_char igmp_code;           /*!< \brief Subtype for routing messages. */
-    u_short igmp_cksum;         /*!< \brief IP-style checksum. */
-    u_long igmp_group;          /*!< \brief Group address being reported. */
-    u_char igmp_misc;           /*!< \brief Reserved, supress and robustness var. */
-    u_char igmp_qqi;            /*!< \brief Querier's query interval. */
-    u_short igmp_numsrc;        /*!< \brief Number of sources. */
-    u_long igmp_sources[1];     /*!< \brief Source addresses. */
+    uint8_t igmp_type;           /*!< \brief Version and type of IGMP message. */
+    uint8_t igmp_code;           /*!< \brief Subtype for routing messages. */
+    uint16_t igmp_cksum;         /*!< \brief IP-style checksum. */
+    uint32_t igmp_group;          /*!< \brief Group address being reported. */
+    uint8_t igmp_misc;           /*!< \brief Reserved, supress and robustness var. */
+    uint8_t igmp_qqi;            /*!< \brief Querier's query interval. */
+    uint16_t igmp_numsrc;        /*!< \brief Number of sources. */
+    uint32_t igmp_sources[1];     /*!< \brief Source addresses. */
 };
 
 /*!
  * \brief IGMPv3 group record.
  */
 struct __attribute__ ((packed)) igmp_grouprec {
-    u_char ig_type;             /*!< \brief Record type. */
-    u_char ig_datalen;          /*!< \brief Amount of aux data. */
-    u_short ig_numsrc;          /*!< \brief Number of sources. */
-    u_long ig_group;            /*!< \brief The group being reported. */
-    u_long ig_sources[1];       /*!< \brief Source addresses. */
+    uint8_t ig_type;             /*!< \brief Record type. */
+    uint8_t ig_datalen;          /*!< \brief Amount of aux data. */
+    uint16_t ig_numsrc;          /*!< \brief Number of sources. */
+    uint32_t ig_group;            /*!< \brief The group being reported. */
+    uint32_t ig_sources[1];       /*!< \brief Source addresses. */
 };
 
 /*!
  * \brief IGMPv3 report.
  */
 struct __attribute__ ((packed)) igmp_report {
-    u_char ir_type;             /*!< \brief Record type. */
-    u_char ir_rsv1;             /*!< \brief Reserved. */
-    u_short ir_cksum;           /*!< \brief Checksum. */
-    u_short ir_rsv2;            /*!< \brief Reserved. */
-    u_short ir_numgrps;         /*!< \brief Number of group records. */
+    uint8_t ir_type;             /*!< \brief Record type. */
+    uint8_t ir_rsv1;             /*!< \brief Reserved. */
+    uint16_t ir_cksum;           /*!< \brief Checksum. */
+    uint16_t ir_rsv2;            /*!< \brief Reserved. */
+    uint16_t ir_numgrps;         /*!< \brief Number of group records. */
     struct igmp_grouprec ir_groups[1];  /*!< \brief Group records. */
 };
 
@@ -203,7 +206,7 @@ struct __attribute__ ((packed)) igmp_report {
 __BEGIN_DECLS
 /* Function prototypes */
 extern void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb);
-extern int NutIgmpOutput(u_char type, u_long dest, NETBUF * nb);
+extern int NutIgmpOutput(uint8_t type, uint32_t dest, NETBUF * nb);
 
 __END_DECLS
 /* End of prototypes */

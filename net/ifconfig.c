@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.9  2008/07/14 13:10:31  haraldkipp
  * Added macros to determine Ethernet address types.
  *
@@ -181,7 +184,7 @@
  * \note Typical applications do not use this function, but call 
  *       NutDhcpIfConfig() or NutNetIfConfig().
  */
-int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gateway)
+int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t gateway)
 {
     IFNET *nif;
 
@@ -264,7 +267,7 @@ int NutNetIfSetup(NUTDEVICE * dev, u_long ip_addr, u_long ip_mask, u_long gatewa
  * \note The whole interface configuration has become a mess over
  *       the years and need a major redesign.
  */
-int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mask)
+int NutNetIfConfig(CONST char *name, void *params, uint32_t ip_addr, uint32_t ip_mask)
 {
     return NutNetIfConfig2(name, params, ip_addr, ip_mask, 0);
 }
@@ -299,7 +302,7 @@ int NutNetIfConfig(CONST char *name, void *params, u_long ip_addr, u_long ip_mas
  *       be handled by NutIpRouteAdd(). It's not yet deprecated, but I
  *       recommend not to use it in application code.
  */
-int NutNetIfConfig2(CONST char *name, void *params, u_long ip_addr, u_long ip_mask, u_long gateway)
+int NutNetIfConfig2(CONST char *name, void *params, uint32_t ip_addr, uint32_t ip_mask, uint32_t gateway)
 {
     NUTDEVICE *dev;
     IFNET *nif;

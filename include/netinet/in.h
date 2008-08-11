@@ -77,6 +77,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 07:00:23  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2007/05/02 11:18:32  haraldkipp
  * IGMP support added. Incomplete.
  *
@@ -136,62 +139,62 @@
 /*!
  * \brief Any IP address.
  */
-#define INADDR_ANY          (u_long)0x00000000
+#define INADDR_ANY          (uint32_t)0x00000000
 
 /*!
  * \brief Broadcast IP address.
  */
-#define INADDR_BROADCAST    (u_long)0xffffffff
+#define INADDR_BROADCAST    (uint32_t)0xffffffff
 
 /*
  * Definitions of bits in internet address integers.
  */
 #ifdef __BIG_ENDIAN__
-#define IN_CLASSA(i)        (((u_long)(i) & 0x80000000) == 0)
+#define IN_CLASSA(i)        (((uint32_t)(i) & 0x80000000) == 0)
 #define IN_CLASSA_NET       0xff000000
-#define IN_CLASSB(i)        (((u_long)(i) & 0xc0000000) == 0x80000000)
+#define IN_CLASSB(i)        (((uint32_t)(i) & 0xc0000000) == 0x80000000)
 #define IN_CLASSB_NET       0xffff0000
-#define IN_CLASSC(i)        (((u_long)(i) & 0xe0000000) == 0xc0000000)
+#define IN_CLASSC(i)        (((uint32_t)(i) & 0xe0000000) == 0xc0000000)
 #define IN_CLASSC_NET       0xffffff00
-#define IN_CLASSD(i)        (((u_long)(i) & 0xf0000000) == 0xe0000000)
+#define IN_CLASSD(i)        (((uint32_t)(i) & 0xf0000000) == 0xe0000000)
 #define IN_CLASSD_NET       0xf0000000
 #else /* __BIG_ENDIAN__ */
-#define IN_CLASSA(i)        (((u_long)(i) & 0x00000080) == 0)
+#define IN_CLASSA(i)        (((uint32_t)(i) & 0x00000080) == 0)
 #define IN_CLASSA_NET       0x000000ff
-#define IN_CLASSB(i)        (((u_long)(i) & 0x000000c0) == 0x00000080)
+#define IN_CLASSB(i)        (((uint32_t)(i) & 0x000000c0) == 0x00000080)
 #define IN_CLASSB_NET       0x0000ffff
-#define IN_CLASSC(i)        (((u_long)(i) & 0x000000e0) == 0x000000c0)
+#define IN_CLASSC(i)        (((uint32_t)(i) & 0x000000e0) == 0x000000c0)
 #define IN_CLASSC_NET       0x00ffffff
-#define IN_CLASSD(i)        (((u_long)(i) & 0x000000f0) == 0x000000e0)
+#define IN_CLASSD(i)        (((uint32_t)(i) & 0x000000f0) == 0x000000e0)
 #define IN_CLASSD_NET       0x0000000f
 #endif /* __BIG_ENDIAN__ */
 
 #define IN_MULTICAST(i)     IN_CLASSD(i)
 
 #ifdef __BIG_ENDIAN__
-#define INADDR_UNSPEC_GROUP     (u_long)0xe0000000  /* 224.0.0.0 */
-#define INADDR_ALLHOSTS_GROUP   (u_long)0xe0000001  /* 224.0.0.1 */
-#define INADDR_ALLRTRS_GROUP    (u_long)0xe0000002  /* 224.0.0.2 */
-#define INADDR_ALLRPTS_GROUP    (u_long)0xe0000016  /* 224.0.0.22, IGMPv3 */
-#define INADDR_CARP_GROUP       (u_long)0xe0000012  /* 224.0.0.18 */
-#define INADDR_PFSYNC_GROUP     (u_long)0xe00000f0  /* 224.0.0.240 */
-#define INADDR_ALLMDNS_GROUP    (u_long)0xe00000fb  /* 224.0.0.251 */
-#define INADDR_MAX_LOCAL_GROUP  (u_long)0xe00000ff  /* 224.0.0.255 */
+#define INADDR_UNSPEC_GROUP     (uint32_t)0xe0000000  /* 224.0.0.0 */
+#define INADDR_ALLHOSTS_GROUP   (uint32_t)0xe0000001  /* 224.0.0.1 */
+#define INADDR_ALLRTRS_GROUP    (uint32_t)0xe0000002  /* 224.0.0.2 */
+#define INADDR_ALLRPTS_GROUP    (uint32_t)0xe0000016  /* 224.0.0.22, IGMPv3 */
+#define INADDR_CARP_GROUP       (uint32_t)0xe0000012  /* 224.0.0.18 */
+#define INADDR_PFSYNC_GROUP     (uint32_t)0xe00000f0  /* 224.0.0.240 */
+#define INADDR_ALLMDNS_GROUP    (uint32_t)0xe00000fb  /* 224.0.0.251 */
+#define INADDR_MAX_LOCAL_GROUP  (uint32_t)0xe00000ff  /* 224.0.0.255 */
 #else /* __BIG_ENDIAN__ */
-#define INADDR_UNSPEC_GROUP     (u_long)0x000000e0  /* 224.0.0.0 */
-#define INADDR_ALLHOSTS_GROUP   (u_long)0x010000e0  /* 224.0.0.1 */
-#define INADDR_ALLRTRS_GROUP    (u_long)0x020000e0  /* 224.0.0.2 */
-#define INADDR_ALLRPTS_GROUP    (u_long)0x160000e0  /* 224.0.0.22, IGMPv3 */
-#define INADDR_CARP_GROUP       (u_long)0x120000e0  /* 224.0.0.18 */
-#define INADDR_PFSYNC_GROUP     (u_long)0xf00000e0  /* 224.0.0.240 */
-#define INADDR_ALLMDNS_GROUP    (u_long)0xfb0000e0  /* 224.0.0.251 */
-#define INADDR_MAX_LOCAL_GROUP  (u_long)0xff0000e0  /* 224.0.0.255 */
+#define INADDR_UNSPEC_GROUP     (uint32_t)0x000000e0  /* 224.0.0.0 */
+#define INADDR_ALLHOSTS_GROUP   (uint32_t)0x010000e0  /* 224.0.0.1 */
+#define INADDR_ALLRTRS_GROUP    (uint32_t)0x020000e0  /* 224.0.0.2 */
+#define INADDR_ALLRPTS_GROUP    (uint32_t)0x160000e0  /* 224.0.0.22, IGMPv3 */
+#define INADDR_CARP_GROUP       (uint32_t)0x120000e0  /* 224.0.0.18 */
+#define INADDR_PFSYNC_GROUP     (uint32_t)0xf00000e0  /* 224.0.0.240 */
+#define INADDR_ALLMDNS_GROUP    (uint32_t)0xfb0000e0  /* 224.0.0.251 */
+#define INADDR_MAX_LOCAL_GROUP  (uint32_t)0xff0000e0  /* 224.0.0.255 */
 #endif /* __BIG_ENDIAN__ */
 
 #ifdef __BIG_ENDIAN__
-#define INADDR_LOOPBACK     (u_long)0x7f000001
+#define INADDR_LOOPBACK     (uint32_t)0x7f000001
 #else /* __BIG_ENDIAN__ */
-#define INADDR_LOOPBACK     (u_long)0x0100007f
+#define INADDR_LOOPBACK     (uint32_t)0x0100007f
 #endif /* __BIG_ENDIAN__ */
 
 /*!

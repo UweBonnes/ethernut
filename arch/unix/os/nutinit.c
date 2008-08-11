@@ -65,7 +65,7 @@ extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 sigset_t irq_signal;
 
 /* our emulated interrupt enabled/disabled flag */
-u_short int_disabled;
+uint16_t int_disabled;
 
 /* number of interrupts that can be outstanding before one is lost */
 #define MAX_IRQ_SLOTS 3
@@ -108,7 +108,7 @@ HANDLE *irq_eventqueues[IRQ_MAX];
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutRegisterIrqHandler(u_char irq, void (*handler) (void *), void *arg)
+int NutRegisterIrqHandler(uint8_t irq, void (*handler) (void *), void *arg)
 {
     if (irq >= IRQ_MAX)
         return -1;
@@ -136,7 +136,7 @@ int NutRegisterIrqHandler(u_char irq, void (*handler) (void *), void *arg)
  * introducing a race-condition
  *
  */
-void NutUnixIrqEventPostAsync(u_char irq, HANDLE * queue)
+void NutUnixIrqEventPostAsync(uint8_t irq, HANDLE * queue)
 {
     if (irq < IRQ_MAX)
         irq_eventqueues[irq] = queue;
@@ -153,7 +153,7 @@ void NutUnixIrqEventPostAsync(u_char irq, HANDLE * queue)
 void NutUnixThreadYieldHook(void);
 void NutUnixThreadYieldHook()
 {
-    u_char irq;
+    uint8_t irq;
     for (irq = 0; irq < IRQ_MAX; irq++) {
         if (irq_eventqueues[irq] != 0) {
             // printf("NutUnixThreadYield posting event nr %d\n\r", irq);
@@ -233,7 +233,7 @@ static void NutUnixInterruptScheduler(int signal)
  * Sending the interrupt to the Nut threads is done by
  * NutInterruptEmulation().
  */
-extern u_long nut_ticks;
+extern uint32_t nut_ticks;
 void NutUnixRaiseInterrupt(int);
 void NutUnixRaiseInterrupt(int irq)
 {
@@ -397,7 +397,7 @@ THREAD(NutIdle, arg)
 #undef main
 
 #define PSEUDO_RAM_SIZE 999999
-u_char PSEUDO_RAM[PSEUDO_RAM_SIZE];
+uint8_t PSEUDO_RAM[PSEUDO_RAM_SIZE];
 
 extern void NutThreadInit(void);
 

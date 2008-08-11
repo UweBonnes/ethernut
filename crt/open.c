@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:40  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/03/16 15:25:20  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -84,7 +87,7 @@ int _open(CONST char *name, int mode)
 {
     NUTDEVICE *dev;
     char dev_name[9];
-    u_char nidx;
+    uint_fast8_t nidx;
     CONST char *nptr = name;
 
     /*

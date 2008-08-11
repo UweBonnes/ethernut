@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 07:00:29  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2006/03/16 15:25:35  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -125,14 +128,14 @@
  *
  * \return IP address in network byte order.
  */
-u_long inet_addr(CONST char * str)
+uint32_t inet_addr(CONST char * str)
 {
-    u_short num;
-    u_long addr = 0;
-    u_char parts = 0;
-    u_char *ap;
+    uint_fast16_t num;
+    uint32_t addr = 0;
+    uint_fast8_t parts = 0;
+    uint8_t *ap;
 
-    ap = (u_char *) & addr;
+    ap = (uint8_t *) & addr;
     while (parts < 4) {
         if (*str < '0' || *str > '9')
             break;
@@ -144,7 +147,7 @@ u_long inet_addr(CONST char * str)
         if (num > 255)
             break;
         parts++;
-        *ap++ = (u_char) num;
+        *ap++ = (uint8_t) num;
         if (*str != '.') {
             if (parts == 4)
                 return addr;
@@ -169,23 +172,23 @@ u_long inet_addr(CONST char * str)
  * \return Pointer to a static buffer containing the 
  *         ASCII representation.
  */
-char *inet_ntoa(u_long addr)
+char *inet_ntoa(uint32_t addr)
 {
     static char str[16];
     char inv[3];
     char *rp;
-    u_char *ap;
-    u_char rem;
-    u_char n;
-    u_char i;
+    uint8_t *ap;
+    uint8_t rem;
+    uint_fast8_t n;
+    uint_fast8_t i;
 
     rp = str;
-    ap = (u_char *) & addr;
+    ap = (uint8_t *) & addr;
     for (n = 0; n < 4; n++) {
         i = 0;
         do {
-            rem = *ap % (u_char) 10;
-            *ap /= (u_char) 10;
+            rem = *ap % (uint8_t) 10;
+            *ap /= (uint8_t) 10;
             inv[i++] = '0' + rem;
         } while (*ap);
         while (i--)

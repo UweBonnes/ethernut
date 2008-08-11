@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.1  2006/01/05 16:32:46  haraldkipp
  * First check-in.
  *
@@ -53,7 +56,7 @@
 
 __BEGIN_DECLS
 /* Prototypes */
-extern void PhatDbgAttrList(FILE * fp, u_char attr);
+extern void PhatDbgAttrList(FILE * fp, uint8_t attr);
 extern void PhatDbgDirEntry(FILE * fp, CONST char *title, PHATDIRENT * dent);
 extern void PhatDbgFileInfo(FILE * fp, CONST char *title, PHATFILE * nfp);
 extern void PhatDbgVbr(FILE * fp, CONST char *title, PHATVBR * vbr);

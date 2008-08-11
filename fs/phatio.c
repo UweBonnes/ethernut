@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 06:59:42  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.4  2006/07/11 12:20:19  haraldkipp
  * PHAT file system failed when accessed from multiple threads. A mutual
  * exclusion semaphore fixes this.
@@ -138,7 +141,7 @@ int PhatSectorFlush(NUTDEVICE * dev, int bufnum)
  *
  * \return 0 on success, -1 on failures.
  */
-int PhatSectorRead(NUTFILE * blkmnt, u_long sect, u_char * buf)
+int PhatSectorRead(NUTFILE * blkmnt, uint32_t sect, uint8_t * buf)
 {
     BLKPAR_SEEK pars;
     NUTDEVICE *blkdev = blkmnt->nf_dev;
@@ -163,7 +166,7 @@ int PhatSectorRead(NUTFILE * blkmnt, u_long sect, u_char * buf)
  * \param dev Specifies the file system device.
  * \return Buffer number on success, -1 on failures.
  */
-int PhatSectorLoad(NUTDEVICE * dev, u_long sect)
+int PhatSectorLoad(NUTDEVICE * dev, uint32_t sect)
 {
     int sbn;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;

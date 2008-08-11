@@ -32,6 +32,7 @@
 
 #include <dev/nvmem.h>
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -48,7 +49,7 @@ static int save_env(void)
     if (nut_environ) {
         NUTENVIRONMENT *envp;
         size_t len;
-        u_long magic = ENVIRON_MAGIC;
+        uint32_t magic = ENVIRON_MAGIC;
         int addr = ENVIRON_EE_OFFSET;
 
         if (NutNvMemSave(addr, &magic, sizeof(magic)) == 0) {

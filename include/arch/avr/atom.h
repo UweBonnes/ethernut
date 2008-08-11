@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/11 06:59:58  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
  * Revision 1.3  2007/09/11 13:41:23  haraldkipp
  * NutEnter/ExitCritical destroyed R0 (ICCAVR).
  *
@@ -75,7 +78,7 @@
  */
 #define NutEnterCritical()  \
 {                           \
-    register u_char sreg = inb(SREG);   \
+    register uint8_t sreg = inb(SREG);   \
     asm("cli\n"             \
         "push %sreg\n");    \
 }
@@ -89,7 +92,7 @@
 #define NutExitCritical()   \
 {                           \
     /* Set to 0 to force register allocation. */ \
-    register u_char sreg = 0;   \
+    register uint8_t sreg = 0;   \
     asm("pop %sreg\n");     \
     outb(SREG, sreg);       \
 }

@@ -36,8 +36,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:41:11  haraldkipp
- * Initial revision
+ * Revision 1.2  2008/08/11 07:00:19  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
+ *
+ * Revision 1.1.1.1  2003/05/09 14:41:11  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.6  2003/02/04 18:00:42  harald
  * Version 3 released
@@ -62,7 +65,7 @@ extern "C" {
 #endif
 
 extern void NutEtherInput(NUTDEVICE *dev, NETBUF *nb);
-extern int NutEtherOutput(NUTDEVICE *dev, u_short type, u_char *ha, NETBUF *nb);
+extern int NutEtherOutput(NUTDEVICE *dev, uint16_t type, uint8_t *ha, NETBUF *nb);
 
 #ifdef __cplusplus
 }
