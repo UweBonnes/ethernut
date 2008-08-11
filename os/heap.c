@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2008/08/11 06:56:27  haraldkipp
+ * Corrected size type of NutHeapRealloc().
+ *
  * Revision 1.19  2008/07/29 07:27:46  haraldkipp
  * Removed setBeef from NutHeapAdd (crashes EIR).
  *
@@ -133,6 +136,8 @@
 #include <sys/atom.h>
 #include <sys/heap.h>
 
+#include <stdint.h>
+
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #endif
@@ -163,8 +168,8 @@ static size_t available;
  * \param node A valid Heapnode without beef
  */
 static INLINE void setBeef(HEAPNODE * node){
-    // Shouldn't it be sizeof(u_long) instead of sizeof(0xDEADBEEF)? 
-	*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
+    // Shouldn't it be sizeof(uint32_t) instead of sizeof(0xDEADBEEF)? 
+	*((uint32_t *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
 }
 
 #if !defined(ARCH_32BIT)
@@ -177,7 +182,7 @@ static INLINE void setBeef(HEAPNODE * node){
  * \bug Results in data abort exception on ARM.
  */
 static INLINE char checkBeef(HEAPNODE * node){
-	return (*((u_long *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
+	return (*((uint32_t *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
 }
 #endif
 
@@ -344,7 +349,7 @@ void *NutHeapAllocClear(size_t size)
  * \todo see if we can do some codesharing with malloc
  * \todo add some checks like reallocating free mem, etc
  */
-void * NutHeapRealloc( void * block, u_short size){
+void * NutHeapRealloc( void * block, size_t size){
 	HEAPNODE *node;
 	HEAPNODE **npp;
 	HEAPNODE *fnode;
@@ -620,13 +625,13 @@ size_t NutHeapAvailable(void)
  */
 
 static HEAPNODE* volatile stackHeapFreeList; /* for special stack heap */
-static u_short stackHeapAvailable;
+static uint16_t stackHeapAvailable;
 
 void *NutStackAlloc(size_t size)
 {
     void * result;
     HEAPNODE* savedHeapNode;
-    u_short savedAvailable;
+    uint16_t savedAvailable;
 
     // Save current real heap context
     savedHeapNode = heapFreeList;
@@ -651,7 +656,7 @@ int NutStackFree(void *block)
 {
     int result;
     HEAPNODE* savedHeapNode;
-    u_short savedAvailable;
+    uint16_t savedAvailable;
 
     // Save current real heap context
     savedHeapNode = heapFreeList;
@@ -675,7 +680,7 @@ int NutStackFree(void *block)
 void NutStackAdd(void *addr, size_t size)
 {
    HEAPNODE* savedHeapNode;
-   u_short savedAvailable;
+   uint16_t savedAvailable;
 
    // Save current real heap context
    savedHeapNode = heapFreeList;

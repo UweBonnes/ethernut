@@ -51,6 +51,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 06:56:26  haraldkipp
+ * Corrected size type of NutHeapRealloc().
+ *
  * Revision 1.9  2008/06/25 08:50:33  freckle
  * added new function NutHeapRealloc
  *
@@ -122,7 +125,7 @@ extern HEAPNODE* volatile heapFreeList;
 extern void *NutHeapAlloc(size_t size);
 extern void *NutHeapAllocClear(size_t size);
 extern int NutHeapFree(void *block);
-extern void * NutHeapRealloc( void * block, u_short size);
+extern void * NutHeapRealloc( void * block, size_t size);
 extern void NutHeapAdd(void *addr, size_t size);
 extern size_t NutHeapAvailable(void);
 
