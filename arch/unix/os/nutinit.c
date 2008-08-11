@@ -250,9 +250,10 @@ void NutUnixRaiseInterrupt(int irq)
         if (++irq_slot >= MAX_IRQ_SLOTS) {
             irq_slot = 0;
         }
-if( (nut_ticks % 1000) == 0 )
-        printf( "%ld\n", nut_ticks );
-        
+#if 0
+        if( (nut_ticks % 1000) == 0 )
+            printf( "%u\n", nut_ticks );
+#endif
         pthread_mutex_unlock(&pending_mutex);
 
         // signal interrupt thread to interrupt Nut threads
