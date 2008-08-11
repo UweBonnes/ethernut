@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 11:51:20  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.4  2008/06/16 13:03:37  haraldkipp
  * Added Thiago's patch to fix _SLEEP_MODE_MASK problem, which is no longer
  * public in the latest avrlibc.
@@ -82,7 +86,7 @@
 #include <compat/twi.h>
 #endif
 
-#if defined(__AVR_ATmega2561__)
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
 #if !defined(TXC)
 #define TXC     TXC0
 #endif

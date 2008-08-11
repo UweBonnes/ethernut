@@ -33,6 +33,10 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.26  2008/08/11 11:51:20  thiagocorrea
+-- Preliminary Atmega2560 compile options, but not yet supported.
+-- It builds, but doesn't seam to run properly at this time.
+--
 -- Revision 1.25  2008/08/06 12:51:07  haraldkipp
 -- Added support for Ethernut 5 (AT91SAM9XE reference design).
 --
@@ -147,7 +151,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA2561=atmega2561", "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
+            makedefs = { "MCU_ATMEGA2560=atmega2560", "MCU_ATMEGA2561=atmega2561", "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
         },
         {
             brief = "GCC for Linux",
@@ -166,7 +170,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA2561=extended", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
+            makedefs = { "MCU_ATMEGA2560=extended", "MCU_ATMEGA2561=extended", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
         },
         {
             brief = "ImageCraft for ARM",

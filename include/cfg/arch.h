@@ -36,6 +36,10 @@
 
 /*!
  * $Log$
+ * Revision 1.7  2008/08/11 11:51:20  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.6  2008/02/15 17:00:24  haraldkipp
  * Spport for AT91SAM7SE512 added.
  *
@@ -73,9 +77,11 @@
 #define AVR_GCC
 #endif
 
-#if !defined(MCU_ATMEGA128) && !defined(MCU_ATMEGA2561)
+#if !defined(MCU_ATMEGA128) && !defined(MCU_ATMEGA2560) && !defined(MCU_ATMEGA2561)
 #if defined(__AVR_ATmega2561__) || defined(ATMega2561)
 #define MCU_ATMEGA2561
+#elif defined(__AVR_ATmega2561__) || defined(ATMega2561)
+#define MCU_ATMEGA2560
 #else
 #define MCU_ATMEGA128
 #endif
@@ -91,9 +97,11 @@
 #define AVR_GCC
 #endif
 
-#if !defined(MCU_ATMEGA128) && !defined(MCU_ATMEGA2561)
+#if !defined(MCU_ATMEGA128) && !defined(MCU_ATMEGA2560) && !defined(MCU_ATMEGA2561)
 #if defined(__AVR_ATmega2561__) || defined(ATMega2561)
 #define MCU_ATMEGA2561
+#elif defined(__AVR_ATmega2561__) || defined(ATMega2561)
+#define MCU_ATMEGA2560
 #else
 #define MCU_ATMEGA128
 #endif

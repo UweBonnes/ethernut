@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/08/11 11:51:19  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.11  2008/08/11 06:59:39  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -156,7 +160,7 @@
 /*!
  * \brief Number of bytes reserved in on-chip memory.
  *
- * AVR offers the option to temporarly use address and data bus
+ * AVR offers the option to temporarily use address and data bus
  * lines as general purpose I/O. If such drivers need data memory,
  * this must be located at internal memory addresses.
  *
@@ -300,7 +304,7 @@ extern void main(void *);
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
 /*
  * Note: Register structure of ATCAN128 differs from ATMEGA128 in regards
  * to wait states.

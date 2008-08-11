@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/11 11:51:19  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.9  2008/08/11 06:59:39  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -149,7 +153,7 @@ typedef struct {
     uint8_t cef_rampz;
     uint8_t cef_sreg;
     uint8_t cef_r1;
-#ifdef __AVR_ATmega2561__
+#ifdef __AVR_3_BYTE_PC__
     uint8_t cef_pcex;
 #endif
     uint8_t cef_pchi;
@@ -298,7 +302,7 @@ HANDLE NutThreadCreate(uint8_t * name, void (*fn) (void *), void *arg, size_t st
     paddr = (const uint8_t *) fn;
     ef->cef_pclo = *paddr;
     ef->cef_pchi = *(paddr + 1);
-#ifdef __AVR_ATmega2561__
+#ifdef __AVR_3_BYTE_PC__
     ef->cef_pcex = *(paddr + 2);
 #endif
     ef->cef_sreg = 0x80;
@@ -315,7 +319,7 @@ HANDLE NutThreadCreate(uint8_t * name, void (*fn) (void *), void *arg, size_t st
     paddr = (const uint8_t *) NutThreadEntry;
     sf->csf_pclo = *paddr;
     sf->csf_pchi = *(paddr + 1);
-#ifdef __AVR_ATmega2561__
+#ifdef __AVR_3_BYTE_PC__
     sf->csf_pcex = *(paddr + 2);
 #endif
 

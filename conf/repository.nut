@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.32  2008/08/11 11:51:20  thiagocorrea
+-- Preliminary Atmega2560 compile options, but not yet supported.
+-- It builds, but doesn't seam to run properly at this time.
+--
 -- Revision 1.31  2008/08/06 12:51:07  haraldkipp
 -- Added support for Ethernut 5 (AT91SAM9XE reference design).
 --
@@ -138,7 +142,7 @@
 --
 --
 
-mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2561", "MCU_AT91SAM9260", "MCU_AT91SAM9XE512",
+mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2560", "MCU_ATMEGA2561", "MCU_AT91SAM9260", "MCU_AT91SAM9XE512",
               "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91SAM7SE512", "MCU_AT91R40008", "MCU_GBA", 
               "MCU_LINUX_EMU", "MCU_S3C4510B" }
 
@@ -173,7 +177,7 @@ arm_ld_choice = {
                     "at91sam9xe512_ram", 
                     "s3c4510b-ram", 
                     "eb40a_ram",
-	                  "eb40a_redboot_ram", 
+                    "eb40a_redboot_ram", 
                     "gbaxport2", 
                     "wolf_ram" 
                 }

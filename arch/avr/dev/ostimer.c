@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 11:51:19  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.6  2008/08/11 06:59:17  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -141,6 +145,9 @@
 #ifdef NUT_CPU_FREQ             /* ----- NUT_CPU_FREQ */
 #if defined(MCU_AT90CAN128)
 #define TCCR_FLAGS  (_BV(CS20) | _BV(CS22) | _BV(WGM21))
+#elif defined(MCU_ATMEGA2560)
+#define TCCR_FLAGS  (_BV(WGM21))
+#define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
 #elif defined(MCU_ATMEGA2561)
 #define TCCR_FLAGS  (_BV(WGM21))
 #define TCCR2B_FLAGS  (_BV(CS20) | _BV(CS22))
@@ -165,7 +172,7 @@
 #endif
 #endif                          /* ----- NUT_CPU_FREQ */
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
 #define TCCRx       TCCR2A
 #define TCNTx       TCNT2
 #define OCRx        OCR2A

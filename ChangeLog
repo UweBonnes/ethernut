@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.470 2008/08/11 06:59:03 haraldkipp Exp $
+$Id: ChangeLog,v 1.471 2008/08/11 11:51:16 thiagocorrea Exp $
+
+2008-08-11  Thiago A. Correa <thiago.correa@gmail.com>
+
+	* Preliminary Atmega2560 compile options, but not yet
+	supported.
 
 2008-08-11  Harald Kipp  <harald.kipp@egnite.de>
 

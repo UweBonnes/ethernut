@@ -33,6 +33,10 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.24  2008/08/11 11:51:19  thiagocorrea
+-- Preliminary Atmega2560 compile options, but not yet supported.
+-- It builds, but doesn't seam to run properly at this time.
+--
 -- Revision 1.23  2008/07/19 02:54:52  thiagocorrea
 -- 	* conf/arch/avr.nut: Fix LCD size configuration for AVR.
 -- 	  Previously, LCD Bus config settings would be used instead
@@ -449,6 +453,176 @@ nutarch_avr =
                 brief = "Half Duplex Port",
                 description = "Port register name of UART1 half duplex control output.",
                 requires = { "UART1_HDX_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+        }
+    },
+    {
+        name = "nutarch_avr_usart2",
+        brief = "USART2 Driver",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = {
+                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
+                        "NUT_EVENT", "CRT_HEAPMEM", "HW_AVR_HAVE_UART2"
+        },
+        provides = { "DEV_UART_SPECIFIC" },
+        sources = { "avr/dev/usart2avr.c", "avr/dev/ih_usart2_rx.c", "avr/dev/ih_usart2_tx.c", "avr/dev/ih_usart2_udre.c" },
+        options =
+        {
+            {
+                macro = "UART2_RTS_BIT",
+                brief = "RTS Bit",
+                description = "Bit number of UART1 RTS handshake output. If enabled, "..
+                              "the driver provides RS 232 input hardware handshake.\n\n",
+                provides = { "UART2_RTS_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART2_RTS_AVRPORT",
+                brief = "RTS Port",
+                description = "Port register name of UART2 RTS handshake output.",
+                requires = { "UART2_RTS_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART2_CTS_IRQ",
+                brief = "CTS Interrupt",
+                description = "Interrupt number of UART2 CTS handshake input. If enabled, "..
+                              "the driver provides RS 232 output hardware handshake.\n\n",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART2_DTR_BIT",
+                brief = "DTR Bit",
+                description = "Bit number of UART2 DTR handshake output. If enabled, "..
+                              "the driver provides RS 232 input hardware handshake.\n\n",
+                provides = { "UART2_DTR_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART2_DTR_AVRPORT",
+                brief = "DTR Port",
+                description = "Port register name of UART2 DTR handshake output.",
+                requires = { "UART2_DTR_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART2_HDX_BIT",
+                brief = "Half Duplex Bit",
+                description = "Bit number of UART2 half duplex control output. If enabled, "..
+                              "the driver provides RS 485 half duplex mode.",
+                provides = { "UART2_HDX_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART2_HDX_AVRPORT",
+                brief = "Half Duplex Port",
+                description = "Port register name of UART2 half duplex control output.",
+                requires = { "UART2_HDX_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+        }
+    },
+    {
+        name = "nutarch_avr_usart3",
+        brief = "USART3 Driver",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = {
+                        "HW_MCU_AVR", "DEV_IRQ_AVR", "DEV_UART_GENERIC",
+                        "NUT_EVENT", "CRT_HEAPMEM", "HW_AVR_HAVE_UART3"
+        },
+        provides = { "DEV_UART_SPECIFIC" },
+        sources = { "avr/dev/usart3avr.c" },
+        options =
+        {
+            {
+                macro = "UART3_RTS_BIT",
+                brief = "RTS Bit",
+                description = "Bit number of UART3 RTS handshake output. If enabled, "..
+                              "the driver provides RS 232 input hardware handshake.\n\n",
+                provides = { "UART3_RTS_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART3_RTS_AVRPORT",
+                brief = "RTS Port",
+                description = "Port register name of UART3 RTS handshake output.",
+                requires = { "UART3_RTS_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART3_CTS_IRQ",
+                brief = "CTS Interrupt",
+                description = "Interrupt number of UART3 CTS handshake input. If enabled, "..
+                              "the driver provides RS 232 output hardware handshake.\n\n",
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART3_DTR_BIT",
+                brief = "DTR Bit",
+                description = "Bit number of UART3 DTR handshake output. If enabled, "..
+                              "the driver provides RS 232 input hardware handshake.\n\n",
+                provides = { "UART3_DTR_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART3_DTR_AVRPORT",
+                brief = "DTR Port",
+                description = "Port register name of UART3 DTR handshake output.",
+                requires = { "UART3_DTR_BIT" },
+                type = "enumerated",
+                choices = avr_port_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART3_HDX_BIT",
+                brief = "Half Duplex Bit",
+                description = "Bit number of UART3 half duplex control output. If enabled, "..
+                              "the driver provides RS 485 half duplex mode.",
+                provides = { "UART3_HDX_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = "include/cfg/arch/avrpio.h"
+            },
+            {
+                macro = "UART3_HDX_AVRPORT",
+                brief = "Half Duplex Port",
+                description = "Port register name of UART3 half duplex control output.",
+                requires = { "UART3_HDX_BIT" },
                 type = "enumerated",
                 choices = avr_port_choice,
                 file = "include/cfg/arch/avrpio.h"

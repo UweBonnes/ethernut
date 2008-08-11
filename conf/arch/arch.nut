@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.33  2008/08/11 11:51:19  thiagocorrea
+-- Preliminary Atmega2560 compile options, but not yet supported.
+-- It builds, but doesn't seam to run properly at this time.
+--
 -- Revision 1.32  2008/08/06 12:51:08  haraldkipp
 -- Added support for Ethernut 5 (AT91SAM9XE reference design).
 --
@@ -217,6 +221,29 @@ nutarch =
                 }
             },
             {
+                macro = "MCU_ATMEGA2560",
+                brief = "Atmel ATmega 2560",
+                description = "8-bit RISC microcontroller with 256K bytes flash, 8K bytes RAM, "..
+                              "4K bytes EEPROM, 64K bytes data memory space, 4 USARTs, 6 timers, "..
+                              "8-channel ADC, SPI and TWI.",
+                requires = { "TOOL_CC_AVR" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR",
+                    "HW_MCU_AVR_ENHANCED",
+                    "HW_MCU_ATMEGA2560",
+                    "HW_TIMER_AVR",
+                    "HW_UART_AVR",
+--                    "HW_AVR_HAVE_UART2",
+--                    "HW_AVR_HAVE_UART3",
+                    "HW_GPIO"
+                },
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                makedefs = { "MCU = $(MCU_ATMEGA2560)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2560", "HWDEF += -D__AVR_3_BYTE_PC__" }
+            },
+            {
                 macro = "MCU_ATMEGA2561",
                 brief = "Atmel ATmega 2561",
                 description = "8-bit RISC microcontroller with 256K bytes flash, 8K bytes RAM, "..
@@ -235,7 +262,7 @@ nutarch =
                 flavor = "boolean",
                 exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
-                makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561" }
+                makedefs = { "MCU = $(MCU_ATMEGA2561)", "HWDEF += -D__HARVARD_ARCH__", "HWDEF += -DATMega2561", "HWDEF += -D__AVR_3_BYTE_PC__" }
             },
             {
                 macro = "MCU_AT91SAM9260",

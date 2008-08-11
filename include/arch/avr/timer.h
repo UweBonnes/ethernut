@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 11:51:20  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.2  2006/02/08 15:20:56  haraldkipp
  * ATmega2561 Support
  *
@@ -43,7 +47,7 @@
  *
  */
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
 #define NutEnableTimerIrq()     sbi(TIMSK2, OCIE2A)
 #define NutDisableTimerIrq()    cbi(TIMSK2, OCIE2A)
 #else

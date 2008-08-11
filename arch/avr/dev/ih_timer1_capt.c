@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2008/08/11 11:51:18  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.3  2008/08/11 06:59:15  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -75,7 +79,7 @@
 
 #include <dev/irqreg.h>
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
 #define INT_MASK_REG    TIMSK1
 #define INT_STATUS_REG  TIFR1
 #define INT_ENABLE_BIT  ICIE1

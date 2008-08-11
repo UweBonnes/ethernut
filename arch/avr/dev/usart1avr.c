@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 11:51:19  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.8  2008/08/11 06:59:17  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -192,11 +196,11 @@
 #define UART_HDX_PORT   PORTF
 #define UART_HDX_DDR    DDRF
 
-#elif (UART0_HDX_AVRPORT == AVRPORTG)
+#elif (UART1_HDX_AVRPORT == AVRPORTG)
 #define UART_HDX_PORT  PORTG
 #define UART_HDX_DDR   DDRG
 
-#elif (UART0_HDX_AVRPORT == AVRPORTH)
+#elif (UART1_HDX_AVRPORT == AVRPORTH)
 #define UART_HDX_PORT  PORTH
 #define UART_HDX_DDR   DDRH
 
@@ -393,7 +397,7 @@ NUTDEVICE devUsartAvr1 = {
 
 #ifdef __IMAGECRAFT__
 #define TXB8    TXB81
-#ifdef ATMega2561
+#if defined(ATMega2560) || defined(ATMega2561)
 #define UMSEL   UMSEL01
 #else
 #define UMSEL   UMSEL1

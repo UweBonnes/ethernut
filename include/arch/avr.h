@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/08/11 11:51:20  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.14  2006/02/08 15:20:22  haraldkipp
  * ATmega2561 Support
  *
@@ -189,7 +193,7 @@ extern void *__heap_start;
 
 /* Some ATC90CAN128 SFR names are different to ATMEGA128. Define some
    compatibilty macros. */
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
 #ifndef ADCW
 #define ADCW    ADC
 #endif
@@ -217,7 +221,7 @@ extern void *__heap_start;
 #ifndef TIFR
 #define TIFR   TIFR0
 #endif
-#endif /* __AVR_AT90CAN128__ */
+#endif /* __AVR_AT90CAN128__ || __AVR_ATmega2560__ || __AVR_ATmega2561__*/
 
 
 #endif /* __AVR_ENHANCED__ */

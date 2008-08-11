@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/11 11:51:20  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.4  2006/02/08 15:20:56  haraldkipp
  * ATmega2561 Support
  *
@@ -80,7 +84,7 @@ extern IRQ_HANDLER sig_ADC;
 extern IRQ_HANDLER sig_EEPROM_READY;
 extern IRQ_HANDLER sig_COMPARATOR;
 
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
 #define sig_USART0_RECV sig_UART0_RECV
 #define sig_USART0_DATA sig_UART0_DATA
 #define sig_USART0_TRANS sig_UART0_TRANS
@@ -105,7 +109,7 @@ extern IRQ_HANDLER sig_CAN_TRANSFER;
 extern IRQ_HANDLER sig_CAN_OVERRUN;
 #endif
 
-#if defined(__AVR_ATmega2561__)
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
 extern IRQ_HANDLER sig_PIN_CHANGE0;
 extern IRQ_HANDLER sig_PIN_CHANGE1;
 extern IRQ_HANDLER sig_WATCHDOG_TIMEOUT;

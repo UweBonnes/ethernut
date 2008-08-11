@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/08/11 11:51:20  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.8  2008/08/11 06:59:58  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -267,7 +271,13 @@
 
 #if defined(_MCU_enhanced) || defined(_MCU_extended)
 
-#ifdef ATMega2561
+#ifdef ATMega2560
+#include <iom2560v.h>
+#define __AVR_ATmega2560__
+#ifndef _EE_EXTIO
+#error "Looks like wrong platform. Select avrext-icc, not avr-icc."
+#endif
+#elif defined(ATMega2561)
 #include <iom2561v.h>
 #define __AVR_ATmega2561__
 #ifndef _EE_EXTIO
@@ -279,7 +289,7 @@
 #endif
 
 #ifndef RAMEND
-#ifdef ATMega2561
+#if defined(ATMega2560) || defined(ATMega2561)
 #define RAMEND  0x21FF
 #else
 #define RAMEND  0x10FF

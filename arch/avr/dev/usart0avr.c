@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/11 11:51:19  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.6  2008/08/11 06:59:17  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -393,7 +397,7 @@ NUTDEVICE devUsartAvr0 = {
 
 #ifdef __IMAGECRAFT__
 #define TXB8    TXB80
-#ifdef ATMega2561
+#if defined(ATMega2560) || defined(ATMega2561)
 #define UMSEL   UMSEL00
 #else
 #define UMSEL   UMSEL0

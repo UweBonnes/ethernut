@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/08/11 11:51:17  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
  * Revision 1.4  2008/08/11 06:59:15  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -79,7 +83,7 @@
 
 #include <dev/irqreg.h>
 
-#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2561)
+#if defined(MCU_AT90CAN128) || defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
 #define INT_MASK_REG    TIMSK0
 #define INT_STATUS_REG  TIFR0
 #define INT_ENABLE_BIT  OCIE0A
@@ -181,14 +185,14 @@ static int AvrTimer0CompIrqCtl(int cmd, void *param)
  * \brief Timer 0 output compare interrupt entry.
  */
 #ifdef __IMAGECRAFT__
-#ifdef ATMega2561
+#if defined( ATMega2560 ) || defined( ATMega2561 )
 #pragma interrupt_handler SIG_OUTPUT_COMPARE0:iv_TIMER0_COMPA
 #else
 #pragma interrupt_handler SIG_OUTPUT_COMPARE0:iv_TIMER0_COMP
 #endif
 NUTSIGNAL(SIG_OUTPUT_COMPARE0, sig_OUTPUT_COMPARE0)
 #else
-#if defined(MCU_ATMEGA2561)
+#if defined(MCU_ATMEGA2560) || defined(MCU_ATMEGA2561)
 NUTSIGNAL(SIG_OUTPUT_COMPARE0A, sig_OUTPUT_COMPARE0)
 #else
 NUTSIGNAL(SIG_OUTPUT_COMPARE0, sig_OUTPUT_COMPARE0)
