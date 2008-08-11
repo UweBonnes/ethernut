@@ -1,5 +1,10 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2008 by egnite GmbH.
+ * Copyright (C) 2001-2003 by egnite Software GmbH.
+ * Copyright (c) 1993 by Digital Equipment Corporation.
+ * Copyright (c) 1983, 1993 by The Regents of the University of California.
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,6 +98,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 17:38:27  haraldkipp
+ * Added an Ethernet protocol demultiplexer.
+ *
  * Revision 1.2  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -119,6 +127,12 @@
  */
 /*@{*/
 
+/*!
+ * \brief Pointer to an optional demultiplexer.
+ *
+ * This pointer will be set on the first call to NutRegisterEthHandler().
+ */
+int (*ether_demux) (NUTDEVICE *, NETBUF *);
 
 /*!
  * \brief Handle incoming Ethernet frames.
@@ -127,8 +141,9 @@
  * network part. Then the frame is routed to the proper
  * handler, based on the type field in the Ethernet header.
  *
- * If the frame neither contains an IP nor an ARP type
- * telegram, then it is silently discarded.
+ * If the frame neither contains an IP nor an ARP type telegram and if 
+ * no registered handler exists or accepts the frame, then it is silently 
+ * discarded.
  *
  * \note This routine is called by the device driver on
  *       incoming ethernet packets. Applications typically do
@@ -150,19 +165,21 @@ void NutEtherInput(NUTDEVICE * dev, NETBUF * nb)
     nb->nb_nw.sz = nb->nb_dl.sz - sizeof(ETHERHDR);
     nb->nb_dl.sz = sizeof(ETHERHDR);
 
-    /*
-     * Route frame to the correct handler.
-     */
-    switch (ntohs(eh->ether_type)) {
-    case ETHERTYPE_IP:
-        NutIpInput(dev, nb);
-        break;
-    case ETHERTYPE_ARP:
-        NutArpInput(dev, nb);
-        break;
-    default:
-        NutNetBufFree(nb);
-        break;
+    /* Route frame to the correct handler. Process registered handlers
+    ** first, IP next and ARP last. */
+    if (ether_demux == NULL || (*ether_demux) (dev, nb)) {
+        switch (ntohs(eh->ether_type)) {
+        case ETHERTYPE_IP:
+            NutIpInput(dev, nb);
+            break;
+        case ETHERTYPE_ARP:
+            NutArpInput(dev, nb);
+            break;
+        default:
+            /* No handler found. Silently discard the frame. */
+            NutNetBufFree(nb);
+            break;
+        }
     }
 }
 

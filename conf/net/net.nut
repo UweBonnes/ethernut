@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.12  2008/08/11 17:38:27  haraldkipp
+-- Added an Ethernet protocol demultiplexer.
+--
 -- Revision 1.11  2008/07/27 11:43:22  haraldkipp
 -- Configurable TCP retransmissions.
 --
@@ -253,6 +256,7 @@ nutnet =
         { 
             "ethin.c",
             "ethout.c",
+            "ethdemux.c",
             "ether_addr.c"
         }
     },

@@ -2,7 +2,11 @@
 #define _NETINET_IF_ETHER_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2008 by egnite GmbH.
+ * Copyright (C) 2001-2003 by egnite Software GmbH.
+ * Copyright (c) 1983, 1993 by The Regents of the University of California.
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +21,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,93 +35,40 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
- * -
- * Portions Copyright (c) 1983, 1993 by
- *  The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
  */
 
 /*
- * $Log$
- * Revision 1.6  2008/08/11 07:00:22  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.5  2008/07/14 13:10:30  haraldkipp
- * Added macros to determine Ethernet address types.
- *
- * Revision 1.4  2006/08/01 07:41:01  haraldkipp
- * New functions ether_aton() and ether_ntoa() added. They convert the ASCII
- * representation of an Ethernet MAC address to its binary form and vice versa.
- *
- * Revision 1.3  2005/04/05 17:38:45  haraldkipp
- * ARM7 memory alignment bugs fixed.
- *
- * Revision 1.2  2004/03/16 16:48:28  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:13  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.6  2003/02/04 18:00:45  harald
- * Version 3 released
- *
- * Revision 1.5  2002/06/26 17:29:21  harald
- * First pre-release with 2.4 stack
- *
+ * $Id$
  */
 
-#include <sys/types.h>
 #include <net/if_var.h>
 #include <net/if_arp.h>
 
 /*!
  * \file netinet/if_ether.h
  * \brief Ethernet interface definitions.
- *
- * A more elaborated file description.
  */
 
-#ifdef __cplusplus
-extern "C" {
+/*! \brief Length of an Ethernet address. */
+#define	ETHER_ADDR_LEN      6
+
+/*! \brief Length of the Ethernet type field. */
+#define	ETHER_TYPE_LEN      2
+
+/*! \brief Length of the Ethernet CRC. */
+#define	ETHER_CRC_LEN       4
+
+/*! \brief Length of an Ethernet header. */
+#define	ETHER_HDR_LEN       (ETHER_ADDR_LEN + ETHER_ADDR_LEN + ETHER_TYPE_LEN)
+
+#ifndef ETHER_MIN_LEN
+/*! \brief Minimum frame length, including CRC. */
+#define	ETHER_MIN_LEN       64
+#endif
+
+#ifndef ETHER_MAX_LEN
+/*! \brief Maximum frame length, including CRC. */
+#define	ETHER_MAX_LEN       1518
 #endif
 
 /*!
@@ -129,17 +80,28 @@ extern "C" {
  * \brief Ethernet protocol header type.
  */
 typedef struct __attribute__((packed)) ether_header {
-    uint8_t  ether_dhost[6];     /*!< \brief Destination MAC address. */
-    uint8_t  ether_shost[6];     /*!< \brief Source MAC address. */
-    uint16_t ether_type;         /*!< \brief Protocol type. */
+    /*! \brief Destination MAC address. */
+    uint8_t  ether_dhost[ETHER_ADDR_LEN];
+    /*! \brief Source MAC address. */
+    uint8_t  ether_shost[ETHER_ADDR_LEN];
+    /*! \brief Protocol type. */
+    uint16_t ether_type;
 } ETHERHDR;
+
+/*! \brief Ethernet maximum transfer unit.
+ *
+ * Must be checked by the hardware driver.
+ */
+#define ETHERMTU    (ETHER_MAX_LEN - ETHER_HDR_LEN - ETHER_CRC_LEN)
+
+/*! \brief Ethernet minimum transfer unit. 
+ *
+ * Must be checked by the hardware driver.
+ */
+#define ETHERMIN    (ETHER_MIN_LEN - ETHER_HDR_LEN - ETHER_CRC_LEN)
 
 #define ETHERTYPE_IP    0x0800  /*!< \brief IP protocol */
 #define ETHERTYPE_ARP   0x0806  /*!< \brief Address resolution protocol */
-
-#define ETHERMTU    1500        /*!< \brief Ethernet maximum transfer unit. */
-//#define ETHERMTU    576           /*!< \brief Ethernet maximum transfer unit. */
-#define ETHERMIN    (60-14)     /*!< \brief Ethernet minimum transfer unit. */
 
 /*! 
  * \brief Determine if a given Ethernet address is zero.
@@ -181,9 +143,12 @@ typedef struct __attribute__((packed)) ether_header {
  */
 #define	ETHER_IS_UNICAST(ea) (!ETHER_IS_ZERO(ea) && !ETHER_IS_MULTICAST(ea)) 
 
+__BEGIN_DECLS
+/* ASCII conversion function prototypes. */
 extern uint8_t *ether_aton(CONST char *str);
 extern char *ether_ntoa(CONST uint8_t *mac);
 
+__END_DECLS
 
 /*!
  * \struct ether_arp if_ether.h netinet/if_ether.h
@@ -196,24 +161,22 @@ extern char *ether_ntoa(CONST uint8_t *mac);
  * \brief Ethernet ARP protocol type.
  */
 typedef struct __attribute__((packed)) ether_arp {
-    ARPHDR ea_hdr;     /*!< \brief Fixed-size header. */
-    uint8_t arp_sha[6]; /*!< \brief Source hardware address. */
-    uint32_t arp_spa;    /*!< \brief Source protocol address. */
-    uint8_t arp_tha[6]; /*!< \brief Target hardware address. */
-    uint32_t arp_tpa;    /*!< \brief Target protocol address. */
+    ARPHDR   ea_hdr;        /*!< \brief Fixed-size header. */
+    uint8_t  arp_sha[6];    /*!< \brief Source hardware address. */
+    uint32_t arp_spa;       /*!< \brief Source protocol address. */
+    uint8_t  arp_tha[6];    /*!< \brief Target hardware address. */
+    uint32_t arp_tpa;       /*!< \brief Target protocol address. */
 } ETHERARP;
 
+__BEGIN_DECLS
+/* ARP function prototypes. */
 extern void NutArpInput(NUTDEVICE *dev, NETBUF *nb);
-
 extern NETBUF *NutArpAllocNetBuf(uint16_t type, uint32_t ip, uint8_t *mac);
 extern int NutArpOutput(NUTDEVICE *dev, NETBUF *nb);
-
 extern void NutArpCacheUpdate(NUTDEVICE *dev, uint32_t ip, uint8_t *ha);
-
 extern int NutArpCacheQuery(NUTDEVICE *dev, uint32_t ip, uint8_t *mac);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
+/* */
 
 #endif

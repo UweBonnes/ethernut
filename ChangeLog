@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.471 2008/08/11 11:51:16 thiagocorrea Exp $
+$Id: ChangeLog,v 1.472 2008/08/11 17:38:27 haraldkipp Exp $
 
 2008-08-11  Thiago A. Correa <thiago.correa@gmail.com>
 
@@ -6,6 +6,23 @@ $Id: ChangeLog,v 1.471 2008/08/11 11:51:16 thiagocorrea Exp $
 	supported.
 
 2008-08-11  Harald Kipp  <harald.kipp@egnite.de>
+
+	* nut/net/ethdemux.c: First trial of a dynamic protocol 
+	demultiplexer. This one works on the data link level and may
+	be implemented on higher levels as well.
+
+	* conf/net/net.nut: Added the Ethernet protocol demultiplexer.
+
+	* net/ethin.c: Added the Ethernet protocol demultiplexer.
+
+	* include/net/ether.h: Added a global pointer to the demultiplexer
+	function. Replaced C++ brakets by indent-friendly macros.
+
+	* include/netinet/if_ether.h: Updated the copyright notice.
+	Removed the Liquorice part after all original code vanished.
+	Replaced CVS 'Log' by 'Id', because the first one will not be
+	supported by Subversion. Added more Ethernet length definitions.
+	Note, that we now include the CRC length in some calculations.
 
 	* BSD types replaced by stdint types (feature request #1282721).
 	Hopefully this will not break any existing code, the BSD types

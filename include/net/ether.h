@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/08/11 17:38:27  haraldkipp
+ * Added an Ethernet protocol demultiplexer.
+ *
  * Revision 1.2  2008/08/11 07:00:19  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -60,15 +63,18 @@
  * \brief Ethernet protocol definitions.
  */
 
+extern int (*ether_demux) (NUTDEVICE *, NETBUF *);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+__BEGIN_DECLS
+/* Function prototypes. */
 extern void NutEtherInput(NUTDEVICE *dev, NETBUF *nb);
 extern int NutEtherOutput(NUTDEVICE *dev, uint16_t type, uint8_t *ha, NETBUF *nb);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
+/* */
 
 #endif
