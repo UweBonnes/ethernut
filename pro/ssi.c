@@ -33,6 +33,9 @@
  
 /*
  * $Log$
+ * Revision 1.11  2008/08/18 11:00:39  olereinhardt
+ * Fixed a memory leak. A filename was never freed again
+ *
  * Revision 1.10  2008/08/11 07:00:36  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -323,11 +326,13 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     }
     if (fd == -1) {
         fprintf_P(stream, rsp_not_found_P, filename);
+        NutHeapFree(filename);
         return;
     }
     
     file_len = _filelength(fd);
     handler = NutGetMimeHandler(filename);
+    NutHeapFree(filename);
     
     if (handler == NULL) {
         size = 512;                 // If we have not registered a mime handler handle default.
