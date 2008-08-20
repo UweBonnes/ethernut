@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/08/20 06:58:35  haraldkipp
+ * Added a new flag to mark unicast packets.
+ *
  * Revision 1.4  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -121,6 +124,8 @@
 
 
 /* lower bits may be used as ref-count, if ever needed */
+#define NBAF_UNICAST     0x08   /*!< \brief Unicast address. */
+
 #define NBAF_DATALINK    0x10   /*!< \brief Datalink buffer allocated flag. */
 #define NBAF_NETWORK     0x20   /*!< \brief Network buffer allocated flag. */
 #define NBAF_TRANSPORT   0x40   /*!< \brief Transport buffer allocated flag. */
