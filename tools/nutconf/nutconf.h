@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2008/08/20 07:00:34  haraldkipp
+ * Incremented build number because of bad package. No code change.
+ *
  * Revision 1.20  2008/07/29 07:39:37  haraldkipp
  * Fixed missing 'make install'. Bug was introduced in 2.0.1.
  *
@@ -111,7 +114,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.2"
+#define VERSION "2.0.3"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

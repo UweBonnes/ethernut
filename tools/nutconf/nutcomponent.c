@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.33  2008/08/20 07:00:33  haraldkipp
+ * Incremented build number because of bad package. No code change.
+ *
  * Revision 1.32  2008/07/29 07:30:30  haraldkipp
  * Make sure that children of a disabled parents are disabled too.
  *
@@ -154,7 +157,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.2"
+#define NUT_CONFIGURE_VERSION   "2.0.3"
 
 #include <stdio.h>
 #include <stdlib.h>
