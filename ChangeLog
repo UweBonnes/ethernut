@@ -1,4 +1,23 @@
-$Id: ChangeLog,v 1.472 2008/08/11 17:38:27 haraldkipp Exp $
+$Id: ChangeLog,v 1.473 2008/08/20 07:01:14 haraldkipp Exp $
+
+2008-08-19  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/net/net.nut, include/netinet/ip.h, include/sys/sock_var.h,
+	include/sys/socket.h, net/ipdemux.c, net/ipin.c, net/tcpin.c,
+	net/tcpsock.c, net/udpin.c, net/udpsock.c: Added IP demultiplexer to 
+	uncouple protocols. Note, that NutUdpInput() and NutTcpInput() use 
+	different parameters and now return a value, which match other layers.
+
+	* include/net/ether.h: Corrected C++ brackets and added 
+	NutRegisterEthHandler() prototype.
+
+	* include/dev/netbuf.h: Added a new flag to mark unicast packets. 
+	This should later avoid repeating address tests.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
+	Incremented build number. Nothing changed really, but we need this to
+	distinguish the bad version packed in the Windows distribution.
+
 
 2008-08-11  Thiago A. Correa <thiago.correa@gmail.com>
 
