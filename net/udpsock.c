@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/08/20 06:57:00  haraldkipp
+ * Implemented IP demultiplexer.
+ *
  * Revision 1.9  2008/08/11 07:00:33  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -159,6 +162,7 @@
 
 UDPSOCKET *udpSocketList;       /*!< Global linked list of all UDP sockets. */
 static uint16_t last_local_port = 4096;  /* Unassigned local port. */
+static uint_fast8_t registered;
 
 /*!
  * \brief Create a UDP socket.
@@ -175,6 +179,12 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
 {
     UDPSOCKET *sock;
 
+    if (!registered) {
+        if (NutRegisterIpHandler(IPPROTO_UDP, NutUdpInput)) {
+            return NULL;
+        }
+        registered = 1;
+    }
     if (port == 0) {
         do {
             if (++last_local_port == 0)

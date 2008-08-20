@@ -63,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/08/20 06:56:59  haraldkipp
+ * Implemented IP demultiplexer.
+ *
  * Revision 1.12  2008/08/11 07:00:27  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -124,6 +127,7 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+#include <sys/device.h>
 #include <dev/netbuf.h>
 
 /*!
@@ -166,7 +170,7 @@ struct udp_socket {
 
 /*@}*/
 
-extern void NutUdpInput(NETBUF *nb, uint_fast8_t bcast);
+extern int NutUdpInput(NUTDEVICE * dev, NETBUF *nb);
 extern int NutUdpOutput(UDPSOCKET *sock, uint32_t dest, uint16_t port, NETBUF *nb);
 
 

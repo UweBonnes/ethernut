@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.13  2008/08/20 06:56:59  haraldkipp
+-- Implemented IP demultiplexer.
+--
 -- Revision 1.12  2008/08/11 17:38:27  haraldkipp
 -- Added an Ethernet protocol demultiplexer.
 --
@@ -155,6 +158,7 @@ nutnet =
             "ipcsum.c",
             "ipin.c",
             "ipout.c",
+            "ipdemux.c",
             "route.c"
         },
         options = 

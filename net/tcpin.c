@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/20 06:57:00  haraldkipp
+ * Implemented IP demultiplexer.
+ *
  * Revision 1.3  2008/08/11 07:00:32  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -139,25 +142,32 @@
  *       this function.
  *
  */
-void NutTcpInput(NETBUF * nb)
+int NutTcpInput(NUTDEVICE * dev, NETBUF * nb)
 {
-    TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
+    TCPHDR *th;
 
-    nb->nb_ap.sz = nb->nb_tp.sz - (th->th_off * 4);
-    if (nb->nb_ap.sz)
-        nb->nb_ap.vp = ((uint32_t *) th) + th->th_off;
-    nb->nb_tp.sz = th->th_off * 4;
+    if (nb->nb_flags & NBAF_UNICAST) {
+        th = (TCPHDR *) nb->nb_tp.vp;
+        nb->nb_ap.sz = nb->nb_tp.sz - (th->th_off * 4);
+        if (nb->nb_ap.sz)
+            nb->nb_ap.vp = ((uint32_t *) th) + th->th_off;
+        nb->nb_tp.sz = th->th_off * 4;
 
-    /*
-     * According to RFC1122 we MUST check the checksum
-     * on incoming segments. Anyway, we rely on lower
-     * level checksums to save processing resources.
-     *
-     * However, we may combine checksum calculation
-     * with moving data to the receiver buffer.
-     */
+        /*
+        ** According to RFC1122 we MUST check the checksum
+        ** on incoming segments. Anyway, we rely on lower
+        ** level checksums to save processing resources.
+        **
+        ** However, we may combine checksum calculation
+        ** with moving data to the receiver buffer.
+        **/
 
-    NutTcpStateMachine(nb);
+        NutTcpStateMachine(nb);
+    } else {
+        /* Silently discard TCP broadcasts. */
+        NutNetBufFree(nb);
+    }
+    return 0;
 }
 
 /*@}*/

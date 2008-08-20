@@ -62,6 +62,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/08/20 06:56:59  haraldkipp
+ * Implemented IP demultiplexer.
+ *
  * Revision 1.10  2008/08/11 07:00:27  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -185,7 +188,7 @@ extern int NutTcpSetSockOpt(TCPSOCKET *sock, int optname, CONST void *optval, in
 extern int NutTcpGetSockOpt(TCPSOCKET *sock, int optname, void *optval, int optlen);
 extern int NutTcpConnect(TCPSOCKET *sock, uint32_t addr, uint16_t port);
 extern int NutTcpAccept(TCPSOCKET *sock, uint16_t port);
-extern void NutTcpInput(NETBUF *nb);
+extern int NutTcpInput(NUTDEVICE * dev, NETBUF *nb);
 extern int NutTcpSend(TCPSOCKET *sock, CONST void *data, int len);
 #ifdef __HARVARD_ARCH__
 extern int NutTcpSend_P(TCPSOCKET *sock, PGM_P data, int len);

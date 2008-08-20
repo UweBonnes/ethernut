@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/20 06:56:59  haraldkipp
+ * Implemented IP demultiplexer.
+ *
  * Revision 1.6  2008/08/11 07:00:23  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -196,6 +199,9 @@ extern void NutIpInput(NUTDEVICE * dev, NETBUF * nb);
  */
 typedef int (*NutIpFilterFunc) (uint32_t);
 extern void NutIpSetInputFilter(NutIpFilterFunc callbackFunc);
+
+extern int NutRegisterIpHandler(uint8_t prot, int (*hdlr)(NUTDEVICE *, NETBUF *));
+extern int (*ip_demux) (NUTDEVICE *, NETBUF *);
 
 __END_DECLS
 /* */

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/20 06:57:00  haraldkipp
+ * Implemented IP demultiplexer.
+ *
  * Revision 1.7  2008/04/18 13:13:11  haraldkipp
  * Using fast ints.
  *
@@ -144,10 +147,8 @@
  *       not call this function.
  *
  * \param nb    Network buffer structure containing the UDP packet.
- * \param bcast Broadcast flag.
  */
- /* @@@ 2003-10-24: modified by OS for udp packet queue */
-void NutUdpInput(NETBUF * nb, uint_fast8_t bcast)
+int NutUdpInput(NUTDEVICE * dev, NETBUF * nb)
 {
     UDPHDR *uh;
     UDPSOCKET *sock;
@@ -163,10 +164,11 @@ void NutUdpInput(NETBUF * nb, uint_fast8_t bcast)
      * broadcasted, return an ICMP unreachable.
      */
     if ((sock = NutUdpFindSocket(uh->uh_dport)) == 0) {
-        if (bcast || NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PORT, 0, nb) == 0) {
+        if ((nb->nb_flags | NBAF_UNICAST) == 0 || 
+            NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PORT, 0, nb) == 0) {
         	NutNetBufFree(nb);
         }
-        return;
+        return 0;
     }
 
     /* if buffer size is defined, use packet queue */
@@ -175,7 +177,7 @@ void NutUdpInput(NETBUF * nb, uint_fast8_t bcast)
         if (sock->so_rx_cnt + nb->nb_ap.sz > sock->so_rx_bsz) {
             /* No, so discard it */
             NutNetBufFree(nb);
-            return;
+            return 0;
         } else {
             /* if a first packet is already in the queue, find the end
              * and add the new packet */
@@ -201,6 +203,7 @@ void NutUdpInput(NETBUF * nb, uint_fast8_t bcast)
     /* post the event only, if one thread is waiting */
     if (sock->so_rx_rdy)
         NutEventPost(&sock->so_rx_rdy);
+    return 0;
 }
 
 /*@}*/

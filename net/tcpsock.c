@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2008/08/20 06:57:00  haraldkipp
+ * Implemented IP demultiplexer.
+ *
  * Revision 1.21  2008/08/11 07:00:32  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -223,7 +226,7 @@ TCPSOCKET *tcpSocketList = 0;   /*!< Global linked list of all TCP sockets. */
 
 static volatile uint16_t last_local_port = 4096; /* Unassigned local port. */
 
-static uint8_t tcpStateRunning = 0;
+static uint_fast8_t registered;
 
 void NutTcpDiscardBuffers(TCPSOCKET * sock)
 {
@@ -360,36 +363,39 @@ TCPSOCKET *NutTcpCreateSocket(void)
 {
     TCPSOCKET *sock = 0;
 
-    if (tcpStateRunning || (tcpStateRunning = (NutTcpInitStateMachine() == 0))) {
-
-        if ((sock = NutHeapAllocClear(sizeof(TCPSOCKET))) != 0) {
-            sock->so_state = TCPS_CLOSED;
-
-            /*
-             * Initialize the virtual device interface.
-             */
-            sock->so_devtype = IFTYP_TCPSOCK;
-            sock->so_devread = NutTcpDeviceRead;
-            sock->so_devwrite = NutTcpDeviceWrite;
-#ifdef __HARVARD_ARCH__
-            sock->so_devwrite_P = NutTcpDeviceWrite_P;
-#endif
-            sock->so_devioctl = NutTcpDeviceIOCtl;
-
-            sock->so_tx_isn = NutGetTickCount();  /* Generate the ISN from the nut_ticks counter */
-            sock->so_tx_una = sock->so_tx_isn;
-            sock->so_tx_nxt = sock->so_tx_isn;
-            sock->so_rx_bsz = sock->so_rx_win = TCP_WINSIZE;
-
-            sock->so_mss = TCP_MSS;
-            sock->so_rtto = 1000; /* Initial retransmission time out */
-
-            sock->so_next = tcpSocketList;
-
-            sock->so_devobsz = TCP_MSS; /* Default output buffer size is TCP_MSS bytes */
-
-            tcpSocketList = sock;
+    if (!registered) {
+        if (NutRegisterIpHandler(IPPROTO_TCP, NutTcpInput) || NutTcpInitStateMachine()) {
+            return NULL;
         }
+        registered = 1;
+    }
+    if ((sock = NutHeapAllocClear(sizeof(TCPSOCKET))) != 0) {
+        sock->so_state = TCPS_CLOSED;
+
+        /*
+            * Initialize the virtual device interface.
+            */
+        sock->so_devtype = IFTYP_TCPSOCK;
+        sock->so_devread = NutTcpDeviceRead;
+        sock->so_devwrite = NutTcpDeviceWrite;
+#ifdef __HARVARD_ARCH__
+        sock->so_devwrite_P = NutTcpDeviceWrite_P;
+#endif
+        sock->so_devioctl = NutTcpDeviceIOCtl;
+
+        sock->so_tx_isn = NutGetTickCount();  /* Generate the ISN from the nut_ticks counter */
+        sock->so_tx_una = sock->so_tx_isn;
+        sock->so_tx_nxt = sock->so_tx_isn;
+        sock->so_rx_bsz = sock->so_rx_win = TCP_WINSIZE;
+
+        sock->so_mss = TCP_MSS;
+        sock->so_rtto = 1000; /* Initial retransmission time out */
+
+        sock->so_next = tcpSocketList;
+
+        sock->so_devobsz = TCP_MSS; /* Default output buffer size is TCP_MSS bytes */
+
+        tcpSocketList = sock;
     }
     return sock;
 }
