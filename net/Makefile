@@ -33,6 +33,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.12  2008/08/20 07:05:48  haraldkipp
+# Added IP demultiplexer.
+#
 # Revision 1.11  2008/02/15 17:30:00  haraldkipp
 # Added missing files. Hopefully not broken after late commit.
 #
@@ -92,7 +95,7 @@ SRC1 =  tcpsock.c tcpsm.c tcpin.c tcpout.c tcputil.c \
 SRC2 =  ipin.c ipout.c ipcsum.c route.c inet.c \
 	netdebug.c pppdebug.c \
 	arpin.c arpout.c arpcache.c \
-	ethin.c ethout.c ifconfig.c confnet.c \
+	ethin.c ethout.c ethdemux.c ifconfig.c confnet.c \
 	pppin.c pppout.c lcpout.c ipcpout.c \
 	igmpin.c igmpout.c ether_addr.c
 #       igmp.c
