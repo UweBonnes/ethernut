@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/20 06:58:04  haraldkipp
+ * Corrected C++ brackets.
+ * Added missing NutRegisterEthHandler prototype.
+ *
  * Revision 1.3  2008/08/11 17:38:27  haraldkipp
  * Added an Ethernet protocol demultiplexer.
  *
@@ -65,14 +69,11 @@
 
 extern int (*ether_demux) (NUTDEVICE *, NETBUF *);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 __BEGIN_DECLS
 /* Function prototypes. */
 extern void NutEtherInput(NUTDEVICE *dev, NETBUF *nb);
 extern int NutEtherOutput(NUTDEVICE *dev, uint16_t type, uint8_t *ha, NETBUF *nb);
+extern int NutRegisterEthHandler(uint16_t type, uint16_t mask, int (*hdlr)(NUTDEVICE *, NETBUF *));
 
 __END_DECLS
 /* */
