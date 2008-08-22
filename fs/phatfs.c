@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.13  2008/08/22 16:22:22  olereinhardt
+ * Check if filesystem is mounted when opening a file.
+ * Prevents a system lockup because of a nullpointer access
+ *
  * Revision 1.12  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -939,6 +943,12 @@ static NUTFILE *PhatApiFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int
 {
     NUTFILE *rc;
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+
+    /* Make sure the volume is mounted. */
+    if (vol == NULL) {
+        errno = ENOENT;
+        return NUTFILE_EOF;
+    }
 
     /* Lock filesystem access. */
     NutEventWait(&vol->vol_fsmutex, 0);
