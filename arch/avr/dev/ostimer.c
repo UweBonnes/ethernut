@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/22 09:25:34  haraldkipp
+ * Clock value caching and new functions NutArchClockGet, NutClockGet and
+ * NutClockSet added.
+ *
  * Revision 1.7  2008/08/11 11:51:19  thiagocorrea
  * Preliminary Atmega2560 compile options, but not yet supported.
  * It builds, but doesn't seam to run properly at this time.
@@ -347,7 +351,7 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return CPU clock frequency in Hertz.
  */
-uint32_t NutGetCpuClock(void)
+uint32_t NutArchClockGet(int idx)
 {
     return cpu_clock;
 }

@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.36  2008/08/22 09:25:35  haraldkipp
+ * Clock value caching and new functions NutArchClockGet, NutClockGet and
+ * NutClockSet added.
+ *
  * Revision 1.35  2008/08/11 07:00:34  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -219,6 +223,8 @@
 static struct timeval   timeStart;
 #endif
 
+#include <string.h>
+
 /*!
  * \addtogroup xgTimer
  */
@@ -240,6 +246,8 @@ static uint32_t nut_ticks_resume;
 volatile uint32_t nut_ticks;
 
 // volatile uint32_t nut_tick_dist[32];
+
+static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
 
 /*!
  *  \brief Loops per microsecond.
@@ -711,5 +719,84 @@ uint32_t NutGetMillis(void)
     ticks         -= seconds * NutGetTickClock();
     return seconds * 1000 + (ticks * 1000 ) / NutGetTickClock();
 }
+
+/*!
+ * \brief Return the specified clock frequency.
+ *
+ * If only 1 hardware clock is defined, then this function is mapped
+ * to NutGetCpuClock().
+ *
+ * The number of available hardware clocks depends on the target harware
+ * and is specified by NUT_HWCLK_MAX + 1.
+ *
+ * \param idx Index of the hardware clock. Can be any of the following:
+ *            - NUT_HWCLK_CPU
+ *            - NUT_HWCLK_PERIPHERAL
+ *
+ * \return CPU clock frequency in Hertz.
+ */
+#if NUT_HWCLK_MAX
+uint32_t NutClockGet(int idx)
+{
+    if (clock_cache[idx] == 0) {
+        clock_cache[idx] = NutArchClockGet(idx) | NUT_CACHE_LVALID;
+    }
+    return clock_cache[idx] & ~NUT_CACHE_LVALID;
+}
+#endif
+
+/*!
+ * \brief Set the specified clock frequency.
+ *
+ * In the future this may be used to set any hardware clock.
+ * For now, this simply clears the clock value cache and must
+ * be called after changing any clock frequency.
+ *
+ * \param idx  Index of the hardware clock, currently ignored.
+ *             Set to -1 (all clocks) to maintain upward compatibility.
+ * \param freq Clock frequency in Hertz, currently ignored.
+ *             Set to NUT_CACHE_LVALID (release cached value) to maintain 
+ *             upward compatibility.
+ *
+ * \return Always 0.
+ */
+int NutClockSet(int idx, uint32_t freq)
+{
+    /* Clear all cached values. */
+    memset(clock_cache, 0, sizeof(clock_cache));
+
+    return 0;
+}
+
+/*!
+ * \brief Return the CPU clock frequency.
+ *
+ * Same as NutClockGet(NUT_HWCLK_CPU) but faster, specially when
+ * NUT_CPU_FREQ is defined.
+ *
+ * \return CPU clock frequency in Hertz.
+ */
+#if !defined(NutGetCpuClock)
+uint32_t NutGetCpuClock(void)
+{
+#ifdef NUT_CPU_FREQ
+    /* Keep this code small! Can we use a preprocessor
+    ** macro to define NutGetCpuClock() as NUT_CPU_FREQ? */
+    return NUT_CPU_FREQ;
+#else /* !NUT_CPU_FREQ */
+    /* Keep this code fast for the normal case, where the
+    ** cached value is valid. */
+    if (clock_cache[NUT_HWCLK_CPU]) {
+        return clock_cache[NUT_HWCLK_CPU] & ~NUT_CACHE_LVALID;
+    }
+#if NUT_HWCLK_MAX
+    return NutClockGet(NUT_HWCLK_CPU);
+#else /* !NUT_HWCLK_MAX */
+    clock_cache[NUT_HWCLK_CPU] = NutArchClockGet(NUT_HWCLK_CPU) | NUT_CACHE_LVALID;
+    return clock_cache[NUT_HWCLK_CPU] & ~NUT_CACHE_LVALID;
+#endif /* !NUT_HWCLK_MAX */
+#endif /* !NUT_CPU_FREQ */
+}
+#endif /* !NutGetCpuClock */
 
 /*@}*/

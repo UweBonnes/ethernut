@@ -181,7 +181,7 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return CPU clock frequency in Hertz.
  */
-uint32_t NutGetCpuClock(void)
+uint32_t NutArchClockGet(int idx)
 {
     uint32_t msel;
     uint32_t CPUClkFreq;

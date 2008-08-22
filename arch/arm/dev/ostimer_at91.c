@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.22  2008/08/22 09:25:33  haraldkipp
+ * Clock value caching and new functions NutArchClockGet, NutClockGet and
+ * NutClockSet added.
+ *
  * Revision 1.21  2008/08/11 06:59:12  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -322,27 +326,18 @@ static uint32_t At91GetProcessorClock(void)
 /*!
  * \brief Determine the master clock frequency.
  *
+ * \deprecated Use NutArchClockGet(NUT_HWCLK_PERIPHERAL)
+ *
  * \return Master clock frequency in Hertz.
  */
 uint32_t At91GetMasterClock(void)
 {
-    uint32_t rc = At91GetProcessorClock();
-
-#if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
-    switch(inr(PMC_MCKR) & PMC_MDIV) {
-    case PMC_MDIV_2:
-        rc /= 2;
-        break;
-    case PMC_MDIV_4:
-        rc /= 4;
-        break;
-    }
-#endif
-    return rc;
+    return NutArchClockGet(NUT_HWCLK_PERIPHERAL);
 }
 
 #endif /* AT91_PLL_MAINCK */
 
+#ifndef NUT_CPU_FREQ
 /*!
  * \brief Return the CPU clock in Hertz.
  *
@@ -352,19 +347,37 @@ uint32_t At91GetMasterClock(void)
  *
  * \return CPU clock frequency in Hertz.
  */
-uint32_t NutGetCpuClock(void)
+uint32_t NutArchClockGet(int idx)
 {
-#if defined(NUT_CPU_FREQ)
-    return NUT_CPU_FREQ;
-#elif defined(AT91_PLL_MAINCK)
-    return At91GetProcessorClock();
+    uint32_t rc = 0;
+
+    if (idx == NUT_HWCLK_CPU) {
+#if defined(AT91_PLL_MAINCK)
+        rc = At91GetProcessorClock();
 #elif defined(NUT_PLL_CPUCLK)
-    return Cy2239xGetFreq(NUT_PLL_CPUCLK, 7);
+        rc = Cy2239xGetFreq(NUT_PLL_CPUCLK, 7);
 #else
 #warning "No CPU Clock defined"
-    return 0;
 #endif
+    }
+#if defined(AT91_PLL_MAINCK)
+    if (idx == NUT_HWCLK_PERIPHERAL) {
+        rc = At91GetProcessorClock();
+#if defined(PMC_MDIV)
+        switch(inr(PMC_MCKR) & PMC_MDIV) {
+        case PMC_MDIV_2:
+            rc /= 2;
+            break;
+        case PMC_MDIV_4:
+            rc /= 4;
+            break;
+        }
+#endif
+    }
+#endif
+    return rc;
 }
+#endif
 
 /*!
  * \brief Return the number of system ticks per second.

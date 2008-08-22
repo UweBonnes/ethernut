@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/22 09:25:34  haraldkipp
+ * Clock value caching and new functions NutArchClockGet, NutClockGet and
+ * NutClockSet added.
+ *
  * Revision 1.6  2008/08/11 06:59:13  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -216,7 +220,7 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return CPU clock frequency in Hertz.
  */
-uint32_t NutGetCpuClock(void)
+uint32_t NutArchClockGet(int idx)
 {
     return NUT_CPU_FREQ;
 }

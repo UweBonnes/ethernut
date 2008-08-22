@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/08/22 09:25:34  haraldkipp
+ * Clock value caching and new functions NutArchClockGet, NutClockGet and
+ * NutClockSet added.
+ *
  * Revision 1.3  2008/08/11 06:59:58  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -70,7 +74,7 @@ __BEGIN_DECLS
  * Architecture dependent functions.
  */
 extern void NutRegisterTimer(void (*handler) (void *));
-extern uint32_t NutGetCpuClock(void);
+extern uint32_t NutArchClockGet(int idx);
 extern uint32_t NutGetTickClock(void);
 extern uint32_t NutTimerMillisToTicks(uint32_t ms);
 

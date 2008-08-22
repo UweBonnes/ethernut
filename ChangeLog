@@ -1,4 +1,23 @@
-$Id: ChangeLog,v 1.473 2008/08/20 07:01:14 haraldkipp Exp $
+$Id: ChangeLog,v 1.474 2008/08/22 09:25:32 haraldkipp Exp $
+
+2008-08-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/ostimer_at91.c, arch/arm/dev/ostimer_gba.c,
+	arch/arm/dev/ostimer_lpc2xxx.c, arch/arm/dev/ostimer_s3c4510b.c,
+	arch/avr/dev/ostimer.c, arch/unix/dev/ostimer.c,
+	include/arch/timer.h, include/sys/timer.h, os/timer.c:
+	Querying the clocks initiated a hardware access, which consumes
+	too many CPU cycles on some platforms. We now cache the clock
+	values, as suggested by Duane Ellis. NutGetCpuClock() moved from 
+	target specific arch/target/dev/ostimer_target.c to os/timer.c.
+	A new function NutArchClockGet provides hardware access and
+	another new function NutClockSet() can be used to clear the
+	cache. If more than one clock is available, the new function
+	NutClockGet() can be used for retrieval.
+
+	* pro/cgi.c, pro/ssi.c: GCC specific implementation removed.
+	This fixes the missing alloca for older avr-libc versions.
+
 
 2008-08-19  Harald Kipp  <harald.kipp@egnite.de>
 

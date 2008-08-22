@@ -51,6 +51,10 @@
 
 /*
  * $Log$
+ * Revision 1.13  2008/08/22 09:25:34  haraldkipp
+ * Clock value caching and new functions NutArchClockGet, NutClockGet and
+ * NutClockSet added.
+ *
  * Revision 1.12  2008/08/11 07:00:28  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -146,6 +150,19 @@ extern NUTTIMERINFO* nutTimerList;
 
 #define TM_ONESHOT  0x01
 
+#define NUT_CACHE_LVALID        0x80000000UL
+
+/* Set defaults. */
+#ifndef NUT_HWCLK_CPU
+#define NUT_HWCLK_CPU           0
+#endif
+#ifndef NUT_HWCLK_PERIPHERAL
+#define NUT_HWCLK_PERIPHERAL    NUT_HWCLK_CPU
+#endif
+#ifndef NUT_HWCLK_MAX
+#define NUT_HWCLK_MAX           NUT_HWCLK_PERIPHERAL
+#endif
+
 __BEGIN_DECLS
 /* Prototypes */
 
@@ -171,6 +188,25 @@ extern uint32_t NutGetMillis(void);
 extern HANDLE NutTimerStart(uint32_t ms, void (*callback)(HANDLE, void *), void *arg, uint8_t flags);
 extern HANDLE NutTimerStartTicks(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags);
 extern void NutTimerStop(HANDLE handle);
+
+/*
+ * Clock frequencies.
+ */
+#if NUT_HWCLK_MAX
+/* More than 1 clock available: Implement function. */
+extern uint32_t NutClockGet(int idx);
+#else
+/* Only 1 clock available: Map to CPU clock. */
+#define NutClockGet(i)          NutGetCpuClock()
+#endif
+
+extern int NutClockSet(int idx, uint32_t freq);
+
+/* On some platforms the clock query functions may be defined by 
+** a preprocessor macro to avoid function call overhead. */
+#if !defined(NutGetCpuClock)
+extern uint32_t NutGetCpuClock(void);
+#endif
 
 __END_DECLS
 /* End of prototypes */
