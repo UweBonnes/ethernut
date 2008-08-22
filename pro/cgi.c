@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/08/22 09:23:56  haraldkipp
+ * GCC specific implementation removed.
+ *
  * Revision 1.6  2008/07/26 14:09:29  haraldkipp
  * Fixed another problem with ICCAVR.
  *
@@ -63,9 +66,6 @@
  */
 
 #include <string.h>
-#if !defined(__IMAGECRAFT__)
-#include <alloca.h>
-#endif
 #include <sys/heap.h>
 
 #include <pro/httpd.h>
@@ -107,31 +107,6 @@ void NutRegisterCgiBinPath(char *path)
 
 int NutCgiCheckRequest(FILE * stream, REQUEST * req)
 {
-#ifdef __GNUC__
-    /*
-     * Ole's original version. Unfortunately the ImageCraft compiler neither
-     * supports alloca() nor strtok_r().
-     */
-    char * cgi_bin = "cgi-bin/";
-    char * tmp;
-    char * save_ptr = NULL;
-
-    if (cgiBinPath != NULL) {
-        cgi_bin = cgiBinPath;
-    }
-    tmp = alloca(strlen(cgi_bin) + 1);
-    strcpy(tmp, cgi_bin);
-    
-    tmp = strtok_r(tmp, ";", &save_ptr);
-    
-    do {
-        if ((tmp != NULL) && (strncasecmp(req->req_url, tmp, strlen(tmp)) == 0)) {
-            NutCgiProcessRequest(stream, req, strlen(tmp));
-            return 1;
-        }    
-        tmp = strtok_r(NULL, ";", &save_ptr);
-    } while (tmp != NULL);
-#else
     /*
      * My version sticks with basic C routines. I hope, that it is also
      * faster and uses less memory. But it hasn't been tested very well,
@@ -157,7 +132,6 @@ int NutCgiCheckRequest(FILE * stream, REQUEST * req)
             cgi_bin += len;
         }
     }
-#endif
     return 0;
 }
 

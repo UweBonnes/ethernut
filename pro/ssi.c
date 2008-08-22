@@ -33,6 +33,9 @@
  
 /*
  * $Log$
+ * Revision 1.12  2008/08/22 09:23:57  haraldkipp
+ * GCC specific implementation removed.
+ *
  * Revision 1.11  2008/08/18 11:00:39  olereinhardt
  * Fixed a memory leak. A filename was never freed again
  *
@@ -88,9 +91,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#if defined(__GNUC__)
-#include <alloca.h>
-#endif
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -188,19 +188,10 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     char *cp;
     REQUEST * req;
     CONST char *cgi_bin = cgiBinPath ? cgiBinPath : "cgi-bin/";
-    char * tmp;
+    CONST char * tmp;
     size_t len;
 
-#ifdef __GNUC__
-    char * save_ptr = NULL;
-
-    tmp = alloca(strlen(cgi_bin) + 1);
-    strcpy(tmp, cgi_bin);    
-    tmp = strtok_r(tmp, ";", &save_ptr);
-#else
     tmp = cgi_bin;
-#endif
-
     if (NutDecodePath(url) == 0) {
         fprintf_P(stream, rsp_bad_req_P);
         return;
@@ -210,16 +201,12 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
      * Process CGI.
      */
     while (tmp) {
-#ifdef __GNUC__
-        len = strlen(tmp);
-#else
         /* Skip leading path separators. */
         while (*cgi_bin == ';')
             cgi_bin++;
         /* Determine the length of the next path component. */
-        for (len = 0, cp = cgi_bin; *cp && *cp != ';'; len++, cp++);
+        for (len = 0, cp = (char *)cgi_bin; *cp && *cp != ';'; len++, cp++);
         tmp = cgi_bin;
-#endif
         if (len && strncasecmp(url, tmp, len) == 0) {
             if ((req = NutHeapAllocClear(sizeof(REQUEST))) == 0) {
                 fprintf_P(stream, rsp_intern_err_P);
@@ -290,14 +277,10 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             DestroyRequestInfo(req);
             return;
         }
-#ifdef __GNUC__
-        tmp = strtok_r(NULL, ";", &save_ptr);
-#else
         cgi_bin += len;
         if (*cgi_bin == '\0') {
             break;
         }
-#endif
     }
     
     /*
