@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.474 2008/08/22 09:25:32 haraldkipp Exp $
+$Id: ChangeLog,v 1.475 2008/08/22 12:39:27 olereinhardt Exp $
 
 2008-08-22  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -37,6 +37,10 @@ $Id: ChangeLog,v 1.474 2008/08/22 09:25:32 haraldkipp Exp $
 	Incremented build number. Nothing changed really, but we need this to
 	distinguish the bad version packed in the Windows distribution.
 
+
+2008-08-17  Ole Reinhardt <ole.reinhardt@thermotemp.de>	
+	* nut/pro/ssi.c: Fixed a memory leak. A filename was 
+          never freed again
 
 2008-08-11  Thiago A. Correa <thiago.correa@gmail.com>
 
