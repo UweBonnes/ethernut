@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.475 2008/08/22 12:39:27 olereinhardt Exp $
+$Id: ChangeLog,v 1.476 2008/08/22 16:23:11 olereinhardt Exp $
+
+2008-08-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+        * fs/phatfs.c: Check if filesystem is mounted when opening a file. 
+          Prevents a system lockup because of a nullpointer access
 
 2008-08-22  Harald Kipp  <harald.kipp@egnite.de>
 
