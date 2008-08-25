@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.60  2008/08/25 17:05:27  haraldkipp
+ * Beta release 4.7.1.
+ *
  * Revision 1.59  2008/08/11 07:00:34  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -230,8 +233,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04070000UL
-static CONST char os_version_string[] = "4.7.0.0";
+#define OS_VERSION_NUMBER  0x04070100UL
+static CONST char os_version_string[] = "4.7.1.0";
 
 /*!
  * \addtogroup xgNutVersion

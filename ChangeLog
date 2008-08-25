@@ -1,6 +1,12 @@
-$Id: ChangeLog,v 1.477 2008/08/25 14:28:14 haraldkipp Exp $
+$Id: ChangeLog,v 1.478 2008/08/25 17:05:26 haraldkipp Exp $
 
 2008-08-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: New beta 4.7.1.
+
+	* conf/MMnet01.conf, conf/MMnet02_03_04.conf, conf/MMnet101.conf,
+	conf/MMnet102_103_104.conf: Added configuration files for MMnet
+	modules. Many thanks to Michal Olejniczak.
 
 	* net/ethdemux.c, net/ipdemux.c: Uninitialized pointers in
 	protocol structure caused frozen system.
