@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.14  2008/08/25 14:26:32  haraldkipp
+ * Append to existing files failed when file size was larger than one cluster.
+ *
  * Revision 1.13  2008/08/22 16:22:22  olereinhardt
  * Check if filesystem is mounted when opening a file.
  * Prevents a system lockup because of a nullpointer access
@@ -480,17 +483,6 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
         }
         else {
             ffcb->f_dirent = srch->phfind_ent;
-            /*
-             * Append to an existing file.
-             */
-            if ((mode & _O_APPEND) != 0 && ffcb->f_dirent.dent_fsize) {
-                if (PhatFilePosSet(nfp, ffcb->f_dirent.dent_fsize)) {
-                    PhatFileClose(ndp);
-                    PhatFileClose(nfp);
-                    free(srch);
-                    return NUTFILE_EOF;
-                }
-            }
         }
     }
     free(srch);
@@ -510,6 +502,16 @@ NUTFILE *PhatFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int acc)
 
     /* Close the directory. */
     PhatFileClose(ndp);
+
+    /*
+     * Append to an existing file.
+     */
+    if ((mode & _O_APPEND) != 0 && ffcb->f_dirent.dent_fsize) {
+        if (PhatFilePosSet(nfp, ffcb->f_dirent.dent_fsize)) {
+            PhatFileClose(nfp);
+            return NUTFILE_EOF;
+        }
+    }
 
 #ifdef NUTDEBUG
     PhatDbgFileInfo(stdout, "File opened", ffcb);
