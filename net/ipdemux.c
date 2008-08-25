@@ -128,7 +128,7 @@ int NutRegisterIpHandler(uint8_t prot, int (*hdlr)(NUTDEVICE *, NETBUF *))
 
     if (inetp == NULL) {
         /* No existing entry. Allocate a new one. */
-        inetp = NutHeapAlloc(sizeof(INET_PROTOCOLS));
+        inetp = NutHeapAllocClear(sizeof(INET_PROTOCOLS));
         if (inetp == NULL) {
             return -1;
         }

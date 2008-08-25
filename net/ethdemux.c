@@ -133,7 +133,7 @@ int NutRegisterEthHandler(uint16_t type, uint16_t mask, int (*hdlr)(NUTDEVICE *,
 
     if (ep == NULL) {
         /* No existing entry. Allocate a new one. */
-        ep = NutHeapAlloc(sizeof(ETH_PROTOCOLS));
+        ep = NutHeapAllocClear(sizeof(ETH_PROTOCOLS));
         if (ep == NULL) {
             return -1;
         }
