@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.476 2008/08/22 16:23:11 olereinhardt Exp $
+$Id: ChangeLog,v 1.477 2008/08/25 14:28:14 haraldkipp Exp $
+
+2008-08-25  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/ethdemux.c, net/ipdemux.c: Uninitialized pointers in
+	protocol structure caused frozen system.
+
+	* fs/phatfs.c: Append to existing files failed when file size
+	was larger than one cluster.
+
 
 2008-08-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
         * fs/phatfs.c: Check if filesystem is mounted when opening a file. 
