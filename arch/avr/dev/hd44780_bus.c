@@ -1,32 +1,34 @@
 /*
+ * Copyright (C)  2008 by Propox sp. z o.o. 
+ *                          office@propox.com
  * Copyright (C) 2004 by Ole Reinhardt <ole.reinhardt@kernelconcepts.de>,
  *                       Kernelconcepts http://www.kernelconcepts.de
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions 
  * are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *     notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
  *
@@ -48,13 +50,16 @@
 
 /*
  * $Log$
- * Revision 1.3  2008/08/11 06:59:15  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+ * Revision 1.4  2008/08/26 11:15:24  thornen
+ * Added support for MMnet03..04 and MMnet102..104 display
  *
- * Revision 1.2  2005/09/07 16:23:11  christianwelzel
+ * Revision 1.11  2008/08/26 08:14:11 michalolejniczak
+ * Added support for MMnet03..04 and MMnet102..104 display
+ *
+ * Revision 1.10  2005/09/07 16:23:11  christianwelzel
  * Added support for MMnet02 display
  *
- * Revision 1.1  2005/07/26 18:02:27  haraldkipp
+ * Revision 1.9  2005/07/26 18:02:27  haraldkipp
  * Moved from dev.
  *
  * Revision 1.8  2005/05/27 14:05:25  olereinhardt
@@ -91,7 +96,7 @@
 #include <dev/term.h>
 #include <sys/timer.h>
 
-static uint16_t lcd_base = 0x0000;
+static u_short lcd_base = 0x0000;
 
 #ifndef LCD_4x20
 #ifndef LCD_4x16
@@ -130,10 +135,11 @@ static uint16_t lcd_base = 0x0000;
 
 static inline void LcdBusyWait(void)
 {
-#ifndef MMNET02
+#if !defined(MMNET02)  && !defined(MMNET03)  && !defined(MMNET04) && \
+	!defined(MMNET102) && !defined(MMNET103) && !defined(MMNET104)
     // wait until LCD busy bit goes to zero
     // do a read from control register
-    while (*(volatile uint8_t *) (LCD_CTRL_ADDR + LCD_READ_OFFSET) & 1 << LCD_BUSY)
+    while (*(volatile u_char *) (LCD_CTRL_ADDR + LCD_READ_OFFSET) & 1 << LCD_BUSY)
         LCD_DELAY;
     LCD_DELAY;
     LCD_DELAY;
@@ -159,63 +165,63 @@ static inline void LcdBusyWait(void)
  * \param ch Byte to send.
  */
 
-static void LcdWriteData(uint8_t data)
+static void LcdWriteData(u_char data)
 {
     LcdBusyWait();              // wait until LCD not busy
-    *(volatile uint8_t *) (LCD_DATA_ADDR) = data;
+    *(volatile u_char *) (LCD_DATA_ADDR) = data;
 }
 
 /*!
  * \brief Write command byte to LCD controller.
  */
-static void LcdWriteCmd(uint8_t cmd, uint8_t delay)
+static void LcdWriteCmd(u_char cmd, u_char delay)
 {
     LcdBusyWait();              // wait until LCD not busy
-    *(volatile uint8_t *) (LCD_CTRL_ADDR) = cmd;
+    *(volatile u_char *) (LCD_CTRL_ADDR) = cmd;
 }
 
-static void LcdSetCursor(uint8_t pos)
+static void LcdSetCursor(u_char pos)
 {
-    uint8_t x = 0;
-    uint8_t y = 0;
+    u_char x = 0;
+    u_char y = 0;
 
 #ifdef KS0073_CONTROLLER
-    uint8_t  offset[4] = {0x00, 0x20, 0x40, 0x60};
+    u_char  offset[4] = {0x00, 0x20, 0x40, 0x60};
     y = pos / 20;
     x = pos % 20;
     if (y > 3) y = 3;
 #endif
 
 #if defined(LCD_2x40) 
-    uint8_t  offset  [2] = {0x00, 0x40};
+    u_char  offset  [2] = {0x00, 0x40};
     y = pos / 40;
     x = pos % 40;
     if (y > 1) y = 1;
 #endif    
     
 #if defined(LCD_4x20) || defined(LCD_2x20)
-    uint8_t  offset  [4] = {0x00, 0x40, 0x14, 0x54};
+    u_char  offset  [4] = {0x00, 0x40, 0x14, 0x54};
     y = pos / 20;
     x = pos % 20;
     if (y>3) y=3;
 #endif    
     
 #if defined(LCD_4x16) || defined(LCD_2x16)
-    uint8_t  offset  [4] = {0x00, 0x40, 0x10, 0x50};
+    u_char  offset  [4] = {0x00, 0x40, 0x10, 0x50};
     y = pos / 16;
     x = pos % 16;
     if (y>3) y=3;
 #endif    
 
 #if defined(LCD_2x8)
-    uint8_t  offset  [2] = {0x00, 0x40};
+    u_char  offset  [2] = {0x00, 0x40};
     y = pos / 8;
     x = pos % 8;
     if (y>1) y=1;
 #endif    
 
 #if defined(LCD_1x8) || defined(LCD_1x16) || defined(LCD_1x20)
-    uint8_t  offset  [1] = { 0x00 };
+    u_char  offset  [1] = { 0x00 };
     y = 0;
     x = pos;
 #endif 
@@ -244,7 +250,7 @@ static void LcdClear(void)
     LcdWriteCmd(1 << LCD_CLR, 0);
 }
 
-static void LcdCursorMode(uint8_t on)
+static void LcdCursorMode(u_char on)
 {
     LcdWriteCmd(1 << LCD_ON_CTRL | on ? 1 << LCD_ON_CURSOR : 0x00, 0);
 }
