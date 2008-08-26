@@ -2,51 +2,44 @@
 #define _DEV_BOARD_H_
 
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
- * Copyright (C)  2008 by Propox sp. z o.o. 
- *                         office@propox.com
+ * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
  *
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE.
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
-
-
 
 /*
  * $Log$
- * Revision 1.13  2008/08/26 11:20:51  thornen
- * Added support for MMnet03..04 and MMnet102..104 display
- * New BSD formula applied
+ * Revision 1.14  2008/08/26 17:36:45  haraldkipp
+ * Revoked changes 2008/08/26 by thornen.
  *
- * Revision 1.12  2008/08/26 08:22:44  michalolejniczak
- * Added support MMnet01..04 and MMnet101..104 
+ * Revision 1.12  2008/08/06 12:51:12  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
  * Revision 1.11  2008/02/15 17:09:44  haraldkipp
  * Added support for the Elektor Internet Radio.
@@ -124,7 +117,7 @@
 #define DEV_UART1       devUsartAvr1
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) || defined(ELEKTOR_IR1)
+#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) || defined(ELEKTOR_IR1) || defined(MCU_AT91SAM9XE512)
 
 #include <dev/usartat91.h>
 #define DEV_UART0       devUsartAt910
@@ -150,11 +143,9 @@
 /*
  * Ethernet device.
  */
-#if defined(ETHERNUT1) || defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105) ||\
-	defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) 
+#if defined(ETHERNUT1) || defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105)
 #include <dev/nicrtl.h>
-#elif defined(ETHERNUT2) || defined(MMNET101) || defined(MMNET102) || \
-	  defined(MMNET103) || defined(MMNET104)
+#elif defined(ETHERNUT2)
 #include <dev/lanc111.h>
 #elif defined(ETHERNUT3) || defined(ELEKTOR_IR1)
 #include <dev/dm9000e.h>
@@ -162,7 +153,7 @@
 #include <dev/ax88796.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
-#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK)
+#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5)
 #include <dev/at91sam7x_emac.h>
 #endif
 
@@ -179,9 +170,7 @@
 #if defined(ETHERNUT3)
 #define RTC_CHIP rtcX12x6
 #include <dev/x12rtc.h>
-#elif defined(XNUT_100) || defined(XNUT_105) ||\
-	  defined(MMNET102) || defined(MMNET103) || defined(MMNET104) ||\
-	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04) 
+#elif defined(MMNET02) || defined(XNUT_100) || defined(XNUT_105)
 #define RTC_CHIP rtcDs1307
 #include <dev/ds1307rtc.h>
 #elif defined(ELEKTOR_IR1)

@@ -1,34 +1,31 @@
 /*
  * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
- * Copyright (C)  2008 by Propox sp. z o.o. 
- *                         office@propox.com
  *
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE.
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
  *
@@ -36,9 +33,15 @@
 
 /*
  * $Log$
- * Revision 1.13  2008/08/26 11:17:28  thornen
- * Added support for MMnet03..04 and MMnet102..104 display.
- * New recomended BSD formula applied
+ * Revision 1.14  2008/08/26 17:36:45  haraldkipp
+ * Revoked changes 2008/08/26 by thornen.
+ *
+ * Revision 1.12  2008/08/11 11:51:19  thiagocorrea
+ * Preliminary Atmega2560 compile options, but not yet supported.
+ * It builds, but doesn't seam to run properly at this time.
+ *
+ * Revision 1.11  2008/08/11 06:59:39  haraldkipp
+ * BSD types replaced by stdint types (feature request #1282721).
  *
  * Revision 1.10  2007/06/14 07:24:38  freckle
  * Disable ADC and buskeeper during idle thread sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined
@@ -143,7 +146,7 @@
 /*!
  * \brief Last memory address using external SRAM.
  */
-#define NUTMEM_END (u_short)(NUTXMEM_START + (u_short)NUTXMEM_SIZE - 1U)
+#define NUTMEM_END (uint16_t)(NUTXMEM_START + (uint16_t)NUTXMEM_SIZE - 1U)
 
 #else
 /*!
@@ -152,7 +155,7 @@
  * \todo Shall we support NUTRAMEND for backward compatibility? If, then
  *       let's do it in cfg/memory.h.
  */
-#define NUTMEM_END (u_short)(NUTMEM_START + (u_short)NUTMEM_SIZE - 1U)
+#define NUTMEM_END (uint16_t)(NUTMEM_START + (uint16_t)NUTMEM_SIZE - 1U)
 
 #endif
 
@@ -160,19 +163,19 @@
 /*!
  * \brief Number of bytes reserved in on-chip memory.
  *
- * AVR offers the option to temporarly use address and data bus
+ * AVR offers the option to temporarily use address and data bus
  * lines as general purpose I/O. If such drivers need data memory,
  * this must be located at internal memory addresses.
  *
  * \todo Not a nice implementation but works as long as this module
  *       is linked first. Should be made a linker option.
  */
-u_char nutmem_onchip[NUTMEM_RESERVED];
+uint8_t nutmem_onchip[NUTMEM_RESERVED];
 #endif
 
 /* sleep mode to put avr in idle thread, SLEEP_MODE_NONE is used for for non sleeping */
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-u_char idle_sleep_mode = SLEEP_MODE_NONE;
+uint8_t idle_sleep_mode = SLEEP_MODE_NONE;
 
 /* AT90CAN128 uses a different register to enter sleep mode */
 #if defined(SMCR)
@@ -304,7 +307,7 @@ extern void main(void *);
 static void NutInitXRAM(void) __attribute__ ((naked, section(".init1"), used));
 void NutInitXRAM(void)
 {
-#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2561__)
+#if defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
 /*
  * Note: Register structure of ATCAN128 differs from ATMEGA128 in regards
  * to wait states.
@@ -416,7 +419,7 @@ void FakeNicEeprom(void)
 
 #endif /* RTL_EESK_BIT && __GNUC__ && NUTXMEM_SIZE */
 
-/*! \fn NutThreadSetSleepMode(u_char mode)
+/*! \fn NutThreadSetSleepMode(uint8_t mode)
  * \brief Sets the sleep mode to enter in Idle thread.
  *
  * If the idle thread is running, no other thread is active
@@ -428,9 +431,9 @@ void FakeNicEeprom(void)
  * \return previous sleep mode 
  */
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-u_char NutThreadSetSleepMode(u_char mode)
+uint8_t NutThreadSetSleepMode(uint8_t mode)
 {
-    u_char old_mode = idle_sleep_mode;
+    uint8_t old_mode = idle_sleep_mode;
     idle_sleep_mode = mode;
     return old_mode;
 }
@@ -444,10 +447,10 @@ u_char NutThreadSetSleepMode(u_char mode)
 THREAD(NutIdle, arg)
 {
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
-    u_char sleep_mode;
+    uint8_t sleep_mode;
 #endif
 #ifdef IDLE_HEARTBEAT_BIT
-    u_char beat = 0;
+    uint8_t beat = 0;
 #endif
 
     /* Initialize system timers. */
@@ -482,11 +485,11 @@ THREAD(NutIdle, arg)
             sleep_mode = AVR_SLEEP_CTRL_REG & _SLEEP_MODE_MASK;
             set_sleep_mode(idle_sleep_mode);
 #ifdef IDLE_THREAD_ADC_OFF
-            u_char adc = bit_is_set(ADCSR, ADEN);
+            uint8_t adc = bit_is_set(ADCSR, ADEN);
             cbi(ADCSR, ADEN); // disable ADC
 #endif
 #ifdef IDLE_THREAD_BUSKEEPER_OFF
-            u_char bitkeeper = bit_is_set(XMCRB, XMBK);
+            uint8_t bitkeeper = bit_is_set(XMCRB, XMBK);
             cbi(XMCRB, XMBK); // disable buskeeper
 #endif
             /* Note:  avr-libc has a sleep_mode() function, but it's broken for
@@ -520,7 +523,7 @@ void NutInitSP(void)
    /* Initialize stack pointer to end of external RAM while starting up the system
     * to avoid overwriting .data and .bss section.
     */
-    SP = (u_short)(NUTMEM_END);
+    SP = (uint16_t)(NUTMEM_END);
 #endif
 }
 #endif
@@ -539,8 +542,8 @@ void NutInitHeap()
      * one continuous heap area, but we lost the ability to have systems with
      * a gap between internal and external RAM.
      */
-    if ((u_short)NUTMEM_END - (u_short) (&__heap_start) > 384) {
-        NutHeapAdd(&__heap_start, (u_short) NUTMEM_END - 256 - (u_short) (&__heap_start));
+    if ((uint16_t)NUTMEM_END - (uint16_t) (&__heap_start) > 384) {
+        NutHeapAdd(&__heap_start, (uint16_t) NUTMEM_END - 256 - (uint16_t) (&__heap_start));
     }
 }
 
@@ -560,10 +563,9 @@ void NutCustomInit(void)
 /*
 * MMnet02 CPLD initialization.
 */
-#if defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04) ||\
-	defined(MMNET102) || defined(MMNET103) || defined(MMNET104) 
+#if defined(MMNET02)
 {
-    volatile u_char *breg = (u_char *)((size_t)-1 & ~0xFF);
+    volatile uint8_t *breg = (uint8_t *)((size_t)-1 & ~0xFF);
 
     *(breg + 1) = 0x01; // Memory Mode 1, Banked Memory
 
@@ -585,8 +587,8 @@ void NutCustomInit(void)
     XMCRA |= _BV(SRL0) | _BV(SRW01) | _BV(SRW00); /* sep. at 0x2000, 3WS for lower Sector */
     XMCRB = 0;
 
-    *((volatile u_char *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
-    *((volatile u_char *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
+    *((volatile uint8_t *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
+    *((volatile uint8_t *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
 
     /* Assume standard Arthernet1 with 16 MHz crystal, set to 38400 bps */
     outp(25, UBRR);
@@ -687,7 +689,7 @@ void NutInit(void)
     /* Initialize stack pointer to end of external RAM while starting up the system
      * to avoid overwriting .data and .bss section.
      */
-    SP = (u_short)(NUTMEM_END);
+    SP = (uint16_t)(NUTMEM_END);
 
     /* Initialize the heap memory
      */
