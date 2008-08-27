@@ -35,6 +35,12 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/08/27 07:01:10  thornen
+ * Added:
+ *  - RTL          support for MMnet01..04
+ *  - LANC111 support for MMnet101..104
+ *  - RTC         support for MMnet02..04 and MMnet102..104
+ *
  * Revision 1.14  2008/08/26 17:36:45  haraldkipp
  * Revoked changes 2008/08/26 by thornen.
  *
@@ -143,9 +149,11 @@
 /*
  * Ethernet device.
  */
-#if defined(ETHERNUT1) || defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105)
+#if defined(ETHERNUT1) || defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105) ||\
+	defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) 
 #include <dev/nicrtl.h>
-#elif defined(ETHERNUT2)
+#elif defined(ETHERNUT2)||\
+      defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
 #include <dev/lanc111.h>
 #elif defined(ETHERNUT3) || defined(ELEKTOR_IR1)
 #include <dev/dm9000e.h>
@@ -170,7 +178,9 @@
 #if defined(ETHERNUT3)
 #define RTC_CHIP rtcX12x6
 #include <dev/x12rtc.h>
-#elif defined(MMNET02) || defined(XNUT_100) || defined(XNUT_105)
+#elif defined(XNUT_100) || defined(XNUT_105) ||\
+	  defined(MMNET102) || defined(MMNET103) || defined(MMNET104) ||\
+	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04) 
 #define RTC_CHIP rtcDs1307
 #include <dev/ds1307rtc.h>
 #elif defined(ELEKTOR_IR1)
