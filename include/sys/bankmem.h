@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.11  2008/08/27 07:05:37  thornen
+ * Added bank support for MMnet03..04 and Mmnet102..104
+ *
  * Revision 1.10  2008/08/26 17:36:46  haraldkipp
  * Revoked changes 2008/08/26 by thornen.
  *
@@ -87,8 +90,8 @@
 #ifdef ARTHERNET1
 /* Arthernet uses a different banking. */
 #define NutSegBufEnable(bank) *(volatile uint8_t *)(NUTBANK_SR) = (((uint8_t)bank+1)<<4)
-#elif MMNET02
-/* MMnet02 uses a different banking. */
+#elif MMNET02 || MMNET03 || MMNET04 || MMNET102 || MMNET103 || MMNET104
+/* MMnet02..04 and MMnet102..104 use a different banking. */
 #define NutSegBufEnable(bank) *((char *)(NUTBANK_SR)) = (bank)
 #else
 /* This is the Ethernut way. */
