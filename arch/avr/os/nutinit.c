@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/08/27 06:40:41  thornen
+ * Added MMnet03..04 and MMnet102..104 CPLD initialization.
+ *
  * Revision 1.14  2008/08/26 17:36:45  haraldkipp
  * Revoked changes 2008/08/26 by thornen.
  *
@@ -561,9 +564,10 @@ static void NutCustomInit(void) __attribute__ ((naked, section (".init1"), used)
  */
 void NutCustomInit(void)
 /*
-* MMnet02 CPLD initialization.
+* MMnet02..04 and MMnet102..104 CPLD initialization.
 */
-#if defined(MMNET02)
+#if defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04) ||\
+	defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
 {
     volatile uint8_t *breg = (uint8_t *)((size_t)-1 & ~0xFF);
 
