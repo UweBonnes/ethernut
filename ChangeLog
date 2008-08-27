@@ -1,5 +1,21 @@
-$Id: ChangeLog,v 1.478 2008/08/25 17:05:26 haraldkipp Exp $
+$Id: ChangeLog,v 1.479 2008/08/27 07:20:05 thornen Exp $
 
+2008-08-26  Michal Olejniczak <m.olejniczak@propox.com>
+    * nut/arch/avr/dev/hd44780_bus.c 
+    Added support for MMnet03..04 and MMnet102..104
+    * nut/arch/avr/os/nutinit.c 
+    Added MMnet03..04 and MMnet102..104 CPLD initialization.
+    * nut/fs/pnutfs.c
+    Added bank support for MMnet03..04 MMnet102..104
+    * nut/include/dev/board.h
+    Added:
+     - RTL     support for MMnet01..04
+     - LANC111 support for MMnet101..104
+     - RTC     support for MMnet02..04 and MMnet102..104
+    *nut/include/sys/bankmem.h
+    Added bank support for MMnet03..04 and Mmnet102..104
+    Many thanks to Harald Kipp for Patience and Support 
+    
 2008-08-25  Harald Kipp  <harald.kipp@egnite.de>
 
 	* configure.ac, os/version.c: New beta 4.7.1.
