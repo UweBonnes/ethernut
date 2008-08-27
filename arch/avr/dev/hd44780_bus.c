@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2008/08/27 06:35:15  thornen
+ * Added support for MMnet03..04 and MMnet102..104
+ *
  * Revision 1.5  2008/08/26 17:36:45  haraldkipp
  * Revoked changes 2008/08/26 by thornen.
  *
@@ -133,7 +136,8 @@ static uint16_t lcd_base = 0x0000;
 
 static inline void LcdBusyWait(void)
 {
-#ifndef MMNET02
+#if !defined(MMNET02)  && !defined(MMNET03)  && !defined(MMNET04) && \
+	!defined(MMNET102) && !defined(MMNET103) && !defined(MMNET104)
     // wait until LCD busy bit goes to zero
     // do a read from control register
     while (*(volatile uint8_t *) (LCD_CTRL_ADDR + LCD_READ_OFFSET) & 1 << LCD_BUSY)
