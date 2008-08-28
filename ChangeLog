@@ -1,4 +1,28 @@
-$Id: ChangeLog,v 1.481 2008/08/28 08:51:47 thornen Exp $
+$Id: ChangeLog,v 1.482 2008/08/28 11:11:23 haraldkipp Exp $
+
+2008-08-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_emac.c, arch/arm/dev/at91sam7x_emac.c,
+	arch/arm/dev/ax88796.c, arch/arm/dev/cs8900a.c,
+	arch/arm/dev/dm9000e.c, arch/avr/dev/eth0cs.c,
+	arch/avr/dev/eth0rtl.c, arch/avr/dev/lanc111.c,
+	arch/avr/dev/wlan.c, dev/ppp.c, include/net/if_var.h,
+	include/net/if.h: Added interface flags, which will be required 
+	to implement Ethernet ioctl functions.
+
+	* conf/dev/dev.nut, dev/lan91.c, include/dev/lan91.h:
+	Added platform independant driver for LAN91 chips. It has been
+	derived from the AVR version and had been tested for the LAN91C111
+	only. This is the first Ethernet driver with ioctl support.
+
+	* net/ifconfig.c: Make use of ioctl if the driver supports this.
+
+	* conf/repository.nut: Added Lua routines which dynamically 
+	return GPIO ports and bits based on the selected target platform.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
+	Added Lua extension to query specific provisions.
+
 
 2008-08-28  Michal Olejniczak <m.olejniczak@propox.com>
 
