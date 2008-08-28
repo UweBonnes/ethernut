@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.34  2008/08/28 11:09:29  haraldkipp
+ * Added Lua extension to query specific provisions.
+ *
  * Revision 1.33  2008/08/20 07:00:33  haraldkipp
  * Incremented build number because of bad package. No code change.
  *
@@ -157,7 +160,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.3"
+#define NUT_CONFIGURE_VERSION   "2.0.4"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -291,6 +294,8 @@ static char errtxt[1024];
 #define LRK_NUTBUILDPATH        "nutconf.NUTSBUILDPATH"
 #define LRK_NUTSAMPLEPATH       "nutconf.NUTSAMPLEPATH"
 #define LRK_NUTCOMPILERPLATFORM "nutconf.NUTCOMPILERPLATFORM"
+
+static int IsProvided(NUTREPOSITORY *repo, NUTCOMPONENT *compo, const char *requirement);
 
 #if 0
 
@@ -676,7 +681,7 @@ static int l_is_enabled(lua_State *ls)
     return 1;
 }
 
-static int l_is_active(lua_State *ls) 
+static int l_is_active(lua_State *ls)
 {
     int status = 0;
     const char *name = luaL_checkstring(ls, 1);
@@ -695,6 +700,31 @@ static int l_is_active(lua_State *ls)
     return 1;
 }
 
+static int l_is_provided(lua_State *ls)
+{
+    int status = 0;
+    const char *name = luaL_checkstring(ls, 1);
+
+    if (name) {
+        NUTREPOSITORY *repo;
+        NUTCOMPONENT *root;
+
+        /* Retrieve pointer to repository from Lua registry. */
+        lua_pushstring(ls, LRK_NUTREPOSITORY);
+        lua_gettable(ls, LUA_REGISTRYINDEX);
+        repo = (NUTREPOSITORY *)lua_topointer(ls, -1);
+
+        /* Retrieve pointer to root component from Lua registry. */
+        lua_pushstring(ls, LRK_NUTROOTCOMPONENT);
+        lua_gettable(ls, LUA_REGISTRYINDEX);
+        root = (NUTCOMPONENT *)lua_topointer(ls, -1);
+        status = IsProvided(repo, root, name);
+    }
+    lua_pushboolean(ls, status);
+
+    return 1;
+}
+
 static const struct luaL_reg nutcomp_lib[] = {
     { "c_repo_path", l_repo_path },
     { "c_nut_source_path", l_nut_source_path },
@@ -705,6 +735,7 @@ static const struct luaL_reg nutcomp_lib[] = {
     { "c_macro_edit", l_macro_edit },
     { "c_is_enabled", l_is_enabled },
     { "c_is_active", l_is_active },
+    { "c_is_provided", l_is_provided },
     { NULL, NULL }
 };
 
@@ -2056,7 +2087,7 @@ char * GetConfigValueOrDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * n
     return val;
 }
 
-int IsProvided(NUTREPOSITORY *repo, NUTCOMPONENT *compo, char *requirement)
+static int IsProvided(NUTREPOSITORY *repo, NUTCOMPONENT *compo, const char *requirement)
 {
     NUTCOMPONENTOPTION *opts;
     int i;

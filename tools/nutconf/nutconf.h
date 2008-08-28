@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2008/08/28 11:09:29  haraldkipp
+ * Added Lua extension to query specific provisions.
+ *
  * Revision 1.21  2008/08/20 07:00:34  haraldkipp
  * Incremented build number because of bad package. No code change.
  *
@@ -114,7 +117,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.3"
+#define VERSION "2.0.4"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
