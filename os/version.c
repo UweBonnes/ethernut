@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.61  2008/08/28 16:11:31  haraldkipp
+ * Fixed bitbanging SPI for ARM targets.
+ *
  * Revision 1.60  2008/08/25 17:05:27  haraldkipp
  * Beta release 4.7.1.
  *
@@ -233,8 +236,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04070100UL
-static CONST char os_version_string[] = "4.7.1.0";
+#define OS_VERSION_NUMBER  0x04070200UL
+static CONST char os_version_string[] = "4.7.2.0";
 
 /*!
  * \addtogroup xgNutVersion

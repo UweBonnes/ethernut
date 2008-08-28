@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.39  2008/08/28 16:11:31  haraldkipp
+# Fixed bitbanging SPI for ARM targets.
+#
 # Revision 1.38  2008/08/25 17:05:26  haraldkipp
 # Beta release 4.7.1.
 #
@@ -159,7 +162,7 @@
 #
 #
 
-AC_INIT(ethernut,4.7.1)
+AC_INIT(ethernut,4.7.2)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2008 egnite GmbH])
