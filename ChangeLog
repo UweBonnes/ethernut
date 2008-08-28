@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.480 2008/08/28 08:44:44 thornen Exp $
+$Id: ChangeLog,v 1.481 2008/08/28 08:51:47 thornen Exp $
+
+2008-08-28  Michal Olejniczak <m.olejniczak@propox.com>
+
+    * nut/conf/MMnet03.conf 
+    Created file for MMnet03. Added MMnet03 definition 
+    * nut/conf/MMnet04.conf 
+    Created file for MMnet04. Added MMnet04 definition 
+    * nut/conf/MMnet103.conf 
+    Created file for MMnet103. Added MMnet103 definition 
+    * nut/conf/MMnet104.conf 
+    Created file forn MMnet04. Added MMnet104 definition 
     
 2008-08-26  Michal Olejniczak <m.olejniczak@propox.com>
     * nut/arch/avr/dev/hd44780_bus.c 
