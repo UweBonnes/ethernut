@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/08/28 11:07:45  haraldkipp
+ * Make use of ioctl if the driver supports this.
+ *
  * Revision 1.10  2008/08/11 07:00:29  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -149,6 +152,7 @@
 
 #include <dev/ppp.h>
 
+#include <net/if.h>
 #include <net/ether.h>
 #include <net/route.h>
 #include <arpa/inet.h>
@@ -318,7 +322,19 @@ int NutNetIfConfig2(CONST char *name, void *params, uint32_t ip_addr, uint32_t i
      */
     nif = dev->dev_icb;
     if (nif->if_type == IFT_ETHER) {
-        memcpy(nif->if_mac, params, sizeof(nif->if_mac));
+        /* Check if ioctl is supported. */
+        if (dev->dev_ioctl) {
+            uint32_t flags;
+
+            /* Driver has ioctl, use it. */
+            dev->dev_ioctl(dev, SIOCGIFFLAGS, &flags);
+            dev->dev_ioctl(dev, SIOCSIFADDR, params);
+            flags |= IFF_UP;
+            dev->dev_ioctl(dev, SIOCSIFFLAGS, &flags);
+        } else {
+            /* No ioctl, set MAC address to start driver. */
+            memcpy(nif->if_mac, params, sizeof(nif->if_mac));
+        }
         return NutNetIfSetup(dev, ip_addr, ip_mask, gateway);
     }
 
