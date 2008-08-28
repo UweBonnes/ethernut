@@ -1,5 +1,5 @@
-$Id: ChangeLog,v 1.479 2008/08/27 07:20:05 thornen Exp $
-
+$Id: ChangeLog,v 1.480 2008/08/28 08:44:44 thornen Exp $
+    
 2008-08-26  Michal Olejniczak <m.olejniczak@propox.com>
     * nut/arch/avr/dev/hd44780_bus.c 
     Added support for MMnet03..04 and MMnet102..104
