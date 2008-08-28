@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.33  2008/08/28 11:08:20  haraldkipp
+-- Added Lua routines which dynamically return GPIO ports and bits based on
+-- the selected target platform.
+--
 -- Revision 1.32  2008/08/11 11:51:20  thiagocorrea
 -- Preliminary Atmega2560 compile options, but not yet supported.
 -- It builds, but doesn't seam to run properly at this time.
@@ -160,7 +164,6 @@ mcu_32bit_choice = { " ",
                    }
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
-
 
 arm_ld_choice = { 
                     " ", 
@@ -332,3 +335,41 @@ function GetNutOsVersion()
     return vers or "unknown"
 end
 
+--
+-- Retrieve platform specific GPIO banks.
+--
+function GetGpioBanks()
+    if c_is_provided("HW_MCU_AVR") then
+        return avr_port_choice
+    end
+    if c_is_provided("HW_MCU_ARM") then
+        return at91_pio_id_choice
+    end
+    return { " ", "1", "2", "3", "4", "5", "6", "7", "8" }
+end
+
+--
+-- Retrieve platform specific GPIO bits.
+--
+function GetGpioBits()
+    if c_is_provided("HW_MCU_AVR") then
+        return avr_bit_choice
+    end
+    return mcu_32bit_choice
+end
+
+--
+-- Retrieve platform specific GPIO header path.
+--
+function GetGpioHeaderPath()
+    local basepath
+    
+    basepath = "include/cfg/arch/"
+    if c_is_provided("HW_MCU_AVR") then
+        return basepath .. "avrpio.h"
+    end
+    if c_is_provided("HW_MCU_ARM") then
+        return basepath .. "armpio.h"
+    end
+    return basepath .. "pio.h"
+end
