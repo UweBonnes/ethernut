@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.41  2008/08/28 11:07:06  haraldkipp
+-- Added platform independant driver for LAN91 chips, currently LAN91C111
+-- only. This is also the first Ethernet driver with ioctl support.
+--
 -- Revision 1.40  2008/07/29 07:30:57  haraldkipp
 -- Added VS1053B.
 --
@@ -2134,7 +2138,60 @@ nutdev =
         sources = { "vscodec.c" },
         requires = { "HW_MCU_AT91SAM7SE" },
     },
-    
+
+    --
+    -- Ethernet Device Drivers.
+    --
+    {
+        name = "nutdev_lan91",
+        brief = "SMSC LAN91x Driver",
+        description = "LAN driver for SMSC LAN91. Currently supports LAN91C111 only.",
+        requires = { "NUT_EVENT", "NUT_TIMER", "HW_GPIO" },
+        provides = { "NET_PHY" },
+        sources = { "lan91.c" },
+        options =
+        {
+            {
+                macro = "LAN91_BASE_ADDR",
+                brief = "Controller Base Address",
+                description = "The driver supports memory mapped controllers only, using "..
+                              "the specified based address.\n\n"..
+                              "The Ethernut 2 reference design uses 0xC000.",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "LAN91_SIGNAL_IRQ",
+                brief = "Interrupt",
+                description = "Ethernet controller interrupt.",
+                default = "INT5",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "LAN91_RESET_GPIO_BIT",
+                brief = "Reset Bit",
+                description = "Bit number of the Ethernet controller reset output.\n\n"..
+                              "Should be disabled when the LAN91 hardware reset "..
+                              "is not connected to a port pin.\n",
+                provides = { "LAN91_RESET_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "LAN91_RESET_GPIO_BANK",
+                brief = "Reset Port",
+                description = "Port register name of the Ethernet controller reset output.",
+                requires = { "LAN91_RESET_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = function() return GetGpioHeaderPath() end
+            },
+        }
+    },
+
     --
     -- Block Device Drivers.
     --
