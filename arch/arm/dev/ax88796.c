@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/28 11:12:15  haraldkipp
+ * Added interface flags, which will be required to implement Ethernet ioctl
+ * functions.
+ *
  * Revision 1.7  2008/08/11 06:59:07  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -97,6 +101,7 @@ static NICINFO dcb_eth0;
  */
 static IFNET ifn_eth0 = {
     IFT_ETHER,                  /*!< \brief Interface type. */
+    0,                          /*!< \brief Interface flags, if_flags. */
     {0, 0, 0, 0, 0, 0},         /*!< \brief Hardware net address. */
     0,                          /*!< \brief IP address. */
     0,                          /*!< \brief Remote IP address for point to point. */

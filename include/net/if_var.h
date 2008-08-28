@@ -63,6 +63,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/08/28 11:12:15  haraldkipp
+ * Added interface flags, which will be required to implement Ethernet ioctl
+ * functions.
+ *
  * Revision 1.7  2008/08/11 07:00:20  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -165,6 +169,13 @@ struct _MCASTENTRY {
     uint32_t mca_ip;
 };
 
+#define	SIOCSIFMTU      0x1001  /*!< \brief Set maximum transfer unit. */
+#define	SIOCGIFMTU      0x1002  /*!< \brief Get maximum transfer unit. */
+#define	SIOCSIFFLAGS    0x1003  /*!< \brief Set interface flags. */
+#define	SIOCGIFFLAGS    0x1004  /*!< \brief Get interface flags. */
+#define	SIOCSIFADDR     0x1005  /*!< \brief Set interface address. */
+#define	SIOCGIFADDR     0x1006  /*!< \brief Get interface address. */
+
 /*!
  * \brief Network interface type.
  */
@@ -177,21 +188,22 @@ typedef struct ifnet IFNET;
  * Contains information about the network interface.
  */
 struct ifnet {
-    uint8_t if_type;             /*!< \brief Interface type.
-                                 *  Either IFT_ETHER or IFT_PPP.
-                                 */
-    uint8_t if_mac[6];           /*!< \brief Hardware net address. */
-    uint32_t if_local_ip;         /*!< \brief IP address. */
-    uint32_t if_remote_ip;        /*!< \brief Remote IP address for point to point. */
-    uint32_t if_mask;             /*!< \brief IP network mask. */
-    uint16_t if_mtu;             /*!< \brief Maximum size of a transmission unit. */
-    uint16_t if_pkt_id;          /*!< \brief Packet identifier. */
-    ARPENTRY *arpTable;         /*!< \brief Linked list of arp entries. */
-    MCASTENTRY *if_mcast;       /*!< \brief Linked list of multicast address entries. */
-    void (*if_recv) (NUTDEVICE *, NETBUF *);			    /*!< \brief Receive routine. */
-    int (*if_send) (NUTDEVICE *, NETBUF *);			    /*!< \brief Send routine. */
-    int (*if_output) (NUTDEVICE *, uint16_t, uint8_t *, NETBUF *);    /*!< \brief Media output routine. */
-    int (*if_ioctl) (NUTDEVICE *, int, void *);    /*!< \brief Interface specific control function. */
+    uint8_t if_type;        /*!< \brief Interface type.
+                            *  Either IFT_ETHER or IFT_PPP.
+                            */
+    uint32_t if_flags;      /*!< \brief Interface flags. */
+    uint8_t if_mac[6];      /*!< \brief Hardware net address. */
+    uint32_t if_local_ip;   /*!< \brief IP address. */
+    uint32_t if_remote_ip;  /*!< \brief Remote IP address for point to point. */
+    uint32_t if_mask;       /*!< \brief IP network mask. */
+    uint16_t if_mtu;        /*!< \brief Maximum size of a transmission unit. */
+    uint16_t if_pkt_id;     /*!< \brief Packet identifier. */
+    ARPENTRY *arpTable;     /*!< \brief Linked list of arp entries. */
+    MCASTENTRY *if_mcast;   /*!< \brief Linked list of multicast address entries. */
+    void (*if_recv) (NUTDEVICE *, NETBUF *);	/*!< \brief Receive routine. */
+    int (*if_send) (NUTDEVICE *, NETBUF *);		/*!< \brief Send routine. */
+    int (*if_output) (NUTDEVICE *, uint16_t, uint8_t *, NETBUF *);  /*!< \brief Media output routine. */
+    int (*if_ioctl) (NUTDEVICE *, int, void *); /*!< \brief Interface specific control function. */
 };
 
 /*@}*/

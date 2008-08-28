@@ -65,6 +65,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/08/28 11:12:15  haraldkipp
+ * Added interface flags, which will be required to implement Ethernet ioctl
+ * functions.
+ *
  * Revision 1.11  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -321,6 +325,7 @@ static int NutPppInit(NUTDEVICE * dev)
  */
 IFNET ifn_ppp = {
     IFT_PPP,                    /*!< \brief Interface type. */
+    0,                          /*!< \brief Interface flags, if_flags. */
     {0, 0, 0, 0, 0, 0}
     ,                           /*!< \brief Hardware net address. */
     0,                          /*!< \brief IP address. */
