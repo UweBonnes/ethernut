@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.23  2008/08/29 15:03:04  haraldkipp
+ * Fixed Configurator bug #2082123. Options now correctly enabled.
+ *
  * Revision 1.22  2008/08/28 11:09:29  haraldkipp
  * Added Lua extension to query specific provisions.
  *
@@ -117,7 +120,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.4"
+#define VERSION "2.0.5"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

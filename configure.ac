@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.40  2008/08/29 15:03:03  haraldkipp
+# Fixed Configurator bug #2082123. Options now correctly enabled.
+#
 # Revision 1.39  2008/08/28 16:11:31  haraldkipp
 # Fixed bitbanging SPI for ARM targets.
 #
@@ -162,7 +165,7 @@
 #
 #
 
-AC_INIT(ethernut,4.7.2)
+AC_INIT(ethernut,4.7.3)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2008 egnite GmbH])

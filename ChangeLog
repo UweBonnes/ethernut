@@ -1,6 +1,18 @@
-$Id: ChangeLog,v 1.483 2008/08/28 16:11:31 haraldkipp Exp $
+$Id: ChangeLog,v 1.484 2008/08/29 15:03:03 haraldkipp Exp $
+
+2008-08-29  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Next beta will be 4.7.3.
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
+	Last change, which makes sure that all subcomponents of a
+	disabled component are disabled as well, introduced a new
+	bug. Now all components should be correctly enabled.
+
 
 2008-08-28  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: New beta 4.7.2.
 
 	* conf/dev/dev.nut, include/dev/sbbif0.h, include/dev/sbbif1.h,
 	include/dev/sbbif2.h, include/dev/sbbif3.h: Bitbanging SPI was 

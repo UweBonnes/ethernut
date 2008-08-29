@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.35  2008/08/29 15:03:04  haraldkipp
+ * Fixed Configurator bug #2082123. Options now correctly enabled.
+ *
  * Revision 1.34  2008/08/28 11:09:29  haraldkipp
  * Added Lua extension to query specific provisions.
  *
@@ -160,7 +163,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.4"
+#define NUT_CONFIGURE_VERSION   "2.0.5"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -2158,40 +2161,41 @@ void EnableComponentTree(NUTCOMPONENT *compo, int enable)
     EnableSubComponents(compo->nc_child, enable);
 }
 
-int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo, int enable)
+static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo)
 {
     int rc = 0;
     int i;
     NUTCOMPONENTOPTION *opts;
 
     while (compo) {
-        int provided = enable;
-        if (enable) {
-            char **crequires = GetComponentRequirements(repo, compo);
-            if(crequires) {
-                for (i = 0; crequires[i]; i++) {
-                    if((provided = IsProvided(repo, root, crequires[i])) == 0) {
-                        break;
-                    }
+        int cprovided = 1;
+        char **crequires = GetComponentRequirements(repo, compo);
+
+        if(crequires) {
+            for (i = 0; crequires[i]; i++) {
+                if((cprovided = IsProvided(repo, root, crequires[i])) == 0) {
+                    break;
                 }
-                for (i = 0; crequires[i]; i++) {
-                    free(crequires[i]);
-                }
-                free(crequires);
             }
+            for (i = 0; crequires[i]; i++) {
+                free(crequires[i]);
+            }
+            free(crequires);
         }
-        if(provided != compo->nc_enabled) {
+        if(cprovided != compo->nc_enabled) {
             /* Update this component branch. */
-            EnableComponentTree(compo, provided);
+            EnableComponentTree(compo, cprovided);
             rc++;
         }
-        if (provided) {
+        if (cprovided) {
             opts = compo->nc_opts;
             while (opts) {
+                int oprovided = 1;
+
                 char **orequires = GetOptionRequirements(repo, compo, opts->nco_name);
                 if (orequires) {
                     for (i = 0; orequires[i]; i++) {
-                        if((provided = IsProvided(repo, root, orequires[i])) == 0) {
+                        if((oprovided = IsProvided(repo, root, orequires[i])) == 0) {
                             break;
                         }
                     }
@@ -2200,28 +2204,35 @@ int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *
                     }
                     free(orequires);
                 }
-                if(provided != opts->nco_enabled) {
-                    opts->nco_enabled = provided;
+                if(oprovided != opts->nco_enabled) {
+                    opts->nco_enabled = oprovided;
                     rc++;
                 }
                 opts = opts->nco_nxt;
             }
-            rc += RefreshComponentTree(repo, root, compo->nc_child, provided);
+            rc += RefreshComponentTree(repo, root, compo->nc_child);
         }
         compo = compo->nc_nxt;
     }
     return rc;
 }
 
+/*!
+ * \brief Refresh the component tree.
+ *
+ * \return 0 on success or -1 on cyclic dependencies.
+ */
 int RefreshComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root)
 {
     int i;
 
-    /* Enable all components. */
+    /* Start with all components enabled. */
     EnableComponentTree(root, 1);
 
+    /* Loop until no new updates appear. Limit the number of loops to
+    ** detect cyclic dependencies. */
     for(i = 0; i < 10; i++) {
-        if(RefreshComponentTree(repo, root, root, 1) == 0) {
+        if(RefreshComponentTree(repo, root, root) == 0) {
             return 0;
         }
     }
