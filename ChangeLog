@@ -1,4 +1,23 @@
-$Id: ChangeLog,v 1.484 2008/08/29 15:03:03 haraldkipp Exp $
+$Id: ChangeLog,v 1.485 2008/09/02 14:34:05 haraldkipp Exp $
+
+2008-09-02  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arch/arm.nut: Added a new MCU family macro to avoid 
+	these lengthy preprocessor conditionals. This is just a first 
+	upgradable sample.
+
+	* conf/arch/avr.nut, conf/dev/dev.nut: Disabled the old 
+	vs1001k driver. We will now use the dev/vs10xx.c, available for 
+	all targets with GPIO.
+
+	* conf/dev/dev.nut, dev/reset.c, include/dev/reset.h:
+	Added platform independent reset functions.
+
+	* dev/vs10xx.c: Make it compile for targets without specific 
+	configuration.
+
+	* include/dev/watchdog.h: Includes stdint header.
+
 
 2008-08-29  Harald Kipp  <harald.kipp@egnite.de>
 
