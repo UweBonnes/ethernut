@@ -33,6 +33,10 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.29  2008/09/02 14:29:37  haraldkipp
+-- Added a new MCU family macro to avoid these lengthy preprocessor
+-- conditionals.
+--
 -- Revision 1.28  2008/08/06 12:51:08  haraldkipp
 -- Added support for Ethernut 5 (AT91SAM9XE reference design).
 --
@@ -140,6 +144,25 @@
 
 nutarch_arm =
 {
+    --
+    -- MCU Family
+    --
+    {
+        name = "nutarch_arm_family",
+        brief = "MCU Family",
+        options =
+        {
+            {
+                macro = "MCU_AT91",
+                brief = "Atmel AT91",
+                type = "integer",
+                default = 1,
+                requires = { "HW_MCU_AT91" },
+                file = "include/cfg/arch.h"
+            }
+        }
+    },
+    
     --
     -- Runtime Initialization
     --
