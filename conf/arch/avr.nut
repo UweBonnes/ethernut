@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.25  2008/09/02 14:29:01  haraldkipp
+-- Disabled the old vs1001k driver.
+--
 -- Revision 1.24  2008/08/11 11:51:19  thiagocorrea
 -- Preliminary Atmega2560 compile options, but not yet supported.
 -- It builds, but doesn't seam to run properly at this time.
@@ -1470,12 +1473,12 @@ nutarch_avr =
         provides = { "DEV_TWI" },
         sources = { "avr/dev/twif.c" }
     },
-    {
-        name = "nutarch_avr_vs1001k",
-        brief = "VS1001 Driver",
-        requires = { "NUT_SEGBUF", "HW_MCU_AVR" },
-        sources = { "avr/dev/vs1001k.c" }
-    },
+--    {
+--        name = "nutarch_avr_vs1001k",
+--        brief = "VS1001 Driver",
+--        requires = { "NUT_SEGBUF", "HW_MCU_AVR" },
+--        sources = { "avr/dev/vs1001k.c" }
+--    },
     {
         name = "nutarch_avr_pcmcia",
         brief = "PCMCIA Driver",
