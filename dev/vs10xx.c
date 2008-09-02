@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/09/02 14:30:28  haraldkipp
+ * Make it compile for targets without specific configuration.
+ *
  * Revision 1.2  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -121,7 +124,7 @@
 #define SciSelect()         Sppi0NegSelectDevice(VS10XX_SCI_SPI0_DEVICE)
 #define SciDeselect()       Sppi0NegDeselectDevice(VS10XX_SCI_SPI0_DEVICE)
 #endif
-#define SciByte             Sppi0Byte
+#define SciByte(b)          Sppi0Byte(b)
 
 #elif defined(VS10XX_SCI_SBBI0_DEVICE) /* Command SPI device. */
 
@@ -140,7 +143,7 @@
 #define SciSelect()         Sbbi0NegSelectDevice(VS10XX_SCI_SBBI0_DEVICE)
 #define SciDeselect()       Sbbi0NegDeselectDevice(VS10XX_SCI_SBBI0_DEVICE)
 #endif
-#define SciByte             Sbbi0Byte
+#define SciByte(b)          Sbbi0Byte(b)
 
 #elif defined(VS10XX_SCI_SBBI1_DEVICE) /* Command SPI device. */
 
@@ -159,7 +162,7 @@
 #define SciSelect()         Sbbi1NegSelectDevice(VS10XX_SCI_SBBI1_DEVICE)
 #define SciDeselect()       Sbbi1NegDeselectDevice(VS10XX_SCI_SBBI1_DEVICE)
 #endif
-#define SciByte             Sbbi1Byte
+#define SciByte(b)          Sbbi1Byte(b)
 
 #elif defined(VS10XX_SCI_SBBI2_DEVICE) /* Command SPI device. */
 
@@ -178,7 +181,7 @@
 #define SciSelect()         Sbbi2NegSelectDevice(VS10XX_SCI_SBBI2_DEVICE)
 #define SciDeselect()       Sbbi2NegDeselectDevice(VS10XX_SCI_SBBI2_DEVICE)
 #endif
-#define SciByte             Sbbi2Byte
+#define SciByte(b)          Sbbi2Byte(b)
 
 #elif defined(VS10XX_SCI_SBBI3_DEVICE) /* Command SPI device. */
 
@@ -197,7 +200,16 @@
 #define SciSelect()         Sbbi3NegSelectDevice(VS10XX_SCI_SBBI3_DEVICE)
 #define SciDeselect()       Sbbi3NegDeselectDevice(VS10XX_SCI_SBBI3_DEVICE)
 #endif
-#define SciByte             Sbbi3Byte
+#define SciByte(b)          Sbbi3Byte(b)
+
+#else /* Command SPI device. */
+
+#define SciReset(act)
+#define SciSetMode()        (-1)
+#define SciSetSpeed()
+#define SciSelect()
+#define SciDeselect()
+#define SciByte(b)          0
 
 #endif /* Command SPI device. */
 
@@ -214,7 +226,7 @@
 #define SdiSelect()         Sppi0NegSelectDevice(VS10XX_SDI_SPI0_DEVICE)
 #define SdiDeselect()       Sppi0NegDeselectDevice(VS10XX_SDI_SPI0_DEVICE)
 #endif
-#define SdiByte             Sppi0Byte
+#define SdiByte(b)          Sppi0Byte(b)
 
 #elif defined(VS10XX_SDI_SBBI0_DEVICE) /* Data SPI device. */
 
@@ -228,7 +240,7 @@
 #define SdiSelect()         Sbbi0NegSelectDevice(VS10XX_SDI_SBBI0_DEVICE)
 #define SdiDeselect()       Sbbi0NegDeselectDevice(VS10XX_SDI_SBBI0_DEVICE)
 #endif
-#define SdiByte             Sbbi0Byte
+#define SdiByte(b)          Sbbi0Byte(b)
 
 #elif defined(VS10XX_SDI_SBBI1_DEVICE) /* Data SPI device. */
 
@@ -242,7 +254,7 @@
 #define SdiSelect()         Sbbi1NegSelectDevice(VS10XX_SDI_SBBI1_DEVICE)
 #define SdiDeselect()       Sbbi1NegDeselectDevice(VS10XX_SDI_SBBI1_DEVICE)
 #endif
-#define SdiByte             Sbbi1Byte
+#define SdiByte(b)          Sbbi1Byte(b)
 
 #elif defined(VS10XX_SDI_SBBI2_DEVICE) /* Data SPI device. */
 
@@ -256,7 +268,7 @@
 #define SdiSelect()         Sbbi2NegSelectDevice(VS10XX_SDI_SBBI2_DEVICE)
 #define SdiDeselect()       Sbbi2NegDeselectDevice(VS10XX_SDI_SBBI2_DEVICE)
 #endif
-#define SdiByte             Sbbi2Byte
+#define SdiByte(b)          Sbbi2Byte(b)
 
 #elif defined(VS10XX_SDI_SBBI3_DEVICE) /* Data SPI device. */
 
@@ -270,19 +282,29 @@
 #define SdiSelect()         Sbbi3NegSelectDevice(VS10XX_SDI_SBBI3_DEVICE)
 #define SdiDeselect()       Sbbi3NegDeselectDevice(VS10XX_SDI_SBBI3_DEVICE)
 #endif
-#define SdiByte             Sbbi3Byte
+#define SdiByte(b)          Sbbi3Byte(b)
+
+#else /* Data SPI device. */
+
+#define SdiSetMode()        (-1)
+#define SdiSetSpeed()
+#define SdiSelect()
+#define SdiDeselect()
+#define SdiByte(b)          0
 
 #endif /* Data SPI device. */
 
 /* -------------------------------------------------
  * AT91 port specifications.
  */
-#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260)
+#if MCU_AT91
 
-#if VS10XX_DREQ_BIT == 9
-#define VS10XX_SIGNAL   sig_INTERRUPT0
-#else
-#define VS10XX_SIGNAL   sig_INTERRUPT2
+#if (VS10XX_SIGNAL_IRQ == INT0)
+#define VS10XX_SIGNAL       sig_INTERRUPT0
+#elif (VS10XX_SIGNAL_IRQ == INT1)
+#define VS10XX_SIGNAL       sig_INTERRUPT1
+#elif (VS10XX_SIGNAL_IRQ == INT2)
+#define VS10XX_SIGNAL       sig_INTERRUPT2
 #endif
 
 #if defined(VS10XX_XCS_BIT)
@@ -729,7 +751,7 @@ static INLINE void VsSdiPutByte(ureg_t b)
 
 #else  /* !VS10XX_BSYNC_BIT */
 
-    SdiByte(b);
+    (void)SdiByte(b);
 
 #endif /* !VS10XX_BSYNC_BIT */
 
@@ -913,10 +935,10 @@ static void VsRegWrite(ureg_t reg, uint16_t data)
      * short time and doesn't require any additional delay
      * even on very fast CPUs.
      */
-    SciByte(VS_OPCODE_WRITE);
-    SciByte((uint8_t) reg);
-    SciByte((uint8_t) (data >> 8));
-    SciByte((uint8_t) data);
+    (void)SciByte(VS_OPCODE_WRITE);
+    (void)SciByte((uint8_t) reg);
+    (void)SciByte((uint8_t) (data >> 8));
+    (void)SciByte((uint8_t) data);
 
     /* Re-select data channel. */
     VsSciSelect(0);
@@ -937,8 +959,8 @@ static uint16_t VsRegRead(ureg_t reg)
     VsWaitReady();
     VsSciSelect(1);
 
-    SciByte(VS_OPCODE_READ);
-    SciByte((uint8_t) reg);
+    (void)SciByte(VS_OPCODE_READ);
+    (void)SciByte((uint8_t) reg);
     data = (uint16_t)SciByte(0) << 8;
     data |= SciByte(0);
 
@@ -1233,7 +1255,7 @@ int VsPlayerReset(uint16_t mode)
 #endif
 #if defined(AUDIO_VS1001K)
     /* Force frequency change (see datasheet). */
-    xVsRegWrite(VS_INT_FCTLH_REG, 0x8008);
+    VsRegWrite(VS_INT_FCTLH_REG, 0x8008);
 #endif
     NutDelay(1);
 
