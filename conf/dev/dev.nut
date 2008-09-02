@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.43  2008/09/02 14:27:15  haraldkipp
+-- Added platform independent reset functions.
+-- Disabled the old vs1001k driver.
+--
 -- Revision 1.42  2008/08/28 16:11:31  haraldkipp
 -- Fixed bitbanging SPI for ARM targets.
 --
@@ -265,6 +269,11 @@ nutdev =
         description = "General read/write access to non volatile memory.",
         provides = { "DEV_NVMEM"},
         sources = { "nvmem.c" },
+    },
+    {
+        name = "nutdev_reset",
+        brief = "System Reset",
+        sources = { "reset.c" },
     },
     {
         name = "nutdev_watchdog",
@@ -1493,8 +1502,8 @@ nutdev =
                       "In the current implementation this file may conflict with "..
                       "the previous VS1001K driver. For now add this to your "..
                       "application's Makefile. ",
-        -- sources = { "vs10xx.c" },
-        requires = { "DEV_SPI" },
+        sources = { "vs10xx.c" },
+        requires = { "DEV_SPI", "HW_GPIO" },
         options =
         {
             {
@@ -1596,7 +1605,7 @@ nutdev =
                 description = "Hardware SPI 0 device index (chip select) used for command channel.\n\n"..
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
---                requires = { "HW_MCU_AVR" },
+                requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
                 exclusivity = { 
                     "VS10XX_SCI_SPI0_DEVICE",
@@ -1696,7 +1705,7 @@ nutdev =
                 brief = "Data Hardware SPI (AVR)",
                 description = "Use hardware SPI for data channel.\n\n"..
                               "Currently supported on the AVR platform only.",
---                requires = { "HW_MCU_AVR" },
+                requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
                 exclusivity = { 
                     "VS10XX_SDI_SPI0_DEVICE",
@@ -1800,9 +1809,8 @@ nutdev =
             {
                 macro = "VS10XX_SIGNAL_IRQ",
                 brief = "Decoder Interrupt",
-                description = "Audio decoder interrupt, default is INT6.",
-                requires = { "HW_MCU_AVR" },
-                default = "INT6",
+                description = "Audio decoder interrupt, default is INT0.",
+                default = "INT0",
                 type = "enumerated",
                 choices = avr_irq_choice,
                 file = "include/cfg/arch/avrpio.h"
@@ -1811,7 +1819,7 @@ nutdev =
                 macro = "VS10XX_DREQ_PIO_ID",
                 brief = "DREQ GPIO Port ID (AT91)",
                 description = "ID of the port used for VS10XX DREQ.\n\n"..
-                              "Must specify an interrupt input.",
+                              "Must correspond with the selected interrupt input.",
                 requires = { "HW_MCU_AT91" },
                 type = "enumerated",
                 choices = at91_pio_id_choice,
@@ -1822,7 +1830,7 @@ nutdev =
                 macro = "VS10XX_DREQ_BIT",
                 brief = "DREQ GPIO Bit (AT91)",
                 description = "Port bit used for VS10XX DREQ.\n\n"..
-                              "Must specify an interrupt input.",
+                              "Must correspond with the selected interrupt input.",
                 requires = { "HW_MCU_AT91" },
                 type = "enumerated",
                 choices = mcu_32bit_choice,
@@ -1833,7 +1841,6 @@ nutdev =
                 macro = "VS10XX_XCS_PORT",
                 brief = "XCS Port",
                 description = "ID of the port used for VS10XX XCS.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 flavor = "integer",
@@ -1843,7 +1850,6 @@ nutdev =
                 macro = "VS10XX_XCS_BIT",
                 brief = "XCS Port Bit",
                 description = "Port bit used for VS10XX XCS.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
@@ -1853,7 +1859,6 @@ nutdev =
                 macro = "VS10XX_XDCS_PORT",
                 brief = "XDCS Port",
                 description = "ID of the port used for VS10XX XDCS.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 flavor = "integer",
@@ -1863,7 +1868,6 @@ nutdev =
                 macro = "VS10XX_XDCS_BIT",
                 brief = "XDCS Port Bit",
                 description = "Port bit used for VS10XX XDCS.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
@@ -1873,7 +1877,6 @@ nutdev =
                 macro = "VS10XX_BSYNC_PORT",
                 brief = "BSYNC Port",
                 description = "ID of the port used for optional VS10XX BSYNC.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
                 choices = function() return GetGpioBanks() end,
                 flavor = "integer",
@@ -1887,7 +1890,6 @@ nutdev =
                               "in VS1001 mode, if this bit is defined. However, "..
                               "it is recommended to use this option for the VS1001 "..
                               "only and run newer chips in so called VS1002 native mode.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
