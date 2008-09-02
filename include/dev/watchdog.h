@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/09/02 14:32:25  haraldkipp
+ * Includes stdint header.
+ *
  * Revision 1.3  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -47,6 +50,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /*!
  * \addtogroup xgWatchDog
