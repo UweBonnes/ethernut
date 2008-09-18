@@ -32,6 +32,9 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.18  2008/09/18 09:53:22  haraldkipp
+ * Ignore case when comparing the installation directory.
+ *
  * Revision 1.17  2008/07/24 15:45:59  haraldkipp
  * More reliable splash screen appearance on Linux.
  *
@@ -225,7 +228,7 @@ bool NutConfApp::OnInit()
     if (!initWork.IsEmpty()) {
         m_docManager->SetLastDirectory(initWork + wxT("/conf"));
         if (::wxIsAbsolutePath(m_settings->m_configname)) {
-            if (!m_settings->m_configname.StartsWith(initWork)) {
+            if (!m_settings->m_configname.Lower().StartsWith(initWork.Lower())) {
                 if (wxMessageBox(wxT("Configuration path has changed.\n\nOld path was ") +
                     wxPathOnly(m_settings->m_configname) + wxT("\nNew path is ") + initWork + wxT("/conf\n\nSwitch to new path?"), 
                     wxT("Path Change"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
