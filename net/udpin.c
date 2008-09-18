@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2008/09/18 09:45:56  haraldkipp
+ * All broadcasts were answered with ICMP unreachable. Due to this the ARP
+ * table grew fast in large networks. Fixed.
+ *
  * Revision 1.8  2008/08/20 06:57:00  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -164,7 +168,7 @@ int NutUdpInput(NUTDEVICE * dev, NETBUF * nb)
      * broadcasted, return an ICMP unreachable.
      */
     if ((sock = NutUdpFindSocket(uh->uh_dport)) == 0) {
-        if ((nb->nb_flags | NBAF_UNICAST) == 0 || 
+        if ((nb->nb_flags & NBAF_UNICAST) == 0 || 
             NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PORT, 0, nb) == 0) {
         	NutNetBufFree(nb);
         }
