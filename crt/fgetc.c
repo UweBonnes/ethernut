@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/09/18 09:45:25  haraldkipp
+ * Reading 0xFF returned EOF. Fixed.
+ *
  * Revision 1.3  2008/08/11 06:59:40  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -73,7 +76,7 @@
  */
 int fgetc(FILE * stream)
 {
-    int8_t ch;
+    uint8_t ch;
     int rc;
 
     if (stream->iob_flags & _IOUNG) {
