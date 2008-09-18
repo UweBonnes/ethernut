@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.24  2008/09/18 09:53:51  haraldkipp
+ * GUI version 2.0.6.
+ *
  * Revision 1.23  2008/08/29 15:03:04  haraldkipp
  * Fixed Configurator bug #2082123. Options now correctly enabled.
  *
@@ -120,7 +123,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.5"
+#define VERSION "2.0.6"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;
