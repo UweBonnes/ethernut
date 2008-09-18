@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.27  2008/09/18 09:48:06  haraldkipp
+-- The old Marv_XXX do no longer work with ICCAVR 7.18B.
+--
 -- Revision 1.26  2008/08/11 11:51:20  thiagocorrea
 -- Preliminary Atmega2560 compile options, but not yet supported.
 -- It builds, but doesn't seam to run properly at this time.
@@ -170,7 +173,7 @@ nuttools =
             flavor = "boolean",
             exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
             file = "include/cfg/arch.h",
-            makedefs = { "MCU_ATMEGA2560=extended", "MCU_ATMEGA2561=extended", "MCU_ATMEGA128=enhanced", "MCU_ATMEGA103=mega" }
+            makedefs = { "MCU_ATMEGA2560=Extended", "MCU_ATMEGA2561=Extended", "MCU_ATMEGA128=Enhanced", "MCU_ATMEGA103=LongJump" }
         },
         {
             brief = "ImageCraft for ARM",

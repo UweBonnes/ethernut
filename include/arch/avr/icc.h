@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/09/18 09:48:07  haraldkipp
+ * The old Marv_XXX do no longer work with ICCAVR 7.18B.
+ *
  * Revision 1.9  2008/08/11 11:51:20  thiagocorrea
  * Preliminary Atmega2560 compile options, but not yet supported.
  * It builds, but doesn't seam to run properly at this time.
@@ -75,6 +78,15 @@
 #include <stddef.h>
 #include <macros.h>
 #include <eeprom.h>
+
+/* ICCV7 incompatibility nightmare. */
+#if defined(_MCU_Enhanced) && !defined(_MCU_enhanced)
+#define _MCU_enhanced
+#endif
+
+#if defined(_MCU_Extended) && !defined(_MCU_extended)
+#define _MCU_extended
+#endif
 
 /*!
  * \brief Specify enhanced AVR target.
