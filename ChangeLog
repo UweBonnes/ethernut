@@ -1,4 +1,53 @@
-$Id: ChangeLog,v 1.485 2008/09/02 14:34:05 haraldkipp Exp $
+$Id: ChangeLog,v 1.486 2008/09/18 09:58:52 haraldkipp Exp $
+
+2008-09-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* crt/fgetc.c: Reading 0xFF returned EOF. Fixed.
+
+	* net/udpin.c: All broadcasts were answered with ICMP unreachable.
+	Due to this the ARP table grew fast in large networks. Fixed.
+
+
+2008-09-08  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/linux/Makefile.am, tools/linux/eir1ocd.cfg, 
+	tools/linux/eir1ocd.ini: Added Elektor Internet Radio config
+	for OpenOCD. Contributed by Michael Fischer.
+
+	* Makedefs.avr-icc7, Makedefs.avrext-icc7, conf/tools.nut,
+	include/arch/avr/icc.h: The old Marv_XXX do no longer work with 
+	ICCAVR 7.18B. This is a real nightmare.
+
+	* appicc/basemon/basemon.prj, appicc/caltime/caltime.prj,
+	appicc/canbus/canbus.prj, appicc/events/events.prj,
+	appicc/ftpd/ftpd.prj, appicc/httpd/httpd.prj, appicc/inetq/inetq.prj,
+	appicc/logtime/logtime.prj, appicc/nutpiper/nutpiper.prj,
+	appicc/playmp3/playmp3.prj, appicc/portdio/portdio.prj,
+	appicc/pppc/pppc.prj, appicc/rs232d/rs232d.prj, 
+	appicc/simple/simple.prj, appicc/tcps/tcps.prj,
+	appicc/threads/threads.prj, appicc/timers/timers.prj,
+	appicc/uart/uart.prj: Adapted to ICCAVR 7.18B.
+
+	* appicc/canbus/CANBUS.SRC: Had wrong source file.
+
+	* appicc/snmpd/snmpd.prj, appicc/snmpd/SNMPD.SRC: Added missing
+	project files.
+
+	* conf/ethernut21b.conf, dev/vs10xx.c, dev/vscodec.c: Now using 
+	the correct PORT macros.
+
+	* tools/nutconf/nutcomponent.c: Version 2.0.6 fixes a few memory 
+	holes and avoids empty macro definitions for items with "integer" 
+	flavor.
+
+	* tools/nutconf/nutconf.cpp: Ignore case when comparing
+	the installation directory.
+
+	* tools/nutconf/nutconf.h: GUI version 2.0.6.
+
+	* tools/nutconf/nutconfdoc.cpp: Fixed memory holes. Corrected
+	ICCAVR option value retrieval.
+
 
 2008-09-02  Harald Kipp  <harald.kipp@egnite.de>
 
