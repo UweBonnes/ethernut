@@ -39,6 +39,10 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.24  2008/09/18 09:54:26  haraldkipp
+ * Fixed memory holes.
+ * Corrected ICCAVR option value retrieval.
+ *
  * Revision 1.23  2008/07/29 07:32:25  haraldkipp
  * Removed unsupported Eclipse project copying.
  *
@@ -624,6 +628,9 @@ bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
             } else {
                 free(newval);
             }
+            if (cfgval) {
+                free(cfgval);
+            }
             CNutConfHint hint(&item, nutValueChanged);
             UpdateAllViews(NULL, &hint);
         } else {
@@ -809,17 +816,26 @@ private:
             if (in_section) {
                 if (line.StartsWith(wxT("Edit1="))) {
                     line.Empty();
+                    /* If we have a first include path, add it first. */
                     if(!cfg->m_firstidir.IsEmpty()) {
                         line += cfg->m_firstidir + wxT(";");
                     }
+                    /* Add the include path of the build tree. */
                     if (!::wxIsAbsolutePath(cfg->m_buildpath)) {
                         line += cfg->m_topdir + wxT("\\");
                     }
 					line += cfg->m_buildpath + wxT("\\include;");
+                    /* Add the ICC specific include path of the source tree. */
+                    if (!::wxIsAbsolutePath(cfg->m_source_dir)) {
+                        line += cfg->m_topdir + wxT("\\");
+                    }
+                    line += cfg->m_source_dir + wxT("\\include\\crt\\iccavr;");
+                    /* Add the include path of the source tree. */
                     if (!::wxIsAbsolutePath(cfg->m_source_dir)) {
                         line += cfg->m_topdir + wxT("\\");
                     }
                     line += cfg->m_source_dir + wxT("\\include");
+                    /* If we have a last include path, add it last. */
                     if(!cfg->m_lastidir.IsEmpty()) {
                         line += wxT(";") + cfg->m_lastidir;
                     }
@@ -840,16 +856,18 @@ private:
                     if (opt && opt->nco_enabled && opt->nco_active) {
                         if (opt->nco_value && opt->nco_value[0]) {
                             line += wxString(opt->nco_value, wxConvLocal) + wxT(" ");
+                        } else {
+                            char *value = GetConfigValueOrDefault(m_doc->GetRepository(), opt->nco_compo, opt->nco_name);
+                            if (value) {
+                                line += wxString(value, wxConvLocal) + wxT(" ");
+                                free(value);
+                            }
                         }
-                    //TODO: Get repository reference.
-//                        else {
-//                        char * value = GetConfigValueOrDefault(m_repository, comp, opt->nco_name);
-//                        if (value) {
-//                            line += wxString(value, wxConvLocal) + wxT(" ");
-//                            free(value);
-//                        }
                     }
                     opt = m_doc->FindOptionByName(NULL, wxT("MCU_ATMEGA2561"));
+                    if (opt == NULL) {
+                        opt = m_doc->FindOptionByName(NULL, wxT("MCU_ATMEGA2560"));
+                    }
                     if (opt && opt->nco_enabled && opt->nco_active) {
                         line += wxT("_MCU_extended");
                     }
@@ -857,15 +875,32 @@ private:
                         line += wxT("_MCU_enhanced");
                     }
                     line += wxT(" __HARVARD_ARCH__");
+                    line += wxT(" ATMEGA");
+                    line += wxT(" CONST=\"\"");
                 }
                 else if (line.StartsWith(wxT("Edit13="))) {
+                    char *value = NULL;
                     NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, wxT("ICCAVR_STARTUP"));
                     line = wxT("Edit13=");
-                    if (opt && opt->nco_enabled && opt->nco_active && opt->nco_value && opt->nco_value[0]) {
-                        line += wxString(opt->nco_value, wxConvLocal) + wxT(".o");
-                    } else {
-                        line += wxT("crtenutram.o");
+
+                    if (opt && opt->nco_enabled && opt->nco_active) {
+                        if (opt->nco_value) {
+                            value = strdup(opt->nco_value);
+                        } else {
+                            value = GetConfigValueOrDefault(m_doc->GetRepository(), opt->nco_compo, opt->nco_name);
+                        }
                     }
+                    wxString valstr;
+                    if (value) {
+                        valstr = wxString(value, wxConvLocal).Trim().Trim(false);
+                        free(value);
+                    }
+                    if (valstr.IsEmpty()) {
+                        line += wxT("crtenutram");
+                    } else {
+                        line += valstr;
+                    }
+                    line += wxT(".o");
                 }
                 else if (line.StartsWith(wxT("Edit27="))) {
                     line = wxT("Edit27=");
