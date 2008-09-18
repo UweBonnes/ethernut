@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.36  2008/09/18 09:52:42  haraldkipp
+ * Version 2.0.6 fixes a few memory holes and avoids empty macro definitions
+ * for items with "integer" flavor.
+ *
  * Revision 1.35  2008/08/29 15:03:04  haraldkipp
  * Fixed Configurator bug #2082123. Options now correctly enabled.
  *
@@ -163,7 +167,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.5"
+#define NUT_CONFIGURE_VERSION   "2.0.6"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -2468,8 +2472,9 @@ static void WriteMakedefLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * com
                     for (i = 0; makedefs[i]; i++) {
                         fprintf(fp, "%s", makedefs[i]);
                         /* Get edited, configured or default value, in this priority. */
-                        value = opts->nco_value;
-                        if (value == NULL) {
+                        if (opts->nco_value) {
+                            value = strdup(opts->nco_value);
+                        } else {
                             value = GetConfigValueOrDefault(repo, compo, opts->nco_name);
                         }
                         if(strchr(makedefs[i], '=') || value == NULL) {
@@ -2477,6 +2482,9 @@ static void WriteMakedefLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * com
                         }
                         else {
                             fprintf(fp, "=%s\n", value);
+                        }
+                        if (value) {
+                            free(value);
                         }
                         free(makedefs[i]);
                     }
@@ -2778,13 +2786,32 @@ NUTHEADERFILE *CreateHeaderList(NUTREPOSITORY *repo, NUTCOMPONENT * compo, NUTHE
             if (fname) {
                 /* Do not store disabled or inactive items. */
                 if(opts->nco_enabled && opts->nco_active) {
+                    char *flavor;
                     /* Get edited, configured or default value, in this priority. */
-                    char *value = opts->nco_value;
-                    if (value == NULL) {
+                    char *value = NULL;
+                    if (opts->nco_value) {
+                        value = strdup(opts->nco_value);
+                    } else {
                         value = GetConfigValueOrDefault(repo, compo, opts->nco_name);
                     }
                     if (value) {
+                        flavor = GetOptionFlavour(repo, compo, opts->nco_name);
+                        if (flavor) {
+                            char *cp;
+
+                            if (strcasecmp(flavor, "integer") == 0) {
+                                for (cp = value; *cp == ' '; cp++);
+                                if (*cp == '\0') {
+                                    free(value);
+                                    value = NULL;
+                                }
+                            }
+                            free(flavor);
+                        }
+                    }
+                    if (value) {
                         nh_root = AddHeaderFileMacro(nh_root, fname, opts->nco_name, value);
+                        free(value);
                     }
                     else {
                         GetHeaderFileEntry(&nh_root, fname);
