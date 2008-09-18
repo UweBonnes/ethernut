@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/09/18 09:51:58  haraldkipp
+ * Use the correct PORT macros.
+ *
  * Revision 1.3  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -123,9 +126,9 @@
 
 #define VS_XRESET_BIT           31 /* PB31 */
 #define VS10XX_XCS_BIT          PA31_SPI0_NPCS1_A
-#define VS10XX_XCS_PIO_ID       PIOA_ID
+#define VS10XX_XCS_PORT       PIOA_ID
 #define VS10XX_XDCS_BIT         PB30_SPI0_NPCS2_A
-#define VS10XX_XDCS_PIO_ID      PIOB_ID
+#define VS10XX_XDCS_PORT      PIOB_ID
 #define VS10XX_DREQ_BIT         PA30_IRQ1_A
 #define VS10XX_DREQ_PIO_ID      PIOA_ID
 #define VS10XX_SIGNAL           sig_INTERRUPT1
@@ -134,22 +137,22 @@
 
 #if defined(VS10XX_XCS_BIT)
 
-#if !defined(VS10XX_XCS_PIO_ID)
+#if !defined(VS10XX_XCS_PORT)
 #define VS10XX_XCS_PE_REG        PIO_PER
 #define VS10XX_XCS_OE_REG        PIO_OER
 #define VS10XX_XCS_COD_REG       PIO_CODR
 #define VS10XX_XCS_SOD_REG       PIO_SODR
-#elif VS10XX_XCS_PIO_ID == PIOA_ID
+#elif VS10XX_XCS_PORT == PIOA_ID
 #define VS10XX_XCS_PE_REG        PIOA_PER
 #define VS10XX_XCS_OE_REG        PIOA_OER
 #define VS10XX_XCS_COD_REG       PIOA_CODR
 #define VS10XX_XCS_SOD_REG       PIOA_SODR
-#elif VS10XX_XCS_PIO_ID == PIOB_ID
+#elif VS10XX_XCS_PORT == PIOB_ID
 #define VS10XX_XCS_PE_REG        PIOB_PER
 #define VS10XX_XCS_OE_REG        PIOB_OER
 #define VS10XX_XCS_COD_REG       PIOB_CODR
 #define VS10XX_XCS_SOD_REG       PIOB_SODR
-#elif VS10XX_XCS_PIO_ID == PIOC_ID
+#elif VS10XX_XCS_PORT == PIOC_ID
 #define VS10XX_XCS_PE_REG        PIOC_PER
 #define VS10XX_XCS_OE_REG        PIOC_OER
 #define VS10XX_XCS_COD_REG       PIOC_CODR
@@ -171,22 +174,22 @@
 
 #if defined(VS10XX_XDCS_BIT)
 
-#if !defined(VS10XX_XDCS_PIO_ID)
+#if !defined(VS10XX_XDCS_PORT)
 #define VS10XX_XDCS_PE_REG        PIO_PER
 #define VS10XX_XDCS_OE_REG        PIO_OER
 #define VS10XX_XDCS_COD_REG       PIO_CODR
 #define VS10XX_XDCS_SOD_REG       PIO_SODR
-#elif VS10XX_XDCS_PIO_ID == PIOA_ID
+#elif VS10XX_XDCS_PORT == PIOA_ID
 #define VS10XX_XDCS_PE_REG        PIOA_PER
 #define VS10XX_XDCS_OE_REG        PIOA_OER
 #define VS10XX_XDCS_COD_REG       PIOA_CODR
 #define VS10XX_XDCS_SOD_REG       PIOA_SODR
-#elif VS10XX_XDCS_PIO_ID == PIOB_ID
+#elif VS10XX_XDCS_PORT == PIOB_ID
 #define VS10XX_XDCS_PE_REG        PIOB_PER
 #define VS10XX_XDCS_OE_REG        PIOB_OER
 #define VS10XX_XDCS_COD_REG       PIOB_CODR
 #define VS10XX_XDCS_SOD_REG       PIOB_SODR
-#elif VS10XX_XDCS_PIO_ID == PIOC_ID
+#elif VS10XX_XDCS_PORT == PIOC_ID
 #define VS10XX_XDCS_PE_REG        PIOC_PER
 #define VS10XX_XDCS_OE_REG        PIOC_OER
 #define VS10XX_XDCS_COD_REG       PIOC_CODR
