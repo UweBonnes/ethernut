@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.34  2008/09/23 07:25:05  haraldkipp
+-- Added support for remaining AT91SAM7 familiy members.
+--
 -- Revision 1.33  2008/08/28 11:08:20  haraldkipp
 -- Added Lua routines which dynamically return GPIO ports and bits based on
 -- the selected target platform.
@@ -172,10 +175,19 @@ arm_ld_choice = {
                     "at91_ram", 
                     "at91_rom", 
                     "at91_httprom", 
+                    "at91sam7s16_rom",
+                    "at91sam7s32_rom",
+                    "at91sam7s64_rom",
+                    "at91sam7s128_rom",
                     "at91sam7s256_rom",
+                    "at91sam7s512_rom",
+                    "at91sam7se32_rom",
+                    "at91sam7se256_rom",
                     "at91sam7se512_rom",
                     "at91sam7se512_ram",
+                    "at91sam7x128_rom", 
                     "at91sam7x256_rom", 
+                    "at91sam7x512_rom", 
                     "at91sam9260_ram", 
                     "at91sam9xe512_ram", 
                     "s3c4510b-ram", 
