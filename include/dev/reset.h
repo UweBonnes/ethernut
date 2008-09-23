@@ -44,6 +44,8 @@
  * \endverbatim
  */
 
+#include <compiler.h>
+
 /*!
  * \addtogroup xgReset
  */
@@ -56,6 +58,9 @@
 #define NUT_RSTTYP_SOFTWARE 4
 #define NUT_RSTTYP_BROWNOUT 5
 
+#if defined(MCU_AT91)
+#include <arch/arm/at91_reset.h>
+#endif
 
 __BEGIN_DECLS
 /* Prototypes */

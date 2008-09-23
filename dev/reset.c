@@ -57,18 +57,9 @@ void NutReset(void)
     if (AvrWatchDogStart(1)) {
         for (;;);
     }
-#elif defined(__arm__)
-#if defined(RSTC_PROCRST)
-    /* Use reset controller if available. */
-    outr(RSTC_CR, RSTC_KEY | RSTC_PROCRST);
-    for (;;);
-#elif MCU_AT91
-    /* Otherwise use the watchdog. */
-    if (At91WatchDogStart(1, 0)) {
-        for (;;);
-    }
-#endif
-#endif /* __arm__ */
+#elif defined(MCU_AT91)
+    At91Reset();
+#endif /* MCU_AT91 */
 }
 
 /*!
@@ -80,5 +71,9 @@ void NutReset(void)
  */
 int NutResetCause(void)
 {
+#if defined(MCU_AT91)
+    return At91ResetCause();
+#else
     return NUT_RSTTYP_UNKNOWN;
+#endif /* MCU_AT91 */
 }
