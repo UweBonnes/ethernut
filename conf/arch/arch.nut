@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.34  2008/09/23 07:24:34  haraldkipp
+-- Added support for remaining AT91SAM7 familiy members.
+-- Added support for AT91 SDRAM and reset controller.
+--
 -- Revision 1.33  2008/08/11 11:51:19  thiagocorrea
 -- Preliminary Atmega2560 compile options, but not yet supported.
 -- It builds, but doesn't seam to run properly at this time.
@@ -283,6 +287,7 @@ nutarch =
                     "HW_MCU_AT91SAM9260",
                     "HW_TIMER_AT91",
                     "HW_PLL_AT91",
+                    "HW_SDRAMC",
                     "HW_UART_AT91",
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
@@ -324,6 +329,33 @@ nutarch =
                 makedefs = { "MCU=arm9" }
             },
             {
+                macro = "MCU_AT91SAM7X128",
+                brief = "Atmel AT91SAM7X128",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 128K bytes flash, "..
+                              "32K bytes RAM, Ethernet MAC, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7X",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_EMAC_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO",
+                    "HW_PDC_AT91"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
                 macro = "MCU_AT91SAM7X256",
                 brief = "Atmel AT91SAM7X256",
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
@@ -343,9 +375,137 @@ nutarch =
                     "HW_UART_AT91",
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
+                    "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_GPIO",
                     "HW_PDC_AT91"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7X512",
+                brief = "Atmel AT91SAM7X512",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 512K bytes flash, "..
+                              "128K bytes RAM, Ethernet MAC, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7X",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_EMAC_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO",
+                    "HW_PDC_AT91"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7S16",
+                brief = "Atmel AT91SAM7S16",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 16K bytes flash, "..
+                    "4K bytes RAM, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7S",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7S32",
+                brief = "Atmel AT91SAM7S32",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 32K bytes flash, "..
+                    "8K bytes RAM, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7S",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7S64",
+                brief = "Atmel AT91SAM7S64",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 64K bytes flash, "..
+                    "16K bytes RAM, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7S",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7S128",
+                brief = "Atmel AT91SAM7S128",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 128K bytes flash, "..
+                    "32K bytes RAM, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7S",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -368,8 +528,90 @@ nutarch =
                     "HW_PIT_AT91",
                     "HW_UART_AT91",
                     "HW_SPI_AT91",
+                    "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_GPIO"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7S512",
+                brief = "Atmel AT91SAM7S512",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 512K bytes flash, "..
+                    "64K bytes RAM, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7S",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7SE32",
+                brief = "Atmel AT91SAM7SE32",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 32K bytes flash, "..
+                    "8K bytes RAM, external bus interface, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7SE",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_SDRAMC",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_RSTC_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO",
+                    "HW_EBI_AT91"
+                },
+                makedefs = { "MCU=arm7tdmi" }
+            },
+            {
+                macro = "MCU_AT91SAM7SE256",
+                brief = "Atmel AT91SAM7SE256",
+                description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
+                    "32K bytes RAM, external bus interface, USB, 2 USARTs and more. ",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM7SE",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_SDRAMC",
+                    "HW_PIT_AT91",
+                    "HW_UART_AT91",
+                    "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_RSTC_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO",
+                    "HW_EBI_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -389,9 +631,12 @@ nutarch =
                     "HW_MCU_AT91SAM7SE",
                     "HW_TIMER_AT91",
                     "HW_PLL_AT91",
+                    "HW_SDRAMC",
                     "HW_PIT_AT91",
                     "HW_UART_AT91",
                     "HW_SPI_AT91",
+                    "HW_TWI_AT91",
+                    "HW_RSTC_AT91",
                     "HW_PDC_AT91",
                     "HW_GPIO",
                     "HW_EBI_AT91"
