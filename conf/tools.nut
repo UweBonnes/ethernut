@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.28  2008/09/23 07:33:53  haraldkipp
+-- Added support for remaining SAM7 familiy members.
+--
 -- Revision 1.27  2008/09/18 09:48:06  haraldkipp
 -- The old Marv_XXX do no longer work with ICCAVR 7.18B.
 --
@@ -199,12 +202,21 @@ nuttools =
                               "at91_ram\t\t\tAT91R40008, code loaded in RAM by bootloader\n"..
                               "at91_rom\t\t\tAT91R40008, code running in FLASH\n"..
                               "at91_httprom\t\tAT91R40008, code running in FLASH. Use this with boothttp.\n"..
-                              "at91sam7x256_rom\t\tAT91SAM7X, code running in FLASH\n"..
-                              "at91sam7s256_rom\t\tAT91SAM7S, code running in FLASH\n"..
-                              "at91sam7se512_rom\tAT91SAM7SE512, code running in FLASH\n"..
-                              "at91sam7se512_ram\tAT91SAM7SE512, code running in RAM (debugging)\n"..
+                              "at91sam7x128_rom\t\tAT91SAM7X128, code running in FLASH\n"..
+                              "at91sam7x256_rom\t\tAT91SAM7X256, code running in FLASH\n"..
+                              "at91sam7x512_rom\t\tAT91SAM7X512, code running in FLASH\n"..
+                              "at91sam7s16_rom\t\tAT91SAM7S16, code running in FLASH\n"..
+                              "at91sam7s32_rom\t\tAT91SAM7S32, code running in FLASH\n"..
+                              "at91sam7s64_rom\t\tAT91SAM7S64, code running in FLASH\n"..
+                              "at91sam7s128_rom\t\tAT91SAM7S128, code running in FLASH\n"..
+                              "at91sam7s256_rom\t\tAT91SAM7S256, code running in FLASH\n"..
+                              "at91sam7s512_rom\t\tAT91SAM7S512, code running in FLASH\n"..
+                              "at91sam7se32_rom\t\tAT91SAM7SE32, code running in FLASH, data in SDRAM\n"..
+                              "at91sam7se256_rom\tAT91SAM7SE256, code running in FLASH, data in SDRAM\n"..
+                              "at91sam7se512_rom\tAT91SAM7SE512, code running in FLASH, data in SDRAM\n"..
+                              "at91sam7se512_ram\tAT91SAM7SE512, code running in SDRAM (debugging)\n"..
                               "at91sam9260_ram\t\tAT91SAM9260, code running in external RAM\n"..
-                              "at91sam9xe512_ram\t\tAT91SAM9XE512, code running in external RAM\n"..
+                              "at91sam9xe512_ram\tAT91SAM9XE512, code running in external RAM\n"..
                               "s3c4510b-ram\t\tSamsung's S3C4510B, code in RAM (unsupported)\n"..
                               "eb40a_ram\t\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
                               "gba_xport2\t\tNintendo's Gameboy Advance\n"..
