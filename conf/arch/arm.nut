@@ -33,6 +33,11 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.30  2008/09/23 07:25:47  haraldkipp
+-- Made AT91 SDRAM settings configurable.
+-- Simplified AT91 TWI configuration.
+-- Added AT91 reset controller module.
+--
 -- Revision 1.29  2008/09/02 14:29:37  haraldkipp
 -- Added a new MCU family macro to avoid these lengthy preprocessor
 -- conditionals.
@@ -247,9 +252,88 @@ nutarch_arm =
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
+            {
+                macro = "NUTMEM_SDRAM_BASE",
+                brief = "SDRAM Base Address",
+                requires = { "HW_SDRAMC" },
+                provides = { "HW_SDRAM" },
+                default = "0x20000000",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_BANKS",
+                brief = "SDRAM Banks",
+                requires = { "HW_SDRAM" },
+                default = "4",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_COLBITS",
+                brief = "SDRAM Column Address Bits",
+                requires = { "HW_SDRAM" },
+                default = "10",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_ROWBITS",
+                brief = "SDRAM Row Address Bits",
+                requires = { "HW_SDRAM" },
+                default = "13",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_CASLAT",
+                brief = "SDRAM CAS Latency",
+                requires = { "HW_SDRAM" },
+                default = "2",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_TWR",
+                brief = "SDRAM Write Recovery Cycles",
+                requires = { "HW_SDRAM" },
+                default = "2",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_TRC",
+                brief = "SDRAM Row Cycle Delay",
+                requires = { "HW_SDRAM" },
+                default = "4",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_TRP",
+                brief = "SDRAM Row Precharge Delay",
+                requires = { "HW_SDRAM" },
+                default = "4",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_TRCD",
+                brief = "SDRAM Row to Column Delay",
+                requires = { "HW_SDRAM" },
+                default = "2",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_TRAS",
+                brief = "SDRAM Active to Precharge Delay",
+                requires = { "HW_SDRAM" },
+                default = "3",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_TXSR",
+                brief = "SDRAM Self Refresh to Active Delay",
+                requires = { "HW_SDRAM" },
+                default = "4",
+                file = "include/cfg/memory.h"
+            },
         },
     },
-    
+
     --
     -- Context Switching
     --
@@ -914,28 +998,12 @@ nutarch_arm =
     },
     {
         name = "nutarch_arm_twi_at91",
-        brief = "AT91 TWI (SAM7X)",
-        description = "TWI interface for AT91 (currently SAM7 only).",
-        requires = { "HW_MCU_AT91SAM7X" },
+        brief = "AT91 TWI",
+        description = "AT91 hardware TWI support.",
+        requires = { "HW_TWI_AT91" },
         provides = { "DEV_TWI" },
         sources = { "arm/dev/at91_twi.c" },
     },     
-    {
-        name = "nutarch_arm_twi_at91_sam7s",
-        brief = "AT91 TWI (SAM7S)",
-        description = "TWI interface for AT91 (currently SAM7 only).",
-        requires = { "HW_MCU_AT91SAM7S" },
-        provides = { "DEV_TWI" },
-        sources = { "arm/dev/at91_twi.c" },
-    },
-    {
-        name = "nutarch_arm_twi_at91_sam7se",
-        brief = "AT91 TWI (SAM7SE)",
-        description = "TWI interface for AT91 (currently SAM7 only).",
-        requires = { "HW_MCU_AT91SAM7SE" },
-        provides = { "DEV_TWI" },
-        sources = { "arm/dev/at91_twi.c" },
-    },
     {
         name = "nutarch_arm_adc_at91",
         brief = "AT91 ADC",
@@ -970,6 +1038,14 @@ nutarch_arm =
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_AT91" },
         sources = { "arm/dev/at91init.c" },
+    },
+    {
+        name = "nutarch_arm_rstc",
+        brief = "AT91 Reset Controller",
+        description = "AT91 reset controller support.",
+        requires = { "HW_RSTC_AT91" },
+        provides = { "DEV_MCU_RESET" },
+        sources = { "arm/dev/at91_reset.c" },
     },
     {
         name = "nutarch__arm_gpio_at91",
