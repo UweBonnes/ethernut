@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.44  2008/09/23 07:26:51  haraldkipp
+-- Made early watchdog setting configurable.
+--
 -- Revision 1.43  2008/09/02 14:27:15  haraldkipp
 -- Added platform independent reset functions.
 -- Disabled the old vs1001k driver.
@@ -281,6 +284,25 @@ nutdev =
         description = "Platform independent watchdog API.\n\n"..
                       "The watchdog timer prevents system lock-up.",
         sources = { "watchdog.c" },
+        options =
+        {
+            {
+                macro = "NUT_WDT_START",
+                brief = "Start Value",
+                description = "If enabled, the watchdog timer will be started during system "..
+                              "initialization with the specified register value.\n\n"..
+                              "On some systems, e.g. the AT91SAM7, the watchdog timer is "..
+                              "enabled by default. If the start value is zero, the watchdog "..
+                              "register is not touched. If this option is disabled, the "..
+                              "watchdog timer will be disabled during system initialization. "..
+                              "It is typically not possible to re-enable the watchdog timer.\n\n"..
+                              "Note, that this setting is optional and may not be available "..
+                              "for all targets.",
+                requires = { "HW_GPIO" },
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            }
+        }
     },
 
     --
