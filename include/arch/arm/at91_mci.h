@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/10/03 11:29:51  haraldkipp
+ * MCI_OPCMD should have been MCI_OPDCMD. The wrong one will be kept for
+ * backward compatibility.
+ *
  * Revision 1.2  2006/09/05 12:32:13  haraldkipp
  * Timeout multiplier settings renamed to follow Atmel's convention.
  * 4-bit bus SDC setting corrected.
@@ -134,7 +138,8 @@
 #define MCI_SPCMD_SYNC          0x00000200      /*!< \brief Synchronized command. */
 #define MCI_SPCMD_ICMD          0x00000400      /*!< \brief Interrupt command. */
 #define MCI_SPCMD_IRSP          0x00000500      /*!< \brief Interrupt response. */
-#define MCI_OPCMD               0x00000800      /*!< \brief Open drain command. */
+#define MCI_OPDCMD              0x00000800      /*!< \brief Open drain command. */
+#define MCI_OPCMD               MCI_OPDCMD      /*!< \brief Open drain command. Deprecated spelling. */
 #define MCI_MAXLAT              0x00001000      /*!< \brief Maximum latency for command to response. */
 #define MCI_TRCMD               0x00030000      /*!< \brief Transfer command mask. */
 #define MCI_TRCMD_NONE          0x00000000      /*!< \brief No data transfer. */
