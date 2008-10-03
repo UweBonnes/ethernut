@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/10/03 11:28:58  haraldkipp
+ * Corrected and modified initialization of MultiMedia and SD Cards.
+ *
  * Revision 1.4  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -154,8 +157,14 @@ typedef struct _MMCIFC {
 /*! \brief Erase previously selected sectors. */
 #define MMCMD_ERASE                     38
 
+/*! \brief Activate SD card's initialization process. */
+#define MMCMD_SEND_APP_OP_COND          41
+
 /*! \brief Set/clear password or lock/unlock the card. */
 #define MMCMD_LOCK_UNLOCK               42
+
+/*! \brief Application command follows. */
+#define MMCMD_SEND_APP_CMD              55
 
 /*! \brief Query card's operating condition register. */
 #define MMCMD_READ_OCR                  58
@@ -244,6 +253,29 @@ typedef struct _MMCIFC {
 
 /*! \brief Number of bytes in the operating condition register. */
 #define MMCARD_OCR_SIZE                 32
+
+/*!
+ * \name Voltage Ranges
+ */
+/*@{*/
+#define MMCARD_165_195V     0x00000080
+#define MMCARD_20_21V       0x00000100
+#define MMCARD_21_22V       0x00000200
+#define MMCARD_22_23V       0x00000400
+#define MMCARD_23_24V       0x00000800
+#define MMCARD_24_25V       0x00001000
+#define MMCARD_25_26V       0x00002000
+#define MMCARD_26_27V       0x00004000
+#define MMCARD_27_28V       0x00008000
+#define MMCARD_28_29V       0x00010000
+#define MMCARD_29_30V       0x00020000
+#define MMCARD_30_31V       0x00040000
+#define MMCARD_31_32V       0x00080000
+#define MMCARD_32_33V       0x00100000
+#define MMCARD_33_34V       0x00200000
+#define MMCARD_34_35V       0x00400000
+#define MMCARD_35_36V       0x00800000
+/*@}*/
 
 /*!
  * \name Control Codes

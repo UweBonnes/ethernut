@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006 by egnite Software GmbH.
+ * Copyright (C) 2008 by egnite GmbH.
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2008/10/03 11:28:58  haraldkipp
+ * Corrected and modified initialization of MultiMedia and SD Cards.
+ *
  * Revision 1.2  2008/08/11 06:59:04  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -91,18 +97,41 @@
 #define MMC_PINS_B  _BV(PA1_MCCDB_B) | _BV(PA0_MCDB0_B) | _BV(PA5_MCDB1_B) | _BV(PA4_MCDB2_B) | _BV(PA3_MCDB3_B)
 #endif
 
+#define MCICMD_ALL_SEND_CID         (MMCMD_ALL_SEND_CID | MCI_OPDCMD | MCI_MAXLAT | MCI_RSPTYP_136)
+#define MCICMD_DESELECT_CARD        (MMCMD_SELECT_CARD)
+#define MCICMD_GO_IDLE_STATE        (MMCMD_GO_IDLE_STATE)
+#define MCICMD_READ_SINGLE_BLOCK    (MMCMD_READ_SINGLE_BLOCK | MCI_TRCMD_START | MCI_TRDIR | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_SELECT_CARD          (MMCMD_SELECT_CARD | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_SEND_APP_CMD         (MMCMD_SEND_APP_CMD | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_SEND_APP_OP_COND     (MMCMD_SEND_APP_OP_COND | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_SEND_OP_COND         (MMCMD_SEND_OP_COND | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_SEND_RELATIVE_ADDR   (MMCMD_SEND_RELATIVE_ADDR | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_SEND_STATUS          (MMCMD_SEND_STATUS | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_SET_BLOCKLEN         (MMCMD_SET_BLOCKLEN | MCI_MAXLAT | MCI_RSPTYP_48)
+#define MCICMD_WRITE_BLOCK          (MMCMD_WRITE_BLOCK | MCI_TRCMD_START | MCI_MAXLAT | MCI_RSPTYP_48)
+
+
+#define MCICMD_ERROR    (MCI_UNRE | MCI_OVRE | MCI_DTOE | MCI_DCRCE | MCI_RTOE | MCI_RENDE | MCI_RCRCE | MCI_RDIRE | MCI_RINDE)
+
+#define MCIFLG_SDCARD   0x00000001
+#define MCIFLG_4BIT     0x00000010
+
 /*!
  * \brief Local card interface information.
  */
 typedef struct _MCIFC {
+    /*! \brief Configuration flags. */
+    uint32_t ifc_config;
     /*! \brief Operating conditions. */
     uint32_t ifc_opcond;
     /*! \brief Relative card address. */
-    u_int ifc_reladdr;
+    uint32_t ifc_reladdr;
     /*! \brief Pointer to sector buffer. */
     uint8_t *ifc_buff;
     /*! \brief MMC response. */
-    u_int ifc_resp[4];
+    uint32_t ifc_resp[4];
+    /*! \brief Card identification. */
+    uint32_t ifc_cid[4];
 } MCIFC;
 
 /*!
@@ -138,6 +167,54 @@ typedef struct _MCIFCB {
     uint8_t fcb_blkbuf[MMC_BLOCK_SIZE];
 } MCIFCB;
 
+/*
+ * Several routines call NutSleep, which results in a context switch.
+ * This mutual exclusion semaphore takes care, that multiple threads
+ * do not interfere with each other.
+ */
+static HANDLE mutex;
+
+/*!
+ * \brief Reset the MCI hardware.
+ *
+ * \param init If 0, the current settings will be kept, otherwise initial 
+ *             values are loaded.
+ */
+static void At91MciReset(int init)
+{
+    uint32_t mode;
+    uint32_t dtmo;
+    uint32_t slot;
+
+    /* Enable MCI clock. */
+    outr(PMC_PCER, _BV(MCI_ID));
+
+    if (init) {
+        outr(MCI_IDR, 0xFFFFFFFF);
+        /* Set initial configuration. */
+        dtmo = MCI_DTOMUL_1M | MCI_DTOCYC;
+        /* Slow start: MMC clock is MCK / (2 * (CLKDIV + 1)) */
+        mode = MCI_RDPROOF | MCI_WRPROOF | MCI_PDCMODE | (2 << MCI_PWSDIV_LSB) | (128 << MCI_CLKDIV_LSB);
+        slot = MCI_SDCSEL_SLOTB;
+    } else {
+        /* Retrieve current configuration. */
+        dtmo = inr(MCI_DTOR);
+        mode = inr(MCI_MR) & 0xffff;
+        slot = inr(MCI_SDCR);
+    }
+
+    /* Disable and software reset. */
+    outr(MCI_CR, MCI_MCIDIS | MCI_SWRST);
+
+    /* Set configuration values. */
+    outr(MCI_DTOR, dtmo);
+    outr(MCI_MR, mode);
+    outr(MCI_SDCR, slot);
+
+    /* Enable card interface. */
+    outr(MCI_CR, MCI_MCIEN | MCI_PWSEN);
+}
+
 /*!
  * \brief Initialize MMC hardware interface.
  *
@@ -148,45 +225,16 @@ typedef struct _MCIFCB {
  */
 static int At91MciInit(NUTDEVICE * dev)
 {
-#ifdef NUTDEBUG
-    printf("[DevInit '%s']", dev->dev_name);
-#endif
     /* Disable PIO lines used for MCI. */
     outr(PIOA_PDR, MMC_PINS_A | MMC_PINS_B);
     /* Enable peripherals. */
     outr(PIOA_ASR, MMC_PINS_A);
     outr(PIOA_BSR, MMC_PINS_B);
-
-    /* Disable and software reset. */
-    outr(MCI_CR, MCI_MCIDIS | MCI_SWRST);
-    NutSleep(10);
-
-    outr(MCI_CR, MCI_MCIEN);
-    outr(MCI_IDR, 0xFFFFFFFF);
-    outr(MCI_DTOR, MCI_DTOMUL_1M | MCI_DTOCYC);
-    /*
-     * MMC clock is MCK / (2 * (CLKDIV + 1))
-     */
-    //outr(MCI_MR, MCI_PDCMODE | (3 << MCI_PWSDIV_LSB) | (47 << MCI_CLKDIV_LSB));
-    //outr(MCI_MR, MCI_PDCMODE | (3 << MCI_PWSDIV_LSB) | (15 << MCI_CLKDIV_LSB)); // 180MHz
-    outr(MCI_MR, MCI_PDCMODE | (3 << MCI_PWSDIV_LSB) | (11 << MCI_CLKDIV_LSB)); // Test
-    //outr(MCI_MR, MCI_PDCMODE | (3 << MCI_PWSDIV_LSB) | (11 << MCI_CLKDIV_LSB));
-
-    /* Select 1-bit mode and slot B. */
-    outr(MCI_SDCR, MCI_SDCSEL_SLOTB);
-
-    /* Enable MCI clock. */
-    outr(PMC_PCER, _BV(MCI_ID));
+    /* Initialize the MCI hardware. */
+    At91MciReset(1);
 
     return 0;
 }
-
-/*
- * Several routines call NutSleep, which results in a context switch.
- * This mutual exclusion semaphore takes care, that multiple threads
- * do not interfere with each other.
- */
-static HANDLE mutex;
 
 /*!
  * \brief Send command to multimedia card.
@@ -194,48 +242,94 @@ static HANDLE mutex;
  * \param ifc   Specifies the hardware interface.
  * \param cmd   Command code. See MMCMD_ macros.
  * \param param Optional command parameter.
+ *
+ * \return MCI status.
  */
-static u_int At91MciTxCmd(MCIFC * ifc, u_int cmd, u_int param)
+static uint32_t At91MciTxCmd(MCIFC * ifc, uint32_t cmd, uint32_t param)
 {
-    u_int sr;
-    u_int rl;
-    u_int i;
-    u_int wfs = MCI_CMDRDY;
+    uint32_t sr;
+    uint32_t rl;
+    uint32_t i;
+    uint32_t wfs = MCI_CMDRDY;
 
+    /*
+     * Disable PDC.
+     */
 #ifdef NUTDEBUG
-    printf("[MmcCmd %X", cmd);
+    printf("[Cmd%lu,%lx]", cmd & MCI_CMDNB, param);
 #endif
     outr(MCI_PTCR, PDC_TXTDIS | PDC_RXTDIS);
-    if ((cmd & MCI_TRCMD_START) != 0 && ifc->ifc_buff) {
+    outr(MCI_MR, inr(MCI_MR) & ~(MCI_BLKLEN | MCI_PDCMODE));
+    outr(MCI_RCR, 0);
+    outr(MCI_RNCR, 0);
+    outr(MCI_TCR, 0);
+    outr(MCI_TNCR, 0);
+
+    if (cmd & MCI_TRCMD_START) {
+        /* Data transfer. Make sure that the buffer is set. */
+        if (ifc->ifc_buff == NULL) {
+            errno = EINVAL;
+            return MCI_OVRE | MCI_UNRE;
+        }
+        /* Set block length and PDC mode. */
         outr(MCI_MR, (inr(MCI_MR) & ~MCI_BLKLEN) | (MMC_BLOCK_SIZE << MCI_BLKLEN_LSB) | MCI_PDCMODE);
-        outr(MCI_RPR, (u_int) ifc->ifc_buff);
-        outr(MCI_RCR, MMC_BLOCK_SIZE / 4);
-        outr(MCI_PTCR, PDC_RXTEN);
-        wfs = MCI_ENDRX;
-        ifc->ifc_buff = NULL;
-    } else {
-        outr(MCI_RCR, 0);
-        outr(MCI_RNCR, 0);
-        outr(MCI_TCR, 0);
-        outr(MCI_TNCR, 0);
+        if (cmd & MCI_TRDIR) {
+            /* Set PDC address and counter for reading. */
+            outr(MCI_RPR, (uint32_t) ifc->ifc_buff);
+            outr(MCI_RCR, MMC_BLOCK_SIZE / 4);
+            /* Enable PDC read. */
+            outr(MCI_PTCR, PDC_RXTEN);
+            /* We will wait until end of data transmission. */
+            wfs = MCI_ENDRX;
+        } else {
+            /* Set PDC address and counter for writing. */
+            outr(MCI_TPR, (uint32_t) ifc->ifc_buff);
+            outr(MCI_TCR, MMC_BLOCK_SIZE / 4);
+            /* We will wait until data block ended. */
+            wfs = MCI_BLKE;
+        }
     }
+    /* Set card parameter and command. */
     outr(MCI_ARGR, param);
     outr(MCI_CMDR, cmd);
-    while (((sr = inr(MCI_SR)) & wfs) == 0);
 
-    if ((cmd & MCI_RSPTYP) == MCI_RSPTYP_48) {
-        rl = 2;
-    } else if ((cmd & MCI_RSPTYP) == MCI_RSPTYP_136) {
-        rl = 4;
-    } else {
-        rl = 0;
+    /* When writing, enable PDC after sending the command. */
+    if ((cmd & (MCI_TRCMD_START | MCI_TRDIR)) == MCI_TRCMD_START) {
+        outr(MCI_PTCR, PDC_TXTEN);
     }
+
+    /* Determine the number of words of the expected response. */
+    switch (cmd & MCI_RSPTYP) {
+    case MCI_RSPTYP_48:
+        rl = 2;
+        break;
+    case MCI_RSPTYP_136:
+        rl = 4;
+        break;
+    default:
+        rl = 0;
+        break;
+    }
+    /* Wait for MCI_CMDRDY, MCI_ENDRX or MCI_BLKE. */
+    while (((sr = inr(MCI_SR)) & wfs) == 0);
+    /* Read the resonse. */
     for (i = 0; i < rl; i++) {
         ifc->ifc_resp[i] = inr(MCI_RSPR);
     }
 #ifdef NUTDEBUG
-    printf("=%X]", sr);
+    printf("[Sta=%lx][Rsp", sr);
+    for (i = 0; i < rl; i++) {
+        printf(" %lx", ifc->ifc_resp[i]);
+    }
+    printf("]\n");
 #endif
+    /* When writing, wait until the card is not busy. */
+    if (wfs & MCI_BLKE) {
+        while ((inr(MCI_SR) & MCI_NOTBUSY) == 0);
+    }
+    /* Do we need this? */
+    ifc->ifc_buff = NULL;
+
     return sr;
 }
 
@@ -243,99 +337,146 @@ static u_int At91MciTxCmd(MCIFC * ifc, u_int cmd, u_int param)
 /*!
  * \brief Discover available cards.
  *
+ * Currently this has been tested for SanDisk SD Cards and several 
+ * MultiMedia Cards. It doesn't seem to work with RS-MMC, though.
+ *
  * \param ifc Specifies the hardware interface.
  *
  * \return 0 on success, -1 otherwise.
  */
 static int At91MciDiscover(MCIFC * ifc)
 {
-    u_int sr;
+    uint32_t sr;
     int tmo;
 
     /* Put all cards in idle state. */
-#ifdef NUTDEBUG
-    printf("\n[MciIdle]");
-#endif
-    outr(MCI_MR, MCI_PDCMODE | (3 << MCI_PWSDIV_LSB) | (47 << MCI_CLKDIV_LSB)); // 400kHz during identification
-    At91MciTxCmd(ifc, MMCMD_GO_IDLE_STATE, 0);
+    At91MciTxCmd(ifc, MCICMD_GO_IDLE_STATE, 0);
+    NutSleep(10);
 
-    /* Poll operating conditions. */
-#ifdef NUTDEBUG
-    printf("\n[MciOpCond]");
-#endif
-    for (tmo = 1000; --tmo;) {
-        sr = At91MciTxCmd(ifc, MCI_OPCMD | MCI_MAXLAT | MCI_RSPTYP_48 | MMCMD_SEND_OP_COND, ifc->ifc_opcond);
-        if (sr & 0xC06B0000) {
-            return -1;
-        }
-        if ((ifc->ifc_resp[0] & MMCOP_NBUSY) != 0) {
+    /* Poll SDC operating conditions. */
+    for (tmo = 100; --tmo;) {
+        At91MciTxCmd(ifc, MCICMD_SEND_APP_CMD, 0);
+        sr = At91MciTxCmd(ifc, MCICMD_SEND_APP_OP_COND, MMCARD_32_33V | MMCARD_31_32V | MMCARD_30_31V);
+        ifc->ifc_opcond = ifc->ifc_resp[0];
+        if (ifc->ifc_resp[0] & MMCOP_NBUSY) {
+            ifc->ifc_config |= MCIFLG_SDCARD;
             break;
         }
-        ifc->ifc_opcond = ifc->ifc_resp[0];
-        NutSleep(1);
     }
+
     if (tmo == 0) {
-#ifdef NUTDEBUG
-        printf("[Failed]");
-#endif
+        /* No SDC. Put all cards back in idle state and try MMC. */
+        At91MciTxCmd(ifc, MCICMD_GO_IDLE_STATE, 0);
+        NutSleep(10);
+
+        /* Poll MMC operating conditions. */
+        for (tmo = 100; --tmo;) {
+            sr = At91MciTxCmd(ifc, MCICMD_SEND_OP_COND, MMCARD_32_33V | MMCARD_31_32V | MMCARD_30_31V);
+            ifc->ifc_opcond = ifc->ifc_resp[0];
+            if (ifc->ifc_resp[0] & MMCOP_NBUSY) {
+                break;
+            }
+        }
+    }
+
+    if (tmo == 0) {
+        /* No valid card. */
         return -1;
     }
 
     /* Discover cards. */
-#ifdef NUTDEBUG
-    printf("\n[MciDiscover]");
-#endif
     ifc->ifc_reladdr = 0;
     for (tmo = 500; --tmo;) {
-        sr = At91MciTxCmd(ifc, MCI_OPCMD | MCI_MAXLAT | MCI_RSPTYP_136 | MMCMD_ALL_SEND_CID, 0);
+        sr = At91MciTxCmd(ifc, MCICMD_ALL_SEND_CID, 0);
+        memcpy(ifc->ifc_cid, ifc->ifc_resp, sizeof(ifc->ifc_cid));
         if (sr & MCI_RTOE) {
             /* No more cards. */
             break;
         }
-        ifc->ifc_reladdr++;
-        At91MciTxCmd(ifc, MCI_MAXLAT | MCI_RSPTYP_48 | MMCMD_SEND_RELATIVE_ADDR, ifc->ifc_reladdr << 16);
+        if (ifc->ifc_config & MCIFLG_SDCARD) {
+            /* SD Card will send an address. */
+            ifc->ifc_reladdr = 0;
+        } else {
+            /* MultiMedia Card will receive an address. */
+            ifc->ifc_reladdr++;
+        }
+        At91MciTxCmd(ifc, MCICMD_SEND_RELATIVE_ADDR, ifc->ifc_reladdr << 16);
+        if (ifc->ifc_config & MCIFLG_SDCARD) {
+            /* Store SD Card address. */
+            ifc->ifc_reladdr = ifc->ifc_resp[0] >> 16;
+        }
     }
-#ifdef NUTDEBUG
-    printf("[%u Cards]", ifc->ifc_reladdr);
-#endif
-    outr(MCI_MR, MCI_PDCMODE | (3 << MCI_PWSDIV_LSB) | (1 << MCI_CLKDIV_LSB)); // 10MHz @ 180/4 MHz
+
+    /* Switch to high speed transfer. */
+    outr(MCI_MR, MCI_PDCMODE | (2 << MCI_PWSDIV_LSB) | (16 << MCI_CLKDIV_LSB));
+
     return ifc->ifc_reladdr ? 0 : -1;
 }
 
 /*!
- * \brief Read or verify a single block.
+ * \brief Read a single block.
  *
  * \param ifc Specifies the hardware interface.
  * \param blk Block number to read or verify.
- * \param buf Data buffer. Receives the data or is verified against the
- *            data being read from the card.
+ * \param buf Data buffer. Receives the data being read from the card.
  *
  * \return 0 on success, -1 otherwise.
  */
 static int At91MciReadSingle(MCIFC * ifc, uint32_t blk, uint8_t * buf)
 {
     int rc = -1;
-    u_int sr;
+    uint32_t sr;
 
     /* Gain mutex access. */
     NutEventWait(&mutex, 0);
 
-#ifdef NUTDEBUG
-    printf("[RB%lu]", blk);
-#endif
-
-    sr = At91MciTxCmd(ifc, MCI_MAXLAT | MCI_RSPTYP_48 | MMCMD_SELECT_CARD, ifc->ifc_reladdr << 16);
-    if ((sr & 0xC07F0000) == 0) {
-        sr = At91MciTxCmd(ifc, MCI_MAXLAT | MCI_RSPTYP_48 | MMCMD_SET_BLOCKLEN, MMC_BLOCK_SIZE);
-        if ((sr & 0xC07F0000) == 0) {
+    sr = At91MciTxCmd(ifc, MCICMD_SELECT_CARD, ifc->ifc_reladdr << 16);
+    if ((sr & MCICMD_ERROR) == 0) {
+        sr = At91MciTxCmd(ifc, MCICMD_SET_BLOCKLEN, MMC_BLOCK_SIZE);
+        if ((sr & MCICMD_ERROR) == 0) {
             ifc->ifc_buff = buf;
-            sr = At91MciTxCmd(ifc, MCI_TRDIR | MCI_TRCMD_START | MCI_MAXLAT | MCI_RSPTYP_48 |
-                              MMCMD_READ_SINGLE_BLOCK, blk * MMC_BLOCK_SIZE);
-            if ((sr & 0xC07F0000) == 0) {
+            sr = At91MciTxCmd(ifc, MCICMD_READ_SINGLE_BLOCK, blk * MMC_BLOCK_SIZE);
+            if ((sr & MCICMD_ERROR) == 0) {
                 rc = 0;
             }
         }
-        At91MciTxCmd(ifc, MMCMD_SELECT_CARD, 0);
+        At91MciTxCmd(ifc, MCICMD_DESELECT_CARD, 0);
+    }
+
+    /* Release mutex access. */
+    NutEventPost(&mutex);
+
+    return rc;
+}
+
+/*!
+ * \brief Write a single block.
+ *
+ * \param ifc Specifies the hardware interface.
+ * \param blk Block number to read or verify.
+ * \param buf Pointer to the data to be sent to the card.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+static int At91MciWriteSingle(MCIFC * ifc, uint32_t blk, CONST uint8_t * buf)
+{
+    int rc = -1;
+    uint32_t sr;
+
+    /* Gain mutex access. */
+    NutEventWait(&mutex, 0);
+
+    sr = At91MciTxCmd(ifc, MCICMD_SELECT_CARD, ifc->ifc_reladdr << 16);
+    if ((sr & MCICMD_ERROR) == 0) {
+        sr = At91MciTxCmd(ifc, MCICMD_SET_BLOCKLEN, MMC_BLOCK_SIZE);
+        if ((sr & MCICMD_ERROR) == 0) {
+            ifc->ifc_buff = (uint8_t *)buf;
+            sr = At91MciTxCmd(ifc, MCICMD_WRITE_BLOCK, blk * MMC_BLOCK_SIZE);
+            if ((sr & MCICMD_ERROR) == 0) {
+                rc = 0;
+            }
+        }
+        At91MciTxCmd(ifc, MCICMD_DESELECT_CARD, 0);
     }
 
     /* Release mutex access. */
@@ -346,9 +487,6 @@ static int At91MciReadSingle(MCIFC * ifc, uint32_t blk, uint8_t * buf)
 
 /*!
  * \brief Read data blocks from a mounted partition.
- *
- * Applications should not call this function directly, but use the
- * stdio interface.
  *
  * \param nfp    Pointer to a ::NUTFILE structure, obtained by a previous 
  *               call to At91MciMount().
@@ -365,25 +503,24 @@ static int At91MciBlockRead(NUTFILE * nfp, void *buffer, int num)
     uint32_t blk = fcb->fcb_blknum;
     NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
     MCIFC *ifc = (MCIFC *) dev->dev_icb;
+    int rt;
 
     if (buffer == 0) {
         buffer = fcb->fcb_blkbuf;
     }
     blk += fcb->fcb_part.part_sect_offs;
 
-    if (At91MciReadSingle(ifc, blk, buffer) == 0) {
-        return 1;
+    for (rt = 10; --rt >= 0;) {
+        if (At91MciReadSingle(ifc, blk, buffer) == 0) {
+            return 1;
+        }
+        At91MciReset(0);
     }
     return -1;
 }
 
 /*!
  * \brief Write data blocks to a mounted partition.
- *
- * \note Not implemented. Always returns -1.
- *
- * Applications should not call this function directly, but use the
- * stdio interface.
  *
  * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
  *               call to At91MciMount().
@@ -396,6 +533,19 @@ static int At91MciBlockRead(NUTFILE * nfp, void *buffer, int num)
  */
 static int At91MciBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
 {
+    MCIFCB *fcb = (MCIFCB *) nfp->nf_fcb;
+    uint32_t blk = fcb->fcb_blknum;
+    NUTDEVICE *dev = (NUTDEVICE *) nfp->nf_dev;
+    MCIFC *ifc = (MCIFC *) dev->dev_icb;
+
+    if (buffer == 0) {
+        buffer = fcb->fcb_blkbuf;
+    }
+    blk += fcb->fcb_part.part_sect_offs;
+
+    if (At91MciWriteSingle(ifc, blk, buffer) == 0) {
+        return 1;
+    }
     return -1;
 }
 
@@ -403,7 +553,7 @@ static int At91MciBlockWrite(NUTFILE * nfp, CONST void *buffer, int num)
  * \brief Unmount a previously mounted partition.
  *
  * Applications should not directly call this function, but use the high
- * level stdio routines for closing a previously opened file.
+ * level stdio routines for closing a previously opened volume.
  *
  * \return 0 on success, -1 otherwise.
  */
@@ -516,29 +666,44 @@ static NUTFILE *At91MciMount(NUTDEVICE * dev, CONST char *name, int mode, int ac
         NutHeapFree(fcb);
         return NUTFILE_EOF;
     }
+    /* Check for the cookie at the end of this sector. */
+	if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
+        NutHeapFree(fcb);
+        return NUTFILE_EOF;
+	}
 
-    /* Read partition table. */
-    part = (DOSPART *) & fcb->fcb_blkbuf[DOSPART_SECTORPOS];
-    for (i = 1; i <= 4; i++) {
-        if (partno) {
-            if (i == partno) {
-                /* Found specified partition number. */
+    /* Check for the partition table. */
+	if(fcb->fcb_blkbuf[DOSPART_TYPEPOS] == 'F' && 
+       fcb->fcb_blkbuf[DOSPART_TYPEPOS + 1] == 'A' &&
+       fcb->fcb_blkbuf[DOSPART_TYPEPOS + 2] == 'T') {
+        /* No partition table. Assume FAT12 and 32MB size. */
+        fcb->fcb_part.part_type = PTYPE_FAT12;
+        fcb->fcb_part.part_sect_offs = 0;
+        fcb->fcb_part.part_sects = 65536; /* How to find out? */
+	}
+    else {
+        /* Read partition table. */
+        part = (DOSPART *) & fcb->fcb_blkbuf[DOSPART_SECTORPOS];
+        for (i = 1; i <= 4; i++) {
+            if (partno) {
+                if (i == partno) {
+                    /* Found specified partition number. */
+                    fcb->fcb_part = *part;
+                    break;
+                }
+            } else if (part->part_state & 0x80) {
+                /* Located first active partition. */
                 fcb->fcb_part = *part;
                 break;
             }
-        } else if (part->part_state & 0x80) {
-            /* Located first active partition. */
-            fcb->fcb_part = *part;
-            break;
+            part++;
         }
-        part++;
-    }
 
-    if (fcb->fcb_part.part_type == PTYPE_EMPTY) {
-        NutHeapFree(fcb);
-        return NUTFILE_EOF;
+        if (fcb->fcb_part.part_type == PTYPE_EMPTY) {
+            NutHeapFree(fcb);
+            return NUTFILE_EOF;
+        }
     }
-
     if ((nfp = NutHeapAlloc(sizeof(NUTFILE))) == 0) {
         NutHeapFree(fcb);
         errno = ENOMEM;
