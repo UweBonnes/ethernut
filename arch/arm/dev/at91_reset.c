@@ -54,7 +54,7 @@ void At91Reset(void)
 {
 #if defined(RSTC_PROCRST)
     /* Use reset controller if available. */
-    outr(RSTC_CR, RSTC_KEY | RSTC_PROCRST);
+    outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST | RSTC_PERRST | RSTC_PROCRST);
 #else
     /* Otherwise use the watchdog. */
     if (At91WatchDogStart(1, 0)) {
