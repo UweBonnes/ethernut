@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.31  2008/10/03 11:31:27  haraldkipp
+-- Added TWI support for the AT91SAM9260.
+--
 -- Revision 1.30  2008/09/23 07:25:47  haraldkipp
 -- Made AT91 SDRAM settings configurable.
 -- Simplified AT91 TWI configuration.
@@ -527,6 +530,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
         },

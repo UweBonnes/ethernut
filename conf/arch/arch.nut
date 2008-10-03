@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.35  2008/10/03 11:31:27  haraldkipp
+-- Added TWI support for the AT91SAM9260.
+--
 -- Revision 1.34  2008/09/23 07:24:34  haraldkipp
 -- Added support for remaining AT91SAM7 familiy members.
 -- Added support for AT91 SDRAM and reset controller.
@@ -291,6 +294,7 @@ nutarch =
                     "HW_UART_AT91",
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
+                    "HW_MCU_SWTWI",
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO",
@@ -659,6 +663,7 @@ nutarch =
                     "HW_MCU_AT91R40008",
                     "HW_TIMER_AT91",
                     "HW_UART_AT91",
+                    "HW_MCU_SWTWI",
                     "HW_WDOG_AT91",
                     "HW_GPIO",
                     "HW_EBI_AT91"

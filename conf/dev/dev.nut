@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.45  2008/10/03 11:31:27  haraldkipp
+-- Added TWI support for the AT91SAM9260.
+--
 -- Revision 1.44  2008/09/23 07:26:51  haraldkipp
 -- Made early watchdog setting configurable.
 --
@@ -1230,7 +1233,7 @@ nutdev =
         name = "nutdev_twbbif",
         brief = "Bit Banging Two Wire",
         description = "Tested on AT91 only.",
-        requires = { "HW_MCU_AT91R40008" },
+        requires = { "HW_MCU_SWTWI" },
         provides = { "DEV_TWI" },
         sources = { "twbbif.c" },
         options =

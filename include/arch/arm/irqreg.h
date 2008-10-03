@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2008/10/03 11:31:28  haraldkipp
+ * Added TWI support for the AT91SAM9260.
+ *
  * Revision 1.16  2008/08/06 12:51:11  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -247,6 +250,7 @@ extern IRQ_HANDLER sig_SWIRQ;
 extern IRQ_HANDLER sig_SSC;
 extern IRQ_HANDLER sig_SPI0;
 extern IRQ_HANDLER sig_SPI1;
+extern IRQ_HANDLER sig_TWI;
 
 #else
 #warning "No MCU defined"

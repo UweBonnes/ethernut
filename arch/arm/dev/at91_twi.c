@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/10/03 11:31:27  haraldkipp
+ * Added TWI support for the AT91SAM9260.
+ *
  * Revision 1.6  2008/08/11 06:59:04  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -98,6 +101,14 @@ static volatile uint16_t tw_mr_idx;  /* Current master receive buffer index. */
       #define TWI_TWD  PA3_TWD_A
       #define TWI_TWCK PA4_TWCK_A
    #endif
+#endif
+
+#if defined (MCU_AT91SAM9260)
+#define TWI_PIO_ASR     PIOA_ASR
+#define TWI_PIO_PDR     PIOA_PDR
+#define TWI_PIO_MDER    PIOA_MDER
+#define TWI_TWD         PA23_TWD_A
+#define TWI_TWCK        PA24_TWCK_A
 #endif
 
 /*
