@@ -1,4 +1,21 @@
-$Id: ChangeLog,v 1.487 2008/09/23 07:31:35 haraldkipp Exp $
+$Id: ChangeLog,v 1.488 2008/10/03 10:04:48 haraldkipp Exp $
+
+2008-10-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/at91_mci.c, include/dev/mmcard.h: Several changes. 
+	The interface should work now with MultiMedia and SD Cards.
+
+	* include/arch/arm/at91_mci.h: Typo corrected, MCI_OPCMD should
+	have been MCI_OPDCMD. The wrong one will be kept for backward
+	compatibility.
+
+	* arch/arm/dev/at91_reset.c: Added external and peripheral reset,
+	as suggested by Ole.
+
+	* arch/arm/dev/at91_twi.c, conf/arch/arm.nut, conf/dev/dev.nut,
+	conf/arch/arch.nut, include/arch/arm/irqreg.h: Added TWI support 
+	for the AT91SAM9260.
+
 
 2008-09-22  Harald Kipp  <harald.kipp@egnite.de>
 
