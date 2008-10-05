@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.32  2008/10/05 16:51:46  haraldkipp
+-- Added suport for the TLV320 audio DAC.
+--
 -- Revision 1.31  2008/10/03 11:31:27  haraldkipp
 -- Added TWI support for the AT91SAM9260.
 --
@@ -1126,6 +1129,13 @@ nutarch_arm =
                 file = "include/cfg/eeprom.h"
             },
         },
+    },
+    {
+        name = "nutarch_arm_tlv320",
+        brief = "TLV320 DAC",
+        requires = { "HW_EXT_CALYPSO" },
+        provides = { "HW_AUDIO_DAC" },
+        sources = { "arm/dev/tlv320dac.c" },
     },
 }
 
