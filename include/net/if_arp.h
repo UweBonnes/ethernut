@@ -63,6 +63,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/10/05 16:46:15  haraldkipp
+ * Added missing attributes 'packed'. This may fix a problem with
+ * different ARM compiler optimization settings.
+ *
  * Revision 1.2  2008/08/11 07:00:19  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -104,7 +108,7 @@ extern "C" {
  * \typedef ARPHDR
  * \brief ARP packet header type.
  */
-typedef struct arphdr {
+typedef struct __attribute__ ((packed)) arphdr {
     uint16_t ar_hrd;    /*!< \brief Format of hardware address. 
                         *   Nut/Net supports ARPHRD_ETHER only. 
                         */

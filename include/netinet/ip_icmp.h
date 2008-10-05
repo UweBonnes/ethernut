@@ -78,6 +78,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/10/05 16:46:15  haraldkipp
+ * Added missing attributes 'packed'. This may fix a problem with
+ * different ARM compiler optimization settings.
+ *
  * Revision 1.2  2008/08/11 07:00:23  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -159,7 +163,7 @@ extern "C" {
  * \typedef ICMPHDR
  * \brief ICMP protocol header type.
  */
-typedef struct icmp {
+typedef struct __attribute__ ((packed)) icmp {
     uint8_t  icmp_type;      /*!< \brief Type of message. */
     uint8_t  icmp_code;      /*!< \brief Type sub code. */
     uint16_t icmp_cksum;     /*!< \brief Ones complement header checksum. */

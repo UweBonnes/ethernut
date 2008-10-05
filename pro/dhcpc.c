@@ -83,6 +83,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.24  2008/10/05 16:46:15  haraldkipp
+ * Added missing attributes 'packed'. This may fix a problem with
+ * different ARM compiler optimization settings.
+ *
  * Revision 1.23  2008/08/11 07:00:34  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -516,7 +520,7 @@ static uint_fast8_t __tcp_trf = 1;
 /*!
  * \brief BOOTP message structure type.
  */
-typedef struct __attribute__ ((packed)) bootp BOOTP;
+typedef struct bootp BOOTP;
 
 /*!
  * \brief BOOTP message structure.
