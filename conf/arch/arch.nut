@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.36  2008/10/05 17:01:15  haraldkipp
+-- Added Helix MP3 decoder and Hermite re-sampler. Do not miss to read
+-- the license texts.
+--
 -- Revision 1.35  2008/10/03 11:31:27  haraldkipp
 -- Added TWI support for the AT91SAM9260.
 --
@@ -298,7 +302,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO",
-                    "HW_PDC_AT91"
+                    "HW_PDC_AT91",
+                    "HW_EXT_CALYPSO"
                 },
                 makedefs = { "MCU=arm9" }
             },
@@ -382,7 +387,8 @@ nutarch =
                     "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_GPIO",
-                    "HW_PDC_AT91"
+                    "HW_PDC_AT91",
+                    "HW_EXT_CALYPSO"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },

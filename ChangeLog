@@ -1,6 +1,61 @@
-$Id: ChangeLog,v 1.488 2008/10/03 10:04:48 haraldkipp Exp $
+$Id: ChangeLog,v 1.489 2008/10/05 17:01:15 haraldkipp Exp $
+
+2008-10-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c:
+	UART driver was broken on SAM7S and SAM7SE.
+
+	* conf/at91sam9260-ek-radio.conf, conf/at91sam7x-ek-radio.conf:
+	Allow RPSL and RCSL.
+
+	* conf/repository.nut, conf/contrib/contrib.nut,
+	contrib/README.txt, include/contrib/README.txt:
+	Added new contrib directory for non-BSDL code.
+
+	* conf/contrib/hxmp3.nut, contrib/hxmp3/LICENSE.txt,
+	contrib/hxmp3/Makefile, contrib/hxmp3/RCSL.txt, 
+	contrib/hxmp3/RPSL.txt, contrib/hxmp3/asmpoly_gcc.S,
+	contrib/hxmp3/bitstream.c, contrib/hxmp3/buffers.c,
+	contrib/hxmp3/dct32.c, contrib/hxmp3/dequant.c,
+	contrib/hxmp3/dqchan.c, contrib/hxmp3/hermite.c,
+	contrib/hxmp3/huffman.c, contrib/hxmp3/hufftabs.c,
+	contrib/hxmp3/imdct.c, contrib/hxmp3/mp3dec.c,
+	contrib/hxmp3/mp3tabs.c, contrib/hxmp3/scalfact.c,
+	contrib/hxmp3/stproc.c, contrib/hxmp3/subband.c,
+	contrib/hxmp3/trigtabs.c, include/contrib/hxmp3/LICENSE.txt,
+	include/contrib/hxmp3/RCSL.txt, include/contrib/hxmp3/RPSL.txt,
+	include/contrib/hxmp3/assembly.h, include/contrib/hxmp3/coder.h,
+	include/contrib/hxmp3/hermite.h, include/contrib/hxmp3/mp3common.h,
+	include/contrib/hxmp3/mp3dec.h, include/contrib/hxmp3/statname.h:
+	Added Helix MP3 decoder and Hermite re-sampler. Do not miss to read
+	the license texts.
+
+	* arch/arm/dev/at91_spi.c: Removed forgotten debug output.
+
+	* conf/arch/arm.nut, arch/arm/dev/tlv320dac.c, 
+	include/dev/tlv320dac.h: Added suport for the TLV320 audio DAC.
+
+	* conf/dev/dev.nut, dev/hxcodec.c, include/dev/hxcodec.h: Added 
+	Helix audio device.
+
 
 2008-10-03  Harald Kipp  <harald.kipp@egnite.de>
+
+	* net/arpin.c, net/icmpin.c, net/igmpin.c, net/ipin.c, net/tcpin.c,
+	net/udpin.c: Cris Neckar reported a security hole, which allows an 
+	attacker to read random memory locations by sending ICMP echo 
+	requests with modified IP header length fields. Even writing to 
+	random locations would be possible by controlling the checksum 
+	generation of the reply packet. Added several new size checks on 
+	incoming telegrams to fix this. Many thanks to Cris for his
+	detailed description of the problem.
+
+	* include/net/if_arp.h, include/netinet/ip_icmp.h, pro/dhcpc.c:
+	Added missing attributes 'packed'. This may fix a problem with
+	different ARM compiler optimization settings.
+
+	* include/netinet/ip.h, include/sys/confnet.h, include/sys/confos.h:
+	Removed attribute 'packed' from typedef.
 
 	* arch/arm/dev/at91_mci.c, include/dev/mmcard.h: Several changes. 
 	The interface should work now with MultiMedia and SD Cards.
