@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/10/05 16:38:06  haraldkipp
+ * UART driver was broken on SAM7S and SAM7SE.
+ *
  * Revision 1.9  2008/08/11 06:59:13  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -195,7 +198,7 @@ NUTDEVICE devUsartAt911 = {
 
 #if defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
 #define US_PIOA_PINS_A  (_BV(PA21_RXD1_A) | _BV(PA22_TXD1_A))
-#define US_PIO_PINS     US_PIOA_PINS_A
+#define US_PIOA_PINS    US_PIOA_PINS_A
 #endif
 
 #if defined(MCU_AT91R40008)
