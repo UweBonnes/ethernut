@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.35  2008/10/05 16:58:14  haraldkipp
+-- Added new contrib directory for non-BSDL code.
+--
 -- Revision 1.34  2008/09/23 07:25:05  haraldkipp
 -- Added support for remaining AT91SAM7 familiy members.
 --
@@ -323,6 +326,16 @@ repository =
         requires = { "HW_TARGET", "TOOL_CXX" },
         subdir = "cpp",
         script = "cpp/cpp.nut"
+    },
+    {
+        name = "nutcontrib",
+        brief = "Non-BSDL Code",
+        description = "Packages in this module are not released under BSD license.\n"..
+                      "More restrictive licenses are acceptable here, but extra effort"..
+                      "is demanded of anyone using the code for commercial purposes.",
+        requires = { "HW_TARGET" },
+        subdir = "contrib",
+        script = "contrib/contrib.nut"
     }
 }
 
