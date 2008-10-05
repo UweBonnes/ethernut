@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.46  2008/10/05 16:56:15  haraldkipp
+-- Added Helix audio device.
+--
 -- Revision 1.45  2008/10/03 11:31:27  haraldkipp
 -- Added TWI support for the AT91SAM9260.
 --
@@ -1289,8 +1292,15 @@ nutdev =
     },
 
     {
+        name = "nutdev_hxcodec",
+        brief = "Helix Audio Device",
+        sources = { "hxcodec.c" },
+        requires = { "AUDIO_DECODER_HELIX", "HW_AUDIO_DAC" },
+    },
+
+    {
         name = "nutdev_vscodec",
-        brief = "VS10XX Audio Codec",
+        brief = "VS10XX Audio Device",
         description = "Tested with VS1033 and VS1053 on a SAM7SE system. "..
                       "Most options are currently hard coded.",
         sources = { "vscodec.c" },
