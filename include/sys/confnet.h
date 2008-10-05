@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2008/10/05 16:47:04  haraldkipp
+ * Removed attribute 'packed' from typedef.
+ *
  * Revision 1.5  2008/08/11 07:00:25  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -93,7 +96,7 @@
 /*!
  * \brief Network configuration type.
  */
-typedef struct __attribute__ ((packed)) _CONFNET CONFNET;
+typedef struct _CONFNET CONFNET;
 
 /*!
  * \struct _CONFNET confnet.h sys/confnet.h

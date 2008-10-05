@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/10/05 16:47:04  haraldkipp
+ * Removed attribute 'packed' from typedef.
+ *
  * Revision 1.7  2008/08/20 06:56:59  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -130,7 +133,7 @@
 /*!
  * \brief Internet header type.
  */
-typedef struct __attribute__ ((packed)) ip IPHDR;
+typedef struct ip IPHDR;
 
 /*!
  * \brief Structure of an internet header.

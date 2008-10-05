@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2008/10/05 16:47:04  haraldkipp
+ * Removed attribute 'packed' from typedef.
+ *
  * Revision 1.7  2008/08/11 07:00:25  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -96,7 +99,7 @@
 /*!
  * \brief Operating system configuration type.
  */
-typedef struct __attribute__ ((packed)) _CONFOS CONFOS;
+typedef struct _CONFOS CONFOS;
 
 /*!
  * \struct _CONFOS confos.h sys/confos.h
