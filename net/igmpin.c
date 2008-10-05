@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/10/05 16:48:52  haraldkipp
+ * Security fix. Check various lengths of incoming packets.
+ *
  * Revision 1.1  2007/05/02 11:18:31  haraldkipp
  * IGMP support added. Incomplete.
  *
@@ -91,17 +94,15 @@
  */
 void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb)
 {
-    IGMP *igmp;
+    IGMP *igmp = (IGMP *) nb->nb_tp.vp;
 
     /*
      * Silently discard packets, which are too small.
      */
-    if (nb->nb_tp.sz < IGMP_MINLEN) {
+    if (igmp == NULL || nb->nb_tp.sz < IGMP_MINLEN) {
         NutNetBufFree(nb);
         return;
     }
-
-    igmp = (IGMP *) nb->nb_tp.vp;
 
     switch (igmp->igmp_type) {
     case IGMP_MEMBERSHIP_QUERY:

@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2008/10/05 16:48:52  haraldkipp
+ * Security fix. Check various lengths of incoming packets.
+ *
  * Revision 1.3  2005/04/08 15:20:50  olereinhardt
  * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
  * for htons and simmilar.
@@ -142,6 +145,11 @@ void NutArpInput(NUTDEVICE * dev, NETBUF * nb)
     ETHERARP *ea;
     ARPHDR *ah;
     IFNET *nif;
+
+    if (nb->nb_nw.sz < sizeof(ETHERARP)) {
+        NutNetBufFree(nb);
+        return;
+    }
 
     ea = (ETHERARP *) nb->nb_nw.vp;
     ah = (ARPHDR *) & ea->ea_hdr;

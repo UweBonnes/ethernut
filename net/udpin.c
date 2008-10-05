@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2008/10/05 16:48:52  haraldkipp
+ * Security fix. Check various lengths of incoming packets.
+ *
  * Revision 1.9  2008/09/18 09:45:56  haraldkipp
  * All broadcasts were answered with ICMP unreachable. Due to this the ARP
  * table grew fast in large networks. Fixed.
@@ -158,10 +161,17 @@ int NutUdpInput(NUTDEVICE * dev, NETBUF * nb)
     UDPSOCKET *sock;
 
     uh = (UDPHDR *) nb->nb_tp.vp;
+    /* Make sure that the datagram contains a full header. */
+    if (uh == NULL || nb->nb_tp.sz < sizeof(UDPHDR)) {
+        NutNetBufFree(nb);
+        return 0;
+    }
 
-    nb->nb_ap.vp = uh + 1;
     nb->nb_ap.sz = nb->nb_tp.sz - sizeof(UDPHDR);
     nb->nb_tp.sz = sizeof(UDPHDR);
+    if (nb->nb_ap.sz) {
+        nb->nb_ap.vp = uh + 1;
+    }
 
     /*
      * Find a port. If none exists and if this datagram hasn't been

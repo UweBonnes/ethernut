@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/10/05 16:48:52  haraldkipp
+ * Security fix. Check various lengths of incoming packets.
+ *
  * Revision 1.4  2008/08/20 06:57:00  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -144,29 +147,37 @@
  */
 int NutTcpInput(NUTDEVICE * dev, NETBUF * nb)
 {
-    TCPHDR *th;
+    TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
-    if (nb->nb_flags & NBAF_UNICAST) {
-        th = (TCPHDR *) nb->nb_tp.vp;
-        nb->nb_ap.sz = nb->nb_tp.sz - (th->th_off * 4);
-        if (nb->nb_ap.sz)
-            nb->nb_ap.vp = ((uint32_t *) th) + th->th_off;
-        nb->nb_tp.sz = th->th_off * 4;
+    /* Process unicasts only. */
+    if (th && (nb->nb_flags & NBAF_UNICAST) != 0) {
+        uint_fast8_t hdrlen = th->th_off * 4;
 
-        /*
-        ** According to RFC1122 we MUST check the checksum
-        ** on incoming segments. Anyway, we rely on lower
-        ** level checksums to save processing resources.
-        **
-        ** However, we may combine checksum calculation
-        ** with moving data to the receiver buffer.
-        **/
+        /* Check the header length. */
+        if (hdrlen >= sizeof(TCPHDR) && hdrlen <= nb->nb_tp.sz) {
+            nb->nb_ap.sz = nb->nb_tp.sz - hdrlen;
+            if (nb->nb_ap.sz) {
+                nb->nb_ap.vp = ((uint32_t *) th) + th->th_off;
+            }
+            nb->nb_tp.sz = hdrlen;
 
-        NutTcpStateMachine(nb);
-    } else {
-        /* Silently discard TCP broadcasts. */
-        NutNetBufFree(nb);
+            /*
+            ** According to RFC1122 we MUST check the checksum
+            ** on incoming segments. Anyway, we rely on lower
+            ** level checksums to save processing resources.
+            **
+            ** However, we may combine checksum calculation
+            ** with moving data to the receiver buffer.
+            **/
+
+            NutTcpStateMachine(nb);
+
+            return 0;
+        }
     }
+    /* Silently discard this segment. */
+    NutNetBufFree(nb);
+
     return 0;
 }
 

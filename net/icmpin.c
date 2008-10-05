@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/10/05 16:48:52  haraldkipp
+ * Security fix. Check various lengths of incoming packets.
+ *
  * Revision 1.7  2008/08/11 07:00:29  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -141,12 +144,10 @@
 static int NutIcmpReflect(NUTDEVICE * dev, uint8_t type, NETBUF * nb)
 {
     IPHDR *ip;
-    ICMPHDR *icmp;
     uint32_t dest;
     IFNET *nif;
 
     ip = nb->nb_nw.vp;
-    icmp = nb->nb_tp.vp;
     dest = ip->ip_src;
     nif = dev->dev_icb;
     ip->ip_src = nif->if_local_ip;
@@ -180,7 +181,7 @@ static int NutIcmpUnreach(NETBUF * nb)
         return -1;
 
     NutTcpAbortSocket(sock, EHOSTUNREACH);
-    NutNetBufFree(nb);
+
     return 0;
 }
 
@@ -202,32 +203,30 @@ static int NutIcmpUnreach(NETBUF * nb)
  */
 void NutIcmpInput(NUTDEVICE * dev, NETBUF * nb)
 {
-    /*
-     * Silently discard packets, which are too small.
-     */
-    if (nb->nb_tp.sz > ICMP_MINLEN) {
-        ICMPHDR *icp = (ICMPHDR *) nb->nb_tp.vp;
+    ICMPHDR *icp = (ICMPHDR *) nb->nb_tp.vp;
 
-        if (nb->nb_tp.sz > sizeof(ICMPHDR)) {
-            nb->nb_ap.sz = nb->nb_tp.sz - sizeof(ICMPHDR);
-            nb->nb_ap.vp = ((char *) icp) + sizeof(ICMPHDR);
-            nb->nb_tp.sz = sizeof(ICMPHDR);
-        }
-
-        switch (icp->icmp_type) {
-        case ICMP_ECHO:
-            if (NutIcmpReflect(dev, ICMP_ECHOREPLY, nb) == 0)
-                NutNetBufFree(nb);
-            break;
-        case ICMP_UNREACH:
-            if (NutIcmpUnreach(nb) != 0)
-                NutNetBufFree(nb);
-            break;
-        default:
-            NutNetBufFree(nb);
-        }
-    } else
+    /* Silently discard packets, which are too small. */
+    if (icp == NULL || nb->nb_tp.sz < sizeof(ICMPHDR)) {
         NutNetBufFree(nb);
+        return;
+    }
+
+    nb->nb_ap.sz = nb->nb_tp.sz - sizeof(ICMPHDR);
+    if (nb->nb_ap.sz) {
+        nb->nb_ap.vp = icp + 1;
+        nb->nb_tp.sz = sizeof(ICMPHDR);
+    }
+
+    switch (icp->icmp_type) {
+    case ICMP_ECHO:
+        if (NutIcmpReflect(dev, ICMP_ECHOREPLY, nb)) {
+            break;
+        }
+    case ICMP_UNREACH:
+        NutIcmpUnreach(nb);
+    default:
+        NutNetBufFree(nb);
+    }
 }
 
 /*@}*/

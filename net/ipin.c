@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2008/10/05 16:48:52  haraldkipp
+ * Security fix. Check various lengths of incoming packets.
+ *
  * Revision 1.14  2008/08/20 06:57:00  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -162,7 +165,7 @@ int (*ip_demux) (NUTDEVICE *, NETBUF *);
 void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
 {
     IPHDR *ip;
-    uint16_t ip_hdrlen;
+    uint_fast8_t hdrlen;
     uint32_t dst;
     uint_fast8_t bcast;
     IFNET *nif;
@@ -181,18 +184,20 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     }
 
     /*
-     * IP header length is given in 32-bit fields. Calculate the size in
-     * bytes and make sure that the header we know will fit in.
-     */
-    ip_hdrlen = ip->ip_hl * 4;
-    if (ip_hdrlen < sizeof(IPHDR)) {
+    ** IP header length is given in 32-bit fields. Calculate the size in
+    ** bytes and make sure that the header we know will fit in. Check
+    ** further, that the header length is not larger than the bytes we
+    ** received.
+    */
+    hdrlen = ip->ip_hl * 4;
+    if (hdrlen < sizeof(IPHDR) || hdrlen > nb->nb_nw.sz) {
         NutNetBufFree(nb);
         return;
     }
 
-    /*
-     * No checksum calculation on incoming datagrams!
-     */
+#if NUT_IP_INCHKSUM
+    /* Optional checksum calculation on incoming datagrams. */
+#endif
 
     /*
      * Check for broadcast.
@@ -247,9 +252,17 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         }
     }
 
-    nb->nb_nw.sz = ip_hdrlen;
-    nb->nb_tp.vp = ((char *) ip) + (ip_hdrlen);
-    nb->nb_tp.sz = htons(ip->ip_len) - (ip_hdrlen);
+    /* Check the IP data length. */
+    nb->nb_tp.sz = htons(ip->ip_len);
+    if (nb->nb_tp.sz < hdrlen || nb->nb_tp.sz > nb->nb_nw.sz) {
+        NutNetBufFree(nb);
+        return;
+    }
+    nb->nb_nw.sz = hdrlen;
+    nb->nb_tp.sz -= hdrlen;
+    if (nb->nb_tp.sz) {
+        nb->nb_tp.vp = ((char *) ip) + hdrlen;
+    }
 
     if (ip_demux == NULL || (*ip_demux) (dev, nb)) {
         switch (ip->ip_p) {
