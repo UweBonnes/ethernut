@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2008/10/05 16:40:36  haraldkipp
+ * Removed forgotten debug output.
+ *
  * Revision 1.6  2008/08/11 06:59:04  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -52,8 +55,6 @@
  * Basic AT91 SPI support added.
  *
  */
-#include <stdio.h>
-
 #include <cfg/arch.h>
 #include <dev/board.h>
 #include <dev/irqreg.h>
@@ -649,7 +650,6 @@ int At91SpiTransfer2(u_int base, u_int cs, CONST void *txbuf, void *rxbuf, int x
     while (((sr = inr(base + SPI_SR_OFF)) & SPI_RXBUFF) == 0) {
         if (base == SPI0_BASE) {
             if ((rc = NutEventWait(&spi0_que, 500)) != 0) {
-                printf("[TO]");
                 break;
             }
         }
