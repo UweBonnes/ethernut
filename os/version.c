@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.63  2008/10/10 11:52:25  haraldkipp
+ * Lua added.
+ *
  * Revision 1.62  2008/08/29 15:03:04  haraldkipp
  * Fixed Configurator bug #2082123. Options now correctly enabled.
  *
@@ -239,8 +242,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04070300UL
-static CONST char os_version_string[] = "4.7.3.0";
+#define OS_VERSION_NUMBER  0x04070400UL
+static CONST char os_version_string[] = "4.7.4.0";
 
 /*!
  * \addtogroup xgNutVersion

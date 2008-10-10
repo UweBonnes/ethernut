@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.36  2008/10/10 11:52:25  haraldkipp
+-- Lua added.
+--
 -- Revision 1.35  2008/10/05 16:58:14  haraldkipp
 -- Added new contrib directory for non-BSDL code.
 --
@@ -326,6 +329,14 @@ repository =
         requires = { "HW_TARGET", "TOOL_CXX" },
         subdir = "cpp",
         script = "cpp/cpp.nut"
+    },
+    {
+        name = "nutlua",
+        brief = "Lua Support",
+        description = "Lua interpreter for Nut/OS.",
+        requires = { "HW_TARGET" },
+        subdir = "lua",
+        script = "lua/lua.nut"
     },
     {
         name = "nutcontrib",

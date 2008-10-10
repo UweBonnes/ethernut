@@ -1,4 +1,29 @@
-$Id: ChangeLog,v 1.489 2008/10/05 17:01:15 haraldkipp Exp $
+$Id: ChangeLog,v 1.490 2008/10/10 11:52:24 haraldkipp Exp $
+
+2008-10-05  Harald Kipp  <harald.kipp@egnite.de>
+
+	* configure.ac, os/version.c: Next beta will be 4.7.4.
+
+	* conf/crt/crt.nut: Floating point provision added.
+
+	* conf/repository.nut, conf/lua/lua.nut,
+	lua/lapi.c, lua/lauxlib.c, lua/lbaselib.c, lua/lcode.c, lua/ldblib.c,
+	lua/ldebug.c, lua/ldo.c, lua/ldump.c, lua/lfunc.c, lua/lgc.c,
+	lua/linit.c, lua/liolib.c, lua/llex.c, lua/lmathlib.c, lua/lmem.c,
+	lua/loadlib.c, lua/lobject.c, lua/lopcodes.c, lua/loslib.c,
+	lua/lparser.c, lua/lstate.c, lua/lstring.c, lua/lstrlib.c,
+	lua/ltable.c, lua/ltablib.c, lua/ltm.c, lua/lundump.c, lua/lvm.c,
+	lua/lzio.c, include/lua/lapi.h, include/lua/lauxlib.h,
+	include/lua/lcode.h, include/lua/ldebug.h, include/lua/ldo.h,
+	include/lua/lfunc.h, include/lua/lgc.h, include/lua/llex.h,
+	include/lua/llimits.h, include/lua/lmem.h, include/lua/lobject.h,
+	include/lua/lopcodes.h, include/lua/lparser.h, include/lua/lstate.h,
+	include/lua/lstring.h, include/lua/ltable.h, include/lua/ltm.h,
+	include/lua/lua.h, include/lua/luaconf.h, include/lua/lualib.h,
+	include/lua/luanut.h, include/lua/lundump.h, include/lua/lvm.h,
+	include/lua/lzio.h: Lua interpreter module added. Many thanks to 
+	Laszlo Parrag.
+
 
 2008-10-05  Harald Kipp  <harald.kipp@egnite.de>
 

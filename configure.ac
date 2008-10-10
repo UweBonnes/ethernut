@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.41  2008/10/10 11:52:24  haraldkipp
+# Lua added.
+#
 # Revision 1.40  2008/08/29 15:03:03  haraldkipp
 # Fixed Configurator bug #2082123. Options now correctly enabled.
 #
@@ -165,7 +168,7 @@
 #
 #
 
-AC_INIT(ethernut,4.7.3)
+AC_INIT(ethernut,4.7.4)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2008 egnite GmbH])
