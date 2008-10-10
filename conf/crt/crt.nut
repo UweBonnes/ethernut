@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.11  2008/10/10 11:51:38  haraldkipp
+-- Floating point provision added.
+--
 -- Revision 1.10  2008/06/28 07:49:33  haraldkipp
 -- Added floating point support for stdio running on ARM.
 --
@@ -150,6 +153,7 @@ nutcrt =
                 brief = "Floating point",
                 description = "Enables floating point support for standard input/output.", 
                 flavor = "boolean",
+                provides = { "FLOATING_POINT_IO" },
                 file = "include/cfg/crt.h"
             },
             {
