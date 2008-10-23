@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.47  2008/10/23 08:52:20  haraldkipp
+-- New software SPI MMC routines added.
+--
 -- Revision 1.46  2008/10/05 16:56:15  haraldkipp
 -- Added Helix audio device.
 --
@@ -2355,9 +2358,402 @@ nutdev =
         sources = { "npluled.c" },
     },
     {
+        name = "nutdev_sbi0mmc",
+        brief = "MMC Software SPI 0 Driver",
+        description = "Bit banging implementation of a low level MMC interface. "..
+                      "Tested on AT91 only, but should work on most targets.",
+        requires = { "HW_GPIO" },
+        provides = { "DEV_MMCLL" },
+        sources = { "sbi0mmc0.c", "sbi0mmc1.c" },
+        options =
+        {
+            {
+                macro = "MMC0_CLK_PIO_ID",
+                brief = "Clock Port",
+                description = "Port ID of the clock line.\n"..
+                              "SD-Card Pin 5, CLK",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CLK_PIO_BIT",
+                brief = "Clock Bit",
+                description = "Port bit number of the clock line.\n"..
+                              "SD-Card Pin 5, CLK",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_MOSI_PIO_ID",
+                brief = "MOSI Port",
+                description = "Port ID of the MOSI line.\n"..
+                              "SD-Card Pin 2, CMD",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_MOSI_PIO_BIT",
+                brief = "MOSI Bit",
+                description = "Port bit number of the MOSI line.\n"..
+                              "SD-Card Pin 2, CMD",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_MISO_PIO_ID",
+                brief = "MISO Port",
+                description = "Port ID of the MISO line.\n"..
+                              "SD-Card Pin 7, DAT0",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_MISO_PIO_BIT",
+                brief = "MISO Bit",
+                description = "Port bit number of the MISO line.\n"..
+                              "SD-Card Pin 7, DAT0",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CS0_PIO_ID",
+                brief = "Card 0 Select Port",
+                description = "Port ID of the first card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CS0_PIO_BIT",
+                brief = "Card 0 Select Bit",
+                description = "Port bit number of the first card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CD0_PIO_ID",
+                brief = "Card 0 Detect Port",
+                description = "Port ID of the first card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CD0_PIO_BIT",
+                brief = "Card 0 Detect Bit",
+                description = "Port bit number of the first card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_WP0_PIO_ID",
+                brief = "Card 0 Write Protect Port",
+                description = "Port ID of the first card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_WP0_PIO_BIT",
+                brief = "Card 0 Write Protect Bit",
+                description = "Port bit number of the first card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CS1_PIO_ID",
+                brief = "Card 1 Select Port",
+                description = "Port ID of the second card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CS1_PIO_BIT",
+                brief = "Card 1 Select Bit",
+                description = "Port bit number of the second card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CD1_PIO_ID",
+                brief = "Card 1 Detect Port",
+                description = "Port ID of the second card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_CD1_PIO_BIT",
+                brief = "Card 1 Detect Bit",
+                description = "Port bit number of the second card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_WP1_PIO_ID",
+                brief = "Card 1 Write Protect Port",
+                description = "Port ID of the second card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC0_WP1_PIO_BIT",
+                brief = "Card 1 Write Protect Bit",
+                description = "Port bit number of the second card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+        },
+    },
+    {
+        name = "nutdev_sbi1mmc",
+        brief = "MMC Software SPI 1 Driver",
+        description = "Bit banging implementation of a low level MMC interface. "..
+                      "Tested on AT91 only, but should work on most targets.",
+        requires = { "HW_GPIO" },
+        provides = { "DEV_MMCLL" },
+        sources = { "sbi1mmc0.c", "sbi1mmc1.c" },
+        options =
+        {
+            {
+                macro = "MMC1_CLK_PIO_ID",
+                brief = "Clock Port",
+                description = "Port ID of the clock line.\n"..
+                              "SD-Card Pin 5, CLK",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CLK_PIO_BIT",
+                brief = "Clock Bit",
+                description = "Port bit number of the clock line.\n"..
+                              "SD-Card Pin 5, CLK",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_MOSI_PIO_ID",
+                brief = "MOSI Port",
+                description = "Port ID of the MOSI line.\n"..
+                              "SD-Card Pin 2, CMD",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_MOSI_PIO_BIT",
+                brief = "MOSI Bit",
+                description = "Port bit number of the MOSI line.\n"..
+                              "SD-Card Pin 2, CMD",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_MISO_PIO_ID",
+                brief = "MISO Port",
+                description = "Port ID of the MISO line.\n"..
+                              "SD-Card Pin 7, DAT0",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_MISO_PIO_BIT",
+                brief = "MISO Bit",
+                description = "Port bit number of the MISO line.\n"..
+                              "SD-Card Pin 7, DAT0",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CS0_PIO_ID",
+                brief = "Card 0 Select Port",
+                description = "Port ID of the first card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CS0_PIO_BIT",
+                brief = "Card 0 Select Bit",
+                description = "Port bit number of the first card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CD0_PIO_ID",
+                brief = "Card 0 Detect Port",
+                description = "Port ID of the first card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CD0_PIO_BIT",
+                brief = "Card 0 Detect Bit",
+                description = "Port bit number of the first card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_WP0_PIO_ID",
+                brief = "Card 0 Write Protect Port",
+                description = "Port ID of the first card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_WP0_PIO_BIT",
+                brief = "Card 0 Write Protect Bit",
+                description = "Port bit number of the first card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CS1_PIO_ID",
+                brief = "Card 1 Select Port",
+                description = "Port ID of the second card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CS1_PIO_BIT",
+                brief = "Card 1 Select Bit",
+                description = "Port bit number of the second card select line.\n"..
+                              "SD-Card Pin 1, DAT3",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CD1_PIO_ID",
+                brief = "Card 1 Detect Port",
+                description = "Port ID of the second card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_CD1_PIO_BIT",
+                brief = "Card 1 Detect Bit",
+                description = "Port bit number of the second card's detect line.\n"..
+                              "Must use an external interrupt pin. If left "..
+                              "empty, then card change detection is disabled.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_WP1_PIO_ID",
+                brief = "Card 1 Write Protect Port",
+                description = "Port ID of the second card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "MMC1_WP1_PIO_BIT",
+                brief = "Card 1 Write Protect Bit",
+                description = "Port bit number of the second card's write protect line.\n"..
+                              "Currently ignored.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+        },
+    },
+    {
         name = "nutdev_sbimmc",
         brief = "Bit Banging Multimedia Card Access",
-        description = "Bit banging implementation of a low level MMC interface. "..
+        description = "Old driver, use the one above!\n\n"..
+                      "Bit banging implementation of a low level MMC interface. "..
                       "Tested on AT91 only.",
         requires = { "HW_GPIO", "HW_MCU_AT91R40008" },
         provides = { "DEV_MMCLL" },
