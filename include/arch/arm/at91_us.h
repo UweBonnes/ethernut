@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2008/10/23 08:50:43  haraldkipp
+ * Prepared AT91 UART hardware handshake.
+ *
  * Revision 1.4  2008/04/18 13:24:57  haraldkipp
  * Added Szemzo Andras' RS485 patch.
  *
@@ -77,6 +80,16 @@
 #define US_STPBRK               0x00000400      /*!< \brief Stop break */
 #define US_STTTO                0x00000800      /*!< \brief Start timeout */
 #define US_SENDA                0x00001000      /*!< \brief Send next byte with address bit set. */
+
+#if defined(USART_HAS_MODE)
+#define US_RSTIT                0x00002000      /*!< \brief Reset iterations. */
+#define US_RSTNACK              0x00004000      /*!< \brief Reset non acknowledge. */
+#define US_RETTO                0x00008000      /*!< \brief Re-arm time out. */
+#define US_DTREN                0x00010000      /*!< \brief Enable data terminal ready. */
+#define US_DTRDIS               0x00020000      /*!< \brief Disable data terminal ready. */
+#define US_RTSEN                0x00040000      /*!< \brief Enable request to send. */
+#define US_RTSDIS               0x00080000      /*!< \brief Disable request to send. */
+#endif /* USART_HAS_MODE */
 /*@}*/
 
 /*! \name Mode Register */
@@ -84,6 +97,16 @@
 #define US_MR_OFF               0x00000004      /*!< \brief USART mode register offset. */
 #define US0_MR  (USART0_BASE + US_MR_OFF)       /*!< \brief Channel 0 mode register address. */
 #define US1_MR  (USART1_BASE + US_MR_OFF)       /*!< \brief Channel 1 mode register address. */
+
+#if defined(USART_HAS_MODE)
+#define US_MODE                 0x0000000F      /*!< \brief USART mode. */
+#define US_MODE_RS485           0x00000001      /*!< \brief Hardware RS485 mode. */
+#define US_MODE_HWHANDSHAKE     0x00000002      /*!< \brief Hardware handshake mode. */
+#define US_MODE_MODEM           0x00000003      /*!< \brief Full modem mode. */
+#define US_MODE_ISO7816_T0      0x00000004      /*!< \brief ISO 7816 protocol mode (T = 0). */
+#define US_MODE_ISO7816_T1      0x00000006      /*!< \brief ISO 7816 protocol mode (T = 1). */
+#define US_MODE_IRDA            0x00000008      /*!< \brief IrDA mode */
+#endif /* USART_HAS_MODE */
 
 #define US_CLKS                 0x00000030      /*!< \brief Clock selection mask. */
 #define US_CLKS_MCK             0x00000000      /*!< \brief Master clock. */
@@ -118,9 +141,6 @@
 #define US_CHMODE_LOCAL_LOOPBACK    0x00008000  /*!< \brief Local loopback. */
 #define US_CHMODE_REMOTE_LOOPBACK   0x0000C000  /*!< \brief Remote loopback. */
 
-#define US_MODE_RS485           0x00000001      /*!< \brief Hardware RS485 mode */
-#define US_MODE_HWHANDSHAKE     0x00000002      /*!< \brief Hardware handshake mode */
-#define US_MODE_MODEM           0x00000003      /*!< \brief Full modem mode */
 #define US_MODE9                0x00020000      /*!< \brief 9 bit mode. */
 
 #define US_CLKO                 0x00040000      /*!< \brief Baud rate output enable */
@@ -155,6 +175,19 @@
 #define US_TIMEOUT              0x00000100      /*!< \brief Receiver timeout */
 #define US_TXEMPTY              0x00000200      /*!< \brief Transmitter empty */
 #define US_RXBUFF               0x00001000      /*!< \brief Receive buffer full */
+
+#if defined(USART_HAS_MODE)
+#define US_ITERATION            0x00000400      /*!< \brief Maximum number of iterations reached. */
+#define US_NACK                 0x00002000      /*!< \brief At least one non acknowledge detected. */
+#define US_RIIC                 0x00010000      /*!< \brief Ring indicator input change. */
+#define US_DSRIC                0x00020000      /*!< \brief Data set ready input change. */
+#define US_DCDIC                0x00040000      /*!< \brief Data carrier detect input change. */
+#define US_CTSIC                0x00080000      /*!< \brief Clear to send input change. */
+#define US_RI                   0x00100000      /*!< \brief Ring indicator sense status. */
+#define US_DSR                  0x00200000      /*!< \brief Data set ready sense status. */
+#define US_DCD                  0x00400000      /*!< \brief Data carrier detect sense status. */
+#define US_CTS                  0x00800000      /*!< \brief Clear to send sense status. */
+#endif /* USART_HAS_MODE */
 
 /*! \brief Baud rate calculation helper macro. 
  *

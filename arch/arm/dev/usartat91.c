@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2008/10/23 08:50:43  haraldkipp
+ * Prepared AT91 UART hardware handshake.
+ *
  * Revision 1.11  2008/08/11 06:59:13  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -115,12 +118,12 @@ static ureg_t rx_errors;
 /*!
  * \brief Enables software flow control if not equal zero.
  */
-static ureg_t flow_control;
+static uint_fast8_t flow_control;
 
 /*!
  * \brief Transmit address frame, if not zero.
  */
-static ureg_t tx_aframe;
+static uint_fast8_t tx_aframe;
 
 #ifdef UART_HDX_BIT
 	/* define in cfg/modem.h */
@@ -141,28 +144,28 @@ static ureg_t tx_aframe;
  * This variable exists only if the hardware configuration defines a
  * port bit to switch between receive and transmit mode.
  */
-static ureg_t hdx_control;
+static uint_fast8_t hdx_control;
 #endif
 
-#ifdef UART_RTS_BIT
+//#if defined(UART_RTS_BIT) || defined(US_MODE_HWHANDSHAKE)
 /*!
  * \brief Enables RTS control if not equal zero.
  *
  * This variable exists only if the hardware configuration defines a
  * port bit to control the RTS signal.
  */
-static ureg_t rts_control;
-#endif
+static uint_fast8_t rts_control;
+//#endif
 
-#ifdef UART_CTS_BIT
+//#if defined(UART_CTS_BIT) || defined(US_MODE_HWHANDSHAKE)
 /*!
  * \brief Enables CTS sense if not equal zero.
  *
  * This variable exists only if the hardware configuration defines a
  * port bit to sense the CTS signal.
  */
-static ureg_t cts_sense;
-#endif
+static uint_fast8_t cts_sense;
+//#endif
 
 #ifdef UART_CTS_BIT
 /*!
@@ -474,11 +477,7 @@ static uint32_t At91UsartGetSpeed(void)
     ureg_t cs = inr(USARTn_BASE + US_MR_OFF);
     uint32_t clk;
 
-#if defined(AT91_PLL_MAINCK)
-    clk = At91GetMasterClock();
-#else
-    clk = NutGetCpuClock();
-#endif
+    clk = NutClockGet(NUT_HWCLK_PERIPHERAL);
     if ((cs & US_CLKS) == US_CLKS_MCK8) {
         clk /= 8;
     }
@@ -501,11 +500,7 @@ static uint32_t At91UsartGetSpeed(void)
 static int At91UsartSetSpeed(uint32_t rate)
 {
     At91UsartDisable();
-#if defined(AT91_PLL_MAINCK)
-    outr(USARTn_BASE + US_BRGR_OFF, (At91GetMasterClock() / (8 * (rate)) + 1) / 2);
-#else
-    outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (rate)) + 1) / 2);
-#endif
+    outr(USARTn_BASE + US_BRGR_OFF, (NutClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (rate)) + 1) / 2);
     At91UsartEnable();
 
     return 0;
@@ -723,6 +718,9 @@ static int At91UsartSetStopBits(uint8_t bits)
 static uint32_t At91UsartGetStatus(void)
 {
     uint32_t rc = 0;
+#if defined(US_MODE_HWHANDSHAKE)
+    uint32_t csr = inr(USARTn_BASE + US_CSR_OFF);
+#endif
 
     /*
      * Set receiver error flags.
@@ -749,10 +747,11 @@ static uint32_t At91UsartGetStatus(void)
             rc |= UART_TXDISABLED;
         }
     }
-#ifdef UART_RTS_BIT
+
     /*
      * Determine hardware handshake control status.
      */
+#if defined(UART_RTS_BIT)
     if (bit_is_set(UART_RTS_PORT, UART_RTS_BIT)) {
         rc |= UART_RTSDISABLED;
         if (rts_control) {
@@ -761,12 +760,14 @@ static uint32_t At91UsartGetStatus(void)
     } else {
         rc |= UART_RTSENABLED;
     }
+#elif defined(US_MODE_HWHANDSHAKE)
+    /* How to find out? */
 #endif
 
-#ifdef UART_CTS_BIT
     /*
      * Determine hardware handshake sense status.
      */
+#ifdef UART_CTS_BIT
     if (bit_is_set(UART_CTS_PIN, UART_CTS_BIT)) {
         rc |= UART_CTSDISABLED;
         if (cts_sense) {
@@ -774,6 +775,37 @@ static uint32_t At91UsartGetStatus(void)
         }
     } else {
         rc |= UART_CTSENABLED;
+    }
+#elif defined(US_MODE_HWHANDSHAKE)
+    if (csr & US_CTS) {
+        rc |= UART_CTSDISABLED;
+        if (cts_sense) {
+            rc |= UART_RXDISABLED;
+        }
+    } else {
+        rc |= UART_CTSENABLED;
+    }
+#endif
+
+    /*
+     * Determine hardware modem sense status.
+     */
+#if defined(US_MODE_HWHANDSHAKE) && 0
+    /* I'm confused. Awful flag mismatch? Why do we have uart.h and usart.h? */
+    if (csr & US_RI) {
+        rc |= UART_RIDISABLED;
+    } else {
+        rc |= UART_RIENABLED;
+    }
+    if (csr & US_DSR) {
+        rc |= UART_DSRDISABLED;
+    } else {
+        rc |= UART_DSRENABLED;
+    }
+    if (csr & US_DCD) {
+        rc |= UART_DCDDISABLED;
+    } else {
+        rc |= UART_DCDENABLED;
     }
 #endif
 
@@ -837,10 +869,12 @@ static int At91UsartSetStatus(uint32_t flags)
         }
         NutExitCritical();
     }
-#ifdef UART_RTS_BIT
+
     /*
      * Process hardware handshake control.
      */
+#if defined(UART_RTS_BIT)
+    /* Manually controlled via GPIO. */
     if (rts_control) {
         if (flags & UART_RXDISABLED) {
             sbi(UART_RTS_PORT, UART_RTS_BIT);
@@ -854,6 +888,43 @@ static int At91UsartSetStatus(uint32_t flags)
     }
     if (flags & UART_RTSENABLED) {
         cbi(UART_RTS_PORT, UART_RTS_BIT);
+    }
+#elif defined(US_MODE_HWHANDSHAKE)
+    /* Build in hardware. */
+    if (rts_control) {
+        if (flags & UART_RXDISABLED) {
+            outr(USARTn_BASE + US_CR_OFF, US_RTSDIS);
+        }
+        if (flags & UART_RXENABLED) {
+            outr(USARTn_BASE + US_CR_OFF, US_RTSEN);
+        }
+    }
+    if (flags & UART_RTSDISABLED) {
+        outr(USARTn_BASE + US_CR_OFF, US_RTSDIS);
+    }
+    if (flags & UART_RTSENABLED) {
+        outr(USARTn_BASE + US_CR_OFF, US_RTSEN);
+    }
+#endif
+
+    /*
+     * Process hardware modem control.
+     */
+#if defined(UART_DTR_BIT)
+    /* Manually controlled via GPIO. */
+    if (flags & UART_DTRDISABLED) {
+        sbi(UART_DTR_PORT, UART_DTR_BIT);
+    }
+    if (flags & UART_DTRENABLED) {
+        cbi(UART_DTR_PORT, UART_DTR_BIT);
+    }
+#elif defined(US_MODE_HWHANDSHAKE)
+    /* Build in hardware. */
+    if (flags & UART_DTRDISABLED) {
+        outr(USARTn_BASE + US_CR_OFF, US_DTRDIS);
+    }
+    if (flags & UART_DTRENABLED) {
+        outr(USARTn_BASE + US_CR_OFF, US_DTREN);
     }
 #endif
 
@@ -993,25 +1064,27 @@ static int At91UsartSetFlowControl(uint32_t flags)
         NutExitCritical();
     }
 
-#ifdef UART_RTS_BIT
     /*
      * Set RTS control mode.
      */
     if (flags & USART_MF_RTSCONTROL) {
+#if defined(UART_RTS_BIT)
         sbi(UART_RTS_PORT, UART_RTS_BIT);
         sbi(UART_RTS_DDR, UART_RTS_BIT);
         rts_control = 1;
+#endif
     } else if (rts_control) {
         rts_control = 0;
+#if defined(UART_RTS_BIT)
         cbi(UART_RTS_DDR, UART_RTS_BIT);
-    }
 #endif
+    }
 
-#ifdef UART_CTS_BIT
-    /*
-     * Set CTS sense mode.
-     */
+/*
+ * Set CTS sense mode.
+ */
     if (flags & USART_MF_CTSSENSE) {
+#if defined(UART_CTS_BIT)
         /* Register CTS sense interrupt. */
         if (NutRegisterIrqHandler(&UART_CTS_SIGNAL, At91UsartCts, 0)) {
             return -1;
@@ -1019,13 +1092,26 @@ static int At91UsartSetFlowControl(uint32_t flags)
         sbi(UART_CTS_PORT, UART_CTS_BIT);
         cbi(UART_CTS_DDR, UART_CTS_BIT);
         cts_sense = 1;
+#elif defined(US_MODE_HWHANDSHAKE)
+        uint32_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_MODE;
+
+        outr(USARTn_BASE + US_MR_OFF, val | US_MODE_HWHANDSHAKE);
+        cts_sense = 1;
+        rts_control = 1;
+#endif
     } else if (cts_sense) {
-        cts_sense = 0;
+#if defined(UART_CTS_BIT)
         /* Deregister CTS sense interrupt. */
         NutRegisterIrqHandler(&UART_CTS_SIGNAL, 0, 0);
         cbi(UART_CTS_DDR, UART_CTS_BIT);
-    }
+#elif defined(US_MODE_HWHANDSHAKE)
+        uint32_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_MODE;
+
+        outr(USARTn_BASE + US_MR_OFF, val);
+        rts_control = 0;
 #endif
+        cts_sense = 0;
+    }
 
 #ifdef UART_HDX_BIT
     /*

@@ -42,6 +42,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.12  2008/10/23 08:50:43  haraldkipp
+ * Prepared AT91 UART hardware handshake.
+ *
  * Revision 1.11  2007/12/09 21:28:56  olereinhardt
  * Added adc support
  *
@@ -141,6 +144,7 @@
 #define SPI_HAS_PDC
 #define SSC_HAS_PDC
 #define USART_HAS_PDC
+#define USART_HAS_MODE
 
 #define PIO_HAS_MULTIDRIVER
 #define PIO_HAS_PULLUP

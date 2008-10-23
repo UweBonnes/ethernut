@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.37  2008/10/23 08:50:43  haraldkipp
+-- Prepared AT91 UART hardware handshake.
+--
 -- Revision 1.36  2008/10/05 17:01:15  haraldkipp
 -- Added Helix MP3 decoder and Hermite re-sampler. Do not miss to read
 -- the license texts.
@@ -588,6 +591,9 @@ nutarch =
                     "HW_SDRAMC",
                     "HW_PIT_AT91",
                     "HW_UART_AT91",
+                    "HW_UART0_RTSCTS",
+                    "HW_UART1_RTSCTS",
+                    "HW_UART1_MODEM",
                     "HW_SPI_AT91",
                     "HW_TWI_AT91",
                     "HW_RSTC_AT91",
@@ -616,6 +622,9 @@ nutarch =
                     "HW_SDRAMC",
                     "HW_PIT_AT91",
                     "HW_UART_AT91",
+                    "HW_UART0_RTSCTS",
+                    "HW_UART1_RTSCTS",
+                    "HW_UART1_MODEM",
                     "HW_SPI_AT91",
                     "HW_TWI_AT91",
                     "HW_RSTC_AT91",
@@ -644,6 +653,9 @@ nutarch =
                     "HW_SDRAMC",
                     "HW_PIT_AT91",
                     "HW_UART_AT91",
+                    "HW_UART0_RTSCTS",
+                    "HW_UART1_RTSCTS",
+                    "HW_UART1_MODEM",
                     "HW_SPI_AT91",
                     "HW_TWI_AT91",
                     "HW_RSTC_AT91",

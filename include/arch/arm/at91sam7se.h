@@ -95,6 +95,7 @@
 #define SPI_HAS_PDC
 #define SSC_HAS_PDC
 #define USART_HAS_PDC
+#define USART_HAS_MODE
 
 #define PIO_HAS_MULTIDRIVER
 #define PIO_HAS_PULLUP

@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2008/10/23 08:50:43  haraldkipp
+ * Prepared AT91 UART hardware handshake.
+ *
  * Revision 1.10  2008/10/05 16:38:06  haraldkipp
  * UART driver was broken on SAM7S and SAM7SE.
  *
@@ -68,6 +71,7 @@
 #include <cfg/os.h>
 #include <cfg/clock.h>
 #include <cfg/arch.h>
+#include <cfg/uart.h>
 
 #include <string.h>
 
@@ -180,30 +184,75 @@ NUTDEVICE devUsartAt910 = {
 
 /*@}*/
 
-#if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+/*
+** SAM9260 and SAM9XE pins.
+*/
+#if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE)
+#if defined(UART0_MODEM_CONTROL)
+#define US_PIOB_PINS_A  ( \
+    _BV(PB4_TXD0_A) | _BV(PB5_RXD0_A) | _BV(PB27_CTS0_A) | _BV(PB26_RTS0_A) \
+    | _BV(PB25_RI0_A) | _BV(PB22_DSR0_A) | _BV(PB23_DCD0_A) | _BV(PB24_DTR0_A) \
+)
+#elif defined(UART0_HARDWARE_HANDSHAKE)
+#define US_PIOB_PINS_A  ( \
+    _BV(PB4_TXD0_A) | _BV(PB5_RXD0_A) | _BV(PB27_CTS0_A) | _BV(PB26_RTS0_A) \
+)
+#else
 #define US_PIOB_PINS_A  (_BV(PB4_TXD0_A) | _BV(PB5_RXD0_A))
+#endif
 #define US_PIOB_PINS    US_PIOB_PINS_A
 #endif
 
-#if defined(MCU_AT91SAM7X256)
-#ifdef AT91_UART0_RS485
-#define US_PIOA_PINS_A  (_BV(PA0_RXD0_A) | _BV(PA1_TXD0_A) | _BV(PA3_RTS0_A))
-#define AT91_UART_RS485_MODE
-#else /* AT91_UART0_RS485 */
-#define US_PIOA_PINS_A  (_BV(PA0_RXD0_A) | _BV(PA1_TXD0_A))
-#undef AT91_UART_RS485_MODE
-#endif /* AT91_UART0_RS485 */
-#define US_PIOA_PINS    US_PIOA_PINS_A
-#endif
-
-#if defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+/*
+** SAM7S and SAM7SE pins.
+*/
+#if defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
+#if defined(UART0_HARDWARE_HANDSHAKE)
+#define US_PIOA_PINS_A  ( \
+    _BV(PA6_TXD0_A) | _BV(PA5_RXD0_A) | _BV(PA8_CTS0_A) | _BV(PA7_RTS0_A) \
+)
+#else
 #define US_PIOA_PINS_A  (_BV(PA5_RXD0_A) | _BV(PA6_TXD0_A))
+#endif
 #define US_PIOA_PINS    US_PIOA_PINS_A
 #endif
 
+/*
+** SAM7X pins.
+*/
+#if defined(MCU_AT91SAM7X)
+#if defined(UART0_HARDWARE_HANDSHAKE)
+#define US_PIOA_PINS_A  ( \
+    _BV(PA1_TXD0_A) | _BV(PA0_RXD0_A) | _BV(PA4_CTS0_A) | _BV(PA3_RTS0_A) \
+)
+#else
+#define US_PIOA_PINS_A  (_BV(PA1_TXD0_A) | _BV(PA0_RXD0_A))
+#endif
+#define US_PIOA_PINS    US_PIOA_PINS_A
+#endif
+
+/*
+** X40 pins.
+*/
 #if defined(MCU_AT91R40008)
 #define US_PIO_PINS     (_BV(P15_RXD0) | _BV(P14_TXD0))
 #endif
+
+/*
+** Historical settings from Szemzo Andras for RS485.
+** Not sure if we must keep this.
+*/
+#ifdef AT91_UART0_RS485
+#if defined(MCU_AT91SAM7X256)
+#undef US_PIOA_PINS_A
+#define US_PIOA_PINS_A  (_BV(PA0_RXD0_A) | _BV(PA1_TXD0_A) | _BV(PA3_RTS0_A))
+#undef AT91_UART_RS485_MODE
+#define AT91_UART_RS485_MODE
+#undef US_PIOA_PINS
+#define US_PIOA_PINS    US_PIOA_PINS_A
+#endif
+#endif /* AT91_UART0_RS485 */
+
 
 #define USARTn_BASE     USART0_BASE
 #define US_ID           US0_ID

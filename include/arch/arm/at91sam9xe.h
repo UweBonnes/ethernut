@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2008/10/23 08:50:43  haraldkipp
+ * Prepared AT91 UART hardware handshake.
+ *
  * Revision 1.1  2008/08/06 12:51:10  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -104,6 +107,7 @@
 #define SPI_HAS_PDC
 #define SSC_HAS_PDC
 #define USART_HAS_PDC
+#define USART_HAS_MODE
 #define MCI_HAS_PDC
 
 #define PIO_HAS_MULTIDRIVER

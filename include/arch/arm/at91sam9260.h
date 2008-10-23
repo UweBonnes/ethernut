@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2008/10/23 08:50:43  haraldkipp
+ * Prepared AT91 UART hardware handshake.
+ *
  * Revision 1.7  2008/01/31 09:35:46  haraldkipp
  * Removed PIO_BASE definition, which conflicts with general GPIO.
  *
@@ -120,6 +123,7 @@
 #define SPI_HAS_PDC
 #define SSC_HAS_PDC
 #define USART_HAS_PDC
+#define USART_HAS_MODE
 #define MCI_HAS_PDC
 
 #define PIO_HAS_MULTIDRIVER
