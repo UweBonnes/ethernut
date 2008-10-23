@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2008/10/23 08:53:01  haraldkipp
+ * Adding new port identifiers.
+ *
  * Revision 1.7  2008/01/31 09:32:16  haraldkipp
  * Added ports H to L.
  *
@@ -71,19 +74,31 @@
  * \brief AVR hardware configuration.
  */
 
+#define PIOA_ID     1
+#define PIOB_ID     2
+#define PIOC_ID     3
+#define PIOD_ID     4
+#define PIOE_ID     5
+#define PIOF_ID     6
+#define PIOG_ID     7
+#define PIOH_ID     8
+#define PIOI_ID     9
+#define PIOJ_ID     10
+#define PIOK_ID     11
+#define PIOL_ID     12
 
-#define AVRPORTA    1
-#define AVRPORTB    2
-#define AVRPORTC    3
-#define AVRPORTD    4
-#define AVRPORTE    5
-#define AVRPORTF    6
-#define AVRPORTG    7
-#define AVRPORTH    8
-#define AVRPORTI    9
-#define AVRPORTJ    10
-#define AVRPORTK    11
-#define AVRPORTL    12
+#define AVRPORTA    PIOA_ID
+#define AVRPORTB    PIOB_ID
+#define AVRPORTC    PIOC_ID
+#define AVRPORTD    PIOD_ID
+#define AVRPORTE    PIOE_ID
+#define AVRPORTF    PIOF_ID
+#define AVRPORTG    PIOG_ID
+#define AVRPORTH    PIOH_ID
+#define AVRPORTI    PIOI_ID
+#define AVRPORTJ    PIOJ_ID
+#define AVRPORTK    PIOK_ID
+#define AVRPORTL    PIOL_ID
 
 #include <cfg/arch/avrpio.h>
 
