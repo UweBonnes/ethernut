@@ -36,6 +36,10 @@
 
 /*!
  * $Log$
+ * Revision 1.8  2008/10/23 08:55:46  haraldkipp
+ * Now determines MCU family.
+ * Added Ethernut 5 settings.
+ *
  * Revision 1.7  2008/08/11 11:51:20  thiagocorrea
  * Preliminary Atmega2560 compile options, but not yet supported.
  * It builds, but doesn't seam to run properly at this time.
@@ -67,6 +71,9 @@
  * when not using the Configurator.
  */
 
+/*
+** Determine board defaults.
+**/
 #if defined(ETHERNUT1)
 
 #ifndef PLATFORM
@@ -119,6 +126,20 @@
 
 #ifndef MCU_AT91R40008
 #define MCU_AT91R40008
+#endif
+
+#elif defined(ETHERNUT5)
+
+#ifndef PLATFORM
+#define PLATFORM ETHERNUT5
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91SAM9XE512
+#define MCU_AT91SAM9XE512
 #endif
 
 #elif defined(AT91SAM7X_EK)
@@ -191,6 +212,40 @@
 #define MCU_AT91SAM9260
 #endif
 
+#endif /* Board */
+
+/*
+** Determine Atmel MCU family.
+**/
+#if defined(MCU_AT91SAM7S16) || defined(MCU_AT91SAM7S32) || defined(MCU_AT91SAM7S64) \
+    || defined(MCU_AT91SAM7S128) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7S512)
+#ifndef MCU_AT91SAM7S
+#define MCU_AT91SAM7S
+#endif
+#endif
+
+#if defined(MCU_AT91SAM7SE32) || defined(MCU_AT91SAM7SE256) || defined(MCU_AT91SAM7SE512)
+#ifndef MCU_AT91SAM7SE
+#define MCU_AT91SAM7SE
+#endif
+#endif
+
+#if defined(MCU_AT91SAM7X128) || defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7X512)
+#ifndef MCU_AT91SAM7X
+#define MCU_AT91SAM7X
+#endif
+#endif
+
+#if defined(MCU_AT91SAM9XE128) || defined(MCU_AT91SAM9XE256) || defined(MCU_AT91SAM9XE512)
+#ifndef MCU_AT91SAM9XE
+#define MCU_AT91SAM9XE
+#endif
+#endif
+
+#if defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE) || defined(MCU_AT91SAM9XE)
+#ifndef MCU_AT91
+#define MCU_AT91
+#endif
 #endif
 
 #endif
