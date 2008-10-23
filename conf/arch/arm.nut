@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.33  2008/10/23 08:51:22  haraldkipp
+-- Added MCU family macros and AT91 UART hardware handshake.
+--
 -- Revision 1.32  2008/10/05 16:51:46  haraldkipp
 -- Added suport for the TLV320 audio DAC.
 --
@@ -169,6 +172,46 @@ nutarch_arm =
                 type = "integer",
                 default = 1,
                 requires = { "HW_MCU_AT91" },
+                file = "include/cfg/arch.h"
+            }
+        }
+    },
+    {
+        name = "nutarch_at91_family",
+        brief = "Atmel AT91 Family",
+        requires = { "HW_MCU_AT91" },
+        options =
+        {
+            {
+                macro = "MCU_AT91SAM7S",
+                brief = "Atmel AT91SAM7S",
+                type = "integer",
+                default = 1,
+                requires = { "HW_MCU_AT91SAM7S" },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_AT91SAM7SE",
+                brief = "Atmel AT91SAM7SE",
+                type = "integer",
+                default = 1,
+                requires = { "HW_MCU_AT91SAM7SE" },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_AT91SAM7X",
+                brief = "Atmel AT91SAM7X",
+                type = "integer",
+                default = 1,
+                requires = { "HW_MCU_AT91SAM7X" },
+                file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_AT91SAM9XE",
+                brief = "Atmel AT91SAM9XE",
+                type = "integer",
+                default = 1,
+                requires = { "HW_MCU_AT91SAM9XE" },
                 file = "include/cfg/arch.h"
             }
         }
@@ -586,6 +629,34 @@ nutarch_arm =
         options =
         {
             {
+                macro = "UART0_RXTX_ONLY",
+                brief = "Receive/Transmit Only",
+                description = "When selected, the driver will not support any handshake signals.",
+                flavor = "boolean",
+                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART0_HARDWARE_HANDSHAKE",
+                brief = "Hardware Handshake",
+                description = "When selected, the driver will support RTS/CTS hardware handshake. "..
+                              "Make sure, that the related peripheral pins are available.",
+                flavor = "boolean",
+                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+                requires = { "HW_UART0_RTSCTS" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART0_MODEM_CONTROL",
+                brief = "Full Modem Control",
+                description = "When selected, the driver will support full modem control. "..
+                              "Make sure, that all related peripheral pins are available.",
+                flavor = "boolean",
+                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+                requires = { "HW_UART0_MODEM" },
+                file = "include/cfg/uart.h"
+            },
+            {
                 macro = "AT91_UART0_RS485",
                 brief = "USE HW RS485 on UART0",
         description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
@@ -606,6 +677,34 @@ nutarch_arm =
         sources = { "arm/dev/usart1at91.c" },
         options =
         {
+            {
+                macro = "UART1_RXTX_ONLY",
+                brief = "Receive/Transmit Only",
+                description = "When selected, the driver will not support any handshake signals.",
+                flavor = "boolean",
+                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART1_HARDWARE_HANDSHAKE",
+                brief = "Hardware Handshake",
+                description = "When selected, the driver will support RTS/CTS hardware handshake. "..
+                              "Make sure, that the related peripheral pins are available.",
+                flavor = "boolean",
+                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+                requires = { "HW_UART1_RTSCTS" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART1_MODEM_CONTROL",
+                brief = "Full Modem Control",
+                description = "When selected, the driver will support full modem control. "..
+                              "Make sure, that all related peripheral pins are available.",
+                flavor = "boolean",
+                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+                requires = { "HW_UART1_MODEM" },
+                file = "include/cfg/uart.h"
+            },
             {
                 macro = "AT91_UART1_RS485",
                 brief = "USE HW RS485 on UART1",
