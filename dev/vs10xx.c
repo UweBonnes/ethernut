@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2008/10/23 08:54:07  haraldkipp
+ * Include the correct header file.
+ *
  * Revision 1.4  2008/09/18 09:51:58  haraldkipp
  * Use the correct PORT macros.
  *
@@ -50,14 +53,13 @@
  *
  */
 
-#include <cfg/arch/avr.h>
-#include <cfg/audio.h>
-
 #include <sys/atom.h>
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/heap.h>
 
+#include <cfg/arch/gpio.h>
+#include <cfg/audio.h>
 #include <dev/irqreg.h>
 #include <dev/vs10xx.h>
 

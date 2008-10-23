@@ -35,19 +35,21 @@
 
 /*
  * $Log$
+ * Revision 1.2  2008/10/23 08:54:07  haraldkipp
+ * Include the correct header file.
+ *
  * Revision 1.1  2008/10/05 16:56:15  haraldkipp
  * Added Helix audio device.
  *
  */
-
-#include <cfg/arch/avr.h>
-#include <cfg/audio.h>
 
 #include <sys/atom.h>
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/heap.h>
 
+#include <cfg/arch/gpio.h>
+#include <cfg/audio.h>
 #include <dev/irqreg.h>
 
 #include <contrib/hxmp3/mp3dec.h>

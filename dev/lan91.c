@@ -38,11 +38,9 @@
  * $Id$
  */
 
-#include <cfg/os.h>
-#include <cfg/arch/avr.h>
-
 #include <string.h>
 
+#include <cfg/os.h>
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -55,6 +53,7 @@
 #include <net/if.h>
 #include <net/if_var.h>
 
+#include <cfg/arch/gpio.h>
 #include <dev/irqreg.h>
 #include <dev/lan91.h>
 

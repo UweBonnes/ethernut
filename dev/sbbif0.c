@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2008/10/23 08:54:07  haraldkipp
+ * Include the correct header file.
+ *
  * Revision 1.2  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -41,8 +44,9 @@
  *
  */
 
-#include <cfg/arch/avr.h>
 #include <sys/timer.h>
+
+#include <cfg/arch/gpio.h>
 #include <dev/sbbif0.h>
 
 /* SPI modes of all devices. */
