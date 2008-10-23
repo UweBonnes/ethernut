@@ -1,4 +1,42 @@
-$Id: ChangeLog,v 1.490 2008/10/10 11:52:24 haraldkipp Exp $
+$Id: ChangeLog,v 1.491 2008/10/23 08:58:28 haraldkipp Exp $
+
+2008-10-22  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
+	arch/arm/dev/usartat91.c, conf/arch/arch.nut,
+	include/arch/arm/at91_us.h, include/arch/arm/at91sam7s.h,
+	include/arch/arm/at91sam7se.h, include/arch/arm/at91sam7x.h,
+	include/arch/arm/at91sam9260.h, include/arch/arm/at91sam9xe.h,
+	include/cfg/uart.h: Prepared AT91 UART hardware handshake.
+
+	* conf/arch/arm.nut: Added MCU family macros and AT91 UART 
+	hardware handshake.
+
+	* conf/dev/dev.nut, include/dev/sbi_mmc.h, dev/sbi_mmc.c,
+	dev/sbi0mmc0.c, dev/sbi0mmc1.c, dev/sbi1mmc0.c, dev/sbi1mmc1.c:
+	New software SPI MMC routines added. Actually we need drivers
+	for a new SPI bus concept, but MMC was not working on the EIR.
+	So I added another temporary solution. This one should work
+	on all supported targets, but has been tested on the EIR only.
+	It supports 2 buses with 2 MMC sockets each.
+
+	* include/cfg/arch/avr.h: Offering the same port identifiers
+	as for the AT91 family. The old ones are kept for backward
+	compatibility.
+
+	* dev/vs10xx.c, dev/lan91.c, dev/vscodec.c, dev/sbbif0.c,
+	dev/hxcodec.c: Include the correct header file.
+
+	* include/cfg/arch/porttran.h: This new header file determines 
+	the target specific GPIO register names by a simple configured 
+	port identifier. Use this to remove those lengthy #if's in some
+	source files.
+
+	* include/cfg/arch.h: Now determines MCU family. Added 
+	Ethernut 5 settings.
+
+	* include/dev/board.h: Added default MMC interfaces.
+
 
 2008-10-05  Harald Kipp  <harald.kipp@egnite.de>
 
