@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2008/10/23 08:56:56  haraldkipp
+ * Added default MMC interfaces.
+ *
  * Revision 1.15  2008/08/27 07:01:10  thornen
  * Added:
  *  - RTL          support for MMnet01..04
@@ -186,6 +189,36 @@
 #elif defined(ELEKTOR_IR1)
 #define RTC_CHIP rtcPcf8563
 #include <dev/pcf8563.h>
+#endif
+
+/*
+ * MultiMedia Card.
+ */
+#if defined(ETHERNUT3)
+#define DEV_MMCARD0         devNplMmc0
+#include <dev/nplmmc.h>
+#elif defined(AT91SAM7X_EK)
+#define DEV_MMCARD0         devAt91SpiMmc0
+#include <dev/spimmc_at91.h>
+#elif defined(AT91SAM9260_EK)
+#define DEV_MMCARD0         devAt91Mci0
+#define DEV_MMCARD0_NAME    "MCI0"
+#include <dev/at91_mci.h>
+#elif defined(ELEKTOR_IR1)
+#define DEV_MMCARD0         devSbi0MmCard0
+#include <dev/sbi_mmc.h>
+#endif
+
+#if defined(DEV_MMCARD0)
+#ifndef DEV_MMCARD
+#define DEV_MMCARD          DEV_MMCARD0
+#endif
+#ifndef DEV_MMCARD0_NAME
+#define DEV_MMCARD0_NAME    "MMC0"
+#endif
+#ifndef DEV_MMCARD_NAME
+#define DEV_MMCARD_NAME     DEV_MMCARD0_NAME
+#endif
 #endif
 
 #endif
