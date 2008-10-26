@@ -2,6 +2,11 @@ const char crurom_rcsid[] = "@(#) $Id$";
 
 /*
  * $Log$
+ * Revision 1.5  2008/10/26 18:29:59  olereinhardt
+ * 2008-10-26  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ * 	* tools/crurom/crurom.c: Added .svn to the list of directories to
+ * 	  ignore when creating urom.c
+ *
  * Revision 1.4  2005/04/28 16:02:43  haraldkipp
  * Autoconfiscated
  *
@@ -133,7 +138,7 @@ int dodir(char *dirpath)
     if(verbose)
         fprintf(stderr, "Scan %s\n", dirpath);
     while((dire = readdir(dir)) != NULL && rc == 0) {
-        if(dire->d_name[0] == '.' || stricmp(dire->d_name, "cvs") == 0)
+        if((dire->d_name[0] == '.') || (stricmp(dire->d_name, "cvs") == 0) || (stricmp(dire->d_name, "svn") == 0))
             continue;
         strcpy(path, dirpath);
         strcat(path, "/");
