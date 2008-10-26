@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.491 2008/10/23 08:58:28 haraldkipp Exp $
+$Id: ChangeLog,v 1.492 2008/10/26 18:31:01 olereinhardt Exp $
+
+2008-10-26  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* tools/crurom/crurom.c: Added .svn to the list of directories to   
+          ignore when creating urom.c
 
 2008-10-22  Harald Kipp  <harald.kipp@egnite.de>
 
