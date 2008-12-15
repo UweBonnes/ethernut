@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2008/12/15 19:18:49  haraldkipp
+ * Enable DataFlash support for EIR board.
+ *
  * Revision 1.6  2008/08/11 06:59:41  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -360,7 +363,7 @@ int At45dbInit(u_int spibas, u_int spipcs)
         return -1;
     }
 
-#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+#if defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7SE) || defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE)
     At91SpiInit(spibas);
     At91SpiReset(spibas);
     At91SpiInitChipSelects(spibas, _BV(spipcs));

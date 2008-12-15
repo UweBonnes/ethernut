@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.34  2008/12/15 19:18:49  haraldkipp
+-- Enable DataFlash support for EIR board.
+--
 -- Revision 1.33  2008/10/23 08:51:22  haraldkipp
 -- Added MCU family macros and AT91 UART hardware handshake.
 --
@@ -542,6 +545,7 @@ nutarch_arm =
             "arm/dev/ih_at91irq1.c",
             "arm/dev/ih_at91irq2.c",
             "arm/dev/ih_at91pio.c",
+            "arm/dev/ih_at91spi0.c",
             "arm/dev/ih_at91ssc.c",
             "arm/dev/ih_at91swirq.c",
             "arm/dev/ih_at91tc0.c",

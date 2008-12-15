@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.492 2008/10/26 18:31:01 olereinhardt Exp $
+$Id: ChangeLog,v 1.493 2008/12/15 19:18:49 haraldkipp Exp $
+
+2008-11-12  Harald Kipp  <harald.kipp@egnite.de>
+
+	* conf/arch/arm.nut, dev/at45db.c: Enable DataFlash support
+	for EIR board.
+
 
 2008-10-26  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* tools/crurom/crurom.c: Added .svn to the list of directories to   
