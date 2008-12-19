@@ -75,7 +75,7 @@ static int PioCtlA(int cmd, void *param, int bit)
 {
     int rc = 0;
     u_int *ival = (u_int *) param;
-    uint16_t enabled = inr(PIOA_IMR) & _BV(bit);
+    uint32_t enabled = inr(PIOA_IMR) & _BV(bit);
 
     /* Disable interrupt. */
     if (enabled) {
