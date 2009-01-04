@@ -33,6 +33,11 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.15  2009/01/04 20:48:53  olereinhardt
+# 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+#
+# 	* pro/Makefile: Fixed Makefile. Thanks to Uwe Bonnes for this patch
+#
 # Revision 1.14  2008/05/16 03:38:27  thiagocorrea
 # Revert httpd memory allocation calls to NutHeapAlloc for consistency and
 # move DestroyRequestInfo to a shared file (reduces code size and remove duplicates
@@ -112,7 +117,7 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS =  dhcpc.c resolv.c httpd.c httpd_p.c httpdopt.c ssi.c asp.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c \
+SRCS =  dhcpc.c resolv.c httpd.c httpd_p.c httpopt.c ssi.c asp.c auth.c cgi.c dencode.c sntp.c syslog.c ftpd.c \
 	wins.c discover.c snmp.c snmp_agent.c snmp_api.c snmp_auth.c snmp_config.c snmp_mib.c asn1.c
 
 OBJS = $(SRCS:.c=.o)
