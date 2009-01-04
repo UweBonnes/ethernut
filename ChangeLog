@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.500 2009/01/04 20:55:15 olereinhardt Exp $
+$Id: ChangeLog,v 1.501 2009/01/04 21:07:18 olereinhardt Exp $
 
 
 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
@@ -6,6 +6,8 @@ $Id: ChangeLog,v 1.500 2009/01/04 20:55:15 olereinhardt Exp $
         * pro/Makefile: Fixed Makefile. Thanks to Uwe Bonnes for this patch
         * configure.ac: Checks and warns about an empty $LUA_HEADERS 
                         also looks in more places. Thanks again to Uwe Bonnes
+        * pro/rfctime.c: Fixed time parsing in RfcTimeParse
+                         Thanks to Michael Fischer!
 
 2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
