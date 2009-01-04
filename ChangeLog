@@ -1,26 +1,33 @@
-$Id: ChangeLog,v 1.499 2009/01/04 05:19:29 thiagocorrea Exp $
+$Id: ChangeLog,v 1.500 2009/01/04 20:55:15 olereinhardt Exp $
 
-2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+
+2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+
+        * pro/Makefile: Fixed Makefile. Thanks to Uwe Bonnes for this patch
+        * configure.ac: Checks and warns about an empty $LUA_HEADERS 
+                        also looks in more places. Thanks again to Uwe Bonnes
+
+2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
 	* tools/nutconf/bldoptdlg.h,
 	* tools/nutconf/bldoptdlg.h:
 	      Fix behavior of "Browse" buttons in page "Build"
 	      of Settings dialog.
 	      
-2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
 	* tools/nutconf/nutcomponent.c,
 	* tools/nutconf/nutconfdoc.cpp:
 	      Add .svn to ignore list when copying files and
 	      reduce some duplicated code.
 	      
-2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
 	* tools/nutconf/nutcomponent.c:
 	      Update lua initialization to conform to lua 5.x API change.
 	      This change should still be compatible with 4.x.
 
-2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
 	* tools/nutconf/mainframe.cpp,
 	* tools/nutconf/nutconfdoc.cpp:
