@@ -23,6 +23,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/04 05:19:29  thiagocorrea
+ * Fix behavior of "Browse" buttons in page "Build" of Settings dialog.
+ *
  * Revision 1.3  2008/03/17 10:22:48  haraldkipp
  * Added more comments.
  *
@@ -79,7 +82,9 @@ private:
     void OnBrowseBuildPath(wxCommandEvent& event);
     void OnBrowseInstallPath(wxCommandEvent& event);
     void OnBrowseSourceDir(wxCommandEvent& event);
-    void OnPlatformEnter(wxCommandEvent& event);
+	void OnBrowseIncludeFirst(wxCommandEvent& event);
+	void OnBrowseIncludeLast(wxCommandEvent& event);
+	void OnPlatformEnter(wxCommandEvent& event);
     void OnSourceDirChange(wxCommandEvent& event);
     void PopulatePlatform();
 

@@ -20,6 +20,9 @@
 
 /*
  * $Log: bldoptdlg.cpp,v $
+ * Revision 1.9  2009/01/04 05:19:29  thiagocorrea
+ * Fix behavior of "Browse" buttons in page "Build" of Settings dialog.
+ *
  * Revision 1.8  2008/07/28 08:41:32  haraldkipp
  * Configurator accepts empty install path for using the default.
  *
@@ -66,6 +69,8 @@ BEGIN_EVENT_TABLE(CBuildOptionsDialog, wxPanel)
     EVT_BUTTON(ID_BROWSE_BUTTON, CBuildOptionsDialog::OnBrowseBuildPath)
     EVT_BUTTON(ID_BROWSE_SRCDIR, CBuildOptionsDialog::OnBrowseSourceDir)
     EVT_BUTTON(ID_BROWSE_INSTALL, CBuildOptionsDialog::OnBrowseInstallPath)
+	EVT_BUTTON(ID_BROWSE_INCLFIRST, CBuildOptionsDialog::OnBrowseIncludeFirst)
+	EVT_BUTTON(ID_BROWSE_INCLLAST, CBuildOptionsDialog::OnBrowseIncludeLast)
     EVT_TEXT_ENTER(ID_COMBO_SRCDIR, CBuildOptionsDialog::OnPlatformEnter)
     EVT_TEXT(ID_ENTRY_SRCDIR, CBuildOptionsDialog::OnSourceDirChange) 
 END_EVENT_TABLE()
@@ -198,8 +203,52 @@ void CBuildOptionsDialog::OnBrowseBuildPath(wxCommandEvent& WXUNUSED(event))
 #ifdef _WIN32
         val.Replace(wxT("\\"), wxT("/"));
 #endif
-        ((wxTextCtrl*)FindWindow(ID_PATH_ENTRY))->SetValue(val);
+        m_entBuildDir->SetValue(val);
     }
+}
+
+/*!
+* \brief Browse for the include first directory.
+*
+* Executed when user clicks the browse button near the include first directory entry.
+*
+* \param event Contains information about the command event.
+*/
+void CBuildOptionsDialog::OnBrowseIncludeFirst( wxCommandEvent& WXUNUSED(event) )
+{
+	wxString path = m_entInclFirstDir->GetValue();
+
+	wxDirDialog dlg(this, wxT("Choose a include directory"), path);
+
+	if (dlg.ShowModal() == wxID_OK) {
+		wxString val = dlg.GetPath();
+#ifdef _WIN32
+		val.Replace(wxT("\\"), wxT("/"));
+#endif
+		m_entInclFirstDir->SetValue(val);
+	}
+}
+
+/*!
+* \brief Browse for the include last directory.
+*
+* Executed when user clicks the browse button near the include last directory entry.
+*
+* \param event Contains information about the command event.
+*/
+void CBuildOptionsDialog::OnBrowseIncludeLast( wxCommandEvent& WXUNUSED(event) )
+{
+	wxString path = m_entInclLastDir->GetValue();
+
+	wxDirDialog dlg(this, wxT("Choose a include directory"), path);
+
+	if (dlg.ShowModal() == wxID_OK) {
+		wxString val = dlg.GetPath();
+#ifdef _WIN32
+		val.Replace(wxT("\\"), wxT("/"));
+#endif
+		m_entInclLastDir->SetValue(val);
+	}
 }
 
 /*!
@@ -301,3 +350,4 @@ void CBuildOptionsDialog::OnSourceDirChange(wxCommandEvent& WXUNUSED(event))
 {
     PopulatePlatform();
 }
+

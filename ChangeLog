@@ -1,5 +1,12 @@
-$Id: ChangeLog,v 1.498 2009/01/04 04:52:39 thiagocorrea Exp $
+$Id: ChangeLog,v 1.499 2009/01/04 05:19:29 thiagocorrea Exp $
 
+2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+        
+	* tools/nutconf/bldoptdlg.h,
+	* tools/nutconf/bldoptdlg.h:
+	      Fix behavior of "Browse" buttons in page "Build"
+	      of Settings dialog.
+	      
 2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
 	* tools/nutconf/nutcomponent.c,
