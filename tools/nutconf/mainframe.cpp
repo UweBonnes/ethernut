@@ -39,6 +39,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.16  2009/01/04 04:30:49  thiagocorrea
+ * Allow nutconf to build with _UNICODE under Win32.
+ *
  * Revision 1.15  2008/07/29 07:39:37  haraldkipp
  * Fixed missing 'make install'. Bug was introduced in 2.0.1.
  *
@@ -707,6 +710,8 @@ void CMainFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
 
 void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-    wxMessageBox(wxT("Nut/OS Configurator " VERSION), wxT("About"), wxOK | wxICON_INFORMATION, this);
+	wxString message(wxT("Nut/OS Configurator "));
+	message += wxT(VERSION);
+    wxMessageBox(message, wxT("About"), wxOK | wxICON_INFORMATION, this);
 }
 

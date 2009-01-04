@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.495 2008/12/24 14:52:08 thiagocorrea Exp $
+$Id: ChangeLog,v 1.496 2009/01/04 04:30:48 thiagocorrea Exp $
+
+2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+        
+	* tools/nutconf/mainframe.cpp,
+	* tools/nutconf/nutconfdoc.cpp:
+	      Allow nutconf to build with _UNICODE under Win32. 
 
 2008-12-24  Thiago A. Correa <thiago.correa@gmail.com>
         

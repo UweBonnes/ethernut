@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.25  2009/01/04 04:30:49  thiagocorrea
+ * Allow nutconf to build with _UNICODE under Win32.
+ *
  * Revision 1.24  2008/09/18 09:54:26  haraldkipp
  * Fixed memory holes.
  * Corrected ICCAVR option value retrieval.
@@ -851,7 +854,7 @@ private:
                     line.Replace(wxT("/"), wxT("\\"));
                 }
                 else if (line.StartsWith(wxT("Edit3="))) {
-                    NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, wxT("PLATFORM"));
+                    NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, "PLATFORM");
                     line = wxT("Edit3=");
                     if (opt && opt->nco_enabled && opt->nco_active) {
                         if (opt->nco_value && opt->nco_value[0]) {
@@ -864,9 +867,9 @@ private:
                             }
                         }
                     }
-                    opt = m_doc->FindOptionByName(NULL, wxT("MCU_ATMEGA2561"));
+                    opt = m_doc->FindOptionByName(NULL, "MCU_ATMEGA2561");
                     if (opt == NULL) {
-                        opt = m_doc->FindOptionByName(NULL, wxT("MCU_ATMEGA2560"));
+                        opt = m_doc->FindOptionByName(NULL, "MCU_ATMEGA2560");
                     }
                     if (opt && opt->nco_enabled && opt->nco_active) {
                         line += wxT("_MCU_extended");
@@ -880,7 +883,7 @@ private:
                 }
                 else if (line.StartsWith(wxT("Edit13="))) {
                     char *value = NULL;
-                    NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, wxT("ICCAVR_STARTUP"));
+                    NUTCOMPONENTOPTION *opt = m_doc->FindOptionByName(NULL, "ICCAVR_STARTUP");
                     line = wxT("Edit13=");
 
                     if (opt && opt->nco_enabled && opt->nco_active) {
