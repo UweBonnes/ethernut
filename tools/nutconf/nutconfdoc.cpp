@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.26  2009/01/04 04:52:39  thiagocorrea
+ * Add .svn to ignore list when copying files and reduce some duplicated code.
+ *
  * Revision 1.25  2009/01/04 04:30:49  thiagocorrea
  * Allow nutconf to build with _UNICODE under Win32.
  *
@@ -713,7 +716,25 @@ bool CNutConfDoc::GenerateBuildTree()
     return true;
 }
 
-class CDirCopyTraverser : public wxDirTraverser
+class CAbstractDirCopyTraverser : public wxDirTraverser
+{
+public:
+	CAbstractDirCopyTraverser() {}
+	virtual ~CAbstractDirCopyTraverser() = 0
+	{
+	}
+
+	virtual bool isSCMdir(const wxString& dirname) const
+	{
+		if(dirname.EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator()) || 
+		   dirname.EndsWith(wxString(wxT(".svn")) + wxFileName::GetPathSeparator()) ) {
+			return true;
+		}
+		return false;
+	}
+};
+
+class CDirCopyTraverser : public CAbstractDirCopyTraverser
 {
 public:
     CDirCopyTraverser(wxString source, wxString target)
@@ -741,7 +762,7 @@ public:
     {
         wxString sub = dirname.Mid(m_source.Length());
         wxFileName name(m_target + sub + wxFileName::GetPathSeparator(), wxEmptyString);
-        if(!name.GetFullPath().EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator())) {
+        if(!isSCMdir(name.GetFullPath())) {
             name.Mkdir(0777, wxPATH_MKDIR_FULL);
             return wxDIR_CONTINUE;
         }
@@ -753,7 +774,7 @@ private:
 };
 
 #ifdef _WIN32
-class CDirIccAvrProjectTraverser : public wxDirTraverser
+class CDirIccAvrProjectTraverser : public CAbstractDirCopyTraverser
 {
 public:
     CDirIccAvrProjectTraverser(wxString source, wxString target)
@@ -781,7 +802,7 @@ public:
     {
         wxString sub = dirname.Mid(m_source.Length());
         wxFileName name(m_target + sub + wxFileName::GetPathSeparator(), wxEmptyString);
-        if(!name.GetFullPath().EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator())) {
+		if(!isSCMdir(name.GetFullPath())) {
             name.Mkdir(0777, wxPATH_MKDIR_FULL);
             return wxDIR_CONTINUE;
         }
@@ -955,7 +976,7 @@ private:
 };
 #endif
 
-class CDirEclipseProjectTraverser : public wxDirTraverser
+class CDirEclipseProjectTraverser : public CAbstractDirCopyTraverser
 {
 public:
     CDirEclipseProjectTraverser(wxString source, wxString target)
@@ -983,7 +1004,7 @@ public:
     {
         wxString sub = dirname.Mid(m_source.Length());
         wxFileName name(m_target + sub + wxFileName::GetPathSeparator(), wxEmptyString);
-        if(!name.GetFullPath().EndsWith(wxString(wxT("CVS")) + wxFileName::GetPathSeparator())) {
+		if(!isSCMdir(name.GetFullPath())) {
             name.Mkdir(0777, wxPATH_MKDIR_FULL);
             return wxDIR_CONTINUE;
         }

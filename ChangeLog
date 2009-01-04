@@ -1,5 +1,12 @@
-$Id: ChangeLog,v 1.497 2009/01/04 04:35:45 thiagocorrea Exp $
+$Id: ChangeLog,v 1.498 2009/01/04 04:52:39 thiagocorrea Exp $
 
+2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+        
+	* tools/nutconf/nutcomponent.c,
+	* tools/nutconf/nutconfdoc.cpp:
+	      Add .svn to ignore list when copying files and
+	      reduce some duplicated code.
+	      
 2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
 	* tools/nutconf/nutcomponent.c:

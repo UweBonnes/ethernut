@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.38  2009/01/04 04:52:39  thiagocorrea
+ * Add .svn to ignore list when copying files and reduce some duplicated code.
+ *
  * Revision 1.37  2009/01/04 04:35:45  thiagocorrea
  * Update lua initialization to conform to lua 5.x API change.
  * This change should still be compatible with 4.x.
@@ -178,6 +181,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <ctype.h>
 
 #ifdef _MSC_VER
 
@@ -3158,6 +3162,7 @@ int copy_appdir(char *src_dir, char *dst_dir, int quiet)
         /* Do not copy dot files or Makefiles for source tree builds. */
         if(dire->d_name[0] == '.' ||
            strcasecmp(dire->d_name, "cvs") == 0 ||
+		   strcasecmp(dire->d_name, ".svn") == 0 ||
            strncasecmp(dire->d_name, "Makeburn", 8) == 0 ||
            strncasecmp(dire->d_name, "Makedefs", 8) == 0 ||
            strncasecmp(dire->d_name, "Makerules", 9) == 0) {
