@@ -34,6 +34,12 @@
 
 #
 # $Log$
+# Revision 1.42  2009/01/04 20:54:11  olereinhardt
+# 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+#
+#         * configure.ac: Checks and warns about an empty $LUA_HEADERS
+#                         also looks in more places.
+#
 # Revision 1.41  2008/10/10 11:52:24  haraldkipp
 # Lua added.
 #
@@ -285,12 +291,20 @@ else
       else
         AC_CHECK_HEADERS(/usr/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/include/lua50"))
         AC_CHECK_HEADERS(/usr/local/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/local/include/lua50"))
+        AC_CHECK_HEADERS(/usr/local/include/lua.h, AC_SUBST(LUA_HEADERS, "/usr/local/include"))
+        AC_CHECK_HEADERS(/usr/include/lua.h, AC_SUBST(LUA_HEADERS, "/usr/include"))
       fi
 #    AC_CHECK_FUNC(sin, LIBS=$LIBS, LIBS="-lm $LIBS")
 #    AC_CHECK_LIB(dl, dlopen)
     fi
   fi
 fi
+
+if test "x$LUA_HEADERS" = "x"; then
+   AC_MSG_WARN(Lua Headers not found disabled)
+   lua_ok=no
+fi
+
 # END lua #################################################################################################
 # nutconfigure ############################################################################################
 if test "x$enable_nutconf_tools" = "xno"; then
