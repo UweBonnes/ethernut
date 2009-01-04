@@ -37,6 +37,12 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/01/04 21:06:53  olereinhardt
+ * 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ * 	* pro/rfctime.c: Fixed time parsing in RfcTimeParse
+ * 	                 Thanks to Michael Fischer!
+ *
  * Revision 1.1  2008/02/15 16:46:09  haraldkipp
  * First release.
  *
@@ -287,7 +293,7 @@ time_t RfcTimeParse(CONST char *str)
         str = TimeParseHms(str, &dts.tm_hour, &dts.tm_min, &dts.tm_sec);
     }
     str = skip_spaces(str);
-    if (strcmp(str, "GMT")) {
+    if (strcmp(str, "GMT") == 0) {
         return mktime(&dts);
     }
     return _mkgmtime(&dts);
