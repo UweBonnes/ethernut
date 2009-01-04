@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.37  2009/01/04 04:35:45  thiagocorrea
+ * Update lua initialization to conform to lua 5.x API change.
+ * This change should still be compatible with 4.x.
+ *
  * Revision 1.36  2008/09/18 09:52:42  haraldkipp
  * Version 2.0.6 fixes a few memory holes and avoids empty macro definitions
  * for items with "integer" flavor.
@@ -1752,21 +1756,7 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
             //lua_atpanic(ls, LuaPanic);
             //lua_cpcall(ls, LuaError, NULL);
 
-            //luaL_openlibs(ls);
-            luaopen_base(ls);
-            lua_settop(ls, 0);
-            luaopen_table(ls);
-            lua_settop(ls, 0);
-            luaopen_io(ls);
-            lua_settop(ls, 0);
-            luaopen_string(ls);
-            lua_settop(ls, 0);
-            luaopen_math(ls);
-            lua_settop(ls, 0);
-            luaopen_debug(ls);
-            lua_settop(ls, 0);
-            luaopen_loadlib(ls);
-            lua_settop(ls, 0);
+            luaL_openlibs(ls);
 
             /* Store pointer to C repository structure in Lua registry. */
             lua_pushstring(ls, LRK_NUTREPOSITORY);
