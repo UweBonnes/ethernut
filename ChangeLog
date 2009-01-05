@@ -1,5 +1,10 @@
-$Id: ChangeLog,v 1.501 2009/01/04 21:07:18 olereinhardt Exp $
+$Id: ChangeLog,v 1.502 2009/01/05 10:35:01 thiagocorrea Exp $
 
+
+2009-01-05  Thiago A. Correa <thiago.correa@gmail.com>
+        
+	* tools/nutconf/nutconfview.cpp:
+	      Fix unsafe cast.
 
 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 
@@ -9,7 +14,7 @@ $Id: ChangeLog,v 1.501 2009/01/04 21:07:18 olereinhardt Exp $
         * pro/rfctime.c: Fixed time parsing in RfcTimeParse
                          Thanks to Michael Fischer!
 
-2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
+2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
         
 	* tools/nutconf/bldoptdlg.h,
 	* tools/nutconf/bldoptdlg.h:

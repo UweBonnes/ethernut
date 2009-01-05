@@ -39,6 +39,9 @@
 
 /*
  * $Log: nutconfview.cpp,v $
+ * Revision 1.6  2009/01/05 10:35:02  thiagocorrea
+ * Fix unsafe cast
+ *
  * Revision 1.5  2006/10/05 17:04:46  haraldkipp
  * Heavily revised and updated version 1.3
  *
@@ -232,7 +235,8 @@ void CNutConfView::OnChangeFilename()
 
         wxString title = wxT("Nut/OS Configurator - ") + docTitle;
 
-        ((wxFrame*)wxGetApp().GetTopWindow())->SetTitle(title);
+		// For wxWindow "label" is the Window Title.
+		wxGetApp().GetTopWindow()->SetLabel(title);
     }
 }
 
