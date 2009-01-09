@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.12  2009/01/09 17:54:10  haraldkipp
+# Temporarily removed C++ sample due to problems with GCC 4.3.
+#
 # Revision 1.11  2007/06/03 08:48:17  haraldkipp
 # New application sample demonstrates calendar functions.
 #
@@ -82,7 +85,7 @@ all:
 	$(MAKE) -C basemon
 	$(MAKE) -C caltime
 	$(MAKE) -C canbus
-	$(MAKE) -C cppdemo
+#	$(MAKE) -C cppdemo
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
@@ -103,7 +106,7 @@ install:
 	$(MAKE) -C basemon install
 	$(MAKE) -C caltime install
 	$(MAKE) -C canbus install
-	$(MAKE) -C cppdemo install
+#	$(MAKE) -C cppdemo install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
@@ -145,7 +148,7 @@ at90can:
 #	$(MAKE) -C basemon
 	$(MAKE) -C caltime
 	$(MAKE) -C canbus
-	$(MAKE) -C cppdemo
+#	$(MAKE) -C cppdemo
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
