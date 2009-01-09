@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2009/01/09 17:55:56  haraldkipp
+# Added install target.
+#
 # Revision 1.1  2008/04/18 13:21:48  haraldkipp
 # Added new Makefiles for ICCAVR V7. Since V7.15 Imagecraft gave up that
 # incompatible interpretation of the const keyword. Not sure, how long we
@@ -51,7 +54,12 @@
 	$(CC) -o $@ $(LDFLAGS) $(OBJS) -lcatmega
 
 %bin: %hex
-	robi $< $@
+	-robi $< $@
 
 burn: $(TARG)
 	$(BURN) $(BURNFLAGS)
+
+install: $(TARG) $(ITARG)
+	$(CP) $(TARG) $(BINDIR)/$(TARG)
+	$(CP) $(ITARG) $(BINDIR)/$(ITARG)
+
