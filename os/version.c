@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.64  2009/01/09 17:54:14  haraldkipp
+ * Next beta will be 4.7.5.
+ *
  * Revision 1.63  2008/10/10 11:52:25  haraldkipp
  * Lua added.
  *
@@ -242,8 +245,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04070400UL
-static CONST char os_version_string[] = "4.7.4.0";
+#define OS_VERSION_NUMBER  0x04070500UL
+static CONST char os_version_string[] = "4.7.5.0";
 
 /*!
  * \addtogroup xgNutVersion

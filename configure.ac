@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.43  2009/01/09 17:54:14  haraldkipp
+# Next beta will be 4.7.5.
+#
 # Revision 1.42  2009/01/04 20:54:11  olereinhardt
 # 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 #
@@ -174,10 +177,10 @@
 #
 #
 
-AC_INIT(ethernut,4.7.4)
+AC_INIT(ethernut,4.7.5)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (C) 2005-2008 egnite GmbH])
+AC_COPYRIGHT([Copyright (C) 2005-2009 egnite GmbH])
 AC_REVISION($Revision$)
 
 # Make sure we got a valid path to the sources.
