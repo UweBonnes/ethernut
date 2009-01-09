@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.39  2009/01/09 18:50:50  haraldkipp
+ * Re-introduced support for Lua 5.0.
+ *
  * Revision 1.38  2009/01/04 04:52:39  thiagocorrea
  * Add .svn to ignore list when copying files and reduce some duplicated code.
  *
@@ -174,7 +177,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.6"
+#define NUT_CONFIGURE_VERSION   "2.0.7"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1760,8 +1763,24 @@ NUTREPOSITORY *OpenRepository(const char *pathname)
             //lua_atpanic(ls, LuaPanic);
             //lua_cpcall(ls, LuaError, NULL);
 
+#if LUA_VERSION_NUM >= 501
             luaL_openlibs(ls);
-
+#else
+            luaopen_base(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_table(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_io(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_string(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_math(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_debug(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+            luaopen_loadlib(repo->nr_ls);
+            lua_settop(repo->nr_ls, 0);
+#endif
             /* Store pointer to C repository structure in Lua registry. */
             lua_pushstring(ls, LRK_NUTREPOSITORY);
             lua_pushlightuserdata(ls, (void *)repo);

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.25  2009/01/09 18:50:50  haraldkipp
+ * Re-introduced support for Lua 5.0.
+ *
  * Revision 1.24  2008/09/18 09:53:51  haraldkipp
  * GUI version 2.0.6.
  *
@@ -123,7 +126,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.6"
+#define VERSION "2.0.7"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

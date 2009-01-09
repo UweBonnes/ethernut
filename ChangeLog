@@ -1,7 +1,10 @@
-$Id: ChangeLog,v 1.503 2009/01/09 17:58:14 haraldkipp Exp $
+$Id: ChangeLog,v 1.504 2009/01/09 18:50:50 haraldkipp Exp $
 
 
 2009-01-09  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
+	Version 2.0.7. Re-introduced support for Lua 5.0.
 
 	* doc/gen/nut_en.cfg.in: Upgraded to Doxygen 1.5.8.
 
