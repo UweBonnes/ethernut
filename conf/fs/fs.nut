@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.8  2009/01/09 17:54:42  haraldkipp
+-- Added raw file system driver.
+--
 -- Revision 1.7  2006/08/01 07:42:56  haraldkipp
 -- New functions extract last component and parent directory from pathnames.
 --
@@ -140,5 +143,17 @@ nutfs =
         provides = { "NUT_FS", "NUT_FS_READ", "NUT_FS_WRITE", "NUT_FS_DIR" },
         description = "RAM file system for banked memory (Ethernut 2).",
         sources = { "pnutfs.c" },
+    },
+    {
+        name = "nutfs_rawfs",
+        brief = "Raw",
+        requires = { "DEV_BLOCKIO" },
+        provides = { "NUT_FS", "NUT_FS_READ", "NUT_FS_WRITE" },
+        description = "This file system provides a single file entry only, "..
+                      "which is mapped to the entire volume. This implies, "..
+                      "that there is no file name and that the size of the "..
+                      "file is fixed to the size of the device's volume.\n\n"..
+                      "This early release had been tested with the AT45D DataFlash.",
+        sources = { "rawfs.c" }
     }
 }
