@@ -1,4 +1,34 @@
-$Id: ChangeLog,v 1.502 2009/01/05 10:35:01 thiagocorrea Exp $
+$Id: ChangeLog,v 1.503 2009/01/09 17:58:14 haraldkipp Exp $
+
+
+2009-01-09  Harald Kipp  <harald.kipp@egnite.de>
+
+	* doc/gen/nut_en.cfg.in: Upgraded to Doxygen 1.5.8.
+
+	* app/Makefile: Temporarily removed C++ sample due to problems
+	with GCC 4.3.
+
+	* configure.ac, os/version.c: Next beta will be 4.7.5.
+
+	* conf/arch/arm.nut, conf/arch/avr.nut, conf/eir10c.conf,
+	conf/ethernut21b.conf, dev/spibus.c, include/dev/board.h,
+	include/sys/device.h, arch/arm/dev/spibus0at91.c,
+	arch/arm/dev/spibus1at91.c, arch/arm/dev/spibus_at91.c,
+	arch/avr/dev/spibus0avr.c, arch/avr/dev/spibus_avr.c,
+	include/cfg/spi.h, include/dev/spibus.h,
+	include/dev/spibus_at91.h, include/dev/spibus_avr.h:
+	Added SPI bus controller for AVR and AT91.
+
+	* conf/dev/dev.nut, dev/blockdev.c, dev/nvmem_at45d.c,
+	dev/spi_at45d.c, dev/spi_at45d0.c, dev/spi_at45d1.c,
+	dev/spi_at45d2.c, dev/spi_at45d3.c, include/dev/blockdev.h,
+	include/dev/at45d.h, include/dev/nvmem_at45d.h,
+	include/dev/spi_at45d.h: Added target independent AT45D block 
+	device drivers and non-volatile memory support based on the 
+	new bus controllers.
+
+	* conf/fs/fs.nut, fs/rawfs.c, include/fs/rawfs.h: Added raw file 
+	system driver.
 
 
 2009-01-05  Thiago A. Correa <thiago.correa@gmail.com>
