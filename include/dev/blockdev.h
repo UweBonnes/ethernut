@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2009/01/09 17:59:05  haraldkipp
+ * Added target independent AT45D block device drivers and non-volatile
+ * memory support based on the new bus controllers.
+ *
  * Revision 1.3  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -55,6 +59,7 @@
 
 #include <sys/types.h>
 #include <stdint.h>
+#include <sys/device.h>
 #include <sys/file.h>
 
 /*!
@@ -78,12 +83,21 @@
 
 /*@}*/
 
-
+/*!
+ * \brief Block seek parameter structure.
+ *
+ * Used with \ref NUTBLKDEV_SEEK ioctl.
+ */
 typedef struct _BLKPAR_SEEK {
     NUTFILE *par_nfp;
     uint32_t par_blknum;
 } BLKPAR_SEEK;
 
+/*!
+ * \brief Device information parameter structure.
+ *
+ * Used with \ref NUTBLKDEV_INFO ioctl.
+ */
 typedef struct _BLKPAR_INFO {
     NUTFILE *par_nfp;
     uint32_t par_nblks;
@@ -91,6 +105,81 @@ typedef struct _BLKPAR_INFO {
     uint8_t *par_blkbp;
 } BLKPAR_INFO;
 
+/*! \brief Generic block I/O device interface structure type. */
+typedef struct _NUTBLOCKIO NUTBLOCKIO;
+
+/*!
+ * \brief Generic block I/O device interface structure.
+ *
+ * This is a virtual structure, used by the generic block I/O device driver. 
+ *
+ * \note Any real implementation must start with the same layout. If this
+ *       structure is changed, we must update all implementations.
+ */
+struct _NUTBLOCKIO {
+    /*!
+     * \brief Device specific information.
+     */
+    void *blkio_info;
+
+    /*!
+     * \brief Total number of blocks on this device.
+     */
+    uint32_t blkio_blk_cnt;
+
+    /*!
+     * \brief Number of bytes per block.
+     */
+    uint32_t blkio_blk_siz;
+
+    /*!
+     * \brief First block for file system mount.
+     */
+    uint32_t blkio_vol_bot;
+
+    /*!
+     * \brief Number of blocks reserved on top of file system mount.
+     */
+    uint32_t blkio_vol_top;
+    
+    /*! 
+     * \brief Read from block I/O device, starting at the specified block.
+     */
+    int (*blkio_read) (NUTDEVICE *, uint32_t, void *, int);
+
+    /*! 
+     * \brief Write to block I/O device, starting at the specified block.
+     */
+    int (*blkio_write) (NUTDEVICE *, uint32_t, CONST void *, int);
+
+#ifdef __HARVARD_ARCH__
+    /*! 
+     * \brief Write program memory to block I/O device, starting at the specified block.
+     */
+    int (*blkio_write_P) (NUTDEVICE *, uint32_t, PGM_P, int);
+#endif
+
+    /*! 
+     * \brief Control functions.
+     */
+    int (*blkio_ioctl)(NUTDEVICE *, int, void *);
+};
+
 /*@}*/
+
+__BEGIN_DECLS
+/* Prototypes */
+extern int NutBlockDeviceInit(NUTDEVICE * dev);
+extern NUTFILE *NutBlockDeviceOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern int NutBlockDeviceClose(NUTFILE * nfp);
+extern int NutBlockDeviceIOCtl(NUTDEVICE * dev, int req, void *conf);
+extern int NutBlockDeviceRead(NUTFILE * nfp, void *buffer, int num);
+extern int NutBlockDeviceWrite(NUTFILE *nfp, CONST void *buffer, int num);
+extern long NutBlockDeviceSize(NUTFILE *nfp);
+#ifdef __HARVARD_ARCH__
+extern int NutBlockDeviceWrite_P(NUTFILE * nfp, PGM_P buffer, int num);
+#endif
+/* Prototypes */
+__BEGIN_DECLS
 
 #endif

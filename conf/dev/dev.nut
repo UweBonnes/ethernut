@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.49  2009/01/09 17:59:05  haraldkipp
+-- Added target independent AT45D block device drivers and non-volatile
+-- memory support based on the new bus controllers.
+--
 -- Revision 1.48  2008/12/24 14:52:10  thiagocorrea
 -- Improve Serial Bit Bang drivers dependency check in nutconf.
 --
@@ -1286,6 +1290,194 @@ nutdev =
     -- Block Device Drivers.
     --
     {
+        name = "nutdev_blockdev",
+        brief = "Block I/O",
+        description = "Generic block I/O driver support routines.",
+        sources = { "blockdev.c" }
+    },
+    {
+        name = "nutdev_spi_at45d",
+        brief = "AT45D DataFlash Block I/O",
+        description = "Block I/O driver for up to four AT45D chips or cards.\n\n"..
+                      "This new driver is based on the device independent "..
+                      "bus interface and may replace older ones.\n\n"..
+                      "Tested with non-volatile memory routines and "..
+                      "the raw file system only. This early release will "..
+                      "definitely not work with the PHAT file system.",
+        requires = { "SPIBUS_CONTROLLER" },
+        provides = { "DEV_BLOCKIO" },
+        sources = 
+        { 
+            "spi_at45d.c", 
+            "spi_at45d0.c", 
+            "spi_at45d1.c", 
+            "spi_at45d2.c", 
+            "spi_at45d3.c"
+        },
+        options =
+        {
+            {
+                macro = "MOUNT_OFFSET_AT45D0",
+                brief = "Reserved Bottom Pages (First Device)",
+                description = "Number of pages reserved at the bottom.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume and may be used for "..
+                              "other purposes like storing configuration data or boot loader images.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "MOUNT_TOP_RESERVE_AT45D0",
+                brief = "Reserved Top Pages (First Device)",
+                description = "Number of pages reserved at the top.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume. On some targets the "..
+                              "top page is used to store internal Nut/OS settings.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_RATE_AT45D0",
+                brief = "Transfer Rate (First Device)",
+                description = "Interface speed in bits per second, default is 33000000 (33Mbps).\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                description = ".",
+                default = "33000000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_CSHIGH_AT45D0",
+                brief = "Pos. Chip Select (First Device)",
+                description = "When set, the chip select is driven high to activate the device. "..
+                              "By default chip selects are low active.",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "MOUNT_OFFSET_AT45D1",
+                brief = "Reserved Bottom Pages (Second Device)",
+                description = "Number of pages reserved at the bottom.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume and may be used for "..
+                              "other purposes like storing configuration data or boot loader images.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "MOUNT_TOP_RESERVE_AT45D1",
+                brief = "Reserved Top Pages (Second Device)",
+                description = "Number of pages reserved at the top.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume. On some targets the "..
+                              "top page is used to store internal Nut/OS settings.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_RATE_AT45D1",
+                brief = "Transfer Rate (Second Device)",
+                description = "Interface speed in bits per second, default is 33000000 (33Mbps).\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                description = ".",
+                default = "33000000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_CSHIGH_AT45D1",
+                brief = "Pos. Chip Select (Second Device)",
+                description = "When set, the chip select is driven high to activate the device. "..
+                              "By default chip selects are low active.",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "MOUNT_OFFSET_AT45D2",
+                brief = "Reserved Bottom Pages (Third Device)",
+                description = "Number of pages reserved at the bottom.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume and may be used for "..
+                              "other purposes like storing configuration data or boot loader images.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "MOUNT_TOP_RESERVE_AT45D2",
+                brief = "Reserved Top Pages (Third Device)",
+                description = "Number of pages reserved at the top.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume. On some targets the "..
+                              "top page is used to store internal Nut/OS settings.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_RATE_AT45D2",
+                brief = "Transfer Rate (Third Device)",
+                description = "Interface speed in bits per second, default is 33000000 (33Mbps).\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                description = ".",
+                default = "33000000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_CSHIGH_AT45D2",
+                brief = "Pos. Chip Select (Third Device)",
+                description = "When set, the chip select is driven high to activate the device. "..
+                              "By default chip selects are low active.",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "MOUNT_OFFSET_AT45D3",
+                brief = "Reserved Bottom Pages (Fourth Device)",
+                description = "Number of pages reserved at the bottom.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume and may be used for "..
+                              "other purposes like storing configuration data or boot loader images.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "MOUNT_TOP_RESERVE_AT45D3",
+                brief = "Reserved Top Pages (Fourth Device)",
+                description = "Number of pages reserved at the top.\n\n"..
+                              "When a file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume. On some targets the "..
+                              "top page is used to store internal Nut/OS settings.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_RATE_AT45D3",
+                brief = "Transfer Rate (Fourth Device)",
+                description = "Interface speed in bits per second, default is 33000000 (33Mbps).\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                description = ".",
+                default = "33000000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_CSHIGH_AT45D3",
+                brief = "Pos. Chip Select (Fourth Device)",
+                description = "When set, the chip select is driven high to activate the device. "..
+                              "By default chip selects are low active.",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "AT45_WRITE_POLLS",
+                brief = "Max. Write Poll Number",
+                description = "Maximum number of polling loops for page write.",
+                default = "1000",
+                file = "include/cfg/memory.h"
+            }
+        }
+    },
+    {
         name = "nutdev_mmcard",
         brief = "Basic MMC Driver",
         description = "Basic Multimedia card driver. To run this driver, a few low "..
@@ -1448,6 +1640,19 @@ nutdev =
         },
     },
 
+    --
+    -- Bus Controller Drivers.
+    --
+
+    {
+        name = "nutdev_spibus",
+        brief = "SPI Bus",
+        requires = { "SPIBUS_CONTROLLER" },
+        description = "Generic SPI bus routines, which may be used "..
+                      "by bus controller implementations.",
+        sources = { "spibus.c" }
+    },
+        
     --
     -- Special Chip Drivers.
     --
@@ -2025,6 +2230,103 @@ nutdev =
                               "next lower one. Bit banging interfaces always run at maximum speed.",
                 default = "500000",                              
                 file = "include/cfg/progif.h"
+            },
+        },
+    },
+    {
+        name = "nutdev_nvmem_at45d",
+        brief = "AT45D Non-Volatile Memory",
+        description = "DataFlash chips and cards may be used to store any kind of configuration "..
+                      "data, including internal Nut/OS and Nut/Net settings.\n\n"..
+                      "This new module will replace existing ones, which either depend "..
+                      "on specific target CPUs or which may interfere with other SPI devices.",
+        sources = { "nvmem_at45d.c" },
+        options =
+        {
+            {
+                macro = "NUT_CONFIG_AT45D0",
+                brief = "Chip 0 for System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in the first DataFlash chip.",
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { 
+                    "NUT_CONFIG_AT45D0",
+                    "NUT_CONFIG_AT45D1",
+                    "NUT_CONFIG_AT45D2",
+                    "NUT_CONFIG_AT45D3"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D1",
+                brief = "Chip 1 for System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in the second DataFlash chip.",
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { 
+                    "NUT_CONFIG_AT45D0",
+                    "NUT_CONFIG_AT45D1",
+                    "NUT_CONFIG_AT45D2",
+                    "NUT_CONFIG_AT45D3"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D2",
+                brief = "Chip 2 for System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in the third DataFlash chip.",
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { 
+                    "NUT_CONFIG_AT45D0",
+                    "NUT_CONFIG_AT45D1",
+                    "NUT_CONFIG_AT45D2",
+                    "NUT_CONFIG_AT45D3"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D3",
+                brief = "Chip 3 for System Configuration",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in the fourth DataFlash chip.",
+                provides = { "HW_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { 
+                    "NUT_CONFIG_AT45D0",
+                    "NUT_CONFIG_AT45D1",
+                    "NUT_CONFIG_AT45D2",
+                    "NUT_CONFIG_AT45D3"
+                },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D_CS",
+                brief = "Chip Select",
+                description = "Chip select number.",
+                default = "0",
+                type = "enumerated",
+                choices = { "0", "1", "2", "3" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D_PAGE",
+                brief = "Start Page",
+                description = "First page used by the configuration data area. "..
+                              "By default the last page will be used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D_SIZE",
+                brief = "Area Size",
+                description = "Size of the configuration data area."..
+                              "By default one full page will be used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
             },
         },
     },
