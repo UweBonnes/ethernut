@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.26  2009/01/09 17:54:21  haraldkipp
+-- Added SPI bus controller for AVR and AT91.
+--
 -- Revision 1.25  2008/09/02 14:29:01  haraldkipp
 -- Disabled the old vs1001k driver.
 --
@@ -1201,6 +1204,212 @@ nutarch_avr =
         options =
         {
         }
+    },
+    {
+        name = "nutarch_avr_spibus_avr",
+        brief = "AVR SPI Bus Controller",
+        description = "SPI bus controllers.\n\n",
+        provides = { "SPIBUS_CONTROLLER" },
+        sources = 
+        { 
+            "avr/dev/spibus_avr.c",
+            "avr/dev/spibus0avr.c"
+        },
+        options =
+        {
+            {
+                macro = "SPIBUS0_POLLING_MODE",
+                brief = "Polling Mode (First Controller)",
+                description = "If enabled, the controller will use polling mode. By default "..
+                              "interrupt mode is used.",
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS0_DOUBLE_BUFFER",
+                brief = "Double buffer IRQ (Second Controller)",
+                description = "If enabled, the controller will use double buffered interrupt mode.\n\n"..
+                              "By default a single buffer is used. Ignored when polling mode is enabled.",
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPI0_CS0_PIO_ID",
+                brief = "CS0 Port (First Controller)",
+                description = "ID of the port used for SPI bus 0 chip select 0.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI0_CS0_PIO_BIT",
+                brief = "CS0 Port Bit (First Controller)",
+                description = "Port bit used for SPI bus 0 chip select 0.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI0_CS1_PIO_ID",
+                brief = "CS1 Port (First Controller)",
+                description = "ID of the port used for SPI bus 0 chip select 1.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI0_CS1_PIO_BIT",
+                brief = "CS1 Port Bit (First Controller)",
+                description = "Port bit used for SPI bus 0 chip select 1.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI0_CS2_PIO_ID",
+                brief = "CS2 Port (First Controller)",
+                description = "ID of the port used for SPI bus 0 chip select 2.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI0_CS2_PIO_BIT",
+                brief = "CS2 Port Bit (First Controller)",
+                description = "Port bit used for SPI bus 0 chip select 2.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI0_CS3_PIO_ID",
+                brief = "CS3 Port (First Controller)",
+                description = "ID of the port used for SPI bus 0 chip select 3.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI0_CS3_PIO_BIT",
+                brief = "CS3 Port Bit (First Controller)",
+                description = "Port bit used for SPI bus 0 chip select 3.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPIBUS1_POLLING_MODE",
+                brief = "Polling Mode (Second Controller)",
+                description = "If enabled, the controller will use polling mode. By default "..
+                              "interrupt mode is used.",
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPIBUS1_DOUBLE_BUFFER",
+                brief = "Double buffer IRQ (Second Controller)",
+                description = "If enabled, the controller will use double buffered interrupt mode.\n\n"..
+                              "By default a single buffer is used. Ignored when polling mode is enabled.",
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },
+            {
+                macro = "SPI1_CS0_PIO_ID",
+                brief = "CS0 Port (Second Controller)",
+                description = "ID of the port used for SPI bus 1 chip select 0.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI1_CS0_PIO_BIT",
+                brief = "CS0 Port Bit (Second Controller)",
+                description = "Port bit used for SPI bus 1 chip select 0.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI1_CS1_PIO_ID",
+                brief = "CS1 Port (Second Controller)",
+                description = "ID of the port used for SPI bus 1 chip select 1.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI1_CS1_PIO_BIT",
+                brief = "CS1 Port Bit (Second Controller)",
+                description = "Port bit used for SPI bus 1 chip select 1.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI1_CS2_PIO_ID",
+                brief = "CS2 Port (Second Controller)",
+                description = "ID of the port used for SPI bus 1 chip select 2.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI1_CS2_PIO_BIT",
+                brief = "CS2 Port Bit (Second Controller)",
+                description = "Port bit used for SPI bus 1 chip select 2.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI1_CS3_PIO_ID",
+                brief = "CS3 Port (Second Controller)",
+                description = "ID of the port used for SPI bus 1 chip select 3.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "SPI1_CS3_PIO_BIT",
+                brief = "CS3 Port Bit (Second Controller)",
+                description = "Port bit used for SPI bus 1 chip select 3.",
+                requires = { "HW_GPIO" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+        },
     },
     {
         name = "nutdev_sppif0",

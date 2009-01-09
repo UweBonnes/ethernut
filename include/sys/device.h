@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/01/09 17:54:28  haraldkipp
+ * Added SPI bus controller for AVR and AT91.
+ *
  * Revision 1.8  2008/08/11 07:00:25  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -132,6 +135,7 @@ __BEGIN_DECLS
 #define IFTYP_TCPSOCK	4	/*!< \brief TCP socket */
 #define IFTYP_CHAR      5	/*!< \brief Character stream device */
 #define IFTYP_CAN       6       /*!< \brief CAN device */
+#define IFTYP_BLKIO     7   /*!< \brief Block I/O device */
 #define IFTYP_FS       16   /*!< \brief file system device */
 
 /*!

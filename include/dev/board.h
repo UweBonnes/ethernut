@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2009/01/09 17:54:28  haraldkipp
+ * Added SPI bus controller for AVR and AT91.
+ *
  * Revision 1.16  2008/10/23 08:56:56  haraldkipp
  * Added default MMC interfaces.
  *
@@ -174,6 +177,19 @@
 #ifndef DEV_ETHER_NAME
 #define DEV_ETHER_NAME  "eth0"
 #endif
+
+/*
+ * SPI bus.
+ */
+#ifndef DEV_SPIBUS
+#if defined(__AVR__)
+#include <dev/spibus_avr.h>
+#define DEV_SPIBUS      spiBus0Avr
+#elif defined(MCU_AT91) && defined(SPI0_BASE)
+#include <dev/spibus_at91.h>
+#define DEV_SPIBUS      spiBus0At91
+#endif
+#endif /* DEV_SPIBUS */
 
 /*
  * RTC chip.
