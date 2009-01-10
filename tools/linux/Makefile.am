@@ -38,3 +38,4 @@
 
 EXTRA_DIST = enut3ocd.cfg enut3ocd.ini eir1ocd.cfg eir1ocd.ini
 
+MAINTAINERCLEANFILES = Makefile.in
