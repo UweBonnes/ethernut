@@ -20,6 +20,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.4  2009/01/10 20:07:20  haraldkipp
+ * Allow unicode build.
+ *
  * Revision 1.3  2008/01/31 15:33:33  haraldkipp
  * Linux fixes.
  *
@@ -90,11 +93,11 @@ CMainFrame::CMainFrame(const wxString& title)
     m_nutList = new wxListCtrl(this, ID_LIST, wxDefaultPosition, wxDefaultSize,
                                     wxLC_REPORT | wxLC_SINGLE_SEL |
                                     wxSUNKEN_BORDER | wxLC_EDIT_LABELS);
-    m_nutList->InsertColumn(0, "MAC", wxLIST_FORMAT_LEFT, 100);
-    m_nutList->InsertColumn(1, "IP", wxLIST_FORMAT_LEFT, 100);
-    m_nutList->InsertColumn(2, "Mask", wxLIST_FORMAT_LEFT, 100);
-    m_nutList->InsertColumn(3, "Gate", wxLIST_FORMAT_LEFT, 100);
-    m_nutList->InsertColumn(4, "Host", wxLIST_FORMAT_LEFT, 100);
+    m_nutList->InsertColumn(0, wxT("MAC"), wxLIST_FORMAT_LEFT, 100);
+    m_nutList->InsertColumn(1, wxT("IP"), wxLIST_FORMAT_LEFT, 100);
+    m_nutList->InsertColumn(2, wxT("Mask"), wxLIST_FORMAT_LEFT, 100);
+    m_nutList->InsertColumn(3, wxT("Gate"), wxLIST_FORMAT_LEFT, 100);
+    m_nutList->InsertColumn(4, wxT("Host"), wxLIST_FORMAT_LEFT, 100);
 
     /*
      * Create the menu bar.
@@ -201,7 +204,7 @@ void CMainFrame::AddNode(DISCOVERY_TELE *info)
 
     m_nutList->SetItem(ix, 2, CSetup::IpToString(info->dist_ip_mask));
     m_nutList->SetItem(ix, 3, CSetup::IpToString(info->dist_gateway));
-    m_nutList->SetItem(ix, 4, info->dist_hostname);
+    m_nutList->SetItem(ix, 4, wxString((char *)info->dist_hostname, wxConvLocal));
 
     m_nutList->SetColumnWidth(0, wxLIST_AUTOSIZE);
     m_nutList->SetColumnWidth(1, wxLIST_AUTOSIZE);
@@ -227,9 +230,9 @@ void CMainFrame::OnActivated(wxListEvent& event)
     item.SetMask(wxLIST_MASK_TEXT);
     m_nutList->GetItem(item);
 
-    CPropDialog dlg("Settings", dist);
+    CPropDialog dlg(wxT("Settings"), dist);
     if(dlg.ShowModal() == wxID_OK) {
-        if(wxMessageBox("Update?", "Setup", wxYES_NO) == wxYES) {
+        if(wxMessageBox(wxT("Update?"), wxT("Setup"), wxYES_NO) == wxYES) {
             dlg.GetSetup(dist);
             dist->dist_type = DIST_APPLY;
             m_nutList->DeleteAllItems();
