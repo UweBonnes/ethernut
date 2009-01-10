@@ -1,4 +1,12 @@
-$Id: ChangeLog,v 1.504 2009/01/09 18:50:50 haraldkipp Exp $
+$Id: ChangeLog,v 1.505 2009/01/10 20:13:59 haraldkipp Exp $
+
+
+2009-01-10  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutdisc/mainframe.cpp, tools/nutdisc/propdialog.cpp:
+	Allow unicode build.
+
+	* tools/linux/Makefile.am: Remove Makefile.in on maintainer-clean.
 
 
 2009-01-09  Harald Kipp  <harald.kipp@egnite.de>
