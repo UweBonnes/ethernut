@@ -39,6 +39,12 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.27  2009/01/13 21:04:10  olereinhardt
+ * 2009-01-13  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ * 	* tools/nutconf/nutconfdoc.cpp: Commented out inline destructor of
+ * 	  CAbstractDirCopyTraverser to fix compilation bug on linux
+ *
  * Revision 1.26  2009/01/04 04:52:39  thiagocorrea
  * Add .svn to ignore list when copying files and reduce some duplicated code.
  *
@@ -720,9 +726,9 @@ class CAbstractDirCopyTraverser : public wxDirTraverser
 {
 public:
 	CAbstractDirCopyTraverser() {}
-	virtual ~CAbstractDirCopyTraverser() = 0
-	{
-	}
+//	virtual ~CAbstractDirCopyTraverser() = 0
+//	{
+//	}
 
 	virtual bool isSCMdir(const wxString& dirname) const
 	{
