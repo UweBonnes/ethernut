@@ -39,6 +39,10 @@
 
 /*
  * $Log: nutconfdoc.cpp,v $
+ * Revision 1.28  2009/01/14 16:25:46  haraldkipp
+ * Already done by Ole. Anyway, removed the commented lines to make Thiago
+ * happy. ;-)
+ *
  * Revision 1.27  2009/01/13 21:04:10  olereinhardt
  * 2009-01-13  Ole Reinhardt <ole.reinhardt@thermotemp.de>
  *
@@ -726,9 +730,6 @@ class CAbstractDirCopyTraverser : public wxDirTraverser
 {
 public:
 	CAbstractDirCopyTraverser() {}
-//	virtual ~CAbstractDirCopyTraverser() = 0
-//	{
-//	}
 
 	virtual bool isSCMdir(const wxString& dirname) const
 	{
