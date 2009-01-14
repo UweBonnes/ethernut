@@ -32,6 +32,10 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.19  2009/01/14 16:24:38  haraldkipp
+ * Applied the patch contributed by Joerg Hermann. This finally
+ * seems to fix the seg fault crash on KDE4 and Gnome 2.24.
+ *
  * Revision 1.18  2008/09/18 09:53:22  haraldkipp
  * Ignore case when comparing the installation directory.
  *
@@ -166,11 +170,11 @@ bool NutConfApp::OnInit()
      * Splash display.
      */
     wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
-    wxSplashScreen* splash = new wxSplashScreen(bmp, wxSPLASH_CENTRE_ON_SCREEN, 0, NULL, -1);
-    for (int i = 0; i < 5; i++) {
-        wxYield();
-        wxMilliSleep(100);
-    }
+    wxSplashScreen* splash = new wxSplashScreen(bmp,
+          wxSPLASH_CENTRE_ON_SCREEN,
+          0, NULL, -1, wxDefaultPosition, wxDefaultSize,
+          wxSIMPLE_BORDER|wxSTAY_ON_TOP);
+    wxYield();
 
     wxImage::AddHandler(new wxGIFHandler);
     wxImage::AddHandler(new wxPNGHandler);
@@ -213,10 +217,6 @@ bool NutConfApp::OnInit()
     SetTopWindow(m_mainFrame);
     m_mainFrame->Show();
 
-    if(splash) {
-        splash->Destroy();
-    }
-
     if (!m_mainFrame->GetHelpController().Initialize(wxT("nutoshelp"))) {
         wxLogMessage(wxT("Failed to load help file"));
     }
@@ -254,6 +254,9 @@ bool NutConfApp::OnInit()
      */
     m_docManager->CreateDocument(m_settings->m_configname, 0);
 
+    if(splash) {
+        splash->Destroy();
+    }
     return true;
 }
 
