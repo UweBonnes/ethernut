@@ -1,4 +1,16 @@
-$Id: ChangeLog,v 1.506 2009/01/13 21:36:40 olereinhardt Exp $
+$Id: ChangeLog,v 1.507 2009/01/14 16:26:38 haraldkipp Exp $
+
+
+2009-01-14  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/nutconf.cpp: Applied the patch contributed by
+	Joerg Hermann. This finally seems to fix the seg fault crash
+	on KDE4 and Gnome 2.24.
+
+	* tools/nutconf/nutconfdoc.cpp: Removed the destructor of
+	CAbstractDirCopyTraverser. It's not really required, but
+	results in a compile error with the newer GNU compiler,
+	which doesn't accept a pure-specifier with a function body.
 
 
 2009-01-13  Ole Reinhardt <ole.reinhardt@thermotemp.de>
