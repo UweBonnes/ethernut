@@ -33,6 +33,13 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/01/15 13:42:54  olereinhardt
+ * 2009-01-15  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *         * arch/arm/dev/at91_spi.c:
+ *           Fixed return values of At91SpiReset
+ *           Fixed calculation of return values in At91SpiGetSckDelay,
+ *           At91SpiGetTxDelay, At91SpiGetCsDelay
+ *
  * Revision 1.7  2008/10/05 16:40:36  haraldkipp
  * Removed forgotten debug output.
  *
@@ -285,7 +292,7 @@ int At91SpiDisable(u_int base)
  */
 int At91SpiReset(u_int base)
 {
-    int rc = -1;
+    int rc = 0;
 
     /* Disable SPI. */
     At91SpiDisable(base);
@@ -544,7 +551,7 @@ int At91SpiSetBits(u_int base, u_int cs, u_int bits)
 
 u_int At91SpiGetSckDelay(u_int base, u_int cs)
 {
-    return (inr(base + SPI_CSR0_OFF + cs * 4) & ~SPI_DLYBS) >> SPI_DLYBS_LSB;
+    return (inr(base + SPI_CSR0_OFF + cs * 4) >> SPI_DLYBS_LSB) & 0xFF;
 }
 
 int At91SpiSetSckDelay(u_int base, u_int cs, u_int dly)
@@ -561,7 +568,7 @@ int At91SpiSetSckDelay(u_int base, u_int cs, u_int dly)
 
 u_int At91SpiGetTxDelay(u_int base, u_int cs)
 {
-    return (inr(base + SPI_CSR0_OFF + cs * 4) & ~SPI_DLYBCT) >> SPI_DLYBCT_LSB;
+    return (inr(base + SPI_CSR0_OFF + cs * 4) >> SPI_DLYBCT_LSB) & 0xFF;
 }
 
 int At91SpiSetTxDelay(u_int base, u_int cs, u_int dly)
@@ -578,7 +585,7 @@ int At91SpiSetTxDelay(u_int base, u_int cs, u_int dly)
 
 u_int At91SpiGetCsDelay(u_int base)
 {
-    return (inr(base + SPI_MR_OFF) & ~SPI_DLYBCS) >> SPI_DLYBCS_LSB;
+    return (inr(base + SPI_MR_OFF) >> SPI_DLYBCS_LSB) & 0xFF;
 }
 
 int At91SpiSetCsDelay(u_int base, u_int dly)
@@ -665,3 +672,4 @@ int At91SpiTransfer2(u_int base, u_int cs, CONST void *txbuf, void *rxbuf, int x
 
     return rc;
 }
+
