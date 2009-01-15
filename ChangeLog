@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.507 2009/01/14 16:26:38 haraldkipp Exp $
+$Id: ChangeLog,v 1.508 2009/01/15 13:43:41 olereinhardt Exp $
+
+2009-01-15  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* arch/arm/dev/at91_spi.c:
+	  Fixed return values of At91SpiReset
+	  Fixed calculation of return values in At91SpiGetSckDelay,
+	  At91SpiGetTxDelay, At91SpiGetCsDelay
 
 
 2009-01-14  Harald Kipp  <harald.kipp@egnite.de>
