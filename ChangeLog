@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.508 2009/01/15 13:43:41 olereinhardt Exp $
+$Id: ChangeLog,v 1.509 2009/01/15 17:59:04 haraldkipp Exp $
+
+2009-01-15  Harald Kipp  <harald.kipp@egnite.de>
+
+	* tools/nutconf/nutconf.cpp: Fixed a path separator problem
+	for Linux. The editor is now launched again when double
+	clicking the configured header file in the property list.
+
 
 2009-01-15  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* arch/arm/dev/at91_spi.c:

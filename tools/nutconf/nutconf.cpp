@@ -32,6 +32,10 @@
 
 /*
  * $Log: nutconf.cpp,v $
+ * Revision 1.20  2009/01/15 17:59:04  haraldkipp
+ * Fixed a path separator problem for Linux. The editor is now launched
+ * again when double clicking the configured header file in the property list.
+ *
  * Revision 1.19  2009/01/14 16:24:38  haraldkipp
  * Applied the patch contributed by Joerg Hermann. This finally
  * seems to fix the seg fault crash on KDE4 and Gnome 2.24.
@@ -315,7 +319,7 @@ bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer
     wxString cmd;
     wxString filePath(strFileName);
 
-    filePath.Replace(wxT("/"), wxT("\\"));
+    filePath.Replace(wxT("/"), wxString(wxFileName::GetPathSeparator()));
 
     if (!strViewer.IsEmpty()) {
         cmd = strViewer + wxString(wxT(" ")) + filePath;
