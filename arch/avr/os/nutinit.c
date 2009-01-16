@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.16  2009/01/16 17:02:19  haraldkipp
+ * No longer save any default OS configuration in non-volatile RAM.
+ * All platforms will now call NutLoadConfig().
+ *
  * Revision 1.15  2008/08/27 06:40:41  thornen
  * Added MMnet03..04 and MMnet102..104 CPLD initialization.
  *
@@ -700,13 +704,8 @@ void NutInit(void)
     NutInitHeap();
 #endif /* __GNUC__ */
 
-    /*
-     * Read eeprom configuration.
-     */
-    if (NutLoadConfig()) {
-        strcpy(confos.hostname, "ethernut");
-        NutSaveConfig();
-    }
+    /* Read OS configuration from non-volatile memory. */
+    NutLoadConfig();
 
     /* Create idle thread
      */

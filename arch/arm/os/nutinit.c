@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.18  2009/01/16 17:02:18  haraldkipp
+ * No longer save any default OS configuration in non-volatile RAM.
+ * All platforms will now call NutLoadConfig().
+ *
  * Revision 1.17  2008/08/11 06:59:14  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -237,10 +241,8 @@ void NutInit(void)
 
     NutHeapAdd(HEAP_START, HEAP_SIZE);
 
-    /*
-     * No EEPROM configuration.
-     */
-    strcpy(confos.hostname, "ethernut");
+    /* Read OS configuration from non-volatile memory. */
+    NutLoadConfig();
 
     /*
      * Create idle thread

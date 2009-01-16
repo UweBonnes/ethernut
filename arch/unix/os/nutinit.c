@@ -417,13 +417,8 @@ int main(int argc, char *argv[])
      */
     NutHeapAdd(PSEUDO_RAM, PSEUDO_RAM_SIZE);
 
-    /*
-     * Read eeprom configuration.
-     */
-    if (NutLoadConfig()) {
-        strcpy(confos.hostname, "ethernut");
-        NutSaveConfig();
-    }
+    /* Read OS configuration from non-volatile memory. */
+    NutLoadConfig();
 
     /*
      * set stdio
