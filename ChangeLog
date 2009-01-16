@@ -1,4 +1,36 @@
-$Id: ChangeLog,v 1.509 2009/01/15 17:59:04 haraldkipp Exp $
+$Id: ChangeLog,v 1.510 2009/01/16 17:09:23 haraldkipp Exp $
+
+2009-01-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/os/nutinit.c, arch/avr/os/nutinit.c,
+	arch/unix/os/nutinit.c: No longer save any default 
+	OS configuration in non-volatile RAM. All platforms
+	will call NutLoadConfig().
+
+	* conf/os/os.nut, os/confos.c, include/sys/confos.h:
+	Configurable host name length. The *nix conditional is
+	no longer required as this will be handled in the nvmem
+	routines. NutLoadConfig will now set the virgin host
+	name, if no valid configuration is available. Cookie
+	and virgin host name are configurable too, but disabled
+	in the Configurator until we fixed the string value
+	problem. You may use UserConf.mk instead.
+
+	* conf/pro/pro.nut, pro/discover.c, include/pro/discover.h,
+	include/cfg/discover.h: Configurable discovery protocol 
+	version and port plus configurable service thread stack 
+	size. The new protocol version 1.1 allows host names up 
+	to 98 characters. Added some code to make sure, that 
+	nothing is overwritten with version 1.0 protocol and 
+	too long host names. Protocol version 1.0 is still the 
+	default.
+
+	* tools/nutdisc/discovery.h, tools/nutdisc/mainframe.cpp,
+	tools/nutdisc/nutdisc.rc, tools/nutdisc/propdialog.cpp,
+	tools/nutdisc/udpthread.cpp, tools/nutdisc/version.h:
+	This new version 2.3 additionally supports discovery 
+	protocol version 1.1.
+
 
 2009-01-15  Harald Kipp  <harald.kipp@egnite.de>
 
