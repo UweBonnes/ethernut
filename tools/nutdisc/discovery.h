@@ -2,6 +2,7 @@
 #define _DISCOVERY_H_
 
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,12 +24,16 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/01/16 17:05:04  haraldkipp
+ * Version 2.3 additionally supports discovery protocol version 1.1.
+ *
  * Revision 1.1  2006/09/07 08:58:27  haraldkipp
  * First check-in
  *
  */
 
-#define DISCOVERY_VERSION   0x10
+#define DISCOVERY_VERSION_1_0   0x10
+#define DISCOVERY_VERSION_1_1   0x11
 
 #define DIST_REQUEST    0
 #define DIST_ANNOUNCE   1
@@ -46,8 +51,7 @@ typedef struct {
     u_long dist_ip_mask;        /*!< \brief IP netmask. */
     u_long dist_gateway;        /*!< \brief Default route. */
     u_long dist_cip_addr;       /*!< \brief Configured IP address. */
-    u_char dist_hostname[8];    /*!< \brief Host name of the system. */
-    u_char dist_custom[92];     /*!< \brief Bootfile to request. */
+    u_char dist_appendix[100];  /*!< \brief Additional settings, starting with host name. */
 } DISCOVERY_TELE;
 #pragma pack()
 

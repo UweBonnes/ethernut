@@ -1,4 +1,5 @@
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -20,6 +21,9 @@
 
 /*
  * $Log: propdialog.cpp,v $
+ * Revision 1.3  2009/01/16 17:05:04  haraldkipp
+ * Version 2.3 additionally supports discovery protocol version 1.1.
+ *
  * Revision 1.2  2009/01/10 20:07:20  haraldkipp
  * Allow unicode build.
  *
@@ -55,7 +59,17 @@ CPropDialog::CPropDialog(const wxString& title, DISCOVERY_TELE *dist)
     topSizer->Add(CreateButtonSizer(wxOK | wxCANCEL));
     m_grid->AppendCategory(wxT("General"));
     m_grid->Append(wxStringProperty(wxT("MAC"), wxT("ics_mac"), CSetup::MacToString(dist->dist_mac)));
-    m_grid->Append(wxStringProperty(wxT("Host Name"), wxT("ics_hostname"), wxString((char *)dist->dist_hostname, wxConvLocal)));
+
+    char *hostname;
+    if (dist->dist_ver == DISCOVERY_VERSION_1_0) {
+        hostname = strdup((char *)dist->dist_appendix);
+    } else {
+        size_t nlen = dist->dist_appendix[0];
+        hostname = (char *)malloc(nlen + 1);
+        memcpy(hostname, &dist->dist_appendix[1], nlen);
+        hostname[nlen] = '\0';
+    }
+    m_grid->Append(wxStringProperty(wxT("Host Name"), wxT("ics_hostname"), wxString(hostname, wxConvLocal)));
 
     m_grid->AppendCategory( wxT("IP"));
     m_grid->Append(wxStringProperty(wxT("Fixed Address"), wxT("ics_cip_addr"), CSetup::IpToString(dist->dist_cip_addr)));
@@ -106,11 +120,17 @@ bool CPropDialog::GetValues()
     }
 
     val = m_grid->GetPropertyValueAsString(wxT("ics_hostname"));
-    if (val.Len() > sizeof(m_dist.dist_hostname)) {
-        ::wxMessageBox(wxT("Host Name too long!"), wxT("Error"), wxOK | wxICON_ERROR, this);
-        return false;
+    if (m_dist.dist_ver == DISCOVERY_VERSION_1_0) {
+        if (val.Len() > 7) {
+            ::wxMessageBox(wxT("Host Name too long!"), wxT("Error"), wxOK | wxICON_ERROR, this);
+            return false;
+        }
+        strncpy((char *)m_dist.dist_appendix, val, 7);
+        m_dist.dist_appendix[7] = 0;
+    } else {
+        m_dist.dist_appendix[0] = (u_char)val.Len();
+        strncpy((char *)&m_dist.dist_appendix[1], val, val.Len());
     }
-    strncpy((char *)m_dist.dist_hostname, val, 8);
 
     val = m_grid->GetPropertyValueAsString(wxT("ics_cip_addr"));
     if (!CSetup::StringToIp(val, &m_dist.dist_cip_addr)) {

@@ -2,6 +2,7 @@
 #define VERSION_H_
 
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,6 +24,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/16 17:05:04  haraldkipp
+ * Version 2.3 additionally supports discovery protocol version 1.1.
+ *
  * Revision 1.2  2008/01/28 16:43:12  haraldkipp
  * Version 2.2
  *
@@ -31,6 +35,6 @@
  *
  */
 
-#define VERSION "2.2.0"
+#define VERSION "2.3.0"
 
 #endif

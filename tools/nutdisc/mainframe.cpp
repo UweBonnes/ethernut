@@ -1,4 +1,5 @@
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -20,6 +21,9 @@
 
 /*
  * $Log: mainframe.cpp,v $
+ * Revision 1.5  2009/01/16 17:05:04  haraldkipp
+ * Version 2.3 additionally supports discovery protocol version 1.1.
+ *
  * Revision 1.4  2009/01/10 20:07:20  haraldkipp
  * Allow unicode build.
  *
@@ -204,7 +208,16 @@ void CMainFrame::AddNode(DISCOVERY_TELE *info)
 
     m_nutList->SetItem(ix, 2, CSetup::IpToString(info->dist_ip_mask));
     m_nutList->SetItem(ix, 3, CSetup::IpToString(info->dist_gateway));
-    m_nutList->SetItem(ix, 4, wxString((char *)info->dist_hostname, wxConvLocal));
+    if (info->dist_ver == DISCOVERY_VERSION_1_0) {
+        m_nutList->SetItem(ix, 4, wxString((char *)info->dist_appendix, wxConvLocal));
+    } else {
+        size_t nlen = info->dist_appendix[0];
+        char *hostname = (char *)malloc(nlen + 1);
+        memcpy(hostname, &info->dist_appendix[1], nlen);
+        hostname[nlen] = '\0';
+        m_nutList->SetItem(ix, 4, wxString(hostname, wxConvLocal));
+        free(hostname);
+    }
 
     m_nutList->SetColumnWidth(0, wxLIST_AUTOSIZE);
     m_nutList->SetColumnWidth(1, wxLIST_AUTOSIZE);

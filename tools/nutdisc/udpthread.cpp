@@ -1,4 +1,5 @@
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -20,6 +21,9 @@
 
 /*
  * $Log: udpthread.cpp,v $
+ * Revision 1.3  2009/01/16 17:05:04  haraldkipp
+ * Version 2.3 additionally supports discovery protocol version 1.1.
+ *
  * Revision 1.2  2008/01/28 16:43:12  haraldkipp
  * Version 2.2
  *
@@ -133,7 +137,8 @@ void *CUdpThread::Entry()
 
     for(;;) {
         cl = sizeof(client);
-        if((got = recvfrom(sock, buf, 512, 0, (struct sockaddr *)&client, &cl)) >= sizeof(DISCOVERY_TELE) - sizeof(dist->dist_custom)) {
+        got = recvfrom(sock, buf, 512, 0, (struct sockaddr *)&client, &cl);
+        if(got > sizeof(DISCOVERY_TELE) - sizeof(dist->dist_appendix)) {
             dist = (DISCOVERY_TELE *)malloc(sizeof(DISCOVERY_TELE));
             memset(dist, 0, sizeof(DISCOVERY_TELE));
             memcpy(dist, buf, got);
