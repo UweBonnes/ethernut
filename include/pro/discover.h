@@ -40,6 +40,14 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2009/01/16 17:03:50  haraldkipp
+ * Configurable discovery protocol version and port plus
+ * configurable service thread stack size. The new version 1.1
+ * allows host names up to 98 characters. Added some code
+ * to make sure, that nothing is overwritten with version 1.0
+ * protocol and too long host names. Protocol version 1.0
+ * is still the default.
+ *
  * Revision 1.2  2008/08/11 07:00:23  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -52,9 +60,12 @@
 
 
 #include <sys/types.h>
+#include <cfg/discover.h>
 #include <stdint.h>
 
+#ifndef DISCOVERY_VERSION
 #define DISCOVERY_VERSION   0x10
+#endif
 
 #define DIST_REQUEST    0
 #define DIST_ANNOUNCE   1
@@ -71,8 +82,12 @@ typedef struct __attribute__ ((packed)) _DISCOVERY_TELE {
     uint32_t dist_ip_mask;        /*!< \brief IP netmask. */
     uint32_t dist_gateway;        /*!< \brief Default route. */
     uint32_t dist_cip_addr;       /*!< \brief Configured IP address. */
+#if DISCOVERY_VERSION <= 0x10
     uint8_t dist_hostname[8];    /*!< \brief Host name of the system. */
     uint8_t dist_custom[92];     /*!< \brief Bootfile to request. */
+#else
+    uint8_t dist_appendix[100];  /*! \brief Host name with lenght byte in front. */
+#endif
 } DISCOVERY_TELE;
 
 typedef int (*NutDiscoveryCallback) (uint32_t, uint16_t, DISCOVERY_TELE *, int);

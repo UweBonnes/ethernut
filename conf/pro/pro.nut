@@ -33,6 +33,14 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.13  2009/01/16 17:03:50  haraldkipp
+-- Configurable discovery protocol version and port plus
+-- configurable service thread stack size. The new version 1.1
+-- allows host names up to 98 characters. Added some code
+-- to make sure, that nothing is overwritten with version 1.0
+-- protocol and too long host names. Protocol version 1.0
+-- is still the default.
+--
 -- Revision 1.12  2008/07/08 13:27:55  haraldkipp
 -- Several HTTP server options are now configurable.
 -- Keepalive is now disabled by default to maintain backward compatibility.
@@ -77,6 +85,50 @@
 
 nutpro =
 {
+    {
+        name = "nutpro_discover",
+        brief = "Discovery",
+        description = "This service allows to scan a local network for Nut/OS nodes "..
+                      "and modify their network settings by running the Nut/OS discovery "..
+                      "tool on a desktop PC.\n\n"..
+                      "It is not available by default and must be activated by the "..
+                      "application.",
+        requires = { "NET_UDP" },
+        sources = { "discover.c" },
+        options = 
+        {
+            {
+                macro = "DISCOVERY_VERSION",
+                brief = "Protocol Version",
+                description = "Make sure, that your discovery tool and any callback "..
+                              "implemented in your application supports the selected version.\n\n"..
+                              "Version 0x10 truncates the host name to 7 characters, while "..
+                              "version 0x11 allows host names up to 98 characters, which "..
+                              "however will reduce the custom area to a single byte.",
+                type = "enumerated",
+                choices = { "0x10", "0x11" },
+                default = "0x10",
+                file = "include/cfg/discover.h"
+            },
+            {
+                macro = "NUT_THREAD_DISTSTACK",
+                brief = "Service Thread Stack",
+                description = "Number of bytes to be allocated for the stack of the discovery "..
+                              "service thread. May be enabled and set to fine tune RAM usage.",
+                flavor = "booldata",
+                file = "include/cfg/discover.h"
+            },
+            {
+                macro = "DISCOVERY_PORT",
+                brief = "Service Port",
+                description = "UDP port used by the discovery service.\n\n"..
+                              "Used as a default. The application may choose a different value.",
+                default = "9806",
+                flavor = "integer",
+                file = "include/cfg/discover.h"
+            },
+        }
+    },
     {
         name = "nutpro_dhcpc",
         brief = "DHCP/BOOTP Client",

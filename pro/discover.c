@@ -33,6 +33,14 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/16 17:03:50  haraldkipp
+ * Configurable discovery protocol version and port plus
+ * configurable service thread stack size. The new version 1.1
+ * allows host names up to 98 characters. Added some code
+ * to make sure, that nothing is overwritten with version 1.0
+ * protocol and too long host names. Protocol version 1.0
+ * is still the default.
+ *
  * Revision 1.2  2008/08/11 07:00:35  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -102,9 +110,14 @@ int NutDiscoveryAnnTele(DISCOVERY_TELE * dist)
     dist->dist_ip_mask = confnet.cdn_ip_mask;
     dist->dist_gateway = confnet.cdn_gateway;
     dist->dist_cip_addr = confnet.cdn_cip_addr;
+#if DISCOVERY_VERSION <= 0x10
     memcpy(dist->dist_hostname, confos.hostname, sizeof(dist->dist_hostname));
-
     return sizeof(DISCOVERY_TELE) - sizeof(dist->dist_custom);
+#else
+    dist->dist_appendix[0] = (uint8_t)strlen(confos.hostname);
+    memcpy(&dist->dist_appendix[1], confos.hostname, dist->dist_appendix[0]);
+    return sizeof(DISCOVERY_TELE) - sizeof(dist->dist_appendix) + dist->dist_appendix[0] + 1;
+#endif
 }
 
 /*!
@@ -116,7 +129,12 @@ int NutDiscoveryAnnTele(DISCOVERY_TELE * dist)
  */
 int NutDiscoveryAppConf(DISCOVERY_TELE * dist)
 {
-    memcpy(confos.hostname, dist->dist_hostname, sizeof(confos.hostname));
+    memset(confos.hostname, 0, sizeof(confos.hostname));
+#if DISCOVERY_VERSION <= 0x10
+    strncpy(confos.hostname, (char *)dist->dist_hostname, sizeof(confos.hostname) - 1);
+#else
+    memcpy(confos.hostname, &dist->dist_appendix[1], dist->dist_appendix[0]);
+#endif
     NutSaveConfig();
 
     memcpy(confnet.cdn_mac, dist->dist_mac, sizeof(confnet.cdn_mac));
@@ -139,15 +157,30 @@ int NutDiscoveryAppConf(DISCOVERY_TELE * dist)
 static int NutDiscoveryHandler(uint32_t ip, uint16_t port, DISCOVERY_TELE * dist, int len)
 {
     int rc = -1;
+#if DISCOVERY_VERSION <= 0x10
+    size_t minlen = sizeof(DISCOVERY_TELE) - sizeof(dist->dist_custom);
+#else
+    size_t minlen = sizeof(DISCOVERY_TELE) - sizeof(dist->dist_appendix) + 1;
+#endif
 
     /* Check minimum datagram length. */
-    if (len >= sizeof(DISCOVERY_TELE) - sizeof(dist->dist_custom)) {
+    if (len >= minlen) {
+        /* 
+         * Request telegram. 
+         */
         if (dist->dist_type == DIST_REQUEST) {
             /* Respond to requests. */
             rc = NutDiscoveryAnnTele(dist);
-        } else if (dist->dist_type == DIST_APPLY        /* Apply telegram. */
-                   && dist->dist_xid == xid     /* Check exchange ID. */
-                   && dist->dist_ver >= DISCOVERY_VERSION) {    /* Minimum version required. */
+        }
+
+        /* 
+         * Apply telegram. 
+         */
+        else if (dist->dist_type == DIST_APPLY
+                   /* Check exchange ID. */
+                   && dist->dist_xid == xid
+                   /* Required protocol version. */
+                   && dist->dist_ver == DISCOVERY_VERSION) {    
             xid += NutGetTickCount();
             /* Store configuration. */
             rc = NutDiscoveryAppConf(dist);
@@ -247,7 +280,7 @@ NutDiscoveryCallback NutRegisterDiscoveryCallback(NutDiscoveryCallback func)
  *               this mask are ignored. Set to INADDR_BROADCAST to allow 
  *               any. If zero, no updates are allowed.
  * \param port   The responder will listen to this UDP port. If zero,
- *               the default port 9806 will be used.
+ *               the default port \ref DISCOVERY_PORT is used.
  * \param flags  Option value, may contain any combination of DISF_ flags.
  *
  * \return 0 if a handler thread had been started, -1 otherwise.
