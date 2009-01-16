@@ -33,6 +33,15 @@
 
 /*
  * $Log$
+ * Revision 1.10  2009/01/16 17:03:02  haraldkipp
+ * Configurable host name length. The *nix conditional is
+ * no longer required as this will be handled in the nvmem
+ * routines. NutLoadConfig will now set the virgin host
+ * name, if no valid configuration is available. Cookie
+ * and virgin host name are configurable too, but disabled
+ * in the Configurator until we fixed the string value
+ * problem. You may use UserConf.mk instead.
+ *
  * Revision 1.9  2006/05/25 09:18:28  haraldkipp
  * API documentation updated and corrected.
  *
@@ -68,8 +77,11 @@
  */
 
 #include <cfg/arch.h>
+#include <sys/nutdebug.h>
 #include <sys/confos.h>
 #include <dev/nvmem.h>
+
+#include <string.h>
 
 /*!
  * \addtogroup xgConfOs
@@ -87,40 +99,57 @@ CONFOS confos;
 /*!
  * \brief Load Nut/OS configuration from non-volatile memory.
  *
- * This routine is automatically called during system
- * initialization.
+ * This routine is automatically called during system initialization.
+ * It tries to read the OS configuration structure \ref CONFOS from
+ * non-volatile memory, starting at /ref CONFOS_EE_OFFSET.
  *
- * \return 0 if OK, -1 if configuration isn't available.
+ * The routine may fail, if 
+ * - non-volatile memory is not supported,
+ * - non-volatile memory contains invalid data,
+ * - the configuration structure has changed.
+ *
+ * \return 0 if OK, -1 on failures, in which case the hostname will
+ *         be set to \ref CONFOS_VIRGIN_HOSTNAME.
  */
 int NutLoadConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(MCU_GBA)
-    if (NutNvMemLoad(CONFOS_EE_OFFSET, &confos, sizeof(CONFOS))) {
-        return -1;
+    /* Sanity check. */
+    NUTASSERT(sizeof(CONFOS) <= 255);
+
+    if (NutNvMemLoad(CONFOS_EE_OFFSET, &confos, sizeof(CONFOS)) == 0 /* If loaded... */
+        && confos.size == sizeof(CONFOS) /* ...check magic size and cookie. */
+        && memcmp(confos.magic, CONFOS_EE_MAGIC, sizeof(CONFOS_EE_MAGIC) - 1) == 0) {
+            return 0;
     }
-    if (confos.size != sizeof(CONFOS) || confos.magic[0] != 'O' || confos.magic[1] != 'S') {
-        return -1;
-    }
-#endif
-    return 0;
+
+    /* No valid configuration, set virgin hostname. */
+    NUTASSERT(sizeof(confos.hostname) > strlen(CONFOS_VIRGIN_HOSTNAME));
+    strcpy(confos.hostname, CONFOS_VIRGIN_HOSTNAME);
+
+    return -1;
 }
 
 /*!
  * \brief Save Nut/OS configuration in non-volatile memory.
  *
+ * Since Nut/OS version 4.7.5, this routine is no longer called automatically 
+ * during system initialization. Thus, if NutLoadConfig() fails, then the 
+ * non-volatile memory remains invalid and NutLoadConfig() will again fail 
+ * during the next system start.
+ *
  * \return 0 if OK, -1 on failures.
  */
 int NutSaveConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(MCU_GBA)
+    /* Sanity checks. */
+    NUTASSERT(sizeof(CONFOS) <= 255);
+    NUTASSERT(strlen(confos.hostname) <= MAX_HOSTNAME_LEN);
+
+    /* Update the magic part. */
     confos.size = sizeof(CONFOS);
-    confos.magic[0] = 'O';
-    confos.magic[1] = 'S';
-    if (NutNvMemSave(CONFOS_EE_OFFSET, &confos, sizeof(CONFOS))) {
-        return -1;
-    }
-#endif
-    return 0;
+    memcpy(confos.magic, CONFOS_EE_MAGIC, sizeof(CONFOS_EE_MAGIC) - 1);
+
+    return NutNvMemSave(CONFOS_EE_OFFSET, &confos, sizeof(CONFOS));
 }
 
 /*@}*/

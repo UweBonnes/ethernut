@@ -40,6 +40,15 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2009/01/16 17:03:02  haraldkipp
+ * Configurable host name length. The *nix conditional is
+ * no longer required as this will be handled in the nvmem
+ * routines. NutLoadConfig will now set the virgin host
+ * name, if no valid configuration is available. Cookie
+ * and virgin host name are configurable too, but disabled
+ * in the Configurator until we fixed the string value
+ * problem. You may use UserConf.mk instead.
+ *
  * Revision 1.8  2008/10/05 16:47:04  haraldkipp
  * Removed attribute 'packed' from typedef.
  *
@@ -94,7 +103,28 @@
 #define CONFOS_EE_OFFSET    0
 #endif
 
+#ifndef CONFOS_EE_MAGIC
 #define CONFOS_EE_MAGIC     "OS"
+#endif
+
+/*!
+ * \brief Maximum number of characters allowed for hostname.
+ *
+ * Intentionally not MAXHOSTNAMELEN to avoid conflicts with existing 
+ * C libraries.
+ */
+#ifndef MAX_HOSTNAME_LEN
+#define MAX_HOSTNAME_LEN    15
+#endif
+
+/*!
+ * \brief Default hostname.
+ *
+ * Used on virgin systems without any valid configuration.
+ */
+#ifndef CONFOS_VIRGIN_HOSTNAME
+#define CONFOS_VIRGIN_HOSTNAME  "ethernut"
+#endif
 
 /*!
  * \brief Operating system configuration type.
@@ -120,11 +150,11 @@ struct __attribute__ ((packed)) _CONFOS {
      *
      * Contains CONFOS_EE_MAGIC.
      */
-    uint8_t magic[2];
+    uint8_t magic[sizeof(CONFOS_EE_MAGIC) - 1];
 
     /*! \brief Host name of the system. 
      */
-    char hostname[16];
+    char hostname[MAX_HOSTNAME_LEN + 1];
 };
 
 extern CONFOS confos;

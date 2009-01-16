@@ -33,6 +33,15 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.19  2009/01/16 17:03:02  haraldkipp
+-- Configurable host name length. The *nix conditional is
+-- no longer required as this will be handled in the nvmem
+-- routines. NutLoadConfig will now set the virgin host
+-- name, if no valid configuration is available. Cookie
+-- and virgin host name are configurable too, but disabled
+-- in the Configurator until we fixed the string value
+-- problem. You may use UserConf.mk instead.
+--
 -- Revision 1.18  2008/07/08 08:25:04  haraldkipp
 -- NutDelay is no more architecture specific.
 -- Number of loops per millisecond is configurable or will be automatically
@@ -375,6 +384,40 @@ nutos =
                               "expects its configuration",
                 default = "0",
                 type = "integer",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFOS_EE_MAGIC",
+                brief = "Magic Cookie",
+                description = "Together with the length of the configuration structure "..
+                              "this is used to determine that we got a valid configuration "..
+                              "structure in non-volatile memory.\n\n"..
+                              "Disabled due to problems of the Configurator using string "..
+                              "literals as values.",
+                requires = { "NOT_AVAILABLE" },
+                default = "\"OS\"",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "MAX_HOSTNAME_LEN",
+                brief = "Max. Host Name Length",
+                description = "The name of the local host can't grow beyond this size. "..
+                              "This is just the basic name without domain information.\n\n"..
+                              "Make sure that the virgin host name will fit. Further, "..
+                              "keep in mind that changing this size will have an impact "..
+                              "at least on the auto discovery feature.",
+                default = "15",
+                type = "integer",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFOS_VIRGIN_HOSTNAME",
+                brief = "Virgin Host Name",
+                description = "This name will be used for hosts without valid configuration.\n\n"..
+                              "Disabled due to problems of the Configurator using string "..
+                              "literals as values.",
+                requires = { "NOT_AVAILABLE" },
+                default = "\"ethernut\"",
                 file = "include/cfg/eeprom.h"
             }
         }
