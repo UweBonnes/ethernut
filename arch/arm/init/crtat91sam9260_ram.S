@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/16 19:45:42  haraldkipp
+ * All ARM code is now running in system mode.
+ *
  * Revision 1.5  2008/01/16 00:19:42  olereinhardt
  * Changed backslash to slash in include path names
  *
@@ -275,19 +278,19 @@ __set_stacks:
          * Set exception stack pointers and enable interrupts.
          */
         ldr     r0, =__exp_stack
-        msr     CPSR_c, #ARM_MODE_FIQ | 0xC0
+        msr     CPSR_c, #ARM_MODE_FIQ | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #FIQ_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_IRQ | 0xC0
+        msr     CPSR_c, #ARM_MODE_IRQ | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #IRQ_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_ABORT | 0xC0
+        msr     CPSR_c, #ARM_MODE_ABORT | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #ABT_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_UNDEF | 0xC0
+        msr     CPSR_c, #ARM_MODE_UNDEF | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #UND_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_SVC
+        msr     CPSR_c, #ARM_MODE_SVC | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         b       __enter_mode
         
@@ -309,6 +312,7 @@ __enter_mode:
         orr     r0, r0, r3
         mcr     p15, 0, r0, c1, c0, 0
 
+        msr     CPSR_c, #ARM_MODE_SYS | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         b       __clear_bss
 
         .ltorg

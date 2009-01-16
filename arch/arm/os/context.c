@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/01/16 19:45:42  haraldkipp
+ * All ARM code is now running in system mode.
+ *
  * Revision 1.7  2008/08/11 06:59:14  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -269,7 +272,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
      * Setup the switch frame.
      */
     sf->csf_lr = (uptr_t) NutThreadEntry;
-    sf->csf_cpsr = I_BIT | F_BIT | ARM_MODE_SVC;
+    sf->csf_cpsr = ARM_CPSR_I_BIT | ARM_CPSR_F_BIT | ARM_MODE_SYS;
 
     /*
      * Initialize the thread info structure and insert it into the 

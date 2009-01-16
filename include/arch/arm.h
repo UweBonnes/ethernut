@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2009/01/16 19:45:42  haraldkipp
+ * All ARM code is now running in system mode.
+ *
  * Revision 1.20  2008/08/06 12:51:09  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -126,8 +129,11 @@
 #define ARM_MODE_MASK       0x1F
 
 #define I_BIT               0x80
+#define ARM_CPSR_I_BIT      0x80
 #define F_BIT               0x40
+#define ARM_CPSR_F_BIT      0x40
 #define T_BIT               0x20
+#define ARM_CPSR_T_BIT      0x20
 
 #ifdef __GNUC__
 #define CONST      const

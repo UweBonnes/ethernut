@@ -1,6 +1,49 @@
-$Id: ChangeLog,v 1.510 2009/01/16 17:09:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.511 2009/01/16 19:45:42 haraldkipp Exp $
 
 2009-01-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/unix/dev/eeprom.c: Trying to apply a quick fix
+	for the Linux emulator build failure.
+
+	* arch/arm/debug/arm-da.S, arch/arm/debug/arm-pfa.S,
+	arch/arm/debug/arm-swi.S, arch/arm/debug/arm-udf.S,
+	arch/arm/debug/common_xxx_handler.c,
+	arch/arm/debug/default_da_handler.c,
+	arch/arm/debug/default_pfa_handler.c,
+	arch/arm/debug/default_swi_handler.c,
+	arch/arm/debug/default_udf_handler.c,
+	arch/arm/debug/reg-dump.c, arch/arm/debug/stackdump.c,
+	include/arch/arm/exception_asm.h,
+	include/arch/arm/exception_c.h,
+	include/arch/arm/ptrace.h, include/sys/ptrace.h,
+	conf/arch/arm.nut: Duane Ellis' crash dump routines added.
+	The original code had been released as part of the LoastARM 
+	Project under GPL Version 2, but has been made available for 
+	Nut/OS under out 3-clause BSD license with kind permission 
+	from the author. It currently handles data abort, undefined,
+	prefetch abort and SWI exceptions and will spit out a
+	register dump and a stack backtrace. Note, that this will 
+	currently work with arm-elf debug code only, because production 
+	code omits frame pointers, which are needed by the stack back 
+	trace. Experimental, use with care.
+
+	* arch/arm/init/crtat91sam7sex_rom.S, arch/arm/init/crtat91_boot.S,
+	arch/arm/init/crtat91_bootcrom.S, arch/arm/init/crtat91_httprom.S,
+	arch/arm/init/crtat91_ram.S, arch/arm/init/crtat91_rom.S,
+	arch/arm/init/crtat91sam7se512_ram.S, 
+	arch/arm/init/crtat91sam7sex_rom.S,
+	arch/arm/init/crtat91sam9260_ram.S,
+	arch/arm/init/crtat91sam9xe512_ram.S,
+	arch/arm/init/crteb40a_ram.S, arch/arm/init/crtwolf_ram.S,
+	include/arch/arm.h, arch/arm/os/context.c:
+	Most previous ARM ports run Nut/OS kernel and application
+	code in supervisor mode, which causes a number of problems.
+	As a simple solution, we are now changing to system mode.
+	The majority of applications will not even notice this change.
+	Some existing code, however, which deals with black magic
+	like nested interrupts etc. should be carefully reviewed.
+	Anyway, this is still experimental and should be used with care.
+	Note the new ARM CPSR bit names, the old ones are deprecated.
 
 	* arch/arm/os/nutinit.c, arch/avr/os/nutinit.c,
 	arch/unix/os/nutinit.c: No longer save any default 

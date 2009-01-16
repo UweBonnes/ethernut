@@ -33,10 +33,15 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/01/16 19:45:42  haraldkipp
+ * All ARM code is now running in system mode.
+ *
  * Revision 1.1  2008/07/14 13:04:27  haraldkipp
  * New Ethernut 3 link option with code in RAM and constant data in ROM.
  *
  */
+
+#include <arch/arm.h>
 
 PS_BASE   = 0xFFFF4000      /* Power saving controller. */
 AIC_BASE  = 0xFFFFF000      /* Advanced interrupt controller. */
@@ -274,21 +279,21 @@ __set_stacks:
          * Set exception stack pointers and enable interrupts.
          */
         ldr     r0, =__xcp_stack
-        msr     CPSR_c, #ARM_MODE_FIQ | 0xC0
+        msr     CPSR_c, #ARM_MODE_FIQ | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #FIQ_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_IRQ | 0xC0
+        msr     CPSR_c, #ARM_MODE_IRQ | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #IRQ_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_ABORT | 0xC0
+        msr     CPSR_c, #ARM_MODE_ABORT | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #ABT_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_UNDEF | 0xC0
+        msr     CPSR_c, #ARM_MODE_UNDEF | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #UND_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_SVC | 0xC0
+        msr     CPSR_c, #ARM_MODE_SVC | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
-        b       __enter_user
+        b       __enter_mode
 
         .rept   32
         .long   0
@@ -299,16 +304,15 @@ __xcp_stack:
         
         .ltorg
 
-        .global __enter_user
+        .global __enter_mode
         .align
-__enter_user:
+__enter_mode:
 /*
- * Section 3: Enter user mode.
+ * Section 3: Enter system mode.
  */
         .section .init3,"ax",%progbits
 
-@        msr     CPSR_c, #ARM_MODE_USER
-
+        msr     CPSR_c, #ARM_MODE_SYS | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         b       __clear_bss
 
         .ltorg

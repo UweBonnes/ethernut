@@ -231,32 +231,32 @@ __set_stacks:
          * Set exception stack pointers and enable interrupts.
          */
         ldr     r0, =__exp_stack
-        msr     CPSR_c, #ARM_MODE_FIQ | 0xC0
+        msr     CPSR_c, #ARM_MODE_FIQ | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #FIQ_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_IRQ | 0xC0
+        msr     CPSR_c, #ARM_MODE_IRQ | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #IRQ_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_ABORT | 0xC0
+        msr     CPSR_c, #ARM_MODE_ABORT | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #ABT_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_UNDEF | 0xC0
+        msr     CPSR_c, #ARM_MODE_UNDEF | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         sub     r0, r0, #UND_STACK_SIZE
-        msr     CPSR_c, #ARM_MODE_SVC | 0xC0
+        msr     CPSR_c, #ARM_MODE_SVC | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         mov     r13, r0
         b       __enter_mode
         
         .ltorg
 
 /*
- * Section 3: Enter user mode.
+ * Section 3: Enter system mode.
  */
         .section .init3,"ax",%progbits
 
         .global __enter_mode
 __enter_mode:
-
+        msr     CPSR_c, #ARM_MODE_SYS | ARM_CPSR_I_BIT | ARM_CPSR_F_BIT
         b       __clear_bss
 
         .ltorg
