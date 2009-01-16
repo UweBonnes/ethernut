@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.36  2009/01/16 19:44:05  haraldkipp
+-- ARM crash dump added.
+--
 -- Revision 1.35  2009/01/09 17:54:21  haraldkipp
 -- Added SPI bus controller for AVR and AT91.
 --
@@ -612,6 +615,38 @@ nutarch_arm =
             "arm/dev/ih_at91tc2.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
+        },
+    },
+    {
+        name = "nutarch_arm_except_ent",
+        brief = "Debug Exception Entries",
+        sources =
+        {
+            "arm/debug/arm-da.S",
+            "arm/debug/arm-pfa.S",
+            "arm/debug/arm-swi.S",
+            "arm/debug/arm-udf.S"
+        },
+        targets =
+        {
+            "arm/debug/arm-da.o",
+            "arm/debug/arm-pfa.o",
+            "arm/debug/arm-swi.o",
+            "arm/debug/arm-udf.o"
+        },
+    },
+    {
+        name = "nutarch_arm_except_hdl",
+        brief = "Debug Exception Handler",
+        sources =
+        {
+            "arm/debug/common_xxx_handler.c",
+            "arm/debug/default_da_handler.c",
+            "arm/debug/default_pfa_handler.c",
+            "arm/debug/default_swi_handler.c",
+            "arm/debug/default_udf_handler.c",
+            "arm/debug/reg-dump.c",
+            "arm/debug/stackdump.c"
         },
     },
 
