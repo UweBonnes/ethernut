@@ -120,3 +120,32 @@ uint16_t eeprom_read_word(const unsigned short *addr)
         return -1;
     return result;
 }
+
+/*!
+ * \brief Load data from AVR EEPROM.
+ *
+ * \return Allways 0.
+ */
+int NutNvMemLoad(u_int addr, void *buff, size_t siz)
+{
+    eeprom_read_block (buff, (void *)addr, siz);
+    return 0;
+}
+
+/*!
+ * \brief Save data in AVR EEPROM.
+ *
+ * \return Allways 0.
+ */
+int NutNvMemSave(u_int addr, const void *buff, size_t len)
+{
+    uint8_t *cp;
+    size_t i;
+
+    for (cp = (uint8_t *) buff, i = 0; i < len; cp++, i++) {
+        if (eeprom_read_byte((uint8_t *) (addr + i)) != *cp) {
+            eeprom_write_byte((uint8_t *) (addr + i), *cp);
+        }
+    }
+    return 0;
+}
