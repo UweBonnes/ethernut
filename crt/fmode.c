@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.3  2008/04/01 10:13:15  haraldkipp
  * Rewritten to fix bug #1903303.
  *
@@ -50,6 +53,7 @@
 
 #include "nut_io.h"
 
+#include <sys/nutdebug.h>
 #include <errno.h>
 #include <fcntl.h>
 
@@ -68,6 +72,8 @@ int _fmode(CONST char *mode)
     int mflags;
     int pflags;
     int bflag = _O_TEXT;
+
+    NUTASSERT(mode != NULL);
 
     switch (*mode) {
     case 'r':

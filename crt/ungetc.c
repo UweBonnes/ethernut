@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:34  haraldkipp
- * Initial revision
+ * Revision 1.2  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:34  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:09  harald
  * *** empty log message ***
@@ -42,6 +45,8 @@
  */
 
 #include "nut_io.h"
+
+#include <sys/nutdebug.h>
 
 /*!
  * \addtogroup xgCrtStdio
@@ -59,6 +64,7 @@
  */
 int ungetc(int c, FILE * stream)
 {
+    NUTASSERT(stream != NULL);
     if ((stream->iob_flags & _IOUNG) != 0 || c == EOF)
         return EOF;
     stream->iob_unget = c;

@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sys/nutdebug.h>
 #include <sys/environ.h>
 
 NUTENVIRONMENT *nut_environ;
@@ -82,6 +83,8 @@ NUTENVIRONMENT *findenv(CONST char *name)
     size_t len;
     size_t max_len = 0;
     char *buf;
+
+    NUTASSERT(name != NULL);
 
     if (nut_environ == NULL) {
         /* Load environment from non-volatile memory. */

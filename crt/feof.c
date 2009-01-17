@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.2  2004/04/15 10:23:24  haraldkipp
  * Distinguish between read error and end of file
  *
@@ -45,6 +48,8 @@
  */
 
 #include "nut_io.h"
+
+#include <sys/nutdebug.h>
 
 /*!
  * \addtogroup xgCrtStdio
@@ -60,6 +65,7 @@
  */
 int feof(FILE * stream)
 {
+    NUTASSERT(stream != NULL);
     return stream->iob_flags & _IOEOF;
 }
 

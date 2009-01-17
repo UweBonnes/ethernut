@@ -31,6 +31,7 @@
  */
 
 #include <sys/environ.h>
+#include <sys/nutdebug.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +54,7 @@ int putenv(CONST char *string)
     char *value;
     char *name;
 
+    NUTASSERT(string != NULL);
     if ((name = malloc(strlen(string) + 1)) != NULL) {
         strcpy(name, string);
         if ((value = strchr(name, '=')) != NULL) {

@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.37  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.36  2008/08/22 09:25:35  haraldkipp
  * Clock value caching and new functions NutArchClockGet, NutClockGet and
  * NutClockSet added.
@@ -208,6 +211,7 @@
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
+#include <sys/nutdebug.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -376,6 +380,8 @@ void NutDelay(uint8_t ms)
 void NutTimerInsert(NUTTIMERINFO * tn)
 {
     NUTTIMERINFO *tnp;
+
+    NUTASSERT(tn != NULL);
 
     tn->tn_prev = NULL;
     for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
@@ -628,6 +634,8 @@ void NutSleep(uint32_t ms)
 void NutTimerStop(HANDLE handle)
 {
     NUTTIMERINFO *tn = (NUTTIMERINFO *)handle;
+
+    NUTASSERT(tn != NULL);
 
     /* Disable periodic operation and callback. */
     tn->tn_ticks = 0;

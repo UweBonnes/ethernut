@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.26  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.25  2008/08/11 07:00:33  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -163,6 +166,7 @@
 #include <sys/timer.h>
 #include <sys/thread.h>
 #include <sys/event.h>
+#include <sys/nutdebug.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -193,6 +197,8 @@ void NutEventTimeout(HANDLE timer, void *arg)
 {
     NUTTHREADINFO *tqp;
     NUTTHREADINFO *volatile *tqpp = arg;
+
+    NUTASSERT(tqpp != NULL);
 
     /* Get the queue's root atomically. */
     NutEnterCritical();
@@ -265,7 +271,9 @@ void NutEventTimeout(HANDLE timer, void *arg)
 int NutEventWait(volatile HANDLE * qhp, uint32_t ms)
 {
     NUTTHREADINFO *tdp;
-    
+
+    NUTASSERT(qhp != NULL);
+
     /* Get the queue's root atomically. */
     NutEnterCritical();
     tdp = *qhp;
@@ -341,6 +349,8 @@ int NutEventWait(volatile HANDLE * qhp, uint32_t ms)
  */
 int NutEventWaitNext(volatile HANDLE * qhp, uint32_t ms)
 {
+    NUTASSERT(qhp != NULL);
+
     /*
      * Check for posts on a previously empty queue. 
      */
@@ -374,7 +384,9 @@ int NutEventWaitNext(volatile HANDLE * qhp, uint32_t ms)
 int NutEventPostAsync(volatile HANDLE * qhp)
 {
     NUTTHREADINFO *td;
-    
+
+    NUTASSERT(qhp != NULL);
+
     NutEnterCritical();
     td = *qhp;
     NutExitCritical();
@@ -475,6 +487,8 @@ int NutEventBroadcastAsync(volatile HANDLE * qhp)
 {
     int rc = 0;
     NUTTHREADINFO *tdp;
+
+    NUTASSERT(qhp != NULL);
 
     /* Get the queue's root atomically. */
     NutEnterCritical();

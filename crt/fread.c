@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.2  2004/04/15 10:23:24  haraldkipp
  * Distinguish between read error and end of file
  *
@@ -47,6 +50,7 @@
 
 #include "nut_io.h"
 
+#include <sys/nutdebug.h>
 #include <io.h>
 
 /*!
@@ -73,6 +77,8 @@ size_t fread(void *buffer, size_t size, size_t count, FILE * stream)
     size_t rc;
     size_t nu = 0;
 
+    NUTASSERT(stream != NULL);
+    NUTASSERT(buffer != NULL);
     if (size > 1)
         count *= size;
     if (stream->iob_flags & _IOUNG) {

@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.34  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.33  2009/01/17 11:26:52  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -202,6 +205,7 @@
 #include <sys/timer.h>
 #include <sys/event.h>
 #include <sys/thread.h>
+#include <sys/nutdebug.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -275,6 +279,8 @@ NUTTHREADINFO * runQueue;
 void NutThreadAddPriQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *tqpp)
 {
     NUTTHREADINFO *tqp;
+
+    NUTASSERT(td != NULL);
 
     td->td_queue = (HANDLE) tqpp;
     td->td_qpec = 0;			// start with clean event count
@@ -433,6 +439,8 @@ void NutThreadResume(void)
  */
 void NutThreadWake(HANDLE timer, HANDLE th)
 {
+    NUTASSERT(th != NULL);
+
     /* clear pointer on timer and waiting queue */
     ((NUTTHREADINFO *) th)->td_timer = 0;
     ((NUTTHREADINFO *) th)->td_state = TDS_READY;
@@ -609,6 +617,8 @@ void NutThreadKill(void)
 HANDLE GetThreadByName(char * name)
 {
     NUTTHREADINFO *tdp;
+
+    NUTASSERT(name != NULL);
 
     for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
         if (strcmp(tdp->td_name, name) == 0)

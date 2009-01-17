@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.3  2009/01/17 11:26:38  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -51,6 +54,7 @@
 #include "nut_io.h"
 
 #include <sys/device.h>
+#include <sys/nutdebug.h>
 
 /*!
  * \addtogroup xgCrtLowio
@@ -71,8 +75,10 @@
 int _read(int fd, void *buffer, unsigned int count)
 {
     NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
-    NUTDEVICE *dev = fp->nf_dev;
+    NUTDEVICE *dev;
 
+    NUTASSERT(fp != NULL);
+    dev = fp->nf_dev;
     if (dev == 0) {
         NUTVIRTUALDEVICE *vdv = (NUTVIRTUALDEVICE *) fp;
         return (*vdv->vdv_read) (fp, buffer, count);

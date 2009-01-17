@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.3  2005/10/24 10:09:36  haraldkipp
  * Integer division hack for ARM without CRT removed.
  *
@@ -51,6 +54,7 @@
 
 #include "nut_io.h"
 
+#include <sys/nutdebug.h>
 #include <io.h>
 
 /*!
@@ -76,6 +80,7 @@ size_t fwrite(CONST void *data, size_t size, size_t count, FILE * stream)
 {
     size_t rc;
 
+    NUTASSERT(stream != NULL);
     if (size > 1)
         count *= size;
     if ((int) (rc = (size_t) _write(stream->iob_fd, data, count)) <= 0)

@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.5  2006/10/08 16:48:22  haraldkipp
  * Documentation fixed
  *
@@ -64,6 +67,7 @@
 extern "C" {
 #endif
 
+#include <sys/nutdebug.h>
 #include <sys/mutex.h>
 #include <sys/event.h>
 
@@ -74,6 +78,7 @@ extern "C" {
  */
  
 void NutMutexInit(MUTEX * mutex) {
+    NUTASSERT(mutex != NULL);
     mutex->thread = 0;
     mutex->count = 0;
     mutex->qhp = 0;
@@ -89,6 +94,7 @@ void NutMutexInit(MUTEX * mutex) {
  */
  
 void NutMutexLock(MUTEX * mutex) {
+    NUTASSERT(mutex != NULL);
     if (mutex->thread != runningThread) {
         while( mutex->count != 0)
             NutEventWaitNext(&mutex->qhp, NUT_WAIT_INFINITE);
@@ -106,6 +112,7 @@ void NutMutexLock(MUTEX * mutex) {
  */
  
 int NutMutexTrylock(MUTEX * mutex) {
+    NUTASSERT(mutex != NULL);
     if ((mutex->count != 0) && (mutex->thread != runningThread))
         return -1;
     NutMutexLock(mutex);
@@ -121,6 +128,7 @@ int NutMutexTrylock(MUTEX * mutex) {
  */
  
 int NutMutexUnlock(MUTEX * mutex) {
+    NUTASSERT(mutex != NULL);
     if (mutex->thread != runningThread)
         return -1;
     if (--mutex->count == 0) {
@@ -137,6 +145,7 @@ int NutMutexUnlock(MUTEX * mutex) {
  */
 
 int NutMutexDestroy(MUTEX * mutex) {
+    NUTASSERT(mutex != NULL);
     if (mutex->count == 0)
         return 0;
     if (mutex->thread == runningThread)

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.2  2009/01/17 11:26:38  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -45,6 +48,8 @@
 #include "nut_io.h"
 
 #include <sys/device.h>
+#include <sys/nutdebug.h>
+
 #include <fs/fs.h>
 #include <errno.h>
 /*!
@@ -70,7 +75,9 @@ long _tell(int fd)
     
     long offset = 0;
     int  origin = SEEK_CUR;
-    
+
+    NUTASSERT(fp != NULL);
+
     conf.arg1 = (void*) fp;
     conf.arg2 = (void*) &offset;
     conf.arg3 = (void*) origin;

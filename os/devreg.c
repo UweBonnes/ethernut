@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.6  2009/01/17 11:26:52  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -64,7 +67,7 @@
  */
 
 #include <string.h>
-
+#include <sys/nutdebug.h>
 #include <dev/uart.h>
 
 /*!
@@ -88,6 +91,7 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
 {
     NUTDEVICE *dev;
 
+    NUTASSERT(name != NULL);
     for (dev = nutDeviceList; dev; dev = dev->dev_next)
         if (strcmp(dev->dev_name, name) == 0)
             break;
@@ -126,19 +130,18 @@ int NutRegisterDevice(NUTDEVICE * dev, uintptr_t base, uint8_t irq)
 {
     int rc = -1;
 
-    //if ((void *) dev >= RAMSTART) {
-    if (dev) {
-        if (base)
-            dev->dev_base = base;
-        if (irq)
-            dev->dev_irq = irq;
+    NUTASSERT(dev != NULL);
 
-        if (NutDeviceLookup(dev->dev_name) == 0) {
-            if(dev->dev_init == 0 || (*dev->dev_init)(dev) == 0) {
-                dev->dev_next = nutDeviceList;
-                nutDeviceList = dev;
-                rc = 0;
-            }
+    if (base)
+        dev->dev_base = base;
+    if (irq)
+        dev->dev_irq = irq;
+
+    if (NutDeviceLookup(dev->dev_name) == 0) {
+        if(dev->dev_init == 0 || (*dev->dev_init)(dev) == 0) {
+            dev->dev_next = nutDeviceList;
+            nutDeviceList = dev;
+            rc = 0;
         }
     }
     return rc;

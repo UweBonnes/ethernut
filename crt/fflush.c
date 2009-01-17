@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:25  haraldkipp
- * Initial revision
+ * Revision 1.2  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:25  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:04  harald
  * *** empty log message ***
@@ -43,6 +46,7 @@
 
 #include "nut_io.h"
 
+#include <sys/nutdebug.h>
 #include <io.h>
 
 /*!
@@ -66,6 +70,7 @@
  */
 int fflush(FILE * stream)
 {
+    NUTASSERT(stream != NULL);
     if (_write(stream->iob_fd, 0, 0))
         return EOF;
     return 0;

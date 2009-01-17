@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.5  2008/08/11 06:59:40  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -56,6 +59,7 @@
 
 #include <time.h>
 #include "ctime.h"
+#include <sys/nutdebug.h>
 
 #define __need_NULL
 #include <stddef.h>
@@ -80,6 +84,8 @@
 int localtime_r(CONST time_t * timer, tm * ptm)
 {
     long ltime;
+
+    NUTASSERT(timer != NULL);
     if ((*timer > (time_t)(3 * _DAY_SEC)) && (*timer < (time_t)(LONG_MAX - 3 * _DAY_SEC))) {
         /*
          * The date does not fall within the first three, or last

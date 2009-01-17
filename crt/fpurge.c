@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.1  2004/03/03 18:09:32  drsung
  * Added function 'fpurge' to crt.
  *
@@ -41,6 +44,7 @@
 
 #include "nut_io.h"
 
+#include <sys/nutdebug.h>
 #include <io.h>
 
 /*!
@@ -61,6 +65,7 @@
  */
 int fpurge(FILE * stream)
 {
+    NUTASSERT(stream != NULL);
     if (_read(stream->iob_fd, 0, 0))
         return EOF;
     return 0;

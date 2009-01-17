@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.2  2005/08/05 11:17:53  olereinhardt
  * Added support for _seek, _tell, fseek, ftell functions
  *
@@ -45,6 +48,8 @@
  */
 
 #include "nut_io.h"
+
+#include <sys/nutdebug.h>
 #include <io.h>
 
 /*!
@@ -62,6 +67,7 @@
  */
 long ftell(FILE * stream)
 {
+    NUTASSERT(stream != NULL);
     return _tell(stream->iob_fd);
 }
 

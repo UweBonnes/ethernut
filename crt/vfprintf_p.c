@@ -33,8 +33,11 @@
 
 /*
  * $Log$
- * Revision 1.1  2003/05/09 14:40:34  haraldkipp
- * Initial revision
+ * Revision 1.2  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
+ * Revision 1.1.1.1  2003/05/09 14:40:34  haraldkipp
+ * Initial using 3.2.1
  *
  * Revision 1.1  2003/02/04 17:49:09  harald
  * *** empty log message ***
@@ -46,6 +49,7 @@
 #include <string.h>
 #include <io.h>
 
+#include <sys/nutdebug.h>
 #include <sys/heap.h>
 
 /*!
@@ -72,6 +76,8 @@ int vfprintf_P(FILE * stream, PGM_P fmt, va_list ap)
     int rc;
     char *rp;
     size_t rl;
+
+    NUTASSERT(stream != NULL);
 
     rl = strlen_P(fmt) + 1;
     if ((rp = NutHeapAlloc(rl)) == 0)

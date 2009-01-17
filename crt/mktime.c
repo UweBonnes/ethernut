@@ -34,6 +34,9 @@
  */
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.3  2008/08/11 06:59:40  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -50,6 +53,8 @@
 
 #include <time.h>
 #include "ctime.h"
+
+#include <sys/nutdebug.h>
 
 #define __need_NULL
 #include <stddef.h>
@@ -74,6 +79,8 @@ static time_t _make_time_t(tm * tb, int ultflag)
 {
     long tmptm1, tmptm2, tmptm3;
     tm *tbtemp;
+
+    NUTASSERT(tb != NULL);
 
     /*
      * First, make sure tm_year is reasonably close to being in range.

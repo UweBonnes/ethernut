@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.4  2008/09/18 09:45:25  haraldkipp
  * Reading 0xFF returned EOF. Fixed.
  *
@@ -55,6 +58,7 @@
 
 #include "nut_io.h"
 
+#include <sys/nutdebug.h>
 #include <io.h>
 
 /*!
@@ -79,6 +83,7 @@ int fgetc(FILE * stream)
     uint8_t ch;
     int rc;
 
+    NUTASSERT(stream != NULL);
     if (stream->iob_flags & _IOUNG) {
         stream->iob_flags &= ~_IOUNG;
         return stream->iob_unget;

@@ -38,6 +38,9 @@
  */
 /*
  * $Log$
+ * Revision 1.9  2009/01/17 15:37:52  haraldkipp
+ * Added some NUTASSERT macros to check function parameters.
+ *
  * Revision 1.8  2008/06/16 15:12:07  freckle
  * fix bug in NutSemTryWait of os/semaphore.c
  *
@@ -70,6 +73,7 @@
 extern "C" {
 #endif
 
+#include <sys/nutdebug.h>
 #include <sys/semaphore.h>
 #include <sys/event.h>
 
@@ -77,6 +81,7 @@ extern "C" {
  * \brief Initialize an unnamed semaphore to value
  */
     void NutSemInit(SEM * sem, short value) {
+        NUTASSERT(sem != NULL);
         sem->qhp = 0;
         sem->value = value;
     }
@@ -88,6 +93,7 @@ extern "C" {
  *
  * \note: Should not be called from interrupt context
  */ void NutSemWait(SEM * sem) {
+        NUTASSERT(sem != NULL);
         sem->value--;
         if (sem->value < 0)
         {
@@ -101,6 +107,7 @@ extern "C" {
  * \note: Should not be called from interrupt context
  */
     void NutSemPost(SEM * sem) {
+        NUTASSERT(sem != NULL);
         sem->value++;
         if (sem->value <= 0)
         {
@@ -116,6 +123,7 @@ extern "C" {
  */
 
     int NutSemTryWait(SEM * sem) {
+        NUTASSERT(sem != NULL);
         if (sem->value <= 0)
             return -1;
         else
@@ -131,6 +139,7 @@ extern "C" {
  */
 
     int NutSemDestroy(SEM * sem) {
+        NUTASSERT(sem != NULL);
         if (sem->qhp == SIGNALED)
             return 0;
         if (sem->qhp == 0)
