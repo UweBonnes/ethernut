@@ -49,7 +49,7 @@
 static void PioIsrC(void *arg)
 {
     GPIO_VECTOR *vct = (GPIO_VECTOR *)arg;
-    u_int isr;
+    unsigned int isr;
 
     for (isr = inr(PIOC_ISR); isr; isr >>= 1, vct++) {
         if ((isr & 1) != 0 && vct->iov_handler) {
@@ -64,7 +64,7 @@ static void PioIsrC(void *arg)
 static int PioCtlC(int cmd, void *param, int bit)
 {
     int rc = 0;
-    u_int *ival = (u_int *) param;
+    unsigned int *ival = (unsigned int *) param;
     uint32_t enabled = inr(PIOC_IMR) & _BV(bit);
 
     /* Disable interrupt. */

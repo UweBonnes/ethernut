@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.1  2008/10/05 16:51:46  haraldkipp
  * Added suport for the TLV320 audio DAC.
  *
@@ -138,15 +142,15 @@ typedef struct _PCM_BUFFER {
 } PCM_BUFFER;
 
 /* Enable PDC hardware. */
-u_int use_pdc = 1;
+unsigned int use_pdc = 1;
 /* PCM buffer queue. */
 static PCM_BUFFER pcm_bufq[SAMPLE_BUFFERS];
 /* PCM buffer read index. */
-static volatile u_int brd_idx;
+static volatile unsigned int brd_idx;
 /* PCM buffer read position. */
 static volatile int brd_pos;
 /* PCM buffer write index. */
-static u_int bwr_idx;
+static unsigned int bwr_idx;
 
 /*!
  * \brief Set PDC pointer and counter registers.
@@ -160,7 +164,7 @@ static void I2sPdcFill(void)
             if (++brd_idx >= SAMPLE_BUFFERS) {
                 brd_idx = 0;
             }
-            outr(SSC_TNPR, (u_int) pcm_bufq[brd_idx].wbf_dat);
+            outr(SSC_TNPR, (unsigned int) pcm_bufq[brd_idx].wbf_dat);
             outr(SSC_TNCR, pcm_bufq[brd_idx].wbf_len);
         }
     }
@@ -203,7 +207,7 @@ static void I2sInterrupt(void *arg)
  *
  * \return Always 0xFF.
  */
-u_char Tlv320DacReadReg(u_int reg)
+u_char Tlv320DacReadReg(unsigned int reg)
 {
     return 0xFF;
 }
@@ -216,7 +220,7 @@ u_char Tlv320DacReadReg(u_int reg)
  * \param reg DAC register address.
  * \param val Value to store in specified register.
  */
-void Tlv320DacWriteReg(u_int reg, u_int val)
+void Tlv320DacWriteReg(unsigned int reg, unsigned int val)
 {
     u_char txdata[2];
 
@@ -232,7 +236,7 @@ void Tlv320DacWriteReg(u_int reg, u_int val)
  *
  * \return Always 0.
  */
-static int Tlv320I2sEnable(u_int rate)
+static int Tlv320I2sEnable(unsigned int rate)
 {
     /* Enable SSC clock. */
     outr(PMC_PCER, _BV(SSC_ID));
@@ -298,7 +302,7 @@ static int Tlv320I2sDisable(void)
  *
  * \return Always 0.
  */
-static int Tlv320I2sInit(u_int rate)
+static int Tlv320I2sInit(unsigned int rate)
 {
     /* Register SSC interrupt handler. */
     NutRegisterIrqHandler(&sig_SSC, I2sInterrupt, 0);
@@ -312,7 +316,7 @@ static int Tlv320I2sInit(u_int rate)
     return 0;
 }
 
-int Tlv320DacSetRate(u_int rate)
+int Tlv320DacSetRate(unsigned int rate)
 {
     switch(rate) {
     case 8000:
@@ -350,7 +354,7 @@ int Tlv320DacSetRate(u_int rate)
  *
  * \return 0 on success, -1 otherwise.
  */
-int Tlv320DacInit(u_int rate)
+int Tlv320DacInit(unsigned int rate)
 {
     /* Initialize TWI. */
     TwInit(0);
@@ -431,7 +435,7 @@ int Tlv320DacFlush(void)
  */
 int Tlv320DacWrite(void *buf, int len)
 {
-    u_int idx;
+    unsigned int idx;
 
     /* Move to the next buffer to write to. */
     idx = bwr_idx + 1;
@@ -500,8 +504,8 @@ int Tlv320DacSetVolume(int left, int right)
     else if (right < DAC_MIN_VOLUME) {
         right = DAC_MIN_VOLUME;
     }
-    Tlv320DacWriteReg(DAC_LHP_VOL, (u_int)(left + 121));
-    Tlv320DacWriteReg(DAC_RHP_VOL, (u_int)(right + 121));
+    Tlv320DacWriteReg(DAC_LHP_VOL, (unsigned int)(left + 121));
+    Tlv320DacWriteReg(DAC_RHP_VOL, (unsigned int)(right + 121));
 
     return 0;
 }

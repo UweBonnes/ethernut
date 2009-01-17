@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.6  2004/08/05 06:49:44  drsung
  * Now the correct value for VIRTUALDEVICEs is returned.
  *
@@ -78,7 +82,7 @@
  */
 long _filelength(int fd)
 {
-    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
+    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
     long l;
 

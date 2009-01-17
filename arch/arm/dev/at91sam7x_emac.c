@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.7  2008/08/28 11:12:15  haraldkipp
  * Added interface flags, which will be required to implement Ethernet ioctl
  * functions.
@@ -202,17 +206,17 @@ typedef struct _EMACINFO EMACINFO;
  * but just to keep the code clean.
  */
 typedef struct _BufDescriptor {
-    u_int addr;
-    u_int stat;
+    unsigned int addr;
+    unsigned int stat;
 } BufDescriptor;
 
 static volatile BufDescriptor txBufTab[2];
 static volatile uint8_t txBuf[EMAC_TX_BUFFERS * EMAC_TX_BUFSIZ] __attribute__ ((aligned(8)));
-static u_int txBufIdx;
+static unsigned int txBufIdx;
 
 static volatile BufDescriptor rxBufTab[EMAC_RX_BUFFERS];
 static volatile uint8_t rxBuf[EMAC_RX_BUFFERS * EMAC_RX_BUFSIZ] __attribute__ ((aligned(8)));
-static u_int rxBufIdx;
+static unsigned int rxBufIdx;
 
 #define RXBUF_OWNERSHIP     0x00000001
 #define RXBUF_WRAP          0x00000002
@@ -346,7 +350,7 @@ static int EmacReset(void)
  */
 static void EmacInterrupt(void *arg)
 {
-    u_int isr;
+    unsigned int isr;
     EMACINFO *ni = (EMACINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     /* Read interrupt status and disable interrupts. */
@@ -374,7 +378,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 {
     int rc = -1;
     uint16_t fbc = 0;
-    u_int i;
+    unsigned int i;
 
     *nbp = NULL;
 
@@ -414,7 +418,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
             *nbp = NutNetBufAlloc(0, NBAF_DATALINK, fbc);
             if (*nbp != NULL) {
                 uint8_t *bp = (uint8_t *) (* nbp)->nb_dl.vp;
-                u_int len;
+                unsigned int len;
 
                 while (fbc) {
                     if (fbc > EMAC_RX_BUFSIZ) {
@@ -455,7 +459,7 @@ static int EmacGetPacket(EMACINFO * ni, NETBUF ** nbp)
 static int EmacPutPacket(int bufnum, EMACINFO * ni, NETBUF * nb)
 {
     int rc = -1;
-    u_int sz;
+    unsigned int sz;
     uint8_t *buf;
 
     /*
@@ -525,17 +529,17 @@ static int EmacStart(CONST uint8_t * mac)
 
     /* Initialize receive buffer descriptors. */
     for (i = 0; i < EMAC_RX_BUFFERS - 1; i++) {
-        rxBufTab[i].addr = (u_int) (&rxBuf[i * EMAC_RX_BUFSIZ]) & RXBUF_ADDRMASK;
+        rxBufTab[i].addr = (unsigned int) (&rxBuf[i * EMAC_RX_BUFSIZ]) & RXBUF_ADDRMASK;
     }
-    rxBufTab[i].addr = ((u_int) (&rxBuf[i * EMAC_RX_BUFSIZ]) & RXBUF_ADDRMASK) | RXBUF_WRAP;
-    outr(EMAC_RBQP, (u_int) rxBufTab);
+    rxBufTab[i].addr = ((unsigned int) (&rxBuf[i * EMAC_RX_BUFSIZ]) & RXBUF_ADDRMASK) | RXBUF_WRAP;
+    outr(EMAC_RBQP, (unsigned int) rxBufTab);
 
     /* Initialize transmit buffer descriptors. */
-    txBufTab[0].addr = (u_int) (&txBuf[0]);
+    txBufTab[0].addr = (unsigned int) (&txBuf[0]);
     txBufTab[0].stat = TXS_USED;
-    txBufTab[1].addr = (u_int) (&txBuf[EMAC_TX_BUFSIZ]);
+    txBufTab[1].addr = (unsigned int) (&txBuf[EMAC_TX_BUFSIZ]);
     txBufTab[1].stat = TXS_USED | TXS_WRAP;
-    outr(EMAC_TBQP, (u_int) txBufTab);
+    outr(EMAC_TBQP, (unsigned int) txBufTab);
 
     /* Clear receiver status. */
     outr(EMAC_RSR, EMAC_OVR | EMAC_REC | EMAC_BNA);

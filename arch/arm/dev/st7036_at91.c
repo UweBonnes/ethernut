@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 06:59:13  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -174,7 +178,7 @@
  *
  * \param xt Delay time in milliseconds
  */
-static void LcdDelay(u_int cycles)
+static void LcdDelay(unsigned int cycles)
 {
     while (cycles--) {
         _NOP(); _NOP(); _NOP(); _NOP();
@@ -193,20 +197,20 @@ static void LcdDelay(u_int cycles)
 }
 
 #if 0
-static void INLINE LcdSetBits(u_int mask)
+static void INLINE LcdSetBits(unsigned int mask)
 {
     outr(LCD_PIO_SOD_REG, mask);
     outr(LCD_PIO_OE_REG, mask);
 }
 
-static void INLINE LcdClrBits(u_int mask)
+static void INLINE LcdClrBits(unsigned int mask)
 {
     outr(LCD_PIO_COD_REG, mask);
     outr(LCD_PIO_OE_REG, mask);
 }
 #endif
 
-static void LcdWaitReady(u_int delay)
+static void LcdWaitReady(unsigned int delay)
 {
     while (delay--) {
         _NOP();
@@ -218,7 +222,7 @@ static void LcdWaitReady(u_int delay)
  *
  * \param data Byte to send.
  */
-static void LcdWriteByte(u_int data)
+static void LcdWriteByte(unsigned int data)
 {
     uint8_t msk = 0x80;
 
@@ -324,7 +328,7 @@ static void LcdCursorMode(uint8_t on)
 static void LcdInit(NUTDEVICE * dev)
 {
 #if defined(PMC_PCER)
-    u_int pcer = 0;
+    unsigned int pcer = 0;
 #if defined(LCD_CS_PIO_ID)
     pcer = _BV(LCD_CS_PIO_ID);
 #endif

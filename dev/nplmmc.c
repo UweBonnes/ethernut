@@ -42,6 +42,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -149,7 +153,7 @@ static int NplMmCard0Select(int on)
 static uint8_t NplMmCard0Io(uint8_t val)
 {
     uint8_t rc;
-    u_int tmo = 255;
+    unsigned int tmo = 255;
 
     while ((inb(NPL_SLR) & NPL_MMCREADY) == 0) {
         if (--tmo == 0) {

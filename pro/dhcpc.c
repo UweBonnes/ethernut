@@ -83,6 +83,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.25  2009/01/17 11:26:52  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.24  2008/10/05 16:46:15  haraldkipp
  * Added missing attributes 'packed'. This may fix a problem with
  * different ARM compiler optimization settings.
@@ -928,7 +932,7 @@ static size_t DhcpAddParmReqOption(uint8_t * op)
  *
  * \return Total number of octets added.
  */
-static u_int DhcpPrepHeader(BOOTP *bp, uint8_t msgtyp, uint32_t xid, uint32_t ciaddr, uint16_t secs)
+static unsigned int DhcpPrepHeader(BOOTP *bp, uint8_t msgtyp, uint32_t xid, uint32_t ciaddr, uint16_t secs)
 {
     uint8_t *op;
 

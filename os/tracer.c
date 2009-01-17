@@ -56,7 +56,7 @@
 /************************************************/
 /* global variables */
 /************************************************/
-u_int micros_high           = 0;
+unsigned int micros_high           = 0;
 t_traceitem *trace_items    = 0;
 t_traceitem *trace_current  = 0;
 int trace_head              = 0;
@@ -244,7 +244,7 @@ void NutTracePrint(int size)
     int i,index;
     uint32_t time;
     char mode;
-    u_int micros, millis, secs;
+    unsigned int micros, millis, secs;
 
     mode = trace_mode;
     trace_mode = TRACE_MODE_OFF;

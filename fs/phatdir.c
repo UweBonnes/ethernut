@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.13  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.12  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -1150,7 +1154,7 @@ int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *stp)
     CONST char *fname;
     NUTFILE *ndp;
     PHATFIND *srch;
-    u_int val;
+    unsigned int val;
 
     /* Open parent directory. */
     if ((ndp = PhatDirOpenParent(dev, path, &fname)) == NUTFILE_EOF) {

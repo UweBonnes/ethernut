@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -130,7 +134,7 @@ extern int Cy2239xSetDivider(int clk, int sel, int val);
 extern int Cy2239xPllEnable(int pll, int fctrl, int ena);
 
 extern uint32_t Cy2239xPllGetFreq(int pll, int fctrl);
-extern int Cy2239xPllSetFreq(int pll, int fctrl, u_int pval, u_int poff, u_int qval, u_int fval);
+extern int Cy2239xPllSetFreq(int pll, int fctrl, unsigned int pval, unsigned int poff, unsigned int qval, unsigned int fval);
 
 __END_DECLS
 /* End of prototypes */

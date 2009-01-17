@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -452,7 +456,7 @@ NUTRTC rtcX12x6 = {
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12EepromRead(u_int addr, void *buff, size_t len)
+int X12EepromRead(unsigned int addr, void *buff, size_t len)
 {
     int rc = -1;
     uint8_t wbuf[2];
@@ -477,7 +481,7 @@ int X12EepromRead(u_int addr, void *buff, size_t len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int X12EepromWrite(u_int addr, CONST void *buff, size_t len)
+int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len)
 {
     int rc = 0;
     uint8_t *wbuf;

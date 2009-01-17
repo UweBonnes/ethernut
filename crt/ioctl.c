@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -71,7 +75,7 @@
  */
 int _ioctl(int fd, int cmd, void *data)
 {
-    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
+    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
 
     if (dev == 0) {

@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2008/04/18 13:22:27  haraldkipp
  * Added type casts to fix ICCAVR V7.16 compile errors.
  *
@@ -134,7 +138,7 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
     ROMFILE *romf = fp->nf_fcb;
     ROMENTRY *rome = romf->romf_entry;
 
-    if ((u_int) size > rome->rome_size - romf->romf_pos)
+    if ((unsigned int) size > rome->rome_size - romf->romf_pos)
         size = rome->rome_size - romf->romf_pos;
     if (size) {
         memcpy_P(buffer, (PGM_P)(rome->rome_data + romf->romf_pos), size);

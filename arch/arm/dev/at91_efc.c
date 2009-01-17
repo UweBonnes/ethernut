@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:04  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -114,10 +118,10 @@ typedef volatile flashdat_t *flashptr_t;
  * This routine must not be located in internal flash memory.
  *
  */
-RAMFUNC int At91EfcCmd(u_int cmd, uint32_t tmo)
+RAMFUNC int At91EfcCmd(unsigned int cmd, uint32_t tmo)
 {
     int rc = 0;
-    u_int fsr;
+    unsigned int fsr;
 
     /* Make sure that the previous command has finished. */
     while ((inr(MC_FSR) & MC_FRDY) == 0) {
@@ -159,7 +163,7 @@ RAMFUNC int At91EfcCmd(u_int cmd, uint32_t tmo)
  *
  * \return Always 0.
  */
-int At91EfcSectorRead(u_int off, void *data, u_int len)
+int At91EfcSectorRead(unsigned int off, void *data, unsigned int len)
 {
     memcpy(data, (void *) (uptr_t) (FLASH_CHIP_BASE + off), len);
 
@@ -178,11 +182,11 @@ int At91EfcSectorRead(u_int off, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At91EfcSectorWrite(u_int off, CONST void *data, u_int len)
+int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len)
 {
     flashptr_t dp = (flashptr_t) (uptr_t) (FLASH_CHIP_BASE + off);
     int rc;
-    u_int i;
+    unsigned int i;
 
     if (data) {
         flashptr_t sp = (flashptr_t) data;
@@ -212,7 +216,7 @@ int At91EfcSectorWrite(u_int off, CONST void *data, u_int len)
 /*!
  * \brief Erase sector at the specified offset.
  */
-int At91EfcSectorErase(u_int off)
+int At91EfcSectorErase(unsigned int off)
 {
     return At91EfcSectorWrite(off, NULL, 256);
 }
@@ -224,7 +228,7 @@ int At91EfcSectorErase(u_int off)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At91EfcRegionLock(u_int off)
+int At91EfcRegionLock(unsigned int off)
 {
     return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, FLASH_WRITE_WAIT);
 }
@@ -236,7 +240,7 @@ int At91EfcRegionLock(u_int off)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At91EfcRegionUnlock(u_int off)
+int At91EfcRegionUnlock(unsigned int off)
 {
     return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, FLASH_WRITE_WAIT);
 }
@@ -252,7 +256,7 @@ int At91EfcRegionUnlock(u_int off)
  *
  * \return Always 0.
  */
-int At91EfcParamRead(u_int pos, void *data, u_int len)
+int At91EfcParamRead(unsigned int pos, void *data, unsigned int len)
 {
     return At91EfcSectorRead(FLASH_CONF_SECTOR + pos, data, len);
 }
@@ -271,7 +275,7 @@ int At91EfcParamRead(u_int pos, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At91EfcParamWrite(u_int pos, CONST void *data, u_int len)
+int At91EfcParamWrite(unsigned int pos, CONST void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

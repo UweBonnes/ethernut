@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.10  2009/01/17 11:26:51  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.9  2009/01/09 17:54:28  haraldkipp
  * Added SPI bus controller for AVR and AT91.
  *
@@ -188,7 +192,7 @@ struct _NUTDEVICE {
      * Will be set by calling NutRegisterDevice(). On some device 
      * drivers this address may be fixed.
      */
-    uptr_t dev_base;
+    uintptr_t dev_base;
 
     /*! \brief Interrupt registration number. 
      *
@@ -309,7 +313,7 @@ struct _IFSTREAM {
 
 extern NUTDEVICE *nutDeviceList;
 
-extern int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, uint8_t irq);
+extern int NutRegisterDevice(NUTDEVICE * dev, uintptr_t base, uint8_t irq);
 extern NUTDEVICE *NutDeviceLookup(CONST char *name);
 
 __END_DECLS

@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 07:00:19  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -90,14 +94,14 @@ typedef struct _ROMENTRY ROMENTRY;
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
     const uint8_t *rome_name;/*!< Filename. */
-    u_int rome_size;        /*!< File size. */
+    unsigned int rome_size;        /*!< File size. */
     const char *rome_data;  /*!< File data. */
 };
 #else
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
     prog_char *rome_name;   /*!< Filename. */
-    u_int rome_size;        /*!< File size. */
+    unsigned int rome_size;        /*!< File size. */
     prog_char *rome_data;   /* __attribute__ ((progmem));  !< File data. */
 };
 #endif
@@ -113,7 +117,7 @@ typedef struct _ROMFILE ROMFILE;
  */
 struct _ROMFILE {
     ROMENTRY *romf_entry;   /*!< Points to ROMENTRY */
-    u_int romf_pos;      /*!< Current read position. */
+    unsigned int romf_pos;      /*!< Current read position. */
 };
 
 /*!

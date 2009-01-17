@@ -56,6 +56,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.20  2009/01/17 11:26:51  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.19  2008/08/11 07:00:28  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -159,10 +163,10 @@ typedef struct _NUTTHREADINFO NUTTHREADINFO;
 struct _NUTTHREADINFO {
     NUTTHREADINFO *td_next;     /*!< \brief Linked list of all threads. */
     NUTTHREADINFO *td_qnxt;     /*!< \brief Linked list of all queued thread. */
-    volatile u_int td_qpec;     /*!< \brief Pending event counter. */
+    volatile unsigned int td_qpec;     /*!< \brief Pending event counter. */
     char td_name[9];            /*!< \brief Name of this thread. */
     uint8_t td_state;            /*!< \brief Operating state. One of TDS_ */
-    uptr_t td_sp;               /*!< \brief Stack pointer. */
+    uintptr_t td_sp;               /*!< \brief Stack pointer. */
     uint8_t td_priority;         /*!< \brief Priority level. 0 is highest priority. */
     uint8_t *td_memory;          /*!< \brief Pointer to heap memory used for stack. */
     HANDLE td_timer;            /*!< \brief Event timer. */

@@ -294,7 +294,7 @@ int At91SpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int x
         outr(base + SPI_TDR_OFF, b);
         /* Wait until transfer has finished. */
         NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
-        outr(base + SPI_IDR_OFF, (u_int) - 1);
+        outr(base + SPI_IDR_OFF, (unsigned int) - 1);
     }
     return 0;
 }

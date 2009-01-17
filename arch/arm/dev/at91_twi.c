@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.7  2008/10/03 11:31:27  haraldkipp
  * Added TWI support for the AT91SAM9260.
  *
@@ -116,7 +120,7 @@ static volatile uint16_t tw_mr_idx;  /* Current master receive buffer index. */
  */
 static void TwInterrupt(void *arg)
 {
-    register u_int twsr = inr(TWI_SR) & (TWI_NACK | TWI_RXRDY | TWI_TXRDY | TWI_TXCOMP);;   
+    register unsigned int twsr = inr(TWI_SR) & (TWI_NACK | TWI_RXRDY | TWI_TXRDY | TWI_TXCOMP);;   
 
     /* Transmission is complete, signal waiting threads */
     if (twsr & TWI_TXCOMP) {
@@ -335,7 +339,7 @@ int TwIOCtl(int req, void *conf)
         /* BUG 41.2.7.1, datasheet SAM7X256  p. 626 */
         if (cldiv * (2 << ckdiv) > 8191) return -1; 
         
-        outr(TWI_CWGR, (ckdiv << 16) | ((u_int) cldiv << 8) | (u_int) cldiv);
+        outr(TWI_CWGR, (ckdiv << 16) | ((unsigned int) cldiv << 8) | (unsigned int) cldiv);
         break;
 
     case TWI_GETSPEED:

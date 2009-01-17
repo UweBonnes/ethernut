@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.13  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.12  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -246,7 +250,7 @@ static HANDLE mutex;
  */
 static void MmCardTxCmd(MMCIFC * ifc, uint8_t cmd, uint32_t param)
 {
-    u_int tmo = MMC_MAX_CMDACK_POLLS;
+    unsigned int tmo = MMC_MAX_CMDACK_POLLS;
     uint8_t ch;
 
     /* Enable card select. */

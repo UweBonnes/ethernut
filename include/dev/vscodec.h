@@ -645,7 +645,7 @@ extern ureg_t VsPlayerInterrupts(ureg_t enable);
 extern ureg_t VsPlayerThrottle(ureg_t on);
 
 extern uint16_t VsPlayTime(void);
-extern u_int VsGetStatus(void);
+extern unsigned int VsGetStatus(void);
 #ifdef __GNUC__
 extern int VsGetHeaderInfo(VS_HEADERINFO *vshi);
 #endif

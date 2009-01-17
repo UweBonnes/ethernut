@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2006/07/05 07:45:29  haraldkipp
  * Split on-chip interface definitions.
  *
@@ -60,11 +64,11 @@
 __BEGIN_DECLS
 /* Function prototypes */
 
-extern int NutNvMemLoad(u_int addr, void *buff, size_t siz);
-extern int NutNvMemSave(u_int addr, CONST void *buff, size_t len);
+extern int NutNvMemLoad(unsigned int addr, void *buff, size_t siz);
+extern int NutNvMemSave(unsigned int addr, CONST void *buff, size_t len);
 
-extern int OnChipNvMemLoad(u_int addr, void *buff, size_t siz);
-extern int OnChipNvMemSave(u_int addr, CONST void *buff, size_t len);
+extern int OnChipNvMemLoad(unsigned int addr, void *buff, size_t siz);
+extern int OnChipNvMemSave(unsigned int addr, CONST void *buff, size_t len);
 
 extern int NutNvMemLock(void);
 extern int NutNvMemUnlock(void);

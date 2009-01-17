@@ -31,6 +31,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:17  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -156,7 +160,7 @@ int IrblastPeriod2Ocr(uint8_t freqKHz, int entries, uint16_t * pCode)
         }
         div = sClk * (uint32_t) pCode[i];
         div = div / freq;
-        pCode[i] = (u_int) (div & 0x0000ffff) - 1;
+        pCode[i] = (unsigned int) (div & 0x0000ffff) - 1;
     }
     return i;
 }

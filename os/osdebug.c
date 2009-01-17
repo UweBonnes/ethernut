@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:52  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2008/08/11 07:00:34  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -119,13 +123,13 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
     else {
         while (tdp) {
 #if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-            fprintf_P(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
-                      states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
+            fprintf_P(stream, fmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
+                      states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else
-            fprintf_P(stream, fmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
-                      states[tdp->td_state], (uptr_t) tdp->td_queue,
-                      (uptr_t) tdp->td_timer, tdp->td_sp,
-                      (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
+            fprintf_P(stream, fmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
+                      states[tdp->td_state], (uintptr_t) tdp->td_queue,
+                      (uintptr_t) tdp->td_timer, tdp->td_sp,
+                      (uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory,
                       *((uint32_t *) tdp->td_memory) != DEADBEEF
                       && *((uint32_t *) (tdp->td_memory + 4)) != DEADBEEF
                       && *((uint32_t *) (tdp->td_memory + 8)) != DEADBEEF
@@ -163,13 +167,13 @@ void NutDumpThreadList(FILE * stream)
     tdp = nutThreadList;
     while (tdp) {
 #if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-        fprintf_P(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
-                  states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
+        fprintf_P(stream, fmt1, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
+                  states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else
-        fprintf_P(stream, fmt1, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
-                  states[tdp->td_state], (uptr_t) tdp->td_queue,
-                  (uptr_t) tdp->td_timer, tdp->td_sp,
-                  (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory, *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
+        fprintf_P(stream, fmt1, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
+                  states[tdp->td_state], (uintptr_t) tdp->td_queue,
+                  (uintptr_t) tdp->td_timer, tdp->td_sp,
+                  (uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory, *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
 #endif
         if (tdp->td_queue) {
             tqp = *(NUTTHREADINFO **) (tdp->td_queue);
@@ -177,7 +181,7 @@ void NutDumpThreadList(FILE * stream)
                 fputs("SIGNALED", stream);
             else {
                 while (tqp) {
-                    fprintf_P(stream, fmt2, (uptr_t) tqp);
+                    fprintf_P(stream, fmt2, (uintptr_t) tqp);
                     tqp = tqp->td_qnxt;
                 }
             }
@@ -216,14 +220,14 @@ void NutDumpTimerList(FILE * stream)
     if ((tnp = nutTimerList) != 0) {
         fputs_P(theader, stream);
         while (tnp) {
-            fprintf_P(stream, fmt1, (uptr_t) tnp, tnp->tn_ticks, tnp->tn_ticks_left);
+            fprintf_P(stream, fmt1, (uintptr_t) tnp, tnp->tn_ticks, tnp->tn_ticks_left);
             if (tnp->tn_callback == NutThreadWake)
                 fputs_P(wname, stream);
             else if (tnp->tn_callback == NutEventTimeout)
                 fputs_P(tname, stream);
             else
-                fprintf_P(stream, fmt2, (uint32_t) ((uptr_t) tnp->tn_callback) << 1);
-            fprintf_P(stream, fmt3, (uptr_t) tnp->tn_arg);
+                fprintf_P(stream, fmt2, (uint32_t) ((uintptr_t) tnp->tn_callback) << 1);
+            fprintf_P(stream, fmt3, (uintptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
@@ -271,9 +275,9 @@ void NutDumpHeap(FILE * stream)
     fputc('\n', stream);
     for (node = heapFreeList; node; node = node->hn_next) {
         sum += node->hn_size;
-        fprintf_P(stream, fmt1, (uptr_t) node, node->hn_size);
+        fprintf_P(stream, fmt1, (uintptr_t) node, node->hn_size);
         /* TODO: Remove hardcoded RAMSTART and RAMEND */
-        if ((uptr_t) node < 0x60 || (uptr_t) node > 0x7fff)
+        if ((uintptr_t) node < 0x60 || (uintptr_t) node > 0x7fff)
             break;
     }
     if ((avail = NutHeapAvailable()) != sum)

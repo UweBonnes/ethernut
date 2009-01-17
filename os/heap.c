@@ -48,6 +48,10 @@
 
 /*
  * $Log$
+ * Revision 1.21  2009/01/17 11:26:52  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.20  2008/08/11 06:56:27  haraldkipp
  * Corrected size type of NutHeapRealloc().
  *
@@ -169,7 +173,7 @@ static size_t available;
  */
 static INLINE void setBeef(HEAPNODE * node){
     // Shouldn't it be sizeof(uint32_t) instead of sizeof(0xDEADBEEF)? 
-	*((uint32_t *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
+	*((uint32_t *) ((uintptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
 }
 
 #if !defined(ARCH_32BIT)
@@ -182,7 +186,7 @@ static INLINE void setBeef(HEAPNODE * node){
  * \bug Results in data abort exception on ARM.
  */
 static INLINE char checkBeef(HEAPNODE * node){
-	return (*((uint32_t *) ((uptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
+	return (*((uint32_t *) ((uintptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
 }
 #endif
 
@@ -290,7 +294,7 @@ void *NutHeapAlloc(size_t size)
          * we split it.
          */
         if (fit->hn_size > size + sizeof(HEAPNODE) + ALLOC_THRESHOLD) {
-            node = (HEAPNODE *) ((uptr_t) fit + size);
+            node = (HEAPNODE *) ((uintptr_t) fit + size);
             node->hn_size = fit->hn_size - size;
             node->hn_next = fit->hn_next;
             fit->hn_size = size;
@@ -304,7 +308,7 @@ void *NutHeapAlloc(size_t size)
     }
 #ifdef NUTDEBUG
     if (__heap_trf) {
-        fprintf(__heap_trs, "\n[H%x,A%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) (((uptr_t *) fit) - 1))->hn_size), (int)size);
+        fprintf(__heap_trs, "\n[H%x,A%d/%d] ", (unsigned int)(uintptr_t) fit, (int)(((HEAPNODE *) (((uintptr_t *) fit) - 1))->hn_size), (int)size);
     }
 #endif
     return fit;
@@ -371,7 +375,7 @@ void * NutHeapRealloc( void * block, size_t size){
 	/*
 	 * Convert our block into a node.
 	 */
-	fnode = (HEAPNODE *) (((uptr_t *) block) - 1);
+	fnode = (HEAPNODE *) (((uintptr_t *) block) - 1);
     
 #ifdef NUTDEBUG
     if (__heap_trf) {
@@ -387,7 +391,7 @@ void * NutHeapRealloc( void * block, size_t size){
     
 #ifdef NUTDEBUG
 	if (__heap_trf)
-		fprintf(__heap_trs, "\n[H%x,R%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
+		fprintf(__heap_trs, "\n[H%x,R%d] ", (unsigned int)(uintptr_t) block, (int)fnode->hn_size);
 #endif
 	
 	if (size > fnode->hn_size){	 //More ram is needed
@@ -405,9 +409,9 @@ void * NutHeapRealloc( void * block, size_t size){
 			/*
 			 * If a free node is following us _and_ is big enaugh: use it!
 			 */
-			if (((uptr_t) fnode + fnode->hn_size) == (uptr_t) node &&  node->hn_size >= size_miss) {
+			if (((uintptr_t) fnode + fnode->hn_size) == (uintptr_t) node &&  node->hn_size >= size_miss) {
 				if(node->hn_size + ALLOC_THRESHOLD >= size_miss){ //split next block
-					newNode = (HEAPNODE *) ((uptr_t) node + size_miss); //create new node;
+					newNode = (HEAPNODE *) ((uintptr_t) node + size_miss); //create new node;
 					//Memove seves difficulties when allocating less then HEAPNODE bytes
 					memmove(newNode, node, sizeof(HEAPNODE)); 
 					newNode->hn_size -= size_miss;
@@ -423,7 +427,7 @@ void * NutHeapRealloc( void * block, size_t size){
 				setBeef(fnode);
 #ifdef NUTDEBUG
                 if (__heap_trf) {
-                    fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
+                    fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
                 }
 #endif
 				return block; 
@@ -440,7 +444,7 @@ void * NutHeapRealloc( void * block, size_t size){
 	
 	//The new size is smaller. 
 	if(size + REALLOC_THRESHOLD + MEMOVHD < fnode->hn_size){	
-		newNode = (HEAPNODE *) ((uptr_t) fnode + size); //behind realloc node
+		newNode = (HEAPNODE *) ((uintptr_t) fnode + size); //behind realloc node
 		newNode->hn_size = fnode->hn_size - size; //set size of freed mem
 		fnode->hn_size = size; //Adjust the size of the realloc node
 		setBeef(fnode); //Add new beef to current node
@@ -448,7 +452,7 @@ void * NutHeapRealloc( void * block, size_t size){
 	}
 #ifdef NUTDEBUG
     if (__heap_trf) {
-        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (u_int)(uptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
+        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
     }
 #endif
 	return block;
@@ -488,7 +492,7 @@ int NutHeapFree(void *block)
     /*
      * Convert our block into a node.
      */
-    fnode = (HEAPNODE *) (((uptr_t *) block) - 1);
+    fnode = (HEAPNODE *) (((uintptr_t *) block) - 1);
 
 #ifdef NUTDEBUG
     if (__heap_trf) {
@@ -509,7 +513,7 @@ int NutHeapFree(void *block)
 
 #ifdef NUTDEBUG
     if (__heap_trf)
-        fprintf(__heap_trs, "\n[H%x,F%d] ", (u_int)(uptr_t) block, (int)fnode->hn_size);
+        fprintf(__heap_trs, "\n[H%x,F%d] ", (unsigned int)(uintptr_t) block, (int)fnode->hn_size);
 #endif
     size = fnode->hn_size;
 
@@ -523,13 +527,13 @@ int NutHeapFree(void *block)
         /*
          * If there' s a free node in front of us, merge it.
          */
-        if (((uptr_t) node + node->hn_size) == (uptr_t) fnode) {
+        if (((uintptr_t) node + node->hn_size) == (uintptr_t) fnode) {
             node->hn_size += fnode->hn_size;
 
             /*
              * If a free node is following us, merge it.
              */
-            if (((uptr_t) node + node->hn_size) == (uptr_t) node->hn_next) {
+            if (((uintptr_t) node + node->hn_size) == (uintptr_t) node->hn_next) {
                 node->hn_size += node->hn_next->hn_size;
                 node->hn_next = node->hn_next->hn_next;
             }
@@ -539,13 +543,13 @@ int NutHeapFree(void *block)
         /*
          * If we walked past our address, link us to the list.
          */
-        if ((uptr_t) node > (uptr_t) fnode) {
+        if ((uintptr_t) node > (uintptr_t) fnode) {
             *npp = fnode;
 
             /*
              * If a free node is following us, merge it.
              */
-            if (((uptr_t) fnode + fnode->hn_size) == (uptr_t) node) {
+            if (((uintptr_t) fnode + fnode->hn_size) == (uintptr_t) node) {
                 fnode->hn_size += node->hn_size;
                 fnode->hn_next = node->hn_next;
             } else
@@ -557,7 +561,7 @@ int NutHeapFree(void *block)
          * If we are within a free node, somebody tried
          * to free a block twice.
          */
-        if (((uptr_t) node + node->hn_size) > (uptr_t) fnode) {
+        if (((uintptr_t) node + node->hn_size) > (uintptr_t) fnode) {
 #ifdef NUTDEBUG
             if (__heap_trf)
                 fputs("\nTWICE\n", __heap_trs);
@@ -595,14 +599,14 @@ int NutHeapFree(void *block)
  */
 void NutHeapAdd(void *addr, size_t size)
 {
-    *((uptr_t *) addr) = size;
+    *((uintptr_t *) addr) = size;
 #if !defined(ARCH_32BIT)
     // Bug #2030525
     // This crashes on the EIR and may harm other 32-bit targets.
     // What is this for?
 	setBeef((HEAPNODE *)addr);
 #endif
-    NutHeapFree(((uptr_t *) addr) + 1);
+    NutHeapFree(((uintptr_t *) addr) + 1);
 }
 
 /*!

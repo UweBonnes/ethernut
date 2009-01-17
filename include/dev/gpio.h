@@ -108,17 +108,17 @@ __BEGIN_DECLS
 
 extern uint32_t GpioPinConfigGet(int bank, int bit);
 extern int GpioPinConfigSet(int bank, int bit, uint32_t flags);
-extern int GpioPortConfigSet(int bank, u_int mask, uint32_t flags);
+extern int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags);
 
 extern int GpioPinGet(int bank, int bit);
 extern void GpioPinSet(int bank, int bit, int value);
 extern void GpioPinSetLow(int bank, int bit);
 extern void GpioPinSetHigh(int bank, int bit);
 
-extern u_int GpioPortGet(int bank);
-extern void GpioPortSet(int bank, u_int value);
-extern void GpioPortSetLow(int bank, u_int mask);
-extern void GpioPortSetHigh(int bank, u_int mask);
+extern unsigned int GpioPortGet(int bank);
+extern void GpioPortSet(int bank, unsigned int value);
+extern void GpioPortSetLow(int bank, unsigned int mask);
+extern void GpioPortSetHigh(int bank, unsigned int mask);
 
 extern int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg);
 extern int GpioIrqEnable(GPIO_SIGNAL * sig, int bit);

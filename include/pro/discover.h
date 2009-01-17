@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:51  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2009/01/16 17:03:50  haraldkipp
  * Configurable discovery protocol version and port plus
  * configurable service thread stack size. The new version 1.1
@@ -92,7 +96,7 @@ typedef struct __attribute__ ((packed)) _DISCOVERY_TELE {
 
 typedef int (*NutDiscoveryCallback) (uint32_t, uint16_t, DISCOVERY_TELE *, int);
 
-extern int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, u_int flags);
+extern int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, unsigned int flags);
 extern NutDiscoveryCallback NutRegisterDiscoveryCallback(NutDiscoveryCallback func);
 
 extern int NutDiscoveryAnnTele(DISCOVERY_TELE *dist);

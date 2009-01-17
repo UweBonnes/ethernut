@@ -132,6 +132,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:14  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -276,7 +280,7 @@ uint16_t CSReadPP16(uint16_t addr)
     return CSRead16(CS_PP_DATA0);
 }
 
-uint32_t CSReadPP32(u_int addr)
+uint32_t CSReadPP32(unsigned int addr)
 {
     uint32_t l;
     uint32_t *p;

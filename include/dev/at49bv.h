@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.2  2008/07/17 11:51:19  olereinhardt
  * Added function AT49bvReadProtectionRegister to read the 64bit factory
  * or user id
@@ -53,11 +57,11 @@ __BEGIN_DECLS
 extern unsigned long At49bvInit(void);
 extern unsigned long long AT49bvReadProtectionRegister(int factory);
 extern int At49bvChipErase(void);
-extern int At49bvSectorErase(u_int off);
-extern int At49bvSectorRead(u_int off, void *data, u_int len);
-extern int At49bvSectorWrite(u_int off, CONST void *data, u_int len);
-extern int At49bvParamRead(u_int pos, void *data, u_int len);
-extern int At49bvParamWrite(u_int pos, CONST void *data, u_int len);
+extern int At49bvSectorErase(unsigned int off);
+extern int At49bvSectorRead(unsigned int off, void *data, unsigned int len);
+extern int At49bvSectorWrite(unsigned int off, CONST void *data, unsigned int len);
+extern int At49bvParamRead(unsigned int pos, void *data, unsigned int len);
+extern int At49bvParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
 __END_DECLS
 /* End of prototypes */

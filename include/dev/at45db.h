@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.4  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -67,15 +71,15 @@ __BEGIN_DECLS
 extern int At45dbSendCmd(int dd, uint8_t op, uint32_t parm, int len, CONST void *tdata, void *rdata, int datalen);
 extern uint8_t At45dbGetStatus(int dd);
 extern int At45dbWaitReady(int dd, uint32_t tmo, int poll);
-extern int At45dbInit(u_int spibas, u_int spipcs);
+extern int At45dbInit(unsigned int spibas, unsigned int spipcs);
 extern int At45dbPageErase(int dd, uint32_t pgn);
 extern int At45dbChipErase(void);
-extern int At45dbPageRead(int dd, uint32_t pgn, void *data, u_int len);
-extern int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, u_int len);
+extern int At45dbPageRead(int dd, uint32_t pgn, void *data, unsigned int len);
+extern int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, unsigned int len);
 extern uint32_t At45dbPages(int dd);
-extern u_int At45dbPageSize(int dd);
-extern int At45dbParamRead(u_int pos, void *data, u_int len);
-extern int At45dbParamWrite(u_int pos, CONST void *data, u_int len);
+extern unsigned int At45dbPageSize(int dd);
+extern int At45dbParamRead(unsigned int pos, void *data, unsigned int len);
+extern int At45dbParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
 __END_DECLS
 /* End of prototypes */

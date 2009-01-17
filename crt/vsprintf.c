@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2006/03/02 19:57:33  haraldkipp
  * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
  *
@@ -58,7 +62,7 @@
 
 static int _sputb(int fd, CONST void *buffer, size_t count)
 {
-    char **spp = (char **) ((uptr_t) fd);
+    char **spp = (char **) ((uintptr_t) fd);
 
     memcpy(*spp, (void *)buffer, count);
     *spp += count;
@@ -80,7 +84,7 @@ int vsprintf(char *buffer, CONST char *fmt, va_list ap)
 {
     int rc;
 
-    rc = _putf(_sputb, (int) ((uptr_t) &buffer), fmt, ap);
+    rc = _putf(_sputb, (int) ((uintptr_t) &buffer), fmt, ap);
     *buffer = 0;
 
     return rc;

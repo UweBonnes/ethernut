@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.6  2006/09/29 12:41:55  haraldkipp
  * Added support for AT45 serial DataFlash memory chips. Currently limited
  * to AT91 builds.
@@ -93,7 +97,7 @@
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutNvMemLoad(u_int addr, void *buff, size_t siz)
+int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
 {
 #if defined(NUT_CONFIG_X12RTC)
     return X12EepromRead(addr, buff, siz);
@@ -122,7 +126,7 @@ int NutNvMemLoad(u_int addr, void *buff, size_t siz)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NutNvMemSave(u_int addr, CONST void *buff, size_t len)
+int NutNvMemSave(unsigned int addr, CONST void *buff, size_t len)
 {
 #if defined(NUT_CONFIG_X12RTC)
     return X12EepromWrite(addr, buff, len);

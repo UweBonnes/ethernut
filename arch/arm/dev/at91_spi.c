@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2009/01/15 13:42:54  olereinhardt
  * 2009-01-15  Ole Reinhardt <ole.reinhardt@thermotemp.de>
  *         * arch/arm/dev/at91_spi.c:
@@ -112,7 +116,7 @@ int At91Spi0Init(void)
  * \return 0 on success or -1 if any of the specified chip selects is 
  *         not available.
  */
-int At91Spi0InitChipSelects(u_int mask)
+int At91Spi0InitChipSelects(unsigned int mask)
 {
     if (mask & _BV(0)) {
 #if defined(SPI0_CS0_PIN)
@@ -195,7 +199,7 @@ int At91Spi1Init(void)
  * \return 0 on success or -1 if any of the specified chip selects is 
  *         not available.
  */
-int At91Spi1InitChipSelects(u_int mask)
+int At91Spi1InitChipSelects(unsigned int mask)
 {
 #if defined(SPI1_CS0_PIN)
     if (mask & _BV(0)) {
@@ -250,7 +254,7 @@ int At91Spi1Enable(void)
  *
  * \return 0 on success or -1 if SPI is not available.
  */
-int At91SpiInit(u_int base)
+int At91SpiInit(unsigned int base)
 {
     int rc = -1;
 
@@ -268,14 +272,14 @@ int At91SpiInit(u_int base)
     return rc;
 }
 
-int At91SpiEnable(u_int base)
+int At91SpiEnable(unsigned int base)
 {
     outr(base + SPI_CR_OFF, SPI_SPIEN);
 
     return 0;
 }
 
-int At91SpiDisable(u_int base)
+int At91SpiDisable(unsigned int base)
 {
     outr(base + SPI_CR_OFF, SPI_SPIDIS);
 
@@ -290,7 +294,7 @@ int At91SpiDisable(u_int base)
  *
  * \return 0 on success or -1 if SPI is not available.
  */
-int At91SpiReset(u_int base)
+int At91SpiReset(unsigned int base)
 {
     int rc = 0;
 
@@ -320,7 +324,7 @@ int At91SpiReset(u_int base)
  * \return 0 on success or -1 if any of the specified chip selects is 
  *         not available.
  */
-int At91SpiInitChipSelects(u_int base, u_int mask)
+int At91SpiInitChipSelects(unsigned int base, unsigned int mask)
 {
     int rc = -1;
 
@@ -346,15 +350,15 @@ int At91SpiInitChipSelects(u_int base, u_int mask)
  *             If the specified rate is above the maximum or below the
  *             minimum, the maximum or minimum value resp. will be set.
  */
-int At91SpiSetRate(u_int base, u_int cs, uint32_t rate)
+int At91SpiSetRate(unsigned int base, unsigned int cs, uint32_t rate)
 {
     int rc = 0;
-    u_int divider;
+    unsigned int divider;
 
     /* The SPI clock is driven by the master clock. */
-    divider = (u_int) At91GetMasterClock();
+    divider = (unsigned int) At91GetMasterClock();
     /* Calculate the SPI clock divider. Avoid rounding errors. */
-    divider += (u_int) (rate / 2);
+    divider += (unsigned int) (rate / 2);
     divider /= rate;
     /* A divider value of 0 is not allowed. */
     if (divider < 1) {
@@ -384,10 +388,10 @@ int At91SpiSetRate(u_int base, u_int cs, uint32_t rate)
     return 0;
 }
 
-uint32_t At91SpiGetModeFlags(u_int base, u_int cs)
+uint32_t At91SpiGetModeFlags(unsigned int base, unsigned int cs)
 {
     uint32_t rc = SPIMF_MFDETECT;
-    u_int mv = inr(base + SPI_MR_OFF);
+    unsigned int mv = inr(base + SPI_MR_OFF);
 
     if (mv & SPI_MSTR) {
         rc |= SPI_MSTR;
@@ -429,9 +433,9 @@ uint32_t At91SpiGetModeFlags(u_int base, u_int cs)
  *              - SPIMF_CAPRISE  Data cpatured on rising edge.
  *              - SPIMF_KEEPCS   Chip select remains active after transfer.
  */
-int At91SpiSetModeFlags(u_int base, u_int cs, uint32_t mode)
+int At91SpiSetModeFlags(unsigned int base, unsigned int cs, uint32_t mode)
 {
-    u_int mv;
+    unsigned int mv;
 
     mv = inr(base + SPI_MR_OFF) & ~(SPI_MSTR | SPI_PCSDEC | SPI_MODFDIS | SPI_LLB);
     if (mode & SPIMF_MASTER) {
@@ -471,9 +475,9 @@ int At91SpiSetModeFlags(u_int base, u_int cs, uint32_t mode)
     return 0;
 }
 
-u_int At91SpiGetBits(u_int base, u_int cs)
+unsigned int At91SpiGetBits(unsigned int base, unsigned int cs)
 {
-    u_int rc;
+    unsigned int rc;
 
     switch (inr(base + SPI_CSR0_OFF + cs * 4) & SPI_BITS) {
     case SPI_BITS_9:
@@ -507,9 +511,9 @@ u_int At91SpiGetBits(u_int base, u_int cs)
     return rc;
 }
 
-int At91SpiSetBits(u_int base, u_int cs, u_int bits)
+int At91SpiSetBits(unsigned int base, unsigned int cs, unsigned int bits)
 {
-    u_int mv;
+    unsigned int mv;
 
     mv = inr(base + SPI_CSR0_OFF + cs * 4) & ~SPI_BITS;
     switch (bits) {
@@ -549,14 +553,14 @@ int At91SpiSetBits(u_int base, u_int cs, u_int bits)
     return 0;
 }
 
-u_int At91SpiGetSckDelay(u_int base, u_int cs)
+unsigned int At91SpiGetSckDelay(unsigned int base, unsigned int cs)
 {
     return (inr(base + SPI_CSR0_OFF + cs * 4) >> SPI_DLYBS_LSB) & 0xFF;
 }
 
-int At91SpiSetSckDelay(u_int base, u_int cs, u_int dly)
+int At91SpiSetSckDelay(unsigned int base, unsigned int cs, unsigned int dly)
 {
-    u_int csr = base + SPI_CSR0_OFF + cs * 4;
+    unsigned int csr = base + SPI_CSR0_OFF + cs * 4;
 
     outr(csr, (inr(csr) & ~SPI_DLYBS) | ((dly << SPI_DLYBS_LSB) & SPI_DLYBS));
 
@@ -566,14 +570,14 @@ int At91SpiSetSckDelay(u_int base, u_int cs, u_int dly)
     return 0;
 }
 
-u_int At91SpiGetTxDelay(u_int base, u_int cs)
+unsigned int At91SpiGetTxDelay(unsigned int base, unsigned int cs)
 {
     return (inr(base + SPI_CSR0_OFF + cs * 4) >> SPI_DLYBCT_LSB) & 0xFF;
 }
 
-int At91SpiSetTxDelay(u_int base, u_int cs, u_int dly)
+int At91SpiSetTxDelay(unsigned int base, unsigned int cs, unsigned int dly)
 {
-    u_int csr = base + SPI_CSR0_OFF + cs * 4;
+    unsigned int csr = base + SPI_CSR0_OFF + cs * 4;
 
     outr(csr, (inr(csr) & ~SPI_DLYBCT) | ((dly << SPI_DLYBCT_LSB) & SPI_DLYBCT));
 
@@ -583,12 +587,12 @@ int At91SpiSetTxDelay(u_int base, u_int cs, u_int dly)
     return 0;
 }
 
-u_int At91SpiGetCsDelay(u_int base)
+unsigned int At91SpiGetCsDelay(unsigned int base)
 {
     return (inr(base + SPI_MR_OFF) >> SPI_DLYBCS_LSB) & 0xFF;
 }
 
-int At91SpiSetCsDelay(u_int base, u_int dly)
+int At91SpiSetCsDelay(unsigned int base, unsigned int dly)
 {
     outr(base + SPI_MR_OFF, (inr(base + SPI_MR_OFF) & ~SPI_DLYBCS) | ((dly << SPI_DLYBCS_LSB) & SPI_DLYBCS));
 
@@ -610,11 +614,11 @@ int At91SpiSetCsDelay(u_int base, u_int dly)
  * \param rxnbuf Second receive buffer.
  * \param xnlen  Length of second transfer.
  */
-int At91SpiTransfer2(u_int base, u_int cs, CONST void *txbuf, void *rxbuf, int xlen, CONST void *txnbuf, void *rxnbuf, int xnlen)
+int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen, CONST void *txnbuf, void *rxnbuf, int xnlen)
 {
     int rc = -1;
-    u_int flags;
-    u_int sr;
+    unsigned int flags;
+    unsigned int sr;
 
     outr(base + PERIPH_PTCR_OFF, PDC_TXTDIS | PDC_RXTDIS);
 
@@ -636,21 +640,21 @@ int At91SpiTransfer2(u_int base, u_int cs, CONST void *txbuf, void *rxbuf, int x
     outr(base + SPI_MR_OFF, flags);
 
     /* Set first transmit pointer and counter. */
-    outr(base + PERIPH_TPR_OFF, (u_int) txbuf);
-    outr(base + PERIPH_TCR_OFF, (u_int) xlen);
+    outr(base + PERIPH_TPR_OFF, (unsigned int) txbuf);
+    outr(base + PERIPH_TCR_OFF, (unsigned int) xlen);
     /* Set first receive pointer and counter. */
-    outr(base + PERIPH_RPR_OFF, (u_int) rxbuf);
-    outr(base + PERIPH_RCR_OFF, (u_int) xlen);
+    outr(base + PERIPH_RPR_OFF, (unsigned int) rxbuf);
+    outr(base + PERIPH_RCR_OFF, (unsigned int) xlen);
 
     /* Set second transmit pointer and counter. */
-    outr(base + PERIPH_TNPR_OFF, (u_int) txnbuf);
-    outr(base + PERIPH_TNCR_OFF, (u_int) xnlen);
+    outr(base + PERIPH_TNPR_OFF, (unsigned int) txnbuf);
+    outr(base + PERIPH_TNCR_OFF, (unsigned int) xnlen);
 
     /* Set second receive pointer and counter. */
-    outr(base + PERIPH_RNPR_OFF, (u_int) rxnbuf);
-    outr(base + PERIPH_RNCR_OFF, (u_int) xnlen);
+    outr(base + PERIPH_RNPR_OFF, (unsigned int) rxnbuf);
+    outr(base + PERIPH_RNCR_OFF, (unsigned int) xnlen);
 
-    outr(base + SPI_IDR_OFF, (u_int) - 1);
+    outr(base + SPI_IDR_OFF, (unsigned int) - 1);
     outr(base + SPI_IER_OFF, SPI_RXBUFF);
     outr(base + PERIPH_PTCR_OFF, PDC_TXTEN | PDC_RXTEN);
 

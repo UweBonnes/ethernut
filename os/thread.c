@@ -56,6 +56,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.33  2009/01/17 11:26:52  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.32  2008/08/11 07:00:34  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -213,7 +217,7 @@
 /*@{*/
 
 #if defined(NUT_CRITICAL_NESTING) && !defined(NUT_CRITICAL_NESTING_STACK)
-u_int critical_nesting_level;
+unsigned int critical_nesting_level;
 #endif
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
@@ -364,7 +368,7 @@ void NutThreadResume(void)
     NUTTHREADINFO *td;
     NUTTHREADINFO **qhp;
     NUTTHREADINFO *tqp;
-    u_int cnt;
+    unsigned int cnt;
 
     /*
      * Process events that have been posted from interrupt context.

@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.4  2008/08/11 06:59:40  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -108,7 +112,7 @@ FILE *freopen(CONST char *name, CONST char *mode, FILE * stream)
     if ((__iob[i]->iob_fd = _open(name, mflags)) == -1) {
         free(__iob[i]);
         if (i < 3)
-            __iob[i] = (FILE *) ((uptr_t) (i + 1));
+            __iob[i] = (FILE *) ((uintptr_t) (i + 1));
         else
             __iob[i] = 0;
         return 0;

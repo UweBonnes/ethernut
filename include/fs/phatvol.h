@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 07:00:19  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -207,9 +211,9 @@ typedef struct _PHATVOL {
     /*! \brief Mutual exclusion I/O semaphore. */
     HANDLE vol_iomutex;
     /*! \brief Bytes per sector. */
-    u_int vol_sectsz;
+    unsigned int vol_sectsz;
     /*! \brief Sectors per cluster. */
-    u_int vol_clustsz;
+    unsigned int vol_clustsz;
 
     /*! \brief Number of sectors per allocation table. */
     uint32_t vol_tabsz;
@@ -220,7 +224,7 @@ typedef struct _PHATVOL {
     uint32_t vol_tab_sect[2];
 
     /*! \brief Number of sectors used by the root directory. */
-    u_int vol_rootsz;
+    unsigned int vol_rootsz;
     /*! \brief First sector of the root directory. */
     uint32_t vol_root_sect;
     /*! \brief First cluster of the root directory. */

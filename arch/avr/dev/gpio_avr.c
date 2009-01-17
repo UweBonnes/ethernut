@@ -238,7 +238,7 @@ void GpioPinSet(int bank, int bit, int value)
     }
 }
 
-u_int GpioPortGet(int bank)
+unsigned int GpioPortGet(int bank)
 {
     switch(bank) {
 #ifdef PINA
@@ -293,7 +293,7 @@ u_int GpioPortGet(int bank)
     return 0;
 }
 
-void GpioPortSet(int bank, u_int value)
+void GpioPortSet(int bank, unsigned int value)
 {
     switch(bank) {
 #ifdef PORTA
@@ -359,12 +359,12 @@ void GpioPortSet(int bank, u_int value)
     }
 }
 
-void GpioPortSetLow(int bank, u_int mask)
+void GpioPortSetLow(int bank, unsigned int mask)
 {
     GpioPortSet(bank, GpioPortGet(bank) & ~mask);
 }
 
-void GpioPortSetHigh(int bank, u_int mask)
+void GpioPortSetHigh(int bank, unsigned int mask)
 {
     GpioPortSet(bank, GpioPortGet(bank) | mask);
 }
@@ -498,7 +498,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     return rc;
 }
 
-int GpioPortConfigSet(int bank, u_int mask, uint32_t flags)
+int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 {
     switch(bank) {
 #ifdef DDRA

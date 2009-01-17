@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 06:59:41  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -210,9 +214,9 @@ unsigned long long AT49bvReadProtectionRegister(int factory)
 /*!
  * \brief Erase sector at the specified offset.
  */
-int At49bvSectorErase(u_int off)
+int At49bvSectorErase(unsigned int off)
 {
-    flashptr_t ptr = (flashptr_t) (uptr_t) (FLASH_CHIP_BASE + off);
+    flashptr_t ptr = (flashptr_t) (uintptr_t) (FLASH_CHIP_BASE + off);
 
     FLASH_UNLOCK(chip);
     FLASH_COMMAND(chip, FLASH_CMD_ERASE);
@@ -244,9 +248,9 @@ int At49bvChipErase(void)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At49bvSectorRead(u_int off, void *data, u_int len)
+int At49bvSectorRead(unsigned int off, void *data, unsigned int len)
 {
-    memcpy(data, (void *) (uptr_t) (FLASH_CHIP_BASE + off), len);
+    memcpy(data, (void *) (uintptr_t) (FLASH_CHIP_BASE + off), len);
 
     return 0;
 }
@@ -262,12 +266,12 @@ int At49bvSectorRead(u_int off, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At49bvSectorWrite(u_int off, CONST void *data, u_int len)
+int At49bvSectorWrite(unsigned int off, CONST void *data, unsigned int len)
 {
     int rc = 0;
     flashptr_t sp = (flashptr_t) data;
-    flashptr_t dp = (flashptr_t) (uptr_t) (FLASH_CHIP_BASE + off);
-    u_int i;
+    flashptr_t dp = (flashptr_t) (uintptr_t) (FLASH_CHIP_BASE + off);
+    unsigned int i;
 
     for (i = 0; i < len; i += sizeof(flashdat_t)) {
         /* No need to save values with all bits set. */
@@ -295,7 +299,7 @@ int At49bvSectorWrite(u_int off, CONST void *data, u_int len)
  *
  * \return Always 0.
  */
-int At49bvParamRead(u_int pos, void *data, u_int len)
+int At49bvParamRead(unsigned int pos, void *data, unsigned int len)
 {
     return At49bvSectorRead(FLASH_CONF_SECTOR + pos, data, len);
 }
@@ -309,7 +313,7 @@ int At49bvParamRead(u_int pos, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At49bvParamWrite(u_int pos, CONST void *data, u_int len)
+int At49bvParamWrite(unsigned int pos, CONST void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;

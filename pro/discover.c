@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:52  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2009/01/16 17:03:50  haraldkipp
  * Configurable discovery protocol version and port plus
  * configurable service thread stack size. The new version 1.1
@@ -83,7 +87,7 @@
 typedef struct {
     uint32_t disopt_ipmask;
     uint16_t disopt_port;
-    u_int disopt_flags;
+    unsigned int disopt_flags;
 } DISCOVERY_OPTIONS;
 
 static DISCOVERY_OPTIONS disopt;
@@ -285,7 +289,7 @@ NutDiscoveryCallback NutRegisterDiscoveryCallback(NutDiscoveryCallback func)
  *
  * \return 0 if a handler thread had been started, -1 otherwise.
  */
-int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, u_int flags)
+int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, unsigned int flags)
 {
     static HANDLE tid = NULL;
 

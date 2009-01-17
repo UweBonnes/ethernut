@@ -34,6 +34,10 @@
  
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -130,7 +134,7 @@ void ADCStartConversion(void);
 //       choices given above
 // post: ADC prescalar set to desired choice
 
-void ADCSetPrescale(u_int prescale);
+void ADCSetPrescale(unsigned int prescale);
 
 
 // ADCEnableChannel

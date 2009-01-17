@@ -93,6 +93,10 @@
 
 /*
  * $Log$
+ * Revision 1.27  2009/01/17 11:26:51  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.26  2008/08/11 07:00:32  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -742,7 +746,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
     }
 #ifdef NUTDEBUG
     if (__tcp_trf) {
-        fprintf(__tcp_trs, " %04x-", (u_int) sock);
+        fprintf(__tcp_trs, " %04x-", (unsigned int) sock);
         if (rc)
             NutDumpSockState(__tcp_trs, sock->so_state, "**ERR ", "**>");
         NutDumpSockState(__tcp_trs, state, "[>", "]");
@@ -1554,7 +1558,7 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
 
 #ifdef NUTDEBUG
     if (__tcp_trf) {
-        fprintf(__tcp_trs, " %04x-", (u_int) sock);
+        fprintf(__tcp_trs, " %04x-", (unsigned int) sock);
         NutDumpSockState(__tcp_trs, sock->so_state, "[", ">]");
     }
 #endif

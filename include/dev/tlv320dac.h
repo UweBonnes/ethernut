@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.1  2008/10/05 16:51:46  haraldkipp
  * Added suport for the TLV320 audio DAC.
  *
@@ -195,15 +199,15 @@
 __BEGIN_DECLS
 /* Prototypes */
 
-extern int Tlv320DacInit(u_int rate);
+extern int Tlv320DacInit(unsigned int rate);
 extern int Tlv320DacWrite(void *buf, int len);
 extern int Tlv320DacFlush(void);
 
-extern u_char Tlv320DacReadReg(u_int reg);
-extern void Tlv320DacWriteReg(u_int reg, u_int val);
+extern u_char Tlv320DacReadReg(unsigned int reg);
+extern void Tlv320DacWriteReg(unsigned int reg, unsigned int val);
 
 extern int Tlv320DacSetVolume(int left, int right);
-extern int Tlv320DacSetRate(u_int rate);
+extern int Tlv320DacSetRate(unsigned int rate);
 extern int Tlv320SwitchMode(void);
 
 __END_DECLS

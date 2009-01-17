@@ -34,6 +34,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.2  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -602,7 +606,7 @@ extern ureg_t VsPlayerInterrupts(ureg_t enable);
 extern ureg_t VsPlayerThrottle(ureg_t on);
 
 extern uint16_t VsPlayTime(void);
-extern u_int VsGetStatus(void);
+extern unsigned int VsGetStatus(void);
 #ifdef __GNUC__
 extern int VsGetHeaderInfo(VS_HEADERINFO *vshi);
 #endif

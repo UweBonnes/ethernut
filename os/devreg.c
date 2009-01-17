@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:52  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 07:00:33  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -118,7 +122,7 @@ NUTDEVICE *NutDeviceLookup(CONST char *name)
  *         structure is invalid or if the device initialization
  *         failed.
  */
-int NutRegisterDevice(NUTDEVICE * dev, uptr_t base, uint8_t irq)
+int NutRegisterDevice(NUTDEVICE * dev, uintptr_t base, uint8_t irq)
 {
     int rc = -1;
 

@@ -36,6 +36,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/10/23 08:54:07  haraldkipp
  * Include the correct header file.
  *
@@ -649,7 +653,7 @@
 
 
 static volatile ureg_t vs_status = VS_STATUS_STOPPED;
-static volatile u_int vs_flush;
+static volatile unsigned int vs_flush;
 
 /*
  * \brief Write a byte to the VS10XX data interface.
@@ -1336,7 +1340,7 @@ uint16_t VsPlayTime(void)
  * - VS_STATUS_EOF Player has reached the end of a stream after VsPlayerFlush() has been called.
  * - VS_STATUS_EMPTY Player runs out of data. VsPlayerKick() will restart it.
  */
-u_int VsGetStatus(void)
+unsigned int VsGetStatus(void)
 {
     return vs_status;
 }

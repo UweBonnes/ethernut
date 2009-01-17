@@ -195,7 +195,7 @@ int At91SpiBusNodeInit(NUTSPINODE * node)
             NutRegisterIrqHandler(bus->bus_sig, At91SpiBus0Interrupt, &bus->bus_ready);
 #endif /* SPIBUS0_DOUBLE_BUFFER */
 #endif /* SPI1_BASE */
-            outr(bus->bus_base + SPI_IDR_OFF, (u_int) - 1);
+            outr(bus->bus_base + SPI_IDR_OFF, (unsigned int) - 1);
             NutIrqEnable(bus->bus_sig);
 #endif /* SPIBUS0_POLLING_MODE */
         } else {
@@ -312,7 +312,7 @@ int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, 
         outr(base + PERIPH_RNPR_OFF, 0);
         outr(base + PERIPH_RNCR_OFF, 0);
 
-        outr(base + SPI_IDR_OFF, (u_int) - 1);
+        outr(base + SPI_IDR_OFF, (unsigned int) - 1);
         outr(base + SPI_IER_OFF, ir);
         outr(base + PERIPH_PTCR_OFF, cr);
         

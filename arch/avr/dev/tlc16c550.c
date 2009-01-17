@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:17  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -173,7 +177,7 @@ static CONST PROGMEM IRQDEFS atIrqDefs[] = {
 static NUTDEVICE *pIrqDev[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static uint8_t irqMask = 0;
 #ifdef ACE_HDX_LINE
-static u_int ByteOcrTime(NUTDEVICE * dev);
+static unsigned int ByteOcrTime(NUTDEVICE * dev);
 static void AceTmr3Init(void);
 static void AceOutComp3AInt(void *arg);
 static void AceAddHdxTime(ACEDCB * dev);
@@ -248,11 +252,11 @@ static void AceIrqHandler(void *arg)
 }
 
 #ifdef ACE_HDX_LINE
-static u_int ByteOcrTime(NUTDEVICE * dev)
+static unsigned int ByteOcrTime(NUTDEVICE * dev)
 {
     uint8_t bv;
     uint8_t tb = 14;             /* twice of 1 start 5 char min. 1 stop */
-    u_int sv;
+    unsigned int sv;
     uint32_t s, c;
 
     /* get speed */
@@ -280,7 +284,7 @@ static u_int ByteOcrTime(NUTDEVICE * dev)
     c = NutGetCpuClock();
     c = c * (uint32_t) tb;
 
-    sv = ((u_int) (c / s) & 0x0000ffff) - 1;
+    sv = ((unsigned int) (c / s) & 0x0000ffff) - 1;
 
     return sv;
 }
@@ -1036,13 +1040,13 @@ static void AceOutComp3AInt(void *arg)
     NUTDEVICE *dev;
     ACEDCB *dcb;
     int i;
-    u_int nextOcr = 0xffff, ocr;
-    u_int timerOcrDiff;
+    unsigned int nextOcr = 0xffff, ocr;
+    unsigned int timerOcrDiff;
 
     /* TMR3 stop counting */
     TCCR3B &= ~(_BV(CS31) | _BV(CS30));
 
-    timerOcrDiff = (u_int /* modulo max */ )((u_int /* modulo max */ )TCNT3 - (u_int /* modulo max */ )OCR3A);
+    timerOcrDiff = (unsigned int /* modulo max */ )((unsigned int /* modulo max */ )TCNT3 - (unsigned int /* modulo max */ )OCR3A);
 
     /* Due to interrupt nesting and as TL interrupts are higher priority - disable them.
      * This routine cannot be interrupted by a cal to the AceAddHdxTime()
@@ -1054,11 +1058,11 @@ static void AceOutComp3AInt(void *arg)
             dcb = dev->dev_dcb;
             /* only if enabled */
             if (dcb->hdxOcrTime != 0) {
-                if ((u_int /* modulo max */ )(dcb->hdxOcrTime - (u_int /* modulo max */ )OCR3A) <= timerOcrDiff) {
+                if ((unsigned int /* modulo max */ )(dcb->hdxOcrTime - (unsigned int /* modulo max */ )OCR3A) <= timerOcrDiff) {
                     dcb->hdxOcrTime = 0;
                     ACE_HDX_RECEIVE(dev->dev_base);
                 } else {
-                    ocr = (u_int /* modulo max */ )(dcb->hdxOcrTime - (u_int /* modulo max */ )TCNT3);
+                    ocr = (unsigned int /* modulo max */ )(dcb->hdxOcrTime - (unsigned int /* modulo max */ )TCNT3);
                     if (ocr < nextOcr) {
                         nextOcr = ocr;
                     }
@@ -1093,13 +1097,13 @@ static void AceAddHdxTime(ACEDCB * dcb)
     }
 
     /* set offset from current counter value */
-    dcb->hdxOcrTime = (u_int /* modulo max */ )((u_int /* modulo max */ )TCNT3 + dcb->hdxByteTime);
+    dcb->hdxOcrTime = (unsigned int /* modulo max */ )((unsigned int /* modulo max */ )TCNT3 + dcb->hdxByteTime);
 
     if (dcb->hdxOcrTime == 0) {
         dcb->hdxOcrTime = 1;    /* 0 means disabled, one bit delay is not a problem as there is interrupt latency anyway */
     }
 
-    if (dcb->hdxByteTime < (u_int /* modulo max */ )((u_int /* modulo max */ )OCR3A - (u_int /* modulo max */ )TCNT3)) {
+    if (dcb->hdxByteTime < (unsigned int /* modulo max */ )((unsigned int /* modulo max */ )OCR3A - (unsigned int /* modulo max */ )TCNT3)) {
         OCR3A = dcb->hdxOcrTime;
     }
     /* TMR3 output compare A match interrupt enable */

@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.15  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.14  2008/08/27 06:45:23  thornen
  * Added bank support for MMnet03..04 MMnet102..104
  *
@@ -291,7 +295,7 @@ typedef struct _PNUTFILE PNUTFILE;
 struct _PNUTFILE {
     PNUT_BLKNUM f_node;         /* Node of the file or directory. */
     uint32_t f_pos;               /* Current file pointer position. */
-    u_int f_flag;               /* File mode. */
+    unsigned int f_flag;               /* File mode. */
 };
 
 /*! \brief Root node of the filesystem. */

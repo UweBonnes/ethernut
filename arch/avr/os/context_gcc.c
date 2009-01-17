@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.11  2008/08/11 06:59:39  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -375,7 +379,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     td->td_queue = 0;
 #ifdef NUTDEBUG
     if (__os_trf)
-        fprintf(__os_trs, "Cre<%04x>", (uptr_t) td);
+        fprintf(__os_trs, "Cre<%04x>", (uintptr_t) td);
 #endif
 
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
@@ -405,7 +409,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "New<%04x %04x>", (uptr_t) runningThread, (uptr_t) runQueue);
+            fprintf(__os_trs, "New<%04x %04x>", (uintptr_t) runningThread, (uintptr_t) runQueue);
 #endif
         NutEnterCritical();
         NutThreadSwitch();

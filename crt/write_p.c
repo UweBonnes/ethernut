@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2004/06/25 08:28:11  freckle
  * Added note that write calls are not thread-safe, i.e, two writes might
  * come out intermixed (although no bytes get lost)
@@ -78,7 +82,7 @@
  */
 int _write_P(int fd, PGM_P data, unsigned int count)
 {
-    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
+    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
 
     if (dev == 0) {

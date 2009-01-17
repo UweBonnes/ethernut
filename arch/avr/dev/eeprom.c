@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.4  2008/08/11 06:59:14  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -74,7 +78,7 @@
  *
  * \return Allways 0.
  */
-int OnChipNvMemLoad(u_int addr, void *buff, size_t siz)
+int OnChipNvMemLoad(unsigned int addr, void *buff, size_t siz)
 {
 #if defined(__IMAGECRAFT__)
     EEPROMReadBytes((int)addr, buff, siz);
@@ -89,7 +93,7 @@ int OnChipNvMemLoad(u_int addr, void *buff, size_t siz)
  *
  * \return Allways 0.
  */
-int OnChipNvMemSave(u_int addr, CONST void *buff, size_t len)
+int OnChipNvMemSave(unsigned int addr, CONST void *buff, size_t len)
 {
     uint8_t *cp;
     size_t i;

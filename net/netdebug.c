@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.11  2009/01/17 11:26:51  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.10  2008/08/11 07:00:31  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -103,7 +107,7 @@ void NutDumpTcpHeader(FILE * stream, char * ds, TCPSOCKET * sock, NETBUF * nb)
     static prog_char fmt[] = "%s%p[%u]-SEQ(%lx)";
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
-    fprintf_P(stream, fmt, ds, sock, (u_int)nb->nb_ap.sz, ntohl(th->th_seq));
+    fprintf_P(stream, fmt, ds, sock, (unsigned int)nb->nb_ap.sz, ntohl(th->th_seq));
     if (th->th_flags & TH_ACK)
         fprintf(stream, "-ACK(%lx)", ntohl(th->th_ack));
     if (th->th_flags & TH_FIN)

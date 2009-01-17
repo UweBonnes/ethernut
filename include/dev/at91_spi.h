@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -78,31 +82,31 @@
 __BEGIN_DECLS
 /* Prototypes */
 extern int At91Spi0Init(void);
-extern int At91Spi0InitChipSelects(u_int mask);
+extern int At91Spi0InitChipSelects(unsigned int mask);
 extern int At91Spi0Enable(void);
 #if defined(SPI1_BASE)
 extern int At91Spi1Init(void);
-extern int At91Spi1InitChipSelects(u_int mask);
+extern int At91Spi1InitChipSelects(unsigned int mask);
 extern int At91Spi1Enable(void);
 #endif
 
-extern int At91SpiInit(u_int base);
-extern int At91SpiReset(u_int base);
-extern int At91SpiInitChipSelects(u_int base, u_int mask);
+extern int At91SpiInit(unsigned int base);
+extern int At91SpiReset(unsigned int base);
+extern int At91SpiInitChipSelects(unsigned int base, unsigned int mask);
 
-extern int At91SpiSetRate(u_int base, u_int cs, uint32_t rate);
-extern uint32_t At91SpiGetModeFlags(u_int base, u_int cs);
-extern int At91SpiSetModeFlags(u_int base, u_int cs, uint32_t mode);
-extern u_int At91SpiGetBits(u_int base, u_int cs);
-extern int At91SpiSetBits(u_int base, u_int cs, u_int bits);
-extern u_int At91SpiGetSckDelay(u_int base, u_int cs);
-extern int At91SpiSetSckDelay(u_int base, u_int cs, u_int dly);
-extern u_int At91SpiGetTxDelay(u_int base, u_int cs);
-extern int At91SpiSetTxDelay(u_int base, u_int cs, u_int dly);
-extern u_int At91SpiGetCsDelay(u_int base);
-extern int At91SpiSetCsDelay(u_int base, u_int dly);
+extern int At91SpiSetRate(unsigned int base, unsigned int cs, uint32_t rate);
+extern uint32_t At91SpiGetModeFlags(unsigned int base, unsigned int cs);
+extern int At91SpiSetModeFlags(unsigned int base, unsigned int cs, uint32_t mode);
+extern unsigned int At91SpiGetBits(unsigned int base, unsigned int cs);
+extern int At91SpiSetBits(unsigned int base, unsigned int cs, unsigned int bits);
+extern unsigned int At91SpiGetSckDelay(unsigned int base, unsigned int cs);
+extern int At91SpiSetSckDelay(unsigned int base, unsigned int cs, unsigned int dly);
+extern unsigned int At91SpiGetTxDelay(unsigned int base, unsigned int cs);
+extern int At91SpiSetTxDelay(unsigned int base, unsigned int cs, unsigned int dly);
+extern unsigned int At91SpiGetCsDelay(unsigned int base);
+extern int At91SpiSetCsDelay(unsigned int base, unsigned int dly);
 
-extern int At91SpiTransfer2(u_int base, u_int cs, CONST void *txbuf, void *rxbuf, int xlen,
+extern int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen,
                            CONST void *txnbuf, void *rxnbuf, int xnlen);
 
 __END_DECLS

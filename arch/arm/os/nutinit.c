@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.19  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.18  2009/01/16 17:02:18  haraldkipp
  * No longer save any default OS configuration in non-volatile RAM.
  * All platforms will now call NutLoadConfig().
@@ -151,16 +155,16 @@ extern void *__unused_start__;
 extern void *__External_SRAM_segment_end__;
 
 #define HEAP_START  &__unused_start__
-#define HEAP_SIZE  ((uptr_t)(&__External_SRAM_segment_end__ - 1) - (uptr_t)(HEAP_START) - 256)
+#define HEAP_SIZE  ((uintptr_t)(&__External_SRAM_segment_end__ - 1) - (uintptr_t)(HEAP_START) - 256)
 #else   /* GCC */
 /*!
  * \brief Last memory address.
  */
-#define NUTMEM_END (uptr_t)(NUTMEM_START + NUTMEM_SIZE - 1U)
+#define NUTMEM_END (uintptr_t)(NUTMEM_START + NUTMEM_SIZE - 1U)
 extern void *__heap_start;
 
 #define HEAP_START  &__heap_start
-#define HEAP_SIZE  ((uptr_t) (NUTMEM_END - 256 - (uptr_t) (&__heap_start)))
+#define HEAP_SIZE  ((uintptr_t) (NUTMEM_END - 256 - (uintptr_t) (&__heap_start)))
 #endif
 
 #if !defined(__arm__) && !defined(__cplusplus)

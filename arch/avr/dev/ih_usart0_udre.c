@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 06:59:16  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -119,7 +123,7 @@ IRQ_HANDLER sig_UART0_DATA = {
 static int AvrUart0TxDataIrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    u_int *ival = (u_int *) param;
+    unsigned int *ival = (unsigned int *) param;
     int_fast8_t enabled = bit_is_set(UCR, UDRIE);
 
     /* Disable interrupt. */
@@ -150,7 +154,7 @@ static int AvrUart0TxDataIrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int) sig_UART0_DATA.ir_count;
+        *ival = (unsigned int) sig_UART0_DATA.ir_count;
         sig_UART0_DATA.ir_count = 0;
         break;
 #endif

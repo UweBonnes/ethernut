@@ -1,4 +1,4 @@
-#define FLASH_BASE      ((u_int *)0x01000000)
+#define FLASH_BASE      ((unsigned int *)0x01000000)
 #define FLASH_SIZE      (2*1024*1024)
 
 /* 
@@ -6,14 +6,14 @@
  *
  * 0x01000000, 16MB, 2 tdf, 16 bits, 7 WS  
  */
-#define EBI_CSR_0       ((u_int *)(FLASH_BASE | 0x2539)     
-#define EBI_CSR_1       ((u_int *)0x10000000)
-#define EBI_CSR_2       ((u_int *)0x20000000)
-#define EBI_CSR_3       ((u_int *)0x30000000)
-#define EBI_CSR_4       ((u_int *)0x40000000)
-#define EBI_CSR_5       ((u_int *)0x50000000)
-#define EBI_CSR_6       ((u_int *)0x60000000)
-#define EBI_CSR_7       ((u_int *)0x70000000)
+#define EBI_CSR_0       ((unsigned int *)(FLASH_BASE | 0x2539)     
+#define EBI_CSR_1       ((unsigned int *)0x10000000)
+#define EBI_CSR_2       ((unsigned int *)0x20000000)
+#define EBI_CSR_3       ((unsigned int *)0x30000000)
+#define EBI_CSR_4       ((unsigned int *)0x40000000)
+#define EBI_CSR_5       ((unsigned int *)0x50000000)
+#define EBI_CSR_6       ((unsigned int *)0x60000000)
+#define EBI_CSR_7       ((unsigned int *)0x70000000)
 
 /*
  * LEDs

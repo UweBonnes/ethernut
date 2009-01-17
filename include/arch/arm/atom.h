@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.6  2008/07/07 11:04:27  haraldkipp
  * Configurable ways of handling critical sections for ARM targets.
  *
@@ -100,7 +104,7 @@
 
 #else /* NUT_CRITICAL_NESTING_STACK */
 
-extern u_int critical_nesting_level;
+extern unsigned int critical_nesting_level;
 
 #define NutEnterCritical() \
 if (critical_nesting_level++ == 0) { \

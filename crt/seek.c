@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.1  2005/08/05 11:17:53  olereinhardt
  * Added support for _seek, _tell, fseek, ftell functions
  *
@@ -63,7 +67,7 @@
  
 int _seek(int fd, long offset, int origin)
 {
-    NUTFILE *fp = (NUTFILE *) ((uptr_t) fd);
+    NUTFILE *fp = (NUTFILE *) ((uintptr_t) fd);
     NUTDEVICE *dev = fp->nf_dev;
     IOCTL_ARG3 conf;
     

@@ -182,9 +182,9 @@ void GpioPinSet(int bank, int bit, int value)
  *
  * \return Pin levels. 0 is returned for unknown banks and pins.
  */
-u_int GpioPortGet(int bank)
+unsigned int GpioPortGet(int bank)
 {
-    u_int rc = 0;
+    unsigned int rc = 0;
 
     switch(bank) {
 #ifdef PIO_PDSR
@@ -223,7 +223,7 @@ u_int GpioPortGet(int bank)
  *
  * \return Levels.
  */
-void GpioPortSetLow(int bank, u_int mask)
+void GpioPortSetLow(int bank, unsigned int mask)
 {
     switch(bank) {
 #ifdef PIO_CODR
@@ -261,7 +261,7 @@ void GpioPortSetLow(int bank, u_int mask)
  * \param mask Pin levels are set to high, if the corresponding
  *             bit in this mask is 1.
  */
-void GpioPortSetHigh(int bank, u_int mask)
+void GpioPortSetHigh(int bank, unsigned int mask)
 {
     switch(bank) {
 #ifdef PIO_SODR
@@ -303,7 +303,7 @@ void GpioPortSetHigh(int bank, u_int mask)
  *              bit in this mask is 1. All other pin levels are
  *              set to low.
  */
-void GpioPortSet(int bank, u_int value)
+void GpioPortSet(int bank, unsigned int value)
 {
     if (value) {
         GpioPortSetHigh(bank, value);
@@ -472,7 +472,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
  *
  * \return Always 0.
  */
-int GpioPortConfigSet(int bank, u_int mask, uint32_t flags)
+int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 {
     switch(bank) {
     case 0:

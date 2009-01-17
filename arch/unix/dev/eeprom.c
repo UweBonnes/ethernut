@@ -126,7 +126,7 @@ uint16_t eeprom_read_word(const unsigned short *addr)
  *
  * \return Allways 0.
  */
-int NutNvMemLoad(u_int addr, void *buff, size_t siz)
+int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
 {
     eeprom_read_block (buff, (void *)addr, siz);
     return 0;
@@ -137,7 +137,7 @@ int NutNvMemLoad(u_int addr, void *buff, size_t siz)
  *
  * \return Allways 0.
  */
-int NutNvMemSave(u_int addr, const void *buff, size_t len)
+int NutNvMemSave(unsigned int addr, const void *buff, size_t len)
 {
     uint8_t *cp;
     size_t i;

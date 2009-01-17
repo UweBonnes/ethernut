@@ -191,9 +191,9 @@ void NutThreadSwitch(void)
 HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     NUTTHREADINFO *td;
-    const uptr_t *paddr;
+    const uintptr_t *paddr;
 
-    paddr = (const uptr_t *) fn;
+    paddr = (const uintptr_t *) fn;
 
     NutEnterCritical();
 
@@ -223,7 +223,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     td->td_queue = 0;
 #ifdef NUTDEBUG
     if (__os_trf) {
-        fprintf(__os_trs, "Cre<%08lx>\n", (uptr_t) td);
+        fprintf(__os_trs, "Cre<%08lx>\n", (uintptr_t) td);
     }
 #endif
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
@@ -282,7 +282,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "New<%08lx %08lx>\n", (uptr_t) runningThread, (uptr_t) runQueue);
+            fprintf(__os_trs, "New<%08lx %08lx>\n", (uintptr_t) runningThread, (uintptr_t) runQueue);
 #endif
         NutThreadSwitch();
     }

@@ -37,6 +37,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.2  2008/08/11 06:59:41  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -391,7 +395,7 @@ uint32_t AvrTargetFusesWriteSafe(uint32_t fuses)
  *
  * \return 0 on success, -1 on time out.
  */
-int AvrTargetPollReady(u_int tmo)
+int AvrTargetPollReady(unsigned int tmo)
 {
 #if !defined(AVRTARGET_NO_SPI_DEVICE)
     while (AvrTargetCmd(AVRCMD_POLL_READY) & 1UL) {

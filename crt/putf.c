@@ -39,6 +39,10 @@
 
 /*
  * $Log$
+ * Revision 1.16  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.15  2008/08/11 06:59:40  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -331,7 +335,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             if (flags & LONGINT)
                 ulval = va_arg(ap, uint32_t);
             else if (ch == 'u')
-                ulval = va_arg(ap, u_int);
+                ulval = va_arg(ap, unsigned int);
             else
                 ulval = va_arg(ap, int);
             if (ch != 'u' && (long) ulval < 0) {
@@ -354,7 +358,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             break;
 
         case 'o':
-            ulval = (flags & LONGINT) ? va_arg(ap, uint32_t) : va_arg(ap, u_int);
+            ulval = (flags & LONGINT) ? va_arg(ap, uint32_t) : va_arg(ap, unsigned int);
             sign = 0;
             if ((dprec = prec) >= 0)
                 flags &= ~ZEROPAD;
@@ -374,12 +378,12 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
         case 'X':
         case 'x':
             if (ch == 'p') {
-                ulval = (uptr_t) va_arg(ap, void *);
+                ulval = (uintptr_t) va_arg(ap, void *);
                 flags |= ALT;
                 ch = 'x';
             } else
                 ulval = (flags & LONGINT) ? va_arg(ap, uint32_t) : (uint32_t)
-                    va_arg(ap, u_int);
+                    va_arg(ap, unsigned int);
 
             sign = 0;
             if ((dprec = prec) >= 0)

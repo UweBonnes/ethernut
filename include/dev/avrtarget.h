@@ -43,6 +43,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.2  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -111,7 +115,7 @@ extern uint32_t AvrTargetSignature(void);
 extern uint32_t AvrTargetFusesRead(void);
 extern uint32_t AvrTargetFusesWriteSafe(uint32_t fuses);
 extern int AvrTargetProgEnable(void);
-extern int AvrTargetPollReady(u_int tmo);
+extern int AvrTargetPollReady(unsigned int tmo);
 extern int AvrTargetChipErase(void);
 extern void AvrTargetPageLoad(uint32_t page, CONST uint8_t * data);
 extern int AvrTargetPageWrite(uint32_t page);

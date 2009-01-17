@@ -36,6 +36,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -143,10 +147,10 @@ static void NplInterrupt(void *arg)
     outw(NPL_SCR, slr);
 }
 
-static int NplIrqCtl(int cmd, void *param, IRQ_HANDLER * irq, u_int mask)
+static int NplIrqCtl(int cmd, void *param, IRQ_HANDLER * irq, unsigned int mask)
 {
     int rc = 0;
-    u_int *ival = (u_int *) param;
+    unsigned int *ival = (unsigned int *) param;
     uint16_t enabled = inw(NPL_IMR) & mask;
 
     /* Disable interrupt. */
@@ -173,7 +177,7 @@ static int NplIrqCtl(int cmd, void *param, IRQ_HANDLER * irq, u_int mask)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (u_int) irq->ir_count;
+        *ival = (unsigned int) irq->ir_count;
         irq->ir_count = 0;
         break;
 #endif

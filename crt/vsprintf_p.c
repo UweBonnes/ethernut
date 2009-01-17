@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.2  2004/03/16 16:48:27  haraldkipp
  * Added Jan Dubiec's H8/300 port.
  *
@@ -56,7 +60,7 @@
 
 static int _sputb(int fd, CONST void *buffer, size_t count)
 {
-    char **spp = (char **) ((uptr_t) fd);
+    char **spp = (char **) ((uintptr_t) fd);
 
     memcpy(*spp, buffer, count);
     *spp += count;
@@ -88,7 +92,7 @@ int vsprintf_P(char *buffer, PGM_P fmt, va_list ap)
     if ((rp = NutHeapAlloc(rl)) == 0)
         return -1;
     memcpy_P(rp, fmt, rl);
-    rc = _putf(_sputb, (int) ((uptr_t) &buffer), rp, ap);
+    rc = _putf(_sputb, (int) ((uintptr_t) &buffer), rp, ap);
     NutHeapFree(rp);
     *buffer = 0;
 

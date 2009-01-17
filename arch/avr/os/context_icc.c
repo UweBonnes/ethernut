@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.11  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.10  2008/08/11 11:51:19  thiagocorrea
  * Preliminary Atmega2560 compile options, but not yet supported.
  * It builds, but doesn't seam to run properly at this time.
@@ -334,7 +338,7 @@ HANDLE NutThreadCreate(uint8_t * name, void (*fn) (void *), void *arg, size_t st
     td->td_queue = 0;
 #ifdef NUTDEBUG
     if (__os_trf)
-        fprintf(__os_trs, "Cre<%04x>", (uptr_t) td);
+        fprintf(__os_trs, "Cre<%04x>", (uintptr_t) td);
 #endif
 
     NutThreadAddPriQueue(td, (NUTTHREADINFO **) & runQueue);
@@ -364,7 +368,7 @@ HANDLE NutThreadCreate(uint8_t * name, void (*fn) (void *), void *arg, size_t st
         runningThread->td_state = TDS_READY;
 #ifdef NUTDEBUG
         if (__os_trf)
-            fprintf(__os_trs, "New<%04x %04x>", (uptr_t) runningThread, (uptr_t) runQueue);
+            fprintf(__os_trs, "New<%04x %04x>", (uintptr_t) runningThread, (uintptr_t) runQueue);
 #endif
         NutEnterCritical();
         NutThreadSwitch();

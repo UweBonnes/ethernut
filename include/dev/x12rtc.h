@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 07:00:00  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -171,8 +175,8 @@ extern int X12RtcClearStatus(uint32_t sflgs);
 extern int X12RtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
 extern int X12RtcWrite(int nv, CONST uint8_t *buff, size_t len);
 
-extern int X12EepromRead(u_int addr, void *buff, size_t len);
-extern int X12EepromWrite(u_int addr, CONST void *buff, size_t len);
+extern int X12EepromRead(unsigned int addr, void *buff, size_t len);
+extern int X12EepromWrite(unsigned int addr, CONST void *buff, size_t len);
 
 __END_DECLS
 /* End of prototypes */

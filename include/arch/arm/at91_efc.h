@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.1  2006/07/26 11:20:57  haraldkipp
  * Added non-volatile configuration memory support for SAM7X, using upper
  * 16k region of on-chip flash.
@@ -46,15 +50,15 @@
 __BEGIN_DECLS
 /* Prototypes */
 
-extern int At91EfcSectorErase(u_int off);
-extern int At91EfcSectorRead(u_int off, void *data, u_int len);
-extern int At91EfcSectorWrite(u_int off, CONST void *data, u_int len);
+extern int At91EfcSectorErase(unsigned int off);
+extern int At91EfcSectorRead(unsigned int off, void *data, unsigned int len);
+extern int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len);
 
-extern int At91EfcRegionLock(u_int off);
-extern int At91EfcRegionUnlock(u_int off);
+extern int At91EfcRegionLock(unsigned int off);
+extern int At91EfcRegionUnlock(unsigned int off);
 
-extern int At91EfcParamRead(u_int pos, void *data, u_int len);
-extern int At91EfcParamWrite(u_int pos, CONST void *data, u_int len);
+extern int At91EfcParamRead(unsigned int pos, void *data, unsigned int len);
+extern int At91EfcParamWrite(unsigned int pos, CONST void *data, unsigned int len);
 
 __END_DECLS
 /* End of prototypes */

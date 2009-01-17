@@ -41,6 +41,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -148,7 +152,7 @@ long lseek(int fh, long pos, int whence)
     //IOCTL_ARG3 args;
 
     //args.arg1 = (void *)fh;
-    //args.arg2 = (void *)(u_int)pos;
+    //args.arg2 = (void *)(unsigned int)pos;
     //args.arg3 = (void *)whence;
     //return (*dev->dev_ioctl) (dev, opcode, (void *)&args);
     return -1;

@@ -114,13 +114,13 @@ typedef struct _t_traceitem {
     uint8_t tag;
     /*! \brief Additional information, depending on the type of the event
     */
-    u_int  pc;
+    unsigned int  pc;
     /*! \brief Upper 16 bit of microseconds clock when event occured
     */
-    u_int  time_h;
+    unsigned int  time_h;
     /*! \brief Lower 16 bit of microseconds clock when event occured
     */
-    u_int  time_l;
+    unsigned int  time_l;
 } t_traceitem;
 
 
@@ -129,7 +129,7 @@ typedef struct _t_traceitem {
  ******************************************************************/
 /*! \brief Upper 16 bits of microseconds clock, incremented on timer 1 overflow interrupts
 */
-extern u_int micros_high;
+extern unsigned int micros_high;
 /*! \brief Trace buffer, initialized by NutTraceInit
 */
 extern t_traceitem *trace_items;

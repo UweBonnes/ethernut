@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.7  2008/08/11 07:00:19  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -105,7 +109,7 @@ typedef struct _PHATFILE {
     /*! \brief Offset into the sector containing the directory entry. */
     uint32_t f_de_offs;
     /*! \brief Directory entry change marker. */
-    u_int f_de_dirty;
+    unsigned int f_de_dirty;
     /*! \brief First cluster of the parent directory, low word. 
      *
      * Our directory entry is located in this cluster.

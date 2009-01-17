@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.23  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.22  2008/08/22 09:25:33  haraldkipp
  * Clock value caching and new functions NutArchClockGet, NutClockGet and
  * NutClockSet added.
@@ -243,11 +247,11 @@ void NutRegisterTimer(void (*handler) (void *))
  *
  * \return Frequency of the selected PLL in Hertz.
  */
-static u_int At91GetPllClock(int plla)
+static unsigned int At91GetPllClock(int plla)
 {
-    u_int rc;
-    u_int pllr;
-    u_int divider;
+    unsigned int rc;
+    unsigned int pllr;
+    unsigned int divider;
 
     /* 
      * The main oscillator clock frequency is specified by the
@@ -279,8 +283,8 @@ static u_int At91GetPllClock(int plla)
  */
 static uint32_t At91GetProcessorClock(void)
 {
-    u_int rc = 0;
-    u_int mckr = inr(PMC_MCKR);
+    unsigned int rc = 0;
+    unsigned int mckr = inr(PMC_MCKR);
 
     /* Determine the clock source. */
     switch(mckr & PMC_CSS) {
@@ -386,7 +390,7 @@ uint32_t NutArchClockGet(int idx)
  */
 uint32_t NutGetTickClock(void)
 {
-    u_int rc;
+    unsigned int rc;
 
 #if defined(NUT_TICK_AT91PIT)
     rc = ((inr(PIT_MR) & PIT_PIV) + 1) * 16;

@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:03  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -117,7 +121,7 @@ static inline int ADCBufWrite(uint16_t channel, uint16_t write)
 
 void ADCSetMode(TADCMode mode) 
 {
-    u_int regval;
+    unsigned int regval;
     
     regval = inr(ADC_MR);
     regval &= ~ADC_SLEEP;
@@ -179,7 +183,7 @@ void ADCDisableChannel(TADCChannel channel)
  * \param prescale  Prescaler value 0-128
  */
 
-void ADCSetPrescale(u_int prescale)
+void ADCSetPrescale(unsigned int prescale)
 {
     if (prescale > 128) prescale = 128;
 
@@ -204,7 +208,7 @@ void ADCStartConversion(void)
 
 static void ADCInterrupt(void *arg)
 {
-    register u_int adcsr = inr(ADC_SR);   
+    register unsigned int adcsr = inr(ADC_SR);   
     uint16_t ADC_Value;        
     uint16_t channel;
 

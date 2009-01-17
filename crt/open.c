@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/08/11 06:59:40  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -117,7 +121,7 @@ int _open(CONST char *name, int mode)
      */
     if (*nptr++ != ':')
         nptr = 0;
-    return (int) ((uptr_t) ((*dev->dev_open) (dev, nptr, mode, 0)));
+    return (int) ((uintptr_t) ((*dev->dev_open) (dev, nptr, mode, 0)));
 }
 
 /*@}*/

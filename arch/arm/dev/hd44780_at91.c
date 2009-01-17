@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.12  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.11  2008/08/11 06:59:09  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -290,7 +294,7 @@
  *
  * \param xt Delay time in milliseconds
  */
-static void LcdDelay(u_int cycles)
+static void LcdDelay(unsigned int cycles)
 {
     while (cycles--) {
         _NOP(); _NOP(); _NOP(); _NOP();
@@ -308,13 +312,13 @@ static void LcdDelay(u_int cycles)
     }
 }
 
-static void INLINE LcdSetBits(u_int mask)
+static void INLINE LcdSetBits(unsigned int mask)
 {
     outr(LCD_PIO_SOD_REG, mask);
     outr(LCD_PIO_OE_REG, mask);
 }
 
-static void INLINE LcdClrBits(u_int mask)
+static void INLINE LcdClrBits(unsigned int mask)
 {
     outr(LCD_PIO_COD_REG, mask);
     outr(LCD_PIO_OE_REG, mask);
@@ -322,9 +326,9 @@ static void INLINE LcdClrBits(u_int mask)
 
 #ifdef LCD_RW_BIT
 
-static u_int LcdReadNibble(void)
+static unsigned int LcdReadNibble(void)
 {
-    u_int rc;
+    unsigned int rc;
 
     LcdSetBits(LCD_EN);
     LcdDelay(LCD_SHORT_DELAY);
@@ -336,7 +340,7 @@ static u_int LcdReadNibble(void)
     rc >>= LCD_DATA_LSB
 #else
     {
-        u_int val = 0;
+        unsigned int val = 0;
 
         if (rc & LCD_D0) {
             val |= 0x01;
@@ -359,7 +363,7 @@ static u_int LcdReadNibble(void)
 /*!
  * \brief Read byte from LCD controller.
  */
-static u_int LcdReadByte(void)
+static unsigned int LcdReadByte(void)
 {
     outr(LCD_PIO_OD_REG, LCD_DATA);
     LcdDelay(LCD_SHORT_DELAY);
@@ -371,7 +375,7 @@ static u_int LcdReadByte(void)
 /*!
  * \brief Read status byte from LCD controller.
  */
-static u_int LcdReadStatus(void)
+static unsigned int LcdReadStatus(void)
 {
     /* RS low selects status register. */
     LcdClrBits(LCD_RS);
@@ -380,7 +384,7 @@ static u_int LcdReadStatus(void)
 
 #endif                          /* LCD_RW_BIT */
 
-static void LcdWaitReady(u_int delay)
+static void LcdWaitReady(unsigned int delay)
 {
     while (delay--) {
 #if defined(LCD_RW_BIT)
@@ -397,13 +401,13 @@ static void LcdWaitReady(u_int delay)
  *
  * \param nib The four least significant bits are sent.
  */
-static void LcdWriteNibble(u_int nib)
+static void LcdWriteNibble(unsigned int nib)
 {
 #ifdef LCD_DATA_LSB
     nib <<= LCD_DATA_LSB;
 #else
     {
-        u_int val = 0;
+        unsigned int val = 0;
         if (nib & 0x01) {
             val |= LCD_D0;
         }
@@ -434,7 +438,7 @@ static void LcdWriteNibble(u_int nib)
  *
  * \param data Byte to send.
  */
-static void LcdWriteByte(u_int data)
+static void LcdWriteByte(unsigned int data)
 {
 #ifdef LCD_RW_BIT
     LcdClrBits(LCD_RW);

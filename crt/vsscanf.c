@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/01/17 11:26:38  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.4  2006/05/05 15:43:07  freckle
  * Fixes for bugs #1477658 and #1477676
  *
@@ -62,7 +66,7 @@
 
 static int _sgetb(int fd, void *buffer, size_t count)
 {
-    char **spp = (char **) ((uptr_t) fd);
+    char **spp = (char **) ((uintptr_t) fd);
     char  *dst = (char*) buffer;
     size_t result = 0;
     
@@ -93,7 +97,7 @@ int vsscanf(CONST char *string, CONST char *fmt, va_list ap)
     /* Bugfix kindly provided by Tomasz Niewegowski. */
     CONST char *ptr = string;
 
-    return _getf(_sgetb, (int) ((uptr_t) &ptr), fmt, ap);
+    return _getf(_sgetb, (int) ((uintptr_t) &ptr), fmt, ap);
 }
 
 /*@}*/

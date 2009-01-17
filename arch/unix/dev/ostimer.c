@@ -69,7 +69,7 @@ static pthread_t timer_thread;
 void *NutTimerEmulation(void *) __attribute__ ((noreturn));
 void *NutTimerEmulation(void *arg)
 {
-    uint8_t trigger_irq = (uint8_t) (uptr_t) arg;
+    uint8_t trigger_irq = (uint8_t) (uintptr_t) arg;
 
     // non-nut thread => not interested in SIGUSR1 (IRQ signals)
     pthread_sigmask(SIG_BLOCK, &irq_signal, 0);
@@ -95,7 +95,7 @@ void NutRegisterTimer(void (*handler) (void *))
     NutRegisterIrqHandler(timerIrqNr, handler, (void *) 0);
 
     // create rtc timer simulation
-    pthread_create(&timer_thread, NULL, NutTimerEmulation, (void *) (uptr_t) timerIrqNr);
+    pthread_create(&timer_thread, NULL, NutTimerEmulation, (void *) (uintptr_t) timerIrqNr);
 }
 
 /*!

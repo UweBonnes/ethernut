@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.2  2008/10/23 08:54:07  haraldkipp
  * Include the correct header file.
  *
@@ -132,7 +136,7 @@ static u_char ri_buff[MP3_BUFSIZ + 2 * MAINBUF_SIZE];
 
 /*! \brief Number of bytes available in the ring buffer.
  */
-static u_int ri_avail;
+static unsigned int ri_avail;
 
 static int first_frame;
 static int samprate;

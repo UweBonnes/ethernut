@@ -38,6 +38,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.5  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.4  2008/08/11 06:59:41  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -433,7 +437,7 @@ uint32_t Cy2239xPllGetFreq(int pll, int fctrl)
  *
  * \return 0 on success, -1 otherwise.
  */
-int Cy2239xPllSetFreq(int pll, int fctrl, u_int pval, u_int poff, u_int qval, u_int fval)
+int Cy2239xPllSetFreq(int pll, int fctrl, unsigned int pval, unsigned int poff, unsigned int qval, unsigned int fval)
 {
     uint8_t reg[4];
     int ena;

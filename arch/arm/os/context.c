@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2009/01/16 19:45:42  haraldkipp
  * All ARM code is now running in system mode.
  *
@@ -250,8 +254,8 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         return 0;
     }
     td = (NUTTHREADINFO *) (threadMem + stackSize);
-    ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
-    sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));
+    ef = (ENTERFRAME *) ((uintptr_t) td - sizeof(ENTERFRAME));
+    sf = (SWITCHFRAME *) ((uintptr_t) ef - sizeof(SWITCHFRAME));
 
     /* 
      * Set predefined values at the stack bottom. May be used to detect
@@ -265,13 +269,13 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     /*
      * Setup the entry frame to simulate C function entry.
      */
-    ef->cef_pc = (uptr_t) fn;
-    ef->cef_r0 = (uptr_t) arg;
+    ef->cef_pc = (uintptr_t) fn;
+    ef->cef_r0 = (uintptr_t) arg;
 
     /*
      * Setup the switch frame.
      */
-    sf->csf_lr = (uptr_t) NutThreadEntry;
+    sf->csf_lr = (uintptr_t) NutThreadEntry;
     sf->csf_cpsr = ARM_CPSR_I_BIT | ARM_CPSR_F_BIT | ARM_MODE_SYS;
 
     /*
@@ -281,7 +285,7 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     memcpy(td->td_name, name, sizeof(td->td_name) - 1);
     td->td_name[sizeof(td->td_name) - 1] = 0;
     td->td_state = TDS_READY;
-    td->td_sp = (uptr_t) sf;
+    td->td_sp = (uintptr_t) sf;
     td->td_priority = 64;
     td->td_memory = threadMem;
     td->td_timer = 0;

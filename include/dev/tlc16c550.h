@@ -34,6 +34,10 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/01/17 11:26:47  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.4  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -194,11 +198,11 @@ struct _ACEDCB {
 #ifdef ACE_HDX_LINE
     /*! \brief One byte time delay after which HDX pin will be off, in OCR register format.
      */	 
-	u_int hdxByteTime;
+	unsigned int hdxByteTime;
 	
     /*! \brief OCR register value at which HDX pin will be off, 0 if not used.
      */	 
-	u_int hdxOcrTime;
+	unsigned int hdxOcrTime;
 #endif
 };
 

@@ -33,6 +33,10 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.3  2008/08/11 06:59:13  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -62,7 +66,7 @@ static ureg_t nested;
  */
 uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
 {
-    u_int cmval;
+    unsigned int cmval;
 
     At91WatchDogDisable();
 

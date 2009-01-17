@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:37  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2008/08/28 11:12:15  haraldkipp
  * Added interface flags, which will be required to implement Ethernet ioctl
  * functions.
@@ -634,9 +638,9 @@ static NETBUF *NicGetPacket(void)
  */
 static uint8_t NicOverflow(volatile uint8_t * base)
 {
-    u_int cr;
-    u_int resend = 0;
-    u_int curr;
+    unsigned int cr;
+    unsigned int resend = 0;
+    unsigned int curr;
 
     /*
      * Wait for any transmission in progress. Save the command register, 

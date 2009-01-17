@@ -37,6 +37,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.5  2008/10/23 08:54:07  haraldkipp
  * Include the correct header file.
  *
@@ -265,7 +269,7 @@ typedef struct _VSDCB {
 } VSDCB;
 
 static VSDCB dcb;
-static u_int vs_chip;
+static unsigned int vs_chip;
 
 /*
  * Interlink not ready yet. Provide some basic SPI routines.

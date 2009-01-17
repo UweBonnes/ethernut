@@ -65,6 +65,10 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/01/17 11:26:51  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.8  2008/08/11 07:00:32  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -167,7 +171,7 @@ int NutPppOutput(NUTDEVICE * dev, uint16_t type, uint8_t * ha, NETBUF * nb)
     /*
      * Call the physical device output routine.
      */
-    if (nif->if_send && (*nif->if_send) ((((NUTFILE *) (uptr_t) (dcb->dcb_fd)))->nf_dev, nb) == 0) {
+    if (nif->if_send && (*nif->if_send) ((((NUTFILE *) (uintptr_t) (dcb->dcb_fd)))->nf_dev, nb) == 0) {
         return 0;
     }
     NutNetBufFree(nb);

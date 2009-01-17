@@ -39,6 +39,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2009/01/17 11:26:46  haraldkipp
+ * Getting rid of two remaining BSD types in favor of stdint.
+ * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+ *
  * Revision 1.7  2008/12/15 19:18:49  haraldkipp
  * Enable DataFlash support for EIR board.
  *
@@ -239,8 +243,8 @@
  */
 typedef struct _AT45_DEVTAB {
     uint32_t devt_pages;
-    u_int devt_pagsiz;
-    u_int devt_offs;
+    unsigned int devt_pagsiz;
+    unsigned int devt_offs;
     uint8_t devt_srmsk;
     uint8_t devt_srval;
 } AT45_DEVTAB;
@@ -250,8 +254,8 @@ typedef struct _AT45_DEVTAB {
  */
 typedef struct _AT45DB_DCB {
     AT45_DEVTAB *dcb_devt;
-    u_int dcb_spibas;
-    u_int dcb_spipcs;
+    unsigned int dcb_spibas;
+    unsigned int dcb_spipcs;
     uint8_t dcb_cmdbuf[MAX_AT45_CMDLEN];
 } AT45DB_DCB;
 
@@ -347,7 +351,7 @@ int At45dbWaitReady(int dd, uint32_t tmo, int poll)
  *
  * \return Device descriptor or -1 in case of an error.
  */
-int At45dbInit(u_int spibas, u_int spipcs)
+int At45dbInit(unsigned int spibas, unsigned int spipcs)
 {
     int dd = -1;
     uint8_t sr;
@@ -413,7 +417,7 @@ int At45dbChipErase(void)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbPageRead(int dd, uint32_t pgn, void *data, u_int len)
+int At45dbPageRead(int dd, uint32_t pgn, void *data, unsigned int len)
 {
     pgn <<= dcbtab[dd].dcb_devt->devt_offs;
     return At45dbSendCmd(dd, DFCMD_CONT_READ, pgn, 8, data, data, len);
@@ -431,7 +435,7 @@ int At45dbPageRead(int dd, uint32_t pgn, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, u_int len)
+int At45dbPageWrite(int dd, uint32_t pgn, CONST void *data, unsigned int len)
 {
     int rc = -1;
     void *rp;
@@ -455,7 +459,7 @@ uint32_t At45dbPages(int dd)
     return dcbtab[dd].dcb_devt->devt_pages;
 }
 
-u_int At45dbPageSize(int dd)
+unsigned int At45dbPageSize(int dd)
 {
     return dcbtab[dd].dcb_devt->devt_pagsiz;
 }
@@ -504,7 +508,7 @@ int At45dbParamSize(void)
  *
  * \return Always 0.
  */
-int At45dbParamRead(u_int pos, void *data, u_int len)
+int At45dbParamRead(unsigned int pos, void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;
@@ -530,7 +534,7 @@ int At45dbParamRead(u_int pos, void *data, u_int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-int At45dbParamWrite(u_int pos, CONST void *data, u_int len)
+int At45dbParamWrite(unsigned int pos, CONST void *data, unsigned int len)
 {
     int rc = -1;
     uint8_t *buff;
