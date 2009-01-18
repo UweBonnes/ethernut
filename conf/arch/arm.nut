@@ -33,6 +33,10 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.37  2009/01/18 16:46:18  haraldkipp
+-- Properly distinguish between PIO IDs and port numbers.
+-- Call internal Lua functions when needed only.
+--
 -- Revision 1.36  2009/01/16 19:44:05  haraldkipp
 -- ARM crash dump added.
 --
@@ -1243,83 +1247,71 @@ nutarch_arm =
             },
             {
                 macro = "SPI0_CS0_PIO_ID",
-                brief = "CS0 Port (First Controller)",
+                brief = "CS0 Port ID (First Controller)",
                 description = "ID of the port used for SPI bus 0 chip select 0.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI0_CS0_PIO_BIT",
                 brief = "CS0 Port Bit (First Controller)",
                 description = "Port bit used for SPI bus 0 chip select 0.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI0_CS1_PIO_ID",
-                brief = "CS1 Port (First Controller)",
+                brief = "CS1 Port ID (First Controller)",
                 description = "ID of the port used for SPI bus 0 chip select 1.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI0_CS1_PIO_BIT",
                 brief = "CS1 Port Bit (First Controller)",
                 description = "Port bit used for SPI bus 0 chip select 1.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI0_CS2_PIO_ID",
-                brief = "CS2 Port (First Controller)",
+                brief = "CS2 Port ID (First Controller)",
                 description = "ID of the port used for SPI bus 0 chip select 2.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI0_CS2_PIO_BIT",
                 brief = "CS2 Port Bit (First Controller)",
                 description = "Port bit used for SPI bus 0 chip select 2.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI0_CS3_PIO_ID",
-                brief = "CS3 Port (First Controller)",
+                brief = "CS3 Port ID (First Controller)",
                 description = "ID of the port used for SPI bus 0 chip select 3.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI0_CS3_PIO_BIT",
                 brief = "CS3 Port Bit (First Controller)",
                 description = "Port bit used for SPI bus 0 chip select 3.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPIBUS1_POLLING_MODE",
@@ -1340,83 +1332,71 @@ nutarch_arm =
             },
             {
                 macro = "SPI1_CS0_PIO_ID",
-                brief = "CS0 Port (Second Controller)",
+                brief = "CS0 Port ID (Second Controller)",
                 description = "ID of the port used for SPI bus 1 chip select 0.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI1_CS0_PIO_BIT",
                 brief = "CS0 Port Bit (Second Controller)",
                 description = "Port bit used for SPI bus 1 chip select 0.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI1_CS1_PIO_ID",
-                brief = "CS1 Port (Second Controller)",
+                brief = "CS1 Port ID (Second Controller)",
                 description = "ID of the port used for SPI bus 1 chip select 1.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI1_CS1_PIO_BIT",
                 brief = "CS1 Port Bit (Second Controller)",
                 description = "Port bit used for SPI bus 1 chip select 1.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI1_CS2_PIO_ID",
-                brief = "CS2 Port (Second Controller)",
+                brief = "CS2 Port ID (Second Controller)",
                 description = "ID of the port used for SPI bus 1 chip select 2.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI1_CS2_PIO_BIT",
                 brief = "CS2 Port Bit (Second Controller)",
                 description = "Port bit used for SPI bus 1 chip select 2.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI1_CS3_PIO_ID",
-                brief = "CS3 Port (Second Controller)",
+                brief = "CS3 Port ID (Second Controller)",
                 description = "ID of the port used for SPI bus 1 chip select 3.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
-                flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                choices = function() return GetAt91PioIds() end,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "SPI1_CS3_PIO_BIT",
                 brief = "CS3 Port Bit (Second Controller)",
                 description = "Port bit used for SPI bus 1 chip select 3.",
-                requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBits() end,
+                choices = mcu_32bit_choice,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/armpio.h"
             },
         },
     },

@@ -33,6 +33,10 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.27  2009/01/18 16:46:18  haraldkipp
+-- Properly distinguish between PIO IDs and port numbers.
+-- Call internal Lua functions when needed only.
+--
 -- Revision 1.26  2009/01/09 17:54:21  haraldkipp
 -- Added SPI bus controller for AVR and AT91.
 --
@@ -1239,9 +1243,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 0 chip select 0.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI0_CS0_PIO_BIT",
@@ -1251,7 +1255,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI0_CS1_PIO_ID",
@@ -1259,9 +1263,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 0 chip select 1.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI0_CS1_PIO_BIT",
@@ -1271,7 +1275,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI0_CS2_PIO_ID",
@@ -1279,9 +1283,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 0 chip select 2.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI0_CS2_PIO_BIT",
@@ -1291,7 +1295,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI0_CS3_PIO_ID",
@@ -1299,9 +1303,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 0 chip select 3.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI0_CS3_PIO_BIT",
@@ -1311,7 +1315,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPIBUS1_POLLING_MODE",
@@ -1335,9 +1339,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 1 chip select 0.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI1_CS0_PIO_BIT",
@@ -1347,7 +1351,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI1_CS1_PIO_ID",
@@ -1355,9 +1359,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 1 chip select 1.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI1_CS1_PIO_BIT",
@@ -1367,7 +1371,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI1_CS2_PIO_ID",
@@ -1375,9 +1379,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 1 chip select 2.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI1_CS2_PIO_BIT",
@@ -1387,7 +1391,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI1_CS3_PIO_ID",
@@ -1395,9 +1399,9 @@ nutarch_avr =
                 description = "ID of the port used for SPI bus 1 chip select 3.",
                 requires = { "HW_GPIO" },
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetAvrPorts() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
             {
                 macro = "SPI1_CS3_PIO_BIT",
@@ -1407,7 +1411,7 @@ nutarch_avr =
                 type = "enumerated",
                 choices = function() return GetGpioBits() end,
                 flavor = "integer",
-                file = function() return GetGpioHeaderPath() end
+                file = "include/cfg/arch/avrpio.h"
             },
         },
     },
