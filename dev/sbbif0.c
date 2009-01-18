@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/01/18 16:46:47  haraldkipp
+ * GPIO header file changed.
+ *
  * Revision 1.3  2008/10/23 08:54:07  haraldkipp
  * Include the correct header file.
  *
@@ -46,7 +49,7 @@
 
 #include <sys/timer.h>
 
-#include <cfg/arch/gpio.h>
+#include <dev/gpio.h>
 #include <dev/sbbif0.h>
 
 /* SPI modes of all devices. */
