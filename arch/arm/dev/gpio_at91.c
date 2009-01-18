@@ -56,25 +56,25 @@ int GpioPinGet(int bank, int bit)
 
     switch(bank) {
 #ifdef PIO_PDSR
-    case 0:
+    case NUTGPIO_PORT:
         rc = (inr(PIO_PDSR) & _BV(bit)) != 0;
         break;
 #endif /* PIO_PDSR */
 
 #ifdef PIOA_PDSR
-    case 1:
+    case NUTGPIO_PORTA:
         rc = (inr(PIOA_PDSR) & _BV(bit)) != 0;
         break;
 #endif /* PIOA_PDSR */
 
 #ifdef PIOB_PDSR
-    case 2:
+    case NUTGPIO_PORTB:
         rc = (inr(PIOB_PDSR) & _BV(bit)) != 0;
         break;
 #endif /* PIOB_PDSR */
 
 #ifdef PIOC_PDSR
-    case 3:
+    case NUTGPIO_PORTC:
         rc = (inr(PIOC_PDSR) & _BV(bit)) != 0;
         break;
 #endif /* PIOC_PDSR */
@@ -94,25 +94,25 @@ void GpioPinSetLow(int bank, int bit)
 {
     switch(bank) {
 #ifdef PIO_CODR
-    case 0:
+    case NUTGPIO_PORT:
         outr(PIO_CODR, _BV(bit));
         break;
 #endif /* PIO_CODR */
 
 #ifdef PIOA_CODR
-    case 1:
+    case NUTGPIO_PORTA:
         outr(PIOA_CODR, _BV(bit));
         break;
 #endif /* PIOA_CODR */
 
 #ifdef PIOB_CODR
-    case 2:
+    case NUTGPIO_PORTB:
         outr(PIOB_CODR, _BV(bit));
         break;
 #endif /* PIOB_CODR */
 
 #ifdef PIOC_CODR
-    case 3:
+    case NUTGPIO_PORTC:
         outr(PIOC_CODR, _BV(bit));
         break;
 #endif /* PIOC_CODR */
@@ -131,25 +131,25 @@ void GpioPinSetHigh(int bank, int bit)
 {
     switch(bank) {
 #ifdef PIO_SODR
-    case 0:
+    case NUTGPIO_PORT:
         outr(PIO_SODR, _BV(bit));
         break;
 #endif /* PIO_SODR */
 
 #ifdef PIOA_SODR
-    case 1:
+    case NUTGPIO_PORTA:
         outr(PIOA_SODR, _BV(bit));
         break;
 #endif /* PIOA_SODR */
 
 #ifdef PIOB_SODR
-    case 2:
+    case NUTGPIO_PORTB:
         outr(PIOB_SODR, _BV(bit));
         break;
 #endif /* PIOB_SODR */
 
 #ifdef PIOC_SODR
-    case 3:
+    case NUTGPIO_PORTC:
         outr(PIOC_SODR, _BV(bit));
         break;
 #endif /* PIOC_SODR */
@@ -188,25 +188,25 @@ unsigned int GpioPortGet(int bank)
 
     switch(bank) {
 #ifdef PIO_PDSR
-    case 0:
+    case NUTGPIO_PORT:
         rc = inr(PIO_PDSR);
         break;
 #endif /* PIO_PDSR */
 
 #ifdef PIOA_PDSR
-    case 1:
+    case NUTGPIO_PORTA:
         rc = inr(PIOA_PDSR);
         break;
 #endif /* PIO_PDSR */
 
 #ifdef PIOB_PDSR
-    case 2:
+    case NUTGPIO_PORTB:
         rc = inr(PIOB_PDSR);
         break;
 #endif /* PIOB_PDSR */
 
 #ifdef PIOC_PDSR
-    case 3:
+    case NUTGPIO_PORTC:
         rc = inr(PIOC_PDSR);
         break;
 #endif /* PIOC_PDSR */
@@ -227,25 +227,25 @@ void GpioPortSetLow(int bank, unsigned int mask)
 {
     switch(bank) {
 #ifdef PIO_CODR
-    case 0:
+    case NUTGPIO_PORT:
         outr(PIO_CODR, mask);
         break;
 #endif /* PIO_CODR */
 
 #ifdef PIOA_CODR
-    case 1:
+    case NUTGPIO_PORTA:
         outr(PIOA_CODR, mask);
         break;
 #endif /* PIOA_CODR */
 
 #ifdef PIOB_CODR
-    case 2:
+    case NUTGPIO_PORTB:
         outr(PIOB_CODR, mask);
         break;
 #endif /* PIOB_CODR */
 
 #ifdef PIOC_CODR
-    case 3:
+    case NUTGPIO_PORTC:
         outr(PIOC_CODR, mask);
         break;
 #endif /* PIOC_CODR */
@@ -265,25 +265,25 @@ void GpioPortSetHigh(int bank, unsigned int mask)
 {
     switch(bank) {
 #ifdef PIO_SODR
-    case 0:
+    case NUTGPIO_PORT:
         outr(PIO_SODR, mask);
         break;
 #endif /* PIO_SODR */
 
 #ifdef PIOA_SODR
-    case 1:
+    case NUTGPIO_PORTA:
         outr(PIOA_SODR, mask);
         break;
 #endif /* PIOA_SODR */
 
 #ifdef PIOB_SODR
-    case 2:
+    case NUTGPIO_PORTB:
         outr(PIOB_SODR, mask);
         break;
 #endif /* PIOB_SODR */
 
 #ifdef PIOC_SODR
-    case 3:
+    case NUTGPIO_PORTC:
         outr(PIOC_SODR, mask);
         break;
 #endif /* PIOC_SODR */
@@ -327,7 +327,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
     uint32_t rc = 0;
 
     switch(bank) {
-    case 0:
+    case NUTGPIO_PORT:
 #ifdef PIO_PSR
         if ((inr(PIO_PSR) & _BV(bit)) == 0) {
             rc |= GPIO_CFG_DISABLED;
@@ -359,7 +359,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
 #endif /* PIO_PUSR */
         break;
 
-    case 1:
+    case NUTGPIO_PORTA:
 #ifdef PIOA_PSR
         if ((inr(PIOA_PSR) & _BV(bit)) == 0) {
             rc |= GPIO_CFG_DISABLED;
@@ -391,7 +391,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
 #endif /* PIOA_PUSR */
         break;
 
-    case 2:
+    case NUTGPIO_PORTB:
 #ifdef PIOB_PSR
         if ((inr(PIOB_PSR) & _BV(bit)) == 0) {
             rc |= GPIO_CFG_DISABLED;
@@ -423,7 +423,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
 #endif /* PIOB_PUSR */
         break;
 
-    case 3:
+    case NUTGPIO_PORTC:
 #ifdef PIOC_PSR
         if ((inr(PIOC_PSR) & _BV(bit)) == 0) {
             rc |= GPIO_CFG_DISABLED;
@@ -475,7 +475,7 @@ uint32_t GpioPinConfigGet(int bank, int bit)
 int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 {
     switch(bank) {
-    case 0:
+    case NUTGPIO_PORT:
 #ifdef PIO_PDR
         if (flags & GPIO_CFG_DISABLED) {
             outr(PIO_PDR, mask);
@@ -528,7 +528,7 @@ int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 #endif /* PIO_OER */
         break;
 
-    case 1:
+    case NUTGPIO_PORTA:
 #ifdef PIOA_PDR
         if (flags & GPIO_CFG_DISABLED) {
             outr(PIOA_PDR, mask);
@@ -581,7 +581,7 @@ int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 #endif /* PIOA_OER */
         break;
 
-    case 2:
+    case NUTGPIO_PORTB:
 #ifdef PIOB_PDR
         if (flags & GPIO_CFG_DISABLED) {
             outr(PIOB_PDR, mask);
@@ -634,7 +634,7 @@ int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
 #endif /* PIOB_OER */
         break;
 
-    case 3:
+    case NUTGPIO_PORTC:
 #ifdef PIOC_PDR
         if (flags & GPIO_CFG_DISABLED) {
             outr(PIOC_PDR, mask);
