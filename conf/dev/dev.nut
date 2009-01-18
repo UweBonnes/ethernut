@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.50  2009/01/18 16:44:07  haraldkipp
+-- Added GPIO based bit banging SPI bus driver.
+--
 -- Revision 1.49  2009/01/09 17:59:05  haraldkipp
 -- Added target independent AT45D block device drivers and non-volatile
 -- memory support based on the new bus controllers.
@@ -330,7 +333,11 @@ nutdev =
         description = "Software SPI0, master mode only.",
         provides = { "DEV_SPI" },
         requires = { "HW_GPIO" },
-        sources = { "sbbif0.c" },
+        sources = { 
+            "sbbif0.c",
+            "spibus_gpio.c",
+            "spibus0gpio.c"
+        },
         options =
         {
             {
@@ -2004,7 +2011,7 @@ nutdev =
                 brief = "XCS Port",
                 description = "ID of the port used for VS10XX XCS.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2022,7 +2029,7 @@ nutdev =
                 brief = "XDCS Port",
                 description = "ID of the port used for VS10XX XDCS.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2040,7 +2047,7 @@ nutdev =
                 brief = "BSYNC Port",
                 description = "ID of the port used for optional VS10XX BSYNC.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2594,7 +2601,7 @@ nutdev =
                 description = "Port ID of the clock line.\n"..
                               "SD-Card Pin 5, CLK",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2614,7 +2621,7 @@ nutdev =
                 description = "Port ID of the MOSI line.\n"..
                               "SD-Card Pin 2, CMD",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2634,7 +2641,7 @@ nutdev =
                 description = "Port ID of the MISO line.\n"..
                               "SD-Card Pin 7, DAT0",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2654,7 +2661,7 @@ nutdev =
                 description = "Port ID of the first card select line.\n"..
                               "SD-Card Pin 1, DAT3",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2675,7 +2682,7 @@ nutdev =
                               "Must use an external interrupt pin. If left "..
                               "empty, then card change detection is disabled.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2696,7 +2703,7 @@ nutdev =
                 description = "Port ID of the first card's write protect line.\n"..
                               "Currently ignored.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2716,7 +2723,7 @@ nutdev =
                 description = "Port ID of the second card select line.\n"..
                               "SD-Card Pin 1, DAT3",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2737,7 +2744,7 @@ nutdev =
                               "Must use an external interrupt pin. If left "..
                               "empty, then card change detection is disabled.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2758,7 +2765,7 @@ nutdev =
                 description = "Port ID of the second card's write protect line.\n"..
                               "Currently ignored.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2790,7 +2797,7 @@ nutdev =
                 description = "Port ID of the clock line.\n"..
                               "SD-Card Pin 5, CLK",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2810,7 +2817,7 @@ nutdev =
                 description = "Port ID of the MOSI line.\n"..
                               "SD-Card Pin 2, CMD",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2830,7 +2837,7 @@ nutdev =
                 description = "Port ID of the MISO line.\n"..
                               "SD-Card Pin 7, DAT0",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2850,7 +2857,7 @@ nutdev =
                 description = "Port ID of the first card select line.\n"..
                               "SD-Card Pin 1, DAT3",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2871,7 +2878,7 @@ nutdev =
                               "Must use an external interrupt pin. If left "..
                               "empty, then card change detection is disabled.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2892,7 +2899,7 @@ nutdev =
                 description = "Port ID of the first card's write protect line.\n"..
                               "Currently ignored.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2912,7 +2919,7 @@ nutdev =
                 description = "Port ID of the second card select line.\n"..
                               "SD-Card Pin 1, DAT3",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2933,7 +2940,7 @@ nutdev =
                               "Must use an external interrupt pin. If left "..
                               "empty, then card change detection is disabled.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
@@ -2954,7 +2961,7 @@ nutdev =
                 description = "Port ID of the second card's write protect line.\n"..
                               "Currently ignored.",
                 type = "enumerated",
-                choices = function() return GetGpioBanks() end,
+                choices = function() return GetGpioPortIds() end,
                 flavor = "integer",
                 file = function() return GetGpioHeaderPath() end
             },
