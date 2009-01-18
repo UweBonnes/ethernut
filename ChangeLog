@@ -1,12 +1,31 @@
-$Id: ChangeLog,v 1.514 2009/01/18 10:45:54 haraldkipp Exp $
+$Id: ChangeLog,v 1.515 2009/01/18 16:51:07 haraldkipp Exp $
 
 2009-01-18  Harald Kipp  <harald.kipp@egnite.de>
 
+	* conf/dev/dev.nut, dev/spibus0gpio.c, dev/spibus_gpio.c,
+	include/dev/spibus_gpio.h: Added GPIO based bit banging SPI bus 
+	driver. This early release had been tested with the EIR board, 
+	but should run on any platform which implements our target 
+	independent GPIO routines. Few more changes to distinguish 
+	between PIO IDs and port numbers.
+
+	* conf/repository.nut, include/dev/gpio.h, include/dev/sbbif0.h:
+	Introduced target independent port numbers. Distinguish between 
+	PIO IDs and port numbers.
+
+	* arch/arm/dev/gpio_at91.c: Constants replaced by new port
+	number macros.
+
+	* conf/arch/arm.nut, conf/arch/avr.nut: Distinguish between 
+	PIO IDs and port numbers. Call internal Lua functions when 
+	needed only.
+
+	* dev/sbbif0.c: Header cfg/arch/gpio.h replaced by dev/gpio.h, 
+	so we can use new port numbers.
+
 	* include/dev/sbbif0.h, include/dev/sbbif1.h, include/dev/sbbif2.h, 
 	include/dev/sbbif3.h: Bit banging SPI still not compiling for ARM 
-	targets. A better fix would have been to change all xxx_PORT macros 
-	to xxx_PIO_ID, but that needs far more code changes and may break 
-	existing configurations.
+	targets.
 
 
 2009-01-17  Harald Kipp  <harald.kipp@egnite.de>
