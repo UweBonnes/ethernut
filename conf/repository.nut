@@ -35,6 +35,10 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.37  2009/01/18 16:44:56  haraldkipp
+-- Introduced target independent port numbers.
+-- Distinguish between PIO IDs and port numbers.
+--
 -- Revision 1.36  2008/10/10 11:52:25  haraldkipp
 -- Lua added.
 --
@@ -171,6 +175,22 @@ mcu_32bit_choice = { " ",
                      "16", "17", "18", "19", "20", "21", "22", "23",
                      "24", "25", "26", "27", "28", "29", "30", "31"
                    }
+
+gpio_port_choice = { 
+                    " ", 
+                    "NUTGPIO_PORTA",
+                    "NUTGPIO_PORTB",
+                    "NUTGPIO_PORTC",
+                    "NUTGPIO_PORTD",
+                    "NUTGPIO_PORTE",
+                    "NUTGPIO_PORTF",
+                    "NUTGPIO_PORTG",
+                    "NUTGPIO_PORTH",
+                    "NUTGPIO_PORTI",
+                    "NUTGPIO_PORTJ",
+                    "NUTGPIO_PORTK",
+                    "NUTGPIO_PORTL"
+                  }
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
 
@@ -376,12 +396,52 @@ end
 --
 function GetGpioBanks()
     if c_is_provided("HW_MCU_AVR") then
+        return GetAvrPorts()
+    end
+    if c_is_provided("HW_MCU_AT91") then
+        if c_is_provided("HW_MCU_AT91R40008") then
+            return { " " }
+        else
+            return { " ", "NUTGPIO_PORTA", "NUTGPIO_PORTB", "NUTGPIO_PORTC" }
+        end
+    end
+    return gpio_port_choice
+end
+
+--
+-- Retrieve platform specific GPIO port IDs.
+--
+function GetGpioPortIds()
+    if c_is_provided("HW_MCU_AVR") then
         return avr_port_choice
     end
-    if c_is_provided("HW_MCU_ARM") then
+    if c_is_provided("HW_MCU_AT91") then
         return at91_pio_id_choice
     end
-    return { " ", "1", "2", "3", "4", "5", "6", "7", "8" }
+    return { " " }
+end
+
+--
+-- Retrieve AT91 PIO IDs.
+--
+function GetAt91PioIds()
+    if c_is_provided("HW_MCU_AT91R40008") then
+        return { " ", "PIO_ID" }
+    end
+    return { " ", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
+end
+
+--
+-- Retrieve AVR Port IDs.
+--
+function GetAvrPorts()
+    if c_is_provided("HW_MCU_ATMEGA103") then
+        return { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF" }
+    end
+    if c_is_provided("HW_MCU_ATMEGA128") then
+        return { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG" }
+    end
+    return avr_port_choice
 end
 
 --

@@ -45,6 +45,20 @@
 #include <cfg/arch/gpio.h>
 #include <dev/irqreg.h>
 
+#define NUTGPIO_PORT    0
+#define NUTGPIO_PORTA   1
+#define NUTGPIO_PORTB   2
+#define NUTGPIO_PORTC   3
+#define NUTGPIO_PORTD   4
+#define NUTGPIO_PORTE   5
+#define NUTGPIO_PORTF   6
+#define NUTGPIO_PORTG   7
+#define NUTGPIO_PORTH   8
+#define NUTGPIO_PORTI   9
+#define NUTGPIO_PORTJ   10
+#define NUTGPIO_PORTK   11
+#define NUTGPIO_PORTL   12
+
 /*!
  * \brief GPIO disabled.
  *
