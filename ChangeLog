@@ -1,4 +1,13 @@
-$Id: ChangeLog,v 1.513 2009/01/17 15:37:52 haraldkipp Exp $
+$Id: ChangeLog,v 1.514 2009/01/18 10:45:54 haraldkipp Exp $
+
+2009-01-18  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/dev/sbbif0.h, include/dev/sbbif1.h, include/dev/sbbif2.h, 
+	include/dev/sbbif3.h: Bit banging SPI still not compiling for ARM 
+	targets. A better fix would have been to change all xxx_PORT macros 
+	to xxx_PIO_ID, but that needs far more code changes and may break 
+	existing configurations.
+
 
 2009-01-17  Harald Kipp  <harald.kipp@egnite.de>
 
