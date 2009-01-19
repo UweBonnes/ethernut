@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.20  2009/01/19 10:38:00  haraldkipp
+ * Moved NutLoadConfig from NutInit to the idle thread. We can now use
+ * standard drivers to read the configuration.
+ * Added support for early stdout.
+ *
  * Revision 1.19  2009/01/17 11:26:37  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -133,6 +138,18 @@
 #include <arch/arm/at91.h>
 #endif
 
+#ifdef EARLY_STDIO_DEV
+#include <sys/device.h>
+#include <stdio.h>
+#include <fcntl.h>
+struct __iobuf {
+    int     iob_fd;
+    uint16_t iob_mode;
+    uint8_t iob_flags;
+    int     iob_unget;
+};
+#endif
+
 /*!
  * \addtogroup xgNutArchArmInit
  */
@@ -206,18 +223,25 @@ THREAD(NutIdle, arg)
     /* Initialize system timers. */
     NutTimerInit();
 
-    /* Create the main application thread. */
+    /* Read OS configuration from non-volatile memory. We can't do this
+    ** earlier, because the low level driver may be interrupt driven. */
+    NutLoadConfig();
+
+    /* Create the main application thread. Watch this carefully when
+    ** changing compilers and compiler versions. Some handle main()
+    ** in a special way, like setting the stack pointer and other
+    ** weird stuff that may break this code. */
     NutThreadCreate("main", main, 0, NUT_THREAD_MAINSTACK);
 
-    /*
-     * Run in an idle loop at the lowest priority. We can still
-     * do something useful here, like killing terminated threads
-     * or putting the CPU into sleep mode.
-     */
+    /* Enter an idle loop at the lowest priority. This will run when
+    ** all other threads are waiting for an event. */
     NutThreadSetPriority(254);
     for (;;) {
+        /* Check if other threads became ready to run. */
         NutThreadYield();
+        /* Remove terminated threads. */
         NutThreadDestroy();
+        /* We could do some power management. */
     }
 }
 
@@ -230,27 +254,45 @@ THREAD(NutIdle, arg)
  */
 void NutInit(void)
 {
+    /* Do some basic hardware initialization first. Frankly, these
+    ** are all hacks and could be done in a more general way. */
 #if defined(OLIMEX_LPCE2294)
     InitHW();
-#elif defined(MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
+#elif defined(MCU_AT91)
     McuInit();
 #endif
-#if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#if defined(MCU_AT91SAM7X) || defined (MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
     {
         uint32_t freq = NutGetCpuClock();
         /* Set Flash Waite state. */
         outr(MC_FMR, ((((freq + freq / 2) / 1000000UL) & 0xFF) << 16) | MC_FWS_2R3W);
     }
 #endif
-
+#ifdef EARLY_STDIO_DEV
+    /* We may optionally initialize stdout as early as possible.
+    ** Be aware, that no heap is available and no threads are 
+    ** running. We need a very basic driver here, which won't
+    ** use interrupts or call malloc, NutEventXxx, NutSleep etc. */
+    {
+        extern NUTDEVICE EARLY_STDIO_DEV;
+        static struct __iobuf early_stdout;
+        /* Initialize the output device. */
+        EARLY_STDIO_DEV.dev_init(&EARLY_STDIO_DEV);
+        /* Assign a static iobuf. */
+        stdout = &early_stdout;
+        /* Open the device. */
+        stdout->iob_fd = (int)EARLY_STDIO_DEV.dev_open(&EARLY_STDIO_DEV, "", 0, 0);
+        /* Set the mode. No idea if this is required. */
+        stdout->iob_mode = _O_WRONLY | _O_CREAT | _O_TRUNC;
+        /* A first trial. */
+        puts("\nStarting Nut/OS");
+    }
+#endif
+    /* Initialize our heap memory. */
     NutHeapAdd(HEAP_START, HEAP_SIZE);
 
-    /* Read OS configuration from non-volatile memory. */
-    NutLoadConfig();
-
-    /*
-     * Create idle thread
-     */
+    /* Create idle thread. Note, that the first call to NutThreadCreate 
+    ** will never return. */
     NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
 }
 
