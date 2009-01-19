@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.20  2009/01/19 18:55:49  haraldkipp
+-- Default fatal error handler added.
+--
 -- Revision 1.19  2009/01/16 17:03:02  haraldkipp
 -- Configurable host name length. The *nix conditional is
 -- no longer required as this will be handled in the nvmem
@@ -526,6 +529,13 @@ nutos =
                 file = "include/cfg/os.h"
             }
         }
+    },
+    {
+        name = "nutos_fatal",
+        brief = "Fatal Error Handler",
+        description = "This default handler may be overridden by "..
+                      "a NUTFATAL routine provided by the application.",
+        sources = { "fatal.c" }
     }
 }
 
