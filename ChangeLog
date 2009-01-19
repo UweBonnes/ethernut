@@ -1,4 +1,19 @@
-$Id: ChangeLog,v 1.515 2009/01/18 16:51:07 haraldkipp Exp $
+$Id: ChangeLog,v 1.516 2009/01/19 10:41:11 haraldkipp Exp $
+
+2009-01-19  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/os/nutinit.c: Moved NutLoadConfig from NutInit to
+	the idle thread. We can now use standard drivers to read the
+	configuration. Added support for early stdout, mainly
+	helpful to trace system initializations and catch early
+	exceptions. Made the code a bit cleaner and added some
+	more comments as well. Should be done for the AVR as well.
+
+	* conf/dev/dev.nut, dev/nvmem_at45d.c: Configuration of the 
+	AT45D non-volatile memory support was not useable. Fixed.
+
+	* dev/nvmem.c: Support for AT45D SPI bus driver added.
+
 
 2009-01-18  Harald Kipp  <harald.kipp@egnite.de>
 
