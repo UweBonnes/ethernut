@@ -1,6 +1,20 @@
-$Id: ChangeLog,v 1.516 2009/01/19 10:41:11 haraldkipp Exp $
+$Id: ChangeLog,v 1.517 2009/01/19 18:58:47 haraldkipp Exp $
 
 2009-01-19  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/os/context.c, include/sys/thread.h, os/thread.c,
+	os/timer.c: Added stack checking code. When 
+	HWDEFS+=-DNUTDEBUG_CHECK_STACKMIN=x has been added to 
+	nutbld/UserConf.mk, then the system will check once per 
+	second, that at least x bytes of stack space remain
+	available. If any thread's stack space had been lower,
+	NUTFATAL will be called. More options are available.
+
+	* conf/os/os.nut, os/fatal.c: Default fatal error handler 
+	added.
+
+	* conf/eir10c.conf: The EIR board uses the last DataFlash
+	sector to store its Nut/OS configuration.
 
 	* arch/arm/os/nutinit.c: Moved NutLoadConfig from NutInit to
 	the idle thread. We can now use standard drivers to read the
