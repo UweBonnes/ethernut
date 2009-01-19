@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.38  2009/01/19 18:55:12  haraldkipp
+ * Added stack checking code.
+ *
  * Revision 1.37  2009/01/17 15:37:52  haraldkipp
  * Added some NUTASSERT macros to check function parameters.
  *
@@ -279,6 +282,14 @@ static void NutTimerIntr(void *arg)
 {
     nut_ticks++;
     // nut_tick_dist[TCNT0]++;
+#ifdef NUTDEBUG_CHECK_STACKMIN
+    if((nut_ticks % 1000) == 0) {
+        NUTTHREADINFO *tdp = NutThreadStackCheck(NUTDEBUG_CHECK_STACKMIN);
+        if (tdp) {
+            NUTFATAL(tdp->td_name, __FILE__, __LINE__, "more stack space");
+        }
+    }
+#endif
 }
 #endif
 

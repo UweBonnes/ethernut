@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.35  2009/01/19 18:55:12  haraldkipp
+ * Added stack checking code.
+ *
  * Revision 1.34  2009/01/17 15:37:52  haraldkipp
  * Added some NUTASSERT macros to check function parameters.
  *
@@ -626,5 +629,68 @@ HANDLE GetThreadByName(char * name)
     }
     return NULL;
 }
+
+#if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
+/* Calculate the size if untouched stack space. */
+static size_t StackAvail(NUTTHREADINFO *td)
+{
+    uint32_t *sp = (uint32_t *)td->td_memory;
+
+    while(*sp++ == DEADBEEF);
+
+    return (size_t)((uintptr_t)sp - (uintptr_t)td->td_memory);
+}
+
+/*!
+ * \brief Return the size of unused stack space.
+ *
+ * The stack will be treated as an array of 32-bit values, which
+ * are initially set to \ref DEADBEEF. Starting at the stack's 
+ * bottom, this function will simply count the number of array 
+ * members, which still contain the original value.
+ *
+ * This implicates at least three limitations:
+ *
+ * - Overflows may be undetected, if some local variables are unmodified.
+ * - The result may be wrong, if local variables contain the DEADBEEF value.
+ * - The result is a multiple of 4 bytes.
+ *
+ * This function is available only if NUTDEBUG_CHECK_STACK has
+ * been defined during system build.
+ *
+ * \param name Symbolic name of the thread.
+ *
+ * \return The number of bytes which never had been touched.
+ */
+size_t NutThreadStackAvailable(char *name)
+{
+    NUTTHREADINFO *tdp = (NUTTHREADINFO *)GetThreadByName(name);
+
+    return tdp ? StackAvail(tdp) : 0;
+}
+
+/*!
+ * \brief Check all Nut/OS threads for sufficient stack space.
+ *
+ * See NutThreadStackAvailable() for further informations.
+ *
+ * \param minleft Number of bytes that should have been unused.
+ *
+ * \return Pointer to the first thread that used too much stack
+ *         space or NULL, if enough stack space has been available
+ *         so far in all threads.
+ */
+NUTTHREADINFO *NutThreadStackCheck(size_t minsiz)
+{
+    NUTTHREADINFO *tdp;
+
+    for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
+        if (StackAvail(tdp) < minsiz) {
+            break;
+        }
+    }
+    return tdp;
+}
+#endif
 
 /*@}*/

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2009/01/19 18:55:12  haraldkipp
+ * Added stack checking code.
+ *
  * Revision 1.9  2009/01/17 11:26:37  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -261,10 +264,19 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
      * Set predefined values at the stack bottom. May be used to detect
      * stack overflows.
      */
+#if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
+    {
+        uint32_t *fip = (uint32_t *)threadMem;
+        while (fip < (uint32_t *)sf) {
+            *fip++ = DEADBEEF;
+        }
+    }
+#else
     *((uint32_t *) threadMem) = DEADBEEF;
     *((uint32_t *) (threadMem + 4)) = DEADBEEF;
     *((uint32_t *) (threadMem + 8)) = DEADBEEF;
     *((uint32_t *) (threadMem + 12)) = DEADBEEF;
+#endif
 
     /*
      * Setup the entry frame to simulate C function entry.

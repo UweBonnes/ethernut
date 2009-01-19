@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.21  2009/01/19 18:55:12  haraldkipp
+ * Added stack checking code.
+ *
  * Revision 1.20  2009/01/17 11:26:51  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -223,6 +226,9 @@ extern void NutThreadRemoveQueue(NUTTHREADINFO * td, NUTTHREADINFO * volatile *t
 
 extern void NutThreadSwitch(void);
 extern HANDLE GetThreadByName(char *name);
+
+extern NUTTHREADINFO *NutThreadStackCheck(size_t minsiz);
+extern size_t NutThreadStackAvailable(char *name);
 
 /*!
  * \brief Macro for thread entry definitions.
