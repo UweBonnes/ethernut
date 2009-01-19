@@ -75,13 +75,13 @@ static int SpiAt45dConfigDevice(void)
     if (devSysConf == NULL) {
         NUTSPINODE *node;
         NUTDEVICE *dev;
-#if defined(NUT_CONFIG_AT45D0)
+#if NUT_CONFIG_AT45D == 0
         dev = &devSpiAt45d0;
-#elif defined(NUT_CONFIG_AT45D1)
+#elif NUT_CONFIG_AT45D == 1
         dev = &devSpiAt45d1;
-#elif defined(NUT_CONFIG_AT45D2)
+#elif NUT_CONFIG_AT45D == 2
         dev = &devSpiAt45d2;
-#elif defined(NUT_CONFIG_AT45D3)
+#elif NUT_CONFIG_AT45D == 3
         dev = &devSpiAt45d3;
 #else
         return -1;

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.51  2009/01/19 10:38:54  haraldkipp
+-- Configuration of the AT45D non-volatile memory support was not useable.
+--
 -- Revision 1.50  2009/01/18 16:44:07  haraldkipp
 -- Added GPIO based bit banging SPI bus driver.
 --
@@ -2251,63 +2254,14 @@ nutdev =
         options =
         {
             {
-                macro = "NUT_CONFIG_AT45D0",
-                brief = "Chip 0 for System Configuration",
+                macro = "NUT_CONFIG_AT45D",
+                brief = "System Configuration Chip",
                 description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in the first DataFlash chip.",
+                              "be stored in the specified DataFlash chip.\n\n"..
+                              "Specify the chip as 0 for the first, 1 for the second etc.",
                 provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                exclusivity = { 
-                    "NUT_CONFIG_AT45D0",
-                    "NUT_CONFIG_AT45D1",
-                    "NUT_CONFIG_AT45D2",
-                    "NUT_CONFIG_AT45D3"
-                },
-                file = "include/cfg/eeprom.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT45D1",
-                brief = "Chip 1 for System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in the second DataFlash chip.",
-                provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                exclusivity = { 
-                    "NUT_CONFIG_AT45D0",
-                    "NUT_CONFIG_AT45D1",
-                    "NUT_CONFIG_AT45D2",
-                    "NUT_CONFIG_AT45D3"
-                },
-                file = "include/cfg/eeprom.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT45D2",
-                brief = "Chip 2 for System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in the third DataFlash chip.",
-                provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                exclusivity = { 
-                    "NUT_CONFIG_AT45D0",
-                    "NUT_CONFIG_AT45D1",
-                    "NUT_CONFIG_AT45D2",
-                    "NUT_CONFIG_AT45D3"
-                },
-                file = "include/cfg/eeprom.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT45D3",
-                brief = "Chip 3 for System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in the fourth DataFlash chip.",
-                provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                exclusivity = { 
-                    "NUT_CONFIG_AT45D0",
-                    "NUT_CONFIG_AT45D1",
-                    "NUT_CONFIG_AT45D2",
-                    "NUT_CONFIG_AT45D3"
-                },
+                flavor = "booldata",
+                default = "0",
                 file = "include/cfg/eeprom.h"
             },
             {
