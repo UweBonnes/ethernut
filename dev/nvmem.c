@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.8  2009/01/19 10:39:33  haraldkipp
+ * Support for AT45D SPI bus driver added.
+ *
  * Revision 1.7  2009/01/17 11:26:46  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -72,6 +75,8 @@
 
 #if defined(NUT_CONFIG_X12RTC)
 #include <dev/x12rtc.h>
+#elif defined(NUT_CONFIG_AT45D)
+#include <dev/nvmem_at45d.h>
 #elif defined(NUT_CONFIG_AT45DB)
 #include <dev/at45db.h>
 #elif defined(NUT_CONFIG_AT49BV)
@@ -101,6 +106,8 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
 {
 #if defined(NUT_CONFIG_X12RTC)
     return X12EepromRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_AT45D)
+    return SpiAt45dConfigRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_AT45DB)
     return At45dbParamRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_AT49BV)
@@ -130,6 +137,8 @@ int NutNvMemSave(unsigned int addr, CONST void *buff, size_t len)
 {
 #if defined(NUT_CONFIG_X12RTC)
     return X12EepromWrite(addr, buff, len);
+#elif defined(NUT_CONFIG_AT45D)
+    return SpiAt45dConfigWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_AT45DB)
     return At45dbParamWrite(addr, buff, len);
 #elif defined(NUT_CONFIG_AT49BV)
