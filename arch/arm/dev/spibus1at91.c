@@ -57,44 +57,64 @@
 
 #if defined(SPI1_PIO_BASE)
 
-#if defined(SPI1_CS0_PIO_BIT) && defined(SPI1_CS0_PIO_ID)
+#if defined(SPI1_CS0_PIO_BIT)
+#if defined(SPI1_CS0_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID SPI1_CS0_PIO_ID
 #include <cfg/arch/porttran.h>
-#define SPI1_CS0_LO()    GPIO_SET_LO(SPI1_CS0_PIO_BIT)
-#define SPI1_CS0_HI()    GPIO_SET_HI(SPI1_CS0_PIO_BIT)
-#define SPI1_CS0_SO()    GPIO_CFG_OUTPUT(SPI1_CS0_PIO_BIT)
+static INLINE void SPI1_CS0_LO(void) { GPIO_SET_LO(SPI1_CS0_PIO_BIT); }
+static INLINE void SPI1_CS0_HI(void) { GPIO_SET_HI(SPI1_CS0_PIO_BIT); }
+static INLINE void SPI1_CS0_SO(void) { GPIO_CFG_OUTPUT(SPI1_CS0_PIO_BIT); }
 #else
 #define SPI1_CS0_LO()
 #define SPI1_CS0_HI()
 #define SPI1_CS0_SO()
 #endif
+#endif
 
-#if defined(SPI1_CS1_PIO_BIT) && defined(SPI1_CS1_PIO_ID)
+#if defined(SPI1_CS1_PIO_BIT)
+#if defined(SPI1_CS1_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID SPI1_CS1_PIO_ID
 #include <cfg/arch/porttran.h>
-#define SPI1_CS1_LO()    GPIO_SET_LO(SPI1_CS1_PIO_BIT)
-#define SPI1_CS1_HI()    GPIO_SET_HI(SPI1_CS1_PIO_BIT)
-#define SPI1_CS1_SO()    GPIO_CFG_OUTPUT(SPI1_CS1_PIO_BIT)
+static INLINE void SPI1_CS1_LO(void) { GPIO_SET_LO(SPI1_CS1_PIO_BIT); }
+static INLINE void SPI1_CS1_HI(void) { GPIO_SET_HI(SPI1_CS1_PIO_BIT); }
+static INLINE void SPI1_CS1_SO(void) { GPIO_CFG_OUTPUT(SPI1_CS1_PIO_BIT); }
+#else
+#define SPI1_CS1_LO()
+#define SPI1_CS1_HI()
+#define SPI1_CS1_SO()
+#endif
 #endif
 
-#if defined(SPI1_CS2_PIO_BIT) && defined(SPI1_CS2_PIO_ID)
+#if defined(SPI1_CS2_PIO_BIT)
+#if defined(SPI1_CS2_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID SPI1_CS2_PIO_ID
 #include <cfg/arch/porttran.h>
-#define SPI1_CS2_LO()    GPIO_SET_LO(SPI1_CS2_PIO_BIT)
-#define SPI1_CS2_HI()    GPIO_SET_HI(SPI1_CS2_PIO_BIT)
-#define SPI1_CS2_SO()    GPIO_CFG_OUTPUT(SPI1_CS2_PIO_BIT)
+static INLINE void SPI1_CS2_LO(void) { GPIO_SET_LO(SPI1_CS2_PIO_BIT); }
+static INLINE void SPI1_CS2_HI(void) { GPIO_SET_HI(SPI1_CS2_PIO_BIT); }
+static INLINE void SPI1_CS2_SO(void) { GPIO_CFG_OUTPUT(SPI1_CS2_PIO_BIT); }
+#else
+#define SPI1_CS2_LO()
+#define SPI1_CS2_HI()
+#define SPI1_CS2_SO()
+#endif
 #endif
 
-#if defined(SPI1_CS3_PIO_BIT) && defined(SPI1_CS3_PIO_ID)
+#if defined(SPI1_CS3_PIO_BIT)
+#if defined(SPI1_CS3_PIO_ID)
 #undef GPIO_ID
 #define GPIO_ID SPI1_CS3_PIO_ID
 #include <cfg/arch/porttran.h>
-#define SPI1_CS3_LO()    GPIO_SET_LO(SPI1_CS3_PIO_BIT)
-#define SPI1_CS3_HI()    GPIO_SET_HI(SPI1_CS3_PIO_BIT)
-#define SPI1_CS3_SO()    GPIO_CFG_OUTPUT(SPI1_CS3_PIO_BIT)
+static INLINE void SPI1_CS3_LO(void) { GPIO_SET_LO(SPI1_CS3_PIO_BIT); }
+static INLINE void SPI1_CS3_HI(void) { GPIO_SET_HI(SPI1_CS3_PIO_BIT); }
+static INLINE void SPI1_CS3_SO(void) { GPIO_CFG_OUTPUT(SPI1_CS3_PIO_BIT); }
+#else
+#define SPI1_CS3_LO()
+#define SPI1_CS3_HI()
+#define SPI1_CS3_SO()
+#endif
 #endif
 
 /*!
@@ -105,6 +125,7 @@ int At91Spi1ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
     int rc = 0;
 
     switch (cs) {
+#if defined(SPI1_CS1_PIO_BIT)
     case 0:
         if (hi) {
             SPI1_CS0_HI();
@@ -113,7 +134,8 @@ int At91Spi1ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
         }
         SPI1_CS0_SO();
         break;
-#if defined(SPI1_CS1_BIT)
+#endif
+#if defined(SPI1_CS1_PIO_BIT)
     case 1:
         if (hi) {
             SPI1_CS1_HI();
@@ -123,7 +145,7 @@ int At91Spi1ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
         SPI1_CS1_SO();
         break;
 #endif
-#if defined(SPI1_CS2_BIT)
+#if defined(SPI1_CS2_PIO_BIT)
     case 2:
         if (hi) {
             SPI1_CS2_HI();
@@ -133,7 +155,7 @@ int At91Spi1ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
         SPI1_CS2_SO();
         break;
 #endif
-#if defined(SPI1_CS3_BIT)
+#if defined(SPI1_CS3_PIO_BIT)
     case 3:
         if (hi) {
             SPI1_CS3_HI();
