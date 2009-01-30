@@ -1,4 +1,40 @@
-$Id: ChangeLog,v 1.517 2009/01/19 18:58:47 haraldkipp Exp $
+$Id: ChangeLog,v 1.518 2009/01/30 09:03:08 haraldkipp Exp $
+
+2009-01-29  Harald Kipp  <harald.kipp@egnite.de>
+
+	* arch/arm/dev/ih_at91fiq.c, arch/arm/dev/ih_at91irq0.c,
+	arch/arm/dev/ih_at91irq1.c: Enable IRQ clocks.
+
+	* arch/arm/dev/spibus0at91.c, arch/arm/dev/spibus1at91.c,
+	arch/avr/dev/spibus0avr.c: Use inline functions instead of 
+	macros to allow different ports. Ability to define port bits 
+	without specifying the port identifier. This can be used by 
+	drivers, which handle chip selects on their own. Corrected a 
+	bug when using chip selects other than 0.
+
+	* conf/dev/dev.nut: Added auto detected VS10xx. Default
+	audio decoder reset recover times changed to 0.
+
+	* conf/eir10c.conf: Added second VS10xx chip select and
+	MMC interface definitions.
+
+	* dev/sbi_mmc.c: Use inline functions instead of macros to 
+	allow different ports.
+
+	* include/cfg/arch/porttran.h: Changed the documented example
+	to use inline functions instead of macros. Compile bug for AT91 
+	MDE, IFE PIO registers fixed.
+
+	* dev/vscodec.c: Make sure, that used registers are defined.
+
+	* include/dev/gpio.h: Added more general names for external 
+	interrupts.
+
+	* include/dev/vs1001.h, include/dev/vs1011.h, 
+	include/dev/vs1053.h, include/dev/vscodec.h: Added VS10xx 
+	feature files. Cleaned up for different decoder chips and fixed 
+	several minor bugs.
+
 
 2009-01-19  Harald Kipp  <harald.kipp@egnite.de>
 
