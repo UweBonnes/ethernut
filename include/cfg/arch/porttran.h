@@ -60,14 +60,14 @@
  * #undef GPIO_ID
  * #define GPIO_ID MY_PORT1_ID
  * #include <cfg/arch/porttran.h>
- * #define MY_PORT1_SET(bit) GPIO_SET_HI(bit)
- * #define MY_PORT1_CLR(bit) GPIO_SET_LO(bit)
+ * static INLINE void MY_PORT1_SET(int bit) { GPIO_SET_HI(bit); }
+ * static INLINE void MY_PORT1_CLR(int bit) { GPIO_SET_LO(bit); }
  *
  * #undef GPIO_ID
  * #define GPIO_ID MY_PORT2_ID
  * #include <cfg/arch/porttran.h>
- * #define MY_PORT2_SET(bit) GPIO_SET_HI(bit)
- * #define MY_PORT2_CLR(bit) GPIO_SET_LO(bit)
+ * static INLINE void MY_PORT2_SET(int bit) { GPIO_SET_HI(bit); }
+ * static INLINE void MY_PORT2_CLR(int bit) { GPIO_SET_LO(bit); }
  *
  * void Out1(int bit, int val)
  * {
@@ -105,6 +105,13 @@
  * \note All listed macros will be available for any port identifier on
  *       any target, even if the related function is not available. You
  *       should check the target's datasheet.
+ *
+ * \note We use capital letters for the inline attribute to refer to a
+ *       preprocessor macro. If the compiler doesn't support inlined 
+ *       function, then the macro will be empty. In this case a function
+ *       call may be used, depending on the compiler's optimization
+ *       strategy. Even if the compiler supports the inline keyword,
+ *       it may decide to generate a callable function.
  */
 
 /*
@@ -127,6 +134,14 @@
 #undef  GPIO_PUE_REG
 #undef  GPIO_PUD_REG
 #undef  GPIO_PUS_REG
+
+#undef  GPIO_MDE_REG
+#undef  GPIO_MDD_REG
+#undef  GPIO_MDS_REG
+
+#undef  GPIO_IFE_REG
+#undef  GPIO_IFD_REG
+#undef  GPIO_IFS_REG
 
 #if defined(__AVR__)
 /*
@@ -392,9 +407,23 @@
 #define GPIO_GET(b)
 #endif
 
-#if defined(GPIO_PE_REG)
+/*
+** PIO enable and disable macros.
+*/
+#if defined(GPIO_PE_REG) && defined(GPIO_PD_REG)
+/* Direct write, if PIO enable and disable registers are available. */
 #define GPIO_ENABLE(b)      outr(GPIO_PE_REG, _BV(b))
+#define GPIO_DISABLE(b)     outr(GPIO_PD_REG, _BV(b))
+#elif defined(GPIO_PE_REG)
+/* Modify bit, if PIO enable register only. */
+#define GPIO_ENABLE(b)      sbi(GPIO_PE_REG, _BV(b))
+#define GPIO_DISABLE(b)     cbi(GPIO_PE_REG, _BV(b))
+#elif defined(GPIO_PD_REG)
+/* Modify bit, if PIO disable register only. */
+#define GPIO_ENABLE(b)      cbi(GPIO_PD_REG, _BV(b))
+#define GPIO_DISABLE(b)     sbi(GPIO_PD_REG, _BV(b))
 #else
+/* None, PIO may be always enabled or not available. */
 #define GPIO_ENABLE(b)
 #endif
 
