@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/01/30 08:55:23  haraldkipp
+ * Enable IRQ clocks.
+ *
  * Revision 1.5  2008/08/11 06:59:09  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -180,6 +183,9 @@ static int Interrupt0Ctl(int cmd, void *param)
     /* Enable interrupt. */
     if (enabled) {
         outr(AIC_IECR, _BV(IRQ0_ID));
+#if defined(PMC_PCER)
+        outr(PMC_PCER, _BV(IRQ0_ID));
+#endif
     }
     return rc;
 }
