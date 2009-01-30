@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/01/30 08:59:30  haraldkipp
+ * Make sure, that used registers are defined.
+ *
  * Revision 1.6  2009/01/17 11:26:46  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -826,15 +829,17 @@ static int VsInit(NUTDEVICE * dev)
         NutSleep(2);
     }
     vs_chip = (VsRegRead(VS_STATUS_REG) & VS_SS_VER) >> VS_SS_VER_LSB;
-#if VS10XX_FREQ < 20000000UL
+#if VS10XX_FREQ < 20000000UL && defined(VS_CF_DOUBLER)
     VsRegWrite(VS_CLOCKF_REG, (uint16_t)(VS_CF_DOUBLER | (VS10XX_FREQ / 2000UL)));
 #else
     VsRegWrite(VS_CLOCKF_REG, (uint16_t)(VS10XX_FREQ / 2000UL));
 #endif
+#if defined(VS_INT_FCTLH_REG)
     if (vs_chip == 0) {
         /* Force frequency change (see datasheet). */
         VsRegWrite(VS_INT_FCTLH_REG, 0x8008);
     }
+#endif
 
     if (VsPlayBufferInit(0)) {
         return -1;
