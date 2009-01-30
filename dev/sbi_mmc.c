@@ -56,10 +56,10 @@
 #undef GPIO_ID
 #define GPIO_ID MMC_CLK_PIO_ID
 #include <cfg/arch/porttran.h>
-#define MMC_CLK_LO()    GPIO_SET_LO(MMC_CLK_PIO_BIT)
-#define MMC_CLK_HI()    GPIO_SET_HI(MMC_CLK_PIO_BIT)
-#define MMC_CLK_EN()    GPIO_ENABLE(MMC_CLK_PIO_BIT)
-#define MMC_CLK_SO()    GPIO_CFG_OUTPUT(MMC_CLK_PIO_BIT)
+static INLINE void MMC_CLK_LO(void) { GPIO_SET_LO(MMC_CLK_PIO_BIT); }
+static INLINE void MMC_CLK_HI(void) { GPIO_SET_HI(MMC_CLK_PIO_BIT); }
+static INLINE void MMC_CLK_EN(void) { GPIO_ENABLE(MMC_CLK_PIO_BIT); }
+static INLINE void MMC_CLK_SO(void) { GPIO_CFG_OUTPUT(MMC_CLK_PIO_BIT); }
 #else
 #define MMC_CLK_LO()
 #define MMC_CLK_HI()
@@ -71,10 +71,10 @@
 #undef GPIO_ID
 #define GPIO_ID    MMC_MOSI_PIO_ID
 #include <cfg/arch/porttran.h>
-#define MMC_MOSI_LO()    GPIO_SET_LO(MMC_MOSI_PIO_BIT)
-#define MMC_MOSI_HI()    GPIO_SET_HI(MMC_MOSI_PIO_BIT)
-#define MMC_MOSI_EN()    GPIO_ENABLE(MMC_MOSI_PIO_BIT)
-#define MMC_MOSI_SO()    GPIO_CFG_OUTPUT(MMC_MOSI_PIO_BIT)
+static INLINE void MMC_MOSI_LO(void) { GPIO_SET_LO(MMC_MOSI_PIO_BIT); }
+static INLINE void MMC_MOSI_HI(void) { GPIO_SET_HI(MMC_MOSI_PIO_BIT); }
+static INLINE void MMC_MOSI_EN(void) { GPIO_ENABLE(MMC_MOSI_PIO_BIT); }
+static INLINE void MMC_MOSI_SO(void) { GPIO_CFG_OUTPUT(MMC_MOSI_PIO_BIT); }
 #else
 #define MMC_MOSI_LO()
 #define MMC_MOSI_HI()
@@ -86,9 +86,9 @@
 #undef GPIO_ID
 #define GPIO_ID    MMC_MISO_PIO_ID
 #include <cfg/arch/porttran.h>
-#define MMC_MISO_TEST() GPIO_GET(MMC_MISO_PIO_BIT)
-#define MMC_MISO_EN()   GPIO_ENABLE(MMC_MISO_PIO_BIT)
-#define MMC_MISO_SI()   GPIO_CFG_INPUT(MMC_MISO_PIO_BIT)
+static INLINE int MMC_MISO_TEST(void) { return GPIO_GET(MMC_MISO_PIO_BIT); }
+static INLINE void MMC_MISO_EN(void) { GPIO_ENABLE(MMC_MISO_PIO_BIT); }
+static INLINE void MMC_MISO_SI(void) { GPIO_CFG_INPUT(MMC_MISO_PIO_BIT); }
 #else
 #define MMC_MISO_TEST() (1)
 #define MMC_MISO_EN()
@@ -99,11 +99,11 @@
 #undef GPIO_ID
 #define GPIO_ID    MMC_CS_PIO_ID
 #include <cfg/arch/porttran.h>
-#define MMC_CS_LO()    GPIO_SET_LO(MMC_CS_PIO_BIT)
-#define MMC_CS_HI()    GPIO_SET_HI(MMC_CS_PIO_BIT)
-#define MMC_CS_IS()    GPIO_IS_HI(MMC_CS_PIO_BIT)
-#define MMC_CS_EN()    GPIO_ENABLE(MMC_CS_PIO_BIT)
-#define MMC_CS_SO()    GPIO_CFG_OUTPUT(MMC_CS_PIO_BIT)
+static INLINE void MMC_CS_LO(void) { GPIO_SET_LO(MMC_CS_PIO_BIT); }
+static INLINE void MMC_CS_HI(void) { GPIO_SET_HI(MMC_CS_PIO_BIT); }
+static INLINE int MMC_CS_IS(void) { return GPIO_IS_HI(MMC_CS_PIO_BIT); }
+static INLINE void MMC_CS_EN(void) { GPIO_ENABLE(MMC_CS_PIO_BIT); }
+static INLINE void MMC_CS_SO(void) { GPIO_CFG_OUTPUT(MMC_CS_PIO_BIT); }
 #else
 #define MMC_CS_LO()
 #define MMC_CS_HI()
