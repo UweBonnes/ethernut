@@ -59,6 +59,16 @@
 #define NUTGPIO_PORTK   11
 #define NUTGPIO_PORTL   12
 
+#define NUTGPIO_EXTINT0     1
+#define NUTGPIO_EXTINT1     2
+#define NUTGPIO_EXTINT2     3
+#define NUTGPIO_EXTINT3     4
+#define NUTGPIO_EXTINT4     5
+#define NUTGPIO_EXTINT5     6
+#define NUTGPIO_EXTINT6     7
+#define NUTGPIO_EXTINT7     8
+#define NUTGPIO_EXTFIQ0    -1
+
 /*!
  * \brief GPIO disabled.
  *
