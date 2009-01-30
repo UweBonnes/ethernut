@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.52  2009/01/30 08:57:16  haraldkipp
+-- Added auto detected VS10xx.
+-- Default audio decoder reset recover times changed to 0.
+--
 -- Revision 1.51  2009/01/19 10:38:54  haraldkipp
 -- Configuration of the AT45D non-volatile memory support was not useable.
 --
@@ -1679,10 +1683,27 @@ nutdev =
         options =
         {
             {
+                macro = "AUDIO_VSAUTO",
+                brief = "Auto Detect",
+                description = "Uses more code.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO_VSAUTO",
+                    "AUDIO_VS1001K",
+                    "AUDIO_VS1011E",
+                    "AUDIO_VS1002D",
+                    "AUDIO_VS1003B",
+                    "AUDIO_VS1033C",
+                    "AUDIO_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
                 macro = "AUDIO_VS1001K",
                 brief = "VS1001K",
                 flavor = "boolean",
                 exclusivity = {
+                    "AUDIO_VSAUTO",
                     "AUDIO_VS1001K",
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
@@ -1697,6 +1718,7 @@ nutdev =
                 brief = "VS1011E",
                 flavor = "boolean",
                 exclusivity = {
+                    "AUDIO_VSAUTO",
                     "AUDIO_VS1001K",
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
@@ -1711,6 +1733,7 @@ nutdev =
                 brief = "VS1002D",
                 flavor = "boolean",
                 exclusivity = {
+                    "AUDIO_VSAUTO",
                     "AUDIO_VS1001K",
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
@@ -1725,6 +1748,7 @@ nutdev =
                 brief = "VS1003B",
                 flavor = "boolean",
                 exclusivity = {
+                    "AUDIO_VSAUTO",
                     "AUDIO_VS1001K",
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
@@ -1739,6 +1763,7 @@ nutdev =
                 brief = "VS1033C",
                 flavor = "boolean",
                 exclusivity = {
+                    "AUDIO_VSAUTO",
                     "AUDIO_VS1001K",
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
@@ -1753,6 +1778,7 @@ nutdev =
                 brief = "VS1053B",
                 flavor = "boolean",
                 exclusivity = {
+                    "AUDIO_VSAUTO",
                     "AUDIO_VS1001K",
                     "AUDIO_VS1011E",
                     "AUDIO_VS1002D",
@@ -2079,7 +2105,7 @@ nutdev =
                 macro = "VS10XX_HWRST_RECOVER",
                 brief = "Hardware Reset Recover",
                 description = "Milliseconds to wait after hardware reset.",
-                default = "4",
+                default = "0",
                 flavor = "integer",
                 file = "include/cfg/audio.h"
             },
@@ -2087,7 +2113,7 @@ nutdev =
                 macro = "VS10XX_SWRST_RECOVER",
                 brief = "Software Reset Recover",
                 description = "Milliseconds to wait after software reset.",
-                default = "2",
+                default = "0",
                 flavor = "integer",
                 file = "include/cfg/audio.h"
             },
