@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2007 proconX Pty Ltd. All rights reserved. 
+ * Copyright (c) 2005-2009 proconX Pty Ltd. All rights reserved. 
  *
  * This driver has been closely modeled after the existing Nut/OS SJA1000
  * driver and the buffer management and some code snippets have been borrowed
@@ -40,6 +40,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/02/04 23:40:52  hwmaier
+ * Added support for a receive buffer size configuration entry ATCAN_RX_BUF_SIZE.
+ *
  * Revision 1.7  2008/08/11 06:59:14  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -79,7 +82,7 @@
 
 #ifdef __GNUC__
 
-#include <cfg/os.h>
+#include <cfg/arch/avr.h>
 #include <string.h>
 #include <sys/event.h>
 #include <sys/heap.h>
@@ -96,8 +99,8 @@
 
 #define RX_MOB 8
 
-#ifndef CAN_BUF_SIZE
-#  define CAN_BUF_SIZE 64
+#ifndef ATCAN_RX_BUF_SIZE
+#  define ATCAN_RX_BUF_SIZE 64
 #endif
 
 
@@ -702,10 +705,10 @@ int AtCanInit(NUTDEVICE * dev)
     memset(dev->dev_dcb, 0, sizeof(CANINFO));
 
     // Init receive buffer
-    canRxBuf.dataptr = NutHeapAlloc(CAN_BUF_SIZE * sizeof(CANFRAME));
+    canRxBuf.dataptr = NutHeapAlloc(ATCAN_RX_BUF_SIZE * sizeof(CANFRAME));
     if (canRxBuf.dataptr == 0)
         return -1;
-    canRxBuf.size = CAN_BUF_SIZE;
+    canRxBuf.size = ATCAN_RX_BUF_SIZE;
     canRxBuf.dataindex = 0;
     canRxBuf.datalength = 0;
 

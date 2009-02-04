@@ -1,4 +1,11 @@
-$Id: ChangeLog,v 1.519 2009/02/04 20:30:29 thiagocorrea Exp $
+$Id: ChangeLog,v 1.520 2009/02/04 23:40:51 hwmaier Exp $
+
+2009-02-05  Henrik Maier  <hwmaier@users.sourceforge.net>
+
+        * arch/avr/dev/atcan.c, conf/arch/avr.nut: 
+        Added support for a receive buffer size configuration 
+        entry ATCAN_RX_BUF_SIZE.
+        
 
 2009-02-04  Thiago A. Correa <thiago.correa@gmail.com>
         

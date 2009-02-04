@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.28  2009/02/04 23:40:52  hwmaier
+-- Added support for a receive buffer size configuration entry ATCAN_RX_BUF_SIZE.
+--
 -- Revision 1.27  2009/01/18 16:46:18  haraldkipp
 -- Properly distinguish between PIO IDs and port numbers.
 -- Call internal Lua functions when needed only.
@@ -1207,6 +1210,12 @@ nutarch_avr =
         sources = { "avr/dev/atcan.c" },
         options =
         {
+            {
+                macro = "ATCAN_RX_BUF_SIZE",
+                brief = "Receive buffers",
+                description = "Number of CAN messages in receive buffer. Default is 64.",
+                file = "include/cfg/arch/avrpio.h"
+            }
         }
     },
     {
