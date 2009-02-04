@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.518 2009/01/30 09:03:08 haraldkipp Exp $
+$Id: ChangeLog,v 1.519 2009/02/04 20:30:29 thiagocorrea Exp $
+
+2009-02-04  Thiago A. Correa <thiago.correa@gmail.com>
+        
+	* os/heap.c: Fix compile for 32 bit ARCHs with OS Debug 
+	enabled.
 
 2009-01-29  Harald Kipp  <harald.kipp@egnite.de>
 

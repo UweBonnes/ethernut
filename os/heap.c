@@ -48,6 +48,9 @@
 
 /*
  * $Log$
+ * Revision 1.22  2009/02/04 20:30:29  thiagocorrea
+ * Fix compile for 32 bit ARCHs with OS Debug enabled.
+ *
  * Revision 1.21  2009/01/17 11:26:52  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -176,8 +179,6 @@ static INLINE void setBeef(HEAPNODE * node){
 	*((uint32_t *) ((uintptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
 }
 
-#if !defined(ARCH_32BIT)
-// This crashed on AT91R40008 (Ethernut 3)
 /*!
  * \brief Check Beef of an heapnode
  * \param node A valid Heapnode with beef
@@ -186,9 +187,13 @@ static INLINE void setBeef(HEAPNODE * node){
  * \bug Results in data abort exception on ARM.
  */
 static INLINE char checkBeef(HEAPNODE * node){
+#if !defined(ARCH_32BIT)
+	// This crashed on AT91R40008 (Ethernut 3)
 	return (*((uint32_t *) ((uintptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
-}
+#else
+	return 1;
 #endif
+}
 
 /*!
  * \brief
@@ -230,7 +235,7 @@ void *NutHeapAlloc(size_t size)
 
 #if defined(ARCH_32BIT)
     /*
-     * Allign to the word boundary
+     * Align to the word boundary
      */
     while ((size & 0x03) != 0)
         size++;
@@ -347,8 +352,8 @@ void *NutHeapAllocClear(size_t size)
  * 				NULL this call is equivalent to malloc.
  * \param size The size of the new allocated block.
  * 
- * \return > NULL A poiner to the memoryblock
- * \return NULL Reallocation has faild. The data is still 
+ * \return > NULL A pointer to the memoryblock
+ * \return NULL Reallocation has failed. The data is still 
  * 				available at the old address.
  * \todo see if we can do some codesharing with malloc
  * \todo add some checks like reallocating free mem, etc
@@ -407,7 +412,7 @@ void * NutHeapRealloc( void * block, size_t size){
 		
 		if(node != NULL){ // There is a node behind the node
 			/*
-			 * If a free node is following us _and_ is big enaugh: use it!
+			 * If a free node is following us _and_ is big enough: use it!
 			 */
 			if (((uintptr_t) fnode + fnode->hn_size) == (uintptr_t) node &&  node->hn_size >= size_miss) {
 				if(node->hn_size + ALLOC_THRESHOLD >= size_miss){ //split next block
@@ -420,14 +425,14 @@ void * NutHeapRealloc( void * block, size_t size){
 					fnode->hn_size = size; //Adjust size of current node
 					available -= size_miss;
 				} else { //Fits nicely
-					*npp = node->hn_next;	//Link previus node 
+					*npp = node->hn_next;	//Link previous node 
 					fnode->hn_size += node->hn_size;
 					available -= node->hn_size;
 				}
 				setBeef(fnode);
 #ifdef NUTDEBUG
                 if (__heap_trf) {
-                    fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
+                    fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fnode, (int)(((HEAPNODE *) ((size_t *) fnode - 1))->hn_size), (int)size);
                 }
 #endif
 				return block; 
@@ -436,7 +441,7 @@ void * NutHeapRealloc( void * block, size_t size){
         
 		//Failed to resize -> move
 		newmem = NutHeapAlloc(size);
-		if(newmem == NULL) return NULL; //Failed to allocate a big enaugh block.
+		if(newmem == NULL) return NULL; //Failed to allocate a big enough block.
 		memcpy(newmem, block, fnode->hn_size - MEMOVHD); //MWMOVHD must not to be moved!!!
 		NutHeapFree(block);
 		return newmem;
@@ -452,7 +457,7 @@ void * NutHeapRealloc( void * block, size_t size){
 	}
 #ifdef NUTDEBUG
     if (__heap_trf) {
-        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fit, (int)(((HEAPNODE *) ((size_t *) fit - 1))->hn_size), (int)size);
+        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fnode, (int)(((HEAPNODE *) ((size_t *) fnode - 1))->hn_size), (int)size);
     }
 #endif
 	return block;
