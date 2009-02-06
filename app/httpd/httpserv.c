@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.20  2009/02/06 15:37:40  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.19  2008/07/25 10:20:12  olereinhardt
  * Fixed compiler bug for AVR-ICC and added missing PSTR macro around
  * prog_char strings
@@ -221,6 +224,17 @@
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
 #include <net/netdebug.h>
+#endif
+
+/* Server thread stack size. */
+#ifndef HTTPD_SERVICE_STACK
+#if defined(__AVR__)
+#define HTTPD_SERVICE_STACK ((580 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)
+#elif defined(__arm__)
+#define HTTPD_SERVICE_STACK ((1024 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)
+#else
+#define HTTPD_SERVICE_STACK  ((2048 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)
+#endif
 #endif
 
 static char *html_mt = "text/html";
@@ -860,7 +874,8 @@ int main(void)
         char thname[] = "httpd0";
 
         thname[5] = '0' + i;
-        NutThreadCreate(thname, Service, (void *) (uptr_t) i, NUT_THREAD_MAINSTACK);
+        NutThreadCreate(thname, Service, (void *) (uptr_t) i, 
+            (HTTPD_SERVICE_STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     }
 
     /*

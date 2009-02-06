@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.21  2009/02/06 15:37:39  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.20  2009/01/19 10:38:00  haraldkipp
  * Moved NutLoadConfig from NutInit to the idle thread. We can now use
  * standard drivers to read the configuration.
@@ -160,7 +163,8 @@ struct __iobuf {
 #endif
 
 #ifndef NUT_THREAD_IDLESTACK
-#define NUT_THREAD_IDLESTACK    512
+/* arm-elf-gcc optimized code used 160 bytes. */
+#define NUT_THREAD_IDLESTACK    256
 #endif
 
 #ifdef __CROSSWORKS4ARM__
@@ -231,7 +235,8 @@ THREAD(NutIdle, arg)
     ** changing compilers and compiler versions. Some handle main()
     ** in a special way, like setting the stack pointer and other
     ** weird stuff that may break this code. */
-    NutThreadCreate("main", main, 0, NUT_THREAD_MAINSTACK);
+    NutThreadCreate("main", main, 0, 
+        (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     /* Enter an idle loop at the lowest priority. This will run when
     ** all other threads are waiting for an event. */
@@ -293,7 +298,8 @@ void NutInit(void)
 
     /* Create idle thread. Note, that the first call to NutThreadCreate 
     ** will never return. */
-    NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
+    NutThreadCreate("idle", NutIdle, 0, 
+        (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 }
 
 /*@}*/

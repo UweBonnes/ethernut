@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2009/02/06 15:37:40  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.16  2009/01/16 17:02:19  haraldkipp
  * No longer save any default OS configuration in non-volatile RAM.
  * All platforms will now call NutLoadConfig().
@@ -164,6 +167,15 @@
  */
 #define NUTMEM_END (uint16_t)(NUTMEM_START + (uint16_t)NUTMEM_SIZE - 1U)
 
+#endif
+
+#ifndef NUT_THREAD_MAINSTACK
+#define NUT_THREAD_MAINSTACK    1024
+#endif
+
+#ifndef NUT_THREAD_IDLESTACK
+/* avr-gcc optimized code used 36 bytes. */
+#define NUT_THREAD_IDLESTACK    128
 #endif
 
 #ifdef NUTMEM_RESERVED
@@ -464,7 +476,8 @@ THREAD(NutIdle, arg)
     NutTimerInit();
 
     /* Create the main application thread. */
-    NutThreadCreate("main", main, 0, NUT_THREAD_MAINSTACK);
+    NutThreadCreate("main", main, 0, 
+        (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
@@ -709,7 +722,8 @@ void NutInit(void)
 
     /* Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0, NUT_THREAD_IDLESTACK);
+    NutThreadCreate("idle", NutIdle, 0, 
+        (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 }
 
 /*@}*/

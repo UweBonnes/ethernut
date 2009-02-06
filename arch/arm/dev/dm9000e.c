@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2009/02/06 15:37:39  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.11  2008/08/28 11:12:15  haraldkipp
  * Added interface flags, which will be required to implement Ethernet ioctl
  * functions.
@@ -99,7 +102,8 @@
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
-#define NUT_THREAD_NICRXSTACK   768
+/* arm-elf-gcc size optimized code used 160 bytes. */
+#define NUT_THREAD_NICRXSTACK   256
 #endif
 
 /*
@@ -1057,7 +1061,8 @@ int DmInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("rxi1", NicRxLanc, dev, NUT_THREAD_NICRXSTACK) == NULL) {
+    if (NutThreadCreate("rxi1", NicRxLanc, dev, 
+        (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
     return 0;

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/02/06 15:37:39  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.8  2009/01/17 11:26:37  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -728,7 +731,8 @@ int EmacInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("emacrx", EmacRxThread, dev, NUT_THREAD_NICRXSTACK) == NULL) {
+    if (NutThreadCreate("emacrx", EmacRxThread, dev, 
+        (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
     return 0;

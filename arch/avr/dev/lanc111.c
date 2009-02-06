@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/02/06 15:37:39  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.8  2008/08/28 11:12:15  haraldkipp
  * Added interface flags, which will be required to implement Ethernet ioctl
  * functions.
@@ -1309,8 +1312,10 @@ int LancInit(NUTDEVICE * dev)
 
     /*
      * Start the receiver thread.
+     *
+     * avr-gcc size optimized code used 76 bytes.
      */
-    NutThreadCreate("rxi5", NicRxLanc, dev, 640);
+    NutThreadCreate("rxi5", NicRxLanc, dev, (128 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     //NutSleep(500);
 

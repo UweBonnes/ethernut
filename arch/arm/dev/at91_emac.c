@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2009/02/06 15:37:39  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.15  2009/01/17 11:26:37  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -117,7 +120,8 @@
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
-#define NUT_THREAD_NICRXSTACK   768
+/* arm-elf-gcc used 168 bytes with optimized, 412 bytes with debug code. */
+#define NUT_THREAD_NICRXSTACK   320
 #endif
 
 #ifndef EMAC_RX_BUFFERS
@@ -988,7 +992,8 @@ int EmacInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("emacrx", EmacRxThread, dev, NUT_THREAD_NICRXSTACK) == NULL) {
+    if (NutThreadCreate("emacrx", EmacRxThread, dev, 
+        (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
     return 0;

@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.3  2009/02/06 15:37:39  haraldkipp
+# Added stack space multiplier and addend. Adjusted stack space.
+#
 # Revision 1.2  2007/10/12 17:22:32  haraldkipp
 # Compiler option -fomit-frame-pointer confuses gdb. Removed.
 #
@@ -40,7 +43,7 @@
 #
 #
 
-DEFS = $(HWDEF)
+DEFS = -DNUT_THREAD_STACK_MULT=3 $(HWDEF)
 
 INCPRE = -I
 INCDIR = $(top_srcdir)/include

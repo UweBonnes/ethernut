@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.26  2009/02/06 15:37:40  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.25  2009/01/17 11:26:52  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -367,7 +370,13 @@ static uint_fast8_t __tcp_trf = 1;
  * \showinitializer
  */
 #ifndef NUT_THREAD_DHCPSTACK
-#define NUT_THREAD_DHCPSTACK    512
+#if defined(__AVR__)
+/* avr-gcc size optimized code used 192 bytes. */
+#define NUT_THREAD_DHCPSTACK    288
+#else
+/* arm-elf-gcc used 276 bytes with size optimized, 680 bytes with debug code. */
+#define NUT_THREAD_DHCPSTACK    384
+#endif
 #endif
 
 /*@}*/
@@ -1865,7 +1874,8 @@ static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
 #ifdef __arm__
         dhcpDev = dev;
 #endif
-        dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev, NUT_THREAD_DHCPSTACK);
+        dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev, 
+            (NUT_THREAD_DHCPSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     }
     NutEventPost(&dhcpWake);
     NutEventWait(&dhcpDone, NUT_WAIT_INFINITE);

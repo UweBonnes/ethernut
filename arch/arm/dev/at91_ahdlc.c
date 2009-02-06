@@ -34,6 +34,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/02/06 15:37:39  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.2  2008/08/11 06:59:03  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -932,7 +935,8 @@ int AhdlcAt91Init(NUTDEVICE * dev)
      * If we have been successful so far, start the HDLC receiver thread,
      * set the initial baudrate and enable the UART.
      */
-    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, NUT_THREAD_AHDLCRXSTACK)) {
+    if (rc == 0 && NutThreadCreate("ahdlcrx", AhdlcRx, dev, 
+        (NUT_THREAD_AHDLCRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) {
 //        AhdlcAvrIOCtl(dev, UART_SETSPEED, &baudrate);
         return 0;
     }

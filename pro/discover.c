@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/02/06 15:37:40  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.4  2009/01/17 11:26:52  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -74,9 +77,11 @@
 
 #ifndef NUT_THREAD_DISTSTACK
 #if defined(__AVR__)
-#define NUT_THREAD_DISTSTACK  384
+/* avr-gcc size optimized code uses 124 bytes. */
+#define NUT_THREAD_DISTSTACK  224
 #else
-#define NUT_THREAD_DISTSTACK  512
+/* arm-elf-gcc used 232 bytes with size optimized, 476 bytes with debug code. */
+#define NUT_THREAD_DISTSTACK  320
 #endif
 #endif
 
@@ -297,7 +302,8 @@ int NutRegisterDiscovery(uint32_t ipmask, uint16_t port, unsigned int flags)
         disopt.disopt_ipmask = ipmask;
         disopt.disopt_port = port ? port : DISCOVERY_PORT;
         disopt.disopt_flags = flags;
-        tid = NutThreadCreate("udisc", DiscoveryResponder, NULL, NUT_THREAD_DISTSTACK);
+        tid = NutThreadCreate("udisc", DiscoveryResponder, NULL, 
+            (NUT_THREAD_DISTSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
         if (tid) {
             return 0;
         }

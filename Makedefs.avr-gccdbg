@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2009/02/06 15:37:39  haraldkipp
+# Added stack space multiplier and addend. Adjusted stack space.
+#
 # Revision 1.1  2007/05/02 11:10:26  haraldkipp
 # Simple and ugly solution to provide AVR debugging.
 #
@@ -59,7 +62,7 @@
 #
 #
 
-DEFS  = $(HWDEF)
+DEFS  = -DNUT_THREAD_STACK_MULT=3 $(HWDEF)
 
 INCPRE = -I
 INCDIR = $(top_srcdir)/include

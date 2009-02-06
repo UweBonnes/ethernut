@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/02/06 15:37:39  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.6  2009/01/17 11:26:38  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -1390,7 +1393,8 @@ int NicInit(NUTDEVICE * dev)
     /*
      * Start the receiver thread.
      */
-    NutThreadCreate("rxi5", NicRx, dev, NUT_THREAD_NICRXSTACK);
+    NutThreadCreate("rxi5", NicRx, dev, 
+        (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     NutSleep(WAIT500);
 
     /*

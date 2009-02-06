@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.28  2009/02/06 15:37:40  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.27  2009/01/17 11:26:51  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -248,7 +251,13 @@
 #endif
 
 #ifndef NUT_THREAD_TCPSMSTACK
-#define NUT_THREAD_TCPSMSTACK   512
+#if defined(__AVR__)
+/* avr-gcc size optimized code used 148 bytes. */
+#define NUT_THREAD_TCPSMSTACK   256
+#else
+/* arm-elf-gcc used 260 bytes with size optimized, 644 bytes with debug code. */
+#define NUT_THREAD_TCPSMSTACK   384
+#endif
 #endif
 
 #ifndef TCP_RETRIES_MAX
@@ -1764,7 +1773,8 @@ void NutTcpStateMachine(NETBUF * nb)
  */
 int NutTcpInitStateMachine(void)
 {
-    if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, NUT_THREAD_TCPSMSTACK)) == 0)
+    if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, 
+        (NUT_THREAD_TCPSMSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) == 0)
         return -1;
     return 0;
 }

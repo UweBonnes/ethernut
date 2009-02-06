@@ -33,6 +33,9 @@
 -- AVR Architecture
 --
 -- $Log$
+-- Revision 1.29  2009/02/06 15:37:40  haraldkipp
+-- Added stack space multiplier and addend. Adjusted stack space.
+--
 -- Revision 1.28  2009/02/04 23:40:52  hwmaier
 -- Added support for a receive buffer size configuration entry ATCAN_RX_BUF_SIZE.
 --
@@ -858,7 +861,7 @@ nutarch_avr =
                 macro = "NUT_THREAD_NICRXSTACK",
                 brief = "Receiver Thread Stack",
                 description = "Number of bytes to be allocated for the stack of the NIC receive thread.",
-                default = "640",
+                flavor = "booldata",
                 type = "integer",
                 file = "include/cfg/dev.h"
             }

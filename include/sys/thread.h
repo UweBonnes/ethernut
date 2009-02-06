@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.22  2009/02/06 15:37:40  haraldkipp
+ * Added stack space multiplier and addend. Adjusted stack space.
+ *
  * Revision 1.21  2009/01/19 18:55:12  haraldkipp
  * Added stack checking code.
  *
@@ -195,6 +198,45 @@ struct _NUTTHREADINFO {
 /*@}*/
 
 #define SLEEP_MODE_NONE 0xff
+
+/*!
+ * \brief Stack size factor.
+ *
+ * Configured stack sizes are multiplied with this value.
+ *
+ * All stack size settings of internal Nut/OS threads had been calculated 
+ * for size optimized code. Probably more stack space is required with 
+ * other compiler settings.
+ *
+ * For example, when GCC generates non-optimized code for source code
+ * debugging, a factor of 3 should be applied to all stack sizes.
+ *
+ * Application code may also make use of this macro.
+ *
+ * \code
+ * #include <sys/thread.h>
+ *
+ * #define MY_THREAD_STACK  ((384 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)
+ *
+ * NutThreadCreate("myth", ThreadFunc, 0, MY_THREAD_STACK);
+ * \endcode
+ *
+ * See also \ref NUT_THREAD_STACK_ADD.
+ */
+#ifndef NUT_THREAD_STACK_MULT
+#define NUT_THREAD_STACK_MULT   1
+#endif
+
+/*!
+ * \brief Stack size summand.
+ *
+ * The specified value will be added to all configured stack sizes.
+ *
+ * See \ref NUT_THREAD_STACK_MULT.
+ */
+#ifndef NUT_THREAD_STACK_ADD
+#define NUT_THREAD_STACK_ADD    0
+#endif
 
 extern NUTTHREADINFO *runningThread;
 extern NUTTHREADINFO *nutThreadList;
