@@ -102,11 +102,10 @@ int setenv(CONST char *name, CONST char *value, int force)
             return -1;
         }
         memset(envp, 0, sizeof(NUTENVIRONMENT));
-        if ((envp->env_name = malloc(strlen(name) + 1)) == NULL) {
+        if ((envp->env_name = strdup(name)) == NULL) {
             free(envp);
             return -1;
         }
-	strcpy(envp->env_name, name);
 
 	for (nxtp = nut_environ; nxtp; nxtp = nxtp->env_next) {
 	    if (strcmp(envp->env_name, nxtp->env_name) < 0) {
@@ -142,10 +141,9 @@ int setenv(CONST char *name, CONST char *value, int force)
             }
         }
         if (force) {
-            if ((envp->env_value = malloc(strlen(value) + 1)) == NULL) {
+            if ((envp->env_value = strdup(value)) == NULL) {
                 return -1;
             }
-            strcpy(envp->env_value, value);
             return save_env();
         }
     }
