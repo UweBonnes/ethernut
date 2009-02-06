@@ -1,4 +1,76 @@
-$Id: ChangeLog,v 1.520 2009/02/04 23:40:51 hwmaier Exp $
+$Id: ChangeLog,v 1.521 2009/02/06 16:01:18 haraldkipp Exp $
+
+2009-02-06  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Makedefs.arm-gccdbg, arch/arm/dev/at91_ahdlc.c,
+	arch/arm/dev/at91_emac.c, arch/arm/dev/at91sam7x_emac.c,
+	arch/arm/dev/dm9000e.c, arch/arm/os/nutinit.c,
+	arch/avr/dev/ahdlcavr.c, arch/avr/dev/lanc111.c,
+	arch/avr/dev/nicrtl.c, arch/avr/os/nutinit.c, conf/arch/avr.nut, 
+	include/sys/thread.h, net/tcpsm.c, pro/dhcpc.c, pro/discover.c,
+	app/httpd/httpserv.c, Makedefs.avr-gccdbg:
+	Added stack space multiplier and addend. For size optimized code
+	the multiplier is 1, for debug code it will be set to 3. Thus,
+	debugging code will have three times more stack space. Most
+	stack sizes of Nut/OS internal threads had been adjusted for
+	size optimized code, using the NUTDEBUG_CHECK_STACK option.
+	As a final result significantly more heap space will be available 
+	to most applications.
+
+	* arch/avr/os/context_gcc.c: Added stack checking code for AVR.
+
+	* os/thread.c: Allow to query the thread handle of the currently
+	running thread without knowing its name (using parameter NULL).
+
+	* conf/c/stdlib.nut, conf/c/string.nut, conf/crt/crt.nut,
+	include/arch/avr/gcc.h, crt/calloc.c, crt/strdup.c: Routines 
+	using heap memory moved from c to crt module. We now have 
+	strdup() and calloc().
+
+	* crt/putenv.c, dev/chat.c, dev/mmcard.c, fs/uromfs.c,
+	net/ethdemux.c, net/ipdemux.c, net/pppsm.c, net/route.c,
+	net/tcpsock.c, net/udpsock.c, os/bankmem.c, pro/asp.c,
+	pro/auth.c, pro/cgi.c, pro/ftpd.c, pro/httpd.c, pro/httpd_p.c,
+	pro/resolv.c, pro/sntp.c, pro/ssi.c, pro/wins.c: Now using strdup() 
+	and calloc(). Furthermore, replaced NutHeap routines by standard 
+	malloc/free and pointer values 0 by NULL. Some day we may be able 
+	to use parts of Nut/OS on other operating systems.
+
+	* pro/uxmlstream.c: Stop XML parsing if less than 8k bytes data 
+	space are available.
+
+	* conf/dev/dev.nut, dev/spi_vscodec.c, dev/spi_vscodec0.c, 
+	include/dev/vscodec.h: New audio driver for VLSI chips uses the 
+	SPI bus. 
+
+	* include/dev/vs1011.h: Clock features corrected.
+
+	* dev/spi_mlcd.c, include/dev/mlcd.h: Added dummy driver for 
+	ATmega driven displays.
+
+	* dev/spi_at45d0.c: The SPI bus driver fails, if attached devices 
+	use different SPI modes. As a temporary workaround we can configure 
+	the first AT45D DataFlash to mode 0. This allows to run the audio 
+	decoder and the DataFlash on the EIR board on the same bus.
+
+	* conf/eir10c.conf: New audio codec and DataFlash driver enabled.
+
+	* conf/ethernut21b.conf: New audio codec driver enabled.
+
+	* conf/arch/arch.nut: Added NutReset support for SAM9260. Removed 
+	stack size defaults.
+
+	* conf/os/os.nut, conf/pro/pro.nut, include/cfg/os.h: Removed 
+	stack size defaults.
+
+	* conf/repository.nut: Introduced target independent symbols for 
+	external interrutps.
+
+	* arch/arm/dev/spibus1at91.c: Corrected a bug with the first chip 
+	select on the second SPI bus. Thanks to Oender Tekyar.
+
+	* dev/at45db.c: Corrected a bug with non-negated chip selects.
+
 
 2009-02-05  Henrik Maier  <hwmaier@users.sourceforge.net>
 
@@ -57,6 +129,8 @@ $Id: ChangeLog,v 1.520 2009/02/04 23:40:51 hwmaier Exp $
 	second, that at least x bytes of stack space remain
 	available. If any thread's stack space had been lower,
 	NUTFATAL will be called. More options are available.
+	This had been originally suggested by Michael Fischer,
+	long, long time ago.
 
 	* conf/os/os.nut, os/fatal.c: Default fatal error handler 
 	added.
