@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.38  2009/02/06 15:57:05  haraldkipp
+-- Removed stack size defaults.
+--
 -- Revision 1.37  2009/01/18 16:46:18  haraldkipp
 -- Properly distinguish between PIO IDs and port numbers.
 -- Call internal Lua functions when needed only.
@@ -1107,7 +1110,7 @@ nutarch_arm =
                 macro = "NUT_THREAD_NICRXSTACK",
                 brief = "Receiver Thread Stack",
                 description = "Number of bytes to be allocated for the stack of the NIC receive thread.",
-                default = "768",
+                flavor = "booldata",
                 type = "integer",
                 file = "include/cfg/dev.h"
             },

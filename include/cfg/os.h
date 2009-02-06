@@ -36,6 +36,9 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2009/02/06 15:52:14  haraldkipp
+ * Removed stack size defaults.
+ *
  * Revision 1.2  2004/11/08 18:58:59  haraldkipp
  * Configurable stack sizes
  *
@@ -49,13 +52,4 @@
  *
  */
 
-#ifndef NUT_THREAD_MAINSTACK
-#define NUT_THREAD_MAINSTACK    768
 #endif
-
-#ifndef NUT_THREAD_IDLESTACK
-#define NUT_THREAD_IDLESTACK    384
-#endif
-
-#endif
-

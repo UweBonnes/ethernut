@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.21  2009/02/06 15:52:14  haraldkipp
+-- Removed stack size defaults.
+--
 -- Revision 1.20  2009/01/19 18:55:49  haraldkipp
 -- Default fatal error handler added.
 --
@@ -278,14 +281,14 @@ nutos =
                 macro = "NUT_THREAD_IDLESTACK",
                 brief = "Idle Thread Stack Size",
                 description = "Number of bytes to be allocated for the stack of the idle thread.",
-                default = "384",
+                flavor = "booldata",
                 file = "include/cfg/os.h"
             },
             {
                 macro = "NUT_THREAD_MAINSTACK",
                 brief = "Main Thread Stack Size",
                 description = "Number of bytes to be allocated for the stack of the main thread.",
-                default = "768",
+                flavor = "booldata",
                 file = "include/cfg/os.h"
             },
             {

@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.14  2009/02/06 15:52:14  haraldkipp
+-- Removed stack size defaults.
+--
 -- Revision 1.13  2009/01/16 17:03:50  haraldkipp
 -- Configurable discovery protocol version and port plus
 -- configurable service thread stack size. The new version 1.1
@@ -238,7 +241,8 @@ nutpro =
             {
                 macro = "NUT_THREAD_DHCPSTACK",
                 brief = "Client Thread Stack",
-                description = "Number of bytes to be allocated for the stack of the DHCP client thread.",
+                description = "Number of bytes to be allocated for the stack of the DHCP client thread.\n\n"..
+                              "For ARM CPUs GCC uses about 280 bytes for size optimized code.",
                 flavor = "booldata",
                 file = "include/cfg/dhcp.h"
             },
