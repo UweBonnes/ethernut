@@ -39,7 +39,7 @@
  */
 
 #define VS_HAS_SM_LAYER12       1
-#define VS_HAS_SM_FFWD          1
+#define VS_HAS_SM_FFWD          0
 #define VS_HAS_SM_MP12          0
 #define VS_HAS_SM_OUTOFWAV      1
 #define VS_HAS_SM_CANCEL        0
@@ -76,7 +76,7 @@
 #define VS_HAS_CF_DOUBLER       1
 
 #define VS_HAS_AD_STEREO_BIT0   1
-#define VS_HAS_AD_SAMRATE       0
+#define VS_HAS_AD_SAMRATE       1
 #define VS_HAS_AD_BITRATE       0
 #define VS_HAS_AD_SAMRATE_IDX   0
 
@@ -88,9 +88,9 @@
 #define VS_HAS_ADPCMRECCTL_REG  0
 #define VS_HAS_AICTRL0_REG      1
 #define VS_HAS_AICTRL_REG       0
-#define VS_HAS_AICTRL1_REG      0
-#define VS_HAS_AICTRL2_REG      0
-#define VS_HAS_AICTRL3_REG      0
+#define VS_HAS_AICTRL1_REG      1
+#define VS_HAS_AICTRL2_REG      1
+#define VS_HAS_AICTRL3_REG      1
 
 #define VS_FLUSH_BYTES          1024
 
