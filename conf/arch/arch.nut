@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.38  2009/02/06 15:51:38  haraldkipp
+-- Added NutReset support for SAM9260.
+-- Removed stack size defaults.
+--
 -- Revision 1.37  2008/10/23 08:50:43  haraldkipp
 -- Prepared AT91 UART hardware handshake.
 --
@@ -302,6 +306,7 @@ nutarch =
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
                     "HW_MCU_SWTWI",
+                    "HW_RSTC_AT91",
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO",
