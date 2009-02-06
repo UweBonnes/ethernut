@@ -56,6 +56,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.36  2009/02/06 15:41:34  haraldkipp
+ * Allow to query the thread handle of the currently running thread without
+ * knowing its name (using parameter NULL).
+ *
  * Revision 1.35  2009/01/19 18:55:12  haraldkipp
  * Added stack checking code.
  *
@@ -621,11 +625,13 @@ HANDLE GetThreadByName(char * name)
 {
     NUTTHREADINFO *tdp;
 
-    NUTASSERT(name != NULL);
-
-    for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
-        if (strcmp(tdp->td_name, name) == 0)
-            return tdp;
+    if (name) {
+        for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
+            if (strcmp(tdp->td_name, name) == 0)
+                return tdp;
+        }
+    } else {
+        return runningThread;
     }
     return NULL;
 }
