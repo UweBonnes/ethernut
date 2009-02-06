@@ -51,12 +51,28 @@
 #endif
 
 #ifndef SPI_MODE_AT45D0
+
 #ifdef SPI_CSHIGH_AT45D0
 #define SPI_MODE_AT45D0 (SPI_MODE_3 | SPI_MODE_CSHIGH)
 #else
 #define SPI_MODE_AT45D0 SPI_MODE_3
 #endif
+
+#elif defined(SPI_CSHIGH_AT45D0)
+
+/* This is a tricky problem. Originally we didn't provide mode settings
+** in the Configurator, but used mode 3 only. After experiencing problems
+** with mode switching on the EIR, we need to set mode 0 for that board,
+** which spoils our chip select polarity setting. */
+#if SPI_MODE_AT45D0 == SPI_MODE_0
+#undef SPI_MODE_AT45D0
+#define SPI_MODE_AT45D0 (SPI_MODE_0 | SPI_MODE_CSHIGH)
+#elif SPI_MODE_AT45D0 == SPI_MODE_3
+#undef SPI_MODE_AT45D0
+#define SPI_MODE_AT45D0 (SPI_MODE_3 | SPI_MODE_CSHIGH)
 #endif
+
+#endif /* SPI_MODE_AT45D0 */
 
 #ifndef MOUNT_OFFSET_AT45D0
 #define MOUNT_OFFSET_AT45D0         0
