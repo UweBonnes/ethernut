@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2009/02/06 15:41:00  haraldkipp
+ * Added stack checking code for AVR.
+ *
  * Revision 1.12  2009/01/17 11:26:38  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -341,10 +344,24 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     td->td_name[sizeof(td->td_name) - 1] = 0;
     td->td_sp = (uint16_t) sf - 1;
     td->td_memory = threadMem;
+
+    /* 
+     * Set predefined values at the stack bottom. May be used to detect
+     * stack overflows.
+     */
+#if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
+    {
+        uint32_t *fip = (uint32_t *)threadMem;
+        while (fip < (uint32_t *)sf) {
+            *fip++ = DEADBEEF;
+        }
+    }
+#else
     *((uint32_t *) threadMem) = DEADBEEF;
     *((uint32_t *) (threadMem + 4)) = DEADBEEF;
     *((uint32_t *) (threadMem + 8)) = DEADBEEF;
     *((uint32_t *) (threadMem + 12)) = DEADBEEF;
+#endif
     td->td_priority = 64;
 
     /*
