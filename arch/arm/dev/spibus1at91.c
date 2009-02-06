@@ -125,7 +125,7 @@ int At91Spi1ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
     int rc = 0;
 
     switch (cs) {
-#if defined(SPI1_CS1_PIO_BIT)
+#if defined(SPI1_CS0_PIO_BIT)
     case 0:
         if (hi) {
             SPI1_CS0_HI();
