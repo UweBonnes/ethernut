@@ -37,6 +37,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.4  2008/05/16 01:46:43  thiagocorrea
  * Minor spellcheck fix on the documentation.
  *
@@ -58,13 +63,14 @@
 /*@{*/
 
 
-#include <string.h>
-#include <io.h>
-#include <fcntl.h>
-
 #include <sys/heap.h>
 #include <sys/confnet.h>
 #include <sys/version.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <io.h>
+#include <fcntl.h>
 
 #include <pro/httpd.h>
 #include <pro/asp.h>
@@ -166,13 +172,13 @@ void NutHttpProcessAsp(FILE * stream, int fd, int file_len, char* http_root, REQ
     Size = MAX_BUFFER_SIZE;
     WriteCount = 0;
     bASPFuncLen = 0;
-    pASPFunction = NutHeapAlloc(MAX_ASP_FUNC_SIZE);
-    pReadBuffer = NutHeapAlloc(Size);
+    pASPFunction = malloc(MAX_ASP_FUNC_SIZE);
+    pReadBuffer = malloc(Size);
     /*
      * For our VERY SPECIAL case, the size of the WriteBuffer must have one char more
      * as the ReadBuffer. Because we must be able to save one more char from the round before.
      */
-    pWriteBuffer = NutHeapAlloc(Size + 1);
+    pWriteBuffer = malloc(Size + 1);
 
     if ((pReadBuffer != NULL) && (pWriteBuffer != NULL) && (pASPFunction != NULL)) {
 
@@ -283,13 +289,13 @@ void NutHttpProcessAsp(FILE * stream, int fd, int file_len, char* http_root, REQ
     }
 
     if (pReadBuffer != NULL) {
-        NutHeapFree(pReadBuffer);
+        free(pReadBuffer);
     }
     if (pWriteBuffer != NULL) {
-        NutHeapFree(pWriteBuffer);
+        free(pWriteBuffer);
     }
     if (pASPFunction != NULL) {
-        NutHeapFree(pASPFunction);
+        free(pASPFunction);
     }
 }
 

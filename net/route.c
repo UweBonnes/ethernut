@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.6  2008/08/11 07:00:32  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -131,6 +136,7 @@
 #include <net/if_var.h>
 #include <net/route.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 #ifdef NUTDEBUG
@@ -180,7 +186,7 @@ int NutIpRouteAdd(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev)
         rtpp = &rtp->rt_next;
         rtp = rtp->rt_next;
     }
-    if ((rte = NutHeapAlloc(sizeof(RTENTRY))) != 0) {
+    if ((rte = malloc(sizeof(RTENTRY))) != NULL) {
         rte->rt_ip = ip & mask;
         rte->rt_mask = mask;
         rte->rt_gateway = gate;
@@ -211,7 +217,7 @@ int NutIpRouteDelAll(NUTDEVICE * dev)
 
         if (rte->rt_dev == dev || dev == 0) {
             *rtpp = rte->rt_next;
-            NutHeapFree(rte);
+            free(rte);
         } else
             *rtpp = (*rtpp)->rt_next;
     }
@@ -243,7 +249,7 @@ int NutIpRouteDel(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev)
 
         if (rte->rt_ip == ip && rte->rt_mask == mask && rte->rt_gateway == gate && rte->rt_dev == dev) {
             *rtpp = rte->rt_next;
-            NutHeapFree(rte);
+            free(rte);
             rc = 0;
         }
     }
@@ -271,7 +277,7 @@ RTENTRY *NutIpRouteList(int *numEntries)
     }
 
     /* Allocate space for the result. */
-    rc = (RTENTRY *) NutHeapAlloc(sizeof(RTENTRY) * (*numEntries));
+    rc = (RTENTRY *) malloc(sizeof(RTENTRY) * (*numEntries));
 
     /* Fill in the result. */
     if (rc) {

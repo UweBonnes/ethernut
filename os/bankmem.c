@@ -33,6 +33,11 @@
 
 /*!
  * $Log$
+ * Revision 1.7  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.6  2008/08/11 07:00:33  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -122,7 +127,7 @@ char *NutSegBufInit(size_t size)
     if (segbuf_start) {
         NutHeapFree(segbuf_start);
     }
-    if ((segbuf_start = NutHeapAlloc(size)) != 0)
+    if ((segbuf_start = NutHeapAlloc(size)) != NULL)
         segbuf_end = segbuf_start + size;
     segbuf_total = size;
 #endif

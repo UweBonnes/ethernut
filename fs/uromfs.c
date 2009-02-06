@@ -33,6 +33,11 @@
 
 /*
  * $Log$
+ * Revision 1.10  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.9  2009/01/17 11:26:46  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -76,13 +81,14 @@
  *
  */
 
-#include <string.h>
-#include <errno.h>
-#include <stdio.h>
-
 #include <sys/heap.h>
 #include <sys/file.h>
 #include <sys/device.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <stdio.h>
 
 #include <fs/fs.h>
 #include <dev/urom.h>
@@ -176,7 +182,7 @@ static int UromWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
                          int acc)
 {
-    NUTFILE *fp = NutHeapAlloc(sizeof(NUTFILE));
+    NUTFILE *fp = malloc(sizeof(NUTFILE));
     ROMENTRY *rome;
     ROMFILE *romf = 0;
 
@@ -190,7 +196,7 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
             break;
     }
     if (rome) {
-        if ((romf = NutHeapAllocClear(sizeof(ROMFILE))) != 0)
+        if ((romf = calloc(1, sizeof(ROMFILE))) != 0)
             romf->romf_entry = rome;
         else
             errno = ENOMEM;
@@ -202,7 +208,7 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
         fp->nf_dev = dev;
         fp->nf_fcb = romf;
     } else {
-        NutHeapFree(fp);
+        free(fp);
         fp = NUTFILE_EOF;
     }
 
@@ -216,8 +222,8 @@ static int UromClose(NUTFILE * fp)
 {
     if (fp && fp != NUTFILE_EOF) {
         if (fp->nf_fcb)
-            NutHeapFree(fp->nf_fcb);
-        NutHeapFree(fp);
+            free(fp->nf_fcb);
+        free(fp);
     }
     return 0;
 }

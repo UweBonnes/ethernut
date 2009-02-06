@@ -1,6 +1,8 @@
-#include <string.h>
 #include <cfg/http.h>
 #include <sys/heap.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include "httpd_p.h"
 
@@ -53,7 +55,7 @@ char *CreateFilePath(CONST char *url, CONST char *addon)
 {
     char *root = http_root ? http_root : HTTP_DEFAULT_ROOT;
     size_t urll = strlen(url);
-    char *path = NutHeapAlloc(strlen(root) + urll + strlen(addon) + 1);
+    char *path = malloc(strlen(root) + urll + strlen(addon) + 1);
 
     if (path) {
         strcpy(path, root);
@@ -75,23 +77,23 @@ void DestroyRequestInfo(REQUEST * req)
 {
 	if (req) {
 		if (req->req_url)
-			NutHeapFree(req->req_url);
+			free(req->req_url);
 		if (req->req_query)
-			NutHeapFree(req->req_query);
+			free(req->req_query);
 		if (req->req_type)
-			NutHeapFree(req->req_type);
+			free(req->req_type);
 		if (req->req_cookie)
-			NutHeapFree(req->req_cookie);
+			free(req->req_cookie);
 		if (req->req_auth)
-			NutHeapFree(req->req_auth);
+			free(req->req_auth);
 		if (req->req_agent)
-			NutHeapFree(req->req_agent);
+			free(req->req_agent);
 		if (req->req_qptrs)
-			NutHeapFree(req->req_qptrs);
+			free(req->req_qptrs);
 		if (req->req_referer)
-			NutHeapFree(req->req_referer);
+			free(req->req_referer);
 		if (req->req_host)
-			NutHeapFree(req->req_host);
-		NutHeapFree(req);
+			free(req->req_host);
+		free(req);
 	}
 }

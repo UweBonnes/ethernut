@@ -38,6 +38,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.11  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.10  2008/08/11 07:00:35  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -535,23 +540,21 @@ int NutRegisterFtpUser(CONST char *user, CONST char *pass)
 {
     if (ftp_user) {
         free(ftp_user);
-        ftp_user = 0;
+        ftp_user = NULL;
     }
     if (user && *user) {
-        if ((ftp_user = malloc(strlen(user) + 1)) == 0) {
+        if ((ftp_user = strdup(user)) == NULL) {
             return -1;
         }
-        strcpy(ftp_user, user);
     }
     if (ftp_pass) {
         free(ftp_pass);
-        ftp_pass = 0;
+        ftp_pass = NULL;
     }
     if (pass && *pass) {
-        if ((ftp_pass = malloc(strlen(pass) + 1)) == 0) {
+        if ((ftp_pass = strdup(pass)) == NULL) {
             return -1;
         }
-        strcpy(ftp_pass, pass);
     }
     return 0;
 }
@@ -652,11 +655,9 @@ int NutFtpProcessCwd(FTPSESSION * session, char *path)
     if (session->ftp_cwd) {
         free(session->ftp_cwd);
     }
-    if ((session->ftp_cwd = malloc(strlen(cp) + 1)) == 0) {
+    if ((session->ftp_cwd = strdup(cp)) == NULL) {
         return NutFtpRespondBad(session, 550);
     }
-    strcpy(session->ftp_cwd, cp);
-
     return NutFtpRespondOk(session, 250);
 }
 

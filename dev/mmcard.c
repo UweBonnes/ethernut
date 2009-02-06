@@ -39,6 +39,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.14  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.13  2009/01/17 11:26:46  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -784,7 +789,7 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         return NUTFILE_EOF;
     }
 
-    if ((fcb = NutHeapAllocClear(sizeof(MMCFCB))) == 0) {
+    if ((fcb = calloc(1, sizeof(MMCFCB))) == 0) {
         errno = ENOMEM;
         return NUTFILE_EOF;
     }
@@ -792,12 +797,12 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 
     /* Read MBR. */
     if (MmCardReadOrVerify(ifc, 0, fcb->fcb_blkbuf, 0)) {
-        NutHeapFree(fcb);
+        free(fcb);
         return NUTFILE_EOF;
     }
     /* Check for the cookie at the end of this sector. */
 	if (fcb->fcb_blkbuf[DOSPART_MAGICPOS] != 0x55 || fcb->fcb_blkbuf[DOSPART_MAGICPOS + 1] != 0xAA) {
-        NutHeapFree(fcb);
+        free(fcb);
         return NUTFILE_EOF;
 	}
     /* Check for the partition table. */
@@ -828,13 +833,13 @@ NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         }
 
         if (fcb->fcb_part.part_type == PTYPE_EMPTY) {
-            NutHeapFree(fcb);
+            free(fcb);
             return NUTFILE_EOF;
         }
     }
 
     if ((nfp = NutHeapAlloc(sizeof(NUTFILE))) == 0) {
-        NutHeapFree(fcb);
+        free(fcb);
         errno = ENOMEM;
         return NUTFILE_EOF;
     }
@@ -876,9 +881,9 @@ int MmCardUnmount(NUTFILE * nfp)
             if ((*ifc->mmcifc_cd) () == 1) {
                 rc = fcb->fcb_fsdev->dev_ioctl(fcb->fcb_fsdev, FS_VOL_UNMOUNT, NULL);
             }
-            NutHeapFree(fcb);
+            free(fcb);
         }
-        NutHeapFree(nfp);
+        free(nfp);
     }
     return rc;
 }

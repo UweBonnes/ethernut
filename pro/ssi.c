@@ -33,6 +33,11 @@
  
 /*
  * $Log$
+ * Revision 1.13  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.12  2008/08/22 09:23:57  haraldkipp
  * GCC specific implementation removed.
  *
@@ -145,7 +150,7 @@ static void NutSsiProcessFile(FILE * stream, char *filename)
     file_len = _filelength(fd);
     
     size = 512;
-    if ((data = NutHeapAlloc(size)) != 0) {
+    if ((data = malloc(size)) != NULL) {
         while (file_len) {
             if (file_len < 512L)
                 size = (int) file_len;
@@ -155,7 +160,7 @@ static void NutSsiProcessFile(FILE * stream, char *filename)
                 break;
             file_len -= (long) n;
         }
-        NutHeapFree(data);
+        free(data);
     }
 
     _close(fd);
@@ -208,7 +213,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         for (len = 0, cp = (char *)cgi_bin; *cp && *cp != ';'; len++, cp++);
         tmp = cgi_bin;
         if (len && strncasecmp(url, tmp, len) == 0) {
-            if ((req = NutHeapAllocClear(sizeof(REQUEST))) == 0) {
+            if ((req = calloc(1, sizeof(REQUEST))) == 0) {
                 fprintf_P(stream, rsp_intern_err_P);
                 return;
             }
@@ -217,20 +222,18 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             req->req_length = 0;
             
             if (orig_req->req_agent != NULL) {
-                if ((req->req_agent = NutHeapAlloc((strlen(orig_req->req_agent) + 1))) == 0) {
+                if ((req->req_agent = strdup(orig_req->req_agent)) == NULL) {
                     fprintf_P(stream, rsp_intern_err_P);
                     DestroyRequestInfo(req);
                     return;
                 }
-                strcpy(req->req_agent, orig_req->req_agent);
             }
             if (orig_req->req_cookie!= NULL) {
-                if ((req->req_cookie = NutHeapAlloc((strlen(orig_req->req_cookie) + 1))) == 0) {
+                if ((req->req_cookie = strdup(orig_req->req_cookie)) == NULL) {
                     fprintf_P(stream, rsp_intern_err_P);
                     DestroyRequestInfo(req);
                     return;
                 }
-                strcpy(req->req_cookie, orig_req->req_cookie);
             }
             if ((cp = strchr(url, '?')) != 0) {
                 *cp++ = 0;
@@ -240,7 +243,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                     for (i = 0; i < orig_req->req_numqptrs*2; i ++) {
                         size += strlen(orig_req->req_qptrs[i]) + 1;
                     }
-                    if ((req->req_query = NutHeapAlloc(size)) == 0) {
+                    if ((req->req_query = malloc(size)) == NULL) {
                         fprintf_P(stream, rsp_intern_err_P);
                         DestroyRequestInfo(req);
                         return;
@@ -257,22 +260,19 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                     }
 
                 } else {
-                    if ((req->req_query = NutHeapAlloc(strlen(cp) + 1)) == 0) {
+                    if ((req->req_query = strdup(cp)) == NULL) {
                         fprintf_P(stream, rsp_intern_err_P);
                         DestroyRequestInfo(req);
                         return;
                     }
-                    strcpy(req->req_query, cp);
                 }
                 NutHttpProcessQueryString(req);
             }
-            if ((req->req_url = NutHeapAlloc(strlen(url) + 1)) == 0) {
+            if ((req->req_url = strdup(url)) == NULL) {
                 fprintf_P(stream, rsp_intern_err_P);
                 DestroyRequestInfo(req);
                 return;
             }
-            strcpy(req->req_url, url);
-
             NutCgiProcessRequest(stream, req, len);
             DestroyRequestInfo(req);
             return;
@@ -305,21 +305,21 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
             }
             _close(fd);
         }
-        NutHeapFree(filename);
+        free(filename);
     }
     if (fd == -1) {
         fprintf_P(stream, rsp_not_found_P, filename);
-        NutHeapFree(filename);
+        free(filename);
         return;
     }
     
     file_len = _filelength(fd);
     handler = NutGetMimeHandler(filename);
-    NutHeapFree(filename);
+    free(filename);
     
     if (handler == NULL) {
         size = 512;                 // If we have not registered a mime handler handle default.
-        if ((data = NutHeapAlloc(size)) != 0) {
+        if ((data = malloc(size)) != NULL) {
             while (file_len) {
                 if (file_len < 512L) {
                     size = (int) file_len;
@@ -331,7 +331,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                 }
                 file_len -= (long) n;
             }
-            NutHeapFree(data);
+            free(data);
         }
     } else handler(stream, fd, file_len, http_root, orig_req);
     _close(fd);
@@ -476,7 +476,7 @@ static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_
     char *index;
     uint8_t found;
     buffsize = MIN(BUFSIZE, file_len);
-    buffer = NutHeapAlloc(buffsize+1);
+    buffer = malloc(buffsize+1);
     in_comment = 0;
     fpos = 0;
     while (file_len != fpos) {
@@ -521,7 +521,7 @@ static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_
         }
     }
     
-    NutHeapFree(buffer);
+    free(buffer);
 }
 
 /*!

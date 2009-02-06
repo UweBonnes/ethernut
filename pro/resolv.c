@@ -32,6 +32,11 @@
 
 /*
  * $Log$
+ * Revision 1.15  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.14  2008/08/11 07:00:35  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -89,7 +94,6 @@
  */
 
 #include <cfg/os.h>
-#include <string.h>
 
 #include <sys/device.h>
 #include <sys/timer.h>
@@ -98,6 +102,9 @@
 #include <arpa/inet.h>
 #include <net/if_var.h>
 #include <sys/socket.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef NUTDEBUG
 #include <stdio.h>
@@ -224,7 +231,7 @@ static uint16_t ScanName(uint8_t * cp, uint8_t ** npp)
     uint8_t *np;
 
     if (*npp) {
-        NutHeapFree(*npp);
+        free(*npp);
         *npp = 0;
     }
 
@@ -232,7 +239,7 @@ static uint16_t ScanName(uint8_t * cp, uint8_t ** npp)
         return 2;
 
     rc = strlen((char *)cp) + 1;
-    np = *npp = NutHeapAlloc(rc);
+    np = *npp = malloc(rc);
     len = *cp++;
     while (len) {
         while (len--)
@@ -248,8 +255,8 @@ static uint16_t ScanName(uint8_t * cp, uint8_t ** npp)
 static uint16_t ScanBinary(uint8_t * cp, uint8_t ** npp, uint16_t len)
 {
     if (*npp)
-        NutHeapFree(*npp);
-    *npp = NutHeapAlloc(len);
+        free(*npp);
+    *npp = malloc(len);
     memcpy(*npp, cp, len);
 
     return len;
@@ -257,8 +264,8 @@ static uint16_t ScanBinary(uint8_t * cp, uint8_t ** npp, uint16_t len)
 
 static DNSHEADER *CreateDnsHeader(DNSHEADER * doh, uint16_t id)
 {
-    if (doh == 0)
-        doh = NutHeapAllocClear(sizeof(DNSHEADER));
+    if (doh == NULL)
+        doh = calloc(1, sizeof(DNSHEADER));
     if (doh) {
         doh->doh_id = id;
         doh->doh_flags = 0x0100;
@@ -270,7 +277,7 @@ static DNSHEADER *CreateDnsHeader(DNSHEADER * doh, uint16_t id)
 static void ReleaseDnsHeader(DNSHEADER * doh)
 {
     if (doh)
-        NutHeapFree(doh);
+        free(doh);
 }
 
 static uint16_t EncodeDnsHeader(uint8_t * buf, DNSHEADER * doh)
@@ -303,13 +310,12 @@ static uint16_t DecodeDnsHeader(DNSHEADER * doh, uint8_t * buf)
 
 static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, CONST uint8_t * name, uint16_t type)
 {
-    if (doq == 0)
-        doq = NutHeapAllocClear(sizeof(DNSQUESTION));
+    if (doq == NULL)
+        doq = calloc(1, sizeof(DNSQUESTION));
     if (doq) {
         if (doq->doq_name)
-            NutHeapFree(doq->doq_name);
-        doq->doq_name = NutHeapAlloc(strlen((char *)name) + 1);
-        strcpy((char *)doq->doq_name, (char *)name);
+            free(doq->doq_name);
+        doq->doq_name = (uint8_t *)strdup((char *)name);
         doq->doq_type = type;
         doq->doq_class = 1;
     }
@@ -320,8 +326,8 @@ static void ReleaseDnsQuestion(DNSQUESTION * doq)
 {
     if (doq) {
         if (doq->doq_name)
-            NutHeapFree(doq->doq_name);
-        NutHeapFree(doq);
+            free(doq->doq_name);
+        free(doq);
     }
 }
 
@@ -349,8 +355,8 @@ static uint16_t DecodeDnsQuestion(DNSQUESTION * doq, uint8_t * buf)
 
 static DNSRESOURCE *CreateDnsResource(DNSRESOURCE * dor)
 {
-    if (dor == 0)
-        dor = NutHeapAllocClear(sizeof(DNSRESOURCE));
+    if (dor == NULL)
+        dor = calloc(1, sizeof(DNSRESOURCE));
     return dor;
 }
 
@@ -358,10 +364,10 @@ static void ReleaseDnsResource(DNSRESOURCE * dor)
 {
     if (dor) {
         if (dor->dor_name)
-            NutHeapFree(dor->dor_name);
+            free(dor->dor_name);
         if (dor->dor_data)
-            NutHeapFree(dor->dor_data);
-        NutHeapFree(dor);
+            free(dor->dor_data);
+        free(dor);
     }
 }
 
@@ -390,20 +396,18 @@ static uint16_t DecodeDnsResource(DNSRESOURCE * dor, uint8_t * buf)
 void NutDnsConfig2(uint8_t * hostname, uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip)
 {
     if (doc.doc_hostname) {
-        NutHeapFree(doc.doc_hostname);
+        free(doc.doc_hostname);
         doc.doc_hostname = 0;
     }
     if (doc.doc_domain) {
-        NutHeapFree(doc.doc_domain);
+        free(doc.doc_domain);
         doc.doc_domain = 0;
     }
     if (hostname) {
-        doc.doc_hostname = NutHeapAlloc(strlen((char *)hostname) + 1);
-        strcpy((char *)doc.doc_hostname, (char *)hostname);
+        doc.doc_hostname = (uint8_t *)strdup((char *)hostname);
     }
     if (domain) {
-        doc.doc_domain = NutHeapAlloc(strlen((char *)domain) + 1);
-        strcpy((char *)doc.doc_domain, (char *)domain);
+        doc.doc_domain = (uint8_t *)strdup((char *)domain);
     }
     doc.doc_ip1 = pdnsip;
     doc.doc_ip2 = sdnsip;
@@ -490,7 +494,7 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
      */
     if ((sock = NutUdpCreateSocket(0)) == 0)
         return 0;
-    pkt = NutHeapAlloc(512);
+    pkt = malloc(512);
 
     for (retries = 0; retries < 6; retries++) {
 
@@ -578,7 +582,7 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
     ReleaseDnsQuestion(doq);
     ReleaseDnsResource(dor);
 
-    NutHeapFree(pkt);
+    free(pkt);
     NutUdpDestroySocket(sock);
 
     return ip;

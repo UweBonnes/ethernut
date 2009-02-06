@@ -38,6 +38,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.25  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.24  2008/08/11 07:00:35  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -463,7 +468,7 @@ void NutHttpProcessQueryString(REQUEST * req)
         if (*ptr == '&')
             req->req_numqptrs++;
 
-    req->req_qptrs = (char **) NutHeapAlloc(sizeof(char *) * (req->req_numqptrs * 2));
+    req->req_qptrs = (char **) malloc(sizeof(char *) * (req->req_numqptrs * 2));
     if (req->req_qptrs == NULL) {
         /* Out of memory */
         req->req_numqptrs = 0;
@@ -537,7 +542,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
             }
             _close(fd);
         }
-        NutHeapFree(filename);
+        free(filename);
     }
     if (fd == -1) {
         NutHttpSendError(stream, req, 404);
@@ -569,25 +574,23 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         if (req->req_ims && s.st_mtime <= req->req_ims) {
             _close(fd);
             NutHttpSendError(stream, req, 304);
-            NutHeapFree(filename);
+            free(filename);
             return;
         }
 
         /* Save static buffer contents. */
         time_str = Rfc1123TimeString(gmtime(&ftime));
-        if ((modstr = NutHeapAlloc(strlen(time_str) + 1)) != NULL) {
-            strcpy(modstr, time_str);
-        }
+        modstr = strdup(time_str);
     }
 #endif /* HTTPD_EXCLUDE_DATE */
 
     /* Filename no longer used. */
-    NutHeapFree(filename);
+    free(filename);
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
     if (modstr) {
         fprintf(stream, "Last-Modified: %s GMT\r\n", modstr);
-        NutHeapFree(modstr);
+        free(modstr);
     }
 
     file_len = _filelength(fd);
@@ -602,7 +605,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
         if (req->req_method != METHOD_HEAD) {
             size_t size = HTTP_FILE_CHUNK_SIZE;
 
-            if ((data = NutHeapAlloc(size)) != NULL) {
+            if ((data = malloc(size)) != NULL) {
                 while (file_len) {
                     if (file_len < HTTP_FILE_CHUNK_SIZE)
                         size = (size_t) file_len;
@@ -617,7 +620,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
                     }
                     file_len -= (long) n;
                 }
-                NutHeapFree(data);
+                free(data);
             }
         }
     }
@@ -647,7 +650,7 @@ static REQUEST *CreateRequestInfo(void)
 {
     REQUEST *req;
 
-    if ((req = NutHeapAllocClear(sizeof(REQUEST))) != NULL) {
+    if ((req = calloc(1, sizeof(REQUEST))) != NULL) {
         req->req_version = HTTP_MAJOR_VERSION * 10 + HTTP_MINOR_VERSION;
     }
     return req;
@@ -670,9 +673,9 @@ int NutRegisterHttpRoot(char *path)
     int len;
 
     if (http_root)
-        NutHeapFree(http_root);
+        free(http_root);
     if (path && (len = strlen(path)) != 0) {
-        if ((http_root = NutHeapAlloc(len + 1)) != NULL)
+        if ((http_root = malloc(len + 1)) != NULL)
             strcpy(http_root, path);
         else
             return -1;
@@ -728,9 +731,8 @@ static int HeaderFieldValue(char **hfvp, CONST char *str)
         while (*str == ' ' || *str == '\t')
             str++;
         /* Allocate a string copy. */
-        if ((*hfvp = NutHeapAlloc(strlen(str) + 1)) == NULL)
+        if ((*hfvp = strdup(str)) == NULL)
             return -1;
-        strcpy(*hfvp, str);
     }
     return 0;
 }
@@ -762,10 +764,10 @@ void NutHttpProcessRequest(FILE * stream)
         if ((req = CreateRequestInfo()) == NULL)
             break;
         if (method)
-            NutHeapFree(method);
+            free(method);
 
         /* The first line contains method, path and protocol. */
-        if ((method = NutHeapAlloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
+        if ((method = malloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
             break;
         }
         if (fgets(method, HTTP_MAX_REQUEST_SIZE, stream) == NULL) {
@@ -779,7 +781,7 @@ void NutHttpProcessRequest(FILE * stream)
         /*
         * Parse remaining request header lines.
         */
-        if ((line = NutHeapAlloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
+        if ((line = malloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
             break;
         }
         for (;;) {
@@ -830,7 +832,7 @@ void NutHttpProcessRequest(FILE * stream)
 #endif
         }
         if (line) {
-            NutHeapFree(line);
+            free(line);
         }
         path = NextWord(method);
         protocol = NextWord(path);
@@ -879,18 +881,15 @@ void NutHttpProcessRequest(FILE * stream)
 
         if ((cp = strchr(path, '?')) != 0) {
             *cp++ = 0;
-            if ((req->req_query = NutHeapAlloc(strlen(cp) + 1)) == NULL) {
+            if ((req->req_query = strdup(cp)) == NULL) {
                 break;
             }
-            strcpy(req->req_query, cp);
-
             NutHttpProcessQueryString(req);
         }
 
-        if ((req->req_url = NutHeapAlloc(strlen(path) + 1)) == NULL) {
+        if ((req->req_url = strdup(path)) == NULL) {
             break;
         }
-        strcpy(req->req_url, path);
 
         if (NutDecodePath(req->req_url) == 0) {
             NutHttpSendError(stream, req, 400);
@@ -905,7 +904,7 @@ void NutHttpProcessRequest(FILE * stream)
     }
     DestroyRequestInfo(req);
     if (method)
-        NutHeapFree(method);
+        free(method);
 }
 
 /*@}*/

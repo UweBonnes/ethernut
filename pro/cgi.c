@@ -32,6 +32,11 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.7  2008/08/22 09:23:56  haraldkipp
  * GCC specific implementation removed.
  *
@@ -65,8 +70,9 @@
  *
  */
 
-#include <string.h>
 #include <sys/heap.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <pro/httpd.h>
 
@@ -88,11 +94,9 @@ char *cgiBinPath = NULL;
 void NutRegisterCgiBinPath(char *path)
 {
     if (cgiBinPath) {
-        NutHeapFree(cgiBinPath);
+        free(cgiBinPath);
     }
-    
-    cgiBinPath = NutHeapAlloc(strlen(path) + 1);
-    strcpy(cgiBinPath, path);    
+    cgiBinPath = strdup(path);
 }
      
 /*!
@@ -158,12 +162,11 @@ int NutRegisterCgi(char *name, int (*func) (FILE *, REQUEST *))
         cgi = cgi->cgi_next;
     }
     
-    if ((!unique_name) || ((cgi = NutHeapAlloc(sizeof(CGIFUNCTION))) == 0)) {
+    if ((!unique_name) || ((cgi = malloc(sizeof(CGIFUNCTION))) == 0)) {
         return -1;
     }
     cgi->cgi_next = cgiFunctionList;
-    cgi->cgi_name = NutHeapAlloc(strlen(name)+1);
-    strcpy(cgi->cgi_name, name);
+    cgi->cgi_name = strdup(name);
     cgi->cgi_func = func;
     cgiFunctionList = cgi;
 

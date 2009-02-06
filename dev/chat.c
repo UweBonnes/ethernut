@@ -32,6 +32,11 @@
 
 /*
  * $Log$
+ * Revision 1.10  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.9  2008/08/11 06:59:41  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -658,8 +663,7 @@ int NutChat(int fd, CONST char *script)
     /*
      * Work with a local copy of the chat string.
      */
-    if ((buf = malloc(strlen(script) + 1)) != 0) {
-        strcpy(buf, script);
+    if ((buf = strdup(script)) != NULL) {
         rc = NutChatProc(fd, buf);
         free(buf);
     }

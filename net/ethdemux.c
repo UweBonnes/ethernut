@@ -45,6 +45,8 @@
  * \endverbatim
  */
 
+#include <stdlib.h>
+
 #include <sys/types.h>
 #include <sys/heap.h>
 #include <netinet/if_ether.h>
@@ -133,7 +135,7 @@ int NutRegisterEthHandler(uint16_t type, uint16_t mask, int (*hdlr)(NUTDEVICE *,
 
     if (ep == NULL) {
         /* No existing entry. Allocate a new one. */
-        ep = NutHeapAllocClear(sizeof(ETH_PROTOCOLS));
+        ep = calloc(1, sizeof(ETH_PROTOCOLS));
         if (ep == NULL) {
             return -1;
         }

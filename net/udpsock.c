@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.11  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.10  2008/08/20 06:57:00  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -143,6 +148,7 @@
  *
  */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <sys/heap.h>
@@ -199,7 +205,7 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
         } while (sock);
         port = last_local_port;
     }
-    if ((sock = NutHeapAllocClear(sizeof(UDPSOCKET))) != 0) {
+    if ((sock = calloc(1, sizeof(UDPSOCKET))) != 0) {
         sock->so_local_port = htons(port);
         sock->so_next = udpSocketList;
         udpSocketList = sock;
@@ -317,7 +323,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
                 sock->so_rx_nb = nb->nb_next;
                 NutNetBufFree(nb);
             }
-            NutHeapFree(sock);
+            free(sock);
             rc = 0;
             break;
         }

@@ -40,6 +40,11 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.9  2008/08/11 07:00:36  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -76,6 +81,7 @@
 #include <pro/sntp.h>
 #include <sys/socket.h>
 #include <sys/heap.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../crt/ctime.h"
 #include <stdio.h>
@@ -129,7 +135,7 @@ THREAD(SNTP_resync, arg)
     int retry = 0;
     time_t t;
 
-    NutHeapFree(arg);
+    free(arg);
 
     NutThreadSetPriority(63);
     for (;;) {
@@ -170,7 +176,7 @@ int NutSNTPGetTime(uint32_t * server_adr, time_t * t)
     if (server_adr == NULL)
         return -1;
 
-    if ((data = NutHeapAllocClear(sizeof(*data))) == NULL)
+    if ((data = calloc(1, sizeof(*data))) == NULL)
         goto error;
 
     sock = NutUdpCreateSocket(0);       /* allocate new udp socket */
@@ -204,21 +210,22 @@ int NutSNTPGetTime(uint32_t * server_adr, time_t * t)
     if (sock)
         NutUdpDestroySocket(sock);
     if (data)
-        NutHeapFree(data);
+        free(data);
     return result;
 }
 
 int NutSNTPStartThread(uint32_t server_addr, uint32_t interval)
 {
-    struct SNTP_resync_args *arg = NutHeapAlloc(sizeof(struct SNTP_resync_args));
+    struct SNTP_resync_args *arg = malloc(sizeof(struct SNTP_resync_args));
     if (!arg)
         return -1;
     arg->server_addr = server_addr;
     arg->interval = interval;
-    if (NutThreadCreate("sntpc", SNTP_resync, arg, NUT_THREAD_SNTPSTACK))
+    if (NutThreadCreate("sntpc", SNTP_resync, arg, 
+        (NUT_THREAD_SNTPSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD))
         return 0;
     else {
-        NutHeapFree(arg);
+        free(arg);
         return -1;
     }
 }

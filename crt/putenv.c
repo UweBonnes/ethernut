@@ -55,8 +55,7 @@ int putenv(CONST char *string)
     char *name;
 
     NUTASSERT(string != NULL);
-    if ((name = malloc(strlen(string) + 1)) != NULL) {
-        strcpy(name, string);
+    if ((name = strdup(string)) != NULL) {
         if ((value = strchr(name, '=')) != NULL) {
 	    *value++ = 0;
         }

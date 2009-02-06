@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.23  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.22  2008/08/20 06:57:00  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -192,6 +197,7 @@
 #include <cfg/os.h>
 #include <sys/types.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>
@@ -285,11 +291,11 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
         NutTcpDiscardBuffers(sock);
         if (sock->so_devocnt)
         {
-            NutHeapFree(sock->so_devobuf);
+            free(sock->so_devobuf);
             sock->so_devocnt = 0;
         }
         memset(sock, 0, sizeof(TCPSOCKET));
-        NutHeapFree(sock);
+        free(sock);
     }
 }
 
@@ -369,7 +375,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
         }
         registered = 1;
     }
-    if ((sock = NutHeapAllocClear(sizeof(TCPSOCKET))) != 0) {
+    if ((sock = calloc(1, sizeof(TCPSOCKET))) != 0) {
         sock->so_state = TCPS_CLOSED;
 
         /*
@@ -983,11 +989,11 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     if (size == 0) {
         if (sock->so_devocnt) {
             if (SendBuffer(sock, sock->so_devobuf, sock->so_devocnt) < 0) {
-                NutHeapFree(sock->so_devobuf);
+                free(sock->so_devobuf);
                 sock->so_devocnt = 0;
                 return -1;
             }
-            NutHeapFree(sock->so_devobuf);
+            free(sock->so_devobuf);
             sock->so_devocnt = 0;
         }
         return 0;
@@ -1011,7 +1017,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
          * and store them
          */
         if (rc) {
-            if (!(sock->so_devobuf = NutHeapAlloc(sock->so_devobsz)))
+            if (!(sock->so_devobuf = malloc(sock->so_devobsz)))
                 return -1;
             memcpy(sock->so_devobuf, buffer, rc);
             sock->so_devocnt = rc;
@@ -1033,7 +1039,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     memcpy(sock->so_devobuf + sock->so_devocnt, buffer, sz);
     buffer += sz;
     if (SendBuffer(sock, sock->so_devobuf, sock->so_devobsz) < 0) {
-        NutHeapFree(sock->so_devobuf);
+        free(sock->so_devobuf);
         sock->so_devocnt = 0;
         return -1;
     }
@@ -1046,7 +1052,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     if (sz >= sock->so_devobsz) {
         rc = size % sock->so_devobsz;
         if (SendBuffer(sock, buffer, sz - rc) < 0) {
-            NutHeapFree(sock->so_devobuf);
+            free(sock->so_devobuf);
             sock->so_devocnt = 0;
             return -1;
         }
@@ -1059,7 +1065,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     if (rc)
         memcpy(sock->so_devobuf, buffer, rc);
     else                        /* Otherwise free buffer */
-        NutHeapFree(sock->so_devobuf);
+        free(sock->so_devobuf);
     sock->so_devocnt = rc;
 
     return size;

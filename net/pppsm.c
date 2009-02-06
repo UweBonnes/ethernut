@@ -34,6 +34,11 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.8  2008/08/11 07:00:32  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -197,7 +202,8 @@ THREAD(NutPppSm, arg)
  */
 int NutPppInitStateMachine(NUTDEVICE * dev)
 {
-    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev, NUT_THREAD_PPPSMSTACK)) == 0) {
+    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev, 
+        (NUT_THREAD_PPPSMSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) == 0) {
         return -1;
     }
     return 0;

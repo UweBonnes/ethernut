@@ -48,6 +48,7 @@ NutWinsNameQuery  (  "myboard", inet_addr(MYIP) ) ;
 /* ********************************************************* */
 
 #include <cfg/os.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <sys/heap.h>
@@ -100,14 +101,14 @@ int NutWinsNameQuery(char * name, uint32_t ipaddr)
     int i, j;
     if (strlen(name) > 15)
         return -1;
-    if (((pkt = NutHeapAllocClear(sizeof(WINSHEADER))) == NULL) ||      /* */
-        ((encoded = NutHeapAllocClear(33)) == NULL) ||  /* */
+    if (((pkt = calloc(1, sizeof(WINSHEADER))) == NULL) ||      /* */
+        ((encoded = calloc(33, 1)) == NULL) ||  /* */
         ((sock = NutUdpCreateSocket(137)) == 0) /* NETBIOS UDP port */
         ) {
         if (pkt != NULL)
-            NutHeapFree(pkt);
+            free(pkt);
         if (encoded != NULL)
-            NutHeapFree(encoded);
+            free(encoded);
         return -1;
     }
     j = 0;

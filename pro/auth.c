@@ -32,6 +32,11 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/02/06 15:40:29  haraldkipp
+ * Using newly available strdup() and calloc().
+ * Replaced NutHeap routines by standard malloc/free.
+ * Replaced pointer value 0 by NULL.
+ *
  * Revision 1.4  2008/07/17 11:29:15  olereinhardt
  * Allow authentication for subdirectories
  *
@@ -54,8 +59,10 @@
  *
  */
 
-#include <string.h>
 #include <sys/heap.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include "dencode.h"
 #include <pro/httpd.h>
@@ -104,22 +111,20 @@ int NutRegisterAuth(CONST char *dirname, CONST char *login)
     AUTHINFO *auth;
 
     /* Allocate a new list element. */
-    if ((auth = NutHeapAlloc(sizeof(AUTHINFO))) != NULL) {
+    if ((auth = malloc(sizeof(AUTHINFO))) != NULL) {
         auth->auth_next = authList;
         /* Allocate the path component. */
-        if ((auth->auth_dirname = NutHeapAlloc(strlen(dirname) + 1)) != NULL) {
-            strcpy(auth->auth_dirname, dirname);
+        if ((auth->auth_dirname = strdup(dirname)) != NULL) {
             /* Allocate the login component. */
-            if ((auth->auth_login = NutHeapAlloc(strlen(login) + 1)) != NULL) {
-                strcpy(auth->auth_login, login);
+            if ((auth->auth_login = strdup(login)) != NULL) {
                 /* Success. Add element to the list and return. */
                 authList = auth;
                 return 0;
             }
             /* Allocation failed. */
-            NutHeapFree(auth->auth_dirname);
+            free(auth->auth_dirname);
         }
-        NutHeapFree(auth);
+        free(auth);
     }
     return -1;
 }
@@ -138,9 +143,9 @@ void NutClearAuth(void)
     while (authList) {
         auth = authList;
         authList = auth->auth_next;
-        NutHeapFree(auth->auth_dirname);
-        NutHeapFree(auth->auth_login);
-        NutHeapFree(auth);
+        free(auth->auth_dirname);
+        free(auth->auth_login);
+        free(auth);
     }
 }
 
