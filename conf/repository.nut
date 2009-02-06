@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.38  2009/02/06 15:52:44  haraldkipp
+-- Introduced target independent symbols for external interrutps.
+--
 -- Revision 1.37  2009/01/18 16:44:56  haraldkipp
 -- Introduced target independent port numbers.
 -- Distinguish between PIO IDs and port numbers.
@@ -190,6 +193,18 @@ gpio_port_choice = {
                     "NUTGPIO_PORTJ",
                     "NUTGPIO_PORTK",
                     "NUTGPIO_PORTL"
+                  }
+
+gpio_irq_choice = { 
+                    " ", 
+                    "NUTGPIO_EXTINT0", 
+                    "NUTGPIO_EXTINT1", 
+                    "NUTGPIO_EXTINT2", 
+                    "NUTGPIO_EXTINT3", 
+                    "NUTGPIO_EXTINT4", 
+                    "NUTGPIO_EXTINT5", 
+                    "NUTGPIO_EXTINT6", 
+                    "NUTGPIO_EXTINT7" 
                   }
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
