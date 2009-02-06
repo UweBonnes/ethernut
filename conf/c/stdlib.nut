@@ -33,6 +33,10 @@
 -- Standard C runtime
 --
 -- $Log$
+-- Revision 1.2  2009/02/06 15:45:02  haraldkipp
+-- Routines using heap memory moved from c to crt module.
+-- We now have strdup() and calloc().
+--
 -- Revision 1.1  2005/07/20 09:18:58  haraldkipp
 -- Subdivided
 --
@@ -57,20 +61,6 @@ nutc_stdlib =
             "stdlib/labs.c",
             "stdlib/strtol.c",
             "stdlib/strtoul.c"
-        }
-    },
-    {
-        name = "nutc_stdlib_heap",
-        brief = "Additional Heap Routines",
-        description = "Although some runtime libraries provide "..
-                      "identical routines, we better use our own to avoid "..
-                      "memory management conflicts.\nFor historical reasons "..
-                      "malloc and free are part of another component.",
-        requires = { "NUT_HEAPMEM" },
-        provides = { "C_STDLIB" },
-        sources = 
-        { 
-            "stdlib/calloc.c"
         }
     }
 }

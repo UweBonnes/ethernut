@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.12  2009/02/06 15:45:03  haraldkipp
+-- Routines using heap memory moved from c to crt module.
+-- We now have strdup() and calloc().
+--
 -- Revision 1.11  2008/10/10 11:51:38  haraldkipp
 -- Floating point provision added.
 --
@@ -291,9 +295,17 @@ nutcrt =
     {
         name = "nutcrt_malloc",
         brief = "Heap memory",
+        description = "Although some runtime libraries provide "..
+                      "identical routines, we better use our own to avoid "..
+                      "memory management conflicts.",
         requires = { "NUT_HEAPMEM" },
         provides = { "CRT_HEAPMEM" },
-        sources = { "malloc.c" }
+        sources = 
+        { 
+            "calloc.c", 
+            "malloc.c", 
+            "strdup.c" 
+        }
     },
     {
         name = "nutcrt_sbrk",

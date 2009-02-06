@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/02/06 15:45:04  haraldkipp
+ * Routines using heap memory moved from c to crt module.
+ * We now have strdup() and calloc().
+ *
  * Revision 1.5  2008/08/11 11:51:20  thiagocorrea
  * Preliminary Atmega2560 compile options, but not yet supported.
  * It builds, but doesn't seam to run properly at this time.
@@ -179,6 +183,11 @@
 #elif !defined(SM) && defined(SM0) && defined(SM1) && defined(SM2)
 #define _SLEEP_MODE_MASK (_BV(SM0) | _BV(SM1) | _BV(SM2))
 #endif
+#endif
+
+#if defined(__AVR_LIBC_VERSION__)
+extern void *calloc(size_t num, size_t size);
+extern char *strdup(CONST char *str);
 #endif
 
 #endif /* _ARCH_AVR_GCC_H_ */
