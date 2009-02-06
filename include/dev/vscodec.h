@@ -42,17 +42,36 @@
 #include <cfg/audio.h>
 #include <sys/device.h>
 
+#include <stdint.h>
+
+/* For backward compatibility. */
+#if defined(AUDIO_VS1001K)
+#define AUDIO0_VS1001K
+#elif defined(AUDIO_VS1011E)
+#define AUDIO0_VS1011E
+#elif defined(AUDIO_VS1002D)
+#define AUDIO0_VS1002D
+#elif defined(AUDIO_VS1003B)
+#define AUDIO0_VS1003B
+#elif defined(AUDIO_VS1033C)
+#define AUDIO0_VS1033C
+#elif defined(AUDIO_VS1053B)
+#define AUDIO0_VS1053B
+#elif defined(AUDIO_VSAUTO)
+#define AUDIO0_VSAUTO
+#endif
+
 /*
 ** Include codec features.
 */
-#if defined(AUDIO_VS1001K)
+#if defined(AUDIO0_VS1001K)
 #include <dev/vs1001.h>
-#elif defined(AUDIO_VS1011E)
+#elif defined(AUDIO0_VS1011E)
 #include <dev/vs1011.h>
-#elif defined(AUDIO_VS1053B)
+#elif defined(AUDIO0_VS1053B)
 #include <dev/vs1053.h>
-#elif !defined(AUDIO_VSAUTO)
-#define AUDIO_VSAUTO
+#elif !defined(AUDIO0_VSAUTO)
+#define AUDIO0_VSAUTO
 #endif
 
 /*!
@@ -66,12 +85,21 @@
 /*@{*/
 
 /* DAC min/max gain in dB. */
+#ifndef AUDIO0_DAC_MIN_GAIN
+#define AUDIO0_DAC_MIN_GAIN      -127
+#endif
+#ifndef AUDIO0_DAC_MAX_GAIN
+#define AUDIO0_DAC_MAX_GAIN      0
+#endif
+
+/* Backward compatibility, still used. */
 #ifndef AUDIO_DAC_MIN_GAIN
-#define AUDIO_DAC_MIN_GAIN      -127
+#define AUDIO_DAC_MIN_GAIN      AUDIO0_DAC_MIN_GAIN
 #endif
 #ifndef AUDIO_DAC_MAX_GAIN
-#define AUDIO_DAC_MAX_GAIN      0
+#define AUDIO_DAC_MAX_GAIN      AUDIO0_DAC_MAX_GAIN
 #endif
+
 
 /*
  * I/O control codes.
@@ -648,6 +676,10 @@
  */
 #if VS_HAS_SC_ADD
 #define VS_SC_ADD           0x1800
+#define VS_SC_ADD_NONE      0x0000
+#define VS_SC_ADD_1_0       0x0800
+#define VS_SC_ADD_1_5       0x1000
+#define VS_SC_ADD_2_0       0x1800
 #endif
 
 /*! \brief Clock multiplier. 
@@ -657,6 +689,14 @@
  */
 #if VS_HAS_SC_MULT
 #define VS_SC_MULT          0xE000
+#define VS_SC_MULT_1_0      0x0000
+#define VS_SC_MULT_2_0      0x2000
+#define VS_SC_MULT_2_5      0x4000
+#define VS_SC_MULT_3_0      0x6000
+#define VS_SC_MULT_3_5      0x8000
+#define VS_SC_MULT_4_0      0xA000
+#define VS_SC_MULT_4_5      0xC000
+#define VS_SC_MULT_5_0      0xE000
 #endif
 
 /*! \brief Clock doubler enable. 
@@ -703,12 +743,8 @@
  */
 #if VS_HAS_AD_STEREO_BIT0
 #define VS_AD_STEREO        0x0001
-#define VS_AD_SAMRATE       0xFFFE
-#define VS_AD_SAMRATE_LSB   1
 #else
 #define VS_AD_STEREO        0x8000
-#define VS_AD_SAMRATE       0x7FFF
-#define VS_AD_SAMRATE_LSB   0
 #endif
 
 /*! \brief Current sampling rate mask.
@@ -720,9 +756,14 @@
  * a low sample rate.
  */
 #if VS_HAS_AD_SAMRATE
+#if VS_HAS_AD_STEREO_BIT0
 #define VS_AD_SAMRATE       0xFFFE
 /*! \brief Crystal clock LSB. */
 #define VS_AD_SAMRATE_LSB   1
+#else
+#define VS_AD_SAMRATE       0x7FFF
+#define VS_AD_SAMRATE_LSB   0
+#endif
 #endif
 
 /*! \brief Current bit rate mask.
@@ -1045,33 +1086,62 @@ typedef struct __attribute__((packed)) {
 } VS_HEADERINFO;
 #endif
 
+#ifndef VSCODEC_CMD_TIMEOUT
+/*! \brief Minimum time in milliseconds to held hardware reset low. */
+#define VSCODEC_CMD_TIMEOUT         NUT_WAIT_INFINITE
+#endif
+
+/*!
+ * \brief Internal codec control block.
+ */
+typedef struct _VSDCB {
+    int dcb_pbstat;         /*!< \brief Playback status. */
+    uint32_t dcb_scmd;      /*!< \brief Requested command flags, see VSREQ_ flags. */
+    int dcb_rvol;           /*!< \brief Volume of right channel. */
+    int dcb_lvol;           /*!< \brief Volume of left channel. */
+    uint16_t dcb_sinefreq;  /*!< \brief Requested beep frequency. */
+    uint32_t dcb_pbwlo;     /*!< \brief Playback buffer low watermark. */
+    uint32_t dcb_pbwhi;     /*!< \brief Playback buffer high watermark. */
+    uint32_t dcb_wtmo;      /*!< \brief Write timeout. */
+    HANDLE dcb_bufque;      /*!< \brief Buffer change event. */
+    HANDLE dcb_feedme;      /*!< \brief Decoder hungry event. */
+    uint16_t dcb_codec_ver; /*!< \brief Chip version, 1001, 1002, 1053 etc. */
+    char dcb_codec_rev;     /*!< \brief Chip revision character. */
+    int (*dcb_isready)(void);
+    int (*dcb_sendcmd)(void *, size_t);
+    int (*dcb_senddata)(CONST uint8_t *, size_t);
+} VSDCB;
+
+#ifndef VSCODEC_DATA_CHUNK_SIZE
+/*! \brief Number of data bytes we can send without checking DREQ. */
+#define VSCODEC_DATA_CHUNK_SIZE     32
+#endif
+
+extern uint8_t zero_chunk[VSCODEC_DATA_CHUNK_SIZE];
+
 extern NUTDEVICE devVsCodec;
+extern NUTDEVICE devSpiVsCodec0;
+
+/*@}*/
 
 __BEGIN_DECLS
 /* Function prototypes */
+extern int VsCodecWaitReady(NUTDEVICE *dev, uint32_t tmo);
+extern uint16_t VsCodecReg(NUTDEVICE *dev, uint_fast8_t op, uint_fast8_t reg, uint_fast16_t val);
+extern uint16_t VsCodecMode(NUTDEVICE *dev, uint_fast16_t flags, uint_fast16_t mask);
+extern int VsDecoderSetVolume(NUTDEVICE *dev, int left, int right);
+extern uint16_t VsCodecBeep(NUTDEVICE *dev, uint16_t fsin);
+extern int VsDecoderBufferInit(NUTDEVICE *dev, uint32_t size);
+extern int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf);
+extern int VsCodecWrite(NUTFILE * nfp, CONST void *data, int len);
+NUTFILE *VsCodecOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern int VsCodecClose(NUTFILE * nfp);
 
-#if 0
-extern int VsPlayerInit(void);
-extern int VsPlayerReset(uint16_t mode);
-extern int VsPlayerSetMode(uint16_t mode);
-extern int VsPlayerKick(void);
-extern int VsPlayerStop(void);
-extern int VsPlayerFlush(void);
-extern ureg_t VsPlayerInterrupts(ureg_t enable);
-extern ureg_t VsPlayerThrottle(ureg_t on);
-
-extern uint16_t VsPlayTime(void);
-extern unsigned int VsGetStatus(void);
-#ifdef __GNUC__
-extern int VsGetHeaderInfo(VS_HEADERINFO *vshi);
-#endif
-extern uint16_t VsMemoryTest(void);
-
-extern int VsSetVolume(ureg_t left, ureg_t right);
-extern int VsBeep(uint8_t fsin, uint8_t ms);
+#ifdef __HARVARD_ARCH__
+extern int VsCodecWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif
 
-/*@}*/
+extern void FeederThread(void *arg) __attribute__ ((noreturn));
 
 __END_DECLS
 /* End of prototypes */

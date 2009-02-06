@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.53  2009/02/06 15:48:08  haraldkipp
+-- New audio driver for VLSI chips uses the SPI bus.
+--
 -- Revision 1.52  2009/01/30 08:57:16  haraldkipp
 -- Added auto detected VS10xx.
 -- Default audio decoder reset recover times changed to 0.
@@ -1239,12 +1242,329 @@ nutdev =
     },
 
     {
+        name = "nutdev_spi_mlcd",
+        brief = "Mega LCD",
+        description = "Currently a dummy without any function.",
+        sources = { "spi_mlcd.c" },
+        requires = { "SPIBUS_CONTROLLER", "HW_GPIO" },
+    },
+
+    {
+        name = "nutdev_spi_vscodec0",
+        brief = "VLSI Audio Codec",
+        description = "Early release tested with VS1053B on SAM7SE.",
+        sources = { "spi_vscodec.c", "spi_vscodec0.c" },
+        requires = { "SPIBUS_CONTROLLER", "HW_GPIO" },
+        options =
+        {
+            {
+                macro = "AUDIO0_VSAUTO",
+                brief = "Auto Detect",
+                description = "Generates significantly more code. Untested.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1001K",
+                brief = "VS1001K",
+                description = "Untested.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1011E",
+                brief = "VS1011E",
+                description = "Untested.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1002D",
+                brief = "VS1002D",
+                description = "Untested.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1003B",
+                brief = "VS1003B",
+                description = "Untested.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1033C",
+                brief = "VS1033C",
+                description = "Untested.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1053B",
+                brief = "VS1053B",
+                description = "Tested with SAM7SE.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VSCODEC0_FREQ",
+                brief = "Crystal Clock Frequency",
+                description = "Frequency of the crystal clock in Hz.\n\n"..
+                              "Tested with default of 12,288 MHz only",
+                default = "12288000",
+                flavor = "booldata",                             
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VSCODEC0_SPI_MODE",
+                brief = "SPI Mode",
+                description = "SPI mode of command channel, 0 is default.",
+                type = "integer",
+                default = "0",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VSCODEC0_SPI_RATE",
+                brief = "SPI Bitrate",
+                description = "Interface speed in bits per second, default is VSCODEC_FREQ/6.",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VSCODEC0_XRESET_PORT",
+                brief = "XRESET GPIO Port",
+                description = "ID of the port used for VS10XX hardware reset.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_XRESET_BIT",
+                brief = "XRESET GPIO Bit",
+                description = "Port bit used for VS10XX hardware.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_SIGNAL_IRQ",
+                brief = "Decoder Interrupt",
+                description = "External interrupt line used for DREQ interrupt. "..
+                              "Must match DREQ port and bit settings.",
+                type = "enumerated",
+                choices = gpio_irq_choice,
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_DREQ_PORT",
+                brief = "DREQ GPIO Port",
+                description = "ID of the port used for VS10XX DREQ.\n\n"..
+                              "Must correspond with the selected interrupt input.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_DREQ_BIT",
+                brief = "DREQ GPIO Bit",
+                description = "Port bit used for VS10XX DREQ.\n\n"..
+                              "Must correspond with the selected interrupt input.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_XCS_PORT",
+                brief = "XCS GPIO Port",
+                description = "ID of the port used for VS10XX XCS.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_XCS_BIT",
+                brief = "XCS GPIO Bit",
+                description = "Port bit used for VS10XX XCS.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_XDCS_PORT",
+                brief = "XDCS GPIO Port",
+                description = "ID of the port used for VS10XX XDCS.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_XDCS_BIT",
+                brief = "XDCS GPIO Bit",
+                description = "Port bit used for VS10XX XDCS.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_VSCS_PORT",
+                brief = "VSCS GPIO Port",
+                description = "ID of the port used for VS10XX general select.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_VSCS_BIT",
+                brief = "VSCS GPIO Bit",
+                description = "Port bit used for VS10XX general select.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_BSYNC_PORT",
+                brief = "BSYNC GPIO Port",
+                description = "Unsupported. ID of the port used for optional VS10XX BSYNC.",
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_BSYNC_BIT",
+                brief = "BSYNC GPIO Bit",
+                description = "Unsupported. Port bit used for optional VS10XX BSYNC.\n\n"..
+                              "Required for the VS1001. Other decoders are driven "..
+                              "in VS1001 mode, if this bit is defined. However, "..
+                              "it is recommended to use this option for the VS1001 "..
+                              "only and run newer chips in so called VS1002 native mode.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "VSCODEC0_HWRST_DURATION",
+                brief = "Hardware Reset Duration",
+                description = "Minimum time in milliseconds to held hardware reset low.",
+                default = "1",
+                flavor = "integer",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VSCODEC0_HWRST_RECOVER",
+                brief = "Hardware Reset Recover",
+                description = "Milliseconds to wait after hardware reset.",
+                default = "0",
+                flavor = "integer",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VSCODEC_SWRST_RECOVER",
+                brief = "Software Reset Recover",
+                description = "Milliseconds to wait after software reset.",
+                default = "0",
+                flavor = "integer",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "VSCODEC0_OUTPUT_BUFSIZ",
+                brief = "Decoder Buffer Size",
+                description = "Number of bytes for the decoder buffer.\n\n"..
+                              "If not specified, half of available data RAM is used, "..
+                              "up to a maximum of 16k.",
+                flavor = "booldata",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "NUT_THREAD_VSCODEC0STACK",
+                brief = "Thread Stack Size",
+                description = "Number of bytes for the decoder thread.",
+                flavor = "booldata",
+                file = "include/cfg/audio.h"
+            },
+        },
+    },
+
+    {
         name = "nutdev_vscodec",
         brief = "VS10XX Audio Device",
         description = "Tested with VS1033 and VS1053 on a SAM7SE system. "..
                       "Most options are currently hard coded.",
         sources = { "vscodec.c" },
-        requires = { "HW_MCU_AT91SAM7SE" },
+        requires = { "NOT_AVAILABLE" },
     },
 
     --
@@ -1356,8 +1676,16 @@ nutdev =
                 description = "Interface speed in bits per second, default is 33000000 (33Mbps).\n\n"..
                               "If the exact value can't be set, the driver will choose the "..
                               "next lower one. Bit banging interfaces always run at maximum speed.",
-                description = ".",
                 default = "33000000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "SPI_MODE_AT45D0",
+                brief = "Transfer Mode (First Device)",
+                description = "Either mode 3 (default) or mode 0 is supported.",
+                default = "SPI_MODE_3",
+                type = "enumerated",
+                choices = { "SPI_MODE_3", "SPI_MODE_0" },
                 file = "include/cfg/memory.h"
             },
             {
@@ -1682,112 +2010,6 @@ nutdev =
         requires = { "DEV_SPI", "HW_GPIO" },
         options =
         {
-            {
-                macro = "AUDIO_VSAUTO",
-                brief = "Auto Detect",
-                description = "Uses more code.",
-                flavor = "boolean",
-                exclusivity = {
-                    "AUDIO_VSAUTO",
-                    "AUDIO_VS1001K",
-                    "AUDIO_VS1011E",
-                    "AUDIO_VS1002D",
-                    "AUDIO_VS1003B",
-                    "AUDIO_VS1033C",
-                    "AUDIO_VS1053B"
-                },
-                file = "include/cfg/audio.h"
-            },
-            {
-                macro = "AUDIO_VS1001K",
-                brief = "VS1001K",
-                flavor = "boolean",
-                exclusivity = {
-                    "AUDIO_VSAUTO",
-                    "AUDIO_VS1001K",
-                    "AUDIO_VS1011E",
-                    "AUDIO_VS1002D",
-                    "AUDIO_VS1003B",
-                    "AUDIO_VS1033C",
-                    "AUDIO_VS1053B"
-                },
-                file = "include/cfg/audio.h"
-            },
-            {
-                macro = "AUDIO_VS1011E",
-                brief = "VS1011E",
-                flavor = "boolean",
-                exclusivity = {
-                    "AUDIO_VSAUTO",
-                    "AUDIO_VS1001K",
-                    "AUDIO_VS1011E",
-                    "AUDIO_VS1002D",
-                    "AUDIO_VS1003B",
-                    "AUDIO_VS1033C",
-                    "AUDIO_VS1053B"
-                },
-                file = "include/cfg/audio.h"
-            },
-            {
-                macro = "AUDIO_VS1002D",
-                brief = "VS1002D",
-                flavor = "boolean",
-                exclusivity = {
-                    "AUDIO_VSAUTO",
-                    "AUDIO_VS1001K",
-                    "AUDIO_VS1011E",
-                    "AUDIO_VS1002D",
-                    "AUDIO_VS1003B",
-                    "AUDIO_VS1033C",
-                    "AUDIO_VS1053B"
-                },
-                file = "include/cfg/audio.h"
-            },
-            {
-                macro = "AUDIO_VS1003B",
-                brief = "VS1003B",
-                flavor = "boolean",
-                exclusivity = {
-                    "AUDIO_VSAUTO",
-                    "AUDIO_VS1001K",
-                    "AUDIO_VS1011E",
-                    "AUDIO_VS1002D",
-                    "AUDIO_VS1003B",
-                    "AUDIO_VS1033C",
-                    "AUDIO_VS1053B"
-                },
-                file = "include/cfg/audio.h"
-            },
-            {
-                macro = "AUDIO_VS1033C",
-                brief = "VS1033C",
-                flavor = "boolean",
-                exclusivity = {
-                    "AUDIO_VSAUTO",
-                    "AUDIO_VS1001K",
-                    "AUDIO_VS1011E",
-                    "AUDIO_VS1002D",
-                    "AUDIO_VS1003B",
-                    "AUDIO_VS1033C",
-                    "AUDIO_VS1053B"
-                },
-                file = "include/cfg/audio.h"
-            },
-            {
-                macro = "AUDIO_VS1053B",
-                brief = "VS1053B",
-                flavor = "boolean",
-                exclusivity = {
-                    "AUDIO_VSAUTO",
-                    "AUDIO_VS1001K",
-                    "AUDIO_VS1011E",
-                    "AUDIO_VS1002D",
-                    "AUDIO_VS1003B",
-                    "AUDIO_VS1033C",
-                    "AUDIO_VS1053B"
-                },
-                file = "include/cfg/audio.h"
-            },
             {
                 macro = "VS10XX_FREQ",
                 brief = "Crystal Clock Frequency",
