@@ -41,6 +41,7 @@
  */
 
 #include <sys/types.h>
+#include <sys/heap.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -209,6 +210,9 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
         return NULL;
     }
     for (;;) {
+        if (NutHeapAvailable() < 8192) {
+            break;
+        }
         /* Read the next tag. */
         if (UxmlReadTag(stream, tag, MAX_UXMLTAG_SIZE)) {
             /* No more tags or error. */
