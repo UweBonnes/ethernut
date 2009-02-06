@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2009/02/06 15:53:42  haraldkipp
+ * Corrected a bug with non-negated chip selects.
+ *
  * Revision 1.8  2009/01/17 11:26:46  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -220,14 +223,14 @@
 #elif defined(AT45DB_SBBI0_DEVICE)
 
 #include <dev/sbbif0.h>
-#if defined(VS10XX_RESET_ACTIVE_HIGH)
+#if defined(AT45DB_RESET_ACTIVE_HIGH)
 #define SpiReset(act)       Sbbi0ChipReset(AT45DB_SBBI0_DEVICE, act)
 #else
 #define SpiReset(act)       Sbbi0ChipReset(AT45DB_SBBI0_DEVICE, !act)
 #endif
 #define SpiSetMode()        Sbbi0SetMode(AT45DB_SBBI0_DEVICE, AT45DB_SPI_MODE)
 #define SpiSetSpeed()       Sbbi0SetSpeed(AT45DB_SBBI0_DEVICE, AT45DB_SPI_RATE)
-#if defined(VS10XX_SELECT_ACTIVE_HIGH)
+#if defined(AT45DB_SELECT_ACTIVE_HIGH)
 #define SpiSelect()         Sbbi0SelectDevice(AT45DB_SBBI0_DEVICE)
 #define SpiDeselect()       Sbbi0DeselectDevice(AT45DB_SBBI0_DEVICE)
 #else
