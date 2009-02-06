@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2009/02/06 15:58:08  haraldkipp
+ * We now have strdup() and calloc().
+ *
  * Revision 1.10  2008/09/18 09:48:07  haraldkipp
  * The old Marv_XXX do no longer work with ICCAVR 7.18B.
  *
@@ -137,6 +140,7 @@
 #define scanf       scanf_M
 #define gets        gets_M
 #define malloc      malloc_M
+#define calloc      calloc_M
 #define realloc     realloc_M
 #define free        free_M
 
@@ -378,6 +382,9 @@
 #define eeprom_read_block(dst, addr, size)  EEPROMReadBytes((int)addr, dst, size)
 #define eeprom_write_byte(addr, src)        EEPROMwrite((int)addr, src)
 #define eeprom_read_byte(addr)              EEPROMread((int)addr)
+
+extern void *calloc(size_t num, size_t size);
+extern char *strdup(CONST char *str);
 
 
 #endif /* _ARCH_AVR_ICC_H_ */
