@@ -1,4 +1,8 @@
-$Id: ChangeLog,v 1.521 2009/02/06 16:01:18 haraldkipp Exp $
+$Id: ChangeLog,v 1.522 2009/02/08 01:00:33 thiagocorrea Exp $
+
+2009-02-04  Thiago A. Correa <thiago.correa@gmail.com>
+        
+	* app/uart/uart.c: Remove unused variable.
 
 2009-02-06  Harald Kipp  <harald.kipp@egnite.de>
 

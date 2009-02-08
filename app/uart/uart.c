@@ -32,6 +32,9 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2009/02/08 01:00:33  thiagocorrea
+ * Remove unused variable in sample app
+ *
  * Revision 1.5  2008/01/31 09:38:15  haraldkipp
  * Added return statement in main to avoid warnings with latest GCC.
  *
@@ -106,7 +109,6 @@ static char inbuf[128];
 int main(void)
 {
     int got;
-    int i;
     char *cp;
     u_long baud = 115200;
     FILE *uart;
@@ -174,7 +176,7 @@ int main(void)
      * Nut/OS never expects a thread to return. So we enter an 
      * endless loop here.
      */
-    for (i = 0;; i++) {
+    for (;;) {
         /*
          * A bit more advanced input routine is able to read a string 
          * up to and including the first newline character or until a
