@@ -33,6 +33,9 @@
  
 /*
  * $Log$
+ * Revision 1.14  2009/02/13 14:43:11  haraldkipp
+ * Memory overflow bug fixed.
+ *
  * Revision 1.13  2009/02/06 15:40:29  haraldkipp
  * Using newly available strdup() and calloc().
  * Replaced NutHeap routines by standard malloc/free.
@@ -99,6 +102,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <memdebug.h>
 
 #include <sys/heap.h>
 #include <sys/version.h>
@@ -239,7 +243,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
                 *cp++ = 0;
                 if (strcmp(cp, "$QUERY_STRING") == 0) {
                     uint16_t size;
-                    size = 0;
+                    size = 1; /* At least 1 for empty requests. */
                     for (i = 0; i < orig_req->req_numqptrs*2; i ++) {
                         size += strlen(orig_req->req_qptrs[i]) + 1;
                     }
