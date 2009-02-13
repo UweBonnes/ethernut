@@ -49,41 +49,28 @@
 /*@{*/
 
 /*!
- * \brief Allocate a block from heap memory.
- *
- * This function simply calls NutHeapAlloc(). It overrides the function
- * of the runtime library, when the application is linked with nutcrt or
- * nutcrtf.
- *
- * \param len Size of the requested memory block.
- *
- * \return Pointer to the allocated memory block if the
- *         function is successful or NULL if the requested
- *         amount of memory is not available.
- */
-void *malloc(size_t len)
+* \brief Reallocate a block from heap memory.
+*
+* This function simply calls NutHeapRealloc(). It overrides the function
+* of the runtime library, when the application is linked with nutcrt or
+* nutcrtf.
+*
+* \param ptr Pointer to memory block previously allocated with malloc to be reallocated.
+*            If this is NULL, a new block is allocated.
+* \param len Size of the requested memory block.
+*
+* \return Pointer to the reallocated memory block if the
+*         function is successful or NULL if the requested
+*         amount of memory is not available.
+*/
+void *realloc(void* ptr, size_t len)
 {
     void *p;
 
-    if ((p = NutHeapAlloc(len)) == NULL) {
+    if ((p = NutHeapRealloc(ptr, len)) == NULL) {
         errno = ENOMEM;
     }
     return p;
-}
-
-/*!
- * \brief Return a block to heap memory.
- *
- * This function simply calls NutHeapFree(). It overrides the function
- * of the runtime library, when the application is linked with nutcrt or
- * nutcrtf.
- *
- * \param p Points to a memory block previously allocated
- *          through a call to malloc().
- */
-void free(void *p)
-{
-    NutHeapFree(p);
 }
 
 /*@}*/
