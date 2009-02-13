@@ -1,8 +1,7 @@
-#ifndef _SYS_NUTDEBUG_H_
-#define _SYS_NUTDEBUG_H_
-
 /*
- * Copyright (C) 2008 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,23 +30,42 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
+ */
+
+/*!
+ * \file os/panic.c
+ * \brief Panic handler.
  *
- */
-
-/*
+ * \verbatim
  * $Id$
+ * \endverbatim
  */
 
-#include <cfg/memory.h>
-#include <sys/types.h>
+#include <stdio.h>
+#include <sys/atom.h>
+#include <sys/nutdebug.h>
 
-#if defined(NUTDEBUG_USE_ASSERT)
-#define NUTASSERT(c) ((c) ? (void)0 : NUTFATAL(__func__, __FILE__, __LINE__, #c))
-#else
-#define NUTASSERT(c)
-#endif
+/*!
+ * \brief This function is called on fatal errors.
+ *
+ * The function will enter a critical section and print a description
+ * of the problem to stdout. It is assumed, that stdout is available 
+ * and has been assigned to a debug output device, such as devDebug or
+ * similar. Then the function will enter an endless loop, which
+ * freezes the system.
+ *
+ * If this is not, what the application is expected to do on fatal
+ * errors or if no debug device has been assigned to stdout, the
+ * application must define its own version of this routine.
+ *
+ * \param fmt Format string containing conversion specifications.
+ */
+void NUTPANIC(CONST char *fmt, ...)
+{
+    va_list ap;
 
-extern void NUTPANIC(CONST char *fmt, ...);
-extern void NUTFATAL(CONST char *, CONST char *, int, CONST char *);
-
-#endif
+    NutEnterCritical();
+    va_start(ap, fmt);
+    vfprintf(stdout, fmt, ap);
+    for(;;);
+}

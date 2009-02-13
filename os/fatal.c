@@ -65,7 +65,5 @@
  */
 void NUTFATAL(CONST char *func, CONST char *file, int line, CONST char *expected)
 {
-    NutEnterCritical();
-    printf("%s:%d: Fatal: Expected %s in %s\n", file, line, expected, func);
-    for(;;);
+    NUTPANIC("%s:%d: Fatal: Expected %s in %s\n", file, line, expected, func);
 }
