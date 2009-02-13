@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.22  2009/02/13 14:43:53  haraldkipp
+-- Heap debug options and split memory flag added.
+-- Banked memory options moved to the right module.
+-- NUTPANIC added.
+--
 -- Revision 1.21  2009/02/06 15:52:14  haraldkipp
 -- Removed stack size defaults.
 --
@@ -136,6 +141,26 @@ nutos =
         options =
         {
             {
+                macro = "NUTMEM_GUARD",
+                brief = "Guard Bytes",
+                description = "If enabled, guard bytes will be added to both ends when "..
+                              "new memory is allocated. When memory is released later, "..
+                              "these guard bytes will be checked in order to detect "..
+                              "memory overflows.",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTDEBUG_HEAP",
+                brief = "Heap Debugging",
+                description = "If enabled, additional code will be added to the heap "..
+                              "management to track memory allocation. This helps to "..
+                              "detect memory leaks. Furthermore, problems are reported "..
+                              "by calling NUTPANIC with a source code reference.",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
                 macro = "NUTMEM_SIZE",
                 brief = "Memory Size",
                 description = "Number of bytes available in fast data memory. On "..
@@ -188,37 +213,11 @@ nutos =
                 file = "include/cfg/memory.h"
             },
             {
-                macro = "NUTBANK_COUNT",
-                brief = "Memory Banks",
-                description = "Number of memory banks.\n\n"..
-                              "Specially on 8-bit systems the address space is typically "..
-                              "very limited. To overcome this, some hardware implementations "..
-                              "like the Ethernut 2 reference design provide memory banking. "..
-                              "Right now this is supported for the AVR platform only.",
-                requires = { "HW_MCU_AVR" },
-                provides = { "NUTBANK_COUNT" },
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "NUTBANK_START",
-                brief = "Banked Memory Start",
-                description = "First address of the banked memory area.",
-                requires = { "NUTBANK_COUNT" },
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "NUTBANK_SIZE",
-                brief = "Banked Memory Size",
-                description = "Size of the banked memory area.",
-                requires = { "NUTBANK_COUNT" },
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "NUTBANK_SR",
-                brief = "Bank Select Register",
-                description = "Address of the bank select register.",
-                requires = { "NUTBANK_COUNT" },
+                macro = "NUTMEM_SPLIT_FAST",
+                brief = "Split Memory",
+                description = "If enabled and if two memory regions are available on the "..
+                              "target board, then each region is managed separately.",
+                flavor = "boolean",
                 file = "include/cfg/memory.h"
             },
             {
@@ -252,7 +251,7 @@ nutos =
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
                 makedefs = { "DATA_SEG" }
-            },
+            }
         }
     },
     {
@@ -263,7 +262,44 @@ nutos =
                       "use banked memory hardware.",
         -- requires = { "HW_MCU_AVR" },
         provides = { "NUT_SEGBUF" },
-        sources = { "bankmem.c" }
+        sources = { "bankmem.c" },
+        options =
+        {
+            {
+                macro = "NUTBANK_COUNT",
+                brief = "Memory Banks",
+                description = "Number of memory banks.\n\n"..
+                              "Specially on 8-bit systems the address space is typically "..
+                              "very limited. To overcome this, some hardware implementations "..
+                              "like the Ethernut 2 reference design provide memory banking. "..
+                              "Right now this is supported for the AVR platform only.",
+                requires = { "HW_MCU_AVR" },
+                provides = { "NUTBANK_COUNT" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTBANK_START",
+                brief = "Banked Memory Start",
+                description = "First address of the banked memory area.",
+                requires = { "NUTBANK_COUNT" },
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTBANK_SIZE",
+                brief = "Banked Memory Size",
+                description = "Size of the banked memory area.",
+                requires = { "NUTBANK_COUNT" },
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTBANK_SR",
+                brief = "Bank Select Register",
+                description = "Address of the bank select register.",
+                requires = { "NUTBANK_COUNT" },
+                file = "include/cfg/memory.h"
+            }
+        }
     },
 
     --
@@ -537,8 +573,8 @@ nutos =
         name = "nutos_fatal",
         brief = "Fatal Error Handler",
         description = "This default handler may be overridden by "..
-                      "a NUTFATAL routine provided by the application.",
-        sources = { "fatal.c" }
+                      "NUTFATAL and NUTPANIC routines provided by the application.",
+        sources = { "fatal.c", "panic.c" }
     }
 }
 
