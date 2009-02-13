@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.14  2009/02/13 14:47:12  haraldkipp
+ * memory alignment macros added.
+ *
  * Revision 1.13  2008/08/11 07:00:28  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -165,6 +168,27 @@ extern "C" {
  * \weakgroup xgNutOS
  */
 /*@{*/
+
+#ifndef NUTMEM_ALIGNMENT
+#if defined(__avr__)
+#define	NUTMEM_ALIGNMENT        1
+#elif defined(__ARM__)
+#define	NUTMEM_ALIGNMENT        4
+#else
+#define	NUTMEM_ALIGNMENT        sizeof(int)
+#endif
+#endif
+
+/*!
+ * \brief Return the next lower aligned value.
+ */
+#define	NUTMEM_BOTTOM_ALIGN(s)  ((s) & ~(NUTMEM_ALIGNMENT - 1))
+
+/*!
+ * \brief Return the next higher aligned value.
+ */
+#define	NUTMEM_TOP_ALIGN(s)     NUTMEM_BOTTOM_ALIGN((s + (NUTMEM_ALIGNMENT - 1)))
+
 
 #if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
 
