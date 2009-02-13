@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2001-2005 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,106 +31,10 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
  */
 
 /*
- * $Log$
- * Revision 1.22  2009/02/04 20:30:29  thiagocorrea
- * Fix compile for 32 bit ARCHs with OS Debug enabled.
- *
- * Revision 1.21  2009/01/17 11:26:52  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.20  2008/08/11 06:56:27  haraldkipp
- * Corrected size type of NutHeapRealloc().
- *
- * Revision 1.19  2008/07/29 07:27:46  haraldkipp
- * Removed setBeef from NutHeapAdd (crashes EIR).
- *
- * Revision 1.18  2008/07/07 07:39:10  haraldkipp
- * Fixes data abort exception on ARM.
- *
- * Revision 1.17  2008/06/28 08:35:38  haraldkipp
- * Replaced inline by INLINE.
- *
- * Revision 1.16  2008/06/25 08:28:39  freckle
- * added new function NutHeapRealloc
- *
- * Revision 1.15  2008/06/25 07:59:41  freckle
- * more detailed error msgs for NutHeapFree
- *
- * Revision 1.13  2008/06/15 17:07:15  haraldkipp
- * Rolled back to version 1.11.
- *
- * Revision 1.11  2006/10/05 17:26:15  haraldkipp
- * Fixes bug #1567729. Thanks to Ashley Duncan.
- *
- * Revision 1.10  2006/09/29 12:26:14  haraldkipp
- * All code should use dedicated stack allocation routines. For targets
- * allocating stack from the normal heap the API calls are remapped by
- * preprocessor macros.
- * Stack allocation code moved from thread module to heap module.
- * Adding static attribute to variable 'available' will avoid interference
- * with application code. The ugly format macros had been replaced by
- * converting all platform specific sizes to unsigned integers.
- *
- * Revision 1.9  2005/08/02 17:47:04  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.8  2005/07/26 15:49:59  haraldkipp
- * Cygwin support added.
- *
- * Revision 1.7  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2004/11/08 18:15:02  haraldkipp
- * Very bad hack to support 32-bit boundaries.
- *
- * Revision 1.5  2004/04/07 12:13:58  haraldkipp
- * Matthias Ringwald's *nix emulation added
- *
- * Revision 1.4  2004/03/19 09:05:12  jdubiec
- * Fixed format strings declarations for AVR.
- *
- * Revision 1.3  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.2  2003/07/20 16:04:36  haraldkipp
- * Nicer debug output
- *
- * Revision 1.1.1.1  2003/05/09 14:41:49  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.18  2003/05/06 18:53:10  harald
- * Use trace flag
- *
- * Revision 1.17  2003/03/31 14:53:30  harald
- * Prepare release 3.1
- *
- * Revision 1.16  2003/02/04 18:15:56  harald
- * Version 3 released
- *
- * Revision 1.15  2002/06/26 17:29:44  harald
- * First pre-release with 2.4 stack
- *
+ * $Id$
  */
 
 /*!
@@ -137,154 +44,196 @@
 /*@{*/
 
 #include <cfg/os.h>
-#include <compiler.h>
-#include <string.h>
-
-#include <sys/atom.h>
 #include <sys/heap.h>
 
+#include <string.h>
 #include <stdint.h>
 
-#ifdef NUTDEBUG
-#include <sys/osdebug.h>
+#ifdef NUTDEBUG_HEAP
+#include <sys/nutdebug.h>
 #endif
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-#define ARCH_32BIT
+/*
+ * Set optional memory guard bytes.
+ */
+#ifdef NUTMEM_GUARD
+#ifndef NUTMEM_GUARD_PATTERN
+#define NUTMEM_GUARD_PATTERN   ((int)(0xDEADBEEF))
+#endif
+#define NUTMEM_GUARD_BYTES     sizeof(NUTMEM_GUARD_PATTERN)
+#else /* NUTMEM_GUARD */
+#define NUTMEM_GUARD_BYTES     0
+#endif /* NUTMEM_GUARD */
+
+/*! \brief Number of bytes used for management information. */
+#define NUT_HEAP_OVERHEAD   (sizeof(HEAPNODE) - sizeof(HEAPNODE *))
+
+/*! \brief Minimum size of a node. */
+#ifndef NUTMEM_HEAPNODE_MIN
+#define NUTMEM_HEAPNODE_MIN (sizeof(HEAPNODE) + (2 * NUTMEM_GUARD_BYTES))
 #endif
 
 /*!
- * \brief List of free nodes.
+ * \brief List of free nodes in normal memory.
  */
-HEAPNODE *volatile heapFreeList;
+HEAPNODE *heapFreeList;
 
+#ifdef NUTMEM_SPLIT_FAST
 /*!
- * \brief Number of bytes available.
+ * \brief List of free nodes in fast memory.
  */
-static size_t available;
+HEAPNODE *heapFreeList;
+#endif
 
+#ifdef NUTDEBUG_HEAP
 /*!
- * \brief Overhead for each allocated memory clock.
- * \showinitializer
+ * \brief List of allocated nodes.
  */
-/* MEMOVHD = sizeof(HEAPNODE:hn_size) + sizeof(0xDEADBEEF) */
-#define MEMOVHD (sizeof(size_t) + sizeof(0xDEADBEEF))
+static HEAPNODE *heapAllocList;
+#endif
 
-/*!
- * \brief Set Beef to heapnode
- * \param node A valid Heapnode without beef
+/*
+ * Prepare the user region.
+ *
+ * Returns a pointer to the memory block's user region, after optionally
+ * having added guard patterns at both ends.
  */
-static INLINE void setBeef(HEAPNODE * node){
-    // Shouldn't it be sizeof(uint32_t) instead of sizeof(0xDEADBEEF)? 
-	*((uint32_t *) ((uintptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) = 0xDEADBEEF;
+static INLINE void *PrepareUserArea(HEAPNODE * node)
+{
+    int *tp = (int *) &node->hn_next;
+#ifdef NUTMEM_GUARD
+    size_t off = (node->hn_size - NUT_HEAP_OVERHEAD) / sizeof(int) - 2;
+
+    *tp++ = NUTMEM_GUARD_PATTERN;
+    *(tp + off) = NUTMEM_GUARD_PATTERN;
+#endif
+    return tp;
 }
 
-/*!
- * \brief Check Beef of an heapnode
- * \param node A valid Heapnode with beef
- * \return !0 Beef is ok
- * \return 0 Beef is not ok
- * \bug Results in data abort exception on ARM.
+/*
+ * Validate the user region.
+ *
+ * If we have guarded user regions, then this routine will do a sanity
+ * check. If the guards had been overridden, then -1 is returned.
+ * However, if running in debug mode, then NUTPANIC is called instead.
+ *
+ * If the guards are still OK or if guard protection is not available,
+ * then zero is returned.
  */
-static INLINE char checkBeef(HEAPNODE * node){
-#if !defined(ARCH_32BIT)
-	// This crashed on AT91R40008 (Ethernut 3)
-	return (*((uint32_t *) ((uintptr_t) node + node->hn_size - sizeof(0xDEADBEEF))) == 0xDEADBEEF);
+#ifdef NUTDEBUG_HEAP
+static INLINE int DebugValidateUserArea(HEAPNODE * node, CONST char *file, int line)
 #else
-	return 1;
+static INLINE int ValidateUserArea(HEAPNODE * node)
 #endif
+{
+#ifdef NUTMEM_GUARD
+    size_t off = (node->hn_size - NUT_HEAP_OVERHEAD) / sizeof(int) - 1;
+    int *tp = (int *) &node->hn_next;
+
+#ifdef NUTDEBUG_HEAP
+    if (*tp != NUTMEM_GUARD_PATTERN) {
+        NUTPANIC("%s:%d: Bad memory block at %p\n", file, line, tp + 1);
+        return -1;
+    }
+    if (*(tp + off) != NUTMEM_GUARD_PATTERN) {
+        NUTPANIC("%s:%d: Bad memory block at %p with %u bytes allocated in %s:%d\n", file, line, tp + 1, node->ht_size, node->ht_file, node->ht_line);
+        return -1;
+    }
+#else
+    if (*tp != NUTMEM_GUARD_PATTERN || *(tp + off) != NUTMEM_GUARD_PATTERN) {
+        return -1;
+    }
+#endif
+#endif
+    return 0;
 }
 
+#ifdef NUTDEBUG_HEAP
+/*
+ * Remove a node from the allocation list.
+ */
+static void DebugUnalloc(HEAPNODE * entry, CONST char *file, int line)
+{
+    HEAPNODE *ht = heapAllocList;
+    HEAPNODE **htp = &heapAllocList;
+
+    while (ht && ht != entry) {
+        htp = &ht->ht_next;
+        ht = ht->ht_next;
+    }
+    if (ht) {
+        *htp = entry->ht_next;
+    } else {
+        NUTPANIC("%s:%d: Memory block at %p never alloced\n", file, line, entry);
+    }
+}
+#endif
+
 /*!
- * \brief
- * Allocate a block from heap memory.
+ * \brief Allocate a block from heap memory.
  *
- * This functions allocates a memory block of the specified
- * size and returns a pointer to that block.
+ * This functions allocates a memory block of the specified size and 
+ * returns a pointer to that block.
  *
- * The actual size of the allocated block is larger than the
- * requested size because of space required for maintenance
- * information. This additional information is invisible to
- * the application.
+ * The actual size of the allocated block is larger than the requested 
+ * size because of space required for maintenance information. This 
+ * additional information is invisible to the application.
  *
- * The routine looks for the smallest block that will meet
- * the required size and releases it to the caller. If the
- * block being requested is usefully smaller than the smallest
- * free block then the block from which the request is being
- * met is split in two. The unused portion is put back into
- * the free-list.
+ * The routine looks for the smallest block that will meet the required 
+ * size and releases it to the caller. If the block being requested is 
+ * usefully smaller than the smallest free block then the block from 
+ * which the request is being met is split in two. The unused portion is 
+ * put back into the free-list.
  *
- * The contents of the allocated block is unspecified.
- * To allocate a block with all bytes set to zero use
- * NutHeapAllocClear().
+ * The contents of the allocated block is unspecified. To allocate a 
+ * block with all bytes set to zero use NutHeapAllocClear().
  *
- * \note Do not use this function in interrupt routines.
- *
+ * \param root Points to the linked list of free nodes.
  * \param size Size of the requested memory block.
  *
- * \return Pointer to the allocated memory block if the
- *         function is successful or NULL if the requested
- *         amount of memory is not available.
+ * \return Pointer to the allocated memory block if the function is 
+ *         successful or NULL if no free block of the requested size
+ *         is available.
  */
-void *NutHeapAlloc(size_t size)
+#ifdef NUTDEBUG_HEAP
+void *NutHeapDebugRootAlloc(HEAPNODE ** root, size_t size, CONST char *file, int line)
+#else
+void *NutHeapRootAlloc(HEAPNODE ** root, size_t size)
+#endif
 {
     HEAPNODE *node;
     HEAPNODE **npp;
-    HEAPNODE *fit = 0;
-    HEAPNODE **fpp = 0;
+    HEAPNODE *fit = NULL;
+    HEAPNODE **fpp = NULL;
+    size_t need;
 
-#if defined(ARCH_32BIT)
-    /*
-     * Align to the word boundary
-     */
-    while ((size & 0x03) != 0)
-        size++;
-#endif
-
-    if (size >= available) {
-#ifdef NUTDEBUG
-        if (__heap_trf)
-            fputs("MEMOVR\n", __heap_trs);
-#endif
-        return 0;
+    /* Determine the minimum size. Add optional guard and alignment bytes.
+       ** Make sure that a HEAPNODE structure fits. */
+    need = size + NUT_HEAP_OVERHEAD + 2 * NUTMEM_GUARD_BYTES;
+    if (need < sizeof(HEAPNODE)) {
+        need = sizeof(HEAPNODE);
     }
-
-    /*
-     * We need additional space in front of the allocated memory
-     * block to store its size. If this is still less than the
-     * space required by a free node, increase it.
-     */
-    if ((size += MEMOVHD) < sizeof(HEAPNODE))
-        size = sizeof(HEAPNODE);
+    need = NUTMEM_TOP_ALIGN(need);
 
     /*
      * Walk through the linked list of free nodes and find the best fit.
      */
-    node = heapFreeList;
-    npp = (HEAPNODE **) & heapFreeList;
+    node = *root;
+    npp = root;
     while (node) {
-
-        /*
-         * Found a note that fits?
-         */
-        if (node->hn_size >= size) {
-            /*
-             * If it's an exact match, we don't
-             * search any further.
-             */
-            if (node->hn_size == size) {
+        /* Found a note that fits? */
+        if (node->hn_size >= need) {
+            /* Is it the first one we found or was the previous 
+               ** one larger? */
+            if (fit == NULL || fit->hn_size > node->hn_size) {
+                /* This is the best fit so far. */
                 fit = node;
                 fpp = npp;
-                break;
-            }
-
-            /*
-             * Is it the first one we found
-             * or was the previous one larger?
-             */
-            if (fit == 0 || (fit->hn_size > node->hn_size)) {
-                fit = node;
-                fpp = npp;
+                /* Is this an exact match? */
+                if (node->hn_size == need) {
+                    /* Exact match found. Stop searching. */
+                    break;
+                }
             }
         }
         npp = &node->hn_next;
@@ -292,30 +241,30 @@ void *NutHeapAlloc(size_t size)
     }
 
     if (fit) {
-        /*
-         * If the node we found is larger than the
-         * required space plus the space needed for
-         * a new node plus a defined threshold, then
-         * we split it.
-         */
-        if (fit->hn_size > size + sizeof(HEAPNODE) + ALLOC_THRESHOLD) {
-            node = (HEAPNODE *) ((uintptr_t) fit + size);
-            node->hn_size = fit->hn_size - size;
+        /* Is remaining space of the node we found large enough for 
+           another node? Honor the specified threshold. */
+        if (fit->hn_size - need >= NUTMEM_HEAPNODE_MIN) {
+            /* Split the node. */
+            node = (HEAPNODE *) ((uintptr_t) fit + need);
+            node->hn_size = fit->hn_size - need;
             node->hn_next = fit->hn_next;
-            fit->hn_size = size;
+            fit->hn_size = need;
             *fpp = node;
-        } else
+        } else {
+            /* Use the full node. */
             *fpp = fit->hn_next;
-
-        available -= fit->hn_size;
-        setBeef(fit);
-        fit = (HEAPNODE *) & fit->hn_next;
-    }
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        fprintf(__heap_trs, "\n[H%x,A%d/%d] ", (unsigned int)(uintptr_t) fit, (int)(((HEAPNODE *) (((uintptr_t *) fit) - 1))->hn_size), (int)size);
-    }
+        }
+#ifdef NUTDEBUG_HEAP
+        /* Add debug information. */
+        fit->ht_size = size;
+        fit->ht_file = file;
+        fit->ht_line = line;
+        /* Add to allocation list. */
+        fit->ht_next = heapAllocList;
+        heapAllocList = fit;
 #endif
+        fit = (HEAPNODE *) PrepareUserArea(fit);
+    }
     return fit;
 }
 
@@ -326,217 +275,102 @@ void *NutHeapAlloc(size_t size)
  * size with all bytes initialized to zero and returns a
  * pointer to that block.
  *
+ * \param root Points to the linked list of free nodes.
  * \param size Size of the requested memory block.
  *
  * \return Pointer to the allocated memory block if the
  *         function is successful or NULL if the requested
  *         amount of memory is not available.
  */
-void *NutHeapAllocClear(size_t size)
+#ifdef NUTDEBUG_HEAP
+void *NutHeapDebugRootAllocClear(HEAPNODE ** root, size_t size, CONST char *file, int line)
 {
     void *ptr;
 
-    if ((ptr = NutHeapAlloc(size)) != 0)
+    if ((ptr = NutHeapDebugRootAlloc(root, size, file, line)) != 0)
         memset(ptr, 0, size);
 
     return ptr;
 }
+#else
+void *NutHeapRootAllocClear(HEAPNODE ** root, size_t size)
+{
+    void *ptr;
 
-/**
- * \brief Change the size of a memoryblock. If more memory is 
- * 				requested than available at that block the data
- * 				is copied to a new, bigger block.
- * 
- * \param block Points to a memory block previously allocated
- *				through a call to NutHeapAlloc(). If block is 
- * 				NULL this call is equivalent to malloc.
- * \param size The size of the new allocated block.
- * 
- * \return > NULL A pointer to the memoryblock
- * \return NULL Reallocation has failed. The data is still 
- * 				available at the old address.
- * \todo see if we can do some codesharing with malloc
- * \todo add some checks like reallocating free mem, etc
- */
-void * NutHeapRealloc( void * block, size_t size){
-	HEAPNODE *node;
-	HEAPNODE **npp;
-	HEAPNODE *fnode;
-	HEAPNODE *newNode;
-	size_t size_miss;
-	void * newmem;
-    
-	//basic forwarding
-	if(size == 0){
-		if( NutHeapFree(block) == 0){
-			return block;
-		} else {
-			return NULL;
-		} 
-	} else if(block == NULL){
-		return 	NutHeapAlloc(size);
-	}
-    
-	/*
-	 * Convert our block into a node.
-	 */
-	fnode = (HEAPNODE *) (((uintptr_t *) block) - 1);
-    
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        if (!checkBeef(fnode)){
-            fputs("\nMEMCORR-", __heap_trs);  	
-        }
-    }
-#endif
-    
-	// Calculate minimum size
-	if ((size += MEMOVHD) < sizeof(HEAPNODE))
-		size = sizeof(HEAPNODE);
-    
-#ifdef NUTDEBUG
-	if (__heap_trf)
-		fprintf(__heap_trs, "\n[H%x,R%d] ", (unsigned int)(uintptr_t) block, (int)fnode->hn_size);
-#endif
-	
-	if (size > fnode->hn_size){	 //More ram is needed
-		//Check whether there is a free node behind.
-		node = heapFreeList;
-		npp = (HEAPNODE **) & heapFreeList;
-		size_miss = size - fnode->hn_size;
-		//Find the first node behind the node to realloc
-		while(node != NULL && fnode < node){			 
-			npp = &node->hn_next;
-			node = node->hn_next;
-		} 
-		
-		if(node != NULL){ // There is a node behind the node
-			/*
-			 * If a free node is following us _and_ is big enough: use it!
-			 */
-			if (((uintptr_t) fnode + fnode->hn_size) == (uintptr_t) node &&  node->hn_size >= size_miss) {
-				if(node->hn_size + ALLOC_THRESHOLD >= size_miss){ //split next block
-					newNode = (HEAPNODE *) ((uintptr_t) node + size_miss); //create new node;
-					//Memove seves difficulties when allocating less then HEAPNODE bytes
-					memmove(newNode, node, sizeof(HEAPNODE)); 
-					newNode->hn_size -= size_miss;
-					//newNode->hn_next is already ok.
-					*npp = newNode;	//link previous node to new node.
-					fnode->hn_size = size; //Adjust size of current node
-					available -= size_miss;
-				} else { //Fits nicely
-					*npp = node->hn_next;	//Link previous node 
-					fnode->hn_size += node->hn_size;
-					available -= node->hn_size;
-				}
-				setBeef(fnode);
-#ifdef NUTDEBUG
-                if (__heap_trf) {
-                    fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fnode, (int)(((HEAPNODE *) ((size_t *) fnode - 1))->hn_size), (int)size);
-                }
-#endif
-				return block; 
-			}
-		}
-        
-		//Failed to resize -> move
-		newmem = NutHeapAlloc(size);
-		if(newmem == NULL) return NULL; //Failed to allocate a big enough block.
-		memcpy(newmem, block, fnode->hn_size - MEMOVHD); //MWMOVHD must not to be moved!!!
-		NutHeapFree(block);
-		return newmem;
-	} 
-	
-	//The new size is smaller. 
-	if(size + REALLOC_THRESHOLD + MEMOVHD < fnode->hn_size){	
-		newNode = (HEAPNODE *) ((uintptr_t) fnode + size); //behind realloc node
-		newNode->hn_size = fnode->hn_size - size; //set size of freed mem
-		fnode->hn_size = size; //Adjust the size of the realloc node
-		setBeef(fnode); //Add new beef to current node
-		NutHeapFree((void *)((size_t *) newNode + 1)); //Free the block				
-	}
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        fprintf(__heap_trs, "\n[H%x,R%d/%d] ", (unsigned int)(uintptr_t) fnode, (int)(((HEAPNODE *) ((size_t *) fnode - 1))->hn_size), (int)size);
-    }
-#endif
-	return block;
+    if ((ptr = NutHeapRootAlloc(root, size)) != 0)
+        memset(ptr, 0, size);
+
+    return ptr;
 }
-
+#endif
 
 /*!
  * \brief Return a block to heap memory.
  *
- * An application calls this function, when a previously
- * allocated memory block is no longer needed.
+ * An application calls this function, when a previously allocated 
+ * memory block is no longer needed.
  *
- * The heap manager checks, if the released block adjoins any
- * other free regions. If it does, then the adjacent free regions
- * are joined together to form one larger region.
+ * The heap manager checks, if the released block adjoins any other 
+ * free regions. If it does, then the adjacent free regions are joined 
+ * together to form one larger region.
  *
- * \note Do not use this function in interrupt routines.
+ * \param root  Points to the linked list of free nodes.
+ * \param block Points to a memory block previously allocated.
  *
- * \param block Points to a memory block previously allocated
- *              through a call to NutHeapAlloc().
- *
- * \return 0 on success, -1 if the caller tried to free
- *         a block which had been previously released.
- * \return -1 if the caller tried to free a block which had been previously released.
- * \return -2 if Beef is not valid. Block will not be freed
- * \return -3 block is NULL
+ * \return 0 on success, -1 if the caller tried to free a block which 
+ *         had been previously released, -2 if the block had been
+ *         corrupted. Furthermore, -3 is returned if block is a NULL
+ *         pointer, but using this may change as C99 allows this.
  */
-int NutHeapFree(void *block)
+#ifdef NUTDEBUG_HEAP
+int NutHeapDebugRootFree(HEAPNODE ** root, void *block, CONST char *file, int line)
+#else
+int NutHeapRootFree(HEAPNODE ** root, void *block)
+#endif
 {
     HEAPNODE *node;
     HEAPNODE **npp;
     HEAPNODE *fnode;
-    size_t size;
 
-    if(block == NULL) return -3;
-
-    /*
-     * Convert our block into a node.
-     */
-    fnode = (HEAPNODE *) (((uintptr_t *) block) - 1);
-
-#ifdef NUTDEBUG
-    if (__heap_trf) {
-        if (block) {
-            if (!checkBeef(fnode)) {
-                fputs("\nMEMCORR-", __heap_trs);
-            }
-        } else {
-            fputs("\nMEMNULL", __heap_trs);
-        } 
+    /* IMHO, this should be removed. It adds additional code, which is
+       useless for most applications. Those, who are interested, can
+       easily do their own check. C99 declares this as a NUL op. */
+    if (block == NULL) {
+        return -3;
     }
-#endif
-#if !defined(ARCH_32BIT)
-    if(!checkBeef(fnode)) {
+
+    /* Revive our node pointer. */
+    fnode = (HEAPNODE *) ((uintptr_t) block - (NUT_HEAP_OVERHEAD + NUTMEM_GUARD_BYTES));
+
+
+#ifdef NUTDEBUG_HEAP
+    /* Sanity check. */
+    if (DebugValidateUserArea(fnode, file, line)) {
+        return -2;
+    }
+    /* Remove from allocation list. */
+    if (file) {
+        DebugUnalloc(fnode, file, line);
+    }
+#else
+    if (ValidateUserArea(fnode)) {
         return -2;
     }
 #endif
-
-#ifdef NUTDEBUG
-    if (__heap_trf)
-        fprintf(__heap_trs, "\n[H%x,F%d] ", (unsigned int)(uintptr_t) block, (int)fnode->hn_size);
-#endif
-    size = fnode->hn_size;
 
     /*
      * Walk through the linked list of free nodes and try
      * to link us in.
      */
-    node = heapFreeList;
-    npp = (HEAPNODE **) & heapFreeList;
+    node = *root;
+    npp = root;
     while (node) {
-        /*
-         * If there' s a free node in front of us, merge it.
-         */
-        if (((uintptr_t) node + node->hn_size) == (uintptr_t) fnode) {
+        /* If this node is directly in front of ours, merge it. */
+        if ((uintptr_t) node + node->hn_size == (uintptr_t) fnode) {
             node->hn_size += fnode->hn_size;
 
             /*
-             * If a free node is following us, merge it.
+             * If another free node is directly following us, merge it.
              */
             if (((uintptr_t) node + node->hn_size) == (uintptr_t) node->hn_next) {
                 node->hn_size += node->hn_next->hn_size;
@@ -562,14 +396,14 @@ int NutHeapFree(void *block)
             break;
         }
 
-        /*
-         * If we are within a free node, somebody tried
-         * to free a block twice.
-         */
+        /* If we are within a free node, somebody may have tried to free 
+           a block twice. The panic below does not make much sense, because
+           if we have NUTDEBUG_HEAP then we will also have NUTMEM_GUARD.
+           In that case the guard will have been overridden by the link 
+           pointer, which is detected by the ValidateUserArea() above. */
         if (((uintptr_t) node + node->hn_size) > (uintptr_t) fnode) {
-#ifdef NUTDEBUG
-            if (__heap_trf)
-                fputs("\nTWICE\n", __heap_trs);
+#ifdef NUTDEBUG_HEAP
+            NUTPANIC("Trying to release free heap memory at %p in %s:%d\n", file, line);
 #endif
             return -1;
         }
@@ -581,133 +415,264 @@ int NutHeapFree(void *block)
     /*
      * If no link was found, put us at the end of the list
      */
-    if (!node) {
+    if (node == NULL) {
         fnode->hn_next = node;
         *npp = fnode;
     }
-    available += size;
-
     return 0;
 }
 
 /*!
- * \brief
- * Add a new memory region to the free heap.
+ * \brief Add a new memory region to the heap.
  *
- * This function is automatically called by Nut/OS during
+ * This function can be called more than once to manage non-continous
+ * memory regions. It is automatically called by Nut/OS during 
  * initialization.
- *
- * Applications typically do not call this function.
  *
  * \param addr Start address of the memory region.
  * \param size Number of bytes of the memory region.
  */
-void NutHeapAdd(void *addr, size_t size)
+void NutHeapRootAdd(HEAPNODE ** root, void *addr, size_t size)
 {
-    *((uintptr_t *) addr) = size;
-#if !defined(ARCH_32BIT)
-    // Bug #2030525
-    // This crashes on the EIR and may harm other 32-bit targets.
-    // What is this for?
-	setBeef((HEAPNODE *)addr);
+    HEAPNODE *node = (HEAPNODE *) NUTMEM_TOP_ALIGN((uintptr_t) addr);
+
+    node->hn_size = NUTMEM_BOTTOM_ALIGN(size - ((uintptr_t) node - (uintptr_t) addr));
+#ifdef NUTDEBUG_HEAP
+    NutHeapDebugRootFree(root, PrepareUserArea(node), NULL, 0);
+#else
+    NutHeapRootFree(root, PrepareUserArea(node));
 #endif
-    NutHeapFree(((uintptr_t *) addr) + 1);
 }
 
 /*!
- * \brief Return the number of bytes available.
+ * \brief Return the total number of bytes available.
  *
  * \return Number of bytes.
  */
-size_t NutHeapAvailable(void)
+size_t NutHeapRootAvailable(HEAPNODE ** root)
 {
-    return available;
+    size_t rc = 0;
+    HEAPNODE *node;
+
+    /* Collect all free nodes. */
+    for (node = *root; node; node = node->hn_next) {
+        /* Reduce the size of each node by the required overhead. */
+        rc += node->hn_size - NUT_HEAP_OVERHEAD;
+    }
+    return rc;
 }
 
-
-#if defined (NUTMEM_STACKHEAP) /* Stack resides in internal memory */
-/*
- * The following routines are wrappers around the standard heap
- * allocation routines.  These wrappers tweak the free heap pointer to point
- * to a second heap which is kept in internal memory and used only for a
- * thread's stack.
+/*!
+ * \brief Return the size of the largest block available.
+ *
+ * \return Number of bytes.
  */
-
-static HEAPNODE* volatile stackHeapFreeList; /* for special stack heap */
-static uint16_t stackHeapAvailable;
-
-void *NutStackAlloc(size_t size)
+size_t NutHeapRootRegionAvailable(HEAPNODE ** root)
 {
-    void * result;
-    HEAPNODE* savedHeapNode;
-    uint16_t savedAvailable;
+    size_t rc = 0;
+    HEAPNODE *node;
 
-    // Save current real heap context
-    savedHeapNode = heapFreeList;
-    savedAvailable = available;
-    // Restore stack-heap context
-    heapFreeList = stackHeapFreeList;
-    available = stackHeapAvailable;
-
-    result = NutHeapAlloc(size);
-
-    // Save stack-heap context
-    stackHeapFreeList = heapFreeList;
-    stackHeapAvailable = available;
-    // Restore real heap context
-    heapFreeList = savedHeapNode;
-    available = savedAvailable;
-
-    return result;
+    /* Collect all free nodes. */
+    for (node = *root; node; node = node->hn_next) {
+        if (rc < node->hn_size) {
+            rc = node->hn_size;
+        }
+    }
+    /* Reduce the size by the required overhead. */
+    return rc - NUT_HEAP_OVERHEAD;
 }
 
-int NutStackFree(void *block)
+/**
+ * \brief Change the size of an allocated memory block.
+ * 
+ * If more memory is requested than available at that block the data
+ * is copied to a new, bigger block.
+ * 
+ * \param block Points to a previously allocated memory block. If NULL,
+ *              then this call is equivalent to NutHeapRootAlloc().
+ * \param size  The requested new size. If 0, then this call is
+ *              equivalent to NutHeapRootFree().
+ * 
+ * \return A pointer to the memory block on success or NULL on failures.
+ */
+#ifdef NUTDEBUG_HEAP
+void *NutHeapDebugRootRealloc(HEAPNODE ** root, void *block, size_t size, CONST char *file, int line)
+#else
+void *NutHeapRootRealloc(HEAPNODE ** root, void *block, size_t size)
+#endif
 {
-    int result;
-    HEAPNODE* savedHeapNode;
-    uint16_t savedAvailable;
+    HEAPNODE *node;
+    HEAPNODE **npp;
+    HEAPNODE *fnode;
+    void *newmem;
 
-    // Save current real heap context
-    savedHeapNode = heapFreeList;
-    savedAvailable = available;
-    // Restore stack-heap context
-    heapFreeList = stackHeapFreeList;
-    available = stackHeapAvailable;
+#ifdef NUTDEBUG_HEAP
+    /* With NULL pointer the call is equivalent to alloc. */
+    if (block == NULL) {
+        return NutHeapDebugRootAlloc(root, size, file, line);
+    }
+    /* With zero size the call is equivalent to free. */
+    if (size == 0) {
+        if (NutHeapDebugRootFree(root, block, file, line)) {
+            return NULL;
+        }
+        return block;
+    }
 
-    result = NutHeapFree(block);
+    /* Revive our node pointer. */
+    fnode = (HEAPNODE *) ((uintptr_t) block - (NUT_HEAP_OVERHEAD + NUTMEM_GUARD_BYTES));
 
-    // Save stack-heap context
-    stackHeapFreeList = heapFreeList;
-    stackHeapAvailable = available;
-    // Restore real heap context
-    heapFreeList = savedHeapNode;
-    available = savedAvailable;
+    /* Sanity check. */
+    if (DebugValidateUserArea(fnode, file, line)) {
+        return NULL;
+    }
+#else
+    if (block == NULL) {
+        return NutHeapRootAlloc(root, size);
+    }
+    if (size == 0) {
+        if (NutHeapRootFree(root, block)) {
+            return NULL;
+        }
+        return block;
+    }
+    fnode = (HEAPNODE *) ((uintptr_t) block - (NUT_HEAP_OVERHEAD + NUTMEM_GUARD_BYTES));
+    if (ValidateUserArea(fnode)) {
+        return NULL;
+    }
+#endif
 
-    return result;
+    /* Determine the minimum size. Add optional guard and alignment bytes.
+       Make sure that a HEAPNODE structure fits. */
+    size += NUT_HEAP_OVERHEAD + NUTMEM_GUARD_BYTES * 2;
+    if (size < sizeof(HEAPNODE)) {
+        size = sizeof(HEAPNODE);
+    }
+    size = NUTMEM_TOP_ALIGN(size);
+
+    /*
+     * Expansion.
+     */
+    if (size > fnode->hn_size) {
+        size_t size_miss = size - fnode->hn_size;
+
+        /* Find the free node following next. */
+        node = *root;
+        npp = root;
+        while (node && node < fnode) {
+            npp = &node->hn_next;
+            node = node->hn_next;
+        }
+
+        /* If we found a node and if this node is large enough and 
+           if it directly follows without a gap, then use it. */
+        if (node && node->hn_size >= size_miss &&       /* */
+            (uintptr_t) fnode + fnode->hn_size == (uintptr_t) node) {
+            /* Check if the following node is large enough to be split. */
+            if (node->hn_size - size_miss >= NUTMEM_HEAPNODE_MIN) {
+                /* Adjust the allocated size. */
+                fnode->hn_size += size_miss;
+                /* Insert the remaining part into the free list. */
+                *npp = (HEAPNODE *) ((uintptr_t) node + size_miss);
+                /* Due to possible overlapping it is important to set
+                   the pointer first, then the size. */
+                (*npp)->hn_next = node->hn_next;
+                (*npp)->hn_size = node->hn_size - size_miss;
+                PrepareUserArea(fnode);
+            } else {
+                /* Adjust the allocated size. */
+                fnode->hn_size += node->hn_size;
+                PrepareUserArea(fnode);
+                /* Remove the merged node from the free list. */
+                *npp = node->hn_next;
+            }
+            /* Return the original pointer. */
+            return block;
+        }
+
+        /* Relocate if no sufficiently large block follows. */
+#ifdef NUTDEBUG_HEAP
+        newmem = NutHeapDebugRootAlloc(root, size, file, line);
+#else
+        newmem = NutHeapRootAlloc(root, size);
+#endif
+        if (newmem) {
+            memcpy(newmem, block, 
+                fnode->hn_size - NUT_HEAP_OVERHEAD - 2 * NUTMEM_GUARD_BYTES);
+#ifdef NUTDEBUG_HEAP
+            NutHeapDebugRootFree(root, block, file, line);
+#else
+            NutHeapRootFree(root, block);
+#endif
+        }
+        return newmem;
+    }
+
+    /*
+     * Reduction.
+     */
+    if (size < fnode->hn_size - NUTMEM_HEAPNODE_MIN) {
+        /* Release the remaining part to the free list. */
+        node = (HEAPNODE *) ((uintptr_t) fnode + size);
+        node->hn_size = fnode->hn_size - size;
+#ifdef NUTDEBUG_HEAP
+        NutHeapDebugRootFree(root, PrepareUserArea(node), NULL, 0);
+#else
+        NutHeapRootFree(root, PrepareUserArea(node));
+#endif
+        /* Adjust the allocated size. */
+        fnode->hn_size = size;
+        PrepareUserArea(fnode);
+    }
+    return block;
 }
 
-void NutStackAdd(void *addr, size_t size)
+/*!
+ * \brief Check consistency of heap.
+ *
+ * Right now this function will just return 0 unless \ref NUTDEBUG_HEAP
+ * is defined.
+ *
+ * \return -1 if any error has been detected, 0 otherwise.
+ */
+int NutHeapCheck(void)
 {
-   HEAPNODE* savedHeapNode;
-   uint16_t savedAvailable;
+#ifdef NUTDEBUG_HEAP
+    HEAPNODE *node;
 
-   // Save current real heap context
-   savedHeapNode = heapFreeList;
-   savedAvailable = available;
-   // Restore stack-heap context
-   heapFreeList = stackHeapFreeList;
-   available = stackHeapAvailable;
-
-   NutHeapAdd(addr, size);
-
-   // Save stack-heap context
-   stackHeapFreeList = heapFreeList;
-   stackHeapAvailable = available;
-   // Restore real heap context
-   heapFreeList = savedHeapNode;
-   available = savedAvailable;
+    for (node = heapAllocList; node; node = node->ht_next) {
+        if (DebugValidateUserArea(node, __FILE__, __LINE__)) {
+            return -1;
+        }
+    }
+#endif
+    return 0;
 }
 
-#endif /* defined(NUTMEM_STACKHEAP) */
+#include <stdio.h>
+
+/*!
+ * \brief Dump heap memory to a given stream.
+ */
+void NutHeapDump(void * stream)
+{
+    HEAPNODE *node;
+
+#ifdef NUTMEM_SPLIT_FAST
+    for (node = heapFastMemFreeList; node; node = node->hn_next) {
+        fprintf(stream, "%p(%d)\n", node, (int) node->hn_size);
+    }
+#endif
+
+    for (node = heapFreeList; node; node = node->hn_next) {
+        fprintf(stream, "%p(%d)\n", node, (int) node->hn_size);
+    }
+
+#ifdef NUTDEBUG_HEAP
+    for (node = heapAllocList; node; node = node->ht_next) {
+        fprintf(stream, "%p(%u) %s:%d\n", node, (int) node->ht_size, node->ht_file, node->ht_line);
+    }
+#endif
+}
 
 /*@}*/

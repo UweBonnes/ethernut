@@ -2,7 +2,10 @@
 #define _SYS_HEAP_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2001-2003 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,59 +34,10 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * -
- * Portions Copyright (C) 2000 David J. Hudson <dave@humbug.demon.co.uk>
- *
- * This file is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You can redistribute this file and/or modify it under the terms of the GNU
- * General Public License (GPL) as published by the Free Software Foundation;
- * either version 2 of the License, or (at your discretion) any later version.
- * See the accompanying file "copying-gpl.txt" for more details.
- *
- * As a special exception to the GPL, permission is granted for additional
- * uses of the text contained in this file.  See the accompanying file
- * "copying-liquorice.txt" for details.
  */
 
 /*
- * $Log$
- * Revision 1.10  2008/08/11 06:56:26  haraldkipp
- * Corrected size type of NutHeapRealloc().
- *
- * Revision 1.9  2008/06/25 08:50:33  freckle
- * added new function NutHeapRealloc
- *
- * Revision 1.8  2008/06/15 17:15:49  haraldkipp
- * Rolled back to version 1.4.
- *
- * Revision 1.4  2006/10/06 23:19:08  hwmaier
- * Added include statement for cfg/memory.h so the macro NUTMEM_STACKHEAP is found when compiling for the AT90CAN128.
- *
- * Revision 1.3  2006/09/29 12:26:14  haraldkipp
- * All code should use dedicated stack allocation routines. For targets
- * allocating stack from the normal heap the API calls are remapped by
- * preprocessor macros.
- * Stack allocation code moved from thread module to heap module.
- * Adding static attribute to variable 'available' will avoid interference
- * with application code. The ugly format macros had been replaced by
- * converting all platform specific sizes to unsigned integers.
- *
- * Revision 1.2  2004/03/16 16:48:44  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:20  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.7  2003/02/04 18:00:52  harald
- * Version 3 released
- *
- * Revision 1.6  2002/06/26 17:29:28  harald
- * First pre-release with 2.4 stack
- *
+ * $Id$
  */
 
 #include <cfg/memory.h>
@@ -94,58 +48,101 @@
  * \brief Heap management definitions.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*!
  * \struct _HEAPNODE heap.h sys/heap.h
  * \brief Heap memory node information structure.
  */
+typedef struct _HEAPNODE HEAPNODE;
+
 /*!
  * \typedef HEAPNODE
  * \brief Heap memory node type.
  */
-typedef struct _HEAPNODE {
-    size_t hn_size;             /*!< \brief Size of this node. */
-    struct _HEAPNODE *hn_next;  /*!< \brief Link to next free node. */
-} HEAPNODE;
-
-extern HEAPNODE* volatile heapFreeList;
-
-/*!
- * \brief Allocation threshold.
- *
- * Might be increased to avoid creating
- * too many small nodes.
- */
-#define ALLOC_THRESHOLD 6
-#define REALLOC_THRESHOLD ALLOC_THRESHOLD 
-
-extern void *NutHeapAlloc(size_t size);
-extern void *NutHeapAllocClear(size_t size);
-extern int NutHeapFree(void *block);
-extern void * NutHeapRealloc( void * block, size_t size);
-extern void NutHeapAdd(void *addr, size_t size);
-extern size_t NutHeapAvailable(void);
-
-#if defined (NUTMEM_STACKHEAP)
-
-/* Dedicated stack memory. */
-extern void *NutStackAlloc(size_t size);
-extern int NutStackFree(void *block);
-extern void NutStackAdd(void *addr, size_t size);
-
-#else /* !NUTMEM_STACKHEAP */
-
-/* Thread stacks resides in normal heap. */
-#define NutStackAlloc(size)     NutHeapAlloc(size)
-#define NutStackFree(block)     NutHeapFree(block)
-
-#endif /* !NUTMEM_STACKHEAP */
-
-#ifdef __cplusplus
-}
+struct _HEAPNODE {
+    size_t hn_size;     /*!< \brief Size of this node. */
+#ifdef NUTDEBUG_HEAP
+    HEAPNODE *ht_next;
+    size_t ht_size;
+    CONST char *ht_file;
+    int ht_line;
 #endif
+    HEAPNODE *hn_next;  /*!< \brief Link to next free node. */
+};
+
+
+extern HEAPNODE *heapFreeList;
+
+#define NutHeapAdd(a, s)                NutHeapRootAdd(&heapFreeList, a, s)
+#define NutHeapAvailable()              NutHeapRootAvailable(&heapFreeList)
+#define NutHeapRegionAvailable()        NutHeapRootRegionAvailable(&heapFreeList)
+
+#ifdef NUTDEBUG_HEAP
+#define NutHeapAlloc(s)                 NutHeapDebugRootAlloc(&heapFreeList, s, __FILE__, __LINE__)
+#define NutHeapAllocClear(s)            NutHeapDebugRootAllocClear(&heapFreeList, s, __FILE__, __LINE__)
+#define NutHeapFree(p)                  NutHeapDebugRootFree(&heapFreeList, p, __FILE__, __LINE__)
+#define NutHeapRealloc(p, s)            NutHeapDebugRootRealloc(&heapFreeList, p, s, __FILE__, __LINE__)
+#else
+#define NutHeapAlloc(s)                 NutHeapRootAlloc(&heapFreeList, s)
+#define NutHeapAllocClear(s)            NutHeapRootAllocClear(&heapFreeList, s)
+#define NutHeapFree(p)                  NutHeapRootFree(&heapFreeList, p)
+#define NutHeapRealloc(p, s)            NutHeapRootRealloc(&heapFreeList, p, s)
+#endif
+
+#ifdef NUTMEM_SPLIT_FAST
+
+HEAPNODE *heapFastMemFreeList;
+
+#define NutHeapFastMemAdd(a, s)         NutHeapRootAdd(&heapFastMemFreeList, a, s)
+#define NutHeapFastMemAvailable()       NutHeapRootAvailable(&heapFastMemFreeList)
+#define NutHeapFastMemRegionAvailable() NutHeapRootRegionAvailable(&heapFastMemFreeList)
+
+#ifdef NUTDEBUG_HEAP
+#define NutHeapFastMemAlloc(s)          NutHeapDebugRootAlloc(&heapFastMemFreeList, s, __FILE__, __LINE__)
+#define NutHeapFastMemAllocClear(s)     NutHeapDebugRootAllocClear(&heapFastMemFreeList, s, __FILE__, __LINE__)
+#define NutHeapFastMemFree(p)           NutHeapDebugRootFree(&heapFastMemFreeList, p, __FILE__, __LINE__)
+#define NutHeapFastMemRealloc(p, s)     NutHeapDebugRootRealloc(&heapFastMemFreeList, p, s, __FILE__, __LINE__)
+#else
+#define NutHeapFastMemAlloc(s)          NutHeapRootAlloc(&heapFastMemFreeList, s)
+#define NutHeapFastMemAllocClear(s)     NutHeapRootAllocClear(&heapFastMemFreeList, s)
+#define NutHeapFastMemFree(p)           NutHeapRootFree(&heapFastMemFreeList, p)
+#define NutHeapFastMemRealloc(p, s)     NutHeapRootRealloc(&heapFastMemFreeList, p, s)
+#endif
+
+#endif /* NUTMEM_SPLIT_FAST */
+
+#if defined(NUTMEM_STACKHEAP) && defined(NUTMEM_SPLIT_FAST)
+/* Dedicated stack memory. */
+#define NutStackAlloc(s)                NutHeapFastMemAlloc(s)
+#define NutStackFree(p)                 NutHeapFastMemFree(p)
+#else
+/* Thread stacks resides in normal heap. */
+#define NutStackAlloc(s)                NutHeapAlloc(s)
+#define NutStackFree(p)                 NutHeapFree(p)
+#endif
+
+__BEGIN_DECLS
+/* Prototypes */
+
+extern void NutHeapRootAdd(HEAPNODE** root, void *addr, size_t size);
+extern size_t NutHeapRootAvailable(HEAPNODE** root);
+extern size_t NutHeapRootRegionAvailable(HEAPNODE** root);
+
+#ifdef NUTDEBUG_HEAP
+extern void *NutHeapDebugRootAlloc(HEAPNODE** root, size_t size, CONST char *file, int line);
+extern void *NutHeapDebugRootAllocClear(HEAPNODE** root, size_t size, CONST char *file, int line);
+extern int NutHeapDebugRootFree(HEAPNODE** root, void *block, CONST char *file, int line);
+extern void *NutHeapDebugRootRealloc(HEAPNODE** root, void * block, size_t size, CONST char *file, int line);
+#else
+extern void *NutHeapRootAlloc(HEAPNODE** root, size_t size);
+extern void *NutHeapRootAllocClear(HEAPNODE** root, size_t size);
+extern int NutHeapRootFree(HEAPNODE** root, void *block);
+extern void *NutHeapRootRealloc(HEAPNODE** root, void * block, size_t size);
+#endif
+
+extern int NutHeapCheck(void);
+extern void NutHeapDump(void * stream);
+
+/* Prototypes */
+__BEGIN_DECLS
 
 #endif
