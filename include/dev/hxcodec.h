@@ -60,6 +60,12 @@
 /*
  * I/O control codes.
  */
+/*
+ * I/O control codes.
+ */
+#define AUDIO_SETWRITETIMEOUT   0x010d
+#define AUDIO_GETWRITETIMEOUT   0x010e
+
 /*! \brief Immediately start playing. */
 #define AUDIO_PLAY          0x3001
 /*! \brief Immediately stop playing and discard buffer. */

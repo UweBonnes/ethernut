@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.54  2009/02/13 14:46:19  haraldkipp
+-- Using the VS10xx driver as a template for redesign.
+--
 -- Revision 1.53  2009/02/06 15:48:08  haraldkipp
 -- New audio driver for VLSI chips uses the SPI bus.
 --
@@ -1239,6 +1242,33 @@ nutdev =
         brief = "Helix Audio Device",
         sources = { "hxcodec.c" },
         requires = { "AUDIO_DECODER_HELIX", "HW_AUDIO_DAC" },
+        options =
+        {
+            {
+                macro = "HXCODEC0_OUTPUT_BUFSIZ",
+                brief = "Decoder Buffer Size",
+                description = "Number of bytes for the decoder buffer.\n\n"..
+                              "If not specified, half of available data RAM is used, "..
+                              "up to a maximum of 16k.",
+                flavor = "booldata",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "NUT_THREAD_HXCODEC0STACK",
+                brief = "Thread Stack Size",
+                description = "Number of bytes for the decoder thread.",
+                flavor = "booldata",
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "HXCODEC0_RESAMPLER",
+                brief = "Resampler",
+                description = "Enables the Hermite resampler.",
+                flavor = "boolean",
+                file = "include/cfg/audio.h"
+            }
+            
+        }
     },
 
     {
