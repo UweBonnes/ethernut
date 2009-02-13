@@ -1,4 +1,61 @@
-$Id: ChangeLog,v 1.522 2009/02/08 01:00:33 thiagocorrea Exp $
+$Id: ChangeLog,v 1.523 2009/02/13 14:49:19 haraldkipp Exp $
+
+2009-02-13  Harald Kipp  <harald.kipp@egnite.de>
+
+	* include/sys/heap.h, os/heap.c: Complete redesign of the Nut/OS 
+	heap memory management. This new version provides advanced 
+	debugging features and fixes at least 2 alignment bugs for 
+	32 bit platforms (special thanks to Timothy M. De Baillie). 
+	Furthermore, it is prepared to manage multiple heap regions, 
+	which is quite useful for targets with more than one RAM area. 
+	However, more needs to be done during system initialization. 
+	Two new routines allow to check the heaps for consistency 
+	(NutHeapCheck) and print out a dump (NutHeapDump).
+
+	* crt/malloc.c, crt/realloc.c: Move realloc to a new module
+	to reduce the size of applications that don't use it.
+
+	* crt/calloc_dbg.c, crt/malloc_dbg.c, crt/strdup_dbg.c, 
+	include/memdebug.h, crt/realloc_dbg.c: Debug versions of C 
+	runtime routines added.
+
+	* pro/ssi.c: As a first result of the new heap routines we 
+	found a memory overflow bug in the $QUERY_STRING handling.
+
+	* conf/os/os.nut: Heap debug options and split memory flag added. 
+	Banked memory options moved to the right module. NUTPANIC added.
+
+	* conf/crt/crt.nut: Debug versions of heap routines added.
+
+	* arch/arm/dev/spibus_at91.c, arch/arm/dev/tlv320dac.c,
+	arch/avr/dev/spibus0avr.c, contrib/hxmp3/buffers.c,
+	contrib/hxmp3/hermite.c, crt/environ.c, crt/fclose.c,
+	crt/fdopen.c, crt/fopen.c, crt/freopen.c, crt/putf.c,
+	crt/setenv.c, crt/time.c, dev/blockdev.c, dev/chat.c,
+	dev/mmcard.c, dev/nvmem_at45d.c, dev/spi_vscodec.c,
+	dev/term.c, dev/usart.c, dev/vscodec.c, dev/x12rtc.c,
+	fs/basename.c, fs/dirent.c, fs/dirname.c, fs/phatdir.c,
+	fs/phatfs.c, fs/phatutil.c, fs/phatvol.c, fs/pnutfs.c,
+	fs/rawfs.c, fs/uromfs.c, net/arpcache.c, net/ethdemux.c,
+	net/ipdemux.c, net/route.c, net/tcpsock.c, net/udpsock.c,
+	pro/asn1.c, pro/asp.c, pro/auth.c, pro/cgi.c, pro/dhcpc.c,
+	pro/discover.c, pro/ftpd.c, pro/httpd.c, pro/httpd_p.c,
+	pro/httpopt.c, pro/resolv.c, pro/snmp_agent.c,
+	pro/snmp_config.c, pro/snmp_mib.c, pro/sntp.c, pro/syslog.c,
+	pro/uxmlstream.c, pro/uxmltree.c: Include memdebug.h for 
+	memory debugging support.
+
+	* include/sys/nutdebug.h, os/fatal.c, os/panic.c:
+	New panic routine added, which works similar to printf.
+
+	* dev/hxcodec.c, include/dev/hxcodec.h, conf/dev/dev.nut: 
+	Using the VS10xx driver as a template for redesign. Now both 
+	drivers behave in the same way, specially when used in media 
+	streaming over the network. No additional buffering is needed.
+
+	* include/sys/types.h: Two memory alignment macros added, 
+	NUTMEM_BOTTOM_ALIGN and NUTMEM_TOP_ALIGN.
+
 
 2009-02-04  Thiago A. Correa <thiago.correa@gmail.com>
         
