@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.13  2009/02/13 14:44:25  haraldkipp
+-- Debug versions of heap routines added.
+--
 -- Revision 1.12  2009/02/06 15:45:03  haraldkipp
 -- Routines using heap memory moved from c to crt module.
 -- We now have strdup() and calloc().
@@ -303,8 +306,13 @@ nutcrt =
         sources = 
         { 
             "calloc.c", 
+            "calloc_dbg.c", 
             "malloc.c", 
-            "strdup.c" 
+            "malloc_dbg.c", 
+            "realloc.c", 
+            "realloc_dbg.c", 
+            "strdup.c",
+            "strdup_dbg.c" 
         }
     },
     {
