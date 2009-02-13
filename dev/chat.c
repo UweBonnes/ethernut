@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.10  2009/02/06 15:40:29  haraldkipp
  * Using newly available strdup() and calloc().
  * Replaced NutHeap routines by standard malloc/free.
@@ -65,6 +68,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <io.h>
+#include <memdebug.h>
 
 #include <dev/chat.h>
 

@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.15  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.14  2009/02/06 15:40:29  haraldkipp
  * Using newly available strdup() and calloc().
  * Replaced NutHeap routines by standard malloc/free.
@@ -103,6 +106,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <memdebug.h>
 
 #include <sys/heap.h>
 #include <sys/timer.h>

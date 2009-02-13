@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 #include "httpd_p.h"
 

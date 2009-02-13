@@ -32,6 +32,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.1  2006/08/01 07:42:56  haraldkipp
  * New functions extract last component and parent directory from pathnames.
  *
@@ -43,6 +46,7 @@
 #include <libgen.h>
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 #if !defined(MAXPATHLEN)
 #define MAXPATHLEN  256

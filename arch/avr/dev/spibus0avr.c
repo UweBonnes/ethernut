@@ -62,6 +62,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <memdebug.h>
 
 #if defined(SPI0_CS0_PIO_BIT)
 #if defined(SPI0_CS0_PIO_ID)

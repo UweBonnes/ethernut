@@ -41,12 +41,13 @@
  * \endverbatim
  */
 
-#include <stdlib.h>
-
 #include <sys/types.h>
 #include <sys/heap.h>
 #include <netinet/if_ether.h>
 #include <netinet/ip.h>
+
+#include <stdlib.h>
+#include <memdebug.h>
 
 /*!
  * \addtogroup xgIP

@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.5  2009/02/06 15:40:29  haraldkipp
  * Using newly available strdup() and calloc().
  * Replaced NutHeap routines by standard malloc/free.
@@ -71,6 +74,7 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
+#include <memdebug.h>
 
 #include <pro/httpd.h>
 #include <pro/asp.h>

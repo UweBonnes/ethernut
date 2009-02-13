@@ -52,6 +52,7 @@
  * Ken Cooke (kenc@real.com)
  */
 #include <stdlib.h>
+#include <memdebug.h>
 #include <contrib/hxmp3/hermite.h>
 
 #define MAXRATE		((1<<23) - 1) /* sampling rates cannot exceed MAXRATE */

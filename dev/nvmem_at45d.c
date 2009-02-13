@@ -52,6 +52,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 #include <dev/nvmem_at45d.h>
 

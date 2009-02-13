@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.2  2008/08/11 06:59:40  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -50,6 +53,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <memdebug.h>
 
 /*!
  * \addtogroup xgCrtStdio

@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.16  2009/01/17 11:26:38  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -98,6 +101,7 @@
 #include <string.h>
 #include "nut_io.h"
 #include <stdlib.h>
+#include <memdebug.h>
 
 /*!
  * \addtogroup xgCrtStdio

@@ -51,6 +51,7 @@
 
 #include <stdlib.h>
 #include <errno.h>
+#include <memdebug.h>
 
 /*!
  * \brief Block volume information structure type.

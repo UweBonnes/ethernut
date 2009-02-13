@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.5  2009/02/06 15:37:40  haraldkipp
  * Added stack space multiplier and addend. Adjusted stack space.
  *
@@ -67,6 +70,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 #include <pro/discover.h>
 

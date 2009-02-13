@@ -45,12 +45,13 @@
  * \endverbatim
  */
 
-#include <stdlib.h>
-
 #include <sys/types.h>
 #include <sys/heap.h>
 #include <netinet/if_ether.h>
 #include <net/ether.h>
+
+#include <stdlib.h>
+#include <memdebug.h>
 
 /*!
  * \addtogroup xgEthernet

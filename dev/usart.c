@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.9  2008/08/11 06:59:42  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -65,6 +68,7 @@
 #include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>

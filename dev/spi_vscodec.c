@@ -46,6 +46,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 /*!
  * \addtogroup xgVsCodec

@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.14  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.13  2009/01/17 11:26:46  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -115,6 +118,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
+#include <memdebug.h>
 
 #if 0
 /* Use for local debugging. */

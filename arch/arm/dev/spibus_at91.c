@@ -47,6 +47,7 @@
 #include <sys/nutdebug.h>
 
 #include <stdlib.h>
+#include <memdebug.h>
 
 #include <dev/spibus_at91.h>
 

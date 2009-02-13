@@ -35,6 +35,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <memdebug.h>
 
 #include <sys/nutdebug.h>
 #include <sys/environ.h>

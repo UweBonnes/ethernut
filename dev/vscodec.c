@@ -37,6 +37,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.7  2009/01/30 08:59:30  haraldkipp
  * Make sure, that used registers are defined.
  *
@@ -79,6 +82,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <memdebug.h>
 
 /*!
  * \addtogroup xgVsCodec

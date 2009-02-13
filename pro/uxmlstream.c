@@ -46,6 +46,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <memdebug.h>
 
 #include <pro/uxml.h>
 

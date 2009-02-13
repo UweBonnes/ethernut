@@ -83,6 +83,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.27  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.26  2009/02/06 15:37:40  haraldkipp
  * Added stack space multiplier and addend. Adjusted stack space.
  *
@@ -202,6 +205,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <memdebug.h>
 
 #include <arpa/inet.h>
 #include <netinet/in.h>

@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.15  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.14  2008/08/25 14:26:32  haraldkipp
  * Append to existing files failed when file size was larger than one cluster.
  *
@@ -116,6 +119,7 @@
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+#include <memdebug.h>
 
 #if 0
 /* Use for local debugging. */

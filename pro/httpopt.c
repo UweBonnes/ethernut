@@ -38,6 +38,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.4  2009/02/13 14:52:05  haraldkipp
+ * Include memdebug.h for heap management debugging support.
+ *
  * Revision 1.3  2008/08/11 07:00:35  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -59,6 +62,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <memdebug.h>
 
 #include <sys/heap.h>
 #include <sys/version.h>
