@@ -33,6 +33,9 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.14  2009/02/16 03:10:50  thiagocorrea
+-- Fix small typo in text, hardly worth mentioning in the Changelog.
+--
 -- Revision 1.13  2008/08/20 06:56:59  haraldkipp
 -- Implemented IP demultiplexer.
 --
@@ -165,7 +168,7 @@ nutnet =
         {
             {
                 macro = "NUTIPCONF_ICMP_ARPMETHOD",
-                brief = "Enable ARM Method",
+                brief = "Enable ARP Method",
                 description = "Allow IP configuration using ARP method.\n\n"..
                               "When enabling this function, be aware that DHCP servers "..
                               "may probe an IP/MAC relationship by sending an ICMP request. "..
