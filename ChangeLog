@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.523 2009/02/13 14:49:19 haraldkipp Exp $
+$Id: ChangeLog,v 1.524 2009/02/16 23:21:14 thiagocorrea Exp $
+
+2009-02-16  Thiago A. Correa <thiago.correa@gmail.com>
+
+	* include/dev/irqreg_arm.h, include/dev/irqreg_avr.h,
+	include/dev/irqreg_h8.h, include/dev/irqreg_m68k.h,
+	include/dev/irqreg_unix.h: Remove deprecated headers.
 
 2009-02-13  Harald Kipp  <harald.kipp@egnite.de>
 
