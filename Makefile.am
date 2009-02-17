@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.4  2009/02/17 14:46:11  haraldkipp
+# Added lua and removed mod.
+#
 # Revision 1.3  2008/01/31 15:33:33  haraldkipp
 # Linux fixes.
 #
@@ -86,8 +89,8 @@ dist-hook:
 	cp -R $(srcdir)/include/* $(distdir)/include
 	mkdir -p $(distdir)/lib
 	cp -R $(srcdir)/lib/* $(distdir)/lib
-	mkdir -p $(distdir)/mod
-	cp -R $(srcdir)/mod/* $(distdir)/mod
+	mkdir -p $(distdir)/lua
+	cp -R $(srcdir)/lua/* $(distdir)/lua
 	mkdir -p $(distdir)/net
 	cp -R $(srcdir)/net/* $(distdir)/net
 	mkdir -p $(distdir)/os
