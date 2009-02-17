@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/02/17 09:33:20  haraldkipp
+ * Added master and slave indices as they appear on the SAM9260.
+ * Not sure about other AT91 devices.
+ *
  * Revision 1.1  2006/08/31 19:10:37  haraldkipp
  * New peripheral register definitions for the AT91SAM9260.
  *
@@ -77,6 +81,19 @@
 #define MATRIX_MRCR_RCB0                0x00000001      /*!< \brief Enable remap for master 0. */
 #define MATRIX_MRCR_RCB1                0x00000002      /*!< \brief Enable remap for master 1. */
 /*@}*/
+
+#define MATRIX_MASTER_I                 0
+#define MATRIX_MASTER_D                 1
+#define MATRIX_MASTER_PDC               2
+#define MATRIX_MASTER_ISI               3
+#define MATRIX_MASTER_EMAC              4
+#define MATRIX_MASTER_USB               5
+
+#define MATRIX_SLAVE_SRAM0              0
+#define MATRIX_SLAVE_SRAM1              1
+#define MATRIX_SLAVE_ROM_USB            2
+#define MATRIX_SLAVE_EBI                3
+#define MATRIX_SLAVE_PERIPHERALS        4
 
 /*@} xgNutArchArmAt91Matrix */
 
