@@ -1,0 +1,18 @@
+# Executable
+BURN=sam-ba
+
+# Choose the programming interface
+#BURNIF=COM1
+BURNIF=\\usb\\ARM0
+
+# Choose the target board
+#BURNTARGET=AT91SAM7XC512-EK
+#BURNTARGET=AT91SAM7SE512-EK
+BURNTARGET=AT91SAM9260-EK
+#BURNTARGET=AT91SAM9XE512-EK
+
+# Choose the target script
+BURNSCRIPT=$(top_srcdir)/tools/win32/at91sam-sdram.tcl
+
+# Assemble command line
+BURNFLAGS=$(BURNIF) $(BURNTARGET) $(BURNSCRIPT) $(ITARG)
