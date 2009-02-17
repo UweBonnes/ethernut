@@ -93,8 +93,8 @@
  * - GPIO_IS_HI Returns output status.
  * - GPIO_GET Returns input status.
  * - GPIO_ENABLE Enables GPIO function.
- * - GPIO_CFG_OUTPUT Configures an output.
- * - GPIO_CFG_INPUT Configures an input.
+ * - GPIO_OUTPUT Configures an output.
+ * - GPIO_INPUT Configures an input.
  * - GPIO_PULLUP_ON Enables input pull-up resistor.
  * - GPIO_PULLUP_OFF Disables input pull-up resistor.
  * - GPIO_FILTER_ON Enables glitch input filter.
@@ -375,8 +375,8 @@
 #undef GPIO_IS_HI
 #undef GPIO_GET
 #undef GPIO_ENABLE
-#undef GPIO_CFG_OUTPUT
-#undef GPIO_CFG_INPUT
+#undef GPIO_OUTPUT
+#undef GPIO_INPUT
 #undef GPIO_PULLUP_ON
 #undef GPIO_PULLUP_OFF
 #undef GPIO_OPENDRAIN
@@ -428,19 +428,19 @@
 #endif
 
 #if defined(GPIO_OD_REG)
-#define GPIO_CFG_OUTPUT(b)  outr(GPIO_OE_REG, _BV(b))
+#define GPIO_OUTPUT(b)      outr(GPIO_OE_REG, _BV(b))
 #elif defined(GPIO_OE_REG)
-#define GPIO_CFG_OUTPUT(b)  sbi(GPIO_OE_REG, b)
+#define GPIO_OUTPUT(b)      sbi(GPIO_OE_REG, b)
 #else
-#define GPIO_CFG_OUTPUT(b)
+#define GPIO_OUTPUT(b)
 #endif
 
 #if defined(GPIO_OD_REG)
-#define GPIO_CFG_INPUT(b)   outr(GPIO_OD_REG, _BV(b))
+#define GPIO_INPUT(b)       outr(GPIO_OD_REG, _BV(b))
 #elif defined(GPIO_OE_REG)
-#define GPIO_CFG_INPUT(b)   cbi(GPIO_OE_REG, b)
+#define GPIO_INPUT(b)       cbi(GPIO_OE_REG, b)
 #else
-#define GPIO_CFG_INPUT(b)
+#define GPIO_INPUT(b)
 #endif
 
 #if defined(GPIO_PUD_REG)
