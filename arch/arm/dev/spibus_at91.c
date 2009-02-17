@@ -179,26 +179,32 @@ int At91SpiBusNodeInit(NUTSPINODE * node)
             node->node_stat = (void *)spireg;
             At91SpiSetup(node);
 
-#ifndef SPIBUS0_POLLING_MODE
-            /* Register and enable SPI interrupt handler. */
-#if defined(SPI1_BASE)
+            /* 
+             * Register and enable SPI interrupt handler. 
+             */
+#if !defined(SPIBUS1_POLLING_MODE) && defined(SPI1_BASE)
             if (bus->bus_base == SPI1_BASE) {
 #if defined(SPIBUS1_DOUBLE_BUFFER)
                 NutRegisterIrqHandler(bus->bus_sig, At91SpiInterrupt, &bus->bus_ready);
-#else /* SPIBUS1_DOUBLE_BUFFER */
+#else
                 NutRegisterIrqHandler(bus->bus_sig, At91SpiBus1Interrupt, &bus->bus_ready);
-#endif /* SPIBUS1_DOUBLE_BUFFER */
+#endif
+                outr(bus->bus_base + SPI_IDR_OFF, (unsigned int) - 1);
+                NutIrqEnable(bus->bus_sig);
             } else
-#else /* SPI1_BASE */
+#endif /* !SPIBUS1_POLLING_MODE */
+
+            {
+#if !defined(SPIBUS0_POLLING_MODE)
 #if defined(SPIBUS0_DOUBLE_BUFFER)
-            NutRegisterIrqHandler(bus->bus_sig, At91SpiInterrupt, &bus->bus_ready);
-#else /* SPIBUS0_DOUBLE_BUFFER */
-            NutRegisterIrqHandler(bus->bus_sig, At91SpiBus0Interrupt, &bus->bus_ready);
-#endif /* SPIBUS0_DOUBLE_BUFFER */
-#endif /* SPI1_BASE */
-            outr(bus->bus_base + SPI_IDR_OFF, (unsigned int) - 1);
-            NutIrqEnable(bus->bus_sig);
-#endif /* SPIBUS0_POLLING_MODE */
+                NutRegisterIrqHandler(bus->bus_sig, At91SpiInterrupt, &bus->bus_ready);
+#else
+                NutRegisterIrqHandler(bus->bus_sig, At91SpiBus0Interrupt, &bus->bus_ready);
+#endif
+                outr(bus->bus_base + SPI_IDR_OFF, (unsigned int) - 1);
+                NutIrqEnable(bus->bus_sig);
+#endif /* !SPIBUS0_POLLING_MODE */
+            }
         } else {
             /* Out of memory? */
             rc = -1;
