@@ -100,7 +100,7 @@ static HEAPNODE *heapAllocList;
  */
 static INLINE void *PrepareUserArea(HEAPNODE * node)
 {
-    int *tp = (int *) &node->hn_next;
+    int *tp = (int *) (uintptr_t) &node->hn_next;
 #ifdef NUTMEM_GUARD
     size_t off = (node->hn_size - NUT_HEAP_OVERHEAD) / sizeof(int) - 2;
 
@@ -128,7 +128,7 @@ static INLINE int ValidateUserArea(HEAPNODE * node)
 {
 #ifdef NUTMEM_GUARD
     size_t off = (node->hn_size - NUT_HEAP_OVERHEAD) / sizeof(int) - 1;
-    int *tp = (int *) &node->hn_next;
+    int *tp = (int *) (uintptr_t) &node->hn_next;
 
 #ifdef NUTDEBUG_HEAP
     if (*tp != NUTMEM_GUARD_PATTERN) {
