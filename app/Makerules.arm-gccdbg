@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2009/02/17 09:28:29  haraldkipp
+# Include dot in wildcards, added PHONY declarations and removed unused
+# targets.
+#
 # Revision 1.1  2007/04/12 09:12:09  haraldkipp
 # Quick solution allows generating GCC debug code.
 #
@@ -39,27 +43,23 @@
 
 include $(top_srcdir)/Makerules.arm-gccdbg
 
-%elf: $(OBJS)
+%.elf: $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -Wl,--start-group $(LIBS) $(ADDLIBS) -Wl,--end-group -o $@
 
-%cof: %elf
+%.cof: %.elf
 	$(ELFCOF) -O coff-ext-avr $< $@
 
-%hex: %elf
+%.hex: %.elf
 	$(BIN) -O ihex $< $@
 
-%rom: %elf
-	$(BIN) -O srec $< $@
-
-%bin: %elf
+%.bin: %.elf
 	$(BIN) -O binary $< $@
 
-%eep: %elf
-	$(BIN) -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex $< $@
-
+.PHONY: burn
 burn: $(TARG) $(ITARG)
 	$(BURN) $(BURNFLAGS)
 
+.PHONY: install
 install: $(TARG) $(ITARG)
 	$(CP) $(TARG) $(BINDIR)/$(TARG)
 	$(CP) $(ITARG) $(BINDIR)/$(ITARG)

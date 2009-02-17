@@ -32,6 +32,10 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.5  2009/02/17 09:28:29  haraldkipp
+# Include dot in wildcards, added PHONY declarations and removed unused
+# targets.
+#
 # Revision 1.4  2006/07/21 09:17:28  haraldkipp
 # Added start-group and end-group to solve circular reference issue with
 # libraries.
@@ -49,28 +53,23 @@
 
 include $(top_srcdir)/Makerules.arm-gcc
 
-%elf: $(OBJS)
+%.elf: $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -Wl,--start-group $(LIBS) $(ADDLIBS) -Wl,--end-group -o $@
 
-%cof: %elf
+%.cof: %.elf
 	$(ELFCOF) -O coff-ext-avr $< $@
 
-%hex: %elf
+%.hex: %.elf
 	$(BIN) -O ihex $< $@
 
-%rom: %elf
-	$(BIN) -O srec $< $@
-
-%bin: %elf
+%.bin: %.elf
 	$(BIN) -O binary $< $@
 
-%eep: %elf
-	$(BIN) -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex $< $@
-
+.PHONY: burn
 burn: $(TARG) $(ITARG)
 	$(BURN) $(BURNFLAGS)
 
+.PHONY: install
 install: $(TARG) $(ITARG)
 	$(CP) $(TARG) $(BINDIR)/$(TARG)
 	$(CP) $(ITARG) $(BINDIR)/$(ITARG)
-

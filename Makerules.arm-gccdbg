@@ -32,36 +32,28 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log$
+# Revision 1.2  2009/02/17 09:28:29  haraldkipp
+# Include dot in wildcards, added PHONY declarations and removed unused
+# targets.
+#
 # Revision 1.1  2007/04/12 09:12:09  haraldkipp
 # Quick solution allows generating GCC debug code.
 #
 #
 
-%o : %c
+%.o : %.c
 	$(CC) -c $(CPFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
 
-%o : %cc
+%.o : %.cc
 	$(CXX) -c $(CXXFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
 
-%o : %S
+%.o : %.S
 	$(AS) -c $(ASFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
 
-%s : %c
+%.s : %.c
 	$(CC) -c $(CPFLAGS) $(INCFIRST) -I$(INCDIR) $(INCLAST) $< -o $@
 
-%elf: $(OBJS)
-	$(CC) $(OBJS) $(LIB) $(LDFLAGS) -o $@
-
-%obj: %elf
-	$(BIN) -O avrobj $< $@
-
-%rom: %elf
-	$(BIN) -O srec $< $@
-
-%eep: %elf
-	$(BIN) -j .eeprom --set-section-flags=.eeprom="alloc,load" -O srec $< $@
-
-%a: $(OBJS)
+%.a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 
 .PHONY: cleancc
