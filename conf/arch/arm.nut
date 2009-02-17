@@ -33,6 +33,12 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.39  2009/02/17 09:32:25  haraldkipp
+-- A lot of clean-up had been done with SAM9260 initialization.
+-- Clock configurations should now work as expected. Note, that
+-- the CPU is running now at 198.6560 MHz with peripheral clock
+-- at 99.3280 MHz.
+--
 -- Revision 1.38  2009/02/06 15:57:05  haraldkipp
 -- Removed stack size defaults.
 --
@@ -288,7 +294,7 @@ nutarch_arm =
                               "SAM7X: 14\n"..
                               "SAM7S: 14\n"..
                               "SAM7SE: 14\n"..
-                              "SAM9260: 14\n",
+                              "SAM9260: 9\n",
                 requires = { "HW_PLL_AT91" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
@@ -304,7 +310,7 @@ nutarch_arm =
                               "SAM7X: 72\n"..
                               "SAM7S: 72\n"..
                               "SAM7SE: 72\n"..
-                              "SAM9260: 72\n",
+                              "SAM9260: 96\n",
                 requires = { "HW_PLL_AT91" },
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
