@@ -40,6 +40,10 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.14  2009/02/17 09:31:41  haraldkipp
+ * Use more general macros. Added definition for NUT_HWCLK_PERIPHERAL for
+ * targets which have a PMC MDIV flag.
+ *
  * Revision 1.13  2008/08/06 12:51:10  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -87,16 +91,24 @@
 
 #if defined (MCU_AT91R40008)
 #include <arch/arm/at91x40.h>
-#elif defined (MCU_AT91SAM7X256)
+#elif defined (MCU_AT91SAM7X)
 #include <arch/arm/at91sam7x.h>
-#elif defined (MCU_AT91SAM7S256)
+#elif defined (MCU_AT91SAM7S)
 #include <arch/arm/at91sam7s.h>
-#elif defined (MCU_AT91SAM7SE512)
+#elif defined (MCU_AT91SAM7SE)
 #include <arch/arm/at91sam7se.h>
 #elif defined (MCU_AT91SAM9260)
 #include <arch/arm/at91sam9260.h>
-#elif defined(MCU_AT91SAM9XE512)
+#elif defined(MCU_AT91SAM9XE)
 #include <arch/arm/at91sam9xe.h>
+#endif
+
+#if defined(PMC_HAS_MDIV)
+/* If the power management controller has a master clock divider, then
+   the peripherals may run on a slower clock than the CPU. In this case
+   set the peripheral clock index to 1. If NUT_HWCLK_PERIPHERAL is not
+   defined, it will be set in sys/timer.h to NUT_HWCLK_CPU, which is 0. */
+#define NUT_HWCLK_PERIPHERAL    1
 #endif
 
 /*! \addtogroup xgNutArchArmAt91 */
