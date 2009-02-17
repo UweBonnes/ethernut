@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2009/02/17 09:33:55  haraldkipp
+ * Check for PLL B availability instead of target names.
+ *
  * Revision 1.2  2008/10/23 08:50:43  haraldkipp
  * Prepared AT91 UART hardware handshake.
  *
@@ -109,6 +112,8 @@
 #define USART_HAS_PDC
 #define USART_HAS_MODE
 #define MCI_HAS_PDC
+#define PMC_HAS_PLLB
+#define PMC_HAS_MDIV
 
 #define PIO_HAS_MULTIDRIVER
 #define PIO_HAS_PULLUP

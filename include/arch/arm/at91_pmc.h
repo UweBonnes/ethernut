@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2009/02/17 09:33:55  haraldkipp
+ * Check for PLL B availability instead of target names.
+ *
  * Revision 1.9  2008/08/06 12:51:10  haraldkipp
  * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
@@ -127,12 +130,12 @@
 
 /*! \name PLL Registers */
 /*@{*/
-#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+#if defined (PMC_HAS_PLLB)
 #define CKGR_PLLAR_OFF              0x00000028  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLAR  (PMC_BASE + CKGR_PLLAR_OFF) /*!< \brief Clock generator PLL register address. */
 #define CKGR_PLLBR_OFF              0x0000002C  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLBR  (PMC_BASE + CKGR_PLLBR_OFF) /*!< \brief Clock generator PLL register address. */
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#else
 #define CKGR_PLLR_OFF               0x0000002C  /*!< \brief Clock generator PLL register offset. */
 #define CKGR_PLLR   (PMC_BASE + CKGR_PLLR_OFF)  /*!< \brief Clock generator PLL register address. */
 #endif
@@ -174,10 +177,10 @@
 #define PMC_CSS                     0x00000003  /*!< \brief Clock selection mask. */
 #define PMC_CSS_SLOW_CLK            0x00000000  /*!< \brief Slow clock selected. */
 #define PMC_CSS_MAIN_CLK            0x00000001  /*!< \brief Main clock selected. */
-#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+#if defined (PMC_HAS_PLLB)
 #define PMC_CSS_PLLA_CLK            0x00000002  /*!< \brief PLL A clock selected. */
 #define PMC_CSS_PLLB_CLK            0x00000003  /*!< \brief PLL B clock selected. */
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#else
 #define PMC_CSS_PLL_CLK             0x00000003  /*!< \brief PLL clock selected. */
 #endif
 #define PMC_PRES                    0x0000001C  /*!< \brief Clock prescaler mask. */
@@ -189,7 +192,7 @@
 #define PMC_PRES_CLK_16             0x00000010  /*!< \brief Selected clock divided by 16. */
 #define PMC_PRES_CLK_32             0x00000014  /*!< \brief Selected clock divided by 32. */
 #define PMC_PRES_CLK_64             0x00000018  /*!< \brief Selected clock divided by 64. */
-#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+#if defined (PMC_HAS_MDIV)
 #define PMC_MDIV                    0x00000300  /*!< \brief Master clock division mask. */
 #define PMC_MDIV_1                  0x00000000  /*!< \brief Processor clock, not divided. */
 #define PMC_MDIV_2                  0x00000100  /*!< \brief Processor clock divided by 2. */
@@ -209,14 +212,14 @@
 #define PMC_IMR     (PMC_BASE + PMC_IMR_OFF)    /*!< \brief Interrupt mask register address. */
 
 #define PMC_MOSCS                   0x00000001  /*!< \brief Main oscillator. */
-#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+#if defined (PMC_HAS_PLLB)
 #define PMC_LOCKA                   0x00000002  /*!< \brief PLL A lock. */
 #define PMC_LOCKB                   0x00000004  /*!< \brief PLL B lock. */
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#else
 #define PMC_LOCK                    0x00000004  /*!< \brief PLL lock. */
 #endif
 #define PMC_MCKRDY                  0x00000008  /*!< \brief Master clock ready. */
-#define PMC_OSC_SEL                 0x00000080  /*!< \brief Slow clock oscillator selection. */
+#define PMC_OSC_SEL                 0x00000080  /*!< \brief 32 kHz external slow clock. */
 #define PMC_PCKRDY0                 0x00000100  /*!< \brief Programmable clock 0 ready. */
 #define PMC_PCKRDY1                 0x00000200  /*!< \brief Programmable clock 1 ready. */
 #define PMC_PCKRDY2                 0x00000400  /*!< \brief Programmable clock 2 ready. */
