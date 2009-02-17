@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2009/02/17 09:35:05  haraldkipp
+ * ARM coprocessor bits added, at least a few.
+ *
  * Revision 1.8  2008/10/23 08:50:43  haraldkipp
  * Prepared AT91 UART hardware handshake.
  *
@@ -66,6 +69,8 @@
  *
  * \endverbatim
  */
+
+#include <arch/arm/v5te.h>
 
 #define FLASH_BASE      0x100000UL
 #define RAM_BASE        0x200000UL
@@ -125,6 +130,8 @@
 #define USART_HAS_PDC
 #define USART_HAS_MODE
 #define MCI_HAS_PDC
+#define PMC_HAS_PLLB
+#define PMC_HAS_MDIV
 
 #define PIO_HAS_MULTIDRIVER
 #define PIO_HAS_PULLUP
