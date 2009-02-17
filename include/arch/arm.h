@@ -35,6 +35,10 @@
 
 /*
  * $Log$
+ * Revision 1.22  2009/02/17 09:34:34  haraldkipp
+ * Added inline assembler macros for reading/writing coprocessor CP15
+ * control register.
+ *
  * Revision 1.21  2009/01/16 19:45:42  haraldkipp
  * All ARM code is now running in system mode.
  *
@@ -107,7 +111,7 @@
  */
 
 #include <cfg/arch.h>
-#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
+#if defined (MCU_AT91)
 #include <arch/arm/at91.h>
 #elif defined (MCU_GBA)
 #include <arch/arm/gba.h>
@@ -180,7 +184,7 @@ extern void *__stack;
 
 #ifndef _NOP
 #ifdef __GNUC__
-#define _NOP() __asm__ __volatile__ ("mov r0, r0")
+#define _NOP() __asm__ __volatile__ ("mov r0, r0  @ _NOP")
 #else
 #define _NOP() asm("mov r0, r0")
 #endif
@@ -202,5 +206,18 @@ extern void *__stack;
 
 #define _SFR_MEM8(addr)     (addr)
 #define _SFR_MEM16(addr)    (addr)
+
+#ifndef __ASSEMBLER__
+#ifdef __GNUC__
+#define ARM_SET_CP15_CR(val) __asm__ __volatile__("mcr p15, 0, %0, c1, c0, 0" :: "r"(val) : "cc")
+#define ARM_GET_CP15_CR() ( \
+    { \
+        unsigned int val; \
+        __asm__ __volatile__("mrc p15, 0, %0, c1, c0, 0" : "=r"(val) :: "cc"); \
+        val; \
+    } \
+)
+#endif /* __GNUC__ */
+#endif /* __ASSEMBLER__ */
 
 #endif
