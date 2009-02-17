@@ -1,10 +1,64 @@
-$Id: ChangeLog,v 1.524 2009/02/16 23:21:14 thiagocorrea Exp $
+$Id: ChangeLog,v 1.525 2009/02/17 09:38:23 haraldkipp Exp $
 
 2009-02-16  Thiago A. Correa <thiago.correa@gmail.com>
 
 	* include/dev/irqreg_arm.h, include/dev/irqreg_avr.h,
 	include/dev/irqreg_h8.h, include/dev/irqreg_m68k.h,
 	include/dev/irqreg_unix.h: Remove deprecated headers.
+
+2009-02-16  Harald Kipp  <harald.kipp@egnite.de>
+
+	* Makerules.arm-gcc, Makerules.arm-gccdbg, app/Makerules.arm-gcc,
+	app/Makerules.arm-gccdbg: Include dot in wildcards, added PHONY 
+	declarations and removed unused targets.
+
+	* arch/arm/dev/spibus0at91.c, arch/arm/dev/spibus1at91.c,
+	arch/avr/dev/spibus0avr.c, dev/sbi_mmc.c,
+	include/cfg/arch/porttran.h: Macro GPIO_CFG_OUTPUT had been 
+	defined twice. I changed the one in porttran.h to GPIO_OUTPUT 
+	in the hope that this will have the least impact on existing 
+	applications. Also changed GPIO_CFG_INPUT to GPIO_INPUT to make 
+	it look more consistent.
+	
+	* arch/arm/dev/spibus_at91.c: Interrupt routine was not 
+	registered due to ifdef mismatch.
+
+	* dev/spi_at45d.c: Added support for AT45DB0642D.
+
+	* include/arch/arm/at91.h: Use more general macros. Added 
+	definition for NUT_HWCLK_PERIPHERAL for targets which have 
+	a PMC MDIV flag. Thanks to Thiago A. Correa, who discovered 
+	this problem.
+
+	* arch/arm/init/crtat91sam9260_ram.S, conf/arch/arm.nut:
+	A lot of clean-up had been done with SAM9260 initialization.
+	Clock configurations should now work as expected. Note, that
+	the CPU is running now at 198.6560 MHz with peripheral clock
+	at 99.3280 MHz. Thanks to Paulo Silva for providing a working
+	sample.
+
+	* include/arch/arm/at91_matrix.h: Added master and slave 
+	indices as they appear on the SAM9260. Not sure about other 
+	AT91 devices.
+
+	* include/arch/arm/at91_pmc.h, include/arch/arm/at91sam9xe.h:
+	Check for PLL B availability instead of target names.
+
+	* include/arch/arm.h: Added inline assembler macros for 
+	reading/writing coprocessor CP15 control register.
+
+	* include/arch/arm/at91sam9260.h, include/arch/arm/v5te.h:
+	ARM coprocessor bits added, at least a few.
+
+	* conf/at91sam9260-ek.conf: Updated for latest Nut/OS 
+	configurations requirements.
+
+	* os/heap.c: Some compiler versions didn't like the pointer 
+	type cast. Hope this will fix it.
+
+	* app/Makeburn.arm-samba, tools/win32/at91sam-sdram.tcl:
+	Added 'make burn' support for SAM-BA.
+
 
 2009-02-13  Harald Kipp  <harald.kipp@egnite.de>
 
