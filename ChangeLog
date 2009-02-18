@@ -1,6 +1,22 @@
-$Id: ChangeLog,v 1.526 2009/02/18 12:19:49 olereinhardt Exp $
+$Id: ChangeLog,v 1.527 2009/02/18 14:32:19 olereinhardt Exp $
 
 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* crt/setenv.c: 
+	  Implemented posix compatible unsetenv function. (The posix variant 
+          correctly returns an int return value)
+
+	  This is needed for Newlib since version 1.17.0
+
+	  As avr-libc and older newlib versions declare unsetenv returning 
+	  void, the void version is still default and using the posix 
+          compatible declaration needs to be enabled in the configurator 
+          (option CRT_UNSETENV_POSIX, in 
+          C runtime (target specific) / Environment / posix compatible unsetenv 
+
+	* conf/crt/crt.nut: Added CRT_UNSETENV_POSIX, enable it when
+	  building for ARM using Newlib since version 1.17.0 to avoid
+	  compile errors for unsetenv in setenv.c. See above!
+
         * basemon/webdemo.c, canbus/candemo.c, httpd/httpserv.c,
           inetq/inetq.c, nutpiper/config.c, nutpiper/config.h,
           nutpiper/nutpiper.c, nutpiper/player.c, nutpiper/player.h,
