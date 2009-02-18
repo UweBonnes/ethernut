@@ -32,6 +32,15 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/02/18 12:13:34  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ * 	* basemon/webdemo.c:
+ *
+ * 	  Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ * 	  return value
+ *
  * Revision 1.7  2006/10/05 17:09:40  haraldkipp
  * Signed mismatches corrected.
  *
@@ -214,7 +223,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     return 0;
 }
 
-void DoCheckboxes(FILE * stream, u_char * name, u_char val)
+void DoCheckboxes(FILE * stream, char * name, u_char val)
 {
     u_char i;
     static prog_char ttop_P[] = "<tr><td>%s</td>";
