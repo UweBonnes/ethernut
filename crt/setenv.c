@@ -39,6 +39,7 @@
 #include <memdebug.h>
 
 #include <sys/environ.h>
+#include <cfg/crt.h>
 
 /*
  * Save environment in non-volatile memory.
@@ -151,6 +152,8 @@ int setenv(CONST char *name, CONST char *value, int force)
     return 0;
 }
 
+
+
 /*!
  * \brief Remove an environment variable.
  *
@@ -160,13 +163,42 @@ int setenv(CONST char *name, CONST char *value, int force)
  * \return 0 upon successful completion. Otherwise, -1 is returned and 
  *         errno is set to indicate the error.
  */
+#ifdef CRT_UNSETENV_POSIX
+int unsetenv(CONST char *name)
+{
+    NUTENVIRONMENT *envp;
+
+    if ((envp = findenv(name)) == NULL) {
+        errno = ENOENT;
+        return -1;
+    }
+    if (envp->env_prev) {
+        envp->env_prev->env_next = envp->env_next;
+    }
+    if (envp->env_next) {
+	envp->env_next->env_prev = envp->env_prev;
+    }
+    if (nut_environ == envp) {
+	nut_environ = envp->env_next;
+    }
+    free(envp->env_name);
+    free(envp->env_value);
+    free(envp);
+
+    save_env();
+    return 0;
+}
+
+
+#else 
+
 void unsetenv(CONST char *name)
 {
     NUTENVIRONMENT *envp;
 
     if ((envp = findenv(name)) == NULL) {
         errno = ENOENT;
-	return;
+        return;
     }
     if (envp->env_prev) {
         envp->env_prev->env_next = envp->env_next;
@@ -184,3 +216,4 @@ void unsetenv(CONST char *name)
     save_env();
 }
 
+#endif
