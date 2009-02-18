@@ -293,7 +293,7 @@ void GpioPortSetHigh(int bank, unsigned int mask)
 /*!
  * \brief Set all pin levels of a bank/port.
  *
- * This routine can be used to simultanously set all pins of a specific
+ * This routine can be used to simultaneously set all pins of a specific
  * port. However, in some implementations the high bit values will be
  * set before the low bit values. If this is a problem, you should use
  * GpioPortSetHigh() and GpioPortSetLow().
@@ -745,7 +745,7 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
  *     ...
  *     GpioPinConfigSet(0, 4, GPIO_CFG_PULLUP);
  *     GpioRegisterIrqHandler(&sig_GPIO, 4, PinChange, NULL);
- *     GpioIrqEnable(&sig_GPIO, 30);
+ *     GpioIrqEnable(&sig_GPIO, 4);
  *     ...
  * }
  * \endcode
