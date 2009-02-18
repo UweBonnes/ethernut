@@ -33,6 +33,11 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.14  2009/02/18 12:48:27  olereinhardt
+-- 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+-- Added CRT_UNSETENV_POSIX, enable it when building for ARM using Newlib since
+-- version 1.17.0 to avoid compile errors for unsetenv in setenv.c.
+--
 -- Revision 1.13  2009/02/13 14:44:25  haraldkipp
 -- Debug versions of heap routines added.
 --
@@ -342,7 +347,17 @@ nutcrt =
                 default = "256",
                 type = "integer",
                 file = "include/cfg/eeprom.h"
-            }
+            },
+	    {
+		macro = "CRT_UNSETENV_POSIX",
+		brief = "Posix compatible unsetenv",
+		description = "Enable posix compatible definition of unsetenv. Newlib since version "..
+		              "1.17.0 declares unsetenv returning int. Older versions are declared "..
+		              "as void function. This will help to avoid compilation errors because "..
+		              "of incompatible declarations.",
+		flavor = "boolean",
+		file = "include/cfg/crt.h"
+	    }
         }
     },
 
