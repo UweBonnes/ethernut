@@ -33,6 +33,13 @@
 
 /*!
  * $Log$
+ * Revision 1.9  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.8  2008/01/31 09:38:15  haraldkipp
  * Added return statement in main to avoid warnings with latest GCC.
  *
@@ -172,7 +179,7 @@ prog_char help_P[] = "400 List of commands follows\r\n"
     "ti[mers]\tLists all running timers.\r\n" "q[uit]\t\tTerminates connection.\r\n" ".\r\n";
 prog_char thread_intro_P[] = "220 List of threads with name,state,prio,stack,mem,timeout follows\r\n";
 prog_char timer_intro_P[] = "221 List of timers with ticks left and interval follows\r\n";
-prog_char mem_fmt_P[] = "210 %u bytes RAM free\r\n";
+prog_char mem_fmt_P[] = "210 %lu bytes RAM free\r\n";
 
 
 /*
@@ -302,10 +309,11 @@ void ProcessRequests(FILE * stream)
 int main(void)
 {
     int pppcom;
+#ifdef PPPDEV
     PPPDCB *dcb;
     u_long lctl;
     int rc;
-
+#endif
     /*
      * Register our devices.
      */

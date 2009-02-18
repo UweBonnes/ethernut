@@ -33,6 +33,13 @@
 
 /*!
  * $Log$
+ * Revision 1.7  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.6  2006/08/31 19:14:44  haraldkipp
  * Not all platforms do have devDebug0. Use board.h to determine the
  * correct driver.
@@ -392,6 +399,7 @@ static void UserInterface(void)
  */
 int main(void)
 {
+#if defined(__AVR__)
     /* Unique MAC address of the Ethernut Board. */
     u_char mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
     /* Unique IP address of the Ethernut Board. Ignored if DHCP is used. */
@@ -401,6 +409,7 @@ int main(void)
     /* Gateway IP address for the Ethernut Board. Ignored if DHCP is used. */
     u_long ip_gate = inet_addr("192.168.192.3");
     /* Baudrate for debug output. */
+#endif
     u_long baud = 115200;
 
     /*

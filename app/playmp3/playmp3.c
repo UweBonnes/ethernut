@@ -33,6 +33,13 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.4  2006/08/31 19:14:44  haraldkipp
  * Not all platforms do have devDebug0. Use board.h to determine the
  * correct driver.
@@ -68,7 +75,9 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#if defined(__AVR__)
 static int PlayMp3File(char *path);
+#endif
 
 /*!
  * \example playmp3/playmp3.c
@@ -157,6 +166,7 @@ int main(void)
 #else /* !__AVR__ */
     for (;;);
 #endif /* !__AVR__ */
+    return 0;
 }
 
 #if defined(__AVR__)
@@ -172,8 +182,8 @@ static int PlayMp3File(char *path)
 {
     int fd;
     size_t rbytes;
-    u_char *mp3buf;
-    int got;
+    char  *mp3buf;
+    int    got;
     u_char ief;
 
     /*

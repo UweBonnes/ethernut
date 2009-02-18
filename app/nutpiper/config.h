@@ -36,6 +36,13 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.1  2003/07/21 17:50:48  haraldkipp
  * First check in
  *
@@ -53,13 +60,13 @@
 typedef struct {
     u_short rs_port;
     u_long rs_ip;
-    u_char *rs_url;
-    u_char *rs_name;
-    u_char *rs_genre;
+    char  *rs_url;
+    char  *rs_name;
+    char  *rs_genre;
     u_long rs_metaint;
     u_short rs_bitrate;
     u_char rs_scandead;
-    u_char *rs_scantitle;
+    char  *rs_scantitle;
 } RADIOSTATION;
 
 extern RADIOSTATION *station;
@@ -95,6 +102,6 @@ extern int ConfigLoad(void);
 extern void ConfigResetFactory(void);
 extern void ConfigSave(void);
 extern void ConfigSaveControl(void);
-extern int ConfigStation(u_char idx, CONST u_char * url);
+extern int ConfigStation(u_char idx, CONST char * url);
 
 #endif

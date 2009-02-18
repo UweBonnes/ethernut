@@ -33,6 +33,13 @@
 
 /*!
  * $Log$
+ * Revision 1.4  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.3  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -93,11 +100,11 @@ static int ProcessMetaData(void)
     int got;
     int rc = 0;
     u_char to_cnt = 0;
-    u_char *mbuf;
-    u_char *mn1;
-    u_char *mn2;
-    u_char *md1;
-    u_char *md2;
+    char *mbuf;
+    char *mn1;
+    char *mn2;
+    char *md1;
+    char *md2;
 
     /*
      * Wait for the lenght byte.
@@ -177,7 +184,7 @@ static int ProcessMetaData(void)
 THREAD(Player, arg)
 {
     size_t rbytes;
-    u_char *mp3buf;
+    char  *mp3buf;
     u_char to_cnt = 0;
     int got;
     u_char ief;

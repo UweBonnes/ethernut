@@ -50,8 +50,8 @@ typedef struct {
     u_long psi_mp3left;
     u_long psi_start;
     u_char psi_metaupdate;
-    u_char *psi_metatitle;
-    u_char *psi_metaurl;
+    char  *psi_metatitle;
+    char  *psi_metaurl;
     TCPSOCKET *psi_sock;
 } PLAYERINFO;
 

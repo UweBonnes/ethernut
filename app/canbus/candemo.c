@@ -83,8 +83,10 @@ CANINFO *canInfoPtr;
  */
 int main(void)
 {
+#if defined(__AVR__) && defined(__GNUC__)
    unsigned long i;
    int result;
+#endif
    u_long baud = 115200;
 
    NutRegisterDevice(&DEV_DEBUG, 0, 0);

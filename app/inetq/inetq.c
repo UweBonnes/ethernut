@@ -32,6 +32,13 @@
 
 /*!
  * $Log$
+ * Revision 1.6  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.5  2006/07/21 09:07:48  haraldkipp
  * Fixed warnings about wrong signedness.
  *
@@ -162,7 +169,7 @@ int main(void)
     /*
      * Resolve hostname using DNS.
      */
-    if ((rip = NutDnsGetHostByName(INETSERVER)) != 0) {
+    if ((rip = NutDnsGetHostByName((u_char*)INETSERVER)) != 0) {
 
         /*
          * Let's try a stdio stream first.
@@ -261,4 +268,5 @@ int main(void)
 
     for (;;)
         NutSleep(1000);
+    return 0;
 }

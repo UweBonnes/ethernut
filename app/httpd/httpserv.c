@@ -33,6 +33,13 @@
 
 /*!
  * $Log$
+ * Revision 1.21  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.20  2009/02/06 15:37:40  haraldkipp
  * Added stack space multiplier and addend. Adjusted stack space.
  *
@@ -885,4 +892,5 @@ int main(void)
     for (;;) {
         NutSleep(60000);
     }
+    return 0;
 }

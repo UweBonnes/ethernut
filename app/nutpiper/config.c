@@ -33,6 +33,13 @@
 
 /*!
  * $Log$
+ * Revision 1.5  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.4  2006/07/21 09:06:36  haraldkipp
  * Exclude AVR specific parts from building for other platforms. This does
  * not imply, that all samples are working on all platforms.
@@ -76,10 +83,10 @@ RADIOCONTROL radio;
  */
 static int ConfigSaveBinary(int addr, void *val, size_t len)
 {
+#if defined(__AVR__)
     size_t i;
     u_char *cp = val;
 
-#if defined(__AVR__)
     for (i = 0; i < len; cp++, i++)
         if (eeprom_read_byte((void *) (addr + i)) != *cp)
             eeprom_write_byte((void *) (addr + i), *cp);
@@ -91,7 +98,7 @@ static int ConfigSaveBinary(int addr, void *val, size_t len)
 /*
  * Save a string into the EEPROM.
  */
-static int ConfigSaveString(int addr, u_char * str)
+static int ConfigSaveString(int addr, char * str)
 {
     int rc = 0;
 
@@ -109,7 +116,7 @@ static int ConfigSaveString(int addr, u_char * str)
 /*
  * Read a string from EEPROM.
  */
-static size_t ConfigLoadString(int addr, u_char * str, size_t size)
+static size_t ConfigLoadString(int addr, char * str, size_t size)
 {
     size_t rc = 0;
 
@@ -130,10 +137,10 @@ static size_t ConfigLoadString(int addr, u_char * str, size_t size)
  */
 static int ConfigLoadBinary(int addr, void *val, size_t len)
 {
+#if defined(__AVR__)
     size_t i;
     u_char *cp = val;
 
-#if defined(__AVR__)
     for (i = 0; i < len; cp++, i++)
         *cp = eeprom_read_byte((void *) (addr + i));
 #endif /* __AVR__ */
@@ -175,12 +182,12 @@ size_t ConfigSize(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int ConfigStation(u_char idx, CONST u_char * url)
+int ConfigStation(u_char idx, CONST char * url)
 {
     u_long ip;
     u_short port = 80;
-    u_char *buf;
-    u_char *cp;
+    char *buf;
+    char *cp;
 
     if (idx >= MAXNUM_STATIONS) {
         idx = 0;

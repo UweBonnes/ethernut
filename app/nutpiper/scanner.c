@@ -33,6 +33,13 @@
 
 /*!
  * $Log$
+ * Revision 1.3  2009/02/18 12:18:58  olereinhardt
+ * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ *           Fixed compilier warnings. Especialy signedness of char buffers
+ *           as well as unused code on arm platform and main functions without
+ *           return value
+ *
  * Revision 1.2  2003/09/29 16:34:26  haraldkipp
  * Include file sequence changed
  *
@@ -60,12 +67,12 @@
 /*
  * Get line from naked TCP stream.
  */
-static int GetLine(TCPSOCKET * sock, u_char * line, u_short size)
+static int GetLine(TCPSOCKET * sock, char * line, u_short size)
 {
     int rc = 0;
     u_char to_cnt = 0;
     int got;
-    u_char *cp = line;
+    char *cp = line;
 
     if (size > 0) {
         for (;;) {
@@ -89,7 +96,7 @@ static int GetLine(TCPSOCKET * sock, u_char * line, u_short size)
     return rc;
 }
 
-static int PutString(TCPSOCKET * sock, u_char * str)
+static int PutString(TCPSOCKET * sock, char * str)
 {
     u_short len = strlen(str);
     u_short n;
@@ -108,7 +115,7 @@ static int PutString(TCPSOCKET * sock, u_char * str)
 int ScanStreamHeader(TCPSOCKET * sock, RADIOSTATION * rsp)
 {
     int rc = -1;
-    u_char *line = malloc(256);
+    char *line = malloc(256);
     char *cp;
 
     /*
@@ -190,11 +197,11 @@ static char *ReadMetaTitle(TCPSOCKET * sock, u_long iv)
     int got;
     int rc = 0;
     char *title = 0;
-    u_char *buf;
-    u_char *mn1;
-    u_char *mn2;
-    u_char *md1;
-    u_char *md2;
+    char *buf;
+    char *mn1;
+    char *mn2;
+    char *md1;
+    char *md2;
 
     /* Allocate temporary buffer. */
     if ((buf = malloc(512 + 1)) == 0) {
@@ -274,7 +281,7 @@ THREAD(Scanner, arg)
 
             /* Delay if this isn't the first connection. */
             if (rsp->rs_name) {
-                printf("%u bytes free\n", NutHeapAvailable());
+                printf("%lu bytes free\n", NutHeapAvailable());
                 NutSleep(30000);
             }
 
