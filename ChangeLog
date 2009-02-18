@@ -1,4 +1,14 @@
-$Id: ChangeLog,v 1.525 2009/02/17 09:38:23 haraldkipp Exp $
+$Id: ChangeLog,v 1.526 2009/02/18 12:19:49 olereinhardt Exp $
+
+2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+        * basemon/webdemo.c, canbus/candemo.c, httpd/httpserv.c,
+          inetq/inetq.c, nutpiper/config.c, nutpiper/config.h,
+          nutpiper/nutpiper.c, nutpiper/player.c, nutpiper/player.h,
+          nutpiper/scanner.c, playmp3/playmp3.c, pppc/pppc.c
+
+          Fixed compilier warnings. Especialy signedness of char buffers
+          as well as unused code on arm platform and main functions without
+          return value
 
 2009-02-16  Thiago A. Correa <thiago.correa@gmail.com>
 
