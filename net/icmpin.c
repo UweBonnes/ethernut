@@ -93,6 +93,11 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/02/22 12:39:51  olereinhardt
+ * Added ICMP destination unreachable support for UDP sockets and give a
+ * more detailed errno to TCP sockets as well. ICMP support for UDP sockets
+ * will just be enabled when defining NUT_UDP_ICMP_SUPPORT int the configurator
+ *
  * Revision 1.8  2008/10/05 16:48:52  haraldkipp
  * Security fix. Check various lengths of incoming packets.
  *
@@ -130,13 +135,38 @@
 #include <netinet/icmp.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
-#include <net/errno.h>
+#include <netinet/udp.h>
 #include <netinet/in.h>
+#include <errno.h>
 
 /*!
  * \addtogroup xgICMP
  */
 /*@{*/
+
+/*!
+ * \brief Translation table from icmp error code to errno.
+ */ 
+
+static const int icmp_code2errno[16] = 
+{
+    ENETUNREACH,
+    EHOSTUNREACH,
+    ENOPROTOOPT,
+    ECONNREFUSED,	
+    EMSGSIZE,
+    EOPNOTSUPP,
+    ENETUNREACH,
+    EHOSTDOWN,
+    ENETUNREACH,
+    ENETUNREACH,
+    EHOSTUNREACH,
+    ENETUNREACH,
+    EHOSTUNREACH,
+    EHOSTUNREACH,
+    EHOSTUNREACH,
+    EHOSTUNREACH,
+};
 
 /*
  * Send out ICMP echo response.
@@ -159,28 +189,55 @@ static int NutIcmpReflect(NUTDEVICE * dev, uint8_t type, NETBUF * nb)
 /*
  * Process incoming ICMP messages for destination unreachable.
  */
-static int NutIcmpUnreach(NETBUF * nb)
+static int NutIcmpUnreach(NETBUF * nb, int icmp_code)
 {
     IPHDR *ih;
-    TCPHDR *th;
-    TCPSOCKET *sock;
 
     if (nb->nb_ap.sz < sizeof(IPHDR) + 8)
         return -1;
 
     ih = nb->nb_ap.vp;
-    if (ih->ip_p != IPPROTO_TCP)
-        return -1;
+    
+    switch (ih->ip_p) {
+        case IPPROTO_TCP: 
+        {
+            TCPHDR *th;
+            TCPSOCKET *sock_tcp;
 
-    th = (TCPHDR *) ((char *) ih) + sizeof(IPHDR);
-    sock = NutTcpFindSocket(th->th_dport, th->th_sport, ih->ip_src);
-    if (sock == 0)
-        return -1;
+            th = (TCPHDR *) ((char *) ih) + sizeof(IPHDR);
+            sock_tcp = NutTcpFindSocket(th->th_dport, th->th_sport, ih->ip_src);
+            if (sock_tcp == 0)
+                return -1;
 
-    if (sock->so_state != TCPS_SYN_SENT && sock->so_state != TCPS_ESTABLISHED)
-        return -1;
+            if (sock_tcp->so_state != TCPS_SYN_SENT && sock_tcp->so_state != TCPS_ESTABLISHED)
+                return -1;
 
-    NutTcpAbortSocket(sock, EHOSTUNREACH);
+            NutTcpAbortSocket(sock_tcp, icmp_code2errno[icmp_code]);
+        }
+        break;
+
+#ifdef NUT_UDP_ICMP_SUPPORT               
+        case IPPROTO_UDP: 
+        {
+            UDPHDR *uh;
+            UDPSOCKET *sock_udp;
+
+            uh = (UDPHDR *) (((char *) ih) + sizeof(IPHDR));
+            sock_udp = NutUdpFindSocket(uh->uh_dport);
+
+            if (sock_udp == NULL)
+                return -1;
+            
+            if (NutUdpSetSocketError(sock_udp, ih->ip_dst, uh->uh_dport, icmp_code2errno[icmp_code]))
+                return -1;
+        }    
+        break;
+#endif            
+            
+        default:
+            return -1;
+    }
+
 
     return 0;
 }
@@ -223,7 +280,7 @@ void NutIcmpInput(NUTDEVICE * dev, NETBUF * nb)
             break;
         }
     case ICMP_UNREACH:
-        NutIcmpUnreach(nb);
+        NutIcmpUnreach(nb, icp->icmp_code);
     default:
         NutNetBufFree(nb);
     }
