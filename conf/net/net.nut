@@ -33,6 +33,10 @@
 -- Operating system functions
 --
 -- $Log$
+-- Revision 1.15  2009/02/22 12:22:44  olereinhardt
+-- 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+-- Added NUT_UDP_ICMP_SUPPORT (ICMP support on UDP sockets)
+--
 -- Revision 1.14  2009/02/16 03:10:50  thiagocorrea
 -- Fix small typo in text, hardly worth mentioning in the Changelog.
 --
@@ -149,7 +153,21 @@ nutnet =
             "udpin.c",
             "udpout.c",
             "udpsock.c"
+        },
+        options = 
+        {
+            {
+                macro = "NUT_UDP_ICMP_SUPPORT",
+                brief = "ICMP support for UDP sockets",
+                requires = { "NET_ICMP" },
+                description = "Allows ICMP error reporting on UDP sockets. e.g. ICMP destination "..
+                              "unreachable, ICMP host unreachable etc. will trigger errors on "..
+                              "UDP send / receive functions.",
+                flavor = "boolean",
+                file = "include/cfg/udp.h"
+            }
         }
+        
     },
     {
         name = "nutnet_ip",
