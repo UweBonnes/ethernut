@@ -34,6 +34,10 @@
 
 /*!
  * $Log$
+ * Revision 1.2  2009/02/22 11:38:47  olereinhardt
+ * 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ * Added warning if NUT_UDP_ICMP_SUPPORT is not enabled in configurator
+ *
  * Revision 1.1  2009/02/22 11:33:24  olereinhardt
  * 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
  * Initial import of ICMP demo for UDP sockets
@@ -179,6 +183,11 @@ int main(void)
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("Demo for ICMP support in UDP sockets...\r\n");
 
+#ifndef NUT_UDP_ICMP_SUPPORT
+#warning ICMP support for UDP sockets not enabled in the configurator, please enable NUT_UDP_ICMP_SUPPORT
+    puts("ICMP support for UDP sockets not enabled in the configurator\r\n");
+    puts("Please enable NUT_UDP_ICMP_SUPPORT\r\n");
+#endif    
     /*
      * Register the network device.
      */
