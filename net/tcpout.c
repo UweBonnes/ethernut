@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2009/02/22 12:30:36  olereinhardt
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.10  2008/08/11 07:00:32  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -145,6 +148,7 @@
 
 #include <cfg/os.h>
 #include <string.h>
+#include <errno.h>
 
 #include <sys/heap.h>
 #include <sys/event.h>
@@ -157,7 +161,6 @@
 #include <netinet/ipcsum.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
-#include <net/errno.h>
 #include <sys/thread.h>
 
 #ifdef NUTDEBUG

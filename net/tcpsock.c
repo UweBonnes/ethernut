@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.25  2009/02/22 12:31:52  olereinhardt
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.24  2009/02/13 14:52:05  haraldkipp
  * Include memdebug.h for heap management debugging support.
  *
@@ -201,6 +204,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>
@@ -208,7 +212,6 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 
-#include <net/errno.h>
 #include <net/route.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>

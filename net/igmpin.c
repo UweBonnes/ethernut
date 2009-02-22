@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/02/22 12:30:36  olereinhardt
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.2  2008/10/05 16:48:52  haraldkipp
  * Security fix. Check various lengths of incoming packets.
  *
@@ -78,8 +81,8 @@
 #include <netinet/igmp.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
-#include <net/errno.h>
 #include <netinet/in.h>
+#include <errno.h>
 
 /*!
  * \addtogroup xgIGMP

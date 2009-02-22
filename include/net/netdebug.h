@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/02/22 12:30:36  olereinhardt
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.4  2008/08/11 07:00:20  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -67,7 +70,7 @@
 
 #include <sys/socket.h>
 #include <netinet/tcp.h>
-#include <net/errno.h>
+#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {

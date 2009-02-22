@@ -93,6 +93,9 @@
 
 /*
  * $Log$
+ * Revision 1.29  2009/02/22 12:30:36  olereinhardt
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.28  2009/02/06 15:37:40  haraldkipp
  * Added stack space multiplier and addend. Adjusted stack space.
  *
@@ -238,7 +241,7 @@
 #include <sys/event.h>
 #include <sys/timer.h>
 
-#include <net/errno.h>
+#include <errno.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <net/route.h>
