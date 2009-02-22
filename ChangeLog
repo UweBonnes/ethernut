@@ -1,4 +1,41 @@
-$Id: ChangeLog,v 1.527 2009/02/18 14:32:19 olereinhardt Exp $
+$Id: ChangeLog,v 1.528 2009/02/22 12:48:58 olereinhardt Exp $
+
+2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* include/net/errno.h: 
+	  Added a deprecated warning.
+	  Commended out all defines and include include/errno.h instead.
+	  All defines in this file are duplicates of the one defined in
+          include/errno.h, just with an offset of 10000. We don't need these
+	  defines and just get conflicts. So remove this file ASAP
+
+	* include/net/netdebug.h, net/igmp.c, net/igmpin.c, net/tcpout.c,
+	  net/tcpsm.c, net/tcpsock.c:
+	  Include "include/errno.h" instead of "include/net/errno.h"
+
+	* net/udpsock.c, include/sys/socket.h, include/sys/sock_var.h:
+	  Added NutUdpError and NutUdpSetSocketError to set and retrieve
+	  socket errors. As udp sockets aren't connection oriented those 
+          errors will be anounced asynchronously on the next NutUdpSend 
+	  or NutUdpReceive.
+
+	  Include "include/errno.h" instead of "include/net/errno.h"
+
+	* conf/net/net.nut:
+	  Added NUT_UDP_ICMP_SUPPORT (ICMP support on UDP sockets)
+
+	* net/icmpin.c: 
+	  Added ICMP destination unreachable support for UDP sockets and 
+	  give a more detailed errno to TCP sockets as well. ICMP support 
+	  for UDP sockets will just be enabled when defining 
+	  NUT_UDP_ICMP_SUPPORT int the configurator
+
+	  Include "include/errno.h" instead of "include/net/errno.h"
+
+	* app/icmp-udp/*: 
+
+	  Initial import of ICMP demo for UDP sockets. You should have
+	  enabled NUT_UDP_ICMP_SUPPORT enabled in the configurator to 
+	  use the new ICMP support for UDP sockets
 
 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* crt/setenv.c: 
