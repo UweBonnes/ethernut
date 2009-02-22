@@ -1,4 +1,4 @@
-$Id: ChangeLog,v 1.528 2009/02/22 12:48:58 olereinhardt Exp $
+$Id: ChangeLog,v 1.529 2009/02/22 13:28:22 olereinhardt Exp $
 
 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* include/net/errno.h: 
@@ -11,6 +11,9 @@ $Id: ChangeLog,v 1.528 2009/02/22 12:48:58 olereinhardt Exp $
 	* include/net/netdebug.h, net/igmp.c, net/igmpin.c, net/tcpout.c,
 	  net/tcpsm.c, net/tcpsock.c:
 	  Include "include/errno.h" instead of "include/net/errno.h"
+
+	* include/cfg/udp.h: Added empty header for "in sourcetree"
+	  compilation
 
 	* net/udpsock.c, include/sys/socket.h, include/sys/sock_var.h:
 	  Added NutUdpError and NutUdpSetSocketError to set and retrieve
