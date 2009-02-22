@@ -63,6 +63,15 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/02/22 12:26:59  olereinhardt
+ * 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ *
+ * Added a deprecated warning.
+ * Commended out all defines and include include/errno.h instead.
+ * All defines in this file are duplicates of the one defined in
+ * include/errno.h, just with an offset of 10000. We don't need these
+ * defines and just get conflicts. So remove this file ASAP
+ *
  * Revision 1.4  2004/05/10 19:17:17  freckle
  * Only define constants if they are not already defined
  * This is a fix to get the *nix emulation to compile on mac os x, but the
@@ -86,10 +95,13 @@
  * \file net/errno.h
  * \brief Network error definitions.
  */
+#include <errno.h>
+#warning Using this file is deprecated, just include <errno.h> instead
 
+/* These definitions won't be needed any more... We should remove this deprecated file ASAP
 #ifndef EINVAL
 
-#define EINVAL          22      /*!< Invalid argument */
+#define EINVAL          22      //!< Invalid argument
 
 
 #define EWOULDBLOCK     10035   //!< Operation would block
@@ -126,5 +138,6 @@
 #define ENOTEMPTY       10066   //!< Directory not empty
 
 #endif
-
+#endif
+*/ 
 #endif
