@@ -63,6 +63,13 @@
 
 /*
  * $Log$
+ * Revision 1.14  2009/02/22 12:37:27  olereinhardt
+ * Added NutUdpError and NutUdpSetSocketError to set and retrieve socket
+ * errors. As udp sockets aren't connection oriented those errors will be
+ * anounced asynchronously on the next NutUdpSend or NutUdpReceive
+ *
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.13  2008/08/20 06:56:59  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -130,6 +137,7 @@
 #include <sys/device.h>
 #include <dev/netbuf.h>
 
+
 /*!
  * \file sys/sock_var.h
  * \brief UDP and TCP socket interface definitions.
@@ -160,12 +168,16 @@ typedef struct udp_socket UDPSOCKET;
  * It may change without notice.
  */
 struct udp_socket {
-    UDPSOCKET *so_next;     /*!< \brief Link to next tcp socket structure. */
+    UDPSOCKET *so_next;      /*!< \brief Link to next tcp socket structure. */
     uint16_t so_local_port;  /*!< \brief Local port number in net byte order. */
-    NETBUF  *so_rx_nb;      /*!< \brief Received, but not read by application. */
-    HANDLE  so_rx_rdy;      /*!< \brief Receiver event queue. */
-    int     so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
-    int     so_rx_bsz;      /*!< \brief Receive buffer size. */
+    NETBUF  *so_rx_nb;       /*!< \brief Received, but not read by application. */
+    HANDLE  so_rx_rdy;       /*!< \brief Receiver event queue. */
+    int     so_rx_cnt;       /*!< \brief Number of data bytes in the receive buffer. */
+    int     so_rx_bsz;       /*!< \brief Receive buffer size. */
+  
+    uint16_t so_last_error;  /*!< \brief Last error of socket */
+    uint32_t so_remote_addr; /*!< \brief Remote IP address in net byte order. Important just in case of an error */
+    uint16_t so_remote_port; /*!< \brief Remote port number in net byte order. Important just in case of an error */
 };
 
 /*@}*/

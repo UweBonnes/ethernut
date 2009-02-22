@@ -62,6 +62,13 @@
 
 /*
  * $Log$
+ * Revision 1.12  2009/02/22 12:37:26  olereinhardt
+ * Added NutUdpError and NutUdpSetSocketError to set and retrieve socket
+ * errors. As udp sockets aren't connection oriented those errors will be
+ * anounced asynchronously on the next NutUdpSend or NutUdpReceive
+ *
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.11  2008/08/20 06:56:59  haraldkipp
  * Implemented IP demultiplexer.
  *
@@ -114,7 +121,7 @@
  *
  */
 
-
+#include <cfg/udp.h>
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 
@@ -122,6 +129,7 @@
 #include <sys/socket_orig.h>
 
 #else /* embedded systems */
+
 
 /*!
 * \addtogroup xgSocket
@@ -217,7 +225,11 @@ extern UDPSOCKET *NutUdpFindSocket(uint16_t port);
 extern int NutUdpSetSockOpt(UDPSOCKET *sock, int optname, CONST void *optval, int optlen);
 extern int NutUdpGetSockOpt(UDPSOCKET *sock, int optname, void *optval, int optlen);
 
-
+#ifdef NUT_UDP_ICMP_SUPPORT    
+extern int NutUdpSetSocketError(UDPSOCKET * sock, uint32_t remote_addr, uint16_t remote_port, uint16_t error);
+extern int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port);
+#endif
+    
 #ifdef __cplusplus
 }
 #endif

@@ -93,6 +93,13 @@
 
 /*
  * $Log$
+ * Revision 1.13  2009/02/22 12:37:26  olereinhardt
+ * Added NutUdpError and NutUdpSetSocketError to set and retrieve socket
+ * errors. As udp sockets aren't connection oriented those errors will be
+ * anounced asynchronously on the next NutUdpSend or NutUdpReceive
+ *
+ * Include "include/errno.h" instead of "include/net/errno.h"
+ *
  * Revision 1.12  2009/02/13 14:52:05  haraldkipp
  * Include memdebug.h for heap management debugging support.
  *
@@ -159,6 +166,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <memdebug.h>
@@ -226,14 +234,22 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
  * \param data Pointer to a buffer containing the data to send.
  * \param len  Number of bytes to be sent.
  *
- * \return 0 on success, -1 otherwise.
+ * \return 0 on success, -1 otherwise. The specific error code
+ *         can be retrieved by calling NutUdpError().
  */
+
 int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int len)
 {
     int rc;
     NETBUF *nb;
 
+#ifdef NUT_UDP_ICMP_SUPPORT    
+    if (sock->so_last_error)
+        return -1;
+#endif
+    
     if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, len)) == 0) {
+        sock->so_last_error = ENOMEM;
         return -1;
     }
     memcpy(nb->nb_ap.vp, data, len);
@@ -257,7 +273,8 @@ int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int
  * \param timeout Maximum number of milliseconds to wait.
  *
  * \return The number of bytes received, if successful. The return
- *         value -1 indicates an error. On timeout 0 is returned.
+ *         value < 0 indicates an error. The specific error code
+ *         can be retrieved by calling NutUdpError().
  *
  * \note Timeout is limited to the granularity of the system timer.
  */
@@ -268,9 +285,21 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *
     UDPHDR *uh;
     NETBUF *nb;
 
+#ifdef NUT_UDP_ICMP_SUPPORT    
+    /* The ICMP handler might have set an error condition. */
+    if (sock->so_last_error)
+        return -1;
+#endif
+    
     if (sock->so_rx_nb == 0)
         NutEventWait(&sock->so_rx_rdy, timeout);
 
+#ifdef NUT_UDP_ICMP_SUPPORT    
+    /* An ICMP message might have posted the rx event. So check again */
+    if (sock->so_last_error)
+        return -1;
+#endif
+    
     if ((nb = sock->so_rx_nb) == 0)
         return 0;
 
@@ -334,6 +363,52 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
         sp = sp->so_next;
     }
     return rc;
+}
+
+/*!
+ * \brief Return specific code of the last error and the IP address / port of 
+ *        the host to which the communication failed
+ *
+ * Possible error codes are:
+ * - ENOTSOCK: Socket operation on non-socket
+ * - EMSGSIZE: Message too long
+ * - ENOPROTOOPT: Protocol not available
+ * - EOPNOTSUPP: Operation not supported on socket
+ * - ENETUNREACH: Network is unreachable
+ * - ECONNREFUSED: Connection refused
+ * - EHOSTDOWN: Host is down
+ * - EHOSTUNREACH: No route to host
+ *
+ * \param sock Socket descriptor. This pointer must have been 
+ *             retrieved by calling NutUdpCreateSocket().
+ * \param addr IP address of the remote host in network byte order.
+ * \param port Remote port number in host byte order.
+ *
+ * \todo Not all error codes are properly set right now. Some socket
+ *       functions return an error without setting an error code.
+ */
+
+int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port)
+{
+    int rc;
+    
+    if (sock == 0) {
+        addr = 0;
+        port = 0;
+        return ENOTSOCK;
+    }
+    
+    if (sock->so_last_error) {
+        rc = sock->so_last_error;
+        *port = ntohs(sock->so_remote_port);
+        *addr = sock->so_remote_addr;
+
+        sock->so_last_error  = 0;
+        sock->so_remote_port = 0;
+        sock->so_remote_addr = 0;
+        return rc;
+    }     
+    return 0;
 }
 
 /*!
@@ -432,6 +507,40 @@ int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
         break;
     }
     return rc;
+}
+
+/*!
+ * \brief Set a UDP socket error.
+ *
+ * This function should only be used together (and from) the icmp input routine 
+ *    
+ * The following values can be set:
+ *
+ * - #EHOSTUNREACH   Host is unreachable
+ *
+ * \param sock    Socket descriptor. This pointer must have been 
+ *                retrieved by calling NutUdpCreateSocket().
+ * \param remote_addr remote ip address in network byte order
+ * \param remote_port remote port in network byte order
+ * \param error   Error number.
+ *
+ * \return 0 on success, -1 otherwise. 
+ */
+
+int NutUdpSetSocketError(UDPSOCKET * sock, uint32_t remote_addr, uint16_t remote_port, uint16_t error)
+{
+    if (sock == 0)
+        return -1;
+    
+    sock->so_remote_addr = remote_addr;
+    sock->so_remote_port = remote_port;
+    sock->so_last_error  = error;
+
+    /* post the event only, if a thread is waiting */
+    if (sock->so_rx_rdy)
+        NutEventPost(&sock->so_rx_rdy);
+
+    return 0;
 }
 
 
