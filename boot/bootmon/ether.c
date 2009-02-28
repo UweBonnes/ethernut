@@ -32,6 +32,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/02/28 15:30:26  olereinhardt
+ * Answer to incomming ARP requests (Fixes arp timeout bug when downloading
+ * large files)
+ *
  * Revision 1.2  2008/07/14 13:08:23  haraldkipp
  * Boot loader version 1.0.6.
  * Re-read configuration on failures. Link wait time increased.
@@ -597,5 +601,14 @@ int EtherInput(unsigned short type, unsigned int tms)
     fsw = inw(NIC_DATA_ADDR);
     fsw = inw(NIC_DATA_ADDR);
 
+    /*
+     * Handle incoming ARP requests.
+     */
+    if (rframe.eth_hdr.ether_type != type) {
+        if (rframe.eth_hdr.ether_type == ETHERTYPE_ARP)
+            ArpRespond();
+        fbc = 0;
+    }    
+    
     return fbc;
 }
