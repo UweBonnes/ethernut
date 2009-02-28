@@ -78,6 +78,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/02/28 15:25:33  olereinhardt
+ * Added ARP responder
+ *
  * Revision 1.1  2007/08/17 13:16:31  haraldkipp
  * Checked in.
  *
@@ -98,6 +101,7 @@
 static unsigned long arptab_ip;        /*!< \brief ARP entry IP address. */
 static unsigned char arptab_ha[6];     /*!< \brief APR entry hardware address. */
 
+ARPENTRY ae;
 ARPFRAME arpframe;
 
 /*!
@@ -164,6 +168,51 @@ int ArpRequest(unsigned long dip, unsigned char *dmac)
         }
     }
     return -1;
+}
+
+/*!
+ * \brief Process incoming ARP packets.
+ *
+ * The incoming IP and hardware address pair is stored. This routine 
+ * does not respond to ARP requests.
+ */
+
+void ArpRespond(void)
+{
+    ARPFRAME *af = (ARPFRAME *) & rframe;
+    ETHERARP *ea = &af->eth_arp;
+
+    ea = &arpframe.eth_arp;
+    if (ea->arp_tpa == confnet.cdn_ip_addr) {
+        if (htons(ea->arp_op) == ARPOP_REPLY) {
+            ae.ae_ip = ea->arp_spa;
+            memcpy_(ae.ae_ha, ea->arp_sha, 6);
+        } 
+    } else 
+    if (ea->arp_spa == confnet.cdn_ip_addr) {
+        if (htons(ea->arp_op) == ARPOP_REQUEST) {          
+            /*
+             * Set ARP header.
+             */
+            ea->arp_hrd = htons(ARPHRD_ETHER);
+            ea->arp_pro = ETHERTYPE_IP;
+            ea->arp_hln = 6;
+            ea->arp_pln = 4;
+            ea->arp_op = htons(ARPOP_REPLY);
+    
+            /*
+             * Set ARP destination data.
+             */
+            
+            memcpy_(ea->arp_tha, ea->arp_sha, 6);
+            ea->arp_tpa = ea->arp_spa;
+            
+            memcpy_(ea->arp_sha, confnet.cdn_mac, 6);
+            ea->arp_spa = confnet.cdn_ip_addr;
+
+            EtherOutput(0, ETHERTYPE_ARP, sizeof(ETHERARP));
+        }
+    }
 }
 
 /*@}*/
