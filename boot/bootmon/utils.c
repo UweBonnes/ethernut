@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/02/28 15:28:46  olereinhardt
+ * Fixed compiler warnings (signedness)
+ *
  * Revision 1.2  2008/07/14 13:08:23  haraldkipp
  * Boot loader version 1.0.6.
  * Re-read configuration on failures. Link wait time increased.
@@ -68,7 +71,7 @@ void Delay(unsigned char val)
     }
 }
 
-void strcpy_(unsigned char *dst, const unsigned char *src)
+void strcpy_(char *dst, const char *src)
 {
     while (*src) {
         *dst++ = *src++;
@@ -101,7 +104,7 @@ int hex2bin(char c)
     return 0;
 }
 
-unsigned long inet_addr(unsigned char *str)
+unsigned long inet_addr(char *str)
 {
     unsigned short num;
     unsigned long addr = 0;
@@ -135,11 +138,11 @@ unsigned long inet_addr(unsigned char *str)
     return -1;
 }
 
-unsigned char *inet_ntoa(unsigned long addr)
+char *inet_ntoa(unsigned long addr)
 {
-    static unsigned char str[16];
-    unsigned char inv[3];
-    unsigned char *rp;
+    static char str[16];
+    char inv[3];
+    char *rp;
     unsigned char *ap;
     unsigned char rem;
     unsigned char n;

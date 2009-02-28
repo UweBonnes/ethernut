@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/02/28 15:28:46  olereinhardt
+ * Fixed compiler warnings (signedness)
+ *
  * Revision 1.1  2007/08/17 13:16:33  haraldkipp
  * Checked in.
  *
@@ -46,12 +49,12 @@ extern void Delay(unsigned char val);
 
 extern void memset_(unsigned char *dst, unsigned char val, unsigned char len);
 extern void memcpy_(unsigned char *dst, const unsigned char *src, unsigned char len);
-extern void strcpy_(unsigned char *dst, const unsigned char *src);
+extern void strcpy_(char *dst, const char *src);
 
-extern unsigned long inet_addr(unsigned char *str);
+extern unsigned long inet_addr(char *str);
 extern int hex2bin(char c);
 
-extern unsigned char *inet_ntoa(unsigned long addr);
+extern char *inet_ntoa(unsigned long addr);
 
 
 /*!

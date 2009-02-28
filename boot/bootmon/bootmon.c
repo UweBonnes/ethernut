@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2009/02/28 15:28:46  olereinhardt
+ * Fixed compiler warnings (signedness)
+ *
  * Revision 1.3  2008/07/14 13:08:22  haraldkipp
  * Boot loader version 1.0.6.
  * Re-read configuration on failures. Link wait time increased.
@@ -83,7 +86,7 @@ void NplUledCntl(int status)
 static int UserEntry(void)
 {
     int n;
-    unsigned char yn[3];
+    char yn[3];
 
     PutString("\nBootMon 1.0.6\n");
     NplUledCntl(ULED_OFF);
@@ -93,7 +96,7 @@ static int UserEntry(void)
     strcpy_(my_mask, inet_ntoa(confnet.cdn_ip_mask));
     strcpy_(my_gate, inet_ntoa(confnet.cdn_gateway));
     strcpy_(my_tftpd, inet_ntoa(confboot.cb_tftp_ip));
-    strcpy_(my_image, confboot.cb_image);
+    strcpy_(my_image, (char*)confboot.cb_image);
     for (;;) {
         GetMac(my_mac);
         GetIP("IP address", my_ip);
@@ -108,7 +111,7 @@ static int UserEntry(void)
             PutString(my_image);
             PutString("): ");
             if (GetLine(my_image, 31) == 0) {
-                strcpy_(my_image, confboot.cb_image);
+                strcpy_(my_image, (char*)confboot.cb_image);
             }
         } else {
             my_image[0] = 0;
@@ -134,7 +137,7 @@ static int UserEntry(void)
     DEBUG("Store '");
     DEBUG(my_image);
     DEBUG("'\n");
-    strcpy_(confboot.cb_image, my_image);
+    strcpy_((char*)confboot.cb_image, my_image);
 
     BootConfigWrite();
 

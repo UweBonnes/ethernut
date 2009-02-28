@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/02/28 15:28:46  olereinhardt
+ * Fixed compiler warnings (signedness)
+ *
  * Revision 1.1  2007/08/17 13:16:32  haraldkipp
  * Checked in.
  *
@@ -44,8 +47,8 @@ extern void PutString(char *cp);
 extern void PutHex(unsigned char val);
 extern void PutShortHex(unsigned short val);
 extern void PutLongHex(unsigned long val);
-extern int GetLine(unsigned char *line, int size);
-extern unsigned char *GetIP(char *prompt, char *value);
+extern int GetLine(char *line, int size);
+extern char *GetIP(char *prompt, char *value);
 extern void GetMac(unsigned char *mac);
 
 #ifdef NUTDEBUG

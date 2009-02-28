@@ -31,6 +31,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2009/02/28 15:28:46  olereinhardt
+ * Fixed compiler warnings (signedness)
+ *
  * Revision 1.1  2007/08/17 13:16:32  haraldkipp
  * Checked in.
  *
@@ -55,7 +58,7 @@ void PutString(char *cp)
     }
 }
 
-int GetLine(unsigned char *line, int size)
+int GetLine(char *line, int size)
 {
     int cnt = 0;
     unsigned char ch;
@@ -79,7 +82,7 @@ int GetLine(unsigned char *line, int size)
 /*
  * Get a line of input.
  */
-unsigned char *GetIP(char *prompt, char *value)
+char *GetIP(char *prompt, char *value)
 {
     for (;;) {
         PutString(prompt);

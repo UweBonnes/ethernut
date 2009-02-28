@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/02/28 15:28:46  olereinhardt
+ * Fixed compiler warnings (signedness)
+ *
  * Revision 1.2  2008/06/23 16:08:37  haraldkipp
  * Reduced retry time to become more responsive to space input via RS-232.
  *
@@ -104,10 +107,10 @@ int TftpRecv(void)
      */
     sframe.u.tftp.th_opcode = TFTP_RRQ;
     slen = 2;
-    cp = sframe.u.tftp.th_u.tu_stuff;
+    cp = (unsigned char*)sframe.u.tftp.th_u.tu_stuff;
     cp1 = confboot.cb_image;
     if (*cp1 == 0) {
-        cp1 = "enut.bin";
+        cp1 = (unsigned char*)"enut.bin";
     }
     DEBUG("Loading ");
     DEBUG(cp1);
@@ -115,7 +118,7 @@ int TftpRecv(void)
         *cp = *cp1++;
         slen++;
     } while (*cp++);
-    memcpy_(cp, "octet", 6);
+    memcpy_(cp, (unsigned char*)"octet", 6);
     slen += 6;
 
     /*
@@ -178,7 +181,7 @@ int TftpRecv(void)
          * Burn the received data into the flash ROM.
          */
         if (rlen > 4) {
-            StoreBlock(block, rframe.u.tftp.th_data);
+            StoreBlock(block, (unsigned char*)rframe.u.tftp.th_data);
         }
 
         /*
