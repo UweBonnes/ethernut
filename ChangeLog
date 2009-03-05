@@ -1,8 +1,10 @@
-$Id: ChangeLog,v 1.532 2009/03/05 21:27:21 freckle Exp $
+$Id: ChangeLog,v 1.533 2009/03/05 22:02:26 freckle Exp $
 
 2009-03-05  Matthias Ringwald <mringwal@inf.ethz.ch>
-    * arch/unix/dev/ostimer.c: added return NULL to make compiler happy
+    * arch/unix/dev/ostimer.c, arch/unix/os/nutinit.c:
+         added return NULL to make compiler happy
     * arch/unix/os/thread.c:   fix function prototype for compiler
+    * fs/pathops: unix emulation requires unistd.h as first include
     
 2009-02-28  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* boot/bootmon/arp.c: Added ARP responder

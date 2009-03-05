@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.10  2009/03/05 22:02:26  freckle
+ * unix emulation requires unistd.h as first include
+ *
  * Revision 1.9  2009/01/17 11:26:46  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -74,12 +77,14 @@
  * \endverbatim
  */
 
+// unix emulation requires unistd.h as first include
+#include <unistd.h>
+
 #include <errno.h>
 #include <sys/device.h>
 #include <string.h>
 
 #include <fs/fs.h>
-#include <unistd.h>
 #include <sys/stat.h>
 
 /*!
