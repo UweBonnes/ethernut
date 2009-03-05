@@ -1,5 +1,7 @@
-$Id: ChangeLog,v 1.530 2009/03/05 09:45:44 olereinhardt Exp $
+$Id: ChangeLog,v 1.531 2009/03/05 19:46:29 freckle Exp $
 
+2009-03-05  Matthias Ringwald <mringwal@inf.ethz.ch>
+    * arch/unix/dev/ostimer.c: added return NULL to make compiler happy
 2009-02-28  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* boot/bootmon/arp.c: Added ARP responder
 
