@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.5  2005/07/26 15:49:59  haraldkipp
  * Cygwin support added.
  *
@@ -70,7 +73,7 @@ extern NUTDEVICE devUsartAvr0;
 extern NUTDEVICE devUsartAvr1;
 #endif
 
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 extern NUTDEVICE devUsartAvr0;
 extern NUTDEVICE devUsartAvr1;
 #endif

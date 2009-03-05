@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.15  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -133,7 +136,7 @@ extern NUTDEVICE devDebug1;
 #elif defined(__m68k__)
 #endif
 
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 #endif

@@ -81,6 +81,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.8  2008/08/11 06:59:58  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -119,7 +122,7 @@
  */
 
 /* use native version on unix emulation */
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 #include <netdb_orig.h>
 /* assure _NETDB_H_ is set */
 #undef  _NETDB_H_

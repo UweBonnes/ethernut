@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.39  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.38  2009/01/19 18:55:12  haraldkipp
  * Added stack checking code.
  *
@@ -224,9 +227,8 @@
 #include <sys/tracer.h>
 #endif
 
-#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 #include <sys/time.h>
-
 static struct timeval   timeStart;
 #endif
 
@@ -273,7 +275,7 @@ volatile uint32_t nut_delay_loops;
 /*!
  * \brief System timer interrupt handler.
  */
-#if !(defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__))
+#ifndef __NUT_EMULATION__
 #ifdef USE_TIMER
 SIGNAL( SIG_TIMER ) 
 #else
@@ -303,7 +305,7 @@ static void NutTimerIntr(void *arg)
  */
 void NutTimerInit(void)
 {
-#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
     gettimeofday( &timeStart, NULL );
 #else
     NutRegisterTimer(NutTimerIntr);
@@ -352,7 +354,7 @@ void NutTimerInit(void)
  */
 void NutMicroDelay(uint32_t us)
 {
-#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
     usleep(us);
 #else
     register uint32_t cnt = nut_delay_loops * us / 1000;
@@ -680,9 +682,8 @@ uint32_t NutGetTickCount(void)
 {
     uint32_t rc;
 
-#if defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
     struct timeval   timeNow;
-
     gettimeofday( &timeNow, NULL );
     rc = (timeNow.tv_sec - timeStart.tv_sec) * 1000;
     rc += (timeNow.tv_usec - timeStart.tv_usec) / 1000;

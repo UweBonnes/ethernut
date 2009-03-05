@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.17  2009/01/09 17:54:28  haraldkipp
  * Added SPI bus controller for AVR and AT91.
  *
@@ -122,7 +125,7 @@
 /*
  * UART device.
  */
-#if defined(__AVR__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 
 #include <dev/usartavr.h>
 #define DEV_UART0       devUsartAvr0

@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.9  2009/01/17 11:26:52  haraldkipp
  * Getting rid of two remaining BSD types in favor of stdint.
  * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
@@ -80,7 +83,7 @@
 
 #include <sys/osdebug.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__NUT_EMULATION__)
 #define ARCH_32BIT
 #endif
 
@@ -122,7 +125,7 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
         fputs("SIGNALED\n", stream);
     else {
         while (tdp) {
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
             fprintf_P(stream, fmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
                       states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else
@@ -166,7 +169,7 @@ void NutDumpThreadList(FILE * stream)
 
     tdp = nutThreadList;
     while (tdp) {
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
         fprintf_P(stream, fmt1, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
                   states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else

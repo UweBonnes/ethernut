@@ -75,6 +75,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.14  2009/02/13 14:47:12  haraldkipp
  * memory alignment macros added.
  *
@@ -136,7 +139,7 @@
 #define _SYS_VIRTUAL_TYPES_H_
 
 
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 //  on an emulation platform, we need to have both
 //              a) the native types headers and libs and
 #include <sys/types_orig.h>
@@ -190,7 +193,7 @@ extern "C" {
 #define	NUTMEM_TOP_ALIGN(s)     NUTMEM_BOTTOM_ALIGN((s + (NUTMEM_ALIGNMENT - 1)))
 
 
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
+#ifndef __NUT_EMULATION__
 
 /*! \brief Unsigned 8-bit value. 
  *
@@ -233,9 +236,9 @@ extern "C" {
     typedef unsigned short ureg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short ureg_t;
-#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-    typedef unsigned short ureg_t;
 #elif defined(__m68k__)
+    typedef unsigned short ureg_t;
+#else
     typedef unsigned short ureg_t;
 #endif
 
@@ -250,9 +253,9 @@ extern "C" {
     typedef unsigned short reg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short reg_t;
-#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-    typedef unsigned short reg_t;
 #elif defined(__m68k__)
+    typedef unsigned short reg_t;
+#else
     typedef unsigned short reg_t;
 #endif
 
@@ -309,8 +312,8 @@ extern "C" {
 #endif                          /* #if defined(__GCC__) && defined(__AVR__) */
 
 
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__) /* provided by system libraries */
-
+#ifndef __NUT_EMULATION__
+	
     /*!
  * \brief Convert short value from host to network byte order.
  */

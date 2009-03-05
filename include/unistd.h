@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.9  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.8  2008/04/01 13:34:20  haraldkipp
  * Fixed Unix emulation build.
  *
@@ -68,7 +71,7 @@
  * \endverbatim
  */
 
-#ifndef _UNISTD_H_
+#ifndef _UNISTD_NUT_H_
 
 #include <compiler.h>  // required e.g. for CONST
 
@@ -76,7 +79,7 @@
 #define _UNISTD_VIRTUAL_H_
 
 /* use native version on unix emulation */
-#if defined(__linux__) || defined(__APPLE__)
+#ifdef __NUT_EMULATION__
 
 #include "unistd_orig.h"
 

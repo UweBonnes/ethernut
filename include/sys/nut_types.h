@@ -23,7 +23,7 @@ typedef unsigned short ureg_t;
 typedef unsigned short ureg_t;
 #elif defined(__m68k__)
 typedef unsigned short ureg_t;
-#elif defined(__linux__) || defined(__APPLE__)
+#else
 typedef unsigned short ureg_t;
 #endif
 
@@ -40,7 +40,7 @@ typedef unsigned short reg_t;
 typedef unsigned short reg_t;
 #elif defined(__m68k__)
 typedef unsigned short reg_t;
-#elif defined(__linux__) || defined(__APPLE__)
+#else
 typedef unsigned short reg_t;
 #endif
 

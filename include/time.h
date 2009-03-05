@@ -35,6 +35,9 @@
  */
 /*
  * $Log$
+ * Revision 1.8  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.7  2008/08/11 06:59:58  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -102,14 +105,10 @@ struct _tm {
  * \typedef long time_t
  * \brief Serial date/time. Holds number of seconds after January 1st, 1970.
  */
-#if !defined(__APPLE__) && !defined(__CYGWIN__)
+#ifndef __NUT_EMULATION__	
 typedef long time_t;
 #endif
 
-#ifdef __linux__
-/* make compiler on linux gcc-2.95 happy */
-struct timespec;
-#endif
 
 time_t time(time_t * timer);
 int gmtime_r(CONST time_t * timer, tm * theTime);

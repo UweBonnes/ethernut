@@ -36,6 +36,9 @@
 
 /*
  * $Log$
+ * Revision 1.17  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.16  2008/08/11 07:00:24  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -125,7 +128,9 @@
  *
  */
 
-#if defined(__AVR__)
+#ifdef __NUT_EMULATION__
+#include <arch/unix/atom.h>
+#elif defined(__AVR__)
 #include <arch/avr/atom.h>
 #elif defined(__arm__)
 #include <arch/arm/atom.h>
@@ -133,8 +138,6 @@
 #include <arch/h8300h/atom.h>
 #elif defined(__m68k__)
 #include <arch/m68k/atom.h>
-#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-#include <arch/unix/atom.h>
 #endif
 
 #endif

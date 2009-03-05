@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.23  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.22  2009/02/06 15:37:40  haraldkipp
  * Added stack space multiplier and addend. Adjusted stack space.
  *
@@ -177,7 +180,7 @@ struct _NUTTHREADINFO {
     uint8_t *td_memory;          /*!< \brief Pointer to heap memory used for stack. */
     HANDLE td_timer;            /*!< \brief Event timer. */
     volatile HANDLE td_queue;   /*!< \brief Root entry of the waiting queue. */
-#if defined (__APPLE__) || defined(__linux__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__	
     pthread_t td_pthread;       /*!< \brief pthread for unix emulations. */
     void (*td_fn) (void *);     /*!< \brief thread function */
     void *td_arg;               /*!< \brief args given to NutCreateThread */
@@ -244,7 +247,7 @@ extern NUTTHREADINFO *runQueue;
 
 __BEGIN_DECLS
 /* Function prototypes. */
-#if defined (__APPLE__) || defined(__linux__) || defined(__CYGWIN__)
+#ifndef __NUT_EMULATION__	
 extern void NutThreadInit(void);
 #endif
 

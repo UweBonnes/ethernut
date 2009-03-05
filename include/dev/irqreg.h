@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.16  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.15  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -149,7 +152,9 @@ typedef struct {
     int (*ir_ctl) (int cmd, void *param);
 } IRQ_HANDLER;
 
-#if defined(__AVR__)
+#ifdef __NUT_EMULATION__
+#include <arch/unix/irqreg.h>
+#elif defined(__AVR__)
 #include <arch/avr/irqreg.h>
 #elif defined(__arm__)
 #include <arch/arm/irqreg.h>
@@ -157,8 +162,6 @@ typedef struct {
 #include <arch/h8300h/irqreg.h>
 #elif defined(__m68k__)
 #include <arch/m68k/irqreg.h>
-#elif defined (__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-#include <arch/unix/irqreg.h>
 #else
 #warning "MCU not defined"
 #endif
@@ -170,7 +173,7 @@ __BEGIN_DECLS
 //extern int NutRegisterInterrupt(int irq, void (*handler)(void *), void *arg) __attribute__ ((obsolete)) ;
 extern void CallHandler(IRQ_HANDLER * irh);
 
-#if defined (__linux__) || defined (__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 extern int  NutRegisterIrqHandler(uint8_t irq_nr, void (*handler) (void *), void *arg);
 #else
 extern int NutRegisterIrqHandler(IRQ_HANDLER * irh, void (*handler) (void *), void *arg);

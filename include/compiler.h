@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.11  2005/08/02 17:46:47  haraldkipp
  * Major API documentation update.
  *
@@ -66,7 +69,9 @@
 # define __END_DECLS
 #endif
 
-#if defined(__AVR__) || defined(ATMEGA)
+#ifdef __NUT_EMULATION__
+#include <arch/unix.h>
+#elif defined(__AVR__) || defined(ATMEGA)
 #include <arch/avr.h>
 #elif defined(__arm__)
 #include <arch/arm.h>
@@ -74,8 +79,6 @@
 #include <arch/h8.h>
 #elif defined(__m68k__)
 #include <arch/m68k.h>
-#elif defined(__linux__) || defined (__APPLE__) || defined(__CYGWIN__)
-#include <arch/unix.h>
 #endif
 
 #endif

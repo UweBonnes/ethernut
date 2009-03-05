@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.7  2008/07/26 09:38:02  haraldkipp
  * Added support for NUT_IRQMODE_NONE and NUT_IRQMODE_LEVEL.
  *
@@ -91,7 +94,7 @@ void CallHandler(IRQ_HANDLER * irh)
  *
  * \return 0 on success, -1 otherwise.
  */
-#if !defined (__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
+#ifndef __NUT_EMULATION__
 int NutRegisterIrqHandler(IRQ_HANDLER * irq, void (*handler) (void *), void *arg)
 {
     int rc = 0;

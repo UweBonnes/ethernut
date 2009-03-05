@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.8  2008/08/11 06:59:59  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -175,7 +178,7 @@ extern NUTDEVICE devUart0;
     extern NUTDEVICE devUart1;
 #endif
 
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 extern NUTDEVICE devUart0;
 extern NUTDEVICE devUart1;
 #endif

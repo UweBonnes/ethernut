@@ -61,17 +61,25 @@
 
 extern void NutAppMain(void *arg) __attribute__ ((noreturn));
 
-/* our IRQ signal */
-sigset_t irq_signal;
+#ifndef NUT_THREAD_MAINSTACK
+#define NUT_THREAD_MAINSTACK    1024
+#endif
 
-/* our emulated interrupt enabled/disabled flag */
-uint16_t int_disabled;
+#ifndef NUT_THREAD_IDLESTACK
+#define NUT_THREAD_IDLESTACK    1024
+#endif
 
 /* number of interrupts that can be outstanding before one is lost */
 #define MAX_IRQ_SLOTS 3
 
 /* type of raised interrupt (timer, usart, ...) */
 int interrupts_pending[MAX_IRQ_SLOTS];
+
+/* our IRQ signal */
+sigset_t irq_signal;
+
+/* our emulated interrupt enabled/disabled flag */
+uint16_t int_disabled;
 
 /* index to first, next free, and first unsignalled interrupt type */
 int irq_current = 0;
@@ -284,7 +292,6 @@ void NutUnixRaiseInterrupt(int irq)
  * it they are disabled (by NutEnterCritical, for example).
  *
  */
-void *NutInterruptEmulation(void *) __attribute__ ((noreturn));
 void *NutInterruptEmulation(void *unused_arg)
 {
     // non-nut thread => not interested in SIGUSR1 (IRQ signals)
@@ -311,6 +318,7 @@ void *NutInterruptEmulation(void *unused_arg)
             pthread_mutex_unlock(&irq_mutex);
         }
     }
+	return NULL;
 }
 
 /*

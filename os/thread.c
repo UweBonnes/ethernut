@@ -56,6 +56,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.37  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.36  2009/02/06 15:41:34  haraldkipp
  * Allow to query the thread handle of the currently running thread without
  * knowing its name (using parameter NULL).
@@ -231,7 +234,7 @@
 unsigned int critical_nesting_level;
 #endif
 
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
 // prototype
 extern void NutUnixThreadYieldHook(void);  // from unix_nutinit.c
 #endif
@@ -465,7 +468,7 @@ void NutThreadWake(HANDLE timer, HANDLE th)
 void NutThreadYield(void)
 {
 
-#if defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#ifdef __NUT_EMULATION__
     NutEnterCritical();
     NutUnixThreadYieldHook();
     NutExitCritical();

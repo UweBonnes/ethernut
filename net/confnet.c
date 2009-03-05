@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.8  2006/05/25 09:18:28  haraldkipp
  * API documentation updated and corrected.
  *
@@ -98,7 +101,7 @@ CONFNET confnet;
  */
 int NutNetLoadConfig(CONST char *name)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
+#ifndef __NUT_EMULATION__	
     if (NutNvMemLoad(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
         return -1;
     }
@@ -125,7 +128,7 @@ int NutNetLoadConfig(CONST char *name)
  */
 int NutNetSaveConfig(void)
 {
-#if !defined(__linux__) && !defined(__APPLE__) && !defined(__CYGWIN__)
+#ifndef __NUT_EMULATION__	
     confnet.cd_size = sizeof(CONFNET);
     if (NutNvMemSave(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
         return -1;

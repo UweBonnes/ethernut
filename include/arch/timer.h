@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2009/03/05 22:16:57  freckle
+ * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+ *
  * Revision 1.4  2008/08/22 09:25:34  haraldkipp
  * Clock value caching and new functions NutArchClockGet, NutClockGet and
  * NutClockSet added.
@@ -55,7 +58,9 @@
 
 #include <stdint.h>
 
-#if defined(__AVR__)
+#ifdef __NUT_EMULATION__
+#include <arch/unix/timer.h>
+#elif defined(__AVR__)
 #include <arch/avr/timer.h>
 #elif defined(__arm__)
 #include <arch/arm/timer.h>
@@ -63,8 +68,6 @@
 #include <arch/h8300h/timer.h>
 #elif defined(__m68k__)
 #include <arch/m68k/timer.h>
-#elif defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
-#include <arch/unix/timer.h>
 #endif
 
 __BEGIN_DECLS
