@@ -39,6 +39,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2009/03/05 22:58:05  freckle
+ * don't follow __arm__ if __NUT_EMULATION__
+ *
  * Revision 1.17  2009/02/13 14:52:05  haraldkipp
  * Include memdebug.h for heap management debugging support.
  *
@@ -429,7 +432,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             cp = ftoa(_double, &fps);
             size = strlen(cp);
             break;
-#elif defined(__arm__)
+#elif defined(__arm__) && !defined(__NUT_EMULATION__)
         case 'g':
         case 'G':
         case 'e':
