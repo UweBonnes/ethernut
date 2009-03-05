@@ -75,7 +75,7 @@ pthread_cond_t main_cv;
 uint16_t main_cs_level;
 
 /* has to be initialized once */
-void NutThreadInit()
+void NutThreadInit(void)
 {
     /* Initialize mutex and condition variable objects */
     pthread_mutex_init(&thread_mutex, NULL);
