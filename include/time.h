@@ -35,6 +35,9 @@
  */
 /*
  * $Log$
+ * Revision 1.9  2009/03/05 22:51:14  freckle
+ * revert change and define time_t on __linux__
+ *
  * Revision 1.8  2009/03/05 22:16:57  freckle
  * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
  *
@@ -105,9 +108,12 @@ struct _tm {
  * \typedef long time_t
  * \brief Serial date/time. Holds number of seconds after January 1st, 1970.
  */
-#ifndef __NUT_EMULATION__	
+
+// time_t is defind on __APPLE__ and __CYGWIN, but not on __linux__ or on embedded systems
+#if !defined(__APPLE__) && !defined(__CYGWIN__)
 typedef long time_t;
 #endif
+
 
 
 time_t time(time_t * timer);
