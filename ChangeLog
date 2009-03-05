@@ -1,4 +1,15 @@
-$Id: ChangeLog,v 1.529 2009/02/22 13:28:22 olereinhardt Exp $
+$Id: ChangeLog,v 1.530 2009/03/05 09:45:44 olereinhardt Exp $
+
+2009-02-28  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* boot/bootmon/arp.c: Added ARP responder
+
+	* boot/bootmon/ether.c: Answer to incomming ARP requests 
+	  (Fixes arp timeout bug when downloading large files)
+
+	* boot/bootmon/bootmon.c, boot/bootmon/dialog.c,
+	  boot/bootmon/dialog.h, boot/bootmon/tftp.c, boot/bootmon/utils.c,
+	  boot/bootmon/utils.h: 
+          Fixed compiler warnings (signedness)
 
 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* include/net/errno.h: 
