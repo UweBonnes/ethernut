@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/03/06 23:51:38  olereinhardt
+ * Fixed minor compile bugs
+ *
  * Revision 1.1  2009/03/06 17:00:33  olereinhardt
  * Added md5 routines, initial checkin
  *
@@ -49,7 +52,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "md5.h"
+#include <gorp/md5.h>
 
 /*!
  * \addtogroup xgHashes
@@ -204,7 +207,7 @@ void NutMD5Init(MD5CONTEXT *context)
  * \param len     Length of the data buffer
  */
 
-void NutMD5Update(MD5CONTEXT *context, uint8_t const *buf, size_t len)
+void NutMD5Update(MD5CONTEXT *context, uint8_t const *buf, uint32_t len)
 {
     uint32_t t;
 

@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/03/06 23:51:37  olereinhardt
+ * Fixed minor compile bugs
+ *
  * Revision 1.1  2009/03/06 17:46:21  olereinhardt
  * Initial checkin, base64 encoding and decoding routines
  *
@@ -48,7 +51,7 @@
 #include <string.h>
 
 #include <sys/heap.h>
-
+#include <sys/types.h>
 /*!
  * \addtogroup xgBase64
  */
@@ -68,9 +71,9 @@ static prog_char base64etab[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrs
  * \return Newly allocated string containing the encoded data. Must be freed later
  */
 
-int8_t *NutEncodeBase64(int8_t * str)
+char *NutEncodeBase64(CONST char* str)
 {
-    int8_t *encoded;
+    char    *encoded;
     size_t  length;
     size_t  encoded_length;
     int     idx, enc_pos;
@@ -107,10 +110,10 @@ int8_t *NutEncodeBase64(int8_t * str)
         bits += (int32_t)str[idx];
         char_count ++;
         if (char_count == 3) {
-            encoded[enc_pos++] = base64etab[(bits >> 18) & 0x3f];
-            encoded[enc_pos++] = base64etab[(bits >> 12) & 0x3f];
-            encoded[enc_pos++] = base64etab[(bits >> 6) & 0x3f];
-            encoded[enc_pos++] = base64etab[bits & 0x3f];
+            encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 18) & 0x3f]);
+            encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 12) & 0x3f]);
+            encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 6) & 0x3f]);
+            encoded[enc_pos++] = PRG_RDB(&base64etab[bits & 0x3f]);
             cols += 4;
             if (cols == 72) {
                 encoded[enc_pos++] = '\r';
@@ -126,13 +129,13 @@ int8_t *NutEncodeBase64(int8_t * str)
     
     if (char_count != 0) {
         bits <<= 16 - (8 * char_count);
-        encoded[enc_pos++] = base64etab[bits >> 18];
-        encoded[enc_pos++] = base64etab[(bits >> 12) & 0x3f];
+        encoded[enc_pos++] = PRG_RDB(&base64etab[bits >> 18]);
+        encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 12) & 0x3f]);
         if (char_count == 1) {
             encoded[enc_pos++] = '=';
             encoded[enc_pos++] = '=';
         } else {
-            encoded[enc_pos++] = base64etab[(bits >> 6) & 0x3f];
+            encoded[enc_pos++] = PRG_RDB(&base64etab[(bits >> 6) & 0x3f]);
             encoded[enc_pos++] = '=';
         }
     }

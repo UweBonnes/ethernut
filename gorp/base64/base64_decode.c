@@ -40,6 +40,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.2  2009/03/06 23:51:37  olereinhardt
+ * Fixed minor compile bugs
+ *
  * Revision 1.1  2009/03/06 17:46:21  olereinhardt
  * Initial checkin, base64 encoding and decoding routines
  *
@@ -47,7 +50,7 @@
  * \endverbatim
  */
 
- 
+#include <sys/types.h> 
 #include <inttypes.h>
 
 /*!
