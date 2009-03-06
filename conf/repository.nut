@@ -35,6 +35,9 @@
 -- of all top-level components.
 --
 -- $Log$
+-- Revision 1.39  2009/03/06 23:54:31  olereinhardt
+-- Added gorp library
+--
 -- Revision 1.38  2009/02/06 15:52:44  haraldkipp
 -- Introduced target independent symbols for external interrutps.
 --
@@ -213,6 +216,7 @@ arm_ld_choice = {
                     " ", 
                     "at91_boot", 
                     "at91_bootcrom", 
+                    "at91_bootloader_bootcrom",
                     "at91_ram", 
                     "at91_rom", 
                     "at91_httprom", 
@@ -332,6 +336,14 @@ repository =
         requires = { "HW_TARGET" },
         subdir = "crt",
         script = "crt/crt.nut"
+    },
+    {
+        name = "nutgorp",
+        brief = "Gorp: Code snipped library",
+        description = "Additional libraries and code snippets used all around in NutOS and application code",
+        requires = { "HW_TARGET" },
+        subdir = "gorp",
+        script = "gorp/gorp.nut"
     },
     {
         name = "nutnet",
