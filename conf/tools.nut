@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.29  2009/03/07 00:04:29  olereinhardt
+-- Added at91_bootloader_bootcrom ldscript
+--
 -- Revision 1.28  2008/09/23 07:33:53  haraldkipp
 -- Added support for remaining SAM7 familiy members.
 --
@@ -199,6 +202,7 @@ nuttools =
                 brief = "ARM Linker Script",
                 description = "at91_boot\t\tAT91R40008, code in ROM, copied to and running in RAM\n"..
                               "at91_bootcrom\t\tAT91R40008, code in ROM copied to RAM, but constant data remains in ROM.\n"..
+                              "at91_bootloader_bootcrom\t\tAT91R40008, code copied to RAM, but consts remain in ROM. Started by bootloader at address 0x10000\n"..
                               "at91_ram\t\t\tAT91R40008, code loaded in RAM by bootloader\n"..
                               "at91_rom\t\t\tAT91R40008, code running in FLASH\n"..
                               "at91_httprom\t\tAT91R40008, code running in FLASH. Use this with boothttp.\n"..
