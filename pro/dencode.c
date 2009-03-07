@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/03/07 00:19:29  olereinhardt
+ * Moved base64 decoder to gorp/base64/base64_decode.c
+ *
  * Revision 1.6  2006/03/16 15:25:38  haraldkipp
  * Changed human readable strings from u_char to char to stop GCC 4 from
  * nagging about signedness.
@@ -51,81 +54,6 @@
  */
  
 #include "dencode.h"
-
-/* Base-64 decoding.  This represents binary data as printable ASCII
-** characters.  Three 8-bit binary bytes are turned into four 6-bit
-** values, like so:
-**
-**   [11111111]  [22222222]  [33333333]
-**
-**   [111111] [112222] [222233] [333333]
-**
-** Then the 6-bit values are represented using the characters "A-Za-z0-9+/".
-*/
-
-/* Since base-64 encodes strings do not have any character above 127,
- * we need just the first 128 bytes. Furthermore there is no char
- * below 32, so we can save 32 additional bytes of flash.
- */
-static prog_char base64dtab[96] = {
-/*
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-*/
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
-    52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
-    -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
-    -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1,
-/*
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 */
-};
-
-/*
- * Do base-64 decoding on a string. Ignore any non-base64 bytes.
- * Return the actual number of bytes generated. The decoded size will
- * be at most 3/4 the size of the encoded, and may be smaller if there
- * are padding characters (blanks, newlines).
- */
-char *NutDecodeBase64(char * str)
-{
-    /* bug fix from Damian Slee. */
-    char code;
-    char *sp;
-    char *tp;
-    char last = -1;
-    char step = 0;
-
-    for (tp = sp = str; *sp; ++sp) {
-    	if (*sp < 32)
-    	    continue;
-        if ((code = PRG_RDB(&base64dtab[(int) *sp - 32])) == (char)-1)
-            continue;
-        switch (step++) {
-        case 1:
-            *tp++ = ((last << 2) | ((code & 0x30) >> 4));
-            break;
-        case 2:
-            *tp++ = (((last & 0xf) << 4) | ((code & 0x3c) >> 2));
-            break;
-        case 3:
-            *tp++ = (((last & 0x03) << 6) | code);
-            step = 0;
-            break;
-        }
-        last = code;
-    }
-    *tp = 0;
-    return str;
-}
 
 int NutDecodeHex(char c)
 {

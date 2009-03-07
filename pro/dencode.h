@@ -3,7 +3,6 @@
 
 #include <sys/types.h>
 
-extern char *NutDecodeBase64(char *str);
 extern int NutDecodeHex(char c);
 extern char *NutDecodePath(char *path);
 
