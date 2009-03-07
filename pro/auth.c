@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/03/07 00:18:13  olereinhardt
+ * Use base64 decoder from gorp/base64/base64_decode.c instead from dencode.c
+ *
  * Revision 1.6  2009/02/13 14:52:05  haraldkipp
  * Include memdebug.h for heap management debugging support.
  *
@@ -68,8 +71,8 @@
 #include <string.h>
 #include <memdebug.h>
 
-#include "dencode.h"
 #include <pro/httpd.h>
+#include <gorp/base64.h>
 
 /*!
  * \addtogroup xgHTTPD
