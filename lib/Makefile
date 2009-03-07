@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.4  2009/03/07 00:05:23  olereinhardt
+# Added gorp directory
+#
 # Revision 1.3  2006/05/25 09:36:09  haraldkipp
 # Include UserConf.mk to determine architecture.
 #
@@ -121,6 +124,7 @@ endif
 	$(MAKE) -C $(top_srcdir)/net
 	$(MAKE) -C $(top_srcdir)/pro
 	$(MAKE) -C $(top_srcdir)/crt
+	$(MAKE) -C $(top_srcdir)/gorp
 ifeq ($(ARCH), avr)
 	$(MAKE) -C $(top_srcdir)/cpp
 endif
@@ -136,6 +140,7 @@ endif
 	$(MAKE) -C $(top_srcdir)/net install
 	$(MAKE) -C $(top_srcdir)/pro install
 	$(MAKE) -C $(top_srcdir)/crt install
+	$(MAKE) -C $(top_srcdir)/gorp install
 ifeq ($(ARCH), avr)
 	$(MAKE) -C $(top_srcdir)/cpp install
 endif
@@ -152,7 +157,7 @@ endif
 	$(MAKE) -C $(top_srcdir)/pro clean
 	$(MAKE) -C $(top_srcdir)/crt clean
 	$(MAKE) -C $(top_srcdir)/cpp clean
-
+	$(MAKE) -C $(top_srcdir)/gorp clean
 apps:
 	$(MAKE) -C $(top_srcdir)/app
 
@@ -170,6 +175,7 @@ endif
 	$(MAKE) -C $(top_srcdir)/net clean
 	$(MAKE) -C $(top_srcdir)/pro clean
 	$(MAKE) -C $(top_srcdir)/crt clean
+	$(MAKE) -C $(top_srcdir)/gorp clean	
 	$(MAKE) -C $(top_srcdir)/cpp clean
 	$(MAKE) -C $(top_srcdir)/app clean
 
@@ -184,6 +190,7 @@ endif
 	$(MAKE) -C $(top_srcdir)/net clean
 	$(MAKE) -C $(top_srcdir)/pro clean
 	$(MAKE) -C $(top_srcdir)/crt clean
+	$(MAKE) -C $(top_srcdir)/gorp clean	
 	$(MAKE) -C $(top_srcdir)/cpp clean
 	$(MAKE) -C $(top_srcdir)/app clean
 	cd $(top_srcdir)
