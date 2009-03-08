@@ -1,8 +1,24 @@
-$Id: ChangeLog,v 1.539 2009/03/08 17:51:55 haraldkipp Exp $
+$Id: ChangeLog,v 1.540 2009/03/08 20:20:46 haraldkipp Exp $
 
 2009-03-08  Harald Kipp  <harald.kipp@egnite.de>
 
-        * tools/nutconf/scrolledtree.cpp, tools/nutconf/scrolledtree.h,
+	* app/basemon/Makefile, app/httpd/Makefile: Added libnutgorp
+	to fix linker error.
+
+	* app/pppc/pppc.c: AVR compile error fixed. lctl is required.
+
+	* gorp/base64/base64_decode.c, gorp/base64/base64_encode.c,
+	include/gorp/md5.h: Replaced inttypes.h by stdint.h. The latter 
+	is sufficient while the first is not always available.
+
+	* gorp/hashes/md5.c: Replaced const by CONST to make it compile
+	with ICCAVR.
+
+	* include/dev/board.h: Fixed missing UART device for AVR.
+
+	* Makefile.am: Included gorp in automake.
+
+	* tools/nutconf/scrolledtree.cpp, tools/nutconf/scrolledtree.h,
 	tools/nutconf/nutconf.h: Dummy scrollbar in tree window fixed.
 
 
