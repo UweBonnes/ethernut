@@ -32,6 +32,9 @@
 # For additional information see http://www.ethernut.de/
 #
 # $Log: Makefile,v $
+# Revision 1.8  2009/03/08 20:17:25  haraldkipp
+# Added libnutgorp to fix linker error.
+#
 # Revision 1.7  2006/07/21 09:13:58  haraldkipp
 # Added creation of *.elf for 'make all'.
 #
@@ -88,7 +91,7 @@ include ../Makedefs
 SRCS =  $(PROJ).c $(WEBFILE)
 OBJS =  $(SRCS:.c=.o)
 #MODS =  $(MODDIR)/dev/lanc111.o
-LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutpro -lnutos -lnutarch -lnutdev -lnutarch -lnutnet -lnutfs -lnutcrt
+LIBS =  $(LIBDIR)/nutinit.o $(MODS) -lnutpro -lnutos -lnutarch -lnutdev -lnutgorp -lnutnet -lnutfs -lnutcrt
 TARG =  $(PROJ).hex
 
 ifneq (, $(findstring h8300, $(ARCH)))
