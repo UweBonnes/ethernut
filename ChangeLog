@@ -1,5 +1,8 @@
-$Id: ChangeLog,v 1.537 2009/03/07 00:25:15 olereinhardt Exp $
+$Id: ChangeLog,v 1.538 2009/03/08 16:44:26 olereinhardt Exp $
 
+2009-03-08  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* include/gorp: Added missing header files to CVS
+	
 2009-03-06  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* gorp: Added gorp ("Studentenfutter") directory
 
