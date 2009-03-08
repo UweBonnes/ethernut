@@ -1,4 +1,10 @@
-$Id: ChangeLog,v 1.538 2009/03/08 16:44:26 olereinhardt Exp $
+$Id: ChangeLog,v 1.539 2009/03/08 17:51:55 haraldkipp Exp $
+
+2009-03-08  Harald Kipp  <harald.kipp@egnite.de>
+
+        * tools/nutconf/scrolledtree.cpp, tools/nutconf/scrolledtree.h,
+	tools/nutconf/nutconf.h: Dummy scrollbar in tree window fixed.
+
 
 2009-03-08  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* include/gorp: Added missing header files to CVS
