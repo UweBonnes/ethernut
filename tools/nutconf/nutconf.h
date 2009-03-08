@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.26  2009/03/08 17:44:33  haraldkipp
+ * Fixed vertical scrollbar bug.
+ *
  * Revision 1.25  2009/01/09 18:50:50  haraldkipp
  * Re-introduced support for Lua 5.0.
  *
@@ -126,7 +129,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.7"
+#define VERSION "2.0.8"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

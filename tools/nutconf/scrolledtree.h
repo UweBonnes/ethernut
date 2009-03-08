@@ -23,6 +23,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2009/03/08 17:44:34  haraldkipp
+ * Fixed vertical scrollbar bug.
+ *
  * Revision 1.6  2008/07/24 15:43:43  haraldkipp
  * Fixed component tree on Linux.
  *
@@ -67,8 +70,10 @@ class CScrolledTreeCtrl
     void OnScroll(wxScrollWinEvent & event);
     void OnPaint(wxPaintEvent& event);
 
+    virtual void SetScrollbar(int orient, int pos, int thumbVisible, int range, bool update);
     virtual void SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY,
                                int noUnitsX, int noUnitsY, int xPos = 0, int yPos = 0, bool noRefresh = false);
+    virtual void DoCalcScrolledPosition(int x, int y, int *xx, int *yy) const;
     virtual void GetViewStart(int *x, int *y) const;
     virtual void PrepareDC(wxDC & dc);
     virtual int GetScrollPos(int orient) const;

@@ -27,6 +27,9 @@
 
 /*
  * $Log: scrolledtree.cpp,v $
+ * Revision 1.8  2009/03/08 17:44:34  haraldkipp
+ * Fixed vertical scrollbar bug.
+ *
  * Revision 1.7  2008/07/24 15:43:43  haraldkipp
  * Fixed component tree on Linux.
  *
@@ -91,7 +94,6 @@ CScrolledTreeCtrl::CScrolledTreeCtrl(wxWindow * parent, wxWindowID id, const wxP
 {
     m_companionWindow = NULL;
     m_drawRowLines = (style & wxTR_ROW_LINES) != 0;
-    wxLogVerbose(wxT("Creating STC, style=%08lX"), style);
 }
 
 CScrolledTreeCtrl::~CScrolledTreeCtrl()
@@ -105,6 +107,39 @@ void CScrolledTreeCtrl::HideVScrollbar()
 #else
     /* No idea how to remove the vertical scrollbar. */
 #endif
+}
+
+void CScrolledTreeCtrl::DoCalcScrolledPosition(int x, int y, int *xx, int *yy) const
+{
+#if USE_GENERIC_TREECTRL || !defined(__WXMSW__)
+    if (IsKindOf(CLASSINFO(wxGenericTreeCtrl)))
+    {
+        wxGenericTreeCtrl* win = (wxGenericTreeCtrl*) this;
+        * yy = 0;
+        int yyy;
+        win->wxGenericTreeCtrl::DoCalcScrolledPosition(x, y, xx, & yyy);
+
+        wxScrolledWindow* scrolledWindow = GetScrolledWindow();
+        if (scrolledWindow)
+        {
+            int xxx;
+            scrolledWindow->DoCalcScrolledPosition(x, y, & xxx, yy);
+        }
+    }
+#endif
+}
+
+void CScrolledTreeCtrl::SetScrollbar(int orient,
+                               int pos,
+                               int thumbVisible,
+                               int range,
+                               bool update)
+{
+#ifndef __WXMSW__
+    if (orient == wxVERTICAL)
+        range = 0;
+#endif
+    wxWindow::SetScrollbar(orient, pos, thumbVisible, range, update);
 }
 
 void CScrolledTreeCtrl::SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY,
