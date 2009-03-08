@@ -37,6 +37,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.3  2009/03/08 20:18:37  haraldkipp
+ * Replaced inttypes.h by stdint.h.
+ *
  * Revision 1.2  2009/03/06 23:51:37  olereinhardt
  * Fixed minor compile bugs
  *
@@ -47,7 +50,7 @@
  * \endverbatim
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <string.h>
 
 #include <sys/heap.h>

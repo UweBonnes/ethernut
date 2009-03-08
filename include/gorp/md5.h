@@ -41,7 +41,7 @@
  */
 /*@{*/
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <sys/types.h>
 
 /*!
@@ -64,7 +64,7 @@ typedef struct _MD5CONTEXT {
 /* Function prototypes. */
 
 void NutMD5Init(MD5CONTEXT *context);
-void NutMD5Update(MD5CONTEXT *context, uint8_t const *buf, uint32_t len);
+void NutMD5Update(MD5CONTEXT *context, uint8_t CONST *buf, uint32_t len);
 void NutMD5Final(MD5CONTEXT *context, uint8_t digest[16]);
 
 __END_DECLS
