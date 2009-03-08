@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.5  2009/03/08 20:02:38  haraldkipp
+# Added gorp library.
+#
 # Revision 1.4  2009/02/17 14:46:11  haraldkipp
 # Added lua and removed mod.
 #
@@ -85,6 +88,8 @@ dist-hook:
 	cp -R $(srcdir)/eboot/* $(distdir)/eboot
 	mkdir -p $(distdir)/fs
 	cp -R $(srcdir)/fs/* $(distdir)/fs
+	mkdir -p $(distdir)/gorp
+	cp -R $(srcdir)/gorp/* $(distdir)/gorp
 	mkdir -p $(distdir)/include
 	cp -R $(srcdir)/include/* $(distdir)/include
 	mkdir -p $(distdir)/lib
