@@ -33,6 +33,9 @@
 
 /*!
  * $Log$
+ * Revision 1.10  2009/03/08 20:17:51  haraldkipp
+ * AVR compile error fixed. lctl is required.
+ *
  * Revision 1.9  2009/02/18 12:18:58  olereinhardt
  * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
  *
@@ -309,9 +312,9 @@ void ProcessRequests(FILE * stream)
 int main(void)
 {
     int pppcom;
+    u_long lctl;
 #ifdef PPPDEV
     PPPDCB *dcb;
-    u_long lctl;
     int rc;
 #endif
     /*
