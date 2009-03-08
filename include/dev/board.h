@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2009/03/08 20:19:34  haraldkipp
+ * Fixed missing UART device for AVR.
+ *
  * Revision 1.18  2009/03/05 22:16:57  freckle
  * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
  *
@@ -125,7 +128,7 @@
 /*
  * UART device.
  */
-#ifdef __NUT_EMULATION__
+#if defined(__AVR__) || defined(__NUT_EMULATION__)
 
 #include <dev/usartavr.h>
 #define DEV_UART0       devUsartAvr0
