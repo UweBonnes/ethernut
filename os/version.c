@@ -33,6 +33,9 @@
 
 /*
  * $Log$
+ * Revision 1.66  2009/03/09 08:22:36  haraldkipp
+ * Release branch 4.8 created
+ *
  * Revision 1.65  2009/03/09 08:15:14  haraldkipp
  * Release branch 4.8 announced
  *
@@ -248,8 +251,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04079900UL
-static CONST char os_version_string[] = "4.7.99.0";
+#define OS_VERSION_NUMBER  0x04080000UL
+static CONST char os_version_string[] = "4.8.0.0";
 
 /*!
  * \addtogroup xgNutVersion

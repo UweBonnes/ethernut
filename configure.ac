@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.45  2009/03/09 08:22:36  haraldkipp
+# Release branch 4.8 created
+#
 # Revision 1.44  2009/03/09 08:15:14  haraldkipp
 # Release branch 4.8 announced
 #
@@ -180,7 +183,7 @@
 #
 #
 
-AC_INIT(ethernut,4.7.99)
+AC_INIT(ethernut,4.8.0)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2009 egnite GmbH])
