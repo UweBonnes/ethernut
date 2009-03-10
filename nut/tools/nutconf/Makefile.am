@@ -34,6 +34,9 @@
 
 #
 # $Log$
+# Revision 1.8.6.1  2009/03/10 15:45:08  thiagocorrea
+# Update lua check to use pkg-config
+#
 # Revision 1.8  2007/07/18 11:44:23  haraldkipp
 # Automatically determine Lua header directory.
 #
@@ -104,12 +107,13 @@ bitmaps/open.xpm bitmaps/open_large.xpm \
 bitmaps/save.xpm bitmaps/save_large.xpm \
 bitmaps/search.xpm bitmaps/search_large.xpm
 nutconf_CXXFLAGS = @WX_CXXFLAGS@ 
-nutconf_CPPFLAGS = -I$(LUA_HEADERS)
-nutconf_LDADD = $(WX_LIBS)
+nutconf_CPPFLAGS = $(LUA_CFLAGS)
+nutconf_LDADD = $(WX_LIBS) $(LUA_LIBS)
 
 endif
 
 nutconfigure_SOURCES = nutcomponent.c nutcomponent.h
-nutconfigure_CPPFLAGS = -DNUT_CONFIGURE_EXEC -I$(LUA_HEADERS)
+nutconfigure_CPPFLAGS = -DNUT_CONFIGURE_EXEC $(LUA_CFLAGS)
+nutconfigure_LDADD = $(LUA_LIBS)
 
 endif

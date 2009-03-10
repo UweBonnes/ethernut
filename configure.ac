@@ -296,25 +296,18 @@ else
       AC_MSG_WARN([Lua $lua_ver is too old.])
       lua_ok=no
     else
-      AC_SEARCH_LIBS([lua_open], [lua lua50], [lua_ok="yes"], [lua_ok="no"])
-      AC_SEARCH_LIBS([luaL_loadfile], [lualib lualib50],, [lua_ok="no"],[-lm -ldl])
-      if test "x$lua_ok" = "xno"; then
+      for i in lua lua5.1; do
+        PKG_CHECK_MODULES(LUA, [$i], [lua_ok="yes"], [ false ])
+      done
+
+      if test "x$lua_ok" != "xyes"; then
         AC_MSG_WARN([Lua library missing, will not build configuration tools.])
-      else
-        AC_CHECK_HEADERS(/usr/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/include/lua50"))
-        AC_CHECK_HEADERS(/usr/local/include/lua50/lua.h, AC_SUBST(LUA_HEADERS, "/usr/local/include/lua50"))
-        AC_CHECK_HEADERS(/usr/local/include/lua.h, AC_SUBST(LUA_HEADERS, "/usr/local/include"))
-        AC_CHECK_HEADERS(/usr/include/lua.h, AC_SUBST(LUA_HEADERS, "/usr/include"))
       fi
+      
 #    AC_CHECK_FUNC(sin, LIBS=$LIBS, LIBS="-lm $LIBS")
 #    AC_CHECK_LIB(dl, dlopen)
     fi
   fi
-fi
-
-if test "x$LUA_HEADERS" = "x"; then
-   AC_MSG_WARN(Lua Headers not found disabled)
-   lua_ok=no
 fi
 
 # END lua #################################################################################################
