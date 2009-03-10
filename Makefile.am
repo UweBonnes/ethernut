@@ -59,7 +59,7 @@ Makedefs.avr-icc Makerules.avr-icc \
 Makedefs.gcc Makerules.gcc Makedefs.h8-gcc Makerules.h8-gcc \
 Makedefs.icc Makerules.icc Makedefs.unix-gcc Makerules.unix-gcc
 
-SUBDIRS = doc tools/crurom tools/nutconf tools/nutdisc tools/linux
+SUBDIRS = nut/doc nut/tools/crurom nut/tools/nutconf nut/tools/nutdisc nut/tools/linux
 
 dist-hook:
 	mkdir -p $(distdir)/app
@@ -102,5 +102,5 @@ dist-hook:
 	cp -R $(srcdir)/os/* $(distdir)/os
 	mkdir -p $(distdir)/pro
 	cp -R $(srcdir)/pro/* $(distdir)/pro
-	rm -rf `find $(distdir) -name CVS`
+	rm -rf `find $(distdir) -name .svn`
 

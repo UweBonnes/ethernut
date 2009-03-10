@@ -193,7 +193,7 @@ AC_COPYRIGHT([Copyright (C) 2005-2009 egnite GmbH])
 AC_REVISION($Revision$)
 
 # Make sure we got a valid path to the sources.
-AC_CONFIG_SRCDIR([tools/nutconf/nutcomponent.c])
+AC_CONFIG_SRCDIR([nut/tools/nutconf/nutcomponent.c])
 
 AM_INIT_AUTOMAKE([dist-bzip2])
 
@@ -423,14 +423,14 @@ AM_CONDITIONAL(BUILD_NUTDISC, test x$nutdisc_ok = xyes)
 AM_CONDITIONAL(PROPGRID_LOCAL, test x$propgrid_local = xyes)
 AC_CONFIG_FILES([
 	Makefile
-	tools/crurom/Makefile
-	tools/nutconf/Makefile
-	tools/nutdisc/Makefile
-	tools/linux/Makefile
-	tools/packaging/ethernut.spec
-	doc/Makefile
-	doc/gen/Makefile
-	doc/gen/nut_en.cfg
+	nut/tools/crurom/Makefile
+	nut/tools/nutconf/Makefile
+	nut/tools/nutdisc/Makefile
+	nut/tools/linux/Makefile
+	nut/tools/packaging/ethernut.spec
+	nut/doc/Makefile
+	nut/doc/gen/Makefile
+	nut/doc/gen/nut_en.cfg
 	])
 AC_OUTPUT
 
