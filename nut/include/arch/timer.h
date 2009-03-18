@@ -64,6 +64,8 @@
 #include <arch/avr/timer.h>
 #elif defined(__arm__)
 #include <arch/arm/timer.h>
+#elif defined(__AVR32__)
+#include <arch/avr32/timer.h>
 #elif defined(__H8300H__) || defined(__H8300S__)
 #include <arch/h8300h/timer.h>
 #elif defined(__m68k__)

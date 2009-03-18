@@ -167,7 +167,7 @@
 
 mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2560", "MCU_ATMEGA2561", "MCU_AT91SAM9260", "MCU_AT91SAM9XE512",
               "MCU_AT91SAM7X256", "MCU_AT91SAM7S256", "MCU_AT91SAM7SE512", "MCU_AT91R40008", "MCU_GBA", 
-              "MCU_LINUX_EMU", "MCU_S3C4510B" }
+              "MCU_LINUX_EMU", "MCU_S3C4510B", "MCU_AVR32UC30512ES", "MCU_AVR32UC30512" }
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
 avr_port_choice = { " ", "AVRPORTA", "AVRPORTB", "AVRPORTC", "AVRPORTD", "AVRPORTE", "AVRPORTF", "AVRPORTG", "AVRPORTH", "AVRPORTI", "AVRPORTJ", "AVRPORTK", "AVRPORTL" }
@@ -240,6 +240,12 @@ arm_ld_choice = {
                     "eb40a_redboot_ram", 
                     "gbaxport2", 
                     "wolf_ram" 
+                }
+
+avr32_ld_choice = { 
+                    " ", 
+                    "uc3a0512_ram",
+                    "uc3a0512_sdram"
                 }
 
 pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
@@ -432,6 +438,9 @@ function GetGpioBanks()
             return { " ", "NUTGPIO_PORTA", "NUTGPIO_PORTB", "NUTGPIO_PORTC" }
         end
     end
+    if c_is_provided("HW_MCU_AVR32") then
+		return GetAvr32PioIds()
+	end
     return gpio_port_choice
 end
 
@@ -445,6 +454,9 @@ function GetGpioPortIds()
     if c_is_provided("HW_MCU_AT91") then
         return at91_pio_id_choice
     end
+    if c_is_provided("HW_MCU_AVR32") then
+		return GetAvr32PioIds()
+	end
     return { " " }
 end
 
@@ -456,6 +468,13 @@ function GetAt91PioIds()
         return { " ", "PIO_ID" }
     end
     return { " ", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
+end
+
+--
+-- Retrieve AVR32 PIO IDs.
+--
+function GetAvr32PioIds()
+    return { " ", "PIOA_ID", "PIOB_ID", "PIOC_ID", "PIOD_ID" }
 end
 
 --
@@ -493,6 +512,9 @@ function GetGpioHeaderPath()
     end
     if c_is_provided("HW_MCU_ARM") then
         return basepath .. "armpio.h"
+    end
+    if c_is_provided("HW_MCU_AVR32") then
+        return basepath .. "avr32pio.h"
     end
     return basepath .. "pio.h"
 end

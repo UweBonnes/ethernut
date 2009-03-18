@@ -166,6 +166,12 @@ extern "C" {
 
 #include <compiler.h>
 
+// Definition of size_t
+#ifdef __cplusplus
+#include <cstddef>
+#else
+#include <stddef.h>
+#endif
 
 /*!
  * \weakgroup xgNutOS
@@ -176,6 +182,8 @@ extern "C" {
 #if defined(__avr__)
 #define	NUTMEM_ALIGNMENT        1
 #elif defined(__ARM__)
+#define	NUTMEM_ALIGNMENT        4
+#elif defined(__AVR32__)
 #define	NUTMEM_ALIGNMENT        4
 #else
 #define	NUTMEM_ALIGNMENT        sizeof(int)
@@ -218,7 +226,7 @@ extern "C" {
 #endif                          /* unix emulation */
 
 /*! \brief Void pointer */
-    typedef void *HANDLE;
+typedef void *HANDLE;
 
 /*!
  * \brief Unsigned register type.
@@ -234,6 +242,8 @@ extern "C" {
     typedef unsigned char ureg_t;
 #elif defined(__arm__)
     typedef unsigned short ureg_t;
+#elif defined(__AVR32__)
+	typedef unsigned long ureg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short ureg_t;
 #elif defined(__m68k__)
@@ -251,6 +261,8 @@ extern "C" {
     typedef unsigned char reg_t;
 #elif defined(__arm__)
     typedef unsigned short reg_t;
+#elif defined(__AVR32__)
+	typedef unsigned short reg_t;
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
     typedef unsigned short reg_t;
 #elif defined(__m68k__)

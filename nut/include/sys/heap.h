@@ -43,6 +43,7 @@
 #include <cfg/memory.h>
 #include <sys/types.h>
 
+
 /*!
  * \file sys/heap.h
  * \brief Heap management definitions.

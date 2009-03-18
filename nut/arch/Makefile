@@ -181,6 +181,10 @@ OBJ1 = arm/init/crt$(LDNAME).o
 
 endif
 
+ifeq ($(ARCH), avr32)
+SRCS = avr32/os/context.c avr32/os/nutinit.c
+endif
+
 ifeq ($(ARCH), unix)
 SRCS = unix/dev/ostimer.c unix/dev/unix_devs.c unix/os/thread.c
 endif

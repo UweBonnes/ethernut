@@ -751,6 +751,58 @@ nutarch =
                     "HW_TIMER_S3C45",
                     "HW_UART_S3C45"
                 }
+            },
+            {
+                macro = "MCU_AVR32UC30512ES",
+                brief = "Atmel AVR32 UC3A 0512ES",
+                description = "AVR32 UC3 32-bit RISC microcontroller with 10/100 Ethernet MAC,"..
+                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 2 UARTs and "..
+                              "2 timers.",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_AVR32" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR32",
+                    "HW_MCU_AVR32UC3",
+                    "HW_SDRAMC",
+                    "HW_TIMER_AVR32",
+                    "HW_UART_AVR32",
+                    "HW_SPI_AVR32",
+                    "HW_WDOG_AVR32",
+                    "HW_PLL_AVR32",
+--                    "HW_GPIO",
+                    "HW_MACB_AVR32",
+                    "HW_EBI_AVR32"
+                },
+                makedefs = { "MCU=uc3a0512es", "MARCH=ucr1" }
+            },
+            {
+                macro = "MCU_AVR32UC30512",
+                brief = "Atmel AVR32 UC3A 0512",
+                description = "AVR32 UC3 32-bit RISC microcontroller with 10/100 Ethernet MAC,"..
+                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 2 UARTs and "..
+                              "2 timers.",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_AVR32" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR32",
+                    "HW_MCU_AVR32UC3",
+                    "HW_SDRAMC",
+                    "HW_TIMER_AVR32",
+                    "HW_UART_AVR32",
+                    "HW_SPI_AVR32",
+                    "HW_WDOG_AVR32",
+                    "HW_PLL_AVR32",
+--                    "HW_GPIO",
+                    "HW_MACB_AVR32",
+                    "HW_EBI_AVR32"
+                },
+                makedefs = { "MCU=uc3a0512", "MARCH=ucr1" }
             }
         }
     },
@@ -769,6 +821,12 @@ nutarch =
         brief = "AVR",
         requires = { "HW_MCU_AVR" },
         script = "arch/avr.nut"
+    },
+    {
+        name = "nutarch_avr32",
+        brief = "AVR32",
+        requires = { "HW_MCU_AVR32" },
+        script = "arch/avr32.nut"
     },
     {
         name = "nutarch_h8300h",

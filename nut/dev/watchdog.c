@@ -53,6 +53,8 @@ uint32_t NutWatchDogStart(uint32_t ms, uint32_t xmode)
     return AvrWatchDogStart(ms);
 #elif defined(MCU_AT91R40008)
     return At91WatchDogStart(ms, xmode);
+#elif defined(__AVR32__)
+	return Avr32WatchDogStart(ms);
 #else
     return 0;
 #endif
@@ -67,6 +69,8 @@ void NutWatchDogRestart(void)
     AvrWatchDogRestart();
 #elif defined(MCU_AT91R40008)
     At91WatchDogRestart();
+#elif defined(__AVR32__)
+	return Avr32WatchDogRestart();
 #endif
 }
 
@@ -79,6 +83,8 @@ void NutWatchDogDisable(void)
     AvrWatchDogDisable();
 #elif defined(MCU_AT91R40008)
     At91WatchDogDisable();
+#elif defined(__AVR32__)
+	return Avr32WatchDogDisable();
 #endif
 }
 
@@ -91,6 +97,8 @@ void NutWatchDogEnable(void)
     AvrWatchDogEnable();
 #elif defined(MCU_AT91R40008)
     At91WatchDogEnable();
+#elif defined(__AVR32__)
+	return Avr32WatchDogEnable();
 #endif
 }
 

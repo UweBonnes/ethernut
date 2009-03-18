@@ -50,6 +50,8 @@
 #include <cfg/arch/avr.h>
 #elif defined(__arm__)
 #include <cfg/arch/armpio.h>
+#elif defined(__AVR32__)
+#include <cfg/arch/avr32.h>
 #endif
 
 #endif

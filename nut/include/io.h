@@ -1,6 +1,3 @@
-#ifndef _IO_H_
-#define	_IO_H_
-
 /*
  * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
  *
@@ -52,6 +49,10 @@
  *
  */
 
+#ifndef _NUT_IO_H_
+#define	_NUT_IO_H_
+ 
+ 
 #include <sys/types.h>
 
 /*!

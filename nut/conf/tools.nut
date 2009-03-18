@@ -128,6 +128,8 @@
 --
 --
 
+toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "LINUX_GCC", "ICCAVR", "ICCARM"}
+
 nuttools =
 {
     options = 
@@ -138,7 +140,7 @@ nuttools =
             provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX", "TOOL_ARMLIB" },
             macro = "ARM_GCC",
             flavor = "boolean",
-            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
+            exclusivity = toolchain_names,
             file = "include/cfg/arch.h"
         },
         {
@@ -148,7 +150,7 @@ nuttools =
             provides = { "TOOL_CC_ARM", "TOOL_GCC", "TOOL_CXX", "TOOL_NOLIBC" },
             macro = "ARM_GCC_NOLIBC",
             flavor = "boolean",
-            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
+            exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
             makedefs = { "ADDLIBS = -lnutc" }
         },
@@ -158,9 +160,18 @@ nuttools =
             provides = { "TOOL_CC_AVR", "TOOL_GCC", "TOOL_CXX" },
             macro = "AVR_GCC",
             flavor = "boolean",
-            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
+            exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
             makedefs = { "MCU_ATMEGA2560=atmega2560", "MCU_ATMEGA2561=atmega2561", "MCU_ATMEGA128=atmega128", "MCU_ATMEGA103=atmega103" }
+        },
+        {
+            brief = "GCC for AVR32",
+            description = "GNU Compiler Collection for AVR32 including libc.",
+            provides = { "TOOL_CC_AVR32", "TOOL_GCC", "TOOL_CXX" },
+            macro = "AVR32_GCC",
+            flavor = "boolean",
+            exclusivity = toolchain_names,
+            file = "include/cfg/arch.h",
         },
         {
             brief = "GCC for Linux",
@@ -168,7 +179,7 @@ nuttools =
             provides = { "TOOL_CC_LINUX", "TOOL_GCC" },
             macro = "LINUX_GCC",
             flavor = "boolean",
-            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
+            exclusivity = toolchain_names,
             file = "include/cfg/arch.h"
         },
         {
@@ -177,7 +188,7 @@ nuttools =
             provides = { "TOOL_CC_AVR", "TOOL_ICC" },
             macro = "ICCAVR",
             flavor = "boolean",
-            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
+            exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
             makedefs = { "MCU_ATMEGA2560=Extended", "MCU_ATMEGA2561=Extended", "MCU_ATMEGA128=Enhanced", "MCU_ATMEGA103=LongJump" }
         },
@@ -187,7 +198,7 @@ nuttools =
             provides = { "TOOL_CC_ARM", "TOOL_ICC" },
             macro = "ICCARM",
             flavor = "boolean",
-            exclusivity = { "ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "LINUX_GCC", "ICCAVR", "ICCARM" },
+            exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
         }
     },
@@ -233,6 +244,20 @@ nuttools =
                 { 
                     "LDNAME", 
                     "LDSCRIPT=$(top_srcdir)/arch/arm/ldscripts/$(LDNAME).ld" 
+                }
+            },
+            {
+                macro = "AVR32_LDSCRIPT",
+                brief = "AVR32 Linker Script",
+                description = "link_uc3a0512.ld\t\tAVR32UC3A0512, code in running in FLASH\n",
+                requires = { "TOOL_CC_AVR32", "TOOL_GCC" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr32_ld_choice,
+                makedefs = 
+                { 
+                    "LDNAME", 
+                    "LDSCRIPT=$(top_srcdir)/arch/avr32/ldscripts/$(LDNAME).ld" 
                 }
             }
         }

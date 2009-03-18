@@ -102,6 +102,30 @@
  */
 #define GPIO_CFG_DEBOUNCE   0x00000010
 
+/*!
+ * \brief GPIO Peripheral 0 mux.
+ * Switch pin function to peripheral 0.
+ */
+#define GPIO_CFG_PERIPHERAL0 0x00000020
+
+/*!
+ * \brief GPIO Peripheral 1 mux.
+ * Switch pin function to peripheral 1.
+ */
+#define GPIO_CFG_PERIPHERAL1 0x00000040
+
+/*!
+ * \brief GPIO Peripheral 2 mux.
+ * Switch pin function to peripheral 2.
+ */
+#define GPIO_CFG_PERIPHERAL2 0x00000080
+
+/*!
+ * \brief GPIO Peripheral 3 mux.
+ * Switch pin function to peripheral 3.
+ */
+#define GPIO_CFG_PERIPHERAL3 0x00000100
+
 typedef struct {
     void (*iov_handler) (void *);
     void *iov_arg;

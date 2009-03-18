@@ -155,6 +155,11 @@ extern uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode);
 extern void At91WatchDogRestart(void);
 extern void At91WatchDogDisable(void);
 extern void At91WatchDogEnable(void);
+#elif defined(__AVR32__)
+extern uint32_t Avr32WatchDogStart(uint32_t ms);
+extern void Avr32WatchDogRestart(void);
+extern void Avr32WatchDogDisable(void);
+extern void Avr32WatchDogEnable(void);
 #endif
 
 __END_DECLS

@@ -75,6 +75,8 @@
 #include <arch/avr.h>
 #elif defined(__arm__)
 #include <arch/arm.h>
+#elif defined(__AVR32__)
+#include <arch/avr32.h>
 #elif defined(__H8300__) || defined(__H8300H__) || defined(__H8300S__)
 #include <arch/h8.h>
 #elif defined(__m68k__)

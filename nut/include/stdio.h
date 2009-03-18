@@ -51,6 +51,7 @@
 
 // some defines in /usr/include/stdio.h we need to overload
 #ifndef NO_STDIO_NUT_WRAPPER
+
 #undef getc
 #undef putc
 #undef stdin
@@ -136,6 +137,7 @@ extern FILE *__iob[];           /*!< \internal Stream slots. */
 #ifndef SEEK_END
 #define SEEK_END 2
 #endif
+
 
 extern void clearerr(FILE * stream);
 extern int fclose(FILE * stream);

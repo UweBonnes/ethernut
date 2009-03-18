@@ -134,6 +134,12 @@ extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
 #endif
 #elif defined(__m68k__)
+
+#elif defined(__AVR32__)
+extern NUTDEVICE devDebug0;
+extern NUTDEVICE devDebug1;
+extern NUTDEVICE devDebug2;
+extern NUTDEVICE devDebug3;
 #endif
 
 #ifdef __NUT_EMULATION__

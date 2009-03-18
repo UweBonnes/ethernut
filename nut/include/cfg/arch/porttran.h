@@ -362,6 +362,30 @@
 
 #endif /* GPIO_ID */
 
+#elif defined(__AVR32__)
+
+#include <avr32/io.h>
+
+#define  GPIO_PE_REG    &AVR32_GPIO.port[GPIO_ID].gpers
+#define  GPIO_PD_REG	&AVR32_GPIO.port[GPIO_ID].pderc
+#define  GPIO_PS_REG	&AVR32_GPIO.port[GPIO_ID].pder
+#define  GPIO_OE_REG    &AVR32_GPIO.port[GPIO_ID].oders
+#define  GPIO_OD_REG    &AVR32_GPIO.port[GPIO_ID].oderc
+#define  GPIO_OS_REG    &AVR32_GPIO.port[GPIO_ID].oder
+#define  GPIO_SOD_REG   &AVR32_GPIO.port[GPIO_ID].ovrs
+#define  GPIO_COD_REG   &AVR32_GPIO.port[GPIO_ID].ovrc
+#define  GPIO_ODS_REG   &AVR32_GPIO.port[GPIO_ID].ovr
+#define  GPIO_PDS_REG   &AVR32_GPIO.port[GPIO_ID].pvr
+#define  GPIO_PUE_REG   &AVR32_GPIO.port[GPIO_ID].puers
+#define  GPIO_PUD_REG   &AVR32_GPIO.port[GPIO_ID].puerc
+#define  GPIO_PUS_REG   &AVR32_GPIO.port[GPIO_ID].puer
+#define  GPIO_MDE_REG   &AVR32_GPIO.port[GPIO_ID].odmerc
+#define  GPIO_MDD_REG   &AVR32_GPIO.port[GPIO_ID].odmers
+#define  GPIO_MDS_REG   &AVR32_GPIO.port[GPIO_ID].odmer
+#define  GPIO_IFE_REG   &AVR32_GPIO.port[GPIO_ID].gfers
+#define  GPIO_IFD_REG   &AVR32_GPIO.port[GPIO_ID].gferc
+#define  GPIO_IFS_REG   &AVR32_GPIO.port[GPIO_ID].gfer
+
 /* Additional targets can be added here. */
 
 #endif /* MCU */

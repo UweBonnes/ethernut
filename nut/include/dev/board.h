@@ -142,6 +142,11 @@
 #define DEV_UART1       devUsartAt911
 #define DEV_UART1_NAME  "uart1"
 
+#elif defined(EVK1100) || defined(__AVR32__)
+
+#include <dev/usartavr32.h>
+#define DEV_UART0		devUsartAvr320
+
 #endif
 
 #ifndef DEV_UART0
@@ -175,6 +180,8 @@
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5)
 #include <dev/at91sam7x_emac.h>
+#elif defined(EVK1100) || defined(__AVR32__)
+#include <dev/avr32_macb.h>
 #endif
 
 #ifndef DEV_ETHER
@@ -194,6 +201,12 @@
 #elif defined(MCU_AT91) && defined(SPI0_BASE)
 #include <dev/spibus_at91.h>
 #define DEV_SPIBUS      spiBus0At91
+#define DEV_SPIBUS0     spiBus0At91
+#elif defined(__AVR32__)
+#include <dev/spibus_avr32.h>
+#define DEV_SPIBUS		spiBus0Avr32
+#define DEV_SPIBUS0		spiBus0Avr32
+#define DEV_SPIBUS1		spiBus1Avr32
 #endif
 #endif /* DEV_SPIBUS */
 

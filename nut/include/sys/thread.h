@@ -255,6 +255,7 @@ extern void NutThreadInit(void);
 extern uint8_t NutThreadSetSleepMode(uint8_t mode);
 #endif
 
+  
 extern HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackSize);
 extern uint8_t NutThreadSetPriority(uint8_t level);
 

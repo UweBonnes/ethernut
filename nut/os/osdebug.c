@@ -83,7 +83,7 @@
 
 #include <sys/osdebug.h>
 
-#if defined(__arm__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__NUT_EMULATION__)
+#if defined(__arm__) || defined(__AVR32__) || defined(__m68k__) || defined(__H8300H__) || defined(__H8300S__) || defined(__NUT_EMULATION__)
 #define ARCH_32BIT
 #endif
 

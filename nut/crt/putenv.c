@@ -44,7 +44,7 @@
  * \return 0 upon successful completion. Otherwise, -1 is returned and 
  *         errno is set to indicate the error.
  */
-#if defined(__arm__)
+#if defined(__arm__) || defined(__AVR32__)
 int putenv(char *string)
 #else
 int putenv(CONST char *string)
