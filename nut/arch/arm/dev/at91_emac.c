@@ -439,7 +439,8 @@ static void phy_outw(uint8_t reg, uint16_t val)
  */
 static int EmacReset(uint32_t tmo)
 {
-    uint16_t phyval;
+    uint16_t phyv
+    uint32_t rstcr_tmp;
 
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
@@ -468,9 +469,12 @@ static int EmacReset(uint32_t tmo)
 #endif
 
     /* Toggle external hardware reset pin. */
-    outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB) | RSTC_URSTEN);
+    rstcr_tmp = inr(RSTC_MR) & 0x00FFFFFF;
+    outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
+ 
     outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
+    outr(RSTC_MR, RSTC_KEY | rstcr_tmp); 
 
     /* Re-enable pull-ups. */
     outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) | 
