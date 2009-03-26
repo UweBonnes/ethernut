@@ -42,18 +42,18 @@
 #
 #
 
-%o : %c
+%.o : %.c
 	$(CC) -c -g $(CPFLAGS) $< 
 
-%o : %cc
+%.o : %.cc
 	echo 0 > $(basename $@).o
 	echo 0 > $(basename $@).hex
 	echo 0 > $(basename $@).bin
 
-%hex: %o
-	$(CC) -o $@ $(LDFLAGS) $(OBJS) -lcatmega
+%.hex: %.o
+	$(CC) -o $(basename $@) $(LDFLAGS) $(OBJS) -lcatmega
 
-%bin: %hex
+%.bin: %.hex
 	-robi $< $@
 
 burn: $(TARG)
