@@ -31,16 +31,7 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Log$
-# Revision 1.2  2008/01/31 09:05:34  haraldkipp
-# XSTSCRIPT and IMPSCRIPT are created dynamically. Macro PROJ renamed to
-# NPL_PROJ. This way the XSVF File and the XSVF Executor can be created
-# in a single Makefile.
-#
-# Revision 1.1  2006/05/25 09:24:55  haraldkipp
-# For building XSVF files from Verilog sources.
-#
-#
+# $Id$
 #
 
 .SUFFIXES: .ngc .ngd .ucf .jed .svf .xsvf
@@ -127,11 +118,15 @@ npl_clean:
 	-$(RM) $(PROJ).vm6
 	-$(RM) $(PROJ).xml
 	-$(RM) $(PROJ)_build.xml
+	-$(RM) $(PROJ)_ngdbuild.xrpt
+	-$(RM) $(PROJ)_xst.xrpt
 	-$(RM) $(PROJ)_vhdl.prj
 	-$(RM) _impact.cmd
 	-$(RM) _impactbatch.log
 	-$(RM) tmperr.err
+	-$(RM) xlnx_auto_0.ise
 	-$(RM) -r xst
+	-$(RM) -r xlnx_auto_0_xdb
 	-$(RM) $(PROJ).prj
 	-$(RM) $(IMPSCRIPT)
 	-$(RM) $(XSTSCRIPT)
