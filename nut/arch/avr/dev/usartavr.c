@@ -839,7 +839,7 @@ static uint32_t AvrUsartGetStatus(void)
     if (bit_is_set(UART_RTS_PORT, UART_RTS_BIT)) {
         rc |= UART_RTSDISABLED;
         if (rts_control) {
-            rc |= UART_RXDISABLED;
+            rc |= UART_TXDISABLED;
         }
     } else {
         rc |= UART_RTSENABLED;
