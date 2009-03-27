@@ -43,7 +43,7 @@
 	echo 0 > $(basename $@).bin
 
 %.hex: %.o
-	$(CC) -o $(basename $@) $(LDFLAGS) $(OBJS) -lcatmega
+	$(CC) -o $(basename $@) $(OBJS) $(LDFLAGS) -lcatmega
 
 %.bin: %.hex
 	-robi $< $@
