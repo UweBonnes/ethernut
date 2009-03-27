@@ -439,8 +439,10 @@ static void phy_outw(uint8_t reg, uint16_t val)
  */
 static int EmacReset(uint32_t tmo)
 {
-    uint16_t phyv
+    uint16_t phyval;
+#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7X256)
     uint32_t rstcr_tmp;
+#endif
 
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
