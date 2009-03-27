@@ -255,8 +255,13 @@
 
 #ifndef NUT_THREAD_TCPSMSTACK
 #if defined(__AVR__)
+#if defined(__GNUC__)
 /* avr-gcc size optimized code used 148 bytes. */
 #define NUT_THREAD_TCPSMSTACK   256
+#else
+/* icc-avr v7.19 used 312 bytes. */
+#define NUT_THREAD_TCPSMSTACK   512
+#endif
 #else
 /* arm-elf-gcc used 260 bytes with size optimized, 644 bytes with debug code. */
 #define NUT_THREAD_TCPSMSTACK   384

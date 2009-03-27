@@ -375,8 +375,13 @@ static uint_fast8_t __tcp_trf = 1;
  */
 #ifndef NUT_THREAD_DHCPSTACK
 #if defined(__AVR__)
+#if defined(__GNUC__)
 /* avr-gcc size optimized code used 192 bytes. */
 #define NUT_THREAD_DHCPSTACK    288
+#else
+/* icc-avr v7.19 used 360 bytes. */
+#define NUT_THREAD_DHCPSTACK    512
+#endif
 #else
 /* arm-elf-gcc used 276 bytes with size optimized, 680 bytes with debug code. */
 #define NUT_THREAD_DHCPSTACK    384

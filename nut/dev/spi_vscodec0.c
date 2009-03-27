@@ -66,8 +66,13 @@
 
 #ifndef NUT_THREAD_VSCODEC0STACK
 #if defined(__AVR__)
+#if defined(__GNUC__)
 /* avr-gcc optimized code used 88 bytes. */
 #define NUT_THREAD_VSCODEC0STACK    128
+#else
+/* icc-avr stack usage is unknown. */
+#define NUT_THREAD_VSCODEC0STACK    384
+#endif
 #else
 /* arm-elf-gcc optimized code used 112 bytes. */
 #define NUT_THREAD_VSCODEC0STACK    192

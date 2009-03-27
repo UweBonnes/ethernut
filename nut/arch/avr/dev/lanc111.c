@@ -134,6 +134,16 @@
 #include <stdio.h>
 #endif
 
+#ifndef NUT_THREAD_LANCRXSTACK
+#if defined(__GNUC__)
+/* avr-gcc size optimized code used 76 bytes. */
+#define NUT_THREAD_LANCRXSTACK  128
+#else
+/* icc-avr v7.19 used 200 bytes. */
+#define NUT_THREAD_LANCRXSTACK  384
+#endif
+#endif
+
 /*
  * Determine ports, which had not been explicitely configured.
  */
@@ -1315,7 +1325,7 @@ int LancInit(NUTDEVICE * dev)
      *
      * avr-gcc size optimized code used 76 bytes.
      */
-    NutThreadCreate("rxi5", NicRxLanc, dev, (128 * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    NutThreadCreate("rxi5", NicRxLanc, dev, (NUT_THREAD_LANCRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     //NutSleep(500);
 

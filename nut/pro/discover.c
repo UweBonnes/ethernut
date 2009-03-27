@@ -81,8 +81,13 @@
 
 #ifndef NUT_THREAD_DISTSTACK
 #if defined(__AVR__)
+#if defined(__GNUC__)
 /* avr-gcc size optimized code uses 124 bytes. */
 #define NUT_THREAD_DISTSTACK  224
+#else
+/* icc-avr v7.19 uses 244 bytes. */
+#define NUT_THREAD_DISTSTACK  384
+#endif
 #else
 /* arm-elf-gcc used 232 bytes with size optimized, 476 bytes with debug code. */
 #define NUT_THREAD_DISTSTACK  320

@@ -174,8 +174,13 @@
 #endif
 
 #ifndef NUT_THREAD_IDLESTACK
+#if defined(__GNUC__)
 /* avr-gcc optimized code used 36 bytes. */
 #define NUT_THREAD_IDLESTACK    128
+#else
+/* icc-avr v7.19 used 132 bytes. */
+#define NUT_THREAD_IDLESTACK    256
+#endif
 #endif
 
 #ifdef NUTMEM_RESERVED
