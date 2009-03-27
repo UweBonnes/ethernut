@@ -58,22 +58,13 @@
  */
 
 #if defined(__AVR__) || defined(ATMEGA)
-/* Ethernut board. */
-#include <cfg/ethernut.h>
 
-/* Modem handshake line. */
-#include <cfg/modem.h>
-
-/* Ethernut MP3 add-on. */
-#include <cfg/medianut.h>
+#include <cfg/arch/avr.h>
 
 #if defined(MCAN)
 /* M-CAN special hardware definitions */
 #include <cfg/m-can.h>
 #endif
-
-/* Ethernut RS232 multiport. */
-#include <cfg/coconut.h>
 
 #elif defined(__H8300H__) || defined(__H8300S__)
 

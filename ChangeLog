@@ -1,5 +1,9 @@
 $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
+	* Mark documented deprecated functions with NUT_DEPRECATE.
+	  This will cause warnings during compilation if deprecated functions
+	  are used in user code.
+
 2009-03-09  Harald Kipp  <harald.kipp@egnite.de>
 
 	* MOVING TO SUBVERSION. PLEASE DO NOT COMMIT ANY MORE CHANGES

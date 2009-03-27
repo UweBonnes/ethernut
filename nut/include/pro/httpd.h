@@ -82,6 +82,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <compiler.h> // For NUT_DEPRECATED
+
 /*!
  * \addtogroup xgHTTPD
  */
@@ -134,7 +136,7 @@ extern void NutHttpProcessRequest(FILE * stream);
 extern void NutHttpProcessQueryString(REQUEST * req);
 extern void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title);
 extern void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long bytes);
-extern void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes);
+extern void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes) NUT_DEPRECATED;
 extern void NutHttpSendError(FILE * stream, REQUEST * req, int status);
 extern char *NutGetMimeType(char *name);
 extern void *NutGetMimeHandler(char *name);

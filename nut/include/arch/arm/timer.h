@@ -63,6 +63,7 @@
  */
 
 #include <cfg/clock.h>
+#include <compiler.h> // For deprecated warning.
 
 #if defined(MCU_LPC2XXX) /* MCU */
 
@@ -87,7 +88,7 @@
 #endif /* MCU */
 
 #if defined(AT91_PLL_MAINCK)
-extern uint32_t At91GetMasterClock(void);
+extern uint32_t At91GetMasterClock(void) NUT_DEPRECATED;
 #endif
 
 #endif

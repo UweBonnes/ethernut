@@ -133,6 +133,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 
+#include <compiler.h> // For NUT_DEPRECATED
+
 __BEGIN_DECLS
 
 /*
@@ -154,7 +156,7 @@ __BEGIN_DECLS
 
 extern void NutDnsConfig2(uint8_t * hostname, uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
 extern void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip);
-extern void NutDnsConfig(CONST uint8_t *hostname, CONST uint8_t *domain, uint32_t dnsip);
+extern void NutDnsConfig(CONST uint8_t *hostname, CONST uint8_t *domain, uint32_t dnsip) NUT_DEPRECATED;
 extern uint32_t NutDnsGetHostByName(CONST uint8_t *hostname);
 extern uint32_t NutDnsGetMxByDomain(CONST uint8_t * hostname);
 

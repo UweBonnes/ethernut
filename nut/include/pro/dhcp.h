@@ -118,6 +118,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 
+#include <compiler.h> // For NUT_DEPRECATED
+
 /*!
  * \addtogroup xgDHCPC
  */
@@ -309,7 +311,7 @@ extern int NutDhcpInform(CONST char *name, uint32_t timeout);
 extern int NutDhcpStatus(CONST char *name);
 extern int NutDhcpError(CONST char *name);
 
-extern int NutDhcpIsConfigured(void);
+extern int NutDhcpIsConfigured(void) NUT_DEPRECATED;
 
 __END_DECLS
 /* */

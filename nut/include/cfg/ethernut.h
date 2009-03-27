@@ -64,6 +64,8 @@
  */
 /*@{*/
 
+#warning Using this file is deprecated, just include <cfg/arch/avr.h> instead
+
 /*! Port output register of \ref RTL_RESET_BIT. */
 #define RTL_RESET_PORT   PORTE
 

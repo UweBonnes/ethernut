@@ -83,4 +83,14 @@
 #include <arch/m68k.h>
 #endif
 
+// Platform independent compiler macros
+#ifdef __GNUC__
+#define NUT_DEPRECATED __attribute__ ((deprecated))
 #endif
+
+// Fallback
+#ifndef NUT_DEPRECATED
+#define NUT_DEPRECATED
+#endif
+
+#endif // _COMPILER_H_

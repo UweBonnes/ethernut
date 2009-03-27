@@ -58,6 +58,8 @@
 
 #include <dev/rtc.h>
 
+#include <compiler.h> // for NUT_DEPRECATED
+
 /*! \name Non-Volatile Alarm Registers */
 /*@{*/
 #define X12RTC_SCA0         0x00    /*!< \brief Alarm 0 second. */
@@ -164,14 +166,14 @@ extern NUTRTC rtcX12x6;
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int X12Init(void);
+extern int X12Init(void) NUT_DEPRECATED;
 
-extern int X12RtcGetClock(struct _tm *tm);
-extern int X12RtcSetClock(CONST struct _tm *tm);
-extern int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs);
-extern int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs);
-extern int X12RtcGetStatus(uint32_t *sflgs);
-extern int X12RtcClearStatus(uint32_t sflgs);
+extern int X12RtcGetClock(struct _tm *tm) NUT_DEPRECATED;
+extern int X12RtcSetClock(CONST struct _tm *tm) NUT_DEPRECATED;
+extern int X12RtcGetAlarm(int idx, struct _tm *tm, int *aflgs) NUT_DEPRECATED;
+extern int X12RtcSetAlarm(int idx, CONST struct _tm *tm, int aflgs) NUT_DEPRECATED;
+extern int X12RtcGetStatus(uint32_t *sflgs) NUT_DEPRECATED;
+extern int X12RtcClearStatus(uint32_t sflgs) NUT_DEPRECATED;
 extern int X12RtcReadRegs(uint8_t addr, uint8_t *buff, size_t len);
 extern int X12RtcWrite(int nv, CONST uint8_t *buff, size_t len);
 

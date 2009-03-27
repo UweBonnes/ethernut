@@ -64,6 +64,8 @@
  */
 /*@{*/
 
+#warning Using this file is deprecated, just include <cfg/arch/avr.h> instead
+
 /*
  * Coconut LEDs.
  */

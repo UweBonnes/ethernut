@@ -71,6 +71,8 @@
  */
 /*@{*/
 
+#warning Using this file is deprecated, just include <cfg/arch/avr.h> instead
+
 #if 0
 
 /*! Port output register of \ref UART0_RTS_BIT. */
