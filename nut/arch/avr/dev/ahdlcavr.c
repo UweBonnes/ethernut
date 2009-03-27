@@ -83,11 +83,11 @@
  */
 
 #include <cfg/ahdlc.h>
+#include <cfg/arch/avr.h>
 
 #include <string.h>
 #include <stdlib.h>
 
-#include <sys/nutconfig.h>
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/event.h>
