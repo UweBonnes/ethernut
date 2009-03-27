@@ -294,10 +294,19 @@ HANDLE NutThreadCreate(uint8_t * name, void (*fn) (void *), void *arg, size_t st
     td->td_name[sizeof(td->td_name) - 1] = 0;
     td->td_sp = (uint16_t) sf - 1;
     td->td_memory = threadMem;
+#if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
+    {
+        uint32_t *fip = (uint32_t *)threadMem;
+        while (fip < (uint32_t *)sf) {
+            *fip++ = DEADBEEF;
+        }
+    }
+#else
     *((uint32_t *) threadMem) = DEADBEEF;
     *((uint32_t *) (threadMem + 4)) = DEADBEEF;
     *((uint32_t *) (threadMem + 8)) = DEADBEEF;
     *((uint32_t *) (threadMem + 12)) = DEADBEEF;
+#endif
     td->td_priority = 64;
 
     /*
