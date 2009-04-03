@@ -1,4 +1,10 @@
 $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
+2009-04-03  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+
+        * at91_twi.c: Fixed bugs reported by Harald and Ajit. Thanks!
+
+
+2009-03-27  Thiago A. Correa <thiago.correa@gmail.com>
 
 	* Mark documented deprecated functions with NUT_DEPRECATE.
 	  This will cause warnings during compilation if deprecated functions
