@@ -109,6 +109,136 @@
  */
 /*@{*/
 
+/*!
+* \name UART0 RTS Handshake Control
+*
+* UART0_RTS_BIT must be defined in arch/avr.h
+*/
+#ifdef UART0_RTS_BIT
+
+#if (UART0_RTS_AVRPORT == AVRPORTB)
+#define UART0_RTS_PORT  PORTB
+#define UART0_RTS_DDR   DDRB
+
+#elif (UART0_RTS_AVRPORT == AVRPORTD)
+#define UART0_RTS_PORT  PORTD
+#define UART0_RTS_DDR   DDRD
+
+#elif (UART0_RTS_AVRPORT == AVRPORTE)
+#define UART0_RTS_PORT  PORTE
+#define UART0_RTS_DDR   DDRE
+
+#elif (UART0_RTS_AVRPORT == AVRPORTF)
+#define UART0_RTS_PORT  PORTF
+#define UART0_RTS_DDR   DDRF
+
+#elif (UART0_RTS_AVRPORT == AVRPORTG)
+#define UART0_RTS_PORT  PORTG
+#define UART0_RTS_DDR   DDRG
+
+#elif (UART0_RTS_AVRPORT == AVRPORTH)
+#define UART0_RTS_PORT  PORTH
+#define UART0_RTS_DDR   DDRH
+
+#endif
+
+#endif /* UART0_RTS_BIT */
+
+#ifdef UART0_DTR_BIT
+
+#if (UART0_DTR_AVRPORT == AVRPORTB)
+#define UART0_DTR_PORT  PORTB
+#define UART0_DTR_DDR   DDRB
+
+#elif (UART0_DTR_AVRPORT == AVRPORTD)
+#define UART0_DTR_PORT  PORTD
+#define UART0_DTR_DDR   DDRD
+
+#elif (UART0_DTR_AVRPORT == AVRPORTE)
+#define UART0_DTR_PORT  PORTE
+#define UART0_DTR_DDR   DDRE
+
+#elif (UART0_DTR_AVRPORT == AVRPORTF)
+#define UART0_DTR_PORT  PORTF
+#define UART0_DTR_DDR   DDRF
+
+#elif (UART0_DTR_AVRPORT == AVRPORTG)
+#define UART0_DTR_PORT  PORTG
+#define UART0_DTR_DDR   DDRG
+
+#elif (UART0_DTR_AVRPORT == AVRPORTH)
+#define UART0_DTR_PORT  PORTH
+#define UART0_DTR_DDR   DDRH
+
+#endif
+
+#endif /* UART0_DTR_BIT */
+
+/*!
+* \name UART1 RTS Handshake Control
+*
+* UART1_RTS_BIT must be defined in arch/avr.h
+*/
+#ifdef UART1_RTS_BIT
+
+#if (UART1_RTS_AVRPORT == AVRPORTB)
+#define UART1_RTS_PORT   PORTB
+#define UART1_RTS_DDR    DDRB
+
+#elif (UART1_RTS_AVRPORT == AVRPORTD)
+#define UART1_RTS_PORT   PORTD
+#define UART1_RTS_DDR    DDRD
+
+#elif (UART1_RTS_AVRPORT == AVRPORTE)
+#define UART1_RTS_PORT   PORTE
+#define UART1_RTS_DDR    DDRE
+
+#elif (UART1_RTS_AVRPORT == AVRPORTF)
+#define UART1_RTS_PORT   PORTF
+#define UART1_RTS_DDR    DDRF
+
+#elif (UART1_RTS_AVRPORT == AVRPORTG)
+#define UART1_RTS_PORT   PORTG
+#define UART1_RTS_DDR    DDRG
+
+#elif (UART1_RTS_AVRPORT == AVRPORTH)
+#define UART1_RTS_PORT   PORTH
+#define UART1_RTS_DDR    DDRH
+
+#endif
+
+#endif /* UART1_RTS_BIT */
+
+#ifdef UART1_DTR_BIT
+
+#if (UART1_DTR_AVRPORT == AVRPORTB)
+#define UART1_DTR_PORT  PORTB
+#define UART1_DTR_DDR   DDRB
+
+#elif (UART1_DTR_AVRPORT == AVRPORTD)
+#define UART1_DTR_PORT  PORTD
+#define UART1_DTR_DDR   DDRD
+
+#elif (UART1_DTR_AVRPORT == AVRPORTE)
+#define UART1_DTR_PORT  PORTE
+#define UART1_DTR_DDR   DDRE
+
+#elif (UART1_DTR_AVRPORT == AVRPORTF)
+#define UART1_DTR_PORT  PORTF
+#define UART1_DTR_DDR   DDRF
+
+#elif (UART1_DTR_AVRPORT == AVRPORTG)
+#define UART1_DTR_PORT  PORTG
+#define UART1_DTR_DDR   DDRG
+
+#elif (UART1_DTR_AVRPORT == AVRPORTH)
+#define UART1_DTR_PORT  PORTH
+#define UART1_DTR_DDR   DDRH
+
+#endif
+
+#endif /* UART1_DTR_BIT */
+
 /*
  * FCS lookup table located in program memory space.
  */
