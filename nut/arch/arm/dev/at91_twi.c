@@ -216,6 +216,10 @@ int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxda
     }
     NutIrqEnable(&sig_TWI);
 
+    if ((txlen == 0) && (rxsiz == 0)) {
+        return -1;
+    }
+
     NutEnterCritical();
     /* Set all parameters for master mode. */
     tw_mm_sla = sla;
@@ -226,8 +230,6 @@ int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxda
     tw_mr_siz = rxsiz;
     tw_mr_buf = rxdata;
     tw_mr_idx = 0;
-
-    if ((tw_mt_len == 0) && (tw_mr_siz == 0)) return -1;
 
     /* Set slave address enable interrupts and start transmission */
     
@@ -278,7 +280,7 @@ int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxda
     
     /* Release the interface. */
     NutEventPost(&tw_mm_mutex);
-    
+  
     return rc;
 }
 
@@ -337,7 +339,7 @@ int TwIOCtl(int req, void *conf)
         }
 
         /* BUG 41.2.7.1, datasheet SAM7X256  p. 626 */
-        if (cldiv * (2 << ckdiv) > 8191) return -1; 
+        if (cldiv * (1 << ckdiv) > 8191) return -1; 
         
         outr(TWI_CWGR, (ckdiv << 16) | ((unsigned int) cldiv << 8) | (unsigned int) cldiv);
         break;
@@ -379,7 +381,7 @@ int TwIOCtl(int req, void *conf)
 
 int TwInit(uint8_t sla)
 {
-    uint32_t speed = 2400;
+    uint32_t speed = 4800;
 
     if (NutRegisterIrqHandler(&sig_TWI, TwInterrupt, 0)) {
         return -1;
