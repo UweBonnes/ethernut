@@ -51,56 +51,52 @@
 #
 #
 
-EXTRA_DIST = nutsetup reconf Makedefs.arm-gcc Makerules.arm-gcc \
-Makedefs.arm-gccdbg Makerules.arm-gccdbg \
-Makedefs.avr-gcc Makerules.avr-gcc \
-Makedefs.avr-gccdbg Makerules.avr-gccdbg \
-Makedefs.avr-icc Makerules.avr-icc \
-Makedefs.gcc Makerules.gcc Makedefs.h8-gcc Makerules.h8-gcc \
-Makedefs.icc Makerules.icc Makedefs.unix-gcc Makerules.unix-gcc
+EXTRA_DIST = nut/nutsetup reconf nut/Makedefs.arm-gcc nut/Makerules.arm-gcc \
+nut/Makedefs.arm-gccdbg nut/Makerules.arm-gccdbg \
+nut/Makedefs.avr-gcc nut/Makerules.avr-gcc \
+nut/Makedefs.avr-gccdbg nut/Makerules.avr-gccdbg \
+nut/Makedefs.avr-icc nut/Makerules.avr-icc \
+nut/Makedefs.gcc nut/Makerules.gcc nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
+nut/Makedefs.icc nut/Makerules.icc nut/Makedefs.unix-gcc nut/Makerules.unix-gcc
 
 SUBDIRS = nut/doc nut/tools/crurom nut/tools/nutconf nut/tools/nutdisc nut/tools/linux
 
 dist-hook:
-	mkdir -p $(distdir)/app
-	cp -R $(srcdir)/app/* $(distdir)/app
-	mkdir -p $(distdir)/appicc
-	cp -R $(srcdir)/appicc/* $(distdir)/appicc
-	mkdir -p $(distdir)/appload
-	cp -R $(srcdir)/appload/* $(distdir)/appload
-	mkdir -p $(distdir)/arch
-	cp -R $(srcdir)/arch/* $(distdir)/arch
-	mkdir -p $(distdir)/bin
-	cp -R $(srcdir)/bin/* $(distdir)/bin
-	mkdir -p $(distdir)/boot
-	cp -R $(srcdir)/boot/* $(distdir)/boot
-	mkdir -p $(distdir)/c
-	cp -R $(srcdir)/c/* $(distdir)/c
-	mkdir -p $(distdir)/conf
-	cp -R $(srcdir)/conf/* $(distdir)/conf
-	mkdir -p $(distdir)/cpp
-	cp -R $(srcdir)/cpp/* $(distdir)/cpp
-	mkdir -p $(distdir)/crt
-	cp -R $(srcdir)/crt/* $(distdir)/crt
-	mkdir -p $(distdir)/dev
-	cp -R $(srcdir)/dev/* $(distdir)/dev
-	mkdir -p $(distdir)/eboot
-	cp -R $(srcdir)/eboot/* $(distdir)/eboot
-	mkdir -p $(distdir)/fs
-	cp -R $(srcdir)/fs/* $(distdir)/fs
-	mkdir -p $(distdir)/gorp
-	cp -R $(srcdir)/gorp/* $(distdir)/gorp
-	mkdir -p $(distdir)/include
-	cp -R $(srcdir)/include/* $(distdir)/include
-	mkdir -p $(distdir)/lib
-	cp -R $(srcdir)/lib/* $(distdir)/lib
-	mkdir -p $(distdir)/lua
-	cp -R $(srcdir)/lua/* $(distdir)/lua
-	mkdir -p $(distdir)/net
-	cp -R $(srcdir)/net/* $(distdir)/net
-	mkdir -p $(distdir)/os
-	cp -R $(srcdir)/os/* $(distdir)/os
-	mkdir -p $(distdir)/pro
-	cp -R $(srcdir)/pro/* $(distdir)/pro
+	mkdir -p $(distdir)/nut/app
+	cp -R $(srcdir)/nut/app/* $(distdir)/nut/app
+	mkdir -p $(distdir)/nut/appicc
+	cp -R $(srcdir)/nut/appicc/* $(distdir)/nut/appicc
+	mkdir -p $(distdir)/nut/arch
+	cp -R $(srcdir)/nut/arch/* $(distdir)/nut/arch
+	mkdir -p $(distdir)/nut/bin
+	cp -R $(srcdir)/nut/bin/* $(distdir)/nut/bin
+	mkdir -p $(distdir)/nut/boot
+	cp -R $(srcdir)/nut/boot/* $(distdir)/nut/boot
+	mkdir -p $(distdir)/nut/c
+	cp -R $(srcdir)/nut/c/* $(distdir)/nut/c
+	mkdir -p $(distdir)/nut/conf
+	cp -R $(srcdir)/nut/conf/* $(distdir)/nut/conf
+	mkdir -p $(distdir)/nut/cpp
+	cp -R $(srcdir)/nut/cpp/* $(distdir)/nut/cpp
+	mkdir -p $(distdir)/nut/crt
+	cp -R $(srcdir)/nut/crt/* $(distdir)/nut/crt
+	mkdir -p $(distdir)/nut/dev
+	cp -R $(srcdir)/nut/dev/* $(distdir)/nut/dev
+	mkdir -p $(distdir)/nut/fs
+	cp -R $(srcdir)/nut/fs/* $(distdir)/nut/fs
+	mkdir -p $(distdir)/nut/gorp
+	cp -R $(srcdir)/nut/gorp/* $(distdir)/nut/gorp
+	mkdir -p $(distdir)/nut/include
+	cp -R $(srcdir)/nut/include/* $(distdir)/nut/include
+	mkdir -p $(distdir)/nut/lib
+	cp -R $(srcdir)/nut/lib/* $(distdir)/nut/lib
+	mkdir -p $(distdir)/nut/lua
+	cp -R $(srcdir)/nut/lua/* $(distdir)/nut/lua
+	mkdir -p $(distdir)/nut/net
+	cp -R $(srcdir)/nut/net/* $(distdir)/nut/net
+	mkdir -p $(distdir)/nut/os
+	cp -R $(srcdir)/nut/os/* $(distdir)/nut/os
+	mkdir -p $(distdir)/nut/pro
+	cp -R $(srcdir)/nut/pro/* $(distdir)/nut/pro
 	rm -rf `find $(distdir) -name .svn`
 

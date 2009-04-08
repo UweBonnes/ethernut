@@ -58,8 +58,8 @@ ref-build.stamp: nut_en.cfg nutdoc_en.txt nut_en.css nutfoot.html nuthead.html
 	touch ref-build.stamp
 
 dist-hook:
-	mkdir -p $(distdir)/doc/en
-	cp -r ../en/* $(distdir)/doc/en/
+	mkdir -p $(distdir)/nut/doc/en
+	cp -r ../en/* $(distdir)/nut/doc/en/
 endif
 
 distclean-local: clean
