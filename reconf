@@ -3,6 +3,6 @@ rm -f config.cache
 aclocal
 autoconf
 autoheader
-automake
+automake -a
 exit
 
