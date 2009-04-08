@@ -93,6 +93,8 @@
  * \endverbatim
  */
 
+#define NUT_DEPRECATED
+
 #include <cfg/os.h>
 #include <cfg/clock.h>
 
