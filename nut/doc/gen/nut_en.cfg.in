@@ -15,7 +15,7 @@ ABBREVIATE_BRIEF       = YES
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        = @top_srcdir@/ @top_builddir@/
+STRIP_FROM_PATH        = @top_srcdir@/nut @top_builddir@/nut
 STRIP_FROM_INC_PATH    =
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
@@ -86,56 +86,56 @@ WARN_LOGFILE           = doxy.log
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = @srcdir@/nutdoc_en.txt \
-                         @top_srcdir@/app/caltime \
-                         @top_srcdir@/app/canbus \
-                         @top_srcdir@/app/cppdemo \
-                         @top_srcdir@/app/events \
-                         @top_srcdir@/app/ftpd \
-                         @top_srcdir@/app/httpd \
-                         @top_srcdir@/app/inetq \
-                         @top_srcdir@/app/isp2 \
-                         @top_srcdir@/app/logtime \
-                         @top_srcdir@/app/nutpiper \
-                         @top_srcdir@/app/playmp3 \
-                         @top_srcdir@/app/portdio \
-                         @top_srcdir@/app/pppc \
-                         @top_srcdir@/app/rs232d \
-                         @top_srcdir@/app/simple \
-                         @top_srcdir@/app/snmpd \
-                         @top_srcdir@/app/tcps \
-                         @top_srcdir@/app/threads \
-                         @top_srcdir@/app/timers \
-                         @top_srcdir@/app/uart \
-                         @top_srcdir@/include \
-                         @top_srcdir@/arch/avr \
-                         @top_srcdir@/arch/arm \
-                         @top_srcdir@/arch/unix \
-                         @top_srcdir@/crt \
-                         @top_srcdir@/c \
-                         @top_srcdir@/cpp \
-                         @top_srcdir@/os \
-                         @top_srcdir@/net \
-                         @top_srcdir@/pro \
-                         @top_srcdir@/dev \
-                         @top_srcdir@/fs
+                         @top_srcdir@/nut/app/caltime \
+                         @top_srcdir@/nut/app/canbus \
+                         @top_srcdir@/nut/app/cppdemo \
+                         @top_srcdir@/nut/app/events \
+                         @top_srcdir@/nut/app/ftpd \
+                         @top_srcdir@/nut/app/httpd \
+                         @top_srcdir@/nut/app/inetq \
+                         @top_srcdir@/nut/app/isp2 \
+                         @top_srcdir@/nut/app/logtime \
+                         @top_srcdir@/nut/app/nutpiper \
+                         @top_srcdir@/nut/app/playmp3 \
+                         @top_srcdir@/nut/app/portdio \
+                         @top_srcdir@/nut/app/pppc \
+                         @top_srcdir@/nut/app/rs232d \
+                         @top_srcdir@/nut/app/simple \
+                         @top_srcdir@/nut/app/snmpd \
+                         @top_srcdir@/nut/app/tcps \
+                         @top_srcdir@/nut/app/threads \
+                         @top_srcdir@/nut/app/timers \
+                         @top_srcdir@/nut/app/uart \
+                         @top_srcdir@/nut/include \
+                         @top_srcdir@/nut/arch/avr \
+                         @top_srcdir@/nut/arch/arm \
+                         @top_srcdir@/nut/arch/unix \
+                         @top_srcdir@/nut/crt \
+                         @top_srcdir@/nut/c \
+                         @top_srcdir@/nut/cpp \
+                         @top_srcdir@/nut/os \
+                         @top_srcdir@/nut/net \
+                         @top_srcdir@/nut/pro \
+                         @top_srcdir@/nut/dev \
+                         @top_srcdir@/nut/fs
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.h
 RECURSIVE              = YES
-EXCLUDE                = @top_srcdir@/arch/arm/dev/at91sam7x_emac.c \
-                         @top_srcdir@/include/dev/at91sam7x_emac.h
+EXCLUDE                = @top_srcdir@/nut/arch/arm/dev/at91sam7x_emac.c \
+                         @top_srcdir@/nut/include/dev/at91sam7x_emac.h
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = *stdio_nut_wrapper.h* \
                          */arch/h8300h/* \
                          */arch/m68k/*
 EXCLUDE_SYMBOLS        =
-EXAMPLE_PATH           = @top_srcdir@/app
+EXAMPLE_PATH           = @top_srcdir@/nut/app
 EXAMPLE_PATTERNS       = *.c \
                          *.cc \
                          *.h
 EXAMPLE_RECURSIVE      = YES
-IMAGE_PATH             = @top_srcdir@/doc/images
+IMAGE_PATH             = @top_srcdir@/nut/doc/images
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
@@ -162,9 +162,9 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = 
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = @top_srcdir@/doc/gen/nuthead.html
-HTML_FOOTER            = @top_srcdir@/doc/gen/nutfoot.html
-HTML_STYLESHEET        = @top_srcdir@/doc/gen/nut_en.css
+HTML_HEADER            = @top_srcdir@/nut/doc/gen/nuthead.html
+HTML_FOOTER            = @top_srcdir@/nut/doc/gen/nutfoot.html
+HTML_STYLESHEET        = @top_srcdir@/nut/doc/gen/nut_en.css
 HTML_ALIGN_MEMBERS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
 GENERATE_DOCSET        = NO
@@ -247,7 +247,7 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = NO
-INCLUDE_PATH           = @top_srcdir@/include/
+INCLUDE_PATH           = @top_srcdir@/nut/include/
 INCLUDE_FILE_PATTERNS  = *.h
 PREDEFINED             = "THREAD(fncname,arg)=void fncname(void *arg) " \
                          "SIGNAL(fncname)=void fncname(void) " \
