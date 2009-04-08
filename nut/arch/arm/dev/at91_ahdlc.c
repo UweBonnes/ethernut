@@ -52,6 +52,7 @@
  - rewrite to enable uart0 as well
 */
 
+#define NUT_DEPRECATED
 
 #include <cfg/ahdlc.h>
 
