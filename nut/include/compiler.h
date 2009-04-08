@@ -84,13 +84,13 @@
 #endif
 
 // Platform independent compiler macros
+#ifndef NUT_DEPRECATED
 #ifdef __GNUC__
 #define NUT_DEPRECATED __attribute__ ((deprecated))
-#endif
-
+#else
 // Fallback
-#ifndef NUT_DEPRECATED
 #define NUT_DEPRECATED
+#endif
 #endif
 
 #endif // _COMPILER_H_
