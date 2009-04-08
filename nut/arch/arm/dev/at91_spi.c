@@ -356,7 +356,7 @@ int At91SpiSetRate(unsigned int base, unsigned int cs, uint32_t rate)
     unsigned int divider;
 
     /* The SPI clock is driven by the master clock. */
-    divider = (unsigned int) At91GetMasterClock();
+    divider = NutClockGet(NUT_HWCLK_PERIPHERAL);
     /* Calculate the SPI clock divider. Avoid rounding errors. */
     divider += (unsigned int) (rate / 2);
     divider /= rate;
