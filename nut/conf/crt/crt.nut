@@ -334,16 +334,32 @@ nutcrt =
     {
         name = "nutcrt_environ",
         brief = "Environment",
+        description = "Nut/OS provides Posix like environment variables. They are stored "..
+                      "in non-volatile memory and are immediately available after reboot.\n\n"..
+                      "The Nut/OS libraries do not use environment variables, because in most "..
+                      "cases they occupy significantly more memory space than directly storing "..
+                      "specific configuration structures at pre-defined memory locations. "..
+                      "Application code, however, may benefit from portability. Furthermore, "..
+                      "in situations where only a few out of a large number of settings need "..
+                      "to be overridden, environment variables may even save non-volatile "..
+                      "memory space.",
         requires = { "NUT_HEAPMEM" },
-        provides = { "CRT_ENVIRON" },
         sources = { "getenv.c", "putenv.c", "setenv.c", "environ.c" },
         options =
         {
             {
                 macro = "ENVIRON_EE_OFFSET",
                 brief = "Location",
-                description = "This is the first non-volatile memory address, where Nut/OS "..
-                              "expects the list of environment variables.",
+                description = "This is the non-volatile memory address offset, where the "..
+                              "runtime library expects  the list of environment variables.\n\n"..
+                              "Note, that changing this value will invalidate previously "..
+                              "stored environment after upgrading to this new version. You must "..
+                              "also make sure, that this memory area will not conflict with "..
+                              "others, specifically system and network configurations.\n\n"..
+                              "This items is available only if the target system offers any "..
+                              "non-volatile memory. Check the non-volatile memory "..
+                              "module in the device driver section.",
+                requires = { "DEV_NVMEM" },
                 default = "256",
                 type = "integer",
                 file = "include/cfg/eeprom.h"
@@ -355,6 +371,7 @@ nutcrt =
 		              "1.17.0 declares unsetenv returning int. Older versions are declared "..
 		              "as void function. This will help to avoid compilation errors because "..
 		              "of incompatible declarations.",
+                requires = { "DEV_NVMEM" },
 		flavor = "boolean",
 		file = "include/cfg/crt.h"
 	    }

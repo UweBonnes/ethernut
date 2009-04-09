@@ -1418,60 +1418,10 @@ nutarch_arm =
     },
     {
         name = "nutarch__arm_at91efc",
-        brief = "AT91 Embedded Flash (SAM7X)",
+        brief = "AT91 Embedded Flash Controller",
         description = "Routines for reading and writing embedded flash memory.",
-        requires = { "HW_MCU_AT91SAM7X" },
+        requires = { "HW_EFC_AT91" },
         sources = { "arm/dev/at91_efc.c" },
-        options =
-        {
-            {
-                macro = "NUT_CONFIG_AT91EFC",
-                brief = "System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in on-chip flash memory.",
-                provides = { "HW_FLASH_PARAM_SECTOR" },
-                flavor = "boolean",
-                file = "include/cfg/eeprom.h"
-            },
-        },
-    },
-    {
-        name = "nutarch__arm_at91efc_sam7s",
-        brief = "AT91 Embedded Flash (SAM7S)",
-        description = "Routines for reading and writing embedded flash memory.",
-        requires = { "HW_MCU_AT91SAM7S" },
-        sources = { "arm/dev/at91_efc.c" },
-        options =
-        {
-            {
-                macro = "NUT_CONFIG_AT91EFC",
-                brief = "System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in on-chip flash memory.",
-                provides = { "HW_FLASH_PARAM_SECTOR" },
-                flavor = "boolean",
-                file = "include/cfg/eeprom.h"
-            },
-        },
-    },
-    {
-        name = "nutarch__arm_at91efc_sam7se",
-        brief = "AT91 Embedded Flash (SAM7SE)",
-        description = "Routines for reading and writing embedded flash memory.",
-        requires = { "HW_MCU_AT91SAM7SE" },
-        sources = { "arm/dev/at91_efc.c" },
-        options =
-        {
-            {
-                macro = "NUT_CONFIG_AT91EFC",
-                brief = "System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in on-chip flash memory.",
-                provides = { "HW_FLASH_PARAM_SECTOR" },
-                flavor = "boolean",
-                file = "include/cfg/eeprom.h"
-            },
-        },
     },
     {
         name = "nutarch_arm_tlv320",

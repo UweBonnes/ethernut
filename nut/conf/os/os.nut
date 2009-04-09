@@ -413,8 +413,10 @@ nutos =
     {
         name = "nutos_confos",
         brief = "Configuration",
-        description = "Initial configuration settings are stored in non volatile memory.",
-        requires = { "DEV_NVMEM" },
+        description = "Initial system settings are stored in non volatile memory."..
+                      "The current version uses 3 bytes for validity check, 15 bytes "..
+                      "for the host name and one last byte, which is always zero.\n\n"..
+                      "The length of the host name is configurable.",
         provides = { "NUT_OSCONFIG" },
         sources = { "confos.c" },
         options =
@@ -422,8 +424,16 @@ nutos =
             {
                 macro = "CONFOS_EE_OFFSET",
                 brief = "Location",
-                description = "This is the first EEPROM address, where Nut/OS "..
-                              "expects its configuration",
+                description = "This is the non-volatile memory address offset, where Nut/OS "..
+                              "expects its configuration.\n\n"..
+                              "Note, that changing this value will invalidate previously "..
+                              "stored setting after upgrading to this new version. You must "..
+                              "also make sure, that this memory area will not conflict with "..
+                              "others, specifically the network configuration.\n\n"..
+                              "This item is disabled if the system doesn't offer any "..
+                              "non-volatile memory. Check the non-volatile memory"..
+                              "module in the device driver section.",
+                requires = { "DEV_NVMEM" },
                 default = "0",
                 type = "integer",
                 file = "include/cfg/eeprom.h"

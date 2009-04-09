@@ -301,9 +301,124 @@ nutdev =
     {
         name = "nutdev_nvmem",
         brief = "Non Volatile Memory",
-        description = "General read/write access to non volatile memory.",
-        provides = { "DEV_NVMEM"},
+        description = "The Nut/OS API provides routines for platform independent access "..
+                      "to non-volatile memory. A part of this memory is used by the system "..
+                      "to store global settings like the host name or network parameters, "..
+                      "while the remaining part is available for application settings.",
         sources = { "nvmem.c" },
+        options =
+        {
+            {
+                macro = "NUT_CONFIG_AT45D",
+                brief = "Atmel AT45D DataFlash",
+                description = "If enabled, the Atmel AT45D DataFlash is used for non-volatile memory."..
+                              "Additionally specify the chip index as 0 for the first, 1 for the second etc.\n\n"..
+                              "For the AVR family the on-chip EEPROM is used by default.",
+                provides = { "DEV_NVMEM", "DEV_NVMEM_AT45D" },
+                flavor = "booldata",
+                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                default = "0",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45DB",
+                brief = "Atmel AT45DB DataFlash",
+                description = "Deprecated, uses old SPI routines.",
+                provides = { "DEV_NVMEM", "DEV_NVMEM_AT45DB" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT49BV",
+                brief = "Atmel AT49BV NOR Flash",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in this chip.",
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT91EFC",
+                brief = "AT91 On-Chip Flash",
+                description = "If enabled, Nut/OS and Nut/Net configurations will "..
+                              "be stored in on-chip flash memory.",
+                requires = { "HW_EFC_AT91" },
+                provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_X12RTC",
+                brief = "Intersil X12x6 EEPROM",
+                description = "If enabled, the EEPROM on the Intersil X1226/X1286 chip is used for non-volatile memory.",
+                provides = { "DEV_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D_CS",
+                brief = "AT45D Chip Select",
+                description = "Chip select number.",
+                requires = { "DEV_NVMEM_AT45D" },
+                default = "0",
+                type = "enumerated",
+                choices = { "0", "1", "2", "3" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D_PAGE",
+                brief = "AT45D Start Page",
+                description = "First page used by the configuration data area. "..
+                              "By default the last page will be used.",
+                requires = { "DEV_NVMEM_AT45D" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT45D_SIZE",
+                brief = "AT45D Area Size",
+                description = "Size of the configuration data area."..
+                              "By default one full page will be used.",
+                requires = { "DEV_NVMEM_AT45D" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "AT45_CONF_SIZE",
+                brief = "Configuration Area Size",
+                description = "During write operations a buffer with this size is allocated "..
+                              "from heap and may cause memory problems with large sectors. "..
+                              "Thus, this value may be less than the size of the configuration "..
+                              "sector, in which case the rest of the sector is unused.",
+                requires = { "DEV_NVMEM_AT45DB" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_CONF_SECTOR",
+                brief = "Flash Sector Address",
+                description = "Address of the sector used for configuration data.\n\n"..
+                              "Specify the relative memory address, e.g. 0x0000 for the first sector.",
+                requires = { "DEV_NVMEM_NORFLASH" },
+                default = "0x6000",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_CONF_SIZE",
+                brief = "Configuration Area Size",
+                description = "During write operations a buffer with this size is allocated "..
+                              "from heap and may cause memory problems with large sectors. "..
+                              "Thus, this value may be less than the size of the configuration "..
+                              "sector, in which case the rest of the sector is unused.",
+                requires = { "DEV_NVMEM_NORFLASH" },
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+        }
     },
     {
         name = "nutdev_reset",
@@ -1179,6 +1294,14 @@ nutdev =
         },
     },
     {
+        name = "nutdev_spibus_npl",
+        brief = "NPL SPI Bus Controller",
+        description = "Programmable logic SPI bus master controller.",
+        requires = { "DEV_PLL" },
+        provides = { "SPIBUS_CONTROLLER" },
+        sources = { "spibus_npl.c" }
+    },
+    {
         name = "nutdev_twbbif",
         brief = "Bit Banging Two Wire",
         description = "Tested on AT91 only.",
@@ -1993,15 +2116,6 @@ nutdev =
         options =
         {
             {
-                macro = "NUT_CONFIG_X12RTC",
-                brief = "System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in this chip.",
-                provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                file = "include/cfg/eeprom.h"
-            },
-            {
                 macro = "EEPROM_PAGE_SIZE",
                 brief = "EEPROM Page Size",
                 description = "If enabled, a different page size may be specified.\n\n"..
@@ -2528,46 +2642,7 @@ nutdev =
                       "data, including internal Nut/OS and Nut/Net settings.\n\n"..
                       "This new module will replace existing ones, which either depend "..
                       "on specific target CPUs or which may interfere with other SPI devices.",
-        sources = { "nvmem_at45d.c" },
-        options =
-        {
-            {
-                macro = "NUT_CONFIG_AT45D",
-                brief = "System Configuration Chip",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in the specified DataFlash chip.\n\n"..
-                              "Specify the chip as 0 for the first, 1 for the second etc.",
-                provides = { "HW_NVMEM" },
-                flavor = "booldata",
-                default = "0",
-                file = "include/cfg/eeprom.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT45D_CS",
-                brief = "Chip Select",
-                description = "Chip select number.",
-                default = "0",
-                type = "enumerated",
-                choices = { "0", "1", "2", "3" },
-                file = "include/cfg/eeprom.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT45D_PAGE",
-                brief = "Start Page",
-                description = "First page used by the configuration data area. "..
-                              "By default the last page will be used.",
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT45D_SIZE",
-                brief = "Area Size",
-                description = "Size of the configuration data area."..
-                              "By default one full page will be used.",
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-        },
+        sources = { "nvmem_at45d.c" }
     },
     {
         name = "nutdev_at45db",
@@ -2607,27 +2682,6 @@ nutdev =
                 description = "Maximum number of polling loops for page write.",
                 default = "1000",
                 file = "include/cfg/memory.h"
-            },
-            {
-                macro = "AT45_CONF_SIZE",
-                brief = "Configuration Area Size",
-                description = "During write operations a buffer with this size is allocated "..
-                              "from heap and may cause memory problems with large sectors. "..
-                              "Thus, this value may be less than the size of the configuration "..
-                              "sector, in which case the rest of the sector is unused.",
-                provides = { "HW_FLASH_PARAM_SECTOR" },
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT45DB",
-                brief = "System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in this chip.",
-                provides = { "HW_FLASH_PARAM_SECTOR" },
-                provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                file = "include/cfg/eeprom.h"
             },
         },
     },
@@ -2677,33 +2731,6 @@ nutdev =
                 description = "Maximum number of polling loops for a byte/word write.",
                 default = "1000",
                 file = "include/cfg/memory.h"
-            },
-            {
-                macro = "FLASH_CONF_SECTOR",
-                brief = "Configuration Sector Address",
-                default = "0x6000",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "FLASH_CONF_SIZE",
-                brief = "Configuration Area Size",
-                description = "During write operations a buffer with this size is allocated "..
-                              "from heap and may cause memory problems with large sectors. "..
-                              "Thus, this value may be less than the size of the configuration "..
-                              "sector, in which case the rest of the sector is unused.",
-                provides = { "HW_FLASH_PARAM_SECTOR" },
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "NUT_CONFIG_AT49BV",
-                brief = "System Configuration",
-                description = "If enabled, Nut/OS and Nut/Net configurations will "..
-                              "be stored in this chip.",
-                provides = { "HW_FLASH_PARAM_SECTOR" },
-                provides = { "HW_NVMEM" },
-                flavor = "boolean",
-                file = "include/cfg/eeprom.h"
             },
         },
     },

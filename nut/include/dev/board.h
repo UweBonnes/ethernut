@@ -195,7 +195,10 @@
  * SPI bus.
  */
 #ifndef DEV_SPIBUS
-#if defined(__AVR__)
+#if defined(ETHERNUT3)
+#include <dev/spibus_npl.h>
+#define DEV_SPIBUS      spiBusNpl
+#elif defined(__AVR__)
 #include <dev/spibus_avr.h>
 #define DEV_SPIBUS      spiBus0Avr
 #elif defined(MCU_AT91) && defined(SPI0_BASE)

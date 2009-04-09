@@ -1714,7 +1714,7 @@ nutarch_avr =
         name = "nutarch_avr_eeprom",
         brief = "EEPROM Access",
         requires = { "HW_MCU_AVR" },
-        provides = { "HW_NVMEM" },
+        provides = { "DEV_NVMEM" },
         sources = { "avr/dev/eeprom.c" }
     },
 }

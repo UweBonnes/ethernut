@@ -2,7 +2,10 @@
 #define _DEV_NPL_H_
 
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2005 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ * 
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,15 +43,7 @@
  * \brief Nut Programmable Logic Header File
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.2  2006/05/25 09:38:40  haraldkipp
- * Use the AVR way of defining memory mapped I/O.
- *
- * Revision 1.1  2006/01/05 16:32:16  haraldkipp
- * First check-in.
- *
- *
+ * $Id$
  * \endverbatim
  */
 
@@ -120,6 +115,7 @@
 #define NPL_MMCS        0x0001  /*!< \brief MMC select. */
 #define NPL_PANCS       0x0002  /*!< \brief Panel select. */
 #define NPL_USRLED      0x0004  /*!< \brief User LED. */
+#define NPL_NPCS0       0x0008  /*!< \brief DataFlash CS. */
 
 /*! \brief Version identifier register.
  */
