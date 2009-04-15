@@ -178,7 +178,8 @@ include $(top_srcdir)/Makedefs
 
 SRCS = ihndlr.c can_dev.c usart.c null.c chat.c term.c netbuf.c ppp.c nvmem.c \
        twbbif.c mmcard.c x12rtc.c cy2239x.c npl.c nplmmc.c watchdog.c \
-	rtc.c ds1307rtc.c at49bv.c avrtarget.c sbbif0.c pcf8563.c
+       rtc.c ds1307rtc.c at49bv.c avrtarget.c sbbif0.c pcf8563.c \
+       pca9555.c usart0sc16is752.c usartsc16is752.c spi_7seg.c
 
 ifeq ($(DEVICE), AT91R40008)
 SRCS += npluled.c sbimmc.c

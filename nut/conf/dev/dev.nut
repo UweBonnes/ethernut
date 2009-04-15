@@ -1359,7 +1359,22 @@ nutdev =
                       "to the nullDev which discards any output.",
         sources = { "null.c" }
     },
-
+    {
+        name = "nutdev_sc16is752",
+        brief = "SC16IS752 Dual USART",
+        description = "TWI driver for SC16IS752 dual USART chip. "..
+                      "Currently SAM7X256 is tested only. "..
+                      "ICCAVR disabled due to compiler errors.",
+        sources = {
+            "usart0sc16is752.c",
+            "usart1sc16is752.c",
+            "usart2sc16is752.c",
+            "usart3sc16is752.c",
+            "usartsc16is752.c"
+        },
+        requires = { "DEV_TWI", "TOOL_GCC" },
+        provides = { "DEV_UART_SPECIFIC" },
+    },
     {
         name = "nutdev_hxcodec",
         brief = "Helix Audio Device",
@@ -1772,6 +1787,34 @@ nutdev =
             },
         }
     },
+    {
+        name = "nutdev_dm9000",
+        brief = "Davicom DM9000 Driver",
+        description = "LAN driver for Davicom DM9000A and DM9000E.",
+        requires = { "HW_MCU_AT91", "NUT_EVENT", "NUT_TIMER" },
+        provides = { "NET_PHY" },
+        sources = { "dm9000.c" },
+        options =
+        {
+            {
+                macro = "DM9000_BASE_ADDR",
+                brief = "Controller Base Address",
+                description = "The driver supports memory mapped controllers only, using "..
+                              "the specified based address.\n\n"..
+                              "The Ethernut 3 reference design uses 0x20000000.\n"..
+                              "The ELEKTOR Internet Radio uses 0x30000000.\n",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "DM9000_SIGNAL_IRQ",
+                brief = "Ethernet Interrupt",
+                description = "Ethernet controller interrupt.",
+                type = "enumerated",
+                choices = avr_irq_choice,
+                file = "include/cfg/arch/armpio.h"
+            }
+        }
+    },
 
     --
     -- Block Device Drivers.
@@ -2143,6 +2186,20 @@ nutdev =
     -- Special Chip Drivers.
     --
 
+    {
+        name = "nutdev_twi_at24c",
+        brief = "AT24C Serial EEPROM",
+        description = "Serial eeprom driver for AT24C chips.\n\n",
+        requires = { "DEV_TWI" },
+        sources = { "at24c.c", "eeprom.c" },
+    },
+    {
+        name = "nutdev_pca9555",
+        brief = "PCA9555 Driver",
+        description = "Philips PCA9555 I/O expander. Tested on AT91 only.",
+        requires = { "DEV_TWI" },
+        sources = { "pca9555.c" },
+    },
     {
         name = "nutdev_vs10xx",
         brief = "VS10XX Audio Decoder",

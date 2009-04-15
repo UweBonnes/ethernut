@@ -20,6 +20,7 @@ Copyright (C) 2003 by Pavel Chromy
 Copyright (C) 2005-2009 proconX Pty. Ltd.
 Copyright (C) 2007 by Przemyslaw Rudy
 Copyright (C) 1982-1993 The Regents of the University of California
+Copyright (C) 2009 by Rittal GmbH & Co. KG, Ulrich Prinz
 Copyright (C) 1988 Stephen Deering.
 Copyright (C) 2008 by Szemzo Andr s
 Copyright (C) 2001-2003 by Telogis.com
