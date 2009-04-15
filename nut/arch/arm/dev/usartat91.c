@@ -137,7 +137,6 @@ static uint_fast8_t tx_aframe;
 #endif
 
 
-#ifdef UART_HDX_BIT
 /*!
  * \brief Enables half duplex control if not equal zero.
  *
@@ -145,7 +144,6 @@ static uint_fast8_t tx_aframe;
  * port bit to switch between receive and transmit mode.
  */
 static uint_fast8_t hdx_control;
-#endif
 
 //#if defined(UART_RTS_BIT) || defined(US_MODE_HWHANDSHAKE)
 /*!
@@ -187,15 +185,11 @@ static void At91UsartCts(void *arg)
 }
 #endif
 
-#ifdef UART_HDX_BIT
 /*
  * \brief USARTn transmitter empty interrupt handler.
  *
  * Used with half duplex communication to switch from tranmit to receive
  * mode after the last character has been transmitted.
- *
- * This routine exists only if the hardware configuration defines a
- * port bit to switch between receive and transmit mode.
  *
  * \param arg Pointer to the transmitter ring buffer.
  */
@@ -205,12 +199,19 @@ static void At91UsartTxEmpty(RINGBUF *rbf)
      * Check if half duplex mode has been enabled and if all characters
      * had been sent out.
      */
-    if (hdx_control && rbf->rbf_cnt == 0) {
-        /* Switch to receiver mode. */
+    if (hdx_control && (rbf->rbf_cnt == 0)) {
+        /*
+         * Switch to receiver mode:
+         * Enable USART receive, disable transmit.
+         * Disable TX-Empty IRQ
+         */
+        outr(USARTn_BASE + US_CR_OFF, US_RXEN | US_TXDIS);
+		//USDBG_PIN1_HIGH();
+#if defined(UART_HDX_BIT)
         UART_HDX_RX(UART_HDX_PORT, UART_HDX_BIT);
+#endif
     }
 }
-#endif
 
 /*
  * \brief USARTn transmitter ready interrupt handler.
@@ -282,6 +283,14 @@ static void At91UsartTxReady(RINGBUF *rbf)
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPostFromIrq(&rbf->rbf_que);
         }
+
+		/* 
+		 * if software half duplex enabled, we need TX-Empty IRQ for
+		 * detection if last bit of last byte transmission is finished.
+		 */
+		if( hdx_control && (rbf->rbf_cnt ==0)) {
+			outr(USARTn_BASE + US_IER_OFF, US_TXEMPTY);		// enable TX-Empty IRQ to enable RX again
+		}
     }
 
     /*
@@ -407,11 +416,9 @@ static void At91UsartInterrupt(void *arg)
         At91UsartTxReady(&dcb->dcb_tx_rbf);
     }
 
-#ifdef UART_HDX_BIT
     if (csr & US_TXEMPTY) {
         At91UsartTxEmpty(&dcb->dcb_tx_rbf);
     }
-#endif /*  UART_HDX_BIT */
 }
 
 /*!
@@ -429,15 +436,13 @@ static void At91UsartEnable(void)
 
     /* Enable UART receiver and transmitter interrupts. */
     outr(USARTn_BASE + US_IER_OFF, US_RXRDY | US_TXRDY);
-    NutIrqEnable(&SIG_UART);
 
-#ifdef UART_HDX_BIT
     if (hdx_control) {
         /* Enable transmit complete interrupt. */
-        sbi(UCSRnB, TXCIE);
+        outr(USARTn_BASE + US_IER_OFF, US_TXEMPTY);
     }
-#endif
 
+    NutIrqEnable(&SIG_UART);
     NutExitCritical();
 }
 
@@ -462,6 +467,7 @@ static void At91UsartDisable(void)
      * Disable USART transmit and receive.
      */
     outr(USARTn_BASE + US_CR_OFF, US_RXDIS | US_TXDIS);
+	outr(USARTn_BASE + US_IDR_OFF, US_TXEMPTY);
 }
 
 /*!
@@ -1026,13 +1032,11 @@ static uint32_t At91UsartGetFlowControl(void)
     }
 #endif
 
-#ifdef UART_HDX_BIT
     if (hdx_control) {
         rc |= USART_MF_HALFDUPLEX;
     } else {
         rc &= ~USART_MF_HALFDUPLEX;
     }
-#endif
 
     return rc;
 }
@@ -1113,30 +1117,34 @@ static int At91UsartSetFlowControl(uint32_t flags)
         cts_sense = 0;
     }
 
-#ifdef UART_HDX_BIT
     /*
      * Set half duplex mode.
      */
     if (flags & USART_MF_HALFDUPLEX) {
-        /* Register transmit complete interrupt. */
-        if (NutRegisterIrqHandler(&sig_UART_TRANS, At91UsartTxComplete, &dcb_usart.dcb_rx_rbf)) {
-            return -1;
-        }
+
+        /* Enable USART receive, disable transmit. */
+        outr(USARTn_BASE + US_CR_OFF, US_RXEN | US_TXDIS);
+        /* Enable Half-Duplex Mode */
+        hdx_control = 1;
+        /* Enable TX-Empty IRQ */
+        outr(USARTn_BASE + US_IDR_OFF, US_TXEMPTY);
+
+#if defined(UART_HDX_BIT)        
         /* Initially enable the receiver. */
         UART_HDX_RX(UART_HDX_PORT, UART_HDX_BIT);
         sbi(UART_HDX_DDR, UART_HDX_BIT);
-        hdx_control = 1;
-        /* Enable transmit complete interrupt. */
-        sbi(UCSRnB, TXCIE);
-    } else if (hdx_control) {
+#endif
+    } 
+    else if (hdx_control) {
         hdx_control = 0;
         /* disable transmit complete interrupt */
-        cbi(UCSRnB, TXCIE);
+        outr(USARTn_BASE + US_IDR_OFF, US_TXEMPTY);
         /* Deregister transmit complete interrupt. */
-        NutRegisterIrqHandler(&sig_UART_TRANS, 0, 0);
+//         NutRegisterIrqHandler(&sig_UART_TRANS, 0, 0);
+#if defined(UART_HDX_BIT)        
         cbi(UART_HDX_DDR, UART_HDX_BIT);
-    }
 #endif
+    }
 
     /*
      * Verify the result.
@@ -1156,12 +1164,16 @@ static int At91UsartSetFlowControl(uint32_t flags)
  */
 static void At91UsartTxStart(void)
 {
-#ifdef UART_HDX_BIT
     if (hdx_control) {
-        /* Enable half duplex transmitter. */
+        /*
+        * Disable USART receive, enable transmit.
+        */
+        outr(USARTn_BASE + US_CR_OFF, US_RXDIS | US_TXEN);
+        //USDBG_PIN2_LOW();
+#if defined(UART_HDX_BIT)
         UART_HDX_TX(UART_HDX_PORT, UART_HDX_BIT);
-    }
 #endif
+    }
     /* Enable transmit interrupts. */
     outr(USARTn_BASE + US_IER_OFF, US_TXRDY);
 }
@@ -1339,7 +1351,7 @@ static int At91UsartDeinit(void)
     /* Deregister transmit complete interrupt. */
     if (hdx_control) {
         hdx_control = 0;
-        NutRegisterIrqHandler(&sig_UART_TRANS, 0, 0);
+//         NutRegisterIrqHandler(&sig_UART_TRANS, 0, 0);
     }
 #endif
 
