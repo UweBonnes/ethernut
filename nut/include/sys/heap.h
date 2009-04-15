@@ -89,9 +89,23 @@ extern HEAPNODE *heapFreeList;
 #define NutHeapRealloc(p, s)            NutHeapRootRealloc(&heapFreeList, p, s)
 #endif
 
+#if defined(NUTMEM_STACKHEAP)
+/* Dedicated stack memory. */
+#ifndef NUTMEM_SPLIT_FAST
+#define NUTMEM_SPLIT_FAST
+#endif
+#define NutStackAdd(a, s)               NutHeapFastMemAdd(a, s)
+#define NutStackAlloc(s)                NutHeapFastMemAlloc(s)
+#define NutStackFree(p)                 NutHeapFastMemFree(p)
+#else /* NUTMEM_STACKHEAP */
+/* Thread stacks resides in normal heap. */
+#define NutStackAlloc(s)                NutHeapAlloc(s)
+#define NutStackFree(p)                 NutHeapFree(p)
+#endif /* NUTMEM_STACKHEAP */
+
 #ifdef NUTMEM_SPLIT_FAST
 
-HEAPNODE *heapFastMemFreeList;
+extern HEAPNODE *heapFastMemFreeList;
 
 #define NutHeapFastMemAdd(a, s)         NutHeapRootAdd(&heapFastMemFreeList, a, s)
 #define NutHeapFastMemAvailable()       NutHeapRootAvailable(&heapFastMemFreeList)
@@ -110,16 +124,6 @@ HEAPNODE *heapFastMemFreeList;
 #endif
 
 #endif /* NUTMEM_SPLIT_FAST */
-
-#if defined(NUTMEM_STACKHEAP) && defined(NUTMEM_SPLIT_FAST)
-/* Dedicated stack memory. */
-#define NutStackAlloc(s)                NutHeapFastMemAlloc(s)
-#define NutStackFree(p)                 NutHeapFastMemFree(p)
-#else
-/* Thread stacks resides in normal heap. */
-#define NutStackAlloc(s)                NutHeapAlloc(s)
-#define NutStackFree(p)                 NutHeapFree(p)
-#endif
 
 __BEGIN_DECLS
 /* Prototypes */
@@ -144,6 +148,6 @@ extern int NutHeapCheck(void);
 extern void NutHeapDump(void * stream);
 
 /* Prototypes */
-__BEGIN_DECLS
+__END_DECLS
 
 #endif
