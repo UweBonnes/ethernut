@@ -157,7 +157,8 @@ nuttools =
         {
             brief = "GCC for AVR",
             description = "GNU Compiler Collection for ARM including avr-libc.",
-            provides = { "TOOL_CC_AVR", "TOOL_GCC", "TOOL_CXX" },
+            --  "TOOL_CXX" disabled due to problems with avr-libc eeprom.h.
+            provides = { "TOOL_CC_AVR", "TOOL_GCC" },
             macro = "AVR_GCC",
             flavor = "boolean",
             exclusivity = toolchain_names,
