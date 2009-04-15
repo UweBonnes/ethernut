@@ -74,6 +74,7 @@
  *
  */
 
+#include <compiler.h>
 #include <stdlib.h>
 
 /*!

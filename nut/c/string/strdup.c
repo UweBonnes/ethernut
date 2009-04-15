@@ -65,6 +65,7 @@
  *
  */
 
+#include <compiler.h>
 #include <sys/types.h>
 
 #include <stddef.h>

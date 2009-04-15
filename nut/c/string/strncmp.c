@@ -71,6 +71,7 @@
  *
  */
 
+#include <compiler.h>
 #include <string.h>
 
 /*!
