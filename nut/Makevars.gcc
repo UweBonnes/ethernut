@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH
+# Copyright (C) 2001-2006 by egnite Software GmbH
 # Copyright (C) 2009 by egnite GmbH
 #
 # All rights reserved.
@@ -35,23 +35,40 @@
 # $Id$
 #
 
-# Set defaults for building in source tree.
-ifeq ($(top_srcdir),)
-top_srcdir = ../..
-endif
-ifeq ($(top_blddir),)
-top_blddir = top_srcdir
-endif
-ifeq ($(top_appdir),)
-top_appdir = top_srcdir
-endif
-ifeq ($(MCU),)
-include $(top_srcdir)/UserConf.mk
-LIBDIR = $(top_blddir)/lib
-endif
+# Inherit general variables.
+include $(top_srcdir)/Makevars.all
 
-# Inherit variables from library build.
-include $(top_srcdir)/Makedefs.avr32-gcc
+# Toolchain commands.
+# CC compiles C sources to object files.
+# CXX compiles C++ sources to object files.
+# AS assembles assembly sources to object files.
+# AR creates libraries from object files.
+# TRGT is a target specific prefix like 'arm-elf-' or 'avr-'.
+CC     = $(TRGT)gcc
+CXX    = $(TRGT)g++
+AS     = $(TRGT)gcc -x assembler-with-cpp
+AR     = $(TRGT)ar
+RANLIN = $(TRGT)ranlib
 
-# Add arm-gcc variables for application build.
-include $(top_srcdir)/app/Makevars.avr32-gcc
+# Preprocessor options.
+DEFS     = $(HWDEF)
+INCPRE   = -I
+CPPFLAGS = $(INCFIRST) -I$(INCDIR) $(INCLAST) $(DEFS) $(UCPFLAGS)
+
+# C compiler options.
+CFLAGS_ASM = -Wa,-a=$(@:.o=.lst)
+CFLAGS_WRN = -Wall -Wstrict-prototypes -Werror
+CFLAGS_OPT = -Os
+CFLAGS     = $(CFLAGS_MCU) $(CFLAGS_OPT) $(CFLAGS_WRN) $(CFLAGS_ASM) $(UCPFLAGS)
+
+# C++ compiler options.
+CXXFLAGS_WRN = -Wall
+CXXFLAGS_ASM = $(CFLAGS_ASM)
+CXXFLAGS_OPT = -Os -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti 
+CXXFLAGS     = $(CXXFLAGS_MCU) $(CXXFLAGS_OPT) $(CXXFLAGS_WRN) $(CXXFLAGS_ASM) $(UCPFLAGS)
+
+# Assembler options.
+ASFLAGS  = $(CFLAGS) $(UASFLAG)
+
+# Librarian options.
+ARFLAGS = rsv

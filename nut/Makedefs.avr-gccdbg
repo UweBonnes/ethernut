@@ -1,5 +1,8 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH
+# Copyright (C) 2009 by egnite GmbH
+#
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -10,17 +13,15 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this
-#    software must display the following acknowledgement:
+# 3. Neither the name of the copyright holders nor the names of
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
 #
-#    This product includes software developed by egnite Software GmbH
-#    and its contributors.
-#
-# THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
-# SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 # BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 # OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,54 +32,15 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Log$
-# Revision 1.2  2009/02/06 15:37:39  haraldkipp
-# Added stack space multiplier and addend. Adjusted stack space.
-#
-# Revision 1.1  2007/05/02 11:10:26  haraldkipp
-# Simple and ugly solution to provide AVR debugging.
-#
-# Revision 1.8  2005/05/09 17:22:50  chaac
-# Added workaround for too aggressive GCC optimizations. Now C and C++
-# compilers use flag -fno-delete-null-pointer-checks when compiling Nut/OS.
-#
-# Revision 1.7  2005/01/22 19:12:31  haraldkipp
-# Added C++ support contributed by Oliver Schulz (MPI).
-#
-# Revision 1.6  2004/11/08 21:43:10  drsung
-# Step back to version 1.4
-#
-# Revision 1.4  2004/09/10 17:18:25  haraldkipp
-# Building inside source tree is working again
-#
-# Revision 1.3  2004/09/08 10:17:44  haraldkipp
-# Listing in local dir
-#
-# Revision 1.2  2004/08/18 16:20:21  haraldkipp
-# Use consistent directory structure
-#
-# Revision 1.1  2004/08/18 13:27:37  haraldkipp
-# Copied from .gcc
-#
+# $Id$
 #
 
+# Inherit avr-gcc variables.
+include $(top_srcdir)/Makevars.avr-gcc
+
+# Override compiler options to create debug code.
+CFLAGS_OPT   = -O0 -gdwarf-2 -fno-delete-null-pointer-checks
+CXXFLAGS_OPT = -O0 -gdwarf-2 -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti
+
+# Debug code needs much more stack space.
 DEFS  = -DNUT_THREAD_STACK_MULT=3 $(HWDEF)
-
-INCPRE = -I
-INCDIR = $(top_srcdir)/include
-
-ARCH   = avr
-TRGT   = avr-
-CC     = $(TRGT)gcc
-CXX    = $(TRGT)g++
-AR     = $(TRGT)ar
-CP     = cp
-AS     = $(TRGT)gcc -x assembler-with-cpp
-RANLIB = $(TRGT)ranlib
-
-MCFLAGS  = -mmcu=$(MCU)
-CPFLAGS  = $(MCFLAGS) -gdwarf-2 -O0 -fno-delete-null-pointer-checks -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
-CXXFLAGS = $(MCFLAGS) -Os -fno-delete-null-pointer-checks -Wall -Werror -Wa,-ahlms=$(<F:.cc=.lst) $(DEFS)
-LDFLAGS  = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref
-ARFLAGS  = rsv
-ASFLAGS  = $(MCFLAGS) -Wa,-amhls=$(<:.S=.lst) $(DEFS)

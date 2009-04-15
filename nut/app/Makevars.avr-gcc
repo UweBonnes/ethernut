@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH
+# Copyright (C) 2001-2006 by egnite Software GmbH
 # Copyright (C) 2009 by egnite GmbH
 #
 # All rights reserved.
@@ -35,23 +35,18 @@
 # $Id$
 #
 
-# Set defaults for building in source tree.
-ifeq ($(top_srcdir),)
-top_srcdir = ../..
-endif
-ifeq ($(top_blddir),)
-top_blddir = top_srcdir
-endif
-ifeq ($(top_appdir),)
-top_appdir = top_srcdir
-endif
-ifeq ($(MCU),)
-include $(top_srcdir)/UserConf.mk
-LIBDIR = $(top_blddir)/lib
+# Inherit variables from general gcc build
+include $(top_srcdir)/app/Makevars.gcc
+
+# set linker options
+LDFLAGS   = $(MCFLAGS) -Wl,--defsym=main=0,-Map=$(PROJ).map,--cref -L$(LIBDIR)
+ifdef DATA_SEG
+LDFLAGS += -Wl,--section-start=.data=$(subst 0x,0x80,$(DATA_SEG))
 endif
 
-# Inherit variables from library build.
-include $(top_srcdir)/Makedefs.avr32-gcc
-
-# Add arm-gcc variables for application build.
-include $(top_srcdir)/app/Makevars.avr32-gcc
+# Do we still need this?
+ELFCOF = $(BIN) --debugging \
+	--change-section-address .data-0x800000 \
+	--change-section-address .bss-0x800000 \
+	--change-section-address .noinit-0x800000 \
+	--change-section-address .eeprom-0x810000

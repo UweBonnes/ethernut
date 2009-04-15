@@ -1,5 +1,4 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH
 # Copyright (C) 2009 by egnite GmbH
 #
 # All rights reserved.
@@ -35,23 +34,18 @@
 # $Id$
 #
 
-# Set defaults for building in source tree.
-ifeq ($(top_srcdir),)
-top_srcdir = ../..
-endif
-ifeq ($(top_blddir),)
-top_blddir = top_srcdir
-endif
-ifeq ($(top_appdir),)
-top_appdir = top_srcdir
-endif
-ifeq ($(MCU),)
-include $(top_srcdir)/UserConf.mk
-LIBDIR = $(top_blddir)/lib
-endif
+help-apps:
+	$(info 'make all'       Creates application binary. This is the default.)
+	$(info 'make clean'     Deletes all files that had been created by 'make all')
+	$(info 'make install'   Creates all libries and installs them for actual use.)
+#	$(info 'make uninstall' Removes all installed libraries.)
+#	$(info 'make distclean' Deletes everything that can be reconstructed including temporary files)
 
-# Inherit variables from library build.
-include $(top_srcdir)/Makedefs.avr32-gcc
+help: help-apps
 
-# Add arm-gcc variables for application build.
-include $(top_srcdir)/app/Makevars.avr32-gcc
+burn: $(TARG) $(ITARG)
+	$(BURN) $(BURNFLAGS)
+
+install: $(TARG) $(ITARG)
+	$(CP) $(TARG) $(BINDIR)/$(TARG)
+	$(CP) $(ITARG) $(BINDIR)/$(ITARG)

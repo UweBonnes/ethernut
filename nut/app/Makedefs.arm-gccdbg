@@ -1,5 +1,8 @@
 #
-# Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2007 by egnite Software GmbH
+# Copyright (C) 2009 by egnite GmbH
+#
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -10,17 +13,15 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this
-#    software must display the following acknowledgement:
+# 3. Neither the name of the copyright holders nor the names of
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
 #
-#    This product includes software developed by egnite Software GmbH
-#    and its contributors.
-#
-# THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
-# SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 # BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 # OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,44 +32,26 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Log$
-# Revision 1.2  2007/10/12 17:22:32  haraldkipp
-# Compiler option -fomit-frame-pointer confuses gdb. Removed.
-#
-# Revision 1.1  2007/04/12 09:12:09  haraldkipp
-# Quick solution allows generating GCC debug code.
-#
+# $Id$
 #
 
+# Set defaults for building in source tree.
 ifeq ($(top_srcdir),)
 top_srcdir = ../..
 endif
-
 ifeq ($(top_blddir),)
-top_blddir = ../..
+top_blddir = top_srcdir
 endif
-
+ifeq ($(top_appdir),)
+top_appdir = top_srcdir
+endif
 ifeq ($(MCU),)
 include $(top_srcdir)/UserConf.mk
 LIBDIR = $(top_blddir)/lib
 endif
 
+# Inherit variables from debug library build
 include $(top_srcdir)/Makedefs.arm-gccdbg
 
-TARG      = $(PROJ).hex
-ITARG     = $(PROJ).bin
-DTARG     = $(PROJ).elf
-
-BIN       = $(TRGT)objcopy
-
-BINDIR    = $(top_srcdir)/bin/$(MCU)
-
-CPFLAGS   = $(MCFLAGS) -O0 -gdwarf-2 -mthumb-interwork -Wall -Wstrict-prototypes -fverbose-asm -Wa,-ahlms=$(<:.c=.lst) $(DEFS)
-LDFLAGS   = $(MCFLAGS) -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
-
-
-ELFCOF    = $(BIN) --debugging \
-	--change-section-address .data-0x800000 \
-	--change-section-address .bss-0x800000 \
-	--change-section-address .noinit-0x800000 \
-	--change-section-address .eeprom-0x810000
+# Add variables for application build
+include $(top_srcdir)/app/Makevars.arm-gcc

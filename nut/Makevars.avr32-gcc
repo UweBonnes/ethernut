@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH
+# Copyright (C) 2001-2006 by egnite Software GmbH
 # Copyright (C) 2009 by egnite GmbH
 #
 # All rights reserved.
@@ -35,23 +35,14 @@
 # $Id$
 #
 
-# Set defaults for building in source tree.
-ifeq ($(top_srcdir),)
-top_srcdir = ../..
-endif
-ifeq ($(top_blddir),)
-top_blddir = top_srcdir
-endif
-ifeq ($(top_appdir),)
-top_appdir = top_srcdir
-endif
-ifeq ($(MCU),)
-include $(top_srcdir)/UserConf.mk
-LIBDIR = $(top_blddir)/lib
-endif
+# Inherit general gcc variables.
+include $(top_srcdir)/Makevars.gcc
 
-# Inherit variables from library build.
-include $(top_srcdir)/Makedefs.avr32-gcc
-
-# Add arm-gcc variables for application build.
-include $(top_srcdir)/app/Makevars.avr32-gcc
+# Set target specific variables.
+ARCH         = avr32
+TRGT         = avr32-
+MCFLAGS      = -march=$(MARCH) -mpart=$(MCU)
+CFLAGS_MCU   = $(MCFLAGS) -mthumb-interwork
+CFLAGS_OPT   = -Os -ffunction-sections -fdata-sections -fomit-frame-pointer
+CXXFLAGS_MCU = $(CFLAGS_MCU)
+CXXFLAGS_OPT = $(CFLAGS_OPT)

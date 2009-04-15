@@ -1,5 +1,8 @@
 #
-# Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2001-2005 by egnite Software GmbH
+# Copyright (C) 2009 by egnite GmbH
+#
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -10,17 +13,15 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this
-#    software must display the following acknowledgement:
+# 3. Neither the name of the copyright holders nor the names of
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
 #
-#    This product includes software developed by egnite Software GmbH
-#    and its contributors.
-#
-# THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
-# SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 # BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 # OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,30 +32,9 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Log: Makedefs.avr32-gcc,v $
+# $Id$
 #
 
-DEFS  = $(HWDEF)
+# Inherit avr32-gcc variables.
+include $(top_srcdir)/Makevars.avr32-gcc
 
-INCPRE = -I
-INCDIR = $(top_srcdir)/include
-
-ARCH   = avr32
-TRGT   = avr32-
-CC     = $(TRGT)gcc
-CXX    = $(TRGT)g++
-AR     = $(TRGT)ar
-CP     = cp
-AS     = $(TRGT)gcc -x assembler-with-cpp
-RANLIB = $(TRGT)ranlib
-
-MCFLAGS  = -march=$(MARCH) -mpart=$(MCU)
-CPFLAGS  = $(MCFLAGS) -Os -ffunction-sections -fdata-sections \
-           -fno-delete-null-pointer-checks -Wall -Werror -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
-
-CXXFLAGS = $(MCFLAGS) -Os -ffunction-sections -fdata-sections \
-           -fno-delete-null-pointer-checks -Wall -Werror  -Wa,-ahlms=$(<F:.cc=.lst) $(DEFS)
-           
-LDFLAGS  = $(MCFLAGS) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--cref -L$(LIBDIR) -Wl,--gc-sections 
-ARFLAGS  = rsv
-ASFLAGS  = $(MCFLAGS) -Wa,-amhls=$(<:.S=.lst) 
