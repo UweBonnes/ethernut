@@ -66,6 +66,7 @@
 
 #define LCD_MF_CURSORON     0x00000001UL    /*!< \brief Cursor on flag. */
 #define LCD_MF_COOKEDMODE   0x00020000UL    /*!< \brief Control character interpretation on flag. */
+#define LCD_MF_INVERTED     0x10000000UL    /*!< \breif display inverted characters on grafic displays */
 
 
 #define ESC_CHAR        "\x1B"
@@ -75,9 +76,9 @@
 #define ESC_DOWN        ESC_CHAR "B"
 #define ESC_RIGHT       ESC_CHAR "C"
 #define ESC_LEFT        ESC_CHAR "D"
-#define ESC_CLRHOME     ESC_CHAR "H"
+#define ESC_CLRHOME     ESC_CHAR "E"
 
-#define ESC_CLR         ESC_CHAR "E"
+#define ESC_HOME        ESC_CHAR "H"
 #define ESC_CLREND      ESC_CHAR "J"
 #define ESC_CLREOL      ESC_CHAR "K"
 #define ESC_CLRSTART    ESC_CHAR "d"
@@ -91,10 +92,18 @@
 
 #define ESC_CURSORON    ESC_CHAR "e"
 #define ESC_CURSOROFF   ESC_CHAR "f"
+#define ESC_INVERTON    ESC_CHAR "i"
+#define ESC_INVERTOFF   ESC_CHAR "n" 
 #define ESC_SPECIALSET  ESC_CHAR "F"
 #define ESC_DEFAULTSET  ESC_CHAR "G"
 #define ESC_ACTIVE      ESC_CHAR "R"
 #define ESC_SLEEP       ESC_CHAR "S"
+
+/*! \brief Deprecated, use ESC_CLRHOME.
+ *
+ * Although wrong, we keep it for now in order not to break existing code.
+ */
+#define ESC_CLR         ESC_CLRHOME
 
 /*
  * winsize structure
