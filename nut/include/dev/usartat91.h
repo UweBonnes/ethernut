@@ -63,6 +63,7 @@
 #define UART_MF_CONTROLMASK 0x00BC	    	/*!< Handshake control mask. */
 
 #define UART_MF_XONXOFF     0x00000400UL    /*!< Software handshake. */
+#define UART_MF_HDPXMODE    0x00000800UL    /*!< Halfduplex Mode. */
 
 #define UART_MF_LOCALECHO   0x00010000UL    /*!< Should be used in stream, not device. */
 #define UART_MF_COOKEDMODE  0x00020000UL    /*!< Should be used in stream, not device. */

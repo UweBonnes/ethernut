@@ -369,6 +369,17 @@
  */
 #define UART_GETRAWMODE         0x012b
 
+/*! \brief UART _ioctl() command code to set physical device to half duplex mode.
+ *
+ * The configuration parameter specifies the halfduplex mode for device. In raw mode
+ */
+#define UART_SETHDPXMODE        0x012c
+
+/*! \brief UART _ioctl() command code to query the halfduplex mode.
+ *
+ */
+#define UART_GETHDPXMODE        0x012d
+
 /*!
  * \addtogroup xgUARTStatus
  * \brief UART device status flags,
