@@ -69,11 +69,11 @@
 
 
 #define TWSLA_MIN		17	/*!< \brief Lowest slave address.
-					 * Addresses below are reserved 
+					 * Addresses below are reserved
 					 * for special purposes.
 					 */
 #define TWSLA_MAX		79	/*!< \brief Lowest slave address.
-					 * Addresses above are reserved 
+					 * Addresses above are reserved
 					 * for special purposes.
 					 */
 #define TWSLA_BCAST		0	/*!< \brief Broadcast slave address. */
@@ -84,7 +84,10 @@ extern int TwInit(uint8_t sla);
 extern int TwIOCtl(int req, void *conf);
 
 extern int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo);
+extern int TwMasterRegRead(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *rxdata, uint8_t rxsiz, uint32_t tmo);
+extern int TwMasterRegWrite(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *txdata, uint8_t txsiz, uint32_t tmo);
 extern int TwMasterError(void);
+extern uint16_t TwMasterIndexes( uint8_t idx);
 
 extern int TwSlaveListen(uint8_t *sla, void *rxdata, uint16_t rxsiz, uint32_t tmo);
 extern int TwSlaveRespond(void *txdata, uint16_t txlen, uint32_t tmo);
