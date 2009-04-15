@@ -75,6 +75,6 @@ extern int SpiAt45dPageWrite_P(NUTDEVICE *dev, uint32_t pgn, PGM_P data, int len
 #endif
 extern int SpiAt45dIOCtl(NUTDEVICE * dev, int req, void *conf);
 /* Prototypes */
-__BEGIN_DECLS
+__END_DECLS
 
 #endif

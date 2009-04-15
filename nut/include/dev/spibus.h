@@ -93,7 +93,7 @@ struct _NUTSPIBUS {
      */
     IRQ_HANDLER *bus_sig;
 
-    /*! \brief Initialize bus controller. 
+    /*! \brief Initialize bus controller.
      *
      * This routine is called during device registration.
      */
@@ -181,5 +181,5 @@ extern uint_fast32_t NutSpiBusSetRate(NUTSPINODE * node, uint_fast32_t rate);
 extern uint_fast8_t NutSpiBusSetBits(NUTSPINODE * node, uint_fast8_t bits);
 extern int NutSpiBusWait(NUTSPINODE * node, uint32_t tmo);
 /* Prototypes */
-__BEGIN_DECLS
+__END_DECLS
 #endif

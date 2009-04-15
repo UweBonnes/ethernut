@@ -57,5 +57,5 @@ __BEGIN_DECLS
 /* Prototypes */
 extern int GpioSpiSetup(NUTSPINODE * node);
 /* Prototypes */
-__BEGIN_DECLS
+__END_DECLS
 #endif

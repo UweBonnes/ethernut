@@ -70,5 +70,5 @@ extern int Avr32SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void 
 extern int Avr32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen);
 extern int Avr32SpiBusWait(NUTSPINODE * node, uint32_t tmo);
 /* Prototypes */
-__BEGIN_DECLS
+__END_DECLS
 #endif

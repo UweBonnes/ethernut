@@ -180,6 +180,6 @@ extern long NutBlockDeviceSize(NUTFILE *nfp);
 extern int NutBlockDeviceWrite_P(NUTFILE * nfp, PGM_P buffer, int num);
 #endif
 /* Prototypes */
-__BEGIN_DECLS
+__END_DECLS
 
 #endif

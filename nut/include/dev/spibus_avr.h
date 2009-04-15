@@ -60,5 +60,5 @@ __BEGIN_DECLS
 /* Prototypes */
 extern int AvrSpiSetup(NUTSPINODE * node);
 /* Prototypes */
-__BEGIN_DECLS
+__END_DECLS
 #endif
