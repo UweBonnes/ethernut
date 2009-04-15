@@ -133,4 +133,15 @@
 #define NUTBANK_SR      0xFF00
 #endif
 
+/*
+ * CLPD Code for Arthernet
+ */
+#ifndef ARTHERCPLDSTART
+#define ARTHERCPLDSTART  0x1100
+#endif 
+
+#ifndef ARTHERCPLDSPI
+#define ARTHERCPLDSPI    0x1200
+#endif
+
 #endif

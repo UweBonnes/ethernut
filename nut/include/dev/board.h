@@ -167,7 +167,8 @@
  * Ethernet device.
  */
 #if defined(ETHERNUT1) || defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105) ||\
-	defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) 
+	defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) ||\
+    defined(ARTHERNET1)
 #include <dev/nicrtl.h>
 #elif defined(ETHERNUT2)||\
       defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)

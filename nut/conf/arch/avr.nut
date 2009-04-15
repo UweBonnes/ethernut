@@ -1705,6 +1705,26 @@ nutarch_avr =
 --        sources = { "avr/dev/vs1001k.c" }
 --    },
     {
+        name = "nutarch_avr_arthernet_cpld",
+        brief = "Arthernet CPLD",
+        requires = { "HW_MCU_AVR" },
+        options =
+        {
+            {
+                macro = "ARTHERCPLDSTART",
+                brief = "CPLD Base Address",
+                default = "0x1100",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "ARTHERCPLDSPI",
+                brief = "CPLD SPI Base Address",
+                default = "0x1200",
+                file = "include/cfg/memory.h"
+            }
+        }
+    },
+    {
         name = "nutarch_avr_pcmcia",
         brief = "PCMCIA Driver",
         requires = { "HW_MCU_AVR" },
