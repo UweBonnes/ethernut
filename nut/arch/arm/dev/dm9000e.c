@@ -151,6 +151,8 @@
 
 #endif
 
+#ifdef NIC_BASE_ADDR
+
 #ifndef NIC_DATA_ADDR
 #define NIC_DATA_ADDR   (NIC_BASE_ADDR + 4)
 #endif
@@ -1119,5 +1121,7 @@ NUTDEVICE devDM9000E = {
     0,                          /*!< \brief Close a device or file. */
     0                           /*!< \brief Request file size. */
 };
+
+#endif /* NIC_BASE_ADDR */
 
 /*@}*/
