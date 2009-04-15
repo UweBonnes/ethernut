@@ -82,7 +82,7 @@ HEAPNODE *heapFreeList;
 /*!
  * \brief List of free nodes in fast memory.
  */
-HEAPNODE *heapFreeList;
+HEAPNODE *heapFastMemFreeList;
 #endif
 
 #ifdef NUTDEBUG_HEAP
