@@ -42,7 +42,7 @@ include $(top_srcdir)/Makevars.gcc
 ARCH         = avr32
 TRGT         = avr32-
 MCFLAGS      = -march=$(MARCH) -mpart=$(MCU)
-CFLAGS_MCU   = $(MCFLAGS) -mthumb-interwork
+CFLAGS_MCU   = $(MCFLAGS)
 CFLAGS_OPT   = -Os -ffunction-sections -fdata-sections -fomit-frame-pointer
 CXXFLAGS_MCU = $(CFLAGS_MCU)
 CXXFLAGS_OPT = $(CFLAGS_OPT)
