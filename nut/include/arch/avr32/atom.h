@@ -36,6 +36,16 @@
  *
  */
 
+/*
+	WHEN CHANGING PLEASE NOTICE:
+	Errata 41.5.5.5 reads:
+	"Need two NOPs instruction after instructions masking interrupts
+	The instructions following in the pipeline the instruction masking the interrupt through SR
+	may behave abnormally.
+	Fix/Workaround
+	Place two NOPs instructions after each SSRF or MTSR instruction setting IxM or GM in SR."
+*/
+
 #ifndef _SYS_ATOM_H_
 #error "Do not include this file directly. Use sys/atom.h instead!"
 #endif
@@ -101,14 +111,18 @@ extern unsigned int critical_nesting_level;
 {                                 \
 	__asm__ __volatile__ (        \
 	"ssrf\t%0"      "\n\t"        \
-	:: "i" (AVR32_SR_GM_OFFSET)); \
+	"nop"		    "\n\t"        \
+	"nop"	        "\n\t"        \
+	:: "i" (AVR32_SR_GM_OFFSET)   \
+	: "memory");				  \
 }
 
 #define NutExitCritical()         \
 {                                 \
 	__asm__ __volatile__ (        \
 	"csrf\t%0"      "\n\t"        \
-    :: "i" (AVR32_SR_GM_OFFSET)); \
+    :: "i" (AVR32_SR_GM_OFFSET)   \
+	: "memory");				  \
 }
 
 #endif /* NUT_CRITICAL_NESTING */

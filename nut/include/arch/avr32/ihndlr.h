@@ -59,24 +59,33 @@ typedef void (__interrupt *__int_handler)(void);
 
 extern void register_interrupt(__int_handler handler, unsigned int irq, unsigned int int_lev);
 
-#define IRQ_ENTRY() \
-{                                                                               \
-	/* Prevent preempted interrupts disabling global interrupts */		        \
-	__asm__ __volatile__ ("ssrf\t%0" :: "i" (AVR32_SR_GM_OFFSET));              \
-                                                                                \
-	/* Save R0..R7. Other registers are saved by the CPU if __AVR32_UC__ */		\
-	/* Or by exception.S if __AVR32_AP7000__ */                                 \
-	__asm__ __volatile__ ("pushm r0-r7");										\
+/*
+	WHEN CHANGING PLEASE NOTICE:
+	Errata 41.5.5.5 reads:
+	"Need two NOPs instruction after instructions masking interrupts
+	The instructions following in the pipeline the instruction masking the interrupt through SR
+	may behave abnormally.
+	Fix/Workaround
+	Place two NOPs instructions after each SSRF or MTSR instruction setting IxM or GM in SR."
+*/
+#define IRQ_ENTRY()																			\
+{																							\
+	/* Prevent preempted interrupts disabling global interrupts */							\
+	__asm__ __volatile__ ("ssrf\t%0; nop; nop" :: "i" (AVR32_SR_GM_OFFSET) : "memory");		\
+																							\
+	/* Save R0..R7. Other registers are saved by the CPU if __AVR32_UC__ */					\
+	/* Or by exception.S if __AVR32_AP7000__ */												\
+	__asm__ __volatile__ ("pushm r0-r7");													\
 }
 
 
-#define IRQ_EXIT() \
-{                                                                               \
-	/* Restore R0..R7 */                                                        \
-	__asm__ __volatile__ ("popm r0-r7");                                        \
-                                                                                \
-	/* Prevent preempted interrupts disabling global interrupts */		        \
-	__asm__ __volatile__ ("csrf\t%0" :: "i" (AVR32_SR_GM_OFFSET));              \
+#define IRQ_EXIT()																			\
+{																							\
+	/* Restore R0..R7 */																	\
+	__asm__ __volatile__ ("popm r0-r7");													\
+																							\
+	/* Prevent preempted interrupts disabling global interrupts */							\
+	__asm__ __volatile__ ("csrf\t%0" :: "i" (AVR32_SR_GM_OFFSET) : "memory");				\
 }
 
 #endif // _ARCH_AVR32_INTERRUPT_HANDLER_H_
