@@ -158,6 +158,7 @@ SECTIONS
   . = ALIGN(8);
   _end = .;
   PROVIDE (end = .);
+  PROVIDE (__bss_end = .);
   __heap_start__ = ALIGN(8);
   PROVIDE  (__heap_start = .);
   . = ORIGIN(CPUSRAM) + LENGTH(CPUSRAM) - 0x1000;
