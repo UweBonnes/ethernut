@@ -84,8 +84,10 @@ extern int TwInit(uint8_t sla);
 extern int TwIOCtl(int req, void *conf);
 
 extern int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxdata, uint16_t rxsiz, uint32_t tmo);
-extern int TwMasterRegRead(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *rxdata, uint8_t rxsiz, uint32_t tmo);
-extern int TwMasterRegWrite(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *txdata, uint8_t txsiz, uint32_t tmo);
+//extern int TwMasterRegRead(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *rxdata, uint8_t rxsiz, uint32_t tmo);
+extern int TwMasterRegRead(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *rxdata, uint16_t rxsiz, uint32_t tmo);
+//extern int TwMasterRegWrite(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *txdata, uint8_t txsiz, uint32_t tmo);
+extern int TwMasterRegWrite(uint8_t sla, uint32_t iadr, uint8_t iadrlen, CONST void *txdata, uint16_t txsiz, uint32_t tmo);
 extern int TwMasterError(void);
 extern uint16_t TwMasterIndexes( uint8_t idx);
 
