@@ -42,11 +42,14 @@ nutgorp =
     {
         name = "nutgorp_library",
         brief = "Gorp Library",
-        description = "This library contains code snippets used by NutOS and applications.\n\n",
+        description = "This library contains code snippets used by Nut/OS and applications.\n\n",
         sources = { 
             "base64/base64_decode.c",
             "base64/base64_encode.c",
-            "hashes/md5.c"
+            "hashes/md5.c",
+            "edline/edline.c",
+            "edline/history.c",
+            "edline/vt100.c"
         }
     }
 }

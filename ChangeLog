@@ -13,6 +13,10 @@ hopefully.
 
 More targets supported with 'make burn' while using SAM-BA.
 
+* Added:
+
+New line editor with key mapping and history support.
+
 
 2009-04-09 Harald Kipp
 
