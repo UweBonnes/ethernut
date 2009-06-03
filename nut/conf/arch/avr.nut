@@ -1243,7 +1243,7 @@ nutarch_avr =
             },
             {
                 macro = "SPIBUS0_DOUBLE_BUFFER",
-                brief = "Double buffer IRQ (Second Controller)",
+                brief = "Double buffer IRQ (First Controller)",
                 description = "If enabled, the controller will use double buffered interrupt mode.\n\n"..
                               "By default a single buffer is used. Ignored when polling mode is enabled.",
                 flavor = "boolean",
