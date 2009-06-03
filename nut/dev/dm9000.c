@@ -110,7 +110,7 @@
 
 #endif
 
-#ifndef NIC_DATA_ADDR
+#if !defined(NIC_DATA_ADDR) && defined(NIC_BASE_ADDR)
 #define NIC_DATA_ADDR   (NIC_BASE_ADDR + 4)
 #endif
 
@@ -347,14 +347,20 @@ typedef struct _NICINFO NICINFO;
 
 static INLINE void nic_outb(uint8_t reg, uint8_t val)
 {
+#ifdef NIC_BASE_ADDR
     outb(NIC_BASE_ADDR, reg);
     outb(NIC_DATA_ADDR, val);
+#endif
 }
 
 static INLINE uint8_t nic_inb(uint16_t reg)
 {
+#ifdef NIC_BASE_ADDR
     outb(NIC_BASE_ADDR, reg);
     return inb(NIC_DATA_ADDR);
+#else
+    return 0;
+#endif
 }
 
 /*!
@@ -485,6 +491,7 @@ static void NicInterrupt(void *arg)
     }
 }
 
+#ifdef NIC_BASE_ADDR
 /*!
  * \brief Write data block to the NIC.
  *
@@ -540,6 +547,7 @@ static void NicRead16(uint8_t * buf, uint16_t len)
         *wp++ = inw(NIC_DATA_ADDR);
     }
 }
+#endif /* NIC_BASE_ADDR */
 
 /*!
  * \brief Fetch the next packet out of the receive ring buffer.
@@ -552,6 +560,7 @@ static void NicRead16(uint8_t * buf, uint16_t len)
 static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
 {
     int rc = -1;
+#ifdef NIC_BASE_ADDR
     uint16_t fsw;
     uint16_t fbc;
 
@@ -653,6 +662,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
     if (ni->ni_insane == 0) {
         NutIrqEnable(&NIC_SIGNAL);
     }
+#endif
     return rc;
 }
 
@@ -671,6 +681,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
 static int NicPutPacket(NICINFO * ni, NETBUF * nb)
 {
     int rc = -1;
+#ifdef NIC_BASE_ADDR
     uint16_t sz;
 
     /*
@@ -733,6 +744,7 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
     if (rc == 0 && ni->ni_tx_queued > 1) {
         NutEventWait(&ni->ni_tx_rdy, 500);
     }
+#endif
     return rc;
 }
 
@@ -857,7 +869,9 @@ THREAD(NicRxLanc, arg)
     outr(PMC_PCER, _BV(IRQ0_ID));
 #endif
 #endif
+#ifdef NIC_SIGNAL_BIT
     outr(NIC_SIGNAL_PDR, _BV(NIC_SIGNAL_BIT));
+#endif
     NutIrqEnable(&NIC_SIGNAL);
 #if defined(ELEKTOR_IR1)
     /* Ugly code alarm: Should be configurable. */
