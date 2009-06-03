@@ -2434,7 +2434,7 @@ nutdev =
                 default = "INT0",
                 type = "enumerated",
                 choices = avr_irq_choice,
-                file = "include/cfg/arch/avrpio.h"
+                file = function() return GetGpioHeaderPath() end
             },
             {
                 macro = "VS10XX_DREQ_PIO_ID",
@@ -2528,7 +2528,7 @@ nutdev =
                 macro = "VS10XX_HWRST_RECOVER",
                 brief = "Hardware Reset Recover",
                 description = "Milliseconds to wait after hardware reset.",
-                default = "0",
+                default = "5",
                 flavor = "integer",
                 file = "include/cfg/audio.h"
             },
@@ -2536,7 +2536,7 @@ nutdev =
                 macro = "VS10XX_SWRST_RECOVER",
                 brief = "Software Reset Recover",
                 description = "Milliseconds to wait after software reset.",
-                default = "0",
+                default = "5",
                 flavor = "integer",
                 file = "include/cfg/audio.h"
             },

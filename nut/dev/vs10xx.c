@@ -57,26 +57,37 @@
  *
  */
 
+#include <cfg/arch/gpio.h>
+#include <cfg/audio.h>
+
+#include <dev/irqreg.h>
+#include <dev/vs10xx.h>
+
 #include <sys/atom.h>
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/heap.h>
-
-#include <cfg/arch/gpio.h>
-#include <cfg/audio.h>
-#include <dev/irqreg.h>
-#include <dev/vs10xx.h>
-
 #include <sys/bankmem.h>
 
 #include <stddef.h>
+
+#ifndef INT0
+#define INT0    0
+#define INT1    1
+#define INT2    2
+#define INT3    3
+#define INT4    4
+#define INT5    5
+#define INT6    6
+#define INT7    7
+#endif
 
 /*!
  * \addtogroup xgVs10xx
  */
 /*@{*/
 
-#if !defined(AUDIO_VS1001K) && !defined(AUDIO_VS1011E) && !defined(AUDIO_VS1002D) && !defined(AUDIO_VS1003B) && !defined(AUDIO_VS1033C)
+#if !defined(AUDIO_VS1001K) && !defined(AUDIO_VS1011E) && !defined(AUDIO_VS1002D) && !defined(AUDIO_VS1003B) && !defined(AUDIO_VS1033C) && !defined(AUDIO_VS1053B)
 #define AUDIO_VS1001K
 #endif
 
@@ -92,12 +103,12 @@
 
 #ifndef VS10XX_HWRST_RECOVER
 /*! \brief Milliseconds to wait after hardware reset. */
-#define VS10XX_HWRST_RECOVER    4
+#define VS10XX_HWRST_RECOVER    10
 #endif
 
 #ifndef VS10XX_SWRST_RECOVER
 /*! \brief Milliseconds to wait after software reset. */
-#define VS10XX_SWRST_RECOVER    2
+#define VS10XX_SWRST_RECOVER    VS10XX_HWRST_RECOVER
 #endif
 
 #ifndef VS10XX_SCI_MODE
@@ -312,7 +323,7 @@
 #define VS10XX_SIGNAL       sig_INTERRUPT0
 #elif (VS10XX_SIGNAL_IRQ == INT1)
 #define VS10XX_SIGNAL       sig_INTERRUPT1
-#elif (VS10XX_SIGNAL_IRQ == INT2)
+#else
 #define VS10XX_SIGNAL       sig_INTERRUPT2
 #endif
 
@@ -1224,12 +1235,8 @@ int VsPlayerReset(uint16_t mode)
     VsPlayerInterrupts(0);
     vs_status = VS_STATUS_STOPPED;
 
-    /* Software reset, set modes of decoder. */
-#if defined(VS10XX_BSYNC_BIT)
-    VsRegWrite(VS_MODE_REG, VS_SM_RESET | mode);
-#else
-    VsRegWrite(VS_MODE_REG, VS_SM_RESET | VS_SM_SDINEW | mode);
-#endif
+    /* Software reset. */
+    VsRegWrite(VS_MODE_REG, VS_SM_RESET);
     /* The decoder needs 9600 XTAL cycles. This is at least twice. */
     NutDelay(VS10XX_SWRST_RECOVER);
 
@@ -1244,18 +1251,17 @@ int VsPlayerReset(uint16_t mode)
         SciReset(0);
         /* No idea how long we need to wait here. */
         NutDelay(VS10XX_HWRST_RECOVER);
-
-        /* Set the requested modes. */
-#if defined(VS10XX_BSYNC_BIT)
-        VsRegWrite(VS_MODE_REG, VS_SM_RESET | mode);
-#else
-        VsRegWrite(VS_MODE_REG, VS_SM_RESET | VS_SM_SDINEW | mode);
-#endif
-        NutDelay(VS10XX_SWRST_RECOVER);
         if (!VS10XX_DREQ_TST()) {
             return -1;
         }
     }
+
+    /* Set codec mode. */
+#if defined(VS10XX_BSYNC_BIT)
+    xVsRegWrite(VS_MODE_REG, mode);
+#else
+    VsRegWrite(VS_MODE_REG, VS_SM_SDINEW | mode);
+#endif
 
 #if VS10XX_FREQ < 20000000UL
     VsRegWrite(VS_CLOCKF_REG, (uint16_t)(VS_CF_DOUBLER | (VS10XX_FREQ / 2000UL)));
