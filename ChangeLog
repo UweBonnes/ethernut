@@ -17,6 +17,13 @@ More targets supported with 'make burn' while using SAM-BA.
 
 New line editor with key mapping and history support.
 
+Several enhancements to Lua scripting. All standard libraries are now 
+available. I/O library supports TCP connect and accept. Lua default
+libraries are selectable and configurable to use integers instead of
+floating point. Lua stand-alone interpreter added, which even runs on 
+8-bit targets, possibly the first one in the world.
+
+
 
 2009-04-09 Harald Kipp
 

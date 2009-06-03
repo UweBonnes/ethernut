@@ -20,8 +20,6 @@
 #include <lua/lualib.h>
 
 
-#ifndef LAU_BASELIB_NOT_IMPLEMENTED
-
 /*
 ** If your system does not support `stdout', you can just remove this function.
 ** If you need, you can define your own `print' function, following this
@@ -649,5 +647,3 @@ LUALIB_API int luaopen_base (lua_State *L) {
   luaL_register(L, LUA_COLIBNAME, co_funcs);
   return 2;
 }
-
-#endif // LAU_BASELIB_NOT_IMPLEMENTED

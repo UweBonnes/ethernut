@@ -22,8 +22,6 @@
 #include <lua/lualib.h>
 
 
-#ifndef LAU_LOADLIB_NOT_IMPLEMENTED
-
 /* prefix for open functions in C libraries */
 #define LUA_POF		"luaopen_"
 
@@ -665,5 +663,3 @@ LUALIB_API int luaopen_package (lua_State *L) {
   lua_pop(L, 1);
   return 1;  /* return 'package' table */
 }
-
-#endif // LAU_LOADLIB_NOT_IMPLEMENTED

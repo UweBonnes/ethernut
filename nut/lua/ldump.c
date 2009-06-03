@@ -15,6 +15,8 @@
 #include <lua/lstate.h>
 #include <lua/lundump.h>
 
+#ifndef NUTLUA_DUMP_EXCLUDED
+
 typedef struct {
  lua_State* L;
  lua_Writer writer;
@@ -162,3 +164,19 @@ int luaU_dump (lua_State* L, const Proto* f, lua_Writer w, void* data, int strip
  DumpFunction(f,NULL,&D);
  return D.status;
 }
+
+#else /* NUTLUA_DUMP_EXCLUDED */
+int luaU_dump (lua_State* L, const Proto* f, lua_Writer w, void* data, int strip) {
+  UNUSED(f);
+  UNUSED(w);
+  UNUSED(data);
+  UNUSED(strip);
+#if 1
+  UNUSED(L);
+  return 0;
+#else
+  lua_pushliteral(L,"dumper not loaded");
+  lua_error(L);
+#endif
+}
+#endif /* NUTLUA_DUMP_EXCLUDED */

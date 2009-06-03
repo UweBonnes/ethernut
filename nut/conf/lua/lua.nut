@@ -40,11 +40,12 @@
 nutlua =
 {
     {
-        name = "nutlua_library",
-        brief = "Lua Library",
-        description = "First trial release, may not yet work as expected.\n\n"..
-                      "Initial implementation was done by Laszlo Parrag.",
-        requires = { "FLOATING_POINT_IO", "TOOL_CC_ARM" },
+        name = "nutlua_std_library",
+        brief = "Standard Libraries",
+        description = "Standard libraries are automatically loaded. "..
+                      "Not all targets offer enough memory to load "..
+                      "all libraries.",
+        requires = { "TOOL_GCC" },
         sources = { 
             "lapi.c",
             "ldo.c",
@@ -75,6 +76,87 @@ nutlua =
             "lcode.c",
             "llex.c",
             "lparser.c"
+        },
+        options =
+        {
+            {
+                macro = "NUTLUA_FLOATING_POINT",
+                brief = "Floating Point Numbers",
+                description = "Floating point numbers are used when enabled.",
+                requires = { "FLOATING_POINT_IO" },
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_DEBUGLIB_IS_STANDARD",
+                brief = "Debug Library",
+                description = "Lua debug library is standard when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_IOLIB_IS_STANDARD",
+                brief = "I/O Library",
+                description = "Lua I/O library is standard when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_IOLIB_TCP",
+                brief = "TCP I/O",
+                description = "Lua I/O library with TCP/IP support.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_LOADLIB_IS_STANDARD",
+                brief = "Package Load Library",
+                description = "Lua package load library is standard when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_MATHLIB_IS_STANDARD",
+                brief = "Math Library",
+                description = "Lua math library is standard when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_OSLIB_IS_STANDARD",
+                brief = "OS Library",
+                description = "Lua OS library is standard when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_STRLIB_IS_STANDARD",
+                brief = "String Library",
+                description = "Lua string library is standard when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_TABLIB_IS_STANDARD",
+                brief = "Table Library",
+                description = "Lua table library is standard when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_PARSER_EXCLUDED",
+                brief = "Exclude Parser",
+                description = "Lua parser is excluded when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            },
+            {
+                macro = "NUTLUA_DUMP_EXCLUDED",
+                brief = "Exclude Dump",
+                description = "Lua binary code dump is excluded when enabled.",
+                flavor = "boolean",
+                file = "include/cfg/lua.h"
+            }
         }
     }
 }

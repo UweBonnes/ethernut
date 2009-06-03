@@ -35,7 +35,7 @@
 #include <lua/ltable.h>
 
 
-#ifndef LAU_TABLELIB_NOT_IMPLEMENTED
+#ifndef NUTLUA_TABLELIB_NOT_IMPLEMENTED
 
 /*
 ** max size of array part is 2^MAXBITS
@@ -108,9 +108,9 @@ static Node *mainposition (const Table *t, const TValue *key) {
     case LUA_TBOOLEAN:
       return hashboolean(t, bvalue(key));
     case LUA_TLIGHTUSERDATA:
-      return hashpointer(t, pvalue(key));
+      return hashpointer(t, (int)pvalue(key));
     default:
-      return hashpointer(t, gcvalue(key));
+      return hashpointer(t, (int)gcvalue(key));
   }
 }
 
@@ -589,5 +589,5 @@ int luaH_isdummy (Node *n) { return n == dummynode; }
 
 #endif
 
-#endif // LAU_TABLELIB_NOT_IMPLEMENTED
+#endif // NUTLUA_TABLELIB_NOT_IMPLEMENTED
 

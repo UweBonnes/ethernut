@@ -16,8 +16,6 @@
 #include <lua/lualib.h>
 
 
-#ifndef LAU_TABLIB_NOT_IMPLEMENTED
-
 #define aux_getn(L,n)	(luaL_checktype(L, n, LUA_TTABLE), luaL_getn(L, n))
 
 
@@ -286,5 +284,3 @@ LUALIB_API int luaopen_table (lua_State *L) {
   luaL_register(L, LUA_TABLIBNAME, tab_funcs);
   return 1;
 }
-
-#endif // LAU_TABLIB_NOT_IMPLEMENTED

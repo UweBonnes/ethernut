@@ -4,7 +4,6 @@
 ** See Copyright Notice in lua.h
 */
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,8 +17,10 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
-
-#ifndef LAU_IOLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_IOLIB_TCP
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#endif
 
 #define IO_INPUT	1
 #define IO_OUTPUT	2
@@ -115,11 +116,19 @@ static int io_pclose (lua_State *L) {
 
 
 /*
-** function to close regular files
+** function to close regular files and tcp sockets
 */
 static int io_fclose (lua_State *L) {
   FILE **p = tofilep(L);
+#ifdef NUTLUA_IOLIB_TCP
+  NUTFILE *nf = (NUTFILE *) (uintptr_t) _fileno(*p);
+#endif
   int ok = (fclose(*p) == 0);
+#ifdef NUTLUA_IOLIB_TCP
+  if (nf->nf_dev == NULL) {
+    NutTcpCloseSocket((TCPSOCKET *) nf);
+  }
+#endif
   *p = NULL;
   return pushresult(L, ok, NULL);
 }
@@ -167,6 +176,44 @@ static int io_open (lua_State *L) {
   return (*pf == NULL) ? pushresult(L, 0, filename) : 1;
 }
 
+#ifdef NUTLUA_IOLIB_TCP
+
+static int io_connect (lua_State *L) {
+  char addr[22];
+  char *port;
+  const char *remote = luaL_checkstring(L, 1);
+  const char *mode = luaL_optstring(L, 2, "r");
+  FILE **pf = newfile(L);
+  TCPSOCKET *sock;
+
+  strncpy(addr, remote, sizeof(addr) - 1);
+  if ((port = strchr(addr, ':')) != NULL) {
+      *port++ = '\0';
+  }
+  if (port && (sock = NutTcpCreateSocket()) != NULL) {
+    if (NutTcpConnect(sock, inet_addr(addr), (uint16_t)atoi(port)) == 0) {
+      *pf = _fdopen((int) sock, mode);
+    }
+  }
+  return (*pf == NULL) ? pushresult(L, 0, remote) : 1;
+}
+
+
+static int io_accept (lua_State *L) {
+  const char *port = luaL_checkstring(L, 1);
+  const char *mode = luaL_optstring(L, 2, "r");
+  FILE **pf = newfile(L);
+  TCPSOCKET *sock;
+
+  if ((sock = NutTcpCreateSocket()) != NULL) {
+    if (NutTcpAccept(sock, (uint16_t)atoi(port)) == 0) {
+      *pf = _fdopen((int) sock, mode);
+    }
+  }
+  return (*pf == NULL) ? pushresult(L, 0, port) : 1;
+}
+
+#endif /* NUTLUA_IOLIB_TCP */
 
 /*
 ** this function has a separated environment, which defines the
@@ -180,13 +227,13 @@ static int io_popen (lua_State *L) {
   return (*pf == NULL) ? pushresult(L, 0, filename) : 1;
 }
 
-
+#ifndef NUTLUA_IOLIB_TMPFILE_NOT_IMPLEMENTED
 static int io_tmpfile (lua_State *L) {
   FILE **pf = newfile(L);
   *pf = tmpfile();
   return (*pf == NULL) ? pushresult(L, 0, NULL) : 1;
 }
-
+#endif
 
 static FILE *getiofile (lua_State *L, int findex) {
   FILE *f;
@@ -452,7 +499,7 @@ static int f_seek (lua_State *L) {
   }
 }
 
-
+#ifndef NUTLUA_IOLIB_SETVBUF_NOT_IMPLEMENTED
 static int f_setvbuf (lua_State *L) {
   static const int mode[] = {_IONBF, _IOFBF, _IOLBF};
   static const char *const modenames[] = {"no", "full", "line", NULL};
@@ -462,7 +509,7 @@ static int f_setvbuf (lua_State *L) {
   int res = setvbuf(f, NULL, mode[op], sz);
   return pushresult(L, res == 0, NULL);
 }
-
+#endif
 
 
 static int io_flush (lua_State *L) {
@@ -476,7 +523,13 @@ static int f_flush (lua_State *L) {
 
 
 static const luaL_Reg iolib[] = {
+#ifdef NUTLUA_IOLIB_TCP
+  {"accept", io_accept},
+#endif
   {"close", io_close},
+#ifdef NUTLUA_IOLIB_TCP
+  {"connect", io_connect},
+#endif
   {"flush", io_flush},
   {"input", io_input},
   {"lines", io_lines},
@@ -484,7 +537,9 @@ static const luaL_Reg iolib[] = {
   {"output", io_output},
   {"popen", io_popen},
   {"read", io_read},
+#ifndef NUTLUA_IOLIB_TMPFILE_NOT_IMPLEMENTED
   {"tmpfile", io_tmpfile},
+#endif
   {"type", io_type},
   {"write", io_write},
   {NULL, NULL}
@@ -497,7 +552,9 @@ static const luaL_Reg flib[] = {
   {"lines", f_lines},
   {"read", f_read},
   {"seek", f_seek},
+#ifndef NUTLUA_IOLIB_SETVBUF_NOT_IMPLEMENTED
   {"setvbuf", f_setvbuf},
+#endif
   {"write", f_write},
   {"__gc", io_gc},
   {"__tostring", io_tostring},
@@ -551,5 +608,3 @@ LUALIB_API int luaopen_io (lua_State *L) {
   lua_pop(L, 1);  /* pop 'popen' */
   return 1;
 }
-
-#endif // LAU_IOLIB_NOT_IMPLEMENTED

@@ -28,7 +28,7 @@
 
 
 
-#ifndef LAU_PARSER_NOT_IMPLEMENTED
+#ifndef NUTLUA_PARSER_EXCLUDED
 
 #define hasmultret(k)		((k) == VCALL || (k) == VVARARG)
 
@@ -1341,7 +1341,7 @@ static void chunk (LexState *ls) {
 
 /* }====================================================================== */
 
-#else // PARSER_IMPLEMENTED
+#else /* NUTLUA_PARSER_EXCLUDED */
 
 Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff, const char *name)
 {
@@ -1350,4 +1350,4 @@ Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff, const char *name)
   return NULL;
 }
 
-#endif // PARSER_IMPLEMENTED
+#endif /* NUTLUA_PARSER_EXCLUDED */

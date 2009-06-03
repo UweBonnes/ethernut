@@ -6,7 +6,9 @@
 
 
 #include <ctype.h>
+#if !defined(__AVR__)
 #include <locale.h>
+#endif
 #include <string.h>
 
 #define llex_c
@@ -24,7 +26,7 @@
 #include <lua/lzio.h>
 
 
-#ifndef LAU_PARSER_NOT_IMPLEMENTED
+#ifndef NUTLUA_PARSER_EXCLUDED
 
 #define next(ls) (ls->current = zgetc(ls->z))
 
@@ -176,6 +178,7 @@ static void buffreplace (LexState *ls, char from, char to) {
 
 
 static void trydecpoint (LexState *ls, SemInfo *seminfo) {
+#if !defined(__AVR__)
   /* format error: try to update decimal point separator */
   struct lconv *cv = localeconv();
   char old = ls->decpoint;
@@ -186,6 +189,7 @@ static void trydecpoint (LexState *ls, SemInfo *seminfo) {
     buffreplace(ls, ls->decpoint, '.');  /* undo change (for error message) */
     luaX_lexerror(ls, "malformed number", TK_NUMBER);
   }
+#endif
 }
 
 
@@ -460,11 +464,11 @@ void luaX_lookahead (LexState *ls) {
   ls->lookahead.token = llex(ls, &ls->lookahead.seminfo);
 }
 
-#else // PARSER_IMPLEMENTED
+#else /* NUTLUA_PARSER_EXCLUDED */
 
 void luaX_init(lua_State *L)
 {
   UNUSED(L);
 }
 
-#endif // PARSER_IMPLEMENTED
+#endif /* NUTLUA_PARSER_EXCLUDED */

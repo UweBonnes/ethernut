@@ -24,7 +24,7 @@
 #include <lua/ltable.h>
 
 
-#ifndef LAU_PARSER_NOT_IMPLEMENTED
+#ifndef NUTLUA_PARSER_EXCLUDED
 
 #define hasjumps(e)	((e)->t != (e)->f)
 
@@ -839,4 +839,4 @@ void luaK_setlist (FuncState *fs, int base, int nelems, int tostore) {
   fs->freereg = base + 1;  /* free registers with list values */
 }
 
-#endif // PARSER_IMPLEMENTED
+#endif /* NUTLUA_PARSER_EXCLUDED */

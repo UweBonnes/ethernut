@@ -20,8 +20,6 @@
 #include <lua/lualib.h>
 
 
-#ifndef LAU_STRLIB_NOT_IMPLEMENTED
-
 /* macro to `unsign' a character */
 #define uchar(c)        ((unsigned char)(c))
 
@@ -868,5 +866,3 @@ LUALIB_API int luaopen_string (lua_State *L) {
   createmetatable(L);
   return 1;
 }
-
-#endif // LAU_STRLIB_NOT_IMPLEMENTED

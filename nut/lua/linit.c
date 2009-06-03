@@ -16,25 +16,25 @@
 
 static const luaL_Reg lualibs[] = {
   {"", luaopen_base},
-#ifndef LAU_LOADLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_LOADLIB_IS_STANDARD
   {LUA_LOADLIBNAME, luaopen_package},
 #endif
-#ifndef LAU_TABLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_TABLIB_IS_STANDARD
   {LUA_TABLIBNAME, luaopen_table},
 #endif
-#ifndef LAU_IOLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_IOLIB_IS_STANDARD
   {LUA_IOLIBNAME, luaopen_io},
 #endif
-#ifndef LAU_OSLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_OSLIB_IS_STANDARD
   {LUA_OSLIBNAME, luaopen_os},
 #endif
-#ifndef LAU_STRLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_STRLIB_IS_STANDARD
   {LUA_STRLIBNAME, luaopen_string},
 #endif
-#ifndef LAU_MATHLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_MATHLIB_IS_STANDARD
   {LUA_MATHLIBNAME, luaopen_math},
 #endif
-#ifndef LAU_DEBUGLIB_NOT_IMPLEMENTED
+#ifdef NUTLUA_DEBUGLIB_IS_STANDARD
   {LUA_DBLIBNAME, luaopen_debug},
 #endif
   {NULL, NULL}

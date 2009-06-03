@@ -28,8 +28,6 @@
 #define FREELIST_REF	0	/* free list of references */
 
 
-int lua_alloc_size = 0, lua_alloc_max = 0;
-
 /* convert a stack index to positive */
 #define abs_index(L, i)		((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : \
 					lua_gettop(L) + (i) + 1)
@@ -591,6 +589,7 @@ LUALIB_API int luaL_loadfile (lua_State *L, const char *filename) {
   return status;
 }
 
+
 typedef struct LoadS {
   const char *s;
   size_t size;
@@ -626,45 +625,14 @@ LUALIB_API int (luaL_loadstring) (lua_State *L, const char *s) {
 
 
 static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
-  #define PRINTALLOC() printf("Allocation: optr:%08X nptr:%08X os:%08X ns:%08X act:%08X max:%08X\n", \
-    (unsigned int)ptr, (unsigned int)nptr, (unsigned int)osize, (unsigned int)nsize, (unsigned int)lua_alloc_size, (unsigned int)lua_alloc_max)
-  
   (void)ud;
   (void)osize;
-  
-  void *nptr = NULL;
-  
-  lua_alloc_size += (long)nsize - (long)osize;
-  if (lua_alloc_size > lua_alloc_max) lua_alloc_max = lua_alloc_size;
-  
   if (nsize == 0) {
-    //printf("lauxlib.c:0357 ");
-    if (ptr != NULL) free(ptr);
-    //printf("lauxlib.c:0358 ");
-    //PRINTALLOC();
+    free(ptr);
     return NULL;
   }
-  else {
-    //printf("lauxlib.c:0361 ");
-    //PRINTALLOC();
-    nptr = malloc(nsize);
-    //printf("lauxlib.c:0362 ");
-    if (nptr == NULL)
-    {
-        printf("Allocation error\n");
-        while(1);
-    }
-    if (ptr != NULL)
-    {
-      //printf("lauxlib.c:0363 ");
-      memcpy(nptr, ptr, (nsize < osize) ? nsize : osize);
-      //printf("lauxlib.c:0364 ");
-      free(ptr);
-      //printf("lauxlib.c:0365 ");
-    }
-    //PRINTALLOC();
-    return nptr;
-  }
+  else
+    return realloc(ptr, nsize);
 }
 
 
@@ -681,3 +649,4 @@ LUALIB_API lua_State *luaL_newstate (void) {
   if (L) lua_atpanic(L, &panic);
   return L;
 }
+

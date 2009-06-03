@@ -386,7 +386,10 @@ repository =
     {
         name = "nutlua",
         brief = "Lua Support",
-        description = "Lua interpreter for Nut/OS.",
+        description = "Lua is a powerful, light-weight scripting language. "..
+                      "It offers good support for object-oriented, "..
+                      "functional as well as data-driven programming.\n\n"..
+                      "Currently available with the GNU compiler only.",
         requires = { "HW_TARGET" },
         subdir = "lua",
         script = "lua/lua.nut"

@@ -6,7 +6,9 @@
 
 
 #include <errno.h>
+#if !defined(__AVR__)
 #include <locale.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -20,8 +22,7 @@
 #include <lua/lualib.h>
 
 
-#ifndef LAU_OSLIB_NOT_IMPLEMENTED
-
+#if !defined(NUTLUA_OSLIB_REMOVE_NOT_IMPLEMENTED) && !defined(NUTLUA_OSLIB_RENAME_NOT_IMPLEMENTED)
 static int os_pushresult (lua_State *L, int i, const char *filename) {
   int en = errno;  /* calls to Lua API may change this value */
   if (i) {
@@ -35,27 +36,32 @@ static int os_pushresult (lua_State *L, int i, const char *filename) {
     return 3;
   }
 }
+#endif
 
-
+#ifndef NUTLUA_OSLIB_EXECUTE_NOT_IMPLEMENTED
 static int os_execute (lua_State *L) {
   lua_pushinteger(L, system(luaL_optstring(L, 1, NULL)));
   return 1;
 }
+#endif
 
-
+#ifndef NUTLUA_OSLIB_REMOVE_NOT_IMPLEMENTED
 static int os_remove (lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
   return os_pushresult(L, remove(filename) == 0, filename);
 }
+#endif
 
 
+#ifndef NUTLUA_OSLIB_RENAME_NOT_IMPLEMENTED
 static int os_rename (lua_State *L) {
   const char *fromname = luaL_checkstring(L, 1);
   const char *toname = luaL_checkstring(L, 2);
   return os_pushresult(L, rename(fromname, toname) == 0, fromname);
 }
+#endif
 
-
+#ifndef NUTLUA_OSLIB_TMPNAME_NOT_IMPLEMENTED
 static int os_tmpname (lua_State *L) {
   char buff[LUA_TMPNAMBUFSIZE];
   int err;
@@ -65,19 +71,19 @@ static int os_tmpname (lua_State *L) {
   lua_pushstring(L, buff);
   return 1;
 }
-
+#endif
 
 static int os_getenv (lua_State *L) {
   lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
   return 1;
 }
 
-
+#ifndef NUTLUA_OSLIB_CLOCK_NOT_IMPLEMENTED
 static int os_clock (lua_State *L) {
   lua_pushnumber(L, ((lua_Number)clock())/(lua_Number)CLOCKS_PER_SEC);
   return 1;
 }
-
+#endif
 
 /*
 ** {======================================================
@@ -122,11 +128,10 @@ static int getfield (lua_State *L, const char *key, int d) {
   return res;
 }
 
-
 static int os_date (lua_State *L) {
   const char *s = luaL_optstring(L, 1, "%c");
   time_t t = luaL_opt(L, (time_t)luaL_checknumber, 2, time(NULL));
-  struct tm *stm;
+  struct _tm *stm;
   if (*s == '!') {  /* UTC? */
     stm = gmtime(&t);
     s++;  /* skip `!' */
@@ -148,6 +153,7 @@ static int os_date (lua_State *L) {
     setboolfield(L, "isdst", stm->tm_isdst);
   }
   else {
+#ifndef NUTLUA_OSLIB_DATE_STRING_NOT_IMPLEMENTED
     char cc[3];
     luaL_Buffer b;
     cc[0] = '%'; cc[2] = '\0';
@@ -164,6 +170,9 @@ static int os_date (lua_State *L) {
       }
     }
     luaL_pushresult(&b);
+#else
+    lua_pushnil(L);
+#endif
   }
   return 1;
 }
@@ -174,7 +183,7 @@ static int os_time (lua_State *L) {
   if (lua_isnoneornil(L, 1))  /* called without args? */
     t = time(NULL);  /* get current time */
   else {
-    struct tm ts;
+    struct _tm ts;
     luaL_checktype(L, 1, LUA_TTABLE);
     lua_settop(L, 1);  /* make sure table is at the top */
     ts.tm_sec = getfield(L, "sec", 0);
@@ -193,16 +202,17 @@ static int os_time (lua_State *L) {
   return 1;
 }
 
-
+#ifndef NUTLUA_OSLIB_DIFFTIME_NOT_IMPLEMENTED
 static int os_difftime (lua_State *L) {
   lua_pushnumber(L, difftime((time_t)(luaL_checknumber(L, 1)),
                              (time_t)(luaL_optnumber(L, 2, 0))));
   return 1;
 }
+#endif
 
 /* }====================================================== */
 
-
+#ifndef NUTLUA_OSLIB_SETLOCALE_NOT_IMPLEMENTED
 static int os_setlocale (lua_State *L) {
   static const int cat[] = {LC_ALL, LC_COLLATE, LC_CTYPE, LC_MONETARY,
                       LC_NUMERIC, LC_TIME};
@@ -213,24 +223,42 @@ static int os_setlocale (lua_State *L) {
   lua_pushstring(L, setlocale(cat[op], l));
   return 1;
 }
+#endif
 
-
+#ifndef NUTLUA_OSLIB_EXIT_NOT_IMPLEMENTED
 static int os_exit (lua_State *L) {
   exit(luaL_optint(L, 1, EXIT_SUCCESS));
 }
+#endif
 
 static const luaL_Reg syslib[] = {
+#ifndef NUTLUA_OSLIB_CLOCK_NOT_IMPLEMENTED
   {"clock",     os_clock},
+#endif
   {"date",      os_date},
+#ifndef NUTLUA_OSLIB_DIFFTIME_NOT_IMPLEMENTED
   {"difftime",  os_difftime},
+#endif
+#ifndef NUTLUA_OSLIB_EXECUTE_NOT_IMPLEMENTED
   {"execute",   os_execute},
+#endif
+#ifndef NUTLUA_OSLIB_EXIT_NOT_IMPLEMENTED
   {"exit",      os_exit},
+#endif
   {"getenv",    os_getenv},
+#ifndef NUTLUA_OSLIB_REMOVE_NOT_IMPLEMENTED
   {"remove",    os_remove},
+#endif
+#ifndef NUTLUA_OSLIB_RENAME_NOT_IMPLEMENTED
   {"rename",    os_rename},
+#endif
+#ifndef NUTLUA_OSLIB_SETLOCALE_NOT_IMPLEMENTED
   {"setlocale", os_setlocale},
+#endif
   {"time",      os_time},
+#ifndef NUTLUA_OSLIB_TMPNAME_NOT_IMPLEMENTED
   {"tmpname",   os_tmpname},
+#endif
   {NULL, NULL}
 };
 
@@ -242,5 +270,3 @@ LUALIB_API int luaopen_os (lua_State *L) {
   luaL_register(L, LUA_OSLIBNAME, syslib);
   return 1;
 }
-
-#endif // LAU_OSLIB_NOT_IMPLEMENTED

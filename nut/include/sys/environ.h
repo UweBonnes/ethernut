@@ -59,8 +59,8 @@ extern NUTENVIRONMENT *findenv(CONST char *name);
 
 extern char *nextenv(CONST char *name);
 
-#if defined (__AVR__)
 extern char *getenv(CONST char *name);
+#if defined (__AVR__)
 extern int setenv(CONST char *name, CONST char *value, int force);
 extern void unsetenv(CONST char *name);
 extern int putenv(CONST char *string);

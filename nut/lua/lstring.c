@@ -18,7 +18,7 @@
 #include <lua/lstring.h>
 
 
-//#ifndef LAU_STRINGLIB_NOT_IMPLEMENTED
+//#ifndef NUTLUA_STRINGLIB_NOT_IMPLEMENTED
 
 void luaS_resize (lua_State *L, int newsize) {
   GCObject **newhash;
@@ -110,4 +110,4 @@ Udata *luaS_newudata (lua_State *L, size_t s, Table *e) {
   return u;
 }
 
-//#endif // LAU_STRINGLIB_NOT_IMPLEMENTED
+//#endif // NUTLUA_STRINGLIB_NOT_IMPLEMENTED

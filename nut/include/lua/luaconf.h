@@ -758,6 +758,40 @@ union luai_Cast { double l_d; long l_l; };
 ** without modifying the main part of the file.
 */
 
+/* patch starts here */
+#ifdef LUA_NUMBER_INT
+
+#undef LUA_NUMBER_DOUBLE
+
+#undef LUA_NUMBER
+#define LUA_NUMBER          int
+
+#undef  LUAI_UACNUMBER
+#define LUAI_UACNUMBER	    int
+
+#undef LUA_NUMBER_SCAN
+#undef LUA_NUMBER_FMT
+#undef LUAI_MAXNUMBER2STR
+#undef lua_str2number
+#define LUA_NUMBER_SCAN     "%d"
+#define LUA_NUMBER_FMT      "%d"
+#define LUAI_MAXNUMBER2STR	12 /* 10 digits, sign, point, and \0 */
+#define lua_str2number(s,p)	strtol((s), (p), 10)
+
+#undef luai_nummod
+#undef luai_numpow
+#define luai_nummod(a,b)    ((a) % (b))
+#define luai_numpow(a,b)    (int)(pow((double)a,(double)b) + 0.5)
+
+#undef lua_number2int
+#undef lua_number2integer
+#define lua_number2int(i,d) ((i)=(int)(d))
+#define lua_number2integer(i,d) ((i)=(lua_Integer)(d))
+
+#endif /*LUA_NUMBER_INT*/
+/* patch ends here */
+
+
 
 
 #endif

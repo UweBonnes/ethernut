@@ -18,8 +18,6 @@
 #include <lua/lualib.h>
 
 
-#ifndef LAU_DEBUGLIB_NOT_IMPLEMENTED
-
 static int db_getregistry (lua_State *L) {
   lua_pushvalue(L, LUA_REGISTRYINDEX);
   return 1;
@@ -395,5 +393,3 @@ LUALIB_API int luaopen_debug (lua_State *L) {
   luaL_register(L, LUA_DBLIBNAME, dblib);
   return 1;
 }
-
-#endif // LAU_DEBUGLIB_NOT_IMPLEMENTED
