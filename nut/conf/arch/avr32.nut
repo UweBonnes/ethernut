@@ -664,6 +664,13 @@ nutarch_avr32 =
             },
         },
     },
+    {
+        name = "nutarch_avr32_flashc",
+        brief = "AVR32 Embedded Flash Controller",
+        description = "Routines for reading and writing embedded flash memory.",
+        requires = { "HW_EFC_AVR32" },
+        sources = { "avr32/dev/flashc.c" },
+    },
 
 }
 
