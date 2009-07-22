@@ -38,7 +38,7 @@
  * $Id$
  */
 
-#define VS_HAS_SM_LAYER12       1
+#define VS_HAS_SM_LAYER12       0
 #define VS_HAS_SM_FFWD          0
 #define VS_HAS_SM_MP12          0
 #define VS_HAS_SM_OUTOFWAV      1

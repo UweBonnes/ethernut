@@ -1,5 +1,12 @@
 $Id$
 
+2009-07-22 Harald Kipp
+
+* Added:
+
+Added support for VS1002D, VS1003B and VS1033C audio decoders.
+
+
 2009-06-03 Harald Kipp
 
 * Fixed:

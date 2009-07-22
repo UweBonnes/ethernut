@@ -218,8 +218,11 @@
  * RTC chip.
  */
 #if defined(ETHERNUT3)
+#ifndef RTC_CHIP
 #define RTC_CHIP rtcX12x6
+#endif
 #include <dev/x12rtc.h>
+#include <dev/pcf8563.h>
 #elif defined(XNUT_100) || defined(XNUT_105) ||\
 	  defined(MMNET102) || defined(MMNET103) || defined(MMNET104) ||\
 	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04) 

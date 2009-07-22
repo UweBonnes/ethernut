@@ -66,8 +66,14 @@
 */
 #if defined(AUDIO0_VS1001K)
 #include <dev/vs1001.h>
+#elif defined(AUDIO0_VS1002D)
+#include <dev/vs1002.h>
+#elif defined(AUDIO0_VS1003B)
+#include <dev/vs1003.h>
 #elif defined(AUDIO0_VS1011E)
 #include <dev/vs1011.h>
+#elif defined(AUDIO0_VS1033C)
+#include <dev/vs1033.h>
 #elif defined(AUDIO0_VS1053B)
 #include <dev/vs1053.h>
 #elif !defined(AUDIO0_VSAUTO)

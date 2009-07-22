@@ -51,13 +51,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(VSCODEC0_SIGNAL_IRQ) && defined(VSCODEC0_DREQ_PORT) && defined(VSCODEC0_DREQ_BIT)
-#if defined(VSCODEC0_XCS_PORT) && defined(VSCODEC0_XCS_BIT)
+#if defined(VSCODEC0_SIGNAL_IRQ) && defined(VSCODEC0_DREQ_BIT) && defined(VSCODEC0_XCS_BIT)
 #define VSCODEC0_CONFIGURED 1
-#endif
 #endif
 
 #if VSCODEC0_CONFIGURED
+
+#ifndef VSCODEC0_DREQ_PORT
+#define VSCODEC0_DREQ_PORT  0
+#endif
+#ifndef VSCODEC0_XCS_PORT
+#define VSCODEC0_XCS_PORT   0
+#endif
 
 /*!
  * \addtogroup xgVsCodec
