@@ -66,7 +66,7 @@
 CONDITION NutConditionInit(void)
 {
     CONDITION cond;
-    cond = NutHeapAlloc(sizeof(cond));
+    cond = NutHeapAlloc(sizeof(_CONDITION));
     if (cond == NULL) return NULL;
     NutMutexInit(&cond->mutex);
     return cond;
@@ -222,7 +222,7 @@ int NutConditionBroadcast(CONDITION cond)
 void NutConditionFree(CONDITION *cond)
 {
     NutMutexDestroy(&(*cond)->mutex);
-    NutHeapFree(cond);
+    NutHeapFree(*cond);
     cond = NULL;
 }
 
