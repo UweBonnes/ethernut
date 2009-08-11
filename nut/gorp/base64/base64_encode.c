@@ -97,10 +97,10 @@ char *NutEncodeBase64(CONST char* str)
     encoded_length = ((length + 1) * 4) / 3;
     /* Add the size for the padding characters */
     encoded_length += encoded_length % 3;
-    /* Now add the space for the inserted <cr><lf> characters */
-    encoded_length += (encoded_length / 72) * 2;
-    /* Allocate the memory. Add one byte for the end of string NUL character */;
-    encoded = NutHeapAlloc(encoded_length + 1 + 1);
+    /* Now add the space for the inserted <cr><lf> characters and add one byte for the end of string NUL character*/
+    encoded_length += (encoded_length / 72) * 2 + 3;
+    /* Allocate the memory. */;
+    encoded = NutHeapAlloc(encoded_length);
     
     if (encoded == NULL) return NULL;
     
@@ -142,6 +142,7 @@ char *NutEncodeBase64(CONST char* str)
             encoded[enc_pos++] = '=';
         }
     }
+    encoded[enc_pos] = '\0';
     return encoded;
 }
 
