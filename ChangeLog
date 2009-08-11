@@ -1,5 +1,10 @@
 $Id$
 
+2009-08-10  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+* Fixed:
+
+Buffer overflow in base64 encoding 
+
 2009-08-01 Ole Reinhardt <ole.reinhardt@thermotemp.de>
 
 * Fixed:
