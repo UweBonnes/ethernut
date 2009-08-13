@@ -66,7 +66,7 @@
 CONDITION NutConditionInit(void)
 {
     CONDITION cond;
-    cond = NutHeapAlloc(sizeof(_CONDITION));
+    cond = NutHeapAlloc(sizeof(struct _CONDITION));
     if (cond == NULL) return NULL;
     NutMutexInit(&cond->mutex);
     return cond;
