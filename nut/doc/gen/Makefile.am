@@ -44,7 +44,7 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-EXTRA_DIST = nutdoc_en.txt nut_en.cfg.in nut_en.css nutfoot.html nuthead.html
+EXTRA_DIST = nutdoc_en.txt nut_en.cfg.in nut_en.css nut_entabs.css nutfoot.html nuthead.html
 
 
 clean-local:
