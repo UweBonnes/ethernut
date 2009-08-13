@@ -51,21 +51,27 @@
 #
 #
 
-EXTRA_DIST = nut/nutsetup reconf nut/Makedefs.arm-gcc nut/Makerules.arm-gcc \
+EXTRA_DIST = nut/nutsetup reconf \
+nut/Makevars.all nut/Makerules.all \
+nut/Makevars.gcc \
+nut/Makevars.arm-gcc \
+nut/Makedefs.arm-gcc nut/Makerules.arm-gcc \
 nut/Makedefs.arm-gccdbg nut/Makerules.arm-gccdbg \
+nut/Makevars.avr-gcc \
 nut/Makedefs.avr-gcc nut/Makerules.avr-gcc \
 nut/Makedefs.avr-gccdbg nut/Makerules.avr-gccdbg \
-nut/Makedefs.avr-icc nut/Makerules.avr-icc \
-nut/Makedefs.gcc nut/Makerules.gcc nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
-nut/Makedefs.icc nut/Makerules.icc nut/Makedefs.unix-gcc nut/Makerules.unix-gcc
+nut/Makevars.avr32-gcc \
+nut/Makedefs.avr32-gcc nut/Makerules.avr32-gcc \
+nut/Makedefs.avr32-gccdbg nut/Makerules.avr32-gccdbg \
+nut/Makedefs.gcc nut/Makerules.gcc \
+nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
+nut/Makedefs.unix-gcc nut/Makerules.unix-gcc
 
 SUBDIRS = nut/doc nut/tools/crurom nut/tools/nutconf nut/tools/nutdisc nut/tools/linux
 
 dist-hook:
 	mkdir -p $(distdir)/nut/app
 	cp -R $(srcdir)/nut/app/* $(distdir)/nut/app
-	mkdir -p $(distdir)/nut/appicc
-	cp -R $(srcdir)/nut/appicc/* $(distdir)/nut/appicc
 	mkdir -p $(distdir)/nut/arch
 	cp -R $(srcdir)/nut/arch/* $(distdir)/nut/arch
 	mkdir -p $(distdir)/nut/bin
