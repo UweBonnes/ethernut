@@ -1,5 +1,11 @@
 $Id$
 
+2009-08-14 Harald Kipp
+
+* Fixed:
+
+Fixed several issues in auto-configuration of source code package.
+
 2009-08-10  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 * Fixed:
 
