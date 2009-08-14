@@ -51,6 +51,8 @@
 #
 #
 
+MAINTAINERCLEANFILES = depcomp compile missing install-sh
+
 EXTRA_DIST = nut/nutsetup reconf \
 nut/Makevars.all nut/Makerules.all \
 nut/Makevars.gcc \
@@ -65,7 +67,8 @@ nut/Makedefs.avr32-gcc nut/Makerules.avr32-gcc \
 nut/Makedefs.avr32-gccdbg nut/Makerules.avr32-gccdbg \
 nut/Makedefs.gcc nut/Makerules.gcc \
 nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
-nut/Makedefs.unix-gcc nut/Makerules.unix-gcc
+nut/Makedefs.unix-gcc nut/Makerules.unix-gcc \
+ChangeLog20090309 nut/tools/packaging/distcheck.lua
 
 SUBDIRS = nut/doc nut/tools/crurom nut/tools/nutconf nut/tools/nutdisc nut/tools/linux
 
