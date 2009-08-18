@@ -452,7 +452,7 @@ void FakeNicEeprom(void)
  * \param mode one of the sleep modes defined in avr/sleep.h or
  *             sleep_mode_none (don't enter sleep mode)
  *
- * \return previous sleep mode 
+ * \return previous sleep mode
  */
 #if defined(__GNUC__) && defined(__AVR_ENHANCED__)
 uint8_t NutThreadSetSleepMode(uint8_t mode)
@@ -481,7 +481,7 @@ THREAD(NutIdle, arg)
     NutTimerInit();
 
     /* Create the main application thread. */
-    NutThreadCreate("main", main, 0, 
+    NutThreadCreate("main", main, 0,
         (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     /*
@@ -654,6 +654,37 @@ void NutCustomInit(void)
 #endif
 }
 /*
+* HHOpen 63f board initialization
+*/
+#elif defined(HHOPEN_63F)
+{
+	PORTA = 0xF8; DDRA  = 0x08;
+	PORTB = 0x01; DDRB  = 0xE7;
+	PORTC = 0xFF; DDRC  = 0x01;
+    PORTD = 0x18; DDRD  = 0xDB;
+	PORTE = 0x5A; DDRE  = 0xEA;
+    PORTF = 0x80; DDRF  = 0xFF;
+    PORTG = 0x00; DDRG  = 0xFF;
+
+    ACSR |= _BV(ACD); /* Switch off analog comparator to reduce power consumption */
+
+    /* Init I2C bus w/ 100 kHz */
+    TWSR = 0;
+    TWBR = (NUT_CPU_FREQ / 100000UL - 16) / 2; /* 100 kHz I2C */
+
+    /* Set default baudrate */
+#if NUT_CPU_FREQ == 14745600
+    UBRR0L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
+    UBRR1L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
+#else
+    sbi(UCSR0A, U2X0);
+    sbi(UCSR1A, U2X1);
+    UBRR0L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
+    UBRR1L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
+#endif
+}
+
+/*
  * Rest of the world and standard ETHERNUT 1/2
  */
 #else
@@ -727,7 +758,7 @@ void NutInit(void)
 
     /* Create idle thread
      */
-    NutThreadCreate("idle", NutIdle, 0, 
+    NutThreadCreate("idle", NutIdle, 0,
         (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 }
 

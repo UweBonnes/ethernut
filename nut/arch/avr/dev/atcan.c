@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009 proconX Pty Ltd. All rights reserved. 
+ * Copyright (c) 2005-2009 proconX Pty Ltd. All rights reserved.
  *
  * This driver has been closely modeled after the existing Nut/OS SJA1000
  * driver and the buffer management and some code snippets have been borrowed
@@ -108,14 +108,39 @@
  * CAN baud rate table
  *
  * Tried to match as closely as possible a sampling point of 87.5 %
- * which is recommended by CiA for CANOpen. DeviceNet specifies a 
+ * which is recommended by CiA for CANOpen. DeviceNet specifies a
  * sampling point > 80%. SQW is 2.
  *****************************************************************************/
 
 //
+// 8.00 MHz
+//
+#if NUT_CPU_FREQ == 8000000
+// 100 kbit/s 86.67% 15 quanta (BRP=7 Tprs=8 Tph1=4 Tph2=2 Tsjw=2)
+#define CAN_BT1_100K 0x08
+#define CAN_BT2_100K 0x0C
+#define CAN_BT3_100K 0x37
+// 125 kbit/s 87.50% 16 quanta (BRP=5 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
+#define CAN_BT1_125K 0x0E
+#define CAN_BT2_125K 0x04
+#define CAN_BT3_125K 0x13
+// 250 kbit/s 87.50% 16 quanta (BRP=2 Tprs=8 Tph1=5 Tph2=2 Tsjw=2)
+#define CAN_BT1_250K 0x06
+#define CAN_BT2_250K 0x04
+#define CAN_BT3_250K 0x13
+// 500 kbit/s 83.33% 12 quanta (BRP=1 Tprs=7 Tph1=2 Tph2=2 Tsjw=2)
+#define CAN_BT1_500K 0x02
+#define CAN_BT2_500K 0x0C
+#define CAN_BT3_500K 0x37
+// 1000 kbit/s 83.33% 12 quanta (BRP=0 Tprs=7 Tph1=2 Tph2=2 Tsjw=2)
+#define CAN_BT1_1M 0x00
+#define CAN_BT2_1M 0x04
+#define CAN_BT3_1M 0x12
+
+//
 // 12.00 MHz
 //
-#if NUT_CPU_FREQ == 12000000
+#elif NUT_CPU_FREQ == 12000000
 // 10 kbit/s 85.00% 20 quanta (BRP=59 Tprs=8 Tph1=8 Tph2=3 Tsjw=2)
 #define CAN_BT1_10K 0x76
 #define CAN_BT2_10K 0x2E
@@ -232,7 +257,7 @@ NUTDEVICE devAtCan;
  * Returns the state of this CAN node.
  * Refer to state diagram in AT90CAN128 dataheet chapter 20.7 "Error
  * Management"
- * 
+ *
  * @retval CAN_SUCCESS if CAN node is in ACTIVE state
  * @retval CAN_PASSIVE if CAN node is in PASSIVE state
  * @retval CAN_BUS_OFF if CAN node is in BUS OFF state
@@ -480,18 +505,18 @@ static void AtCanInterrupt(void *arg)
             ci->can_tx_frames++;
         }
         // Error interrupts ?
-        else 
+        else
         {
            // Stat houskeeping
            ci->can_errors++;
         }
-        
+
         //
         // Acknowledge all MOB interrupts and manage MObs
         //
-        CANSTMOB = CANSTMOB & ~(_BV(TXOK) | _BV(RXOK) | _BV(BERR) | 
+        CANSTMOB = CANSTMOB & ~(_BV(TXOK) | _BV(RXOK) | _BV(BERR) |
                                 _BV(SERR) | _BV(CERR) | _BV(FERR) | _BV(AERR));
-        
+
         if (bit_is_set(CANCDMOB, CONMOB1))
            // Re-enable MOb for reception by re-writing CONMOB1 bit
            CANCDMOB |= _BV(CONMOB1);
@@ -563,12 +588,12 @@ void AtCanOutput(NUTDEVICE * dev, CANFRAME * frame)
  * Reads a frame from input buffer
  *
  * This function reads a frame from the input buffer. If the input buffer
- * is empty the function will block unitl new frames are received, 
+ * is empty the function will block unitl new frames are received,
  * or the timeout is reached.
  *
  * \param dev Pointer to the device structure
  * \param frame Pointer to the receive frame
- * \return 1 if timeout, 0 otherwise 
+ * \return 1 if timeout, 0 otherwise
  */
 uint8_t AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
 {
@@ -577,8 +602,8 @@ uint8_t AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
     while (canRxBuf.datalength == 0)
     {
         uint32_t timeout =  ((IFCAN *) (dev->dev_icb))->can_rtimeout;
-        
-        if (NutEventWait(&ci->can_rx_rdy, timeout)) 
+
+        if (NutEventWait(&ci->can_rx_rdy, timeout))
             return 1;
     }
     NutEnterCritical();
@@ -590,7 +615,7 @@ uint8_t AtCanInput(NUTDEVICE * dev, CANFRAME * frame)
         canRxBuf.dataindex %= canRxBuf.size;
     canRxBuf.datalength--;
     NutExitCritical();
-    
+
     return 0;
 }
 
@@ -632,6 +657,7 @@ uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
 {
     switch (baudrate)
     {
+#if NUT_CPU_FREQ != 8000000
         case CAN_SPEED_10K:
             CANBT1 = CAN_BT1_10K;
             CANBT2 = CAN_BT2_10K;
@@ -647,6 +673,7 @@ uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
             CANBT2 = CAN_BT2_50K;
             CANBT3 = CAN_BT3_50K;
         break;
+#endif
         case CAN_SPEED_100K:
             CANBT1 = CAN_BT1_100K;
             CANBT2 = CAN_BT2_100K;
@@ -667,11 +694,13 @@ uint8_t AtCanSetBaudrate(NUTDEVICE * dev, uint32_t baudrate)
             CANBT2 = CAN_BT2_500K;
             CANBT3 = CAN_BT3_500K;
         break;
+#if NUT_CPU_FREQ != 8000000
         case CAN_SPEED_800K:
             CANBT1 = CAN_BT1_800K;
             CANBT2 = CAN_BT2_800K;
             CANBT3 = CAN_BT3_800K;
         break;
+#endif
         case CAN_SPEED_1M:
             CANBT1 = CAN_BT1_1M;
             CANBT2 = CAN_BT2_1M;

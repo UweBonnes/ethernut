@@ -100,7 +100,7 @@ int IOExpRawRead ( uint8_t port, uint8_t *value )
 	if( port > 1 ) return -1;
 
 	if( TwMasterRegRead( I2C_SLA_IOEXP, port, 1, value, 1, 50) == -1)
-		return-1;
+		return -1;
 	return 0;
 }
 

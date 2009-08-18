@@ -113,6 +113,11 @@
 #define DEV_DEBUG_NAME  "uart1"
 #endif
 
+#if defined(HHOPEN_63F)
+#define DEV_DEBUG		devDebug1
+#define DEV_DEBUG_NAME	"uart1"
+#endif
+
 #if defined(DBGU_BASE)
 #define DEV_DEBUG       devDebug
 #define DEV_DEBUG_NAME  "dbgu"
@@ -225,7 +230,7 @@
 #include <dev/pcf8563.h>
 #elif defined(XNUT_100) || defined(XNUT_105) ||\
 	  defined(MMNET102) || defined(MMNET103) || defined(MMNET104) ||\
-	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04) 
+	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04)
 #define RTC_CHIP rtcDs1307
 #include <dev/ds1307rtc.h>
 #elif defined(ELEKTOR_IR1)
