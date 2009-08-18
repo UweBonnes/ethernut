@@ -2,7 +2,7 @@
 #define _SYS_CONDITION_H_
 
 /*
- * Copyright (C) 2008 by EmbeddedIT, 
+ * Copyright (C) 2008 by EmbeddedIT,
  * Ole Reinhardt <ole.reinhardt@embedded-it.de> All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,12 +22,12 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EMBEDDED IT
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
@@ -46,22 +46,21 @@
 
 #include <sys/atom.h>
 #include <sys/mutex.h>
+#include <sys/types.h>
 
 /*!
  * \addtogroup xgConditionVariables
  */
 /*@{*/
 
-
 /*!
  * \brief Condition variable type.
  */
-typedef struct _CONDITION *CONDITION;
-
+typedef struct _CONDITION CONDITION;
 
 /*!
  * \struct _CONDITION condition.h sys/condition.h
- * \brief Condition variable 
+ * \brief Condition variable
  *
  */
 struct _CONDITION {
@@ -69,15 +68,16 @@ struct _CONDITION {
     MUTEX  mutex; /*!< \brief Mutex used for locking */
 };
 
+
 __BEGIN_DECLS
 
-extern CONDITION NutConditionInit(void);
-extern void NutConditionLock(CONDITION cond);
-extern void NutConditionUnlock(CONDITION cond);
-extern int NutConditionWait(CONDITION cond);
-extern int NutConditionSignal(CONDITION cond);
-extern int NutConditionBroadcast(CONDITION cond);
-extern void NutConditionFree(CONDITION *cond);
+extern int NutConditionInit(CONDITION * cond);
+extern void NutConditionLock(CONDITION * cond);
+extern void NutConditionUnlock(CONDITION * cond);
+extern int NutConditionWait(CONDITION * cond);
+extern int NutConditionSignal(CONDITION * cond);
+extern int NutConditionBroadcast(CONDITION * cond);
+extern void NutConditionFree(CONDITION * cond);
 
 __END_DECLS
 

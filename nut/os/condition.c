@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 by EmbeddedIT, 
+ * Copyright (C) 2008 by EmbeddedIT,
  * Ole Reinhardt <ole.reinhardt@embedded-it.de> All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -19,12 +19,12 @@
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EMBEDDED IT
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
@@ -63,26 +63,25 @@
  * \return Handle of the condition variable, NULL if not enough memory available
  */
 
-CONDITION NutConditionInit(void)
+int NutConditionInit( CONDITION * cond)
 {
-    CONDITION cond;
     cond = NutHeapAlloc(sizeof(struct _CONDITION));
-    if (cond == NULL) return NULL;
+    if (cond == NULL) return 1;
     NutMutexInit(&cond->mutex);
-    return cond;
+    return 0;
 }
 
 /*!
  * \brief Locks the condition mutex
  *
- * To avoid the "lost wakeup" bug it is important to always lock the condition before 
+ * To avoid the "lost wakeup" bug it is important to always lock the condition before
  * modifying the condition or signalling the condition variable
  *
  * \param cond The condition to be locked
  *
  */
 
-void NutConditionLock(CONDITION cond)
+void NutConditionLock(CONDITION * cond)
 {
     if (cond == NULL) return;
     NutMutexLock(&cond->mutex);
@@ -91,43 +90,43 @@ void NutConditionLock(CONDITION cond)
 /*!
  * \brief Unocks the condition mutex
  *
- * Always unlock the confition after modifying the condition and signalling the 
+ * Always unlock the confition after modifying the condition and signalling the
  * condition variable.
  *
  * \param cond The condition to be unlocked
  *
  */
 
-void NutConditionUnlock(CONDITION cond)
+void NutConditionUnlock(CONDITION * cond)
 {
     if (cond == NULL) return;
     NutMutexUnlock(&cond->mutex);
 }
 
 /*!
- * \brief Waits until this thread is woken up on cond. 
+ * \brief Waits until this thread is woken up on cond.
  *
  * The condition is unlocked before falling asleep and locked again before resuming.
  *
- * It is important to use the NutConditionWait() and NutConditionTimedWait() 
- * functions only inside a loop which checks for the condition to be true. 
- * It is not guaranteed that the waiting thread will find the condition 
- * fulfilled after it wakes up, even if the signaling thread left the condition 
- * in that state: another thread may have altered the condition before the 
- * waiting thread got the chance to be woken up, even if the condition itself 
+ * It is important to use the NutConditionWait() and NutConditionTimedWait()
+ * functions only inside a loop which checks for the condition to be true.
+ * It is not guaranteed that the waiting thread will find the condition
+ * fulfilled after it wakes up, even if the signaling thread left the condition
+ * in that state: another thread may have altered the condition before the
+ * waiting thread got the chance to be woken up, even if the condition itself
  * is protected by locking with NutConditionLock.
  *
  * Always lock the condition before entering the above mentioned check loop
- * and always unlock the condition after successfully leaving the loop and 
+ * and always unlock the condition after successfully leaving the loop and
  * processing the data you wait for.
  *
  * \param cond The condition to wait on.
- * 
+ *
  * \return 0 on success, -1 on error
  *
  */
 
-int NutConditionWait(CONDITION cond)
+int NutConditionWait(CONDITION * cond)
 {
     if (cond == NULL) return -1;
     NutMutexUnlock(&cond->mutex);
@@ -137,26 +136,26 @@ int NutConditionWait(CONDITION cond)
 }
 
 /*!
- * \brief Waits until this thread is woken up on cond but not longer than until 
- * the time specified by abs_ms. 
+ * \brief Waits until this thread is woken up on cond but not longer than until
+ * the time specified by abs_ms.
  *
  * The condition is unlocked before falling asleep and locked again before resuming.
  *
- * It is important to use the NutConditionWait() and NutConditionTimedWait() 
- * functions only inside a loop which checks for the condition to be true. 
- * It is not guaranteed that the waiting thread will find the condition 
- * fulfilled after it wakes up, even if the signaling thread left the condition 
- * in that state: another thread may have altered the condition before the 
- * waiting thread got the chance to be woken up, even if the condition itself 
+ * It is important to use the NutConditionWait() and NutConditionTimedWait()
+ * functions only inside a loop which checks for the condition to be true.
+ * It is not guaranteed that the waiting thread will find the condition
+ * fulfilled after it wakes up, even if the signaling thread left the condition
+ * in that state: another thread may have altered the condition before the
+ * waiting thread got the chance to be woken up, even if the condition itself
  * is protected by locking with NutConditionLock.
  *
  * Always lock the condition before entering the above mentioned check loop
- * and always unlock the condition after successfully leaving the loop and 
+ * and always unlock the condition after successfully leaving the loop and
  * processing the data you wait for.
  *
  * \param cond The condition to wait on.
- * \param abs_ms Absolute time in ms to longest wait for. Use NutGetMillis() to 
- *        obtain the current time and add your desired offset. Overflows are 
+ * \param abs_ms Absolute time in ms to longest wait for. Use NutGetMillis() to
+ *        obtain the current time and add your desired offset. Overflows are
  *        handled correct. At longest you can wait 2147483648ms
  *
  * \return 0 on success, -1 on error or timeout
@@ -164,25 +163,25 @@ int NutConditionWait(CONDITION cond)
  *
  */
 
-int NutConditionTimedWait(CONDITION cond, uint32_t abs_ms)
+int NutConditionTimedWait(CONDITION * cond, uint32_t abs_ms)
 {
     uint32_t ms;
-    
+
     if (cond == NULL) return -1;
     ms = abs_ms - NutGetMillis();
     if (ms > 0x7FFFFFFF) return -1;
-    
+
     NutMutexUnlock(&cond->mutex);
     NutEventWait(&cond->event, ms);
     NutMutexLock(&cond->mutex);
     return 0;
 }
-  
+
 /*!
  * \brief If threads are waiting for cond, exactly one of them is woken up.
  *
- * Call this function after you fullfilled the condition. The conditon should be 
- * locked befor fulfilling the condition should not be unlocked before calling 
+ * Call this function after you fullfilled the condition. The conditon should be
+ * locked befor fulfilling the condition should not be unlocked before calling
  * this function.
  *
  * \param cond The condition to signal
@@ -190,7 +189,7 @@ int NutConditionTimedWait(CONDITION cond, uint32_t abs_ms)
  *
  */
 
-int NutConditionSignal(CONDITION cond)
+int NutConditionSignal(CONDITION * cond)
 {
     if (cond == NULL) return -1;
     return NutEventPost(&cond->event);
@@ -199,8 +198,8 @@ int NutConditionSignal(CONDITION cond)
 /*!
  * \brief If threads are waiting for cond, all of them are woken up.
  *
- * Call this function after you fullfilled the condition. The conditon should be 
- * locked befor fulfilling the condition should not be unlocked before calling 
+ * Call this function after you fullfilled the condition. The conditon should be
+ * locked befor fulfilling the condition should not be unlocked before calling
  * this function.
  *
  * \param cond The condition to signal
@@ -208,7 +207,7 @@ int NutConditionSignal(CONDITION cond)
  *
  */
 
-int NutConditionBroadcast(CONDITION cond)
+int NutConditionBroadcast(CONDITION * cond)
 {
     if (cond == NULL) return -1;
     return NutEventBroadcast(&cond->event);
@@ -219,10 +218,10 @@ int NutConditionBroadcast(CONDITION cond)
  *
  * \param cond Pointer to the condition
  */
-void NutConditionFree(CONDITION *cond)
+void NutConditionFree(CONDITION * cond)
 {
-    NutMutexDestroy(&(*cond)->mutex);
-    NutHeapFree(*cond);
+    NutMutexDestroy(&cond->mutex);
+    NutHeapFree(cond);
     cond = NULL;
 }
 
