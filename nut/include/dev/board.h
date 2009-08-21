@@ -140,7 +140,8 @@
 #define DEV_UART1       devUsartAvr1
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) || defined(ELEKTOR_IR1) || defined(MCU_AT91SAM9XE512)
+#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) ||\
+    defined(ELEKTOR_IR1) || defined(MCU_AT91SAM9XE512)
 
 #include <dev/usartat91.h>
 #define DEV_UART0       devUsartAt910

@@ -583,6 +583,14 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
                 case 'o':
                     TermEraseLineStart(dcb);
                     break;
+                case 'i':
+                    dcb->dcb_modeflags |= LCD_MF_INVERTED;
+                    (*dcb->dss_cursor_mode) (3);
+                    break;
+                case 'n':
+                    dcb->dcb_modeflags &= ~LCD_MF_INVERTED;
+                    (*dcb->dss_cursor_mode) (2);
+                    break;
                 }
                 continue;
             }

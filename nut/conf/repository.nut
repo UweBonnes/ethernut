@@ -252,6 +252,10 @@ pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
 
 hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
 
+pca9555_port_choice = { "IOXP_PORT0", "IOXP_PORT1" }
+pca9555_pin_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
+						
+
 repository =
 {
     {
@@ -494,6 +498,26 @@ function GetAvrPorts()
 end
 
 --
+-- Retrieve IOExpander specific Ports bits.
+--
+function GetIoxpPorts()
+	if c_is_provided("DEV_IOEXP") then
+		return pca9555_port_choice
+	end
+	return { " " }
+end
+
+--
+-- Retrieve IOExpander specific GPIO bits.
+--
+function GetIoxpBits()
+	if c_is_provided("DEV_IOEXP") then
+		return pca9555_pin_choice
+	end
+	return { " " }
+end
+
+--
 -- Retrieve platform specific GPIO bits.
 --
 function GetGpioBits()
@@ -502,6 +526,7 @@ function GetGpioBits()
     end
     return mcu_32bit_choice
 end
+
 
 --
 -- Retrieve platform specific GPIO header path.

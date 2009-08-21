@@ -316,7 +316,7 @@ nutdev =
                               "For the AVR family the on-chip EEPROM is used by default.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45D" },
                 flavor = "booldata",
-                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
                 default = "0",
                 file = "include/cfg/eeprom.h"
             },
@@ -326,7 +326,7 @@ nutdev =
                 description = "Deprecated, uses old SPI routines.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_AT45DB" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -336,7 +336,7 @@ nutdev =
                               "be stored in this chip.",
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -347,7 +347,7 @@ nutdev =
                 requires = { "HW_EFC_AT91" },
                 provides = { "DEV_NVMEM", "DEV_NVMEM_NORFLASH" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -356,7 +356,24 @@ nutdev =
                 description = "If enabled, the EEPROM on the Intersil X1226/X1286 chip is used for non-volatile memory.",
                 provides = { "DEV_NVMEM" },
                 flavor = "boolean",
-                exclusivity = { "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT24",
+                brief = "Standard EEPROM",
+                description = "If enabled, a standard EEPROM chip is used for non-volatile memory.",
+                provides = { "DEV_NVMEM", "DEV_NVMEM_I2C" },
+                flavor = "boolean",
+                exclusivity = { "NUT_CONFIG_AT24", "NUT_CONFIG_X12RTC", "NUT_CONFIG_AT45D", "NUT_CONFIG_AT45DB", "NUT_CONFIG_AT49BV", "NUT_CONFIG_AT91EFC" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "NUT_CONFIG_AT24_ADR",
+                brief = "EEPROM Bus address",
+                description = "Address of the EEPROM on the I2C Bus.",
+                requires = { "DEV_NVMEM_I2C" },
+                default = "0x50",
                 file = "include/cfg/eeprom.h"
             },
             {
@@ -453,7 +470,7 @@ nutdev =
     },
 
     --
-    -- Simple Interface Drivers.    
+    -- Simple Interface Drivers.
     --
     {
         name = "nutdev_sbbif0",
@@ -461,7 +478,7 @@ nutdev =
         description = "Software SPI0, master mode only.",
         provides = { "DEV_SPI" },
         requires = { "HW_GPIO" },
-        sources = { 
+        sources = {
             "sbbif0.c",
             "spibus_gpio.c",
             "spibus0gpio.c"
@@ -1347,7 +1364,7 @@ nutdev =
             },
         },
     },
-    
+
     --
     -- Character Device Drivers.
     --
@@ -1405,7 +1422,7 @@ nutdev =
                 flavor = "boolean",
                 file = "include/cfg/audio.h"
             }
-            
+
         }
     },
 
@@ -1543,7 +1560,7 @@ nutdev =
                 description = "Frequency of the crystal clock in Hz.\n\n"..
                               "Tested with default of 12,288 MHz only",
                 default = "12288000",
-                flavor = "booldata",                             
+                flavor = "booldata",
                 file = "include/cfg/audio.h"
             },
             {
@@ -1836,12 +1853,12 @@ nutdev =
                       "definitely not work with the PHAT file system.",
         requires = { "SPIBUS_CONTROLLER" },
         provides = { "DEV_BLOCKIO" },
-        sources = 
-        { 
-            "spi_at45d.c", 
-            "spi_at45d0.c", 
-            "spi_at45d1.c", 
-            "spi_at45d2.c", 
+        sources =
+        {
+            "spi_at45d.c",
+            "spi_at45d0.c",
+            "spi_at45d1.c",
+            "spi_at45d2.c",
             "spi_at45d3.c"
         },
         options =
@@ -2031,7 +2048,7 @@ nutdev =
                 brief = "Block Size",
                 description = "Block size in bytes. Do not change unless you are "..
                               "sure that both, the file system and the hardware support it.",
-                default = "512",                              
+                default = "512",
                 flavor = "integer",
                 file = "include/cfg/mmci.h"
             },
@@ -2181,7 +2198,7 @@ nutdev =
                       "by bus controller implementations.",
         sources = { "spibus.c" }
     },
-        
+
     --
     -- Special Chip Drivers.
     --
@@ -2197,8 +2214,48 @@ nutdev =
         name = "nutdev_pca9555",
         brief = "PCA9555 Driver",
         description = "Philips PCA9555 I/O expander. Tested on AT91 only.",
+		provides = { "DEV_IOEXP" },
         requires = { "DEV_TWI" },
         sources = { "pca9555.c" },
+        options =
+        {
+            {
+                macro = "I2C_SLA_IOEXP",
+                brief = "Slave Address",
+                description = "PCA9555 slave address (0x20..0x27)",
+                type = "enumerated",
+                flavor = "integer",
+                default = "0x23",
+               	file = "include/cfg/pca9555.h"
+            },
+            {
+                macro = "IOEXP_IRQ_PORT",
+                brief = "Interrupt Port",
+                description = "Port for interrupt",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+               	file = "include/cfg/pca9555.h"
+            },
+            {
+                macro = "IOEXP_IRQ_PIN",
+                brief = "Interrupt Pin",
+                description = "Port for Interrupty",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+               	file = "include/cfg/pca9555.h"
+            },
+        },
+    },
+	{
+		name = "led",
+		brief = "LED Driver",
+		description = "Provides controlling of LEDs connected to GPIO.\n"..
+		              "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
+		              "can be used to address LEDs connected to this chip instead of CPU's GPIOs",
+		provides = { "DEV_LED" },
+		sources = { "led.c" },
     },
     {
         name = "nutdev_vs10xx",
@@ -2217,7 +2274,7 @@ nutdev =
                 description = "Frequency of the crystal clock in Hz.\n\n"..
                               "The clock doubler will be enabled if this value is "..
                               "lower than 20,000,000 Hz.",
-                default = "12288000",                              
+                default = "12288000",
                 file = "include/cfg/audio.h"
             },
             {
@@ -2228,7 +2285,7 @@ nutdev =
                               "Currently supported on the AVR platform only.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2244,7 +2301,7 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2260,7 +2317,7 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2276,7 +2333,7 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2292,7 +2349,7 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.\n\n"..
                               "Currently supported on the AVR platform only.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SCI_SPI0_DEVICE",
                     "VS10XX_SCI_SBBI0_DEVICE",
                     "VS10XX_SCI_SBBI1_DEVICE",
@@ -2328,7 +2385,7 @@ nutdev =
                               "Currently supported on the AVR platform only.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -2342,7 +2399,7 @@ nutdev =
                 brief = "Data Software SPI0",
                 description = "Use software SPI 0 for data channel.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -2356,7 +2413,7 @@ nutdev =
                 brief = "Data Software SPI1",
                 description = "Use software SPI 1 for data channel.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -2370,7 +2427,7 @@ nutdev =
                 brief = "Data Software SPI2",
                 description = "Use software SPI 2 for data channel.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -2384,7 +2441,7 @@ nutdev =
                 brief = "Data Software SPI3",
                 description = "Use software SPI 3 for data channel.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "VS10XX_SDI_SPI0_DEVICE",
                     "VS10XX_SDI_SBBI0_DEVICE",
                     "VS10XX_SDI_SBBI1_DEVICE",
@@ -2416,14 +2473,14 @@ nutdev =
             {
                 macro = "VS10XX_SELECT_ACTIVE_HIGH",
                 brief = "Active High Chip Select",
-                description = "Select this option if the chip select is active high.", 
+                description = "Select this option if the chip select is active high.",
                 flavor = "boolean",
                 file = "include/cfg/audio.h"
             },
             {
                 macro = "VS10XX_RESET_ACTIVE_HIGH",
                 brief = "Active High Reset",
-                description = "Select this option if the reset is active high.", 
+                description = "Select this option if the reset is active high.",
                 flavor = "boolean",
                 file = "include/cfg/audio.h"
             },
@@ -2540,10 +2597,10 @@ nutdev =
                 flavor = "integer",
                 file = "include/cfg/audio.h"
             },
-            
+
         },
     },
-    
+
     {
         name = "nutdev_avrtarget",
         brief = "AVR Serial Programming",
@@ -2586,7 +2643,7 @@ nutdev =
                               "Specify device index 0, 1, 2 or 3.",
                 requires = { "HW_MCU_AVR" },
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -2601,7 +2658,7 @@ nutdev =
                 description = "Use software SPI 0 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -2616,7 +2673,7 @@ nutdev =
                 description = "Use software SPI 1 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -2631,7 +2688,7 @@ nutdev =
                 description = "Use software SPI 2 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -2646,7 +2703,7 @@ nutdev =
                 description = "Use software SPI 3 for programming.\n\n"..
                               "Specify device index 0, 1, 2 or 3.",
                 flavor = "booldata",
-                exclusivity = { 
+                exclusivity = {
                     "AVRTARGET_SPI",
                     "AVRTARGET_SBBI0",
                     "AVRTARGET_SBBI1",
@@ -2658,14 +2715,14 @@ nutdev =
             {
                 macro = "AVRTARGET_SELECT_ACTIVE_HIGH",
                 brief = "Active High Chip Select",
-                description = "Select this option if the chip select is active high.", 
+                description = "Select this option if the chip select is active high.",
                 flavor = "boolean",
                 file = "include/cfg/progif.h"
             },
             {
                 macro = "AVRTARGET_RESET_ACTIVE_HIGH",
                 brief = "Active High Reset",
-                description = "Select this option if the reset is active high.", 
+                description = "Select this option if the reset is active high.",
                 flavor = "boolean",
                 file = "include/cfg/progif.h"
             },
@@ -2687,7 +2744,7 @@ nutdev =
                 description = "Interface speed in bits per second, default is 500000.\n\n"..
                               "If the exact value can't be set, the driver will choose the "..
                               "next lower one. Bit banging interfaces always run at maximum speed.",
-                default = "500000",                              
+                default = "500000",
                 file = "include/cfg/progif.h"
             },
         },
@@ -2742,7 +2799,7 @@ nutdev =
             },
         },
     },
-    
+
     {
         name = "nutdev_at49bv",
         brief = "AT49BV Flash Memory",
@@ -3433,5 +3490,14 @@ nutdev =
         brief = "SPI Flashing (AVR)",
         sources = { "spiflash.c" },
         requires = { "NOT_AVAILABLE" }
+    },
+	{
+        name = "nutdev_3_7SEG",
+        brief = "3x7 segment driver",
+        description = "3x7 segment driver with SPI",
+        sources = { "spi_7seg.c" },
+        options =
+        {
+        },
     },
 }

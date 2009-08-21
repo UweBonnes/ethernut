@@ -39,81 +39,119 @@
  * only)
  *
  */
+#include <compiler.h>
+#include <stdlib.h>
+#include <string.h>
+#include <memdebug.h>
+#include <sys/heap.h>
+#include <sys/event.h>
+
 #include <cfg/os.h>
 #include <dev/twif.h>
 
-#include <sys/event.h>
+#include <dev/gpio.h>
+#include <cfg/pca9555.h>
 #include <dev/pca9555.h>
 
-#ifndef I2C_SLA_RTC
+#ifndef I2C_SLA_IOEXP
 #define I2C_SLA_IOEXP     0x23
 #endif
 
-static uint8_t portValue[2] = { 0x00, 0x1f };
+#define PCA_PINP    0   /**< PCA Input register offset */
+#define PCA_POUT    2   /**< PCA Output register offset */
+#define PCA_PINV    4   /**< PCA Polarity inversion register offset */
+#define PCA_CONF    6   /**< PCA Configuration register offset */
+
+typedef struct __attribute__ ((packed))
+{
+    uint8_t out[2];
+    uint8_t pol[2];
+    uint8_t con[2];
+} pca_regs_t;
+
+pca_regs_t *pca_ctrl = NULL;
 
 /*****************************************************************/
 int IOExpInit( void )
 /*****************************************************************/
 {
-	uint8_t cmd[2];
+    pca_ctrl = malloc( sizeof( pca_regs_t));
+    if( pca_ctrl == NULL) return -1;
 
-    cmd[0] = 0x0f;  /* port 0 input   */
-	cmd[1] = 0x00;  /* port 1 output  */
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, 0x06, 1, cmd, 2, 50 ) == -1 )
+    memset( pca_ctrl, 0, sizeof( pca_regs_t));
+    pca_ctrl->out[0] = 0xff;
+    pca_ctrl->out[1] = 0xff;
+    pca_ctrl->con[0] = 0xff;
+    pca_ctrl->con[1] = 0xff;
+    
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT, 1, (void*)pca_ctrl, sizeof(pca_regs_t), 50 ) == -1 )
 	{
 		// printf( "Init Chip not responding\n");
 		return -1;
 	}
 
-	cmd[0] = 0xff;  /* 4 polarity reg 0 */
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, 0x04, 1, cmd, 1, 50 ) == -1 )
-	{
-		// printf( "Init Chip not responding\n");
-		return -1;
-	}
-	cmd[0] = 0xf0;  /* 4 polarity reg 1 */
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, 0x02, 1, cmd, 1, 50 ) == -1 )
-	{
-		return -1;
-	}
-
 	return 0;
 }
 
 /*****************************************************************/
-int IOExpRawWrite ( uint8_t port, uint8_t value )
+int IOExpPinConfigSet( int bank, int bit, uint32_t flags)
 /*****************************************************************/
 {
-	if ( port > 1 )	return -1;
+    bank &= 0xf;
+    
+    if( flags & GPIO_CFG_OUTPUT)
+        pca_ctrl->con[bank] &= ~(1<<bit);
+    if( flags & GPIO_CFG_PULLUP)
+        pca_ctrl->out[bank] &= ~(1<<bit);
+    if( flags == 0)
+        pca_ctrl->con[bank] |= (1<<bit);
 
-	portValue[port] = value;
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50) == -1)
+        return -1;
 
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, 0x02 + port, 1, &portValue[port], 1, 50 ) == -1 )
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_CONF+bank, 1, &pca_ctrl->con[bank], 1, 50) == -1)
+        return -1;
+    
+    return 0;      
+}
+
+/*****************************************************************/
+int IOExpRawWrite ( int bank, int value )
+/*****************************************************************/
+{
+    bank &= 0x0f;
+	if ( bank > 1 )	return -1;
+
+	pca_ctrl->out[bank] = value;
+
+	if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
 		return -1;
 	return 0;
 }
 
 /*****************************************************************/
-int IOExpRawRead ( uint8_t port, uint8_t *value )
+int IOExpRawRead ( int bank, int *value )
 /*****************************************************************/
 {
-	if( port > 1 ) return -1;
+    bank &= 0x0f;
+	if( bank > 1 ) return -1;
 
-	if( TwMasterRegRead( I2C_SLA_IOEXP, port, 1, value, 1, 50) == -1)
-		return -1;
+	if( TwMasterRegRead( I2C_SLA_IOEXP, PCA_PINP+bank, 1, value, 1, 50) == -1)
+		return-1;
 	return 0;
 }
 
 
 /*****************************************************************/
-int IOExpGetBit ( uint8_t port, uint8_t bit, uint8_t *value )
+int IOExpGetBit ( int bank, int bit, int *value )
 /*****************************************************************/
 {
-	uint8_t val;
+	int val;
 
-	if( port > 1 ) return -1;
+    bank &= 0x0f;
+	if( bank > 1 ) return -1;
 
-	if( TwMasterRegRead( I2C_SLA_IOEXP, 0, 1, &val, 1, 50))
+	if( TwMasterRegRead( I2C_SLA_IOEXP, PCA_PINP+bank, 1, &val, 1, 50)==-1)
 		return -1;
 	else
 		*value = (( val & ( 1 << bit )) == 0 ) ? 0 : 1;
@@ -122,28 +160,40 @@ int IOExpGetBit ( uint8_t port, uint8_t bit, uint8_t *value )
 }
 
 /*****************************************************************/
-int IOExpSetBit ( uint8_t port, uint8_t bit )
+int IOExpSetBitHigh( int bank, int bit )
 /*****************************************************************/
 {
-	if( port > 1 ) return -1;
+    bank &= 0x0f;
+	if( bank > 1 ) return -1;
 
-	portValue[port] |= ( 1 << bit );
+	pca_ctrl->out[bank] |= ( 1 << bit );
 
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, 0x02+port, 1, &portValue[port], 1, 50 ) == -1 )
+	if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
 		return -1;
 	return 0;
 }
 
 /*****************************************************************/
-int IOExpClrBit ( uint8_t port, uint8_t bit )
+int IOExpSetBitLow( int bank, int bit )
 /*****************************************************************/
 {
-	if( port > 1 ) return 0;
+    bank &= 0x0f;
+	if( bank > 1 ) return -1;
 
-	portValue[port] &= ~( 1 << bit );
+	pca_ctrl->out[bank] &= ~( 1 << bit );
 
-	if( TwMasterRegWrite( I2C_SLA_IOEXP, 0x02+port, 1, &portValue[port], 1, 50 ) == -1 )
+	if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50 ) == -1 )
 		return -1;
 	return 0;
+}
+
+/*****************************************************************/
+int IOExpSetBit( int bank, int bit, int value )
+/*****************************************************************/
+{
+    if( value)
+        return IOExpSetBitHigh( bank, bit);
+    else
+        return IOExpSetBitLow( bank, bit);
 }
 

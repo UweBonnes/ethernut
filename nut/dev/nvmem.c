@@ -116,6 +116,8 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
     return OnChipNvMemLoad(addr, buff, siz);
 #elif defined(NUT_CONFIG_AT91EFC)
     return At91EfcParamRead(addr, buff, siz);
+#elif defined(NUT_CONFIG_AT24)
+    return EEReadData( addr, buff, len);
 #else
     return -1;
 #endif
@@ -147,6 +149,8 @@ int NutNvMemSave(unsigned int addr, CONST void *buff, size_t len)
     return OnChipNvMemSave(addr, buff, len);
 #elif defined(NUT_CONFIG_AT91EFC)
     return At91EfcParamWrite(addr, buff, len);
+#elif defined(NUT_CONFIG_AT24)
+    return EEWriteData( addr, buff, len);
 #else
     return -1;
 #endif

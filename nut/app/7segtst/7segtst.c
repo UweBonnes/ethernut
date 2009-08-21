@@ -45,7 +45,11 @@
  *
  */
 
+#include <cfg/os.h>
+
 #include <string.h>
+#include <io.h>
+#include <fcntl.h>
 #include <stdio.h>
 
 #include <dev/spi_7seg.h>
@@ -57,6 +61,9 @@
 #include <sys/thread.h>
 #include <sys/timer.h>
 
+#ifdef NUTDEBUG
+#include <sys/osdebug.h>
+#endif
 
 
 
@@ -73,7 +80,7 @@ int main(void)
 
 
 	u_long baud = 115200;
-	uint8_t rc, data;
+	uint8_t rc;
 	unsigned int count=0;
 	/*
      * Register the UART device, open it, assign stdout to it and set 

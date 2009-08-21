@@ -50,6 +50,13 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <cfg/memory.h>
+
+#include <dev/blockdev.h>
+#include <dev/spi_7seg.h>
+
+#include <cfg/arch/gpio.h>
+#include <dev/spibus_at91.h>
 
 
 #define SEG_NOOP 0x00
@@ -88,47 +95,30 @@
 
 #define MAX_7SEG_DIGITS 3
 
-
 #ifndef DISP_7SEG_WRITE_POLLS
 #define DISP_7SEG_WRITE_POLLS        1000
 #endif
 
 
-
-#include <cfg/memory.h>
-
-#include <dev/blockdev.h>
-#include <dev/spi_7seg.h>
-
 #ifndef SPI_RATE_DISP_7SEG
 #define SPI_RATE_DISP_7SEG  1000000
-//#define SPI_RATE_DISP_7SEG  2000000
-// #define SPI_RATE_DISP_7SEG  4000000
-// #define SPI_RATE_DISP_7SEG  8000000
-//#define SPI_RATE_DISP_7SEG  16000000
 #endif
 
 #ifndef SPI_MODE_DISP_7SEG
-#ifdef SPI_CSHIGH_DISP_7SEG
-#define SPI_MODE_DISP_7SEG (SPI_MODE_3 | SPI_MODE_CSHIGH)
-#else
 #define SPI_MODE_DISP_7SEG SPI_MODE_3
 #endif
-#endif
 
-#include <cfg/arch/gpio.h>
-#include <dev/spibus_at91.h>
 
 /*!
  * \brief 7seg SPI node implementation structure.
  */
 NUTSPINODE nodeSpi7SEG = {
-    &NUT_CONFIG_7SEG_SPIBUS,      /*!< \brief Pointer to the bus controller driver, node_bus. */
-    NULL,                       /*!< \brief Pointer to device driver specific settings, node_stat. */
-    SPI_RATE_DISP_7SEG,            /*!< \brief Initial clock rate, node_rate. */
-    SPI_MODE_DISP_7SEG,            /*!< \brief Initial mode, node_mode. */
-    8,                          /*!< \brief Initial data bits, node_bits. */
-    NUT_CONFIG_7SEG_CS                           /*!< \brief Chip select, node_cs. */
+    NULL,                   /*!< \brief Pointer to the bus controller driver, node_bus. */
+    NULL,                   /*!< \brief Pointer to device driver specific settings, node_stat. */
+    SPI_RATE_DISP_7SEG,     /*!< \brief Initial clock rate, node_rate. */
+    SPI_MODE_DISP_7SEG,     /*!< \brief Initial mode, node_mode. */
+    8,                      /*!< \brief Initial data bits, node_bits. */
+    0                       /*!< \brief Chip select, node_cs. */
 };
 
 /*!

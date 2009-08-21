@@ -49,47 +49,41 @@
 
 #include <cfg/arch.h>
 #include <dev/board.h>
+#include <dev/gpio.h>
 
 #include <sys/thread.h>
 #include <sys/timer.h>
 #include <dev/pca9555.h>
-
-#define	LED_OFF		0
-#define	LED_ON		1
-
-#define	LED(led,state)	if( state == LED_OFF )IOExpSetBit( 1, led );else IOExpClrBit( 1, led )
-#define	LED1(state)	LED( 0, state )
-#define	LED2(state)	LED( 1, state )
-#define	LED3(state)	LED( 2, state )
-#define	LED4(state)	LED( 3, state )
-#define	LED5(state)	LED( 4, state )
-
-#define	DLED(led,state)	if( state == LED_OFF )IOExpSetBit( 0, led + 4 );else IOExpClrBit( 0, led + 4 )
-#define	DLED1(state)	DLED( 0, state )
-#define	DLED2(state)	DLED( 1, state )
-#define	DLED3(state)	DLED( 2, state )
-#define	DLED4(state)	DLED( 3, state )
+#include <dev/led.h>
 
 #define KEY1 (1<<0)
 #define KEY2 (1<<1)
 #define KEY3 (1<<2)
 #define KEY4 (1<<3)
 
-uint8_t ledid = 0;
-
 /******************************************************************/
 THREAD(Thread1, arg)
 /******************************************************************/
 {
+    HANDLE ds1, ds2, ds3;
+    int ledmask = 1;
+
+    if( NutRegisterLed( &ds1, IOXP_PORT1, 0) == 0)
+        printf( "register LED 1 OK\n");
+    if( NutRegisterLed( &ds2, IOXP_PORT1, 1) == 0)
+        printf( "register LED 2 OK\n");
+    if( NutRegisterLed( &ds3, IOXP_PORT1, 2) == 0)
+        printf( "register LED 3 OK\n");
+    
     NutThreadSetPriority(128);
     for (;;) {
-		LED( ledid, LED_OFF );
-		if( ++ledid > 4 )
-		{
-			ledid = 0;
-		}
-		LED( ledid, LED_ON );
+        NutSetLed( ds1, 0, (ledmask>>0) & 1);
+        NutSetLed( ds2, 0, (ledmask>>1) & 1);
+        NutSetLed( ds3, 0, (ledmask>>2) & 1);
 
+        ledmask <<= 1;
+        if( ledmask & (1<<3)) ledmask = 1;
+        
         NutSleep(250);
     }
 }
@@ -98,35 +92,48 @@ THREAD(Thread1, arg)
 THREAD(Thread2, arg)
 /******************************************************************/
 {
-	uint8_t key;
+	uint8_t key, oldkey;
 	uint8_t flag = 1;
 	int rc;
+    HANDLE led3;
 
 	printf( "Key and LED test for PCA9555\n" );
 
+    if( NutRegisterLed( &led3, IOXP_PORT1, 3) == 0)
+        printf( "register LED 4 OK\n");
+
+    oldkey = ~key;
+    
     NutThreadSetPriority(128);
     for (;;)
 	{
 		key = 0;
 		rc = IOExpRawRead( 0, &key);
-		printf( "IOER rc=%d key=0x%02x\n", rc, key);
-		if( rc >= 0)
-		{
-			if( flag == 0 )
-			{
-				flag = 1;
+        if( key != oldkey) {
+            if( key > oldkey) {
+                /* flash led if key is pressed */
+                NutSetLed( led3, 5, LED_ONESHOT);
+            }
+            
+            oldkey = key;
+    		printf( "IOER rc=%d key=0x%02x\n", rc, key);
+    		if( rc >= 0)
+    		{
+    			if( flag == 0 )
+    			{
+    				flag = 1;
 
-				if( key & KEY1)	printf( "Key 1 pressed\n" );
-				if( key & KEY2)	printf( "Key 2 pressed\n" );
-				if( key & KEY3)	printf( "Key 3 pressed\n" );
-				if( key & KEY4)	printf( "Key 4 pressed\n" );
-			}
-		}
-		else
-		{
-			flag = 0;
-		}
-
+    				if( key & KEY1)	printf( "Key 1 pressed\n" );
+    				if( key & KEY2)	printf( "Key 2 pressed\n" );
+    				if( key & KEY3)	printf( "Key 3 pressed\n" );
+    				if( key & KEY4)	printf( "Key 4 pressed\n" );
+    			}
+    		}
+    		else
+    		{
+    			flag = 0;
+    		}
+        }
         NutSleep(125);
     }
 }
@@ -136,6 +143,7 @@ int main(void)
 /******************************************************************/
 {
     u_long baud = 115200;
+    HANDLE led4;
     /*
      * Register the UART device, open it, assign stdout to it and set
      * the baudrate.
@@ -144,10 +152,23 @@ int main(void)
     freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
-	baud = 100000;
-	TwInit( 0 ); /* par = slave address but we are master */
+    printf("Init TWI... ");
+	baud = 400000;
+	if( TwInit( 0 ) == 0) /* par = slave address but we are master */
+        printf( "OK\n"); 
+    else
+        printf( "FAIL\n");
 	TwIOCtl( TWI_SETSPEED, &baud);
-	IOExpInit();
+
+    printf("Init PCA9555... ");
+	if( IOExpInit() == 0)
+        printf( "OK\n"); 
+    else
+        printf( "FAIL\n");
+
+    if( NutRegisterLed( &led4, IOXP_PORT1, 4) == 0)
+        printf( "register LED B OK\n");
+    NutSetLed( led4, 100, LED_BLINK);
 
     /*
      * Start two additional threads. All threads are started with

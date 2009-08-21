@@ -42,16 +42,31 @@
 #ifndef _DEV_PCA9555_H_
 #define	_DEV_PCA9555_H_
 
+#include <cfg/pca9555.h>
 #include <dev/twif.h>
+
+#define IOXP_PORT0  0x80
+#define IOXP_PORT1  0x81
+
+#define IOXP_PIN0   0
+#define IOXP_PIN1   1
+#define IOXP_PIN2   2
+#define IOXP_PIN3   3
+#define IOXP_PIN4   4
+#define IOXP_PIN5   5
+#define IOXP_PIN6   6
+#define IOXP_PIN7   7
 
 __BEGIN_DECLS
 /* Prototypes */
 extern int IOExpInit( void );
-extern int IOExpRawWrite ( uint8_t port, uint8_t value );
-extern int IOExpRawRead ( uint8_t port, uint8_t *value );
-extern int IOExpSetBit ( uint8_t port, uint8_t bit );
-extern int IOExpClrBit ( uint8_t port, uint8_t bit );
-extern int IOExpGetBit ( uint8_t port, uint8_t bit, uint8_t *value );
+extern int IOExpPinConfigSet( int bank, int bit, uint32_t flags);
+extern int IOExpRawWrite ( int bank, int value );
+extern int IOExpRawRead ( int bank, int *value );
+extern int IOExpSetBitLow( int bank, int bit );
+extern int IOExpSetBitHigh( int bank, int bit );
+extern int IOExpGetBit ( int bank, int bit, int *value );
+extern int IOExpSetBit( int bank, int bit, int value );
 
 __END_DECLS
 /* End of prototypes */
