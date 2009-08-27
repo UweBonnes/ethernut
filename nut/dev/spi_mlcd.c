@@ -89,8 +89,9 @@ static void LcdCursorMode(uint8_t on)
 {
 }
 
-static void LcdInit(NUTDEVICE *dev)
+static int LcdInit(NUTDEVICE *dev)
 {
+    return 0;
 }
 
 /*!

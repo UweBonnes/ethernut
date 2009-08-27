@@ -56,14 +56,14 @@ void EEInit( void )
     at24c32s.PageSize = 32;
     at24c32s.NumOfPage = 128;
     at24c32s.EepromSize = 32*128;
-    at24c32s.SlaveAddress = I2C_SLA_AT24C;
+    at24c32s.SlaveAddress = NUT_CONFIG_AT24_ADR;
 	at24c32s.IAddrW = 2;
 	at24c32s.Timeout = 20;
     //strcpy (at24c32s.EepromName, "AT24C32" );
 }
 
 /****************************************************************************/
-int EEWriteData( uint16_t addr, void *data, uint16_t len )
+int EEWriteData( uint16_t addr, CONST void *data, uint16_t len )
 /****************************************************************************/
 {
 	return At24cWrite( &at24c32s, (uint8_t *)data, len, addr );

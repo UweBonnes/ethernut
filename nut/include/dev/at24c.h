@@ -3,8 +3,11 @@
 
 #include <sys/types.h>
 #include <stdint.h>
+#include <cfg/eeprom.h>
 
-#define I2C_SLA_AT24C	0x50
+#ifndef NUT_CONFIG_AT24_ADR
+#define NUT_CONFIG_AT24_ADR	0x50
+#endif
 
 struct at24c{
    uint8_t 	SlaveAddress;	/* Slave address on the bus */

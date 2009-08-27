@@ -266,13 +266,21 @@
 
 typedef struct _VSDCB {
     int dcb_pbstat;     /*!< \brief Playback status. */
-    uint32_t dcb_scmd;    /*!< \brief Requested command flags, see VSREQ_ flags. */
+    uint32_t dcb_scmd;  /*!< \brief Requested command flags, see VSREQ_ flags. */
     int dcb_crvol;      /*!< \brief Current volume of right channel. */
     int dcb_srvol;      /*!< \brief Requested volume of right channel. */
     int dcb_clvol;      /*!< \brief Current volume of left channel. */
     int dcb_slvol;      /*!< \brief Requested volume of left channel. */
-    uint32_t dcb_pbwlo;   /*!< \brief Playback buffer low watermark. */
-    uint32_t dcb_pbwhi;   /*!< \brief Playback buffer high watermark. */
+    int dcb_ctreb;      /*!< \brief Current bass enhancement. */
+    int dcb_streb;      /*!< \brief Requested bass enhancement. */
+    int dcb_ctfin;      /*!< \brief Current bass frequency.*/
+    int dcb_stfin;      /*!< \brief Requested bass frequency. */
+    int dcb_cbass;      /*!< \brief Current treble enhancement. */
+    int dcb_sbass;      /*!< \brief Requested bass enhancement. */
+    int dcb_cbfin;      /*!< \brief Current treble frequency. */
+    int dcb_sbfin;      /*!< \brief Requested treble frequency. */
+    uint32_t dcb_pbwlo; /*!< \brief Playback buffer low watermark. */
+    uint32_t dcb_pbwhi; /*!< \brief Playback buffer high watermark. */
 } VSDCB;
 
 static VSDCB dcb;
@@ -309,7 +317,7 @@ static void SciDeselect(void)
 /*!
  * \brief Wait for decoder ready.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
 static int VsWaitReady(void)
@@ -328,7 +336,7 @@ static int VsWaitReady(void)
 /*
  * \brief Write a specified number of bytes to the VS10XX data interface.
  *
- * This function will check the DREQ line. Decoder interrupts must have 
+ * This function will check the DREQ line. Decoder interrupts must have
  * been disabled before calling this function.
  */
 static int VsSdiWrite(CONST uint8_t * data, size_t len)
@@ -344,10 +352,10 @@ static int VsSdiWrite(CONST uint8_t * data, size_t len)
 }
 
 /*
- * \brief Write a specified number of bytes from program space to the 
+ * \brief Write a specified number of bytes from program space to the
  *        VS10XX data interface.
  *
- * This function is similar to VsSdiWrite() except that the data is 
+ * This function is similar to VsSdiWrite() except that the data is
  * located in program space.
  */
 static int VsSdiWrite_P(PGM_P data, size_t len)
@@ -382,7 +390,7 @@ static void VsRegWrite(ureg_t reg, uint16_t data)
  * \brief Read from a register.
  *
  * Decoder interrupts must have been disabled before calling this function.
- * 
+ *
  * \return Register contents.
  */
 static uint16_t VsRegRead(ureg_t reg)
@@ -586,7 +594,7 @@ static int VsPlayerFlush(void)
 /*!
  * \brief Send data to the decoder.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -614,24 +622,24 @@ static int VsWrite(NUTFILE * fp, CONST void *data, int len)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write to device.
  *
  * Similar to VsWrite() except that the data is expected in program memory.
  *
  * This function is implemented for CPUs with Harvard Architecture only.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write_P entry.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to PnutFileOpen().
  * \param buffer Pointer to the data in program space. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error. Currently this function is not implemented and always
  *         returns -1.
  *
@@ -664,7 +672,7 @@ static NUTFILE *VsOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return nfp;
 }
 
-/*! 
+/*!
  * \brief Close codec device.
  */
 static int VsClose(NUTFILE * nfp)
@@ -699,6 +707,14 @@ static int VsPlayBufferInit(uint32_t size)
  * - AUDIO_GET_STATUS   Sets an int to 1 if the player is running, 0 if idle.
  * - AUDIO_GET_PLAYGAIN Sets an int to the current playback gain, 0..-127.
  * - AUDIO_SET_PLAYGAIN Reads the requested playback gain from an int, 0..-127.
+ * - AUDIO_GET_TREB     Reads audio enhancement treble value as int in 1.5dB steps
+ * - AUDIO_SET_TREB     Sets audio enhancement treble value as int in 1.5dB steps
+ * - AUDIO_GET_TFIN     Reads audio enhancement treable cutoff frequency in 1000Hz steps
+ * - AUDIO_SET_TFIN     Sets audio enhancement treable cutoff frequency in 1000Hz steps
+ * - AUDIO_GET_BASS     Reads audio enhancement bass value as int in 1dB steps
+ * - AUDIO_SET_BASS     Sets audio enhancement bass value as int in 1dB steps
+ * - AUDIO_GET_BFIN     Reads audio enhancement bass cutoff frequency in 10Hz steps
+ * - AUDIO_SET_BFIN     Sets audio enhancement bass cutoff frequency in 10Hz steps
  * - AUDIO_GET_PBSIZE   Sets an unsigned long with the size of the playback buffer.
  * - AUDIO_SET_PBSIZE   Sets the size the playback buffer using an unsigned long.
  * - AUDIO_GET_PBLEVEL  Sets an unsigned long with the number of bytes in the playback buffer.
@@ -750,6 +766,40 @@ static int VsIOCtl(NUTDEVICE * dev, int req, void *conf)
         }
         dcb.dcb_slvol = dcb.dcb_srvol = iv;
         break;
+    case AUDIO_GET_TREB:
+        *lvp = dcb.dcb_ctreb;
+        break;
+    case AUDIO_SET_TREB:
+        if( iv > AUDIO_DAC_MAX_TREB) {
+            iv = AUDIO_DAC_MAX_TREB;
+        }
+        dcb.dcb_streb = iv;
+        break;
+    case AUDIO_GET_TFIN:
+        *lvp = dcb.dcb_ctfin;
+        break;
+    case AUDIO_SET_TFIN:
+        if( iv > AUDIO_DAC_MAX_TFIN) {
+            iv = AUDIO_DAC_MAX_TFIN;
+        }
+        dcb.dcb_stfin = iv;
+        break;
+    case AUDIO_GET_BASS:
+        *lvp = dcb.dcb_cbass;
+        break;
+    case AUDIO_SET_BASS:
+        if( iv > AUDIO_DAC_MAX_BASS) {
+            iv = AUDIO_DAC_MAX_BASS;
+        }
+        dcb.dcb_sbass = iv;
+    case AUDIO_GET_BFIN:
+        *lvp = dcb.dcb_cbass;
+        break;
+    case AUDIO_SET_BFIN:
+        if( iv > AUDIO_DAC_MAX_BFIN) {
+            iv = AUDIO_DAC_MAX_BFIN;
+        }
+        dcb.dcb_sbass = iv;
     case AUDIO_GET_PBSIZE:
         *lvp = NutSegBufAvailable() + NutSegBufUsed();
         break;
@@ -857,7 +907,7 @@ static int VsInit(NUTDEVICE * dev)
 /*!
  * \brief VS10XX device information structure.
  *
- * An application must pass a pointer to this structure to 
+ * An application must pass a pointer to this structure to
  * NutRegisterDevice() before using this driver.
  *
  * The device is named \b audio0.

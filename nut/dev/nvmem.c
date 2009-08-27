@@ -83,6 +83,8 @@
 #include <dev/at49bv.h>
 #elif defined(NUT_CONFIG_AT91EFC)
 #include <arch/arm/at91_efc.h>
+#elif defined(NUT_CONFIG_AT24)
+#include <dev/eeprom.h>
 #endif
 
 /*!
@@ -117,7 +119,7 @@ int NutNvMemLoad(unsigned int addr, void *buff, size_t siz)
 #elif defined(NUT_CONFIG_AT91EFC)
     return At91EfcParamRead(addr, buff, siz);
 #elif defined(NUT_CONFIG_AT24)
-    return EEReadData( addr, buff, len);
+    return EEReadData( addr, buff, siz);
 #else
     return -1;
 #endif

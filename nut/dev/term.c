@@ -100,7 +100,7 @@ static void TermRefreshLineEnd(CONST TERMDCB * dcb, uint8_t row, uint8_t col)
     (*dcb->dss_set_cursor) (row * dcb->dcb_ncols + col);
 
     /*
-     * This loop looks weird. But it was the only way I found to get 
+     * This loop looks weird. But it was the only way I found to get
      * around a GCC bug in reload1.c:1920.
      */
     for (;;) {
@@ -285,27 +285,27 @@ static void TermIdentify(TERMDCB * dcb)
  *             function.
  * \param req  Requested control function. May be set to one of the
  *             following constants:
- * - LCD_CMDBYTE     Send command byte to display. Parameter conf points 
+ * - LCD_CMDBYTE     Send command byte to display. Parameter conf points
  *                   to  an u_char value containing the command byte.
- * - LCD_CMDWORD16   Send 16 bit command word to display. Parameter conf 
- *                   points to an uint16_t value containing the command 
+ * - LCD_CMDWORD16   Send 16 bit command word to display. Parameter conf
+ *                   points to an uint16_t value containing the command
  *                   bytes. The most significant byte is send first.
- * - LCD_CMDWORD32   Send 32 bit command byte to display. Parameter conf 
- *                   points to an uint32_t value containing the command 
+ * - LCD_CMDWORD32   Send 32 bit command byte to display. Parameter conf
+ *                   points to an uint32_t value containing the command
  *                   bytes. The most significant bytes are send first.
- * - LCD_DATABYTE    Send raw data byte to display. Parameter conf points 
+ * - LCD_DATABYTE    Send raw data byte to display. Parameter conf points
  *                   to an u_char value containing the data byte.
- * - LCD_DATAWORD16  Send 16 bit raw data word to display. Parameter conf 
- *                   points to an uint16_t value containing the data 
+ * - LCD_DATAWORD16  Send 16 bit raw data word to display. Parameter conf
+ *                   points to an uint16_t value containing the data
  *                   bytes. The most significant byte is send first.
- * - LCD_DATAWORD32  Send 32 bit raw data word to display. Parameter conf 
- *                   points to an uint32_t value containing the data 
+ * - LCD_DATAWORD32  Send 32 bit raw data word to display. Parameter conf
+ *                   points to an uint32_t value containing the data
  *                   bytes. The most significant bytes are send first.
- * - LCD_SETCOOKEDMODE Set terminal control character mode. Parameter conf 
- *                     points to an uint32_t value containing 0 (off) or 1 
+ * - LCD_SETCOOKEDMODE Set terminal control character mode. Parameter conf
+ *                     points to an uint32_t value containing 0 (off) or 1
  *                     (on).
- * - LCD_GETCOOKEDMODE Query terminal control character mode. Parameter 
- *                     conf points to an uint32_t value receiving 0 (off) 
+ * - LCD_GETCOOKEDMODE Query terminal control character mode. Parameter
+ *                     conf points to an uint32_t value receiving 0 (off)
  *                     or 1 (on).
  *
  * \param conf Points to a buffer that contains any data required for
@@ -391,24 +391,37 @@ int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 int TermInit(NUTDEVICE * dev)
 {
+    int rc;
+
     TERMDCB *dcb = dev->dev_dcb;
 
     /*
+     * Check if initialisazion needed.
+     */
+    if( dcb->dss_init == NULL) {
+        return -1;
+    }
+    /*
      * Initialize the display hardware.
      */
-    (*dcb->dss_init) (dev);
-
+    rc = (*dcb->dss_init)(dev);
+    if(  rc != 0) {
+        return rc;
+    }
     /*
      * Initialize driver control block.
      */
     dcb->dcb_smem = malloc(dcb->dcb_nrows * dcb->dcb_vcols);
+    if( dcb->dcb_smem == NULL) {
+        return -1;
+    }
     TermClear(dcb);
 
     return 0;
 }
 
-/*! 
- * \brief Write to the terminal device. 
+/*!
+ * \brief Write to the terminal device.
  *
  * \param fp     File pointer to a previously opened device.
  * \param buffer Pointer to the data bytes to be written.
@@ -621,8 +634,8 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
             }
         }
 
-        /* 
-         * Send any character to the LCD driver, which had been left 
+        /*
+         * Send any character to the LCD driver, which had been left
          * unprocessed upto this point.
          */
         (*dcb->dss_write) (ch);
@@ -639,7 +652,7 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     return rc;
 }
 
-/*! 
+/*!
  * \brief Write data to a terminal device.
  *
  * Application should not call this function directly, but use the
@@ -687,7 +700,7 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
  *
  * \bug Switching from graphic mode back to text mode will not work,
  *      because all escape sequences are ignored as soon as the graphic
- *      mode has been enabled. Applications should use _ioctl() 
+ *      mode has been enabled. Applications should use _ioctl()
  *      functions to switch modes.
  */
 int TermWrite(NUTFILE * fp, CONST void *buffer, int len)
@@ -695,7 +708,7 @@ int TermWrite(NUTFILE * fp, CONST void *buffer, int len)
     return TermPut(fp->nf_dev, buffer, len, 0);
 }
 
-/*! 
+/*!
  * \brief Write data from program space to a terminal device.
  *
  * Similar to TermWrite() except that the data is located in program memory.
@@ -716,7 +729,7 @@ int TermWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 }
 #endif
 
-/*! 
+/*!
  * \brief Open a terminal device.
  *
  * Application should not call this function directly, but use the
@@ -752,7 +765,7 @@ NUTFILE *TermOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
+/*!
  * \brief Close a device or file.
  *
  * Application should not call this function directly, but use the

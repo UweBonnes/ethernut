@@ -325,7 +325,7 @@ static void LcdCursorMode(uint8_t on)
     LcdDelay(10 * LCD_LONG_DELAY);
 }
 
-static void LcdInit(NUTDEVICE * dev)
+static int LcdInit(NUTDEVICE * dev)
 {
 #if defined(PMC_PCER)
     unsigned int pcer = 0;
@@ -382,6 +382,8 @@ static void LcdInit(NUTDEVICE * dev)
     LcdClear();
     /* Move cursor home. */
     LcdCursorHome();
+
+    return 0;
 }
 
 /*!

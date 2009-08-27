@@ -38,6 +38,7 @@
  */
 
 #include <dev/vscodec.h>
+#include <stdio.h>
 
 #include <sys/event.h>
 #include <sys/timer.h>
@@ -62,7 +63,9 @@
 /*! \brief Volume update. */
 #define VSREQ_VOLUPD    0x00000004
 /*! \brief Sine wave test. */
-#define VSREQ_BEEP      0x00000008
+#define VSREQ_AUDIOE    0x00000008
+/*! \brief audio enhancement update. */
+#define VSREQ_BEEP      0x00000010
 /*@}*/
 
 
@@ -127,9 +130,9 @@ uint16_t VsCodecReg(NUTDEVICE *dev, uint_fast8_t op, uint_fast8_t reg, uint_fast
  * Set both, flags and mask to zero to read the flags without change.
  *
  * \param dev   Specifies the audio codec device.
- * \param flags Mode flags to set. All other flags are disabled, if they 
+ * \param flags Mode flags to set. All other flags are disabled, if they
  *              appear in the mask.
- * \param mask  Mode flags to update. All other flags are left unchanged. 
+ * \param mask  Mode flags to update. All other flags are left unchanged.
  *
  * \return Previous mode flags.
  */
@@ -166,6 +169,7 @@ int VsDecoderSetVolume(NUTDEVICE *dev, int left, int right)
     uint16_t l;
     uint16_t r;
 
+    printf("vol set %d %d\n", left, right);
     /* Honor limits. */
     left = left > AUDIO_DAC_MAX_GAIN ? AUDIO_DAC_MAX_GAIN : left;
     left = left < AUDIO_DAC_MIN_GAIN ? AUDIO_DAC_MIN_GAIN : left;
@@ -184,9 +188,56 @@ int VsDecoderSetVolume(NUTDEVICE *dev, int left, int right)
 }
 
 /*!
+ * \brief Set Bass.
+ *
+ * \param dev   Specifies the audio codec device.
+ * \param treb  Treble amplitude x 1.5dB.
+ * \param tset  Treble frequency limit x 1000Hz
+ * \param bass  Bass amplitude x 1dB.
+ * \param bset  Bass frequency limit x 10Hz
+ *
+ * \return Always 0.
+ */
+int VsDecoderSetBass(NUTDEVICE *dev, int treb, int tfin, int bass, int bfin)
+{
+    VSDCB *dcb = (VSDCB *)dev->dev_dcb;
+//    uint16_t t;
+//    uint16_t b;
+
+    printf("bass: t:%ddB tf:%dHz b:%ddB bf:%dHz\n", treb, tfin*1000, bass, bfin);
+    /* Honor limits. */
+    treb = treb > AUDIO_DAC_MAX_TREB ? AUDIO_DAC_MAX_TREB : treb;
+    treb = treb < 0 ? 0 : treb;
+    tfin = tfin > AUDIO_DAC_MAX_TFIN ? AUDIO_DAC_MAX_TFIN : tfin;
+    tfin = tfin < 0 ? 0 : tfin;
+    bass = bass > AUDIO_DAC_MAX_BASS ? AUDIO_DAC_MAX_BASS : bass;
+    bass = bass < 0 ? 0 : bass;
+    bfin = bfin > AUDIO_DAC_MAX_BFIN ? AUDIO_DAC_MAX_BFIN : bfin;
+    bfin = bfin < 0 ? 0 : bfin;
+
+    /* Convert to register values. */
+    /*
+    l = (uint16_t)(-2 * left);
+    r = (uint16_t)(-2 * right);
+    */
+
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_BASS_REG,
+        (treb << VS_ST_AMPLITUDE_LSB) | (tfin << VS_ST_FREQLIMIT_LSB) |
+        (treb << VS_SB_AMPLITUDE_LSB) | (tfin << VS_SB_FREQLIMIT_LSB)
+    );
+
+    dcb->dcb_treb = treb;
+    dcb->dcb_tfin = tfin;
+    dcb->dcb_bass = bass;
+    dcb->dcb_bfin = bfin;
+
+    return 0;
+}
+
+/*!
  * \brief Start or stop sine wave beeper.
  *
- * Old, VS1001 compatible routine, which supports a limit number of 
+ * Old, VS1001 compatible routine, which supports a limit number of
  * frequencies only. It will try to find the best value.
  *
  * \param dev Specifies the audio codec device.
@@ -293,8 +344,8 @@ THREAD(FeederThread, arg)
     /* We are a high priority thread. */
     NutThreadSetPriority(7);
     for (;;) {
-        /* 
-        ** Idle mode processing. 
+        /*
+        ** Idle mode processing.
         */
         if (dcb->dcb_pbstat == CODEC_STATUS_IDLE) {
             /* Loop while in test mode. */
@@ -319,8 +370,8 @@ THREAD(FeederThread, arg)
             }
         }
 
-        /* 
-        ** Play mode processing. 
+        /*
+        ** Play mode processing.
         */
         if (dcb->dcb_pbstat == CODEC_STATUS_PLAYING) {
             /* Wait while decoder is busy. */
@@ -350,14 +401,18 @@ THREAD(FeederThread, arg)
                     VsDecoderSetVolume(dev, dcb->dcb_lvol, dcb->dcb_rvol);
                     dcb->dcb_scmd &= ~VSREQ_VOLUPD;
                 }
+                if (dcb->dcb_scmd & VSREQ_AUDIOE) {
+                    VsDecoderSetBass( dev, dcb->dcb_treb, dcb->dcb_tfin, dcb->dcb_bass, dcb->dcb_bfin);
+                    dcb->dcb_scmd &= ~VSREQ_AUDIOE;
+                }
             } else if (NutSegBufUsed() == 0) {
                 /* Running out of data. */
                 if (idlefill) {
                     /* For some reason the HDAT0/HDAT1 registers in the
                     ** VS1053 do not contain zero when the codec runs
                     ** empty. I expected this when reading the datasheet.
-                    ** Instead we fill the buffer with zeros, to make 
-                    ** sure that the whole buffer is decoded before we 
+                    ** Instead we fill the buffer with zeros, to make
+                    ** sure that the whole buffer is decoded before we
                     ** enter idle mode. */
                     idlefill -= (*dcb->dcb_senddata)(NULL, idlefill);
                 }
@@ -424,6 +479,22 @@ int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf)
         dcb->dcb_lvol = *ivp;
         dcb->dcb_rvol = *ivp;
         dcb->dcb_scmd |= VSREQ_VOLUPD;
+        break;
+    case AUDIO_SET_TREB:
+        dcb->dcb_treb = *ivp;
+        dcb->dcb_scmd |= VSREQ_AUDIOE;
+        break;
+    case AUDIO_SET_TFIN:
+        dcb->dcb_tfin = *ivp;
+        dcb->dcb_scmd |= VSREQ_AUDIOE;
+        break;
+    case AUDIO_SET_BASS:
+        dcb->dcb_bass = *ivp;
+        dcb->dcb_scmd |= VSREQ_AUDIOE;
+        break;
+    case AUDIO_SET_BFIN:
+        dcb->dcb_bfin = *ivp;
+        dcb->dcb_scmd |= VSREQ_AUDIOE;
         break;
     case AUDIO_GET_PBSIZE:
         *lvp = NutSegBufAvailable() + NutSegBufUsed();
@@ -503,8 +574,8 @@ int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Flush VLSI audio decoder buffer.
  *
- * Waits until all currently buffered data had been processed by the 
- * decoder. This makes sure that the end of the stream will not be 
+ * Waits until all currently buffered data had been processed by the
+ * decoder. This makes sure that the end of the stream will not be
  * cut off.
  *
  * \param dev Specifies the audio codec device.
@@ -539,7 +610,7 @@ static int VsDecoderBufferFlush(NUTDEVICE *dev, uint32_t tmo)
 /*!
  * \brief Write to decoder.
  *
- * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous
  *             call to VsCodecOpen().
  * \param data Pointer to the data buffer. If NULL, the buffered data
  *             will be flushed.
@@ -586,24 +657,24 @@ int VsCodecWrite(NUTFILE * nfp, CONST void *data, int len)
 }
 
 #ifdef __HARVARD_ARCH__
-/*! 
+/*!
  * \brief Write program data to decoder.
  *
  * Similar to VsCodecWrite() except that the data is expected in program memory.
  *
  * This function is implemented for CPUs with Harvard Architecture only.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write_P entry.
  *
- * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous 
+ * \param nfp    Pointer to a \ref NUTFILE structure, obtained by a previous
  *               call to VsCodecOpen().
  * \param buffer Pointer to the data in program space. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
- * \return The number of bytes written. A return value of -1 indicates an 
+ * \return The number of bytes written. A return value of -1 indicates an
  *         error. Currently this function is not implemented and always
  *         returns -1.
  *
@@ -635,7 +706,7 @@ NUTFILE *VsCodecOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return nfp;
 }
 
-/* 
+/*
  * Close codec stream.
  */
 int VsCodecClose(NUTFILE * nfp)

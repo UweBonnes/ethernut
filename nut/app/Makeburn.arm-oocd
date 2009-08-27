@@ -1,0 +1,6 @@
+BURN=openocd
+BURNMEMORY=FLASHNN
+
+#BURNFLAGS=-f interface/openocd-usb.cfg -f target/sam7x256.cfg -c init -f $(top_srcdir)/tools/flash/flash.script -c "flash write_image erase ./$(ITARG) 0x00100000 bin" -f $(top_srcdir)/tools/flash/flash-exit.script
+#BURNFLAGS=-f interface/openocd-usb.cfg -f target/sam7se512.cfg -c init -f $(top_srcdir)/tools/flash/flash.script -c "flash write_image erase ./$(ITARG) 0x00100000 bin" -f $(top_srcdir)/tools/flash/flash-exit.script
+BURNFLAGS=-f interface/openocd-usb.cfg -f target/sam7se512.cfg -c init -f $(top_srcdir)/tools/flash/flash.script -c "flash write_image erase ./$(ITARG) 0x00100000 bin" -f $(top_srcdir)/tools/flash/flash-exit.script

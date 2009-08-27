@@ -140,8 +140,8 @@ static int UromSeek(NUTFILE * fp, long *pos, int whence)
     return rc;
 }
 
-/*! 
- * \brief Read from device. 
+/*!
+ * \brief Read from device.
  */
 static int UromRead(NUTFILE * fp, void *buffer, int size)
 {
@@ -157,7 +157,7 @@ static int UromRead(NUTFILE * fp, void *buffer, int size)
     return size;
 }
 
-/*! 
+/*!
  * \brief Write data to a file.
  *
  * \return Always returns -1.
@@ -167,7 +167,7 @@ static int UromWrite(NUTFILE * fp, CONST void *buffer, int len)
     return -1;
 }
 
-/*! 
+/*!
  * \brief Write data from progam space to a file.
  *
  * \return Always returns -1.
@@ -180,7 +180,7 @@ static int UromWrite_P(NUTFILE * fp, PGM_P buffer, int len)
 #endif
 
 
-/*! 
+/*!
  * \brief Open a file.
  */
 static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
@@ -219,8 +219,8 @@ static NUTFILE *UromOpen(NUTDEVICE * dev, CONST char *name, int mode,
     return fp;
 }
 
-/*! 
- * \brief Close a file. 
+/*!
+ * \brief Close a file.
  */
 static int UromClose(NUTFILE * fp)
 {
@@ -232,7 +232,7 @@ static int UromClose(NUTFILE * fp)
     return 0;
 }
 
-/*! 
+/*!
  * \brief Query file size.
  */
 static long UromSize(NUTFILE * fp)

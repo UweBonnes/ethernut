@@ -521,7 +521,7 @@ static void LcdCursorMode(uint8_t on)
     LcdDelay(10 * LCD_LONG_DELAY);
 }
 
-static void LcdInit(NUTDEVICE * dev)
+static int LcdInit(NUTDEVICE * dev)
 {
 #if defined(PMC_PCER)
     outr(PMC_PCER, _BV(LCD_PIO_ID));
@@ -573,6 +573,8 @@ static void LcdInit(NUTDEVICE * dev)
     LcdCursorHome();
     /* Set data address to zero. */
     LcdWriteCmd(_BV(LCD_DDRAM));
+
+    return 0;
 }
 
 /*!
