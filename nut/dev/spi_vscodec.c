@@ -200,6 +200,7 @@ int VsDecoderSetVolume(NUTDEVICE *dev, int left, int right)
  */
 int VsDecoderSetBass(NUTDEVICE *dev, int treb, int tfin, int bass, int bfin)
 {
+#ifdef VS_HAS_BASS_REG
     VSDCB *dcb = (VSDCB *)dev->dev_dcb;
 //    uint16_t t;
 //    uint16_t b;
@@ -230,6 +231,7 @@ int VsDecoderSetBass(NUTDEVICE *dev, int treb, int tfin, int bass, int bfin)
     dcb->dcb_tfin = tfin;
     dcb->dcb_bass = bass;
     dcb->dcb_bfin = bfin;
+#endif
 
     return 0;
 }
