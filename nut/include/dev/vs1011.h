@@ -72,7 +72,9 @@
 #define VS_HAS_SC_FREQ          1
 #define VS_HAS_SC_X3FREQ        0
 #define VS_HAS_SC_ADD           0
+#define VS_HAS_SC_ADD2          0
 #define VS_HAS_SC_MULT          0
+#define VS_HAS_SC_MULT5         0
 #define VS_HAS_CF_DOUBLER       1
 
 #define VS_HAS_AD_STEREO_BIT0   1

@@ -74,7 +74,9 @@
 #define VS_HAS_SC_FREQ          0
 #define VS_HAS_SC_X3FREQ        0
 #define VS_HAS_SC_ADD           0
+#define VS_HAS_SC_ADD2          0
 #define VS_HAS_SC_MULT          0
+#define VS_HAS_SC_MULT5         0
 #define VS_HAS_CF_DOUBLER       1
 
 #define VS_HAS_AD_STEREO_BIT0   0
@@ -95,6 +97,9 @@
 #define VS_HAS_AICTRL3_REG      1
 
 #define VS_FLUSH_BYTES          2048
+
+#define VS_DECODER_CAPS         (AUDIO_FMT_WAV_PCM | AUDIO_FMT_MPEG1_L3)
+#define VS_ENCODER_CAPS         (0)
 
 #endif
 
