@@ -133,7 +133,7 @@
 /* -------------------------------------------------
  * AT91 port specifications.
  */
-#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7SE512) || defined (MCU_AT91SAM9260)
+#if defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM7SE512) || defined (MCU_AT91SAM9260)
 
 #if defined(ELEKTOR_IR1)
 
