@@ -38,7 +38,6 @@
  */
 
 #include <dev/vscodec.h>
-#include <stdio.h>
 
 #include <sys/event.h>
 #include <sys/timer.h>
@@ -62,9 +61,9 @@
 #define VSREQ_CANCEL    0x00000002
 /*! \brief Volume update. */
 #define VSREQ_VOLUPD    0x00000004
-/*! \brief Sine wave test. */
+/*! \brief Audio enhancement update. */
 #define VSREQ_AUDIOE    0x00000008
-/*! \brief audio enhancement update. */
+/*! \brief Sine wave test. */
 #define VSREQ_BEEP      0x00000010
 /*@}*/
 
@@ -169,7 +168,7 @@ int VsDecoderSetVolume(NUTDEVICE *dev, int left, int right)
     uint16_t l;
     uint16_t r;
 
-    printf("vol set %d %d\n", left, right);
+    //printf("vol set %d %d\n", left, right);
     /* Honor limits. */
     left = left > AUDIO_DAC_MAX_GAIN ? AUDIO_DAC_MAX_GAIN : left;
     left = left < AUDIO_DAC_MIN_GAIN ? AUDIO_DAC_MIN_GAIN : left;
@@ -205,7 +204,7 @@ int VsDecoderSetBass(NUTDEVICE *dev, int treb, int tfin, int bass, int bfin)
 //    uint16_t t;
 //    uint16_t b;
 
-    printf("bass: t:%ddB tf:%dHz b:%ddB bf:%dHz\n", treb, tfin*1000, bass, bfin);
+    //printf("bass: t:%ddB tf:%dHz b:%ddB bf:%dHz\n", treb, tfin*1000, bass, bfin);
     /* Honor limits. */
     treb = treb > AUDIO_DAC_MAX_TREB ? AUDIO_DAC_MAX_TREB : treb;
     treb = treb < 0 ? 0 : treb;
