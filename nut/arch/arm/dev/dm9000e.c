@@ -103,7 +103,7 @@
 
 #ifndef NUT_THREAD_NICRXSTACK
 /* arm-elf-gcc size optimized code used 160 bytes. */
-#define NUT_THREAD_NICRXSTACK   256
+#define NUT_THREAD_NICRXSTACK   384
 #endif
 
 /*
