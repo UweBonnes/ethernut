@@ -245,7 +245,7 @@ NUTDEVICE devUsartAt910 = {
 ** Not sure if we must keep this.
 */
 #ifdef AT91_UART0_RS485
-#if defined(MCU_AT91SAM7X256)
+#if defined(MCU_AT91SAM7X)
 #undef US_PIOA_PINS_A
 #define US_PIOA_PINS_A  (_BV(PA0_RXD0_A) | _BV(PA1_TXD0_A) | _BV(PA3_RTS0_A))
 #undef AT91_UART_RS485_MODE

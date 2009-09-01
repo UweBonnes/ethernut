@@ -140,7 +140,7 @@
  * \brief GPIO controller ID.
  */
 #if !defined(LCD_PIO_ID)
-#if defined(MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
+#if defined(MCU_AT91SAM7X) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
 #define LCD_PIO_ID  PIOA_ID
 #elif defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 #define LCD_PIO_ID  PIOB_ID

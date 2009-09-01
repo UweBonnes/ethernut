@@ -145,9 +145,9 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int DebugInit(NUTDEVICE * dev)
 {
-#if defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
+#if defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
     /* Disable GPIO on UART tx/rx pins. */
-    #if defined (MCU_AT91SAM7X256)
+    #if defined (MCU_AT91SAM7X)
        outr(PIOA_PDR, _BV(27) | _BV(28));
     #elif defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
        outr(PIOA_PDR, _BV(PA9_DRXD_A) | _BV(PA10_DTXD_A));
@@ -213,7 +213,7 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(14) | _BV(15));
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
+#elif defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US0_ID));
     /* Disable GPIO on UART tx/rx pins. */
@@ -254,7 +254,7 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(PS_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */
     outr(PIO_PDR, _BV(21) | _BV(22));
-#elif defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
+#elif defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable UART clock. */
     outr(PMC_PCER, _BV(US1_ID));
     /* Disable GPIO on UART tx/rx pins. */

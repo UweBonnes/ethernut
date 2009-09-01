@@ -70,7 +70,7 @@
 #define NutEnableTimerIrq()    VICIntEnable  = (1 << VIC_TIMER0)
 #define NutDisableTimerIrq()   VICIntEnClr = (1 << VIC_TIMER0)
 
-#elif defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X256) || defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)  /* MCU */
+#elif defined (MCU_AT91R40008) || defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)  /* MCU */
 
 #if defined(NUT_TICK_AT91PIT)
 #define NutEnableTimerIrq()    NutSysIrqEnable(&syssig_PIT)

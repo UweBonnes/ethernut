@@ -108,7 +108,7 @@
 #define SPI0_MISO_BIT    3
 #endif
 
-#if defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X256) /* MCU ---------------------- */
+#if defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) /* MCU ---------------------- */
 
 #ifndef SPI0_PE_REG
 /*! \brief SPI port enable register.

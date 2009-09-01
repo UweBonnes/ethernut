@@ -195,7 +195,7 @@ void NutRegisterTimer(void (*handler) (void *))
 
     int dummy;
 
-#if defined(MCU_AT91SAM7X256) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
+#if defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable TC0 clock. */
     outr(PMC_PCER, _BV(TC0_ID));
 #endif

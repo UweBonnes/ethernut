@@ -149,7 +149,7 @@ extern IRQ_HANDLER sig_INTERRUPT1;
 extern IRQ_HANDLER sig_INTERRUPT2;
 extern IRQ_HANDLER sig_INTERRUPT2;
 
-#elif defined(MCU_AT91SAM7X256)
+#elif defined(MCU_AT91SAM7X)
 
 extern IRQ_HANDLER sig_FIQ;
 extern IRQ_HANDLER sig_SYS;

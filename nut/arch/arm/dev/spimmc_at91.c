@@ -89,7 +89,7 @@
 #define MMC_DATAIN_BIT  PA1_SPI0_MOSI_A
 #define MMC_CLK_BIT     PA2_SPI0_SPCK_A
 
-#elif defined(MCU_AT91SAM7X256)
+#elif defined(MCU_AT91SAM7X)
 
 #ifndef MMC_CS_BIT
 #define MMC_CS_BIT      SPI0_NPCS1_PA13A
@@ -107,7 +107,7 @@
 #define MMC_DATAIN_BIT  SPI0_MOSI_PA13A
 #define MMC_CLK_BIT     SPI0_SPCK_PA14A
 
-#else   /* MCU_AT91SAM7X256 */
+#else   /* MCU_AT91SAM7X */
 #warning "MMC SPI mode not supported on this MCU"
 #endif
 
