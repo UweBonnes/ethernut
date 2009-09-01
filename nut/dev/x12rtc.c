@@ -93,11 +93,10 @@
 
 #include <dev/x12rtc.h>
 
-#ifdef NUTDEBUG
+#if 0
 /* Use for local debugging. */
-#include <sys/osdebug.h>
+#define NUTDEBUG
 #include <stdio.h>
-#include <io.h>
 #endif
 
 #ifndef I2C_SLA_RTC
