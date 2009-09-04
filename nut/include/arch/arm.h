@@ -200,6 +200,10 @@ extern void *__stack;
 
 #define _BV(bit)    (1 << (bit))
 
+#define sbi(_reg, _bit)         outr(_reg, inr(_reg) | _BV(_bit))
+#define cbi(_reg, _bit)         outr(_reg, inr(_reg) & ~_BV(_bit))
+#define bit_is_set(_reg, _bit)  ((inr(_reg) & _BV(_bit)) != 0)
+
 #ifdef __IMAGECRAFT__
 #define __attribute__(x)
 #endif
