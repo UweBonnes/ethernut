@@ -244,7 +244,7 @@ int Spi7segInit(NUTDEVICE * dev)
 
 
 
-static const unsigned char CharLookup[] = {
+static CONST unsigned char CharLookup[] = {
 	/* '0' */(0x7E),
 	/* '1' */(0x30),
 	/* '2' */(0x6D),
