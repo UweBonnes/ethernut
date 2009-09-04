@@ -241,6 +241,13 @@ NUTDEVICE devUsartAt910 = {
 #endif
 
 /*
+** CPLD logic, currently used on Ethernut 3 only.
+*/
+#if defined(ETHERNUT3)
+#define UART_USES_NPL   1
+#endif
+
+/*
 ** Historical settings from Szemzo Andras for RS485.
 ** Not sure if we must keep this.
 */
