@@ -11,6 +11,11 @@ BURNIF=\usb\ARM0
 #BURNTARGET=AT91SAM7XC512-EK
 #BURNSCRIPT=$(top_srcdir)/tools/win32/at91sam-flash.tcl 0x100000
 
+# Morphoq
+#
+#BURNTARGET=AT91SAM7X512-EK
+#BURNSCRIPT=$(top_srcdir)/tools/win32/at91sam-flash.tcl 0x100000
+
 # ELEKTOR Internet Radio
 # AT91SAM7SE Evaluation Kit
 #
