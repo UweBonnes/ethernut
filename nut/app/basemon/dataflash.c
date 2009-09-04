@@ -145,6 +145,11 @@ static int SpiMemInit(u_short *pages, u_short *pagesize)
             *pages = 2048;
             return 0;
         }
+        else if(fs == 13) {
+            *pagesize = 528;
+            *pages = 8192;
+            return 0;
+        }
     }
     return -1;
 }
