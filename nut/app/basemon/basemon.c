@@ -177,7 +177,7 @@ extern int NutAppMain(void) __attribute__ ((noreturn));
 int uart_bs;
 u_char nic;
 
-static char *version = "4.2.0";
+static char *version = "4.3.0";
 static size_t sram;
 static u_char banks;
 static size_t banksize;
