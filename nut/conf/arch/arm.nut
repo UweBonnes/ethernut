@@ -238,7 +238,7 @@ nutarch_arm =
             }
         }
     },
-
+    
     --
     -- Runtime Initialization
     --
@@ -415,7 +415,7 @@ nutarch_arm =
         requires = { "HW_MCU_ARM", "TOOL_GCC" },
         sources = { "arm/os/context.c" },
     },
-
+    
     --
     -- System Timer Hardware
     --
@@ -529,7 +529,7 @@ nutarch_arm =
         name = "nutarch_arm_irqat91sam7s",
         brief = "Interrupt Handler (SAM7S)",
         requires = { "HW_MCU_AT91SAM7S" },
-        provides = { "DEV_IRQ_AT91" },
+        provides = { "DEV_IRQ_AT91" }, 
         sources =
         {
             "arm/dev/ih_at91fiq.c",
@@ -555,7 +555,7 @@ nutarch_arm =
         name = "nutarch_arm_irqat91sam7se",
         brief = "Interrupt Handler (SAM7SE)",
         requires = { "HW_MCU_AT91SAM7SE" },
-        provides = { "DEV_IRQ_AT91" },
+        provides = { "DEV_IRQ_AT91" }, 
         sources =
         {
             "arm/dev/ih_at91fiq.c",
@@ -714,13 +714,13 @@ nutarch_arm =
             {
                 macro = "AT91_UART0_RS485",
                 brief = "USE HW RS485 on UART0",
-        		description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
-                      "The UART0 RTS pin is used for RS485 direction switching.",
+                description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
+                              "The UART0 RTS pin is used for RS485 direction switching.",
                 provides = { "AT91_UART0_RS485" },
                 flavor = "booldata",
+                file = "include/cfg/uart.h"
             },
-
-	},
+        },
     },
     {
         name = "nutarch_arm_usart1",
@@ -763,13 +763,13 @@ nutarch_arm =
             {
                 macro = "AT91_UART1_RS485",
                 brief = "USE HW RS485 on UART1",
-        description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
-                      "The UART1 RTS pin is used for RS485 direction switching.",
+                description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
+                              "The UART1 RTS pin is used for RS485 direction switching.",
                 provides = { "AT91_UART1_RS485" },
                 flavor = "booldata",
+                file = "include/cfg/uart.h"
             },
-
-	},
+        },
     },
     {
         name = "nutarch_arm_ahdlc",
@@ -1033,7 +1033,7 @@ nutarch_arm =
                 file = "include/cfg/arch/armpio.h"
             },
         }
-
+        
     },
     {
         name = "nutarch_gba_debug",
@@ -1041,7 +1041,7 @@ nutarch_arm =
         requires = { "HW_LCD_GBA" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
         sources = { "arm/dev/debug_gba.c" }
-    },
+    },   
     {
         name = "nutarch_arm_ax88796",
         brief = "AX88796 Driver (AT91)",
@@ -1049,7 +1049,7 @@ nutarch_arm =
         requires = { "HW_MCU_AT91R40008", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/ax88796.c" },
-    },
+    },     
     {
         name = "nutarch_arm_dm9000e",
         brief = "DM9000E Driver (AT91)",
@@ -1164,7 +1164,7 @@ nutarch_arm =
         requires = { "HW_TWI_AT91" },
         provides = { "DEV_TWI" },
         sources = { "arm/dev/at91_twi.c" },
-    },
+    },     
     {
         name = "nutarch_arm_adc_at91",
         brief = "AT91 ADC",
@@ -1172,7 +1172,7 @@ nutarch_arm =
         requires = { "HW_MCU_AT91SAM7X" },
         provides = { "DEV_ADC" },
         sources = { "arm/dev/at91_adc.c" },
-    },
+    },   
     {
         name = "nutarch_arm_spimmc_at91",
         brief = "AT91 SPI MMC Access",
@@ -1180,7 +1180,7 @@ nutarch_arm =
         requires = { "HW_SPI_AT91" },
         provides = { "DEV_MMCLL" },
         sources = { "arm/dev/spimmc_at91.c" },
-    },
+    },     
     {
         name = "nutarch_arm_mci_at91",
         brief = "AT91 MCI Device",
@@ -1188,8 +1188,8 @@ nutarch_arm =
         requires = { "HW_MCI_AT91", "HW_MCU_AT91SAM9260" },
         provides = { "DEV_BLOCK" },
         sources = { "arm/dev/at91_mci.c" },
-    },
-
+    },     
+    
     --
     -- Special Functions
     --
@@ -1213,11 +1213,11 @@ nutarch_arm =
         brief = "AT91 GPIO",
         description = "Generic port I/O API.",
         requires = { "HW_MCU_AT91" },
-        sources = {
+        sources = { 
           "arm/dev/gpio_at91.c" ,
           "arm/dev/gpioa_at91.c",
           "arm/dev/gpiob_at91.c",
-          "arm/dev/gpioc_at91.c"
+          "arm/dev/gpioc_at91.c" 
         },
     },
     {
@@ -1229,8 +1229,8 @@ nutarch_arm =
                       "left unfinished.",
         requires = { "HW_SPI_AT91" },
         provides = { "SPIBUS_CONTROLLER" },
-        sources =
-        {
+        sources = 
+        { 
             "arm/dev/spibus_at91.c",
             "arm/dev/spibus0at91.c",
             "arm/dev/spibus1at91.c"
