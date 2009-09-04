@@ -260,7 +260,7 @@ static void LcdCursorMode(uint8_t on)
  * \brief Initialization of the LCD controller
  */
 
-static void LcdInit(NUTDEVICE * dev)
+static int LcdInit(NUTDEVICE * dev)
 {
     lcd_base = dev->dev_base;
 #ifdef  KS0073_CONTROLLER
@@ -296,6 +296,8 @@ static void LcdInit(NUTDEVICE * dev)
     LcdWriteCmd(1 << LCD_HOME, 0);
     // set data address to 0
     LcdWriteCmd(1 << LCD_DDRAM | 0x00, 0);
+
+    return 0;
 }
 
 /*!

@@ -477,7 +477,7 @@ static void LcdCursorMode(uint8_t on)
     LcdWriteCmd(1 << LCD_ON_CTRL | on ? 1 << LCD_ON_CURSOR : 0x00, LCD_LONG_DELAY);
 }
 
-static void LcdInit(NUTDEVICE *dev)
+static int LcdInit(NUTDEVICE *dev)
 {
     /*
      * Set LCD register select and enable outputs.
@@ -540,6 +540,8 @@ static void LcdInit(NUTDEVICE *dev)
     // set data address to 0
     LcdWriteCmd(1 << LCD_DDRAM | 0x00, LCD_LONG_DELAY);    
     during_init = 0;
+
+    return 0;
 }
 
 /*!
