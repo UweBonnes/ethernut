@@ -2,7 +2,10 @@
 #define _SMSCREGS_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2003 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +20,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -34,10 +37,12 @@
  */
 
 /*
- * $Log$
- * Revision 1.1  2003/11/03 16:09:22  haraldkipp
- * Completely rewritten to support Ethernut 2
+ * $Id$
  *
+ * WARNING! Do not use any part of Basemon for your own applications. WARNING!
+ *
+ * This is not a typical application sample. It overrides parts of Nut/OS to
+ * keep it running on broken hardware.
  */
 
 #define NIC_BASE            0xC000
@@ -347,17 +352,17 @@
 
 #define MSBV(bit)       (1 << ((bit) - 8))
 
-#define nic_outlb(addr, val) (*(volatile u_char *)(addr) = (val))
-#define nic_outhb(addr, val) (*(volatile u_char *)((addr) + 1) = (val))
-#define nic_outwx(addr, val) (*(volatile u_short *)(addr) = (val))
+#define nic_outlb(addr, val) (*(volatile uint8_t *)(addr) = (val))
+#define nic_outhb(addr, val) (*(volatile uint8_t *)((addr) + 1) = (val))
+#define nic_outwx(addr, val) (*(volatile uint16_t *)(addr) = (val))
 #define nic_outw(addr, val) { \
-    *(volatile u_char *)(addr) = (u_char)(val); \
-    *((volatile u_char *)(addr) + 1) = (u_char)((val) >> 8); \
+    *(volatile uint8_t *)(addr) = (uint8_t)(val); \
+    *((volatile uint8_t *)(addr) + 1) = (uint8_t)((val) >> 8); \
 }
 
-#define nic_inlb(addr) (*(volatile u_char *)(addr))
-#define nic_inhb(addr) (*(volatile u_char *)((addr) + 1))
-#define nic_inw(addr) (*(volatile u_short *)(addr))
+#define nic_inlb(addr) (*(volatile uint8_t *)(addr))
+#define nic_inhb(addr) (*(volatile uint8_t *)((addr) + 1))
+#define nic_inw(addr) (*(volatile uint16_t *)(addr))
 
 #define nic_bs(bank)    nic_outlb(NIC_BSR, bank)
 

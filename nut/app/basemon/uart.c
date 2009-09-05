@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,17 +34,12 @@
  */
 
 /*
- * $Log$
- * Revision 1.6  2006/10/05 17:09:40  haraldkipp
- * Signed mismatches corrected.
+ * $Id$
  *
- * Revision 1.5  2006/07/21 09:06:36  haraldkipp
- * Exclude AVR specific parts from building for other platforms. This does
- * not imply, that all samples are working on all platforms.
+ * WARNING! Do not use any part of Basemon for your own applications. WARNING!
  *
- * Revision 1.4  2006/05/15 11:51:07  haraldkipp
- * Added support for external watchdog hardware.
- *
+ * This is not a typical application sample. It overrides parts of Nut/OS to
+ * keep it running on broken hardware.
  */
 
 #include <stdio.h>
@@ -60,9 +58,9 @@ char inbuff[32];
 /*
  * Wait for a character from the serial port.
  */
-u_char GetChar(void)
+uint8_t GetChar(void)
 {
-    u_char ch;
+    uint8_t ch;
 
 #ifdef HEARTBEAT_BIT
     HeartBeat();
@@ -83,7 +81,7 @@ u_char GetChar(void)
 int GetLine(char * line, int size)
 {
     int cnt = 0;
-    u_char ch;
+    uint8_t ch;
 
     GetChar();
     for (;;) {
@@ -113,7 +111,7 @@ char *GetIP(char * prompt, char * value)
         printf("%s (%s): ", prompt, value);
         if (GetLine(inbuff, sizeof(inbuff)) == 0)
             break;
-        if (inet_addr(inbuff) != (u_long) (-1L)) {
+        if (inet_addr(inbuff) != (uint32_t) (-1L)) {
             strcpy(value, inbuff);
             break;
         }
@@ -131,7 +129,7 @@ char *GetIP(char * prompt, char * value)
 int DetectSpeed(void)
 {
 #if defined (__AVR__)
-    u_char bstab[] = {
+    uint8_t bstab[] = {
         1,      /* 115200 @  3.6864 */
         7,      /* 115200 @ 14.7456 */
         23,     /*   9600 @  3.6864, 19200 @  7.3728, 38400 @ 14.7456 */
@@ -154,12 +152,12 @@ int DetectSpeed(void)
         129,    /*   9600 @ 20.0000 */
         77      /*   9600 @ 12.0000 */
     };
-    u_char bsx;
+    uint8_t bsx;
     int bs;
-    u_short i;
-    u_char t;
-    u_char rec;
-    u_char ict;                 /* Imagecraft dummy */
+    uint16_t i;
+    uint8_t t;
+    uint8_t rec;
+    uint8_t ict;                 /* Imagecraft dummy */
 
     /*
      * Enable UART transmitter and receiver.
@@ -179,7 +177,7 @@ int DetectSpeed(void)
             Delay(1000);
             if ((inb(USR) & _BV(RXC)) != 0)
                 ict = inb(UDR);
-            outb(UBRR, (u_char) bs);
+            outb(UBRR, (uint8_t) bs);
             Delay(1000);
             if ((inb(USR) & _BV(RXC)) != 0)
                 ict = inb(UDR);

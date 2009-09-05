@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,17 +34,12 @@
  */
 
 /*
- * $Log$
- * Revision 1.6  2006/10/05 17:09:40  haraldkipp
- * Signed mismatches corrected.
+ * $Id$
  *
- * Revision 1.5  2006/09/29 12:18:35  haraldkipp
- * Added support for ATmega2561.
+ * WARNING! Do not use any part of Basemon for your own applications. WARNING!
  *
- * Revision 1.4  2006/07/21 09:06:36  haraldkipp
- * Exclude AVR specific parts from building for other platforms. This does
- * not imply, that all samples are working on all platforms.
- *
+ * This is not a typical application sample. It overrides parts of Nut/OS to
+ * keep it running on broken hardware.
  */
 
 #include <string.h>
@@ -51,7 +49,7 @@
 #include "uart.h"
 #include "xmemtest.h"
 
-extern u_char GetChar(void);
+extern uint8_t GetChar(void);
 
 #define MERR_BAD_ADDR       1
 #define MERR_BAD_DATA       2
@@ -64,7 +62,7 @@ extern u_char GetChar(void);
 #define MERR_SHORT_ADDRBUS  9
 
 static int merr;
-static u_char merr_bits;
+static uint8_t merr_bits;
 static void *merr_addr;
 
 /* PORTA: AD0..7 */
@@ -125,7 +123,7 @@ void XMemDisable(void)
 
 #ifdef __AVR_ENHANCED__
 
-void XMemLatch(u_char val)
+void XMemLatch(uint8_t val)
 {
     /* Port A is connected to latch inputs. */
     outb(PORTA, val);
@@ -141,7 +139,7 @@ void MemWrite(uptr_t addr, ureg_t data)
     outb(PORTC, addr >> 8);
 
     /* Set low address byte. */
-    outb(PORTA, (u_char)addr);
+    outb(PORTA, (uint8_t)addr);
 
     /* ALE falling */
     cbi(PORTG, PORTG2);
@@ -159,13 +157,13 @@ void MemWrite(uptr_t addr, ureg_t data)
 
 ureg_t MemRead(uptr_t addr)
 {
-    u_char rc;
+    uint8_t rc;
 
     /* Set high address byte. */
     outb(PORTC, addr >> 8);
 
     /* Set low address byte. */
-    outb(PORTC, (u_char)addr);
+    outb(PORTC, (uint8_t)addr);
 
     /* ALE falling */
     cbi(PORTG, PORTG2);
@@ -190,7 +188,7 @@ ureg_t MemRead(uptr_t addr)
  */
 int XMemTestBus(void)
 {
-    u_char wb;
+    uint8_t wb;
 
     /*
      * Disable external memory bus. This will set the control bus
@@ -247,7 +245,7 @@ int XMemTestBus(void)
         outb(PORTA, ~wb);
         outb(DDRA, wb);
         Delay(16);
-        if(inb(PINA) != (u_char)~wb) {
+        if(inb(PINA) != (uint8_t)~wb) {
             merr = MERR_SHORT_DATABUS;
             return -1;
         }
@@ -272,7 +270,7 @@ int XMemTestBus(void)
         outb(PORTC, ~wb);
         outb(DDRC, wb);
         Delay(16);
-        if(inb(PINC) != (u_char)~wb) {
+        if(inb(PINC) != (uint8_t)~wb) {
             merr = MERR_SHORT_ADDRBUS;
             return -1;
         }
@@ -293,10 +291,10 @@ int XMemTestBus(void)
  */
 size_t XMemTest(void)
 {
-    volatile u_char *mem;
-    u_char wb;
-    u_char pattern[] = { 0x00, 0xFF, 0x55, 0xAA };
-    u_char *last = (u_char *)-1;
+    volatile uint8_t *mem;
+    uint8_t wb;
+    uint8_t pattern[] = { 0x00, 0xFF, 0x55, 0xAA };
+    uint8_t *last = (uint8_t *)-1;
 
 #if defined(__AVR_ENHANCED__) && !defined(__AVR_ATmega2561__)
     /*
@@ -321,32 +319,32 @@ size_t XMemTest(void)
      * Let's see, how many kBytes we have. A simple pattern test on the
      * first bytes of each kilobyte boundary will do.
      */
-    for (mem = (u_char *)(RAMEND + 1); mem <= last; mem += 1024) {
+    for (mem = (uint8_t *)(RAMEND + 1); mem <= last; mem += 1024) {
         memcpy((void *)mem, pattern, sizeof(pattern));
         if(memcmp((void *)mem, pattern, sizeof(pattern))) {
-            last = (u_char *)(mem - 1);
+            last = (uint8_t *)(mem - 1);
         }
 
         /*
          * External RAM may not start at kilobyte boundary. Set the
          * address to full kilobytes after first test.
          */
-        else if(mem == (u_char *)(RAMEND + 1)) {
-            mem = (u_char *)((uptr_t)mem & ~0x3FF);
+        else if(mem == (uint8_t *)(RAMEND + 1)) {
+            mem = (uint8_t *)((uptr_t)mem & ~0x3FF);
         }
     }
 
     /*
      * Set all bits in RAM.
      */
-    for (mem = (u_char *)(RAMEND + 1); mem <= (u_char *)last; mem += 256) {
+    for (mem = (uint8_t *)(RAMEND + 1); mem <= (uint8_t *)last; mem += 256) {
         memset((void *)mem, 0xFF, 256);
     }
 
     /*
      * Do an extensive test.
      */
-    for (mem = (u_char *)(RAMEND + 1); mem <= (u_char *)last; mem++) {
+    for (mem = (uint8_t *)(RAMEND + 1); mem <= (uint8_t *)last; mem++) {
         /*
          * The next RAM location must still have all bits set. If not,
          * any manipulation on lower addresses may have modified this
@@ -402,14 +400,14 @@ size_t XMemTest(void)
  */
 int XMemBankTest(size_t *xramsize)
 {
-    volatile u_char *breg = (u_char *)((size_t)-1 & ~0xFF);
-    volatile u_char *bmem = 0;
+    volatile uint8_t *breg = (uint8_t *)((size_t)-1 & ~0xFF);
+    volatile uint8_t *bmem = 0;
     size_t bsize = 16384;
-    u_char *bend = (u_char *)bmem + bsize;
-    u_char *xramend = (u_char *)(*xramsize + RAMEND + 1);
-    volatile u_char *cp;
-    u_char i;
-    u_char j;
+    uint8_t *bend = (uint8_t *)bmem + bsize;
+    uint8_t *xramend = (uint8_t *)(*xramsize + RAMEND + 1);
+    volatile uint8_t *cp;
+    uint8_t i;
+    uint8_t j;
 
     /*
      * Determine the start address of banked memory. Switch to
@@ -418,16 +416,16 @@ int XMemBankTest(size_t *xramsize)
      * and find the first location set to 1.
      */
     *(breg + 1) = 1;
-    for (cp = (u_char *)(RAMEND + 1); cp < xramend; cp += 256) {
+    for (cp = (uint8_t *)(RAMEND + 1); cp < xramend; cp += 256) {
         *cp = 1;
     }
     *breg = 0;
-    for (cp = (u_char *)(RAMEND + 1); cp < xramend; cp += 256) {
+    for (cp = (uint8_t *)(RAMEND + 1); cp < xramend; cp += 256) {
         *cp = 0;
     }
 
     *(breg + 1) = 1;
-    for (cp = (u_char *)(RAMEND + 1); cp < xramend; cp += 256) {
+    for (cp = (uint8_t *)(RAMEND + 1); cp < xramend; cp += 256) {
         if(*cp == 1) {
             bmem = cp;
             break;
@@ -459,7 +457,7 @@ int XMemBankTest(size_t *xramsize)
         /*
          * Test if non-banked memory is intact.
          */
-        for (cp = (u_char *)(RAMEND + 1); cp < bmem; cp += 256) {
+        for (cp = (uint8_t *)(RAMEND + 1); cp < bmem; cp += 256) {
             if(*cp) {
                 break;
             }
@@ -490,30 +488,30 @@ int XMemBankTest(size_t *xramsize)
  */
 void LoopSRAM(void)
 {
-    register u_int pattern;
-    volatile u_char *mem;
+    register unsigned int pattern;
+    volatile uint8_t *mem;
     uptr_t faddr = 0xFFFF;
     puts("Check address and data bus.");
     printf_P(presskey_P);
     for (;;) {
         for (pattern = 1; pattern; pattern <<= 1) {
             if (pattern <= RAMEND)
-                mem = (u_char *) (pattern | (RAMEND + 1));
+                mem = (uint8_t *) (pattern | (RAMEND + 1));
             else
-                mem = (u_char *) pattern;
-            *mem = (u_char) ((pattern >> 8) | pattern);
+                mem = (uint8_t *) pattern;
+            *mem = (uint8_t) ((pattern >> 8) | pattern);
         }
         for (pattern = 1; pattern; pattern <<= 1) {
             if (pattern <= RAMEND)
-                mem = (u_char *) (pattern | (RAMEND + 1));
+                mem = (uint8_t *) (pattern | (RAMEND + 1));
             else
-                mem = (u_char *) pattern;
-            if (*mem != (u_char) ((pattern >> 8) | pattern))
+                mem = (uint8_t *) pattern;
+            if (*mem != (uint8_t) ((pattern >> 8) | pattern))
                 faddr = (uptr_t) mem;
         }
         Delay(5000);
         if (GetChar()) {
-            printf("No RAM at 0x%04X\n", (u_int)faddr);
+            printf("No RAM at 0x%04X\n", (unsigned int)faddr);
             return;
         }
     }

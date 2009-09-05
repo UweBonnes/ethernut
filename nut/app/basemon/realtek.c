@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,14 +34,12 @@
  */
 
 /*
- * $Log$
- * Revision 1.6  2006/09/29 12:18:35  haraldkipp
- * Added support for ATmega2561.
+ * $Id$
  *
- * Revision 1.5  2006/07/21 09:06:36  haraldkipp
- * Exclude AVR specific parts from building for other platforms. This does
- * not imply, that all samples are working on all platforms.
+ * WARNING! Do not use any part of Basemon for your own applications. WARNING!
  *
+ * This is not a typical application sample. It overrides parts of Nut/OS to
+ * keep it running on broken hardware.
  */
 
 #include <stdio.h>
@@ -69,9 +70,9 @@
 
 static int NicReset(void)
 {
-    volatile u_char *base = (u_char *) 0x8300;
-    u_char i;
-    u_char j;
+    volatile uint8_t *base = (uint8_t *) 0x8300;
+    uint8_t i;
+    uint8_t j;
 
     /* Start command clears the reset bit. */
     nic_write(NIC_CR, NIC_CR_STA | NIC_CR_RD2);
@@ -114,7 +115,7 @@ static int NicReset(void)
 static int DetectNicEeprom(void)
 {
 #ifdef __AVR_ENHANCED__
-    register u_int cnt = 0;
+    register unsigned int cnt = 0;
 
     cli();
     /*
@@ -202,9 +203,9 @@ static prog_char nic_eeprom[18] = {
 static void EmulateNicEeprom(void)
 {
 #ifdef __AVR_ENHANCED__
-    register u_char clk;
-    register u_char cnt;
-    register u_char val;
+    register uint8_t clk;
+    register uint8_t cnt;
+    register uint8_t val;
 
     /*
      * Prepare the EEPROM emulation port bits. Configure the EEDO and
@@ -309,7 +310,7 @@ static void EmulateNicEeprom(void)
  */
 int RealtekDetect(void)
 {
-    u_char bv;
+    uint8_t bv;
 
     bv = nic_inlb(NIC_CR);
     if(bv & (NIC_CR_PS0 | NIC_CR_PS1)) {
@@ -337,9 +338,9 @@ void RealtekLoop(void)
 int RealtekTest(void)
 {
     int i;
-    u_char force_swreset = 0;
-    volatile u_char *base = (u_char *) 0x8300;
-    u_short nic_id;
+    uint8_t force_swreset = 0;
+    volatile uint8_t *base = (uint8_t *) 0x8300;
+    uint16_t nic_id;
 
     /*
      * NIC ID detection loop.
@@ -409,14 +410,14 @@ int RealtekTest(void)
 
 void RealtekSend(void)
 {
-    u_char mac[] = {
+    uint8_t mac[] = {
         0x00, 0x06, 0x98, 0x00, 0x00, 0x00
     };
-    u_short sz;
-    u_short i;
-    volatile u_char *base = (u_char *) 0x8300;
-    u_char rb;
-    u_long cnt = 0;
+    uint16_t sz;
+    uint16_t i;
+    volatile uint8_t *base = (uint8_t *) 0x8300;
+    uint8_t rb;
+    uint32_t cnt = 0;
 
     printf("Init controller...");
     nic_write(NIC_PG0_IMR, 0);

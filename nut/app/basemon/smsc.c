@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,14 +34,12 @@
  */
 
 /*
- * $Log$
- * Revision 1.4  2006/07/21 09:06:36  haraldkipp
- * Exclude AVR specific parts from building for other platforms. This does
- * not imply, that all samples are working on all platforms.
+ * $Id$
  *
- * Revision 1.3  2006/05/15 11:51:07  haraldkipp
- * Added support for external watchdog hardware.
+ * WARNING! Do not use any part of Basemon for your own applications. WARNING!
  *
+ * This is not a typical application sample. It overrides parts of Nut/OS to
+ * keep it running on broken hardware.
  */
 
 #include <stdio.h>
@@ -58,11 +59,11 @@
  *
  * \return Contents of the PHY interface rgister.
  */
-static u_char NicPhyRegSelect(u_char reg, u_char we)
+static uint8_t NicPhyRegSelect(uint8_t reg, uint8_t we)
 {
-    u_char rs;
-    u_char msk;
-    u_char i;
+    uint8_t rs;
+    uint8_t msk;
+    uint8_t i;
 
     nic_bs(3);
     rs = (nic_inlb(NIC_MGMT) & ~(MGMT_MCLK | MGMT_MDO)) | MGMT_MDOE;
@@ -120,11 +121,11 @@ static u_char NicPhyRegSelect(u_char reg, u_char we)
  *
  * \return Contents of the specified register.
  */
-static u_short NicPhyRead(u_char reg)
+static uint16_t NicPhyRead(uint8_t reg)
 {
-    u_short rc = 0;
-    u_char rs;
-    u_char i;
+    uint16_t rc = 0;
+    uint8_t rs;
+    uint8_t i;
 
     /* Select register for reading. */
     rs = NicPhyRegSelect(reg, 0);
@@ -154,10 +155,10 @@ static u_short NicPhyRead(u_char reg)
  * \param reg PHY register number.
  * \param val Value to write.
  */
-static void NicPhyWrite(u_char reg, u_short val)
+static void NicPhyWrite(uint8_t reg, uint16_t val)
 {
-    u_short msk;
-    u_char rs;
+    uint16_t msk;
+    uint8_t rs;
 
     /* Select register for writing. */
     rs = NicPhyRegSelect(reg, 1);
@@ -190,10 +191,10 @@ static void NicPhyWrite(u_char reg, u_short val)
  */
 static int NicPhyConfig(void)
 {
-    u_short phy_sor;
-    u_short phy_sr;
-    u_short phy_to;
-    u_short mode;
+    uint16_t phy_sor;
+    uint16_t phy_sr;
+    uint16_t phy_to;
+    uint16_t mode;
 
     /* 
      * Reset the PHY and wait until this self clearing bit
@@ -257,7 +258,7 @@ static int NicPhyConfig(void)
  *
  * \return 0 on success or -1 on timeout.
  */
-static INLINE int NicMmuWait(u_short tmo)
+static INLINE int NicMmuWait(uint16_t tmo)
 {
     while (tmo--) {
         if ((nic_inlb(NIC_MMUCR) & MMUCR_BUSY) == 0)
@@ -308,7 +309,7 @@ static int NicReset(void)
 
 int SmscDetect(void)
 {
-    u_char bv;
+    uint8_t bv;
 
     /* High byte of base select is always 0x33. */
     if((bv = nic_inhb(NIC_BSR)) != 0x33) {
@@ -328,7 +329,7 @@ int SmscDetect(void)
  */
 static int SmscTestInterrupt(void)
 {
-    u_char tmo;
+    uint8_t tmo;
 
 #if defined (__AVR__)
     /*
@@ -396,8 +397,8 @@ static int SmscTestBuffer(void)
 {
     ureg_t i;
     ureg_t tmo;
-    u_short cnt;
-    u_short val;
+    uint16_t cnt;
+    uint16_t val;
 
     /* Disable interrupts. */
     if (NicReset()) {
@@ -443,7 +444,7 @@ static int SmscTestBuffer(void)
         for(cnt = 0; cnt < 1024; cnt++) {
             val = ~cnt;
             nic_outw(NIC_PTR, cnt * 2);
-            nic_outlb(NIC_DATA, (u_char)val);
+            nic_outlb(NIC_DATA, (uint8_t)val);
             nic_outw(NIC_PTR, cnt * 2 + 1);
             nic_outlb(NIC_DATA, val >> 8);
         }
@@ -488,10 +489,10 @@ int SmscTest(void)
  */
 void SmscSend(void)
 {
-    u_char mac[] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
+    uint8_t mac[] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
     ureg_t i;
-    u_short sz;
-    u_long cnt = 0;
+    uint16_t sz;
+    uint32_t cnt = 0;
 
     printf("\nInit controller...");
     if (NicReset()) {

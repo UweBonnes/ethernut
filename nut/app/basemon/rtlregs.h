@@ -2,7 +2,10 @@
 #define _DEV_RTLREGS_H_
 
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2003 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +20,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,26 +34,15 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*
- * $Log$
- * Revision 1.2  2003/11/03 16:07:40  haraldkipp
- * Completely rewritten to support Ethernut 2
+ * $Id$
  *
- * Revision 1.1  2003/08/07 09:37:59  haraldkipp
- * First public check in
+ * WARNING! Do not use any part of Basemon for your own applications. WARNING!
  *
- * Revision 1.2  2003/02/04 18:19:36  harald
- * Version 3 released
- *
- * Revision 1.1  2002/08/02 13:59:49  harald
- * *** empty log message ***
- *
- * Revision 1.5  2002/06/26 17:29:08  harald
- * First pre-release with 2.4 stack
- *
+ * This is not a typical application sample. It overrides parts of Nut/OS to
+ * keep it running on broken hardware.
  */
 
 /*!
@@ -299,9 +291,9 @@
 #define nic_write(reg, data) *(base + (reg)) = data
 
 
-#define nic_outlb(reg, val) (*(volatile u_char *)(NIC_BASE + (reg)) = (val))
-#define nic_inlb(reg) (*(volatile u_char *)(NIC_BASE + (reg)))
-#define nic_inw(reg) (*(volatile u_short *)(NIC_BASE + (reg)))
+#define nic_outlb(reg, val) (*(volatile uint8_t *)(NIC_BASE + (reg)) = (val))
+#define nic_inlb(reg) (*(volatile uint8_t *)(NIC_BASE + (reg)))
+#define nic_inw(reg) (*(volatile uint16_t *)(NIC_BASE + (reg)))
 
 #define nic_bs(bank)    nic_outlb(NIC_BSR, (bank))
 

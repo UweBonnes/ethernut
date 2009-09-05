@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,26 +34,12 @@
  */
 
 /*
- * $Log$
- * Revision 1.8  2009/02/18 12:13:34  olereinhardt
- * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+ * $Id$
  *
- * 	* basemon/webdemo.c:
+ * WARNING! Do not use any part of Basemon for your own applications. WARNING!
  *
- * 	  Fixed compilier warnings. Especialy signedness of char buffers
- *           as well as unused code on arm platform and main functions without
- * 	  return value
- *
- * Revision 1.7  2006/10/05 17:09:40  haraldkipp
- * Signed mismatches corrected.
- *
- * Revision 1.6  2006/09/29 12:18:35  haraldkipp
- * Added support for ATmega2561.
- *
- * Revision 1.5  2006/07/21 09:06:36  haraldkipp
- * Exclude AVR specific parts from building for other platforms. This does
- * not imply, that all samples are working on all platforms.
- *
+ * This is not a typical application sample. It overrides parts of Nut/OS to
+ * keep it running on broken hardware.
  */
 
 #include <stdio.h>
@@ -102,10 +91,10 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 
     fputs_P(ttop_P, stream);
     while (tdp) {
-        fprintf_P(stream, tfmt_P, (u_int)tdp, tdp->td_name, tdp->td_priority,
-                  states[tdp->td_state], (u_int)tdp->td_queue, (u_int)tdp->td_timer,
-                  (u_int)tdp->td_sp,
-                  (u_int) tdp->td_sp - (u_int) tdp->td_memory, *((u_long *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
+        fprintf_P(stream, tfmt_P, (unsigned int)tdp, tdp->td_name, tdp->td_priority,
+                  states[tdp->td_state], (unsigned int)tdp->td_queue, (unsigned int)tdp->td_timer,
+                  (unsigned int)tdp->td_sp,
+                  (unsigned int) tdp->td_sp - (unsigned int) tdp->td_memory, *((uint32_t *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
         tdp = tdp->td_next;
     }
     fputs_P(tbot_P, stream);
@@ -120,8 +109,8 @@ static int ShowThreads(FILE * stream, REQUEST * req)
 static int ShowTimer(FILE * stream, REQUEST * req)
 {
     NUTTIMERINFO *tnp;
-    u_long ticks_left;
-    u_long crystal;
+    uint32_t ticks_left;
+    uint32_t crystal;
     static prog_char head_P[] = "<HTML><HEAD><TITLE>Nut/OS Timers</TITLE>" "</HEAD><BODY>";
     static prog_char cfmt_P[] = "\r\nCPU running at %u.%04u MHz<br>\r\n";
     static prog_char ttop_P[] = "<TABLE BORDER><TR><TH>Handle</TH>"
@@ -142,7 +131,7 @@ static int ShowTimer(FILE * stream, REQUEST * req)
         ticks_left = 0;
         while (tnp) {
             ticks_left += tnp->tn_ticks_left;
-            fprintf_P(stream, tfmt_P, (u_int)tnp, ticks_left, tnp->tn_ticks, (u_int)tnp->tn_callback, (u_int)tnp->tn_arg);
+            fprintf_P(stream, tfmt_P, (unsigned int)tnp, ticks_left, tnp->tn_ticks, (unsigned int)tnp->tn_callback, (unsigned int)tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
@@ -174,7 +163,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
 
     NutEnterCritical();
     for (ts = tcpSocketList; ts; ts = ts->so_next) {
-        fprintf_P(stream, fmt1_P, (u_int)ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
+        fprintf_P(stream, fmt1_P, (unsigned int)ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf_P(stream, fmt2_P, inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
         switch (ts->so_state) {
         case TCPS_LISTEN:
@@ -223,9 +212,9 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     return 0;
 }
 
-void DoCheckboxes(FILE * stream, char * name, u_char val)
+void DoCheckboxes(FILE * stream, char * name, uint8_t val)
 {
-    u_char i;
+    uint8_t i;
     static prog_char ttop_P[] = "<tr><td>%s</td>";
     static prog_char tfmt_P[] = "<td><input type=\"checkbox\"" " name=\"%s\" value=\"%u\" ";
     static prog_char tchk_P[] = " checked=\"checked\"";
@@ -298,7 +287,7 @@ THREAD(WebDemo, arg)
     TCPSOCKET *sock;
     FILE *stream;
     IFNET *ifn = 0;
-    u_long ip_addr;             /* ICCAVR bugfix */
+    uint32_t ip_addr;             /* ICCAVR bugfix */
     static prog_char netfail_P[] = "\nFailed to configure network " /* */
                                    "interface: Ethernut stopped!\n\x07";
     static prog_char dhcpfail_P[] = "\nFailed to configure network " /* */
