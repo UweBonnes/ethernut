@@ -51,10 +51,10 @@ static char inbuff[60];
 void PutString(char *cp)
 {
     while (*cp) {
-        UartTx(*cp);
         if (*cp++ == '\n') {
             UartTx('\r');
         }
+        UartTx(*cp);
     }
 }
 

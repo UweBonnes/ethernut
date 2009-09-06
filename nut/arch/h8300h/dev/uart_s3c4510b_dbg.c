@@ -44,17 +44,16 @@ static int DebugInit(NUTDEVICE * dev)
 /*!
  * \brief Send a single character to debug device.
  *
- * A carriage return character will be automatically appended
- * to any linefeed.
+ * A newline character will be automatically prepended
+ * by a carriage return.
  */
 static void DebugPut(char ch)
 {
-	while (!(inl(DEBUG_CHK_STAT_BASE) & 0x40));
-
-	outl(ch, DEBUG_TX_BUFF_BASE);
-
     if (ch == '\n')
         DebugPut('\r');
+
+	while (!(inl(DEBUG_CHK_STAT_BASE) & 0x40));
+	outl(ch, DEBUG_TX_BUFF_BASE);
 }
 
 /*!

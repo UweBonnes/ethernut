@@ -142,27 +142,29 @@ static int DebugInit(NUTDEVICE * dev)
 /*!
  * \brief Send a single character to debug device.
  *
- * A carriage return character will be automatically appended 
- * to any linefeed.
+ * A newline character will be automatically prepended
+ * by a carriage return.
  */
 static void DebugPut(CONST NUTDEVICE * dev, char ch)
 {
 	volatile avr32_usart_t* usart = (avr32_usart_t*)dev->dev_base;
-	
-	// Wait for TX Ready.
-	while ( !(usart->csr & AVR32_USART_CSR_TXRDY_MASK) );
-	
-	usart->thr = (ch << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
 
+	/* Prepend new line by carriage return */
 	if (ch == '\n') {
 		DebugPut(dev, '\r');
 	}
+
+	/* Wait for TX Ready.*/
+	while ( !(usart->csr & AVR32_USART_CSR_TXRDY_MASK) );
+	/* Send out character */
+	usart->thr = (ch << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
+
 }
 
 /*!
  * \brief Send characters to debug device 0.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -171,7 +173,7 @@ static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
 {
      int c = len;
      CONST char *cp = buffer;
- 
+
      while (c--) {
          DebugPut(fp->nf_dev, *cp++);
      }
@@ -194,7 +196,7 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
+/*!
  * \brief Close debug device 0.
  *
  * \return Always 0.
