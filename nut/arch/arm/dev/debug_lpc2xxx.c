@@ -3,30 +3,30 @@
 *
 *  Copyright (c) 2005 by Michael Fischer. All rights reserved.
 *
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
 *  are met:
-*  
-*  1. Redistributions of source code must retain the above copyright 
+*
+*  1. Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the 
+*     notice, this list of conditions and the following disclaimer in the
 *     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the author nor the names of its contributors may 
-*     be used to endorse or promote products derived from this software 
+*  3. Neither the name of the author nor the names of its contributors may
+*     be used to endorse or promote products derived from this software
 *     without specific prior written permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+*  THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+*  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+*  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+*  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+*  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 *  SUCH DAMAGE.
 *
 ****************************************************************************
@@ -69,63 +69,65 @@ int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 int DebugInit(NUTDEVICE * dev)
 {
   if        (dev->dev_name[4] == '0') {
-    U0LCR = _BV(7);  
-    U0DLL = 0x08; 
+    U0LCR = _BV(7);
+    U0DLL = 0x08;
     U0DLM = 0x00;
-    U0LCR = 0x03;   
-    U0IER = 0x00;  
-    U0FCR = 0x00; 
-    
+    U0LCR = 0x03;
+    U0IER = 0x00;
+    U0FCR = 0x00;
+
     PINSEL0  |= 0x00000005;
-    
+
   } else if (dev->dev_name[4] == '1') {
     U1LCR = _BV(7);
     U1DLL = 0x08;
     U1DLM = 0x00;
-    U1LCR = 0x03;  
-    U1IER = 0x00; 
+    U1LCR = 0x03;
+    U1IER = 0x00;
     U1FCR = 0x00;
-    
+
     PINSEL0  |= 0x00050000;
   }
-  
+
   return 0;
 }
 
 /*!
  * \brief Send a single character to debug device 0.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  */
 void DebugPut0(char ch)
 {
+  if(ch == '\n') {
+	  while ((U0LSR & U0LSR_THRE) == 0);
+	  U0THR = '\r';
+  }
   while ((U0LSR & U0LSR_THRE) == 0);
   U0THR = ch;
-
-  if(ch == '\n') 
-    DebugPut0('\r');
 }
 
 /*!
  * \brief Send a single character to debug device 1.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  */
 void DebugPut1(char ch)
 {
+  if(ch == '\n') {
+	  while ((U1LSR & U1LSR_THRE) == 0);
+	  U1THR = '\r';
+  }
   while ((U1LSR & U1LSR_THRE) == 0);
   U1THR = ch;
-
-  if(ch == '\n') 
-    DebugPut1('\r');
 }
 
 /*!
  * \brief Send characters to debug device.
  *
- * A carriage return character will be automatically appended 
+ * A carriage return character will be automatically appended
  * to any linefeed.
  *
  * \return Number of characters sent.
@@ -143,7 +145,7 @@ int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
     while(c--)
       DebugPut1(*cp++);
   }
-  
+
   return len;
 }
 
@@ -161,7 +163,7 @@ NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
   return (&dbgfile);
 }
 
-/*! 
+/*!
  * \brief Close debug device.
  *
  * \return Always 0.

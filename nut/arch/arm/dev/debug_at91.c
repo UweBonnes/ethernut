@@ -289,23 +289,24 @@ static int Debug1Init(NUTDEVICE * dev)
 /*!
  * \brief Send a single character to debug device 0.
  *
- * A carriage return character will be automatically appended 
- * to any linefeed.
+ * A newline character will be automatically prepended
+ * by a carriage return.
  */
 static void DebugPut(CONST NUTDEVICE * dev, char ch)
 {
+    if (ch == '\n') {
+	    while ((inr(dev->dev_base + US_CSR_OFF) & US_TXRDY) == 0);
+        outr(dev->dev_base + US_THR_OFF, '\r');
+    }
     while ((inr(dev->dev_base + US_CSR_OFF) & US_TXRDY) == 0);
     outr(dev->dev_base + US_THR_OFF, ch);
-    if (ch == '\n') {
-        DebugPut(dev, '\r');
-    }
 }
 
 /*!
  * \brief Send characters to debug device 0.
  *
- * A carriage return character will be automatically appended 
- * to any linefeed.
+ * A newline character will be automatically prepended
+ * by a carriage return.
  *
  * \return Number of characters sent.
  */
@@ -336,7 +337,7 @@ static NUTFILE *DebugOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
     return fp;
 }
 
-/*! 
+/*!
  * \brief Close debug device 0.
  *
  * \return Always 0.

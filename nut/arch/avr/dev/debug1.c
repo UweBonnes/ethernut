@@ -107,10 +107,12 @@ static int DebugInit(NUTDEVICE * dev)
 
 static void DebugPut(char ch)
 {
+    if(ch == '\n') {
+	    while((UCSR1A & BV(UDRE)) == 0);
+	    UDR1 = '\r';
+    }
     while((UCSR1A & BV(UDRE)) == 0);
     UDR1 = ch;
-    if(ch == '\n')
-        DebugPut('\r');
 }
 
 static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)

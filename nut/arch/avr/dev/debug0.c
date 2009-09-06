@@ -136,10 +136,12 @@ static int DebugInit(NUTDEVICE * dev)
  */
 static void DebugPut(char ch)
 {
+    if(ch == '\n') {
+	    while((USR & BV(UDRE)) == 0);
+	    UDR = '\r';
+    }
     while((USR & BV(UDRE)) == 0);
     UDR = ch;
-    if(ch == '\n')
-        DebugPut('\r');
 }
 
 /*!
