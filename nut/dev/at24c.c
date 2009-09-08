@@ -117,7 +117,10 @@ static int lld_at24_read( struct at24c *at24cs, uint8_t *buffer, uint32_t len, u
 #ifdef AT24C_DEBUG
 		printf("MRD l=%lu: TME %d, mt %u, mr %u\n", len, tme, TwMasterIndexes( 0), TwMasterIndexes(1));
 #endif
-		/* there was an error */
+        if( tme == TWERR_OK)
+            return 0;		
+
+        /* there was an error */
 		if( tme == TWERR_SLA_NACK) {
 			--retry;
 #ifdef AT24C_DEBUG
@@ -126,7 +129,8 @@ static int lld_at24_read( struct at24c *at24cs, uint8_t *buffer, uint32_t len, u
 			NutSleep(1);
 #endif
 		}
-		else return -2;
+        else
+            return -2;
 
 	} while( retry);
 

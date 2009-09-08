@@ -50,16 +50,21 @@
 static struct at24c at24c32s;
 
 /****************************************************************************/
-void EEInit( void )
+int EEInit( void )
 /****************************************************************************/
 {
+    uint8_t dummy;
     at24c32s.PageSize = 32;
     at24c32s.NumOfPage = 128;
     at24c32s.EepromSize = 32*128;
     at24c32s.SlaveAddress = NUT_CONFIG_AT24_ADR;
 	at24c32s.IAddrW = 2;
 	at24c32s.Timeout = 20;
+    
     //strcpy (at24c32s.EepromName, "AT24C32" );
+    
+    /* Do a dummy read for communication test */
+    return At24cRead( &at24c32s, &dummy, 1, 0);
 }
 
 /****************************************************************************/
