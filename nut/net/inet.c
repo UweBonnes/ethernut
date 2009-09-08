@@ -200,4 +200,34 @@ char *inet_ntoa(uint32_t addr)
     return str;
 }
 
+/*!
+ * \brief Convert numeric MAC address array into double dotted 
+ *        ASCII representation.
+ *
+ * \note This function is not thread safe. Each subsequent
+ *       call will destroy the previous result. Applications
+ *       should locally store the result before calling the 
+ *       function again or allowing other threads to call it.
+ *
+ * \param mac Pointer to MAC address array.
+ *
+ * \return Pointer to a static buffer containing the 
+ *         ASCII representation.
+ */
+char *inet_mtoa(uint8_t *mac)
+{
+    static char str[18];
+    char hex[16]="0123456789ABCDEF";
+    int i, p;
+
+    p=0;
+    for(i=0;i<6;i++) 
+    {
+        str[p++]=hex[mac[i]>>4];
+        str[p++]=hex[mac[i]&0xf];
+        if(i<5) str[p++]=':'; else str[p++]='\0';
+    }
+    return str;
+}
+
 /*@}*/
