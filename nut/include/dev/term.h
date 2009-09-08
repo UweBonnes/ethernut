@@ -56,6 +56,8 @@
 #define LCD_DATAWORD32      0x0407
 #define LCD_SETCOOKEDMODE   0x0413  /*!< \brief Set raw mode. */ 
 #define LCD_GETCOOKEDMODE   0x0414  /*!< \brief Query raw mode. */ 
+#define LCD_SET_AUTOLF      0x0415
+#define LCD_GET_AUTOLF      0x0416
 
 #ifndef TIOCGWINSZ
 #define TIOCGWINSZ          0x0501  /*!< Gets the window size */
@@ -66,6 +68,8 @@
 
 #define LCD_MF_CURSORON     0x00000001UL    /*!< \brief Cursor on flag. */
 #define LCD_MF_COOKEDMODE   0x00020000UL    /*!< \brief Control character interpretation on flag. */
+#define LCD_MF_AUTOLF       0x00040000UL    /*!< \brief Control automatic break into next line on line end */
+#define LCD_MF_AUTOSCROLL   0x00080000UL    /*!< \brief Control automatic scrolling at end of display */
 #define LCD_MF_INVERTED     0x10000000UL    /*!< \breif display inverted characters on grafic displays */
 
 
