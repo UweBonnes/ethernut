@@ -365,6 +365,20 @@ int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
         else
             *(uint32_t *)conf = 0;
         break;
+
+    case LCD_SET_AUTOLF:
+        if (*(uint32_t *)conf)
+            dcb->dcb_modeflags |= LCD_MF_AUTOLF;
+        else
+            dcb->dcb_modeflags &= ~LCD_MF_AUTOLF;
+        break;
+    case LCD_GET_AUTOLF:
+        if (dcb->dcb_modeflags & LCD_MF_AUTOLF)
+            *(uint32_t *)conf = 1;
+        else
+            *(uint32_t *)conf = 0;
+        break;
+        
     case TIOCGWINSZ:
         win_size = (WINSIZE *)conf;
         win_size->ws_col    = dcb->dcb_nrows;
@@ -391,22 +405,18 @@ int TermIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 int TermInit(NUTDEVICE * dev)
 {
-    int rc;
-
     TERMDCB *dcb = dev->dev_dcb;
 
     /*
      * Check if initialisazion needed.
      */
-    if( dcb->dss_init == NULL) {
-        return -1;
-    }
-    /*
-     * Initialize the display hardware.
-     */
-    rc = (*dcb->dss_init)(dev);
-    if(  rc != 0) {
-        return rc;
+    if( dcb->dss_init != NULL) {
+        /*
+         * Initialize the display hardware.
+         */
+        if(  dcb->dss_init(dev) != 0) {
+            return -1;
+        }
     }
     /*
      * Initialize driver control block.
@@ -415,6 +425,7 @@ int TermInit(NUTDEVICE * dev)
     if( dcb->dcb_smem == NULL) {
         return -1;
     }
+
     TermClear(dcb);
 
     return 0;
@@ -454,6 +465,7 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
         if (dcb->dcb_modeflags & LCD_MF_COOKEDMODE) {
             /* Process special characters. */
             if (dcb->dcb_ctlseq == 0) {
+
                 /* Linefeed. */
                 if (ch == 10) {
                     dcb->dcb_col = 0;
@@ -596,10 +608,12 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
                 case 'o':
                     TermEraseLineStart(dcb);
                     break;
+                    
                 case 'i':
                     dcb->dcb_modeflags |= LCD_MF_INVERTED;
                     (*dcb->dss_cursor_mode) (3);
                     break;
+                    
                 case 'n':
                     dcb->dcb_modeflags &= ~LCD_MF_INVERTED;
                     (*dcb->dss_cursor_mode) (2);
@@ -640,11 +654,18 @@ static int TermPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
          */
         (*dcb->dss_write) (ch);
 
-        /* Update shadow memory. */
         if (dcb->dcb_modeflags & LCD_MF_COOKEDMODE) {
+            /* Update shadow memory. */
             *(dcb->dcb_smem + dcb->dcb_row * dcb->dcb_vcols + dcb->dcb_col) = ch;
+
+            /* step cursor forward */
             if (++dcb->dcb_col >= dcb->dcb_vcols) {
-                dcb->dcb_col = dcb->dcb_vcols - 1;
+                if( dcb->dcb_modeflags & LCD_MF_AUTOLF) {
+                    dcb->dcb_col = 0;
+                    if( dcb->dcb_row < dcb->dcb_nrows) dcb->dcb_row++;
+                }
+                else
+                    dcb->dcb_col = dcb->dcb_vcols - 1;
                 (*dcb->dss_set_cursor) (dcb->dcb_row * dcb->dcb_ncols + dcb->dcb_col);
             }
         }
