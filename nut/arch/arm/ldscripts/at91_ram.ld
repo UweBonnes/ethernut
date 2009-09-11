@@ -125,6 +125,11 @@ SECTIONS
 	. = ALIGN(4);
   } > ram
 
+  .eh_frame :
+  {
+	KEEP (*(.eh_frame))
+	. = ALIGN(4);
+  } > ram
 
   .ctors :
   {

@@ -74,6 +74,8 @@ SECTIONS
     . = ALIGN(4);
     *(.rodata*);
     . = ALIGN(4);
+    *(.eh_frame*);
+    . = ALIGN(4);
     *(.glue_7t);
     . = ALIGN(4);
     *(.glue_7);

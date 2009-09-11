@@ -106,6 +106,12 @@ SECTIONS
     . = ALIGN(4);
   } > rom
 
+  .eh_frame :
+  {
+    KEEP (*(.eh_frame))
+    . = ALIGN(4);
+  } > ram
+
   .stab 0 (NOLOAD) :
   {
     [ .stab ]

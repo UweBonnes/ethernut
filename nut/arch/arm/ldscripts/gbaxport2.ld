@@ -91,6 +91,11 @@ SECTIONS
         *(.fixup)
     } >  rom
 
+    .eh_frame ALIGN(4):
+     {
+         KEEP (*(.eh_frame))
+     } > rom
+
     .gcc_except_table   ALIGN (0x4)  :
     {
         . = . ;
