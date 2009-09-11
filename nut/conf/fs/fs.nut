@@ -139,7 +139,7 @@ nutfs =
     {
         name = "nutfs_pnutfs",
         brief = "PNUT",
-        requires = { "HW_MCU_AVR", "NUT_SEGBUF" },
+        -- requires = { "HW_MCU_AVR", "NUT_SEGBUF" },
         provides = { "NUT_FS", "NUT_FS_READ", "NUT_FS_WRITE", "NUT_FS_DIR" },
         description = "RAM file system for banked memory (Ethernut 2).",
         sources = { "pnutfs.c" },
