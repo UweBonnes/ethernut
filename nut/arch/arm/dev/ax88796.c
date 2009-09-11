@@ -803,8 +803,20 @@ THREAD(NicRxAsix, arg)
     ifn = (IFNET *) dev->dev_icb;
     ni = (NICINFO *) dev->dev_dcb;
 
+    /*
+     * This is a temporary hack. Due to a change in initialization,
+     * we may not have got a MAC address yet. Wait until one has been
+     * set.
+     */
     for (;;) {
-        if (*((uint32_t *) (ifn->if_mac)) && *((uint32_t *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
+        int i;
+
+        for (i = 0; i < sizeof(ifn->if_mac); i++) {
+            if (ifn->if_mac[i] && ifn->if_mac[i] != 0xFF) {
+                break;
+            }
+        }
+        if (i < sizeof(ifn->if_mac)) {
             break;
         }
         NutSleep(63);
