@@ -308,83 +308,83 @@ nutarch_avr =
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart0avr.c" },
-        options =
-        {
-            {
-                macro = "UART0_RTS_BIT",
-                brief = "RTS Bit",
-                description = "Bit number of UART0 RTS handshake output. If enabled, "..
-                              "the driver provides RS 232 input hardware handshake.\n\n"..
-                              "Ethernut 2.x:\n"..
-                              "Short JP1 pins 4 and 6 to select bit 2 on PORTE.",
-                provides = { "UART0_RTS_BIT" },
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART0_RTS_AVRPORT",
-                brief = "RTS Port",
-                description = "Port register name of UART0 RTS handshake output.",
-                requires = { "UART0_RTS_BIT" },
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART0_CTS_IRQ",
-                brief = "CTS Interrupt",
-                description = "Interrupt number of UART0 CTS handshake input. If enabled, "..
-                              "the driver provides RS 232 output hardware handshake.\n\n"..
-                              "Ethernut 2.x:\n"..
-                              "Short JP1 pins 7 and 8 to select INT7.",
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_irq_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART0_DTR_BIT",
-                brief = "DTR Bit",
-                description = "Bit number of UART0 DTR handshake output. If enabled, "..
-                              "the driver provides RS 232 output hardware handshake.\n\n",
-                provides = { "UART0_DTR_BIT" },
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART0_DTR_AVRPORT",
-                brief = "DTR Port",
-                description = "Port register name of UART0 DTR handshake output.",
-                requires = { "UART0_DTR_BIT" },
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART0_HDX_BIT",
-                brief = "Half Duplex Bit",
-                description = "Bit number of UART0 half duplex control output. If enabled, "..
-                              "the driver provides RS 485 half duplex mode.",
-                provides = { "UART0_HDX_BIT" },
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART0_HDX_AVRPORT",
-                brief = "Half Duplex Port",
-                description = "Port register name of UART0 half duplex control output.",
-                requires = { "UART0_HDX_BIT" },
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-        }
+--        options =
+--        {
+--            {
+--                macro = "UART0_RTS_BIT",
+--                brief = "RTS Bit",
+--                description = "Bit number of UART0 RTS handshake output. If enabled, "..
+--                              "the driver provides RS 232 input hardware handshake.\n\n"..
+--                              "Ethernut 2.x:\n"..
+--                              "Short JP1 pins 4 and 6 to select bit 2 on PORTE.",
+--                provides = { "UART0_RTS_BIT" },
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_bit_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART0_RTS_AVRPORT",
+--                brief = "RTS Port",
+--                description = "Port register name of UART0 RTS handshake output.",
+--                requires = { "UART0_RTS_BIT" },
+--                type = "enumerated",
+--                choices = avr_port_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART0_CTS_IRQ",
+--                brief = "CTS Interrupt",
+--                description = "Interrupt number of UART0 CTS handshake input. If enabled, "..
+--                              "the driver provides RS 232 output hardware handshake.\n\n"..
+--                              "Ethernut 2.x:\n"..
+--                              "Short JP1 pins 7 and 8 to select INT7.",
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_irq_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART0_DTR_BIT",
+--                brief = "DTR Bit",
+--                description = "Bit number of UART0 DTR handshake output. If enabled, "..
+--                              "the driver provides RS 232 output hardware handshake.\n\n",
+--                provides = { "UART0_DTR_BIT" },
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_bit_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART0_DTR_AVRPORT",
+--                brief = "DTR Port",
+--                description = "Port register name of UART0 DTR handshake output.",
+--                requires = { "UART0_DTR_BIT" },
+--                type = "enumerated",
+--                choices = avr_port_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART0_HDX_BIT",
+--                brief = "Half Duplex Bit",
+--                description = "Bit number of UART0 half duplex control output. If enabled, "..
+--                              "the driver provides RS 485 half duplex mode.",
+--                provides = { "UART0_HDX_BIT" },
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_bit_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART0_HDX_AVRPORT",
+--                brief = "Half Duplex Port",
+--                description = "Port register name of UART0 half duplex control output.",
+--                requires = { "UART0_HDX_BIT" },
+--                type = "enumerated",
+--                choices = avr_port_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--        }
     },
     {
         name = "nutarch_avr_usart1",
@@ -397,83 +397,83 @@ nutarch_avr =
         },
         provides = { "DEV_UART_SPECIFIC" },
         sources = { "avr/dev/usart1avr.c" },
-        options =
-        {
-            {
-                macro = "UART1_RTS_BIT",
-                brief = "RTS Bit",
-                description = "Bit number of UART1 RTS handshake output. If enabled, "..
-                              "the driver provides RS 232 input hardware handshake.\n\n"..
-                              "Ethernut 2.x:\n"..
-                              "Short JP1 pins 4 and 6 to select bit 2 on PORTE.",
-                provides = { "UART1_RTS_BIT" },
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART1_RTS_AVRPORT",
-                brief = "RTS Port",
-                description = "Port register name of UART1 RTS handshake output.",
-                requires = { "UART1_RTS_BIT" },
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART1_CTS_IRQ",
-                brief = "CTS Interrupt",
-                description = "Interrupt number of UART1 CTS handshake input. If enabled, "..
-                              "the driver provides RS 232 output hardware handshake.\n\n"..
-                              "Ethernut 2.x:\n"..
-                              "Short JP1 pins 7 and 8 to select INT7.",
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_irq_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART1_DTR_BIT",
-                brief = "DTR Bit",
-                description = "Bit number of UART1 DTR handshake output. If enabled, "..
-                              "the driver provides RS 232 input hardware handshake.\n\n",
-                provides = { "UART1_DTR_BIT" },
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART1_DTR_AVRPORT",
-                brief = "DTR Port",
-                description = "Port register name of UART1 DTR handshake output.",
-                requires = { "UART1_DTR_BIT" },
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART1_HDX_BIT",
-                brief = "Half Duplex Bit",
-                description = "Bit number of UART1 half duplex control output. If enabled, "..
-                              "the driver provides RS 485 half duplex mode.",
-                provides = { "UART1_HDX_BIT" },
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr_bit_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-            {
-                macro = "UART1_HDX_AVRPORT",
-                brief = "Half Duplex Port",
-                description = "Port register name of UART1 half duplex control output.",
-                requires = { "UART1_HDX_BIT" },
-                type = "enumerated",
-                choices = avr_port_choice,
-                file = "include/cfg/arch/avrpio.h"
-            },
-        }
+--        options =
+--        {
+--            {
+--                macro = "UART1_RTS_BIT",
+--                brief = "RTS Bit",
+--                description = "Bit number of UART1 RTS handshake output. If enabled, "..
+--                              "the driver provides RS 232 input hardware handshake.\n\n"..
+--                              "Ethernut 2.x:\n"..
+--                              "Short JP1 pins 4 and 6 to select bit 2 on PORTE.",
+--                provides = { "UART1_RTS_BIT" },
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_bit_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART1_RTS_AVRPORT",
+--                brief = "RTS Port",
+--                description = "Port register name of UART1 RTS handshake output.",
+--                requires = { "UART1_RTS_BIT" },
+--                type = "enumerated",
+--                choices = avr_port_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART1_CTS_IRQ",
+--                brief = "CTS Interrupt",
+--                description = "Interrupt number of UART1 CTS handshake input. If enabled, "..
+--                              "the driver provides RS 232 output hardware handshake.\n\n"..
+--                              "Ethernut 2.x:\n"..
+--                              "Short JP1 pins 7 and 8 to select INT7.",
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_irq_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART1_DTR_BIT",
+--                brief = "DTR Bit",
+--                description = "Bit number of UART1 DTR handshake output. If enabled, "..
+--                              "the driver provides RS 232 input hardware handshake.\n\n",
+--                provides = { "UART1_DTR_BIT" },
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_bit_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART1_DTR_AVRPORT",
+--                brief = "DTR Port",
+--                description = "Port register name of UART1 DTR handshake output.",
+--                requires = { "UART1_DTR_BIT" },
+--                type = "enumerated",
+--                choices = avr_port_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART1_HDX_BIT",
+--                brief = "Half Duplex Bit",
+--                description = "Bit number of UART1 half duplex control output. If enabled, "..
+--                              "the driver provides RS 485 half duplex mode.",
+--                provides = { "UART1_HDX_BIT" },
+--                flavor = "booldata",
+--                type = "enumerated",
+--                choices = avr_bit_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--            {
+--                macro = "UART1_HDX_AVRPORT",
+--                brief = "Half Duplex Port",
+--                description = "Port register name of UART1 half duplex control output.",
+--                requires = { "UART1_HDX_BIT" },
+--                type = "enumerated",
+--                choices = avr_port_choice,
+--                file = "include/cfg/arch/avrpio.h"
+--            },
+--        }
     },
     {
         name = "nutarch_avr_usart2",

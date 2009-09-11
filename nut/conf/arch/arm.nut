@@ -679,48 +679,42 @@ nutarch_arm =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART_SPECIFIC" },
+        provides = {"DEV_UART_SPECIFIC", 
+                    "DEV_UART0_GPIO_RTS", 
+                    "DEV_UART0_GPIO_CTS", 
+                    "DEV_UART0_GPIO_HDX" },
         sources = { "arm/dev/usart0at91.c" },
-        options =
-        {
-            {
-                macro = "UART0_RXTX_ONLY",
-                brief = "Receive/Transmit Only",
-                description = "When selected, the driver will not support any handshake signals.",
-                flavor = "boolean",
-                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
-                file = "include/cfg/uart.h"
-            },
-            {
-                macro = "UART0_HARDWARE_HANDSHAKE",
-                brief = "Hardware Handshake",
-                description = "When selected, the driver will support RTS/CTS hardware handshake. "..
-                              "Make sure, that the related peripheral pins are available.",
-                flavor = "boolean",
-                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
-                requires = { "HW_UART0_RTSCTS" },
-                file = "include/cfg/uart.h"
-            },
-            {
-                macro = "UART0_MODEM_CONTROL",
-                brief = "Full Modem Control",
-                description = "When selected, the driver will support full modem control. "..
-                              "Make sure, that all related peripheral pins are available.",
-                flavor = "boolean",
-                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
-                requires = { "HW_UART0_MODEM" },
-                file = "include/cfg/uart.h"
-            },
-            {
-                macro = "AT91_UART0_RS485",
-                brief = "USE HW RS485 on UART0",
-                description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
-                              "The UART0 RTS pin is used for RS485 direction switching.",
-                provides = { "AT91_UART0_RS485" },
-                flavor = "booldata",
-                file = "include/cfg/uart.h"
-            },
-        },
+--        options =
+--        {
+--            {
+--                macro = "UART0_RXTX_ONLY",
+--                brief = "Receive/Transmit Only",
+--                description = "When selected, the driver will not support any handshake signals.",
+--                flavor = "boolean",
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                file = "include/cfg/uart.h"
+--            },
+--            {
+--                macro = "UART0_HARDWARE_HANDSHAKE",
+--                brief = "Hardware Handshake",
+--                description = "When selected, the driver will support RTS/CTS hardware handshake. "..
+--                              "Make sure, that the related peripheral pins are available.",
+--                flavor = "boolean",
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                requires = { "HW_UART0_RTSCTS" },
+--                file = "include/cfg/uart.h"
+--            },
+--            {
+--                macro = "UART0_MODEM_CONTROL",
+--                brief = "Full Modem Control",
+--                description = "When selected, the driver will support full modem control. "..
+--                              "Make sure, that all related peripheral pins are available.",
+--                flavor = "boolean",
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                requires = { "HW_UART0_MODEM" },
+--                file = "include/cfg/uart.h"
+--            },
+--        },
     },
     {
         name = "nutarch_arm_usart1",
@@ -728,48 +722,42 @@ nutarch_arm =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = { "DEV_UART_SPECIFIC" },
+        provides = {"DEV_UART_SPECIFIC", 
+                    "DEV_UART1_GPIO_RTS", 
+                    "DEV_UART1_GPIO_CTS", 
+                    "DEV_UART1_GPIO_HDX" },
         sources = { "arm/dev/usart1at91.c" },
-        options =
-        {
-            {
-                macro = "UART1_RXTX_ONLY",
-                brief = "Receive/Transmit Only",
-                description = "When selected, the driver will not support any handshake signals.",
-                flavor = "boolean",
-                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
-                file = "include/cfg/uart.h"
-            },
-            {
-                macro = "UART1_HARDWARE_HANDSHAKE",
-                brief = "Hardware Handshake",
-                description = "When selected, the driver will support RTS/CTS hardware handshake. "..
-                              "Make sure, that the related peripheral pins are available.",
-                flavor = "boolean",
-                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
-                requires = { "HW_UART1_RTSCTS" },
-                file = "include/cfg/uart.h"
-            },
-            {
-                macro = "UART1_MODEM_CONTROL",
-                brief = "Full Modem Control",
-                description = "When selected, the driver will support full modem control. "..
-                              "Make sure, that all related peripheral pins are available.",
-                flavor = "boolean",
-                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
-                requires = { "HW_UART1_MODEM" },
-                file = "include/cfg/uart.h"
-            },
-            {
-                macro = "AT91_UART1_RS485",
-                brief = "USE HW RS485 on UART1",
-                description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
-                              "The UART1 RTS pin is used for RS485 direction switching.",
-                provides = { "AT91_UART1_RS485" },
-                flavor = "booldata",
-                file = "include/cfg/uart.h"
-            },
-        },
+--        options =
+--        {
+--            {
+--                macro = "UART1_RXTX_ONLY",
+--                brief = "Receive/Transmit Only",
+--                description = "When selected, the driver will not support any handshake signals.",
+--                flavor = "boolean",
+--                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+--                file = "include/cfg/uart.h"
+--            },
+--            {
+--                macro = "UART1_HARDWARE_HANDSHAKE",
+--                brief = "Hardware Handshake",
+--                description = "When selected, the driver will support RTS/CTS hardware handshake. "..
+--                              "Make sure, that the related peripheral pins are available.",
+--                flavor = "boolean",
+--                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+--                requires = { "HW_UART1_RTSCTS" },
+--                file = "include/cfg/uart.h"
+--            },
+--            {
+--                macro = "UART1_MODEM_CONTROL",
+--                brief = "Full Modem Control",
+--                description = "When selected, the driver will support full modem control. "..
+--                              "Make sure, that all related peripheral pins are available.",
+--                flavor = "boolean",
+--                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+--                requires = { "HW_UART1_MODEM" },
+--                file = "include/cfg/uart.h"
+--            },
+--        },
     },
     {
         name = "nutarch_arm_ahdlc",
