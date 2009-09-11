@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright 2001-2006 by egnite Software GmbH
+ * Copyright 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,56 +31,10 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * The 9-bit communication had been contributed by Brett Abbott,
- * Digital Telemetry Limited.
- *
- * Dave Smart contributed the synchronous mode support.
  */
 
 /*
- * $Log$
- * Revision 1.12  2008/10/23 08:50:43  haraldkipp
- * Prepared AT91 UART hardware handshake.
- *
- * Revision 1.11  2008/08/11 06:59:13  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.10  2008/07/31 09:43:25  haraldkipp
- * Initializing peripheral control registers in a more general way.
- * Fixes bug #2032960.
- *
- * Revision 1.9  2008/04/18 13:24:56  haraldkipp
- * Added Szemzo Andras' RS485 patch.
- *
- * Revision 1.8  2008/02/15 16:59:27  haraldkipp
- * Spport for AT91SAM7SE512 added.
- *
- * Revision 1.7  2007/10/04 20:05:51  olereinhardt
- * Support for SAM7S256 added
- *
- * Revision 1.6  2006/08/31 19:01:44  haraldkipp
- * Using the processor clock for baud rate calculations failed
- * on the SAM9, if the master clock is further divided. This
- * had been fixed.
- *
- * Revision 1.5  2006/08/05 11:54:06  haraldkipp
- * Special register functions should not be based on MCU definitions but on
- * register definitions.
- *
- * Revision 1.4  2006/07/05 07:55:23  haraldkipp
- * Daidai's support for AT91SAM7X added.
- *
- * Revision 1.3  2006/06/28 17:18:40  haraldkipp
- * Temporarly exclude AT91R40008 specific register settings from building
- * for AT91SAM7X.
- *
- * Revision 1.2  2006/01/05 16:47:32  haraldkipp
- * Baudrate calculation is now based on NutGetCpuClock().
- *
- * Revision 1.1  2005/11/20 14:40:28  haraldkipp
- * Added interrupt driven UART driver for AT91.
- *
+ * $Id$
  */
 
 #include <cfg/clock.h>
@@ -93,6 +50,173 @@
 #include <dev/irqreg.h>
 
 #include <dev/usartat91.h>
+
+/*
+** Initial USART settings.
+*/
+#ifndef UART_INIT_BAUDRATE
+#define UART_INIT_BAUDRATE  115200
+#endif
+
+/*
+** Add empty placeholders for undefined pin configurations.
+*/
+#ifndef UART_RXTX_PINS_ENABLE
+#define UART_RXTX_PINS_ENABLE()
+#endif
+
+#ifndef UART_HDX_PIN_ENABLE
+#define UART_HDX_PIN_ENABLE()
+#endif
+#ifndef UART_HDX_RX
+#define UART_HDX_RX()
+#endif
+#ifndef UART_HDX_TX
+#define UART_HDX_TX()
+#endif
+
+#ifndef UART_RTS_PIN_ENABLE
+#define UART_RTS_PIN_ENABLE()
+#endif
+#ifndef UART_RTS_ON
+#define UART_RTS_ON()
+#endif
+#ifndef UART_RTS_OFF
+#define UART_RTS_OFF()
+#endif
+
+#ifndef UART_CTS_PIN_ENABLE
+#define UART_CTS_PIN_ENABLE()
+#endif
+#ifndef UART_CTS_IS_ON
+#define UART_CTS_IS_ON()    (1)
+#endif
+
+#ifndef UART_MODEM_PINS_ENABLE
+#define UART_MODEM_PINS_ENABLE()
+#endif
+
+
+/*
+** GPIO controlled half duplex pin.
+*/
+#if defined(UART_HDX_BIT) && defined(UART_HDX_PIO_ID)
+
+#undef UART_HDX_RX
+#undef UART_HDX_TX
+#undef UART_HDX_PIN_ENABLE
+#undef GPIO_ID
+#define GPIO_ID UART_HDX_PIO_ID
+#include <cfg/arch/porttran.h>
+static INLINE void UART_HDX_PIN_ENABLE(void) {
+    GPIO_ENABLE(UART_HDX_BIT);
+    GPIO_OUTPUT(UART_HDX_BIT);
+}
+#ifdef UART_HDX_FLIP_BIT
+static INLINE void UART_HDX_RX(void) { GPIO_SET_HI(UART_HDX_BIT); }
+static INLINE void UART_HDX_TX(void) { GPIO_SET_LO(UART_HDX_BIT); }
+#else
+static INLINE void UART_HDX_RX(void) { GPIO_SET_LO(UART_HDX_BIT); }
+static INLINE void UART_HDX_TX(void) { GPIO_SET_HI(UART_HDX_BIT); }
+#endif
+
+#elif defined(UART_USES_NPL)
+
+#undef UART_HDX_RX
+#undef UART_HDX_TX
+#define UART_HDX_RX()   cbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_HDX_TX()   sbi(NPL_RSCR, NPL_RSRTS_BIT)
+
+#endif /* UART_HDX_BIT */
+
+/*
+** GPIO controlled RTS pin.
+*/
+#if defined(UART_RTS_BIT) && defined(UART_RTS_PIO_ID)
+
+#undef UART_RTS_ON
+#undef UART_RTS_OFF
+#undef UART_RTS_PIN_ENABLE
+#undef GPIO_ID
+#define GPIO_ID UART_RTS_PIO_ID
+#include <cfg/arch/porttran.h>
+static INLINE void UART_RTS_PIN_ENABLE(void) { \
+    GPIO_ENABLE(UART_RTS_BIT); \
+    GPIO_OUTPUT(UART_RTS_BIT); \
+}
+#ifdef UART_RTS_FLIP_BIT
+static INLINE void UART_RTS_ON(void) { GPIO_SET_HI(UART_RTS_BIT); }
+static INLINE void UART_RTS_OFF(void) { GPIO_SET_LO(UART_RTS_BIT); }
+#else
+static INLINE void UART_RTS_ON(void) { GPIO_SET_LO(UART_RTS_BIT); }
+static INLINE void UART_RTS_OFF(void) { GPIO_SET_HI(UART_RTS_BIT); }
+#endif
+
+#elif defined(UART_USES_NPL)
+
+#undef UART_RTS_ON
+#undef UART_RTS_OFF
+#define UART_RTS_ON()   cbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_RTS_OFF()  sbi(NPL_RSCR, NPL_RSRTS_BIT)
+
+#endif
+
+/*
+** GPIO monitored CTS pin.
+*/
+#if defined(UART_CTS_BIT) && defined(UART_CTS_PIO_ID)
+
+#undef UART_CTS_IS_ON
+#undef UART_CTS_PIN_ENABLE
+#undef GPIO_ID
+#define GPIO_ID UART_CTS_PIO_ID
+#include <cfg/arch/porttran.h>
+#ifdef UART_CTS_FLIP_BIT
+static INLINE int UART_CTS_IS_ON(void) { return GPIO_GET(UART_CTS_BIT); }
+#else
+static INLINE int UART_CTS_IS_ON(void) { return !GPIO_GET(UART_CTS_BIT); }
+#endif
+static INLINE void UART_CTS_PIN_ENABLE(void) { \
+    GPIO_ENABLE(UART_CTS_BIT); \
+    GPIO_INPUT(UART_CTS_BIT); \
+    GPIO_PULLUP_ON(UART_CTS_BIT); \
+}
+
+#elif defined(UART_USES_NPL)
+
+#undef UART_CTS_IS_ON
+static INLINE int UART_CTS_IS_ON(void) {
+    outw(NPL_SCR, NPL_RSCTS);
+    return bit_is_set(NPL_SLR, NPL_RSCTS_BIT);
+}
+
+#endif
+
+/*
+** Determine if we use built-in hardware handshake.
+*/
+#if !defined(USE_BUILT_IN_HARDWARE_HANDSHAKE)
+#if defined(UART_HARDWARE_HANDSHAKE) && \
+    defined(US_MODE_HWHANDSHAKE) && \
+    !defined(UART_RTS_BIT) && \
+    !defined(UART_CTS_BIT) && \
+    !defined(UART_USES_NPL)
+#define USE_BUILT_IN_HARDWARE_HANDSHAKE 1
+#else
+#define USE_BUILT_IN_HARDWARE_HANDSHAKE 0
+#endif
+#endif
+
+/*
+** Determine if we use built-in half duplex mode.
+*/
+#if !defined(USE_BUILT_IN_HALF_DUPLEX)
+#if defined(UART_HARDWARE_HANDSHAKE) && !defined(UART_HDX_BIT) && !defined(UART_USES_NPL)
+#define USE_BUILT_IN_HALF_DUPLEX    1
+#else
+#define USE_BUILT_IN_HALF_DUPLEX    0
+#endif
+#endif
 
 /*!
  * \addtogroup xgNutArchArmAt91Us
@@ -117,7 +241,7 @@
 /*!
  * \brief Receiver error flags.
  */
-static ureg_t rx_errors;
+static unsigned int rx_errors;
 
 /*!
  * \brief Enables software flow control if not equal zero.
@@ -129,27 +253,13 @@ static uint_fast8_t flow_control;
  */
 static uint_fast8_t tx_aframe;
 
-#ifdef UART_HDX_BIT
-	/* define in cfg/modem.h */
-	#ifdef UART_HDX_FLIP_BIT	/* same as RTS toggle by Windows NT driver */
-		#define UART_HDX_TX		cbi
-		#define UART_HDX_RX		sbi
-	#else						/* previous usage by Ethernut */
-		#define UART_HDX_TX		sbi
-		#define UART_HDX_RX		cbi
-	#endif
-#endif
-
-
 /*!
- * \brief Enables half duplex control if not equal zero.
+ * \brief Half duplex control flag.
  *
- * This variable exists only if the hardware configuration defines a
- * port bit to switch between receive and transmit mode.
+ * Set to 1 if half duplex is enabled. Contains zero otherwise.
  */
 static uint_fast8_t hdx_control;
 
-//#if defined(UART_RTS_BIT) || defined(US_MODE_HWHANDSHAKE)
 /*!
  * \brief Enables RTS control if not equal zero.
  *
@@ -157,9 +267,7 @@ static uint_fast8_t hdx_control;
  * port bit to control the RTS signal.
  */
 static uint_fast8_t rts_control;
-//#endif
 
-//#if defined(UART_CTS_BIT) || defined(US_MODE_HWHANDSHAKE)
 /*!
  * \brief Enables CTS sense if not equal zero.
  *
@@ -167,9 +275,8 @@ static uint_fast8_t rts_control;
  * port bit to sense the CTS signal.
  */
 static uint_fast8_t cts_sense;
-//#endif
 
-#if defined(UART_CTS_BIT) || defined(UART_USES_NPL)
+#if (defined(UART_CTS_BIT) && defined(UART_CTS_SIGNAL)) || defined(UART_USES_NPL)
 /*!
  * \brief USARTn CTS sense interrupt handler.
  *
@@ -182,13 +289,18 @@ static uint_fast8_t cts_sense;
  */
 static void At91UsartCts(void *arg)
 {
-    /* Enable transmit interrupt. */
-    //sbi(UCSRnB, UDRIE);
     /* Disable CTS sense interrupt. */
-    //cbi(EIMSK, UART_CTS_BIT);
+#if defined(UART_USES_NPL)
+    NplIrqDisable(&sig_RSCTS);
+#else
+    // TODO: Disable CTS interrupt.
+#endif
+    /* Enable transmit interrupt. */
+    outr(USARTn_BASE + US_IER_OFF, US_TXRDY);
 }
 #endif
 
+#if USE_BUILT_IN_HALF_DUPLEX == 0
 /*
  * \brief USARTn transmitter empty interrupt handler.
  *
@@ -210,14 +322,12 @@ static void At91UsartTxEmpty(RINGBUF *rbf)
          * Disable TX-Empty IRQ
          */
         outr(USARTn_BASE + US_CR_OFF, US_RXEN | US_TXDIS);
-		//USDBG_PIN1_HIGH();
-#if defined(UART_HDX_BIT)
-        UART_HDX_RX(UART_HDX_PORT, UART_HDX_BIT);
-#elif defined(UART_USES_NPL)
-        sbi(NPL_RSCR, NPL_RSRTS_BIT);
+#if defined(UART_HDX_BIT) || defined(UART_USES_NPL)
+        UART_HDX_RX();
 #endif
     }
 }
+#endif
 
 /*
  * \brief USARTn transmitter ready interrupt handler.
@@ -252,25 +362,25 @@ static void At91UsartTxReady(RINGBUF *rbf)
         return;
 	}
 
+    /*
+     * Check if we have more bytes to transmit.
+     */
     if (rbf->rbf_cnt) {
+#if defined(UART_CTS_BIT) || defined(UART_USES_NPL)
         /*
-         * If CTS has been disabled, we disable the transmit interrupts
-         * and return without sending anything.
+         * If CTS has been disabled, we disable the transmit interrupts,
+         * enable CTS interrupts and return without sending anything.
          */
-#ifdef UART_CTS_BIT
-        if (cts_sense && bit_is_set(UART_CTS_PIN, UART_CTS_BIT)) {
+        if (cts_sense && !UART_CTS_IS_ON()) {
             outr(USARTn_BASE + US_IDR_OFF, US_TXRDY);
-            sbi(EIMSK, UART_CTS_BIT);
-            return;
-        }
-#elif defined(UART_USES_NPL)
-        if (cts_sense && bit_is_set(NPL_STATUS, NPL_RSCTS_BIT)) {
-            outr(USARTn_BASE + US_IDR_OFF, US_TXRDY);
-            sbi(NPL_IMR, NPL_RSCTS_BIT);
+#if defined(UART_CTS_BIT)
+            // TODO: Disable CTS interrupt.
+#else
+            NplIrqEnable(&sig_RSCTS);
+#endif
             return;
         }
 #endif
-        rbf->rbf_cnt--;
 
         /*
          * Send address in multidrop mode.
@@ -279,37 +389,39 @@ static void At91UsartTxReady(RINGBUF *rbf)
             outr(USARTn_BASE + US_CR_OFF, US_SENDA);
         }
 
-        /*
-         * Start transmission of the next character.
-         */
+        /* Start transmission of the next character. */
         outr(USARTn_BASE + US_THR_OFF, *cp);
-
-        /*
-         * Wrap around the buffer pointer if we reached its end.
-         */
+        /* Decrement the number of available bytes in the buffer. */
+        rbf->rbf_cnt--;
+        /* Wrap around the buffer pointer if we reached its end. */
         if (++cp == rbf->rbf_last) {
             cp = rbf->rbf_start;
         }
         rbf->rbf_tail = cp;
+
+#if USE_BUILT_IN_HALF_DUPLEX == 0
+		/* 
+		 * If software half duplex enabled, we need TX-Empty IRQ for
+		 * detection if last bit of last byte transmission is finished.
+		 */
+		if( hdx_control && rbf->rbf_cnt == 0) {
+			outr(USARTn_BASE + US_IER_OFF, US_TXEMPTY);
+		}
+#endif
+
+        /* Send an event if we reached the low watermark. */
         if (rbf->rbf_cnt == rbf->rbf_lwm) {
             NutEventPostFromIrq(&rbf->rbf_que);
         }
-
-		/* 
-		 * if software half duplex enabled, we need TX-Empty IRQ for
-		 * detection if last bit of last byte transmission is finished.
-		 */
-		if( hdx_control && (rbf->rbf_cnt ==0)) {
-			outr(USARTn_BASE + US_IER_OFF, US_TXEMPTY);		// enable TX-Empty IRQ to enable RX again
-		}
     }
 
     /*
      * Nothing left to transmit, disable interrupt.
      */
     else {
+        /* Disable transmit interrupts. */
         outr(USARTn_BASE + US_IDR_OFF, US_TXRDY);
-        rbf->rbf_cnt = 0;
+        /* Send an event to inform the upper level. */
         NutEventPostFromIrq(&rbf->rbf_que);
     }
 }
@@ -372,7 +484,7 @@ static void At91UsartRxReady(RINGBUF *rbf)
 
     /*
      * Check the high watermark for software handshake. If the number of
-     * buffered bytes is above this mark, then send XOFF.
+     * buffered bytes is equal or above this mark, then send XOFF.
      */
     else if (flow_control) {
         if(cnt >= rbf->rbf_hwm) {
@@ -388,17 +500,14 @@ static void At91UsartRxReady(RINGBUF *rbf)
         }
     }
 
+#if defined(UART_RTS_BIT) || defined(UART_USES_NPL)
     /*
-     * Check the high watermark for hardware handshake. If the number of
-     * buffered bytes is above this mark, then disable RTS.
+     * Check the high watermark for GPIO hardware handshake. If the 
+     * number of buffered bytes is equal or above this mark, then 
+     * disable RTS.
      */
-#ifdef UART_RTS_BIT
     else if (rts_control && cnt >= rbf->rbf_hwm) {
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
-    }
-#elif defined(UART_USES_NPL)
-    else if (rts_control && cnt >= rbf->rbf_hwm) {
-        sbi(NPL_RSCR, NPL_RSRTS_BIT);
+        UART_RTS_OFF();
     }
 #endif
 
@@ -422,7 +531,7 @@ static void At91UsartRxReady(RINGBUF *rbf)
 static void At91UsartInterrupt(void *arg)
 {
     USARTDCB *dcb = (USARTDCB *)arg;
-    ureg_t csr = inr(USARTn_BASE + US_CSR_OFF);
+    unsigned int csr = inr(USARTn_BASE + US_CSR_OFF);
 
     if (csr & US_RXRDY) {
         At91UsartRxReady(&dcb->dcb_rx_rbf);
@@ -431,9 +540,11 @@ static void At91UsartInterrupt(void *arg)
         At91UsartTxReady(&dcb->dcb_tx_rbf);
     }
 
+#if USE_BUILT_IN_HALF_DUPLEX == 0
     if (csr & US_TXEMPTY) {
         At91UsartTxEmpty(&dcb->dcb_tx_rbf);
     }
+#endif
 }
 
 /*!
@@ -444,45 +555,44 @@ static void At91UsartInterrupt(void *arg)
  */
 static void At91UsartEnable(void)
 {
-    NutEnterCritical();
-
     /* Enable UART receiver and transmitter. */
     outr(USARTn_BASE + US_CR_OFF, US_RXEN | US_TXEN);
-
-    /* Enable UART receiver and transmitter interrupts. */
-    outr(USARTn_BASE + US_IER_OFF, US_RXRDY | US_TXRDY);
-
-    if (hdx_control) {
-        /* Enable transmit complete interrupt. */
-        outr(USARTn_BASE + US_IER_OFF, US_TXEMPTY);
-    }
-
+    /* Globally enable UART interrupts. */
     NutIrqEnable(&SIG_UART);
-    NutExitCritical();
 }
 
 /*!
  * \brief Carefully disable USART hardware functions.
+ *
+ * This routine is called before changing cruical settings like
+ * baudrate, frame format etc.
+ *
+ * The previous version uses a 10ms delay to make sure, that any 
+ * incoming or outgoing character is processed. However, this time
+ * depends on the baudrate.
+ *
+ * In fact we do not need to take care of incoming characters,
+ * when changing such settings.
+ *
+ * For outgoing characters however, settings may be changed on
+ * the fly and we should wait, until the last character transmitted
+ * with the old settings has left the shift register. While TXRDY 
+ * is set when the holding register is empty, TXEMPTY is set when the
+ * shift register is empty. The bad news is, that both are zero, if
+ * the transmitter is disabled. We are not able to determine this
+ * state. So we check TXRDY first and, if set, wait for any character
+ * currently in the shift register.
  */
 static void At91UsartDisable(void)
 {
-    /*
-     * Disable USART interrupts.
-     */
-    NutEnterCritical();
-    outr(USARTn_BASE + US_IDR_OFF, 0xFFFFFFFF);
-    NutExitCritical();
-
-    /*
-     * Allow incoming or outgoing character to finish.
-     */
-    NutDelay(10);
-
-    /*
-     * Disable USART transmit and receive.
-     */
+    /* Globally disable UART interrupts. */
+    NutIrqDisable(&SIG_UART);
+    /* Wait until all bits had been shifted out. */
+    if (inr(USARTn_BASE + US_CSR_OFF) & US_TXRDY) {
+        while((inr(USARTn_BASE + US_CSR_OFF) & US_TXEMPTY) == 0);
+    }
+    /* Disable USART transmit and receive. */
     outr(USARTn_BASE + US_CR_OFF, US_RXDIS | US_TXDIS);
-	outr(USARTn_BASE + US_IDR_OFF, US_TXEMPTY);
 }
 
 /*!
@@ -495,14 +605,15 @@ static void At91UsartDisable(void)
  */
 static uint32_t At91UsartGetSpeed(void)
 {
-    ureg_t cs = inr(USARTn_BASE + US_MR_OFF);
+    unsigned int cs;
     uint32_t clk;
 
     clk = NutClockGet(NUT_HWCLK_PERIPHERAL);
-    if ((cs & US_CLKS) == US_CLKS_MCK8) {
+    cs = inr(USARTn_BASE + US_MR_OFF) & US_CLKS;
+    if (cs == US_CLKS_MCK8) {
         clk /= 8;
     }
-    else if ((cs & US_CLKS) != US_CLKS_MCK) {
+    else if (cs != US_CLKS_MCK) {
         clk = 0;
     }
     return clk / (16UL * (inr(USARTn_BASE + US_BRGR_OFF) & 0xFFFF));
@@ -537,7 +648,7 @@ static int At91UsartSetSpeed(uint32_t rate)
  */
 static uint8_t At91UsartGetDataBits(void)
 {
-    ureg_t val = inr(USARTn_BASE + US_MR_OFF);
+    unsigned int val = inr(USARTn_BASE + US_MR_OFF);
 
     if ((val & US_PAR) == US_PAR_MULTIDROP) {
         val = 9;
@@ -570,7 +681,7 @@ static uint8_t At91UsartGetDataBits(void)
  */
 static int At91UsartSetDataBits(uint8_t bits)
 {
-    ureg_t val = inr(USARTn_BASE + US_MR_OFF);
+    unsigned int val = inr(USARTn_BASE + US_MR_OFF);
 
     if (bits == 9) {
         val &= ~US_PAR;
@@ -615,7 +726,7 @@ static int At91UsartSetDataBits(uint8_t bits)
  */
 static uint8_t At91UsartGetParity(void)
 {
-    ureg_t val = inr(USARTn_BASE + US_MR_OFF) & US_PAR;
+    unsigned int val = inr(USARTn_BASE + US_MR_OFF) & US_PAR;
 
     if ((val & US_PAR) == US_PAR_MULTIDROP) {
         val = 9;
@@ -646,7 +757,7 @@ static uint8_t At91UsartGetParity(void)
  */
 static int At91UsartSetParity(uint8_t mode)
 {
-    ureg_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_PAR;
+    unsigned int val = inr(USARTn_BASE + US_MR_OFF) & ~US_PAR;
 
     switch (mode) {
     case 0:
@@ -682,7 +793,7 @@ static int At91UsartSetParity(uint8_t mode)
  */
 static uint8_t At91UsartGetStopBits(void)
 {
-    ureg_t val = inr(USARTn_BASE + US_MR_OFF) & US_NBSTOP;
+    unsigned int val = inr(USARTn_BASE + US_MR_OFF) & US_NBSTOP;
     if (val == US_NBSTOP_1) {
         val = 1;
     }
@@ -705,7 +816,7 @@ static uint8_t At91UsartGetStopBits(void)
  */
 static int At91UsartSetStopBits(uint8_t bits)
 {
-    ureg_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_NBSTOP;
+    unsigned int val = inr(USARTn_BASE + US_MR_OFF) & ~US_NBSTOP;
 
     switch(bits) {
     case 1:
@@ -739,7 +850,7 @@ static int At91UsartSetStopBits(uint8_t bits)
 static uint32_t At91UsartGetStatus(void)
 {
     uint32_t rc = 0;
-#if defined(US_MODE_HWHANDSHAKE)
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
     uint32_t csr = inr(USARTn_BASE + US_CSR_OFF);
 #endif
 
@@ -772,15 +883,10 @@ static uint32_t At91UsartGetStatus(void)
     /*
      * Determine hardware handshake control status.
      */
-#if defined(UART_RTS_BIT)
-    if (bit_is_set(UART_RTS_PORT, UART_RTS_BIT)) {
-        rc |= UART_RTSDISABLED;
-        if (rts_control) {
-            rc |= UART_RXDISABLED;
-        }
-    } else {
-        rc |= UART_RTSENABLED;
-    }
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
+    /* How to find out? */
+#elif defined(UART_RTS_BIT)
+    /* No definition of the status register? */
 #elif defined(UART_USES_NPL)
     if (bit_is_set(NPL_RSCR, NPL_RSRTS_BIT)) {
         rc |= UART_RTSDISABLED;
@@ -790,32 +896,12 @@ static uint32_t At91UsartGetStatus(void)
     } else {
         rc |= UART_RTSENABLED;
     }
-#elif defined(US_MODE_HWHANDSHAKE)
-    /* How to find out? */
 #endif
 
     /*
      * Determine hardware handshake sense status.
      */
-#ifdef UART_CTS_BIT
-    if (bit_is_set(UART_CTS_PIN, UART_CTS_BIT)) {
-        rc |= UART_CTSDISABLED;
-        if (cts_sense) {
-            rc |= UART_RXDISABLED;
-        }
-    } else {
-        rc |= UART_CTSENABLED;
-    }
-#elif defined(UART_USES_NPL)
-    if (bit_is_set(NPL_STATUS, NPL_RSCTS_BIT)) {
-        rc |= UART_CTSDISABLED;
-        if (cts_sense) {
-            rc |= UART_RXDISABLED;
-        }
-    } else {
-        rc |= UART_CTSENABLED;
-    }
-#elif defined(US_MODE_HWHANDSHAKE)
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
     if (csr & US_CTS) {
         rc |= UART_CTSDISABLED;
         if (cts_sense) {
@@ -824,12 +910,21 @@ static uint32_t At91UsartGetStatus(void)
     } else {
         rc |= UART_CTSENABLED;
     }
+#else
+    if (UART_CTS_IS_ON()) {
+        rc |= UART_CTSENABLED;
+    } else {
+        rc |= UART_CTSDISABLED;
+        if (cts_sense) {
+            rc |= UART_RXDISABLED;
+        }
+    }
 #endif
 
     /*
      * Determine hardware modem sense status.
      */
-#if defined(US_MODE_HWHANDSHAKE) && 0
+#if 0
     /* I'm confused. Awful flag mismatch? Why do we have uart.h and usart.h? */
     if (csr & US_RI) {
         rc |= UART_RIDISABLED;
@@ -885,7 +980,7 @@ static int At91UsartSetStatus(uint32_t flags)
     if (flow_control) {
 
         /* Access to the flow control status must be atomic. */
-        NutEnterCritical();
+        NutIrqDisable(&SIG_UART);
 
         /*
          * Enabling or disabling the receiver means to behave like
@@ -906,46 +1001,14 @@ static int At91UsartSetStatus(uint32_t flags)
         } else if (flags & UART_TXDISABLED) {
             flow_control |= XOFF_RCVD;
         }
-        NutExitCritical();
+        NutIrqEnable(&SIG_UART);
     }
 
     /*
      * Process hardware handshake control.
      */
-#if defined(UART_RTS_BIT)
-    /* Manually controlled via GPIO. */
-    if (rts_control) {
-        if (flags & UART_RXDISABLED) {
-            sbi(UART_RTS_PORT, UART_RTS_BIT);
-        }
-        if (flags & UART_RXENABLED) {
-            cbi(UART_RTS_PORT, UART_RTS_BIT);
-        }
-    }
-    if (flags & UART_RTSDISABLED) {
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
-    }
-    if (flags & UART_RTSENABLED) {
-        cbi(UART_RTS_PORT, UART_RTS_BIT);
-    }
-#elif defined(UART_USES_NPL)
-    /* Manually controlled via CPLD register. */
-    if (rts_control) {
-        if (flags & UART_RXDISABLED) {
-            sbi(NPL_RSCR, NPL_RSRTS_BIT);
-        }
-        if (flags & UART_RXENABLED) {
-            cbi(NPL_RSCR, NPL_RSRTS_BIT);
-        }
-    }
-    if (flags & UART_RTSDISABLED) {
-        sbi(NPL_RSCR, NPL_RSRTS_BIT);
-    }
-    if (flags & UART_RTSENABLED) {
-        cbi(NPL_RSCR, NPL_RSRTS_BIT);
-    }
-#elif defined(US_MODE_HWHANDSHAKE)
-    /* Build in hardware. */
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
+    /* Built-in hardware. */
     if (rts_control) {
         if (flags & UART_RXDISABLED) {
             outr(USARTn_BASE + US_CR_OFF, US_RTSDIS);
@@ -960,21 +1023,30 @@ static int At91UsartSetStatus(uint32_t flags)
     if (flags & UART_RTSENABLED) {
         outr(USARTn_BASE + US_CR_OFF, US_RTSEN);
     }
+#else
+    /* Manually controlled via GPIO. */
+    if (rts_control) {
+        if (flags & UART_RXDISABLED) {
+            UART_RTS_OFF();
+        }
+        if (flags & UART_RXENABLED) {
+            UART_RTS_ON();
+        }
+    }
+    if (flags & UART_RTSDISABLED) {
+        UART_RTS_OFF();
+    }
+    if (flags & UART_RTSENABLED) {
+        UART_RTS_ON();
+    }
 #endif
+
 
     /*
      * Process hardware modem control.
      */
-#if defined(UART_DTR_BIT)
-    /* Manually controlled via GPIO. */
-    if (flags & UART_DTRDISABLED) {
-        sbi(UART_DTR_PORT, UART_DTR_BIT);
-    }
-    if (flags & UART_DTRENABLED) {
-        cbi(UART_DTR_PORT, UART_DTR_BIT);
-    }
-#elif defined(US_MODE_HWHANDSHAKE)
-    /* Build in hardware. */
+#if USE_BUILT_IN_MODEM_CONTROL
+    /* Built-in hardware. */
     if (flags & UART_DTRDISABLED) {
         outr(USARTn_BASE + US_CR_OFF, US_DTRDIS);
     }
@@ -1015,14 +1087,14 @@ static int At91UsartSetStatus(uint32_t flags)
  * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
+ * Not implemented for the AT91 USART. Always returns 0.
+ *
  * \return Or-ed combination of \ref UART_SYNC, \ref UART_MASTER,
  *         \ref UART_NCLOCK and \ref UART_HIGHSPEED.
  */
 static uint8_t At91UsartGetClockMode(void)
 {
-    uint8_t rc = 0;
-
-    return rc;
+    return 0;
 }
 
 /*!
@@ -1031,6 +1103,8 @@ static uint8_t At91UsartGetClockMode(void)
  * This function is called by ioctl function of the upper level USART
  * driver through the USARTDCB jump table.
  *
+ * Not implemented for the AT91 USART. Always returns -1.
+ *
  * \param mode Must be an or-ed combination of USART_SYNC, USART_MASTER,
  *             USART_NCLOCK and USART_HIGHSPEED.
  *
@@ -1038,13 +1112,7 @@ static uint8_t At91UsartGetClockMode(void)
  */
 static int At91UsartSetClockMode(uint8_t mode)
 {
-    /*
-     * Verify the result.
-     */
-    if (At91UsartGetClockMode() != mode) {
-        return -1;
-    }
-    return 0;
+    return -1;
 }
 
 /*!
@@ -1065,7 +1133,7 @@ static uint32_t At91UsartGetFlowControl(void)
         rc &= ~USART_MF_XONXOFF;
     }
 
-#if defined(UART_RTS_BIT) || defined(UART_USES_NPL)
+#if defined(UART_RTS_BIT) || defined(UART_USES_NPL) || defined(UART_HARDWARE_HANDSHAKE)
     if (rts_control) {
         rc |= USART_MF_RTSCONTROL;
     } else {
@@ -1073,7 +1141,7 @@ static uint32_t At91UsartGetFlowControl(void)
     }
 #endif
 
-#if defined(UART_CTS_BIT) || defined(UART_USES_NPL)
+#if defined(UART_CTS_BIT) || defined(UART_USES_NPL) || defined(UART_HARDWARE_HANDSHAKE)
     if (cts_sense) {
         rc |= USART_MF_CTSSENSE;
     } else {
@@ -1086,7 +1154,6 @@ static uint32_t At91UsartGetFlowControl(void)
     } else {
         rc &= ~USART_MF_HALFDUPLEX;
     }
-
     return rc;
 }
 
@@ -1102,118 +1169,94 @@ static uint32_t At91UsartGetFlowControl(void)
  */
 static int At91UsartSetFlowControl(uint32_t flags)
 {
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
+    uint32_t mr = inr(USARTn_BASE + US_MR_OFF) & ~US_MODE;
+#endif
+
     /*
      * Set software handshake mode.
      */
+    NutIrqDisable(&SIG_UART);
     if (flags & USART_MF_XONXOFF) {
         if(flow_control == 0) {
-            NutEnterCritical();
             flow_control = 1 | XOFF_SENT;  /* force XON to be sent on next read */
-            NutExitCritical();
         }
     } else {
-        NutEnterCritical();
         flow_control = 0;
-        NutExitCritical();
     }
+    NutIrqEnable(&SIG_UART);
 
     /*
      * Set RTS control mode.
      */
     if (flags & USART_MF_RTSCONTROL) {
-#if defined(UART_RTS_BIT)
-        sbi(UART_RTS_PORT, UART_RTS_BIT);
-        sbi(UART_RTS_DDR, UART_RTS_BIT);
         rts_control = 1;
-#elif defined(UART_USES_NPL)
-        sbi(NPL_RSCR, NPL_RSRTS_BIT);
-        rts_control = 1;
+        UART_RTS_PIN_ENABLE();
+        UART_RTS_OFF();
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
+        outr(USARTn_BASE + US_MR_OFF, mr | US_MODE_HWHANDSHAKE);
+        cts_sense = 1;
 #endif
     } else if (rts_control) {
         rts_control = 0;
-#if defined(UART_RTS_BIT)
-        cbi(UART_RTS_DDR, UART_RTS_BIT);
+        UART_RTS_ON();
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
+        outr(USARTn_BASE + US_MR_OFF, mr);
+        cts_sense = 0;
 #endif
     }
 
-/*
- * Set CTS sense mode.
- */
+    /*
+     * Set CTS sense mode.
+     */
     if (flags & USART_MF_CTSSENSE) {
-#if defined(UART_CTS_BIT)
-        /* Register CTS sense interrupt. */
-        if (NutRegisterIrqHandler(&UART_CTS_SIGNAL, At91UsartCts, 0)) {
-            return -1;
-        }
-        sbi(UART_CTS_PORT, UART_CTS_BIT);
-        cbi(UART_CTS_DDR, UART_CTS_BIT);
         cts_sense = 1;
-#elif defined(UART_USES_NPL)
-        /* Register CTS sense interrupt. */
-        if (NplRegisterIrqHandler(&sig_RSCTS, At91UsartCts, 0)) {
-            return -1;
-        }
-        cts_sense = 1;
-#elif defined(US_MODE_HWHANDSHAKE)
-        uint32_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_MODE;
-
-        outr(USARTn_BASE + US_MR_OFF, val | US_MODE_HWHANDSHAKE);
-        cts_sense = 1;
+        UART_CTS_PIN_ENABLE();
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
         rts_control = 1;
+        outr(USARTn_BASE + US_MR_OFF, mr | US_MODE_HWHANDSHAKE);
 #endif
     } else if (cts_sense) {
-#if defined(UART_CTS_BIT)
-        /* Deregister CTS sense interrupt. */
-        NutRegisterIrqHandler(&UART_CTS_SIGNAL, 0, 0);
-        cbi(UART_CTS_DDR, UART_CTS_BIT);
-#elif defined(UART_USES_NPL)
-        NplRegisterIrqHandler(&sig_RSCTS, NULL, 0);
-#elif defined(US_MODE_HWHANDSHAKE)
-        uint32_t val = inr(USARTn_BASE + US_MR_OFF) & ~US_MODE;
-
-        outr(USARTn_BASE + US_MR_OFF, val);
-        rts_control = 0;
-#endif
         cts_sense = 0;
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE
+        rts_control = 0;
+        outr(USARTn_BASE + US_MR_OFF, mr);
+#endif
     }
 
     /*
      * Set half duplex mode.
      */
     if (flags & USART_MF_HALFDUPLEX) {
-
+        /* Mark half duplex mode enabled. */
+        hdx_control = 1;
+        /* Enable half duplex pin. */
+        UART_HDX_PIN_ENABLE();
+        UART_HDX_RX();
+#if USE_BUILT_IN_HALF_DUPLEX
+        /* Enable built-in RS-485 mode. */
+        outr(USARTn_BASE + US_MR_OFF, mr | US_MODE_RS485);
+#else
         /* Enable USART receive, disable transmit. */
         outr(USARTn_BASE + US_CR_OFF, US_RXEN | US_TXDIS);
-        /* Enable Half-Duplex Mode */
-        hdx_control = 1;
-        /* Enable TX-Empty IRQ */
+        /* Enable transmit complete interrupt. */
         outr(USARTn_BASE + US_IDR_OFF, US_TXEMPTY);
-
-#if defined(UART_HDX_BIT)        
-        /* Initially enable the receiver. */
-        UART_HDX_RX(UART_HDX_PORT, UART_HDX_BIT);
-        sbi(UART_HDX_DDR, UART_HDX_BIT);
-#elif defined(UART_USES_NPL)
-        sbi(NPL_RSCR, NPL_RSRTS_BIT);
 #endif
-    } 
+    }
     else if (hdx_control) {
         hdx_control = 0;
-        /* disable transmit complete interrupt */
+#if USE_BUILT_IN_HALF_DUPLEX
+        /* Disable built-in RS-485 mode. */
+        outr(USARTn_BASE + US_MR_OFF, inr(USARTn_BASE + US_MR_OFF) & ~US_MODE);
+#else
+        /* Enable USART receive and transmit. */
+        outr(USARTn_BASE + US_CR_OFF, US_RXEN | US_TXEN);
+        /* Disable transmit complete interrupt. */
         outr(USARTn_BASE + US_IDR_OFF, US_TXEMPTY);
-        /* Deregister transmit complete interrupt. */
-//         NutRegisterIrqHandler(&sig_UART_TRANS, 0, 0);
-#if defined(UART_HDX_BIT)        
-        cbi(UART_HDX_DDR, UART_HDX_BIT);
 #endif
     }
-
-    /*
-     * Verify the result.
-     */
-    if (At91UsartGetFlowControl() != flags) {
-        return -1;
-    }
+    /* No need to call At91UsartGetFlowControl. The result is obvious,
+    ** because we do not exclude unsupported modes yet. */
     return 0;
 }
 
@@ -1226,18 +1269,15 @@ static int At91UsartSetFlowControl(uint32_t flags)
  */
 static void At91UsartTxStart(void)
 {
+#if USE_BUILT_IN_HALF_DUPLEX == 0
     if (hdx_control) {
-        /*
-        * Disable USART receive, enable transmit.
-        */
-        outr(USARTn_BASE + US_CR_OFF, US_RXDIS | US_TXEN);
-        //USDBG_PIN2_LOW();
-#if defined(UART_HDX_BIT)
-        UART_HDX_TX(UART_HDX_PORT, UART_HDX_BIT);
-#elif defined(UART_USES_NPL)
-        cbi(NPL_RSCR, NPL_RSRTS_BIT);
+#if defined(UART_HDX_BIT) || defined(UART_USES_NPL)
+        UART_HDX_TX();
 #endif
+        /* Disable USART receive, enable transmit. */
+        outr(USARTn_BASE + US_CR_OFF, US_RXDIS | US_TXEN);
     }
+#endif
     /* Enable transmit interrupts. */
     outr(USARTn_BASE + US_IER_OFF, US_TXRDY);
 }
@@ -1256,7 +1296,7 @@ static void At91UsartRxStart(void)
      * Do any required software flow control.
      */
     if (flow_control && (flow_control & XOFF_SENT) != 0) {
-        NutEnterCritical();
+        NutIrqDisable(&SIG_UART);
         if ((inr(USARTn_BASE + US_CSR_OFF) & US_TXRDY)) {
             outr(USARTn_BASE + US_THR_OFF, ASCII_XON);
             flow_control &= ~XON_PENDING;
@@ -1264,19 +1304,13 @@ static void At91UsartRxStart(void)
             flow_control |= XON_PENDING;
         }
         flow_control &= ~(XOFF_SENT | XOFF_PENDING);
-        NutExitCritical();
+        NutIrqEnable(&SIG_UART);
     }
 
     /* Enable RTS. */
-#ifdef UART_RTS_BIT
     if (rts_control) {
-        cbi(UART_RTS_PORT, UART_RTS_BIT);
+        UART_RTS_ON();
     }
-#elif defined(UART_USES_NPL)
-    if (rts_control) {
-        cbi(NPL_RSCR, NPL_RSRTS_BIT);
-    }
-#endif
 }
 
 /*
@@ -1296,75 +1330,47 @@ static int At91UsartInit(void)
         return -1;
     }
 
+    /*
+     * Register CTS sense interrupts.
+     */
+#if defined(UART_CTS_BIT) && defined(UART_CTS_SIGNAL)
+    if (NutRegisterIrqHandler(&UART_CTS_SIGNAL, At91UsartCts, NULL)) {
+        return -1;
+    }
+#elif defined(UART_USES_NPL)
+    if (NplRegisterIrqHandler(&sig_RSCTS, At91UsartCts, NULL)) {
+        return -1;
+    }
+#endif
+
     /* Enable UART clock. */
 #if defined(US_ID)
 #if defined(PS_PCER)
     outr(PS_PCER, _BV(US_ID));
-#endif
-#if defined(PMC_PCER)
+#elif defined(PMC_PCER)
     outr(PMC_PCER, _BV(US_ID));
 #endif
 #endif
 
     /* Disable GPIO on UART tx/rx pins. */
-#if defined(PIO_PDR) && defined(US_PIO_PINS)
-    outr(PIO_PDR, US_PIO_PINS);
-#endif
-
-#if defined(PIOA_PDR) && defined(US_PIOA_PINS)
-    outr(PIOA_PDR, US_PIOA_PINS);
-#endif
-#if defined(PIOA_ASR) && defined(US_PIOA_PINS_A)
-    outr(PIOA_ASR, US_PIOA_PINS_A);
-#endif
-#if defined(PIOA_BSR) && defined(US_PIOA_PINS_B)
-    outr(PIOA_BSR, US_PIOA_PINS_B);
-#endif
-
-#if defined(PIOB_PDR) && defined(US_PIOB_PINS)
-    outr(PIOB_PDR, US_PIOB_PINS);
-#endif
-#if defined(PIOB_ASR) && defined(US_PIOB_PINS_A)
-    outr(PIOB_ASR, US_PIOB_PINS_A);
-#endif
-#if defined(PIOB_BSR) && defined(US_PIOB_PINS_B)
-    outr(PIOB_BSR, US_PIOB_PINS_B);
-#endif
-
-#if defined(PIOC_PDR) && defined(US_PIOC_PINS)
-    outr(PIOC_PDR, US_PIOC_PINS);
-#endif
-#if defined(PIOC_ASR) && defined(US_PIOC_PINS_A)
-    outr(PIOC_ASR, US_PIOC_PINS_A);
-#endif
-#if defined(PIOC_BSR) && defined(US_PIOC_PINS_B)
-    outr(PIOC_BSR, US_PIOC_PINS_B);
-#endif
+    UART_RXTX_PINS_ENABLE();
 
     /* Reset UART. */
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(USARTn_BASE + US_IDR_OFF, 0xFFFFFFFF);
-    /* Clear UART counter registers. */
-#if defined (US_RCR_OFF)
+
+#if defined(US_RCR_OFF) && defined(US_TCR_OFF)
+    /* Clear UART PDC counter registers. */
     outr(USARTn_BASE + US_RCR_OFF, 0);
-#endif
-#if defined (US_TCR_OFF)
     outr(USARTn_BASE + US_TCR_OFF, 0);
 #endif
-    /* Set UART baud rate generator register. */
-#if defined(AT91_PLL_MAINCK)
-    outr(USARTn_BASE + US_BRGR_OFF, (At91GetMasterClock() / (8 * (115200)) + 1) / 2);
-#else
-    outr(USARTn_BASE + US_BRGR_OFF, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
-#endif
-    /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
 
-#ifdef AT91_UART_RS485_MODE
-    outr(USARTn_BASE + US_MR_OFF, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1 | US_MODE_RS485);
-#else
+    /* Set UART baud rate generator register. */
+    outr(USARTn_BASE + US_BRGR_OFF, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (UART_INIT_BAUDRATE)) + 1) / 2);
+
+    /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(USARTn_BASE + US_MR_OFF, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
-#endif
 
     return 0;
 }
@@ -1391,24 +1397,9 @@ static int At91UsartDeinit(void)
 #if defined (US_ID)
 #if defined(PS_PCDR)
     outr(PS_PCDR, _BV(US_ID));
-#endif
-#if defined(PMC_PCDR)
+#elif defined(PMC_PCDR)
     outr(PMC_PCDR, _BV(US_ID));
 #endif
-#endif
-
-    /* Enable GPIO on UART tx/rx pins. */
-#if defined(PIO_PER) && defined(US_PIO_PINS)
-    outr(PIO_PER, US_PIO_PINS);
-#endif
-#if defined(PIOA_PER) && defined(US_PIOA_PINS)
-    outr(PIOA_PER, US_PIOA_PINS);
-#endif
-#if defined(PIOB_PER) && defined(US_PIOB_PINS)
-    outr(PIOB_PER, US_PIOB_PINS);
-#endif
-#if defined(PIOC_PER) && defined(US_PIOC_PINS)
-    outr(PIOC_PER, US_PIOC_PINS);
 #endif
 
     /*
@@ -1416,37 +1407,10 @@ static int At91UsartDeinit(void)
      * to the upper level to do this on the last close or during
      * deregistration.
      */
-#if defined(UART_HDX_BIT) || defined(UART_USES_NPL)
-    /* Deregister transmit complete interrupt. */
-    if (hdx_control) {
-        hdx_control = 0;
-//         NutRegisterIrqHandler(&sig_UART_TRANS, 0, 0);
-    }
-#endif
-
-#ifdef UART_CTS_BIT
-    if (cts_sense) {
-        cts_sense = 0;
-        cbi(UART_CTS_DDR, UART_CTS_BIT);
-        /* Deregister CTS sense interrupt. */
-        NutRegisterIrqHandler(&UART_CTS_SIGNAL, 0, 0);
-    }
-#elif defined(UART_USES_NPL)
-    if (cts_sense) {
-        cts_sense = 0;
-        /* Deregister CTS sense interrupt. */
-        NplRegisterIrqHandler(&sig_RSCTS, NULL, 0);
-    }
-#endif
-
-#if defined(UART_RTS_BIT) || defined(UART_USES_NPL)
-    if (rts_control) {
-        rts_control = 0;
-#if defined(UART_RTS_BIT)
-        cbi(UART_RTS_DDR, UART_RTS_BIT);
-#endif
-    }
-#endif
+    hdx_control = 0;
+    UART_HDX_RX();
+    cts_sense = 0;
+    rts_control = 0;
 
     return 0;
 }
