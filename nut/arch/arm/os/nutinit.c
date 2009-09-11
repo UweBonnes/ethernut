@@ -145,6 +145,7 @@
 #include <sys/device.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <dev/debug.h>
 struct __iobuf {
     int     iob_fd;
     uint16_t iob_mode;
@@ -167,17 +168,21 @@ struct __iobuf {
 #define NUT_THREAD_IDLESTACK    256
 #endif
 
-#ifdef __CROSSWORKS4ARM__
-extern void *__unused_start__;
-/*
- * Michael, Why does Crossworks needs this one. Is memory configurable
- * with the Configurator?
- */
-extern void *__External_SRAM_segment_end__;
+#ifdef __CROSSWORKS_ARM
 
-#define HEAP_START  &__unused_start__
-#define HEAP_SIZE  ((uintptr_t)(&__External_SRAM_segment_end__ - 1) - (uintptr_t)(HEAP_START) - 256)
+/*
+ * A CrossWorks MemoryMap file will be used. Here the memory
+ * between __heap_start__ and __External_RAM_segment_end__
+ * can be used for NutOS.
+ */
+extern void *__heap_start__;
+extern void *__RAM_END_segment_end__;
+
+#define HEAP_START  &__heap_start__
+#define HEAP_SIZE  ((uintptr_t)(&__RAM_END_segment_end__ - 1) - (uintptr_t)(HEAP_START) - 256)
+
 #else   /* GCC */
+
 /*!
  * \brief Last memory address.
  */
@@ -294,7 +299,7 @@ void NutInit(void)
     }
 #endif
     /* Initialize our heap memory. */
-    NutHeapAdd(HEAP_START, HEAP_SIZE);
+    NutHeapAdd(HEAP_START, HEAP_SIZE & ~3);
 
     /* Create idle thread. Note, that the first call to NutThreadCreate 
     ** will never return. */

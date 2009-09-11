@@ -66,4 +66,19 @@ extern void unsetenv(CONST char *name);
 extern int putenv(CONST char *string);
 #endif
 
+#if defined (__CROSSWORKS_ARM)
+
+#include <cfg/crt.h>
+
+extern int setenv(CONST char *name, CONST char *value, int force);
+extern int putenv(char *string);
+
+#ifdef CRT_UNSETENV_POSIX
+extern int unsetenv(CONST char *name);
+#else
+extern void unsetenv(CONST char *name);
+#endif
+
+#endif /* (__CROSSWORKS_ARM) */
+
 #endif

@@ -224,4 +224,31 @@ extern void *__stack;
 #endif /* __GNUC__ */
 #endif /* __ASSEMBLER__ */
 
+#if !defined (__ASSEMBLER__) && defined(__CROSSWORKS_ARM)
+/*!
+ * \brief Case insensitive string comparisions.
+ *
+ * Not supported by CrossWorks and temporarly redirected 
+ * to the stricmp and strnicmp routines.
+ *
+ */
+#define strcasecmp(s1, s2)      stricmp(s1, s2)
+#define strncasecmp(s1, s2, n)  strnicmp(s1, s2, n)
+
+/*
+ * Not supported by CrossWorks, added prototypes here.
+ */
+int   stricmp(CONST char *s1, CONST char *s2);
+int   strnicmp(CONST char *s1, CONST char *s2, size_t n);
+char *strdup(CONST char *str);
+
+/*
+ * If "Enforce ANSI Checking" is enabled, which is
+ * the default from the v2.x version of CrossWorks
+ * the keyword asm will not be recognize. Therefore
+ * the next define is needed to solve the problem.
+ */
+#define asm __asm__
+#endif
+
 #endif
