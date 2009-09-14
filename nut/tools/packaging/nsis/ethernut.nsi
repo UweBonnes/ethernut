@@ -7,7 +7,7 @@ SetCompressor /SOLID lzma
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 
 !define PRODUCT  "Nut/OS"
-!define NUTVERSION  "4.9.2"
+!define NUTVERSION  "4.9.5"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 

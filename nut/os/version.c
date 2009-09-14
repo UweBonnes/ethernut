@@ -254,8 +254,8 @@
 
 #include <sys/version.h>
 
-#define OS_VERSION_NUMBER  0x04090400UL
-static CONST char os_version_string[] = "4.9.4.0";
+#define OS_VERSION_NUMBER  0x04090500UL
+static CONST char os_version_string[] = "4.9.5.0";
 
 /*!
  * \addtogroup xgNutVersion
