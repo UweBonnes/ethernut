@@ -291,9 +291,9 @@
 #define nic_write(reg, data) *(base + (reg)) = data
 
 
-#define nic_outlb(reg, val) (*(volatile uint8_t *)(NIC_BASE + (reg)) = (val))
-#define nic_inlb(reg) (*(volatile uint8_t *)(NIC_BASE + (reg)))
-#define nic_inw(reg) (*(volatile uint16_t *)(NIC_BASE + (reg)))
+#define nic_outlb(reg, val) (*(volatile uint8_t *)(nic_base + (reg)) = (val))
+#define nic_inlb(reg) (*(volatile uint8_t *)(nic_base + (reg)))
+#define nic_inw(reg) (*(volatile uint16_t *)(nic_base + (reg)))
 
 #define nic_bs(bank)    nic_outlb(NIC_BSR, (bank))
 

@@ -105,31 +105,44 @@ static void SpiInit(void)
 /*!
  * \brief Read memory chip status.
  */
-static uint8_t SpiMemStatus(void)
+static uint8_t SpiMemStatus(uint8_t cs)
 {
     uint8_t rc;
 
-    sbi(SPIMEM_CS_PORT, SPIMEM_CS_BIT);
+    if (cs == SPIMEM_CS_BIT) {
+        sbi(SPIMEM_CS_PORT, cs);
+    } else {
+        cbi(SPIMEM_CS_PORT, cs);
+    }
     SpiByte(0x57);
     rc = SpiByte(0);
-    cbi(SPIMEM_CS_PORT, SPIMEM_CS_BIT);
+
+    if (cs == SPIMEM_CS_BIT) {
+        cbi(SPIMEM_CS_PORT, cs);
+    } else {
+        sbi(SPIMEM_CS_PORT, cs);
+    }
 
     return rc;
 }
 
-static int SpiMemInit(uint16_t *pages, uint16_t *pagesize)
+static int SpiMemInit(uint8_t cs, uint16_t *pages, uint16_t *pagesize)
 {
     uint8_t fs;
     
     /* Init SPI memory chip select. */
-    cbi(SPIMEM_CS_PORT, SPIMEM_CS_BIT);
-    sbi(SPIMEM_CS_DDR, SPIMEM_CS_BIT);
+    if (cs == SPIMEM_CS_BIT) {
+        cbi(SPIMEM_CS_PORT, cs);
+    } else {
+        sbi(SPIMEM_CS_PORT, cs);
+    }
+    sbi(SPIMEM_CS_DDR, cs);
     
     /* Initialize the SPI interface. */
     SpiInit();
     
     /* Read the status register for a rudimentary check. */
-    fs = SpiMemStatus();
+    fs = SpiMemStatus(cs);
     if(fs & 0x80) {
         fs = (fs >> 2) & 0x0F;
         *pagesize = 264;
@@ -165,7 +178,9 @@ long SpiMemTest(void)
     uint16_t pagesize = 0;
 
 #if defined (__AVR__)
-    SpiMemInit(&pages, &pagesize);
+    if (SpiMemInit(SPIMEM_CS_BIT, &pages, &pagesize)) {
+        SpiMemInit(SPIMEM_CS_BIT_ALT, &pages, &pagesize);
+    }
 
     /* Disable SPI */
     outb(SPCR, 0);

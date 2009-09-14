@@ -67,10 +67,11 @@
 
 #define RTL_EE_MEMBUS
 
+static uint8_t *nic_base;
 
 static int NicReset(void)
 {
-    volatile uint8_t *base = (uint8_t *) 0x8300;
+    volatile uint8_t *base = nic_base;
     uint8_t i;
     uint8_t j;
 
@@ -304,14 +305,11 @@ static void EmulateNicEeprom(void)
 #endif
 }
 
-
-/*!
- * \brief Detect an RTL8019AS chip.
- */
-int RealtekDetect(void)
+static int RealtekProbe(size_t addr)
 {
     uint8_t bv;
 
+    nic_base = (uint8_t *)addr;
     bv = nic_inlb(NIC_CR);
     if(bv & (NIC_CR_PS0 | NIC_CR_PS1)) {
         nic_outlb(NIC_CR, NIC_CR_STP | NIC_CR_RD2);
@@ -320,6 +318,24 @@ int RealtekDetect(void)
         return -1;
     }
     return 0;
+}
+
+/*!
+ * \brief Detect an RTL8019AS chip.
+ */
+int RealtekDetect(void)
+{
+    size_t addr;
+
+    if (RealtekProbe(NIC_BASE) == 0) {
+        return 0;
+    }
+    for (addr = 0x8000; addr; addr += 0x100) {
+        if (RealtekProbe(addr) == 0) {
+            return 0;
+        }
+    }
+    return -1;
 }
 
 void RealtekLoop(void)
@@ -339,7 +355,7 @@ int RealtekTest(void)
 {
     int i;
     uint8_t force_swreset = 0;
-    volatile uint8_t *base = (uint8_t *) 0x8300;
+    volatile uint8_t *base = nic_base;
     uint16_t nic_id;
 
     /*
@@ -415,7 +431,7 @@ void RealtekSend(void)
     };
     uint16_t sz;
     uint16_t i;
-    volatile uint8_t *base = (uint8_t *) 0x8300;
+    volatile uint8_t *base = nic_base;
     uint8_t rb;
     uint32_t cnt = 0;
 

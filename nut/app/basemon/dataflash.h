@@ -52,6 +52,7 @@
 #define SPIMEM_CS_PORT    PORTB
 #define SPIMEM_CS_DDR     DDRB
 #define SPIMEM_CS_BIT     4
+#define SPIMEM_CS_BIT_ALT 5
 
 __BEGIN_DECLS
 /* Prototypes */

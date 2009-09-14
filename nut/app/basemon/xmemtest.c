@@ -292,10 +292,12 @@ int XMemTestBus(void)
  */
 size_t XMemTest(void)
 {
+    size_t first = RAMEND + 1;
+    size_t last = (size_t)-1;
+    size_t addr;
     volatile uint8_t *mem;
     uint8_t wb;
     uint8_t pattern[] = { 0x00, 0xFF, 0x55, 0xAA };
-    uint8_t *last = (uint8_t *)-1;
 
 #if defined(__AVR_ENHANCED__) && !defined(__AVR_ATmega2561__)
     /*
@@ -320,32 +322,34 @@ size_t XMemTest(void)
      * Let's see, how many kBytes we have. A simple pattern test on the
      * first bytes of each kilobyte boundary will do.
      */
-    for (mem = (uint8_t *)(RAMEND + 1); mem <= last; mem += 1024) {
+    for (addr = first; addr >= first; addr += 1024) {
+        mem = (uint8_t *)((addr + 1024) - sizeof(pattern));
         memcpy((void *)mem, pattern, sizeof(pattern));
         if(memcmp((void *)mem, pattern, sizeof(pattern))) {
-            last = (uint8_t *)(mem - 1);
+            last = addr - 1;
         }
 
         /*
          * External RAM may not start at kilobyte boundary. Set the
          * address to full kilobytes after first test.
          */
-        else if(mem == (uint8_t *)(RAMEND + 1)) {
-            mem = (uint8_t *)((uptr_t)mem & ~0x3FF);
+        else if(addr == RAMEND + 1) {
+            addr &= ~0x3FF;
         }
     }
 
     /*
      * Set all bits in RAM.
      */
-    for (mem = (uint8_t *)(RAMEND + 1); mem <= (uint8_t *)last; mem += 256) {
-        memset((void *)mem, 0xFF, 256);
+    for (addr = first; addr >= first && addr < last; addr += 256) {
+        memset((void *)addr, 0xFF, 256);
     }
 
     /*
      * Do an extensive test.
      */
-    for (mem = (uint8_t *)(RAMEND + 1); mem <= (uint8_t *)last; mem++) {
+    for (addr = first; addr >= first && addr < last; addr++) {
+        mem = (uint8_t *)addr;
         /*
          * The next RAM location must still have all bits set. If not,
          * any manipulation on lower addresses may have modified this
@@ -388,7 +392,7 @@ size_t XMemTest(void)
             break;
         }
     }
-    return (size_t)last - RAMEND;
+    return last - first + 1;
 }
 
 /*!
