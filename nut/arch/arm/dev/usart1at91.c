@@ -50,6 +50,7 @@
 #include <sys/timer.h>
 
 #include <dev/irqreg.h>
+#include <dev/gpio.h>
 #include <dev/usartat91.h>
 
 #ifndef NUT_CPU_FREQ
@@ -265,6 +266,21 @@ NUTDEVICE devUsartAt911 = {
 #endif
 
 /*
+** Determine the CTS GPIO interrupt, based on the port ID.
+*/
+#if defined(UART1_CTS_BIT) && !defined(UART1_CTS_SIGNAL)
+#if UART1_CTS_PIO_ID == PIOA_ID
+#define UART1_CTS_SIGNAL    sig_GPIO1
+#elif UART1_CTS_PIO_ID == PIOB_ID
+#define UART1_CTS_SIGNAL    sig_GPIO2
+#elif UART1_CTS_PIO_ID == PIOC_ID
+#define UART1_CTS_SIGNAL    sig_GPIO3
+#else
+#define UART1_CTS_SIGNAL    sig_GPIO
+#endif
+#endif
+
+/*
 ** Translate all macros for UART1 to generalized ones used by the
 ** source that will be included at the end of this file.
 */
@@ -288,8 +304,8 @@ NUTDEVICE devUsartAt911 = {
 #if defined(UART1_CTS_PIO_ID)
 #define UART_CTS_PIO_ID UART1_CTS_PIO_ID
 #endif
-#if defined(UART0_CTS_SIGNAL)
-#define UART_CTS_SIGNAL UART0_CTS_SIGNAL
+#if defined(UART1_CTS_SIGNAL)
+#define UART_CTS_SIGNAL UART1_CTS_SIGNAL
 #endif
 
 #if defined(UART1_INIT_BAUDRATE)

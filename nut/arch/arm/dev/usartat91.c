@@ -276,7 +276,7 @@ static uint_fast8_t rts_control;
  */
 static uint_fast8_t cts_sense;
 
-#if (defined(UART_CTS_BIT) && defined(UART_CTS_SIGNAL)) || defined(UART_USES_NPL)
+#if defined(UART_CTS_BIT) || defined(UART_USES_NPL)
 /*!
  * \brief USARTn CTS sense interrupt handler.
  *
@@ -292,11 +292,15 @@ static void At91UsartCts(void *arg)
     /* Disable CTS sense interrupt. */
 #if defined(UART_USES_NPL)
     NplIrqDisable(&sig_RSCTS);
-#else
-    // TODO: Disable CTS interrupt.
-#endif
     /* Enable transmit interrupt. */
     outr(USARTn_BASE + US_IER_OFF, US_TXRDY);
+#else
+    if (UART_CTS_IS_ON()) {
+        GpioIrqDisable(&UART_CTS_SIGNAL, UART_CTS_BIT);
+        /* Enable transmit interrupt. */
+        outr(USARTn_BASE + US_IER_OFF, US_TXRDY);
+    }
+#endif
 }
 #endif
 
@@ -360,7 +364,7 @@ static void At91UsartTxReady(RINGBUF *rbf)
          */
         outr(USARTn_BASE + US_IDR_OFF, US_TXRDY);
         return;
-	}
+    }
 
     /*
      * Check if we have more bytes to transmit.
@@ -374,7 +378,7 @@ static void At91UsartTxReady(RINGBUF *rbf)
         if (cts_sense && !UART_CTS_IS_ON()) {
             outr(USARTn_BASE + US_IDR_OFF, US_TXRDY);
 #if defined(UART_CTS_BIT)
-            // TODO: Disable CTS interrupt.
+            GpioIrqEnable(&UART_CTS_SIGNAL, UART_CTS_BIT);
 #else
             NplIrqEnable(&sig_RSCTS);
 #endif
@@ -400,13 +404,13 @@ static void At91UsartTxReady(RINGBUF *rbf)
         rbf->rbf_tail = cp;
 
 #if USE_BUILT_IN_HALF_DUPLEX == 0
-		/* 
-		 * If software half duplex enabled, we need TX-Empty IRQ for
-		 * detection if last bit of last byte transmission is finished.
-		 */
-		if( hdx_control && rbf->rbf_cnt == 0) {
-			outr(USARTn_BASE + US_IER_OFF, US_TXEMPTY);
-		}
+        /* 
+         * If software half duplex enabled, we need TX-Empty IRQ for
+         * detection if last bit of last byte transmission is finished.
+         */
+        if( hdx_control && rbf->rbf_cnt == 0) {
+            outr(USARTn_BASE + US_IER_OFF, US_TXEMPTY);
+        }
 #endif
 
         /* Send an event if we reached the low watermark. */
@@ -1169,7 +1173,7 @@ static uint32_t At91UsartGetFlowControl(void)
  */
 static int At91UsartSetFlowControl(uint32_t flags)
 {
-#if USE_BUILT_IN_HARDWARE_HANDSHAKE
+#if USE_BUILT_IN_HARDWARE_HANDSHAKE || USE_BUILT_IN_HALF_DUPLEX
     uint32_t mr = inr(USARTn_BASE + US_MR_OFF) & ~US_MODE;
 #endif
 
@@ -1257,6 +1261,7 @@ static int At91UsartSetFlowControl(uint32_t flags)
     }
     /* No need to call At91UsartGetFlowControl. The result is obvious,
     ** because we do not exclude unsupported modes yet. */
+
     return 0;
 }
 
@@ -1311,6 +1316,8 @@ static void At91UsartRxStart(void)
     if (rts_control) {
         UART_RTS_ON();
     }
+    /* Enable receive interrupts. */
+    outr(USARTn_BASE + US_IER_OFF, US_RXRDY);
 }
 
 /*
@@ -1333,14 +1340,23 @@ static int At91UsartInit(void)
     /*
      * Register CTS sense interrupts.
      */
-#if defined(UART_CTS_BIT) && defined(UART_CTS_SIGNAL)
-    if (NutRegisterIrqHandler(&UART_CTS_SIGNAL, At91UsartCts, NULL)) {
+#if defined(UART_CTS_BIT)
+
+    if (GpioRegisterIrqHandler(&sig_GPIO1, UART_CTS_BIT, At91UsartCts, NULL)) {
         return -1;
     }
+#if defined(PS_PCER)
+    outr(PS_PCER, _BV(UART_CTS_PIO_ID));
+#elif defined(PMC_PCER)
+    outr(PMC_PCER, _BV(UART_CTS_PIO_ID));
+#endif
+
 #elif defined(UART_USES_NPL)
+
     if (NplRegisterIrqHandler(&sig_RSCTS, At91UsartCts, NULL)) {
         return -1;
     }
+
 #endif
 
     /* Enable UART clock. */
