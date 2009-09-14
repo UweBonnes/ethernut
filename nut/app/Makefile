@@ -82,22 +82,22 @@
 #
 
 all:
-	$(MAKE) -C basemon
+	-$(MAKE) -C basemon
 	$(MAKE) -C caltime
-	$(MAKE) -C canbus
-#	$(MAKE) -C cppdemo
+	-$(MAKE) -C canbus
+#	-$(MAKE) -C cppdemo
 	$(MAKE) -C events
-	$(MAKE) -C ftpd
-	$(MAKE) -C httpd
-	$(MAKE) -C inetq
-	$(MAKE) -C logtime
-	$(MAKE) -C nutpiper
-	$(MAKE) -C playmp3
-	$(MAKE) -C portdio
+	-$(MAKE) -C ftpd
+	-$(MAKE) -C httpd
+	-$(MAKE) -C inetq
+	-$(MAKE) -C logtime
+	-$(MAKE) -C nutpiper
+	-$(MAKE) -C playmp3
+	-$(MAKE) -C portdio
 	$(MAKE) -C pppc
-	$(MAKE) -C rs232d
+	-$(MAKE) -C rs232d
 	$(MAKE) -C simple
-	$(MAKE) -C tcps
+	-$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
 	$(MAKE) -C uart
@@ -145,10 +145,10 @@ clean:
 	$(MAKE) -C uart clean
 
 at90can:
-#	$(MAKE) -C basemon
+#	-$(MAKE) -C basemon
 	$(MAKE) -C caltime
 	$(MAKE) -C canbus
-#	$(MAKE) -C cppdemo
+#	-$(MAKE) -C cppdemo
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
