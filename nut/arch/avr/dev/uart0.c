@@ -61,6 +61,24 @@
 
 #include <dev/uartavr.h>
 
+extern int UartAvrInit(NUTDEVICE * dev);
+extern int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf);
+extern int UartAvrInput(NUTDEVICE * dev);
+extern int UartAvrOutput(NUTDEVICE * dev);
+extern int UartAvrFlush(NUTDEVICE * dev);
+
+extern int UartAvrGetRaw(uint8_t * cp);
+extern int UartAvrPutRaw(uint8_t ch);
+
+extern int UartAvrRead(NUTFILE * fp, void *buffer, int size);
+extern int UartAvrWrite(NUTFILE * fp, CONST void *buffer, int len);
+#ifdef __HARVARD_ARCH__
+extern int UartAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len);
+#endif
+extern NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern long UartAvrSize(NUTFILE * fp);
+extern int UartAvrClose(NUTFILE * fp);
+
 /*!
  * \addtogroup xgUartAvr
  */

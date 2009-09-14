@@ -523,6 +523,10 @@
  */
 #define UART_HS_SOFT        0x0020
 
+/*! \brief Half duplex mode.
+ */
+#define UART_HS_HALFDUPLEX  0x0400
+
 /*@}*/
 
 
@@ -587,32 +591,4 @@
 
 /*@}*/
 
-__BEGIN_DECLS
-/*
- * The following prototypes are misplaced and should be removed
- * from here.
- *
- * A note by Jan Dubiec: I suggest move them to dev/uart[01].c;
- * more, those files could be even merged.
- *
- */
-extern int UartAvrInit(NUTDEVICE * dev);
-extern int UartAvrIOCtl(NUTDEVICE * dev, int req, void *conf);
-extern int UartAvrInput(NUTDEVICE * dev);
-extern int UartAvrOutput(NUTDEVICE * dev);
-extern int UartAvrFlush(NUTDEVICE * dev);
-
-extern int UartAvrGetRaw(uint8_t * cp);
-extern int UartAvrPutRaw(uint8_t ch);
-
-extern int UartAvrRead(NUTFILE * fp, void *buffer, int size);
-extern int UartAvrWrite(NUTFILE * fp, CONST void *buffer, int len);
-#ifdef __HARVARD_ARCH__
-extern int UartAvrWrite_P(NUTFILE * fp, PGM_P buffer, int len);
-#endif
-extern NUTFILE *UartAvrOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc);
-extern long UartAvrSize(NUTFILE * fp);
-extern int UartAvrClose(NUTFILE * fp);
-
-__END_DECLS
 #endif
