@@ -371,7 +371,6 @@ nutcrt =
 		              "1.17.0 declares unsetenv returning int. Older versions are declared "..
 		              "as void function. This will help to avoid compilation errors because "..
 		              "of incompatible declarations.",
-                requires = { "DEV_NVMEM" },
 		flavor = "boolean",
 		file = "include/cfg/crt.h"
 	    }
