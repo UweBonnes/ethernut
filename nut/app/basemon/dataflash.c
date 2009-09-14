@@ -42,6 +42,8 @@
  * keep it running on broken hardware.
  */
 
+#include <stdint.h>
+
 #include "dataflash.h"
 
 #if defined (__AVR__)

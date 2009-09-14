@@ -42,6 +42,7 @@
  * keep it running on broken hardware.
  */
 
+#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 
