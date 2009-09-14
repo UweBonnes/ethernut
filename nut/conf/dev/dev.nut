@@ -255,7 +255,7 @@ nutdev =
                               "Select this option, if you want to use hardware handshake via GPIO or if "..
                               "the target specific UART0 driver doesn't support built-in hardware handshake.",
                 flavor = "boolean",
-                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
                 file = "include/cfg/uart.h"
             },
             {
@@ -267,7 +267,7 @@ nutdev =
                               "Do not select this option if you want to use hardware handshake "..
                               "via GPIO pins.",
                 flavor = "boolean",
-                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
                 requires = { "HW_UART0_RTSCTS" },
                 file = "include/cfg/uart.h"
             },
@@ -280,7 +280,7 @@ nutdev =
                               "Do not select this option if you want to use modem control "..
                               "via GPIO pins.",
                 flavor = "boolean",
-                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+--                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
                 requires = { "HW_UART0_MODEM" },
                 file = "include/cfg/uart.h"
             },
