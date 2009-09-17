@@ -43,21 +43,75 @@
  *
  */
 
+/*!
+ * \file dev/keys.h
+ * \brief Key handler definitions.
+ */
+
+/*!
+ * \addtogroup xgDevices
+ */
+/*@{*/
 
 #include <stdint.h>
-//#include <sys/nut_types.h>
 
+/*!
+ * \brief LED action definitions.
+ *
+ * The LED modifies the LED according to these tokens when calling
+ * NutSetLed().
+ *
+ */
+
+/*!
+ * \brief Switch LED off.
+ *
+ * The LED will be switched off immediately.
+ * If a timOff parameter of not 0 is given, the LED will be switched off
+ * for the given time in ms an then return to on state.
+ */
 #define	LED_OFF		0
+
+/*!
+ * \brief Switch LED on.
+ *
+ * The LED will be switched on immediately.
+ * If a timOff parameter of not 0 is given, the LED will be switched on
+ * for the given time in ms an then return off state.
+ */
 #define	LED_ON		1
+
+/*!
+ * \brief Flip the LED state (toggle).
+ *
+ * Toggle the LED from its actual state the the other.
+ * Timing parameters are not supported.
+ */
 #define LED_FLIP    2
-#define LED_ONESHOT 3
+
+/*!
+ * \brief Let the LED blink continuously.
+ *
+ * The parameter timOn specifies the on-time and parameter timOff the off-time.
+ * Together with higher timer settings a software dimming can as well be
+ * established as a simple blink effect or short / long flash effects.
+ * Be adviced that high timer rates can decrease overall system speed.
+ * Therefore you have to modify the timer rate in the led.c directly. Standard
+ * setting is 10ms cycle time.
+ */
 #define LED_BLINK   4
 
+/*@}*/
+
 __BEGIN_DECLS
-/* Prototypes */
-void NutSetLed( HANDLE ledh, uint8_t tim, uint8_t state);
-int NutRegisterLed( HANDLE * ledh, int port, int pin);
-void SetLedEvent( uint8_t led, uint32_t interval, uint32_t duration );
+/* Function prototypes. */
+
+void NutSetLed( HANDLE ledh, uint_fast8_t fxin, uint32_t timOn, uint32_t timOff);
+extern void SetLedEvent( uint8_t led, uint32_t interval, uint32_t duration );
+
+extern int NutRegisterLed( HANDLE * ledh, int port, int pin);
+
 __END_DECLS
-/* End of prototypes */
+/* */
+
 #endif

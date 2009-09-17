@@ -275,7 +275,6 @@ int TwMasterRegRead(uint8_t sla, uint32_t iadr, uint8_t iadrlen, void *rxdata, u
     /* This routine is marked reentrant, so lock the interface. */
     if (NutEventWait(&tw_mm_mutex, tmo)) {
         tw_mm_error = TWERR_IF_LOCKED;
-        NutEventPost(&tw_mm_mutex);
         return -1;
     }
 
@@ -347,7 +346,6 @@ int TwMasterRegWrite(uint8_t sla, uint32_t iadr, uint8_t iadrlen, CONST void *tx
     /* This routine is marked reentrant, so lock the interface. */
     if (NutEventWait(&tw_mm_mutex, tmo)) {
         tw_mm_err = TWERR_IF_LOCKED;
-        NutEventPost(&tw_mm_mutex);
         return -1;
     }
 

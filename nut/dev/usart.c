@@ -169,22 +169,22 @@ static int UsartResetBuffer(RINGBUF * rbf, size_t size, size_t lowm, size_t hiwm
     return 0;
 }
 
-/*! 
- * \brief Read from device. 
+/*!
+ * \brief Read from device.
  *
- * This function is called by the low level input routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read 
+ * This function is called by the low level input routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
  * entry.
  *
  * The function may block the calling thread until at least one
  * character has been received or a timeout occurs.
  *
  * It is recommended to set a proper read timeout with software handshake.
- * In this case a timeout may occur, if the communication peer lost our 
- * last XON character. The application may then use ioctl() to disable the 
+ * In this case a timeout may occur, if the communication peer lost our
+ * last XON character. The application may then use ioctl() to disable the
  * receiver and do the read again. This will send out another XON.
  *
- * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
  *               previous call to UsartOpen().
  * \param buffer Pointer to the buffer that receives the data. If zero,
  *               then all characters in the input buffer will be
@@ -234,8 +234,8 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
         if (avail) {
             break;
         }
-        /* 
-         * This will enable RTS hardware handshake or re-enable the 
+        /*
+         * This will enable RTS hardware handshake or re-enable the
          * remote transmitter by sending a XON character.
          */
         (*dcb->dcb_rx_start) ();
@@ -319,7 +319,7 @@ static size_t UsartFlushOutput(USARTDCB *dcb, size_t added, size_t left)
     size_t rc;
     RINGBUF *rbf = &dcb->dcb_tx_rbf;
 
-    /* 
+    /*
      * Add the new characters to the buffer count.
      */
     NutEnterCritical();
@@ -405,7 +405,7 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
     added = 0;
     for (rc = 0; rc < len;) {
         /*
-         * If we reached the high watermark, then kick the hardware driver 
+         * If we reached the high watermark, then kick the hardware driver
          * to start transmission and wait until the low watermark is reached.
          */
         if (cnt + added >= rbf->rbf_hwm) {
@@ -458,20 +458,20 @@ static int UsartPut(NUTDEVICE * dev, CONST void *buffer, int len, int pflg)
 /*!
  * \brief Write a device or file.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write entry.
  *
  * The function may block the calling thread.
  *
- * \param fp     Pointer to a _NUTFILE structure, obtained by a previous 
+ * \param fp     Pointer to a _NUTFILE structure, obtained by a previous
  *               call to UsartOpen().
  * \param buffer Pointer to the data to be written. If zero, then the
  *               output buffer will be flushed.
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1 
+ *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
 int UsartWrite(NUTFILE * fp, CONST void *buffer, int len)
@@ -482,22 +482,22 @@ int UsartWrite(NUTFILE * fp, CONST void *buffer, int len)
 /*!
  * \brief Write a device or file.
  *
- * Similar to UsartWrite() except that the data is located in program 
+ * Similar to UsartWrite() except that the data is located in program
  * memory.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_write_P
  * entry.
  *
  * The function may block the calling thread.
  *
- * \param fp     Pointer to a NUTFILE structure, obtained by a previous 
+ * \param fp     Pointer to a NUTFILE structure, obtained by a previous
  *               call to UsartOpen().
  * \param buffer Pointer to the data in program space to be written.
  * \param len    Number of bytes to write.
  *
  * \return The number of bytes written, which may be less than the number
- *         of bytes specified if a timeout occured. A return value of -1 
+ *         of bytes specified if a timeout occured. A return value of -1
  *         indicates an error.
  */
 int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
@@ -505,10 +505,10 @@ int UsartWrite_P(NUTFILE * fp, PGM_P buffer, int len)
     return UsartPut(fp->nf_dev, (CONST char *) buffer, len, 1);
 }
 
-/*! 
+/*!
  * \brief Close an USART device.
  *
- * This function is called by the low level close routine of the C runtime 
+ * This function is called by the low level close routine of the C runtime
  * library, using the _NUTDEVICE::dev_close entry.
  *
  * \param fp Pointer to a _NUTFILE structure, obtained by a previous call
@@ -536,7 +536,7 @@ int UsartClose(NUTFILE * fp)
 /*!
  * \brief Open an USART device.
  *
- * This function is called by the low level open routine of the C runtime 
+ * This function is called by the low level open routine of the C runtime
  * library, using the _NUTDEVICE::dev_open entry.
  *
  * \param dev Pointer to the NUTDEVICE structure.
@@ -591,7 +591,7 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
         dcb->dcb_modeflags |= USART_MF_COOKEDMODE;
     }
 
-    /* 
+    /*
      * For now we do the initialization here. Later we may implement
      * a file creation routine to get a linked list of all opened
      * files in the system.
@@ -664,7 +664,7 @@ NUTFILE *UsartOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
  *
  * \todo Hardware handshake is not available with AT91 targets.
  *
- * \warning Timeout values are given in milliseconds and are limited to 
+ * \warning Timeout values are given in milliseconds and are limited to
  *          the granularity of the system timer. To disable timeout,
  *          set the parameter to NUT_WAIT_INFINITE.
  */
@@ -797,7 +797,7 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 		else
 			*lvp = 0;
 		break;
-		
+
     case UART_SETCLOCKMODE:
         rc = (*dcb->dcb_set_clock_mode) (lv);
         break;
@@ -870,10 +870,10 @@ int UsartIOCtl(NUTDEVICE * dev, int req, void *conf)
 /*!
  * \brief Retrieves the number of characters in input buffer.
  *
- * This function is called by the low level size routine of the C runtime 
+ * This function is called by the low level size routine of the C runtime
  * library, using the _NUTDEVICE::dev_size entry.
  *
- * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a 
+ * \param fp     Pointer to a \ref _NUTFILE structure, obtained by a
  *               previous call to UsartOpen().
  *
  * \return The number of bytes currently stored in input buffer.

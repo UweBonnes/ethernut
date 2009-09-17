@@ -2619,6 +2619,41 @@ nutdev =
 		              "can be used to address LEDs connected to this chip instead of CPU's GPIOs",
 		provides = { "DEV_LED" },
 		sources = { "led.c" },
+		options =
+        {
+            {
+                macro = "LED_SUPPORT_IOEXP",
+                brief = "LEDs on external GPIOs",
+                description = "Enable control of LEDs connected to an external GPIO expanders "..
+ 				               	"like PCA9555.",
+                type = "enumerated",
+                flavor = "boolean",
+                requires = { "DEV_IOEXP" },
+               	file = "include/cfg/pca9555.h",
+            },
+		},
+    },
+	{
+		name = "keys",
+		brief = "Key Driver",
+		description = "Provides controlling of keys / pushbuttons and switches connected to GPIO.\n"..
+		              "In addition with a PCA9555 I2C IO-Expander a special range of GPIO Ports\n"..
+		              "can be used to address keys connected to this chip instead of CPU's GPIOs",
+		provides = { "DEV_KEY" },
+		sources = { "keys.c" },
+		options =
+        {
+            {
+                macro = "KEY_SUPPORT_IOEXP",
+                brief = "Keys on external GPIOs",
+                description = "Enable control of Keys connected to an external GPIO expanders "..
+ 				               	"like PCA9555.",
+                type = "enumerated",
+                flavor = "boolean",
+                requires = { "DEV_IOEXP" },
+               	file = "include/cfg/pca9555.h",
+            },
+		},
     },
     {
         name = "nutdev_vs10xx",

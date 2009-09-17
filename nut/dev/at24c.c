@@ -45,7 +45,7 @@
 
 #define AT24C_AT91
 
-#define AT24C_DEBUG
+//#define AT24C_DEBUG
 
 #ifdef AT24C_DEBUG
 #include <stdio.h>
@@ -79,7 +79,7 @@ static int lld_at24_write( struct at24c *at24cs, uint8_t *buffer, uint32_t len, 
 		if( tme >= TWERR_SLA_NACK) {
 			/* slave might be busy so we retry (ACK-Polling) */
 			--retry;
-//			NutSleep(1);
+
 #ifdef AT24C_DEBUG
 			printf("RW %u\n", retry);
 #else
@@ -123,6 +123,7 @@ static int lld_at24_read( struct at24c *at24cs, uint8_t *buffer, uint32_t len, u
         /* there was an error */
 		if( tme == TWERR_SLA_NACK) {
 			--retry;
+
 #ifdef AT24C_DEBUG
 			printf("RR %u\n", retry);
 #else
