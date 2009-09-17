@@ -47,6 +47,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memdebug.h>
+#include <fcntl.h>
 
 /*!
  * \addtogroup xgVsCodec
@@ -65,6 +66,8 @@
 #define VSREQ_AUDIOE    0x00000008
 /*! \brief Sine wave test. */
 #define VSREQ_BEEP      0x00000010
+/*! \brief Start recording. */
+#define VSREQ_RECORD    0x00000020
 /*@}*/
 
 
@@ -168,7 +171,6 @@ int VsDecoderSetVolume(NUTDEVICE *dev, int left, int right)
     uint16_t l;
     uint16_t r;
 
-    //printf("vol set %d %d\n", left, right);
     /* Honor limits. */
     left = left > AUDIO_DAC_MAX_GAIN ? AUDIO_DAC_MAX_GAIN : left;
     left = left < AUDIO_DAC_MIN_GAIN ? AUDIO_DAC_MIN_GAIN : left;
@@ -361,10 +363,17 @@ THREAD(FeederThread, arg)
                     }
                 }
             } while (intest);
+            /* Check if we should change to record mode. */
+            if (dcb->dcb_scmd & VSREQ_RECORD) {
+                dcb->dcb_scmd &= ~(VSREQ_RECORD | VSREQ_CANCEL);
+                dcb->dcb_pbstat = CODEC_STATUS_RECORDING;
+                /* Activate the encoder. */
+                VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0x0034);
+            }
             /* Check if we should change to play mode. This will happen
             ** if we receive a play request or if the buffer contents
             ** reaches the high watermark. */
-            if ((dcb->dcb_scmd & VSREQ_PLAY) != 0 || NutSegBufUsed() >=  dcb->dcb_pbwhi) {
+            else if ((dcb->dcb_scmd & VSREQ_PLAY) != 0 || NutSegBufUsed() >=  dcb->dcb_pbwhi) {
                 dcb->dcb_scmd &= ~(VSREQ_PLAY | VSREQ_CANCEL);
                 dcb->dcb_pbstat = CODEC_STATUS_PLAYING;
                 VsDecoderSetVolume(dev, dcb->dcb_lvol, dcb->dcb_rvol);
@@ -424,7 +433,124 @@ THREAD(FeederThread, arg)
                 }
             }
         }
+
+        /* 
+        ** Record mode processing. 
+        */
+        else if (dcb->dcb_pbstat == CODEC_STATUS_RECORDING) {
+            for (;;) {
+                /* Process cancel requests. */
+                if (dcb->dcb_scmd & VSREQ_CANCEL) {
+                    dcb->dcb_scmd &= ~VSREQ_CANCEL;
+                    dcb->dcb_pbstat = CODEC_STATUS_IDLE;
+                    break;
+                }
+                bp = (uint8_t *)NutSegBufWriteRequest(&avail);
+                avail >>= 1;
+                if (avail == 0) {
+                    /* Buffer overflow. */
+                    dcb->dcb_pbstat = CODEC_STATUS_IDLE;
+                    break;
+                }
+#if defined(VS_HDAT0_REG) && defined(VS_HDAT1_REG)
+                /* TODO: Missing register definitions give compiler error. */
+                filled = VsCodecReg(dev, VS_OPCODE_READ, VS_HDAT1_REG, 0);
+                if (filled > 255) {
+                    if (avail > filled) {
+                        avail = filled;
+                    } else {
+                        filled = avail;
+                    }
+                    while (filled--) {
+                        uint16_t data = VsCodecReg(dev, VS_OPCODE_READ, VS_HDAT0_REG, 0);
+                        *bp++ = (uint8_t) data >> 8;
+                        *bp++ = (uint8_t) data >> 8;
+                    }
+                    NutSegBufWriteLast(avail << 1);
+                    NutEventPost(&dcb->dcb_bufque);
+                } else {
+                    NutSleep(200);
+                }
+#endif
+            }
+            NutEventPost(&dcb->dcb_bufque);
+        }
     }
+}
+
+/* TODO: This is a preview and may not work as expected. */
+static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
+{
+    uint_fast8_t reg;
+    uint_fast16_t cnt;
+    size_t i = 0;
+
+#ifdef VS_SM_ADPCM
+    VsCodecMode(dev, 0, VS_SM_ADPCM);
+#endif
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_CLOCKF_REG, 0xC000);
+    NutSleep(100);
+#if VS_HAS_BASS_REG
+    VsCodecReg(dev, VS_OPCODE_WRITE, VS_BASS_REG, 0);
+#endif
+	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
+	VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
+	VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
+    while (i + 3 <= plg->vsplg_size) {
+        reg = (uint_fast8_t)plg->vsplg_data[i++];
+        cnt = plg->vsplg_data[i++];
+
+        if (cnt & 0x8000) {
+            cnt &= 0x7FFF;
+            while (cnt--) {
+                VsCodecReg(dev, VS_OPCODE_WRITE, reg, plg->vsplg_data[i]);
+            }
+            i++;
+        } 
+        else if (i + cnt <= plg->vsplg_size) {
+            while (cnt--) {
+                VsCodecReg(dev, VS_OPCODE_WRITE, reg, plg->vsplg_data[i]);
+                i++;
+            }
+        } 
+        else {
+            break;
+        }
+    }
+    if (i != plg->vsplg_size) {
+        return -1;
+    }
+
+#ifdef VS_SM_ADPCM
+	// set bits 12 and 13 of register SCI_MODE
+	// 12 is the ADPCM bit, 13 is the MIC/LINE bit.
+    VsCodecMode(dev, VS_SM_LINE_IN | VS_SM_ADPCM, VS_SM_LINE_IN | VS_SM_ADPCM);
+#endif
+
+#if VS_HAS_AICTRL0_REG
+	// write 0 to SCI_AICTRL0 (maximum signal level, set by encoder to read later on)
+	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL0_REG, 0);
+#endif
+
+    // recording gain 0: automatic gain control on
+	//CodecReg(&codec_node, VS_OPCODE_WRITE, VS_AICTRL1_REG, 0);
+
+#if VS_HAS_AICTRL1_REG
+	// recording gain 1
+	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL1_REG, 1024);
+#endif
+
+#if VS_HAS_AICTRL2_REG
+	// maximum autogain amplification, 4096 (=4x) is recommended
+	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
+#endif
+
+#if VS_HAS_AICTRL3_REG	
+	// setting SCI_AICTRL3 should be fine, too...
+	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
+#endif
+
+    return 0;
 }
 
 /*!
@@ -533,40 +659,36 @@ int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf)
             rc = -1;
         }
         break;
+    case AUDIO_GET_DECCAPS:
+        /* Retrieve decoder capabilities. */
+        *lvp = dcb->dcb_dec_caps;
+        break;
+    case AUDIO_GET_CODCAPS:
+        /* Retrieve encoder capabilities. */
+        *lvp = dcb->dcb_cod_caps;
+        break;
+    case AUDIO_GET_MIDCAPS:
+        /* Retrieve midi capabilities. */
+        *lvp = dcb->dcb_midi_caps;
+        break;
+
 #if 0
     case AUDIO_GET_DECINFO:
         /* Retrieve decoder information. */
         break;
-    case AUDIO_GET_DECCAPS:
-        /* Retrieve decoder capabilities. */
-        break;
-    case AUDIO_GET_DECFMTS:
-        /* Retrieve decoder formats. */
-        break;
-    case AUDIO_SET_DECFMTS:
-        /* Enable or disable specific decoder formats. */
-        break;
     case AUDIO_GET_CODINFO:
         /* Retrieve encoder information. */
-        break;
-    case AUDIO_GET_CODCAPS:
-        /* Retrieve encoder capabilities. */
-        break;
-    case AUDIO_GET_CODFMTS:
-        /* Retrieve encoder formats. */
-        break;
-    case AUDIO_SET_CODFMTS:
-        /* Enable or disable specific encoder formats. */
         break;
     case AUDIO_GET_MIDINFO:
         /* Retrieve midi information. */
         break;
-    case AUDIO_GET_MIDCAPS:
-        /* Retrieve midi capabilities. */
-        break;
 #endif
+    case AUDIO_PLUGIN_UPLOAD:
+        rc = VsCodecLoadPlugIn(dev, (VS_PLUGIN_INFO *) conf);
+        break;
+
     default:
-        rc = -1;
+        rc = (*dcb->dcb_control)(req, conf);
         break;
     }
     return rc;
@@ -602,6 +724,69 @@ static int VsDecoderBufferFlush(NUTDEVICE *dev, uint32_t tmo)
         /* Wait for a new buffer update. */
         rc = NutEventWait(&dcb->dcb_bufque, tmo);
         if (rc) {
+            break;
+        }
+    }
+    return rc;
+}
+
+/*!
+ * \brief Read from the encoder.
+ *
+ * \param nfp  Pointer to a \ref NUTFILE structure, obtained by a previous 
+ *             call to VsCodecOpen().
+ * \param data Pointer to the data buffer. If NULL, the buffered data
+ *             will be flushed.
+ * \param len  Number of bytes to read. If 0, all buffered data will be 
+ *             flushed.
+ *
+ * \return Number of characters sent. If a read timeout had been set,
+ *         then this may be less than the specified length.
+ */
+int VsCodecRead(NUTFILE * nfp, void *data, int len)
+{
+    int rc = 0;
+    uint8_t *bp;
+    uint8_t *dp;
+    size_t rbytes;
+    NUTDEVICE *dev;
+    VSDCB *dcb;
+
+    dev = nfp->nf_dev;
+    dcb = dev->dev_dcb;
+
+    /* Flush buffer if data pointer is a NULL pointer. */
+    if (data == NULL || len == 0) {
+        return 0;
+    }
+    if (dcb->dcb_pbstat == CODEC_STATUS_PLAYING) {
+        /* Cannot read decoder data. */
+        return -1;
+    } else if (dcb->dcb_pbstat == CODEC_STATUS_IDLE) {
+        /* Start recording if idle. */
+        if (dcb->dcb_cod_mode & AUDIO_FMT_VORBIS) {
+        }
+        dcb->dcb_scmd |= VSREQ_RECORD;
+        NutEventPost(&dcb->dcb_feedme);
+    }
+    dp = data;
+    while (len) {
+        /* Retrieve new data from the input buffer. */
+        bp = (uint8_t *) NutSegBufReadRequest(&rbytes);
+        if (rbytes) {
+            if (rbytes > len) {
+                rbytes = len;
+            }
+            memcpy(dp, bp, rbytes);
+            NutSegBufReadLast(rbytes);
+            NutEventPost(&dcb->dcb_feedme);
+            len -= rbytes;
+            rc += rbytes;
+            dp += rbytes;
+        }
+        /* Wait for data. */
+        else if (NutEventWait(&dcb->dcb_bufque, dcb->dcb_rtmo)) {
+            /* Read timeout. */
             break;
         }
     }
@@ -692,16 +877,34 @@ int VsCodecWrite_P(NUTFILE * nfp, PGM_P buffer, int len)
 NUTFILE *VsCodecOpen(NUTDEVICE * dev, CONST char *name, int mode, int acc)
 {
     NUTFILE *nfp;
+    VSDCB *dcb;
 
 #if defined(VS_SW_RESET_ON_OPEN)
     VsCodecMode(dev, VS_SM_RESET, VS_SM_RESET);
 #endif
 
-    nfp = malloc(sizeof(NUTFILE));
-    nfp->nf_next = NULL;
-    nfp->nf_dev = dev;
-    nfp->nf_fcb = NULL;
+    dcb = dev->dev_dcb;
+    if (mode & _O_WRONLY) {
+        uint32_t on = 1;
+        /* Decoder. */
+        if (VsCodecIOCtl(dev, AUDIO_IRQ_ENABLE, &on)) {
+            return NULL;
+        }
+    } else {
+        /* Encoder. */
+        if (strcmp(name, "vorbis") == 0) {
+            dcb->dcb_cod_mode = AUDIO_FMT_VORBIS;
+        } else {
+            dcb->dcb_cod_mode = AUDIO_FMT_WAV_IMA_ADPCM;
+        }
+    }
 
+    nfp = malloc(sizeof(NUTFILE));
+    if (nfp) {
+        nfp->nf_next = NULL;
+        nfp->nf_dev = dev;
+        nfp->nf_fcb = NULL;
+    }
     NutSegBufReset();
 
     return nfp;

@@ -105,5 +105,8 @@
 #define VS_IO_START             0xC000
 #define VS_IO_SIZE              16384
 
+#define VS_DECODER_CAPS         (AUDIO_FMT_WAV_PCM | AUDIO_FMT_MPEG1_L1 | AUDIO_FMT_MPEG1_L2 | AUDIO_FMT_MPEG1_L3)
+#define VS_ENCODER_CAPS         (0)
+
 #endif
 

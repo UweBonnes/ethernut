@@ -51,13 +51,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(VSCODEC0_SIGNAL_IRQ) && defined(VSCODEC0_DREQ_PORT) && defined(VSCODEC0_DREQ_BIT)
-#if defined(VSCODEC0_XCS_PORT) && defined(VSCODEC0_XCS_BIT)
+#if defined(VSCODEC0_SIGNAL_IRQ) && defined(VSCODEC0_DREQ_BIT) && defined(VSCODEC0_XCS_BIT)
 #define VSCODEC0_CONFIGURED 1
-#endif
 #endif
 
 #if VSCODEC0_CONFIGURED
+
+#ifndef VSCODEC0_DREQ_PORT
+#define VSCODEC0_DREQ_PORT  0
+#endif
+#ifndef VSCODEC0_XCS_PORT
+#define VSCODEC0_XCS_PORT   0
+#endif
 
 /*!
  * \addtogroup xgVsCodec
@@ -268,6 +273,74 @@ static int VsCodec0SendData(CONST uint8_t *buf, size_t len)
 }
 
 /*!
+ * \brief Handle I/O controls for audio codec.
+ *
+ * \param dev Specifies the audio codec device.
+ *
+ * \return 0 on success, -1 otherwise.
+ */
+static int VsCodec0Control(int req, void *conf)
+{
+    int rc = 0;
+    uint32_t *lvp = (uint32_t *) conf;
+
+    switch (req) {
+    case AUDIO_SET_DECFMTS:
+        /* Enable or disable specific decoder formats. */
+#if defined(VS_SM_LAYER12)
+        if (*lvp & (AUDIO_FMT_MPEG1_L1 | AUDIO_FMT_MPEG1_L2)) {
+            VsCodecMode(&devSpiVsCodec0, VS_SM_LAYER12, VS_SM_LAYER12);
+        } else {
+            VsCodecMode(&devSpiVsCodec0, 0, VS_SM_LAYER12);
+        }
+#endif
+        break;
+    case AUDIO_GET_DECFMTS:
+        /* Retrieve decoder formats. */
+        *lvp = VS_DECODER_CAPS;
+#if defined(VS_SM_LAYER12)
+        {
+            uint16_t mode = VsCodecMode(&devSpiVsCodec0, 0, 0);
+
+            if ((mode & VS_SM_LAYER12) == 0) {
+                *lvp &= ~(AUDIO_FMT_MPEG1_L1 | AUDIO_FMT_MPEG1_L2);
+            }
+        }
+#endif
+        break;
+    case AUDIO_GET_CODFMTS:
+        /* Retrieve encoder formats. */
+        *lvp = VS_ENCODER_CAPS;
+#if defined(VS_SM_ADPCM)
+        {
+            uint16_t mode = VsCodecMode(&devSpiVsCodec0, 0, 0);
+
+            if ((mode & VS_SM_ADPCM) == 0) {
+                *lvp &= ~(AUDIO_FMT_WAV_ADPCM | AUDIO_FMT_WAV_IMA_ADPCM);
+            }
+        }
+#endif
+        break;
+    case AUDIO_SET_CODFMTS:
+        /* Enable or disable specific encoder formats. */
+        if (*lvp & AUDIO_FMT_VORBIS) {
+        }
+        break;
+    case AUDIO_IRQ_ENABLE:
+        if (*lvp) {
+            NutIrqEnable(&VSCODEC0_DREQ_SIGNAL);
+        } else {
+            NutIrqDisable(&VSCODEC0_DREQ_SIGNAL);
+        }
+        break;
+    default:
+        rc = -1;
+        break;
+    }
+    return rc;
+}
+
+/*!
  * \brief Set VLSI audio codec clock.
  *
  * \param dev Specifies the audio codec device.
@@ -320,8 +393,6 @@ static int VsCodec0SetClock(uint32_t xtal, uint_fast8_t dreq)
     if (rc == 0) {
 #if VS_HAS_SC_X3FREQ
         (*nodeSpiVsCodec0.node_bus->bus_set_rate) (&nodeSpiVsCodec0, xtal / 2);
-#else
-        (*nodeSpiVsCodec0.node_bus->bus_set_rate) (&nodeSpiVsCodec0, xtal / 3);
 #endif
     }
     return rc;
@@ -343,14 +414,10 @@ static int VsCodec0Detect(void)
     int rc = -1;
     uint_fast16_t status;
 
-    /* While the VS1053B works fine on the EIR board, we still need
-    ** a dummy read on the Ethernut 2.1B with Medianut 2. TODO: Why? */
-    status = VsCodecReg(&devSpiVsCodec0, VS_OPCODE_READ, VS_STATUS_REG, 0);
-    status = VsCodecReg(&devSpiVsCodec0, VS_OPCODE_READ, VS_STATUS_REG, 0);
-
     /*
     ** Verify the hardware if chip is pre-configured.
     */
+    status = VsCodecReg(&devSpiVsCodec0, VS_OPCODE_READ, VS_STATUS_REG, 0);
 #if defined(AUDIO0_VS1001K)
     if ((status & VS_SS_VER) == (VS1001_SS_VER << VS_SS_VER_LSB)) {
         dcbVsCodec0.dcb_codec_ver = 1001;
@@ -508,13 +575,25 @@ static int VsCodec0Init(NUTDEVICE * dev)
 {
     size_t avail;
 
+    /* Activate hardware reset. */
+    VsCodec0ResetHardware(1);
+
     /* Set function pointers. */
     dcbVsCodec0.dcb_isready = VsCodec0IsReady;
     dcbVsCodec0.dcb_sendcmd = VsCodec0SendCmd;
     dcbVsCodec0.dcb_senddata = VsCodec0SendData;
+    dcbVsCodec0.dcb_control = VsCodec0Control;
 
-    /* Activate hardware reset. */
-    VsCodec0ResetHardware(1);
+    /* Set capabilities. */
+#ifdef VS_DECODER_CAPS
+    dcbVsCodec0.dcb_dec_caps = VS_DECODER_CAPS;
+#endif
+#ifdef VS_ENCODER_CAPS
+    dcbVsCodec0.dcb_cod_caps = VS_ENCODER_CAPS;
+#endif
+#ifdef VS_MIDI_CAPS
+    dcbVsCodec0.dcb_midi_caps = VS_MIDI_CAPS;
+#endif
 
     /* Initialize DREQ input. Will be later used as an external interupt. */
     GpioPinConfigSet(VSCODEC0_DREQ_PORT, VSCODEC0_DREQ_BIT, 0);
@@ -587,7 +666,7 @@ NUTDEVICE devSpiVsCodec0 = {
     &dcbVsCodec0,       /* Driver control block, dev_dcb. */
     VsCodec0Init,       /* Driver initialization routine, dev_init. */
     VsCodecIOCtl,       /* Driver specific control function, dev_ioctl. */
-    NULL,               /* Read from device, dev_read. */
+    VsCodecRead,        /* Read from device, dev_read. */
     VsCodecWrite,       /* Write to device, dev_write. */
 #ifdef __HARVARD_ARCH__
     VsCodecWrite_P,     /* Write data from program space to device, dev_write_P. */
