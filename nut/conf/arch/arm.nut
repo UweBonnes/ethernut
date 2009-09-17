@@ -1192,7 +1192,7 @@ nutarch_arm =
         name = "nutarch_arm_rstc",
         brief = "AT91 Reset Controller",
         description = "AT91 reset controller support.",
-        requires = { "HW_RSTC_AT91" },
+--        requires = { "HW_RSTC_AT91" },
         provides = { "DEV_MCU_RESET" },
         sources = { "arm/dev/at91_reset.c" },
     },

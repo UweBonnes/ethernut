@@ -40,6 +40,7 @@
  */
 
 #include <arch/arm.h>
+#include <dev/watchdog.h>
 #include <dev/reset.h>
 
 /*!
