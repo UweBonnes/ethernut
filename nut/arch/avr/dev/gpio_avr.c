@@ -702,96 +702,96 @@ int GpioPinConfigSet(int bank, int bit, uint32_t flags)
     switch(bank) {
 #ifdef DDRA
     case AVRPORTA:
-        if (flags & GPIO_CFG_PULLUP) {
-            sbi(PORTA, bit);
-        }
-        else {
-            cbi(PORTA, bit);
-        }
         if (flags & GPIO_CFG_OUTPUT) {
             sbi(DDRA, bit);
         }
         else {
+            if (flags & GPIO_CFG_PULLUP) {
+                sbi(PORTA, bit);
+            }
+            else {
+                cbi(PORTA, bit);
+            }
             cbi(DDRA, bit);
         }
         break;
 #endif
 #ifdef DDRB
     case AVRPORTB:
-        if (flags & GPIO_CFG_PULLUP) {
-            sbi(PORTB, bit);
-        }
-        else {
-            cbi(PORTB, bit);
-        }
         if (flags & GPIO_CFG_OUTPUT) {
             sbi(DDRB, bit);
         }
         else {
+            if (flags & GPIO_CFG_PULLUP) {
+                sbi(PORTB, bit);
+            }
+            else {
+                cbi(PORTB, bit);
+            }
             cbi(DDRB, bit);
         }
         break;
 #endif
 #ifdef DDRC
     case AVRPORTC:
-        if (flags & GPIO_CFG_PULLUP) {
-            sbi(PORTC, bit);
-        }
-        else {
-            cbi(PORTC, bit);
-        }
         if (flags & GPIO_CFG_OUTPUT) {
             sbi(DDRC, bit);
         }
         else {
+            if (flags & GPIO_CFG_PULLUP) {
+                sbi(PORTC, bit);
+            }
+            else {
+                cbi(PORTC, bit);
+            }
             cbi(DDRC, bit);
         }
         break;
 #endif
 #ifdef DDRD
     case AVRPORTD:
-        if (flags & GPIO_CFG_PULLUP) {
-            sbi(PORTD, bit);
-        }
-        else {
-            cbi(PORTD, bit);
-        }
         if (flags & GPIO_CFG_OUTPUT) {
             sbi(DDRD, bit);
         }
         else {
+            if (flags & GPIO_CFG_PULLUP) {
+                sbi(PORTD, bit);
+            }
+            else {
+                cbi(PORTD, bit);
+            }
             cbi(DDRD, bit);
         }
         break;
 #endif
 #ifdef DDRE
     case AVRPORTE:
-        if (flags & GPIO_CFG_PULLUP) {
-            sbi(PORTE, bit);
-        }
-        else {
-            cbi(PORTE, bit);
-        }
         if (flags & GPIO_CFG_OUTPUT) {
             sbi(DDRE, bit);
         }
         else {
+            if (flags & GPIO_CFG_PULLUP) {
+                sbi(PORTE, bit);
+            }
+            else {
+                cbi(PORTE, bit);
+            }
             cbi(DDRE, bit);
         }
         break;
 #endif
 #ifdef DDRF
     case AVRPORTF:
-        if (flags & GPIO_CFG_PULLUP) {
-            sbi(PORTF, bit);
-        }
-        else {
-            cbi(PORTF, bit);
-        }
         if (flags & GPIO_CFG_OUTPUT) {
             sbi(DDRF, bit);
         }
         else {
+            if (flags & GPIO_CFG_PULLUP) {
+                sbi(PORTF, bit);
+            }
+            else {
+                cbi(PORTF, bit);
+            }
             cbi(DDRF, bit);
         }
         break;
