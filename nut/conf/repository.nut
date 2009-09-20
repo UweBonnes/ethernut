@@ -296,6 +296,22 @@ repository =
                 flavor = "booldata",
                 file = "include/cfg/arch.h",
                 makedefs = { "PLATFORM", "HWDEF+=-D$(PLATFORM)" }
+            },
+            {
+                macro = "PLATFORM_SUB",
+                brief = "User Platform Macro",
+                description = "String constant identifying a user specific hardware that is based on the "..
+                      "PLATFORM macro above.\n\n"..
+                      "This macro can be used if a project is developed for different targets "..
+                      "that are based mainly on the same base project and hardware.\n\n"..
+                      "An example: You develop different EIR applications, same chip, same board, but "..
+                      "one with an OLED, another with an LC-display and a third without display but IR-remote\n\n"..
+                      "This string constant is passed as a macro definition to "..
+                      "the Makefiles and allows conditional compilation "..
+                      "depending on the hardware used.",
+                flavor = "booldata",
+                file = "include/cfg/arch.h",
+                makedefs = { "SUBPLATFORM", "HWDEF+=-D$(SUBPLATFORM)" }
             }
         }
     },

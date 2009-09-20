@@ -1,5 +1,20 @@
 $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
+2009-09-20  Ulrich Prinz  <uprinz2@netscape.net>
+	* Added Platform Subtype for user board derivate configuration.
+
+2009-09-20  Ulrich Prinz  <uprinz2@netscape.net>
+	* Added limited support for using SAMs DBGU as USART.
+	Some limitations apply: Dataformat is fixed to 8 bits, 1 stop.
+	No chip supported handshake signals, only GPIO can be used.
+
+2009-09-17  Ulrich Prinz  <uprinz2@netscape.net>
+	* Fixed two issues in at91_twi.c
+	Reworked led.c driver completely
+	Added keys.c driver
+	Added app/led_key example for new drivers
+	Deleted hundreds of trailing spaces
+
 2009-03-09  Harald Kipp  <harald.kipp@egnite.de>
 
 	* MOVING TO SUBVERSION. PLEASE DO NOT COMMIT ANY MORE CHANGES
@@ -16,7 +31,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* app/pppc/pppc.c: AVR compile error fixed. lctl is required.
 
 	* gorp/base64/base64_decode.c, gorp/base64/base64_encode.c,
-	include/gorp/md5.h: Replaced inttypes.h by stdint.h. The latter 
+	include/gorp/md5.h: Replaced inttypes.h by stdint.h. The latter
 	is sufficient while the first is not always available.
 
 	* gorp/hashes/md5.c: Replaced const by CONST to make it compile
@@ -32,7 +47,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2009-03-08  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* include/gorp: Added missing header files to CVS
-	
+
 2009-03-06  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* gorp: Added gorp ("Studentenfutter") directory
 
@@ -40,7 +55,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* gorp/hashes/md5*: Added first code snippets: md5 routines
 
-	* gorp/base64/base64_encode, gorp/base64/base64_encode: 
+	* gorp/base64/base64_encode, gorp/base64/base64_encode:
 	  Added base64 encoding and decoding routines
 
 	* lib/Makefile: Added gorp directory
@@ -72,20 +87,20 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
       os/osdebug.c, os/thread.c, os/timer.c:
         use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
     * crt/putf.c: don't follow __arm__ if __NUT_EMULATION__
-    
+
 2009-02-28  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 	* boot/bootmon/arp.c: Added ARP responder
 
-	* boot/bootmon/ether.c: Answer to incomming ARP requests 
+	* boot/bootmon/ether.c: Answer to incomming ARP requests
 	  (Fixes arp timeout bug when downloading large files)
 
 	* boot/bootmon/bootmon.c, boot/bootmon/dialog.c,
 	  boot/bootmon/dialog.h, boot/bootmon/tftp.c, boot/bootmon/utils.c,
-	  boot/bootmon/utils.h: 
+	  boot/bootmon/utils.h:
           Fixed compiler warnings (signedness)
 
 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
-	* include/net/errno.h: 
+	* include/net/errno.h:
 	  Added a deprecated warning.
 	  Commended out all defines and include include/errno.h instead.
 	  All defines in this file are duplicates of the one defined in
@@ -101,8 +116,8 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* net/udpsock.c, include/sys/socket.h, include/sys/sock_var.h:
 	  Added NutUdpError and NutUdpSetSocketError to set and retrieve
-	  socket errors. As udp sockets aren't connection oriented those 
-          errors will be anounced asynchronously on the next NutUdpSend 
+	  socket errors. As udp sockets aren't connection oriented those
+          errors will be anounced asynchronously on the next NutUdpSend
 	  or NutUdpReceive.
 
 	  Include "include/errno.h" instead of "include/net/errno.h"
@@ -110,32 +125,32 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* conf/net/net.nut:
 	  Added NUT_UDP_ICMP_SUPPORT (ICMP support on UDP sockets)
 
-	* net/icmpin.c: 
-	  Added ICMP destination unreachable support for UDP sockets and 
-	  give a more detailed errno to TCP sockets as well. ICMP support 
-	  for UDP sockets will just be enabled when defining 
+	* net/icmpin.c:
+	  Added ICMP destination unreachable support for UDP sockets and
+	  give a more detailed errno to TCP sockets as well. ICMP support
+	  for UDP sockets will just be enabled when defining
 	  NUT_UDP_ICMP_SUPPORT int the configurator
 
 	  Include "include/errno.h" instead of "include/net/errno.h"
 
-	* app/icmp-udp/*: 
+	* app/icmp-udp/*:
 
 	  Initial import of ICMP demo for UDP sockets. You should have
-	  enabled NUT_UDP_ICMP_SUPPORT enabled in the configurator to 
+	  enabled NUT_UDP_ICMP_SUPPORT enabled in the configurator to
 	  use the new ICMP support for UDP sockets
 
 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
-	* crt/setenv.c: 
-	  Implemented posix compatible unsetenv function. (The posix variant 
+	* crt/setenv.c:
+	  Implemented posix compatible unsetenv function. (The posix variant
           correctly returns an int return value)
 
 	  This is needed for Newlib since version 1.17.0
 
-	  As avr-libc and older newlib versions declare unsetenv returning 
-	  void, the void version is still default and using the posix 
-          compatible declaration needs to be enabled in the configurator 
-          (option CRT_UNSETENV_POSIX, in 
-          C runtime (target specific) / Environment / posix compatible unsetenv 
+	  As avr-libc and older newlib versions declare unsetenv returning
+	  void, the void version is still default and using the posix
+          compatible declaration needs to be enabled in the configurator
+          (option CRT_UNSETENV_POSIX, in
+          C runtime (target specific) / Environment / posix compatible unsetenv
 
 	* conf/crt/crt.nut: Added CRT_UNSETENV_POSIX, enable it when
 	  building for ARM using Newlib since version 1.17.0 to avoid
@@ -159,25 +174,25 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2009-02-16  Harald Kipp  <harald.kipp@egnite.de>
 
 	* Makerules.arm-gcc, Makerules.arm-gccdbg, app/Makerules.arm-gcc,
-	app/Makerules.arm-gccdbg: Include dot in wildcards, added PHONY 
+	app/Makerules.arm-gccdbg: Include dot in wildcards, added PHONY
 	declarations and removed unused targets.
 
 	* arch/arm/dev/spibus0at91.c, arch/arm/dev/spibus1at91.c,
 	arch/avr/dev/spibus0avr.c, dev/sbi_mmc.c,
-	include/cfg/arch/porttran.h: Macro GPIO_CFG_OUTPUT had been 
-	defined twice. I changed the one in porttran.h to GPIO_OUTPUT 
-	in the hope that this will have the least impact on existing 
-	applications. Also changed GPIO_CFG_INPUT to GPIO_INPUT to make 
+	include/cfg/arch/porttran.h: Macro GPIO_CFG_OUTPUT had been
+	defined twice. I changed the one in porttran.h to GPIO_OUTPUT
+	in the hope that this will have the least impact on existing
+	applications. Also changed GPIO_CFG_INPUT to GPIO_INPUT to make
 	it look more consistent.
-	
-	* arch/arm/dev/spibus_at91.c: Interrupt routine was not 
+
+	* arch/arm/dev/spibus_at91.c: Interrupt routine was not
 	registered due to ifdef mismatch.
 
 	* dev/spi_at45d.c: Added support for AT45DB0642D.
 
-	* include/arch/arm/at91.h: Use more general macros. Added 
-	definition for NUT_HWCLK_PERIPHERAL for targets which have 
-	a PMC MDIV flag. Thanks to Thiago A. Correa, who discovered 
+	* include/arch/arm/at91.h: Use more general macros. Added
+	definition for NUT_HWCLK_PERIPHERAL for targets which have
+	a PMC MDIV flag. Thanks to Thiago A. Correa, who discovered
 	this problem.
 
 	* arch/arm/init/crtat91sam9260_ram.S, conf/arch/arm.nut:
@@ -187,23 +202,23 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	at 99.3280 MHz. Thanks to Paulo Silva for providing a working
 	sample.
 
-	* include/arch/arm/at91_matrix.h: Added master and slave 
-	indices as they appear on the SAM9260. Not sure about other 
+	* include/arch/arm/at91_matrix.h: Added master and slave
+	indices as they appear on the SAM9260. Not sure about other
 	AT91 devices.
 
 	* include/arch/arm/at91_pmc.h, include/arch/arm/at91sam9xe.h:
 	Check for PLL B availability instead of target names.
 
-	* include/arch/arm.h: Added inline assembler macros for 
+	* include/arch/arm.h: Added inline assembler macros for
 	reading/writing coprocessor CP15 control register.
 
 	* include/arch/arm/at91sam9260.h, include/arch/arm/v5te.h:
 	ARM coprocessor bits added, at least a few.
 
-	* conf/at91sam9260-ek.conf: Updated for latest Nut/OS 
+	* conf/at91sam9260-ek.conf: Updated for latest Nut/OS
 	configurations requirements.
 
-	* os/heap.c: Some compiler versions didn't like the pointer 
+	* os/heap.c: Some compiler versions didn't like the pointer
 	type cast. Hope this will fix it.
 
 	* app/Makeburn.arm-samba, tools/win32/at91sam-sdram.tcl:
@@ -212,27 +227,27 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2009-02-13  Harald Kipp  <harald.kipp@egnite.de>
 
-	* include/sys/heap.h, os/heap.c: Complete redesign of the Nut/OS 
-	heap memory management. This new version provides advanced 
-	debugging features and fixes at least 2 alignment bugs for 
-	32 bit platforms (special thanks to Timothy M. De Baillie). 
-	Furthermore, it is prepared to manage multiple heap regions, 
-	which is quite useful for targets with more than one RAM area. 
-	However, more needs to be done during system initialization. 
-	Two new routines allow to check the heaps for consistency 
+	* include/sys/heap.h, os/heap.c: Complete redesign of the Nut/OS
+	heap memory management. This new version provides advanced
+	debugging features and fixes at least 2 alignment bugs for
+	32 bit platforms (special thanks to Timothy M. De Baillie).
+	Furthermore, it is prepared to manage multiple heap regions,
+	which is quite useful for targets with more than one RAM area.
+	However, more needs to be done during system initialization.
+	Two new routines allow to check the heaps for consistency
 	(NutHeapCheck) and print out a dump (NutHeapDump).
 
 	* crt/malloc.c, crt/realloc.c: Move realloc to a new module
 	to reduce the size of applications that don't use it.
 
-	* crt/calloc_dbg.c, crt/malloc_dbg.c, crt/strdup_dbg.c, 
-	include/memdebug.h, crt/realloc_dbg.c: Debug versions of C 
+	* crt/calloc_dbg.c, crt/malloc_dbg.c, crt/strdup_dbg.c,
+	include/memdebug.h, crt/realloc_dbg.c: Debug versions of C
 	runtime routines added.
 
-	* pro/ssi.c: As a first result of the new heap routines we 
+	* pro/ssi.c: As a first result of the new heap routines we
 	found a memory overflow bug in the $QUERY_STRING handling.
 
-	* conf/os/os.nut: Heap debug options and split memory flag added. 
+	* conf/os/os.nut: Heap debug options and split memory flag added.
 	Banked memory options moved to the right module. NUTPANIC added.
 
 	* conf/crt/crt.nut: Debug versions of heap routines added.
@@ -252,23 +267,23 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	pro/discover.c, pro/ftpd.c, pro/httpd.c, pro/httpd_p.c,
 	pro/httpopt.c, pro/resolv.c, pro/snmp_agent.c,
 	pro/snmp_config.c, pro/snmp_mib.c, pro/sntp.c, pro/syslog.c,
-	pro/uxmlstream.c, pro/uxmltree.c: Include memdebug.h for 
+	pro/uxmlstream.c, pro/uxmltree.c: Include memdebug.h for
 	memory debugging support.
 
 	* include/sys/nutdebug.h, os/fatal.c, os/panic.c:
 	New panic routine added, which works similar to printf.
 
-	* dev/hxcodec.c, include/dev/hxcodec.h, conf/dev/dev.nut: 
-	Using the VS10xx driver as a template for redesign. Now both 
-	drivers behave in the same way, specially when used in media 
+	* dev/hxcodec.c, include/dev/hxcodec.h, conf/dev/dev.nut:
+	Using the VS10xx driver as a template for redesign. Now both
+	drivers behave in the same way, specially when used in media
 	streaming over the network. No additional buffering is needed.
 
-	* include/sys/types.h: Two memory alignment macros added, 
+	* include/sys/types.h: Two memory alignment macros added,
 	NUTMEM_BOTTOM_ALIGN and NUTMEM_TOP_ALIGN.
 
 
 2009-02-04  Thiago A. Correa <thiago.correa@gmail.com>
-        
+
 	* app/uart/uart.c: Remove unused variable.
 
 2009-02-06  Harald Kipp  <harald.kipp@egnite.de>
@@ -277,7 +292,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	arch/arm/dev/at91_emac.c, arch/arm/dev/at91sam7x_emac.c,
 	arch/arm/dev/dm9000e.c, arch/arm/os/nutinit.c,
 	arch/avr/dev/ahdlcavr.c, arch/avr/dev/lanc111.c,
-	arch/avr/dev/nicrtl.c, arch/avr/os/nutinit.c, conf/arch/avr.nut, 
+	arch/avr/dev/nicrtl.c, arch/avr/os/nutinit.c, conf/arch/avr.nut,
 	include/sys/thread.h, net/tcpsm.c, pro/dhcpc.c, pro/discover.c,
 	app/httpd/httpserv.c, Makedefs.avr-gccdbg:
 	Added stack space multiplier and addend. For size optimized code
@@ -285,7 +300,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	debugging code will have three times more stack space. Most
 	stack sizes of Nut/OS internal threads had been adjusted for
 	size optimized code, using the NUTDEBUG_CHECK_STACK option.
-	As a final result significantly more heap space will be available 
+	As a final result significantly more heap space will be available
 	to most applications.
 
 	* arch/avr/os/context_gcc.c: Added stack checking code for AVR.
@@ -294,50 +309,50 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	running thread without knowing its name (using parameter NULL).
 
 	* conf/c/stdlib.nut, conf/c/string.nut, conf/crt/crt.nut,
-	include/arch/avr/gcc.h, crt/calloc.c, crt/strdup.c: Routines 
-	using heap memory moved from c to crt module. We now have 
+	include/arch/avr/gcc.h, crt/calloc.c, crt/strdup.c: Routines
+	using heap memory moved from c to crt module. We now have
 	strdup() and calloc().
 
 	* crt/putenv.c, dev/chat.c, dev/mmcard.c, fs/uromfs.c,
 	net/ethdemux.c, net/ipdemux.c, net/pppsm.c, net/route.c,
 	net/tcpsock.c, net/udpsock.c, os/bankmem.c, pro/asp.c,
 	pro/auth.c, pro/cgi.c, pro/ftpd.c, pro/httpd.c, pro/httpd_p.c,
-	pro/resolv.c, pro/sntp.c, pro/ssi.c, pro/wins.c: Now using strdup() 
-	and calloc(). Furthermore, replaced NutHeap routines by standard 
-	malloc/free and pointer values 0 by NULL. Some day we may be able 
+	pro/resolv.c, pro/sntp.c, pro/ssi.c, pro/wins.c: Now using strdup()
+	and calloc(). Furthermore, replaced NutHeap routines by standard
+	malloc/free and pointer values 0 by NULL. Some day we may be able
 	to use parts of Nut/OS on other operating systems.
 
-	* pro/uxmlstream.c: Stop XML parsing if less than 8k bytes data 
+	* pro/uxmlstream.c: Stop XML parsing if less than 8k bytes data
 	space are available.
 
-	* conf/dev/dev.nut, dev/spi_vscodec.c, dev/spi_vscodec0.c, 
-	include/dev/vscodec.h: New audio driver for VLSI chips uses the 
-	SPI bus. 
+	* conf/dev/dev.nut, dev/spi_vscodec.c, dev/spi_vscodec0.c,
+	include/dev/vscodec.h: New audio driver for VLSI chips uses the
+	SPI bus.
 
 	* include/dev/vs1011.h: Clock features corrected.
 
-	* dev/spi_mlcd.c, include/dev/mlcd.h: Added dummy driver for 
+	* dev/spi_mlcd.c, include/dev/mlcd.h: Added dummy driver for
 	ATmega driven displays.
 
-	* dev/spi_at45d0.c: The SPI bus driver fails, if attached devices 
-	use different SPI modes. As a temporary workaround we can configure 
-	the first AT45D DataFlash to mode 0. This allows to run the audio 
+	* dev/spi_at45d0.c: The SPI bus driver fails, if attached devices
+	use different SPI modes. As a temporary workaround we can configure
+	the first AT45D DataFlash to mode 0. This allows to run the audio
 	decoder and the DataFlash on the EIR board on the same bus.
 
 	* conf/eir10c.conf: New audio codec and DataFlash driver enabled.
 
 	* conf/ethernut21b.conf: New audio codec driver enabled.
 
-	* conf/arch/arch.nut: Added NutReset support for SAM9260. Removed 
+	* conf/arch/arch.nut: Added NutReset support for SAM9260. Removed
 	stack size defaults.
 
-	* conf/os/os.nut, conf/pro/pro.nut, include/cfg/os.h: Removed 
+	* conf/os/os.nut, conf/pro/pro.nut, include/cfg/os.h: Removed
 	stack size defaults.
 
-	* conf/repository.nut: Introduced target independent symbols for 
+	* conf/repository.nut: Introduced target independent symbols for
 	external interrutps.
 
-	* arch/arm/dev/spibus1at91.c: Corrected a bug with the first chip 
+	* arch/arm/dev/spibus1at91.c: Corrected a bug with the first chip
 	select on the second SPI bus. Thanks to Oender Tekyar.
 
 	* dev/at45db.c: Corrected a bug with non-negated chip selects.
@@ -345,14 +360,14 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2009-02-05  Henrik Maier  <hwmaier@users.sourceforge.net>
 
-        * arch/avr/dev/atcan.c, conf/arch/avr.nut: 
-        Added support for a receive buffer size configuration 
+        * arch/avr/dev/atcan.c, conf/arch/avr.nut:
+        Added support for a receive buffer size configuration
         entry ATCAN_RX_BUF_SIZE.
-        
+
 
 2009-02-04  Thiago A. Correa <thiago.correa@gmail.com>
-        
-	* os/heap.c: Fix compile for 32 bit ARCHs with OS Debug 
+
+	* os/heap.c: Fix compile for 32 bit ARCHs with OS Debug
 	enabled.
 
 2009-01-29  Harald Kipp  <harald.kipp@egnite.de>
@@ -361,10 +376,10 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	arch/arm/dev/ih_at91irq1.c: Enable IRQ clocks.
 
 	* arch/arm/dev/spibus0at91.c, arch/arm/dev/spibus1at91.c,
-	arch/avr/dev/spibus0avr.c: Use inline functions instead of 
-	macros to allow different ports. Ability to define port bits 
-	without specifying the port identifier. This can be used by 
-	drivers, which handle chip selects on their own. Corrected a 
+	arch/avr/dev/spibus0avr.c: Use inline functions instead of
+	macros to allow different ports. Ability to define port bits
+	without specifying the port identifier. This can be used by
+	drivers, which handle chip selects on their own. Corrected a
 	bug when using chip selects other than 0.
 
 	* conf/dev/dev.nut: Added auto detected VS10xx. Default
@@ -373,37 +388,37 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* conf/eir10c.conf: Added second VS10xx chip select and
 	MMC interface definitions.
 
-	* dev/sbi_mmc.c: Use inline functions instead of macros to 
+	* dev/sbi_mmc.c: Use inline functions instead of macros to
 	allow different ports.
 
 	* include/cfg/arch/porttran.h: Changed the documented example
-	to use inline functions instead of macros. Compile bug for AT91 
+	to use inline functions instead of macros. Compile bug for AT91
 	MDE, IFE PIO registers fixed.
 
 	* dev/vscodec.c: Make sure, that used registers are defined.
 
-	* include/dev/gpio.h: Added more general names for external 
+	* include/dev/gpio.h: Added more general names for external
 	interrupts.
 
-	* include/dev/vs1001.h, include/dev/vs1011.h, 
-	include/dev/vs1053.h, include/dev/vscodec.h: Added VS10xx 
-	feature files. Cleaned up for different decoder chips and fixed 
+	* include/dev/vs1001.h, include/dev/vs1011.h,
+	include/dev/vs1053.h, include/dev/vscodec.h: Added VS10xx
+	feature files. Cleaned up for different decoder chips and fixed
 	several minor bugs.
 
 
 2009-01-19  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/arm/os/context.c, include/sys/thread.h, os/thread.c,
-	os/timer.c: Added stack checking code. When 
-	HWDEFS+=-DNUTDEBUG_CHECK_STACKMIN=x has been added to 
-	nutbld/UserConf.mk, then the system will check once per 
+	os/timer.c: Added stack checking code. When
+	HWDEFS+=-DNUTDEBUG_CHECK_STACKMIN=x has been added to
+	nutbld/UserConf.mk, then the system will check once per
 	second, that at least x bytes of stack space remain
 	available. If any thread's stack space had been lower,
 	NUTFATAL will be called. More options are available.
 	This had been originally suggested by Michael Fischer,
 	long, long time ago.
 
-	* conf/os/os.nut, os/fatal.c: Default fatal error handler 
+	* conf/os/os.nut, os/fatal.c: Default fatal error handler
 	added.
 
 	* conf/eir10c.conf: The EIR board uses the last DataFlash
@@ -416,7 +431,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	exceptions. Made the code a bit cleaner and added some
 	more comments as well. Should be done for the AVR as well.
 
-	* conf/dev/dev.nut, dev/nvmem_at45d.c: Configuration of the 
+	* conf/dev/dev.nut, dev/nvmem_at45d.c: Configuration of the
 	AT45D non-volatile memory support was not useable. Fixed.
 
 	* dev/nvmem.c: Support for AT45D SPI bus driver added.
@@ -425,28 +440,28 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2009-01-18  Harald Kipp  <harald.kipp@egnite.de>
 
 	* conf/dev/dev.nut, dev/spibus0gpio.c, dev/spibus_gpio.c,
-	include/dev/spibus_gpio.h: Added GPIO based bit banging SPI bus 
-	driver. This early release had been tested with the EIR board, 
-	but should run on any platform which implements our target 
-	independent GPIO routines. Few more changes to distinguish 
+	include/dev/spibus_gpio.h: Added GPIO based bit banging SPI bus
+	driver. This early release had been tested with the EIR board,
+	but should run on any platform which implements our target
+	independent GPIO routines. Few more changes to distinguish
 	between PIO IDs and port numbers.
 
 	* conf/repository.nut, include/dev/gpio.h, include/dev/sbbif0.h:
-	Introduced target independent port numbers. Distinguish between 
+	Introduced target independent port numbers. Distinguish between
 	PIO IDs and port numbers.
 
 	* arch/arm/dev/gpio_at91.c: Constants replaced by new port
 	number macros.
 
-	* conf/arch/arm.nut, conf/arch/avr.nut: Distinguish between 
-	PIO IDs and port numbers. Call internal Lua functions when 
+	* conf/arch/arm.nut, conf/arch/avr.nut: Distinguish between
+	PIO IDs and port numbers. Call internal Lua functions when
 	needed only.
 
-	* dev/sbbif0.c: Header cfg/arch/gpio.h replaced by dev/gpio.h, 
+	* dev/sbbif0.c: Header cfg/arch/gpio.h replaced by dev/gpio.h,
 	so we can use new port numbers.
 
-	* include/dev/sbbif0.h, include/dev/sbbif1.h, include/dev/sbbif2.h, 
-	include/dev/sbbif3.h: Bit banging SPI still not compiling for ARM 
+	* include/dev/sbbif0.h, include/dev/sbbif1.h, include/dev/sbbif2.h,
+	include/dev/sbbif3.h: Bit banging SPI still not compiling for ARM
 	targets.
 
 
@@ -465,7 +480,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	crt/vfprintf.c, crt/vfprintf_p.c, crt/write.c, crt/write_p.c:
 	Added some NUTASSERT macros to check function parameters.
 
-	* Getting rid of two remaining BSD types in favor of stdint. 
+	* Getting rid of two remaining BSD types in favor of stdint.
 	Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
 
 
@@ -486,20 +501,20 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	include/arch/arm/exception_c.h,
 	include/arch/arm/ptrace.h, include/sys/ptrace.h,
 	conf/arch/arm.nut: Duane Ellis' crash dump routines added.
-	The original code had been released as part of the LoastARM 
-	Project under GPL Version 2, but has been made available for 
-	Nut/OS under out 3-clause BSD license with kind permission 
+	The original code had been released as part of the LoastARM
+	Project under GPL Version 2, but has been made available for
+	Nut/OS under out 3-clause BSD license with kind permission
 	from the author. It currently handles data abort, undefined,
 	prefetch abort and SWI exceptions and will spit out a
-	register dump and a stack backtrace. Note, that this will 
-	currently work with arm-elf debug code only, because production 
-	code omits frame pointers, which are needed by the stack back 
+	register dump and a stack backtrace. Note, that this will
+	currently work with arm-elf debug code only, because production
+	code omits frame pointers, which are needed by the stack back
 	trace. Experimental, use with care.
 
 	* arch/arm/init/crtat91sam7sex_rom.S, arch/arm/init/crtat91_boot.S,
 	arch/arm/init/crtat91_bootcrom.S, arch/arm/init/crtat91_httprom.S,
 	arch/arm/init/crtat91_ram.S, arch/arm/init/crtat91_rom.S,
-	arch/arm/init/crtat91sam7se512_ram.S, 
+	arch/arm/init/crtat91sam7se512_ram.S,
 	arch/arm/init/crtat91sam7sex_rom.S,
 	arch/arm/init/crtat91sam9260_ram.S,
 	arch/arm/init/crtat91sam9xe512_ram.S,
@@ -515,7 +530,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	Note the new ARM CPSR bit names, the old ones are deprecated.
 
 	* arch/arm/os/nutinit.c, arch/avr/os/nutinit.c,
-	arch/unix/os/nutinit.c: No longer save any default 
+	arch/unix/os/nutinit.c: No longer save any default
 	OS configuration in non-volatile RAM. All platforms
 	will call NutLoadConfig().
 
@@ -529,18 +544,18 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	problem. You may use UserConf.mk instead.
 
 	* conf/pro/pro.nut, pro/discover.c, include/pro/discover.h,
-	include/cfg/discover.h: Configurable discovery protocol 
-	version and port plus configurable service thread stack 
-	size. The new protocol version 1.1 allows host names up 
-	to 98 characters. Added some code to make sure, that 
-	nothing is overwritten with version 1.0 protocol and 
-	too long host names. Protocol version 1.0 is still the 
+	include/cfg/discover.h: Configurable discovery protocol
+	version and port plus configurable service thread stack
+	size. The new protocol version 1.1 allows host names up
+	to 98 characters. Added some code to make sure, that
+	nothing is overwritten with version 1.0 protocol and
+	too long host names. Protocol version 1.0 is still the
 	default.
 
 	* tools/nutdisc/discovery.h, tools/nutdisc/mainframe.cpp,
 	tools/nutdisc/nutdisc.rc, tools/nutdisc/propdialog.cpp,
 	tools/nutdisc/udpthread.cpp, tools/nutdisc/version.h:
-	This new version 2.3 additionally supports discovery 
+	This new version 2.3 additionally supports discovery
 	protocol version 1.1.
 
 
@@ -571,7 +586,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 
 2009-01-13  Ole Reinhardt <ole.reinhardt@thermotemp.de>
-          
+
         * tools/nutconf/nutconfdoc.cpp: Commented out inline destructor of
           CAbstractDirCopyTraverser to fix compilation bug on linux
 
@@ -609,65 +624,65 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	dev/spi_at45d.c, dev/spi_at45d0.c, dev/spi_at45d1.c,
 	dev/spi_at45d2.c, dev/spi_at45d3.c, include/dev/blockdev.h,
 	include/dev/at45d.h, include/dev/nvmem_at45d.h,
-	include/dev/spi_at45d.h: Added target independent AT45D block 
-	device drivers and non-volatile memory support based on the 
+	include/dev/spi_at45d.h: Added target independent AT45D block
+	device drivers and non-volatile memory support based on the
 	new bus controllers.
 
-	* conf/fs/fs.nut, fs/rawfs.c, include/fs/rawfs.h: Added raw file 
+	* conf/fs/fs.nut, fs/rawfs.c, include/fs/rawfs.h: Added raw file
 	system driver.
 
 
 2009-01-05  Thiago A. Correa <thiago.correa@gmail.com>
-        
+
 	* tools/nutconf/nutconfview.cpp:
 	      Fix unsafe cast.
 
 2009-01-04  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 
         * pro/Makefile: Fixed Makefile. Thanks to Uwe Bonnes for this patch
-        * configure.ac: Checks and warns about an empty $LUA_HEADERS 
+        * configure.ac: Checks and warns about an empty $LUA_HEADERS
                         also looks in more places. Thanks again to Uwe Bonnes
         * pro/rfctime.c: Fixed time parsing in RfcTimeParse
                          Thanks to Michael Fischer!
 
 2008-01-04  Thiago A. Correa <thiago.correa@gmail.com>
-        
+
 	* tools/nutconf/bldoptdlg.h,
 	* tools/nutconf/bldoptdlg.h:
 	      Fix behavior of "Browse" buttons in page "Build"
 	      of Settings dialog.
-	      
+
 2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
-        
+
 	* tools/nutconf/nutcomponent.c,
 	* tools/nutconf/nutconfdoc.cpp:
 	      Add .svn to ignore list when copying files and
 	      reduce some duplicated code.
-	      
+
 2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
-        
+
 	* tools/nutconf/nutcomponent.c:
 	      Update lua initialization to conform to lua 5.x API change.
 	      This change should still be compatible with 4.x.
 
 2009-01-04  Thiago A. Correa <thiago.correa@gmail.com>
-        
+
 	* tools/nutconf/mainframe.cpp,
 	* tools/nutconf/nutconfdoc.cpp:
-	      Allow nutconf to build with _UNICODE under Win32. 
+	      Allow nutconf to build with _UNICODE under Win32.
 
 2008-12-24  Thiago A. Correa <thiago.correa@gmail.com>
-        
-	* conf/dev/dev.nut, 
+
+	* conf/dev/dev.nut,
           Improve Serial Bit Bang drivers dependency check
           in nutconf.
 
 2008-12-19  Ole Reinhardt <ole.reinhardt@thermotemp.de>
-        
-	* arch/arm/dev/gpioa_at91.c, 
-	  arch/arm/dev/gpiob_at91.c, 
+
+	* arch/arm/dev/gpioa_at91.c,
+	  arch/arm/dev/gpiob_at91.c,
 	  arch/arm/dev/gpioc_at91.c:
-          Fixed irq enable / disable bug  
+          Fixed irq enable / disable bug
 
 2008-11-12  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -676,7 +691,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 
 2008-10-26  Ole Reinhardt <ole.reinhardt@thermotemp.de>
-	* tools/crurom/crurom.c: Added .svn to the list of directories to   
+	* tools/crurom/crurom.c: Added .svn to the list of directories to
           ignore when creating urom.c
 
 2008-10-22  Harald Kipp  <harald.kipp@egnite.de>
@@ -688,7 +703,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	include/arch/arm/at91sam9260.h, include/arch/arm/at91sam9xe.h,
 	include/cfg/uart.h: Prepared AT91 UART hardware handshake.
 
-	* conf/arch/arm.nut: Added MCU family macros and AT91 UART 
+	* conf/arch/arm.nut: Added MCU family macros and AT91 UART
 	hardware handshake.
 
 	* conf/dev/dev.nut, include/dev/sbi_mmc.h, dev/sbi_mmc.c,
@@ -706,12 +721,12 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* dev/vs10xx.c, dev/lan91.c, dev/vscodec.c, dev/sbbif0.c,
 	dev/hxcodec.c: Include the correct header file.
 
-	* include/cfg/arch/porttran.h: This new header file determines 
-	the target specific GPIO register names by a simple configured 
+	* include/cfg/arch/porttran.h: This new header file determines
+	the target specific GPIO register names by a simple configured
 	port identifier. Use this to remove those lengthy #if's in some
 	source files.
 
-	* include/cfg/arch.h: Now determines MCU family. Added 
+	* include/cfg/arch.h: Now determines MCU family. Added
 	Ethernut 5 settings.
 
 	* include/dev/board.h: Added default MMC interfaces.
@@ -738,7 +753,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	include/lua/lstring.h, include/lua/ltable.h, include/lua/ltm.h,
 	include/lua/lua.h, include/lua/luaconf.h, include/lua/lualib.h,
 	include/lua/luanut.h, include/lua/lundump.h, include/lua/lvm.h,
-	include/lua/lzio.h: Lua interpreter module added. Many thanks to 
+	include/lua/lzio.h: Lua interpreter module added. Many thanks to
 	Laszlo Parrag.
 
 
@@ -755,7 +770,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	Added new contrib directory for non-BSDL code.
 
 	* conf/contrib/hxmp3.nut, contrib/hxmp3/LICENSE.txt,
-	contrib/hxmp3/Makefile, contrib/hxmp3/RCSL.txt, 
+	contrib/hxmp3/Makefile, contrib/hxmp3/RCSL.txt,
 	contrib/hxmp3/RPSL.txt, contrib/hxmp3/asmpoly_gcc.S,
 	contrib/hxmp3/bitstream.c, contrib/hxmp3/buffers.c,
 	contrib/hxmp3/dct32.c, contrib/hxmp3/dequant.c,
@@ -774,21 +789,21 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* arch/arm/dev/at91_spi.c: Removed forgotten debug output.
 
-	* conf/arch/arm.nut, arch/arm/dev/tlv320dac.c, 
+	* conf/arch/arm.nut, arch/arm/dev/tlv320dac.c,
 	include/dev/tlv320dac.h: Added suport for the TLV320 audio DAC.
 
-	* conf/dev/dev.nut, dev/hxcodec.c, include/dev/hxcodec.h: Added 
+	* conf/dev/dev.nut, dev/hxcodec.c, include/dev/hxcodec.h: Added
 	Helix audio device.
 
 
 2008-10-03  Harald Kipp  <harald.kipp@egnite.de>
 
 	* net/arpin.c, net/icmpin.c, net/igmpin.c, net/ipin.c, net/tcpin.c,
-	net/udpin.c: Cris Neckar reported a security hole, which allows an 
-	attacker to read random memory locations by sending ICMP echo 
-	requests with modified IP header length fields. Even writing to 
-	random locations would be possible by controlling the checksum 
-	generation of the reply packet. Added several new size checks on 
+	net/udpin.c: Cris Neckar reported a security hole, which allows an
+	attacker to read random memory locations by sending ICMP echo
+	requests with modified IP header length fields. Even writing to
+	random locations would be possible by controlling the checksum
+	generation of the reply packet. Added several new size checks on
 	incoming telegrams to fix this. Many thanks to Cris for his
 	detailed description of the problem.
 
@@ -799,7 +814,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* include/netinet/ip.h, include/sys/confnet.h, include/sys/confos.h:
 	Removed attribute 'packed' from typedef.
 
-	* arch/arm/dev/at91_mci.c, include/dev/mmcard.h: Several changes. 
+	* arch/arm/dev/at91_mci.c, include/dev/mmcard.h: Several changes.
 	The interface should work now with MultiMedia and SD Cards.
 
 	* include/arch/arm/at91_mci.h: Typo corrected, MCI_OPCMD should
@@ -810,7 +825,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	as suggested by Ole.
 
 	* arch/arm/dev/at91_twi.c, conf/arch/arm.nut, conf/dev/dev.nut,
-	conf/arch/arch.nut, include/arch/arm/irqreg.h: Added TWI support 
+	conf/arch/arch.nut, include/arch/arm/irqreg.h: Added TWI support
 	for the AT91SAM9260.
 
 
@@ -819,7 +834,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* arch/arm/init/crtat91sam7sex_rom.S: Added generic AT91SAM7
 	runtime initialization.
 
-	* arch/arm/init/crtat91sam7s256_rom.S, 
+	* arch/arm/init/crtat91sam7s256_rom.S,
 	arch/arm/init/crtat91sam7se512_rom.S,
 	arch/arm/init/crtat91sam7x256_rom.S: Make use of generic code.
 
@@ -846,13 +861,13 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* arch/arm/ldscripts/at91sam7s256_rom.ld: Removed duplicate
 	carriage returns and 16k reserved flash.
 
-	* conf/arch/arch.nut: Added support for remaining AT91SAM7 familiy 
+	* conf/arch/arch.nut: Added support for remaining AT91SAM7 familiy
 	members. Added support for AT91 SDRAM and reset controller.
 
-	* conf/repository.nut: Added support for remaining AT91SAM7 familiy 
+	* conf/repository.nut: Added support for remaining AT91SAM7 familiy
 	members.
 
-	* conf/arch/arm.nut: Made AT91 SDRAM settings configurable. 
+	* conf/arch/arm.nut: Made AT91 SDRAM settings configurable.
 	Simplified AT91 TWI configuration. Added AT91 reset controller module.
 
 	* conf/eir10c.conf: Enable new SDRAM configuration.
@@ -866,7 +881,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* arch/arm/dev/at91_reset.c, include/arch/arm/at91_reset.h:
 	Added AT91 specific reset functions.
 
-	* dev/reset.c, include/dev/reset.h: Moved AT91 specific 
+	* dev/reset.c, include/dev/reset.h: Moved AT91 specific
 	initialization to arch/arm/.
 
 
@@ -880,12 +895,12 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-09-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* tools/linux/Makefile.am, tools/linux/eir1ocd.cfg, 
+	* tools/linux/Makefile.am, tools/linux/eir1ocd.cfg,
 	tools/linux/eir1ocd.ini: Added Elektor Internet Radio config
 	for OpenOCD. Contributed by Michael Fischer.
 
 	* Makedefs.avr-icc7, Makedefs.avrext-icc7, conf/tools.nut,
-	include/arch/avr/icc.h: The old Marv_XXX do no longer work with 
+	include/arch/avr/icc.h: The old Marv_XXX do no longer work with
 	ICCAVR 7.18B. This is a real nightmare.
 
 	* appicc/basemon/basemon.prj, appicc/caltime/caltime.prj,
@@ -893,7 +908,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	appicc/ftpd/ftpd.prj, appicc/httpd/httpd.prj, appicc/inetq/inetq.prj,
 	appicc/logtime/logtime.prj, appicc/nutpiper/nutpiper.prj,
 	appicc/playmp3/playmp3.prj, appicc/portdio/portdio.prj,
-	appicc/pppc/pppc.prj, appicc/rs232d/rs232d.prj, 
+	appicc/pppc/pppc.prj, appicc/rs232d/rs232d.prj,
 	appicc/simple/simple.prj, appicc/tcps/tcps.prj,
 	appicc/threads/threads.prj, appicc/timers/timers.prj,
 	appicc/uart/uart.prj: Adapted to ICCAVR 7.18B.
@@ -903,11 +918,11 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* appicc/snmpd/snmpd.prj, appicc/snmpd/SNMPD.SRC: Added missing
 	project files.
 
-	* conf/ethernut21b.conf, dev/vs10xx.c, dev/vscodec.c: Now using 
+	* conf/ethernut21b.conf, dev/vs10xx.c, dev/vscodec.c: Now using
 	the correct PORT macros.
 
-	* tools/nutconf/nutcomponent.c: Version 2.0.6 fixes a few memory 
-	holes and avoids empty macro definitions for items with "integer" 
+	* tools/nutconf/nutcomponent.c: Version 2.0.6 fixes a few memory
+	holes and avoids empty macro definitions for items with "integer"
 	flavor.
 
 	* tools/nutconf/nutconf.cpp: Ignore case when comparing
@@ -921,18 +936,18 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-09-02  Harald Kipp  <harald.kipp@egnite.de>
 
-	* conf/arch/arm.nut: Added a new MCU family macro to avoid 
-	these lengthy preprocessor conditionals. This is just a first 
+	* conf/arch/arm.nut: Added a new MCU family macro to avoid
+	these lengthy preprocessor conditionals. This is just a first
 	upgradable sample.
 
-	* conf/arch/avr.nut, conf/dev/dev.nut: Disabled the old 
-	vs1001k driver. We will now use the dev/vs10xx.c, available for 
+	* conf/arch/avr.nut, conf/dev/dev.nut: Disabled the old
+	vs1001k driver. We will now use the dev/vs10xx.c, available for
 	all targets with GPIO.
 
 	* conf/dev/dev.nut, dev/reset.c, include/dev/reset.h:
 	Added platform independent reset functions.
 
-	* dev/vs10xx.c: Make it compile for targets without specific 
+	* dev/vs10xx.c: Make it compile for targets without specific
 	configuration.
 
 	* include/dev/watchdog.h: Includes stdint header.
@@ -953,7 +968,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* configure.ac, os/version.c: New beta 4.7.2.
 
 	* conf/dev/dev.nut, include/dev/sbbif0.h, include/dev/sbbif1.h,
-	include/dev/sbbif2.h, include/dev/sbbif3.h: Bitbanging SPI was 
+	include/dev/sbbif2.h, include/dev/sbbif3.h: Bitbanging SPI was
 	not configurable for ARM targets.
 
 	* arch/arm/dev/at91_emac.c, arch/arm/dev/at91sam7x_emac.c,
@@ -961,7 +976,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	arch/arm/dev/dm9000e.c, arch/avr/dev/eth0cs.c,
 	arch/avr/dev/eth0rtl.c, arch/avr/dev/lanc111.c,
 	arch/avr/dev/wlan.c, dev/ppp.c, include/net/if_var.h,
-	include/net/if.h: Added interface flags, which will be required 
+	include/net/if.h: Added interface flags, which will be required
 	to implement Ethernet ioctl functions.
 
 	* conf/dev/dev.nut, dev/lan91.c, include/dev/lan91.h:
@@ -971,7 +986,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* net/ifconfig.c: Make use of ioctl if the driver supports this.
 
-	* conf/repository.nut: Added Lua routines which dynamically 
+	* conf/repository.nut: Added Lua routines which dynamically
 	return GPIO ports and bits based on the selected target platform.
 
 	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
@@ -980,19 +995,19 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-08-28  Michal Olejniczak <m.olejniczak@propox.com>
 
-    * nut/conf/MMnet03.conf 
-    Created file for MMnet03. Added MMnet03 definition 
-    * nut/conf/MMnet04.conf 
-    Created file for MMnet04. Added MMnet04 definition 
-    * nut/conf/MMnet103.conf 
-    Created file for MMnet103. Added MMnet103 definition 
-    * nut/conf/MMnet104.conf 
-    Created file forn MMnet04. Added MMnet104 definition 
-    
+    * nut/conf/MMnet03.conf
+    Created file for MMnet03. Added MMnet03 definition
+    * nut/conf/MMnet04.conf
+    Created file for MMnet04. Added MMnet04 definition
+    * nut/conf/MMnet103.conf
+    Created file for MMnet103. Added MMnet103 definition
+    * nut/conf/MMnet104.conf
+    Created file forn MMnet04. Added MMnet104 definition
+
 2008-08-26  Michal Olejniczak <m.olejniczak@propox.com>
-    * nut/arch/avr/dev/hd44780_bus.c 
+    * nut/arch/avr/dev/hd44780_bus.c
     Added support for MMnet03..04 and MMnet102..104
-    * nut/arch/avr/os/nutinit.c 
+    * nut/arch/avr/os/nutinit.c
     Added MMnet03..04 and MMnet102..104 CPLD initialization.
     * nut/fs/pnutfs.c
     Added bank support for MMnet03..04 MMnet102..104
@@ -1003,8 +1018,8 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
      - RTC     support for MMnet02..04 and MMnet102..104
     *nut/include/sys/bankmem.h
     Added bank support for MMnet03..04 and Mmnet102..104
-    Many thanks to Harald Kipp for Patience and Support 
-    
+    Many thanks to Harald Kipp for Patience and Support
+
 2008-08-25  Harald Kipp  <harald.kipp@egnite.de>
 
 	* configure.ac, os/version.c: New beta 4.7.1.
@@ -1021,7 +1036,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 
 2008-08-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
-        * fs/phatfs.c: Check if filesystem is mounted when opening a file. 
+        * fs/phatfs.c: Check if filesystem is mounted when opening a file.
           Prevents a system lockup because of a nullpointer access
 
 2008-08-22  Harald Kipp  <harald.kipp@egnite.de>
@@ -1032,7 +1047,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	include/arch/timer.h, include/sys/timer.h, os/timer.c:
 	Querying the clocks initiated a hardware access, which consumes
 	too many CPU cycles on some platforms. We now cache the clock
-	values, as suggested by Duane Ellis. NutGetCpuClock() moved from 
+	values, as suggested by Duane Ellis. NutGetCpuClock() moved from
 	target specific arch/target/dev/ostimer_target.c to os/timer.c.
 	A new function NutArchClockGet provides hardware access and
 	another new function NutClockSet() can be used to clear the
@@ -1047,14 +1062,14 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* conf/net/net.nut, include/netinet/ip.h, include/sys/sock_var.h,
 	include/sys/socket.h, net/ipdemux.c, net/ipin.c, net/tcpin.c,
-	net/tcpsock.c, net/udpin.c, net/udpsock.c: Added IP demultiplexer to 
-	uncouple protocols. Note, that NutUdpInput() and NutTcpInput() use 
+	net/tcpsock.c, net/udpin.c, net/udpsock.c: Added IP demultiplexer to
+	uncouple protocols. Note, that NutUdpInput() and NutTcpInput() use
 	different parameters and now return a value, which match other layers.
 
-	* include/net/ether.h: Corrected C++ brackets and added 
+	* include/net/ether.h: Corrected C++ brackets and added
 	NutRegisterEthHandler() prototype.
 
-	* include/dev/netbuf.h: Added a new flag to mark unicast packets. 
+	* include/dev/netbuf.h: Added a new flag to mark unicast packets.
 	This should later avoid repeating address tests.
 
 	* tools/nutconf/nutcomponent.c, tools/nutconf/nutconf.h:
@@ -1062,8 +1077,8 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	distinguish the bad version packed in the Windows distribution.
 
 
-2008-08-17  Ole Reinhardt <ole.reinhardt@thermotemp.de>	
-	* nut/pro/ssi.c: Fixed a memory leak. A filename was 
+2008-08-17  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+	* nut/pro/ssi.c: Fixed a memory leak. A filename was
           never freed again
 
 2008-08-11  Thiago A. Correa <thiago.correa@gmail.com>
@@ -1073,7 +1088,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-08-11  Harald Kipp  <harald.kipp@egnite.de>
 
-	* nut/net/ethdemux.c: First trial of a dynamic protocol 
+	* nut/net/ethdemux.c: First trial of a dynamic protocol
 	demultiplexer. This one works on the data link level and may
 	be implemented on higher levels as well.
 
@@ -1101,7 +1116,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-08-09  Harald Kipp  <harald.kipp@egnite.de>
 
-	* dev/netbuf.c, include/dev/netbuf.h: Simplified NETBUF 
+	* dev/netbuf.c, include/dev/netbuf.h: Simplified NETBUF
 	allocation and release. Note, that NutNetBufFree will
 	no longer return an error.
 
@@ -1111,7 +1126,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2008-08-06  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/arm/dev/at91_emac.c: First EMAC reset failed on power-up.
-	Initialize EMAC clock and MII mode earlier. 
+	Initialize EMAC clock and MII mode earlier.
 
 	* arch/arm/dev/at91_emac.c, arch/arm/dev/debug_at91.c,
 	arch/arm/dev/hd44780_at91.c, arch/arm/dev/ostimer_at91.c,
@@ -1123,12 +1138,12 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	include/arch/arm/timer.h, include/arch/arm.h, include/dev/board.h,
 	include/dev/debug.h, arch/arm/init/crtat91sam9xe512_ram.S,
 	arch/arm/ldscripts/at91sam9xe512_iram.ld, conf/ethernut50c.conf,
-	include/arch/arm/at91sam9xe.h: Added support for Ethernut 5 
+	include/arch/arm/at91sam9xe.h: Added support for Ethernut 5
 	(AT91SAM9XE reference design).
 
 
 2008-08-01  Ole Reinhardt <ole.reinhardt@thermotemp.de>
-	* tools/nutconf/configitem.cpp: Added cast to char* 
+	* tools/nutconf/configitem.cpp: Added cast to char*
 	  in line 698 to avoid compiling bug on linux
 
 2008-07-31  Harald Kipp  <harald.kipp@egnite.de>
@@ -1136,8 +1151,8 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* app/canbus/candemo.c: Use the right device name to open.
 
 	* arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
-	arch/arm/dev/usartat91.c, include/arch/arm/at91x40.h: 
-	Initializing peripheral control registers in a more general 
+	arch/arm/dev/usartat91.c, include/arch/arm/at91x40.h:
+	Initializing peripheral control registers in a more general
 	way. Works now for AT91SAM9260 and fixes bug #2032960.
 
 	* conf/at91sam9260-ek.conf: Added PHY address. Fixes bug
@@ -1156,7 +1171,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-07-28  Harald Kipp  <harald.kipp@egnite.de>
 
-	* os/heap.c: Nut/OS crashes on the Elektor Internet Radio. 
+	* os/heap.c: Nut/OS crashes on the Elektor Internet Radio.
 	After removing setBeef() from NutHeapAdd, it worked again.
 
 	* os/timer.c: Late timer destroy, hopefully solves bug #2029411.
@@ -1165,13 +1180,13 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	settings.
 
 	* tools/nutconf/mainframe.cpp, tools/nutconf/nutconf.h,
-	tools/nutconf/nutconfdoc.cpp: Configurator 2.0.2 fixes missing 
+	tools/nutconf/nutconfdoc.cpp: Configurator 2.0.2 fixes missing
 	'make install', introduced in 2.0.1.
 
 	* tools/nutconf/settings.cpp, tools/nutconf/settings.h:
 	The default installation path is an empty string.
 
-	* tools/nutconf/nutcomponent.c: Make sure that all children of 
+	* tools/nutconf/nutcomponent.c: Make sure that all children of
 	a disabled parent are disabled too.
 
 	* conf/dev/dev.nut: Added VS1053B.
@@ -1180,17 +1195,17 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	SAM7SE again. No idea why this had been removed.
 
 	* tools/nutconf/bldoptdlg.cpp, tools/nutconf/nutcomponent.c,
-	tools/nutconf/nutconf.h: Configurator version 2.0.1 accepts empty 
+	tools/nutconf/nutconf.h: Configurator version 2.0.1 accepts empty
 	install path for using the default lib/ within the build tree.
 
-	* tools/nutconf/nutconfdoc.cpp: Temporarly removed unsupported 
+	* tools/nutconf/nutconfdoc.cpp: Temporarly removed unsupported
 	Eclipse project copying. We are testing a new setup for Eclipse.
 
 
 2008-07-27  Harald Kipp  <harald.kipp@egnite.de>
 
-	* conf/net/net.nut, net/tcpsm.c, net/tcputil.c: Number of 
-	retransmissions and upper and lower bounds of timeouts made 
+	* conf/net/net.nut, net/tcpsm.c, net/tcputil.c: Number of
+	retransmissions and upper and lower bounds of timeouts made
 	configurable. Many thanks to Szemzo Andras for pointing out,
 	that this is required on some networks (ADSL in his case).
 
@@ -1212,15 +1227,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	arch/arm/dev/ih_at91tc0.c, arch/arm/dev/ih_at91tc1.c,
 	arch/arm/dev/ih_at91tc2.c, arch/arm/dev/ih_at91twi.c,
 	arch/arm/dev/ih_at91uart0.c, arch/arm/dev/ih_at91uart1.c:
-	Added capability to set and retrieve the interrupt mode. 
+	Added capability to set and retrieve the interrupt mode.
 	The default mode for the UART had been switched from
 	edge triggered to level sensitive, as specified in the
-	AT91 datasheet. Many thanks to Tim DeBaillie for reporting 
+	AT91 datasheet. Many thanks to Tim DeBaillie for reporting
 	these problems. And special thanks to Alain M. for tracking
 	them.
 
-	* dev/ihndlr.c, include/dev/irqreg.h: Allow to just query the 
-	current interrupt mode by calling NutIrqSetMode(&sig_, 
+	* dev/ihndlr.c, include/dev/irqreg.h: Allow to just query the
+	current interrupt mode by calling NutIrqSetMode(&sig_,
 	NUT_IRQMODE_NONE). Another new level specifier is
 	NUT_IRQMODE_LEVEL, which is used to specify level sensitive
 	interrupts for internal devices of the AT91 CPUs.
@@ -1231,7 +1246,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	  and added missing PSTR macro around prog_char strings
 
 	* pro/cgi.c, pro/ssi.c: Imagecraft compilers does not support alloca
-	  (to allocate memory from the stack). So we use 
+	  (to allocate memory from the stack). So we use
           NutHeapAlloc / NutHeapClear instead for Imagecraft.
 
 2008-07-24  Harald Kipp  <harald.kipp@egnite.de>
@@ -1242,15 +1257,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	capabilities.
 
 	* tools/nutconf/nutconf.h, tools/nutconf/bitmaps/nutconf.xpm,
-	tools/nutconf/bitmaps/nutconf.bmp: Configurator version 2.0 
+	tools/nutconf/bitmaps/nutconf.bmp: Configurator version 2.0
 	with new splash screen.
 
 	* tools/nutconf/configitem.cpp, tools/nutconf/nutcomponent.c,
 	tools/nutconf/nutcomponent.h, tools/nutconf/nutconfdoc.cpp,
-	tools/nutconf/nutconfdoc.h: Allow dynamically changing configuration 
-	items. Values are no longer read during initialization, but 
-	retrieved from the repository when needed. You can even specify Lua 
-	functions instead of strings. A number of Lua extensions had been 
+	tools/nutconf/nutconfdoc.h: Allow dynamically changing configuration
+	items. Values are no longer read during initialization, but
+	retrieved from the repository when needed. You can even specify Lua
+	functions instead of strings. A number of Lua extensions had been
 	added to allow the script to retrieve values from the Configurator
 	GUI. On the downside, the Configurator GUI has become very slow
 	when values are changed. However, this should be acceptable for
@@ -1258,29 +1273,29 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	can be easily fixed later.
 
 	* tools/nutconf/scrolledtree.cpp, tools/nutconf/scrolledtree.h,
-	tools/nutconf/treecomp.cpp, tools/nutconf/treecomp.h: The component 
-	tree stopped working on Linux and OS X after wxWidgets implemented 
-	the wxScrollHelper. 
-	Although not fully fixed, it works acceptable again. The main 
-	problem is, that it seems to be impossible to have a scrolled 
-	window without vertical scrollbar. For now ignore the bar in the 
+	tools/nutconf/treecomp.cpp, tools/nutconf/treecomp.h: The component
+	tree stopped working on Linux and OS X after wxWidgets implemented
+	the wxScrollHelper.
+	Although not fully fixed, it works acceptable again. The main
+	problem is, that it seems to be impossible to have a scrolled
+	window without vertical scrollbar. For now ignore the bar in the
 	middle of the component tree.
 
-	* tools/nutconf/mainframe.cpp: Reorganized window initialization 
-	fixes bad client window after starting the Configurator on Linux 
+	* tools/nutconf/mainframe.cpp: Reorganized window initialization
+	fixes bad client window after starting the Configurator on Linux
 	and OS X.
 
-	* tools/nutconf/settings.cpp: Fixed a path separator bug, which 
-	prevents the Configurator from automatically finding the repository 
-	path. The best way is to create a new directory (e.g. ethernut), 
-	where you should unpack and install the source package. When done, 
-	create a link named nut/ to the unpacked directory ethernut-x.y.z. 
+	* tools/nutconf/settings.cpp: Fixed a path separator bug, which
+	prevents the Configurator from automatically finding the repository
+	path. The best way is to create a new directory (e.g. ethernut),
+	where you should unpack and install the source package. When done,
+	create a link named nut/ to the unpacked directory ethernut-x.y.z.
 	This way you will get the same directory structure as on Windows.
 
-	* tools/nutconf/nutconf.cpp: More reliable splash screen appearance 
+	* tools/nutconf/nutconf.cpp: More reliable splash screen appearance
 	on Linux. Also tried to fix help file loading, but still not working.
 
-	* tools/nutconf/configtree.cpp: Simplyfied mouse event handling. 
+	* tools/nutconf/configtree.cpp: Simplyfied mouse event handling.
 	Reporting dynamic script errors.
 
 	* tools/nutconf/bitmaps/application.xpm,
@@ -1318,7 +1333,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* tools/nutconf/appoptdlg.cpp, tools/nutconf/bldoptdlg.cpp:
 	Use correct ifdefs for path separators.
 
-	* tools/nutconf/valuewindow.cpp: Use method IsOk() instead of 
+	* tools/nutconf/valuewindow.cpp: Use method IsOk() instead of
 	simply checking the item handle.
 
 
@@ -1331,21 +1346,21 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2008-07-17  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 
 	* pro/auth.c: Allow Authentication for subdirectories
-	
-	* pro/cgi.c: 
+
+	* pro/cgi.c:
 	  - Check for unique cgi names
-	  - Alloc local copy of cgi name. Allows dynamicaly generated cgi 
+	  - Alloc local copy of cgi name. Allows dynamicaly generated cgi
             names
-	  - Function to register a different cgi-bin path. Multiple path 
+	  - Function to register a different cgi-bin path. Multiple path
 	    allowed. See httpd demo for an example
-	
+
 	* pro/httpd.c pro/httpd_p.c pro/httpd_p.h pro/ssi.c:
           - Implemented feature request #1667498
 	  - Moved some functions used in httpd.c as well as in ssi.c into
 	    httpd_p.c
-	  - Implemeted $QUERY_STRING parameter in for CGIs included by a 
+	  - Implemeted $QUERY_STRING parameter in for CGIs included by a
 	    ssi file
-	
+
 	* include/pro/httpd.h: Added prototype for new functions in cgi.c
 
 	* dev/at49bv.c, include/dev/at49bv.h: Added function
@@ -1355,15 +1370,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	  app/httpd/sample/include.inc, app/httpd/sample/index.html,
 	  app/httpd/sample/ssi.shtml:
 	  Updated the webserver demo to show new webserver functions
-	  (different cgi pathes with seperate authentication, 
+	  (different cgi pathes with seperate authentication,
 	  $QUERY_STRING parameter for ssi included CGIs)
 
 
 2008-07-15  Henrik Maier  <hwmaier@users.sourceforge.net>
 
-	* conf/xnut-105.conf: Renamed to xnut-105d.conf. 
-        
-        * conf/xnut-105d.conf, conf/xnut-100.conf: Added configuration item 
+	* conf/xnut-105.conf: Renamed to xnut-105d.conf.
+
+        * conf/xnut-105d.conf, conf/xnut-100.conf: Added configuration item
         for DTR which is now supported by usart driver.
 
 
@@ -1373,15 +1388,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	boot/bootmon/start_rom.S, tools/win32/enut3ocd.ini,
 	tools/linux/enut3ocd.ini: Ethernut 3 chip selects and wait
 	states had been set inconsistently. We are now running
-	with minimum waits. You may have to add additional delays in 
+	with minimum waits. You may have to add additional delays in
 	your existing applications.
 
-	* arch/arm/init/crtat91_bootcrom.S, conf/repository.nut, 
+	* arch/arm/init/crtat91_bootcrom.S, conf/repository.nut,
 	arch/arm/ldscripts/at91_bootcrom.ld, conf/tools.nut:
 	New link option for Ethernut 3. After power up, the code
 	is copied from Flash to RAM similar to at91_boot, but the
 	the constant data remains in Flash memory. This way the
-	code runs much faster than with at91_rom, but applications 
+	code runs much faster than with at91_rom, but applications
 	with large constant data areas like a big UROM filesystem
 	will still fit.
 
@@ -1424,7 +1439,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-07-09  Harald Kipp  <harald.kipp@egnite.de>
 
-	* conf/dev/dev.nut, dev/x12rtc.c: Made EEPROM_PAGE_SIZE configurable. 
+	* conf/dev/dev.nut, dev/x12rtc.c: Made EEPROM_PAGE_SIZE configurable.
 	I'm not convinced whether this makes sense, but it won't hurt.
 
 	* pro/cgi.c: Bug #1799374 fixed, without adding any code, as suggested
@@ -1435,19 +1450,19 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	Thanks to Martin Ludwig for his suggestions. Fixes bugs
 	#1711107 and #2003064.
 
-	* arch/arm/init/crtat91sam7se512_ram.S, conf/tools.nut, 
-	arch/arm/ldscripts/at91sam7se512_ram.ld, conf/repository.nut: 
-	Added capability to load the code directly into RAM for easier 
+	* arch/arm/init/crtat91sam7se512_ram.S, conf/tools.nut,
+	arch/arm/ldscripts/at91sam7se512_ram.ld, conf/repository.nut:
+	Added capability to load the code directly into RAM for easier
 	debugging. Contributed by Michael Fischer.
 
 
 2008-07-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* conf/pro/pro.nut, include/cfg/http.h, pro/httpd.c: Several HTTP 
-	server options are now configurable. Keepalive is now disabled by 
+	* conf/pro/pro.nut, include/cfg/http.h, pro/httpd.c: Several HTTP
+	server options are now configurable. Keepalive is now disabled by
 	default to maintain backward compatibility. Fixes bug #1968754.
 
-	* crt/putf.c: Starting from avr-libc 1.6.0 (WinAVR-20071221 and 
+	* crt/putf.c: Starting from avr-libc 1.6.0 (WinAVR-20071221 and
 	newer) declaration of dtostrf has changed. Many thanks to
 	Andrzej Lawrynowicz. Fixes bug #1871390.
 
@@ -1457,7 +1472,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	include/arch/timer.h, include/sys/timer.h, os/timer.c:
 	Architecture specific implementations of NutDelay replaced by
 	a more general one, which tries to automatically determine the
-	required number of loops during NutTimerInit. Alternatively this 
+	required number of loops during NutTimerInit. Alternatively this
 	number is configurable. A new function NutMicroDelay has been added.
 	Somehow fixes bug #1567794.
 
@@ -1479,7 +1494,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-07-01  Thiago A. Correa  <thiago.correa@gmail.com>
 
-	* crt/malloc.c: Add realloc to override libc's realloc using 
+	* crt/malloc.c: Add realloc to override libc's realloc using
 	NutHeapRealloc.
 
 
@@ -1498,16 +1513,16 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-06-25  Matthias Ringwald <mringwal@inf.ethz.ch>
         * include/sys/heap.h, os/heap.c: Added NutHeapRealloc contributed
-        by Moritz 'Monty' Struebe. 
+        by Moritz 'Monty' Struebe.
         * include/arch/unix.h: escape realloc in unix emulation
         * include/arch/icc.h:  escape realloc for icc
 
 2008-06-23  Harald Kipp  <harald.kipp@egnite.de>
 
-	* boot/bootmon/Makedefs, boot/bootmon/bootmon.c, 
+	* boot/bootmon/Makedefs, boot/bootmon/bootmon.c,
 	boot/bootmon/npluled.h: Version 1.5.0. User LED support added.
 
-	* boot/bootmon/tftp.c: Reduced retry time to become more responsive 
+	* boot/bootmon/tftp.c: Reduced retry time to become more responsive
 	to space input via RS-232.
 
 
@@ -1518,7 +1533,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-06-16  Harald Kipp  <harald.kipp@egnite.de>
 
-	* arch/arm/dev/at91_spi.c: Fixes #1963841. Many thanks to Eric 
+	* arch/arm/dev/at91_spi.c: Fixes #1963841. Many thanks to Eric
 	Haver (very sharp eyes).
 
 	* conf/arch/avr.nut, arch/Makefile: Temporarily removed wlandrv.c
@@ -1526,7 +1541,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* include/arch/avr/gcc.h: Added Thiago's patch to fix
 	_SLEEP_MODE_MASK problem, which is no longer public in
-	the latest avrlibc. 
+	the latest avrlibc.
 
 
 2008-06-15  Harald Kipp  <harald.kipp@egnite.de>
@@ -1551,13 +1566,13 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2008-06-05  Harald Kipp  <harald.kipp@egnite.de>
 
-	* arch/arm/dev/st7036_at91.c, conf/arch/arm.nut, 
+	* arch/arm/dev/st7036_at91.c, conf/arch/arm.nut,
 	conf/at91sam7x-ek-radio.conf, conf/at91sam7x-ek.conf,
 	conf/at91sam9260-ek-radio.conf, conf/at91sam9260-ek.conf,
 	conf/eir10b.conf: The port ID is now individually
-	configurable for each signal line. Thus, there is no need to set 
-	board specific defaults in the driver's source file. Settings had 
-	been moved to the configuration files. This change may break your 
+	configurable for each signal line. Thus, there is no need to set
+	board specific defaults in the driver's source file. Settings had
+	been moved to the configuration files. This change may break your
 	existing LCD configuration.
 
 
@@ -1567,11 +1582,11 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2008-04-21  Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* pro/ssi.c: Nicer implement query string feature and save some
           memory
-	
+
 	* os/condition.c, include/sys/condition.h: Implemented condition
 	  variables to use with NutOS as an application candy
 
-	* doc/gen/nutdoc_en.txt: Added description of condition variables 
+	* doc/gen/nutdoc_en.txt: Added description of condition variables
 
 	* conf/os/os.nut: Added configuration options for condition variables
 
@@ -1584,11 +1599,11 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* net/ipin.c, net/udpin.c: Use fast ints.
 
-	* Makedefs.avr-icc7, Makerules.avr-icc7, app/Makedefs.avr-icc7, 
-	app/Makerules.avr-icc7, Makedefs.avrext-icc7, Makerules.avrext-icc7, 
-	app/Makedefs.avrext-icc7, app/Makerules.avrext-icc7: Added new 
-	Makefiles for ICCAVR V7. Since V7.15 Imagecraft gave up that 
-	incompatible interpretation of the const keyword. Not sure, 
+	* Makedefs.avr-icc7, Makerules.avr-icc7, app/Makedefs.avr-icc7,
+	app/Makerules.avr-icc7, Makedefs.avrext-icc7, Makerules.avrext-icc7,
+	app/Makedefs.avrext-icc7, app/Makerules.avrext-icc7: Added new
+	Makefiles for ICCAVR V7. Since V7.15 Imagecraft gave up that
+	incompatible interpretation of the const keyword. Not sure,
 	how long we will be able to support ICCAVR V6.
 
 	* crt/putf.c, crt/sprintf_p.c, crt/sscanf_p.c, fs/uromfs.c:
@@ -1597,7 +1612,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* pro/ssi.c: Fixed ICCAVR compile errors. No chance to implement
 	GCC's PSTR().
 
-	* Makedefs.avr-icc, include\crt\iccavr\stdint.h: New include 
+	* Makedefs.avr-icc, include\crt\iccavr\stdint.h: New include
 	directory adds support for stdint types to ICCAVR.
 
 	* arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
@@ -1615,15 +1630,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* dev/netbuf.c, include/dev/netbuf.h, include/netinet/ipcsum.h,
 	include/sys/sock_var.h, include/sys/socket.h, net/ipcpout.c,
 	net/ipcsum.c, net/netdebug.c, net/papout.c, net/tcpsock.c,
-	net/udpout.c, net/udpsock.c, net/papout.c: Changed size parameter 
-	from u_short to int, which is easier to handle for 32-bit targets. 
-	You need to recompile your ARM code. No impact on AVR expected, 
-	except possible sign warnings. I changed u_int to int at some 
-	places to avoid warnings during compilation of the Nut/Net 
+	net/udpout.c, net/udpsock.c, net/papout.c: Changed size parameter
+	from u_short to int, which is easier to handle for 32-bit targets.
+	You need to recompile your ARM code. No impact on AVR expected,
+	except possible sign warnings. I changed u_int to int at some
+	places to avoid warnings during compilation of the Nut/Net
 	libs.
 
-	* include/arch/arm/at91_ssc.h: Corrected definitions of clock 
-	selection bits. The new naming is required, but may break existing 
+	* include/arch/arm/at91_ssc.h: Corrected definitions of clock
+	selection bits. The new naming is required, but may break existing
 	code.
 
 
@@ -1637,14 +1652,14 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2008-04-15  Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * pro/httpd.c: Fixed compilation error with avr-gcc 3.4.6
-        
+
 	* app/basemon/basemon.c: Removed error message when compiling for
-        AT90CAN128 CPU. Since the AT90CAN128 RevD silicon became 
+        AT90CAN128 CPU. Since the AT90CAN128 RevD silicon became
         available, basemon can be used with this CPU.
-        
+
 	* conf/xnut-105.conf: Renamed to xnut-105c.conf. Added new version of
         xnut-105.conf with settings for AT90CAN128 RevD silicon.
-        
+
 
 2008-04-02  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -1676,7 +1691,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	required at least. Thanks to Moritz Struebe.
 
 	* conf/pro/pro.nut, pro/Makefile, pro/httpd.c, pro/httpopt.c:
-	Added the new, enhanced httpd API library. Includes the fixes 
+	Added the new, enhanced httpd API library. Includes the fixes
 	from Piotr Szlachta, #1839026 and #1839029.
 
 	* conf/repository.nut: Added missing at91sam7s entries.
@@ -1714,7 +1729,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* arch/arm/init/crtat91_boot.S: Reduced wait states for
 	Flash access from 8 to 4.
 
-	* include/arch/arm/atom.h: Added memory and cc clobbers to 
+	* include/arch/arm/atom.h: Added memory and cc clobbers to
 	NutEnter/ExitCritical. This keeps compiler optimizations
 	inside and outside of critical sections seperated. Many
 	thanks to Duane Ellis. Probably required for AVR too,
@@ -1734,25 +1749,25 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	tools/nutconf/treecomp.cpp, tools/nutconf/treecomp.h:
 	Removed dispensable scroll handlers.
 
-	* tools/nutconf/nutcomponent.h: Do not re-declare 
+	* tools/nutconf/nutcomponent.h: Do not re-declare
 	__BEGIN_DECLS. Avoids compiler warning on Mac OS X.
 
-	* tools/nutconf/nutconf.cpp: Splash screen must be destroyed, 
+	* tools/nutconf/nutconf.cpp: Splash screen must be destroyed,
 	not deleted. Thanks to Steffen Ritter.
 
-	* tools/nutconf/nutconfdoc.cpp: Added Eclipse project file 
+	* tools/nutconf/nutconfdoc.cpp: Added Eclipse project file
 	copying (experimental).
 
 	* tools/nutconf/scrolledtree.cpp: Get it run on OS X.
 
-	* tools/nutconf/settings.cpp: FindAbsoluteDir() now returns an 
-	empty string on failure. Previous versions returned the current 
-	directory (dot) without any chance for the caller to recognize 
+	* tools/nutconf/settings.cpp: FindAbsoluteDir() now returns an
+	empty string on failure. Previous versions returned the current
+	directory (dot) without any chance for the caller to recognize
 	the error condition. This should fix the forgotten path problem
 	on Linux, but not sure if it works under all conditions.
 
-	* tools/nutconf/splitscroll.cpp: OS X uses a different window 
-	hierarchy, so we need to search for the scrollbar instead of 
+	* tools/nutconf/splitscroll.cpp: OS X uses a different window
+	hierarchy, so we need to search for the scrollbar instead of
 	simply taking the first one.
 
 	* tools/nutconf/valuewindow.cpp: Fix OS X scrolling.
@@ -1770,22 +1785,22 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* configure.ac, os/version.c: Second beta, version #4.5.1.
 
-	* crt/nut_io.h: Serious bug fix. Reconfigured FOPEN_MAX was 
+	* crt/nut_io.h: Serious bug fix. Reconfigured FOPEN_MAX was
 	not honored by all modules.
 
 	* dev/vscodec.c, include/dev/vscodec.h, conf/dev/dev.nut:
-	The old VS1001K support routine had been done in 2002 for the 
-	4MHz ATmega. In order to handle high bitrates, decoder feeding 
+	The old VS1001K support routine had been done in 2002 for the
+	4MHz ATmega. In order to handle high bitrates, decoder feeding
 	was done in interrupt context. With today's 16MHz AVRs, this
-	complicated processing is no longer required. Here we present a 
-	new character device driver for the VLSI decoders. Note, that 
-	most things are still hard coded for the AT91SAM7SE and the 
-	VS1033 or VS1053. The part we are missing most is a general SPI 
+	complicated processing is no longer required. Here we present a
+	new character device driver for the VLSI decoders. Note, that
+	most things are still hard coded for the AT91SAM7SE and the
+	VS1033 or VS1053. The part we are missing most is a general SPI
 	driver. Stay tuned.
 
 	* pro/uxmlparse.c, pro/uxmlstream.c, pro/uxmltree.c,
-	include/pro/uxml.h, conf/pro/pro.nut: Micro XML parser added. 
-	This is a very limited and probably incomplete parser. However, 
+	include/pro/uxml.h, conf/pro/pro.nut: Micro XML parser added.
+	This is a very limited and probably incomplete parser. However,
 	it allows to parse relatively large XML files on tiny systems.
 
 	* arch/arm/dev/at91_twi.c, arch/arm/dev/debug_at91.c,
@@ -1802,52 +1817,52 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	arch/arm/ldscripts/at91sam7se512_rom.ld: AT91SAM7SE512 support added.
 
 	* conf/repository.nut, conf/arch/arch.nut, conf/arch/arm.nut:
-	AT91SAM7SE512 support added. Global MCU list simplifies exclusivity 
+	AT91SAM7SE512 support added. Global MCU list simplifies exclusivity
 	attribute. HW_EBI_AT91 added for MCUs with external bus interface.
 
-	* pro/resolv.c, include/netdb.h: Added NutDnsGetConfig2() to query 
-	DNS IP entries. Btw. all this network initialization stuff had 
-	become souu rotten over the time. Blame me for not providing a 
+	* pro/resolv.c, include/netdb.h: Added NutDnsGetConfig2() to query
+	DNS IP entries. Btw. all this network initialization stuff had
+	become souu rotten over the time. Blame me for not providing a
 	cleaner design in the early beginning.
 
-	* os/bankmem.c: Calling the initialization routine more than once 
-	is now possible. By default, half of the available memory will be 
+	* os/bankmem.c: Calling the initialization routine more than once
+	is now possible. By default, half of the available memory will be
 	allocated. Previous versions eat all free memory above 8k.
 
-	* pro/ssi.c: Quick hack provided by Niels. No idea what this is 
-	for, but according to the author it is a dirty solution. We 
-	urgently need it to get the Elektor Radio working. Sorry in 
+	* pro/ssi.c: Quick hack provided by Niels. No idea what this is
+	for, but according to the author it is a dirty solution. We
+	urgently need it to get the Elektor Radio working. Sorry in
 	advance for any trouble this change may cause.
 
 	* arch/arm/dev/dm9000e.c, include/dev/board.h, conf/eir10b.conf:
 	Added support for the Elektor Internet Radio.
 
-	* dev/at45db.c, include/dev/at45db.h: At45dbPageErase selected 
-	the wrong bank. Fixed. Parameter pgn (page number) of 
-	At45dbPageWrite() changed from unsigned int to unsigned long. 
-	New routines At45dbPages() and At45dbPageSize() allow to 
+	* dev/at45db.c, include/dev/at45db.h: At45dbPageErase selected
+	the wrong bank. Fixed. Parameter pgn (page number) of
+	At45dbPageWrite() changed from unsigned int to unsigned long.
+	New routines At45dbPages() and At45dbPageSize() allow to
 	determine the chip's layout.
 
-	* pro/snmp.c, pro/snmp_agent.c, pro/snmp_api.c, pro/snmp_auth.c, 
-	pro/snmp_config.c, pro/snmp_mib.c: Added missing SNMP code files. 
+	* pro/snmp.c, pro/snmp_agent.c, pro/snmp_api.c, pro/snmp_auth.c,
+	pro/snmp_config.c, pro/snmp_mib.c: Added missing SNMP code files.
 	SET command is still buggy and will crash.
 
-	* pro/rfctime.c: Missing code for RFC date and time conversion 
+	* pro/rfctime.c: Missing code for RFC date and time conversion
 	added.
 
-	* conf/arch/arch.nut, include/arch/arm/at91sam7s.h: Line endings 
+	* conf/arch/arch.nut, include/arch/arm/at91sam7s.h: Line endings
 	fixed and TABs converted.
 
-	* c/stdlib/atoi.c, c/stdlib/atol.c, c/stdlib/strtol.c, 
-	c/stdlib/strtoul.c, c/string/memcpy.c, c/string/strcat.c, 
+	* c/stdlib/atoi.c, c/stdlib/atol.c, c/stdlib/strtol.c,
+	c/stdlib/strtoul.c, c/string/memcpy.c, c/string/strcat.c,
 	c/string/strchr.c, c/string/strncmp.c, c/string/strtok.c,
 	crt/strtok_r.c, include/pro/asn1.h, include/pro/snmp_auth.h,
-	include/pro/snmp_config.h: Replaced const with CONST. Some compilers 
+	include/pro/snmp_config.h: Replaced const with CONST. Some compilers
 	for embedded systems use this attribute in a different way.
 
 
 2008-02-08  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-        * arch/Makefile: Added ih_at91spi for sam7x, Support for 
+        * arch/Makefile: Added ih_at91spi for sam7x, Support for
           at91sam7s added
         * conf/arch/arm.nut: Added ih_at91spi for sam7x
 
@@ -1865,7 +1880,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* conf/repository.nut, conf/tools.nut,
 	arch/arm/init/crtat91_httprom.S, arch/arm/ldscripts/at91_httprom.ld:
-	Added ability to upload AT91 flash image via HTTP. Many thanks to 
+	Added ability to upload AT91 flash image via HTTP. Many thanks to
 	Matthias Wilde for this cool feature.
 
 	* include/arch/arm/at91_twi.h: Removed duplicate Log tag. Ole is
@@ -1876,13 +1891,13 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* arch/arm/dev/spimmc_at91.c: Failed to compile for SAM7S. Added
 	some default settings.
 
-	* configure.ac, tools/nutdisc/Makefile.am: Added build of Nut 
+	* configure.ac, tools/nutdisc/Makefile.am: Added build of Nut
 	Discoverer.
 
 	* tools/nutdisc/nutdisc.cpp, tools/nutdisc/udpthread.cpp:
 	Added *nix socket support.
 
-	* tools/nutdisc/mainframe.cpp, tools/nutdisc/mainframe.h: Added 
+	* tools/nutdisc/mainframe.cpp, tools/nutdisc/mainframe.h: Added
 	autoscan and window hiding.
 
 	* tools/nutdisc/nutdisc.h: Make frame window public.
@@ -1895,12 +1910,12 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* conf/arch/arm.nut, conf/arch/avr.nut, include/arch/arm/irqreg.h,
 	arch/arm/dev/gpio_at91.c, arch/arm/dev/gpioa_at91.c,
 	arch/arm/dev/gpiob_at91.c, arch/arm/dev/gpioc_at91.c,
-	arch/avr/dev/gpio_avr.c, include/dev/gpio.h: Added first version 
-	of platform independent GPIO routines. Consider the AVR version 
+	arch/avr/dev/gpio_avr.c, include/dev/gpio.h: Added first version
+	of platform independent GPIO routines. Consider the AVR version
 	untested.
 
 	* arch/arm/dev/ih_at91pioa.c, arch/arm/dev/ih_at91piob.c,
-	arch/arm/dev/ih_at91pioc.c: Added PIO interrupt handling for 
+	arch/arm/dev/ih_at91pioc.c: Added PIO interrupt handling for
 	devices with more than one port.
 
 	* include/pro/httpd.h: Expanded REQUEST structure to handle
@@ -1908,40 +1923,40 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* include/pro/rfctime.h: RFC date and time conversion added.
 
-	* include/pro/asn1.h, include/pro/snmp_agent.h, 
+	* include/pro/asn1.h, include/pro/snmp_agent.h,
 	include/pro/snmp_api.h, include/pro/snmp_auth.h,
 	include/pro/snmp_config.h, include/pro/snmp_mib.h,
-	include/pro/snmp.h: Added first SNMP support, still incomplete, 
+	include/pro/snmp.h: Added first SNMP support, still incomplete,
 	possibly buggy.
 
-	* conf/repository.nut, include/cfg/arch/avr.h: Added ports H up 
+	* conf/repository.nut, include/cfg/arch/avr.h: Added ports H up
 	to L.
 
-	* app/portdio/portdio.c: Now makes use of general GPIO routines 
-	to work on all platforms. Pre-configured for Ethernut 1, 2 and 3 
-	as well as Atmel's SAM7X and SAM9260 Evaluation Kits. Note, that 
-	the AVR version had been moved from PORTD to PORTB. This had been 
-	done to get the same expansion port pins on Ethernut 1/2 and 
-	Ethernut 3 without disturbing the TWI/I2C port. Removed system 
+	* app/portdio/portdio.c: Now makes use of general GPIO routines
+	to work on all platforms. Pre-configured for Ethernut 1, 2 and 3
+	as well as Atmel's SAM7X and SAM9260 Evaluation Kits. Note, that
+	the AVR version had been moved from PORTD to PORTB. This had been
+	done to get the same expansion port pins on Ethernut 1/2 and
+	Ethernut 3 without disturbing the TWI/I2C port. Removed system
 	specific commands to keep it simple.
 
-	* include/arch/arm/at91sam9260.h: Removed PIO_BASE definition, 
+	* include/arch/arm/at91sam9260.h: Removed PIO_BASE definition,
 	which conflicts with general GPIO.
 
 	* app/canbus/candemo.c, app/events/events.c, app/ftpd/ftpserv.c,
 	app/logtime/logtime.c, app/pppc/pppc.c, app/rs232d/rs232d.c,
 	app/simple/simple.c, app/tcps/tcps.c, app/threads/threads.c,
-	app/timers/timers.c, app/uart/uart.c: Added return statement in 
+	app/timers/timers.c, app/uart/uart.c: Added return statement in
 	main to avoid warnings with latest GCC.
 
 
 2008-01-16 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* arch/arm/init/crtat91sam9260_ram.S, arch/arm/init/crtat91_rom.S:
-	  Changed backslash to slash in include path names 
+	  Changed backslash to slash in include path names
 
 2007-12-09 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 	* include/arch/arm/at91sam7x.h, include/arch/arm/at91sam9260.h,
-	  include/arch/arm/at91sam7s.h, include/arch/arm/irqreg.h: 
+	  include/arch/arm/at91sam7s.h, include/arch/arm/irqreg.h:
 	  Added adc support
 	* conf/arch/arm.nut: Added config options for at91 adc driver
 	* arch/arm/dev/at91_twi.c: Added doxygen tags
@@ -1953,22 +1968,22 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2007-11-16 Henrik Maier  <hwmaier@users.sourceforge.net>
 
 	* app/canbus/candemo.c: Added delay after send to avoid bus overflow
-        
-        * arch/avr/dev/atcan.c: Updated bit timing values for a sample 
-        point of 87.5% and a SJW of 2. Required for maximum bus 
+
+        * arch/avr/dev/atcan.c: Updated bit timing values for a sample
+        point of 87.5% and a SJW of 2. Required for maximum bus
         length as per CiA DS-102.
 
 
 2007-11-15 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * eboot/flash.s: Uses avr/io.h include file for register definitions
-        so it works for ATmega128, AT90CAN128 and AT90CAN128 
-        
+        so it works for ATmega128, AT90CAN128 and AT90CAN128
+
         * eboot/eboot.c: Include wdt.h was missing to compile for ATmega2561.
-        
-	* eboot/ether.c: Added support for AT90CAN128 MCU. Fixed using SRE 
+
+	* eboot/ether.c: Added support for AT90CAN128 MCU. Fixed using SRE
         bit on MCUCR register for ATmega2561, must be XMCRA like AT90CAN128.
-        
+
 
 2007-10-12  Harald Kipp  <harald.kipp@egnite.de>
 
@@ -1990,21 +2005,21 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2007-10-08 Henrik Maier  <hwmaier@users.sourceforge.net>
 
         * app/canbus/candemo.c: Compiles now also for SJA1000 based designs
-        * include/dev/board.h: Added RTC DS1307 for XNUT-100 and XNUT-105 
+        * include/dev/board.h: Added RTC DS1307 for XNUT-100 and XNUT-105
           units
-        
+
 
 2007-10-04 Ole Reinhardt <ole.reinhardt@embedded-it.de>
 
-	* include/arch/arm/at91sam7s.h, conf/at91sam7s.conf, 
-	  arch/arm/ldscripts/at91sam7s256_rom.ld, 
+	* include/arch/arm/at91sam7s.h, conf/at91sam7s.conf,
+	  arch/arm/ldscripts/at91sam7s256_rom.ld,
 	  arch/arm/init/crtat91sam7s256_rom.S: Initial checkin, Support for
 	  SAM7S256
 
 	* conf/arch/arch.nut, conf/arch/arm.nut, include/dev/debug.h,
 	  include/dev/board.h, include/cfg/arch.h, include/arch/arm.h,
 	  include/arch/arm/irqreg.h, include/arch/arm/at91_pmc.h,
-	  include/arch/arm/at91.h, dev/twbbif.c, conf/tools.nut, 
+	  include/arch/arm/at91.h, dev/twbbif.c, conf/tools.nut,
 	  arch/arm/os/nutinit.c, arch/arm/dev/usartat91.c,
 	  arch/arm/dev/usart0at91.c, arch/arm/dev/usart1at91.c,
 	  arch/arm/dev/st7036_at91.c, arch/arm/dev/ostimer_at91.c,
@@ -2033,7 +2048,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* include/arch/avr/atom.h: NutEnter/ExitCritical destroyed R0.
 	Many thanks to Jean Pierre Gauthier for tracking this hidden bug.
 
-	* Makedefs.avrext-icc, app/Makedefs.avrext-icc: Updated compiler 
+	* Makedefs.avrext-icc, app/Makedefs.avrext-icc: Updated compiler
 	options for ATmega256.
 
 	* conf/arch/avr.nut: Typo corrected.
@@ -2047,14 +2062,14 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* tools/nutconf/nutconf.h: New Configurator version 1.4.3.
 
-	* tools/nutconf/nutcomponent.c, tools/nutconf/settings.cpp: Now 
+	* tools/nutconf/nutcomponent.c, tools/nutconf/settings.cpp: Now
 	avr-dude is the default.
 
 	* tools/nutconf/nutconf.cpp, tools/nutconf/nutconfdoc.cpp,
-	tools/nutconf/settings.h: Top installation directory will be used 
-	for ICCAVR project configuration. Re-building the application tree 
-	will no longer override existing project files. Probably no longer 
-	in use, but _MCU_enhanced will be replaced by _MCU_extended for 
+	tools/nutconf/settings.h: Top installation directory will be used
+	for ICCAVR project configuration. Re-building the application tree
+	will no longer override existing project files. Probably no longer
+	in use, but _MCU_enhanced will be replaced by _MCU_extended for
 	ATmega256.
 
 	* tools/nutconf/settings.cpp: When multiple configurations is
@@ -2064,17 +2079,17 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2007-09-08 Henrik Maier  <hwmaier@users.sourceforge.net>
 
-        * dev/can_dev.c, include/dev/can_dev.h: Changes to support RX time-out, 
+        * dev/can_dev.c, include/dev/can_dev.h: Changes to support RX time-out,
         CAN_SetRxTimeout() added.
-        
+
 	* arch/avr/dev/sja1000.c: Optional time-out for receiving added
-        
-        * arch/avr/dev/atcan.c: Optional time-out for receiving added, 
-        more robust handling of error interrupts. 
-        
+
+        * arch/avr/dev/atcan.c: Optional time-out for receiving added,
+        more robust handling of error interrupts.
+
 	* arch/avr/dev/atcan.c, include/dev/atcan.h: AtCanGetBusState() added.
-        
-        * include/cfg/xnut.h: Wrapped LED macros in braces. Corrected serial 
+
+        * include/cfg/xnut.h: Wrapped LED macros in braces. Corrected serial
         port control macros.
 
 
@@ -2088,15 +2103,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
         * include/arch/arm/at91sam7x.h: Added support for AT91 TWI driver
         * include/arch/arm/irqreg.h: Added interrupt definitions for SPI/TWI
         * conf/olimex-sam7-ex256.conf: First checkin
-        * conf/repository.nut: 
-        Added ld script selection for eb40a_redboot_ram (EB40A Eval board 
+        * conf/repository.nut:
+        Added ld script selection for eb40a_redboot_ram (EB40A Eval board
         with redboot bootloader running, changed load address)
         * conf/at91eb40a_redboot.conf: First checkin, New config for
 	AT91EB40A eval board with redboot bootloader running
 	* arch/arm/ldscrips/eb40a_redboot_ram.ld: First checkin, support for
 	AT91EB40A eval board with redboot bootloader running
 	* arch/arm/dev/at91_emac.c: Changed phy detection and added support
-	for micel phy (SAM7-EX256 Board). Still needs work: Make phy id 
+	for micel phy (SAM7-EX256 Board). Still needs work: Make phy id
         configurable in configurator.
 
 
@@ -2114,7 +2129,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* arch/avr/include/atom.h: Removed. Had been replaced by
 	include/arch/avr/atom.h some time ago.
 
-	* fs/pathops.c, include/fs/fs.h, include/stdio.h: Added missing 
+	* fs/pathops.c, include/fs/fs.h, include/stdio.h: Added missing
 	rename() function call, kindly provided by Andrew Zacharias.
 
 	* Makefile.am: New boot directory for bootloader code.
@@ -2125,22 +2140,22 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 2007-08-28  Harald Kipp  <harald.kipp@egnite.de>
 
 	* arch/arm/dev/at91_emac.c, arch/arm/dev/uartgba.c,
-	arch/avr/dev/ace.c, arch/avr/dev/usart0avr.c, 
-	arch/avr/dev/usart1avr.c, c/stdlib/abs.c, c/string/strrchr.c, 
-	include/dev/ace.h, include/dev/hd44780.h, include/dev/hd44780_bus.h, 
+	arch/avr/dev/ace.c, arch/avr/dev/usart0avr.c,
+	arch/avr/dev/usart1avr.c, c/stdlib/abs.c, c/string/strrchr.c,
+	include/dev/ace.h, include/dev/hd44780.h, include/dev/hd44780_bus.h,
 	include/dev/sbbif3.h, include/fs/phatfs.h, include/netinet/igmp.h,
-	include/sys/mutex.h, include/sys/semaphore.h, include/sys/sock_var.h, 
-	doc/gen/nutdoc_en.txt, doc/gen/nut_en.cfg.in: Moved to Doxygen 1.5.3. 
+	include/sys/mutex.h, include/sys/semaphore.h, include/sys/sock_var.h,
+	doc/gen/nutdoc_en.txt, doc/gen/nut_en.cfg.in: Moved to Doxygen 1.5.3.
 	Several documentation typos fixed.
 
 
 2007-08-17  Harald Kipp  <harald.kipp@egnite.de>
 
-	* include/arch/arm/atom.h: Fixes a long existing and severe 
-	porting bug (#1757410). NutEnter/ExitCritical destroyed r0! 
+	* include/arch/arm/atom.h: Fixes a long existing and severe
+	porting bug (#1757410). NutEnter/ExitCritical destroyed r0!
 	While this is a temporary register on avr-gcc, arm-elf-gcc
 	uses it for passing the first function parameter. This new
-	version now also allows nesting by saving the current status 
+	version now also allows nesting by saving the current status
 	register on the stack.
 
 	* arch/arm/include/atom.h: Removed. Had been replaced by
@@ -2167,14 +2182,14 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2007-07-30  Ole Reinhardt <ole.reinhardt@embedded.it.de>
 	* eboot/eboot.c: Unlike ATMega128 the ATMega2561 does not
-          disable the watchdog after a reset, so we need to do this 
+          disable the watchdog after a reset, so we need to do this
 
 2007-07-30  Ole Reinhardt <ole.reinhardt@embedded.it.de>
 	* eboot/Makedefs: Added support for ATMega2561. Needs to be enabled
         by uncommenting LDFLAGS line and commenting out the one for
  	ATMega128
         * eboot/arp.c: Added korrekt arp response code
-        * eboot/eboot.c, eboot/ether.c, eboot/tftp.c eboot/util.c 
+        * eboot/eboot.c, eboot/ether.c, eboot/tftp.c eboot/util.c
           eboot/tftpc: Added ATMega2561 support
 
 2007-07-26  Matthias Ringwald <mringwal@inf.ethz.ch>
@@ -2204,7 +2219,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* dev/ppp.c: Fixed bug #1369171, memory leak in NutPppClose().
 	Thanks to Sergey Danilov.
 
-	* nutsetup, arch/Makefile, include/cfg/arch.h: 
+	* nutsetup, arch/Makefile, include/cfg/arch.h:
 	Building in the source tree should work again for AT91 devices.
 
 
@@ -2226,27 +2241,27 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
         * include/arch/arm/at91_udp.h: Defines for arm7 UDP controller
 
 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-	* net/Makefile:	Commented in igmp_in.c and igmp_out.c again 
+	* net/Makefile:	Commented in igmp_in.c and igmp_out.c again
         * net/ipin.c: igmp support reenabled
 
 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-	* dev/twbbif.c: Added default TWI_DELAY for avr architecture 
+	* dev/twbbif.c: Added default TWI_DELAY for avr architecture
         to allow in-tree compilation
-	* net/Makefile:	Commented out igmp support as long as it does 
+	* net/Makefile:	Commented out igmp support as long as it does
         not exists to allow in-tree compilation
         * net/ipin.c: Commented out igmp support as long as it does not compile
 
 2007-08-06  Ole Reinhardt <ole.reinhardt@embedded-it.de>
-	* arch/arm/init/crtat91sam7x256_rom.S: 
+	* arch/arm/init/crtat91sam7x256_rom.S:
         Corrected inlude path names. Changed backslash to slash
 
 2007-06-14  Matthias Ringwald <mringwal@inf.ethz.ch>
 	* include/sys/thread.c, arch/avr/os/nutinit.c: NutThreadSetSleepMode
 	now returns previous sleep mode
-    
+
 	* arch/avr/os/nutinit.c: Disable ADC and buskeeper during idle thread
 	sleep, if IDLE_THREAD_ADC_OFF and IDLE_THREAD_BUSKEEPER_OFF are defined.
-     
+
 2007-06-01  Harald Kipp  <harald.kipp@egnite.de>
 
 	* app/caltime/caltime.c, app/caltime/Makefile, app/Makefile:
@@ -2262,15 +2277,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	wrong century determination for X1226. Debugging output added.
 
 	* include/dev/board.h: RTC_CHIP definition now visible for
-	ETHERNUT3 and MMNET02 only. 
+	ETHERNUT3 and MMNET02 only.
 
 	* include/dev/x12rtc.h: Wrong watchdog mode bit fixed.
 
 
 2007-05-24  Harald Kipp  <harald.kipp@egnite.de>
 
-	* arch/avr/dev/irblast.c, include/dev/irblast.h: New driver from 
-	Przemyslaw Rudy sends modulated infrared remote control codes 
+	* arch/avr/dev/irblast.c, include/dev/irblast.h: New driver from
+	Przemyslaw Rudy sends modulated infrared remote control codes
 	using a simple IR LED. Cool.
 
 
@@ -2279,16 +2294,16 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* arch/avr/dev/ace.c: Added two more interfaces. Thanks to
 	Przemyslaw Rudy.
 
-	* arch/avr/dev/tlc16c550.c, include/dev/tlc16c550.h: Update 
+	* arch/avr/dev/tlc16c550.c, include/dev/tlc16c550.h: Update
 	provided by Przemyslaw Rudy.
 
 
 2007-05-22  Harald Kipp  <harald.kipp@egnite.de>
 
-	* arch/arm/dev/dm9000e.c: Added some delay befor reading the status 
+	* arch/arm/dev/dm9000e.c: Added some delay befor reading the status
 	of the received packet. Fixes bug #1672527, thanks to Andreas Helmcke.
 
-	* dev/npluled.c: NplUledStatus was looking at the MMC line not the 
+	* dev/npluled.c: NplUledStatus was looking at the MMC line not the
 	LED line when returning the status. Fixes bug #1711622, thanks to
 	Douglas Pearless.
 
@@ -2301,11 +2316,11 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* configure.ac, os/version.c: Pre-release 4.3.3 alpha.
 
-	* Makedefs.avr-gccdbg, Makerules.avr-gccdbg, 
-	app/Makedefs.avr-gccdbg, app/Makerules.avr-gccdbg: Enables AVR 
+	* Makedefs.avr-gccdbg, Makerules.avr-gccdbg,
+	app/Makedefs.avr-gccdbg, app/Makerules.avr-gccdbg: Enables AVR
 	debugging. Same ugly solution which I already used for the ARM.
 
-	* arch/avr/dev/ih_usart0_udre.c: ATmega256x used wrong interrupt 
+	* arch/avr/dev/ih_usart0_udre.c: ATmega256x used wrong interrupt
 	handler.
 
 	* arch/avr/os/context_gcc.c: Minor typo with big impact.
@@ -2317,7 +2332,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	variants to enable compiler warnings at format/argument mismatch.
 	Added mapping to standard functions for non Harvard architectures.
 
-	* include/io.h: Added mapping of _write_P to _write for non Harvard 
+	* include/io.h: Added mapping of _write_P to _write for non Harvard
 	architectures.
 
 	* include/arch/arm.h: Mapping of Harvard specific stdio functions
@@ -2327,19 +2342,19 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	Added multicast table entry.
 
 	* arm/dev/at91sam7x_emac.c, arch/arm/dev/ax88796.c,
-	arch/arm/dev/cs8900a.c, arch/arm/dev/dm9000e.c, 
-	arch/avr/dev/eth0cs.c, arch/avr/dev/eth0rtl.c, 
-	arch/avr/dev/lanc111.c, arch/avr/dev/wlan.c, dev/ppp.c, 
+	arch/arm/dev/cs8900a.c, arch/arm/dev/dm9000e.c,
+	arch/avr/dev/eth0cs.c, arch/avr/dev/eth0rtl.c,
+	arch/avr/dev/lanc111.c, arch/avr/dev/wlan.c, dev/ppp.c,
 	include/net/if_var.h: Added multicast table entry.
 
 	* include/net/if.h: Socket ioctl functions added. More
 	had to be done to make it work.
-	
+
 	* include/sys/sockio.h: Socket ioctls.
 
 	* net/igmp.c, net/igmpin.c, net/igmpout.c,
 	conf/net/net.nut, include/netinet/in.h, net/ipin.c,
-	net/ipout.c, include/netinet/igmp.h: IGMP template added. 
+	net/ipout.c, include/netinet/igmp.h: IGMP template added.
 	Not working yet.
 
 	* dev/x12rtc.c: Failed to store more than one EEPROM page.
@@ -2362,16 +2377,16 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	tools/nutconf/repoptdlg.cpp, tools/nutconf/tooloptdlg.cpp:
 	Path entry validator added. Transfer functions return actual result.
 
-	* tools/nutconf/mainframe.cpp: Adding 3D style to sash in component 
-	tree fixes repaint problems. Further added live update and sash 
+	* tools/nutconf/mainframe.cpp: Adding 3D style to sash in component
+	tree fixes repaint problems. Further added live update and sash
 	gravity attributes for easier resizing.
 
 	* tools/nutconf/nutconfdoc.cpp: Configurator failed to create
 	application directories containing subdirs. Fixed.
 
-	* tools/nutconf/settingsdlg.cpp, tools/nutconf/settingsdlg.h: 
-	Transfer functions return the accumulated result of the pages. 
-	New validation routine switches to the page and the field with 
+	* tools/nutconf/settingsdlg.cpp, tools/nutconf/settingsdlg.h:
+	Transfer functions return the accumulated result of the pages.
+	New validation routine switches to the page and the field with
 	invalid contents.
 
 
@@ -2390,16 +2405,16 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	first ATmega2561 support for the GNU compiler.
 
 	* conf/dev/dev.nut, dev/vs10xx.c, include/cfg/audio.h,
-	include/dev/vs10xx.h: New VS10XX decoder support. It will replace 
-	the old VS1001K driver, but hasn't been tested for this chip yet. 
+	include/dev/vs10xx.h: New VS10XX decoder support. It will replace
+	the old VS1001K driver, but hasn't been tested for this chip yet.
 	For the time being, please add the vs10xx.c to your application
 	code when using the VS1011E.
 
 	* conf/dev/dev.nut, dev/avrtarget.c, include/cfg/progif.h,
-	include/dev/avrtarget.h: New API added, which allows to program 
+	include/dev/avrtarget.h: New API added, which allows to program
 	external AVR devices via SPI.
 
-	* conf/ethernut21b.conf, conf/ethernut30e.conf: Added 
+	* conf/ethernut21b.conf, conf/ethernut30e.conf: Added
 	default setting for configurable SPI.
 
 	* arch/arm/dev/ostimer_at91.c: Adjusted the miserable delay
@@ -2414,12 +2429,12 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* conf/arch/avr.nut, conf/dev/dev.nut, arch/avr/dev/sppif0.c,
 	dev/sbbif0.c, include/dev/sbbif1.h, include/dev/sbbif2.h,
-	include/dev/sbbif3.h, include/dev/sppif0.h: Configurable SPI support 
+	include/dev/sbbif3.h, include/dev/sppif0.h: Configurable SPI support
 	added. Polled hardware SPI only, which is currently limited to AVR.
 	Header files are available for up to 4 software SPI devices, but
 	the API routines had been implemented for device 0 only.
 
-	* conf/os/os.nut, include/sys/bankmem.h, os/bankmem.c: 
+	* conf/os/os.nut, include/sys/bankmem.h, os/bankmem.c:
 	Segmented buffer now runs on ARM too. Note, that several
 	parameters had been changed from u_short to size_t. Hopefully
 	this will not cause problems with existing software.
@@ -2444,15 +2459,15 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 	* arch/avr/dev/ih_timer0_comp.c, arch/avr/dev/ih_timer2_comp.c,
 	arch/avr/dev/ih_usart0_rx.c, arch/avr/dev/ih_usart0_tx.c,
-	arch/avr/dev/ih_usart0_udre.c, arch/avr/dev/ih_usart1_rx.c, 
-	arch/avr/dev/ih_usart1_tx.c, arch/avr/dev/ih_usart1_udre.c: 
-	ATmega2561 uses different interrupt vector names. One day we should 
+	arch/avr/dev/ih_usart0_udre.c, arch/avr/dev/ih_usart1_rx.c,
+	arch/avr/dev/ih_usart1_tx.c, arch/avr/dev/ih_usart1_udre.c:
+	ATmega2561 uses different interrupt vector names. One day we should
 	switch to the new names used by avr-libc.
 
 	* arch/avr/os/context_gcc.c: Added extended program counter byte
 	for the ATmega2561.
 
-	* conf/arch/arch.nut, conf/tools.nut: ATmega2561 no longer bound to 
+	* conf/arch/arch.nut, conf/tools.nut: ATmega2561 no longer bound to
 	ICCAVR.
 
 	* include/arch/avr/gcc.h: Added new register bit names for the
@@ -2478,7 +2493,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2007-03-08  Matthias Ringwald <mringwal@inf.ethz.ch>
     * arch/avr/dev/usartavr.c: moved Exit Tracer event to end of IRQ
- 
+
 2007-02-15  Harald Kipp  <harald.kipp@egnite.de>
 
 	* os/version.c: Beta release 4.3.1.
@@ -2486,33 +2501,33 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* net/tcpsm.c: Serious bug in the TCP state machine froze socket
 	connection on 32-bit platforms.
 
-	* arch/arm/dev/at91_emac.c, conf/arch/arm.nut: Configurable buffer 
+	* arch/arm/dev/at91_emac.c, conf/arch/arm.nut: Configurable buffer
 	usage and link timeout.
 
-	* arch/arm/dev/hd44780_at91.c, conf/arch/arm.nut: Port usage is 
-	now configurable. Data bits no longer need four consecutive port bits. 
+	* arch/arm/dev/hd44780_at91.c, conf/arch/arm.nut: Port usage is
+	now configurable. Data bits no longer need four consecutive port bits.
 	Added delays in read for better reliability with some slow displays.
 
 	* arch/arm/dev/st7036_at91.c, include/dev/st7036.h, conf/arch/arm.nut:
 	Added support for ST7036 based displays. Tested with EA DOG-M LCDs.
 
-	* conf/arch/arm.nut, include/arch/arm/at91sam7x.h, 
+	* conf/arch/arm.nut, include/arch/arm/at91sam7x.h,
 	include/arch/arm/at91sam9260.h, arch/arm/dev/ih_at91sys.c,
-	include/arch/arm/irqreg.h: Support for system controller interrupts 
+	include/arch/arm/irqreg.h: Support for system controller interrupts
 	added.
 
 	* arch/arm/dev/ostimer_at91.c, include/arch/arm/at91_pit.h,
-	conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam7x-ek.conf, 
-	include/arch/arm/at91sam7x.h: Now the periodic interrupt timer 
+	conf/arch/arch.nut, conf/arch/arm.nut, conf/at91sam7x-ek.conf,
+	include/arch/arm/at91sam7x.h: Now the periodic interrupt timer
 	may be used for the system clock.
 
-	* conf/dev/dev.nut, conf/ethernut30e.conf, conf/ethernut30d.conf, 
-	dev/twbbif.c, include/cfg/twi.h: Configurable port bits for 
-	bit-banging I2C. Should work now on all AT91 MCUs. Make sure to 
+	* conf/dev/dev.nut, conf/ethernut30e.conf, conf/ethernut30d.conf,
+	dev/twbbif.c, include/cfg/twi.h: Configurable port bits for
+	bit-banging I2C. Should work now on all AT91 MCUs. Make sure to
 	update your configuration file.
 
 	* arch/arm/init/crtat91sam7x256_rom.S, conf/arch/arm.nut,
-	arch/arm/init/crtat91sam9260_ram.S: Configurable runtime 
+	arch/arm/init/crtat91sam9260_ram.S: Configurable runtime
 	initialization.
 
 	* arch/avr/dev/usart0avr.c, arch/avr/dev/usart1avr.c: PORTG
@@ -2526,7 +2541,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	* tools/nutconf/mainframe.cpp, tools/nutconf/nutcomponent.c,
 	tools/nutconf/nutconf.h, tools/nutconf/nutconf.cpp,
 	tools/nutconf/repoptdlg.cpp, tools/nutconf/settings.cpp:
-	Version 1.4.1 works with wxWidgets 2.8.0. Wide character issues 
+	Version 1.4.1 works with wxWidgets 2.8.0. Wide character issues
 	fixed.
 
 	* tools/nutconf/settingsdlg.h: Missing notebook.h added.
@@ -2541,7 +2556,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 
 2006-11-08  Harald Kipp  <harald.kipp@egnite.de>
 
-	* Bugfix, kindly provided by Steve Venroy. Already released request 
+	* Bugfix, kindly provided by Steve Venroy. Already released request
 	structure was passed to NutHttpSendError().
 
 
@@ -2551,7 +2566,7 @@ $Id: ChangeLog,v 1.541 2009/03/09 08:15:14 haraldkipp Exp $
 	tools/nutconf/settings.cpp, tools/nutconf/settings.h,
 	tools/nutconf/settingsdlg.cpp: Added support for multiple
 	configurations / settings
-	
+
 
 2006-10-17  Harald Kipp  <harald.kipp@egnite.de>
 
