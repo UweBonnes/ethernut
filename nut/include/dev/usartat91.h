@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.3  2009/09/20 13:24:58  ulrichprinz
+ * Added limited USART support for DBGU.
+ *
  * Revision 1.2  2008/04/18 13:24:58  haraldkipp
  * Added Szemzo Andras' RS485 patch.
  *
@@ -82,5 +85,6 @@
 
 extern NUTDEVICE devUsartAt910;
 extern NUTDEVICE devUsartAt911;
+extern NUTDEVICE devDbguAt91;
 
 #endif

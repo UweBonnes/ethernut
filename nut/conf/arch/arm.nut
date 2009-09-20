@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.40  2009/09/20 13:24:58  ulrichprinz
+-- Added limited USART support for DBGU on SAM.
+--
 -- Revision 1.39  2009/02/17 09:32:25  haraldkipp
 -- A lot of clean-up had been done with SAM9260 initialization.
 -- Clock configurations should now work as expected. Note, that
@@ -238,7 +241,7 @@ nutarch_arm =
             }
         }
     },
-    
+
     --
     -- Runtime Initialization
     --
@@ -415,7 +418,7 @@ nutarch_arm =
         requires = { "HW_MCU_ARM", "TOOL_GCC" },
         sources = { "arm/os/context.c" },
     },
-    
+
     --
     -- System Timer Hardware
     --
@@ -679,9 +682,9 @@ nutarch_arm =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = {"DEV_UART_SPECIFIC", 
-                    "DEV_UART0_GPIO_RTS", 
-                    "DEV_UART0_GPIO_CTS", 
+        provides = {"DEV_UART_SPECIFIC",
+                    "DEV_UART0_GPIO_RTS",
+                    "DEV_UART0_GPIO_CTS",
                     "DEV_UART0_GPIO_HDX" },
         sources = { "arm/dev/usart0at91.c" },
 --        options =
@@ -722,9 +725,9 @@ nutarch_arm =
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
-        provides = {"DEV_UART_SPECIFIC", 
-                    "DEV_UART1_GPIO_RTS", 
-                    "DEV_UART1_GPIO_CTS", 
+        provides = {"DEV_UART_SPECIFIC",
+                    "DEV_UART1_GPIO_RTS",
+                    "DEV_UART1_GPIO_CTS",
                     "DEV_UART1_GPIO_HDX" },
         sources = { "arm/dev/usart1at91.c" },
 --        options =
@@ -755,6 +758,28 @@ nutarch_arm =
 --                flavor = "boolean",
 --                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
 --                requires = { "HW_UART1_MODEM" },
+--                file = "include/cfg/uart.h"
+--            },
+--        },
+    },
+    {
+        name = "nutarch_arm_usartd",
+        brief = "DBGU USART Driver",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
+        provides = {"DEV_UART_SPECIFIC",
+                    "DEV_UARTD_GPIO_RTS",
+                    "DEV_UARTD_GPIO_CTS",
+                    "DEV_UARTD_GPIO_HDX" },
+        sources = { "arm/dev/usartDat91.c" },
+--        options =
+--        {
+--            {
+--                macro = "UARTD_RXTX_ONLY",
+--                brief = "Receive/Transmit Only",
+--                description = "When selected, the driver will not support any handshake signals.",
+--                flavor = "boolean",
 --                file = "include/cfg/uart.h"
 --            },
 --        },
@@ -1021,7 +1046,7 @@ nutarch_arm =
                 file = "include/cfg/arch/armpio.h"
             },
         }
-        
+
     },
     {
         name = "nutarch_gba_debug",

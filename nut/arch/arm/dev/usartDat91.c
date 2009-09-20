@@ -1,8 +1,5 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH
- * Copyright 2009 by egnite GmbH
- *
- * All rights reserved.
+ * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +14,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+ * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -34,14 +31,18 @@
  */
 
 /*
- * $Id$
+ * $Log$
+ * Revision 0.01  2009/09/20 ulrichprinz
+ * First checkin of using DBGU as limited standard USART.
+ *
  */
+
+#define NUT_DEPRECATED
 
 #include <cfg/os.h>
 #include <cfg/clock.h>
 #include <cfg/arch.h>
 #include <cfg/uart.h>
-#include <cfg/arch/gpio.h>
 
 #include <string.h>
 
@@ -50,7 +51,8 @@
 #include <sys/timer.h>
 
 #include <dev/irqreg.h>
-#include <dev/gpio.h>
+#include <dev/debug.h>
+#include <arch/arm/at91_dbgu.h>
 #include <dev/usartat91.h>
 
 #ifndef NUT_CPU_FREQ
@@ -63,17 +65,18 @@
 
 /*
  * Local function prototypes.
+ *
+ * Commented functions are not supported by DBGU
+ *
  */
 static uint32_t At91UsartGetSpeed(void);
 static int At91UsartSetSpeed(uint32_t rate);
 static uint8_t At91UsartGetDataBits(void);
-static int At91UsartSetDataBits(uint8_t bits);
+static int At91UsartSetDataBits( uint8_t bits);
 static uint8_t At91UsartGetParity(void);
 static int At91UsartSetParity(uint8_t mode);
 static uint8_t At91UsartGetStopBits(void);
 static int At91UsartSetStopBits(uint8_t bits);
-static uint32_t At91UsartGetFlowControl(void);
-static int At91UsartSetFlowControl(uint32_t flags);
 static uint32_t At91UsartGetStatus(void);
 static int At91UsartSetStatus(uint32_t flags);
 static uint8_t At91UsartGetClockMode(void);
@@ -82,6 +85,10 @@ static void At91UsartTxStart(void);
 static void At91UsartRxStart(void);
 static int At91UsartInit(void);
 static int At91UsartDeinit(void);
+static uint32_t At91UsartGetFlowControl(void);
+static int At91UsartSetFlowControl(uint32_t flags);
+
+extern IRQ_HANDLER sig_DBGU;
 
 /*!
  * \addtogroup xgNutArchArmAt91Us
@@ -89,9 +96,9 @@ static int At91UsartDeinit(void);
 /*@{*/
 
 /*!
- * \brief USART0 device control block structure.
+ * \brief DBGU device control block structure.
  */
-static USARTDCB dcb_usart0 = {
+static USARTDCB dcb_dbgu = {
     0,                          /* dcb_modeflags */
     0,                          /* dcb_statusflags */
     0,                          /* dcb_rtimeout */
@@ -99,14 +106,14 @@ static USARTDCB dcb_usart0 = {
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_tx_rbf */
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_rx_rbf */
     0,                          /* dbc_last_eol */
-    At91UsartInit,              /* dcb_init */
+    At91UsartInit,    	        /* dcb_init */
     At91UsartDeinit,            /* dcb_deinit */
     At91UsartTxStart,           /* dcb_tx_start */
     At91UsartRxStart,           /* dcb_rx_start */
     At91UsartSetFlowControl,    /* dcb_set_flow_control */
     At91UsartGetFlowControl,    /* dcb_get_flow_control */
     At91UsartSetSpeed,          /* dcb_set_speed */
-    At91UsartGetSpeed,          /* dcb_get_speed */
+    At91UsartGetSpeed,	        /* dcb_get_speed */
     At91UsartSetDataBits,       /* dcb_set_data_bits */
     At91UsartGetDataBits,       /* dcb_get_data_bits */
     At91UsartSetParity,         /* dcb_set_parity */
@@ -120,7 +127,7 @@ static USARTDCB dcb_usart0 = {
 };
 
 /*!
- * \name AT91 USART0 Device
+ * \name AT91 DBGU Device
  */
 /*@{*/
 /*!
@@ -134,14 +141,14 @@ static USARTDCB dcb_usart0 = {
  *
  * \showinitializer
  */
-NUTDEVICE devUsartAt910 = {
+NUTDEVICE devDbguAt91 = {
     0,                          /* Pointer to next device, dev_next. */
-    {'u', 'a', 'r', 't', '0', 0, 0, 0, 0},    /* Unique device name, dev_name. */
+    {'u', 'a', 'r', 't', 'd', 0, 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
-    0,                          /* Base address, dev_base (not used). */
+    DBGU_BASE,                  /* Base address, dev_base (not used). */
     0,                          /* First interrupt number, dev_irq (not used). */
     0,                          /* Interface control block, dev_icb (not used). */
-    &dcb_usart0,                /* Driver control block, dev_dcb. */
+    &dcb_dbgu,                  /* Driver control block, dev_dcb. */
     UsartInit,                  /* Driver initialization routine, dev_init. */
     UsartIOCtl,                 /* Driver specific control function, dev_ioctl. */
     UsartRead,                  /* Read from device, dev_read. */
@@ -156,10 +163,18 @@ NUTDEVICE devUsartAt910 = {
 /*@}*/
 
 /* Modem control includes hardware handshake. */
-#if defined(UART0_MODEM_CONTROL)
+/*
+ * Hardware driven control signals are not available
+ * with the DBUG unit of most chips.
+ */
+
+#undef UART_MODEM_CONTROL
+#undef UART_HARDWARE_HANDSHAKE
+
+#if defined(UART_MODEM_CONTROL)
 #define UART_MODEM_CONTROL
 #define UART_HARDWARE_HANDSHAKE
-#elif defined(UART0_HARDWARE_HANDSHAKE)
+#elif defined(UART_HARDWARE_HANDSHAKE)
 #define UART_HARDWARE_HANDSHAKE
 #endif
 
@@ -168,11 +183,11 @@ NUTDEVICE devUsartAt910 = {
 */
 #if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE)
 
-#define UART_RXTX_PINS  (_BV(PB5_RXD0_A) | _BV(PB4_TXD0_A))
-#define UART_HDX_PIN    _BV(PB26_RTS0_A)
-#define UART_RTS_PIN    _BV(PB26_RTS0_A)
-#define UART_CTS_PIN    _BV(PB27_CTS0_A)
-#define UART_MODEM_PINS (_BV(PB24_DTR0_A) | _BV(PB22_DSR0_A) | _BV(PB23_DCD0_A) | _BV(PB25_RI0_A))
+#define UART_RXTX_PINS  (_BV(PB14_DRXD_A) | _BV(PB15_DTXD_A))
+#undef UART_HDX_PIN
+#undef UART_RTS_PIN
+#undef UART_CTS_PIN
+#undef UART_MODEM_PINS
 
 #define UART_RXTX_PINS_ENABLE()     outr(PIOB_ASR, UART_RXTX_PINS); \
                                     outr(PIOB_PDR, UART_RXTX_PINS)
@@ -196,10 +211,10 @@ NUTDEVICE devUsartAt910 = {
 */
 #elif defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
 
-#define UART_RXTX_PINS  (_BV(PA5_RXD0_A) | _BV(PA6_TXD0_A))
-#define UART_HDX_PIN    _BV(PA7_RTS0_A)
-#define UART_RTS_PIN    _BV(PA7_RTS0_A)
-#define UART_CTS_PIN    _BV(PA8_CTS0_A)
+#define UART_RXTX_PINS  (_BV(PA9_DRXD_A) | _BV(PA10_DTXD_A))
+#undef UART_HDX_PIN
+#undef UART_RTS_PIN
+#undef UART_CTS_PIN
 
 #define UART_RXTX_PINS_ENABLE() outr(PIOA_ASR, UART_RXTX_PINS); \
                                 outr(PIOA_PDR, UART_RXTX_PINS)
@@ -218,10 +233,10 @@ NUTDEVICE devUsartAt910 = {
 */
 #elif defined(MCU_AT91SAM7X)
 
-#define UART_RXTX_PINS  (_BV(PA0_RXD0_A) | _BV(PA1_TXD0_A))
-#define UART_HDX_PIN    _BV(PA3_RTS0_A)
-#define UART_RTS_PIN    _BV(PA3_RTS0_A)
-#define UART_CTS_PIN    _BV(PA4_CTS0_A)
+#define UART_RXTX_PINS  (_BV(PA27_DRXD_A) | _BV(PA28_DTXD_A))
+#undef UART_HDX_PIN
+#undef UART_RTS_PIN
+#undef UART_CTS_PIN
 
 #define UART_RXTX_PINS_ENABLE() outr(PIOA_ASR, UART_RXTX_PINS); \
                                 outr(PIOA_PDR, UART_RXTX_PINS)
@@ -234,23 +249,6 @@ NUTDEVICE devUsartAt910 = {
 #define UART_CTS_PIN_ENABLE()   outr(PIOA_ASR, UART_CTS_PIN); \
                                 outr(PIOA_PDR, UART_CTS_PIN)
 #endif
-
-/*
-** X40 pins.
-*/
-#elif defined(MCU_AT91R40008)
-
-#define UART_RXTX_PINS  (_BV(P15_RXD0) | _BV(P14_TXD0))
-
-#define UART_RXTX_PINS_ENABLE() outr(PIO_PDR, UART_RXTX_PINS)
-
-/*
-** Add more targets here.
-**
-** For unsupported targets you may also do basic initializations in
-** your application code.
-*/
-
 #endif
 
 /*
@@ -279,37 +277,37 @@ NUTDEVICE devUsartAt910 = {
 ** Translate all macros for UART0 to generalized ones used by the
 ** source that will be included at the end of this file.
 */
-#if defined(UART0_HDX_BIT)
-#define UART_HDX_BIT    UART0_HDX_BIT
+#if defined(UARTD_HDX_BIT)
+#define UART_HDX_BIT    UARTD_HDX_BIT
 #endif
-#if defined(UART0_HDX_PIO_ID)
-#define UART_HDX_PIO_ID UART0_HDX_PIO_ID
-#endif
-
-#if defined(UART0_RTS_BIT)
-#define UART_RTS_BIT    UART0_RTS_BIT
-#endif
-#if defined(UART0_RTS_PIO_ID)
-#define UART_RTS_PIO_ID UART0_RTS_PIO_ID
+#if defined(UARTD_HDX_PIO_ID)
+#define UART_HDX_PIO_ID UARTD_HDX_PIO_ID
 #endif
 
-#if defined(UART0_CTS_BIT)
-#define UART_CTS_BIT    UART0_CTS_BIT
+#if defined(UARTD_RTS_BIT)
+#define UART_RTS_BIT    UARTD_RTS_BIT
 #endif
-#if defined(UART0_CTS_PIO_ID)
-#define UART_CTS_PIO_ID UART0_CTS_PIO_ID
-#endif
-#if defined(UART0_CTS_SIGNAL)
-#define UART_CTS_SIGNAL UART0_CTS_SIGNAL
+#if defined(UARTD_RTS_PIO_ID)
+#define UART_RTS_PIO_ID UARTD_RTS_PIO_ID
 #endif
 
-#if defined(UART0_INIT_BAUDRATE)
-#define UART_INIT_BAUDRATE  UART0_INIT_BAUDRATE
+#if defined(UARTD_CTS_BIT)
+#define UART_CTS_BIT    UARTD_CTS_BIT
+#endif
+#if defined(UARTD_CTS_PIO_ID)
+#define UART_CTS_PIO_ID UARTD_CTS_PIO_ID
+#endif
+#if defined(UARTD_CTS_SIGNAL)
+#define UART_CTS_SIGNAL UARTD_CTS_SIGNAL
 #endif
 
-#define USARTn_BASE     USART0_BASE
-#define US_ID           US0_ID
-#define SIG_UART        sig_UART0
-#define dcb_usart       dcb_usart0
+#if defined(UARTD_INIT_BAUDRATE)
+#define UART_INIT_BAUDRATE  UARTD_INIT_BAUDRATE
+#endif
+
+#define USARTn_BASE     DBGU_BASE
+#define US_ID           SYSC_ID
+#define SIG_UART        syssig_DBGU
+#define dcb_usart       dcb_dbgu
 
 #include "usartat91.c"

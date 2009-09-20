@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.20  2009/09/20 13:24:58  ulrichprinz
+ * Added limited USART support for DBGU.
+ *
  * Revision 1.19  2009/03/08 20:19:34  haraldkipp
  * Fixed missing UART device for AVR.
  *
@@ -147,6 +150,8 @@
 #define DEV_UART0       devUsartAt910
 #define DEV_UART1       devUsartAt911
 #define DEV_UART1_NAME  "uart1"
+#define DEV_UARTD       devDbguAt91
+#define DEV_UARTD_NAME  "uartd"
 
 #elif defined(EVK1100) || defined(__AVR32__)
 

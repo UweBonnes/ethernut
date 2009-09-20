@@ -35,6 +35,9 @@
 
 /*
  * $Id$
+ *
+ * Revision 1.01  2009/09/20 ulrichprinz
+ * Added support for using DBGU as limited standard USART.
  */
 
 #include <cfg/clock.h>
@@ -218,6 +221,21 @@ static INLINE int UART_CTS_IS_ON(void) {
 #endif
 #endif
 
+/* Some function renaming for IRQ handling on uarts
+ * that do not have a separate IRQ instance but a
+ * merged one with others like DBU on SYS-IRQ or
+ * external uarts on GPIO-IRQs
+ */
+#if (US_ID==SYSC_ID)
+#define NutUartIrqRegister  NutRegisterSysIrqHandler
+#define NutUartIrqEnable    NutSysIrqEnable
+#define NutUartIrqDisable   NutSysIrqDisable
+#else
+#define NutUartIrqRegister  NutRegisterIrqHandler
+#define NutUartIrqEnable    NutIrqEnable
+#define NutUartIrqDisable   NutIrqDisable
+#endif
+
 /*!
  * \addtogroup xgNutArchArmAt91Us
  */
@@ -338,7 +356,7 @@ static void At91UsartTxEmpty(RINGBUF *rbf)
  *
  * \param rbf Pointer to the transmitter ring buffer.
  */
-static void At91UsartTxReady(RINGBUF *rbf) 
+static void At91UsartTxReady(RINGBUF *rbf)
 {
     register uint8_t *cp = rbf->rbf_tail;
 
@@ -404,7 +422,7 @@ static void At91UsartTxReady(RINGBUF *rbf)
         rbf->rbf_tail = cp;
 
 #if USE_BUILT_IN_HALF_DUPLEX == 0
-        /* 
+        /*
          * If software half duplex enabled, we need TX-Empty IRQ for
          * detection if last bit of last byte transmission is finished.
          */
@@ -438,7 +456,7 @@ static void At91UsartTxReady(RINGBUF *rbf)
  * \param rbf Pointer to the receiver ring buffer.
  */
 
-static void At91UsartRxReady(RINGBUF *rbf) 
+static void At91UsartRxReady(RINGBUF *rbf)
 {
     register size_t cnt;
     register uint8_t ch;
@@ -506,8 +524,8 @@ static void At91UsartRxReady(RINGBUF *rbf)
 
 #if defined(UART_RTS_BIT) || defined(UART_USES_NPL)
     /*
-     * Check the high watermark for GPIO hardware handshake. If the 
-     * number of buffered bytes is equal or above this mark, then 
+     * Check the high watermark for GPIO hardware handshake. If the
+     * number of buffered bytes is equal or above this mark, then
      * disable RTS.
      */
     else if (rts_control && cnt >= rbf->rbf_hwm) {
@@ -562,7 +580,7 @@ static void At91UsartEnable(void)
     /* Enable UART receiver and transmitter. */
     outr(USARTn_BASE + US_CR_OFF, US_RXEN | US_TXEN);
     /* Globally enable UART interrupts. */
-    NutIrqEnable(&SIG_UART);
+    NutUartIrqEnable(&SIG_UART);
 }
 
 /*!
@@ -571,7 +589,7 @@ static void At91UsartEnable(void)
  * This routine is called before changing cruical settings like
  * baudrate, frame format etc.
  *
- * The previous version uses a 10ms delay to make sure, that any 
+ * The previous version uses a 10ms delay to make sure, that any
  * incoming or outgoing character is processed. However, this time
  * depends on the baudrate.
  *
@@ -580,7 +598,7 @@ static void At91UsartEnable(void)
  *
  * For outgoing characters however, settings may be changed on
  * the fly and we should wait, until the last character transmitted
- * with the old settings has left the shift register. While TXRDY 
+ * with the old settings has left the shift register. While TXRDY
  * is set when the holding register is empty, TXEMPTY is set when the
  * shift register is empty. The bad news is, that both are zero, if
  * the transmitter is disabled. We are not able to determine this
@@ -590,7 +608,7 @@ static void At91UsartEnable(void)
 static void At91UsartDisable(void)
 {
     /* Globally disable UART interrupts. */
-    NutIrqDisable(&SIG_UART);
+    NutUartIrqDisable(&SIG_UART);
     /* Wait until all bits had been shifted out. */
     if (inr(USARTn_BASE + US_CSR_OFF) & US_TXRDY) {
         while((inr(USARTn_BASE + US_CSR_OFF) & US_TXEMPTY) == 0);
@@ -636,9 +654,16 @@ static uint32_t At91UsartGetSpeed(void)
 static int At91UsartSetSpeed(uint32_t rate)
 {
     At91UsartDisable();
+#if !(USARTn_BASE == DBGU_BASE)
     outr(USARTn_BASE + US_BRGR_OFF, (NutClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (rate)) + 1) / 2);
+#else
+    #if defined(AT91_PLL_MAINCK)
+        outr(DBGU_BRGR, (At91GetMasterClock() / (8 * rate) + 1) / 2);
+    #else
+        outr(DBGU_BRGR, (NutGetCpuClock() / (8 * rate) + 1) / 2);
+    #endif
+#endif
     At91UsartEnable();
-
     return 0;
 }
 
@@ -652,6 +677,7 @@ static int At91UsartSetSpeed(uint32_t rate)
  */
 static uint8_t At91UsartGetDataBits(void)
 {
+#if !(USARTn_BASE == DBGU_BASE)
     unsigned int val = inr(USARTn_BASE + US_MR_OFF);
 
     if ((val & US_PAR) == US_PAR_MULTIDROP) {
@@ -673,6 +699,10 @@ static uint8_t At91UsartGetDataBits(void)
         }
     }
     return (uint8_t)val;
+#else
+    /* Not supported by DBGU, always 8 bits */
+    return 8;
+#endif
 }
 
 /*!
@@ -685,6 +715,7 @@ static uint8_t At91UsartGetDataBits(void)
  */
 static int At91UsartSetDataBits(uint8_t bits)
 {
+#if !(USARTn_BASE == DBGU_BASE)
     unsigned int val = inr(USARTn_BASE + US_MR_OFF);
 
     if (bits == 9) {
@@ -718,6 +749,10 @@ static int At91UsartSetDataBits(uint8_t bits)
         return -1;
     }
     return 0;
+#else
+    /* Not supported by DBGU, always 8 bits */
+    return -1;
+#endif
 }
 
 /*!
@@ -797,6 +832,7 @@ static int At91UsartSetParity(uint8_t mode)
  */
 static uint8_t At91UsartGetStopBits(void)
 {
+#if !(USARTn_BASE == DBGU_BASE)
     unsigned int val = inr(USARTn_BASE + US_MR_OFF) & US_NBSTOP;
     if (val == US_NBSTOP_1) {
         val = 1;
@@ -808,6 +844,10 @@ static uint8_t At91UsartGetStopBits(void)
         val = 3;
     }
     return (uint8_t)val;
+#else
+    /* Not supported by DBGU, always 1 */
+    return 1;
+#endif
 }
 
 /*!
@@ -820,6 +860,7 @@ static uint8_t At91UsartGetStopBits(void)
  */
 static int At91UsartSetStopBits(uint8_t bits)
 {
+#if !(USARTn_BASE == DBGU_BASE)
     unsigned int val = inr(USARTn_BASE + US_MR_OFF) & ~US_NBSTOP;
 
     switch(bits) {
@@ -843,6 +884,7 @@ static int At91UsartSetStopBits(uint8_t bits)
     if (At91UsartGetStopBits() != bits) {
         return -1;
     }
+#endif
     return 0;
 }
 
@@ -984,7 +1026,7 @@ static int At91UsartSetStatus(uint32_t flags)
     if (flow_control) {
 
         /* Access to the flow control status must be atomic. */
-        NutIrqDisable(&SIG_UART);
+        NutUartIrqDisable(&SIG_UART);
 
         /*
          * Enabling or disabling the receiver means to behave like
@@ -1005,7 +1047,7 @@ static int At91UsartSetStatus(uint32_t flags)
         } else if (flags & UART_TXDISABLED) {
             flow_control |= XOFF_RCVD;
         }
-        NutIrqEnable(&SIG_UART);
+        NutUartIrqEnable(&SIG_UART);
     }
 
     /*
@@ -1180,7 +1222,7 @@ static int At91UsartSetFlowControl(uint32_t flags)
     /*
      * Set software handshake mode.
      */
-    NutIrqDisable(&SIG_UART);
+    NutUartIrqDisable(&SIG_UART);
     if (flags & USART_MF_XONXOFF) {
         if(flow_control == 0) {
             flow_control = 1 | XOFF_SENT;  /* force XON to be sent on next read */
@@ -1188,7 +1230,7 @@ static int At91UsartSetFlowControl(uint32_t flags)
     } else {
         flow_control = 0;
     }
-    NutIrqEnable(&SIG_UART);
+    NutUartIrqEnable(&SIG_UART);
 
     /*
      * Set RTS control mode.
@@ -1301,7 +1343,7 @@ static void At91UsartRxStart(void)
      * Do any required software flow control.
      */
     if (flow_control && (flow_control & XOFF_SENT) != 0) {
-        NutIrqDisable(&SIG_UART);
+        NutUartIrqDisable(&SIG_UART);
         if ((inr(USARTn_BASE + US_CSR_OFF) & US_TXRDY)) {
             outr(USARTn_BASE + US_THR_OFF, ASCII_XON);
             flow_control &= ~XON_PENDING;
@@ -1309,7 +1351,7 @@ static void At91UsartRxStart(void)
             flow_control |= XON_PENDING;
         }
         flow_control &= ~(XOFF_SENT | XOFF_PENDING);
-        NutIrqEnable(&SIG_UART);
+        NutUartIrqEnable(&SIG_UART);
     }
 
     /* Enable RTS. */
@@ -1333,7 +1375,7 @@ static int At91UsartInit(void)
     /*
      * Register receive and transmit interrupts.
      */
-    if (NutRegisterIrqHandler(&SIG_UART, At91UsartInterrupt, &dcb_usart)) {
+    if (NutUartIrqRegister(&SIG_UART, At91UsartInterrupt, &dcb_usart)) {
         return -1;
     }
 
@@ -1383,7 +1425,7 @@ static int At91UsartInit(void)
 #endif
 
     /* Set UART baud rate generator register. */
-    outr(USARTn_BASE + US_BRGR_OFF, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (UART_INIT_BAUDRATE)) + 1) / 2);
+    At91UsartSetSpeed( UART_INIT_BAUDRATE);
 
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(USARTn_BASE + US_MR_OFF, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
@@ -1402,7 +1444,7 @@ static int At91UsartInit(void)
 static int At91UsartDeinit(void)
 {
     /* Deregister receive and transmit interrupts. */
-    NutRegisterIrqHandler(&SIG_UART, 0, 0);
+    NutUartIrqRegister(&SIG_UART, 0, 0);
 
     /* Reset UART. */
     outr(USARTn_BASE + US_CR_OFF, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);

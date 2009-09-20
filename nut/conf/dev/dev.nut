@@ -608,6 +608,108 @@ nutdev =
                 flavor = "boolean",
                 file = function() return GetGpioHeaderPath() end
             },
+            {
+                macro = "UARTD_RXTX_ONLY",
+                brief = "DBGU Receive/Transmit Only",
+                description = "When selected, the driver will not use any built-in hardware handshake.\n\n"..
+                              "Select this option, if you want to use hardware handshake via GPIO.\n\n"..
+                              "The DBGU unit does not support any other way of handshake.",
+                flavor = "boolean",
+--                exclusivity = { "UARTD_RXTX_ONLY", "UARTD_HARDWARE_HANDSHAKE", "UARTD_MODEM_CONTROL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UARTD_INIT_BAUDRATE",
+                brief = "DBGU Initial Baudrate",
+                description = "Default is 115200. Currently supported on the AT91 driver only.",
+                requires = { "HW_MCU_AT91" },
+                flavor = "integer",
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UARTD_RTS_BIT",
+                brief = "DBGU RTS Port Bit",
+                description = "Port bit used for RTS handshake output. If enabled, "..
+                              "the driver provides RTS transmit handshake via GPIO.",
+                provides = { "UARTD_RTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UARTD_RTS_PIO_ID",
+                brief = "DBGU RTS Port",
+                description = "ID of the port used for RTS handshake output.",
+                requires = { "UARTD_RTS_BIT", "DEV_UARTD_GPIO_RTS" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UARTD_RTS_FLIP_BIT",
+                brief = "DBGU RTS Bit Inverted",
+                description = "If enabled, the RTS output will be inverted.",
+                requires = { "UARTD_RTS_BIT", "DEV_UARTD_GPIO_RTS" },
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UARTD_CTS_BIT",
+                brief = "DBGU CTS Port Bit",
+                description = "Port bit used for CTS handshake input. If enabled, "..
+                              "the driver provides CTS transmit handshake via GPIO.\n\n"..
+                              "Select this option, if you want to use hardware handshake via GPIO.\n\n"..
+                              "The DBGU unit does not support any other way of handshake.",
+                requires = { "DEV_UARTD_GPIO_CTS" },
+                provides = { "UARTD_CTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "booldata",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UARTD_CTS_PIO_ID",
+                brief = "DBGU CTS Port",
+                description = "ID of the port used for CTS handshake output.",
+                requires = { "UARTD_CTS_BIT" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UARTD_HDX_BIT",
+                brief = "DBGU Half Duplex Bit",
+                description = "Bit number of UART0 half duplex control output. If enabled, "..
+                              "the driver provides RS-485 half duplex mode control via GPIO."..
+                              "Select this option, if you want to use software half-duplex.\n\n"..
+                              "The DBGU unit does not support any other way.",
+                provides = { "UARTD_HDX_BIT" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = avr_bit_choice,
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UARTD_HDX_PIO_ID",
+                brief = "DBGU Half Duplex Port",
+                description = "ID of the port used for UART0 half duplex control output.",
+                requires = { "UARTD_HDX_BIT", "DEV_UARTD_GPIO_HDX" },
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "UARTD_HDX_FLIP_BIT",
+                brief = "DBGU Half Duplex Bit Inverted",
+                description = "If enabled, the half duplex control output will be inverted.",
+                requires = { "UARTD_HDX_BIT", "DEV_UARTD_GPIO_HDX" },
+                flavor = "boolean",
+                file = function() return GetGpioHeaderPath() end
+            },
         }
     },
     {
