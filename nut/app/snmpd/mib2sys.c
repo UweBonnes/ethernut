@@ -96,7 +96,7 @@ static SNMPVAR mib_variables[] = {
     {MAG_SYS_CONTACT, ASN_OCTET_STR, ACL_RWRITE, MibVarsSysGet, 1, {4}},
     {MAG_SYS_NAME, ASN_OCTET_STR, ACL_RWRITE, MibVarsSysGet, 1, {5}},
     {MAG_SYS_LOCATION, ASN_OCTET_STR, ACL_RWRITE, MibVarsSysGet, 1, {6}},
-    {MAG_SYS_SERVICES, ASN_INTEGER, ACL_RONLY, MibVarsSysGet, 1, {7}},
+    {MAG_SYS_SERVICES, ASN_INTEGER, ACL_RONLY, MibVarsSysGet, 1, {7}}
 };
 
 static char sys_descr[MAX_SYSSTR_LEN];
@@ -230,9 +230,11 @@ static u_char *MibVarsSysGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, i
 
     rc = SnmpOidCmp(name, *namelen, fullname, fullnamelen);
     if ((exact && rc) || (!exact && rc >= 0)) {
+        free(fullname);
         return NULL;
     }
     memcpy(name, fullname, fullnamelen * sizeof(OID));
+    free(fullname);
     *namelen = fullnamelen;
 
     *wmethod = NULL;

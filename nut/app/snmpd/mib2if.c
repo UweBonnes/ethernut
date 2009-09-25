@@ -42,7 +42,7 @@
 
 #define MIB_IF_ENTRIES   4
 
-#if defined(ETHERNUT1) || defined(XNUT_100) | defined(XNUT_105)
+#if defined(ETHERNUT1) || defined(XNUT_100) || defined(XNUT_105) || defined(CHARON2)
 #define PHY_NAME    "RTL8019AS 10 Mbit Ethernet"
 #elif defined(ETHERNUT2) || defined(INTECH21)
 #define PHY_NAME    "LAN91C111 100Mbit Ethernet"
@@ -186,6 +186,7 @@ static u_char *MibVarsIfGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, in
         *(fullname + fullnamelen - 1) = index;
         rc = SnmpOidCmp(name, *namelen, fullname, fullnamelen);
         if ((exact && rc) || (!exact && rc >= 0)) {
+            free(fullname);
             return NULL;
         }
     } else {
@@ -199,11 +200,13 @@ static u_char *MibVarsIfGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, in
             }
         }
         if (index == 0) {
+            free(fullname);
             return NULL;
         }
     }
 
     memcpy(name, fullname, fullnamelen * sizeof(OID));
+    free(fullname);
     *namelen = fullnamelen;
     *wmethod = NULL;
     *varlen = sizeof(long);
