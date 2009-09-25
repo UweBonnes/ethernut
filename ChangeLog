@@ -1,5 +1,30 @@
 $Id$
 
+2009-09-20  Ulrich Prinz
+
+* Added:
+
+Platform Subtype for user board derivate configuration.
+
+Limited support for using SAMs DBGU as USART.
+Some limitations apply: Dataformat is fixed to 8 bits, 1 stop.
+No chip supported handshake signals, only GPIO can be used.
+
+
+2009-09-17  Ulrich Prinz
+
+* Fixed:
+        
+Fixed two issues in at91_twi.c
+Reworked led.c driver completely
+Deleted hundreds of trailing spaces
+
+* Added:
+
+keys.c driver
+app/led_key example for new drivers
+
+
 2009-08-14 Harald Kipp
 
 * Fixed:
