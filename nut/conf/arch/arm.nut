@@ -767,7 +767,7 @@ nutarch_arm =
         brief = "DBGU USART Driver",
         description = "Hardware specific USART driver. Implements hardware "..
                       "functions for the generic driver framework.",
-        requires = { "HW_UART_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
+        requires = { "HW_DBGU_AT91", "DEV_IRQ_AT91", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = {"DEV_UART_SPECIFIC",
                     "DEV_UARTD_GPIO_RTS",
                     "DEV_UARTD_GPIO_CTS",
