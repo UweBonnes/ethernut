@@ -55,17 +55,16 @@
 
 #include <cfg/os.h>
 
+#include <compiler.h>
+#include <dev/board.h>
+#include <dev/gpio.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/heap.h>
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/atom.h>
-
-#include <compiler.h>
-#include <dev/board.h>
-
-#include <dev/gpio.h>
 
 #include <sys/nutdebug.h>
 
