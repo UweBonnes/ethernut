@@ -375,6 +375,8 @@ nutpro =
             "snmp_auth.c",
             "snmp_config.c",
             "snmp_mib.c",
+            "snmp_pdu.c",
+            "snmp_session.c",
             "asn1.c"
         }
     },

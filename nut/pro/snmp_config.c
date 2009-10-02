@@ -39,6 +39,11 @@
 
 #include <pro/snmp_config.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 static VIEW_LIST *views;
 static COMMUNITY_LIST *communities;
 
@@ -172,3 +177,5 @@ int SnmpCommunityCreate(CONST char *name, int readView, int writeView)
     }
     return 0;
 }
+
+/*@}*/

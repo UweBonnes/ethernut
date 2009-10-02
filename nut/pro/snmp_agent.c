@@ -46,6 +46,11 @@
 #include <pro/snmp_mib.h>
 #include <pro/snmp_agent.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 /*
  * Using this as a global had been derived from the original CMU code.
  * It is very ugly (shiffer), but may require some effort to transform
@@ -473,6 +478,9 @@ int SnmpAgent(UDPSOCKET * sock)
     if (in_data && out_data && sess) {
         for (;;) {
             rc = NutUdpReceiveFrom(sock, &raddr, &rport, in_data, SNMP_MAX_LEN, 0);
+            if (rc < 0) {
+                break;
+            }
             out_len = SNMP_MAX_LEN;
             memset(sess, 0, sizeof(SNMP_SESSION));
             if (SnmpAgentProcessRequest(sess, in_data, (size_t) rc, out_data, &out_len) == 0) {
@@ -495,3 +503,5 @@ int SnmpAgent(UDPSOCKET * sock)
     }
     return rc;
 }
+
+/*@}*/

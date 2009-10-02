@@ -45,6 +45,11 @@
 
 #include <pro/asn1.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 typedef int (WMETHOD)(int, uint8_t *, uint8_t, size_t, OID *, size_t);
 
 typedef struct _SNMPVAR {
@@ -61,6 +66,8 @@ typedef struct _SNMPVAR {
     /*! \brief Name (object identifier) of the variable. */
     OID var_name[MAX_OID_LEN];
 } SNMPVAR;
+
+/*@}*/
 
 extern int SnmpMibRegister(OID[], size_t, SNMPVAR *, int);
 extern uint8_t *SnmpMibFind(OID *, size_t *, uint8_t *, size_t *, uint16_t *, int, WMETHOD **, int *);

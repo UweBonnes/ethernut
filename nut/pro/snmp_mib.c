@@ -41,6 +41,11 @@
 #include <pro/snmp_api.h>
 #include <pro/snmp_mib.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 /*
  * The subtree structure contains a subtree prefix which applies to
  * all variables in the associated variable list.
@@ -195,3 +200,5 @@ uint8_t *SnmpMibFind(OID * name, size_t * namelen, uint8_t * type, size_t * len,
 
     return access;
 }
+
+/*@}*/

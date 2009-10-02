@@ -35,6 +35,11 @@
 
 #include <pro/snmp_api.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 /*
  * generic statistics counter functions 
  */
@@ -187,3 +192,12 @@ uint32_t SnmpStatsGet(int which)
     }
     return 0;
 }
+
+void SnmpStatsSet(int which, uint32_t value)
+{
+    if (which >= 0 && which < SNMP_STAT_MAX) {
+        statistics[which] = value;
+    }
+}
+
+/*@}*/

@@ -35,6 +35,11 @@
 #include <pro/snmp_api.h>
 
 /*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
+/*!
  * \brief Parse an SNMP variable.
  *
  * \param data  Pointer to start of the name/value pair.
@@ -174,3 +179,5 @@ uint8_t *SnmpVarBuild(uint8_t * data, size_t * dlen, CONST OID * name, size_t nl
     }
     return dp;
 }
+
+/*@}*/

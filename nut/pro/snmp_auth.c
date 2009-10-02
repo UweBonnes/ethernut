@@ -36,6 +36,11 @@
 #include <pro/snmp_auth.h>
 
 /*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
+/*!
  * \brief Parse header of community string based message.
  *
  * Retrieves version and community.
@@ -89,3 +94,5 @@ uint8_t *SnmpAuthBuild(SNMP_SESSION * session, uint8_t * data, size_t * length, 
     }
     return data;
 }
+
+/*@}*/

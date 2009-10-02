@@ -45,6 +45,11 @@
 
 #include <pro/asn1.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 #define SNMP_MAX_MSG_SIZE          1472 /* ethernet MTU minus IP/UDP header */
 
 
@@ -82,6 +87,8 @@
 
 #define  SNMP_STAT_MAX                   28
 
+/*@}*/
+
 extern int SnmpOidCmp(CONST OID *, size_t, CONST OID *, size_t);
 extern int SnmpOidLenCmp(CONST OID *name1, CONST OID *name2, size_t len);
 extern int SnmpOidTreeCmp(CONST OID *, size_t, CONST OID *, size_t);
@@ -90,5 +97,6 @@ extern int SnmpOidEquals(CONST OID *, size_t, CONST OID *, size_t);
 
 extern void SnmpStatsInc(int);
 extern uint32_t SnmpStatsGet(int);
+extern void SnmpStatsSet(int, uint32_t);
 
 #endif

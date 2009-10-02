@@ -45,6 +45,11 @@
 
 #include <pro/snmp.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 /*
  * View types.
  */
@@ -66,6 +71,8 @@ typedef struct _communityEntry {
         int  comm_write_view;
         char comm_name[16];
 } COMMUNITY_LIST;
+
+/*@}*/
 
 extern int SnmpViewCreate(CONST char *, CONST OID *, size_t, int);
 extern int SnmpViewFind(char *);

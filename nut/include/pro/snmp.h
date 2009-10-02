@@ -45,6 +45,11 @@
 
 #include <pro/asn1.h>
 
+/*!
+ * \addtogroup xgSNMP
+ */
+/*@{*/
+
 #ifndef SNMP_PORT
 /*! \brief Standard UDP port for SNMP agents to receive requests messages. 
  */
@@ -183,6 +188,8 @@
 #define SNMP_ACT_COMMIT      2
 #define SNMP_ACT_ACTION      3
 #define SNMP_ACT_FREE        4
+
+/*@}*/
 
 extern CONST uint8_t *SnmpVarParse(CONST uint8_t *, size_t *, OID *, size_t *, uint8_t *, uint8_t **, size_t *);
 extern uint8_t *SnmpVarBuild(uint8_t *, size_t *, CONST OID *, size_t, uint8_t , CONST uint8_t *, size_t);
