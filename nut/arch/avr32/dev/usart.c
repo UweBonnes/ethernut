@@ -89,14 +89,14 @@ static uint_fast8_t flow_control;
 static uint_fast8_t tx_aframe;
 
 #ifdef UART_HDX_BIT
-	/* define in cfg/modem.h */
-	#ifdef UART_HDX_FLIP_BIT	/* same as RTS toggle by Windows NT driver */
-		#define UART_HDX_TX		cbi
-		#define UART_HDX_RX		sbi
-	#else						/* previous usage by Ethernut */
-		#define UART_HDX_TX		sbi
-		#define UART_HDX_RX		cbi
-	#endif
+        /* define in cfg/modem.h */
+#ifdef UART_HDX_FLIP_BIT        /* same as RTS toggle by Windows NT driver */
+#define UART_HDX_TX             cbi
+#define UART_HDX_RX             sbi
+#else                           /* previous usage by Ethernut */
+#define UART_HDX_TX             sbi
+#define UART_HDX_RX             cbi
+#endif
 #endif
 
 
@@ -162,7 +162,7 @@ static void Avr32UsartCts(void *arg)
  *
  * \param arg Pointer to the transmitter ring buffer.
  */
-static void Avr32UsartTxEmpty(RINGBUF *rbf)
+static void Avr32UsartTxEmpty(RINGBUF * rbf)
 {
     /*
      * Check if half duplex mode has been enabled and if all characters
@@ -180,7 +180,7 @@ static void Avr32UsartTxEmpty(RINGBUF *rbf)
  *
  * \param rbf Pointer to the transmitter ring buffer.
  */
-static void Avr32UsartTxReady(RINGBUF *rbf) 
+static void Avr32UsartTxReady(RINGBUF * rbf)
 {
     register uint8_t *cp = rbf->rbf_tail;
 
@@ -189,10 +189,10 @@ static void Avr32UsartTxReady(RINGBUF *rbf)
      */
     if (flow_control & (XON_PENDING | XOFF_PENDING)) {
         if (flow_control & XON_PENDING) {
-			USARTn_BASE.thr = (ASCII_XOFF << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
+            USARTn_BASE.thr = (ASCII_XOFF << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
             flow_control |= XOFF_SENT;
         } else {
-			USARTn_BASE.thr = (ASCII_XON << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
+            USARTn_BASE.thr = (ASCII_XON << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
             flow_control &= ~XOFF_SENT;
         }
         flow_control &= ~(XON_PENDING | XOFF_PENDING);
@@ -204,10 +204,10 @@ static void Avr32UsartTxReady(RINGBUF *rbf)
          * If XOFF has been received, we disable the transmit interrupts
          * and return without sending anything.
          */
-		USARTn_BASE.IDR.txrdy = 1;
-		USARTn_BASE.csr;
+        USARTn_BASE.IDR.txrdy = 1;
+        USARTn_BASE.csr;
         return;
-	}
+    }
 
     if (rbf->rbf_cnt) {
 
@@ -217,8 +217,8 @@ static void Avr32UsartTxReady(RINGBUF *rbf)
          * and return without sending anything.
          */
         if (cts_sense && bit_is_set(UART_CTS_PIN, UART_CTS_BIT)) {
-			USARTn_BASE.IDR.txrdy = 1;
-			USARTn_BASE.csr;
+            USARTn_BASE.IDR.txrdy = 1;
+            USARTn_BASE.csr;
 //            sbi(EIMSK, UART_CTS_BIT);
             return;
         }
@@ -229,13 +229,13 @@ static void Avr32UsartTxReady(RINGBUF *rbf)
          * Send address in multidrop mode.
          */
         if (tx_aframe) {
-			USARTn_BASE.cr |= AVR32_USART_CR_SENDA_MASK;
+            USARTn_BASE.cr |= AVR32_USART_CR_SENDA_MASK;
         }
 
         /*
          * Start transmission of the next character.
          */
-		USARTn_BASE.thr = (*cp << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
+        USARTn_BASE.thr = (*cp << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
 
         /*
          * Wrap around the buffer pointer if we reached its end.
@@ -253,8 +253,8 @@ static void Avr32UsartTxReady(RINGBUF *rbf)
      * Nothing left to transmit, disable interrupt.
      */
     else {
-		USARTn_BASE.IDR.txrdy = 1;
-		USARTn_BASE.csr;
+        USARTn_BASE.IDR.txrdy = 1;
+        USARTn_BASE.csr;
         rbf->rbf_cnt = 0;
         NutEventPostFromIrq(&rbf->rbf_que);
     }
@@ -268,7 +268,7 @@ static void Avr32UsartTxReady(RINGBUF *rbf)
  * \param rbf Pointer to the receiver ring buffer.
  */
 
-static void Avr32UsartRxReady(RINGBUF *rbf) 
+static void Avr32UsartRxReady(RINGBUF * rbf)
 {
     register size_t cnt;
     register uint8_t ch;
@@ -290,14 +290,14 @@ static void Avr32UsartRxReady(RINGBUF *rbf)
     if (flow_control) {
         /* XOFF character disables transmit interrupts. */
         if (ch == ASCII_XOFF) {
-			USARTn_BASE.IDR.txrdy = 1;
-			USARTn_BASE.csr;
+            USARTn_BASE.IDR.txrdy = 1;
+            USARTn_BASE.csr;
             flow_control |= XOFF_RCVD;
             return;
         }
         /* XON enables transmit interrupts. */
         else if (ch == ASCII_XON) {
-			USARTn_BASE.IER.txrdy = 1;
+            USARTn_BASE.IER.txrdy = 1;
             flow_control &= ~XOFF_RCVD;
             return;
         }
@@ -313,7 +313,7 @@ static void Avr32UsartRxReady(RINGBUF *rbf)
     }
 
     /* Wake up waiting threads if this is the first byte in the buffer. */
-    if (cnt++ == 0){
+    if (cnt++ == 0) {
         NutEventPostFromIrq(&rbf->rbf_que);
     }
 
@@ -322,8 +322,8 @@ static void Avr32UsartRxReady(RINGBUF *rbf)
      * buffered bytes is above this mark, then send XOFF.
      */
     else if (flow_control) {
-        if(cnt >= rbf->rbf_hwm) {
-            if((flow_control & XOFF_SENT) == 0) {
+        if (cnt >= rbf->rbf_hwm) {
+            if ((flow_control & XOFF_SENT) == 0) {
                 if (USARTn_BASE.csr & AVR32_USART_CSR_TXRDY_MASK) {
                     USARTn_BASE.thr = (ASCII_XOFF << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
                     flow_control |= XOFF_SENT;
@@ -334,7 +334,6 @@ static void Avr32UsartRxReady(RINGBUF *rbf)
             }
         }
     }
-
 #ifdef UART_RTS_BIT
     /*
      * Check the high watermark for hardware handshake. If the number of
@@ -364,7 +363,7 @@ static void Avr32UsartRxReady(RINGBUF *rbf)
  */
 static void Avr32UsartInterrupt(void *arg)
 {
-    USARTDCB *dcb = (USARTDCB *)arg;
+    USARTDCB *dcb = (USARTDCB *) arg;
     ureg_t csr = USARTn_BASE.csr;
 
     if (csr & AVR32_USART_CSR_RXRDY_MASK) {
@@ -373,12 +372,11 @@ static void Avr32UsartInterrupt(void *arg)
     if (csr & AVR32_USART_CSR_TXRDY_MASK) {
         Avr32UsartTxReady(&dcb->dcb_tx_rbf);
     }
-
 #ifdef UART_HDX_BIT
     if (csr & AVR32_USART_CSR_TXEMPTY_MASK) {
         Avr32UsartTxEmpty(&dcb->dcb_tx_rbf);
     }
-#endif /*  UART_HDX_BIT */
+#endif                          /*  UART_HDX_BIT */
 }
 
 /*!
@@ -392,16 +390,16 @@ static void Avr32UsartEnable(void)
     NutEnterCritical();
 
     /* Enable UART receiver and transmitter. */
-	USARTn_BASE.cr |= AVR32_USART_CR_RXEN_MASK | AVR32_USART_CR_TXEN_MASK;
+    USARTn_BASE.cr |= AVR32_USART_CR_RXEN_MASK | AVR32_USART_CR_TXEN_MASK;
 
     /* Enable UART receiver and transmitter interrupts. */
-	USARTn_BASE.ier = AVR32_USART_IER_RXRDY_MASK | AVR32_USART_IER_TXRDY_MASK;
+    USARTn_BASE.ier = AVR32_USART_IER_RXRDY_MASK | AVR32_USART_IER_TXRDY_MASK;
     //NutIrqEnable(&SIG_UART);
 
 #ifdef UART_HDX_BIT
     if (hdx_control) {
         /* Enable transmit complete interrupt. */
-		USARTn_BASE.ier = AVR32_USART_IER_TXEMPTY_MASK;
+        USARTn_BASE.ier = AVR32_USART_IER_TXEMPTY_MASK;
     }
 #endif
 
@@ -417,8 +415,8 @@ static void Avr32UsartDisable(void)
      * Disable USART interrupts.
      */
     NutEnterCritical();
-	USARTn_BASE.idr = 0xFFFFFFFF;
-	USARTn_BASE.csr;
+    USARTn_BASE.idr = 0xFFFFFFFF;
+    USARTn_BASE.csr;
     NutExitCritical();
 
     /*
@@ -429,7 +427,7 @@ static void Avr32UsartDisable(void)
     /*
      * Disable USART transmit and receive.
      */
-	USARTn_BASE.cr |= AVR32_USART_CR_RXDIS_MASK | AVR32_USART_CR_TXDIS_MASK;
+    USARTn_BASE.cr |= AVR32_USART_CR_RXDIS_MASK | AVR32_USART_CR_TXDIS_MASK;
 }
 
 /*!
@@ -443,13 +441,13 @@ static void Avr32UsartDisable(void)
 static uint32_t Avr32UsartGetSpeed(void)
 {
     uint32_t clk = NutClockGet(NUT_HWCLK_PERIPHERAL_A);
-	uint32_t cd = USARTn_BASE.BRGR.cd;
-	
-	if ( USARTn_BASE.BRGR.fp ) {
-		cd += USARTn_BASE.BRGR.fp/8;
-	}
+    uint32_t cd = USARTn_BASE.BRGR.cd;
 
-	return clk / (8UL * (2 - USARTn_BASE.MR.over) * cd);
+    if (USARTn_BASE.BRGR.fp) {
+        cd += USARTn_BASE.BRGR.fp / 8;
+    }
+
+    return clk / (8UL * (2 - USARTn_BASE.MR.over) * cd);
 }
 
 /*!
@@ -464,23 +462,23 @@ static uint32_t Avr32UsartGetSpeed(void)
  */
 static int Avr32UsartSetSpeed(uint32_t rate)
 {
-	const unsigned long pba_hz = NutClockGet(NUT_HWCLK_PERIPHERAL_A);
-	const unsigned int over = (pba_hz >= 16 * rate) ? 16 : 8;
-	const unsigned int cd_fp = ((1 << AVR32_USART_BRGR_FP_SIZE) * pba_hz + (over * rate) / 2) / (over * rate);
-	const unsigned int cd = cd_fp >> AVR32_USART_BRGR_FP_SIZE;
-	const unsigned int fp = cd_fp & ((1 << AVR32_USART_BRGR_FP_SIZE) - 1);
+    const unsigned long pba_hz = NutClockGet(NUT_HWCLK_PERIPHERAL_A);
+    const unsigned int over = (pba_hz >= 16 * rate) ? 16 : 8;
+    const unsigned int cd_fp = ((1 << AVR32_USART_BRGR_FP_SIZE) * pba_hz + (over * rate) / 2) / (over * rate);
+    const unsigned int cd = cd_fp >> AVR32_USART_BRGR_FP_SIZE;
+    const unsigned int fp = cd_fp & ((1 << AVR32_USART_BRGR_FP_SIZE) - 1);
 
-	if (cd < 1 || cd > (1 << AVR32_USART_BRGR_CD_SIZE) - 1)
-		return -1;
+    if (cd < 1 || cd > (1 << AVR32_USART_BRGR_CD_SIZE) - 1)
+        return -1;
 
-	Avr32UsartDisable();
-	USARTn_BASE.mr = (USARTn_BASE.mr & ~(AVR32_USART_MR_USCLKS_MASK |
-										 AVR32_USART_MR_SYNC_MASK |
-										 AVR32_USART_MR_OVER_MASK)) |
-										 AVR32_USART_MR_USCLKS_MCK << AVR32_USART_MR_USCLKS_OFFSET |
-				((over == 16) ? AVR32_USART_MR_OVER_X16 : AVR32_USART_MR_OVER_X8) << AVR32_USART_MR_OVER_OFFSET;
+    Avr32UsartDisable();
+    USARTn_BASE.mr = (USARTn_BASE.mr & ~(AVR32_USART_MR_USCLKS_MASK |
+                                         AVR32_USART_MR_SYNC_MASK |
+                                         AVR32_USART_MR_OVER_MASK)) |
+        AVR32_USART_MR_USCLKS_MCK << AVR32_USART_MR_USCLKS_OFFSET |
+        ((over == 16) ? AVR32_USART_MR_OVER_X16 : AVR32_USART_MR_OVER_X8) << AVR32_USART_MR_OVER_OFFSET;
 
-	USARTn_BASE.brgr = cd << AVR32_USART_BRGR_CD_OFFSET | fp << AVR32_USART_BRGR_FP_OFFSET;
+    USARTn_BASE.brgr = cd << AVR32_USART_BRGR_CD_OFFSET | fp << AVR32_USART_BRGR_FP_OFFSET;
     Avr32UsartEnable();
 
     return 0;
@@ -499,11 +497,10 @@ static uint8_t Avr32UsartGetDataBits(void)
     uint8_t val;
     if (USARTn_BASE.mr & AVR32_USART_MR_MODE9_MASK) {
         val = 9;
+    } else {
+        val = USARTn_BASE.MR.chrl + 5;
     }
-    else {
-		val = USARTn_BASE.MR.chrl + 5;
-    }
-    return (uint8_t)val;
+    return (uint8_t) val;
 }
 
 /*!
@@ -516,13 +513,12 @@ static uint8_t Avr32UsartGetDataBits(void)
  */
 static int Avr32UsartSetDataBits(uint8_t bits)
 {
-	Avr32UsartDisable();
+    Avr32UsartDisable();
     if (bits == 9) {
-        // Character length set to 9 bits. MODE9 dominates CHRL.
+        /* Character length set to 9 bits. MODE9 dominates CHRL. */
         USARTn_BASE.mr |= AVR32_USART_MR_MODE9_MASK;
-    }
-    else {
-		USARTn_BASE.mr |= (bits - 5) << AVR32_USART_MR_CHRL_OFFSET;
+    } else {
+        USARTn_BASE.mr |= (bits - 5) << AVR32_USART_MR_CHRL_OFFSET;
     }
     Avr32UsartEnable();
 
@@ -545,19 +541,16 @@ static int Avr32UsartSetDataBits(uint8_t bits)
  */
 static uint8_t Avr32UsartGetParity(void)
 {
-	uint8_t val;
+    uint8_t val;
 
     if (USARTn_BASE.MR.mode9) {
         val = 9;
-    }
-    else {
+    } else {
         if (USARTn_BASE.MR.par == AVR32_USART_MR_PAR_ODD) {
             val = 1;
-        }
-        else if (USARTn_BASE.MR.par == AVR32_USART_MR_PAR_EVEN) {
+        } else if (USARTn_BASE.MR.par == AVR32_USART_MR_PAR_EVEN) {
             val = 2;
-        }
-        else {
+        } else {
             val = 0;
         }
     }
@@ -576,7 +569,7 @@ static uint8_t Avr32UsartGetParity(void)
  */
 static int Avr32UsartSetParity(uint8_t mode)
 {
-	Avr32UsartDisable();
+    Avr32UsartDisable();
     switch (mode) {
     case 0:
         USARTn_BASE.MR.par = AVR32_USART_MR_PAR_NONE;
@@ -609,16 +602,15 @@ static int Avr32UsartSetParity(uint8_t mode)
  */
 static uint8_t Avr32UsartGetStopBits(void)
 {
-	switch(USARTn_BASE.MR.nbstop)
-	{
-	case AVR32_USART_MR_NBSTOP_1:
-		return 1;
-	case AVR32_USART_MR_NBSTOP_2:
-		return 2;
-	case AVR32_USART_MR_NBSTOP_1_5:
-		return 3;
-	}
-	return 0;
+    switch (USARTn_BASE.MR.nbstop) {
+    case AVR32_USART_MR_NBSTOP_1:
+        return 1;
+    case AVR32_USART_MR_NBSTOP_2:
+        return 2;
+    case AVR32_USART_MR_NBSTOP_1_5:
+        return 3;
+    }
+    return 0;
 }
 
 /*!
@@ -631,8 +623,8 @@ static uint8_t Avr32UsartGetStopBits(void)
  */
 static int Avr32UsartSetStopBits(uint8_t bits)
 {
-	Avr32UsartDisable();
-    switch(bits) {
+    Avr32UsartDisable();
+    switch (bits) {
     case 1:
         USARTn_BASE.MR.nbstop = AVR32_USART_MR_NBSTOP_1;
         break;
@@ -868,7 +860,7 @@ static int Avr32UsartSetStatus(uint32_t flags)
         USARTn_BASE.CR.dtrdis = 1;
     }
     if (flags & UART_DTRENABLED) {
-		USARTn_BASE.CR.dtren = 1;
+        USARTn_BASE.CR.dtren = 1;
     }
 #endif
 
@@ -997,9 +989,9 @@ static int Avr32UsartSetFlowControl(uint32_t flags)
      * Set software handshake mode.
      */
     if (flags & USART_MF_XONXOFF) {
-        if(flow_control == 0) {
+        if (flow_control == 0) {
             NutEnterCritical();
-            flow_control = 1 | XOFF_SENT;  /* force XON to be sent on next read */
+            flow_control = 1 | XOFF_SENT;       /* force XON to be sent on next read */
             NutExitCritical();
         }
     } else {
@@ -1037,7 +1029,7 @@ static int Avr32UsartSetFlowControl(uint32_t flags)
         cbi(UART_CTS_DDR, UART_CTS_BIT);
         cts_sense = 1;
 #elif defined(US_MODE_HWHANDSHAKE)
-		USARTn_BASE.MR.mode = AVR32_USART_MR_MODE_HARDWARE;
+        USARTn_BASE.MR.mode = AVR32_USART_MR_MODE_HARDWARE;
         cts_sense = 1;
         rts_control = 1;
 #endif
@@ -1047,12 +1039,11 @@ static int Avr32UsartSetFlowControl(uint32_t flags)
         NutRegisterIrqHandler(&UART_CTS_SIGNAL, 0, 0);
         cbi(UART_CTS_DDR, UART_CTS_BIT);
 #elif defined(US_MODE_HWHANDSHAKE)
-		USARTn_BASE.MR.mode = AVR32_USART_MR_MODE_NORMAL;
+        USARTn_BASE.MR.mode = AVR32_USART_MR_MODE_NORMAL;
         rts_control = 0;
 #endif
         cts_sense = 0;
     }
-
 #ifdef UART_HDX_BIT
     /*
      * Set half duplex mode.
@@ -1103,7 +1094,7 @@ static void Avr32UsartTxStart(void)
     }
 #endif
     /* Enable transmit interrupts. */
-	USARTn_BASE.IER.txrdy = 1;
+    USARTn_BASE.IER.txrdy = 1;
 }
 
 /*!
@@ -1122,7 +1113,7 @@ static void Avr32UsartRxStart(void)
     if (flow_control && (flow_control & XOFF_SENT) != 0) {
         NutEnterCritical();
         if (USARTn_BASE.CSR.txrdy) {
-			USARTn_BASE.thr = (ASCII_XON << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
+            USARTn_BASE.thr = (ASCII_XON << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
             flow_control &= ~XON_PENDING;
         } else {
             flow_control |= XON_PENDING;
@@ -1156,40 +1147,35 @@ static int Avr32UsartInit(void)
     }
 
     /* Disable GPIO on UART tx/rx pins. */
-	GpioPinConfigSet( AVR32_GPIO_BANK(USART_RX_PIN), AVR32_GPIO_PIN(USART_RX_PIN), AVR32_GPIO_FUNCTION(USART_RX_FUNCTION) );
-	GpioPinConfigSet( AVR32_GPIO_BANK(USART_TX_PIN), AVR32_GPIO_PIN(USART_TX_PIN), AVR32_GPIO_FUNCTION(USART_TX_FUNCTION) );
+    GpioPinConfigSet(AVR32_GPIO_BANK(USART_RX_PIN), AVR32_GPIO_PIN(USART_RX_PIN), AVR32_GPIO_FUNCTION(USART_RX_FUNCTION));
+    GpioPinConfigSet(AVR32_GPIO_BANK(USART_TX_PIN), AVR32_GPIO_PIN(USART_TX_PIN), AVR32_GPIO_FUNCTION(USART_TX_FUNCTION));
 
-	// Disable all USART interrupts.
-	// Interrupts needed should be set explicitly on every reset.
-	USARTn_BASE.idr = 0xFFFFFFFF;
-	USARTn_BASE.csr;
+    /* Disable all USART interrupts.
+    ** Interrupts needed should be set explicitly on every reset. */
+    USARTn_BASE.idr = 0xFFFFFFFF;
+    USARTn_BASE.csr;
 
-	// Reset mode and other registers that could cause unpredictable behavior after reset.
-	USARTn_BASE.mr = 0;
-	USARTn_BASE.rtor = 0;
-	USARTn_BASE.ttgr = 0;
+    /* Reset mode and other registers that could cause unpredictable behavior after reset. */
+    USARTn_BASE.mr = 0;
+    USARTn_BASE.rtor = 0;
+    USARTn_BASE.ttgr = 0;
 
-	// Shutdown TX and RX (will be re-enabled when setup has successfully completed),
-	// reset status bits and turn off DTR and RTS.
-	USARTn_BASE.cr =	AVR32_USART_CR_RSTRX_MASK   |
-						AVR32_USART_CR_RSTTX_MASK   |
-						AVR32_USART_CR_RSTSTA_MASK  |
-						AVR32_USART_CR_RSTIT_MASK   |
-						AVR32_USART_CR_RSTNACK_MASK |
-						AVR32_USART_CR_DTRDIS_MASK  |
-						AVR32_USART_CR_RTSDIS_MASK;
-		
-	USARTn_BASE.mr |=	(8 - 5)							<< AVR32_USART_MR_CHRL_OFFSET | // 8 bit character length
-						AVR32_USART_MR_PAR_NONE			<< AVR32_USART_MR_PAR_OFFSET  | // No parity
-						AVR32_USART_MR_CHMODE_NORMAL	<< AVR32_USART_MR_CHMODE_OFFSET |
-						AVR32_USART_MR_NBSTOP_1			<< AVR32_USART_MR_NBSTOP_OFFSET;
+    /* Shutdown TX and RX (will be re-enabled when setup has successfully completed),
+    ** reset status bits and turn off DTR and RTS. */
+    USARTn_BASE.cr = AVR32_USART_CR_RSTRX_MASK |
+        AVR32_USART_CR_RSTTX_MASK |
+        AVR32_USART_CR_RSTSTA_MASK |
+        AVR32_USART_CR_RSTIT_MASK | AVR32_USART_CR_RSTNACK_MASK | AVR32_USART_CR_DTRDIS_MASK | AVR32_USART_CR_RTSDIS_MASK;
 
-	// Set normal mode.
-	USARTn_BASE.mr = (USARTn_BASE.mr & ~AVR32_USART_MR_MODE_MASK) |
-				     AVR32_USART_MR_MODE_NORMAL << AVR32_USART_MR_MODE_OFFSET;
+    USARTn_BASE.mr |= (8 - 5) << AVR32_USART_MR_CHRL_OFFSET |   /* 8 bit character length */
+        AVR32_USART_MR_PAR_NONE << AVR32_USART_MR_PAR_OFFSET |  /* No parity */
+        AVR32_USART_MR_CHMODE_NORMAL << AVR32_USART_MR_CHMODE_OFFSET | AVR32_USART_MR_NBSTOP_1 << AVR32_USART_MR_NBSTOP_OFFSET;
 
-	// Enable input and output.
-	USARTn_BASE.cr |= AVR32_USART_CR_RXEN_MASK | AVR32_USART_CR_TXEN_MASK;
+    /* Set normal mode. */
+    USARTn_BASE.mr = (USARTn_BASE.mr & ~AVR32_USART_MR_MODE_MASK) | AVR32_USART_MR_MODE_NORMAL << AVR32_USART_MR_MODE_OFFSET;
+
+    /* Enable input and output. */
+    USARTn_BASE.cr |= AVR32_USART_CR_RXEN_MASK | AVR32_USART_CR_TXEN_MASK;
 
     return 0;
 }
@@ -1207,19 +1193,16 @@ static int Avr32UsartDeinit(void)
     /* Deregister receive and transmit interrupts. */
     NutRegisterIrqHandler(&SIG_UART, 0, 0);
 
-	// Shutdown TX and RX (will be re-enabled when setup has successfully completed),
-	// reset status bits and turn off DTR and RTS.
-	USARTn_BASE.cr =	AVR32_USART_CR_RSTRX_MASK   |
-						AVR32_USART_CR_RSTTX_MASK   |
-						AVR32_USART_CR_RSTSTA_MASK  |
-						AVR32_USART_CR_RSTIT_MASK   |
-						AVR32_USART_CR_RSTNACK_MASK |
-						AVR32_USART_CR_DTRDIS_MASK  |
-						AVR32_USART_CR_RTSDIS_MASK;
+    /* Shutdown TX and RX (will be re-enabled when setup has successfully completed),
+    ** reset status bits and turn off DTR and RTS. */
+    USARTn_BASE.cr = AVR32_USART_CR_RSTRX_MASK |
+        AVR32_USART_CR_RSTTX_MASK |
+        AVR32_USART_CR_RSTSTA_MASK |
+        AVR32_USART_CR_RSTIT_MASK | AVR32_USART_CR_RSTNACK_MASK | AVR32_USART_CR_DTRDIS_MASK | AVR32_USART_CR_RTSDIS_MASK;
 
-	/* Disable all UART interrupts. */
-	USARTn_BASE.idr = 0xFFFFFFFF;
-	USARTn_BASE.csr;
+    /* Disable all UART interrupts. */
+    USARTn_BASE.idr = 0xFFFFFFFF;
+    USARTn_BASE.csr;
 
     /* Disable UART clock. */
 
