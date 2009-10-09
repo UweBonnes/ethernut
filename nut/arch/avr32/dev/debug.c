@@ -69,27 +69,26 @@
  */
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
-	volatile avr32_usart_t* usart = (avr32_usart_t*)dev->dev_base;
+    volatile avr32_usart_t *usart = (avr32_usart_t *) dev->dev_base;
 
-    if(req == UART_SETSPEED) {
-		const uint32_t baudrate = (*((uint32_t *)conf));
-		const uint32_t pba_hz = NutArchClockGet(NUT_HWCLK_PERIPHERAL_A);
-		unsigned int over = (pba_hz >= 16 * baudrate) ? 16 : 8;
-		unsigned int cd_fp = ((1 << AVR32_USART_BRGR_FP_SIZE) * pba_hz + (over * baudrate) / 2) / (over * baudrate);
-		unsigned int cd = cd_fp >> AVR32_USART_BRGR_FP_SIZE;
-		unsigned int fp = cd_fp & ((1 << AVR32_USART_BRGR_FP_SIZE) - 1);
+    if (req == UART_SETSPEED) {
+        const uint32_t baudrate = (*((uint32_t *) conf));
+        const uint32_t pba_hz = NutArchClockGet(NUT_HWCLK_PERIPHERAL_A);
+        unsigned int over = (pba_hz >= 16 * baudrate) ? 16 : 8;
+        unsigned int cd_fp = ((1 << AVR32_USART_BRGR_FP_SIZE) * pba_hz + (over * baudrate) / 2) / (over * baudrate);
+        unsigned int cd = cd_fp >> AVR32_USART_BRGR_FP_SIZE;
+        unsigned int fp = cd_fp & ((1 << AVR32_USART_BRGR_FP_SIZE) - 1);
 
-		if (cd < 1 || cd > (1 << AVR32_USART_BRGR_CD_SIZE) - 1)
-			return -1;
+        if (cd < 1 || cd > (1 << AVR32_USART_BRGR_CD_SIZE) - 1)
+            return -1;
 
-		usart->mr = (usart->mr & ~(AVR32_USART_MR_USCLKS_MASK |
-			AVR32_USART_MR_SYNC_MASK |
-			AVR32_USART_MR_OVER_MASK)) |
-			AVR32_USART_MR_USCLKS_MCK << AVR32_USART_MR_USCLKS_OFFSET |
-			((over == 16) ? AVR32_USART_MR_OVER_X16 : AVR32_USART_MR_OVER_X8) << AVR32_USART_MR_OVER_OFFSET;
+        usart->mr = (usart->mr & ~(AVR32_USART_MR_USCLKS_MASK |
+                                   AVR32_USART_MR_SYNC_MASK |
+                                   AVR32_USART_MR_OVER_MASK)) |
+            AVR32_USART_MR_USCLKS_MCK << AVR32_USART_MR_USCLKS_OFFSET |
+            ((over == 16) ? AVR32_USART_MR_OVER_X16 : AVR32_USART_MR_OVER_X8) << AVR32_USART_MR_OVER_OFFSET;
 
-		usart->brgr = cd << AVR32_USART_BRGR_CD_OFFSET |
-			fp << AVR32_USART_BRGR_FP_OFFSET;
+        usart->brgr = cd << AVR32_USART_BRGR_CD_OFFSET | fp << AVR32_USART_BRGR_FP_OFFSET;
         return 0;
     }
     return -1;
@@ -102,41 +101,37 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int DebugInit(NUTDEVICE * dev)
 {
-	volatile avr32_usart_t* usart = (avr32_usart_t*)dev->dev_base;
+    volatile avr32_usart_t *usart = (avr32_usart_t *) dev->dev_base;
 
-	// Disable all USART interrupts.
-	// Interrupts needed should be set explicitly on every reset.
-	usart->idr = 0xFFFFFFFF;
-	usart->csr;
+    /* Disable all USART interrupts.
+    ** Interrupts needed should be set explicitly on every reset. */
+    usart->idr = 0xFFFFFFFF;
+    usart->csr;
 
-	// Reset mode and other registers that could cause unpredictable behavior after reset.
-	usart->mr = 0;
-	usart->rtor = 0;
-	usart->ttgr = 0;
+    /* Reset mode and other registers that could cause unpredictable behavior after reset. */
+    usart->mr = 0;
+    usart->rtor = 0;
+    usart->ttgr = 0;
 
-	// Shutdown TX and RX (will be re-enabled when setup has successfully completed),
-	// reset status bits and turn off DTR and RTS.
-	usart->cr = AVR32_USART_CR_RSTRX_MASK   |
-				AVR32_USART_CR_RSTTX_MASK   |
-				AVR32_USART_CR_RSTSTA_MASK  |
-				AVR32_USART_CR_RSTIT_MASK   |
-				AVR32_USART_CR_RSTNACK_MASK |
-				AVR32_USART_CR_DTRDIS_MASK  |
-				AVR32_USART_CR_RTSDIS_MASK;
+    /* Shutdown TX and RX (will be re-enabled when setup has successfully completed),
+    ** reset status bits and turn off DTR and RTS. */
+    usart->cr = AVR32_USART_CR_RSTRX_MASK |
+        AVR32_USART_CR_RSTTX_MASK |
+        AVR32_USART_CR_RSTSTA_MASK |
+        AVR32_USART_CR_RSTIT_MASK | AVR32_USART_CR_RSTNACK_MASK | AVR32_USART_CR_DTRDIS_MASK | AVR32_USART_CR_RTSDIS_MASK;
 
-	usart->mr |=	(8 - 5)							<< AVR32_USART_MR_CHRL_OFFSET | // 8 bit character length
-					AVR32_USART_MR_PAR_NONE			<< AVR32_USART_MR_PAR_OFFSET  | // No parity
-					AVR32_USART_MR_CHMODE_NORMAL	<< AVR32_USART_MR_CHMODE_OFFSET |
-					AVR32_USART_MR_NBSTOP_1			<< AVR32_USART_MR_NBSTOP_OFFSET;
+    usart->mr |= (8 - 5) << AVR32_USART_MR_CHRL_OFFSET |        /* 8 bit character length */
+        AVR32_USART_MR_PAR_NONE << AVR32_USART_MR_PAR_OFFSET |  /* No parity */
+        AVR32_USART_MR_CHMODE_NORMAL << AVR32_USART_MR_CHMODE_OFFSET | /* */
+        AVR32_USART_MR_NBSTOP_1 << AVR32_USART_MR_NBSTOP_OFFSET;
 
-	// Set normal mode.
-	usart->mr = (usart->mr & ~AVR32_USART_MR_MODE_MASK) |
-		AVR32_USART_MR_MODE_NORMAL << AVR32_USART_MR_MODE_OFFSET;
+    /* Set normal mode. */
+    usart->mr = (usart->mr & ~AVR32_USART_MR_MODE_MASK) | AVR32_USART_MR_MODE_NORMAL << AVR32_USART_MR_MODE_OFFSET;
 
-	// Enable input and output.
-	usart->cr = AVR32_USART_CR_TXEN_MASK;
+    /* Enable input and output. */
+    usart->cr = AVR32_USART_CR_TXEN_MASK;
 
-	return 0;
+    return 0;
 }
 
 /*!
@@ -147,17 +142,17 @@ static int DebugInit(NUTDEVICE * dev)
  */
 static void DebugPut(CONST NUTDEVICE * dev, char ch)
 {
-	volatile avr32_usart_t* usart = (avr32_usart_t*)dev->dev_base;
+    volatile avr32_usart_t *usart = (avr32_usart_t *) dev->dev_base;
 
-	/* Prepend new line by carriage return */
-	if (ch == '\n') {
-		DebugPut(dev, '\r');
-	}
+    /* Prepend new line by carriage return */
+    if (ch == '\n') {
+        DebugPut(dev, '\r');
+    }
 
-	/* Wait for TX Ready.*/
-	while ( !(usart->csr & AVR32_USART_CSR_TXRDY_MASK) );
-	/* Send out character */
-	usart->thr = (ch << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
+    /* Wait for TX Ready. */
+    while (!(usart->csr & AVR32_USART_CSR_TXRDY_MASK));
+    /* Send out character */
+    usart->thr = (ch << AVR32_USART_THR_TXCHR_OFFSET) & AVR32_USART_THR_TXCHR_MASK;
 
 }
 
@@ -171,12 +166,12 @@ static void DebugPut(CONST NUTDEVICE * dev, char ch)
  */
 static int DebugWrite(NUTFILE * fp, CONST void *buffer, int len)
 {
-     int c = len;
-     CONST char *cp = buffer;
+    int c = len;
+    CONST char *cp = buffer;
 
-     while (c--) {
-         DebugPut(fp->nf_dev, *cp++);
-     }
+    while (c--) {
+        DebugPut(fp->nf_dev, *cp++);
+    }
     return len;
 }
 
@@ -209,9 +204,10 @@ static int DebugClose(NUTFILE * fp)
 #ifdef AVR32_USART0
 static int Debug0Init(NUTDEVICE * dev)
 {
-	// Assign GPIO to USART.
-	GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_USART0_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART0_TXD_0_PIN), AVR32_GPIO_FUNCTION(AVR32_USART0_TXD_0_FUNCTION) );
-	return DebugInit( dev );
+    /* Assign GPIO to USART. */
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART0_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART0_TXD_0_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART0_TXD_0_FUNCTION));
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile0;
@@ -221,15 +217,15 @@ static NUTFILE dbgfile0;
  */
 NUTDEVICE devDebug0 = {
     0,                          /*!< Pointer to next device, dev_next. */
-	{'u', 'a', 'r', 't', '0', 0, 0, 0, 0}
+    {'u', 'a', 'r', 't', '0', 0, 0, 0, 0}
     ,                           /*!< Unique device name, dev_name. */
     0,                          /*!< Type of device, dev_type. */
-    (uintptr_t)(&AVR32_USART0), /*!< Base address, dev_base. */
+    (uintptr_t) (&AVR32_USART0),        /*!< Base address, dev_base. */
     0,                          /*!< First interrupt number, dev_irq. */
     0,                          /*!< Interface control block, dev_icb. */
     &dbgfile0,                  /*!< Driver control block, dev_dcb. */
     Debug0Init,                 /*!< Driver initialization routine, dev_init. */
-    DebugIOCtl,                /*!< Driver specific control function, dev_ioctl. */
+    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
     0,                          /*!< dev_read. */
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
@@ -241,9 +237,10 @@ NUTDEVICE devDebug0 = {
 #ifdef AVR32_USART1
 static int Debug1Init(NUTDEVICE * dev)
 {
-	// Assign GPIO to USART.
-	GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_USART1_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART1_TXD_0_PIN), AVR32_GPIO_FUNCTION(AVR32_USART1_TXD_0_FUNCTION) );
-	return DebugInit( dev );
+    /* Assign GPIO to USART. */
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART1_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART1_TXD_0_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART1_TXD_0_FUNCTION));
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile1;
@@ -256,12 +253,12 @@ NUTDEVICE devDebug1 = {
     {'u', 'a', 'r', 't', '1', 0, 0, 0, 0}
     ,                           /*!< Unique device name, dev_name. */
     0,                          /*!< Type of device, dev_type. */
-    (uintptr_t)(&AVR32_USART1), /*!< Base address, dev_base. */
+    (uintptr_t) (&AVR32_USART1),        /*!< Base address, dev_base. */
     0,                          /*!< First interrupt number, dev_irq. */
     0,                          /*!< Interface control block, dev_icb. */
     &dbgfile1,                  /*!< Driver control block, dev_dcb. */
     Debug1Init,                 /*!< Driver initialization routine, dev_init. */
-    DebugIOCtl,                /*!< Driver specific control function, dev_ioctl. */
+    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
     0,                          /*!< dev_read. */
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
@@ -273,9 +270,10 @@ NUTDEVICE devDebug1 = {
 #ifdef AVR32_USART2
 static int Debug2Init(NUTDEVICE * dev)
 {
-	// Assign GPIO to USART.
-	GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_USART2_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART2_TXD_0_PIN), AVR32_GPIO_FUNCTION(AVR32_USART2_TXD_0_FUNCTION) );
-	return DebugInit( dev );
+    /* Assign GPIO to USART. */
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART2_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART2_TXD_0_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART2_TXD_0_FUNCTION));
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile2;
@@ -288,12 +286,12 @@ NUTDEVICE devDebug2 = {
     {'u', 'a', 'r', 't', '2', 0, 0, 0, 0}
     ,                           /*!< Unique device name, dev_name. */
     0,                          /*!< Type of device, dev_type. */
-    (uintptr_t)(&AVR32_USART2), /*!< Base address, dev_base. */
+    (uintptr_t) (&AVR32_USART2),        /*!< Base address, dev_base. */
     0,                          /*!< First interrupt number, dev_irq. */
     0,                          /*!< Interface control block, dev_icb. */
     &dbgfile2,                  /*!< Driver control block, dev_dcb. */
     Debug2Init,                 /*!< Driver initialization routine, dev_init. */
-    DebugIOCtl,                /*!< Driver specific control function, dev_ioctl. */
+    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
     0,                          /*!< dev_read. */
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
@@ -305,9 +303,10 @@ NUTDEVICE devDebug2 = {
 #ifdef AVR32_USART3
 static int Debug3Init(NUTDEVICE * dev)
 {
-	// Assign GPIO to USART.
-	GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_USART3_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART3_TXD_0_PIN), AVR32_GPIO_FUNCTION(AVR32_USART3_TXD_0_FUNCTION) );
-	return DebugInit( dev );
+    /* Assign GPIO to USART. */
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART3_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART3_TXD_0_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART3_TXD_0_FUNCTION));
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile3;
@@ -320,12 +319,12 @@ NUTDEVICE devDebug3 = {
     {'u', 'a', 'r', 't', '3', 0, 0, 0, 0}
     ,                           /*!< Unique device name, dev_name. */
     0,                          /*!< Type of device, dev_type. */
-    (uintptr_t)(&AVR32_USART3), /*!< Base address, dev_base. */
+    (uintptr_t) (&AVR32_USART3),        /*!< Base address, dev_base. */
     0,                          /*!< First interrupt number, dev_irq. */
     0,                          /*!< Interface control block, dev_icb. */
     &dbgfile3,                  /*!< Driver control block, dev_dcb. */
     Debug3Init,                 /*!< Driver initialization routine, dev_init. */
-    DebugIOCtl,                /*!< Driver specific control function, dev_ioctl. */
+    DebugIOCtl,                 /*!< Driver specific control function, dev_ioctl. */
     0,                          /*!< dev_read. */
     DebugWrite,                 /*!< dev_write. */
     DebugOpen,                  /*!< dev_opem. */
