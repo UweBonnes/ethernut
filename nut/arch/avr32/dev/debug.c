@@ -54,6 +54,37 @@
 #include <avr32/io.h>
 #include <arch/avr32/gpio.h>
 
+#if defined(AVR32_USART0_TXD_0_0_PIN)
+#define AVR32_USART0_TXD_PIN        AVR32_USART0_TXD_0_0_PIN
+#define AVR32_USART0_TXD_FUNCTION   AVR32_USART0_TXD_0_0_FUNCTION
+#elif defined(AVR32_USART0_TXD_0_PIN)
+#define AVR32_USART0_TXD_PIN    AVR32_USART0_TXD_0_PIN
+#define AVR32_USART0_TXD_FUNCTION   AVR32_USART0_TXD_0_FUNCTION
+#endif
+
+#if defined(AVR32_USART1_TXD_0_0_PIN)
+#define AVR32_USART1_TXD_PIN        AVR32_USART1_TXD_0_0_PIN
+#define AVR32_USART1_TXD_FUNCTION   AVR32_USART1_TXD_0_0_FUNCTION
+#elif defined(AVR32_USART1_TXD_0_PIN)
+#define AVR32_USART1_TXD_PIN    AVR32_USART1_TXD_0_PIN
+#define AVR32_USART1_TXD_FUNCTION   AVR32_USART1_TXD_0_FUNCTION
+#endif
+
+#if defined(AVR32_USART2_TXD_0_0_PIN)
+#define AVR32_USART2_TXD_PIN        AVR32_USART2_TXD_0_0_PIN
+#define AVR32_USART2_TXD_FUNCTION   AVR32_USART2_TXD_0_0_FUNCTION
+#elif defined(AVR32_USART2_TXD_0_PIN)
+#define AVR32_USART2_TXD_PIN    AVR32_USART2_TXD_0_PIN
+#define AVR32_USART2_TXD_FUNCTION   AVR32_USART2_TXD_0_FUNCTION
+#endif
+
+#if defined(AVR32_USART3_TXD_0_0_PIN)
+#define AVR32_USART3_TXD_PIN        AVR32_USART3_TXD_0_0_PIN
+#define AVR32_USART3_TXD_FUNCTION   AVR32_USART3_TXD_0_0_FUNCTION
+#elif defined(AVR32_USART3_TXD_0_PIN)
+#define AVR32_USART3_TXD_PIN    AVR32_USART3_TXD_0_PIN
+#define AVR32_USART3_TXD_FUNCTION   AVR32_USART3_TXD_0_FUNCTION
+#endif
 
 /*!
  * \addtogroup xgDevDebugAvr32
@@ -201,12 +232,12 @@ static int DebugClose(NUTFILE * fp)
     return 0;
 }
 
-#ifdef AVR32_USART0
+#ifdef AVR32_USART0_TXD_PIN
 static int Debug0Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART0_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART0_TXD_0_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART0_TXD_0_FUNCTION));
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART0_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART0_TXD_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART0_TXD_FUNCTION));
     return DebugInit(dev);
 };
 
@@ -232,14 +263,14 @@ NUTDEVICE devDebug0 = {
     DebugClose,                 /*!< dev_close. */
     0                           /*!< dev_size. */
 };
-#endif
+#endif /* AVR32_USART0_TXD_PIN */
 
-#ifdef AVR32_USART1
+#ifdef AVR32_USART1_TXD_PIN
 static int Debug1Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART1_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART1_TXD_0_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART1_TXD_0_FUNCTION));
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART1_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART1_TXD_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART1_TXD_FUNCTION));
     return DebugInit(dev);
 };
 
@@ -265,14 +296,14 @@ NUTDEVICE devDebug1 = {
     DebugClose,                 /*!< dev_close. */
     0                           /*!< dev_size. */
 };
-#endif
+#endif /* AVR32_USART1_TXD_PIN */
 
-#ifdef AVR32_USART2
+#ifdef AVR32_USART2_TXD_PIN
 static int Debug2Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART2_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART2_TXD_0_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART2_TXD_0_FUNCTION));
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART2_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART2_TXD_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART2_TXD_FUNCTION));
     return DebugInit(dev);
 };
 
@@ -298,14 +329,14 @@ NUTDEVICE devDebug2 = {
     DebugClose,                 /*!< dev_close. */
     0                           /*!< dev_size. */
 };
-#endif
+#endif /* AVR32_USART2_TXD_PIN */
 
-#ifdef AVR32_USART3
+#ifdef AVR32_USART3_TXD_PIN
 static int Debug3Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART3_TXD_0_PIN), AVR32_GPIO_PIN(AVR32_USART3_TXD_0_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART3_TXD_0_FUNCTION));
+    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART3_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART3_TXD_PIN),
+                     AVR32_GPIO_FUNCTION(AVR32_USART3_TXD_FUNCTION));
     return DebugInit(dev);
 };
 
@@ -332,6 +363,6 @@ NUTDEVICE devDebug3 = {
     0                           /*!< dev_size. */
 };
 
-#endif
+#endif /* AVR32_USART3_TXD_PIN */
 
 /*@}*/
