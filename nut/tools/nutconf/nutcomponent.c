@@ -1941,7 +1941,12 @@ int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pat
     int rc;
     lua_State *ls = (lua_State *)(repo->nr_ls);
 
-    if(ls == NULL || root == NULL || pathname == NULL || access(pathname, 0)) {
+    if(ls == NULL || root == NULL || pathname == NULL) {
+        return -1;
+    }
+    if(access(pathname, 0)) {
+        sprintf(errtxt, "Failed to access %s", pathname);
+        errsts++;
         return -1;
     }
 
