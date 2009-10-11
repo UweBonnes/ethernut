@@ -245,7 +245,8 @@ arm_ld_choice = {
 avr32_ld_choice = { 
                     " ", 
                     "uc3a0512_ram",
-                    "uc3a0512_sdram"
+                    "uc3a0512_sdram",
+                    "uc3a3256_rom"
                 }
 
 pll_clk_choice = { " ", "0", "1", "2", "3", "4" }

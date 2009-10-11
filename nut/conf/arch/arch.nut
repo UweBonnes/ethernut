@@ -883,10 +883,9 @@ nutarch =
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
 --                    "HW_GPIO",
-                    "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
                 },
-                makedefs = { "MCU=uc3a0512", "MARCH=ucr1" }
+                makedefs = { "MCU=uc3a3256", "MARCH=ucr2" }
             }
         }
     },

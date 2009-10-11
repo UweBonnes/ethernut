@@ -250,7 +250,8 @@ nuttools =
             {
                 macro = "AVR32_LDSCRIPT",
                 brief = "AVR32 Linker Script",
-                description = "link_uc3a0512.ld\t\tAVR32UC3A0512, code in running in FLASH\n",
+                description = "link_uc3a0512.ld\t\tAVR32UC3A0512, code in running in FLASH\n"..
+                              "uc3a3256_rom\t\tAT32UC3A3256, code in running in FLASH\n",
                 requires = { "TOOL_CC_AVR32", "TOOL_GCC" },
                 flavor = "booldata",
                 type = "enumerated",
