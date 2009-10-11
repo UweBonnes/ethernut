@@ -109,7 +109,7 @@ class CNutConfDoc:public wxDocument {
 
     NUTCOMPONENTOPTION *FindOptionByName(NUTCOMPONENT * compo, char *name);
     bool IsOptionActive(char *name);
-    void DeactivateOptionList(char **exlist);
+    void DeactivateOptionList(NUTCOMPONENT *compo, char **exlist);
 
   protected:
     NUTREPOSITORY *m_repository;

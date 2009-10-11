@@ -598,11 +598,14 @@ bool CNutConfDoc::IsRequirementProvided(char *requirement)
     return IsRequirementProvided(m_root, requirement);
 }
 
-void CNutConfDoc::DeactivateOptionList(char **exlist)
+void CNutConfDoc::DeactivateOptionList(NUTCOMPONENT *compo, char **exlist)
 {
     if (exlist) {
+        if (compo == NULL) {
+            compo = m_root->nc_child;
+        }
         for (int i = 0; exlist[i]; i++) {
-            NUTCOMPONENTOPTION *opt = FindOptionByName(m_root->nc_child, exlist[i]);
+            NUTCOMPONENTOPTION *opt = FindOptionByName(compo, exlist[i]);
             if (opt) {
                 opt->nco_active = 0;
             }

@@ -317,7 +317,7 @@ void CConfigItem::OnIconLeftDown(CConfigTree & WXUNUSED(treeCtrl))
 
             if (m_option && m_option->nco_exclusivity) {
                 if(!IsActive()) {
-                    pDoc->DeactivateOptionList(m_option->nco_exclusivity);
+                    pDoc->DeactivateOptionList(m_option->nco_compo, m_option->nco_exclusivity);
                     pDoc->SetActive(*this, true);
                 }
             }
