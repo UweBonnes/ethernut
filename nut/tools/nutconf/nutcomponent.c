@@ -2393,12 +2393,58 @@ void EnableComponentTree(NUTCOMPONENT *compo, int enable)
     EnableSubComponents(compo->nc_child, enable);
 }
 
+typedef struct {
+    char **st_array;
+    int st_index;
+    int st_size;
+} STRINGTABLE;
+
+int StringTableSearch(STRINGTABLE *tab, char *str)
+{
+    int i;
+
+    for (i = 0; i < tab->st_index; i++) {
+        if (strcmp(tab->st_array[i], str) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void StringTableAdd(STRINGTABLE *tab, char *str)
+{
+    if (StringTableSearch(tab, str) < 0) {
+        if (tab->st_index >= tab->st_size) {
+            tab->st_size += 100;
+            tab->st_array = realloc(tab->st_array, tab->st_size * sizeof(char *));
+        }
+        tab->st_array[tab->st_index++] = strdup(str);
+    }
+}
+
+STRINGTABLE *StringTableCreate(void)
+{
+    return calloc(1, sizeof(STRINGTABLE));
+}
+
+void StringTableDestroy(STRINGTABLE *tab)
+{
+    int i;
+
+    if (tab) {
+        for (i = 0; i < tab->st_index; i++) {
+            free(tab->st_array[i]);
+        }
+        free(tab);
+    }
+}
+
 /*!
  * \brief Refresh the component tree.
  *
  * \param repo Pointer to the repository information.
  */
-static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo)
+static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo, STRINGTABLE *provisions)
 {
     int rc = 0;
     int i;
@@ -2410,7 +2456,7 @@ static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMP
 
         if(crequires) {
             for (i = 0; crequires[i]; i++) {
-                if((cprovided = IsProvided(repo, root, crequires[i])) == 0) {
+                if ((cprovided = (StringTableSearch(provisions, crequires[i])) >= 0) == 0) {
                     break;
                 }
             }
@@ -2432,7 +2478,7 @@ static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMP
                 char **orequires = GetOptionRequirements(repo, compo, opts->nco_name);
                 if (orequires) {
                     for (i = 0; orequires[i]; i++) {
-                        if((oprovided = IsProvided(repo, root, orequires[i])) == 0) {
+                        if ((oprovided = (StringTableSearch(provisions, orequires[i])) >= 0) == 0) {
                             break;
                         }
                     }
@@ -2447,11 +2493,46 @@ static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMP
                 }
                 opts = opts->nco_nxt;
             }
-            rc += RefreshComponentTree(repo, root, compo->nc_child);
+            rc += RefreshComponentTree(repo, root, compo->nc_child, provisions);
         }
         compo = compo->nc_nxt;
     }
     return rc;
+}
+
+void CollectProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *compo, STRINGTABLE *tab)
+{
+    NUTCOMPONENTOPTION *opts;
+    int i;
+
+    while (compo) {
+        if(compo->nc_enabled) {
+            char **cprovides = GetComponentProvisions(repo, compo);
+            if(cprovides) {
+                /* Add component provisions. */
+                for (i = 0; cprovides[i]; i++) {
+                    StringTableAdd(tab, cprovides[i]);
+                }
+                ReleaseStringArray(cprovides);
+            }
+            opts = compo->nc_opts;
+            while (opts) {
+                if(opts->nco_enabled && opts->nco_active) {
+                    char **oprovides = GetOptionProvisions(repo, compo, opts->nco_name);
+                    if (oprovides) {
+                        /* Add option provisions. */
+                        for (i = 0; oprovides[i]; i++) {
+                            StringTableAdd(tab, oprovides[i]);
+                        }
+                        ReleaseStringArray(oprovides);
+                    }
+                }
+                opts = opts->nco_nxt;
+            }
+            CollectProvisions(repo, compo->nc_child, tab);
+        }
+        compo = compo->nc_nxt;
+    }
 }
 
 /*!
@@ -2471,9 +2552,13 @@ int RefreshComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root)
     /* Loop until no new updates appear. Limit the number of loops to
     ** detect cyclic dependencies. */
     for(i = 0; i < 10; i++) {
-        if(RefreshComponentTree(repo, root, root) == 0) {
+        STRINGTABLE *provisions = StringTableCreate();
+        CollectProvisions(repo, root, provisions);
+        if(RefreshComponentTree(repo, root, root, provisions) == 0) {
+            StringTableDestroy(provisions);
             return 0;
         }
+        StringTableDestroy(provisions);
     }
     return -1;
 }
