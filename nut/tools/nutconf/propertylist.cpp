@@ -106,24 +106,27 @@ void CPropertyList::AddColumns()
     InsertColumn(1, wxT("Value"), wxLIST_FORMAT_LEFT, 300);
 }
 
-/*
- * Fill property list.
+/*!
+ * \brief Fill property list.
+ *
+ * Retrieves the properties of the currently selected item and updates
+ * the list in the property window.
+ *
+ * \param pti Pointer to the currently selected item.
  */
 void CPropertyList::Fill(CConfigItem * pti)
 {
     /*
-     * No item specified, clear the list.
+     * Clear the list.
      */
-    if (pti == NULL) {
-        ClearAll();
-        AddColumns();
-        m_pti = NULL;
-    } 
+    ClearAll();
+    AddColumns();
+    m_pti = pti;
+
     /*
      * Display this item's properties.
      */
-    else {
-        m_pti = pti;
+    if (m_pti) {
         int i;
 
         /*
@@ -133,29 +136,21 @@ void CPropertyList::Fill(CConfigItem * pti)
             SetItemData(i, 0);
         }
 
-        if (!m_pti->GetRequirementList().IsEmpty()) {
-            SetItem(nutRequires, m_pti->GetRequirementList());
-        }
-        if (!m_pti->GetProvisionList().IsEmpty()) {
-            SetItem(nutProvides, m_pti->GetProvisionList());
-        }
-        if (!m_pti->GetExclusivityList().IsEmpty()) {
-            SetItem(nutExclusivity, m_pti->GetExclusivityList());
-        }
-
         /*
          * Set the file name property. Typically a relative path to a
          * source code header file.
          */
-        if (!m_pti->GetFilename().IsEmpty()) {
-            SetItem(nutFile, m_pti->GetFilename());
+        wxString value = m_pti->GetFilename();
+        if (!value.IsEmpty()) {
+            SetItem(nutFile, value);
         }
 
         /*
          * Set the macro property.
          */
-        if (!m_pti->GetMacro().IsEmpty()) {
-            SetItem(nutMacro, m_pti->GetMacro());
+        value = m_pti->GetMacro();
+        if (!value.IsEmpty()) {
+            SetItem(nutMacro, value);
 
             /*
              * The macro's value is optional.
@@ -198,6 +193,19 @@ void CPropertyList::Fill(CConfigItem * pti)
             if (GetItemData(i) == 0) {
                 DeleteItem(i);
             }
+        }
+
+        value = m_pti->GetRequirementList();
+        if (!value.IsEmpty()) {
+            SetItem(nutRequires, value);
+        }
+        value = m_pti->GetProvisionList();
+        if (!value.IsEmpty()) {
+            SetItem(nutProvides, value);
+        }
+        value = m_pti->GetExclusivityList();
+        if (!value.IsEmpty()) {
+            SetItem(nutExclusivity, value);
         }
     }
     Refresh();
