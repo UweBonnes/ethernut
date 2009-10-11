@@ -42,6 +42,8 @@
 
 #include <arch/avr32/ihndlr.h>
 
+#if defined(AVR32_MACB)
+
 #ifndef NUT_IRQPRI_MACB
 #define NUT_IRQPRI_MACB  AVR32_INTC_INT2
 #endif
@@ -142,3 +144,5 @@ int MacbIrqCtl( int cmd, void *param )
 	}
     return rc;
 }
+
+#endif
