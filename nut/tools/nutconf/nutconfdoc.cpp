@@ -377,6 +377,7 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
             }
             else {
                 CSettings *cfg = wxGetApp().GetSettings();
+                /* Store settings in the Lua registry. */
                 RegisterSourcePath(m_repository, cfg->m_source_dir.mb_str());
                 RegisterBuildPath(m_repository, cfg->m_buildpath.mb_str());
                 RegisterLibPath(m_repository, cfg->m_lib_dir.mb_str());
@@ -666,6 +667,7 @@ bool CNutConfDoc::SetActive(CConfigItem & item, bool bEnabled)
 {
     item.SetActive(bEnabled);
 
+    /* Store settings in the Lua registry. */
     CSettings *cfg = wxGetApp().GetSettings();
     RegisterSourcePath(m_repository, cfg->m_source_dir.mb_str());
     RegisterBuildPath(m_repository, cfg->m_buildpath.mb_str());

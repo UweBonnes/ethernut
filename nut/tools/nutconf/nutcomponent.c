@@ -229,11 +229,11 @@
  */
 #define TKN_MACRO   "macro"
 
-/*! \brief
+/*! \brief String containing a Lua script.
  */
 #define TKN_SCRIPT  "script"
 
-/*! \brief
+/*! \brief Subdirectory of a component
  */
 #define TKN_SUBDIR  "subdir"
 
@@ -256,7 +256,7 @@
  */
 #define TKN_OPTIONS "options"
 
-/*! \brief
+/*! \brief Condition for automatic activation.
  */
 #define TKN_ACTIF   "active_if"
 
@@ -274,7 +274,8 @@
  */
 #define TKN_TYPE    "type"
 
-/*! \brief
+/*! \brief C language type.
+ * Not yet supported.
  */
 #define TKN_CTYPE   "ctype"
 
@@ -290,15 +291,15 @@
  */
 #define TKN_TARGETS "targets"
 
-/*! \brief
+/*! \brief List of choices of an enumerated option.
  */
 #define TKN_CHOICES "choices"
 
-/*! \brief
+/*! \brief Optional Makefile definitions.
  */
 #define TKN_MAKEDEFS "makedefs"
 
-/*! \brief
+/*! \brief List of options which are mutually exclusive.
  */
 #define TKN_EXCLUSIVITY "exclusivity"
 
@@ -431,17 +432,30 @@ static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
 }
 #endif
 
+/*! 
+ * \brief Get the current script status.
+ */
 const int GetScriptStatus(void)
 {
     return errsts;
 }
 
+/*! 
+ * \brief Get the script's error message.
+ */
 const char *GetScriptErrorString(void)
 {
     errsts = 0;
     return errtxt;
 }
 
+/*!
+ * \brief Store string value in the Lua registry.
+ *
+ * \todo Same as RegisterStringValue(). Remove this one?
+ *
+ * \param ls Lua state.
+ */
 int SetLuaRegString(lua_State *ls, char *key, char *value)
 {
     lua_pushstring(ls, key);
@@ -451,6 +465,11 @@ int SetLuaRegString(lua_State *ls, char *key, char *value)
     return 0;
 }
 
+/*!
+ * \brief Retrieve string value from the Lua registry.
+ *
+ * \param ls Lua state.
+ */
 const char * GetLuaRegString(lua_State *ls, char *key)
 {
     const char *value;
@@ -464,7 +483,9 @@ const char * GetLuaRegString(lua_State *ls, char *key)
 }
 
 /*!
- * Lua callable.
+ * \brief Process c_repo_path call from Lua.
+ *
+ * \param ls Lua state.
  */
 static int l_repo_path(lua_State *ls) 
 {
@@ -487,6 +508,11 @@ static int l_repo_path(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_nut_source_path call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_nut_source_path(lua_State *ls) 
 {
     const char *str;
@@ -507,6 +533,11 @@ static int l_nut_source_path(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_nut_build_path call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_nut_build_path(lua_State *ls) 
 {
     const char *str;
@@ -527,6 +558,11 @@ static int l_nut_build_path(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_nut_lib_path call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_nut_lib_path(lua_State *ls) 
 {
     const char *str;
@@ -547,6 +583,11 @@ static int l_nut_lib_path(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_nut_sample_path call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_nut_sample_path(lua_State *ls) 
 {
     const char *str;
@@ -567,6 +608,11 @@ static int l_nut_sample_path(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_compiler_platform call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_compiler_platform(lua_State *ls) 
 {
     const char *str;
@@ -658,6 +704,11 @@ static int GetEnableState(NUTCOMPONENT *compo, const char *name)
     return rc;
 }
 
+/*!
+ * \brief Process c_macro_edit call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_macro_edit(lua_State *ls) 
 {
     char *value = NULL;
@@ -680,6 +731,11 @@ static int l_macro_edit(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_is_enabled call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_is_enabled(lua_State *ls) 
 {
     int status = 0;
@@ -699,6 +755,11 @@ static int l_is_enabled(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_is_active call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_is_active(lua_State *ls)
 {
     int status = 0;
@@ -718,6 +779,11 @@ static int l_is_active(lua_State *ls)
     return 1;
 }
 
+/*!
+ * \brief Process c_is_provided call from Lua.
+ *
+ * \param ls Lua state.
+ */
 static int l_is_provided(lua_State *ls)
 {
     int status = 0;
@@ -772,6 +838,15 @@ void RegisterLuaExtension(lua_State *ls, const luaL_reg *reg)
    }
 }
 
+/*!
+ * \brief Store string value in the Lua registry.
+ *
+ * \param ls   Lua state.
+ * \param name Item name.
+ * \param name Item value.
+ *
+ * \return Always 0.
+ */
 static int RegisterStringValue(lua_State *ls, const char *name, const char *str)
 {
     lua_pushstring(ls, name);
@@ -1811,26 +1886,56 @@ void CloseRepository(NUTREPOSITORY *repo)
     }
 }
 
+/*!
+ * \brief Store source tree path in the Lua registry.
+ *
+ * \param repo Pointer to the repository information.
+ * \param path Pointer to the path name.
+ */
 int RegisterSourcePath(NUTREPOSITORY *repo, const char *path) 
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTSOURCEPATH, path);
 }
 
+/*!
+ * \brief Store build tree path in the Lua registry.
+ *
+ * \param repo Pointer to the repository information.
+ * \param path Pointer to the path name.
+ */
 int RegisterBuildPath(NUTREPOSITORY *repo, const char *path) 
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTBUILDPATH, path);
 }
 
+/*!
+ * \brief Store library path in the Lua registry.
+ *
+ * \param repo Pointer to the repository information.
+ * \param path Pointer to the path name.
+ */
 int RegisterLibPath(NUTREPOSITORY *repo, const char *path) 
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTLIBPATH, path);
 }
 
+/*!
+ * \brief Store sample tree path in the Lua registry.
+ *
+ * \param repo Pointer to the repository information.
+ * \param path Pointer to the path name.
+ */
 int RegisterSamplePath(NUTREPOSITORY *repo, const char *path) 
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTSAMPLEPATH, path);
 }
 
+/*!
+ * \brief Store target compiler platform in the Lua registry.
+ *
+ * \param repo     Pointer to the repository information.
+ * \param platform Pointer to the platform name.
+ */
 int RegisterCompilerPlatform(NUTREPOSITORY *repo, const char *platform) 
 {
     return RegisterStringValue((lua_State *)(repo->nr_ls), LRK_NUTCOMPILERPLATFORM, platform);
@@ -1964,6 +2069,11 @@ int ConfigureComponents(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *pat
     return LoadConfigValues(ls, root);
 }
 
+/*!
+ * \brief Get the brief description of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetComponentBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -1971,6 +2081,11 @@ char * GetComponentBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentValue(ls, comp, TKN_BRIEF);
 }
 
+/*!
+ * \brief Get the detailed description of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetComponentDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -1978,6 +2093,11 @@ char * GetComponentDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentValue(ls, comp, TKN_DESC);
 }
 
+/*!
+ * \brief Get the subdirectory name of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetComponentSubdir(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -1985,6 +2105,11 @@ char * GetComponentSubdir(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentValue(ls, comp, TKN_SUBDIR);
 }
 
+/*!
+ * \brief Get the requirements of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetComponentRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -1992,6 +2117,11 @@ char **GetComponentRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentTableValues(ls, comp, TKN_REQUIRES);
 }
 
+/*!
+ * \brief Get the provisions of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetComponentProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -1999,6 +2129,11 @@ char **GetComponentProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentTableValues(ls, comp, TKN_PROVIDES);
 }
 
+/*!
+ * \brief Get the source files of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetComponentSources(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2006,6 +2141,11 @@ char **GetComponentSources(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentTableValues(ls, comp, TKN_SOURCES);
 }
 
+/*!
+ * \brief Get the target files of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetComponentTargets(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2013,6 +2153,11 @@ char **GetComponentTargets(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentTableValues(ls, comp, TKN_TARGETS);
 }
 
+/*!
+ * \brief Get the special make definitions of a component.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetComponentMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2020,6 +2165,11 @@ char **GetComponentMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp)
     return GetComponentTableValues(ls, comp, TKN_MAKEDEFS);
 }
 
+/*!
+ * \brief Get the brief descripton of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetOptionBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2027,6 +2177,11 @@ char * GetOptionBrief(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionStringValue(ls, comp, name, TKN_BRIEF);
 }
 
+/*!
+ * \brief Get the detailed descripton of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetOptionDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2034,6 +2189,11 @@ char * GetOptionDescription(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name
     return GetOptionStringValue(ls, comp, name, TKN_DESC);
 }
 
+/*!
+ * \brief Get the default value of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetOptionDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2041,6 +2201,11 @@ char * GetOptionDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionStringValue(ls, comp, name, TKN_DEFAULT);
 }
 
+/*!
+ * \brief Get the header file name of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetOptionFile(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2048,6 +2213,11 @@ char * GetOptionFile(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionStringValue(ls, comp, name, TKN_FILE);
 }
 
+/*!
+ * \brief Get the flavour of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetOptionFlavour(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2055,6 +2225,11 @@ char * GetOptionFlavour(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionStringValue(ls, comp, name, TKN_FLAVOR);
 }
 
+/*!
+ * \brief Get the type of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetOptionTypeString(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2062,6 +2237,11 @@ char * GetOptionTypeString(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionStringValue(ls, comp, name, TKN_TYPE);
 }
 
+/*!
+ * \brief Get the requirements of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetOptionRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2069,6 +2249,11 @@ char **GetOptionRequirements(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * nam
     return GetOptionTableValues(ls, comp, name, TKN_REQUIRES);
 }
 
+/*!
+ * \brief Get the provisions of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetOptionProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2076,6 +2261,11 @@ char **GetOptionProvisions(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionTableValues(ls, comp, name, TKN_PROVIDES);
 }
 
+/*!
+ * \brief Get the available choices of an enumerated component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetOptionChoices(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2083,6 +2273,11 @@ char **GetOptionChoices(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionTableValues(ls, comp, name, TKN_CHOICES);
 }
 
+/*!
+ * \brief Get the special make definitions of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char **GetOptionMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2090,6 +2285,11 @@ char **GetOptionMakedefs(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
     return GetOptionTableValues(ls, comp, name, TKN_MAKEDEFS);
 }
 
+/*!
+ * \brief Get the current value of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetConfigValue(NUTREPOSITORY *repo, char * name)
 {
     lua_State *ls = (lua_State *)(repo->nr_ls);
@@ -2097,6 +2297,11 @@ char * GetConfigValue(NUTREPOSITORY *repo, char * name)
     return GetGlobalValue(ls, name);
 }
 
+/*!
+ * \brief Get the current or the default value of a component option.
+ *
+ * \param repo Pointer to the repository information.
+ */
 char * GetConfigValueOrDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * name)
 {
     char *val;
@@ -2112,6 +2317,11 @@ char * GetConfigValueOrDefault(NUTREPOSITORY *repo, NUTCOMPONENT *comp, char * n
     return val;
 }
 
+/*!
+ * \brief Check if a specific requirement is provided.
+ *
+ * \param repo Pointer to the repository information.
+ */
 static int IsProvided(NUTREPOSITORY *repo, NUTCOMPONENT *compo, const char *requirement)
 {
     NUTCOMPONENTOPTION *opts;
@@ -2183,6 +2393,11 @@ void EnableComponentTree(NUTCOMPONENT *compo, int enable)
     EnableSubComponents(compo->nc_child, enable);
 }
 
+/*!
+ * \brief Refresh the component tree.
+ *
+ * \param repo Pointer to the repository information.
+ */
 static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMPONENT *compo)
 {
     int rc = 0;
@@ -2241,6 +2456,8 @@ static int RefreshComponentTree(NUTREPOSITORY *repo, NUTCOMPONENT *root, NUTCOMP
 
 /*!
  * \brief Refresh the component tree.
+ *
+ * \param repo Pointer to the repository information.
  *
  * \return 0 on success or -1 on cyclic dependencies.
  */
@@ -2345,6 +2562,11 @@ static const char *MakeTargetPath(const char *dir, const char *path)
     return result;
 }
 
+/*!
+ * \brief Add the list of source files to a Makefile.
+ *
+ * \param repo Pointer to the repository information.
+ */
 int AddMakeSources(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, const char *sub_dir, int *lpos)
 {
     int rc = 0;
@@ -2391,6 +2613,11 @@ int AddMakeSources(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, const c
     return rc;
 }
 
+/*!
+ * \brief Add the list of target files to a Makefile.
+ *
+ * \param repo Pointer to the repository information.
+ */
 int AddMakeTargets(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, int cnt)
 {
     int i;
@@ -2426,6 +2653,7 @@ int AddMakeTargets(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, int cnt
  * \brief Add the source file list to the Makefile.
  *
  * \param fp      Pointer to an opened file.
+ * \param repo    Pointer to the repository information.
  * \param compo   Pointer to a library component.
  * \param sub_dir Component's subdirectory in the build tree.
  *
@@ -2451,6 +2679,7 @@ int WriteMakeSources(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, const
  * \brief Add the configured lines to the Makefile.
  *
  * \param fp Pointer to an opened file.
+ * \param repo Pointer to the repository information.
  * \param compo Pointer to a library component.
  *
  * \todo This is not yet finished. All 'name=value' pairs should
@@ -2523,6 +2752,7 @@ static void WriteMakedefLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * com
  * \brief Add target to the Makefile in the top build directory.
  *
  * \param fp     Pointer to an opened file.
+ * \param repo   Pointer to the repository information.
  * \param compo  Pointer to the first child of the root component.
  * \param target Makefile target, set to NULL for 'all'.
  */
@@ -2554,6 +2784,7 @@ void WriteMakeRootLines(FILE * fp, NUTREPOSITORY *repo, NUTCOMPONENT * compo, ch
  * and one in each library's subdirectory. It will also create the NutConf.mk
  * and UserConf.mk. Except for UserConf.mk, any existing file will be replaced.
  *
+ * \param repo       Pointer to the repository information.
  * \param root       Pointer to the root component.
  * \param bld_dir    Pathname of the top build directory.
  * \param src_dir    Pathname of the top source directory.
@@ -2791,6 +3022,8 @@ static NUTHEADERFILE *AddHeaderFileMacro(NUTHEADERFILE *nh_root, char *fname, ch
 
 /*!
  * \brief Create a linked list of header files and associated macros.
+ *
+ * \param repo Pointer to the repository information.
  */
 NUTHEADERFILE *CreateHeaderList(NUTREPOSITORY *repo, NUTCOMPONENT * compo, NUTHEADERFILE *nh_root)
 {
@@ -2886,6 +3119,7 @@ void ReleaseHeaderList(NUTHEADERFILE *nh_root)
  * This routine creates all build specific header files in the build
  * directory. Existing files will be replaced.
  *
+ * \param repo    Pointer to the repository information.
  * \param root    Pointer to the root component.
  * \param bld_dir Pathname of the top build directory.
  *
@@ -2966,6 +3200,7 @@ int CreateHeaderFiles(NUTREPOSITORY *repo, NUTCOMPONENT * root, const char *bld_
  * It will also create the NutConf.mk and UserConf.mk. Except for UserConf.mk,
  * any existing file will be replaced.
  *
+ * \param repo       Pointer to the repository information.
  * \param root       Pointer to the root component.
  * \param bld_dir    Pathname of the top build directory.
  * \param app_dir    Pathname of the application build directory.
@@ -3321,6 +3556,7 @@ int main(int argc, char **argv)
                 if(!quiet) {
                     printf("OK\n");
                 }
+                /* Store options in the Lua registry. */
                 RegisterSourcePath(repo, src_dir);
                 RegisterBuildPath(repo, bld_dir);
                 RegisterLibPath(repo, lib_dir);
