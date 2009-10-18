@@ -764,13 +764,10 @@ THREAD(NicRxLanc, arg)
 
     /*
      * This is a temporary hack. Due to a change in initialization,
-     * we may not have got a MAC address yet. Wait until one has been
-     * set.
+     * we may not have got a MAC address yet. Wait until a valid one
+     * has been set.
      */
-    for (;;) {
-        if (ETHER_IS_UNICAST(ifn->if_mac)) {
-            break;
-        }
+    while (!ETHER_IS_UNICAST(ifn->if_mac)) {
         NutSleep(10);
     }
 

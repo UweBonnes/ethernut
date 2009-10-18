@@ -1199,14 +1199,11 @@ THREAD(NicRxLanc, arg)
 
     /*
      * This is a temporary hack. Due to a change in initialization,
-     * we may not have got a MAC address yet. Wait until one has been
-     * set.
+     * we may not have got a MAC address yet. Wait until a valid one
+     * has been set.
      */
-    for (;;) {
-        if (*((uint32_t *) (ifn->if_mac)) && *((uint32_t *) (ifn->if_mac)) != 0xFFFFFFFFUL) {
-            break;
-        }
-        NutSleep(63);
+    while (!ETHER_IS_UNICAST(ifn->if_mac)) {
+        NutSleep(10);
     }
 
     /*

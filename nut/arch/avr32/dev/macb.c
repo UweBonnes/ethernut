@@ -677,24 +677,14 @@ THREAD(EmacRxThread, arg)
 	ifn = (IFNET *) dev->dev_icb;
 	ni = (EMACINFO *) dev->dev_dcb;
 
-	/*
-	* This is a temporary hack. Due to a change in initialization,
-	* we may not have got a MAC address yet. Wait until one has been
-	* set.
-	*/
-	for (;;) {
-		int i;
-
-		for (i = 0; i < sizeof(ifn->if_mac); i++) {
-			if (ifn->if_mac[i] && ifn->if_mac[i] != 0xFF) {
-				break;
-			}
-		}
-		if (i < sizeof(ifn->if_mac)) {
-			break;
-		}
-		NutSleep(63);
-	}
+    /*
+     * This is a temporary hack. Due to a change in initialization,
+     * we may not have got a MAC address yet. Wait until a valid one
+     * has been set.
+     */
+    while (!ETHER_IS_UNICAST(ifn->if_mac)) {
+        NutSleep(10);
+    }
 
 	/*
 	* Do not continue unless we managed to start the NIC. We are
