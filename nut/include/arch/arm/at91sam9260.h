@@ -163,6 +163,7 @@
 /*! \name Peripheral Identifiers and Interrupts */
 /*@{*/
 #define FIQ_ID      0           /*!< \brief Fast interrupt. */
+#define SYSC_ID     1           /*!< \brief System interrupt. */
 #define PIOA_ID     2           /*!< \brief Parallel I/O controller A. */
 #define PIOB_ID     3           /*!< \brief Parallel I/O controller B. */
 #define PIOC_ID     4           /*!< \brief Parallel I/O controller C. */
