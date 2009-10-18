@@ -129,7 +129,7 @@
 #include "nutconfdoc.h"
 #include "mainframe.h"
 
-#define VERSION "2.0.8"
+#define VERSION "2.0.9"
 
 class NutConfApp:public wxApp {
     friend class CMainFrame;

@@ -177,7 +177,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.7"
+#define NUT_CONFIGURE_VERSION   "2.0.9"
 
 #include <stdio.h>
 #include <stdlib.h>
