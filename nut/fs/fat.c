@@ -367,8 +367,8 @@ typedef struct _atapi_pvd {
     BYTE volseqnum[4];
     BYTE seksize[4];
     BYTE pathtablen[8];
-    BYTE firstsek_LEpathtab1_LE[4];
-    BYTE firstsek_LEpathtab2_LE[4];
+    DWORD firstsek_LEpathtab1_LE;
+    DWORD firstsek_LEpathtab2_LE;
     BYTE firstsek_BEpathtab1_BE[4];
     BYTE firstsek_BEpathtab2_BE[4];
     BYTE rootdir[34];
@@ -931,8 +931,8 @@ static int MountATAPI(int nDrive)
 
         pDrive->bSectorsPerCluster = 1;
         pDrive->dwFirstRootDirSector = *(DWORD *) & pPVD->rootdir[2];
-        pDrive->dwFAT1StartSector = *(DWORD *) & pPVD->firstsek_LEpathtab1_LE[0];
-        pDrive->dwFAT2StartSector = *(DWORD *) & pPVD->firstsek_LEpathtab2_LE[0];
+        pDrive->dwFAT1StartSector = pPVD->firstsek_LEpathtab1_LE;
+        pDrive->dwFAT2StartSector = pPVD->firstsek_LEpathtab2_LE;
 
         pDrive->dwRootDirSectors = pDrive->dwFAT1StartSector - pDrive->dwFirstRootDirSector;
         pDrive->dwRootCluster = pDrive->dwFirstRootDirSector;
