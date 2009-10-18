@@ -138,7 +138,6 @@ typedef struct _HXDCB {
 } HXDCB;
 
 static HXDCB dcb;
-static void *hres;
 
 typedef struct _MP3PLAYERINFO {
     HMP3Decoder mpi_mp3dec;
@@ -215,6 +214,8 @@ static int DecodeFrame(uint8_t *buf, int len)
 #ifdef HXCODEC0_RESAMPLER
                 /* If needed, initialize resampler. */
                 if (samprate != DAC_OUTPUT_RATE) {
+                    void *hres;
+
                     if ((hres = RAInitResamplerHermite(samprate, DAC_OUTPUT_RATE, mpi.mpi_frameinfo.nChans)) == NULL) {
                         return -1;
                     }
