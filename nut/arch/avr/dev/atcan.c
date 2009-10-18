@@ -302,6 +302,8 @@ int8_t AtCanGetFreeMob(void)
 /**
  * Configure a single message object for receiption.
  *
+ * All 15 MOBS can be set up for reception,  not only RX_MOB MOBs
+ * 
  * @param mob        Message object index (0-14)
  * @param id         Acceptance code
  * @param idIsExt    Flag if acceptance code is extended (0 = standard, 1 = extended)

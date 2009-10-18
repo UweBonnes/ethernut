@@ -73,6 +73,10 @@ enum CAN_RESULT
  
 int8_t AtCanGetBusState(void);
 
+int8_t AtCanEnableMsgObj(uint8_t mob,
+                         uint32_t id, int8_t idIsExt, int8_t idRemTag,
+                         uint32_t mask, int8_t maskIsExt, int8_t maskRemTag);
+
 int8_t AtCanEnableRx(uint8_t noOfMsgObjs,
                      uint32_t id, int8_t idIsExt, int8_t idRemTag,
                      uint32_t mask, int8_t maskIsExt, int8_t maskRemTag);
