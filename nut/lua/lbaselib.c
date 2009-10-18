@@ -43,7 +43,7 @@ static int luaB_print (lua_State *L) {
     fputs(s, stdout);
     lua_pop(L, 1);  /* pop result */
   }
-  fputs("\n", stdout);
+  fputs("\r\n", stdout);
   return 0;
 }
 
