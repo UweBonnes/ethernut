@@ -255,7 +255,7 @@ nutdev =
                               "Select this option, if you want to use hardware handshake via GPIO or if "..
                               "the target specific UART0 driver doesn't support built-in hardware handshake.",
                 flavor = "boolean",
---                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
                 file = "include/cfg/uart.h"
             },
             {
@@ -267,7 +267,7 @@ nutdev =
                               "Do not select this option if you want to use hardware handshake "..
                               "via GPIO pins.",
                 flavor = "boolean",
---                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
                 requires = { "HW_UART0_RTSCTS" },
                 file = "include/cfg/uart.h"
             },
@@ -280,7 +280,7 @@ nutdev =
                               "Do not select this option if you want to use modem control "..
                               "via GPIO pins.",
                 flavor = "boolean",
---                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
+                exclusivity = { "UART0_RXTX_ONLY", "UART0_HARDWARE_HANDSHAKE", "UART0_MODEM_CONTROL" },
                 requires = { "HW_UART0_MODEM" },
                 file = "include/cfg/uart.h"
             },
@@ -3101,6 +3101,102 @@ nutdev =
         },
     },
 
+    {
+        name = "nutdev_jtag_tap",
+        brief = "JTAG TAP Controller",
+        sources = { "jtag_tap.c" },
+        requires = { "DEV_JTAG_CABLE" },
+        options =
+        {
+            {
+                macro = "JTAG0_CLOCK_RATE",
+                brief = "Cable 0 Clock Rate",
+                description = "Maximum TCK frequency in Hertz.",
+                file = "include/cfg/progif.h"
+            },
+        }
+    },
+    {
+        name = "nutdev_jtag_gpio",
+        brief = "JTAG GPIO Cable Driver 0",
+        sources = { "jtag_gpio0.c" },
+        provides = { "DEV_JTAG_CABLE" },
+        options =
+        {
+            {
+                macro = "JTAG0_TDO_PIO_ID",
+                brief = "TDO Port",
+                description = "Port ID of the TDO input.\n",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TDO_PIO_BIT",
+                brief = "TDO Bit",
+                description = "Port bit number of the TDO input.\n",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TDI_PIO_ID",
+                brief = "TDI Port",
+                description = "Port ID of the TDI output.\n",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TDI_PIO_BIT",
+                brief = "TDI Bit",
+                description = "Port bit number of the TDI output.\n",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TMS_PIO_ID",
+                brief = "TMS Port",
+                description = "Port ID of the TMS output.\n",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TMS_PIO_BIT",
+                brief = "TMS Bit",
+                description = "Port bit number of the TMS output.\n",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TCK_PIO_ID",
+                brief = "TCK Port",
+                description = "Port ID of the TCK output.\n",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+            {
+                macro = "JTAG0_TCK_PIO_BIT",
+                brief = "TCK Bit",
+                description = "Port bit number of the TCK output.\n",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+                file = function() return GetGpioHeaderPath() end
+            },
+        }
+    },
     {
         name = "nutdev_avrtarget",
         brief = "AVR Serial Programming",
