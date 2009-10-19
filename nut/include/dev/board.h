@@ -102,35 +102,33 @@
  *
  */
 
+#include <cfg/arch.h>
+
 /*
  * Debug device.
  */
 #include <dev/debug.h>
 
-#if defined(GBA)
-#define DEV_DEBUG_NAME  "con"
-#endif
-
-#if defined(OLIMEX_LPCE2294)
-#define DEV_DEBUG       devDebug1
-#define DEV_DEBUG_NAME  "uart1"
-#endif
-
-#if defined(HHOPEN_63F)
-#define DEV_DEBUG		devDebug1
-#define DEV_DEBUG_NAME	"uart1"
-#endif
-
-#if defined(DBGU_BASE)
-#define DEV_DEBUG       devDebug
-#define DEV_DEBUG_NAME  "dbgu"
-#endif
-
 #ifndef DEV_DEBUG
+#if defined(OLIMEX_LPCE2294) || defined(HHOPEN_63F) || defined(EVK1104)
+#define DEV_DEBUG       devDebug1
+#elif defined(DBGU_BASE)
+#define DEV_DEBUG       devDebug
+#else
 #define DEV_DEBUG       devDebug0
 #endif
+#endif
+
 #ifndef DEV_DEBUG_NAME
+#if defined(GBA)
+#define DEV_DEBUG_NAME  "con"
+#elif defined(OLIMEX_LPCE2294) || defined(HHOPEN_63F) || defined(EVK1104)
+#define DEV_DEBUG_NAME  "uart1"
+#elif defined(DBGU_BASE)
+#define DEV_DEBUG_NAME  "dbgu"
+#else
 #define DEV_DEBUG_NAME  "uart0"
+#endif
 #endif
 
 /*
@@ -139,24 +137,54 @@
 #if defined(__AVR__) || defined(__NUT_EMULATION__)
 
 #include <dev/usartavr.h>
+
+#ifndef DEV_UART0
 #define DEV_UART0       devUsartAvr0
+#endif
+
+#ifndef DEV_UART1
 #define DEV_UART1       devUsartAvr1
+#endif
+
 #define DEV_UART1_NAME  "uart1"
 
-#elif defined(ETHERNUT3) || defined(WOLF) || defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(AT91SAM7S) || defined(AT91SAM7SE) ||\
-    defined(ELEKTOR_IR1) || defined(MCU_AT91SAM9XE512)
+#elif defined(MCU_AT91)
 
 #include <dev/usartat91.h>
-#define DEV_UART0       devUsartAt910
-#define DEV_UART1       devUsartAt911
-#define DEV_UART1_NAME  "uart1"
-#define DEV_UARTD       devDbguAt91
-#define DEV_UARTD_NAME  "uartd"
 
-#elif defined(EVK1100) || defined(__AVR32__)
+#ifndef DEV_UART0
+#define DEV_UART0       devUsartAt910
+#endif
+
+#ifndef DEV_UART1
+#define DEV_UART1       devUsartAt911
+#endif
+
+#ifndef DEV_UARTD
+#define DEV_UARTD       devDbguAt91
+#endif
+
+#elif defined(__AVR32__)
 
 #include <dev/usartavr32.h>
-#define DEV_UART0		devUsartAvr320
+
+#ifndef DEV_UART0
+#define DEV_UART0       devUsartAvr320
+#endif
+
+#ifndef DEV_UART1
+#define DEV_UART1       devUsartAvr321
+#endif
+
+#if defined(EVK1104) && !defined(DEV_UART)
+#define DEV_UART        DEV_UART1
+#define DEV_UART_NAME   DEV_UART1_NAME
+#endif
+
+#elif defined(GBA)
+
+#define DEV_UART        DEV_DEBUG
+#define DEV_UART_NAME   DEV_DEBUG_NAME
 
 #endif
 
@@ -165,6 +193,14 @@
 #endif
 #ifndef DEV_UART0_NAME
 #define DEV_UART0_NAME  "uart0"
+#endif
+
+#if defined(DEV_UART1) && !defined(DEV_UART1_NAME)
+#define DEV_UART1_NAME  "uart1"
+#endif
+
+#if defined(DEV_UARTD) && !defined(DEV_UARTD_NAME)
+#define DEV_UARTD_NAME  "uartd"
 #endif
 
 #ifndef DEV_UART
@@ -190,7 +226,7 @@
 #include <dev/ax88796.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
-#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5)
+#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5) || defined(MORPHOQ1)
 #include <dev/at91sam7x_emac.h>
 #elif defined(EVK1100) || defined(__AVR32__)
 #include <dev/avr32_macb.h>
