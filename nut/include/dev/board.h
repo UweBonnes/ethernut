@@ -120,7 +120,7 @@
 #endif
 
 #ifndef DEV_DEBUG_NAME
-#if defined(GBA)
+#if defined(GBAXPORT2)
 #define DEV_DEBUG_NAME  "con"
 #elif defined(OLIMEX_LPCE2294) || defined(HHOPEN_63F) || defined(EVK1104)
 #define DEV_DEBUG_NAME  "uart1"
@@ -181,7 +181,7 @@
 #define DEV_UART_NAME   DEV_UART1_NAME
 #endif
 
-#elif defined(GBA)
+#elif defined(GBAXPORT2)
 
 #define DEV_UART        DEV_DEBUG
 #define DEV_UART_NAME   DEV_DEBUG_NAME
