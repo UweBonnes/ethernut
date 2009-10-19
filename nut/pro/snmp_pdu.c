@@ -32,6 +32,7 @@
  * For additional information see http://www.ethernut.de/
  */
 
+#include <compiler.h>
 #include <stdlib.h>
 #include <string.h>
 

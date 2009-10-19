@@ -48,6 +48,7 @@
  * \endverbatim
  */
 
+#include <compiler.h>
 #include <cfg/os.h>
 
 #include <stdlib.h>
@@ -57,7 +58,6 @@
 #include <sys/timer.h>
 #include <sys/atom.h>
 
-#include <compiler.h>
 #include <dev/board.h>
 
 #include <dev/gpio.h>
