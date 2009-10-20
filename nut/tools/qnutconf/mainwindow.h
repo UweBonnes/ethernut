@@ -62,6 +62,7 @@ private:
 
 private slots:
 	void updateView(const QModelIndex& current, const QModelIndex& previous);
+	void message( const QString& );
 
 private:
 	NutComponentModel* model;

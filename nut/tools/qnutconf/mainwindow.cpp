@@ -31,6 +31,7 @@
  *
  */
 
+#include <QTime>
 #include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -46,12 +47,18 @@ MainWindow::MainWindow()
 	Settings::instance()->load();
 	model = new NutComponentModel(Settings::instance()->repository(), this);
 	ui.componentTree->setModel( model );
-	connect( model, SIGNAL(errorMessage(const QString&)), ui.logPanel, SLOT(append(const QString&)) );
-	connect( model, SIGNAL(message(const QString&)), ui.logPanel, SLOT(append(const QString&)) );
+	connect( model, SIGNAL(errorMessage(const QString&)), SLOT(message(const QString&)) );
+	connect( model, SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(updateView(const QModelIndex&, const QModelIndex&)) );
 
 	readSettings();
+
+	message( tr("Nut/OS Configurator Version %1").arg(NUTCONF_VERSION_STR) );
+	message( tr("Linked to Qt %1").arg(QT_VERSION_STR) );
+	message( tr("Working in %1").arg( QDir::current().absolutePath() ) );
 }
+
+#include <qglobal.h>
 
 MainWindow::~MainWindow()
 {
@@ -125,3 +132,7 @@ void MainWindow::updateView( const QModelIndex& current, const QModelIndex& prev
 	ui.descriptionPanel->setText( data.toString() );
 }
 
+void MainWindow::message( const QString& msg )
+{
+	ui.logPanel->append( QTime::currentTime().toString("HH:mm:ss: ") +  msg );
+}
