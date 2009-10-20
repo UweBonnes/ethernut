@@ -50,6 +50,9 @@ public slots:
 
 private slots:
 	void populatePlatform();
+	void populateProgrammer();
+	void browseFolder();
+	void browseFile();
 
 private:
 	Ui::SettingsDialogClass ui;

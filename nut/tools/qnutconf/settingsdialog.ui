@@ -24,7 +24,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="repositoryTab">
       <attribute name="title">
@@ -56,9 +56,15 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="btn_BrowseRepository">
               <property name="text">
                <string>Browse...</string>
+              </property>
+              <property name="browseTarget" stdset="0">
+               <string>e_RepositoryFile</string>
+              </property>
+              <property name="fileFilter" stdset="0">
+               <string>*.nut</string>
               </property>
              </widget>
             </item>
@@ -118,6 +124,9 @@
              <widget class="QPushButton" name="btn_BrowseSource">
               <property name="text">
                <string>Browse...</string>
+              </property>
+              <property name="browseTarget" stdset="0">
+               <string>e_SourceDirectory</string>
               </property>
              </widget>
             </item>
@@ -180,6 +189,9 @@
             <property name="text">
              <string>Browse...</string>
             </property>
+            <property name="browseTarget" stdset="0">
+             <string>e_IncludeFirst</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -200,6 +212,9 @@
             <property name="text">
              <string>Browse...</string>
             </property>
+            <property name="browseTarget" stdset="0">
+             <string>e_IncludeLast</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -219,6 +234,9 @@
             <property name="text">
              <string>Browse...</string>
             </property>
+            <property name="browseTarget" stdset="0">
+             <string>e_BuildDirectory</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -237,6 +255,9 @@
            <widget class="QPushButton" name="btn_BrowseInstallDirectory">
             <property name="text">
              <string>Browse...</string>
+            </property>
+            <property name="browseTarget" stdset="0">
+             <string>e_InstallDirectory</string>
             </property>
            </widget>
           </item>
@@ -291,12 +312,15 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
-             <widget class="QLineEdit" name="e_SourceDirectory_2"/>
+             <widget class="QLineEdit" name="e_AppDirectory"/>
             </item>
             <item>
-             <widget class="QPushButton" name="btn_BrowseSource_2">
+             <widget class="QPushButton" name="btn_BrowseAppDirectory">
               <property name="text">
                <string>Browse...</string>
+              </property>
+              <property name="browseTarget" stdset="0">
+               <string>e_AppDirectory</string>
               </property>
              </widget>
             </item>
@@ -315,7 +339,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox_2"/>
+             <widget class="QComboBox" name="cb_Programmer"/>
             </item>
             <item>
              <spacer name="horizontalSpacer_3">
@@ -365,7 +389,7 @@
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>e_RepositoryFile</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>btn_BrowseRepository</tabstop>
   <tabstop>checkBox</tabstop>
   <tabstop>e_SourceDirectory</tabstop>
   <tabstop>btn_BrowseSource</tabstop>
@@ -406,5 +430,121 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btn_BrowseAppDirectory</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialogClass</receiver>
+   <slot>browseFolder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>371</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_BrowseSource</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialogClass</receiver>
+   <slot>browseFolder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>79</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>372</x>
+     <y>81</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_BrowseIncludeFirst</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialogClass</receiver>
+   <slot>browseFolder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>293</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>372</x>
+     <y>165</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_BrowseIncludeLast</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialogClass</receiver>
+   <slot>browseFolder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>310</x>
+     <y>204</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_BrowseBuildDirectory</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialogClass</receiver>
+   <slot>browseFolder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>327</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>271</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_BrowseInstallDirectory</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialogClass</receiver>
+   <slot>browseFolder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>309</x>
+     <y>344</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>374</x>
+     <y>341</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_BrowseRepository</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialogClass</receiver>
+   <slot>browseFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>380</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>browseFolder()</slot>
+  <slot>browseFile()</slot>
+ </slots>
 </ui>

@@ -68,6 +68,8 @@ public:
 	void setToolPath(const QString& val) { m_toolPath = val; }
 	QString targetPlatform() const { return m_targetPlatform; }
 	void setTargetPlatform(const QString& val) { m_targetPlatform = val; }
+	QString programmer() const { return m_programmer; }
+	void setProgrammer(const QString& val) { m_programmer = val; }
 
 private:
 	Settings();
@@ -85,6 +87,7 @@ private:
 	QString m_appDir;
 	QString m_toolPath;
 	QString m_targetPlatform;
+	QString m_programmer;
 };
 
 #endif // __SETTINGS_H__

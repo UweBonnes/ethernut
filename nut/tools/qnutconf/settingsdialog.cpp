@@ -34,6 +34,8 @@
 #include "settingsdialog.h"
 #include "settings.h"
 
+#include <QFileDialog>
+
 SettingsDialog::SettingsDialog(QWidget *parent)
 	: QDialog(parent)
 {
@@ -46,8 +48,14 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	ui.e_SourceDirectory->setText( Settings::instance()->sourceDir() );
 	ui.e_BuildDirectory->setText( Settings::instance()->buildPath() );
 	ui.e_InstallDirectory->setText( Settings::instance()->installPath() );
-
 	populatePlatform();
+
+	// Tools tab
+	ui.e_ToolPath->setText( Settings::instance()->toolPath() );
+
+	// Samples tab
+	ui.e_AppDirectory->setText( Settings::instance()->appDir() );
+	populateProgrammer();
 }
 
 SettingsDialog::~SettingsDialog()
@@ -73,9 +81,107 @@ void SettingsDialog::populatePlatform()
 			ui.cb_Platform->addItem( file.mid( 9 ) );
 		}
 	}
+
+	if ( platform.isEmpty() )
+		platform = Settings::instance()->targetPlatform();
+
+	int index = ui.cb_Platform->findText( platform );
+	if ( index >= 0 )
+		ui.cb_Platform->setCurrentIndex( index );
+}
+
+/*!
+	Fills the programmer selection combo box.
+	Scans the <source directory>/app for files with a base name of 'Makeburn'.
+	The extensions of all files found are added to the combo box.
+*/
+void SettingsDialog::populateProgrammer()
+{
+	QDir src_dir( ui.e_SourceDirectory->text() + QDir::separator() + "app" );
+	QString programmer = ui.cb_Programmer->currentText();
+
+	if ( src_dir.exists() )
+	{
+		ui.cb_Programmer->clear();
+		foreach( QString file, src_dir.entryList( QStringList() << "Makeburn.*") )
+		{
+			ui.cb_Programmer->addItem( file.mid( 9 ) );
+		}
+	}
+	
+	if ( programmer.isEmpty() )
+		programmer = Settings::instance()->programmer();
+
+	int index = ui.cb_Programmer->findText( programmer );
+	if ( index >= 0 )
+		ui.cb_Programmer->setCurrentIndex( index );
 }
 
 void SettingsDialog::accept()
 {
+	// Update the Settings singleton.
+
+	// Repository tab
+	Settings::instance()->setRepository( ui.e_RepositoryFile->text() );
+	
+	// Build tab
+	Settings::instance()->setSourceDir( ui.e_SourceDirectory->text() );
+	Settings::instance()->setBuildPath( ui.e_BuildDirectory->text() );
+	Settings::instance()->setInstallPath( ui.e_InstallDirectory->text() );
+	Settings::instance()->setTargetPlatform( ui.cb_Platform->currentText() );
+
+	// Tools tab
+	Settings::instance()->setToolPath( ui.e_ToolPath->text() );
+
+	// Samples tab
+	Settings::instance()->setAppDir( ui.e_AppDirectory->text() );
+	Settings::instance()->setProgrammer( ui.cb_Programmer->currentText() );
+
 	QDialog::accept();
 }
+
+/*!
+	Looks for dynamic property "browseTarget" (string) in the slot sender, with the
+	name of a QLineEdit, to fill with the user selected folder path.
+	This dynamic property is usually set from the Qt Designer.
+*/
+void SettingsDialog::browseFolder()
+{
+	QObject* sender = QObject::sender();
+	QVariant browseTarget = sender->property("browseTarget");
+	if ( !browseTarget.isValid() )
+		return;
+
+	QLineEdit* target = findChild<QLineEdit*>( browseTarget.toString() );
+	if ( !target )
+		return;
+
+	QString folder = QFileDialog::getExistingDirectory( this, tr("Browse"), target->text() );
+	if ( !folder.isEmpty() )
+		target->setText( folder );
+}
+
+/*!
+	Looks for dynamic property "browseTarget" (string) in the slot sender, with the
+	name of a QLineEdit, to fill with the user selected file path.
+	If the optional "fileFilter" property is available, it will be used as the contents
+	of the filter parameter to open the dialog.
+	These dynamic properties are usually set from the Qt Designer.
+*/
+void SettingsDialog::browseFile()
+{
+	QObject* sender = QObject::sender();
+	QVariant browseTarget = sender->property("browseTarget");
+	QVariant filter = sender->property("fileFilter");
+	if ( !browseTarget.isValid() )
+		return;
+
+	QLineEdit* target = findChild<QLineEdit*>( browseTarget.toString() );
+	if ( !target )
+		return;
+
+	QString fileName = QFileDialog::getOpenFileName( this, tr("Browse"), target->text(), filter.toString() );
+	if ( !fileName.isEmpty() )
+		target->setText( fileName );
+}
+

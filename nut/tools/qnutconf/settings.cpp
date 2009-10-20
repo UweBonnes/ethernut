@@ -144,6 +144,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	m_appDir = settings.value("applicationDirectory", "nutapp").toString();
 	m_targetPlatform = settings.value("targetPlatform").toString();
 	m_toolPath = settings.value("toolPath").toString();
+	m_programmer = settings.value("programmer").toString();
 	
 	return true;
 }
