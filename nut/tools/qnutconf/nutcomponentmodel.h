@@ -40,6 +40,8 @@
 
 #include "nutcomponent.h"
 
+class QTextStream;
+
 class NutComponentModel : public QAbstractItemModel
 {
 	Q_OBJECT
@@ -57,6 +59,7 @@ public:
 	~NutComponentModel();
 
 	bool openConfig( const QString& );
+	bool saveConfig( const QString& filename );
 
 	QVariant data(const QModelIndex &index, int role) const;
 	bool setData(const QModelIndex &index, const QVariant &value, int role);
@@ -77,6 +80,8 @@ private:
 	bool isOptionActive( const char* );
 	NUTCOMPONENTOPTION* findOptionByName(NUTCOMPONENT* compo, const char* name);
 	void deactivateOptionList(char **exlist);
+
+	void saveComponentOptions( QTextStream& file, NUTCOMPONENT* compo );
 };
 
 #endif //__NUTCOMPONENTTREEMODEL_H__

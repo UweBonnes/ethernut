@@ -34,6 +34,9 @@
 #include "nutcomponentmodel.h"
 
 #include <QtGui>
+#include <QFile>
+
+#include <string.h>
 
 #include "nutcomponentmodel.h"
 #include "nutcomponentmodel_p.h"
@@ -134,6 +137,66 @@ bool NutComponentModel::openConfig( const QString& fileName )
 	rebuildTree();
 	reset();
 	return true;
+}
+
+void NutComponentModel::saveComponentOptions( QTextStream& stream, NUTCOMPONENT* compo )
+{
+	while( compo )
+	{
+		NUTCOMPONENTOPTION* opts = compo->nc_opts;
+		while (opts) 
+		{
+			if(opts->nco_enabled && opts->nco_active) 
+			{
+				QString value;
+				if (opts->nco_value) 
+				{
+					/* Save edited value. */
+					value = QLatin1String(opts->nco_value);
+				} 
+				else
+				{
+					/* Save configured value. */
+					char* v = GetConfigValue( d->repository, opts->nco_name );
+					value = QLatin1String( v );
+					free( v );
+				}
+
+				/* Do not save empty values, unless they are boolean. */
+				if ( value.isEmpty() ) 
+				{
+					char* flavor = GetOptionFlavour(d->repository, opts->nco_compo, opts->nco_name);
+					QString flavorString = QString(QLatin1String(flavor)).toLower();
+					if ( flavor )
+						free( flavor );
+					if ( flavorString.isEmpty() || flavorString.startsWith( "bool" ) )
+						value.clear();
+				}
+
+				if ( !value.isEmpty() )
+					stream << opts->nco_name << " = \"" << value << "\"\n";
+			}
+			opts = opts->nco_nxt;
+		}
+		saveComponentOptions(stream, compo->nc_child);
+		compo = compo->nc_nxt;
+	}
+}
+
+bool NutComponentModel::saveConfig( const QString& filename )
+{
+	if ( filename.isEmpty() )
+		return false;
+
+	QFile file( filename );
+	if ( file.open( QFile::WriteOnly | QFile::Text ) )
+	{
+		QTextStream stream( &file );
+		saveComponentOptions( stream, d->rootComponent );
+		file.close();
+		return true;
+	}
+	return false;
 }
 
 int NutComponentModel::columnCount(const QModelIndex &parent) const

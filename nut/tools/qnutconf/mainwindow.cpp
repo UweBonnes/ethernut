@@ -85,8 +85,25 @@ void MainWindow::on_actionOpen_triggered()
 			QApplication::restoreOverrideCursor();
 			QMessageBox::critical(this, tr("Erro"), tr("There was a problem opening the file, please check the log message"));
 		}
+		else
+			Settings::instance()->load( fileName );
 		QApplication::restoreOverrideCursor();
 	}
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+	model->saveConfig( Settings::instance()->configFileName() );
+}
+
+void MainWindow::on_actionSave_as_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName( this, tr("Browse"), Settings::instance()->repository(), tr("Nut/OS Configuration (*.conf)") );
+	if ( fileName.isEmpty() )
+		return;
+
+	Settings::instance()->setConfigFileName( fileName );
+	model->saveConfig( fileName );
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -102,6 +119,9 @@ void MainWindow::on_actionSettings_triggered()
 
 void MainWindow::updateView( const QModelIndex& current, const QModelIndex& previous )
 {
+	Q_UNUSED(previous);
+
 	QVariant data = model->data( current, NutComponentModel::Description );
 	ui.descriptionPanel->setText( data.toString() );
 }
+
