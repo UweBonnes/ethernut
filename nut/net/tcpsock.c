@@ -816,6 +816,7 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
                 sock->so_rx_buf = nb->nb_next;
                 sock->so_rx_cnt -= rd_cnt;
                 NutNetBufFree(nb);
+                sock->so_rx_apc--;
                 nb = sock->so_rx_buf;
                 rd_cnt = 0;
             }

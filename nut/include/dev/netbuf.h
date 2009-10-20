@@ -171,6 +171,7 @@ __BEGIN_DECLS
 extern NETBUF *NutNetBufAlloc(NETBUF *nb, uint8_t type, int size);
 extern NETBUF *NutNetBufClone(NETBUF *nb);
 extern void NutNetBufFree(NETBUF *nb);
+extern int NutNetBufCollect(NETBUF * nbq, int total);
 
 __END_DECLS
 

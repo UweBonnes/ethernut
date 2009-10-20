@@ -315,4 +315,44 @@ void NutNetBufFree(NETBUF * nb)
     NutHeapFree(nb);
 }
 
+/*!
+ * \brief Collect linked list of network buffers.
+ *
+ * \param nbq Points to an existing network buffer queue.
+ *
+ * \return Number of released network buffers.
+ */
+int NutNetBufCollect(NETBUF * nbq, int total)
+{
+    int rc = 0;
+    NETBUF *nb;
+    NETBUF *nbx;
+    NBDATA nbd;
+    uint8_t *ap;
+
+    if (NutNetBufAllocData(&nbd, total) == 0) {
+        ap = (uint8_t *) nbd.vp;
+        memcpy(nbd.vp, nbq->nb_ap.vp, nbq->nb_ap.sz);
+        nbd.sz = nbq->nb_ap.sz;
+        nb = nbq->nb_next;
+        while (nb && total >= nbd.sz + nb->nb_ap.sz) {
+            nbx = nb->nb_next;
+            memcpy(ap + nbd.sz, nb->nb_ap.vp, nb->nb_ap.sz);
+            nbd.sz += nb->nb_ap.sz;
+            NutNetBufFree(nb);
+            nb = nbx;
+            rc++;
+        }
+        nbq->nb_next = nb;
+        if (nbq->nb_flags & NBAF_APPLICATION) {
+            NutHeapFree(nbq->nb_ap.vp);
+        } else {
+            nbq->nb_flags |= NBAF_APPLICATION;
+        }
+        nbq->nb_ap.vp = nbd.vp;
+        nbq->nb_ap.sz = nbd.sz;
+    }
+    return rc;
+}
+
 /*@}*/

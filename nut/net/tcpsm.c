@@ -284,10 +284,14 @@ NETBUF *volatile tcp_in_nbq;
 static uint16_t tcp_in_cnt;
 static HANDLE tcpThread = 0;
 
+static size_t tcp_adv_cnt;
+static size_t tcp_adv_max = TCP_WINSIZE;
+
 /* ================================================================
  * Helper functions
  * ================================================================
  */
+
 
 /*!
  * \brief Reads TCP option fields if any, and writes the data to
@@ -380,6 +384,22 @@ static void NutTcpProcessAppData(TCPSOCKET * sock, NETBUF * nb)
     else
         sock->so_tx_flags |= SO_FORCE;
 
+    if (++sock->so_rx_apc > 8) {
+        NETBUF *nbq;
+        int_fast8_t apc = sock->so_rx_apc;
+        int cnt = sock->so_rx_cnt;
+
+        for (nbq = sock->so_rx_buf; nbq; nbq = nbq->nb_next) {
+            if (nbq->nb_ap.sz < 256) {
+                sock->so_rx_apc -= NutNetBufCollect(nbq, cnt);
+                break;
+            }
+            if (--apc < 8) {
+                break;
+            }
+            cnt -= nbq->nb_ap.sz;
+        }
+    }
     NutTcpOutput(sock, 0, 0);
 }
 
@@ -1193,29 +1213,38 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
         uint32_t thq_seq;
 
         if (nb->nb_ap.sz) {
-            nbq = sock->so_rx_nbq;
-            nbqp = &sock->so_rx_nbq;
-            while (nbq) {
-                thq = (TCPHDR *) (nbq->nb_tp.vp);
-                th_seq = htonl(th->th_seq);
-                thq_seq = htonl(thq->th_seq);
-                if (th_seq < thq_seq) {
+            /* Keep track of the number of bytes used by packets
+            ** received in advance. Honor a global limit. */
+            tcp_adv_cnt += nb->nb_dl.sz + sizeof(IPHDR) + sizeof (TCPHDR) + nb->nb_ap.sz;
+            if (tcp_adv_cnt > tcp_adv_max) {
+                /* Limit reached, discard the packet. */
+                NutNetBufFree(nb);
+                tcp_adv_cnt -= nb->nb_dl.sz + sizeof(IPHDR) + sizeof (TCPHDR) + nb->nb_ap.sz;
+            } else {
+                nbq = sock->so_rx_nbq;
+                nbqp = &sock->so_rx_nbq;
+                while (nbq) {
+                    thq = (TCPHDR *) (nbq->nb_tp.vp);
+                    th_seq = htonl(th->th_seq);
+                    thq_seq = htonl(thq->th_seq);
+                    if (th_seq < thq_seq) {
+                        *nbqp = nb;
+                        nb->nb_next = nbq;
+                        break;
+                    }
+                    if (th_seq == thq_seq) {
+                        NutNetBufFree(nb);
+                        sock->so_tx_flags |= SO_ACK | SO_FORCE;
+                        NutTcpOutput(sock, 0, 0);
+                        return;
+                    }
+                    nbqp = &nbq->nb_next;
+                    nbq = nbq->nb_next;
+                }
+                if (nbq == 0) {
                     *nbqp = nb;
-                    nb->nb_next = nbq;
-                    break;
+                    nb->nb_next = 0;
                 }
-                if (th_seq == thq_seq) {
-                    NutNetBufFree(nb);
-                    sock->so_tx_flags |= SO_ACK | SO_FORCE;
-                    NutTcpOutput(sock, 0, 0);
-                    return;
-                }
-                nbqp = &nbq->nb_next;
-                nbq = nbq->nb_next;
-            }
-            if (nbq == 0) {
-                *nbqp = nb;
-                nb->nb_next = 0;
             }
         } else
             NutNetBufFree(nb);
@@ -1253,6 +1282,9 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
             if (htonl(th->th_seq) > sock->so_rx_nxt)
                 break;
             sock->so_rx_nbq = nb->nb_next;
+            /* Update the heap space used by packets 
+            ** received in advance. */
+            tcp_adv_cnt -= nb->nb_dl.sz + sizeof(IPHDR) + sizeof (TCPHDR) + nb->nb_ap.sz;
             if (htonl(th->th_seq) == sock->so_rx_nxt) {
                 NutTcpProcessAppData(sock, nb);
                 flags |= th->th_flags;

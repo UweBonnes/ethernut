@@ -244,6 +244,7 @@ struct tcp_socket {
     int     so_rx_cnt;      /*!< \brief Number of data bytes in the receive buffer. */
     int     so_rx_bsz;      /*!< \brief Receive buffer size. */
     int     so_rd_cnt;      /*!< \brief Number of bytes read from buffer top. */
+    int_fast8_t so_rx_apc;  /*!< \brief Number of packets received in advance. */
     NETBUF  *so_rx_buf;     /*!< \brief Data waiting to be read by application. */
     HANDLE  so_rx_tq;       /*!< \brief Threads waiting for received data. */
     NETBUF  *so_rx_nbq;     /*!< \brief Network buffers received in advance. */
