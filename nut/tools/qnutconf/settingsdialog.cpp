@@ -137,6 +137,8 @@ void SettingsDialog::accept()
 	Settings::instance()->setAppDir( ui.e_AppDirectory->text() );
 	Settings::instance()->setProgrammer( ui.cb_Programmer->currentText() );
 
+	Settings::instance()->save();
+
 	QDialog::accept();
 }
 

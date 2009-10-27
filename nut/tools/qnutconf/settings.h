@@ -45,6 +45,7 @@ public:
 	~Settings();
 	
 	bool load( const QString& fileName = QString() );
+	void save();
 
 	static Settings* instance();
 	static QString findRelativePath( const QString& filename );

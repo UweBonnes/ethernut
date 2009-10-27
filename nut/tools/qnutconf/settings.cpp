@@ -151,3 +151,16 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	return true;
 }
 
+void Settings::save()
+{
+	QSettings settings;
+	settings.setValue("settings/configFileName", m_configFileName);
+	settings.setValue("buildPath", m_buildPath);
+	settings.setValue("includePath", m_includePath);
+	settings.setValue("installPath", m_installPath);
+	settings.setValue("sourceDirectory", m_sourceDir);
+	settings.setValue("applicationDirectory", m_appDir);
+	settings.setValue("targetPlatform", m_targetPlatform);
+	settings.setValue("toolPath", m_toolPath);
+	settings.setValue("programmer", m_programmer);
+}
