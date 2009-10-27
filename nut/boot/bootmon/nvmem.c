@@ -38,6 +38,7 @@
 
 #include "utils.h"
 #include "twbbi.h"
+#include "npl.h"
 #include "nvmem.h"
 
 #ifndef EEPROM_PAGE_SIZE
@@ -52,6 +53,90 @@
 #define I2C_SLA_EEPROM  0x57
 #endif
 
+#ifndef I2C_SLA_PLL
+#define I2C_SLA_PLL     0x69
+#endif
+
+#define DFCMD_BUF1_FLASH        0x83
+#define DFCMD_BUF1_WRITE        0x84
+#define DFCMD_READ_STATUS       0xD7
+#define DFCMD_CONT_READ         0xE8
+
+#define SPI_WRITE       1
+#define SPI_READ        2
+
+static int at45d_avail;
+
+#ifndef NVMEM_BUFF_SIZE
+#ifdef AT45D_CONF
+#define NVMEM_BUFF_SIZE     528
+#else
+#define NVMEM_BUFF_SIZE     128
+#endif
+#endif
+
+static unsigned char page_buf[NVMEM_BUFF_SIZE];
+
+#ifdef AT45D_CONF
+static int NplSpiTransfer(int dir, unsigned char *ptr, int len)
+{
+    int cnt = 20000;
+    unsigned char b;
+
+    while (len--) {
+        outb(NPL_MMCDR, *ptr);
+        while ((inb(NPL_SLR) & NPL_MMCREADY) == 0) {
+            if (cnt-- <= 0) {
+                return -1;
+            }
+        }
+        b = inb(NPL_MMCDR);
+        if (dir & SPI_READ) {
+            *ptr = b;
+        }
+        ptr++;
+    }
+    return 0;
+}
+
+static unsigned char At45dStatus(void)
+{
+    unsigned char cmd[2] = { DFCMD_READ_STATUS, 0xFF };
+
+    outb(NPL_XER, inb(NPL_XER) & ~NPL_NPCS0);
+    NplSpiTransfer(SPI_WRITE | SPI_READ, cmd, 2);
+    outb(NPL_XER, inb(NPL_XER) | NPL_NPCS0);
+
+    return cmd[1];
+}
+
+static int At45dCommand(unsigned char op, unsigned long parm, int oplen, unsigned char *xptr, int xlen)
+{
+    int rc = -1;
+    unsigned char cmd[8];
+
+    memset_(cmd, 0, oplen);
+    cmd[0] = op;
+    if (parm) {
+        cmd[1] = (unsigned char) (parm >> 16);
+        cmd[2] = (unsigned char) (parm >> 8);
+        cmd[3] = (unsigned char) parm;
+    }
+
+    outb(NPL_XER, inb(NPL_XER) & ~NPL_NPCS0);
+    rc = NplSpiTransfer(SPI_WRITE, cmd, oplen);
+    if (rc == 0) {
+        if (xlen > 0) {
+            rc = NplSpiTransfer(SPI_WRITE, xptr, xlen);
+        } else if (xlen < 0) {
+            rc = NplSpiTransfer(SPI_READ, xptr, -xlen);
+        }
+    }
+    outb(NPL_XER, inb(NPL_XER) | NPL_NPCS0);
+
+    return rc;
+}
+#else
 static int NvMemWriteEnable(int on)
 {
     int rc;
@@ -83,6 +168,8 @@ static int NvMemWaitReady(void)
     }
     return cnt ? 0 : -1;
 }
+#endif
+
 
 /*!
  * \brief Read contents from non-volatile EEPROM.
@@ -96,13 +183,21 @@ static int NvMemWaitReady(void)
 int NvMemRead(unsigned int addr, void *buff, unsigned int len)
 {
     int rc = -1;
-    unsigned char wbuf[2];
 
-    wbuf[0] = (unsigned char) (addr >> 8);
-    wbuf[1] = (unsigned char) addr;
-    if (TwMasterTransact(I2C_SLA_EEPROM, wbuf, 2, buff, len, 0) == len) {
+#ifdef AT45D_CONF
+    if (at45d_avail) {
+        memcpy_(buff, &page_buf[addr], len);
         rc = 0;
     }
+#else
+    unsigned char param[2];
+
+    param[0] = (unsigned char) (addr >> 8);
+    param[1] = (unsigned char) addr;
+    if (TwMasterTransact(I2C_SLA_EEPROM, param, 2, buff, len, 0) == len) {
+        rc = 0;
+    }
+#endif
     return rc;
 }
 
@@ -118,11 +213,24 @@ int NvMemRead(unsigned int addr, void *buff, unsigned int len)
  *
  * \return 0 on success or -1 in case of an error.
  */
-unsigned char wbuf[128];
-
 int NvMemWrite(unsigned int addr, void *buff, unsigned int len)
 {
     int rc = 0;
+
+#ifdef AT45D_CONF
+    if (at45d_avail) {
+        memcpy_(&page_buf[addr], buff, len);
+        if (At45dCommand(DFCMD_BUF1_WRITE, 0, 4, page_buf, sizeof(page_buf))) {
+            rc = -1;
+        }
+        else if (At45dCommand(DFCMD_BUF1_FLASH, 8191 << 10, 4, 0, 0)) {
+            rc = -1;
+        }
+        Delay(10);
+    } else {
+        rc = -1;
+    }
+#else
     unsigned int wlen;
     unsigned char *wp = buff;
 
@@ -137,13 +245,13 @@ int NvMemWrite(unsigned int addr, void *buff, unsigned int len)
         }
 
         /* Set a TWI write buffer. */
-        wbuf[0] = (unsigned char) (addr >> 8);
-        wbuf[1] = (unsigned char) addr;
-        memcpy_(wbuf + 2, wp, wlen);
+        page_buf[0] = (unsigned char) (addr >> 8);
+        page_buf[1] = (unsigned char) addr;
+        memcpy_(page_buf + 2, wp, wlen);
 
         /* Enable EEPROM write access and send the write buffer. */
         if ((rc = NvMemWriteEnable(1)) == 0) {
-            rc = TwMasterTransact(I2C_SLA_EEPROM, wbuf, wlen + 2, 0, 0, 0);
+            rc = TwMasterTransact(I2C_SLA_EEPROM, page_buf, wlen + 2, 0, 0, 0);
         }
 
         /* Check the result. */
@@ -160,6 +268,7 @@ int NvMemWrite(unsigned int addr, void *buff, unsigned int len)
         }
     }
     NvMemWriteEnable(0);
+#endif
 
     return rc;
 }
@@ -170,4 +279,30 @@ int NvMemWrite(unsigned int addr, void *buff, unsigned int len)
 void NvMemInit(void)
 {
     TwInit();
+
+#ifdef AT45D_CONF
+    {
+        unsigned char reg[2];
+
+        reg[0] = 0x09;
+        if (TwMasterTransact(I2C_SLA_PLL, reg, 1, &reg[1], 1, 0) == 1) {
+            reg[1] &= ~0x7F;
+            reg[1] |= 2;
+            TwMasterTransact(I2C_SLA_PLL, reg, 2, 0, 0, 0);
+        }
+        reg[0] = 0x08;
+        if (TwMasterTransact(I2C_SLA_PLL, reg, 1, &reg[1], 1, 0) == 1) {
+            reg[1] &= ~0x7F;
+            reg[1] |= 2;
+            TwMasterTransact(I2C_SLA_PLL, reg, 2, 0, 0, 0);
+        }
+
+        /* AT45DB0321B is supported only. */
+        if ((At45dStatus() & 0x3D) == 0x34) {
+            if (At45dCommand(DFCMD_CONT_READ, 8191 << 10, 8, page_buf, -((int)sizeof(page_buf))) == 0) {
+                at45d_avail = 1;
+            }
+        }
+    }
+#endif
 }

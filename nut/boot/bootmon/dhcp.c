@@ -287,7 +287,7 @@ int DhcpQuery(void)
         confboot.cb_tftp_ip = rframe.u.bootp.bp_siaddr;
     }
     if (confboot.cb_image[0] == 0) {
-        for (cp = rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(confboot.cb_image) - 1; cp++, i++) {
+        for (cp = (unsigned char *)rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(confboot.cb_image) - 1; cp++, i++) {
             confboot.cb_image[i] = *cp;
         }
         confboot.cb_image[i] = 0;

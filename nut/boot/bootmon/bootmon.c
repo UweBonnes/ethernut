@@ -88,7 +88,7 @@ static int UserEntry(void)
     int n;
     char yn[3];
 
-    PutString("\nBootMon 1.0.6\n");
+    PutString("\nBootMon 1.1.0\n");
     NplUledCntl(ULED_OFF);
 
     memcpy_(my_mac, confnet.cdn_mac, 6);
@@ -150,7 +150,7 @@ static int UserEntry(void)
 int main(void)
 {
     int i;
-    unsigned long *flash_app = 0x10020000;
+    unsigned long *flash_app = (unsigned long *)0x10020000;
 
     NplUledCntl(ULED_ON);
     /* Initialize RS232 port. */

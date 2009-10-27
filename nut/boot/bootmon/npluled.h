@@ -49,13 +49,7 @@
  * \endverbatim
  */
 
-#define NPL_BASE        0x21000000
-
-#define NPL_XER         (NPL_BASE + 0x18)
-
-#define NPL_MMCS        0x0001  /*!< \brief MMC select. */
-#define NPL_PANCS       0x0002  /*!< \brief Panel select. */
-#define NPL_USRLED      0x0004  /*!< \brief User LED. */
+#include "npl.h"
 
 /*!
  * \addtogroup xgNpl
@@ -68,9 +62,6 @@
  */
 #define ULED_ON		1
 #define ULED_OFF	0
-
-#define outb(_reg, _val)  (*((volatile unsigned char *)(_reg)) = (_val))
-#define inb(_reg)   (*((volatile unsigned char *)(_reg)))
 
 /* Function prototypes. */
 extern void NplUledCntl(int status);

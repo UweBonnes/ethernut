@@ -31,7 +31,7 @@
  */
 
 /*
- * $Log$
+ * $Log: tftp.c,v $
  * Revision 1.3  2009/02/28 15:28:46  olereinhardt
  * Fixed compiler warnings (signedness)
  *
@@ -113,7 +113,7 @@ int TftpRecv(void)
         cp1 = (unsigned char*)"enut.bin";
     }
     DEBUG("Loading ");
-    DEBUG(cp1);
+    DEBUG((char *)cp1);
     do {
         *cp = *cp1++;
         slen++;
