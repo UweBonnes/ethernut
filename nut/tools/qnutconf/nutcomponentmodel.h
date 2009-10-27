@@ -70,6 +70,9 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+	// Build methods
+	bool generateBuildTree();
+
 signals:
 	void errorMessage( const QString& );
 	void message(const QString&);

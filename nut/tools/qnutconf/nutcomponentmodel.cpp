@@ -42,6 +42,7 @@
 #include "nutcomponentmodel_p.h"
 
 #include "nutcomponent.h"
+#include "settings.h"
 
 
 class NutComponentModel::NutComponentModelPrivate
@@ -367,4 +368,31 @@ void NutComponentModel::deactivateOptionList( char **exlist )
 		if (opt) 
 			opt->nco_active = 0;
 	}
+}
+
+/*!
+	Create all configuration headers and Makefiles
+	Returns true on success, and false otherwise.
+*/
+bool NutComponentModel::generateBuildTree()
+{
+	emit message( tr("Creating Makefiles for %1 in %2").arg(Settings::instance()->targetPlatform(), Settings::instance()->buildPath()) );
+
+	if ( CreateMakeFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit(), 
+		Settings::instance()->sourceDir().toLocal8Bit(), Settings::instance()->targetPlatform().toLocal8Bit(),
+#ifdef Q_OS_WIN32
+		Settings::instance()->includePath().join(";").toLocal8Bit(),
+#else
+		Settings::instance()->includePath().join(":"),
+#endif
+		0, Settings::instance()->installPath().toLocal8Bit()) )
+	{
+		return false;
+	}
+
+	emit message( tr("Creating header files in %1").arg(Settings::instance()->buildPath()) );
+	if ( CreateHeaderFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit()) )
+		return false;
+
+	return true;
 }

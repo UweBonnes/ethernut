@@ -31,45 +31,70 @@
  *
  */
 
-#if !defined( __MAINWINDOW_H__ )
-#define __MAINWINDOW_H__
+#include "builder.h"
+#include "settings.h"
 
-#include <QTime>
-#include <QMainWindow>
+#include <QThread>
 
-#include "ui_mainwindow.h"
-
-class NutComponentModel;
-
-class MainWindow : public QMainWindow
+Builder::Builder()
 {
-	Q_OBJECT
-	Ui::MainWindow ui;
-	QTime time;
+	process = new QProcess( this );
+	process->setProcessChannelMode( QProcess::MergedChannels );
+	connect( process, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(processNextTarget(int)) );
+	connect( process, SIGNAL(readyReadStandardOutput()), SLOT(readyReadStandardOutput()) );
+}
 
-public:
-	MainWindow();
-	~MainWindow();
+Builder::~Builder()
+{
+	delete process;
+}
 
-public slots:
-	void on_actionOpen_triggered();
-	void on_actionSave_triggered();
-	void on_actionSave_as_triggered();
-	void on_actionExit_triggered();
-	void on_actionSettings_triggered();
-	void on_actionBuild_Nut_OS_triggered();
+Builder* Builder::instance()
+{
+	static Builder* theInstance = new Builder;
+	return theInstance;
+}
 
-private:
-	void readSettings();
-	void writeSettings();
+bool Builder::build( const QString& target )
+{
+	queue.append( target );
+	if ( process->state() == QProcess::NotRunning )
+	{
+		QStringList env = QProcess::systemEnvironment();
+		env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=\\1;" + Settings::instance()->toolPath() );
+		process->setEnvironment( env );
+		process->setWorkingDirectory( Settings::instance()->buildPath() );
+		processNextTarget( 0 );
+	}
 
-private slots:
-	void buildFinished( int exitCode );
-	void updateView(const QModelIndex& current, const QModelIndex& previous);
-	void message( const QString& );
+	return true;
+}
 
-private:
-	NutComponentModel* model;
-};
+void Builder::processNextTarget( int exitCode )
+{
+	if ( queue.isEmpty() || exitCode != 0 )
+	{
+		queue.clear();
+		emit done( exitCode );
+		return;
+	}
 
-#endif // __MAINWINDOW_H__
+	runMake( queue.first() );
+	queue.pop_front();
+}
+
+void Builder::runMake( const QString& target )
+{
+	emit message( tr("----- Running 'make %1' -----").arg( target ) );
+
+	QStringList paramList;
+
+	paramList << target;
+	process->start( "make", paramList );
+}
+
+void Builder::readyReadStandardOutput()
+{
+	emit message( process->readAllStandardOutput() );
+	emit message( process->readAllStandardError() );
+}

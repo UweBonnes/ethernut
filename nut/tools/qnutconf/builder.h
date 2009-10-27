@@ -31,45 +31,36 @@
  *
  */
 
-#if !defined( __MAINWINDOW_H__ )
-#define __MAINWINDOW_H__
+#if !defined( __BUILDER_H__ )
+#define __BUILDER_H__
 
-#include <QTime>
-#include <QMainWindow>
+#include <QProcess>
 
-#include "ui_mainwindow.h"
-
-class NutComponentModel;
-
-class MainWindow : public QMainWindow
+class Builder : public QObject
 {
 	Q_OBJECT
-	Ui::MainWindow ui;
-	QTime time;
+
+	QProcess* process;
+	QStringList queue;
 
 public:
-	MainWindow();
-	~MainWindow();
+	Builder();
+	~Builder();
 
-public slots:
-	void on_actionOpen_triggered();
-	void on_actionSave_triggered();
-	void on_actionSave_as_triggered();
-	void on_actionExit_triggered();
-	void on_actionSettings_triggered();
-	void on_actionBuild_Nut_OS_triggered();
+	bool build( const QString& target );
+
+	static Builder* instance();
 
 private:
-	void readSettings();
-	void writeSettings();
+	void runMake( const QString& target );
 
 private slots:
-	void buildFinished( int exitCode );
-	void updateView(const QModelIndex& current, const QModelIndex& previous);
-	void message( const QString& );
+	void processNextTarget(int exitCode);
+	void readyReadStandardOutput();
 
-private:
-	NutComponentModel* model;
+signals:
+	void message( const QString& message );
+	void done( int exitCode );
 };
 
-#endif // __MAINWINDOW_H__
+#endif __BUILDER_H__

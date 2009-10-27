@@ -32,6 +32,7 @@
  */
 
 #include <QTime>
+#include <QTimer>
 #include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -40,6 +41,7 @@
 #include "settingsdialog.h"
 #include "nutcomponentmodel.h"
 #include "settings.h"
+#include "builder.h"
 
 MainWindow::MainWindow()
 {
@@ -56,9 +58,13 @@ MainWindow::MainWindow()
 	message( tr("Nut/OS Configurator Version %1").arg(NUTCONF_VERSION_STR) );
 	message( tr("Linked to Qt %1").arg(QT_VERSION_STR) );
 	message( tr("Working in %1").arg( QDir::current().absolutePath() ) );
-}
 
-#include <qglobal.h>
+	connect( Builder::instance(), SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
+	connect( Builder::instance(), SIGNAL(done(int)), SLOT(buildFinished(int)) );
+
+	// Run File->Open as soon as we enter the event loop
+	QTimer::singleShot( 100, this, SLOT(on_actionOpen_triggered()) );
+}
 
 MainWindow::~MainWindow()
 {
@@ -124,6 +130,45 @@ void MainWindow::on_actionSettings_triggered()
 	dialog.exec();
 }
 
+void MainWindow::on_actionBuild_Nut_OS_triggered()
+{
+	/*
+	 * Create a message box containing all relevant information and
+	 * let the user decide if he really wants that.
+	 */
+	QString question = tr(
+							"\nBuild directory:   %1"
+							"\nTarget platform:   %2"
+							"\nInstall directory: %3"
+							"\n\nDo you want to build the Nut/OS libraries?\n"
+							).arg( Settings::instance()->buildPath(), Settings::instance()->targetPlatform(), Settings::instance()->installPath() );
+	if ( QMessageBox::question( this, tr("Build Nut/OS"), question, QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
+		return; 
+	
+	// Measure build time
+	time.start();
+
+	// Generate the build tree
+	model->generateBuildTree();
+
+	/* Clean up any previous build */
+	Builder::instance()->build( "clean" );
+	/* Make all */
+	Builder::instance()->build( "all" );
+
+	ui.actionBuild_Nut_OS->setEnabled( false );
+}
+
+void MainWindow::buildFinished( int exitCode )
+{
+	if ( !exitCode )
+		message( tr("Build finished successfully in %1s" ).arg( time.elapsed() / 1000 ) );
+	else
+		message( tr("Build failed") );
+
+	ui.actionBuild_Nut_OS->setEnabled( true );
+}
+
 void MainWindow::updateView( const QModelIndex& current, const QModelIndex& previous )
 {
 	Q_UNUSED(previous);
@@ -136,3 +181,4 @@ void MainWindow::message( const QString& msg )
 {
 	ui.logPanel->append( QTime::currentTime().toString("HH:mm:ss: ") +  msg );
 }
+

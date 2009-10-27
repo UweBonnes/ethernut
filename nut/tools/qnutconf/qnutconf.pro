@@ -13,6 +13,7 @@ DEFINES += NUTCONF_VERSION_STR=\\\"3.0.0\\\"
 
 # Input
 SOURCES +=	\
+			builder.cpp \
 			main.cpp \
 			mainwindow.cpp \
 			nutcomponent.c \
@@ -22,6 +23,7 @@ SOURCES +=	\
 			settingsdialog.cpp
 			
 HEADERS +=	\
+			builder.h \
 			mainwindow.h \
 			nutcomponent.h \
 			nutcomponentmodel.h \
