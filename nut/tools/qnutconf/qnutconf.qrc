@@ -1,5 +1,13 @@
 <RCC>
   <qresource>
+    <file>images/text.png</file>
+    <file>images/enumerated.png</file>
+    <file>images/integer.png</file>
+    <file>images/library.png</file>
+    <file>images/module.png</file>
+    <file>images/save_large.png</file>
+    <file>images/open_large.png</file>
+    <file>images/buildlibrary_large.png</file>
     <file>images/module.xpm</file>
     <file>images/library.xpm</file>
     <file>images/stopbuild.bmp</file>
@@ -7,10 +15,7 @@
     <file>images/building_large.bmp</file>
     <file>images/buildlibary.bmp</file>
     <file>images/buildlibary_dis.bmp</file>
-    <file>images/buildlibary_large.bmp</file>
     <file>images/buildlibary_large_dis.bmp</file>
-    <file>images/buildlibrary.bmp</file>
-    <file>images/buildlibrary_large.bmp</file>
     <file>images/copy.bmp</file>
     <file>images/cshelp.bmp</file>
     <file>images/cut.bmp</file>
@@ -20,15 +25,8 @@
     <file>images/help_large_dis.bmp</file>
     <file>images/new.bmp</file>
     <file>images/nutconf.bmp</file>
-    <file>images/open.bmp</file>
-    <file>images/open_dis.bmp</file>
-    <file>images/open_large.bmp</file>
-    <file>images/open_large_dis.bmp</file>
     <file>images/paste.bmp</file>
     <file>images/save.bmp</file>
-    <file>images/save_dis.bmp</file>
-    <file>images/save_large.bmp</file>
-    <file>images/save_large_dis.bmp</file>
     <file>images/search.bmp</file>
     <file>images/search_dis.bmp</file>
     <file>images/search_large.bmp</file>

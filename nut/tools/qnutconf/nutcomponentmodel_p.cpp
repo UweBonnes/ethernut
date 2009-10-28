@@ -326,10 +326,29 @@ QPixmap TreeItem::icon() const
 	switch( componentType() )
 	{
 	case nutLibrary:
-		return QPixmap(":/images/library.xpm");
-		break;
+		return QPixmap(":/images/library.png");
+
 	case nutModule:
-		return QPixmap(":/images/module.xpm");
+		return QPixmap(":/images/module.png");
+
+	case nutOption:
+		// Don't show up icon if there is a check box.
+		if ( optionFlavor() != nutFlavorData )
+			break;
+
+		switch( optionType() )
+		{
+		case TreeItem::nutInteger:
+			return QPixmap(":/images/integer.png");
+
+		case TreeItem::nutEnumerated:
+			return QPixmap(":/images/enumerated.png");
+		case TreeItem::nutString:
+			return QPixmap(":/images/text.png");
+		default:
+			break;
+		}
+	default:
 		break;
 	}
 	return QPixmap();

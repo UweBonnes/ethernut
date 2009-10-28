@@ -16,8 +16,11 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normalon>:/images/buildlibrary_large.bmp</normalon>
+    <normalon>:/images/buildlibrary_large.png</normalon>
    </iconset>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -50,6 +53,18 @@
             <property name="headerHidden">
              <bool>false</bool>
             </property>
+            <attribute name="headerCascadingSectionResizes">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="headerStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="headerCascadingSectionResizes">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="headerStretchLastSection">
+             <bool>true</bool>
+            </attribute>
            </widget>
           </widget>
          </item>
@@ -63,7 +78,17 @@
         <widget class="QTextBrowser" name="descriptionPanel"/>
        </widget>
       </widget>
-      <widget class="QTextEdit" name="logPanel"/>
+      <widget class="QTextEdit" name="logPanel">
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
+       <property name="undoRedoEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -135,7 +160,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset>
-     <normalon>:/images/open_large.bmp</normalon>
+     <normalon>:/images/open_large.png</normalon>
     </iconset>
    </property>
    <property name="text">
@@ -148,7 +173,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset>
-     <normalon>:/images/save_large.bmp</normalon>
+     <normalon>:/images/save_large.png</normalon>
     </iconset>
    </property>
    <property name="text">
@@ -171,7 +196,7 @@
   <action name="actionBuild_Nut_OS">
    <property name="icon">
     <iconset>
-     <normalon>:/images/buildlibary_large.bmp</normalon>
+     <normalon>:/images/buildlibrary_large.png</normalon>
     </iconset>
    </property>
    <property name="text">
