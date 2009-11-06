@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2003 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2001-2003 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,69 +34,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.16  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.15  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.14  2008/08/11 07:00:35  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.13  2008/02/15 17:07:09  haraldkipp
- * Added routine to query DNS IP settings.
- *
- * Revision 1.12  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.11  2006/03/16 15:25:39  haraldkipp
- * Changed human readable strings from u_char to char to stop GCC 4 from
- * nagging about signedness.
- *
- * Revision 1.10  2006/01/23 19:52:10  haraldkipp
- * Added required typecasts before left shift.
- *
- * Revision 1.9  2006/01/23 17:33:47  haraldkipp
- * Avoid memory alignment errors.
- *
- * Revision 1.8  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.7  2004/10/14 16:43:07  drsung
- * Fixed compiler warning "comparison between signed and unsigned"
- *
- * Revision 1.6  2004/07/28 19:23:15  drsung
- * call to DumpDnsResource commented out.
- *
- * Revision 1.5  2004/04/15 18:38:58  drsung
- * Bugfix if the DNS server sends more than one answer.
- *
- * Revision 1.4  2004/03/18 13:39:05  haraldkipp
- * Deprecated header file replaced
- *
- * Revision 1.3  2004/02/28 20:14:38  drsung
- * Merge from nut-3_4-release b/c of bugfixes.
- *
- * Revision 1.2.2.1  2004/02/28 19:15:07  drsung
- * Memory leak fixed in CreateDnsQuestion.
- * Thanks to Jean Pierre Gauthier.
- *
- * Revision 1.2  2003/07/20 18:25:40  haraldkipp
- * Support secondary DNS.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:59  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.5  2003/02/04 18:17:32  harald
- * Version 3 released
- *
- * Revision 1.4  2002/06/26 17:29:50  harald
- * First pre-release with 2.4 stack
- *
+ * $Id$
  */
 
 #include <cfg/os.h>
@@ -150,14 +91,15 @@ typedef struct {
 #ifdef NUTDEBUG
 void DumpDnsHeader(FILE * stream, DNSHEADER * doh)
 {
-    fprintf(stream,
-            "HEADER: id=%u flg=%04X #q=%u #an=%u #au=%u #ad=%u\r\n",
-            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers, doh->doh_authrr, doh->doh_addrr);
+    fprintf(stream, "HEADER: id=%u flg=%04X #q=%u #an=%u #au=%u #ad=%u\r\n",
+            doh->doh_id, doh->doh_flags, doh->doh_quests, doh->doh_answers, 
+            doh->doh_authrr, doh->doh_addrr);
 }
 
 void DumpDnsQuestion(FILE * stream, DNSQUESTION * doq)
 {
-    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n", doq->doq_name, doq->doq_type, doq->doq_class);
+    fprintf(stream, "QUESTION: name='%s' type=%u class=%u\r\n", 
+        doq->doq_name, doq->doq_type, doq->doq_class);
 }
 
 void DumpDnsResource(FILE * stream, DNSRESOURCE * dor)
@@ -183,7 +125,7 @@ static uint16_t AddShort(uint8_t * cp, uint16_t val)
 static uint16_t AddName(uint8_t * cp, CONST uint8_t * name)
 {
     uint8_t *lcp;
-    uint16_t rc = strlen((char *)name) + 2;
+    uint16_t rc = strlen((char *) name) + 2;
 
     lcp = cp++;
     *lcp = 0;
@@ -204,7 +146,7 @@ static uint16_t AddName(uint8_t * cp, CONST uint8_t * name)
 
 static uint16_t ScanShort(uint8_t * cp, uint16_t * val)
 {
-    *val = (uint16_t)(*cp++) << 8;
+    *val = (uint16_t) (*cp++) << 8;
     *val |= *cp;
 
     return 2;
@@ -237,7 +179,7 @@ static uint16_t ScanName(uint8_t * cp, uint8_t ** npp)
     if ((*cp & 0xC0) == 0xC0)
         return 2;
 
-    rc = strlen((char *)cp) + 1;
+    rc = strlen((char *) cp) + 1;
     np = *npp = malloc(rc);
     len = *cp++;
     while (len) {
@@ -314,7 +256,7 @@ static DNSQUESTION *CreateDnsQuestion(DNSQUESTION * doq, CONST uint8_t * name, u
     if (doq) {
         if (doq->doq_name)
             free(doq->doq_name);
-        doq->doq_name = (uint8_t *)strdup((char *)name);
+        doq->doq_name = (uint8_t *) strdup((char *) name);
         doq->doq_type = type;
         doq->doq_class = 1;
     }
@@ -398,13 +340,13 @@ void NutDnsConfig(CONST uint8_t * hostname, CONST uint8_t * domain, uint32_t dns
     NutDnsConfig2(hostname, domain, dnsip, 0);
 }
 
-void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip)
+void NutDnsGetConfig2(char **hostname, char **domain, uint32_t * pdnsip, uint32_t * sdnsip)
 {
     if (hostname) {
-        *hostname = (char *)confdns.doc_hostname;
+        *hostname = (char *) confdns.doc_hostname;
     }
     if (domain) {
-        *domain = (char *)confdns.doc_domain;
+        *domain = (char *) confdns.doc_domain;
     }
     if (pdnsip) {
         *pdnsip = confdns.doc_ip1;
@@ -446,7 +388,7 @@ uint32_t NutDnsGetHostByName(CONST uint8_t * hostname)
  * \return Number of IP address, which is zero, if the name could not
  *         be resolved.
  */
-uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t *ip_all);
+uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t * ip_all);
 
 uint8_t NutDnsGetHostsByName(CONST uint8_t * hostname, uint32_t * ip_all)
 {
@@ -556,9 +498,9 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
                 }
                 if (dor->dor_len == 4) {
                     ip = *dor->dor_data;
-                    ip += (uint32_t)(*(dor->dor_data + 1)) << 8;
-                    ip += (uint32_t)(*(dor->dor_data + 2)) << 16;
-                    ip += (uint32_t)(*(dor->dor_data + 3)) << 24;
+                    ip += (uint32_t) (*(dor->dor_data + 1)) << 8;
+                    ip += (uint32_t) (*(dor->dor_data + 2)) << 16;
+                    ip += (uint32_t) (*(dor->dor_data + 3)) << 24;
                     break;
                 }
                 /* TBD: 18.3.2004 - for MX requests authoritative rrs should be skipped + additional rrs should be searched for IP address */
@@ -579,7 +521,7 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
     return ip;
 }
 
-uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t *ip_all)
+uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t * ip_all)
 {
     uint8_t n_ip;
     uint8_t *pkt;
@@ -595,7 +537,8 @@ uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint
     uint16_t rport;
 
 
-	for ( n_ip = 0; n_ip < 8; n_ip++ ) ip_all[n_ip] = 0;
+    for (n_ip = 0; n_ip < 8; n_ip++)
+        ip_all[n_ip] = 0;
 
     /*
      * We need a configured DNS address.
@@ -679,9 +622,9 @@ uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint
                     if (dor->dor_type == 1) {
                         if (dor->dor_len == 4) {
                             ip_all[n_ip] = *dor->dor_data;
-                            ip_all[n_ip] += (uint32_t)(*(dor->dor_data + 1)) << 8;
-                            ip_all[n_ip] += (uint32_t)(*(dor->dor_data + 2)) << 16;
-                            ip_all[n_ip] += (uint32_t)(*(dor->dor_data + 3)) << 24;
+                            ip_all[n_ip] += (uint32_t) (*(dor->dor_data + 1)) << 8;
+                            ip_all[n_ip] += (uint32_t) (*(dor->dor_data + 2)) << 16;
+                            ip_all[n_ip] += (uint32_t) (*(dor->dor_data + 3)) << 24;
                             n_ip++;
                         }
                     }
