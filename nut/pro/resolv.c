@@ -466,6 +466,26 @@ uint32_t NutDnsGetHostByName(CONST uint8_t * hostname)
     return NutDnsGetResource(hostname, 1);
 }
 
+/*!
+ * \brief Retrieves all IP-address corresponding to a host name.
+ *
+ * This is a very simple implementation, which will not return
+ * any other resource information than the IP address.
+ *
+ * \param hostname Fully qualified domain name of the host.
+ * \param type     Request type.
+ * \param ip_all   Array of IP Addresses.
+ *
+ * \return Number of IP address, which is zero, if the name could not
+ *         be resolved.
+ */
+uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t *ip_all);
+
+uint8_t NutDnsGetHostsByName(CONST uint8_t * hostname, uint32_t * ip_all)
+{
+    return NutDnsGetResourceAll(hostname, 1, ip_all);
+}
+
 uint32_t NutDnsGetMxByDomain(CONST uint8_t * hostname)
 {
     return NutDnsGetResource(hostname, 0x0F);
@@ -590,6 +610,130 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
     NutUdpDestroySocket(sock);
 
     return ip;
+}
+
+uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint32_t *ip_all)
+{
+    uint8_t n_ip;
+    uint8_t *pkt;
+    uint16_t len;
+    uint16_t id = 0;
+    UDPSOCKET *sock;
+    DNSHEADER *doh = 0;
+    DNSQUESTION *doq = 0;
+    DNSRESOURCE *dor = 0;
+    int n;
+    int retries;
+    uint32_t raddr;
+    uint16_t rport;
+
+
+	for ( n_ip = 0; n_ip < 8; n_ip++ ) ip_all[n_ip] = 0;
+
+    /*
+     * We need a configured DNS address.
+     */
+    if (doc.doc_ip1 == 0 && doc.doc_ip2 == 0)
+        return 0;
+
+    /*
+     * Create client socket and allocate
+     * a buffer for the UDP packet.
+     */
+    if ((sock = NutUdpCreateSocket(0)) == 0)
+        return 0;
+    pkt = NutHeapAlloc(512);
+
+    for (retries = 0; retries < 6; retries++) {
+
+        /*
+         * Create standard header info structures.
+         */
+        doh = CreateDnsHeader(doh, ++id);
+        doq = CreateDnsQuestion(doq, hostname, type);
+
+#ifdef NUTDEBUG
+        //DumpDnsHeader(doh);
+        //DumpDnsQuestion(doq);
+#endif
+
+        /*
+         * Encode the header info into the packet buffer
+         * and send it to the DNS server.
+         */
+        len = EncodeDnsHeader(pkt, doh);
+        len += EncodeDnsQuestion(pkt + len, doq);
+
+        if ((retries & 1) == 0 || doc.doc_ip2 == 0) {
+            if (NutUdpSendTo(sock, doc.doc_ip1, 53, pkt, len) < 0)
+                break;
+        } else {
+            if (NutUdpSendTo(sock, doc.doc_ip2, 53, pkt, len) < 0)
+                break;
+        }
+
+        /*
+         * Loop until we receive a response with the
+         * expected id or until timeout.
+         */
+        for (;;) {
+            len = 0;
+            n = NutUdpReceiveFrom(sock, &raddr, &rport, pkt, 512, 1000);
+            if (n <= 0)
+                break;
+            if (n > 12) {
+                len = DecodeDnsHeader(doh, pkt);
+#ifdef NUTDEBUG
+                //DumpDnsHeader(doh);
+#endif
+                if (doh->doh_id == id)
+                    break;
+            }
+        }
+
+        /*
+         * Decode the answer.
+         */
+        if (len && doh->doh_quests == 1) {
+            len += DecodeDnsQuestion(doq, pkt + len);
+#ifdef NUTDEBUG
+            //DumpDnsQuestion(doq);
+#endif
+            if (doh->doh_answers < 1)
+                break;
+            else {
+                n_ip = 0;
+                for (n = 1; n <= (int) doh->doh_answers; n++) {
+                    dor = CreateDnsResource(dor);
+                    len += DecodeDnsResource(dor, pkt + len);
+#ifdef NUTDEBUG
+                    //DumpDnsResource(dor);
+#endif
+                    if (dor->dor_type == 1) {
+                        if (dor->dor_len == 4) {
+                            ip_all[n_ip] = *dor->dor_data;
+                            ip_all[n_ip] += (uint32_t)(*(dor->dor_data + 1)) << 8;
+                            ip_all[n_ip] += (uint32_t)(*(dor->dor_data + 2)) << 16;
+                            ip_all[n_ip] += (uint32_t)(*(dor->dor_data + 3)) << 24;
+                            n_ip++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+     * Clean up.
+     */
+    ReleaseDnsHeader(doh);
+    ReleaseDnsQuestion(doq);
+    ReleaseDnsResource(dor);
+
+    NutHeapFree(pkt);
+    NutUdpDestroySocket(sock);
+
+    return n_ip;
 }
 
 /*@}*/
