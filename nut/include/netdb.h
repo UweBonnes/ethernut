@@ -152,9 +152,16 @@ __END_DECLS
 
 #endif /* unix emulation */
 
+typedef struct {
+    uint8_t *doc_hostname;
+    uint8_t *doc_domain;
+    uint32_t doc_ip1;
+    uint32_t doc_ip2;
+} DNSCONFIG;
+
 __BEGIN_DECLS
 
-extern void NutDnsConfig2(uint8_t * hostname, uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
+extern void NutDnsConfig2(CONST uint8_t * hostname, CONST uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip);
 extern void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip);
 extern void NutDnsConfig(CONST uint8_t *hostname, CONST uint8_t *domain, uint32_t dnsip) NUT_DEPRECATED;
 extern uint32_t NutDnsGetHostByName(CONST uint8_t *hostname);

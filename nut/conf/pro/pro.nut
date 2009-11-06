@@ -255,6 +255,7 @@ nutpro =
         requires = { "NET_UDP" },
         sources = 
         { 
+            "confdns.c",
             "resolv.c"
         }
     },

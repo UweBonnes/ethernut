@@ -110,6 +110,8 @@
 #include <string.h>
 #include <memdebug.h>
 
+#include <netdb.h>
+
 #ifdef NUTDEBUG
 #include <stdio.h>
 #endif
@@ -119,14 +121,7 @@
  */
 /*@{*/
 
-typedef struct {
-    uint8_t *doc_hostname;
-    uint8_t *doc_domain;
-    uint32_t doc_ip1;
-    uint32_t doc_ip2;
-} DNSCONFIG;
-
-static DNSCONFIG doc;
+extern DNSCONFIG confdns;
 
 typedef struct {
     uint16_t doh_id;
@@ -390,34 +385,6 @@ static uint16_t DecodeDnsResource(DNSRESOURCE * dor, uint8_t * buf)
 }
 
 /*!
- * \brief Set DNS configuration.
- *
- * \param hostname DNS name of the local host.
- * \param domain Name of the domain of the local host.
- * \param pdnsip IP address of the primary DNS server.
- * \param sdnsip IP address of the secondary DNS server.
- */
-void NutDnsConfig2(uint8_t * hostname, uint8_t * domain, uint32_t pdnsip, uint32_t sdnsip)
-{
-    if (doc.doc_hostname) {
-        free(doc.doc_hostname);
-        doc.doc_hostname = 0;
-    }
-    if (doc.doc_domain) {
-        free(doc.doc_domain);
-        doc.doc_domain = 0;
-    }
-    if (hostname) {
-        doc.doc_hostname = (uint8_t *)strdup((char *)hostname);
-    }
-    if (domain) {
-        doc.doc_domain = (uint8_t *)strdup((char *)domain);
-    }
-    doc.doc_ip1 = pdnsip;
-    doc.doc_ip2 = sdnsip;
-}
-
-/*!
  * \brief Sets DNS configuration.
  *
  * \deprecated New applications should use NutDnsConfig2().
@@ -426,7 +393,7 @@ void NutDnsConfig2(uint8_t * hostname, uint8_t * domain, uint32_t pdnsip, uint32
  * \param domain Name of the domain of the local host.
  * \param dnsip IP address of the DNS server.
  */
-void NutDnsConfig(uint8_t * hostname, uint8_t * domain, uint32_t dnsip)
+void NutDnsConfig(CONST uint8_t * hostname, CONST uint8_t * domain, uint32_t dnsip)
 {
     NutDnsConfig2(hostname, domain, dnsip, 0);
 }
@@ -434,16 +401,16 @@ void NutDnsConfig(uint8_t * hostname, uint8_t * domain, uint32_t dnsip)
 void NutDnsGetConfig2(char ** hostname, char ** domain, uint32_t *pdnsip, uint32_t *sdnsip)
 {
     if (hostname) {
-        *hostname = (char *)doc.doc_hostname;
+        *hostname = (char *)confdns.doc_hostname;
     }
     if (domain) {
-        *domain = (char *)doc.doc_domain;
+        *domain = (char *)confdns.doc_domain;
     }
     if (pdnsip) {
-        *pdnsip = doc.doc_ip1;
+        *pdnsip = confdns.doc_ip1;
     }
     if (sdnsip) {
-        *sdnsip = doc.doc_ip2;
+        *sdnsip = confdns.doc_ip2;
     }
 }
 
@@ -509,7 +476,7 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
     /*
      * We need a configured DNS address.
      */
-    if (doc.doc_ip1 == 0 && doc.doc_ip2 == 0)
+    if (confdns.doc_ip1 == 0 && confdns.doc_ip2 == 0)
         return 0;
 
     /*
@@ -540,11 +507,11 @@ uint32_t NutDnsGetResource(CONST uint8_t * hostname, CONST uint16_t type)
         len = EncodeDnsHeader(pkt, doh);
         len += EncodeDnsQuestion(pkt + len, doq);
 
-        if ((retries & 1) == 0 || doc.doc_ip2 == 0) {
-            if (NutUdpSendTo(sock, doc.doc_ip1, 53, pkt, len) < 0)
+        if ((retries & 1) == 0 || confdns.doc_ip2 == 0) {
+            if (NutUdpSendTo(sock, confdns.doc_ip1, 53, pkt, len) < 0)
                 break;
         } else {
-            if (NutUdpSendTo(sock, doc.doc_ip2, 53, pkt, len) < 0)
+            if (NutUdpSendTo(sock, confdns.doc_ip2, 53, pkt, len) < 0)
                 break;
         }
 
@@ -633,7 +600,7 @@ uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint
     /*
      * We need a configured DNS address.
      */
-    if (doc.doc_ip1 == 0 && doc.doc_ip2 == 0)
+    if (confdns.doc_ip1 == 0 && confdns.doc_ip2 == 0)
         return 0;
 
     /*
@@ -664,11 +631,11 @@ uint8_t NutDnsGetResourceAll(CONST uint8_t * hostname, CONST uint16_t type, uint
         len = EncodeDnsHeader(pkt, doh);
         len += EncodeDnsQuestion(pkt + len, doq);
 
-        if ((retries & 1) == 0 || doc.doc_ip2 == 0) {
-            if (NutUdpSendTo(sock, doc.doc_ip1, 53, pkt, len) < 0)
+        if ((retries & 1) == 0 || confdns.doc_ip2 == 0) {
+            if (NutUdpSendTo(sock, confdns.doc_ip1, 53, pkt, len) < 0)
                 break;
         } else {
-            if (NutUdpSendTo(sock, doc.doc_ip2, 53, pkt, len) < 0)
+            if (NutUdpSendTo(sock, confdns.doc_ip2, 53, pkt, len) < 0)
                 break;
         }
 
