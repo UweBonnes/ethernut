@@ -41,15 +41,10 @@ include $(top_srcdir)/app/Makerules.all
 	$(CC) $(OBJS) $(LDFLAGS) -Wl,--start-group $(LIBS) $(ADDLIBS) -Wl,--end-group -o $@
 
 %.hex: %.elf
-	$(BIN) -O ihex $< $@
+	$(BIN) $(BINFLAGS) -O ihex $< $@
 
-# AVR used this one. We need an OPT variable.
-#%.hex: %.elf
-#	$(BIN) -R .eeprom -O ihex $< $@
-
-# Old AVR target. Still required?
 %.rom: %.elf
-	$(BIN) -O srec $< $@
+	$(BIN) $(BINFLAGS) -O srec $< $@
 
 %.bin: %.elf
-	$(BIN) -O binary $< $@
+	$(BIN) $(BINFLAGS) -O binary $< $@
