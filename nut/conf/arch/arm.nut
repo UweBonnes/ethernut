@@ -1108,6 +1108,18 @@ nutarch_arm =
                 file = "include/cfg/arch/armpio.h"
             },
             {
+                macro = "NIC_PHY_UID",
+                brief = "PHY ID",
+                description = "ID for the PHY connected to EMAC.\n"..
+                              "DM9161: 0x0181b8a0 (ATMEL EK)\n"..
+                              "AM79C875: 0x00225540\n"..
+                              "MICREL: 0x00221610 (Olimex SAM7-EX256)\n"..
+                              "LAN8700: 0x0007c0c0\n"..
+                              "ANY: 0xffffffff (Disable PHY ID check - not recommended)\n\n",
+                flavor = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
                 macro = "PHY_PWRDN_BIT",
                 brief = "PHY Power Down Bit",
                 description = "For the SAM7X default is 18.\n\n",
