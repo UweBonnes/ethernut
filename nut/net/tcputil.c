@@ -107,7 +107,7 @@ void NutTcpCalcRtt(TCPSOCKET * sock)
     if (sock->so_retran_time == 0)
         return;
         
-    delta = (uint16_t) NutGetMillis() - sock->so_retran_time;
+    delta = (uint16_t) NutGetMillis() - (sock->so_retran_time & ~1);
     
     /* According to RFC793 (or STD007), page 41, we use 0.8 for ALPHA and 2.0 for BETA. */
     sock->so_rtto = min (TCP_RTTO_MAX, max(TCP_RTTO_MIN, (delta * 4 + sock->so_rtto * 8) / 10));
