@@ -68,7 +68,11 @@
 # Create a project file
 #
 $(PROJ).prj:
+ifeq ($(HDL), VHDL)
+	echo vhdl work "$(PROJ).vhd" > $(PROJ).prj
+else
 	echo verilog work "$(PROJ).v" > $(PROJ).prj
+endif
 
 #
 # Create an Impact script

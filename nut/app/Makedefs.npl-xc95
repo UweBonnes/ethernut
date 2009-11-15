@@ -55,5 +55,8 @@ XSTFLAGS = $(INTSTYLE)
 NGDBFLAGS = $(INTSTYLE) -quiet -aul
 
 FITFLAGS = -p $(NPL_PART) -ofmt verilog -exhaust -log $(FITLOG) -power auto
+ifeq ($(HDL), VHDL)
+FITFLAGS = -p $(NPL_PART) -ofmt vhdl -exhaust -log $(FITLOG) -power auto
+endif
 
 PREPFLAGS = $(INTSTYLE) -s IEEE1149
