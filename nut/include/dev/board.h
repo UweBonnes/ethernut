@@ -266,8 +266,15 @@
  */
 #if defined(ETHERNUT3)
 #ifndef RTC_CHIP
+#include <cfg/eeprom.h>
+#ifdef NUT_CONFIG_AT45D
+/* Ethernut 3.1 */
+#define RTC_CHIP rtcPcf8563
+#else
+/* Ethernut 3.0 */
 #define RTC_CHIP rtcX12x6
 #endif
+#endif /* RTC_CHIP */
 #include <dev/x12rtc.h>
 #include <dev/pcf8563.h>
 #elif defined(XNUT_100) || defined(XNUT_105) ||\
