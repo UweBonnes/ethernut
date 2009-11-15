@@ -822,6 +822,11 @@ static int NicStart(CONST uint8_t * mac)
     /* Clear interrupts. */
     nic_outb(NIC_ISR, NIC_ISR_ROOS | NIC_ISR_ROS | NIC_ISR_PTS | NIC_ISR_PRS);
 
+    /* Enable late collision retries on the DM9000A. */
+    if (nic_inb(NIC_CHIPR) == 0x19) {
+        nic_outb(0x2D, 0x40);
+    }
+
     /* Enable receiver. */
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN | NIC_RCR_ALL);
 
