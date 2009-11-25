@@ -84,7 +84,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <io.h>
-#include <inttypes.h>
+//#include <inttypes.h>
 #include <errno.h>
 
 #include <dev/board.h>
@@ -103,6 +103,7 @@ static char send_buffer[UDP_BUFF_SIZE];
 static char rcv_buffer[UDP_BUFF_SIZE];
 static u_char my_mac[] = MY_MAC;
 
+#ifdef DEV_ETHER
 
 /* Print error message */
 void print_udp_icmp_error(uint32_t remote_ip, uint16_t remote_port, int error)
@@ -159,6 +160,8 @@ THREAD(UDPReceiver, arg)
     }
 }
 
+#endif /* DEV_ETHER */
+
 /*
  * Main application routine. 
  *
@@ -183,6 +186,7 @@ int main(void)
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("Demo for ICMP support in UDP sockets...\r\n");
 
+#ifdef DEV_ETHER
 #ifndef NUT_UDP_ICMP_SUPPORT
 #warning ICMP support for UDP sockets not enabled in the configurator, please enable NUT_UDP_ICMP_SUPPORT
     puts("ICMP support for UDP sockets not enabled in the configurator\r\n");
@@ -245,5 +249,6 @@ int main(void)
         
         NutSleep(1000);
     }
+#endif /* DEV_ETHER */
     return 0;
 }
