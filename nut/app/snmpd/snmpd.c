@@ -32,8 +32,6 @@
 
 #include <dev/board.h>
 
-#include <stdio.h>
-#include <io.h>
 #include <sys/types.h>
 #include <ctype.h>
 #include <errno.h>
@@ -49,6 +47,10 @@
 #include <pro/snmp_mib.h>
 #include <pro/snmp_api.h>
 #include <pro/snmp_agent.h>
+
+#include <stdio.h>
+#include <io.h>
+
 #include "mib2sys.h"
 #include "mib2if.h"
 
@@ -153,6 +155,7 @@ int main(void)
     /*
      * Register LAN device and configure network interface.
      */
+#ifdef DEV_ETHER
     if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5) == 0) {
         rc |= LANDEV_OK;
         if (NutDhcpIfConfig("eth0", 0, 60000) == 0) {
@@ -207,6 +210,8 @@ int main(void)
 
     /* Program stopped. */
     NutUdpDestroySocket(sock);
+#endif
+
     for (;;) {
         NutSleep(100);
         printf("Hello ");

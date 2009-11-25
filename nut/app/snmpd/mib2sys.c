@@ -30,11 +30,6 @@
  * For additional information see http://www.ethernut.de/
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-
 #include <sys/version.h>
 #include <sys/confos.h>
 #include <sys/confnet.h>
@@ -42,6 +37,12 @@
 
 #include <pro/snmp.h>
 #include <pro/snmp_api.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
+
 #include "mib2sys.h"
 
 #if defined(STK501)
@@ -175,7 +176,7 @@ static int MibVarsSysSet(int action, u_char * var_val, u_char var_val_type, size
         return SNMP_ERR_WRONGLENGTH;
     }
     size = MAX_SYSSTR_LEN;
-    if ((value = malloc(MAX_SYSSTR_LEN) + 1) == NULL) {
+    if ((value = (u_char *)malloc(MAX_SYSSTR_LEN) + 1) == NULL) {
         return SNMP_ERR_RESOURCEUNAVAILABLE;
     }
     AsnOctetStringParse(var_val, &len, &var_val_type, value, &size);

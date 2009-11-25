@@ -30,13 +30,13 @@
  * For additional information see http://www.ethernut.de/
  */
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <sys/confnet.h>
 
 #include <pro/snmp.h>
 #include <pro/snmp_api.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include "mib2if.h"
 
@@ -52,7 +52,7 @@
 #define PHY_NAME    "DM9161A 100Mbit Ethernet"
 #elif defined(ETHERNUT5)
 #define PHY_NAME    "LAN8700I 100Mbit Ethernet"
-#elif
+#else
 #define PHY_NAME    "Ethernet"
 #endif
 
