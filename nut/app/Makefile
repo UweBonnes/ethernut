@@ -84,40 +84,48 @@
 all:
 	-$(MAKE) -C basemon
 	$(MAKE) -C caltime
-	-$(MAKE) -C canbus
-#	-$(MAKE) -C cppdemo
+	$(MAKE) -C canbus
+#	$(MAKE) -C cppdemo
 	$(MAKE) -C events
-	-$(MAKE) -C ftpd
-	-$(MAKE) -C httpd
-	-$(MAKE) -C inetq
-	-$(MAKE) -C logtime
-	-$(MAKE) -C nutpiper
-	-$(MAKE) -C playmp3
-	-$(MAKE) -C portdio
+	$(MAKE) -C ftpd
+	$(MAKE) -C httpd
+	$(MAKE) -C icmp-udp
+	$(MAKE) -C inetq
+	$(MAKE) -C led_key
+	$(MAKE) -C logtime
+	-$(MAKE) -C lua
+	$(MAKE) -C nutpiper
+	$(MAKE) -C playmp3
+	$(MAKE) -C portdio
 	$(MAKE) -C pppc
-	-$(MAKE) -C rs232d
+	$(MAKE) -C rs232d
 	$(MAKE) -C simple
-	-$(MAKE) -C tcps
+	$(MAKE) -C snmpd
+	$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
 	$(MAKE) -C uart
 
 install:
-	$(MAKE) -C basemon install
+	-$(MAKE) -C basemon install
 	$(MAKE) -C caltime install
 	$(MAKE) -C canbus install
 #	$(MAKE) -C cppdemo install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
+	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
+	$(MAKE) -C led_key install
 	$(MAKE) -C logtime install
+	-$(MAKE) -C lua install
 	$(MAKE) -C nutpiper install
 	$(MAKE) -C playmp3 install
 	$(MAKE) -C portdio install
 	$(MAKE) -C pppc install
 	$(MAKE) -C rs232d install
 	$(MAKE) -C simple install
+	$(MAKE) -C snmpd install
 	$(MAKE) -C tcps install
 	$(MAKE) -C threads install
 	$(MAKE) -C timers install
@@ -131,8 +139,11 @@ clean:
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
+	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean
+	$(MAKE) -C led_key clean
 	$(MAKE) -C logtime clean
+	$(MAKE) -C lua clean
 	$(MAKE) -C nutpiper clean
 	$(MAKE) -C playmp3 clean
 	$(MAKE) -C portdio clean
