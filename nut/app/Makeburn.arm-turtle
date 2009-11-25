@@ -1,0 +1,5 @@
+BURN=openocd
+BURNDONGLE=-c "source [find interface/turtelizer2.cfg]"
+BURNBOARD=-c "source [find board/ethernut3.cfg]"
+BURNCMDS=-c init -c "nutrun ./$(TARG)" -c shutdown
+BURNFLAGS=-s $(top_srcdir)/tools/turtelizer2 $(BURNDONGLE) $(BURNBOARD) $(BURNCMDS)
