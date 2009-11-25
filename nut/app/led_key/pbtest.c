@@ -56,6 +56,8 @@
 #include <cfg/dev.h>
 #include <dev/board.h>
 #include <sys/timer.h>
+#include <sys/event.h>
+#include <sys/thread.h>
 
 #include <dev/gpio.h>
 
