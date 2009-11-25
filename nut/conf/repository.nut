@@ -433,24 +433,50 @@ repository =
 }
 
 --
+-- Read first 8 kBytes from C source file.
+--
+function GetSourceFileHead(source_path)
+    local fp, buf
+
+    -- Retrieve the repository path by calling a C function provided
+    -- by the Configurator and read the first 8k of the file.
+    fp = io.open(c_repo_path() .. "/../" .. source_path, "r")
+    if fp ~= nil then
+        buf = fp:read(8192)
+        fp:close()
+    end
+    return buf
+end
+
+--
 -- Read OS Version from C source file.
 --
 function GetNutOsVersion()
-    local fp, buf, p1, p2, vers
+    local buf, p1, p2, vers
 
-    -- Retrieve the repository path by calling a C function provided
-    -- by the Configurator and read the Nut/OS version file.
-    fp = io.open(c_repo_path() .. "/../os/version.c", "r")
-    if fp == nil then
-        return nil
+    -- Try to read the version from a string in os/version.c.
+    -- This worked until 4.9.7.
+    buf = GetSourceFileHead("os/version.c")
+    if buf ~= nil then
+        p1, p2, vers = string.find(buf, "os_version_string.+\"(.+)\"")
     end
-    buf = fp:read(8192)
-    fp:close()
 
-    -- Extract the version string.
-    p1, p2, vers = string.find(buf, "os_version_string.+\"(.+)\"")
-    
-    return vers or "unknown"
+    -- If this doesn't work, we may have 4.9.8 or later.
+    -- We will find the hex coded version in include/sys/version.h.
+    if vers == nil then
+        buf = GetSourceFileHead("include/sys/version.h")
+        if buf ~= nil then
+            p1, p2, vers = string.find(buf, "OS_VERSION_NUMBER.+0x(.+)UL")
+            if vers ~= nil then
+                vers = tonumber(string.sub(vers, 1, 2), 16).."."..
+                       tonumber(string.sub(vers, 3, 4), 16).."."..
+                       tonumber(string.sub(vers, 5, 6), 16).."."..
+                       tonumber(string.sub(vers, 7, 8), 16)
+            end
+        end
+    end
+
+    return vers or "Unknown"
 end
 
 --

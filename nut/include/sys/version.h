@@ -50,6 +50,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 
+#define OS_VERSION_NUMBER  0x04090800UL
+
 #ifdef __cplusplus
 extern "C" {
 #endif
