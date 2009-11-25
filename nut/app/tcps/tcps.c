@@ -263,6 +263,9 @@ int main(void)
      * Register all devices used in our application.
      */
     NutRegisterDevice(&DEV_DEBUG, 0, 0);
+#ifndef DEV_ETHER
+    for (;;);
+#else
     NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
 
     /*
@@ -345,5 +348,6 @@ int main(void)
             NutTcpCloseSocket(sock);
         }
     }
+#endif
     return 0;
 }
