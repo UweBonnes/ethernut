@@ -212,7 +212,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     return 0;
 }
 
-void DoCheckboxes(FILE * stream, char * name, uint8_t val)
+static void DoCheckboxes(FILE * stream, char * name, uint8_t val)
 {
     uint8_t i;
     static prog_char ttop_P[] = "<tr><td>%s</td>";
@@ -284,6 +284,7 @@ static int ShowPorts(FILE * stream, REQUEST * req)
 
 THREAD(WebDemo, arg)
 {
+#ifdef __AVR__
     TCPSOCKET *sock;
     FILE *stream;
     IFNET *ifn = 0;
@@ -405,5 +406,6 @@ THREAD(WebDemo, arg)
          */
         NutTcpCloseSocket(sock);
     }
+#endif
 }
 
