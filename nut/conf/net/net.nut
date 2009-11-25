@@ -223,12 +223,8 @@ nutnet =
     {
         name = "nutnet_inet",
         brief = "INET",
-        requires = { "NET_LINK" },
-        provides = { "NET_INET" },
-        sources = 
-        { 
-            "inet.c"
-        }
+        description = "IP helper routines",
+        sources = { "inet.c" }
     },
     {
         name = "nutnet_arp",
