@@ -365,20 +365,28 @@ nutpro =
     },
     {
         name = "nutpro_snmp",
-        brief = "SNMP Agent",
+        brief = "SNMP",
         description = "Simple network management protocol.",
-        requires = { "NET_UDP" },
         sources =
         { 
             "snmp.c",
-            "snmp_agent.c",
             "snmp_api.c",
             "snmp_auth.c",
             "snmp_config.c",
             "snmp_mib.c",
             "snmp_pdu.c",
-            "snmp_session.c",
             "asn1.c"
+        }
+    },
+    {
+        name = "nutpro_snmp_udp",
+        brief = "SNMP Agent",
+        description = "SNMP agent module.",
+        requires = { "NET_UDP" },
+        sources =
+        { 
+            "snmp_agent.c",
+            "snmp_session.c"
         }
     },
     {
