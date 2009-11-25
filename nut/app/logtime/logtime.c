@@ -160,6 +160,7 @@ int main(void)
         puts("Configure network");
     }
 
+#ifdef DEV_ETHER
     /*
      * Register LAN device and configure network interface.
      */
@@ -243,5 +244,6 @@ int main(void)
         syslog(LOG_DEBUG, "%d bytes free", NutHeapAvailable());
         NutSleep(60000);
     }
+#endif
     return 0;
 }
