@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2005 by egnite Software GmbH
+ * 
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,37 +35,7 @@
  */
 
 /*!
- * $Log$
- * Revision 1.10  2008/01/31 09:38:15  haraldkipp
- * Added return statement in main to avoid warnings with latest GCC.
- *
- * Revision 1.9  2006/09/07 09:00:19  haraldkipp
- * Discovery registration added. Enabled by default on ARM targets only to
- * avoid blowing up AVR code.
- *
- * Revision 1.8  2006/09/05 12:26:35  haraldkipp
- * Added support for SAM9 MMC.
- * DHCP enabled by default.
- *
- * Revision 1.7  2006/08/31 19:15:30  haraldkipp
- * Dummy file system name added to SAM9260 to let it pass the compiler.
- * The application will not yet run on this platform.
- *
- * Revision 1.6  2006/07/26 11:22:55  haraldkipp
- * Added support for AT91SAM7X-EK.
- *
- * Revision 1.4  2006/01/22 17:34:38  haraldkipp
- * Added support for Ethernut 3, PHAT file system and realtime clock.
- *
- * Revision 1.3  2005/04/19 08:51:26  haraldkipp
- * Warn if not Ethernut 2
- *
- * Revision 1.2  2005/02/07 19:05:23  haraldkipp
- * ATmega 103 compile errors fixed
- *
- * Revision 1.1  2005/02/05 20:32:57  haraldkipp
- * First release
- *
+ * $Id$
  */
 
 #include <stdio.h>
@@ -70,14 +43,8 @@
 #include <io.h>
 
 #include <dev/board.h>
-#include <dev/lanc111.h>
-#include <dev/debug.h>
 #include <dev/pnut.h>
-#include <dev/nplmmc.h>
 #include <dev/sbimmc.h>
-#include <dev/spimmc_at91.h>
-#include <dev/at91_mci.h>
-#include <dev/x12rtc.h>
 #include <fs/phatfs.h>
 
 #include <sys/confnet.h>
@@ -252,7 +219,9 @@
 #define MYTZ    -1
 
 /*! \brief IP address of the host running a time daemon. */
+#if defined(DEV_ETHER)
 #define MYTIMED "130.149.17.21"
+#endif
 
 #ifdef ETHERNUT3
 /*! \brief Defined if X1226 RTC is available. */
@@ -271,8 +240,9 @@
  * connection for background processing. So we run this routine by
  * several threads.
  */
-void FtpService(void)
+static void FtpService(void)
 {
+#if defined(DEV_ETHER)
     TCPSOCKET *sock;
 
     /*
@@ -285,19 +255,19 @@ void FtpService(void)
          */
 #ifdef TCPIP_MSS
         {
-            u_short mss = TCPIP_MSS;
+            uint16_t mss = TCPIP_MSS;
             NutTcpSetSockOpt(sock, TCP_MAXSEG, &mss, sizeof(mss));
         }
 #endif
 #ifdef FTPD_TIMEOUT
         {
-            u_long tmo = FTPD_TIMEOUT;
+            uint32_t tmo = FTPD_TIMEOUT;
             NutTcpSetSockOpt(sock, SO_RCVTIMEO, &tmo, sizeof(tmo));
         }
 #endif
 #ifdef TCPIP_BUFSIZ
         {
-            u_short siz = TCPIP_BUFSIZ;
+            uint16_t siz = TCPIP_BUFSIZ;
             NutTcpSetSockOpt(sock, SO_RCVBUF, &siz, sizeof(siz));
         }
 #endif
@@ -307,9 +277,9 @@ void FtpService(void)
          */
         printf("\nWaiting for an FTP client...");
         if (NutTcpAccept(sock, FTP_PORTNUM) == 0) {
-            printf("%s connected, %u bytes free\n", inet_ntoa(sock->so_remote_addr), (u_int)NutHeapAvailable());
+            printf("%s connected, %u bytes free\n", inet_ntoa(sock->so_remote_addr), (unsigned int)NutHeapAvailable());
             NutFtpServerSession(sock);
-            printf("%s disconnected, %u bytes free\n", inet_ntoa(sock->so_remote_addr), (u_int)NutHeapAvailable());
+            printf("%s disconnected, %u bytes free\n", inet_ntoa(sock->so_remote_addr), (unsigned int)NutHeapAvailable());
         } else {
             puts("Accept failed");
         }
@@ -319,6 +289,7 @@ void FtpService(void)
          */
         NutTcpCloseSocket(sock);
     }
+#endif
 }
 
 /*
@@ -337,7 +308,7 @@ THREAD(FtpThread, arg)
  */
 void InitDebugDevice(void)
 {
-    u_long baud = DBG_BAUDRATE;
+    uint32_t baud = DBG_BAUDRATE;
 
     NutRegisterDevice(&DEV_DEBUG, 0, 0);
     freopen(DEV_DEBUG_NAME, "w", stdout);
@@ -349,40 +320,41 @@ void InitDebugDevice(void)
  * the first time boot with empty EEPROM and no DHCP server
  * was found, use hardcoded values.
  */
-int InitEthernetDevice(void)
+static int InitEthernetDevice(void)
 {
-    u_long ip_addr = inet_addr(MY_IPADDR);
-    u_long ip_mask = inet_addr(MY_IPMASK);
-    u_long ip_gate = inet_addr(MY_IPGATE);
-    u_char mac[6] = MY_MAC;
+#if defined(DEV_ETHER)
+    uint32_t ip_addr = inet_addr(MY_IPADDR);
+    uint32_t ip_mask = inet_addr(MY_IPMASK);
+    uint32_t ip_gate = inet_addr(MY_IPGATE);
+    uint8_t mac[6] = MY_MAC;
 
-    if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5)) {
-        puts("No Ethernet Device");
-        return -1;
-    }
-
-    printf("Configure %s...", DEV_ETHER_NAME);
+    if (NutRegisterDevice(&DEV_ETHER, 0x8300, 5) == 0) {
+        printf("Configure %s...", DEV_ETHER_NAME);
 #ifdef USE_DHCP
-    if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000) == 0) {
-        puts("OK");
-        return 0;
-    }
-    printf("initial boot...");
-    if (NutDhcpIfConfig(DEV_ETHER_NAME, mac, 60000) == 0) {
-        puts("OK");
-        return 0;
-    }
+        if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000) == 0) {
+            puts("OK");
+            return 0;
+        }
+        printf("initial boot...");
+        if (NutDhcpIfConfig(DEV_ETHER_NAME, mac, 60000) == 0) {
+            puts("OK");
+            return 0;
+        }
 #endif
-    printf("No DHCP...");
-    NutNetIfConfig(DEV_ETHER_NAME, mac, ip_addr, ip_mask);
-    /* Without DHCP we had to set the default gateway manually.*/
-    if(ip_gate) {
-        printf("hard coded gate...");
-        NutIpRouteAdd(0, 0, ip_gate, &DEV_ETHER);
+        printf("No DHCP...");
+        NutNetIfConfig(DEV_ETHER_NAME, mac, ip_addr, ip_mask);
+        /* Without DHCP we had to set the default gateway manually.*/
+        if(ip_gate) {
+            printf("hard coded gate...");
+            NutIpRouteAdd(0, 0, ip_gate, &DEV_ETHER);
+        }
+        puts("OK");
+        return 0;
     }
-    puts("OK");
+#endif /* DEV_ETHER */
+    puts("No Ethernet Device");
 
-    return 0;
+    return -1;
 }
 
 /*
@@ -395,7 +367,7 @@ static int QueryTimeServer(void)
 #ifdef MYTIMED
     {
         time_t now;
-        u_long timeserver = inet_addr(MYTIMED);
+        uint32_t timeserver = inet_addr(MYTIMED);
 
         /* Query network time service and set the system time. */
         printf("Query time from %s...", MYTIMED);
@@ -436,7 +408,7 @@ static int InitTimeAndDate(void)
 #ifdef X12RTC_DEV
     /* Query RTC hardware if available. */
     {
-        u_long rs;
+        uint32_t rs;
 
         /* Query the status. If it fails, we do not have an RTC. */
         if (X12RtcGetStatus(&rs)) {
@@ -482,7 +454,7 @@ static int InitTimeAndDate(void)
 int main(void)
 {
     int volid;
-    u_long ipgate;
+    uint32_t ipgate;
 
     /* Initialize a debug output device and print a banner. */
     InitDebugDevice();
@@ -492,15 +464,17 @@ int main(void)
     if (InitEthernetDevice()) {
         for(;;);
     }
+#if defined(DEV_ETHER)
     printf("IP Addr: %s\n", inet_ntoa(confnet.cdn_ip_addr));
     printf("IP Mask: %s\n", inet_ntoa(confnet.cdn_ip_mask));
     NutIpRouteQuery(0, &ipgate);
     printf("IP Gate: %s\n", inet_ntoa(ipgate));
+#endif
 
 #ifdef USE_DISCOVERY
     /* Register a discovery responder. */
     printf("Start Responder...");
-    if (NutRegisterDiscovery((u_long)-1, 0, DISF_INITAL_ANN)) {
+    if (NutRegisterDiscovery((uint32_t)-1, 0, DISF_INITAL_ANN)) {
         puts("failed");
     }
     else {
@@ -546,6 +520,7 @@ int main(void)
     volid = 0;
 #endif
 
+#if defined(DEV_ETHER)
     /* Register root path. */
     printf("Register FTP root...");
     if (NutRegisterFtpRoot(FSDEV_NAME ":")) {
@@ -553,6 +528,7 @@ int main(void)
         for (;;);
     }
     puts("OK");
+#endif
 
     /* Start two additional server threads. */
     NutThreadCreate("ftpd0", FtpThread, 0, 1640);
