@@ -50,5 +50,6 @@
  */
 
 extern NUTDEVICE devUsartAvr320;
+extern NUTDEVICE devUsartAvr321;
 
 #endif

@@ -292,6 +292,7 @@ nutarch_avr32 =
         sources =
         {
             "avr32/dev/ih_uart0.c",
+            "avr32/dev/ih_uart1.c",
 			"avr32/dev/ih_rtc.c",
             "avr32/dev/ih_macb.c",
             "avr32/dev/ih_spi0.c",
@@ -376,6 +377,55 @@ nutarch_avr32 =
 				description = "If enabled, UART0 driver will enable hw RS485 on SAM7x."..
                       "The UART0 RTS pin is used for RS485 direction switching.",
                 provides = { "AVR32_UART0_RS485" },
+                flavor = "booldata",
+            },
+
+		},
+    },
+    {
+        name = "nutarch_avr32_usart1",
+        brief = "USART1 Driver",
+        description = "Hardware specific USART driver. Implements hardware "..
+                      "functions for the generic driver framework.",
+        requires = { "HW_UART_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
+        provides = { "DEV_UART_SPECIFIC" },
+        sources = { "avr32/dev/usart1.c" },
+        options =
+        {
+            {
+                macro = "UART1_RXTX_ONLY",
+                brief = "Receive/Transmit Only",
+                description = "When selected, the driver will not support any handshake signals.",
+                flavor = "boolean",
+                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART1_HARDWARE_HANDSHAKE",
+                brief = "Hardware Handshake",
+                description = "When selected, the driver will support RTS/CTS hardware handshake. "..
+                              "Make sure, that the related peripheral pins are available.",
+                flavor = "boolean",
+                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+                requires = { "HW_UART1_RTSCTS" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "UART1_MODEM_CONTROL",
+                brief = "Full Modem Control",
+                description = "When selected, the driver will support full modem control. "..
+                              "Make sure, that all related peripheral pins are available.",
+                flavor = "boolean",
+                exclusivity = { "UART1_RXTX_ONLY", "UART1_HARDWARE_HANDSHAKE", "UART1_MODEM_CONTROL" },
+                requires = { "HW_UART1_MODEM" },
+                file = "include/cfg/uart.h"
+            },
+            {
+                macro = "AVR32_UART1_RS485",
+                brief = "USE HW RS485 on UART1",
+				description = "If enabled, UART1 driver will enable hw RS485 on SAM7x."..
+                      "The UART1 RTS pin is used for RS485 direction switching.",
+                provides = { "AVR32_UART1_RS485" },
                 flavor = "booldata",
             },
 
