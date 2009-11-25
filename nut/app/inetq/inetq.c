@@ -144,6 +144,7 @@ int main(void)
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("\nInetQuery 1.0");
 
+#ifdef DEV_ETHER
     /*
      * Register Realtek controller at address 8300 hex and interrupt 5.
      */
@@ -265,6 +266,7 @@ int main(void)
         }
     } else
         printf("Great news, %s has been removed!\n", INETSERVER);
+#endif
 
     for (;;)
         NutSleep(1000);
