@@ -228,13 +228,13 @@
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5) || defined(MORPHOQ1)
 #include <dev/at91sam7x_emac.h>
-#elif defined(EVK1100) || defined(__AVR32__)
+#elif defined(EVK1100)
 #include <dev/avr32_macb.h>
 #endif
 
-#ifndef DEV_ETHER
-#define DEV_ETHER       devEth0
-#endif
+//#ifndef DEV_ETHER
+//#define DEV_ETHER       devEth0
+//#endif
 #ifndef DEV_ETHER_NAME
 #define DEV_ETHER_NAME  "eth0"
 #endif
