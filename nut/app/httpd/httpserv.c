@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2004 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2001-2004 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -152,6 +155,13 @@
 /* Wether to use PHAT file system. */
 //#define USE_PHAT
 
+#if defined(__ARM__)
+/* Wether we should use ASP. */
+#define USE_ASP
+/* Wether we should use SSI. */
+#define USE_SSI
+#endif
+
 #endif /* __IMAGECRAFT__ */
 
 
@@ -246,7 +256,9 @@
 
 static char *html_mt = "text/html";
 
+#ifdef DEV_ETHER
 
+#if defined(USE_ASP)
 /**************************************************************/
 /*  ASPCallback                                               */
 /*                                                            */
@@ -273,6 +285,7 @@ static int ASPCallback (char *pASPFunction, FILE *stream)
 
     return (-1);
 }
+#endif
 
 /*
  * CGI Sample: Show request parameters.
@@ -573,6 +586,7 @@ int ShowForm(FILE * stream, REQUEST * req)
     return 0;
 }
 
+#if defined(USE_SSI)
 /*
  * CGI Sample: Dynamic output cgi included by ssi.shtml file
  *
@@ -630,6 +644,7 @@ int SSIDemoCGI(FILE * stream, REQUEST * req)
 
     return 0;
 }
+#endif
 
 /*! \fn Service(void *arg)
  * \brief HTTP service thread.
@@ -714,6 +729,7 @@ THREAD(Service, arg)
         printf("[%u] Disconnected\n", id);
     }
 }
+#endif /* DEV_ETHER */
 
 /*!
  * \brief Main application routine.
@@ -733,6 +749,8 @@ int main(void)
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     NutSleep(200);
     printf("\n\nNut/OS %s HTTP Daemon...", NutVersionString());
+
+#ifdef DEV_ETHER
 
 #ifdef NUTDEBUG
     NutTraceTcp(stdout, 0);
@@ -840,14 +858,15 @@ int main(void)
      */
     NutRegisterCgi("test.cgi", ShowQuery);
 
+#if defined(USE_SSI)
     /* 
      * Register a cgi included by the ssi demo. This will show how dynamic 
      * content is included in a ssi page and how the request parameters for 
      * a site are passed down to the included cgi.
-     */
-    
+     */    
     NutRegisterCgi("ssi-demo.cgi", SSIDemoCGI);
-    
+#endif
+
     /*
      * Register some CGI samples, which display interesting
      * system informations.
@@ -871,9 +890,14 @@ int main(void)
     /*
      * Register SSI and ASP handler
      */
+#if defined(USE_SSI)
     NutRegisterSsi();
+#endif
+#if defined(USE_ASP)
     NutRegisterAsp();
     NutRegisterAspCallback(ASPCallback);
+#endif
+
     /*
      * Start four server threads.
      */
@@ -884,6 +908,7 @@ int main(void)
         NutThreadCreate(thname, Service, (void *) (uptr_t) i, 
             (HTTPD_SERVICE_STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     }
+#endif /* DEV_ETHER */
 
     /*
      * We could do something useful here, like serving a watchdog.
