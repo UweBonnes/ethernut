@@ -48,6 +48,7 @@
  *
  */
 
+#include <dev/board.h>
 
 #include <sys/heap.h>
 #include <sys/thread.h>
@@ -63,6 +64,7 @@
 
 #include "scanner.h"
 
+#ifdef DEV_ETHER
 
 /*
  * Get line from naked TCP stream.
@@ -334,3 +336,5 @@ int ScannerInit(void)
 
     return 0;
 }
+
+#endif /* DEV_ETHER */
