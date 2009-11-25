@@ -139,7 +139,7 @@ adc_mode_t current_mode = ADC_OFF;
 // buffer: [data1 data2 ... datalast head tail]
 
 #define _adc_buf_head ADC_BUF_SIZE
-#define _adc_buf_tail ADC_BUF_SIZE+1
+#define _adc_buf_tail (ADC_BUF_SIZE+1)
 
 uint16_t *ADC_buffer = NULL;
 
@@ -196,7 +196,7 @@ void ADCInit()
     ADCSetMode(ADC_INITIAL_MODE);
     ADCSetPrescale(ADC_INITIAL_PRESCALE);
 
-    ADC_buffer = NutHeapAlloc(sizeof(uint16_t) * ADC_BUF_SIZE + 2);
+    ADC_buffer = NutHeapAlloc(sizeof(uint16_t) * (ADC_BUF_SIZE + 2));
     ADCBufInit(ADC_buffer);
 
     if (NutRegisterIrqHandler(&sig_ADC, ADCInterrupt, NULL)) {
