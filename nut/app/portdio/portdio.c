@@ -405,6 +405,8 @@ void init_dio(void)
 #endif /* OUTBANK */
 }
 
+#ifdef DEV_ETHER
+
 void service(void)
 {
     TCPSOCKET *sock;
@@ -452,6 +454,8 @@ THREAD(service_thread, arg)
         service();
 }
 
+#endif /* DEV_ETHER */
+
 /*
  * Main application routine. 
  *
@@ -466,6 +470,7 @@ int main(void)
      */
     init_dio();
 
+#ifdef DEV_ETHER
     /*
      * Register Realtek controller at address 8300 hex
      * and interrupt 5.
@@ -491,6 +496,7 @@ int main(void)
 
     for (;;)
         service();
+#endif /* DEV_ETHER */
 
     return 0;
 }
