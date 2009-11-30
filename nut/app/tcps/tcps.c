@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2001-2005 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -32,41 +35,7 @@
  */
 
 /*!
- * $Log$
- * Revision 1.6  2008/01/31 09:38:15  haraldkipp
- * Added return statement in main to avoid warnings with latest GCC.
- *
- * Revision 1.5  2005/11/22 09:14:13  haraldkipp
- * Replaced specific device names by generalized macros.
- *
- * Revision 1.4  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.3  2005/04/19 08:55:29  haraldkipp
- * Description updated
- *
- * Revision 1.2  2003/11/04 17:46:52  haraldkipp
- * Adapted to Ethernut 2
- *
- * Revision 1.1  2003/08/05 18:59:05  haraldkipp
- * Release 3.3 update
- *
- * Revision 1.8  2003/02/04 16:24:35  harald
- * Adapted to version 3
- *
- * Revision 1.7  2002/06/26 17:29:06  harald
- * First pre-release with 2.4 stack
- *
- * Revision 1.6  2002/06/12 10:59:05  harald
- * *** empty log message ***
- *
- * Revision 1.5  2002/06/04 19:12:55  harald
- * *** empty log message ***
- *
- * Revision 1.4  2002/05/08 16:02:32  harald
- * First Imagecraft compilation
- *
+ * $Id$
  */
 
 /*!
@@ -74,177 +43,326 @@
  *
  * Simple TCP server.
  *
- * Program Ethernut with tcps.hex and enter
- *
  * \code telnet x.x.x.x \endcode
  *
  * on a command prompt, replacing x.x.x.x with the
- * IP address of your ethernut board. Enter help
+ * IP address of your target board. Enter help
  * for a list of available commands.
  */
 
-#include <cfg/os.h>
-#include <string.h>
-#include <stdio.h>
-#include <io.h>
-
+/* Device specific definitions. */
 #include <dev/board.h>
+#include <dev/reset.h>
+#include <dev/gpio.h>
 
+/* OS specific definitions. */
 #include <sys/version.h>
+#include <sys/confnet.h>
 #include <sys/heap.h>
-#include <sys/thread.h>
 #include <sys/timer.h>
 #include <sys/socket.h>
 
+/* Network specific definitions. */
 #include <arpa/inet.h>
+#include <net/if_var.h>
 #include <pro/dhcp.h>
 
-#ifdef NUTDEBUG
-#include <sys/osdebug.h>
-#include <net/netdebug.h>
-#endif
+/* Standard C header files. */
+#include <stdlib.h>
+#include <stdio.h>
+#include <io.h>
+#include <string.h>
+#include <time.h>
+#include <ctype.h>
 
-#include <sys/confnet.h>
+/* Version of this application sample. */
+#define APP_VERSION     "2.0.0"
 
-static char buff[128];
+/* Max. size of the input line. */
+#define MAX_INPUT_LINE  32
+
+/* TCP server port. Telnet default is 23. */
+#define TCP_SERVER_PORT 23
+
+static time_t start_time;
 
 /*
- * To save RAM, we store large strings in program space. With AVRGCC we
- * would be able to use the PSTR() macro and put the text directly in
- * the statement that uses it. But ICCAVR doesn't support anything like 
- * this. Sigh.
+ * Halt the application on fatal errors.
  */
-#if defined(__IMAGECRAFT__)
-#define CC_STRING   "ICCAVR"
-#elif defined(__GNUC__)
-#define CC_STRING   "AVRGCC"
-#else
-#define CC_STRING   "Compiler unknown"
-#endif
+static void FatalError(char *msg)
+{
+    /* Print a message ... */
+    puts(msg);
+    /* ... and never return. */
+    for (;;);
+}
 
-prog_char vbanner_P[] = "\n\nTCP Server Sample - Nut/OS %s - " CC_STRING "\n";
-prog_char banner_P[] = "200 Welcome to tcps. Type help to get help.\r\n";
-prog_char help_P[] = "400 List of commands follows\r\n"
-    "m[emory]\tQueries number of RAM bytes free.\r\n"
-    "t[hreads]\tLists all created threads.\r\n"
-    "ti[mers]\tLists all running timers.\r\n" "q[uit]\t\tTerminates connection.\r\n" ".\r\n";
-prog_char thread_intro_P[] = "220 List of threads with name,state,prio,stack,mem,timeout follows\r\n";
-prog_char timer_intro_P[] = "221 List of timers with ticks left and interval follows\r\n";
-prog_char mem_fmt_P[] = "210 %u bytes RAM free\r\n";
+/*
+ * Extract command and up to 2 parameters from an input line.
+ *
+ * This helper routine splits a line into words. A pointer to the
+ * first word is returned as a function result. A pointer to an
+ * optional second word is set via a funtion parameter and a
+ * pointer to the rest of the line is set via a second function
+ * parameter.
+ *
+ * Example:
+ *
+ * If line points to "help me to get this done", then we can use
+ *
+ * char *cmd;
+ * char *param1;
+ * char *param2;
+ *
+ * cmd = ParseLine(line, &param1, &param2);
+ *
+ * On return, cmd will point to "help", param1 will point to "me"
+ * and param 2 will point to "to get this done".
+ *
+ * If the line contains less than 3 words, then the second
+ * parameter pointer is set to NULL. With one word only, also
+ * the first parameter pointer is set to NULL. The function 
+ * result is NULL on empty lines, including lines containing 
+ * all spaces.
+ *
+ * Leading spaces are skipped. Trailing end of line characters
+ * are removed.
+ *
+ * Note, that the original contents of the line will be
+ * modified.
+ */
+static char *ParseLine(char *line, char **pp1, char **pp2)
+{
+    char *p0;
+    char *cp;
+
+    /* Initialize parameter pointers to NULL. */
+    *pp1 = NULL;
+    *pp2 = NULL;
+
+    /* Chop off EOL. */
+    cp = strchr(line, '\r');
+    if (cp) {
+        *cp = 0;
+    }
+    cp = strchr(line, '\n');
+    if (cp) {
+        *cp = 0;
+    }
+
+    /*
+     * Parse line for command and parameters.
+     */
+    p0 = line;
+    while (isspace(*p0)) {
+        /* Skip leading spaces. */
+        p0++;
+    }
+    if (*p0 == '\0') {
+        /* Return NULL on empty lines. */
+        return NULL;
+    }
+    cp = strchr(p0, ' ');
+    if (cp) {
+        *cp++ = '\0';
+        while (isspace(*cp)) {
+            /* Skip leading spaces. */
+            cp++;
+        }
+        if (*cp) {
+            /* First parameter found. */
+            *pp1 = cp;
+            cp = strchr(cp, ' ');
+        } else {
+            cp = NULL;
+        }
+        if (cp) {
+            *cp++ = '\0';
+            while (isspace(*cp)) {
+                /* Skip leading spaces. */
+                cp++;
+            }
+            if (*cp) {
+                /* Remaining parameter(s) found. */
+                *pp2 = cp;
+            }
+        }
+    }
+    /* Return pointer to command. */
+    return p0;
+}
 
 /*
  * Process client requests.
+ *
+ * This function is called when a connection has been established
+ * and returns when the connection is closed.
  */
-void ProcessRequests(FILE * stream)
+static void ProcessRequests(FILE * stream)
 {
-    int got;
-    char *cp;
+    char *buff;
+    char *cmd;
+    size_t clen;
+    char *p1;
+    char *p2;
 
     /*
-     * Send a welcome banner.
+     * Allocate an input buffer. Check the result.
      */
-    fputs_P(banner_P, stream);
+    buff = malloc(MAX_INPUT_LINE + 1);
+    if (buff == NULL) {
+        return;
+    }
+
+    /*
+     * Send a welcome banner to the new client.
+     */
+    fputs("200 Welcome to tcps. Type help to get help.\r\n", stream);
     for (;;) {
 
-        /*
-         * Flush output and read a line.
+        /* 
+         * Flush any pending output and read in a new line. 
+         *
+         * If you want line editing capabilities, check
+         * http://www.ethernut.de/nutwiki/Input_Line_Editor
          */
         fflush(stream);
-        if (fgets(buff, sizeof(buff), stream) == 0)
+        if (fgets(buff, MAX_INPUT_LINE, stream) == NULL) {
+            /* Probably a disconnect, return. */
             break;
-
-        /*
-         * Chop off EOL.
-         */
-        if ((cp = strchr(buff, '\r')) != 0)
-            *cp = 0;
-        if ((cp = strchr(buff, '\n')) != 0)
-            *cp = 0;
-
-        /*
-         * Ignore blank lines.
-         */
-        got = strlen(buff);
-        if (got == 0)
+        }
+        /* Parse the input line. */
+        cmd = ParseLine(buff, &p1, &p2);
+        if (cmd == NULL) {
+            /* Skip empty lines. */
             continue;
+        }
+        /* Retrieve command length for abbreviations. */
+        clen = strlen(cmd);
 
         /*
-         * Memory info.
+         * Process memory info request.
+         *
+         * http://www.ethernut.de/nutwiki/Heap_Memory
          */
-        if (strncmp(buff, "memory", got) == 0) {
-            fprintf_P(stream, mem_fmt_P, (u_int)NutHeapAvailable());
+        if (strncmp(cmd, "heap", clen) == 0) {
+            fprintf(stream, "210 %u bytes RAM free\r\n", (unsigned int)NutHeapAvailable());
             continue;
         }
 
         /*
-         * List threads.
+         * Process IP address configuration.
          */
-        if (strncmp(buff, "threads", got) == 0) {
-            NUTTHREADINFO *tdp;
-            NUTTIMERINFO *tnp;
+        if (strncmp(cmd, "ip", clen) == 0) {
+            uint32_t ip = p1 ? inet_addr(p1) : (uint32_t) -1;
 
-            fputs_P(thread_intro_P, stream);
-            for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
-                fputs(tdp->td_name, stream);
-                switch (tdp->td_state) {
-                case TDS_TERM:
-                    fputs("\tTerm\t", stream);
-                    break;
-                case TDS_RUNNING:
-                    fputs("\tRun\t", stream);
-                    break;
-                case TDS_READY:
-                    fputs("\tReady\t", stream);
-                    break;
-                case TDS_SLEEP:
-                    fputs("\tSleep\t", stream);
-                    break;
+            if (ip == (uint32_t) -1) {
+                fputs("420 Invalid or missing address\r\n", stream);
+            } else {
+                confnet.cdn_cip_addr = ip;
+                if (NutNetSaveConfig()) {
+                    fputs("421 Failed to save configuration\r\n", stream);
+                } else {
+                    fputs("220 Configuration saved\r\n", stream);
                 }
-                fprintf(stream, "%u\t%u", tdp->td_priority, (u_int) tdp->td_sp - (u_int) tdp->td_memory);
-                if (*((u_long *) tdp->td_memory) != DEADBEEF)
-                    fputs("\tCorrupted\t", stream);
-                else
-                    fputs("\tOK\t", stream);
-
-                if ((tnp = (NUTTIMERINFO *) tdp->td_timer) != 0)
-                    fprintf(stream, "%lu\r\n", tnp->tn_ticks_left);
-                else
-                    fputs("None\r\n", stream);
             }
-            fputs(".\r\n", stream);
             continue;
         }
 
         /*
-         * List timers.
+         * Process IP mask configuration.
          */
-        if (strncmp("timers", buff, got) == 0) {
-            NUTTIMERINFO *tnp;
+        if (strncmp(cmd, "mask", clen) == 0) {
+            uint32_t mask = p1 ? inet_addr(p1) : (uint32_t) -1;
 
-            fputs_P(timer_intro_P, stream);
-            for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
-                fprintf(stream, "%lu\t", tnp->tn_ticks_left);
-                if (tnp->tn_ticks)
-                    fprintf(stream, "%lu\r\n", tnp->tn_ticks);
-                else
-                    fputs("Oneshot\r\n", stream);
+            if (mask == (uint32_t) -1) {
+                fputs("430 Invalid or missing mask\r\n", stream);
+            } else {
+                confnet.cdn_ip_mask = mask;
+                if (NutNetSaveConfig()) {
+                    fputs("421 Failed to save configuration\r\n", stream);
+                } else {
+                    fputs("230 Configuration saved\r\n", stream);
+                }
             }
-            fputs(".\r\n", stream);
+            continue;
+        }
+
+        /*
+         * Process GPIO pin status.
+         *
+         * http://www.ethernut.de/nutwiki/LowLevelPortIo
+         */
+        if (strncmp(cmd, "pin", clen) == 0) {
+            int bank = p1 ? atoi(p1) : 0;
+            int bit = p2 ? atoi(p2) : 0;
+            int state = GpioPinGet(bank, bit);
+
+            fprintf(stream, "240 %d at GPIO bank %d bit %d\r\n", state, bank, bit);
+            continue;
+        }
+
+        /*
+         * Process serial line send request.
+         */
+        if (strncmp(cmd, "send", clen) == 0) {
+            if (p1) {
+                printf("%s", p1);
+                if (p1) {
+                    printf(" %s", p2);
+                }
+            }
+            putchar('\n');
+            fputs("250 Message sent\r\n", stream);
+            continue;
+        }
+
+        /*
+         * Process time info request.
+         */
+        if (strncmp(cmd, "uptime", clen) == 0) {
+            fprintf(stream, "220 %ld seconds running\r\n", (long)(time(NULL) - start_time));
+            continue;
+        }
+
+        /*
+         * Process system reset request.
+         *
+         * http://www.ethernut.de/nutwiki/System_Reset
+         */
+        if (strncmp(cmd, "reset", clen) == 0) {
+            fputs("910 System reset\r\n", stream);
+            fflush(stream);
+            NutSleep(1000);
+            NutReset();
+            fputs("490 System reset not implemented\r\n", stream);
             continue;
         }
 
         /*
          * Quit connection.
          */
-        if (strncmp("quit", buff, got) == 0) {
+        if (strncmp(cmd, "quit", clen) == 0) {
+            fputs("900 Bye\r\n", stream);
+            fflush(stream);
             break;
         }
 
         /*
          * Display help text on any unknown command.
          */
-        fputs_P(help_P, stream);
+        fputs("400 List of commands follows\r\n"
+              "h[eap]    Query heap memory bytes available.\r\n"
+              "i[p]      Set IP <address>.\r\n"
+              "m[ask]    Set IP <mask>.\r\n"
+              "p[in]     Query status of GPIO pin <bank> <bit>.\r\n"
+              "r[eset]   Reset system.\r\n"
+              "s[end]    Send <message> to serial port.\r\n"
+              "u[ptime]  Query number of seconds the system is running.\r\n"
+              "q[uit]    Terminates connection.\r\n" 
+              ".\r\n", stream);
     }
+    free(buff);
 }
 
 /*
@@ -256,98 +374,96 @@ int main(void)
 {
     TCPSOCKET *sock;
     FILE *stream;
-    u_long baud = 115200;
-    u_char mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x55 };
+    uint32_t baud = 115200;
 
     /*
-     * Register all devices used in our application.
+     * Assign stdout to the DEBUG device.
      */
     NutRegisterDevice(&DEV_DEBUG, 0, 0);
-#ifndef DEV_ETHER
-    for (;;);
-#else
-    NutRegisterDevice(&DEV_ETHER, 0x8300, 5);
-
-    /*
-     * Assign stdout to the UART device.
-     */
     freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
-    printf_P(vbanner_P, NutVersionString());
-#ifdef NUTDEBUG
-    NutTraceTcp(stdout, 1);
-    NutTraceOs(stdout, 0);
-    NutTraceHeap(stdout, 0);
-    NutTracePPP(stdout, 0);
-#endif
-
-    NutNetLoadConfig(DEV_ETHER_NAME);
-    memcpy(confnet.cdn_mac, mac, 6);
-    NutNetSaveConfig();
 
     /*
-     * Setup the ethernet device. Try DHCP first. If this is
-     * the first time boot with empty EEPROM and no DHCP server
-     * was found, use hardcoded values.
+     * Print out our version information.
      */
-    printf("Configure eth0...");
-    if (NutDhcpIfConfig("eth0", 0, 60000)) {
-        printf("initial boot...");
-        if (NutDhcpIfConfig("eth0", mac, 60000)) {
-            u_long ip_addr = inet_addr("192.168.192.100");
-            u_long ip_mask = inet_addr("255.255.255.0");
-
-            printf("no DHCP...");
-            NutNetIfConfig("eth0", mac, ip_addr, ip_mask);
-            /* If not in a local network, we must also call 
-               NutIpRouteAdd() to configure the routing. */
-        }
-    }
-    puts("OK");
-    printf("IP: %s\n", inet_ntoa(confnet.cdn_ip_addr));
+    printf("\n\nNut/OS %s\n", NutVersionString());
+    printf("TCP Server Sample %s\n", APP_VERSION);
 
     /*
-     * Now loop endless for connections.
+     * Configure the network interface. It is assumed, that 
+     * we got a valid configuration in non-volatile memory.
+     *
+     * For alternatives see
+     * http://www.ethernut.de/nutwiki/Network_Configuration
+     */
+    printf("Configure %s...", DEV_ETHER_NAME);
+    if (NutRegisterDevice(&DEV_ETHER, 0, 0)) {
+        FatalError("failed");
+    }
+    if (NutDhcpIfConfig("eth0", 0, 60000)) {
+        FatalError("no valid network configuration");
+    }
+    printf("OK\nRun 'telnet %s", inet_ntoa(confnet.cdn_ip_addr));
+#if TCP_SERVER_PORT != 23
+    printf(" %d", TCP_SERVER_PORT);
+#endif
+    puts("' to connect to this server");
+
+    /* Set the start time. */
+    start_time = time(NULL);
+
+    /*
+     * Now loop endless for client connections.
+     *
+     * Note, that we are only able to serve one client at a time.
+     * If you want to allow concurrent connections, then this
+     * loop must run in threads. Then each thread can handle one
+     * client. See
+     * http://www.ethernut.de/nutwiki/Multithreading
      */
     for (;;) {
-        /*
-         * Create a socket.
-         */
+        /* Create a socket. */
         if ((sock = NutTcpCreateSocket()) != 0) {
-            /*
-             * Listen on port 23. If we return, we got a client.
-             */
             printf("Waiting for a telnet client...");
-            if (NutTcpAccept(sock, 23) == 0) {
+            /* Listen on port 23. If we return, we got a client. */
+            if (NutTcpAccept(sock, TCP_SERVER_PORT) == 0) {
                 puts("connected");
 
                 /*
                  * Open a stream and associate it with the socket, so 
                  * we can use standard I/O. Note, that socket streams
-                 * currently do support text mode.
+                 * currently do support cooked text mode.
                  */
-                if ((stream = _fdopen((int) sock, "r+b")) != 0) {
-                    /*
-                     * Process client requests.
+                stream = _fdopen((int) sock, "r+b");
+                if (stream) {
+                    /* Process client requests as long as the connection is
+                     * established.
+                     *
+                     * Note, that unplugging the network cable will not terminate
+                     * a TCP connection by default. If you need this, you may set
+                     * a receive timeout on the socket:
+                     *
+                     * uint32_t to = 5000;
+                     * NutTcpSetSockOpt(sock, SO_RCVTIMEO, &to, sizeof(to));
+                     *
+                     * See also
+                     * http://www.ethernut.de/nutwiki/Socket_Timeouts
                      */
                     ProcessRequests(stream);
-                    puts("Disconnected");
-
-                    /*
-                     * Close the stream.
-                     */
+                    /* Close the stream. */
                     fclose(stream);
-                } else
+                } else {
                     puts("Assigning a stream failed");
-            } else
+                }
+            } else {
                 puts("failed");
+            }
 
-            /*
-             * Close our socket.
-             */
+            /* Close our socket. */
             NutTcpCloseSocket(sock);
+            puts("Disconnected");
         }
     }
-#endif
+    /* Never reached, but required to suppress compiler warning. */
     return 0;
 }
