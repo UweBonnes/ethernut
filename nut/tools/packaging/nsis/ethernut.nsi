@@ -7,7 +7,7 @@ SetCompressor /SOLID lzma
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 
 !define PRODUCT  "Nut/OS"
-!define NUTVERSION  "4.9.7"
+!define NUTVERSION  "4.9.8"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
@@ -297,11 +297,13 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\ethernut21b.conf
     File ..\..\..\conf\ethernut30d.conf
     File ..\..\..\conf\ethernut30e.conf
-    File ..\..\..\conf\ethernut31a.conf
+    File ..\..\..\conf\ethernut31d.conf
     File ..\..\..\conf\ethernut50c.conf
     File ..\..\..\conf\evk1100.conf
     File ..\..\..\conf\evk1100-intram.conf
+    File ..\..\..\conf\evk1104.conf
     File ..\..\..\conf\gbaxport2.conf
+    File ..\..\..\conf\hhopen63f.conf
     File ..\..\..\conf\MMnet02.conf
     File ..\..\..\conf\MMnet03.conf
     File ..\..\..\conf\MMnet04.conf
@@ -454,6 +456,10 @@ SectionGroup "Application Samples"
     File ..\..\..\app\*.unix-gcc
     File ..\..\..\app\Makeburn.*
 
+    SetOutPath "$INSTDIR\nut\app\7segtst"
+    File ..\..\..\app\7segtst\Makefile
+    File ..\..\..\app\7segtst\*.c
+
     SetOutPath "$INSTDIR\nut\app\basemon"
     File ..\..\..\app\basemon\Makefile
     File ..\..\..\app\basemon\*.c
@@ -483,6 +489,10 @@ SectionGroup "Application Samples"
     File ..\..\..\app\cppdemo\Makefile
     File ..\..\..\app\cppdemo\*.cc
 
+    SetOutPath "$INSTDIR\nut\app\eeprom"
+    File ..\..\..\app\eeprom\Makefile
+    File ..\..\..\app\eeprom\*.c
+
     SetOutPath "$INSTDIR\nut\app\events"
     File ..\..\..\app\events\Makefile
     File ..\..\..\app\events\*.c
@@ -496,6 +506,10 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\appicc\ftpd"
     File ..\..\..\appicc\ftpd\*.prj
     File ..\..\..\appicc\ftpd\*.SRC
+
+    SetOutPath "$INSTDIR\nut\app\hhopen"
+    File ..\..\..\app\hhopen\Makefile
+    File ..\..\..\app\hhopen\*.c
 
     SetOutPath "$INSTDIR\nut\app\httpd"
     File ..\..\..\app\httpd\Makefile
@@ -526,6 +540,10 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\inetq\*.prj
     File ..\..\..\appicc\inetq\*.SRC
 
+    SetOutPath "$INSTDIR\nut\app\ioexpander"
+    File ..\..\..\app\ioexpander\Makefile
+    File ..\..\..\app\ioexpander\*.c
+
     SetOutPath "$INSTDIR\nut\app\isp2"
     File ..\..\..\app\isp2\Makefile
     File ..\..\..\app\isp2\*.c
@@ -533,12 +551,20 @@ SectionGroup "Application Samples"
     File ..\..\..\app\isp2\*.isp
     SetOutPath "$INSTDIR\nut\app\isp2\isp"
 
+    SetOutPath "$INSTDIR\nut\app\led_key"
+    File ..\..\..\app\led_key\Makefile
+    File ..\..\..\app\led_key\*.c
+
     SetOutPath "$INSTDIR\nut\app\logtime"
     File ..\..\..\app\logtime\Makefile
     File ..\..\..\app\logtime\*.c
     SetOutPath "$INSTDIR\nut\appicc\logtime"
     File ..\..\..\appicc\logtime\*.prj
     File ..\..\..\appicc\logtime\*.SRC
+
+    SetOutPath "$INSTDIR\nut\app\lua"
+    File ..\..\..\app\lua\Makefile
+    File ..\..\..\app\lua\*.c
 
     SetOutPath "$INSTDIR\nut\app\nutpiper"
     File ..\..\..\app\nutpiper\Makefile
