@@ -86,15 +86,21 @@ WARN_LOGFILE           = doxy.log
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = @srcdir@/nutdoc_en.txt \
+                         @top_srcdir@/nut/app/7segtst \
                          @top_srcdir@/nut/app/caltime \
                          @top_srcdir@/nut/app/canbus \
                          @top_srcdir@/nut/app/cppdemo \
+                         @top_srcdir@/nut/app/eeprom \
                          @top_srcdir@/nut/app/events \
                          @top_srcdir@/nut/app/ftpd \
+                         @top_srcdir@/nut/app/hhopen \
                          @top_srcdir@/nut/app/httpd \
                          @top_srcdir@/nut/app/inetq \
+                         @top_srcdir@/nut/app/ioexpander \
                          @top_srcdir@/nut/app/isp2 \
+                         @top_srcdir@/nut/app/led_key \
                          @top_srcdir@/nut/app/logtime \
+                         @top_srcdir@/nut/app/lua \
                          @top_srcdir@/nut/app/nutpiper \
                          @top_srcdir@/nut/app/playmp3 \
                          @top_srcdir@/nut/app/portdio \
