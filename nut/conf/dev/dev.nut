@@ -2297,6 +2297,17 @@ nutdev =
             }
         }
     },
+    {
+        name = "nutdev_null_ether",
+        brief = "Ethernet Null Device",
+        description = "This virtual device discards all outgoing data and never delivers any "..
+                      "incoming data.\n\n"..
+                      "All targets without supported Ethernet hardware will use this driver "..
+                      "by default. The main purpose of this driver is to build network applications "..
+                      "without compiler and linker errors, even if no Ethernet hardware is available.",
+        provides = { "NET_PHY" },
+        sources = { "null_ether.c" },
+    },
 
     --
     -- Block Device Drivers.

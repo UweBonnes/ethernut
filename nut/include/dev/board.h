@@ -232,9 +232,9 @@
 #include <dev/avr32_macb.h>
 #endif
 
-//#ifndef DEV_ETHER
-//#define DEV_ETHER       devEth0
-//#endif
+#ifndef DEV_ETHER
+#include <dev/null_ether.h>
+#endif
 #ifndef DEV_ETHER_NAME
 #define DEV_ETHER_NAME  "eth0"
 #endif
