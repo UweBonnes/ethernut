@@ -1,0 +1,104 @@
+/*
+* Copyright (C) 2009 by Comm5 Tecnologia Ltda. All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+*
+* 1. Redistributions of source code must retain the above copyright
+*    notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright
+*    notice, this list of conditions and the following disclaimer in the
+*    documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holders nor the names of
+*    contributors may be used to endorse or promote products derived
+*    from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY COMM5 TECNOLOGIA LTDA AND CONTRIBUTORS
+* ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
+* SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+* OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+* AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+* THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+* SUCH DAMAGE.
+*
+* For additional information see http://www.ethernut.de/
+*
+*/
+
+#include <QSpinBox>
+#include <QComboBox>
+
+#include "nutcomponentdelegate.h"
+#include "nutcomponentmodel.h"
+#include "nutcomponentmodel_p.h"
+
+
+NutComponentDelegate::NutComponentDelegate( NutComponentModel* parent /*= 0*/ ) : QItemDelegate( parent )
+{
+}
+
+QWidget* NutComponentDelegate::createEditor( QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index ) const
+{
+	Q_UNUSED(option);
+
+	if (!index.isValid())
+		return 0;
+	
+	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+	if ( item->optionType() == TreeItem::nutInteger )
+		return new QSpinBox( parent );
+	else if ( item->optionType() == TreeItem::nutEnumerated )
+		return new QComboBox( parent );
+
+	return QItemDelegate::createEditor( parent, option, index );
+}
+
+void NutComponentDelegate::setEditorData( QWidget* editor, const QModelIndex& index ) const
+{
+	Q_UNUSED(index);
+	if ( editor->inherits("QSpinBox") )
+	{
+		QSpinBox* widget = qobject_cast<QSpinBox*>( editor );
+		int value = index.model()->data( index, Qt::EditRole ).toInt();
+		widget->setValue( value );
+	}
+	else if ( editor->inherits("QComboBox") )
+	{
+		QComboBox* widget = qobject_cast<QComboBox*>( editor );
+		TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+		widget->addItems( item->optionChoices() );
+		widget->setCurrentIndex( widget->findText( item->value().toString() ) );
+	}
+	else
+		QItemDelegate::setEditorData( editor, index );
+}
+
+void NutComponentDelegate::setModelData( QWidget* editor, QAbstractItemModel* model, const QModelIndex& index ) const
+{
+	if ( editor->inherits("QSpinBox") )
+	{
+		QSpinBox* widget = qobject_cast<QSpinBox*>( editor );
+		widget->interpretText();
+		int value = widget->value();
+		model->setData( index, value, Qt::EditRole );
+	}
+	else if ( editor->inherits("QComboBox") )
+	{
+		QComboBox* widget = qobject_cast<QComboBox*>( editor );
+		model->setData( index, widget->currentText(), Qt::EditRole );
+	}
+	else
+		QItemDelegate::setModelData( editor, model, index );
+}
+
+void NutComponentDelegate::updateEditorGeometry( QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index ) const
+{
+	Q_UNUSED(index);
+	editor->setGeometry(option.rect);
+}

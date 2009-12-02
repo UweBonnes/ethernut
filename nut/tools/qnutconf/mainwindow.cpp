@@ -40,6 +40,7 @@
 #include "mainwindow.h"
 #include "settingsdialog.h"
 #include "nutcomponentmodel.h"
+#include "nutcomponentdelegate.h"
 #include "settings.h"
 #include "builder.h"
 
@@ -48,7 +49,10 @@ MainWindow::MainWindow()
 	ui.setupUi( this );
 	Settings::instance()->load();
 	model = new NutComponentModel(Settings::instance()->repository(), this);
+
 	ui.componentTree->setModel( model );
+	ui.componentTree->setItemDelegate( new NutComponentDelegate( model ) );
+
 	connect( model, SIGNAL(errorMessage(const QString&)), SLOT(message(const QString&)) );
 	connect( model, SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(updateView(const QModelIndex&, const QModelIndex&)) );

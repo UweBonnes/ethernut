@@ -411,3 +411,17 @@ void TreeItem::setActive( bool enable )
 			componentOptions->nco_value = strdup("");
 	}
 }
+
+QStringList TreeItem::optionChoices() const
+{
+	char** choices = ::GetOptionChoices( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
+	char** it = choices;
+	QStringList result;
+
+	while( *it )
+	{
+		result.append( QLatin1String(*it++) );
+	}
+	ReleaseStringArray( choices );
+	return result;
+}

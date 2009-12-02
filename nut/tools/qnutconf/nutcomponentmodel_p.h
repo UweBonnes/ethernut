@@ -101,6 +101,8 @@ public:
 	nutComponentType componentType() const;
 	nutOptionFlavor optionFlavor() const;
 
+	QStringList optionChoices() const;
+
 	bool isActive() const;
 	void setActive( bool );
 

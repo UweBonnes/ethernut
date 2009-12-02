@@ -50,6 +50,7 @@ class NutComponentModel : public QAbstractItemModel
 	NutComponentModelPrivate* d;
 
 	friend class TreeItem;
+	friend class NutComponentDelegate;
 
 public:
 

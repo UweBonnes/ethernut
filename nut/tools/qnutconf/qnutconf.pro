@@ -17,6 +17,7 @@ SOURCES +=	\
 			main.cpp \
 			mainwindow.cpp \
 			nutcomponent.c \
+			nutcomponentdelegate.cpp \
 			nutcomponentmodel.cpp \
 			nutcomponentmodel_p.cpp \
 			settings.cpp \
@@ -26,6 +27,7 @@ HEADERS +=	\
 			builder.h \
 			mainwindow.h \
 			nutcomponent.h \
+			nutcomponentdelegate.h \
 			nutcomponentmodel.h \
 			nutcomponentmodel_p.h \
 			settings.h \
