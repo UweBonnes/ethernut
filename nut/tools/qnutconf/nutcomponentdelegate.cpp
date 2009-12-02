@@ -33,14 +33,16 @@
 
 #include <QSpinBox>
 #include <QComboBox>
+#include <QApplication>
 
 #include "nutcomponentdelegate.h"
 #include "nutcomponentmodel.h"
 #include "nutcomponentmodel_p.h"
 
 
-NutComponentDelegate::NutComponentDelegate( NutComponentModel* parent /*= 0*/ ) : QItemDelegate( parent )
+NutComponentDelegate::NutComponentDelegate( NutComponentModel* parent ) : QItemDelegate( parent )
 {
+	paintRadio = false;
 }
 
 QWidget* NutComponentDelegate::createEditor( QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index ) const
@@ -102,3 +104,49 @@ void NutComponentDelegate::updateEditorGeometry( QWidget* editor, const QStyleOp
 	Q_UNUSED(index);
 	editor->setGeometry(option.rect);
 }
+
+void NutComponentDelegate::paint( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const
+{
+
+	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+	if ( item->optionUIHint() == TreeItem::nutHintRadio )
+		paintRadio = true;
+
+	QItemDelegate::paint( painter, option, index );
+
+	paintRadio = false;
+}
+
+void NutComponentDelegate::drawCheck(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect, Qt::CheckState state) const
+{
+	if (!rect.isValid())
+		return;
+
+	QStyleOptionViewItem opt(option);
+	opt.rect = rect;
+	opt.state = opt.state & ~QStyle::State_HasFocus;
+
+	switch (state) {
+	case Qt::Unchecked:
+		opt.state |= QStyle::State_Off;
+		break;
+	case Qt::PartiallyChecked:
+		opt.state |= QStyle::State_NoChange;
+		break;
+	case Qt::Checked:
+		opt.state |= QStyle::State_On;
+		break;
+	}
+
+	const QWidget *widget = 0;
+	if (const QStyleOptionViewItemV3 *v3 = qstyleoption_cast<const QStyleOptionViewItemV3 *>(&option))
+		widget = v3->widget;
+
+	QStyle *style = widget ? widget->style() : QApplication::style();
+
+	if ( paintRadio )
+		style->drawPrimitive(QStyle::PE_IndicatorRadioButton, &opt, painter, widget);
+	else
+		style->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &opt, painter, widget);
+}
+

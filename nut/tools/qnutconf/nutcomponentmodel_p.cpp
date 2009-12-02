@@ -52,6 +52,11 @@ TreeItem::TreeItem( NUTCOMPONENTOPTION *opts, NutComponentModel* parentModel, Tr
   componentOptions( opts ), parentComponent(0), model(parentModel)
 {
 	componentTypeValue = nutOption;
+	
+	if (componentOptions && componentOptions->nco_exclusivity)
+		uiHint = nutHintRadio;
+	else
+		uiHint = nutHintNone;
 }
 
 TreeItem::~TreeItem()
@@ -424,4 +429,9 @@ QStringList TreeItem::optionChoices() const
 	}
 	ReleaseStringArray( choices );
 	return result;
+}
+
+TreeItem::nutUIHint TreeItem::optionUIHint() const
+{
+	return uiHint;
 }

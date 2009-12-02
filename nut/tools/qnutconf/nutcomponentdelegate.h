@@ -42,8 +42,10 @@ class NutComponentDelegate : public QItemDelegate
 {
 	Q_OBJECT
 
+	mutable bool paintRadio;
+
 public:
-	NutComponentDelegate(NutComponentModel* parent = 0);
+	explicit NutComponentDelegate(NutComponentModel* parent);
 
 	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
@@ -52,6 +54,11 @@ public:
 
 	void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
+
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+protected:
+	void drawCheck(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect, Qt::CheckState state) const;
 };
 
 #endif // __NUTCOMPONENTDELEGATE_H__

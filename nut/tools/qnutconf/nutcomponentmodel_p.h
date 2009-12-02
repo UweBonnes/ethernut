@@ -72,6 +72,11 @@ public:
 		nutFlavorData
 	};
 
+	enum nutUIHint {
+		nutHintNone,
+		nutHintCheck,
+		nutHintRadio
+	};
 
 	TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, TreeItem* parent = 0 );
 	TreeItem( NUTCOMPONENTOPTION *opts, NutComponentModel* parentModel, TreeItem* parent );
@@ -100,6 +105,7 @@ public:
 	nutOptionType optionType() const;
 	nutComponentType componentType() const;
 	nutOptionFlavor optionFlavor() const;
+	nutUIHint optionUIHint() const;
 
 	QStringList optionChoices() const;
 
@@ -114,6 +120,7 @@ private:
 	NUTCOMPONENT* parentComponent;
 	NUTCOMPONENTOPTION* componentOptions;
 	nutComponentType componentTypeValue;
+	nutUIHint uiHint;
 };
 
 #endif //__NUTCOMPONENTTREEMODEL_P_H__
