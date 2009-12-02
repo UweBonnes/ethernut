@@ -98,3 +98,4 @@ void Builder::readyReadStandardOutput()
 	emit message( process->readAllStandardOutput() );
 	emit message( process->readAllStandardError() );
 }
+

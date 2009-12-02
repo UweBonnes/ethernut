@@ -36,7 +36,7 @@
 
 
 TreeItem::TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, TreeItem* parent /*= 0 */ ) : parentItem( parent ), 
-  parentComponent( pComponent ), componentOptions(0), model(parentModel)
+  model( parentModel ), parentComponent( pComponent ), componentOptions( 0 )
 {
 	/* Libraries contain modules. */
 	if ( parentComponent )
@@ -48,8 +48,8 @@ TreeItem::TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, Tr
 	}
 }
 
-TreeItem::TreeItem( NUTCOMPONENTOPTION *opts, NutComponentModel* parentModel, TreeItem* parent ) : parentItem( parent ), 
-  componentOptions( opts ), parentComponent(0), model(parentModel)
+TreeItem::TreeItem( NUTCOMPONENTOPTION* opts, NutComponentModel* parentModel, TreeItem* parent ) : parentItem( parent ), 
+  model( parentModel ), parentComponent( 0 ), componentOptions( opts )
 {
 	componentTypeValue = nutOption;
 	
@@ -435,3 +435,4 @@ TreeItem::nutUIHint TreeItem::optionUIHint() const
 {
 	return uiHint;
 }
+
