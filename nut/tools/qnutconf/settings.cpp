@@ -74,7 +74,7 @@ void Settings::destroy()
 	with a nut folder inside. This performs a deep pattern search, 
 	looking for sub folders.
 */
-QString Settings::findRelativePathDepthSearch( const QString& filename, QDir& startPoint )
+QString Settings::findRelativePathDepthSearch( const QString& filename, const QDir& startPoint )
 {
 	QRegExp nutFolder( "[\\\\/]nut[\\\\/]?$" );
 

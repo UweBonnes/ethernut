@@ -76,7 +76,7 @@ private:
 	Settings();
 	
 	static void destroy();
-	static QString findRelativePathDepthSearch( const QString& filename, QDir& startPoint  );
+	static QString findRelativePathDepthSearch( const QString& filename, const QDir& startPoint );
 
 private:
 	QString repositoryFile;
