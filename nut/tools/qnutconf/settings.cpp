@@ -36,6 +36,8 @@
 #include <QDirIterator>
 #include <QSettings>
 
+#include <stdlib.h>
+
 #include "settings.h"
 
 Settings::Settings()

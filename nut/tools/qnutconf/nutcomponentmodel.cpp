@@ -383,7 +383,7 @@ bool NutComponentModel::generateBuildTree()
 #ifdef Q_OS_WIN32
 		Settings::instance()->includePath().join(";").toLocal8Bit(),
 #else
-		Settings::instance()->includePath().join(":"),
+		Settings::instance()->includePath().join(":").toLocal8Bit(),
 #endif
 		0, Settings::instance()->installPath().toLocal8Bit()) )
 	{
