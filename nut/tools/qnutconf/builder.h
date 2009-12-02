@@ -34,6 +34,8 @@
 #if !defined( __BUILDER_H__ )
 #define __BUILDER_H__
 
+#include <QObject>
+#include <QStringList>
 #include <QProcess>
 
 class Builder : public QObject
@@ -63,4 +65,4 @@ signals:
 	void done( int exitCode );
 };
 
-#endif __BUILDER_H__
+#endif //__BUILDER_H__
