@@ -7,7 +7,7 @@ SRCS =	lapi.c ldo.c ldump.c ldebug.c lfunc.c lgc.c \
 	ltm.c lundump.c lvm.c lzio.c lauxlib.c linit.c \
 	loadlib.c lbaselib.c liolib.c loslib.c ldblib.c \
 	lmathlib.c ltablib.c lstrlib.c \
-	lcode.c llex.c lparser.c
+	lcode.c llex.c lparser.c lrotable.c
 
 OBJS =	$(SRCS:.c=.o)
 

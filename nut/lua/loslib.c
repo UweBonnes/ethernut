@@ -231,7 +231,7 @@ static int os_exit (lua_State *L) {
 }
 #endif
 
-static const luaL_Reg syslib[] = {
+const luaL_Reg syslib[] = {
 #ifndef NUTLUA_OSLIB_CLOCK_NOT_IMPLEMENTED
   {"clock",     os_clock},
 #endif
@@ -267,6 +267,10 @@ static const luaL_Reg syslib[] = {
 
 
 LUALIB_API int luaopen_os (lua_State *L) {
+#if NUTLUA_OPTIMIZE_MEMORY > 0
+  return 0;
+#else
   luaL_register(L, LUA_OSLIBNAME, syslib);
   return 1;
+#endif
 }

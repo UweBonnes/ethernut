@@ -75,10 +75,23 @@ nutlua =
             "lstrlib.c",
             "lcode.c",
             "llex.c",
-            "lparser.c"
+            "lparser.c",
+            "lrotable.c"
         },
         options =
         {
+            {
+                macro = "NUTLUA_OPTIMIZE_MEMORY",
+                brief = "Memory Optimization",
+                description = "Minimizes RAM footprint at the expense of speed.\n\n"..
+                              "0 - no optimizations\n"..
+                              "1 - optimize while maitaining full compatibility with the test suite\n"..
+                              "2 - aggresive optimizations (breaks compatibility with some tests)",
+                type = "enumerated",
+                default = "2",
+                choices = { "0", "1", "2" },
+                file = "include/cfg/lua.h"
+            },
             {
                 macro = "NUTLUA_FLOATING_POINT",
                 brief = "Floating Point Numbers",
