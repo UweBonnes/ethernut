@@ -73,7 +73,6 @@ MainWindow::MainWindow()
 MainWindow::~MainWindow()
 {
 	writeSettings();
-	close();
 }
 
 void MainWindow::readSettings()
@@ -104,7 +103,10 @@ void MainWindow::on_actionOpen_triggered()
 			QMessageBox::critical(this, tr("Erro"), tr("There was a problem opening the file, please check the log message"));
 		}
 		else
+		{
 			Settings::instance()->load( fileName );
+			ui.componentTree->resizeColumnToContents( 0 );
+		}
 		QApplication::restoreOverrideCursor();
 	}
 }
