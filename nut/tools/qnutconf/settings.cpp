@@ -88,8 +88,6 @@ QString Settings::findRelativePathDepthSearch( const QString& filename, const QD
 			QDir nut( folder );
 			if ( nut.exists( filename ) )
 				return QDir::current().relativeFilePath( QDir( folder ).absoluteFilePath( filename ) );
-			else
-				return QString();
 		}
 	}
 	return QString();
@@ -113,7 +111,6 @@ QString Settings::findRelativePath( const QString& filename )
 	
 	// Now look for parents and siblings.
 	QDir current( QDir::current() );
-	current.cdUp(); // Already visited current.
 
 	while ( !current.isRoot() )
 	{
