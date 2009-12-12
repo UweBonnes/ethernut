@@ -56,7 +56,7 @@ public:
 
 	enum CustomRoles { Description = Qt::UserRole };
 
-	NutComponentModel(const QString &path, QObject *parent = 0);
+	NutComponentModel(QObject *parent = 0);
 	~NutComponentModel();
 
 	bool openConfig( const QString& );
@@ -79,6 +79,7 @@ signals:
 	void message(const QString&);
 
 private:
+	void close();
 	void rebuildTree();
 	NUTREPOSITORY* repository();
 	bool isOptionActive( const char* );

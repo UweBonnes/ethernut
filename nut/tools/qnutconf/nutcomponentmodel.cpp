@@ -92,13 +92,10 @@ void NutComponentModel::NutComponentModelPrivate::addChildItems( NUTCOMPONENT* p
 
 }
 
-NutComponentModel::NutComponentModel(const QString &path, QObject *parent)
+NutComponentModel::NutComponentModel(QObject *parent)
 : QAbstractItemModel(parent), d( new NutComponentModelPrivate )
 {
 	d->rootItem = new TreeItem( 0, 0 );
-
-	QString repositoryPath = path;
-	d->repositoryPath = repositoryPath.replace("\\", "/");
 }
 
 NutComponentModel::~NutComponentModel()
@@ -108,8 +105,14 @@ NutComponentModel::~NutComponentModel()
 
 bool NutComponentModel::openConfig( const QString& fileName )
 {
+	if ( d->repository )
+		close();
+
 	if ( !d->repository )
 	{
+		QString repositoryPath = Settings::instance()->repository();
+		d->repositoryPath = repositoryPath.replace("\\", "/");
+
 		d->repository = OpenRepository( qPrintable(d->repositoryPath) );
 		if ( !d->repository )
 		{
@@ -124,14 +127,14 @@ bool NutComponentModel::openConfig( const QString& fileName )
 			return false; // Failed to open repository
 		}
 		
-		if(ConfigureComponents(d->repository, d->rootComponent, qPrintable(fileName)))
+		if( ConfigureComponents(d->repository, d->rootComponent, qPrintable(fileName)) )
 		{
 			emit errorMessage( QLatin1String(GetScriptErrorString()) );
 			return false; // Failed to open repository
 		}
 
-		if (RefreshComponents(d->repository, d->rootComponent)) 
-			emit errorMessage( tr("Conflicting configuration") );
+		if ( RefreshComponents(d->repository, d->rootComponent) ) 
+			emit errorMessage( tr("WARNING: Cyclic Dependency Detected. Check dependencies on the .nut files") );
 		 else
 			emit message( tr("OK") );
 	}
@@ -200,6 +203,22 @@ bool NutComponentModel::saveConfig( const QString& filename )
 	return false;
 }
 
+
+/*!
+	Close the repository and go back to a pre openConfig state 
+*/
+void NutComponentModel::close()
+{
+	if ( d->repository )
+	{
+		CloseRepository( d->repository );
+		d->repository = 0;
+		d->repositoryPath.clear();
+	}
+	delete d->rootItem;
+	d->rootItem = new TreeItem( 0, 0 );
+}
+
 int NutComponentModel::columnCount(const QModelIndex &parent) const
 {
 	if (parent.isValid())
@@ -236,7 +255,10 @@ bool NutComponentModel::setData( const QModelIndex &index, const QVariant &value
 	else if ( role == Qt::CheckStateRole )
 	{
 		item->setActive( value.toBool() );
-		RefreshComponents(d->repository, d->rootComponent);
+		if ( RefreshComponents(d->repository, d->rootComponent) )
+			emit errorMessage( tr("WARNING: Cyclic Dependency Detected. Check dependencies on the .nut files") );
+
+		// RefreshComponents might have changed the status on the whole tree, refresh everything.
 		emit dataChanged( this->index(0, 0), this->index(rowCount(), 2) );
 		return true;
 	}
@@ -261,8 +283,7 @@ QVariant NutComponentModel::headerData(int section, Qt::Orientation orientation,
 	return QVariant();
 }
 
-QModelIndex NutComponentModel::index(int row, int column, const QModelIndex &parent)
-const
+QModelIndex NutComponentModel::index(int row, int column, const QModelIndex &parent) const
 {
 	if (!hasIndex(row, column, parent))
 		return QModelIndex();

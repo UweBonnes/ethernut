@@ -48,7 +48,7 @@ MainWindow::MainWindow()
 {
 	ui.setupUi( this );
 	Settings::instance()->load();
-	model = new NutComponentModel(Settings::instance()->repository(), this);
+	model = new NutComponentModel( this );
 
 	ui.componentTree->setModel( model );
 	ui.componentTree->setItemDelegate( new NutComponentDelegate( model ) );
@@ -73,6 +73,7 @@ MainWindow::MainWindow()
 MainWindow::~MainWindow()
 {
 	writeSettings();
+	close();
 }
 
 void MainWindow::readSettings()
@@ -115,7 +116,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_actionSave_as_triggered()
 {
-	QString fileName = QFileDialog::getOpenFileName( this, tr("Browse"), Settings::instance()->repository(), tr("Nut/OS Configuration (*.conf)") );
+	QString fileName = QFileDialog::getOpenFileName( this, tr("Browse"), Settings::instance()->configFileName(), tr("Nut/OS Configuration (*.conf)") );
 	if ( fileName.isEmpty() )
 		return;
 

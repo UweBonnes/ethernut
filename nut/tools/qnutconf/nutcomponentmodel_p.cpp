@@ -424,9 +424,8 @@ QStringList TreeItem::optionChoices() const
 	QStringList result;
 
 	while( *it )
-	{
 		result.append( QLatin1String(*it++) );
-	}
+
 	ReleaseStringArray( choices );
 	return result;
 }
