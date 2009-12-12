@@ -239,6 +239,104 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 }
 
 /*!
+ * \brief Create a referencing copy of an existing network buffer structure.
+ *
+ * \param nb   Points to an existing network buffer structure, previously 
+ *             allocated by NutNetBufAlloc().
+ * \param type Part of the buffer to be additionally allocated. This can 
+ *             be any combination of the following flags:
+ *             - NBAF_DATALINK
+ *             - NBAF_NETWORK
+ *             - NBAF_TRANSPORT
+ *             - NBAF_APPLICATION
+ *
+ * \return Pointer to a newly allocated copy.
+ */
+NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
+{
+    NETBUF *cb;
+    
+    NUTASSERT(nb != NULL);
+
+    if ((nb->nb_flags & NBAF_REFCNT) == NBAF_REFCNT) {
+        inserts = NBAF_ALL;
+    }
+
+    cb = NutHeapAllocClear(sizeof(NETBUF));
+    if (cb) {
+        uint_fast8_t referenced = 0;
+        register int e = 0;
+        register int s;
+
+        s = nb->nb_dl.sz;
+        if (s) {
+            if (inserts & NBAF_DATALINK) {
+                e = NutNetBufAllocData(&cb->nb_dl, s);
+                if (e == 0) {
+                    memcpy(cb->nb_dl.vp, nb->nb_dl.vp, s);
+                    cb->nb_flags |= NBAF_DATALINK;
+                }
+            } else {
+                cb->nb_dl.vp = nb->nb_dl.vp;
+                cb->nb_dl.sz = s;
+                referenced = 1;
+            }
+        }
+        s = nb->nb_nw.sz;
+        if (s && e == 0) {
+            if (inserts & NBAF_NETWORK) {
+                e = NutNetBufAllocData(&cb->nb_nw, s);
+                if (e == 0) {
+                    memcpy(cb->nb_nw.vp, nb->nb_nw.vp, s);
+                    cb->nb_flags |= NBAF_NETWORK;
+                }
+            } else {
+                cb->nb_nw.vp = nb->nb_nw.vp;
+                cb->nb_nw.sz = s;
+                referenced = 1;
+            }
+        }
+        s = nb->nb_tp.sz;
+        if (s && e == 0) {
+            if (inserts & NBAF_TRANSPORT) {
+                e = NutNetBufAllocData(&cb->nb_tp, s);
+                if (e == 0) {
+                    memcpy(cb->nb_tp.vp, nb->nb_tp.vp, s);
+                    cb->nb_flags |= NBAF_TRANSPORT;
+                }
+            } else {
+                cb->nb_tp.vp = nb->nb_tp.vp;
+                cb->nb_tp.sz = s;
+                referenced = 1;
+            }
+        }
+        s = nb->nb_ap.sz;
+        if (s && e == 0) {
+            if (inserts & NBAF_APPLICATION) {
+                e = NutNetBufAllocData(&cb->nb_ap, s);
+                if (e == 0) {
+                    memcpy(cb->nb_ap.vp, nb->nb_ap.vp, s);
+                    cb->nb_flags |= NBAF_APPLICATION;
+                }
+            } else {
+                cb->nb_ap.vp = nb->nb_ap.vp;
+                cb->nb_ap.sz = s;
+                referenced = 1;
+            }
+        }
+        if (e) {
+            NutNetBufFree(cb);
+            cb = NULL;
+        } 
+        else if (referenced) {
+            cb->nb_ref = nb;
+            nb->nb_flags++;
+        }
+    }
+    return cb;
+}
+
+/*!
  * \brief Create a copy of an existing network buffer
  *        structure.
  *
@@ -250,40 +348,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
  */
 NETBUF *NutNetBufClone(NETBUF * nb)
 {
-    NETBUF *cb = NutHeapAllocClear(sizeof(NETBUF));
-    
-    NUTASSERT(nb != NULL);
-
-    if (cb) {
-        register int e = 0;
-        register int s;
-
-        s = nb->nb_dl.sz;
-        if (s && (e = NutNetBufAllocData(&cb->nb_dl, s)) == 0) {
-            memcpy(cb->nb_dl.vp, nb->nb_dl.vp, s);
-            cb->nb_flags |= NBAF_DATALINK;
-        }
-        s = nb->nb_nw.sz;
-        if (s && e == 0 && (e = NutNetBufAllocData(&cb->nb_nw, s)) == 0) {
-            memcpy(cb->nb_nw.vp, nb->nb_nw.vp, s);
-            cb->nb_flags |= NBAF_NETWORK;
-        }
-        s = nb->nb_tp.sz;
-        if (s && e == 0 && (e = NutNetBufAllocData(&cb->nb_tp, s)) == 0) {
-            memcpy(cb->nb_tp.vp, nb->nb_tp.vp, s);
-            cb->nb_flags |= NBAF_TRANSPORT;
-        }
-        s = nb->nb_ap.sz;
-        if (s && e == 0 && (e = NutNetBufAllocData(&cb->nb_ap, s)) == 0) {
-            memcpy(cb->nb_ap.vp, nb->nb_ap.vp, s);
-            cb->nb_flags |= NBAF_APPLICATION;
-        }
-        if (e) {
-            NutNetBufFree(cb);
-            cb = NULL;
-        }
-    }
-    return cb;
+    return NutNetBufClonePart(nb, NBAF_ALL);
 }
 
 /*!
@@ -300,19 +365,26 @@ void NutNetBufFree(NETBUF * nb)
 {
     NUTASSERT(nb);
 
-    if (nb->nb_flags & NBAF_DATALINK) {
-        NutHeapFree(nb->nb_dl.vp);
+    if (nb->nb_flags & NBAF_REFCNT) {
+        nb->nb_flags--;
+    } else {
+        if (nb->nb_flags & NBAF_DATALINK) {
+            NutHeapFree(nb->nb_dl.vp);
+        }
+        if (nb->nb_flags & NBAF_NETWORK) {
+            NutHeapFree(nb->nb_nw.vp);
+        }
+        if (nb->nb_flags & NBAF_TRANSPORT) {
+            NutHeapFree(nb->nb_tp.vp);
+        }
+        if (nb->nb_flags & NBAF_APPLICATION) {
+            NutHeapFree(nb->nb_ap.vp);
+        }
+        if (nb->nb_ref) {
+            NutNetBufFree(nb->nb_ref);
+        }
+        NutHeapFree(nb);
     }
-    if (nb->nb_flags & NBAF_NETWORK) {
-        NutHeapFree(nb->nb_nw.vp);
-    }
-    if (nb->nb_flags & NBAF_TRANSPORT) {
-        NutHeapFree(nb->nb_tp.vp);
-    }
-    if (nb->nb_flags & NBAF_APPLICATION) {
-        NutHeapFree(nb->nb_ap.vp);
-    }
-    NutHeapFree(nb);
 }
 
 /*!

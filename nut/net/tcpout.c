@@ -354,7 +354,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
         }
         if (sock->so_rtt_seq == 0)
             sock->so_rtt_seq = ntohl (th->th_seq);
-        nb_clone = NutNetBufClone (nb);
+        nb_clone = NutNetBufClonePart(nb, 0);
     }
     else
         nb_clone = nb;

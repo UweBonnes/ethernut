@@ -186,7 +186,6 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
     NUTDEVICE *dev;
     IFNET *nif;
     uint32_t gate;
-    int rc;
 
     if ((nb = NutNetBufAlloc(nb, NBAF_NETWORK, sizeof(IPHDR))) == 0)
         return -1;
@@ -210,33 +209,38 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
     ip->ip_dst = dest;
 
     /*
-     * Broadcasts are sent on all network interfaces.
+     * Limited broadcasts are sent on all network interfaces.
+     * See RFC 919.
      */
     if (dest == 0xffffffff) {
 
         memset(ha, 0xff, sizeof(ha));
-
-        for (dev = nutDeviceList, rc = 0; dev && rc == 0; dev = dev->dev_next) {
+        for (dev = nutDeviceList; dev; dev = dev->dev_next) {
             if (dev->dev_type == IFTYP_NET) {
-
                 /*
-                 * Set remaining IP header items and calculate the checksum.
+                 * Set remaining IP header items using a NETBUF clone and calculate 
+                 * the checksum.
                  */
+                int rc = 0;
+                NETBUF *nb_clone = NutNetBufClonePart(nb, NBAF_NETWORK);
+
                 nif = dev->dev_icb;
+                ip = nb_clone->nb_nw.vp;
                 ip->ip_id = htons(nif->if_pkt_id++);
                 ip->ip_src = nif->if_local_ip;
+                ip->ip_ttl = 1;
                 ip->ip_sum = 0;
-                ip->ip_sum = NutIpChkSum(0, nb->nb_nw.vp, nb->nb_nw.sz);
-                /*
-                 * TODO: We must clone the NETBUF!!!
-                 */
+                ip->ip_sum = NutIpChkSum(0, nb_clone->nb_nw.vp, nb_clone->nb_nw.sz);
                 if (nif->if_type == IFT_ETHER)
-                    rc = (*nif->if_output) (dev, ETHERTYPE_IP, ha, nb);
-                else
-                    rc = (*nif->if_output) (dev, PPP_IP, 0, nb);
+                    rc = (*nif->if_output) (dev, ETHERTYPE_IP, ha, nb_clone);
+                else if (nif->if_type == IFT_PPP)
+                    rc = (*nif->if_output) (dev, PPP_IP, 0, nb_clone);
+                if (rc == 0) {
+                    NutNetBufFree(nb_clone);
+                }
             }
         }
-        return rc;
+        return 0;
     }
 
     /*

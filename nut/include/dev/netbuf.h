@@ -124,6 +124,8 @@
 
 
 /* lower bits may be used as ref-count, if ever needed */
+#define NBAF_REFCNT      0x07   /*!< \brief Reference count mask. */
+
 #define NBAF_UNICAST     0x08   /*!< \brief Unicast address. */
 
 #define NBAF_DATALINK    0x10   /*!< \brief Datalink buffer allocated flag. */
@@ -162,6 +164,7 @@ struct _NETBUF {
     NBDATA nb_nw;       /*!< \brief Network buffer. */
     NBDATA nb_tp;       /*!< \brief Transport buffer. */
     NBDATA nb_ap;       /*!< \brief Application buffer. */
+    NETBUF *nb_ref;     /*!< \brief Link to clone origin. */
 };
 
 /*@}*/
@@ -170,6 +173,7 @@ __BEGIN_DECLS
 
 extern NETBUF *NutNetBufAlloc(NETBUF *nb, uint8_t type, int size);
 extern NETBUF *NutNetBufClone(NETBUF *nb);
+extern NETBUF *NutNetBufClonePart(NETBUF *nb, uint8_t types);
 extern void NutNetBufFree(NETBUF *nb);
 extern int NutNetBufCollect(NETBUF * nbq, int total);
 
