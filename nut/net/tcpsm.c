@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2007 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2007 by egnite Software GmbH
+ * Copyright (C) 2009 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -92,145 +95,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.29  2009/02/22 12:30:36  olereinhardt
- * Include "include/errno.h" instead of "include/net/errno.h"
- *
- * Revision 1.28  2009/02/06 15:37:40  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
- *
- * Revision 1.27  2009/01/17 11:26:51  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.26  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.25  2008/07/27 11:43:22  haraldkipp
- * Configurable TCP retransmissions.
- *
- * Revision 1.24  2008/04/06 13:29:01  haraldkipp
- * In unreliable or high traffic networks connections may suddenly freeze.
- * The problem is, that during overflows (happening every 65s) the
- * retransmission timer may be loaded with 0, which in turn disables all
- * outstanding retransmission. Applied fix contributed by Henrik Maier.
- *
- * Revision 1.23  2007/02/15 15:59:59  haraldkipp
- * Serious bug in the TCP state machine froze socket connection on 32-bit
- * platforms.
- *
- * Revision 1.22  2006/10/05 17:25:41  haraldkipp
- * Avoid possible alignment errors. Fixes bug #1567748.
- *
- * Revision 1.21  2006/05/15 12:49:12  haraldkipp
- * ICCAVR doesn't accept void pointer calculation.
- *
- * Revision 1.20  2006/03/21 21:22:19  drsung
- * Enhancement made to TCP state machine. Now TCP options
- * are read from peer and at least the maximum segment size is stored.
- *
- * Revision 1.19  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.18  2005/04/05 17:44:57  haraldkipp
- * Made stack space configurable.
- *
- * Revision 1.17  2005/03/30 15:17:58  mrjones4u
- * Defussed race condition in NutTcpStateActiveOpenEvent where the NutEventWait would be called after sock->so_ac_tq had been signaled and therefore the calling thread will hang due to usage of NutEventBroadcast which will not ‘store’ the signaled state. This condition can e.g. occur when attempting connection an unconnected target port on an active host. The returning RST would be processed and signaled before the NutEventWait is called.
- *
- * Revision 1.16  2005/02/04 17:17:49  haraldkipp
- * Unused include files removed.
- *
- * Revision 1.15  2005/01/21 16:49:46  freckle
- * Seperated calls to NutEventPostAsync between Threads and IRQs
- *
- * Revision 1.14  2005/01/03 08:43:29  haraldkipp
- * Replaced unprotected calls to NutEventPostAsync() by late calls to NutEventPost().
- * This should fix the infrequent system halts/resets. The event to the transmitter
- * waiting queue will be broadcasted on relevant state changes.
- *
- * Revision 1.13  2004/07/30 19:54:46  drsung
- * Some code of TCP stack redesigned. Round trip time calculation is now
- * supported. Fixed several bugs in TCP state machine. Now TCP connections
- * should be more reliable under heavy traffic or poor physical connections.
- *
- * Revision 1.12  2004/04/15 11:08:21  haraldkipp
- * Bugfix: Sequence number had not been incremented on FIN segments.
- * Added Realtek hack to reduce concurrent connection problems.
- * Rely on TCP output to set the retransmission timer.
- *
- * Revision 1.11  2004/02/28 20:14:38  drsung
- * Merge from nut-3_4-release b/c of bugfixes.
- *
- * Revision 1.9.2.1  2004/02/28 20:02:23  drsung
- * Bugfix in several tcp state functions. Swapped around the check
- * for ACK and SYN flag. Because initial SYN packets don't have
- * an ACK flag, recevied SYN packets were never rejected.
- * Thanks to Damian Slee, who discovered that.
- *
- * Revision 1.9  2004/01/25 11:50:03  drsung
- * setting correct error code on timeout while NutTcpConnect.
- *
- * Revision 1.8  2004/01/25 11:29:48  drsung
- * bugfix for connection establishing.
- *
- * Revision 1.7  2004/01/14 19:35:19  drsung
- * New TCP output buffer handling and fixed not starting retransmission timer for NutTcpConnect.
- *
- * Revision 1.6  2003/11/28 19:49:58  haraldkipp
- * TCP connections suddenly drop during transmission.
- * Bug in retransmission timer fixed.
- *
- * Revision 1.5  2003/11/04 17:57:35  haraldkipp
- * Bugfix: Race condition left socket in close-wait state
- *
- * Revision 1.4  2003/11/03 16:48:02  haraldkipp
- * Use the system timer for retransmission timouts
- *
- * Revision 1.3  2003/08/14 15:10:31  haraldkipp
- * Two bugfixes: 1. NutTcpAccept fails if caller got higher priority.
- * 2. Incoming TCP NETBUFs will never be released if TCP is not used by
- * the application.
- *
- * Revision 1.2  2003/07/13 19:22:23  haraldkipp
- * TCP transfer speed increased by changing the character receive buffer
- * in TCPSOCKET to a NETBUF queue. (More confusing diff lines by using
- * indent, sorry.)
- *
- * Revision 1.1.1.1  2003/05/09 14:41:42  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.20  2003/05/06 18:20:02  harald
- * Stack size reduced
- *
- * Revision 1.19  2003/04/01 18:36:11  harald
- * Added forced ACK response on same sequence
- *
- * Revision 1.18  2003/03/31 12:29:45  harald
- * Check NEBUF allocation
- *
- * Revision 1.17  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.16  2003/01/14 16:51:29  harald
- * Handle possible deadlock in the TCP state machine in low memory situations.
- * Fixed: TCP might fail to process incoming packets on slow connections.
- *
- * Revision 1.15  2002/09/15 17:05:41  harald
- * Silently ignore late SYNs.
- * Detect host down in local networks during connect.
- * Avoid re-sending packets too soon.
- *
- * Revision 1.14  2002/09/03 17:42:20  harald
- * Buffer sequences received in advance
- *
- * Revision 1.13  2002/08/16 17:54:56  harald
- * Count out of sequence drops
- *
- * Revision 1.12  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * $Id$
  */
 
 #include <cfg/os.h>
@@ -284,14 +149,113 @@ NETBUF *volatile tcp_in_nbq;
 static uint16_t tcp_in_cnt;
 static HANDLE tcpThread = 0;
 
+#ifndef MAX_BACKLOG
+#define MAX_BACKLOG 8
+#endif
+
+#if MAX_BACKLOG
+#ifndef MAX_BACKLOG_TIME
+#define MAX_BACKLOG_TIME    5
+#endif
+static NETBUF *tcp_backlog[MAX_BACKLOG];
+static uint_fast8_t tcp_backlog_time[MAX_BACKLOG];
+#endif
+
 static size_t tcp_adv_cnt;
 static size_t tcp_adv_max = TCP_WINSIZE;
+
+static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb);
 
 /* ================================================================
  * Helper functions
  * ================================================================
  */
 
+#if MAX_BACKLOG
+static int NutTcpBacklogAdd(NETBUF *nb)
+{
+    uint_fast8_t i;
+    uint_fast8_t n = MAX_BACKLOG;
+    IPHDR *ih = (IPHDR *) nb->nb_nw.vp;
+    TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
+
+    /* Process SYN segments only. */
+    if ((th->th_flags & (TH_SYN | TH_ACK | TH_RST)) == TH_SYN) {
+        for (i = 0; i < MAX_BACKLOG; i++) {
+            if (tcp_backlog[i] == NULL) {
+                /* Remember the first free entry. */
+                if (n == MAX_BACKLOG) {
+                    n = i;
+                }
+            } 
+            else if (((IPHDR *) tcp_backlog[i]->nb_nw.vp)->ip_src == ih->ip_src && 
+                    ((TCPHDR *) tcp_backlog[i]->nb_tp.vp)->th_sport == th->th_sport) {
+                /* Already received a SYN. Either the remote is too impatient
+                ** or we are too busy. Kill this entry and reject the SYN. */
+                NutNetBufFree(tcp_backlog[i]);
+                tcp_backlog[i] = NULL;
+                return -1;
+            }
+        }
+        /* First SYN from the remote for this port.
+        ** If there is a free entry left, then use it. */
+        if (n != MAX_BACKLOG) {
+            tcp_backlog[n] = nb;
+            tcp_backlog_time[n] = 0;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+static NETBUF *NutTcpBacklogCheck(uint16_t port)
+{
+    NETBUF *nb;
+    uint_fast8_t i;
+    uint_fast8_t n = MAX_BACKLOG;
+
+    for (i = 0; i < MAX_BACKLOG; i++) {
+        if (tcp_backlog[i]) {
+            if (((TCPHDR *) tcp_backlog[i]->nb_tp.vp)->th_dport == port) {
+                if (n == MAX_BACKLOG || tcp_backlog_time[i] > tcp_backlog_time[n]) {
+                    n = i;
+                }
+            }
+        }
+    }
+    if (n == MAX_BACKLOG) {
+        nb = NULL;
+    } else {
+        nb = tcp_backlog[n];
+        tcp_backlog[n] = NULL;
+    }
+    return nb;
+}
+
+static NETBUF *NutTcpBacklogTimer(void)
+{
+    NETBUF *nb;
+    uint_fast8_t i;
+    uint_fast8_t n = MAX_BACKLOG;
+
+    for (i = 0; i < MAX_BACKLOG; i++) {
+        if (tcp_backlog[i]) {
+            if (tcp_backlog_time[i] < MAX_BACKLOG_TIME) {
+                tcp_backlog_time[i]++;
+            } else {
+                n = i;
+            }
+        }
+    }
+    if (n == MAX_BACKLOG) {
+        nb = NULL;
+    } else {
+        nb = tcp_backlog[n];
+        tcp_backlog[n] = NULL;
+    }
+    return nb;
+}
+#endif /* MAX_BACKLOG */
 
 /*!
  * \brief Reads TCP option fields if any, and writes the data to
@@ -830,10 +794,29 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
 
     NutTcpStateChange(sock, TCPS_LISTEN);
 
-    /*
-     * Block application.
-     */
+#if MAX_BACKLOG
+    {
+        /* If a SYN segment is already waiting in the backlog,
+        ** then process it and return to the caller. */
+        NETBUF *nb = NutTcpBacklogCheck(sock->so_local_port);
+        if (nb) {
+            NutTcpInputOptions(sock, nb);
+            NutTcpStateProcess(sock, nb);
+
+            return 0;
+        }
+    }
+    if (NutEventWait(&sock->so_pc_tq, sock->so_read_to)) {
+        sock->so_state = TCPS_CLOSED;
+        return (sock->so_last_error = ETIMEDOUT);
+    }
+#else
+    /* For backward compatibility we simply block the application. 
+    ** If we do not have a backlog, then timing out would not make 
+    ** much sense anyway, because incoming connection attempts will
+    ** be immediately rejected. */
     NutEventWait(&sock->so_pc_tq, 0);
+#endif /* MAX_BACKLOG */
 
     return 0;
 }
@@ -1690,6 +1673,19 @@ THREAD(NutTcpSm, arg)
     for (;;) {
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {
             tac = 0;
+
+#if MAX_BACKLOG
+            /* Process backlog timer.
+            **
+            ** Note, that the tac counter will spoil any exact timing.
+            ** On the other hand, if we are very busy, it may not be that
+            ** bad to kill early SYN segments soon. */
+            nb = NutTcpBacklogTimer();
+            if (nb) {
+                NutTcpReject(nb);
+            }
+#endif /* MAX_BACKLOG */
+
             for (sock = tcpSocketList; sock; sock = sock->so_next) {
 
                 /*
@@ -1742,16 +1738,20 @@ THREAD(NutTcpSm, arg)
                     NutDumpTcpHeader(__tcp_trs, " IN", sock, nb);
 #endif
                 nbx = nb->nb_next;
+                /* If a matching socket exists, process the NETBUF. */
                 if (sock) {
                     NutTcpInputOptions(sock, nb);
                     NutTcpStateProcess(sock, nb);
                 }
-
-                /*
-                 * Reject the segment, if no matching socket was found.
-                 */
-                else
+#if MAX_BACKLOG
+                /* No matching socket, try to add it to the backlog. */
+                else if (NutTcpBacklogAdd(nb) == 0) {
+                }
+#endif
+                /* No matching socket and no backlog. Reject it. */
+                else {
                     NutTcpReject(nb);
+                }
                 nb = nbx;
             }
         }
