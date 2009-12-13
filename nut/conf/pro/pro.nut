@@ -450,7 +450,7 @@ nutpro =
         description = "Netbios WINS (RFC 1002) Name Query Response.\n\n"..
                       "Only query request client routine sending/positive name query response "..
                       "receiving is implemented.\n\n"..
-                      "When the NetBIOS name 1uery request UDP datagram is on the ethernet "..
+                      "When the NetBIOS name query request UDP datagram is on the ethernet "..
                       "network, asking 'Who is name?', NutWinsNameQuery answers with the "..
                       "specified 'ipaddr' Ethernut IP address.",
         requires =  { "NET_UDP" },
