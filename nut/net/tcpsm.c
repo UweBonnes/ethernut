@@ -149,16 +149,24 @@ NETBUF *volatile tcp_in_nbq;
 static uint16_t tcp_in_cnt;
 static HANDLE tcpThread = 0;
 
-#ifndef MAX_BACKLOG
-#define MAX_BACKLOG 8
+#ifndef TCP_COLLECT_INADV
+#define TCP_COLLECT_INADV   8
 #endif
 
-#if MAX_BACKLOG
-#ifndef MAX_BACKLOG_TIME
-#define MAX_BACKLOG_TIME    5
+#ifndef TCP_COLLECT_SLIMIT
+#define TCP_COLLECT_SLIMIT  256
+#define
+
+#ifndef TCP_BACKLOG_MAX
+#define TCP_BACKLOG_MAX     8
 #endif
-static NETBUF *tcp_backlog[MAX_BACKLOG];
-static uint_fast8_t tcp_backlog_time[MAX_BACKLOG];
+
+#if TCP_BACKLOG_MAX
+#ifndef TCP_BACKLOG_TIME
+#define TCP_BACKLOG_TIME    5
+#endif
+static NETBUF *tcp_backlog[TCP_BACKLOG_MAX];
+static uint_fast8_t tcp_backlog_time[TCP_BACKLOG_MAX];
 #endif
 
 static size_t tcp_adv_cnt;
@@ -171,20 +179,20 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb);
  * ================================================================
  */
 
-#if MAX_BACKLOG
+#if TCP_BACKLOG_MAX
 static int NutTcpBacklogAdd(NETBUF *nb)
 {
     uint_fast8_t i;
-    uint_fast8_t n = MAX_BACKLOG;
+    uint_fast8_t n = TCP_BACKLOG_MAX;
     IPHDR *ih = (IPHDR *) nb->nb_nw.vp;
     TCPHDR *th = (TCPHDR *) nb->nb_tp.vp;
 
     /* Process SYN segments only. */
     if ((th->th_flags & (TH_SYN | TH_ACK | TH_RST)) == TH_SYN) {
-        for (i = 0; i < MAX_BACKLOG; i++) {
+        for (i = 0; i < TCP_BACKLOG_MAX; i++) {
             if (tcp_backlog[i] == NULL) {
                 /* Remember the first free entry. */
-                if (n == MAX_BACKLOG) {
+                if (n == TCP_BACKLOG_MAX) {
                     n = i;
                 }
             } 
@@ -199,7 +207,7 @@ static int NutTcpBacklogAdd(NETBUF *nb)
         }
         /* First SYN from the remote for this port.
         ** If there is a free entry left, then use it. */
-        if (n != MAX_BACKLOG) {
+        if (n != TCP_BACKLOG_MAX) {
             tcp_backlog[n] = nb;
             tcp_backlog_time[n] = 0;
             return 0;
@@ -212,18 +220,18 @@ static NETBUF *NutTcpBacklogCheck(uint16_t port)
 {
     NETBUF *nb;
     uint_fast8_t i;
-    uint_fast8_t n = MAX_BACKLOG;
+    uint_fast8_t n = TCP_BACKLOG_MAX;
 
-    for (i = 0; i < MAX_BACKLOG; i++) {
+    for (i = 0; i < TCP_BACKLOG_MAX; i++) {
         if (tcp_backlog[i]) {
             if (((TCPHDR *) tcp_backlog[i]->nb_tp.vp)->th_dport == port) {
-                if (n == MAX_BACKLOG || tcp_backlog_time[i] > tcp_backlog_time[n]) {
+                if (n == TCP_BACKLOG_MAX || tcp_backlog_time[i] > tcp_backlog_time[n]) {
                     n = i;
                 }
             }
         }
     }
-    if (n == MAX_BACKLOG) {
+    if (n == TCP_BACKLOG_MAX) {
         nb = NULL;
     } else {
         nb = tcp_backlog[n];
@@ -236,18 +244,18 @@ static NETBUF *NutTcpBacklogTimer(void)
 {
     NETBUF *nb;
     uint_fast8_t i;
-    uint_fast8_t n = MAX_BACKLOG;
+    uint_fast8_t n = TCP_BACKLOG_MAX;
 
-    for (i = 0; i < MAX_BACKLOG; i++) {
+    for (i = 0; i < TCP_BACKLOG_MAX; i++) {
         if (tcp_backlog[i]) {
-            if (tcp_backlog_time[i] < MAX_BACKLOG_TIME) {
+            if (tcp_backlog_time[i] < TCP_BACKLOG_TIME) {
                 tcp_backlog_time[i]++;
             } else {
                 n = i;
             }
         }
     }
-    if (n == MAX_BACKLOG) {
+    if (n == TCP_BACKLOG_MAX) {
         nb = NULL;
     } else {
         nb = tcp_backlog[n];
@@ -255,7 +263,7 @@ static NETBUF *NutTcpBacklogTimer(void)
     }
     return nb;
 }
-#endif /* MAX_BACKLOG */
+#endif /* TCP_BACKLOG_MAX */
 
 /*!
  * \brief Reads TCP option fields if any, and writes the data to
@@ -348,13 +356,13 @@ static void NutTcpProcessAppData(TCPSOCKET * sock, NETBUF * nb)
     else
         sock->so_tx_flags |= SO_FORCE;
 
-    if (++sock->so_rx_apc > 8) {
+    if (++sock->so_rx_apc > TCP_COLLECT_INADV) {
         NETBUF *nbq;
         int_fast8_t apc = sock->so_rx_apc;
         int cnt = sock->so_rx_cnt;
 
         for (nbq = sock->so_rx_buf; nbq; nbq = nbq->nb_next) {
-            if (nbq->nb_ap.sz < 256) {
+            if (nbq->nb_ap.sz < TCP_COLLECT_SLIMIT) {
                 sock->so_rx_apc -= NutNetBufCollect(nbq, cnt);
                 break;
             }
@@ -794,7 +802,7 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
 
     NutTcpStateChange(sock, TCPS_LISTEN);
 
-#if MAX_BACKLOG
+#if TCP_BACKLOG_MAX
     {
         /* If a SYN segment is already waiting in the backlog,
         ** then process it and return to the caller. */
@@ -816,7 +824,7 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
     ** much sense anyway, because incoming connection attempts will
     ** be immediately rejected. */
     NutEventWait(&sock->so_pc_tq, 0);
-#endif /* MAX_BACKLOG */
+#endif /* TCP_BACKLOG_MAX */
 
     return 0;
 }
@@ -1674,7 +1682,7 @@ THREAD(NutTcpSm, arg)
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {
             tac = 0;
 
-#if MAX_BACKLOG
+#if TCP_BACKLOG_MAX
             /* Process backlog timer.
             **
             ** Note, that the tac counter will spoil any exact timing.
@@ -1684,7 +1692,7 @@ THREAD(NutTcpSm, arg)
             if (nb) {
                 NutTcpReject(nb);
             }
-#endif /* MAX_BACKLOG */
+#endif /* TCP_BACKLOG_MAX */
 
             for (sock = tcpSocketList; sock; sock = sock->so_next) {
 
@@ -1743,7 +1751,7 @@ THREAD(NutTcpSm, arg)
                     NutTcpInputOptions(sock, nb);
                     NutTcpStateProcess(sock, nb);
                 }
-#if MAX_BACKLOG
+#if TCP_BACKLOG_MAX
                 /* No matching socket, try to add it to the backlog. */
                 else if (NutTcpBacklogAdd(nb) == 0) {
                 }

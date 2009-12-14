@@ -140,6 +140,64 @@ nutnet =
                               "connections earlier.",
                 default = "20000",
                 file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_COLLECT_INADV",
+                brief = "Segment Collection",
+                description = "TCP segments received in advance are stored in a special queue "..
+                              " with complete headers. Due to this overhead, available memory may "..
+                              "become exhausted when the remote sends many small segments after one "..
+                              "segment got lost.\n\n"..
+                              "When the number of segments received in advance reaches the given "..
+                              "value, the stack will collect all consecutive small segments in the "..
+                              "buffer, removing the headers from all collected segments.\n\n"..
+                              "Increasing this value will increase memory requirements, but "..
+                              "give better performance on unreliable connections.",
+                default = "8",
+                file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_COLLECT_SLIMIT",
+                brief = "Segment Collection Limit",
+                description = "When the number of segments received in advance reaches the value "..
+                              "given by TCP_COLLECT_INADV, the stack will collect all consecutive "..
+                              "small segments.\n\n"..
+                              "This option specifies the limit, below which segments are conidered "..
+                              "small. Segments equal or larger in size will not be collected.",
+                default = "256",
+                file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_BACKLOG_MAX",
+                brief = "Backlog Buffer Size",
+                description = "The backlog buffers incoming TCP connections for which no server "..
+                              "thread is currently listening. It simply delays the reject in the "..
+                              "hope that a thread will become available soon.\n\n"..
+                              "Earlier versions of the stack immediately rejected incoming SYN "..
+                              "segments if no socket was listening on the specific port. Setting "..
+                              "this option to zero will keep this behaviour. Otherwise "..
+                              "this parameter specifies the maximum number of connection "..
+                              "attempts being stored in the backlog buffer.\n\n"..
+                              "If this option is not set to zero, then NutTcpAccept() will now "..
+                              "honor the TCP receive timeout, which may break existing applications.",
+                default = "8",
+                file = "include/cfg/tcp.h"
+            },
+            {
+                macro = "TCP_BACKLOG_TIME",
+                brief = "Max. Backlog Time",
+                description = "In the current implementation there is no exact configuration for the "..
+                              "maximum time that a connection attempt is kept in the backlog buffer. "..
+                              "Multiplying this value by 200ms provides a rough approximation, but "..
+                              "the timeout may be significantly shorter with many incoming packets.\n\n"..
+                              "When the time elapses without any socket becoming ready to serve "..
+                              "the connection, then the connection attempt is rejected.\n\n"..
+                              "Furthermore, if the remote sends a second SYN packet for the same "..
+                              "connection, then the previous one is removed from the backlog and "..
+                              "the new attempt is rejected immediately.\n\n"..
+                              "This option is ignored, if TCP_BACKLOG_MAX is zero.",
+                default = "5",
+                file = "include/cfg/tcp.h"
             }
         }
     },
