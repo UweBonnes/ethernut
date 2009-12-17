@@ -246,15 +246,15 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
                         break;
                     }
                     if (isalpha(*tkn) && UxmlFilterMatch(tkn, f_attr)) {
-                        size_t len = strlen(tkn) + 1;
-                        char *name = malloc(len);
+                        char *name = strdup(tkn);
 
                         if (name) {
-                            memcpy(name, tkn, len);
                             if ((tp = UxmlParseTag(tp, tkn, MAX_UXMLTKN_SIZE)) == NULL || *tkn != '=') {
+                                free(name);
                                 break;
                             }
                             if ((tp = UxmlParseTag(tp, tkn, MAX_UXMLTKN_SIZE)) == NULL || *tkn == '>') {
+                                free(name);
                                 break;
                             }
                             UxmlNodeAddAttrib(node, name, tkn);
