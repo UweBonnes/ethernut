@@ -2,6 +2,7 @@
 #define _UDPTHREAD_H_
 
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -22,13 +23,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2008/01/31 15:33:33  haraldkipp
- * Linux fixes.
- *
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
- *
+ * $Id$
  */
 
 #include "mainframe.h"
@@ -42,9 +37,7 @@ public:
 
     virtual void *Entry();
     virtual void OnExit();
-//new
     bool Broadcast(DISCOVERY_TELE *dist = NULL);
-//new
 
 public:
     CMainFrame *m_frame;

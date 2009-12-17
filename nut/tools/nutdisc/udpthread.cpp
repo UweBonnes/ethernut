@@ -20,16 +20,7 @@
  */
 
 /*
- * $Log: udpthread.cpp,v $
- * Revision 1.3  2009/01/16 17:05:04  haraldkipp
- * Version 2.3 additionally supports discovery protocol version 1.1.
- *
- * Revision 1.2  2008/01/28 16:43:12  haraldkipp
- * Version 2.2
- *
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
- *
+ * $Id$
  */
 
 // For compilers that support precompilation, includes "wx/wx.h".

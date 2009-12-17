@@ -1,4 +1,5 @@
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -19,13 +20,7 @@
  */
 
 /*
- * $Log: taskbaricon.cpp,v $
- * Revision 1.2  2008/01/31 15:33:33  haraldkipp
- * Linux fixes.
- *
- * Revision 1.1  2008/01/28 16:43:11  haraldkipp
- * Version 2.2
- *
+ * $Id$
  */
 
 #include <wx/wxprec.h>

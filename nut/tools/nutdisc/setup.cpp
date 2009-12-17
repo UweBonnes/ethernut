@@ -1,4 +1,5 @@
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -19,10 +20,7 @@
  */
 
 /*
- * $Log: setup.cpp,v $
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
- *
+ * $Id$
  */
 
 #include "setup.h"

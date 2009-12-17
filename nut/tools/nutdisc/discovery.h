@@ -23,13 +23,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.2  2009/01/16 17:05:04  haraldkipp
- * Version 2.3 additionally supports discovery protocol version 1.1.
- *
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
- *
+ * $Id$
  */
 
 #define DISCOVERY_VERSION_1_0   0x10
