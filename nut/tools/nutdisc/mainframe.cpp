@@ -20,22 +20,7 @@
  */
 
 /*
- * $Log: mainframe.cpp,v $
- * Revision 1.5  2009/01/16 17:05:04  haraldkipp
- * Version 2.3 additionally supports discovery protocol version 1.1.
- *
- * Revision 1.4  2009/01/10 20:07:20  haraldkipp
- * Allow unicode build.
- *
- * Revision 1.3  2008/01/31 15:33:33  haraldkipp
- * Linux fixes.
- *
- * Revision 1.2  2008/01/28 16:43:11  haraldkipp
- * Version 2.2
- *
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
- *
+ * $Id$
  */
 
 #include <wx/wxprec.h>
@@ -53,19 +38,15 @@
 
 #include <wx/config.h>
 
-//#include "wx/propdlg.h"
-
 #include "version.h"
 #include "setup.h"
 #include "propdialog.h"
 #include "udpthread.h"
 #include "mainframe.h"
 
-//new
 #if !defined(__WXMSW__)
 #include "bitmaps/nutdisc.xpm"
 #endif
-//
 
 BEGIN_EVENT_TABLE(CMainFrame, wxFrame)
     EVT_LIST_ITEM_ACTIVATED(ID_LIST, CMainFrame::OnActivated)
@@ -135,7 +116,7 @@ CMainFrame::CMainFrame(const wxString& title)
 #if defined(__WXCOCOA__)
     m_dockIcon = new CTaskBarIcon(this, wxTaskBarIcon::DOCK);
 #endif
-    if (!m_taskBarIcon->SetIcon(wxICON(nutdisc), wxT("wxTaskBarIcon Sample"))) {
+    if (!m_taskBarIcon->SetIcon(wxICON(nutdisc), wxT("Nut Discoverer"))) {
         wxMessageBox(wxT("Could not set icon."));
     }
 
@@ -304,7 +285,7 @@ void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 #ifdef __WXDEBUG__
         wxT(" (debug)")
 #endif
-        wxT("\n\nCopyright 2004-2007 by egnite GmbH")
+        wxT("\n\nCopyright 2004-2009 by egnite GmbH")
         wxT("\n\nBuild with wxWidgets Version %s.\n\n"),
         wxT(VERSION), wxVERSION_STRING);
 

@@ -1,4 +1,5 @@
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2009 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -19,13 +20,7 @@
  */
 
 /*
- * $Log: nutdisc.cpp,v $
- * Revision 1.2  2008/01/28 16:43:11  haraldkipp
- * Version 2.2
- *
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
- *
+ * $Id$
  */
 
 
@@ -48,7 +43,7 @@
 #include "nutdisc.h"
 
 #if !wxUSE_THREADS
-    #error "This sample requires thread support!"
+    #error "This application requires thread support!"
 #endif // wxUSE_THREADS
 
 IMPLEMENT_APP(CApp)

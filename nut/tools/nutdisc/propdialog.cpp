@@ -20,16 +20,7 @@
  */
 
 /*
- * $Log: propdialog.cpp,v $
- * Revision 1.3  2009/01/16 17:05:04  haraldkipp
- * Version 2.3 additionally supports discovery protocol version 1.1.
- *
- * Revision 1.2  2009/01/10 20:07:20  haraldkipp
- * Allow unicode build.
- *
- * Revision 1.1  2006/09/07 08:58:27  haraldkipp
- * First check-in
- *
+ * $Id$
  */
 
 #include <wx/config.h>
@@ -57,8 +48,8 @@ CPropDialog::CPropDialog(const wxString& title, DISCOVERY_TELE *dist)
 
     topSizer->Add(m_grid, 1, wxEXPAND | wxALL);
     topSizer->Add(CreateButtonSizer(wxOK | wxCANCEL));
-    m_grid->AppendCategory(wxT("General"));
-    m_grid->Append(wxStringProperty(wxT("MAC"), wxT("ics_mac"), CSetup::MacToString(dist->dist_mac)));
+    m_grid->Append(new wxPropertyCategory(wxT("General")));
+    m_grid->Append(new wxStringProperty(wxT("MAC"), wxT("ics_mac"), CSetup::MacToString(dist->dist_mac)));
 
     char *hostname;
     if (dist->dist_ver == DISCOVERY_VERSION_1_0) {
@@ -69,12 +60,12 @@ CPropDialog::CPropDialog(const wxString& title, DISCOVERY_TELE *dist)
         memcpy(hostname, &dist->dist_appendix[1], nlen);
         hostname[nlen] = '\0';
     }
-    m_grid->Append(wxStringProperty(wxT("Host Name"), wxT("ics_hostname"), wxString(hostname, wxConvLocal)));
+    m_grid->Append(new wxStringProperty(wxT("Host Name"), wxT("ics_hostname"), wxString(hostname, wxConvLocal)));
 
-    m_grid->AppendCategory( wxT("IP"));
-    m_grid->Append(wxStringProperty(wxT("Fixed Address"), wxT("ics_cip_addr"), CSetup::IpToString(dist->dist_cip_addr)));
-    m_grid->Append(wxStringProperty(wxT("Mask"), wxT("ics_ip_mask"), CSetup::IpToString(dist->dist_ip_mask)));
-    m_grid->Append(wxStringProperty(wxT("Gateway"), wxT("ics_gateway"), CSetup::IpToString(dist->dist_gateway)));
+    m_grid->Append(new wxPropertyCategory(wxT("IP")));
+    m_grid->Append(new wxStringProperty(wxT("Fixed Address"), wxT("ics_cip_addr"), CSetup::IpToString(dist->dist_cip_addr)));
+    m_grid->Append(new wxStringProperty(wxT("Mask"), wxT("ics_ip_mask"), CSetup::IpToString(dist->dist_ip_mask)));
+    m_grid->Append(new wxStringProperty(wxT("Gateway"), wxT("ics_gateway"), CSetup::IpToString(dist->dist_gateway)));
 
     SetSizer(topSizer);
     topSizer->SetSizeHints(this);
