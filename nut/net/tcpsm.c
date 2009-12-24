@@ -155,7 +155,7 @@ static HANDLE tcpThread = 0;
 
 #ifndef TCP_COLLECT_SLIMIT
 #define TCP_COLLECT_SLIMIT  256
-#define
+#endif
 
 #ifndef TCP_BACKLOG_MAX
 #define TCP_BACKLOG_MAX     8
