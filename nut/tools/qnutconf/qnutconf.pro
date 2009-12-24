@@ -14,6 +14,7 @@ DEFINES += NUTCONF_VERSION_STR=\\\"3.0.0\\\"
 # Input
 SOURCES +=	\
 			builder.cpp \
+			dirtraverser.cpp \
 			main.cpp \
 			mainwindow.cpp \
 			nutcomponent.c \
@@ -25,6 +26,7 @@ SOURCES +=	\
 			
 HEADERS +=	\
 			builder.h \
+			dirtraverser.h \
 			mainwindow.h \
 			nutcomponent.h \
 			nutcomponentdelegate.h \

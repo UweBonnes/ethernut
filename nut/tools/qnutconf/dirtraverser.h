@@ -31,48 +31,29 @@
  *
  */
 
-#if !defined( __MAINWINDOW_H__ )
-#define __MAINWINDOW_H__
+#if !defined( __DIRTRAVERSER_H__ )
+#define __DIRTRAVERSER_H__
 
-#include <QTime>
-#include <QMainWindow>
+#include <QList>
 
-#include "ui_mainwindow.h"
-
-class NutComponentModel;
-
-class MainWindow : public QMainWindow
+class AbstractDirTraverserFilter
 {
-	Q_OBJECT
-	Ui::MainWindow ui;
-	QTime time;
-
 public:
-	MainWindow();
-	~MainWindow();
+	virtual ~AbstractDirTraverserFilter() {}
 
-public slots:
-	void on_actionOpen_triggered();
-	void on_actionSave_triggered();
-	void on_actionSave_as_triggered();
-	void on_actionExit_triggered();
-	void on_actionSettings_triggered();
-	void on_actionBuild_Nut_OS_triggered();
-	void on_actionCreate_sample_triggered();
-
-private:
-	void readSettings();
-	void writeSettings();
-
-	void generateApplicationTree();
-
-private slots:
-	void buildFinished( int exitCode );
-	void updateView(const QModelIndex& current, const QModelIndex& previous);
-	void message( const QString& );
-
-private:
-	NutComponentModel* model;
+	virtual bool onFile( const QString& file ) = 0;
 };
 
-#endif // __MAINWINDOW_H__
+class DirTraverser
+{
+	QList<AbstractDirTraverserFilter*> filters;
+public:
+	virtual ~DirTraverser();
+	void run( const QString& src, const QString& dest );
+
+private:
+	void copyDir( const QString& src, const QString& dest );
+	void runFilters( const QString& fileName );
+};
+
+#endif // __DIRTRAVERSER_H__

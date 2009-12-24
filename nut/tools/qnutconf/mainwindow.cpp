@@ -36,6 +36,7 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDirIterator>
 
 #include "mainwindow.h"
 #include "settingsdialog.h"
@@ -43,6 +44,7 @@
 #include "nutcomponentdelegate.h"
 #include "settings.h"
 #include "builder.h"
+#include "dirtraverser.h"
 
 MainWindow::MainWindow()
 {
@@ -60,8 +62,8 @@ MainWindow::MainWindow()
 	readSettings();
 
 	message( tr("Nut/OS Configurator Version %1").arg(NUTCONF_VERSION_STR) );
-	message( tr("Linked to Qt %1").arg(QT_VERSION_STR) );
-	message( tr("Working in %1").arg( QDir::current().absolutePath() ) );
+	message( tr("Linked to Qt %1, running on %1").arg(QT_VERSION_STR, QLatin1String(qVersion())) );
+	message( tr("Working in %1").arg( QDir::toNativeSeparators( QDir::current().absolutePath() ) ) );
 
 	connect( Builder::instance(), SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
 	connect( Builder::instance(), SIGNAL(done(int)), SLOT(buildFinished(int)) );
@@ -166,6 +168,11 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	ui.actionBuild_Nut_OS->setEnabled( false );
 }
 
+void MainWindow::on_actionCreate_sample_triggered()
+{
+	generateApplicationTree();
+}
+
 void MainWindow::buildFinished( int exitCode )
 {
 	if ( !exitCode )
@@ -187,5 +194,19 @@ void MainWindow::updateView( const QModelIndex& current, const QModelIndex& prev
 void MainWindow::message( const QString& msg )
 {
 	ui.logPanel->append( QTime::currentTime().toString("HH:mm:ss: ") +  msg );
+}
+
+void MainWindow::generateApplicationTree()
+{
+	QApplication::setOverrideCursor( Qt::BusyCursor );
+
+	QString srcDir = Settings::instance()->sourceDir() + "/app";
+	QString appDir = Settings::instance()->appDir();
+	message( tr("Copying samples from %1 to %2").arg(srcDir, appDir) );
+
+	DirTraverser traverser;
+	traverser.run( srcDir, appDir );
+
+	QApplication::restoreOverrideCursor();
 }
 
