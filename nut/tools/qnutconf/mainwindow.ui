@@ -75,12 +75,6 @@
          <attribute name="verticalHeaderHighlightSections">
           <bool>false</bool>
          </attribute>
-         <attribute name="verticalHeaderVisible">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="verticalHeaderHighlightSections">
-          <bool>false</bool>
-         </attribute>
         </widget>
         <widget class="QTextBrowser" name="descriptionPanel"/>
        </widget>
@@ -142,6 +136,9 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionHelp_Contents"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -221,6 +218,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionHelp_Contents">
+   <property name="text">
+    <string>Help Contents</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

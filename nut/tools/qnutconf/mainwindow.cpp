@@ -178,6 +178,13 @@ void MainWindow::on_actionCreate_sample_triggered()
 	generateApplicationTree();
 }
 
+void MainWindow::on_actionAbout_triggered()
+{
+	QMessageBox::about(this, tr("Nut/OS Configurator"),
+		tr("<p>Nut/OS Configurator version " NUTCONF_VERSION_STR "</p>"
+		"<p>Visit the project <a href=\"http://www.ethernut.de\">website</a> for more information</p>" ));
+}
+
 void MainWindow::buildFinished( int exitCode )
 {
 	if ( !exitCode )
@@ -219,4 +226,5 @@ void MainWindow::generateApplicationTree()
 
 	QApplication::restoreOverrideCursor();
 }
+
 
