@@ -41,6 +41,7 @@
 #include "mainwindow.h"
 #include "settingsdialog.h"
 #include "nutcomponentmodel.h"
+#include "nutcomponentdetailsmodel.h"
 #include "nutcomponentdelegate.h"
 #include "settings.h"
 #include "builder.h"
@@ -55,9 +56,13 @@ MainWindow::MainWindow()
 	ui.componentTree->setModel( model );
 	ui.componentTree->setItemDelegate( new NutComponentDelegate( model ) );
 
+	NutComponentDetailsModel* detailsModel = new NutComponentDetailsModel( model );
+	ui.detailsView->setModel( detailsModel );
+
 	connect( model, SIGNAL(errorMessage(const QString&)), SLOT(message(const QString&)) );
 	connect( model, SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(updateView(const QModelIndex&, const QModelIndex&)) );
+	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), detailsModel, SLOT(refresh(const QModelIndex&)) );
 
 	readSettings();
 
@@ -206,6 +211,11 @@ void MainWindow::generateApplicationTree()
 
 	DirTraverser traverser;
 	traverser.run( srcDir, appDir );
+
+	message( tr("Creating Makefiles for %1 in %1").arg(Settings::instance()->targetPlatform(), Settings::instance()->appDir()) );
+	model->generateSampleMakefiles();
+
+	message( tr("OK") );
 
 	QApplication::restoreOverrideCursor();
 }

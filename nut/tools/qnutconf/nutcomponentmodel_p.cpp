@@ -117,6 +117,13 @@ QVariant TreeItem::data( int column, int role ) const
 		}
 		break;
 
+	case Qt::ToolTipRole:
+		if ( isEnabled() )
+			return description();
+		else
+			return QString("Depends on: %1").arg( depends().join(", ") );
+		break;
+
 	case NutComponentModel::Description:
 		return description();
 
@@ -373,6 +380,11 @@ bool TreeItem::canEdit() const
 	return true;
 }
 
+/*!
+	Returns true if an option has been enabled by the user or
+	automatically by the system.
+	Only options can be active, components are always active.
+*/
 bool TreeItem::isActive() const
 {
 	if (componentOptions) {
@@ -435,3 +447,91 @@ TreeItem::nutUIHint TreeItem::optionUIHint() const
 	return uiHint;
 }
 
+QStringList TreeItem::depends() const
+{
+	QStringList result;
+
+	if (componentOptions) 
+	{
+		char** requires = GetOptionRequirements( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
+		char** it = requires;
+		if ( it )
+		{
+			while ( *it )
+				result.append( QLatin1String(*it++) );
+
+			ReleaseStringArray( requires );
+		}
+	}
+
+	/* Do we need component requirements? */
+	if ( parentComponent ) 
+	{
+		char** requires = GetComponentRequirements( model->repository(), parentComponent );
+		char** it = requires;
+
+		if ( it )
+		{
+			while ( *it )
+				result.append( QLatin1String(*it++) );
+
+			ReleaseStringArray( requires );
+		}
+	}
+
+	return result;
+}
+
+QStringList TreeItem::provides() const
+{
+	QStringList result;
+
+	if (componentOptions) 
+	{
+		char** requires = GetOptionProvisions( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
+		char** it = requires;
+		if ( it )
+		{
+			while ( *it )
+				result.append( QLatin1String(*it++) );
+
+			ReleaseStringArray( requires );
+		}
+	}
+
+	/* Do we need component requirements? */
+	if ( parentComponent ) 
+	{
+		char** requires = GetComponentProvisions( model->repository(), parentComponent );
+		char** it = requires;
+
+		if ( it )
+		{
+			while ( *it )
+				result.append( QLatin1String(*it++) );
+
+			ReleaseStringArray( requires );
+		}
+	}
+
+	return result;
+}
+
+/*!
+	Nut/OS is configured using auto-generated header files.
+	This method returns the header file that this specific option is associated with.
+*/
+QString TreeItem::headerFile() const
+{
+	QString value;
+	if (componentOptions) 
+	{
+		char* filename = GetOptionFile( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
+		if ( filename ) 
+		{
+			value = QLatin1String( filename );
+			free(filename);
+		}
+	}
+	return value;
+}

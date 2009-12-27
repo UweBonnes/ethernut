@@ -73,6 +73,7 @@ public:
 
 	// Build methods
 	bool generateBuildTree();
+	bool generateSampleMakefiles();
 
 signals:
 	void errorMessage( const QString& );

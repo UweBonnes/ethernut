@@ -111,6 +111,9 @@ public:
 
 	bool isActive() const;
 	void setActive( bool );
+	QStringList depends() const;
+	QStringList provides() const;
+	QString headerFile() const;
 
 private:
 	QList<TreeItem*> childItems;

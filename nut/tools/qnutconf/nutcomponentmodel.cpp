@@ -417,3 +417,21 @@ bool NutComponentModel::generateBuildTree()
 
 	return true;
 }
+
+/*!
+	Create Makefiles for the samples directory
+*/
+bool NutComponentModel::generateSampleMakefiles()
+{
+	QByteArray buildPath = Settings::instance()->buildPath().toLocal8Bit();
+	QByteArray appDir = Settings::instance()->appDir().toLocal8Bit();
+	QByteArray srcDir = Settings::instance()->sourceDir().toLocal8Bit();
+	QByteArray instDir = Settings::instance()->installPath().toLocal8Bit();
+	QByteArray platform = Settings::instance()->targetPlatform().toLocal8Bit();
+	QByteArray programmer = Settings::instance()->programmer().toLocal8Bit();
+
+	if( CreateSampleDirectory( d->repository, d->rootComponent, buildPath, appDir, srcDir, instDir, platform, 
+		programmer, 0, 0 ) )
+			return false;
+	return true;
+}

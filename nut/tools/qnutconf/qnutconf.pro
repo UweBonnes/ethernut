@@ -20,6 +20,7 @@ SOURCES +=	\
 			nutcomponent.c \
 			nutcomponentdelegate.cpp \
 			nutcomponentmodel.cpp \
+			nutcomponentdetailsmodel.cpp \
 			nutcomponentmodel_p.cpp \
 			settings.cpp \
 			settingsdialog.cpp
@@ -31,6 +32,7 @@ HEADERS +=	\
 			nutcomponent.h \
 			nutcomponentdelegate.h \
 			nutcomponentmodel.h \
+			nutcomponentdetailsmodel.h \
 			nutcomponentmodel_p.h \
 			settings.h \
 			settingsdialog.h
