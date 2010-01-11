@@ -67,7 +67,7 @@ MainWindow::MainWindow()
 	readSettings();
 
 	message( tr("Nut/OS Configurator Version %1").arg(NUTCONF_VERSION_STR) );
-	message( tr("Linked to Qt %1, running on %1").arg(QT_VERSION_STR, QLatin1String(qVersion())) );
+	message( tr("Linked to Qt %1, running on %2").arg(QT_VERSION_STR, QLatin1String(qVersion())) );
 	message( tr("Working in %1").arg( QDir::toNativeSeparators( QDir::current().absolutePath() ) ) );
 
 	connect( Builder::instance(), SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
@@ -217,6 +217,8 @@ void MainWindow::generateApplicationTree()
 	message( tr("Copying samples from %1 to %2").arg(srcDir, appDir) );
 
 	DirTraverser traverser;
+	traverser.addExclusion( QRegExp("Makerules.*", Qt::CaseSensitive, QRegExp::Wildcard ) );
+	traverser.addExclusion( QRegExp("Makevars.*", Qt::CaseSensitive, QRegExp::Wildcard ) );
 	traverser.run( srcDir, appDir );
 
 	message( tr("Creating Makefiles for %1 in %1").arg(Settings::instance()->targetPlatform(), Settings::instance()->appDir()) );
