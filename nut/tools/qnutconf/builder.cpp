@@ -95,7 +95,8 @@ void Builder::runMake( const QString& target )
 
 void Builder::readyReadStandardOutput()
 {
-	emit message( process->readAllStandardOutput() );
-	emit message( process->readAllStandardError() );
+	QByteArray ba = process->readAllStandardOutput();
+	if ( !ba.isEmpty() )
+		emit message( ba.trimmed() );
 }
 
