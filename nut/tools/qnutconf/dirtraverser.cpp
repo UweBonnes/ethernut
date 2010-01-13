@@ -5,6 +5,10 @@
 #include <QFile>
 #include <QDirIterator>
 
+DirTraverser::DirTraverser()
+{
+}
+
 DirTraverser::~DirTraverser()
 {
 	foreach( AbstractDirTraverserFilter* filter, filters )
@@ -23,24 +27,24 @@ void DirTraverser::copyDir( const QString& src, const QString& dest )
 			QDir().mkpath( dest );
 
 		//Construct an iterator to get the entries in the directory
-		QDirIterator dirIterator( src );
+		QDirIterator dirIterator( src, QDir::AllEntries | QDir::NoDotAndDotDot );
 		while ( dirIterator.hasNext() ) 
 		{
 			QString item = dirIterator.next();
 			QString fileName = dirIterator.fileName();
 			QFileInfo fileInfo = dirIterator.fileInfo();
 
-			if ( fileName != "." && fileName != ".." )
+			if ( checkExclusionList(fileInfo.absoluteFilePath()) )
+				continue;
+
+			//If entry is a file copy it
+			if ( fileInfo.isFile() )
 			{
-				//If entry is a file copy it
-				if ( fileInfo.isFile() )
-				{
-					QFile::copy(item, dest + "/" + fileName);
-					runFilters( dest + "/" + fileName );
-				}
-				else
-					copyDir( item, dest + "/" + fileName );
+				QFile::copy(item, dest + "/" + fileName);
+				runFilters( dest + "/" + fileName );
 			}
+			else
+				copyDir( item, dest + "/" + fileName );
 		}
 	}
 	else
@@ -61,4 +65,22 @@ void DirTraverser::runFilters( const QString& fileName )
 		if ( !filter->onFile( fileName ) )
 			break;
 	}
+}
+
+void DirTraverser::addExclusion( const QRegExp& e )
+{
+	excludeList.append( e );
+}
+
+/*!
+	Returns true if \a file matches an exclusion list entry
+*/
+bool DirTraverser::checkExclusionList( const QString& file )
+{
+	foreach( QRegExp pattern, excludeList )
+	{
+		if ( pattern.exactMatch(file) )
+			return true;
+	}
+	return false;
 }

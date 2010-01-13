@@ -35,6 +35,7 @@
 #define __DIRTRAVERSER_H__
 
 #include <QList>
+#include <QRegExp>
 
 class AbstractDirTraverserFilter
 {
@@ -47,13 +48,17 @@ public:
 class DirTraverser
 {
 	QList<AbstractDirTraverserFilter*> filters;
+	QList<QRegExp> excludeList;
 public:
+	DirTraverser();
 	virtual ~DirTraverser();
+	void addExclusion( const QRegExp& );
 	void run( const QString& src, const QString& dest );
 
 private:
 	void copyDir( const QString& src, const QString& dest );
 	void runFilters( const QString& fileName );
+	bool checkExclusionList( const QString& );
 };
 
 #endif // __DIRTRAVERSER_H__
