@@ -860,7 +860,7 @@ nutarch =
                     "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
                 },
-                makedefs = { "MCU=uc3a0512", "MARCH=ucr1" }
+                makedefs = { "MCU=uc3a0512", "MARCH=ucr2" }
             },
             {
                 macro = "MCU_AVR32UC3A256",
