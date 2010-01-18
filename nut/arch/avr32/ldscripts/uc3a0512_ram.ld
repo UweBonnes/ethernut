@@ -154,7 +154,7 @@ SECTIONS
       _end.  Align after .bss to ensure correct alignment even if the
       .bss section disappears because there are no input sections.  */
    . = ALIGN(8);
-  } >CPUSRAM AT>FLASH
+  } >CPUSRAM AT>CPUSRAM
   . = ALIGN(8);
   _end = .;
   PROVIDE (end = .);
@@ -202,7 +202,7 @@ SECTIONS
     *(.stack)
     . = 0x1000;
     _estack = .;
-  } >CPUSRAM AT>FLASH
+  } >CPUSRAM AT>CPUSRAM
   .userpage :  {	*(.userpage .userpage.*)  } >USERPAGE AT>USERPAGE
   .factorypage :  {	*(.factorypage .factorypage.*)  } >FACTORYPAGE AT>FACTORYPAGE
   /DISCARD/ : { *(.note.GNU-stack) }
