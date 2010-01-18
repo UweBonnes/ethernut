@@ -125,7 +125,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_actionSave_as_triggered()
 {
-	QString fileName = QFileDialog::getOpenFileName( this, tr("Browse"), Settings::instance()->configFileName(), tr("Nut/OS Configuration (*.conf)") );
+	QString fileName = QFileDialog::getSaveFileName( this, tr("Save as..."), Settings::instance()->configFileName(), tr("Nut/OS Configuration (*.conf)") );
 	if ( fileName.isEmpty() )
 		return;
 
@@ -169,6 +169,8 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	Builder::instance()->build( "clean" );
 	/* Make all */
 	Builder::instance()->build( "all" );
+	/* Make install */
+	Builder::instance()->build( "install" );
 
 	ui.actionBuild_Nut_OS->setEnabled( false );
 }
