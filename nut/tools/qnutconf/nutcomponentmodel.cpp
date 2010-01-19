@@ -174,10 +174,9 @@ void NutComponentModel::saveComponentOptions( QTextStream& stream, NUTCOMPONENT*
 					if ( flavor )
 						free( flavor );
 					if ( flavorString.isEmpty() || flavorString.startsWith( "bool" ) )
-						value.clear();
+						stream << opts->nco_name << " = \"" << value << "\"\n";
 				}
-
-				if ( !value.isEmpty() )
+				else
 					stream << opts->nco_name << " = \"" << value << "\"\n";
 			}
 			opts = opts->nco_nxt;
