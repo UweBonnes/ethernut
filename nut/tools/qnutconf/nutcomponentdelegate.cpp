@@ -35,6 +35,8 @@
 #include <QComboBox>
 #include <QApplication>
 
+#include <limits>
+
 #include "nutcomponentdelegate.h"
 #include "nutcomponentmodel.h"
 #include "nutcomponentmodel_p.h"
@@ -54,7 +56,11 @@ QWidget* NutComponentDelegate::createEditor( QWidget* parent, const QStyleOption
 	
 	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 	if ( item->optionType() == TreeItem::nutInteger )
-		return new QSpinBox( parent );
+	{
+		QSpinBox* w = new QSpinBox( parent );
+		w->setMaximum( std::numeric_limits<int>::max() );
+		return w;
+	}
 	else if ( item->optionType() == TreeItem::nutEnumerated )
 		return new QComboBox( parent );
 
