@@ -255,10 +255,11 @@
 #include <sys/version.h>
 
 static CONST char os_version_string[] = {
-  (OS_VERSION_NUMBER>>24 && 0xff) + '0','.',
-  (OS_VERSION_NUMBER>>16 && 0xff) + '0','.',
-  (OS_VERSION_NUMBER>> 8 && 0xff) + '0','.',
-  (OS_VERSION_NUMBER     && 0xff) + '0'};
+  ((OS_VERSION_NUMBER >> 24) & 0xff) + '0','.',
+  ((OS_VERSION_NUMBER >> 16) & 0xff) + '0','.',
+  ((OS_VERSION_NUMBER >> 8) & 0xff) + '0','.',
+  (OS_VERSION_NUMBER & 0xff) + '0', 0
+};
 
 /*!
  * \addtogroup xgNutVersion
