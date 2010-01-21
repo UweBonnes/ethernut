@@ -158,7 +158,10 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 							).arg( Settings::instance()->buildPath(), Settings::instance()->targetPlatform(), Settings::instance()->installPath() );
 	if ( QMessageBox::question( this, tr("Build Nut/OS"), question, QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
 		return; 
-	
+
+	// Clear log window
+	ui.logPanel->clear();
+
 	// Measure build time
 	time.start();
 
