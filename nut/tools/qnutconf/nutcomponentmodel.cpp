@@ -173,8 +173,10 @@ void NutComponentModel::saveComponentOptions( QTextStream& stream, NUTCOMPONENT*
 					QString flavorString = QString(QLatin1String(flavor)).toLower();
 					if ( flavor )
 						free( flavor );
-					if ( flavorString.isEmpty() || flavorString.startsWith( "bool" ) )
+					if ( flavorString.startsWith( "bool" ) )
 						stream << opts->nco_name << " = \"" << value << "\"\n";
+					else
+						qWarning( qPrintable(QString("Not saving %1 flavor %2").arg(opts->nco_name).arg(flavorString)) );
 				}
 				else
 					stream << opts->nco_name << " = \"" << value << "\"\n";
@@ -192,7 +194,7 @@ bool NutComponentModel::saveConfig( const QString& filename )
 		return false;
 
 	QFile file( filename );
-	if ( file.open( QFile::WriteOnly | QFile::Text ) )
+	if ( file.open( QFile::WriteOnly | QFile::Text | QFile::Truncate ) )
 	{
 		QTextStream stream( &file );
 		saveComponentOptions( stream, d->rootComponent );
