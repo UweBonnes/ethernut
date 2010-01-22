@@ -42,6 +42,11 @@
 
 #include <avr32/io.h>
 
+// AP7000 includes lack this define, even though they are the same as UC30512
+#if !defined(AVR32_WDT_KEY_VALUE) 
+#define AVR32_WDT_KEY_VALUE                            0x00000055
+#endif
+
 /*!
  * \addtogroup xgNutArchAvr32DevWatchDog
  */
@@ -57,10 +62,11 @@ static void wdt_set_ctrl(unsigned long ctrl)
 
 static long long wdt_get_us_timeout_period(void)
 {
+	unsigned int slowclock = NutArchClockGet(NUT_HWCLK_SLOW_CLOCK);
 	// Read CTRL.PSEL and translate it into us.
 	return (AVR32_WDT.ctrl & AVR32_WDT_CTRL_EN_MASK) ?
 		((1ULL << (((AVR32_WDT.ctrl & AVR32_WDT_CTRL_PSEL_MASK) >> AVR32_WDT_CTRL_PSEL_OFFSET) + 1)) *
-		1000000 + AVR32_PM_RCOSC_FREQUENCY / 2) / AVR32_PM_RCOSC_FREQUENCY : -1;
+		1000000 + slowclock / 2) / slowclock : -1;
 }
 /*!
  * \brief Start the AVR32 hardware watch dog timer.
@@ -72,18 +78,14 @@ uint32_t Avr32WatchDogStart(uint32_t ms)
 {
 	unsigned long long int timeout = ms * 1000;
 
-	/* While still unclear how the slowclock can be changed from it's
-	   constant value (if ever), we can exploit the constant to reduce
-	   code size. 	
-	 */
-	//	unsigned int slowclock = NutArchClockGet(NUT_HWCLK_SLOW_CLOCK);
+	unsigned int slowclock = NutArchClockGet(NUT_HWCLK_SLOW_CLOCK);
 
     Avr32WatchDogDisable();
 
 #define MIN_US_TIMEOUT_PERIOD  \
-	(((1ULL <<  1 ) * 1000000 + AVR32_PM_RCOSC_FREQUENCY / 2) / AVR32_PM_RCOSC_FREQUENCY)
+	(((1ULL <<  1 ) * 1000000 + slowclock / 2) / slowclock)
 #define MAX_US_TIMEOUT_PERIOD  \
-	(((1ULL << (1 << AVR32_WDT_CTRL_PSEL_SIZE)) * 1000000 + AVR32_PM_RCOSC_FREQUENCY / 2) / AVR32_PM_RCOSC_FREQUENCY)
+	(((1ULL << (1 << AVR32_WDT_CTRL_PSEL_SIZE)) * 1000000 + slowclock / 2) / slowclock)
 
 	// Set the CTRL.EN bit and translate the us timeout to fit in CTRL.PSEL using
 	// the formula wdt = 2pow(PSEL+1) / fRCosc in useconds.
@@ -93,7 +95,7 @@ uint32_t Avr32WatchDogStart(uint32_t ms)
 		timeout = MAX_US_TIMEOUT_PERIOD;
 
 	wdt_set_ctrl(AVR32_WDT_CTRL_EN_MASK |
-		((32 - __builtin_clz(((((timeout * AVR32_PM_RCOSC_FREQUENCY + 500000) / 1000000) << 1) - 1) >> 1) - 1) << AVR32_WDT_CTRL_PSEL_OFFSET));
+		((32 - __builtin_clz(((((timeout * slowclock + 500000) / 1000000) << 1) - 1) >> 1) - 1) << AVR32_WDT_CTRL_PSEL_OFFSET));
 
 	Avr32WatchDogRestart();
     nested = 1;
