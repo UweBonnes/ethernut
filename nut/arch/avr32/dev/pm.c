@@ -41,6 +41,7 @@
  */
 
 
+#include <avr32/io.h>
 #include <arch/avr32/pm.h>
 
 
@@ -428,9 +429,6 @@ void pm_pll_disable(volatile avr32_pm_t *pm,
 void pm_wait_for_pll0_locked(volatile avr32_pm_t *pm)
 {
   while (!(pm->poscsr & AVR32_PM_POSCSR_LOCK0_MASK));
-
-  // Bypass the lock signal of the PLL
-  pm->pll[0] |= AVR32_PM_PLL0_PLLBPL_MASK;
 }
 
 
@@ -507,4 +505,30 @@ void pm_write_gplp(volatile avr32_pm_t *pm,unsigned long gplp, unsigned long val
 unsigned long pm_read_gplp(volatile avr32_pm_t *pm,unsigned long gplp)
 {
   return pm->gplp[gplp];
+}
+
+long pm_enable_module(volatile avr32_pm_t *pm, unsigned long module)
+{
+	unsigned long domain = module>>5;
+	unsigned long *regptr = (unsigned long*)(&(pm->cpumask) + domain*sizeof(unsigned long));
+
+	// UC3A Implementation-specific shortcut: the ckMASK registers are contiguous and
+	// memory-mapped in that order: CPUMASK, HSBMASK, PBAMASK, PBBMASK.
+
+	*regptr |= (module%32);
+
+	return 1;
+}
+
+long pm_disable_module(volatile avr32_pm_t *pm, unsigned long module)
+{
+	unsigned long domain = module>>5;
+	unsigned long *regptr = (unsigned long*)(&(pm->cpumask) + domain*sizeof(unsigned long));
+
+	// UC3A Implementation-specific shortcut: the ckMASK registers are contiguous and
+	// memory-mapped in that order: CPUMASK, HSBMASK, PBAMASK, PBBMASK.
+
+	*regptr &= ~(module%32);
+
+	return 1;
 }

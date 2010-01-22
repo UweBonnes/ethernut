@@ -328,5 +328,30 @@ extern void pm_switch_to_clock(volatile avr32_pm_t *pm, unsigned long clock);
  */
 extern void pm_switch_to_osc0(volatile avr32_pm_t *pm, unsigned int fosc0, unsigned int startup);
 
+/*! \brief Enable the clock of a module.
+ *
+ * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
+ * \param module The module to clock (use one of the defines in the part-specific
+ * header file under "toolchain folder"/avr32/inc(lude)/avr32/; depending on the
+ * clock domain, look for the sections "CPU clocks", "HSB clocks", "PBx clocks")
+ *
+ * \return Status.
+ *   \retval 0  Success.
+ *   \retval <0 An error occured.
+ */
+extern long pm_enable_module(volatile avr32_pm_t *pm, unsigned long module);
+
+/*! \brief Disable the clock of a module.
+ *
+ * \param pm Base address of the Power Manager (i.e. &AVR32_PM)
+ * \param module The module to shut down (use one of the defines in the part-specific
+ * header file under "toolchain folder"/avr32/inc(lude)/avr32/; depending on the
+ * clock domain, look for the sections "CPU clocks", "HSB clocks", "PBx clocks")
+ *
+ * \return Status.
+ *   \retval 0  Success.
+ *   \retval <0 An error occured.
+ */
+extern long pm_disable_module(volatile avr32_pm_t *pm, unsigned long module);
 
 #endif  // _PM_H_

@@ -45,6 +45,7 @@
 #include <cfg/os.h>
 #include <cfg/clock.h>
 
+#include <sys/atom.h>
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
@@ -53,6 +54,7 @@
 
 #include <avr32/io.h>
 #include <arch/avr32/gpio.h>
+#include <arch/avr32/pm.h>
 
 #if defined(AVR32_USART0_TXD_0_0_PIN)
 #define AVR32_USART0_TXD_PIN        AVR32_USART0_TXD_0_0_PIN
@@ -136,8 +138,10 @@ static int DebugInit(NUTDEVICE * dev)
 
     /* Disable all USART interrupts.
     ** Interrupts needed should be set explicitly on every reset. */
+    NutEnterCritical();
     usart->idr = 0xFFFFFFFF;
     usart->csr;
+    NutExitCritical();
 
     /* Reset mode and other registers that could cause unpredictable behavior after reset. */
     usart->mr = 0;
@@ -146,10 +150,15 @@ static int DebugInit(NUTDEVICE * dev)
 
     /* Shutdown TX and RX (will be re-enabled when setup has successfully completed),
     ** reset status bits and turn off DTR and RTS. */
-    usart->cr = AVR32_USART_CR_RSTRX_MASK |
-        AVR32_USART_CR_RSTTX_MASK |
-        AVR32_USART_CR_RSTSTA_MASK |
-        AVR32_USART_CR_RSTIT_MASK | AVR32_USART_CR_RSTNACK_MASK | AVR32_USART_CR_DTRDIS_MASK | AVR32_USART_CR_RTSDIS_MASK;
+    usart->cr = AVR32_USART_CR_RSTRX_MASK   |
+				AVR32_USART_CR_RSTTX_MASK   |
+				AVR32_USART_CR_RSTSTA_MASK  |
+				AVR32_USART_CR_RSTIT_MASK   |
+				AVR32_USART_CR_RSTNACK_MASK |
+#ifndef AVR32_USART_CR_DTRDIS_MASK
+				AVR32_USART_CR_DTRDIS_MASK  |
+#endif
+				AVR32_USART_CR_RTSDIS_MASK;
 
     usart->mr |= (8 - 5) << AVR32_USART_MR_CHRL_OFFSET |        /* 8 bit character length */
         AVR32_USART_MR_PAR_NONE << AVR32_USART_MR_PAR_OFFSET |  /* No parity */
@@ -175,7 +184,7 @@ static void DebugPut(CONST NUTDEVICE * dev, char ch)
 {
     volatile avr32_usart_t *usart = (avr32_usart_t *) dev->dev_base;
 
-    /* Prepend new line by carriage return */
+	/* Prepend new line by carriage return */
     if (ch == '\n') {
         DebugPut(dev, '\r');
     }
@@ -238,7 +247,10 @@ static int Debug0Init(NUTDEVICE * dev)
     /* Assign GPIO to USART. */
     GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART0_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART0_TXD_PIN),
                      AVR32_GPIO_FUNCTION(AVR32_USART0_TXD_FUNCTION));
-    return DebugInit(dev);
+
+	pm_enable_module(&AVR32_PM, AVR32_USART0_CLK_PBA);
+
+	return DebugInit(dev);
 };
 
 static NUTFILE dbgfile0;
@@ -271,7 +283,10 @@ static int Debug1Init(NUTDEVICE * dev)
     /* Assign GPIO to USART. */
     GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART1_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART1_TXD_PIN),
                      AVR32_GPIO_FUNCTION(AVR32_USART1_TXD_FUNCTION));
-    return DebugInit(dev);
+
+	pm_enable_module(&AVR32_PM, AVR32_USART1_CLK_PBA);
+
+	return DebugInit(dev);
 };
 
 static NUTFILE dbgfile1;
@@ -304,7 +319,10 @@ static int Debug2Init(NUTDEVICE * dev)
     /* Assign GPIO to USART. */
     GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART2_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART2_TXD_PIN),
                      AVR32_GPIO_FUNCTION(AVR32_USART2_TXD_FUNCTION));
-    return DebugInit(dev);
+
+	pm_enable_module(&AVR32_PM, AVR32_USART2_CLK_PBA);
+
+	return DebugInit(dev);
 };
 
 static NUTFILE dbgfile2;
@@ -337,7 +355,10 @@ static int Debug3Init(NUTDEVICE * dev)
     /* Assign GPIO to USART. */
     GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART3_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART3_TXD_PIN),
                      AVR32_GPIO_FUNCTION(AVR32_USART3_TXD_FUNCTION));
-    return DebugInit(dev);
+
+	pm_enable_module(&AVR32_PM, AVR32_USART3_CLK_PBA);
+
+	return DebugInit(dev);
 };
 
 static NUTFILE dbgfile3;
