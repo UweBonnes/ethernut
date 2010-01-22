@@ -392,7 +392,7 @@ static int probePhy(volatile avr32_macb_t* macb)
 static int EmacReset(NUTDEVICE * dev)
 {
 	volatile avr32_macb_t * macb = (avr32_macb_t *)dev->dev_base;
-	const uint32_t hclk_hz = NutArchClockGet(NUT_HWCLK_PERIPHERAL_A);
+	const uint32_t hclk_hz = NutArchClockGet(NUT_HWCLK_PERIPHERAL_B);
 
 	/* Disable TX and RX */
 	macb->ncr = 0;
@@ -418,13 +418,13 @@ static int EmacReset(NUTDEVICE * dev)
 
 	/* Set MII management clock divider */
 	if (hclk_hz <= 20000000)
-		macb->ncfgr |= (AVR32_MACB_NCFGR_CLK_DIV8 << AVR32_MACB_NCFGR_CLK_OFFSET);
+		macb->ncfgr |= (AVR32_MACB_NCFGR_CLK_DIV8  << AVR32_MACB_NCFGR_CLK_OFFSET);
 	else if (hclk_hz <= 40000000)
 		macb->ncfgr |= (AVR32_MACB_NCFGR_CLK_DIV16 << AVR32_MACB_NCFGR_CLK_OFFSET);
 	else if (hclk_hz <= 80000000)
-		macb->ncfgr |= AVR32_MACB_NCFGR_CLK_DIV32 << AVR32_MACB_NCFGR_CLK_OFFSET;
+		macb->ncfgr |= (AVR32_MACB_NCFGR_CLK_DIV32 << AVR32_MACB_NCFGR_CLK_OFFSET);
 	else
-		macb->ncfgr |= AVR32_MACB_NCFGR_CLK_DIV64 << AVR32_MACB_NCFGR_CLK_OFFSET;
+		macb->ncfgr |= (AVR32_MACB_NCFGR_CLK_DIV64 << AVR32_MACB_NCFGR_CLK_OFFSET);
 
 	/* Wait for PHY ready. */
 	NutDelay(255);
@@ -657,7 +657,7 @@ static int EmacStart(volatile avr32_macb_t * macb, CONST uint8_t * mac)
 	macb->ncfgr |= AVR32_MACB_NCFGR_DRFCS_MASK;
 
 	/* Enable receiver, transmitter and statistics. */
-	macb->ncr |= AVR32_MACB_NCR_RE_MASK | AVR32_MACB_NCR_TE_MASK | AVR32_MACB_NCR_WESTAT_MASK;
+	macb->ncr |= AVR32_MACB_NCR_RE_MASK | AVR32_MACB_NCR_TE_MASK;
 
 	return 0;
 }
