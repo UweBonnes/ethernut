@@ -280,7 +280,9 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
                     }
                 }
                 if (value) {
-                    fprintf(fp, "%s = \"%s\"\n", opts->nco_name, value);
+					wxString escapedValue( value );
+					escapedValue.Replace(wxT("\""), wxT("\\\"")); // escape (") to (\");
+                    fprintf(fp, "%s = \"%s\"\n", opts->nco_name, escapedValue.c_str());
                     free(value);
                 }
             }

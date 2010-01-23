@@ -443,10 +443,7 @@ nutos =
                 brief = "Magic Cookie",
                 description = "Together with the length of the configuration structure "..
                               "this is used to determine that we got a valid configuration "..
-                              "structure in non-volatile memory.\n\n"..
-                              "Disabled due to problems of the Configurator using string "..
-                              "literals as values.",
-                requires = { "NOT_AVAILABLE" },
+                              "structure in non-volatile memory.\n",
                 default = "\"OS\"",
                 file = "include/cfg/eeprom.h"
             },
@@ -465,10 +462,7 @@ nutos =
             {
                 macro = "CONFOS_VIRGIN_HOSTNAME",
                 brief = "Virgin Host Name",
-                description = "This name will be used for hosts without valid configuration.\n\n"..
-                              "Disabled due to problems of the Configurator using string "..
-                              "literals as values.",
-                requires = { "NOT_AVAILABLE" },
+                description = "This name will be used for hosts without valid configuration.\n",
                 default = "\"ethernut\"",
                 file = "include/cfg/eeprom.h"
             }

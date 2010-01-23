@@ -174,12 +174,15 @@ void NutComponentModel::saveComponentOptions( QTextStream& stream, NUTCOMPONENT*
 					if ( flavor )
 						free( flavor );
 					if ( flavorString.startsWith( "bool" ) )
-						stream << opts->nco_name << " = \"" << value << "\"\n";
+						stream << opts->nco_name << " = \"\"\n";
 					else
 						qWarning( qPrintable(QString("Not saving %1 flavor %2").arg(opts->nco_name).arg(flavorString)) );
 				}
 				else
+				{
+					value = value.replace("\"", "\\\""); // Escape (") to (\")
 					stream << opts->nco_name << " = \"" << value << "\"\n";
+				}
 			}
 			opts = opts->nco_nxt;
 		}
