@@ -1082,7 +1082,7 @@ static int AvrUsartSetClockMode(uint8_t mode)
         /* Disable high speed. */
         cbi(UCSRnA, U2X);
         /* Enable synchronous mode. */
-        sbi(UCSRnA, UMSEL);
+        sbi(UCSRnC, UMSEL);
     }
 
     /*
