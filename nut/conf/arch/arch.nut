@@ -829,7 +829,7 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
---                    "HW_GPIO",
+                    "HW_GPIO",
                     "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
                 },
@@ -856,7 +856,7 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
---                    "HW_GPIO",
+                    "HW_GPIO",
                     "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
                 },
@@ -882,7 +882,7 @@ nutarch =
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
---                    "HW_GPIO",
+                    "HW_GPIO",
                     "HW_EBI_AVR32"
                 },
                 makedefs = { "MCU=uc3a3256", "MARCH=ucr2" }

@@ -317,7 +317,7 @@
 /* -------------------------------------------------
  * AT91 port specifications.
  */
-#if MCU_AT91
+#if MCU_AT91 || __AVR32__
 
 #if (VS10XX_SIGNAL_IRQ == INT0)
 #define VS10XX_SIGNAL       sig_INTERRUPT0
