@@ -253,6 +253,7 @@ bool NutComponentModel::setData( const QModelIndex &index, const QVariant &value
 		if ( item->setValue( value ) )
 		{
 			emit dataChanged(index, index);
+			emit modified();
 			return true;
 		}
 	}
@@ -264,6 +265,7 @@ bool NutComponentModel::setData( const QModelIndex &index, const QVariant &value
 
 		// RefreshComponents might have changed the status on the whole tree, refresh everything.
 		emit dataChanged( this->index(0, 0), this->index(rowCount(), 2) );
+		emit modified();
 		return true;
 	}
 	return false;

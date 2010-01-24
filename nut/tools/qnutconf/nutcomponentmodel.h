@@ -78,6 +78,7 @@ public:
 signals:
 	void errorMessage( const QString& );
 	void message(const QString&);
+	void modified();
 
 private:
 	void close();

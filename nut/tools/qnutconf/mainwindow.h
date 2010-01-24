@@ -65,13 +65,15 @@ public slots:
 private:
 	void readSettings();
 	void writeSettings();
-
+	void updateWindowTitle();
 	void generateApplicationTree();
 
 private slots:
 	void buildFinished( int exitCode );
 	void updateView(const QModelIndex& current, const QModelIndex& previous);
 	void message( const QString& );
+	void resizeComponentTreeToContents();
+	void documentModified();
 
 private:
 	NutComponentModel* model;

@@ -61,8 +61,10 @@ MainWindow::MainWindow()
 
 	connect( model, SIGNAL(errorMessage(const QString&)), SLOT(message(const QString&)) );
 	connect( model, SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
+	connect( model, SIGNAL(modified()), SLOT(documentModified()) );
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(updateView(const QModelIndex&, const QModelIndex&)) );
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), detailsModel, SLOT(refresh(const QModelIndex&)) );
+	connect( ui.componentTree, SIGNAL(expanded(const QModelIndex&)), SLOT(resizeComponentTreeToContents()));
 
 	readSettings();
 
@@ -112,6 +114,8 @@ void MainWindow::on_actionOpen_triggered()
 		else
 		{
 			Settings::instance()->load( fileName );
+			setWindowFilePath( fileName );
+			updateWindowTitle();
 			ui.componentTree->resizeColumnToContents( 0 );
 		}
 		QApplication::restoreOverrideCursor();
@@ -121,6 +125,9 @@ void MainWindow::on_actionOpen_triggered()
 void MainWindow::on_actionSave_triggered()
 {
 	model->saveConfig( Settings::instance()->configFileName() );
+	setWindowModified( false );
+	updateWindowTitle();
+	statusBar()->showMessage(tr("File saved"), 2000);
 }
 
 void MainWindow::on_actionSave_as_triggered()
@@ -131,6 +138,11 @@ void MainWindow::on_actionSave_as_triggered()
 
 	Settings::instance()->setConfigFileName( fileName );
 	model->saveConfig( fileName );
+	setWindowFilePath( fileName );
+	setWindowModified( false );
+	updateWindowTitle();
+
+	statusBar()->showMessage(tr("File saved"), 2000);
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -247,4 +259,31 @@ void MainWindow::generateApplicationTree()
 	QApplication::restoreOverrideCursor();
 }
 
+void MainWindow::resizeComponentTreeToContents()
+{
+	ui.componentTree->resizeColumnToContents( 0 );
+}
 
+void MainWindow::updateWindowTitle()
+{
+	QString title = tr("Nut/OS Configurator");
+	if ( !windowFilePath().isEmpty() )
+	{
+		title += " - " + QFileInfo( windowFilePath() ).fileName();
+	}
+
+	if ( isWindowModified() )
+		title += "*";
+
+	setWindowTitle( title );
+}
+
+/*!
+	This slot is called whenever one of the settings in the component
+	tree is changed.
+*/
+void MainWindow::documentModified()
+{
+	setWindowModified(true);
+	updateWindowTitle();
+}
