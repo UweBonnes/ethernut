@@ -217,43 +217,6 @@ gpio_irq_choice = {
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
 
-arm_ld_choice = { 
-                    " ", 
-                    "at91_boot", 
-                    "at91_bootcrom", 
-                    "at91_bootloader_bootcrom",
-                    "at91_ram", 
-                    "at91_rom", 
-                    "at91_httprom", 
-                    "at91sam7s16_rom",
-                    "at91sam7s32_rom",
-                    "at91sam7s64_rom",
-                    "at91sam7s128_rom",
-                    "at91sam7s256_rom",
-                    "at91sam7s512_rom",
-                    "at91sam7se32_rom",
-                    "at91sam7se256_rom",
-                    "at91sam7se512_rom",
-                    "at91sam7se512_ram",
-                    "at91sam7x128_rom", 
-                    "at91sam7x256_rom", 
-                    "at91sam7x512_rom", 
-                    "at91sam9260_ram", 
-                    "at91sam9xe512_ram", 
-                    "s3c4510b-ram", 
-                    "eb40a_ram",
-                    "eb40a_redboot_ram", 
-                    "gbaxport2", 
-                    "wolf_ram" 
-                }
-
-avr32_ld_choice = { 
-                    " ", 
-                    "uc3a0512_ram",
-                    "uc3a0512_sdram",
-                    "uc3a3256_rom"
-                }
-
 pll_clk_choice = { " ", "0", "1", "2", "3", "4" }
 
 hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }

@@ -210,52 +210,13 @@ nuttools =
         options = 
         {
             {
-                macro = "ARM_LDSCRIPT",
-                brief = "ARM Linker Script",
-                description = "at91_boot\t\tAT91R40008, code in ROM, copied to and running in RAM\n"..
-                              "at91_bootcrom\t\tAT91R40008, code in ROM copied to RAM, but constant data remains in ROM.\n"..
-                              "at91_bootloader_bootcrom\t\tAT91R40008, code copied to RAM, but consts remain in ROM. Started by bootloader at address 0x10000\n"..
-                              "at91_ram\t\t\tAT91R40008, code loaded in RAM by bootloader\n"..
-                              "at91_rom\t\t\tAT91R40008, code running in FLASH\n"..
-                              "at91_httprom\t\tAT91R40008, code running in FLASH. Use this with boothttp.\n"..
-                              "at91sam7x128_rom\t\tAT91SAM7X128, code running in FLASH\n"..
-                              "at91sam7x256_rom\t\tAT91SAM7X256, code running in FLASH\n"..
-                              "at91sam7x512_rom\t\tAT91SAM7X512, code running in FLASH\n"..
-                              "at91sam7s16_rom\t\tAT91SAM7S16, code running in FLASH\n"..
-                              "at91sam7s32_rom\t\tAT91SAM7S32, code running in FLASH\n"..
-                              "at91sam7s64_rom\t\tAT91SAM7S64, code running in FLASH\n"..
-                              "at91sam7s128_rom\t\tAT91SAM7S128, code running in FLASH\n"..
-                              "at91sam7s256_rom\t\tAT91SAM7S256, code running in FLASH\n"..
-                              "at91sam7s512_rom\t\tAT91SAM7S512, code running in FLASH\n"..
-                              "at91sam7se32_rom\t\tAT91SAM7SE32, code running in FLASH, data in SDRAM\n"..
-                              "at91sam7se256_rom\tAT91SAM7SE256, code running in FLASH, data in SDRAM\n"..
-                              "at91sam7se512_rom\tAT91SAM7SE512, code running in FLASH, data in SDRAM\n"..
-                              "at91sam7se512_ram\tAT91SAM7SE512, code running in SDRAM (debugging)\n"..
-                              "at91sam9260_ram\t\tAT91SAM9260, code running in external RAM\n"..
-                              "at91sam9xe512_ram\tAT91SAM9XE512, code running in external RAM\n"..
-                              "s3c4510b-ram\t\tSamsung's S3C4510B, code in RAM (unsupported)\n"..
-                              "eb40a_ram\t\tAtmel's AT91EB40A, code in RAM at 0x100\n"..
-                              "gba_xport2\t\tNintendo's Gameboy Advance\n"..
-                              "wolf_ram\t\t\thwgroup's Wolf Module, code in RAM at 0x100 (unsupported)\n",
-                requires = { "TOOL_CC_ARM", "TOOL_GCC" },
+                macro = "LDSCRIPT",
+                brief = "Linker Script",
+                description = function() return GetLDScriptDescription(); end,
+                requires = { "TOOL_GCC" },
                 flavor = "booldata",
                 type = "enumerated",
-                choices = arm_ld_choice,
-                makedefs = 
-                { 
-                    "LDNAME", 
-                    "LDSCRIPT=$(top_srcdir)/arch/arm/ldscripts/$(LDNAME).ld" 
-                }
-            },
-            {
-                macro = "AVR32_LDSCRIPT",
-                brief = "AVR32 Linker Script",
-                description = "link_uc3a0512.ld\t\tAVR32UC3A0512, code in running in FLASH\n"..
-                              "uc3a3256_rom\t\tAT32UC3A3256, code in running in FLASH\n",
-                requires = { "TOOL_CC_AVR32", "TOOL_GCC" },
-                flavor = "booldata",
-                type = "enumerated",
-                choices = avr32_ld_choice,
+                choices = function() return GetLDScripts(); end,
                 makedefs = 
                 { 
                     "LDNAME", 
@@ -297,3 +258,145 @@ nuttools =
     -- This will be part of the application wizard.
     --
 }
+
+avr32_ld_description = {
+                        uc3a0512_ram   = "AVR32UC3A0512, code running in FLASH",
+                        uc3a0512_sdram = "AVR32UC3A0512, code running in FLASH, data in external SDRAM",
+                        uc3a3256_rom   = "AT32UC3A3256, code in running in FLASH",
+}
+
+
+avr32_ld_choice = { 
+					" ", 
+					"uc3a0512_ram",
+					"uc3a0512_sdram",
+					"uc3a3256_rom"
+}
+
+arm_ld_description = {
+    at91_boot                = "AT91R40008, code in ROM, copied to and running in RAM",
+    at91_bootcrom            = "AT91R40008, code in ROM copied to RAM, but constant data remains in ROM.",
+    at91_bootloader_bootcrom = "AT91R40008, code copied to RAM, but consts remain in ROM. Started by bootloader at address 0x10000",
+    at91_ram                 = "AT91R40008, code loaded in RAM by bootloader",
+    at91_rom                 = "AT91R40008, code running in FLASH",
+    at91_httprom             = "AT91R40008, code running in FLASH. Use this with boothttp.",
+    at91sam7x128_rom         = "AT91SAM7X128, code running in FLASH",
+    at91sam7x256_rom         = "AT91SAM7X256, code running in FLASH",
+    at91sam7x512_rom         = "AT91SAM7X512, code running in FLASH",
+    at91sam7s16_rom          = "AT91SAM7S16, code running in FLASH",
+    at91sam7s32_rom          = "AT91SAM7S32, code running in FLASH",
+    at91sam7s64_rom          = "AT91SAM7S64, code running in FLASH",
+    at91sam7s128_rom         = "AT91SAM7S128, code running in FLASH",
+    at91sam7s256_rom         = "AT91SAM7S256, code running in FLASH",
+    at91sam7s512_rom         = "AT91SAM7S512, code running in FLASH",
+    at91sam7se32_rom         = "AT91SAM7SE32, code running in FLASH, data in SDRAM",
+    at91sam7se256_rom        = "AT91SAM7SE256, code running in FLASH, data in SDRAM",
+    at91sam7se512_rom        = "AT91SAM7SE512, code running in FLASH, data in SDRAM",
+    at91sam7se512_ram        = "AT91SAM7SE512, code running in SDRAM (debugging)",
+    at91sam9260_ram          = "AT91SAM9260, code running in external RAM",
+    at91sam9xe512_ram        = "AT91SAM9XE512, code running in external RAM",
+    ["s3c4510b-ram"]         = "Samsung's S3C4510B, code in RAM (unsupported)",
+    eb40a_ram                = "Atmel's AT91EB40A, code in RAM at 0x100",
+    gba_xport2               = "Nintendo's Gameboy Advance",
+    wolf_ram                 = "hwgroup's Wolf Module, code in RAM at 0x100 (unsupported)"
+}
+
+arm_ld_choice = { 
+                " ", 
+                "at91_boot", 
+                "at91_bootcrom", 
+                "at91_bootloader_bootcrom",
+                "at91_ram", 
+                "at91_rom", 
+                "at91_httprom", 
+                "at91sam7s16_rom",
+                "at91sam7s32_rom",
+                "at91sam7s64_rom",
+                "at91sam7s128_rom",
+                "at91sam7s256_rom",
+                "at91sam7s512_rom",
+                "at91sam7se32_rom",
+                "at91sam7se256_rom",
+                "at91sam7se512_rom",
+                "at91sam7se512_ram",
+                "at91sam7x128_rom", 
+                "at91sam7x256_rom", 
+                "at91sam7x512_rom", 
+                "at91sam9260_ram", 
+                "at91sam9xe512_ram", 
+                "s3c4510b-ram", 
+                "eb40a_ram",
+                "eb40a_redboot_ram", 
+                "gbaxport2", 
+                "wolf_ram" 
+}
+
+--
+-- Return the list of ldscripts
+--                
+function GetLDScripts()
+	if c_is_provided("TOOL_CC_AVR32") then
+		return avr32_ld_choice
+	end
+	if c_is_provided("TOOL_CC_ARM") then
+		return arm_ld_choice
+	end
+end
+
+--
+-- Return the ldscript description
+--
+function GetLDScriptDescription()
+	if c_is_provided("TOOL_CC_AVR32") then
+		return FormatLDScriptDescription(avr32_ld_description)
+	end
+	if c_is_provided("TOOL_CC_ARM") then
+		return FormatLDScriptDescription(arm_ld_description)
+	end
+end
+
+--
+-- Returns pairs sorted by keys in alphabetic order
+--
+function pairsByKeys (t, f)
+  local a = {}
+  -- build temporary table of the keys
+  for n in pairs (t) do 
+    table.insert (a, n) 
+  end
+  table.sort (a, f)  -- sort using supplied function, if any
+  local i = 0        -- iterator variable
+  return function () -- iterator function
+    i = i + 1
+    return a[i], t[a[i]]
+  end  -- iterator function
+end -- pairsByKeys
+
+--
+-- Return the formated ldscript description
+-- Note: It looks like it's impossible to properly
+-- format based on tabs on both nutconf and qnutconf using
+-- non-fixed length fonts. When we move definitively to qnutconf
+-- this can be made to output html, then we will get it right.
+--
+function FormatLDScriptDescription( t )
+	local result = ""
+	local maxKeyLen = 0;
+	for k,v in pairs(t) do
+		if maxKeyLen < string.len(k) then
+			maxKeyLen = string.len(k)
+		end
+	end
+	
+	maxTabs = math.ceil( maxKeyLen / 6 + 1 );
+	for k,v in pairsByKeys(t) do
+		tabs = maxTabs - math.ceil( string.len(k) / 6 );
+		result = result .. k
+		for i = 1, tabs do
+			result = result .. "\t"
+		end
+		result = result .. v .. "\n"
+	end
+	return result
+end
+
