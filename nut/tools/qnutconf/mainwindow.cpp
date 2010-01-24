@@ -159,6 +159,11 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	if ( QMessageBox::question( this, tr("Build Nut/OS"), question, QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
 		return; 
 
+	// Disable build options.
+	ui.actionBuild_Nut_OS->setEnabled( false );
+	ui.actionCreate_sample->setEnabled( false );
+	ui.actionBuildStop->setEnabled( true );
+
 	// Clear log window
 	ui.logPanel->clear();
 
@@ -175,7 +180,11 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	/* Make install */
 	Builder::instance()->build( "install" );
 
-	ui.actionBuild_Nut_OS->setEnabled( false );
+}
+
+void MainWindow::on_actionBuildStop_triggered()
+{
+	Builder::instance()->stop();
 }
 
 void MainWindow::on_actionCreate_sample_triggered()
@@ -198,6 +207,8 @@ void MainWindow::buildFinished( int exitCode )
 		message( tr("Build failed") );
 
 	ui.actionBuild_Nut_OS->setEnabled( true );
+	ui.actionCreate_sample->setEnabled( true );
+	ui.actionBuildStop->setEnabled( false );
 }
 
 void MainWindow::updateView( const QModelIndex& current, const QModelIndex& previous )

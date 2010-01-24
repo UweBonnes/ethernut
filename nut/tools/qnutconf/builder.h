@@ -50,6 +50,7 @@ public:
 	~Builder();
 
 	bool build( const QString& target );
+	void stop();
 
 	static Builder* instance();
 

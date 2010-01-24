@@ -80,6 +80,11 @@
        </widget>
       </widget>
       <widget class="QTextEdit" name="logPanel">
+       <property name="font">
+        <font>
+         <family>Courier New</family>
+        </font>
+       </property>
        <property name="acceptDrops">
         <bool>false</bool>
        </property>
@@ -100,7 +105,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -129,6 +134,7 @@
      <string>Build</string>
     </property>
     <addaction name="actionBuild_Nut_OS"/>
+    <addaction name="actionBuildStop"/>
     <addaction name="separator"/>
     <addaction name="actionCreate_sample"/>
    </widget>
@@ -206,6 +212,15 @@
    <property name="text">
     <string>Build Nut/OS</string>
    </property>
+   <property name="statusTip">
+    <string>Build Nut/OS Libraries</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionCreate_sample">
    <property name="text">
@@ -234,6 +249,17 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionBuildStop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="statusTip">
+    <string>Cancel the current build</string>
    </property>
   </action>
  </widget>

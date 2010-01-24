@@ -58,6 +58,7 @@ public slots:
 	void on_actionExit_triggered();
 	void on_actionSettings_triggered();
 	void on_actionBuild_Nut_OS_triggered();
+	void on_actionBuildStop_triggered();
 	void on_actionCreate_sample_triggered();
 	void on_actionAbout_triggered();
 

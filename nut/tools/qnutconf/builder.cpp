@@ -101,3 +101,15 @@ void Builder::readyReadStandardOutput()
 		emit message( ba.trimmed() );
 }
 
+void Builder::stop()
+{
+	queue.clear();
+	if ( process->state() != QProcess::NotRunning )
+	{
+		process->write("\x03"); // Send Ctrl+C
+		process->waitForBytesWritten(-1);
+		process->waitForFinished(-1);
+		process->close();
+	}
+	emit message( tr("Build canceled by the user") );
+}
