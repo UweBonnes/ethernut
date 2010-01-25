@@ -113,7 +113,7 @@ bool NutComponentModel::openConfig( const QString& fileName )
 		QString repositoryPath = Settings::instance()->repository();
 		d->repositoryPath = QDir::toNativeSeparators(repositoryPath.replace("\\", "/"));
 
-		if ( QFile::exists( d->repositoryPath ) )
+		if ( !QFile::exists( d->repositoryPath ) )
 		{
 			emit errorMessage( tr("Couldn't find repository at [%1].\n Please check your settings.").arg(d->repositoryPath) );
 			return false;
