@@ -76,6 +76,7 @@
  */
 
 #include "eboot.h"
+#include "config.h"
 #include "arp.h"
 #include "ip.h"
 
@@ -164,11 +165,11 @@ int IpInput(u_char proto, u_short tms)
         rc = htons(ip->ip_len) - (ip->ip_hl * 4);
         if(ip->ip_dst == INADDR_BROADCAST)
             break;
-        if(local_ip == 0)
+        if(confnet.cdn_ip_addr == 0)
             continue;
-        if(ip->ip_dst == local_ip)
+        if(ip->ip_dst == confnet.cdn_ip_addr)
             break;
-        if((ip->ip_dst | netmask) == INADDR_BROADCAST)
+        if((ip->ip_dst | confnet.cdn_ip_mask) == INADDR_BROADCAST)
             break;        
     }
     return rc;
@@ -206,7 +207,7 @@ int IpOutput(u_long dip, u_char proto, u_short len)
     ip->ip_ttl = 0x40;
     ip->ip_p = proto;
     ip->ip_dst = dip;
-    ip->ip_src = local_ip;
+    ip->ip_src = confnet.cdn_ip_addr;
     ip->ip_id++;
     ip->ip_sum = 0;
     ip->ip_sum = IpChkSum((u_char *)ip, sizeof(IPHDR));

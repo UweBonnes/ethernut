@@ -61,19 +61,4 @@ void Delay(long ms)
         asm volatile ("nop\n\t"::);
 }
 
-#if 0
-void Debug(char *cp)
-{
-    while(*cp) {
-#if defined(__AVR_ATmega2561__)    
-        while((UCSR0A & (1<<UDRE0)) == 0);
-#else
-        while((UCSR0A & (1<<UDRE)) == 0);
-#endif
-        UDR0 = *cp;
-        cp++;
-    }
-}
-#endif
-
 /*@}*/

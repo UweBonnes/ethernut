@@ -41,6 +41,5 @@
  */
 
 extern void Delay(long nops);
-extern void Debug(char *cp);
 
 #endif

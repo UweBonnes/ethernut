@@ -44,10 +44,13 @@
 #
 #
 
-DEFS =
-#DEFS = -DNUTDEBUG
+MCU=atmega128
 
-#INCDIR = $(top_srcdir)/include
+DEFS =
+DEFS += -DEE_CONFNET=64
+DEFS += -DEE_CONFBOOT=256
+#DEFS += -DNUTDEBUG
+
 INCDIR = .
 
 TRGT = avr-
@@ -58,8 +61,6 @@ AS     = $(TRGT)gcc -x assembler-with-cpp
 
 ELFCOF    = elfcoff
 BIN       = $(TRGT)objcopy
-
-BINDIR    = $(top_srcdir)/bin/$(MCU)
 
 MCFLAGS   = -mmcu=$(MCU)
 CPFLAGS   = $(MCFLAGS) -Os -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(DEFS)

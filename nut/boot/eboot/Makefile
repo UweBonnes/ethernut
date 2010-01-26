@@ -45,16 +45,12 @@
 
 PROJ = eboot
 
-top_srcdir = ..
-top_appdir = ..
-
-include $(top_srcdir)/UserConf.mk
 include Makedefs
 
-SRCS =  $(PROJ).c tftp.c dhcp.c udp.c ip.c arp.c ether.c util.c
+SRCS =  $(PROJ).c tftp.c dhcp.c udp.c ip.c arp.c ether.c config.c util.c debug.c
 LIBS =  
 
-OBJS  = $(SRCS:.c=.o) flash.o
+OBJS  = start.o $(SRCS:.c=.o) flash.o
 TARG  = $(PROJ).hex
 
 all: $(OBJS) $(TARG)

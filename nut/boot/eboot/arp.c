@@ -90,6 +90,7 @@
 #include <string.h>
 
 #include "eboot.h"
+#include "config.h"
 #include "ip.h"
 #include "arp.h"
 
@@ -132,8 +133,8 @@ int ArpRequest(u_long dip, u_char * dmac)
         ea->arp_pln = 4;
         ea->arp_op = htons(ARPOP_REQUEST);
         for (i = 0; i < 6; i++)
-            ea->arp_sha[i] = mac[i];
-        ea->arp_spa = local_ip;
+            ea->arp_sha[i] = confnet.cdn_mac[i];
+        ea->arp_spa = confnet.cdn_ip_addr;
         for (i = 0; i < 6; i++)
             ea->arp_tha[i] = 0xFF;
         ea->arp_tpa = dip;
@@ -145,7 +146,7 @@ int ArpRequest(u_long dip, u_char * dmac)
                 ARPFRAME *af = (ARPFRAME *) & rframe;
 
                 ea = &af->eth_arp;
-                if (ea->arp_tpa == local_ip) {
+                if (ea->arp_tpa == confnet.cdn_ip_addr) {
                     if (htons(ea->arp_op) == ARPOP_REPLY) {
                         ae.ae_ip = ea->arp_spa;
                         for (i = 0; i < 6; i++)
@@ -180,14 +181,14 @@ void ArpRespond(void)
     ETHERARP *ea = &af->eth_arp;
 
     ea = &arpframe.eth_arp;
-    if (ea->arp_tpa == local_ip) {
+    if (ea->arp_tpa == confnet.cdn_ip_addr) {
         if (htons(ea->arp_op) == ARPOP_REPLY) {
             ae.ae_ip = ea->arp_spa;
             for (i = 0; i < 6; i++)
                 ae.ae_ha[i] = ea->arp_sha[i];
         } 
     } else 
-    if (ea->arp_spa == local_ip) {
+    if (ea->arp_spa == confnet.cdn_ip_addr) {
         if (htons(ea->arp_op) == ARPOP_REQUEST) {          
             /*
              * Set ARP header.
@@ -206,8 +207,8 @@ void ArpRespond(void)
             ea->arp_tpa = ea->arp_spa;
             
             for (i = 0; i < 6; i++)
-                ea->arp_sha[i] = mac[i];
-            ea->arp_spa = local_ip;
+                ea->arp_sha[i] = confnet.cdn_mac[i];
+            ea->arp_spa = confnet.cdn_ip_addr;
 
             EtherOutput(0, ETHERTYPE_ARP, sizeof(ETHERARP));
         }

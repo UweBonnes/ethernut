@@ -55,6 +55,8 @@
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>
 
+#include "config.h"
+#include "debug.h"
 #include "ether.h"
 #include "dhcp.h"
 #include "tftp.h"
@@ -63,17 +65,7 @@
 
 BOOTFRAME sframe;
 BOOTFRAME rframe;
-u_long netmask;
-//u_long broadcast;
-//u_long gateway;
-//u_long dns;
 u_long sid;
-u_long local_ip;
-u_long server_ip;
-u_char bootfile[128];
-
-u_char mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
-
 
 /*!
  * \addtogroup xgEBoot
@@ -92,17 +84,6 @@ u_char mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
  */
 int main(void)
 {
-    u_char *bp;
-    u_long pp;
-
-    UBRR0L = 7;
-#if defined(__AVR_ATmega2561__)
-    UCSR0B = (1<<RXEN0) | (1<<TXEN0);
-#else 
-    UCSR0B = (1<<RXEN) | (1<<TXEN);
-#endif
-
-
 #if defined(__AVR_ATmega2561__)
     /* unlike ATMega128 the ATMega2561 does not disbale the watchdog */
     /* after a reset, so we need to do this here                     */
@@ -112,43 +93,33 @@ int main(void)
 #endif
 
     /*
-     * We are without runtime library, so we have
-     * to initialize everything.
+     * Enable external data and address bus.
      */
-    asm volatile ("clr r1");
-    asm volatile ("cli");
+    MCUCR = _BV(SRE) | _BV(SRW);
+    DEBUGINIT();
+    DEBUG("\neboot 2.0.0\n");
 
-    /*
-     * Initialize the data segment.
-     */
-    pp = (u_long) & __data_load_start;
-    for (bp = &__data_start; bp < &__data_end; bp++) {
-        *bp = __ELPM(pp);
-        pp++;
-    }
-
-    /*
-     * Clear bss.
-     */
-    for (bp = &__bss_start; bp < &__bss_end; bp++)
-        *bp = 0;
+    BootConfigRead();
 
     /*
      * Initialize the network interface controller hardware.
      */
-    NicInit();
+    DEBUG("ETHERNET ");
+    if (NicInit() == 0) {
+        DEBUG("OK\n");
 
-    /*
-     * DHCP query and TFTP download.
-     */
-    if (DhcpQuery() == 0 && bootfile[0])
-        TftpRecv();
+        /*
+        * DHCP query and TFTP download.
+        */
+        if (DhcpQuery() == 0 && confboot.cb_image[0])
+            TftpRecv();
+    } else {
+        DEBUG("No\n");
+    }
 
     /*
      * Will jump to the application.
      */
-    asm volatile ("jmp 0");
-    for (;;);
     return 0;
 }
 

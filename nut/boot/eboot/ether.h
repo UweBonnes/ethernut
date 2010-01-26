@@ -80,7 +80,7 @@ typedef struct ether_header {
 
 /*@}*/
 
-extern void NicInit(void);
+extern int NicInit(void);
 extern int EtherOutput(u_char *dest, u_short type, u_short len);
 extern int EtherInput(u_short type, u_short tms);
 

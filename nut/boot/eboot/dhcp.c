@@ -92,8 +92,10 @@
 #include <string.h>
 #include "util.h"
 
+#include "config.h"
 #include "eboot.h"
 #include "ip.h"
+#include "debug.h"
 #include "dhcp.h"
 
 /*!
@@ -159,11 +161,12 @@ int DhcpTransact(int slen, u_char xtype)
         if (UdpOutput(INADDR_BROADCAST, DHCP_SERVERPORT, DHCP_CLIENTPORT, slen) < 0) {
             return -1;
         }
-        if ((rlen = UdpInput(DHCP_CLIENTPORT, 5000)) < 0) {
+        if ((rlen = UdpInput(DHCP_CLIENTPORT, 20000)) < 0) {
             return -1;
         }
         if (rlen &&
             rframe.u.bootp.bp_xid == sframe.u.bootp.bp_xid && DhcpGetOption(DHCPOPT_MSGTYPE, &type, 1) == 1 && type == xtype) {
+            DEBUG("[DHCP]");
             break;
         }
         rlen = 0;
@@ -197,16 +200,27 @@ int DhcpQuery(void)
     register u_char *cp;
 
     /*
+     * Nothing to do if we got a fixed IP address.
+     */
+    if (confnet.cdn_cip_addr) {
+        confnet.cdn_ip_addr = confnet.cdn_cip_addr;
+        return 0;
+    }
+    confnet.cdn_ip_addr = 0;
+
+    /*
      * Discovery loop.
      */
     bp = &sframe.u.bootp;
     bp->bp_op = 1;
-    bp->bp_xid = 0x04030201;
+    bp->bp_xid = confnet.cdn_mac[4];
+    bp->bp_xid <<= 8;
+    bp->bp_xid |= confnet.cdn_mac[5];
     bp->bp_flags = 0x0080;
     bp->bp_htype = 1;
-    bp->bp_hlen = sizeof(mac);
+    bp->bp_hlen = sizeof(confnet.cdn_mac);
     for (i = 0; i < 6; i++)
-        bp->bp_chaddr[i] = mac[i];
+        bp->bp_chaddr[i] = confnet.cdn_mac[i];
 
     bp->bp_cookie = 0x63538263;
 
@@ -215,43 +229,41 @@ int DhcpQuery(void)
 
     slen = sizeof(BOOTPHDR) - sizeof(sframe.u.bootp.bp_options) + 4;
 
-    if(DhcpTransact(slen, DHCP_OFFER) <= 0)
+    if(DhcpTransact(slen, DHCP_OFFER) <= 0) {
+        DEBUG("[NoOffer]");
         return -1;
-
+    }
     DhcpGetOption(DHCPOPT_SID, &sid, 4);
     
 
     /*
      * Request loop.
      */
+    DEBUGULONG(rframe.u.bootp.bp_yiaddr);
     i = DHCP_REQUEST;
     cp = DhcpSetOption(bp->bp_options, DHCPOPT_MSGTYPE, &i, 1);
     cp = DhcpSetOption(cp, DHCPOPT_REQUESTIP, (u_char *)&rframe.u.bootp.bp_yiaddr, 4);
     cp = DhcpSetOption(cp, DHCPOPT_SID, (u_char *)&sid, 4);
 
     slen = sizeof(BOOTPHDR) - sizeof(sframe.u.bootp.bp_options) + 16;
-    if(DhcpTransact(slen, DHCP_ACK) <= 0)
+    if(DhcpTransact(slen, DHCP_ACK) <= 0) {
+        DEBUG("[NoAck]");
         return -1;
+    }
 
-    local_ip = rframe.u.bootp.bp_yiaddr;
+    confnet.cdn_ip_addr = rframe.u.bootp.bp_yiaddr;
 
-    /*
-     * I'd say that tftpd32 is buggy, because it sends siaddr
-     * set to zero. This is a miserable hack to fix this.
-     */
-    server_ip = rframe.u.bootp.bp_siaddr;
-    if(server_ip == 0)
-        server_ip = rframe.ip_hdr.ip_src;
-
-    for (cp = (u_char *)rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(bootfile) - 1; cp++, i++)
-        bootfile[i] = *cp;
-    bootfile[i] = 0;
-
-    DhcpGetOption(DHCPOPT_NETMASK, &netmask, 4);
-    //DhcpGetOption(DHCPOPT_BROADCAST, &broadcast, 4);
-    //DhcpGetOption(DHCPOPT_GATEWAY, &gateway, 4);
-    //DhcpGetOption(DHCPOPT_DNS, &dns, 4);
-    DhcpGetOption(DHCPOPT_SID, &sid, 4);
+    if (confboot.cb_tftp_ip == 0) {
+        confboot.cb_tftp_ip = rframe.u.bootp.bp_siaddr;
+    }
+    DEBUGULONG(confboot.cb_tftp_ip);
+    if (confboot.cb_image[0] == 0) {
+        for (cp = (u_char *)rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(confboot.cb_image) - 1; cp++, i++)
+            confboot.cb_image[i] = *cp;
+        confboot.cb_image[i] = 0;
+    }
+    DEBUG((char *)confboot.cb_image);
+    DhcpGetOption(DHCPOPT_NETMASK, &confnet.cdn_ip_mask, 4);
 
     return 0;
 }

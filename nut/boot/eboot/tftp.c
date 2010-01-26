@@ -51,8 +51,10 @@
 #include <avr/pgmspace.h>
 #include <string.h>
 
+#include "config.h"
 #include "flash.h"
 #include "eboot.h"
+#include "debug.h"
 #include "tftp.h"
 
 /*!
@@ -123,7 +125,7 @@ int TftpRecv(void)
     sframe.u.tftp.th_opcode = htons(TFTP_RRQ);
     slen = 2;
     cp = (u_char *)sframe.u.tftp.th_u.tu_stuff;
-    cp1 = bootfile;
+    cp1 = confboot.cb_image;
     do {
         *cp = *cp1++;
         slen++;
@@ -146,9 +148,11 @@ int TftpRecv(void)
          * a data block.
          */
         for (retry = 0; retry < 3; retry++) {
-            if (UdpOutput(server_ip, tport, SPORT, slen) >= 0) {
-                if ((rlen = UdpInput(SPORT, 5000)) >= 4)
+            if (UdpOutput(confboot.cb_tftp_ip, tport, SPORT, slen) >= 0) {
+                if ((rlen = UdpInput(SPORT, 20000)) >= 4) {
+                    DEBUG(".");
                     break;
+                }
             }
         }
 
@@ -156,16 +160,20 @@ int TftpRecv(void)
          * Can't reach the TFTP server or got a malformed
          * repsonse.
          */
-        if ((retry >= 3) || (rlen < 4))
+        if ((retry >= 3) || (rlen < 4)) {
+            DEBUG("[ErrTftp2]");
             return -1;
+        }
 
 
         /*
          * Accept data blocks only. Anything else will stop
          * the transfer with an error.
          */
-        if (ntohs(rframe.u.tftp.th_opcode) != TFTP_DATA)
+        if (ntohs(rframe.u.tftp.th_opcode) != TFTP_DATA) {
+            DEBUG("[ErrTftp3]");
             return -1;
+        }
 
         /*
          * If this was the first block we received, prepare
@@ -183,8 +191,10 @@ int TftpRecv(void)
          * with an error.
          */
         if (ntohs(rframe.u.tftp.th_u.tu_block) != block + 1) {
-            if (block == 0)
+            if (block == 0) {
+                DEBUG("[ErrTftp4]");
                 return -1;
+            }
             continue;
         }
 
@@ -208,7 +218,7 @@ int TftpRecv(void)
     /*
      * Send the last ACK.
      */
-    UdpOutput(server_ip, tport, SPORT, slen);
+    UdpOutput(confboot.cb_tftp_ip, tport, SPORT, slen);
 
     return 0;
 }

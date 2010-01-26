@@ -73,6 +73,7 @@
 #include <string.h>
 #include <avr/io.h>
 
+#include "config.h"
 #include "rtlregs.h"
 #include "util.h"
 #include "eboot.h"
@@ -182,13 +183,9 @@ static void EmulateNicEeprom(void)
  * For further description of the initialization
  * please refer to the original Ethernut code.
  */
-void NicInit(void)
+int NicInit(void)
 {
     u_char c;
-
-    mac[3]=EEPROM_read(0x4D);
-    mac[4]=EEPROM_read(0x4E);
-    mac[5]=EEPROM_read(0x4F);
 
     /*
      * Enable external data and address
@@ -227,12 +224,12 @@ void NicInit(void)
     NIC_PG0_ISR = 0xff;
     NIC_CR = NIC_CR_STP | NIC_CR_RD2 | NIC_CR_PS0;
 
-    NIC_PG1_PAR0 = mac[0];
-    NIC_PG1_PAR1 = mac[1];
-    NIC_PG1_PAR2 = mac[2];
-    NIC_PG1_PAR3 = mac[3];
-    NIC_PG1_PAR4 = mac[4];
-    NIC_PG1_PAR5 = mac[5];
+    NIC_PG1_PAR0 = confnet.cdn_mac[0];
+    NIC_PG1_PAR1 = confnet.cdn_mac[1];
+    NIC_PG1_PAR2 = confnet.cdn_mac[2];
+    NIC_PG1_PAR3 = confnet.cdn_mac[3];
+    NIC_PG1_PAR4 = confnet.cdn_mac[4];
+    NIC_PG1_PAR5 = confnet.cdn_mac[5];
 
     NIC_PG1_MAR0 = 0;
     NIC_PG1_MAR1 = 0;
@@ -251,6 +248,8 @@ void NicInit(void)
     NIC_CR = NIC_CR_STA | NIC_CR_RD2;
     NIC_PG0_TCR = 0;
     Delay(1000);
+
+    return 0;
 }
 
 /*!
@@ -278,7 +277,7 @@ int EtherOutput(u_char * dmac, u_short type, u_short len)
     }
 
     for (i = 0; i < 6; i++)
-        eh->ether_shost[i] = mac[i];
+        eh->ether_shost[i] = confnet.cdn_mac[i];
     if (dmac) {
         for (i = 0; i < 6; i++)
             eh->ether_dhost[i] = dmac[i];
