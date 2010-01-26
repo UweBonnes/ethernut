@@ -71,6 +71,8 @@ public:
 	void setTargetPlatform(const QString& val) { m_targetPlatform = val; }
 	QString programmer() const { return m_programmer; }
 	void setProgrammer(const QString& val) { m_programmer = val; }
+	bool absolutePathInSamples() { return m_absolutePathInSamples; }
+	void setAbsolutePathInSamples( bool val ) { m_absolutePathInSamples = val; }
 
 private:
 	Settings();
@@ -89,6 +91,7 @@ private:
 	QString m_toolPath;
 	QString m_targetPlatform;
 	QString m_programmer;
+	bool m_absolutePathInSamples;
 };
 
 #endif // __SETTINGS_H__

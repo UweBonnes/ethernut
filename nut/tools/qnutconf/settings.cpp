@@ -144,6 +144,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	m_targetPlatform = settings.value("targetPlatform").toString();
 	m_toolPath = settings.value("toolPath").toString();
 	m_programmer = settings.value("programmer").toString();
+	m_absolutePathInSamples = settings.value("absolutePathInSamples", true).toBool();
 	
 	setConfigFileName( fileName );
 
@@ -162,4 +163,5 @@ void Settings::save()
 	settings.setValue("targetPlatform", m_targetPlatform);
 	settings.setValue("toolPath", m_toolPath);
 	settings.setValue("programmer", m_programmer);
+	settings.setValue("absolutePathInSamples", m_absolutePathInSamples);
 }

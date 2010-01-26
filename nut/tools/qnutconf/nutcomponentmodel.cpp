@@ -435,15 +435,23 @@ bool NutComponentModel::generateBuildTree()
 */
 bool NutComponentModel::generateSampleMakefiles()
 {
-	QByteArray buildPath = Settings::instance()->buildPath().toLocal8Bit();
-	QByteArray appDir = Settings::instance()->appDir().toLocal8Bit();
-	QByteArray srcDir = Settings::instance()->sourceDir().toLocal8Bit();
-	QByteArray instDir = Settings::instance()->installPath().toLocal8Bit();
+	QString buildPath = Settings::instance()->buildPath();
+	QString appDir = Settings::instance()->appDir();
+	QString srcDir = Settings::instance()->sourceDir();
+	QString instDir = Settings::instance()->installPath();
 	QByteArray platform = Settings::instance()->targetPlatform().toLocal8Bit();
 	QByteArray programmer = Settings::instance()->programmer().toLocal8Bit();
 
-	if( CreateSampleDirectory( d->repository, d->rootComponent, buildPath, appDir, srcDir, instDir, platform, 
-		programmer, 0, 0 ) )
+	if ( Settings::instance()->absolutePathInSamples() )
+	{
+		buildPath = QDir(buildPath).absolutePath();
+		appDir = QDir(appDir).absolutePath();
+		srcDir = QDir(srcDir).absolutePath();
+		instDir = QDir(instDir).absolutePath();
+	}
+
+	if( CreateSampleDirectory( d->repository, d->rootComponent, qPrintable(buildPath), qPrintable(appDir), qPrintable(srcDir), 
+		qPrintable(instDir), platform, programmer, 0, 0 ) )
 			return false;
 	return true;
 }

@@ -55,6 +55,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
 	// Samples tab
 	ui.e_AppDirectory->setText( Settings::instance()->appDir() );
+	ui.cb_AbsolutePathInSamples->setChecked( Settings::instance()->absolutePathInSamples() );
 	populateProgrammer();
 }
 
@@ -136,6 +137,7 @@ void SettingsDialog::accept()
 	// Samples tab
 	Settings::instance()->setAppDir( ui.e_AppDirectory->text() );
 	Settings::instance()->setProgrammer( ui.cb_Programmer->currentText() );
+	Settings::instance()->setAbsolutePathInSamples( ui.cb_AbsolutePathInSamples->checkState() == Qt::Checked  );
 
 	Settings::instance()->save();
 
