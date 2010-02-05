@@ -95,6 +95,7 @@
 #include <time.h>
 #include <memdebug.h>
 
+#define SYSLOG_INTERNAL
 #include <sys/syslog.h>
 
 #ifndef SYSLOG_PERROR_ONLY
@@ -110,13 +111,6 @@ static UDPSOCKET *syslog_sock;
  */
 /*@{*/
 
-#ifndef SYSLOG_MAXBUF
-/*!
- * \brief Syslog message buffer size.
- */
-#define SYSLOG_MAXBUF 256
-#endif
-
 static uint16_t syslog_port = 514;
 static int syslog_fac = LOG_USER;
 static int syslog_mask = 0xFF;
@@ -125,14 +119,18 @@ static uint32_t syslog_server;
 static int syslog_stat;
 static size_t syslog_taglen;
 static char *syslog_tag;
-static char *syslog_buf;
+char *syslog_buf;
 
 /*!
  * \brief Assemble syslog header.
  *
+ * For internal use only.
+ *
  * \param pri Value of the syslog PRI part.
+ *
+ * \return Number of characters in the global syslog buffer.
  */
-static size_t syslog_header(int pri)
+size_t syslog_header(int pri)
 {
     size_t rc;
 
@@ -147,6 +145,11 @@ static size_t syslog_header(int pri)
     /* Set default facility if none specified. */
     if ((pri & LOG_FACMASK) == 0) {
         pri |= syslog_fac;
+    }
+
+    /* Open log if not done before. */
+    if (syslog_buf == 0) {
+        openlog(0, syslog_stat | LOG_NDELAY, syslog_fac);
     }
 
     /* PRI field. 
@@ -252,6 +255,27 @@ static size_t syslog_header(int pri)
 }
 
 /*!
+ * \brief Send syslog buffer.
+ *
+ * For internal use only.
+ *
+ * \param len Number of valid characters in buffer.
+ */
+void syslog_flush(size_t len)
+{
+    /* Output to stderr if requested */
+    if (syslog_stat & LOG_PERROR) {
+        _write(_fileno(stderr), syslog_buf, len);
+        _write(_fileno(stderr), "\n", 1);
+    }
+
+    /* Output the message to a remote logger. */
+    if (syslog_server) {
+        NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, len);
+    }
+}
+
+/*!
  * \brief Print log message.
  *
  * Alternate form of syslog(), in which the arguments have already been captured
@@ -263,41 +287,21 @@ static size_t syslog_header(int pri)
  */
 void vsyslog(int pri, CONST char *fmt, va_list ap)
 {
-    size_t cnt;
-
-    /* Open log if not done before. */
-    if (syslog_buf == 0) {
-        openlog(0, syslog_stat | LOG_NDELAY, syslog_fac);
-    }
-
     /* Build the header. */
-    cnt = syslog_header(pri);
+    size_t cnt = syslog_header(pri);
+
     if (cnt) {
-
 #ifdef SYSLOG_PERROR_ONLY
-
         fputs(syslog_buf, stderr);
         vfprintf(stderr, fmt, ap);
-
 #else
-
         /* Potentially dangerous. We need vsnprintf() */
         if (cnt + strlen(fmt) >= SYSLOG_MAXBUF) {
             puts("Buffer overflow");
             return;
         }
         cnt += vsprintf(&syslog_buf[cnt], fmt, ap);
-
-        /* Output to stderr if requested */
-        if (syslog_stat & LOG_PERROR) {
-            _write(_fileno(stderr), syslog_buf, cnt);
-            _write(_fileno(stderr), "\n", 1);
-        }
-        /* Output the message to a remote logger. */
-        if (syslog_server) {
-            NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, cnt);
-        }
-
+        syslog_flush(cnt);
 #endif /* SYSLOG_PERROR_ONLY */
     }
 }
@@ -329,90 +333,6 @@ void syslog(int pri, CONST char *fmt, ...)
     vsyslog(pri, (char *) fmt, ap);
     va_end(ap);
 }
-
-#ifdef __HARVARD_ARCH__
-/*!
- * \brief Print log message.
- *
- * Alternate form of syslog(), in which the arguments have already been captured
- * using the variable-length argument facilities.
- *
- * \param pri Priority level of this message. See syslog().
- * \param fmt Format string containing conversion specifications like printf.
- * \param ap  List of arguments.
- */
-void vsyslog_P(int pri, PGM_P fmt, va_list ap)
-{
-    /* Build the header. */
-    size_t cnt;
-
-    /* Open log if not done before. */
-    if (syslog_buf == 0) {
-        openlog(0, syslog_stat | LOG_NDELAY, syslog_fac);
-    }
-
-    /* Build the header. */
-    cnt = syslog_header(pri);
-    if (cnt) {
-
-#ifdef SYSLOG_PERROR_ONLY
-
-        vfprintf_P(stderr, fmt, ap);
-
-#else
-
-        /* Potentially dangerous. We need vsnprintf() */
-        if (cnt + strlen_P(fmt) >= SYSLOG_MAXBUF) {
-            return;
-        }
-        cnt += vsprintf_P(&syslog_buf[cnt], fmt, ap);
-
-        /* Output to stderr if requested */
-        if (syslog_stat & LOG_PERROR) {
-            _write(_fileno(stderr), syslog_buf, cnt);
-            _write(_fileno(stderr), "\n", 1);
-        }
-
-        /*
-        * Output the message to a remote logger.
-        */
-        if (syslog_server) {
-            NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, cnt);
-        }
-
-#endif /* SYSLOG_PERROR_ONLY */
-    }
-}
-
-/*!
- * \brief Print log message.
- *
- * The message is tagged with priority.
- *
- * \param pri Priority level of this message, selected from the following
- *            ordered list (high to low):
- *            - LOG_EMERG   A panic condition.
- *            - LOG_ALERT   A condition that should be corrected immediately.
- *            - LOG_CRIT    Critical conditions, e.g., hard device errors.
- *            - LOG_ERR     Errors.
- *            - LOG_WARNING Warning messages.
- *            - LOG_NOTICE  Conditions that are not error conditions, but should 
- *                          possibly be handled specially.
- *            - LOG_INFO    Informational messages.
- *            - LOG_DEBUG   Messages that contain information normally of use only 
- *                          when debugging a program.
- * \param fmt Format string containing conversion specifications like printf.
- */
-void syslog_P(int pri, PGM_P fmt, ...)
-{
-    va_list ap;
-
-    va_start(ap, fmt);
-    vsyslog_P(pri, fmt, ap);
-    va_end(ap);
-}
-
-#endif /* __HARVARD_ARCH__ */
 
 /*!
  * \brief Set the log priority mask level.

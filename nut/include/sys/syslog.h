@@ -88,6 +88,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 #include <stdarg.h>
 
 #define	LOG_EMERG	0       /* system is unusable */
@@ -154,6 +155,18 @@
 #define	LOG_NOWAIT	0x10    /* don't wait for console forks: DEPRECATED */
 #define	LOG_PERROR	0x20    /* log to stderr as well */
 
+#ifdef SYSLOG_INTERNAL
+
+#ifndef SYSLOG_MAXBUF
+/*!
+ * \brief Syslog message buffer size.
+ */
+#define SYSLOG_MAXBUF 256
+#endif
+
+extern char *syslog_buf;
+
+#endif /* SYSLOG_INTERNAL */
 
 __BEGIN_DECLS                   /* */
 extern void closelog(void);
@@ -163,8 +176,15 @@ extern uint32_t setlogserver(uint32_t ip, uint16_t port);
 extern void syslog(int, CONST char *, ...);
 extern void vsyslog(int, CONST char *, va_list);
 #ifdef __HARVARD_ARCH__
+#ifdef SYSLOG_INTERNAL
+extern size_t syslog_header(int pri);
+extern void syslog_flush(size_t len);
+#endif
 extern void syslog_P(int pri, PGM_P fmt, ...);
 extern void vsyslog_P(int pri, PGM_P fmt, va_list ap);
+#else
+#define syslog_P    syslog
+#define vsyslog_P   vsyslog
 #endif
 __END_DECLS                     /* */
 #endif
