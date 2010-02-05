@@ -424,7 +424,7 @@ nutpro =
         brief = "Syslog Client API",
         description = "Logs system and debug information to a remote server.",
         requires = { "PRO_SNTP", "NET_UDP" },
-        sources =  { "syslog.c" },
+        sources =  { "syslog.c", "syslog_P.c" },
         options = 
         {
             {
