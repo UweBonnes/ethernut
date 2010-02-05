@@ -85,6 +85,7 @@
 
 #include <cfg/syslog.h>
 #include <sys/confos.h>
+#include <sys/confnet.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -126,8 +127,129 @@ static size_t syslog_taglen;
 static char *syslog_tag;
 static char *syslog_buf;
 
-static char mon_name[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+/*!
+ * \brief Assemble syslog header.
+ *
+ * \param pri Value of the syslog PRI part.
+ */
+static size_t syslog_header(int pri)
+{
+    size_t rc;
 
+    /* Remove invalid bits. */
+    pri &= LOG_PRIMASK | LOG_FACMASK;
+
+    /* Check priority against setlog mask values. */
+    if ((LOG_MASK(LOG_PRI(pri)) & syslog_mask) == 0) {
+        return 0;
+    }
+
+    /* Set default facility if none specified. */
+    if ((pri & LOG_FACMASK) == 0) {
+        pri |= syslog_fac;
+    }
+
+    /* PRI field. 
+    ** This is common to all syslog formats. */
+    rc = sprintf(syslog_buf, "<%d>", pri);
+
+    /* VERSION field. 
+    ** Note, that there is no space separator. */
+#ifdef SYSLOG_RFC5424
+    syslog_buf[rc++] = '1';
+#endif
+
+    /* TIMESTAMP field. */
+#ifdef SYSLOG_OMIT_TIMESTAMP
+
+#ifdef SYSLOG_RFC5424
+    syslog_buf[rc++] = ' ';
+    syslog_buf[rc++] = '-';
+#endif
+
+#else
+    {
+        time_t now;
+        struct _tm *tip;
+
+        time(&now);
+
+#ifdef SYSLOG_RFC5424
+        tip = gmtime(&now);
+        rc += sprintf(&syslog_buf[rc], " %04d-%02d-%02dT%02d:%02d:%02dZ",
+            tip->tm_year + 1900, tip->tm_mon + 1, tip->tm_mday,
+            tip->tm_hour, tip->tm_min, tip->tm_sec);
+#else
+        {
+            static char mon_name[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+
+            tip = localtime(&now);
+            rc += sprintf(&syslog_buf[rc], "%.3s%3d %02d:%02d:%02d", 
+                &mon_name[tip->tm_mon * 3], tip->tm_mday, 
+                tip->tm_hour, tip->tm_min, tip->tm_sec);
+        }
+#endif /* SYSLOG_RFC5424 */
+
+    }
+#endif /* SYSLOG_OMIT_TIMESTAMP */
+
+    /* HOSTNAME field. */
+#ifdef SYSLOG_OMIT_HOSTNAME
+
+#ifdef SYSLOG_RFC5424
+    syslog_buf[rc++] = ' ';
+    syslog_buf[rc++] = '-';
+#endif
+
+#else
+
+#ifdef SYSLOG_RFC5424
+    syslog_buf[rc++] = ' ';
+    if (confnet.cdn_cip_addr) {
+        strcpy(&syslog_buf[rc], inet_ntoa(confnet.cdn_cip_addr));
+        rc += strlen(&syslog_buf[rc]);
+    }
+    else if (confos.hostname[0]) {
+        strcpy(&syslog_buf[rc], confos.hostname);
+        rc += strlen(&syslog_buf[rc]);
+    }
+    else if (confnet.cdn_ip_addr) {
+        strcpy(&syslog_buf[rc], inet_ntoa(confnet.cdn_ip_addr));
+        rc += strlen(&syslog_buf[rc]);
+    } else {
+        syslog_buf[rc++] = '-';
+    }
+#else
+    syslog_buf[rc++] = ' ';
+    strcpy(&syslog_buf[rc], confos.hostname);
+    rc += strlen(confos.hostname);
+#endif /* SYSLOG_RFC5424 */
+
+#endif /* SYSLOG_OMIT_HOSTNAME */
+
+    /* APP-NAME field. */
+    if (syslog_taglen) {
+        syslog_buf[rc++] = ' ';
+        strcpy(&syslog_buf[rc], syslog_tag);
+        rc += syslog_taglen;
+#ifndef SYSLOG_RFC5424
+        syslog_buf[rc++] = ':';
+#endif
+    }
+
+    /* No PROCID and MSGID fields. */
+#ifdef SYSLOG_RFC5424
+    syslog_buf[rc++] = ' ';
+    syslog_buf[rc++] = '-';
+    syslog_buf[rc++] = ' ';
+    syslog_buf[rc++] = '-';
+#endif
+
+    syslog_buf[rc++] = ' ';
+    syslog_buf[rc] = '\0';
+    
+    return rc;
+}
 
 /*!
  * \brief Print log message.
@@ -141,63 +263,43 @@ static char mon_name[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
  */
 void vsyslog(int pri, CONST char *fmt, va_list ap)
 {
-    time_t now;
-    struct _tm *tip;
     size_t cnt;
-
-    /* Remove invalid bits. */
-    pri &= LOG_PRIMASK | LOG_FACMASK;
-
-    /* Check priority against setlog mask values. */
-    if ((LOG_MASK(LOG_PRI(pri)) & syslog_mask) == 0) {
-        return;
-    }
 
     /* Open log if not done before. */
     if (syslog_buf == 0) {
         openlog(0, syslog_stat | LOG_NDELAY, syslog_fac);
     }
 
-    /* Set default facility if none specified. */
-    if ((pri & LOG_FACMASK) == 0) {
-        pri |= syslog_fac;
-    }
+    /* Build the header. */
+    cnt = syslog_header(pri);
+    if (cnt) {
 
-    time(&now);
-    tip = localtime(&now);
-    sprintf(syslog_buf, "<%d>%.3s%3d %02d:%02d:%02d %s ", pri, &mon_name[tip->tm_mon * 3],
-            tip->tm_mday, tip->tm_hour, tip->tm_min, tip->tm_sec, confos.hostname);
-    cnt = strlen(syslog_buf);
+#ifdef SYSLOG_PERROR_ONLY
 
-    if (syslog_taglen) {
-        cnt += syslog_taglen + 2;
-        if (cnt >= SYSLOG_MAXBUF) {
+        fputs(syslog_buf, stderr);
+        vfprintf(stderr, fmt, ap);
+
+#else
+
+        /* Potentially dangerous. We need vsnprintf() */
+        if (cnt + strlen(fmt) >= SYSLOG_MAXBUF) {
+            puts("Buffer overflow");
             return;
         }
-        strcat(syslog_buf, syslog_tag);
-        strcat(syslog_buf, ": ");
-    }
+        cnt += vsprintf(&syslog_buf[cnt], fmt, ap);
 
-    /* Potentially dangerous. We need vsnprintf() */
-    if (cnt + strlen(fmt) >= SYSLOG_MAXBUF) {
-        return;
-    }
-    vsprintf(&syslog_buf[cnt], fmt, ap);
-    cnt = strlen(syslog_buf);
+        /* Output to stderr if requested */
+        if (syslog_stat & LOG_PERROR) {
+            _write(_fileno(stderr), syslog_buf, cnt);
+            _write(_fileno(stderr), "\n", 1);
+        }
+        /* Output the message to a remote logger. */
+        if (syslog_server) {
+            NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, cnt);
+        }
 
-    /* Output to stderr if requested */
-    if (syslog_stat & LOG_PERROR) {
-        _write(_fileno(stderr), syslog_buf, cnt);
-        _write(_fileno(stderr), "\n", 1);
+#endif /* SYSLOG_PERROR_ONLY */
     }
-#ifndef SYSLOG_PERROR_ONLY
-    /*
-     * Output the message to a remote logger.
-     */
-    if (syslog_server) {
-        NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, cnt);
-    }
-#endif
 }
 
 /*!
@@ -241,63 +343,45 @@ void syslog(int pri, CONST char *fmt, ...)
  */
 void vsyslog_P(int pri, PGM_P fmt, va_list ap)
 {
-    time_t now;
-    struct _tm *tip;
+    /* Build the header. */
     size_t cnt;
-
-    /* Remove invalid bits. */
-    pri &= LOG_PRIMASK | LOG_FACMASK;
-
-    /* Check priority against setlog mask values. */
-    if ((LOG_MASK(LOG_PRI(pri)) & syslog_mask) == 0) {
-        return;
-    }
 
     /* Open log if not done before. */
     if (syslog_buf == 0) {
         openlog(0, syslog_stat | LOG_NDELAY, syslog_fac);
     }
 
-    /* Set default facility if none specified. */
-    if ((pri & LOG_FACMASK) == 0) {
-        pri |= syslog_fac;
-    }
+    /* Build the header. */
+    cnt = syslog_header(pri);
+    if (cnt) {
 
-    time(&now);
-    tip = localtime(&now);
-    sprintf(syslog_buf, "<%d>%.3s%3d %02d:%02d:%02d %s ", pri, &mon_name[tip->tm_mon * 3],
-            tip->tm_mday, tip->tm_hour, tip->tm_min, tip->tm_sec, confos.hostname);
-    cnt = strlen(syslog_buf);
+#ifdef SYSLOG_PERROR_ONLY
 
-    if (syslog_taglen) {
-        cnt += syslog_taglen + 2;
-        if (cnt >= SYSLOG_MAXBUF) {
+        vfprintf_P(stderr, fmt, ap);
+
+#else
+
+        /* Potentially dangerous. We need vsnprintf() */
+        if (cnt + strlen_P(fmt) >= SYSLOG_MAXBUF) {
             return;
         }
-        strcat(syslog_buf, syslog_tag);
-        strcat(syslog_buf, ": ");
-    }
+        cnt += vsprintf_P(&syslog_buf[cnt], fmt, ap);
 
-    /* Potentially dangerous. We need vsnprintf() */
-    if (cnt + strlen_P(fmt) >= SYSLOG_MAXBUF) {
-        return;
-    }
-    vsprintf_P(&syslog_buf[cnt], fmt, ap);
-    cnt = strlen(syslog_buf);
+        /* Output to stderr if requested */
+        if (syslog_stat & LOG_PERROR) {
+            _write(_fileno(stderr), syslog_buf, cnt);
+            _write(_fileno(stderr), "\n", 1);
+        }
 
-    /* Output to stderr if requested */
-    if (syslog_stat & LOG_PERROR) {
-        _write(_fileno(stderr), syslog_buf, cnt);
-        _write(_fileno(stderr), "\n", 1);
+        /*
+        * Output the message to a remote logger.
+        */
+        if (syslog_server) {
+            NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, cnt);
+        }
+
+#endif /* SYSLOG_PERROR_ONLY */
     }
-#ifndef SYSLOG_PERROR_ONLY
-    /*
-     * Output the message to a remote logger.
-     */
-    if (syslog_server) {
-        NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, cnt);
-    }
-#endif
 }
 
 /*!
