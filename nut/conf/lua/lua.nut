@@ -88,7 +88,7 @@ nutlua =
                               "1 - optimize while maitaining full compatibility with the test suite\n"..
                               "2 - aggresive optimizations (breaks compatibility with some tests)",
                 type = "enumerated",
-                default = "2",
+                default = "0",
                 choices = { "0", "1", "2" },
                 file = "include/cfg/lua.h"
             },
