@@ -94,11 +94,13 @@
 
 #include <cfg/arch.h>
 
+#include <string.h>
+#include <stdlib.h>
+#include <memdebug.h>
+
 #include <io.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -119,6 +121,9 @@
 #define SSI_TYPE_FILE    0x01
 #define SSI_TYPE_VIRTUAL 0x02
 #define SSI_TYPE_EXEC    0x03
+#define SSI_TYPE_ECHO    0x04
+
+static char * (*ssivar_handler)(char *, REQUEST *);
 
 static prog_char rsp_not_found_P[] = "404 Not found: %s\r\n";
 static prog_char rsp_intern_err_P[] = "500 Internal error\r\n";
@@ -312,8 +317,7 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
         free(filename);
     }
     if (fd == -1) {
-        fprintf_P(stream, rsp_not_found_P, filename);
-        free(filename);
+        fprintf_P(stream, rsp_not_found_P, url);
         return;
     }
     
@@ -340,6 +344,24 @@ static void NutSsiProcessVirtual(FILE * stream, char *url, char* http_root, REQU
     } else handler(stream, fd, file_len, http_root, orig_req);
     _close(fd);
     return;
+}
+
+/*!
+ * \brief Send variable content to the stream.
+ *
+ * \param stream Stream of the socket connection, previously opened for 
+ *               binary read and write.
+ * \param varname Name of the variable.
+ */
+static void NutSsiProcessEcho(FILE * stream, char *name, REQUEST *req)
+{
+    if (ssivar_handler) {
+        char *value = (*ssivar_handler)(name, req);
+
+        if (value) {
+            fputs(value, stream);
+        }
+    }
 }
 
 /*!
@@ -397,6 +419,10 @@ static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char*
     if (strncasecmp(&buffer[pos], "#exec", 5) == 0) { // Search include or exec directive
         pos += 5;
         type = SSI_TYPE_EXEC;
+    } else 
+    if (strncasecmp(&buffer[pos], "#echo", 5) == 0) { // Search echo directive
+        pos += 5;
+        type = SSI_TYPE_ECHO;
     } else return 0;                                // No include or exec found. Skip the rest of this comment...
     if (pos >= end) return 0;
 
@@ -410,6 +436,11 @@ static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char*
         if (strncasecmp(&buffer[pos], "file", 4) == 0) {  // Search file directive
             pos += 4;
             type = SSI_TYPE_FILE;
+        } else return 0;                            // No file found. Test for file...
+    }
+    else if (type == SSI_TYPE_ECHO) {
+        if (strncasecmp(&buffer[pos], "var", 3) == 0) {  // Search var directive
+            pos += 3;
         } else return 0;                            // No file found. Test for file...
     } else {
         if (strncasecmp(&buffer[pos], "cgi", 3) == 0) {  // Search cgi directive
@@ -445,6 +476,9 @@ static uint8_t NutSsiCheckForSsi(FILE *stream, char *buffer, uint16_t end, char*
                 break;
             case SSI_TYPE_EXEC:
                 NutSsiProcessVirtual(stream, filename, http_root, req);
+                break;
+            case SSI_TYPE_ECHO:
+                NutSsiProcessEcho(stream, filename, req);
                 break;
         }
     }
@@ -536,11 +570,22 @@ static void NutHttpProcessSHTML(FILE * stream, int fd, int file_len, char* http_
  * <!--#include virtual="/news/news.htm" -->
  * <!--#include file="UROM:/news/news.htm" -->
  * <!--#exec cgi="/cgi-bin/counter.cgi" -->
+ * <!--#echo var="counter" -->
  */
 
 void NutRegisterSsi(void)
 {
     NutSetMimeHandler(".shtml", NutHttpProcessSHTML);
+}
+
+/*!
+ * \brief Register SSI handler for variables.
+ */
+int NutRegisterSsiVarHandler(char * (*handler)(char *name, REQUEST *req))
+{
+    ssivar_handler = handler;
+
+    return 0;
 }
 
 /*@}*/
