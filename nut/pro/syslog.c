@@ -104,6 +104,13 @@
 #include <arpa/inet.h>
 static UDPSOCKET *syslog_sock;
 
+#ifndef SYSLOG_PORT
+#define SYSLOG_PORT     514
+#endif
+
+static uint32_t syslog_server;
+static uint16_t syslog_port = SYSLOG_PORT;
+
 #endif                          /* SYSLOG_PERROR_ONLY */
 
 /*!
@@ -111,11 +118,9 @@ static UDPSOCKET *syslog_sock;
  */
 /*@{*/
 
-static uint16_t syslog_port = 514;
 static int syslog_fac = LOG_USER;
 static int syslog_mask = 0xFF;
 
-static uint32_t syslog_server;
 static int syslog_stat;
 static size_t syslog_taglen;
 static char *syslog_tag;
@@ -254,6 +259,7 @@ size_t syslog_header(int pri)
     return rc;
 }
 
+#ifndef SYSLOG_PERROR_ONLY
 /*!
  * \brief Send syslog buffer.
  *
@@ -274,6 +280,7 @@ void syslog_flush(size_t len)
         NutUdpSendTo(syslog_sock, syslog_server, syslog_port, syslog_buf, len);
     }
 }
+#endif
 
 /*!
  * \brief Print log message.
@@ -294,6 +301,7 @@ void vsyslog(int pri, CONST char *fmt, va_list ap)
 #ifdef SYSLOG_PERROR_ONLY
         fputs(syslog_buf, stderr);
         vfprintf(stderr, fmt, ap);
+        fputc('\n', stderr);
 #else
         /* Potentially dangerous. We need vsnprintf() */
         if (cnt + strlen(fmt) >= SYSLOG_MAXBUF) {
@@ -360,10 +368,13 @@ int setlogmask(int logmask)
  * \param ip   IP address in network byte order. If 0, no messages will be sent out.
  * \param port Port number. If 0, then standard port is used.
  *
- * \return Previous IP.
+ * \return Previous IP or (uint32_t)-1 (all bits set) if UDP is not supported.
  */
 uint32_t setlogserver(uint32_t ip, uint16_t port)
 {
+#ifdef SYSLOG_PERROR_ONLY
+    return (uint32_t)-1;
+#else
     uint32_t rc = syslog_server;
 
     syslog_server = ip;
@@ -371,6 +382,7 @@ uint32_t setlogserver(uint32_t ip, uint16_t port)
         syslog_port = port;
     }
     return rc;
+#endif
 }
 
 /*!

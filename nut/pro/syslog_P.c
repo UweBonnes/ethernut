@@ -105,6 +105,7 @@ void vsyslog_P(int pri, PGM_P fmt_P, va_list ap)
 #ifdef SYSLOG_PERROR_ONLY
         fputs(syslog_buf, stderr);
         vfprintf_P(stderr, fmt_P, ap);
+        fputc('\n', stderr);
 #else
         /* Potentially dangerous. We need vsnprintf() */
         if (cnt + strlen_P(fmt_P) >= SYSLOG_MAXBUF) {

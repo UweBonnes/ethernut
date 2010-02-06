@@ -430,18 +430,56 @@ nutpro =
             {
                 macro = "SYSLOG_PERROR_ONLY",
                 brief = "Disable Network",
-                description = "UDP references are excluded.", 
+                description = "If set, syslog will not support network transfers.\n\n"..
+                              "This option will significantly decrease memory usage. "..
+                              "The application should call openlog() with option "..
+                              "LOG_PERROR to redirect all syslog messages to stderr. "..
+                              "This requires that stderr had been opened.",
                 flavor = "boolean",
+                file = "include/cfg/syslog.h"
+            },
+            {
+                macro = "SYSLOG_PORT",
+                brief = "Default Port",
+                description = "Default UDP port for sending syslog messages.\n\n"..
+                              "The application may override this value when calling "..
+                              "setlogserver().",
+                default = "514",
+                flavor = "integer",
                 file = "include/cfg/syslog.h"
             },
             {
                 macro = "SYSLOG_MAXBUF",
                 brief = "Output buffer size",
                 description = "This is a critical value. If set too low, then "..
-                              "syslog may crash with long messages. Default is 256.",
-                flavor = "booldata",
+                              "syslog may crash with long messages.",
+                default = 256,
+                flavor = "integer",
                 file = "include/cfg/syslog.h"
-            }
+            },
+            {
+                macro = "SYSLOG_RFC5424",
+                brief = "RFC5424 Headers",
+                description = "Set this option to activate RFC5424 compatible message headers.\n\n"..
+                              "By default, the syslog client sends BSD-like messages, which are "..
+                              "not well defined.",
+                flavor = "boolean",
+                file = "include/cfg/syslog.h"
+            },
+            {
+                macro = "SYSLOG_OMIT_TIMESTAMP",
+                brief = "Disable Timestamp",
+                description = "Set this option to exclude timestamps from syslog messages.",
+                flavor = "boolean",
+                file = "include/cfg/syslog.h"
+            },
+            {
+                macro = "SYSLOG_OMIT_HOSTNAME",
+                brief = "Disable Hostname",
+                description = "Set this option to exclude the hostname from syslog messages.",
+                flavor = "boolean",
+                file = "include/cfg/syslog.h"
+            },
         }
     },
     {
