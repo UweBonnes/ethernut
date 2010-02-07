@@ -245,9 +245,9 @@ static struct timeval   timeStart;
 NUTTIMERINFO *nutTimerList;
 
 /*
- * Last processing time of elapsed timers. 
+ * Last processing time of elapsed timers.
  */
-static uint32_t nut_ticks_resume; 
+static uint32_t nut_ticks_resume;
 
 /*!
 *  \brief System tick counter
@@ -277,7 +277,7 @@ volatile uint32_t nut_delay_loops;
  */
 #ifndef __NUT_EMULATION__
 #ifdef USE_TIMER
-SIGNAL( SIG_TIMER ) 
+SIGNAL( SIG_TIMER )
 #else
 static void NutTimerIntr(void *arg)
 #endif
@@ -299,7 +299,7 @@ static void NutTimerIntr(void *arg)
 /*!
  * \brief Initialize system timer.
  *
- * This function is automatically called by Nut/OS during system 
+ * This function is automatically called by Nut/OS during system
  * initialization. It calls the hardware dependent layer to initialze
  * the timer hardware and register a timer interrupt handler.
  */
@@ -325,7 +325,7 @@ void NutTimerInit(void)
         while (cnt == NutGetTickCount()) {
             nut_delay_loops++;
         }
-        /* 
+        /*
          * The loop above needs more cycles than the actual delay loop.
          * Apply the correction found by trial and error. Works acceptable
          * with GCC for Ethernut 1 and 3.
@@ -340,9 +340,9 @@ void NutTimerInit(void)
 /*!
  * \brief Loop for a specified number of microseconds.
  *
- * This call will not release the CPU and will not switch to another 
+ * This call will not release the CPU and will not switch to another
  * thread. However, interrupts are not disabled and introduce some
- * jitter. Furthermore, unless NUT_DELAYLOOPS is not defined, the 
+ * jitter. Furthermore, unless NUT_DELAYLOOPS is not defined, the
  * deviation may be greater than 10%.
  *
  * If you need exact timing, use timer/counter hardware instead.
@@ -368,8 +368,8 @@ void NutMicroDelay(uint32_t us)
 /*!
  * \brief Loop for a specified number of milliseconds.
  *
- * This call will not release the CPU and will not switch to another 
- * thread. Because of absent thread switching, the delay time is more 
+ * This call will not release the CPU and will not switch to another
+ * thread. Because of absent thread switching, the delay time is more
  * exact than with NutSleep().
  *
  * \param ms Delay time in milliseconds, maximum is 255.
@@ -433,10 +433,10 @@ void NutTimerProcessElapsed(void)
     ticks = NutGetTickCount();
     ticks_new = ticks - nut_ticks_resume;
     nut_ticks_resume = ticks;
-    
+
     // process timers
     while (nutTimerList && ticks_new){
-        
+
         tn = nutTimerList;
 
         // subtract time
@@ -447,7 +447,7 @@ void NutTimerProcessElapsed(void)
             ticks_new -= tn->tn_ticks_left;
             tn->tn_ticks_left = 0;
         }
-        
+
         // elapsed
         if (tn->tn_ticks_left == 0){
 
@@ -493,13 +493,13 @@ void NutTimerProcessElapsed(void)
 NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *), void *arg, uint8_t flags)
 {
     NUTTIMERINFO *tn;
-    
+
     tn = NutHeapAlloc(sizeof(NUTTIMERINFO));
     if (tn) {
         tn->tn_ticks_left = ticks + NutGetTickCount() - nut_ticks_resume;
-        
+
         /*
-         * Periodic timers will reload the tick counter on each timer 
+         * Periodic timers will reload the tick counter on each timer
          * intervall.
          */
         if (flags & TM_ONESHOT) {
@@ -507,21 +507,21 @@ NUTTIMERINFO * NutTimerCreate(uint32_t ticks, void (*callback) (HANDLE, void *),
         } else {
             tn->tn_ticks = ticks;
         }
-        
+
         /* Set callback and callback argument. */
         tn->tn_callback = callback;
         tn->tn_arg = arg;
     }
-    return tn;    
+    return tn;
 }
 
 /*!
  * \brief Start a system timer.
  *
- * The function returns immediately, while the timer runs asynchronously in 
+ * The function returns immediately, while the timer runs asynchronously in
  * the background.
  *
- * The timer counts for a specified number of ticks, then calls the callback 
+ * The timer counts for a specified number of ticks, then calls the callback
  * routine with a given argument.
  *
  * Even after the timer elapsed, the callback function is not executed
@@ -569,7 +569,7 @@ HANDLE NutTimerStartTicks(uint32_t ticks, void (*callback) (HANDLE, void *), voi
  * choice.
  *
  * \param ms       Specifies the timer interval in milliseconds. The
- *                 resolution is limited to the granularity of the system 
+ *                 resolution is limited to the granularity of the system
  *                 timer.
  * \param callback Identifies the function to be called on each
  *                 timer interval.
@@ -600,8 +600,8 @@ HANDLE NutTimerStart(uint32_t ms, void (*callback) (HANDLE, void *), void *arg, 
  *       milliseconds, depending on the number of threads
  *       with higher or equal priority, which are ready to run.
  *
- * \param ms Milliseconds to sleep. If 0, the current thread will not 
- *           sleep, but may give up the CPU. The resolution is limited 
+ * \param ms Milliseconds to sleep. If 0, the current thread will not
+ *           sleep, but may give up the CPU. The resolution is limited
  *           to the granularity of the system timer.
  *
  * \todo Code size can be reduced by trying to create the timer before
@@ -640,7 +640,7 @@ void NutSleep(uint32_t ms)
  * ther first timer interval. Anyway, long running one-shot
  * timers may be stopped to release the occupied memory.
  *
- * \param handle Identifies the timer to be stopped. This handle must 
+ * \param handle Identifies the timer to be stopped. This handle must
  *               have been created by calling NutTimerStart() or
  *               NutTimerStartTicks().
  */
@@ -673,7 +673,7 @@ void NutTimerStop(HANDLE handle)
 /*!
  * \brief Return the number of system timer ticks.
  *
- * This function returns the number of system ticks since the system was 
+ * This function returns the number of system ticks since the system was
  * started.
  *
  * \return Number of ticks.
@@ -721,13 +721,13 @@ uint32_t NutGetSeconds(void)
  * This function returns the value of a counter, which is incremented
  * every system timer tick. During system start, the counter is cleared
  * to zero and will overflow with the 32 bit tick counter (4294967296).
- * With the default 1024 ticks/s this will happen after 7.9 years.
+ * With the default 1024 ticks/s this will happen after 49.71 days.
  * The resolution is also given by the system ticks.
  *
  * \note There is intentionally no provision to modify the seconds counter.
  *       Callers can rely on a continuous update and use this value for
  *       system tick independend timeout calculations.
- *       Depending on 
+ *       Depending on
  *
  * \return Value of the seconds counter.
  */
@@ -775,7 +775,7 @@ uint32_t NutClockGet(int idx)
  * \param idx  Index of the hardware clock, currently ignored.
  *             Set to -1 (all clocks) to maintain upward compatibility.
  * \param freq Clock frequency in Hertz, currently ignored.
- *             Set to NUT_CACHE_LVALID (release cached value) to maintain 
+ *             Set to NUT_CACHE_LVALID (release cached value) to maintain
  *             upward compatibility.
  *
  * \return Always 0.
