@@ -87,7 +87,7 @@ static char *skip_spaces(CONST char *str)
 static char *parse_digits(CONST char *str, int *val)
 {
     *val = 0;
-    while (isdigit(*str)) {
+    while (isdigit((unsigned char)*str)) {
         *val *= 10;
         *val += *str++ - '0';
     }
@@ -99,7 +99,7 @@ static char *parse_digits(CONST char *str, int *val)
  *
  * Works with years including and excluding the century. If the
  * resulting value is lower than 70, the 21st century is assumed.
- * Values 
+ * Values
  *
  * \param str  Pointer to the time string.
  * \param year Points to the variable that will receive the years since 1900.
@@ -137,7 +137,7 @@ char *TimeParseMonth(CONST char *str, int *month)
     if (*str == 'A') {
         if (*++str == 'p' || *str == 'P') {
             /* April */
-            *month = 3; 
+            *month = 3;
         }
         else {
             /* August */
@@ -155,7 +155,7 @@ char *TimeParseMonth(CONST char *str, int *month)
     else if (*str == 'J') {
         if (*++str == 'a' || *str == 'A') {
             /* January */
-            *month = 0; 
+            *month = 0;
         }
         else if (*str && (*++str == 'l' || *str == 'L')) {
             /* July */
@@ -188,7 +188,7 @@ char *TimeParseMonth(CONST char *str, int *month)
         /* September */
         *month = 8;
     }
-    while (isalpha(*str)) {
+    while (isalpha((unsigned char)*str)) {
         str++;
     }
     return (char *)str;
@@ -210,11 +210,11 @@ char *TimeParseMonth(CONST char *str, int *month)
 char *TimeParseDmy(CONST char *str, int *mday, int *mon, int *year)
 {
     str = parse_digits(str, mday);
-    while (*str && !isalpha(*str)) {
+    while (*str && !isalpha((unsigned char)*str)) {
         str++;
     }
     str = TimeParseMonth(str, mon);
-    while (*str && !isdigit(*str)) {
+    while (*str && !isdigit((unsigned char)*str)) {
         str++;
     }
     str = TimeParseYear(str, year);
@@ -269,13 +269,13 @@ time_t RfcTimeParse(CONST char *str)
     str = skip_spaces(str);
 
     /* Skip weekday, optional in RFC 822. */
-    if (isalpha(*str)) {
+    if (isalpha((unsigned char)*str)) {
         while (*str && *str != ' ' && *str != '\t')
             str++;
         str = skip_spaces(str);
     }
 
-    if (isalpha(*str)) {
+    if (isalpha((unsigned char)*str)) {
         /* asctime format 'Fri Feb 2 2007 07:30:05'. */
         str = TimeParseMonth(str, &dts.tm_mon);
         str = skip_spaces(str);
@@ -309,7 +309,7 @@ time_t RfcTimeParse(CONST char *str)
 char *Rfc1123TimeString(struct _tm *tm)
 {
     sprintf(rfc1123_buf, "%s, %02d %s %04d %02d:%02d:%02d",
-            wkdays[tm->tm_wday], 
+            wkdays[tm->tm_wday],
             tm->tm_mday, months[tm->tm_mon], tm->tm_year + 1900,
             tm->tm_hour, tm->tm_min, tm->tm_sec);
 

@@ -82,7 +82,7 @@ extern char *http_root;
 /*!
  * \brief Set the mime type handler for a specified file extension.
  *
- * This is the function that handles / sends a specific file type to the 
+ * This is the function that handles / sends a specific file type to the
  * client. Specially used for server side includes (shtml files)
  *
  * \param extension Filename extension the handler should be registered for
@@ -100,7 +100,7 @@ uint8_t NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd,
         if (strcasecmp(extension, mimeTypes[i].mtyp_ext) == 0) {
             mimeTypes[i].mtyp_handler = handler;
             return 0;
-        }    
+        }
     return 1;
 }
 
@@ -109,7 +109,7 @@ uint8_t NutSetMimeHandler(char *extension, void (*handler)(FILE *stream, int fd,
  *
  * \param str String to encode
  *
- * \return A new allocated encoded string, or NULL if str is null, or 
+ * \return A new allocated encoded string, or NULL if str is null, or
  *         if there's not enough memory for the new string.
  *
  * \note Remember to free() to the returned string.
@@ -126,7 +126,7 @@ char *NutHttpURLEncode(char *str)
 
     /* Calculate how many characters we need to encode */
     for (ptr1 = str; *ptr1; ptr1++) {
-        if (!isalnum(*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' || 
+        if (!isalnum((unsigned char)*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' ||
 		*ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
             numEncs++;
     }
@@ -137,7 +137,7 @@ char *NutHttpURLEncode(char *str)
          * and ptr2 refers to the new string. */
         ptr2 = encstring;
         for (ptr1 = str; *ptr1; ptr1++) {
-		    if (isalnum(*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' || 
+		    if (isalnum((unsigned char)*ptr1) || *ptr1 == '%' || *ptr1 == '&'|| *ptr1 == '+' ||
 		    *ptr1 == ',' || *ptr1 == ':' || *ptr1 == ';'|| *ptr1 == '='|| *ptr1 == '?'|| *ptr1 == '@')
                 *ptr2++ = *ptr1;
             else {
@@ -156,7 +156,7 @@ char *NutHttpURLEncode(char *str)
  *
  * Reads the query from input stream and parses it into
  * name/value table. To save RAM, this method allocated ram and
- * uses req_query to store the input data. Then it creates a table 
+ * uses req_query to store the input data. Then it creates a table
  * of pointers into the req_query buffer.
  *
  * \param stream Input stream
@@ -168,19 +168,19 @@ void NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
     int got;
     register int i;
     register char *ptr;
-    
+
     if (req->req_query != NULL)
         return;
-    
+
     if (!stream)
         return;
-    
+
     if (req->req_method == METHOD_POST) {
         req->req_query = malloc(req->req_length+1);
         if (req->req_query == NULL) {
             /* Out of memory */
             req->req_numqptrs = 0;
-            return;            
+            return;
         }
         memset(req->req_query, 0, req->req_length+1);
         i = 0;
@@ -235,11 +235,11 @@ void NutHttpProcessPostQuery(FILE *stream, REQUEST * req)
 
 /*!
  * \brief Gets a request parameter value by name
- * 
+ *
  * \param req Request object
  * \param name Name of parameter
  *
- * \return Pointer to the parameter value. 
+ * \return Pointer to the parameter value.
  */
 char *NutHttpGetParameter(REQUEST * req, char *name)
 {
@@ -253,7 +253,7 @@ char *NutHttpGetParameter(REQUEST * req, char *name)
 /*!
  * \brief Gets the number of request parameters
  *
- * The following code fragment retrieves all name/value pairs of the 
+ * The following code fragment retrieves all name/value pairs of the
  * request.
  *
  * \code

@@ -186,7 +186,7 @@ static int GenShortName(NUTFILE * ndp, CONST char *lfn, char *sfn)
                 /* This is also the last dot. Start copying the extension. */
                 lfn++;
                 if (*lfn) {
-                    sfn[8] = toupper(*lfn);
+                    sfn[8] = toupper((unsigned char)*lfn);
                 }
                 i = 9;
             }
@@ -199,7 +199,7 @@ static int GenShortName(NUTFILE * ndp, CONST char *lfn, char *sfn)
             }
             lfn = xp + 1;
             if (*lfn) {
-                sfn[i++] = toupper(*lfn);
+                sfn[i++] = toupper((unsigned char)*lfn);
             }
         }
         else if (*lfn != ' ') {
@@ -207,13 +207,13 @@ static int GenShortName(NUTFILE * ndp, CONST char *lfn, char *sfn)
                 sfn[i++] = '_';
             }
             else {
-                sfn[i++] = toupper(*lfn);
+                sfn[i++] = toupper((unsigned char)*lfn);
             }
         }
     }
 
     /*
-     * Select a unique short name by verifying existing entries in the 
+     * Select a unique short name by verifying existing entries in the
      * specified directory.
      */
     if ((entry = malloc(sizeof(PHATDIRENT))) != NULL) {
@@ -339,7 +339,7 @@ static int PhatDirEntryAlloc(NUTFILE * ndp, CONST char *fname, PHATDIRENT * entr
         }
         if (got != sizeof(PHATDIRENT)) {
             /*
-             * End of directory reached. Try to expand it. 
+             * End of directory reached. Try to expand it.
              */
             if (IsFixedRootDir(ndp) ||  /* */
                 dfcb->f_pos >= PHAT_MAXDIRENT * sizeof(PHATDIRENT)) {
@@ -762,7 +762,7 @@ int PhatDirReleaseChain(NUTDEVICE * dev, PHATDIRENT *dent)
     clust <<= 16;
     clust |= dent->dent_clust;
 
-    /* The data area starts at cluster 2. With empty files the first cluster 
+    /* The data area starts at cluster 2. With empty files the first cluster
        is set to zero. A value of one is suspicious and will be ignored. */
     if (clust >= 2) {
         /* Call the format specific release routine. */
@@ -1098,7 +1098,7 @@ int PhatDirRemove(NUTDEVICE * dev, char *path)
     }
 
     /*
-     * Make sure, that the directory we want to remove is empty. The dot 
+     * Make sure, that the directory we want to remove is empty. The dot
      * and double dot entries are ignored.
      */
     if ((ndp = PhatFileOpen(dev, path, _O_RDONLY, 0)) != NUTFILE_EOF) {
@@ -1184,7 +1184,7 @@ int PhatDirEntryStatus(NUTDEVICE * dev, CONST char *path, struct stat *stp)
             t.tm_mon--;
         }
         t.tm_year = ((val >> 9) & 0x7F) + 80;
-        t.tm_isdst = _daylight; 
+        t.tm_isdst = _daylight;
         stp->st_mtime = mktime(&t);
 
         stp->st_ino = 0;

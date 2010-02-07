@@ -156,9 +156,9 @@ static int UxmlReadTag(FILE * stream, char *data, size_t size)
  *
  * Note, that this is a minimal and probably incomplete implementation,
  * which had been specifically created to parse the SHOUTcast radio
- * station list. On the other hand, it offers a practical XML parser 
- * solution for embedded systems with very low memory resources. Unlike 
- * most other implementations, it does not require to copy the whole XML 
+ * station list. On the other hand, it offers a practical XML parser
+ * solution for embedded systems with very low memory resources. Unlike
+ * most other implementations, it does not require to copy the whole XML
  * document into internal memory. Instead, the parser reads and interprets
  * individual tags. Furthermore, the caller may specify tag and attribute
  * filters to reduce the resulting tree size. Be aware, that because of
@@ -175,13 +175,13 @@ static int UxmlReadTag(FILE * stream, char *data, size_t size)
  *               This can be used to limit memory consumption of the
  *               tree structure. Note, that this filtering may result
  *               in a tree structure, which is different from the
- *               structure of the original document. Set to NULL to 
+ *               structure of the original document. Set to NULL to
  *               disable tag filtering.
- *              
- * \param f_attr Optional attribute filter, which points to an array of 
- *               attribute names to include. All other attributes will be 
- *               discarded. Like the tag filter, it can be used to limit 
- *               memory consumption of the tree structure. Set to NULL 
+ *
+ * \param f_attr Optional attribute filter, which points to an array of
+ *               attribute names to include. All other attributes will be
+ *               discarded. Like the tag filter, it can be used to limit
+ *               memory consumption of the tree structure. Set to NULL
  *               to disable attribute filtering.
  *
  * \return Pointer to a newly allocated UXML_NODE tree structure. NULL
@@ -189,7 +189,7 @@ static int UxmlReadTag(FILE * stream, char *data, size_t size)
  *         UxmlTreeDestroy() to release the memory allocated by the
  *         tree.
  *
- * \todo Empty element tags with a slash in front of the closing angle 
+ * \todo Empty element tags with a slash in front of the closing angle
  *       bracket are not yet supported.
  */
 UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
@@ -221,9 +221,9 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
         }
         /* Parse the tag. */
         if ((tp = UxmlParseTag(tag + 1, tkn, MAX_UXMLTKN_SIZE)) != NULL) {
-            if (isalpha(*tkn) && UxmlFilterMatch(tkn, f_tags)) {
-                /* 
-                 * New node. 
+            if (isalpha((unsigned char)*tkn) && UxmlFilterMatch(tkn, f_tags)) {
+                /*
+                 * New node.
                  */
                 if ((nn = UxmlNodeCreate(tkn)) == NULL) {
                     break;
@@ -245,7 +245,7 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
                         /* End of this tag or error. */
                         break;
                     }
-                    if (isalpha(*tkn) && UxmlFilterMatch(tkn, f_attr)) {
+                    if (isalpha((unsigned char)*tkn) && UxmlFilterMatch(tkn, f_attr)) {
                         char *name = strdup(tkn);
 
                         if (name) {
@@ -263,8 +263,8 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
                     }
                 }
             } else if (*tkn == '/') {
-                /* 
-                 * End of the active node. 
+                /*
+                 * End of the active node.
                  */
                 tp = UxmlParseTag(tp, tkn, MAX_UXMLTKN_SIZE);
                 if (tp && node && strcasecmp(node->xmln_name, tkn) == 0) {

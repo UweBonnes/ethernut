@@ -65,15 +65,15 @@ char *UxmlParseTag(char *data, char *tkn, size_t size)
     char *rc = NULL;
 
     /* Skip leading spaces. */
-    while (isspace(*data)) {
+    while (isspace((unsigned char)*data)) {
         data++;
     }
     if (*data) {
         rc = data;
 
-        if (isalnum(*rc)) {
+        if (isalnum((unsigned char)*rc)) {
             /* Collect name or number (well, almost). */
-            while (isalnum(*rc) || *rc == '-' || *rc == ':' || *rc == '_') {
+            while (isalnum((unsigned char)*rc) || *rc == '-' || *rc == ':' || *rc == '_') {
                 if (size > 1) {
                     size--;
                     *tkn++ = *rc;

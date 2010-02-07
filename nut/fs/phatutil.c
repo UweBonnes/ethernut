@@ -96,7 +96,7 @@
 /*!
  * \brief Create a DOS timestamp of the current time and date.
  *
- * \param dostim Receives the time of day part. 
+ * \param dostim Receives the time of day part.
  * \param dosdat Receives the calendar date part.
  */
 void GetDosTimeStamp(uint16_t * dostim, uint16_t * dosdat)
@@ -147,13 +147,13 @@ int MakePhatName(CONST char *src, uint8_t * dst)
         dst[0] = PHAT_REM_NAMENT;
         src++;
     } else {
-        dst[0] = toupper(*src);
+        dst[0] = toupper((unsigned char)*src);
         src++;
     }
 
     /* Copy the rest of the base name upto the dot, 8 characters max. */
     for (i = 1; i < 8 && *src && *src != '.'; i++, src++) {
-        dst[i] = toupper(*src);
+        dst[i] = toupper((unsigned char)*src);
     }
 
     /* More characters? */
@@ -165,7 +165,7 @@ int MakePhatName(CONST char *src, uint8_t * dst)
         /* Skip the dot and copy the extension. */
         src++;
         for (i = 8; i < 11 && *src; i++, src++) {
-            dst[i] = toupper(*src);
+            dst[i] = toupper((unsigned char)*src);
         }
         /* If more characters are available, then the extension is too long. */
         if (*src) {
@@ -369,13 +369,13 @@ int PhatFilePosSet(NUTFILE * nfp, uint32_t pos)
             }
             else {
 
-                /* 
-                * We reached the end of the current sector. Move to the 
+                /*
+                * We reached the end of the current sector. Move to the
                 * next sector of the current cluster.
                 */
                 if (fcb->f_clust_pos + 1 >= vol->vol_clustsz) {
                     /*
-                    * We reached the end of the current cluster. Move to 
+                    * We reached the end of the current cluster. Move to
                     * the next cluster.
                     */
                     if (vol->vol_type == 32) {
