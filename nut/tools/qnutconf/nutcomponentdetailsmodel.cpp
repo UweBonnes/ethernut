@@ -55,7 +55,7 @@ int NutComponentDetailsModel::columnCount( const QModelIndex& parent /*= QModelI
 */
 void NutComponentDetailsModel::refresh( const QModelIndex& selected )
 {
-#if QT_VERSION >= 0x0406
+#if QT_VERSION >= 0x040600
 	beginResetModel();
 #endif
 
@@ -82,7 +82,7 @@ void NutComponentDetailsModel::refresh( const QModelIndex& selected )
 		cache.append( QStringList() << tr("Active") << (item->isActive() ? tr("Yes") : tr("No")) );
 	}
 
-#if QT_VERSION >= 0x0406
+#if QT_VERSION >= 0x040600
 	endResetModel();
 #else
 	reset();
