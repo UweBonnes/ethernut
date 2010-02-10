@@ -186,7 +186,7 @@
 #include <time.h>
 #include <ctype.h>
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined( __MINGW32__ )
 
 #include <io.h>
 #include <direct.h>
