@@ -420,7 +420,7 @@ static void DumpCompoTree(FILE *fp, NUTCOMPONENT * compo, int level)
     }
 }
 
-#else
+// #else
 static void DumpStack(FILE *fp, char * pos, lua_State * ls)
 {
     if (fp && pos && ls);
@@ -2964,7 +2964,7 @@ int CreateMakeFiles(NUTREPOSITORY *repo, NUTCOMPONENT *root, const char *bld_dir
                     //for(i = 0; i < targets; i++) {
                     //    fprintf(fp, "OBJ%d = $(SRC%d:.c=.o)\n", i + 1, i + 1);
                     //}
-                    fprintf(fp, "include $(top_blddir)/NutConf.mk\n\n", mak_ext);
+                    fprintf(fp, "include $(top_blddir)/NutConf.mk\n\n");
                     fprintf(fp, "include $(top_srcdir)/Makedefs.%s\n\n", mak_ext);
 
                     fprintf(fp, "INCFIRST=$(INCPRE)$(top_blddir)/include ");
