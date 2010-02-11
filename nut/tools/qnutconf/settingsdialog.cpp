@@ -43,6 +43,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
 	// Repository tab
 	ui.e_RepositoryFile->setText( Settings::instance()->repository() );
+	ui.cb_MultiConfig->setChecked( Settings::instance()->multipleConfigs() );
 
 	// Build tab
 	ui.e_SourceDirectory->setText( Settings::instance()->sourceDir() );
@@ -124,7 +125,8 @@ void SettingsDialog::accept()
 
 	// Repository tab
 	Settings::instance()->setRepository( ui.e_RepositoryFile->text() );
-	
+	Settings::instance()->setMultipleConfigs( ui.cb_MultiConfig->checkState() == Qt::Checked );
+
 	// Build tab
 	Settings::instance()->setSourceDir( ui.e_SourceDirectory->text() );
 	Settings::instance()->setBuildPath( ui.e_BuildDirectory->text() );

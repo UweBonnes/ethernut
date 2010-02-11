@@ -73,6 +73,8 @@ public:
 	void setProgrammer(const QString& val) { m_programmer = val; }
 	bool absolutePathInSamples() { return m_absolutePathInSamples; }
 	void setAbsolutePathInSamples( bool val ) { m_absolutePathInSamples = val; }
+	void setMultipleConfigs( bool val ) { m_multipleConfigs = val; }
+	bool multipleConfigs() { return m_multipleConfigs; }
 
 private:
 	Settings();
@@ -92,6 +94,7 @@ private:
 	QString m_targetPlatform;
 	QString m_programmer;
 	bool m_absolutePathInSamples;
+	bool m_multipleConfigs;
 };
 
 #endif // __SETTINGS_H__

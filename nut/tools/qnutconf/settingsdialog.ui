@@ -83,7 +83,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="cb_MultiConfig">
             <property name="text">
              <string>Enable multiple configurations</string>
             </property>
@@ -403,7 +403,7 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>e_RepositoryFile</tabstop>
   <tabstop>btn_BrowseRepository</tabstop>
-  <tabstop>checkBox</tabstop>
+  <tabstop>cb_MultiConfig</tabstop>
   <tabstop>e_SourceDirectory</tabstop>
   <tabstop>btn_BrowseSource</tabstop>
   <tabstop>cb_Platform</tabstop>

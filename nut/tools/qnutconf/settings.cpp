@@ -35,6 +35,7 @@
 #include <QRegExp>
 #include <QDirIterator>
 #include <QSettings>
+#include <QCryptographicHash>
 
 #include <stdlib.h>
 
@@ -135,7 +136,15 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	repositoryFile = srcpath + "/conf/repository.nut";
 
 	QSettings settings;
+	m_multipleConfigs = settings.value("settings/multipleconfig").toBool();
 	m_configFileName = settings.value("settings/configFileName").toString();
+
+	if ( multipleConfigs() && !fileName.isEmpty() )
+	{
+		QByteArray hash = QCryptographicHash::hash( fileName.toLocal8Bit(), QCryptographicHash::Md5 );
+		settings.beginGroup( hash.toHex() );
+	}
+
 	m_buildPath = settings.value("buildPath", "nutbld").toString();
 	m_includePath = settings.value("includePath").toStringList();
 	m_installPath = settings.value("installPath").toString();
@@ -160,6 +169,14 @@ void Settings::save()
 {
 	QSettings settings;
 	settings.setValue("settings/configFileName", m_configFileName);
+	settings.setValue("settings/multipleconfig", m_multipleConfigs);
+
+	if ( multipleConfigs() && !configFileName().isEmpty() )
+	{
+		QByteArray hash = QCryptographicHash::hash( configFileName().toLocal8Bit(), QCryptographicHash::Md5 );
+		settings.beginGroup( hash.toHex() );
+	}
+
 	settings.setValue("buildPath", m_buildPath);
 	settings.setValue("includePath", m_includePath);
 	settings.setValue("installPath", m_installPath);
