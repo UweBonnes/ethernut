@@ -812,8 +812,8 @@ nutarch =
                 macro = "MCU_AVR32UC30512ES",
                 brief = "Atmel AVR32 UC3A 0512ES",
                 description = "AVR32 UC3 32-bit RISC microcontroller with 10/100 Ethernet MAC,"..
-                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 2 UARTs and "..
-                              "2 timers.",
+                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 4 UARTs and "..
+                              "other peripherals.",
                 flavor = "boolean",
                 exclusivity = mcu_names, 
                 file = "include/cfg/arch.h",
@@ -839,8 +839,8 @@ nutarch =
                 macro = "MCU_AVR32UC30512",
                 brief = "Atmel AVR32 UC3A 0512",
                 description = "AVR32 UC3 32-bit RISC microcontroller with 10/100 Ethernet MAC,"..
-                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 2 UARTs and "..
-                              "2 timers.",
+                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 4 UARTs and "..
+                              "and other peripherals.",
                 flavor = "boolean",
                 exclusivity = mcu_names, 
                 file = "include/cfg/arch.h",
