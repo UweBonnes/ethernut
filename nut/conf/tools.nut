@@ -217,11 +217,7 @@ nuttools =
                 flavor = "booldata",
                 type = "enumerated",
                 choices = function() return GetLDScripts(); end,
-                makedefs = 
-                { 
-                    "LDNAME", 
-                    "LDSCRIPT=$(top_srcdir)/arch/avr32/ldscripts/$(LDNAME).ld" 
-                }
+                makedefs = function() return { "LDNAME", "LDSCRIPT=" .. GetLDScriptsPath() }; end,
             }
         }
     },
@@ -330,6 +326,22 @@ arm_ld_choice = {
                 "gbaxport2", 
                 "wolf_ram" 
 }
+
+--
+-- Retrieve platform specific ldscript path.
+--
+function GetLDScriptsPath()
+    local basepath
+    
+    basepath = "$(top_srcdir)/arch/"
+    if c_is_provided("TOOL_CC_AVR32") then
+        return basepath .. "avr32/ldscripts/$(LDNAME).ld"
+    end
+    if c_is_provided("TOOL_CC_ARM") then
+        return basepath .. "arm/ldscripts/$(LDNAME).ld"
+    end
+    return "Unknown Platform - Check GetLDScriptsPath in tools.nut"
+end
 
 --
 -- Return the list of ldscripts
