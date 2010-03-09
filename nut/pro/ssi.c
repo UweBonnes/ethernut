@@ -93,6 +93,7 @@
 /*@{*/
 
 #include <cfg/arch.h>
+#include <sys/types.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -101,10 +102,8 @@
 #include <io.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <memdebug.h>
 
 #include <sys/heap.h>
 #include <sys/version.h>
