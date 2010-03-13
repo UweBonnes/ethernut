@@ -49,18 +49,28 @@
 extern NUTSPINODE nodeSpi7SEG;
 extern NUTDEVICE devSpi7SEG;
 
-#define DOT_7SEG_SET    0
-#define DOT_7SEG_CLEAR	1
-#define DOT_7SEG_FLIP	2
+#ifndef ESC_CHAR
+#define ESC_CHAR        "\x1B"
+#endif
+
+/* 7 Segment Display commands for use in fprintf */
+#define CLR_7SEG    ESC_CHAR "c"    /*< \brief Clear display and reset write position. */
+#define BLS_7SEG    ESC_CHAR "b"    /*< \brief Set display blinking 0.5Hz. */
+#define BLF_7SEG    ESC_CHAR "f"    /*< \brief Set display blinking 2Hz. */
+#define NOR_7SEG    ESC_CHAR "n"    /*< \brief Set display to normal mode. */
+#define HOME_7SEG   ESC_CHAR "h"    /*< \brief Set write position home. */
+#define TEST_7SEG   ESC_CHAR "t"    /*< \brief Enable test mode of display (all segments on). */
+#define INT_7SEG    ESC_CHAR "i"    /*< \brief Set intensity of display ( "0".."f"). */
+
+/* 7 Segment Display dot extra functions */
+#define DOT_7SEG_CLR  0     /*< \brief Clear the decimal dot of a digit. */
+#define DOT_7SEG_SET  1     /*< \brief Set the decimal dot of a digit. */
+#define DOT_7SEG_FLIP 2     /*< \brief Invert the decimal dot of a digit. */
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int Spi7segInit(NUTDEVICE *dev);
+void Spi7segDot(NUTDEVICE * dev, uint8_t pos, uint8_t act);
 extern int Spi7segCommand(NUTDEVICE * dev, uint8_t addr, CONST void *txbuf, void *rxbuf, int xlen);
-
-extern void display_7seg(NUTDEVICE * dev, uint16_t number);
-extern void print_7seg(NUTDEVICE *dev, char* chars);
-extern void dot_7seg(NUTDEVICE *dev, uint8_t dotNumber, uint8_t dotCommand);
 /* Prototypes */
 __BEGIN_DECLS
 

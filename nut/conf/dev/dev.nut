@@ -4105,6 +4105,32 @@ nutdev =
         sources = { "spi_7seg.c" },
         options =
         {
+            {
+                macro = "SEG7_SPI_RATE",
+                brief = "SPI Transfer Rate",
+                description = "Interface speed in bits per second, default is 4000000 (4Mbps).\n\n"..
+                              "If the exact value can't be set, the driver will choose the "..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                default = "4000000",
+               	file = "include/cfg/spi_7seg.h"
+            },
+	        {
+	            macro = "SEG7_DIGITS",
+	            brief = "Number of Digits",
+	            description = "Select Number of Digits connected to the AS110x chain.",
+	            type = "integer",
+	            default = "4",
+	           	file = "include/cfg/spi_7seg.h"
+	        },
+	        {
+	            macro = "SEG7_REVERSE",
+	            brief = "Reverse Digits",
+	            description = "Select if Digits are connected reverse ( for upside down mounting).",
+            	flavor = "boolean",
+	           	file = "include/cfg/spi_7seg.h"
+	        },
+
+
         },
     },
 }

@@ -52,14 +52,14 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#include <dev/spi_7seg.h>
-
 #include <dev/board.h>
 #include <dev/gpio.h>
 
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/timer.h>
+
+#include <dev/spi_7seg.h>
 
 #ifdef NUTDEBUG
 #include <sys/osdebug.h>
@@ -104,7 +104,7 @@ int main(void)
 
 	 for (;;)
 	{
-		display_7seg(&devSpi7SEG,count++);
+		printf( devSpi7Seg, "%3d\n", count++);
 		if(count >999)count=0;
 		NutSleep(200);
 	}
