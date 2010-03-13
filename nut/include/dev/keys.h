@@ -149,7 +149,9 @@ __BEGIN_DECLS
 extern int NutGetKeyState( HANDLE keyh);
 extern uint32_t NutGetKeyTime( HANDLE keyh);
 
-extern int NutRegisterKey( HANDLE *keyhp, HANDLE *event, int bank, int pin, int fx, uint32_t fxt);
+int NutRegisterKey( HANDLE *keyhp, int bank, int pin, int fx, uint32_t fxt);
+int NutAssignKeyFkt( HANDLE *keyhp, void (*callback)(void));
+int NutAssignKeyEvt( HANDLE *keyhp, HANDLE *event);
 
 __END_DECLS
 /* */

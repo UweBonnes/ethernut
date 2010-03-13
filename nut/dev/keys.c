@@ -89,6 +89,7 @@
 typedef struct {
     void*    next;      /**< Pointer to next key or NULL on last key */
     HANDLE*  event;     /**< Handle for key event */
+    void (*callback)(void);     /**< Function Pointer if key is activated */
     int      bank;		/**< GPIO bank of key */
     int      pin;       /**< GPIO pin of key */
 	int      lastState;	/**< last state sampled from port */
@@ -119,7 +120,7 @@ HANDLE key_evt = NULL;
 int NutGetKeyState( HANDLE keyh)
 {
 	KEYEventT *key = (KEYEventT *)keyh;
-    int rc = (key->newState & KEY_PENDING);
+    int rc = key->newState;
     key->newState &= ~KEY_PENDING;
     return rc;
 }
@@ -216,6 +217,7 @@ THREAD( sys_key, arg)
                         KPRINTF("KD %08lx E:%08lx\n", (uint32_t)key, (uint32_t)(key->event));
                         key->newState |= KEY_PENDING;
                         if( key->event) NutEventPost( key->event);
+                        if( key->callback) (*key->callback)();
                     }
 				}
 				else if( (key->newState & KEY_IS_DOWN) < (key->lastState & KEY_IS_DOWN)) {
@@ -225,11 +227,13 @@ THREAD( sys_key, arg)
                         KPRINTF("KU %08lx E:%08lx\n", (uint32_t)key, (uint32_t)(key->event));
                         key->newState |= (KEY_ACTION_UP | KEY_PENDING);
                         if( key->event) NutEventPost( key->event);
+                        if( key->callback) (*key->callback)();
                     }
                     else if( ( key->fx == KEY_ACTION_SHORT) && ( (now - key->TimeDown) < key->fxt)) {
                         KPRINTF("KS %08lx E:%08lx\n", (uint32_t)key, (uint32_t)(key->event));
                         key->newState |= (KEY_ACTION_SHORT | KEY_PENDING);
                         if( key->event) NutEventPost( key->event);
+                        if( key->callback) (*key->callback)();
                     }
 				}
                 else if( (key->newState & KEY_IS_DOWN) && (key->fx==KEY_ACTION_HOLD)) {
@@ -238,6 +242,7 @@ THREAD( sys_key, arg)
                         KPRINTF("KH %08lx E:%08lx\n", (uint32_t)key, (uint32_t)(key->event));
                         key->newState |= (KEY_ACTION_HOLD | KEY_PENDING);
                         if( key->event) NutEventPost( key->event);
+                        if( key->callback) (*key->callback)();
                         key->newState |= KEY_IS_LOCKED;
                     }
                 }
@@ -267,12 +272,34 @@ int InitKEY( KEYEventT *key )
     }
 #ifdef KEY_SUPPORT_IOEXP
     else {
-        /* configure externally connected GPIO pin */
-        IOExpPinConfigSet( key->bank, key->pin, GPIO_CFG_PULLUP);
+        /* configure externally connected GPIO pin as input */
+        IOExpPinConfigSet( key->bank, key->pin, 0);
         return 0;
     }
 #endif
 	return -1;
+}
+
+int NutAssignKeyEvt( HANDLE *keyhp, HANDLE *event)
+{
+    KEYEventT *key;
+    if( keyhp==NULL) return -1;
+
+    key = (KEYEventT*)keyhp;
+	key->event = event;
+    key->newState &= ~KEY_PENDING;
+    return 0;
+}
+
+int NutAssignKeyFkt( HANDLE *keyhp, void (*callback)(void))
+{
+    KEYEventT *key;
+    if( keyhp==NULL) return -1;
+
+    key = (KEYEventT*)keyhp;
+	key->callback = callback;
+    key->newState &= ~KEY_PENDING;
+    return 0;
 }
 
 /*!
@@ -296,7 +323,7 @@ int InitKEY( KEYEventT *key )
  * <tr><td>>KEY_ACTION_SHORT</td><td>n</td>  <td>on Key released before n ms</td></tr>
  * </table>
  */
-int NutRegisterKey( HANDLE *keyhp, HANDLE *event, int bank, int pin, int fx, uint32_t fxt)
+int NutRegisterKey( HANDLE *keyhp, int bank, int pin, int fx, uint32_t fxt)
 {
     KEYEventT *key;
 
@@ -315,8 +342,8 @@ int NutRegisterKey( HANDLE *keyhp, HANDLE *event, int bank, int pin, int fx, uin
     key->pin = pin;
     key->fx = fx;
     key->fxt = fxt;
-    key->event = event;
-    NUTASSERT( event != NULL);
+    key->callback = NULL;
+    key->event = NULL;
     key->lastState = key->newState = 1;
     key->TimeDown = 0;
 
