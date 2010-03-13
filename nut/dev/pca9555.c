@@ -83,12 +83,17 @@ int IOExpInit( void )
     pca_ctrl->out[1] = 0xff;
     pca_ctrl->con[0] = 0xff;
     pca_ctrl->con[1] = 0xff;
+    pca_ctrl->pol[0] = 0x00;
+    pca_ctrl->pol[1] = 0x00;
     
-    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT, 1, (void*)pca_ctrl, sizeof(pca_regs_t), 50 ) == -1 )
-	{
-		// printf( "Init Chip not responding\n");
-		return -1;
-	}
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT, 1, &pca_ctrl->out[0], 2, 50) == -1)
+        return -1;
+
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_CONF , 1, &pca_ctrl->con[0], 2, 50) == -1)
+        return -1;
+    
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_PINV , 1, &pca_ctrl->pol[0], 2, 50) == -1)
+        return -1;
 
 	return 0;
 }
@@ -99,19 +104,24 @@ int IOExpPinConfigSet( int bank, int bit, uint32_t flags)
 {
     bank &= 0xf;
     
+    if( flags == 0) /* Input */
+        pca_ctrl->con[bank] |= (1<<bit);
     if( flags & GPIO_CFG_OUTPUT)
         pca_ctrl->con[bank] &= ~(1<<bit);
-    if( flags & GPIO_CFG_PULLUP)
-        pca_ctrl->out[bank] &= ~(1<<bit);
-    if( flags == 0)
-        pca_ctrl->con[bank] |= (1<<bit);
-
+    if( flags & GPIO_CFG_INVERT)
+        pca_ctrl->pol[bank] |= (1<<bit);
+    if( flags & GPIO_CFG_NORM)
+        pca_ctrl->pol[bank] &= ~(1<<bit);
+    
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_POUT+bank, 1, &pca_ctrl->out[bank], 1, 50) == -1)
         return -1;
 
     if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_CONF+bank, 1, &pca_ctrl->con[bank], 1, 50) == -1)
         return -1;
     
+    if( TwMasterRegWrite( I2C_SLA_IOEXP, PCA_PINV+bank, 1, &pca_ctrl->pol[bank], 1, 50) == -1)
+        return -1;
+
     return 0;      
 }
 

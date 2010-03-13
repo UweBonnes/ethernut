@@ -57,6 +57,9 @@
 #define IOXP_PIN6   6
 #define IOXP_PIN7   7
 
+#define GPIO_CFG_INVERT 0x00010000
+#define GPIO_CFG_NORM   0x00020000
+
 __BEGIN_DECLS
 /* Prototypes */
 extern int IOExpInit( void );
