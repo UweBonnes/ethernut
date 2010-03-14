@@ -1,5 +1,14 @@
 $Id$
 
+2010-03-14  Ole Reinhardt <ole.reinhardt@thermotemp.de>
+
+* Fixed:
+
+Fixed SpiAt45dConfigWrite() for config space larger than one page      
+The function is now able to write multiple pages and correctly 
+handles a page offset
+
+
 2009-09-20  Ulrich Prinz
 
 * Added:
