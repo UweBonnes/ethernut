@@ -138,7 +138,6 @@ size_t SpiAt45dConfigSize(void)
     if (SpiAt45dConfigDevice() == 0) {
 #ifdef NUT_CONFIG_AT45D_SIZE
         rc = NUT_CONFIG_AT45D_SIZE;
-        NUTASSERT(NUT_CONFIG_AT45D_SIZE <= SpiAt45dPageSize(devSysConf));
 #else
         rc = (size_t) SpiAt45dPageSize(devSysConf);
 #endif
@@ -184,30 +183,56 @@ int SpiAt45dConfigRead(size_t pos, void *data, size_t len)
  *
  * \return 0 on success or -1 in case of an error.
  */
+
 int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
 {
     int rc = -1;
-    uint8_t *buff;
+    uint8_t *pbuff;
+    uint8_t *data_buff = (uint8_t*) data;
     int csize = SpiAt45dConfigSize();
+    int psize = SpiAt45dPageSize(devSysConf);
+    int page;
+    int offset;
+    int wsize;
+    int remaining = len;
 
-    /* Load the complete configuration area. */
-    if (csize >= pos + len && (buff = malloc(csize)) != NULL) {
-        uint32_t cpage = SpiAt45dConfigPage();
+    if ((len > 0) && (csize >= pos + len) && (len > 0) && ((pbuff = malloc(psize)) != NULL)) {
+        page     = pos / psize;
+        offset   = pos % psize;
 
-        if (SpiAt45dPageRead(devSysConf, cpage, buff, csize) == csize) {
-            /* Compare old with new contents. */
-            if (memcmp(buff + pos, data, len)) {
-                /* New contents differs. Copy it into the sector buffer. */
-                memcpy(buff + pos, data, len);
-                /* Erase sector and write new data. */
-                if (SpiAt45dPageWrite(devSysConf, cpage, buff, csize) == csize) {
+        wsize = (offset + len > psize) ? psize - offset : psize;
+        if (remaining < wsize) {
+            wsize = remaining;
+        }
+
+        while (remaining > 0) {
+            /* Load one full page */
+            if (SpiAt45dPageRead(devSysConf, page, pbuff, psize) == psize) {
+                /* Compare old with new contents. */
+                if (memcmp(pbuff + offset, data_buff, wsize)) {
+                    /* New contents differs. Copy it into the sector buffer. */
+                    memcpy(pbuff + offset, data_buff, wsize);
+                    /* Erase sector and write new data. */
+                    if (SpiAt45dPageWrite(devSysConf, page, pbuff, psize) == psize) {
+                        rc = 0;
+                    }
+                } else {
                     rc = 0;
                 }
             } else {
-                rc = 0;
+                rc = -1;
+                break;
             }
+        
+            data_buff += wsize;
+            remaining -= wsize;
+            offset = 0;
+            page ++;
+
+            wsize = (remaining > psize) ? psize : remaining;
         }
-        free(buff);
+        free(pbuff);
     }
+        
     return rc;
 }
