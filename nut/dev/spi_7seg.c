@@ -45,8 +45,6 @@
 
 #include <cfg/os.h>
 #include <cfg/arch.h>
-#include <string.h>
-#include <stdlib.h>
 
 #ifdef SPI2SEG_DEBUG
 #include <stdio.h>
@@ -60,6 +58,8 @@
 #include <sys/timer.h>
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include <cfg/memory.h>
 
