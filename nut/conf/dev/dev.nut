@@ -2509,14 +2509,16 @@ nutdev =
         }
     },
     {
-        name = "nutdev_mmcard",
-        brief = "Basic MMC Driver",
-        description = "Basic Multimedia card driver. To run this driver, a few low "..
-                      "level routines are required for direct hardware access. "..
-                      "Tested on AT91 only.",
-        requires = { "DEV_MMCLL" },
+        name = "nutdev_spi_mmc",
+        brief = "SPI Bus MMC Driver",
+        description = "Block I/O driver for Multimedia cards attached to the SPI bus.\n\n"..
+                      "The included routines provide generic access to memory cards to "..
+                      "be used by hardware specifc MMC drivers, which are typically "..
+                      "defined by an MMC support module.\n\n"..
+                      "Replaces the older basic MMC driver. Tested on AT91 only.",
+        requires = { "DEV_MMCSUPPORT", "SPIBUS_CONTROLLER" },
         provides = { "DEV_BLOCK" },
-        sources = { "mmcard.c" },
+        sources = { "spi_mmc.c" },
         options =
         {
             {
@@ -2526,14 +2528,6 @@ nutdev =
                               "sure that both, the file system and the hardware support it.",
                 default = "512",
                 flavor = "integer",
-                file = "include/cfg/mmci.h"
-            },
-            {
-                macro = "MMC_VERIFY_AFTER",
-                brief = "Verify Read/Write",
-                description = "If enabled, an additional read will be done to verify "..
-                              "each read or written sector. This is useful for testing.",
-                flavor = "boolean",
                 file = "include/cfg/mmci.h"
             },
             {
@@ -2602,6 +2596,21 @@ nutdev =
                 flavor = "integer",
                 file = "include/cfg/mmci.h"
             },
+        },
+    },
+    {
+        name = "nutdev_mmcard",
+        brief = "Basic MMC Driver",
+        description = "Basic Multimedia card driver. To run this driver, a few low "..
+                      "level routines are required for direct hardware access.\n\n"..
+                      "SPI bus sharing is not available with this early driver "..
+                      "and it has been replaced by the newer SPI bus driver.\n"..
+                      "Tested on AT91 only.",
+        requires = { "DEV_MMCLL" },
+        provides = { "DEV_BLOCK" },
+        sources = { "mmcard.c" },
+        options =
+        {
             {
                 macro = "MMC_MAX_R1_POLLS",
                 brief = "R1 Response Timeout",
@@ -2612,7 +2621,15 @@ nutdev =
                 flavor = "integer",
                 file = "include/cfg/mmci.h"
             },
-        },
+            {
+                macro = "MMC_VERIFY_AFTER",
+                brief = "Verify Read/Write",
+                description = "If enabled, an additional read will be done to verify "..
+                              "each read or written sector. This is useful for testing.",
+                flavor = "boolean",
+                file = "include/cfg/mmci.h"
+            }
+        }
     },
 
     --
@@ -3550,11 +3567,37 @@ nutdev =
     {
         name = "nutdev_nplmmc",
         brief = "NPL Multimedia Card Access",
-        description = "CPLD implementation of a low level MMC interface. "..
+        description = "CPLD implementation of a low level MMC interface.\n\n"..
+                      "This early driver doesn't support SPI bus sharing and "..
+                      "has been replaced by the SPI bus driver.\n\n"..
                       "Tested on AT91 only.",
         requires = { "DEV_NPL" },
         provides = { "DEV_MMCLL" },
         sources = { "nplmmc.c" },
+    },
+    {
+        name = "nutdev_spi_mmc_npl",
+        brief = "NPL Multimedia Card Support",
+        description = "CPLD implementation of MMC support.\n\n"..
+                      "This package provides additional routines, which "..
+                      "are needed when using MultiMedia Cards with an SPI "..
+                      "bus driver. Main functions are card change detection "..
+                      "and write SD Card write protect switch sensing.\n\n",
+                      "Tested on AT91 only.",
+        requires = { "DEV_NPL" },
+        provides = { "DEV_MMCSUPPORT" },
+        sources = { "spi_mmc_npl.c" },
+        options =
+        {
+            {
+                macro = "NPL_MMC0_ULED",
+                brief = "LED Indicator",
+                description = "If enabled, the NPL user LED will be used to "..
+                              "inidcate card access.",
+                flavor = "boolean",
+                file = "include/cfg/mmci.h"
+            }
+        }
     },
     {
         name = "nutdev_npluled",

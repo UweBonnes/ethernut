@@ -67,6 +67,30 @@
  */
 /*@{*/
 
+#define NUTMC_SF_CD     0x01
+#define NUTMC_SF_WP     0x02
+
+#define NUTMC_IND_OFF   0
+#define NUTMC_IND_READ  1
+#define NUTMC_IND_WRITE 2
+#define NUTMC_IND_ERROR 4
+
+/*!
+ * \brief Memory card support structure.
+ */
+typedef struct _MEMCARDSUPP {
+    /*! \brief Status change flag. */
+    uint8_t mcs_cf;
+    /*! \brief Socket status. */
+    uint8_t mcs_sf;
+    /*! \brief Status reset. */
+    int (*mcs_reset) (NUTDEVICE *);
+    /*! \brief Set activity indicator. */
+    void (*mcs_act) (int);
+    /*! \brief Power up or down. */
+    int (*mcs_power) (int);
+} MEMCARDSUPP;
+
 /*!
  * \brief Low level access information structure.
  */
@@ -108,6 +132,9 @@ typedef struct _MMCIFC {
 
 /*! \brief Assign relative card address. */
 #define MMCMD_SELECT_CARD               7
+
+/*! \brief Query card's extended CSD. */
+#define MMCMD_SEND_EXTCSD               8
 
 /*! \brief Query card's CSD. */
 #define MMCMD_SEND_CSD                  9
@@ -290,6 +317,8 @@ typedef struct _MMCIFC {
 #define MMCARD_GETCID       0x2003
 /*! \brief Retrieve card specific data. */
 #define MMCARD_GETCSD       0x2004
+/*! \brief Retrieve extended card specific data. */
+#define MMCARD_GETEXTCSD    0x2005
 
 /*@}*/
 
@@ -376,6 +405,16 @@ extern int MmCardBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
 #endif
 extern NUTFILE *MmCardMount(NUTDEVICE * dev, CONST char *name, int mode, int acc);
 extern int MmCardUnmount(NUTFILE * nfp);
+
+extern int SpiMmcInit(NUTDEVICE * dev);
+extern int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf);
+extern int SpiMmcBlockRead(NUTFILE * nfp, void *buffer, int num);
+extern int SpiMmcBlockWrite(NUTFILE * nfp, CONST void *buffer, int num);
+#ifdef __HARVARD_ARCH__
+extern int SpiMmcBlockWrite_P(NUTFILE * nfp, PGM_P buffer, int len);
+#endif
+extern NUTFILE *SpiMmcMount(NUTDEVICE * dev, CONST char *name, int mode, int acc);
+extern int SpiMmcUnmount(NUTFILE * nfp);
 
 __END_DECLS
 /* End of prototypes */
