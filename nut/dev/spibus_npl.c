@@ -247,29 +247,28 @@ int NplSpiBusNodeInit(NUTSPINODE * node)
  */
 int NplSpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
 {
-    uint8_t b = 0xff;
+    uint8_t rxc;
+    uint8_t txc = 0xFF;
     uint8_t *txp = (uint8_t *) txbuf;
     uint8_t *rxp = (uint8_t *) rxbuf;
-    uintptr_t base;
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
     NUTASSERT(node->node_bus->bus_base != 0);
-    base = node->node_bus->bus_base;
 
     while (xlen--) {
         if (txp) {
-            b = *txp++;
+            txc = *txp++;
         }
         /* Transmission starts by writing the transmit data. */
-        outb(NPL_MMCDR, b);
+        outb(NPL_MMCDR, txc);
         /* Wait for receiver data register full. */
         while ((inb(NPL_SLR) & NPL_MMCREADY) == 0);
         /* Read incoming data. */
-        b = inb(NPL_MMCDR);
+        rxc = inb(NPL_MMCDR);
         if (rxp) {
-            *rxp++ = b;
+            *rxp++ = rxc;
         }
     }
     return 0;
