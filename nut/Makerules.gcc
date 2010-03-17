@@ -52,6 +52,11 @@ include $(top_srcdir)/Makerules.all
 %.a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 
+# No idea why the pattern rule above doesn't work on some
+# make versions (No rule to make...). 
+# This little hack seems to fix it:
+$(PROJ).a: $(OBJS)
+
 cleancc:
 	-rm -f $(OBJS) $(DEPS)
 	-rm -f $(OBJS:.o=.lst) $(OBJ1:.o=.lst) $(OBJ2:.o=.lst) $(OBJ3:.o=.lst) $(OBJ4:.o=.lst) $(OBJ5:.o=.lst)

@@ -46,9 +46,10 @@ LIBDIR = $(top_blddir)/lib
 include $(top_srcdir)/UserConf.mk
 include $(top_srcdir)/Makedefs
 
-SRCS =  base64/base64_decode.c \
-        base64/base64_encode.c \
-        hashes/md5.c
+SRCS =  codec/base64_decode.c codec/base64_encode.c \
+        edit/edline.c edit/history.c edit/vt100.c \
+        hashes/md5.c \
+        list/lili.c list/lpushpop.c list/lstrcmp.c list/lstrcopy.c list/lutil.c
 
 OBJS = $(SRCS:.c=.o)
 

@@ -1335,6 +1335,62 @@
  * \brief C Standard String Library
  */
 
+/* ======================================================================================= */
+
+/* ===================================== Gorp Library ==================================== */
+
+/*!
+ * \defgroup xgGorp Gorp Library
+ * \brief Code Snippets.
+ *
+ */
+
+/*!
+ * \defgroup xgGorpEdit Edit
+ * \ingroup xgGorp
+ * \brief Editor Functions.
+ *
+ */
+
+/*!
+ * \defgroup xgEdLine EdLine Editor
+ * \ingroup xgGorpEdit
+ * \brief Line Editor.
+ *
+ */
+
+/*!
+ * \defgroup xgGorpCodec Encoding and Decoding
+ * \ingroup xgGorp
+ * \brief Codec Functions.
+ */
+
+/*!
+ * \defgroup xgBase64 Base64 Codec
+ * \ingroup xgGorpCodec
+ * \brief Base64 Encoder and Decoder.
+ *
+ */
+
+/*!
+ * \defgroup xgHashes Hashes
+ * \ingroup xgGorp
+ * \brief MD5 Digest Functions.
+ *
+ */
+
+/*!
+ * \defgroup xgGorpList Lists and Queues
+ * \ingroup xgGorp
+ * \brief Base64 Encoder and Decoder.
+ *
+ */
+/*!
+ * \defgroup xgLili LiLi
+ * \ingroup xgGorpList
+ * \brief Linked List.
+ */
+
 /* =================================== Device Driver API ================================= */
 /*!
  * \defgroup xgDriver Device Driver API.

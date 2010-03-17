@@ -40,16 +40,27 @@
 nutgorp =
 {
     {
-        name = "nutgorp_library",
-        brief = "Gorp Library",
-        description = "This library contains code snippets used by Nut/OS and applications.\n\n",
-        sources = { 
-            "base64/base64_decode.c",
-            "base64/base64_encode.c",
-            "hashes/md5.c",
-            "edline/edline.c",
-            "edline/history.c",
-            "edline/vt100.c"
-        }
+        name = "nutgorp_edit",
+        brief = "Edit",
+        description = "Editor functions.",
+        script = "gorp/edit.nut"
+    },
+    {
+        name = "nutgorp_codec",
+        brief = "Encode and Decode",
+        description = "Encoding and decoding functions.",
+        script = "gorp/codec.nut"
+    },
+    {
+        name = "nutgorp_hashes",
+        brief = "Hashes",
+        description = "Hash functions.",
+        script = "gorp/hashes.nut"
+    },
+    {
+        name = "nutgorp_list",
+        brief = "Lists",
+        description = "Functions for lists and queues.",
+        script = "gorp/list.nut"
     }
 }
