@@ -50,7 +50,7 @@
  */
 
 /*!
- * \addtogroup xgDevices
+ * \addtogroup xgDevKeys
  */
 /*@{*/
 

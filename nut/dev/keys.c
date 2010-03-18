@@ -82,7 +82,7 @@
 #include <dev/keys.h>
 
 /*!
- * \addtogroup xgDevices
+ * \addtogroup xgDevKeys
  */
 /*@{*/
 

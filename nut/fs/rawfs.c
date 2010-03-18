@@ -72,7 +72,7 @@
 #endif
 
 /*!
- * \addtogroup xgRawFsFs
+ * \addtogroup xgRawFs
  */
 /*@{*/
 

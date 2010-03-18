@@ -44,12 +44,12 @@
  */
 
 /*!
- * \file dev/keys.h
- * \brief Key handler definitions.
+ * \file dev/led.h
+ * \brief LED handler definitions.
  */
 
 /*!
- * \addtogroup xgDevices
+ * \addtogroup xgDevLED
  */
 /*@{*/
 

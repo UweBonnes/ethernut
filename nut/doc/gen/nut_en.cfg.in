@@ -119,6 +119,7 @@ INPUT                  = @srcdir@/nutdoc_en.txt \
                          @top_srcdir@/nut/crt \
                          @top_srcdir@/nut/c \
                          @top_srcdir@/nut/cpp \
+                         @top_srcdir@/nut/gorp \
                          @top_srcdir@/nut/os \
                          @top_srcdir@/nut/net \
                          @top_srcdir@/nut/pro \

@@ -1012,6 +1012,12 @@
  */
 
 /*!
+ * \defgroup xgSNMP SNMP
+ * \ingroup xgUserPro
+ * \brief Simple network management protocol
+ */
+
+/*!
  * \defgroup xgSntp SNTP
  * \ingroup xgUserPro
  * \brief Simple network time protocol
@@ -1048,6 +1054,13 @@
  *     NutWinsNameQuery("myboard", inet_addr(MYIP));
  * } 
  * \endcode
+ */
+
+/*!
+ * \defgroup xgUXML XML Parser
+ * \ingroup xgUserPro
+ * \brief XML Parser for tiny systems.
+ *
  */
   
 /*!
@@ -1165,6 +1178,18 @@
  * \defgroup xgurom Micro-ROM File System
  * \ingroup xgFileSystem
  * \brief Very simple read-only file system.
+ */
+
+/*!
+ * \defgroup xgUFLASH Micro Flash File System
+ * \ingroup xgFileSystem
+ * \brief Simple flash file system.
+ */
+
+/*!
+ * \defgroup xgRawFs Raw File System
+ * \ingroup xgFileSystem
+ * \brief Very simple raw file system.
  */
 
 /*!
@@ -1501,6 +1526,12 @@
  */
 
 /*!
+ * \defgroup xgNullEther Null Ethernet Driver
+ * \ingroup xgDevNetwork
+ * \brief Null Driver.
+ */
+
+/*!
  * \defgroup xgNicDm9000e Davicom DM9000E
  * \ingroup xgDevNetwork
  * \brief 100 MBit Ethernet controller.
@@ -1514,6 +1545,11 @@
  * \brief Register definitions.
  */
 
+/*!
+ * \defgroup xgNicLan91 SMSC LAM91
+ * \ingroup xgDevNetwork
+ * \brief 100 MBit Ethernet controller.
+ */
 
 /*!
  * \defgroup xgDevDisplay Display Devices
@@ -1558,6 +1594,16 @@
  */
 
 /*!
+ * \defgroup xgDevAudio Audio Devices
+ * \ingroup xgDriver
+ */
+
+/*!
+ * \defgroup xgVsCodec VLSI VS Driver
+ * \ingroup xgDevAudio
+ */
+
+/*!
  * \defgroup xgBlockDev Block Devices
  * \ingroup xgDriver
  * \brief Mass storage block device driver.
@@ -1568,6 +1614,18 @@
  * \defgroup xgMmCard Multimedia Card Driver
  * \ingroup xgBlockDev
  * \brief Block device driver for MM/SD Cards.
+ */
+
+/*!
+ * \defgroup xgSbiMmCard Bit-banging MMC Driver
+ * \ingroup xgBlockDev
+ * \brief Block device driver for MM/SD Cards.
+ */
+
+/*!
+ * \defgroup xgNplMemCardSupport NPL Multimedia Card Support
+ * \ingroup xgBlockDev
+ * \brief Support routines for MM/SD Cards.
  */
 
 /*!
@@ -1610,6 +1668,14 @@
  *
  * Platform independent watchdog support is available for the
  * AVR platform and the AT91R40008 MCU.
+ */
+
+/*!
+ * \defgroup xgReset System Reset
+ * \ingroup xgDriver
+ * \brief System reset.
+ *
+ * Platform independent system reset.
  */
 
 /*!
@@ -1691,6 +1757,29 @@
  * Specification of RS232 handshake lines.
  */
 
+/*!
+ * \defgroup xgDevGenGpio Generic Port I/O
+ * \ingroup xgDriver
+ * \brief Platform independent port I/O
+ */
+
+/*!
+ * \defgroup xgPortTranslate GPIO Macros
+ * \ingroup xgDevGenGpio
+ * \brief Platform independent GPIO
+ */
+
+/*!
+ * \defgroup xgDevKeys Keys
+ * \ingroup xgDevGenGpio
+ * \brief Button handler.
+ */
+
+/*!
+ * \defgroup xgDevLED LED
+ * \ingroup xgDevGenGpio
+ * \brief LED handler.
+ */
 
 /* ======================================================================================= */
 
@@ -1978,6 +2067,23 @@
  * \brief Microcontroller Board with CAN Bus
  */
 
+/* =================================== AVR32 Architectures ================================= */
+/*!
+ * \defgroup xgNutArchAvr32 AVR32
+ * \ingroup xgNutArch
+ * \brief 32 Bit RISC processor.
+ *
+ * \code
+ * #include <arch/avr.h>
+ * \endcode
+ */
+
+/*!
+ * \defgroup xgConfigAvr32 Configuration
+ * \ingroup xgNutArchAvr32
+ * \brief AVR32 hardware configuration.
+ */ 
+
 
 /* =================================== ARM Architectures ================================= */
 /*!
@@ -2021,6 +2127,12 @@
  * The AT91 peripherals are connected to the 32-bit wide advanced peripheral bus.
  * All registers are word accessible only.
  */ 
+
+/*!
+ * \defgroup xgNutArchArmAt91Adc ADC
+ * \ingroup xgNutArchArmAt91
+ * \brief A/D Converter.
+ */
 
 /*!
  * \defgroup xgNutArchArmAt91Aic AIC: Interrupt Controller
@@ -2099,6 +2211,12 @@
  * \ingroup xgNutArchArmAt91
  * \brief Power management controller registers.
  */
+
+/*!
+ * \defgroup xgNutArchArmAt91Pwmc PWM Controller
+ * \ingroup xgNutArchArmAt91
+ * \brief PWM controller registers.
+ */
  
 /*!
  * \defgroup xgNutArchArmAt91Ps Power Saving
@@ -2118,13 +2236,25 @@
  */
 
 /*!
+ * \defgroup xgNutArchArmAt91Sam7se AT91SAM7SE
+ * \ingroup xgNutArchArmAt91
+ * \brief Register definitions.
+ */
+
+/*!
+ * \defgroup xgNutArchArmAt91Sam7x AT91SAM7X
+ * \ingroup xgNutArchArmAt91
+ * \brief Register definitions.
+ */
+
+/*!
  * \defgroup xgNutArchArmAt91Rstc Reset Controller
  * \ingroup xgNutArchArmAt91
  * \brief Reset controller registers.
  */
  
 /*!
- * \defgroup xgNutArchArmAt91Sam7x AT91SAM7X
+ * \defgroup xgNutArchArmAt91Sam9x AT91SAM9XE
  * \ingroup xgNutArchArmAt91
  * \brief Register definitions.
  */
@@ -2178,9 +2308,9 @@
  */
  
 /*!
- * \defgroup xgNutArchArmAt91Twi Two Wire Interface
+ * \defgroup xgNutArchArmAt91Twi AT91 Two Wire Interface
  * \ingroup xgNutArchArmAt91
- * \brief Two wire interface registers.
+ * \brief Two wire interface.
  */
  
 /*!
@@ -2205,7 +2335,7 @@
  */
 
 /*!
- * \defgroup xgNutArchArmAt91Wdt Watchdog Registers
+ * \defgroup xgNutArchArmAt91Wdt AT91 Watchdog Registers
  * \ingroup xgNutArchArmAt91
  * \brief Watchdog timer registers.
  *
@@ -2442,14 +2572,14 @@
  */
 
 /*!
- * \defgroup xgUartH8 UART
+ * \defgroup xgUartH8 H8 UART
  * \ingroup xgNutArchH8300hDevSerial
  * \brief TODO
  *
  */
 
 /*!
- * \defgroup xgUartDev UART
+ * \defgroup xgUartDev H3800 UART
  * \ingroup xgNutArchH8300hDevSerial
  * \brief TODO
  *
@@ -2494,6 +2624,18 @@
  * \defgroup xgNutArchM68kInit Initialization
  * \ingroup xgNutArchM68k
  * \brief Starting Nut/OS
+ */ 
+
+/* ===================================== Contribs ======================================== */
+/*!
+ * \defgroup xgContrib Contribs
+ * \brief Special License Contributions.
+ */
+
+/*!
+ * \defgroup xgHelixCodec Helix
+ * \ingroup xgContrib
+ * \brief Helix MP3 Decoder.
  */ 
 
 /* ================================= Directories ========================================= */

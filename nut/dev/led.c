@@ -75,7 +75,7 @@
 #include "dev/led.h"
 
 /*!
- * \addtogroup xgDevices
+ * \addtogroup xgDevLED
  */
 /*@{*/
 

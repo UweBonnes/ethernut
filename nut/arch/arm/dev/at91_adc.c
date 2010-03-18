@@ -58,7 +58,7 @@
 #include <dev/at91_adc.h>
 
 /*!
- * \addtogroup xgAt91Adc
+ * \addtogroup xgNutArchArmAt91Adc
  */
 /*@{*/
 

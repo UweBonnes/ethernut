@@ -51,7 +51,7 @@
 #include <dev/twif.h>
 
 /*!
- * \addtogroup xgAt91Twi
+ * \addtogroup xgNutArchArmAt91Twi
  */
 /*@{*/
 
