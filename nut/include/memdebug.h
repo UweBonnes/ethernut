@@ -42,6 +42,7 @@
 
 #include <compiler.h>
 #include <cfg/memory.h>
+#include <stdlib.h>
 
 #ifdef NUTDEBUG_HEAP
 #define malloc(s) dbg_malloc(s, __FILE__, __LINE__)
