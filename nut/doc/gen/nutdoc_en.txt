@@ -73,9 +73,6 @@
 /*!
  * \mainpage Nut/OS
  *
- * \image html logo_ethernut_239x57.gif
- *
- *
  * \section intro Introduction
  *
  * Ethernut is an Open Source Hardware and Software Project for building 
