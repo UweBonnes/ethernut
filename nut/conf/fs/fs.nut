@@ -103,6 +103,72 @@ nutfs =
         makedefs = { "CRUROM=crurom" }
     },
     {
+        name = "nutfs_uflashfs",
+        brief = "UFLASH",
+        requires = { "SERIALFLASH_INTERFACE" },
+        provides = { "NUT_FS", "NUT_FS_READ", "NUT_FS_WRITE", "NUT_FS_DIR" },
+        sources = { "uflashfs.c" },
+        options =
+        {
+            {
+                macro = "UFLASH_MAX_BLOCKS",
+                brief = "Maximum Blocks",
+                description = "Maximum number of blocks supported.\n\n"..
+                              "UFLASH uses a table in RAM to translate logical to physical "..
+                              "block numbers. This option can be used to limit the number "..
+                              "of blocks in order to reduce RAM usage.",
+                type = "integer",
+                default = "8192",
+                file = "include/cfg/fs.h"
+            },
+            {
+                macro = "UFLASH_BLOCK_UNITS",
+                brief = "Units per Block",
+                description = "Number of flash units used for one block.\n\n"..
+                              "A UFLASH file system block must have at least 2 units.\n\n"..
+                              "Serial flash memory is divided in various ways. For the UFLASH "..
+                              "file system a unit is the smallest part, that can be written and "..
+                              "erased. Typically a unit matches a flash memory page.",
+                type = "integer",
+                default = "4",
+                file = "include/cfg/fs.h"
+            },
+            {
+                macro = "UFLASH_ENTRIES",
+                brief = "Maximum Number of Entries",
+                description = "Specifies the number of files that can exist on a volume.",
+                type = "integer",
+                default = "128",
+                file = "include/cfg/fs.h"
+            },
+            {
+                macro = "UFLASH_MAX_PATH",
+                brief = "Maximum Entry Name Size",
+                description = "If enabled, the given number of bytes are reserved for "..
+                              "the name of each entry. Otherwise variable length names "..
+                              "are used.\n\n",
+                type = "integer",
+                flavor = "booldata",
+                file = "include/cfg/fs.h"
+            },
+            {
+                macro = "UFLASH_USE_TIMESTAMP",
+                brief = "Timestamps",
+                description = "If enabled, the last modification date and time is maintained. "..
+                              "For reasonable results, this requires that the system time had been set. ",
+                flavor = "boolean",
+                file = "include/cfg/fs.h"
+            },
+            {
+                macro = "UFLASH_USAGE_CACHE",
+                brief = "Usage Cache Size",
+                type = "integer",
+                default = "32",
+                file = "include/cfg/fs.h"
+            },
+        },
+    },
+    {
         name = "nutfs_phatfs",
         brief = "PHAT",
         requires = { "DEV_BLOCK" },

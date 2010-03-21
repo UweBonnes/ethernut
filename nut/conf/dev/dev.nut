@@ -2509,6 +2509,29 @@ nutdev =
         }
     },
     {
+        name = "nutdev_spi_at45dib",
+        brief = "AT45D Serial Flash Driver",
+        description = "Although the implemented routines are quite similar to other device drivers, "..
+                      "this is not a standard block I/O driver.\n\n"..
+                      "The implemented functions offer access to AT45D DataFlash devices "..
+                      "without the need to allocate page buffers from heap memory. Instead, "..
+                      "the chip's internal RAM buffers are used.\n\n"..
+                      "This module also uses the options from the block I/O driver.",
+        requires = { "SPIBUS_CONTROLLER" },
+        provides = { "SERIALFLASH_INTERFACE" },
+        sources = { "spi_at45dib.c" },
+        options =
+        {
+            {
+                macro = "AT45D_CRC_PAGE",
+                brief = "Use Page CRC",
+                description = "If enabled, each page is protected by a 16 bit CRC ",
+                flavor = "boolean",
+                file = "include/cfg/memory.h"
+            }
+        }
+    },
+    {
         name = "nutdev_spi_mmc",
         brief = "SPI Bus MMC Driver",
         description = "Block I/O driver for Multimedia cards attached to the SPI bus.\n\n"..
