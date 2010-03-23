@@ -153,7 +153,6 @@ void NutThreadEntry(void)
     asm volatile ("ldmfd   sp!, {r0, lr}\n\tbx lr":::"r0", "lr");
 }
 
-
 /*!
  * \brief Switch to another thread.
  *
@@ -168,34 +167,52 @@ void NutThreadEntry(void)
 void NutThreadSwitch(void) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
-    /* Save CPU context. */
-    asm volatile (              /* */
-                     "@ Save context\n\t"       /* */
-                     "stmfd   sp!, {r4-r11, lr}\n\t"    /* Save registers. */
-                     "mrs     r4, cpsr\n\t"     /* Save status. */
-                     "stmfd   sp!, {r4}\n\t"    /* */
-                     "str     sp, %0"   /* Save stack pointer. */
-                     ::"m" (runningThread->td_sp)       /* */
-        );
+    __asm__ __volatile__
+        /* Save CPU context. */
+     ("@ Save context\n\t"
+      /* Save registers. */
+      "stmfd   sp!, {r4-r11, lr}\n\t"
+      /* Save status. */
+      "mrs     r0, cpsr\n\t"
+      /* */
+      "stmfd   sp!, {r0}\n\t"
+      /* Save stack pointer. */
+      "str     sp, %[td_sp]"
+      /* Output. */
+      :
+      /* Input. */
+      :[td_sp] "o"(runningThread->td_sp)
+      /* Clobbers. */
+      :"r0", "memory");
 
     /* Select thread on top of the run queue. */
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
-
-    /* Restore context. */
-    __asm__ __volatile__(       /* */
-                            "@ Load context\n\t"        /* */
-                            "ldr     sp, %0\n\t"        /* Restore stack pointer. */
-                            "ldmfd   sp!, {r4}\n\t"     /* Get saved status... */
-                            "bic     r4, r4, #0xC0" "\n\t"      /* ...enable interrupts */
-                            "msr     spsr, r4\n\t"      /* ...and save in spsr. */
-                            "ldmfd   sp!, {r4-r11, lr}\n\t"     /* Restore registers. */
-                            "movs    pc, lr"    /* Restore status and return. */
-                            ::"m"(runningThread->td_sp) /* */
-        );
 #if defined(NUT_CRITICAL_NESTING) && !defined(NUT_CRITICAL_NESTING_STACK)
-        critical_nesting_level = 0;
+    critical_nesting_level = 0;
 #endif
+
+    __asm__ __volatile__
+        /* Restore context. */
+     ("@ Reload context\n\t"
+      /* Restore stack pointer. */
+      "ldr     sp, %[td_sp]\n\t"
+      /* Get saved status... */
+      "ldmfd   sp!, {r0}\n\t"
+      /* ...enable interrupts */
+      "bic     r0, r0, #0xC0\n\t"
+      /* ...and save in spsr. */
+      "msr     spsr, r0\n\t"
+      /* Restore registers. */
+      "ldmfd   sp!, {r4-r11, lr}\n\t"
+      /* Restore status and return. */
+      "movs    pc, lr"
+      /* Output. */
+      :
+      /* Input. */
+      :[td_sp] "m"(runningThread->td_sp)
+      /* Clobbers. */
+      :"r0", "memory");
 }
 
 /*!
@@ -316,17 +333,28 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         /* This will never return. */
         runningThread = runQueue;
         runningThread->td_state = TDS_RUNNING;
-        /* Restore context. */
-        __asm__ __volatile__(       /* */
-                            "@ Load context\n\t"        /* */
-                            "ldr     sp, %0\n\t"        /* Restore stack pointer. */
-                            "ldmfd   sp!, {r4}\n\t"     /* Get saved status... */
-                            "bic     r4, r4, #0xC0" "\n\t"      /* ...enable interrupts */
-                            "msr     spsr, r4\n\t"      /* ...and save in spsr. */
-                            "ldmfd   sp!, {r4-r11, lr}\n\t"     /* Restore registers. */
-                            "movs    pc, lr"    /* Restore status and return. */
-                            ::"m"(runningThread->td_sp) /* */
-                            );
+
+        __asm__ __volatile__
+            /* Load initial idle thread context. */
+         ("@ Load context\n\t"
+          /* Restore stack pointer. */
+          "ldr     sp, %[td_sp]\n\t"
+          /* Get saved status... */
+          "ldmfd   sp!, {r0}\n\t"
+          /* ...enable interrupts */
+          "bic     r0, r0, #0xC0\n\t"
+          /* ...and save in spsr. */
+          "msr     spsr, r0\n\t"
+          /* Restore registers. */
+          "ldmfd   sp!, {r4-r11, lr}\n\t"
+          /* Restore status and return. */
+          "movs    pc, lr"
+          /* Input. */
+          :
+          /* Output. */
+          :[td_sp] "m" (runningThread->td_sp)
+          /* Clobbers. */
+          :"r0", "memory");
     }
 
     /*
