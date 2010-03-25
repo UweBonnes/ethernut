@@ -191,13 +191,13 @@ int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
     uint8_t *data_buff = (uint8_t*) data;
     int csize = SpiAt45dConfigSize();
     int psize = SpiAt45dPageSize(devSysConf);
-    int page;
+    int page  = SpiAt45dConfigPage();
     int offset;
     int wsize;
     int remaining = len;
 
     if ((len > 0) && (csize >= pos + len) && (len > 0) && ((pbuff = malloc(psize)) != NULL)) {
-        page     = pos / psize;
+        page    += pos / psize;
         offset   = pos % psize;
 
         wsize = (offset + len > psize) ? psize - offset : psize;
@@ -215,6 +215,9 @@ int SpiAt45dConfigWrite(size_t pos, CONST void *data, size_t len)
                     /* Erase sector and write new data. */
                     if (SpiAt45dPageWrite(devSysConf, page, pbuff, psize) == psize) {
                         rc = 0;
+                    } else {
+                        rc = -1;
+                        break;
                     }
                 } else {
                     rc = 0;
