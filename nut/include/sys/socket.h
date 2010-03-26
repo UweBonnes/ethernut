@@ -129,7 +129,7 @@
 #include <sys/socket_orig.h>
 
 #else /* embedded systems */
-
+#include <compiler.h>
 
 /*!
 * \addtogroup xgSocket
@@ -187,9 +187,7 @@
  * \brief UDP and TCP socket interface definitions.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+__BEGIN_DECLS
 
 extern TCPSOCKET *NutTcpCreateSocket(void);
 extern int NutTcpSetSockOpt(TCPSOCKET *sock, int optname, CONST void *optval, int optlen);
@@ -230,8 +228,6 @@ extern int NutUdpSetSocketError(UDPSOCKET * sock, uint32_t remote_addr, uint16_t
 extern int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port);
 #endif
     
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif

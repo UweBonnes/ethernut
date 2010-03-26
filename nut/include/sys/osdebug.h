@@ -54,12 +54,10 @@
  */
 
 #include <stdio.h>
-
+#include <compiler.h>
 #include <sys/thread.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+__BEGIN_DECLS
 
 extern FILE *__os_trs;
 extern uint_fast8_t __os_trf;
@@ -75,8 +73,6 @@ extern uint_fast8_t __heap_trf;
 extern void NutTraceHeap(FILE *stream, uint8_t flags);
 extern void NutDumpHeap(FILE *stream);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif

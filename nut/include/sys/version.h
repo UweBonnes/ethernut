@@ -47,21 +47,18 @@
  *
  */
 
+#include <compiler.h>
 #include <sys/types.h>
 #include <stdint.h>
 
 #define OS_VERSION_NUMBER  0x04090900UL
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+__BEGIN_DECLS
+/* */
 extern uint32_t NutVersion(void);
 extern CONST char *NutVersionString(void);
 
-#ifdef __cplusplus
-}
-#endif
-
+__END_DECLS
+/* */
 #endif
 

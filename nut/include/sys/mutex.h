@@ -58,6 +58,7 @@
 #ifndef _SYS_MUTEX_H
 #define _SYS_MUTEX_H
 
+#include <compiler.h>
 #include <sys/types.h>
 #include <sys/thread.h>
 
@@ -66,34 +67,30 @@
  */
 /*@{*/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+__BEGIN_DECLS
 
 /*!
  * \brief Recursive mutex type.
  */
-    typedef struct _MUTEX MUTEX;
+typedef struct _MUTEX MUTEX;
 
 /*!
  * \struct _MUTEX mutex.h sys/mutex.h
  * \brief Recursive mutex.
  *
  */
-    struct _MUTEX {
-        HANDLE qhp;             /*!< \brief Queue to wait, if mutex is not free. */
-        NUTTHREADINFO *thread;  /*!< \brief Thread who owns the mutex */
-        uint16_t count;          /*!< \brief Lock counter. */
-    };
+struct _MUTEX {
+    HANDLE qhp;             /*!< \brief Queue to wait, if mutex is not free. */
+    NUTTHREADINFO *thread;  /*!< \brief Thread who owns the mutex */
+    uint16_t count;          /*!< \brief Lock counter. */
+};
 
-    extern void NutMutexInit(MUTEX * mutex);
-    extern void NutMutexLock(MUTEX * mutex);
-    extern int NutMutexUnlock(MUTEX * mutex);
-    extern int NutMutexTrylock(MUTEX * mutex);
-    extern int NutMutexDestroy(MUTEX * mutex);
-#ifdef __cplusplus
-}
-#endif
+extern void NutMutexInit(MUTEX * mutex);
+extern void NutMutexLock(MUTEX * mutex);
+extern int NutMutexUnlock(MUTEX * mutex);
+extern int NutMutexTrylock(MUTEX * mutex);
+extern int NutMutexDestroy(MUTEX * mutex);
+__END_DECLS
 
 /*@}*/
 

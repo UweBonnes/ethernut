@@ -55,6 +55,7 @@
 #ifndef _SYS_SEMAPHORE_H
 #define _SYS_SEMAPHORE_H
 
+#include <compiler.h>
 #include <sys/types.h>
 #include <sys/thread.h>
 
@@ -63,34 +64,30 @@
  */
 /*@{*/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+__BEGIN_DECLS
 
 /*!
  * \brief Sempahore type.
  */
-    typedef struct _SEM SEM;
+typedef struct _SEM SEM;
 
 /*!
  * \struct _SEM semaphore.h sys/semaphore.h
  * \brief Semaphore.
  *
  */
-    struct _SEM {
-        HANDLE qhp;           /*!< \brief Queue to wait, if semaphore is zero. */
-        short value;          /*!< \brief semaphore value . */
-    };
+struct _SEM {
+    HANDLE qhp;           /*!< \brief Queue to wait, if semaphore is zero. */
+    short value;          /*!< \brief semaphore value . */
+};
 
-    extern void NutSemInit(SEM * sem, short value);
-    extern void NutSemWait(SEM * sem);
-    extern int NutSemTryWait(SEM * sem);
-    extern void NutSemPost(SEM * sem);
-    extern int NutSemDestroy(SEM * sem);
+extern void NutSemInit(SEM * sem, short value);
+extern void NutSemWait(SEM * sem);
+extern int NutSemTryWait(SEM * sem);
+extern void NutSemPost(SEM * sem);
+extern int NutSemDestroy(SEM * sem);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 /*@}*/
 

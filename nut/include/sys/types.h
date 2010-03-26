@@ -160,11 +160,9 @@ typedef long long longlong;
  * \brief Nut/OS type declarations.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <compiler.h>
+
+__BEGIN_DECLS
 
 // Definition of size_t
 #ifdef __cplusplus
@@ -366,10 +364,8 @@ typedef void *HANDLE;
 
 /*@}*/
 
-#ifdef __cplusplus
-}
-#endif
-
+__END_DECLS
+/* */
 #endif                          /* #ifndef _SYS_VIRTUAL_TYPES_H_ */
 
 #endif                          /* #ifndef _SYS_TYPES_H_ */
