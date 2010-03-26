@@ -36,8 +36,8 @@
  */
 
 /*
- * \file include/gorp/edline.h
- * \brief Simple line editor definitions.
+ * \file include/gorp/lili.h
+ * \brief Linked list definitions.
  *
  * \verbatim
  * $Id$
