@@ -35,7 +35,7 @@
  * $Log$
  *
  * Revision 1.0  2009/04/13 ulrichprinz
- * First checkin, new twi driver for AS1108 3 Digit 7-Segment driver 
+ * First checkin, new twi driver for AS1108 3 Digit 7-Segment driver
  * (currently SAM7X256 is tested only)
  *
  */
@@ -65,8 +65,15 @@
 #include <sys/osdebug.h>
 #endif
 
+/* 7-Segment connection definition
+ * correct these to the port and bus you use
+ */
 
+/* SPI-Chipselect of the Display driver */
+#define NUT_CONFIG_7SEG_CS 1
 
+/* SPI-Bus the driver is connected to */
+#define NUT_CONFIG_7SEG_SPIBUS spiBus0At91
 
 /*
  * Main application routine.
@@ -83,7 +90,7 @@ int main(void)
 	uint8_t rc;
 	unsigned int count=0;
 	/*
-     * Register the UART device, open it, assign stdout to it and set 
+     * Register the UART device, open it, assign stdout to it and set
      * the baudrate.
      */
     NutRegisterDevice(&DEV_DEBUG, 0, 0);
@@ -93,8 +100,7 @@ int main(void)
      * Initialize digital I/O.
      */
     printf("initSPI_disp7seg\n");
-	
-	//rc = NutRegisterSpiDevice(&devSpi7SEG,&nodeSpi7SEG.node_bus,nodeSpi7SEG.node_cs);
+
 	rc = NutRegisterSpiDevice(&devSpi7SEG,&NUT_CONFIG_7SEG_SPIBUS,NUT_CONFIG_7SEG_CS);
 	if (rc != 0){
 		printf("spi init failed\n");
@@ -102,7 +108,7 @@ int main(void)
 	}
 	printf("display_7seg\n");
 
-	 for (;;)
+    for (;;)
 	{
 		printf( devSpi7Seg, "%3d\n", count++);
 		if(count >999)count=0;
