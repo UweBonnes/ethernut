@@ -40,6 +40,12 @@
 nutgorp =
 {
     {
+        name = "nutgorp_buffer",
+        brief = "Buffer",
+        description = "Buffer functions.",
+        script = "gorp/buffer.nut"
+    },
+    {
         name = "nutgorp_edit",
         brief = "Edit",
         description = "Editor functions.",
