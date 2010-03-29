@@ -938,7 +938,7 @@ static int EntryTruncate(UFLASHVOLUME * vol, blknum_t lbe)
     BLOCKFOOT bf;
     blknum_t b;
     blknum_t b_old;
-    char *name;
+    char *name = NULL;
 
     EntryTruncateSeq(vol, lbe);
 
@@ -1121,7 +1121,7 @@ static int UFlashDirRead(DIR * dir)
     UFLASHFIND *uff;
     UFLASHVOLUME *vol;
     ENTRYHEAD eh;
-    char *name;
+    char *name = NULL;
     char *cp;
 
     ndp = dir->dd_fd;

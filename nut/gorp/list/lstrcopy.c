@@ -43,7 +43,6 @@
 
 #include <memdebug.h>
 
-#include <string.h>
 #include <stdlib.h>
 
 #include <gorp/lili.h>

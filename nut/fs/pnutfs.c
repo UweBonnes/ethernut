@@ -498,7 +498,7 @@ static void PnutNodeRelease(PNUT_BLKNUM node)
  *
  * \return 0 on success, otherwise returns an error code.
  */
-static int PnutNodeGetDataPtr(PNUT_BLKNUM node, uint32_t pos, void **buffer, size_t * size, int create)
+static int PnutNodeGetDataPtr(PNUT_BLKNUM node, uint32_t pos, uint8_t **buffer, size_t * size, int create)
 {
     int blkidx;                 /* Number of full blocks */
     int rc = EINVAL;
@@ -524,7 +524,7 @@ static int PnutNodeGetDataPtr(PNUT_BLKNUM node, uint32_t pos, void **buffer, siz
          * position and the remaining bytes within this block.
          */
         if (blk >= 0) {
-            char *blkptr = (char *) BankNodePointer(blk);
+            uint8_t *blkptr = (uint8_t *) BankNodePointer(blk);
             int blkpos = pos % PNUT_BLOCK_SIZE; /* Position within block */
 
             *buffer = blkptr + blkpos;
@@ -546,16 +546,18 @@ static int PnutDirIsEmpty(PNUT_BLKNUM node)
     int rc = 1;
     uint32_t pos;
     size_t size;
-    PNUT_DIRENTRY *entry;
+    PNUT_DIRENTRY *entry = NULL;
 
     /* Loop through the data blocks of this directory node. */
     for (pos = 0; pos < BankNodePointer(node)->node_size; pos += PNUT_DIRENT_SIZE) {
 
         /* Get the pointer to the next directory entry. */
-        if (PnutNodeGetDataPtr(node, pos, (void *) &entry, &size, 0) || size == 0) {
+        uint8_t *ptr = (uint8_t *)entry;
+        if (PnutNodeGetDataPtr(node, pos, &ptr, &size, 0) || size == 0) {
             /* No more entries. */
             break;
         }
+        entry = (PNUT_DIRENTRY *)ptr;
 
         if (size >= PNUT_DIRENT_SIZE) {
             if (entry->dir_inuse && strcmp(entry->dir_name, ".") && strcmp(entry->dir_name, "..")) {
@@ -591,10 +593,12 @@ static int PnutDirFindEntry(PNUT_BLKNUM node, CONST char *path, size_t len, PNUT
     for (pos = 0; pos < BankNodePointer(node)->node_size; pos += PNUT_DIRENT_SIZE) {
 
         /* Get the pointer to the next directory entry. */
-        if (PnutNodeGetDataPtr(node, pos, (void **) entry, &size, 0) || size == 0) {
+        uint8_t *ptr = (uint8_t *)(*entry);
+        if (PnutNodeGetDataPtr(node, pos, &ptr, &size, 0) || size == 0) {
             /* No more entries. */
             break;
         }
+        *entry = (PNUT_DIRENTRY *)ptr;
 
         /* Compare this entry. */
         if (size >= PNUT_DIRENT_SIZE) { /* Skip entries across block boundaries. */
@@ -623,7 +627,7 @@ static int PnutDirFindPath(PNUT_BLKNUM node, CONST char *path, PNUT_FINDRESULT *
 {
     int rc = 0;
     size_t len;
-    PNUT_DIRENTRY *entry;
+    PNUT_DIRENTRY *entry = NULL;
 
     result->fr_pnode = node;
     result->fr_node = -1;
@@ -766,20 +770,22 @@ static int PnutDirRead(DIR * dir)
 {
     int rc = -1;
     uint32_t pos;
-    PNUT_DIRENTRY *entry;
+    PNUT_DIRENTRY *entry = NULL;
     size_t size;
     PNUTFILE *fp = dir->dd_fd->nf_fcb;
     struct dirent *ent = (struct dirent *) dir->dd_buf;
 
     ent->d_name[0] = 0;
     for (pos = fp->f_pos; pos < BankNodePointer(fp->f_node)->node_size; pos += PNUT_DIRENT_SIZE) {
+        uint8_t *ptr = (uint8_t *)entry;
         /* Retrieve the entry at the current position. */
-        rc = PnutNodeGetDataPtr(fp->f_node, pos, (void *) &entry, &size, 0);
+        rc = PnutNodeGetDataPtr(fp->f_node, pos, &ptr, &size, 0);
         if (rc || size == 0) {
             /* No more entries. */
             rc = -1;
             break;
         }
+        entry = (PNUT_DIRENTRY *)ptr;
         fp->f_pos = pos + PNUT_DIRENT_SIZE;
 
         /* Skip entries across block boundaries and unused entires. */
@@ -808,7 +814,7 @@ static int PnutDirAddEntry(PNUT_BLKNUM dnode, CONST char *name, PNUT_BLKNUM enod
     int rc = 0;
     uint32_t pos = 0;
     size_t size;
-    PNUT_DIRENTRY *entry;
+    PNUT_DIRENTRY *entry = NULL;
     PNUT_NODE *np;
 
     /*
@@ -822,9 +828,11 @@ static int PnutDirAddEntry(PNUT_BLKNUM dnode, CONST char *name, PNUT_BLKNUM enod
          * Get the data pointer to the specified position. Automatically
          * create a new block if we reached the end of the data.
          */
-        if ((rc = PnutNodeGetDataPtr(dnode, pos, (void *) &entry, &size, 1)) != 0) {
+        uint8_t *ptr = (uint8_t *)entry;
+        if ((rc = PnutNodeGetDataPtr(dnode, pos, &ptr, &size, 1)) != 0) {
             break;
         }
+        entry = (PNUT_DIRENTRY *)ptr;
         pos += PNUT_DIRENT_SIZE;
 
         /* Process entry if it doesn't cross block boundaries. */
@@ -872,7 +880,7 @@ static int PnutDirAddEntry(PNUT_BLKNUM dnode, CONST char *name, PNUT_BLKNUM enod
 static int PnutDirDelEntry(PNUT_BLKNUM node, CONST char *name)
 {
     int rc;
-    PNUT_DIRENTRY *entry;
+    PNUT_DIRENTRY *entry = NULL;
     PNUT_NODE *rnp;
     PNUT_BLKNUM rnode;
 
@@ -1164,7 +1172,7 @@ static int PnutFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
     CONST char *buf = buffer;
 
     while (len) {
-        if ((ec = PnutNodeGetDataPtr(node, fp->f_pos, (void *) &blkptr, &blksiz, 1)) != 0) {
+        if ((ec = PnutNodeGetDataPtr(node, fp->f_pos, &blkptr, &blksiz, 1)) != 0) {
             break;
         }
         if (blksiz >= len) {
@@ -1220,7 +1228,7 @@ static int PnutFileRead(NUTFILE * nfp, void *buffer, int len)
         len = (size_t) (BankNodePointer(node)->node_size - fp->f_pos);
     }
     while (len) {
-        if ((ec = PnutNodeGetDataPtr(node, fp->f_pos, (void *) &blkptr, &blksiz, 0)) != 0) {
+        if ((ec = PnutNodeGetDataPtr(node, fp->f_pos, &blkptr, &blksiz, 0)) != 0) {
             break;
         }
         if (blksiz >= len) {
