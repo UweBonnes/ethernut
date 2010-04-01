@@ -77,23 +77,6 @@
 #define TCP_RTTO_MAX    20000
 #endif
 
-/*!
- * \brief Sequence number comparisons.
- *
- * Return true if x is between low and high inclusive,
- * false otherwise
- */
-int IsInLimits(uint32_t x, uint32_t low, uint32_t high)
-{
-    if (low <= high) {
-        if (low <= x && x <= high)
-            return 1;
-    } else if (low >= x && x >= high)
-        return 1;
-
-    return 0;
-}
-
 #define min(a,b) ((a>b)?b:a)
 #define max(a,b) ((a>b)?a:b)
 

@@ -426,7 +426,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
      * If remote acked something not yet send, reply immediately.
      */
     h_ack = ntohl(th->th_ack);
-    if (h_ack > sock->so_tx_nxt) {
+    if (SeqIsAfter(h_ack, sock->so_tx_nxt)) {
         sock->so_tx_flags |= SO_ACK | SO_FORCE;
         return 0;
     }
@@ -438,7 +438,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
      */
     if (h_ack == sock->so_tx_una) {
         h_seq = ntohl(th->th_seq);
-        if (h_seq > sock->so_tx_wl1 || (h_seq == sock->so_tx_wl1 && h_ack >= sock->so_tx_wl2)) {
+        if (SeqIsAfter(h_seq, sock->so_tx_wl1) || (h_seq == sock->so_tx_wl1 && !SeqIsAfter(sock->so_tx_wl2, h_ack))) {
             sock->so_tx_win = ntohs(th->th_win);
             sock->so_tx_wl1 = h_seq;
             sock->so_tx_wl2 = h_ack;
@@ -449,7 +449,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
      * Ignore old ACKs but wake up sleeping transmitter threads, because
      * the window size may have changed.
      */
-    if (h_ack < sock->so_tx_una) {
+    if (SeqIsAfter(sock->so_tx_una, h_ack)) {
         return 0;
     }
 
@@ -499,7 +499,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
     /* 
      * Do round trip time calculation.
      */
-    if (sock->so_rtt_seq && sock->so_rtt_seq < h_ack)
+    if (sock->so_rtt_seq && SeqIsAfter(h_ack, sock->so_rtt_seq))
         NutTcpCalcRtt (sock);
     sock->so_rtt_seq = 0;
     /*
@@ -512,7 +512,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
             h_seq++;
         }
         //@@@printf ("[%04X]*: processack, check seq#: %lu\n", (u_short) sock, h_seq);
-        if (h_seq > h_ack) {
+        if (SeqIsAfter(h_seq, h_ack)) {
             break;
         }
         sock->so_tx_nbq = nb->nb_next;
@@ -1026,7 +1026,7 @@ static void NutTcpStateSynSent(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
      * Validate ACK, if set.
      */
     if (flags & TH_ACK) {
-        if (!IsInLimits(ntohl(th->th_ack), sock->so_tx_isn + 1, sock->so_tx_nxt)) {
+        if (!SeqIsBetween(ntohl(th->th_ack), sock->so_tx_isn + 1, sock->so_tx_nxt)) {
             NutTcpReject(nb);
             return;
         }
@@ -1114,7 +1114,7 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
     /*
      * Reject out of window sequence.
      */
-    if (!IsInLimits(ntohl(th->th_ack), sock->so_tx_una + 1, sock->so_tx_nxt)) {
+    if (!SeqIsBetween(ntohl(th->th_ack), sock->so_tx_una + 1, sock->so_tx_nxt)) {
         NutTcpReject(nb);
         return;
     }
@@ -1196,7 +1196,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
      * add this one to a linked list of segments received in advance and 
      * hope that the missing data will arrive later.
      */
-    if (htonl(th->th_seq) > sock->so_rx_nxt) {
+    if (SeqIsAfter(ntohl(th->th_seq),sock->so_rx_nxt)) {
         NETBUF *nbq;
         NETBUF **nbqp;
         TCPHDR *thq;
@@ -1218,7 +1218,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
                     thq = (TCPHDR *) (nbq->nb_tp.vp);
                     th_seq = htonl(th->th_seq);
                     thq_seq = htonl(thq->th_seq);
-                    if (th_seq < thq_seq) {
+                    if (SeqIsAfter(thq_seq, th_seq)) {
                         *nbqp = nb;
                         nb->nb_next = nbq;
                         break;
@@ -1270,7 +1270,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
          */
         while ((nb = sock->so_rx_nbq) != 0) {
             th = (TCPHDR *) (nb->nb_tp.vp);
-            if (htonl(th->th_seq) > sock->so_rx_nxt)
+            if (SeqIsAfter(ntohl(th->th_seq), sock->so_rx_nxt))
                 break;
             sock->so_rx_nbq = nb->nb_next;
             /* Update the heap space used by packets 
@@ -1611,7 +1611,7 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
         /* Wake up all threads waiting for transmit, if something interesting happened. */
         if(sock->so_state != TCPS_ESTABLISHED || /* Status changed. */
            sock->so_tx_win > tx_win ||           /* Windows changed. */
-           sock->so_tx_una > tx_una) {           /* Unacknowledged data changed. */
+           sock->so_tx_una != tx_una) {          /* Unacknowledged data changed. */
             NutEventBroadcast(&sock->so_tx_tq);
         }
         break;
