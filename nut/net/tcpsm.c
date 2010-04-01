@@ -1173,7 +1173,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
      * (Thanks to Mike Cornelius).
      */
     if (flags & TH_SYN) {
-        if (htonl(th->th_seq) != sock->so_rx_isn)
+        if (ntohl(th->th_seq) != sock->so_rx_isn)
             NutTcpReject(nb);
         else
             NutNetBufFree(nb);
@@ -1216,8 +1216,8 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
                 nbqp = &sock->so_rx_nbq;
                 while (nbq) {
                     thq = (TCPHDR *) (nbq->nb_tp.vp);
-                    th_seq = htonl(th->th_seq);
-                    thq_seq = htonl(thq->th_seq);
+                    th_seq = ntohl(th->th_seq);
+                    thq_seq = ntohl(thq->th_seq);
                     if (SeqIsAfter(thq_seq, th_seq)) {
                         *nbqp = nb;
                         nb->nb_next = nbq;
@@ -1252,7 +1252,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
      * than the next data expected and they do not 
      * contain any data.
      */
-    if (htonl(th->th_seq) != sock->so_rx_nxt) {
+    if (ntohl(th->th_seq) != sock->so_rx_nxt) {
         sock->so_tx_flags |= SO_ACK | SO_FORCE;
         /* This seems to be unused. */
         sock->so_oos_drop++;
@@ -1276,7 +1276,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
             /* Update the heap space used by packets 
             ** received in advance. */
             tcp_adv_cnt -= nb->nb_dl.sz + sizeof(IPHDR) + sizeof (TCPHDR) + nb->nb_ap.sz;
-            if (htonl(th->th_seq) == sock->so_rx_nxt) {
+            if (ntohl(th->th_seq) == sock->so_rx_nxt) {
                 NutTcpProcessAppData(sock, nb);
                 flags |= th->th_flags;
             } else
