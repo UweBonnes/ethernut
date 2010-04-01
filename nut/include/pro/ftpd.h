@@ -108,6 +108,10 @@ typedef struct {
      * - 1: Passive.
      */
     reg_t ftp_passive;
+    /*! \brief Source file for renaming.
+     * NULL if no "RNFR" has been send or rename is finished.
+     */
+    char * ftp_renamesource;
 } FTPSESSION;
 
 /*@}*/

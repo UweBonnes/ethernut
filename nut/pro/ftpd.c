@@ -37,6 +37,15 @@
  *
  * \verbatim
  *
+ * By Malte Marwedel:
+ *  - Adding move command (RNFR, RNTO)
+ *  - (AVR) Moving strings from RAM to flash
+ *  - Add support for list with -la option
+ *  - Checks if file is a real file before accepting a GET
+ *  - Fixing GET if network is busy
+ *  - Fixing "cd foo", "cd ../bar" bug (path should be "/bar" was "//bar")
+ *  - Note: Passive mode is not implemented properly, try to use active instead
+ *
  * $Log$
  * Revision 1.12  2009/02/13 14:52:05  haraldkipp
  * Include memdebug.h for heap management debugging support.
@@ -82,10 +91,13 @@
  * \endverbatim
  */
 
+//#define FTPD_DEBUG
+
 #include <sys/version.h>
 
 #include <sys/socket.h>
 #include <netinet/tcp.h>
+#include <sys/timer.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -142,7 +154,7 @@ static char *ftp_user;
 static char *ftp_pass;
 
 /*
- * On Harvard architectures constant strings are stored in ROM, 
+ * On Harvard architectures constant strings are stored in ROM,
  * because RAM is usually a scarce resource on these platforms.
  */
 static prog_char cmd_cwd_P[] = "CWD";
@@ -165,6 +177,9 @@ static prog_char cmd_stor_P[] = "STOR";
 static prog_char cmd_syst_P[] = "SYST";
 static prog_char cmd_type_P[] = "TYPE";
 static prog_char cmd_user_P[] = "USER";
+static prog_char cmd_rename1_P[] = "RNFR";
+static prog_char cmd_rename2_P[] = "RNTO";
+
 
 static char *mon_name = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
@@ -263,7 +278,7 @@ static int ParseIpPort(CONST char * arg, uint32_t * ip, uint16_t * port)
 /*!
  * \brief Send a positive response.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param code    Response code.
  *
@@ -285,7 +300,7 @@ int NutFtpRespondOk(FTPSESSION * session, int code)
 /*!
  * \brief Send a negative response.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param code    Response code.
  *
@@ -307,7 +322,7 @@ int NutFtpRespondBad(FTPSESSION * session, int code)
 /*!
  * \brief Send a response including the specified transfer mode.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param binary  0 indicates ASCII transfer mode.
  *
@@ -335,9 +350,9 @@ int NutFtpSendMode(FTPSESSION * session, int binary)
  * Combines an absolute directory path with a relative path name to a
  * full absolute path name. The absolute directory is split into two
  * parts, the root and the current work directory. The resulting path
- * will never be above the specified root. 
+ * will never be above the specified root.
  *
- * \param root Non-empty absolute root directory path including the 
+ * \param root Non-empty absolute root directory path including the
  *             device name, but without a trailing slash.
  * \param work Absolute work directory path below root including a
  *             leading, but without a trailing slash. This path is
@@ -345,8 +360,8 @@ int NutFtpSendMode(FTPSESSION * session, int binary)
  * \param path Relative path name of a file or directory without any
  *             trailing slash.
  *
- * \return Pointer to the resulting path name. The buffer for this name 
- *         is allocated from heap memory. The caller is responsible for 
+ * \return Pointer to the resulting path name. The buffer for this name
+ *         is allocated from heap memory. The caller is responsible for
  *         freeing it. In case of an error, a NULL pointer is returned.
  */
 char *CreateFullPathName(char *root, char *work, char *path)
@@ -391,7 +406,10 @@ char *CreateFullPathName(char *root, char *work, char *path)
             while (*path) {
                 /* Ingore duplicate slashes. */
                 if (*path == '/') {
-                    *cp++ = *path++;
+                    /* No double slash in target if we are at the root */
+                    if ((cp == full) || (*(cp-1) != '/')) {
+                        *cp++ = *path++;
+                    }
                     while (*path == '/') {
                         path++;
                     }
@@ -438,7 +456,7 @@ char *CreateFullPathName(char *root, char *work, char *path)
 /*!
  * \brief Establish an FTP connection for data transfer.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  *
  * \return Socket descriptor of the newly created data connection or
@@ -446,6 +464,10 @@ char *CreateFullPathName(char *root, char *work, char *path)
  */
 TCPSOCKET *NutFtpDataConnect(FTPSESSION * session)
 {
+#ifdef FTPD_DEBUG
+    static prog_char errorcode_P[] = "errorcode of active socket: %i\n";
+    static prog_char socfailed_P[] = "Create socket failed";
+#endif
     TCPSOCKET *sock;
     int rc;
 
@@ -458,12 +480,23 @@ TCPSOCKET *NutFtpDataConnect(FTPSESSION * session)
             rc = NutTcpAccept(sock, session->ftp_data_port);
         } else {
             rc = NutTcpConnect(sock, session->ftp_data_ip, session->ftp_data_port);
+#ifdef FTPD_DEBUG
+            if (rc) {
+              int errorcode = NutTcpError(sock);
+              printf_P(errorcode_P, errorcode);
+            }
+#endif
         }
         if (rc) {
             NutTcpCloseSocket(sock);
             sock = 0;
         }
     }
+#ifdef FTPD_DEBUG
+    else {
+        puts_P(socfailed_P);
+    }
+#endif
     return sock;
 }
 
@@ -475,7 +508,7 @@ TCPSOCKET *NutFtpDataConnect(FTPSESSION * session)
  *
  * \param path Path name of the root directory. Must include the
  *             device name followed by a colon followed by an
- *             absolute directory path. May be set to NULL for 
+ *             absolute directory path. May be set to NULL for
  *             the default #FTP_ROOTPATH.
  *
  * \return 0 on success, -1 otherwise.
@@ -531,7 +564,7 @@ int NutRegisterFtpRoot(CONST char *path)
  * Only one username/password pair is supported. Subsequent calls will
  * override previous settings.
  *
- * \warning Not successfully registering any will make file systems 
+ * \warning Not successfully registering any will make file systems
  *          accessible by anyone.
  *
  * \param user User's name.
@@ -594,7 +627,7 @@ FTPSESSION *NutFtpOpenSession(TCPSOCKET * sock)
             session->ftp_cwd[1] = 0;
 
             /*
-             * Open a stream and associate it with the socket, so 
+             * Open a stream and associate it with the socket, so
              * we can use standard I/O. Note, that socket streams
              * currently do support text mode.
              */
@@ -611,7 +644,7 @@ FTPSESSION *NutFtpOpenSession(TCPSOCKET * sock)
 /*!
  * \brief Close an FTP server session.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  */
 void NutFtpCloseSession(FTPSESSION * session)
@@ -622,6 +655,9 @@ void NutFtpCloseSession(FTPSESSION * session)
         if (session->ftp_cwd) {
             free(session->ftp_cwd);
         }
+        if (session->ftp_renamesource) {
+            free(session->ftp_renamesource);
+        }
         free(session);
     }
 }
@@ -629,7 +665,7 @@ void NutFtpCloseSession(FTPSESSION * session)
 /*!
  * \brief Process an FTP client's CWD command.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param path    Full absolute path name of the directory.
  *
@@ -643,7 +679,7 @@ int NutFtpProcessCwd(FTPSESSION * session, char *path)
 
     if (*cp && strcmp(cp, "/")) {
         /*
-         * Check, if the path exists and if this is a directory. 
+         * Check, if the path exists and if this is a directory.
          */
         if (stat(path, &st) || !S_ISDIR(st.st_mode)) {
             return NutFtpRespondBad(session, 550);
@@ -670,7 +706,7 @@ int NutFtpProcessCwd(FTPSESSION * session, char *path)
  *
  * Causes the specified file to be deleted.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param path    Full absolute path name of the file.
  *
@@ -688,15 +724,15 @@ int NutFtpProcessDelete(FTPSESSION * session, char *path)
 /*!
  * \brief Transfer a file to or from the FTP client.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param path    Full absolute path name of the file.
- * \param mode    If set to zero, the server will accept the data 
- *                transferred via the data connection and to store the 
- *                data as a file. If the file exists, then its contents 
- *                will be replaced by the data being transferred. A new 
+ * \param mode    If set to zero, the server will accept the data
+ *                transferred via the data connection and to store the
+ *                data as a file. If the file exists, then its contents
+ *                will be replaced by the data being transferred. A new
  *                file is created, if the file does not already exist.
- *                If this parameter is not equal zero, then the server 
+ *                If this parameter is not equal zero, then the server
  *                will transfer a copy of the specified file.
  *
  * \return 0 if the command has been processed or -1 if the
@@ -704,19 +740,34 @@ int NutFtpProcessDelete(FTPSESSION * session, char *path)
  */
 int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
 {
+#ifdef FTPD_DEBUG
+    static prog_char dataconnectfailed_P[] = "NutFtpDataConnect failed";
+#endif
     TCPSOCKET *sock;
     int ec = 550;
-    int fh;
-
+    int fh = -1;
     /* Open the file to send. */
     if (mode) {
-        fh = _open(path, _O_BINARY | _O_RDONLY);
+        /* Some clients open file as directorys. Giving them a direct failure */
+        struct stat st;
+        if (stat(path, &st) == 0) {
+            if (S_ISREG(st.st_mode)) {
+                fh = _open(path, _O_BINARY | _O_RDONLY);
+            } else {
+#ifdef FTPD_DEBUG
+               printf("Not a regular file\n");
+#endif
+            }
+        } else {
+#ifdef FTPD_DEBUG
+            printf("'%s' stat() failed\n", path);
+#endif
+        }
     }
     /* Open the file to receive. */
     else {
         fh = _open(path, _O_CREAT | _O_TRUNC);
     }
-
     if (fh != -1) {
         /* File status OK, opening data connection */
         NutFtpSendMode(session, session->ftp_tran_mode);
@@ -735,7 +786,26 @@ int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
                 /* Send a file. */
                 if (mode) {
                     while ((got = _read(fh, buf, mss)) > 0) {
-                        if (NutTcpSend(sock, buf, got) != got) {
+                        int send = 0;
+                        int retcode;
+                        uint8_t timeout = 0;
+                        /* Mentioned in inetq.c, NutTcpSend does not gurantee
+                           to send all bytes, so we use a loop and do a timeout if
+                           no byte has been send within two seconds. */
+                        do {
+                            retcode = NutTcpSend(sock, buf+send, got-send);
+                            send += retcode; //if < 0, we will leave the loop anyway
+                            if (send == 0) {
+                                timeout++;
+                                NutSleep(10);
+                            } else {
+                                timeout = 0;
+                            }
+                        } while ((send < got ) && (retcode >= 0) && (timeout < 200));
+                        if (retcode <= 0) {
+#ifdef FTPD_DEBUG
+                            printf("Error in NutTcpSend\n");
+#endif
                             ec = 551;
                             break;
                         }
@@ -756,6 +826,11 @@ int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
             }
             NutTcpCloseSocket(sock);
         }
+#ifdef FTPD_DEBUG
+          else {
+          puts_P(dataconnectfailed_P);
+        }
+#endif
         _close(fh);
 
         /* Remove files received with an error. */
@@ -774,15 +849,20 @@ int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
  *
  * Causes a directory listing to be sent to the client.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param path    Full absolute path name of the directory.
  *
+ * \param options Set to 1 to incude filenames beginning with a "." (unix hidden files)
  * \return 0 if the command has been processed or -1 if the
  *         session has been aborted.
  */
-int NutFtpTransferDirectory(FTPSESSION * session, char *path)
+int NutFtpTransferDirectoryOptions(FTPSESSION * session, char *path, int options)
 {
+    static prog_char fileattributes_P[] = "rw-rw-rw-  1 0 0 %6lu ";
+    static prog_char pathname_P[] = "%s/%s";
+    static prog_char dateattribute_P[] = "%.3s %u ";
+    static prog_char timeattribute_P[] = "%02u:%02u ";
     TCPSOCKET *sock;
     FILE *fp;
 
@@ -793,7 +873,6 @@ int NutFtpTransferDirectory(FTPSESSION * session, char *path)
     uint32_t size;
     int ec = 550;
     char *name;
-
     dir = opendir(path);
     if (dir) {
         NutFtpSendMode(session, 0);
@@ -801,12 +880,11 @@ int NutFtpTransferDirectory(FTPSESSION * session, char *path)
             if ((fp = _fdopen((int) sock, "r+b")) != 0) {
                 ec = 0;
                 while ((d_ent = readdir(dir)) != 0) {
-                    if (d_ent->d_name[0] == '.') {
+                    if ((d_ent->d_name[0] == '.')  && ((options & 1) == 0)) {
                         continue;
                     }
-
                     if ((name = malloc(strlen(path) + strlen(d_ent->d_name) + 2)) != 0) {
-                        sprintf(name, "%s/%s", path, d_ent->d_name);
+                        sprintf_P(name, pathname_P, path, d_ent->d_name);
                         if (stat(name, &st) == 0) {
                             if (S_ISDIR(st.st_mode)) {
                                 fputc('d', fp);
@@ -815,12 +893,12 @@ int NutFtpTransferDirectory(FTPSESSION * session, char *path)
                                 fputc('-', fp);
                                 size = st.st_size;
                             }
-                            fprintf(fp, "rw-rw-rw-  1 0 0 %6lu ", size);
+                            fprintf_P(fp, fileattributes_P, size);
                             gmt = gmtime(&st.st_mtime);
                             //fprintf(fp, "%s %u %u ", mon_name[gmt->tm_mon], gmt->tm_mday, 1900 + gmt->tm_year);
-                            fprintf(fp, "%.3s %u ", mon_name + gmt->tm_mon * 3, gmt->tm_mday);
+                            fprintf_P(fp, dateattribute_P, mon_name + gmt->tm_mon * 3, gmt->tm_mday);
                             //fprintf(fp, "%02u:%02u:%02u ", gmt->tm_hour, gmt->tm_min, gmt->tm_sec);
-                            fprintf(fp, "%02u:%02u ", gmt->tm_hour, gmt->tm_min);
+                            fprintf_P(fp, timeattribute_P, gmt->tm_hour, gmt->tm_min);
                             fputs(d_ent->d_name, fp);
                             fputs("\r\n", fp);
                         }
@@ -840,11 +918,28 @@ int NutFtpTransferDirectory(FTPSESSION * session, char *path)
 }
 
 /*!
+ * \brief Process an FTP client's LIST or NLST command.
+ *
+ * Causes a directory listing to be sent to the client.
+ *
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
+ *                previous call to NutFtpOpenSession().
+ * \param path    Full absolute path name of the directory.
+ *
+ * \return 0 if the command has been processed or -1 if the
+ *         session has been aborted.
+ */
+int NutFtpTransferDirectory(FTPSESSION * session, char *path)
+{
+    return NutFtpTransferDirectoryOptions(session, path, 0);
+}
+
+/*!
  * \brief Process an FTP client's MKD command.
  *
  * Causes the specified directory to be created.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param path    Full absolute path name of the directory.
  *
@@ -859,12 +954,56 @@ int NutFtpProcessMkd(FTPSESSION * session, char *path)
     return NutFtpRespondOk(session, 257);
 }
 
+
+int NutFtpRenamePrepare(FTPSESSION * session, char *path)
+{
+    if (session->ftp_renamesource) {
+        free(session->ftp_renamesource);
+        session->ftp_renamesource = NULL;
+    }
+    if (path) {
+        struct stat st;
+        if (stat(path, &st) == 0) {
+            session->ftp_renamesource = strdup(path);
+            if (session->ftp_renamesource) {
+                return NutFtpRespondOk(session, 350);
+            }
+        } else {
+          return NutFtpRespondBad(session, 450);
+        }
+    }
+    return NutFtpRespondBad(session, 501);
+}
+
+int NutFtpRenameAction(FTPSESSION * session, char *path)
+{
+    uint16_t responsebad;
+    if (session->ftp_renamesource) {
+         if (path) {
+             int res = rename(session->ftp_renamesource, path);
+             free(session->ftp_renamesource);
+             session->ftp_renamesource = NULL;
+             if (res == 0) {
+                 return NutFtpRespondOk(session, 250);
+             } else {
+                 responsebad = 550;
+             }
+         } else {
+             responsebad = 501;
+         }
+    } else {
+         responsebad = 503;
+    }
+    return NutFtpRespondBad(session, responsebad);
+}
+
+
 /*!
  * \brief Process an FTP client's PASS command.
  *
  * Only one login per session is accepted.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param pass    Password.
  *
@@ -886,11 +1025,11 @@ int NutFtpProcessPass(FTPSESSION * session, char *pass)
 /*!
  * \brief Process an FTP client's PASV command.
  *
- * This command requests the server to listen on a data port and to wait 
- * for a connection rather than initiate one upon receipt of a transfer 
+ * This command requests the server to listen on a data port and to wait
+ * for a connection rather than initiate one upon receipt of a transfer
  * command.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  *
  * \return 0 if the command has been processed or -1 if the
@@ -898,10 +1037,11 @@ int NutFtpProcessPass(FTPSESSION * session, char *pass)
  */
 int NutFtpProcessPassiv(FTPSESSION * session)
 {
+    static prog_char passiveprint_P[] = "227 Passive (%u,%u,%u,%u,%u,%u).\r\n";
     uint32_t ip = session->ftp_sock->so_local_addr;
     uint16_t port = 20;
 
-    fprintf(session->ftp_stream, "227 Passive (%u,%u,%u,%u,%u,%u).\r\n",        /* */
+    fprintf_P(session->ftp_stream, passiveprint_P,        /* */
             (uint8_t) ip, (uint8_t) (ip >> 8), (uint8_t) (ip >> 16), (uint8_t) (ip >> 24),  /* */
             (uint8_t) (port >> 8), (uint8_t) port);
     fflush(session->ftp_stream);
@@ -913,12 +1053,12 @@ int NutFtpProcessPassiv(FTPSESSION * session)
 /*!
  * \brief Process an FTP client's PORT command.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param args    Command argument, which is the concatenation of the
- *                32-bit internet host address and a 16-bit TCP port 
- *                address. This address information is broken into 8-bit 
- *                fields and the value of each field is transmitted as 
+ *                32-bit internet host address and a 16-bit TCP port
+ *                address. This address information is broken into 8-bit
+ *                fields and the value of each field is transmitted as
  *                a decimal number.
  *
  * \return 0 if the command has been processed or -1 if the
@@ -938,10 +1078,10 @@ int NutFtpProcessPort(FTPSESSION * session, char *args)
 /*!
  * \brief Process an FTP client's PWD command.
  *
- * Causes the name of the current working directory to be 
+ * Causes the name of the current working directory to be
  * returned in the reply.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  *
  * \return 0 if the command has been processed or -1 if the
@@ -949,10 +1089,11 @@ int NutFtpProcessPort(FTPSESSION * session, char *args)
  */
 int NutFtpProcessPwd(FTPSESSION * session)
 {
+    static prog_char pwdanswer_P[] = "257 \"%s\"\r\n";
 #ifdef FTPD_DEBUG
     printf("\n<'257 \"%s\"' ", session->ftp_cwd);
 #endif
-    fprintf(session->ftp_stream, "257 \"%s\"\r\n", session->ftp_cwd);
+    fprintf_P(session->ftp_stream, pwdanswer_P, session->ftp_cwd);
     return 0;
 }
 
@@ -961,7 +1102,7 @@ int NutFtpProcessPwd(FTPSESSION * session)
  *
  * Causes the specified directory to be removed.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param path    Full absolute path name of the directory.
  *
@@ -979,7 +1120,7 @@ int NutFtpProcessRmd(FTPSESSION * session, char *path)
 /*!
  * \brief Process an FTP client's SYST command.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  *
  * \return 0 if the command has been processed or -1 if the
@@ -987,10 +1128,11 @@ int NutFtpProcessRmd(FTPSESSION * session, char *path)
  */
 int NutFtpProcessSystem(FTPSESSION * session)
 {
+    static prog_char unixtype_P[] = "215 UNIX Type: L8\r\n";
 #ifdef FTPD_DEBUG
     printf("\n<'215 UNIX Type: L8' ");
 #endif
-    fputs("215 UNIX Type: L8\r\n", session->ftp_stream);
+    fputs_P(unixtype_P, session->ftp_stream);
     return 0;
 }
 
@@ -1001,7 +1143,7 @@ int NutFtpProcessSystem(FTPSESSION * session)
  * the letters 'A' or 'a' will switch the transfer mode to
  * ASCII. Otherwise binary mode is set.
  *
- * \param session  Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session  Pointer to an \ref FTPSESSION structure, obtained by a
  *                 previous call to NutFtpOpenSession().
  * \param typecode Command arguments.
  *
@@ -1019,7 +1161,7 @@ int NutFtpProcessType(FTPSESSION * session, char *typecode)
  *
  * Only one login per session is accepted.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param user    User name.
  *
@@ -1051,7 +1193,7 @@ int NutFtpProcessUser(FTPSESSION * session, char *user)
  *
  * This routine implements the protocol interpreter of the FTP server.
  *
- * \param session Pointer to an \ref FTPSESSION structure, obtained by a 
+ * \param session Pointer to an \ref FTPSESSION structure, obtained by a
  *                previous call to NutFtpOpenSession().
  * \param request Request string.
  *
@@ -1069,12 +1211,16 @@ int NutFtpProcessRequest(FTPSESSION * session, char *request)
     printf("\n>'%s %s' ", cmd, args);
 #endif
 
+    /* Clean-up if rename request is incomplete */
+    if ((session->ftp_renamesource) && (strcmp_P(cmd, cmd_rename2_P))) {
+          free(session->ftp_renamesource);
+          session->ftp_renamesource = NULL;
+    }
     /* QUIT - Terminate session. */
     if (strcmp_P(cmd, cmd_quit_P) == 0) {
         NutFtpRespondOk(session, 221);
         rc = -1;
     }
-
     /* USER <username> - Check user name. */
     else if (strcmp_P(cmd, cmd_user_P) == 0) {
         rc = NutFtpProcessUser(session, args);
@@ -1118,12 +1264,23 @@ int NutFtpProcessRequest(FTPSESSION * session, char *request)
         else if (strcmp_P(cmd, cmd_type_P) == 0) {
             rc = NutFtpProcessType(session, args);
         }
-
         /* Commands with path name argument. */
         else {
             char *path;
-
-            if ((path = CreateFullPathName(ftp_root, session->ftp_cwd, args)) == 0) {
+            char *argsredux = args;
+            int options = 0;
+            if (args[0] == '-') {
+                 if (strchr(args, 'a')) {
+                   options = 1;
+                 }
+                 argsredux = strchr(args, ' ');
+                 if ((argsredux) && (strlen(argsredux) > 0)) {
+                     argsredux++; //remove space
+                 } else {
+                     argsredux = "";
+                 }
+            }
+            if ((path = CreateFullPathName(ftp_root, session->ftp_cwd, argsredux)) == 0) {
                 rc = NutFtpRespondBad(session, 451);
             }
 
@@ -1139,7 +1296,7 @@ int NutFtpProcessRequest(FTPSESSION * session, char *request)
 
             /* LIST | NLST [<pathname>] - Send list of files in a directory. */
             else if (strcmp_P(cmd, cmd_list_P) == 0 || strcmp_P(cmd, cmd_nlst_P) == 0) {
-                rc = NutFtpTransferDirectory(session, path);
+                rc = NutFtpTransferDirectoryOptions(session, path, options);
             }
 
             /* MKD <pathname> - Make a directory. */
@@ -1161,7 +1318,14 @@ int NutFtpProcessRequest(FTPSESSION * session, char *request)
             else if (strcmp_P(cmd, cmd_stor_P) == 0) {
                 rc = NutFtpTransferFile(session, path, 0);
             }
-
+            /* RNFR <pathname> from - Rename a file on the client. */
+            else if (strcmp_P(cmd, cmd_rename1_P) == 0) {
+                rc = NutFtpRenamePrepare(session, path);
+            }
+            /* RNTO <pathname> to - Rename a file on the client. */
+            else if (strcmp_P(cmd, cmd_rename2_P) == 0) {
+                rc = NutFtpRenameAction(session, path);
+            }
             /* Anything else is an unknown command. */
             else {
                 rc = NutFtpRespondBad(session, 502);
@@ -1182,7 +1346,7 @@ int NutFtpProcessRequest(FTPSESSION * session, char *request)
  * This routine completely implements an FTP server except TCP connect
  * and disconnect.
  *
- * For file transfers, the same maximum segment size and timeouts as set 
+ * For file transfers, the same maximum segment size and timeouts as set
  * for this socket will be used for the data connection.
  *
  * \param sock Socket of an established TCP connection.
@@ -1227,8 +1391,8 @@ int NutFtpServerSession(TCPSOCKET * sock)
               &mon_name[tip->tm_mon * 3],       /* */
               tip->tm_mday, tip->tm_hour, tip->tm_min, tip->tm_sec);
 
-    /* 
-     * Loop for requests. 
+    /*
+     * Loop for requests.
      */
     while (rc == 0) {
 
