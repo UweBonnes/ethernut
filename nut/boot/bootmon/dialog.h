@@ -43,12 +43,12 @@
  *
  */
 
-extern void PutString(char *cp);
+extern int PutString(char *cp);
 extern void PutHex(unsigned char val);
 extern void PutShortHex(unsigned short val);
 extern void PutLongHex(unsigned long val);
 extern int GetLine(char *line, int size);
-extern char *GetIP(char *prompt, char *value);
+extern void GetIP(char *prompt, char *value);
 extern void GetMac(unsigned char *mac);
 
 #ifdef NUTDEBUG

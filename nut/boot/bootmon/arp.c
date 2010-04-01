@@ -179,17 +179,15 @@ int ArpRequest(unsigned long dip, unsigned char *dmac)
 
 void ArpRespond(void)
 {
-    ARPFRAME *af = (ARPFRAME *) & rframe;
-    ETHERARP *ea = &af->eth_arp;
+    ETHERARP *ea = &arpframe.eth_arp;
 
-    ea = &arpframe.eth_arp;
     if (ea->arp_tpa == confnet.cdn_ip_addr) {
         if (htons(ea->arp_op) == ARPOP_REPLY) {
             ae.ae_ip = ea->arp_spa;
             memcpy_(ae.ae_ha, ea->arp_sha, 6);
         } 
-    } else 
-    if (ea->arp_spa == confnet.cdn_ip_addr) {
+    } 
+    else if (ea->arp_spa == confnet.cdn_ip_addr) {
         if (htons(ea->arp_op) == ARPOP_REQUEST) {          
             /*
              * Set ARP header.

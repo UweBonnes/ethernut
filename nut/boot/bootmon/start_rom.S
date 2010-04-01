@@ -111,6 +111,7 @@ EBI_DRP_EARLY = 0x10
 /*
  * Section 0: Vector table and reset entry.
  */
+        .arm
         .section .init0,"ax",%progbits
 
         .global __vectors

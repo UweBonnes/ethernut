@@ -54,6 +54,7 @@
 #include "dhcp.h"
 #include "bootmon.h"
 
+unsigned long random_id;
 BOOTFRAME sframe;
 BOOTFRAME rframe;
 
@@ -85,10 +86,7 @@ void NplUledCntl(int status)
 
 static int UserEntry(void)
 {
-    int n;
-    char yn[3];
-
-    PutString("\nBootMon 1.1.0\n");
+    PutString("\nBootMon 1.2.0\n");
     NplUledCntl(ULED_OFF);
 
     memcpy_(my_mac, confnet.cdn_mac, 6);
@@ -97,34 +95,18 @@ static int UserEntry(void)
     strcpy_(my_gate, inet_ntoa(confnet.cdn_gateway));
     strcpy_(my_tftpd, inet_ntoa(confboot.cb_tftp_ip));
     strcpy_(my_image, (char*)confboot.cb_image);
-    for (;;) {
-        GetMac(my_mac);
-        GetIP("IP address", my_ip);
 
-        if (inet_addr(my_ip)) {
-            GetIP("Net mask", my_mask);
-            GetIP("Default route", my_gate);
-        }
-        GetIP("TFTP IP", my_tftpd);
-        if (inet_addr(my_ip)) {
-            PutString("TFTP Image (");
-            PutString(my_image);
-            PutString("): ");
-            if (GetLine(my_image, 31) == 0) {
-                strcpy_(my_image, (char*)confboot.cb_image);
-            }
-        } else {
-            my_image[0] = 0;
-        }
-        if (inet_addr(my_ip) == 0) {
-            PutString("Using DHCP (Y): ");
-            n = GetLine(yn, 2);
-            if (n == 0 || yn[0] == 'Y' || yn[0] == 'y') {
-                break;
-            }
-        } else if (inet_addr(my_gate) == 0 || (inet_addr(my_ip) & inet_addr(my_mask)) == (inet_addr(my_gate) & inet_addr(my_mask))) {
-            break;
-        }
+    GetMac(my_mac);
+    GetIP("IP address", my_ip);
+
+    if (inet_addr(my_ip)) {
+        GetIP("Net mask", my_mask);
+        GetIP("Default route", my_gate);
+    }
+    GetIP("TFTP IP", my_tftpd);
+    if (inet_addr(my_tftpd)) {
+        PutString("TFTP Image: ");
+        GetLine(my_image, 31);
     }
     PutString("\n");
 
@@ -161,6 +143,13 @@ int main(void)
         /* First trial failed, retry once more. */
         BootConfigRead();
     }
+    /* Set default netmask, if configured one is zero. */
+    if (confnet.cdn_ip_mask == 0) {
+        confnet.cdn_ip_mask = 0xFFFFFF;
+    }
+
+    /* Initialize random ID with MAC address. */
+    memcpy_((unsigned char *)&random_id, &confnet.cdn_mac[2], sizeof(random_id));
 
     /*
      * Loop until a valid image is loaded.
@@ -169,7 +158,7 @@ int main(void)
         /*
          * Give user a chance to enter a space and a new configuration.
          */
-        for (i = 0; i < 20; i++) {
+        for (i = 0; i < 100; i++) {
             if (UartRxWait(6000) == 0) {
                 if (UartRx() == ' ') {
                     UserEntry();

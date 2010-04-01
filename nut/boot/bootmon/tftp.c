@@ -31,7 +31,7 @@
  */
 
 /*
- * $Log: tftp.c,v $
+ * $Log$
  * Revision 1.3  2009/02/28 15:28:46  olereinhardt
  * Fixed compiler warnings (signedness)
  *
@@ -92,7 +92,7 @@ int TftpRecv(void)
     unsigned short tport = TPORT;
     unsigned short block = 0;
     unsigned char *cp;
-    unsigned char *cp1;
+    char *cp1;
 
     /*
      * Do nothing if there's no TFTP host configured.
@@ -108,12 +108,12 @@ int TftpRecv(void)
     sframe.u.tftp.th_opcode = TFTP_RRQ;
     slen = 2;
     cp = (unsigned char*)sframe.u.tftp.th_u.tu_stuff;
-    cp1 = confboot.cb_image;
+    cp1 = (char *)confboot.cb_image;
     if (*cp1 == 0) {
-        cp1 = (unsigned char*)"enut.bin";
+        cp1 = "enut.bin";
     }
     DEBUG("Loading ");
-    DEBUG((char *)cp1);
+    DEBUG(cp1);
     do {
         *cp = *cp1++;
         slen++;
@@ -133,7 +133,7 @@ int TftpRecv(void)
         for (retry = 0; retry < 3; retry++) {
             DEBUG("[RQ TFTP]");
             if (UdpOutput(confboot.cb_tftp_ip, tport, SPORT, slen) >= 0) {
-                if ((rlen = UdpInput(SPORT, 100)) >= 4)
+                if ((rlen = UdpInput(SPORT, 500)) >= 4)
                     break;
             }
         }

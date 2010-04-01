@@ -506,109 +506,111 @@ int EtherInput(unsigned short type, unsigned int tms)
     unsigned short fbc;
     unsigned char isr;
 
-    /* Read the status word w/o auto increment. */
-    nic_inb(NIC_MRCMDX);
-    fsw = inb(NIC_DATA_ADDR);
+    for (;;) {
+        /* Read the status word w/o auto increment. */
+        nic_inb(NIC_MRCMDX);
+        fsw = inb(NIC_DATA_ADDR);
 
-    if (fsw != 1) {
-        DEBUG("[ETH-POLL]");
-        DEBUGUSHORT(tms);
+        if (fsw != 1) {
+            DEBUG("[ETH-POLL]");
+            DEBUGUSHORT(tms);
+            while (tms) {
+                tms--;
+                random_id++;
+                DEBUG(".");
+                isr = nic_inb(NIC_ISR);
+                nic_outb(NIC_ISR, isr);
+
+                /* Receiver interrupt. */
+                if (isr & NIC_ISR_PRS) {
+                    break;
+                }
+                MicroDelay(10000);
+            }
+        }
+
+        /* 
+        * Read the status word w/o auto increment. If zero, no packet is 
+        * available. Otherwise it should be set to one. Any other value 
+        * indicates a weird chip crying for reset.
+        */
         while (tms) {
+            DEBUG("!");
             tms--;
-
-            DEBUG(".");
-            isr = nic_inb(NIC_ISR);
-            nic_outb(NIC_ISR, isr);
-
-            /* Receiver interrupt. */
-            if (isr & NIC_ISR_PRS) {
+            random_id++;
+            nic_inb(NIC_MRCMDX);
+            fsw = inb(NIC_DATA_ADDR);
+            if (fsw > 1) {
+                DEBUG("[FSW ");
+                DEBUGUCHAR(fsw);
+                DEBUG("]");
+                return -1;
+            } else if (fsw) {
                 break;
             }
             MicroDelay(10000);
         }
-    }
 
-    /* 
-     * Read the status word w/o auto increment. If zero, no packet is 
-     * available. Otherwise it should be set to one. Any other value 
-     * indicates a weird chip crying for reset.
-     */
-    while (tms) {
-        DEBUG("!");
-        tms--;
-        nic_inb(NIC_MRCMDX);
-        fsw = inb(NIC_DATA_ADDR);
-        if (fsw > 1) {
-            DEBUG("[FSW ");
-            DEBUGUCHAR(fsw);
+        if (fsw != 1) {
+            return 0;
+        }
+
+        /* Now read status word and byte count with auto increment. */
+        outb(NIC_BASE_ADDR, NIC_MRCMD);
+        fsw = inw(NIC_DATA_ADDR);
+        fbc = inw(NIC_DATA_ADDR);
+
+        /*
+        * Receiving long packets is unexpected, because we disabled 
+        * this during initialization. Let's declare the chip insane.
+        * Short packets will be handled by the caller.
+        */
+        if (fbc > 1536) {
+            //ni->ni_insane = 1;
+            DEBUG("[FBC ");
+            DEBUGUSHORT(fbc);
             DEBUG("]");
             return -1;
-        } else if (fsw) {
-            break;
         }
-        MicroDelay(10000);
-    }
 
-    if (fsw != 1) {
-        return 0;
-    }
+        /*
+        * The high byte of the status word contains a copy of the 
+        * receiver status register.
+        */
+        fsw >>= 8;
+        fsw &= NIC_RSR_ERRORS;
 
-    /* Now read status word and byte count with auto increment. */
-    outb(NIC_BASE_ADDR, NIC_MRCMD);
-    fsw = inw(NIC_DATA_ADDR);
-    fbc = inw(NIC_DATA_ADDR);
+        /*  Discard error packets. */
+        if (fsw) {
+            DEBUG(" RxError(");
+            DEBUGUSHORT(fbc);
+            DEBUG(")");
+            fbc = (fbc + 1) / 2;
+            while (fbc--) {
+                fsw = inw(NIC_DATA_ADDR);
+            }
+            return -1;
+        }
 
-    /*
-     * Receiving long packets is unexpected, because we disabled 
-     * this during initialization. Let's declare the chip insane.
-     * Short packets will be handled by the caller.
-     */
-    if (fbc > 1536) {
-        //ni->ni_insane = 1;
-        DEBUG("[FBC ");
-        DEBUGUSHORT(fbc);
-        DEBUG("]");
-        return -1;
-    }
-
-    /*
-     * The high byte of the status word contains a copy of the 
-     * receiver status register.
-     */
-    fsw >>= 8;
-    fsw &= NIC_RSR_ERRORS;
-
-    /*  Discard error packets. */
-    if (fsw) {
-        DEBUG(" RxError(");
+        DEBUG(" Rx(");
         DEBUGUSHORT(fbc);
         DEBUG(")");
-        fbc = (fbc + 1) / 2;
-        while (fbc--) {
-            fsw = inw(NIC_DATA_ADDR);
+
+        /* Read packet data from 16 bit bus. */
+        fbc -= 4;
+        NicRead16((unsigned char *) &rframe, fbc);
+        /* Read packet CRC. */
+        fsw = inw(NIC_DATA_ADDR);
+        fsw = inw(NIC_DATA_ADDR);
+
+        if (rframe.eth_hdr.ether_type == type) {
+            break;
         }
-        return -1;
-    }
-
-    DEBUG(" Rx(");
-    DEBUGUSHORT(fbc);
-    DEBUG(")");
-
-    /* Read packet data from 16 bit bus. */
-    fbc -= 4;
-    NicRead16((unsigned char *) &rframe, fbc);
-    /* Read packet CRC. */
-    fsw = inw(NIC_DATA_ADDR);
-    fsw = inw(NIC_DATA_ADDR);
-
-    /*
-     * Handle incoming ARP requests.
-     */
-    if (rframe.eth_hdr.ether_type != type) {
+        /*
+         * Handle incoming ARP requests.
+         */
         if (rframe.eth_hdr.ether_type == ETHERTYPE_ARP)
             ArpRespond();
-        fbc = 0;
-    }    
-    
+    }
     return fbc;
 }

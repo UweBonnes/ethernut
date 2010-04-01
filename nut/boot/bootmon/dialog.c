@@ -48,30 +48,49 @@ static char buf[9];
 static char hexdigit[] = "0123456789ABCDEF";
 static char inbuff[60];
 
-void PutString(char *cp)
+int PutString(char *cp)
 {
-    while (*cp) {
-        if (*cp++ == '\n') {
+    int rc = 0;
+
+    for (; *cp; cp++) {
+        if (*cp == '\n') {
             UartTx('\r');
+            rc++;
         }
         UartTx(*cp);
+        rc++;
     }
+    return rc;
 }
 
 int GetLine(char *line, int size)
 {
-    int cnt = 0;
+    int cnt;
     unsigned char ch;
 
+    cnt = PutString(line);
+    line += cnt;
     for (;;) {
         if (cnt > size - 1)
             break;
         while ((ch = UartRx()) == 0 || ch == 32);
-        if (ch < 32)
+        if (ch == 8) {
+            if (cnt) {
+                UartTx(ch);
+                UartTx(' ');
+                UartTx(ch);
+                cnt--;
+                line--;
+            }
+        }
+        else if (ch < 32) {
             break;
-        UartTx(ch);
-        *line++ = ch;
-        cnt++;
+        }
+        else {
+            UartTx(ch);
+            *line++ = ch;
+            cnt++;
+        }
     }
     *line = 0;
     PutString("\n");
@@ -82,22 +101,22 @@ int GetLine(char *line, int size)
 /*
  * Get a line of input.
  */
-char *GetIP(char *prompt, char *value)
+void GetIP(char *prompt, char *value)
 {
     for (;;) {
         PutString(prompt);
-        PutString(" (");
-        PutString(value);
-        PutString("): ");
+        PutString(": ");
+        strcpy_(inbuff, value);
         if (GetLine(inbuff, sizeof(inbuff)) == 0)
             break;
         if (inet_addr(inbuff) != (unsigned long) (-1L)) {
             strcpy_(value, inbuff);
             break;
         }
-        PutString("Bad IP address\n");
+        PutString("Bad IP address ");
+        PutString(inbuff);
+        PutString("\n");
     }
-    return value;
 }
 
 void PutHex(unsigned char val)
@@ -142,11 +161,12 @@ void GetMac(unsigned char *mac)
     int n;
 
     for (;;) {
-        PutString("\nMAC address (");
+        PutString("\nMAC address: ");
         for (i = 0; i < 6; i++) {
-            PutHex(mac[i]);
+            inbuff[i * 2] = hexdigit[mac[i] & 0x0F];
+            inbuff[i * 2 + 1] = hexdigit[mac[i] >> 4];
         }
-        PutString("): ");
+        inbuff[i * 2] = 0;
 
         n = GetLine(inbuff, sizeof(inbuff));
         if (n == 0) {

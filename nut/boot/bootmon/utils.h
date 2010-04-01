@@ -50,7 +50,7 @@ extern void Delay(unsigned char val);
 extern void memset_(unsigned char *dst, unsigned char val, unsigned char len);
 extern void memcpy_(unsigned char *dst, const unsigned char *src, unsigned char len);
 extern void strcpy_(char *dst, const char *src);
-
+extern int memcmp_(const unsigned char *dst, const unsigned char *src, unsigned char len);
 extern unsigned long inet_addr(char *str);
 extern int hex2bin(char c);
 

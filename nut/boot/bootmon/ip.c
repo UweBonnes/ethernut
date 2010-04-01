@@ -147,6 +147,7 @@ int IpInput(unsigned char proto, unsigned int tms)
          */
         DEBUG("[IP-POLL]");
         if ((rc = EtherInput(ETHERTYPE_IP, tms)) <= 0) {
+            DEBUG("[NoInp]");
             break;
         }
 

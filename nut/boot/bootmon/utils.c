@@ -52,8 +52,14 @@
 void MicroDelay(unsigned int nops)
 {
     while (nops--) {
-        asm volatile ("nop");
-        asm volatile ("nop");
+        _NOP();
+        _NOP();
+        _NOP();
+        _NOP();
+        _NOP();
+        _NOP();
+        _NOP();
+        _NOP();
     }
 }
 
@@ -84,6 +90,16 @@ void memcpy_(unsigned char *dst, const unsigned char *src, unsigned char len)
     while (len--) {
         *dst++ = *src++;
     }
+}
+
+int memcmp_(const unsigned char *dst, const unsigned char *src, unsigned char len)
+{
+    while (len--) {
+        if (*dst != *src) {
+            return -1;
+        }
+    }
+    return 0;
 }
 
 void memset_(unsigned char *dst, unsigned char val, unsigned char len)

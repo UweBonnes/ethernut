@@ -49,7 +49,7 @@
 #include "config.h"
 #include "utils.h"
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__ ((packed, __may_alias__)) {
     ETHERHDR eth_hdr;
     IPHDR ip_hdr;
     UDPHDR udp_hdr;
@@ -58,6 +58,8 @@ typedef struct __attribute__ ((packed)) {
         BOOTPHDR bootp;
     } u;
 } BOOTFRAME;
+
+extern unsigned long random_id;
 
 /*
  * Outgoing frame.

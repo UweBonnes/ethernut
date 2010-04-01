@@ -237,7 +237,7 @@ int DhcpQuery(void)
      */
     bp = &sframe.u.bootp;
     bp->bp_op = 1;
-    bp->bp_xid = *((unsigned long *) &confnet.cdn_mac[2]);
+    bp->bp_xid = random_id;
     bp->bp_htype = 1;
     bp->bp_hlen = sizeof(confnet.cdn_mac);
     memcpy_(bp->bp_chaddr, confnet.cdn_mac, 6);

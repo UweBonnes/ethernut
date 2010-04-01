@@ -44,7 +44,7 @@ DEFS += -DEE_CONFNET=64
 DEFS += -DEE_CONFBOOT=128
 # DEFS += -DNUTDEBUG
 DEFS += -DUSRLED
-# DEFS += -DAT45D_CONF
+DEFS += -DAT45D_CONF
 
 ENTRY = 0x1F000
 
@@ -66,14 +66,6 @@ BURNMEMORY=FLASH
 BURNFLAGS=-DDEVICE=0x1F0F0F0F -DIMAGE=./$(BTARG) BATCH at91-upl.jom $(BURNMEMORY)
 
 MCFLAGS   = -mcpu=$(MCU)
-CPFLAGS = $(MCFLAGS) -Os -mthumb-interwork -fomit-frame-pointer -Wall -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
-ASFLAGS = $(MCFLAGS) -Wa,-amhls=$(<F:.S=.lst) $(DEFS)
-LDFLAGS   = $(MCFLAGS) -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)
-#LDFLAGS = $(MCFLAGS) -Wl,-T$(LDSCRIPT),-Map=$(PROJ).map,--relax,--sort-common,--strip-all,--cref -L$(LIBDIR)
-#LDFLAGS   = $(MCFLAGS) -Wl,-Map=$(PROJ).map,--cref,--defsym,__stack=0x10FF -nostartfiles -nodefaultlibs -Ttext=$(ENTRY)
-
-ELFCOF    = $(BIN) --debugging \
-	--change-section-address .data-0x800000 \
-	--change-section-address .bss-0x800000 \
-	--change-section-address .noinit-0x800000 \
-	--change-section-address .eeprom-0x810000
+CPFLAGS = $(MCFLAGS) -Os -mthumb -mthumb-interwork -fomit-frame-pointer -Wall -Wstrict-prototypes -Wa,-ahlms=$(<F:.c=.lst) $(DEFS)
+ASFLAGS = $(MCFLAGS) -mthumb-interwork -Wa,-amhls=$(<F:.S=.lst) $(DEFS)
+LDFLAGS   = $(MCFLAGS) -mthumb-interwork -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)

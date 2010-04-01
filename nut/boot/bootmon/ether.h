@@ -65,7 +65,7 @@
 #define ETHERTYPE_IP    0x0008  /*!< \brief IP protocol */
 #define ETHERTYPE_ARP   0x0608  /*!< \brief Address resolution protocol */
 
-typedef struct __attribute__ ((packed)) ether_header {
+typedef struct __attribute__ ((packed, __may_alias__)) ether_header {
     unsigned char ether_dhost[6];       /*!< \brief Destination MAC address. */
     unsigned char ether_shost[6];       /*!< \brief Source MAC address. */
     unsigned short ether_type;  /*!< \brief Protocol type. */
