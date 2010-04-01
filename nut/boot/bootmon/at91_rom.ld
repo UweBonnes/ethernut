@@ -82,6 +82,18 @@ SECTIONS
     __data_load_start = .;
   } > rom
 
+  .bss :
+  {
+    . += 0x400;
+    PROVIDE (__stack = .);
+    PROVIDE (__bss_start = .);
+    *(.bss)
+    *(COMMON)
+    . = ALIGN(4);
+    PROVIDE (__bss_end = .);
+    PROVIDE (__heap_start = .);
+  } > ram
+
   .data : AT (__data_load_start)
   {
     PROVIDE (__data_start = .);
@@ -90,18 +102,6 @@ SECTIONS
     edata = .;
     _edata = .;
     PROVIDE (__data_end = .);
-  } > ram
-
-  .bss :
-  {
-    PROVIDE (__bss_start = .);
-    *(.bss)
-    *(COMMON)
-    . = ALIGN(4);
-    PROVIDE (__bss_end = .);
-    . += 0x400;
-    PROVIDE (__stack = .);
-    PROVIDE (__heap_start = .);
   } > ram
 
   .stab 0 (NOLOAD) :
