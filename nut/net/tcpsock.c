@@ -369,8 +369,6 @@ TCPSOCKET *NutTcpFindSocket(uint16_t lport, uint16_t rport, uint32_t raddr)
  *
  * \return Socket descriptor of the newly created TCP socket or
  *         0 if there is not enough memory left.
- *
- * \todo Avoid fixed initial sequence number.
  */
 TCPSOCKET *NutTcpCreateSocket(void)
 {
