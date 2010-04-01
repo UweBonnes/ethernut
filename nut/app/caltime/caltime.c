@@ -1,6 +1,6 @@
 /*!
  * Copyright (C) 2001-2005 by egnite Software GmbH
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2010 by egnite GmbH
  *
  * All rights reserved.
  *
@@ -48,9 +48,9 @@
 #include <io.h>
 #include <string.h>
 #include <time.h>
-
-/* Remove the following line to exclude the line editor. */
-#define USE_LINE_EDITOR
+#ifdef USE_BUILD_TIME
+#include <pro/rfctime.h>
+#endif
 
 #ifdef USE_LINE_EDITOR
 #include <gorp/edline.h>
@@ -64,8 +64,10 @@ static EDLINE *edline;
  *
  * Demonstrates Nut/OS date and time functions, which had been contributed
  * by Oliver Schulz.
+ *
+ * Check the Makefile for additional options.
  */
-static char *version = "2.0";
+static char *version = "2.1";
 
 
 /* Used for ASCII Art Animation. */
@@ -394,6 +396,9 @@ int main(void)
     puts("Note: Enable local echo!");
 #endif
 
+#if USE_TIME_ZONE
+    _timezone = USE_TIME_ZONE;
+#endif
 
 #ifdef RTC_CHIP
     /* Register and query hardware RTC, if available. */
@@ -409,6 +414,13 @@ int main(void)
         } else {
             puts("OK");
         }
+    }
+#elif USE_BUILD_TIME
+    {
+        /* Initially use the compile date and time. */
+        time_t now = RfcTimeParse("Unk, " __DATE__ " " __TIME__);
+        stime(&now);
+        puts("Built " __DATE__ " " __TIME__);
     }
 #endif
 
@@ -449,6 +461,7 @@ int main(void)
             DisplayUpTime();
             break;
         case 'C':
+        case 'c':
             CalcWeekDay();
             break;
         case 'S':
