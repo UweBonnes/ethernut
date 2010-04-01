@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,46 +30,10 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*!
- * $Log$
- * Revision 1.10  2009/03/08 20:17:51  haraldkipp
- * AVR compile error fixed. lctl is required.
- *
- * Revision 1.9  2009/02/18 12:18:58  olereinhardt
- * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- *
- *           Fixed compilier warnings. Especialy signedness of char buffers
- *           as well as unused code on arm platform and main functions without
- *           return value
- *
- * Revision 1.8  2008/01/31 09:38:15  haraldkipp
- * Added return statement in main to avoid warnings with latest GCC.
- *
- * Revision 1.7  2006/07/21 09:08:19  haraldkipp
- * Use devAhdlc0 instead of devUart0. The latter will not work.
- *
- * Revision 1.6  2005/10/16 23:22:44  hwmaier
- * Commented out unreferenced include statement hd44780.h
- *
- * Revision 1.5  2005/04/30 16:42:41  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.4  2005/02/23 04:44:35  hwmaier
- * Changes in order to support AT90CAN128
- *
- * Revision 1.3  2004/01/28 14:24:47  drsung
- * Bugfix for ICCAVR
- *
- * Revision 1.2  2003/11/06 09:24:50  haraldkipp
- * Added a note that debug output will hang ATmega103
- *
- * Revision 1.1  2003/08/14 14:57:07  haraldkipp
- * First release
- *
+ * $Id$
  */
 
 /*!

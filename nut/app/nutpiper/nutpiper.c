@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2003-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2003-2006 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,38 +30,10 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*!
- * $Log$
- * Revision 1.7  2009/02/18 12:18:58  olereinhardt
- * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- *
- *           Fixed compilier warnings. Especialy signedness of char buffers
- *           as well as unused code on arm platform and main functions without
- *           return value
- *
- * Revision 1.6  2006/08/31 19:14:44  haraldkipp
- * Not all platforms do have devDebug0. Use board.h to determine the
- * correct driver.
- *
- * Revision 1.5  2006/07/21 09:06:36  haraldkipp
- * Exclude AVR specific parts from building for other platforms. This does
- * not imply, that all samples are working on all platforms.
- *
- * Revision 1.4  2006/05/15 12:51:47  haraldkipp
- * Player start timeout increased.
- *
- * Revision 1.3  2004/05/11 17:22:12  drsung
- * Deprecated header file removed.
- *
- * Revision 1.2  2003/11/04 17:46:52  haraldkipp
- * Adapted to Ethernut 2
- *
- * Revision 1.1  2003/07/21 17:50:48  haraldkipp
- * First check in
- *
+ * $Id$
  */
 
 /*!

@@ -1,5 +1,7 @@
 /*!
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2005 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,69 +33,7 @@
  */
 
 /*!
- * $Log$
- * Revision 1.6  2008/01/31 09:38:15  haraldkipp
- * Added return statement in main to avoid warnings with latest GCC.
- *
- * Revision 1.5  2005/11/22 09:17:31  haraldkipp
- * Replaced specific device names by generalized macros.
- * Thread stack size increased to get it running on ARM CPUs.
- *
- * Revision 1.4  2005/04/19 08:57:52  haraldkipp
- * Description updated and ARM support added
- *
- * Revision 1.3  2005/04/05 18:00:29  haraldkipp
- * Make it work on the Gameboy Advance.
- *
- * Revision 1.2  2004/09/08 10:18:23  haraldkipp
- * For EB40A
- *
- * Revision 1.1  2003/08/05 18:59:05  haraldkipp
- * Release 3.3 update
- *
- * Revision 1.14  2003/02/04 18:19:40  harald
- * Version 3 released
- *
- * Revision 1.13  2003/02/04 16:24:37  harald
- * Adapted to version 3
- *
- * Revision 1.12  2002/11/02 15:13:18  harald
- * Library dependencies removed
- *
- * Revision 1.11  2002/10/31 16:27:40  harald
- * Mods by troth for Linux
- *
- * Revision 1.10  2002/07/03 16:33:21  harald
- * Broken watchdog patch
- *
- * Revision 1.9  2002/06/26 17:29:07  harald
- * First pre-release with 2.4 stack
- *
- * Revision 1.8  2002/06/12 10:59:23  harald
- * *** empty log message ***
- *
- * Revision 1.7  2002/06/04 18:48:50  harald
- * Problems with ATmega128 watchdog
- *
- * Revision 1.6  2002/05/11 21:01:47  harald
- * Adding more stress to test timer functions
- *
- * Revision 1.5  2002/05/09 21:49:57  harald
- * Using new default UART.
- * Bufgix: Event queues must be set 0.
- *
- * Revision 1.4  2002/05/08 16:02:34  harald
- * First Imagecraft compilation
- *
- * Revision 1.3  2002/05/02 18:48:03  harald
- * *** empty log message ***
- *
- * Revision 1.2  2002/01/28 19:49:28  harald
- * Testing new timer layout
- *
- * Revision 1.1  2001/06/28 18:43:13  harald
- * Preview release
- *
+ * $Id$
  */
 
 /*!

@@ -1,5 +1,7 @@
 /*!
- * Copyright (C) 2001-2008 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2008 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,47 +33,7 @@
  */
 
 /*!
- * $Log$
- * Revision 1.4  2008/01/31 09:35:10  haraldkipp
- * Now makes use of general GPIO routines to work on all platforms.
- * Pre-configured for Ethernut 1, 2 and 3 as well as Atmel's SAM7X
- * and SAM9260 Evaluation Kits. Note, that the AVR version had been
- * moved from PORTD to PORTB. This had been done to get the same
- * expansion port pins on Ethernut 1/2 and Ethernut 3 without
- * disturbing the TWI/I2C port. Removed system specific commands to
- * keep it simple.
- *
- * Revision 1.3  2005/11/22 09:16:31  haraldkipp
- * Replaced specific device names by generalized macros.
- * Casting size_t to int to avoid compiler warnings about printf format
- * specifiers.
- * Excluded hardware specific statements for non-AVR targets. This way
- * it will not work on other targets, but at least compile without error.
- *
- * Revision 1.2  2003/11/04 17:46:52  haraldkipp
- * Adapted to Ethernut 2
- *
- * Revision 1.1  2003/08/05 18:59:05  haraldkipp
- * Release 3.3 update
- *
- * Revision 1.7  2003/02/04 18:19:38  harald
- * Version 3 released
- *
- * Revision 1.6  2003/02/04 16:24:33  harald
- * Adapted to version 3
- *
- * Revision 1.5  2002/06/26 17:29:03  harald
- * First pre-release with 2.4 stack
- *
- * Revision 1.4  2002/06/12 10:56:16  harald
- * *** empty log message ***
- *
- * Revision 1.3  2002/06/04 19:12:37  harald
- * *** empty log message ***
- *
- * Revision 1.2  2002/05/08 16:02:31  harald
- * First Imagecraft compilation
- *
+ * $Id$
  */
 
 /*!

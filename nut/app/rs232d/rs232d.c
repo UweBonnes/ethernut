@@ -1,6 +1,8 @@
 /*!
  * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
  *
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,40 +33,7 @@
  */
 
 /*!
- * $Log$
- * Revision 1.5  2008/01/31 09:38:15  haraldkipp
- * Added return statement in main to avoid warnings with latest GCC.
- *
- * Revision 1.4  2005/11/22 09:14:13  haraldkipp
- * Replaced specific device names by generalized macros.
- *
- * Revision 1.3  2004/09/10 10:26:35  haraldkipp
- * Removed old header files
- *
- * Revision 1.2  2003/11/04 17:46:52  haraldkipp
- * Adapted to Ethernut 2
- *
- * Revision 1.1  2003/08/05 18:59:05  haraldkipp
- * Release 3.3 update
- *
- * Revision 1.7  2003/02/04 18:19:39  harald
- * Version 3 released
- *
- * Revision 1.6  2003/02/04 16:24:34  harald
- * Adapted to version 3
- *
- * Revision 1.5  2002/10/31 16:25:48  harald
- * Mods by troth for Linux
- *
- * Revision 1.3  2002/06/26 17:29:03  harald
- * First pre-release with 2.4 stack
- *
- * Revision 1.2  2002/06/12 11:22:55  harald
- * *** empty log message ***
- *
- * Revision 1.1  2002/06/04 19:00:49  harald
- * First check in
- *
+ * $Id$
  */
 
 /*!

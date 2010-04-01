@@ -17,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,84 +31,10 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*!
- * $Log$
- * Revision 1.21  2009/02/18 12:18:58  olereinhardt
- * 2009-02-18  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- *
- *           Fixed compilier warnings. Especialy signedness of char buffers
- *           as well as unused code on arm platform and main functions without
- *           return value
- *
- * Revision 1.20  2009/02/06 15:37:40  haraldkipp
- * Added stack space multiplier and addend. Adjusted stack space.
- *
- * Revision 1.19  2008/07/25 10:20:12  olereinhardt
- * Fixed compiler bug for AVR-ICC and added missing PSTR macro around
- * prog_char strings
- *
- * Revision 1.18  2008/07/17 11:56:20  olereinhardt
- * Updated the webserver demo to show new webserver functions (different cgi
- * pathes with seperate authentication, $QUERY_STRING parameter for ssi
- * included CGIs)
- *
- * Revision 1.17  2008/05/13 19:31:34  thiagocorrea
- * NutHttpSendHeaderBot is marked as deprecated, use NutHttpSendHeaderBottom instead.
- *
- * Revision 1.16  2007/07/17 18:29:30  haraldkipp
- * Server thread names not unique on SAM7X. Fixed by Marti Raudsepp.
- *
- * Revision 1.15  2006/09/07 09:01:36  haraldkipp
- * Discovery registration added.
- * Re-arranged network interface setup to exclude DHCP code from ICCAVR
- * builds and make it work with the demo compiler. Unfinished.
- * Added PHAT file system support. Untested.
- *
- * Revision 1.14  2006/03/02 19:44:03  haraldkipp
- * MMC and PHAT enabled.
- *
- * Revision 1.13  2006/01/11 08:32:57  hwmaier
- * Added explicit type casts to silence a few avr-gcc 3.4.3 warning messages
- *
- * Revision 1.12  2005/11/22 09:14:13  haraldkipp
- * Replaced specific device names by generalized macros.
- *
- * Revision 1.11  2005/10/16 23:22:20  hwmaier
- * Removed unreferenced nutconfig.h include statement
- *
- * Revision 1.10  2005/08/05 11:32:50  olereinhardt
- * Added SSI and ASP sample
- *
- * Revision 1.9  2005/04/05 18:04:17  haraldkipp
- * Support for ARM7 Wolf Board added.
- *
- * Revision 1.8  2005/02/23 04:39:26  hwmaier
- * no message
- *
- * Revision 1.7  2005/02/22 02:44:34  hwmaier
- * Changes to compile as well for AT90CAN128 device.
- *
- * Revision 1.6  2004/12/16 10:17:18  haraldkipp
- * Added Mikael Adolfsson's excellent parameter parsing routines.
- *
- * Revision 1.5  2004/03/16 16:48:26  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.4  2003/11/04 17:46:52  haraldkipp
- * Adapted to Ethernut 2
- *
- * Revision 1.3  2003/09/29 16:33:12  haraldkipp
- * Using portable strtok and strtok_r
- *
- * Revision 1.2  2003/08/07 08:27:58  haraldkipp
- * Bugfix, remote not displayed in socket list
- *
- * Revision 1.1  2003/07/20 15:56:14  haraldkipp
- * *** empty log message ***
- *
+ * $Id$
  */
 
 /*!

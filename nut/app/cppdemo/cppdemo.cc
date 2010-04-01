@@ -1,23 +1,45 @@
-// Trivial C++ Demo for NutOS.
+/*
+ * Copyright (c) 2005 by Oliver Schulz (MPI)
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holders nor the names of
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * For additional information see http://www.ethernut.de/
+ */
 
 /*!
- * $Log: cppdemo.cc,v $
- * Revision 1.4  2007/04/12 09:15:39  haraldkipp
- * Now compiles on avr-gcc 4.1.1.
- *
- * Revision 1.3  2006/07/10 14:24:11  haraldkipp
- * Header files replaced by platform independent variants.
- * Contributed by Matthias Wilde.
- *
- * Revision 1.2  2005/08/02 17:46:44  haraldkipp
- * Major API documentation update.
- *
+ * $Id$
  */
 
 /*!
  * \example cppdemo/cppdemo.cc
  *
- * This sample demonstrates the usage of Nut/OS with C++.
+ * This trivial sample demonstrates the usage of Nut/OS with C++.
  *
  * You should carefully think about using C++ with tiny embedded systems.
  * This sample just proofs, that it basically works.

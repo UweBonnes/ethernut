@@ -33,15 +33,7 @@
  */
 
 /*!
- * $Log$
- * Revision 1.2  2009/02/22 11:38:47  olereinhardt
- * 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- * Added warning if NUT_UDP_ICMP_SUPPORT is not enabled in configurator
- *
- * Revision 1.1  2009/02/22 11:33:24  olereinhardt
- * 2009-02-22  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- * Initial import of ICMP demo for UDP sockets
- *
+ * $Id$
  */
 
 /*!
