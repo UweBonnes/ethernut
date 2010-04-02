@@ -93,8 +93,6 @@
  * \endverbatim
  */
 
-#define NUT_DEPRECATED
-
 #include <cfg/os.h>
 #include <cfg/clock.h>
 
@@ -102,8 +100,6 @@
 #include <sys/device.h>
 #include <sys/file.h>
 #include <sys/timer.h>
-
-#define static
 
 /*!
  * \addtogroup xgDevDebugAt91
