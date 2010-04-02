@@ -106,12 +106,28 @@
  */
 /*@{*/
 
+#ifndef NUT_DEV_DEBUG_SPEED
+#define NUT_DEV_DEBUG_SPEED 115200
+#endif
+
 #if defined(DBGU_BASE)
 static NUTFILE dbgfile;
 #else
 static NUTFILE dbgfile0;
 static NUTFILE dbgfile1;
 #endif
+
+/*!
+ * \brief Calculate divisor for a given baud rate.
+ *
+ * \param baud Baud rate.
+ *
+ * \return Calculated divisor.
+ */
+static uint32_t RateDiv(uint32_t baud)
+{
+    return (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * baud) + 1) / 2;
+}
 
 #if defined(DBGU_BASE)
 /*!
@@ -124,7 +140,7 @@ static NUTFILE dbgfile1;
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outr(DBGU_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (*((uint32_t *)conf))) + 1) / 2);
+        outr(DBGU_BRGR, RateDiv(*((uint32_t *)conf)));
         return 0;
     }
     return -1;
@@ -148,7 +164,7 @@ static int DebugInit(NUTDEVICE * dev)
     /* Disable all UART interrupts. */
     outr(DBGU_IDR, 0xFFFFFFFF);
     /* Set UART baud rate generator register. */
-    outr(DBGU_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (115200)) + 1) / 2);
+    outr(DBGU_BRGR, RateDiv(NUT_DEV_DEBUG_SPEED));
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(DBGU_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
@@ -169,7 +185,7 @@ static int DebugInit(NUTDEVICE * dev)
 static int Debug0IOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outr(US0_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (*((uint32_t *)conf))) + 1) / 2);
+        outr(US0_BRGR, RateDiv(*((uint32_t *)conf)));
         return 0;
     }
     return -1;
@@ -185,7 +201,7 @@ static int Debug0IOCtl(NUTDEVICE * dev, int req, void *conf)
 static int Debug1IOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outr(US1_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (*((uint32_t *)conf))) + 1) / 2);
+        outr(US1_BRGR, RateDiv(*((uint32_t *)conf)));
         return 0;
     }
     return -1;
@@ -222,7 +238,7 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(US0_TCR, 0);
 #endif
     /* Set UART baud rate generator register. */
-    outr(US0_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (115200)) + 1) / 2);
+    outr(US0_BRGR, RateDiv(NUT_DEV_DEBUG_SPEED));
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(US0_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
@@ -262,7 +278,7 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(US1_TCR, 0);
 #endif
     /* Set UART baud rate generator register. */
-    outr(US1_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (115200)) + 1) / 2);
+    outr(US1_BRGR, RateDiv(NUT_DEV_DEBUG_SPEED));
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(US1_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
