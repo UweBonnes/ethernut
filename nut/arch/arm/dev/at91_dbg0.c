@@ -42,6 +42,7 @@
  * \endverbatim
  */
 
+#include <cfg/uart.h>
 #include <arch/arm/debug_at91.h>
 
 #if defined(USART0_BASE)
@@ -52,7 +53,11 @@
 /*@{*/
 
 #ifndef NUT_DEV_DEBUG_SPEED
+#ifdef UART0_INIT_BAUDRATE
+#define NUT_DEV_DEBUG_SPEED UART0_INIT_BAUDRATE
+#else
 #define NUT_DEV_DEBUG_SPEED 115200
+#endif
 #endif
 
 /*!
