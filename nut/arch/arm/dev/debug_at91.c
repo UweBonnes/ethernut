@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2006 by egnite Software GmbH
+ * Copyright (C) 2010 by egnite GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,7 +31,6 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
 /*!
@@ -36,60 +38,7 @@
  * \brief AT91 debug output device.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.13  2008/08/11 06:59:07  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.12  2008/08/06 12:51:00  haraldkipp
- * Added support for Ethernut 5 (AT91SAM9XE reference design).
- *
- * Revision 1.11  2008/02/15 16:58:41  haraldkipp
- * Spport for AT91SAM7SE512 added.
- *
- * Revision 1.10  2007/10/04 19:55:33  olereinhardt
- * Support for SAM7S256 added
- *
- * Revision 1.9  2006/08/31 19:01:08  haraldkipp
- * Using devDebug2 for the DBGU output was a bad idea. Some AT91 chips
- * provide more than two UARTs. We now use devDebug to specify the DBGU
- * device. Baudrate calculations failed on CPUs running on a processor
- * clock, which differs from a futher divided main clock. This had been
- * fixed.
- *
- * Revision 1.8  2006/08/05 11:54:06  haraldkipp
- * Special register functions should not be based on MCU definitions but on
- * register definitions.
- *
- * Revision 1.7  2006/07/05 07:55:23  haraldkipp
- * Daidai's support for AT91SAM7X added.
- *
- * Revision 1.6  2006/06/28 17:18:40  haraldkipp
- * Temporarly exclude AT91R40008 specific register settings from building
- * for AT91SAM7X.
- *
- * Revision 1.5  2006/03/16 19:03:48  haraldkipp
- * Added ioctl to set baudrate.
- *
- * Revision 1.4  2006/01/05 16:46:01  haraldkipp
- * Baudrate calculation is now based on NutGetCpuClock().
- * The AT91_US_BAUD macro had been marked deprecated.
- *
- * Revision 1.3  2005/10/24 08:26:58  haraldkipp
- * Use AT91 header file. Allow to use both USARTs.
- *
- * Revision 1.2  2005/08/02 17:46:45  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:02:26  haraldkipp
- * Moved from dev.
- *
- * Revision 1.2  2005/04/05 17:49:05  haraldkipp
- * Make it work on Wolf, but breaks AT91EB40A.
- *
- * Revision 1.1  2004/09/08 10:53:13  haraldkipp
- * Our first device for the EB40A
- *
+ * $Id$
  * \endverbatim
  */
 
