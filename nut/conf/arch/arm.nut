@@ -674,7 +674,10 @@ nutarch_arm =
         brief = "UART Debug Output (AT91)",
         requires = { "HW_UART_AT91" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        sources = { "arm/dev/debug_at91.c" }
+        sources = { "arm/dev/debug_at91.c",
+                    "arm/dev/at91_dbg0.c",
+                    "arm/dev/at91_dbg1.c",
+                    "arm/dev/at91_dbgu.c" }
     },
     {
         name = "nutarch_arm_usart0",
