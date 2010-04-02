@@ -128,11 +128,7 @@ static NUTFILE dbgfile1;
 static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-#if defined(AT91_PLL_MAINCK)
-        outr(DBGU_BRGR, (At91GetMasterClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
-#else
-        outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
-#endif
+        outr(DBGU_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (*((uint32_t *)conf))) + 1) / 2);
         return 0;
     }
     return -1;
@@ -145,24 +141,22 @@ static int DebugIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int DebugInit(NUTDEVICE * dev)
 {
-#if defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
     /* Disable GPIO on UART tx/rx pins. */
-    #if defined (MCU_AT91SAM7X)
-       outr(PIOA_PDR, _BV(27) | _BV(28));
-    #elif defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
-       outr(PIOA_PDR, _BV(PA9_DRXD_A) | _BV(PA10_DTXD_A));
-    #endif
+#if defined (PA9_DRXD_A) && defined (PA10_DTXD_A)
+    outr(PIOA_PDR, _BV(PA9_DRXD_A) | _BV(PA10_DTXD_A));
+#elif defined (PA27_DRXD_A) && defined (PA28_DTXD_A)
+    outr(PIOA_PDR, _BV(PA27_DRXD_A) | _BV(PA28_DTXD_A));
+#endif
     /* Reset UART. */
     outr(DBGU_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
     /* Disable all UART interrupts. */
     outr(DBGU_IDR, 0xFFFFFFFF);
     /* Set UART baud rate generator register. */
-    outr(DBGU_BRGR, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
+    outr(DBGU_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (115200)) + 1) / 2);
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(DBGU_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
     outr(DBGU_CR, US_RXEN | US_TXEN);
-#endif
 
     return 0;
 }
@@ -179,7 +173,7 @@ static int DebugInit(NUTDEVICE * dev)
 static int Debug0IOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outr(US0_BRGR, (NutGetCpuClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
+        outr(US0_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (*((uint32_t *)conf))) + 1) / 2);
         return 0;
     }
     return -1;
@@ -195,7 +189,7 @@ static int Debug0IOCtl(NUTDEVICE * dev, int req, void *conf)
 static int Debug1IOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     if(req == UART_SETSPEED) {
-        outr(US1_BRGR, (NutGetCpuClock() / (8 * (*((uint32_t *)conf))) + 1) / 2);
+        outr(US1_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (*((uint32_t *)conf))) + 1) / 2);
         return 0;
     }
     return -1;
@@ -208,20 +202,19 @@ static int Debug1IOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 static int Debug0Init(NUTDEVICE * dev)
 {
-#if defined (MCU_AT91R40008)
     /* Enable UART clock. */
+#if defined (PS_PCER)
     outr(PS_PCER, _BV(US0_ID));
-    /* Disable GPIO on UART tx/rx pins. */
-    outr(PIO_PDR, _BV(14) | _BV(15));
-#elif defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
-    /* Enable UART clock. */
+#elif defined (PMC_PCER)
     outr(PMC_PCER, _BV(US0_ID));
+#endif
     /* Disable GPIO on UART tx/rx pins. */
-    #if defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
-       outr(PIOA_PDR, _BV(PA5_RXD0_A) | _BV(PA6_TXD0_A));
-    #else
-       outr(PIOA_PDR, _BV(0) | _BV(1));
-    #endif
+#if defined (P15_RXD0) && defined (P14_TXD0)
+    outr(PIO_PDR, _BV(P15_RXD0) | _BV(P14_TXD0));
+#elif defined (PA0_RXD0_A) && defined (PA1_TXD0_A)
+    outr(PIOA_PDR, _BV(PA0_RXD0_A) | _BV(PA1_TXD0_A));
+#elif defined (PA5_RXD0_A) && defined (PA6_TXD0_A)
+    outr(PIOA_PDR, _BV(PA5_RXD0_A) | _BV(PA6_TXD0_A));
 #endif
     /* Reset UART. */
     outr(US0_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
@@ -233,7 +226,7 @@ static int Debug0Init(NUTDEVICE * dev)
     outr(US0_TCR, 0);
 #endif
     /* Set UART baud rate generator register. */
-    outr(US0_BRGR, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
+    outr(US0_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (115200)) + 1) / 2);
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(US0_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
@@ -249,20 +242,19 @@ static int Debug0Init(NUTDEVICE * dev)
  */
 static int Debug1Init(NUTDEVICE * dev)
 {
-#if defined (MCU_AT91R40008)
     /* Enable UART clock. */
+#if defined (PS_PCER)
     outr(PS_PCER, _BV(US1_ID));
-    /* Disable GPIO on UART tx/rx pins. */
-    outr(PIO_PDR, _BV(21) | _BV(22));
-#elif defined (MCU_AT91SAM7X) || defined (MCU_AT91SAM9260) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
-    /* Enable UART clock. */
+#elif defined (PMC_PCER)
     outr(PMC_PCER, _BV(US1_ID));
+#endif
     /* Disable GPIO on UART tx/rx pins. */
-    #if defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
-       outr(PIOA_PDR, _BV(PA21_RXD1_A) | _BV(PA22_TXD1_A));
-    #else
-       outr(PIOA_PDR, _BV(5) | _BV(6));
-    #endif
+#if defined (P22_RXD1) && defined (P21_TXD1)
+    outr(PIO_PDR, _BV(P22_RXD1) | _BV(P21_TXD1));
+#elif defined (PA5_RXD1_A) && defined (PA6_TXD1_A)
+    outr(PIOA_PDR, _BV(PA5_RXD1_A) | _BV(PA6_TXD1_A));
+#elif defined (PA21_RXD1_A) && defined (PA22_TXD1_A)
+    outr(PIOA_PDR, _BV(PA21_RXD1_A) | _BV(PA22_TXD1_A));
 #endif
     /* Reset UART. */
     outr(US1_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
@@ -274,7 +266,7 @@ static int Debug1Init(NUTDEVICE * dev)
     outr(US1_TCR, 0);
 #endif
     /* Set UART baud rate generator register. */
-    outr(US1_BRGR, (NutGetCpuClock() / (8 * (115200)) + 1) / 2);
+    outr(US1_BRGR, (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * (115200)) + 1) / 2);
     /* Set UART mode to 8 data bits, no parity and 1 stop bit. */
     outr(US1_MR, US_CHMODE_NORMAL | US_CHRL_8 | US_PAR_NO | US_NBSTOP_1);
     /* Enable UART receiver and transmitter. */
