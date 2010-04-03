@@ -80,7 +80,7 @@
 #define IP_MF       0x2000      /*!< \brief More fragments flag. */
 #define IP_OFFMASK  0x1fff      /*!< \brief Mask for fragmenting bits. */
 
-typedef struct __attribute__ ((packed, __may_alias__)) ip {
+typedef struct __attribute__ ((packed)) ip {
     unsigned char ip_hl:4,      /*!< \brief Header length. */
      ip_v:4;                    /*!< \brief Version. */
     unsigned char ip_tos;       /*!< \brief Type of service. */

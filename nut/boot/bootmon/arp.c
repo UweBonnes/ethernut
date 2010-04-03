@@ -113,7 +113,7 @@ int ArpRequest(unsigned long dip, unsigned char *dmac)
     ea->arp_tpa = dip;
 
 
-    ea = &(((ARPFRAME *) & rframe)->eth_arp);
+    ea = &rframe.eth.arp;
     for (rlen = retry = 0; retry < 3;) {
         /* 
          * Send a message, if nothing has been received yet.

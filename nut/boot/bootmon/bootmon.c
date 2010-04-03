@@ -45,8 +45,8 @@
 #include "bootmon.h"
 
 unsigned long random_id;
-BOOTFRAME sframe;
-BOOTFRAME rframe;
+ETHERFRAME sframe;
+ETHERFRAME rframe;
 
 static unsigned char my_mac[32];
 static char my_ip[32];

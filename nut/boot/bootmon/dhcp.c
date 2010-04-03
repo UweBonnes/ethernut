@@ -84,7 +84,7 @@ unsigned char DhcpGetOption(unsigned char opt, void *ptr, unsigned char size)
     register unsigned char *cp;
     unsigned char i;
 
-    cp = rframe.u.bootp.bp_options;
+    cp = rframe.eth.udp.u.bootp.bp_options;
     for (;;) {
         if (*cp == DHCPOPT_PAD) {
             cp++;
@@ -167,7 +167,7 @@ int DhcpTransact(unsigned short slen, unsigned char xtype)
          * Check if the response contains the expected ID and
          * message type.
          */
-        if (rframe.u.bootp.bp_xid == sframe.u.bootp.bp_xid && DhcpGetOption(DHCPOPT_MSGTYPE, &type, 1) == 1 && type == xtype) {
+        if (rframe.eth.udp.u.bootp.bp_xid == sframe.eth.udp.u.bootp.bp_xid && DhcpGetOption(DHCPOPT_MSGTYPE, &type, 1) == 1 && type == xtype) {
             DEBUG("[DHCP]");
             break;
         }
@@ -209,7 +209,7 @@ int DhcpQuery(void)
     /*
      * Setup bootp message.
      */
-    bp = &sframe.u.bootp;
+    bp = &sframe.eth.udp.u.bootp;
     bp->bp_op = 1;
     bp->bp_xid = random_id;
     bp->bp_htype = 1;
@@ -226,7 +226,7 @@ int DhcpQuery(void)
     /*
      * Send DHCP discover and wait for any response.
      */
-    slen = sizeof(BOOTPHDR) - sizeof(sframe.u.bootp.bp_options) + 4;
+    slen = sizeof(BOOTPHDR) - sizeof(sframe.eth.udp.u.bootp.bp_options) + 4;
     if (DhcpTransact(slen, DHCP_OFFER) <= 0) {
         return -1;
     }
@@ -239,16 +239,16 @@ int DhcpQuery(void)
     /*
      * Reuse the bootp structure and add DHCP options for request message.
      */
-    DEBUGULONG(rframe.u.bootp.bp_yiaddr);
+    DEBUGULONG(rframe.eth.udp.u.bootp.bp_yiaddr);
     i = DHCP_REQUEST;
     cp = DhcpSetOption(bp->bp_options, DHCPOPT_MSGTYPE, &i, 1);
-    cp = DhcpSetOption(cp, DHCPOPT_REQUESTIP, (unsigned char *) &rframe.u.bootp.bp_yiaddr, 4);
+    cp = DhcpSetOption(cp, DHCPOPT_REQUESTIP, (unsigned char *) &rframe.eth.udp.u.bootp.bp_yiaddr, 4);
     DhcpSetOption(cp, DHCPOPT_SID, (unsigned char *) &sid, 4);
 
     /*
      * Send DHCP request and wait for ACK.
      */
-    slen = sizeof(BOOTPHDR) - sizeof(sframe.u.bootp.bp_options) + 16;
+    slen = sizeof(BOOTPHDR) - sizeof(sframe.eth.udp.u.bootp.bp_options) + 16;
     if (DhcpTransact(slen, DHCP_ACK) <= 0) {
         return -1;
     }
@@ -256,12 +256,12 @@ int DhcpQuery(void)
     /*
      * Retrieve local IP, bootp server IP, bootfile name and netmask.
      */
-    confnet.cdn_ip_addr = rframe.u.bootp.bp_yiaddr;
+    confnet.cdn_ip_addr = rframe.eth.udp.u.bootp.bp_yiaddr;
     if (confboot.cb_tftp_ip == 0) {
-        confboot.cb_tftp_ip = rframe.u.bootp.bp_siaddr;
+        confboot.cb_tftp_ip = rframe.eth.udp.u.bootp.bp_siaddr;
     }
     if (confboot.cb_image[0] == 0) {
-        for (cp = (unsigned char *)rframe.u.bootp.bp_file, i = 0; *cp && i < sizeof(confboot.cb_image) - 1; cp++, i++) {
+        for (cp = (unsigned char *)rframe.eth.udp.u.bootp.bp_file, i = 0; *cp && i < sizeof(confboot.cb_image) - 1; cp++, i++) {
             confboot.cb_image[i] = *cp;
         }
         confboot.cb_image[i] = 0;

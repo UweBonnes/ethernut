@@ -65,7 +65,7 @@
  */
 /*@{*/
 
-typedef struct __attribute__ ((packed, __may_alias__)) udphdr {
+typedef struct __attribute__ ((packed)) udphdr {
     unsigned short uh_sport;    /*!< \brief Source port */
     unsigned short uh_dport;    /*!< \brief Destination port */
     unsigned short uh_ulen;     /*!< \brief UDP length */

@@ -82,7 +82,7 @@
 int UdpInput(unsigned short port, unsigned int tms)
 {
     int rc;
-    UDPHDR *uh = &rframe.udp_hdr;
+    UDPHDR *uh = &rframe.eth.udp.udp_hdr;
 
     for (;;) {
         if ((rc = IpInput(IPPROTO_UDP, tms)) <= 0)
@@ -115,7 +115,7 @@ int UdpInput(unsigned short port, unsigned int tms)
  */
 int UdpOutput(unsigned long dip, unsigned short dport, unsigned short sport, unsigned short len)
 {
-    UDPHDR *up = &sframe.udp_hdr;
+    UDPHDR *up = &sframe.eth.udp.udp_hdr;
 
     /*
      * Setup the UDP header.

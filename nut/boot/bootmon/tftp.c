@@ -99,9 +99,9 @@ int TftpRecv(void)
     /*
      * Prepare the transmit buffer for a file request.
      */
-    sframe.u.tftp.th_opcode = TFTP_RRQ;
+    sframe.eth.udp.u.tftp.th_opcode = TFTP_RRQ;
     slen = 2;
-    cp = (unsigned char*)sframe.u.tftp.th_u.tu_stuff;
+    cp = (unsigned char*)sframe.eth.udp.u.tftp.th_u.tu_stuff;
     cp1 = (char *)confboot.cb_image;
     if (*cp1 == 0) {
         cp1 = "enut.bin";
@@ -146,7 +146,7 @@ int TftpRecv(void)
          * Accept data blocks only. Anything else will stop
          * the transfer with an error.
          */
-        if (ntohs(rframe.u.tftp.th_opcode) != TFTP_DATA)
+        if (ntohs(rframe.eth.udp.u.tftp.th_opcode) != TFTP_DATA)
             return -1;
 
         /*
@@ -154,8 +154,8 @@ int TftpRecv(void)
          * the send buffer for sending ACKs.
          */
         if (block == 0) {
-            tport = rframe.udp_hdr.uh_sport;
-            sframe.u.tftp.th_opcode = TFTP_ACK;
+            tport = rframe.eth.udp.udp_hdr.uh_sport;
+            sframe.eth.udp.u.tftp.th_opcode = TFTP_ACK;
             slen = 4;
         }
 
@@ -164,7 +164,7 @@ int TftpRecv(void)
          * However, if we missed the first block, return
          * with an error.
          */
-        if (ntohs(rframe.u.tftp.th_u.tu_block) != block + 1) {
+        if (ntohs(rframe.eth.udp.u.tftp.th_u.tu_block) != block + 1) {
             if (block == 0) {
                 return -1;
             }
@@ -175,14 +175,14 @@ int TftpRecv(void)
          * Burn the received data into the flash ROM.
          */
         if (rlen > 4) {
-            StoreBlock(block, (unsigned char*)rframe.u.tftp.th_data);
+            StoreBlock(block, (unsigned char*)rframe.eth.udp.u.tftp.th_data);
         }
 
         /*
          * Update our block counter.
          */
         block++;
-        sframe.u.tftp.th_u.tu_block = htons(block);
+        sframe.eth.udp.u.tftp.th_u.tu_block = htons(block);
 
     } while (rlen >= 516);
 

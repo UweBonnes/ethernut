@@ -45,9 +45,9 @@
  */
 /*@{*/
 
-typedef struct __attribute__ ((packed, __may_alias__)) tftphdr {
+typedef struct __attribute__ ((packed)) tftphdr {
     short th_opcode;            /* packet type */
-    union __attribute__ ((packed, __may_alias__)) {
+    union __attribute__ ((packed)) {
         short tu_block;         /* block # */
         short tu_code;          /* error code */
         char tu_stuff[1];       /* request packet stuff */

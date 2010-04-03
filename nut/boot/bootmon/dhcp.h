@@ -95,7 +95,7 @@
 /*
  * DHCP message structure according to RFC 2131.
  */
-typedef struct __attribute__ ((packed, __may_alias__)) bootp {
+typedef struct __attribute__ ((packed)) bootp {
     unsigned char bp_op;        /*!< \brief Packet opcode type: 1=request, 2=reply */
     unsigned char bp_htype;     /*!< \brief Hardware address type: 1=Ethernet */
     unsigned char bp_hlen;      /*!< \brief Hardware address length: 6 for Ethernet */

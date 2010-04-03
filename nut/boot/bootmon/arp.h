@@ -76,7 +76,7 @@
  * \typedef ETHERARP
  * \brief Ethernet ARP protocol type.
  */
-typedef struct __attribute__ ((packed, __may_alias__)) ether_arp {
+typedef struct __attribute__ ((packed)) ether_arp {
     unsigned short arp_hrd;     /*!< \brief Format of hardware address. 
                                    *   Nut/Net supports ARPHRD_ETHER only. 
                                  */
@@ -94,7 +94,7 @@ typedef struct __attribute__ ((packed, __may_alias__)) ether_arp {
     unsigned long arp_tpa;      /*!< \brief Target protocol address. */
 } ETHERARP;
 
-typedef struct __attribute__ ((packed, __may_alias__)) arp_frame {
+typedef struct __attribute__ ((packed)) arp_frame {
     ETHERHDR eth_hdr;
     ETHERARP eth_arp;
 } ARPFRAME;

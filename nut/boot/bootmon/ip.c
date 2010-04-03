@@ -129,7 +129,7 @@ int IpInput(unsigned char proto, unsigned int tms)
 {
     int rc;
     int unexp = 10;
-    IPHDR *ip = &rframe.ip_hdr;
+    IPHDR *ip = &rframe.eth.udp.ip_hdr;
 
     for (;;) {
         /*
@@ -200,7 +200,7 @@ int IpOutput(unsigned long dip, int proto, unsigned int len)
 
     /* Fill the IP header. */
     len += sizeof(IPHDR);
-    ip = &sframe.ip_hdr;
+    ip = &sframe.eth.udp.ip_hdr;
     ip->ip_v = IPVERSION;
     ip->ip_hl = sizeof(IPHDR) >> 2;
     ip->ip_len = htons((unsigned short)len);

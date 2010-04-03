@@ -42,6 +42,7 @@
  */
 
 #include "ether.h"
+#include "arp.h"
 #include "ip.h"
 #include "udp.h"
 #include "dhcp.h"
@@ -49,26 +50,33 @@
 #include "config.h"
 #include "utils.h"
 
-typedef struct __attribute__ ((packed, __may_alias__)) {
-    ETHERHDR eth_hdr;
+typedef struct __attribute__ ((packed)) {
     IPHDR ip_hdr;
     UDPHDR udp_hdr;
     union {
         TFTPHDR tftp;
         BOOTPHDR bootp;
     } u;
-} BOOTFRAME;
+} UDPFRAME;
+
+typedef struct __attribute__ ((packed)) {
+    ETHERHDR eth_hdr;
+    union {
+        ETHERARP arp;
+        UDPFRAME udp;
+    } eth;
+} ETHERFRAME;
 
 extern unsigned long random_id;
 
 /*
  * Outgoing frame.
  */
-extern BOOTFRAME sframe;
+extern ETHERFRAME sframe;
 
 /*
  * Incoming frame.
  */
-extern BOOTFRAME rframe;
+extern ETHERFRAME rframe;
 
 #endif
