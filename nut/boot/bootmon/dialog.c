@@ -162,8 +162,8 @@ void GetMac(unsigned char *mac)
     for (;;) {
         PutString("\nMAC address: ");
         for (i = 0; i < 6; i++) {
-            inbuff[i * 2] = hexdigit[mac[i] & 0x0F];
-            inbuff[i * 2 + 1] = hexdigit[mac[i] >> 4];
+            inbuff[i * 2] = hexdigit[mac[i] >> 4];
+            inbuff[i * 2 + 1] = hexdigit[mac[i] & 0x0F];
         }
         inbuff[i * 2] = 0;
 
