@@ -119,7 +119,7 @@
 #include <pro/dhcp.h>
 
 static char buff[1024];
-static u_char my_mac[] = MY_MAC;
+static uint8_t my_mac[] = MY_MAC;
 
 /*
  * Main application routine. 
@@ -127,16 +127,16 @@ static u_char my_mac[] = MY_MAC;
  */
 int main(void)
 {
-    u_long baud = 115200;
+    uint32_t baud = 115200;
     TCPSOCKET *sock;
     FILE *stream;
-    u_long rip;
-    u_long ip_addr;
+    uint32_t rip;
+    uint32_t ip_addr;
     int bite;
     size_t rc;
     size_t len;
-    u_long start_time;
-    u_long total_bytes;
+    uint32_t start_time;
+    uint32_t total_bytes;
 
     /*
      * Initialize the uart device.
@@ -172,7 +172,7 @@ int main(void)
     /*
      * Resolve hostname using DNS.
      */
-    if ((rip = NutDnsGetHostByName((u_char*)INETSERVER)) != 0) {
+    if ((rip = NutDnsGetHostByName((uint8_t*)INETSERVER)) != 0) {
 
         /*
          * Let's try a stdio stream first.

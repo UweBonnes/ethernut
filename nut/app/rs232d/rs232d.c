@@ -126,7 +126,7 @@ int main(void)
 {
     TCPSOCKET *sock;
     CHANNEL cd;
-    u_long baud = 9600;
+    uint32_t baud = 9600;
 
     /*
      * Register our devices.
@@ -150,12 +150,12 @@ int main(void)
      */
     if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
         /* No valid EEPROM contents, use hard coded MAC. */
-        u_char my_mac[] = { 0x00, 0x06, 0x98, 0x20, 0x00, 0x00 };
+        uint8_t my_mac[] = { 0x00, 0x06, 0x98, 0x20, 0x00, 0x00 };
 
         if (NutDhcpIfConfig("eth0", my_mac, 60000)) {
             /* No DHCP server found, use hard coded IP address. */
-            u_long ip_addr = inet_addr("192.168.192.100");
-            u_long ip_mask = inet_addr("255.255.255.0");
+            uint32_t ip_addr = inet_addr("192.168.192.100");
+            uint32_t ip_mask = inet_addr("255.255.255.0");
 
             NutNetIfConfig("eth0", my_mac, ip_addr, ip_mask);
             /* If not in a local network, we must also call 

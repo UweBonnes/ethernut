@@ -206,7 +206,7 @@ void ProcessRequests(FILE * stream)
          * Memory info.
          */
         if (strncmp(buff, "memory", strlen(buff)) == 0) {
-            fprintf(stream, "210 %u bytes RAM free\r\n", (u_int)NutHeapAvailable());
+            fprintf(stream, "210 %u bytes RAM free\r\n", (unsigned int)NutHeapAvailable());
             continue;
         }
 
@@ -425,7 +425,7 @@ THREAD(service_thread, arg)
  */
 int main(void)
 {
-    u_char my_mac[] = MY_MAC;
+    uint8_t my_mac[] = MY_MAC;
 
     /*
      * Initialize digital I/O.
@@ -446,7 +446,7 @@ int main(void)
         /*
          * No DHCP server available. Use hard coded values.
          */
-        u_long ip_addr = inet_addr(MY_IP);      /* ICCAVR fix. */
+        uint32_t ip_addr = inet_addr(MY_IP);      /* ICCAVR fix. */
         NutNetIfConfig("eth0", my_mac, ip_addr, inet_addr(MY_MASK));
     }
 

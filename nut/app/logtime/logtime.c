@@ -121,9 +121,9 @@ static char *version = "1.0.1";
  */
 int main(void)
 {
-    u_long baud = MYBAUD;
-    u_char mac[6] = { MYMAC };
-    u_long timeserver = inet_addr(MYTIMED);
+    uint32_t baud = MYBAUD;
+    uint8_t mac[6] = { MYMAC };
+    uint32_t timeserver = inet_addr(MYTIMED);
     int rc = 0;
     time_t now;
 

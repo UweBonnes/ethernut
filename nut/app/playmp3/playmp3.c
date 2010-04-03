@@ -85,7 +85,7 @@ static int PlayMp3File(char *path);
 int main(void)
 {
     /* Baudrate for debug output. */
-    u_long baud = 115200;
+    uint32_t baud = 115200;
 
     /*
      * Register our devices.
@@ -164,7 +164,7 @@ static int PlayMp3File(char *path)
     size_t rbytes;
     char  *mp3buf;
     int    got;
-    u_char ief;
+    uint8_t ief;
 
     /*
      * Open the MP3 file.

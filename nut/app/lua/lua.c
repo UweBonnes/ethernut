@@ -336,8 +336,8 @@ int main(void)
     if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
         uint8_t mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
         if (NutDhcpIfConfig("eth0", mac, 60000)) {
-            u_long ip_addr = inet_addr("192.168.192.100");
-            u_long ip_mask = inet_addr("255.255.255.0");
+            uint32_t ip_addr = inet_addr("192.168.192.100");
+            uint32_t ip_mask = inet_addr("255.255.255.0");
             NutNetIfConfig("eth0", mac, ip_addr, ip_mask);
         }
     }

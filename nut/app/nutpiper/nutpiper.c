@@ -81,19 +81,19 @@
 /*
  * TCP buffer size.
  */
-static u_short tcpbufsiz = 4288;
+static uint16_t tcpbufsiz = 4288;
 
 /*
  * Maximum segment size, choose 536 up to 1460. Note, that segment 
  * sizes above 536 may result in fragmented packets. Remember, that 
  * Ethernut doesn't support TCP fragmentation.
  */
-static u_short mss = 536;
+static uint16_t mss = 536;
 
 /*
  * Socket receive timeout.
  */
-static u_long rx_to = 1000;
+static uint32_t rx_to = 1000;
 
 /*
  * Connect to a radio station.
@@ -156,12 +156,12 @@ static void DisconnectStation(TCPSOCKET * sock)
  *
  * We are supporting the remote control only for now.
  */
-static u_short UserInput(void)
+static uint16_t UserInput(void)
 {
-    u_short rc;
-    static u_short old = 0xFFFF;
+    uint16_t rc;
+    static uint16_t old = 0xFFFF;
 
-    if ((rc = (u_short) NutIrGet(500)) == 0xFFFF)
+    if ((rc = (uint16_t) NutIrGet(500)) == 0xFFFF)
         old = rc;
     else if (rc == old || (rc >> 7) != IR_DEVICE)
         rc = 0xFFFF;
@@ -179,9 +179,9 @@ static u_short UserInput(void)
  */
 static void StationList(void)
 {
-    u_char cf = 1;
-    u_char rs = radio.rc_cstation;
-    u_short ircode;
+    uint8_t cf = 1;
+    uint8_t rs = radio.rc_cstation;
+    uint16_t ircode;
 
     DisplayMessage(0, 1, "Stations");
     DisplayEntry(rs);
@@ -219,8 +219,8 @@ static void StationList(void)
  */
 static void UserInterface(void)
 {
-    u_char ief;
-    u_short ircode;
+    uint8_t ief;
+    uint16_t ircode;
     TCPSOCKET *sock = 0;
 
     for (;;) {
@@ -375,16 +375,16 @@ int main(void)
 {
 #if defined(__AVR__)
     /* Unique MAC address of the Ethernut Board. */
-    u_char mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
+    uint8_t mac[6] = { 0x00, 0x06, 0x98, 0x00, 0x00, 0x00 };
     /* Unique IP address of the Ethernut Board. Ignored if DHCP is used. */
-    u_long ip_addr = inet_addr("192.168.192.100");
+    uint32_t ip_addr = inet_addr("192.168.192.100");
     /* IP network mask of the Ethernut Board. Ignored if DHCP is used. */
-    u_long ip_mask = inet_addr("255.255.255.0");
+    uint32_t ip_mask = inet_addr("255.255.255.0");
     /* Gateway IP address for the Ethernut Board. Ignored if DHCP is used. */
-    u_long ip_gate = inet_addr("192.168.192.3");
+    uint32_t ip_gate = inet_addr("192.168.192.3");
     /* Baudrate for debug output. */
 #endif
-    u_long baud = 115200;
+    uint32_t baud = 115200;
 
     /*
      * Assign stdout to the debug device.

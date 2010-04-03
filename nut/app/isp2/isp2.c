@@ -87,9 +87,9 @@
 /*!
  * \brief Exchange SPI byte.
  */
-static u_char SpiByte(u_char c)
+static uint8_t SpiByte(uint8_t c)
 {
-	u_char i;
+	uint8_t i;
 
 	for(i = 0; i < 8; i++) {
 		if(c & 0x80)
@@ -114,8 +114,8 @@ static u_char SpiByte(u_char c)
  */
 int SpiFlashEnable(void)
 {
-    u_char i;
-    u_char rc;
+    uint8_t i;
+    uint8_t rc;
 
     cbi(ISPMOSI_PORT, ISPMOSI_BIT);
     sbi(ISPMOSI_DDR, ISPMOSI_BIT);
@@ -156,9 +156,9 @@ int SpiFlashEnable(void)
  * \param id Three byte character array, which receives
  *           the CPU ID.
  */
-void SpiFlashId(u_char * id)
+void SpiFlashId(uint8_t * id)
 {
-    u_char i;
+    uint8_t i;
 
     for (i = 0; i < 3; i++) {
         SpiByte(0x30);
@@ -181,9 +181,9 @@ void SpiFlashId(u_char * id)
  *
  * \return 0 on success, -1 otherwise.
  */
-int SpiFlashWriteByte(u_char high, u_short addr, u_char data)
+int SpiFlashWriteByte(uint8_t high, uint16_t addr, uint8_t data)
 {
-    u_char d;
+    uint8_t d;
 
     if (data != 0xff) {
         SpiByte(0x40 | high);
@@ -226,7 +226,7 @@ int SpiFlashWriteByte(u_char high, u_short addr, u_char data)
  *
  * \return 0 on success, -1 otherwise.
  */
-int SpiFlashWriteWord(u_short addr, u_short data)
+int SpiFlashWriteWord(uint16_t addr, uint16_t data)
 {
     if (SpiFlashWriteByte(0, addr, data & 0xFF))
         return -1;
@@ -257,12 +257,12 @@ void SpiFlashErase(void)
 
 int main(void)
 {
-    u_char id[3];
-    u_long baud = 115200;
+    uint8_t id[3];
+    uint32_t baud = 115200;
     char *filename = "UROM:sisp.bin";
     int val;
-    u_short word;
-    u_short addr;
+    uint16_t word;
+    uint16_t addr;
     FILE *fp;
 
     /*
@@ -329,7 +329,7 @@ int main(void)
             puts("OK");
             break;
         }
-        word = ((u_char)fgetc(fp) << 8) + (u_char)val;
+        word = ((uint8_t)fgetc(fp) << 8) + (uint8_t)val;
         if (SpiFlashWriteWord(addr, word)) {
             printf("failed at %04X\n", addr);
             break;

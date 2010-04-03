@@ -122,8 +122,8 @@ int main(void)
     UDPSOCKET *sock;
     OID view_all[] = { SNMP_OID_INTERNET };
     int view_idx;
-    u_long baud = MYBAUD;
-    u_char mac[6] = { MYMAC };
+    uint32_t baud = MYBAUD;
+    uint8_t mac[6] = { MYMAC };
     int rc = 0;
 
     /*
@@ -175,7 +175,7 @@ int main(void)
     sock = NutUdpCreateSocket(SNMP_PORT);
     /* Nut/Net doesn't provide UDP datagram buffering by default. */
     {
-        u_short max_ms = SNMP_MAX_MSG_SIZE * 2;
+        uint16_t max_ms = SNMP_MAX_MSG_SIZE * 2;
         NutUdpSetSockOpt(sock, SO_RCVBUF, &max_ms, sizeof(max_ms));
     }
 

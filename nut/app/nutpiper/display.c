@@ -52,14 +52,14 @@
 #include "player.h"
 #include "display.h"
 
-u_short lcd_offset;
+uint16_t lcd_offset;
 
 #define DISPLAY_LINES       2
 #define DISPLAY_VCOLUMNS    80
 
 char *sline[2];
 char *mline[2];
-u_short mticks[2];
+uint16_t mticks[2];
 
 FILE *lcd;
 
@@ -70,12 +70,12 @@ HANDLE updevt;
  */
 THREAD(Displayer, arg)
 {
-    u_int step[2] = { 0, 0 };
-    u_int stepmx[2] = { 0, 0 };
+    unsigned int step[2] = { 0, 0 };
+    unsigned int stepmx[2] = { 0, 0 };
     char *line;
     char *sptr = 0;
-    u_char scrolling = DISPLAY_LINES;
-    u_char ln;
+    uint8_t scrolling = DISPLAY_LINES;
+    uint8_t ln;
 
     fputs(ESC_CURSOROFF, lcd);
     NutThreadSetPriority(128);
@@ -140,7 +140,7 @@ void DisplayStation(RADIOSTATION * rsp)
  *
  * \param status Status to be displayed.
  */
-void DisplayStatus(u_char status)
+void DisplayStatus(uint8_t status)
 {
     RADIOSTATION *rsp = &station[radio.rc_cstation];
 
@@ -181,7 +181,7 @@ void DisplayStatus(u_char status)
  *             permanent display.
  * \param fmt  Format string containing conversion specifications.
  */
-void DisplayMessage(u_char row, u_char secs, CONST char *fmt, ...)
+void DisplayMessage(uint8_t row, uint8_t secs, CONST char *fmt, ...)
 {
     va_list ap;
 
@@ -201,7 +201,7 @@ void DisplayMessage(u_char row, u_char secs, CONST char *fmt, ...)
  *
  * \param rs Index of the list entry.
  */
-void DisplayEntry(u_char rs)
+void DisplayEntry(uint8_t rs)
 {
     RADIOSTATION *rsp = &station[rs];
 

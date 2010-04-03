@@ -47,15 +47,15 @@
 #define PSI_STOP    3
 
 typedef struct {
-    u_char psi_status;
+    uint8_t psi_status;
     HANDLE psi_cmdevt;
     HANDLE psi_stsevt;
     /*! \brief Metadata interval. */
-    u_long psi_metaint;
+    uint32_t psi_metaint;
     /*! \brief MP3 data left until next metadata. */
-    u_long psi_mp3left;
-    u_long psi_start;
-    u_char psi_metaupdate;
+    uint32_t psi_mp3left;
+    uint32_t psi_start;
+    uint8_t psi_metaupdate;
     char  *psi_metatitle;
     char  *psi_metaurl;
     TCPSOCKET *psi_sock;
@@ -64,7 +64,7 @@ typedef struct {
 extern PLAYERINFO player;
 
 extern int PlayerInit(void);
-extern int PlayerStop(u_long tmo);
-extern int PlayerStart(TCPSOCKET * sock, u_long metaint, u_long tmo);
+extern int PlayerStop(uint32_t tmo);
+extern int PlayerStart(TCPSOCKET * sock, uint32_t metaint, uint32_t tmo);
 
 #endif

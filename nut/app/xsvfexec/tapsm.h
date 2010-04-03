@@ -93,7 +93,7 @@
 
 
 extern void TapStateInit(void);
-extern int TapStateChange(u_char state);
+extern int TapStateChange(uint8_t state);
 extern void TapStateInc(void);
 
 /*@}*/

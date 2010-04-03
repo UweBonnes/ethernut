@@ -89,7 +89,7 @@ int main(void)
 {
 
 
-	u_long baud = 115200;
+	uint32_t baud = 115200;
 	uint8_t rc;
 	unsigned int count=0;
 	/*

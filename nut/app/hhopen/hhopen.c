@@ -229,7 +229,7 @@ int DMX_Reconfigure( FILE * dev, FILE * debug)
 {
 	char *buff;
 	char trigger, l;
-	u_long baud = 250000UL;
+	uint32_t baud = 250000UL;
 
     buff = malloc(BUFFERSIZE);
 
@@ -282,8 +282,8 @@ void Backlight_Color( int r, int g, int b)
 int main(void)
 {
 	CHANNEL_t cd;
-    u_long baud = DEV_DXM_SPEED;
-	u_long bufsz = BUFFERSIZE;
+    uint32_t baud = DEV_DXM_SPEED;
+	uint32_t bufsz = BUFFERSIZE;
 	char * buff = NULL;
 	int state;
 #ifdef DEBUG_ISM

@@ -63,7 +63,7 @@
 /*!
  * \brief Current state of the TAP controller.
  */
-static u_char tapState;
+static uint8_t tapState;
 
 /*!
  * \brief TAP controller initialization.
@@ -110,7 +110,7 @@ static void TmsLowTransition(void)
  *
  * \return Zero on success, otherwise an error code is returned.
  */
-int TapStateChange(u_char state)
+int TapStateChange(uint8_t state)
 {
     int i;
     int rc = 0;

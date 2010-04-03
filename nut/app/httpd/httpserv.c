@@ -315,10 +315,10 @@ static int ShowThreads(FILE * stream, REQUEST * req)
     /* Send HTML header. */
     fputs_P(head, stream);
     for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
-        fprintf_P(stream, tfmt, (uptr_t) tdp, tdp->td_name, tdp->td_priority,
-                  thread_states[tdp->td_state], (uptr_t) tdp->td_queue, (uptr_t) tdp->td_timer,
-                  (uptr_t) tdp->td_sp, (uptr_t) tdp->td_sp - (uptr_t) tdp->td_memory,
-                  *((u_long *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
+        fprintf_P(stream, tfmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
+                  thread_states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer,
+                  (uintptr_t) tdp->td_sp, (uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory,
+                  *((uint32_t *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
     }
     fputs_P(foot, stream);
     fflush(stream);
@@ -345,7 +345,7 @@ static int ShowTimers(FILE * stream, REQUEST * req)
 #endif
     static prog_char foot[] = "</TABLE></BODY></HTML>";
     NUTTIMERINFO *tnp;
-    u_long ticks_left;
+    uint32_t ticks_left;
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
     NutHttpSendHeaderBottom(stream, req, html_mt, -1);
@@ -357,7 +357,7 @@ static int ShowTimers(FILE * stream, REQUEST * req)
         ticks_left = 0;
         while (tnp) {
             ticks_left += tnp->tn_ticks_left;
-            fprintf_P(stream, tfmt, (uptr_t) tnp, ticks_left, tnp->tn_ticks, (uptr_t) tnp->tn_callback, (uptr_t) tnp->tn_arg);
+            fprintf_P(stream, tfmt, (uintptr_t) tnp, ticks_left, tnp->tn_ticks, (uintptr_t) tnp->tn_callback, (uintptr_t) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
@@ -451,7 +451,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
         /*
          * Fixed a bug reported by Zhao Weigang.
          */
-        fprintf_P(stream, tfmt1, (uptr_t) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
+        fprintf_P(stream, tfmt1, (uintptr_t) ts, inet_ntoa(ts->so_local_addr), ntohs(ts->so_local_port));
         fprintf_P(stream, tfmt2, inet_ntoa(ts->so_remote_addr), ntohs(ts->so_remote_port));
         fputs_P(st_P, stream);
         fputs("</TD></TR>\r\n", stream);
@@ -588,7 +588,7 @@ THREAD(Service, arg)
 {
     TCPSOCKET *sock;
     FILE *stream;
-    u_char id = (u_char) ((uptr_t) arg);
+    uint8_t id = (uint8_t) ((uintptr_t) arg);
 
     /*
      * Now loop endless for connections.
@@ -631,7 +631,7 @@ THREAD(Service, arg)
         /*
          * Associate a stream with the socket so we can use standard I/O calls.
          */
-        if ((stream = _fdopen((int) ((uptr_t) sock), "r+b")) == 0) {
+        if ((stream = _fdopen((int) ((uintptr_t) sock), "r+b")) == 0) {
             printf("[%u] Creating stream device failed\n", id);
         } else {
             /*
@@ -664,8 +664,8 @@ THREAD(Service, arg)
  */
 int main(void)
 {
-    u_long baud = 115200;
-    u_char i;
+    uint32_t baud = 115200;
+    uint8_t i;
 
     /*
      * Initialize the uart device.
@@ -694,16 +694,16 @@ int main(void)
 
     printf("Configure %s...", DEV_ETHER_NAME);
     if (NutNetLoadConfig(DEV_ETHER_NAME)) {
-        u_char mac[] = MY_MAC;
+        uint8_t mac[] = MY_MAC;
 
         printf("initial boot...");
 #ifdef USE_DHCP
         if (NutDhcpIfConfig(DEV_ETHER_NAME, mac, 60000)) 
 #endif
         {
-            u_long ip_addr = inet_addr(MY_IPADDR);
-            u_long ip_mask = inet_addr(MY_IPMASK);
-            u_long ip_gate = inet_addr(MY_IPGATE);
+            uint32_t ip_addr = inet_addr(MY_IPADDR);
+            uint32_t ip_mask = inet_addr(MY_IPMASK);
+            uint32_t ip_gate = inet_addr(MY_IPGATE);
 
             printf("No DHCP...");
             if (NutNetIfConfig(DEV_ETHER_NAME, mac, ip_addr, ip_mask) == 0) {
@@ -739,7 +739,7 @@ int main(void)
     printf("%s ready\n", inet_ntoa(confnet.cdn_ip_addr));
 
 #ifdef USE_DISCOVERY
-    NutRegisterDiscovery((u_long)-1, 0, DISF_INITAL_ANN);
+    NutRegisterDiscovery((uint32_t)-1, 0, DISF_INITAL_ANN);
 #endif
 
     /*
@@ -831,7 +831,7 @@ int main(void)
         char thname[] = "httpd0";
 
         thname[5] = '0' + i;
-        NutThreadCreate(thname, Service, (void *) (uptr_t) i, 
+        NutThreadCreate(thname, Service, (void *) (uintptr_t) i, 
             (HTTPD_SERVICE_STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     }
 #endif /* DEV_ETHER */

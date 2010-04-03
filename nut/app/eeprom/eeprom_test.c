@@ -152,7 +152,7 @@ int main(void)
 
 	uint8_t txBuffer[128];
 	uint8_t rxBuffer[128];
-    u_long baud = 115200;
+    uint32_t baud = 115200;
 
 	/*
      * Register the UART device, open it, assign stdout to it and set

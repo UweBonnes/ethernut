@@ -225,8 +225,8 @@ void ProcessRequests(FILE * stream)
                     fputs("\tSleep\t", stream);
                     break;
                 }
-                fprintf(stream, "%u\t%u", tdp->td_priority, (u_short) tdp->td_sp - (u_short) tdp->td_memory);
-                if (*((u_long *) tdp->td_memory) != DEADBEEF)
+                fprintf(stream, "%u\t%u", tdp->td_priority, (uint16_t) tdp->td_sp - (uint16_t) tdp->td_memory);
+                if (*((uint32_t *) tdp->td_memory) != DEADBEEF)
                     fputs("\tCorrupted\t", stream);
                 else
                     fputs("\tOK\t", stream);
@@ -278,7 +278,7 @@ void ProcessRequests(FILE * stream)
 int main(void)
 {
     int pppcom;
-    u_long lctl;
+    uint32_t lctl;
 #ifdef PPPDEV
     PPPDCB *dcb;
     int rc;

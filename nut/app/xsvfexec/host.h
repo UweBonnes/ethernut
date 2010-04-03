@@ -176,9 +176,9 @@ extern int XsvfInit(void);
 extern void XsvfExit(int rc);
 
 extern int XsvfGetError(void);
-extern u_char XsvfGetCmd(void);
-extern u_char XsvfGetState(u_char state0, u_char state1);
-extern u_char XsvfGetByte(void);
+extern uint8_t XsvfGetCmd(void);
+extern uint8_t XsvfGetState(uint8_t state0, uint8_t state1);
+extern uint8_t XsvfGetByte(void);
 extern short XsvfGetShort(void);
 extern long XsvfGetLong(void);
 extern int XsvfReadBitString(void *buf, int num);

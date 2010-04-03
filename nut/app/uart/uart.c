@@ -70,7 +70,7 @@ int main(void)
 {
     int got;
     char *cp;
-    u_long baud = 115200;
+    uint32_t baud = 115200;
     FILE *uart;
 #ifdef STDIO_FLOATING_POINT
     float dval = 0.0;

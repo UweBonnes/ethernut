@@ -85,7 +85,7 @@
 #define MAG_SYS_LOCATION    6
 #define MAG_SYS_SERVICES    7
 
-static u_char *MibVarsSysGet(CONST SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
+static uint8_t *MibVarsSysGet(CONST SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
 
 static OID base_oid[] = { SNMP_OID_MIB2, 1 };
 static size_t base_oidlen = sizeof(base_oid) / sizeof(OID);
@@ -158,11 +158,11 @@ int MibRegisterSysVars(void)
     return SnmpMibRegister(base_oid, base_oidlen, mib_variables, sizeof(mib_variables) / sizeof(SNMPVAR));
 }
 
-static int MibVarsSysSet(int action, u_char * var_val, u_char var_val_type, size_t var_val_len, OID * name, size_t name_len)
+static int MibVarsSysSet(int action, uint8_t * var_val, uint8_t var_val_type, size_t var_val_len, OID * name, size_t name_len)
 {
     size_t len = SNMP_MAX_LEN;
-    u_char *value;
-    u_char *cp;
+    uint8_t *value;
+    uint8_t *cp;
     size_t size;
 
     if (action != SNMP_ACT_COMMIT) {
@@ -176,7 +176,7 @@ static int MibVarsSysSet(int action, u_char * var_val, u_char var_val_type, size
         return SNMP_ERR_WRONGLENGTH;
     }
     size = MAX_SYSSTR_LEN;
-    if ((value = (u_char *)malloc(MAX_SYSSTR_LEN) + 1) == NULL) {
+    if ((value = (uint8_t *)malloc(MAX_SYSSTR_LEN) + 1) == NULL) {
         return SNMP_ERR_RESOURCEUNAVAILABLE;
     }
     AsnOctetStringParse(var_val, &len, &var_val_type, value, &size);
@@ -217,9 +217,9 @@ static int MibVarsSysSet(int action, u_char * var_val, u_char var_val_type, size
  *                want the first name that is following the given one.
  * \param varlen  Size of the variable.
  */
-static u_char *MibVarsSysGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
+static uint8_t *MibVarsSysGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
 {
-    static u_char empty[1];
+    static uint8_t empty[1];
     int rc;
     OID *fullname;
     size_t fullnamelen = base_oidlen + vp->var_namelen + 1;
@@ -243,19 +243,19 @@ static u_char *MibVarsSysGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, i
     switch (vp->var_magic) {
     case MAG_SYS_DESCR:
         *varlen = strlen(sys_descr);
-        return (u_char *) sys_descr;
+        return (uint8_t *) sys_descr;
     case MAG_SYS_OID:
         *varlen = sizeof(sys_oid);
-        return (u_char *) sys_oid;
+        return (uint8_t *) sys_oid;
     case MAG_SYS_UPTIME:
         sys_uptime = time(NULL) - sys_starttime;
         sys_uptime *= 100;
-        return (u_char *) & sys_uptime;
+        return (uint8_t *) & sys_uptime;
     case MAG_SYS_CONTACT:
         *wmethod = MibVarsSysSet;
         if (sys_contact) {
             *varlen = strlen(sys_contact);
-            return (u_char *) sys_contact;
+            return (uint8_t *) sys_contact;
         }
         *varlen = 0;
         return empty;
@@ -263,7 +263,7 @@ static u_char *MibVarsSysGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, i
         *wmethod = MibVarsSysSet;
         if (sys_name) {
             *varlen = strlen(sys_name);
-            return (u_char *) sys_name;
+            return (uint8_t *) sys_name;
         }
         *varlen = 0;
         return empty;
@@ -271,12 +271,12 @@ static u_char *MibVarsSysGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, i
         *wmethod = MibVarsSysSet;
         if (sys_location) {
             *varlen = strlen(sys_location);
-            return (u_char *) sys_location;
+            return (uint8_t *) sys_location;
         }
         *varlen = 0;
         return empty;
     case MAG_SYS_SERVICES:
-        return (u_char *) & sys_services;
+        return (uint8_t *) & sys_services;
     }
     return NULL;
 }

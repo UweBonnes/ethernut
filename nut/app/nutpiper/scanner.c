@@ -57,10 +57,10 @@
 /*
  * Get line from naked TCP stream.
  */
-static int GetLine(TCPSOCKET * sock, char * line, u_short size)
+static int GetLine(TCPSOCKET * sock, char * line, uint16_t size)
 {
     int rc = 0;
-    u_char to_cnt = 0;
+    uint8_t to_cnt = 0;
     int got;
     char *cp = line;
 
@@ -88,8 +88,8 @@ static int GetLine(TCPSOCKET * sock, char * line, u_short size)
 
 static int PutString(TCPSOCKET * sock, char * str)
 {
-    u_short len = strlen(str);
-    u_short n;
+    uint16_t len = strlen(str);
+    uint16_t n;
     int c;
 
     for (n = 0; n < len; n += c)
@@ -180,10 +180,10 @@ int ScanStreamHeader(TCPSOCKET * sock, RADIOSTATION * rsp)
 /*
  * Process embedded meta data.
  */
-static char *ReadMetaTitle(TCPSOCKET * sock, u_long iv)
+static char *ReadMetaTitle(TCPSOCKET * sock, uint32_t iv)
 {
-    u_char blks = 0;
-    u_short cnt;
+    uint8_t blks = 0;
+    uint16_t cnt;
     int got;
     int rc = 0;
     char *title = 0;
@@ -254,8 +254,8 @@ THREAD(Scanner, arg)
 {
     TCPSOCKET *sock;
     RADIOSTATION *rsp;
-    u_char rs;
-    u_long rx_to = 10000UL;
+    uint8_t rs;
+    uint32_t rx_to = 10000UL;
 
     NutThreadSetPriority(128);
     NutSleep(10000);

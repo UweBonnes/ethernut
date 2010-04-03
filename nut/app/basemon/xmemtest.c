@@ -134,7 +134,7 @@ void XMemLatch(uint8_t val)
     cbi(PORTG, PORTG2);
 }
 
-void MemWrite(uptr_t addr, ureg_t data)
+void MemWrite(uintptr_t addr, ureg_t data)
 {
     /* Set high address byte. */
     outb(PORTC, addr >> 8);
@@ -156,7 +156,7 @@ void MemWrite(uptr_t addr, ureg_t data)
     sbi(PORTG, PORTG2);
 }
 
-ureg_t MemRead(uptr_t addr)
+ureg_t MemRead(uintptr_t addr)
 {
     uint8_t rc;
 
@@ -495,7 +495,7 @@ void LoopSRAM(void)
 {
     register unsigned int pattern;
     volatile uint8_t *mem;
-    uptr_t faddr = 0xFFFF;
+    uintptr_t faddr = 0xFFFF;
     puts("Check address and data bus.");
     printf_P(presskey_P);
     for (;;) {
@@ -512,7 +512,7 @@ void LoopSRAM(void)
             else
                 mem = (uint8_t *) pattern;
             if (*mem != (uint8_t) ((pattern >> 8) | pattern))
-                faddr = (uptr_t) mem;
+                faddr = (uintptr_t) mem;
         }
         Delay(5000);
         if (GetChar()) {

@@ -89,7 +89,7 @@ int main(void)
    unsigned long i;
    int result;
 #endif
-   u_long baud = 115200;
+   uint32_t baud = 115200;
 
    NutRegisterDevice(&DEV_DEBUG, 0, 0);
    freopen(DEV_DEBUG_NAME, "w", stdout);
@@ -139,7 +139,7 @@ int main(void)
       // Check if we did receive a frame
       if (CAN_TryRxFrame(&DEV_CAN, &canFrame) == 0)
       {
-         u_char j;
+         uint8_t j;
 
          printf("%ld ", canFrame.id);
          for (j = 0; j < canFrame.len; j++)

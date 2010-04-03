@@ -93,7 +93,7 @@
 
 static char send_buffer[UDP_BUFF_SIZE];
 static char rcv_buffer[UDP_BUFF_SIZE];
-static u_char my_mac[] = MY_MAC;
+static uint8_t my_mac[] = MY_MAC;
 
 #ifdef DEV_ETHER
 
@@ -160,7 +160,7 @@ THREAD(UDPReceiver, arg)
  */
 int main(void)
 {
-    u_long baud = 115200;
+    uint32_t baud = 115200;
     UDPSOCKET *socket;
 
     uint32_t ip_addr;

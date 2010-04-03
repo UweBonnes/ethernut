@@ -435,7 +435,7 @@ void NutInit(void)
      * standard output will use malloc. We do not use any external
      * RAM before passing the memory test.
      */
-    NutHeapAdd(&__bss_end, (uptr_t) RAMEND - 256 - (uptr_t) (&__bss_end));
+    NutHeapAdd(&__bss_end, (uintptr_t) RAMEND - 256 - (uintptr_t) (&__bss_end));
 
     /*
      * Use the debug UART driver for output. In opposite

@@ -79,11 +79,11 @@ static void ClearMetaData(void)
  */
 static int ProcessMetaData(void)
 {
-    u_char blks = 0;
-    u_short cnt;
+    uint8_t blks = 0;
+    uint16_t cnt;
     int got;
     int rc = 0;
-    u_char to_cnt = 0;
+    uint8_t to_cnt = 0;
     char *mbuf;
     char *mn1;
     char *mn2;
@@ -169,9 +169,9 @@ THREAD(Player, arg)
 {
     size_t rbytes;
     char  *mp3buf;
-    u_char to_cnt = 0;
+    uint8_t to_cnt = 0;
     int got;
-    u_char ief;
+    uint8_t ief;
 
     /*
      * Nut/OS threads run forever.
@@ -344,7 +344,7 @@ int PlayerInit(void)
  *
  * Force player into idle mode.
  */
-int PlayerStop(u_long tmo)
+int PlayerStop(uint32_t tmo)
 {
     while (player.psi_status != PSI_IDLE) {
         printf("[STOP]");
@@ -364,7 +364,7 @@ int PlayerStop(u_long tmo)
  *
  * If the player is currently running, it will be stopped first.
  */
-int PlayerStart(TCPSOCKET * sock, u_long metaint, u_long tmo)
+int PlayerStart(TCPSOCKET * sock, uint32_t metaint, uint32_t tmo)
 {
     if (PlayerStop(tmo))
         return -1;

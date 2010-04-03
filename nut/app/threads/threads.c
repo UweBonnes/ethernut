@@ -89,7 +89,7 @@ THREAD(Thread2, arg)
  */
 int main(void)
 {
-    u_long baud = 115200;
+    uint32_t baud = 115200;
 
     /*
      * Register the UART device, open it, assign stdout to it and set 

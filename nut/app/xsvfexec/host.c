@@ -160,7 +160,7 @@ static int xsvf_err;
 int XsvfInit(void)
 {
 #if defined(ETHERNUT2) || defined(ETHERNUT3)
-    u_long baud = 115200;
+    uint32_t baud = 115200;
 
     /*
      * Prepare standard output and display a banner.
@@ -269,9 +269,9 @@ int XsvfGetError(void)
  *
  * \return Byte value.
  */
-u_char XsvfGetByte(void)
+uint8_t XsvfGetByte(void)
 {
-    u_char rc;
+    uint8_t rc;
 
     if(_read(fh, &rc, sizeof(rc)) != sizeof(rc)) {
         xsvf_err = XE_DATAUNDERFLOW;
@@ -288,9 +288,9 @@ u_char XsvfGetByte(void)
  *
  * \return XSVF command or XUNKNOWN if an error occured.
  */
-u_char XsvfGetCmd(void)
+uint8_t XsvfGetCmd(void)
 {
-    u_char rc;
+    uint8_t rc;
 #ifdef ETHERNUT2
     static char cnt;
     if (++cnt == 0) {
@@ -317,9 +317,9 @@ u_char XsvfGetCmd(void)
  * 
  * \return TAP state or UNKNOWN_STATE if an error occured.
  */
-u_char XsvfGetState(u_char state0, u_char state1)
+uint8_t XsvfGetState(uint8_t state0, uint8_t state1)
 {
-    u_char rc;
+    uint8_t rc;
 
     if(_read(fh, &rc, sizeof(rc)) != sizeof(rc) || rc > 1) {
         rc = UNKNOWN_STATE;
@@ -409,7 +409,7 @@ int XsvfReadBitString(void *buf, int num)
 
 #ifdef XSVF_DEBUG
     else {
-        u_char *cp = buf;
+        uint8_t *cp = buf;
 
         printf("[%u:", num);
         while(len-- > 0) {
@@ -430,7 +430,7 @@ int XsvfReadBitString(void *buf, int num)
  */
 int XsvfSkipComment(void)
 {
-    u_char ch;
+    uint8_t ch;
 
     for(;;) {
         if(_read(fh, &ch, sizeof(ch)) != sizeof(ch)) {

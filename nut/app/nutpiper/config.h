@@ -49,14 +49,14 @@
 #define PREV_STATION        254
 
 typedef struct {
-    u_short rs_port;
-    u_long rs_ip;
+    uint16_t rs_port;
+    uint32_t rs_ip;
     char  *rs_url;
     char  *rs_name;
     char  *rs_genre;
-    u_long rs_metaint;
-    u_short rs_bitrate;
-    u_char rs_scandead;
+    uint32_t rs_metaint;
+    uint16_t rs_bitrate;
+    uint8_t rs_scandead;
     char  *rs_scantitle;
 } RADIOSTATION;
 
@@ -75,15 +75,15 @@ extern RADIOSTATION *station;
 
 
 typedef struct {
-    u_char rc_off;              /*!< \brief Set when switched off. */
-    u_char rc_cstatus;          /*!< \brief Current status. */
-    u_char rc_dstatus;          /*!< \brief Displayed status. */
-    u_char rc_cstation;         /*!< \brief Current station. */
-    u_char rc_rstation;         /*!< \brief Requested station. */
-    u_char rc_cvolume;          /*!< \brief Current volume. */
-    u_char rc_rvolume;          /*!< \brief Requested station. */
-    u_char rc_cmute;            /*!< \brief Muted. */
-    u_char rc_rmute;            /*!< \brief Muted requested. */
+    uint8_t rc_off;              /*!< \brief Set when switched off. */
+    uint8_t rc_cstatus;          /*!< \brief Current status. */
+    uint8_t rc_dstatus;          /*!< \brief Displayed status. */
+    uint8_t rc_cstation;         /*!< \brief Current station. */
+    uint8_t rc_rstation;         /*!< \brief Requested station. */
+    uint8_t rc_cvolume;          /*!< \brief Current volume. */
+    uint8_t rc_rvolume;          /*!< \brief Requested station. */
+    uint8_t rc_cmute;            /*!< \brief Muted. */
+    uint8_t rc_rmute;            /*!< \brief Muted requested. */
 } RADIOCONTROL;
 
 extern RADIOCONTROL radio;
@@ -93,6 +93,6 @@ extern int ConfigLoad(void);
 extern void ConfigResetFactory(void);
 extern void ConfigSave(void);
 extern void ConfigSaveControl(void);
-extern int ConfigStation(u_char idx, CONST char * url);
+extern int ConfigStation(uint8_t idx, CONST char * url);
 
 #endif

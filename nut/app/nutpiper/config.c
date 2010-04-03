@@ -66,7 +66,7 @@ static int ConfigSaveBinary(int addr, void *val, size_t len)
 {
 #if defined(__AVR__)
     size_t i;
-    u_char *cp = val;
+    uint8_t *cp = val;
 
     for (i = 0; i < len; cp++, i++)
         if (eeprom_read_byte((void *) (addr + i)) != *cp)
@@ -120,7 +120,7 @@ static int ConfigLoadBinary(int addr, void *val, size_t len)
 {
 #if defined(__AVR__)
     size_t i;
-    u_char *cp = val;
+    uint8_t *cp = val;
 
     for (i = 0; i < len; cp++, i++)
         *cp = eeprom_read_byte((void *) (addr + i));
@@ -137,7 +137,7 @@ static int ConfigLoadBinary(int addr, void *val, size_t len)
 size_t ConfigSize(void)
 {
     size_t rc = 0;
-    u_char idx;
+    uint8_t idx;
     RADIOSTATION *rsp;
 
     for (idx = 0; idx < MAXNUM_STATIONS; idx++) {
@@ -163,10 +163,10 @@ size_t ConfigSize(void)
  *
  * \return 0 on success, -1 otherwise.
  */
-int ConfigStation(u_char idx, CONST char * url)
+int ConfigStation(uint8_t idx, CONST char * url)
 {
-    u_long ip;
-    u_short port = 80;
+    uint32_t ip;
+    uint16_t port = 80;
     char *buf;
     char *cp;
 
@@ -221,7 +221,7 @@ int ConfigStation(u_char idx, CONST char * url)
  */
 static void ConfigCreate(void)
 {
-    u_char idx;
+    uint8_t idx;
 
     if (station == 0)
         station = malloc(MAXNUM_STATIONS * sizeof(RADIOSTATION));
@@ -333,7 +333,7 @@ int ConfigLoad(void)
     int rc = -1;
     int addr = CONFAPP_EE_OFFSET;
     char *buf;
-    u_char idx;
+    uint8_t idx;
     RADIOSTATION *rsp;
 
     buf = malloc(MAXLEN_URL + 1);
@@ -387,7 +387,7 @@ void ConfigSaveControl(void)
  */
 void ConfigSave(void)
 {
-    u_char idx;
+    uint8_t idx;
     RADIOSTATION *rsp;
     int addr = CONFAPP_EE_OFFSET;
 

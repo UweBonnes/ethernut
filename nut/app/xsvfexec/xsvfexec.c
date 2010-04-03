@@ -74,13 +74,13 @@
  *
  * \return 0 if equal, 1 otherwise.
  */
-static int BitStringCmp(int len, u_char *op1, u_char *op2, u_char *mask)
+static int BitStringCmp(int len, uint8_t *op1, uint8_t *op2, uint8_t *mask)
 {
     int rc = 0;
 
 #if !defined(_WIN32)
     int i;
-    u_char diff;
+    uint8_t diff;
 
     for (i = 0; i < len; i += 8) {
         diff = *op1++ ^ *op2++;
@@ -105,21 +105,21 @@ static int BitStringCmp(int len, u_char *op1, u_char *op2, u_char *mask)
  *            the final result.
  * \param op2 Pointer to the second bit string. Will be added to the first.
  */
-static void BitStringAdd(int len, u_char *op1, u_char *op2)
+static void BitStringAdd(int len, uint8_t *op1, uint8_t *op2)
 {
     int i;
-    u_short sum;
-    u_char ovr = 0;
+    uint16_t sum;
+    uint8_t ovr = 0;
 
     i = (int)((len + 7UL) / 8UL);
     while (i--) {
-        if((sum = (u_short)((u_short)op1[i] + (u_short)op2[i] + ovr)) > (u_short)255) {
+        if((sum = (uint16_t)((uint16_t)op1[i] + (uint16_t)op2[i] + ovr)) > (uint16_t)255) {
             ovr = 1;
         }
         else {
             ovr = 0;
         }
-        op1[i] = (u_char)sum;
+        op1[i] = (uint8_t)sum;
     }
 }
 
@@ -131,10 +131,10 @@ static void BitStringAdd(int len, u_char *op1, u_char *op2)
  *
  * \return The number of bits set to one.
  */
-static int BitStringOnes(int len, u_char *op)
+static int BitStringOnes(int len, uint8_t *op)
 {
     int rc = 0;
-    u_char mask;
+    uint8_t mask;
     int i = (int)((len + 7UL) / 8UL);
 
     while (i--) {
@@ -162,13 +162,13 @@ static int BitStringOnes(int len, u_char *op)
  * \param tdi_val2  Second TDI value.
  * \param data_mask The data mask used for the update.
  */
-static void UpdateTdi(int len, u_char *tdi_val, int len2, u_char *tdi_val2, u_char *data_mask)
+static void UpdateTdi(int len, uint8_t *tdi_val, int len2, uint8_t *tdi_val2, uint8_t *data_mask)
 {
-    u_char tdibit;
-    u_char mask;
+    uint8_t tdibit;
+    uint8_t mask;
     int i;
-    u_char d = 0;
-    u_char m = 0;
+    uint8_t d = 0;
+    uint8_t m = 0;
 
     for (i = len - 1; i >= 0; --i) {
         mask = data_mask[i];
@@ -210,11 +210,11 @@ static void UpdateTdi(int len, u_char *tdi_val, int len2, u_char *tdi_val2, u_ch
  *
  * \return Zero on success, otherwise an error code is returned.
  */
-static int ReShift(int len, u_char *tdi_val, u_char *tdo_exp, u_char *tdo_msk, 
-                   u_char sState, u_char eState, long delay, u_char retries)
+static int ReShift(int len, uint8_t *tdi_val, uint8_t *tdo_exp, uint8_t *tdo_msk, 
+                   uint8_t sState, uint8_t eState, long delay, uint8_t retries)
 {
     int rc = 0;
-    u_char tdo_val[MAX_BITVEC_BYTES];
+    uint8_t tdo_val[MAX_BITVEC_BYTES];
 
     if (len == 0) {
         if (delay) {
@@ -228,10 +228,10 @@ static int ReShift(int len, u_char *tdi_val, u_char *tdo_exp, u_char *tdo_msk,
          * Retry loop. 
          */
         do {
-            u_char *tdi = &tdi_val[last_byte];
-            u_char *tdo = &tdo_val[last_byte];
+            uint8_t *tdi = &tdi_val[last_byte];
+            uint8_t *tdo = &tdo_val[last_byte];
             int bitcnt;
-            u_char bitmsk;
+            uint8_t bitmsk;
 
             TapStateChange(sState);
 
@@ -330,7 +330,7 @@ static int ReShift(int len, u_char *tdi_val, u_char *tdo_exp, u_char *tdo_msk,
  *
  * \return Zero on success, otherwise an error code is returned.
  */
-static int Shift(int len, u_char *tdi_val, u_char *tdo_exp, u_char sState, u_char eState)
+static int Shift(int len, uint8_t *tdi_val, uint8_t *tdo_exp, uint8_t sState, uint8_t eState)
 {
     XsvfReadBitString(tdi_val, len);
     if(tdo_exp) {
@@ -342,32 +342,32 @@ static int Shift(int len, u_char *tdi_val, u_char *tdo_exp, u_char sState, u_cha
 /*!
  * \brief TDI value buffer.
  */
-static u_char tdiVal[MAX_BITVEC_BYTES];
+static uint8_t tdiVal[MAX_BITVEC_BYTES];
 
 /*!
  * \brief TDI value 2 buffer.
  */
-static u_char tdiVal2[MAX_BITVEC_BYTES];
+static uint8_t tdiVal2[MAX_BITVEC_BYTES];
 
 /*!
  * \brief Expected TDO value buffer.
  */
-static u_char tdoExp[MAX_BITVEC_BYTES];
+static uint8_t tdoExp[MAX_BITVEC_BYTES];
 
 /*!
  * \brief TDO mask buffer.
  */
-static u_char tdoMask[MAX_BITVEC_BYTES];
+static uint8_t tdoMask[MAX_BITVEC_BYTES];
 
 /*!
  * \brief Data mask buffer.
  */
-static u_char dataMask[MAX_BITVEC_BYTES];
+static uint8_t dataMask[MAX_BITVEC_BYTES];
 
 /*!
  * \brief Address mask buffer.
  */
-static u_char addrMask[MAX_BITVEC_BYTES];
+static uint8_t addrMask[MAX_BITVEC_BYTES];
 
 /*!
  * \brief Execute an XSVF buffer.
@@ -380,10 +380,10 @@ static u_char addrMask[MAX_BITVEC_BYTES];
 static int Execute(void)
 {
     int rc = 0;
-    u_char cmd;
-    u_char endIr = RUN_TEST_IDLE;
-    u_char endDr = RUN_TEST_IDLE;
-    u_char retries = DEFAULT_REPEAT;
+    uint8_t cmd;
+    uint8_t endIr = RUN_TEST_IDLE;
+    uint8_t endDr = RUN_TEST_IDLE;
+    uint8_t retries = DEFAULT_REPEAT;
     long delay = 0;
     int drSize = 0;
     int drSize2 = 0;

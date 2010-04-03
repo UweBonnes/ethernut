@@ -56,7 +56,7 @@
 #define PHY_NAME    "Ethernet"
 #endif
 
-static u_char *MibVarsIfGet(CONST SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
+static uint8_t *MibVarsIfGet(CONST SNMPVAR *, OID *, size_t *, int, size_t *, WMETHOD **);
 
 #define MAG_IF_NUMBER           0
 
@@ -115,7 +115,7 @@ static SNMPVAR mib_variables[] = {
 static long if_number;
 static long if_type;
 static long if_mtu;
-static u_long if_speed;
+static uint32_t if_speed;
 static long if_index;
 static char *if_descr;
 static OID if_specific[] = { 0, 0 };
@@ -145,10 +145,10 @@ int MibRegisterIfVars(void)
     return SnmpMibRegister(base_oid, base_oidlen, mib_variables, sizeof(mib_variables) / sizeof(SNMPVAR));
 }
 
-static int MibVarsIfSet(int action, u_char * var_val, u_char var_val_type, size_t var_val_len, OID * name, size_t name_len)
+static int MibVarsIfSet(int action, uint8_t * var_val, uint8_t var_val_type, size_t var_val_len, OID * name, size_t name_len)
 {
     size_t bigsize = 1000;
-    u_long value = 0;
+    uint32_t value = 0;
 
     if (action != SNMP_ACT_COMMIT) {
         return 0;
@@ -157,7 +157,7 @@ static int MibVarsIfSet(int action, u_char * var_val, u_char var_val_type, size_
     case 7:
         if (var_val_type != ASN_INTEGER)
             return SNMP_ERR_WRONGTYPE;
-        if (var_val_len > sizeof(u_long))
+        if (var_val_len > sizeof(uint32_t))
             return SNMP_ERR_WRONGLENGTH;
         AsnUnsignedParse(var_val, &bigsize, &var_val_type, &value);
         if (name[10] > 0 && name[10] < MIB_IF_ENTRIES) {
@@ -168,7 +168,7 @@ static int MibVarsIfSet(int action, u_char * var_val, u_char var_val_type, size_
     return 0;
 }
 
-static u_char *MibVarsIfGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
+static uint8_t *MibVarsIfGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, int exact, size_t * varlen, WMETHOD ** wmethod)
 {
     int rc;
     int ifc = 0;
@@ -213,25 +213,25 @@ static u_char *MibVarsIfGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, in
 
     switch (vp->var_magic) {
     case MAG_IF_NUMBER:
-        return (u_char *) & if_number;
+        return (uint8_t *) & if_number;
     case MAG_IF_INDEX:
-        return (u_char *) & if_index;
+        return (uint8_t *) & if_index;
     case MAG_IF_DESCR:
         *varlen = strlen(if_descr);
-        return (u_char *) if_descr;
+        return (uint8_t *) if_descr;
     case MAG_IF_TYPE:
-        return (u_char *) & if_type;
+        return (uint8_t *) & if_type;
     case MAG_IF_MTU:
-        return (u_char *) & if_mtu;
+        return (uint8_t *) & if_mtu;
     case MAG_IF_SPEED:
-        return (u_char *) & if_speed;
+        return (uint8_t *) & if_speed;
     case MAG_IF_PHYSADDRESS:
         *varlen = 6;
         return confnet.cdn_mac;
     case MAG_IF_ADMINSTATUS:
     case MAG_IF_OPERSTATUS:
         *wmethod = MibVarsIfSet;
-        return (u_char *) & if_admin_status[ifc];
+        return (uint8_t *) & if_admin_status[ifc];
     case MAG_IF_LASTCHANGE:
     case MAG_IF_INOCTETS:
     case MAG_IF_INUCASTPKTS:
@@ -245,10 +245,10 @@ static u_char *MibVarsIfGet(CONST SNMPVAR * vp, OID * name, size_t * namelen, in
     case MAG_IF_OUTDISCARDS:
     case MAG_IF_OUTERRORS:
     case MAG_IF_OUTQLEN:
-        return (u_char *) & zero;
+        return (uint8_t *) & zero;
     case MAG_IF_SPECIFIC:
         *varlen = sizeof(if_specific);
-        return (u_char *) if_specific;
+        return (uint8_t *) if_specific;
     }
     return NULL;
 }

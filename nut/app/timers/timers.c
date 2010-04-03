@@ -138,7 +138,7 @@ THREAD(Sleeper1, arg)
     NutThreadSetPriority(128);
     for (;;) {
         if (NutHeapAvailable() > 500)
-            printf("\n%u free ", (u_int)NutHeapAvailable());
+            printf("\n%u free ", (unsigned int)NutHeapAvailable());
         else
             puts("Memory low");
         NutSleep(500);
@@ -179,10 +179,10 @@ THREAD(Sleeper4, arg)
 int main(void)
 {
     int seq;
-    u_long baud = 115200;
-    u_long sleep_ms = 2000;
-    u_long timer_ms = 125;
-    u_long cpu_crystal;
+    uint32_t baud = 115200;
+    uint32_t sleep_ms = 2000;
+    uint32_t timer_ms = 125;
+    uint32_t cpu_crystal;
     int one_shot;
     HANDLE timer1, timer2, timer3, timer4;
     HANDLE event1 = 0, event2 = 0, event3 = 0, event4 = 0;
@@ -284,7 +284,7 @@ int main(void)
         }
         //printf("\nSleeping %u seconds ", (int)(sleep_ms / 1000UL));
         //NutSleep(sleep_ms);
-        printf("\n%u bytes free\n", (u_int)NutHeapAvailable());
+        printf("\n%u bytes free\n", (unsigned int)NutHeapAvailable());
     }
     return 0;
 }
