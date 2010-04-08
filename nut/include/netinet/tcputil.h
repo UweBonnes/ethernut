@@ -92,7 +92,7 @@
 extern "C" {
 #endif
 
-/*! \brief Wraparound-safe TCP sequence number comparison.
+/*! \brief Wraparound-safe TCP sequence number comparison, (low <= x <= high)
  *
  * Returns true if x is between low and high inclusive,
  * false otherwise.
@@ -100,15 +100,15 @@ extern "C" {
 #define SeqIsBetween(x, low, high) \
   ((uint32_t)(x - low) <= (uint32_t)(high - low))
 
-/*! \brief Wraparound-safe TCP sequence number comparison.
+/*! \brief Wraparound-safe TCP sequence number comparison, (x > low)
  *
- * Returns true if number x is comes after low.
+ * Returns true if number x comes after low.
  *
- * Values in range low-1 ... low - (1<<31) are considered to be in the past
- * Values in range low   ... low + (1<<31)-1 are considered to be in the future
+ * Values between low   ... low+1 - (1<<31) are in the past
+ * Values between low+1 ... low   + (1<<31) are in the future
  */
 #define SeqIsAfter(x, low) \
-  ((int32_t)(x - low) > 0)
+  ((int32_t)(low - x) < 0)
 
 extern void NutTcpCalcRtt(TCPSOCKET * sock);
 
