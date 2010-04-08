@@ -186,6 +186,23 @@
 #define NIC_PHY_ADDR	        0
 #endif
 
+/*!
+ * \brief PHY ID.
+ *
+ * If set to 0xffffffff, the PHY id will be ignored.
+ */
+#ifndef NIC_PHY_UID
+#define NIC_PHY_UID 0xffffffff
+#endif
+
+/*!
+ * \brief Check all known PHY IDs.
+ *
+ * If defined, perform the old PHY checks. This ensures compatibility 
+ * at the cost of bloat. Should be removed later on when all boards 
+ * have their PHY ids in their configuration.
+ */
+#define CHECK_ALL_KNOWN_PHY_IDS
 
 #if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 
@@ -433,13 +450,85 @@ static void phy_outw(uint8_t reg, uint16_t val)
 #endif
 
 /*!
+ * \brief Probe PHY.
+ * \param timeout for link status from PHY in loops.
+ * \return 0 on success, -1 otherwise.
+ */
+static int probePhy(uint32_t tmo)
+{
+    uint32_t physID;
+    uint16_t phyval;
+
+    /* Read Phy ID. Ignore revision number. */
+    physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);
+#if NIC_PHY_UID != 0xffffffff
+    if ( physID != (NIC_PHY_UID & 0xFFFFFFF0) ) {
+        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+        return -1;
+    }
+#elif defined(CHECK_ALL_KNOWN_PHY_IDS)
+#define MII_DM9161_ID     0x0181b8a0
+#define MII_AM79C875_ID   0x00225540
+#define MII_MICREL_ID     0x00221610
+#define MII_LAN8700_ID    0x0007c0c0
+
+    if ( physID != MII_DM9161_ID && physID != MII_AM79C875_ID && physID != MII_MICREL_ID && physID != MII_LAN8700_ID ) {
+        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+        return -1;
+    }
+#endif
+
+    /* Handle auto negotiation if configured. */
+    phyval = phy_inw(NIC_PHY_BMCR);
+    if (phyval & NIC_PHY_BMCR_ANEGENA) {
+        /* Wait for auto negotiation completed. */
+        phy_inw(NIC_PHY_BMSR);  /* Discard previously latched status. */
+        while (--tmo) {
+            if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
+                break;
+            }
+        }
+        /* Return error on link timeout. */
+        if (tmo == 0) {
+            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+            return -1;
+        }
+
+        /*
+        * Read link partner abilities and configure EMAC.
+        */
+        phyval = phy_inw(NIC_PHY_ANLPAR);
+        if (phyval & NIC_PHY_ANEG_TX_FDX) {
+            /* 100Mb full duplex. */
+            outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_SPD | EMAC_FD);
+        }
+        else if (phyval & NIC_PHY_ANEG_TX_HDX) {
+            /* 100Mb half duplex. */
+            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_FD) | EMAC_SPD);
+        }
+        else if (phyval & NIC_PHY_ANEG_10_FDX) {
+            /* 10Mb full duplex. */
+            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_SPD) | EMAC_FD);
+        }
+        else {
+            /* 10Mb half duplex. */
+            outr(EMAC_NCFGR, inr(EMAC_NCFGR) & ~(EMAC_SPD | EMAC_FD));
+        }
+    }
+
+    /* Disable management port. */
+    outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
+
+    return 0;
+}
+
+/*!
  * \brief Reset the Ethernet controller.
  *
  * \return 0 on success, -1 otherwise.
  */
 static int EmacReset(uint32_t tmo)
 {
-    uint16_t phyval;
 #if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7X)
     uint32_t rstcr_tmp;
 #endif
@@ -509,88 +598,7 @@ static int EmacReset(uint32_t tmo)
     phy_outw(NIC_PHY_BMCR, phy_inw(NIC_PHY_BMCR) & ~NIC_PHY_BMCR_ISOLATE);
 #endif
 
-//    /* For some unknown reason it seems to be required to read the ID registers first. */
-//    if (phy_inw(NIC_PHY_ID1) != 0x0181 || (phy_inw(NIC_PHY_ID2) & 0xFFF0) != 0xB8A0) {
-//        outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-//        return -1;
-//    }
-
-// TODO: Make phy id configurable
-/* PHY ID */
-#define MII_DM9161_ID_H     0x0181
-#define MII_DM9161_ID_L     0xb8a0
-
-#define MII_AM79C875_ID_H   0x0022
-#define MII_AM79C875_ID_L   0x5540      
-
-#define MII_MICREL_ID_H     0x0022
-#define MII_MICREL_ID_L     0x1610
-
-#define MII_LAN8700_ID_H    0x0007
-#define MII_LAN8700_ID_L    0xc0c0
-
-     /* For some unknown reason it seems to be required to read the ID 
-registers first. */
-
-     // Check for DM PHY (as used on the ATMEL EK)
-    if (phy_inw(NIC_PHY_ID1) != MII_DM9161_ID_H ||
-       (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_DM9161_ID_L) {
-     // Check for MICREL PHY (as used on the Olimex SAM7-EX256)         
-        if (phy_inw(NIC_PHY_ID1) != MII_MICREL_ID_H ||
-           (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_MICREL_ID_L) {
-            if (phy_inw(NIC_PHY_ID1) != MII_LAN8700_ID_H ||
-               (phy_inw(NIC_PHY_ID2) & 0xFFF0) != MII_LAN8700_ID_L) {
-                outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-                return -1;
-            }
-        }
-    }
-
-
-// TODO: END
-
-    /* Handle auto negotiation if configured. */
-    phyval = phy_inw(NIC_PHY_BMCR);
-    if (phyval & NIC_PHY_BMCR_ANEGENA) {
-        /* Wait for auto negotiation completed. */
-        phy_inw(NIC_PHY_BMSR);  /* Discard previously latched status. */
-        while (--tmo) {
-            if (phy_inw(NIC_PHY_BMSR) & NIC_PHY_BMSR_ANCOMPL) {
-                break;
-            }
-        }
-        /* Return error on link timeout. */
-        if (tmo == 0) {
-            outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-            return -1;
-        }
-
-        /*
-         * Read link partner abilities and configure EMAC.
-         */
-        phyval = phy_inw(NIC_PHY_ANLPAR);
-        if (phyval & NIC_PHY_ANEG_TX_FDX) {
-            /* 100Mb full duplex. */
-            outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_SPD | EMAC_FD);
-        }
-        else if (phyval & NIC_PHY_ANEG_TX_HDX) {
-            /* 100Mb half duplex. */
-            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_FD) | EMAC_SPD);
-        }
-        else if (phyval & NIC_PHY_ANEG_10_FDX) {
-            /* 10Mb full duplex. */
-            outr(EMAC_NCFGR, (inr(EMAC_NCFGR) & ~EMAC_SPD) | EMAC_FD);
-        }
-        else {
-            /* 10Mb half duplex. */
-            outr(EMAC_NCFGR, inr(EMAC_NCFGR) & ~(EMAC_SPD | EMAC_FD));
-        }
-    }
-
-    /* Disable management port. */
-    outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
-
-    return 0;
+    return probePhy(tmo);
 }
 
 /*
@@ -799,8 +807,8 @@ static int EmacStart(CONST uint8_t * mac)
     /* Clear receiver status. */
     outr(EMAC_RSR, EMAC_OVR | EMAC_REC | EMAC_BNA);
 
-    /* Copy all frames and discard FCS. */
-    outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_CAF | EMAC_DRFCS);
+    /* Discard FCS. */
+    outr(EMAC_NCFGR, inr(EMAC_NCFGR) | EMAC_DRFCS);
 
     /* Enable receiver, transmitter and statistics. */
     outr(EMAC_NCR, inr(EMAC_NCR) | EMAC_TE | EMAC_RE | EMAC_WESTAT);
@@ -953,7 +961,7 @@ int EmacOutput(NUTDEVICE * dev, NETBUF * nb)
         mx_wait = 500;
     } else {
         /* Ethernet works. Set a long waiting time in case we
-           temporarly lose the link next time. */
+           temporarily lose the link next time. */
         mx_wait = 5000;
     }
     return rc;
