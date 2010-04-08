@@ -1984,11 +1984,24 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
     }
 
     /*
+     * Zero out the ip address and mask. This allows to switch between 
+     * DHCP and static IP addresses without resetting/power cycling.
+     * See patch #2903940.
+     */
+    nif->if_local_ip = 0;
+    nif->if_mask = confnet.cdn_ip_mask;
+
+    /*
      * If the EEPROM contains a fixed network configuration, we skip DHCP.
      */
     if ((confnet.cdn_cip_addr & confnet.cdn_ip_mask) != 0) {
-        confnet.cdn_ip_addr = confnet.cdn_cip_addr;
-        NutNetIfConfig2(name, confnet.cdn_mac, confnet.cdn_ip_addr, confnet.cdn_ip_mask, confnet.cdn_gateway);
+        /* Give up a previously allocated lease. See patch #2903940. */
+        (void)NutDhcpRelease(name, (3*MIN_DHCP_WAIT));
+        NutNetIfConfig2(name,
+                        confnet.cdn_mac,
+                        confnet.cdn_ip_addr,
+                        confnet.cdn_ip_mask,
+                        confnet.cdn_gateway);
         return 0;
     }
 
