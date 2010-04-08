@@ -385,7 +385,7 @@ int At91SpiSetRate(unsigned int base, unsigned int cs, uint32_t rate)
         rc = -1;
         break;
     }
-    return 0;
+    return rc;
 }
 
 uint32_t At91SpiGetModeFlags(unsigned int base, unsigned int cs)
