@@ -310,7 +310,7 @@ void NutMD5Final(MD5CONTEXT *context, uint8_t digest[16])
     NutMD5Transform(context->buf, (uint32_t *) context->in);
     byteReverse((unsigned char *) context->buf, 4);
     memcpy(digest, context->buf, 16);
-    memset(context, 0, sizeof(context));        /* In case it's sensitive */
+    memset(context, 0, sizeof(MD5CONTEXT));        /* In case it's sensitive */
 }
 
 /*@}*/
