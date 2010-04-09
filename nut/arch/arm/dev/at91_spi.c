@@ -444,8 +444,8 @@ int At91SpiSetModeFlags(unsigned int base, unsigned int cs, uint32_t mode)
     if (mode & SPIMF_PCSDEC) {
         mv |= SPI_PCSDEC;
     }
-    if (mode & SPIMF_MFDETECT) {
-        mv &= ~SPI_MODFDIS;
+    if (!(mode & SPIMF_MFDETECT)) {
+        mv |= SPI_MODFDIS;
     }
     if (mode & SPIMF_LOOPBACK) {
         mv |= SPI_LLB;
