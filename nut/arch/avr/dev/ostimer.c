@@ -371,13 +371,12 @@ uint32_t NutGetTickClock(void)
  */
 uint32_t NutTimerMillisToTicks(uint32_t ms)
 {
-    uint32_t x;
-    
-    x = ms * NutGetTickClock() / 1000UL;
-    if (x == 0) {
-        x = 1;
-    }
-    
-    return (x);
+#if (NUT_TICK_FREQ % 1000)
+    if (ms >= 0x3E8000UL)
+        return (ms / 1000UL) * NUT_TICK_FREQ;
+    return (ms * NUT_TICK_FREQ + 999UL) / 1000UL;
+#else
+    return ms * (NUT_TICK_FREQ / 1000UL);
+#endif
 }
 
