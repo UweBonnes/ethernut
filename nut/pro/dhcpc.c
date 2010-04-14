@@ -1997,6 +1997,7 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
     if ((confnet.cdn_cip_addr & confnet.cdn_ip_mask) != 0) {
         /* Give up a previously allocated lease. See patch #2903940. */
         (void)NutDhcpRelease(name, (3*MIN_DHCP_WAIT));
+        confnet.cdn_ip_addr = confnet.cdn_cip_addr;
         NutNetIfConfig2(name,
                         confnet.cdn_mac,
                         confnet.cdn_ip_addr,
