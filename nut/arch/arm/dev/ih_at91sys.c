@@ -86,13 +86,6 @@ void SystemIrqEntry(void)
         /* Call memory controller interrupt handler. */
         (syssig_MC.sir_handler) (syssig_MC.sir_arg);
     }
-    if ((inr(PIT_MR) & PIT_PITIEN) != 0 && (inr(PIT_SR) & PIT_PITS) != 0) {
-        if (syssig_PIT.sir_handler) {
-            /* Call periodic interval timer interrupt handler. */
-            (syssig_PIT.sir_handler) (syssig_PIT.sir_arg);
-        }
-        inr(PIT_PIVR);
-    }
     if (syssig_PMC.sir_enabled && syssig_PMC.sir_handler) {
         /* Call power management controller interrupt handler. */
         (syssig_PMC.sir_handler) (syssig_PMC.sir_arg);
@@ -108,6 +101,13 @@ void SystemIrqEntry(void)
     if (syssig_WDT.sir_enabled && syssig_WDT.sir_handler) {
         /* Call watchdog timer interrupt handler. */
         (syssig_WDT.sir_handler) (syssig_WDT.sir_arg);
+    }
+    if ((inr(PIT_MR) & PIT_PITIEN) != 0 && (inr(PIT_SR) & PIT_PITS) != 0) {
+        if (syssig_PIT.sir_handler) {
+            /* Call periodic interval timer interrupt handler. */
+            (syssig_PIT.sir_handler) (syssig_PIT.sir_arg);
+        }
+        inr(PIT_PIVR);
     }
     IRQ_EXIT();
 }
@@ -142,8 +142,8 @@ static int SystemIrqCtl(int cmd, void *param)
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
         outr(AIC_SVR(SYSC_ID), (unsigned int)SystemIrqEntry);
-        /* Initialize to edge triggered with defined priority. */
-        outr(AIC_SMR(SYSC_ID), AIC_SRCTYPE_INT_EDGE_TRIGGERED | NUT_IRQPRI_SYS);
+        /* Initialize to level triggered with defined priority. */
+        outr(AIC_SMR(SYSC_ID), AIC_SRCTYPE_INT_LEVEL_SENSITIVE | NUT_IRQPRI_SYS);
         /* Clear interrupt */
         outr(AIC_ICCR, _BV(SYSC_ID));
         break;
