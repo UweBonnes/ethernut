@@ -7,14 +7,15 @@ SetCompressor /SOLID lzma
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 
 !define PRODUCT  "Nut/OS"
-!define NUTVERSION  "4.9.8"
+!define NUTVERSION  "4.9"
+!define NUTRELEASE  "9"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
 Name "${PRODUCT}"
-OutFile "ethernut-${NUTVERSION}.exe"
+OutFile "ethernut-${NUTVERSION}.${NUTRELEASE}.exe"
 XPStyle off
-BrandingText "${PRODUCT} ${NUTVERSION}-${INSTBUILD}"
+BrandingText "${PRODUCT} ${NUTVERSION}.${NUTRELEASE}-${INSTBUILD}"
 
 InstallDir c:\ethernut-${NUTVERSION}
 InstallDirRegKey HKLM "${SWREGKEY}\${NUTVERSION}" ""
@@ -74,14 +75,14 @@ InstallDirRegKey HKLM "${SWREGKEY}\${NUTVERSION}" ""
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
 
-VIProductVersion "${NUTVERSION}.${INSTBUILD}"
+VIProductVersion "${NUTVERSION}.${NUTRELEASE}.${INSTBUILD}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Ethernut"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "Open Source Software and Hardware Project"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "egnite GmbH"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "Ethernut is a trademark of egnite GmbH"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright ® 2001-2009 by egnite GmbH"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Embedded RTOS and TCP/IP Stack Installer"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${NUTVERSION}"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${NUTVERSION}.${NUTRELEASE}"
 
 ; Installer Sections
 ;
@@ -276,6 +277,12 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\win32\nutconfigure.exe
     File ..\..\..\tools\win32\msvcr71.dll
     File ..\..\..\tools\win32\msvcp71.dll
+    File ..\..\..\tools\win32\qnutconf.exe
+    File ..\..\..\tools\win32\msvcr90.dll
+    File ..\..\..\tools\win32\msvcp90.dll
+    File ..\..\..\tools\win32\QtCore4.dll
+    File ..\..\..\tools\win32\QtGui4.dll
+    File ..\..\..\tools\win32\Microsoft.VC90.CRT.manifest
     SetOutPath "$INSTDIR\nut\conf"
     File ..\..\..\conf\arthernet1.conf
     File ..\..\..\conf\at91eb40a.conf
@@ -323,6 +330,7 @@ SectionGroup "Development Tools"
     File /r ..\..\..\conf\*.nut
     SetOutPath "$INSTDIR"
     CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\Configurator.lnk" "$INSTDIR\nutconf.exe"
+    CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\Configurator Qt (Preview).lnk" "$INSTDIR\qnutconf.exe"
   SectionEnd
 
   Section "Ethernut Discoverer" SecDiscover
@@ -365,8 +373,11 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\win32\install_giveio.bat
     File ..\..\..\tools\win32\remove_giveio.bat
     File ..\..\..\tools\win32\status_giveio.bat
-    File ..\..\..\tools\win32\*.sys
-    File ..\..\..\tools\win32\*.dll
+    File ..\..\..\tools\win32\giveio.sys
+    File ..\..\..\tools\win32\WinIo.sys
+    File ..\..\..\tools\win32\libusb0.dll
+    File ..\..\..\tools\win32\WinIo.dll
+    File ..\..\..\tools\win32\msys-1.0.dll
   SectionEnd
 
   Section "JTAG-O-MAT Programmer" SecJtagomat
@@ -412,6 +423,19 @@ SectionGroup "Development Tools"
     SetOutPath "$INSTDIR\nut\tools\crurom"
 ;    File ..\..\..\tools\crurom\Makefile
     File ..\..\..\tools\crurom\*.c
+    SetOutPath "$INSTDIR\nut\tools\qnutconf"
+    File ..\..\..\tools\qnutconf\*.c
+    File ..\..\..\tools\qnutconf\*.cpp
+    File ..\..\..\tools\qnutconf\*.h
+    File ..\..\..\tools\qnutconf\*.rc
+    File ..\..\..\tools\qnutconf\*.qrc
+    File ..\..\..\tools\qnutconf\*.pro
+    File ..\..\..\tools\qnutconf\*.ui
+    SetOutPath "$INSTDIR\nut\tools\qnutconf\images"
+    File ..\..\..\tools\qnutconf\images\*.bmp
+    File ..\..\..\tools\qnutconf\images\*.ico
+    File ..\..\..\tools\qnutconf\images\*.png
+    File ..\..\..\tools\qnutconf\images\*.xpm
     SetOutPath "$INSTDIR\nut\tools\nutconf"
     File ..\..\..\tools\nutconf\*.c
     File ..\..\..\tools\nutconf\*.cpp
@@ -695,7 +719,7 @@ Section -post
 
   WriteRegStr HKLM SOFTWARE\nut "Install_Dir" $INSTDIR
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ethernut-${NUTVERSION}" \
-                   "DisplayName" "Ethernut ${NUTVERSION} (remove only)"
+                   "DisplayName" "Ethernut ${NUTVERSION}.${NUTRELEASE} (remove only)"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ethernut-${NUTVERSION}" \
                    "UninstallString" '"$INSTDIR\Uninstall.exe"'
 SectionEnd
@@ -839,10 +863,23 @@ Section "Uninstall"
 
   Delete "$INSTDIR\nutconf.exe"
   Delete "$INSTDIR\nutconfigure.exe"
+  Delete "$INSTDIR\qnutconf.exe"
   Delete "$INSTDIR\nutdisc.exe"
   Delete "$INSTDIR\msvcr71.dll"
   Delete "$INSTDIR\msvcp71.dll"
+  Delete "$INSTDIR\Microsoft.VC90.CRT.manifest"
+  Delete "$INSTDIR\msvcr90.dll"
+  Delete "$INSTDIR\msvcp90.dll"
+  Delete "$INSTDIR\QtCore4.dll"
+  Delete "$INSTDIR\QtGui4.dll"
 ;  Delete "$INSTDIR\nutoshelp.chm"
+  Delete "$INSTDIR\ChangeLog"
+  Delete "$INSTDIR\ChangeLog20090309"
+  Delete "$INSTDIR\AUTHORS"
+  Delete "$INSTDIR\COPYING"
+  Delete "$INSTDIR\INSTALL"
+  Delete "$INSTDIR\NEWS"
+  Delete "$INSTDIR\README"
   RMDir /r "$INSTDIR\nut"
 
   Delete "$INSTDIR\Uninstall.exe"
