@@ -143,6 +143,7 @@ int main(void)
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     puts("\n*** LED and key Test ***\n");
+    fflush( stdout);
 
     /* Register LED1 as blinking led */
 	NutRegisterLed( &led1, NUTGPIO_PORTB, 19);
@@ -160,22 +161,39 @@ int main(void)
     NutRegisterLed( &led4, NUTGPIO_PORTB, 22);
     NutSetLed( led4, LED_ON, 200, 0);
 
-    /* Register keys for thread 1 mutex
-     *   Register keyMi to release mutex simply on pressing key1
-     *   what will clear three right LEDs.
-     *   Register keyDn to release mutex if key2 is hold down for 2 seconds
-     *   what will bring right three LEDs to different blinking.
+    /* Register keys for thread */
+
+    /* First we register middle function of the 5-way control of the SAM7X-EK
+     * to do something if it is pressed for less than 1s.
      */
-	NutRegisterKey( &keyMi, &keyT1w, NUTGPIO_PORTA, 25, KEY_ACTION_SHORT, 1000);
-	NutRegisterKey( &keyDn, &keyT1w, NUTGPIO_PORTA, 22, KEY_ACTION_HOLD, 2000);
+	NutRegisterKey( &keyMi, NUTGPIO_PORTA, 25, KEY_ACTION_SHORT, 1000);
+
+    /* Then we assign, what to do if the above event has happened
+     * Here we assign to release a handle.
+     */
+    NutAssignKeyEvt( keyMi, &keyT1w);
+
+    /* Second example is to register the down function of the 5-way controller
+     * to a different functionality, it executes something after beeing pressed
+     * for at least 2s.
+     */
+	NutRegisterKey( &keyDn, NUTGPIO_PORTA, 22, KEY_ACTION_HOLD, 2000);
+
+    /* Assign event to keyDn too.
+     */
+    NutAssignKeyEvt( keyDn, &keyT1w);
 
     /* Register keys for thread 2 mutex
-     *   Register key3 to release mutex if it is relased
-     *   Register key4 to release mutex if it is pressed very short
      */
-	NutRegisterKey( &keyLt, &keyT2w, NUTGPIO_PORTA, 23, KEY_ACTION_UP, 0);
-	NutRegisterKey( &keyRt, &keyT2w, NUTGPIO_PORTA, 24, KEY_ACTION_DOWN, 0);
-	NutRegisterKey( &keyUp, &keyT2w, NUTGPIO_PORTA, 21, KEY_ACTION_DOWN, 0);
+	NutRegisterKey( &keyLt, NUTGPIO_PORTA, 23, KEY_ACTION_UP, 0);
+	NutRegisterKey( &keyRt, NUTGPIO_PORTA, 24, KEY_ACTION_DOWN, 0);
+	NutRegisterKey( &keyUp, NUTGPIO_PORTA, 21, KEY_ACTION_DOWN, 0);
+
+    /* We assign two of the keys to release a mutex.
+     */
+    NutAssignKeyEvt( keyLt, &keyT2w);
+    NutAssignKeyEvt( keyRt, &keyT2w);
+    NutAssignKeyEvt( keyUp, &keyT2w);
 
     /* Register threads that wait on keys */
     NutThreadCreate("k1", Key1Thread, NULL, 256);
