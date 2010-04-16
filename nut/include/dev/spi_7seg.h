@@ -1,7 +1,8 @@
 #ifndef _DEV_SPI_7SEG_H_
 #define _DEV_SPI_7SEG_H_
 /*
- * Copyright (C) 2008-2009 by egnite GmbH
+ * Copyright (C) 2009 by Rittal GmbH & Co. KG,
+ * Ulrich Prinz <prinz.u@rittal.de>
  *
  * All rights reserved.
  *

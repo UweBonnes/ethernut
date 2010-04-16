@@ -49,24 +49,11 @@
  */
 
 #include <cfg/os.h>
-
-#include <string.h>
 #include <io.h>
-#include <fcntl.h>
 #include <stdio.h>
 
 #include <dev/board.h>
-#include <dev/gpio.h>
-
-#include <sys/heap.h>
-#include <sys/thread.h>
-#include <sys/timer.h>
-
 #include <dev/spi_7seg.h>
-
-#ifdef NUTDEBUG
-#include <sys/osdebug.h>
-#endif
 
 /* 7-Segment connection definition
  * correct these to the port and bus you use
@@ -78,6 +65,9 @@
 /* SPI-Bus the driver is connected to */
 #define NUT_CONFIG_7SEG_SPIBUS spiBus0At91
 
+/* FILE handle for display */
+FILE *disp;
+
 /*
  * Main application routine.
  *
@@ -87,11 +77,10 @@
 int main(void)
 /******************************************************************/
 {
-
-
 	uint32_t baud = 115200;
 	uint8_t rc;
 	unsigned int count=0;
+
 	/*
      * Register the UART device, open it, assign stdout to it and set
      * the baudrate.
@@ -99,21 +88,30 @@ int main(void)
     NutRegisterDevice(&DEV_DEBUG, 0, 0);
     freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+
     /*
-     * Initialize digital I/O.
+     * Register 7-Segment chip at the SPI bus.
      */
-    printf("initSPI_disp7seg\n");
+    printf("initSPI_disp7seg... ");
 
 	rc = NutRegisterSpiDevice(&devSpi7SEG,&NUT_CONFIG_7SEG_SPIBUS,NUT_CONFIG_7SEG_CS);
 	if (rc != 0){
-		printf("spi init failed\n");
+        /* If it fails, leave a message and end here */
+		printf("FAILED\n");
+        fflush(stdout);
 		while(1);
 	}
-	printf("display_7seg\n");
+	printf("OK\n");
+
+    /* The driver implements simple printf support for the display
+     * so it can be opened as a file and used by fprintf()
+     */
+    disp = fopen( devSpi7SEG.dev_name, "w");
 
     for (;;)
 	{
-		printf( devSpi7Seg, "%3d\n", count++);
+        /* Lets run a counter for a simple demo */
+		fprintf( disp, "%3d\n", count++);
 		if(count >999)count=0;
 		NutSleep(200);
 	}

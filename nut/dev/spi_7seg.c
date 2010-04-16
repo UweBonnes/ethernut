@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2008-2009 by egnite GmbH
- * Copyright (C) 2006 by egnite Software GmbH
+ * Copyright (C) 2009 by Rittal GmbH & Co. KG,
+ * Ulrich Prinz <prinz.u@rittal.de>
  *
  * All rights reserved.
  *
@@ -45,6 +45,9 @@
 
 #include <cfg/os.h>
 #include <cfg/arch.h>
+//#include <cfg/board.h>
+#include <string.h>
+#include <stdlib.h>
 
 #ifdef SPI2SEG_DEBUG
 #include <stdio.h>
@@ -58,8 +61,6 @@
 #include <sys/timer.h>
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 #include <cfg/memory.h>
 
