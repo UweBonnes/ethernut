@@ -1,6 +1,6 @@
 ## Upload Configuration for OpenOCD
 ## ================================
-## When properly configured, you can conveniently use 
+## When properly configured, you can conveniently use
 ##  make clean all burn
 ## to build, upload and run the binary.
 
@@ -58,8 +58,8 @@ endif
 BURNCMDS  = -c init
 
 ## Works fine with the latest eir config.
-BURNCMDS += -c "run_flash_image ./$(TARG)"
-BURNCMDS += -c shutdown
+#BURNCMDS += -c "run_flash_image ./$(TARG)"
+#BURNCMDS += -c shutdown
 
 ## Running Ethernut 3 RAM images.
 # BURNCMDS=-c init -c "run_ram_image ./$(TARG)" -c shutdown
@@ -67,9 +67,13 @@ BURNCMDS += -c shutdown
 ## Example for an explicit command sequence.
 # BURNCMDS=-c init -c "reset init" -c "load_image $IMGFILE 0" -c "verify_image $IMGFILE 0" -c "resume 0" -c shutdown
 
-## Example for an external script.
-# BURNCMDS += -f $(top_srcdir)/tools/flash/flash.script 
-# BURNCMDS += -c "flash write_image erase ./$(ITARG) 0x00100000 bin" 
+## Example for an command line chaining.
+# BURNCMDS += -f $(top_srcdir)/tools/flash/flash.script
+BURNCMDS += -c "reset init"
+BURNCMDS += -c "halt"
+BURNCMDS += -c "arm7_9 dcc_downloads enable"
+BURNCMDS += -c "flash write_image erase ./$(ITARG) 0x00100000 bin"
+BURNCMDS += -c "reset run"
 # BURNCMDS += -f $(top_srcdir)/tools/flash/flash-exit.script
 
 # Terminate OpenOCD. Use with all targets.
