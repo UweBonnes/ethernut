@@ -95,6 +95,10 @@
 
 #if 0
 /* Use for local debugging. */
+#define X12DEBUG
+#endif
+
+#ifdef X12DEBUG
 #define NUTDEBUG
 #include <stdio.h>
 #endif
@@ -152,12 +156,12 @@ static int X12WaitReady(void)
     uint8_t poll;
     int cnt = 200; /* Ethernut 3 needs about 50 loops, so this is quite save. */
 
-    /* 
+    /*
      * Poll for write cycle finished. We can't use a sleep here, because our
      * X12xx routines are not re-entrant.
      */
     while (--cnt && TwMasterTransact(I2C_SLA_EEPROM, 0, 0, &poll, 1, NUT_WAIT_INFINITE) == -1);
-#ifdef NUTDEBUG
+#ifdef X12DEBUG
     printf("[RtcRdy:%d]", 200 - cnt);
 #endif
 
@@ -181,7 +185,7 @@ int X12RtcReadRegs(uint8_t reg, uint8_t *buff, size_t cnt)
     wbuf[0] = 0;
     wbuf[1] = reg;
     if (TwMasterTransact(I2C_SLA_RTC, wbuf, 2, buff, cnt, NUT_WAIT_INFINITE) == cnt) {
-#ifdef NUTDEBUG
+#ifdef X12DEBUG
         printf("[Rtc$%02x>", reg);
         while(cnt--) {
             printf(" %02x", *buff++);
@@ -216,7 +220,7 @@ int X12RtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
             rc = X12WaitReady();
         }
         X12WriteEnable(0);
-#ifdef NUTDEBUG
+#ifdef X12DEBUG
         printf("[Rtc$%02X<", *++buff);
         cnt -= 2;
         while(cnt--) {
@@ -233,7 +237,7 @@ int X12RtcWrite(int nv, CONST uint8_t *buff, size_t cnt)
  *
  * \deprecated New applications must use NutRtcGetTime().
  *
- * \param tm Points to a structure that receives the date and time 
+ * \param tm Points to a structure that receives the date and time
  *           information.
  *
  * \return 0 on success or -1 in case of an error.
@@ -312,7 +316,7 @@ int X12RtcSetClock(CONST struct _tm *tm)
  * \deprecated New applications must use NutRtcGetAlarm().
  *
  * \param idx   Zero based index. Two alarms are supported.
- * \param tm    Points to a structure that receives the date and time 
+ * \param tm    Points to a structure that receives the date and time
  *              information.
  * \param aflgs Points to an unsigned long that receives the enable flags.
  *
@@ -571,7 +575,7 @@ int X12Init(void)
             if (data[0] != data[1]) {
                 rtc_chip = 1;
             }
-#ifdef NUTDEBUG
+#ifdef X12DEBUG
             printf("[RTC=X12%c6]", rtc_chip ? '8' : '2');
 #endif
         }
