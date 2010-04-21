@@ -65,7 +65,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -196,6 +196,7 @@
  * \endverbatim
  */
 
+#include <cfg/os.h>
 #include <sys/thread.h>
 #include <sys/event.h>
 #include <sys/timer.h>
@@ -259,7 +260,7 @@ static uint_fast8_t __tcp_trf = 1;
 /*!
  * \brief Maximum DHCP message size we can accept.
  *
- * RFC 2131 demands, that a DHCP client must be prepared to receive DHCP 
+ * RFC 2131 demands, that a DHCP client must be prepared to receive DHCP
  * messages with an options field length of at least 312 octets. This
  * implies that we must be able to accept messages of up to 576 octets.
  *
@@ -283,12 +284,12 @@ static uint_fast8_t __tcp_trf = 1;
 /*!
  * \brief Maximum UDP buffer size used by the DHCP client.
  *
- * If this item is not equal zero, the DHCP client will use its value to 
+ * If this item is not equal zero, the DHCP client will use its value to
  * set #SO_RCVBUF by calling NutUdpSetSockOpt().
  *
- * If this item is set to zero, NutUdpSetSockOpt() is not called and the 
- * UDP socket interface will buffer the last incoming datagram on the 
- * #DHCP_CLIENTPORT socket port only. Any previously received datagram is 
+ * If this item is set to zero, NutUdpSetSockOpt() is not called and the
+ * UDP socket interface will buffer the last incoming datagram on the
+ * #DHCP_CLIENTPORT socket port only. Any previously received datagram is
  * silently discarded. As long as one DHCP server is expected in the local
  * network, this will be fine and save some heap memory while DHCP is
  * active.
@@ -302,8 +303,8 @@ static uint_fast8_t __tcp_trf = 1;
 /*!
  * \brief Minimum number of milliseconds to wait for a response.
  *
- * If we receive no response from a DHCP server within this time, we 
- * will double this value up to \ref MAX_DHCP_WAIT and repeat our 
+ * If we receive no response from a DHCP server within this time, we
+ * will double this value up to \ref MAX_DHCP_WAIT and repeat our
  * request up to \ref MAX_DCHP_RETRIES times before giving up.
  *
  * \showinitializer
@@ -327,7 +328,7 @@ static uint_fast8_t __tcp_trf = 1;
 /*!
  * \brief Maximum number of request retries.
  *
- * We will give up after resending this number of requests without 
+ * We will give up after resending this number of requests without
  * receiving a response.
  *
  * \showinitializer
@@ -409,7 +410,7 @@ static uint_fast8_t __tcp_trf = 1;
 
 /*! \brief Client message to servers.
  *
- * Used for 
+ * Used for
  * - requesting offered parameters from one server and implicitly declining offers from all others.
  * - confirming correctness of previously allocated address after, e.g., system reboot.
  * - extending the lease on a particular network address.
@@ -457,7 +458,7 @@ static uint_fast8_t __tcp_trf = 1;
 /*!
  * \brief DHCP pad option.
  *
- * The pad option can be used to cause subsequent fields to align on 
+ * The pad option can be used to cause subsequent fields to align on
  * word boundaries.
  */
 #define DHCPOPT_PAD          0
@@ -597,7 +598,7 @@ struct dyn_cfg {
  */
 static DYNCFG *dhcpConfig;
 
-/*! 
+/*!
  * \brief Client thread identifier.
  *
  * Used to determine if the client thread is running. Zero indicates that
@@ -639,7 +640,7 @@ static uint32_t dhcpApiTimeout;
 /*!
  * \brief Time at which the application started to wait.
  *
- * Used in conjunction with \ref dhcpApiTimeout to limit the maximum 
+ * Used in conjunction with \ref dhcpApiTimeout to limit the maximum
  * wait time for server responses.
  */
 static uint32_t dhcpApiStart;
@@ -725,7 +726,7 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
     /* Set the assigned IP address. */
     memcpy(&cfgp->dyn_yiaddr, &bp->bp_yiaddr, 4);
 
-    /* 
+    /*
      * Parse options until an end option is found or until we reached
      * the end of the message.
      */
@@ -757,6 +758,25 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
                 break;
             }
             cfgp->dyn_msgtyp = *(op + 2);
+
+#ifdef NUTDEBUG
+            if (__tcp_trf & NET_DBG_DHCP) {
+                switch(cfgp->dyn_msgtyp) {
+                    case DHCP_OFFER:
+                        fprintf(__tcp_trs, "+MSGT-OFFER+\n");
+                        break;
+                    case DHCP_ACK:
+                        fprintf(__tcp_trs, "+MSGT-ACK+\n");
+                        break;
+                    case DHCP_NAK:
+                        fprintf(__tcp_trs, "-MSGT-NAK-\n");
+                        break;
+                    default:
+                        fprintf(__tcp_trs, "#MSGT-UNK#\n");
+                        break;
+                }
+            }
+#endif
         }
         /* Our host name. May or may not include the domain. */
         else if (*op == DHCPOPT_HOSTNAME) {
@@ -783,13 +803,13 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
             else if (*op == DHCPOPT_BROADCAST) {
                 cfgp->dyn_broadcast = lval;
             }
-            /* Our IP default gate. More than one gateway may be 
-               specified. We take the fist one only and ignore the 
+            /* Our IP default gate. More than one gateway may be
+               specified. We take the fist one only and ignore the
                rest. */
             else if (*op == DHCPOPT_GATEWAY) {
                 cfgp->dyn_gateway = lval;
             }
-            /* Our DNS server. Updated by Jelle Martijn Kok to 
+            /* Our DNS server. Updated by Jelle Martijn Kok to
                support a secondary DNS. */
             else if (*op == DHCPOPT_DNS) {
                 cfgp->dyn_pdns = lval;
@@ -822,15 +842,15 @@ static DYNCFG *ParseReply(BOOTP *bp, int len)
     }
 
     /*
-     * Discard this configuration if parsing stopped before reaching 
+     * Discard this configuration if parsing stopped before reaching
      * the end option or if we didn't receive an expected message type.
      */
-    if (*op != DHCPOPT_END ||   /* */
-        (cfgp->dyn_msgtyp != DHCP_OFFER &&      /* */
-         cfgp->dyn_msgtyp != DHCP_ACK &&        /* */
+    if (*op != DHCPOPT_END ||
+        (cfgp->dyn_msgtyp != DHCP_OFFER &&
+         cfgp->dyn_msgtyp != DHCP_ACK &&
          cfgp->dyn_msgtyp != DHCP_NAK)) {
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
+        if (__tcp_trf & NET_DBG_DHCP) {
             fprintf(__tcp_trs, "[DHCP-Parse Error]");
         }
 #endif
@@ -939,13 +959,13 @@ static size_t DhcpAddParmReqOption(uint8_t * op)
  * All other fields are cleared to zero.
  *
  * \param bp     Pointer to the buffer to initialize.
- * \param msgtyp DHCP message type, either \ref DHCP_DISCOVER, 
+ * \param msgtyp DHCP message type, either \ref DHCP_DISCOVER,
  *               \ref DHCP_REQUEST or \ref DHCP_RELEASE.
  * \param xid    Random transaction identifier.
  * \param ciaddr Our IP address. Should be set to zero unless we are in
- *               BOUND, RENEW or REBINDING state and can respond to ARP 
+ *               BOUND, RENEW or REBINDING state and can respond to ARP
  *               requests.
- * \param secs   Seconds elapsed, since we began address acquisition or 
+ * \param secs   Seconds elapsed, since we began address acquisition or
  *               renewal.
  *
  * \return Total number of octets added.
@@ -968,7 +988,7 @@ static unsigned int DhcpPrepHeader(BOOTP *bp, uint8_t msgtyp, uint32_t xid, uint
 
 #ifdef DHCP_BROADCAST_FLAG
     /*
-     * We do not need the broadcast flag, because our stack accepts IP 
+     * We do not need the broadcast flag, because our stack accepts IP
      * messages to any destination if no local address has been assigned,
      * However, we continue supporting this compile time option.
      */
@@ -992,10 +1012,10 @@ static unsigned int DhcpPrepHeader(BOOTP *bp, uint8_t msgtyp, uint32_t xid, uint
  * \brief Send a DHCP message to the server.
  *
  * This routine will also add an end of option identifier and take care,
- * that the message length will not fall below the minimum expected by 
+ * that the message length will not fall below the minimum expected by
  * BOOTP.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutUdpCreateSocket().
  * \param addr Destination IP addres.
  * \param bp   Pointer to a buffer to be used for transmission.
@@ -1011,13 +1031,13 @@ static int DhcpSendMessage(UDPSOCKET * sock, uint32_t addr, BOOTP *bp, size_t le
     /* Add 'end of options'. */
     bp->bp_options[len++] = DHCPOPT_END;
 
-    /* Maintain a BOOTP compatible minimum packet size of 300 octets. 
+    /* Maintain a BOOTP compatible minimum packet size of 300 octets.
        Thanks to Tomohiro Haraikawa. */
     if ((len += sizeof(BOOTP) - sizeof(bp->bp_options)) < MIN_DHCP_MSGSIZE) {
         len = MIN_DHCP_MSGSIZE;
     }
 #ifdef NUTDEBUG
-    if (__tcp_trf) {
+    if (__tcp_trf & NET_DBG_DHCP) {
         fprintf(__tcp_trs, "[DHCP-Send to %s]", inet_ntoa(addr));
     }
 #endif
@@ -1031,7 +1051,7 @@ static int DhcpSendMessage(UDPSOCKET * sock, uint32_t addr, BOOTP *bp, size_t le
 /*!
  * \brief Receive a DHCP reply from the server.
  *
- * \param sock Socket descriptor. 
+ * \param sock Socket descriptor.
  * \param xid  Expected transaction identifier. Incoming messages with a
  *             different identifier are silently discarded.
  * \param bp   Pointer to the receive buffer.
@@ -1056,7 +1076,7 @@ static int DhcpRecvMessage(UDPSOCKET * sock, uint32_t xid, BOOTP *bp, uint32_t t
     for (;;) {
         rc = NutUdpReceiveFrom(sock, &addr, &port, bp, sizeof(BOOTP), wtim);
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
+        if (__tcp_trf & NET_DBG_DHCP) {
             if (rc > 0) {
                 fprintf(__tcp_trs, "[DHCP-Recv from %s]", inet_ntoa(addr));
             } else if (rc < 0) {
@@ -1073,7 +1093,7 @@ static int DhcpRecvMessage(UDPSOCKET * sock, uint32_t xid, BOOTP *bp, uint32_t t
             }
             break;
         }
-        /* The message must at least include the BOOTP header plus five 
+        /* The message must at least include the BOOTP header plus five
            bytes of options (magic and end). We are quite liberal here. */
         if (rc > sizeof(BOOTP) - sizeof(bp->bp_options) + 5) {
             /* The message must be a BOOTP reply with the expected XID. */
@@ -1082,7 +1102,7 @@ static int DhcpRecvMessage(UDPSOCKET * sock, uint32_t xid, BOOTP *bp, uint32_t t
                 break;
             }
         }
-        /* Calculate the remaining timeout for not getting trapped here 
+        /* Calculate the remaining timeout for not getting trapped here
            on a busy network, which regularly broadcasts DHCP messages. */
         wtim = NutGetMillis() - etim;
         if (wtim >= tmo - 250) {
@@ -1098,9 +1118,9 @@ static int DhcpRecvMessage(UDPSOCKET * sock, uint32_t xid, BOOTP *bp, uint32_t t
 /*!
  * \brief Broadcast a DHCP discover message.
  *
- * \param sock  Socket descriptor. This pointer must have been retrieved 
+ * \param sock  Socket descriptor. This pointer must have been retrieved
  *              by calling NutUdpCreateSocket().
- * \param bp    Pointer to a buffer to be used for transmission. No specific 
+ * \param bp    Pointer to a buffer to be used for transmission. No specific
  *              initialization required.
  * \param xid   Random transaction identifier.
  * \param raddr Requested IP address. Optional.
@@ -1124,7 +1144,7 @@ static int DhcpBroadcastDiscover(UDPSOCKET * sock, BOOTP *bp, uint32_t xid, uint
 
     optlen += DhcpAddParmReqOption(op + optlen);
 
-    /* Pass host name if specified in confos structure.  
+    /* Pass host name if specified in confos structure.
      * Win2k DHCP server can register this as dynamic DNS entry.
      * Also viewing DHCP lease table shows something sensible.
      */
@@ -1143,15 +1163,15 @@ static int DhcpBroadcastDiscover(UDPSOCKET * sock, BOOTP *bp, uint32_t xid, uint
 /*!
  * \brief Send a DHCP request message.
  *
- * \param sock  Socket descriptor. This pointer must have been retrieved by 
+ * \param sock  Socket descriptor. This pointer must have been retrieved by
  *              calling NutUdpCreateSocket().
  * \param daddr IP address of the DHCP server or \ref INADDR_BROADCAST.
  * \param bp    Pointer to a buffer to be used for transmission.
  * \param xid   Random transaction identifier.
- * \param caddr Our IP address. Should be set only if we are able to respond 
+ * \param caddr Our IP address. Should be set only if we are able to respond
  *              to ARP requests. Otherwise must be set to 0.
  * \param raddr Requested IP address. Required.
- * \param sid   Server identifier. If this request is not an offer response, 
+ * \param sid   Server identifier. If this request is not an offer response,
  *              then set it to zero.
  * \param secs  Seconds elapsed since start of address acquisition. If this
  *              request is sent in reponse to an offer, the same value must
@@ -1191,14 +1211,14 @@ static int DhcpSendRequest(UDPSOCKET * sock, uint32_t daddr, BOOTP *bp, uint32_t
 /*!
  * \brief Broadcast a DHCP request message.
  *
- * \param sock  Socket descriptor. This pointer must have been retrieved by 
+ * \param sock  Socket descriptor. This pointer must have been retrieved by
  *              calling NutUdpCreateSocket().
  * \param bp    Pointer to a buffer to be used for transmission.
  * \param xid   Random transaction identifier.
- * \param caddr Our IP address. Should be set only if we are able to respond 
+ * \param caddr Our IP address. Should be set only if we are able to respond
  *              to ARP requests. Otherwise must be set to 0.
  * \param raddr Requested IP address. Required.
- * \param sid   Server identifier. If this request is not an offer response, 
+ * \param sid   Server identifier. If this request is not an offer response,
  *              then set it to zero.
  * \param secs  Seconds elapsed since start of address acquisition. If this
  *              request is sent in reponse to an offer, the same value must
@@ -1215,14 +1235,14 @@ static int DhcpBroadcastRequest(UDPSOCKET * sock, BOOTP *bp, uint32_t xid, /* */
 /*!
  * \brief Relinguish our DHCP lease.
  *
- * \param sock  Socket descriptor. This pointer must have been retrieved by 
+ * \param sock  Socket descriptor. This pointer must have been retrieved by
  *              calling NutUdpCreateSocket().
  * \param daddr IP address of the DHCP server.
  * \param bp    Pointer to a buffer to be used for transmission.
  * \param xid   Random transaction identifier.
- * \param caddr Our IP address. Should be set only if we are able to respond 
+ * \param caddr Our IP address. Should be set only if we are able to respond
  *              to ARP requests. Otherwise must be set to 0.
- * \param sid   Server identifier. If this request is not an offer response, 
+ * \param sid   Server identifier. If this request is not an offer response,
  *              then set it to zero.
  *
  * \return 0 on success, -1 if send failed.
@@ -1245,7 +1265,7 @@ static int DhcpSendRelease(UDPSOCKET * sock, uint32_t daddr, BOOTP *bp, uint32_t
 /*!
  * \brief Inform DHCP about an externally allocated address.
  *
- * \param sock  Socket descriptor. This pointer must have been retrieved by 
+ * \param sock  Socket descriptor. This pointer must have been retrieved by
  *              calling NutUdpCreateSocket().
  * \param daddr IP address of the DHCP server or INADDR_BROADCAST.
  * \param bp    Pointer to a buffer to be used for transmission.
@@ -1293,49 +1313,126 @@ static DYNCFG *CheckOffer(DYNCFG * dyncfg, BOOTP *bp, size_t len)
 {
     DYNCFG *offer;
 
-    /* Parse the new offer. If it's invalid, return the current 
+#ifdef NUTDEBUG
+    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "\n[chkoffer %s ", inet_ntoa( dyncfg->dyn_yiaddr));
+#endif
+
+    /* Parse the new offer. If it's invalid, return the current
        configuration. */
     if ((offer = ParseReply(bp, len)) == 0) {
+#ifdef NUTDEBUG
+        if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "TAKE: %s]", inet_ntoa( offer->dyn_yiaddr));
+#endif
         return dyncfg;
     }
 
     /* Discard anything which is not an offer. */
     if (offer->dyn_msgtyp != DHCP_OFFER) {
         ReleaseDynCfg(offer);
+#ifdef NUTDEBUG
+        if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "NO-OFFER]");
+#endif
         return dyncfg;
     }
 
     /* First offer, take it. */
     if (dyncfg == 0) {
         dyncfg = offer;
+#ifdef NUTDEBUG
+        if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "FIRST: %s]", inet_ntoa(offer->dyn_yiaddr));
+#endif
     }
 
-    /* 
+    /*
      * Check if the new offer is better than the current configuration:
      */
     else {
         /* If we remember a previously allocated IP which isn't in the
-           current configuration but in the new offer, then let's take 
+           current configuration but in the new offer, then let's take
            the new one. */
+#ifdef NUTDEBUG
+        if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "PREV ");
+#endif
         if (confnet.cdn_ip_addr & confnet.cdn_ip_mask) {
             if (dyncfg->dyn_yiaddr != confnet.cdn_ip_addr &&    /* */
                 offer->dyn_yiaddr == confnet.cdn_ip_addr) {
                 ReleaseDynCfg(dyncfg);
                 dyncfg = offer;
+#ifdef NUTDEBUG
+                if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "OLD: %s]", inet_ntoa( dyncfg->dyn_yiaddr));
+#endif
             }
         }
         /* In the second place prefer long lease times. */
         else if (offer->dyn_leaseTime > dyncfg->dyn_leaseTime) {
             ReleaseDynCfg(dyncfg);
             dyncfg = offer;
+#ifdef NUTDEBUG
+            if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "LONG: %s]", inet_ntoa( dyncfg->dyn_yiaddr));
+#endif
         }
         /* The new one deosn't offer anything interesting. Discard it. */
         else {
             ReleaseDynCfg(offer);
+#ifdef NUTDEBUG
+            if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "DSIC]");
+#endif
         }
     }
     return dyncfg;
 }
+
+#ifdef NUTDEBUG
+void DhcpStateDebug( uint_fast8_t n, uint_fast8_t s, int li, int lt, ureg_t retries)
+{
+    if (__tcp_trf & NET_DBG_DHCP) {
+        if( n)
+            fprintf(__tcp_trs, "\n[%u.DHCP-", retries + 1);
+        else
+            fprintf(__tcp_trs, "\n->[%u.DHCP-", retries + 1);
+
+        switch (dhcpState) {
+        case DHCPST_INIT:
+            fprintf(__tcp_trs, "INIT]");
+            break;
+        case DHCPST_SELECTING:
+            fprintf(__tcp_trs, "SELECTING]");
+            break;
+        case DHCPST_REQUESTING:
+            fprintf(__tcp_trs, "REQUESTING]");
+            break;
+        case DHCPST_REBOOTING:
+            fprintf(__tcp_trs, "REBOOTING %s]", inet_ntoa(li));
+            break;
+        case DHCPST_BOUND:
+            fprintf(__tcp_trs, "BOUND %lu]", NutGetSeconds() - lt);
+            break;
+        case DHCPST_RENEWING:
+            fprintf(__tcp_trs, "RENEWING %lu]", NutGetSeconds() - lt);
+            break;
+        case DHCPST_REBINDING:
+            fprintf(__tcp_trs, "REBINDING %lu]", NutGetSeconds() - lt);
+            break;
+        case DHCPST_INFORMING:
+            fprintf(__tcp_trs, "INFORMING]");
+            break;
+        case DHCPST_RELEASING:
+            fprintf(__tcp_trs, "RELEASING]");
+            break;
+        case DHCPST_IDLE:
+            if (dhcpError) {
+                fprintf(__tcp_trs, "ERROR %u]", dhcpError);
+            } else {
+                fprintf(__tcp_trs, "IDLE]");
+            }
+            break;
+        default:
+            fprintf(__tcp_trs, "UNKNOWN %u]", dhcpState);
+            break;
+        }
+    }
+}
+#endif
 
 /*! \fn NutDhcpClient(void *arg)
  * \brief DHCP client thread.
@@ -1377,12 +1474,12 @@ THREAD(NutDhcpClient, arg)
     nif = ((NUTDEVICE *) arg)->dev_icb;
 #endif
 
-    /* 
-     * Generate a random transaction identifier based on our MAC 
-     * address with the least significant byte of the MAC address 
-     * becoming the most significant byte of the identifier. This 
-     * should give a sufficient unique value when several Ethernuts 
-     * are started concurrently. 
+    /*
+     * Generate a random transaction identifier based on our MAC
+     * address with the least significant byte of the MAC address
+     * becoming the most significant byte of the identifier. This
+     * should give a sufficient unique value when several Ethernuts
+     * are started concurrently.
      */
     xid = 0;
     for (retries = 0; retries < sizeof(xid); retries++) {
@@ -1392,49 +1489,9 @@ THREAD(NutDhcpClient, arg)
     retries = 0;
 
     for (;;) {
+
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
-            fprintf(__tcp_trs, "\n[%u.DHCP-", retries + 1);
-            switch (dhcpState) {
-            case DHCPST_INIT:
-                fprintf(__tcp_trs, "INIT]");
-                break;
-            case DHCPST_SELECTING:
-                fprintf(__tcp_trs, "SELECTING]");
-                break;
-            case DHCPST_REQUESTING:
-                fprintf(__tcp_trs, "REQUESTING]");
-                break;
-            case DHCPST_REBOOTING:
-                fprintf(__tcp_trs, "REBOOTING %s]", inet_ntoa(last_ip));
-                break;
-            case DHCPST_BOUND:
-                fprintf(__tcp_trs, "BOUND %lu]", NutGetSeconds() - leaseTime);
-                break;
-            case DHCPST_RENEWING:
-                fprintf(__tcp_trs, "RENEWING %lu]", NutGetSeconds() - leaseTime);
-                break;
-            case DHCPST_REBINDING:
-                fprintf(__tcp_trs, "REBINDING %lu]", NutGetSeconds() - leaseTime);
-                break;
-            case DHCPST_INFORMING:
-                fprintf(__tcp_trs, "INFORMING]");
-                break;
-            case DHCPST_RELEASING:
-                fprintf(__tcp_trs, "RELEASING]");
-                break;
-            case DHCPST_IDLE:
-                if (dhcpError) {
-                    fprintf(__tcp_trs, "ERROR %u]", dhcpError);
-                } else {
-                    fprintf(__tcp_trs, "IDLE]");
-                }
-                break;
-            default:
-                fprintf(__tcp_trs, "UNKNOWN %u]", dhcpState);
-                break;
-            }
-        }
+        DhcpStateDebug( 0, dhcpState, last_ip, leaseTime, retries);
 #endif
 
         /*
@@ -1450,15 +1507,15 @@ THREAD(NutDhcpClient, arg)
         } else {
             /* Start with minimum timeout first. */
             tmo = MIN_DHCP_WAIT;
-            /* Use a new xid for the first message in each state except 
-             * when requesting, where we should continue using the xid 
+            /* Use a new xid for the first message in each state except
+             * when requesting, where we should continue using the xid
              * from the offer message we received.
              */
             if (dhcpState != DHCPST_REQUESTING) {
                 xid++;
             }
 
-            /* If we know the server's IP, try to unicast on the first 
+            /* If we know the server's IP, try to unicast on the first
                attempt. */
             if (dhcpConfig && dhcpConfig->dyn_sid) {
                 server_ip = dhcpConfig->dyn_sid;
@@ -1484,7 +1541,7 @@ THREAD(NutDhcpClient, arg)
         /*
          * Keep track of acquisition time.
          */
-        if (dhcpState == DHCPST_SELECTING || dhcpState == DHCPST_RENEWING || dhcpState == DHCPST_REBINDING) {
+        if ((dhcpState == DHCPST_SELECTING) || (dhcpState == DHCPST_RENEWING) || (dhcpState == DHCPST_REBINDING)) {
             /* For retries make sure that secs doesn't overflow. */
             if (retries) {
                 if (NutGetSeconds() - aqsTime > 0xffffUL) {
@@ -1503,7 +1560,7 @@ THREAD(NutDhcpClient, arg)
         /*
          * Release UDP socket and buffer in states with long inactive time.
          */
-        if (dhcpState == DHCPST_BOUND || dhcpState == DHCPST_IDLE) {
+        if ((dhcpState == DHCPST_BOUND) || (dhcpState == DHCPST_IDLE)) {
             if (sock) {
                 NutUdpDestroySocket(sock);
                 sock = 0;
@@ -1528,18 +1585,18 @@ THREAD(NutDhcpClient, arg)
                 continue;
             }
 
-            if (sock == 0 || bp == 0) {
+            if ((sock == 0) || (bp == 0)) {
                 if (sock == 0) {
                     sock = NutUdpCreateSocket(DHCP_CLIENTPORT);
                 }
                 if (bp == 0) {
                     bp = malloc(sizeof(BOOTP));
                 }
-                if (sock == 0 || bp == 0) {
+                if ((sock == 0) || (bp == 0)) {
                     /* Looks like we are out of memory. */
                     dhcpError = DHCPERR_SYSTEM;
                     dhcpState = DHCPST_IDLE;
-                    /* At this point either socket or buffer may be allocated. 
+                    /* At this point either socket or buffer may be allocated.
                        Thus we need to jump back to the top of our state loop
                        to release it. */
                     continue;
@@ -1572,27 +1629,51 @@ THREAD(NutDhcpClient, arg)
             }
         }
 
+#ifdef NUTDEBUG
+//        DhcpStateDebug( 1, dhcpState, last_ip, leaseTime, retries);
+#endif
         /*
          * Broadcast discover and collect incoming offers.
          */
         else if (dhcpState == DHCPST_SELECTING) {
+#ifdef NUTDEBUG
+            if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[SEL: TICK %p]", dhcpConfig);
+#endif
+
             if (retries++ > MAX_DCHP_RETRIES) {
-                /* Too many retries while discovering DHCP. Give up. */
-                dhcpError = DHCPERR_TIMEOUT;
-                dhcpState = DHCPST_IDLE;
+                if( dhcpConfig) {
+                    /* Ulrich says: we got at least one valid offer from a DHCP server */
+                    reply = 0;
+                    leaseTime = aqsTime;
+                    dhcpState = DHCPST_BOUND;
+                }
+                else {
+                    /* Too many retries while discovering DHCP. Give up. */
+                    dhcpError = DHCPERR_TIMEOUT;
+                    dhcpState = DHCPST_IDLE;
+                }
             }
             /* Send the discovering broadcast. */
             else if (DhcpBroadcastDiscover(sock, bp, xid, last_ip, secs) < 0) {
                 /* Fatal transmit error on broadcast. */
+#ifdef NUTDEBUG
+                if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[SEL-TXERR]");
+#endif
                 dhcpState = DHCPST_IDLE;
             } else {
                 /* Collect incoming offers. */
                 while ((n = DhcpRecvMessage(sock, xid, bp, tmo)) > 0) {
                     /* Check if this is a valid offer. */
                     if ((dhcpConfig = CheckOffer(dhcpConfig, bp, n)) != 0) {
+#ifdef NUTDEBUG
+                        if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[SEL-OFFER n=%d]", n);
+#endif
                         /* If the callers timeout is low, do not collect
                            more than one. Thanks to Jelle Kok. */
                         if (dhcpApiTimeout < MIN_DHCP_WAIT * 3) {
+#ifdef NUTDEBUG
+                            if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[NOTL]");
+#endif
                             break;
                         }
                         /* Switch to lowest timeout after we received
@@ -1602,13 +1683,20 @@ THREAD(NutDhcpClient, arg)
                 }
                 /* Change to ERROR state on fatal receive errors. */
                 if (n < 0) {
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[SEL-FATERR]");
+#endif
                     dhcpState = DHCPST_IDLE;
                 }
                 /* Change to REQUESTING state if we got a valid offer.
                    Otherwise we stay in SELECTING state. */
                 else if (dhcpConfig) {
-                    retries = 0;
-                    dhcpState = DHCPST_REQUESTING;
+                    /* Wait for at least one period for other DHCP servers to offer */
+                    retries = MAX_DCHP_RETRIES+1;
+//                    dhcpState = DHCPST_REQUESTING;
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[SEL-WAIT]");
+#endif
                 }
             }
         }
@@ -1638,9 +1726,12 @@ THREAD(NutDhcpClient, arg)
                     leaseTime = aqsTime;
                     dhcpState = DHCPST_BOUND;
                 }
-                /* The server declines a previously offered configuration. 
+                /* The server declines a previously offered configuration.
                    Restart discovery. */
                 else if (reply->dyn_msgtyp == DHCP_NAK) {
+#ifdef NUTDEBUG
+        if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[DHCP-NAK1]");
+#endif
                     dhcpState = DHCPST_INIT;
                 }
             }
@@ -1658,9 +1749,15 @@ THREAD(NutDhcpClient, arg)
             /* Broadcast a request for our previous configuration. */
             else if (DhcpBroadcastRequest(sock, bp, xid, 0, last_ip, 0, secs) < 0) {
                 /* Fatal transmit error on broadcast. Give up. */
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[BC-FATAL]");
+#endif
                 dhcpState = DHCPST_IDLE;
             } else if ((n = DhcpRecvMessage(sock, xid, bp, tmo)) < 0) {
                 /* Fatal receive error. */
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[RCV-FATAL]");
+#endif
                 dhcpState = DHCPST_IDLE;
             } else if (n > 0 && (reply = ParseReply(bp, n)) != 0) {
                 if (reply->dyn_msgtyp == DHCP_ACK) {
@@ -1669,10 +1766,16 @@ THREAD(NutDhcpClient, arg)
                     reply = 0;
                     leaseTime = aqsTime;
                     dhcpState = DHCPST_BOUND;
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[OK]");
+#endif
                 } else if (reply->dyn_msgtyp == DHCP_NAK) {
                     /* Either our previous address had been allocated by
                        someone else or we changed the network. Remove the
                        previous address and restart. */
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[DHCP-NAK2]");
+#endif
                     last_ip = 0;
                     dhcpState = DHCPST_INIT;
                 }
@@ -1729,6 +1832,9 @@ THREAD(NutDhcpClient, arg)
                     dhcpState = DHCPST_BOUND;
                 } else if (reply->dyn_msgtyp == DHCP_NAK) {
                     /* Unexpected NAK. */
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[DHCP-UXNAK]");
+#endif
                     retries = 0;
                     dhcpState = DHCPST_REBINDING;
                 }
@@ -1747,7 +1853,7 @@ THREAD(NutDhcpClient, arg)
                 retries = 0;
                 dhcpState = DHCPST_REBINDING;
             }
-            /* Broadcast a request for our previous configuration. We 
+            /* Broadcast a request for our previous configuration. We
                must not include a server identifier. */
             else if (DhcpBroadcastRequest(sock, bp, xid, dhcpConfig->dyn_yiaddr, dhcpConfig->dyn_yiaddr, 0, secs) < 0) {
                 /* Fatal transmit error on broadcast. Give up. */
@@ -1765,7 +1871,7 @@ THREAD(NutDhcpClient, arg)
                     dhcpState = DHCPST_BOUND;
                 } else if (reply->dyn_msgtyp == DHCP_NAK) {
                     /*
-                     * We have a problem here if the last DHCP server died. 
+                     * We have a problem here if the last DHCP server died.
                      * If a backup server exists, it may probe our IP address
                      * using ARP or ICMP. Our interface is up and responding,
                      * so the backup server may think that the IP address
@@ -1773,6 +1879,9 @@ THREAD(NutDhcpClient, arg)
                      * down our interface (not yet implemented) we are stuck.
                      * We switch to discovery state, but the problem remains.
                      */
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[DHCP-NAK3]");
+#endif
                     dhcpState = DHCPST_INIT;
                 }
             }
@@ -1818,13 +1927,16 @@ THREAD(NutDhcpClient, arg)
                 if (reply->dyn_msgtyp == DHCP_ACK) {
                     dhcpState = DHCPST_IDLE;
                 } else if (reply->dyn_msgtyp == DHCP_NAK) {
+#ifdef NUTDEBUG
+                    if (__tcp_trf & NET_DBG_DHCP) fprintf(__tcp_trs, "[DHCP-FNAK]");
+#endif
                     dhcpState = DHCPST_IDLE;
                 }
             }
         }
 
         /*
-         * We are done somehow. Either a fatal error occured or we 
+         * We are done somehow. Either a fatal error occured or we
          * reached the specified timeout time or our lease has been
          * release or something else configured our interface.
          * Release all resources and wait for a new API call to
@@ -1849,13 +1961,13 @@ THREAD(NutDhcpClient, arg)
 /*!
  * \brief Activate the DHCP client thread.
  *
- * Start the DHCP thread if not running or wake it up. Pass the caller's 
- * timeout to the thread and wait an infinite time. We rely on the thread 
+ * Start the DHCP thread if not running or wake it up. Pass the caller's
+ * timeout to the thread and wait an infinite time. We rely on the thread
  * to wake us up on timeout.
  *
  * \param name    Name of the registered Ethernet device.
  * \param state   State to start with.
- * \param timeout Maximum number of milliseconds to wait. To disable 
+ * \param timeout Maximum number of milliseconds to wait. To disable
  *                timeout, set this parameter to \ref NUT_WAIT_INFINITE.
  *                This value must be larger than 3 times of \ref MIN_DHCP_WAIT
  *                to enable collection of offers from multiple servers.
@@ -1883,7 +1995,7 @@ static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
 #ifdef __arm__
         dhcpDev = dev;
 #endif
-        dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev, 
+        dhcpThread = NutThreadCreate("dhcpc", NutDhcpClient, dev,
             (NUT_THREAD_DHCPSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
     }
     NutEventPost(&dhcpWake);
@@ -1895,30 +2007,30 @@ static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
 /*!
  * \brief Automatically configure an Ethernet network interface.
  *
- * If no MAC address is specified, this routine will try to read a 
- * previously stored configuration from the EEPROM. If this retrieves 
- * a fixed IP configuration, then the network interface will be 
- * immediately configured with these values by calling NutNetIfConfig(). 
- * If no valid IP configuration has been read, then this routine will 
- * start the DHCP client thread and wait upto a given number of 
+ * If no MAC address is specified, this routine will try to read a
+ * previously stored configuration from the EEPROM. If this retrieves
+ * a fixed IP configuration, then the network interface will be
+ * immediately configured with these values by calling NutNetIfConfig().
+ * If no valid IP configuration has been read, then this routine will
+ * start the DHCP client thread and wait upto a given number of
  * milliseconds for an acknowledged configuration from a DHCP server.
  *
- * If a MAC address has been specified, this routine will not read the 
- * EEPROM configuration. If the application has set the global 
- * \ref CONFNET structure to a valid IP configuration before calling 
- * this function, then the network interface will be immediately 
- * configured with these values by calling NutNetIfConfig(). Otherwise 
- * the DHCP client thread will be started and this routine will wait 
- * upto a given number of milliseconds for an acknowledged configuration 
+ * If a MAC address has been specified, this routine will not read the
+ * EEPROM configuration. If the application has set the global
+ * \ref CONFNET structure to a valid IP configuration before calling
+ * this function, then the network interface will be immediately
+ * configured with these values by calling NutNetIfConfig(). Otherwise
+ * the DHCP client thread will be started and this routine will wait
+ * upto a given number of milliseconds for an acknowledged configuration
  * from a DHCP server.
  *
  * \param name    Name of the registered Ethernet device.
- * \param mac     MAC address of the destination. Set NULL to use the 
+ * \param mac     MAC address of the destination. Set NULL to use the
  *                configuration stored in the EEPROM.
- * \param timeout Maximum number of milliseconds to wait. To disable 
+ * \param timeout Maximum number of milliseconds to wait. To disable
  *                timeout, set this parameter to \ref NUT_WAIT_INFINITE.
- *                Otherwise the value must be larger than 3 times of 
- *                \ref MIN_DHCP_WAIT to enable collection of offers 
+ *                Otherwise the value must be larger than 3 times of
+ *                \ref MIN_DHCP_WAIT to enable collection of offers
  *                from multiple servers.
  *
  * \return 0 if the interface had been successfully configured. In most
@@ -1965,7 +2077,7 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
         }
 
         /*
-         * If no MAC address has been specified, read the configuration 
+         * If no MAC address has been specified, read the configuration
          * from EEPROM. If this fails, we do not continue any further,
          * but let the caller know that something is wrong. He may call
          * us again with a valid MAC address.
@@ -1984,7 +2096,7 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
     }
 
     /*
-     * Zero out the ip address and mask. This allows to switch between 
+     * Zero out the ip address and mask. This allows to switch between
      * DHCP and static IP addresses without resetting/power cycling.
      * See patch #2903940.
      */
@@ -2007,8 +2119,8 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
     }
 
     /*
-     * Start the DHCP thread if not running or wake it up. Pass the caller's 
-     * timeout to the thread and wait an infinite time. We rely on the thread 
+     * Start the DHCP thread if not running or wake it up. Pass the caller's
+     * timeout to the thread and wait an infinite time. We rely on the thread
      * to wake us up on timeout.
      */
     if (DhcpKick(name, DHCPST_INIT, timeout) == 0) {
@@ -2018,22 +2130,22 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
          */
         if (dhcpState == DHCPST_BOUND) {
 #ifdef NUTDEBUG
-            if (__tcp_trf) {
+            if (__tcp_trf & NET_DBG_DHCP) {
                 fprintf(__tcp_trs, "[DHCP-Config %s]", inet_ntoa(dhcpConfig->dyn_yiaddr));
             }
 #endif
             NutNetIfSetup(dev, dhcpConfig->dyn_yiaddr, dhcpConfig->dyn_netmask, dhcpConfig->dyn_gateway);
-            NutDnsConfig2(0, 0, dhcpConfig->dyn_pdns, dhcpConfig->dyn_sdns);
+            NutDnsConfig2(NULL, NULL, dhcpConfig->dyn_pdns, dhcpConfig->dyn_sdns);
             return 0;
         }
 
         /*
-         * Our interface has been configured externally, possibly by auto 
+         * Our interface has been configured externally, possibly by auto
          * ARP or a similar function implemented by the application.
          */
         if (nif->if_local_ip) {
 #ifdef NUTDEBUG
-            if (__tcp_trf) {
+            if (__tcp_trf & NET_DBG_DHCP) {
                 fprintf(__tcp_trs, "[DHCP-External %s]", inet_ntoa(nif->if_local_ip));
             }
 #endif
@@ -2041,12 +2153,12 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
         }
 
         /*
-         * DHCP failed. In case we remember a previously allocated address, 
+         * DHCP failed. In case we remember a previously allocated address,
          * then let's use it.
          */
         if ((confnet.cdn_ip_addr & confnet.cdn_ip_mask) != 0) {
 #ifdef NUTDEBUG
-            if (__tcp_trf) {
+            if (__tcp_trf & NET_DBG_DHCP) {
                 fprintf(__tcp_trs, "[DHCP-Reusing %s]", inet_ntoa(confnet.cdn_ip_addr));
             }
 #endif
@@ -2155,7 +2267,7 @@ int NutDhcpError(CONST char *name)
 }
 
 /*!
- * \brief Check if DHCP has configured our interface 
+ * \brief Check if DHCP has configured our interface
  *
  * \deprecated Applications should use NutDhcpStatus().
  *

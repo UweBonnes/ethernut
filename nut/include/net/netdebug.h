@@ -76,6 +76,11 @@
 extern "C" {
 #endif
 
+/* Flags for NutTraceTcp flags parameter to select the debug */
+#define NET_DBG_SOCKSTATE   0x01
+#define NET_DBG_ARP         0x10
+#define NET_DBG_DHCP        0x20
+
 extern FILE *__tcp_trs;
 extern uint_fast8_t __tcp_trf;
 
