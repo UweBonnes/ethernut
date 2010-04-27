@@ -244,14 +244,8 @@ repository =
 -- Third version of a dynamic item:
 -- The value is specified as a function returning a string. In this case any function
 -- used in our function body may be defined later.
-        brief = function() return "Nut/OS " .. GetNutOsVersion(); end,
-
-
-        description = "The version info was read from os/version.c in the current source "..
-                      "tree by a Lua script defined in the configuration file.\n\n"..
-                      "Also added here to demonstrate the capabilities of Lua as a "..
-                      "configuration language.\n\n"..
-                      "See http://www.lua.org.\n\n",
+        brief = "Hardware Platform",
+        description = "Board specific settings.",
         options =
         {
             {
@@ -261,7 +255,11 @@ repository =
                       "Examples are ETHERNUT1, ETHERNUT2 etc. "..
                       "This string constant is passed as a macro definition to "..
                       "the Makefiles and allows conditional compilation "..
-                      "depending on the hardware used.",
+                      "depending on the hardware used.\n\n"..
+                      "If required, the lower case variant of this string will be used "..
+                      "as a source file name containing board specific functions. Such files "..
+                      "are located in directory arch/MCU/board.",
+                provides = { "HW_TARGET_BOARD" },
                 flavor = "booldata",
                 file = "include/cfg/arch.h",
                 makedefs = { "PLATFORM", "HWDEF+=-D$(PLATFORM)" }

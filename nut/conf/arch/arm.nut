@@ -409,6 +409,19 @@ nutarch_arm =
     },
 
     --
+    -- Board Initialization
+    --
+    {
+        name = "nutarch_bs",
+        brief = "Board Support",
+        sources = 
+            function() 
+                return { "arm/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" }; 
+            end,
+        requires = { "HW_BOARD_SUPPORT" },
+    },
+
+    --
     -- Context Switching
     --
     {
@@ -629,6 +642,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
             "arm/dev/ih_at91uart1.c",
         },

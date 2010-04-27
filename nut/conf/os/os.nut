@@ -117,17 +117,70 @@
 nutos =
 {
     --
+    -- Version Information
+    --
+    {
+        name = "nutos_version",
+        brief = function() return "Version " .. GetNutOsVersion(); end,
+        description = "The version info was read from os/version.c in the current source tree.",
+        sources = { "version.c" },
+        options =
+        {
+            {
+                macro = "NUT_VERSION_EXT",
+                brief = "Extended",
+                description = "User provided extension to the hard coded version information.",
+                requires = { "NOT_AVAILABLE" },
+                file = "include/cfg/os.h"
+            }
+        }
+    },
+
+    --
     -- Initialization
     --
     {
         name = "nutos_init",
-        brief = "Initialization",
+        brief = "System Initialization",
         description = "This module is automatically called after booting the system. "..
                       "It will initialize memory and timer hardware and start the "..
                       "Nut/OS idle thread, which in turn starts the application's "..
                       "main routine in a separate thread.",
         sources = { "nutinit.c" },
-        targets = { "nutinit.o" }
+        targets = { "nutinit.o" },
+        options =
+        {
+            {
+                macro = "NUT_INIT_BOARD",
+                brief = "Board Initialization",
+                description = "If selected, a board specific initialization function "..
+                      "is called before system initialization. At this time the C runtime "..
+                      "is basically available and all global and static variables "..
+                      "are set. However, kernel services like memory management, "..
+                      "timers, threads etc. are not available in this stage.\n\n"..
+                      "A related source file must be provided in the "..
+                      "arch/MCU/board/ directory, named after the PLATFORM macro.",
+                requires = { "HW_TARGET_BOARD" },
+                provides = { "HW_BOARD_SUPPORT" },
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+            },
+            {
+                macro = "NUT_INIT_IDLE",
+                brief = "Idle Initialization",
+                description = "If selected, a board specific initialization function "..
+                      "is called at the beginning of the idle thread. At this time "..
+                      "heap memory management is available and even new threads may be "..
+                      "created. However, context switching will not work and timer "..
+                      "services (including time outs) are not available.\n\n"..
+                      "A related source file must be provided in the "..
+                      "arch/MCU/board/ directory, named after the PLATFORM macro.",
+                requires = { "HW_TARGET_BOARD" },
+                provides = { "HW_BOARD_SUPPORT" },
+                flavor = "boolean",
+                file = "include/cfg/arch.h",
+            }
+        }
     },
 
     --
@@ -465,21 +518,6 @@ nutos =
                 description = "This name will be used for hosts without valid configuration.\n",
                 default = "\"ethernut\"",
                 file = "include/cfg/eeprom.h"
-            }
-        }
-    },
-    {
-        name = "nutos_version",
-        brief = "Version identifier",
-        sources = { "version.c" },
-        options =
-        {
-            {
-                macro = "NUT_VERSION_EXT",
-                brief = "Extended",
-                description = "User provided extension to the hard coded version information.",
-                requires = { "NOT_AVAILABLE" },
-                file = "include/cfg/os.h"
             }
         }
     },

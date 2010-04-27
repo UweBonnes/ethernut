@@ -346,6 +346,7 @@ nutarch =
                     "HW_UART1_RTSCTS",
                     "HW_EMAC_AT91",
                     "HW_SPI_AT91",
+                    "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_MCI_AT91",
                     "HW_GPIO",
