@@ -177,7 +177,7 @@
 #include <config.h>
 #endif
 
-#define NUT_CONFIGURE_VERSION   "2.0.9"
+#define NUT_CONFIGURE_VERSION   "2.0.10"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -633,7 +633,7 @@ static int l_compiler_platform(lua_State *ls)
     return 1;
 }
 
-static char * GetMacroEdit(NUTCOMPONENT *compo, const char *macro)
+static char * GetMacroEdit(NUTREPOSITORY *repo, NUTCOMPONENT *compo, const char *macro)
 {
     char *rc = NULL;
     NUTCOMPONENTOPTION *opts;
@@ -642,12 +642,16 @@ static char * GetMacroEdit(NUTCOMPONENT *compo, const char *macro)
         opts = compo->nc_opts;
         while (opts && rc == NULL) {
             if (strcmp(opts->nco_name, macro) == 0) {
-                rc = opts->nco_value;
+                if (opts->nco_value) {
+                    rc = strdup(opts->nco_value);
+                } else {
+                    rc = GetConfigValueOrDefault(repo, compo, opts->nco_name);
+                }
             }
             opts = opts->nco_nxt;
         }
         if (rc == NULL) {
-            rc = GetMacroEdit(compo->nc_child, macro);
+            rc = GetMacroEdit(repo, compo->nc_child, macro);
         }
         compo = compo->nc_nxt;
     }
@@ -715,13 +719,20 @@ static int l_macro_edit(lua_State *ls)
     const char *macro = luaL_checkstring(ls, 1);
 
     if (macro) {
+        NUTREPOSITORY *repo;
         NUTCOMPONENT *root;
+
+        /* Retrieve pointer to repository from Lua registry. */
+        lua_pushstring(ls, LRK_NUTREPOSITORY);
+        lua_gettable(ls, LUA_REGISTRYINDEX);
+        repo = (NUTREPOSITORY *)lua_topointer(ls, -1);
 
         /* Retrieve pointer to root component from Lua registry. */
         lua_pushstring(ls, LRK_NUTROOTCOMPONENT);
         lua_gettable(ls, LUA_REGISTRYINDEX);
         root = (NUTCOMPONENT *)lua_topointer(ls, -1);
-        value = GetMacroEdit(root, macro);
+
+        value = GetMacroEdit(repo, root, macro);
     }
     if (value) {
         lua_pushstring(ls, value);
