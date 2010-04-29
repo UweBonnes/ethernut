@@ -155,7 +155,7 @@
 #define US2_ID      8           /*!< \brief USART 2. */
 #define MCI_ID      9           /*!< \brief MMC interface. */
 #define UDP_ID      10          /*!< \brief USB device port. */
-#define TWI0_ID      11          /*!< \brief Two wire interface 0. */
+#define TWI_ID      11          /*!< \brief Two wire interface 0. */
 #define SPI0_ID     12          /*!< \brief Serial peripheral 0. */
 #define SPI1_ID     13          /*!< \brief Serial peripheral 1. */
 #define SSC_ID      14          /*!< \brief Serial peripheral interface. */
@@ -343,8 +343,8 @@
 
 /*! \name Two Wire Interface Peripheral Multiplexing */
 /*@{*/
-#define PA23_TWD0_A         23  /*!< \brief Two wire serial 0 data pin. */
-#define PA24_TWCK0_A        24  /*!< \brief Two wire serial 0 clock pin. */
+#define PA23_TWD_A          23  /*!< \brief Two wire serial 0 data pin. */
+#define PA24_TWCK_A         24  /*!< \brief Two wire serial 0 clock pin. */
 
 #define PB12_TWD1_A         12  /*!< \brief Two wire serial 1 data pin. */
 #define PB13_RWCK1_A        13  /*!< \brief Two wire serial 1 clock pin. */
