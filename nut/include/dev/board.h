@@ -104,6 +104,10 @@
 
 #include <cfg/arch.h>
 
+#if defined(ETHERNUT5)
+#include <arch/arm/board/ethernut5.h>
+#endif
+
 /*
  * Debug device.
  */
@@ -316,6 +320,16 @@
 #define DEV_MMCARD_NAME     DEV_MMCARD0_NAME
 #endif
 #endif
+
+__BEGIN_DECLS
+/* Prototypes */
+
+extern void NutBoardInit(void);
+extern void NutIdleInit(void);
+extern void NutMainInit(void);
+
+__END_DECLS
+/* End of prototypes */
 
 #endif
 

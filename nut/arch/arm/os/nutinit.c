@@ -141,6 +141,8 @@
 #include <arch/arm/at91.h>
 #endif
 
+#include <dev/board.h>
+
 #ifdef EARLY_STDIO_DEV
 #include <sys/device.h>
 #include <stdio.h>
@@ -229,12 +231,19 @@ THREAD(NutIdle, arg)
 #if defined(MCU_GBA) || defined(MCU_LPC2XXX)
     InitIrqHandler();
 #endif
+#ifdef NUT_INIT_IDLE
+    NutIdleInit();
+#endif
     /* Initialize system timers. */
     NutTimerInit();
 
     /* Read OS configuration from non-volatile memory. We can't do this
     ** earlier, because the low level driver may be interrupt driven. */
     NutLoadConfig();
+
+#ifdef NUT_INIT_IDLE
+    NutMainInit();
+#endif
 
     /* Create the main application thread. Watch this carefully when
     ** changing compilers and compiler versions. Some handle main()
@@ -297,6 +306,9 @@ void NutInit(void)
         /* A first trial. */
         puts("\nStarting Nut/OS");
     }
+#endif
+#ifdef NUT_INIT_BOARD
+    NutBoardInit();
 #endif
     /* Initialize our heap memory. */
     NutHeapAdd(HEAP_START, HEAP_SIZE & ~3);
