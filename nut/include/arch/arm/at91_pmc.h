@@ -226,6 +226,14 @@
 #define PMC_PCKRDY3                 0x00000800  /*!< \brief Programmable clock 3 ready. */
 /*@}*/
 
+/*! \name Power Management Charge Pump Current Register */
+/*@{*/
+#define PMC_PLLICPR_OFF             0x00000080  /*!< \brief Charge pump current register offset. */
+#define PMC_PLLICPR (PMC_BASE + PMC_PLLICPR_OFF)/*!< \brief Charge pump current register address. */
+#define PMC_PLLICPR_ICPPLLA         0x00000001  /*!< \brief PLL A charge pump current. */
+#define PMC_PLLICPR_ICPPLLB         0x00000100  /*!< \brief PLL B charge pump current. */
+/*@}*/
+
 /*@} xgNutArchArmAt91Pmc */
 
 
