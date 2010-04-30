@@ -137,7 +137,7 @@ static void TwInterrupt(void *arg)
             }
         }
     } else if (twsr & TWI_TXCOMP) {
-        /* Transfer is complete, disable interrupts 
+        /* Transfer is complete, disable interrupts
         ** and signal waiting threads */
         outr(TWI_IDR, 0xFFFFFFFF);
         NutEventPostFromIrq(&tw_mm_que);
@@ -229,7 +229,7 @@ int TwMasterTransact(uint8_t sla, CONST void *txdata, uint16_t txlen, void *rxda
     /* Make sure that all interrupts are disabled. */
     outr(TWI_IDR, 0xFFFFFFFF);
 
-    /* Check for errors that may have been detected 
+    /* Check for errors that may have been detected
     ** by the interrupt routine. */
     if (tw_mm_err) {
         tw_mm_error = tw_mm_err;
@@ -470,7 +470,7 @@ int TwIOCtl(int req, void *conf)
         cldiv = inr(TWI_CWGR) & 0x000000FF;
         ckdiv = (inr(TWI_CWGR) >> 16) & 0x00000007;
 
-        *((uint32_t *) conf) = NutGetCpuClock() * ((cldiv * 2 << ckdiv) - 3);
+        *((uint32_t *) conf) = NutGetCpuClock() / ((cldiv * 2 << ckdiv) - 3);
         break;
 
     case TWI_GETSTATUS:
@@ -510,9 +510,9 @@ int TwInit(uint8_t sla)
     /* Let periperal control the PIO lines. */
     outr(TWI_PIO_PDR, _BV(TWI_TWD) | _BV(TWI_TWCK));
     /* Enabled OpenDrain output on both lines. */
-    outr(TWI_PIO_MDER, _BV(TWI_TWD) | _BV(TWI_TWCK));   
+    outr(TWI_PIO_MDER, _BV(TWI_TWD) | _BV(TWI_TWCK));
     /* Enable TWI clock in PMC. */
-    outr(PMC_PCER, _BV(TWI_ID));        
+    outr(PMC_PCER, _BV(TWI_ID));
 
     /* Disable all interrupts. */
     outr(TWI_IDR, 0xFFFFFFFF);

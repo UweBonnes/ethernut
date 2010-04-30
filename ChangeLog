@@ -1,5 +1,12 @@
 $Id$
 
+2010-04-30  Andre Riesberg
+
+* Fixed:
+
+On some architectures the function TwIOCtl(TWI_GETSPEED) gives the wrong result.
+
+
 2010-03-14  Ole Reinhardt <ole.reinhardt@thermotemp.de>
 
 * Fixed:
