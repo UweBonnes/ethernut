@@ -129,10 +129,10 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
             fprintf_P(stream, fmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
                       states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else
-            fprintf_P(stream, fmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
-                      states[tdp->td_state], (uintptr_t) tdp->td_queue,
-                      (uintptr_t) tdp->td_timer, tdp->td_sp,
-                      (uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory,
+            fprintf_P(stream, fmt, (long) tdp, tdp->td_name, tdp->td_priority,
+                      states[tdp->td_state], (long) tdp->td_queue,
+                      (long) tdp->td_timer, (long) tdp->td_sp,
+                      (long) tdp->td_sp - (long) tdp->td_memory,
                       *((uint32_t *) tdp->td_memory) != DEADBEEF
                       && *((uint32_t *) (tdp->td_memory + 4)) != DEADBEEF
                       && *((uint32_t *) (tdp->td_memory + 8)) != DEADBEEF
@@ -156,8 +156,8 @@ void NutDumpThreadList(FILE * stream)
 {
 
 #ifdef ARCH_32BIT
-    static prog_char fmt1[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s";
-    static prog_char fmt2[] = " %08lX";
+    static prog_char fmt1[] = "%08X %-8s %4u %s %08X %08X %08X %9u %s";
+    static prog_char fmt2[] = " %08X";
 #else
     static prog_char fmt1[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s";
     static prog_char fmt2[] = " %04X";
@@ -173,10 +173,10 @@ void NutDumpThreadList(FILE * stream)
         fprintf_P(stream, fmt1, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
                   states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else
-        fprintf_P(stream, fmt1, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
-                  states[tdp->td_state], (uintptr_t) tdp->td_queue,
-                  (uintptr_t) tdp->td_timer, tdp->td_sp,
-                  (uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory, *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
+        fprintf_P(stream, fmt1, (int) tdp, tdp->td_name, tdp->td_priority,
+                  states[tdp->td_state], (int) tdp->td_queue,
+                  (int) tdp->td_timer, (int) tdp->td_sp,
+                  (int) tdp->td_sp - (int) tdp->td_memory, *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
 #endif
         if (tdp->td_queue) {
             tqp = *(NUTTHREADINFO **) (tdp->td_queue);
@@ -184,7 +184,7 @@ void NutDumpThreadList(FILE * stream)
                 fputs("SIGNALED", stream);
             else {
                 while (tqp) {
-                    fprintf_P(stream, fmt2, (uintptr_t) tqp);
+                    fprintf_P(stream, fmt2, (int) tqp);
                     tqp = tqp->td_qnxt;
                 }
             }
@@ -209,9 +209,9 @@ void NutDumpTimerList(FILE * stream)
     static prog_char tname[] = "NutEventTimeout";
 #ifdef ARCH_32BIT
     static prog_char theader[] = "Address  Ticks  Left Callback\n";
-    static prog_char fmt1[] = "%08lX%6lu%6lu ";
+    static prog_char fmt1[] = "%08X%6lu%6lu ";
     static prog_char fmt2[] = "%09lX";
-    static prog_char fmt3[] = "(%08lX)\n";
+    static prog_char fmt3[] = "(%08X)\n";
 #else
     static prog_char theader[] = "Addr Ticks  Left Callback\n";
     static prog_char fmt1[] = "%04X%6lu%6lu ";
@@ -223,14 +223,14 @@ void NutDumpTimerList(FILE * stream)
     if ((tnp = nutTimerList) != 0) {
         fputs_P(theader, stream);
         while (tnp) {
-            fprintf_P(stream, fmt1, (uintptr_t) tnp, tnp->tn_ticks, tnp->tn_ticks_left);
+            fprintf_P(stream, fmt1, (int) tnp, tnp->tn_ticks, tnp->tn_ticks_left);
             if (tnp->tn_callback == NutThreadWake)
                 fputs_P(wname, stream);
             else if (tnp->tn_callback == NutEventTimeout)
                 fputs_P(tname, stream);
             else
                 fprintf_P(stream, fmt2, (uint32_t) ((uintptr_t) tnp->tn_callback) << 1);
-            fprintf_P(stream, fmt3, (uintptr_t) tnp->tn_arg);
+            fprintf_P(stream, fmt3, (int) tnp->tn_arg);
             tnp = tnp->tn_next;
         }
     }
@@ -263,9 +263,9 @@ void NutDumpHeap(FILE * stream)
 {
 
 #ifdef ARCH_32BIT
-    static prog_char fmt1[] = "%08lx %9ld\n";
-    static prog_char fmt2[] = "%lu counted, but %lu reported\n";
-    static prog_char fmt3[] = "%lu bytes free\n";
+    static prog_char fmt1[] = "%08x %9d\n";
+    static prog_char fmt2[] = "%u counted, but %u reported\n";
+    static prog_char fmt3[] = "%u bytes free\n";
 #else
     static prog_char fmt1[] = "%04x %5d\n";
     static prog_char fmt2[] = "%u counted, but %u reported\n";
@@ -278,15 +278,15 @@ void NutDumpHeap(FILE * stream)
     fputc('\n', stream);
     for (node = heapFreeList; node; node = node->hn_next) {
         sum += node->hn_size;
-        fprintf_P(stream, fmt1, (uintptr_t) node, node->hn_size);
+        fprintf_P(stream, fmt1, (int) node, (unsigned int) node->hn_size);
         /* TODO: Remove hardcoded RAMSTART and RAMEND */
         if ((uintptr_t) node < 0x60 || (uintptr_t) node > 0x7fff)
             break;
     }
     if ((avail = NutHeapAvailable()) != sum)
-        fprintf_P(stream, fmt2, sum, avail);
+        fprintf_P(stream, fmt2, (unsigned int) sum, (unsigned int) avail);
     else
-        fprintf_P(stream, fmt3, avail);
+        fprintf_P(stream, fmt3, (unsigned int) avail);
 }
 
 /*!
