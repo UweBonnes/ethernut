@@ -118,7 +118,7 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
 #ifdef ARCH_32BIT
     static prog_char fmt[] = "%08lX %-8s %4u %s %08lX %08lX %08lX %9lu %s\n";
 #else
-    static prog_char fmt[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s\n";
+    static prog_char fmt[] = "%04lX %-8s %4u %s %04lX %04lX %04lX %5lu %s\n";
 #endif
 
     if (tdp == SIGNALED)
@@ -129,10 +129,10 @@ void NutDumpThreadQueue(FILE * stream, NUTTHREADINFO * tdp)
             fprintf_P(stream, fmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
                       states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer, tdp->td_cs_level, 0, "--");
 #else
-            fprintf_P(stream, fmt, (long) tdp, tdp->td_name, tdp->td_priority,
-                      states[tdp->td_state], (long) tdp->td_queue,
-                      (long) tdp->td_timer, (long) tdp->td_sp,
-                      (long) tdp->td_sp - (long) tdp->td_memory,
+            fprintf_P(stream, fmt, (long) (intptr_t) tdp, tdp->td_name, tdp->td_priority,
+                      states[tdp->td_state], (long) (intptr_t) tdp->td_queue,
+                      (long) (intptr_t) tdp->td_timer, (long) tdp->td_sp,
+                      (long) tdp->td_sp - (long) (intptr_t) tdp->td_memory,
                       *((uint32_t *) tdp->td_memory) != DEADBEEF
                       && *((uint32_t *) (tdp->td_memory + 4)) != DEADBEEF
                       && *((uint32_t *) (tdp->td_memory + 8)) != DEADBEEF
