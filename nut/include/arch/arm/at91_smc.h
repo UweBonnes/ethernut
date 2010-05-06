@@ -55,7 +55,7 @@
  */
 /*@{*/
 
-#if defined(EBI_HAS_CSA)
+#if defined(SMC_HAS_CSR)
 
 #define SMC_CSR(cs)             (SMC_BASE + cs * 0x04)  /*!< \brief SMC chip select register address. */
 
@@ -80,7 +80,7 @@
 #define SMC_RWHOLD              0x70000000  /*!< brief Read and write signal hold time mask. */
 #define SMC_RWHOLD_LSB                  28  /*!< brief Read and write signal hold time LSB. */
 
-#else /* EBI_HAS_CSA */
+#else /* SMC_HAS_CSR */
 
 /*! \name SMC Setup Register */
 /*@{*/
@@ -132,7 +132,7 @@
 #define SMC_DBW_16                          0x00001000  /*!< \brief 16-bit data bus. */
 #define SMC_DBW_32                          0x00002000  /*!< \brief 32-bit data bus. */
 #define SMC_TDF_CYCLES                      0x000F0000  /*!< \brief Data float time mask. */
-#define SMC_TDF_CYCLES_LSB                  0x000F0000  /*!< \brief Data float time LSB. */
+#define SMC_TDF_CYCLES_LSB                          16  /*!< \brief Data float time LSB. */
 #define SMC_TDF_MODE                        0x00100000  /*!< \brief TDF optimization. */
 #define SMC_PMEN                            0x01000000  /*!< \brief Page mode enable. */
 #define SMC_PS                              0x30000000  /*!< \brief Page size mask. */
@@ -142,7 +142,7 @@
 #define SMC_PS_32                           0x30000000  /*!< \brief 32-byte page. */
 /*@}*/
 
-#endif /* EBI_HAS_CSA */
+#endif /* SMC_HAS_CSR */
 
 /*@} xgNutArchArmAt91Smc */
 

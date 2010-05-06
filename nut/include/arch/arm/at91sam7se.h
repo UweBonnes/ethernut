@@ -90,6 +90,7 @@
 #define PDC_TXTDIS      0x00000200      /*!< \brief Transmitter transfer disable. */
 
 #define EBI_HAS_CSA
+#define SMC_HAS_CSR
 
 #define DBGU_HAS_PDC
 #define SPI_HAS_PDC
