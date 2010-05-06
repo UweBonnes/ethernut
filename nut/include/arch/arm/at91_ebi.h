@@ -64,7 +64,14 @@
 #define EBI_CS2A                0x00000004      /*!< \brief Chip select 2 assignment (CF2=1). */
 #define EBI_CS3A                0x00000008      /*!< \brief Chip select 3 assignment (NAND=1). */
 #define EBI_CS4A                0x00000010      /*!< \brief Chip select 4 assignment (CF1=1). */
+#define EBI_CS5A                0x00000020      /*!< \brief Chip select 5 assignment (CF2=1). */
+#define EBI_DBPUC               0x00000100      /*!< \brief Data bus pull-up disable. */
 #define EBI_NWPC                0x00010000      /*!< \brief NWAIT pin enable. */
+#define EBI_DRIVE               0x00030000      /*!< \brief I/O drive configuration mask. */
+#define EBI_DRIVE_18L           0x00000000      /*!< \brief Optimized for 1.8V with low drive. */
+#define EBI_DRIVE_33L           0x00010000      /*!< \brief Optimized for 3.3V with low drive. */
+#define EBI_DRIVE_18H           0x00020000      /*!< \brief Optimized for 1.8V with high drive. */
+#define EBI_DRIVE_33H           0x00030000      /*!< \brief Optimized for 3.3V with high drive. */
 
 #else /* EBI_HAS_CSA */
 
