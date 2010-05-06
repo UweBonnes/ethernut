@@ -77,6 +77,7 @@
 #define SMC_BASE        0xFFFFEC00      /*!< \brief SMC base address. */
 #define MATRIX_BASE     0xFFFFEE00      /*!< \brief MATRIX base address. */
 #define CCFG_BASE       0xFFFFEF10      /*!< \brief CCFG base address. */
+#define EBI_BASE        0xFFFFEF1C      /*!< \brief External bus interface base address. */
 #define AIC_BASE        0xFFFFF000      /*!< \brief AIC base address. */
 #define DBGU_BASE       0xFFFFF200      /*!< \brief DBGU base address. */
 #define PIOA_BASE       0xFFFFF400      /*!< \brief PIO A base address. */
@@ -85,10 +86,11 @@
 #define EEFC_BASE       0xFFFFFA00      /*!< \brief EEFC base address. */
 #define PMC_BASE        0xFFFFFC00      /*!< \brief PMC base address. */
 #define RSTC_BASE       0xFFFFFD00      /*!< \brief Resect controller register base address. */
+#define SHDWC_BASE      0xFFFFFD10      /*!< \brief Shutdown controller base address. */
 #define RTT_BASE        0xFFFFFD20      /*!< \brief Realtime timer base address. */
 #define PIT_BASE        0xFFFFFD30      /*!< \brief Periodic interval timer base address. */
 #define WDT_BASE        0xFFFFFD40      /*!< \brief Watch Dog register base address. */
-#define GPBR_BASE       0xFFFFFD50      /*!< \brief GPB register base address. */
+#define GPBR_BASE       0xFFFFFD60      /*!< \brief GPB register base address. */
 
 #define PERIPH_RPR_OFF  0x00000100      /*!< \brief Receive pointer register offset. */
 #define PERIPH_RCR_OFF  0x00000104      /*!< \brief Receive counter register offset. */
@@ -105,6 +107,8 @@
 #define PDC_RXTDIS      0x00000002      /*!< \brief Receiver transfer disable. */
 #define PDC_TXTEN       0x00000100      /*!< \brief Transmitter transfer enable. */
 #define PDC_TXTDIS      0x00000200      /*!< \brief Transmitter transfer disable. */
+
+#define EBI_HAS_CSA
 
 #define DBGU_HAS_PDC
 #define SPI_HAS_PDC
@@ -129,11 +133,14 @@
 #include <arch/arm/at91_pio.h>
 #include <arch/arm/at91_pmc.h>
 #include <arch/arm/at91_rstc.h>
+#include <arch/arm/at91_shdwc.h>
 #include <arch/arm/at91_wdt.h>
 #include <arch/arm/at91_ssc.h>
 #include <arch/arm/at91_twi.h>
+#include <arch/arm/at91_ebi.h>
 #include <arch/arm/at91_smc.h>
 #include <arch/arm/at91_mci.h>
+#include <arch/arm/at91_smc.h>
 #include <arch/arm/at91_matrix.h>
 #include <arch/arm/at91_ccfg.h>
 #include <arch/arm/at91_sdramc.h>
