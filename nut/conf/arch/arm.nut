@@ -1226,8 +1226,8 @@ nutarch_arm =
     {
         name = "nutarch_arm_mci_at91",
         brief = "AT91 MCI Device",
-        description = "MCI based block device for AT91SAM9260.",
-        requires = { "HW_MCI_AT91", "HW_MCU_AT91SAM9260" },
+        description = "MCI based block device driver.",
+        requires = { "HW_MCI_AT91" },
         provides = { "DEV_BLOCK" },
         sources = { "arm/dev/at91_mci.c" },
     },
