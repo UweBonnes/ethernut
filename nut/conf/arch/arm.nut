@@ -412,7 +412,7 @@ nutarch_arm =
     -- Board Initialization
     --
     {
-        name = "nutarch_bs",
+        name = "nutarch_arm_bs",
         brief = "Board Support",
         sources = 
             function() 
