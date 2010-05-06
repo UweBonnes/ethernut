@@ -241,7 +241,7 @@ THREAD(NutIdle, arg)
     ** earlier, because the low level driver may be interrupt driven. */
     NutLoadConfig();
 
-#ifdef NUT_INIT_IDLE
+#ifdef NUT_INIT_MAIN
     NutMainInit();
 #endif
 
