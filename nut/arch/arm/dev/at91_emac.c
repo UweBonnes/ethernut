@@ -216,8 +216,6 @@
 //#define EMAC_PIO_PER            PIOA_PER
 //#define EMAC_PIO_OER            PIOA_OER
 //#define EMAC_PIO_CODR           PIOA_CODR
-#define EMAC_PIO_PUER           PIOA_PUER
-#define EMAC_PIO_PUDR           PIOA_PUDR
 #define EMAC_PIO_ASR            PIOA_ASR
 #define EMAC_PIO_BSR            PIOA_BSR
 #define EMAC_PIO_PDR            PIOA_PDR
@@ -529,17 +527,16 @@ static int probePhy(uint32_t tmo)
  */
 static int EmacReset(uint32_t tmo)
 {
-#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7X)
-    uint32_t rstcr_tmp;
-#endif
-
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
 
-#if defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM7X)
-    /* Disable TESTMODE and set PHY address 0 and by disabling pull-ups. */
-    outr(EMAC_PIO_PUDR,
+#if defined(MCU_AT91SAM7X) && (NIC_PHY_UID == 0x0181B8A0)
+    {
+    uint32_t rstcr_tmp;
+
+        /* Disable TESTMODE and set PHY address 0 and by disabling pull-ups. */
+        outr(EMAC_PIO_PUDR,
 #if !defined(PHY_MODE_RMII)
         /* Additionally disable RMII, if not configured. */
         _BV(PHY_COL_RMII_BIT) | 
@@ -549,29 +546,30 @@ static int EmacReset(uint32_t tmo)
         _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
 
 #ifdef PHY_PWRDN_BIT
-    /* Disable PHY power down. */
-    outr(EMAC_PIO_PER, _BV(PHY_PWRDN_BIT));
-    outr(EMAC_PIO_OER, _BV(PHY_PWRDN_BIT));
+        /* Disable PHY power down. */
+        outr(EMAC_PIO_PER, _BV(PHY_PWRDN_BIT));
+        outr(EMAC_PIO_OER, _BV(PHY_PWRDN_BIT));
 #ifdef PHY_PWRDN_NEGPOL
-    outr(EMAC_PIO_SODR, _BV(PHY_PWRDN_BIT));
+        outr(EMAC_PIO_SODR, _BV(PHY_PWRDN_BIT));
 #else
-    outr(EMAC_PIO_CODR, _BV(PHY_PWRDN_BIT));
+        outr(EMAC_PIO_CODR, _BV(PHY_PWRDN_BIT));
 #endif
 #endif
 
-    /* Toggle external hardware reset pin. */
-    rstcr_tmp = inr(RSTC_MR) & 0x00FFFFFF;
-    outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
+        /* Toggle external hardware reset pin. */
+        rstcr_tmp = inr(RSTC_MR) & 0x00FFFFFF;
+        outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
  
-    outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
-    while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
-    outr(RSTC_MR, RSTC_KEY | rstcr_tmp); 
+        outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
+        while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
+        outr(RSTC_MR, RSTC_KEY | rstcr_tmp); 
 
-    /* Re-enable pull-ups. */
-    outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) | 
-        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) |
-        _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
-#endif /* MCU_AT91SAM9XE512 */
+        /* Re-enable pull-ups. */
+        outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) | 
+            _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) |
+            _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
+    }
+#endif /* MCU_AT91SAM7X */
 
     /* Configure MII port. */
     outr(EMAC_PIO_ASR, PHY_MII_PINS_A);
@@ -591,6 +589,13 @@ static int EmacReset(uint32_t tmo)
 
     /* Wait for PHY ready. */
     NutDelay(255);
+
+#if NIC_PHY_UID == 0x0007C0F0
+    /* Set LAN8710 mode. */
+    phy_outw(18, phy_inw(18) | 0x00E0);
+    phy_outw(NIC_PHY_BMCR, NIC_PHY_BMCR_RESET);
+    NutSleep(100);
+#endif
 
 #ifndef PHY_MODE_RMII
     /* Clear MII isolate. */
