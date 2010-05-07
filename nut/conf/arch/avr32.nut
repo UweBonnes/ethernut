@@ -454,22 +454,6 @@ nutarch_avr32 =
         options =
         {
             {
-                macro = "NIC_PHY_ADDR",
-                brief = "PHY Address",
-                description = "Default is 1 for EVK1100 and EVK1105.\n\n",
-                flavor = "integer",
-                file = "include/cfg/dev.h"
-            },
-            {
-                macro = "NIC_PHY_UID",
-                brief = "PHY ID",
-                description = "ID for the PHY connected to MACB.\n"..
-                              "DP83848: 0x20005C90 (EVK1100, EVK1105)\n"..
-                              "ANY: 0xffffffff (Disable PHY ID check - not recommended)\n\n",
-                flavor = "integer",
-                file = "include/cfg/dev.h"
-            },
-            {
                 macro = "PHY_PWRDN_BIT",
                 brief = "PHY Power Down Bit",
                 description = "For the SAM7X default is 18.\n\n",

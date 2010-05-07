@@ -2308,6 +2308,34 @@ nutdev =
         provides = { "NET_PHY" },
         sources = { "null_ether.c" },
     },
+    {
+        name = "nutdev_ether_phy",
+        brief = "Ethernet PHYceiver",
+        provides = { "NET_PHY" },
+        options =
+        {
+            {
+                macro = "NIC_PHY_ADDR",
+                brief = "PHY Address",
+                description = "Default is 1 for EVK1100 and EVK1105.\n\n",
+                flavor = "integer",
+                file = "include/cfg/dev.h"
+            },
+            {
+                macro = "NIC_PHY_UID",
+                brief = "PHY ID",
+                description = "ID for the PHY connected to the Ethernet MAC.\n\n"..
+                              "AM79C875: 0x00225540\n"..
+                              "DM9161: 0x0181B8A0 (ATMEL EK)\n"..
+                              "DP83848: 0x20005C90 (EVK1100, EVK1105)\n"..
+                              "MICREL: 0x00221610 (Olimex SAM7-EX256)\n"..
+                              "LAN8700: 0x0007C0C0\n"..
+                              "ANY: 0xFFFFFFFF (Disable PHY ID check - not recommended)",
+                flavor = "integer",
+                file = "include/cfg/dev.h"
+            }
+        }
+    },
 
     --
     -- Block Device Drivers.
