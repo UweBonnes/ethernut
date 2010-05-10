@@ -1,5 +1,8 @@
 #
-# Copyright (C) 2002-2004 by egnite Software GmbH. All rights reserved.
+# Copyright (C) 2002-2004 by egnite Software GmbH
+# Copyright (C) 2010 by egnite GmbH
+#
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -10,17 +13,15 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this
-#    software must display the following acknowledgement:
+# 3. Neither the name of the copyright holders nor the names of
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
 #
-#    This product includes software developed by egnite Software GmbH
-#    and its contributors.
-#
-# THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
-# SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 # BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 # OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -31,16 +32,7 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Log: Makefile,v $
-# Revision 1.3  2005/05/26 13:09:59  haraldkipp
-# Bootloader failed to compile because of missing NutConf.mk.
-#
-# Revision 1.2  2004/09/10 10:09:40  haraldkipp
-# Using new Configurator
-#
-# Revision 1.1  2004/04/15 09:34:45  haraldkipp
-# Checked in
-#
+# $Id$
 #
 
 PROJ = eboot
@@ -50,18 +42,16 @@ include Makedefs
 SRCS =  $(PROJ).c tftp.c dhcp.c udp.c ip.c arp.c ether.c config.c util.c debug.c
 LIBS =  
 
-OBJS  = start.o $(SRCS:.c=.o) flash.o
-TARG  = $(PROJ).hex
+OBJS     = start.o $(SRCS:.c=.o) flash.o
+TARG_ELF = $(PROJ).elf
+TARG_HEX = $(PROJ).hex
+TARG_BIN = $(PROJ).bin
 
-all: $(OBJS) $(TARG)
+all: $(OBJS) $(TARG_ELF) $(TARG_HEX) $(TARG_BIN)
 
 include Makerules
 
 clean:
-	-rm -f $(OBJS)
-	-rm -f $(TARG)
-	-rm -f $(PROJ).obj
-	-rm -f $(PROJ).sym
+	-rm -f $(OBJS) $(TARG_ELF) $(TARG_HEX) $(TARG_BIN)
+	-rm -f $(OBJS:.o=.lst)
 	-rm -f $(PROJ).map
-	-rm -f $(SRCS:.c=.lst)
-	-rm -f $(SRCS:.c=.bak)
