@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2010/05/13 Andre Riesberg
+ * Added .ramfunc segment.
+ *
  * Revision 1.1  2005/10/24 11:34:55  haraldkipp
  * Initial check in.
  *
@@ -83,6 +86,7 @@ SECTIONS
     PROVIDE (__data_start = .);
     *(.data)
     . = ALIGN(4);
+    *(.ramfunc)
     edata = .;
     _edata = .;
     PROVIDE (__data_end = .);

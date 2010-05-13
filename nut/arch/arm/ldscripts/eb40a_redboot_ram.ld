@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2010/05/13 Andre Riesberg
+ * Added .ramfunc segment.
+ *
  * Revision 1.1  2007/09/06 19:59:38  olereinhardt
  * First checkin, support for AT91EB40A eval board with redboot bootloader
  * running
@@ -88,6 +91,7 @@ SECTIONS
     PROVIDE (__data_start = .);
     *(.data)
     . = ALIGN(4);
+    *(.ramfunc)
     edata = .;
     _edata = .;
     PROVIDE (__data_end = .);

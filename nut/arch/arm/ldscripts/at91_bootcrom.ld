@@ -32,6 +32,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2010/05/13 Andre Riesberg
+ * Added .ramfunc segment.
+ *
  * Revision 1.1  2008/07/14 13:04:27  haraldkipp
  * New Ethernut 3 link option with code in RAM and constant data in ROM.
  *
@@ -82,6 +85,7 @@ SECTIONS
     PROVIDE (__data_start = .);
     *(.data)
     . = ALIGN(4);
+    *(.ramfunc)
     edata = .;
     _edata = .;
     PROVIDE (__data_end = .);
