@@ -66,63 +66,6 @@
 #include <dev/term.h>
 #include <sys/timer.h>
 
-#ifndef LCD_ROWS
-#define LCD_ROWS    2
-#endif
-
-#ifndef LCD_COLS
-#define LCD_COLS    16
-#endif
-
-#ifndef LCD_SHORT_DELAY
-#define LCD_SHORT_DELAY 100
-#endif
-
-#ifndef LCD_LONG_DELAY
-#define LCD_LONG_DELAY  1000
-#endif
-
-
-#ifdef LCD_CS_BIT
-#define LCD_CS      _BV(LCD_CS_BIT)
-#if LCD_CS_PIO_ID == PIOA_ID
-#define LCD_CS_SET() { outr(PIOA_PER, LCD_CS); outr(PIOA_SODR, LCD_CS); outr(PIOA_OER, LCD_CS); }
-#define LCD_CS_CLR() { outr(PIOA_PER, LCD_CS); outr(PIOA_CODR, LCD_CS); outr(PIOA_OER, LCD_CS); }
-#elif LCD_CS_PIO_ID == PIOB_ID
-#define LCD_CS_SET() { outr(PIOB_PER, LCD_CS); outr(PIOB_SODR, LCD_CS); outr(PIOB_OER, LCD_CS); }
-#define LCD_CS_CLR() { outr(PIOB_PER, LCD_CS); outr(PIOB_CODR, LCD_CS); outr(PIOB_OER, LCD_CS); }
-#elif LCD_CS_PIO_ID == PIOC_ID
-#define LCD_CS_SET() { outr(PIOC_PER, LCD_CS); outr(PIOC_SODR, LCD_CS); outr(PIOC_OER, LCD_CS); }
-#define LCD_CS_CLR() { outr(PIOC_PER, LCD_CS); outr(PIOC_CODR, LCD_CS); outr(PIOC_OER, LCD_CS); }
-#else
-#define LCD_CS_SET() { outr(PIO_PER, LCD_CS); outr(PIO_SODR, LCD_CS); outr(PIO_OER, LCD_CS); }
-#define LCD_CS_CLR() { outr(PIO_PER, LCD_CS); outr(PIO_CODR, LCD_CS); outr(PIO_OER, LCD_CS); }
-#endif /* LCD_CS_PIO_ID */
-#else /* LCD_CS_BIT */
-#define LCD_CS_SET()
-#define LCD_CS_CLR()
-#endif /* LCD_CS_BIT */
-
-#ifdef LCD_RS_BIT
-#define LCD_RS      _BV(LCD_RS_BIT)
-#if LCD_RS_PIO_ID == PIOA_ID
-#define LCD_RS_SET() { outr(PIOA_PER, LCD_RS); outr(PIOA_SODR, LCD_RS); outr(PIOA_OER, LCD_RS); }
-#define LCD_RS_CLR() { outr(PIOA_PER, LCD_RS); outr(PIOA_CODR, LCD_RS); outr(PIOA_OER, LCD_RS); }
-#elif LCD_RS_PIO_ID == PIOB_ID
-#define LCD_RS_SET() { outr(PIOB_PER, LCD_RS); outr(PIOB_SODR, LCD_RS); outr(PIOB_OER, LCD_RS); }
-#define LCD_RS_CLR() { outr(PIOB_PER, LCD_RS); outr(PIOB_CODR, LCD_RS); outr(PIOB_OER, LCD_RS); }
-#elif LCD_RS_PIO_ID == PIOC_ID
-#define LCD_RS_SET() { outr(PIOC_PER, LCD_RS); outr(PIOC_SODR, LCD_RS); outr(PIOC_OER, LCD_RS); }
-#define LCD_RS_CLR() { outr(PIOC_PER, LCD_RS); outr(PIOC_CODR, LCD_RS); outr(PIOC_OER, LCD_RS); }
-#else
-#define LCD_RS_SET() { outr(PIO_PER, LCD_RS); outr(PIO_SODR, LCD_RS); outr(PIO_OER, LCD_RS); }
-#define LCD_RS_CLR() { outr(PIO_PER, LCD_RS); outr(PIO_CODR, LCD_RS); outr(PIO_OER, LCD_RS); }
-#endif /* LCD_RS_PIO_ID */
-#else /* LCD_RS_BIT */
-#define LCD_RS_SET()
-#define LCD_RS_CLR()
-#endif /* LCD_RS_BIT */
-
 #ifdef LCD_CLK_BIT
 #define LCD_CLK     _BV(LCD_CLK_BIT)
 #if LCD_CLK_PIO_ID == PIOA_ID
@@ -171,9 +114,9 @@
 /*!
  * \brief Wait until controller will be ready again
  *
- * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise 
- * We will either busy loop with NutDelay or sleep with NutSleep. The second 
- * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher 
+ * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise
+ * We will either busy loop with NutDelay or sleep with NutSleep. The second
+ * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher
  * timer resolution.
  *
  * \param xt Delay time in milliseconds
@@ -248,7 +191,7 @@ static void LcdWriteByte(unsigned int data)
 static void LcdWriteCmd(uint8_t cmd)
 {
     /* RS low selects instruction register. */
-    LCD_CS_CLR();
+    LCD_EN_CLR();
     LcdDelay(LCD_SHORT_DELAY);
     LCD_RS_CLR();
     LcdDelay(LCD_SHORT_DELAY);
@@ -256,7 +199,7 @@ static void LcdWriteCmd(uint8_t cmd)
     LcdDelay(LCD_SHORT_DELAY);
     LCD_RS_SET();
     LcdDelay(LCD_SHORT_DELAY);
-    LCD_CS_SET();
+    LCD_EN_SET();
     LcdDelay(LCD_SHORT_DELAY);
 }
 
@@ -273,13 +216,13 @@ static void LcdWriteInstruction(uint8_t cmd, uint8_t xt)
 static void LcdWriteData(uint8_t data)
 {
     /* RS high selects data register. */
-	LCD_CS_CLR();
+	LCD_EN_CLR();
     LcdDelay(LCD_SHORT_DELAY);
     LCD_RS_SET();
     LcdDelay(LCD_SHORT_DELAY);
     LcdWriteByte(data);
     LcdDelay(LCD_SHORT_DELAY);
-	LCD_CS_SET();
+	LCD_EN_SET();
     LcdDelay(LCD_SHORT_DELAY);
 }
 
@@ -329,8 +272,8 @@ static int LcdInit(NUTDEVICE * dev)
 {
 #if defined(PMC_PCER)
     unsigned int pcer = 0;
-#if defined(LCD_CS_PIO_ID)
-    pcer = _BV(LCD_CS_PIO_ID);
+#if defined(LCD_EN_PIO_ID)
+    pcer = _BV(LCD_EN_PIO_ID);
 #endif
 #if defined(LCD_RS_PIO_ID)
     pcer |= _BV(LCD_RS_PIO_ID);
@@ -345,7 +288,7 @@ static int LcdInit(NUTDEVICE * dev)
 #endif
 
     /* Initialize GPIO lines. */
-    LCD_CS_SET();
+    LCD_EN_SET();
     LCD_RS_SET();
     LCD_CLK_SET();
     LCD_MOSI_SET();
@@ -354,7 +297,7 @@ static int LcdInit(NUTDEVICE * dev)
     NutSleep(50);
 
 	LCD_RS_CLR();
-	LCD_CS_CLR();
+	LCD_EN_CLR();
 
 	LcdWriteCmd(0x38);    /* Function set. */
 	NutSleep(2);
@@ -375,7 +318,7 @@ static int LcdInit(NUTDEVICE * dev)
 	LcdWriteCmd(0x06);    /* Entry mode set. */
 	NutSleep(1);
 
-	LCD_CS_SET();
+	LCD_EN_SET();
 	LCD_RS_SET();
 
     /* Clear display. */

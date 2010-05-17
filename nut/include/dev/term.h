@@ -72,8 +72,9 @@
 #define LCD_MF_AUTOSCROLL   0x00080000UL    /*!< \brief Control automatic scrolling at end of display */
 #define LCD_MF_INVERTED     0x10000000UL    /*!< \breif display inverted characters on grafic displays */
 
-
+#ifndef ESC_CHAR
 #define ESC_CHAR        "\x1B"
+#endif
 
 #define ESC_POS         ESC_CHAR "Y"
 #define ESC_UP          ESC_CHAR "A"

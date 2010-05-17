@@ -414,9 +414,9 @@ nutarch_arm =
     {
         name = "nutarch_arm_bs",
         brief = "Board Support",
-        sources = 
-            function() 
-                return { "arm/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" }; 
+        sources =
+            function()
+                return { "arm/board/"..string.lower(c_macro_edit("PLATFORM"))..".c" };
             end,
         requires = { "HW_BOARD_SUPPORT" },
     },
@@ -829,15 +829,57 @@ nutarch_arm =
         }
     },
     {
-        name = "nutarch_at91_hd44780",
-        brief = "HD44780 LCD Driver (AT91)",
-        description = "Only 4 bit interfaces are currently supported.\n"..
-                      "Tested on the AT91R40008 with 2x16 character LCD.",
+    	name = "nutarch_at91_chlcd",
+    	brief = "Character LCD Driver (AT91)",
+    	description = "Parallel or serial connected displays like\n"..
+    	              "HD44780, KS0066, KS0073 and others.\n",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_FILE", "DEV_WRITE" },
-        sources = { "arm/dev/hd44780_at91.c" },
-        options =
-        {
+        sources = { "arm/dev/charlcd_at91.c" },
+    	options =
+    	{
+    		--
+    		--  Define selection of supported driver chips
+    		--
+    		{
+	    		macro = "LCD_HD44780",
+		        brief = "HD44780 Driver",
+		        description = "Tested on the EIR 1.0 with 2x16 and 4x20 character LCD.",
+		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7063" },
+                flavor = "booldata",
+                provides = { "LCD_GPIO" },
+                file = "include/cfg/lcd.h",
+		    },
+    		{
+	    		macro = "LCD_KS0066",
+		        brief = "KS0066 Driver",
+		        description = "Currently not tested.",
+		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7063" },
+                flavor = "booldata",
+                provides = { "LCD_GPIO" },
+                file = "include/cfg/lcd.h",
+		    },
+    		{
+	    		macro = "LCD_KS0073",
+		        brief = "KS0073 Driver",
+		        description = "Currently not tested.",
+		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7063" },
+                flavor = "booldata",
+                provides = { "LCD_GPIO" },
+                file = "include/cfg/lcd.h",
+		    },
+    		{
+	    		macro = "LCD_ST7063",
+		        brief = "ST7063 Driver",
+		        description = "Serial connected display via SPI.\nCurrently not tested.",
+		        exclusivity = { "LCD_HD44780", "LCD_KS0066", "LCD_KS0073", "LCD_ST7063" },
+                flavor = "booldata",
+                provides = { "LCD_SPI" },
+                file = "include/cfg/lcd.h",
+		    },
+    		--
+    		--  Support for timing related parameters
+    		--
             {
                 macro = "LCD_ROWS",
                 brief = "Rows",
@@ -855,27 +897,85 @@ nutarch_arm =
                 file = "include/cfg/lcd.h"
             },
             {
-                macro = "LCD_SHORT_DELAY",
-                brief = "Short Delay",
-                description = "The number of dummy loops executed after LCD enable goes up.",
-                default = "10",
+                macro = "LCD_PW_EH",
+                brief = "Enable Pulse Stretch",
+                description = "Set a value here if the system is to fast to guarantee a minimum enable high time:\n"..
+                              "For HD44780 with Vcc=5.0V this is 230ns\n"..
+                              "For HD44780 with Vcc=3.3V this is 500ns\n\n"..
+                              "This value uses a NOP-Loop to stretch the enable Pulse and is directly dependand on the "..
+                              "systems CPU speed. It also may differ for other chips.\n\n"..
+                              "For a 5V driven display connected to EIR 1.0, this value can be left empty while it must "..
+                              "be set to about 5 for a 3.3V driven HD44780 LCD.",
+                requires = { "LCD_GPIO" },
                 flavor = "integer",
                 file = "include/cfg/lcd.h"
             },
             {
-                macro = "LCD_LONG_DELAY",
-                brief = "Long Delay",
-                description = "The number of loops executed after sending a command to the LCD "..
-                              "controller. If a R/W line is speicifed, then the driver will queries "..
-                              "the LCD status and terminates the loop as soon as the LCD busy "..
-                              "flag has been cleared.",
-                default = "1000",
+                macro = "LCD_E2E_DLY",
+                brief = "Enable to Enable Delay",
+                description = "Time for Enable to Enable delay in µs. This is the timespan between two\n"..
+                              "consecutive accesses of the 4-bit or 8-bit bus.\n For SPI-bus driven chips, this "..
+                              "is the /CS to /CS delay. This function uses NutMicroDelay()",
+                default = "80",
                 flavor = "integer",
                 file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_SLEEP_DLY",
+                brief = "Sleep after Data",
+                description = "Enable this option on a timing critical system.\n"..
+                              "Instead of cosecutive accessing the display this option will enable a NutSleep(1)\n"..
+                              "After each data or command written out to the LCD.",
+                flavor = "boolean",
+                file = "include/cfg/lcd.h"
+            },
+    		--
+    		--  Selection of parallel interface parameters
+    		--
+            {
+                macro = "LCD_IF_8BIT",
+                brief = "8-Bit Mode",
+                description = "Select parallel bus width is 8 bit.\n"..
+                			  "Splitting single bus lines accross ports is not "..
+                			  "supported for data bit lines.\n"..
+                			  "In 8 bit mode all data lines have to be aligned "..
+                			  "in one row.\n"..
+                			  "This option is actually not supported in this driver.",
+                requires = { "LCD_GPIO" },
+                flavor = "booldata",
+                exclusivity = { "LCD_IF_8BIT", "LCD_IF_4BIT" },
+                provides = { "LCD_IF_8BIT" },
+                file = "include/cfg/lcd.h"
+            },
+            {
+                macro = "LCD_IF_4BIT",
+                brief = "Use 4-Bit Mode",
+                description = "Select parallel bus width is 4 bit."..
+                			  "Splitting single bus lines accross ports is not"..
+                			  "supported for data bit lines.",
+                requires = { "LCD_GPIO" },
+                flavor = "booldata",
+                exclusivity = { "LCD_IF_8BIT", "LCD_IF_4BIT" },
+                provides = { "LCD_IF_4BIT" },
+                file = "include/cfg/lcd.h"
+            },
+    		--
+    		--  Selection of parallel interface parameters
+    		--
+            {
+                macro = "LCD_DATA_PIO_ID",
+                brief = "Port of LCD data pins",
+                requires = { "LCD_GPIO" },
+                description = "Port of the below defined data pins. Valid for "..
+                              "both, single bit definitions or LSB.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "LCD_DATA_LSB",
                 brief = "Least Significant Data Bit",
+                requires = { "LCD_GPIO" },
                 description = "Bit number of the least significant data bit. The remaining "..
                               "data bits must be connected to the following port bits.",
                 type = "enumerated",
@@ -886,6 +986,7 @@ nutarch_arm =
             {
                 macro = "LCD_DATA_BIT0",
                 brief = "Data Bit 0",
+                requires = { "LCD_GPIO", "LCD_IF_4BIT" },
                 description = "Port bit connected to LCD data bit 0.\n"..
                               "Not used if LCD_DATA_LSB is defined.\n",
                 type = "enumerated",
@@ -895,13 +996,16 @@ nutarch_arm =
             {
                 macro = "LCD_DATA_BIT1",
                 brief = "Data Bit 1",
+                requires = { "LCD_GPIO", "LCD_IF_4BIT" },
                 type = "enumerated",
+                requires = { "LCD_IF_4BIT" },
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
             {
                 macro = "LCD_DATA_BIT2",
                 brief = "Data Bit 2",
+                requires = { "LCD_GPIO", "LCD_IF_4BIT" },
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
@@ -909,22 +1013,47 @@ nutarch_arm =
             {
                 macro = "LCD_DATA_BIT3",
                 brief = "Data Bit 3",
+                requires = { "LCD_GPIO", "LCD_IF_4BIT" },
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
+    		--
+    		--  Selection of display control lines
+    		--
             {
-                macro = "LCD_ENABLE_BIT",
+                macro = "LCD_EN_PIO_ID",
+                brief = "LCD Enable Port",
+                description = "Port ID of the Enable line.\n"..
+                              "For parallel chips this is the active high enable signal.\n"..
+                              "For serial chips this is the active low chip select line.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_EN_BIT",
                 brief = "Enable Bit",
                 description = "Port bit of the LCD enable line. "..
-                              "This line must be exclusively reserved.",
+                              "This line must be exclusively reserved."..
+                              "For parallel chips this is the active high enable signal.\n"..
+                              "For serial chips this is the active low chip select line.",
                 default = "4",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
             {
-                macro = "LCD_REGSEL_BIT",
+                macro = "LCD_RS_PIO_ID",
+                brief = "LCD Register Select Port",
+                description = "Port ID of the Register Select line.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_RS_BIT",
                 brief = "Register Select Bit",
                 description = "Port bit of the LCD register select line. "..
                               "May be shared.",
@@ -933,138 +1062,76 @@ nutarch_arm =
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
+    		--
+    		--  Selection of optional display control lines
+    		--
+            {
+                macro = "LCD_RW_PIO_ID",
+                brief = "LCD Read/Write Select Port",
+                description = "Optional port base of the Read/Write Select line."..
+                              "Driver supports display confiurations with R/W tied to 0.\n"..
+                              "For this, leave this entry blank.",
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                flavor = "integer",
+                file = "include/cfg/arch/armpio.h"
+            },
             {
                 macro = "LCD_RW_BIT",
                 brief = "Read/Write Bit",
-                description = "Optional port bit of the LCD register select line. "..
-                              "If not specified, the driver will use the maximum delay. "..
-                              "May be shared.",
+                description = "Optional port ID of the Read/Write Select line."..
+                              "Driver supports display confiurations with R/W tied to 0.\n"..
+                              "For this, leave this entry blank.",
                 type = "enumerated",
-                flavor = "booldata",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
-        },
-    },
-    {
-        name = "nutarch_at91_st7036",
-        brief = "ST7036 LCD Driver (AT91)",
-        description = "Bit banging SPI mode\n"..
-                      "Tested on Ethernut 3 with 2x16 character LCD.",
-        requires = { "HW_MCU_AT91" },
-        provides = { "DEV_FILE", "DEV_WRITE" },
-        sources = { "arm/dev/st7036_at91.c" },
-        options =
-        {
             {
-                macro = "LCD_ROWS",
-                brief = "Rows",
-                description = "The number of available display rows, either 1, 2 or 4.",
-                default = "2",
-                flavor = "integer",
-                file = "include/cfg/lcd.h"
-            },
-            {
-                macro = "LCD_COLS",
-                brief = "Columns",
-                description = "The number of available display colums, either 8, 16, 20 or 40.",
-                default = "16",
-                flavor = "integer",
-                file = "include/cfg/lcd.h"
-            },
-            {
-                macro = "LCD_SHORT_DELAY",
-                brief = "Short Delay",
-                description = "The number of dummy loops executed after each signal change.",
-                default = "100",
-                flavor = "integer",
-                file = "include/cfg/lcd.h"
-            },
-            {
-                macro = "LCD_LONG_DELAY",
-                brief = "Long Delay",
-                description = "The number of loops executed after sending a data byte to the LCD "..
-                              "controller. Ten times of this delay will be additionally applied "..
-                              "after sending a command byte.",
-                default = "1000",
-                flavor = "integer",
-                file = "include/cfg/lcd.h"
-            },
-            {
-                macro = "LCD_CS_PIO_ID",
-                brief = "LCD CS Port",
-                description = "Port ID of the chip select line.",
+                macro = "LCD_EN2_PIO_ID",
+                brief = "LCD Enable Port 2",
+                requires = { "LCD_GPIO" },
+                description = "Optional port base of the 2nd Enable line. "..
+                              "This line must be exclusively reserved.\n"..
+                              "This is only used on large 4x40 character displays.",
                 type = "enumerated",
                 choices = at91_pio_id_choice,
-                flavor = "integer",
                 file = "include/cfg/arch/armpio.h"
             },
             {
-                macro = "LCD_CS_BIT",
-                brief = "LCD CS Bit",
-                description = "Bit number of the chip select line. "..
-                              "If not specified, no chip select will be generated.",
+                macro = "LCD_EN2_BIT",
+                brief = "LCD Enable-2 Bit",
+                requires = { "LCD_GPIO" },
+                description = "Optional port bit of the 2nd LCD enable line. "..
+                              "This is only used on large 4x40 character displays.\n"..
+                              "This line must be exclusively reserved.",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
             {
-                macro = "LCD_CLK_PIO_ID",
-                brief = "LCD CLK Port",
-                description = "Port ID of the clock line.",
+                macro = "LCD_RST_PIO_ID",
+                brief = "LCD Reset Port",
+                description = "Optional port base of the LCD Reset line. "..
+                              "This line must be exclusively reserved.\n"..
+                              "Some LCD Drivers support an optional reset line.\n"..
+                              "This is currently not supported by this driver!",
                 type = "enumerated",
                 choices = at91_pio_id_choice,
-                flavor = "integer",
                 file = "include/cfg/arch/armpio.h"
             },
             {
-                macro = "LCD_CLK_BIT",
-                brief = "LCD CLK Bit",
-                description = "Bit number of the clock line. "..
-                              "If not specified, no clock signal will be generated.",
+                macro = "LCD_RST_BIT",
+                brief = "LCD Reset Bit",
+                description = "Optional port bit of the 2nd LCD enable line. "..
+                              "This line must be exclusively reserved.\n"..
+                              "Some LCD Drivers support an optional reset line.\n"..
+                              "This is currently not supported by this driver!",
                 type = "enumerated",
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
-            {
-                macro = "LCD_MOSI_PIO_ID",
-                brief = "LCD MOSI Port",
-                description = "Port ID of the data line.",
-                type = "enumerated",
-                choices = at91_pio_id_choice,
-                flavor = "integer",
-                file = "include/cfg/arch/armpio.h"
-            },
-            {
-                macro = "LCD_MOSI_BIT",
-                brief = "LCD MOSI Bit",
-                description = "Bit number of the data line. "..
-                              "If not specified, no data will be sent to the LCD.",
-                type = "enumerated",
-                choices = mcu_32bit_choice,
-                file = "include/cfg/arch/armpio.h"
-            },
-            {
-                macro = "LCD_RS_PIO_ID",
-                brief = "LCD RS Port",
-                description = "Port ID of the register select line.",
-                type = "enumerated",
-                choices = at91_pio_id_choice,
-                flavor = "integer",
-                file = "include/cfg/arch/armpio.h"
-            },
-            {
-                macro = "LCD_RS_BIT",
-                brief = "LCD RS Bit",
-                description = "Bit number of the register select line. "..
-                              "If not specified, no register select will be generated.",
-                type = "enumerated",
-                choices = mcu_32bit_choice,
-                file = "include/cfg/arch/armpio.h"
-            },
-        }
-
-    },
+	    },
+	},
     {
         name = "nutarch_gba_debug",
         brief = "LCD Debug Output (GBA)",

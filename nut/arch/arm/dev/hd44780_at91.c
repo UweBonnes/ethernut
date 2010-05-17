@@ -84,200 +84,31 @@
  */
 
 #include <cfg/arch.h>
-#include <cfg/arch/gpio.h>
+#include <cfg/arch/armpio.h>
 #include <cfg/lcd.h>
-
-#if 0
-/* Configuration items. */
-#define LCD_DATA_LSB    0
-#define LCD_ENABLE_BIT  4
-#define LCD_RW_BIT      5
-#define LCD_REGSEL_BIT  7
-
-#endif
 
 #include <stdlib.h>
 #include <string.h>
+//#include <stdio.h>
 
 #include <sys/nutconfig.h>
 #include <dev/hd44780.h>
 #include <dev/term.h>
 #include <sys/timer.h>
 
-#if !defined(LCD_4x20) && !defined(LCD_4x16)
-#if !defined(LCD_2x40) && !defined(LCD_2x20) && !defined(LCD_2x16) && !defined(LCD_2x8)
-#if !defined(LCD_1x20) && !defined(LCD_1x16) && !defined(LCD_1x8)
-#if !defined(KS0073_CONTROLLER)
-#define LCD_2x16
-#endif                          /* !KS0073_CONTROLLER */
-#endif                          /* !1 line */
-#endif                          /* !2 lines */
-#endif                          /* !4 lines */
-
-#ifndef LCD_ROWS
-#if defined(LCD_4x20) || defined(LCD_4x16) || defined(KS0073_CONTROLLER)
-#define LCD_ROWS    4
-#elif defined(LCD_1x20) || defined(LCD_1x16) || defined(LCD_1x8)
-#define LCD_ROWS    1
-#else
-#define LCD_ROWS    2
-#endif
-#endif                          /* LCD_ROWS */
-
-#ifndef LCD_COLS
-#if defined(LCD_2x40)
-#define LCD_COLS    40
-#elif defined(LCD_4x20) || defined(LCD_2x20) || defined(LCD_1x20) || defined(KS0073_CONTROLLER)
-#define LCD_COLS    20
-#elif defined(LCD_2x8) || defined(LCD_1x8)
-#define LCD_COLS    8
-#else
-#define LCD_COLS    16
-#endif
-#endif                          /* LCD_COLS */
-
-/*!
- * \brief GPIO controller ID.
- */
-#if !defined(LCD_PIO_ID)
-#if defined(MCU_AT91SAM7X) || defined (MCU_AT91SAM7S256) || defined (MCU_AT91SAM7SE512)
-#define LCD_PIO_ID  PIOA_ID
-#elif defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
-#define LCD_PIO_ID  PIOB_ID
-#else
-#define LCD_PIO_ID  PIO_ID
-#endif
-#endif
-
-/*!
- * \brief LCD GPIO enable register.
- */
-#if !defined(LCD_PIO_PE_REG)
-#if LCD_PIO_ID == PIOA_ID
-#define LCD_PIO_PE_REG  PIOA_PER
-#elif LCD_PIO_ID == PIOB_ID
-#define LCD_PIO_PE_REG  PIOB_PER
-#elif LCD_PIO_ID == PIOC_ID
-#define LCD_PIO_PE_REG  PIOC_PER
-#else
-#define LCD_PIO_PE_REG  PIO_PER
-#endif
-#endif
-
-/*!
- * \brief LCD GPIO output enable register.
- */
-#if !defined(LCD_PIO_OE_REG)
-#if LCD_PIO_ID == PIOA_ID
-#define LCD_PIO_OE_REG  PIOA_OER
-#elif LCD_PIO_ID == PIOB_ID
-#define LCD_PIO_OE_REG  PIOB_OER
-#elif LCD_PIO_ID == PIOC_ID
-#define LCD_PIO_OE_REG  PIOC_OER
-#else
-#define LCD_PIO_OE_REG  PIO_OER
-#endif
-#endif
-
-/*!
- * \brief LCD GPIO output disable register.
- */
-#ifdef LCD_RW_BIT
-#if !defined(LCD_PIO_OD_REG)
-#if LCD_PIO_ID == PIOA_ID
-#define LCD_PIO_OD_REG  PIOA_ODR
-#elif LCD_PIO_ID == PIOB_ID
-#define LCD_PIO_OD_REG  PIOB_ODR
-#elif LCD_PIO_ID == PIOC_ID
-#define LCD_PIO_OD_REG  PIOC_ODR
-#else
-#define LCD_PIO_OD_REG  PIO_ODR
-#endif
-#endif
-#endif /* LCD_RW_BIT */
-
-/*!
- * \brief LCD GPIO set output data register.
- */
-#if !defined(LCD_PIO_SOD_REG)
-#if LCD_PIO_ID == PIOA_ID
-#define LCD_PIO_SOD_REG PIOA_SODR
-#elif LCD_PIO_ID == PIOB_ID
-#define LCD_PIO_SOD_REG PIOB_SODR
-#elif LCD_PIO_ID == PIOC_ID
-#define LCD_PIO_SOD_REG PIOC_SODR
-#else
-#define LCD_PIO_SOD_REG PIO_SODR
-#endif
-#endif
-
-/*!
- * \brief LCD GPIO clear output data register.
- */
-#if !defined(LCD_PIO_COD_REG)
-#if LCD_PIO_ID == PIOA_ID
-#define LCD_PIO_COD_REG PIOA_CODR
-#elif LCD_PIO_ID == PIOB_ID
-#define LCD_PIO_COD_REG PIOB_CODR
-#elif LCD_PIO_ID == PIOC_ID
-#define LCD_PIO_COD_REG PIOC_CODR
-#else
-#define LCD_PIO_COD_REG PIO_CODR
-#endif
-#endif
-
-/*!
- * \brief LCD GPIO pin data status register.
- */
-#ifdef LCD_RW_BIT
-#if !defined(LCD_PIO_PDS_REG)
-#if LCD_PIO_ID == PIOA_ID
-#define LCD_PIO_PDS_REG PIOA_PDSR
-#elif LCD_PIO_ID == PIOB_ID
-#define LCD_PIO_PDS_REG PIOB_PDSR
-#elif LCD_PIO_ID == PIOC_ID
-#define LCD_PIO_PDS_REG PIOC_PDSR
-#else
-#define LCD_PIO_PDS_REG PIO_PDSR
-#endif
-#endif
-#endif /* LCD_RW_BIT */
-
-#if !defined(LCD_DATA_LSB) && !defined(LCD_DATA_BIT0)
-#define LCD_DATA_LSB    0
-#endif
-
+#ifdef LCD_IF_4BIT
 #ifdef LCD_DATA_LSB
 #define LCD_DATA    (0xF << LCD_DATA_LSB)
-#else
+#else   /* LCD_DATA_LSB */
 #define LCD_D0      _BV(LCD_DATA_BIT0)
 #define LCD_D1      _BV(LCD_DATA_BIT1)
 #define LCD_D2      _BV(LCD_DATA_BIT2)
 #define LCD_D3      _BV(LCD_DATA_BIT3)
 #define LCD_DATA    (LCD_D0 | LCD_D1 | LCD_D2 | LCD_D3)
-#endif
-
-#ifndef LCD_ENABLE_BIT
-#define LCD_ENABLE_BIT  4
-#endif
-#define LCD_EN      _BV(LCD_ENABLE_BIT)
-
-#ifndef LCD_REGSEL_BIT
-#define LCD_REGSEL_BIT  7
-#endif
-#define LCD_RS      _BV(LCD_REGSEL_BIT)
-
-#ifdef LCD_RW_BIT
-#define LCD_RW      _BV(LCD_RW_BIT)
-#endif
-
-#ifndef LCD_SHORT_DELAY
-#define LCD_SHORT_DELAY 10
-#endif
-
-#ifndef LCD_LONG_DELAY
-#define LCD_LONG_DELAY  1000
-#endif
+#endif  /* LCD_DATA_LSB */
+#else   /* LCD_IF_4BIT */
+#define LCD_DATA     (0xFF << LCD_DATA_LSB)
+#endif  /* LCD_IF_4BIT */
 
 /*!
  * \addtogroup xgDisplay
@@ -287,53 +118,47 @@
 /*!
  * \brief Wait until controller will be ready again
  *
- * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise 
- * We will either busy loop with NutDelay or sleep with NutSleep. The second 
- * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher 
+ * If LCD_WR_BIT is defined we will wait until the ready bit is set, otherwise
+ * We will either busy loop with NutDelay or sleep with NutSleep. The second
+ * option will be used if we have defined NUT_CPU_FREQ. In this case we have a higher
  * timer resolution.
  *
  * \param xt Delay time in milliseconds
  */
-static void LcdDelay(unsigned int cycles)
+
+#ifdef LCD_PW_EH
+void LcdNanoDelay( uint_fast16_t n)
 {
-    while (cycles--) {
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
-        _NOP(); _NOP(); _NOP(); _NOP();
+    while (n--) {
+        _NOP();
     }
 }
+#else
+#define LcdNanoDelay( a)
+#endif
+
 
 static void INLINE LcdSetBits(unsigned int mask)
 {
-    outr(LCD_PIO_SOD_REG, mask);
-    outr(LCD_PIO_OE_REG, mask);
+    outr(LCD_DATA_BASE+PIO_SODR_OFF, mask);
+    outr(LCD_DATA_BASE+PIO_OER_OFF, mask);
 }
 
 static void INLINE LcdClrBits(unsigned int mask)
 {
-    outr(LCD_PIO_COD_REG, mask);
-    outr(LCD_PIO_OE_REG, mask);
+    outr(LCD_DATA_BASE+PIO_CODR_OFF, mask);
+    outr(LCD_DATA_BASE+PIO_OER_OFF, mask);
 }
 
 #ifdef LCD_RW_BIT
-
 static unsigned int LcdReadNibble(void)
 {
     unsigned int rc;
 
-    LcdSetBits(LCD_EN);
+    LCD_EN_SET();
     LcdDelay(LCD_SHORT_DELAY);
-    rc = inr(LCD_PIO_PDS_REG) & LCD_DATA;
-    LcdClrBits(LCD_EN);
+    rc = inr(LCD_DATA_PIO_ID+PIO_PDSR_OFF) & LCD_DATA;
+    LCD_EN_CLR();
     LcdDelay(LCD_SHORT_DELAY);
 
 #ifdef LCD_DATA_LSB
@@ -365,9 +190,9 @@ static unsigned int LcdReadNibble(void)
  */
 static unsigned int LcdReadByte(void)
 {
-    outr(LCD_PIO_OD_REG, LCD_DATA);
+    outr(LCD_DATA_PIO_ID+PIO_ODR_OFF, LCD_DATA);
     LcdDelay(LCD_SHORT_DELAY);
-    LcdSetBits(LCD_RW);
+    LCD_RW_SET();
     LcdDelay(LCD_SHORT_DELAY);
     return (LcdReadNibble() << 4) | LcdReadNibble();
 }
@@ -378,23 +203,29 @@ static unsigned int LcdReadByte(void)
 static unsigned int LcdReadStatus(void)
 {
     /* RS low selects status register. */
-    LcdClrBits(LCD_RS);
+    LCD_RS_CLR();
     return LcdReadByte();
 }
 
-#endif                          /* LCD_RW_BIT */
+#endif                          /* HD44_RW_BIT */
 
+#if 0
+/* This function is a bit critical as some chipsets are known to
+ * release the redy bit some time early. So after rady goes low,
+ * another fixed delay has to be added before soing the next access.
+ */
 static void LcdWaitReady(unsigned int delay)
 {
     while (delay--) {
-#if defined(LCD_RW_BIT)
+#if defined(HD44_RW_BIT)
         if ((LcdReadStatus() & _BV(LCD_BUSY)) == 0) {
             break;
         }
 #endif
-        _NOP();
+        NutMicroDelay(1);
     }
 }
+#endif
 
 /*!
  * \brief Send half byte to LCD controller.
@@ -426,11 +257,14 @@ static void LcdWriteNibble(unsigned int nib)
     LcdSetBits(nib & LCD_DATA);
     LcdClrBits(~nib & LCD_DATA);
 
-    LcdDelay(LCD_SHORT_DELAY);
-    LcdSetBits(LCD_EN);
-    LcdDelay(LCD_SHORT_DELAY);
-    LcdClrBits(LCD_EN);
-    LcdDelay(LCD_SHORT_DELAY);
+    /* Create Enable Pulse:
+     * For HD44780 Displays we need:
+     * Vcc = 5.0V -> PWeh >= 230ns
+     * Vcc = 3.3V -> PWeh >= 500ns
+     */
+    LCD_EN_SET();
+    LcdNanoDelay(LCD_PW_EH);
+    LCD_EN_CLR();
 }
 
 /*!
@@ -440,12 +274,30 @@ static void LcdWriteNibble(unsigned int nib)
  */
 static void LcdWriteByte(unsigned int data)
 {
+    /* If configured set RW low */
 #ifdef LCD_RW_BIT
-    LcdClrBits(LCD_RW);
+    LCD_RW_CLR();
 #endif
+
+    /* If using 4-bit access, write two nibbles now */
+#ifdef LCD_IF_4BIT
     LcdWriteNibble(data >> 4);
+    LcdNanoDelay(LCD_PW_EH);
     LcdWriteNibble(data);
-    LcdWaitReady(LCD_LONG_DELAY);
+#else
+    /* else write one byte */
+    data <<= LCD_DATA_LSB;
+    LcdSetBits(data & LCD_DATA);
+    LcdClrBits(~data & LCD_DATA);
+#endif
+
+    /* If configured, let the task sleep before next character */
+#if defined(LCD_SLEEP_DLY)
+    NutSleep(1);
+#else
+    /* or add a fixed delay and immediately process next char */
+    NutMicroDelay(LCD_E2E_DLY);
+#endif
 }
 
 /*!
@@ -456,7 +308,7 @@ static void LcdWriteByte(unsigned int data)
 static void LcdWriteCmd(uint8_t cmd)
 {
     /* RS low selects instruction register. */
-    LcdClrBits(LCD_RS);
+    LCD_RS_CLR();
     LcdWriteByte(cmd);
 }
 
@@ -473,16 +325,16 @@ static void LcdWriteInstruction(uint8_t cmd, uint8_t xt)
 static void LcdWriteData(uint8_t data)
 {
     /* RS high selects data register. */
-    LcdSetBits(LCD_RS);
+    LCD_RS_SET();
     LcdWriteByte(data);
 }
 
 static void LcdSetCursor(uint8_t pos)
 {
     uint8_t offset[] = {
-#ifdef KS0073_CONTROLLER
+#ifdef LCD_KS0073
         0x00, 0x20, 0x40, 0x60
-#elif LCD_COLS == 20
+#elif (LCD_COLS >= 20)
         0x00, 0x40, 0x14, 0x54
 #else
         0x00, 0x40, 0x10, 0x50
@@ -496,7 +348,7 @@ static void LcdSetCursor(uint8_t pos)
 static void LcdCursorHome(void)
 {
     LcdWriteCmd(1 << LCD_HOME);
-    LcdDelay(10 * LCD_LONG_DELAY);
+    NutSleep(2);
 }
 
 static void LcdCursorLeft(void)
@@ -512,49 +364,74 @@ static void LcdCursorRight(void)
 static void LcdClear(void)
 {
     LcdWriteCmd(_BV(LCD_CLR));
-    LcdDelay(10 * LCD_LONG_DELAY);
+    NutSleep(2);
 }
 
 static void LcdCursorMode(uint8_t on)
 {
     LcdWriteCmd(1 << LCD_ON_CTRL | on ? 1 << LCD_ON_CURSOR : 0x00);
-    LcdDelay(10 * LCD_LONG_DELAY);
 }
 
 static int LcdInit(NUTDEVICE * dev)
 {
 #if defined(PMC_PCER)
-    outr(PMC_PCER, _BV(LCD_PIO_ID));
+    outr(PMC_PCER, _BV(LCD_RS_PIO_ID) | _BV(LCD_EN_PIO_ID));
 #endif
 
     /* Initialize GPIO lines. */
 #ifdef LCD_RW_BIT
-    outr(LCD_PIO_PE_REG, LCD_RW);
-    LcdClrBits(LCD_RW);
+    outr(PMC_PCER, _BV(LCD_RW_PIO_ID));
+    LCD_RW_CLR();
 #endif
-    outr(LCD_PIO_PE_REG, LCD_EN | LCD_RS | LCD_DATA);
-    LcdClrBits(LCD_DATA | LCD_RS);
-    LcdDelay(LCD_LONG_DELAY);
-    LcdClrBits(LCD_EN);
-    LcdDelay(LCD_LONG_DELAY);
+
+#ifdef LCD_EN2_BIT
+    outr(PMC_PCER, _BV(LCD_EN2_PIO_ID));
+    LCD_EN2_CLR();
+#endif
+
+#ifdef LCD_RST_BIT
+    outr(PMC_PCER, _BV(LCD_RST_PIO_ID));
+    LCD_RST_CLR();
+#endif
+
+    LCD_RS_CLR();
+    LCD_RW_CLR();
+    LcdClrBits(LCD_DATA);
+    NutMicroDelay(30);
+    LCD_EN_CLR();
+    NutMicroDelay(30);
 
     /* Initial delay. Actually only required after power on. */
     NutSleep(16);
 
     /* This initialization will make sure, that the LCD is switched
-       to 4-bit mode, no matter which mode we start from. */
+     * to 8-bit mode, no matter which mode we start from or we finally
+     * need.
+     */
     LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT)) >> 4);
-    NutSleep(5);
+    NutSleep(15);
+    LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT)) >> 4);
+    NutSleep(4);
     LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT)) >> 4);
     NutSleep(2);
-    LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT)) >> 4);
-    NutSleep(2);
+
+#ifdef LCD_IF_4BIT
+    /* We now switch to 4-bit mode */
     LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
     NutSleep(2);
 
+    // TODO: Add support for large font in single line displays
     /* Set number of lines and font. Can't be changed later. */
+#if (LCD_ROWS == 2) || (LCD_ROWS==4)
     LcdWriteNibble((_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_2LINES)) >> 4);
     LcdWriteNibble(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_2LINES));
+#else
+    LcdWriteNibble(_BV(LCD_FUNCTION) >> 4);
+    LcdWriteNibble(_BV(LCD_FUNCTION) );
+#endif
+#else /* LCD_IF_4BIT */
+    LcdWriteCmd(_BV(LCD_FUNCTION) | _BV(LCD_FUNCTION_8BIT));
+#endif /* LCD_IF_4BIT */
     NutSleep(2);
 
     /* Switch display and cursor off. */
@@ -605,7 +482,7 @@ TERMDCB dcb_term = {
  */
 NUTDEVICE devLcd = {
     0,                          /*!< Pointer to next device. */
-    {'l', 'c', 'd', 0, 0, 0, 0, 0, 0},  /*!< Unique device name. */
+    {'c', 'h', 'a', 'r', 'l', 'c', 'd', 0, 0},  /*!< Unique device name. */
     IFTYP_STREAM,               /*!< Type of device. */
     0,                          /*!< Base address. */
     0,                          /*!< First interrupt number. */
