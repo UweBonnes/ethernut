@@ -119,6 +119,7 @@
 #include <arch/arm/at91_sdramc.h>
 #include <arch/arm/at91_ssc.h>
 #include <arch/arm/at91_twi.h>
+#include <arch/arm/at91_udp.h>
 #include <arch/arm/at91_adc.h>
 #include <arch/arm/at91_pwmc.h>
 
