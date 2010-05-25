@@ -129,7 +129,7 @@ static void TxComplete(void *arg)
             UDR1 = ifs->if_tx_buf[ifs->if_tx_idx];
         else
 #endif
-            outp(ifs->if_tx_buf[ifs->if_tx_idx], UDR);
+            outb(UDR, ifs->if_tx_buf[ifs->if_tx_idx]);
         ifs->if_tx_idx++;
     } else {
         ifs->if_tx_act = 0;
@@ -154,10 +154,10 @@ static void RxComplete(void *arg)
 
 #ifdef UDR1
     if (dev->dev_base)
-        ifs->if_rx_buf[ifs->if_rx_idx] = inp(UDR1);
+        ifs->if_rx_buf[ifs->if_rx_idx] = inb(UDR1);
     else
 #endif
-        ifs->if_rx_buf[ifs->if_rx_idx] = inp(UDR);
+        ifs->if_rx_buf[ifs->if_rx_idx] = inb(UDR);
 
     if (ifs->if_rd_idx == ifs->if_rx_idx) {
         dcb = dev->dev_dcb;
@@ -241,7 +241,7 @@ int UartAvrOutput(NUTDEVICE * dev)
             UDR1 = ifs->if_tx_buf[ifs->if_tx_idx];
         else
 #endif
-            outp(ifs->if_tx_buf[ifs->if_tx_idx], UDR);
+            outb(UDR, ifs->if_tx_buf[ifs->if_tx_idx]);
         ifs->if_tx_idx++;
     }
     return 0;
@@ -294,10 +294,10 @@ static int UartAvrGetStatus(NUTDEVICE * dev, uint32_t * status)
 
 #ifdef UDR1
     if (dev->dev_base)
-        us = inp(UCSR1A);
+        us = inb(UCSR1A);
     else
 #endif
-        us = inp(USR);
+        us = inb(USR);
     if (us & FE)
         *status |= UART_FRAMINGERROR;
     if (us & DOR)

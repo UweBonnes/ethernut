@@ -80,9 +80,9 @@ static __inline uint8_t SpiByte(uint8_t c)
 static uint8_t SpiByte(uint8_t c)
 #endif
 {
-    outp(c, SPDR);
+    outb(SPDR, c);
     loop_until_bit_is_set(SPSR, SPIF);
-    return inp(SPDR);
+    return inb(SPDR);
 }
 
 /*!
@@ -134,7 +134,7 @@ int SpiFlashEnable(void)
          * on this pin might force us to SPI slave mode.
          */
         sbi(DDRB, 0);
-        outp(BV(MSTR) | BV(SPE) | BV(SPR0), SPCR);
+        outb(SPCR, BV(MSTR) | BV(SPE) | BV(SPR0));
 
         /*
          * Try to enable programming.
@@ -152,7 +152,7 @@ int SpiFlashEnable(void)
          * target is not synchronized. A positive pulse on the
          * clock line should help.
          */
-        outp(0, SPCR);
+        outb(SPCR, 0);
         sbi(PORTB, 1);
         cbi(PORTB, 1);
     }

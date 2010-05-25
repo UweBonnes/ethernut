@@ -303,7 +303,7 @@ static void Tx0Complete(void *arg)
             return;
         }
 #endif
-        outp(dcb->dcb_tx_buf[dcb->dcb_tx_idx], UDR);
+        outb(UDR, dcb->dcb_tx_buf[dcb->dcb_tx_idx]);
         dcb->dcb_tx_idx++;
     } else {
         cbi(UCR, UDRIE);
@@ -336,7 +336,7 @@ static void Tx1Complete(void *arg)
             return;
         }
 #endif
-        outp(dcb->dcb_tx_buf[dcb->dcb_tx_idx], UDR1);
+        outb(UDR1, dcb->dcb_tx_buf[dcb->dcb_tx_idx]);
         dcb->dcb_tx_idx++;
     } else {
         cbi(UCSR1B, UDRIE);
@@ -363,7 +363,7 @@ static void Rx0Complete(void *arg)
 {
     AHDLCDCB *dcb = arg;
 
-    dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inp(UDR);
+    dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inb(UDR);
     if (dcb->dcb_rd_idx == dcb->dcb_rx_idx)
         NutEventPostFromIrq(&dcb->dcb_rx_rdy);
     /* Late increment fixes ICCAVR bug on volatile variables. */
@@ -378,7 +378,7 @@ static void Rx1Complete(void *arg)
 {
     AHDLCDCB *dcb = arg;
 
-    dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inp(UDR1);
+    dcb->dcb_rx_buf[dcb->dcb_rx_idx] = inb(UDR1);
     if (dcb->dcb_rd_idx == dcb->dcb_rx_idx)
         NutEventPostFromIrq(&dcb->dcb_rx_rdy);
     /* Late increment fixes ICCAVR bug on volatile variables. */
@@ -727,7 +727,7 @@ static int AhdlcAvrGetStatus(NUTDEVICE * dev, uint32_t * status)
         else
             *status |= UART_DTRENABLED;
 #endif
-        us = inp(UCSR1A);
+        us = inb(UCSR1A);
     } else
 #endif                          /* __AVR_ENHANCED__ */
     {
@@ -749,7 +749,7 @@ static int AhdlcAvrGetStatus(NUTDEVICE * dev, uint32_t * status)
         else
             *status |= UART_DTRENABLED;
 #endif
-        us = inp(USR);
+        us = inb(USR);
     }
     if (us & FE)
         *status |= UART_FRAMINGERROR;
@@ -815,14 +815,14 @@ static void AhdlcAvrEnable(uint16_t base)
 #ifdef UART1_CTS_BIT
         sbi(EIMSK, UART1_CTS_BIT);
 #endif
-        outp(BV(RXCIE) | BV(RXEN) | BV(TXEN), UCSR1B);
+        outb(UCSR1B, BV(RXCIE) | BV(RXEN) | BV(TXEN));
     } else
 #endif                          /* __AVR_ENHANCED__ */
     {
 #ifdef UART0_CTS_BIT
         sbi(EIMSK, UART0_CTS_BIT);
 #endif
-        outp(BV(RXCIE) | BV(RXEN) | BV(TXEN), UCR);
+        outb(UCR, BV(RXCIE) | BV(RXEN) | BV(TXEN));
     }
     NutExitCritical();
 }
@@ -841,14 +841,14 @@ static void AhdlcAvrDisable(uint16_t base)
 #ifdef UART1_CTS_BIT
         cbi(EIMSK, UART1_CTS_BIT);
 #endif
-        outp(inp(UCSR1B) & ~(BV(RXCIE) | BV(UDRIE)), UCSR1B);
+        outb(UCSR1B, inb(UCSR1B) & ~(BV(RXCIE) | BV(UDRIE)));
     } else
 #endif                          /* __AVR_ENHANCED__ */
     {
 #ifdef UART0_CTS_BIT
         cbi(EIMSK, UART0_CTS_BIT);
 #endif
-        outp(inp(UCR) & ~(BV(RXCIE) | BV(UDRIE)), UCR);
+        outb(UCR, inb(UCR) & ~(BV(RXCIE) | BV(UDRIE)));
     }
     NutExitCritical();
 
@@ -862,10 +862,10 @@ static void AhdlcAvrDisable(uint16_t base)
      */
 #ifdef __AVR_ENHANCED__
     if (base)
-        outp(inp(UCSR1B) & ~(BV(RXEN) | BV(TXEN)), UCSR1B);
+        outb(UCSR1B, inb(UCSR1B) & ~(BV(RXEN) | BV(TXEN)));
     else
 #endif                          /* __AVR_ENHANCED__ */
-        outp(inp(UCR) & ~(BV(RXEN) | BV(TXEN)), UCR);
+        outb(UCR, inb(UCR) & ~(BV(RXEN) | BV(TXEN)));
 }
 
 /*!
@@ -933,14 +933,14 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         sv = (uint16_t) ((((2UL * NutGetCpuClock()) / (*lvp * 16UL)) + 1UL) / 2UL) - 1;
 #ifdef __AVR_ENHANCED__
         if (devnum) {
-            outp((uint8_t) sv, UBRR1L);
-            outp((uint8_t) (sv >> 8), UBRR1H);
+            outb(UBRR1L, (uint8_t) sv);
+            outb(UBRR1H, (uint8_t) (sv >> 8));
         } else {
-            outp((uint8_t) sv, UBRR0L);
-            outp((uint8_t) (sv >> 8), UBRR0H);
+            outb(UBRR0L, (uint8_t) sv);
+            outb(UBRR0H, (uint8_t) (sv >> 8));
         }
 #else
-        outp((uint8_t) sv, UBRR);
+        outb(UBRR, (uint8_t) sv);
 #endif
         AhdlcAvrEnable(devnum);
         break;
@@ -948,11 +948,11 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     case UART_GETSPEED:
 #ifdef __AVR_ENHANCED__
         if (devnum)
-            sv = (uint16_t) inp(UBRR1H) << 8 | inp(UBRR1L);
+            sv = (uint16_t) inb(UBRR1H) << 8 | inb(UBRR1L);
         else
-            sv = (uint16_t) inp(UBRR0H) << 8 | inp(UBRR0L);
+            sv = (uint16_t) inb(UBRR0H) << 8 | inb(UBRR0L);
 #else
-        sv = inp(UBRR);
+        sv = inb(UBRR);
 #endif
         *lvp = NutGetCpuClock() / (16UL * (uint32_t) (sv + 1));
         break;
@@ -964,11 +964,11 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         if (bv >= 5 && bv <= 8) {
             bv = (bv - 5) << 1;
             if (devnum) {
-                outp((inp(UCSR1C) & 0xF9) | bv, UCSR1C);
-                outp(inp(UCSR1B) & 0xFB, UCSR1B);
+                outb(UCSR1C, (inb(UCSR1C) & 0xF9) | bv);
+                outb(UCSR1B, inb(UCSR1B) & 0xFB);
             } else {
-                outp((inp(UCSR0C) & 0xF9) | bv, UCSR0C);
-                outp(inp(UCSR0B) & 0xFB, UCSR0B);
+                outb(UCSR0C, (inb(UCSR0C) & 0xF9) | bv);
+                outb(UCSR0B, inb(UCSR0B) & 0xFB);
             }
         } else
             rc = -1;
@@ -982,9 +982,9 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     case UART_GETDATABITS:
 #ifdef __AVR_ENHANCED__
         if (devnum)
-            *lvp = ((inp(UCSR1C) & 0x06) >> 1) + 5;
+            *lvp = ((inb(UCSR1C) & 0x06) >> 1) + 5;
         else
-            *lvp = ((inp(UCSR0C) & 0x06) >> 1) + 5;
+            *lvp = ((inb(UCSR0C) & 0x06) >> 1) + 5;
 #else
         *lvp = 8;
 #endif
@@ -999,9 +999,9 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
                 bv = 3;
             bv <<= 4;
             if (devnum)
-                outp((inp(UCSR1C) & 0xCF) | bv, UCSR1C);
+                outb(UCSR1C, (inb(UCSR1C) & 0xCF) | bv);
             else
-                outp((inp(UCSR0C) & 0xCF) | bv, UCSR0C);
+                outb(UCSR0C, (inb(UCSR0C) & 0xCF) | bv);
         } else
             rc = -1;
 #endif
@@ -1013,9 +1013,9 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     case UART_GETPARITY:
 #ifdef __AVR_ENHANCED__
         if (devnum)
-            bv = (inp(UCSR1C) & 0x30) >> 4;
+            bv = (inb(UCSR1C) & 0x30) >> 4;
         else
-            bv = (inp(UCSR0C) & 0x30) >> 4;
+            bv = (inb(UCSR0C) & 0x30) >> 4;
         if (bv == 3)
             bv = 1;
 #else
@@ -1031,9 +1031,9 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         if (bv == 1 || bv == 2) {
             bv = (bv - 1) << 3;
             if (devnum)
-                outp((inp(UCSR1C) & 0xF7) | bv, UCSR1C);
+                outb(UCSR1C, (inb(UCSR1C) & 0xF7) | bv);
             else
-                outp((inp(UCSR0C) & 0xF7) | bv, UCSR0C);
+                outb(UCSR0C, (inb(UCSR0C) & 0xF7) | bv);
         } else
             rc = -1;
 #else
@@ -1046,9 +1046,9 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
     case UART_GETSTOPBITS:
 #ifdef __AVR_ENHANCED__
         if (devnum)
-            *lvp = ((inp(UCSR1C) & 0x08) >> 3) + 1;
+            *lvp = ((inb(UCSR1C) & 0x08) >> 3) + 1;
         else
-            *lvp = ((inp(UCSR0C) & 0x08) >> 3) + 1;
+            *lvp = ((inb(UCSR0C) & 0x08) >> 3) + 1;
 #else
         *lvp = 1;
 #endif

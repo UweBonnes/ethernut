@@ -567,7 +567,7 @@ static int AhdlcAt91GetStatus(NUTDEVICE * dev, uint32_t * status)
         else
             *status |= UART_DTRENABLED;
 #endif
-        us = inp(UCSR1A);
+        us = inb(UCSR1A);
     } else
 #endif                          /* __AVR_ENHANCED__ */
     {
@@ -589,7 +589,7 @@ static int AhdlcAt91GetStatus(NUTDEVICE * dev, uint32_t * status)
         else
             *status |= UART_DTRENABLED;
 #endif
-        //SAAM       us = inp(USR);
+        //SAAM       us = inb(USR);
     }
 //SAAM    if (us & FE)
     //SAAM       *status |= UART_FRAMINGERROR;

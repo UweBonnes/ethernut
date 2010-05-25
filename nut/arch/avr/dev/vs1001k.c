@@ -541,7 +541,7 @@ static void VsRegWrite(uint8_t reg, uint16_t data)
 #ifndef VS_NOSPI
     /* Re-enable SPI. Hint given by Jesper Hansen. */
     outb(SPCR, BV(MSTR) | BV(SPE));
-    outb(SPSR, inp(SPSR));
+    outb(SPSR, inb(SPSR));
 #endif
 
     /* Deselect chip. */
@@ -575,7 +575,7 @@ static uint16_t VsRegRead(uint8_t reg)
 #ifndef VS_NOSPI
     /* Re-enable SPI. Changed due to a hint by Jesper. */
     outb(SPCR, BV(MSTR) | BV(SPE));
-    outb(SPSR, inp(SPSR));
+    outb(SPSR, inb(SPSR));
 #endif
 
     /* Deselect chip and enable interrupts. */
@@ -819,7 +819,7 @@ int VsPlayerInit(void)
          * active.
          */
         outb(SPCR, BV(MSTR) | BV(SPE));
-        dummy = inp(SPSR);
+        dummy = inb(SPSR);
         outb(SPDR, 0);
     }
 #endif

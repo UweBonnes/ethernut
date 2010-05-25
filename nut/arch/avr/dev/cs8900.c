@@ -586,7 +586,7 @@ int CSNicInit(NUTDEVICE * dev)
 
     // Take CS8900 out of reset and wait for internal reset to complete
 #ifdef NUT_CS8900_OLD
-    outp(inp(PORTD) & ~RESETE, PORTD);
+    outb(PORTD, inb(PORTD) & ~RESETE);
 #else
     CSSoftwareWakeup();
     CSSoftwareReset();

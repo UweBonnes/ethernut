@@ -130,7 +130,7 @@ int NutTraceInit(int size, char mode)
 {
     if (!trace_isinit) {
         // start timer1 at CPU frequency/8 and register interrupt service routine
-        outp(2,TCCR1B);
+        outb(TCCR1B, 2);
         NutRegisterIrqHandler(&sig_OVERFLOW1, NutTraceTimer1IRQ, 0);
         sbi(TIMSK, TOIE1);
         trace_isinit = 1;
