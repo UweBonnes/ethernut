@@ -1,8 +1,3 @@
-BURN=avrdude
-BURNPORT=com1
-BURNTARGET=$(MCU)
-#BURNFLAGS=-dprog=stk500 -dserial=$(BURNPORT) -dspeed=115200 -dpart=$(BURNTARGET) --erase --upload if=$(TARG)
-
 # Programming support using avrdude. Settings and variables.
 
 # Programming hardware: alf avr910 avrisp bascom bsd
@@ -11,6 +6,22 @@ BURNTARGET=$(MCU)
 # Type: avrdude -c ?
 # to get a full listing.
 #
+
+BURN=avrdude
+BURNPORT=com2
+
+ifeq ($(MCU),atmega128)
+BURNTARGET=m128
+endif
+ifeq ($(MCU),atmega2561)
+BURNTARGET=m2561
+endif
+ifeq ($(BURNTARGET),)
+BURNTARGET=$(MCU)
+endif
+
+#BURNFLAGS=-dprog=stk500 -dserial=$(BURNPORT) -dspeed=115200 -dpart=$(BURNTARGET) --erase --upload if=$(TARG)
+
 AVRDUDE_PROGRAMMER = stk500v2
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARG)
