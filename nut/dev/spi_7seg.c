@@ -46,6 +46,7 @@
 #include <cfg/os.h>
 #include <cfg/arch.h>
 //#include <cfg/board.h>
+#include <compiler.h>
 #include <string.h>
 #include <stdlib.h>
 
