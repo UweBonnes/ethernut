@@ -443,8 +443,8 @@ void NutCustomInit(void)
     *(breg + 1) = 0x01; // Memory Mode 1, Banked Memory
 
     /* Assume 14.745600 MHz crystal, set to 115200bps */
-    outp(7, UBRR);
-    outp(7, UBRR1L);
+    outb(UBRR, 7);
+    outb(UBRR1L, 7);
 }
 /*
  * Arthernet CPLD initialization.
@@ -464,8 +464,8 @@ void NutCustomInit(void)
     *((volatile uint8_t *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
 
     /* Assume standard Arthernet1 with 16 MHz crystal, set to 38400 bps */
-    outp(25, UBRR);
-    outp(25, UBRR1L);
+    outb(UBRR, 25);
+    outb(UBRR1L, 25);
 }
 /*
 * XNUT board initialization
@@ -537,9 +537,9 @@ void NutCustomInit(void)
 #else
 {
     /* Assume standard Ethernut with 14.745600 MHz crystal, set to 115200bps */
-    outp(7, UBRR);
+    outb(UBRR, 7);
 #ifdef __AVR_ENHANCED__
-    outp(7, UBRR1L);
+    outb(UBRR1L, 7);
 #endif
 }
 #endif
@@ -584,7 +584,7 @@ void NutInit(void)
 
 #ifdef NUTDEBUG
     /* Note: The platform's default baudrate will be set in NutCustomInit() */
-    outp(BV(RXEN) | BV(TXEN), UCR);
+    outb(UCR, BV(RXEN) | BV(TXEN));
 #endif
 
 #ifdef NUT_INIT_BOARD
