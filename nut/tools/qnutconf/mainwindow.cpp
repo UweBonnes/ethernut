@@ -122,12 +122,30 @@ void MainWindow::on_actionOpen_triggered()
 	}
 }
 
-void MainWindow::on_actionSave_triggered()
+void MainWindow::saveConfig( QString filename /* = QString() */ )
 {
-	model->saveConfig( Settings::instance()->configFileName() );
+	if ( filename.isEmpty() )
+	{
+		if ( Settings::instance()->configFileName().isEmpty() )
+		{
+			filename = QFileDialog::getSaveFileName( this, tr("Save as..."), QString(), tr("Nut/OS Configuration (*.conf)") );
+			if ( filename.isEmpty() ) // User canceled
+				return;
+		}
+		else
+			filename = Settings::instance()->configFileName();
+	}
+	Settings::instance()->setConfigFileName( filename );
+	model->saveConfig( filename );
+	setWindowFilePath( filename );
 	setWindowModified( false );
 	updateWindowTitle();
 	statusBar()->showMessage(tr("File saved"), 2000);
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+	saveConfig( Settings::instance()->configFileName() );
 }
 
 void MainWindow::on_actionSave_as_triggered()
@@ -136,17 +154,25 @@ void MainWindow::on_actionSave_as_triggered()
 	if ( fileName.isEmpty() )
 		return;
 
-	Settings::instance()->setConfigFileName( fileName );
-	model->saveConfig( fileName );
-	setWindowFilePath( fileName );
-	setWindowModified( false );
-	updateWindowTitle();
-
-	statusBar()->showMessage(tr("File saved"), 2000);
+	saveConfig( fileName );
 }
 
 void MainWindow::on_actionExit_triggered()
 {
+	if ( isWindowModified() )
+	{
+		QMessageBox::StandardButton ret;
+		ret = QMessageBox::warning(this, QString(),
+			                             tr("The document has been modified.\n"
+			                                "Do you want to save your changes?"),
+			                             QMessageBox::Save | QMessageBox::Discard
+			                             | QMessageBox::Cancel);
+		if (ret == QMessageBox::Save)
+			saveConfig();
+		else if (ret == QMessageBox::Cancel)
+			return;
+	}
+
 	QApplication::quit();
 }
 
@@ -287,3 +313,4 @@ void MainWindow::documentModified()
 	setWindowModified(true);
 	updateWindowTitle();
 }
+

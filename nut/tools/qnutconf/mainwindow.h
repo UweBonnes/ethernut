@@ -54,6 +54,7 @@ public:
 public slots:
 	void on_actionOpen_triggered();
 	void on_actionSave_triggered();
+
 	void on_actionSave_as_triggered();
 	void on_actionExit_triggered();
 	void on_actionSettings_triggered();
@@ -67,6 +68,7 @@ private:
 	void writeSettings();
 	void updateWindowTitle();
 	void generateApplicationTree();
+	void saveConfig( QString filename = QString() );
 
 private slots:
 	void buildFinished( int exitCode );
