@@ -276,6 +276,34 @@ nutpro =
         sources = { "ftpd.c" }
     },
     {
+        name = "nutpro_smtp",
+        brief = "SMTP Client API",
+        description = "Provides email transfer via SMTP.",
+        requires = { "NET_TCP", "CRT_STREAM_READ" },
+        sources = 
+        { 
+            "smtpc.c"
+        },
+        options = 
+        {
+            {
+                macro = "MAX_MAIL_RCPTS",
+                brief = "Max. Number of Recipients",
+                description = "Maximum number of recipients for a single email envelope.",
+                type = "integer",
+                default = "4",
+                file = "include/cfg/smtp.h"
+            },
+            {
+                macro = "SMTP_BUFSIZ",
+                brief = "Size of the SMTP Buffer",
+                type = "integer",
+                default = "256",
+                file = "include/cfg/smtp.h"
+            }
+        }
+    },
+    {
         name = "nutpro_httpd",
         brief = "HTTP Server API",
         description = "Webserver helper routines. Provides simple authorization "..
