@@ -90,30 +90,32 @@ int UxmlNodeAddAttrib(UXML_NODE * node, char *name, char *value)
     UXML_ATTRIB *ap;
     size_t len;
 
-    if ((attr = malloc(sizeof(UXML_ATTRIB))) == NULL) {
-        return -1;
-    }
-    attr->xmla_next = NULL;
-    len = strlen(name) + 1;
-    attr->xmla_name = malloc(len);
-    memcpy(attr->xmla_name, name, len);
-    len = strlen(value) + 1;
-    attr->xmla_value = malloc(len);
-    memcpy(attr->xmla_value, value, len);
-
-    if (node->xmln_attribs == NULL) {
-        node->xmln_attribs = attr;
-    } else {
-        ap = node->xmln_attribs;
-        for (;;) {
-            if (ap->xmla_next == NULL) {
-                ap->xmla_next = attr;
-                break;
+    attr = malloc(sizeof(UXML_ATTRIB));
+    if (attr) {
+        attr->xmla_next = NULL;
+        attr->xmla_name = strdup(name);
+        if (attr->xmla_name) {
+            attr->xmla_value = strdup(value);
+            if (attr->xmla_value) {
+                if (node->xmln_attribs == NULL) {
+                    node->xmln_attribs = attr;
+                } else {
+                    ap = node->xmln_attribs;
+                    for (;;) {
+                        if (ap->xmla_next == NULL) {
+                            ap->xmla_next = attr;
+                            break;
+                        }
+                        ap = ap->xmla_next;
+                    }
+                }
+                return 0;
             }
-            ap = ap->xmla_next;
+            free(attr->xmla_name);
         }
+        free(attr);
     }
-    return 0;
+    return -1;
 }
 
 static void UxmlNodeDestroy(UXML_NODE * node)
