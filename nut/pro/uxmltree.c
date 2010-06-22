@@ -88,7 +88,6 @@ int UxmlNodeAddAttrib(UXML_NODE * node, char *name, char *value)
 {
     UXML_ATTRIB *attr;
     UXML_ATTRIB *ap;
-    size_t len;
 
     attr = malloc(sizeof(UXML_ATTRIB));
     if (attr) {
