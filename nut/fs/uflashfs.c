@@ -1167,6 +1167,7 @@ static int UFlashFileRename(NUTDEVICE * dev, CONST char *old_path, CONST char *n
     blknum_t lbe;
     blknum_t b;
     blknum_t b_old;
+    uint_fast8_t u;
     ENTRYHEAD eh;
     UFLASHVOLUME *vol;
     BLOCKHEAD bh;
@@ -1197,34 +1198,51 @@ static int UFlashFileRename(NUTDEVICE * dev, CONST char *old_path, CONST char *n
 #endif
     eh.eh_nlen = strlen(new_path);
 
-    /* Allocate a new entry block. */
+    /* Exclusive access from here. */
     NutEventWait(&vol->vol_mutex, 0);
+
+    /* Allocate a new entry block. */
     b = PhysBlkAllocate(vol, 0);
     if (b >= vol->vol_blocks) {
+        /* No more blocks available. */
         NutEventPost(&vol->vol_mutex);
         return -1;
     }
-    b_old = vol->vol_l2p[lbe];
 
+    /* Replace the physical block in the translation table. */
+    b_old = vol->vol_l2p[lbe];
     vol->vol_l2p[lbe] = b;
 
-    /* Erase the new block and copy the old entry to the new block. */
+    /* Keep the footer and erase the pages of the new block, except the 
+       first. The first page of unallocated blocks is already erased. */
     FlashReadBlockFoot(vol->vol_ifc, b, &bf);
     FlashEraseBlockData(vol->vol_ifc, b);
-    FlashUnitCopy(vol->vol_ifc, b_old, b, 0);
 
-    /* Update block and entry header. */
-    FlashReadBlockHead(vol->vol_ifc, b, &bh);
-    FlashWriteBlockHead(vol->vol_ifc, b, &bh);
-    FlashWriteEntry(vol->vol_ifc, b, &eh, new_path);
-    FlashUnitCommit(vol->vol_ifc, b, 0);
+    /* Copy all pages of the entry block. */
+    for (u = 0; u < UFLASH_BLOCK_UNITS; u++) {
+        FlashUnitCopy(vol->vol_ifc, b_old, b, u);
+        /* If this is the first unit, write a new version of the header. */
+        if (u == 0) {
+            /* Separately copy the block header, because this will 
+               increment the block's version number. */
+            FlashReadBlockHead(vol->vol_ifc, b, &bh);
+            FlashWriteBlockHead(vol->vol_ifc, b, &bh);
 
-    /* Update block footer. */
-    FlashWriteBlockFoot(vol->vol_ifc, b, &bf);
-    FlashUnitCommit(vol->vol_ifc, b, UFLASH_BLOCK_UNITS - 1);
+            /* Fill in the new path name. */
+            FlashWriteEntry(vol->vol_ifc, b, &eh, new_path);
+        }
+        /* If this is the last unit, write back an updated footer. */
+        else if (u == UFLASH_BLOCK_UNITS - 1) {
+            FlashWriteBlockFoot(vol->vol_ifc, b, &bf);
+        }
+        /* Commit the unit. */
+        FlashUnitCommit(vol->vol_ifc, b, u);
+    }
 
-    /* Remove the old entry. */
+    /* Finally remove the old entry. */
     FlashEraseEntry(vol->vol_ifc, b_old);
+
+    /* Release exclusive access. */
     NutEventPost(&vol->vol_mutex);
 
     return 0;
