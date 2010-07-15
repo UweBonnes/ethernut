@@ -159,8 +159,8 @@ static INLINE void UART_RTS_OFF(void) { GPIO_SET_HI(UART_RTS_BIT); }
 
 #undef UART_RTS_ON
 #undef UART_RTS_OFF
-#define UART_RTS_ON()   cbi(NPL_RSCR, NPL_RSRTS_BIT)
-#define UART_RTS_OFF()  sbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_RTS_ON()   sbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_RTS_OFF()  cbi(NPL_RSCR, NPL_RSRTS_BIT)
 
 #endif
 
