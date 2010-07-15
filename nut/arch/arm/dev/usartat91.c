@@ -127,8 +127,13 @@ static INLINE void UART_HDX_TX(void) { GPIO_SET_HI(UART_HDX_BIT); }
 
 #undef UART_HDX_RX
 #undef UART_HDX_TX
-#define UART_HDX_RX()   cbi(NPL_RSCR, NPL_RSRTS_BIT)
-#define UART_HDX_TX()   sbi(NPL_RSCR, NPL_RSRTS_BIT)
+#if US_ID == US1_ID
+#define UART_HDX_RX()   if (inr(NPL_RSCR) & NPL_RSUS1P) sbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_HDX_TX()   if (inr(NPL_RSCR) & NPL_RSUS1P) cbi(NPL_RSCR, NPL_RSRTS_BIT)
+#else
+#define UART_HDX_RX()   if ((inr(NPL_RSCR) & NPL_RSUS1P) == 0) sbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_HDX_TX()   if ((inr(NPL_RSCR) & NPL_RSUS1P) == 0) cbi(NPL_RSCR, NPL_RSRTS_BIT)
+#endif
 
 #endif /* UART_HDX_BIT */
 
@@ -159,9 +164,13 @@ static INLINE void UART_RTS_OFF(void) { GPIO_SET_HI(UART_RTS_BIT); }
 
 #undef UART_RTS_ON
 #undef UART_RTS_OFF
-#define UART_RTS_ON()   sbi(NPL_RSCR, NPL_RSRTS_BIT)
-#define UART_RTS_OFF()  cbi(NPL_RSCR, NPL_RSRTS_BIT)
-
+#if US_ID == US1_ID
+#define UART_RTS_ON()   if (inr(NPL_RSCR) & NPL_RSUS1P) sbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_RTS_OFF()  if (inr(NPL_RSCR) & NPL_RSUS1P) cbi(NPL_RSCR, NPL_RSRTS_BIT)
+#else
+#define UART_RTS_ON()   if ((inr(NPL_RSCR) & NPL_RSUS1P) == 0) sbi(NPL_RSCR, NPL_RSRTS_BIT)
+#define UART_RTS_OFF()  if ((inr(NPL_RSCR) & NPL_RSUS1P) == 0) cbi(NPL_RSCR, NPL_RSRTS_BIT)
+#endif
 #endif
 
 /*
@@ -1235,17 +1244,16 @@ static int At91UsartSetFlowControl(uint32_t flags)
     /*
      * Set RTS control mode.
      */
+    UART_RTS_PIN_ENABLE();
+    UART_RTS_ON();
     if (flags & USART_MF_RTSCONTROL) {
         rts_control = 1;
-        UART_RTS_PIN_ENABLE();
-        UART_RTS_OFF();
 #if USE_BUILT_IN_HARDWARE_HANDSHAKE
         outr(USARTn_BASE + US_MR_OFF, mr | US_MODE_HWHANDSHAKE);
         cts_sense = 1;
 #endif
     } else if (rts_control) {
         rts_control = 0;
-        UART_RTS_ON();
 #if USE_BUILT_IN_HARDWARE_HANDSHAKE
         outr(USARTn_BASE + US_MR_OFF, mr);
         cts_sense = 0;
@@ -1355,9 +1363,7 @@ static void At91UsartRxStart(void)
     }
 
     /* Enable RTS. */
-    if (rts_control) {
-        UART_RTS_ON();
-    }
+    UART_RTS_ON();
     /* Enable receive interrupts. */
     outr(USARTn_BASE + US_IER_OFF, US_RXRDY);
 }
