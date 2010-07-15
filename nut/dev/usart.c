@@ -242,6 +242,10 @@ int UsartRead(NUTFILE * fp, void *buffer, int size)
         if (NutEventWait(&rbf->rbf_que, dcb->dcb_rtimeout)) {
             return 0;
         }
+        /* Device closed by another thread. */
+        if (rbf->rbf_siz == 0) {
+            return -1;
+        }
     }
 
     /*
@@ -529,6 +533,8 @@ int UsartClose(NUTFILE * fp)
     free(fp);
     UsartResetBuffer(&dcb->dcb_tx_rbf, 0, 0, 0);
     UsartResetBuffer(&dcb->dcb_rx_rbf, 0, 0, 0);
+    /* Wake-up all threads waiting for incoming data. */
+    NutEventBroadcast(&dcb->dcb_rx_rbf.rbf_que);
 
     return 0;
 }
