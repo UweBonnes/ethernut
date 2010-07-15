@@ -530,6 +530,7 @@ int UsartClose(NUTFILE * fp)
     if (fp == 0 || fp == NUTFILE_EOF)
         return -1;
 
+    (*dcb->dcb_set_status) (UART_RTSDISABLED);
     free(fp);
     UsartResetBuffer(&dcb->dcb_tx_rbf, 0, 0, 0);
     UsartResetBuffer(&dcb->dcb_rx_rbf, 0, 0, 0);
