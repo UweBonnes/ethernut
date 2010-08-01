@@ -1018,9 +1018,49 @@ nutarch_arm =
                 choices = mcu_32bit_choice,
                 file = "include/cfg/arch/armpio.h"
             },
-    		--
-    		--  Selection of display control lines
-    		--
+            --
+            --  Selection of serial interface parameters
+            --
+            {
+                macro = "LCD_CLK_PIO_ID",
+                brief = "SPI Clock Port",
+                description = "Port ID of the SPI clock line.\n",
+                requires = { "LCD_SPI" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_CLK_BIT",
+                brief = "SPI Clock Bit",
+                description = "Port bit of the SPI clock line. ",
+                requires = { "LCD_SPI" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_MOSI_PIO_ID",
+                brief = "SPI Clock Port",
+                description = "Port ID of the SPI MOSI line.\n",
+                requires = { "LCD_SPI" },
+                type = "enumerated",
+                choices = at91_pio_id_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            {
+                macro = "LCD_MOSI_BIT",
+                brief = "SPI MOSI Bit",
+                description = "Port bit of the SPI clock line. ",
+                requires = { "LCD_SPI" },
+                type = "enumerated",
+                choices = mcu_32bit_choice,
+                file = "include/cfg/arch/armpio.h"
+            },
+            
+            --
+            --  Selection of display control lines
+            --
             {
                 macro = "LCD_EN_PIO_ID",
                 brief = "LCD Enable Port",
