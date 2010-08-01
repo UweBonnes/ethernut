@@ -261,8 +261,8 @@
 
 #if defined(LCD_HD44780) || defined(LCD_KS0066) || defined(LCD_KS0073)
 #include "hd44780_at91.c"
-#elif defined(LCD_ST7063)
-#include "st7063_at91.c"
+#elif defined(LCD_ST7036)
+#include "st7036_at91.c"
 #endif
 
 /*@}*/
