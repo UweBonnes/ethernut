@@ -111,6 +111,14 @@
  */
 /*@{*/
 
+#ifndef LCD_SHORT_DELAY
+#define LCD_SHORT_DELAY 100
+#endif
+
+#ifndef LCD_LONG_DELAY
+#define LCD_LONG_DELAY  1000
+#endif
+
 /*!
  * \brief Wait until controller will be ready again
  *
