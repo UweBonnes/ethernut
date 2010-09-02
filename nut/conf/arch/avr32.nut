@@ -1,5 +1,7 @@
 --
--- Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
+-- Copyright (C) 2001-2010 by egnite Software GmbH
+--
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
 --    contributors may be used to endorse or promote products derived
 --    from this software without specific prior written permission.
 --
--- THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 -- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 -- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
--- SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+-- COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 -- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 -- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 -- OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -29,6 +31,7 @@
 --
 -- For additional information see http://www.ethernut.de/
 --
+
 
 -- AVR32 Architecture
 --
@@ -46,90 +49,186 @@ nutarch_avr32 =
         sources = { "avr32/init/crtavr32.S" },
         targets = { "avr32/init/crtavr32.o" },
         requires = { "TOOL_CC_AVR32", "TOOL_GCC" },
+    },
+    
+    --
+    -- Power Manager
+    --
+    {
+        name = "nutarch_avr32_pm",
+        brief = "Power Manager",
+        requires = { "HW_MCU_AVR32" },
+        sources = { "avr32/dev/pm.c" },
         options =
         {
-            {
-                macro = "IRQ_STACK_SIZE",
-                brief = "IRQ Stack Size",
-                description = "Number of bytes reserved for interrupt stack\n"..
-                              "Default is 512 (128 words).",
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "FIQ_STACK_SIZE",
-                brief = "FIQ Stack Size",
-                description = "Number of bytes reserved for fast interrupt stack\n"..
-                              "Default is 256 (64 words).",
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "ABT_STACK_SIZE",
-                brief = "ABT Stack Size",
-                description = "Number of bytes reserved for abort exception stack\n"..
-                              "Default is 128 (32 words).",
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
-            {
-                macro = "UND_STACK_SIZE",
-                brief = "UND Stack Size",
-                description = "Number of bytes reserved for undefined exception stack\n"..
-                              "Default is 128 (32 words).",
-                flavor = "booldata",
-                file = "include/cfg/memory.h"
-            },
             {
                 macro = "OSC0_VAL",
                 brief = "Osc0 Frequency",
                 description = "The value of the Oscilator 0 (crystal) in Hz connected to the CPU.\n\n"..
-                              "Default values are\n"..
+                              "Default values are:\n"..
                               "EVK1100: 12000000\n"..
-                              "EVK1101: 12000000\n",
-                flavor = "booldata",
-                file = "include/cfg/clock.h"
-            },
-            {
-                macro = "PLL_DIV_VAL",
-                brief = "PLL Divider",
-                description = "Make sure to read the datasheet before modifying this value.\n\n"..
-                              "The main clock (crystal) will be divided by this value "..
-                              "and multiplied by the PLL multiplier value plus 1 to "..
-                              "generate the PLL output frequency.\n\n"..
-                              "Default values are\n"..
-                              "SAM7X: 14\n"..
-                              "SAM7S: 14\n"..
-                              "SAM7SE: 14\n"..
-                              "SAM9260: 14\n",
-                requires = { "HW_PLL_AVR32" },
+                              "EVK1101: 12000000\n"..
+                              "EVK1104: 12000000\n"..
+                              "EVK1105: 12000000\n",
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
             {
                 macro = "PLL_MUL_VAL",
-                brief = "PLL Multiplier",
+                brief = "PLL Multiply Factor",
                 description = "Make sure to read the datasheet before modifying this value.\n\n"..
-                              "The main clock (crystal) will be divided by the PLL "..
-                              "divider value and multiplied by the specified multiplier "..
-                              " value plus 1 to generate the PLL output frequency.\n\n"..
-                              "Default values are\n"..
-                              "SAM7X: 72\n"..
-                              "SAM7S: 72\n"..
-                              "SAM7SE: 72\n"..
-                              "SAM9260: 72\n",
+                              "These bitfields determine the ratio of the PLL output frequency "..
+                              "(voltage controlled oscillator frequency fVCO) to the source "..
+                              "oscillator frequency:\n\n"..
+                              "fVCO = (PLLMUL+1)/(PLLDIV) x fOSC if PLLDIV > 0.\n".. 
+                              "fVCO = 2*(PLLMUL+1) x fOSC if PLLDIV = 0\n"..
+                              "Note that the MUL field cannot be equal to 0 or 1, or the behavior of the PLL will be undefined.\n"..
+                              "Possible values of PLLMUL are 2...15\n",
                 requires = { "HW_PLL_AVR32" },
+                default = "9",
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
             {
-                macro = "MASTER_CLOCK_PRES",
-                brief = "Master Clock Prescaler",
-                description = "The selected clock will be divided by this value to generate "..
-                              "the master clock. Possible values are 1, 2 (default), 4, 8, 16, 32 or 64.",
+                macro = "PLL_DIV_VAL",
+                brief = "PLL Division Factor",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "These bitfields determine the ratio of the PLL output frequency "..
+                              "(voltage controlled oscillator frequency fVCO) to the source "..
+                              "oscillator frequency:\n\n"..
+                              "fVCO = (PLLMUL+1)/(PLLDIV) x fOSC if PLLDIV > 0.\n".. 
+                              "fVCO = 2*(PLLMUL+1) x fOSC if PLLDIV = 0\n"..
+                              "Note that the MUL field cannot be equal to 0 or 1, or the behavior of the PLL will be undefined.\n"..
+                              "Possible values of PLLDIV are 0...15\n",
+                requires = { "HW_PLL_AVR32" },
+                default = "1",
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
+            {
+                macro = "PLL_FREQ_VAL",
+                brief = "Select the VCO frequency range",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "Select the VCO frequency range:\n\n"..
+                              "0: 160MHz < fvco < 240MHz\n"..
+                              "1: 80MHz < fvco < 180MHz",
+                requires = { "HW_PLL_AVR32" },
+                default = "1",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_DIV2_VAL",
+                brief = "Enable the extra output divider",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "Enable the extra output divider:\n\n"..
+                              "0: fPLL = fvco\n"..
+                              "1: fPLL = fvco / 2",
+                requires = { "HW_PLL_AVR32" },
+                default = "1",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_WBWD_VAL",
+                brief = "Disable the Wide-Bandwidth mode",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "Disable the Wide-Bandwidth mode (Wide-Bandwidth mode allows a faster startup time and out-of-lock time):\n\n"..
+                              "0: Wide Bandwidth Mode enabled\n"..
+                              "1: Wide Bandwidth Mode disabled",
+                requires = { "HW_PLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_PBADIV_VAL",
+                brief = "PBA Division and Clock Select",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "PBA Division and Clock Select:\n\n"..
+                              "PBADIV = 0: PBA clock equals main clock\n"..
+                              "PBADIV = 1: PBA clock equals main clock divided by 2^(PBASEL+1)",
+                requires = { "HW_PLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_PBASEL_VAL",
+                brief = "PBA Division and Clock Select",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "PBA Division and Clock Select:\n\n"..
+                              "PBADIV = 0: PBA clock equals main clock\n"..
+                              "PBADIV = 1: PBA clock equals main clock divided by 2^(PBASEL+1)",
+                requires = { "HW_PLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_PBBDIV_VAL",
+                brief = "PBB Division and Clock Select",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "PBB Division and Clock Select:\n\n"..
+                              "PBBDIV = 0: PBB clock equals main clock\n"..
+                              "PBBDIV = 1: PBB clock equals main clock divided by 2^(PBBSEL+1)",
+                requires = { "HW_PLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_PBBSEL_VAL",
+                brief = "PBB Division and Clock Select",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "PBB Division and Clock Select:\n\n"..
+                              "PBBDIV = 0: PBB clock equals main clock\n"..
+                              "PBBDIV = 1: PBB clock equals main clock divided by 2^(PBBSEL+1)",
+                requires = { "HW_PLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_HSBDIV_VAL",
+                brief = "HSB Division and Clock Select",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "For the AT32UC3B, HSBDIV always equals CPUDIV, and HSBSEL always "..
+                              "equals CPUSEL, as the HSB clock is always equal to the CPU clock.\n\n"..
+                              "HSB Division and Clock Select:\n\n"..
+                              "HSBDIV = 0: CPU clock equals main clock\n"..
+                              "HSBDIV = 1: CPU clock equals main clock divided by 2^(HSBSEL+1)",
+                requires = { "HW_PLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "PLL_HSBSEL_VAL",
+                brief = "HSB Division and Clock Select",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "For the AT32UC3B, HSBDIV always equals CPUDIV, and HSBSEL always "..
+                              "equals CPUSEL, as the HSB clock is always equal to the CPU clock.\n\n"..
+                              "HSB Division and Clock Select:\n\n"..
+                              "HSBDIV = 0: CPU clock equals main clock\n"..
+                              "HSBDIV = 1: CPU clock equals main clock divided by 2^(HSBSEL+1)",
+                requires = { "HW_PLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+        },
+    },
+    
+    --
+    -- SDRAM Controler
+    --
+    {
+        name = "nutarch_avr32_sdramc",
+        brief = "SDRAM Controler",
+        requires = { "HW_MCU_AVR32", "HW_SDRAMC" },
+        options =
+        {
             {
                 macro = "NUTMEM_SDRAM_BASE",
                 brief = "SDRAM Base Address",
@@ -142,17 +241,10 @@ nutarch_avr32 =
                 file = "include/cfg/memory.h"
             },
             {
-                macro = "NUTMEM_SDRAM_BANKS",
-                brief = "SDRAM Banks",
-                requires = { "HW_SDRAM" },
-                default = "4",
-                file = "include/cfg/memory.h"
-            },
-            {
                 macro = "NUTMEM_SDRAM_COLBITS",
                 brief = "SDRAM Column Address Bits",
                 requires = { "HW_SDRAM" },
-                default = "10",
+                default = "9",
                 file = "include/cfg/memory.h"
             },
             {
@@ -160,6 +252,20 @@ nutarch_avr32 =
                 brief = "SDRAM Row Address Bits",
                 requires = { "HW_SDRAM" },
                 default = "13",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_BANKS",
+                brief = "SDRAM Banks",
+                requires = { "HW_SDRAM" },
+                default = "2",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "NUTMEM_SDRAM_CASLAT",
+                brief = "SDRAM CAS Latency",
+                requires = { "HW_SDRAM" },
+                default = "2",
                 file = "include/cfg/memory.h"
             },
             {
@@ -172,52 +278,45 @@ nutarch_avr32 =
                 file = "include/cfg/memory.h"
             },
             {
-                macro = "NUTMEM_SDRAM_CASLAT",
-                brief = "SDRAM CAS Latency",
-                requires = { "HW_SDRAM" },
-                default = "2",
-                file = "include/cfg/memory.h"
-            },
-            {
                 macro = "NUTMEM_SDRAM_TWR",
                 brief = "SDRAM Write Recovery Cycles",
                 requires = { "HW_SDRAM" },
-                default = "2",
+                default = "14",
                 file = "include/cfg/memory.h"
             },
             {
                 macro = "NUTMEM_SDRAM_TRC",
                 brief = "SDRAM Row Cycle Delay",
                 requires = { "HW_SDRAM" },
-                default = "4",
+                default = "60",
                 file = "include/cfg/memory.h"
             },
             {
                 macro = "NUTMEM_SDRAM_TRP",
                 brief = "SDRAM Row Precharge Delay",
                 requires = { "HW_SDRAM" },
-                default = "4",
+                default = "15",
                 file = "include/cfg/memory.h"
             },
             {
                 macro = "NUTMEM_SDRAM_TRCD",
                 brief = "SDRAM Row to Column Delay",
                 requires = { "HW_SDRAM" },
-                default = "2",
+                default = "15",
                 file = "include/cfg/memory.h"
             },
             {
                 macro = "NUTMEM_SDRAM_TRAS",
                 brief = "SDRAM Active to Precharge Delay",
                 requires = { "HW_SDRAM" },
-                default = "3",
+                default = "37",
                 file = "include/cfg/memory.h"
             },
             {
                 macro = "NUTMEM_SDRAM_TXSR",
                 brief = "SDRAM Self Refresh to Active Delay",
                 requires = { "HW_SDRAM" },
-                default = "4",
+                default = "67",
                 file = "include/cfg/memory.h"
             },
             {
@@ -308,8 +407,6 @@ nutarch_avr32 =
             "avr32/dev/ih_uart1.c",
 			"avr32/dev/ih_rtc.c",
             "avr32/dev/ih_macb.c",
-            "avr32/dev/ih_spi0.c",
-            "avr32/dev/ih_spi1.c",
             "avr32/dev/ih_irq0.c",
             "avr32/dev/ih_irq1.c",
             "avr32/dev/ih_irq2.c",
@@ -322,7 +419,6 @@ nutarch_avr32 =
             "avr32/dev/ihndlr.c",
         },
     },
-
 
     --
     -- Device Drivers
@@ -343,7 +439,6 @@ nutarch_avr32 =
         sources = 
 		{ 
 			"avr32/dev/debug.c",
-			"avr32/dev/pm.c",
         },
     },
     {
@@ -510,10 +605,11 @@ nutarch_avr32 =
     --
     {
         name = "nutarch_avr32_gpio",
-        brief = "AVR32 GPIO",
+        brief = "GPIO Controller",
         description = "Generic port I/O API.",
         requires = { "HW_MCU_AVR32" },
         sources = { 
+          "avr32/dev/gpio_nutos.c",
           "avr32/dev/gpio.c",
         },
     },
@@ -526,16 +622,17 @@ nutarch_avr32 =
         sources = { "avr32/dev/reset.c" },
     },
     {
-        name = "nutarch_avr32_spibus",
-        brief = "SPI Bus Controller",
-        description = "Supports up to two bus controllers.\n\n",
-        requires = { "HW_SPI_AVR32" },
+        name = "nutarch_avr32_spibus0",
+        brief = "SPI0 Bus Controller",
+        description = "Hardware specific SPI driver. Implements hardware "..
+                      "functions for the SPI0 bus.",
+        requires = { "HW_SPI_AVR32_0" },
         provides = { "SPIBUS_CONTROLLER" },
         sources = 
         { 
             "avr32/dev/spibus.c",
             "avr32/dev/spibus0.c",
-            "avr32/dev/spibus1.c"
+            "avr32/dev/ih_spi0.c",
         },
         options =
         {
@@ -624,6 +721,22 @@ nutarch_avr32 =
                 flavor = "integer",
                 file = "include/cfg/spi.h"
             },
+        },
+    },
+    {
+        name = "nutarch_avr32_spibus1",
+        brief = "SPI1 Bus Controller",
+        description = "Hardware specific SPI driver. Implements hardware "..
+                      "functions for the SPI1 bus.",
+        requires = { "HW_SPI_AVR32_1" },
+        provides = { "SPIBUS_CONTROLLER" },
+        sources = 
+        { 
+            "avr32/dev/spibus1.c",
+            "avr32/dev/ih_spi1.c",
+        },
+        options =
+        {
             {
                 macro = "SPIBUS1_POLLING_MODE",
                 brief = "Polling Mode (Second Controller)",
@@ -713,7 +826,7 @@ nutarch_avr32 =
     },
     {
         name = "nutarch_avr32_flashc",
-        brief = "AVR32 Embedded Flash Controller",
+        brief = "Flash Controller",
         description = "Routines for reading and writing embedded flash memory.",
         requires = { "HW_EFC_AVR32" },
         sources = { "avr32/dev/flashc.c" },

@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,8 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
+
 
 /*
  * $Log: nutinit.c,v $
@@ -41,9 +43,15 @@
 #include <cfg/arch.h>
 #include <cfg/memory.h>
 #include <cfg/os.h>
+#include <sys/heap.h>
+#include <sys/confos.h>
+#include <sys/thread.h>
+#include <sys/timer.h>
+
 #include <arch/avr32.h>
 
 #include <arch/avr32/pm.h>
+#include <arch/avr32/ihndlr.h>
 
 
 /*!
@@ -63,9 +71,18 @@
 
 extern void *__heap_start;
 
+extern void *__ram_start__;
+extern void *__ram_size__;
+
 /*!
 * \brief Last memory address.
 */
+#undef NUTMEM_START
+#define NUTMEM_START ((uint32_t)&__ram_start__)
+
+#undef NUTMEM_SIZE
+#define NUTMEM_SIZE ((uint32_t)&__ram_size__)
+
 #define NUTMEM_END (uptr_t)(NUTMEM_START + NUTMEM_SIZE - 1U)
 extern void *__heap_start;
 
@@ -80,8 +97,17 @@ extern void main(void *);
 #endif
 
 
-// Defined in ihndlr.c
-extern void IrqInit(void);
+typedef union {
+    unsigned long fcr;
+    avr32_flashc_fcr_t FCR;
+} u_avr32_flashc_fcr_t;
+
+static void flashc_set_wait_state(unsigned int wait_state)
+{
+    u_avr32_flashc_fcr_t u_avr32_flashc_fcr = { AVR32_FLASHC.fcr };
+    u_avr32_flashc_fcr.FCR.fws = wait_state;
+    AVR32_FLASHC.fcr = u_avr32_flashc_fcr.fcr;
+}
 
 /*!
  * \brief Idle thread. 
@@ -92,23 +118,21 @@ extern void IrqInit(void);
  */
 THREAD(NutIdle, arg)
 {
-
-	// Init INTC
-	IrqInit();
+    /* Init INTC */
+    init_interrupts();
 
     /* Initialize system timers. */
     NutTimerInit();
 
-	/* Read OS configuration from non-volatile memory. We can't do this
-	** earlier, because the low level driver may be interrupt driven. */
-	NutLoadConfig();
+    /* Read OS configuration from non-volatile memory. We can't do this
+     ** earlier, because the low level driver may be interrupt driven. */
+    NutLoadConfig();
 
-	/* Create the main application thread. Watch this carefully when
-	** changing compilers and compiler versions. Some handle main()
-	** in a special way, like setting the stack pointer and other
-	** weird stuff that may break this code. */
-	NutThreadCreate("main", main, 0, 
-		(NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    /* Create the main application thread. Watch this carefully when
+     ** changing compilers and compiler versions. Some handle main()
+     ** in a special way, like setting the stack pointer and other
+     ** weird stuff that may break this code. */
+    NutThreadCreate("main", main, 0, (NUT_THREAD_MAINSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 
     /*
      * Run in an idle loop at the lowest priority. We can still
@@ -131,102 +155,95 @@ THREAD(NutIdle, arg)
  */
 void NutInit(void)
 {
-	pm_switch_to_osc0(&AVR32_PM, OSC0_VAL, AVR32_PM_OSCCTRL0_STARTUP_2048_RCOSC);
+    uint32_t CPUFrequency;
 
-	// Configure Clocks & Flash wait States 
-#if defined(PLL_MUL_VAL) || defined(PLL_DIV_VAL)
-	pm_pll_setup(&AVR32_PM,
-		0,   // unsigned int pll
-		PLL_MUL_VAL,   // unsigned int mul
-		PLL_DIV_VAL / 2,   // unsigned int div, Sel Osc0/PLL0 or Osc1/Pll1
-		0,   // unsigned int osc
-		16); // unsigned int lockcount
+    /* Switch main clock to Oscillator 0 */
+    pm_switch_to_osc0(&AVR32_PM, OSC0_VAL, AVR32_PM_OSCCTRL0_STARTUP_2048_RCOSC);
 
-# if PLL_DIV_VAL > 1
-	// set PLL options to run half speed.
-	pm_pll_set_option(&AVR32_PM, 
-		0,  // unsigned int pll
-		0,  // unsigned int  pll_freq
-		1,  // unsigned int  pll_div2
-		0); // unsigned int  pll_wbwdisable
-# endif
+    pm_pll_setup(&AVR32_PM, 0,  /* use PLL0     */
+                 PLL_MUL_VAL,   /* MUL          */
+                 PLL_DIV_VAL,   /* DIV          */
+                 0,             /* Oscillator 0 */
+                 16);           /* lockcount in main clock for the PLL wait lock */
 
-	// Enable PLL0
-	pm_pll_enable(&AVR32_PM,0);
-	// Wait for PLL0 locked
-	pm_wait_for_pll0_locked(&AVR32_PM);
+    /*
+     * This function will set a PLL option.
+     *
+     * pm             Base address of the Power Manager (i.e. &AVR32_PM)
+     * pll            PLL number 0
+     * pll_freq       Set to 1 for VCO frequency range 80-180MHz,
+     *                set to 0 for VCO frequency range 160-240Mhz.
+     * pll_div2       Divide the PLL output frequency by 2 (this settings does
+     *                not change the FVCO value)
+     * pll_wbwdisable 1 Disable the Wide-Bandwidth Mode (Wide-Bandwidth mode
+     *                allow a faster startup time and out-of-lock time). 0 to
+     *                enable the Wide-Bandwidth Mode.
+     */
+    pm_pll_set_option(&AVR32_PM, 0,     /* use PLL0 */
+                      PLL_FREQ_VAL,     /* pll_freq */
+                      PLL_DIV2_VAL,     /* pll_div2 */
+                      PLL_WBWD_VAL);    /* pll_wbwd */
 
-# ifndef PLL_MUL_VAL
-#  define PLL_MUL_VAL 0
-# endif
-# ifndef PLL_DIV_VAL
-#  define PLL_DIV_VAL 1
-# endif
-# define F_CPU ((PLL_MUL_VAL+1)/PLL_DIV_VAL*OSC0_VAL)
+    /* Enable PLL0 */
+    pm_pll_enable(&AVR32_PM, 0);
 
-	// Scale down peripheral clocks not to exceed their maximum ratings
-	pm_cksel(&AVR32_PM,
-#if F_CPU > AVR32_PM_PBA_MAX_FREQ
-	1, // pbadiv
-	F_CPU / 2 / AVR32_PM_PBA_MAX_FREQ, // pbasel
-#else
-	0, 0,
-#endif
-#if F_CPU > AVR32_PM_PBB_MAX_FREQ
-	1, // pbbdiv
-	F_CPU / 2 / AVR32_PM_PBA_MAX_FREQ, // pbbsel
-#else
-	0, 0,
-#endif
-#if F_CPU > AVR32_PM_HSB_MAX_FREQ
-	1, // hsbdiv
-	F_CPU / 2 / AVR32_PM_HSB_MAX_FREQ // hsbsel
-#else
-	0, 0
-#endif
-	);
+    /* Wait for PLL0 locked */
+    pm_wait_for_pll0_locked(&AVR32_PM);
 
+    /* Create PBA, PBB and HSB clock */
+    pm_cksel(&AVR32_PM, PLL_PBADIV_VAL, /* pbadiv */
+             PLL_PBASEL_VAL,    /* pbasel */
+             PLL_PBBDIV_VAL,    /* pbbdiv */
+             PLL_PBBSEL_VAL,    /* pbbsel */
+             PLL_HSBDIV_VAL,    /* hsbdiv */
+             PLL_HSBSEL_VAL);   /* hsbsel */
 
-# if F_CPU > AVR32_FLASHC_FWS_0_MAX_FREQ
-	AVR32_FLASHC.FCR.fws = 1;
-# endif
+    /* Calculate CPU frequency */
+    CPUFrequency = (OSC0_VAL * (PLL_MUL_VAL + 1)) / PLL_DIV_VAL;
+    CPUFrequency = (PLL_DIV2_VAL == 0) ? CPUFrequency : CPUFrequency >> 1;
 
-	pm_switch_to_clock(&AVR32_PM, AVR32_PM_MCCTRL_MCSEL_PLL0);
+    if (PLL_HSBDIV_VAL > 0) {
+        CPUFrequency = CPUFrequency >> (PLL_HSBSEL_VAL + 1);
+    }
 
-#else
-# define F_CPU OSC0_VAL
-# if F_CPU > AVR32_FLASHC_FWS_0_MAX_FREQ
-	AVR32_FLASHC.FCR.fws = 1;
-# endif
-#endif
+    if (CPUFrequency > AVR32_FLASHC_FWS_0_MAX_FREQ) {
+        /*
+         * Set one wait-state (WS) for the flash controller if the 
+         * HSB/CPU is more than AVR32_FLASHC_FWS_0_MAX_FREQ.
+         */
+        flashc_set_wait_state(1);
+    }
+
+    /* Switch PLL to main clock */
+    pm_switch_to_clock(&AVR32_PM, AVR32_PM_MCSEL_PLL0);
 
 #ifdef EARLY_STDIO_DEV
-	/* We may optionally initialize stdout as early as possible.
-	** Be aware, that no heap is available and no threads are 
-	** running. We need a very basic driver here, which won't
-	** use interrupts or call malloc, NutEventXxx, NutSleep etc. */
-	{
-		extern NUTDEVICE EARLY_STDIO_DEV;
-		static struct __iobuf early_stdout;
-		/* Initialize the output device. */
-		EARLY_STDIO_DEV.dev_init(&EARLY_STDIO_DEV);
-		/* Assign a static iobuf. */
-		stdout = &early_stdout;
-		/* Open the device. */
-		stdout->iob_fd = (int)EARLY_STDIO_DEV.dev_open(&EARLY_STDIO_DEV, "", 0, 0);
-		/* Set the mode. No idea if this is required. */
-		stdout->iob_mode = _O_WRONLY | _O_CREAT | _O_TRUNC;
-		/* A first trial. */
-		puts("\nStarting Nut/OS");
-	}
+    /* We may optionally initialize stdout as early as possible.
+     ** Be aware, that no heap is available and no threads are 
+     ** running. We need a very basic driver here, which won't
+     ** use interrupts or call malloc, NutEventXxx, NutSleep etc. */
+    {
+        extern NUTDEVICE EARLY_STDIO_DEV;
+        static struct __iobuf early_stdout;
+        /* Initialize the output device. */
+        EARLY_STDIO_DEV.dev_init(&EARLY_STDIO_DEV);
+        /* Assign a static iobuf. */
+        stdout = &early_stdout;
+        /* Open the device. */
+        stdout->iob_fd = (int) EARLY_STDIO_DEV.dev_open(&EARLY_STDIO_DEV, "", 0, 0);
+        /* Set the mode. No idea if this is required. */
+        stdout->iob_mode = _O_WRONLY | _O_CREAT | _O_TRUNC;
+        /* A first trial. */
+        puts("\nStarting Nut/OS");
+    }
 #endif
-	/* Initialize our heap memory. */
+
+    /* Initialize our heap memory. */
     NutHeapAdd(HEAP_START, HEAP_SIZE);
 
-	/* Create idle thread. Note, that the first call to NutThreadCreate 
-	** will never return. */
-	NutThreadCreate("idle", NutIdle, 0, 
-		(NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+    /* Create idle thread. Note, that the first call to NutThreadCreate 
+     ** will never return. */
+    NutThreadCreate("idle", NutIdle, 0, (NUT_THREAD_IDLESTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
 }
 
 /*@}*/

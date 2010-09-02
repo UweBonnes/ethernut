@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,8 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
+
 
 /*
  * $Log: spi.c,v $
@@ -66,12 +68,11 @@ static void Avr32Spi0Interrupt(void *arg)
  */
 int Avr32Spi0Init(void)
 {
-	volatile avr32_spi_t* spi = AVR32_SPI0;
+    volatile avr32_spi_t *spi = AVR32_SPI0;
     /* Enable SPI peripherals. */
     Avr32Spi0Enable();
     /* Enable SPI clock. */
-	spi->
-    outr(PMC_PCER, _BV(SPI0_ID));
+    spi->outr(PMC_PCER, _BV(SPI0_ID));
 
     /* Register and enable SPI0 interrupt handler. */
     NutRegisterIrqHandler(&sig_SPI0, Avr32Spi0Interrupt, 0);
@@ -587,7 +588,8 @@ int At91SpiSetCsDelay(unsigned int base, unsigned int dly)
  * \param rxnbuf Second receive buffer.
  * \param xnlen  Length of second transfer.
  */
-int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen, CONST void *txnbuf, void *rxnbuf, int xnlen)
+int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void *rxbuf, int xlen, CONST void *txnbuf, void *rxnbuf,
+                     int xnlen)
 {
     int rc = -1;
     unsigned int flags;
@@ -627,7 +629,7 @@ int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void
     outr(base + PERIPH_RNPR_OFF, (unsigned int) rxnbuf);
     outr(base + PERIPH_RNCR_OFF, (unsigned int) xnlen);
 
-    outr(base + SPI_IDR_OFF, (unsigned int) - 1);
+    outr(base + SPI_IDR_OFF, (unsigned int) -1);
     outr(base + SPI_IER_OFF, SPI_RXBUFF);
     outr(base + PERIPH_PTCR_OFF, PDC_TXTEN | PDC_RXTEN);
 
@@ -649,4 +651,3 @@ int At91SpiTransfer2(unsigned int base, unsigned int cs, CONST void *txbuf, void
 
     return rc;
 }
-

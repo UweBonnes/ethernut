@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,8 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
+
 
 /*
  * $Log: ih_irq3.c,v $
@@ -53,11 +55,11 @@ static int Interrupt3Ctl(int cmd, void *param);
 
 IRQ_HANDLER sig_INTERRUPT3 = {
 #ifdef NUT_PERFMON
-    0,                  /* Interrupt counter, ir_count. */
+    0,                          /* Interrupt counter, ir_count. */
 #endif
-    NULL,               /* Passed argument, ir_arg. */
-    NULL,               /* Handler subroutine, ir_handler. */
-    Interrupt3Ctl       /* Interrupt control, ir_ctl. */
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    Interrupt3Ctl               /* Interrupt control, ir_ctl. */
 };
 
 /*!
@@ -72,11 +74,11 @@ static SIGNAL(Interrupt3Entry)
     if (sig_INTERRUPT3.ir_handler) {
         (sig_INTERRUPT3.ir_handler) (sig_INTERRUPT3.ir_arg);
     }
-	/* Clear interrupt */
-	AVR32_EIC.icr = AVR32_EIC_ICR_INT3_MASK;
-	AVR32_EIC.isr;
+    /* Clear interrupt */
+    AVR32_EIC.icr = AVR32_EIC_ICR_INT3_MASK;
+    AVR32_EIC.isr;
 
-	IRQ_EXIT();
+    IRQ_EXIT();
 }
 
 /*!
@@ -96,31 +98,30 @@ static SIGNAL(Interrupt3Entry)
 static int Interrupt3Ctl(int cmd, void *param)
 {
     int rc = 0;
-    unsigned int *ival = (unsigned int *)param;
+    unsigned int *ival = (unsigned int *) param;
     int_fast8_t enabled = AVR32_EIC.imr & AVR32_EIC_IMR_INT3_MASK;
 
     /* Disable interrupt. */
     if (enabled) {
-		AVR32_EIC.idr = AVR32_EIC_IDR_INT3_MASK;
-		AVR32_EIC.imr;
+        AVR32_EIC.idr = AVR32_EIC_IDR_INT3_MASK;
+        AVR32_EIC.imr;
     }
 
-    switch(cmd) {
+    switch (cmd) {
     case NUT_IRQCTL_INIT:
-		/* Setup Peripheral mux for interrupt line */
-		GpioPinConfigSet( AVR32_GPIO_BANK(AVR32_EIC_EXTINT_3_PIN), AVR32_GPIO_PIN(AVR32_EIC_EXTINT_3_PIN), AVR32_GPIO_FUNCTION(AVR32_EIC_EXTINT_3_FUNCTION) );
-		/* Set the vector. */
-		register_interrupt(Interrupt3Entry, AVR32_EIC_IRQ_3, NUT_IRQPRI_IRQ3);
+        /* Setup Peripheral mux for interrupt line */
+        gpio_enable_module_pin(AVR32_EIC_EXTINT_3_PIN, AVR32_EIC_EXTINT_3_FUNCTION);
+        /* Set the vector. */
+        register_interrupt(Interrupt3Entry, AVR32_EIC_IRQ_3, NUT_IRQPRI_IRQ3);
         /* Initialize to edge triggered with defined priority. */
-		AVR32_EIC.mode &= ~AVR32_EIC_MODE_INT3_MASK;
+        AVR32_EIC.mode &= ~AVR32_EIC_MODE_INT3_MASK;
         /* Clear interrupt */
         AVR32_EIC.icr = AVR32_EIC_ICR_INT3_MASK;
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
             *ival |= 1;
-        }
-        else {
+        } else {
             *ival &= ~1;
         }
         break;
@@ -133,41 +134,41 @@ static int Interrupt3Ctl(int cmd, void *param)
     case NUT_IRQCTL_GETMODE:
         {
             if (AVR32_EIC.mode & AVR32_EIC_MODE_INT3_MASK) {
-				if ( AVR32_EIC.level & AVR32_EIC_LEVEL_INT3_MASK)
-					*ival = NUT_IRQMODE_HIGHLEVEL;
-				else
-					*ival = NUT_IRQMODE_LOWLEVEL;
-			} else {
-				if (AVR32_EIC.edge & AVR32_EIC_EDGE_INT3_MASK)
-					*ival = NUT_IRQMODE_RISINGEDGE;
-				else
-					*ival = NUT_IRQMODE_FALLINGEDGE;
+                if (AVR32_EIC.level & AVR32_EIC_LEVEL_INT3_MASK)
+                    *ival = NUT_IRQMODE_HIGHLEVEL;
+                else
+                    *ival = NUT_IRQMODE_LOWLEVEL;
+            } else {
+                if (AVR32_EIC.edge & AVR32_EIC_EDGE_INT3_MASK)
+                    *ival = NUT_IRQMODE_RISINGEDGE;
+                else
+                    *ival = NUT_IRQMODE_FALLINGEDGE;
             }
         }
         break;
     case NUT_IRQCTL_SETMODE:
         if (*ival == NUT_IRQMODE_LOWLEVEL) {
             AVR32_EIC.mode |= AVR32_EIC_MODE_INT3_MASK;
-			AVR32_EIC.level &= ~AVR32_EIC_LEVEL_INT3_MASK;
+            AVR32_EIC.level &= ~AVR32_EIC_LEVEL_INT3_MASK;
         } else if (*ival == NUT_IRQMODE_HIGHLEVEL) {
-			AVR32_EIC.mode |= AVR32_EIC_MODE_INT3_MASK;
-			AVR32_EIC.level |= ~AVR32_EIC_LEVEL_INT3_MASK;
+            AVR32_EIC.mode |= AVR32_EIC_MODE_INT3_MASK;
+            AVR32_EIC.level |= ~AVR32_EIC_LEVEL_INT3_MASK;
         } else if (*ival == NUT_IRQMODE_FALLINGEDGE) {
-			AVR32_EIC.mode &= ~AVR32_EIC_MODE_INT3_MASK;
-			AVR32_EIC.edge &= ~AVR32_EIC_EDGE_INT3_MASK;
-        } else  if (*ival == NUT_IRQMODE_RISINGEDGE) {
-			AVR32_EIC.mode &= ~AVR32_EIC_MODE_INT3_MASK;
-			AVR32_EIC.edge |= ~AVR32_EIC_EDGE_INT3_MASK;
-        } else  {
+            AVR32_EIC.mode &= ~AVR32_EIC_MODE_INT3_MASK;
+            AVR32_EIC.edge &= ~AVR32_EIC_EDGE_INT3_MASK;
+        } else if (*ival == NUT_IRQMODE_RISINGEDGE) {
+            AVR32_EIC.mode &= ~AVR32_EIC_MODE_INT3_MASK;
+            AVR32_EIC.edge |= ~AVR32_EIC_EDGE_INT3_MASK;
+        } else {
             rc = -1;
         }
         break;
     case NUT_IRQCTL_GETPRIO:
-	    *ival = NUT_IRQPRI_IRQ3;
+        *ival = NUT_IRQPRI_IRQ3;
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (unsigned int)sig_INTERRUPT3.ir_count;
+        *ival = (unsigned int) sig_INTERRUPT3.ir_count;
         sig_INTERRUPT3.ir_count = 0;
         break;
 #endif
@@ -178,10 +179,9 @@ static int Interrupt3Ctl(int cmd, void *param)
 
     /* Enable interrupt. */
     if (enabled) {
-		AVR32_EIC.ier = AVR32_EIC_IER_INT3_MASK;
-		AVR32_EIC.imr;
-		AVR32_EIC.en |= AVR32_EIC_EN_INT3_MASK;
+        AVR32_EIC.ier = AVR32_EIC_IER_INT3_MASK;
+        AVR32_EIC.imr;
+        AVR32_EIC.en |= AVR32_EIC_EN_INT3_MASK;
     }
     return rc;
 }
-

@@ -1,8 +1,8 @@
 /******************************************************************************
- * AVR32 AT32UC3A3256 GNU LD script file.
+ * AVR32 AT32UC3A0512 GNU LD script file.
  *
  * - Compiler:           GNU GCC for AVR32
- * - Supported devices:  AVR32 AT32UC3A3256
+ * - Supported devices:  AVR32 AT32UC3A0512
  *
  * - author              Atmel Corporation: http://www.atmel.com \n
  *                       Support and FAQ: http://support.atmel.no/
@@ -50,8 +50,8 @@ SEARCH_DIR(.)
 
 MEMORY
 {
-  FLASH (rxai!w) : ORIGIN = 0x80000000, LENGTH = 0x00040000
-  INTRAM (wxa!ri) : ORIGIN = 0x00000004, LENGTH = 0x0000FFFC
+  FLASH (rxai!w) : ORIGIN = 0x80000000, LENGTH = 0x00080000
+  INTRAM (wxa!ri) : ORIGIN = 0xD0000000, LENGTH = 32M
   USERPAGE : ORIGIN = 0x80800000, LENGTH = 0x00000200
 }
 

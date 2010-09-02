@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2001-2008 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,8 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
+
 
 /*
  * $Log: context.c,v $
@@ -60,8 +62,8 @@
  * points to this structure.
  */
 typedef struct {
-	uint32_t csf_cpsr;
-	uint32_t csf_lr;
+    uint32_t csf_cpsr;
+    uint32_t csf_lr;
     uint32_t csf_r7;
     uint32_t csf_r6;
     uint32_t csf_r5;
@@ -79,7 +81,7 @@ typedef struct {
  */
 typedef struct {
     uint32_t cef_pc;
-	uint32_t cef_r12;
+    uint32_t cef_r12;
 } ENTERFRAME;
 
 /*!
@@ -88,13 +90,10 @@ typedef struct {
 static void NutThreadEntry(void) __attribute__ ((naked));
 void NutThreadEntry(void)
 {
-	/* Load argument in r12 and jump to thread entry. */
-	__asm__ volatile (
-						"popm   r12, lr\n\t"  //put the value of cef_r12 in R12 and the value of cef_pc in lr
-						"mov    pc,lr\n\t"    //then pc recieve lr
-						:
-						:
-						:"r12", "lr", "pc");
+    /* Load argument in r12 and jump to thread entry. */
+    __asm__ volatile ("popm   r12, lr\n\t"      /* put the value of cef_r12 in R12 and the value of cef_pc in lr */
+                      "mov    pc,lr\n\t"        /* then pc recieve lr */
+                      :::"r12", "lr", "pc");
 }
 
 
@@ -113,35 +112,29 @@ void NutThreadSwitch(void) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
     /* Save CPU context. */
-    __asm__ volatile (   
-						"pushm    r0-r7, lr \n\t"   /* Save registers in the stack */
-						"mfsr       r10, %1 \n\t"   /* Save status in R10 */
-						"pushm      r10     \n\t"   /* Save r10 in the stack*/
-						"st.w        %0, sp \n\t"   /* the address contained in R10 contain the address of the stack pointer. */
-						:"=m"(runningThread->td_sp)
-						:"i"(AVR32_SR)
-						:"r10"
-					);
+    __asm__ volatile ("pushm    r0-r7, lr \n\t"    /* Save registers in the stack */
+                      "mfsr       r10, %1 \n\t"    /* Save status in R10 */
+                      "pushm      r10     \n\t"    /* Save r10 in the stack */
+                      "st.w        %0, sp \n\t"    /* the address contained in R10 contain the address of the stack pointer. */
+                      :"=m" (runningThread->td_sp)
+                      :"i"(AVR32_SR)
+                      :"r10");
 
     /* Select thread on top of the run queue. */
     runningThread = runQueue;
     runningThread->td_state = TDS_RUNNING;
 
     /* Restore context. */
-	/* When changing this, remember to keep NutThreadCreate copy in sync */
-	__asm__ volatile (   
-							"ld.w    sp, %0\n\t"		/* Restore stack pointer. */
-							"popm    r10   \n\t"		/* Get saved status... */
-							"mtsr    %1, r10\n\t"
-							"popm r0-r7, lr\n\t"		/* Restore registers. */
-							"mov     pc, lr\n\t"		/* Restore status and return. */
-							:
-							:"m"(runningThread->td_sp),"i"(AVR32_SR)
-							:"r10"
-					);
+    /* When changing this, remember to keep NutThreadCreate copy in sync */
+    __asm__ volatile ("ld.w    sp, %0\n\t"         /* Restore stack pointer. */
+                      "popm    r10   \n\t"         /* Get saved status... */
+                      "mtsr    %1, r10\n\t" "popm r0-r7, lr\n\t"        /* Restore registers. */
+                      "mov     pc, lr\n\t"         /* Restore status and return. */
+                      ::"m" (runningThread->td_sp), "i"(AVR32_SR)
+                      :"r10");
 
 #if defined(NUT_CRITICAL_NESTING) && !defined(NUT_CRITICAL_NESTING_STACK)
-        critical_nesting_level = 0;
+    critical_nesting_level = 0;
 #endif
 }
 
@@ -165,7 +158,7 @@ void NutThreadSwitch(void)
  * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
  *         error.
  */
-HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
+HANDLE NutThreadCreate(char *name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     uint8_t *threadMem;
     SWITCHFRAME *sf;
@@ -207,35 +200,35 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
     ef = (ENTERFRAME *) ((uptr_t) td - sizeof(ENTERFRAME));
     sf = (SWITCHFRAME *) ((uptr_t) ef - sizeof(SWITCHFRAME));
 
-   /* 
-    * Set predefined values at the stack bottom. May be used to detect
-    * stack overflows.
-    */
+    /* 
+     * Set predefined values at the stack bottom. May be used to detect
+     * stack overflows.
+     */
 #if defined(NUTDEBUG_CHECK_STACKMIN) || defined(NUTDEBUG_CHECK_STACK)
-	{
-		uint32_t *fip = (uint32_t *)threadMem;
-		while (fip < (uint32_t *)sf) {
-			*fip++ = DEADBEEF;
-		}
-	}
+    {
+        uint32_t *fip = (uint32_t *) threadMem;
+        while (fip < (uint32_t *) sf) {
+            *fip++ = DEADBEEF;
+        }
+    }
 #else
-	*((uint32_t *) threadMem) = DEADBEEF;
-	*((uint32_t *) (threadMem + 4)) = DEADBEEF;
-	*((uint32_t *) (threadMem + 8)) = DEADBEEF;
-	*((uint32_t *) (threadMem + 12)) = DEADBEEF;
+    *((uint32_t *) threadMem) = DEADBEEF;
+    *((uint32_t *) (threadMem + 4)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 8)) = DEADBEEF;
+    *((uint32_t *) (threadMem + 12)) = DEADBEEF;
 #endif
 
     /*
      * Setup the entry frame to simulate C function entry.
      */
-    ef->cef_pc  = (uptr_t) fn;
+    ef->cef_pc = (uptr_t) fn;
     ef->cef_r12 = (uptr_t) arg;
 
     /*
      * Setup the switch frame.
      */
     sf->csf_lr = (uptr_t) NutThreadEntry;
-    sf->csf_cpsr = (AVR32_SR_M_SUP << AVR32_SR_M_OFFSET);  /* [M2:M0]=001 - Supervisor Mode I1M=0 I0M=0, GM=0 */
+    sf->csf_cpsr = (AVR32_SR_M_SUP << AVR32_SR_M_OFFSET);       /* [M2:M0]=001 - Supervisor Mode I1M=0 I0M=0, GM=0 */
 
     /*
      * Initialize the thread info structure and insert it into the 
@@ -263,17 +256,14 @@ HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stack
         /* This will never return. */
         runningThread = runQueue;
         runningThread->td_state = TDS_RUNNING;
-		/* Restore context. */
-		__asm__ volatile (										/* */
-							"ld.w    sp, %0\n\t"		/* Restore stack pointer. */
-							"popm    r10   \n\t"		/* Get saved status... */
-							"mtsr    %1, r10\n\t"
-							"popm r0-r7, lr\n\t"		/* Restore registers. */
-							"mov     pc, lr\n\t"		/* Restore status and return. */
-							:
-							:"m"(runningThread->td_sp),"i"(AVR32_SR)
-							:"r10"
-		         );
+        /* Restore context. */
+        __asm__ volatile (      /* */
+                             "ld.w    sp, %0\n\t"       /* Restore stack pointer. */
+                             "popm    r10   \n\t"       /* Get saved status... */
+                             "mtsr    %1, r10\n\t" "popm r0-r7, lr\n\t" /* Restore registers. */
+                             "mov     pc, lr\n\t"       /* Restore status and return. */
+                             ::"m" (runningThread->td_sp), "i"(AVR32_SR)
+                             :"r10");
     }
 
     /*

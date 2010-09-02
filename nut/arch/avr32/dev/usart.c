@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,12 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
- * The 9-bit communication had been contributed by Brett Abbott,
- * Digital Telemetry Limited.
- *
- * Dave Smart contributed the synchronous mode support.
  */
+
 
 /*
  * $Log: usart.c,v $
@@ -1147,11 +1145,11 @@ static int Avr32UsartInit(void)
     }
 
     /* Disable GPIO on UART tx/rx pins. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(USART_RX_PIN), AVR32_GPIO_PIN(USART_RX_PIN), AVR32_GPIO_FUNCTION(USART_RX_FUNCTION));
-    GpioPinConfigSet(AVR32_GPIO_BANK(USART_TX_PIN), AVR32_GPIO_PIN(USART_TX_PIN), AVR32_GPIO_FUNCTION(USART_TX_FUNCTION));
+    gpio_enable_module_pin(USART_RX_PIN, USART_RX_FUNCTION);
+    gpio_enable_module_pin(USART_TX_PIN, USART_TX_FUNCTION);
 
     /* Disable all USART interrupts.
-    ** Interrupts needed should be set explicitly on every reset. */
+     ** Interrupts needed should be set explicitly on every reset. */
     USARTn_BASE.idr = 0xFFFFFFFF;
     USARTn_BASE.csr;
 
@@ -1161,7 +1159,7 @@ static int Avr32UsartInit(void)
     USARTn_BASE.ttgr = 0;
 
     /* Shutdown TX and RX (will be re-enabled when setup has successfully completed),
-    ** reset status bits and turn off DTR and RTS. */
+     ** reset status bits and turn off DTR and RTS. */
     USARTn_BASE.cr = AVR32_USART_CR_RSTRX_MASK |
         AVR32_USART_CR_RSTTX_MASK |
         AVR32_USART_CR_RSTSTA_MASK |
@@ -1194,7 +1192,7 @@ static int Avr32UsartDeinit(void)
     NutRegisterIrqHandler(&SIG_UART, 0, 0);
 
     /* Shutdown TX and RX (will be re-enabled when setup has successfully completed),
-    ** reset status bits and turn off DTR and RTS. */
+     ** reset status bits and turn off DTR and RTS. */
     USARTn_BASE.cr = AVR32_USART_CR_RSTRX_MASK |
         AVR32_USART_CR_RSTTX_MASK |
         AVR32_USART_CR_RSTSTA_MASK |

@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2006 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,8 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
+
 
 /*
  * $Log: ih_spi0.c,v $
@@ -44,6 +46,14 @@
 
 #ifndef NUT_IRQPRI_SPI0
 #define NUT_IRQPRI_SPI0  AVR32_INTC_INT3
+#endif
+
+#ifndef AVR32_SPI0
+#define AVR32_SPI0 AVR32_SPI
+#endif
+
+#ifndef AVR32_SPI0_IRQ
+#define AVR32_SPI0_IRQ AVR32_SPI_IRQ
 #endif
 
 static int SerialPeripheral0IrqCtl(int cmd, void *param);
@@ -90,21 +100,21 @@ static int SerialPeripheral0IrqCtl(int cmd, void *param)
 {
     int rc = 0;
     unsigned int *ival = (unsigned int *) param;
-	ureg_t imr = AVR32_SPI0.imr;
-	static ureg_t enabledIMR = 0;
-	int_fast8_t enabled = imr;
+    ureg_t imr = AVR32_SPI0.imr;
+    static ureg_t enabledIMR = 0;
+    int_fast8_t enabled = imr;
 
     /* Disable interrupt. */
     if (enabled) {
-		AVR32_SPI0.idr = 0xFFFFFFFF;
-		AVR32_SPI0.idr;
-		enabledIMR = imr;
+        AVR32_SPI0.idr = 0xFFFFFFFF;
+        AVR32_SPI0.idr;
+        enabledIMR = imr;
     }
 
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-		register_interrupt(SerialPeripheral0IrqEntry, AVR32_SPI0_IRQ, NUT_IRQPRI_SPI0);
+        register_interrupt(SerialPeripheral0IrqEntry, AVR32_SPI0_IRQ, NUT_IRQPRI_SPI0);
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {

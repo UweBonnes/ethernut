@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,8 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
+
 
 /*
  * $Log: ih_uart0.c,v $
@@ -50,11 +52,11 @@ static int Uart0IrqCtl(int cmd, void *param);
 
 IRQ_HANDLER sig_UART0 = {
 #ifdef NUT_PERFMON
-    0,                  /* Interrupt counter, ir_count. */
+    0,                          /* Interrupt counter, ir_count. */
 #endif
-    NULL,               /* Passed argument, ir_arg. */
-    NULL,               /* Handler subroutine, ir_handler. */
-    Uart0IrqCtl         /* Interrupt control, ir_ctl. */
+    NULL,                       /* Passed argument, ir_arg. */
+    NULL,                       /* Handler subroutine, ir_handler. */
+    Uart0IrqCtl                 /* Interrupt control, ir_ctl. */
 };
 
 /*!
@@ -89,36 +91,35 @@ SIGNAL(Uart0IrqEntry)
 static int Uart0IrqCtl(int cmd, void *param)
 {
     int rc = 0;
-    unsigned int *ival = (unsigned int *)param;
-	ureg_t imr = AVR32_USART0.imr;
-	static ureg_t enabledIMR = 0;
+    unsigned int *ival = (unsigned int *) param;
+    ureg_t imr = AVR32_USART0.imr;
+    static ureg_t enabledIMR = 0;
     int_fast8_t enabled = imr;
 
     /* Disable interrupt. */
     if (enabled) {
         AVR32_USART0.idr = 0xFFFFFFFF;
-		AVR32_USART0.csr;
-		enabledIMR = imr;
+        AVR32_USART0.csr;
+        enabledIMR = imr;
     }
 
-    switch(cmd) {
+    switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Set the vector. */
-		register_interrupt(Uart0IrqEntry, AVR32_USART0_IRQ, NUT_IRQPRI_UART0);
-		
+        register_interrupt(Uart0IrqEntry, AVR32_USART0_IRQ, NUT_IRQPRI_UART0);
+
         break;
     case NUT_IRQCTL_STATUS:
         if (enabled) {
             *ival |= 1;
-        }
-        else {
+        } else {
             *ival &= ~1;
         }
         break;
     case NUT_IRQCTL_ENABLE:
         enabled = 1;
-		if ( *ival )
-			imr = *ival;
+        if (*ival)
+            imr = *ival;
         break;
     case NUT_IRQCTL_DISABLE:
         enabled = 0;
@@ -128,7 +129,7 @@ static int Uart0IrqCtl(int cmd, void *param)
         break;
 #ifdef NUT_PERFMON
     case NUT_IRQCTL_GETCOUNT:
-        *ival = (unsigned int)sig_UART0.ir_count;
+        *ival = (unsigned int) sig_UART0.ir_count;
         sig_UART0.ir_count = 0;
         break;
 #endif
@@ -140,7 +141,7 @@ static int Uart0IrqCtl(int cmd, void *param)
     /* Enable interrupt. */
     if (enabled) {
         AVR32_USART0.ier = enabledIMR;
-		AVR32_USART0.csr;
+        AVR32_USART0.csr;
     }
     return rc;
 }

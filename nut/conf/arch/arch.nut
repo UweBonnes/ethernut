@@ -809,12 +809,16 @@ nutarch =
                     "HW_UART_S3C45"
                 }
             },
+            
+            --
+            -- AVR32
+            --
             {
-                macro = "MCU_AVR32UC30512ES",
-                brief = "Atmel AVR32 UC3A 0512ES",
-                description = "AVR32 UC3 32-bit RISC microcontroller with 10/100 Ethernet MAC,"..
-                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 4 UARTs and "..
-                              "other peripherals.",
+                macro = "MCU_AVR32UC3A0512",
+                brief = "Atmel AT32UC3A0512",
+                description = "32-bit AVR UC3 RISC microcontroller with 512K flash, 64K SRAM,\n"..
+                              "10/100 Ethernet MAC, Full-Speed + OTG USB,"..
+                              "I2C, 4 UARTs and many other peripherals.",
                 flavor = "boolean",
                 exclusivity = mcu_names, 
                 file = "include/cfg/arch.h",
@@ -826,7 +830,8 @@ nutarch =
                     "HW_SDRAMC",
                     "HW_TIMER_AVR32",
                     "HW_UART_AVR32",
-                    "HW_SPI_AVR32",
+                    "HW_SPI_AVR32_0",
+                    "HW_SPI_AVR32_1",
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
@@ -834,14 +839,15 @@ nutarch =
                     "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
                 },
-                makedefs = { "MCU=uc3a0512es", "MARCH=ucr1" }
+                makedefs = { "MCU=uc3a0512" }
             },
             {
-                macro = "MCU_AVR32UC30512",
-                brief = "Atmel AVR32 UC3A 0512",
-                description = "AVR32 UC3 32-bit RISC microcontroller with 10/100 Ethernet MAC,"..
-                              "512K flash, 64K SRAM, external SRAM/SDRAM controler, I2C, 4 UARTs and "..
-                              "and other peripherals.",
+                macro = "MCU_AVR32UC3A0512ES",
+                brief = "Atmel AT32UC3A0512-ES",
+                description = "*** Engineering Sample, do not use this CPU for new designs ***\n\n"..
+                              "32-bit AVR UC3 RISC microcontroller with 512K flash, 64K SRAM,\n"..
+                              "10/100 Ethernet MAC, Full-Speed + OTG USB,"..
+                              "I2C, 4 UARTs and many other peripherals.",
                 flavor = "boolean",
                 exclusivity = mcu_names, 
                 file = "include/cfg/arch.h",
@@ -853,7 +859,8 @@ nutarch =
                     "HW_SDRAMC",
                     "HW_TIMER_AVR32",
                     "HW_UART_AVR32",
-                    "HW_SPI_AVR32",
+                    "HW_SPI_AVR32_0",
+                    "HW_SPI_AVR32_1",
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
@@ -861,13 +868,13 @@ nutarch =
                     "HW_MACB_AVR32",
                     "HW_EBI_AVR32"
                 },
-                makedefs = { "MCU=uc3a0512", "MARCH=ucr2" }
+                makedefs = { "MCU=uc3a0512es" }
             },
             {
-                macro = "MCU_AVR32UC3A256",
-                brief = "Atmel AVR32 UC3A3 256",
-                description = "AVR32 UC3 32-bit RISC microcontroller with 256k Flash, 64k SRAM, "..
-                              "high speed USB device and OTG and many other peripherals.",
+                macro = "MCU_AVR32UC3A3256",
+                brief = "Atmel AT32UC3A3256",
+                description = "32-bit AVR UC3 RISC microcontroller with 256k Flash, 64k SRAM,\n"..
+                              "High-Speed + OTG USB device and many other peripherals.",
                 flavor = "boolean",
                 exclusivity = mcu_names, 
                 file = "include/cfg/arch.h",
@@ -879,14 +886,38 @@ nutarch =
                     "HW_SDRAMC",
                     "HW_TIMER_AVR32",
                     "HW_UART_AVR32",
-                    "HW_SPI_AVR32",
+                    "HW_SPI_AVR32_0",
+                    "HW_SPI_AVR32_1",
                     "HW_EFC_AVR32",
                     "HW_WDOG_AVR32",
                     "HW_PLL_AVR32",
                     "HW_GPIO",
                     "HW_EBI_AVR32"
                 },
-                makedefs = { "MCU=uc3a3256", "MARCH=ucr2" }
+                makedefs = { "MCU=uc3a3256" }
+            },
+            {
+                macro = "MCU_AVR32UC3B0256",
+                brief = "Atmel AT32UC3B0256",
+                description = "32-bit AVR UC3 RISC microcontroller with 256k Flash, 32k SRAM,\n"..
+                              "Full-Speed + Mini-Host USB device and many other peripherals.",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_AVR32" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR32",
+                    "HW_MCU_AVR32UC3",
+                    "HW_TIMER_AVR32",
+                    "HW_UART_AVR32",
+                    "HW_SPI_AVR32_0",
+                    "HW_EFC_AVR32",
+                    "HW_WDOG_AVR32",
+                    "HW_PLL_AVR32",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=uc3b0256" }
             }
         }
     },

@@ -1,7 +1,7 @@
 #ifndef _ARCH_AVR32_RESET_H_
 #define _ARCH_AVR32_RESET_H_
-/*
- * Copyright (C) 2008 by egnite GmbH.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
  *
  * All rights reserved.
  *
@@ -33,6 +33,7 @@
  *
  * For additional information see http://www.ethernut.de/
  */
+
 
 /*!
  * \file arch/avr32/reset.h

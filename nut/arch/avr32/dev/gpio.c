@@ -1,5 +1,7 @@
 /*!
- * Copyright (C) 2007 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,421 +30,465 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
+ *
+ * Portions Copyright Atmel Corporation, see the following note. 
+ */
+ 
+/* This source file is part of the ATMEL AVR-UC3-SoftwareFramework-1.7.0 Release */
+
+/*This file has been prepared for Doxygen automatic documentation generation.*/
+/*! \file *********************************************************************
+ *
+ * \brief GPIO driver for AVR32 UC3.
+ *
+ * This file defines a useful set of functions for the GPIO.
+ *
+ * - Compiler:           IAR EWAVR32 and GNU GCC for AVR32
+ * - Supported devices:  All AVR32 devices with a GPIO module can be used.
+ * - AppNote:
+ *
+ * \author               Atmel Corporation: http://www.atmel.com \n
+ *                       Support and FAQ: http://support.atmel.no/
+ *
+ *****************************************************************************/
+
+/* Copyright (c) 2009 Atmel Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. The name of Atmel may not be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * 4. This software may only be redistributed and used in connection with an Atmel
+ * AVR product.
+ *
+ * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+ * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+ *
  */
 
-/*!
- * $Id: gpio.c,v 1.4 2009/01/18 16:45:28 haraldkipp Exp $
+#include <arch/avr32/gpio.h>
+
+//! GPIO module instance.
+#define GPIO  AVR32_GPIO
+
+
+/*! \name Peripheral Bus Interface
  */
+//! @{
 
-#include <arch/avr32.h>
 
-#include <stdlib.h>
-#include <string.h>
-
-#include <dev/gpio.h>
-
-#include <avr32/io.h>
-
-/*!
-	\internal
-	Switch GPIO Peripheral Mux to specified \a function where function is one
-	of the GPIO_CFG_PERIPHERALx values.
-
-	Note that GPIO_CFG_PERIPHERALx values are mutually exclusive.
-*/
-static int gpio_enable_module_pin( int bank, int mask, unsigned int function)
+int gpio_enable_module(const gpio_map_t gpiomap, unsigned int size)
 {
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
+  int status = GPIO_SUCCESS;
+  unsigned int i;
 
-	// Enable the correct function.
-	switch (function)
-	{
-	case GPIO_CFG_PERIPHERAL0: // A function.
-		gpio_port->pmr0c = mask;
-		gpio_port->pmr1c = mask;
-		break;
+  for (i = 0; i < size; i++)
+  {
+    status |= gpio_enable_module_pin(gpiomap->pin, gpiomap->function);
+    gpiomap++;
+  }
 
-	case GPIO_CFG_PERIPHERAL1: // B function.
-		gpio_port->pmr0s = mask;
-		gpio_port->pmr1c = mask;
-		break;
-
-	case GPIO_CFG_PERIPHERAL2: // C function.
-		gpio_port->pmr0c = mask;
-		gpio_port->pmr1s = mask;
-		break;
-
-	default:
-		return -1;
-	}
-
-	// Disable GPIO control.
-	gpio_port->gperc = mask;
-
-	return 0;
+  return status;
 }
 
-/*!
- * \brief Get pin level.
- *
- * \param bank GPIO bank/port number.
- * \param bit  Bit number of the specified bank/port.
- *
- * \return 1 if the pin level is high. 0 is returned if the pin level
- *         is low or if the pin is undefined.
- */
-int GpioPinGet(int bank, int bit)
-{
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
 
-	return (gpio_port->pvr >> (bit & 0x1F)) & 1;
+int gpio_enable_module_pin(unsigned int pin, unsigned int function)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  // Enable the correct function.
+  switch (function)
+  {
+  case 0: // A function.
+    gpio_port->pmr0c = 1 << (pin & 0x1F);
+    gpio_port->pmr1c = 1 << (pin & 0x1F);
+#if defined(AVR32_GPIO_210_H_INCLUDED) || defined(AVR32_GPIO_211_H_INCLUDED)
+    gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+    break;
+
+  case 1: // B function.
+    gpio_port->pmr0s = 1 << (pin & 0x1F);
+    gpio_port->pmr1c = 1 << (pin & 0x1F);
+#if defined(AVR32_GPIO_210_H_INCLUDED) || defined(AVR32_GPIO_211_H_INCLUDED)
+    gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+    break;
+
+  case 2: // C function.
+    gpio_port->pmr0c = 1 << (pin & 0x1F);
+    gpio_port->pmr1s = 1 << (pin & 0x1F);
+#if defined(AVR32_GPIO_210_H_INCLUDED) || defined(AVR32_GPIO_211_H_INCLUDED)
+    gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+    break;
+
+  case 3: // D function.
+    gpio_port->pmr0s = 1 << (pin & 0x1F);
+    gpio_port->pmr1s = 1 << (pin & 0x1F);
+#if defined(AVR32_GPIO_210_H_INCLUDED) || defined(AVR32_GPIO_211_H_INCLUDED)
+    gpio_port->pmr2c = 1 << (pin & 0x1F);
+#endif
+    break;
+
+#if defined(AVR32_GPIO_210_H_INCLUDED) || defined(AVR32_GPIO_211_H_INCLUDED)
+  case 4: // E function.
+    gpio_port->pmr0c = 1 << (pin & 0x1F);
+    gpio_port->pmr1c = 1 << (pin & 0x1F);
+    gpio_port->pmr2s = 1 << (pin & 0x1F);
+    break;
+    
+  case 5: // F function.
+    gpio_port->pmr0s = 1 << (pin & 0x1F);
+    gpio_port->pmr1c = 1 << (pin & 0x1F);
+    gpio_port->pmr2s = 1 << (pin & 0x1F);
+    break;
+    
+  case 6: // G function.
+    gpio_port->pmr0c = 1 << (pin & 0x1F);
+    gpio_port->pmr1s = 1 << (pin & 0x1F);
+    gpio_port->pmr2s = 1 << (pin & 0x1F);
+    break;
+    
+  case 7: // H function.
+    gpio_port->pmr0s = 1 << (pin & 0x1F);
+    gpio_port->pmr1s = 1 << (pin & 0x1F);
+    gpio_port->pmr2s = 1 << (pin & 0x1F);
+    break;
+#endif
+
+  default:
+    return GPIO_INVALID_ARGUMENT;
+  }
+
+  // Disable GPIO control.
+  gpio_port->gperc = 1 << (pin & 0x1F);
+
+  return GPIO_SUCCESS;
 }
 
-/*!
- * \brief Set pin level to low.
- *
- * Trying to set undefined pins is silently ignored.
- *
- * \param bank GPIO bank/port number.
- * \param bit  Bit number of the specified bank/port.
- */
-void GpioPinSetLow(int bank, int bit)
-{
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
 
-	gpio_port->ovrc  = 1 << (bit & 0x1F); // Value to be driven on the I/O line: 0.
+void gpio_enable_gpio(const gpio_map_t gpiomap, unsigned int size)
+{
+  unsigned int i;
+
+  for (i = 0; i < size; i++)
+  {
+    gpio_enable_gpio_pin(gpiomap->pin);
+    gpiomap++;
+  }
 }
 
-/*!
- * \brief Set pin level to high.
- *
- * Trying to set undefined pins is silently ignored.
- *
- * \param bank GPIO bank/port number.
- * \param bit  Bit number of the specified bank/port.
- */
-void GpioPinSetHigh(int bank, int bit)
-{
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
 
-	gpio_port->ovrs  = 1 << (bit & 0x1F); // Value to be driven on the I/O line: 1.
+void gpio_enable_gpio_pin(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->oderc = 1 << (pin & 0x1F);
+  gpio_port->gpers = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Set pin level.
- *
- * Trying to set undefined pins is silently ignored.
- *
- * \param bank  GPIO bank/port number.
- * \param bit   Bit number of the specified bank/port.
- * \param value Level, 0 for low or any other value for high.
- */
-void GpioPinSet(int bank, int bit, int value)
+
+// The open-drain mode is not synthesized on the current AVR32 products.
+// If one day some AVR32 products have this feature, the corresponding part
+// numbers should be listed in the #if below.
+// Note that other functions are available in this driver to use pins with open
+// drain in GPIO mode. The advantage of the open-drain mode functions over these
+// other functions is that they can be used not only in GPIO mode but also in
+// module mode.
+#if 0
+
+
+void gpio_enable_pin_open_drain(unsigned int pin)
 {
-    if (value) {
-        GpioPinSetHigh(bank, bit);
-    }
-    else {
-        GpioPinSetLow(bank, bit);
-    }
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->odmers = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Get all pin levels of a specified bank/port.
- *
- * \param bank GPIO bank/port number.
- *
- * \return Pin levels. 0 is returned for unknown banks and pins.
- */
-unsigned int GpioPortGet(int bank)
-{
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
 
-	return gpio_port->pvr;
+void gpio_disable_pin_open_drain(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->odmerc = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Set multiple pin levels of a bank/port to low.
- *
- * \param bank GPIO bank/port number.
- * \param mask Pin levels are set to low, if the corresponding
- *             bit in this mask is 1.
- *
- * \return Levels.
- */
-void GpioPortSetLow(int bank, unsigned int mask)
-{
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
 
-	gpio_port->ovrc  = mask; // Value to be driven on the I/O line: 0.
-	gpio_port->oders = mask; // The GPIO output driver is enabled for that pin.
-	gpio_port->gpers = mask; // The GPIO module controls that pin.
+#endif
+
+
+void gpio_enable_pin_pull_up(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->puers = 1 << (pin & 0x1F);
+#if defined(AVR32_GPIO_200_H_INCLUDED) || defined(AVR32_GPIO_210_H_INCLUDED) || defined(AVR32_GPIO_211_H_INCLUDED)
+  gpio_port->pderc = 1 << (pin & 0x1F);
+#endif
 }
 
-/*!
- * \brief Set multiple pin levels of a bank/port to high.
- *
- * Trying to set undefined ports is silently ignored.
- *
- * \param bank GPIO bank/port number.
- * \param mask Pin levels are set to high, if the corresponding
- *             bit in this mask is 1.
- */
-void GpioPortSetHigh(int bank, unsigned int mask)
-{
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
 
-	gpio_port->ovrs  = mask; // Value to be driven on the I/O line: 1.
-	gpio_port->oders = mask; // The GPIO output driver is enabled for that pin.
-	gpio_port->gpers = mask; // The GPIO module controls that pin.
+void gpio_disable_pin_pull_up(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->puerc = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Set all pin levels of a bank/port.
+#if defined(AVR32_GPIO_200_H_INCLUDED) || defined(AVR32_GPIO_210_H_INCLUDED) || defined(AVR32_GPIO_211_H_INCLUDED)
+// Added support of Pull-up Resistor, Pull-down Resistor and Buskeeper Control.
+
+/*! \brief Enables the pull-down resistor of a pin.
  *
- * This routine can be used to simultaneously set all pins of a specific
- * port. However, in some implementations the high bit values will be
- * set before the low bit values. If this is a problem, you should use
- * GpioPortSetHigh() and GpioPortSetLow().
- *
- * \param bank  GPIO bank/port number.
- * \param value Pin levels are set to high, if the corresponding
- *              bit in this mask is 1. All other pin levels are
- *              set to low.
+ * \param pin The pin number.
  */
-void GpioPortSet(int bank, unsigned int value)
+void gpio_enable_pin_pull_down(unsigned int pin)
 {
-    if (value) {
-        GpioPortSetHigh(bank, value);
-    }
-    value = ~value;
-    if (value) {
-        GpioPortSetLow(bank, value);
-    }
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->puerc = 1 << (pin & 0x1F);
+  gpio_port->pders = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Get pin configuration.
+/*! \brief Disables the pull-down resistor of a pin.
  *
- * \param bank GPIO bank/port number.
- * \param bit  Bit number of the specified bank/port.
- *
- * \return Attribute flags of the pin.
+ * \param pin The pin number.
  */
-uint32_t GpioPinConfigGet(int bank, int bit)
+void gpio_disable_pin_pull_down(unsigned int pin)
 {
-    uint32_t rc = 0;
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
-
-    if ((gpio_port->gper & _BV(bit)) == 0) {
-		rc |= GPIO_CFG_DISABLED;
-	}
-
-	if (gpio_port->oder & _BV(bit)) {
-		rc |= GPIO_CFG_OUTPUT;
-	}
-
-	if (gpio_port->gfer & _BV(bit)) {
-		rc |= GPIO_CFG_DEBOUNCE;
-	}
-
-	if (gpio_port->puer & _BV(bit)) {
-		rc |= GPIO_CFG_PULLUP;
-	}
-
-	if (gpio_port->pmr1 & _BV(bit))	{
-		if (gpio_port->pmr0 & _BV(bit))	{
-			rc |= GPIO_CFG_PERIPHERAL3;
-		}
-		else {
-			rc |= GPIO_CFG_PERIPHERAL2;
-		}
-	}
-	else {
-		if (gpio_port->pmr0 & _BV(bit))	{
-			rc |= GPIO_CFG_PERIPHERAL1;
-		}
-		else {
-			rc |= GPIO_CFG_PERIPHERAL0;
-		}
-	}
-
-    return rc;
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->pderc = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Set port wide pin configuration.
+/*! \brief Enables the buskeeper functionality on a pin.
  *
- * \note This function does not check for undefined ports and pins or
- *       invalid attributes. If this is required, use GpioPinConfigSet().
- *
- * \param bank  GPIO bank/port number.
- * \param mask  The given attributes are set for a specific pin, if the
- *              corresponding bit in this mask is 1.
- * \param flags Attribute flags to set.
- *
- * \return Always 0.
+ * \param pin The pin number.
  */
-int GpioPortConfigSet(int bank, unsigned int mask, uint32_t flags)
+void gpio_enable_pin_buskeeper(unsigned int pin)
 {
-#define PERIPHERALS_MASK (GPIO_CFG_PERIPHERAL0|GPIO_CFG_PERIPHERAL1|GPIO_CFG_PERIPHERAL2|GPIO_CFG_PERIPHERAL3)
-
-	volatile avr32_gpio_port_t *gpio_port = &AVR32_GPIO.port[bank];
-
-	if (flags & GPIO_CFG_PULLUP) {
-		gpio_port->puers = mask;
-	}
-	else {
-		gpio_port->puerc = mask;
-	}
-
-	if (flags & GPIO_CFG_DEBOUNCE) {
-		gpio_port->gfers = mask;
-	}
-	else {
-		gpio_port->gferc = mask;
-	}
-
-	if (flags & GPIO_CFG_OUTPUT) {
-		gpio_port->oders = mask;
-	} else {
-		gpio_port->oderc = mask;
-	}
-
-	if (flags & PERIPHERALS_MASK) {
-		gpio_enable_module_pin(bank, mask, flags & PERIPHERALS_MASK);
-	}
-
-	if (flags & (GPIO_CFG_DISABLED | PERIPHERALS_MASK)) {
-		gpio_port->gperc = mask;
-	}
-	else {
-		gpio_port->oderc = mask;
-		gpio_port->gpers = mask;
-	}
-
-#undef PERIPHERALS_MASK
-	return 0;
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->puers = 1 << (pin & 0x1F);
+  gpio_port->pders = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Set pin configuration.
+/*! \brief Disables the buskeeper functionality on a pin.
  *
- * Applications may also use this function to make sure, that a specific
- * attribute is available for a specific pin.
- *
- * \note GPIO pins are typically initialized to a safe state after power
- *       up. This routine is not able to determine the consequences of
- *       changing pin configurations. In the worst case you may permanently
- *       damage your hardware by bad pin settings.
- *
- * \param bank  GPIO bank/port number.
- * \param bit   Bit number of the specified bank/port.
- * \param flags Attribute flags.
- *
- * \return 0 if all attributes had been set, -1 otherwise.
+ * \param pin The pin number.
  */
-int GpioPinConfigSet(int bank, int bit, uint32_t flags)
+void gpio_disable_pin_buskeeper(unsigned int pin)
 {
-    GpioPortConfigSet(bank, _BV(bit), flags);
-
-    /* Check the result. */
-    if (GpioPinConfigGet(bank, bit) != flags) {
-        return -1;
-    }
-    return 0;
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->puerc = 1 << (pin & 0x1F);
+  gpio_port->pderc = 1 << (pin & 0x1F);
 }
 
-/*!
- * \brief Register a GPIO pin interrupt handler.
- *
- * Generating interrupts on GPIO pin changes is not supported on all
- * platforms. In this case dedicated external interrupt pins may
- * be used with NutRegisterIrqHandler().
- *
- * Interrupts are triggered on rising and falling edges. Level triggering
- * or triggering on specific edges is not supported.
- *
- * After registering, interrupts are disabled. Calling GpioIrqEnable()
- * is required to activate the interrupt.
- *
- * The following code fragment registers an interrupt handler which is
- * called on each change of bit 4 of the first GPIO port:
- * \code
- * #include <dev/gpio.h>
- *
- * static void PinChange(void *arg)
- * {
- *     ...
- * }
- *
- * {
- *     ...
- *     GpioPinConfigSet(0, 4, GPIO_CFG_PULLUP);
- *     GpioRegisterIrqHandler(&sig_GPIO, 4, PinChange, NULL);
- *     GpioIrqEnable(&sig_GPIO, 30);
- *     ...
- * }
- * \endcode
- *
- * \param sig     Bank/port interrupt to be associated with this handler.
- * \param bit     Bit number of the specified bank/port.
- * \param handler This routine will be called by Nut/OS, when the specified
- *                pin changes its state.
- * \param arg     Argument to be passed to the interrupt handler routine.
- *
- * \return 0 on success, -1 otherwise.
- */
-int GpioRegisterIrqHandler(GPIO_SIGNAL * sig, int bit, void (*handler) (void *), void *arg)
+#endif
+
+int gpio_get_pin_value(unsigned int pin)
 {
-    int rc = 0;
-
-    if (sig->ios_vector == 0) {
-        /* This is the first call. Allocate the vector table. */
-        sig->ios_vector = malloc(sizeof(GPIO_VECTOR) * 32);
-        if (sig->ios_vector) {
-            memset(sig->ios_vector, 0, sizeof(GPIO_VECTOR) * 32);
-            /* Register our internal PIO interrupt service. */
-            rc = NutRegisterIrqHandler(sig->ios_sig, sig->ios_handler, sig->ios_vector);
-            if (rc == 0) {
-                rc = NutIrqEnable(sig->ios_sig);
-            }
-        }
-        else {
-            rc = -1;
-        }
-    }
-    sig->ios_vector[bit].iov_handler = handler;
-    sig->ios_vector[bit].iov_arg = arg;
-
-    return rc;
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  return (gpio_port->pvr >> (pin & 0x1F)) & 1;
 }
 
-/*!
- * \brief Enable a specified GPIO interrupt.
- *
- * A related interrupt handler must have been registered before calling
- * this function. See GpioRegisterIrqHandler().
- *
- * \param sig Interrupt to enable.
- * \param bit Bit number of the specified bank/port.
- *
- * \return 0 on success, -1 otherwise.
- */
-int GpioIrqEnable(GPIO_SIGNAL * sig, int bit)
+
+int gpio_get_gpio_pin_output_value(unsigned int pin)
 {
-    return (sig->ios_ctl) (NUT_IRQCTL_ENABLE, NULL, bit);
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  return (gpio_port->ovr >> (pin & 0x1F)) & 1;
 }
 
-/*!
- * \brief Disable a specified GPIO interrupt.
- *
- * \param sig Interrupt to disable.
- * \param bit Bit number of the specified bank/port.
- *
- * \return 0 on success, -1 otherwise.
- */
-int GpioIrqDisable(GPIO_SIGNAL * sig, int bit)
+
+int gpio_get_gpio_open_drain_pin_output_value(unsigned int pin)
 {
-    return (sig->ios_ctl) (NUT_IRQCTL_DISABLE, NULL, bit);
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  return ((gpio_port->oder >> (pin & 0x1F)) & 1) ^ 1;
 }
+
+
+void gpio_set_gpio_pin(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  gpio_port->ovrs  = 1 << (pin & 0x1F); // Value to be driven on the I/O line: 1.
+  gpio_port->oders = 1 << (pin & 0x1F); // The GPIO output driver is enabled for that pin.
+  gpio_port->gpers = 1 << (pin & 0x1F); // The GPIO module controls that pin.
+}
+
+
+void gpio_clr_gpio_pin(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  gpio_port->ovrc  = 1 << (pin & 0x1F); // Value to be driven on the I/O line: 0.
+  gpio_port->oders = 1 << (pin & 0x1F); // The GPIO output driver is enabled for that pin.
+  gpio_port->gpers = 1 << (pin & 0x1F); // The GPIO module controls that pin.
+}
+
+
+void gpio_tgl_gpio_pin(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  gpio_port->ovrt  = 1 << (pin & 0x1F); // Toggle the I/O line.
+  gpio_port->oders = 1 << (pin & 0x1F); // The GPIO output driver is enabled for that pin.
+  gpio_port->gpers = 1 << (pin & 0x1F); // The GPIO module controls that pin.
+}
+
+
+void gpio_set_gpio_open_drain_pin(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  gpio_port->oderc = 1 << (pin & 0x1F); // The GPIO output driver is disabled for that pin.
+  gpio_port->gpers = 1 << (pin & 0x1F); // The GPIO module controls that pin.
+}
+
+
+void gpio_clr_gpio_open_drain_pin(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  gpio_port->ovrc  = 1 << (pin & 0x1F); // Value to be driven on the I/O line: 0.
+  gpio_port->oders = 1 << (pin & 0x1F); // The GPIO output driver is enabled for that pin.
+  gpio_port->gpers = 1 << (pin & 0x1F); // The GPIO module controls that pin.
+}
+
+
+void gpio_tgl_gpio_open_drain_pin(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  gpio_port->ovrc  = 1 << (pin & 0x1F); // Value to be driven on the I/O line if the GPIO output driver is enabled: 0.
+  gpio_port->odert = 1 << (pin & 0x1F); // The GPIO output driver is toggled for that pin.
+  gpio_port->gpers = 1 << (pin & 0x1F); // The GPIO module controls that pin.
+}
+
+
+void gpio_enable_pin_glitch_filter(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->gfers = 1 << (pin & 0x1F);
+}
+
+
+void gpio_disable_pin_glitch_filter(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->gferc = 1 << (pin & 0x1F);
+}
+
+/*! \brief Configure the edge detector of an input pin
+ *
+ * \param pin The pin number.
+ * \param mode The edge detection mode (\ref GPIO_PIN_CHANGE, \ref GPIO_RISING_EDGE
+ *             or \ref GPIO_FALLING_EDGE).
+ *
+ * \return \ref GPIO_SUCCESS or \ref GPIO_INVALID_ARGUMENT.
+ */
+static int gpio_configure_edge_detector(unsigned int pin, unsigned int mode)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  
+  // Configure the edge detector.
+  switch (mode)
+  {
+  case GPIO_PIN_CHANGE:
+    gpio_port->imr0c = 1 << (pin & 0x1F);
+    gpio_port->imr1c = 1 << (pin & 0x1F);
+    break;
+
+  case GPIO_RISING_EDGE:
+    gpio_port->imr0s = 1 << (pin & 0x1F);
+    gpio_port->imr1c = 1 << (pin & 0x1F);
+    break;
+
+  case GPIO_FALLING_EDGE:
+    gpio_port->imr0c = 1 << (pin & 0x1F);
+    gpio_port->imr1s = 1 << (pin & 0x1F);
+    break;
+
+  default:
+    return GPIO_INVALID_ARGUMENT;
+  }
+
+  return GPIO_SUCCESS;
+}
+
+
+int gpio_enable_pin_interrupt(unsigned int pin, unsigned int mode)
+{
+  volatile avr32_gpio_port_t  *gpio_port = &GPIO.port[pin >> 5];
+
+  // Enable the glitch filter.
+  gpio_port->gfers = 1 << (pin & 0x1F);
+
+  // Configure the edge detector.
+  if(GPIO_INVALID_ARGUMENT == gpio_configure_edge_detector(pin, mode))
+    return(GPIO_INVALID_ARGUMENT);
+
+  // Enable interrupt.
+  gpio_port->iers = 1 << (pin & 0x1F);
+
+  return GPIO_SUCCESS;
+}
+
+
+void gpio_disable_pin_interrupt(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->ierc = 1 << (pin & 0x1F);
+}
+
+
+int gpio_get_pin_interrupt_flag(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  return (gpio_port->ifr >> (pin & 0x1F)) & 1;
+}
+
+
+void gpio_clear_pin_interrupt_flag(unsigned int pin)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+  gpio_port->ifrc = 1 << (pin & 0x1F);
+}
+
+
+//#
+//# Peripheral Event System Support.
+//#
+#if UC3L
+int gpio_configure_pin_periph_event_mode(unsigned int pin, unsigned int mode, unsigned int use_igf)
+{
+  volatile avr32_gpio_port_t *gpio_port = &GPIO.port[pin >> 5];
+
+  if(TRUE == use_igf)
+  {
+    // Enable the glitch filter.
+    gpio_port->gfers = 1 << (pin & 0x1F);
+  }
+  else
+  {
+    // Disable the glitch filter.
+    gpio_port->gferc = 1 << (pin & 0x1F);
+  }
+
+  // Configure the edge detector.
+  return(gpio_configure_edge_detector(pin, mode));
+}
+
+#endif
+
+//! @}

@@ -1,12 +1,50 @@
-/* This file is part of the ATMEL AVR32-SoftwareFramework-AT32UC3A-1.4.0 Release */
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holders nor the names of
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * For additional information see http://www.ethernut.de/
+ *
+ * Portions Copyright Atmel Corporation, see the following note. 
+ */
+ 
+/* This file is part of the ATMEL AVR-UC3-SoftwareFramework-1.7.0 Release */
 
 /*This file is prepared for Doxygen automatic documentation generation.*/
 /*! \file *********************************************************************
  *
- * \brief NEWLIB_ADDONS exception vectors file for AVR32.
+ * \brief Exception and interrupt vectors.
+ *
+ * This file maps all events supported by an AVR32.
  *
  * - Compiler:           GNU GCC for AVR32
- * - Supported devices:  All AVR32 devices can be used.
+ * - Supported devices:  All AVR32 devices with an INTC module can be used.
  * - AppNote:
  *
  * \author               Atmel Corporation: http://www.atmel.com \n
@@ -14,39 +52,51 @@
  *
  ******************************************************************************/
 
-/* Copyright (C) 2006-2008, Atmel Corporation All rights reserved.
+/* Copyright (c) 2009 Atmel Corporation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
  *
- * 3. The name of ATMEL may not be used to endorse or promote products derived
+ * 3. The name of Atmel may not be used to endorse or promote products derived
  * from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY ATMEL ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * 4. This software may only be redistributed and used in connection with an Atmel
+ * AVR product.
+ *
+ * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE EXPRESSLY AND
- * SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+ * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+ *
  */
 
+#if !__AVR32_UC__ && !__AVR32_AP__
+  #error Implementation of the AVR32 architecture not supported by the INTC driver.
+#endif
 
 
-#include <arch/avr32.h>
 #include <avr32/io.h>
 
-	.section	.exception,"ax"
+
+//! @{
+//! \verbatim
+
+
+  .section  .exception, "ax", @progbits
+
 
 // Start of Exception Vector Table.
 
@@ -65,7 +115,7 @@ _handle_Unrecoverable_Exception:
         rjmp $
 
         .org  0x004
-        // TLB Multiple Hit: UNUSED IN AVR32UC.
+        // TLB Multiple Hit.
 _handle_TLB_Multiple_Hit:
         rjmp $
 
@@ -116,7 +166,7 @@ _handle_Privilege_Violation:
         rjmp $
 
         .org  0x02C
-        // Floating-Point: UNUSED IN AVR32UC.
+        // Floating-Point: UNUSED IN AVR32UC and AVR32AP.
 _handle_Floating_Point:
         rjmp $
 
@@ -151,17 +201,17 @@ _handle_DTLB_Modified:
         rjmp $
 
         .org  0x050
-        // ITLB Miss: UNUSED IN AVR32UC.
+        // ITLB Miss.
 _handle_ITLB_Miss:
         rjmp $
 
         .org  0x060
-        // DTLB Miss (Read): UNUSED IN AVR32UC.
+        // DTLB Miss (Read).
 _handle_DTLB_Miss_Read:
         rjmp $
 
         .org  0x070
-        // DTLB Miss (Write): UNUSED IN AVR32UC.
+        // DTLB Miss (Write).
 _handle_DTLB_Miss_Write:
         rjmp $
 
@@ -174,49 +224,53 @@ _handle_Supervisor_Call:
 // Interrupt support.
 // The interrupt controller must provide the offset address relative to EVBA.
 // Important note:
-//   All interrupts call a C function named IrqHandler.
+//   All interrupts call a C function named _get_interrupt_handler.
 //   This function will read group and interrupt line number to then return in
 //   R12 a pointer to a user-provided interrupt handler.
 
-	.balign 4
+  .balign 4
 
-	.irp    priority, 0, 1, 2, 3
+  .irp    priority, 0, 1, 2, 3
 _int\priority:
 #if __AVR32_UC__
-	// R8-R12, LR, PC and SR are automatically pushed onto the system stack by the
-	// CPU upon interrupt entry. No other register is saved by hardware.
+  // R8-R12, LR, PC and SR are automatically pushed onto the system stack by the
+  // CPU upon interrupt entry. No other register is saved by hardware.
 #elif __AVR32_AP__
-	// PC and SR are automatically saved in respectively RAR_INTx and RSR_INTx by
-	// the CPU upon interrupt entry. No other register is saved by hardware.
-	pushm   r8-r12, lr
+  // PC and SR are automatically saved in respectively RAR_INTx and RSR_INTx by
+  // the CPU upon interrupt entry. No other register is saved by hardware.
+  pushm   r8-r12, lr
 #endif
-	mov     r12, \priority  // Pass the int_lev parameter to the GetIrqHandler function.
-	call    GetIrqHandler
-	cp.w    r12, 0          // Get the pointer to the interrupt handler returned by the function.
+  mov     r12, \priority  // Pass the int_level parameter to the _get_interrupt_handler function.
+  call    _get_interrupt_handler
+  cp.w    r12, 0          // Get the pointer to the interrupt handler returned by the function.
 #if __AVR32_UC__
-	movne   pc, r12         // If this was not a spurious interrupt (R12 != NULL), jump to the handler.
+  movne   pc, r12         // If this was not a spurious interrupt (R12 != NULL), jump to the handler.
 #elif __AVR32_AP__
-	breq    spint\priority  // If this was a spurious interrupt (R12 == NULL), branch.
-	st.w    --sp, r12       // Push the pointer to the interrupt handler onto the system stack since no register may be altered.
-	popm    r8-r12, lr, pc  // Restore registers and jump to the handler.
+  breq    spint\priority  // If this was a spurious interrupt (R12 == NULL), branch.
+  st.w    --sp, r12       // Push the pointer to the interrupt handler onto the system stack since no register may be altered.
+  popm    r8-r12, lr, pc  // Restore registers and jump to the handler.
 spint\priority:
-	popm    r8-r12, lr
+  popm    r8-r12, lr
 #endif
-	rete                    // If this was a spurious interrupt (R12 == NULL), return from event handler.
-	.endr
+  rete                    // If this was a spurious interrupt (R12 == NULL), return from event handler.
+  .endr
 
 
 // Constant data area.
 
-	.balign 4
+  .balign 4
 
-	// Values to store in the interrupt priority registers for the various interrupt priority levels.
-	// The interrupt priority registers contain the interrupt priority level and
-	// the EVBA-relative interrupt vector offset.
-	.global ipr_val
-	.type ipr_val, @object
+  // Values to store in the interrupt priority registers for the various interrupt priority levels.
+  // The interrupt priority registers contain the interrupt priority level and
+  // the EVBA-relative interrupt vector offset.
+  .global ipr_val
+  .type ipr_val, @object
 ipr_val:
-	.word (AVR32_INTC_INT0 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int0 - _evba),\
-	      (AVR32_INTC_INT1 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int1 - _evba),\
-          (AVR32_INTC_INT2 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int2 - _evba),\
-          (AVR32_INTC_INT3 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int3 - _evba)
+  .word (AVR32_INTC_INT0 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int0 - _evba),\
+        (AVR32_INTC_INT1 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int1 - _evba),\
+        (AVR32_INTC_INT2 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int2 - _evba),\
+        (AVR32_INTC_INT3 << AVR32_INTC_IPR_INTLEVEL_OFFSET) | (_int3 - _evba)
+
+
+//! \endverbatim
+//! @}

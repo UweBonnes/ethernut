@@ -41,7 +41,7 @@ include $(top_srcdir)/Makevars.gcc
 # Set target specific variables.
 ARCH         = avr32
 TRGT         = avr32-
-MCFLAGS      = -march=$(MARCH) -mpart=$(MCU)
+MCFLAGS      = -mpart=$(MCU)
 CFLAGS_MCU   = $(MCFLAGS)
 CFLAGS_OPT   = -Os -ffunction-sections -fdata-sections -fomit-frame-pointer
 CXXFLAGS_MCU = $(CFLAGS_MCU)

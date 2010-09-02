@@ -1,3 +1,41 @@
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holders nor the names of
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * For additional information see http://www.ethernut.de/
+ *
+ * Portions Copyright Atmel Corporation, see the following note. 
+ */
+ 
+/* This source file is part of the ATMEL AVR-UC3-SoftwareFramework-1.7.0 Release */
+
 /*This file has been prepared for Doxygen automatic documentation generation.*/
 /*! \file *********************************************************************
  *
@@ -13,36 +51,41 @@
  *
  *****************************************************************************/
 
-/* Copyright (c) 2007, Atmel Corporation All rights reserved.
+/* Copyright (c) 2009 Atmel Corporation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
  *
- * 3. The name of ATMEL may not be used to endorse or promote products derived
+ * 3. The name of Atmel may not be used to endorse or promote products derived
  * from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY ATMEL ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * 4. This software may only be redistributed and used in connection with an Atmel
+ * AVR product.
+ *
+ * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE EXPRESSLY AND
- * SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+ * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+ *
  */
-
 
 #include <avr32/io.h>
 #include <arch/avr32/pm.h>
+
+#define PASS   0
 
 
 /*! \name PM Writable Bit-Field Registers
@@ -160,7 +203,9 @@ void pm_enable_osc0_ext_clock(volatile avr32_pm_t *pm)
 
 void pm_enable_osc0_crystal(volatile avr32_pm_t *pm, unsigned int fosc0)
 {
-  pm_set_osc0_mode(pm, (fosc0 < 8000000) ? AVR32_PM_OSCCTRL0_MODE_CRYSTAL_G2 :
+  pm_set_osc0_mode(pm, (fosc0 <  900000) ? AVR32_PM_OSCCTRL0_MODE_CRYSTAL_G0 :
+                       (fosc0 < 3000000) ? AVR32_PM_OSCCTRL0_MODE_CRYSTAL_G1 :
+                       (fosc0 < 8000000) ? AVR32_PM_OSCCTRL0_MODE_CRYSTAL_G2 :
                                            AVR32_PM_OSCCTRL0_MODE_CRYSTAL_G3);
 }
 
@@ -221,7 +266,9 @@ void pm_enable_osc1_ext_clock(volatile avr32_pm_t *pm)
 
 void pm_enable_osc1_crystal(volatile avr32_pm_t *pm, unsigned int fosc1)
 {
-  pm_set_osc1_mode(pm, (fosc1 < 8000000) ? AVR32_PM_OSCCTRL1_MODE_CRYSTAL_G2 :
+  pm_set_osc1_mode(pm, (fosc1 <  900000) ? AVR32_PM_OSCCTRL1_MODE_CRYSTAL_G0 :
+                       (fosc1 < 3000000) ? AVR32_PM_OSCCTRL1_MODE_CRYSTAL_G1 :
+                       (fosc1 < 8000000) ? AVR32_PM_OSCCTRL1_MODE_CRYSTAL_G2 :
                                            AVR32_PM_OSCCTRL1_MODE_CRYSTAL_G3);
 }
 
@@ -435,9 +482,6 @@ void pm_wait_for_pll0_locked(volatile avr32_pm_t *pm)
 void pm_wait_for_pll1_locked(volatile avr32_pm_t *pm)
 {
   while (!(pm->poscsr & AVR32_PM_POSCSR_LOCK1_MASK));
-
-  // Bypass the lock signal of the PLL
-  pm->pll[1] |= AVR32_PM_PLL1_PLLBPL_MASK;
 }
 
 
@@ -465,10 +509,14 @@ void pm_bod_enable_irq(volatile avr32_pm_t *pm)
   pm->ier = AVR32_PM_IER_BODDET_MASK;
 }
 
-
 void pm_bod_disable_irq(volatile avr32_pm_t *pm)
 {
+  unsigned char global_interrupt_enabled = Is_global_interrupt_enabled();
+
+  if (global_interrupt_enabled) Disable_global_interrupt();
   pm->idr = AVR32_PM_IDR_BODDET_MASK;
+  pm->isr;
+  if (global_interrupt_enabled) Enable_global_interrupt();
 }
 
 
@@ -496,39 +544,40 @@ unsigned long pm_bod_get_level(volatile avr32_pm_t *pm)
 }
 
 
-void pm_write_gplp(volatile avr32_pm_t *pm,unsigned long gplp, unsigned long value)
+unsigned long pm_read_gplp(volatile avr32_pm_t *pm, unsigned long gplp)
+{
+  return pm->gplp[gplp];
+}
+
+
+void pm_write_gplp(volatile avr32_pm_t *pm, unsigned long gplp, unsigned long value)
 {
   pm->gplp[gplp] = value;
 }
 
 
-unsigned long pm_read_gplp(volatile avr32_pm_t *pm,unsigned long gplp)
-{
-  return pm->gplp[gplp];
-}
-
 long pm_enable_module(volatile avr32_pm_t *pm, unsigned long module)
 {
-	unsigned long domain = module>>5;
-	unsigned long *regptr = (unsigned long*)(&(pm->cpumask) + domain*sizeof(unsigned long));
+  unsigned long domain = module>>5;
+  unsigned long *regptr = (unsigned long*)(&(pm->cpumask) + domain);
 
-	// UC3A Implementation-specific shortcut: the ckMASK registers are contiguous and
-	// memory-mapped in that order: CPUMASK, HSBMASK, PBAMASK, PBBMASK.
+  // Implementation-specific shortcut: the ckMASK registers are contiguous and
+  // memory-mapped in that order: CPUMASK, HSBMASK, PBAMASK, PBBMASK.
 
-	*regptr |= (module%32);
+  *regptr |= (1<<(module%32));
 
-	return 1;
+  return PASS;
 }
 
 long pm_disable_module(volatile avr32_pm_t *pm, unsigned long module)
 {
-	unsigned long domain = module>>5;
-	unsigned long *regptr = (unsigned long*)(&(pm->cpumask) + domain*sizeof(unsigned long));
+  unsigned long domain = module>>5;
+  unsigned long *regptr = (unsigned long*)(&(pm->cpumask) + domain);
 
-	// UC3A Implementation-specific shortcut: the ckMASK registers are contiguous and
-	// memory-mapped in that order: CPUMASK, HSBMASK, PBAMASK, PBBMASK.
+  // Implementation-specific shortcut: the ckMASK registers are contiguous and
+  // memory-mapped in that order: CPUMASK, HSBMASK, PBAMASK, PBBMASK.
 
-	*regptr &= ~(module%32);
+  *regptr &= ~(1<<(module%32));
 
-	return 1;
+  return PASS;
 }

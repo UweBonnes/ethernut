@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2005 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -29,6 +31,7 @@
  *
  * For additional information see http://www.ethernut.de/
  */
+
 
 /*
  * $Log: usart0.c,v $
@@ -87,24 +90,24 @@ static USARTDCB dcb_usart0 = {
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_tx_rbf */
     {0, 0, 0, 0, 0, 0, 0, 0},   /* dcb_rx_rbf */
     0,                          /* dbc_last_eol */
-    Avr32UsartInit,              /* dcb_init */
-    Avr32UsartDeinit,            /* dcb_deinit */
-    Avr32UsartTxStart,           /* dcb_tx_start */
-    Avr32UsartRxStart,           /* dcb_rx_start */
-    Avr32UsartSetFlowControl,    /* dcb_set_flow_control */
-    Avr32UsartGetFlowControl,    /* dcb_get_flow_control */
-    Avr32UsartSetSpeed,          /* dcb_set_speed */
-    Avr32UsartGetSpeed,          /* dcb_get_speed */
-    Avr32UsartSetDataBits,       /* dcb_set_data_bits */
-    Avr32UsartGetDataBits,       /* dcb_get_data_bits */
-    Avr32UsartSetParity,         /* dcb_set_parity */
-    Avr32UsartGetParity,         /* dcb_get_parity */
-    Avr32UsartSetStopBits,       /* dcb_set_stop_bits */
-    Avr32UsartGetStopBits,       /* dcb_get_stop_bits */
-    Avr32UsartSetStatus,         /* dcb_set_status */
-    Avr32UsartGetStatus,         /* dcb_get_status */
-    Avr32UsartSetClockMode,      /* dcb_set_clock_mode */
-    Avr32UsartGetClockMode,      /* dcb_get_clock_mode */
+    Avr32UsartInit,             /* dcb_init */
+    Avr32UsartDeinit,           /* dcb_deinit */
+    Avr32UsartTxStart,          /* dcb_tx_start */
+    Avr32UsartRxStart,          /* dcb_rx_start */
+    Avr32UsartSetFlowControl,   /* dcb_set_flow_control */
+    Avr32UsartGetFlowControl,   /* dcb_get_flow_control */
+    Avr32UsartSetSpeed,         /* dcb_set_speed */
+    Avr32UsartGetSpeed,         /* dcb_get_speed */
+    Avr32UsartSetDataBits,      /* dcb_set_data_bits */
+    Avr32UsartGetDataBits,      /* dcb_get_data_bits */
+    Avr32UsartSetParity,        /* dcb_set_parity */
+    Avr32UsartGetParity,        /* dcb_get_parity */
+    Avr32UsartSetStopBits,      /* dcb_set_stop_bits */
+    Avr32UsartGetStopBits,      /* dcb_get_stop_bits */
+    Avr32UsartSetStatus,        /* dcb_set_status */
+    Avr32UsartGetStatus,        /* dcb_get_status */
+    Avr32UsartSetClockMode,     /* dcb_set_clock_mode */
+    Avr32UsartGetClockMode,     /* dcb_get_clock_mode */
 };
 
 /*!
@@ -124,7 +127,7 @@ static USARTDCB dcb_usart0 = {
  */
 NUTDEVICE devUsartAvr320 = {
     0,                          /* Pointer to next device, dev_next. */
-    {'u', 'a', 'r', 't', '0', 0, 0, 0, 0},    /* Unique device name, dev_name. */
+    {'u', 'a', 'r', 't', '0', 0, 0, 0, 0},      /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
     0,                          /* Base address, dev_base (not used). */
     0,                          /* First interrupt number, dev_irq (not used). */

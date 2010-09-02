@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2008-2009 by egnite GmbH
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
  *
  * All rights reserved.
  *
@@ -32,6 +32,7 @@
  * For additional information see http://www.ethernut.de/
  */
 
+
 /*!
  * \file arch/avr32/dev/spibus.c
  * \brief General AVR32 SPI bus controller routines.
@@ -60,9 +61,9 @@
  */
 static void Avr32SpiInterrupt(void *arg)
 {
-    NutEventPostFromIrq((void **)arg);
+    NutEventPostFromIrq((void **) arg);
 }
-#endif /* SPIBUS0_DOUBLE_BUFFER */
+#endif                          /* SPIBUS0_DOUBLE_BUFFER */
 
 /*!
  * \brief Update SPI shadow registers.
@@ -84,7 +85,7 @@ int Avr32SpiSetup(NUTSPINODE * node)
     spireg = node->node_stat;
 
     spireg->mr &= ~(AVR32_SPI_MR_MODFDIS_MASK | AVR32_SPI_MR_LLB_MASK | AVR32_SPI_MR_PCSDEC_MASK);
-	
+
     if ((node->node_mode & SPI_MODE_FAULT) == 0) {
         spireg->mr |= AVR32_SPI_MR_MODFDIS_MASK;
     }
@@ -92,11 +93,13 @@ int Avr32SpiSetup(NUTSPINODE * node)
         spireg->mr |= AVR32_SPI_MR_LLB_MASK;
     }
 
-	spireg->mr |= 0xe0 << AVR32_SPI_PCS_OFFSET;
+    spireg->mr |= 0xe0 << AVR32_SPI_PCS_OFFSET;
 
-	spireg->csr &= ~(AVR32_SPI_CSR0_BITS_MASK | AVR32_SPI_CSR0_CPOL_MASK | AVR32_SPI_CSR0_NCPHA_MASK | AVR32_SPI_CSR0_CSAAT_MASK | AVR32_SPI_CSR0_SCBR_MASK);
+    spireg->csr &=
+        ~(AVR32_SPI_CSR0_BITS_MASK | AVR32_SPI_CSR0_CPOL_MASK | AVR32_SPI_CSR0_NCPHA_MASK | AVR32_SPI_CSR0_CSAAT_MASK |
+          AVR32_SPI_CSR0_SCBR_MASK);
     if (node->node_bits) {
-        spireg->csr |= ((uint32_t)(node->node_bits - 8) << AVR32_SPI_CSR0_BITS_OFFSET) & AVR32_SPI_CSR0_BITS_MASK;
+        spireg->csr |= ((uint32_t) (node->node_bits - 8) << AVR32_SPI_CSR0_BITS_OFFSET) & AVR32_SPI_CSR0_BITS_MASK;
     }
     if (node->node_mode & SPI_MODE_CPOL) {
         spireg->csr |= AVR32_SPI_CSR0_CPOL_MASK;
@@ -149,60 +152,60 @@ int Avr32SpiBusNodeInit(NUTSPINODE * node)
     NUTASSERT(node->node_bus != NULL);
     bus = node->node_bus;
 
-	/* Try to deactivate the node's chip select. */
+    /* Try to deactivate the node's chip select. */
 #if defined(AVR32_SPI1_ADDRESS)
-	if (bus->bus_base == AVR32_SPI1_ADDRESS) {
-		rc = Avr32Spi1ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
-	} else
+    if (bus->bus_base == AVR32_SPI1_ADDRESS) {
+        rc = Avr32Spi1ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
+    } else
 #endif
-		rc = Avr32Spi0ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
-	
+        rc = Avr32Spi0ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
+
     /* It should not hurt us being called more than once. Thus, we
-       ** check whether any initialization had been taken place already. */
+     ** check whether any initialization had been taken place already. */
     if (rc == 0 && node->node_stat == NULL) {
-		/* Allocate and set our shadow registers. */
-		AVR32SPIREG *spireg = malloc(sizeof(AVR32SPIREG));
-		if (spireg) {
-			/* Set interface defaults. */
-			spireg->mr = AVR32_SPI_MR_MODFDIS_MASK | AVR32_SPI_MR_MSTR_MASK;
-			spireg->mr |= (1 << (AVR32_SPI_MR_PCS_OFFSET + node->node_cs));
-			spireg->csr = 0;
-			/* Update with node's defaults. */
-			node->node_stat = (void *)spireg;
-			Avr32SpiSetup(node);
+        /* Allocate and set our shadow registers. */
+        AVR32SPIREG *spireg = malloc(sizeof(AVR32SPIREG));
+        if (spireg) {
+            /* Set interface defaults. */
+            spireg->mr = AVR32_SPI_MR_MODFDIS_MASK | AVR32_SPI_MR_MSTR_MASK;
+            spireg->mr |= (1 << (AVR32_SPI_MR_PCS_OFFSET + node->node_cs));
+            spireg->csr = 0;
+            /* Update with node's defaults. */
+            node->node_stat = (void *) spireg;
+            Avr32SpiSetup(node);
 
-			/* 
-			* Register and enable SPI interrupt handler. 
-			*/
+            /* 
+             * Register and enable SPI interrupt handler. 
+             */
 #if !defined(SPIBUS1_POLLING_MODE) && defined(AVR32_SPI1_ADDRESS)
-			if (bus->bus_base == AVR32_SPI1_ADDRESS) {
+            if (bus->bus_base == AVR32_SPI1_ADDRESS) {
 #if defined(SPIBUS1_DOUBLE_BUFFER)
-				NutRegisterIrqHandler(bus->bus_sig, Avr32SpiInterrupt, &bus->bus_ready);
+                NutRegisterIrqHandler(bus->bus_sig, Avr32SpiInterrupt, &bus->bus_ready);
 #else
-				NutRegisterIrqHandler(bus->bus_sig, Avr32SpiBus1Interrupt, &bus->bus_ready);
+                NutRegisterIrqHandler(bus->bus_sig, Avr32SpiBus1Interrupt, &bus->bus_ready);
 #endif
-				outr(bus->bus_base + AVR32_SPI_IDR, (unsigned int) - 1);
-				NutIrqEnable(bus->bus_sig);
-			} else
-#endif /* !SPIBUS1_POLLING_MODE */
+                outr(bus->bus_base + AVR32_SPI_IDR, (unsigned int) -1);
+                NutIrqEnable(bus->bus_sig);
+            } else
+#endif                          /* !SPIBUS1_POLLING_MODE */
 
-			{
+            {
 #if !defined(SPIBUS0_POLLING_MODE)
 #if defined(SPIBUS0_DOUBLE_BUFFER)
-				NutRegisterIrqHandler(bus->bus_sig, Avr32SpiInterrupt, &bus->bus_ready);
+                NutRegisterIrqHandler(bus->bus_sig, Avr32SpiInterrupt, &bus->bus_ready);
 #else
-				NutRegisterIrqHandler(bus->bus_sig, Avr32SpiBus0Interrupt, &bus->bus_ready);
+                NutRegisterIrqHandler(bus->bus_sig, Avr32SpiBus0Interrupt, &bus->bus_ready);
 #endif
-				outr(bus->bus_base + AVR32_SPI_IDR, (unsigned int) - 1);
-				NutIrqEnable(bus->bus_sig);
-#endif /* !SPIBUS0_POLLING_MODE */
-			}
-		} else {
-			/* Out of memory? */
-			rc = -1;
-		}
-	}
-	return rc;
+                outr(bus->bus_base + AVR32_SPI_IDR, (unsigned int) -1);
+                NutIrqEnable(bus->bus_sig);
+#endif                          /* !SPIBUS0_POLLING_MODE */
+            }
+        } else {
+            /* Out of memory? */
+            rc = -1;
+        }
+    }
+    return rc;
 }
 
 #if defined(SPIBUS0_POLLING_MODE) || defined(SPIBUS1_POLLING_MODE)
@@ -240,9 +243,9 @@ int Avr32SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, i
         /* Transmission starts by writing the transmit data. */
         outr(base + AVR32_SPI_TDR, (b << AVR32_SPI_TDR_TD_OFFSET));
         /* Wait for receiver data register full. */
-        while((inr(base + AVR32_SPI_SR) & AVR32_SPI_RDRF_MASK) == 0);
+        while ((inr(base + AVR32_SPI_SR) & AVR32_SPI_RDRF_MASK) == 0);
         /* Read incoming data. */
-        b = (uint8_t)inr(base + AVR32_SPI_RDR) >> AVR32_SPI_RDR_RD_OFFSET;
+        b = (uint8_t) inr(base + AVR32_SPI_RDR) >> AVR32_SPI_RDR_RD_OFFSET;
         if (rxp) {
             *rxp++ = b;
         }
@@ -297,4 +300,4 @@ int Avr32SpiBusWait(NUTSPINODE * node, uint32_t tmo)
     }
     return 0;
 }
-#endif /* SPIBUS_POLLING_MODE */
+#endif                          /* SPIBUS_POLLING_MODE */

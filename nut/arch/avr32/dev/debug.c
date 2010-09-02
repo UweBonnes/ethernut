@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2001-2006 by egnite Software GmbH. All rights reserved.
+/*!
+ * Copyright (C) 2001-2010 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,8 +30,8 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
+
 
 /*!
  * \file arch/avr32/dev/debug0.c
@@ -60,7 +62,7 @@
 #define AVR32_USART0_TXD_PIN        AVR32_USART0_TXD_0_0_PIN
 #define AVR32_USART0_TXD_FUNCTION   AVR32_USART0_TXD_0_0_FUNCTION
 #elif defined(AVR32_USART0_TXD_0_PIN)
-#define AVR32_USART0_TXD_PIN    AVR32_USART0_TXD_0_PIN
+#define AVR32_USART0_TXD_PIN        AVR32_USART0_TXD_0_PIN
 #define AVR32_USART0_TXD_FUNCTION   AVR32_USART0_TXD_0_FUNCTION
 #endif
 
@@ -68,7 +70,7 @@
 #define AVR32_USART1_TXD_PIN        AVR32_USART1_TXD_0_0_PIN
 #define AVR32_USART1_TXD_FUNCTION   AVR32_USART1_TXD_0_0_FUNCTION
 #elif defined(AVR32_USART1_TXD_0_PIN)
-#define AVR32_USART1_TXD_PIN    AVR32_USART1_TXD_0_PIN
+#define AVR32_USART1_TXD_PIN        AVR32_USART1_TXD_0_PIN
 #define AVR32_USART1_TXD_FUNCTION   AVR32_USART1_TXD_0_FUNCTION
 #endif
 
@@ -76,7 +78,7 @@
 #define AVR32_USART2_TXD_PIN        AVR32_USART2_TXD_0_0_PIN
 #define AVR32_USART2_TXD_FUNCTION   AVR32_USART2_TXD_0_0_FUNCTION
 #elif defined(AVR32_USART2_TXD_0_PIN)
-#define AVR32_USART2_TXD_PIN    AVR32_USART2_TXD_0_PIN
+#define AVR32_USART2_TXD_PIN        AVR32_USART2_TXD_0_PIN
 #define AVR32_USART2_TXD_FUNCTION   AVR32_USART2_TXD_0_FUNCTION
 #endif
 
@@ -84,7 +86,7 @@
 #define AVR32_USART3_TXD_PIN        AVR32_USART3_TXD_0_0_PIN
 #define AVR32_USART3_TXD_FUNCTION   AVR32_USART3_TXD_0_0_FUNCTION
 #elif defined(AVR32_USART3_TXD_0_PIN)
-#define AVR32_USART3_TXD_PIN    AVR32_USART3_TXD_0_PIN
+#define AVR32_USART3_TXD_PIN        AVR32_USART3_TXD_0_PIN
 #define AVR32_USART3_TXD_FUNCTION   AVR32_USART3_TXD_0_FUNCTION
 #endif
 
@@ -137,7 +139,7 @@ static int DebugInit(NUTDEVICE * dev)
     volatile avr32_usart_t *usart = (avr32_usart_t *) dev->dev_base;
 
     /* Disable all USART interrupts.
-    ** Interrupts needed should be set explicitly on every reset. */
+     ** Interrupts needed should be set explicitly on every reset. */
     NutEnterCritical();
     usart->idr = 0xFFFFFFFF;
     usart->csr;
@@ -149,20 +151,17 @@ static int DebugInit(NUTDEVICE * dev)
     usart->ttgr = 0;
 
     /* Shutdown TX and RX (will be re-enabled when setup has successfully completed),
-    ** reset status bits and turn off DTR and RTS. */
-    usart->cr = AVR32_USART_CR_RSTRX_MASK   |
-				AVR32_USART_CR_RSTTX_MASK   |
-				AVR32_USART_CR_RSTSTA_MASK  |
-				AVR32_USART_CR_RSTIT_MASK   |
-				AVR32_USART_CR_RSTNACK_MASK |
+     ** reset status bits and turn off DTR and RTS. */
+    usart->cr = AVR32_USART_CR_RSTRX_MASK |
+        AVR32_USART_CR_RSTTX_MASK | AVR32_USART_CR_RSTSTA_MASK | AVR32_USART_CR_RSTIT_MASK | AVR32_USART_CR_RSTNACK_MASK |
 #ifndef AVR32_USART_CR_DTRDIS_MASK
-				AVR32_USART_CR_DTRDIS_MASK  |
+        AVR32_USART_CR_DTRDIS_MASK |
 #endif
-				AVR32_USART_CR_RTSDIS_MASK;
+        AVR32_USART_CR_RTSDIS_MASK;
 
     usart->mr |= (8 - 5) << AVR32_USART_MR_CHRL_OFFSET |        /* 8 bit character length */
         AVR32_USART_MR_PAR_NONE << AVR32_USART_MR_PAR_OFFSET |  /* No parity */
-        AVR32_USART_MR_CHMODE_NORMAL << AVR32_USART_MR_CHMODE_OFFSET | /* */
+        AVR32_USART_MR_CHMODE_NORMAL << AVR32_USART_MR_CHMODE_OFFSET |  /* */
         AVR32_USART_MR_NBSTOP_1 << AVR32_USART_MR_NBSTOP_OFFSET;
 
     /* Set normal mode. */
@@ -184,7 +183,7 @@ static void DebugPut(CONST NUTDEVICE * dev, char ch)
 {
     volatile avr32_usart_t *usart = (avr32_usart_t *) dev->dev_base;
 
-	/* Prepend new line by carriage return */
+    /* Prepend new line by carriage return */
     if (ch == '\n') {
         DebugPut(dev, '\r');
     }
@@ -245,12 +244,11 @@ static int DebugClose(NUTFILE * fp)
 static int Debug0Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART0_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART0_TXD_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART0_TXD_FUNCTION));
+    gpio_enable_module_pin(AVR32_USART0_TXD_PIN, AVR32_USART0_TXD_FUNCTION);
 
-	pm_enable_module(&AVR32_PM, AVR32_USART0_CLK_PBA);
+    pm_enable_module(&AVR32_PM, AVR32_USART0_CLK_PBA);
 
-	return DebugInit(dev);
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile0;
@@ -275,18 +273,17 @@ NUTDEVICE devDebug0 = {
     DebugClose,                 /*!< dev_close. */
     0                           /*!< dev_size. */
 };
-#endif /* AVR32_USART0_TXD_PIN */
+#endif                          /* AVR32_USART0_TXD_PIN */
 
 #ifdef AVR32_USART1_TXD_PIN
 static int Debug1Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART1_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART1_TXD_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART1_TXD_FUNCTION));
+    gpio_enable_module_pin(AVR32_USART1_TXD_PIN, AVR32_USART1_TXD_FUNCTION);
 
-	pm_enable_module(&AVR32_PM, AVR32_USART1_CLK_PBA);
+    pm_enable_module(&AVR32_PM, AVR32_USART1_CLK_PBA);
 
-	return DebugInit(dev);
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile1;
@@ -311,18 +308,17 @@ NUTDEVICE devDebug1 = {
     DebugClose,                 /*!< dev_close. */
     0                           /*!< dev_size. */
 };
-#endif /* AVR32_USART1_TXD_PIN */
+#endif                          /* AVR32_USART1_TXD_PIN */
 
 #ifdef AVR32_USART2_TXD_PIN
 static int Debug2Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART2_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART2_TXD_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART2_TXD_FUNCTION));
+    gpio_enable_module_pin(AVR32_USART2_TXD_PIN, AVR32_USART2_TXD_FUNCTION);
 
-	pm_enable_module(&AVR32_PM, AVR32_USART2_CLK_PBA);
+    pm_enable_module(&AVR32_PM, AVR32_USART2_CLK_PBA);
 
-	return DebugInit(dev);
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile2;
@@ -347,18 +343,17 @@ NUTDEVICE devDebug2 = {
     DebugClose,                 /*!< dev_close. */
     0                           /*!< dev_size. */
 };
-#endif /* AVR32_USART2_TXD_PIN */
+#endif                          /* AVR32_USART2_TXD_PIN */
 
 #ifdef AVR32_USART3_TXD_PIN
 static int Debug3Init(NUTDEVICE * dev)
 {
     /* Assign GPIO to USART. */
-    GpioPinConfigSet(AVR32_GPIO_BANK(AVR32_USART3_TXD_PIN), AVR32_GPIO_PIN(AVR32_USART3_TXD_PIN),
-                     AVR32_GPIO_FUNCTION(AVR32_USART3_TXD_FUNCTION));
+    gpio_enable_module_pin(AVR32_USART3_TXD_PIN, AVR32_USART3_TXD_FUNCTION);
 
-	pm_enable_module(&AVR32_PM, AVR32_USART3_CLK_PBA);
+    pm_enable_module(&AVR32_PM, AVR32_USART3_CLK_PBA);
 
-	return DebugInit(dev);
+    return DebugInit(dev);
 };
 
 static NUTFILE dbgfile3;
@@ -384,6 +379,6 @@ NUTDEVICE devDebug3 = {
     0                           /*!< dev_size. */
 };
 
-#endif /* AVR32_USART3_TXD_PIN */
+#endif                          /* AVR32_USART3_TXD_PIN */
 
 /*@}*/
