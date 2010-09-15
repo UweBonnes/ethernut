@@ -61,7 +61,7 @@ bool Builder::build( const QString& target )
 	if ( process->state() == QProcess::NotRunning )
 	{
 		QStringList env = QProcess::systemEnvironment();
-		env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=\\1;" + Settings::instance()->toolPath() );
+		env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=" + Settings::instance()->toolPath() + ";\\1" );
 		env << "MAKE=make -j" + QString::number(QThread::idealThreadCount() + 1);
 		process->setEnvironment( env );
 		process->setWorkingDirectory( Settings::instance()->buildPath() );
