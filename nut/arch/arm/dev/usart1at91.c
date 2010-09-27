@@ -186,8 +186,27 @@ NUTDEVICE devUsartAt911 = {
 #endif
 
 /*
-** SAM7S and SAM7SE pins.
+** AT91SAM9G45 pins.
 */
+#elif defined(MCU_AT91SAM9G45)
+
+#define UART_RXTX_PINS  (_BV(PB4_TXD1_A) | _BV(PB5_RXD1_A))
+#define UART_HDX_PIN    _BV(PD16_RTS1_A)
+#define UART_RTS_PIN    _BV(PD16_RTS1_A)
+#define UART_CTS_PIN    _BV(PD17_CTS1_A)
+
+#define UART_RXTX_PINS_ENABLE()     outr(PIOB_ASR, UART_RXTX_PINS); \
+                                    outr(PIOB_PDR, UART_RXTX_PINS)
+
+#if defined(UART_HARDWARE_HANDSHAKE)
+#define UART_HDX_PIN_ENABLE()       outr(PIOD_ASR, UART_HDX_PIN); \
+                                    outr(PIOD_PDR, UART_HDX_PIN)
+#define UART_RTS_PIN_ENABLE()       outr(PIOD_ASR, UART_RTS_PIN); \
+                                    outr(PIOD_PDR, UART_RTS_PIN)
+#define UART_CTS_PIN_ENABLE()       outr(PIOD_ASR, UART_CTS_PIN); \
+                                    outr(PIOD_PDR, UART_CTS_PIN)
+#endif
+
 #elif defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
 
 #define UART_RXTX_PINS  (_BV(PA21_RXD1_A) | _BV(PA22_TXD1_A))

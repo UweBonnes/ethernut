@@ -99,6 +99,8 @@
 #include <arch/arm/at91sam7se.h>
 #elif defined (MCU_AT91SAM9260)
 #include <arch/arm/at91sam9260.h>
+#elif defined (MCU_AT91SAM9G45)
+#include <arch/arm/at91sam9g45.h>
 #elif defined(MCU_AT91SAM9XE)
 #include <arch/arm/at91sam9xe.h>
 #endif

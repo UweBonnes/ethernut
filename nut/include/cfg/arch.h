@@ -212,6 +212,20 @@
 #define MCU_AT91SAM9260
 #endif
 
+#elif defined(AT91SAM9G45_EK)
+
+#ifndef PLATFORM
+#define PLATFORM AT91SAM9G45_EK
+#endif
+
+#ifndef ARM_GCC
+#define ARM_GCC
+#endif
+
+#ifndef MCU_AT91SAM9G45
+#define MCU_AT91SAM9G45
+#endif
+
 #endif /* Board */
 
 /*
@@ -242,7 +256,7 @@
 #endif
 #endif
 
-#if defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE) || defined(MCU_AT91SAM9XE)
+#if defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE) || defined(MCU_AT91SAM9XE) || defined(MCU_AT91SAM9G45)
 #ifndef MCU_AT91
 #define MCU_AT91
 #endif

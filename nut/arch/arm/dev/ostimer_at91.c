@@ -176,7 +176,6 @@
 void NutRegisterTimer(void (*handler) (void *))
 {
 #if defined(NUT_TICK_AT91PIT)
-
     /* Set compare value for the specified tick frequency. */
 #if defined(AT91_PLL_MAINCK)
     outr(PIT_MR, (At91GetMasterClock() / (16 * NUT_TICK_FREQ) - 1) << PIT_PIV_LSB);
@@ -195,7 +194,7 @@ void NutRegisterTimer(void (*handler) (void *))
 
     int dummy;
 
-#if defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
+#if defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9G45) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable TC0 clock. */
     outr(PMC_PCER, _BV(TC0_ID));
 #endif
@@ -377,9 +376,18 @@ uint32_t NutArchClockGet(int idx)
         case PMC_MDIV_4:
             rc /= 4;
             break;
+        case PMC_MDIV_3:
+            rc /= 3;
+            break;
         }
 #endif
     }
+#ifdef PMC_PLLADIV2
+    if (inr(PMC_MCKR) & PMC_PLLADIV2)
+    {
+      rc /= 2;
+    }
+#endif
 #endif
     return rc;
 }

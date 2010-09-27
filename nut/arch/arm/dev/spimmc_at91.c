@@ -80,7 +80,18 @@
  */
 /*@{*/
 
-#if defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+#if defined(MCU_AT91SAM9G45)
+
+#ifndef MMC_CS_BIT
+#define MMC_CS_BIT      PB3_SPI0_NPCS0_A
+#endif
+#define MMC_DATAOUT_BIT PB0_SPI0_MISO_A
+#define MMC_DATAIN_BIT  PB1_SPI0_MOSI_A
+#define MMC_CLK_BIT     PB2_SPI0_SPCK_A
+
+#define MMC_PIO_PDR     PIOB_PDR
+
+#elif defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
 
 #ifndef MMC_CS_BIT
 #define MMC_CS_BIT      PA3_SPI0_NPCS0_A

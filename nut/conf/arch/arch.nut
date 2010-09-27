@@ -320,6 +320,42 @@ nutarch =
                 makedefs = { "MCU=arm9" }
             },
             {
+                macro = "MCU_AT91SAM9G45",
+                brief = "Atmel AT91SAM9G45",
+                description = "ARM926EJ-S RISC microcontroller with Ethernet MAC, "..
+                              "one USB Device Port, and a USB Host controller. "..
+                              "It also integrates several standard peripherals, "..
+                              "such as the USART, SPI, TWI, Timer Counters, Synchronous "..
+                              "Serial Controller, ADC and MultiMedia Card Interface.\n\n",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_MCU_AT91",
+                    "HW_MCU_AT91SAM9G45",
+                    "HW_TIMER_AT91",
+                    "HW_PLL_AT91",
+                    "HW_SDRAMC",
+                    "HW_UART_AT91",
+                    "HW_DBGU_AT91",
+                    "HW_UART0_RTSCTS",
+                    "HW_UART0_MODEM",
+                    "HW_UART1_RTSCTS",
+                    "HW_EMAC_AT91",
+                    "HW_SPI_AT91",
+                    "HW_MCU_SWTWI",
+                    "HW_RSTC_AT91",
+                    "HW_PDC_AT91",
+                    "HW_GPIO",
+                    "HW_PDC_AT91",
+                    "HW_PIT_AT91"
+                },
+                makedefs = { "MCU=arm9" }
+            },
+            {
                 macro = "MCU_AT91SAM9XE512",
                 brief = "Atmel AT91SAM9XE512",
                 description = "ARM926EJ-S RISC microcontroller with Ethernet MAC, "..

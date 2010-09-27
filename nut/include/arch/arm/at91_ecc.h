@@ -89,7 +89,7 @@
 #define ECC_PR0    (ECC_BASE + ECC_PR0_OFF) /*!< \brief Parity register 0 address. */
 #define ECC_PR1_OFF             0x00000010  /*!< \brief Parity register 1 offset. */
 #define ECC_PR1    (ECC_BASE + ECC_PR1_OFF) /*!< \brief Parity register 1 address. */
-#define ECC_PR(i)  (ECC_BASE + 0x18 + (((i) - 2) * 4) /*!< \brief Parity registers 2 to 15 address. */
+#define ECC_PR(i)  (ECC_BASE + 0x18 + (((i) - 2) * 4)) /*!< \brief Parity registers 2 to 15 address. */
 #define ECC_BITADDR0            0x0000000F  /*!< \brief Corrupted bit offset mask. */
 #define ECC_BITADDR0_LSB                0   /*!< \brief Corrupted bit offset LSB. */
 #define ECC_BITADDR             0x00000007  /*!< \brief Corrupted bit offset mask, 8-bit word. */

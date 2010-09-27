@@ -232,7 +232,7 @@ extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (vo
 extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
 extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
 
-#elif defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512)
+#elif defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE512) || defined(MCU_AT91SAM9G45)
 
 extern IRQ_HANDLER sig_FIQ;
 extern IRQ_HANDLER sig_UART0;

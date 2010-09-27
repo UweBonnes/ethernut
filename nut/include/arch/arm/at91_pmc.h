@@ -197,6 +197,10 @@
 #define PMC_MDIV_1                  0x00000000  /*!< \brief Processor clock, not divided. */
 #define PMC_MDIV_2                  0x00000100  /*!< \brief Processor clock divided by 2. */
 #define PMC_MDIV_4                  0x00000200  /*!< \brief Processor clock divided by 4. */
+#define PMC_MDIV_3                  0x00000300  /*!< \brief Processor clock divided by 3. */
+#ifdef MCU_AT91SAM9G45
+#define PMC_PLLADIV2                0x00001000  /*!< \brief PLLA clock frequency devided by 2. */
+#endif
 #endif
 /*@}*/
 

@@ -273,6 +273,93 @@
 #endif /* PIOC_BASE */
 /*@}*/
 
+/*! \name PIO D Register Addresses */
+/*@{*/
+#if defined(PIOD_BASE)
+#define PIOD_PER    (PIOD_BASE + PIO_PER_OFF)   /*!< \brief PIO enable register address. */
+#define PIOD_PDR    (PIOD_BASE + PIO_PDR_OFF)   /*!< \brief PIO disable register address. */
+#define PIOD_PSR    (PIOD_BASE + PIO_PSR_OFF)   /*!< \brief PIO status register address. */
+#define PIOD_OER    (PIOD_BASE + PIO_OER_OFF)   /*!< \brief Output enable register address. */
+#define PIOD_ODR    (PIOD_BASE + PIO_ODR_OFF)   /*!< \brief Output disable register address. */
+#define PIOD_OSR    (PIOD_BASE + PIO_OSR_OFF)   /*!< \brief Output status register address. */
+#define PIOD_IFER   (PIOD_BASE + PIO_IFER_OFF)  /*!< \brief Input filter enable register address. */
+#define PIOD_IFDR   (PIOD_BASE + PIO_IFDR_OFF)  /*!< \brief Input filter disable register address. */
+#define PIOD_IFSR   (PIOD_BASE + PIO_IFSR_OFF)  /*!< \brief Input filter status register address. */
+#define PIOD_SODR   (PIOD_BASE + PIO_SODR_OFF)  /*!< \brief Set output data register address. */
+#define PIOD_CODR   (PIOD_BASE + PIO_CODR_OFF)  /*!< \brief Clear output data register address. */
+#define PIOD_ODSR   (PIOD_BASE + PIO_ODSR_OFF)  /*!< \brief Output data status register address. */
+#define PIOD_PDSR   (PIOD_BASE + PIO_PDSR_OFF)  /*!< \brief Pin data status register address. */
+#define PIOD_IER    (PIOD_BASE + PIO_IER_OFF)   /*!< \brief Interrupt enable register address. */
+#define PIOD_IDR    (PIOD_BASE + PIO_IDR_OFF)   /*!< \brief Interrupt disable register address. */
+#define PIOD_IMR    (PIOD_BASE + PIO_IMR_OFF)   /*!< \brief Interrupt mask register address. */
+#define PIOD_ISR    (PIOD_BASE + PIO_ISR_OFF)   /*!< \brief Interrupt status register address. */
+#if defined(PIO_HAS_MULTIDRIVER)
+#define PIOD_MDER   (PIOD_BASE + PIO_MDER_OFF)  /*!< \brief Multi-driver enable register address. */
+#define PIOD_MDDR   (PIOD_BASE + PIO_MDDR_OFF)  /*!< \brief Multi-driver disable register address. */
+#define PIOD_MDSR   (PIOD_BASE + PIO_MDSR_OFF)  /*!< \brief Multi-driver status register address. */
+#endif /* PIO_HAS_MULTIDRIVER */
+#if defined(PIO_HAS_PULLUP)
+#define PIOD_PUDR   (PIOD_BASE + PIO_PUDR_OFF)  /*!< \brief Pull-up disable register address. */
+#define PIOD_PUER   (PIOD_BASE + PIO_PUER_OFF)  /*!< \brief Pull-up enable register address. */
+#define PIOD_PUSR   (PIOD_BASE + PIO_PUSR_OFF)  /*!< \brief Pull-up status register address. */
+#endif /* PIO_HAS_PULLUP */
+#if defined(PIO_HAS_PERIPHERALSELECT)
+#define PIOD_ASR    (PIOD_BASE + PIO_ASR_OFF)   /*!< \brief PIO peripheral A select register address. */
+#define PIOD_BSR    (PIOD_BASE + PIO_BSR_OFF)   /*!< \brief PIO peripheral B select register address. */
+#define PIOD_ABSR   (PIOD_BASE + PIO_ABSR_OFF)  /*!< \brief PIO peripheral AB status register address. */
+#endif /* PIO_HAS_PERIPHERALSELECT */
+#if defined(PIO_HAS_OUTPUTWRITEENABLE)
+#define PIOD_OWER   (PIOD_BASE + PIO_OWER_OFF)  /*!< \brief PIO output write enable register address. */
+#define PIOD_OWDR   (PIOD_BASE + PIO_OWDR_OFF)  /*!< \brief PIO output write disable register address. */
+#define PIOD_OWSR   (PIOD_BASE + PIO_OWSR_OFF)  /*!< \brief PIO output write status register address. */
+#endif /* PIO_HAS_OUTPUTWRITEENABLE */
+#endif /* PIOD_BASE */
+/*@}*/
+
+
+/*! \name PIO E Register Addresses */
+/*@{*/
+#if defined(PIOE_BASE)
+#define PIOE_PER    (PIOE_BASE + PIO_PER_OFF)   /*!< \brief PIO enable register address. */
+#define PIOE_PDR    (PIOE_BASE + PIO_PDR_OFF)   /*!< \brief PIO disable register address. */
+#define PIOE_PSR    (PIOE_BASE + PIO_PSR_OFF)   /*!< \brief PIO status register address. */
+#define PIOE_OER    (PIOE_BASE + PIO_OER_OFF)   /*!< \brief Output enable register address. */
+#define PIOE_ODR    (PIOE_BASE + PIO_ODR_OFF)   /*!< \brief Output disable register address. */
+#define PIOE_OSR    (PIOE_BASE + PIO_OSR_OFF)   /*!< \brief Output status register address. */
+#define PIOE_IFER   (PIOE_BASE + PIO_IFER_OFF)  /*!< \brief Input filter enable register address. */
+#define PIOE_IFDR   (PIOE_BASE + PIO_IFDR_OFF)  /*!< \brief Input filter disable register address. */
+#define PIOE_IFSR   (PIOE_BASE + PIO_IFSR_OFF)  /*!< \brief Input filter status register address. */
+#define PIOE_SODR   (PIOE_BASE + PIO_SODR_OFF)  /*!< \brief Set output data register address. */
+#define PIOE_CODR   (PIOE_BASE + PIO_CODR_OFF)  /*!< \brief Clear output data register address. */
+#define PIOE_ODSR   (PIOE_BASE + PIO_ODSR_OFF)  /*!< \brief Output data status register address. */
+#define PIOE_PDSR   (PIOE_BASE + PIO_PDSR_OFF)  /*!< \brief Pin data status register address. */
+#define PIOE_IER    (PIOE_BASE + PIO_IER_OFF)   /*!< \brief Interrupt enable register address. */
+#define PIOE_IDR    (PIOE_BASE + PIO_IDR_OFF)   /*!< \brief Interrupt disable register address. */
+#define PIOE_IMR    (PIOE_BASE + PIO_IMR_OFF)   /*!< \brief Interrupt mask register address. */
+#define PIOE_ISR    (PIOE_BASE + PIO_ISR_OFF)   /*!< \brief Interrupt status register address. */
+#if defined(PIO_HAS_MULTIDRIVER)
+#define PIOE_MDER   (PIOE_BASE + PIO_MDER_OFF)  /*!< \brief Multi-driver enable register address. */
+#define PIOE_MDDR   (PIOE_BASE + PIO_MDDR_OFF)  /*!< \brief Multi-driver disable register address. */
+#define PIOE_MDSR   (PIOE_BASE + PIO_MDSR_OFF)  /*!< \brief Multi-driver status register address. */
+#endif /* PIO_HAS_MULTIDRIVER */
+#if defined(PIO_HAS_PULLUP)
+#define PIOE_PUDR   (PIOE_BASE + PIO_PUDR_OFF)  /*!< \brief Pull-up disable register address. */
+#define PIOE_PUER   (PIOE_BASE + PIO_PUER_OFF)  /*!< \brief Pull-up enable register address. */
+#define PIOE_PUSR   (PIOE_BASE + PIO_PUSR_OFF)  /*!< \brief Pull-up status register address. */
+#endif /* PIO_HAS_PULLUP */
+#if defined(PIO_HAS_PERIPHERALSELECT)
+#define PIOE_ASR    (PIOE_BASE + PIO_ASR_OFF)   /*!< \brief PIO peripheral A select register address. */
+#define PIOE_BSR    (PIOE_BASE + PIO_BSR_OFF)   /*!< \brief PIO peripheral B select register address. */
+#define PIOE_ABSR   (PIOE_BASE + PIO_ABSR_OFF)  /*!< \brief PIO peripheral AB status register address. */
+#endif /* PIO_HAS_PERIPHERALSELECT */
+#if defined(PIO_HAS_OUTPUTWRITEENABLE)
+#define PIOE_OWER   (PIOE_BASE + PIO_OWER_OFF)  /*!< \brief PIO output write enable register address. */
+#define PIOE_OWDR   (PIOE_BASE + PIO_OWDR_OFF)  /*!< \brief PIO output write disable register address. */
+#define PIOE_OWSR   (PIOE_BASE + PIO_OWSR_OFF)  /*!< \brief PIO output write status register address. */
+#endif /* PIO_HAS_OUTPUTWRITEENABLE */
+#endif /* PIOD_BASE */
+/*@}*/
+
 /*@} xgNutArchArmAt91Pio */
 
 #endif                          /* _ARCH_ARM_AT91_PIO_H_ */

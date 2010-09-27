@@ -238,6 +238,14 @@ nutarch_arm =
                 default = 1,
                 requires = { "HW_MCU_AT91SAM9XE" },
                 file = "include/cfg/arch.h"
+            },
+            {
+                macro = "MCU_AT91SAM9G45",
+                brief = "Atmel AT91SAM9G45",
+                type = "integer",
+                default = 1,
+                requires = { "HW_MCU_AT91SAM9G45" },
+                file = "include/cfg/arch.h"
             }
         }
     },
@@ -621,6 +629,32 @@ nutarch_arm =
         },
     },
     {
+        name = "nutarch_arm_irqat91sam9g45",
+        brief = "Interrupt Handler (SAM9G45)",
+        requires = { "HW_MCU_AT91SAM9G45" },
+        provides = { "DEV_IRQ_AT91" },
+        sources =
+        {
+            "arm/dev/ih_at91sys.c",
+            "arm/dev/ih_at91emac.c",
+            "arm/dev/ih_at91fiq.c",
+            "arm/dev/ih_at91irq0.c",
+            "arm/dev/ih_at91pioa.c",
+            "arm/dev/ih_at91piob.c",
+            "arm/dev/ih_at91pioc.c",
+            "arm/dev/ih_at91spi0.c",
+            "arm/dev/ih_at91spi1.c",
+            "arm/dev/ih_at91ssc.c",
+            "arm/dev/ih_at91swirq.c",
+            "arm/dev/ih_at91tc0.c",
+            "arm/dev/ih_at91tc1.c",
+            "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91twi.c",
+            "arm/dev/ih_at91uart0.c",
+            "arm/dev/ih_at91uart1.c",
+        },
+    },
+    {
         name = "nutarch_arm_irqat91sam9xe",
         brief = "Interrupt Handler (SAM9XE)",
         requires = { "HW_MCU_AT91SAM9XE" },
@@ -913,7 +947,7 @@ nutarch_arm =
             {
                 macro = "LCD_E2E_DLY",
                 brief = "Enable to Enable Delay",
-                description = "Time for Enable to Enable delay in µs. This is the timespan between two\n"..
+                description = "Time for Enable to Enable delay in ï¿½s. This is the timespan between two\n"..
                               "consecutive accesses of the 4-bit or 8-bit bus.\n For SPI-bus driven chips, this "..
                               "is the /CS to /CS delay. This function uses NutMicroDelay()",
                 default = "80",
@@ -1218,7 +1252,7 @@ nutarch_arm =
     {
         name = "nutarch_arm_at91_emac",
         brief = "AT91 EMAC Driver",
-        description = "LAN driver for AT91SAM7X and AT91SAM9260.",
+        description = "LAN driver for AT91SAM7X and AT91SAM9260 and AT91SAM9G45.",
         requires = { "HW_EMAC_AT91", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
         sources = { "arm/dev/at91_emac.c" },
