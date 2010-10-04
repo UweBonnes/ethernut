@@ -390,14 +390,17 @@ NUTCOMPONENTOPTION* NutComponentModel::findOptionByName( NUTCOMPONENT* compo, co
 /*!
 	Deactivate a list of options.
 */
-void NutComponentModel::deactivateOptionList( char **exlist )
+void NutComponentModel::deactivateOptionList( char **exlist, NUTCOMPONENT* compo /*= 0*/ )
 {
 	if (!exlist)
 		return;
 
+	if (!compo)
+		compo = d->rootComponent->nc_child; 
+
 	for (int i = 0; exlist[i]; ++i) 
 	{
-		NUTCOMPONENTOPTION *opt = findOptionByName(d->rootComponent->nc_child, exlist[i]);
+		NUTCOMPONENTOPTION *opt = findOptionByName(compo, exlist[i]);
 		if (opt) 
 			opt->nco_active = 0;
 	}

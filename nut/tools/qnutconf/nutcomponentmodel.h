@@ -86,7 +86,7 @@ private:
 	NUTREPOSITORY* repository();
 	bool isOptionActive( const char* );
 	NUTCOMPONENTOPTION* findOptionByName(NUTCOMPONENT* compo, const char* name);
-	void deactivateOptionList(char **exlist);
+	void deactivateOptionList(char **exlist, NUTCOMPONENT* compo = 0);
 
 	void saveComponentOptions( QTextStream& file, NUTCOMPONENT* compo );
 };

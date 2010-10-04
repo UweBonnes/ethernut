@@ -421,7 +421,7 @@ void TreeItem::setActive( bool enable )
 	{
 		// Make sure exclusive options only have one of them enabled.
 		if ( enable && componentOptions->nco_exclusivity )
-			model->deactivateOptionList(componentOptions->nco_exclusivity);
+			model->deactivateOptionList(componentOptions->nco_exclusivity, componentOptions->nco_compo);
 
 		componentOptions->nco_active = enable;
 		if (enable && !componentOptions->nco_value)
