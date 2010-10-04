@@ -47,6 +47,8 @@
 
 #include <avr32/io.h>
 
+#ifdef AVR32_EIC_EXTINT_6_PIN
+
 #ifndef NUT_IRQPRI_IRQ6
 #define NUT_IRQPRI_IRQ6  AVR32_INTC_INT3
 #endif
@@ -185,3 +187,5 @@ static int Interrupt6Ctl(int cmd, void *param)
     }
     return rc;
 }
+
+#endif // AVR32_EIC_EXTINT_6_PIN

@@ -954,6 +954,29 @@ nutarch =
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=uc3b0256" }
+            },
+            {
+                macro = "MCU_AVR32UC3B164",
+                brief = "Atmel AT32UC3B164",
+                description = "32-bit AVR UC3 RISC microcontroller with 64k Flash, 16k SRAM,\n"..
+                              "Full-Speed + Mini-Host USB device and many other peripherals.",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_AVR32" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_AVR32",
+                    "HW_MCU_AVR32UC3",
+                    "HW_TIMER_AVR32",
+                    "HW_UART_AVR32",
+                    "HW_SPI_AVR32_0",
+                    "HW_EFC_AVR32",
+                    "HW_WDOG_AVR32",
+                    "HW_PLL_AVR32",
+                    "HW_GPIO"
+                },
+                makedefs = { "MCU=uc3b164" }
             }
         }
     },
