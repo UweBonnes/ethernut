@@ -1708,10 +1708,11 @@ THREAD(NutTcpSm, arg)
                  * Process retransmit timer.
                  */
                 if (sock->so_tx_nbq && sock->so_retran_time) {
-                    if ((uint16_t)NutGetMillis() - (sock->so_retran_time & ~1) >= sock->so_rtto) {
+                    if ((uint16_t)((uint16_t)NutGetMillis() - (sock->so_retran_time & ~1)) >= sock->so_rtto) {
                         NutTcpStateRetranTimeout(sock);
                     }
                 }
+
 
                 /*
                  * Destroy sockets after timeout in TIMEWAIT state.
