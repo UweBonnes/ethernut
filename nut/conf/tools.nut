@@ -256,17 +256,23 @@ nuttools =
 }
 
 avr32_ld_description = {
-                        uc3a0512_ram   = "AVR32UC3A0512, code running in FLASH",
-                        uc3a0512_sdram = "AVR32UC3A0512, code running in FLASH, data in external SDRAM",
-                        uc3a3256_rom   = "AT32UC3A3256, code in running in FLASH",
+                        uc3a0512_rom        = "AVR32UC3A0512, code running in FLASH",
+                        uc3a0512_rom_extram = "AVR32UC3A0512, code running in FLASH, data in external SDRAM",
+                        uc3a3256_rom        = "AT32UC3A3256, code running in FLASH",
+                        uc3a3256_rom_extram = "AT32UC3A3256, code running in FLASH, data in external SDRAM",
+                        uc3a0256_rom        = "AT32UC3A0256, code running in FLASH",
+                        uc3b164_rom         = "AT32UC3B164, code running in FLASH",
 }
 
 
 avr32_ld_choice = { 
 					" ", 
-					"uc3a0512_ram",
-					"uc3a0512_sdram",
-					"uc3a3256_rom"
+					"uc3a0512_rom",
+					"uc3a0512_rom_extram",
+					"uc3a3256_rom",
+					"uc3a3256_rom_extram",
+					"uc3a0256_rom",
+					"uc3b164_rom"
 }
 
 arm_ld_description = {
