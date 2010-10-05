@@ -853,7 +853,7 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
 	 if(sock->so_state == TCPS_SYN_SENT)
 		NutEventWait(&sock->so_ac_tq, 0);
 
-    if (sock->so_state != TCPS_ESTABLISHED)
+    if (sock->so_state != TCPS_ESTABLISHED && sock->so_state != TCPS_CLOSE_WAIT)
         return -1;
 
     return 0;
@@ -1708,7 +1708,11 @@ THREAD(NutTcpSm, arg)
                  * Process retransmit timer.
                  */
                 if (sock->so_tx_nbq && sock->so_retran_time) {
-                    if ((uint16_t)((uint16_t)NutGetMillis() - (sock->so_retran_time & ~1)) >= sock->so_rtto) {
+                    uint16_t millis = (uint16_t)NutGetMillis();
+                    uint16_t diff = millis > sock->so_retran_time ? 
+                                    millis - sock->so_retran_time : 
+                                    sock->so_retran_time - millis;
+                    if (diff >= sock->so_rtto) {
                         NutTcpStateRetranTimeout(sock);
                     }
                 }
