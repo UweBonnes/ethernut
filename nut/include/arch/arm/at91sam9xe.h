@@ -52,6 +52,8 @@
  * \endverbatim
  */
 
+#include <arch/arm/v5te.h>
+
 #define FLASH_BASE      0x100000UL
 #define RAM_BASE        0x200000UL
 
@@ -145,6 +147,7 @@
 #include <arch/arm/at91_ccfg.h>
 #include <arch/arm/at91_sdramc.h>
 #include <arch/arm/at91_adc.h>
+#include <arch/arm/at91_eefc.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam9x */
 /*@{*/
