@@ -853,7 +853,7 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
 	 if(sock->so_state == TCPS_SYN_SENT)
 		NutEventWait(&sock->so_ac_tq, 0);
 
-    if (sock->so_state != TCPS_ESTABLISHED)
+    if (sock->so_state != TCPS_ESTABLISHED && sock->so_state != TCPS_CLOSE_WAIT)
         return -1;
 
     return 0;
