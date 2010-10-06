@@ -102,9 +102,17 @@ void MainWindow::writeSettings()
 
 void MainWindow::on_actionOpen_triggered()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), QString(), tr("Nut/OS Configuration (*.conf)") );
+	// Retrieve conf directory visited last.
+	QSettings settings;
+	QString confdir = settings.value("confpath", "").toString();
+
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), confdir, tr("Nut/OS Configuration (*.conf)") );
 	if ( !fileName.isEmpty() )
 	{
+		// Save conf directory for later retrieval.
+		confdir = QFileInfo(fileName).absolutePath();
+		settings.setValue("confpath", confdir);
+
 		QApplication::setOverrideCursor( Qt::BusyCursor );
 		if ( !model->openConfig( fileName ) )
 		{
