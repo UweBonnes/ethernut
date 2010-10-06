@@ -180,6 +180,10 @@
 #define DEV_UART1       devUsartAvr321
 #endif
 
+#ifndef DEV_UART2
+#define DEV_UART2       devUsartAvr322
+#endif
+
 #if defined(EVK1104) && !defined(DEV_UART)
 #define DEV_UART        DEV_UART1
 #define DEV_UART_NAME   DEV_UART1_NAME
@@ -201,6 +205,10 @@
 
 #if defined(DEV_UART1) && !defined(DEV_UART1_NAME)
 #define DEV_UART1_NAME  "uart1"
+#endif
+
+#if defined(DEV_UART2) && !defined(DEV_UART2_NAME)
+#define DEV_UART2_NAME  "uart2"
 #endif
 
 #if defined(DEV_UARTD) && !defined(DEV_UARTD_NAME)

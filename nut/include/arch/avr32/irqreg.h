@@ -43,6 +43,7 @@
 extern IRQ_HANDLER sig_RTC;
 extern IRQ_HANDLER sig_UART0;
 extern IRQ_HANDLER sig_UART1;
+extern IRQ_HANDLER sig_UART2;
 extern IRQ_HANDLER sig_MACB;
 extern IRQ_HANDLER sig_SPI0;
 extern IRQ_HANDLER sig_SPI1;
