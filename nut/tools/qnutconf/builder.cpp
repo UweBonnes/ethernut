@@ -38,10 +38,12 @@
 
 Builder::Builder()
 {
+	verbose_log = false;
+
 	process = new QProcess( this );
-	process->setProcessChannelMode( QProcess::MergedChannels );
 	connect( process, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(processNextTarget(int)) );
 	connect( process, SIGNAL(readyReadStandardOutput()), SLOT(readyReadStandardOutput()) );
+	connect( process, SIGNAL(readyReadStandardError()), SLOT(readyReadStandardError()) );
 }
 
 Builder::~Builder()
@@ -55,11 +57,17 @@ Builder* Builder::instance()
 	return theInstance;
 }
 
-bool Builder::build( const QString& target )
+bool Builder::build( const QString& target, bool verbose )
 {
 	queue.append( target );
 	if ( process->state() == QProcess::NotRunning )
 	{
+		verbose_log = verbose;
+		if (verbose) {
+			process->setProcessChannelMode( QProcess::MergedChannels );
+		} else {
+			process->setProcessChannelMode( QProcess::SeparateChannels );
+		}
 		QStringList env = QProcess::systemEnvironment();
 		env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=" + Settings::instance()->toolPath() + ";\\1" );
 		env << "MAKE=make -j" + QString::number(QThread::idealThreadCount() + 1);
@@ -97,6 +105,13 @@ void Builder::runMake( const QString& target )
 void Builder::readyReadStandardOutput()
 {
 	QByteArray ba = process->readAllStandardOutput();
+	if ( verbose_log && !ba.isEmpty() )
+		emit message( ba.trimmed() );
+}
+
+void Builder::readyReadStandardError()
+{
+	QByteArray ba = process->readAllStandardError();
 	if ( !ba.isEmpty() )
 		emit message( ba.trimmed() );
 }

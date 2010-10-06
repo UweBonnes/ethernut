@@ -202,9 +202,6 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	ui.actionCreate_sample->setEnabled( false );
 	ui.actionBuildStop->setEnabled( true );
 
-	// Clear log window
-	ui.logPanel->clear();
-
 	// Measure build time
 	time.start();
 
@@ -212,11 +209,11 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	model->generateBuildTree();
 
 	/* Clean up any previous build */
-	Builder::instance()->build( "clean" );
+	Builder::instance()->build( "clean", ui.logVerbose->isChecked() );
 	/* Make all */
-	Builder::instance()->build( "all" );
+	Builder::instance()->build( "all", ui.logVerbose->isChecked() );
 	/* Make install */
-	Builder::instance()->build( "install" );
+	Builder::instance()->build( "install", ui.logVerbose->isChecked() );
 
 }
 

@@ -49,17 +49,19 @@ public:
 	Builder();
 	~Builder();
 
-	bool build( const QString& target );
+	bool build( const QString& target, bool verbose );
 	void stop();
 
 	static Builder* instance();
 
 private:
 	void runMake( const QString& target );
+	bool verbose_log;
 
 private slots:
 	void processNextTarget(int exitCode);
 	void readyReadStandardOutput();
+	void readyReadStandardError();
 
 signals:
 	void message( const QString& message );
