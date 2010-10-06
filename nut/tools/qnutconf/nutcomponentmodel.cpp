@@ -125,21 +125,21 @@ bool NutComponentModel::openConfig( const QString& fileName )
 			emit errorMessage( QLatin1String(GetScriptErrorString()) );
 			return false; // Failed to open repository
 		}
-		
+
 		d->rootComponent = LoadComponents(d->repository);
 		if ( !d->rootComponent )
 		{
 			emit errorMessage( QLatin1String(GetScriptErrorString()) );
 			return false; // Failed to open repository
 		}
-		
+
 		if( ConfigureComponents(d->repository, d->rootComponent, qPrintable(fileName)) )
 		{
 			emit errorMessage( QLatin1String(GetScriptErrorString()) );
 			return false; // Failed to open repository
 		}
 
-		if ( RefreshComponents(d->repository, d->rootComponent) ) 
+		if ( RefreshComponents(d->repository, d->rootComponent) )
 			emit errorMessage( tr("WARNING: Cyclic Dependency Detected. Check dependencies on the .nut files") );
 		 else
 			emit message( tr("OK") );
@@ -154,16 +154,16 @@ void NutComponentModel::saveComponentOptions( QTextStream& stream, NUTCOMPONENT*
 	while( compo )
 	{
 		NUTCOMPONENTOPTION* opts = compo->nc_opts;
-		while (opts) 
+		while (opts)
 		{
-			if(opts->nco_enabled && opts->nco_active) 
+			if(opts->nco_enabled && opts->nco_active)
 			{
 				QString value;
-				if (opts->nco_value) 
+				if (opts->nco_value)
 				{
 					/* Save edited value. */
 					value = QLatin1String(opts->nco_value);
-				} 
+				}
 				else
 				{
 					/* Save configured value. */
@@ -173,7 +173,7 @@ void NutComponentModel::saveComponentOptions( QTextStream& stream, NUTCOMPONENT*
 				}
 
 				/* Do not save empty values, unless they are boolean. */
-				if ( value.isEmpty() ) 
+				if ( value.isEmpty() )
 				{
 					char* flavor = GetOptionFlavour(d->repository, opts->nco_compo, opts->nco_name);
 					QString flavorString = QString(QLatin1String(flavor)).toLower();
@@ -215,7 +215,7 @@ bool NutComponentModel::saveConfig( const QString& filename )
 
 
 /*!
-	Close the repository and go back to a pre openConfig state 
+	Close the repository and go back to a pre openConfig state
 */
 void NutComponentModel::close()
 {
@@ -369,7 +369,7 @@ NUTCOMPONENTOPTION* NutComponentModel::findOptionByName( NUTCOMPONENT* compo, co
 	if (!compo && d->rootComponent)
 		compo = d->rootComponent->nc_child;
 
-	while (compo) 
+	while (compo)
 	{
 		NUTCOMPONENTOPTION* opts = compo->nc_opts;
 		while (opts) {
@@ -396,12 +396,12 @@ void NutComponentModel::deactivateOptionList( char **exlist, NUTCOMPONENT* compo
 		return;
 
 	if (!compo)
-		compo = d->rootComponent->nc_child; 
+		compo = d->rootComponent->nc_child;
 
-	for (int i = 0; exlist[i]; ++i) 
+	for (int i = 0; exlist[i]; ++i)
 	{
 		NUTCOMPONENTOPTION *opt = findOptionByName(compo, exlist[i]);
-		if (opt) 
+		if (opt)
 			opt->nco_active = 0;
 	}
 }
@@ -414,7 +414,7 @@ bool NutComponentModel::generateBuildTree()
 {
 	emit message( tr("Creating Makefiles for %1 in %2").arg(Settings::instance()->targetPlatform(), Settings::instance()->buildPath()) );
 
-	if ( CreateMakeFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit(), 
+	if ( CreateMakeFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit(),
 		Settings::instance()->sourceDir().toLocal8Bit(), Settings::instance()->targetPlatform().toLocal8Bit(),
 #ifdef Q_OS_WIN32
 		Settings::instance()->includePath().join(";").toLocal8Bit(),
@@ -453,7 +453,7 @@ bool NutComponentModel::generateSampleMakefiles()
 		instDir = QDir(instDir).absolutePath();
 	}
 
-	if( CreateSampleDirectory( d->repository, d->rootComponent, qPrintable(buildPath), qPrintable(appDir), qPrintable(srcDir), 
+	if( CreateSampleDirectory( d->repository, d->rootComponent, qPrintable(buildPath), qPrintable(appDir), qPrintable(srcDir),
 		qPrintable(instDir), platform, programmer, 0, 0 ) )
 			return false;
 	return true;
