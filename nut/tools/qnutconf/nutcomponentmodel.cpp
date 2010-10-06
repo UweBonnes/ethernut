@@ -412,6 +412,11 @@ void NutComponentModel::deactivateOptionList( char **exlist, NUTCOMPONENT* compo
 */
 bool NutComponentModel::generateBuildTree()
 {
+	QString instDir = Settings::instance()->installPath();
+	if (instDir.isEmpty()) {
+		instDir = Settings::instance()->buildPath() + "/lib";
+	}
+
 	emit message( tr("Creating Makefiles for %1 in %2").arg(Settings::instance()->targetPlatform(), Settings::instance()->buildPath()) );
 
 	if ( CreateMakeFiles( d->repository, d->rootComponent, Settings::instance()->buildPath().toLocal8Bit(),
@@ -421,7 +426,7 @@ bool NutComponentModel::generateBuildTree()
 #else
 		Settings::instance()->includePath().join(":").toLocal8Bit(),
 #endif
-		0, Settings::instance()->installPath().toLocal8Bit()) )
+		0, qPrintable(instDir)) )
 	{
 		return false;
 	}
@@ -445,6 +450,9 @@ bool NutComponentModel::generateSampleMakefiles()
 	QByteArray platform = Settings::instance()->targetPlatform().toLocal8Bit();
 	QByteArray programmer = Settings::instance()->programmer().toLocal8Bit();
 
+	if (instDir.isEmpty()) {
+		instDir = buildPath + "/lib";
+	}
 	if ( Settings::instance()->absolutePathInSamples() )
 	{
 		buildPath = QDir(buildPath).absolutePath();
