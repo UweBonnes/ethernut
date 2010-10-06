@@ -1,10 +1,14 @@
 <RCC>
   <qresource>
     <file>images/text.png</file>
+    <file>images/text_dis.png</file>
     <file>images/enumerated.png</file>
+    <file>images/enumerated_dis.png</file>
     <file>images/integer.png</file>
+    <file>images/integer_dis.png</file>
     <file>images/library.png</file>
     <file>images/module.png</file>
+    <file>images/module_dis.png</file>
     <file>images/save_large.png</file>
     <file>images/open_large.png</file>
     <file>images/buildlibrary_large.png</file>

@@ -35,7 +35,7 @@
 #include "nutcomponentmodel_p.h"
 
 
-TreeItem::TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, TreeItem* parent /*= 0 */ ) : parentItem( parent ), 
+TreeItem::TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, TreeItem* parent /*= 0 */ ) : parentItem( parent ),
   model( parentModel ), parentComponent( pComponent ), componentOptions( 0 )
 {
 	/* Libraries contain modules. */
@@ -48,11 +48,11 @@ TreeItem::TreeItem( NUTCOMPONENT* pComponent, NutComponentModel* parentModel, Tr
 	}
 }
 
-TreeItem::TreeItem( NUTCOMPONENTOPTION* opts, NutComponentModel* parentModel, TreeItem* parent ) : parentItem( parent ), 
+TreeItem::TreeItem( NUTCOMPONENTOPTION* opts, NutComponentModel* parentModel, TreeItem* parent ) : parentItem( parent ),
   model( parentModel ), parentComponent( 0 ), componentOptions( opts )
 {
 	componentTypeValue = nutOption;
-	
+
 	if (componentOptions && componentOptions->nco_exclusivity)
 		uiHint = nutHintRadio;
 	else
@@ -104,7 +104,7 @@ QVariant TreeItem::data( int column, int role ) const
 
 	case Qt::DecorationRole:
 		if ( column == 0 )
-			return icon();
+			return icon(isEnabled());
 		break;
 
 	case Qt::CheckStateRole:
@@ -175,7 +175,7 @@ QString TreeItem::briefDescription() const
 	} else {
 		str = ("Nut/OS Components");
 	}
-	
+
 	if (str.isEmpty())
 		return name();
 
@@ -241,7 +241,7 @@ QVariant TreeItem::value() const
 */
 bool TreeItem::setValue( const QVariant& v )
 {
-	if (componentOptions) 
+	if (componentOptions)
 	{
 		if ( v != value() )
 		{
@@ -251,7 +251,7 @@ bool TreeItem::setValue( const QVariant& v )
 			componentOptions->nco_active = 1;
 		}
 	}
-	return true;	
+	return true;
 }
 
 Qt::ItemFlags TreeItem::flags( int column ) const
@@ -312,7 +312,7 @@ TreeItem::nutOptionType TreeItem::optionType() const
 
 TreeItem::nutComponentType TreeItem::componentType() const
 {
-	return componentTypeValue;	
+	return componentTypeValue;
 }
 
 TreeItem::nutOptionFlavor TreeItem::optionFlavor() const
@@ -333,7 +333,7 @@ TreeItem::nutOptionFlavor TreeItem::optionFlavor() const
 	return nutFlavorNone;
 }
 
-QPixmap TreeItem::icon() const
+QPixmap TreeItem::icon(bool enabled) const
 {
 	switch( componentType() )
 	{
@@ -341,7 +341,9 @@ QPixmap TreeItem::icon() const
 		return QPixmap(":/images/library.png");
 
 	case nutModule:
-		return QPixmap(":/images/module.png");
+		if (enabled)
+			return QPixmap(":/images/module.png");
+		return QPixmap(":/images/module_dis.png");
 
 	case nutOption:
 		// Don't show up icon if there is a check box.
@@ -351,12 +353,18 @@ QPixmap TreeItem::icon() const
 		switch( optionType() )
 		{
 		case TreeItem::nutInteger:
-			return QPixmap(":/images/integer.png");
+			if (enabled)
+				return QPixmap(":/images/integer.png");
+			return QPixmap(":/images/integer_dis.png");
 
 		case TreeItem::nutEnumerated:
-			return QPixmap(":/images/enumerated.png");
+			if (enabled)
+				return QPixmap(":/images/enumerated.png");
+			return QPixmap(":/images/enumerated_dis.png");
 		case TreeItem::nutString:
-			return QPixmap(":/images/text.png");
+			if (enabled)
+				return QPixmap(":/images/text.png");
+			return QPixmap(":/images/text_dis.png");
 		default:
 			break;
 		}
@@ -417,7 +425,7 @@ bool TreeItem::hasBool() const
 
 void TreeItem::setActive( bool enable )
 {
-	if (componentOptions) 
+	if (componentOptions)
 	{
 		// Make sure exclusive options only have one of them enabled.
 		if ( enable && componentOptions->nco_exclusivity )
@@ -451,7 +459,7 @@ QStringList TreeItem::depends() const
 {
 	QStringList result;
 
-	if (componentOptions) 
+	if (componentOptions)
 	{
 		char** requires = GetOptionRequirements( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
 		char** it = requires;
@@ -465,7 +473,7 @@ QStringList TreeItem::depends() const
 	}
 
 	/* Do we need component requirements? */
-	if ( parentComponent ) 
+	if ( parentComponent )
 	{
 		char** requires = GetComponentRequirements( model->repository(), parentComponent );
 		char** it = requires;
@@ -486,7 +494,7 @@ QStringList TreeItem::provides() const
 {
 	QStringList result;
 
-	if (componentOptions) 
+	if (componentOptions)
 	{
 		char** requires = GetOptionProvisions( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
 		char** it = requires;
@@ -500,7 +508,7 @@ QStringList TreeItem::provides() const
 	}
 
 	/* Do we need component requirements? */
-	if ( parentComponent ) 
+	if ( parentComponent )
 	{
 		char** requires = GetComponentProvisions( model->repository(), parentComponent );
 		char** it = requires;
@@ -524,10 +532,10 @@ QStringList TreeItem::provides() const
 QString TreeItem::headerFile() const
 {
 	QString value;
-	if (componentOptions) 
+	if (componentOptions)
 	{
 		char* filename = GetOptionFile( model->repository(), componentOptions->nco_compo, componentOptions->nco_name );
-		if ( filename ) 
+		if ( filename )
 		{
 			value = QLatin1String( filename );
 			free(filename);

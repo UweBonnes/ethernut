@@ -92,7 +92,7 @@ public:
 	Qt::ItemFlags flags(int column) const;
 	int row() const;
 	TreeItem *parent();
-	QPixmap icon() const;
+	QPixmap icon(bool enabled) const;
 
 	QString name() const;
 	QString description() const;
