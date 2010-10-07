@@ -99,6 +99,9 @@
 
 #ifdef NUTDEBUG
 #include <stdio.h>
+#define DMPRINTF(args,...) printf(args,##__VA_ARGS__)
+#else
+#define DMPRINTF(args,...)
 #endif
 
 #ifndef NUT_THREAD_NICRXSTACK
@@ -477,7 +480,7 @@ static int NicReset(void)
     NutDelay(1);
     /* FIXME: Delay required. */
 #endif
-
+    DMPRINTF("\n*DMRES*\n");
     return NicPhyInit();
 }
 
@@ -486,20 +489,23 @@ static int NicReset(void)
  */
 static void NicInterrupt(void *arg)
 {
-    uint8_t isr;
+    uint_fast8_t isr;
     NICINFO *ni = (NICINFO *) ((NUTDEVICE *) arg)->dev_dcb;
 
     /* Read interrupt status and disable interrupts. */
     isr = nic_inb(NIC_ISR);
+    DMPRINTF("*DMIRQ %02x:", isr);
 
     /* Receiver interrupt. */
     if (isr & NIC_ISR_PRS) {
+        DMPRINTF("RX*");
         nic_outb(NIC_ISR, NIC_ISR_PRS);
         NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
 
     /* Transmitter interrupt. */
     if (isr & NIC_ISR_PTS) {
+        DMPRINTF("TX*");
         if (ni->ni_tx_queued) {
             if (ni->ni_tx_quelen) {
                 /* Initiate transfer of a queued packet. */
@@ -516,6 +522,7 @@ static void NicInterrupt(void *arg)
 
     /* Receiver overflow interrupt. */
     if (isr & NIC_ISR_ROS) {
+        DMPRINTF("OVI*");
         nic_outb(NIC_ISR, NIC_ISR_ROS);
         ni->ni_insane = 1;
         NutEventPostFromIrq(&ni->ni_rx_rdy);
@@ -523,9 +530,15 @@ static void NicInterrupt(void *arg)
 
     /* Receiver overflow counter interrupt. */
     if (isr & NIC_ISR_ROOS) {
+        DMPRINTF("OVC*");
         nic_outb(NIC_ISR, NIC_ISR_ROOS);
         NutEventPostFromIrq(&ni->ni_rx_rdy);
     }
+
+    if( ni->ni_insane)
+        DMPRINTF("INS\n");
+    else
+        DMPRINTF("\n");
 }
 
 /*!
@@ -603,9 +616,9 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
     /* Disable NIC interrupts. */
     NutIrqDisable(&NIC_SIGNAL);
 
-    /* 
-     * Read the status word w/o auto increment. If zero, no packet is 
-     * available. Otherwise it should be set to one. Any other value 
+    /*
+     * Read the status word w/o auto increment. If zero, no packet is
+     * available. Otherwise it should be set to one. Any other value
      * indicates a weird chip crying for reset.
      */
     nic_inb(NIC_MRCMDX);
@@ -628,7 +641,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
         }
 
         /*
-         * Receiving long packets is unexpected, because we disabled 
+         * Receiving long packets is unexpected, because we disabled
          * this during initialization. Let's declare the chip insane.
          * Short packets will be handled by the caller.
          */
@@ -636,7 +649,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
             ni->ni_insane = 1;
         } else {
             /*
-             * The high byte of the status word contains a copy of the 
+             * The high byte of the status word contains a copy of the
              * receiver status register.
              */
             fsw >>= 8;
@@ -655,7 +668,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
                 ni->ni_rx_packets++;
             }
 #endif
-            /* 
+            /*
              * If we got an error packet or failed to allocated the
              * buffer, then silently discard the packet.
              */
@@ -708,7 +721,7 @@ static int NicGetPacket(NICINFO * ni, NETBUF ** nbp)
  *           release the buffer in case of an error.
  *
  * \return 0 on success, -1 in case of any errors. Errors
- *         will automatically release the network buffer 
+ *         will automatically release the network buffer
  *         structure.
  */
 static int NicPutPacket(NICINFO * ni, NETBUF * nb)
@@ -717,7 +730,7 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
     uint16_t sz;
 
     /*
-     * Calculate the number of bytes to be send. Do not send packets 
+     * Calculate the number of bytes to be send. Do not send packets
      * larger than the Ethernet maximum transfer unit. The MTU
      * consist of 1500 data bytes plus the 14 byte Ethernet header
      * plus 4 bytes CRC. We check the data bytes only.
@@ -801,8 +814,8 @@ static int NicStart(CONST uint8_t * mac)
     nic_outb(NIC_NCR, NIC_NCR_RST | NIC_NCR_LBMAC);
     NutDelay(5);
 
-    /* 
-     * PHY power down followed by PHY power up. This should activate 
+    /*
+     * PHY power down followed by PHY power up. This should activate
      * the auto sense link.
      */
     nic_outb(NIC_GPR, 1);
@@ -904,13 +917,13 @@ THREAD(NicRxLanc, arg)
 
     for (;;) {
         /*
-         * Wait for the arrival of new packets or poll the receiver 
+         * Wait for the arrival of new packets or poll the receiver
          * every two seconds.
          */
         NutEventWait(&ni->ni_rx_rdy, 2000);
 
         /*
-         * Fetch all packets from the NIC's internal buffer and pass 
+         * Fetch all packets from the NIC's internal buffer and pass
          * them to the registered handler.
          */
         while (NicGetPacket(ni, &nb) == 0) {
@@ -993,12 +1006,12 @@ int DmOutput(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Initialize Ethernet hardware.
  *
- * Resets the LAN91C111 Ethernet controller, initializes all required 
- * hardware registers and starts a background thread for incoming 
+ * Resets the LAN91C111 Ethernet controller, initializes all required
+ * hardware registers and starts a background thread for incoming
  * Ethernet traffic.
  *
- * Applications should do not directly call this function. It is 
- * automatically executed during during device registration by 
+ * Applications should do not directly call this function. It is
+ * automatically executed during during device registration by
  * NutRegisterDevice().
  *
  * If the network configuration hasn't been set by the application
@@ -1058,7 +1071,7 @@ int DmInit(NUTDEVICE * dev)
     }
 
     /* Start the receiver thread. */
-    if (NutThreadCreate("rxi1", NicRxLanc, dev, 
+    if (NutThreadCreate("rxi1", NicRxLanc, dev,
         (NUT_THREAD_NICRXSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD) == NULL) {
         return -1;
     }
@@ -1091,11 +1104,11 @@ static IFNET ifn_eth0 = {
 /*!
  * \brief Device information structure.
  *
- * A pointer to this structure must be passed to NutRegisterDevice() 
+ * A pointer to this structure must be passed to NutRegisterDevice()
  * to bind this Ethernet device driver to the Nut/OS kernel.
- * An application may then call NutNetIfConfig() with the name \em eth0 
+ * An application may then call NutNetIfConfig() with the name \em eth0
  * of this driver to initialize the network interface.
- * 
+ *
  */
 NUTDEVICE devDM9000E = {
     0,                          /*!< \brief Pointer to next device. */
