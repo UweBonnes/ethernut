@@ -132,7 +132,7 @@ toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "LINUX_G
 
 nuttools =
 {
-    options = 
+    options =
     {
         {
             brief = "GCC for ARM",
@@ -207,7 +207,7 @@ nuttools =
         name = "nuttools_gccopt",
         brief = "GCC Settings",
         requires = { "TOOL_GCC" },
-        options = 
+        options =
         {
             {
                 macro = "LDSCRIPT",
@@ -225,7 +225,7 @@ nuttools =
         name = "nuttools_iccopt",
         brief = "ImageCraft AVR Settings",
         requires = { "TOOL_CC_AVR", "TOOL_ICC" },
-        options = 
+        options =
         {
             {
                 macro = "ICCAVR_STARTUP",
@@ -250,7 +250,7 @@ nuttools =
     }
 
     --
-    -- Intentionally no programmer or urom creator specified. 
+    -- Intentionally no programmer or urom creator specified.
     -- This will be part of the application wizard.
     --
 }
@@ -304,14 +304,14 @@ arm_ld_description = {
     wolf_ram                 = "hwgroup's Wolf Module, code in RAM at 0x100 (unsupported)"
 }
 
-arm_ld_choice = { 
-                " ", 
-                "at91_boot", 
-                "at91_bootcrom", 
+arm_ld_choice = {
+                " ",
+                "at91_boot",
+                "at91_bootcrom",
                 "at91_bootloader_bootcrom",
-                "at91_ram", 
-                "at91_rom", 
-                "at91_httprom", 
+                "at91_ram",
+                "at91_rom",
+                "at91_httprom",
                 "at91sam7s16_rom",
                 "at91sam7s32_rom",
                 "at91sam7s64_rom",
@@ -322,17 +322,17 @@ arm_ld_choice = {
                 "at91sam7se256_rom",
                 "at91sam7se512_rom",
                 "at91sam7se512_ram",
-                "at91sam7x128_rom", 
-                "at91sam7x256_rom", 
-                "at91sam7x512_rom", 
-                "at91sam9260_ram", 
+                "at91sam7x128_rom",
+                "at91sam7x256_rom",
+                "at91sam7x512_rom",
+                "at91sam9260_ram",
                 "at91sam9G45_ram", 
-                "at91sam9xe512_ram", 
-                "s3c4510b-ram", 
+                "at91sam9xe512_ram",
+                "s3c4510b-ram",
                 "eb40a_ram",
-                "eb40a_redboot_ram", 
-                "gbaxport2", 
-                "wolf_ram" 
+                "eb40a_redboot_ram",
+                "gbaxport2",
+                "wolf_ram"
 }
 
 --
@@ -340,7 +340,7 @@ arm_ld_choice = {
 --
 function GetLDScriptsPath()
     local basepath
-    
+
     basepath = "$(top_srcdir)/arch/"
     if c_is_provided("TOOL_CC_AVR32") then
         return basepath .. "avr32/ldscripts/$(LDNAME).ld"
@@ -353,7 +353,7 @@ end
 
 --
 -- Return the list of ldscripts
---                
+--
 function GetLDScripts()
 	if c_is_provided("TOOL_CC_AVR32") then
 		return avr32_ld_choice
@@ -381,8 +381,8 @@ end
 function pairsByKeys (t, f)
   local a = {}
   -- build temporary table of the keys
-  for n in pairs (t) do 
-    table.insert (a, n) 
+  for n in pairs (t) do
+    table.insert (a, n)
   end
   table.sort (a, f)  -- sort using supplied function, if any
   local i = 0        -- iterator variable
@@ -407,7 +407,7 @@ function FormatLDScriptDescription( t )
 			maxKeyLen = string.len(k)
 		end
 	end
-	
+
 	maxTabs = math.ceil( maxKeyLen / 6 + 1 );
 	for k,v in pairsByKeys(t) do
 		tabs = maxTabs - math.ceil( string.len(k) / 6 );

@@ -57,7 +57,8 @@ CPFLAGS   = $(MCFLAGS) -Os -Wall -Wstrict-prototypes -Wa,-ahlms=$(<:.c=.lst) $(D
 LDFLAGS   = $(MCFLAGS) -Wl,--defsym=main=0,-Map=$(PROJ).map,--cref -L$(LIBDIR) 
 
 ELFCOF    = $(BIN) --debugging \
-	--change-section-address .data-0x800000 \
-	--change-section-address .bss-0x800000 \
-	--change-section-address .noinit-0x800000 \
-	--change-section-address .eeprom-0x810000
+	--change-section-address .data-0x08000000 \
+	--change-section-address .bss-0x08000000 \
+	--change-section-address .rodata-0x08000000
+	--change-section-address .noinit-0x08000000 \
+#	--change-section-address .eeprom-0x810000

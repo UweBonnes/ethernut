@@ -125,7 +125,7 @@
     .elseif \value == 1
       st.w r0[AVR32_GPIO_PMR1C], r1
       st.w r0[AVR32_GPIO_PMR0S], r1
-   .elseif \value == 2    
+    .elseif \value == 2    
       st.w r0[AVR32_GPIO_PMR1S], r1
       st.w r0[AVR32_GPIO_PMR0C], r1
     .else

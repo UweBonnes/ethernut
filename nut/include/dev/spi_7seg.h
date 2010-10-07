@@ -1,8 +1,8 @@
 #ifndef _DEV_SPI_7SEG_H_
 #define _DEV_SPI_7SEG_H_
 /*
- * Copyright (C) 2009 by Rittal GmbH & Co. KG,
- * Ulrich Prinz <prinz.u@rittal.de>
+ * Copyright (C) 2009 by Ulrich Prinz (uprinz2@netscape.net)
+ * Copyright (C) 2009 by Rittal GmbH & Co. KG. All rights reserved.
  *
  * All rights reserved.
  *

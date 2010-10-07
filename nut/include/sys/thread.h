@@ -171,22 +171,22 @@ typedef struct _NUTTHREADINFO NUTTHREADINFO;
  */
 
 struct _NUTTHREADINFO {
-    NUTTHREADINFO *td_next;     /*!< \brief Linked list of all threads. */
-    NUTTHREADINFO *td_qnxt;     /*!< \brief Linked list of all queued thread. */
-    volatile unsigned int td_qpec;     /*!< \brief Pending event counter. */
-    char td_name[9];            /*!< \brief Name of this thread. */
-    uint8_t td_state;            /*!< \brief Operating state. One of TDS_ */
-    uintptr_t td_sp;               /*!< \brief Stack pointer. */
-    uint8_t td_priority;         /*!< \brief Priority level. 0 is highest priority. */
-    uint8_t *td_memory;          /*!< \brief Pointer to heap memory used for stack. */
-    HANDLE td_timer;            /*!< \brief Event timer. */
-    volatile HANDLE td_queue;   /*!< \brief Root entry of the waiting queue. */
+    NUTTHREADINFO *td_next;         /*!< \brief Linked list of all threads. */
+    NUTTHREADINFO *td_qnxt;         /*!< \brief Linked list of all queued thread. */
+    volatile unsigned int td_qpec;  /*!< \brief Pending event counter. */
+    char td_name[9];                /*!< \brief Name of this thread. */
+    uint8_t td_state;               /*!< \brief Operating state. One of TDS_ */
+    uintptr_t td_sp;                /*!< \brief Stack pointer. */
+    uint8_t td_priority;            /*!< \brief Priority level. 0 is highest priority. */
+    uint8_t *td_memory;             /*!< \brief Pointer to heap memory used for stack. */
+    HANDLE td_timer;                /*!< \brief Event timer. */
+    volatile HANDLE td_queue;       /*!< \brief Root entry of the waiting queue. */
 #ifdef __NUT_EMULATION__	
-    pthread_t td_pthread;       /*!< \brief pthread for unix emulations. */
-    void (*td_fn) (void *);     /*!< \brief thread function */
-    void *td_arg;               /*!< \brief args given to NutCreateThread */
-    pthread_cond_t td_cv;       /*!< \brief conditional variable for unix emulations. */
-    uint16_t td_cs_level;        /*! \brief number critical sections has been entered without leaving */
+    pthread_t td_pthread;           /*!< \brief pthread for unix emulations. */
+    void (*td_fn) (void *);         /*!< \brief thread function */
+    void *td_arg;                   /*!< \brief args given to NutCreateThread */
+    pthread_cond_t td_cv;           /*!< \brief conditional variable for unix emulations. */
+    uint16_t td_cs_level;           /*! \brief number critical sections has been entered without leaving */
 #endif
 };
 /*@}*/

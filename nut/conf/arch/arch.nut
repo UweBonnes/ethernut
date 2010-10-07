@@ -493,7 +493,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 16K bytes flash, "..
                     "4K bytes RAM, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -520,7 +520,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 32K bytes flash, "..
                     "8K bytes RAM, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -550,7 +550,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 64K bytes flash, "..
                     "16K bytes RAM, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -580,7 +580,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 128K bytes flash, "..
                     "32K bytes RAM, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -610,7 +610,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
                     "64K bytes RAM, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -640,7 +640,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 512K bytes flash, "..
                     "64K bytes RAM, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -670,7 +670,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 32K bytes flash, "..
                     "8K bytes RAM, external bus interface, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -703,7 +703,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes flash, "..
                     "32K bytes RAM, external bus interface, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -736,7 +736,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 512K bytes flash, "..
                     "32K bytes RAM, external bus interface, USB, 2 USARTs and more. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -769,7 +769,7 @@ nutarch =
                 description = "ARM7TDMI 16/32-bit RISC microcontroller with 256K bytes RAM, "..
                               "64M bytes address space, 2 USARTs and 3 timers. ",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -791,7 +791,7 @@ nutarch =
                 brief = "Nintendo GBA",
                 description = "ARM7TDMI 16/32-bit RISC microcontroller",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -804,11 +804,15 @@ nutarch =
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
+            --
+            --
+            -- UNIX EMULATION FOR NUT/OS
+            --
             {
                 macro = "MCU_LINUX_EMU",
                 brief = "Linux Emulator",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_LINUX" },
                 provides = { "HW_TARGET", "DEV_NVMEM", "HW_EMU_LINUX" }
@@ -817,7 +821,7 @@ nutarch =
                 macro = "MCU_H8_3068",
                 brief = "Renesas H8/3068",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_H8300" },
                 provides = {
@@ -834,7 +838,7 @@ nutarch =
                               "HDLC protocol, 64M bytes address space, I2C, 2 UARTs and "..
                               "2 timers.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_ARM" },
                 provides = {
@@ -856,7 +860,7 @@ nutarch =
                               "10/100 Ethernet MAC, Full-Speed + OTG USB,"..
                               "I2C, 4 UARTs and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {
@@ -886,7 +890,7 @@ nutarch =
                               "10/100 Ethernet MAC, Full-Speed + OTG USB,"..
                               "I2C, 4 UARTs and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {
@@ -914,7 +918,7 @@ nutarch =
                 description = "32-bit AVR UC3 RISC microcontroller with 256k Flash, 64k SRAM,\n"..
                               "High-Speed + OTG USB device and many other peripherals.",
                 flavor = "boolean",
-                exclusivity = mcu_names, 
+                exclusivity = mcu_names,
                 file = "include/cfg/arch.h",
                 requires = { "TOOL_CC_AVR32" },
                 provides = {

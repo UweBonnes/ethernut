@@ -165,13 +165,14 @@
 --
 --
 
-mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2560", "MCU_ATMEGA2561", 
+mcu_names = { "MCU_ATMEGA103", "MCU_ATMEGA128", "MCU_AT90CAN128", "MCU_ATMEGA2560", "MCU_ATMEGA2561",
               "MCU_AT91SAM9260", "MCU_AT91SAM9G45", "MCU_AT91SAM9XE512",
-              "MCU_AT91SAM7X128", "MCU_AT91SAM7X256", "MCU_AT91SAM7X512", 
-              "MCU_AT91SAM7S16", "MCU_AT91SAM7S32", "MCU_AT91SAM7S64", "MCU_AT91SAM7S128", "MCU_AT91SAM7S256", "MCU_AT91SAM7S512", 
-              "MCU_AT91SAM7SE32", "MCU_AT91SAM7SE256", "MCU_AT91SAM7SE512", 
-              "MCU_AT91R40008", "MCU_GBA", 
-              "MCU_LINUX_EMU", "MCU_H8_3068", "MCU_S3C4510B", 
+              "MCU_AT91SAM7X128", "MCU_AT91SAM7X256", "MCU_AT91SAM7X512",
+              "MCU_AT91SAM7S16", "MCU_AT91SAM7S32", "MCU_AT91SAM7S64", "MCU_AT91SAM7S128", "MCU_AT91SAM7S256", "MCU_AT91SAM7S512",
+              "MCU_AT91SAM7SE32", "MCU_AT91SAM7SE256", "MCU_AT91SAM7SE512",
+              "MCU_AT91R40008", "MCU_GBA",
+              "MCU_LINUX_EMU", "MCU_H8_3068", "MCU_S3C4510B",
+              
               "MCU_AVR32UC3A0512ES", "MCU_AVR32UC3A0512", "MCU_AVR32UC3A3256", "MCU_AVR32UC3B0256", "MCU_AVR32UC3B164" }
 
 avr_bit_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
@@ -180,15 +181,15 @@ avr_irq_choice = { " ", "INT0", "INT1", "INT2", "INT3", "INT4", "INT5", "INT6", 
 
 iccavr_startup_choice = { "crtenutram", "crtenut", "crtnutram", "crtnut", "crtnutm256" }
 
-mcu_32bit_choice = { " ", 
+mcu_32bit_choice = { " ",
                      "0", "1", "2", "3", "4", "5", "6", "7",
                      "8", "9", "10", "11", "12", "13", "14", "15",
                      "16", "17", "18", "19", "20", "21", "22", "23",
                      "24", "25", "26", "27", "28", "29", "30", "31"
                    }
 
-gpio_port_choice = { 
-                    " ", 
+gpio_port_choice = {
+                    " ",
                     "NUTGPIO_PORTA",
                     "NUTGPIO_PORTB",
                     "NUTGPIO_PORTC",
@@ -203,16 +204,16 @@ gpio_port_choice = {
                     "NUTGPIO_PORTL"
                   }
 
-gpio_irq_choice = { 
-                    " ", 
-                    "NUTGPIO_EXTINT0", 
-                    "NUTGPIO_EXTINT1", 
-                    "NUTGPIO_EXTINT2", 
-                    "NUTGPIO_EXTINT3", 
-                    "NUTGPIO_EXTINT4", 
-                    "NUTGPIO_EXTINT5", 
-                    "NUTGPIO_EXTINT6", 
-                    "NUTGPIO_EXTINT7" 
+gpio_irq_choice = {
+                    " ",
+                    "NUTGPIO_EXTINT0",
+                    "NUTGPIO_EXTINT1",
+                    "NUTGPIO_EXTINT2",
+                    "NUTGPIO_EXTINT3",
+                    "NUTGPIO_EXTINT4",
+                    "NUTGPIO_EXTINT5",
+                    "NUTGPIO_EXTINT6",
+                    "NUTGPIO_EXTINT7"
                   }
 
 at91_pio_id_choice = { " ", "PIO_ID", "PIOA_ID", "PIOB_ID", "PIOC_ID" }
@@ -223,7 +224,7 @@ hd44780_databits_choice = { " ", "0xFF", "0xF0", "0x0F" }
 
 pca9555_port_choice = { "IOXP_PORT0", "IOXP_PORT1" }
 pca9555_pin_choice = { " ", "0", "1", "2", "3", "4", "5", "6", "7" }
-						
+
 
 repository =
 {
@@ -237,7 +238,7 @@ repository =
 
 -- Second version of a dynamic item:
 -- A function result is combined with a static string. Note, that the function
--- is executed when this script file is loaded and must have been defined 
+-- is executed when this script file is loaded and must have been defined
 -- previously.
 --        brief = "Nut/OS " .. GetNutOsVersion(),
 
@@ -585,7 +586,7 @@ end
 --
 function GetGpioHeaderPath()
     local basepath
-    
+
     basepath = "include/cfg/arch/"
     if c_is_provided("HW_MCU_AVR") then
         return basepath .. "avrpio.h"

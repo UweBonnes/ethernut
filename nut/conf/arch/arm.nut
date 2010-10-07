@@ -947,7 +947,7 @@ nutarch_arm =
             {
                 macro = "LCD_E2E_DLY",
                 brief = "Enable to Enable Delay",
-                description = "Time for Enable to Enable delay in ï¿½s. This is the timespan between two\n"..
+                description = "Time for Enable to Enable delay in µs. This is the timespan between two\n"..
                               "consecutive accesses of the 4-bit or 8-bit bus.\n For SPI-bus driven chips, this "..
                               "is the /CS to /CS delay. This function uses NutMicroDelay()",
                 default = "80",

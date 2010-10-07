@@ -34,8 +34,12 @@
  */
 
 /*
- * $Id$
- *
+ * \verbatim
+ * $Id: 7segtst.c 3108 2010-09-15 21:11:15Z Astralix $
+ * \endverbatim
+ */
+
+/*
  * Revision 1.0  2009/04/13 ulrichprinz
  * First checkin, new twi driver for AS1108 3 Digit 7-Segment driver
  * (currently SAM7X256 is tested only)

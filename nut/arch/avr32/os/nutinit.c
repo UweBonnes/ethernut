@@ -110,7 +110,7 @@ static void flashc_set_wait_state(unsigned int wait_state)
 }
 
 /*!
- * \brief Idle thread. 
+ * \brief Idle thread.
  *
  * \param arg Ignored by the idle thread.
  *
@@ -149,8 +149,8 @@ THREAD(NutIdle, arg)
 /*!
  * \brief Nut/OS Initialization.
  *
- * Initializes the memory management and the thread system and starts 
- * an idle thread, which in turn initializes the timer management. 
+ * Initializes the memory management and the thread system and starts
+ * an idle thread, which in turn initializes the timer management.
  * Finally the application's main() function is called.
  */
 void NutInit(void)

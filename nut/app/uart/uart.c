@@ -77,20 +77,20 @@ int main(void)
 #endif
 
     /*
-     * Each device must be registered. We do this by referencing the 
-     * device structure of the driver. The advantage is, that only 
-     * those device drivers are included in our flash code, which we 
+     * Each device must be registered. We do this by referencing the
+     * device structure of the driver. The advantage is, that only
+     * those device drivers are included in our flash code, which we
      * really need.
      *
-     * The uart0 device is the first one on the ATmega chip. So it 
-     * has no configurable base address or interrupt and we set both 
+     * The uart0 device is the first one on the ATmega chip. So it
+     * has no configurable base address or interrupt and we set both
      * parameters to zero.
      */
     NutRegisterDevice(&DEV_UART, 0, 0);
 
     /*
      * Now, as the device is registered, we can open it. The fopen()
-     * function returns a pointer to a FILE structure, which we use 
+     * function returns a pointer to a FILE structure, which we use
      * for subsequent reading and writing.
      */
     uart = fopen(DEV_UART_NAME, "r+");
@@ -107,7 +107,7 @@ int main(void)
     _ioctl(_fileno(uart), UART_SETSPEED, &baud);
 
     /*
-     * Stream devices can use low level read and write functions. 
+     * Stream devices can use low level read and write functions.
      * Writing program space data is supported too.
      */
     _write(_fileno(uart), banner, strlen(banner));
@@ -116,16 +116,16 @@ int main(void)
     }
 
     /*
-     * Stream devices do buffered I/O. That means, nothing will be 
-     * passed to the hardware device until either the output buffer 
+     * Stream devices do buffered I/O. That means, nothing will be
+     * passed to the hardware device until either the output buffer
      * is full or we do a flush. With stream I/O we typically use
-     * fflush(), but low level writing a null pointer will also flush 
+     * fflush(), but low level writing a null pointer will also flush
      * the output buffer.
      */
     _write(_fileno(uart), 0, 0);
 
     /*
-     * The low level function read() will grab all available bytes 
+     * The low level function read() will grab all available bytes
      * from the input buffer. If the buffer is empty, the call will
      * block until something is available for reading.
      */
@@ -133,12 +133,12 @@ int main(void)
     _write(_fileno(uart), inbuf, got);
 
     /*
-     * Nut/OS never expects a thread to return. So we enter an 
+     * Nut/OS never expects a thread to return. So we enter an
      * endless loop here.
      */
     for (;;) {
         /*
-         * A bit more advanced input routine is able to read a string 
+         * A bit more advanced input routine is able to read a string
          * up to and including the first newline character or until a
          * specified maximum number of characters, whichever comes first.
          */
@@ -154,7 +154,7 @@ int main(void)
             *cp = 0;
 
         /*
-         * Streams support formatted output as well as printing strings 
+         * Streams support formatted output as well as printing strings
          * from program space.
          */
         if (inbuf[0])
