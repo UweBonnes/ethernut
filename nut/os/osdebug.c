@@ -74,8 +74,10 @@
  * First pre-release with 2.4 stack
  *
  */
-
 #include <compiler.h>
+
+#include <cfg/os.h>
+
 #include <sys/thread.h>
 #include <sys/timer.h>
 #include <sys/event.h>

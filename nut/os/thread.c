@@ -217,9 +217,7 @@
 #include <sys/thread.h>
 #include <sys/nutdebug.h>
 
-#ifdef NUTDEBUG
 #include <sys/osdebug.h>
-#endif
 
 #ifdef NUTTRACER
 #include <sys/tracer.h>
