@@ -2812,6 +2812,14 @@ nutdev =
                 requires = { "DEV_IOEXP" },
                	file = "include/cfg/pca9555.h",
             },
+            {
+                macro = "LED_ON_HIGH",
+                brief = "LEDs On on GPIO is high",
+                description = "Enable this option if the LEDs are on on a logic 1 level of the port pin.",
+                flavor = "boolean",
+                requires = { "DEV_LED" },
+               	file = "include/cfg/led.h",
+            },
 		},
     },
 	{

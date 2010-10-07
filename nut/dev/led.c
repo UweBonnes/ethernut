@@ -72,6 +72,7 @@
 #ifdef LED_SUPPORT_IOEXP
 #include <dev/pca9555.h>
 #endif
+#include "cfg/led.h"
 #include "dev/led.h"
 
 /*!
@@ -80,8 +81,14 @@
 /*@{*/
 
 /* define inverted LED states as LEDs are driven by low side switching */
+
+#ifdef LED_ON_HIGH
+#define LED_IS_ON  1
+#define LED_IS_OFF 0
+#else
 #define LED_IS_ON  0
 #define LED_IS_OFF 1
+#endif
 
 typedef struct
 {
@@ -231,7 +238,7 @@ void NutSetLed( HANDLE ledh, uint_fast8_t fxin, uint32_t timOn, uint32_t timOff)
             led->state ^= 1;
             led->timOn = timOn;
             led->timOff = timOff;
-            if( led->state)
+            if( led->state==LED_IS_ON)
                 led->tim = timOff;
             else
                 led->tim = timOn;
@@ -267,11 +274,13 @@ void NutSetLed( HANDLE ledh, uint_fast8_t fxin, uint32_t timOn, uint32_t timOff)
  * Register a LED for beeing controlled by this driver. LED can then be
  * set by NutSetLed() by passing over the LEDs handler to that function.
  * Also LEDs connectd through external (I2C / SPI) port chips can be
- * driven, ne needs to enable the control for that chips first in Nutconf.
+ * driven, if the control for that chips is enabled in Nutconf.
+ * The desired GPIO pin (internal or external) should be configured
+ * correct before you can register a LED on it.
  *
- * \param ledh The led-handle for accessing the LED after registering.
+ * \param ledh Pointer to a HANDLE for accessing the LED after registering.
  * \param bank Port of CPU or IO-Expander the LED is connected to.
- * \param pin Pin at the given port.
+ * \param pin  Pin at the given port.
  *
  * \return -1 if registering failed, else 0.
  *
