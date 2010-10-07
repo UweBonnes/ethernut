@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2009 by Rittal GmbH & Co. KG,
- * Ulrich Prinz <prinz.u@rittal.de> All rights reserved.
+ * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
+ * Copyright (C) 2009 by Rittal GmbH & Co. KG. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -1397,8 +1397,8 @@ static int Sc16is752RegRawWrite(uint8_t dev, uint8_t ch, uint8_t reg, uint8_t va
 #else
 	 MYPRINT("%s(%d,%d,0x%02x,0x%02x) => slave addr:0x%02x data 0x%02x\n",
 		 __func__, dev, ch, reg, val, i2caddr[dev], wbuf[0]);
-    return TwMasterTransact(i2caddr[dev], wbuf, 2, 0, 0, 0);
 #endif
+    return TwMasterTransact(i2caddr[dev], wbuf, 2, 0, 0, 0);
 }
 
 static int Sc16is752RegRawRead(uint8_t dev, uint8_t ch, uint8_t reg, uint8_t *val)

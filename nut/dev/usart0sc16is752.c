@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2009 by Rittal GmbH & Co. KG,
- * Ulrich Prinz <prinz.u@rittal.de> All rights reserved.
+ * Copyright (C) 2009 by Ulrich Prinz (uprinz2@netscape.net)
+ * Copyright (C) 2010 by Rittal GmbH & Co. KG. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,123 +56,117 @@
 #include <dev/irqreg.h>
 #include <dev/usartsc16is752.h>
 
-#define DEV_ 	0
+#define SCDEV 	0
 #define CH_  	0
-#define NUTDEV_	devUsartsc16is752a
+#define NUTDEV	devUsartsc16is752a
+
 #if defined(__linux__)
 #define IRQ_	0
 #else
+extern IRQ_HANDLER sig_INTERRUPT1;
 #define IRQ_	sig_INTERRUPT1
 #endif
 
 // static void Sc16is752UsartEnable_(void)
 // {
-//     Sc16is752UsartEnable(DEV_, CH_);
+//     Sc16is752UsartEnable(SCDEV, CH_);
 // }
 //
 // static void Sc16is752UsartDisable_(void)
 // {
-//     Sc16is752UsartDisable(DEV_, CH_);
+//     Sc16is752UsartDisable(SCDEV, CH_);
 // }
 
-NUTDEVICE devUsartsc16is752a;
+NUTDEVICE NUTDEV;
 
 static uint32_t Sc16is752UsartGetSpeed_(void)
 {
-    return Sc16is752UsartGetSpeed(DEV_, CH_);
+    return Sc16is752UsartGetSpeed(SCDEV, CH_);
 }
 
 static int Sc16is752UsartSetSpeed_(uint32_t rate)
 {
-    return Sc16is752UsartSetSpeed(rate, DEV_, CH_);
+    return Sc16is752UsartSetSpeed(rate, SCDEV, CH_);
 }
 
 static uint8_t Sc16is752UsartGetDataBits_(void)
 {
-    return Sc16is752UsartGetDataBits(DEV_, CH_);
+    return Sc16is752UsartGetDataBits(SCDEV, CH_);
 }
 
 static int Sc16is752UsartSetDataBits_(uint8_t bits)
 {
-    return Sc16is752UsartSetDataBits(bits, DEV_, CH_);
+    return Sc16is752UsartSetDataBits(bits, SCDEV, CH_);
 }
 
 static uint8_t Sc16is752UsartGetParity_(void)
 {
-    return Sc16is752UsartGetParity(DEV_, CH_);
+    return Sc16is752UsartGetParity(SCDEV, CH_);
 }
 
 static int Sc16is752UsartSetParity_(uint8_t mode)
 {
-    return Sc16is752UsartSetParity(mode, DEV_, CH_);
+    return Sc16is752UsartSetParity(mode, SCDEV, CH_);
 }
 
 static uint8_t Sc16is752UsartGetStopBits_(void)
 {
-    return Sc16is752UsartGetStopBits(DEV_, CH_);
+    return Sc16is752UsartGetStopBits(SCDEV, CH_);
 }
 
 static int Sc16is752UsartSetStopBits_(uint8_t bits)
 {
-    return Sc16is752UsartSetStopBits(bits, DEV_, CH_);
+    return Sc16is752UsartSetStopBits(bits, SCDEV, CH_);
 }
 
 static uint32_t Sc16is752UsartGetStatus_(void)
 {
-    return Sc16is752UsartGetStatus(DEV_, CH_);
+    return Sc16is752UsartGetStatus(SCDEV, CH_);
 }
 
 static int Sc16is752UsartSetStatus_(uint32_t flags)
 {
-    return Sc16is752UsartSetStatus(flags, DEV_, CH_);
+    return Sc16is752UsartSetStatus(flags, SCDEV, CH_);
 }
 
 static uint8_t Sc16is752UsartGetClockMode_(void)
 {
-    return Sc16is752UsartGetClockMode(DEV_, CH_);
+    return Sc16is752UsartGetClockMode(SCDEV, CH_);
 }
 
 static int Sc16is752UsartSetClockMode_(uint8_t mode)
 {
-    return Sc16is752UsartSetClockMode(mode, DEV_, CH_);
+    return Sc16is752UsartSetClockMode(mode, SCDEV, CH_);
 }
 
 static uint32_t Sc16is752UsartGetFlowControl_(void)
 {
-    return Sc16is752UsartGetFlowControl(DEV_, CH_);
+    return Sc16is752UsartGetFlowControl(SCDEV, CH_);
 }
 
 static int Sc16is752UsartSetFlowControl_(uint32_t flags)
 {
-    return Sc16is752UsartSetFlowControl(flags, DEV_, CH_);
+    return Sc16is752UsartSetFlowControl(flags, SCDEV, CH_);
 }
 
 static void Sc16is752UsartTxStart_(void)
 {
-    Sc16is752UsartTxStart(DEV_, CH_);
+    Sc16is752UsartTxStart(SCDEV, CH_);
 }
 
 static void Sc16is752UsartRxStart_(void)
 {
-    Sc16is752UsartRxStart(DEV_, CH_);
+    Sc16is752UsartRxStart(SCDEV, CH_);
 }
 
 static int Sc16is752UsartInit_(void)
 {
-#if defined(__linux__)
-    return Sc16is752UsartInit(DEV_, CH_, &NUTDEV_, 0);
-#else
-    return Sc16is752UsartInit(DEV_, CH_, &NUTDEV_, &IRQ_);
-#endif
+    return Sc16is752UsartInit(SCDEV, CH_, &NUTDEV, &IRQ_);
 }
 
 static int Sc16is752UsartDeinit_(void)
 {
-#if defined(__linux__)
-    return Sc16is752UsartDeinit(DEV_, CH_, 0);
-#else
-    return Sc16is752UsartDeinit(DEV_, CH_, &IRQ_);
-#endif
+    return Sc16is752UsartDeinit(SCDEV, CH_, &IRQ_);
 }
 
 
@@ -231,9 +225,9 @@ static USARTDCB dcb_usarta = {
  */
 NUTDEVICE devUsartsc16is752a = {
     0,                          /* Pointer to next device, dev_next. */
-    {'u', 'a', 'r', 't', 'a', 0, 0, 0, 0},    /* Unique device name, dev_name. */
+    {'u', 'a', 'r', 't', '_', 'a', 0, 0, 0},    /* Unique device name, dev_name. */
     IFTYP_CHAR,                 /* Type of device, dev_type. */
-    (DEV_<<8)|CH_,              /* Base address, used for dev & ch: (dev<<8)|ch */
+    (SCDEV<<8)|CH_,              /* Base address, used for dev & ch: (dev<<8)|ch */
     0,                          /* First interrupt number, dev_irq (not used). */
     0,                          /* Interface control block, dev_icb (not used). */
     &dcb_usarta,                /* Driver control block, dev_dcb. */
