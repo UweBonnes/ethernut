@@ -83,7 +83,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -195,8 +195,8 @@ static int NutTcpBacklogAdd(NETBUF *nb)
                 if (n == TCP_BACKLOG_MAX) {
                     n = i;
                 }
-            } 
-            else if (((IPHDR *) tcp_backlog[i]->nb_nw.vp)->ip_src == ih->ip_src && 
+            }
+            else if (((IPHDR *) tcp_backlog[i]->nb_nw.vp)->ip_src == ih->ip_src &&
                     ((TCPHDR *) tcp_backlog[i]->nb_tp.vp)->th_sport == th->th_sport) {
                 /* Already received a SYN. Either the remote is too impatient
                 ** or we are too busy. Kill this entry and reject the SYN. */
@@ -269,7 +269,7 @@ static NETBUF *NutTcpBacklogTimer(void)
  * \brief Reads TCP option fields if any, and writes the data to
  *        the socket descriptor if important for us.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param nb   Network buffer structure containing a TCP segment.
  */
@@ -277,13 +277,13 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
 {
     uint8_t *cp;
     uint16_t s;
-    
+
     /* any options there? */
     if (nb->nb_tp.sz <= sizeof (TCPHDR))
         return;
-    
+
     /* loop through available options */
-    for (cp = ((uint8_t*) nb->nb_tp.vp) + sizeof(TCPHDR); (*cp != TCPOPT_EOL) 
+    for (cp = ((uint8_t*) nb->nb_tp.vp) + sizeof(TCPHDR); (*cp != TCPOPT_EOL)
        && (cp - (uint8_t *)nb->nb_tp.vp < (int)nb->nb_tp.sz); )
     {
         switch (*cp)
@@ -292,7 +292,7 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
             case TCPOPT_NOP:
                 cp++;
                 continue;
-                
+
             /* Read MAXSEG option */
             case TCPOPT_MAXSEG:
                 s = ntohs(((uint16_t)cp[2] << 8) | cp[3]);
@@ -309,10 +309,10 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
 }
 
 /*!
- * \brief Move application data in sync from the network buffer 
+ * \brief Move application data in sync from the network buffer
  *        structure to the socket's receive buffer.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param nb   Network buffer structure containing a TCP segment.
  */
@@ -412,7 +412,7 @@ static void NutTcpProcessSyn(TCPSOCKET * sock, IPHDR * ih, TCPHDR * th)
 /*!
  * \brief ACK processing.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
  */
@@ -469,7 +469,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
             if (++sock->so_tx_dup >= 3) {
                 sock->so_tx_dup = 0;
 #ifdef NUTDEBUG
-                if (__tcp_trf)
+                if (__tcp_trf & NET_DBG_SOCKSTATE)
                     NutDumpTcpHeader(__tcp_trs, "RET", sock, sock->so_tx_nbq);
 #endif
                 /*
@@ -496,7 +496,7 @@ static int NutTcpProcessAck(TCPSOCKET * sock, TCPHDR * th, uint16_t length)
      */
     sock->so_tx_win = ntohs(th->th_win);
 
-    /* 
+    /*
      * Do round trip time calculation.
      */
     if (sock->so_rtt_seq && SeqIsAfter(h_ack, sock->so_rtt_seq))
@@ -754,7 +754,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
         break;
     }
 #ifdef NUTDEBUG
-    if (__tcp_trf) {
+    if (__tcp_trf & NET_DBG_SOCKSTATE) {
         fprintf(__tcp_trs, " %04x-", (unsigned int) sock);
         if (rc)
             NutDumpSockState(__tcp_trs, sock->so_state, "**ERR ", "**>");
@@ -790,7 +790,7 @@ static int NutTcpStateChange(TCPSOCKET * sock, uint8_t state)
 /*!
  * \brief Initiated by the application.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
  * \return 0 if granted, error code otherwise.
@@ -819,8 +819,8 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
         return (sock->so_last_error = ETIMEDOUT);
     }
 #else
-    /* For backward compatibility we simply block the application. 
-    ** If we do not have a backlog, then timing out would not make 
+    /* For backward compatibility we simply block the application.
+    ** If we do not have a backlog, then timing out would not make
     ** much sense anyway, because incoming connection attempts will
     ** be immediately rejected. */
     NutEventWait(&sock->so_pc_tq, 0);
@@ -834,7 +834,7 @@ int NutTcpStatePassiveOpenEvent(TCPSOCKET * sock)
  *
  * The caller must make sure, that the socket is in closed state.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
  * \return 0 if granted, -1 otherwise.
@@ -868,7 +868,7 @@ int NutTcpStateActiveOpenEvent(TCPSOCKET * sock)
  * No further data sending is accepted.
  * Receiving is still allowed.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  */
 int NutTcpStateCloseEvent(TCPSOCKET * sock)
@@ -898,8 +898,8 @@ int NutTcpStateCloseEvent(TCPSOCKET * sock)
         break;
 
     case TCPS_CLOSE_WAIT:
-        /* 
-         * RFC 793 is wrong. 
+        /*
+         * RFC 793 is wrong.
          */
         //@@@printf("[%04X]CLOSE_WAIT: going to LAST_ACK\n", (u_short) sock);
         NutTcpStateChange(sock, TCPS_LAST_ACK);
@@ -923,7 +923,7 @@ int NutTcpStateCloseEvent(TCPSOCKET * sock)
 /*!
  * \brief Initiated by the application.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  */
 int NutTcpStateWindowEvent(TCPSOCKET * sock)
@@ -945,9 +945,9 @@ int NutTcpStateWindowEvent(TCPSOCKET * sock)
  *
  * This function is called by the TCP timer.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
- * \returns Nonzero if socket was aborted due to reach of retransmit 
+ * \returns Nonzero if socket was aborted due to reach of retransmit
  *          limit or network error.
  *
  */
@@ -961,7 +961,7 @@ int NutTcpStateRetranTimeout(TCPSOCKET * sock)
         return -1;
     } else {
 #ifdef NUTDEBUG
-        if (__tcp_trf)
+        if (__tcp_trf & NET_DBG_SOCKSTATE)
             NutDumpTcpHeader(__tcp_trs, "RET", sock, sock->so_tx_nbq);
 #endif
         /* We must save sock->so_tx_nbq->nb_next before calling NutIpOutput,
@@ -1087,7 +1087,7 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
     if (flags & TH_RST) {
         if (sock->so_pc_tq)
             NutTcpStateChange(sock, TCPS_LISTEN);
-        else 
+        else
             NutTcpAbortSocket(sock, ECONNREFUSED);
         NutNetBufFree(nb);
     	sock->so_retran_time = 0;
@@ -1125,7 +1125,7 @@ static void NutTcpStateSynReceived(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
     /*
      * Even SYN segments may contain application data, which will be stored
      * in the socket's input buffer. However, there is no need to post an
-     * event to any thread waiting for data, because our connection is not 
+     * event to any thread waiting for data, because our connection is not
      * yet established.
      */
     if (nb->nb_ap.sz)
@@ -1191,9 +1191,9 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
 
     /*
-     * If the sequence number of the incoming segment is larger than 
-     * expected, we probably missed one or more previous segments. Let's 
-     * add this one to a linked list of segments received in advance and 
+     * If the sequence number of the incoming segment is larger than
+     * expected, we probably missed one or more previous segments. Let's
+     * add this one to a linked list of segments received in advance and
      * hope that the missing data will arrive later.
      */
     if (SeqIsAfter(ntohl(th->th_seq),sock->so_rx_nxt)) {
@@ -1246,10 +1246,10 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
     }
 
     /*
-     * Acknowledge any sequence numbers not expected, 
+     * Acknowledge any sequence numbers not expected,
      * even if they do not contain any data. Keepalive
      * packets contain a sequence number one less
-     * than the next data expected and they do not 
+     * than the next data expected and they do not
      * contain any data.
      */
     if (ntohl(th->th_seq) != sock->so_rx_nxt) {
@@ -1258,7 +1258,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
         sock->so_oos_drop++;
         NutNetBufFree(nb);
         NutTcpOutput(sock, 0, 0);
-    } 
+    }
 
     /*
      * The sequence number is exactly what we expected.
@@ -1273,7 +1273,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
             if (SeqIsAfter(ntohl(th->th_seq), sock->so_rx_nxt))
                 break;
             sock->so_rx_nbq = nb->nb_next;
-            /* Update the heap space used by packets 
+            /* Update the heap space used by packets
             ** received in advance. */
             tcp_adv_cnt -= nb->nb_dl.sz + sizeof(IPHDR) + sizeof (TCPHDR) + nb->nb_ap.sz;
             if (ntohl(th->th_seq) == sock->so_rx_nxt) {
@@ -1338,7 +1338,7 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
 
     //@@@if (flags & TH_FIN) printf ("[%04X]FIN_WAIT_1: received FIN\n", (u_short) sock);
     //@@@printf ("[%04X]FIN_WAIT_1: received ACK: %lu, unack: %lu, next: %lu\n", (u_short) sock, ntohl(th->th_ack), sock->so_tx_una, sock->so_tx_nxt);
-    
+
     //@@@printf ("[%04X]FIN_WAIT_1:  pre processack, nbq: %04X\n", (u_short) sock, (u_short) sock->so_tx_nbq);
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
     //@@@printf ("[%04X]FIN_WAIT_1: post processack, nbq: %04X\n", (u_short) sock, (u_short) sock->so_tx_nbq);
@@ -1365,7 +1365,7 @@ static void NutTcpStateFinWait1(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
 
     if (flags & TH_FIN) {
         sock->so_rx_nxt++;
-        /* 
+        /*
          * Our FIN has been acked.
          */
         sock->so_time_wait = 0;
@@ -1417,7 +1417,7 @@ static void NutTcpStateFinWait2(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NE
 
     //@@@printf ("[%04X]FIN_WAIT_2: received ACK: %lu, unack: %lu, next: %lu\n", (u_short) sock, ntohl(th->th_ack), sock->so_tx_una, sock->so_tx_nxt);
     /*
-     * Process acknowledge and application data and release the 
+     * Process acknowledge and application data and release the
      * network buffer.
      */
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
@@ -1574,7 +1574,7 @@ static void NutTcpStateLastAck(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
     NutTcpProcessAck(sock, th, nb->nb_ap.sz);
     NutNetBufFree(nb);
 
-    if (sock->so_tx_nxt == sock->so_tx_una) 
+    if (sock->so_tx_nxt == sock->so_tx_una)
         NutTcpDestroySocket(sock);
     //@@@else printf ("[%04X]LAST_ACK: no destroy sock\n", (u_short) sock);
 }
@@ -1584,7 +1584,7 @@ static void NutTcpStateLastAck(TCPSOCKET * sock, uint8_t flags, TCPHDR * th, NET
  *
  * Processing is based on the current state of the socket connection.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param nb   Network buffer structure containing a TCP segment.
  *             Will be released within this routine.
@@ -1597,7 +1597,7 @@ static void NutTcpStateProcess(TCPSOCKET * sock, NETBUF * nb)
     uint8_t flags = th->th_flags;
 
 #ifdef NUTDEBUG
-    if (__tcp_trf) {
+    if (__tcp_trf & NET_DBG_SOCKSTATE) {
         fprintf(__tcp_trs, " %04x-", (unsigned int) sock);
         NutDumpSockState(__tcp_trs, sock->so_state, "[", ">]");
     }
@@ -1677,7 +1677,7 @@ THREAD(NutTcpSm, arg)
      * code. We depend on the speed of the reading application.
      */
     NutThreadSetPriority (32);
-    
+
     for (;;) {
         if (++tac > 3 || NutEventWait(&tcp_in_rdy, 200)) {
             tac = 0;
@@ -1743,7 +1743,7 @@ THREAD(NutTcpSm, arg)
                 th = (TCPHDR *) nb->nb_tp.vp;
                 sock = NutTcpFindSocket(th->th_dport, th->th_sport, ih->ip_src);
 #ifdef NUTDEBUG
-                if (__tcp_trf)
+                if (__tcp_trf & NET_DBG_SOCKSTATE)
                     NutDumpTcpHeader(__tcp_trs, " IN", sock, nb);
 #endif
                 nbx = nb->nb_next;
@@ -1774,8 +1774,8 @@ THREAD(NutTcpSm, arg)
  * be added to a global queue and processed by the TCP state
  * machine, which is running on a separate thread.
  *
- * \note This routine is called by the IP layer on incoming 
- *       TCP segments. Applications typically do not call 
+ * \note This routine is called by the IP layer on incoming
+ *       TCP segments. Applications typically do not call
  *       this function.
  */
 void NutTcpStateMachine(NETBUF * nb)
@@ -1822,7 +1822,7 @@ void NutTcpStateMachine(NETBUF * nb)
  */
 int NutTcpInitStateMachine(void)
 {
-    if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL, 
+    if (tcpThread == 0 && (tcpThread = NutThreadCreate("tcpsm", NutTcpSm, NULL,
         (NUT_THREAD_TCPSMSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) == 0)
         return -1;
     return 0;

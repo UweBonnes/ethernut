@@ -65,7 +65,7 @@
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -190,7 +190,7 @@ static uint_fast8_t __tcp_trf = 1;
 
 /*! \brief Maximum age of an entry in the ARP cache in minutes.
  *
- * Outdated entries will be regularly removed, forcing the Ethernet 
+ * Outdated entries will be regularly removed, forcing the Ethernet
  * interface to generate new ARP requests. This way MAC address
  * changes are detected.
  *
@@ -208,7 +208,7 @@ static uint_fast8_t __tcp_trf = 1;
  * \showinitializer
  */
 #ifndef MAX_ARPREQUESTS
-#define MAX_ARPREQUESTS 1
+#define MAX_ARPREQUESTS 5
 #endif
 
 /*! \brief Minimum wait before sending out a new ARP request.
@@ -241,7 +241,7 @@ static void ArpCacheFlush(IFNET * ifn)
                thread takes over and deals with ARP, we are dead. */
             NutEventBroadcastAsync(&ae->ae_tq);
 #ifdef NUTDEBUG
-            if (__tcp_trf) {
+            if (__tcp_trf & NET_DBG_ARP) {
                 fprintf(__tcp_trs, "[ARP-DEL %s]", inet_ntoa(ae->ae_ip));
             }
 #endif
@@ -294,7 +294,7 @@ static void ArpCacheAging(void)
                         }
                         rmf |= ae->ae_flags;
 #ifdef NUTDEBUG
-                        if (__tcp_trf) {
+                        if (__tcp_trf & NET_DBG_ARP) {
                             fprintf(__tcp_trs, "[ARP-AGE %s %u]",       /* */
                                     inet_ntoa(ae->ae_ip), ae->ae_outdated);
                         }
@@ -315,7 +315,7 @@ static void ArpCacheAging(void)
  * \param ifn Pointer to the network interface.
  * \param ip  IP address to search, given in network byte order.
  *
- * \return Pointer to the ARP cache entry, if found, or NULL if no 
+ * \return Pointer to the ARP cache entry, if found, or NULL if no
  *         entry exists.
  */
 static ARPENTRY *ArpCacheLookup(IFNET * ifn, uint32_t ip)
@@ -340,7 +340,7 @@ static ARPENTRY *ArpCacheLookup(IFNET * ifn, uint32_t ip)
  * \param ha  Pointer to the MAC address. If NULL, an incomplete entry
  *            will be created.
  *
- * \return Pointer to the new entry or NULL if not enough memory is 
+ * \return Pointer to the new entry or NULL if not enough memory is
  *         available.
  */
 static ARPENTRY *ArpCacheNew(IFNET * ifn, uint32_t ip, uint8_t * ha)
@@ -361,7 +361,7 @@ static ARPENTRY *ArpCacheNew(IFNET * ifn, uint32_t ip, uint8_t * ha)
         ifn->arpTable = entry;
 
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
+        if (__tcp_trf & NET_DBG_ARP) {
             fprintf(__tcp_trs, "\n[ARP-NEW %s", inet_ntoa(ip));
             if (ha) {
                 fprintf(__tcp_trs, " %02x%02x%02x%02x%02x%02x", /* */
@@ -377,12 +377,12 @@ static ARPENTRY *ArpCacheNew(IFNET * ifn, uint32_t ip, uint8_t * ha)
 /*!
  * \brief Update an ARP entry.
  *
- * If an entry with the same IP address exists, then this entry is 
- * updated. If no entry exists, a new one is created. All threads 
+ * If an entry with the same IP address exists, then this entry is
+ * updated. If no entry exists, a new one is created. All threads
  * waiting for address resolution are woken up.
  *
  * \note This function is automatically called on each incoming
- *       ARP telegram. Applications typically do not call this 
+ *       ARP telegram. Applications typically do not call this
  *       function.
  *
  * \param dev Identifies the device.
@@ -401,7 +401,7 @@ void NutArpCacheUpdate(NUTDEVICE * dev, uint32_t ip, uint8_t * ha)
     if ((entry = ArpCacheLookup(dev->dev_icb, ip)) != 0) {
 
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
+        if (__tcp_trf & NET_DBG_ARP) {
             fprintf(__tcp_trs, "[ARP-UPD %s", inet_ntoa(ip));
             if (ha) {
                 fprintf(__tcp_trs, " %02x%02x%02x%02x%02x%02x", /* */
@@ -419,8 +419,8 @@ void NutArpCacheUpdate(NUTDEVICE * dev, uint32_t ip, uint8_t * ha)
         NutEventBroadcast(&entry->ae_tq);
     }
 
-    /* 
-     * If no entry with this IP exists, then create a new completed one. 
+    /*
+     * If no entry with this IP exists, then create a new completed one.
      */
     else {
         ArpCacheNew(dev->dev_icb, ip, ha);
@@ -454,18 +454,18 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST uint32_t ip, uint8_t * mac)
     uint_fast8_t retries = MAX_ARPREQUESTS;
     uint32_t tmo = MIN_ARPWAIT;
 
-    /* Aging the cache on each query adds some processing to the path 
-     * which we want to be as fast as possible. But when calling this 
-     * function in NutArpCacheNew only, we will never detect when a 
-     * node changes its MAC address. Anyway, the previous solution of 
+    /* Aging the cache on each query adds some processing to the path
+     * which we want to be as fast as possible. But when calling this
+     * function in NutArpCacheNew only, we will never detect when a
+     * node changes its MAC address. Anyway, the previous solution of
      * running a timer thread consumed too much RAM.
      */
     ArpCacheAging();
 
     /*
-     * Search a matching entry. If none exists, create a new incomplete 
-     * entry and a request packet. If another thread has entered this 
-     * routine, an incomplete entry exists and the current thread will 
+     * Search a matching entry. If none exists, create a new incomplete
+     * entry and a request packet. If another thread has entered this
+     * routine, an incomplete entry exists and the current thread will
      * not create a request packet and send out requests.
      */
     if ((entry = ArpCacheLookup(ifn, ip)) == 0) {
@@ -480,8 +480,8 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST uint32_t ip, uint8_t * mac)
     }
 
     /*
-     * We enter a loop, which will send ARP requests on increasing 
-     * time intervals until our ARP entry gets completed. Give up 
+     * We enter a loop, which will send ARP requests on increasing
+     * time intervals until our ARP entry gets completed. Give up
      * after a configured number of retries.
      */
     for (;;) {
@@ -498,7 +498,7 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST uint32_t ip, uint8_t * mac)
             break;
         }
 #ifdef NUTDEBUG
-        if (__tcp_trf) {
+        if (__tcp_trf & NET_DBG_ARP) {
             fprintf(__tcp_trs, "[%u.ARP-%s %s]",        /* */
                     MAX_ARPREQUESTS - retries + 1,      /* */
                     nb ? "QRY" : "WAIT",        /* */
@@ -526,14 +526,14 @@ int NutArpCacheQuery(NUTDEVICE * dev, CONST uint32_t ip, uint8_t * mac)
         tmo += tmo;
 
         /* During our sleep, another thread, which created the
-           incomplete entry, may have given up and removed the entry. 
+           incomplete entry, may have given up and removed the entry.
            In this case we should also return an error. */
         if ((entry = ArpCacheLookup(ifn, ip)) == 0) {
             break;
         }
     }
 
-    /* Only the thread that created the entry, allocated a request 
+    /* Only the thread that created the entry, allocated a request
        packet. If this thread fails, it should also remove the entry. */
     if (nb) {
         NutNetBufFree(nb);
