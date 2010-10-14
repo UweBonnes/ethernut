@@ -295,7 +295,7 @@ static void NutTcpInputOptions(TCPSOCKET * sock, NETBUF * nb)
 
             /* Read MAXSEG option */
             case TCPOPT_MAXSEG:
-                s = ntohs(((uint16_t)cp[2] << 8) | cp[3]);
+                s = ntohs(*((uint16_t*)&cp[2]));
                 if (s < sock->so_mss)
                     sock->so_mss = s;
                 cp += TCPOLEN_MAXSEG;
