@@ -389,7 +389,7 @@ THREAD(NutIdle, arg)
 static void NutInitSP(void) __attribute__ ((naked, section (".init5"), used));
 void NutInitSP(void)
 {
-#if defined (__AVR_AT90CAN128__)
+#if defined (NUTMEM_STACKHEAP)
     /* Stack must remain in internal RAM where avr-libc's runtime lib init placed it */
 #else
    /* Initialize stack pointer to end of external RAM while starting up the system
