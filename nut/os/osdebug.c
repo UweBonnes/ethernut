@@ -99,11 +99,11 @@ uint_fast8_t __heap_trf;
 static char *states[] = { "TRM", "RUN", "RDY", "SLP" };
 
 #ifdef ARCH_32BIT
-/*                              12345678 12345678 1234 123 12345678 12345678 12345678 1234556789 */
-static prog_char qheader[] = "\nHandle   Name     Prio Sta Queue    Timer    StackPtr FreeMem\n";
+/*                              12345678 12345678 1234 123 12345678 12345678 12345678 1234556789 123456789*/
+static prog_char qheader[] = "\nHandle   Name     Prio Sta Queue    Timer    StackPtr   FreeMem  MinStack\n";
 #else
-/*                              1234 12345678 1234 123 1234 1234 1234 12345 */
-static prog_char qheader[] = "\nHndl Name     Prio Sta QUE  Timr StkP FreeMem\n";
+/*                              1234 12345678 1234 123 1234 1234 1234 1234567 12345678*/
+static prog_char qheader[] = "\nHndl Name     Prio Sta QUE  Timr StkP FreeMem MinStack\n";
 #endif
 
 /*!
@@ -158,10 +158,10 @@ void NutDumpThreadList(FILE * stream)
 {
 
 #ifdef ARCH_32BIT
-    static prog_char fmt1[] = "%08X %-8s %4u %s %08X %08X %08X %9u %s";
+    static prog_char fmt1[] = "%08X %-8s %4u %s %08X %08X %08X %9u %9u %s";
     static prog_char fmt2[] = " %08X";
 #else
-    static prog_char fmt1[] = "%04X %-8s %4u %s %04X %04X %04X %5u %s";
+    static prog_char fmt1[] = "%04X %-8s %4u %s %04X %04X %04X %7u %8u %s";
     static prog_char fmt2[] = " %04X";
 #endif
     NUTTHREADINFO *tqp;
@@ -178,7 +178,8 @@ void NutDumpThreadList(FILE * stream)
         fprintf_P(stream, fmt1, (int) tdp, tdp->td_name, tdp->td_priority,
                   states[tdp->td_state], (int) tdp->td_queue,
                   (int) tdp->td_timer, (int) tdp->td_sp,
-                  (int) tdp->td_sp - (int) tdp->td_memory, *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
+                  (int) tdp->td_sp - (int) tdp->td_memory, NutThreadStackAvailable(tdp->td_name), 
+                  *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
 #endif
         if (tdp->td_queue) {
             tqp = *(NUTTHREADINFO **) (tdp->td_queue);
