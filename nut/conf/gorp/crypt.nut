@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2009 by Ole Reinhardt <ole.reinhardt@thermotemp.de>. 
+-- Copyright (C) 2010 by Ulrich Prinz
 --
 -- All rights reserved.
 --
@@ -32,47 +32,17 @@
 -- For additional information see http://www.ethernut.de/
 --
 
--- Gorp ("Studentenfutter") library
+-- Gorp linked list modules.
 --
 -- $Id$
 --
 
-nutgorp =
+nutgorp_crypt =
 {
     {
-        name = "nutgorp_buffer",
-        brief = "Buffer",
-        description = "Buffer functions.",
-        script = "gorp/buffer.nut"
-    },
-    {
-        name = "nutgorp_edit",
-        brief = "Edit",
-        description = "Editor functions.",
-        script = "gorp/edit.nut"
-    },
-    {
-        name = "nutgorp_codec",
-        brief = "Encode and Decode",
-        description = "Encoding and decoding functions.",
-        script = "gorp/codec.nut"
-    },
-    {
-        name = "nutgorp_hashes",
-        brief = "Hashes",
-        description = "Hash functions.",
-        script = "gorp/hashes.nut"
-    },
-    {
-        name = "nutgorp_list",
-        brief = "Lists",
-        description = "Functions for lists and queues.",
-        script = "gorp/list.nut"
-    },
-    {
-        name = "nutgorp_crypt",
-        brief = "Cryptography",
-        description = "Functions to encrypt and decrypt data.",
-        script = "gorp/crypt.nut"
+        name = "nutgorp_list_xtea",
+        brief = "XTEA Crypto",
+        description = "Functions to encrypt and decrypt with publich domain XTEA algorythm.",
+        sources = { "crypt/xtea.c" }
     }
 }

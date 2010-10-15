@@ -49,7 +49,8 @@ include $(top_srcdir)/Makedefs
 SRCS =  codec/base64_decode.c codec/base64_encode.c \
         edit/edline.c edit/history.c edit/vt100.c \
         hashes/md5.c \
-        list/lili.c list/lpushpop.c list/lstrcmp.c list/lstrcopy.c list/lutil.c
+        list/lili.c list/lpushpop.c list/lstrcmp.c list/lstrcopy.c list/lutil.c \
+        crypt/xtea.c
 
 OBJS = $(SRCS:.c=.o)
 
