@@ -178,7 +178,7 @@ void NutDumpThreadList(FILE * stream)
         fprintf_P(stream, fmt1, (int) tdp, tdp->td_name, tdp->td_priority,
                   states[tdp->td_state], (int) tdp->td_queue,
                   (int) tdp->td_timer, (int) tdp->td_sp,
-                  (int) tdp->td_sp - (int) tdp->td_memory, NutThreadStackAvailable(tdp->td_name), 
+                  (int) tdp->td_sp - (int) tdp->td_memory, (unsigned int) NutThreadStackAvailable(tdp->td_name), 
                   *((uint32_t *) tdp->td_memory) != DEADBEEF ? "FAIL" : "OK");
 #endif
         if (tdp->td_queue) {
