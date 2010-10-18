@@ -452,6 +452,14 @@ nutarch_avr32 =
         sources = { "avr32/dev/usart0.c" },
         options =
         {
+			{
+				macro = "UART0_ALT_PINSET",
+				brief = "USART0 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/uart.h"
+				
+			},
             {
                 macro = "UART0_RXTX_ONLY",
                 brief = "Receive/Transmit Only",
@@ -501,6 +509,14 @@ nutarch_avr32 =
         sources = { "avr32/dev/usart1.c" },
         options =
         {
+			{
+				macro = "UART1_ALT_PINSET",
+				brief = "USART1 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/uart.h"
+				
+			},
             {
                 macro = "UART1_RXTX_ONLY",
                 brief = "Receive/Transmit Only",
@@ -550,6 +566,14 @@ nutarch_avr32 =
         sources = { "avr32/dev/usart2.c" },
         options =
         {
+			{
+				macro = "UART2_ALT_PINSET",
+				brief = "USART2 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/uart.h"
+				
+			},
             {
                 macro = "UART2_RXTX_ONLY",
                 brief = "Receive/Transmit Only",

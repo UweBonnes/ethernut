@@ -42,6 +42,7 @@
 #include <cfg/clock.h>
 #include <cfg/arch.h>
 #include <cfg/uart.h>
+#include <cfg/arch/gpio.h>
 
 #include <string.h>
 
@@ -51,6 +52,7 @@
 
 #include <dev/irqreg.h>
 #include <dev/usartavr32.h>
+#include <dev/gpio.h>
 
 /*
  * Local function prototypes.
@@ -150,16 +152,42 @@ NUTDEVICE devUsartAvr321 = {
 #define dcb_usart       dcb_usart1
 
 #define USARTn_BASE         AVR32_USART1
-#if defined(AVR32_USART1_TXD_0_0_PIN)
-#define USART_RX_PIN        AVR32_USART1_RXD_0_0_PIN
-#define USART_RX_FUNCTION   AVR32_USART1_RXD_0_0_FUNCTION
-#define USART_TX_PIN        AVR32_USART1_TXD_0_0_PIN
-#define USART_TX_FUNCTION   AVR32_USART1_TXD_0_0_FUNCTION
-#elif defined(AVR32_USART1_TXD_0_PIN)
-#define USART_RX_PIN        AVR32_USART1_RXD_0_PIN
-#define USART_RX_FUNCTION   AVR32_USART1_RXD_0_FUNCTION
-#define USART_TX_PIN        AVR32_USART1_TXD_0_PIN
-#define USART_TX_FUNCTION   AVR32_USART1_TXD_0_FUNCTION
+#if UART1_ALT_PINSET == ALTERNATE_PIN_SET2
+# if defined(AVR32_USART1_TXD_0_0_PIN)
+#  define USART_RX_PIN        AVR32_USART1_RXD_0_1_PIN
+#  define USART_RX_FUNCTION   AVR32_USART1_RXD_0_1_FUNCTION
+#  define USART_TX_PIN        AVR32_USART1_TXD_0_1_PIN
+#  define USART_TX_FUNCTION   AVR32_USART1_TXD_0_1_FUNCTION
+# elif defined(AVR32_USART1_TXD_0_PIN)
+#  define USART_RX_PIN        AVR32_USART1_RXD_1_PIN
+#  define USART_RX_FUNCTION   AVR32_USART1_RXD_1_FUNCTION
+#  define USART_TX_PIN        AVR32_USART1_TXD_1_PIN
+#  define USART_TX_FUNCTION   AVR32_USART1_TXD_1_FUNCTION
+# endif
+#elif UART1_ALT_PINSET == ALTERNATE_PIN_SET3
+# if defined(AVR32_USART1_TXD_0_0_PIN)
+#  define USART_RX_PIN        AVR32_USART1_RXD_0_2_PIN
+#  define USART_RX_FUNCTION   AVR32_USART1_RXD_0_2_FUNCTION
+#  define USART_TX_PIN        AVR32_USART1_TXD_0_2_PIN
+#  define USART_TX_FUNCTION   AVR32_USART1_TXD_0_2_FUNCTION
+# elif defined(AVR32_USART1_TXD_0_PIN)
+#  define USART_RX_PIN        AVR32_USART1_RXD_2_PIN
+#  define USART_RX_FUNCTION   AVR32_USART1_RXD_2_FUNCTION
+#  define USART_TX_PIN        AVR32_USART1_TXD_2_PIN
+#  define USART_TX_FUNCTION   AVR32_USART1_TXD_2_FUNCTION
+# endif
+#else // ALTERNATE_PIN_SET1
+# if defined(AVR32_USART1_TXD_0_0_PIN)
+#  define USART_RX_PIN        AVR32_USART1_RXD_0_0_PIN
+#  define USART_RX_FUNCTION   AVR32_USART1_RXD_0_0_FUNCTION
+#  define USART_TX_PIN        AVR32_USART1_TXD_0_0_PIN
+#  define USART_TX_FUNCTION   AVR32_USART1_TXD_0_0_FUNCTION
+# elif defined(AVR32_USART1_TXD_0_PIN)
+#  define USART_RX_PIN        AVR32_USART1_RXD_0_PIN
+#  define USART_RX_FUNCTION   AVR32_USART1_RXD_0_FUNCTION
+#  define USART_TX_PIN        AVR32_USART1_TXD_0_PIN
+#  define USART_TX_FUNCTION   AVR32_USART1_TXD_0_FUNCTION
+# endif
 #endif
 
 #include "usart.c"

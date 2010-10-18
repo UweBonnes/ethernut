@@ -54,5 +54,17 @@
 #include <cfg/arch/avr32.h>
 #endif
 
+/* 
+   Alternate pin sets for driver configuration of the
+   peripheral GPIO. 
+*/
+#define ALTERNATE_PIN_SET1 1
+#define ALTERNATE_PIN_SET2 2
+#define ALTERNATE_PIN_SET3 3
+#define ALTERNATE_PIN_SET4 4
+#define ALTERNATE_PIN_SET5 5
+#define ALTERNATE_PIN_SET6 6
+#define ALTERNATE_PIN_SET7 7
+
 #endif
 

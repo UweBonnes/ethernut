@@ -599,3 +599,11 @@ function GetGpioHeaderPath()
     end
     return basepath .. "pio.h"
 end
+
+
+--
+-- Retrieve platform specific GPIO Special Functions
+--
+function GetAlternativePinsets()
+	return { "ALTERNATE_PIN_SET1", "ALTERNATE_PIN_SET2", "ALTERNATE_PIN_SET3" }
+end
