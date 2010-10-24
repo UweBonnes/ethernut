@@ -97,6 +97,7 @@
 #include <dev/irqreg.h>
 #include <dev/dm9000e.h>
 
+/* WARNING: Variadic macros are C99 and may fail with C89 compilers. */
 #ifdef NUTDEBUG
 #include <stdio.h>
 #define DMPRINTF(args,...) printf(args,##__VA_ARGS__)
