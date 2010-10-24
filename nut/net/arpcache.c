@@ -208,7 +208,7 @@ static uint_fast8_t __tcp_trf = 1;
  * \showinitializer
  */
 #ifndef MAX_ARPREQUESTS
-#define MAX_ARPREQUESTS 5
+#define MAX_ARPREQUESTS 1
 #endif
 
 /*! \brief Minimum wait before sending out a new ARP request.
