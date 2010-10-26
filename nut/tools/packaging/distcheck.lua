@@ -20,7 +20,7 @@
 
 require("lfs")
 
-PKG_VERSION = "4.9.2"
+PKG_VERSION = "4.9.10"
 ARC_NAME = "ethernut-"..PKG_VERSION
 TOP_DIR = "."
 PS = "\\"
@@ -30,10 +30,11 @@ REDIR = " >>build.log 2>&1"
 ERROR_LOG = "errors-"..PKG_VERSION..".log"
 
 BASE_PATH = "C:\\apps\\bin;%windir%\\system32;%windir%;%windir%\\System32\\Wbem;"
-TOOL_PATH = "C:\\ethernut-4.7\\nut\\tools\\win32;"
+TOOL_PATH = "C:\\ethernut\\nut-trunk\\nut\\tools\\win32;"
 GCCAVR_PATH = "C:\\WinAVR\\bin;C:\\WinAVR\\utils\\bin;"
+GCCAVR32_PATH = "C:\\AVR32GCC\\bin;"
 GCCARM_PATH = "C:\\Programme\\YAGARTO\\bin;"
-ICCAVR7_PATH = "C:\\iccv719avr\\bin;"
+ICCAVR7_PATH = "C:\\iccv7avr\\bin;"
 NSIS_PATH = "C:\\Programme\\NSIS;"
 DOXY_PATH = "C:\\Programme\\doxygen\\bin;"
 
@@ -58,19 +59,25 @@ avr_targets = {
   { name = "mmnet102_103_104", mcu = "atmega128" },
 }
 
+avr32_targets = {
+  { name = "evk1104", mcu = "uc3a3256" },
+  { name = "evk1100", mcu = "uc3a0512es" }
+}
+
 arm_targets = {
-  { name = "ethernut30d", mcu = "arm7tdmi" },
-  { name = "ethernut30e", mcu = "arm7tdmi" },
-  { name = "ethernut31a", mcu = "arm7tdmi" },
-  { name = "eir10c", mcu = "arm7tdmi" },
   { name = "at91eb40a", mcu = "arm7tdmi" },
   { name = "at91sam7s", mcu = "arm7tdmi" },
   { name = "at91sam7se-ek", mcu = "arm7tdmi" },
   { name = "at91sam7x-ek", mcu = "arm7tdmi" },
-  { name = "olimex-sam7-ex256", mcu = "arm7tdmi" },
-  { name = "gbaxport2", mcu = "arm7tdmi" },
-  { name = "ethernut50c", mcu = "arm9" },
   { name = "at91sam9260-ek", mcu = "arm9" },
+  { name = "ethernut30d", mcu = "arm7tdmi" },
+  { name = "ethernut30e", mcu = "arm7tdmi" },
+  { name = "ethernut31d", mcu = "arm7tdmi" },
+  { name = "ethernut50e", mcu = "arm9" },
+  { name = "eir10c", mcu = "arm7tdmi" },
+  { name = "gbaxport2", mcu = "arm7tdmi" },
+  { name = "morphoq11a", mcu = "arm7tdmi" },
+  { name = "olimex-sam7-ex256", mcu = "arm7tdmi" },
 }
 
 asm_sources = {
@@ -104,10 +111,14 @@ cpp_sources = {
   { p = ".cc$", m = ".cc", r = true },
   { p = ".cpp$", m = ".cpp", r = true },
   { p = ".h$", m = ".h", r = true },
+  { p = ".pro$", m = ".pro", r = true },
+  { p = ".qrc$", m = ".qrc", r = true },
   { p = ".rc$", m = ".rc", r = true },
+  { p = ".ui$", m = ".ui", r = true },
   { p = ".xpm$", m = ".xpm", r = true },
   { p = ".bmp$", m = ".bmp", r = true },
   { p = ".ico$", m = ".ico", r = true },
+  { p = ".png$", m = ".png", r = true },
 }
 
 doxy_files = {
@@ -161,6 +172,7 @@ win32_files = {
   { p = ".jom$", m = ".jom", r = true },
   { p = ".tcl$", m = ".tcl", r = true },
   { p = ".bin$", m = ".bin", r = true },
+  { p = ".manifest$", m = ".manifest", r = true },
 }
 
 tool_files = {
@@ -292,7 +304,7 @@ function create_readme(path, content)
   local e
   f,e = io.open(path..PS.."README", "w")
   if e then
-    print(path..PS.."README")
+    print("Failed to create "..path..PS.."README")
   else
     f:write(content)
     f:close()
@@ -427,26 +439,6 @@ copy_files(SRC_DIR..PS.."nut"..PS.."tools"..PS.."win32", WORK_DIR..PS.."nut"..PS
 lfs.chdir(WORK_DIR)
 
 --
--- Build ARM GCC libs and apps
---
-path_env = TOOL_PATH..GCCARM_PATH..BASE_PATH
-if os.execute("SET PATH="..path_env.."&arm-elf-gcc -v"..REDIR) == 0 then
-  for t_index, t_board in ipairs(arm_targets) do 
-    update_config("nut/conf/"..t_board.name..".conf", "CRT_UNSETENV_POSIX", '""')
-  
-    if build_libs(t_board.name, "arm-gcc", path_env) == 0 then
-      if build_apps(t_board.name, t_board.mcu, "arm-gcc", path_env) == 0 then
-        if build_libs(t_board.name, "arm-gccdbg", path_env) == 0 then
-          build_apps(t_board.name, t_board.mcu, "arm-gccdbg", path_env)
-        end
-      end
-    end
-  end
-else  
-  build_result:write("GCC for ARM not available\n\n")
-end
-
---
 -- Build AVR GCC libs and apps
 --
 path_env = TOOL_PATH..GCCAVR_PATH..BASE_PATH
@@ -462,6 +454,43 @@ if os.execute("SET PATH="..path_env.."&avr-gcc -v"..REDIR) == 0 then
   end
 else
   build_result:write("GCC for AVR not available\n\n")
+end
+
+--
+-- Build ARM GCC libs and apps
+--
+path_env = TOOL_PATH..GCCARM_PATH..BASE_PATH
+if os.execute("SET PATH="..path_env.."&arm-elf-gcc -v"..REDIR) == 0 then
+-- if os.execute("SET PATH="..path_env.."&arm-none-eabi-gcc -v"..REDIR) == 0 then
+  for t_index, t_board in ipairs(arm_targets) do 
+    update_config("nut/conf/"..t_board.name..".conf", "CRT_UNSETENV_POSIX", '""')
+  
+    if build_libs(t_board.name, "arm-gcc", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "arm-gcc", path_env)
+    end
+    if build_libs(t_board.name, "arm-gccdbg", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "arm-gccdbg", path_env)
+    end
+  end
+else  
+  build_result:write("GCC for ARM not available\n\n")
+end
+
+--
+-- Build AVR32 GCC libs and apps
+--
+path_env = TOOL_PATH..GCCAVR32_PATH..BASE_PATH
+if os.execute("SET PATH="..path_env.."&avr32-gcc -v"..REDIR) == 0 then
+  for t_index, t_board in ipairs(avr32_targets) do 
+    if build_libs(t_board.name, "avr32-gcc", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "avr32-gcc", path_env)
+    end
+    if build_libs(t_board.name, "avr32-gccdbg", path_env) == 0 then
+      build_apps(t_board.name, t_board.mcu, "avr32-gccdbg", path_env)
+    end
+  end
+else
+  build_result:write("GCC for AVR32 not available\n\n")
 end
 
 --
@@ -482,6 +511,9 @@ if os.execute("SET PATH="..path_env.."&iccavr -v"..REDIR) == 0 then
         build_apps(t_board.name, "extended", "avrext-icc7", path_env)
       end
     end
+    update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", '""')
+    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", nil)
+    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", nil)
   end
 else
   build_result:write("ICC7 for AVR not available\n\n")
