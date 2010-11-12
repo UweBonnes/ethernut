@@ -872,7 +872,6 @@ static int EntrySearchNext(UFLASHVOLUME * vol, CONST char *name, ENTRYHEAD * eh,
     blknum_t b;
     int nlen;
 
-    name += *name == '/';
     nlen = strlen(name);
     /* Walking through the translation table requires exclusive access. */
     NutEventWait(&vol->vol_mutex, 0);
@@ -1020,6 +1019,9 @@ static int UFlashFileRemove(NUTDEVICE * dev, CONST char *name)
 
     vol = (UFLASHVOLUME *) dev->dev_dcb;
 
+    while (*name == '/') {
+        name++;
+    }
     lbe = EntrySearch(vol, name, &eh);
     if (lbe >= UFLASH_ENTRIES || vol->vol_l2p[lbe] > vol->vol_blocks) {
         return -1;
@@ -1040,26 +1042,41 @@ static int UFlashFileStatus(NUTDEVICE * dev, CONST char *name, struct stat *st)
     blknum_t lbe;
     ENTRYHEAD eh;
     UFLASHVOLUME *vol;
+    uint_fast8_t partial = 0;
 
     vol = (UFLASHVOLUME *) dev->dev_dcb;
 
+    while (*name == '/') {
+        name++;
+    }
     lbe = EntrySearch(vol, name, &eh);
     if (lbe >= UFLASH_ENTRIES || vol->vol_l2p[lbe] > vol->vol_blocks) {
-        return -1;
+        lbe = EntrySearchNext(vol, name, &eh, 0);
+        if (lbe >= UFLASH_ENTRIES || vol->vol_l2p[lbe] > vol->vol_blocks) {
+            return -1;
+        }
+        partial = 1;
     }
     memset(st, 0, sizeof(struct stat));
-    NutEventWait(&vol->vol_mutex, 0);
+    if (partial) {
+        st->st_mode = 1;
 #ifdef UFLASH_USE_TIMESTAMP
-    st->st_size = EntryScan(vol, lbe, &st->st_mtime);
-#else
-    st->st_size = EntryScan(vol, lbe, NULL);
+        EntryScan(vol, lbe, &st->st_mtime);
 #endif
-    NutEventPost(&vol->vol_mutex);
+    } else {
+        NutEventWait(&vol->vol_mutex, 0);
+#ifdef UFLASH_USE_TIMESTAMP
+        st->st_size = EntryScan(vol, lbe, &st->st_mtime);
+#else
+        st->st_size = EntryScan(vol, lbe, NULL);
+#endif
+        NutEventPost(&vol->vol_mutex);
 #if UFLASH_MAX_PATH
-    st->st_size -= sizeof(ENTRYHEAD) + UFLASH_MAX_PATH;
+        st->st_size -= sizeof(ENTRYHEAD) + UFLASH_MAX_PATH;
 #else
-    st->st_size -= sizeof(ENTRYHEAD) + eh.eh_nlen;
+        st->st_size -= sizeof(ENTRYHEAD) + eh.eh_nlen;
 #endif
+    }
     return 0;
 }
 
@@ -1081,7 +1098,7 @@ static NUTFILE *UFlashDirOpen(NUTDEVICE * dev, CONST char *dpath)
         uff = malloc(sizeof(UFLASHFIND));
         if (uff) {
             uff->uff_lbe = 0;
-            uff->uff_path = strdup(dpath);
+            uff->uff_path = strdup(dpath + (*dpath == '/'));
             if (uff->uff_path) {
                 ndp->nf_dev = dev;
                 ndp->nf_fcb = uff;
@@ -1187,6 +1204,12 @@ static int UFlashFileRename(NUTDEVICE * dev, CONST char *old_path, CONST char *n
 
     vol = (UFLASHVOLUME *) dev->dev_dcb;
 
+    while (*old_path == '/') {
+        old_path++;
+    }
+    while (*new_path == '/') {
+        new_path++;
+    }
     lbe = EntrySearch(vol, old_path, &eh);
     if (lbe >= UFLASH_ENTRIES || vol->vol_l2p[lbe] > vol->vol_blocks) {
         return -1;
@@ -1295,6 +1318,9 @@ static NUTFILE *UFlashFileOpen(NUTDEVICE * dev, CONST char *path, int mode, int 
     vol = (UFLASHVOLUME *) dev->dev_dcb;
     NUTASSERT(vol != NULL);
 
+    while (*path == '/') {
+        path++;
+    }
     /* Allocate a private entry information structure. */
     ent = calloc(1, sizeof(UFLASHENTRY));
     if (ent == NULL) {
