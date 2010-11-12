@@ -166,6 +166,7 @@
 
 #define strlen_P(x)             strlen((char *)(x))
 #define strcpy_P(x,y)           strcpy(x,(char *)(y))
+#define strcat_P(x,y)           strcat(x,(char *)(y))
 
 #define strcmp_P(x, y)          strcmp((char *)(x), (char *)(y))
 #define memcpy_P(x, y, z)       memcpy(x, y, z)
