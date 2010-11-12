@@ -3424,10 +3424,10 @@ nutdev =
             {
                 macro = "AVRTARGET_SPI_RATE",
                 brief = "SPI Bitrate",
-                description = "Interface speed in bits per second, default is 500000.\n\n"..
+                description = "Interface speed in bits per second, default is 100000.\n\n"..
                               "If the exact value can't be set, the driver will choose the "..
                               "next lower one. Bit banging interfaces always run at maximum speed.",
-                default = "500000",
+                default = "100000",
                 file = "include/cfg/progif.h"
             },
         },
