@@ -72,9 +72,6 @@ static int NplSpiSetup(NUTSPINODE * node)
     uint32_t clkdiv;
 
     NUTASSERT(node != NULL);
-    NUTASSERT(node->node_stat != NULL);
-    NUTASSERT(node->node_bus != NULL);
-    NUTASSERT(node->node_bus->bus_base != 0);
 
     /* Query the PLL number routed to Clock B. */
     clk = Cy2239xGetPll(NUT_PLL_NPLCLK1);
@@ -157,7 +154,6 @@ int NplSpiBusSelect(NUTSPINODE * node, uint32_t tmo)
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
-    NUTASSERT(node->node_stat != NULL);
 
     /* Allocate the bus. */
     rc = NutEventWait(&node->node_bus->bus_mutex, tmo);
@@ -254,8 +250,6 @@ int NplSpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
-    NUTASSERT(node->node_bus != NULL);
-    NUTASSERT(node->node_bus->bus_base != 0);
 
     while (xlen--) {
         if (txp) {
