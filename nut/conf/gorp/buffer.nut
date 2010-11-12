@@ -42,9 +42,38 @@ nutgorp_buffer =
     {
         name = "nutgorp_buffer_perci",
         brief = "Persistant Ring Buffer",
-        description = "Circular buffer using a file.\n\n",
+        description = "Circular buffer using a file.\n\n"..
+                      "PerCi buffers are quite useful for log files. They are "..
+                      "created with a fixed size and will never grow beyond "..
+                      "their initial size. Instead, the oldest data will be "..
+                      "overwritten when new data is added to a completely filled "..
+                      "file.",
+        requires = { "NUT_FS_READ", "NUT_FS_WRITE" },
         sources = { 
             "buffer/perci.c"
+        },
+        options =
+        {
+            {
+                macro = "PERCI_MAX_RECORDS",
+                brief = "Max. Number of Records",
+                description = "Maximum number of records.\n\n"..
+                              "This is a system wide upper limit. The file's actual number "..
+                              "of records will be specified during its initialization",
+                type = "integer",
+                default = 256,
+                file = "include/cfg/perci.h"
+            },
+            {
+                macro = "PERCI_RECSIZE",
+                brief = "Record Size",
+                description = "Number of bytes per record.\n\n"..
+                              "This is a system wide value. If changed, existing files "..
+                              "must be re-initialized and their content is lost.",
+                type = "integer",
+                default = 256,
+                file = "include/cfg/perci.h"
+            }
         }
     }
 }

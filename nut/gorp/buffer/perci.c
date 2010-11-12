@@ -51,6 +51,7 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/nutdebug.h>
+#include <sys/event.h>
 
 #include <gorp/perci.h>
 
@@ -72,8 +73,8 @@ void PerCiDump(FILE *stream, char *path)
 #ifdef NUTDEBUG
     int fd;
     int got;
-    perci_reclen_t i;
-    perci_reclen_t ll;
+    perci_fast_reclen_t i;
+    perci_fast_reclen_t ll;
     perci_recnum_t recnum;
     perci_reclen_t reclen;
     uint8_t *recbuf;
@@ -83,15 +84,16 @@ void PerCiDump(FILE *stream, char *path)
         fprintf(stream, "Error %d opening %s\n", errno, path);
         return;
     } else {
+        fprintf(stream, "Dump %ld bytes in %s\n", _filelength(fd), path);
         recbuf = malloc(PERCI_DATASIZE);
         for (recnum = 0;; recnum++) {
-            got = _read(fd, &reclen, sizeof(reclen));
+            got = _read(fd, &reclen, sizeof(perci_reclen_t));
             if (got <= 0) {
                 break;
             }
             fprintf(stream, "%03u %03u ", recnum, (unsigned int)reclen);
             got = _read(fd, recbuf, PERCI_DATASIZE);
-            for (i = 0, ll = 0; i < (perci_reclen_t) got && i <= reclen; i++) {
+            for (i = 0, ll = 0; i < (perci_fast_reclen_t) got && i <= (perci_fast_reclen_t) reclen; i++) {
                 if (recbuf[i] < ' ') {
                     ll += 2;
                     if (recbuf[i] == '\n') {
@@ -146,7 +148,7 @@ void PerCiDump(FILE *stream, char *path)
  *
  * \return 0 on success and -1 on failure.
  */
-int PerCiInit(char *path, perci_recnum_t recs)
+int PerCiInit(char *path, int recs)
 {
     int fd;
     int i;
@@ -165,6 +167,7 @@ int PerCiInit(char *path, perci_recnum_t recs)
         for (i = 0; i < recs; i++) {
             _write(fd, rec, PERCI_RECSIZE);
         }
+        _write(fd, rec, sizeof(perci_reclen_t));
         free(rec);
     }
     _close(fd);
@@ -201,12 +204,11 @@ PERCI_WRITER *PerCiOpen(char *path)
     uint_fast8_t ok = 0;
     PERCI_WRITER *writer;
     perci_reclen_t reclen;
-    int got;
 
     /* Check function parameter. */
     NUTASSERT(path != NULL);
 
-    /* Allocate a writer structure. */
+    /* Allocate a writer structure and open the file. */
     writer = calloc(1, sizeof(PERCI_WRITER));
     if (writer) {
         /* Open the file. If this fails, release the writer structure
@@ -217,38 +219,40 @@ PERCI_WRITER *PerCiOpen(char *path)
                least 2 records, we consider it corrupted. */
             writer->pcw_size = _filelength(writer->pcw_fd);
             if (writer->pcw_size >= 2 * PERCI_RECSIZE + sizeof(perci_reclen_t)) {
+                writer->pcw_size -= sizeof(perci_reclen_t);
 
                 /* 
                  * Scan the file for the next available record. 
                  */
                 _seek(writer->pcw_fd, 0, SEEK_SET);
-                writer->pcw_recnum = 0;
-                do {
+                for (writer->pcw_recnum = 0; writer->pcw_recnum < PERCI_MAX_RECORDS; writer->pcw_recnum++) {
                     /* Read the length of the current record. */
-                    got = _read(writer->pcw_fd, &reclen, sizeof(reclen));
-                    if (got < sizeof(reclen)) {
+                    if (_read(writer->pcw_fd, &reclen, sizeof(perci_reclen_t)) != sizeof(perci_reclen_t)) {
+                        /* Corrupted. */
                         break;
                     }
                     /* If this record isn't completely filled, then we continue
-                       at this point. */
+                       writing at this point. */
                     if (reclen < PERCI_DATASIZE) {
                         /* Fill the record buffer. */
                         writer->pcw_rec.pcd_len = reclen;
                         if (reclen && _read(writer->pcw_fd, writer->pcw_rec.pcd_data, reclen) != reclen) {
                             break;
                         }
+                        NutEventPost(&writer->pcw_mutex);
                         ok = 1;
                         break;
                     }
                     /* This record is filled, move to the next one. */
                     _seek(writer->pcw_fd, PERCI_DATASIZE, SEEK_CUR);
-                } while (++writer->pcw_recnum);
+                }
             }
         }
     }
     /* Release resources on error. */
     if (!ok && writer) {
         if (writer->pcw_fd != -1) {
+            _close(writer->pcw_fd);
         }
         free(writer);
         writer = NULL;
@@ -302,16 +306,17 @@ int PerCiWrite(PERCI_WRITER * writer, CONST char *data, int len)
 {
     perci_fast_reclen_t cnt = 0;
     perci_fast_reclen_t num;
-    perci_reclen_t reclen;
+    perci_fast_reclen_t reclen;
 
     /* Check parameters. */
     NUTASSERT(writer != NULL);
     NUTASSERT(writer->pcw_fd != -1);
     NUTASSERT(writer->pcw_rec.pcd_len <= PERCI_DATASIZE);
 
+    NutEventWait(&writer->pcw_mutex, NUT_WAIT_INFINITE);
     while ((perci_fast_reclen_t) len > cnt) {
         /* Calculate the number of bytes to write in the next step. */
-        reclen = writer->pcw_rec.pcd_len;
+        reclen = (perci_fast_reclen_t) writer->pcw_rec.pcd_len;
         num = (perci_fast_reclen_t) len - cnt;
         if (num > PERCI_DATASIZE - reclen) {
             num = PERCI_DATASIZE - reclen;
@@ -330,6 +335,7 @@ int PerCiWrite(PERCI_WRITER * writer, CONST char *data, int len)
         if (writer->pcw_rec.pcd_len == PERCI_DATASIZE) {
             _seek(writer->pcw_fd, writer->pcw_recnum * PERCI_RECSIZE, SEEK_SET);
             if (_write(writer->pcw_fd, &writer->pcw_rec, sizeof(PERCI_RECORD)) != sizeof(PERCI_RECORD)) {
+                NutEventPost(&writer->pcw_mutex);
                 return -1;
             }
             writer->pcw_rec.pcd_len = 0;
@@ -339,11 +345,13 @@ int PerCiWrite(PERCI_WRITER * writer, CONST char *data, int len)
                 writer->pcw_recnum = 0;
                 _seek(writer->pcw_fd, 0, SEEK_SET);
                 if (_write(writer->pcw_fd, &writer->pcw_rec.pcd_len, sizeof(perci_reclen_t)) != sizeof(perci_reclen_t)) {
+                    NutEventPost(&writer->pcw_mutex);
                     return -1;
                 }
             }
         }
     }
+    NutEventPost(&writer->pcw_mutex);
     return cnt;
 }
 
@@ -420,7 +428,7 @@ int PerCiWriteFormat(PERCI_WRITER * writer, CONST char *fmt, ...)
  * \return The number of bytes contained in the record found, or 0 if
  *         no more records with data are available.
  */
-static perci_reclen_t FindNextData(PERCI_WRITER * writer, uint8_t * recnum)
+static perci_fast_reclen_t FindNextData(PERCI_WRITER * writer, perci_fast_recnum_t * recnum)
 {
     perci_reclen_t reclen;
     long pos;
@@ -429,6 +437,7 @@ static perci_reclen_t FindNextData(PERCI_WRITER * writer, uint8_t * recnum)
     /* Check parameters. */
     NUTASSERT(writer != NULL);
 
+    NutEventWait(&writer->pcw_mutex, NUT_WAIT_INFINITE);
     pos = *recnum * PERCI_RECSIZE;
     for (;;) {
         /* If we reached the end of the file, then continue at its
@@ -455,6 +464,7 @@ static perci_reclen_t FindNextData(PERCI_WRITER * writer, uint8_t * recnum)
         pos += PERCI_RECSIZE;
         (*recnum)++;
     }
+    NutEventPost(&writer->pcw_mutex);
     return reclen;
 }
 
@@ -522,7 +532,7 @@ void PerCiDetachReader(PERCI_READER * reader)
 int PerCiRead(PERCI_READER * reader, char *data, int len)
 {
     int cnt = 0;
-    int num;
+    perci_fast_reclen_t num;
     int got;
 
     /* Check parameters. */
@@ -534,7 +544,7 @@ int PerCiRead(PERCI_READER * reader, char *data, int len)
     while (len > cnt) {
         /* Calculate the number of bytes to read in the next step. */
         num = len - cnt;
-        if (num > reader->pcr_reclen - (int) reader->pcr_recpos) {
+        if (num > reader->pcr_reclen - reader->pcr_recpos) {
             num = reader->pcr_reclen - reader->pcr_recpos;
         }
         /* Check if we reached the last record. This is the one currently
@@ -592,19 +602,18 @@ int PerCiRead(PERCI_READER * reader, char *data, int len)
 int PerCiReadLine(PERCI_READER * reader, char *line, int len)
 {
     int cnt = 0;
-    char *cp;
+    char *cp = line;
 
     /* Check function parameters. */
     NUTASSERT(reader != NULL);
     NUTASSERT(line != NULL);
 
-    cp = line;
-    for (cp = line; len > cnt; cnt++, cp++) {
+    while (cnt < len) {
         if (PerCiRead(reader, cp, 1) != 1) {
             break;
         }
-        if (*cp == '\n') {
-            cp++;
+        cnt++;
+        if (*cp++ == '\n') {
             break;
         }
     }

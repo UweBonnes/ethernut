@@ -36,13 +36,15 @@
  */
 
 /*
- * \file include/gorp/edline.h
- * \brief Simple line editor definitions.
+ * \file include/gorp/perci.h
+ * \brief Persistent circular buffer definitions.
  *
  * \verbatim
  * $Id$
  * \endverbatim
  */
+
+#include <cfg/perci.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -94,21 +96,22 @@ typedef struct __attribute__ ((packed)) _PERCI_RECORD {
 typedef struct _PERCI_WRITER {
     int pcw_fd;
     long pcw_size;
-    uint8_t pcw_recnum;
+    HANDLE pcw_mutex;
+    perci_fast_recnum_t pcw_recnum;
     PERCI_RECORD pcw_rec;
 } PERCI_WRITER;
 
 typedef struct _PERCI_READER {
     PERCI_WRITER *pcr_cil;
-    uint8_t pcr_recnum;
-    uint8_t pcr_reclen;
-    uint8_t pcr_recpos;
+    perci_fast_recnum_t pcr_recnum;
+    perci_fast_reclen_t pcr_reclen;
+    perci_fast_reclen_t pcr_recpos;
 } PERCI_READER;
 
 __BEGIN_DECLS
 /* Prototypes */
 
-extern int PerCiInit(char *path, perci_recnum_t recs);
+extern int PerCiInit(char *path, int recs);
 
 extern PERCI_WRITER *PerCiOpen(char *path);
 extern void PerCiClose(PERCI_WRITER *writer);
