@@ -860,7 +860,6 @@ int NutFtpTransferFile(FTPSESSION * session, char *path, int mode)
 int NutFtpTransferDirectoryOptions(FTPSESSION * session, char *path, int options)
 {
     static prog_char fileattributes_P[] = "rw-rw-rw-  1 0 0 %6lu ";
-    static prog_char pathname_P[] = "%s/%s";
     static prog_char dateattribute_P[] = "%.3s %u ";
     static prog_char timeattribute_P[] = "%02u:%02u ";
     TCPSOCKET *sock;
@@ -873,18 +872,25 @@ int NutFtpTransferDirectoryOptions(FTPSESSION * session, char *path, int options
     uint32_t size;
     int ec = 550;
     char *name;
+    size_t pathlen;
+
     dir = opendir(path);
     if (dir) {
         NutFtpSendMode(session, 0);
         if ((sock = NutFtpDataConnect(session)) != 0) {
             if ((fp = _fdopen((int) sock, "r+b")) != 0) {
                 ec = 0;
+                pathlen = strlen(path);
                 while ((d_ent = readdir(dir)) != 0) {
                     if ((d_ent->d_name[0] == '.')  && ((options & 1) == 0)) {
                         continue;
                     }
-                    if ((name = malloc(strlen(path) + strlen(d_ent->d_name) + 2)) != 0) {
-                        sprintf_P(name, pathname_P, path, d_ent->d_name);
+                    if ((name = malloc(pathlen + strlen(d_ent->d_name) + 2)) != 0) {
+                        strcpy(name, path);
+                        if (pathlen == 0 || name[pathlen - 1] != '/') {
+                            strcat(name, "/");
+                        }
+                        strcat(name, d_ent->d_name);
                         if (stat(name, &st) == 0) {
                             if (S_ISDIR(st.st_mode)) {
                                 fputc('d', fp);
