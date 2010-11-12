@@ -254,12 +254,31 @@
 
 #include <sys/version.h>
 
+#if defined(__GNUC__)
+#define NUM2STR(x)  #x
+#define OS_VERSION_STRING(a, b, c, d)   NUM2STR(a) "." NUM2STR(b) "." NUM2STR(c) "." NUM2STR(d)
+static CONST char *os_version_string = 
+    OS_VERSION_STRING(NUT_VERSION_MAJOR, NUT_VERSION_MINOR, NUT_VERSION_RELEASE, NUT_VERSION_BUILD);
+#else
 static CONST char os_version_string[] = {
-  ((OS_VERSION_NUMBER >> 24) & 0xff) + '0','.',
-  ((OS_VERSION_NUMBER >> 16) & 0xff) + '0','.',
-  ((OS_VERSION_NUMBER >> 8) & 0xff) + '0','.',
-  (OS_VERSION_NUMBER & 0xff) + '0', 0
+#if NUT_VERSION_MAJOR >= 10
+    (NUT_VERSION_MAJOR / 10) + '0',
+#endif
+    (NUT_VERSION_MAJOR % 10) + '0', '.',
+#if NUT_VERSION_MINOR >= 10
+    (NUT_VERSION_MINOR / 10) + '0',
+#endif
+    (NUT_VERSION_MINOR % 10) + '0', '.',
+#if NUT_VERSION_RELEASE >= 10
+    (NUT_VERSION_RELEASE / 10) + '0',
+#endif
+    (NUT_VERSION_RELEASE % 10) + '0', '.',
+#if NUT_VERSION_BUILD >= 10
+    (NUT_VERSION_BUILD / 10) + '0',
+#endif
+    (NUT_VERSION_BUILD % 10) + '0', 0
 };
+#endif
 
 /*!
  * \addtogroup xgNutVersion

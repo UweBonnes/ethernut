@@ -457,7 +457,7 @@ end
 -- Read OS Version from C source file.
 --
 function GetNutOsVersion()
-    local buf, p1, p2, vers
+    local buf, p1, p2, vers, subvers
 
     -- Try to read the version from a string in os/version.c.
     -- This worked until 4.9.7.
@@ -469,16 +469,27 @@ function GetNutOsVersion()
     -- If this doesn't work, we may have 4.9.8 or later.
     -- We will find the hex coded version in include/sys/version.h.
     if vers == nil then
-        buf = GetSourceFileHead("include/sys/version.h")
-        if buf ~= nil then
-            p1, p2, vers = string.find(buf, "OS_VERSION_NUMBER.+0x(.+)UL")
-            if vers ~= nil then
-                vers = tonumber(string.sub(vers, 1, 2), 16).."."..
-                       tonumber(string.sub(vers, 3, 4), 16).."."..
-                       tonumber(string.sub(vers, 5, 6), 16).."."..
-                       tonumber(string.sub(vers, 7, 8), 16)
-            end
-        end
+      buf = GetSourceFileHead("include/sys/version.h")
+      p1, p2, vers = string.find(buf, "NUT_VERSION_MAJOR%s+(%d+)")
+      if vers == nil then
+        vers = "?"
+      end
+      vers = vers .. "."
+      p1, p2, subvers = string.find(buf, "NUT_VERSION_MINOR%s+(%d+)")
+      if subvers == nil then
+        subvers = "?"
+      end
+      vers = vers .. subvers .. "."
+      p1, p2, subvers = string.find(buf, "NUT_VERSION_RELEASE%s+(%d+)")
+      if subvers == nil then
+        subvers = "?"
+      end
+      vers = vers .. subvers .. "."
+      p1, p2, subvers = string.find(buf, "NUT_VERSION_BUILD%s+(%d+)")
+      if subvers == nil then
+        subvers = "?"
+      end
+      vers = vers .. subvers
     end
 
     return vers or "Unknown"
