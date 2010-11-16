@@ -186,7 +186,7 @@
 #
 #
 
-AC_INIT(ethernut,4.9.9)
+AC_INIT(ethernut,4.9.10)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (C) 2005-2010 Ethernut Project])
