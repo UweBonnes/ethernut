@@ -8,7 +8,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT  "Nut/OS"
 !define NUTVERSION  "4.9"
-!define NUTRELEASE  "9"
+!define NUTRELEASE  "10"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
@@ -242,11 +242,6 @@ SectionGroup "Contributions"
     File /r ..\..\..\contrib\*.c
     File /r ..\..\..\contrib\*.S
     File /r ..\..\..\contrib\*.txt
-
-    SetOutPath "$INSTDIR\nut\conf"
-    File ..\..\..\conf\at91sam7x-ek-radio.conf
-    File ..\..\..\conf\at91sam9260-ek-radio.conf
-
   SectionEnd
 SectionGroupEnd
 
@@ -291,6 +286,7 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\at91sam7se-ek.conf
     File ..\..\..\conf\at91sam7x-ek.conf
     File ..\..\..\conf\at91sam9260-ek.conf
+    File ..\..\..\conf\at91sam9g45-ek.conf
     File ..\..\..\conf\charon2.conf
     File ..\..\..\conf\eir10c.conf
     File ..\..\..\conf\ethernut103.conf
@@ -305,10 +301,14 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\ethernut30d.conf
     File ..\..\..\conf\ethernut30e.conf
     File ..\..\..\conf\ethernut31d.conf
-    File ..\..\..\conf\ethernut50c.conf
-    File ..\..\..\conf\evk1100.conf
+    File ..\..\..\conf\ethernut50e.conf
+    File ..\..\..\conf\evk1100-extram.conf
     File ..\..\..\conf\evk1100-intram.conf
-    File ..\..\..\conf\evk1104.conf
+    File ..\..\..\conf\evk1101.conf
+    File ..\..\..\conf\evk1104-extram.conf
+    File ..\..\..\conf\evk1104-intram.conf
+    File ..\..\..\conf\evk1105-extram.conf
+    File ..\..\..\conf\evk1105-intram.conf
     File ..\..\..\conf\gbaxport2.conf
     File ..\..\..\conf\hhopen63f.conf
     File ..\..\..\conf\MMnet02.conf
@@ -321,6 +321,7 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\MMnet02_03_04.conf
     File ..\..\..\conf\MMnet101.conf
     File ..\..\..\conf\MMnet102_103_104.conf
+    File ..\..\..\conf\morphoq11a.conf
     File ..\..\..\conf\olimex-sam7-ex256.conf
     File ..\..\..\conf\stk501.conf
     File ..\..\..\conf\wolf.conf
