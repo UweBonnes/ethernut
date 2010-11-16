@@ -429,7 +429,7 @@ static uint16_t phy_inw(uint8_t reg)
     return (uint16_t) (inr(EMAC_MAN) >> EMAC_DATA_LSB);
 }
 
-#ifndef PHY_MODE_RMII
+#if !defined(PHY_MODE_RMII) || (NIC_PHY_UID == 0x0007C0F0)
 /*!
  * \brief Write value to PHY register.
  *
