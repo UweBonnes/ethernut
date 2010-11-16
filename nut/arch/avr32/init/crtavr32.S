@@ -450,5 +450,3 @@ sdramc_delay:
 //! @}
 
 #include "exception.S"
-
-// *** EOF ***
