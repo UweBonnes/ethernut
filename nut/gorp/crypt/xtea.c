@@ -1,7 +1,7 @@
-/* 
- * Copyright of XTEA encryption algorithm by David Wheeler and Roger Needham 
+/*
+ * Copyright of XTEA encryption algorithm by David Wheeler and Roger Needham
  * at the Computer Laboratory of Cambridge University.
- * 
+ *
  * Kindly released to Public Domain.
  */
 
@@ -47,6 +47,8 @@
  * $Id$
  * \endverbatim
  */
+
+#include <compiler.h>
 
 #include <stdint.h>
 #include <string.h>

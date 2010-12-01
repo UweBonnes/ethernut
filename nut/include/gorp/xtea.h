@@ -50,7 +50,6 @@
  * \endverbatim
  */
 
-#include <compiler.h>
 
 typedef uint32_t XTeaKeyBlock_t[4];
 
