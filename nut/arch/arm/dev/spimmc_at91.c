@@ -41,7 +41,7 @@
  * \verbatim
  *
  * $Log$
- * Revision 1.7  2010/12/15 15:14:13  haraldkipp
+ * Revision 1.7  2010/12/15 15:14:13  ve2yag
  * Add support for all SAM7S and 7SE family.
  *
  * Revision 1.6  2008/08/11 06:59:13  haraldkipp
