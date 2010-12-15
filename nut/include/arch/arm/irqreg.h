@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.18  2010/12/15 13:22:28  ve2yag
+ * Add support for all AT91SAM7S and SE family.
+ *
  * Revision 1.17  2008/10/03 11:31:28  haraldkipp
  * Added TWI support for the AT91SAM9260.
  *
@@ -192,7 +195,8 @@ extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (vo
 extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
 extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
 
-#elif defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+//#elif defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#elif defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
 
 extern IRQ_HANDLER sig_FIQ;
 extern IRQ_HANDLER sig_SYS;
