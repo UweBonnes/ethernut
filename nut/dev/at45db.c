@@ -39,6 +39,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.91 2010/12/15 15:20:42  ve2yag
+ * Added MCU_AT91SAM7S family.
+ *
  * Revision 1.9  2009/02/06 15:53:42  haraldkipp
  * Corrected a bug with non-negated chip selects.
  *
@@ -370,7 +373,7 @@ int At45dbInit(unsigned int spibas, unsigned int spipcs)
         return -1;
     }
 
-#if defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7SE) || defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE)
+#if defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7SE) || defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE)
     At91SpiInit(spibas);
     At91SpiReset(spibas);
     At91SpiInitChipSelects(spibas, _BV(spipcs));
