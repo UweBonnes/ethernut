@@ -41,6 +41,9 @@
  * \verbatim
  *
  * $Log$
+ * Revision 1.7  2010/12/15 15:14:13  haraldkipp
+ * Add support for all SAM7S and 7SE family.
+ *
  * Revision 1.6  2008/08/11 06:59:13  haraldkipp
  * BSD types replaced by stdint types (feature request #1282721).
  *
@@ -109,7 +112,8 @@
 #define MMC_DATAIN_BIT  SPI0_MOSI_PA17A
 #define MMC_CLK_BIT     SPI0_SPCK_PA18A
 
-#elif defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+//#elif defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
+#elif defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
 
 #ifndef MMC_CS_BIT
 #define MMC_CS_BIT      SPI0_NPCS0_PA11A
