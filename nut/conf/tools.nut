@@ -132,7 +132,7 @@
 --
 
 toolchain_names = {"ARM_GCC", "ARM_GCC_NOLIBC", "AVR_GCC", "AVR32_GCC", "LINUX_GCC", "ICCAVR", "ICCARM"}
-
+gcc_output_format = {"ARMELF", "ARMEABI"}
 nuttools =
 {
     options =
@@ -204,6 +204,32 @@ nuttools =
             flavor = "boolean",
             exclusivity = toolchain_names,
             file = "include/cfg/arch.h",
+        }
+    },
+    {
+        name = "nuttools_gccoutput",
+        brief = "GCC binary format (for ARM)",
+        requires = { "TOOL_CC_ARM" },
+        options =
+        {
+            {
+                brief = "ELF",
+                description = "Old binary format",
+                provides = { "USE_ARM_ELF" },
+                macro = "ARMELF",
+                flavor = "boolean",
+                exclusivity = gcc_output_format,
+                makedefs = { "TRGT = arm-elf-" }
+           },
+            {
+                brief = "EABI",
+                description = "New binary format",
+                provides = { "USE_ARM_EABI" },
+                macro = "ARMEABI",
+                flavor = "boolean",
+                exclusivity = gcc_output_format,
+                makedefs = { "TRGT = arm-none-eabi-" }
+            }
         }
     },
     {

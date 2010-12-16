@@ -39,7 +39,7 @@
 include $(top_srcdir)/Makevars.gcc
 
 # Set target specific variables.
-TRGT       = arm-elf-
+#TRGT       = arm-elf-
 MCFLAGS    = -mcpu=$(MCU)
 CFLAGS_MCU = $(MCFLAGS) -mthumb-interwork
 CXXFLAGS_MCU = $(CFLAGS_MCU)
