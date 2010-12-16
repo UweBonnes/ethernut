@@ -35,6 +35,9 @@
 
 /*
  * $Log$
+ * Revision 1.19  2010/12/15 21:46:28  ve2yag
+ * Add PWM interrupt support for AT91SAM7S and SE.
+ *
  * Revision 1.18  2010/12/15 13:22:28  ve2yag
  * Add support for all AT91SAM7S and SE family.
  *
@@ -195,7 +198,6 @@ extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (vo
 extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
 extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
 
-//#elif defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM7SE512)
 #elif defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
 
 extern IRQ_HANDLER sig_FIQ;
@@ -205,6 +207,7 @@ extern IRQ_HANDLER sig_UART1;
 extern IRQ_HANDLER sig_TC0;
 extern IRQ_HANDLER sig_TC1;
 extern IRQ_HANDLER sig_TC2;
+extern IRQ_HANDLER sig_PWMC;
 extern IRQ_HANDLER sig_INTERRUPT0;
 extern IRQ_HANDLER sig_INTERRUPT1;
 extern IRQ_HANDLER sig_PIOA;

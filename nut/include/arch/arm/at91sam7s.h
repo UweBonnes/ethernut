@@ -41,6 +41,9 @@
  *
  * \verbatim
  *
+ * Revision 1.2  2010/12/15 21:46:28  ve2yag
+ * Add PWM interrupt support for AT91SAM7S and SE.
+ *
  * Revision 1.1  2007/09/12    jbennett
  * Branched from at91sam7x.h version 1.7
  *
@@ -100,6 +103,7 @@
 #define PIO_HAS_OUTPUTWRITEENABLE
 
 #include <arch/arm/at91_tc.h>
+#include <arch/arm/at91_pwmc.h>
 #include <arch/arm/at91_us.h>
 #include <arch/arm/at91_dbgu.h>
 #include <arch/arm/at91_spi.h>

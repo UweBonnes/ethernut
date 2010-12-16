@@ -33,6 +33,9 @@
 -- ARM Architecture
 --
 -- $Log$
+-- Revision 1.41  2010/12/15 21:46:28  ve2yag
+-- Add PWM interrupt support for AT91SAM7S and SE.
+--
 -- Revision 1.40  2009/09/20 13:24:58  ulrichprinz
 -- Added limited USART support for DBGU on SAM.
 --
@@ -568,6 +571,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91pwmc.c",
             "arm/dev/ih_at91adc.c",
             "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
@@ -594,6 +598,7 @@ nutarch_arm =
             "arm/dev/ih_at91tc0.c",
             "arm/dev/ih_at91tc1.c",
             "arm/dev/ih_at91tc2.c",
+            "arm/dev/ih_at91pwmc.c",
             "arm/dev/ih_at91adc.c",
             "arm/dev/ih_at91twi.c",
             "arm/dev/ih_at91uart0.c",
