@@ -33,6 +33,9 @@
 -- Tools
 --
 -- $Log$
+-- Revision 1.30  2010/12/15 18:41:29  ve2yag
+-- Added bootloader support script for AT91SAM7S family.
+--
 -- Revision 1.29  2009/03/07 00:04:29  olereinhardt
 -- Added at91_bootloader_bootcrom ldscript
 --
@@ -288,8 +291,10 @@ arm_ld_description = {
     at91sam7s16_rom          = "AT91SAM7S16, code running in FLASH",
     at91sam7s32_rom          = "AT91SAM7S32, code running in FLASH",
     at91sam7s64_rom          = "AT91SAM7S64, code running in FLASH",
+    at91sam7s64_bootrom      = "AT91SAM7S64, code running in FLASH, bootloader in FLASH",
     at91sam7s128_rom         = "AT91SAM7S128, code running in FLASH",
     at91sam7s256_rom         = "AT91SAM7S256, code running in FLASH",
+    at91sam7s256_bootrom     = "AT91SAM7S256, code running in FLASH, bootloader in FLASH",
     at91sam7s512_rom         = "AT91SAM7S512, code running in FLASH",
     at91sam7se32_rom         = "AT91SAM7SE32, code running in FLASH, data in SDRAM",
     at91sam7se256_rom        = "AT91SAM7SE256, code running in FLASH, data in SDRAM",
@@ -315,8 +320,10 @@ arm_ld_choice = {
                 "at91sam7s16_rom",
                 "at91sam7s32_rom",
                 "at91sam7s64_rom",
+                "at91sam7s64_bootrom",
                 "at91sam7s128_rom",
                 "at91sam7s256_rom",
+                "at91sam7s256_bootrom",
                 "at91sam7s512_rom",
                 "at91sam7se32_rom",
                 "at91sam7se256_rom",
