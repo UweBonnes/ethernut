@@ -418,7 +418,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
                     "HW_GPIO",
-                    "HW_PDC_AT91"
+                    "HW_PDC_AT91",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -451,7 +452,8 @@ nutarch =
                     "HW_EFC_AT91",
                     "HW_GPIO",
                     "HW_PDC_AT91",
-                    "HW_EXT_CALYPSO"
+                    "HW_EXT_CALYPSO",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -483,7 +485,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
                     "HW_GPIO",
-                    "HW_PDC_AT91"
+                    "HW_PDC_AT91",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -510,7 +513,8 @@ nutarch =
                     "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -540,7 +544,8 @@ nutarch =
                     "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -570,7 +575,8 @@ nutarch =
                     "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -600,7 +606,8 @@ nutarch =
                     "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -630,7 +637,8 @@ nutarch =
                     "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -660,7 +668,8 @@ nutarch =
                     "HW_TWI_AT91",
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
-                    "HW_GPIO"
+                    "HW_GPIO",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -693,7 +702,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
                     "HW_GPIO",
-                    "HW_EBI_AT91"
+                    "HW_EBI_AT91",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -726,7 +736,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
                     "HW_GPIO",
-                    "HW_EBI_AT91"
+                    "HW_EBI_AT91",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
@@ -759,7 +770,8 @@ nutarch =
                     "HW_PDC_AT91",
                     "HW_EFC_AT91",
                     "HW_GPIO",
-                    "HW_EBI_AT91"
+                    "HW_EBI_AT91",
+                    "HW_WDOG_AT91"
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },

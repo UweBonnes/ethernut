@@ -56,7 +56,9 @@
  */
 /*@{*/
 
+#if defined(MCU_AT91R40008)
 static ureg_t nested;
+#endif
 
 /*!
  * \brief Start the AT91 hardware watch dog timer.
@@ -68,6 +70,7 @@ uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
 {
     unsigned int cmval;
 
+#if defined(MCU_AT91R40008)
     At91WatchDogDisable();
 
     /*
@@ -105,6 +108,20 @@ uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
     At91WatchDogRestart();
     outr(WD_OMR, WD_OKEY | WD_WDEN | xmode);
     nested = 1;
+#elif defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
+	/* Compute 12-bit timer value for 32Khz(approx) slow clock divided by 128 */
+	cmval = (ms * (32000/128)) / 1000;
+    if(cmval>4095) cmval=4095;		
+
+	/* if mode=0, Enable watchdog and disable it when debugging (default value) */
+    if (xmode == 0) {
+        xmode |= WDT_WDRSTEN|WDT_WDDBGHLT|WDT_WDIDLEHLT;
+    }
+
+	/* Write watchdog, you can do it only one time. Delta fixed to timer value */
+	outr(WDT_MR, cmval | (cmval<<16) | xmode);
+	At91WatchDogRestart();
+#endif
 
     return ms;
 }
@@ -117,7 +134,11 @@ uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode)
  */
 void At91WatchDogRestart(void)
 {
+#if defined(MCU_AT91R40008)
     outr(WD_CR, WD_RSTKEY);
+#elif defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
+	outr(WDT_CR, WDT_KEY|WDT_WDRSTT);
+#endif
 }
 
 /*!
@@ -128,10 +149,14 @@ void At91WatchDogRestart(void)
  */
 void At91WatchDogDisable(void)
 {
+#if defined(MCU_AT91R40008)
     if (nested) {
         nested++;
     }
     outr(WD_OMR, WD_OKEY | (inr(WD_OMR) & ~WD_WDEN));
+#elif defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
+    outr(WDT_MR, WDT_WDDIS);
+#endif
 }
 
 /*!
@@ -142,10 +167,12 @@ void At91WatchDogDisable(void)
  */
 void At91WatchDogEnable(void)
 {
+#if defined(MCU_AT91R40008)
     if (nested > 1 && --nested == 1) {
         At91WatchDogRestart();
         outr(WD_OMR, WD_OKEY | inr(WD_OMR) | WD_WDEN);
     }
+#endif
 }
 
 /*@}*/

@@ -150,7 +150,7 @@ extern uint32_t AvrWatchDogStart(uint32_t ms);
 extern void AvrWatchDogRestart(void);
 extern void AvrWatchDogDisable(void);
 extern void AvrWatchDogEnable(void);
-#elif defined(MCU_AT91R40008)
+#elif defined(MCU_AT91R40008) || defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S) || defined(MCU_AT91SAM7SE)
 extern uint32_t At91WatchDogStart(uint32_t ms, uint32_t xmode);
 extern void At91WatchDogRestart(void);
 extern void At91WatchDogDisable(void);
@@ -168,3 +168,4 @@ __END_DECLS
 /*@}*/
 
 #endif
+ 
