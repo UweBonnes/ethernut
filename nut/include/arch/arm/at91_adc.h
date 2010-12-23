@@ -76,8 +76,7 @@
 /*@{*/
 #define ADC_MR_OFF              0x00000004      /*!< \brief Mode register offset. */
 #define ADC_MR      (ADC_BASE + ADC_MR_OFF)     /*!< \brief Mode register address. */
-#define ADC_TRGEN               0x00000001      /*!< \brief Software reset. */
-#define ADC_START               0x00000002      /*!< \brief Start a conversion. */
+#define ADC_TRGEN               0x00000001      /*!< \brief Hardware trigger enable. */
 #define ADC_TRGSEL              0x0000000E      /*!< \brief Trigger select mask */
 #define   ADC_TRGSEL_TIOA0      0x00000000      /*!< \brief Trigger select timer counter 0 output */
 #define   ADC_TRGSEL_TIOA1      0x00000002      /*!< \brief Trigger select timer counter 1 output */
