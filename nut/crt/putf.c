@@ -119,8 +119,8 @@
 
 #if defined(__arm__)
 /*
- * Newlib needs _sbrk for floating point conversion. Because newlib 
- * libraries are linked after Nut/OS libraries, this function is referenced 
+ * Newlib needs _sbrk for floating point conversion. Because newlib
+ * libraries are linked after Nut/OS libraries, this function is referenced
  * too late. So we include a reference here to force _sbrk inclusion.
  * This reference should depend on newlib usage, not generally on ARM CPUs,
  * but how to find out if we have newlib or not?
@@ -292,7 +292,7 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
             size = 1;
             sign = 0;
             break;
-            
+
         case 'P':
 #ifdef __HARVARD_ARCH__
             /*
@@ -440,14 +440,16 @@ int _putf(int _putb(int, CONST void *, size_t), int fd, CONST char *fmt, va_list
         case 'f':
             {
                 int decpt;
-                int sign;
+                int neg;
                 char *rve = buf;
                 char *bp = buf;
 
                 if (prec == -1)
                     prec = DEFPREC;
                 _double = va_arg(ap, double);
-                cp = _dtoa_r(_REENT, _double, 3, prec, &decpt, &sign, &rve);
+                cp = _dtoa_r(_REENT, _double, 3, prec, &decpt, &neg, &rve);
+                if (neg)
+                    sign = '-';
                 if (decpt == 9999) {
                     /* Infinite or invalid. */
                     strcpy(bp, cp);
