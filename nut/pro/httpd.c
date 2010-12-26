@@ -168,12 +168,12 @@
 
 
 /*! \brief Local major HTTP version. */
-#ifndef HTTP_MAJOR_VERSION  
+#ifndef HTTP_MAJOR_VERSION
 #define HTTP_MAJOR_VERSION  1
 #endif
 
 /*! \brief Local minor HTTP version. */
-#ifndef HTTP_MINOR_VERSION  
+#ifndef HTTP_MINOR_VERSION
 #define HTTP_MINOR_VERSION  1
 #endif
 
@@ -198,18 +198,19 @@
 /*@{*/
 
 /*!
- * \brief Known mime types. 
+ * \brief Known mime types.
  */
 MIMETYPES mimeTypes[] = {
     {
     ".txt", "text/plain", NULL}, {
     ".html", "text/html", NULL}, {
-    ".shtml", "text/html", NULL}, {    
+    ".shtml", "text/html", NULL}, {
     ".asp", "text/html", NULL}, {
     ".htm", "text/html", NULL}, {
     ".gif", "image/gif", NULL}, {
     ".jpg", "image/jpeg", NULL}, {
-    ".png", "image/png", NULL}, {    
+    ".png", "image/png", NULL}, {
+    ".bmp", "image/bmp", NULL}, {
     ".pdf", "application/pdf", NULL}, {
     ".js",  "application/x-javascript", NULL}, {
     ".jar", "application/x-java-archive", NULL}, {
@@ -225,7 +226,7 @@ static uint32_t http_optflags;
  *
  * Sends HTTP and Server version lines.
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param req    The associated client request.
  * \param status Response status, error code or 200, if no error occurred.
@@ -251,10 +252,10 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
  *
  * \deprecated Use NutHttpSendHeaderBottom().
  *
- * \param stream    Stream of the socket connection, previously opened 
+ * \param stream    Stream of the socket connection, previously opened
  *                  for  binary read and write.
- * \param mime_type Points to a string that specifies the content type. 
- *                  Examples are "text/html", "image/png", 
+ * \param mime_type Points to a string that specifies the content type.
+ *                  Examples are "text/html", "image/png",
  *                  "image/gif", "video/mpeg" or "text/css".
  *                  A null pointer is ignored.
  * \param bytes     Content length of the data following this
@@ -270,10 +271,10 @@ void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
  *
  * Sends Content-Type, Content-Lenght and Connection lines.
  *
- * \param stream    Stream of the socket connection, previously opened 
+ * \param stream    Stream of the socket connection, previously opened
  *                  for  binary read and write.
- * \param mime_type Points to a string that specifies the content type. 
- *                  Examples are "text/html", "image/png", 
+ * \param mime_type Points to a string that specifies the content type.
+ *                  Examples are "text/html", "image/png",
  *                  "image/gif", "video/mpeg" or "text/css".
  *                  A null pointer is ignored.
  * \param bytes     Content length of the data following this
@@ -309,7 +310,7 @@ void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long
  *
  * A canned error file is used.
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  * \param req    Contains the HTTP request.
  * \param status Error code to be returned.
@@ -402,15 +403,15 @@ char *NutGetMimeType(char *name)
 /*!
  * \brief Return the mime type handler of a specified file name.
  *
- * This is the function that handles / sends a specific file type to the 
+ * This is the function that handles / sends a specific file type to the
  * client. Specially used for server side includes (shtml files)
  *
  * \param name Name of the file.
  *
  * \return A pointer to a function of the type void (u_char * filename)
- *         If the extension is not registered, the handler for 
- *         "text/plain; charset=iso-8859-1" is returned. 
- *         If the filename is empty, then the handler for 
+ *         If the extension is not registered, the handler for
+ *         "text/plain; charset=iso-8859-1" is returned.
+ *         If the filename is empty, then the handler for
  *         "text/html; charset=iso-8859-1" is returned.
  */
 
@@ -426,8 +427,8 @@ void *NutGetMimeHandler(char *name)
  *
  * \param str String to decode. This is overwritten with
  * the decoded string
- * 
- * \warning To save RAM, the str parameter will be 
+ *
+ * \warning To save RAM, the str parameter will be
  * 	    overwritten with the encoded string.
  */
 void NutHttpURLDecode(char *str)
@@ -512,7 +513,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     char *mime_type;
     char *filename = NULL;
     char *modstr = NULL;
-    
+
     /*
      * Validate authorization.
      */
@@ -526,7 +527,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
      */
     if (NutCgiCheckRequest(stream, req)) {
         return;
-    }    
+    }
 
     for (n = 0, fd = -1; default_files[n]; n++) {
         filename = CreateFilePath(req->req_url, default_files[n]);
@@ -573,7 +574,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
             /* Use compile time if stat not available. */
             ftime = RfcTimeParse("Fri " __DATE__ " " __TIME__);
         }
-            
+
         /* Check if-modified-since condition. */
         if (req->req_ims && s.st_mtime <= req->req_ims) {
             _close(fd);
@@ -602,7 +603,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     if (handler) {
         NutHttpSendHeaderBottom(stream, req, mime_type, -1);
         handler(stream, fd, file_len, http_root, req);
-    } 
+    }
     /* Use default transfer, if no registered mime handler is available. */
     else {
         NutHttpSendHeaderBottom(stream, req, mime_type, file_len);
@@ -613,7 +614,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
                 while (file_len) {
                     if (file_len < HTTP_FILE_CHUNK_SIZE)
                         size = (size_t) file_len;
-    
+
                     n = _read(fd, data, size);
                     if (n <= 0) {
                         /* We can't do much here, the header is out already. */
@@ -715,7 +716,7 @@ uint32_t NutHttpGetOptionFlags(void)
 /*!
  * \brief Allocate a buffer for a header field value.
  *
- * \param hfvp Points to the character pointer variable that will receive 
+ * \param hfvp Points to the character pointer variable that will receive
  *             the pointer to the header field value. If the variable does
  *             not contain a NULL pointer upon entry, the routine will
  *             return immediately and will not extract any value. If it
@@ -747,7 +748,7 @@ static int HeaderFieldValue(char **hfvp, CONST char *str)
  * Waits for the next HTTP request on an established connection
  * and processes it.
  *
- * \param stream Stream of the socket connection, previously opened for 
+ * \param stream Stream of the socket connection, previously opened for
  *               binary read and write.
  */
 void NutHttpProcessRequest(FILE * stream)
