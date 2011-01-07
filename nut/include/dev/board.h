@@ -240,7 +240,7 @@
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5) || defined(MORPHOQ1)
 #include <dev/at91sam7x_emac.h>
-#elif defined(EVK1100)
+#elif defined(EVK1100) || defined(EVK1105)
 #include <dev/avr32_macb.h>
 #endif
 
