@@ -52,7 +52,7 @@
 #include <dev/spibus_at91.h>
 
 #if defined(SPIBUS0_DOUBLE_BUFFER) || defined(SPIBUS1_DOUBLE_BUFFER)
-#warning Double buffered SPI not tested for AT91 targets.
+
 /*!
  * \brief AT91 SPI interrupt handler.
  */
