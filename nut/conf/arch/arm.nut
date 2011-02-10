@@ -1423,7 +1423,6 @@ nutarch_arm =
                 brief = "PDC Mode (First Controller)",
                 description = "If enabled, the controller will use PDC mode.\n\n"..
                               "Under development.",
-                requires = { "NOT_AVAILABLE" },
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
