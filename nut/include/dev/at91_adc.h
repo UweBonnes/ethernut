@@ -134,7 +134,7 @@ void ADCStartConversion(void);
 //       choices given above
 // post: ADC prescalar set to desired choice
 
-void ADCSetPrescale(unsigned int prescale);
+void ADCSetPrescale(uint32_t prescale);
 
 
 // ADCEnableChannel
