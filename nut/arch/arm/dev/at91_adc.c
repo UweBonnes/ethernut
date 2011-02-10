@@ -92,7 +92,7 @@ int ADCBufRead(uint16_t channel, uint16_t * read)
     head = ADC_Buffer[channel][_adc_buf_head];
     if (head != tail) {
         *read = ADC_Buffer[channel][tail];
-        ADC_Buffer[channel][_adc_buf_tail] = (tail + 1) & (AT91_ADC_BUF_SIZE-1);
+        ADC_Buffer[channel][_adc_buf_tail] = (tail + 1) & (AT91_ADC_BUF_SIZE - 1);
         return 0;
     }
     return 1;
@@ -105,9 +105,9 @@ static inline int ADCBufWrite(uint16_t channel, uint16_t write)
     uint16_t tail, head;
     tail = ADC_Buffer[channel][_adc_buf_tail];
     head = ADC_Buffer[channel][_adc_buf_head];
-    if ((head + 1) % AT91_ADC_BUF_SIZE != tail) {
+    if (((head + 1) & (AT91_ADC_BUF_SIZE - 1)) != tail) {
         ADC_Buffer[channel][head] = write;
-        ADC_Buffer[channel][_adc_buf_head] = (head + 1) & (AT91_ADC_BUF_SIZE-1);
+        ADC_Buffer[channel][_adc_buf_head] = (head + 1) & (AT91_ADC_BUF_SIZE - 1);
         return 0;
     }
     return 1;
@@ -121,7 +121,7 @@ static inline int ADCBufWrite(uint16_t channel, uint16_t write)
 
 void ADCSetMode(TADCMode mode) 
 {
-    unsigned int regval;
+    uint32_t regval;
     
     regval = inr(ADC_MR);
     regval &= ~ADC_SLEEP;
@@ -161,8 +161,22 @@ void ADCSetMode(TADCMode mode)
 
 void ADCEnableChannel(TADCChannel channel) 
 {
+    uint32_t     adc_chsr;
+    register int idx;
+    register int max = channel;
+
     outr(ADC_CHER, _BV(channel));
-    outr(ADC_IER,  _BV(channel));
+    adc_chsr = inr(ADC_CHSR);
+
+    /* Search the highest numbered channel which is enabled */
+    for (idx = 0; idx < 8; idx ++) {
+        if (adc_chsr & _BV(idx)) max = idx;
+    }
+
+    /* Disable EOC for all channels */
+    outr(ADC_IDR, 0x000000FF);
+    /* Enable EOC for highest numbered channel */
+    outr(ADC_IER, _BV(max));
 }
 
 /*!
@@ -173,7 +187,7 @@ void ADCEnableChannel(TADCChannel channel)
 
 void ADCDisableChannel(TADCChannel channel) 
 {
-    outr(ADC_CHER, _BV(channel));
+    outr(ADC_CHDR, _BV(channel));
     outr(ADC_IDR,  _BV(channel));
 }
 
@@ -183,7 +197,7 @@ void ADCDisableChannel(TADCChannel channel)
  * \param prescale  Prescaler value 0-128
  */
 
-void ADCSetPrescale(unsigned int prescale)
+void ADCSetPrescale(uint32_t prescale)
 {
     if (prescale > 128) prescale = 128;
 
@@ -208,7 +222,7 @@ void ADCStartConversion(void)
 
 static void ADCInterrupt(void *arg)
 {
-    register unsigned int adcsr = inr(ADC_SR);   
+    register uint32_t adcsr = inr(ADC_SR) & inr(ADC_CHSR);
     uint16_t ADC_Value;        
     uint16_t channel;
 
