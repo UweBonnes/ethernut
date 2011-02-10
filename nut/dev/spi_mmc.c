@@ -220,10 +220,11 @@ static int CardWaitRdy(NUTSPINODE * node)
 {
     int poll = MMC_MAX_READY_POLLS;
     uint8_t b;
+    uint8_t dummy = 0xFF;
     NUTSPIBUS *bus = (NUTSPIBUS *) node->node_bus;
 
     do {
-        (*bus->bus_transfer) (node, NULL, &b, 1);
+        (*bus->bus_transfer) (node, &dummy, &b, 1);
         if (b == 0xFF) {
             return 0;
         }
@@ -248,11 +249,12 @@ static int CardWaitRdy(NUTSPINODE * node)
 static uint8_t CardRxTkn(NUTSPINODE * node)
 {
     uint8_t rc;
+    uint8_t dummy = 0xFF;
     int poll = MMC_MAX_CMDACK_POLLS;
     NUTSPIBUS *bus = (NUTSPIBUS *) node->node_bus;
 
     do {
-        (*bus->bus_transfer) (node, NULL, &rc, 1);
+        (*bus->bus_transfer) (node, &dummy, &rc, 1);
         if (rc != 0xFF) {
             break;
         }
@@ -297,6 +299,7 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
     int retries = 4;
     uint8_t txb[7];
     uint8_t rxb;
+    uint8_t dummy = 0xFF;
     NUTSPIBUS *bus;
 
     bus = (NUTSPIBUS *) node->node_bus;
@@ -329,7 +332,7 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
                     break;
                 }
                 if (len == 2) {
-                    (*bus->bus_transfer) (node, NULL, &rxb, 1);
+                    (*bus->bus_transfer) (node, &dummy, &rxb, 1);
                     rc <<= 8;
                     rc |= rxb;
                 }
@@ -396,6 +399,7 @@ static int CardRxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, uint8_t *b
 {
     int rc = -1;
     uint8_t rsp;
+    uint16_t dummy = 0xFFFF;
     NUTSPIBUS *bus;
     int retries = MMC_MAX_READ_RETRIES;
 
@@ -404,14 +408,15 @@ static int CardRxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, uint8_t *b
     NUTASSERT(node->node_bus != NULL);
 
     bus = (NUTSPIBUS *) node->node_bus;
+    memset(buf, 0xFF, len);
     while (rc && retries--) {
         rsp = (uint8_t)CardTxCommand(node, cmd, param, 0);
         if (rsp != 0xFF) {
             if (rsp == 0 && CardRxTkn(node) == 0xFE) {
                 /* Data transfer. */
-                (*bus->bus_transfer) (node, NULL, buf, len);
+                (*bus->bus_transfer) (node, buf, buf, len);
                 /* Ignore the CRC. */
-                (*bus->bus_transfer) (node, NULL, NULL, 2);
+                (*bus->bus_transfer) (node, &dummy, NULL, 2);
                 rc = 0;
             }
             (*bus->bus_release) (node);
@@ -438,6 +443,7 @@ static int CardTxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, CONST uint
 {
     int rc = -1;
     uint8_t rsp;
+    uint16_t dummy = 0xFFFF;
     NUTSPIBUS *bus;
     int retries = MMC_MAX_WRITE_RETRIES;
 
@@ -457,7 +463,7 @@ static int CardTxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, CONST uint
                 /* Data transfer. */
                 (*bus->bus_transfer) (node, buf, NULL, len);
                 /* Send dummy CRC. */
-                (*bus->bus_transfer) (node, NULL, NULL, 2);
+                (*bus->bus_transfer) (node, &dummy, NULL, 2);
                 /* Get response. */
                 if (CardRxTkn(node) == 0xE5) {
                     rc = 0;
@@ -826,6 +832,7 @@ int SpiMmcUnmount(NUTFILE * nfp)
 int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     int rc = 0;
+    uint8_t dummy = 0xFF;
     NUTSPINODE * node = (NUTSPINODE *) dev->dev_icb;
     MEMCARDSUPP *msc = (MEMCARDSUPP *) dev->dev_dcb;
 
@@ -878,7 +885,7 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
                 uint8_t rxb;
 
                 for (i = 0; i < 4; i++) {
-                    (*bus->bus_transfer) (node, NULL, &rxb, 1);
+                    (*bus->bus_transfer) (node, &dummy, &rxb, 1);
                     *ocr <<= 8;
                     *ocr |= rxb;
                 }
