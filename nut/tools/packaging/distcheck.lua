@@ -78,6 +78,7 @@ arm_targets = {
   { name = "gbaxport2", mcu = "arm7tdmi" },
   { name = "morphoq11a", mcu = "arm7tdmi" },
   { name = "olimex-sam7-ex256", mcu = "arm7tdmi" },
+  { name = "eNet-sam7X", mcu="arm7tdmi" },
 }
 
 asm_sources = {
