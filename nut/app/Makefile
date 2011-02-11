@@ -171,6 +171,7 @@ at90can:
 	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
 	$(MAKE) -C simple
+	$(MAKE) -C snmpd	
 	$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
