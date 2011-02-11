@@ -8,6 +8,7 @@ Copyright (c) 1993 by Digital Equipment Corporation
 Copyright (C) 2008 by Duane Ellis
 Copyright (C) 2001-2007 by egnite Software GmbH
 Copyright (C) 2008-2009 by egnite GmbH
+Copyright (C) 2008-2011 by Thermotemp GmbH, EmbeddedIT, Ole Reinhardt
 Copyright (C) 2001-2008 by EmbeddedIT, Ole Reinhardt
 Copyright (C) 2000-2004 by ETH Zurich
 Copyright (c) 2002-2005 by Michael Fischer
@@ -24,7 +25,6 @@ Copyright (C) 2009 by Rittal GmbH & Co. KG, Ulrich Prinz
 Copyright (C) 1988 Stephen Deering.
 Copyright (C) 2008 by Szemzo Andr s
 Copyright (C) 2001-2003 by Telogis.com
-Copyright (C) 2008-2009 by Thermotemp GmbH, Ole Reinhardt
 Copyright (C) 1997 Todd C. Miller
 Copyright (C) UNIX System Laboratories, Inc.
 
@@ -560,6 +560,7 @@ Copyright (c)1999 Citrus Project,
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
+
 modification, are permitted provided that the following conditions
 are met:
 1. Redistributions of source code must retain the above copyright
