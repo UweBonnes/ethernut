@@ -136,7 +136,6 @@ THREAD(UDPReceiver, arg)
     uint16_t remote_port;
     UDPSOCKET *socket = (UDPSOCKET*) arg;
     int      rc;
-    int      error;
     
     while (1) {
         rc = NutUdpReceiveFrom(socket, &remote_ip, &remote_port, rcv_buffer, UDP_BUFF_SIZE, 2000);
@@ -144,8 +143,11 @@ THREAD(UDPReceiver, arg)
             printf("<-- Timeout (2 sec.) on UDP receive\r\n");
         } else 
         if (rc < 0) {
+#ifdef NUT_UDP_ICMP_SUPPORT             
+            int error;
             error = NutUdpError(socket, &remote_ip, &remote_port);
             print_udp_icmp_error(remote_ip, remote_port, error);
+#endif            
         } else {
             printf("<-- Received packet: \"%s\"\r\n", rcv_buffer);
         }
@@ -166,7 +168,6 @@ int main(void)
     uint32_t ip_addr;
     uint32_t ip_udp_echo;
     int    rc;
-    int    error;
     int    packet_nr;
     uint16_t length;
 
@@ -231,12 +232,13 @@ int main(void)
         rc = NutUdpSendTo(socket, ip_udp_echo, UDP_ECHO_PORT, send_buffer, length);
         printf("--> Sended packet: \"%s\", to %s, rc: %d\r\n", send_buffer, inet_ntoa(ip_udp_echo), rc);
         if (rc < 0) {
+#ifdef NUT_UDP_ICMP_SUPPORT
+            int      error;            
             uint32_t remote_ip;
-            uint16_t remote_port;
-            
+            uint16_t remote_port;             
             error = NutUdpError(socket, &remote_ip, &remote_port);
             print_udp_icmp_error(remote_ip, remote_port, error);
-            
+#endif            
         }
         
         NutSleep(1000);
