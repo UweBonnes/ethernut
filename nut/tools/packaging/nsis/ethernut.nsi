@@ -160,6 +160,8 @@ SectionGroup "Nut/OS"
     File ..\..\..\*.gcc
     File ..\..\..\*.arm-gcc
     File ..\..\..\*.arm-gccdbg
+    File ..\..\..\*.arm-eCross-gcc
+    File ..\..\..\*.arm-eCross-gccdbg
 ;    File ..\..\..\*.arm-icc
     File ..\..\..\*.avr-gcc
     File ..\..\..\*.avr-gccdbg
@@ -289,6 +291,7 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\at91sam9g45-ek.conf
     File ..\..\..\conf\charon2.conf
     File ..\..\..\conf\eir10c.conf
+    File ..\..\..\conf\eNet-sam7X.conf
     File ..\..\..\conf\ethernut103.conf
     File ..\..\..\conf\ethernut13f.conf
     File ..\..\..\conf\ethernut13g.conf
@@ -467,6 +470,8 @@ SectionGroup "Application Samples"
     File ..\..\..\app\*.gcc
     File ..\..\..\app\*.arm-gcc
     File ..\..\..\app\*.arm-gccdbg
+    File ..\..\..\app\*.arm-eCross-gcc
+    File ..\..\..\app\*.arm-eCross-gccdbg
 ;    File ..\..\..\app\*.arm-icc
     File ..\..\..\app\*.avr-gcc
     File ..\..\..\app\*.avr-gccdbg
@@ -896,6 +901,7 @@ Section "Uninstall"
   DeleteRegKey HKLM "${SWREGKEY}\${NUTVERSION}"
   DeleteRegKey HKCU "Software\egnite\NutConf"
   DeleteRegKey HKCU "Software\egnite\nutdisc"
+
 SectionEnd
 
 /*
