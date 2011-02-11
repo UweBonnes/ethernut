@@ -140,10 +140,12 @@
  * This routine collects all pins as they would have been read
  * from a single 8-bit register.
  */
+
+#ifdef INBANK
 static int PortStatus(void)
 {
     int stat = 0;
-#ifdef INBANK
+
 #ifdef INPIN1
     stat |= GpioPinGet(INBANK, INPIN1);
 #endif
@@ -156,7 +158,7 @@ static int PortStatus(void)
 #ifdef INPIN4
     stat |= GpioPinGet(INBANK, INPIN4) << 3;
 #endif
-#endif /* INBANK */
+
 
 #ifdef OUTBANK
 #ifdef OUTPIN1
@@ -175,7 +177,7 @@ static int PortStatus(void)
 
     return stat;
 }
-
+#endif
 /*
  * Process client requests.
  */

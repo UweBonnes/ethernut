@@ -271,7 +271,7 @@ THREAD(Scanner, arg)
 
             /* Delay if this isn't the first connection. */
             if (rsp->rs_name) {
-                printf("%lu bytes free\n", NutHeapAvailable());
+                printf("%d bytes free\n", NutHeapAvailable());
                 NutSleep(30000);
             }
 

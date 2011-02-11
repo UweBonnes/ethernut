@@ -299,10 +299,10 @@ static int ShowThreads(FILE * stream, REQUEST * req)
         "<TABLE BORDER><TR><TH>Handle</TH><TH>Name</TH><TH>Priority</TH><TH>Status</TH><TH>Event<BR>Queue</TH><TH>Timer</TH><TH>Stack-<BR>pointer</TH><TH>Free<BR>Stack</TH></TR>\r\n";
 #if defined(__AVR__)
     static prog_char tfmt[] =
-        "<TR><TD>%04X</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%04X</TD><TD>%04X</TD><TD>%04X</TD><TD>%u</TD><TD>%s</TD></TR>\r\n";
+        "<TR><TD>%04X</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%04X</TD><TD>%04X</TD><TD>%04X</TD><TD>%lu</TD><TD>%s</TD></TR>\r\n";
 #else
     static prog_char tfmt[] =
-        "<TR><TD>%08lX</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%08lX</TD><TD>%08lX</TD><TD>%08lX</TD><TD>%lu</TD><TD>%s</TD></TR>\r\n";
+        "<TR><TD>%08X</TD><TD>%s</TD><TD>%u</TD><TD>%s</TD><TD>%08X</TD><TD>%08X</TD><TD>%08X</TD><TD>%lu</TD><TD>%s</TD></TR>\r\n";
 #endif
     static prog_char foot[] = "</TABLE></BODY></HTML>";
     static char *thread_states[] = { "TRM", "<FONT COLOR=#CC0000>RUN</FONT>", "<FONT COLOR=#339966>RDY</FONT>", "SLP" };
@@ -317,7 +317,7 @@ static int ShowThreads(FILE * stream, REQUEST * req)
     for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
         fprintf_P(stream, tfmt, (uintptr_t) tdp, tdp->td_name, tdp->td_priority,
                   thread_states[tdp->td_state], (uintptr_t) tdp->td_queue, (uintptr_t) tdp->td_timer,
-                  (uintptr_t) tdp->td_sp, (uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory,
+                  (uintptr_t) tdp->td_sp, (unsigned long)((uintptr_t) tdp->td_sp - (uintptr_t) tdp->td_memory),
                   *((uint32_t *) tdp->td_memory) != DEADBEEF ? "Corr" : "OK");
     }
     fputs_P(foot, stream);
@@ -341,7 +341,7 @@ static int ShowTimers(FILE * stream, REQUEST * req)
 #if defined(__AVR__)
     static prog_char tfmt[] = "<TR><TD>%04X</TD><TD>%lu</TD><TD>%lu</TD><TD>%04X</TD><TD>%04X</TD></TR>\r\n";
 #else
-    static prog_char tfmt[] = "<TR><TD>%08lX</TD><TD>%lu</TD><TD>%lu</TD><TD>%08lX</TD><TD>%08lX</TD></TR>\r\n";
+    static prog_char tfmt[] = "<TR><TD>%08X</TD><TD>%lu</TD><TD>%lu</TD><TD>%08X</TD><TD>%08X</TD></TR>\r\n";
 #endif
     static prog_char foot[] = "</TABLE></BODY></HTML>";
     NUTTIMERINFO *tnp;
@@ -384,7 +384,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
 #if defined(__AVR__)
     static prog_char tfmt1[] = "<TR><TD>%04X</TD><TD>TCP</TD><TD>%s:%u</TD>";
 #else
-    static prog_char tfmt1[] = "<TR><TD>%08lX</TD><TD>TCP</TD><TD>%s:%u</TD>";
+    static prog_char tfmt1[] = "<TR><TD>%08X</TD><TD>TCP</TD><TD>%s:%u</TD>";
 #endif
     static prog_char tfmt2[] = "<TD>%s:%u</TD><TD>";
     static prog_char foot[] = "</TABLE></BODY></HTML>";
@@ -612,7 +612,7 @@ THREAD(Service, arg)
 #if defined(__AVR__)
         printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
 #else
-        printf("[%u] Connected, %lu bytes free\n", id, NutHeapAvailable());
+        printf("[%u] Connected, %u bytes free\n", id, NutHeapAvailable());
 #endif
 
         /*

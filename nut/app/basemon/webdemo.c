@@ -63,6 +63,7 @@
 #include "basemon.h"
 #include "webdemo.h"
 
+#ifdef __AVR__ /* TODO: This function is called from webserver thread!!! Broken for other CPUs? */
 static char *states[] = { "TRM",
     "<FONT COLOR=#CC0000>RUN</FONT>",
     "<FONT COLOR=#339966>RDY</FONT>",
@@ -73,6 +74,7 @@ static char *states[] = { "TRM",
 /*
  * Thread list CGI.
  */
+
 static int ShowThreads(FILE * stream, REQUEST * req)
 {
     NUTTHREADINFO *tdp = nutThreadList;
@@ -85,8 +87,8 @@ static int ShowThreads(FILE * stream, REQUEST * req)
         "<TD>%s</TD><TD>%04X</TD><TD>%04X</TD>" "<TD>%04X</TD><TD>%u</TD><TD>%s</TD></TR>\r\n";
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, "text/html", -1);
-
+    NutHttpSendHeaderBottom(stream, req, "text/html", -1);
+    
     fputs_P(head_P, stream);
 
     fputs_P(ttop_P, stream);
@@ -119,7 +121,8 @@ static int ShowTimer(FILE * stream, REQUEST * req)
     static prog_char tbot_P[] = "</TABLE></BODY></HTML>";
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, "text/html", -1);
+    NutHttpSendHeaderBottom(stream, req, "text/html", -1);
+
 
     fputs_P(head_P, stream);
 
@@ -157,7 +160,7 @@ static int ShowSockets(FILE * stream, REQUEST * req)
     static prog_char tbot_P[] = "</TABLE></BODY></HTML>\r\n";
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, "text/html", -1);
+    NutHttpSendHeaderBottom(stream, req, "text/html", -1);
 
     fputs_P(head_P, stream);
 
@@ -245,7 +248,7 @@ static int ShowPorts(FILE * stream, REQUEST * req)
     static prog_char tbot_P[] = "</table></form>\r\n</body>\r\n</html>";
 
     NutHttpSendHeaderTop(stream, req, 200, "Ok");
-    NutHttpSendHeaderBot(stream, "text/html", -1);
+    NutHttpSendHeaderBottom(stream, req, "text/html", -1);
 
     fputs_P(ttop_P, stream);
 
@@ -281,6 +284,8 @@ static int ShowPorts(FILE * stream, REQUEST * req)
 
     return 0;
 }
+
+#endif /* #ifdef __AVR__ */
 
 THREAD(WebDemo, arg)
 {
@@ -407,5 +412,6 @@ THREAD(WebDemo, arg)
         NutTcpCloseSocket(sock);
     }
 #endif
+    while(1); /* Keep compiler happy */
 }
 

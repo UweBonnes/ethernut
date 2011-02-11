@@ -148,7 +148,7 @@ prog_char help_P[] = "400 List of commands follows\r\n"
     "ti[mers]\tLists all running timers.\r\n" "q[uit]\t\tTerminates connection.\r\n" ".\r\n";
 prog_char thread_intro_P[] = "220 List of threads with name,state,prio,stack,mem,timeout follows\r\n";
 prog_char timer_intro_P[] = "221 List of timers with ticks left and interval follows\r\n";
-prog_char mem_fmt_P[] = "210 %lu bytes RAM free\r\n";
+prog_char mem_fmt_P[] = "210 %d bytes RAM free\r\n";
 
 
 /*
@@ -225,7 +225,7 @@ void ProcessRequests(FILE * stream)
                     fputs("\tSleep\t", stream);
                     break;
                 }
-                fprintf(stream, "%u\t%u", tdp->td_priority, (uint16_t) tdp->td_sp - (uint16_t) tdp->td_memory);
+                fprintf(stream, "%u\t%lu", tdp->td_priority, (uint32_t) tdp->td_sp - (uint32_t) tdp->td_memory);
                 if (*((uint32_t *) tdp->td_memory) != DEADBEEF)
                     fputs("\tCorrupted\t", stream);
                 else
@@ -278,7 +278,9 @@ void ProcessRequests(FILE * stream)
 int main(void)
 {
     int pppcom;
+#ifdef __AVR_ENHANCED__
     uint32_t lctl;
+#endif    
 #ifdef PPPDEV
     PPPDCB *dcb;
     int rc;

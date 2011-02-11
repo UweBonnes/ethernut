@@ -154,7 +154,7 @@ static char *ParseLine(char *line, char **pp1, char **pp2)
      * Parse line for command and parameters.
      */
     p0 = line;
-    while (isspace(*p0)) {
+    while (isspace((int)*p0)) {
         /* Skip leading spaces. */
         p0++;
     }
@@ -165,7 +165,7 @@ static char *ParseLine(char *line, char **pp1, char **pp2)
     cp = strchr(p0, ' ');
     if (cp) {
         *cp++ = '\0';
-        while (isspace(*cp)) {
+        while (isspace((int)*cp)) {
             /* Skip leading spaces. */
             cp++;
         }
@@ -178,7 +178,7 @@ static char *ParseLine(char *line, char **pp1, char **pp2)
         }
         if (cp) {
             *cp++ = '\0';
-            while (isspace(*cp)) {
+            while (isspace((int)*cp)) {
                 /* Skip leading spaces. */
                 cp++;
             }

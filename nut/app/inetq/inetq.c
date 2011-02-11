@@ -163,7 +163,7 @@ int main(void)
         ip_addr = inet_addr(MY_IP);
         NutNetIfConfig("eth0", my_mac, ip_addr, inet_addr(MY_MASK));
         NutIpRouteAdd(0, 0, inet_addr(MY_GATE), &DEV_ETHER);
-        NutDnsConfig(0, 0, inet_addr(DNSSERVERIP));
+        NutDnsConfig2(0, 0, inet_addr(DNSSERVERIP), 0);
     } else
         ip_addr = confnet.cdn_ip_addr;
     printf("%s ready\n", inet_ntoa(ip_addr));

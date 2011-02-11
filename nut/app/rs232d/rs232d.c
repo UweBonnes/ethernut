@@ -63,7 +63,7 @@
 #include <fcntl.h>
 
 #include <arpa/inet.h>
-
+#include <net/if_var.h>
 #include <pro/dhcp.h>
 
 #define BUFFERSIZE  128
