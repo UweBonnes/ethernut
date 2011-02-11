@@ -34,11 +34,8 @@
 # $Id: Makevars.arm-eCross-gcc $
 #
 
-# Inherit general gcc variables.
-include $(top_srcdir)/Makevars.gcc
+# Inherit variables from general gcc build
+include $(top_srcdir)/app/Makevars.gcc
 
-# Set target specific variables.
-TRGT       = arm-eCross-eabi-
-MCFLAGS    = -mcpu=$(MCU)
-CFLAGS_MCU = $(MCFLAGS) -mthumb-interwork
-CXXFLAGS_MCU = $(CFLAGS_MCU)
+# set linker options
+LDFLAGS = $(MCFLAGS) -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(PROJ).map,--cref,--no-warn-mismatch -L$(LIBDIR)

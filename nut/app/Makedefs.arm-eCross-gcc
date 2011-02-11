@@ -34,5 +34,23 @@
 # $Id: Makedefs.arm-eCross-gcc $
 #
 
-# Inherit arm-gcc variables.
-include $(top_srcdir)/Makevars.arm-eCross-gcc
+# Set defaults for building in source tree.
+ifeq ($(top_srcdir),)
+top_srcdir = ../..
+endif
+ifeq ($(top_blddir),)
+top_blddir = top_srcdir
+endif
+ifeq ($(top_appdir),)
+top_appdir = top_srcdir
+endif
+ifeq ($(MCU),)
+include $(top_srcdir)/UserConf.mk
+LIBDIR = $(top_blddir)/lib
+endif
+
+# Inherit variables from library build
+include $(top_srcdir)/Makedefs.arm-eCross-gcc
+
+# Add arm-gcc variables for application build
+include $(top_srcdir)/app/Makevars.arm-eCross-gcc

@@ -31,8 +31,7 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Id: Makedefs.arm-eCross-gcc $
+# $Id: Makerules.arm-eCross-gccdbg $
 #
 
-# Inherit arm-gcc variables.
-include $(top_srcdir)/Makevars.arm-eCross-gcc
+include $(top_srcdir)/Makerules.gcc

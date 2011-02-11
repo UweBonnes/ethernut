@@ -1,6 +1,5 @@
 #
-# Copyright (C) 2001-2006 by egnite Software GmbH
-# Copyright (C) 2009 by egnite GmbH
+# Copyright (C) 2010 by Thermotemp GmbH, Embedded-IT, based on template from Egnite
 #
 # All rights reserved.
 #
@@ -32,7 +31,7 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Id: Makerules.arm-eCross-gcc 
+# $Id: Makerules.arm-eCross-gcc $
 #
 
 include $(top_srcdir)/Makerules.gcc

@@ -31,8 +31,16 @@
 #
 # For additional information see http://www.ethernut.de/
 #
-# $Id: Makedefs.arm-eCross-gcc $
+# $Id: Makedefs.arm-eCross-gccdbg $
 #
 
 # Inherit arm-gcc variables.
 include $(top_srcdir)/Makevars.arm-eCross-gcc
+
+# Override compiler options to create debug code.
+CFLAGS_OPT   = -O0 -gdwarf-2
+CXXFLAGS_OPT = -O0 -gdwarf-2 -fno-delete-null-pointer-checks -fno-exceptions -fno-rtti
+
+# Debug code needs much more stack space.
+DEFS = -DNUT_THREAD_STACK_MULT=3 $(HWDEF)
+
