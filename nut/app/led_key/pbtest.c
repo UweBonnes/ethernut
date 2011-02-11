@@ -62,7 +62,13 @@
 #include <dev/keys.h>
 #include <dev/led.h>
 
-#if   defined(AT91SAM7X_EK)
+
+/* This sample application only supports the following boards */
+#if defined(AT91SAM7X_EK) || defined(ENET_SAM7X) || \
+    defined(EVK1100) || defined(EVK1101) || defined(EVK1105)
+
+
+#if defined(AT91SAM7X_EK) || defined(ENET_SAM7X)
 #define LED1_PORT    NUTGPIO_PORTB
 #define LED1_PIN     19
 #define LED2_PORT    NUTGPIO_PORTB
@@ -307,3 +313,20 @@ int main(void)
     }
     return 0;
 }
+
+#else  /* defined(AT91SAM7X_EK) || defined(ENET_SAM7X) || 
+          defined(EVK1100) || defined(EVK1101) || defined(EVK1105) */
+int main(void)
+{   
+    uint32_t baud = 115200;
+    /*
+     * Register the UART device, open it, assign stdout to it and set
+     * the baudrate.
+     */
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
+    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+    printf("Sorry, your board is not supported \n");
+    while(1);
+}
+#endif
