@@ -336,7 +336,7 @@ int At91SpiBusDblBufTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, 
 }
 #endif
 
-#if !defined(SPIBUS0_DOUBLE_BUFFER) || !defined(SPIBUS1_DOUBLE_BUFFER)
+#if defined(SPIBUS0_DOUBLE_BUFFER) || defined(SPIBUS1_DOUBLE_BUFFER)
 /*! 
  * \brief Wait until all SPI bus transfers are done.
  *
