@@ -145,6 +145,19 @@
 #define MMC_MAX_READY_POLLS     800
 #endif
 
+
+/* HACK!!!
+   Some SPI hardware just shift around data read from MISO pin to the MOSI pin if the SPI data register 
+   is not set manually. At least on the AT91 platform it is impossible to use DMA transfers just for reading  
+   and to hold the MOSI line at high level if no tx data is send out at the same time. So we declare a buffer   
+   filled with 0xFF here, to make sure the MOSI pin is held at high level (0xFF) all the time during a 
+   read only transfer. This buffer is used in CardRXData and several other places too. The buffer is read only.
+
+   This is a very very nasty hack and waists 512 Bytes of ram, but I don't see a better solution right now!
+*/
+
+static uint8_t dummy_tx_buf[MMC_BLOCK_SIZE];
+
 /*!
  * \brief Local multimedia card status information.
  */
@@ -220,11 +233,10 @@ static int CardWaitRdy(NUTSPINODE * node)
 {
     int poll = MMC_MAX_READY_POLLS;
     uint8_t b;
-    uint8_t dummy = 0xFF;
     NUTSPIBUS *bus = (NUTSPIBUS *) node->node_bus;
 
     do {
-        (*bus->bus_transfer) (node, &dummy, &b, 1);
+        (*bus->bus_transfer) (node, dummy_tx_buf, &b, 1);
         if (b == 0xFF) {
             return 0;
         }
@@ -249,12 +261,12 @@ static int CardWaitRdy(NUTSPINODE * node)
 static uint8_t CardRxTkn(NUTSPINODE * node)
 {
     uint8_t rc;
-    uint8_t dummy = 0xFF;
+
     int poll = MMC_MAX_CMDACK_POLLS;
     NUTSPIBUS *bus = (NUTSPIBUS *) node->node_bus;
 
     do {
-        (*bus->bus_transfer) (node, &dummy, &rc, 1);
+        (*bus->bus_transfer) (node, dummy_tx_buf, &rc, 1);
         if (rc != 0xFF) {
             break;
         }
@@ -299,7 +311,6 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
     int retries = 4;
     uint8_t txb[7];
     uint8_t rxb;
-    uint8_t dummy = 0xFF;
     NUTSPIBUS *bus;
 
     bus = (NUTSPIBUS *) node->node_bus;
@@ -332,7 +343,7 @@ static uint16_t CardTxCommand(NUTSPINODE * node, uint8_t cmd, uint32_t param, in
                     break;
                 }
                 if (len == 2) {
-                    (*bus->bus_transfer) (node, &dummy, &rxb, 1);
+                    (*bus->bus_transfer) (node, dummy_tx_buf, &rxb, 1);
                     rc <<= 8;
                     rc |= rxb;
                 }
@@ -399,24 +410,24 @@ static int CardRxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, uint8_t *b
 {
     int rc = -1;
     uint8_t rsp;
-    uint16_t dummy = 0xFFFF;
     NUTSPIBUS *bus;
     int retries = MMC_MAX_READ_RETRIES;
+
 
     /* Sanity checks. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
 
     bus = (NUTSPIBUS *) node->node_bus;
-    memset(buf, 0xFF, len);
+
     while (rc && retries--) {
         rsp = (uint8_t)CardTxCommand(node, cmd, param, 0);
         if (rsp != 0xFF) {
             if (rsp == 0 && CardRxTkn(node) == 0xFE) {
                 /* Data transfer. */
-                (*bus->bus_transfer) (node, buf, buf, len);
+                (*bus->bus_transfer) (node, dummy_tx_buf, buf, len);
                 /* Ignore the CRC. */
-                (*bus->bus_transfer) (node, &dummy, NULL, 2);
+                (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 2);
                 rc = 0;
             }
             (*bus->bus_release) (node);
@@ -443,7 +454,6 @@ static int CardTxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, CONST uint
 {
     int rc = -1;
     uint8_t rsp;
-    uint16_t dummy = 0xFFFF;
     NUTSPIBUS *bus;
     int retries = MMC_MAX_WRITE_RETRIES;
 
@@ -463,7 +473,7 @@ static int CardTxData(NUTSPINODE * node, uint8_t cmd, uint32_t param, CONST uint
                 /* Data transfer. */
                 (*bus->bus_transfer) (node, buf, NULL, len);
                 /* Send dummy CRC. */
-                (*bus->bus_transfer) (node, &dummy, NULL, 2);
+                (*bus->bus_transfer) (node, dummy_tx_buf, NULL, 2);
                 /* Get response. */
                 if (CardRxTkn(node) == 0xE5) {
                     rc = 0;
@@ -832,7 +842,6 @@ int SpiMmcUnmount(NUTFILE * nfp)
 int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
 {
     int rc = 0;
-    uint8_t dummy = 0xFF;
     NUTSPINODE * node = (NUTSPINODE *) dev->dev_icb;
     MEMCARDSUPP *msc = (MEMCARDSUPP *) dev->dev_dcb;
 
@@ -885,7 +894,7 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
                 uint8_t rxb;
 
                 for (i = 0; i < 4; i++) {
-                    (*bus->bus_transfer) (node, &dummy, &rxb, 1);
+                    (*bus->bus_transfer) (node, dummy_tx_buf, &rxb, 1);
                     *ocr <<= 8;
                     *ocr |= rxb;
                 }
@@ -925,6 +934,7 @@ int SpiMmcIOCtl(NUTDEVICE * dev, int req, void *conf)
  */
 int SpiMmcInit(NUTDEVICE * dev)
 {
+    memset(dummy_tx_buf, 0xFF, MMC_BLOCK_SIZE);
     return 0;
 }
 
