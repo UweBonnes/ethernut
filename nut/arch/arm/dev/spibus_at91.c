@@ -269,6 +269,8 @@ int At91SpiBusPollTransfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, in
  *
  * \todo Not yet done. Given up after SAM7SE SDRAM problems.
  *       Currently working fine on SAM7X platform
+ * \todo Is this working asynchronously? Old comments mentioned that 
+ *       the transfer might be still active when function returns.
  *
  * \param node Specifies the SPI bus node.
  * \param txbuf Pointer to the transmit buffer. If NULL, undetermined
