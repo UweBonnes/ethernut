@@ -1422,10 +1422,21 @@ nutarch_arm =
                 macro = "SPIBUS0_DOUBLE_BUFFER",
                 brief = "PDC Mode (First Controller)",
                 description = "If enabled, the controller will use PDC mode.\n\n"..
-                              "Under development.",
+                              "Under development. Works fine on SAM7X",
+		provides = { "SPIBUS0_DOUBLE_BUFFER" },
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
+            {
+                macro = "SPIBUS0_DOUBLE_BUFFER_HEURISTIC",
+                brief = "Heuristicaly use polling mode for short transfers instead of PDC",
+                description = "If enabled, the controller will use the polling mode instead of PDC mode for short "..
+                              "transfers (currently less that 4 byte), as setup of PDC might result in larger overhead. ".. 
+                              "Depends on the selected SPI clock\n\n",
+		requires = { "SPIBUS0_DOUBLE_BUFFER" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },	
             {
                 macro = "SPI0_CS0_PIO_ID",
                 brief = "CS0 Port ID (First Controller)",
@@ -1506,11 +1517,21 @@ nutarch_arm =
                 macro = "SPIBUS1_DOUBLE_BUFFER",
                 brief = "PDC Mode (Second Controller)",
                 description = "If enabled, the controller will use PDC mode.\n\n"..
-                              "Under development.",
-                requires = { "NOT_AVAILABLE" },
+                              "Under development. Works fine on SAM7X",
+		provides = { "SPIBUS1_DOUBLE_BUFFER" },
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },
+            {
+                macro = "SPIBUS1_DOUBLE_BUFFER_HEURISTIC",
+                brief = "Heuristicaly use polling mode for short transfers instead of PDC",
+                description = "If enabled, the controller will use the polling mode instead of PDC mode for short "..
+                              "transfers (currently less that 4 byte), as setup of PDC might result in larger overhead. ".. 
+                              "Depends on the selected SPI clock\n\n",
+		requires = { "SPIBUS1_DOUBLE_BUFFER" },
+                flavor = "boolean",
+                file = "include/cfg/spi.h"
+            },	
             {
                 macro = "SPI1_CS0_PIO_ID",
                 brief = "CS0 Port ID (Second Controller)",
