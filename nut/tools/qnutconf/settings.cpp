@@ -150,7 +150,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 
 	QString defaultToolPath;
 #if defined( Q_OS_WIN32 )
-	defaultToolPath = srcpath + "/tools/win32";
+	defaultToolPath = QDir(srcpath + "/tools/win32").absolutePath();
 #endif
 	m_toolPath = settings.value("toolPath", defaultToolPath).toString();
 	m_programmer = settings.value("programmer").toString();

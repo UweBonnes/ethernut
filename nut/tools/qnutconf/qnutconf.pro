@@ -23,7 +23,8 @@ SOURCES +=	\
 			nutcomponentdetailsmodel.cpp \
 			nutcomponentmodel_p.cpp \
 			settings.cpp \
-			settingsdialog.cpp
+			settingsdialog.cpp \
+			systeminfo.cpp
 			
 HEADERS +=	\
 			builder.h \
@@ -35,7 +36,8 @@ HEADERS +=	\
 			nutcomponentdetailsmodel.h \
 			nutcomponentmodel_p.h \
 			settings.h \
-			settingsdialog.h
+			settingsdialog.h \
+			systeminfo.h
 
 FORMS +=	\
 			mainwindow.ui \

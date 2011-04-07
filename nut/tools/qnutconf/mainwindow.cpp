@@ -46,6 +46,7 @@
 #include "settings.h"
 #include "builder.h"
 #include "dirtraverser.h"
+#include "systeminfo.h"
 
 MainWindow::MainWindow()
 {
@@ -69,7 +70,7 @@ MainWindow::MainWindow()
 	readSettings();
 
 	message( tr("Nut/OS Configurator Version %1").arg(NUTCONF_VERSION_STR) );
-	message( tr("Linked to Qt %1, running on %2").arg(QT_VERSION_STR, QLatin1String(qVersion())) );
+	message( tr("Linked to Qt %1, running on %2").arg(QT_VERSION_STR, SystemInfo::GetOsString()) );
 	message( tr("Working in %1").arg( QDir::toNativeSeparators( QDir::current().absolutePath() ) ) );
 
 	connect( Builder::instance(), SIGNAL(message(const QString&)), SLOT(message(const QString&)) );
@@ -104,7 +105,7 @@ void MainWindow::on_actionOpen_triggered()
 {
 	// Retrieve conf directory visited last.
 	QSettings settings;
-	QString confdir = settings.value("confpath", "").toString();
+	QString confdir = settings.value("confpath", Settings::instance()->sourceDir() + "/conf").toString();
 
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), confdir, tr("Nut/OS Configuration (*.conf)") );
 	if ( !fileName.isEmpty() )
