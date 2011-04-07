@@ -77,14 +77,12 @@ void Settings::destroy()
 */
 QString Settings::findRelativePathDepthSearch( const QString& filename, const QDir& startPoint )
 {
-	QRegExp nutFolder( "[\\\\/]nut[\\\\/]?$" );
-
 	// First look inside current folder and children.
 	QDirIterator it( startPoint, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks );
 	while( it.hasNext() )
 	{
 		QString folder = it.next();
-		if ( folder.contains( nutFolder ) )
+		if ( folder.contains( QRegExp("/nut/?$") ) )
 		{
 			QDir nut( folder );
 			if ( nut.exists( filename ) )
@@ -100,13 +98,11 @@ QString Settings::findRelativePathDepthSearch( const QString& filename, const QD
 */
 QString Settings::findRelativePath( const QString& filename )
 {
-	QRegExp nutFolder( "[\\\\/]nut[\\\\/]?$" );
-
 	// If it is in our parent folder path.
-	if ( QDir::current().absolutePath().contains( QRegExp("[\\\\/]nut[\\\\/]") ) )
+	if ( QDir::current().absolutePath().contains("/nut/") )
 	{
 		QString path = QDir::current().absolutePath();
-		path.chop( path.length() - path.indexOf( QRegExp("[\\\\/]nut[\\\\/]") ) );
+		path.chop( path.length() - path.indexOf("/nut/") );
 		return findRelativePathDepthSearch( filename, QDir( path ) );
 	}
 	
@@ -128,7 +124,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 {
 	/* Get source path */
 	QString srcpath = findRelativePath("os/version.c");
-	if ( srcpath.contains( QRegExp("[\\\\/]nut[\\\\/]") ) )
+	if ( srcpath.contains("/nut/") )
 		srcpath.truncate( srcpath.lastIndexOf("nut") + 3 );
 	else
 		srcpath.truncate( srcpath.lastIndexOf("os/version.c") );
