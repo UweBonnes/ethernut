@@ -127,7 +127,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	if ( srcpath.contains("/nut/") )
 		srcpath.truncate( srcpath.lastIndexOf("nut") + 3 );
 	else
-		srcpath.truncate( srcpath.lastIndexOf("os/version.c") );
+		srcpath.truncate( srcpath.lastIndexOf("/os/version.c") );
 
 	repositoryFile = srcpath + "/conf/repository.nut";
 
