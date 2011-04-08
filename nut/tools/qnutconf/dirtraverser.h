@@ -36,29 +36,31 @@
 
 #include <QList>
 #include <QRegExp>
+#include <QFileInfo>
 
-class AbstractDirTraverserFilter
+class AbstractFileCopyFilter
 {
 public:
-	virtual ~AbstractDirTraverserFilter() {}
+	virtual ~AbstractFileCopyFilter() {}
 
-	virtual bool onFile( const QString& file ) = 0;
+	virtual bool onFile( const QFileInfo &fileInfo, const QString& dest ) = 0;
+};
+
+class AppDirCopyFilter : public AbstractFileCopyFilter
+{
+	bool onFile( const QFileInfo &fileInfo, const QString& dest );
 };
 
 class DirTraverser
 {
-	QList<AbstractDirTraverserFilter*> filters;
-	QList<QRegExp> excludeList;
 public:
 	DirTraverser();
 	virtual ~DirTraverser();
-	void addExclusion( const QRegExp& );
-	void run( const QString& src, const QString& dest );
+	void insertFilter( AbstractFileCopyFilter* filter );
+	void copyDir( const QString& src, const QString& dest );
 
 private:
-	void copyDir( const QString& src, const QString& dest );
-	void runFilters( const QString& fileName );
-	bool checkExclusionList( const QString& );
+	QList<AbstractFileCopyFilter*> filters;
 };
 
 #endif // __DIRTRAVERSER_H__

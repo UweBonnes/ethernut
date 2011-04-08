@@ -11,7 +11,7 @@ DirTraverser::DirTraverser()
 
 DirTraverser::~DirTraverser()
 {
-	foreach( AbstractDirTraverserFilter* filter, filters )
+	foreach( AbstractFileCopyFilter* filter, filters )
 	{
 		delete filter;
 	}
@@ -34,14 +34,18 @@ void DirTraverser::copyDir( const QString& src, const QString& dest )
 			QString fileName = dirIterator.fileName();
 			QFileInfo fileInfo = dirIterator.fileInfo();
 
-			if ( checkExclusionList(fileInfo.absoluteFilePath()) )
-				continue;
-
 			//If entry is a file copy it
 			if ( fileInfo.isFile() )
 			{
-				QFile::copy(item, dest + "/" + fileName);
-				runFilters( dest + "/" + fileName );
+				bool done = false;
+
+				foreach( AbstractFileCopyFilter* filter, filters ) {
+					done = filter->onFile( fileInfo, dest );
+					if ( done )
+						break;
+				}
+				if ( !done )
+					QFile::copy( item, dest + "/" + fileName );
 			}
 			else
 				copyDir( item, dest + "/" + fileName );
@@ -53,34 +57,25 @@ void DirTraverser::copyDir( const QString& src, const QString& dest )
 	}
 }
 
-void DirTraverser::run( const QString& src, const QString& dest )
+void DirTraverser::insertFilter( AbstractFileCopyFilter* filter )
 {
-	copyDir(src, dest);
+	filters.insert( 0, filter );
 }
 
-void DirTraverser::runFilters( const QString& fileName )
+bool AppDirCopyFilter::onFile( const QFileInfo &fileInfo, const QString& dest)
 {
-	foreach( AbstractDirTraverserFilter* filter, filters )
-	{
-		if ( !filter->onFile( fileName ) )
-			break;
-	}
-}
+	Q_UNUSED(dest);
+	QString fileName = fileInfo.fileName();
+	const char* exclude_pattern[] = {
+		"Makeburn\\..*",
+		"Makedefs\\..*",
+		"Makerules\\..*",
+		"Makevars\\..*"
+	};
 
-void DirTraverser::addExclusion( const QRegExp& e )
-{
-	excludeList.append( e );
-}
-
-/*!
-	Returns true if \a file matches an exclusion list entry
-*/
-bool DirTraverser::checkExclusionList( const QString& file )
-{
-	foreach( QRegExp pattern, excludeList )
-	{
-		if ( pattern.exactMatch(file) )
+	for (int i = 0; i < sizeof(exclude_pattern) / sizeof(exclude_pattern[0]); i++)
+		if ( QRegExp(exclude_pattern[i]).exactMatch(fileName) )
 			return true;
-	}
+
 	return false;
 }

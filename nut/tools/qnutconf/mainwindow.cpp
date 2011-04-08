@@ -277,11 +277,8 @@ void MainWindow::generateApplicationTree()
 	message( tr("Copying samples from %1 to %2").arg(srcDir, appDir) );
 
 	DirTraverser traverser;
-	traverser.addExclusion( QRegExp( ".*[\\\\/]Makerules\\..*" ) );
-	traverser.addExclusion( QRegExp( ".*[\\\\/]Makevars\\..*" ) );
-	traverser.addExclusion( QRegExp( ".*[\\\\/]Makedefs\\..*" ) );
-	traverser.addExclusion( QRegExp( ".*[\\\\/]Makeburn\\..*" ) );
-	traverser.run( srcDir, appDir );
+	traverser.insertFilter(new AppDirCopyFilter);
+	traverser.copyDir( srcDir, appDir );
 
 	message( tr("Creating Makefiles for %1 in %2").arg(Settings::instance()->targetPlatform(), Settings::instance()->appDir()) );
 	model->generateSampleMakefiles();
