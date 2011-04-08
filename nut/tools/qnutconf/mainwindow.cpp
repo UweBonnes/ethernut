@@ -274,11 +274,20 @@ void MainWindow::generateApplicationTree()
 
 	QString srcDir = Settings::instance()->sourceDir() + "/app";
 	QString appDir = Settings::instance()->appDir();
-	message( tr("Copying samples from %1 to %2").arg(srcDir, appDir) );
 
-	DirTraverser traverser;
-	traverser.insertFilter(new AppDirCopyFilter);
-	traverser.copyDir( srcDir, appDir );
+	message( tr("Copying samples from %1 to %2").arg(srcDir, appDir) );
+	DirTraverser appDirTraverser;
+	appDirTraverser.insertFilter(new AppDirCopyFilter);
+	appDirTraverser.copyDir( srcDir, appDir );
+
+#ifdef Q_OS_WIN32
+	srcDir = Settings::instance()->sourceDir() + "/appicc";
+
+	message( tr("Translating ICCAVR projects from %1 to %2").arg(srcDir, appDir) );
+	DirTraverser iccPrjTraverser;
+	iccPrjTraverser.insertFilter(new IccProjectCopyFilter(model) );
+	iccPrjTraverser.copyDir( srcDir, appDir );
+#endif
 
 	message( tr("Creating Makefiles for %1 in %2").arg(Settings::instance()->targetPlatform(), Settings::instance()->appDir()) );
 	model->generateSampleMakefiles();

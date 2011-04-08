@@ -71,6 +71,9 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+	NUTREPOSITORY* repository();
+	NUTCOMPONENTOPTION* findOptionByName(NUTCOMPONENT* compo, const char* name);
+
 	// Build methods
 	bool generateBuildTree();
 	bool generateSampleMakefiles();
@@ -83,9 +86,7 @@ signals:
 private:
 	void close();
 	void rebuildTree();
-	NUTREPOSITORY* repository();
 	bool isOptionActive( const char* );
-	NUTCOMPONENTOPTION* findOptionByName(NUTCOMPONENT* compo, const char* name);
 	void deactivateOptionList(char **exlist, NUTCOMPONENT* compo = 0);
 
 	void saveComponentOptions( QTextStream& file, NUTCOMPONENT* compo );

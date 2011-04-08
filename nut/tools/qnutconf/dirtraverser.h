@@ -51,6 +51,15 @@ class AppDirCopyFilter : public AbstractFileCopyFilter
 	bool onFile( const QFileInfo &fileInfo, const QString& dest );
 };
 
+class IccProjectCopyFilter : public AbstractFileCopyFilter
+{
+public:
+	IccProjectCopyFilter( NutComponentModel* model );
+	bool onFile( const QFileInfo& fileInfo, const QString& dest );
+private:
+	NutComponentModel* m_model;
+};
+
 class DirTraverser
 {
 public:
