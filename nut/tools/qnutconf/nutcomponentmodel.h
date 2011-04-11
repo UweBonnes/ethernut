@@ -54,7 +54,11 @@ class NutComponentModel : public QAbstractItemModel
 
 public:
 
-	enum CustomRoles { Description = Qt::UserRole };
+	enum CustomRoles {
+		Description = Qt::UserRole,
+		Name = Qt::UserRole + 1,
+		FullSearch = Qt::UserRole + 2
+	};
 
 	NutComponentModel(QObject *parent = 0);
 	~NutComponentModel();

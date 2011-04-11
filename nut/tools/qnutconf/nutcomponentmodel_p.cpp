@@ -127,6 +127,15 @@ QVariant TreeItem::data( int column, int role ) const
 	case NutComponentModel::Description:
 		return description();
 
+	case NutComponentModel::Name:
+		return name();
+
+	case NutComponentModel::FullSearch:
+		return briefDescription()
+				+ " " + value().toString()
+				+ " " + name()
+				+ " " + description();
+
 	default:
 		break;
 	}

@@ -208,7 +208,7 @@ void MainWindow::on_findNext_triggered(const QString &text)
 	else
 		start = model->index(0, 0);
 
-	QModelIndexList found = model->match(start, Qt::DisplayRole, QVariant::fromValue(text), 1, 
+	QModelIndexList found = model->match(start, NutComponentModel::FullSearch, QVariant::fromValue(text), 1, 
 		Qt::MatchFixedString | Qt::MatchContains | Qt::MatchRecursive | Qt::MatchWrap);
 	if (!found.isEmpty()) {
 		ui.componentTree->scrollTo(found.first());
