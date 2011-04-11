@@ -71,15 +71,6 @@
             <attribute name="headerStretchLastSection">
              <bool>true</bool>
             </attribute>
-            <attribute name="headerCascadingSectionResizes">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="headerVisible">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="headerStretchLastSection">
-             <bool>true</bool>
-            </attribute>
            </widget>
           </widget>
          </item>
@@ -95,18 +86,6 @@
          </attribute>
          <attribute name="verticalHeaderVisible">
           <bool>false</bool>
-         </attribute>
-         <attribute name="verticalHeaderHighlightSections">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="verticalHeaderStretchLastSection">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="verticalHeaderVisible">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="horizontalHeaderStretchLastSection">
-          <bool>true</bool>
          </attribute>
          <attribute name="verticalHeaderHighlightSections">
           <bool>false</bool>
@@ -225,6 +204,7 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="actionFind"/>
     <addaction name="actionSettings"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -269,6 +249,7 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionBuild_Nut_OS"/>
+   <addaction name="actionFind"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">
@@ -365,6 +346,18 @@
     <string>Cancel the current build</string>
    </property>
   </action>
+  <action name="actionFind">
+   <property name="icon">
+    <iconset resource="qnutconf.qrc">
+     <normaloff>:/images/search_large.png</normaloff>:/images/search_large.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>componentTree</tabstop>
@@ -385,8 +378,8 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>51</x>
-     <y>616</y>
+     <x>773</x>
+     <y>638</y>
     </hint>
     <hint type="destinationlabel">
      <x>51</x>

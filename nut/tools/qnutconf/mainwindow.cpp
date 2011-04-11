@@ -39,6 +39,7 @@
 #include <QDirIterator>
 
 #include "mainwindow.h"
+#include "finddialog.h"
 #include "settingsdialog.h"
 #include "nutcomponentmodel.h"
 #include "nutcomponentdetailsmodel.h"
@@ -53,6 +54,7 @@ MainWindow::MainWindow()
 	ui.setupUi( this );
 	Settings::instance()->load();
 	model = new NutComponentModel( this );
+	m_findDialog = 0;
 
 	ui.componentTree->setModel( model );
 	ui.componentTree->setItemDelegate( new NutComponentDelegate( model ) );
@@ -82,6 +84,8 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
+	if (m_findDialog)
+		delete m_findDialog;
 	writeSettings();
 }
 
@@ -183,6 +187,33 @@ void MainWindow::on_actionExit_triggered()
 	}
 
 	QApplication::quit();
+}
+
+void MainWindow::on_actionFind_triggered()
+{
+	if (m_findDialog == 0) {
+		m_findDialog = new FindDialog(this);
+		connect(m_findDialog, SIGNAL(findNext(const QString &)), this, SLOT(on_findNext_triggered(const QString &)));
+	}
+	m_findDialog->show();
+	m_findDialog->raise();
+	m_findDialog->activateWindow();
+}
+
+void MainWindow::on_findNext_triggered(const QString &text)
+{
+	QModelIndex start = ui.componentTree->currentIndex();
+	if (start.isValid())
+		start = ui.componentTree->indexBelow(start);
+	else
+		start = model->index(0, 0);
+
+	QModelIndexList found = model->match(start, Qt::DisplayRole, QVariant::fromValue(text), 1, 
+		Qt::MatchFixedString | Qt::MatchContains | Qt::MatchRecursive | Qt::MatchWrap);
+	if (!found.isEmpty()) {
+		ui.componentTree->scrollTo(found.first());
+		ui.componentTree->setCurrentIndex(found.first());
+	}
 }
 
 void MainWindow::on_actionSettings_triggered()

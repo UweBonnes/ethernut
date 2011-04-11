@@ -15,6 +15,7 @@ DEFINES += NUTCONF_VERSION_STR=\\\"3.0.0\\\"
 SOURCES +=	\
 			builder.cpp \
 			dirtraverser.cpp \
+			finddialog.cpp \
 			main.cpp \
 			mainwindow.cpp \
 			nutcomponent.c \
@@ -29,6 +30,7 @@ SOURCES +=	\
 HEADERS +=	\
 			builder.h \
 			dirtraverser.h \
+			finddialog.h \
 			mainwindow.h \
 			nutcomponent.h \
 			nutcomponentdelegate.h \
@@ -41,7 +43,8 @@ HEADERS +=	\
 
 FORMS +=	\
 			mainwindow.ui \
-			settingsdialog.ui
+			settingsdialog.ui \
+			finddialog.ui
 
 include(lua/lua.pri)
 

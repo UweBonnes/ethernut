@@ -40,6 +40,7 @@
 #include "ui_mainwindow.h"
 
 class NutComponentModel;
+class FindDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -57,11 +58,14 @@ public slots:
 
 	void on_actionSave_as_triggered();
 	void on_actionExit_triggered();
+	void on_actionFind_triggered();
 	void on_actionSettings_triggered();
 	void on_actionBuild_Nut_OS_triggered();
 	void on_actionBuildStop_triggered();
 	void on_actionCreate_sample_triggered();
 	void on_actionAbout_triggered();
+
+	void on_findNext_triggered(const QString &text);
 
 private:
 	void readSettings();
@@ -79,6 +83,7 @@ private slots:
 
 private:
 	NutComponentModel* model;
+	FindDialog *m_findDialog;
 };
 
 #endif // __MAINWINDOW_H__

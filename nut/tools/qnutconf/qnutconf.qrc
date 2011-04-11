@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>images/search_large.png</file>
     <file>images/text.png</file>
     <file>images/text_dis.png</file>
     <file>images/enumerated.png</file>
