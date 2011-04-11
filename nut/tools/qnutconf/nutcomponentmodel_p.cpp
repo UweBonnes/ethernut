@@ -257,10 +257,7 @@ bool TreeItem::setValue( const QVariant& v )
 Qt::ItemFlags TreeItem::flags( int column ) const
 {
 	Q_UNUSED(column);
-	Qt::ItemFlags f;
-
-	if ( isEnabled() )
-		f |= Qt::ItemIsEnabled;
+	Qt::ItemFlags f(Qt::ItemIsEnabled);
 
 	if ( column == 0 )
 		f |= Qt::ItemIsSelectable;

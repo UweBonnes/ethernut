@@ -118,7 +118,11 @@ void NutComponentDelegate::paint( QPainter *painter, const QStyleOptionViewItem 
 	if ( item->optionUIHint() == TreeItem::nutHintRadio )
 		paintRadio = true;
 
-	QItemDelegate::paint( painter, option, index );
+	QStyleOptionViewItem opt(option);
+	if (!item->isEnabled()) {
+		opt.state &= ~QStyle::State_Enabled;
+	}		
+	QItemDelegate::paint( painter, opt, index );
 
 	paintRadio = false;
 }
