@@ -84,6 +84,9 @@ private slots:
 private:
 	NutComponentModel* model;
 	FindDialog *m_findDialog;
+	QString m_findText;
+	QModelIndexList m_foundItems;
+	int m_foundItemIndex;
 };
 
 #endif // __MAINWINDOW_H__

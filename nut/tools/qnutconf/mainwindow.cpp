@@ -202,17 +202,28 @@ void MainWindow::on_actionFind_triggered()
 
 void MainWindow::on_findNext_triggered(const QString &text)
 {
-	QModelIndex start = ui.componentTree->currentIndex();
-	if (start.isValid())
-		start = ui.componentTree->indexBelow(start);
-	else
-		start = model->index(0, 0);
-
-	QModelIndexList found = model->match(start, NutComponentModel::FullSearch, QVariant::fromValue(text), 1, 
-		Qt::MatchFixedString | Qt::MatchContains | Qt::MatchRecursive | Qt::MatchWrap);
-	if (!found.isEmpty()) {
-		ui.componentTree->scrollTo(found.first());
-		ui.componentTree->setCurrentIndex(found.first());
+	if (m_findText != text || m_foundItems.isEmpty()) {
+#ifndef QT_NO_CURSOR
+		QApplication::setOverrideCursor(Qt::WaitCursor);
+#endif
+		m_foundItems = model->match(model->index(0, 0), NutComponentModel::FullSearch, QVariant::fromValue(text), -1, 
+			Qt::MatchFixedString | Qt::MatchContains | Qt::MatchRecursive | Qt::MatchWrap);
+#ifndef QT_NO_CURSOR
+		QApplication::restoreOverrideCursor();
+#endif
+		m_findText = text;
+		m_foundItemIndex = 0;
+	} else {
+		if (++m_foundItemIndex >= m_foundItems.count()) {
+			m_foundItemIndex = 0;
+		}
+	}
+	if (m_foundItems.isEmpty()) {
+		QMessageBox::warning(this, tr("Search result"), tr("No items found"));
+	} else {
+		ui.componentTree->scrollTo(m_foundItems.at(m_foundItemIndex), QAbstractItemView::PositionAtCenter);
+		ui.componentTree->setCurrentIndex(m_foundItems.at(m_foundItemIndex));
+		activateWindow();
 	}
 }
 
