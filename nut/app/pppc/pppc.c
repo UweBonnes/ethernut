@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2011 by egnite GmbH
  * Copyright (C) 2003-2006 by egnite Software GmbH
  *
  * All rights reserved.
@@ -39,72 +40,35 @@
 /*!
  * \example pppc/pppc.c
  *
- * PPP client. Similar to the TCP server sample, but uses PPP over RS232.
+ * PPP client sample.
  *
- * The default settings in this sample may be used to connect to a RAS
- * server of a Windows PC. When adding a similar modem script, it will
- * also work with a Linux PC nearly out of the box. At least you need
- * to change the PPPUSER and PPPPASS.
+ * This example demonstrates Nut/OS Point-To-Point protocol. Most likely
+ * it will not run without modification. See the '#define' entries
+ * below.
  *
- * \bug This sample works with ICCAVR (6.28 tested) only with debugging
- *      enabled.
+ * The application will dial the provider via a modem, using the specified
+ * chat script. When connected, it will establish a PPP session. Then DNS
+ * is used to query the IP address of an NTP server, from which it queries
+ * the current time. Finally the PPP session is terminated and the whole
+ * procedure is repeated every hour.
  *
- * \bug Not working with ATmega103. Debug output needs to be removed.
+ * By default the application will use 2 serial ports. The first one is
+ * used for debugging output on stdout and the second UART will be 
+ * connected to a modem.
+ *
+ * Note, that PPP is not available for all target boards. If this is the
+ * case the program will use the local Ethernet network, where DHCP must
+ * be available.
  */
 
-#include <cfg/arch.h>
+#include <cfg/ahdlc.h>
 
-/*
- * PPP user and password.
- */
-#define PPPUSER     "me"
-#define PPPPASS     "secret"
-
-/*
- * The Nut/OS modem chat utility works similar to the the UNIX
- * chat script. This one is used to connect to a Windows PC
- * using a direct cable.
- */
-#define PPPCHAT     "TIMEOUT 2 '' CLIENT\\c CLIENTSERVER"
-
-/*
- * A very simple modem script.
- */
-//#define PPPCHAT     "'' AT OK ATD555 CONNECT"
-
-
-/*
- * PPP device settings.
- */
-#if defined(__AVR__)
-#define PPPDEV      devAhdlc0   /* Use HDLC driver. */
-//#define PPPDEV      devUart0    /* Use standard UART driver. */
-#else
-#warning "Works on ATmega128 only."
-#endif
-#define PPPCOM      "uart0"     /* Physical device name. */
-#define PPPSPEED    115200      /* Baudrate. */
-#define PPPRXTO     1000        /* Character receive timeout. */
-
-
-/*
- * Server input buffer size.
- */
-#define RXBUFFSIZE  256
-
-#include <cfg/os.h>
-#include <dev/debug.h>
-//#include <dev/hd44780.h>
+#include <dev/board.h>
 #include <dev/ahdlcavr.h>
-//#include <dev/uartavr.h>
 #include <dev/ppp.h>
 #include <dev/chat.h>
 
 #include <sys/version.h>
-#include <sys/heap.h>
-#include <sys/thread.h>
-#include <sys/socket.h>
-
 #include <sys/timer.h>
 
 #include <arpa/inet.h>
@@ -112,164 +76,272 @@
 #include <net/if_var.h>
 #include <net/route.h>
 
-#ifdef NUTDEBUG
-#include <net/netdebug.h>
-#endif
+#include <pro/dhcp.h>
+#include <pro/sntp.h>
+#include <pro/rfctime.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
+#include <time.h>
 
-#if defined(__IMAGECRAFT__)
-#define CC_STRING   "ICCAVR"
-#elif defined(__GNUC__)
-#define CC_STRING   "AVRGCC"
+/*
+ * Conversational script with a modem.
+ *
+ * The Nut/OS modem chat utility works similar to the the UNIX chat
+ * script. In general it consists of one or more expect-send pairs of
+ * strings or optional keyword-parameter pairs. Keywords are
+ *
+ * - TIMEOUT to set the max. time in seconds to wait for expected string
+ * - ABORT to specify up to 10 abort strings
+ * - REPORT to specify up to 3 reported abort strings
+ *
+ * Adjust this script to the requirements of your modem equipment
+ * and your GPRS provider.
+ *
+ * The following script had been tested with a Siemens GPRS modem
+ * (S55 mobile phone), using a t-mobile pre-paid account.
+ */
+#define PPP_CHAT    /* Wait up to 20 seconds for any response. */ \
+                    "TIMEOUT 20" \
+                    /* Expect nothing at the beginning. */ \
+                    " ''" \
+                    /* Send simple AT command to check the modem. */ \
+                    " AT OK" \
+                    /* Define PDP context, expecting 'OK'. */ \
+                    " AT+CGDCONT=1,\"IP\",\"internet.t-mobile\" OK" \
+                    /* Dial and wait for 'CONNECT'. */ \
+                    " ATD*99***1# CONNECT"
+
+/*
+ * PPP user and password.
+ *
+ * Often GPRS providers accept any login.
+ */
+#define PPP_USER    "me"
+#define PPP_PASS    "secret"
+
+/*
+ * PPP device settings.
+ */
+#if defined(NUT_THREAD_AHDLCRXSTACK)
+//#define PPP_DEV         devAhdlc1   /* AHDLC driver */
+#define PPP_DEV_NAME    "uart1"     /* Physical device name */
+#define PPP_SPEED       115200      /* Baudrate */
+#define PPP_RXTO        1000        /* Receive timeout (ms) */
 #else
-#define CC_STRING   "Compiler unknown"
+#warning "PPP is not supported on your target"
 #endif
 
 /*
- * Debug output device settings.
+ * Open serial debug port for standard output.
  */
-#ifdef __AVR_ENHANCED__
-#define DBGDEV      devDebug1   /* Use debug driver. */
-//#define DBGDEV      devUart1    /* Use standard UART driver. */
-#define DBGCOM      "uart1"     /* Device name. */
-#define DBGSPEED    115200      /* Baudrate. */
-#endif
-
-prog_char vbanner_P[] = "\n\nPPP Client Sample - Nut/OS %s - " CC_STRING "\n";
-prog_char banner_P[] = "200 Welcome to tcps. Type help to get help.\r\n";
-prog_char help_P[] = "400 List of commands follows\r\n"
-    "m[emory]\tQueries number of RAM bytes free.\r\n"
-    "t[hreads]\tLists all created threads.\r\n"
-    "ti[mers]\tLists all running timers.\r\n" "q[uit]\t\tTerminates connection.\r\n" ".\r\n";
-prog_char thread_intro_P[] = "220 List of threads with name,state,prio,stack,mem,timeout follows\r\n";
-prog_char timer_intro_P[] = "221 List of timers with ticks left and interval follows\r\n";
-prog_char mem_fmt_P[] = "210 %d bytes RAM free\r\n";
-
-
-/*
- * Process client requests.
- */
-void ProcessRequests(FILE * stream)
+static void DebugPortOpen(void)
 {
-    int got;
-    char *cp;
-    char *buff;
+    uint32_t baud = 115200;
 
-    /*
-     * We allocate the input buffer from heap memory.
-     */
-    buff = malloc(RXBUFFSIZE);
+    /* Register debug UART. */
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    /* Open debug device for standard output. */
+    freopen(DEV_DEBUG_NAME, "w", stdout);
+    /* Set baud rate. */
+    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+}
 
-    /*
-     * Send a welcome banner.
-     */
-    fputs_P(banner_P, stream);
-    for (;;) {
+/*
+ * Initialize the protocol port.
+ */
+static void ProtocolPortInit(void)
+{
+#ifdef PPP_DEV
+    /* Register PPP and UART device. */
+    NutRegisterDevice(&PPP_DEV, 0, 0);
+    NutRegisterDevice(&devPpp, 0, 0);
+#else
+    /* Use Ethernet. */
+    NutRegisterDevice(&DEV_ETHER, 0, 0);
+#endif
+}
 
-        /*
-         * Flush output and read a line.
-         */
-        fflush(stream);
-        if (fgets(buff, RXBUFFSIZE, stream) == 0)
-            break;
+/*
+ * Open the physical device.
+ */
+static int ProtocolPortOpen(void)
+{
+#ifdef PPP_DEV
+    int pppcom;
+    uint32_t lctl;
 
-        /*
-         * Chop off EOL.
-         */
-        if ((cp = strchr(buff, '\r')) != 0)
-            *cp = 0;
-        if ((cp = strchr(buff, '\n')) != 0)
-            *cp = 0;
-
-        /*
-         * Ignore blank lines.
-         */
-        got = strlen(buff);
-        if (got == 0)
-            continue;
-
-        /*
-         * Memory info.
-         */
-        if (strncmp(buff, "memory", got) == 0) {
-            fprintf_P(stream, mem_fmt_P, NutHeapAvailable());
-            continue;
-        }
-
-        /*
-         * List threads.
-         */
-        if (strncmp(buff, "threads", got) == 0) {
-            NUTTHREADINFO *tdp;
-            NUTTIMERINFO *tnp;
-
-            fputs_P(thread_intro_P, stream);
-            for (tdp = nutThreadList; tdp; tdp = tdp->td_next) {
-                fputs(tdp->td_name, stream);
-                switch (tdp->td_state) {
-                case TDS_TERM:
-                    fputs("\tTerm\t", stream);
-                    break;
-                case TDS_RUNNING:
-                    fputs("\tRun\t", stream);
-                    break;
-                case TDS_READY:
-                    fputs("\tReady\t", stream);
-                    break;
-                case TDS_SLEEP:
-                    fputs("\tSleep\t", stream);
-                    break;
-                }
-                fprintf(stream, "%u\t%lu", tdp->td_priority, (uint32_t) tdp->td_sp - (uint32_t) tdp->td_memory);
-                if (*((uint32_t *) tdp->td_memory) != DEADBEEF)
-                    fputs("\tCorrupted\t", stream);
-                else
-                    fputs("\tOK\t", stream);
-
-                if ((tnp = (NUTTIMERINFO *) tdp->td_timer) != 0)
-                    fprintf(stream, "%lu\r\n", tnp->tn_ticks_left);
-                else
-                    fputs("None\r\n", stream);
-            }
-            fputs(".\r\n", stream);
-            continue;
-        }
-
-        /*
-         * List timers.
-         */
-        if (strncmp("timers", buff, got) == 0) {
-            NUTTIMERINFO *tnp;
-
-            fputs_P(timer_intro_P, stream);
-            for (tnp = nutTimerList; tnp; tnp = tnp->tn_next) {
-                fprintf(stream, "%lu\t", tnp->tn_ticks_left);
-                if (tnp->tn_ticks)
-                    fprintf(stream, "%lu\r\n", tnp->tn_ticks);
-                else
-                    fputs("Oneshot\r\n", stream);
-            }
-            fputs(".\r\n", stream);
-            continue;
-        }
-
-        /*
-         * Quit connection.
-         */
-        if (strncmp("quit", buff, got) == 0) {
-            break;
-        }
-
-        /*
-         * Display help text on any unknown command.
-         */
-        fputs_P(help_P, stream);
+    /* Open PPP device. Specify physical device, user and password. */
+    printf("Open PPP interface at " PPP_DEV_NAME "...");
+    pppcom = _open("ppp:" PPP_DEV_NAME "/" PPP_USER "/" PPP_PASS, _O_RDWR | _O_BINARY);
+    if (pppcom == -1) {
+        puts("failed");
+        return -1;
     }
+
+    /*
+     * Set PPP line speed.
+     */
+    lctl = PPP_SPEED;
+    _ioctl(pppcom, UART_SETSPEED, &lctl);
+    printf("%lu baud", lctl);
+
+    /*
+     * The PPP driver doesn't set any receive timeout, but
+     * may require it.
+     */
+    lctl = PPP_RXTO;
+    _ioctl(pppcom, UART_SETREADTIMEOUT, &lctl);
+    printf(", %lu ms timeout\n", lctl);
+
+    return pppcom;
+#else
+    /* Nothing to be done for Ethernet. */
+    return 0;
+#endif
+}
+
+/*
+ * Establish a modem connection.
+ */
+static int ProtocolPortConnect(int pppcom)
+{
+#ifdef PPP_DEV
+    int rc;
+
+    /*
+     * Connect using a chat script. We may also set any
+     * required hardware handshake line at this stage.
+     */
+    printf("Connecting...");
+    for (;;) {
+        rc = NutChat(pppcom, PPP_CHAT);
+        switch (rc) {
+        case 0:
+            puts("done");
+            /* A short pause is required here to let the driver
+               initialize the receiver thread. */
+            NutSleep(100);
+            break;
+        case 1:
+            puts("bad script");
+            break;
+        case 2:
+            puts("I/O error");
+            break;
+        case 3:
+            puts("no response");
+            break;
+        default:
+            printf("aborted (%d)\n", rc);
+            break;
+        }
+        if (rc != 3) {
+            break;
+        }
+        NutSleep(1000);
+    }
+    return rc;
+#else
+    /* Nothing to be done for Ethernet. */
+    return 0;
+#endif
+}
+
+/*
+ * Hang up.
+ */
+static void ProtocolPortClose(int pppcom)
+{
+#ifdef PPP_DEV
+    /* Set the UART back to normal mode. */
+    _ioctl(pppcom, HDLC_SETIFNET, NULL);
+    /* Close the physical port. This may or may not hang up. Please
+       check the modem's documentation. */
+    _close(pppcom);
+#endif
+}
+
+static int ProtocolPortConfigure(void)
+{
+    printf("Configure network interface...");
+#ifdef PPP_DEV
+    PPPDCB *dcb;
+
+    /*
+     * We are connected, configure our PPP network interface.
+     * This will initiate the PPP configuration negotiation
+     * and authentication with the server.
+     */
+    if (NutNetIfConfig("ppp", 0, 0, 0)) {
+        puts("failed");
+        return -1;
+    }
+    puts("done");
+
+    /*
+     * Set name server and default route. Actually the PPP interface
+     * should do this, but the current release doesn't.
+     */
+    dcb = devPpp.dev_dcb;
+    NutDnsConfig2(0, 0, dcb->dcb_ip_dns1, dcb->dcb_ip_dns2);
+    NutIpRouteAdd(0, 0, dcb->dcb_remote_ip, &devPpp);
+
+    /*
+     * Display our IP settings.
+     */
+    printf("     Local IP: %s\n", inet_ntoa(dcb->dcb_local_ip));
+    printf("    Remote IP: %s\n", inet_ntoa(dcb->dcb_remote_ip));
+    printf("  Primary DNS: %s\n", inet_ntoa(dcb->dcb_ip_dns1));
+    printf("Secondary DNS: %s\n", inet_ntoa(dcb->dcb_ip_dns2));
+#else
+    /* We use DHCP on Ethernet. */
+    if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
+        puts("failed");
+        return -1;
+    }
+    puts("done");
+#endif
+
+    return 0;
+}
+
+/*
+ * Connect any NTP-Pool server to query the current time.
+ */
+static void QueryDateAndTime(void)
+{
+    uint32_t ip;
+    time_t now;
+    int i;
+
+    /* First connect the DNS server to get the IP address. */
+    printf("Is There Anybody Out There? ");
+    ip = NutDnsGetHostByName((uint8_t *) "pool.ntp.org");
+    if (ip == 0) {
+        puts("No?");
+    } else {
+        /* We do have an IP, now try to connect it. */
+        printf("Yes, found %s\n", inet_ntoa(ip));
+        for (i = 0; i < 3; i++) {
+            printf("What's the time? ");
+            if (NutSNTPGetTime(&ip, &now) == 0) {
+                /* We got a valid response, display the result. */
+                printf("%s GMT\n", Rfc1123TimeString(gmtime(&now)));
+                return;
+            } else {
+                /* It failed. May be the server is too busy. Try
+                   again in 5 seconds. */
+                puts("Sorry?");
+                NutSleep(5000);
+            }
+        }
+    }
+    /* We give up after 3 trials. */
+    puts("You missed the starting gun.");
 }
 
 /*
@@ -278,178 +350,38 @@ void ProcessRequests(FILE * stream)
 int main(void)
 {
     int pppcom;
-#ifdef __AVR_ENHANCED__
-    uint32_t lctl;
-#endif    
-#ifdef PPPDEV
-    PPPDCB *dcb;
-    int rc;
-#endif
-    /*
-     * Register our devices.
-     */
-#ifdef __AVR_ENHANCED__
-    NutRegisterDevice(&DBGDEV, 0, 0);
-#endif
-#ifdef PPPDEV
-    NutRegisterDevice(&PPPDEV, 0, 0);
-    NutRegisterDevice(&devPpp, 0, 0);
-#endif
 
-    /*
-     * Open debug device for standard output.
-     */
-    if(freopen("uart1", "w", stdout) == 0) {
-        for(;;);
-    }
+    /* Initialize a debug port for standard output and display a banner. */
+    DebugPortOpen();
+    printf("\n\nPPP Client Sample - Nut/OS %s\n", NutVersionString());
 
-    /*
-     * Set debug output speed.
-     */
-#ifdef __AVR_ENHANCED__
-    lctl = DBGSPEED;
-    _ioctl(_fileno(stdout), UART_SETSPEED, &lctl);
-#endif
-
-    /*
-     * Display banner including compiler info and Nut/OS version.
-     */
-    printf_P(vbanner_P, NutVersionString());
-
-    /*
-     * Open PPP device. Specify physical device, user and password.
-     */
-    printf("Open uart...");
-    if ((pppcom = _open("ppp:" PPPCOM "/" PPPUSER "/" PPPPASS, _O_RDWR | _O_BINARY)) == -1) {
-        printf("Failed to open " PPPCOM "\n");
-        for (;;);
-    }
-    puts("done");
-
-#ifdef PPPDEV
-    /*
-     * Set PPP line speed.
-     */
-    lctl = PPPSPEED;
-    _ioctl(pppcom, UART_SETSPEED, &lctl);
-
-    /*
-     * The PPP driver doesn't set any receive timeout, but
-     * may require it.
-     */
-    lctl = PPPRXTO;
-    _ioctl(pppcom, UART_SETREADTIMEOUT, &lctl);
-
-#ifdef NUTDEBUG
-    /*
-     * Optionally enable PPP trace.
-     */
-    NutTracePPP(stdout, 1);
-#endif
-
-    /*
-     * This delay may be removed. It is quite helpful during development.
-     */
-    NutSleep(5000);
-
-    /*
-     * PPP connection loop.
-     */
+    /* Initialize the network interface. */
+    ProtocolPortInit();
+    /* This loop runs once per hour. */
     for (;;) {
-        /*
-         * Connect using a chat script. We may also set any
-         * required hardware handshake line at this stage.
-         */
-        printf("Connecting...");
-        if ((rc = NutChat(pppcom, PPPCHAT)) != 0) {
-            printf("no connect, reason = %d\n", rc);
-            continue;
+        /* Open the network interface. */
+        pppcom = ProtocolPortOpen();
+        if (pppcom == -1) {
+            /* If this fails, we are busted. */
+            break;
         }
-        puts("done");
-
-        /*
-         * We are connected, configure our PPP network interface.
-         * This will initiate the PPP configuration negotiation
-         * and authentication with the server.
-         */
-        printf("Configure PPP...");
-        rc = NutNetIfConfig("ppp", 0, 0, 0);
-        if (rc != 0) {
-            puts("failed");
-            /*
-             * Optionally toggle DTR to hang up the modem.
-             */
-            continue;
-        }
-        puts("done");
-
-        /*
-         * Set name server and default route. Actually the PPP interface
-         * should do this, but the current release doesn't.
-         */
-        dcb = devPpp.dev_dcb;
-        NutDnsConfig2(0, 0, dcb->dcb_ip_dns1, dcb->dcb_ip_dns2);
-        NutIpRouteAdd(0, 0, dcb->dcb_remote_ip, &devPpp);
-
-        /*
-         * Display our IP settings.
-         */
-        printf("     Local IP: %s\n", inet_ntoa(dcb->dcb_local_ip));
-        printf("    Remote IP: %s\n", inet_ntoa(dcb->dcb_remote_ip));
-        printf("  Primary DNS: %s\n", inet_ntoa(dcb->dcb_ip_dns1));
-        printf("Secondary DNS: %s\n", inet_ntoa(dcb->dcb_ip_dns2));
-
-        /*
-         * Client connection loop.
-         */
-        for (;;) {
-            TCPSOCKET *sock;
-            FILE *stream;
-
-            /*
-             * Create a socket.
-             */
-            if ((sock = NutTcpCreateSocket()) != 0) {
-
-                /*
-                 * Listen on port 23. If we return, we got a client.
-                 */
-                printf("Waiting for a client...");
-                if (NutTcpAccept(sock, 23) == 0) {
-                    puts("connected");
-
-                    /*
-                     * Open a stream and associate it with the socket, so
-                     * we can use standard I/O. Note, that socket streams
-                     * currently do support text mode.
-                     */
-                    if ((stream = _fdopen((int) sock, "r+b")) != 0) {
-                        /*
-                         * Process client requests.
-                         */
-                        ProcessRequests(stream);
-                        puts("\nDisconnected");
-
-                        /*
-                         * Close the stream.
-                         */
-                        fclose(stream);
-                    } else {
-                        puts("Assigning a stream failed");
-                    }
-                } else {
-                    puts("failed");
-                }
-
-                /*
-                 * Close our socket.
-                 */
-                NutTcpCloseSocket(sock);
+        /* Establish the modem connection. */
+        if (ProtocolPortConnect(pppcom) == 0) {
+            /* Configure the network interface. */
+            if (ProtocolPortConfigure() == 0) {
+                /* Talk to the Internet. */
+                QueryDateAndTime();
             }
-            NutSleep(1000);
-            printf("%u bytes free\n", NutHeapAvailable());
         }
+        /* Hang up. */
+        ProtocolPortClose(pppcom);
+
+        /* Sleep 1 hour. */
+        puts("I'll be back in 1 hour.");
+        NutSleep(3600000);
     }
-#endif /* PPPDEV */
+    /* Ouch... */
+    puts("Good bye cruel world");
+
     return 0;
 }
