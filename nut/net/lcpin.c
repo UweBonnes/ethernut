@@ -86,6 +86,8 @@
 #include <netinet/ppp_fsm.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <dev/usart.h>
+#include <io.h>
 
 /*!
  * \addtogroup xgLCP
@@ -98,7 +100,7 @@ extern uint32_t new_magic;
 /*
  * Received Configure-Request.
  */
-static void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static inline void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     int rc = XCP_CONFACK;
@@ -264,6 +266,7 @@ static void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     if (rc == XCP_CONFACK) {
         if (dcb->dcb_lcp_state == PPPS_ACKRCVD) {
             dcb->dcb_lcp_state = PPPS_OPENED;
+            _ioctl(dcb->dcb_fd, HDLC_SETTXACCM, &(dcb->dcb_accm) );
             if (dcb->dcb_auth == PPP_PAP)
                 PapTxAuthReq(dev, ++dcb->dcb_reqid);
             else
@@ -279,7 +282,7 @@ static void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
  * Configure-Ack received.
  * Never called in INITIAL or STARTING phase.
  */
-static void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static inline void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -360,6 +363,7 @@ static void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
          * ACK sent and ACK received.
          */
         dcb->dcb_lcp_state = PPPS_OPENED;
+        _ioctl(dcb->dcb_fd, HDLC_SETTXACCM, &(dcb->dcb_accm) );
 
         if (dcb->dcb_auth == PPP_PAP)
             PapTxAuthReq(dev, ++dcb->dcb_reqid);
@@ -381,7 +385,7 @@ static void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Configure-Nak or Configure-Reject received.
  */
-static void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t rejected)
+static inline void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -445,7 +449,7 @@ static void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t re
 /*
  * Terminate-Request received.
  */
-static void LcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static inline void LcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -468,7 +472,7 @@ static void LcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Terminate-Ack received.
  */
-static void LcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static inline void LcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -527,7 +531,7 @@ void LcpRxProtRej(NUTDEVICE * dev)
 /*
  * Received a Code-Reject.
  */
-static void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static inline void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -540,7 +544,7 @@ static void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Received an Echo-Request.
  */
-static void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static inline void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 

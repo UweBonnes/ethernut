@@ -369,6 +369,21 @@
  */
 #define UART_GETRAWMODE         0x012b
 
+/*! \brief AHDLC _ioctl() command code to set the ACCM (Control Character Mask).
+ *
+ * During the LCP stage of PPP negotiation both peers inform each other which
+ * of the control characters (0-31) will not require escaping when being
+ * transmitted.  This allows the PPP layer to tell the HDLC layer about this
+ * so that data may be transmitted quicker (no escapes).
+ */
+#define HDLC_SETTXACCM          0x012c
+
+/*! \brief AHDLC _ioctl() command code to get the ACCM (Control Character Mask).
+ *
+ * Just in case someone ever wants to see what it currently is.
+ */
+#define HDLC_GETTXACCM          0x012d
+
 /*! \brief UART _ioctl() command code to set physical device to half duplex mode.
  *
  * The configuration parameter specifies the halfduplex mode for device. In raw mode

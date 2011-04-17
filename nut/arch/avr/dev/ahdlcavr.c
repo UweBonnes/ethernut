@@ -283,7 +283,33 @@ static prog_char fcstab[512] = {
 /*!
  * Checks the 32-bit ACCM to see if the byte needs un-escaping
  */
-#define IN_ACC_MAP(c, m) (( ((uint8_t) (c)) < 0x20)  && ((m) & (1UL << (c))) != 0)
+#define IN_ACC_MAP(c, m) in_acc_map(c, &(m))
+/* Trust me, this is a whole lot smaller when compiled than it looks in C.
+ * It is written explicitly so that gcc can make good AVR asm out of it. */
+static inline uint8_t in_acc_map(u_char ch, void * esc_mask) __attribute__((always_inline));  /* gcc specific attribute */
+static inline uint8_t in_acc_map(u_char ch, void * esc_mask)
+{
+    const uint8_t shift_mask = 0x07;
+    const uint8_t index_mask = 0x18;
+    const uint8_t over_mask = ~(shift_mask|index_mask);
+
+    uint8_t shift, index, emask;
+    uint8_t * emskp = esc_mask;
+
+    if (over_mask & ch) {
+        return 0;
+    }
+
+    shift = shift_mask & ch;
+
+    index = ch >> (uint8_t)3;
+	
+    /* NOTE:  This assumes that the esc bit field is little endian,
+     * which it should have been switched to before being set. */
+
+    emask = emskp[index];
+    return emask & ( ((uint8_t)1) << shift );
+}
 
 #ifndef NUT_THREAD_AHDLCRXSTACK
 #define NUT_THREAD_AHDLCRXSTACK     512
@@ -899,6 +925,8 @@ static void AhdlcAvrDisable(uint16_t base)
  *             - UART_GETRAWMODE, conf points to an uint32_t value receiving 0 (off) or 1 (on).
  *             - HDLC_SETIFNET, conf points to a pointer containing the address of the network device's NUTDEVICE structure.
  *             - HDLC_GETIFNET, conf points to a pointer receiving the address of the network device's NUTDEVICE structure.
+ *             - HDLC_SETTXACCM, conf points to an uint32_t value containing the ACC Map in host endian.
+ *             - HDLC_GETTXACCM, conf points to an uint32_t value receiving the ACC Map in host endian.
  *
  * \param conf Points to a buffer that contains any data required for
  *             the given control function or receives data from that
@@ -1135,6 +1163,16 @@ int AhdlcAvrIOCtl(NUTDEVICE * dev, int req, void *conf)
         break;
     case HDLC_GETIFNET:
         *ppv = dev->dev_icb;
+        break;
+
+    /* AVR host endian is little endian, and the ACCM should have been switched
+     * to host endian when the value was read in. */
+    case HDLC_SETTXACCM:
+        dcb->dcb_tx_accm = (*lvp);
+        break;
+
+    case HDLC_GETTXACCM:
+        (*lvp) = dcb->dcb_tx_accm;
         break;
 
     default:

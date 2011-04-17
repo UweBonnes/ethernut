@@ -89,6 +89,8 @@
 #include <netinet/if_ppp.h>
 #include <netinet/ppp_fsm.h>
 #include <net/ppp.h>
+#include <dev/usart.h>
+#include <io.h>
 
 /*!
  * \addtogroup xgLCP
@@ -131,7 +133,7 @@ int NutLcpOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb)
     return 0;
 }
 
-void LcpResetOptions(NUTDEVICE * dev)
+static inline void LcpResetOptions(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -140,8 +142,10 @@ void LcpResetOptions(NUTDEVICE * dev)
     dcb->dcb_neg_magic = new_magic;
     dcb->dcb_loc_magic = 0;
     dcb->dcb_rem_magic = 0;
-    dcb->dcb_accm = LCP_DEFOPT_ASYNCMAP;
+    dcb->dcb_accm = 0xFFffFFff;
     dcb->dcb_loc_mru = 1500;
+
+    _ioctl(dcb->dcb_fd, HDLC_SETTXACCM, &dcb->dcb_accm );
 }
 
 /*
@@ -170,7 +174,7 @@ void LcpTxConfReq(NUTDEVICE * dev, uint8_t id, uint8_t rejected)
         xcpo = nb->nb_ap.vp;
         xcpo->xcpo_type = LCP_ASYNCMAP;
         xcpo->xcpo_len = 6;
-        xcpo->xcpo_.ul = htonl(LCP_DEFOPT_ASYNCMAP);
+        xcpo->xcpo_.ul = htonl(LCP_DEFOPT_ASYNCMAP); /* Should this be "= 0;" instead? */
 
         /*
          * This is a temporary hack. In the initial version
