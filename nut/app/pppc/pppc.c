@@ -127,7 +127,7 @@
  * PPP device settings.
  */
 #if defined(NUT_THREAD_AHDLCRXSTACK)
-//#define PPP_DEV         devAhdlc1   /* AHDLC driver */
+#define PPP_DEV         devAhdlc1   /* AHDLC driver */
 #define PPP_DEV_NAME    "uart1"     /* Physical device name */
 #define PPP_SPEED       115200      /* Baudrate */
 #define PPP_RXTO        1000        /* Receive timeout (ms) */
