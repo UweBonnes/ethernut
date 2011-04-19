@@ -82,18 +82,31 @@
 #
 
 all:
-	-$(MAKE) -C basemon
+ifeq ($(ARCH), arm)
+# Broken: Seems to depend on AT91
+#	$(MAKE) -C 7segtst
+endif
+ifeq ($(ARCH), avr)
+	$(MAKE) -C basemon
+endif
 	$(MAKE) -C caltime
 	$(MAKE) -C canbus
+# Broken: C++ no longer available?	
 #	$(MAKE) -C cppdemo
+# Broken: Probably since r2650
+#	$(MAKE) -C eeprom
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
+# Broken: Fails on ATmega103, no PORTF	
+#	$(MAKE) -C hhopen
 	$(MAKE) -C httpd
 	$(MAKE) -C icmp-udp
 	$(MAKE) -C inetq
+# Broken: LED_ONESHOT not declared
+#	$(MAKE) -C ioexpander
 	$(MAKE) -C led_key
 	$(MAKE) -C logtime
-	-$(MAKE) -C lua
+	$(MAKE) -C lua
 	$(MAKE) -C nutpiper
 	$(MAKE) -C playmp3
 	$(MAKE) -C portdio
@@ -107,18 +120,22 @@ all:
 	$(MAKE) -C uart
 
 install:
-	-$(MAKE) -C basemon install
+#	$(MAKE) -C 7segtst install
+	$(MAKE) -C basemon install
 	$(MAKE) -C caltime install
 	$(MAKE) -C canbus install
 #	$(MAKE) -C cppdemo install
+#	$(MAKE) -C eeprom install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
+#	$(MAKE) -C hhopen install
 	$(MAKE) -C httpd install
 	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
+#	$(MAKE) -C ioexpander install
 	$(MAKE) -C led_key install
 	$(MAKE) -C logtime install
-	-$(MAKE) -C lua install
+	$(MAKE) -C lua install
 	$(MAKE) -C nutpiper install
 	$(MAKE) -C playmp3 install
 	$(MAKE) -C portdio install
@@ -132,15 +149,19 @@ install:
 	$(MAKE) -C uart install
 
 clean:
+	$(MAKE) -C 7segtst clean
 	$(MAKE) -C basemon clean
 	$(MAKE) -C caltime clean
 	$(MAKE) -C canbus clean
 	$(MAKE) -C cppdemo clean
+	$(MAKE) -C eeprom clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
+	$(MAKE) -C hhopen clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean
+	$(MAKE) -C ioexpander clean
 	$(MAKE) -C led_key clean
 	$(MAKE) -C logtime clean
 	$(MAKE) -C lua clean
@@ -150,16 +171,15 @@ clean:
 	$(MAKE) -C pppc clean
 	$(MAKE) -C rs232d clean
 	$(MAKE) -C simple clean
+	$(MAKE) -C snmpd clean
 	$(MAKE) -C tcps clean
 	$(MAKE) -C threads clean
 	$(MAKE) -C timers clean
 	$(MAKE) -C uart clean
 
 at90can:
-#	-$(MAKE) -C basemon
 	$(MAKE) -C caltime
 	$(MAKE) -C canbus
-#	-$(MAKE) -C cppdemo
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
@@ -171,7 +191,7 @@ at90can:
 	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
 	$(MAKE) -C simple
-	$(MAKE) -C snmpd	
+	$(MAKE) -C snmpd
 	$(MAKE) -C tcps
 	$(MAKE) -C threads
 	$(MAKE) -C timers
