@@ -95,9 +95,9 @@
 #include <cfg/arch.h>
 #include <sys/types.h>
 
+#include <memdebug.h>
 #include <string.h>
 #include <stdlib.h>
-#include <memdebug.h>
 
 #include <io.h>
 #include <ctype.h>
