@@ -104,7 +104,8 @@ endif
 	$(MAKE) -C inetq
 # Broken: LED_ONESHOT not declared
 #	$(MAKE) -C ioexpander
-	$(MAKE) -C led_key
+# Broken: Probably since r2897
+#	$(MAKE) -C led_key
 	$(MAKE) -C logtime
 	$(MAKE) -C lua
 	$(MAKE) -C nutpiper
@@ -133,7 +134,7 @@ install:
 	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
 #	$(MAKE) -C ioexpander install
-	$(MAKE) -C led_key install
+#	$(MAKE) -C led_key install
 	$(MAKE) -C logtime install
 	$(MAKE) -C lua install
 	$(MAKE) -C nutpiper install
