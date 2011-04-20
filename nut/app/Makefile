@@ -102,10 +102,8 @@ endif
 	$(MAKE) -C httpd
 	$(MAKE) -C icmp-udp
 	$(MAKE) -C inetq
-# Broken: LED_ONESHOT not declared
-#	$(MAKE) -C ioexpander
-# Broken: Probably since r2897
-#	$(MAKE) -C led_key
+	$(MAKE) -C ioexpander
+	$(MAKE) -C led_key
 	$(MAKE) -C logtime
 	$(MAKE) -C lua
 	$(MAKE) -C nutpiper
@@ -133,8 +131,8 @@ install:
 	$(MAKE) -C httpd install
 	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
-#	$(MAKE) -C ioexpander install
-#	$(MAKE) -C led_key install
+	$(MAKE) -C ioexpander install
+	$(MAKE) -C led_key install
 	$(MAKE) -C logtime install
 	$(MAKE) -C lua install
 	$(MAKE) -C nutpiper install
@@ -158,7 +156,7 @@ clean:
 	$(MAKE) -C eeprom clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
-	$(MAKE) -C hhopen clean
+#	$(MAKE) -C hhopen clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean

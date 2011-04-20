@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2009 by Rittal GmbH & Co. KG,
- * Ulrich Prinz <prinz.u@rittal.de>
+ * Copyright (C) 2010 by Ulrich Prinz (uprinz2@netscape.net)
+ * Copyright (C) 2010 by Rittal GmbH & Co. KG GmbH. All rights reserved.
  *
  * All rights reserved.
  *
@@ -34,13 +34,17 @@
  */
 
 /*
- * $Id$
+ * \verbatim
+ * $Id: eeprom_test.c 3108 2010-09-15 21:11:15Z Astralix $
+ * \endverbatim
  */
-                              
+
 /*!
  * \example eeprom/eeprom.c
  *
- * Test application for new AT24C EEPROM driver (currently SAM7X256 is tested only).
+ * Test application for new AT24C EEPROM driver.
+ * (currently SAM7X256 and STM32F is tested only).
+ *
  */
 
 /* Test */
@@ -63,14 +67,14 @@
 #define	LED_OFF		0
 #define	LED_ON		1
 
-#define	LED(led,state)	if( state == LED_OFF )IOExpSetBit( 1, led );else IOExpClrBit( 1, led )
+#define	LED(led,state)	if( state == LED_OFF )IOExpSetBitHigh( 1, led );else IOExpSetBitLow( 1, led )
 #define	LED1(state)	LED( 0, state )
 #define	LED2(state)	LED( 1, state )
 #define	LED3(state)	LED( 2, state )
 #define	LED4(state)	LED( 3, state )
 #define	LED5(state)	LED( 4, state )
 
-#define	DLED(led,state)	if( state == LED_OFF )IOExpSetBit( 0, led + 4 );else IOExpClrBit( 0, led + 4 )
+#define	DLED(led,state)	if( state == LED_OFF )IOExpSetBitHigh( 0, led + 4 );else IOExpSetBitLow( 0, led + 4 )
 #define	DLED1(state)	DLED( 0, state )
 #define	DLED2(state)	DLED( 1, state )
 #define	DLED3(state)	DLED( 2, state )
@@ -143,7 +147,8 @@ void HexDump( uint8_t *rxb, uint16_t len )
 }
 
 const uint8_t teststr[64] = { "This is an ultimatly long string that reaches 61 bytes length\0"};
-
+const char failstr[] = "\033[1;37;41m\033[K*** FAIL rc=%d ***\033[0m\n";
+const char infostr[] = "\n\033[30;46m\033[K%s\033[0m\n";
 /*
  * Main application thread.
  */
@@ -153,6 +158,7 @@ int main(void)
 	uint8_t txBuffer[128];
 	uint8_t rxBuffer[128];
     uint32_t baud = 115200;
+    int rc = 0;
 
 	/*
      * Register the UART device, open it, assign stdout to it and set
@@ -162,12 +168,15 @@ int main(void)
     freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
-	printf( "\n*** EEPROM Test ***\n");
+    /* Clear terminal screen and cursor home */
+    printf( "\033[2J\033[H");
+	printf( "\033[1;37;44m\033[K*** EEPROM Test ***\033[0m\n");
 
 	baud = 100000;
 	TwInit( 0 ); /* par = slave address but we are master */
 	TwIOCtl( TWI_SETSPEED, &baud);
 //	IOExpInit();
+
 	EEInit();
 
     /*
@@ -185,42 +194,101 @@ int main(void)
 	memset( rxBuffer, 0x00, sizeof( rxBuffer));
 	memset( txBuffer, 0xff, sizeof( txBuffer));
 
-	printf( "Read\n" );
-	EEReadData( 2, rxBuffer, 64);
+	printf( infostr, "*** Read ***" );
+	rc = EEReadData( 0x0100, rxBuffer, 64);
 	HexDump( rxBuffer, 64 );
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
 
 	if( !strncmp( rxBuffer, teststr, strlen( teststr)))
 		printf( "Test successfull, data is equal!\n");
 	else
 		printf( "Test failed, data not equal!\n");
 
-	printf( "\nInit: Fill 0xFF\n" );
-	EEWriteData( 0, txBuffer, 64);
-	EEReadData( 0, rxBuffer, 64);
-	HexDump( rxBuffer, 64 );
+	printf( infostr,"Init: Fill 0xFF" );
+	rc = EEWriteData( 0x0100, txBuffer, 64);
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
 
+	rc = EEReadData( 0x0100, rxBuffer, 64);
+	HexDump( rxBuffer, 64 );
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
+
+    /*****************/
+
+	printf( infostr, "Step 1" );
 	strcpy( txBuffer, "First, " );
-	EEWriteData( 24, txBuffer, strlen( txBuffer ));
-	EEReadData( 0, rxBuffer, 64);
-	printf( "1 Step\n" );
-	HexDump( rxBuffer, 64 );
+	rc = EEWriteData( 0x0100+24, txBuffer, strlen( txBuffer ));
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
 
-	strcpy( txBuffer, "Third." );
-	EEWriteData( 24+16, txBuffer, strlen( txBuffer ));
-	EEReadData( 0, rxBuffer, 64);
-	printf( "2 Step\n" );
+	rc = EEReadData( 0x0100, rxBuffer, 64);
 	HexDump( rxBuffer, 64 );
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
 
+    /*****************/
+
+	printf( infostr, "Step 2" );
+	strcpy( txBuffer, "Third!" );
+	rc = EEWriteData( 0x0100+24+16, txBuffer, strlen( txBuffer ));
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
+
+	rc = EEReadData( 0x0100, rxBuffer, 64);
+	HexDump( rxBuffer, 64 );
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
+
+    /*****************/
+
+	printf( infostr, "Step 3" );
 	strcpy( txBuffer, "Second, " );
-	EEWriteData( 24+8, txBuffer, strlen( txBuffer ));
-	EEReadData( 0, rxBuffer, 64);
-	printf( "3 Step\n" );
-	HexDump( rxBuffer, 64 );
+	rc = EEWriteData( 0x0100+24+8, txBuffer, strlen( txBuffer ));
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
 
-	EEWriteData( 2, (void*)teststr, strlen( teststr));
-	EEReadData( 2, rxBuffer, 64);
-	printf( "4 Step\n" );
+	rc = EEReadData( 0x0100, rxBuffer, 64);
 	HexDump( rxBuffer, 64 );
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
+
+    /*****************/
+
+	printf( infostr, "Step 4" );
+	rc = EEWriteData( 0x0100, (void*)teststr, strlen( teststr));
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
+
+	rc = EEReadData( 0x0100, rxBuffer, 64);
+	HexDump( rxBuffer, 64 );
+    if( rc) {
+        printf(failstr, rc);
+        while(1) NutSleep(1000);
+    }
+
+	printf( "\n\033[30;34m\033[K*** END ***\033[0m\n" );
 
     /*
      * Endless loop in main thread.

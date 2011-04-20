@@ -44,6 +44,7 @@
 #include <sys/heap.h>
 #include <sys/timer.h>
 #include <sys/confnet.h>
+#include <sys/thread.h>
 
 #include <gorp/edline.h>
 

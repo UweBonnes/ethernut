@@ -233,12 +233,12 @@ int main(void)
         printf("--> Sended packet: \"%s\", to %s, rc: %d\r\n", send_buffer, inet_ntoa(ip_udp_echo), rc);
         if (rc < 0) {
 #ifdef NUT_UDP_ICMP_SUPPORT
-            int      error;            
+            int      error;
             uint32_t remote_ip;
             uint16_t remote_port;             
             error = NutUdpError(socket, &remote_ip, &remote_port);
             print_udp_icmp_error(remote_ip, remote_port, error);
-#endif            
+#endif
         }
         
         NutSleep(1000);

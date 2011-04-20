@@ -50,6 +50,8 @@ include $(top_srcdir)/Makerules.unix-gcc
 	$(BIN) -O ihex $< $@
 
 install: $(TARG) $(ITARG)
+	@echo "  [INSTALL] $(TARG)"
 	$(CP) $(TARG) $(BINDIR)/$(TARG)
+	@echo "  [INSTALL] $(ITARG)"
 	$(CP) $(ITARG) $(BINDIR)/$(ITARG)
 

@@ -79,9 +79,9 @@ THREAD(Thread1, arg)
     
     NutThreadSetPriority(128);
     for (;;) {
-        NutSetLed( ds1, 0, (ledmask>>0) & 1);
-        NutSetLed( ds2, 0, (ledmask>>1) & 1);
-        NutSetLed( ds3, 0, (ledmask>>2) & 1);
+        NutSetLed( ds1, (ledmask>>0) & 1, 0, 0);
+        NutSetLed( ds2, (ledmask>>1) & 1, 0, 0);
+        NutSetLed( ds3, (ledmask>>2) & 1, 0, 0);
 
         ledmask <<= 1;
         if( ledmask & (1<<3)) ledmask = 1;
@@ -114,7 +114,7 @@ THREAD(Thread2, arg)
         if( key != oldkey) {
             if( key > oldkey) {
                 /* flash led if key is pressed */
-                NutSetLed( led3, 5, LED_ONESHOT);
+                NutSetLed( led3, LED_ON, 200, 0);
             }
             
             oldkey = key;
@@ -170,7 +170,7 @@ int main(void)
 
     if( NutRegisterLed( &led4, IOXP_PORT1, 4) == 0)
         printf( "register LED B OK\n");
-    NutSetLed( led4, 100, LED_BLINK);
+    NutSetLed( led4, LED_BLINK, 100, 100);
 
     /*
      * Start two additional threads. All threads are started with

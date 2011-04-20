@@ -65,7 +65,8 @@
 
 /* This sample application only supports the following boards */
 #if defined(AT91SAM7X_EK) || defined(ENET_SAM7X) || \
-    defined(EVK1100) || defined(EVK1101) || defined(EVK1105)
+    defined(EVK1100) || defined(EVK1101) || defined(EVK1105) \\
+    defined(STM3210C_EVAL) || defined(STM3210E_EVAL)
 
 
 #if defined(AT91SAM7X_EK) || defined(ENET_SAM7X)
@@ -150,6 +151,51 @@
 #define KEY_RT_PIN   24
 #define KEY_UP_PORT  NUTGPIO_PORTB
 #define KEY_UP_PIN   22
+
+#elif defined(STM3210C_EVAL)
+#define LED1_PORT    NUTGPIO_PORTD
+#define LED1_PIN     7
+#define LED2_PORT    NUTGPIO_PORTD
+#define LED2_PIN     13
+#define LED3_PORT    NUTGPIO_PORTD
+#define LED3_PIN     3
+#define LED4_PORT    NUTGPIO_PORTD
+#define LED4_PIN     4
+
+/* For STM3210C-EVAL Kit the 5-way controller is connected to 
+ * a I2C expander. So we use the few single buttons instead.
+ */
+#define KEY_MI_PORT  NUTGPIO_PORTB	/* User Button */
+#define KEY_MI_PIN   9
+#define KEY_DN_PORT  NUTGPIO_PORTC	/* Tamper Button */
+#define KEY_DN_PIN   13
+#define KEY_LT_PORT  NUTGPIO_PORTA	/* Wakeup Button */
+#define KEY_LT_PIN   0
+//#define KEY_RT_PORT  NUTGPIO_PORTB
+//#define KEY_RT_PIN   24
+//#define KEY_UP_PORT  NUTGPIO_PORTB
+//#define KEY_UP_PIN   22
+
+#elif defined(STM3210E_EVAL)
+#define LED1_PORT    NUTGPIO_PORTF
+#define LED1_PIN     6
+#define LED2_PORT    NUTGPIO_PORTF
+#define LED2_PIN     7
+#define LED3_PORT    NUTGPIO_PORTF
+#define LED3_PIN     8
+#define LED4_PORT    NUTGPIO_PORTF
+#define LED4_PIN     9
+
+#define KEY_MI_PORT  NUTGPIO_PORTG
+#define KEY_MI_PIN   7
+#define KEY_DN_PORT  NUTGPIO_PORTD
+#define KEY_DN_PIN   3
+#define KEY_LT_PORT  NUTGPIO_PORTG
+#define KEY_LT_PIN   14
+#define KEY_RT_PORT  NUTGPIO_PORTG
+#define KEY_RT_PIN   13
+#define KEY_UP_PORT  NUTGPIO_PORTG
+#define KEY_UP_PIN   15
 #endif
 
 
@@ -287,17 +333,21 @@ int main(void)
      */
     NutAssignKeyEvt(keyDn, &keyT1w);
 
-    /* Register keys for thread 2 mutex
+    /* Register keys for thread 2 mutex.
+     * We assign two of the keys to release a mutex.
      */
+#ifdef KEY_LT_PORT
     NutRegisterKey(&keyLt, KEY_LT_PORT, KEY_LT_PIN, KEY_ACTION_UP, 0);
-    NutRegisterKey(&keyRt, KEY_RT_PORT, KEY_RT_PIN, KEY_ACTION_DOWN, 0);
-    NutRegisterKey(&keyUp, KEY_UP_PORT, KEY_UP_PIN, KEY_ACTION_DOWN, 0);
-
-    /* We assign two of the keys to release a mutex.
-     */
     NutAssignKeyEvt(keyLt, &keyT2w);
+#endif
+#ifdef KEY_RT_PORT
+    NutRegisterKey(&keyRt, KEY_RT_PORT, KEY_RT_PIN, KEY_ACTION_DOWN, 0);
     NutAssignKeyEvt(keyRt, &keyT2w);
+#endif
+#ifdef KEY_UP_PORT
+    NutRegisterKey(&keyUp, KEY_UP_PORT, KEY_UP_PIN, KEY_ACTION_DOWN, 0);
     NutAssignKeyEvt(keyUp, &keyT2w);
+#endif
 
     /* Register threads that wait on keys */
     NutThreadCreate("k1", Key1Thread, NULL, 256);
