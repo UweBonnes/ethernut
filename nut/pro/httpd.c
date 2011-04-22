@@ -268,6 +268,7 @@ MIMETYPES mimeTypes[] = {
     ".jar", "application/x-java-archive", NULL}, {
     ".css", "text/css", NULL}, {
     ".xml", "text/xml", NULL}, {
+    ".svg", "image/svg+xml", NULL}, {
     NULL, NULL, NULL}
 };
 
