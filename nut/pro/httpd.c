@@ -198,6 +198,58 @@
 /*@{*/
 
 /*!
+ * \brief Structure for table of interpreted header names.
+ */
+typedef struct _REQUEST_LOOKUP {
+    uint_fast8_t rlu_len;
+    char *rlu_str;
+} REQUEST_LOOKUP;
+
+/*!
+ * \brief Table for verifying header names.
+ *
+ * Modify with care, it might become a bit tricky.
+ *
+ * In any case the entries must be in sorted order. When inserting
+ * a new entry, you need to adapt the switch/case statement in
+ * function ParseHeaderLines(). If the new entry is larger than
+ * all existing entries, do not forget to update MAX_REQUEST_NAME_SIZE.
+ */
+static const REQUEST_LOOKUP req_lookup[] = {
+    { 13, "authorization" },
+#if HTTP_KEEP_ALIVE_REQ
+    { 10, "connection" },
+#else
+    {  0, NULL },
+#endif
+    { 14, "content-length" },
+    { 12, "content-type" },
+    {  6, "cookie" },
+    {  4, "host" },
+#if defined(HTTPD_EXCLUDE_DATE)
+    {  0, NULL },
+#else
+    {  17, "if-modified-since" },
+#endif
+    {  7, "referer" },
+    { 10, "user-agent" }
+};
+
+/*!
+ * \brief Number of entries in the header name table.
+ */
+#define NUM_REQUEST_LOOKUP  sizeof(req_lookup) / sizeof(REQUEST_LOOKUP)
+
+/*!
+ * \brief Size of the largest entry in the header name table.
+ */
+#if defined(HTTPD_EXCLUDE_DATE)
+#define MAX_REQUEST_NAME_SIZE   14
+#else
+#define MAX_REQUEST_NAME_SIZE   17
+#endif
+
+/*!
  * \brief Known mime types.
  */
 MIMETYPES mimeTypes[] = {
@@ -743,6 +795,190 @@ static int HeaderFieldValue(char **hfvp, CONST char *str)
 }
 
 /*!
+ * \brief Interpret next header from a given stream.
+ *
+ * This function reads single characters from the stream as long
+ * as they fit with an entry in the req_lookup table. It will
+ * return as soon as an unknown entry had been detected, or when
+ * a colon or linefeed has been read, or if reading from the stream
+ * fails.
+ *
+ * \param stream Stream to read from.
+ * \param idx    Pointer to a variable that receives the index
+ *               of a known header. This is only valid if the
+ *               function returns a colon character.
+ *
+ * \return Last character read from the stream, EOF on error or
+ *         timeout, or zero on empty lines.
+ */
+static int NextHeaderName(FILE * stream, uint_fast8_t *idx)
+{
+    uint_fast8_t i = 0;
+    int ch = 0;
+
+    *idx = 0;
+
+    /* Read the first character, which is not a carriage returns. */
+    do {
+        ch = fgetc(stream);
+    } while (ch == '\r');
+    /* Return 0, if we got the linefeed. This is an empty line,
+       which should be interpreted by the caller as the end of
+       the HTTP header. */
+    if (ch == '\n') {
+        return 0;
+    }
+
+    /* Lookup the header line name. */
+    while (i < MAX_REQUEST_NAME_SIZE && *idx < NUM_REQUEST_LOOKUP) {
+        /* Stop, if the last read failed or if we found the end of the
+           line or the name field. */
+        if (ch == EOF || ch == ':' || ch == '\n') {
+            break;
+        }
+        /* Check if all characters read so far fits with any header
+            we are interested in. */
+        for (; *idx < NUM_REQUEST_LOOKUP; (*idx)++) {
+            if (i < req_lookup[*idx].rlu_len &&
+                *(req_lookup[*idx].rlu_str + i) == tolower(ch)) {
+                /* So far, this header fits. */
+                break;
+            }
+        }
+        /* Read the next character, ignoring carriage returns. */
+        i++;
+        do {
+            ch = fgetc(stream);
+        } while (ch == '\r');
+    }
+    return ch;
+}
+
+/*!
+ * \brief Read characters from a given stream until EOL.
+ */
+static void SkipLine(FILE * stream)
+{
+    int ch;
+
+    do {
+        ch = fgetc(stream);
+    } while (ch != EOF && ch != '\n');
+}
+
+static int ParserHeaderLines(FILE *stream, REQUEST *req)
+{
+    char *cp;
+    int ch;
+    uint_fast8_t req_idx;
+    char **strval;
+    char *line;
+
+    line = malloc(HTTP_MAX_REQUEST_SIZE);
+    if (line) {
+
+        for (;;) {
+            /* Parse the next header name. */
+            ch = NextHeaderName(stream, &req_idx);
+            if (ch == EOF) {
+                /* Broken connection, stop parsing. */
+                break;
+            }
+            if (ch == 0) {
+                /* Empty line marks the end of the request header. */
+                free(line);
+                return 0;
+            }
+            if (ch != ':' || req_idx >= NUM_REQUEST_LOOKUP) {
+                /* No valid name/value pair or unexpected header line.
+                   Skip this line. */
+                SkipLine(stream);
+            } else {
+                /* At this point we got a header we are interested in.
+                   Read the rest of this line, it contains the value. */
+                if (fgets(line, HTTP_MAX_REQUEST_SIZE, stream) == NULL) {
+                    /* Broken connection, stop parsing. */
+                    break;
+                }
+
+                /* Make sure we got a complete line. */
+                cp = strchr(line, '\n');
+                if (cp == NULL) {
+                    /* Incomplete line, skip it. */
+                    SkipLine(stream);
+                    /* May be we should return an internal error to the browser. */
+                } else {
+                    /* We got the value, chop off any CR-LF. */
+                    *cp = '\0';
+                    if (cp > line && *--cp == '\r') {
+                        *cp = '\0';
+                    }
+                    //printf("Header '%s: %s'\n", req_lookup[req_idx].rlu_str, line);
+                    /* Store the value in the request info structure.
+                       Impotant! This switch statement must correspond
+                       to the req_lookup table. */
+                    strval = NULL;
+                    switch (req_idx) {
+                    case 0:
+                        /* Authorization: Store as string. */
+                        strval = &req->req_auth;
+                        break;
+#if HTTP_KEEP_ALIVE_REQ
+                    case 1:
+                        /* Connection: Interpret type. */
+                        if (strncasecmp(line, "close", 5) == 0) {
+                            req->req_connection = HTTP_CONN_CLOSE;
+                        }
+                        else if (strncasecmp(line, "Keep-Alive", 10) == 0) {
+                            req->req_connection = HTTP_CONN_KEEP_ALIVE;
+                        }
+                        break;
+#endif
+                    case 2:
+                        /* Content-Length: Get size. */
+                        req->req_length = atol(line);
+                        break;
+                    case 3:
+                        /* Content-Type: Store as string. */
+                        strval = &req->req_type;
+                        break;
+                    case 4:
+                        /* Cookie: Store as string. */
+                        strval = &req->req_cookie;
+                        break;
+                    case 5:
+                        /* Host: Store as string. */
+                        strval = &req->req_host;
+                        break;
+#if !defined(HTTPD_EXCLUDE_DATE)
+                    case 6:
+                        /* If-Modified-Since: Interpret RFC date. */
+                        req->req_ims = RfcTimeParse(line);
+                        break;
+#endif
+                    case 7:
+                        /* Referer: Store as string. */
+                        strval = &req->req_referer;
+                        break;
+                    case 8:
+                        /* User-Agent: Store as string. */
+                        strval = &req->req_agent;
+                        break;
+                    }
+                    /* Anything to store as a string. */
+                    if (strval && HeaderFieldValue(strval, line)) {
+                        break;
+                    }
+                }
+            }
+        }
+        /* All header lines processed. */
+        free(line);
+    }
+    return -1;
+}
+
+/*!
  * \brief Process the next HTTP request.
  *
  * Waits for the next HTTP request on an established connection
@@ -756,7 +992,6 @@ void NutHttpProcessRequest(FILE * stream)
     REQUEST *req = NULL;
     char *method = NULL;
     char *path;
-    char *line;
     char *protocol;
     char *cp;
 #if HTTP_KEEP_ALIVE_REQ
@@ -783,62 +1018,12 @@ void NutHttpProcessRequest(FILE * stream)
         if ((cp = strchr(method, '\n')) != NULL)
             *cp = 0;
 
-        /*
-        * Parse remaining request header lines.
-        */
-        if ((line = malloc(HTTP_MAX_REQUEST_SIZE)) == NULL) {
+        /* Parse remaining request header lines. */
+        if (ParserHeaderLines(stream, req)) {
             break;
         }
-        for (;;) {
-            /* Read a line and chop off CR/LF. */
-            if (fgets(line, HTTP_MAX_REQUEST_SIZE, stream) == NULL)
-                break;
-            if ((cp = strchr(line, '\r')) != 0)
-                *cp = 0;
-            if ((cp = strchr(line, '\n')) != 0)
-                *cp = 0;
-            if (*line == 0)
-                /* Empty line marks the end of the request header. */
-                break;
-            if (strncasecmp(line, "Authorization:", 14) == 0) {
-                if (HeaderFieldValue(&req->req_auth, line + 14))
-                    break;
-            } else if (strncasecmp(line, "Content-Length:", 15) == 0) {
-                req->req_length = atol(line + 15);
-            } else if (strncasecmp(line, "Content-Type:", 13) == 0) {
-                if (HeaderFieldValue(&req->req_type, line + 13))
-                    break;
-            } else if (strncasecmp(line, "Cookie:", 7) == 0) {
-                if (HeaderFieldValue(&req->req_cookie, line + 7))
-                    break;
-            } else if (strncasecmp(line, "User-Agent:", 11) == 0) {
-                if (HeaderFieldValue(&req->req_agent, line + 11))
-                    break;
-#if !defined(HTTPD_EXCLUDE_DATE)
-            } else if (strncasecmp(line, "If-Modified-Since:", 18) == 0) {
-                req->req_ims = RfcTimeParse(line + 18);
-#endif
-            } else if (strncasecmp(line, "Referer:", 8) == 0) {
-                if (HeaderFieldValue(&req->req_referer, line + 8))
-                    break;
-            } else if (strncasecmp(line, "Host:", 5) == 0) {
-                if (HeaderFieldValue(&req->req_host, line + 5))
-                    break;
-            }
-#if HTTP_KEEP_ALIVE_REQ
-            else if (strncasecmp(line, "Connection:", 11) == 0) {
-                if (strncasecmp(line + 12, "close", 5) == 0) {
-                    req->req_connection = HTTP_CONN_CLOSE;
-                }
-                else if (strncasecmp(line + 12, "Keep-Alive", 10) == 0) {
-                    req->req_connection = HTTP_CONN_KEEP_ALIVE;
-                }
-            }
-#endif
-        }
-        if (line) {
-            free(line);
-        }
+
+        /* Further break up the first header line. */
         path = NextWord(method);
         protocol = NextWord(path);
         NextWord(protocol);
