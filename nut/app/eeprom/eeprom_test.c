@@ -59,69 +59,9 @@
 #include <sys/thread.h>
 #include <sys/timer.h>
 #include <dev/twif.h>
-#include <dev/pca9555.h>
 #include <dev/eeprom.h>
-#define MYPRINT(fmt, ...) printf ("%s:%s(%d)\t" fmt "\n", \
-                             __FILE__,__FUNCTION__,__LINE__, ##__VA_ARGS__);
 
-#define	LED_OFF		0
-#define	LED_ON		1
-
-#define	LED(led,state)	if( state == LED_OFF )IOExpSetBitHigh( 1, led );else IOExpSetBitLow( 1, led )
-#define	LED1(state)	LED( 0, state )
-#define	LED2(state)	LED( 1, state )
-#define	LED3(state)	LED( 2, state )
-#define	LED4(state)	LED( 3, state )
-#define	LED5(state)	LED( 4, state )
-
-#define	DLED(led,state)	if( state == LED_OFF )IOExpSetBitHigh( 0, led + 4 );else IOExpSetBitLow( 0, led + 4 )
-#define	DLED1(state)	DLED( 0, state )
-#define	DLED2(state)	DLED( 1, state )
-#define	DLED3(state)	DLED( 2, state )
-#define	DLED4(state)	DLED( 3, state )
-
-#define KEY1 (1<<0)
-#define KEY2 (1<<1)
-#define KEY3 (1<<2)
-#define KEY4 (1<<3)
-
-int8_t ledid = 0;
-uint8_t up = 0;
-
-
-THREAD(Led, arg)
-{
-    /*
-     * Endless loop in high priority thread.
-     */
-    NutThreadSetPriority(16);
-    for (;;)
-	{
-		if( up == 1 )
-		{
-			LED( ledid, LED_OFF );
-			if( ++ledid > 4 )
-			{
-				ledid = 3;
-				up = 0;
-			}
-			LED( ledid, LED_ON );
-		}
-		else
-		{
-			LED( ledid, LED_OFF );
-			if( --ledid < 0 )
-			{
-				ledid = 1;
-				up = 1;
-			}
-			LED( ledid, LED_ON );
-		}
-        NutSleep(200);
-    }
-}
-
-void HexDump( uint8_t *rxb, uint16_t len )
+void HexDump( char *rxb, uint16_t len )
 {
 	uint16_t i;
 	uint16_t f = 1;
@@ -146,7 +86,7 @@ void HexDump( uint8_t *rxb, uint16_t len )
 	}
 }
 
-const uint8_t teststr[64] = { "This is an ultimatly long string that reaches 61 bytes length\0"};
+const char teststr[64] = { "This is an ultimatly long string that reaches 61 bytes length\0"};
 const char failstr[] = "\033[1;37;41m\033[K*** FAIL rc=%d ***\033[0m\n";
 const char infostr[] = "\n\033[30;46m\033[K%s\033[0m\n";
 /*
@@ -155,8 +95,8 @@ const char infostr[] = "\n\033[30;46m\033[K%s\033[0m\n";
 int main(void)
 {
 
-	uint8_t txBuffer[128];
-	uint8_t rxBuffer[128];
+	char txBuffer[128];
+	char rxBuffer[128];
     uint32_t baud = 115200;
     int rc = 0;
 
@@ -175,7 +115,6 @@ int main(void)
 	baud = 100000;
 	TwInit( 0 ); /* par = slave address but we are master */
 	TwIOCtl( TWI_SETSPEED, &baud);
-//	IOExpInit();
 
 	EEInit();
 
@@ -199,6 +138,7 @@ int main(void)
 	HexDump( rxBuffer, 64 );
     if( rc) {
         printf(failstr, rc);
+		printf("Please make sure that you have an EEPROM connected on your board.\n");
         while(1) NutSleep(1000);
     }
 
@@ -224,8 +164,8 @@ int main(void)
     /*****************/
 
 	printf( infostr, "Step 1" );
-	strcpy( txBuffer, "First, " );
-	rc = EEWriteData( 0x0100+24, txBuffer, strlen( txBuffer ));
+	strcpy( (char*)txBuffer, "First, " );
+	rc = EEWriteData( 0x0100+24, txBuffer, strlen( (char*)txBuffer ));
     if( rc) {
         printf(failstr, rc);
         while(1) NutSleep(1000);
@@ -241,8 +181,8 @@ int main(void)
     /*****************/
 
 	printf( infostr, "Step 2" );
-	strcpy( txBuffer, "Third!" );
-	rc = EEWriteData( 0x0100+24+16, txBuffer, strlen( txBuffer ));
+	strcpy( txBuffer, (const char*)"Third!" );
+	rc = EEWriteData( 0x0100+24+16, (const char*)txBuffer, strlen( txBuffer ));
     if( rc) {
         printf(failstr, rc);
         while(1) NutSleep(1000);
@@ -299,3 +239,5 @@ int main(void)
     }
     return 0;
 }
+
+
