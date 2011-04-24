@@ -65,7 +65,7 @@
 
 /* This sample application only supports the following boards */
 #if defined(AT91SAM7X_EK) || defined(ENET_SAM7X) || \
-    defined(EVK1100) || defined(EVK1101) || defined(EVK1105) \\
+    defined(EVK1100) || defined(EVK1101) || defined(EVK1105) || \
     defined(STM3210C_EVAL) || defined(STM3210E_EVAL)
 
 
