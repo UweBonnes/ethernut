@@ -93,12 +93,9 @@ endif
 	$(MAKE) -C canbus
 # Broken: C++ no longer available?	
 #	$(MAKE) -C cppdemo
-# Broken: Probably since r2650
-#	$(MAKE) -C eeprom
+	$(MAKE) -C eeprom
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
-# Broken: Fails on ATmega103, no PORTF	
-#	$(MAKE) -C hhopen
 	$(MAKE) -C httpd
 	$(MAKE) -C icmp-udp
 	$(MAKE) -C inetq
@@ -124,10 +121,9 @@ install:
 	$(MAKE) -C caltime install
 	$(MAKE) -C canbus install
 #	$(MAKE) -C cppdemo install
-#	$(MAKE) -C eeprom install
+	$(MAKE) -C eeprom install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
-#	$(MAKE) -C hhopen install
 	$(MAKE) -C httpd install
 	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
@@ -156,7 +152,6 @@ clean:
 	$(MAKE) -C eeprom clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
-#	$(MAKE) -C hhopen clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean
