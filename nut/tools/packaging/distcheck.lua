@@ -20,7 +20,7 @@
 
 require("lfs")
 
-PKG_VERSION = "4.9.10"
+PKG_VERSION = "4.9.11"
 ARC_NAME = "ethernut-"..PKG_VERSION
 TOP_DIR = "."
 PS = "\\"
@@ -29,14 +29,14 @@ WORK_DIR = TOP_DIR..PS..ARC_NAME
 REDIR = " >>build.log 2>&1"
 ERROR_LOG = "errors-"..PKG_VERSION..".log"
 
-BASE_PATH = "C:\\apps\\bin;%windir%\\system32;%windir%;%windir%\\System32\\Wbem;"
+BASE_PATH = "C:\\apps\\bin;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;"
 TOOL_PATH = "C:\\ethernut\\nut-trunk\\nut\\tools\\win32;"
 GCCAVR_PATH = "C:\\WinAVR\\bin;C:\\WinAVR\\utils\\bin;"
-GCCAVR32_PATH = "C:\\AVR32GCC\\bin;"
-GCCARM_PATH = "C:\\Programme\\YAGARTO\\bin;"
-ICCAVR7_PATH = "C:\\iccv7avr\\bin;"
-NSIS_PATH = "C:\\Programme\\NSIS;"
-DOXY_PATH = "C:\\Programme\\doxygen\\bin;"
+GCCAVR32_PATH = "%ProgramFiles(x86)%\\Atmel\\AVR Tools\\AVR32 Toolchain\\bin;"
+GCCARM_PATH = "%ProgramFiles(x86)%\\YAGARTO\\bin;"
+ICCAVR7_PATH = "C:\\iccv719avr\\bin;"
+NSIS_PATH = "%ProgramFiles(x86)%\\NSIS;"
+DOXY_PATH = "%ProgramFiles(x86)%\\doxygen\\bin;"
 
 avr_targets = {
   { name = "ethernut103", mcu = "atmega103" },
@@ -60,8 +60,13 @@ avr_targets = {
 }
 
 avr32_targets = {
-  { name = "evk1104", mcu = "uc3a3256" },
-  { name = "evk1100", mcu = "uc3a0512es" }
+  { name = "evk1100-extram", mcu = "uc3a0512es" },
+  { name = "evk1100-intram", mcu = "uc3a0512es" },
+  { name = "evk1101", mcu = "uc3b0256" },
+  { name = "evk1104-extram", mcu = "uc3a3256" },
+  { name = "evk1104-intram", mcu = "uc3a3256" },
+  { name = "evk1105-extram", mcu = "uc3a0512" },
+  { name = "evk1105-intram", mcu = "uc3a0512" }
 }
 
 arm_targets = {
@@ -75,10 +80,10 @@ arm_targets = {
   { name = "ethernut31d", mcu = "arm7tdmi" },
   { name = "ethernut50e", mcu = "arm9" },
   { name = "eir10c", mcu = "arm7tdmi" },
+  { name = "enet-sam7x", mcu="arm7tdmi" },
   { name = "gbaxport2", mcu = "arm7tdmi" },
   { name = "morphoq11a", mcu = "arm7tdmi" },
   { name = "olimex-sam7-ex256", mcu = "arm7tdmi" },
-  { name = "eNet-sam7X", mcu="arm7tdmi" },
 }
 
 asm_sources = {
@@ -91,6 +96,7 @@ app_specials = {
   { p = ".class$", m = ".class", r = true },
   { p = ".gif$", m = ".gif", r = true },
   { p = ".html$", m = ".html", r = true },
+  { p = ".isp$", m = ".isp", r = true },
   { p = ".inc$", m = ".inc", r = true },
   { p = ".java$", m = ".java", r = true },
   { p = ".mp3$", m = ".mp3", r = true },
@@ -448,7 +454,10 @@ if os.execute("SET PATH="..path_env.."&avr-gcc -v"..REDIR) == 0 then
     if build_libs(t_board.name, "avr-gcc", path_env) == 0 then
       if build_apps(t_board.name, t_board.mcu, "avr-gcc", path_env) == 0 then
         if build_libs(t_board.name, "avr-gccdbg", path_env) == 0 then
-          build_apps(t_board.name, t_board.mcu, "avr-gccdbg", path_env)
+		  -- Exclude debug apps from targets with less than 256k flash
+		  if t_board.mcu == "atmega2561" then
+            build_apps(t_board.name, t_board.mcu, "avr-gccdbg", path_env)
+	      end
         end
       end
     end
@@ -461,16 +470,20 @@ end
 -- Build ARM GCC libs and apps
 --
 path_env = TOOL_PATH..GCCARM_PATH..BASE_PATH
-if os.execute("SET PATH="..path_env.."&arm-elf-gcc -v"..REDIR) == 0 then
--- if os.execute("SET PATH="..path_env.."&arm-none-eabi-gcc -v"..REDIR) == 0 then
+-- if os.execute("SET PATH="..path_env.."&arm-elf-gcc -v"..REDIR) == 0 then
+if os.execute("SET PATH="..path_env.."&arm-none-eabi-gcc -v"..REDIR) == 0 then
   for t_index, t_board in ipairs(arm_targets) do 
     update_config("nut/conf/"..t_board.name..".conf", "CRT_UNSETENV_POSIX", '""')
-  
+    update_config("nut/conf/"..t_board.name..".conf", "ARMEABI", '""')
+	
     if build_libs(t_board.name, "arm-gcc", path_env) == 0 then
       build_apps(t_board.name, t_board.mcu, "arm-gcc", path_env)
     end
     if build_libs(t_board.name, "arm-gccdbg", path_env) == 0 then
-      build_apps(t_board.name, t_board.mcu, "arm-gccdbg", path_env)
+	  -- Exclude debug apps from AT91EB40A because of lack of sufficient RAM
+	  if t_board.name ~= "at91eb40a" then
+        build_apps(t_board.name, t_board.mcu, "arm-gccdbg", path_env)
+      end
     end
   end
 else  
@@ -491,34 +504,36 @@ if os.execute("SET PATH="..path_env.."&avr32-gcc -v"..REDIR) == 0 then
     end
   end
 else
+  build_result:write("SET PATH="..path_env.."&avr32-gcc -v\n")
   build_result:write("GCC for AVR32 not available\n\n")
 end
 
 --
 -- Build ICCAVR7 libs and apps
+-- Temporarily excluded until CONST had been fully replaced by const.
 --
-path_env = TOOL_PATH..ICCAVR7_PATH..BASE_PATH
-if os.execute("SET PATH="..path_env.."&iccavr -v"..REDIR) == 0 then
-  for t_index, t_board in ipairs(avr_targets) do 
-    update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", nil)
-    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", '""')
-    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", '"crtenutram"')
-    if t_board.mcu == "atmega128" then
-      if build_libs(t_board.name, "avr-icc7", path_env) == 0 then
-        build_apps(t_board.name, "enhanced", "avr-icc7", path_env)
-      end
-    elseif t_board.mcu == "atmega2561" then
-      if build_libs(t_board.name, "avrext-icc7", path_env) == 0 then
-        build_apps(t_board.name, "extended", "avrext-icc7", path_env)
-      end
-    end
-    update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", '""')
-    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", nil)
-    update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", nil)
-  end
-else
-  build_result:write("ICC7 for AVR not available\n\n")
-end
+-- path_env = TOOL_PATH..ICCAVR7_PATH..BASE_PATH
+-- if os.execute("SET PATH="..path_env.."&iccavr -v"..REDIR) == 0 then
+--   for t_index, t_board in ipairs(avr_targets) do 
+--     update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", nil)
+--     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", '""')
+--     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", '"crtenutram"')
+--     if t_board.mcu == "atmega128" then
+--       if build_libs(t_board.name, "avr-icc7", path_env) == 0 then
+--         build_apps(t_board.name, "enhanced", "avr-icc7", path_env)
+--       end
+--     elseif t_board.mcu == "atmega2561" then
+--       if build_libs(t_board.name, "avrext-icc7", path_env) == 0 then
+--         build_apps(t_board.name, "extended", "avrext-icc7", path_env)
+--       end
+--     end
+--     update_config("nut/conf/"..t_board.name..".conf", "AVR_GCC", '""')
+--     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR", nil)
+--     update_config("nut/conf/"..t_board.name..".conf", "ICCAVR_STARTUP", nil)
+--   end
+-- else
+--   build_result:write("ICC7 for AVR not available\n\n")
+-- end
 
 --
 -- Generate API documentation
