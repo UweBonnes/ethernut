@@ -58,6 +58,22 @@
 #include <dev/pca9555.h>
 #include <dev/led.h>
 
+#ifndef MCU_AT91
+
+int main(void)
+{
+    uint32_t baud = 115200;
+
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
+    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+
+    puts("TwMasterRegRead is not available on your platform.");
+    for (;;);
+}
+
+#else
+
 #define KEY1 (1<<0)
 #define KEY2 (1<<1)
 #define KEY3 (1<<2)
@@ -188,3 +204,5 @@ int main(void)
     }
     return 0;
 }
+
+#endif /* MCU_AT91 */
