@@ -52,12 +52,6 @@
 
 #include <arch/arm.h>
 
-PS_BASE   = 0xFFFF4000      /* Power saving controller. */
-AIC_BASE  = 0xFFFFF000      /* Advanced interrupt controller. */
-AIC_SVR   = 0x080           /* Source Vector Register */
-AIC_EOICR = 0x130           /*  of Interrupt Command Register */
-AIC_SPU   = 0x134           /* Spurious Vector Register */
-
 FLASH_BASE = 0x01000000
 FLASH_SIZE = 0x00200000
 
@@ -69,55 +63,6 @@ IRQ_STACK_SIZE = (128*4)
 FIQ_STACK_SIZE = (64*4)
 ABT_STACK_SIZE = (16*4)
 UND_STACK_SIZE = (16*4)
-
-ARM_MODE_USER = 0x10
-ARM_MODE_FIQ = 0x11
-ARM_MODE_IRQ = 0x12
-ARM_MODE_SVC = 0x13
-ARM_MODE_ABORT = 0x17
-ARM_MODE_UNDEF = 0x1B
-ARM_MODE_SYS = 0x1F
-
-EBI_DBW_8 = 0x0002
-EBI_DBW_16 = 0x0001
-
-EBI_NWS_1 = 0x0000
-EBI_NWS_2 = 0x0004
-EBI_NWS_3 = 0x0008
-EBI_NWS_4 = 0x000C
-EBI_NWS_5 = 0x0010
-EBI_NWS_6 = 0x0014
-EBI_NWS_7 = 0x0018
-EBI_NWS_8 = 0x001C
-EBI_WSE = 0x0020
-
-EBI_PAGES_1M = 0x0000
-EBI_PAGES_4M = 0x0080
-EBI_PAGES_16M = 0x0100
-EBI_PAGES_64M = 0x0180
-
-EBI_TDF_0 = 0x0000
-EBI_TDF_1 = 0x0200
-EBI_TDF_2 = 0x0400
-EBI_TDF_3 = 0x0600
-EBI_TDF_4 = 0x0800
-EBI_TDF_5 = 0x0A00
-EBI_TDF_6 = 0x0C00
-EBI_TDF_7 = 0x0E00
-
-EBI_BAT_BYTE_WRITE = 0x0000
-EBI_BAT_BYTE_SELECT = 0x1000
-
-EBI_CSEN = 0x2000
-
-EBI_ALE_16M = 0x00
-EBI_ALE_8M = 0x04
-EBI_ALE_4M = 0x05
-EBI_ALE_2M = 0x06
-EBI_ALE_1M = 0x07
-
-EBI_DRP_STANDARD = 0x00
-EBI_DRP_EARLY = 0x10
 
 /*
  * Section 0: Vector table and reset entry.
@@ -254,8 +199,8 @@ L0:
         subs    r0, r0, #1
         bhi     L0
 
-        str     r2, [r1, #AIC_SVR]
-        add     r1, r1, #AIC_SVR
+        str     r2, [r1, #AIC_SVR(0)]
+        add     r1, r1, #AIC_SVR(0)
         mov     r0, #31
 L1:
         str     r3, [r1, r0, LSL #2]
