@@ -2757,9 +2757,10 @@ nutdev =
     {
         name = "nutdev_pca9555",
         brief = "PCA9555 Driver",
-        description = "Philips PCA9555 I/O expander. Tested on AT91 only.",
+        description = "Philips PCA9555 I/O expander. Uses TwMasterRegRead(), which is "..
+                      "currently available on AT91 hardware TWI only.",
 		provides = { "DEV_IOEXP" },
-        requires = { "DEV_TWI" },
+        requires = { "HW_TWI_AT91", "HW_MCU_AT91" },
         sources = { "pca9555.c" },
         options =
         {
