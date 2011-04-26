@@ -136,8 +136,9 @@
 
 #ifndef NUT_THREAD_LANCRXSTACK
 #if defined(__GNUC__)
-/* avr-gcc size optimized code used 76 bytes. */
-#define NUT_THREAD_LANCRXSTACK  128
+/* avr-gcc size optimized code used 76 bytes.
+   Sigh! 144 bytes are reported using avr-gcc 4.3.3 and Nut/OS 4.9.10. */
+#define NUT_THREAD_LANCRXSTACK  256
 #else
 /* icc-avr v7.19 used 200 bytes. */
 #define NUT_THREAD_LANCRXSTACK  384
