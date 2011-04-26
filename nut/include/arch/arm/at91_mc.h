@@ -79,17 +79,24 @@
 #define MC_AASR_OFF             0x00000008      /*!< \brief MC abort address status register offset. */
 #define MC_AASR     (MC_BASE + MC_AASR_OFF)     /*!< \brief MC abort address status register address. */
 
-#define MC_FMR_OFF              0x00000060      /*!< \brief MC flash mode register offset. */
-#define MC_FMR      (MC_BASE + MC_FMR_OFF)      /*!< \brief MC flash mode register address. */
+#define MC_FMR_EFC0_OFF         0x00000060      /*!< \brief MC flash mode register bank 0 offset. */
+#define MC_FMR_EFC0 (MC_BASE + MC_FMR_EFC0_OFF) /*!< \brief MC flash mode register bank 0 address. */
+#define MC_FMR_EFC1_OFF         0x00000070      /*!< \brief MC flash mode register bank 1 offset. */
+#define MC_FMR_EFC1 (MC_BASE + MC_FMR_EFC1_OFF) /*!< \brief MC flash mode register bank 1 address. */
+
+#define MC_FMR_OFF         MC_FMR_EFC0_OFF      /*!< \brief MC flash mode register offset. */
+#define MC_FMR                 MC_FMR_EFC0      /*!< \brief MC flash mode register address. */
 #define MC_FRDY                 0x00000001      /*!< \brief Flash ready. */
 #define MC_LOCKE                0x00000004      /*!< \brief Lock error. */
 #define MC_PROGE                0x00000008      /*!< \brief Programming error. */
 #define MC_NEBP                 0x00000080      /*!< \brief No erase before programming. */
+#define MC_FWS_LSB                       8      /*!< \brief Flash wait state LSB. */
 #define MC_FWS_MASK             0x00000300      /*!< \brief Flash wait state mask. */
 #define MC_FWS_1R2W             0x00000000      /*!< \brief 1 cycle for read, 2 for write operations. */
 #define MC_FWS_2R3W             0x00000100      /*!< \brief 2 cycles for read, 3 for write operations. */
 #define MC_FWS_3R4W             0x00000200      /*!< \brief 3 cycles for read, 4 for write operations. */
 #define MC_FWS_4R4W             0x00000300      /*!< \brief 4 cycles for read and write operations. */
+#define MC_FMCN_LSB                     16      /*!< \brief Flash microsecond cycle number LSB. */
 #define MC_FMCN_MASK            0x00FF0000      /*!< \brief Flash microsecond cycle number mask. */
 
 #define MC_FCR_OFF              0x00000064      /*!< \brief MC flash command register offset. */
