@@ -211,12 +211,9 @@ int NplSpiBusDeselect(NUTSPINODE * node)
 int NplSpiBusNodeInit(NUTSPINODE * node)
 {
     int rc;
-    NUTSPIBUS *bus;
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
-    NUTASSERT(node->node_bus != NULL);
-    bus = node->node_bus;
 
     /* Try to deactivate the node's chip select. */
     rc = NplSpiChipSelect(node->node_cs, 1);

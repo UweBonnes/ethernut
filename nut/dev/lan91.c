@@ -293,7 +293,6 @@ static void NicPhyWrite(uint8_t reg, uint16_t val)
  */
 static int NicPhyConfig(void)
 {
-    uint16_t phy_sor;
     uint16_t phy_sr;
     uint16_t phy_to;
     uint16_t mode;
@@ -311,9 +310,6 @@ static int NicPhyConfig(void)
         if (phy_to > 3)
             return -1;
     }
-
-    /* Store PHY status output. */
-    phy_sor = NicPhyRead(LAN91_PHYSOR);
 
     /* Enable PHY interrupts. */
     NicPhyWrite(LAN91_PHYMSK, LAN91_PHYMSK_MLOSSSYN | LAN91_PHYMSK_MCWRD | LAN91_PHYMSK_MSSD |
@@ -830,17 +826,16 @@ static int Lan91Output(NUTDEVICE * dev, NETBUF * nb)
 {
     static uint_fast16_t mx_wait = LAN91_TX_POLLTIME;
     int rc = -1;
-    NICINFO *ni;
 
     /*
      * After initialization we are waiting for a long time to give
      * the PHY a chance to establish an Ethernet link.
      */
     if (NutEventWait(&mutex, mx_wait) == 0) {
-        ni = (NICINFO *) dev->dev_dcb;
 
         if (NicPutPacket(nb) == 0) {
 #ifdef NUT_PERFMON
+            NICINFO *ni = (NICINFO *) dev->dev_dcb;
             ni->ni_tx_packets++;
 #endif
             rc = 0;

@@ -1675,13 +1675,11 @@ static int UFlashFileSeek(NUTFILE * nfp, long *pos, int whence)
     int rc = 0;
     long npos;
     UFLASHENTRY *ent;
-    UFLASHVOLUME *vol;
 
     NUTASSERT(nfp != NULL);
     NUTASSERT(nfp->nf_fcb != NULL);
 
     ent = (UFLASHENTRY *) nfp->nf_fcb;
-    vol = (UFLASHVOLUME *) nfp->nf_dev->dev_dcb;
 
     NUTASSERT(pos != NULL);
     npos = *pos;

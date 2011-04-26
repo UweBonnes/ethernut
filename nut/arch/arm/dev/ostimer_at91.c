@@ -192,8 +192,6 @@ void NutRegisterTimer(void (*handler) (void *))
 
 #else   /* NUT_TICK_AT91PIT */
 
-    int dummy;
-
 #if defined(MCU_AT91SAM7X) || defined(MCU_AT91SAM7S256) || defined(MCU_AT91SAM9260) || defined(MCU_AT91SAM9G45) || defined (MCU_AT91SAM7SE512) || defined(MCU_AT91SAM9XE512)
     /* Enable TC0 clock. */
     outr(PMC_PCER, _BV(TC0_ID));
@@ -204,7 +202,7 @@ void NutRegisterTimer(void (*handler) (void *))
     /* Disable all interrupts */
     outr(TC0_IDR, 0xFFFFFFFF);
     /* Clear the status register. */
-    dummy = inr(TC0_SR);
+    inr(TC0_SR);
     /* Select divider and compare trigger */
     outr(TC0_CMR, TC_CLKS_MCK32 | TC_CPCTRG);
     /* Enable the Clock counter */

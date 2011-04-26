@@ -734,14 +734,12 @@ int AhdlcAt91IOCtl(NUTDEVICE * dev, int req, void *conf)
     void **ppv = (void **) conf;
     uint32_t *lvp = (uint32_t *) conf;
     uint8_t bv;
-    uint8_t devnum;
     ureg_t cs;
 
     if (dev == 0) {
         dev = &devUsartAt910;
     }
 
-    devnum = dev->dev_base;
     dcb = dev->dev_dcb;
 
     switch (req) {

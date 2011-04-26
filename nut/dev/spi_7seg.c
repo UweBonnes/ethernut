@@ -478,13 +478,10 @@ int Spi7segWrite(NUTFILE * fp, CONST void *buffer, int len)
 void Spi7segDot(NUTDEVICE * dev, uint8_t pos, uint8_t act)
 {
     DCB_7SEG * dcb;
-    NUTSPINODE *node;
 
     NUTASSERT(dev->dev_dcb != NULL);
-    NUTASSERT(dev->dev_icb != NULL);
 
     dcb  = dev->dev_dcb;
-    node = dev->dev_icb;
 
 	if( pos < SEG7_DIGITS)
 	{
