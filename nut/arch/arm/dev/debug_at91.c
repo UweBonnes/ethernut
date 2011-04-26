@@ -62,7 +62,7 @@
  */
 uint32_t At91BaudRateDiv(uint32_t baud)
 {
-    return (NutArchClockGet(NUT_HWCLK_PERIPHERAL) / (8 * baud) + 1) / 2;
+    return (NutClockGet(NUT_HWCLK_PERIPHERAL) / (8 * baud) + 1) / 2;
 }
 
 /*!
