@@ -58,7 +58,7 @@
 #include <dev/pca9555.h>
 #include <dev/led.h>
 
-#ifndef MCU_AT91
+#if !defined(MCU_AT91) || defined(MCU_AT91R40008) || defined(MCU_GBA)
 
 int main(void)
 {
@@ -68,7 +68,7 @@ int main(void)
     freopen(DEV_DEBUG_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
-    puts("TwMasterRegRead is not available on your platform.");
+    puts("TwMasterReg functions are not available on your platform.");
     for (;;);
 }
 
