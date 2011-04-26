@@ -44,7 +44,7 @@ AR  = ilibw
 CP  = cp
 AS  = iccavr
 
-CPFLAGS = $(INCFIRST) $(INCPRE). $(INCDIR) $(INCLAST) -Wf-const_is_flash -e $(DEFS) -l -MLongJump -MHasMul -M$(MCU)
+CPFLAGS = $(INCFIRST) $(INCPRE). $(INCDIR) $(INCLAST) -e $(DEFS) -l -MLongJump -MHasMul -M$(MCU)
 #CPFLAGS = -I$(INCDIR) -I$(AVR)/include -e $(DEFS) -l -g -Mavr_$(MCU)
 LDFLAGS = -m -Wl,-Map=$(PROJ).map,--cref
 ARFLAGS = -a
