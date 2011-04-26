@@ -72,6 +72,8 @@ static int DebugInit(NUTDEVICE * dev)
     outr(PIOA_PDR, _BV(PA9_DRXD_A) | _BV(PA10_DTXD_A));
 #elif defined (PA27_DRXD_A) && defined (PA28_DTXD_A)
     outr(PIOA_PDR, _BV(PA27_DRXD_A) | _BV(PA28_DTXD_A));
+#elif defined (PB14_DRXD_A) && defined (PB15_DTXD_A)
+    outr(PIOB_PDR, _BV(PB14_DRXD_A) | _BV(PB15_DTXD_A));
 #endif
     /* Reset UART. */
     outr(DBGU_CR, US_RSTRX | US_RSTTX | US_RXDIS | US_TXDIS);
