@@ -288,8 +288,9 @@ static void ProcessRequests(FILE * stream)
             continue;
         }
 
+#ifndef MCU_GBA
         /*
-         * Process GPIO pin status.
+         * Process GPIO pin status, not available on GameBoy.
          *
          * http://www.ethernut.de/nutwiki/LowLevelPortIo
          */
@@ -301,6 +302,7 @@ static void ProcessRequests(FILE * stream)
             fprintf(stream, "240 %d at GPIO bank %d bit %d\r\n", state, bank, bit);
             continue;
         }
+#endif
 
         /*
          * Process serial line send request.
@@ -355,7 +357,9 @@ static void ProcessRequests(FILE * stream)
               "h[eap]    Query heap memory bytes available.\r\n"
               "i[p]      Set IP <address>.\r\n"
               "m[ask]    Set IP <mask>.\r\n"
+#ifndef MCU_GBA
               "p[in]     Query status of GPIO pin <bank> <bit>.\r\n"
+#endif
               "r[eset]   Reset system.\r\n"
               "s[end]    Send <message> to serial port.\r\n"
               "u[ptime]  Query number of seconds the system is running.\r\n"
