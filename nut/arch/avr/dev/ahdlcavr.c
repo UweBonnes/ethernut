@@ -85,9 +85,6 @@
 #include <cfg/ahdlc.h>
 #include <cfg/arch/avr.h>
 
-#include <string.h>
-#include <stdlib.h>
-
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/event.h>
@@ -96,13 +93,14 @@
 
 #include <dev/irqreg.h>
 #include <dev/uartavr.h>
-
-#include <fcntl.h>
-
 #include <dev/ppp.h>
 #include <dev/ahdlcavr.h>
 
+#include <stdint.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
 
 /*!
  * \addtogroup xgAhdlcAvr
@@ -286,8 +284,8 @@ static prog_char fcstab[512] = {
 #define IN_ACC_MAP(c, m) in_acc_map(c, &(m))
 /* Trust me, this is a whole lot smaller when compiled than it looks in C.
  * It is written explicitly so that gcc can make good AVR asm out of it. */
-static inline uint8_t in_acc_map(u_char ch, void * esc_mask) __attribute__((always_inline));  /* gcc specific attribute */
-static inline uint8_t in_acc_map(u_char ch, void * esc_mask)
+static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask) __attribute__((always_inline));  /* gcc specific attribute */
+static INLINE uint8_t in_acc_map(u_char ch, void * esc_mask)
 {
     const uint8_t shift_mask = 0x07;
     const uint8_t index_mask = 0x18;
