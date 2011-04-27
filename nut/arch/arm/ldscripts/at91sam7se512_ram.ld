@@ -28,25 +28,20 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
+ *
+ * NOTE: This is a reworked version for debugging in RAM.
+ *       (20.03.2011, Michael Fischer)
  */
 
-/*
- * Revision 1.1  2010/05/13 Andre Riesberg
- * Added .ramfunc segment.
- *
- * $Id$
- */
 
 ENTRY(_start)
 STARTUP(crtat91sam7se512_ram.o)
 SEARCH_DIR(.)
 
-/* Last 16k flash is used to save config. */
 MEMORY
 {
-  rom(rx)  : org = 0x00000000, len = 496k
+  iram(rw) : org = 0x00000000, len = 32k
   ram(rw)  : org = 0x20000000, len = 64M
-  iram(rw) : org = 0x00200000, len = 32k
 }
 
 SECTIONS
@@ -84,13 +79,9 @@ SECTIONS
     *(.glue_7);
   } > ram
 
-
   . = ALIGN(4);
 
-  _etext = .;
-  PROVIDE (__etext = .);
-
-  .data : AT (__etext)
+  .data :
   {
     PROVIDE (__data_start = .);
     *(.data)
