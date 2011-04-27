@@ -46,31 +46,11 @@
 
 #include <arch/arm.h>
 
-//PS_BASE   = 0xFFFF4000      /* Power saving controller. */
-//AIC_BASE  = 0xFFFFF000      /* Advanced interrupt controller. */
-//AIC_SVR   = 0x080           /* Source Vector Register */
-//AIC_EOICR = 0x130           /*  of Interrupt Command Register */
-//AIC_SPU   = 0x134           /* Spurious Vector Register */
-
-FLASH_BASE = 0x01000000
-FLASH_SIZE = 0x00200000
-
-RAM_BASE  = 0x00000000
-RAM_LIMIT = 0x00000100
-RAM_SIZE  = (256*1024)
-
 IRQ_STACK_SIZE = (128*4)
 FIQ_STACK_SIZE = (64*4)
 ABT_STACK_SIZE = (16*4)
 UND_STACK_SIZE = (16*4)
-
-//ARM_MODE_USER = 0x10
-//ARM_MODE_FIQ = 0x11
-//ARM_MODE_IRQ = 0x12
-//ARM_MODE_SVC = 0x13
-//ARM_MODE_ABORT = 0x17
-//ARM_MODE_UNDEF = 0x1B
-//ARM_MODE_SYS = 0x1F
+SVC_STACK_SIZE = (256*4)
 
 /*
  * Section 0: Vector table and reset entry.
