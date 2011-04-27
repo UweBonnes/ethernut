@@ -61,6 +61,22 @@
 #include <dev/twif.h>
 #include <dev/eeprom.h>
 
+#if !defined(MCU_AT91) || defined(MCU_AT91R40008) || defined(MCU_GBA)
+
+int main(void)
+{
+    uint32_t baud = 115200;
+
+    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    freopen(DEV_DEBUG_NAME, "w", stdout);
+    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
+
+    puts("TwMasterReg functions are not available on your platform.");
+    for (;;);
+}
+
+#else
+
 void HexDump( char *rxb, uint16_t len )
 {
 	uint16_t i;
@@ -240,4 +256,5 @@ int main(void)
     return 0;
 }
 
+#endif
 
