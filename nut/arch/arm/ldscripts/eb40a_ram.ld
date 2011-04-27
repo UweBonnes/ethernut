@@ -71,7 +71,7 @@ SECTIONS
     . = ALIGN(4);
     *(.init5);
     . = ALIGN(4);
-    *(.text);
+    *(.text.*);
     . = ALIGN(4);
     *(.rodata*);
     . = ALIGN(4);
