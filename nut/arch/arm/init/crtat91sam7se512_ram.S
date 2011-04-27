@@ -29,10 +29,10 @@
  *
  * For additional information see http://www.ethernut.de/
  *
- */
-
-/*
- * $Id$
+ * NOTE: This is the corrected version for debugging in RAM.
+ *       The remapping, SRAM to 0x00000000, must be done by the 
+ *       debugger script. Relocating of .data section is removed too.
+ *       (20.03.2011, Michael Fischer)
  */
 
 #include <cfg/clock.h>
@@ -40,28 +40,19 @@
 
 #include <arch/arm.h>
 
-#ifndef PLL_MUL_VAL
-#define PLL_MUL_VAL 72
+#ifndef NUTMEM_FLASH_RWS
+/* By default use 1 wait state for flash read access. */
+#define NUTMEM_FLASH_RWS    1
 #endif
 
-#ifndef PLL_DIV_VAL
-#define PLL_DIV_VAL 14
-#endif
-
-#if MASTER_CLOCK_PRES == 1
-#define AT91MCK_PRES    PMC_PRES_CLK
-#elif MASTER_CLOCK_PRES == 4
-#define AT91MCK_PRES    PMC_PRES_CLK_4
-#elif MASTER_CLOCK_PRES == 8
-#define AT91MCK_PRES    PMC_PRES_CLK_8
-#elif MASTER_CLOCK_PRES == 16
-#define AT91MCK_PRES    PMC_PRES_CLK_16
-#elif MASTER_CLOCK_PRES == 32
-#define AT91MCK_PRES    PMC_PRES_CLK_32
-#elif MASTER_CLOCK_PRES == 64
-#define AT91MCK_PRES    PMC_PRES_CLK_64
+#if NUTMEM_FLASH_RWS == 0
+#define MC_FWS_VAL  MC_FWS_1R2W /* 1 cycle for read, 2 for write ops. */
+#elif NUTMEM_FLASH_RWS == 1
+#define MC_FWS_VAL  MC_FWS_2R3W /* 2 cycles for read, 3 for write ops. */
+#elif NUTMEM_FLASH_RWS == 2
+#define MC_FWS_VAL  MC_FWS_3R4W /* 3 cycles for read, 4 for write ops. */
 #else
-#define AT91MCK_PRES    PMC_PRES_CLK_2
+#define MC_FWS_VAL  MC_FWS_4R4W /* 4 cycles for read and write ops. */
 #endif
 
 #ifndef IRQ_STACK_SIZE
@@ -131,19 +122,13 @@ __xcpt_dummy:
         .globl	_start
 _start:
 
-        /* 
-         * Remapping memory, SRAM to 0x00000000
-         */
-        ldr     r1, =MC_BASE
-        mov     r0, #01
-        str     r0, [r1, #MC_RCR_OFF]
-         
         /*
-         * Use 2 cycles for flash access.
+         * Set cycles for flash access.
          */
         ldr     r1, =MC_BASE
-        mov     r0, #MC_FWS_2R3W
-        str     r0, [r1, #MC_FMR_OFF]
+        mov     r0, #MC_FWS_VAL
+        str     r0, [r1, #MC_FMR_EFC0_OFF]
+        str     r0, [r1, #MC_FMR_EFC1_OFF]
 
         /*
          * Disable all interrupts. Useful for debugging w/o target reset.
@@ -159,54 +144,6 @@ _start:
         ldr     r1, =WDT_BASE
         ldr     r0, =WDT_WDDIS
         str     r0, [r1, #WDT_MR_OFF]
-
-        /*
-         * Enable the main oscillator. Set startup time of 6 * 8 slow 
-         * clock cycles and wait until oscillator is stabilized.
-         */
-        ldr     r1, =PMC_BASE
-        mov     r0, #(6 << 8)
-        orr     r0, r0, #CKGR_MOSCEN
-        str     r0, [r1, #CKGR_MOR_OFF]
-wait_moscs:
-        ldr     r0, [r1, #PMC_SR_OFF]
-        tst     r0, #PMC_MOSCS
-        beq     wait_moscs
-
-        /*
-         * Set PLL:
-         * PLLfreq = crystal / divider * (multiplier + 1)
-         * Wait 28 clock cycles until PLL is locked.
-         */
-        ldr     r0, =((PLL_MUL_VAL << CKGR_MUL_LSB) | (28 << CKGR_PLLCOUNT_LSB) | (PLL_DIV_VAL << CKGR_DIV_LSB))
-
-        str     r0, [r1, #CKGR_PLLR_OFF]
-wait_lock:
-        ldr     r0, [r1, #PMC_SR_OFF]
-        tst     r0, #PMC_LOCK
-        beq     wait_lock
-
-        /*
-         * Set master clock prescaler.
-         */
-        mov     r0, #AT91MCK_PRES
-        str     r0, [r1, #PMC_MCKR_OFF]
-wait_presrdy:
-        ldr     r0, [r1, #PMC_SR_OFF]
-        tst     r0, #PMC_MCKRDY
-        beq     wait_presrdy
-
-        /*
-         * Switch to PLL clock.
-         */
-        ldr     r0, [r1, #PMC_MCKR_OFF]
-        orr     r0, r0, #PMC_CSS_PLL_CLK
-        str     r0, [r1, #PMC_MCKR_OFF]
-wait_pllsel:
-        ldr     r0, [r1, #PMC_SR_OFF]
-        tst     r0, #PMC_MCKRDY
-        beq     wait_pllsel
-
 
         /*
          * Enable external reset key.
@@ -276,19 +213,6 @@ _40:
         cmp     r1, r2
         strne   r3, [r1], #+4
         bne     _40
-
-        /*
-         * Relocate .data section (Copy from ROM to RAM).
-         */
-        ldr     r1, =__etext
-        ldr     r2, =__data_start
-        ldr     r3, =__data_end
-
-_41:
-        cmp     r2, r3
-        ldrlo   r0, [r1], #4
-        strlo   r0, [r2], #4
-        blo     _41
 
         /*
          * Initialize user stack pointer.
