@@ -156,6 +156,17 @@ static void DisconnectStation(TCPSOCKET * sock)
  *
  * We are supporting the remote control only for now.
  */
+#ifdef ARTHERNET1
+
+static uint16_t UserInput(void)
+{
+     /* IR will not work on Arthernet, because interrupt 5
+        is in use and can't be re-configured in the IR driver. */
+    return 0xFFFF;
+}
+
+#else /* ARTHERNET1 */
+
 static uint16_t UserInput(void)
 {
     uint16_t rc;
@@ -173,6 +184,8 @@ static uint16_t UserInput(void)
     }
     return rc;
 }
+
+#endif /* ARTHERNET1 */
 
 /*
  * If we got a background scanner 
@@ -419,10 +432,14 @@ int main(void)
         for (;;);
     }
 
+#ifndef ARTHERNET1
     /*
      * Initialize IR remote control.
+     * This will not work on Arthernet, because interrupt 5
+     * is in use and can't be re-configured in the IR driver.
      */
     NutIrInitSony();
+#endif
 
     /*
      * LAN configuration using EEPROM values or DHCP/ARP method.
