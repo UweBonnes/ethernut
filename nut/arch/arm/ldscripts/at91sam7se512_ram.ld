@@ -31,6 +31,9 @@
  */
 
 /*
+ * Revision 1.1  2010/05/13 Andre Riesberg
+ * Added .ramfunc segment.
+ *
  * $Id$
  */
 
@@ -67,7 +70,7 @@ SECTIONS
   } > iram
 
   . = ALIGN(4);
-  
+
   .text :
   {
     *(.text);
@@ -80,7 +83,7 @@ SECTIONS
     . = ALIGN(4);
     *(.glue_7);
   } > ram
-  
+
 
   . = ALIGN(4);
 
@@ -92,6 +95,7 @@ SECTIONS
     PROVIDE (__data_start = .);
     *(.data)
     . = ALIGN(4);
+    *(.ramfunc)
     _edata = .;
     PROVIDE (__data_end = .);
   } > ram
