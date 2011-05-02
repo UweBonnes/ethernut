@@ -238,8 +238,8 @@
 #include <dev/ax88796.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
-#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5) || defined(MORPHOQ1)
-#include <dev/at91sam7x_emac.h>
+#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5) || defined(MORPHOQ1) || defined(ENET_SAM7X)
+#include <dev/at91_emac.h>
 #elif defined(EVK1100) || defined(EVK1105)
 #include <dev/avr32_macb.h>
 #endif
@@ -294,7 +294,7 @@
 	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04)
 #define RTC_CHIP rtcDs1307
 #include <dev/ds1307rtc.h>
-#elif defined(ELEKTOR_IR1)
+#elif defined(ELEKTOR_IR1) || defined(ENET_SAM7X)
 #define RTC_CHIP rtcPcf8563
 #include <dev/pcf8563.h>
 #endif
