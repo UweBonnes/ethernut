@@ -93,6 +93,7 @@ endif
 	$(MAKE) -C canbus
 # Broken: C++ no longer available?	
 #	$(MAKE) -C cppdemo
+	$(MAKE) -C editconf
 	$(MAKE) -C eeprom
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
@@ -121,6 +122,7 @@ install:
 	$(MAKE) -C caltime install
 	$(MAKE) -C canbus install
 #	$(MAKE) -C cppdemo install
+	$(MAKE) -C editconf install
 	$(MAKE) -C eeprom install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
@@ -149,6 +151,7 @@ clean:
 	$(MAKE) -C caltime clean
 	$(MAKE) -C canbus clean
 	$(MAKE) -C cppdemo clean
+	$(MAKE) -C editconf clean
 	$(MAKE) -C eeprom clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
