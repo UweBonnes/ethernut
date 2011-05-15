@@ -67,6 +67,9 @@
 #elif defined (MCU_AT91SAM9260) || defined(MCU_AT91SAM9XE)
 #define TWI_TWD     PA23_TWD_A
 #define TWI_TWCK    PA24_TWCK_A
+#elif defined (MCU_AT91SAM9G45)
+#define TWI_TWD     PA20_TWD0_A
+#define TWI_TWCK    PA21_TWCK0_A
 #endif
 
 /*
