@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 by egnite GmbH
+ * Copyright 2010-2011 by egnite GmbH
  *
  * All rights reserved.
  *
@@ -54,21 +54,43 @@
 #endif
 
 
-/* Power management registers. */
-#define PMM_REG_ENA 0
-#define PMM_REG_DIS 1
-#define PMM_REG_STA 2
+/*! \name Power Management Registers */
+/*@{*/
+/*! \brief Version register. */
+#define PWRMAN_REG_VERS         0       
+/*! \brief Feature status register. */
+#define PWRMAN_REG_STA          1       
+/*! \brief Feature enable register. */
+#define PWRMAN_REG_ENA          2       
+/*! \brief Feature disable register. */
+#define PWRMAN_REG_DIS          3       
+/*! \brief Board temperature register. */
+#define PWRMAN_REG_TEMP         4       
+/*! \brief Auxiliary input voltage register. */
+#define PWRMAN_REG_VAUX         6       
+/*! \brief LED blinking timer register. */
+#define PWRMAN_REG_LEDCTL       8       
+/*@}*/
 
-/* Power management register bits. */
-#define PMM_CPUPWR  0x01
-#define PMM_VBUSI   0x02
-#define PMM_VBUSO   0x04
-#define PMM_MMCPWR  0x08
-#define PMM_RS232   0x10
-#define PMM_ETHCLK  0x20
-#define PMM_ETHRST  0x40
-#define PMM_LED     0x80
-#define PMM_ALARM   0x80
+/* \name Feature flags */
+/*@{*/
+/*! \brief 1.8V and 3.3V supply. */
+#define PWRMAN_BOARD    0x01
+/*! \brief VBUS input at device connector. */
+#define PWRMAN_VBIN     0x02    
+/*! \brief VBUS output at host connector. */
+#define PWRMAN_VBOUT    0x04    
+/*! \brief Memory card supply. */
+#define PWRMAN_MMC      0x08    
+/*! \brief RS-232 driver shutdown. */
+#define PWRMAN_RS232    0x10    
+/*! \brief Ethernet clock enable. */
+#define PWRMAN_ETHCLK   0x20    
+/*! \brief Ethernet PHY reset. */
+#define PWRMAN_ETHRST   0x40    
+/*! \brief RTC wake-up. */
+#define PWRMAN_WAKEUP   0x80    
+/*@}*/
 
 /*!
  * \brief Delay loop.
@@ -133,7 +155,7 @@ static void PmmInit(void)
     outr(PIOA_MDER, _BV(PA23_TWD_A) | _BV(PA24_TWCK_A));
     /* Enable TWI clock. */
     outr(PMC_PCER, _BV(TWI_ID));
-    /* Enable interrupts and reset the interface. */
+    /* Disable interrupts and reset the interface. */
     outr(TWI_IDR, 0xFFFFFFFF);
     outr(TWI_CR, TWI_SWRST);
     /* Switch to master mode. */
@@ -172,6 +194,32 @@ static int PmmWriteReg(unsigned int reg, unsigned int val)
     return 0;
 }
 
+#if 0
+/* For an unknown reason the system hangs in NutTimer(!) processing
+   when trying to read the version. Something is somewhere
+   mysteriously broken. Stack? CPU initialization? Keep this code
+   for reference. */
+static int PmmReadReg(unsigned int reg, unsigned char *val)
+{
+    unsigned long sr;
+    volatile unsigned int tmo;
+
+    outr(TWI_IADRR, reg);
+    outr(TWI_MMR, 0x22 << TWI_DADR_LSB | TWI_IADRSZ_1BYTE | TWI_MREAD);
+    outr(TWI_CR, TWI_START | TWI_STOP);
+    for (tmo = 0; ((sr = inr(TWI_SR)) & TWI_RXRDY) == 0; tmo++) {
+        if (tmo > 100000) {
+            return -1;
+        }
+    }
+    if (sr & TWI_NACK) {
+        return -1;
+    }
+    *val = inb(TWI_RHR);
+    return 0;
+}
+#endif
+
 /*!
  * \brief Ethernet PHY hardware reset.
  */
@@ -188,9 +236,9 @@ static void PmmPhyReset(void)
     outr(PIOA_PER, _BV(18));
 
     BootMilliDelay(10);
-    PmmWriteReg(PMM_REG_ENA, PMM_ETHRST);
+    PmmWriteReg(PWRMAN_REG_ENA, PWRMAN_ETHRST | PWRMAN_ETHCLK);
     BootMilliDelay(1);
-    PmmWriteReg(PMM_REG_DIS, PMM_ETHRST);
+    PmmWriteReg(PWRMAN_REG_DIS, PWRMAN_ETHRST);
     BootMilliDelay(10);
 }
 
