@@ -71,6 +71,7 @@
 
 #include <string.h>
 #include <arpa/inet.h>
+#include <netinet/if_ether.h>
 #include <sys/confnet.h>
 #include <dev/nvmem.h>
 
@@ -101,6 +102,18 @@ CONFNET confnet;
  */
 int NutNetLoadConfig(CONST char *name)
 {
+#ifdef CONFNET_HARDCODED
+
+    memset(&confnet, 0, sizeof(CONFNET));
+    memcpy(confnet.cdn_mac, ether_aton(CONFNET_VIRGIN_MAC), sizeof(confnet.cdn_mac));
+    confnet.cdn_cip_addr = inet_addr(CONFNET_VIRGIN_IP);
+    confnet.cdn_ip_mask = inet_addr(CONFNET_VIRGIN_NETMASK);
+    confnet.cdn_gateway = inet_addr(CONFNET_VIRGIN_GATE);
+
+    return 0;
+
+#else /* CONFNET_HARDCODED */
+
 #ifndef __NUT_EMULATION__	
     if (NutNvMemLoad(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
         return -1;
@@ -119,6 +132,8 @@ int NutNetLoadConfig(CONST char *name)
     memset(confnet.cdn_mac, 0xFF, sizeof(confnet.cdn_mac));
 
     return -1;
+
+#endif /* CONFNET_HARDCODED */
 }
 
 /*!
@@ -128,7 +143,7 @@ int NutNetLoadConfig(CONST char *name)
  */
 int NutNetSaveConfig(void)
 {
-#ifndef __NUT_EMULATION__	
+#if !defined (__NUT_EMULATION__) && !defined (CONFNET_HARDCODED)
     confnet.cd_size = sizeof(CONFNET);
     if (NutNvMemSave(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
         return -1;

@@ -46,5 +46,9 @@
  *
  */
 
+#ifndef CONFNET_NVMEM
+#define CONFNET_NVMEM
+#endif
+
 #endif
 

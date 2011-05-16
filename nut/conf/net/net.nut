@@ -382,14 +382,42 @@ nutnet =
     {
         name = "nutnet_conf",
         brief = "Network Configuration",
-        description = "Initial network settings are stored in non volatile memory."..
-                      "The current version uses 10 bytes for validity check, 6 bytes "..
-                      "for the MAC address and 16 bytes for the IP configuration.\n\n"..
-                      "The length of the host name is configurable.",
+        description = "Initial network settings may be stored in non volatile memory "..
+                      "or may be hardcoded.",
         provides = { "NET_PARMS" },
         sources = { "confnet.c" },
         options =
         {
+            {
+                macro = "CONFNET_NVMEM",
+                brief = "Use Non-Volatile Memory",
+                description = "Initial network settings are stored in non volatile memory."..
+                              "The current version uses 10 bytes for validity check, 6 bytes "..
+                              "for the MAC address and 16 bytes for the IP configuration.\n\n"..
+                              "The length of the host name is configurable.\n\n"..
+                              "This item is disabled if the system doesn't offer any "..
+                              "non-volatile memory. Check the non-volatile memory"..
+                              "module in the device driver section.",
+                requires = { "DEV_NVMEM" },
+                provides = { "CONFNET_INIT_IN_NVMEM" },
+                flavor = "boolean",
+                exclusivity = { "CONFNET_NVMEM", "CONFNET_HARDCODED" },
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFNET_HARDCODED",
+                brief = "Use Hard-Coded Values",
+                description = "Initial network settings are hard-coded. When changed, you need to "..
+                              "re-compile the Nut/OS libraries.\n\n"..
+                              "Applications may handle the network configuration in a very "..
+                              "special way, which is not covered by the standard API. "..
+                              "Using hard-coded values will be also useful as a temporary "..
+                              "solution when porting Nut/Net to a new platform.",
+                provides = { "CONFNET_INIT_IN_CODE" },
+                flavor = "boolean",
+                exclusivity = { "CONFNET_NVMEM", "CONFNET_HARDCODED" },
+                file = "include/cfg/eeprom.h"
+            },
             {
                 macro = "CONFNET_EE_OFFSET",
                 brief = "Location",
@@ -398,13 +426,46 @@ nutnet =
                               "Note, that changing this value will invalidate previously "..
                               "stored setting after upgrading to this new version. You must "..
                               "also make sure, that this memory area will not conflict with "..
-                              "others, specifically the system configuration.\n\n"..
-                              "This item is disabled if the system doesn't offer any "..
-                              "non-volatile memory. Check the non-volatile memory"..
-                              "module in the device driver section.",
-                requires = { "DEV_NVMEM" },
+                              "others, specifically the system configuration.",
+                requires = { "CONFNET_INIT_IN_NVMEM" },
                 default = "64",
                 type = "integer",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFNET_VIRGIN_MAC",
+                brief = "Initial MAC Address",
+                description = "Ethernet MAC address. "..
+                              "The given default is a locally administered address.",
+                requires = { "CONFNET_INIT_IN_CODE" },
+                default = "\"02:00:00:00:00:00\"",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFNET_VIRGIN_IP",
+                brief = "Initial IP Address",
+                description = "When set to 0.0.0.0, Nut/Net will request an IP address from the DHCP "..
+                              "server during network initialization.",
+                requires = { "CONFNET_INIT_IN_CODE" },
+                default = "\"0.0.0.0\"",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFNET_VIRGIN_NETMASK",
+                brief = "Initial IP Mask",
+                description = "If the initial IP address is 0.0.0.0, this will be overridden by DHCP. ",
+                requires = { "CONFNET_INIT_IN_CODE" },
+                default = "\"255.255.255.0\"",
+                file = "include/cfg/eeprom.h"
+            },
+            {
+                macro = "CONFNET_VIRGIN_GATE",
+                brief = "Initial IP Gate",
+                description = "IP address of the default gateway, may be 0.0.0.0 if routing to other "..
+                              "networks is not required. If the initial IP address is 0.0.0.0, this "..
+                              "will be overridden by DHCP.",
+                requires = { "CONFNET_INIT_IN_CODE" },
+                default = "\"0.0.0.0\"",
                 file = "include/cfg/eeprom.h"
             }
         }
