@@ -34,28 +34,28 @@
 # $Id$
 #
 
-%o : %c
+%.o : %.c
 	$(CC) -c $(CPFLAGS) $<
 
-%o : %S
+%.o : %.S
 	$(AS) -c $(ASFLAGS) $< -o $@
 
-%s : %c
+%.s : %.c
 	$(CC) -S $(CPFLAGS) $< -o $@
 
-%elf: $(OBJS)
+%.elf: $(OBJS)
 	$(CC) $(OBJS) $(LIB) $(LDFLAGS) -o $@
 
-%obj: %elf
+%.obj: %.elf
 	$(BIN) -O avrobj $< $@
 
-%rom: %elf
+%.rom: %.elf
 	$(BIN) -O srec $< $@
 
-%eep: %elf
+%.eep: %.elf
 	$(BIN) -j .eeprom --set-section-flags=.eeprom="alloc,load" -O srec $< $@
 
-%a: $(OBJS)
+%.a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(?F)
 
 .PHONY: cleancc

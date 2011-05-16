@@ -90,21 +90,12 @@ typedef struct _ROMENTRY ROMENTRY;
  * \struct _ROMENTRY uromfs.h fs/uromfs.h
  * \brief Mikro-ROM directory entry structure.
  */
-#ifdef __IMAGECRAFT__
-struct _ROMENTRY {
-    ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
-    const uint8_t *rome_name;/*!< Filename. */
-    unsigned int rome_size;        /*!< File size. */
-    const char *rome_data;  /*!< File data. */
-};
-#else
 struct _ROMENTRY {
     ROMENTRY *rome_next;    /*!< Link to next ROMENTRY structure. */
     prog_char *rome_name;   /*!< Filename. */
     unsigned int rome_size;        /*!< File size. */
     prog_char *rome_data;   /* __attribute__ ((progmem));  !< File data. */
 };
-#endif
 
 /*!
  * \brief Mikro-ROM file information type.

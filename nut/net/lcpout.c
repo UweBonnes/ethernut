@@ -133,7 +133,7 @@ int NutLcpOutput(NUTDEVICE * dev, uint8_t code, uint8_t id, NETBUF * nb)
     return 0;
 }
 
-static inline void LcpResetOptions(NUTDEVICE * dev)
+static INLINE void LcpResetOptions(NUTDEVICE * dev)
 {
     PPPDCB *dcb = dev->dev_dcb;
 

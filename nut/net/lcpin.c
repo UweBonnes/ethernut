@@ -100,7 +100,7 @@ extern uint32_t new_magic;
 /*
  * Received Configure-Request.
  */
-static inline void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     int rc = XCP_CONFACK;
@@ -282,7 +282,7 @@ static inline void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
  * Configure-Ack received.
  * Never called in INITIAL or STARTING phase.
  */
-static inline void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static INLINE void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
     XCPOPT *xcpo;
@@ -385,7 +385,7 @@ static inline void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Configure-Nak or Configure-Reject received.
  */
-static inline void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t rejected)
+static INLINE void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uint8_t rejected)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -449,7 +449,7 @@ static inline void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uin
 /*
  * Terminate-Request received.
  */
-static inline void LcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static INLINE void LcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -472,7 +472,7 @@ static inline void LcpRxTermReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Terminate-Ack received.
  */
-static inline void LcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static INLINE void LcpRxTermAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -531,7 +531,7 @@ void LcpRxProtRej(NUTDEVICE * dev)
 /*
  * Received a Code-Reject.
  */
-static inline void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static INLINE void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 
@@ -544,7 +544,7 @@ static inline void LcpRxCodeRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*
  * Received an Echo-Request.
  */
-static inline void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
+static INLINE void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 {
     PPPDCB *dcb = dev->dev_dcb;
 

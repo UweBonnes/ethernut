@@ -111,7 +111,7 @@
  * the meaning as a program memory attribute.
  */
 #ifndef CONST
-#define CONST
+#define CONST   const
 #endif
 
 /*!
@@ -157,7 +157,7 @@
 
 #define memcpy_P(dst, src_P, n) cmemcpy(dst, src_P, n)
 #define strcat_P(s1, s2_P)      cstrcat(s1, s2_P)
-#define strcmp_P(s1_P, s2)      cstrcmp(s2, s1_P)   /* Thanks to Michael. */
+#define strcmp_P(s1, s2_P)      (-cstrcmp(s2_P, s1))
 #define strlen_P(s_P)           cstrlen(s_P)
 #define strncat_P(s1, s2_P, n)  cstrncat(s1, s2_P, n)
 #define strncmp_P(s1_P, s2, n)  cstrncmp(s1_P, s2, n)
@@ -198,17 +198,17 @@
 /*! \def PRG_RDB(p)
  * \brief Read byte from program space.
  */
-#define PRG_RDB(p)  (*((const char *)(p)))
+#define PRG_RDB(p)  (*((__flash char *)(p)))
 
 /*! \def prog_char
  * \brief Character in program space.
  */
-#define prog_char const char
+#define prog_char __flash char
 
 /*! \def prog_int
  * \brief Integer in program space.
  */
-#define prog_int const int
+#define prog_int __flash int
 
 /*! \def PGM_P
  * \brief Pointer to character in program space.
@@ -385,6 +385,8 @@
 
 extern void *calloc(size_t num, size_t size);
 extern char *strdup(CONST char *str);
+
+#include <string.h>
 
 
 #endif /* _ARCH_AVR_ICC_H_ */
