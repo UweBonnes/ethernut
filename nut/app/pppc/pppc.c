@@ -267,7 +267,6 @@ static void ProtocolPortClose(int pppcom)
 
 static int ProtocolPortConfigure(void)
 {
-    printf("Configure network interface...");
 #ifdef PPP_DEV
     PPPDCB *dcb;
 
@@ -276,6 +275,7 @@ static int ProtocolPortConfigure(void)
      * This will initiate the PPP configuration negotiation
      * and authentication with the server.
      */
+    printf("Configure network interface...");
     if (NutNetIfConfig("ppp", 0, 0, 0)) {
         puts("failed");
         return -1;
@@ -299,6 +299,7 @@ static int ProtocolPortConfigure(void)
     printf("Secondary DNS: %s\n", inet_ntoa(dcb->dcb_ip_dns2));
 #else
     /* We use DHCP on Ethernet. */
+    printf("Configure network interface...");
     if (NutDhcpIfConfig(DEV_ETHER_NAME, 0, 60000)) {
         puts("failed");
         return -1;
