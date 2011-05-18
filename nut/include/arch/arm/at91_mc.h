@@ -99,8 +99,13 @@
 #define MC_FMCN_LSB                     16      /*!< \brief Flash microsecond cycle number LSB. */
 #define MC_FMCN_MASK            0x00FF0000      /*!< \brief Flash microsecond cycle number mask. */
 
-#define MC_FCR_OFF              0x00000064      /*!< \brief MC flash command register offset. */
-#define MC_FCR      (MC_BASE + MC_FCR_OFF)      /*!< \brief MC flash command register address. */
+#define MC_FCR_EFC0_OFF         0x00000064      /*!< \brief MC flash mode register bank 0 offset. */
+#define MC_FCR_EFC0 (MC_BASE + MC_FCR_EFC0_OFF) /*!< \brief MC flash mode register bank 0 address. */
+#define MC_FCR_EFC1_OFF         0x00000074      /*!< \brief MC flash mode register bank 1 offset. */
+#define MC_FCR_EFC1 (MC_BASE + MC_FCR_EFC1_OFF) /*!< \brief MC flash mode register bank 1 address. */
+
+#define MC_FCR_OFF         MC_FCR_EFC0_OFF      /*!< \brief MC flash command register offset. */
+#define MC_FCR                 MC_FCR_EFC0      /*!< \brief MC flash command register address. */
 #define MC_FCMD_MASK            0x0000000F      /*!< \brief Flash command mask. */
 #define MC_FCMD_NOP             0x00000000      /*!< \brief No command. */
 #define MC_FCMD_WP              0x00000001      /*!< \brief Write page. */
@@ -114,8 +119,13 @@
 #define MC_PAGEN_MASK           0x0003FF00      /*!< \brief Page number mask. */
 #define MC_KEY                  0x5A000000      /*!< \brief Writing protect key. */
 
-#define MC_FSR_OFF              0x00000068      /*!< \brief MC flash status register offset. */
-#define MC_FSR      (MC_BASE + MC_FSR_OFF)      /*!< \brief MC flash status register address. */
+#define MC_FSR_EFC0_OFF         0x00000068      /*!< \brief MC flash mode register bank 0 offset. */
+#define MC_FSR_EFC0 (MC_BASE + MC_FSR_EFC0_OFF) /*!< \brief MC flash mode register bank 0 address. */
+#define MC_FSR_EFC1_OFF         0x00000078      /*!< \brief MC flash mode register bank 1 offset. */
+#define MC_FSR_EFC1 (MC_BASE + MC_FSR_EFC1_OFF) /*!< \brief MC flash mode register bank 1 address. */
+
+#define MC_FSR_OFF         MC_FSR_EFC0_OFF      /*!< \brief MC flash status register offset. */
+#define MC_FSR                 MC_FSR_EFC0      /*!< \brief MC flash status register address. */
 #define MC_SECURITY             0x00000010      /*!< \brief Security bit status. */
 
 #define MC_GPNVM0               0x00000100      /*!< \brief General purpose NVM bit 0. */

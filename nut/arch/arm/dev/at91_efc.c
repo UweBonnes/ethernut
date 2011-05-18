@@ -56,6 +56,8 @@
  * \endverbatim
  */
 
+#include <cfg/memory.h>
+
 #include <sys/atom.h>
 #include <dev/nvmem.h>
 
@@ -76,10 +78,27 @@
 #define FLASH_CHIP_BASE  0x00100000
 #endif
 
+/*! \brief Size handled by each controller.
+ */
+#ifndef FLASH_CHIP_SIZE
+#define FLASH_CHIP_SIZE  0x00040000
+#endif
+
 /*! \brief Address offset of the configuration sector.
+ *
+ * Although this is a configurable item, we try to determine
+ * a default value for some of the most widely used CPUs.
+ *
+ * \todo Provide pre-defined flash layouts for all CPUs in
+ *       one of the architecture specific header files.
  */
 #ifndef FLASH_CONF_SECTOR
+#if defined(MCU_AT91SAM7S512) || defined(MCU_AT91SAM7SE512) || \
+    defined(MCU_AT91SAM7X512) || defined(MCU_AT91SAM9XE512)
+#define FLASH_CONF_SECTOR  0x0007FF00
+#else
 #define FLASH_CONF_SECTOR  0x0003FF00
+#endif
 #endif
 
 /*! \brief Size of the configuration area.
@@ -118,13 +137,13 @@ typedef volatile flashdat_t *flashptr_t;
  * This routine must not be located in internal flash memory.
  *
  */
-RAMFUNC int At91EfcCmd(unsigned int cmd, uint32_t tmo)
+RAMFUNC int At91EfcCmdEx(int fci, unsigned int cmd, uint32_t tmo)
 {
     int rc = 0;
     unsigned int fsr;
 
     /* Make sure that the previous command has finished. */
-    while ((inr(MC_FSR) & MC_FRDY) == 0) {
+    while ((inr(fci ? MC_FSR_EFC1: MC_FSR_EFC0) & MC_FRDY) == 0) {
         if (tmo && --tmo < 1) {
             return -1;
         }
@@ -134,10 +153,10 @@ RAMFUNC int At91EfcCmd(unsigned int cmd, uint32_t tmo)
     NutEnterCritical();
 
     /* Write command. */
-    outr(MC_FCR, MC_KEY | cmd);
+    outr(fci ? MC_FCR_EFC1 : MC_FCR_EFC0, MC_KEY | cmd);
 
     /* Wait for ready flag set. */
-    while (((fsr = inr(MC_FSR)) & MC_FRDY) == 0) {
+    while (((fsr = inr(fci ? MC_FSR_EFC1 : MC_FSR_EFC0)) & MC_FRDY) == 0) {
         if (tmo && --tmo < 1) {
             rc = -1;
             break;
@@ -152,6 +171,17 @@ RAMFUNC int At91EfcCmd(unsigned int cmd, uint32_t tmo)
         rc = -1;
     }
     return rc;
+}
+
+/*!
+ * \brief Execute flash controller command.
+ *
+ * This routine must not be located in internal flash memory.
+ *
+ */
+RAMFUNC int At91EfcCmd(unsigned int cmd, uint32_t tmo)
+{
+    return At91EfcCmdEx(0, cmd, tmo);
 }
 
 /*!
@@ -203,13 +233,21 @@ int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len)
         }
     }
 
-    /* Clear NEBP in mode register for automatic erasure. */
-    outr(MC_FMR, (i = inr(MC_FMR)) & ~MC_NEBP);
-    /* Execute page write command. */
-    rc = At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_WP, FLASH_WRITE_WAIT);
-    /* Restore mode register. */
-    outr(MC_FMR, i);
-
+    if (off < FLASH_CHIP_SIZE) {
+        /* Clear NEBP in mode register for automatic erasure. */
+        outr(MC_FMR, (i = inr(MC_FMR)) & ~MC_NEBP);
+        /* Execute page write command. */
+        rc = At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_WP, FLASH_WRITE_WAIT);
+        /* Restore mode register. */
+        outr(MC_FMR, i);
+    } else {
+        /* Clear NEBP in mode register for automatic erasure. */
+        outr(MC_FMR_EFC1, (i = inr(MC_FMR_EFC1)) & ~MC_NEBP);
+        /* Execute page write command. */
+        rc = At91EfcCmdEx(1, ((off - FLASH_CHIP_SIZE) & MC_PAGEN_MASK) | MC_FCMD_WP, FLASH_WRITE_WAIT);
+        /* Restore mode register. */
+        outr(MC_FMR_EFC1, i);
+    }
     return rc;
 }
 
@@ -230,6 +268,10 @@ int At91EfcSectorErase(unsigned int off)
  */
 int At91EfcRegionLock(unsigned int off)
 {
+    if (off < FLASH_CHIP_SIZE) {
+        return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, FLASH_WRITE_WAIT);
+    }
+    off -= FLASH_CHIP_SIZE;
     return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, FLASH_WRITE_WAIT);
 }
 
@@ -242,6 +284,10 @@ int At91EfcRegionLock(unsigned int off)
  */
 int At91EfcRegionUnlock(unsigned int off)
 {
+    if (off < FLASH_CHIP_SIZE) {
+        return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, FLASH_WRITE_WAIT);
+    }
+    off -= FLASH_CHIP_SIZE;
     return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, FLASH_WRITE_WAIT);
 }
 
