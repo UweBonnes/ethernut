@@ -40,7 +40,7 @@ include ../Makedefs
 
 SRCS =  $(PROJ).c
 OBJS =  $(SRCS:.c=.o)
-LIBS =  $(LIBDIR)/nutinit.o -lnutlua -lnutnet -lnutpro -lnutgorp -lnutos -lnutarch -lnutdev -lnutarch -lnutos -lnutcrt -lm $(ADDLIBS)
+LIBS =  $(LIBDIR)/nutinit.o -lnutlua -lnutnet -lnutpro -lnutgorp -lnutos -lnutarch -lnutdev -lnutarch -lnutos -lnutcrt $(LIBMATH) $(ADDLIBS)
 TARG =  $(PROJ).hex
 
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)

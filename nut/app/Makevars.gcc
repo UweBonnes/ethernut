@@ -43,3 +43,6 @@ BIN = $(TRGT)objcopy
 
 # Removes -Werror for application build
 CFLAGS_WRN = -Wall -Wstrict-prototypes
+
+# Special libraries
+LIBMATH = -lm

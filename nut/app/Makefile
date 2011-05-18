@@ -103,7 +103,9 @@ endif
 	$(MAKE) -C ioexpander
 	$(MAKE) -C led_key
 	$(MAKE) -C logtime
+ifeq ($(CC), iccavr)
 	$(MAKE) -C lua
+endif
 	$(MAKE) -C nutpiper
 	$(MAKE) -C playmp3
 	$(MAKE) -C portdio
@@ -118,7 +120,9 @@ endif
 
 install:
 #	$(MAKE) -C 7segtst install
+ifeq ($(ARCH), avr)
 	$(MAKE) -C basemon install
+endif
 	$(MAKE) -C caltime install
 	$(MAKE) -C canbus install
 #	$(MAKE) -C cppdemo install
@@ -132,7 +136,9 @@ install:
 	$(MAKE) -C ioexpander install
 	$(MAKE) -C led_key install
 	$(MAKE) -C logtime install
+ifeq ($(CC), iccavr)
 	$(MAKE) -C lua install
+endif
 	$(MAKE) -C nutpiper install
 	$(MAKE) -C playmp3 install
 	$(MAKE) -C portdio install
