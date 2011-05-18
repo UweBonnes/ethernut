@@ -68,6 +68,8 @@ SECTIONS
     . = ALIGN(4);
     *(.text);
     . = ALIGN(4);
+    *(.text.*);
+    . = ALIGN(4);
     *(.rodata*);
     . = ALIGN(4);
     *(.glue_7t);

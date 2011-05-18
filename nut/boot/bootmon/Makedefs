@@ -37,7 +37,7 @@
 
 DEFS += -DEE_CONFNET=64
 DEFS += -DEE_CONFBOOT=128
-# DEFS += -DNUTDEBUG
+DEFS += -DNUTDEBUG
 DEFS += -DUSRLED
 DEFS += -DAT45D_CONF
 
@@ -46,7 +46,8 @@ ENTRY = 0x1F000
 INCDIR = .
 LIBDIR = .
 
-TRGT = arm-elf-
+TRGT   = arm-none-eabi-
+#TRGT = arm-elf-
 CC     = $(TRGT)gcc
 AR     = $(TRGT)ar
 CP     = cp

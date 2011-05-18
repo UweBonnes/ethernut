@@ -73,7 +73,8 @@ static unsigned long arptab_ip;        /*!< \brief ARP entry IP address. */
 static unsigned char arptab_ha[6];     /*!< \brief APR entry hardware address. */
 
 ARPENTRY ae;
-ARPFRAME arpframe;
+ETHERHDR arpheader;
+ETHERARP arpframe;
 
 /*!
  * \brief Request the MAC address of a specified IP address.
@@ -85,7 +86,7 @@ ARPFRAME arpframe;
  */
 int ArpRequest(unsigned long dip, unsigned char *dmac)
 {
-    ETHERARP *ea = &arpframe.eth_arp;
+    ETHERARP *ea;
     unsigned char retry;
     int rlen;
 
@@ -102,15 +103,15 @@ int ArpRequest(unsigned long dip, unsigned char *dmac)
     /*
      * Set ARP header.
      */
-    ea->arp_hrd = ARPHRD_ETHER;
-    ea->arp_pro = ETHERTYPE_IP;
-    ea->arp_hln = 6;
-    ea->arp_pln = 4;
-    ea->arp_op = ARPOP_REQUEST;
-    memcpy_(ea->arp_sha, confnet.cdn_mac, 6);
-    memset_(ea->arp_tha, 0xFF, 6);
-    ea->arp_spa = confnet.cdn_ip_addr;
-    ea->arp_tpa = dip;
+    arpframe.arp_hrd = ARPHRD_ETHER;
+    arpframe.arp_pro = ETHERTYPE_IP;
+    arpframe.arp_hln = 6;
+    arpframe.arp_pln = 4;
+    arpframe.arp_op = ARPOP_REQUEST;
+    memcpy_(arpframe.arp_sha, confnet.cdn_mac, 6);
+    memset_(arpframe.arp_tha, 0xFF, 6);
+    arpframe.arp_spa = confnet.cdn_ip_addr;
+    arpframe.arp_tpa = dip;
 
 
     ea = &rframe.eth.arp;
@@ -150,36 +151,27 @@ int ArpRequest(unsigned long dip, unsigned char *dmac)
 
 void ArpRespond(void)
 {
-    ETHERARP *ea = &arpframe.eth_arp;
+    ETHERARP *ea = &rframe.eth.arp;
 
-    if (ea->arp_tpa == confnet.cdn_ip_addr) {
-        if (htons(ea->arp_op) == ARPOP_REPLY) {
+    if (ea->arp_op == ARPOP_REPLY) {
+        if (ea->arp_tpa == confnet.cdn_ip_addr) {        
             ae.ae_ip = ea->arp_spa;
             memcpy_(ae.ae_ha, ea->arp_sha, 6);
-        } 
-    } 
-    else if (ea->arp_spa == confnet.cdn_ip_addr) {
-        if (htons(ea->arp_op) == ARPOP_REQUEST) {          
-            /*
-             * Set ARP header.
-             */
-            ea->arp_hrd = htons(ARPHRD_ETHER);
-            ea->arp_pro = ETHERTYPE_IP;
-            ea->arp_hln = 6;
-            ea->arp_pln = 4;
-            ea->arp_op = htons(ARPOP_REPLY);
-    
-            /*
-             * Set ARP destination data.
-             */
-            
-            memcpy_(ea->arp_tha, ea->arp_sha, 6);
-            ea->arp_tpa = ea->arp_spa;
-            
-            memcpy_(ea->arp_sha, confnet.cdn_mac, 6);
-            ea->arp_spa = confnet.cdn_ip_addr;
-
-            EtherOutput(0, ETHERTYPE_ARP, sizeof(ETHERARP));
+        }
+    }
+    else if (ea->arp_op == ARPOP_REQUEST) {
+        if (ea->arp_tpa == confnet.cdn_ip_addr) {
+            /* Use the request as a basis for our reply. */
+            memcpy_((unsigned char *)&arpframe, (unsigned char *)ea, sizeof(ETHERARP));
+            /* The request's source becomes the reply's destination. */ 
+            memcpy_(arpframe.arp_tha, ea->arp_sha, 6);
+            arpframe.arp_tpa = ea->arp_spa;
+            /* Use our configuration for the reply's source. */
+            memcpy_(arpframe.arp_sha, confnet.cdn_mac, 6);
+            arpframe.arp_spa = confnet.cdn_ip_addr;
+            /* Make this a reply and send it . */
+            arpframe.arp_op = ARPOP_REPLY;
+            EtherOutput(arpframe.arp_tha, ETHERTYPE_ARP, sizeof(ETHERARP));
         }
     }
 }

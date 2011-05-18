@@ -60,7 +60,6 @@ typedef struct __attribute__ ((packed)) {
 } UDPFRAME;
 
 typedef struct __attribute__ ((packed)) {
-    ETHERHDR eth_hdr;
     union {
         ETHERARP arp;
         UDPFRAME udp;
@@ -72,11 +71,13 @@ extern unsigned long random_id;
 /*
  * Outgoing frame.
  */
+extern ETHERHDR sheader;
 extern ETHERFRAME sframe;
 
 /*
  * Incoming frame.
  */
+extern ETHERHDR rheader;
 extern ETHERFRAME rframe;
 
 #endif

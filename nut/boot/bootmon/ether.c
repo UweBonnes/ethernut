@@ -292,6 +292,7 @@ static void NicWrite16(unsigned char *buf, unsigned int len)
 {
     unsigned short val;
 
+    /* Make sure that the total size is an even value. */
     len = (len + 1) / 2;
     while (len--) {
         val = *buf++;
@@ -309,6 +310,7 @@ static void NicRead16(unsigned char *buf, unsigned short len)
 {
     unsigned short val;
 
+    /* Make sure that the total size is an even value. */
     len = (len + 1) / 2;
     while (len--) {
         val = inw(NIC_DATA_ADDR);
@@ -322,7 +324,7 @@ static void NicRead16(unsigned char *buf, unsigned short len)
  *
  * \return 0 on success, -1 otherwise.
  */
-int NicReset(void)
+static int NicReset(void)
 {
     /* Software reset. */
     nic_outb(NIC_NCR, NIC_NCR_RST | NIC_NCR_LBMAC);
@@ -391,9 +393,12 @@ int EtherInit(void)
     nic_outb(NIC_GPR, 0);
 
     /* Set MAC address. */
+    DEBUG("[MAC=");
     for (i = 0; i < 6; i++) {
+        DEBUGUCHAR(confnet.cdn_mac[i]);
         nic_outb(NIC_PAR + i, confnet.cdn_mac[i]);
     }
+    DEBUG("]");
 
     /* Enable broadcast receive. */
     for (i = 0; i < 7; i++) {
@@ -403,6 +408,11 @@ int EtherInit(void)
 
     /* Clear interrupts. */
     nic_outb(NIC_ISR, NIC_ISR_ROOS | NIC_ISR_ROS | NIC_ISR_PTS | NIC_ISR_PRS);
+
+    /* Enable late collision retries on the DM9000A. */
+    if (nic_inb(NIC_CHIPR) == 0x19) {
+        nic_outb(0x2D, 0x40);
+    }
 
     /* Enable receiver. */
     nic_outb(NIC_RCR, NIC_RCR_DIS_LONG | NIC_RCR_DIS_CRC | NIC_RCR_RXEN);
@@ -435,7 +445,7 @@ int EtherInit(void)
 /*!
  * \brief Send an Ethernet frame.
  *
- * \param dmac Destination MAC address.
+ * \param dmac Destination MAC address, NULL for broadcast.
  * \param type Frame type.
  * \param len  Frame size.
  *
@@ -444,26 +454,25 @@ int EtherInit(void)
 int EtherOutput(const unsigned char *dmac, unsigned int type, unsigned int len)
 {
     ETHERHDR *eh;
-    unsigned char *cp;
+    unsigned char *ed;
 
     /*
      * Set the Ethernet header.
      */
     if (type == ETHERTYPE_ARP) {
-        cp = (unsigned char *) &arpframe;
+        eh = &arpheader;
+        ed = (unsigned char *) &arpframe;
     } else {
-        cp = (unsigned char *) &sframe;
+        eh = &sheader;
+        ed = (unsigned char *) &sframe;
     }
-    eh = (ETHERHDR *) cp;
     memcpy_(eh->ether_shost, confnet.cdn_mac, 6);
-    memcpy_(eh->ether_dhost, dmac, 6);
-    eh->ether_type = (unsigned short)type;
-
-    /* Add the size of the Ethernet header and make sure that the total
-       size is an even value. */
-    if ((len += sizeof(ETHERHDR)) & 1) {
-        len++;
+    if (dmac) {
+        memcpy_(eh->ether_dhost, dmac, 6);
+    } else {
+        memset_(eh->ether_dhost, 0xFF, 6);
     }
+    eh->ether_type = (unsigned short)type;
 
     DEBUG("\nTx(");
     DEBUGUSHORT(len);
@@ -473,10 +482,11 @@ int EtherOutput(const unsigned char *dmac, unsigned int type, unsigned int len)
     outb(NIC_BASE_ADDR, NIC_MWCMD);
 
     /* Transfer the Ethernet frame. */
-    NicWrite16(cp, len);
+    NicWrite16((unsigned char *)eh, sizeof(ETHERHDR));
+    NicWrite16(ed, len);
 
     /* Start the transmission. */
-    nic_outw(NIC_TXPL, len);
+    nic_outw(NIC_TXPL, len + sizeof(ETHERHDR));
     nic_outb(NIC_TCR, NIC_TCR_TXREQ);
 
     return 0;
@@ -514,32 +524,14 @@ int EtherInput(unsigned short type, unsigned int tms)
 
                 /* Receiver interrupt. */
                 if (isr & NIC_ISR_PRS) {
-                    break;
+                    nic_inb(NIC_MRCMDX);
+                    fsw = inb(NIC_DATA_ADDR);
+                    if (fsw == 1) {
+                        break;
+                    }
                 }
                 MicroDelay(10000);
             }
-        }
-
-        /* 
-        * Read the status word w/o auto increment. If zero, no packet is 
-        * available. Otherwise it should be set to one. Any other value 
-        * indicates a weird chip crying for reset.
-        */
-        while (tms) {
-            DEBUG("!");
-            tms--;
-            random_id++;
-            nic_inb(NIC_MRCMDX);
-            fsw = inb(NIC_DATA_ADDR);
-            if (fsw > 1) {
-                DEBUG("[FSW ");
-                DEBUGUCHAR(fsw);
-                DEBUG("]");
-                return -1;
-            } else if (fsw) {
-                break;
-            }
-            MicroDelay(10000);
         }
 
         if (fsw != 1) {
@@ -589,18 +581,19 @@ int EtherInput(unsigned short type, unsigned int tms)
 
         /* Read packet data from 16 bit bus. */
         fbc -= 4;
-        NicRead16((unsigned char *) &rframe, fbc);
+        NicRead16((unsigned char *) &rheader, sizeof(ETHERHDR));
+        NicRead16((unsigned char *) &rframe, fbc - sizeof(ETHERHDR));
         /* Read packet CRC. */
         fsw = inw(NIC_DATA_ADDR);
         fsw = inw(NIC_DATA_ADDR);
 
-        if (rframe.eth_hdr.ether_type == type) {
+        if (rheader.ether_type == type) {
             break;
         }
         /*
          * Handle incoming ARP requests.
          */
-        if (rframe.eth_hdr.ether_type == ETHERTYPE_ARP)
+        if (rheader.ether_type == ETHERTYPE_ARP)
             ArpRespond();
     }
     return fbc;

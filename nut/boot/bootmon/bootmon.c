@@ -45,7 +45,9 @@
 #include "bootmon.h"
 
 unsigned long random_id;
+ETHERHDR sheader;
 ETHERFRAME sframe;
+ETHERHDR rheader;
 ETHERFRAME rframe;
 
 static unsigned char my_mac[32];
@@ -76,7 +78,7 @@ void NplUledCntl(int status)
 
 static int UserEntry(void)
 {
-    PutString("\nBootMon 1.2.0\n");
+    PutString("\nBootMon 1.2.1\n");
     NplUledCntl(ULED_OFF);
 
     memcpy_(my_mac, confnet.cdn_mac, 6);

@@ -94,12 +94,8 @@ typedef struct __attribute__ ((packed)) ether_arp {
     unsigned long arp_tpa;      /*!< \brief Target protocol address. */
 } ETHERARP;
 
-typedef struct __attribute__ ((packed)) arp_frame {
-    ETHERHDR eth_hdr;
-    ETHERARP eth_arp;
-} ARPFRAME;
-
-extern ARPFRAME arpframe;
+extern ETHERHDR arpheader;
+extern ETHERARP arpframe;
 
 typedef struct {
     unsigned long ae_ip;        /*!< \brief IP address. */

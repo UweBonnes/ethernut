@@ -53,9 +53,9 @@ include Makerules
 
 clean:
 	-rm -f $(OBJS)
-	-rm -f $(TARG)
+	-rm -f $(TARG) $(BTARG)
 	-rm -f $(PROJ).obj
 	-rm -f $(PROJ).sym
 	-rm -f $(PROJ).map
-	-rm -f $(SRCS:.c=.lst)
+	-rm -f start_rom.lst $(SRCS:.c=.lst)
 	-rm -f $(SRCS:.c=.bak)
