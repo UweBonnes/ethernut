@@ -143,7 +143,6 @@
 */
 #define LUA_INTEGER	ptrdiff_t
 
-
 /*
 @@ LUA_API is a mark for all core API functions.
 @@ LUALIB_API is a mark for all standard library functions.
@@ -764,7 +763,7 @@ union luai_Cast { double l_d; long l_l; };
 #undef LUA_NUMBER_DOUBLE
 
 #undef LUA_NUMBER
-#define LUA_NUMBER          int
+#define LUA_NUMBER          long
 
 #undef  LUAI_UACNUMBER
 #define LUAI_UACNUMBER	    int
@@ -773,8 +772,8 @@ union luai_Cast { double l_d; long l_l; };
 #undef LUA_NUMBER_FMT
 #undef LUAI_MAXNUMBER2STR
 #undef lua_str2number
-#define LUA_NUMBER_SCAN     "%d"
-#define LUA_NUMBER_FMT      "%d"
+#define LUA_NUMBER_SCAN     "%ld"
+#define LUA_NUMBER_FMT      "%ld"
 #define LUAI_MAXNUMBER2STR	12 /* 10 digits, sign, point, and \0 */
 #define lua_str2number(s,p)	strtol((s), (p), 10)
 
