@@ -207,32 +207,6 @@ nuttools =
         }
     },
     {
-        name = "nuttools_gccoutput",
-        brief = "GCC binary format (for ARM)",
-        requires = { "TOOL_CC_ARM" },
-        options =
-        {
-            {
-                brief = "ELF",
-                description = "Old binary format",
-                provides = { "USE_ARM_ELF" },
-                macro = "ARMELF",
-                flavor = "boolean",
-                exclusivity = gcc_output_format,
-                makedefs = { "TRGT = arm-elf-" }
-           },
-            {
-                brief = "EABI",
-                description = "New binary format",
-                provides = { "USE_ARM_EABI" },
-                macro = "ARMEABI",
-                flavor = "boolean",
-                exclusivity = gcc_output_format,
-                makedefs = { "TRGT = arm-none-eabi-" }
-            }
-        }
-    },
-    {
         name = "nuttools_gccopt",
         brief = "GCC Settings",
         requires = { "TOOL_GCC" },
@@ -247,6 +221,24 @@ nuttools =
                 type = "enumerated",
                 choices = function() return GetLDScripts(); end,
                 makedefs = function() return { "LDNAME", "LDSCRIPT=" .. GetLDScriptsPath() }; end,
+            },
+            {
+                brief = "arm-elf",
+                description = "Old binary format",
+                requires = { "TOOL_CC_ARM" },
+                macro = "ARMELF",
+                flavor = "boolean",
+                exclusivity = gcc_output_format,
+                makedefs = { "TRGT = arm-elf-" }
+           },
+            {
+                brief = "arm-none-eabi",
+                description = "New binary format",
+                requires = { "TOOL_CC_ARM" },
+                macro = "ARMEABI",
+                flavor = "boolean",
+                exclusivity = gcc_output_format,
+                makedefs = { "TRGT = arm-none-eabi-" }
             }
         }
     },
