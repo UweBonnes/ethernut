@@ -252,16 +252,23 @@ SectionGroup "Manuals"
     SectionIn 1 2 3
     SetOutPath "$INSTDIR\nut\doc\en\html"
     File ..\..\..\doc\en\html\*.html
+    File ..\..\..\doc\en\html\*.xml
     File ..\..\..\doc\en\html\*.css
-    File ..\..\..\doc\en\html\*.dot
-    ; File ..\..\..\doc\en\html\*.map
-    ; File ..\..\..\doc\en\html\*.md5
+    File ..\..\..\doc\en\html\*.map
+    File ..\..\..\doc\en\html\*.md5
     File ..\..\..\doc\en\html\*.png
-    File ..\..\..\doc\en\html\*.gif
+;    File ..\..\..\doc\en\html\*.gif
+    File ..\..\..\doc\en\html\*.js
+    SetOutPath "$INSTDIR\nut\doc\en\html\search"
+    File ..\..\..\doc\en\html\search\*.html
+    File ..\..\..\doc\en\html\search\*.css
+    File ..\..\..\doc\en\html\search\*.js
+    File ..\..\..\doc\en\html\search\*.png
     SetOutPath "$INSTDIR"
-;    FILE ..\..\..\doc\en\html\nutoshelp.chm
+    FILE ..\..\..\doc\en\chm\nutosapiref.chm
+    FILE ..\..\..\doc\en\chm\nutosapiref.chi
     SetOutPath "$SMPROGRAMS\Ethernut ${NUTVERSION}"
-;    CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\WinHelp API Reference.lnk" "$INSTDIR\nutoshelp.chm"
+    CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\WinHelp API Reference.lnk" "$INSTDIR\nutosapiref.chm"
     CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\HTML API Reference.lnk" "$INSTDIR\nut\doc\en\html\index.html"  
   SectionEnd
 SectionGroupEnd
@@ -286,12 +293,14 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\at91eb40a_redboot.conf
     File ..\..\..\conf\at91sam7s.conf
     File ..\..\..\conf\at91sam7se-ek.conf
+    File ..\..\..\conf\at91sam7x-ek-radio.conf
     File ..\..\..\conf\at91sam7x-ek.conf
+    File ..\..\..\conf\at91sam9260-ek-radio.conf
     File ..\..\..\conf\at91sam9260-ek.conf
     File ..\..\..\conf\at91sam9g45-ek.conf
     File ..\..\..\conf\charon2.conf
     File ..\..\..\conf\eir10c.conf
-    File ..\..\..\conf\eNet-sam7X.conf
+    File ..\..\..\conf\enet-sam7x.conf
     File ..\..\..\conf\ethernut103.conf
     File ..\..\..\conf\ethernut13f.conf
     File ..\..\..\conf\ethernut13g.conf
@@ -304,7 +313,7 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\ethernut30d.conf
     File ..\..\..\conf\ethernut30e.conf
     File ..\..\..\conf\ethernut31d.conf
-    File ..\..\..\conf\ethernut50e.conf
+    File ..\..\..\conf\ethernut50f.conf
     File ..\..\..\conf\evk1100-extram.conf
     File ..\..\..\conf\evk1100-intram.conf
     File ..\..\..\conf\evk1101.conf
@@ -313,21 +322,19 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\evk1105-extram.conf
     File ..\..\..\conf\evk1105-intram.conf
     File ..\..\..\conf\gbaxport2.conf
-    File ..\..\..\conf\hhopen63f.conf
-    File ..\..\..\conf\MMnet02.conf
-    File ..\..\..\conf\MMnet03.conf
-    File ..\..\..\conf\MMnet04.conf
-    File ..\..\..\conf\MMnet102.conf
-    File ..\..\..\conf\MMnet103.conf
-    File ..\..\..\conf\MMnet104.conf
-    File ..\..\..\conf\MMnet01.conf
-    File ..\..\..\conf\MMnet02_03_04.conf
-    File ..\..\..\conf\MMnet101.conf
-    File ..\..\..\conf\MMnet102_103_104.conf
+    File ..\..\..\conf\mmnet01.conf
+    File ..\..\..\conf\mmnet02.conf
+    File ..\..\..\conf\mmnet02_03_04.conf
+    File ..\..\..\conf\mmnet03.conf
+    File ..\..\..\conf\mmnet04.conf
+    File ..\..\..\conf\mmnet101.conf
+    File ..\..\..\conf\mmnet102.conf
+    File ..\..\..\conf\mmnet102_103_104.conf
+    File ..\..\..\conf\mmnet103.conf
+    File ..\..\..\conf\mmnet104.conf
     File ..\..\..\conf\morphoq11a.conf
     File ..\..\..\conf\olimex-sam7-ex256.conf
     File ..\..\..\conf\stk501.conf
-    File ..\..\..\conf\wolf.conf
     File ..\..\..\conf\xnut-100.conf
     File ..\..\..\conf\xnut-105c.conf
     File ..\..\..\conf\xnut-105d.conf
@@ -519,6 +526,10 @@ SectionGroup "Application Samples"
     File ..\..\..\app\cppdemo\Makefile
     File ..\..\..\app\cppdemo\*.cc
 
+    SetOutPath "$INSTDIR\nut\app\editconf"
+    File ..\..\..\app\editconf\Makefile
+    File ..\..\..\app\editconf\*.c
+
     SetOutPath "$INSTDIR\nut\app\eeprom"
     File ..\..\..\app\eeprom\Makefile
     File ..\..\..\app\eeprom\*.c
@@ -536,10 +547,6 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\appicc\ftpd"
     File ..\..\..\appicc\ftpd\*.prj
     File ..\..\..\appicc\ftpd\*.SRC
-
-    SetOutPath "$INSTDIR\nut\app\hhopen"
-    File ..\..\..\app\hhopen\Makefile
-    File ..\..\..\app\hhopen\*.c
 
     SetOutPath "$INSTDIR\nut\app\httpd"
     File ..\..\..\app\httpd\Makefile
