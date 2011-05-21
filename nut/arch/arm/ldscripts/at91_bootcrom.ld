@@ -73,6 +73,8 @@ SECTIONS
     . = ALIGN(4);
     *(.text);
     . = ALIGN(4);
+    *(.text.*);
+    . = ALIGN(4);
     *(.glue_7t);
     . = ALIGN(4);
     *(.glue_7);

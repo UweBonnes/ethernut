@@ -36,6 +36,7 @@ SECTIONS
     {
     	_text = .;
     	*(.text)
+    	*(.text.*)
     	*(.rodata)
     	. = ALIGN(0x100);
     	_etext = .;
