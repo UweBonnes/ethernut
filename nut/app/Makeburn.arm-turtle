@@ -12,7 +12,7 @@ BURNDONGLE=turtelizer2
 # A file with this name and extension .cfg must exist in
 # the OpenOCD board directory.
 #
-ifneq ($(PLATFORM), ETHERNUT2)
+ifneq ($(PLATFORM), ETHERNUT5)
 ifneq ($(PLATFORM), ETHERNUT3)
 ifneq ($(PLATFORM), ELEKTOR_IR1)
 else
