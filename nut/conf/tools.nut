@@ -323,8 +323,7 @@ arm_ld_description = {
     at91sam9xe512_ram        = "AT91SAM9XE512, code running in external RAM",
     ["s3c4510b-ram"]         = "Samsung's S3C4510B, code in RAM (unsupported)",
     eb40a_ram                = "Atmel's AT91EB40A, code in RAM at 0x100",
-    gba_xport2               = "Nintendo's Gameboy Advance",
-    wolf_ram                 = "hwgroup's Wolf Module, code in RAM at 0x100 (unsupported)"
+    gba_xport2               = "Nintendo's Gameboy Advance"
 }
 
 arm_ld_choice = {
@@ -356,8 +355,7 @@ arm_ld_choice = {
                 "s3c4510b-ram",
                 "eb40a_ram",
                 "eb40a_redboot_ram",
-                "gbaxport2",
-                "wolf_ram"
+                "gbaxport2"
 }
 
 --

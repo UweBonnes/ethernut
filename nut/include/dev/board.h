@@ -234,8 +234,6 @@
 #include <dev/lanc111.h>
 #elif defined(ETHERNUT3) || defined(ELEKTOR_IR1)
 #include <dev/dm9000e.h>
-#elif defined(WOLF)
-#include <dev/ax88796.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5) || defined(MORPHOQ1) || defined(ENET_SAM7X)

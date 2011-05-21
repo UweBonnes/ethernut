@@ -59,8 +59,6 @@
 #define BOARD_NAME  "AT91SAM9260-EK"
 #elif defined(CHARON2)
 #define BOARD_NAME  "Charon 2"
-#elif defined(WOLF)
-#define BOARD_NAME  "Wolf"
 #elif defined(ARTHERNET1)
 #define BOARD_NAME  "Arthernet 1"
 #elif defined(MMNET02)
