@@ -74,14 +74,14 @@
 
 /*! \brief Base address of the flash memory chip.
  */
-#ifndef FLASH_CHIP_BASE
-#define FLASH_CHIP_BASE  0x00100000
+#ifndef EFC_CHIP_BASE
+#define EFC_CHIP_BASE  0x00100000
 #endif
 
 /*! \brief Size handled by each controller.
  */
-#ifndef FLASH_CHIP_SIZE
-#define FLASH_CHIP_SIZE  0x00040000
+#ifndef EFC_CHIP_SIZE
+#define EFC_CHIP_SIZE  0x00040000
 #endif
 
 /*! \brief Address offset of the configuration sector.
@@ -114,16 +114,16 @@
 #define FLASH_CONF_SIZE         256
 #endif
 
-#ifndef FLASH_WRITE_WAIT
-#define FLASH_WRITE_WAIT        60000
+#ifndef EFC_WRITE_WAIT
+#define EFC_WRITE_WAIT        60000
 #endif
 
-#ifndef FLASH_ERASE_WAIT
-#define FLASH_ERASE_WAIT        60000
+#ifndef EFC_ERASE_WAIT
+#define EFC_ERASE_WAIT        60000
 #endif
 
-#ifndef FLASH_CHIP_ERASE_WAIT
-#define FLASH_CHIP_ERASE_WAIT   600000
+#ifndef EFC_CHIP_ERASE_WAIT
+#define EFC_CHIP_ERASE_WAIT   600000
 #endif
 
 
@@ -195,7 +195,7 @@ RAMFUNC int At91EfcCmd(unsigned int cmd, uint32_t tmo)
  */
 int At91EfcSectorRead(unsigned int off, void *data, unsigned int len)
 {
-    memcpy(data, (void *) (uptr_t) (FLASH_CHIP_BASE + off), len);
+    memcpy(data, (void *) (uptr_t) (EFC_CHIP_BASE + off), len);
 
     return 0;
 }
@@ -214,7 +214,7 @@ int At91EfcSectorRead(unsigned int off, void *data, unsigned int len)
  */
 int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len)
 {
-    flashptr_t dp = (flashptr_t) (uptr_t) (FLASH_CHIP_BASE + off);
+    flashptr_t dp = (flashptr_t) (uptr_t) (EFC_CHIP_BASE + off);
     int rc;
     unsigned int i;
 
@@ -233,18 +233,18 @@ int At91EfcSectorWrite(unsigned int off, CONST void *data, unsigned int len)
         }
     }
 
-    if (off < FLASH_CHIP_SIZE) {
+    if (off < EFC_CHIP_SIZE) {
         /* Clear NEBP in mode register for automatic erasure. */
         outr(MC_FMR, (i = inr(MC_FMR)) & ~MC_NEBP);
         /* Execute page write command. */
-        rc = At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_WP, FLASH_WRITE_WAIT);
+        rc = At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_WP, EFC_WRITE_WAIT);
         /* Restore mode register. */
         outr(MC_FMR, i);
     } else {
         /* Clear NEBP in mode register for automatic erasure. */
         outr(MC_FMR_EFC1, (i = inr(MC_FMR_EFC1)) & ~MC_NEBP);
         /* Execute page write command. */
-        rc = At91EfcCmdEx(1, ((off - FLASH_CHIP_SIZE) & MC_PAGEN_MASK) | MC_FCMD_WP, FLASH_WRITE_WAIT);
+        rc = At91EfcCmdEx(1, ((off - EFC_CHIP_SIZE) & MC_PAGEN_MASK) | MC_FCMD_WP, EFC_WRITE_WAIT);
         /* Restore mode register. */
         outr(MC_FMR_EFC1, i);
     }
@@ -268,11 +268,11 @@ int At91EfcSectorErase(unsigned int off)
  */
 int At91EfcRegionLock(unsigned int off)
 {
-    if (off < FLASH_CHIP_SIZE) {
-        return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, FLASH_WRITE_WAIT);
+    if (off < EFC_CHIP_SIZE) {
+        return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, EFC_WRITE_WAIT);
     }
-    off -= FLASH_CHIP_SIZE;
-    return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, FLASH_WRITE_WAIT);
+    off -= EFC_CHIP_SIZE;
+    return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_SLB, EFC_WRITE_WAIT);
 }
 
 /*!
@@ -284,11 +284,11 @@ int At91EfcRegionLock(unsigned int off)
  */
 int At91EfcRegionUnlock(unsigned int off)
 {
-    if (off < FLASH_CHIP_SIZE) {
-        return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, FLASH_WRITE_WAIT);
+    if (off < EFC_CHIP_SIZE) {
+        return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, EFC_WRITE_WAIT);
     }
-    off -= FLASH_CHIP_SIZE;
-    return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, FLASH_WRITE_WAIT);
+    off -= EFC_CHIP_SIZE;
+    return At91EfcCmd((off & MC_PAGEN_MASK) | MC_FCMD_CLB, EFC_WRITE_WAIT);
 }
 
 /*!
