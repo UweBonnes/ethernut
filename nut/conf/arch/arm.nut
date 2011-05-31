@@ -451,7 +451,7 @@ nutarch_arm =
         brief = "System Timer (AT91)",
         requires = { "HW_TIMER_AT91" },
         provides = { "NUT_OSTIMER_DEV" },
-        sources = { "arm/dev/ostimer_at91.c" },
+        sources = { "arm/dev/atmel/ostimer_at91.c" },
         options =
         {
             {
@@ -482,13 +482,13 @@ nutarch_arm =
         brief = "System Timer (GBA)",
         requires = { "HW_TIMER_GBA" },
         provides = { "NUT_OSTIMER_DEV" },
-        sources = { "arm/dev/ostimer_gba.c" },
+        sources = { "arm/dev/gba/ostimer_gba.c" },
     },
     {
         name = "nutarch_wdt_at91",
         brief = "Watchdog Timer (AT91)",
         requires = { "HW_WDOG_AT91" },
-        sources = { "arm/dev/wdt_at91.c" },
+        sources = { "arm/dev/atmel/wdt_at91.c" },
     },
 
     --
@@ -499,7 +499,7 @@ nutarch_arm =
         brief = "Interrupt Handler (GBA)",
         requires = { "HW_MCU_GBA" },
         provides = { "DEV_IRQ_GBA" },
-        sources = { "arm/dev/ihndlr_gba.c" },
+        sources = { "arm/dev/gba/ihndlr_gba.c" },
     },
     {
         name = "nutarch_arm_irqat91x40",
@@ -508,18 +508,18 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
-            "arm/dev/ih_at91fiq.c",
-            "arm/dev/ih_at91irq0.c",
-            "arm/dev/ih_at91irq1.c",
-            "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pio.c",
-            "arm/dev/ih_at91swirq.c",
-            "arm/dev/ih_at91tc0.c",
-            "arm/dev/ih_at91tc1.c",
-            "arm/dev/ih_at91tc2.c",
-            "arm/dev/ih_at91uart0.c",
-            "arm/dev/ih_at91uart1.c",
-            "arm/dev/ih_at91wdi.c"
+            "arm/dev/atmel/ih_at91fiq.c",
+            "arm/dev/atmel/ih_at91irq0.c",
+            "arm/dev/atmel/ih_at91irq1.c",
+            "arm/dev/atmel/ih_at91irq2.c",
+            "arm/dev/atmel/ih_at91pio.c",
+            "arm/dev/atmel/ih_at91swirq.c",
+            "arm/dev/atmel/ih_at91tc0.c",
+            "arm/dev/atmel/ih_at91tc1.c",
+            "arm/dev/atmel/ih_at91tc2.c",
+            "arm/dev/atmel/ih_at91uart0.c",
+            "arm/dev/atmel/ih_at91uart1.c",
+            "arm/dev/atmel/ih_at91wdi.c"
         },
     },
     {
@@ -529,27 +529,27 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
-            "arm/dev/ih_at91fiq.c",
-            "arm/dev/ih_at91sys.c",
-            "arm/dev/ih_at91irq0.c",
-            "arm/dev/ih_at91irq1.c",
-            "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pioa.c",
-            "arm/dev/ih_at91piob.c",
-            "arm/dev/ih_at91pioc.c",
-            "arm/dev/ih_at91spi0.c",
-            "arm/dev/ih_at91spi1.c",
-            "arm/dev/ih_at91ssc.c",
-            "arm/dev/ih_at91swirq.c",
-            "arm/dev/ih_at91tc0.c",
-            "arm/dev/ih_at91tc1.c",
-            "arm/dev/ih_at91tc2.c",
-            "arm/dev/ih_at91adc.c",
-            "arm/dev/ih_at91twi.c",
-            "arm/dev/ih_at91uart0.c",
-            "arm/dev/ih_at91uart1.c",
-            "arm/dev/ih_at91emac.c",
-            "arm/dev/ih_at91wdi.c",
+            "arm/dev/atmel/ih_at91fiq.c",
+            "arm/dev/atmel/ih_at91sys.c",
+            "arm/dev/atmel/ih_at91irq0.c",
+            "arm/dev/atmel/ih_at91irq1.c",
+            "arm/dev/atmel/ih_at91irq2.c",
+            "arm/dev/atmel/ih_at91pioa.c",
+            "arm/dev/atmel/ih_at91piob.c",
+            "arm/dev/atmel/ih_at91pioc.c",
+            "arm/dev/atmel/ih_at91spi0.c",
+            "arm/dev/atmel/ih_at91spi1.c",
+            "arm/dev/atmel/ih_at91ssc.c",
+            "arm/dev/atmel/ih_at91swirq.c",
+            "arm/dev/atmel/ih_at91tc0.c",
+            "arm/dev/atmel/ih_at91tc1.c",
+            "arm/dev/atmel/ih_at91tc2.c",
+            "arm/dev/atmel/ih_at91adc.c",
+            "arm/dev/atmel/ih_at91twi.c",
+            "arm/dev/atmel/ih_at91uart0.c",
+            "arm/dev/atmel/ih_at91uart1.c",
+            "arm/dev/atmel/ih_at91emac.c",
+            "arm/dev/atmel/ih_at91wdi.c",
         },
     },
     {
@@ -559,25 +559,25 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
-            "arm/dev/ih_at91fiq.c",
-            "arm/dev/ih_at91sys.c",
-            "arm/dev/ih_at91irq0.c",
-            "arm/dev/ih_at91irq1.c",
-            "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pio.c",
-            "arm/dev/ih_at91pioa.c",
-            "arm/dev/ih_at91spi0.c",
-            "arm/dev/ih_at91ssc.c",
-            "arm/dev/ih_at91swirq.c",
-            "arm/dev/ih_at91tc0.c",
-            "arm/dev/ih_at91tc1.c",
-            "arm/dev/ih_at91tc2.c",
-            "arm/dev/ih_at91pwmc.c",
-            "arm/dev/ih_at91adc.c",
-            "arm/dev/ih_at91twi.c",
-            "arm/dev/ih_at91uart0.c",
-            "arm/dev/ih_at91uart1.c",
-            "arm/dev/ih_at91wdi.c"
+            "arm/dev/atmel/ih_at91fiq.c",
+            "arm/dev/atmel/ih_at91sys.c",
+            "arm/dev/atmel/ih_at91irq0.c",
+            "arm/dev/atmel/ih_at91irq1.c",
+            "arm/dev/atmel/ih_at91irq2.c",
+            "arm/dev/atmel/ih_at91pio.c",
+            "arm/dev/atmel/ih_at91pioa.c",
+            "arm/dev/atmel/ih_at91spi0.c",
+            "arm/dev/atmel/ih_at91ssc.c",
+            "arm/dev/atmel/ih_at91swirq.c",
+            "arm/dev/atmel/ih_at91tc0.c",
+            "arm/dev/atmel/ih_at91tc1.c",
+            "arm/dev/atmel/ih_at91tc2.c",
+            "arm/dev/atmel/ih_at91pwmc.c",
+            "arm/dev/atmel/ih_at91adc.c",
+            "arm/dev/atmel/ih_at91twi.c",
+            "arm/dev/atmel/ih_at91uart0.c",
+            "arm/dev/atmel/ih_at91uart1.c",
+            "arm/dev/atmel/ih_at91wdi.c"
         },
     },
     {
@@ -587,27 +587,27 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
-            "arm/dev/ih_at91fiq.c",
-            "arm/dev/ih_at91sys.c",
-            "arm/dev/ih_at91irq0.c",
-            "arm/dev/ih_at91irq1.c",
-            "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pio.c",
-            "arm/dev/ih_at91pioa.c",
-            "arm/dev/ih_at91piob.c",
-            "arm/dev/ih_at91pioc.c",
-            "arm/dev/ih_at91spi0.c",
-            "arm/dev/ih_at91ssc.c",
-            "arm/dev/ih_at91swirq.c",
-            "arm/dev/ih_at91tc0.c",
-            "arm/dev/ih_at91tc1.c",
-            "arm/dev/ih_at91tc2.c",
-            "arm/dev/ih_at91pwmc.c",
-            "arm/dev/ih_at91adc.c",
-            "arm/dev/ih_at91twi.c",
-            "arm/dev/ih_at91uart0.c",
-            "arm/dev/ih_at91uart1.c",
-            "arm/dev/ih_at91wdi.c"
+            "arm/dev/atmel/ih_at91fiq.c",
+            "arm/dev/atmel/ih_at91sys.c",
+            "arm/dev/atmel/ih_at91irq0.c",
+            "arm/dev/atmel/ih_at91irq1.c",
+            "arm/dev/atmel/ih_at91irq2.c",
+            "arm/dev/atmel/ih_at91pio.c",
+            "arm/dev/atmel/ih_at91pioa.c",
+            "arm/dev/atmel/ih_at91piob.c",
+            "arm/dev/atmel/ih_at91pioc.c",
+            "arm/dev/atmel/ih_at91spi0.c",
+            "arm/dev/atmel/ih_at91ssc.c",
+            "arm/dev/atmel/ih_at91swirq.c",
+            "arm/dev/atmel/ih_at91tc0.c",
+            "arm/dev/atmel/ih_at91tc1.c",
+            "arm/dev/atmel/ih_at91tc2.c",
+            "arm/dev/atmel/ih_at91pwmc.c",
+            "arm/dev/atmel/ih_at91adc.c",
+            "arm/dev/atmel/ih_at91twi.c",
+            "arm/dev/atmel/ih_at91uart0.c",
+            "arm/dev/atmel/ih_at91uart1.c",
+            "arm/dev/atmel/ih_at91wdi.c"
         },
     },
     {
@@ -617,24 +617,24 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
-            "arm/dev/ih_at91emac.c",
-            "arm/dev/ih_at91fiq.c",
-            "arm/dev/ih_at91irq0.c",
-            "arm/dev/ih_at91irq1.c",
-            "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pioa.c",
-            "arm/dev/ih_at91piob.c",
-            "arm/dev/ih_at91pioc.c",
-            "arm/dev/ih_at91spi0.c",
-            "arm/dev/ih_at91spi1.c",
-            "arm/dev/ih_at91ssc.c",
-            "arm/dev/ih_at91swirq.c",
-            "arm/dev/ih_at91tc0.c",
-            "arm/dev/ih_at91tc1.c",
-            "arm/dev/ih_at91tc2.c",
-            "arm/dev/ih_at91twi.c",
-            "arm/dev/ih_at91uart0.c",
-            "arm/dev/ih_at91uart1.c",
+            "arm/dev/atmel/ih_at91emac.c",
+            "arm/dev/atmel/ih_at91fiq.c",
+            "arm/dev/atmel/ih_at91irq0.c",
+            "arm/dev/atmel/ih_at91irq1.c",
+            "arm/dev/atmel/ih_at91irq2.c",
+            "arm/dev/atmel/ih_at91pioa.c",
+            "arm/dev/atmel/ih_at91piob.c",
+            "arm/dev/atmel/ih_at91pioc.c",
+            "arm/dev/atmel/ih_at91spi0.c",
+            "arm/dev/atmel/ih_at91spi1.c",
+            "arm/dev/atmel/ih_at91ssc.c",
+            "arm/dev/atmel/ih_at91swirq.c",
+            "arm/dev/atmel/ih_at91tc0.c",
+            "arm/dev/atmel/ih_at91tc1.c",
+            "arm/dev/atmel/ih_at91tc2.c",
+            "arm/dev/atmel/ih_at91twi.c",
+            "arm/dev/atmel/ih_at91uart0.c",
+            "arm/dev/atmel/ih_at91uart1.c",
         },
     },
     {
@@ -644,23 +644,23 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
-            "arm/dev/ih_at91sys.c",
-            "arm/dev/ih_at91emac.c",
-            "arm/dev/ih_at91fiq.c",
-            "arm/dev/ih_at91irq0.c",
-            "arm/dev/ih_at91pioa.c",
-            "arm/dev/ih_at91piob.c",
-            "arm/dev/ih_at91pioc.c",
-            "arm/dev/ih_at91spi0.c",
-            "arm/dev/ih_at91spi1.c",
-            "arm/dev/ih_at91ssc.c",
-            "arm/dev/ih_at91swirq.c",
-            "arm/dev/ih_at91tc0.c",
-            "arm/dev/ih_at91tc1.c",
-            "arm/dev/ih_at91tc2.c",
-            "arm/dev/ih_at91twi.c",
-            "arm/dev/ih_at91uart0.c",
-            "arm/dev/ih_at91uart1.c",
+            "arm/dev/atmel/ih_at91sys.c",
+            "arm/dev/atmel/ih_at91emac.c",
+            "arm/dev/atmel/ih_at91fiq.c",
+            "arm/dev/atmel/ih_at91irq0.c",
+            "arm/dev/atmel/ih_at91pioa.c",
+            "arm/dev/atmel/ih_at91piob.c",
+            "arm/dev/atmel/ih_at91pioc.c",
+            "arm/dev/atmel/ih_at91spi0.c",
+            "arm/dev/atmel/ih_at91spi1.c",
+            "arm/dev/atmel/ih_at91ssc.c",
+            "arm/dev/atmel/ih_at91swirq.c",
+            "arm/dev/atmel/ih_at91tc0.c",
+            "arm/dev/atmel/ih_at91tc1.c",
+            "arm/dev/atmel/ih_at91tc2.c",
+            "arm/dev/atmel/ih_at91twi.c",
+            "arm/dev/atmel/ih_at91uart0.c",
+            "arm/dev/atmel/ih_at91uart1.c",
         },
     },
     {
@@ -670,24 +670,24 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
-            "arm/dev/ih_at91emac.c",
-            "arm/dev/ih_at91fiq.c",
-            "arm/dev/ih_at91irq0.c",
-            "arm/dev/ih_at91irq1.c",
-            "arm/dev/ih_at91irq2.c",
-            "arm/dev/ih_at91pioa.c",
-            "arm/dev/ih_at91piob.c",
-            "arm/dev/ih_at91pioc.c",
-            "arm/dev/ih_at91spi0.c",
-            "arm/dev/ih_at91spi1.c",
-            "arm/dev/ih_at91ssc.c",
-            "arm/dev/ih_at91swirq.c",
-            "arm/dev/ih_at91tc0.c",
-            "arm/dev/ih_at91tc1.c",
-            "arm/dev/ih_at91tc2.c",
-            "arm/dev/ih_at91twi.c",
-            "arm/dev/ih_at91uart0.c",
-            "arm/dev/ih_at91uart1.c",
+            "arm/dev/atmel/ih_at91emac.c",
+            "arm/dev/atmel/ih_at91fiq.c",
+            "arm/dev/atmel/ih_at91irq0.c",
+            "arm/dev/atmel/ih_at91irq1.c",
+            "arm/dev/atmel/ih_at91irq2.c",
+            "arm/dev/atmel/ih_at91pioa.c",
+            "arm/dev/atmel/ih_at91piob.c",
+            "arm/dev/atmel/ih_at91pioc.c",
+            "arm/dev/atmel/ih_at91spi0.c",
+            "arm/dev/atmel/ih_at91spi1.c",
+            "arm/dev/atmel/ih_at91ssc.c",
+            "arm/dev/atmel/ih_at91swirq.c",
+            "arm/dev/atmel/ih_at91tc0.c",
+            "arm/dev/atmel/ih_at91tc1.c",
+            "arm/dev/atmel/ih_at91tc2.c",
+            "arm/dev/atmel/ih_at91twi.c",
+            "arm/dev/atmel/ih_at91uart0.c",
+            "arm/dev/atmel/ih_at91uart1.c",
         },
     },
     {
@@ -731,10 +731,10 @@ nutarch_arm =
         brief = "UART Debug Output (AT91)",
         requires = { "HW_UART_AT91" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        sources = { "arm/dev/debug_at91.c",
-                    "arm/dev/at91_dbg0.c",
-                    "arm/dev/at91_dbg1.c",
-                    "arm/dev/at91_dbgu.c" }
+        sources = { "arm/dev/atmel/debug_at91.c",
+                    "arm/dev/atmel/at91_dbg0.c",
+                    "arm/dev/atmel/at91_dbg1.c",
+                    "arm/dev/atmel/at91_dbgu.c" }
     },
     {
         name = "nutarch_arm_usart0",
@@ -746,7 +746,7 @@ nutarch_arm =
                     "DEV_UART0_GPIO_RTS",
                     "DEV_UART0_GPIO_CTS",
                     "DEV_UART0_GPIO_HDX" },
-        sources = { "arm/dev/usart0at91.c" },
+        sources = { "arm/dev/atmel/usart0at91.c" },
 --        options =
 --        {
 --            {
@@ -789,7 +789,7 @@ nutarch_arm =
                     "DEV_UART1_GPIO_RTS",
                     "DEV_UART1_GPIO_CTS",
                     "DEV_UART1_GPIO_HDX" },
-        sources = { "arm/dev/usart1at91.c" },
+        sources = { "arm/dev/atmel/usart1at91.c" },
 --        options =
 --        {
 --            {
@@ -832,7 +832,7 @@ nutarch_arm =
                     "DEV_UARTD_GPIO_RTS",
                     "DEV_UARTD_GPIO_CTS",
                     "DEV_UARTD_GPIO_HDX" },
-        sources = { "arm/dev/usartDat91.c" },
+        sources = { "arm/dev/atmel/usartDat91.c" },
 --        options =
 --        {
 --            {
@@ -850,7 +850,7 @@ nutarch_arm =
         description = "HDLC driver, required for PPP. This is an EXPERIMENTAL driver!",
         requires = { "HW_UART_AT91", "HW_PDC_AT91", "NUT_EVENT" },
         provides = { "PROTO_HDLC" },
-        sources = { "arm/dev/at91_ahdlc.c" },
+        sources = { "arm/dev/atmel/at91_ahdlc.c" },
         options =
         {
             {
@@ -1220,7 +1220,7 @@ nutarch_arm =
         brief = "LCD Debug Output (GBA)",
         requires = { "HW_LCD_GBA" },
         provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
-        sources = { "arm/dev/debug_gba.c" }
+        sources = { "arm/dev/gba/debug_gba.c" }
     },
     {
         name = "nutarch_arm_ax88796",
@@ -1264,7 +1264,7 @@ nutarch_arm =
         description = "LAN driver for AT91SAM7X and AT91SAM9260 and AT91SAM9G45.",
         requires = { "HW_EMAC_AT91", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
-        sources = { "arm/dev/at91_emac.c" },
+        sources = { "arm/dev/atmel/at91_emac.c" },
         options =
         {
             {
@@ -1336,7 +1336,7 @@ nutarch_arm =
         description = "AT91 hardware TWI support.",
         requires = { "HW_TWI_AT91" },
         provides = { "DEV_TWI" },
-        sources = { "arm/dev/at91_twi.c" },
+        sources = { "arm/dev/atmel/at91_twi.c" },
     },
     {
         name = "nutarch_arm_adc_at91",
@@ -1344,7 +1344,7 @@ nutarch_arm =
         description = "ADC interface for AT91 (currently SAM7 only).",
         requires = { "HW_MCU_AT91SAM7X" },
         provides = { "DEV_ADC" },
-        sources = { "arm/dev/at91_adc.c" },
+        sources = { "arm/dev/atmel/at91_adc.c" },
     },
     {
         name = "nutarch_arm_spimmc_at91",
@@ -1352,7 +1352,7 @@ nutarch_arm =
         description = "Low level MMC interface for AT91.",
         requires = { "HW_SPI_AT91" },
         provides = { "DEV_MMCLL" },
-        sources = { "arm/dev/spimmc_at91.c" },
+        sources = { "arm/dev/atmel/spimmc_at91.c" },
     },
     {
         name = "nutarch_arm_mci_at91",
@@ -1360,7 +1360,7 @@ nutarch_arm =
         description = "MCI based block device driver.",
         requires = { "HW_MCI_AT91" },
         provides = { "DEV_BLOCK" },
-        sources = { "arm/dev/at91_mci.c" },
+        sources = { "arm/dev/atmel/at91_mci.c" },
     },
 
     --
@@ -1371,7 +1371,7 @@ nutarch_arm =
         brief = "AT91 Initialization",
         description = "Contains spurious interrupt handler.",
         requires = { "HW_MCU_AT91" },
-        sources = { "arm/dev/at91init.c" },
+        sources = { "arm/dev/atmel/at91init.c" },
     },
     {
         name = "nutarch_arm_rstc",
@@ -1379,7 +1379,7 @@ nutarch_arm =
         description = "AT91 reset controller support.",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_MCU_RESET" },
-        sources = { "arm/dev/at91_reset.c" },
+        sources = { "arm/dev/atmel/at91_reset.c" },
     },
     {
         name = "nutarch__arm_gpio_at91",
@@ -1387,10 +1387,10 @@ nutarch_arm =
         description = "Generic port I/O API.",
         requires = { "HW_MCU_AT91" },
         sources = {
-          "arm/dev/gpio_at91.c" ,
-          "arm/dev/gpioa_at91.c",
-          "arm/dev/gpiob_at91.c",
-          "arm/dev/gpioc_at91.c"
+          "arm/dev/atmel/gpio_at91.c" ,
+          "arm/dev/atmel/gpioa_at91.c",
+          "arm/dev/atmel/gpiob_at91.c",
+          "arm/dev/atmel/gpioc_at91.c"
         },
     },
     {
@@ -1404,9 +1404,9 @@ nutarch_arm =
         provides = { "SPIBUS_CONTROLLER" },
         sources =
         {
-            "arm/dev/spibus_at91.c",
-            "arm/dev/spibus0at91.c",
-            "arm/dev/spibus1at91.c"
+            "arm/dev/atmel/spibus_at91.c",
+            "arm/dev/atmel/spibus0at91.c",
+            "arm/dev/atmel/spibus1at91.c"
         },
         options =
         {
@@ -1607,14 +1607,14 @@ nutarch_arm =
         brief = "AT91 SPI Support",
         description = "Preliminary SPI routines.",
         requires = { "HW_SPI_AT91", "HW_PDC_AT91" },
-        sources = { "arm/dev/at91_spi.c" },
+        sources = { "arm/dev/atmel/at91_spi.c" },
     },
     {
         name = "nutarch__arm_at91efc",
         brief = "AT91 Embedded Flash Controller",
         description = "Routines for reading and writing embedded flash memory.",
         requires = { "HW_EFC_AT91" },
-        sources = { "arm/dev/at91_efc.c" },
+        sources = { "arm/dev/atmel/at91_efc.c" },
     },
     {
         name = "nutarch_arm_tlv320",
