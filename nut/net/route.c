@@ -139,6 +139,8 @@
 #include <net/if_var.h>
 #include <net/route.h>
 
+#include <netinet/ip.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <memdebug.h>
@@ -353,7 +355,7 @@ NUTDEVICE *NutIpRouteQuery(uint32_t ip, uint32_t * gate)
     /* Return the first interface if the IP is broadcast. This solves the
        long existing problem with bad checksums on UDP broadcasts. Many
        thanks to Nicolas Moreau for this patch. */
-    if (ip == 0xFFFFFFFF)
+    if ((ip == 0xFFFFFFFF) || (IP_IS_MULTICAST(ip)))
         rte = rteList;
     else
         rte = NutIpRouteRecQuery(ip, gate, 0);

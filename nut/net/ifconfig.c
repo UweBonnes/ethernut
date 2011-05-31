@@ -365,4 +365,32 @@ int NutNetIfConfig2(CONST char *name, void *params, uint32_t ip_addr, uint32_t i
     return -1;
 }
 
+int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr)
+{
+    NUTDEVICE *dev;
+    IFNET *nif;
+    int rc = -1;
+
+    /*
+     * Check if this is a registered network device.
+     */
+    if ((dev = NutDeviceLookup(name)) == 0 || dev->dev_type != IFTYP_NET)
+        return -1;
+
+    /*
+     * Setup multicast address
+     */
+    nif = dev->dev_icb;
+    if (nif->if_type == IFT_ETHER) {
+        /* Check if ioctl is supported. */
+        if (dev->dev_ioctl) {
+            /* Driver has ioctl, use it. */
+            rc = dev->dev_ioctl(dev, SIOCADDMULTI, &ip_addr);
+        }
+    }
+
+    return rc;
+}
+
+
 /*@}*/

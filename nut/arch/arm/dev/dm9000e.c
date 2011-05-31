@@ -82,6 +82,7 @@
 #include <arch/arm.h>
 
 #include <string.h>
+#include <stdlib.h>
 
 #include <sys/atom.h>
 #include <sys/heap.h>
@@ -377,6 +378,7 @@ struct _NICINFO {
     volatile int ni_tx_quelen;  /*!< Number of bytes in transmission queue not sent. */
     volatile int ni_insane;     /*!< Set by error detection. */
     int ni_iomode;              /*!< 8 or 16 bit access. 32 bit is not supported. */
+    uint8_t ni_mar[8];          /*!< Multicast Address Register. */
 };
 
 /*!
@@ -391,6 +393,32 @@ typedef struct _NICINFO NICINFO;
  */
 /*@{*/
 
+
+/*
+ * ether_crc32_le based on FreeBSD code from if_ethersubr.c
+ */
+static const uint32_t crctab[] = {
+    0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac,
+    0x76dc4190, 0x6b6b51f4, 0x4db26158, 0x5005713c,
+    0xedb88320, 0xf00f9344, 0xd6d6a3e8, 0xcb61b38c,
+    0x9b64c2b0, 0x86d3d2d4, 0xa00ae278, 0xbdbdf21c
+};
+
+static uint32_t ether_crc32_le(const uint8_t *buf, uint8_t len)
+{
+   uint32_t crc;
+   uint8_t i;
+
+   crc = 0xffffffff; /* initial value */
+
+   for (i = 0; i < len; i++) {
+      crc ^= buf[i];
+      crc = (crc >> 4) ^ crctab[crc & 0xf];
+      crc = (crc >> 4) ^ crctab[crc & 0xf];
+   }
+
+   return (crc);
+}
 
 static INLINE void nic_outb(uint8_t reg, uint8_t val)
 {
@@ -794,13 +822,31 @@ static int NicPutPacket(NICINFO * ni, NETBUF * nb)
 }
 
 /*!
+ * \brief Update the multicast register.
+ *
+ * \param Network interface controller information.
+ */
+static void NicUpdateMCHardware(NICINFO *ni)
+{
+    int i;
+
+    /* Enable broadcast receive. */
+    ni->ni_mar[7] |= 0x80;
+    
+    /* Set multicast address register */
+    for (i = 0; i < 7; i++) {
+        nic_outb(NIC_MAR + i, ni->ni_mar[i]);
+    }
+}
+
+/*!
  * \brief Fire up the network interface.
  *
  * NIC interrupts must be disabled when calling this function.
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(CONST uint8_t * mac, NICINFO * ni)
 {
     int i;
     int link_wait = 20;
@@ -827,11 +873,8 @@ static int NicStart(CONST uint8_t * mac)
         nic_outb(NIC_PAR + i, mac[i]);
     }
 
-    /* Enable broadcast receive. */
-    for (i = 0; i < 7; i++) {
-        nic_outb(NIC_MAR + i, 0);
-    }
-    nic_outb(NIC_MAR + 7, 0x80);
+    /* Set multicast address register */
+    NicUpdateMCHardware(ni);    
 
     /* Clear interrupts. */
     nic_outb(NIC_ISR, NIC_ISR_ROOS | NIC_ISR_ROS | NIC_ISR_PTS | NIC_ISR_PRS);
@@ -891,7 +934,7 @@ THREAD(NicRxLanc, arg)
      * This happens, for example, if no Ethernet cable is plugged
      * in.
      */
-    while (NicStart(ifn->if_mac)) {
+    while (NicStart(ifn->if_mac, ni)) {
         NutSleep(1000);
     }
 
@@ -939,7 +982,7 @@ THREAD(NicRxLanc, arg)
 
         /* We got a weird chip, try to restart it. */
         while (ni->ni_insane) {
-            if (NicStart(ifn->if_mac) == 0) {
+            if (NicStart(ifn->if_mac, ni) == 0) {
                 ni->ni_insane = 0;
                 ni->ni_tx_queued = 0;
                 ni->ni_tx_quelen = 0;
@@ -1027,6 +1070,23 @@ int DmInit(NUTDEVICE * dev)
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
 
 #if defined(ELEKTOR_IR1)
+    
+    /* @@MF: "Power on reset" the Ethernet controller */
+    outr(PIOC_SODR, _BV(PC17_NANDOE_B));
+    outr(PIOC_PER,  _BV(PC17_NANDOE_B));
+    outr(PIOC_OER,  _BV(PC17_NANDOE_B));
+    outr(PIOC_CODR, _BV(PC17_NANDOE_B));
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+    outr(PIOC_SODR, _BV(PC17_NANDOE_B));
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+    NutDelay(WAIT250);
+    /**************************************************/
+
     outr(PIOA_BSR, _BV(PA20_NCS2_B));
     outr(PIOA_PDR, _BV(PA20_NCS2_B));
     outr(PIOC_BSR, _BV(PC16_NWAIT_B) | _BV(PC21_NWR0_B) | _BV(PC22_NRD_B));
@@ -1079,6 +1139,70 @@ int DmInit(NUTDEVICE * dev)
     return 0;
 }
 
+static int DmIOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = 0;
+    IFNET *nif = (IFNET *) dev->dev_icb;
+    NICINFO *ni = (NICINFO *) dev->dev_dcb;
+    uint32_t index;
+    MCASTENTRY *mcast;
+    
+    uint8_t mac[6];
+
+    switch (req) {
+        /* Set interface address */ 
+        case SIOCSIFADDR:
+            /* Set interface hardware address. */
+            memcpy(nif->if_mac, conf, sizeof(nif->if_mac));
+            break;
+    
+       /* Add multicast address */
+        case SIOCADDMULTI:
+            mac[0] = 0x01;
+            mac[1] = 0x00;
+            mac[2] = 0x5E;
+            mac[3] = ((uint8_t*)conf)[1] & 0x7f;
+            mac[4] = ((uint8_t*)conf)[2];
+            mac[5] = ((uint8_t*)conf)[3];
+            
+            mcast = malloc(sizeof(MCASTENTRY));
+            if (mcast != NULL) {
+                /* Calculate MAR index, range 0...63 */
+                index  = ether_crc32_le(&mac[0], 6);
+                index &= 0x3F;
+            
+                /* Set multicast bit */            
+                ni->ni_mar[index / 8] |= (1 << (index % 8));
+                
+                /* Add new mcast to the mcast list */
+                memcpy(mcast->mca_ha, mac, 6);
+                mcast->mca_ip = *((uint32_t*)conf);
+                mcast->mca_next = nif->if_mcast;
+                nif->if_mcast = mcast;
+                
+                /* Update the MC hardware */
+                NicUpdateMCHardware(ni);
+            }
+            else {
+                rc = -1;
+            }    
+            break;
+        
+        /* Delete multicast address */    
+        case SIOCDELMULTI:
+            /* Will be implemented later */
+            rc = -1;            
+            break;  
+              
+        default:
+            rc = -1;
+            break;
+    }    
+    
+    return rc;
+}
+
+
 static NICINFO dcb_eth0;
 
 /*!
@@ -1099,7 +1223,8 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     DmOutput,                   /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    0                           /*!< \brief Interface specific control function. */
 };
 
 /*!
@@ -1120,7 +1245,7 @@ NUTDEVICE devDM9000E = {
     &ifn_eth0,                  /*!< \brief Interface control block. */
     &dcb_eth0,                  /*!< \brief Driver control block. */
     DmInit,                     /*!< \brief Driver initialization routine. */
-    0,                          /*!< \brief Driver specific control function. */
+    DmIOCtl,                    /*!< \brief Driver specific control function. */
     0,                          /*!< \brief Read from device. */
     0,                          /*!< \brief Write to device. */
 #ifdef __HARVARD_ARCH__

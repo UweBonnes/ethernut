@@ -175,6 +175,8 @@ struct _MCASTENTRY {
 #define	SIOCGIFFLAGS    0x1004  /*!< \brief Get interface flags. */
 #define	SIOCSIFADDR     0x1005  /*!< \brief Set interface address. */
 #define	SIOCGIFADDR     0x1006  /*!< \brief Get interface address. */
+#define	SIOCADDMULTI    0x1007  /*!< \brief Add multicast address.*/
+#define	SIOCDELMULTI    0x1008  /*!< \brief Delete multicast address. */
 
 /*!
  * \brief Network interface type.
@@ -216,6 +218,8 @@ extern int NutNetIfConfig(CONST char *name, void *mac_dev, uint32_t ip_addr,
                           uint32_t ip_mask);
 extern int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask,
                          uint32_t gateway);
+extern int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr);
+
 
 extern int NutNetLoadConfig(CONST char *name);
 extern int NutNetSaveConfig(void);

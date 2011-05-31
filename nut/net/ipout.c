@@ -212,9 +212,20 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
      * Limited broadcasts are sent on all network interfaces.
      * See RFC 919.
      */
+    if ((dest == 0xffffffff) || (IP_IS_MULTICAST(dest))) {
     if (dest == 0xffffffff) {
+            /* Broadcast */
+            memset(ha, 0xff, sizeof(ha));
+        } else { 
+            /* Multicast */ 
+            ha[0] = 0x01; 
+            ha[1] = 0x00; 
+            ha[2] = 0x5E; 
+            ha[3] = ((uint8_t*)&dest)[1] & 0x7f;
+            ha[4] = ((uint8_t*)&dest)[2];
+            ha[5] = ((uint8_t*)&dest)[3];
+        }            
 
-        memset(ha, 0xff, sizeof(ha));
         for (dev = nutDeviceList; dev; dev = dev->dev_next) {
             if (dev->dev_type == IFTYP_NET) {
                 /*
