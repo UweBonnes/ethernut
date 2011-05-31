@@ -52,7 +52,7 @@
 
 #include <dev/irqreg.h>
 #include <dev/debug.h>
-#include <arch/arm/at91_dbgu.h>
+#include <arch/arm/atmel/at91_dbgu.h>
 #include <dev/usartat91.h>
 
 #ifndef NUT_CPU_FREQ

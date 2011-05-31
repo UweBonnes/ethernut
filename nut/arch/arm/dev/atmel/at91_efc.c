@@ -65,7 +65,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <arch/arm/at91_efc.h>
+#include <arch/arm/atmel/at91_efc.h>
 
 /*!
  * \addtogroup xgAt91Efc

@@ -134,30 +134,30 @@ void PrintBlockingDebug(char *Str);
 #define PIO_HAS_PERIPHERALSELECT
 #define PIO_HAS_OUTPUTWRITEENABLE
 
-#include <arch/arm/at91_rtc.h>
-#include <arch/arm/at91_ecc.h>
-#include <arch/arm/at91_ebi.h>
-#include <arch/arm/at91_tc.h>
-#include <arch/arm/at91_us.h>
-#include <arch/arm/at91_dbgu.h>
-#include <arch/arm/at91_emac.h>
-#include <arch/arm/at91_spi.h>
-#include <arch/arm/at91_aic.h>
-#include <arch/arm/at91_pio.h>
-#include <arch/arm/at91_pmc.h>
-#include <arch/arm/at91_rstc.h>
-#include <arch/arm/at91_wdt.h>
-#include <arch/arm/at91_ssc.h>
-#include <arch/arm/at91_twi.h>
-#include <arch/arm/at91_smc.h>
-#include <arch/arm/at91_mci.h>
-#include <arch/arm/at91_matrix.h>
-#include <arch/arm/at91_ccfg.h>
-#include <arch/arm/at91_sdramc.h>
-#include <arch/arm/at91_adc.h>
-#include <arch/arm/at91_pit.h>
-#include <arch/arm/at91_lcdc.h>
-#include <arch/arm/at91_tsadcc.h>
+#include <arch/arm/atmel/at91_rtc.h>
+#include <arch/arm/atmel/at91_ecc.h>
+#include <arch/arm/atmel/at91_ebi.h>
+#include <arch/arm/atmel/at91_tc.h>
+#include <arch/arm/atmel/at91_us.h>
+#include <arch/arm/atmel/at91_dbgu.h>
+#include <arch/arm/atmel/at91_emac.h>
+#include <arch/arm/atmel/at91_spi.h>
+#include <arch/arm/atmel/at91_aic.h>
+#include <arch/arm/atmel/at91_pio.h>
+#include <arch/arm/atmel/at91_pmc.h>
+#include <arch/arm/atmel/at91_rstc.h>
+#include <arch/arm/atmel/at91_wdt.h>
+#include <arch/arm/atmel/at91_ssc.h>
+#include <arch/arm/atmel/at91_twi.h>
+#include <arch/arm/atmel/at91_smc.h>
+#include <arch/arm/atmel/at91_mci.h>
+#include <arch/arm/atmel/at91_matrix.h>
+#include <arch/arm/atmel/at91_ccfg.h>
+#include <arch/arm/atmel/at91_sdramc.h>
+#include <arch/arm/atmel/at91_adc.h>
+#include <arch/arm/atmel/at91_pit.h>
+#include <arch/arm/atmel/at91_lcdc.h>
+#include <arch/arm/atmel/at91_tsadcc.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam9g45 */
 /*@{*/

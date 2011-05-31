@@ -103,25 +103,25 @@
 #define PIO_HAS_PERIPHERALSELECT
 #define PIO_HAS_OUTPUTWRITEENABLE
 
-#include <arch/arm/at91_tc.h>
-#include <arch/arm/at91_us.h>
-#include <arch/arm/at91_dbgu.h>
-#include <arch/arm/at91_spi.h>
-#include <arch/arm/at91_aic.h>
-#include <arch/arm/at91_pio.h>
-#include <arch/arm/at91_pmc.h>
-#include <arch/arm/at91_rstc.h>
-#include <arch/arm/at91_wdt.h>
-#include <arch/arm/at91_pit.h>
-#include <arch/arm/at91_mc.h>
-#include <arch/arm/at91_ebi.h>
-#include <arch/arm/at91_smc.h>
-#include <arch/arm/at91_sdramc.h>
-#include <arch/arm/at91_ssc.h>
-#include <arch/arm/at91_twi.h>
-#include <arch/arm/at91_udp.h>
-#include <arch/arm/at91_adc.h>
-#include <arch/arm/at91_pwmc.h>
+#include <arch/arm/atmel/at91_tc.h>
+#include <arch/arm/atmel/at91_us.h>
+#include <arch/arm/atmel/at91_dbgu.h>
+#include <arch/arm/atmel/at91_spi.h>
+#include <arch/arm/atmel/at91_aic.h>
+#include <arch/arm/atmel/at91_pio.h>
+#include <arch/arm/atmel/at91_pmc.h>
+#include <arch/arm/atmel/at91_rstc.h>
+#include <arch/arm/atmel/at91_wdt.h>
+#include <arch/arm/atmel/at91_pit.h>
+#include <arch/arm/atmel/at91_mc.h>
+#include <arch/arm/atmel/at91_ebi.h>
+#include <arch/arm/atmel/at91_smc.h>
+#include <arch/arm/atmel/at91_sdramc.h>
+#include <arch/arm/atmel/at91_ssc.h>
+#include <arch/arm/atmel/at91_twi.h>
+#include <arch/arm/atmel/at91_udp.h>
+#include <arch/arm/atmel/at91_adc.h>
+#include <arch/arm/atmel/at91_pwmc.h>
 
 /*! \addtogroup xgNutArchArmAt91Sam7se */
 /*@{*/

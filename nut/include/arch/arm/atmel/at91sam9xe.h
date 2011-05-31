@@ -1,7 +1,7 @@
-#ifndef _ARCH_ARM_SAM9260_H_
-#define _ARCH_ARM_SAM9260_H_
+#ifndef _ARCH_ARM_AT91SAM9XE_H_
+#define _ARCH_ARM_AT91SAM9XE_H_
 /*
- * Copyright (C) 2006-2007 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2006-2008 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -16,11 +16,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,38 +33,20 @@
  */
 
 /*!
- * \file arch/arm/at91sam9260.h
- * \brief AT91SAM9260 peripherals.
+ * \file arch/arm/at91sam9x.h
+ * \brief AT91SAM9X peripherals.
  *
  * \verbatim
  *
  * $Log$
- * Revision 1.9  2009/02/17 09:35:05  haraldkipp
- * ARM coprocessor bits added, at least a few.
+ * Revision 1.3  2009/02/17 09:33:55  haraldkipp
+ * Check for PLL B availability instead of target names.
  *
- * Revision 1.8  2008/10/23 08:50:43  haraldkipp
+ * Revision 1.2  2008/10/23 08:50:43  haraldkipp
  * Prepared AT91 UART hardware handshake.
  *
- * Revision 1.7  2008/01/31 09:35:46  haraldkipp
- * Removed PIO_BASE definition, which conflicts with general GPIO.
- *
- * Revision 1.6  2007/12/09 21:29:14  olereinhardt
- * Added adc support
- *
- * Revision 1.5  2007/07/16 15:51:01  haraldkipp
- * Default PIO base address added.
- *
- * Revision 1.4  2007/02/15 16:28:07  haraldkipp
- * Support for system controller interrupts added.
- *
- * Revision 1.3  2006/09/29 12:45:08  haraldkipp
- * Added PIO features and SPI peripheral selections.
- *
- * Revision 1.2  2006/09/05 12:32:56  haraldkipp
- * MIC base address corrected.
- *
- * Revision 1.1  2006/08/31 19:04:08  haraldkipp
- * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
+ * Revision 1.1  2008/08/06 12:51:10  haraldkipp
+ * Added support for Ethernut 5 (AT91SAM9XE reference design).
  *
  *
  * \endverbatim
@@ -89,7 +71,7 @@
 #define SPI1_BASE       0xFFFCC000      /*!< \brief SPI0 1 base address. */
 #define USART3_BASE     0xFFFD0000      /*!< \brief USART 3 base address. */
 #define USART4_BASE     0xFFFD4000      /*!< \brief USART 4 base address. */
-#define USART5_BASE     0xFFFD8000      /*!< \brief USART 5 base address. */
+#define TWI1_BASE       0xFFFD8000      /*!< \brief TWI 1 base address. */
 #define TC345_BASE      0xFFFDC000      /*!< \brief Timer/counter 3, 4 and 5 base address. */
 #define ADC_BASE        0xFFFE0000      /*!< \brief ADC base address. */
 #define ECC_BASE        0xFFFFE800      /*!< \brief ECC base address. */
@@ -97,16 +79,20 @@
 #define SMC_BASE        0xFFFFEC00      /*!< \brief SMC base address. */
 #define MATRIX_BASE     0xFFFFEE00      /*!< \brief MATRIX base address. */
 #define CCFG_BASE       0xFFFFEF10      /*!< \brief CCFG base address. */
+#define EBI_BASE        0xFFFFEF1C      /*!< \brief External bus interface base address. */
 #define AIC_BASE        0xFFFFF000      /*!< \brief AIC base address. */
 #define DBGU_BASE       0xFFFFF200      /*!< \brief DBGU base address. */
 #define PIOA_BASE       0xFFFFF400      /*!< \brief PIO A base address. */
 #define PIOB_BASE       0xFFFFF600      /*!< \brief PIO B base address. */
 #define PIOC_BASE       0xFFFFF800      /*!< \brief PIO C base address. */
+#define EEFC_BASE       0xFFFFFA00      /*!< \brief EEFC base address. */
 #define PMC_BASE        0xFFFFFC00      /*!< \brief PMC base address. */
 #define RSTC_BASE       0xFFFFFD00      /*!< \brief Resect controller register base address. */
+#define SHDWC_BASE      0xFFFFFD10      /*!< \brief Shutdown controller base address. */
 #define RTT_BASE        0xFFFFFD20      /*!< \brief Realtime timer base address. */
 #define PIT_BASE        0xFFFFFD30      /*!< \brief Periodic interval timer base address. */
 #define WDT_BASE        0xFFFFFD40      /*!< \brief Watch Dog register base address. */
+#define GPBR_BASE       0xFFFFFD60      /*!< \brief GPB register base address. */
 
 #define PERIPH_RPR_OFF  0x00000100      /*!< \brief Receive pointer register offset. */
 #define PERIPH_RCR_OFF  0x00000104      /*!< \brief Receive counter register offset. */
@@ -124,6 +110,8 @@
 #define PDC_TXTEN       0x00000100      /*!< \brief Transmitter transfer enable. */
 #define PDC_TXTDIS      0x00000200      /*!< \brief Transmitter transfer disable. */
 
+#define EBI_HAS_CSA
+
 #define DBGU_HAS_PDC
 #define SPI_HAS_PDC
 #define SSC_HAS_PDC
@@ -138,32 +126,36 @@
 #define PIO_HAS_PERIPHERALSELECT
 #define PIO_HAS_OUTPUTWRITEENABLE
 
-#include <arch/arm/at91_tc.h>
-#include <arch/arm/at91_us.h>
-#include <arch/arm/at91_dbgu.h>
-#include <arch/arm/at91_emac.h>
-#include <arch/arm/at91_spi.h>
-#include <arch/arm/at91_aic.h>
-#include <arch/arm/at91_pio.h>
-#include <arch/arm/at91_pmc.h>
-#include <arch/arm/at91_rstc.h>
-#include <arch/arm/at91_wdt.h>
-#include <arch/arm/at91_ssc.h>
-#include <arch/arm/at91_twi.h>
-#include <arch/arm/at91_smc.h>
-#include <arch/arm/at91_mci.h>
-#include <arch/arm/at91_matrix.h>
-#include <arch/arm/at91_ccfg.h>
-#include <arch/arm/at91_sdramc.h>
-#include <arch/arm/at91_adc.h>
+#include <arch/arm/atmel/at91_tc.h>
+#include <arch/arm/atmel/at91_us.h>
+#include <arch/arm/atmel/at91_dbgu.h>
+#include <arch/arm/atmel/at91_emac.h>
+#include <arch/arm/atmel/at91_spi.h>
+#include <arch/arm/atmel/at91_aic.h>
+#include <arch/arm/atmel/at91_pio.h>
+#include <arch/arm/atmel/at91_pmc.h>
+#include <arch/arm/atmel/at91_rstc.h>
+#include <arch/arm/atmel/at91_shdwc.h>
+#include <arch/arm/atmel/at91_wdt.h>
+#include <arch/arm/atmel/at91_ssc.h>
+#include <arch/arm/atmel/at91_twi.h>
+#include <arch/arm/atmel/at91_ebi.h>
+#include <arch/arm/atmel/at91_smc.h>
+#include <arch/arm/atmel/at91_mci.h>
+#include <arch/arm/atmel/at91_smc.h>
+#include <arch/arm/atmel/at91_matrix.h>
+#include <arch/arm/atmel/at91_ccfg.h>
+#include <arch/arm/atmel/at91_sdramc.h>
+#include <arch/arm/atmel/at91_adc.h>
+#include <arch/arm/atmel/at91_eefc.h>
 
-/*! \addtogroup xgNutArchArmAt91Sam9260 */
+/*! \addtogroup xgNutArchArmAt91Sam9x */
 /*@{*/
 
 /*! \name Peripheral Identifiers and Interrupts */
 /*@{*/
 #define FIQ_ID      0           /*!< \brief Fast interrupt. */
-#define SYSC_ID     1           /*!< \brief System interrupt. */
+#define SYSC_ID     2           /*!< \brief System controller. */
 #define PIOA_ID     2           /*!< \brief Parallel I/O controller A. */
 #define PIOB_ID     3           /*!< \brief Parallel I/O controller B. */
 #define PIOC_ID     4           /*!< \brief Parallel I/O controller C. */
@@ -173,7 +165,7 @@
 #define US2_ID      8           /*!< \brief USART 2. */
 #define MCI_ID      9           /*!< \brief MMC interface. */
 #define UDP_ID      10          /*!< \brief USB device port. */
-#define TWI_ID      11          /*!< \brief Two wire interface. */
+#define TWI_ID      11          /*!< \brief Two wire interface 0. */
 #define SPI0_ID     12          /*!< \brief Serial peripheral 0. */
 #define SPI1_ID     13          /*!< \brief Serial peripheral 1. */
 #define SSC_ID      14          /*!< \brief Serial peripheral interface. */
@@ -185,7 +177,7 @@
 #define ISI_ID      22          /*!< \brief Image sensor interface. */
 #define US3_ID      23          /*!< \brief USART 3. */
 #define US4_ID      24          /*!< \brief USART 4. */
-#define US5_ID      25          /*!< \brief USART 5. */
+#define TWI1_ID     25          /*!< \brief Two wire interface 1. */
 #define TC3_ID      26          /*!< \brief Timer/counter 3. */
 #define TC4_ID      27          /*!< \brief Timer/counter 4. */
 #define TC5_ID      28          /*!< \brief Timer/counter 5. */
@@ -227,9 +219,6 @@
 
 #define PA31_TXD4_B         31  /*!< \brief Channel 4 transmit data pin. */
 #define PA30_RXD4_B         30  /*!< \brief Channel 4 receive data pin. */
-
-#define PB12_TXD5_A         12  /*!< \brief Channel 5 transmit data pin. */
-#define PB13_RXD5_A         13  /*!< \brief Channel 5 receive data pin. */
 /*@}*/
 
 /*! \name SPI Peripheral Multiplexing */
@@ -364,8 +353,11 @@
 
 /*! \name Two Wire Interface Peripheral Multiplexing */
 /*@{*/
-#define PA23_TWD_A          23  /*!< \brief Two wire serial data pin. */
-#define PA24_TWCK_A         24  /*!< \brief Two wire serial clock pin. */
+#define PA23_TWD_A          23  /*!< \brief Two wire serial 0 data pin. */
+#define PA24_TWCK_A         24  /*!< \brief Two wire serial 0 clock pin. */
+
+#define PB12_TWD1_A         12  /*!< \brief Two wire serial 1 data pin. */
+#define PB13_RWCK1_A        13  /*!< \brief Two wire serial 1 clock pin. */
 /*@}*/
 
 /*! \name Timer/Counter Peripheral Multiplexing */
@@ -447,6 +439,6 @@
 #define PC14_IRQ2_B         14  /*!< \brief External interrupt 2 input pin. */
 /*@}*/
 
-/*@} xgNutArchArmAt91Sam9260 */
+/*@} xgNutArchArmAt91Sam9x */
 
-#endif                          /* _ARCH_ARM_SAM9260_H_ */
+#endif                          /* _ARCH_ARM_AT91SAM9XE_H_ */

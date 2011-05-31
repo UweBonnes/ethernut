@@ -43,7 +43,7 @@
  */
 
 #include <cfg/uart.h>
-#include <arch/arm/debug_at91.h>
+#include <arch/arm/atmel/debug_at91.h>
 
 #if defined(USART1_BASE)
 

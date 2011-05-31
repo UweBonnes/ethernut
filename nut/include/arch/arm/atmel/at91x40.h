@@ -120,14 +120,14 @@
 
 #define USART_HAS_PDC
 
-#include <arch/arm/at91_ebi.h>
-#include <arch/arm/at91_sf.h>
-#include <arch/arm/at91_us.h>
-#include <arch/arm/at91_tc.h>
-#include <arch/arm/at91_pio.h>
-#include <arch/arm/at91_ps.h>
-#include <arch/arm/at91_wd.h>
-#include <arch/arm/at91_aic.h>
+#include <arch/arm/atmel/at91_ebi.h>
+#include <arch/arm/atmel/at91_sf.h>
+#include <arch/arm/atmel/at91_us.h>
+#include <arch/arm/atmel/at91_tc.h>
+#include <arch/arm/atmel/at91_pio.h>
+#include <arch/arm/atmel/at91_ps.h>
+#include <arch/arm/atmel/at91_wd.h>
+#include <arch/arm/atmel/at91_aic.h>
 
 /*! \name USART Peripheral Multiplexing */
 /*@{*/

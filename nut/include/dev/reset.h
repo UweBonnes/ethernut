@@ -59,7 +59,7 @@
 #define NUT_RSTTYP_BROWNOUT 5
 
 #if defined(MCU_AT91)
-#include <arch/arm/at91_reset.h>
+#include <arch/arm/atmel/at91_reset.h>
 #elif defined(__AVR32__)
 #include <arch/avr32/reset.h>
 #endif

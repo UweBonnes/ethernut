@@ -90,19 +90,19 @@
  */
 
 #if defined (MCU_AT91R40008)
-#include <arch/arm/at91x40.h>
+#include <arch/arm/atmel/at91x40.h>
 #elif defined (MCU_AT91SAM7X)
-#include <arch/arm/at91sam7x.h>
+#include <arch/arm/atmel/at91sam7x.h>
 #elif defined (MCU_AT91SAM7S)
-#include <arch/arm/at91sam7s.h>
+#include <arch/arm/atmel/at91sam7s.h>
 #elif defined (MCU_AT91SAM7SE)
-#include <arch/arm/at91sam7se.h>
+#include <arch/arm/atmel/at91sam7se.h>
 #elif defined (MCU_AT91SAM9260)
-#include <arch/arm/at91sam9260.h>
+#include <arch/arm/atmel/at91sam9260.h>
 #elif defined (MCU_AT91SAM9G45)
-#include <arch/arm/at91sam9g45.h>
+#include <arch/arm/atmel/at91sam9g45.h>
 #elif defined(MCU_AT91SAM9XE)
-#include <arch/arm/at91sam9xe.h>
+#include <arch/arm/atmel/at91sam9xe.h>
 #endif
 
 #if defined(PMC_HAS_MDIV)

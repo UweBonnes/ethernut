@@ -42,7 +42,7 @@
  * \endverbatim
  */
 
-#include <arch/arm/debug_at91.h>
+#include <arch/arm/atmel/debug_at91.h>
 
 #include <dev/debug.h>
 #include <sys/timer.h>
