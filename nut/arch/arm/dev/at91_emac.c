@@ -300,9 +300,6 @@
 #define PHY_RXDV_TESTMODE_BIT   15
 #define PHY_COL_RMII_BIT        16
 #define PHY_RXCLK_10BTSER_BIT   17
-#ifndef PHY_PWRDN_BIT
-#define PHY_PWRDN_BIT           18
-#endif
 #define PHY_MDINTR_BIT          26
 
 #define PHY_MII_PINS_A 0 \
