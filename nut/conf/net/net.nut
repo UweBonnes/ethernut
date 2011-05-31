@@ -274,6 +274,7 @@ nutnet =
         provides = { "NET_IGMP" },
         sources = 
         { 
+            "igmp.c",
             "igmpin.c",
             "igmpout.c"
         }

@@ -158,6 +158,8 @@
 #include <arpa/inet.h>
 #include <netinet/ppp_fsm.h>
 #include <netinet/if_ether.h>
+#include <netinet/igmp.h>
+#include <netinet/in.h>
 
 #include <sys/event.h>
 #include <dev/uart.h>
@@ -386,6 +388,9 @@ int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr)
         if (dev->dev_ioctl) {
             /* Driver has ioctl, use it. */
             rc = dev->dev_ioctl(dev, SIOCADDMULTI, &ip_addr);
+            if ((rc == 0) && (ip_addr != INADDR_ALLHOSTS_GROUP)) {
+                NutIgmpJoinGroup(dev, ip_addr);
+            }    
         }
     }
 

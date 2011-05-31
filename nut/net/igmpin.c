@@ -76,12 +76,14 @@
  *
  */
 
+#include <string.h>
 #include <net/if_var.h>
 #include <netinet/ipcsum.h>
 #include <netinet/igmp.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
 #include <errno.h>
 
 /*!
@@ -98,6 +100,10 @@
 void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb)
 {
     IGMP *igmp = (IGMP *) nb->nb_tp.vp;
+    IFNET *nif;
+    MCASTENTRY *mca;
+    
+    nif = dev->dev_icb;    
 
     /*
      * Silently discard packets, which are too small.
@@ -109,9 +115,21 @@ void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb)
 
     switch (igmp->igmp_type) {
     case IGMP_MEMBERSHIP_QUERY:
+        /* Clear the received buffer first. */ 
+        NutNetBufFree(nb);
+        
+        /* Go through the list and send reports */
+        for (mca = nif->if_mcast; mca; mca = mca->mca_next) {
+            /* Do not send for 224.0.0.1 */ 
+            if (mca->mca_ip != INADDR_ALLHOSTS_GROUP) {
+                NutIgmpJoinGroup(dev, mca->mca_ip);
+            }
+        }
         break;
     case IGMP_V1_MEMBERSHIP_REPORT:
     case IGMP_V2_MEMBERSHIP_REPORT:
+        /* Not supported in the moment */
+        NutNetBufFree(nb);
         break;
     default:
         /* Unrecognized message types are silently ignored. */

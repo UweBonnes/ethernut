@@ -269,11 +269,9 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
         case IPPROTO_ICMP:
             NutIcmpInput(dev, nb);
             break;
-#if 0
         case IPPROTO_IGMP:
             NutIgmpInput(dev, nb);
             break;
-#endif
         default:
             /* Unkown protocol, send ICMP destination (protocol)
             * unreachable message.

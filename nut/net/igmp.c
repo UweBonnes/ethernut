@@ -73,25 +73,48 @@
  *
  */
 
-#include <netinet/ip_icmp.h>
+#include <netinet/ip.h>
 #include <netinet/ipcsum.h>
-#include <netinet/icmp.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
+#include <netinet/igmp.h>
 #include <netinet/in.h>
-#include <errno.h>
 
 /*!
  * \addtogroup xgIGMP
  */
 /*@{*/
 
-void NutIgmpJoinGroup(struct in_multi *inm)
+static void SendIgmpMessage(NUTDEVICE * dev, uint8_t type, uint32_t ip_addr)
 {
+    NETBUF *nb;
+    IGMP *igmp;
+
+    (void) dev;
+
+    /* Alloc net buffer */
+    if ((nb = NutNetBufAlloc(NULL, NBAF_TRANSPORT, sizeof(IGMP))) == 0)
+        return;
+
+    igmp = (IGMP *) nb->nb_tp.vp;
+    nb->nb_tp.sz = sizeof(IGMP);
+
+    igmp->igmp_type = IGMP_V2_MEMBERSHIP_REPORT;
+    igmp->igmp_code = 0;
+    igmp->igmp_group = ip_addr;
+
+    igmp->igmp_cksum = 0;
+    igmp->igmp_cksum = NutIpChkSum(0, nb->nb_tp.vp, nb->nb_tp.sz);
+
+    NutIpOutput(IPPROTO_IGMP, INADDR_ALLRPTS_GROUP, nb);
 }
 
-void NutIgmpLeaveGroup(struct in_multi *inm)
+void NutIgmpJoinGroup(NUTDEVICE * dev, uint32_t ip_addr)
 {
+    SendIgmpMessage(dev, IGMP_V2_MEMBERSHIP_REPORT, ip_addr);
+}
+
+void NutIgmpLeaveGroup(NUTDEVICE * dev, uint32_t ip_addr)
+{
+    SendIgmpMessage(dev, IGMP_V2_LEAVE_GROUP, ip_addr);
 }
 
 /*@}*/

@@ -137,6 +137,7 @@
  * \brief Internet header type.
  */
 typedef struct ip IPHDR;
+typedef struct ip_opt IPHDR_OPT;
 
 /*!
  * \brief Structure of an internet header.
@@ -164,6 +165,32 @@ struct __attribute__ ((packed)) ip {
     uint32_t ip_src;              /*!< \brief Source IP address. */
     uint32_t ip_dst;              /*!< \brief Destination IP address. */
 };
+
+struct __attribute__ ((packed)) ip_opt {
+#ifndef __BIG_ENDIAN__
+#ifdef __IMAGECRAFT__
+    unsigned ip_hl:4,           /*!< \brief Header length. */
+     ip_v:4;                    /*!< \brief Version. */
+#else
+    uint8_t ip_hl:4,             /*!< \brief Header length. */
+     ip_v:4;                    /*!< \brief Version. */
+#endif
+#else                           /* #ifndef __BIG_ENDIAN__ */
+    uint8_t ip_v:4,              /*!< \brief Version. */
+     ip_hl:4;                   /*!< \brief Header length. */
+#endif                          /* #ifndef __BIG_ENDIAN__ */
+    uint8_t ip_tos;              /*!< \brief Type of service. */
+    short ip_len;               /*!< \brief Total length. */
+    uint16_t ip_id;              /*!< \brief Identification. */
+    short ip_off;               /*!< \brief Fragment offset field. */
+    uint8_t ip_ttl;              /*!< \brief Time to live. */
+    uint8_t ip_p;                /*!< \brief Protocol. */
+    uint16_t ip_sum;             /*!< \brief Checksum. */
+    uint32_t ip_src;              /*!< \brief Source IP address. */
+    uint32_t ip_dst;              /*!< \brief Destination IP address. */
+    uint32_t ip_option;           /*!< \brief Option. */
+};
+
 
 #define IPOPT_EOL       0       /*!< \brief End of option list. */
 #define IPOPT_NOP       1       /*!< \brief No operation. */

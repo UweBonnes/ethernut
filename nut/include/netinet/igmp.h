@@ -93,8 +93,8 @@
  * \typedef IGMP
  * \brief IGMP packet type.
  */
-typedef struct __attribute__ ((packed))
-igmp IGMP;
+typedef struct __attribute__ ((packed)) igmp IGMP;
+typedef struct __attribute__ ((packed)) igmp_report IGMP_REPORT;
 
 /*!
  * \struct igmp igmp.h netinet/igmp.h
@@ -207,6 +207,9 @@ __BEGIN_DECLS
 /* Function prototypes */
 extern void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb);
 extern int NutIgmpOutput(uint8_t type, uint32_t dest, NETBUF * nb);
+
+extern void NutIgmpJoinGroup(NUTDEVICE *dev, uint32_t ip_addr);
+extern void NutIgmpLeaveGroup(NUTDEVICE *dev, uint32_t ip_addr);
 
 __END_DECLS
 /* End of prototypes */

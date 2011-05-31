@@ -182,13 +182,18 @@
 int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
 {
     uint8_t ha[6];
-    IPHDR *ip;
+    IPHDR_OPT *ip;
     NUTDEVICE *dev;
     IFNET *nif;
     uint32_t gate;
 
+    if (proto != IPPROTO_IGMP) {
     if ((nb = NutNetBufAlloc(nb, NBAF_NETWORK, sizeof(IPHDR))) == 0)
         return -1;
+    } else {
+        if ((nb = NutNetBufAlloc(nb, NBAF_NETWORK, sizeof(IPHDR_OPT))) == 0)
+            return -1;
+    }
 
     /*
      * Set those items in the IP header, which are common for
@@ -196,7 +201,11 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
      */
     ip = nb->nb_nw.vp;
     ip->ip_v = 4;
+    if (proto == IPPROTO_IGMP) {
+        ip->ip_hl = sizeof(IPHDR_OPT) / 4;
+    } else {
     ip->ip_hl = sizeof(IPHDR) / 4;
+    }
     ip->ip_tos = 0;
     ip->ip_len = htons(nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz);
     ip->ip_off = 0;
@@ -207,6 +216,12 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
     }
     ip->ip_p = proto;
     ip->ip_dst = dest;
+
+    if (proto == IPPROTO_IGMP) {
+      /* Router Alert Option */
+      ip->ip_option = htonl(0x94040000);
+    }
+    
 
     /*
      * Limited broadcasts are sent on all network interfaces.
