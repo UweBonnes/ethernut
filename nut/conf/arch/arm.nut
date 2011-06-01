@@ -878,7 +878,7 @@ nutarch_arm =
     	              "HD44780, KS0066, KS0073 and others.\n",
         requires = { "HW_MCU_AT91" },
         provides = { "DEV_FILE", "DEV_WRITE" },
-        sources = { "arm/dev/charlcd_at91.c" },
+        sources = { "arm/dev/atmel/charlcd_at91.c" },
     	options =
     	{
     		--
