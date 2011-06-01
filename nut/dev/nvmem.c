@@ -82,7 +82,7 @@
 #elif defined(NUT_CONFIG_AT49BV)
 #include <dev/at49bv.h>
 #elif defined(NUT_CONFIG_AT91EFC)
-#include <arch/arm/at91_efc.h>
+#include <arch/arm/atmel/at91_efc.h>
 #elif defined(NUT_CONFIG_AT24)
 #include <dev/eeprom.h>
 #endif
