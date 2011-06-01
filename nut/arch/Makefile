@@ -126,55 +126,56 @@ endif
 ifeq ($(ARCH), arm)
 
 SRCS = arm/os/context.c
+SRCSPATH = arm/dev/atmel
 
 ifeq ($(DEVICE), AT91R40008)
-SRCS +=	 arm/dev/ostimer_at91.c arm/dev/wdt_at91.c \
-	 arm/dev/ih_at91fiq.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
-	 arm/dev/ih_at91pio.c arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c \
-	 arm/dev/ih_at91tc2.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/ih_at91wdi.c \
-	 arm/dev/debug_at91.c arm/dev/usart0at91.c arm/dev/usart1at91.c arm/dev/hd44780_at91.c \
-	 arm/dev/st7036_at91.c arm/dev/ax88796.c arm/dev/dm9000e.c arm/dev/at91init.c \
-	 arm/dev/gpio_at91.c arm/dev/gpioa_at91.c
+SRCS +=	 $(SRCSPATH)/ostimer_at91.c $(SRCSPATH)/wdt_at91.c \
+	 $(SRCSPATH)/ih_at91fiq.c $(SRCSPATH)/ih_at91irq0.c $(SRCSPATH)/ih_at91irq1.c $(SRCSPATH)/ih_at91irq2.c \
+	 $(SRCSPATH)/ih_at91pio.c $(SRCSPATH)/ih_at91swirq.c $(SRCSPATH)/ih_at91tc0.c $(SRCSPATH)/ih_at91tc1.c \
+	 $(SRCSPATH)/ih_at91tc2.c $(SRCSPATH)/ih_at91uart0.c $(SRCSPATH)/ih_at91uart1.c $(SRCSPATH)/ih_at91wdi.c \
+	 $(SRCSPATH)/debug_at91.c $(SRCSPATH)/usart0at91.c $(SRCSPATH)/usart1at91.c $(SRCSPATH)/hd44780_at91.c \
+	 $(SRCSPATH)/st7036_at91.c arm/dev/ax88796.c arm/dev/dm9000e.c $(SRCSPATH)/at91init.c \
+	 $(SRCSPATH)/gpio_at91.c $(SRCSPATH)/gpioa_at91.c
 endif
 
 ifeq ($(DEVICE), AT91SAM7X256)
-SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91fiq.c \
-	 arm/dev/ih_at91sys.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
-	 arm/dev/ih_at91pio.c arm/dev/ih_at91spi0.c arm/dev/ih_at91spi1.c arm/dev/ih_at91ssc.c \
-	 arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c \
-	 arm/dev/ih_at91twi.c arm/dev/ih_at91adc.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c \
-	 arm/dev/ih_at91emac.c arm/dev/ih_at91wdi.c arm/dev/debug_at91.c arm/dev/usart0at91.c \
-	 arm/dev/usart1at91.c arm/dev/at91_emac.c arm/dev/spimmc_at91.c arm/dev/at91init.c \
-	 arm/dev/gpio_at91.c arm/dev/gpioa_at91.c arm/dev/gpiob_at91.c arm/dev/gpioc_at91.c \
-	 arm/dev/at91_efc.c arm/dev/at91_twi.c arm/dev/at91_adc.c arm/dev/hd44780_at91.c \
-	 arm/dev/st7036_at91.c arm/dev/usartDat91.c
+SRCS +=	 $(SRCSPATH)/ostimer_at91.c $(SRCSPATH)/ih_at91fiq.c \
+	 $(SRCSPATH)/ih_at91sys.c $(SRCSPATH)/ih_at91irq0.c $(SRCSPATH)/ih_at91irq1.c $(SRCSPATH)/ih_at91irq2.c \
+	 $(SRCSPATH)/ih_at91pio.c $(SRCSPATH)/ih_at91spi0.c $(SRCSPATH)/ih_at91spi1.c $(SRCSPATH)/ih_at91ssc.c \
+	 $(SRCSPATH)/ih_at91swirq.c $(SRCSPATH)/ih_at91tc0.c $(SRCSPATH)/ih_at91tc1.c $(SRCSPATH)/ih_at91tc2.c \
+	 $(SRCSPATH)/ih_at91twi.c $(SRCSPATH)/ih_at91adc.c $(SRCSPATH)/ih_at91uart0.c $(SRCSPATH)/ih_at91uart1.c \
+	 $(SRCSPATH)/ih_at91emac.c $(SRCSPATH)/ih_at91wdi.c $(SRCSPATH)/debug_at91.c $(SRCSPATH)/usart0at91.c \
+	 $(SRCSPATH)/usart1at91.c $(SRCSPATH)/at91_emac.c $(SRCSPATH)/spimmc_at91.c $(SRCSPATH)/at91init.c \
+	 $(SRCSPATH)/gpio_at91.c $(SRCSPATH)/gpioa_at91.c $(SRCSPATH)/gpiob_at91.c $(SRCSPATH)/gpioc_at91.c \
+	 $(SRCSPATH)/at91_efc.c $(SRCSPATH)/at91_twi.c $(SRCSPATH)/at91_adc.c $(SRCSPATH)/hd44780_at91.c \
+	 $(SRCSPATH)/st7036_at91.c $(SRCSPATH)/usartDat91.c
 endif
 
 ifeq ($(DEVICE), AT91SAM7S256)
-SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91fiq.c \
-	 arm/dev/ih_at91sys.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
-	 arm/dev/ih_at91pio.c arm/dev/ih_at91spi0.c arm/dev/ih_at91ssc.c \
-	 arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c \
-	 arm/dev/ih_at91twi.c arm/dev/ih_at91adc.c arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c \
-	 arm/dev/ih_at91wdi.c arm/dev/debug_at91.c arm/dev/usart0at91.c arm/dev/usart1at91.c \
-	 arm/dev/at91_emac.c arm/dev/spimmc_at91.c arm/dev/at91init.c \
-	 arm/dev/at91_efc.c arm/dev/at91_twi.c arm/dev/at91_adc.c arm/dev/usartDat91.c
+SRCS +=	 $(SRCSPATH)/ostimer_at91.c $(SRCSPATH)/ih_at91fiq.c \
+	 $(SRCSPATH)/ih_at91sys.c $(SRCSPATH)/ih_at91irq0.c $(SRCSPATH)/ih_at91irq1.c $(SRCSPATH)/ih_at91irq2.c \
+	 $(SRCSPATH)/ih_at91pio.c $(SRCSPATH)/ih_at91spi0.c $(SRCSPATH)/ih_at91ssc.c \
+	 $(SRCSPATH)/ih_at91swirq.c $(SRCSPATH)/ih_at91tc0.c $(SRCSPATH)/ih_at91tc1.c $(SRCSPATH)/ih_at91tc2.c \
+	 $(SRCSPATH)/ih_at91twi.c $(SRCSPATH)/ih_at91adc.c $(SRCSPATH)/ih_at91uart0.c $(SRCSPATH)/ih_at91uart1.c \
+	 $(SRCSPATH)/ih_at91wdi.c $(SRCSPATH)/debug_at91.c $(SRCSPATH)/usart0at91.c $(SRCSPATH)/usart1at91.c \
+	 $(SRCSPATH)/at91_emac.c $(SRCSPATH)/spimmc_at91.c $(SRCSPATH)/at91init.c \
+	 $(SRCSPATH)/at91_efc.c $(SRCSPATH)/at91_twi.c $(SRCSPATH)/at91_adc.c $(SRCSPATH)/usartDat91.c
 endif
 
 ifeq ($(DEVICE), AT91SAM9260)
-SRCS +=	 arm/dev/ostimer_at91.c arm/dev/ih_at91emac.c \
-	 arm/dev/ih_at91fiq.c arm/dev/ih_at91irq0.c arm/dev/ih_at91irq1.c arm/dev/ih_at91irq2.c \
-	 arm/dev/ih_at91pio.c arm/dev/ih_at91spi0.c arm/dev/ih_at91spi1.c arm/dev/ih_at91ssc.c \
-	 arm/dev/ih_at91swirq.c arm/dev/ih_at91tc0.c arm/dev/ih_at91tc1.c arm/dev/ih_at91tc2.c \
-	 arm/dev/ih_at91uart0.c arm/dev/ih_at91uart1.c arm/dev/debug_at91.c arm/dev/usart0at91.c \
-	 arm/dev/usart1at91.c arm/dev/hd44780_at91.c arm/dev/st7036_at91.c arm/dev/at91_emac.c \
-	 arm/dev/spimmc_at91.c arm/dev/at91_mci.c arm/dev/at91init.c arm/dev/at91_spi.c \
-	 arm/dev/gpio_at91.c arm/dev/gpioa_at91.c arm/dev/gpiob_at91.c arm/dev/gpioc_at91.c \
-	 arm/dev/ih_at91pioa.c arm/dev/ih_at91piob.c arm/dev/ih_at91pioc.c arm/dev/usartDat91.c
+SRCS +=	 $(SRCSPATH)/ostimer_at91.c $(SRCSPATH)/ih_at91emac.c \
+	 $(SRCSPATH)/ih_at91fiq.c $(SRCSPATH)/ih_at91irq0.c $(SRCSPATH)/ih_at91irq1.c $(SRCSPATH)/ih_at91irq2.c \
+	 $(SRCSPATH)/ih_at91pio.c $(SRCSPATH)/ih_at91spi0.c $(SRCSPATH)/ih_at91spi1.c $(SRCSPATH)/ih_at91ssc.c \
+	 $(SRCSPATH)/ih_at91swirq.c $(SRCSPATH)/ih_at91tc0.c $(SRCSPATH)/ih_at91tc1.c $(SRCSPATH)/ih_at91tc2.c \
+	 $(SRCSPATH)/ih_at91uart0.c $(SRCSPATH)/ih_at91uart1.c $(SRCSPATH)/debug_at91.c $(SRCSPATH)/usart0at91.c \
+	 $(SRCSPATH)/usart1at91.c $(SRCSPATH)/hd44780_at91.c $(SRCSPATH)/st7036_at91.c $(SRCSPATH)/at91_emac.c \
+	 $(SRCSPATH)/spimmc_at91.c $(SRCSPATH)/at91_mci.c $(SRCSPATH)/at91init.c $(SRCSPATH)/at91_spi.c \
+	 $(SRCSPATH)/gpio_at91.c $(SRCSPATH)/gpioa_at91.c $(SRCSPATH)/gpiob_at91.c $(SRCSPATH)/gpioc_at91.c \
+	 $(SRCSPATH)/ih_at91pioa.c $(SRCSPATH)/ih_at91piob.c $(SRCSPATH)/ih_at91pioc.c $(SRCSPATH)/usartDat91.c
 endif
 
 ifeq ($(DEVICE), gba)
-SRCS += arm/dev/ostimer_gba.c arm/dev/ihndlr_gba.c arm/dev/debug_gba.c
+SRCS += arm/dev/gba/ostimer_gba.c arm/dev/gba/ihndlr_gba.c arm/dev/gba/debug_gba.c
 endif
 
 OBJ1 = arm/init/crt$(LDNAME).o
