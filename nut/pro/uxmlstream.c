@@ -188,9 +188,6 @@ static int UxmlReadTag(FILE * stream, char *data, size_t size)
  *         may be returned in case of an error. The caller should use
  *         UxmlTreeDestroy() to release the memory allocated by the
  *         tree.
- *
- * \todo Empty element tags with a slash in front of the closing angle
- *       bracket are not yet supported.
  */
 UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
 {
@@ -222,6 +219,9 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
         /* Parse the tag. */
         if ((tp = UxmlParseTag(tag + 1, tkn, MAX_UXMLTKN_SIZE)) != NULL) {
             if (isalpha((unsigned char)*tkn) && UxmlFilterMatch(tkn, f_tags)) {
+                /* Save pointer to tp because needed to determine self closing tag */
+                char *old_tp = tp;
+
                 /*
                  * New node.
                  */
@@ -261,6 +261,10 @@ UXML_NODE *UxmlParseStream(FILE * stream, char **f_tags, char **f_attr)
                             free(name);
                         }
                     }
+                }
+                /* Check if tag is self closing */
+                if (node && strlen(old_tp) > 1 && old_tp[strlen(old_tp) - 2]=='/') {
+                    node = node->xmln_parent;
                 }
             } else if (*tkn == '/') {
                 /*
