@@ -409,7 +409,7 @@ wait_pllsel:
         ldr     r0, =(SDRAMC_DBW | SDRAMC_MODE_NORMAL)
         str     r0, [r1, #SDRAMC_MR_OFF]
         mov     r0, #0
-        str     r3, [r2, #0]
+        str     r0, [r2, #0]
 #endif /* NUTMEM_SDRAM_BASE */
 
         /*
