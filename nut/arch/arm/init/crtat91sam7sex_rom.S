@@ -402,7 +402,7 @@ wait_pllsel:
         str     r3, [r2, #20]
 
         /* Set refresh rate count. */
-        mov     r3, #384
+        mov     r0, #384
         str     r0, [r1, #SDRAMC_TR_OFF]
 
         /* Issue 16 bit SDRAM command: Normal mode. */
