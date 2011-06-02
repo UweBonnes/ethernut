@@ -188,8 +188,8 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
     uint32_t gate;
 
     if (proto != IPPROTO_IGMP) {
-    if ((nb = NutNetBufAlloc(nb, NBAF_NETWORK, sizeof(IPHDR))) == 0)
-        return -1;
+        if ((nb = NutNetBufAlloc(nb, NBAF_NETWORK, sizeof(IPHDR))) == 0)
+            return -1;
     } else {
         if ((nb = NutNetBufAlloc(nb, NBAF_NETWORK, sizeof(IPHDR_OPT))) == 0)
             return -1;
@@ -204,7 +204,7 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
     if (proto == IPPROTO_IGMP) {
         ip->ip_hl = sizeof(IPHDR_OPT) / 4;
     } else {
-    ip->ip_hl = sizeof(IPHDR) / 4;
+        ip->ip_hl = sizeof(IPHDR) / 4;
     }
     ip->ip_tos = 0;
     ip->ip_len = htons(nb->nb_nw.sz + nb->nb_tp.sz + nb->nb_ap.sz);
@@ -218,28 +218,28 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
     ip->ip_dst = dest;
 
     if (proto == IPPROTO_IGMP) {
-      /* Router Alert Option */
-      ip->ip_option = htonl(0x94040000);
+        /* Router Alert Option */
+        ip->ip_option = htonl(0x94040000);
     }
-    
+
 
     /*
      * Limited broadcasts are sent on all network interfaces.
      * See RFC 919.
      */
     if ((dest == 0xffffffff) || (IP_IS_MULTICAST(dest))) {
-    if (dest == 0xffffffff) {
+        if (dest == 0xffffffff) {
             /* Broadcast */
             memset(ha, 0xff, sizeof(ha));
-        } else { 
-            /* Multicast */ 
-            ha[0] = 0x01; 
-            ha[1] = 0x00; 
-            ha[2] = 0x5E; 
-            ha[3] = ((uint8_t*)&dest)[1] & 0x7f;
-            ha[4] = ((uint8_t*)&dest)[2];
-            ha[5] = ((uint8_t*)&dest)[3];
-        }            
+        } else {
+            /* Multicast */
+            ha[0] = 0x01;
+            ha[1] = 0x00;
+            ha[2] = 0x5E;
+            ha[3] = ((uint8_t *) & dest)[1] & 0x7f;
+            ha[4] = ((uint8_t *) & dest)[2];
+            ha[5] = ((uint8_t *) & dest)[3];
+        }
 
         for (dev = nutDeviceList; dev; dev = dev->dev_next) {
             if (dev->dev_type == IFTYP_NET) {
