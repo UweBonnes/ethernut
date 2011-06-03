@@ -2650,6 +2650,79 @@ nutdev =
         },
     },
     {
+        name = "nutdev_spi_mmc_gpio",
+        brief = "SPI bus based Multimedia Card Support",
+        description = "SPI bus implementation of MMC support with GPIO based CD and WP detection.\n\n"..
+                      "This package provides additional routines, which "..
+                      "are needed when using MultiMedia Cards with an SPI "..
+                      "bus driver. Main functions are card change detection "..
+                      "and write SD Card write protect switch sensing.\n\n"..
+                      "Tested on AT91 only but should work with every SPI bus driver.",
+        requires = { "SPIBUS_CONTROLLER" },
+        provides = { "DEV_MMCSUPPORT" },
+        sources = { "spi_mmc_gpio.c" },
+        options =
+        {
+            {
+                macro = "SPI_MMC_CLK",
+                brief = "SPI Bus Transfer Rate",
+                description = "Interface speed in bits per second, default is 33000000 (33Mbps).\n\n"..
+                              "If the exact value can't be set, the driver will choose the \n"..
+                              "next lower one. Bit banging interfaces always run at maximum speed.",
+                default = "33000000",
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "SPI_MMC_CS",
+                brief = "SPI Bus Chip Select Number",
+                default = "0",
+                type = "enumerated",
+                choices = { "0", "1", "2", "3" },
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_CD_PIN",
+                brief = "Card detect GPIO pin number",
+                description = "Number of GPIO pin where the card detect signal is connected.\n\n"..
+                              "If disabled it is assumed that the card is always present\n",
+		provides = { "MMC_CD_PIN" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_CD_PORT",
+                brief = "Card detect GPIO Port",
+                description = "Port register name of the GPIO pin where the carddetect signal is connected.",
+                requires = { "MMC_CD_PIN" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_WP_PIN",
+                brief = "Card write protect GPIO pin number",
+                description = "Number of GPIO pin where the card write protect signal is connected.\n\n"..
+                              "If disabled it is assumed that the card is always writable\n",
+		provides = { "MMC_WP_PIN" },
+                flavor = "booldata",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                file = "include/cfg/mmci.h"
+            },
+            {
+                macro = "MMC_WP_PORT",
+                brief = "Card detect GPIO Port",
+                description = "Port register name of the GPIO pin where the write protect signal is connected.",
+                requires = { "MMC_WP_PIN" },
+                type = "enumerated",
+                choices = function() return GetGpioBanks() end,
+                file = "include/cfg/mmci.h"
+            },
+        },
+    },
+    {
         name = "nutdev_mmcard",
         brief = "Basic MMC Driver",
         description = "Basic Multimedia card driver. To run this driver, a few low "..
