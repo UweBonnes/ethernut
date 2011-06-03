@@ -264,7 +264,7 @@ NUTSPINODE nodeSpiMmcGpio = {
  * to mount the first active primary partition with any previously 
  * registered file system driver (typically devPhat0).
  */
-NUTDEVICE devGpioSpiMmc = {
+NUTDEVICE devSpiMmcGpio = {
     0,                  /*!< Pointer to next device, dev_next. */
     {'M', 'M', 'C', '0', 0, 0, 0, 0, 0}
     ,                   /*!< Unique device name, dev_name. */
