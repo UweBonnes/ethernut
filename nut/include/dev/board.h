@@ -313,6 +313,9 @@
 #elif defined(ELEKTOR_IR1)
 #define DEV_MMCARD0         devSbi0MmCard0
 #include <dev/sbi_mmc.h>
+#elif defined (ENET_SAM7X)
+#include <dev/spi_mmc_gpio.h>
+#define DEV_MMCARD0         devSpiMmcGpio
 #endif
 
 #if defined(DEV_MMCARD0)
