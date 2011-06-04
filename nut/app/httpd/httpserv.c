@@ -831,8 +831,7 @@ int main(void)
         char thname[] = "httpd0";
 
         thname[5] = '0' + i;
-        NutThreadCreate(thname, Service, (void *) (uintptr_t) i, 
-            (HTTPD_SERVICE_STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+        NutThreadCreate(thname, Service, (void *) (uintptr_t) i, HTTPD_SERVICE_STACK); 
     }
 #endif /* DEV_ETHER */
 
