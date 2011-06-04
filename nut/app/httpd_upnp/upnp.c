@@ -462,9 +462,8 @@ void upnp_Init(void)
 
             if (NutRegisterCgi(UPNP_CGI_NAME, LocationCGIHandler) == 0) {
                 /* Start the UPnP threads */
-                NutThreadCreate("ssdp", SSDPTask, NULL, (UPNP_SERVICE_STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
-                NutThreadCreate("ssdp-notify", NotifyTask, NULL,
-                                (UPNP_SERVICE_STACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD);
+                NutThreadCreate("ssdp", SSDPTask, NULL, UPNP_SERVICE_STACK);
+                NutThreadCreate("ssdp-notify", NotifyTask, NULL, UPNP_SERVICE_STACK);
             }
         }
     }
