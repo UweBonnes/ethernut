@@ -103,7 +103,7 @@ static void SpiMmcGpioIrq(void *arg)
 
     if (GpioPinGet(MMC_CD_PORT, MMC_CD_PIN) == 0) {
         /* Card was inserted */
-        
+
         /* Set the change flag. */
         mcs->mcs_cf = 1;
         /* Set the card detect flag. */
@@ -221,6 +221,8 @@ static int SpiMmcGpioInit(NUTDEVICE * dev)
         /* Initialize the SPI interface. */
         rc = SpiMmcInit(dev);
     }
+    /* call the IRQ handler routine to check if a card is available just right now */
+    SpiMmcGpioIrq(dev->dev_dcb);
 #else
     /* No card detect pin is defined, so we assume that the card is always present */
     rc = SpiMmcInit(dev);
