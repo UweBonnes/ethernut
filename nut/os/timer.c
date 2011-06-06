@@ -336,6 +336,7 @@ void NutTimerInit(void)
 #else
         nut_delay_loops *= 137UL;
         nut_delay_loops /= 25UL;
+#endif
     }
 #endif
 #endif
