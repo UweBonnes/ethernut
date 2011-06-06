@@ -262,9 +262,9 @@ static uint32_t clock_cache[NUT_HWCLK_MAX + 1];
  *  \brief Loops per microsecond.
  */
 #if defined(NUT_DELAYLOOPS)
-volatile uint32_t nut_delay_loops = NUT_DELAYLOOPS;
+uint32_t nut_delay_loops = NUT_DELAYLOOPS;
 #else
-volatile uint32_t nut_delay_loops;
+uint32_t nut_delay_loops;
 #endif
 
 /*!
