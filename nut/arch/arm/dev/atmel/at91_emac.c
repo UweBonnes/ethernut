@@ -400,6 +400,12 @@ static unsigned int rxBufIdx;
 #define TXS_NO_CRC          0x00010000  /*!< \brief CRC not appended. */
 #define TXS_LAST_BUFF       0x00008000  /*!< \brief Last buffer of frame. */
 
+#define MII_DM9161_ID     0x0181b8a0
+#define MII_AM79C875_ID   0x00225540
+#define MII_MICREL_ID     0x00221610
+#define MII_LAN8700_ID    0x0007c0c0
+#define MII_LAN8710_ID    0x0007C0F0
+
 
 /*!
  * \addtogroup xgNutArchArmAt91Emac
@@ -426,7 +432,7 @@ static uint16_t phy_inw(uint8_t reg)
     return (uint16_t) (inr(EMAC_MAN) >> EMAC_DATA_LSB);
 }
 
-#if !defined(PHY_MODE_RMII) || (NIC_PHY_UID == 0x0007C0F0)
+#if !defined(PHY_MODE_RMII) || (NIC_PHY_UID == MII_LAN8710_ID)
 /*!
  * \brief Write value to PHY register.
  *
@@ -462,12 +468,7 @@ static int probePhy(uint32_t tmo)
         return -1;
     }
 #elif defined(CHECK_ALL_KNOWN_PHY_IDS)
-#define MII_DM9161_ID     0x0181b8a0
-#define MII_AM79C875_ID   0x00225540
-#define MII_MICREL_ID     0x00221610
-#define MII_LAN8700_ID    0x0007c0c0
-
-    if ( physID != MII_DM9161_ID && physID != MII_AM79C875_ID && physID != MII_MICREL_ID && physID != MII_LAN8700_ID ) {
+    if ( physID != MII_DM9161_ID && physID != MII_AM79C875_ID && physID != MII_MICREL_ID && physID != MII_LAN8700_ID && physID != MII_LAN8710_ID) {
         outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
         return -1;
     }
@@ -528,7 +529,7 @@ static int EmacReset(uint32_t tmo)
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
 
-#if defined(MCU_AT91SAM7X) && (NIC_PHY_UID == 0x0181B8A0)
+#if defined(MCU_AT91SAM7X) && (NIC_PHY_UID == MII_DM9161_ID)
     {
     uint32_t rstcr_tmp;
 
@@ -587,7 +588,7 @@ static int EmacReset(uint32_t tmo)
     /* Wait for PHY ready. */
     NutDelay(255);
 
-#if NIC_PHY_UID == 0x0007C0F0
+#if NIC_PHY_UID == MII_LAN8710_ID
     /* Set LAN8710 mode. */
     phy_outw(18, phy_inw(18) | 0x00E0);
     phy_outw(NIC_PHY_BMCR, NIC_PHY_BMCR_RESET);
