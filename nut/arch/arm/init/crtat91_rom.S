@@ -143,9 +143,9 @@ _rmap_tab:
         .long   0x10000000 | EBI_CSEN | EBI_PAGES_16M | EBI_WSE | EBI_NWS_4 | EBI_DBW_16
         /* 
          * Chip select NCS1 enables 16-bit Ethernet controller at 0x20000000.
-         * We need 2 wait states. 
+         * We need 3 wait states. 
          */
-        .long   0x20000000 | EBI_CSEN | EBI_BAT_BYTE_SELECT | EBI_PAGES_1M | EBI_WSE | EBI_NWS_2 | EBI_DBW_16
+        .long   0x20000000 | EBI_CSEN | EBI_BAT_BYTE_SELECT | EBI_PAGES_1M | EBI_WSE | EBI_NWS_3 | EBI_DBW_16
         /* 
          * Chip select NCS2 selects 8-bit NPL registers at 0x21000000.
          * The CPLD is quite fast and may run at one or zero wait states.
