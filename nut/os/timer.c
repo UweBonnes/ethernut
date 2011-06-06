@@ -330,8 +330,12 @@ void NutTimerInit(void)
          * Apply the correction found by trial and error. Works acceptable
          * with GCC for Ethernut 1 and 3.
          */
+#if defined(__AVR__)
         nut_delay_loops *= 103UL;
         nut_delay_loops /= 26UL;
+#else
+        nut_delay_loops *= 137UL;
+        nut_delay_loops /= 25UL;
     }
 #endif
 #endif
