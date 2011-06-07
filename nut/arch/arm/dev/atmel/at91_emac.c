@@ -461,7 +461,7 @@ static int probePhy(uint32_t tmo)
     uint16_t phyval;
 
     /* Read Phy ID. Ignore revision number. */
-    physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);
+    physID = (phy_inw(NIC_PHY_ID2) & 0xFFF0) | ((phy_inw(NIC_PHY_ID1) << 16) & 0xFFFF0000);   
 #if NIC_PHY_UID != 0xffffffff
     if ( physID != (NIC_PHY_UID & 0xFFFFFFF0) ) {
         outr(EMAC_NCR, inr(EMAC_NCR) & ~EMAC_MPE);
@@ -525,49 +525,10 @@ static int probePhy(uint32_t tmo)
  */
 static int EmacReset(uint32_t tmo)
 {
+    /* Enable power sources if not yet enabled */
     outr(PMC_PCER, _BV(PIOA_ID));
     outr(PMC_PCER, _BV(PIOB_ID));
     outr(PMC_PCER, _BV(EMAC_ID));
-
-#if defined(MCU_AT91SAM7X) && (NIC_PHY_UID == MII_DM9161_ID)
-    {
-    uint32_t rstcr_tmp;
-
-        /* Disable TESTMODE and set PHY address 0 and by disabling pull-ups. */
-        outr(EMAC_PIO_PUDR,
-#if !defined(PHY_MODE_RMII)
-        /* Additionally disable RMII, if not configured. */
-        _BV(PHY_COL_RMII_BIT) | 
-#endif
-        _BV(PHY_RXDV_TESTMODE_BIT) | 
-        _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) |
-        _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
-
-#ifdef PHY_PWRDN_BIT
-        /* Disable PHY power down. */
-        outr(EMAC_PIO_PER, _BV(PHY_PWRDN_BIT));
-        outr(EMAC_PIO_OER, _BV(PHY_PWRDN_BIT));
-#ifdef PHY_PWRDN_NEGPOL
-        outr(EMAC_PIO_SODR, _BV(PHY_PWRDN_BIT));
-#else
-        outr(EMAC_PIO_CODR, _BV(PHY_PWRDN_BIT));
-#endif
-#endif
-
-        /* Toggle external hardware reset pin. */
-        rstcr_tmp = inr(RSTC_MR) & 0x00FFFFFF;
-        outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
- 
-        outr(RSTC_CR, RSTC_KEY | RSTC_EXTRST);
-        while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
-        outr(RSTC_MR, RSTC_KEY | rstcr_tmp); 
-
-        /* Re-enable pull-ups. */
-        outr(EMAC_PIO_PUER, _BV(PHY_RXDV_TESTMODE_BIT) | 
-            _BV(PHY_RXD0_AD0_BIT) | _BV(PHY_RXD1_AD1_BIT) |
-            _BV(PHY_RXD2_AD2_BIT) | _BV(PHY_RXD3_AD3_BIT) | _BV(PHY_CRS_AD4_BIT));
-    }
-#endif /* MCU_AT91SAM7X */
 
     /* Configure MII port. */
     outr(EMAC_PIO_ASR, PHY_MII_PINS_A);
