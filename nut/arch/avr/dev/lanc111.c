@@ -174,9 +174,9 @@
 #define LANC111_RESET_PORT   PORTF
 #define LANC111_RESET_DDR    DDRF
 
-#endif /* LANC111_RESET_AVRPORT */
+#endif                          /* LANC111_RESET_AVRPORT */
 
-#endif /* LANC111_RESET_BIT */
+#endif                          /* LANC111_RESET_BIT */
 
 /*
  * Determine interrupt settings.
@@ -544,8 +544,8 @@
  * \brief Network interface controller information structure.
  */
 struct _NICINFO {
-    HANDLE volatile ni_rx_rdy;  /*!< Receiver event queue. */
-    uint16_t ni_tx_cnt;          /*!< Number of bytes in transmission queue. */
+    HANDLE volatile ni_rx_rdy;    /*!< Receiver event queue. */
+    uint16_t ni_tx_cnt;           /*!< Number of bytes in transmission queue. */
     uint32_t ni_rx_packets;       /*!< Number of packets received. */
     uint32_t ni_tx_packets;       /*!< Number of packets sent. */
     uint32_t ni_interrupts;       /*!< Number of interrupts. */
@@ -553,6 +553,7 @@ struct _NICINFO {
     uint32_t ni_rx_frame_errors;  /*!< Number of frame errors. */
     uint32_t ni_rx_crc_errors;    /*!< Number of CRC errors. */
     uint32_t ni_rx_missed_errors; /*!< Number of missed packets. */
+    uint8_t ni_mar[8];            /*!< Multicast Address Register. */
 };
 
 /*!
@@ -864,6 +865,22 @@ static int NicReset(void)
     return 0;
 }
 
+/*!
+ * \brief Update the multicast register.
+ *
+ * \param Network interface controller information.
+ */
+static void NicUpdateMCHardware(NICINFO * ni)
+{
+    int i;
+
+    /* Set multicast address register */
+    nic_bs(3);
+    for (i = 0; i < 7; i++) {
+        nic_outlb(NIC_MT + i, ni->ni_mar[i]);
+    }
+}
+
 /*
  * Fires up the network interface. NIC interrupts
  * should have been disabled when calling this
@@ -871,7 +888,7 @@ static int NicReset(void)
  *
  * \param mac Six byte unique MAC address.
  */
-static int NicStart(CONST uint8_t * mac)
+static int NicStart(CONST uint8_t * mac, NICINFO * ni)
 {
     uint8_t i;
 
@@ -897,6 +914,9 @@ static int NicStart(CONST uint8_t * mac)
     for (i = 0; i < 6; i++)
         nic_outlb(NIC_IAR + i, mac[i]);
     //printf("OK\n");
+
+    /* Set multicast address register */
+    NicUpdateMCHardware(ni);
 
     /* Enable interrupts. */
     nic_bs(2);
@@ -1213,7 +1233,7 @@ THREAD(NicRxLanc, arg)
      * This happens, for example, if no Ethernet cable is plugged
      * in.
      */
-    while(NicStart(ifn->if_mac)) {
+    while (NicStart(ifn->if_mac, ni)) {
         NutSleep(1000);
     }
 
@@ -1330,6 +1350,71 @@ int LancInit(NUTDEVICE * dev)
     return 0;
 }
 
+static int LancIOCtl(NUTDEVICE * dev, int req, void *conf)
+{
+    int rc = 0;
+    IFNET *nif = (IFNET *) dev->dev_icb;
+    NICINFO *ni = (NICINFO *) dev->dev_dcb;
+    uint32_t i;
+    MCASTENTRY *mcast;
+
+    uint8_t mac[6];
+
+    switch (req) {
+        /* Set interface address */
+    case SIOCSIFADDR:
+        /* Set interface hardware address. */
+        memcpy(nif->if_mac, conf, sizeof(nif->if_mac));
+        break;
+
+        /* Add multicast address */
+    case SIOCADDMULTI:
+        mac[0] = 0x01;
+        mac[1] = 0x00;
+        mac[2] = 0x5E;
+        mac[3] = ((uint8_t *) conf)[1] & 0x7f;
+        mac[4] = ((uint8_t *) conf)[2];
+        mac[5] = ((uint8_t *) conf)[3];
+
+        mcast = malloc(sizeof(MCASTENTRY));
+        if (mcast != NULL) {
+            /* 
+             * HACK ALERT (MF):
+             * I do not know the correct algorithm. The algorithm
+             * which works for the dm9000 does not work here.
+             * Therefore set all bits to 1.
+             */
+            for (i = 0; i < 7; i++) {
+                ni->ni_mar[i] = 0xFF;
+            }
+
+            /* Add new mcast to the mcast list */
+            memcpy(mcast->mca_ha, mac, 6);
+            mcast->mca_ip = *((uint32_t *) conf);
+            mcast->mca_next = nif->if_mcast;
+            nif->if_mcast = mcast;
+
+            /* Update the MC hardware */
+            NicUpdateMCHardware(ni);
+        } else {
+            rc = -1;
+        }
+        break;
+
+        /* Delete multicast address */
+    case SIOCDELMULTI:
+        /* Will be implemented later */
+        rc = -1;
+        break;
+
+    default:
+        rc = -1;
+        break;
+    }
+
+    return rc;
+}
+
 static NICINFO dcb_eth0;
 
 /*!
@@ -1350,7 +1435,8 @@ static IFNET ifn_eth0 = {
     0,                          /*!< \brief Linked list of multicast address entries, if_mcast. */
     NutEtherInput,              /*!< \brief Routine to pass received data to, if_recv(). */
     LancOutput,                 /*!< \brief Driver output routine, if_send(). */
-    NutEtherOutput              /*!< \brief Media output routine, if_output(). */
+    NutEtherOutput,             /*!< \brief Media output routine, if_output(). */
+    0                           /*!< \brief Interface specific control function. */
 };
 
 /*!
@@ -1371,7 +1457,7 @@ NUTDEVICE devSmsc111 = {
     &ifn_eth0,                  /* Interface control block. */
     &dcb_eth0,                  /* Driver control block. */
     LancInit,                   /* Driver initialization routine. */
-    0,                          /* Driver specific control function. */
+    LancIOCtl,                  /* Driver specific control function. */
     0,                          /* Read from device. */
     0,                          /* Write to device. */
     0,                          /* Write from program space data to device. */
