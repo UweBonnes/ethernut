@@ -84,7 +84,7 @@
 
 static char HTTP_TEXT_XML[] = "text/xml; charset=\"utf-8\"";
 
-static prog_char NOTIFY_ALIVE[] =
+static char NOTIFY_ALIVE[] =
    "NOTIFY * HTTP/1.1\r\n"
    "Host: 239.255.255.250:1900\r\n"
    "Cache-Control: max-age=900\r\n"
@@ -96,7 +96,7 @@ static prog_char NOTIFY_ALIVE[] =
    "Content-Length: 0\r\n"
    "\r\n";
 
-static prog_char NOTIFY_BYE[] =
+static char NOTIFY_BYE[] =
    "NOTIFY * HTTP/1.1\r\n"
    "Host: 239.255.255.250:1900\r\n"
    "NT: upnp:rootdevice\r\n"
@@ -105,7 +105,7 @@ static prog_char NOTIFY_BYE[] =
    "Content-Length: 0\r\n"
    "\r\n";
 
-static prog_char MSEARCH_RESPONSE[] =
+static char MSEARCH_RESPONSE[] =
    "HTTP/1.1 200 OK\r\n"
    "Cache-Control: max-age=900\r\n"
    "Ext:\r\n"
@@ -120,7 +120,7 @@ static prog_char MSEARCH_RESPONSE[] =
  * All listed elements which are not tagged are "REQUIRED" as per
  * UPnP Device Architecture 1.0. Some other are "OPTIONAL" or "RECOMMENDED".
  */
-static prog_char HTML_UPNP[] =
+static char HTML_UPNP[] =
 "<?xml version=\"1.0\"?>\r\n"
 "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">\r\n"
    "<specVersion>\r\n"
