@@ -192,6 +192,11 @@
 #define HTTP_FILE_CHUNK_SIZE 512
 #endif
 
+/*! \brief Enable GZIP support. */
+#ifndef HTTPD_SUPPORT_GZIP
+#define HTTPD_SUPPORT_GZIP 0
+#endif
+
 /*!
  * \addtogroup xgHTTPD
  */
@@ -216,6 +221,7 @@ typedef struct _REQUEST_LOOKUP {
  * all existing entries, do not forget to update MAX_REQUEST_NAME_SIZE.
  */
 static const REQUEST_LOOKUP req_lookup[] = {
+    { 15, "accept-encoding" },
     { 13, "authorization" },
 #if HTTP_KEEP_ALIVE_REQ
     { 10, "connection" },
@@ -244,7 +250,7 @@ static const REQUEST_LOOKUP req_lookup[] = {
  * \brief Size of the largest entry in the header name table.
  */
 #if defined(HTTPD_EXCLUDE_DATE)
-#define MAX_REQUEST_NAME_SIZE   14
+#define MAX_REQUEST_NAME_SIZE   15
 #else
 #define MAX_REQUEST_NAME_SIZE   17
 #endif
@@ -316,7 +322,7 @@ void NutHttpSendHeaderTop(FILE * stream, REQUEST * req, int status, char *title)
  */
 void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
 {
-	NutHttpSendHeaderBottom( stream, 0, mime_type, bytes );
+	NutHttpSendHeaderBottom( stream, 0, mime_type, bytes);
 }
 
 /*!
@@ -324,26 +330,33 @@ void NutHttpSendHeaderBot(FILE * stream, char *mime_type, long bytes)
  *
  * Sends Content-Type, Content-Lenght and Connection lines.
  *
- * \param stream    Stream of the socket connection, previously opened
- *                  for  binary read and write.
- * \param mime_type Points to a string that specifies the content type.
- *                  Examples are "text/html", "image/png",
- *                  "image/gif", "video/mpeg" or "text/css".
- *                  A null pointer is ignored.
- * \param bytes     Content length of the data following this
- *                  header. Ignored, if negative.
+ * \param stream      Stream of the socket connection, previously opened
+ *                    for  binary read and write.
+ * \param mime_type   Points to a string that specifies the content type.
+ *                    Examples are "text/html", "image/png",
+ *                    "image/gif", "video/mpeg" or "text/css".
+ *                    A null pointer is ignored.
+ * \param bytes       Content length of the data following this
+ *                    header. Ignored, if negative.
+ * \param first2bytes The first two bytes of the file.
  */
-void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long bytes)
+ 
+static void NutHttpSendHeaderBottomEx(FILE * stream, REQUEST * req, char *mime_type, long bytes, unsigned short first2bytes)
 {
     static prog_char typ_fmt_P[] = "Content-Type: %s\r\n";
     static prog_char len_fmt_P[] = "Content-Length: %ld\r\n";
+    static prog_char enc_fmt_P[] = "Content-Encoding: gzip\r\n";
     static prog_char con_str_P[] = "Connection: ";
     static prog_char ccl_str_P[] = "close\r\n\r\n";
+    
+#define GZIP_ID  0x8b1f
 
     if (mime_type)
         fprintf_P(stream, typ_fmt_P, mime_type);
     if (bytes >= 0)
         fprintf_P(stream, len_fmt_P, bytes);
+    if (first2bytes == GZIP_ID)
+        fputs_P(enc_fmt_P, stream);
     fputs_P(con_str_P, stream);
 #if HTTP_KEEP_ALIVE_REQ
     if ( req && req->req_connection == HTTP_CONN_KEEP_ALIVE) {
@@ -356,6 +369,25 @@ void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long
 #else
     fputs_P(ccl_str_P, stream);
 #endif
+}
+
+/*!
+ * \brief Send bottom lines of a standard HTML header.
+ *
+ * Sends Content-Type, Content-Lenght and Connection lines.
+ *
+ * \param stream      Stream of the socket connection, previously opened
+ *                    for  binary read and write.
+ * \param mime_type   Points to a string that specifies the content type.
+ *                    Examples are "text/html", "image/png",
+ *                    "image/gif", "video/mpeg" or "text/css".
+ *                    A null pointer is ignored.
+ * \param bytes       Content length of the data following this
+ *                    header. Ignored, if negative.
+ */
+void NutHttpSendHeaderBottom(FILE * stream, REQUEST * req, char *mime_type, long bytes)
+{
+    NutHttpSendHeaderBottomEx(stream, req, mime_type, bytes, 0);
 }
 
 /*!
@@ -566,6 +598,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     char *mime_type;
     char *filename = NULL;
     char *modstr = NULL;
+    unsigned short first2bytes = 0;
 
     /*
      * Validate authorization.
@@ -652,6 +685,7 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     }
 
     file_len = _filelength(fd);
+    
     /* Use mime handler, if one has been registered. */
     if (handler) {
         NutHttpSendHeaderBottom(stream, req, mime_type, -1);
@@ -659,7 +693,19 @@ static void NutHttpProcessFileRequest(FILE * stream, REQUEST * req)
     }
     /* Use default transfer, if no registered mime handler is available. */
     else {
-        NutHttpSendHeaderBottom(stream, req, mime_type, file_len);
+    
+#if (HTTPD_SUPPORT_GZIP >= 1)    
+        /* Check for Accept-Encoding: gzip support */
+        if (req->req_encoding != NULL) {
+            if (strstr(req->req_encoding, "gzip") != NULL) {
+                /* Read first two bytes, needed for gzip header check */
+                _read(fd, &first2bytes, 2);
+                _seek(fd, -2, SEEK_CUR);
+            }            
+        }
+#endif        
+    
+        NutHttpSendHeaderBottomEx(stream, req, mime_type, file_len, first2bytes);
         if (req->req_method != METHOD_HEAD) {
             size_t size = HTTP_FILE_CHUNK_SIZE;
 
@@ -934,11 +980,15 @@ static int ParserHeaderLines(FILE *stream, REQUEST *req)
                     strval = NULL;
                     switch (req_idx) {
                     case 0:
+                        /* Accept-encoding */
+                        strval = &req->req_encoding;
+                        break;
+                    case 1:
                         /* Authorization: Store as string. */
                         strval = &req->req_auth;
                         break;
 #if HTTP_KEEP_ALIVE_REQ
-                    case 1:
+                    case 2:
                         /* Connection: Interpret type. */
                         if (strncasecmp(line, "close", 5) == 0) {
                             req->req_connection = HTTP_CONN_CLOSE;
@@ -948,33 +998,33 @@ static int ParserHeaderLines(FILE *stream, REQUEST *req)
                         }
                         break;
 #endif
-                    case 2:
+                    case 3:
                         /* Content-Length: Get size. */
                         req->req_length = atol(line);
                         break;
-                    case 3:
+                    case 4:
                         /* Content-Type: Store as string. */
                         strval = &req->req_type;
                         break;
-                    case 4:
+                    case 5:
                         /* Cookie: Store as string. */
                         strval = &req->req_cookie;
                         break;
-                    case 5:
+                    case 6:
                         /* Host: Store as string. */
                         strval = &req->req_host;
                         break;
 #if !defined(HTTPD_EXCLUDE_DATE)
-                    case 6:
+                    case 7:
                         /* If-Modified-Since: Interpret RFC date. */
                         req->req_ims = RfcTimeParse(line);
                         break;
 #endif
-                    case 7:
+                    case 8:
                         /* Referer: Store as string. */
                         strval = &req->req_referer;
                         break;
-                    case 8:
+                    case 9:
                         /* User-Agent: Store as string. */
                         strval = &req->req_agent;
                         break;

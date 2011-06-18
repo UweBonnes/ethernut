@@ -120,6 +120,7 @@ struct _REQUEST {
     char *req_referer;          /*!< \brief Misspelled HTTP referrer. */
     char *req_host;             /*!< \brief Server host. */
     int req_connection;         /*!< \brief Connection type, HTTP_CONN_. */
+    char *req_encoding;         /*!< \brief Accept encoding */
 };
 
 typedef struct _MIMETYPES MIMETYPES;

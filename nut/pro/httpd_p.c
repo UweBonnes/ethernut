@@ -76,25 +76,27 @@ char *CreateFilePath(CONST char *url, CONST char *addon)
 */
 void DestroyRequestInfo(REQUEST * req)
 {
-	if (req) {
-		if (req->req_url)
-			free(req->req_url);
-		if (req->req_query)
-			free(req->req_query);
-		if (req->req_type)
-			free(req->req_type);
-		if (req->req_cookie)
-			free(req->req_cookie);
-		if (req->req_auth)
-			free(req->req_auth);
-		if (req->req_agent)
-			free(req->req_agent);
-		if (req->req_qptrs)
-			free(req->req_qptrs);
-		if (req->req_referer)
-			free(req->req_referer);
-		if (req->req_host)
-			free(req->req_host);
-		free(req);
-	}
+    if (req) {
+        if (req->req_url)
+            free(req->req_url);
+        if (req->req_query)
+            free(req->req_query);
+        if (req->req_type)
+            free(req->req_type);
+        if (req->req_cookie)
+            free(req->req_cookie);
+        if (req->req_auth)
+            free(req->req_auth);
+        if (req->req_agent)
+            free(req->req_agent);
+        if (req->req_qptrs)
+            free(req->req_qptrs);
+        if (req->req_referer)
+            free(req->req_referer);
+        if (req->req_host)
+            free(req->req_host);
+        if (req->req_encoding)
+            free(req->req_encoding);
+        free(req);
+    }
 }
