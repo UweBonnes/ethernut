@@ -97,7 +97,7 @@ static void SendIgmpMessage(NUTDEVICE * dev, uint8_t type, uint32_t ip_addr)
     igmp = (IGMP *) nb->nb_tp.vp;
     nb->nb_tp.sz = sizeof(IGMP);
 
-    igmp->igmp_type = IGMP_V2_MEMBERSHIP_REPORT;
+    igmp->igmp_type = type;
     igmp->igmp_code = 0;
     igmp->igmp_group = ip_addr;
 

@@ -397,5 +397,36 @@ int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr)
     return rc;
 }
 
+int NutNetIfDelMcastAddr(CONST char *name, uint32_t ip_addr)
+{
+    NUTDEVICE *dev;
+    IFNET *nif;
+    int rc = -1;
+
+    /*
+     * Check if this is a registered network device.
+     */
+    if ((dev = NutDeviceLookup(name)) == 0 || dev->dev_type != IFTYP_NET)
+        return -1;
+
+    /*
+     * Setup multicast address
+     */
+    nif = dev->dev_icb;
+    if (nif->if_type == IFT_ETHER) {
+        /* Check if ioctl is supported. */
+        if (dev->dev_ioctl) {
+            /* Driver has ioctl, use it. */
+            rc = dev->dev_ioctl(dev, SIOCDELMULTI, &ip_addr);
+            if ((rc == 0) && (ip_addr != INADDR_ALLHOSTS_GROUP)) {
+                NutIgmpLeaveGroup(dev, ip_addr);
+            }    
+        }
+    }
+
+    return rc;
+}
+
+
 
 /*@}*/

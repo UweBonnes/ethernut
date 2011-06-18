@@ -219,6 +219,7 @@ extern int NutNetIfConfig(CONST char *name, void *mac_dev, uint32_t ip_addr,
 extern int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask,
                          uint32_t gateway);
 extern int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr);
+extern int NutNetIfDelMcastAddr(CONST char *name, uint32_t ip_addr);
 
 
 extern int NutNetLoadConfig(CONST char *name);
