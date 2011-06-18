@@ -834,9 +834,22 @@ static int NextHeaderName(FILE * stream, uint_fast8_t *idx)
     while (i < MAX_REQUEST_NAME_SIZE && *idx < NUM_REQUEST_LOOKUP) {
         /* Stop, if the last read failed or if we found the end of the
            line or the name field. */
-        if (ch == EOF || ch == ':' || ch == '\n') {
+        if (ch == EOF || ch == '\n') {
             break;
         }
+        
+        /* Check if the length is correct */
+        if (ch == ':') {
+            if (i == req_lookup[*idx].rlu_len) {
+                /* The correct element was found */
+                break;
+            } else {
+                /* The element does not match */
+                *idx = -1;
+                break;
+            }
+        }
+        
         /* Check if all characters read so far fits with any header
             we are interested in. */
         for (; *idx < NUM_REQUEST_LOOKUP; (*idx)++) {
