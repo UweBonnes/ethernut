@@ -186,10 +186,10 @@
 #
 #
 
-AC_INIT(ethernut,4.9.10)
+AC_INIT(ethernut,4.99.0)
 AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (C) 2005-2010 Ethernut Project])
+AC_COPYRIGHT([Copyright (C) 2005-2011 Ethernut Project])
 AC_REVISION($Revision$)
 
 # Make sure we got a valid path to the sources.

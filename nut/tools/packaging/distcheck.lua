@@ -20,7 +20,7 @@
 
 require("lfs")
 
-PKG_VERSION = "4.9.11"
+PKG_VERSION = "4.99.0"
 ARC_NAME = "ethernut-"..PKG_VERSION
 TOP_DIR = "."
 PS = "\\"
