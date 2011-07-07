@@ -98,6 +98,7 @@ endif
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
+	$(MAKE) -C httpd_upnp
 	$(MAKE) -C icmp-udp
 	$(MAKE) -C inetq
 	$(MAKE) -C ioexpander
