@@ -114,14 +114,15 @@
 #include <cfg/os.h>
 #include <cfg/arch/avr.h>
 
-#include <string.h>
-
 #include <sys/atom.h>
 #include <sys/heap.h>
 #include <sys/thread.h>
 #include <sys/event.h>
 #include <sys/timer.h>
 #include <sys/confnet.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <netinet/if_ether.h>
 #include <net/ether.h>
