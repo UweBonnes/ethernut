@@ -256,6 +256,7 @@
 #if defined(ETHERNUT3)
 #include <dev/spibus_npl.h>
 #define DEV_SPIBUS      spiBusNpl
+#define DEV_SPIBUS0     DEV_SPIBUS 
 #elif defined(__AVR__)
 #include <dev/spibus_avr.h>
 #define DEV_SPIBUS      spiBus0Avr
@@ -302,7 +303,9 @@
  */
 #if defined(ETHERNUT3)
 #define DEV_MMCARD0         devNplMmc0
+#define DEV_MMCARD0_SPIBUS  devNplSpiMmc0
 #include <dev/nplmmc.h>
+#include <dev/spi_mmc_npl.h>
 #elif defined(AT91SAM7X_EK)
 #define DEV_MMCARD0         devAt91SpiMmc0
 #include <dev/spimmc_at91.h>
@@ -315,7 +318,7 @@
 #include <dev/sbi_mmc.h>
 #elif defined (ENET_SAM7X)
 #include <dev/spi_mmc_gpio.h>
-#define DEV_MMCARD0         devSpiMmcGpio
+#define DEV_MMCARD0_SPIBUS  devSpiMmcGpio
 #endif
 
 #if defined(DEV_MMCARD0)
