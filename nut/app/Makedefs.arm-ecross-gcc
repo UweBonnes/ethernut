@@ -50,7 +50,7 @@ LIBDIR = $(top_blddir)/lib
 endif
 
 # Inherit variables from library build
-include $(top_srcdir)/Makedefs.arm-eCross-gcc
+include $(top_srcdir)/Makedefs.arm-ecross-gcc
 
 # Add arm-gcc variables for application build
-include $(top_srcdir)/app/Makevars.arm-eCross-gcc
+include $(top_srcdir)/app/Makevars.arm-ecross-gcc
