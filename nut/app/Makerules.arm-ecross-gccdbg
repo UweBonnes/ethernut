@@ -34,5 +34,5 @@
 # $Id: Makerules.arm-eCross-gccdbg $
 #
 
-include $(top_srcdir)/Makerules.arm-eCross-gccdbg
+include $(top_srcdir)/Makerules.arm-ecross-gccdbg
 include $(top_srcdir)/app/Makerules.gcc
