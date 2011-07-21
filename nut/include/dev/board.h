@@ -319,6 +319,7 @@
 #elif defined (ENET_SAM7X)
 #include <dev/spi_mmc_gpio.h>
 #define DEV_MMCARD0_SPIBUS  devSpiMmcGpio
+#define DEV_MMCARD0         DEV_MMCARD0_SPIBUS
 #endif
 
 #if defined(DEV_MMCARD0)
