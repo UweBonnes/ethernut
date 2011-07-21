@@ -35,7 +35,7 @@
 #
 
 # Inherit arm-gcc variables.
-include $(top_srcdir)/Makevars.arm-eCross-gcc
+include $(top_srcdir)/Makevars.arm-ecross-gcc
 
 # Override compiler options to create debug code.
 CFLAGS_OPT   = -O0 -gdwarf-2
