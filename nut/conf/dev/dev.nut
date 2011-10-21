@@ -903,7 +903,6 @@ nutdev =
                 description = "Address of the sector used for configuration data.\n\n"..
                               "Specify the relative memory address, e.g. 0x0000 for the first sector.",
                 requires = { "DEV_NVMEM_NORFLASH" },
-                default = "0x6000",
                 file = "include/cfg/memory.h"
             },
             {
