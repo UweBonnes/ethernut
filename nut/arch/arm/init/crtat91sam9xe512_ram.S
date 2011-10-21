@@ -135,16 +135,6 @@ __data_stop:
         .global	_start
 _start:
 
-/* ------------ DBGU Output -------------- */
-        ldr     r1, =DBGU_BASE
-        mov     r3, #65
-        str     r3, [r1, #US_THR_OFF]
-_uswrdy:
-	ldr     r3, [r1, #US_CSR_OFF]
-        tst     r3, #US_TXEMPTY
-        beq     _uswrdy
-/* ------------ DBGU Output -------------- */
-
         /*
          * Disable all interrupts and clear any pending ones. 
          * Useful for debugging w/o target reset.
@@ -174,16 +164,6 @@ _uswrdy:
         ldr     r0, =WDT_WDDIS
         str     r0, [r1, #WDT_MR_OFF]
 
-/* ------------ DBGU Output -------------- */
-        ldr     r1, =DBGU_BASE
-        mov     r3, #66
-        str     r3, [r1, #US_THR_OFF]
-_uswrdy1:
-	ldr     r3, [r1, #US_CSR_OFF]
-        tst     r3, #US_TXEMPTY
-        beq     _uswrdy1
-/* ------------ DBGU Output -------------- */
-
         /*
          * Enable the main oscillator. Set startup time of 64 * 8 slow 
          * clock cycles and wait until oscillator is stabilized.
@@ -197,16 +177,6 @@ wait_moscs:
         ldr     r0, [r1, #CKGR_MCFR_OFF]
         tst     r0, #CKGR_MAINRDY
         beq     wait_moscs
-
-/* ------------ DBGU Output -------------- */
-        ldr     r1, =DBGU_BASE
-        mov     r3, #67
-        str     r3, [r1, #US_THR_OFF]
-_uswrdy2:
-	ldr     r3, [r1, #US_CSR_OFF]
-        tst     r3, #US_TXEMPTY
-        beq     _uswrdy2
-/* ------------ DBGU Output -------------- */
 
         /*
          * CKGR_MCFR contains the number of main clock cycles within
@@ -222,16 +192,6 @@ _uswrdy2:
 @        mov     r0, #PMC_CSS_MAIN_CLK
 @        str     r0, [r1, #PMC_MCKR_OFF]
 
-/* ------------ DBGU Output -------------- */
-        ldr     r1, =DBGU_BASE
-        mov     r3, #68
-        str     r3, [r1, #US_THR_OFF]
-_uswrdy3:
-	ldr     r3, [r1, #US_CSR_OFF]
-        tst     r3, #US_TXEMPTY
-        beq     _uswrdy3
-/* ------------ DBGU Output -------------- */
-        
         /*
          * PLLfreq = crystal / divider * (multiplier + 1)
          * Crystal is 18.432 MHz, divider is 14 and multiplier is 72.
@@ -265,16 +225,6 @@ wait_mckrdy:
 @        and     r0, r0, #PMC_MCKRDY
 @        cmp     r0, #0
 @        beq     wait_mckrdy
-
-/* ------------ DBGU Output -------------- */
-        ldr     r1, =DBGU_BASE
-        mov     r3, #69
-        str     r3, [r1, #US_THR_OFF]
-_uswrdy4:
-	ldr     r3, [r1, #US_CSR_OFF]
-        tst     r3, #US_TXEMPTY
-        beq     _uswrdy4
-/* ------------ DBGU Output -------------- */
 
         /*
          * Enable external reset key.
