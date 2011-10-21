@@ -245,6 +245,12 @@ int At91SpiBus0Deselect(NUTSPINODE * node)
     /* Deactivate the node's chip select. */
     At91Spi0ChipSelect(node->node_cs, (node->node_mode & SPI_MODE_CSHIGH) == 0);
 
+#ifdef SPIBUS0_PIN_SHARING
+    /* Disable SPI peripherals if pins are shared. */
+    outr(SPI0_PIO_BASE + PIO_ODR_OFF, SPI0_PINS);
+    outr(SPI0_PIO_BASE + PIO_PER_OFF, SPI0_PINS);
+#endif
+
     /* Release the bus. */
     NutEventPost(&node->node_bus->bus_mutex);
 

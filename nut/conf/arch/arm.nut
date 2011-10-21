@@ -1362,6 +1362,17 @@ nutarch_arm =
         requires = { "HW_MCI_AT91" },
         provides = { "DEV_BLOCK" },
         sources = { "arm/dev/atmel/at91_mci.c" },
+        options =
+        {
+            {
+                macro = "MCI0_PIN_SHARING",
+                brief = "Share Pins",
+                description = "If enabled, the controller will release the peripheral pins when the MCI "..
+		              "is not used and the pins may be used for other purposes.",
+                flavor = "boolean",
+                file = "include/cfg/arch/armpio.h"
+            },
+	},
     },
 
     --
@@ -1438,6 +1449,14 @@ nutarch_arm =
                 flavor = "boolean",
                 file = "include/cfg/spi.h"
             },	
+            {
+                macro = "SPIBUS0_PIN_SHARING",
+                brief = "Share Pins (First Controller)",
+                description = "If enabled, the controller will release the peripheral pins when releasing "..
+		              "the bus. This way the pins may be used for other purposes when SPI is inactive.",
+                flavor = "boolean",
+                file = "include/cfg/arch/armpio.h"
+            },
             {
                 macro = "SPI0_CS0_PIO_ID",
                 brief = "CS0 Port ID (First Controller)",
