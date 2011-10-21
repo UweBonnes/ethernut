@@ -61,6 +61,8 @@
 #include <arpa/inet.h>
 #include <netinet/if_ether.h>
 
+#include "meminfo.h"
+
 /* Reads line from standard input. */
 static int EditLine(char *prompt, char *line, int siz)
 {
@@ -92,7 +94,7 @@ static int EditLine(char *prompt, char *line, int siz)
  
     return 0;
 }
- 
+
 /* Editor main routine. */
 int main(void)
 {
@@ -107,7 +109,8 @@ int main(void)
     freopen(DEV_CONSOLE_NAME, "w", stdout);
     freopen(DEV_CONSOLE_NAME, "r", stdin);    
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
-    puts("Network Configuration Editor");
+    puts("\n\nNetwork Configuration Editor - Compiled " __DATE__ " - " __TIME__);
+    ShowHardwareConfiguration();
  
     for (;;) {
         /* Load configuration. */
