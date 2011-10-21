@@ -259,18 +259,23 @@
 #define DEV_SPIBUS0     DEV_SPIBUS 
 #elif defined(__AVR__)
 #include <dev/spibus_avr.h>
-#define DEV_SPIBUS      spiBus0Avr
+#define DEV_SPIBUS0     spiBus0Avr
 #elif defined(MCU_AT91) && defined(SPI0_BASE)
 #include <dev/spibus_at91.h>
-#define DEV_SPIBUS      spiBus0At91
 #define DEV_SPIBUS0     spiBus0At91
 #elif defined(__AVR32__)
 #include <dev/spibus_avr32.h>
-#define DEV_SPIBUS		spiBus0Avr32
 #define DEV_SPIBUS0		spiBus0Avr32
 #define DEV_SPIBUS1		spiBus1Avr32
 #endif
 #endif /* DEV_SPIBUS */
+#ifndef DEV_SPIBUS
+#if defined(DEV_SPIBUS0)
+#define DEV_SPIBUS      DEV_SPIBUS0
+#elif defined(DEV_SPIBUS1)
+#define DEV_SPIBUS      DEV_SPIBUS1
+#endif
+#endif
 
 /*
  * RTC chip.
