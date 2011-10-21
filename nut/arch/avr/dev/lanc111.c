@@ -131,6 +131,9 @@
 #include <dev/irqreg.h>
 #include <dev/lanc111.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 #ifdef NUTDEBUG
 #include <stdio.h>
 #endif
