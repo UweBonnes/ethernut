@@ -88,6 +88,7 @@
 #define RSTC_ERSTL              0x00000F00      /*!< \brief External reset length. */
 #define RSTC_ERSTL_LSB                  8       /*!< \brief Least significant bit of external reset length. */
 #define RSTC_BODIEN             0x00010000      /*!< \brief Brown-out detection interrupt enable. */
+#define RSTC_KEY_MSK            0xFF000000      /*!< \brief Password mask. */
 /*@}*/
 
 /*@} xgNutArchArmAt91Rstc */
