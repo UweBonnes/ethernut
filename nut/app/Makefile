@@ -82,19 +82,10 @@
 #
 
 all:
-ifeq ($(ARCH), arm)
-# Broken: Seems to depend on AT91
-#	$(MAKE) -C 7segtst
-endif
-ifeq ($(ARCH), avr)
-	$(MAKE) -C basemon
-endif
 	$(MAKE) -C caltime
-	$(MAKE) -C canbus
 # Broken: C++ no longer available?	
 #	$(MAKE) -C cppdemo
 	$(MAKE) -C editconf
-	$(MAKE) -C eeprom
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
@@ -102,12 +93,8 @@ endif
 	$(MAKE) -C httpd_upnp
 	$(MAKE) -C icmp-udp
 	$(MAKE) -C inetq
-	$(MAKE) -C ioexpander
-	$(MAKE) -C led_key
 	$(MAKE) -C logtime
-ifeq ($(CC), iccavr)
 	$(MAKE) -C lua
-endif
 	$(MAKE) -C nutpiper
 	$(MAKE) -C playmp3
 	$(MAKE) -C portdio
@@ -121,27 +108,17 @@ endif
 	$(MAKE) -C uart
 
 install:
-#	$(MAKE) -C 7segtst install
-ifeq ($(ARCH), avr)
-	$(MAKE) -C basemon install
-endif
 	$(MAKE) -C caltime install
-	$(MAKE) -C canbus install
 #	$(MAKE) -C cppdemo install
 	$(MAKE) -C editconf install
-	$(MAKE) -C eeprom install
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
 	$(MAKE) -C httpd_simple install
 	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
-	$(MAKE) -C ioexpander install
-	$(MAKE) -C led_key install
 	$(MAKE) -C logtime install
-ifeq ($(CC), iccavr)
 	$(MAKE) -C lua install
-endif
 	$(MAKE) -C nutpiper install
 	$(MAKE) -C playmp3 install
 	$(MAKE) -C portdio install
@@ -155,21 +132,15 @@ endif
 	$(MAKE) -C uart install
 
 clean:
-	$(MAKE) -C 7segtst clean
-	$(MAKE) -C basemon clean
 	$(MAKE) -C caltime clean
-	$(MAKE) -C canbus clean
 	$(MAKE) -C cppdemo clean
 	$(MAKE) -C editconf clean
-	$(MAKE) -C eeprom clean
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
 	$(MAKE) -C httpd_simple clean
 	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean
-	$(MAKE) -C ioexpander clean
-	$(MAKE) -C led_key clean
 	$(MAKE) -C logtime clean
 	$(MAKE) -C lua clean
 	$(MAKE) -C nutpiper clean

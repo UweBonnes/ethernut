@@ -43,9 +43,17 @@ OBJS =  $(SRCS:.c=.o)
 LIBS =  $(LIBDIR)/nutinit.o -lnutlua -lnutnet -lnutpro -lnutgorp -lnutos -lnutarch -lnutdev -lnutarch -lnutos -lnutcrt $(LIBMATH) $(ADDLIBS)
 TARG =  $(PROJ).hex
 
+ifeq ($(CC),iccavr)
+all:
+	echo ImageCraft cannot compile Lua libraries
+install:
+	echo ImageCraft cannot compile Lua libraries
+else
 all: $(OBJS) $(TARG) $(ITARG) $(DTARG)
 
 include ../Makerules
+
+endif
 
 clean:
 	-rm -f $(OBJS)
