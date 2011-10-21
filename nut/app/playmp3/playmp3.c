@@ -91,12 +91,12 @@ int main(void)
      * Register our devices.
      */
     NutRegisterDevice(&devUrom, 0, 0);
-    NutRegisterDevice(&DEV_DEBUG, 0, 0);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
     /*
      * Assign stdout to the debug device.
      */
-    freopen(DEV_DEBUG_NAME, "w", stdout);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     /*

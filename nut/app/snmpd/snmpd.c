@@ -80,10 +80,10 @@ static char *version = "0.2.0";
 #define MYGATE  "192.168.192.1"
 
 /*! \brief Device name used for UART output. */
-#define MYUART  DEV_DEBUG_NAME
+#define MYUART  DEV_CONSOLE_NAME
 
 /*! \brief Output device. */
-#define MYDEV   DEV_DEBUG
+#define MYDEV   DEV_CONSOLE
 
 /*! \brief UART baudrate. */
 #define MYBAUD  115200

@@ -141,8 +141,8 @@ int main(void)
     /*
      * Initialize the uart device.
      */
-    NutRegisterDevice(&DEV_DEBUG, 0, 0);
-    freopen(DEV_DEBUG_NAME, "w", stdout);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
     puts("\nInetQuery 1.0");
 

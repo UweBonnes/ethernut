@@ -88,13 +88,13 @@ static char *version = "1.0.1";
 #define MYTIMED "130.149.17.21"
 
 /*! \brief Device name used for UART output. */
-#define MYUART  "uart0"
+#define MYUART  DEV_CONSOLE_NAME
 
 /*! \brief UART baudrate. */
 #define MYBAUD  115200
 
 /*! \brief Output device. */
-#define MYDEV   DEV_UART
+#define MYDEV   DEV_CONSOLE
 
 /*! \brief Local timezone, -1 for Central Europe. */
 #define MYTZ    -1

@@ -126,8 +126,8 @@ int main(void)
      * Register the UART device, open it, assign stdout to it and set 
      * the baudrate.
      */
-    NutRegisterDevice(&DEV_DEBUG, 0, 0);
-    freopen(DEV_DEBUG_NAME, "w", stdout);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
     _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
 
     /*

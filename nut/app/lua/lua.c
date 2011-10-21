@@ -320,10 +320,10 @@ int main(void)
     unsigned long baud = 115200;
 
     /* Initialize the console. */
-    NutRegisterDevice(&DEV_UART, 0, 0);
-    freopen(DEV_UART_NAME, "w", stdout);
-    freopen(DEV_UART_NAME, "w", stderr);
-    freopen(DEV_UART_NAME, "r", stdin);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
+    freopen(DEV_CONSOLE_NAME, "w", stderr);
+    freopen(DEV_CONSOLE_NAME, "r", stdin);
     _ioctl(_fileno(stdin), UART_SETSPEED, &baud);
 
     /* Display banner. */

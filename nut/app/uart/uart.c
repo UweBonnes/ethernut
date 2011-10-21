@@ -86,14 +86,14 @@ int main(void)
      * has no configurable base address or interrupt and we set both
      * parameters to zero.
      */
-    NutRegisterDevice(&DEV_UART, 0, 0);
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
 
     /*
      * Now, as the device is registered, we can open it. The fopen()
      * function returns a pointer to a FILE structure, which we use
      * for subsequent reading and writing.
      */
-    uart = fopen(DEV_UART_NAME, "r+");
+    uart = fopen(DEV_CONSOLE_NAME, "r+");
 
     /*
      * Before doing the first read or write, we set the baudrate.
