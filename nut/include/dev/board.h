@@ -104,7 +104,13 @@
 
 #include <cfg/arch.h>
 
-#if defined(ETHERNUT5)
+#if defined(ETHERNUT1)
+#include <arch/arm/board/ethernut1.h>
+#elif defined(ETHERNUT2)
+#include <arch/arm/board/ethernut2.h>
+#elif defined(ETHERNUT3)
+#include <arch/arm/board/ethernut3.h>
+#elif defined(ETHERNUT5)
 #include <arch/arm/board/ethernut5.h>
 #endif
 
@@ -225,18 +231,17 @@
 /*
  * Ethernet device.
  */
-#if defined(ETHERNUT1) || defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105) ||\
+#if defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105) ||\
 	defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) ||\
     defined(ARTHERNET1)
 #include <dev/nicrtl.h>
-#elif defined(ETHERNUT2)||\
-      defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
+#elif defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
 #include <dev/lanc111.h>
-#elif defined(ETHERNUT3) || defined(ELEKTOR_IR1)
+#elif defined(ELEKTOR_IR1)
 #include <dev/dm9000e.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
-#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(ETHERNUT5) || defined(MORPHOQ1) || defined(ENET_SAM7X)
+#elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(MORPHOQ1) || defined(ENET_SAM7X)
 #include <dev/at91_emac.h>
 #elif defined(EVK1100) || defined(EVK1105)
 #include <dev/avr32_macb.h>
@@ -253,11 +258,7 @@
  * SPI bus.
  */
 #ifndef DEV_SPIBUS
-#if defined(ETHERNUT3)
-#include <dev/spibus_npl.h>
-#define DEV_SPIBUS      spiBusNpl
-#define DEV_SPIBUS0     DEV_SPIBUS 
-#elif defined(__AVR__)
+#if defined(__AVR__)
 #include <dev/spibus_avr.h>
 #define DEV_SPIBUS0     spiBus0Avr
 #elif defined(MCU_AT91) && defined(SPI0_BASE)
@@ -280,38 +281,26 @@
 /*
  * RTC chip.
  */
-#if defined(ETHERNUT3)
-#ifndef RTC_CHIP
-#include <cfg/eeprom.h>
-#ifdef NUT_CONFIG_AT45D
-/* Ethernut 3.1 */
-#define RTC_CHIP rtcPcf8563
-#else
-/* Ethernut 3.0 */
-#define RTC_CHIP rtcX12x6
-#endif
-#endif /* RTC_CHIP */
-#include <dev/x12rtc.h>
-#include <dev/pcf8563.h>
-#elif defined(XNUT_100) || defined(XNUT_105) ||\
+#if defined(XNUT_100) || defined(XNUT_105) ||\
 	  defined(MMNET102) || defined(MMNET103) || defined(MMNET104) ||\
 	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04)
-#define RTC_CHIP rtcDs1307
+#define RTC_CHIP0 rtcDs1307
 #include <dev/ds1307rtc.h>
 #elif defined(ELEKTOR_IR1) || defined(ENET_SAM7X)
-#define RTC_CHIP rtcPcf8563
+#define RTC_CHIP0 rtcPcf8563
 #include <dev/pcf8563.h>
+#endif
+
+#ifdef RTC_CHIP0
+#ifndef RTC_CHIP
+#define RTC_CHIP RTC_CHIP0
+#endif
 #endif
 
 /*
  * MultiMedia Card.
  */
-#if defined(ETHERNUT3)
-#define DEV_MMCARD0         devNplMmc0
-#define DEV_MMCARD0_SPIBUS  devNplSpiMmc0
-#include <dev/nplmmc.h>
-#include <dev/spi_mmc_npl.h>
-#elif defined(AT91SAM7X_EK)
+#if defined(AT91SAM7X_EK)
 #define DEV_MMCARD0         devAt91SpiMmc0
 #include <dev/spimmc_at91.h>
 #elif defined(AT91SAM9260_EK)
