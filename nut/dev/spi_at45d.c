@@ -284,16 +284,20 @@ int SpiAt45dInit(NUTDEVICE * dev)
     blkio = dev->dev_dcb;
     node = dev->dev_icb;
 
-    /* Read the status byte and locate the related table entry. */
-    sr = At45dStatus(node);
-    sr &= AT45D_STATUS_DENSITY | AT45D_STATUS_PAGE_SIZE;
-    for (i = at45d_known_types; --i >= 0;) {
-        if (sr == at45d_info[i].at45d_srval) {
-            /* Known DataFlash type. */
-            blkio->blkio_info = &at45d_info[i];
-            blkio->blkio_blk_cnt = at45d_info[i].at45d_pages;
-            blkio->blkio_blk_siz = at45d_info[i].at45d_psize;
-            return 0;
+    if (At45dWaitReady(node, 10, 1) == 0) {
+        /* Read the status byte and locate the related table entry. */
+        sr = At45dStatus(node);
+        if (sr != 0xff) {
+            sr &= AT45D_STATUS_DENSITY | AT45D_STATUS_PAGE_SIZE;
+            for (i = at45d_known_types; --i >= 0;) {
+                if (sr == at45d_info[i].at45d_srval) {
+                    /* Known DataFlash type. */
+                    blkio->blkio_info = &at45d_info[i];
+                    blkio->blkio_blk_cnt = at45d_info[i].at45d_pages;
+                    blkio->blkio_blk_siz = at45d_info[i].at45d_psize;
+                    return 0;
+                }
+            }
         }
     }
     /* Unknown DataFlash type. */
