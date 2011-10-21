@@ -670,6 +670,7 @@ nutarch_arm =
         provides = { "DEV_IRQ_AT91" },
         sources =
         {
+            "arm/dev/atmel/ih_at91sys.c",
             "arm/dev/atmel/ih_at91emac.c",
             "arm/dev/atmel/ih_at91fiq.c",
             "arm/dev/atmel/ih_at91irq0.c",
