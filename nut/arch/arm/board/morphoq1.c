@@ -87,6 +87,10 @@ static void MorphoqClockInit(void)
  */
 static void MorphoqReset(void)
 {
+    unsigned int mr;
+
+    /* Save initial configuration. */
+    mr = inr(RSTC_MR) & ~RSTC_KEY_MSK;
     /* Set reset pulse length to 250us, disable user reset. */
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
     /* Invoke external reset. */
@@ -98,6 +102,8 @@ static void MorphoqReset(void)
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
     /* Due to the RC filter, the pin is rising very slowly. */
     MorphoqDelay(25000);
+    /* Restore initial configuration. */
+    outr(RSTC_MR, RSTC_KEY | mr);
 }
 
 /*!

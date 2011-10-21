@@ -88,6 +88,10 @@ static void Sam9260ekClockInit(void)
  */
 static void Sam9260ekReset(void)
 {
+    unsigned int mr;
+
+    /* Save initial configuration. */
+    mr = inr(RSTC_MR) & ~RSTC_KEY_MSK;
     /* Set reset pulse length to 250us, disable user reset. */
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
     /* Invoke external reset. */
@@ -96,6 +100,8 @@ static void Sam9260ekReset(void)
     /* Wait until reset pin is released. */
     while ((inr(RSTC_SR) & RSTC_NRSTL) == 0);
     Sam9260ekDelay(25000);
+    /* Restore initial configuration. */
+    outr(RSTC_MR, RSTC_KEY | mr);
 }
 
 /*!
