@@ -98,6 +98,7 @@ endif
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
+	$(MAKE) -C httpd_simple
 	$(MAKE) -C httpd_upnp
 	$(MAKE) -C icmp-udp
 	$(MAKE) -C inetq
@@ -132,6 +133,7 @@ endif
 	$(MAKE) -C events install
 	$(MAKE) -C ftpd install
 	$(MAKE) -C httpd install
+	$(MAKE) -C httpd_simple install
 	$(MAKE) -C icmp-udp install
 	$(MAKE) -C inetq install
 	$(MAKE) -C ioexpander install
@@ -163,6 +165,7 @@ clean:
 	$(MAKE) -C events clean
 	$(MAKE) -C ftpd clean
 	$(MAKE) -C httpd clean
+	$(MAKE) -C httpd_simple clean
 	$(MAKE) -C icmp-udp clean
 	$(MAKE) -C inetq clean
 	$(MAKE) -C ioexpander clean
@@ -187,6 +190,7 @@ at90can:
 	$(MAKE) -C events
 	$(MAKE) -C ftpd
 	$(MAKE) -C httpd
+	$(MAKE) -C httpd_simple
 	$(MAKE) -C inetq
 	$(MAKE) -C logtime
 	$(MAKE) -C nutpiper
