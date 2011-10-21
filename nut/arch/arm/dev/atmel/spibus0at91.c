@@ -60,9 +60,21 @@
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS0_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS0_LO(void) { GPIO_SET_LO(SPI0_CS0_PIO_BIT); }
-static INLINE void SPI0_CS0_HI(void) { GPIO_SET_HI(SPI0_CS0_PIO_BIT); }
-static INLINE void SPI0_CS0_SO(void) { GPIO_OUTPUT(SPI0_CS0_PIO_BIT); }
+static INLINE void SPI0_CS0_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS0_PIO_BIT);
+}
+
+static INLINE void SPI0_CS0_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS0_PIO_BIT);
+}
+
+static INLINE void SPI0_CS0_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS0_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS0_PIO_BIT);
+}
 #else
 #define SPI0_CS0_LO()
 #define SPI0_CS0_HI()
@@ -75,9 +87,21 @@ static INLINE void SPI0_CS0_SO(void) { GPIO_OUTPUT(SPI0_CS0_PIO_BIT); }
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS1_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS1_LO(void) { GPIO_SET_LO(SPI0_CS1_PIO_BIT); }
-static INLINE void SPI0_CS1_HI(void) { GPIO_SET_HI(SPI0_CS1_PIO_BIT); }
-static INLINE void SPI0_CS1_SO(void) { GPIO_OUTPUT(SPI0_CS1_PIO_BIT); }
+static INLINE void SPI0_CS1_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS1_PIO_BIT);
+}
+
+static INLINE void SPI0_CS1_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS1_PIO_BIT);
+}
+
+static INLINE void SPI0_CS1_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS1_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS1_PIO_BIT);
+}
 #else
 #define SPI0_CS1_LO()
 #define SPI0_CS1_HI()
@@ -90,9 +114,21 @@ static INLINE void SPI0_CS1_SO(void) { GPIO_OUTPUT(SPI0_CS1_PIO_BIT); }
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS2_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS2_LO(void) { GPIO_SET_LO(SPI0_CS2_PIO_BIT); }
-static INLINE void SPI0_CS2_HI(void) { GPIO_SET_HI(SPI0_CS2_PIO_BIT); }
-static INLINE void SPI0_CS2_SO(void) { GPIO_OUTPUT(SPI0_CS2_PIO_BIT); }
+static INLINE void SPI0_CS2_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS2_PIO_BIT);
+}
+
+static INLINE void SPI0_CS2_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS2_PIO_BIT);
+}
+
+static INLINE void SPI0_CS2_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS2_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS2_PIO_BIT);
+}
 #else
 #define SPI0_CS2_LO()
 #define SPI0_CS2_HI()
@@ -105,9 +141,21 @@ static INLINE void SPI0_CS2_SO(void) { GPIO_OUTPUT(SPI0_CS2_PIO_BIT); }
 #undef GPIO_ID
 #define GPIO_ID SPI0_CS3_PIO_ID
 #include <cfg/arch/porttran.h>
-static INLINE void SPI0_CS3_LO(void) { GPIO_SET_LO(SPI0_CS3_PIO_BIT); }
-static INLINE void SPI0_CS3_HI(void) { GPIO_SET_HI(SPI0_CS3_PIO_BIT); }
-static INLINE void SPI0_CS3_SO(void) { GPIO_OUTPUT(SPI0_CS3_PIO_BIT); }
+static INLINE void SPI0_CS3_LO(void)
+{
+    GPIO_SET_LO(SPI0_CS3_PIO_BIT);
+}
+
+static INLINE void SPI0_CS3_HI(void)
+{
+    GPIO_SET_HI(SPI0_CS3_PIO_BIT);
+}
+
+static INLINE void SPI0_CS3_SO(void)
+{
+    GPIO_ENABLE(SPI0_CS3_PIO_BIT);
+    GPIO_OUTPUT(SPI0_CS3_PIO_BIT);
+}
 #else
 #define SPI0_CS3_LO()
 #define SPI0_CS3_HI()
