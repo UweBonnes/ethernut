@@ -146,6 +146,7 @@
 #include <arch/arm/atmel/at91_matrix.h>
 #include <arch/arm/atmel/at91_ccfg.h>
 #include <arch/arm/atmel/at91_sdramc.h>
+#include <arch/arm/atmel/at91_pit.h>
 #include <arch/arm/atmel/at91_adc.h>
 #include <arch/arm/atmel/at91_eefc.h>
 
