@@ -345,12 +345,25 @@ void NutTimerInit(void)
 /*!
  * \brief Loop for a specified number of microseconds.
  *
+ * This routine can be used for short delays below the system tick 
+ * time, mainly when driving external hardware, where the resolution
+ * of NutSleep() wouldn't fit, a thread switch would be undesirable
+ * or in early system initialization stage, where the system timer
+ * is not available. In all other cases NutSleep() should be used.
+ *
  * This call will not release the CPU and will not switch to another
  * thread. However, interrupts are not disabled and introduce some
  * jitter. Furthermore, unless NUT_DELAYLOOPS is not defined, the
  * deviation may be greater than 10%.
  *
- * If you need exact timing, use timer/counter hardware instead.
+ * For delays below 100 microseconds, the deviation may increase above
+ * 200%. In any case the delay should always be at least as large as
+ * specified. If in doubt, use a simple port bit toggle routine to
+ * check the result with an oscilloscope or frequency counter and adjust
+ * NUT_DELAYLOOPS accordingly.
+ *
+ * In any case, if you need exact timing, use timer/counter hardware
+ * instead.
  *
  * \param us Delay time in microseconds. Values above 255 milliseconds
  *           may not work.
