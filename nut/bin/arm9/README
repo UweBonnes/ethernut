@@ -1,1 +1,1 @@
-ARM9 application binaries are copied here during 'make install'.
+When running 'make install' binaries for arm9 will be placed in this directory.
