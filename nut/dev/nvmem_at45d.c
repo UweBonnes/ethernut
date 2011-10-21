@@ -129,11 +129,11 @@ static uint32_t SpiAt45dConfigPage(void)
  * Otherwise one full page is used.
  *
  * \return The number of bytes available for configuration data. In case of
- *         an error, -1 is returned.
+ *         an error, 0 is returned.
  */
 size_t SpiAt45dConfigSize(void)
 {
-    int rc = 0;
+    size_t rc = 0;
 
     if (SpiAt45dConfigDevice() == 0) {
 #ifdef NUT_CONFIG_AT45D_SIZE
