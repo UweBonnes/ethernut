@@ -2,7 +2,7 @@
 #define _MAINFRAME_H_
 
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -38,6 +38,8 @@ enum
 {
     ID_SCAN = 1,
     ID_AUTOSCAN,
+    ID_OPTIONS,
+    ID_CONFIG,
     ID_HIDE,
     ID_RESTORE,
     ID_ABOUT,
@@ -59,12 +61,16 @@ public:
     void OnUdpEvent(wxCommandEvent& event);
 
 protected:
+    void EditNodeConfig(DISCOVERY_TELE *dist);
     void OnScan(wxCommandEvent& event);
     void OnAutoScan(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
+    void OnOptions(wxCommandEvent& event);
+    void OnNodeConfig(wxCommandEvent& event);
     void OnHide(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnScanTimer(wxTimerEvent& event); 
+    void OnNodeConfigUpdUI(wxUpdateUIEvent& event);
 
 private:
     wxListCtrl *m_nutList;

@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -24,6 +24,10 @@
  */
 
 #include <wx/config.h>
+
+#ifdef __WXMSW__
+#pragma warning(disable:4996)
+#endif
 
 #include "setup.h"
 #include "propdialog.h"
@@ -104,15 +108,15 @@ CPropDialog::~CPropDialog()
 
 bool CPropDialog::GetValues()
 {
-    wxString val = m_grid->GetPropertyValueAsString(wxT("ics_mac"));
+    wxString val = m_grid->GetPropertyValueAsString("ics_mac");
     if (!CSetup::StringToMac(val, m_dist.dist_mac)) {
         ::wxMessageBox(wxT("Bad MAC address!"), wxT("Error"), wxOK | wxICON_ERROR, this);
         return false;
     }
 
-    val = m_grid->GetPropertyValueAsString(wxT("ics_hostname"));
+    val = m_grid->GetPropertyValueAsString("ics_hostname");
     if (m_dist.dist_ver == DISCOVERY_VERSION_1_0) {
-        if (val.Len() > 7) {
+        if (val.Len() > 8) {
             ::wxMessageBox(wxT("Host Name too long!"), wxT("Error"), wxOK | wxICON_ERROR, this);
             return false;
         }
@@ -123,19 +127,19 @@ bool CPropDialog::GetValues()
         strncpy((char *)&m_dist.dist_appendix[1], val, val.Len());
     }
 
-    val = m_grid->GetPropertyValueAsString(wxT("ics_cip_addr"));
+    val = m_grid->GetPropertyValueAsString("ics_cip_addr");
     if (!CSetup::StringToIp(val, &m_dist.dist_cip_addr)) {
         wxMessageBox(wxT("Bad IP address!"), wxT("Error"), wxOK | wxICON_ERROR, this);
         return false;
     }
 
-    val = m_grid->GetPropertyValueAsString(wxT("ics_ip_mask"));
+    val = m_grid->GetPropertyValueAsString("ics_ip_mask");
     if (!CSetup::StringToIp(val, &m_dist.dist_ip_mask)) {
         wxMessageBox(wxT("Bad IP mask!"), wxT("Error"), wxOK | wxICON_ERROR, this);
         return false;
     }
 
-    val = m_grid->GetPropertyValueAsString(wxT("ics_gateway"));
+    val = m_grid->GetPropertyValueAsString("ics_gateway");
     if (!CSetup::StringToIp(val, &m_dist.dist_gateway)) {
         wxMessageBox(wxT("Bad gateway address!"), wxT("Error"), wxOK | wxICON_ERROR, this);
         return false;

@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -42,6 +42,7 @@
 #include "setup.h"
 #include "propdialog.h"
 #include "udpthread.h"
+#include "options.h"
 #include "mainframe.h"
 
 #if !defined(__WXMSW__)
@@ -53,10 +54,13 @@ BEGIN_EVENT_TABLE(CMainFrame, wxFrame)
     EVT_MENU(ID_SCAN, CMainFrame::OnScan)
     EVT_MENU(ID_AUTOSCAN, CMainFrame::OnAutoScan)
     EVT_MENU(wxID_EXIT, CMainFrame::OnExit)
+    EVT_MENU(ID_OPTIONS, CMainFrame::OnOptions)
+    EVT_MENU(ID_CONFIG, CMainFrame::OnNodeConfig)
     EVT_MENU(ID_HIDE, CMainFrame::OnHide)
     EVT_MENU(ID_ABOUT, CMainFrame::OnAbout)
     EVT_MENU(UDP_EVENT, CMainFrame::OnUdpEvent)
     EVT_TIMER(wxID_ANY, CMainFrame::OnScanTimer)
+    EVT_UPDATE_UI(ID_CONFIG, CMainFrame::OnNodeConfigUpdUI)
 END_EVENT_TABLE()
 
 #if 0
@@ -72,10 +76,13 @@ CMainFrame::CMainFrame(const wxString& title)
 {
     SetIcon(wxICON(nutdisc));
 
+    wxPanel* p = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    wxBoxSizer *topsizer = new wxBoxSizer(wxVERTICAL);
+
     /*
      * Create a list control to display all nodes, which we detected.
      */
-    m_nutList = new wxListCtrl(this, ID_LIST, wxDefaultPosition, wxDefaultSize,
+    m_nutList = new wxListCtrl(p, ID_LIST, wxDefaultPosition, wxDefaultSize,
                                     wxLC_REPORT | wxLC_SINGLE_SEL |
                                     wxSUNKEN_BORDER | wxLC_EDIT_LABELS);
     m_nutList->InsertColumn(0, wxT("MAC"), wxLIST_FORMAT_LEFT, 100);
@@ -83,6 +90,10 @@ CMainFrame::CMainFrame(const wxString& title)
     m_nutList->InsertColumn(2, wxT("Mask"), wxLIST_FORMAT_LEFT, 100);
     m_nutList->InsertColumn(3, wxT("Gate"), wxLIST_FORMAT_LEFT, 100);
     m_nutList->InsertColumn(4, wxT("Host"), wxLIST_FORMAT_LEFT, 100);
+
+    topsizer->Add(m_nutList, wxSizerFlags(1).Expand().Border(wxALL, 5));
+    p->SetSizer(topsizer);
+    topsizer->SetSizeHints(this);
 
     /*
      * Create the menu bar.
@@ -92,15 +103,17 @@ CMainFrame::CMainFrame(const wxString& title)
     menuAction->AppendCheckItem(ID_AUTOSCAN, wxT("&Autoscan"));
     menuAction->Append(wxID_EXIT, wxT("E&xit"));
 
-    wxMenu *menuView = new wxMenu;
-    menuView->Append(ID_HIDE, wxT("&Hide"));
+    wxMenu *menuSettings = new wxMenu;
+    menuSettings->Append(ID_OPTIONS, wxT("&Program Options"));
+    menuSettings->Append(ID_CONFIG, wxT("&Configure Node"));
+    menuSettings->Append(ID_HIDE, wxT("&Hide Window"));
 
     wxMenu *menuHelp = new wxMenu;
     menuHelp->Append(ID_ABOUT, wxT("&About"));
 
     wxMenuBar *menuBar = new wxMenuBar();
-    menuBar->Append(menuAction, wxT("&Action") );
-    menuBar->Append(menuView, wxT("&View") );
+    menuBar->Append(menuAction, wxT("&Actions") );
+    menuBar->Append(menuSettings, wxT("&Settings") );
     menuBar->Append(menuHelp, wxT("&Help") );
     SetMenuBar(menuBar);
 
@@ -207,6 +220,24 @@ void CMainFrame::AddNode(DISCOVERY_TELE *info)
     m_nutList->SetColumnWidth(4, wxLIST_AUTOSIZE);
 }
 
+void CMainFrame::EditNodeConfig(DISCOVERY_TELE *dist)
+{
+    CPropDialog dlg(wxT("Node Settings"), dist);
+
+    if(dlg.ShowModal() == wxID_OK) {
+        if(wxMessageBox(wxT("Update node?"), wxT("Setup"), wxYES_NO) == wxYES) {
+            dlg.GetSetup(dist);
+            dist->dist_type = DIST_APPLY;
+            m_nutList->DeleteAllItems();
+            m_thread->Broadcast(dist);
+        }
+        else {
+            m_nutList->DeleteAllItems();
+            m_thread->Broadcast();
+        }
+    }
+}
+
 /*!
  * \brief Event handler.
  *
@@ -224,9 +255,9 @@ void CMainFrame::OnActivated(wxListEvent& event)
     item.SetMask(wxLIST_MASK_TEXT);
     m_nutList->GetItem(item);
 
-    CPropDialog dlg(wxT("Settings"), dist);
+    CPropDialog dlg(wxT("Node Settings"), dist);
     if(dlg.ShowModal() == wxID_OK) {
-        if(wxMessageBox(wxT("Update?"), wxT("Setup"), wxYES_NO) == wxYES) {
+        if(wxMessageBox(wxT("Update node?"), wxT("Setup"), wxYES_NO) == wxYES) {
             dlg.GetSetup(dist);
             dist->dist_type = DIST_APPLY;
             m_nutList->DeleteAllItems();
@@ -236,6 +267,17 @@ void CMainFrame::OnActivated(wxListEvent& event)
             m_nutList->DeleteAllItems();
             m_thread->Broadcast();
         }
+    }
+}
+
+void CMainFrame::OnNodeConfig(wxCommandEvent& WXUNUSED(event))
+{
+    long ix = -1;
+
+    ix = m_nutList->GetNextItem(ix, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (ix != -1) {
+        DISCOVERY_TELE *dist = (DISCOVERY_TELE *)m_nutList->GetItemData(ix);
+        EditNodeConfig(dist);
     }
 }
 
@@ -259,7 +301,7 @@ void CMainFrame::OnAutoScan(wxCommandEvent& event)
     if (event.IsChecked()) {
         m_nutList->DeleteAllItems();
         m_thread->Broadcast();
-        m_timer.Start(1000);
+        m_timer.Start(wxAtoi(g_options->m_scantime) * 1000);
     } else {
         if (m_timer.IsRunning()) {
             m_timer.Stop();
@@ -277,6 +319,14 @@ void CMainFrame::OnHide(wxCommandEvent& WXUNUSED(event))
     Show(false);
 }
 
+void CMainFrame::OnOptions(wxCommandEvent& WXUNUSED(event))
+{
+    COptionsDialog dialog(this);
+    if (dialog.ShowModal() == wxID_OK) {
+        g_options->Save();
+    }
+}
+
 void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxString msg;
@@ -285,7 +335,7 @@ void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 #ifdef __WXDEBUG__
         wxT(" (debug)")
 #endif
-        wxT("\n\nCopyright 2004-2009 by egnite GmbH")
+        wxT("\n\nCopyright 2004-2011 by egnite GmbH")
         wxT("\n\nBuild with wxWidgets Version %s.\n\n"),
         wxT(VERSION), wxVERSION_STRING);
 
@@ -296,4 +346,9 @@ void CMainFrame::OnScanTimer(wxTimerEvent& WXUNUSED(event))
 { 
     m_nutList->DeleteAllItems();
     m_thread->Broadcast();
+}
+
+void CMainFrame::OnNodeConfigUpdUI(wxUpdateUIEvent& event)
+{
+    event.Enable(m_nutList->GetSelectedItemCount() != 0);
 }

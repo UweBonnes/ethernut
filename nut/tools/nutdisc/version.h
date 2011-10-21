@@ -2,7 +2,7 @@
 #define VERSION_H_
 
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,6 +26,6 @@
  * $Id$
  */
 
-#define VERSION "2.4.0"
+#define VERSION "3.0.0"
 
 #endif

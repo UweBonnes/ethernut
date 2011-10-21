@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -24,11 +24,14 @@
  */
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include <wx/wxprec.h>
+//#include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
+
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -43,9 +46,9 @@
     #include <netinet/in.h>
 #endif
 
-
 #include "udpthread.h"
 #include "discovery.h"
+#include "options.h"
 #include "nutdisc.h"
 
 // define this to use wxExecute in the exec tests, otherwise just use system
@@ -67,31 +70,41 @@ void CUdpThread::OnExit()
 {
 }
 
+static char szBuffer[1024];
+
 bool CUdpThread::Broadcast(DISCOVERY_TELE *dist)
 {
     int sock;
     int on = 1;
     struct sockaddr_in client;
+    int rc;
+
+    gethostname(szBuffer, sizeof(szBuffer));
+    struct hostent *host = gethostbyname(szBuffer);
+    struct in_addr *addr = (struct in_addr *)host->h_addr_list[0];
+    struct in_addr *addr2 = (struct in_addr *)host->h_addr_list[1];
+    struct in_addr *addr3 = (struct in_addr *)host->h_addr_list[2];
 
     // Create client socket.
     if((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
          return false;
     }
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char *)&on, sizeof(on));
+    rc = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char *)&on, sizeof(on));
 
+    memset(&client, 0, sizeof(client));
     client.sin_family = AF_INET;
-    client.sin_port = htons(DISCOVERY_PORT);
-    client.sin_addr.s_addr = INADDR_BROADCAST;
+    client.sin_port = htons((unsigned short) wxAtoi(g_options->m_scanport));
+    client.sin_addr.s_addr = inet_addr(g_options->m_scanip);
     if(dist) {
-        sendto(sock, (char *)dist, sizeof(DISCOVERY_TELE), 0, (struct sockaddr *)&client, sizeof(client));
+        rc = sendto(sock, (char *)dist, sizeof(DISCOVERY_TELE), 0, (struct sockaddr *)&client, sizeof(client));
     }
     else {
         DISCOVERY_TELE dummy;
         memset(&dummy, 0, sizeof(dummy));
-        sendto(sock, (char *)&dummy, sizeof(DISCOVERY_TELE), 0, (struct sockaddr *)&client, sizeof(client));
+        rc = sendto(sock, (char *)&dummy, sizeof(DISCOVERY_TELE), 0, (struct sockaddr *)&client, sizeof(client));
     }
 #if defined(__WXMSW__)
-    closesocket(sock);
+    rc = closesocket(sock);
 #else
     close(sock);
 #endif
@@ -120,7 +133,7 @@ void *CUdpThread::Entry()
     }
     setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char *)&on, sizeof(on));
     server.sin_family = AF_INET;
-    server.sin_port = htons(lport);
+    server.sin_port = htons((unsigned short) wxAtoi(g_options->m_scanport));
     server.sin_addr.s_addr = INADDR_ANY;
     if(bind(sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
          return NULL;

@@ -2,7 +2,7 @@
 #define _TASKBARICON_H_
 
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2007 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it

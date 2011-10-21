@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -39,6 +39,7 @@
 #include <wx/notebook.h>
 #include <wx/config.h>
 
+#include "options.h"
 #include "mainframe.h"
 #include "nutdisc.h"
 
@@ -60,15 +61,15 @@ bool CApp::OnInit()
     int ec;
 
     SetVendorName(wxT("egnite"));
-    SetAppName(wxT("nutdisc"));
+    SetAppName(wxT("NutDiscover"));
 
 #if defined(__WXMSW__)
     // Initialize the socket interface.
-    wVersionRequested = MAKEWORD(1, 1);
+    wVersionRequested = MAKEWORD(2, 2);
     if((ec = WSAStartup(wVersionRequested, &wsaData)) != 0) {
         return 0;
     }
-    if(LOBYTE(wsaData.wVersion) != 1 || HIBYTE(wsaData.wVersion) != 1) {
+    if(LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
         WSACleanup();
         return 0;
     }
@@ -77,6 +78,7 @@ bool CApp::OnInit()
     if (!wxApp::OnInit())
         return false;
 
+    g_options = new COptions();
     m_frame = new CMainFrame(wxT("Nut/OS Discoverer"));
     m_frame->Show();
 

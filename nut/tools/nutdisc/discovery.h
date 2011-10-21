@@ -2,7 +2,7 @@
 #define _DISCOVERY_H_
 
 /* ----------------------------------------------------------------------------
- * Copyright (C) 2009 by egnite GmbH
+ * Copyright (C) 2009-2011 by egnite GmbH
  * Copyright (C) 2005-2006 by egnite Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -37,15 +37,15 @@
 
 #pragma pack(1)
 typedef struct {
-    u_long dist_xid;            /*!< \brief Exchange identifier. */
-    u_char dist_type;           /*!< \brief Message type, 0=request, 1=announce, 2=apply. */
-    u_char dist_ver;            /*!< \brief Telegram version. */
-    u_char dist_mac[6];         /*!< \brief Ethernet MAC address. */
-    u_long dist_ip_addr;        /*!< \brief Last used IP address. */
-    u_long dist_ip_mask;        /*!< \brief IP netmask. */
-    u_long dist_gateway;        /*!< \brief Default route. */
-    u_long dist_cip_addr;       /*!< \brief Configured IP address. */
-    u_char dist_appendix[100];  /*!< \brief Additional settings, starting with host name. */
+    unsigned long dist_xid;            /*!< \brief Exchange identifier. */
+    unsigned char dist_type;           /*!< \brief Message type, 0=request, 1=announce, 2=apply. */
+    unsigned char dist_ver;            /*!< \brief Telegram version. */
+    unsigned char dist_mac[6];         /*!< \brief Ethernet MAC address. */
+    unsigned long dist_ip_addr;        /*!< \brief Last used IP address. */
+    unsigned long dist_ip_mask;        /*!< \brief IP netmask. */
+    unsigned long dist_gateway;        /*!< \brief Default route. */
+    unsigned long dist_cip_addr;       /*!< \brief Configured IP address. */
+    unsigned char dist_appendix[100];  /*!< \brief Additional settings, starting with host name. */
 } DISCOVERY_TELE;
 #pragma pack()
 
