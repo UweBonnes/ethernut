@@ -42,10 +42,6 @@
 ****************************************************************************/
 #define __MAIN_C__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
 #include <sys/version.h>
 #include <sys/thread.h>
 #include <sys/socket.h>
@@ -55,6 +51,11 @@
 #include <net/if_var.h>
 #include <arpa/inet.h>
 #include <pro/httpd.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
 
 /*=========================================================================*/
 /*  DEFINE: All Structures and Common Constants                            */
