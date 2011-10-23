@@ -240,6 +240,32 @@ nutdev =
         sources = { "ihndlr.c" },
     },
     {
+        name = "nutdev_uart_poll",
+        brief = "UART Polling Driver",
+        description = "Simple UART driver without interrupt handler.",
+        requires = { "DEV_UART" },
+        options =
+        {
+            {
+                macro = "NUT_DEV_DEBUG_READ",
+                brief = "Enable Debug Input",
+                description = "By default the serial debug port can be used for output only. "..
+                              "This option enables usage of this port for input too.\n\n"..
+                              "Note, that the debug driver is not interrupt driven, it "..
+                              "uses polling. Therefore, standard output functions "..
+                              "may be even called in interrupt context. This is not "..
+                              "true for input, where the driver calls NutSleep while "..
+                              "waiting for incoming data.\n\n"..
+                              "Further note, that incoming characters are not handled in "..
+                              "the background and may get lost, if the application is not "..
+                              "actively listening for input data.",
+                requires = { "DEV_UART" },
+                flavor = "boolean",
+                file = "include/cfg/uart.h"
+            }
+        }
+    },
+    {
         name = "nutdev_usart",
         brief = "USART Driver Framework",
         description = "Generic USART driver framework.",
@@ -709,23 +735,6 @@ nutdev =
                 requires = { "UARTD_HDX_BIT", "DEV_UARTD_GPIO_HDX" },
                 flavor = "boolean",
                 file = function() return GetGpioHeaderPath() end
-            },
-            {
-                macro = "NUT_DEV_DEBUG_READ",
-                brief = "Enable Debug Input",
-                description = "By default the serial debug port can be used for output only. "..
-                              "This option enables usage of this port for input too.\n\n"..
-                              "Note, that the debug driver is not interrupt driven, it "..
-                              "uses polling. Therefore, standard output functions "..
-                              "may be even called in interrupt context. This is not "..
-                              "true for input, where the driver calls NutSleep while "..
-                              "waiting for incoming data.\n\n"..
-                              "Further note, that incoming characters are not handled in "..
-                              "the background and may get lost, if the application is not "..
-                              "actively listening for input data.",
-                requires = { "HW_MCU_AT91" },
-                flavor = "boolean",
-                file = "include/cfg/uart.h"
             },
         }
     },
