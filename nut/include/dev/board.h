@@ -103,11 +103,12 @@
  */
 
 #include <cfg/arch.h>
+#include <cfg/uart.h>
 
 #if defined(ETHERNUT1)
-#include <arch/arm/board/ethernut1.h>
+#include <arch/avr/board/ethernut1.h>
 #elif defined(ETHERNUT2)
-#include <arch/arm/board/ethernut2.h>
+#include <arch/avr/board/ethernut2.h>
 #elif defined(ETHERNUT3)
 #include <arch/arm/board/ethernut3.h>
 #elif defined(ETHERNUT5)
@@ -226,6 +227,23 @@
 #endif
 #ifndef DEV_UART_NAME
 #define DEV_UART_NAME   DEV_UART0_NAME
+#endif
+
+/*
+ * Console devices.
+ */
+#ifndef DEV_CONSOLE
+#ifdef NUT_DEV_DEBUG_READ
+#define DEV_CONSOLE      DEV_DEBUG
+#ifndef DEV_CONSOLE_NAME
+#define DEV_CONSOLE_NAME DEV_DEBUG_NAME
+#endif
+#else
+#define DEV_CONSOLE      DEV_UART
+#ifndef DEV_CONSOLE_NAME
+#define DEV_CONSOLE_NAME DEV_UART_NAME
+#endif
+#endif
 #endif
 
 /*
