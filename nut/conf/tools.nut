@@ -363,7 +363,8 @@ arm_ld_choice = {
                 "s3c4510b-ram",
                 "eb40a_ram",
                 "eb40a_redboot_ram",
-                "gbaxport2"
+                "gbaxport2",
+                "zero"
 }
 
 --

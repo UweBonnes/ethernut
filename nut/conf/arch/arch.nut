@@ -996,6 +996,26 @@ nutarch =
                     "HW_GPIO"
                 },
                 makedefs = { "MCU=uc3b164" }
+            },
+
+            --
+            -- Imaginary Zero CPU
+            --
+            {
+                macro = "MCU_ZERO",
+                brief = "Zero Dummy CPU",
+                description = "Imaginary ARM9 CPU, useful as a porting template.",
+                flavor = "boolean",
+                exclusivity = mcu_names, 
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARM",
+                    "HW_TIMER_ZERO",
+                    "HW_UART_ZERO"
+                },
+                makedefs = { "MCU=arm9" }
             }
         }
     },

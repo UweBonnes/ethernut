@@ -280,6 +280,8 @@ extern int NutRegisterSysIrqHandler(SYSIRQ_HANDLER * sysirq, void (*handler) (vo
 extern int NutSysIrqEnable(SYSIRQ_HANDLER * sysirq);
 extern int NutSysIrqDisable(SYSIRQ_HANDLER * sysirq);
 
+#elif defined(MCU_ZERO)
+
 #else
 #warning "No MCU defined"
 #endif

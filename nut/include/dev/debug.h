@@ -132,6 +132,8 @@ extern NUTDEVICE devDebug0;
 #elif defined(MCU_LPC2XXX)
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;
+#elif defined(MCU_ZERO)
+extern NUTDEVICE devDebug0;
 #endif
 #elif defined(__m68k__)
 

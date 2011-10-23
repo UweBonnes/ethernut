@@ -490,6 +490,13 @@ nutarch_arm =
         requires = { "HW_WDOG_AT91" },
         sources = { "arm/dev/atmel/wdt_at91.c" },
     },
+    {
+        name = "nutarch_ostimer_zero",
+        brief = "System Timer (Zero)",
+        requires = { "HW_TIMER_ZERO" },
+        provides = { "NUT_OSTIMER_DEV" },
+        sources = { "arm/dev/zero/os_timer.c" },
+    },
 
     --
     -- Interrupt handling.
@@ -1642,6 +1649,14 @@ nutarch_arm =
         requires = { "HW_EXT_CALYPSO" },
         provides = { "HW_AUDIO_DAC" },
         sources = { "arm/dev/tlv320dac.c" },
+    },
+    {
+        name = "nutarch_zero_debug",
+        brief = "UART Debug Output (Zero)",
+        description = "Polling UART driver sample for imaginary Zero CPU.",
+        requires = { "HW_UART_ZERO" },
+        provides = { "DEV_UART", "DEV_FILE", "DEV_WRITE" },
+        sources = { "arm/dev/zero/dev_debug.c" }
     },
 }
 
