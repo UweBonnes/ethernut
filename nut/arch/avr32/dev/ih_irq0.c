@@ -46,6 +46,8 @@
 
 #include <avr32/io.h>
 
+#ifdef AVR32_EIC_IRQ_0
+
 #ifndef NUT_IRQPRI_IRQ0
 #define NUT_IRQPRI_IRQ0  AVR32_INTC_INT3
 #endif
@@ -188,3 +190,5 @@ static int Interrupt0Ctl(int cmd, void *param)
     }
     return rc;
 }
+
+#endif // AVR32_EIC_IRQ_1
