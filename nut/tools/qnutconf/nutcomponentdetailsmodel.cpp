@@ -40,12 +40,12 @@ QVariant NutComponentDetailsModel::data( const QModelIndex& index, int role /*= 
 	return QVariant();
 }
 
-int NutComponentDetailsModel::rowCount( const QModelIndex& parent /*= QModelIndex() */ ) const
+int NutComponentDetailsModel::rowCount( const QModelIndex& /*= QModelIndex() */ ) const
 {
 	return cache.count();
 }
 
-int NutComponentDetailsModel::columnCount( const QModelIndex& parent /*= QModelIndex() */ ) const
+int NutComponentDetailsModel::columnCount( const QModelIndex& /*= QModelIndex() */ ) const
 {
 	return 2;
 }
