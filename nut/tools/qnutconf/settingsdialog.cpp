@@ -46,6 +46,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 	ui.cb_MultiConfig->setChecked( Settings::instance()->multipleConfigs() );
 
 	// Build tab
+	ui.cb_ClearLogBeforeBuild->setChecked( Settings::instance()->clearLogBeforeBuild() );
 	ui.e_SourceDirectory->setText( Settings::instance()->sourceDir() );
 	ui.e_BuildDirectory->setText( Settings::instance()->buildPath() );
 	ui.e_InstallDirectory->setText( Settings::instance()->installPath() );
@@ -128,6 +129,7 @@ void SettingsDialog::accept()
 	Settings::instance()->setMultipleConfigs( ui.cb_MultiConfig->checkState() == Qt::Checked );
 
 	// Build tab
+	Settings::instance()->setClearLogBeforeBuild(ui.cb_ClearLogBeforeBuild->checkState() == Qt::Checked );
 	Settings::instance()->setSourceDir( ui.e_SourceDirectory->text() );
 	Settings::instance()->setBuildPath( ui.e_BuildDirectory->text() );
 	Settings::instance()->setInstallPath( ui.e_InstallDirectory->text() );

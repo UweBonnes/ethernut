@@ -75,6 +75,8 @@ public:
 	void setAbsolutePathInSamples( bool val ) { m_absolutePathInSamples = val; }
 	void setMultipleConfigs( bool val ) { m_multipleConfigs = val; }
 	bool multipleConfigs() { return m_multipleConfigs; }
+	void setClearLogBeforeBuild( bool val ) { m_clearLogBeforeBuild = val; }
+	bool clearLogBeforeBuild() { return m_clearLogBeforeBuild; }
 
 private:
 	Settings();
@@ -95,6 +97,7 @@ private:
 	QString m_programmer;
 	bool m_absolutePathInSamples;
 	bool m_multipleConfigs;
+	bool m_clearLogBeforeBuild;
 };
 
 #endif // __SETTINGS_H__

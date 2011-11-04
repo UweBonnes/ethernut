@@ -155,6 +155,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	m_toolPath = settings.value("toolPath", defaultToolPath).toString();
 	m_programmer = settings.value("programmer").toString();
 	m_absolutePathInSamples = settings.value("absolutePathInSamples", true).toBool();
+	m_clearLogBeforeBuild = settings.value("clearLogBeforeBuild", true).toBool();
 	
 	setConfigFileName( fileName );
 
@@ -182,4 +183,5 @@ void Settings::save()
 	settings.setValue("toolPath", m_toolPath);
 	settings.setValue("programmer", m_programmer);
 	settings.setValue("absolutePathInSamples", m_absolutePathInSamples);
+	settings.setValue("clearLogBeforeBuild", m_clearLogBeforeBuild);
 }

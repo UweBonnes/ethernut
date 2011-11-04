@@ -253,6 +253,10 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	ui.actionCreate_sample->setEnabled( false );
 	ui.actionBuildStop->setEnabled( true );
 
+	// Clear log window
+	if ( Settings::instance()->clearLogBeforeBuild() )
+		ui.logPanel->clear();
+
 	// Measure build time
 	time.start();
 

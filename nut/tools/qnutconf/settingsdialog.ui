@@ -113,6 +113,22 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="title">
+          <string>General</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QCheckBox" name="cb_ClearLogBeforeBuild">
+            <property name="text">
+             <string>Clear build log before builds</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="groupBox_3">
          <property name="title">
           <string>Source Directory</string>
@@ -404,9 +420,23 @@
   <tabstop>e_RepositoryFile</tabstop>
   <tabstop>btn_BrowseRepository</tabstop>
   <tabstop>cb_MultiConfig</tabstop>
+  <tabstop>cb_ClearLogBeforeBuild</tabstop>
   <tabstop>e_SourceDirectory</tabstop>
   <tabstop>btn_BrowseSource</tabstop>
   <tabstop>cb_Platform</tabstop>
+  <tabstop>e_IncludeFirst</tabstop>
+  <tabstop>btn_BrowseIncludeFirst</tabstop>
+  <tabstop>e_IncludeLast</tabstop>
+  <tabstop>btn_BrowseIncludeLast</tabstop>
+  <tabstop>e_BuildDirectory</tabstop>
+  <tabstop>btn_BrowseBuildDirectory</tabstop>
+  <tabstop>e_InstallDirectory</tabstop>
+  <tabstop>btn_BrowseInstallDirectory</tabstop>
+  <tabstop>e_ToolPath</tabstop>
+  <tabstop>e_AppDirectory</tabstop>
+  <tabstop>btn_BrowseAppDirectory</tabstop>
+  <tabstop>cb_Programmer</tabstop>
+  <tabstop>cb_AbsolutePathInSamples</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>
@@ -466,8 +496,8 @@
    <slot>browseFolder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>308</x>
-     <y>79</y>
+     <x>344</x>
+     <y>134</y>
     </hint>
     <hint type="destinationlabel">
      <x>372</x>
@@ -482,8 +512,8 @@
    <slot>browseFolder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>293</x>
-     <y>168</y>
+     <x>345</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
      <x>372</x>
@@ -498,8 +528,8 @@
    <slot>browseFolder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>204</y>
+     <x>345</x>
+     <y>236</y>
     </hint>
     <hint type="destinationlabel">
      <x>376</x>
@@ -514,8 +544,8 @@
    <slot>browseFolder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>327</x>
-     <y>273</y>
+     <x>345</x>
+     <y>298</y>
     </hint>
     <hint type="destinationlabel">
      <x>376</x>
