@@ -64,6 +64,8 @@ QString SystemInfo::GetOsString()
         return "Mac OS X 10.6 \"Snow Leopard\"";
     case QSysInfo::MV_10_6 + 1:
         return "Mac OS X 10.7 \"Lion\"";
+    default:
+        return "Unknown Mac OS Version";
     }
 #elif defined(Q_WS_WIN)
     switch(QSysInfo::WindowsVersion) {
@@ -79,6 +81,8 @@ QString SystemInfo::GetOsString()
         return "Windows Vista";
     case QSysInfo::WV_WINDOWS7:
         return "Windows 7";
+    default:
+        return "Unknown Windows OS";
     }
 #endif
     return "unknown OS";
