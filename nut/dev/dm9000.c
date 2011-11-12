@@ -54,7 +54,7 @@
 #include <net/if_var.h>
 
 #include <dev/irqreg.h>
-#include <dev/dm9000e.h>
+#include <dev/dm9000.h>
 
 #ifdef NUTDEBUG
 #include <stdio.h>

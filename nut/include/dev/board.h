@@ -258,7 +258,7 @@
 #elif defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
 #include <dev/lanc111.h>
 #elif defined(ELEKTOR_IR1)
-#include <dev/dm9000e.h>
+#include <dev/dm9000.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(MORPHOQ1) || defined(ENET_SAM7X)
