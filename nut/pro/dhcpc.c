@@ -385,7 +385,8 @@ static uint_fast8_t __tcp_trf = 1;
 #endif
 #else
 /* arm-elf-gcc used 276 bytes with size optimized, 680 bytes with debug code. */
-#define NUT_THREAD_DHCPSTACK    384
+/* arm-none-eabi creates stack overflow with 384 bytes on EIR 1.0 board. */
+#define NUT_THREAD_DHCPSTACK    512
 #endif
 #endif
 
