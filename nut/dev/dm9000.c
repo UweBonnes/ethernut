@@ -66,29 +66,6 @@
 #define NUT_THREAD_NICRXSTACK   256
 #endif
 
-/*
- * Determine ports, which had not been explicitely configured.
- */
-#if defined(ETHERNUT3)
-
-#ifndef NIC_BASE_ADDR
-#define NIC_BASE_ADDR   0x20000000
-#endif
-
-#ifndef NIC_SIGNAL_IRQ
-#define NIC_SIGNAL_IRQ  INT1
-#endif
-
-#ifndef NIC_SIGNAL_PDR
-#define NIC_SIGNAL_PDR  PIO_PDR
-#endif
-
-#ifndef NIC_SIGNAL_BIT
-#define NIC_SIGNAL_BIT  10
-#endif
-
-#endif
-
 #if !defined(NIC_DATA_ADDR) && defined(NIC_BASE_ADDR)
 #define NIC_DATA_ADDR   (NIC_BASE_ADDR + 4)
 #endif

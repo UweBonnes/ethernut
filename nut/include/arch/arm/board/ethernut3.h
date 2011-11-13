@@ -65,6 +65,22 @@
 /*
  * Ethernet devices
  */
+#ifndef NIC_BASE_ADDR
+#define NIC_BASE_ADDR   0x20000000
+#endif
+
+#ifndef NIC_SIGNAL_IRQ
+#define NIC_SIGNAL_IRQ  INT1
+#endif
+
+#ifndef NIC_SIGNAL_PDR
+#define NIC_SIGNAL_PDR  PIO_PDR
+#endif
+
+#ifndef NIC_SIGNAL_BIT
+#define NIC_SIGNAL_BIT  10
+#endif
+
 #include <dev/dm9000e.h>
 
 /*
