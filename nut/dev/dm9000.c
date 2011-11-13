@@ -39,6 +39,7 @@
 
 #include <cfg/os.h>
 #include <arch/arm.h>
+#include <dev/board.h>
 
 #include <string.h>
 
@@ -84,28 +85,6 @@
 
 #ifndef NIC_SIGNAL_BIT
 #define NIC_SIGNAL_BIT  10
-#endif
-
-#elif defined(ELEKTOR_IR1)
-
-#ifndef NIC_BASE_ADDR
-#define NIC_BASE_ADDR   0x30000000
-#endif
-
-#ifndef NIC_SIGNAL_IRQ
-#define NIC_SIGNAL_IRQ  INT0
-#endif
-
-#ifndef NIC_SIGNAL_PDR
-#define NIC_SIGNAL_PDR  PIOB_PDR
-#endif
-
-#ifndef NIC_SIGNAL_XSR
-#define NIC_SIGNAL_XSR  PIOB_ASR
-#endif
-
-#ifndef NIC_SIGNAL_BIT
-#define NIC_SIGNAL_BIT  PB20_IRQ0_A
 #endif
 
 #endif
@@ -977,23 +956,6 @@ int DmInit(NUTDEVICE * dev)
 {
     uint32_t id;
     NICINFO *ni = (NICINFO *) dev->dev_dcb;
-
-#if defined(ELEKTOR_IR1)
-    outr(PIOA_BSR, _BV(PA20_NCS2_B));
-    outr(PIOA_PDR, _BV(PA20_NCS2_B));
-    outr(PIOC_BSR, _BV(PC16_NWAIT_B) | _BV(PC21_NWR0_B) | _BV(PC22_NRD_B));
-    outr(PIOC_PDR, _BV(PC16_NWAIT_B) | _BV(PC21_NWR0_B) | _BV(PC22_NRD_B));
-
-    outr(SMC_CSR(2)
-        , (1 << SMC_NWS_LSB)
-        | SMC_WSEN
-        | (2 << SMC_TDF_LSB)
-        | SMC_BAT
-        | SMC_DBW_16
-        | (1 << SMC_RWSETUP_LSB)
-        | (1 << SMC_RWHOLD_LSB)
-        );
-#endif
 
     /* Probe chip by verifying the identifier registers. */
     id = (uint32_t) nic_inb(NIC_VID);

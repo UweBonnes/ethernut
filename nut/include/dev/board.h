@@ -105,7 +105,9 @@
 #include <cfg/arch.h>
 #include <cfg/uart.h>
 
-#if defined(ETHERNUT1)
+#if defined(ELEKTOR_IR1)
+#include <arch/arm/board/elektor_ir1.h>
+#elif defined(ETHERNUT1)
 #include <arch/avr/board/ethernut1.h>
 #elif defined(ETHERNUT2)
 #include <arch/avr/board/ethernut2.h>
@@ -257,8 +259,6 @@
 #include <dev/nicrtl.h>
 #elif defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
 #include <dev/lanc111.h>
-#elif defined(ELEKTOR_IR1)
-#include <dev/dm9000.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(MORPHOQ1) || defined(ENET_SAM7X)
@@ -306,7 +306,7 @@
 	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04)
 #define RTC_CHIP0 rtcDs1307
 #include <dev/ds1307rtc.h>
-#elif defined(ELEKTOR_IR1) || defined(ENET_SAM7X)
+#elif defined(ENET_SAM7X)
 #define RTC_CHIP0 rtcPcf8563
 #include <dev/pcf8563.h>
 #endif
@@ -327,9 +327,6 @@
 #define DEV_MMCARD0         devAt91Mci0
 #define DEV_MMCARD0_NAME    "MCI0"
 #include <dev/at91_mci.h>
-#elif defined(ELEKTOR_IR1)
-#define DEV_MMCARD0         devSbi0MmCard0
-#include <dev/sbi_mmc.h>
 #elif defined (ENET_SAM7X)
 #include <dev/spi_mmc_gpio.h>
 #define DEV_MMCARD0_SPIBUS  devSpiMmcGpio
