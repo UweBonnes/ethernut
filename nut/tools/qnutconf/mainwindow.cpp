@@ -84,8 +84,7 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-	if (m_findDialog)
-		delete m_findDialog;
+	delete m_findDialog;
 	writeSettings();
 }
 
@@ -203,14 +202,12 @@ void MainWindow::on_actionFind_triggered()
 void MainWindow::on_findNext_triggered(const QString &text)
 {
 	if (m_findText != text || m_foundItems.isEmpty()) {
-#ifndef QT_NO_CURSOR
 		QApplication::setOverrideCursor(Qt::WaitCursor);
-#endif
+
 		m_foundItems = model->match(model->index(0, 0), NutComponentModel::FullSearch, QVariant::fromValue(text), -1, 
 			Qt::MatchFixedString | Qt::MatchContains | Qt::MatchRecursive | Qt::MatchWrap);
-#ifndef QT_NO_CURSOR
+
 		QApplication::restoreOverrideCursor();
-#endif
 		m_findText = text;
 		m_foundItemIndex = 0;
 	} else {
