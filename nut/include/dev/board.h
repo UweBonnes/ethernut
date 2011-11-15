@@ -115,6 +115,8 @@
 #include <arch/arm/board/ethernut3.h>
 #elif defined(ETHERNUT5)
 #include <arch/arm/board/ethernut5.h>
+#elif defined(FLECX1)
+#include <arch/arm/lpc/lpc1700/board/flecx1.h>
 #elif defined(ZERO_EK)
 #include <arch/arm/board/zero_ek.h>
 #endif

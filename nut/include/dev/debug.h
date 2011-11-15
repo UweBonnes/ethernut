@@ -129,6 +129,8 @@ extern NUTDEVICE devDebug1;
 extern NUTDEVICE devDebug;
 #elif defined(MCU_GBA)
 extern NUTDEVICE devDebug0;
+#elif defined(MCU_LPC1700)
+extern NUTDEVICE devDebug0;
 #elif defined(MCU_LPC2XXX)
 extern NUTDEVICE devDebug0;
 extern NUTDEVICE devDebug1;

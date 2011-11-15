@@ -12,6 +12,7 @@ BURNDONGLE=turtelizer2
 # A file with this name and extension .cfg must exist in
 # the OpenOCD board directory.
 #
+ifneq ($(PLATFORM), FLECX1)
 ifneq ($(PLATFORM), ETHERNUT5)
 ifneq ($(PLATFORM), ETHERNUT3)
 ifneq ($(PLATFORM), ELEKTOR_IR1)
@@ -24,6 +25,9 @@ endif
 else
 BURNBOARD=ethernut5
 endif
+else
+BURNBOARD=flecx
+endif
 
 # Choose the commands
 # -------------------
@@ -32,7 +36,7 @@ endif
 BURNCMDS=-c init -c "run_flash_image ./$(TARG)" -c shutdown
 # BURNCMDS=-c init -c "run_ram_image ./$(TARG)" -c shutdown
 # BURNCMDS=-c init -c "reset init" -c "load_image $IMGFILE 0" -c "verify_image $IMGFILE 0" -c "resume 0" -c shutdown
-
+# BURNCMDS=-c "init" -c "soft_reset_halt" -c "halt" -c "mww 0x400FC040 1" -c "flash write_image erase ./$(ITARG) 0 bin" -c "soft_reset_halt" -c "halt" -c "reg pc 0xd1" -c "step" -c "resume" -c "shutdown"
 
 # No change required
 # ------------------

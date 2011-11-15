@@ -816,6 +816,24 @@ nutarch =
                 },
                 makedefs = { "MCU=arm7tdmi" }
             },
+            {
+                macro = "MCU_LPC1758",
+                brief = "NXP LPC1758",
+                flavor = "boolean",
+                exclusivity = mcu_names,
+                file = "include/cfg/arch.h",
+                requires = { "TOOL_CC_ARM" },
+                provides = {
+                    "HW_TARGET",
+                    "HW_MCU_ARMV7_M",
+                    "HW_MCU_LPC",
+                    "HW_MCU_LPC1700",
+                    "HW_MCU_LPC1758",
+                    "HW_TIMER_LPC1700",
+                    "HW_UART_LPC"
+                },
+                makedefs = { "MCU=cortex-m3" }
+            },
             --
             --
             -- UNIX EMULATION FOR NUT/OS
@@ -1046,6 +1064,12 @@ nutarch =
         brief = "H8/300H",
         requires = { "HW_MCU_H8300" },
         script = "arch/h8300h.nut"
+    },
+    {
+        name = "nutarch_lpc",
+        brief = "LPC",
+        requires = { "HW_MCU_LPC" },
+        script = "arch/lpc.nut"
     },
     {
         name = "nutarch_m68k",

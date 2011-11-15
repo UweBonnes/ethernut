@@ -133,7 +133,11 @@
 #elif defined(__AVR__)
 #include <arch/avr/atom.h>
 #elif defined(__arm__)
+#if defined(__ARM_ARCH_7M__)
+#include <arch/arm/lpc/lpc1700/atom.h>
+#else
 #include <arch/arm/atom.h>
+#endif
 #elif defined(__AVR32__)
 #include <arch/avr32/atom.h>
 #elif defined(__H8300H__) || defined(__H8300S__)

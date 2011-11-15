@@ -1,8 +1,5 @@
-#ifndef _ARCH_TIMER_H_
-#define _ARCH_TIMER_H_
-
 /*
- * Copyright (C) 2001-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2001-2011 by egnite Software GmbH. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,63 +28,43 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
+ *
  */
 
 /*
- * $Log$
- * Revision 1.5  2009/03/05 22:16:57  freckle
- * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
- *
- * Revision 1.4  2008/08/22 09:25:34  haraldkipp
- * Clock value caching and new functions NutArchClockGet, NutClockGet and
- * NutClockSet added.
- *
- * Revision 1.3  2008/08/11 06:59:58  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2008/07/08 08:25:05  haraldkipp
- * NutDelay is no more architecture specific.
- * Number of loops per millisecond is configurable or will be automatically
- * determined.
- * A new function NutMicroDelay provides shorter delays.
- *
- * Revision 1.1  2005/07/26 18:42:19  haraldkipp
- * First check in
- *
+ * $Id$
  */
 
-#include <stdint.h>
+#ifndef _SYS_ATOM_H_
+#error "Do not include this file directly. Use sys/atom.h instead!"
+#endif
 
-#ifdef __NUT_EMULATION__
-#include <arch/unix/timer.h>
-#elif defined(__AVR__)
-#include <arch/avr/timer.h>
-#elif defined(__arm__)
-#if defined(__ARM_ARCH_7M__)
-#include <arch/arm/lpc/lpc1700/timer.h>
+#ifdef __GNUC__
+
+#define NutEnterCritical() \
+{ \
+	asm volatile (  \
+		"@ NutEnterCritical"    "\n\t" \
+        "mrs     r0, PRIMASK"   "\n\t" \
+        "cpsid   i"             "\n\t" \
+		:::"r0" \
+	); \
+}
+
+#define NutExitCritical() \
+	{\
+     	asm volatile ( \
+		"@ NutExitCritical"     "\n\t" \
+		"mrs     r0, PRIMASK"   "\n\t" \
+		"cpsie   i"             "\n\t" \
+		:::"r0" \
+	); \
+}
+
+#define NutJumpOutCritical()    NutExitCritical()
+
 #else
-#include <arch/arm/timer.h>
-#endif
-#elif defined(__AVR32__)
-#include <arch/avr32/timer.h>
-#elif defined(__H8300H__) || defined(__H8300S__)
-#include <arch/h8300h/timer.h>
-#elif defined(__m68k__)
-#include <arch/m68k/timer.h>
-#endif
 
-__BEGIN_DECLS
-/* Prototypes */
-
-/*
- * Architecture dependent functions.
- */
-extern void NutRegisterTimer(void (*handler) (void *));
-extern uint32_t NutArchClockGet(int idx);
-extern uint32_t NutGetTickClock(void);
-extern uint32_t NutTimerMillisToTicks(uint32_t ms);
-
-__END_DECLS
-/* End of prototypes */
+#error This compiler is not supported
 
 #endif

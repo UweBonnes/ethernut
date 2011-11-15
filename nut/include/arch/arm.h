@@ -111,33 +111,15 @@
  */
 
 #include <cfg/arch.h>
-#if defined (MCU_AT91)
-#include <arch/arm/at91.h>
-#elif defined (MCU_GBA)
-#include <arch/arm/gba.h>
-#elif defined (MCU_LPC2XXX)
-#include <arch/arm/lpc2xxx.h>
+
+#if defined(__ARM_ARCH_4T__)
+#include <arch/arm/armv4t.h>
+#elif defined(__ARM_ARCH_7M__)
+#include <arch/arm/armv7_m.h>
+#else
+#error ARM architecture unknown or not specified
 #endif
 
-#ifndef __ASSEMBLER__
-#include <dev/mweeprom.h>
-#endif
-
-#define ARM_MODE_USER       0x10
-#define ARM_MODE_FIQ        0x11
-#define ARM_MODE_IRQ        0x12
-#define ARM_MODE_SVC        0x13
-#define ARM_MODE_ABORT      0x17
-#define ARM_MODE_UNDEF      0x1B
-#define ARM_MODE_SYS        0x1F
-#define ARM_MODE_MASK       0x1F
-
-#define I_BIT               0x80
-#define ARM_CPSR_I_BIT      0x80
-#define F_BIT               0x40
-#define ARM_CPSR_F_BIT      0x40
-#define T_BIT               0x20
-#define ARM_CPSR_T_BIT      0x20
 
 #ifdef __GNUC__
 #define CONST      const
@@ -212,17 +194,105 @@ extern void *__stack;
 #define _SFR_MEM8(addr)     (addr)
 #define _SFR_MEM16(addr)    (addr)
 
-#ifndef __ASSEMBLER__
-#ifdef __GNUC__
-#define ARM_SET_CP15_CR(val) __asm__ __volatile__("mcr p15, 0, %0, c1, c0, 0" :: "r"(val) : "cc")
-#define ARM_GET_CP15_CR() ( \
-    { \
-        unsigned int val; \
-        __asm__ __volatile__("mrc p15, 0, %0, c1, c0, 0" : "=r"(val) :: "cc"); \
-        val; \
-    } \
-)
-#endif /* __GNUC__ */
+#if !defined (__ASSEMBLER__)
+#define mem_barrier() __asm__ __volatile__("":::"memory")
+
+static INLINE void mem_wr(unsigned int reg, unsigned int val)
+{
+    *(volatile unsigned int *) reg = val;
+}
+
+static INLINE void mem_wr8(unsigned int reg, uint8_t val)
+{
+    *(volatile uint8_t *) reg = val;
+}
+
+static INLINE void mem_wr16(unsigned int reg, uint16_t val)
+{
+    *(volatile uint16_t *) reg = val;
+}
+
+static INLINE void mem_wr32(unsigned int reg, uint32_t val)
+{
+    *(volatile uint32_t *) reg = val;
+}
+
+static INLINE unsigned int mem_rd(unsigned int reg)
+{
+    return *(const volatile unsigned int *) reg;
+}
+
+static INLINE uint8_t mem_rd8(unsigned int reg)
+{
+    return *(const volatile uint8_t *) reg;
+}
+
+static INLINE uint16_t mem_rd16(unsigned int reg)
+{
+    return *(const volatile uint16_t *) reg;
+}
+
+static INLINE uint32_t mem_rd32(unsigned int reg)
+{
+    return *(const volatile uint32_t *) reg;
+}
+
+static INLINE void mem_wr_mb(unsigned int reg, unsigned int val)
+{
+    mem_wr(reg, val);
+    mem_barrier();
+}
+
+static INLINE void mem_wr8_mb(unsigned int reg, uint8_t val)
+{
+    mem_wr8(reg, val);
+    mem_barrier();
+}
+
+static INLINE void mem_wr16_mb(unsigned int reg, uint16_t val)
+{
+    mem_wr16(reg, val);
+    mem_barrier();
+}
+
+static INLINE void mem_wr32_mb(unsigned int reg, uint32_t val)
+{
+    mem_wr32(reg, val);
+    mem_barrier();
+}
+
+static INLINE unsigned int mem_rd_mb(unsigned int reg)
+{
+    unsigned int rc = mem_rd(reg);
+    mem_barrier();
+
+    return rc;
+}
+
+static INLINE uint8_t mem_rd8_mb(unsigned int reg)
+{
+    uint8_t rc = mem_rd8(reg);
+    mem_barrier();
+
+    return rc;
+}
+
+static INLINE uint16_t mem_rd16_mb(unsigned int reg)
+{
+    uint16_t rc = mem_rd16(reg);
+    mem_barrier();
+
+    return rc;
+}
+
+static INLINE uint32_t mem_rd32_mb(unsigned int reg)
+{
+    uint32_t rc = mem_rd32(reg);
+    mem_barrier();
+
+    return rc;
+}
+
 #endif /* __ASSEMBLER__ */
 
 #if !defined (__ASSEMBLER__) && defined(__CROSSWORKS_ARM)

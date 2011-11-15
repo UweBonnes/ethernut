@@ -384,7 +384,11 @@ function GetLDScriptsPath()
         return basepath .. "avr32/ldscripts/$(LDNAME).ld"
     end
     if c_is_provided("TOOL_CC_ARM") then
-        return basepath .. "arm/ldscripts/$(LDNAME).ld"
+        if c_is_provided("HW_MCU_LPC1700") then
+            return basepath .. "arm/lpc/lpc1700/ldscripts/$(LDNAME).ld"
+        else
+            return basepath .. "arm/ldscripts/$(LDNAME).ld"
+        end
     end
     return "Unknown Platform - Check GetLDScriptsPath in tools.nut"
 end
