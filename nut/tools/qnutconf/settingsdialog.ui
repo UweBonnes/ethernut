@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>378</width>
-    <height>422</height>
+    <height>472</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,6 +118,13 @@
           <string>General</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QCheckBox" name="cb_LogVerbose">
+            <property name="text">
+             <string>Verbose compiler log messages</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QCheckBox" name="cb_ClearLogBeforeBuild">
             <property name="text">
@@ -420,6 +427,7 @@
   <tabstop>e_RepositoryFile</tabstop>
   <tabstop>btn_BrowseRepository</tabstop>
   <tabstop>cb_MultiConfig</tabstop>
+  <tabstop>cb_LogVerbose</tabstop>
   <tabstop>cb_ClearLogBeforeBuild</tabstop>
   <tabstop>e_SourceDirectory</tabstop>
   <tabstop>btn_BrowseSource</tabstop>
@@ -448,8 +456,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>253</x>
-     <y>400</y>
+     <x>262</x>
+     <y>462</y>
     </hint>
     <hint type="destinationlabel">
      <x>141</x>
@@ -464,8 +472,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>335</x>
-     <y>402</y>
+     <x>344</x>
+     <y>462</y>
     </hint>
     <hint type="destinationlabel">
      <x>308</x>
@@ -497,7 +505,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>344</x>
-     <y>134</y>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>372</x>
@@ -513,7 +521,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>345</x>
-     <y>213</y>
+     <y>256</y>
     </hint>
     <hint type="destinationlabel">
      <x>372</x>
@@ -529,7 +537,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>345</x>
-     <y>236</y>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
      <x>376</x>
@@ -545,7 +553,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>345</x>
-     <y>298</y>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
      <x>376</x>
@@ -560,8 +568,8 @@
    <slot>browseFolder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>309</x>
-     <y>344</y>
+     <x>345</x>
+     <y>410</y>
     </hint>
     <hint type="destinationlabel">
      <x>374</x>
@@ -580,7 +588,7 @@
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
-     <x>380</x>
+     <x>377</x>
      <y>116</y>
     </hint>
    </hints>

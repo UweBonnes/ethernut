@@ -77,6 +77,8 @@ public:
 	bool multipleConfigs() { return m_multipleConfigs; }
 	void setClearLogBeforeBuild( bool val ) { m_clearLogBeforeBuild = val; }
 	bool clearLogBeforeBuild() { return m_clearLogBeforeBuild; }
+	void setVerboseBuild( bool val ) { m_verboseBuild = val; }
+	bool verboseBuild() { return m_verboseBuild; }
 
 private:
 	Settings();
@@ -98,6 +100,7 @@ private:
 	bool m_absolutePathInSamples;
 	bool m_multipleConfigs;
 	bool m_clearLogBeforeBuild;
+	bool m_verboseBuild;
 };
 
 #endif // __SETTINGS_H__

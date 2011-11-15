@@ -121,7 +121,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="logControl" stretch="0,0,0">
+         <layout class="QHBoxLayout" name="logControl" stretch="0,0">
           <property name="spacing">
            <number>15</number>
           </property>
@@ -140,13 +140,6 @@
              </size>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="logVerbose">
-            <property name="text">
-             <string>Verbose</string>
-            </property>
-           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="logClear">
@@ -364,7 +357,6 @@
   <tabstop>detailsView</tabstop>
   <tabstop>descriptionPanel</tabstop>
   <tabstop>logPanel</tabstop>
-  <tabstop>logVerbose</tabstop>
   <tabstop>logClear</tabstop>
  </tabstops>
  <resources>

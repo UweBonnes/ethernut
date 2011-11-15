@@ -264,11 +264,11 @@ void MainWindow::on_actionBuild_Nut_OS_triggered()
 	model->generateBuildTree();
 
 	/* Clean up any previous build */
-	Builder::instance()->build( "clean", ui.logVerbose->isChecked() );
+	Builder::instance()->build( "clean", Settings::instance()->verboseBuild() );
 	/* Make all */
-	Builder::instance()->build( "all", ui.logVerbose->isChecked() );
+	Builder::instance()->build( "all", Settings::instance()->verboseBuild() );
 	/* Make install */
-	Builder::instance()->build( "install", ui.logVerbose->isChecked() );
+	Builder::instance()->build( "install", Settings::instance()->verboseBuild() );
 
 }
 

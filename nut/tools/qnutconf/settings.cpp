@@ -156,7 +156,7 @@ bool Settings::load( const QString& fileName /*= QString() */ )
 	m_programmer = settings.value("programmer").toString();
 	m_absolutePathInSamples = settings.value("absolutePathInSamples", true).toBool();
 	m_clearLogBeforeBuild = settings.value("clearLogBeforeBuild", true).toBool();
-	
+	m_verboseBuild = settings.value("verboseBuild", false).toBool();
 	setConfigFileName( fileName );
 
 	return true;
@@ -184,4 +184,5 @@ void Settings::save()
 	settings.setValue("programmer", m_programmer);
 	settings.setValue("absolutePathInSamples", m_absolutePathInSamples);
 	settings.setValue("clearLogBeforeBuild", m_clearLogBeforeBuild);
+	settings.setValue("verboseBuild", m_verboseBuild);
 }
