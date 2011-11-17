@@ -63,24 +63,33 @@ void NutComponentDetailsModel::refresh( const QModelIndex& selected )
 	if ( !selected.isValid() )
 		return;
 
-	TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-	cache.append( QStringList() << tr("Enabled") << (item->isEnabled() ? tr("Yes") : tr("No")) );
+	cache.append( QStringList() << tr("Enabled") << (selected.flags() & Qt::ItemIsEnabled ? tr("Yes") : tr("No")) );
 
 	QString value;
-	value = item->depends().join(", ");
+	value = selected.data( NutComponentModel::Depends ).toStringList().join(", ");
 	if ( !value.isEmpty() )
 		cache.append( QStringList() << tr("Requires") << value );
 
-	value = item->provides().join(", ");
+	value = selected.data( NutComponentModel::Provides ).toStringList().join(", ");
 	if ( !value.isEmpty() )
 		cache.append( QStringList() << tr("Provides") << value );
 
-	if ( item->componentType() == TreeItem::nutOption )
-	{
-		cache.append( QStringList() << tr("File") << item->headerFile() );
-		cache.append( QStringList() << tr("Macro") << item->name() );
-		cache.append( QStringList() << tr("Active") << (item->isActive() ? tr("Yes") : tr("No")) );
-	}
+	value = selected.data( NutComponentModel::File ).toString();
+	if ( !value.isEmpty() )
+		cache.append( QStringList() << tr("File") << value );
+
+	value = selected.data( NutComponentModel::Macro ).toString();
+	if ( !value.isEmpty() )
+		cache.append( QStringList() << tr("Macro") << value );
+
+	value = selected.data( NutComponentModel::Active ).toBool() ? tr("Yes") : tr("No");
+	cache.append( QStringList() << tr("Active") << value );
+
+	// 	if ( item->componentType() == TreeItem::nutOption )
+// 	{
+// 		cache.append( QStringList() << tr("Macro") << item->name() );
+// 		cache.append( QStringList() << tr("Active") << (item->isActive() ? tr("Yes") : tr("No")) );
+// 	}
 
 #if QT_VERSION >= 0x040600
 	endResetModel();

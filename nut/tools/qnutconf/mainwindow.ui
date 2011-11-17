@@ -204,6 +204,13 @@
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="menuComponent_Tree">
+     <property name="title">
+      <string>Component Tree</string>
+     </property>
+     <addaction name="actionViewComponentTreeDisabledItems"/>
+    </widget>
+    <addaction name="menuComponent_Tree"/>
    </widget>
    <widget class="QMenu" name="menuBuild">
     <property name="title">
@@ -349,6 +356,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionViewComponentTreeDisabledItems">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Disabled Items</string>
    </property>
   </action>
  </widget>

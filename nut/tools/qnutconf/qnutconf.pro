@@ -9,7 +9,7 @@ CONFIG += qt thread
 
 win32:DEFINES += _CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_WARNINGS
 
-DEFINES += NUTCONF_VERSION_STR=\"3.0.0\"
+DEFINES += NUTCONF_VERSION_STR=\"3.1.0\"
 
 # Input
 SOURCES +=	\
@@ -21,6 +21,7 @@ SOURCES +=	\
 			nutcomponent.c \
 			nutcomponentdelegate.cpp \
 			nutcomponentmodel.cpp \
+			nutcomponentmodelfilterproxy.cpp \
 			nutcomponentdetailsmodel.cpp \
 			nutcomponentmodel_p.cpp \
 			settings.cpp \
@@ -35,6 +36,7 @@ HEADERS +=	\
 			nutcomponent.h \
 			nutcomponentdelegate.h \
 			nutcomponentmodel.h \
+			nutcomponentmodelfilterproxy.h \
 			nutcomponentdetailsmodel.h \
 			nutcomponentmodel_p.h \
 			settings.h \
@@ -52,7 +54,7 @@ RESOURCES += qnutconf.qrc
 
 RC_FILE = qnutconf.rc
 
-VERSION = 3.0.0
+VERSION = 3.1.0
 QMAKE_TARGET_COMPANY = Ethernut Project
 QMAKE_TARGET_DESCRIPTION = Ethernut Configurator
 QMAKE_TARGET_COPYRIGHT = All rights reserved by authors

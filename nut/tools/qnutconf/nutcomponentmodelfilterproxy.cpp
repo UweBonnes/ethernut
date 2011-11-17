@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 by Comm5 Tecnologia Ltda. All rights reserved.
+ * Copyright (C) 2011 by Comm5 Tecnologia Ltda. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,64 +31,25 @@
  *
  */
 
-#if !defined( __MAINWINDOW_H__ )
-#define __MAINWINDOW_H__
+#include "nutcomponentmodel.h"
+#include "nutcomponentmodelfilterproxy.h"
 
-#include <QTime>
-#include <QMainWindow>
 
-#include "ui_mainwindow.h"
-
-class FindDialog;
-class NutComponentModel;
-class NutComponentModelFilterProxy;
-
-class MainWindow : public QMainWindow
+NutComponentModelFilterProxy::NutComponentModelFilterProxy( QObject* parent /*= 0*/ ) : QSortFilterProxyModel( parent )
 {
-	Q_OBJECT
-	Ui::MainWindow ui;
-	QTime time;
+	setDynamicSortFilter( true );
+}
 
-public:
-	MainWindow();
-	~MainWindow();
+bool NutComponentModelFilterProxy::filterAcceptsRow( int source_row, const QModelIndex& source_parent ) const
+{
+	if ( !m_showDisabledItems && !(sourceModel()->data(sourceModel()->index(source_row, 0, source_parent), NutComponentModel::Enabled).toBool() ) )
+		return false;
+	return true;
+}
 
-public slots:
-	void on_actionOpen_triggered();
-	void on_actionSave_triggered();
-
-	void on_actionSave_as_triggered();
-	void on_actionExit_triggered();
-	void on_actionFind_triggered();
-	void on_actionSettings_triggered();
-	void on_actionBuild_Nut_OS_triggered();
-	void on_actionBuildStop_triggered();
-	void on_actionCreate_sample_triggered();
-	void on_actionAbout_triggered();
-
-	void on_findNext_triggered(const QString &text);
-
-private:
-	void readSettings();
-	void writeSettings();
-	void updateWindowTitle();
-	void generateApplicationTree();
-	void saveConfig( QString filename = QString() );
-
-private slots:
-	void buildFinished( int exitCode );
-	void updateView(const QModelIndex& current, const QModelIndex& previous);
-	void message( const QString& );
-	void resizeComponentTreeToContents();
-	void documentModified();
-
-private:
-	NutComponentModel* model;
-	NutComponentModelFilterProxy* proxyModel;
-	FindDialog *m_findDialog;
-	QString m_findText;
-	QModelIndexList m_foundItems;
-	int m_foundItemIndex;
-};
-
-#endif // __MAINWINDOW_H__
+void NutComponentModelFilterProxy::showDisabledItems( bool enabled )
+{
+	m_showDisabledItems = enabled;
+	// Refresh whole tree
+	invalidateFilter();
+}

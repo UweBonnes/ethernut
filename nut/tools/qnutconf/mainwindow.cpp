@@ -42,6 +42,7 @@
 #include "finddialog.h"
 #include "settingsdialog.h"
 #include "nutcomponentmodel.h"
+#include "nutcomponentmodelfilterproxy.h"
 #include "nutcomponentdetailsmodel.h"
 #include "nutcomponentdelegate.h"
 #include "settings.h"
@@ -56,8 +57,11 @@ MainWindow::MainWindow()
 	model = new NutComponentModel( this );
 	m_findDialog = 0;
 
-	ui.componentTree->setModel( model );
-	ui.componentTree->setItemDelegate( new NutComponentDelegate( model ) );
+	proxyModel = new NutComponentModelFilterProxy( this );
+	proxyModel->setSourceModel( model );
+
+	ui.componentTree->setModel( proxyModel );
+	ui.componentTree->setItemDelegate( new NutComponentDelegate( this ) );
 
 	NutComponentDetailsModel* detailsModel = new NutComponentDetailsModel( model );
 	ui.detailsView->setModel( detailsModel );
@@ -68,6 +72,8 @@ MainWindow::MainWindow()
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(updateView(const QModelIndex&, const QModelIndex&)) );
 	connect( ui.componentTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), detailsModel, SLOT(refresh(const QModelIndex&)) );
 	connect( ui.componentTree, SIGNAL(expanded(const QModelIndex&)), SLOT(resizeComponentTreeToContents()));
+
+	connect( ui.actionViewComponentTreeDisabledItems, SIGNAL(triggered(bool)), proxyModel, SLOT(showDisabledItems(bool)) );
 
 	readSettings();
 
@@ -93,8 +99,11 @@ void MainWindow::readSettings()
 	QSettings settings;
 	QPoint pos = settings.value("pos", QPoint(50, 50)).toPoint();
 	QSize size = settings.value("size", QSize(550, 350)).toSize();
+	bool showDisabledItems = settings.value("showDisabledItems", false).toBool();
 	resize(size);
 	move(pos);
+	proxyModel->showDisabledItems( showDisabledItems );
+	ui.actionViewComponentTreeDisabledItems->setChecked( showDisabledItems );
 }
 
 void MainWindow::writeSettings()
@@ -102,6 +111,7 @@ void MainWindow::writeSettings()
 	QSettings settings;
 	settings.setValue("pos", pos());
 	settings.setValue("size", size());
+	settings.setValue("showDisabledItems", ui.actionViewComponentTreeDisabledItems->isChecked());
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -302,7 +312,7 @@ void MainWindow::updateView( const QModelIndex& current, const QModelIndex& prev
 {
 	Q_UNUSED(previous);
 
-	QVariant data = model->data( current, NutComponentModel::Description );
+	QVariant data = current.data( NutComponentModel::Description );
 	ui.descriptionPanel->setText( data.toString() );
 }
 

@@ -42,7 +42,7 @@
 #include "nutcomponentmodel_p.h"
 
 
-NutComponentDelegate::NutComponentDelegate( NutComponentModel* parent ) : QItemDelegate( parent )
+NutComponentDelegate::NutComponentDelegate( QObject* parent /* = 0 */ ) : QItemDelegate( parent )
 {
 	paintRadio = false;
 }
@@ -114,12 +114,11 @@ void NutComponentDelegate::updateEditorGeometry( QWidget* editor, const QStyleOp
 void NutComponentDelegate::paint( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
 
-	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-	if ( item->optionUIHint() == TreeItem::nutHintRadio )
+	if ( index.data( NutComponentModel::UI_Hint ) == TreeItem::nutHintRadio )
 		paintRadio = true;
 
 	QStyleOptionViewItem opt(option);
-	if (!item->isEnabled()) {
+	if ( !( index.data(NutComponentModel::Enabled).toBool() ) ) {
 		opt.state &= ~QStyle::State_Enabled;
 	}		
 	QItemDelegate::paint( painter, opt, index );

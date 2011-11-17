@@ -45,7 +45,7 @@ class NutComponentDelegate : public QItemDelegate
 	mutable bool paintRadio;
 
 public:
-	explicit NutComponentDelegate(NutComponentModel* parent);
+	explicit NutComponentDelegate(QObject* parent = 0);
 
 	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 

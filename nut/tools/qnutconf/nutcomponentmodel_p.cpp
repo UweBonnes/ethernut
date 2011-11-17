@@ -124,17 +124,40 @@ QVariant TreeItem::data( int column, int role ) const
 			return QString("Depends on: %1").arg( depends().join(", ") );
 		break;
 
+	case NutComponentModel::Active:
+		return isActive();
+
+	case NutComponentModel::Enabled: //Use internal enabled state instead of flags() 
+		return isEnabled();          //so user can select the item and get the help and description.
+
 	case NutComponentModel::Description:
 		return description();
 
 	case NutComponentModel::Name:
 		return name();
 
+	case NutComponentModel::Depends:
+		return depends();
+
+	case NutComponentModel::Provides:
+		return provides();
+
+	case NutComponentModel::File:
+		return headerFile();
+	
+	case NutComponentModel::Macro: // When a file is specified, name is the preprocessor macro name
+		if ( !headerFile().isEmpty() )
+			return name();
+		break;
+
 	case NutComponentModel::FullSearch:
 		return briefDescription()
 				+ " " + value().toString()
 				+ " " + name()
 				+ " " + description();
+
+	case NutComponentModel::UI_Hint:
+		return optionUIHint();
 
 	default:
 		break;

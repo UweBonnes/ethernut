@@ -56,8 +56,15 @@ public:
 
 	enum CustomRoles {
 		Description = Qt::UserRole,
-		Name = Qt::UserRole + 1,
-		FullSearch = Qt::UserRole + 2
+		Name,
+		Depends,
+		Provides,
+		File,
+		Macro,
+		FullSearch,
+		Enabled,
+		Active,
+		UI_Hint
 	};
 
 	NutComponentModel(QObject *parent = 0);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 by Comm5 Tecnologia Ltda. All rights reserved.
+ * Copyright (C) 2011 by Comm5 Tecnologia Ltda. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,64 +31,20 @@
  *
  */
 
-#if !defined( __MAINWINDOW_H__ )
-#define __MAINWINDOW_H__
+#include <QSortFilterProxyModel>
 
-#include <QTime>
-#include <QMainWindow>
-
-#include "ui_mainwindow.h"
-
-class FindDialog;
-class NutComponentModel;
-class NutComponentModelFilterProxy;
-
-class MainWindow : public QMainWindow
+class NutComponentModelFilterProxy : public QSortFilterProxyModel
 {
 	Q_OBJECT
-	Ui::MainWindow ui;
-	QTime time;
-
 public:
-	MainWindow();
-	~MainWindow();
+	NutComponentModelFilterProxy( QObject* parent = 0 );
 
 public slots:
-	void on_actionOpen_triggered();
-	void on_actionSave_triggered();
+	void showDisabledItems( bool enabled );
 
-	void on_actionSave_as_triggered();
-	void on_actionExit_triggered();
-	void on_actionFind_triggered();
-	void on_actionSettings_triggered();
-	void on_actionBuild_Nut_OS_triggered();
-	void on_actionBuildStop_triggered();
-	void on_actionCreate_sample_triggered();
-	void on_actionAbout_triggered();
+protected:
+	bool filterAcceptsRow( int source_row, const QModelIndex& source_parent ) const;
 
-	void on_findNext_triggered(const QString &text);
-
-private:
-	void readSettings();
-	void writeSettings();
-	void updateWindowTitle();
-	void generateApplicationTree();
-	void saveConfig( QString filename = QString() );
-
-private slots:
-	void buildFinished( int exitCode );
-	void updateView(const QModelIndex& current, const QModelIndex& previous);
-	void message( const QString& );
-	void resizeComponentTreeToContents();
-	void documentModified();
-
-private:
-	NutComponentModel* model;
-	NutComponentModelFilterProxy* proxyModel;
-	FindDialog *m_findDialog;
-	QString m_findText;
-	QModelIndexList m_foundItems;
-	int m_foundItemIndex;
+public:
+	bool m_showDisabledItems;
 };
-
-#endif // __MAINWINDOW_H__
