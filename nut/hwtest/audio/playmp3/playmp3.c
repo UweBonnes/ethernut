@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2003-2006 by egnite Software GmbH
+ * Copyright (C) 2011 by egnite GmbH
  *
  * All rights reserved.
  *
@@ -37,40 +38,55 @@
  */
 
 #include <dev/board.h>
-#include <dev/vs1001k.h>
-#include <dev/debug.h>
+#include <dev/vscodec.h>
 #include <dev/urom.h>
 
 #include <sys/version.h>
-#include <sys/heap.h>
-#include <sys/event.h>
-#include <sys/timer.h>
-#include <sys/thread.h>
-#include <sys/bankmem.h>
 
-#include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
 #include <errno.h>
 
-#if defined(__AVR__)
-static int PlayMp3File(char *path);
+#ifndef DEV_FS
+#define DEV_FS                  devUrom
 #endif
+
+#ifndef DEV_FS_NAME
+#define DEV_FS_NAME             "UROM"
+#endif
+
+#ifndef DEV_AUDIO_CODEC
+#define DEV_AUDIO_CODEC         devSpiVsCodec0
+#endif
+
+#ifndef DEV_AUDIO_CODEC_NAME
+#define DEV_AUDIO_CODEC_NAME    "audio0"
+#endif
+
+static char mp3buf[512];
+static void PlayMp3File(char *path, int gain);
 
 /*!
  * \example playmp3/playmp3.c
  *
- * To run this example code, you need to attach the Medianut Board to the
- * Ethernut or use a similar hardware design based on the VS1001K MP3 decoder.
- *
  * This sample application plays MP3 files from the UROM filesystem. It 
- * demonstrates how to use the global segmented buffer and the MP3 decoder 
- * driver and can provide a basis for talking equipment, alarm sound output 
- * etc.
+ * demonstrates how to use an audio decoder with Nut/OS. It can provide
+ * a basis for talking equipment, alarm sound output etc.
  *
- * The UROM filesystem is located in the CPU's flash ROM. No external file
+ * The code will run out of the box on the Elektor Internet Radio.
+ *
+ * To run this example code on Ethernut 1 or 2, you need to attach the
+ * Medianut Board to the expansion port or use a similar hardware design
+ * with a hardware based MP3 decoder.
+ *
+ * To run on the AT91SAM7X-EK or the AT91SAM9260-EK, you need to attach
+ * Calypso Board or any similar hardware design providing an audio DAC.
+ * In addition, you must accept the RealNetworks RPSL/RCSL license by
+ * enabling this item in the Configurator. Note, that this license is
+ * different from the BSD license of Nut/OS.
+ *
+ * The UROM filesystem is located in program memory. No external file
  * storage device is required. Use the crurom utility to create a C source 
  * file named urom.c from the MP3 files located in subdirectory sounds. 
  * Here's how to call crurom:
@@ -79,168 +95,76 @@ static int PlayMp3File(char *path);
  *
  * The created file will then be compiled and linked to the application 
  * code.
- *
- * UART0 is used for debug output.
  */
 int main(void)
 {
-    /* Baudrate for debug output. */
-    uint32_t baud = 115200;
-
-    /*
-     * Register our devices.
-     */
-    NutRegisterDevice(&devUrom, 0, 0);
+    /* Assign stdout to the default console device. */
     NutRegisterDevice(&DEV_CONSOLE, 0, 0);
-
-    /*
-     * Assign stdout to the debug device.
-     */
     freopen(DEV_CONSOLE_NAME, "w", stdout);
-    _ioctl(_fileno(stdout), UART_SETSPEED, &baud);
-
-    /*
-     * Print a banner.
-     */
     printf("\n\nPlay MP3 files on Nut/OS %s\n", NutVersionString());
 
-#if defined(__AVR__)
-
-    /*
-     * Initialize the MP3 buffer. The NutSegBuf routines provide a global
-     * system buffer, which works with banked and non-banked systems.
-     */
-    if (NutSegBufInit(8192) == 0) {
-        puts("NutSegBufInit: Fatal error");
+    /* Initialize the file system driver. */
+    if (NutRegisterDevice(&DEV_FS, 0, 0)) {
+        puts("File system not available");
     }
 
-    /* 
-     * Initialize the MP3 decoder hardware.
-     */
-    if (VsPlayerInit() || VsPlayerReset(0)) {
-        puts("VsPlayer: Fatal error");
+    /* Initialize the audio decoder. */
+    if (NutRegisterSpiDevice(&DEV_AUDIO_CODEC, &DEV_SPIBUS, 1)) {
+        puts("Audio codec not available");
     }
 
-    /*
-     * Play the MP3 files in an endless loop. For each file set the volume 
-     * of the left and right channel, call the local routine PlayMp3File() 
-     * and sleep one second before playing the next sound file.
-     */
+    /* Play audio files in an endless loop. */
     for (;;) {
-        VsSetVolume(0, 254);
-        PlayMp3File("UROM:sound1a.mp3");
-        NutSleep(1000);
-
-        VsSetVolume(0, 0);
-        PlayMp3File("UROM:sound2a.mp3");
-        NutSleep(1000);
-
-        VsSetVolume(254, 0);
-        PlayMp3File("UROM:sound3a.mp3");
-        NutSleep(1000);
-
-        VsSetVolume(0, 0);
-        PlayMp3File("UROM:sound4a.mp3");
-        NutSleep(1000);
+        PlayMp3File(DEV_FS_NAME ":sound1a.mp3", -40);
+        PlayMp3File(DEV_FS_NAME ":sound2a.mp3", -30);
+        PlayMp3File(DEV_FS_NAME ":sound3a.mp3", -20);
+        PlayMp3File(DEV_FS_NAME ":sound4a.mp3", -10);
     }
-#else /* !__AVR__ */
-    for (;;);
-#endif /* !__AVR__ */
     return 0;
 }
-
-#if defined(__AVR__)
 
 /*
- * Play MP3 file from local file system.
- *
- * \param path Pathname of the MP3 file to play.
- *
- * \return 0 on success, -1 if opening the file failed.
+ * Play audio file with specified volume.
  */
-static int PlayMp3File(char *path)
+static void PlayMp3File(char *path, int gain)
 {
-    int fd;
-    size_t rbytes;
-    char  *mp3buf;
-    int    got;
-    uint8_t ief;
+    int fh;
+    int dh;
+    int got;
 
-    /*
-     * Open the MP3 file.
-     */
-    printf("Play %s: ", path);
-    if ((fd = _open(path, _O_RDONLY | _O_BINARY)) == -1) {
-        printf("Error %d\n", errno);
-        return -1;
+    printf("Play %s on %s: ", path, DEV_AUDIO_CODEC_NAME);
+
+    /* Open audio codec. */
+    dh = _open(DEV_AUDIO_CODEC_NAME, _O_WRONLY | _O_BINARY);
+    if (dh == -1) {
+        printf("Error %d, can't open audio codec\n", errno);
+        return;
     }
-    puts("OK");
 
-    /* 
-     * Reset decoder buffer.
-     */
-    printf("[B.RST]");
-    ief = VsPlayerInterrupts(0);
-    NutSegBufReset();
-    VsPlayerInterrupts(ief);
+    /* Set volume. */
+    _ioctl(dh, AUDIO_SET_PLAYGAIN, &gain);
 
-    for (;;) {
-        /*
-         * Query number of byte available in MP3 buffer.
-         */
-        ief = VsPlayerInterrupts(0);
-        mp3buf = NutSegBufWriteRequest(&rbytes);
-        VsPlayerInterrupts(ief);
-
-        /* 
-         * Read data directly into the MP3 buffer. 
-         */
-        if (rbytes) {
-            printf("[B.RD%d]", rbytes);
-            if ((got = _read(fd, mp3buf, rbytes)) > 0) {
-                printf("[B.CMT%d]", got);
-                ief = VsPlayerInterrupts(0);
-                mp3buf = NutSegBufWriteCommit(got);
-                VsPlayerInterrupts(ief);
-            } else {
-                printf("[EOF]");
+    /* Open audio file. */
+    fh = _open(path, _O_RDONLY | _O_BINARY);
+    if (fh == -1) {
+        printf("Error %d, can't open audio file\n", errno);
+        return;
+    } else {
+        /* Transfer audio data from file to codec. */
+        for (;;) {
+            got = _read(fh, mp3buf, sizeof(mp3buf));
+            if (got <= 0) {
                 break;
             }
+            _write(dh, mp3buf, got);
         }
-
-        /*
-         * If the player is not running, kick it.
-         */
-        if (VsGetStatus() != VS_STATUS_RUNNING) {
-            printf("[P.KICK]");
-            VsPlayerKick();
-        }
-
-        /*
-         * Allow background threads to take over.
-         */
-        NutThreadYield();
+        /* Close audio file. */
+        _close(fh);
     }
+    /* Close audio codec. Will not return until all buffered data has
+       been played. */
+    _close(dh);
 
-    _close(fd);
-
-    /* 
-     * Flush decoder and wait until finished. 
-     */
-    printf("[P.FLUSH]");
-    VsPlayerFlush();
-    while (VsGetStatus() != VS_STATUS_EMPTY) {
-        NutSleep(1);
-    }
-
-    /*
-     * Reset the decoder. 
-     */
-    printf("[P.RST]");
-    VsPlayerReset(0);
-
-    printf("\nDone, %u bytes free\n", NutHeapAvailable());
-    return 0;
+    puts("Done");
+    return;
 }
-
-#endif /* !__AVR__ */
