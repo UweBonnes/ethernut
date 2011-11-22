@@ -159,6 +159,12 @@ QVariant TreeItem::data( int column, int role ) const
 	case NutComponentModel::UI_Hint:
 		return optionUIHint();
 
+	case NutComponentModel::OptionType:
+		return optionType();
+
+	case NutComponentModel::OptionChoices:
+		return optionChoices();
+
 	default:
 		break;
 	}

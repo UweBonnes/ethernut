@@ -64,7 +64,9 @@ public:
 		FullSearch,
 		Enabled,
 		Active,
-		UI_Hint
+		UI_Hint,
+		OptionType,
+		OptionChoices,
 	};
 
 	NutComponentModel(QObject *parent = 0);

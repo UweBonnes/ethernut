@@ -54,17 +54,21 @@ QWidget* NutComponentDelegate::createEditor( QWidget* parent, const QStyleOption
 	if (!index.isValid())
 		return 0;
 	
-	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-	if ( item->optionType() == TreeItem::nutInteger )
+	switch ( index.data( NutComponentModel::OptionType ).toInt() )
 	{
-		QSpinBox* w = new QSpinBox( parent );
-		w->setMaximum( std::numeric_limits<int>::max() );
-		return w;
-	}
-	else if ( item->optionType() == TreeItem::nutEnumerated )
+	case TreeItem::nutInteger:
+		{
+			QSpinBox* w = new QSpinBox( parent );
+			w->setMaximum( std::numeric_limits<int>::max() );
+			return w;
+		}
+
+	case TreeItem::nutEnumerated:
 		return new QComboBox( parent );
 
-	return QItemDelegate::createEditor( parent, option, index );
+	default:
+		return QItemDelegate::createEditor( parent, option, index );
+	}
 }
 
 void NutComponentDelegate::setEditorData( QWidget* editor, const QModelIndex& index ) const
@@ -79,9 +83,8 @@ void NutComponentDelegate::setEditorData( QWidget* editor, const QModelIndex& in
 	else if ( editor->inherits("QComboBox") )
 	{
 		QComboBox* widget = qobject_cast<QComboBox*>( editor );
-		TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-		widget->addItems( item->optionChoices() );
-		widget->setCurrentIndex( widget->findText( item->value().toString() ) );
+		widget->addItems( index.data( NutComponentModel::OptionChoices ).toStringList() );
+		widget->setCurrentIndex( widget->findText( index.data().toString() ) );
 	}
 	else
 		QItemDelegate::setEditorData( editor, index );
