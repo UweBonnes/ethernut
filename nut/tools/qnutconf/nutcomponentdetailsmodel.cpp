@@ -85,12 +85,6 @@ void NutComponentDetailsModel::refresh( const QModelIndex& selected )
 	value = selected.data( NutComponentModel::Active ).toBool() ? tr("Yes") : tr("No");
 	cache.append( QStringList() << tr("Active") << value );
 
-	// 	if ( item->componentType() == TreeItem::nutOption )
-// 	{
-// 		cache.append( QStringList() << tr("Macro") << item->name() );
-// 		cache.append( QStringList() << tr("Active") << (item->isActive() ? tr("Yes") : tr("No")) );
-// 	}
-
 #if QT_VERSION >= 0x040600
 	endResetModel();
 #else
