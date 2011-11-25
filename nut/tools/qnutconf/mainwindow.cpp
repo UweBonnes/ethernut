@@ -50,6 +50,10 @@
 #include "dirtraverser.h"
 #include "systeminfo.h"
 
+// Transform a C Macro into a string expanding it
+#define QUOTE_P(str) #str
+#define QUOTE(str) QUOTE_P(str)
+
 MainWindow::MainWindow()
 {
 	ui.setupUi( this );
@@ -77,7 +81,7 @@ MainWindow::MainWindow()
 
 	readSettings();
 
-	message( tr("Nut/OS Configurator Version %1").arg(NUTCONF_VERSION_STR) );
+	message( tr("Nut/OS Configurator Version %1").arg(QUOTE(NUTCONF_VERSION)) );
 	message( tr("Linked to Qt %1, running on %2").arg(QT_VERSION_STR, SystemInfo::GetOsString()) );
 	message( tr("Working in %1").arg( QDir::toNativeSeparators( QDir::current().absolutePath() ) ) );
 
@@ -292,8 +296,8 @@ void MainWindow::on_actionCreate_sample_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
 	QMessageBox::about(this, tr("Nut/OS Configurator"),
-		tr("<p>Nut/OS Configurator version " NUTCONF_VERSION_STR "</p>"
-		"<p>Visit the project <a href=\"http://www.ethernut.de\">website</a> for more information</p>" ));
+		tr("<p>Nut/OS Configurator version %1</p>"
+		"<p>Visit the project <a href=\"http://www.ethernut.de\">website</a> for more information</p>" ).arg(QUOTE(NUTCONF_VERSION)));
 }
 
 void MainWindow::buildFinished( int exitCode )
