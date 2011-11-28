@@ -1,11 +1,11 @@
-# Doxyfile 1.7.3
+# Doxyfile 1.7.5.1
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Nut/OS"
-PROJECT_NUMBER         = 4.9.11
+PROJECT_NUMBER         = @PACKAGE_VERSION@
 PROJECT_BRIEF          = "API Reference"
 PROJECT_LOGO           = nutos_logo.png
 OUTPUT_DIRECTORY       = ../en
@@ -17,7 +17,8 @@ ABBREVIATE_BRIEF       = YES
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        = /ethernut-4.9/nut/ /ethernut/nutbld/
+STRIP_FROM_PATH        = @top_srcdir@/nut/ \
+                         @top_builddir@/nut/
 STRIP_FROM_INC_PATH    =
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
@@ -38,6 +39,8 @@ SIP_SUPPORT            = NO
 IDL_PROPERTY_SUPPORT   = YES
 DISTRIBUTE_GROUP_DOC   = NO
 SUBGROUPING            = NO
+INLINE_GROUPED_CLASSES = NO
+INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
 SYMBOL_CACHE_SIZE      = 0
 #---------------------------------------------------------------------------
@@ -77,6 +80,7 @@ SHOW_FILES             = YES
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    =
 LAYOUT_FILE            =
+CITE_BIB_FILES         =
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
@@ -90,54 +94,57 @@ WARN_LOGFILE           = doxy.log
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./nutdoc_en.txt \
-                         /ethernut-4.9/nut/app/caltime \
-                         /ethernut-4.9/nut/app/canbus \
-                         /ethernut-4.9/nut/app/cppdemo \
-                         /ethernut-4.9/nut/app/events \
-                         /ethernut-4.9/nut/app/ftpd \
-                         /ethernut-4.9/nut/app/httpd \
-                         /ethernut-4.9/nut/app/inetq \
-                         /ethernut-4.9/nut/app/isp2 \
-                         /ethernut-4.9/nut/app/logtime \
-                         /ethernut-4.9/nut/app/nutpiper \
-                         /ethernut-4.9/nut/app/playmp3 \
-                         /ethernut-4.9/nut/app/portdio \
-                         /ethernut-4.9/nut/app/pppc \
-                         /ethernut-4.9/nut/app/rs232d \
-                         /ethernut-4.9/nut/app/simple \
-                         /ethernut-4.9/nut/app/snmpd \
-                         /ethernut-4.9/nut/app/tcps \
-                         /ethernut-4.9/nut/app/threads \
-                         /ethernut-4.9/nut/app/timers \
-                         /ethernut-4.9/nut/app/uart \
-                         /ethernut-4.9/nut/include \
-                         /ethernut-4.9/nut/arch/avr \
-                         /ethernut-4.9/nut/arch/arm \
-                         /ethernut-4.9/nut/crt \
-                         /ethernut-4.9/nut/c \
-                         /ethernut-4.9/nut/cpp \
-                         /ethernut-4.9/nut/os \
-                         /ethernut-4.9/nut/net \
-                         /ethernut-4.9/nut/pro \
-                         /ethernut-4.9/nut/dev \
-                         /ethernut-4.9/nut/fs
+INPUT                  = @srcdir@/nutdoc_en.txt \
+                         @top_srcdir@/nut/app/caltime \
+                         @top_srcdir@/nut/app/cppdemo \
+                         @top_srcdir@/nut/app/editconf \
+                         @top_srcdir@/nut/app/events \
+                         @top_srcdir@/nut/app/ftpd \
+                         @top_srcdir@/nut/app/httpd \
+                         @top_srcdir@/nut/app/httpd_simple \
+                         @top_srcdir@/nut/app/httpd_upnp \
+                         @top_srcdir@/nut/app/icmp-udp \
+                         @top_srcdir@/nut/app/inetq \
+                         @top_srcdir@/nut/app/logtime \
+                         @top_srcdir@/nut/app/lua \
+                         @top_srcdir@/nut/app/portdio \
+                         @top_srcdir@/nut/app/pppc \
+                         @top_srcdir@/nut/app/rs232d \
+                         @top_srcdir@/nut/app/simple \
+                         @top_srcdir@/nut/app/snmpd \
+                         @top_srcdir@/nut/app/tcps \
+                         @top_srcdir@/nut/app/threads \
+                         @top_srcdir@/nut/app/timers \
+                         @top_srcdir@/nut/app/uart \
+                         @top_srcdir@/nut/include \
+                         @top_srcdir@/nut/arch/arm \
+                         @top_srcdir@/nut/arch/avr \
+                         @top_srcdir@/nut/arch/avr32 \
+                         @top_srcdir@/nut/crt \
+                         @top_srcdir@/nut/c \
+                         @top_srcdir@/nut/cpp \
+                         @top_srcdir@/nut/os \
+                         @top_srcdir@/nut/net \
+                         @top_srcdir@/nut/pro \
+                         @top_srcdir@/nut/dev \
+                         @top_srcdir@/nut/fs \
+                         @top_srcdir@/nut/gorp
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
-						 *.h
+                         *.h
 RECURSIVE              = YES
-EXCLUDE                = /ethernut-4.9/nut/arch/arm/dev/at91sam7x_emac.c \
-                         /ethernut-4.9/nut/include/dev/at91sam7x_emac.h
+EXCLUDE                = @top_srcdir@/nut/arch/arm/dev/at91sam7x_emac.c \
+                         @top_srcdir@/nut/include/dev/at91sam7x_emac.h
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = *stdio_nut_wrapper.h* \
                          */arch/h8300h/* \
                          */arch/m68k/*
 EXCLUDE_SYMBOLS        =
-EXAMPLE_PATH           = /ethernut-4.9/nut/app
+EXAMPLE_PATH           = @top_srcdir@/nut/app
 EXAMPLE_PATTERNS       = *.c \
                          *.cc \
-						 *.h
+                         *.h
 EXAMPLE_RECURSIVE      = YES
 IMAGE_PATH             = osi_symbol.png
 INPUT_FILTER           =
@@ -170,6 +177,7 @@ HTML_FILE_EXTENSION    = .html
 HTML_HEADER            =
 HTML_FOOTER            = nutfoot.html
 HTML_STYLESHEET        =
+HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 350
 HTML_COLORSTYLE_SAT    = 20
 HTML_COLORSTYLE_GAMMA  = 120
@@ -183,9 +191,9 @@ DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
 DOCSET_PUBLISHER_NAME  = Publisher
 GENERATE_HTMLHELP      = YES
 CHM_FILE               = nutosapiref.chm
-HHC_LOCATION           = 
+HHC_LOCATION           =
 GENERATE_CHI           = YES
-CHM_INDEX_ENCODING     = 
+CHM_INDEX_ENCODING     =
 BINARY_TOC             = YES
 TOC_EXPAND             = NO
 GENERATE_QHP           = NO
@@ -208,6 +216,7 @@ FORMULA_FONTSIZE       = 10
 FORMULA_TRANSPARENT    = YES
 USE_MATHJAX            = NO
 MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
+MATHJAX_EXTENSIONS     =
 SEARCHENGINE           = NO
 SERVER_BASED_SEARCH    = NO
 #---------------------------------------------------------------------------
@@ -221,11 +230,13 @@ COMPACT_LATEX          = NO
 PAPER_TYPE             = a4
 EXTRA_PACKAGES         =
 LATEX_HEADER           =
+LATEX_FOOTER           =
 PDF_HYPERLINKS         = YES
 USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
 LATEX_SOURCE_CODE      = NO
+LATEX_BIB_STYLE        = plain
 #---------------------------------------------------------------------------
 # configuration options related to the RTF output
 #---------------------------------------------------------------------------
@@ -268,7 +279,7 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
-INCLUDE_PATH           = /ethernut-4.9/nut/include/
+INCLUDE_PATH           = @top_srcdir@/nut/include/
 INCLUDE_FILE_PATTERNS  = *.h
 PREDEFINED             = "THREAD(fncname,arg)=void fncname(void *arg) " \
                          "SIGNAL(fncname)=void fncname(void) " \
@@ -313,6 +324,7 @@ CALLER_GRAPH           = NO
 GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png
+INTERACTIVE_SVG        = NO
 DOT_PATH               =
 DOTFILE_DIRS           =
 MSCFILE_DIRS           =
