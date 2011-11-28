@@ -1630,6 +1630,20 @@ nutarch_arm =
         },
     },
     {
+        name = "nutarch_arm_spibus_at91ssc",
+        brief = "AT91SSC SPI Bus Controller",
+        description = "This early release had been tested on the AT91SAM7SE only. "..
+                      "The driver uses the SSC hardware to implement an SPI bus driver. "..
+                      "Only polling mode and SPI mode 3 are available.",
+        requires = { "HW_SSC_AT91" },
+        provides = { "SPIBUS_CONTROLLER" },
+        sources =
+        {
+            "arm/dev/atmel/spibus_at91ssc.c",
+            "arm/dev/atmel/spibus0at91ssc.c"
+        }
+    },
+    {
         name = "nutarch__arm_at91spi",
         brief = "AT91 SPI Support",
         description = "Preliminary SPI routines.",
