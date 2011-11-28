@@ -7,7 +7,7 @@ SetCompressor /SOLID lzma
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 
 !define PRODUCT  "Nut/OS"
-!define NUTVERSION  "4.99"
+!define NUTVERSION  "5.0"
 !define NUTRELEASE  "0"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
@@ -55,7 +55,7 @@ InstallDirRegKey HKLM "${SWREGKEY}\${NUTVERSION}" ""
 
 !define MUI_FINISHPAGE_LINK "http://www.ethernut.de"
 !define MUI_FINISHPAGE_LINK_LOCATION "http://www.ethernut.de/"
-!define MUI_FINISHPAGE_RUN "$INSTDIR\nutconf.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\qnutconf.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Start Nut/OS Configurator"
 !define MUI_FINISHPAGE_RUN_NOTCHECKED
 
@@ -80,7 +80,7 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Ethernut"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "Open Source Software and Hardware Project"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "egnite GmbH"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "Ethernut is a trademark of egnite GmbH"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright ® 2001-2009 by egnite GmbH"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright ® 2001-2011 by egnite GmbH"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Embedded RTOS and TCP/IP Stack Installer"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${NUTVERSION}.${NUTRELEASE}"
 
@@ -92,8 +92,6 @@ InstType "Build with WinAVR in Source Tree"
 
 Section
   SetOutPath "$INSTDIR"
-  File ..\..\..\..\ChangeLog
-  File ..\..\..\..\ChangeLog20090309
   File ..\..\..\..\AUTHORS
   File ..\..\..\..\COPYING
   File ..\..\..\..\INSTALL
@@ -127,6 +125,7 @@ Section
   SetOutPath "$INSTDIR\nut\doc"
   File ..\..\..\doc\copying-gpl.txt
   File ..\..\..\doc\copying-liquorice.txt
+  File ..\..\..\tools\packaging\nsis\license.txt
 
   SetOutPath "$INSTDIR\nut"
   File ..\..\..\nutsetup
@@ -284,6 +283,8 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\win32\qnutconf.exe
     File ..\..\..\tools\win32\msvcr90.dll
     File ..\..\..\tools\win32\msvcp90.dll
+    File ..\..\..\tools\win32\msvcr100.dll
+    File ..\..\..\tools\win32\msvcp100.dll
     File ..\..\..\tools\win32\QtCore4.dll
     File ..\..\..\tools\win32\QtGui4.dll
     File ..\..\..\tools\win32\Microsoft.VC90.CRT.manifest
@@ -295,12 +296,12 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\at91sam7se-ek.conf
     File ..\..\..\conf\at91sam7x-ek-radio.conf
     File ..\..\..\conf\at91sam7x-ek.conf
-    File ..\..\..\conf\at91sam9260-ek-radio.conf
     File ..\..\..\conf\at91sam9260-ek.conf
     File ..\..\..\conf\at91sam9g45-ek.conf
     File ..\..\..\conf\charon2.conf
     File ..\..\..\conf\eir10c.conf
     File ..\..\..\conf\enet-sam7x.conf
+    File ..\..\..\conf\enet-sam7x_bootrom.conf
     File ..\..\..\conf\ethernut103.conf
     File ..\..\..\conf\ethernut13f.conf
     File ..\..\..\conf\ethernut13g.conf
@@ -321,6 +322,7 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\evk1104-intram.conf
     File ..\..\..\conf\evk1105-extram.conf
     File ..\..\..\conf\evk1105-intram.conf
+    File ..\..\..\conf\flecx10a.conf
     File ..\..\..\conf\gbaxport2.conf
     File ..\..\..\conf\mmnet01.conf
     File ..\..\..\conf\mmnet02.conf
@@ -338,10 +340,11 @@ SectionGroup "Development Tools"
     File ..\..\..\conf\xnut-100.conf
     File ..\..\..\conf\xnut-105c.conf
     File ..\..\..\conf\xnut-105d.conf
+    File ..\..\..\conf\zero-ek.conf
     File /r ..\..\..\conf\*.nut
     SetOutPath "$INSTDIR"
-    CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\Configurator.lnk" "$INSTDIR\nutconf.exe"
-    CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\Configurator Qt (Preview).lnk" "$INSTDIR\qnutconf.exe"
+    CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\Configurator.lnk" "$INSTDIR\qnutconf.exe"
+    CreateShortCut "$SMPROGRAMS\Ethernut ${NUTVERSION}\Configurator (wxWidgets).lnk" "$INSTDIR\nutconf.exe"
   SectionEnd
 
   Section "Ethernut Discoverer" SecDiscover
@@ -493,20 +496,17 @@ SectionGroup "Application Samples"
     File ..\..\..\app\*.unix-gcc
     File ..\..\..\app\Makeburn.*
 
-    SetOutPath "$INSTDIR\nut\app\7segtst"
-    File ..\..\..\app\7segtst\Makefile
-    File ..\..\..\app\7segtst\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\7segtst"
+    File ..\..\..\hwtest\arm\atmel\7segtst\Makefile
+    File ..\..\..\hwtest\arm\atmel\7segtst\*.c
 
-    SetOutPath "$INSTDIR\nut\app\basemon"
-    File ..\..\..\app\basemon\Makefile
-    File ..\..\..\app\basemon\*.c
-    File ..\..\..\app\basemon\*.h
-    SetOutPath "$INSTDIR\nut\app\basemon\html"
-    File ..\..\..\app\basemon\html\*.html
-    File ..\..\..\app\basemon\html\*.gif
-    SetOutPath "$INSTDIR\nut\appicc\basemon"
-    File ..\..\..\appicc\basemon\*.prj
-    File ..\..\..\appicc\basemon\*.SRC
+    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon"
+    File ..\..\..\hwtest\avr\basemon\Makefile
+    File ..\..\..\hwtest\avr\basemon\*.c
+    File ..\..\..\hwtest\avr\basemon\*.h
+    SetOutPath "$INSTDIR\nut\hwtest\avr\basemon\html"
+    File ..\..\..\hwtest\avr\basemon\html\*.html
+    File ..\..\..\hwtest\avr\basemon\html\*.gif
 
     SetOutPath "$INSTDIR\nut\app\caltime"
     File ..\..\..\app\caltime\Makefile
@@ -515,9 +515,9 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\caltime\*.prj
     File ..\..\..\appicc\caltime\*.SRC
     
-    SetOutPath "$INSTDIR\nut\app\canbus"
-    File ..\..\..\app\canbus\Makefile
-    File ..\..\..\app\canbus\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\avr\canbus"
+    File ..\..\..\hwtest\avr\canbus\Makefile
+    File ..\..\..\hwtest\avr\canbus\*.c
     SetOutPath "$INSTDIR\nut\appicc\canbus"
     File ..\..\..\appicc\canbus\*.prj
     File ..\..\..\appicc\canbus\*.SRC
@@ -529,10 +529,11 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\app\editconf"
     File ..\..\..\app\editconf\Makefile
     File ..\..\..\app\editconf\*.c
+    File ..\..\..\app\editconf\*.h
 
-    SetOutPath "$INSTDIR\nut\app\eeprom"
-    File ..\..\..\app\eeprom\Makefile
-    File ..\..\..\app\eeprom\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\eeprom"
+    File ..\..\..\hwtest\arm\atmel\eeprom\Makefile
+    File ..\..\..\hwtest\arm\atmel\eeprom\*.c
 
     SetOutPath "$INSTDIR\nut\app\events"
     File ..\..\..\app\events\Makefile
@@ -564,6 +565,25 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\httpd\*.prj
     File ..\..\..\appicc\httpd\*.SRC
 
+    SetOutPath "$INSTDIR\nut\app\httpd_simple"
+    File ..\..\..\app\httpd_simple\Makefile
+    File ..\..\..\app\httpd_simple\*.c
+    SetOutPath "$INSTDIR\nut\app\httpd_simple\urom"
+    File ..\..\..\app\httpd_simple\urom\*.html
+	
+    SetOutPath "$INSTDIR\nut\app\httpd_upnp"
+    File ..\..\..\app\httpd_upnp\Makefile
+    File ..\..\..\app\httpd_upnp\*.c
+    File ..\..\..\app\httpd_upnp\*.h
+    SetOutPath "$INSTDIR\nut\app\httpd_upnp\sample"
+    File ..\..\..\app\httpd_upnp\sample\*.html
+    File ..\..\..\app\httpd_upnp\sample\*.gif
+    SetOutPath "$INSTDIR\nut\app\httpd_upnp\sample\flash"
+    File ..\..\..\app\httpd_upnp\sample\flash\*.html
+    File ..\..\..\app\httpd_upnp\sample\flash\*.swf
+    SetOutPath "$INSTDIR\nut\app\httpd_upnp\sample\upnp"
+    File ..\..\..\app\httpd_upnp\sample\upnp\*.xml
+
     SetOutPath "$INSTDIR\nut\app\icmp-udp"
     File ..\..\..\app\icmp-udp\Makefile
     File ..\..\..\app\icmp-udp\*.c
@@ -577,20 +597,20 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\inetq\*.prj
     File ..\..\..\appicc\inetq\*.SRC
 
-    SetOutPath "$INSTDIR\nut\app\ioexpander"
-    File ..\..\..\app\ioexpander\Makefile
-    File ..\..\..\app\ioexpander\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\ioexpander"
+    File ..\..\..\hwtest\arm\atmel\ioexpander\Makefile
+    File ..\..\..\hwtest\arm\atmel\ioexpander\*.c
 
-    SetOutPath "$INSTDIR\nut\app\isp2"
-    File ..\..\..\app\isp2\Makefile
-    File ..\..\..\app\isp2\*.c
-    File ..\..\..\app\isp2\*.S
-    File ..\..\..\app\isp2\*.isp
+    SetOutPath "$INSTDIR\nut\hwtest\avr\isp2"
+    File ..\..\..\hwtest\avr\isp2\Makefile
+    File ..\..\..\hwtest\avr\isp2\*.c
+    File ..\..\..\hwtest\avr\isp2\*.S
+    File ..\..\..\hwtest\avr\isp2\*.isp
     SetOutPath "$INSTDIR\nut\app\isp2\isp"
 
-    SetOutPath "$INSTDIR\nut\app\led_key"
-    File ..\..\..\app\led_key\Makefile
-    File ..\..\..\app\led_key\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\arm\atmel\led_key"
+    File ..\..\..\hwtest\arm\atmel\led_key\Makefile
+    File ..\..\..\hwtest\arm\atmel\led_key\*.c
 
     SetOutPath "$INSTDIR\nut\app\logtime"
     File ..\..\..\app\logtime\Makefile
