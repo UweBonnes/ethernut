@@ -205,6 +205,51 @@ static int VsCodec0SendCmd(void *cmd, size_t len)
 }
 
 /*
+ * \brief Write to command channel of codec 0.
+ *
+ * This routine will not check the DREQ line.
+ *
+ * \param cmd  Points to the buffer. On entry it contains the data to 
+ *             send. On exit it will contain the data received from
+ *             the chip.
+ * \param len  Number of bytes to send and receive.
+ */
+static int VsCodec0RecvData(void *buf, size_t len)
+{
+    int rc;
+    uint8_t *bp = (uint8_t *) buf;
+    const uint8_t cmd[4] = { VS_OPCODE_READ, VS_HDAT0_REG, 0xFF, 0xFF };
+    uint8_t rsp[4];
+
+    VsCodecWaitReady(&devSpiVsCodec0, VSCODEC_CMD_TIMEOUT);
+    //(*nodeSpiVsCodec0.node_bus->bus_set_rate) (&nodeSpiVsCodec0, 20000000);
+    /* Allocate the SPI bus. */
+    rc = (*nodeSpiVsCodec0.node_bus->bus_alloc) (&nodeSpiVsCodec0, VSCODEC0_SPIBUS_WAIT);
+    if (rc == 0) {
+        len >>= 1;
+        while (len--) {
+            /* Activate chip selects. */
+#if defined(VSCODEC0_VSCS_PORT) && defined(VSCODEC0_VSCS_BIT)
+            GpioPinSetLow(VSCODEC0_VSCS_PORT, VSCODEC0_VSCS_BIT);
+#endif            
+            GpioPinSetLow(VSCODEC0_XCS_PORT, VSCODEC0_XCS_BIT); /* XCS=PA31 */
+            /* Send command bytes and receive response. */
+            rc = (*nodeSpiVsCodec0.node_bus->bus_transfer) (&nodeSpiVsCodec0, cmd, rsp, 4);
+            /* Deactivate chip selects. */
+            GpioPinSetHigh(VSCODEC0_XCS_PORT, VSCODEC0_XCS_BIT);
+#if defined(VSCODEC0_VSCS_PORT) && defined(VSCODEC0_VSCS_BIT)
+            GpioPinSetHigh(VSCODEC0_VSCS_PORT, VSCODEC0_VSCS_BIT);
+#endif
+            *bp++ = rsp[2];
+            *bp++ = rsp[3];
+        }
+        /* Release the SPI bus. */
+        (*nodeSpiVsCodec0.node_bus->bus_release) (&nodeSpiVsCodec0);
+    }
+    return rc;
+}
+
+/*
  * \brief Write data to the decoder.
  *
  * Data is sent in fixed chunks. The first one is sent without
@@ -582,6 +627,7 @@ static int VsCodec0Init(NUTDEVICE * dev)
     dcbVsCodec0.dcb_isready = VsCodec0IsReady;
     dcbVsCodec0.dcb_sendcmd = VsCodec0SendCmd;
     dcbVsCodec0.dcb_senddata = VsCodec0SendData;
+    dcbVsCodec0.dcb_recvdata = VsCodec0RecvData;
     dcbVsCodec0.dcb_control = VsCodec0Control;
 
     /* Set capabilities. */

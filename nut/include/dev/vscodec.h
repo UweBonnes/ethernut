@@ -208,11 +208,22 @@
 /*! \brief Set internal clock. */
 #define AUDIO_SET_ICLOCK    0x3032
 
+/*! \brief Upload into WRAM. */
+#define AUDIO_WRITE_CMEM    0x3038
+
 typedef struct _VS_PLUGIN_INFO VS_PLUGIN_INFO;
 
 struct _VS_PLUGIN_INFO {
     size_t vsplg_size;
     CONST uint16_t *vsplg_data;
+};
+
+typedef struct _VS_WRAM_DATA VS_WRAM_DATA;
+
+struct _VS_WRAM_DATA {
+    uint16_t vswd_addr;
+    uint16_t vswd_size;
+    uint16_t *vswd_data;
 };
 
 /*
@@ -1207,6 +1218,7 @@ typedef struct _VSDCB {
     int (*dcb_sendcmd)(void *, size_t);
     int (*dcb_senddata)(CONST uint8_t *, size_t);
     int (*dcb_control)(int req, void *conf);
+    int (*dcb_recvdata)(void *, size_t);
 } VSDCB;
 
 #ifndef VSCODEC_DATA_CHUNK_SIZE

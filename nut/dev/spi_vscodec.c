@@ -461,11 +461,7 @@ THREAD(FeederThread, arg)
                     } else {
                         filled = avail;
                     }
-                    while (filled--) {
-                        uint16_t data = VsCodecReg(dev, VS_OPCODE_READ, VS_HDAT0_REG, 0);
-                        *bp++ = (uint8_t) data >> 8;
-                        *bp++ = (uint8_t) data >> 8;
-                    }
+                    (*dcb->dcb_recvdata)(bp, filled << 1);
                     NutSegBufWriteLast(avail << 1);
                     NutEventPost(&dcb->dcb_bufque);
                 } else {
@@ -550,6 +546,64 @@ static int VsCodecLoadPlugIn(NUTDEVICE *dev, VS_PLUGIN_INFO *plg)
 	VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
 #endif
 
+    return 0;
+}
+
+static int VsCodecWriteWRam(NUTDEVICE *dev, VS_WRAM_DATA *vswd)
+{
+    size_t i;
+
+    if (vswd == NULL) {
+        /*
+         * Initialize data transfer.
+         */
+#ifdef VS_SM_ADPCM
+        VsCodecMode(dev, 0, VS_SM_ADPCM);
+#endif
+        /* Set clock to 4.5x = 55.3 MHz. */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_CLOCKF_REG, 0xC000);
+        NutSleep(100);
+#if VS_HAS_BASS_REG
+        /* Clear SCI bass register. */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_BASS_REG, 0);
+#endif
+        /* Disable all interrupts except SCI. */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AIADDR_REG, 0);
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, 0xC01A);
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, 0x0002);
+    } 
+    else if (vswd->vswd_data) {
+        /*
+         * Transfer data, if available.
+         */
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAMADDR_REG, vswd->vswd_addr);
+        for (i = 0; i < vswd->vswd_size; i++) {
+            VsCodecReg(dev, VS_OPCODE_WRITE, VS_WRAM_REG, vswd->vswd_data[i]);
+        }
+    } else {
+        /*
+         * All data transfered.
+         */
+#ifdef VS_SM_ADPCM
+        VsCodecMode(dev, VS_SM_LINE_IN | VS_SM_ADPCM, VS_SM_LINE_IN | VS_SM_ADPCM);
+#endif
+
+#if VS_HAS_AICTRL0_REG
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL0_REG, 0);
+#endif
+
+#if VS_HAS_AICTRL1_REG
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL1_REG, 1024);
+#endif
+
+#if VS_HAS_AICTRL2_REG
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL2_REG, 4096);
+#endif
+
+#if VS_HAS_AICTRL3_REG	
+        VsCodecReg(dev, VS_OPCODE_WRITE, VS_AICTRL3_REG, 0);
+#endif
+    }
     return 0;
 }
 
@@ -685,6 +739,9 @@ int VsCodecIOCtl(NUTDEVICE * dev, int req, void *conf)
 #endif
     case AUDIO_PLUGIN_UPLOAD:
         rc = VsCodecLoadPlugIn(dev, (VS_PLUGIN_INFO *) conf);
+        break;
+    case AUDIO_WRITE_CMEM:
+        VsCodecWriteWRam(dev, (VS_WRAM_DATA *) conf);
         break;
 
     default:
