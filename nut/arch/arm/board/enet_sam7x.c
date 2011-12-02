@@ -87,7 +87,7 @@ static void eNet_sam7X_ClockInit(void)
  */
 static void eNet_sam7X_Reset(void)
 {
-    uint32_t rstcr_tmp = inr(RSTC_MR) & 0x00FFFFFF;
+    uint32_t rstcr_tmp = inr(RSTC_MR) & ~RSTC_KEY_MSK;
 
     /* Set reset pulse length to 250us, disable user reset. */
     outr(RSTC_MR, RSTC_KEY | (2 << RSTC_ERSTL_LSB));
