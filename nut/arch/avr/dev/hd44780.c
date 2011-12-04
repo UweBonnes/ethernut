@@ -309,10 +309,10 @@ static INLINE uint8_t LcdReadNibble(void)
 
     uint8_t ret;
     sbi(LCD_RW_PORT, LCD_RW_BIT);
-    outp(inp(LCD_DATA_DDR) & ~LCD_DATA_BITS, LCD_DATA_DDR);   // enable data input
+    outb(LCD_DATA_DDR, inb(LCD_DATA_DDR) & ~LCD_DATA_BITS);   // enable data input
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY;
-    ret = inp(LCD_DATA_PIN) & LCD_DATA_BITS;
+    ret = inb(LCD_DATA_PIN) & LCD_DATA_BITS;
     cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY;
     return ret;
@@ -381,8 +381,8 @@ static INLINE void LcdSendNibble(uint8_t nib)
 #ifdef LCD_RW_BIT
     cbi(LCD_RW_PORT, LCD_RW_BIT);
 #endif
-    outp(inp(LCD_DATA_DDR) | LCD_DATA_BITS, LCD_DATA_DDR);
-    outp((inp(LCD_DATA_PORT) & ~LCD_DATA_BITS) | (nib & LCD_DATA_BITS), LCD_DATA_PORT);
+    outb(LCD_DATA_DDR, inb(LCD_DATA_DDR) | LCD_DATA_BITS);
+    outb(LCD_DATA_PORT, (inb(LCD_DATA_PORT) & ~LCD_DATA_BITS) | (nib & LCD_DATA_BITS));
     sbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT);
     LCD_DELAY; 
     cbi(LCD_ENABLE_PORT, LCD_ENABLE_BIT); 

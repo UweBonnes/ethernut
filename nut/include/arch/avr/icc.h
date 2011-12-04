@@ -277,10 +277,8 @@
 /* FIXME */
 #define SIGNAL(x)   void x(void)
 
-#define outp(val, reg)  (reg = val)
 #define outb(reg, val)  (reg = val)
 
-#define inp(reg)        (reg)
 #define inb(reg)        (reg)
 
 #include <eeprom.h>

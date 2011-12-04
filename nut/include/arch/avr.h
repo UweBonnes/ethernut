@@ -122,12 +122,6 @@
 #ifndef outb
 #define outb(sfr, val) (_SFR_BYTE(sfr) = (val))
 #endif
-#ifndef outp
-#define outp(val, sfr) outb(sfr, val)
-#endif
-#ifndef inp
-#define inp(sfr) inb(sfr)
-#endif
 #ifndef BV
 #define BV(bit) _BV(bit)
 #endif
