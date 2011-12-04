@@ -91,29 +91,15 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/10/05 16:48:52  haraldkipp
- * Security fix. Check various lengths of incoming packets.
+/*!
+ * \file net/arpin.c
+ * \brief ARP input functions.
  *
- * Revision 1.3  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.2  2004/07/27 19:41:00  drsung
- * If NutArpOutput fails, the NetBuf must not be deallocated by
- * calling NutNetBufFree.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:26  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.9  2003/02/04 18:14:56  harald
- * Version 3 released
- *
- * Revision 1.8  2002/06/26 17:29:35  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
+
 #include <sys/types.h>
 #include <net/if_var.h>
 #include <netinet/if_ether.h>

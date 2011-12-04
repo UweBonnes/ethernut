@@ -31,33 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/pppdebug.c
+ * \brief PPP debug helper functions.
  *
- * Revision 1.6  2006/10/05 17:25:41  haraldkipp
- * Avoid possible alignment errors. Fixes bug #1567748.
- *
- * Revision 1.5  2006/03/29 01:23:52  olereinhardt
- *  Signednes of strings
- *
- * Revision 1.4  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.3  2004/03/08 11:27:24  haraldkipp
- * Accept incoming header compression.
- *
- * Revision 1.2  2003/08/14 15:16:22  haraldkipp
- * Echo, discard and protocol reject added
- *
- * Revision 1.1.1.1  2003/05/09 14:41:36  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/05/06 17:30:28  harald
- * Put in seperate module
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <net/netdebug.h>

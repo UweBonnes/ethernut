@@ -91,46 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.8  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
+/*!
+ * \file net/route.c
+ * \brief IP routing functions.
  *
- * Revision 1.7  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.6  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.5  2005/07/23 14:30:40  haraldkipp
- * Removed unnecessary critical sections and atomic inc-/decrements.
- * Fixed a bug in NutIpRouteList(), which filled the first entry only.
- * Corrected the comment about unavailabilty of removing routes.
- *
- * Revision 1.4  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.3  2004/12/17 15:27:19  haraldkipp
- * Added Adam Pierce's routing management functions.
- *
- * Revision 1.2  2004/10/10 16:37:03  drsung
- * Detection of directed broadcasts to local network added.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:38  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.12  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
- * Revision 1.11  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.10  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

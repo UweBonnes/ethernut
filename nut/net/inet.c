@@ -91,27 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/inet.c
+ * \brief Internet address helper functions.
  *
- * Revision 1.3  2006/03/16 15:25:35  haraldkipp
- * Changed human readable strings from u_char to char to stop GCC 4 from
- * nagging about signedness.
- *
- * Revision 1.2  2005/08/02 17:47:03  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:30  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.11  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.10  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 /*!

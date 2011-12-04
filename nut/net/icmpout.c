@@ -91,32 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.5  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/icmpout.c
+ * \brief ICMP output functions.
  *
- * Revision 1.4  2004/03/08 11:22:16  haraldkipp
- * Not all compilers like pointer calculation with void pointers
- *
- * Revision 1.3  2004/02/06 19:24:00  drsung
- * Bugfix. After last changes, ping didn't work any more. Thanks to Pavel Celeda, who discovered this bug.
- *
- * Revision 1.2  2004/02/02 18:59:25  drsung
- * Some more ICMP support added.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:28  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.11  2003/03/31 12:02:27  harald
- * Check NEBUF allocation
- *
- * Revision 1.10  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.9  2002/06/26 17:29:35  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/in.h>

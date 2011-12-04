@@ -31,42 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.9  2009/03/05 22:16:57  freckle
- * use __NUT_EMULATION instead of __APPLE__, __linux__, or __CYGWIN__
+/*!
+ * \file net/confnet.c
+ * \brief Persistent storage of network configuration.
  *
- * Revision 1.8  2006/05/25 09:18:28  haraldkipp
- * API documentation updated and corrected.
- *
- * Revision 1.7  2006/01/23 17:26:18  haraldkipp
- * Platform independant routines added, which provide generic access to
- * non-volatile memory.
- *
- * Revision 1.6  2005/10/04 05:37:34  hwmaier
- * Removed preprocessor warning message for AT90CAN128 MCU as this device is now supported by avr-libc.
- *
- * Revision 1.5  2005/07/26 15:49:59  haraldkipp
- * Cygwin support added.
- *
- * Revision 1.4  2005/02/10 07:06:50  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.3  2004/04/07 12:13:58  haraldkipp
- * Matthias Ringwald's *nix emulation added
- *
- * Revision 1.2  2003/07/13 19:03:06  haraldkipp
- * Make empty MAC broadcast.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:27  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:22:48  harald
- * EEPROM corruption fixed
- *
- * Revision 1.1  2003/02/04 18:15:26  harald
- * Version 3 released
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

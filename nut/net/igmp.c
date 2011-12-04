@@ -63,14 +63,13 @@
  * SUCH DAMAGE.
  */
 
-/*
- * $Log$
- * Revision 1.2  2009/02/22 12:30:36  olereinhardt
- * Include "include/errno.h" instead of "include/net/errno.h"
+/*!
+ * \file net/igmp.c
+ * \brief IGMP interface.
  *
- * Revision 1.1  2007/05/02 11:18:31  haraldkipp
- * IGMP support added. Incomplete.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/ip.h>

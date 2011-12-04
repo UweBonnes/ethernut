@@ -94,8 +94,13 @@
  * SOFTWARE.
  */
 
-/*
+/*!
+ * \file net/tcpsm.c
+ * \brief TCP state machine.
+ *
+ * \verbatim
  * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

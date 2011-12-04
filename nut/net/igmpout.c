@@ -63,14 +63,13 @@
  * SUCH DAMAGE.
  */
 
-/*
- * $Log$
- * Revision 1.2  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/igmpout.c
+ * \brief IGMP output functions.
  *
- * Revision 1.1  2007/05/02 11:18:32  haraldkipp
- * IGMP support added. Incomplete.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/in.h>

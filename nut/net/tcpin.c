@@ -91,30 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.5  2008/10/05 16:48:52  haraldkipp
- * Security fix. Check various lengths of incoming packets.
+/*!
+ * \file net/tcpin.c
+ * \brief TCP input functions.
  *
- * Revision 1.4  2008/08/20 06:57:00  haraldkipp
- * Implemented IP demultiplexer.
- *
- * Revision 1.3  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.2  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:39  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.11  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.10  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

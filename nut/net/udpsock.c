@@ -91,71 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.13  2009/02/22 12:37:26  olereinhardt
- * Added NutUdpError and NutUdpSetSocketError to set and retrieve socket
- * errors. As udp sockets aren't connection oriented those errors will be
- * anounced asynchronously on the next NutUdpSend or NutUdpReceive
+/*!
+ * \file net/udpsock.c
+ * \brief UDP socket interface.
  *
- * Include "include/errno.h" instead of "include/net/errno.h"
- *
- * Revision 1.12  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.11  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.10  2008/08/20 06:57:00  haraldkipp
- * Implemented IP demultiplexer.
- *
- * Revision 1.9  2008/08/11 07:00:33  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.8  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.7  2005/08/02 17:47:03  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.6  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.5  2003/11/26 12:55:12  drsung
- * Portability issues ... again
- *
- * Revision 1.4  2003/11/24 21:01:04  drsung
- * Packet queue added for UDP sockets.
- *
- * Revision 1.3  2003/08/14 15:07:18  haraldkipp
- * Optimization
- *
- * Revision 1.2  2003/07/20 16:01:01  haraldkipp
- * Bugfix: Send crashed on routing problems.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:46  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.13  2003/05/06 18:21:52  harald
- * Memory hole fixed
- *
- * Revision 1.12  2003/04/21 17:04:57  harald
- * Bugfix: Return port number in host byte order
- *
- * Revision 1.11  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.10  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/heap.h>

@@ -47,24 +47,13 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.3  2008/08/11 07:00:31  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/papin.c
+ * \brief PPP PAP output functions.
  *
- * Revision 1.2  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:35  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:16:41  harald
- * PPP IP config to DCB
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <dev/ppp.h>

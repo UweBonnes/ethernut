@@ -91,113 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.25  2009/02/22 12:31:52  olereinhardt
- * Include "include/errno.h" instead of "include/net/errno.h"
+/*!
+ * \file net/tcpsock.c
+ * \brief TCP socket interface.
  *
- * Revision 1.24  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.23  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
- *
- * Revision 1.22  2008/08/20 06:57:00  haraldkipp
- * Implemented IP demultiplexer.
- *
- * Revision 1.21  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.20  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.19  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.18  2006/03/21 21:22:20  drsung
- * Enhancement made to TCP state machine. Now TCP options
- * are read from peer and at least the maximum segment size is stored.
- *
- * Revision 1.17  2005/10/24 11:00:16  haraldkipp
- * Integer division hack for ARM without CRT removed again.
- *
- * Revision 1.16  2005/08/02 17:47:03  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.15  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.14  2005/04/08 14:40:36  freckle
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__) for htons
- *
- * Revision 1.13  2005/04/05 17:58:02  haraldkipp
- * Avoid integer division on ARM platform as long as we run without crtlib.
- *
- * Revision 1.12  2005/02/04 17:16:45  haraldkipp
- * Stop searching when listening socket found
- *
- * Revision 1.11  2005/01/03 08:44:15  haraldkipp
- * Simplyfied NutTcpSend().
- *
- * Revision 1.10  2004/10/14 16:43:07  drsung
- * Fixed compiler warning "comparison between signed and unsigned"
- *
- * Revision 1.9  2004/07/30 19:54:46  drsung
- * Some code of TCP stack redesigned. Round trip time calculation is now
- * supported. Fixed several bugs in TCP state machine. Now TCP connections
- * should be more reliable under heavy traffic or poor physical connections.
- *
- * Revision 1.8  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.7  2004/01/28 12:11:57  drsung
- * Bugfix for ICCAVR ... again
- *
- * Revision 1.6  2004/01/28 07:11:38  drsung
- * Bugfix for ICCAVR
- *
- * Revision 1.5  2004/01/14 19:34:08  drsung
- * New TCP output buffer handling
- *
- * Revision 1.4  2003/11/04 17:58:18  haraldkipp
- * Removed volatile attibute from socket list
- *
- * Revision 1.3  2003/08/14 15:08:36  haraldkipp
- * Bugfix, TCP may reuse socket ports because of wrong byte order during compare.
- *
- * Revision 1.2  2003/07/13 19:23:59  haraldkipp
- * TCP transfer speed increased by changing the character receive buffer
- * in TCPSOCKET to a NETBUF queue.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:44  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.18  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.17  2002/09/15 17:07:05  harald
- * Allow application to read buffered data during close wait
- *
- * Revision 1.16  2002/09/03 17:43:15  harald
- * Configurable receive buffer size
- *
- * Revision 1.15  2002/08/16 17:54:57  harald
- * Count out of sequence drops
- *
- * Revision 1.14  2002/08/11 12:26:21  harald
- * ICC mods
- *
- * Revision 1.13  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

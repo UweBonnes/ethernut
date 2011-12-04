@@ -91,34 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/08/11 07:00:33  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/udpout.c
+ * \brief UDP output functions.
  *
- * Revision 1.3  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.2  2005/08/02 17:47:03  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:45  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.12  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
- * Revision 1.11  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.10  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/in.h>

@@ -32,45 +32,13 @@
  * -
  */
 
-/*
- * $Log$
- * Revision 1.9  2009/02/06 15:40:29  haraldkipp
- * Using newly available strdup() and calloc().
- * Replaced NutHeap routines by standard malloc/free.
- * Replaced pointer value 0 by NULL.
+/*!
+ * \file net/pppsm.c
+ * \brief PPP state machine.
  *
- * Revision 1.8  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.7  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2005/04/05 17:44:57  haraldkipp
- * Made stack space configurable.
- *
- * Revision 1.5  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.4  2004/03/08 11:28:37  haraldkipp
- * HDLC functions moved to async HDLC driver.
- *
- * Revision 1.3  2004/01/30 11:37:58  haraldkipp
- * Handle magic number rejects
- *
- * Revision 1.2  2003/08/14 15:14:19  haraldkipp
- * Do not increment ID when resending.
- * Added authentication retries.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:37  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:18:37  harald
- * PPP hack for simple UART support, functions reordered.
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

@@ -91,47 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.10  2008/10/05 16:48:52  haraldkipp
- * Security fix. Check various lengths of incoming packets.
+/*!
+ * \file net/udpin.c
+ * \brief UDP input functions.
  *
- * Revision 1.9  2008/09/18 09:45:56  haraldkipp
- * All broadcasts were answered with ICMP unreachable. Due to this the ARP
- * table grew fast in large networks. Fixed.
- *
- * Revision 1.8  2008/08/20 06:57:00  haraldkipp
- * Implemented IP demultiplexer.
- *
- * Revision 1.7  2008/04/18 13:13:11  haraldkipp
- * Using fast ints.
- *
- * Revision 1.6  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.5  2005/06/05 16:48:32  haraldkipp
- * Additional parameter enables NutUdpInput() to avoid responding to UDP
- * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
- *
- * Revision 1.4  2005/05/26 11:47:24  drsung
- * ICMP unreachable will be sent on incoming udp packets with no local peer port.
- *
- * Revision 1.3  2005/02/02 16:22:35  haraldkipp
- * Do not wake up waiting threads if the incoming datagram
- * doesn't fit in the buffer.
- *
- * Revision 1.2  2003/11/24 21:01:04  drsung
- * Packet queue added for UDP sockets.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:45  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.10  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.9  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/event.h>

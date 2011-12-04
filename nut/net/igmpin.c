@@ -63,17 +63,13 @@
  * SUCH DAMAGE.
  */
 
-/*
- * $Log$
- * Revision 1.3  2009/02/22 12:30:36  olereinhardt
- * Include "include/errno.h" instead of "include/net/errno.h"
+/*!
+ * \file net/igmpin.c
+ * \brief IGMP input functions.
  *
- * Revision 1.2  2008/10/05 16:48:52  haraldkipp
- * Security fix. Check various lengths of incoming packets.
- *
- * Revision 1.1  2007/05/02 11:18:31  haraldkipp
- * IGMP support added. Incomplete.
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

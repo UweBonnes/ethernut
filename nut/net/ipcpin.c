@@ -47,42 +47,13 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.8  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/ipcin.c
+ * \brief PPP IPC input functions.
  *
- * Revision 1.7  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.6  2004/03/08 11:24:48  haraldkipp
- * PppUp() replaced by direct post.
- *
- * Revision 1.5  2004/01/30 11:36:52  haraldkipp
- * Memory hole fixed
- *
- * Revision 1.4  2003/12/18 20:44:11  drsung
- * Bug fix in IpcpRxConfReq. Thanks to Michel Hendriks.
- *
- * Revision 1.3  2003/08/14 15:17:50  haraldkipp
- * Caller controls ID increment
- *
- * Revision 1.2  2003/07/24 16:12:53  haraldkipp
- * First bugfix: PPP always used the secondary DNS.
- * Second bugfix: When the PPP server rejects the
- * secondary DNS, IPCP negotiation was trapped in a
- * loop.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:30  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:04:57  harald
- * PPP IP config to DCB
- *
- * Revision 1.1  2003/03/31 14:53:27  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <sys/event.h>

@@ -31,60 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.11  2009/01/17 11:26:51  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+/*!
+ * \file net/netdebug.c
+ * \brief Network debug helper functions.
  *
- * Revision 1.10  2008/08/11 07:00:31  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.9  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.8  2007/07/17 18:31:44  haraldkipp
- * Output strings must be signed characters. Fixed provided by Michael Mueller.
- *
- * Revision 1.7  2006/03/16 15:25:35  haraldkipp
- * Changed human readable strings from u_char to char to stop GCC 4 from
- * nagging about signedness.
- *
- * Revision 1.6  2005/01/13 18:48:53  haraldkipp
- * Compiler warnings avoided.
- *
- * Revision 1.5  2005/01/02 10:07:10  haraldkipp
- * Replaced platform dependant formats in debug outputs.
- *
- * Revision 1.4  2004/04/07 12:13:58  haraldkipp
- * Matthias Ringwald's *nix emulation added
- *
- * Revision 1.3  2004/03/19 09:05:08  jdubiec
- * Fixed format strings declarations for AVR.
- *
- * Revision 1.2  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.8  2003/05/06 18:16:14  harald
- * Separate PPP debug module added.
- *
- * Revision 1.7  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.6  2002/10/29 15:32:24  harald
- * PPP support
- *
- * Revision 1.5  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <arpa/inet.h>

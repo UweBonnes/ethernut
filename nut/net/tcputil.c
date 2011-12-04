@@ -31,31 +31,13 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.4  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/tcputil.c
+ * \brief TCP utility functions.
  *
- * Revision 1.3  2008/07/27 11:43:22  haraldkipp
- * Configurable TCP retransmissions.
- *
- * Revision 1.2  2004/07/30 19:54:46  drsung
- * Some code of TCP stack redesigned. Round trip time calculation is now
- * supported. Fixed several bugs in TCP state machine. Now TCP connections
- * should be more reliable under heavy traffic or poor physical connections.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:45  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.10  2003/05/06 18:23:15  harald
- * Still not done
- *
- * Revision 1.9  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.8  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/tcp.h>

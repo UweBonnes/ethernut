@@ -76,55 +76,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/ipcsum.c
+ * \brief IP checksum calculation.
  *
- * Revision 1.6  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.5  2006/10/05 17:25:41  haraldkipp
- * Avoid possible alignment errors. Fixes bug #1567748.
- *
- * Revision 1.4  2005/04/05 17:39:56  haraldkipp
- * Replaced all this awful crap by a simple generic routine.
- *
- * Revision 1.3  2004/04/07 12:13:58  haraldkipp
- * Matthias Ringwald's *nix emulation added
- *
- * Revision 1.2  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:32  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.15  2003/03/31 14:53:27  harald
- * Prepare release 3.1
- *
- * Revision 1.14  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.13  2002/10/29 15:30:26  harald
- * Temporarly switched back from asm to C
- *
- * Revision 1.12  2002/09/15 16:48:34  harald
- * *** empty log message ***
- *
- * Revision 1.11  2002/08/11 12:39:34  harald
- * ICC Assembler version by Klaus Ummenhofer
- *
- * Revision 1.8  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
- * Revision 1.10  2002/08/08 17:29:28  harald
- * Imagecraft support by Klaus Ummenhofer
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/ipcsum.h>

@@ -91,51 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/ipout.c
+ * \brief IP output functions.
  *
- * Revision 1.6  2007/05/02 11:18:32  haraldkipp
- * IGMP support added. Incomplete.
- *
- * Revision 1.5  2006/10/17 11:05:03  haraldkipp
- * Failed ARP requests are no longer classified as fatal transmission errors.
- *
- * Revision 1.4  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.3  2004/10/10 16:37:03  drsung
- * Detection of directed broadcasts to local network added.
- *
- * Revision 1.2  2003/07/20 16:00:23  haraldkipp
- * Memory hole fixed.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:33  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.17  2003/04/01 18:31:47  harald
- * *** empty log message ***
- *
- * Revision 1.16  2003/03/31 12:28:10  harald
- * Check NEBUF allocation
- *
- * Revision 1.15  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.14  2003/01/14 16:44:08  harald
- * *** empty log message ***
- *
- * Revision 1.13  2002/10/29 15:32:14  harald
- * PPP support
- *
- * Revision 1.12  2002/09/15 16:49:42  harald
- * *** empty log message ***
- *
- * Revision 1.11  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

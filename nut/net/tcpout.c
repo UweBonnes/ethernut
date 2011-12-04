@@ -91,59 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.11  2009/02/22 12:30:36  olereinhardt
- * Include "include/errno.h" instead of "include/net/errno.h"
+/*!
+ * \file net/tcpout.c
+ * \brief TCP output functions.
  *
- * Revision 1.10  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.9  2008/04/06 13:29:01  haraldkipp
- * In unreliable or high traffic networks connections may suddenly freeze.
- * The problem is, that during overflows (happening every 65s) the
- * retransmission timer may be loaded with 0, which in turn disables all
- * outstanding retransmission. Applied fix contributed by Henrik Maier.
- *
- * Revision 1.8  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.7  2006/03/02 19:57:34  haraldkipp
- * ICCARM insists on a (void *) typecast for the second parameter of memcpy().
- *
- * Revision 1.6  2006/01/23 17:33:47  haraldkipp
- * Avoid memory alignment errors.
- *
- * Revision 1.5  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.4  2005/04/05 17:41:48  haraldkipp
- * Header is dangerous when you forget to remove all debug outputs.
- *
- * Revision 1.3  2004/07/30 19:54:46  drsung
- * Some code of TCP stack redesigned. Round trip time calculation is now
- * supported. Fixed several bugs in TCP state machine. Now TCP connections
- * should be more reliable under heavy traffic or poor physical connections.
- *
- * Revision 1.2  2004/04/15 11:05:35  haraldkipp
- * Set retransmission timer on first transmit queue entry
- *
- * Revision 1.1.1.1  2003/05/09 14:41:40  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.15  2003/03/31 12:29:17  harald
- * Check NEBUF allocation
- *
- * Revision 1.14  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.13  2002/09/15 16:50:44  harald
- * *** empty log message ***
- *
- * Revision 1.12  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

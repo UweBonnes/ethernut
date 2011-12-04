@@ -47,39 +47,15 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/ipcout.c
+ * \brief PPP IPC output functions.
  *
- * Revision 1.6  2008/04/18 13:32:00  haraldkipp
- * Changed size parameter from u_short to int, which is easier to handle
- * for 32-bit targets. You need to recompile your ARM code. No impact on
- * AVR expected
- * I changed u_int to int at some places to avoid some warnings during
- * compilation of Nut/Net.
- * libs.
- *
- * Revision 1.5  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.4  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.3  2003/08/14 15:17:50  haraldkipp
- * Caller controls ID increment
- *
- * Revision 1.2  2003/07/24 16:13:38  haraldkipp
- * Never request a rejected DNS
- *
- * Revision 1.1.1.1  2003/05/09 14:41:31  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.1  2003/03/31 14:53:27  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
+
 #include <string.h>
 
 #include <dev/ppp.h>

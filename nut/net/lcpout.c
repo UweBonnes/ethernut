@@ -47,36 +47,13 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/lcpout.c
+ * \brief PPP LCP output functions.
  *
- * Revision 1.6  2006/10/08 16:48:22  haraldkipp
- * Documentation fixed
- *
- * Revision 1.5  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.4  2004/03/08 11:26:57  haraldkipp
- * Bugfix, establishing PPP sessions failed.
- *
- * Revision 1.3  2004/01/30 11:37:58  haraldkipp
- * Handle magic number rejects
- *
- * Revision 1.2  2003/08/14 15:18:41  haraldkipp
- * Negotiate local magic
- *
- * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:15:30  harald
- * Use async map define
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

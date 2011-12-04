@@ -35,74 +35,13 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
- * $Log$
- * Revision 1.15  2008/10/05 16:48:52  haraldkipp
- * Security fix. Check various lengths of incoming packets.
+/*!
+ * \file net/ipin.c
+ * \brief IP input functions.
  *
- * Revision 1.14  2008/08/20 06:57:00  haraldkipp
- * Implemented IP demultiplexer.
- *
- * Revision 1.13  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.12  2008/04/18 13:13:11  haraldkipp
- * Using fast ints.
- *
- * Revision 1.11  2007/07/09 16:20:19  olereinhardt
- * 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
- *         * net/Makefile: Commented in igmp_in.c and igmp_out.c again
- *         * net/ipin.c: igmp support reenabled
- *
- * Revision 1.10  2007/07/09 15:59:00  olereinhardt
- * 2007-07-09  Ole Reinhardt <ole.reinhardt@embedded-it.de>
- * 	* ipin.c: commented out igmp support as long as it does not compile
- *
- * Revision 1.9  2007/05/02 11:18:32  haraldkipp
- * IGMP support added. Incomplete.
- *
- * Revision 1.8  2007/03/23 12:43:50  haraldkipp
- * ARP method wasn't actually disabled by default. Fixed.
- *
- * Revision 1.7  2006/09/05 12:35:39  haraldkipp
- * DHCP servers may probe an IP/MAC relationship by sending an
- * ICMP request. This triggered the Nut/Net ARP method and
- * terminated the DHCP client, leaving the system with default
- * configurations of the network mask (255.255.255.0) and
- * default gateway (none). The rarely used ARP method is now
- * disabled by default.
- *
- * Revision 1.6  2006/07/10 17:46:59  haraldkipp
- * Now really like Jan suggested to fix it.
- *
- * Revision 1.5  2006/07/10 08:49:47  haraldkipp
- * Do not respond to broadcasts with unknown protocols. Many thanks to Jan.
- *
- * Revision 1.4  2005/06/05 16:48:26  haraldkipp
- * Additional parameter enables NutUdpInput() to avoid responding to UDP
- * broadcasts with ICMP unreachable messages. Fixes bug #1215192.
- *
- * Revision 1.3  2004/12/16 18:48:50  haraldkipp
- * Added Damian Slee's IP filter function.
- *
- * Revision 1.2  2004/02/02 18:59:25  drsung
- * Some more ICMP support added.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:32  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.16  2003/05/06 18:14:18  harald
- * Allow incoming DHCP telegrams, even if not broadcasted
- *
- * Revision 1.15  2003/03/31 12:26:05  harald
- * Accept masks with all bits set
- *
- * Revision 1.14  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.13  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/ip.h>

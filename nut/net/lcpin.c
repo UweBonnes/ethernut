@@ -47,36 +47,13 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/*
- * $Log$
- * Revision 1.7  2008/08/11 07:00:30  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/lcpin.c
+ * \brief PPP LCP input functions.
  *
- * Revision 1.6  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.5  2004/03/08 11:26:13  haraldkipp
- * Accept incoming header compression.
- *
- * Revision 1.4  2004/01/30 11:37:58  haraldkipp
- * Handle magic number rejects
- *
- * Revision 1.3  2004/01/14 19:05:53  drsung
- * Bug fix in LcpRxConfReq. Thanks to Michel Hendriks.
- *
- * Revision 1.2  2003/08/14 15:19:15  haraldkipp
- * Echo support added.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:34  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:14:45  harald
- * Cleanup
- *
- * Revision 1.1  2003/03/31 14:53:27  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <net/if_var.h>

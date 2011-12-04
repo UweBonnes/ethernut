@@ -81,72 +81,7 @@
  * \brief ARP cache.
  *
  * \verbatim
- *
- * $Log$
- * Revision 1.16  2009/02/13 14:52:05  haraldkipp
- * Include memdebug.h for heap management debugging support.
- *
- * Revision 1.15  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.14  2006/10/05 17:24:41  haraldkipp
- * On ARP transmit errors the incomplete cache entry is not removed.
- * Subsequent queries will never send out new ARP requests. Many thanks
- * to Michael Jones for providing a first solution. I added a check,
- * which avoids to remove an already completed entry. Fixes bug #1567783.
- *
- * Revision 1.13  2005/08/02 17:46:49  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.12  2005/06/05 16:49:09  haraldkipp
- * Do not do ARP retries by default.
- *
- * Revision 1.11  2005/05/16 08:41:25  haraldkipp
- * Bugfix: Empty queue before removing entry.
- *
- * Revision 1.10  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.9  2005/03/13 13:40:32  haraldkipp
- * If NutArpOutput() failed, then NutArpCacheQuery() released the already
- * released NETBUF. This bug had been fixed. If NutArpAllocNetBuf() fails,
- * the ARP entry will now be removed immediately. Additional check for
- * valid entry pointer added. These modifications had been suggested by
- * Dusan Ferbas. Finally memcpy() has been replaced by a simple loop in order
- * to provide a work around for GCC Bug #18251.
- *
- * Revision 1.8  2005/02/07 18:57:49  haraldkipp
- * ICCAVR compile errors fixed
- *
- * Revision 1.7  2005/02/07 09:26:56  haraldkipp
- * Argh! Committed wrong source.
- *
- * Revision 1.5  2005/02/04 14:55:08  haraldkipp
- * Almost a complete redesign. Replaced the ARP timer thread by calling an
- * ARP aging routine before each incoming ARP and outgoing IP packet.
- * This also fixes the bug, which generated two ARP requests per query.
- * Thanks to Dusam Ferbas and Rostislav Hlebak for their help.
- *
- * Revision 1.4  2004/07/27 19:38:30  drsung
- * Under certain circumstances the same ARPENTRY was
- * allocated twice.
- *
- * Revision 1.3  2004/03/18 10:18:01  haraldkipp
- * Comments updated
- *
- * Revision 1.2  2004/02/08 17:14:05  drsung
- * arp entries with set ATF_PERM flag are not removed any longer.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:26  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.16  2003/02/04 18:14:56  harald
- * Version 3 released
- *
- * Revision 1.15  2002/06/26 17:29:35  harald
- * First pre-release with 2.4 stack
- *
+ * $Id$
  * \endverbatim
  */
 

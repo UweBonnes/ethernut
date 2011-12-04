@@ -63,44 +63,13 @@
  * -
  */
 
-/*
- * $Log$
- * Revision 1.9  2009/01/17 11:26:51  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
+/*!
+ * \file net/pppout.c
+ * \brief PPP output functions.
  *
- * Revision 1.8  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.7  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.5  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.4  2004/03/08 11:28:23  haraldkipp
- * HDLC functions moved to async HDLC driver.
- *
- * Revision 1.3  2003/08/14 15:15:28  haraldkipp
- * Unsuccessful try to fix ICCAVR bug
- *
- * Revision 1.2  2003/07/13 19:09:59  haraldkipp
- * Debug output fixed.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:37  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:17:58  harald
- * PPP hack for simple UART support
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

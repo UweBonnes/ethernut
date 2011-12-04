@@ -91,27 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.3  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/arpout.c
+ * \brief ARP output functions.
  *
- * Revision 1.2  2005/04/08 15:20:50  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:27  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.11  2003/03/31 11:54:51  harald
- * Avoid including PPP code unless required
- *
- * Revision 1.10  2003/02/04 18:14:56  harald
- * Version 3 released
- *
- * Revision 1.9  2002/06/26 17:29:35  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <string.h>

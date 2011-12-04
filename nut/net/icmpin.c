@@ -91,43 +91,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.9  2009/02/22 12:39:51  olereinhardt
- * Added ICMP destination unreachable support for UDP sockets and give a
- * more detailed errno to TCP sockets as well. ICMP support for UDP sockets
- * will just be enabled when defining NUT_UDP_ICMP_SUPPORT int the configurator
+/*!
+ * \file net/icmpin.c
+ * \brief ICMP input functions.
  *
- * Revision 1.8  2008/10/05 16:48:52  haraldkipp
- * Security fix. Check various lengths of incoming packets.
- *
- * Revision 1.7  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.6  2008/05/24 22:23:55  olereinhardt
- * Fixed cvs log message
- *
- * Revision 1.5  2008/05/24 22:22:26  olereinhardt
- * Fixed size comparision in NutIcmpUnreach
- *
- * Revision 1.4  2004/03/18 10:28:36  haraldkipp
- * Comments updated
- *
- * Revision 1.3  2004/02/06 19:23:59  drsung
- * Bugfix. After last changes, ping didn't work any more. Thanks to Pavel Celeda, who discovered this bug.
- *
- * Revision 1.2  2004/02/02 18:59:25  drsung
- * Some more ICMP support added.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:28  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.11  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.10  2002/06/26 17:29:35  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <netinet/ip_icmp.h>

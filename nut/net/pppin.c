@@ -62,43 +62,13 @@
  * -
  */
 
-/*
- * $Log$
- * Revision 1.9  2008/08/11 07:00:32  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
+/*!
+ * \file net/pppin.c
+ * \brief PPP input functions.
  *
- * Revision 1.8  2006/10/05 17:25:41  haraldkipp
- * Avoid possible alignment errors. Fixes bug #1567748.
- *
- * Revision 1.7  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.6  2005/04/08 15:20:51  olereinhardt
- * added <sys/types.h> (__APPLE__) and <netinet/in.h> (__linux__)
- * for htons and simmilar.
- *
- * Revision 1.5  2004/03/18 15:36:09  haraldkipp
- * ICCAVR failed to compile
- *
- * Revision 1.4  2004/03/08 11:27:44  haraldkipp
- * Accept incoming header compression.
- *
- * Revision 1.3  2003/08/14 15:15:28  haraldkipp
- * Unsuccessful try to fix ICCAVR bug
- *
- * Revision 1.2  2003/07/13 19:05:22  haraldkipp
- * Debug output corrected.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:36  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.2  2003/05/06 18:17:11  harald
- * Separate PPP debug module added.
- *
- * Revision 1.1  2003/03/31 14:53:28  harald
- * Prepare release 3.1
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>
