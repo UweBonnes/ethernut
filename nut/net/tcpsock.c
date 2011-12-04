@@ -1056,7 +1056,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
      */
     sz = size - sz;
     if (sz >= sock->so_devobsz) {
-        rc = size % sock->so_devobsz;
+        rc = sz % sock->so_devobsz;
         if (SendBuffer(sock, buffer, sz - rc) < 0) {
             free(sock->so_devobuf);
             sock->so_devocnt = 0;
