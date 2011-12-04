@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 by egnite GmbH.
+ * Copyright (C) 2008 by egnite GmbH
  *
  * All rights reserved.
  *
