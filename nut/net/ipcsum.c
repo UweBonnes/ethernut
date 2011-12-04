@@ -153,36 +153,32 @@
 uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
 {
     register uint32_t sum = ics;
-    register uint8_t *cp = (uint8_t *) buf;
+    register uint16_t *cp = (uint16_t *) buf;
 
-    /* Sum up 16 bit values. */
+    /* Sum up 16 bit values. The result is the same for little and big
+       endian machines. See RFC1071 for further details. */
     while (len > 1) {
-#ifdef __BIG_ENDIAN__
-        sum += ((uint16_t)*cp << 8) | *(cp + 1);
-#else
-        sum += ((uint16_t)*(cp + 1) << 8) | *cp;
-#endif
-        cp += 2;
+        sum += *cp++;
         len -= 2;
     }
-
-    /* Add remaining byte on odd lengths. */
+    /* Add remaining byte on odd lengths. A union is used to handle
+       different byte orders. */
     if (len) {
-#ifdef __BIG_ENDIAN__
-        sum += (uint16_t)*cp << 8;
-#else
-        sum += *cp;
-#endif
-    }
+        union {
+            uint8_t last_byte;
+            uint16_t last_word;
+        } last;
 
-    /* Fold upper 16 bits to lower ones. */
-    while (sum >> 16) {
-        sum = (uint16_t)sum + (sum >> 16);
+        last.last_word = 0;
+        last.last_byte = *((uint8_t *) cp);
+        sum += last.last_word;
     }
+    /* Fold upper 16 bits to lower ones. */
+    sum = (uint16_t)sum + (sum >> 16);
+    sum += (sum >> 16);
+
     return (uint16_t) sum;
 }
-
-
 
 /*!
  * \brief Calculates an the final IP checksum over a block of data.
