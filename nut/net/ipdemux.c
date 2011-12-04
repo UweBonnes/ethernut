@@ -71,7 +71,7 @@ static INET_PROTOCOLS *in_prots;
  * \brief Forward Ethernet frame to registered handler.
  *
  * \param dev Identifies the device that received the frame.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the Ethernet frame.
  *
  * \return 0 if the frame will be processed by a handler. Otherwise
@@ -95,9 +95,9 @@ static int NutIpDemux(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Register an additional Ethernet protocol handler.
  *
- * The specified mask will be applied on the type field of incoming 
+ * The specified mask will be applied on the type field of incoming
  * frames before compared with the type that had been specified for
- * the handler. If more than one handler is registered for an incoming 
+ * the handler. If more than one handler is registered for an incoming
  * Ethernet frame, the handler being registered last is called first.
  *
  * Each handler should return 0 if it processed the frame, in which
@@ -148,7 +148,7 @@ int NutRegisterIpHandler(uint8_t prot, int (*hdlr)(NUTDEVICE *, NETBUF *))
             in_prots = inetp;
         }
     }
-    /* Finally set the handler function pointer of the new or existing 
+    /* Finally set the handler function pointer of the new or existing
     ** entry. */
     inetp->inet_input = hdlr;
 

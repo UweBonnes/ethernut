@@ -69,8 +69,8 @@ int (*ether_demux) (NUTDEVICE *, NETBUF *);
  * network part. Then the frame is routed to the proper
  * handler, based on the type field in the Ethernet header.
  *
- * If the frame neither contains an IP nor an ARP type telegram and if 
- * no registered handler exists or accepts the frame, then it is silently 
+ * If the frame neither contains an IP nor an ARP type telegram and if
+ * no registered handler exists or accepts the frame, then it is silently
  * discarded.
  *
  * \note This routine is called by the device driver on
@@ -78,7 +78,7 @@ int (*ether_demux) (NUTDEVICE *, NETBUF *);
  *       not call this function.
  *
  * \param dev Identifies the device that received the frame.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the Ethernet frame.
  */
 void NutEtherInput(NUTDEVICE * dev, NETBUF * nb)

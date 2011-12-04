@@ -72,8 +72,8 @@ void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb)
     IGMP *igmp = (IGMP *) nb->nb_tp.vp;
     IFNET *nif;
     MCASTENTRY *mca;
-    
-    nif = dev->dev_icb;    
+
+    nif = dev->dev_icb;
 
     /*
      * Silently discard packets, which are too small.
@@ -85,12 +85,12 @@ void NutIgmpInput(NUTDEVICE * dev, NETBUF * nb)
 
     switch (igmp->igmp_type) {
     case IGMP_MEMBERSHIP_QUERY:
-        /* Clear the received buffer first. */ 
+        /* Clear the received buffer first. */
         NutNetBufFree(nb);
-        
+
         /* Go through the list and send reports */
         for (mca = nif->if_mcast; mca; mca = mca->mca_next) {
-            /* Do not send for 224.0.0.1 */ 
+            /* Do not send for 224.0.0.1 */
             if (mca->mca_ip != INADDR_ALLHOSTS_GROUP) {
                 NutIgmpJoinGroup(dev, mca->mca_ip);
             }

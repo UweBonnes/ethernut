@@ -145,7 +145,7 @@ void LcpTxConfReq(NUTDEVICE * dev, uint8_t id, uint8_t rejected)
          * rejects. The MAGICNUMBER had been added later
          * to support echo requests, but some servers reject
          * this option. Now we still do not provide full
-         * reject processing but blindly assume, that the 
+         * reject processing but blindly assume, that the
          * MAGICNUMBER is the rejected option.
          */
         if (!rejected) {

@@ -74,33 +74,33 @@
  * Check the TCP socket status and send any segment waiting
  * for transmission.
  *
- * The function will not return until the data has been stored in the 
- * network device hardware for transmission. If the device is not ready 
- * for transmitting a new packet, the calling thread will be suspended 
- * until the device becomes ready again. 
+ * The function will not return until the data has been stored in the
+ * network device hardware for transmission. If the device is not ready
+ * for transmitting a new packet, the calling thread will be suspended
+ * until the device becomes ready again.
  *
- * If the target host is connected through an Ethernet network and if 
- * the hardware address of that host is currently unknown, an ARP 
- * request is sent out and the function will block until a response 
+ * If the target host is connected through an Ethernet network and if
+ * the hardware address of that host is currently unknown, an ARP
+ * request is sent out and the function will block until a response
  * is received or an ARP timeout occurs.
  *
- * Segments containing data or SYN and FIN flags are added to a special 
- * queue for unacknowledged segments and will be retransmitted by the 
- * TCP timer thread, if not acknowledged by the remote within a specific 
+ * Segments containing data or SYN and FIN flags are added to a special
+ * queue for unacknowledged segments and will be retransmitted by the
+ * TCP timer thread, if not acknowledged by the remote within a specific
  * time. The state machine will remove these segments from the queue
  * as soon as they are acknowledged.
  *
  * \note This function is mainly used by the TCP state machine.
- *       Applications typically do not call this function but 
+ *       Applications typically do not call this function but
  *       use NutTcpSend(), which is part of the TCP socket interface.
  *
- * \param sock  Socket descriptor. This pointer must have been retrieved 
+ * \param sock  Socket descriptor. This pointer must have been retrieved
  *              by calling NutTcpCreateSocket().
  * \param data  Pointer to TCP segment contents.
  * \param size  TCP segment length.
  *
- * \return 0 on success, -1 otherwise. Returning 0 does not imply that 
- *         the data has been successfully delivered, because flow control 
+ * \return 0 on success, -1 otherwise. Returning 0 does not imply that
+ *         the data has been successfully delivered, because flow control
  *         and retransmission is still handled in the background.
  */
 int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
@@ -151,7 +151,7 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
     }
 
     /*
-     * Any SYN is sent first. Add options too. We rely on the caller 
+     * Any SYN is sent first. Add options too. We rely on the caller
      * not to send a SYN segment with data, because this may break
      * some old stacks.
      */
@@ -261,10 +261,10 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
         nb_clone = nb;
 
     /*
-     * IP output might fail because of routing, ARP or network device 
+     * IP output might fail because of routing, ARP or network device
      * problems or because the system ran out of memory.
      */
-    if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, nb_clone)) 
+    if (NutIpOutput(IPPROTO_TCP, sock->so_remote_addr, nb_clone))
         return -1;
 
     NutNetBufFree (nb_clone);
@@ -278,13 +278,13 @@ int NutTcpOutput(TCPSOCKET * sock, CONST uint8_t * data, uint16_t size)
  * Send RST in response to an incoming segment, which should
  * be rejected.
  *
- * The function avoids to send out a RST segment in response to 
+ * The function avoids to send out a RST segment in response to
  * an incoming RST segment.
  *
  * \note This function is mainly used by the TCP state machine.
  *       Applications typically do not call this function.
  *
- * \param nb Network buffer structure of the incoming segment. 
+ * \param nb Network buffer structure of the incoming segment.
  *           Will be released within this function.
  *
  * \return 0 on success, -1 otherwise.
@@ -345,7 +345,7 @@ int NutTcpReject(NETBUF * nb)
      */
     th->th_sum = 0;
     csum =
-        NutIpPseudoChkSumPartial(ih->ip_dst, ih->ip_src, IPPROTO_TCP, 
+        NutIpPseudoChkSumPartial(ih->ip_dst, ih->ip_src, IPPROTO_TCP,
                                  htons(nb->nb_tp.sz));
     th->th_sum = NutIpChkSum(csum, th, nb->nb_tp.sz);
 

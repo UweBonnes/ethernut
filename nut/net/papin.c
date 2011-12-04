@@ -91,7 +91,7 @@ void PapRxAuthNak(NUTDEVICE *dev, uint8_t id, NETBUF *nb)
  *
  *
  * \param dev Identifies the device that received the packet.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the PAP packet.
  */
 void NutPapInput(NUTDEVICE * dev, NETBUF * nb)

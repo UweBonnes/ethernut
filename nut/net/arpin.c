@@ -59,7 +59,7 @@
 /*!
  * \brief Handle incoming ARP packets.
  *
- * Packets not destined to us or packets with unsupported 
+ * Packets not destined to us or packets with unsupported
  * address type or item length are silently discarded.
  *
  * \note This routine is called by the Ethernet layer on
@@ -67,7 +67,7 @@
  *       not call this function.
  *
  * \param dev Identifies the device that received the packet.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the ARP packet.
  */
 void NutArpInput(NUTDEVICE * dev, NETBUF * nb)
@@ -105,7 +105,7 @@ void NutArpInput(NUTDEVICE * dev, NETBUF * nb)
     }
 
     /*
-     * TODO: Silently discard packets with our own 
+     * TODO: Silently discard packets with our own
      * source address.
      */
 

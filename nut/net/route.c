@@ -70,8 +70,8 @@ RTENTRY *rteList;           /*!< Linked list of routing entries. */
  * \brief Add a new entry to the IP routing table.
  *
  * Note, that there is currently no support for detecting duplicates.
- * Anyway, newer entries will be found first, because they are inserted 
- * in front of older entries. However, this works only for equal masks, 
+ * Anyway, newer entries will be found first, because they are inserted
+ * in front of older entries. However, this works only for equal masks,
  * i.e. new network routes will never overwrite old host routes.
  *
  * \param ip   Network or host IP address to be routed.
@@ -173,7 +173,7 @@ int NutIpRouteDel(uint32_t ip, uint32_t mask, uint32_t gate, NUTDEVICE * dev)
 }
 
 /*!
- * \brief Return an array of RTENTRY structures which contain all the current route table entries. 
+ * \brief Return an array of RTENTRY structures which contain all the current route table entries.
  *
  * The calling function is responsible for deleting the array.
  *

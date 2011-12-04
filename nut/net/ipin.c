@@ -66,8 +66,8 @@ static NutIpFilterFunc NutIpFilter;
 /*!
  * \brief Set filter function for incoming IP datagrams.
  *
- * The callbackFunc is called by the IP layer on every incoming IP 
- * datagram. Thus it must not block. The implementer returns 0 for 
+ * The callbackFunc is called by the IP layer on every incoming IP
+ * datagram. Thus it must not block. The implementer returns 0 for
  * allow, -1 for deny.
  *
  * It is recommended to set the filer after DHCP has done its thing,
@@ -91,7 +91,7 @@ int (*ip_demux) (NUTDEVICE *, NETBUF *);
 /*!
  * \brief Process incoming IP datagrams.
  *
- * Datagrams addressed to other destinations and datagrams 
+ * Datagrams addressed to other destinations and datagrams
  * whose version number is not 4 are silently discarded.
  *
  * \note This routine is called by the Ethernet layer on
@@ -144,7 +144,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
     dst = ip->ip_dst;
     nif = dev->dev_icb;
 
-    if (dst == INADDR_BROADCAST || 
+    if (dst == INADDR_BROADCAST ||
         (nif->if_local_ip && nif->if_mask != INADDR_BROADCAST && (dst | nif->if_mask) == INADDR_BROADCAST)) {
         bcast = 1;
     }

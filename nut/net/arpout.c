@@ -64,7 +64,7 @@
  * \param ip   Target IP address.
  * \param mac  Target MAC address, null pointer for broadcast.
  *
- * \return Pointer to the allocated network buffer structure 
+ * \return Pointer to the allocated network buffer structure
  *         or 0 on failure.
  */
 NETBUF *NutArpAllocNetBuf(uint16_t type, uint32_t ip, uint8_t * mac)

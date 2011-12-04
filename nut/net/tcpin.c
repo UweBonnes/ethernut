@@ -66,8 +66,8 @@
  * \warning The caller must take care not to pass broadcast
  *          or multicast segments.
  *
- * \note This routine is called by the IP layer on incoming 
- *       TCP  segments. Applications typically do not call 
+ * \note This routine is called by the IP layer on incoming
+ *       TCP  segments. Applications typically do not call
  *       this function.
  *
  */

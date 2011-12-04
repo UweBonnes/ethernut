@@ -86,7 +86,7 @@ int NutNetLoadConfig(CONST char *name)
 
 #else /* CONFNET_HARDCODED */
 
-#ifndef __NUT_EMULATION__	
+#ifndef __NUT_EMULATION__
     if (NutNvMemLoad(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
         return -1;
     }

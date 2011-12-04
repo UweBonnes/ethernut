@@ -59,14 +59,14 @@
 
 /*!
  * \brief Translation table from icmp error code to errno.
- */ 
+ */
 
-static CONST int icmp_code2errno[16] = 
+static CONST int icmp_code2errno[16] =
 {
     ENETUNREACH,
     EHOSTUNREACH,
     ENOPROTOOPT,
-    ECONNREFUSED,	
+    ECONNREFUSED,
     EMSGSIZE,
     EOPNOTSUPP,
     ENETUNREACH,
@@ -110,9 +110,9 @@ static int NutIcmpUnreach(NETBUF * nb, int icmp_code)
         return -1;
 
     ih = nb->nb_ap.vp;
-    
+
     switch (ih->ip_p) {
-        case IPPROTO_TCP: 
+        case IPPROTO_TCP:
         {
             TCPHDR *th;
             TCPSOCKET *sock_tcp;
@@ -129,8 +129,8 @@ static int NutIcmpUnreach(NETBUF * nb, int icmp_code)
         }
         break;
 
-#ifdef NUT_UDP_ICMP_SUPPORT               
-        case IPPROTO_UDP: 
+#ifdef NUT_UDP_ICMP_SUPPORT
+        case IPPROTO_UDP:
         {
             UDPHDR *uh;
             UDPSOCKET *sock_udp;
@@ -140,13 +140,13 @@ static int NutIcmpUnreach(NETBUF * nb, int icmp_code)
 
             if (sock_udp == NULL)
                 return -1;
-            
+
             if (NutUdpSetSocketError(sock_udp, ih->ip_dst, uh->uh_dport, icmp_code2errno[icmp_code]))
                 return -1;
-        }    
+        }
         break;
-#endif            
-            
+#endif
+
         default:
             return -1;
     }
@@ -160,15 +160,15 @@ static int NutIcmpUnreach(NETBUF * nb, int icmp_code)
  *
  * Incoming ICMP packets are processed in the background.
  * NutNet currently handles echo request and destination
- * unreachable packets. Any other packet type is silently 
+ * unreachable packets. Any other packet type is silently
  * discarded.
  *
- * \note This routine is called by the IP layer on incoming 
- *       ICMP datagrams. Applications typically do not call 
+ * \note This routine is called by the IP layer on incoming
+ *       ICMP datagrams. Applications typically do not call
  *       this function.
  *
  * \param dev Identifies the device that received the packet.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the ICMP datagram.
  */
 void NutIcmpInput(NUTDEVICE * dev, NETBUF * nb)

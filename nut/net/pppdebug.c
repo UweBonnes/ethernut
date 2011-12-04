@@ -404,7 +404,7 @@ void NutDumpPpp(FILE * stream, NETBUF * nb)
 /*!
  * \brief Control PPP tracing.
  *
- * \param stream Pointer to a previously opened stream or null to 
+ * \param stream Pointer to a previously opened stream or null to
  *               disable trace output.
  * \param flags  Flags to enable specific traces.
  */

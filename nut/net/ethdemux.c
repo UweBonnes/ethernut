@@ -37,7 +37,7 @@
  * \file net/ethdemux.c
  * \brief Supports Ethernet protocol handlers, registered at runtime.
  *
- * This module is added to the application code only if 
+ * This module is added to the application code only if
  * NutRegisterEthHandler() is called.
  *
  * \verbatim
@@ -76,7 +76,7 @@ static ETH_PROTOCOLS *eth_prot;
  * \brief Forward Ethernet frame to registered handler.
  *
  * \param dev Identifies the device that received the frame.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the Ethernet frame.
  *
  * \return 0 if the frame will be processed by a handler. Otherwise
@@ -100,9 +100,9 @@ static int NutEtherDemux(NUTDEVICE * dev, NETBUF * nb)
 /*!
  * \brief Register an additional Ethernet protocol handler.
  *
- * The specified mask will be applied on the type field of incoming 
+ * The specified mask will be applied on the type field of incoming
  * frames before compared with the type that had been specified for
- * the handler. If more than one handler is registered for an incoming 
+ * the handler. If more than one handler is registered for an incoming
  * Ethernet frame, the handler being registered last is called first.
  *
  * Each handler should return 0 if it processed the frame, in which
@@ -154,7 +154,7 @@ int NutRegisterEthHandler(uint16_t type, uint16_t mask, int (*hdlr)(NUTDEVICE *,
             eth_prot = ep;
         }
     }
-    /* Finally set the handler function pointer of the new or existing 
+    /* Finally set the handler function pointer of the new or existing
     ** entry. */
     ep->ethp_input = hdlr;
 

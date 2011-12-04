@@ -58,15 +58,15 @@
 /*!
  * \brief Send a UDP packet.
  *
- * \param sock  Socket descriptor. This pointer must have been 
+ * \param sock  Socket descriptor. This pointer must have been
  *              retrieved by calling NutUdpCreateSocket().
  * \param daddr IP address of the remote host in network byte order.
  * \param port  Remote port number in host byte order.
- * \param nb    Network buffer structure containing the datagram. 
+ * \param nb    Network buffer structure containing the datagram.
  *              This buffer will be released if the function returns
  *              an error.
  *
- * \note Applications typically do not call this function but 
+ * \note Applications typically do not call this function but
  *       use the UDP socket interface.
  *
  * \return 0 on success, -1 otherwise.

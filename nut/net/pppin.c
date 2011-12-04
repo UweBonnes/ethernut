@@ -68,15 +68,15 @@
 /*!
  * \brief Handle incoming PPP frames.
  *
- * Splits the PPP frame into the data link and the network part. 
- * Then the frame is routed to the proper handler, based on the 
+ * Splits the PPP frame into the data link and the network part.
+ * Then the frame is routed to the proper handler, based on the
  * type field in the header.
  *
- * \note This routine is called by the device driver on incoming 
+ * \note This routine is called by the device driver on incoming
  *       PPP frames. Applications typically do not call this function.
  *
  * \param dev Identifies the device that received the frame.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the PPP frame.
  */
 void NutPppInput(NUTDEVICE * dev, NETBUF * nb)

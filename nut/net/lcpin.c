@@ -78,7 +78,7 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     switch (dcb->dcb_lcp_state) {
     case PPPS_CLOSED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutNetBufFree(nb);
         NutLcpOutput(dev, XCP_TERMACK, id, 0);
@@ -93,7 +93,7 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         return;
 
     case PPPS_OPENED:
-        /* 
+        /*
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
@@ -101,7 +101,7 @@ static INLINE void LcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         break;
 
     case PPPS_STOPPED:
-        /* 
+        /*
          * Negotiation started by our peer.
          */
         LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
@@ -306,7 +306,7 @@ static INLINE void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
     case PPPS_CLOSED:
     case PPPS_STOPPED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutLcpOutput(dev, XCP_TERMACK, id, 0);
         break;
@@ -335,7 +335,7 @@ static INLINE void LcpRxConfAck(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
         break;
 
     case PPPS_OPENED:
-        /* 
+        /*
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
@@ -381,7 +381,7 @@ static INLINE void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uin
     case PPPS_CLOSED:
     case PPPS_STOPPED:
         /*
-         * Go away, we're closed. 
+         * Go away, we're closed.
          */
         NutLcpOutput(dev, XCP_TERMACK, id, 0);
         break;
@@ -399,7 +399,7 @@ static INLINE void LcpRxConfNakRej(NUTDEVICE * dev, uint8_t id, NETBUF * nb, uin
         break;
 
     case PPPS_OPENED:
-        /* 
+        /*
          * Go down and restart negotiation.
          */
         IpcpLowerDown(dev);
@@ -525,7 +525,7 @@ static INLINE void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
 /*!
  * \brief Handle incoming LCP packets.
  *
- * Packets not destined to us or packets with unsupported 
+ * Packets not destined to us or packets with unsupported
  * address type or item length are silently discarded.
  *
  * \note This routine is called by the Ethernet layer on
@@ -533,7 +533,7 @@ static INLINE void LcpRxEchoReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
  *       not call this function.
  *
  * \param dev Identifies the device that received the packet.
- * \param nb  Pointer to a network buffer structure containing 
+ * \param nb  Pointer to a network buffer structure containing
  *            the ARP packet.
  */
 void NutLcpInput(NUTDEVICE * dev, NETBUF * nb)

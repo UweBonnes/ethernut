@@ -60,12 +60,12 @@ static char hexdigit[] = "0123456789ABCDEF";
 /*!
  * \brief Convert an ASCII string to a binary Ethernet address.
  *
- * \note This function returns a pointer to internal static storage space 
+ * \note This function returns a pointer to internal static storage space
  *       that will be overwritten by subsequent calls.
  *
  * \param str String to convert.
  *
- * \return Pointer to a static string that contains the converted 
+ * \return Pointer to a static string that contains the converted
  *         binary address.
  */
 uint8_t *ether_aton(CONST char *str)
@@ -99,12 +99,12 @@ uint8_t *ether_aton(CONST char *str)
 /*!
  * \brief Convert a binary Ethernet address to an ASCII string.
  *
- * \note This function returns a pointer to internal static storage space 
+ * \note This function returns a pointer to internal static storage space
  *       that will be overwritten by subsequent calls.
  *
  * \param mac Address to convert.
  *
- * \return Pointer to a static string that contains the converted 
+ * \return Pointer to a static string that contains the converted
  *         ASCII string.
  */
 char *ether_ntoa(CONST uint8_t *mac)

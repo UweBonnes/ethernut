@@ -112,7 +112,7 @@ UDPSOCKET *NutUdpCreateSocket(uint16_t port)
 /*!
  * \brief Send a UDP datagram.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutUdpCreateSocket().
  * \param addr IP address of the remote host in network byte order.
  * \param port Remote port number in host byte order.
@@ -128,11 +128,11 @@ int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int
     int rc;
     NETBUF *nb;
 
-#ifdef NUT_UDP_ICMP_SUPPORT    
+#ifdef NUT_UDP_ICMP_SUPPORT
     if (sock->so_last_error)
         return -1;
 #endif
-    
+
     if ((nb = NutNetBufAlloc(0, NBAF_APPLICATION, len)) == 0) {
         sock->so_last_error = ENOMEM;
         return -1;
@@ -149,7 +149,7 @@ int NutUdpSendTo(UDPSOCKET * sock, uint32_t addr, uint16_t port, void *data, int
 /*!
  * \brief Receive a UDP datagram.
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutUdpCreateSocket().
  * \param addr    IP address of the remote host in network byte order.
  * \param port    Remote port number in host byte order.
@@ -170,21 +170,21 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *
     UDPHDR *uh;
     NETBUF *nb;
 
-#ifdef NUT_UDP_ICMP_SUPPORT    
+#ifdef NUT_UDP_ICMP_SUPPORT
     /* The ICMP handler might have set an error condition. */
     if (sock->so_last_error)
         return -1;
 #endif
-    
+
     if (sock->so_rx_nb == 0)
         NutEventWait(&sock->so_rx_rdy, timeout);
 
-#ifdef NUT_UDP_ICMP_SUPPORT    
+#ifdef NUT_UDP_ICMP_SUPPORT
     /* An ICMP message might have posted the rx event. So check again */
     if (sock->so_last_error)
         return -1;
 #endif
-    
+
     if ((nb = sock->so_rx_nb) == 0)
         return 0;
 
@@ -212,10 +212,10 @@ int NutUdpReceiveFrom(UDPSOCKET * sock, uint32_t * addr, uint16_t * port, void *
  * \brief Close UDP socket.
  *
  * The memory occupied by the socket is immediately released
- * after calling this function. The application  must not use 
+ * after calling this function. The application  must not use
  * the socket after this call.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutUdpCreateSocket().
  *
  * \return 0 on success, -1 otherwise.
@@ -234,7 +234,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
     while (sp) {
         if (sp == sock) {
             *spp = sock->so_next;
-            /* packets may have arrived that the application 
+            /* packets may have arrived that the application
                did not read before closing the socket. */
             while ((nb = sock->so_rx_nb) != 0) {
                 sock->so_rx_nb = nb->nb_next;
@@ -251,7 +251,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
 }
 
 /*!
- * \brief Return specific code of the last error and the IP address / port of 
+ * \brief Return specific code of the last error and the IP address / port of
  *        the host to which the communication failed
  *
  * Possible error codes are:
@@ -264,7 +264,7 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
  * - EHOSTDOWN: Host is down
  * - EHOSTUNREACH: No route to host
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutUdpCreateSocket().
  * \param addr IP address of the remote host in network byte order.
  * \param port Remote port number in host byte order.
@@ -276,13 +276,13 @@ int NutUdpDestroySocket(UDPSOCKET * sock)
 int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port)
 {
     int rc;
-    
+
     if (sock == 0) {
         addr = 0;
         port = 0;
         return ENOTSOCK;
     }
-    
+
     if (sock->so_last_error) {
         rc = sock->so_last_error;
         *port = ntohs(sock->so_remote_port);
@@ -292,7 +292,7 @@ int NutUdpError(UDPSOCKET * sock, uint32_t * addr, uint16_t * port)
         sock->so_remote_port = 0;
         sock->so_remote_addr = 0;
         return rc;
-    }     
+    }
     return 0;
 }
 
@@ -328,12 +328,12 @@ UDPSOCKET *NutUdpFindSocket(uint16_t port)
  *
  * - #SO_RCVBUF   Socket input buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutUdpCreateSocket().
  * \param optname Option to set.
  * \param optval  Pointer to the value.
  * \param optlen  Length of the value.
- * \return 0 on success, -1 otherwise. 
+ * \return 0 on success, -1 otherwise.
  */
 int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optlen)
 {
@@ -364,13 +364,13 @@ int NutUdpSetSockOpt(UDPSOCKET * sock, int optname, CONST void *optval, int optl
  *
  * - #SO_RCVBUF   Socket input buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutUdpCreateSocket().
  * \param optname Option to get.
  * \param optval  Points to a buffer receiving the value.
  * \param optlen  Length of the value buffer.
  *
- * \return 0 on success, -1 otherwise. 
+ * \return 0 on success, -1 otherwise.
  */
 int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
 {
@@ -397,26 +397,26 @@ int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
 /*!
  * \brief Set a UDP socket error.
  *
- * This function should only be used together (and from) the ICMP input routine 
- *    
+ * This function should only be used together (and from) the ICMP input routine
+ *
  * The following values can be set:
  *
  * - #EHOSTUNREACH   Host is unreachable
  *
- * \param sock        Socket descriptor. This pointer must have been 
+ * \param sock        Socket descriptor. This pointer must have been
  *                    retrieved by calling NutUdpCreateSocket().
  * \param remote_addr Remote IP address in network byte order
  * \param remote_port Remote port in network byte order
  * \param error       Error number.
  *
- * \return 0 on success, -1 otherwise. 
+ * \return 0 on success, -1 otherwise.
  */
 
 int NutUdpSetSocketError(UDPSOCKET * sock, uint32_t remote_addr, uint16_t remote_port, uint16_t error)
 {
     if (sock == 0)
         return -1;
-    
+
     sock->so_remote_addr = remote_addr;
     sock->so_remote_port = remote_port;
     sock->so_last_error  = error;

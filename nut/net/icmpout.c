@@ -98,7 +98,7 @@ int NutIcmpOutput(uint8_t type, uint32_t dest, NETBUF * nb)
 /*!
  * \brief Send an ICMP message to a given destination.
  *
- * \param type Type of the ICMP message. See NutIcmpOutput() for 
+ * \param type Type of the ICMP message. See NutIcmpOutput() for
  *             a list of valid types.
  * \param code Type subcode.
  * \param spec Type specific data item.
@@ -127,14 +127,14 @@ int NutIcmpReply(uint8_t type, uint8_t code, uint32_t spec, uint32_t dest, NETBU
 /*!
  * \brief Send an ICMP message as a response to a given destination.
  *
- * \param type Type of the ICMP message. See NutIcmpOutput() for 
+ * \param type Type of the ICMP message. See NutIcmpOutput() for
  *             a list of valid types.
  * \param code Type subcode.
  * \param spec Type specific data item.
  * \param nb   Network buffer structure containing the previously received
- *             network packet. According to RFC792 the complete IP header 
+ *             network packet. According to RFC792 the complete IP header
  *             and the first 8 bytes of the transport netbuf is used as the
- *             application data for the response. If this function returns 
+ *             application data for the response. If this function returns
  *             with an error, the buffer is freed. The destination address is
  *             taken from the IP header.
  *

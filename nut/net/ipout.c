@@ -63,11 +63,11 @@
  *
  * Route an IP datagram to the proper interface.
  *
- * The function will not return until the data has been stored 
- * in the network device hardware for transmission. If the 
- * device is not ready for transmitting a new packet, the 
- * calling thread will be suspended until the device becomes 
- * ready again. If the hardware address of the target host needs 
+ * The function will not return until the data has been stored
+ * in the network device hardware for transmission. If the
+ * device is not ready for transmitting a new packet, the
+ * calling thread will be suspended until the device becomes
+ * ready again. If the hardware address of the target host needs
  * to be resolved the function will be suspended too.
  *
  * \param proto Protocol type.
@@ -75,7 +75,7 @@
  *              the proper network interface by checking the routing
  *              table. It will also perform any necessary hardware
  *              address resolution.
- * \param nb    Network buffer structure containing the datagram. 
+ * \param nb    Network buffer structure containing the datagram.
  *              This buffer will be released if the function returns
  *              an error.
  *
@@ -149,7 +149,7 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
         for (dev = nutDeviceList; dev; dev = dev->dev_next) {
             if (dev->dev_type == IFTYP_NET) {
                 /*
-                 * Set remaining IP header items using a NETBUF clone and calculate 
+                 * Set remaining IP header items using a NETBUF clone and calculate
                  * the checksum.
                  */
                 int rc = 0;
@@ -176,7 +176,7 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
     }
 
     /*
-     * Get destination's route. This will also return the proper 
+     * Get destination's route. This will also return the proper
      * interface.
      */
     if ((dev = NutIpRouteQuery(dest, &gate)) == 0) {
@@ -200,16 +200,16 @@ int NutIpOutput(uint8_t proto, uint32_t dest, NETBUF * nb)
      * destination.
      */
     if (nif->if_type == IFT_ETHER) {
-        /* 
+        /*
          * Detect directed broadcasts for the local network. In this
          * case don't send ARP queries, but send directly to MAC broadcast
-         * address. 
+         * address.
          */
         if ((gate == 0) && ((dest | nif->if_mask) == 0xffffffff)) {
             memset(ha, 0xff, sizeof(ha));
         } else if (NutArpCacheQuery(dev, gate ? gate : dest, ha)) {
-            /* Note, that a failed ARP request is not considered a 
-               transmission error. It might be caused by a simple 
+            /* Note, that a failed ARP request is not considered a
+               transmission error. It might be caused by a simple
                packet loss. */
             return 0;
         }

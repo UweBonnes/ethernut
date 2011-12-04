@@ -88,17 +88,17 @@ uint32_t inet_addr(CONST char * str)
 }
 
 /*!
- * \brief Convert numeric IP address into decimal dotted 
+ * \brief Convert numeric IP address into decimal dotted
  *        ASCII representation.
  *
  * \note This function is not thread safe. Each subsequent
  *       call will destroy the previous result. Applications
- *       should locally store the result before calling the 
+ *       should locally store the result before calling the
  *       function again or allowing other threads to call it.
  *
  * \param addr IP address in network byte order.
  *
- * \return Pointer to a static buffer containing the 
+ * \return Pointer to a static buffer containing the
  *         ASCII representation.
  */
 char *inet_ntoa(uint32_t addr)
@@ -130,17 +130,17 @@ char *inet_ntoa(uint32_t addr)
 }
 
 /*!
- * \brief Convert numeric MAC address array into double dotted 
+ * \brief Convert numeric MAC address array into double dotted
  *        ASCII representation.
  *
  * \note This function is not thread safe. Each subsequent
  *       call will destroy the previous result. Applications
- *       should locally store the result before calling the 
+ *       should locally store the result before calling the
  *       function again or allowing other threads to call it.
  *
  * \param mac Pointer to MAC address array.
  *
- * \return Pointer to a static buffer containing the 
+ * \return Pointer to a static buffer containing the
  *         ASCII representation.
  */
 char *inet_mtoa(uint8_t *mac)
@@ -150,7 +150,7 @@ char *inet_mtoa(uint8_t *mac)
     int i, p;
 
     p=0;
-    for(i=0;i<6;i++) 
+    for(i=0;i<6;i++)
     {
         str[p++]=hex[mac[i]>>4];
         str[p++]=hex[mac[i]&0xf];

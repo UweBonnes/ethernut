@@ -84,7 +84,7 @@
  *
  * \return 0 on success, -1 otherwise.
  *
- * \note Typical applications do not use this function, but call 
+ * \note Typical applications do not use this function, but call
  *       NutDhcpIfConfig() or NutNetIfConfig().
  */
 int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t gateway)
@@ -138,30 +138,30 @@ int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t 
 /*!
  * \brief Configure a network interface.
  *
- * Devices must have been registered by NutRegisterDevice() before 
+ * Devices must have been registered by NutRegisterDevice() before
  * calling this function.
  *
- * For Ethernet devices applications may alternatively call 
- * NutDhcpIfConfig(), which allows automatic configuration by DHCP or 
+ * For Ethernet devices applications may alternatively call
+ * NutDhcpIfConfig(), which allows automatic configuration by DHCP or
  * the so called ARP method.
  *
  * \param name    Name of the device to configure.
- * \param params  Pointer to interface specific parameters. For Ethernet 
- *                interfaces this parameter may be a pointer to a buffer 
+ * \param params  Pointer to interface specific parameters. For Ethernet
+ *                interfaces this parameter may be a pointer to a buffer
  *                containing the 6 byte long MAC address. This will
  *                override the MAC address stored in the non-volatile
  *                configuration memory. If this memory is uninitialized
- *                or not available, the MAC address must be specified. 
+ *                or not available, the MAC address must be specified.
  *                For PPP interfaces this parameter is ignored and should
  *                be set to zero.
- * \param ip_addr Specified IP address in network byte order. This must 
- *                be a unique address within the Internet. If you do not 
- *                directly communicate with other Internet hosts, you can 
+ * \param ip_addr Specified IP address in network byte order. This must
+ *                be a unique address within the Internet. If you do not
+ *                directly communicate with other Internet hosts, you can
  *                use a locally assigned address. With PPP interfaces this
  *                may be set to 0.0.0.0, in which case the remote peer
  *                will be queried for an IP address.
  * \param ip_mask Specified IP network mask in network byte order.
- *                Typical Ethernet networks use 255.255.255.0, which 
+ *                Typical Ethernet networks use 255.255.255.0, which
  *                allows up to 254 hosts. For PPP interfaces 255.255.255.255
  *                is the default.
  *
@@ -178,27 +178,27 @@ int NutNetIfConfig(CONST char *name, void *params, uint32_t ip_addr, uint32_t ip
 /*!
  * \brief Configure a network interface including the default gateway.
  *
- * Devices must have been registered by NutRegisterDevice() before 
+ * Devices must have been registered by NutRegisterDevice() before
  * calling this function.
  *
- * For Ethernet devices applications may alternatively call 
- * NutDhcpIfConfig(), which allows automatic configuration by DHCP or 
+ * For Ethernet devices applications may alternatively call
+ * NutDhcpIfConfig(), which allows automatic configuration by DHCP or
  * the so called ARP method.
  *
  * \param name    Name of the device to configure.
  * \param params  Pointer to interface specific parameters.
- * \param ip_addr Specified IP address in network byte order. This must 
- *                be a unique address within the Internet. If you do not 
- *                directly communicate with other Internet hosts, you can 
+ * \param ip_addr Specified IP address in network byte order. This must
+ *                be a unique address within the Internet. If you do not
+ *                directly communicate with other Internet hosts, you can
  *                use a locally assigned address. With PPP interfaces this
  *                may be set to 0.0.0.0, in which case the remote peer
  *                will be queried for an IP address.
  * \param ip_mask Specified IP network mask in network byte order.
- *                Typical Ethernet networks use 255.255.255.0, which 
+ *                Typical Ethernet networks use 255.255.255.0, which
  *                allows up to 254 hosts. For PPP interfaces 255.255.255.255
  *                is the default.
  * \param gateway Specified IP address of gateway or next router in LAN.
- *                
+ *
  * \return 0 on success, -1 otherwise.
  *
  * \note I do not like this function, because setting a gateway should
@@ -245,7 +245,7 @@ int NutNetIfConfig2(CONST char *name, void *params, uint32_t ip_addr, uint32_t i
 
         /*
          * Set the interface's IP address, make sure that the state
-         * change queue is empty and switch hardware driver into 
+         * change queue is empty and switch hardware driver into
          * network mode.
          */
         dcb->dcb_local_ip = ip_addr;
@@ -287,7 +287,7 @@ int NutNetIfAddMcastAddr(CONST char *name, uint32_t ip_addr)
             rc = dev->dev_ioctl(dev, SIOCADDMULTI, &ip_addr);
             if ((rc == 0) && (ip_addr != INADDR_ALLHOSTS_GROUP)) {
                 NutIgmpJoinGroup(dev, ip_addr);
-            }    
+            }
         }
     }
 
@@ -317,7 +317,7 @@ int NutNetIfDelMcastAddr(CONST char *name, uint32_t ip_addr)
             rc = dev->dev_ioctl(dev, SIOCDELMULTI, &ip_addr);
             if ((rc == 0) && (ip_addr != INADDR_ALLHOSTS_GROUP)) {
                 NutIgmpLeaveGroup(dev, ip_addr);
-            }    
+            }
         }
     }
 

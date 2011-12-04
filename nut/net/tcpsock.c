@@ -107,17 +107,17 @@ void NutTcpDiscardBuffers(TCPSOCKET * sock)
  *
  * Remove socket from the socket list and release occupied memory.
  *
- * Applications must not call this function. It is automatically called 
+ * Applications must not call this function. It is automatically called
  * by a timer after the socket has been closed by NutTcpCloseSocket().
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  */
 void NutTcpDestroySocket(TCPSOCKET * sock)
 {
     TCPSOCKET *sp;
     TCPSOCKET *volatile *spp;
-    
+
     //@@@printf ("[%04X] Calling destroy.\n", (u_short) sock);
 
     /*
@@ -152,7 +152,7 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
 /*!
  * \brief Find a matching socket.
  *
- * Loop through all sockets and find a matching connection (preferred) 
+ * Loop through all sockets and find a matching connection (preferred)
  * or a listening socket.
  *
  * Applications typically do not call this function.
@@ -204,10 +204,10 @@ TCPSOCKET *NutTcpFindSocket(uint16_t lport, uint16_t rport, uint32_t raddr)
 /*!
  * \brief Create a TCP socket.
  *
- * Allocates a TCPSOCKET structure from heap memory, initializes 
+ * Allocates a TCPSOCKET structure from heap memory, initializes
  * it and returns a pointer to that structure.
  *
- * The very first call will also start the TCP state machine, 
+ * The very first call will also start the TCP state machine,
  * which is running in a separate thread.
  *
  * \return Socket descriptor of the newly created TCP socket or
@@ -265,7 +265,7 @@ TCPSOCKET *NutTcpCreateSocket(void)
  * - #SO_RCVTIMEO Socket receive timeout (#uint32_t).
  * - #SO_SNDBUF   Socket output buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutTcpCreateSocket().
  * \param optname Option to set.
  * \param optval  Pointer to the value.
@@ -284,7 +284,7 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
     case TCP_MAXSEG:
         if (optval == 0 || optlen != sizeof(uint16_t))
             sock->so_last_error = EINVAL;
-        else if (sock->so_state != TCPS_CLOSED) 
+        else if (sock->so_state != TCPS_CLOSED)
         	sock->so_last_error = EISCONN;
         else {
             sock->so_mss = *((uint16_t *) optval);
@@ -347,7 +347,7 @@ int NutTcpSetSockOpt(TCPSOCKET * sock, int optname, CONST void *optval, int optl
  * - #SO_RCVTIMEO Socket receive timeout (#uint32_t).
  * - #SO_SNDBUF   Socket output buffer size (#uint16_t).
  *
- * \param sock    Socket descriptor. This pointer must have been 
+ * \param sock    Socket descriptor. This pointer must have been
  *                retrieved by calling NutTcpCreateSocket().
  * \param optname Option to get.
  * \param optval  Points to a buffer receiving the value.
@@ -420,12 +420,12 @@ int NutTcpGetSockOpt(TCPSOCKET * sock, int optname, void *optval, int optlen)
  *
  * This function tries to establish a connection to the specified
  * remote port of the specified remote server. The calling thread
- * will be suspended until a connection is successfully established 
+ * will be suspended until a connection is successfully established
  * or an error occurs.
  *
  * This function is typically used by TCP client applications.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param addr IP address of the host to connect (network byte order).
  * \param port Port number to connect (host byte order).
@@ -502,7 +502,7 @@ int NutTcpConnect(TCPSOCKET * sock, uint32_t addr, uint16_t port)
  *
  * This function is typically used by TCP server applications.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param port Port number to listen to (host byte order).
  *
@@ -519,16 +519,16 @@ int NutTcpAccept(TCPSOCKET * sock, uint16_t port)
 /*!
  * \brief Send data on a connected TCP socket.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket(). In
  *             addition a connection must have been established
  *             by calling NutTcpConnect or NutTcpAccept.
  * \param data Pointer to a buffer containing the data to send.
  * \param len  Number of bytes to be sent.
  *
- * \return If successful, the number of bytes added to the socket transmit 
- *         buffer. This is limited to the maximum segment size of the 
- *         connection and thus may be less than the specified number of 
+ * \return If successful, the number of bytes added to the socket transmit
+ *         buffer. This is limited to the maximum segment size of the
+ *         connection and thus may be less than the specified number of
  *         bytes to send. The return value -1 indicates a fatal error.
  *         On time out, a value of 0 is returned.
  */
@@ -540,7 +540,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
      * Check parameters.
      */
     NutThreadYield();
-    
+
     if (sock == 0)
         return -1;
     if (data == 0 || len == 0)
@@ -563,7 +563,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
 
         /*
          * Limit the size of unacknowledged data to four full segments.
-         * Also wait for peer's window open wide enough to take all our 
+         * Also wait for peer's window open wide enough to take all our
          * data. This also avoids silly window syndrome on our side.
          */
         unacked = sock->so_tx_nxt - sock->so_tx_una;
@@ -575,8 +575,8 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
         }
     }
     /*
-     * The segment will be automatically retransmitted if not 
-     * acknowledged in time. If this returns an error, it's a 
+     * The segment will be automatically retransmitted if not
+     * acknowledged in time. If this returns an error, it's a
      * fatal one.
      */
     sock->so_tx_flags |= SO_ACK;
@@ -588,7 +588,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
 /*!
  * \brief Receive data on a connected TCP socket.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket(). In
  *             addition a connection must have been established
  *             by calling NutTcpConnect or NutTcpAccept.
@@ -598,7 +598,7 @@ int NutTcpSend(TCPSOCKET * sock, CONST void *data, int len)
  * \return If successful, the number of received data bytes
  *         is returned. This may be less than the specified
  *         size of the buffer. The return value 0 indicates
- *         a timeout, while -1 is returned in case of an error 
+ *         a timeout, while -1 is returned in case of an error
  *         or broken connection. Call NutTcpError() to determine
  *         the specific error code.
  */
@@ -687,10 +687,10 @@ int NutTcpReceive(TCPSOCKET * sock, void *data, int size)
  * \brief Close TCP socket.
  *
  * Note, that the socket may not be immediately destroyed
- * after calling this function. However, the application 
+ * after calling this function. However, the application
  * must not use the socket after this call.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
  * \return 0 on success, -1 otherwise.
@@ -741,7 +741,7 @@ int NutTcpCloseSocket(TCPSOCKET * sock)
  * - EHOSTUNREACH: No route to host
  * - ENOTEMPTY: Directory not empty
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  *
  * \note Applications must not call this function to retrieve the
@@ -758,17 +758,17 @@ int NutTcpError(TCPSOCKET * sock)
     return sock->so_last_error;
 }
 
-/*! 
+/*!
  * \brief Read from virtual socket device.
  *
  * TCP sockets can be used like other Nut/OS devices. This routine
  * is part of the virtual socket device driver.
  *
- * This function is called by the low level input routines of the 
- * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read 
+ * This function is called by the low level input routines of the
+ * \ref xrCrtLowio "C runtime library", using the _NUTDEVICE::dev_read
  * entry.
  *
- * \param sock   Socket descriptor. This pointer must have been 
+ * \param sock   Socket descriptor. This pointer must have been
  *               retrieved by calling NutTcpCreateSocket().
  * \param buffer Pointer to the buffer that receives the data.
  * \param size   Maximum number of bytes to read.
@@ -795,25 +795,25 @@ static int SendBuffer(TCPSOCKET * sock, CONST void *buffer, int size)
     return rc;
 }
 
-/*! 
+/*!
  * \brief Write to a socket.
  *
  * TCP sockets can be used like other Nut/OS devices. This routine
  * is part of the virtual socket device driver.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write entry.
  *
  * In contrast to NutTcpSend() this routine provides some buffering.
  *
- * \param sock Socket descriptor. This pointer must have been 
+ * \param sock Socket descriptor. This pointer must have been
  *             retrieved by calling NutTcpCreateSocket().
  * \param buf  Pointer to the data to be written.
- * \param size Number of bytes to write. If zero, then the output buffer 
+ * \param size Number of bytes to write. If zero, then the output buffer
  *             will be flushed.
  *
- * \return The number of bytes written. A return value of -1 indicates 
+ * \return The number of bytes written. A return value of -1 indicates
  *         an error.
  *
  */
@@ -920,28 +920,28 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     return size;
 }
 
-/*! 
+/*!
  * \brief Write to device.
  *
- * This function is implemented for CPUs with Harvard Architecture 
+ * This function is implemented for CPUs with Harvard Architecture
  * only.
  *
  * TCP sockets can be used like other Nut/OS devices. This routine
- * is part of the virtual socket device driver and similar to 
- * NutTcpDeviceWrite() except that the data is located in program 
+ * is part of the virtual socket device driver and similar to
+ * NutTcpDeviceWrite() except that the data is located in program
  * memory.
  *
- * This function is called by the low level output routines of the 
- * \ref xrCrtLowio "C runtime library", using the 
+ * This function is called by the low level output routines of the
+ * \ref xrCrtLowio "C runtime library", using the
  * \ref _NUTDEVICE::dev_write_P entry.
  *
- * \param sock   Socket descriptor. This pointer must have been 
+ * \param sock   Socket descriptor. This pointer must have been
  *               retrieved by calling NutTcpCreateSocket().
  * \param buffer Pointer to the data in program space to be written.
  * \param size   Number of bytes to write.
  *
  * \warning Inefficient implementation. No buffering has been
- *          implemented. Thus, each call will result in a separate 
+ *          implemented. Thus, each call will result in a separate
  *          TCP segment.
  */
 #ifdef __HARVARD_ARCH__
@@ -964,13 +964,13 @@ int NutTcpDeviceWrite_P(TCPSOCKET * sock, PGM_P buffer, int size)
 }
 #endif
 
-/*! 
+/*!
  * \brief Driver control function.
  *
- * Used by the virtual device driver to modify or query device specific 
+ * Used by the virtual device driver to modify or query device specific
  * settings.
  *
- * \param sock  Socket descriptor. This pointer must have been 
+ * \param sock  Socket descriptor. This pointer must have been
  *              retrieved by calling NutTcpCreateSocket().
  * \param cmd   Requested control function. May be set to one of the
  *              following constants:
@@ -987,7 +987,7 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
 {
     uint32_t *lvp = (uint32_t *) param;
     int rc = 0;
-    
+
     switch (cmd) {
     case IOCTL_GETFILESIZE:
     case IOCTL_GETINBUFCOUNT:
@@ -999,8 +999,8 @@ int NutTcpDeviceIOCtl(TCPSOCKET * sock, int cmd, void *param)
     default:
         rc = -1;
     }
-    
-    return rc;    
+
+    return rc;
 }
 
 /*@}*/

@@ -172,7 +172,7 @@ THREAD(NutPppSm, arg)
  */
 int NutPppInitStateMachine(NUTDEVICE * dev)
 {
-    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev, 
+    if (pppThread == 0 && (pppThread = NutThreadCreate("pppsm", NutPppSm, dev,
         (NUT_THREAD_PPPSMSTACK * NUT_THREAD_STACK_MULT) + NUT_THREAD_STACK_ADD)) == 0) {
         return -1;
     }
@@ -210,7 +210,7 @@ void LcpOpen(NUTDEVICE * dev)
 
     case PPPS_CLOSED:
         /*
-         * The LCP layer is down and the lower layer is up. Start 
+         * The LCP layer is down and the lower layer is up. Start
          * link negotiation by sending out a request.
          */
         LcpTxConfReq(dev, ++dcb->dcb_reqid, 0);
@@ -246,7 +246,7 @@ void LcpClose(NUTDEVICE * dev)
     switch (dcb->dcb_lcp_state) {
     case PPPS_STARTING:
         /*
-         * The LCP layer has been enabled, but the lower layer is still 
+         * The LCP layer has been enabled, but the lower layer is still
          * down. Disable the link layer.
          */
         dcb->dcb_lcp_state = PPPS_INITIAL;
@@ -414,7 +414,7 @@ void IpcpClose(NUTDEVICE * dev)
     switch (dcb->dcb_ipcp_state) {
     case PPPS_STARTING:
         /*
-         * The IPCP layer has been enabled, but the lower layer is still 
+         * The IPCP layer has been enabled, but the lower layer is still
          * down. Disable the network layer.
          */
         dcb->dcb_ipcp_state = PPPS_INITIAL;
