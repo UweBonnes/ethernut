@@ -76,74 +76,13 @@
  * SOFTWARE.
  */
 
-/*
- * $Log$
- * Revision 1.11  2008/08/28 11:07:45  haraldkipp
- * Make use of ioctl if the driver supports this.
+/*!
+ * \file net/ifconfig.c
+ * \brief Network interface configuration functions.
  *
- * Revision 1.10  2008/08/11 07:00:29  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.9  2008/07/14 13:10:31  haraldkipp
- * Added macros to determine Ethernet address types.
- *
- * Revision 1.8  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.7  2004/03/18 11:08:32  haraldkipp
- * Comments updated
- *
- * Revision 1.6  2004/03/18 10:49:59  haraldkipp
- * Comments updated
- *
- * Revision 1.5  2004/03/16 16:48:45  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.4  2004/03/08 11:24:19  haraldkipp
- * Ugly PPP activation hack replaced by HDLC ioctl.
- *
- * Revision 1.3  2004/02/25 16:38:20  haraldkipp
- * Do not use zero MAC
- *
- * Revision 1.2  2004/02/02 18:54:22  drsung
- * gateway ip address was not set, if static network configuration from EEPROM is used.
- *
- * Revision 1.1.1.1  2003/05/09 14:41:29  haraldkipp
- * Initial using 3.2.1
- *
- * Revision 1.24  2003/05/06 18:02:14  harald
- * PPP hack for simple UART support
- *
- * Revision 1.23  2003/04/21 17:02:22  harald
- * Added comments.
- * New PPP state machine implemented.
- * Auto config moved to DHCP.
- *
- * Revision 1.22  2003/03/31 12:03:15  harald
- * Adapt new PPP structure
- *
- * Revision 1.21  2003/02/04 18:14:57  harald
- * Version 3 released
- *
- * Revision 1.20  2003/01/14 16:43:40  harald
- * *** empty log message ***
- *
- * Revision 1.19  2002/11/02 15:18:27  harald
- * Library dependencies removed
- *
- * Revision 1.18  2002/10/31 16:08:09  harald
- * *** empty log message ***
- *
- * Revision 1.17  2002/10/29 15:29:17  harald
- * PPP support
- *
- * Revision 1.16  2002/07/03 16:41:32  harald
- * Bugfix: Failed to store gateway
- *
- * Revision 1.15  2002/06/26 17:29:36  harald
- * First pre-release with 2.4 stack
- *
+ * \verbatim
+ * $Id$
+ * \endverbatim
  */
 
 #include <cfg/os.h>

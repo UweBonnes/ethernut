@@ -30,6 +30,15 @@
  * For additional information see http://www.ethernut.de/
  */
 
+/*!
+ * \file net/ether_addr.c
+ * \brief MAC address conversion functions.
+ *
+ * \verbatim
+ * $Id$
+ * \endverbatim
+ */
+
 #include <string.h>
 #include <netinet/if_ether.h>
 
