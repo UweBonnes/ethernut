@@ -397,17 +397,17 @@ int NutUdpGetSockOpt(UDPSOCKET * sock, int optname, void *optval, int optlen)
 /*!
  * \brief Set a UDP socket error.
  *
- * This function should only be used together (and from) the icmp input routine 
+ * This function should only be used together (and from) the ICMP input routine 
  *    
  * The following values can be set:
  *
  * - #EHOSTUNREACH   Host is unreachable
  *
- * \param sock    Socket descriptor. This pointer must have been 
- *                retrieved by calling NutUdpCreateSocket().
- * \param remote_addr remote ip address in network byte order
- * \param remote_port remote port in network byte order
- * \param error   Error number.
+ * \param sock        Socket descriptor. This pointer must have been 
+ *                    retrieved by calling NutUdpCreateSocket().
+ * \param remote_addr Remote IP address in network byte order
+ * \param remote_port Remote port in network byte order
+ * \param error       Error number.
  *
  * \return 0 on success, -1 otherwise. 
  */

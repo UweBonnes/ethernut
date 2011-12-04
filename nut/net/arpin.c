@@ -120,7 +120,7 @@ void NutArpInput(NUTDEVICE * dev, NETBUF * nb)
      */
 
     /*
-     * Add the sender to our arp cache. Note, that we don't do
+     * Add the sender to our ARP cache. Note, that we don't do
      * this with replies only, but also with requests on our
      * address. The assumption is that if someone is requesting
      * our address, they are probably intending to talk to us,

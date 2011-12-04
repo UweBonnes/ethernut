@@ -132,7 +132,7 @@ void IpcpRxConfReq(NUTDEVICE * dev, uint8_t id, NETBUF * nb)
                 xcpr->xcpo_type = xcpo->xcpo_type;
                 xcpr->xcpo_len = len;
                 for (i = 0; i < len - 2; i++)
-                    /* bug fix by Michel Hendriks. Thanks! */
+                    /* Bug fix by Michel Hendriks. Thanks! */
                     xcpr->xcpo_.uc[i] = xcpo->xcpo_.uc[i];
             }
             xcpr = (XCPOPT *) ((char *) xcpr + len);

@@ -74,12 +74,12 @@ int (*ether_demux) (NUTDEVICE *, NETBUF *);
  * discarded.
  *
  * \note This routine is called by the device driver on
- *       incoming ethernet packets. Applications typically do
+ *       incoming Ethernet packets. Applications typically do
  *       not call this function.
  *
  * \param dev Identifies the device that received the frame.
  * \param nb  Pointer to a network buffer structure containing 
- *            the ethernet frame.
+ *            the Ethernet frame.
  */
 void NutEtherInput(NUTDEVICE * dev, NETBUF * nb)
 {

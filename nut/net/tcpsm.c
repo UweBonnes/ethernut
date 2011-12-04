@@ -1196,7 +1196,7 @@ static void NutTcpStateEstablished(TCPSOCKET * sock, uint8_t flags, TCPHDR * th,
 
     /*
      * Acknowledge any sequence numbers not expected,
-     * even if they do not contain any data. Keepalive
+     * even if they do not contain any data. Keep alive
      * packets contain a sequence number one less
      * than the next data expected and they do not
      * contain any data.

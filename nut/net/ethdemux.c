@@ -77,7 +77,7 @@ static ETH_PROTOCOLS *eth_prot;
  *
  * \param dev Identifies the device that received the frame.
  * \param nb  Pointer to a network buffer structure containing 
- *            the ethernet frame.
+ *            the Ethernet frame.
  *
  * \return 0 if the frame will be processed by a handler. Otherwise
  *         -1 is returned.

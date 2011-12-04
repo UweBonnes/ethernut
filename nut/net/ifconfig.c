@@ -162,7 +162,7 @@ int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t 
  *                will be queried for an IP address.
  * \param ip_mask Specified IP network mask in network byte order.
  *                Typical Ethernet networks use 255.255.255.0, which 
- *                allows upto 254 hosts. For PPP interfaces 255.255.255.255
+ *                allows up to 254 hosts. For PPP interfaces 255.255.255.255
  *                is the default.
  *
  * \return 0 on success, -1 otherwise.
@@ -195,7 +195,7 @@ int NutNetIfConfig(CONST char *name, void *params, uint32_t ip_addr, uint32_t ip
  *                will be queried for an IP address.
  * \param ip_mask Specified IP network mask in network byte order.
  *                Typical Ethernet networks use 255.255.255.0, which 
- *                allows upto 254 hosts. For PPP interfaces 255.255.255.255
+ *                allows up to 254 hosts. For PPP interfaces 255.255.255.255
  *                is the default.
  * \param gateway Specified IP address of gateway or next router in LAN.
  *                

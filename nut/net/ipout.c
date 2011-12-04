@@ -73,7 +73,7 @@
  * \param proto Protocol type.
  * \param dest  Destination IP address. The function will determine
  *              the proper network interface by checking the routing
- *              table. It will also perform any neccessary hardware
+ *              table. It will also perform any necessary hardware
  *              address resolution.
  * \param nb    Network buffer structure containing the datagram. 
  *              This buffer will be released if the function returns

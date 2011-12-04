@@ -152,7 +152,7 @@ void NutTcpDestroySocket(TCPSOCKET * sock)
 /*!
  * \brief Find a matching socket.
  *
- * Loop through all sockets and find a matching connection (prefered) 
+ * Loop through all sockets and find a matching connection (preferred) 
  * or a listening socket.
  *
  * Applications typically do not call this function.
@@ -851,7 +851,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     /* If we don't have a buffer so far... */
     if (sock->so_devocnt == 0) {
         /* If new data block is bigger or equal than buffer size
-         * send first part of data to nic and store remaining
+         * send first part of data to NIC and store remaining
          * bytes in buffer
          */
         if ((uint16_t) size >= sock->so_devobsz) {
@@ -894,7 +894,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     }
 
     /* If remaining data is bigger or equal than buffer size
-     * send first part of data to nic and later store remaining
+     * send first part of data to NIC and later store remaining
      * bytes in buffer
      */
     sz = size - sz;
@@ -909,7 +909,7 @@ int NutTcpDeviceWrite(TCPSOCKET * sock, CONST void *buf, int size)
     } else
         rc = sz;
 
-    /* If there are some remainings bytes, store them in buffer
+    /* If there are some remaining bytes, store them in buffer
      */
     if (rc)
         memcpy(sock->so_devobuf, buffer, rc);

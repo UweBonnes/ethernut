@@ -131,12 +131,12 @@ int NutIcmpReply(uint8_t type, uint8_t code, uint32_t spec, uint32_t dest, NETBU
  *             a list of valid types.
  * \param code Type subcode.
  * \param spec Type specific data item.
- * \param nb   Network buffer structure containing the previously recevied
- *             network packet. According to RFC792 the complete ip header 
+ * \param nb   Network buffer structure containing the previously received
+ *             network packet. According to RFC792 the complete IP header 
  *             and the first 8 bytes of the transport netbuf is used as the
  *             application data for the response. If this function returns 
- *             with an error, the buffer is freed. The destination addess is
- *             taken from the ip header.
+ *             with an error, the buffer is freed. The destination address is
+ *             taken from the IP header.
  *
  * \return 0 on success, -1 otherwise.
  */

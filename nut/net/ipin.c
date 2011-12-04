@@ -212,7 +212,7 @@ void NutIpInput(NUTDEVICE * dev, NETBUF * nb)
             NutIgmpInput(dev, nb);
             break;
         default:
-            /* Unkown protocol, send ICMP destination (protocol)
+            /* Unknown protocol, send ICMP destination (protocol)
             * unreachable message.
             */
             if (bcast || !NutIcmpResponse(ICMP_UNREACH, ICMP_UNREACH_PROTOCOL, 0, nb))
