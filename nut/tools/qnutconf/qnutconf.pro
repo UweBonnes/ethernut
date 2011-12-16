@@ -53,8 +53,15 @@ include(lua/lua.pri)
 RESOURCES += qnutconf.qrc
 
 RC_FILE = qnutconf.rc
-
 VERSION = 3.1.0
 QMAKE_TARGET_COMPANY = Ethernut Project
 QMAKE_TARGET_DESCRIPTION = Ethernut Configurator
 QMAKE_TARGET_COPYRIGHT = All rights reserved by authors
+
+macx {
+
+	# Adds the Mac icons to the application bundle. 
+	ICON = images/qnutconf.icns 
+}
+
+
