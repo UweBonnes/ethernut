@@ -2851,6 +2851,197 @@ nutdev =
         description = "Serial eeprom driver for AT24C chips.\n\n",
         requires = { "DEV_TWI" },
         sources = { "at24c.c", "eeprom.c" },
+        options =
+        {
+        	{
+        		macro = "AT24C_SLAVE_ADDR",
+        		brief = "Address of Slave",
+        		description = "EEPROMs Slave address on the bus.\n"..
+        					  "No convetions here, so the address should be given without R/W bit.\n"..
+        					  "For a AT24C64 it usually will be 0x50.",
+        	    flavour = "integer",
+        	    default = "0x50",
+        	    file = "include/cfg/eeprom.h",
+        	},
+        	{
+        		macro = "AT24C_CHIP_SIZE",
+        		brief = "Memory Size",
+        		description = "Size of your EEPROM.\n"..
+        					  "As manufacturers like to give sizes in bits, as it sound like more "..
+        					  "this value is usually the chips name divided by 8\n"..
+        					  "For a AT24C64 it will be 8192 bytes",
+        	    flavour = "integer",
+        	    default = "8192",
+        	    file = "include/cfg/eeprom.h",
+        	},
+            {
+                macro = "AT24C_ADR_SIZE",
+                brief = "Address Size",
+                description = "Number of bytes send as internal address.\n",
+                flavour = "integer",
+                default = "2",
+                file = "include/cfg/eeprom.h",
+            },
+        	{
+                macro = "AT24C_ROW_SIZE",
+                brief = "Row Size",
+                description = "Row size of the EEPROM.\n"..
+                              "This is equal to the ammount of bytes that can be written in one "..
+                              "programming cycle. Addtitionally this is the base for correct "..
+                              "alignment of programming addresses.\n\n"..
+                              "On most EEPROMs this value is 32 bytes.",
+                flavour = "integer",
+                default = "32",
+                file = "include/cfg/eeprom.h",
+        	},
+            {
+                macro = "AT24C_BLOCK_ADDR",
+                brief = "Block Addressing Mode",
+                description = "This is a special addressing mode found on small end cheap chips "..
+                              "of manufacturers that cannot understand I2C specification at all.\n\n"..
+                              "Normally the Slave-Address is used to select the right slave on the bus. "..
+                              "Some chips allow to appear on different addresses by pulling some of their pins high or low.\n"..
+                              "Now, these EEPROMs needing this item checked, have their address pins internally not "..
+                    		  "connected but use the lower three address bits for the high byte of the internal address...\n"..
+			                  "For these chips, the address length must be 1 even they are larger than 256 bytes.",
+                flavor = "booldata",
+                file = "include/cfg/eeprom.h",
+            }
+        }
+    },
+    {
+        name = "nutdev_sht21",
+        brief = "SHT21 Driver",
+        description = "Sensirion SHT21 temperature and humidity sensor driver.\n"..
+        			  "Should work with new SHT25 device too, but not tested.",
+		provides = { "DEV_SHT21" },
+        requires = { "DEV_TWI" },
+        sources = { "sht21.c" },
+        options =
+        {
+            {
+                macro = "I2C_SLA_SHT21",
+                brief = "Slave Address",
+                description = "SHT21 slave address. This is fixed and cannot be altered.",
+                type = "enumerated",
+                flavor = "integer",
+                default = "0x40",
+               	file = "include/cfg/sht21.h"
+            },
+            {
+                macro = "SHT_ACK_POLLING",
+                brief = "SHT21 ACK-Polling",
+                description = "The SHT2x supports operation modes: ACK polling or ACK-Stretching.\n"..
+                			  "ACK Polling: The driver will poll the SHT2x every about 10ms for a result.\n"..
+                			  "ACK Stretching: The SHT2x will held SCL low until measurement finished. "..
+                			  "This will block the complete bus for other devices too but requires less code.",
+                flavor = "booldata",
+               	file = "include/cfg/sht21.h"
+            },
+            {
+                macro = "SHT21_PRECISION",
+                brief = "SHT21 precision",
+                description = "The SHT21 supports several different precisons for measurement:\n"..
+                			  "Possible values are:\n"..
+                			  "0x00: rH=12bit, T=14bit\n"..
+                			  "0x01: rH= 8bit, T=12bit\n"..
+                			  "0x80: rH=10bit, T=13bit\n"..
+                			  "0x81: rH=11bit, T=11bit\n",
+                type = "enumerated",
+                flavor = "integer",
+                choices = { "0x00", "0x01", "0x80", "0x81" },
+                default = "0x00",
+               	file = "include/cfg/sht21.h"
+            }
+            
+        }
+    },
+    {
+        name = "nutdev_mma745x",
+        brief = "MMA745x Driver",
+        description = "Freescale MMA745x velocity sensor driver.\n",
+		provides = { "DEV_MMA745X" },
+        requires = { "DEV_TWI" },
+        sources = { "mma745x.c" },
+        options =
+        {
+            {
+                macro = "MMA745X_MODE",
+                brief = "Operating Mode",
+                description = "The MMA745x supports measurement modes:\n"..
+                			  "The driver initializes to the given mode. The user can switch the mode at any time.\n"..
+                			  "Possible values are:\n"..
+                			  "0x00: Standby\n"..
+                			  "0x01: Measurement\n"..
+                			  "0x02: Level detection\n"..
+                			  "0x02: Pulse detection\n"..
+                			  "Note that for Measurement Mode INT1/DRDY can only serve as DRDY signal or interrupt.\n"..
+                			  "Level and pulse interrupts are not available.\n",
+                type = "enumerated",
+                flavor = "integer",
+                choices = { "0x00", "0x01", "0x02", "0x03" },
+                default = "0x00",
+               	file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_RANGE",
+                brief = "Range",
+                description = "The MMA745x supports several different measurement ranges:\n"..
+                			  "Possible values are:\n"..
+                			  "0x00: +/- 8g\n"..
+                			  "0x08: +/- 4g\n"..
+                			  "0x04: +/- 2g\n",
+                type = "enumerated",
+                flavor = "integer",
+                choices = { "0x00", "0x08", "0x04" },
+                default = "0x00",
+               	file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_8BIT",
+                brief = "8 Bit Width",
+                description = "The MMA745x supports 10bit and 8 bit data format. Select this to use 8 bit information.\n",
+                type = "enumerated",
+                flavor = "boolean",
+               	file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ1_PORT",
+                brief = "INT1/DRDY Port",
+                description = "Port for interrupt 1 / data ready signal.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+               	file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ1_PIN",
+                brief = "INT1/DRDY Pin",
+                description = "Pin for interrupt 1 / data ready signal.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+               	file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ2_PORT",
+                brief = "INT2 Port",
+                description = "Port for interrupt 2 signal.",
+                type = "enumerated",
+                choices = function() return GetGpioPortIds() end,
+                flavor = "integer",
+               	file = "include/cfg/mma745x.h"
+            },
+            {
+                macro = "MMA745X_IRQ2_PIN",
+                brief = "INT2 Pin",
+                description = "Pin for interrupt 2 signal.",
+                type = "enumerated",
+                choices = function() return GetGpioBits() end,
+                flavor = "integer",
+               	file = "include/cfg/mma745x.h"
+            },
+        }
     },
     {
         name = "nutdev_pca9555",

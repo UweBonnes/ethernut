@@ -10,19 +10,23 @@
 #endif
 
 struct at24c{
-   uint8_t 	SlaveAddress;	/* Slave address on the bus */
-   uint8_t	IAddrW;			/* With of slaves address register in bytes */
-   uint8_t 	PageSize;   	/* Size of pages that can be written at once */
-   uint8_t 	NumOfPage;  	/* Number of pages of previous defined size */
-   uint32_t EepromSize;		/* Size of the eeprom memory in total */
-   uint8_t  Timeout;		/* Timeout of internal programming in ms*/
+   uint8_t 	SlaveAddress;	/*< Slave address on the bus */
+   uint8_t	IAddrW;			/*< With of slaves address register in bytes */
+   uint8_t 	PageSize;   	/*< Size of pages that can be written at once */
+   uint32_t EepromSize;		/*< Size of the eeprom memory in total */
+   uint8_t  Timeout;		/*< Timeout of internal programming in ms*/
+#ifdef AT24C_BLOCK_ADDR
+   uint8_t  BlInSla;        /*< Block in slave address (lower 3 bits used
+                                for internal high byte of address) */
+#endif
+   HANDLE   ee_mutex;       /*< Mutex to avoid concurrent access to same EEPROM */
 //   unsigned int EepromName;
 };
 
 __BEGIN_DECLS
 /* Prototypes */
-extern int At24cWrite( struct at24c *at24cs, uint8_t *buffer, uint32_t len, uint32_t addr);
-extern int At24cRead( struct at24c *at24cs, uint8_t *buffer, uint32_t len, uint32_t addr );
+extern int At24cWrite( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t addr);
+extern int At24cRead( struct at24c *at24cs, uint8_t *buffer, uint16_t len, uint16_t addr );
 __END_DECLS
 /* End of prototypes */
 #endif
