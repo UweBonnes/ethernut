@@ -55,7 +55,6 @@ int EEInit( void )
 {
     uint8_t dummy;
     at24c32s.PageSize = 32;
-    at24c32s.NumOfPage = 128;
     at24c32s.EepromSize = 32*128;
     at24c32s.SlaveAddress = NUT_CONFIG_AT24_ADR;
 	at24c32s.IAddrW = 2;
