@@ -69,30 +69,32 @@
 uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
 {
     register uint32_t sum = ics;
-    register uint16_t *cp = (uint16_t *) buf;
+    register uint8_t *cp = (uint8_t *) buf;
 
-    /* Sum up 16 bit values. The result is the same for little and big
-       endian machines. See RFC1071 for further details. */
+    /* Sum up 16 bit values. */
     while (len > 1) {
-        sum += *cp++;
+#ifdef __BIG_ENDIAN__
+        sum += ((uint16_t)*cp << 8) | *(cp + 1);
+#else
+        sum += ((uint16_t)*(cp + 1) << 8) | *cp;
+#endif
+        cp += 2;
         len -= 2;
     }
-    /* Add remaining byte on odd lengths. A union is used to handle
-       different byte orders. */
+
+    /* Add remaining byte on odd lengths. */
     if (len) {
-        union {
-            uint8_t last_byte;
-            uint16_t last_word;
-        } last;
-
-        last.last_word = 0;
-        last.last_byte = *((uint8_t *) cp);
-        sum += last.last_word;
+#ifdef __BIG_ENDIAN__
+        sum += (uint16_t)*cp << 8;
+#else
+        sum += *cp;
+#endif
     }
-    /* Fold upper 16 bits to lower ones. */
-    sum = (uint16_t)sum + (sum >> 16);
-    sum += (sum >> 16);
 
+    /* Fold upper 16 bits to lower ones. */
+    while (sum >> 16) {
+        sum = (uint16_t)sum + (sum >> 16);
+    }
     return (uint16_t) sum;
 }
 
