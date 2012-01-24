@@ -96,7 +96,6 @@ all:
 	$(MAKE) -C logtime
 	$(MAKE) -C lua
 	$(MAKE) -C nutpiper
-	$(MAKE) -C playmp3
 	$(MAKE) -C portdio
 	$(MAKE) -C pppc
 	$(MAKE) -C rs232d
@@ -120,7 +119,6 @@ install:
 	$(MAKE) -C logtime install
 	$(MAKE) -C lua install
 	$(MAKE) -C nutpiper install
-	$(MAKE) -C playmp3 install
 	$(MAKE) -C portdio install
 	$(MAKE) -C pppc install
 	$(MAKE) -C rs232d install
@@ -144,7 +142,6 @@ clean:
 	$(MAKE) -C logtime clean
 	$(MAKE) -C lua clean
 	$(MAKE) -C nutpiper clean
-	$(MAKE) -C playmp3 clean
 	$(MAKE) -C portdio clean
 	$(MAKE) -C pppc clean
 	$(MAKE) -C rs232d clean
@@ -165,7 +162,6 @@ at90can:
 	$(MAKE) -C inetq
 	$(MAKE) -C logtime
 	$(MAKE) -C nutpiper
-	$(MAKE) -C playmp3
 	$(MAKE) -C portdio
 	$(MAKE) -C pppc
 	$(MAKE) -C rs232d

@@ -8,7 +8,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT  "Nut/OS"
 !define NUTVERSION  "5.0"
-!define NUTRELEASE  "0"
+!define NUTRELEASE  "1"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
@@ -631,14 +631,11 @@ SectionGroup "Application Samples"
     File ..\..\..\appicc\nutpiper\*.prj
     File ..\..\..\appicc\nutpiper\*.SRC
 
-    SetOutPath "$INSTDIR\nut\app\playmp3"
-    File ..\..\..\app\playmp3\Makefile
-    File ..\..\..\app\playmp3\*.c
-    SetOutPath "$INSTDIR\nut\app\playmp3\sounds"
-    File ..\..\..\app\playmp3\sounds\*.mp3
-    SetOutPath "$INSTDIR\nut\appicc\playmp3"
-    File ..\..\..\appicc\playmp3\*.prj
-    File ..\..\..\appicc\playmp3\*.SRC
+    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3"
+    File ..\..\..\hwtest\audio\playmp3\Makefile
+    File ..\..\..\hwtest\audio\playmp3\*.c
+    SetOutPath "$INSTDIR\nut\hwtest\audio\playmp3\sounds"
+    File ..\..\..\hwtest\audio\playmp3\sounds\*.mp3
 
     SetOutPath "$INSTDIR\nut\app\portdio"
     File ..\..\..\app\portdio\Makefile
