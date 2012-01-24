@@ -419,131 +419,6 @@ void NutInitHeap()
     }
 }
 
-#if defined(__GNUC__)
-static void NutCustomInit(void) __attribute__ ((naked, section (".init1"), used));
-#endif
-/*!
- * NutCustomInit is a container function for hardware specific init code.
- *
- * The hardware is selected with a PLATFORM macro definition.
- *
- * Typically this function configures CPLDs, enables chips,
- * overwrites NutInitXRAM's default wait state settings, sets the default
- * baudrate for NUDEBUG as they depend on the crystal frequency used, etc.
- */
-void NutCustomInit(void)
-/*
-* MMnet02..04 and MMnet102..104 CPLD initialization.
-*/
-#if defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04) ||\
-	defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
-{
-    volatile uint8_t *breg = (uint8_t *)((size_t)-1 & ~0xFF);
-
-    *(breg + 1) = 0x01; // Memory Mode 1, Banked Memory
-
-    /* Assume 14.745600 MHz crystal, set to 115200bps */
-    outb(UBRR, 7);
-    outb(UBRR1L, 7);
-}
-/*
- * Arthernet CPLD initialization.
- */
-#elif defined(ARTHERNET1)
-{
-    /* Arthernet1 memory setup - mt - TODO: check this
-    Note: This overwrites the default settings of NutInitXRAM()!
-    0x1100-0x14FF  CLPD area  -> use 3 Waitstates for 0x1100-0x1FFF (no Limit at 0x1500 available)
-    0x1500-0xFFFF  Heap/Stack -> use 1 Waitstate  for 0x2000-0xFFFF
-    */
-    MCUCR  = _BV(SRE); /* enable xmem-Interface */
-    XMCRA |= _BV(SRL0) | _BV(SRW01) | _BV(SRW00); /* sep. at 0x2000, 3WS for lower Sector */
-    XMCRB = 0;
-
-    *((volatile uint8_t *)(ARTHERCPLDSTART)) = 0x10; // arthernet cpld init - Bank
-    *((volatile uint8_t *)(ARTHERCPLDSPI)) = 0xFF; // arthernet cpld init - SPI
-
-    /* Assume standard Arthernet1 with 16 MHz crystal, set to 38400 bps */
-    outb(UBRR, 25);
-    outb(UBRR1L, 25);
-}
-/*
-* XNUT board initialization
-*/
-#elif defined(XNUT_100) || defined(XNUT_105)
-{
-    PORTB = 0x35;
-    DDRB  = 0x3F;
-    PORTD = 0xE8;
-    DDRD  = 0xB0;
-    PORTE = 0x0E;
-    DDRE  = 0x02;
-    PORTF = 0xF0;
-    DDRF  = 0x0F;
-    PORTG = 0x1F;
-    DDRG  = 0x07;
-
-    ACSR |= _BV(ACD); /* Switch off analog comparator to reduce power consumption */
-
-    /* Init I2C bus w/ 100 kHz */
-    TWSR = 0;
-    TWBR = (NUT_CPU_FREQ / 100000UL - 16) / 2; /* 100 kHz I2C */
-
-    /* Set default baudrate */
-#if NUT_CPU_FREQ == 14745600
-    UBRR0L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
-    UBRR1L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
-#else
-    sbi(UCSR0A, U2X0);
-    sbi(UCSR1A, U2X1);
-    UBRR0L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
-    UBRR1L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
-#endif
-}
-/*
-* HHOpen 63f board initialization
-*/
-#elif defined(HHOPEN_63F)
-{
-	PORTA = 0xF8; DDRA  = 0x08;
-	PORTB = 0x01; DDRB  = 0xE7;
-	PORTC = 0xFF; DDRC  = 0x01;
-    PORTD = 0x18; DDRD  = 0xDB;
-	PORTE = 0x5A; DDRE  = 0xEA;
-    PORTF = 0x80; DDRF  = 0xFF;
-    PORTG = 0x00; DDRG  = 0xFF;
-
-    ACSR |= _BV(ACD); /* Switch off analog comparator to reduce power consumption */
-
-    /* Init I2C bus w/ 100 kHz */
-    TWSR = 0;
-    TWBR = (NUT_CPU_FREQ / 100000UL - 16) / 2; /* 100 kHz I2C */
-
-    /* Set default baudrate */
-#if NUT_CPU_FREQ == 14745600
-    UBRR0L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
-    UBRR1L = (NUT_CPU_FREQ / (16 * 9600UL)) - 1;
-#else
-    sbi(UCSR0A, U2X0);
-    sbi(UCSR1A, U2X1);
-    UBRR0L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
-    UBRR1L = (NUT_CPU_FREQ / (8 * 9600UL)) - 1;
-#endif
-}
-
-/*
- * Rest of the world and standard ETHERNUT 1/2
- */
-#else
-{
-    /* Assume standard Ethernut with 14.745600 MHz crystal, set to 115200bps */
-    outb(UBRR, 7);
-#ifdef __AVR_ENHANCED__
-    outb(UBRR1L, 7);
-#endif
-}
-#endif
-
 /*!
  * \brief Nut/OS Initialization.
  *
@@ -581,7 +456,6 @@ void NutInit(void)
     /*
      * We can't use local variables in naked functions.
      */
-
 #ifdef NUTDEBUG
     /* Note: The platform's default baudrate will be set in NutCustomInit() */
     outb(UCR, BV(RXEN) | BV(TXEN));
@@ -592,8 +466,6 @@ void NutInit(void)
 #endif
 
 #ifndef __GNUC__
-    NutCustomInit();
-
     /* Initialize stack pointer to end of external RAM while starting up the system
      * to avoid overwriting .data and .bss section.
      */

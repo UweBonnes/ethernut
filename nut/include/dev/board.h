@@ -105,7 +105,9 @@
 #include <cfg/arch.h>
 #include <cfg/uart.h>
 
-#if defined(ELEKTOR_IR1)
+#if defined(ARTHERNET1)
+#include <arch/avr/board/arthernet1.h>
+#elif defined(ELEKTOR_IR1)
 #include <arch/arm/board/elektor_ir1.h>
 #elif defined(ETHERNUT1)
 #include <arch/avr/board/ethernut1.h>
@@ -117,6 +119,11 @@
 #include <arch/arm/board/ethernut5.h>
 #elif defined(FLECX1)
 #include <arch/arm/lpc/lpc1700/board/flecx1.h>
+#elif defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) || \
+      defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
+#include <arch/avr/board/mmnet.h>
+#elif defined(XNUT_100) || defined(XNUT_105)
+#include <arch/avr/board/xnut.h>
 #elif defined(ZERO_EK)
 #include <arch/arm/board/zero_ek.h>
 #endif
@@ -255,12 +262,8 @@
 /*
  * Ethernet device.
  */
-#if defined(CHARON2) || defined(XNUT_100) || defined(XNUT_105) ||\
-	defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) ||\
-    defined(ARTHERNET1)
+#if defined(CHARON2)
 #include <dev/nicrtl.h>
-#elif defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
-#include <dev/lanc111.h>
 #elif defined(OLIMEX_LPCE2294)
 #include <dev/cs8900a.h>
 #elif defined(AT91SAM7X_EK) || defined(AT91SAM9260_EK) || defined(MORPHOQ1) || defined(ENET_SAM7X)
@@ -303,12 +306,7 @@
 /*
  * RTC chip.
  */
-#if defined(XNUT_100) || defined(XNUT_105) ||\
-	  defined(MMNET102) || defined(MMNET103) || defined(MMNET104) ||\
-	  defined(MMNET02)  || defined(MMNET03)  || defined(MMNET04)
-#define RTC_CHIP0 rtcDs1307
-#include <dev/ds1307rtc.h>
-#elif defined(ENET_SAM7X)
+#if defined(ENET_SAM7X)
 #define RTC_CHIP0 rtcPcf8563
 #include <dev/pcf8563.h>
 #endif
