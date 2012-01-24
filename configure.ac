@@ -195,7 +195,7 @@ AC_REVISION($Revision$)
 # Make sure we got a valid path to the sources.
 AC_CONFIG_SRCDIR([nut/tools/nutconf/nutcomponent.c])
 
-AM_INIT_AUTOMAKE([dist-bzip2])
+AM_INIT_AUTOMAKE([1.9 tar-pax dist-bzip2])
 
 # Check for programs.
 #AC_PROG_CC
