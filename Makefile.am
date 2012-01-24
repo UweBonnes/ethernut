@@ -65,7 +65,7 @@ nut/Makedefs.avr-gccdbg nut/Makerules.avr-gccdbg \
 nut/Makevars.avr32-gcc \
 nut/Makedefs.avr32-gcc nut/Makerules.avr32-gcc \
 nut/Makedefs.avr32-gccdbg nut/Makerules.avr32-gccdbg \
-nut/Makedefs.gcc nut/Makerules.gcc \
+nut/Makerules.gcc \
 nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
 nut/Makedefs.unix-gcc nut/Makerules.unix-gcc \
 ChangeLog20090309 nut/tools/packaging/distcheck.lua
