@@ -67,7 +67,7 @@
 #
 #
 
-PROPGRIDLIBNAME = libwx_gtk2_propgrid-2.8.a
+PROPGRIDLIBNAME = libwx_gtk2u_propgrid-2.9.a
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -80,6 +80,8 @@ mainframe.cpp \
 mainframe.h \
 nutdisc.cpp \
 nutdisc.h \
+options.cpp \
+options.h \
 propdialog.cpp \
 propdialog.h \
 resource.h \
@@ -92,9 +94,10 @@ udpthread.h \
 version.h \
 bitmaps/nutdisc.xpm
 nutdisc_CXXFLAGS = @WX_CXXFLAGS@ 
-nutdisc_CPPFLAGS = -I$(LUA_HEADERS)
+#nutdisc_CPPFLAGS = -I$(LUA_HEADERS)
 if PROPGRID_LOCAL
 nutdisc_LDADD = /usr/local/lib/$(PROPGRIDLIBNAME) $(WX_LIBS)
+#nutdisc_LDADD = $(WX_LIBS)
 else
 nutdisc_LDADD = /usr/lib/$(PROPGRIDLIBNAME) $(WX_LIBS)
 endif
