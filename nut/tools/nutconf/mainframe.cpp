@@ -1,23 +1,5 @@
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004-2007 by egnite Software GmbH
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * ----------------------------------------------------------------------------
- * Parts are
- *
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -33,72 +15,22 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  * ----------------------------------------------------------------------------
  */
 
 /*
- * $Log: mainframe.cpp,v $
- * Revision 1.16  2009/01/04 04:30:49  thiagocorrea
- * Allow nutconf to build with _UNICODE under Win32.
- *
- * Revision 1.15  2008/07/29 07:39:37  haraldkipp
- * Fixed missing 'make install'. Bug was introduced in 2.0.1.
- *
- * Revision 1.14  2008/07/24 15:44:22  haraldkipp
- * Fixed initial window creation on Linux.
- *
- * Revision 1.13  2008/03/17 10:22:48  haraldkipp
- * Added more comments.
- *
- * Revision 1.12  2007/04/25 16:02:27  haraldkipp
- * Adding 3D style to sash in component tree fixes repaint problems.
- * Further added live update and sash gravity attributes for easier resizing.
- *
- * Revision 1.11  2007/02/15 19:33:45  haraldkipp
- * Version 1.4.1 works with wxWidgets 2.8.0.
- * Several wide character issues fixed.
- *
- * Revision 1.10  2006/10/05 17:04:46  haraldkipp
- * Heavily revised and updated version 1.3
- *
- * Revision 1.9  2005/11/24 09:44:30  haraldkipp
- * wxWidget failed to built with unicode support, which results in a number
- * of compile errors. Fixed by Torben Mikael Hansen.
- *
- * Revision 1.8  2005/09/21 10:44:15  christianwelzel
- * Replaced deprecated commands with newer ones.
- *
- * Revision 1.7  2005/07/22 18:46:25  haraldkipp
- * Added selectable toolbar button sizes, toolbar menu, more toolbar buttons
- * and online help.
- *
- * Revision 1.6  2005/07/20 11:16:00  haraldkipp
- * Linux application icon added
- *
- * Revision 1.5  2005/07/20 09:20:25  haraldkipp
- * Set application icon
- *
- * Revision 1.4  2005/04/22 15:14:43  haraldkipp
- * Avoid compiler warnings.
- *
- * Revision 1.3  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.2  2004/08/03 15:03:25  haraldkipp
- * Another change of everything
- *
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
- *
+ * $Id$
  */
 
 #include <wx/config.h>
+#include <wx/sysopt.h>
 
 #include "ids.h"
 #include "nutconf.h"
 #include "settings.h"
 #include "settingsdlg.h"
+#include "conftreectrl.h"
+#include "nutconfhint.h"
 #include "mainframe.h"
 
 #if !defined(__WXMSW__)
@@ -129,6 +61,9 @@ BEGIN_EVENT_TABLE(CMainFrame, wxDocParentFrame)
     EVT_MENU(ID_NUTOS_HELP, CMainFrame::OnHelp)
     EVT_MENU(wxID_FIND, CMainFrame::OnFind)
     EVT_MENU(ID_HELP_ABOUT, CMainFrame::OnAbout)
+    EVT_DATAVIEW_ITEM_ACTIVATED(ID_CONFTREE_CTRL, CMainFrame::OnItemActivated)
+    EVT_DATAVIEW_SELECTION_CHANGED(ID_CONFTREE_CTRL, CMainFrame::OnSelectionChanged)
+    EVT_DATAVIEW_ITEM_VALUE_CHANGED(ID_CONFTREE_CTRL, CMainFrame::OnItemValueChanged)
 END_EVENT_TABLE();
 
 CMainFrame::CMainFrame(wxDocManager * manager, const wxString & title)
@@ -193,10 +128,6 @@ CMainFrame::~CMainFrame()
         pConfig->Write(wxT("outp_w"), (long) sz.x);
         pConfig->Write(wxT("outp_h"), (long) sz.y);
 
-        x = m_splitter->GetSashPosition();
-        if(x > 0) {
-            pConfig->Write(wxT("split_x"), (long) x);
-        }
         pConfig->SetPath(lastPath);
     }
 }
@@ -204,29 +135,14 @@ CMainFrame::~CMainFrame()
 void CMainFrame::CreateNutMenuBar()
 {
     wxMenu *fileMenu = new wxMenu(wxEmptyString, wxMENU_TEAROFF);
-    //td fileMenu->Append(wxID_NEW, wxT("&New\tCtrl+N"), wxT("Creates a new document"));
     fileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"), wxT("Opens an existing configuration"));
     fileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Saves the active configuration"));
     fileMenu->Append(wxID_SAVEAS, wxT("Save &As..."), wxT("Saves the active configuration with a new name"));
-    //td fileMenu->AppendSeparator();
-    //td fileMenu->Append(ID_IMPORT, wxT("&Import..."), wxT("Imports a minimal configuration exported from another configuration"));
-    //td fileMenu->Append(ID_EXPORT, wxT("&Export..."), wxT("Exports a minimal configuration for importing into another configuration"));
-    //td fileMenu->AppendSeparator();
     fileMenu->Append(wxID_EXIT, wxT("E&xit\tAlt+X"), wxT("Quits the application"));
 
     wxMenu *editMenu = new wxMenu(wxEmptyString, wxMENU_TEAROFF);
     editMenu->Append(wxID_FIND, wxT("&Find...\tCtrl+F"), wxT("Finds the specified text"));
     editMenu->Append(ID_SETTINGS, wxT("&Settings...\tCtrl+T"), wxT("Shows the settings dialog"));
-    //td editMenu->Append(wxID_CUT, wxT("Cu&t\tCtrl+X"), wxT("Cuts the output pane selection and moves it to the Clipboard"));
-    //td editMenu->Append(wxID_COPY, wxT("&Copy\tCtrl+C"), wxT("Copies the output pane selection to the clipboard"));
-    //td editMenu->Append(wxID_PASTE, wxT("&Paste\tCtrl+V"), wxT("Inserts Clipboard contents"));
-    //td editMenu->Append(wxID_CLEAR, wxT("&Clear"), wxT("Erases everything in the output pane"));
-    //td editMenu->AppendSeparator();
-    //td editMenu->Append(wxID_SELECTALL, wxT("&Select All\tCtrl+A"), wxT("Selects the entire output pane"));
-    //td editMenu->AppendSeparator();
-    //td editMenu->Append(ID_FIND_NEXT, wxT("Find &Next\tF3"), wxT("Finds the next item matching the Find text"));
-    //td editMenu->AppendSeparator();
-    //td editMenu->Append(ID_SAVE_OUTPUT, wxT("Sa&ve Output..."), wxT("Saves the contents of the output pane"));
 
     wxMenu *viewMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
     wxMenu *toolbarMenu = new wxMenu;
@@ -234,53 +150,21 @@ void CMainFrame::CreateNutMenuBar()
     toolbarMenu->Check(ID_TOOLBARS, true);
     toolbarMenu->AppendCheckItem(ID_TOOLBARSIZE, wxT("&Large Buttons"), wxT("Toggles toolbar size"));
     viewMenu->Append(-1, wxT("Toolbar"), toolbarMenu);
-    //td viewMenu->Append(ID_SETTINGS, wxT("&Settings...\tCtrl+T"), wxT("Shows the application settings dialog"));
-    //td viewMenu->AppendSeparator();
-    //td viewMenu->Append(ID_TOGGLE_PROPERTIES, wxT("&Properties\tAlt+1"), wxT("Shows or hides the properties window"), true);
-    //td viewMenu->Append(ID_TOGGLE_OUTPUT, wxT("&Output\tAlt+2"), wxT("Shows the output window"), true);
-    //td viewMenu->Append(ID_TOGGLE_SHORT_DESCR, wxT("&Short Description\tAlt+3"), wxT("Shows or hides the short description window"), true);
 
     wxMenu *buildMenu = new wxMenu(wxEmptyString, wxMENU_TEAROFF);
-    //td buildMenu->Append(ID_BUILD_LIBRARY, wxT("&Library\tF7"), wxT("Builds the library"));
-    //td buildMenu->Append(ID_BUILD_TESTS, wxT("&Tests\tShift+F7"), wxT("Builds the tests"));
-    //td buildMenu->Append(ID_CLEAN, wxT("&Clean"), wxT("Deletes intermediate and output files"));
-    //td buildMenu->Append(ID_STOP_BUILD, wxT("&Stop"), wxT("Stops the build"));
-    //td buildMenu->AppendSeparator();
     buildMenu->Append(ID_BUILD_LIBRARY, wxT("Build Nut/OS"), wxT("Builds Nut/OS libraries"));
-    // buildMenu->Append(ID_GENERATE_BUILD_TREE, wxT("&Generate Build Tree"), wxT("Explicitly recreates the build tree"));
-    // buildMenu->Append(ID_BUILD_NUTOS, wxT("Build Nut/OS"), wxT("Builds Nut/OS libraries"));
     buildMenu->AppendSeparator();
     buildMenu->Append(ID_CREATE_SAMPLE_APPS, wxT("Create Sample Directory"), wxT("Creates a directory with Nut/OS sample applications"));
-    //td buildMenu->Append(ID_BUILD_OPTIONS, wxT("&Options..."), wxT("Changes build options"));
-    //td buildMenu->Append(ID_BUILD_REPOSITORY, wxT("&Repository..."), wxT("Selects repository"));
-    //td buildMenu->Append(ID_BUILD_TEMPLATES, wxT("&Templates..."), wxT("Selects the package templates"));
-    //td buildMenu->Append(ID_BUILD_PACKAGES, wxT("&Packages..."), wxT("Selects individual packages"));
-
-    //td wxMenu *toolsMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
-    //td wxMenu *pathMenu = new wxMenu;
-    //td pathMenu->Append(ID_PATHS_BUILD_TOOLS, wxT("&Build Tools..."), wxT("Specifies the folder containing the build tools"));
-    //td pathMenu->Append(ID_PATHS_USER_TOOLS, wxT("&User Tools..."), wxT("Specifies the folder containing the user tools"));
-    //td toolsMenu->Append(ID_PATHS, wxT("&Paths"), pathMenu);
-    //td toolsMenu->Append(ID_SHELL, wxT("&Shell..."), wxT("Invokes a command shell"));
-    //td toolsMenu->Append(ID_RUN_TESTS, wxT("&Run Tests...\tCtrl+F5"), wxT("Runs the configuration tests"));
-    //td toolsMenu->Append(ID_PLATFORMS, wxT("&Platforms..."), wxT("Edits the platforms list"));
-    //td toolsMenu->Append(ID_ADMINISTRATION, wxT("&Administration..."), wxT("Performs repository administration tasks"));
-    //td toolsMenu->AppendSeparator();
-    //td toolsMenu->Append(ID_INDEX_DOCS, wxT("Regenerate Help &Index"), wxT("Regenerates the online help contents"));
 
     wxMenu *helpMenu = new wxMenu;
     helpMenu->Append(ID_NUTOS_HELP, wxT("Help &Contents"), wxT("Displays help contents"));
     helpMenu->Append(ID_HELP_ABOUT, wxT("About NutConf..."), wxT("Displays version and copyright information"));
-    //td helpMenu->Append(ID_CONFIGTOOL_HELP, wxT("&Configuration Tool Help\tShift+F1"), wxT("Displays help"));
-    //td helpMenu->Append(ID_CONTEXT_HELP, wxT("&Help On..."), wxT("Displays help for clicked-on windows"));
-    //td helpMenu->AppendSeparator();
 
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, wxT("&File"));
     menuBar->Append(editMenu, wxT("&Edit"));
     menuBar->Append(viewMenu, wxT("&View"));
     menuBar->Append(buildMenu, wxT("&Build"));
-    //td menuBar->Append(toolsMenu, wxT("&Tools"));
     menuBar->Append(helpMenu, wxT("&Help"));
 
     SetMenuBar(menuBar);
@@ -289,25 +173,26 @@ void CMainFrame::CreateNutMenuBar()
 
 void CMainFrame::CreateNutToolBar()
 {
+    wxSystemOptions::SetOption("msw.remap", 0);
+
     wxToolBarBase *toolBar = CreateToolBar(wxNO_BORDER | wxTB_FLAT | wxTB_HORIZONTAL | wxTB_DOCKABLE, ID_TOOLBAR);
     toolBar->SetMargins(4, 4);
 
     /* Load small toolbar buttons. */
     if (m_smallToolbar) {
-        toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
-        toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
-        toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
-        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
-        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Show help"));
+        toolBar->AddTool(wxID_OPEN, wxT("Open"), wxBITMAP(TBB_OPEN), wxT("Load configuration"));
+        toolBar->AddTool(wxID_SAVE, wxT("Save"), wxBITMAP(TBB_SAVE), wxT("Save configuration"));
+        toolBar->AddTool(ID_BUILD_LIBRARY, wxT("Build"), wxBITMAP(TBB_BUILDLIBRARY), wxT("Build Nut/OS"));
+        toolBar->AddTool(wxID_FIND, wxT("Search"), wxBITMAP(TBB_SEARCH), wxT("Find item"));
+        toolBar->AddTool(ID_NUTOS_HELP, wxT("Help"), wxBITMAP(TBB_HELP), wxT("Show help"));
     }
     /* Load large toolbar buttons. */
     else {
-        toolBar->AddTool(wxID_OPEN, wxBITMAP(TBB_OPEN_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Open configuration"));
-        toolBar->AddTool(wxID_SAVE, wxBITMAP(TBB_SAVE_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Save configuration"));
-        //toolBar->AddSeparator();
-        toolBar->AddTool(ID_BUILD_LIBRARY, wxBITMAP(TBB_BUILDLIBRARY_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Build Nut/OS"));
-        toolBar->AddTool(wxID_FIND, wxBITMAP(TBB_SEARCH_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Search"));
-        toolBar->AddTool(ID_NUTOS_HELP, wxBITMAP(TBB_HELP_LARGE), wxNullBitmap, false, -1, -1, (wxObject *) NULL, wxT("Show help"));
+        toolBar->AddTool(wxID_OPEN, wxT("Open"), wxBITMAP(TBB_OPEN_LARGE), wxT("Load configuration"));
+        toolBar->AddTool(wxID_SAVE, wxT("Save"), wxBITMAP(TBB_SAVE_LARGE), wxT("Save configuration"));
+        toolBar->AddTool(ID_BUILD_LIBRARY, wxT("Build"), wxBITMAP(TBB_BUILDLIBRARY_LARGE), wxT("Build Nut/OS"));
+        toolBar->AddTool(wxID_FIND, wxT("Search"), wxBITMAP(TBB_SEARCH_LARGE), wxT("Find item"));
+        toolBar->AddTool(ID_NUTOS_HELP, wxT("Help"), wxBITMAP(TBB_HELP_LARGE), wxT("Show help"));
         toolBar->SetToolBitmapSize(wxSize(32, 32));
     }
     toolBar->Realize();
@@ -351,7 +236,7 @@ void CMainFrame::CreateNutWindows()
     m_outputWindow->ShowPosition(m_outputWindow->GetLastPosition());
 
     /*
-     * Create the left sash.
+     * Create the left sash for the configuration tree.
      */
     wxLogVerbose(wxT("Create ConfigSash"));
     m_configSashWindow = new wxSashLayoutWindow(this, ID_CONFIG_SASH_WINDOW);
@@ -388,36 +273,8 @@ void CMainFrame::CreateNutWindows()
         new CInfoWindow(m_infoSashWindow, ID_SHORT_DESCR_WINDOW, wxDefaultPosition, wxDefaultSize,
                         wxTE_MULTILINE | wxCLIP_CHILDREN | wxTE_READONLY);
 
-    /*
-     * Component tree control.
-     *
-     * Window relationship:
-     *  CSplitScroll - wxScrolledWindow
-     *      wxSplitterWindow
-     *          CConfigTree - CScrolledTreeCtrl - wxTreeCtrl
-     *          CValueWindow - CTreeCompWindow - wxWindow
-     */
-    wxLogVerbose(wxT("Create CSplitScroll"));
-    m_scrolledWindow = new CSplitScroll(m_configSashWindow, ID_SCROLLED_WINDOW, wxDefaultPosition,
-                                        wxSize(250, 150), wxNO_BORDER | wxCLIP_CHILDREN | wxVSCROLL);
-    wxLogVerbose(wxT("Create wxSplitterWindow"));
-    m_splitter = new wxSplitterWindow(m_scrolledWindow, ID_SPLITTER_WINDOW, wxDefaultPosition,
-                                      wxSize(240, 130), wxSP_LIVE_UPDATE | wxSP_3D | wxCLIP_CHILDREN);
-    wxLogVerbose(wxT("Create CConfigTree"));
-    m_treeWindow = new CConfigTree(m_splitter, ID_TREE_CTRL, wxDefaultPosition, wxSize(120, 120), 
-                             wxTR_HAS_BUTTONS | /* wxTR_NO_LINES | */ wxTR_ROW_LINES | wxNO_BORDER);
-    wxLogVerbose(wxT("Create CValueWindow"));
-    m_valueWindow = new CValueWindow(m_splitter, ID_VALUE_WINDOW, wxDefaultPosition, 
-                                     wxSize(120, 120), wxNO_BORDER);
-    m_splitter->SplitVertically(m_treeWindow, m_valueWindow);
-    m_splitter->SetMinimumPaneSize(100);
-    m_splitter->SetSashGravity(0.5);
-
-    m_scrolledWindow->EnableScrolling(false, false);
-
-    // Let the two controls know about each other
-    m_valueWindow->SetTreeCtrl(m_treeWindow);
-    m_treeWindow->SetCompanionWindow(m_valueWindow);
+    /* Create the configuration tree control. */
+    m_treeCtrl = new CConfTreeCtrl(m_configSashWindow, ID_CONFTREE_CTRL);
 
     wxConfigBase *pConfig = wxConfigBase::Get();
     wxString lastPath = pConfig->GetPath();
@@ -427,9 +284,6 @@ void CMainFrame::CreateNutWindows()
     w = pConfig->Read(wxT("tree_w"), 270);
     h = pConfig->Read(wxT("tree_h"), 190);
     m_configSashWindow->SetDefaultSize(wxSize(w > 50 ? w : 50, h > 50 ? h : 50));
-    m_splitter->SetSashSize(5);
-    int x = pConfig->Read(wxT("split_x"), 10);
-    m_splitter->SetSashPosition(x < 10 ? 10 : x);
 
     wxLogVerbose(wxT("Size PropertySash"));
     w = pConfig->Read(wxT("prop_w"), 300);
@@ -455,14 +309,9 @@ wxTextCtrl *CMainFrame::GetOutputWindow() const
     return m_outputWindow;
 }
 
-CConfigTree *CMainFrame::GetTreeCtrl() const
+CConfTreeCtrl *CMainFrame::GetTreeCtrl() const
 {
-    return m_treeWindow;
-}
-
-CValueWindow *CMainFrame::GetValueWindow() const
-{
-    return m_valueWindow;
+    return m_treeCtrl;
 }
 
 CInfoWindow *CMainFrame::GetInfoWindow() const
@@ -715,3 +564,27 @@ void CMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     wxMessageBox(message, wxT("About"), wxOK | wxICON_INFORMATION, this);
 }
 
+/* Item doubleclicked. */
+void CMainFrame::OnItemActivated(wxDataViewEvent& event)
+{
+    wxDataViewItem item(event.GetItem());
+}
+
+/* Item clicked. */
+void CMainFrame::OnSelectionChanged(wxDataViewEvent& event)
+{
+    wxDataViewItem item(event.GetItem());
+
+    CNutConfDoc *doc = wxGetApp().GetNutConfDoc();
+    if (doc) {
+        CNutConfHint hint(NULL, nutSelChanged);
+        doc->UpdateAllViews(NULL, &hint);
+        if (GetScriptStatus()) {
+            wxLogMessage(wxT("%s"), GetScriptErrorString());
+        }
+    }
+}
+
+void CMainFrame::OnItemValueChanged(wxDataViewEvent& WXUNUSED(event))
+{
+}

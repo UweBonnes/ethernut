@@ -1,23 +1,5 @@
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004-2007 by egnite Software GmbH
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * ----------------------------------------------------------------------------
- * Parts are
- *
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -33,113 +15,11 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  * ----------------------------------------------------------------------------
  */
 
 /*
- * $Log: nutconfdoc.cpp,v $
- * Revision 1.28  2009/01/14 16:25:46  haraldkipp
- * Already done by Ole. Anyway, removed the commented lines to make Thiago
- * happy. ;-)
- *
- * Revision 1.27  2009/01/13 21:04:10  olereinhardt
- * 2009-01-13  Ole Reinhardt <ole.reinhardt@thermotemp.de>
- *
- * 	* tools/nutconf/nutconfdoc.cpp: Commented out inline destructor of
- * 	  CAbstractDirCopyTraverser to fix compilation bug on linux
- *
- * Revision 1.26  2009/01/04 04:52:39  thiagocorrea
- * Add .svn to ignore list when copying files and reduce some duplicated code.
- *
- * Revision 1.25  2009/01/04 04:30:49  thiagocorrea
- * Allow nutconf to build with _UNICODE under Win32.
- *
- * Revision 1.24  2008/09/18 09:54:26  haraldkipp
- * Fixed memory holes.
- * Corrected ICCAVR option value retrieval.
- *
- * Revision 1.23  2008/07/29 07:32:25  haraldkipp
- * Removed unsupported Eclipse project copying.
- *
- * Revision 1.22  2008/07/28 08:40:20  haraldkipp
- * Temporarly removed unsupported Eclipse project copying. We are testing a
- * new setup for Eclipse.
- *
- * Revision 1.21  2008/07/24 15:41:41  haraldkipp
- * Dynamic configuration.
- *
- * Revision 1.20  2008/03/17 10:19:06  haraldkipp
- * Added Eclipse project file copying (experimental).
- *
- * Revision 1.19  2007/09/11 13:43:22  haraldkipp
- * Top installation directory will be used for ICCAVR project configuration.
- * Re-building the application tree will no longer override existing project
- * files. Probably no longer in use, but _MCU_enhanced will be replaced by
- * _MCU_extended for ATmega256.
- *
- * Revision 1.18  2007/04/25 16:03:33  haraldkipp
- * Bugfix: Configurator failed to create application directories containing
- * subdirs.
- *
- * Revision 1.17  2007/02/15 19:36:03  haraldkipp
- * Wide character issues fixed.
- * Mkdir no more creates the full path without trailing separator.
- *
- * Revision 1.16  2006/10/21 12:48:18  christianwelzel
- * Added support for multiple configurations / settings
- *
- * Revision 1.15  2006/10/05 17:04:46  haraldkipp
- * Heavily revised and updated version 1.3
- *
- * Revision 1.14  2005/11/24 09:44:30  haraldkipp
- * wxWidget failed to built with unicode support, which results in a number
- * of compile errors. Fixed by Torben Mikael Hansen.
- *
- * Revision 1.13  2005/10/07 22:12:28  hwmaier
- * Added bld_dir parameter to CreateSampleDirectory.
- *
- * Revision 1.12  2005/08/14 16:10:18  christianwelzel
- * Avoid compiler warnings under cygwin.
- *
- * Revision 1.11  2005/07/26 16:39:09  haraldkipp
- * Do not store default values.
- *
- * Revision 1.10  2005/04/22 15:19:45  haraldkipp
- * Added support for building ICCAVR applications in the sample tree.
- *
- * Revision 1.9  2004/11/24 15:36:53  haraldkipp
- * Release 1.1.1.
- * Do not store empty options.
- * Remove include files from the build tree, if they are no longer used.
- * Command line parameter 's' allows different settings.
- * Minor compiler warning fixed.
- *
- * Revision 1.8  2004/11/08 10:21:26  drsung
- * While creating the sample directory, CVS files are now not copied.
- *
- * Revision 1.7  2004/09/26 12:04:07  drsung
- * Fixed several hundred memory leaks :-).
- * Relative pathes can now be used for source, build and install directory.
- *
- * Revision 1.6  2004/09/19 15:12:22  haraldkipp
- * Set mod flag on all changes
- *
- * Revision 1.5  2004/09/17 13:02:39  haraldkipp
- * First and last directory added to sample dir
- *
- * Revision 1.4  2004/09/07 19:20:07  haraldkipp
- * Initial/default lib/inc dirs updated
- *
- * Revision 1.3  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.2  2004/08/03 15:03:25  haraldkipp
- * Another change of everything
- *
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
- *
+ * $Id$
  */
 
 #include <wx/dir.h>
@@ -149,13 +29,13 @@
 #include <wx/wfstream.h>
 
 #include "nutconf.h"
-#include "treeitemdata.h"
 #include "nutconfhint.h"
 #include "nutconfdoc.h"
 
 #ifdef __WXMSW__
-#define strcasecmp stricmp
-#define strncasecmp strnicmp
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define strdup _strdup
 #endif
 
 /*
@@ -168,7 +48,7 @@ IMPLEMENT_DYNAMIC_CLASS(CNutConfDoc, wxDocument);
  */
 CNutConfDoc::CNutConfDoc()
 {
-    m_root = NULL;
+    m_compo_root = NULL;
 }
 
 /*!
@@ -280,11 +160,9 @@ void CNutConfDoc::SaveComponentOptions(FILE *fp, NUTCOMPONENT * compo)
                     }
                 }
                 if (value) {
-                    wxString escapedValue = wxString::FromAscii( value );
-                    escapedValue.Replace(wxT("\""), wxT("\\\"")); // escape (") to (\");
-                    //fprintf(fp, "%s = \"%s\"\n", opts->nco_name, escapedValue.c_str());
+					wxString escapedValue( value );
+					escapedValue.Replace(wxT("\""), wxT("\\\"")); // escape (") to (\");
                     fprintf(fp, "%s = \"%s\"\n", opts->nco_name, (const char*) escapedValue.mb_str(wxConvUTF8));
-
                     free(value);
                 }
             }
@@ -310,7 +188,7 @@ bool CNutConfDoc::OnSaveDocument(const wxString& filename)
 
     FILE *fp = fopen(filename.mb_str(), "w");
     if (fp) {
-        SaveComponentOptions(fp, m_root->nc_child);
+        SaveComponentOptions(fp, m_compo_root->nc_child);
         fclose(fp);
         Modify(false);
         SetFilename(filename);
@@ -336,8 +214,8 @@ bool CNutConfDoc::OnCloseDocument()
 
 void CNutConfDoc::ReleaseRepository()
 {
-	if (m_root)
-		ReleaseComponents(m_root);
+	if (m_compo_root)
+		ReleaseComponents(m_compo_root);
 }
 
 /*
@@ -371,12 +249,12 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
 
     m_repository = OpenRepository(repositoryname.mb_str());
     if(m_repository) {
-        m_root = LoadComponents(m_repository);
-        if(m_root) {
+        m_compo_root = LoadComponents(m_repository);
+        if(m_compo_root) {
             str = wxT("Loading ") + configname;
             wxGetApp().SetStatusText(str);
             wxLogMessage(wxT("%s"), str.c_str());
-            if(ConfigureComponents(m_repository, m_root, configname.mb_str())) {
+            if(ConfigureComponents(m_repository, m_compo_root, configname.mb_str())) {
                 wxLogMessage(wxT("%s"), GetScriptErrorString());
             }
             else {
@@ -387,7 +265,7 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
                 RegisterLibPath(m_repository, cfg->m_lib_dir.mb_str());
                 RegisterSamplePath(m_repository, cfg->m_app_dir.mb_str());
                 RegisterCompilerPlatform(m_repository, cfg->m_platform.mb_str());
-                if (RefreshComponents(m_repository, m_root)) {
+                if (RefreshComponents(m_repository, m_compo_root)) {
                     wxLogError(wxT("Conflicting configuration"));
                 } else {
                     wxLogMessage(wxT("OK"));
@@ -397,7 +275,6 @@ bool CNutConfDoc::ReadRepository(const wxString & repositoryname, const wxString
         else {
             wxLogMessage(wxT("%s"), GetScriptErrorString());
         }
-//        CloseRepository(m_repository);
     }
     else {
         wxLogError(wxT("Failed to open repository"));
@@ -423,41 +300,7 @@ NUTREPOSITORY * CNutConfDoc::GetRepository()
  */
 NUTCOMPONENT * CNutConfDoc::GetRootComponent()
 {
-    return m_root;
-}
-
-/*!
- *
- */
-void CNutConfDoc::AddChildItems(NUTCOMPONENT * compo, wxTreeItemId parent)
-{
-    CConfigTree *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
-
-    if(compo) {
-        compo = compo->nc_child;
-        while (compo) {
-            CConfigItem *item = new CConfigItem(NULL, compo);
-
-            wxTreeItemId childId = treeCtrl->AppendItem(parent, wxT(""), -1, -1, new CTreeItemData(item));
-            item->SetTreeItem(childId);
-            item->UpdateTreeItem(*treeCtrl);
-            m_items.Append(item);
-
-
-            NUTCOMPONENTOPTION *opts = compo->nc_opts;
-            while (opts) {
-                item = new CConfigItem(item, opts);
-                wxTreeItemId optId = treeCtrl->AppendItem(childId, wxT(""), -1, -1, new CTreeItemData(item));
-                item->SetTreeItem(optId);
-                item->UpdateTreeItem(*treeCtrl);
-                m_items.Append(item);
-                opts = opts->nco_nxt;
-            }
-
-            AddChildItems(compo, childId);
-            compo = compo->nc_nxt;
-        }
-    }
+    return m_compo_root;
 }
 
 /*!
@@ -465,27 +308,12 @@ void CNutConfDoc::AddChildItems(NUTCOMPONENT * compo, wxTreeItemId parent)
  */
 void CNutConfDoc::AddAllItems()
 {
-    CConfigTree *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
-
+    CConfTreeCtrl *treeCtrl = wxGetApp().GetMainFrame()->GetTreeCtrl();
     wxGetApp().GetMainFrame()->GetPropertyListWindow()->Fill(NULL);
-
-    treeCtrl->DeleteAllItems();
-
-    CConfigItem *item = new CConfigItem();
-    wxTreeItemId rootId = treeCtrl->AddRoot(wxT(""), -1, -1, new CTreeItemData(item));
-
-    item->SetTreeItem(rootId);
-    item->UpdateTreeItem(*treeCtrl);
-    m_items.Append(item);
-
-    AddChildItems(m_root, rootId);
-
-    UpdateAllViews();
-
-    if (GetItems().GetCount() > 0) {
-        wxGetApp().GetMainFrame()->GetTreeCtrl()->Expand(rootId);
-    }
-    wxGetApp().GetMainFrame()->GetTreeCtrl()->SetFocus();
+    m_model = new CConfTreeModel(this, m_compo_root);
+    treeCtrl->AssociateModel(m_model);
+    m_model->DecRef();
+    treeCtrl->Expand(m_model->GetRootItem());
 }
 
 /*!
@@ -496,22 +324,179 @@ wxList & CNutConfDoc::GetItems()
     return m_items;
 }
 
-/*!
- * \brief Return a specified item.
- */
-CConfigItem *CNutConfDoc::GetItem(size_t i)
+wxString CNutConfDoc::GetBriefDescription(NUTCOMPONENT * compo) const
 {
-    return (CConfigItem *) m_items[i];
+    wxString str;
+    char *brief;
+
+    if (compo) {
+        brief = GetComponentBrief(m_repository, compo);
+        if (brief) {
+            str = wxString(brief, wxConvLocal);
+            free(brief);
+        } else {
+            str = wxString(compo->nc_name, wxConvLocal);
+        }
+    } else {
+        str = wxT("Nut/OS");
+    }
+    return str;
 }
 
+wxString CNutConfDoc::GetBriefDescription(NUTCOMPONENTOPTION* option) const
+{
+    wxString str;
+    char *brief;
+
+    if (option) {
+        brief = GetOptionBrief(m_repository, option->nco_compo, option->nco_name);
+        if (brief) {
+            str = wxString(brief, wxConvLocal);
+            free(brief);
+        } else {
+            str = wxString(option->nco_name, wxConvLocal);
+        }
+    }
+    return str;
+}
+
+wxString CNutConfDoc::GetDescription(NUTCOMPONENT * compo) const
+{
+    wxString str;
+
+    if (compo) {
+        char *desc = GetComponentDescription(m_repository, compo);
+        if (desc) {
+            str = wxString(desc, wxConvLocal);
+            free(desc);
+        }
+    }
+    return str;
+}
+
+wxString CNutConfDoc::GetDescription(NUTCOMPONENTOPTION* option) const
+{
+    wxString str;
+
+    if (option) {
+        char *desc = GetOptionDescription(m_repository, option->nco_compo, option->nco_name);
+        if (desc) {
+            str = wxString(desc, wxConvLocal);
+            free(desc);
+        }
+    }
+    return str;
+}
+
+nutOptionType CNutConfDoc::GetOptionType(NUTCOMPONENTOPTION* option) const
+{
+    nutOptionType type = nutOptionTypeNone;
+
+    if (option) {
+        char *str = GetOptionTypeString(m_repository, option->nco_compo, option->nco_name);
+        
+        if (str) {
+            if (strcasecmp(str, "integer") == 0) {
+                type = nutInteger;
+            }
+            else if (strcasecmp(str, "bool") == 0) {
+                type = nutBool;
+            }
+            else if (strcasecmp(str, "enumerated") == 0) {
+                type = nutEnumerated;
+            }
+            free(str);
+        }
+        if (type == nutOptionTypeNone) {
+            nutOptionFlavor flavor = GetOptionFlavor(option);
+            if (flavor == nutFlavorBool) {
+                type = nutBool;
+            } 
+            else {
+                type = nutString;
+            }
+        }
+    }
+    return type;
+}
+
+nutOptionFlavor CNutConfDoc::GetOptionFlavor(NUTCOMPONENTOPTION* option) const
+{
+    nutOptionFlavor flavor = nutFlavorNone;
+
+    if (option) {
+        char *str = GetOptionFlavour(m_repository, option->nco_compo, option->nco_name);
+        if (str) {
+            if (strcasecmp(str, "boolean") == 0) {
+                flavor = nutFlavorBool;
+            }
+            else if (strcasecmp(str, "booldata") == 0) {
+                flavor = nutFlavorBoolData;
+            }
+            else {
+                flavor = nutFlavorData;
+            }
+            free(str);
+        }
+    }
+    return flavor;
+}
+
+wxString CNutConfDoc::GetOptionValue(NUTCOMPONENTOPTION* option) const
+{
+    wxString str;
+
+    if (option) {
+        /* First try the edited value. */
+        if (option->nco_value) {
+            str = wxString(option->nco_value, wxConvLocal);
+        } else {
+            /* Get either the configured value or its default. */
+            char *val = GetConfigValueOrDefault(m_repository, option->nco_compo, option->nco_name);
+            if (val) {
+                str = wxString(val, wxConvLocal);
+                free(val);
+            }
+            /* Return the first enumerated item, if no configured or default value. */
+            else if (GetOptionType(option) == nutEnumerated) {
+                char **choices = GetOptionChoices(m_repository, option->nco_compo, option->nco_name);
+                if (choices) {
+                    if (choices[0]) {
+                        str = wxString(choices[0], wxConvLocal);
+                    }
+                    for (int i = 0; choices[i]; i++) {
+                        free(choices[i]);
+                    }
+                    free(choices);
+                }
+            }
+        }
+    }
+    return str;
+}
+
+int CNutConfDoc::GetEnumStrings(NUTCOMPONENTOPTION* option, wxArrayString & arEnumStrings) const
+{
+    if (option) {
+        char **choices = GetOptionChoices(wxGetApp().GetNutConfDoc()->GetRepository(), option->nco_compo, option->nco_name);
+        if (choices) {
+            for (int i = 0; choices[i]; i++) {
+                arEnumStrings.Add(wxString(choices[i], wxConvLocal));
+                free(choices[i]);
+            }
+            free(choices);
+        }
+    }
+    return arEnumStrings.GetCount();
+}
 
 /*!
  * \brief Find NUTCOMPONENTOPTION by name.
  */
-NUTCOMPONENTOPTION *CNutConfDoc::FindOptionByName(NUTCOMPONENT * compo, char *name)
+NUTCOMPONENTOPTION *CNutConfDoc::FindOptionByName(NUTCOMPONENT * compo, char *name) const
 {
-    if (compo == NULL && m_root) {
-        compo = m_root->nc_child;
+    if (compo == NULL && m_compo_root) {
+        compo = m_compo_root->nc_child;
     }
     while (compo) {
         NUTCOMPONENTOPTION *opts = compo->nc_opts;
@@ -532,9 +517,9 @@ NUTCOMPONENTOPTION *CNutConfDoc::FindOptionByName(NUTCOMPONENT * compo, char *na
 /*!
  * \brief Return the activation state of an item with a specified name.
  */
-bool CNutConfDoc::IsOptionActive(char *name)
+bool CNutConfDoc::IsOptionActive(char *name) const
 {
-    NUTCOMPONENTOPTION *opt = FindOptionByName(m_root->nc_child, name);
+    NUTCOMPONENTOPTION *opt = FindOptionByName(m_compo_root->nc_child, name);
 
     if (opt && opt->nco_active) {
         return true;
@@ -600,14 +585,14 @@ bool CNutConfDoc::IsRequirementProvided(NUTCOMPONENT *compo, char *requirement)
 
 bool CNutConfDoc::IsRequirementProvided(char *requirement)
 {
-    return IsRequirementProvided(m_root, requirement);
+    return IsRequirementProvided(m_compo_root, requirement);
 }
 
 void CNutConfDoc::DeactivateOptionList(NUTCOMPONENT *compo, char **exlist)
 {
     if (exlist) {
         if (compo == NULL) {
-            compo = m_root->nc_child;
+            compo = m_compo_root->nc_child;
         }
         for (int i = 0; exlist[i]; i++) {
             NUTCOMPONENTOPTION *opt = FindOptionByName(compo, exlist[i]);
@@ -619,58 +604,10 @@ void CNutConfDoc::DeactivateOptionList(NUTCOMPONENT *compo, char **exlist)
 }
 
 /*!
- * \brief Set value of an integer item.
- */
-bool CNutConfDoc::SetValue(CConfigItem & item, long nValue)
-{
-    wxString str;
-    str.Printf(wxT("%ld"), nValue);
-    return SetValue(item, str);
-}
-
-/*!
- * \brief Set value of a string item.
- */
-bool CNutConfDoc::SetValue(CConfigItem & item, const wxString & strValue)
-{
-    if (item.m_option) {
-        char *newval = strdup(strValue.mb_str());
-
-        /* Check if edited value changed. */
-        if (item.m_option->nco_value == NULL || strcmp(item.m_option->nco_value, newval)) {
-            /* Remove any previously edited value. */
-            if (item.m_option->nco_value) {
-                free(item.m_option->nco_value);
-                item.m_option->nco_value = NULL;
-            }
-            /* Check if new value differs from configured value. */
-            char *cfgval = GetConfigValue(m_repository, item.m_option->nco_name);
-            if ((cfgval == NULL && *newval) || (cfgval && strcmp(cfgval, newval))) {
-                item.m_option->nco_value = newval;
-                item.m_option->nco_active = 1;
-                Modify(true);
-            } else {
-                free(newval);
-            }
-            if (cfgval) {
-                free(cfgval);
-            }
-            CNutConfHint hint(&item, nutValueChanged);
-            UpdateAllViews(NULL, &hint);
-        } else {
-            free(newval);
-        }
-    }
-    return true;
-}
-
-/*!
  * \brief Set value of a boolean item.
  */
-bool CNutConfDoc::SetActive(CConfigItem & item, bool bEnabled)
+void CNutConfDoc::ActiveStateChanged()
 {
-    item.SetActive(bEnabled);
-
     /* Store settings in the Lua registry. */
     CSettings *cfg = wxGetApp().GetSettings();
     RegisterSourcePath(m_repository, cfg->m_source_dir.mb_str());
@@ -679,12 +616,17 @@ bool CNutConfDoc::SetActive(CConfigItem & item, bool bEnabled)
     RegisterSamplePath(m_repository, cfg->m_app_dir.mb_str());
     RegisterCompilerPlatform(m_repository, cfg->m_platform.mb_str());
 
-    RefreshComponents(m_repository, m_root);
+    /* Process dependencies. */
+    RefreshComponents(m_repository, m_compo_root);
     Modify(true);
-    CNutConfHint hint(&item, nutExternallyChanged);
-    UpdateAllViews(NULL, &hint);
 
-    return true;
+    CNutConfHint hint(NULL, nutExternallyChanged);
+    UpdateAllViews(NULL, &hint);
+}
+
+void CNutConfDoc::OptionValueChanged()
+{
+    ActiveStateChanged();
 }
 
 /*!
@@ -721,14 +663,14 @@ bool CNutConfDoc::GenerateBuildTree()
     wxBusyCursor wait;
 
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_buildpath.c_str());
-    if(CreateMakeFiles(m_repository, m_root, cfg->m_buildpath.mb_str(), cfg->m_source_dir.mb_str(),
+    if(CreateMakeFiles(m_repository, m_compo_root, cfg->m_buildpath.mb_str(), cfg->m_source_dir.mb_str(),
                        cfg->m_platform.mb_str(), cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str(),
                        GetInstallDir().mb_str())) {
         return false;
     }
 
     wxLogMessage(wxT("Creating header files in %s"), cfg->m_buildpath.c_str());
-    if(CreateHeaderFiles(m_repository, m_root, cfg->m_buildpath.mb_str())) {
+    if(CreateHeaderFiles(m_repository, m_compo_root, cfg->m_buildpath.mb_str())) {
         return false;
     }
     wxLogMessage(wxT("OK"));
@@ -1116,7 +1058,7 @@ bool CNutConfDoc::GenerateApplicationTree()
     eclipse_dir.Traverse(eclipse_traverser);
 #endif
     wxLogMessage(wxT("Creating Makefiles for %s in %s"), cfg->m_platform.c_str(), cfg->m_app_dir.c_str());
-    if(CreateSampleDirectory(m_repository, m_root, cfg->m_buildpath.mb_str(), cfg->m_app_dir.mb_str(), 
+    if(CreateSampleDirectory(m_repository, m_compo_root, cfg->m_buildpath.mb_str(), cfg->m_app_dir.mb_str(), 
                              cfg->m_source_dir.mb_str(), GetInstallDir().mb_str(), cfg->m_platform.mb_str(), 
                              cfg->m_programmer.mb_str(), cfg->m_firstidir.mb_str(), cfg->m_lastidir.mb_str())) {
         return false;
@@ -1124,3 +1066,4 @@ bool CNutConfDoc::GenerateApplicationTree()
     wxLogMessage(wxT("OK"));
     return true;
 }
+

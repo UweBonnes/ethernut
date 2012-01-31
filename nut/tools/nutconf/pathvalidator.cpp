@@ -19,11 +19,7 @@
  */
 
 /*
- * $Log: pathvalidator.cpp,v $
- * Revision 1.1  2007/04/25 16:00:36  haraldkipp
- * New path validator class allows to check file and directory paths.
- * It further provides automatic slash / backslash translation.
- *
+ * $Id$
  */
 
 #include <wx/tokenzr.h>

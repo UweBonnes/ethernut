@@ -19,27 +19,7 @@
  */
 
 /*
- * $Log: appoptdlg.cpp,v $
- * Revision 1.6  2008/07/24 15:47:20  haraldkipp
- * Use correct ifdefs for path separators.
- *
- * Revision 1.5  2008/03/17 10:22:48  haraldkipp
- * Added more comments.
- *
- * Revision 1.4  2007/04/25 16:01:38  haraldkipp
- * Path entry validator added.
- * Transfer functions return actual result.
- *
- * Revision 1.3  2005/11/24 09:44:30  haraldkipp
- * wxWidget failed to built with unicode support, which results in a number
- * of compile errors. Fixed by Torben Mikael Hansen.
- *
- * Revision 1.2  2005/04/22 15:06:12  haraldkipp
- * Avoid compiler warnings.
- *
- * Revision 1.1  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
+ * $Id$
  */
 
 #ifdef __GNUG__

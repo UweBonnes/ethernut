@@ -1,23 +1,5 @@
 /* ----------------------------------------------------------------------------
  * Copyright (C) 2004 by egnite Software GmbH
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * ----------------------------------------------------------------------------
- * Parts are
- *
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -33,61 +15,11 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  * ----------------------------------------------------------------------------
  */
 
 /*
- * $Log: settings.cpp,v $
- * Revision 1.14  2008/07/29 07:28:54  haraldkipp
- * The default installation path is an empty string.
- *
- * Revision 1.13  2008/07/24 15:45:19  haraldkipp
- * Fixed automatic repository path detection on Linux and OS X.
- *
- * Revision 1.12  2008/03/17 10:20:32  haraldkipp
- * FindAbsoluteDir() now returns an empty string on failure. Previous versions
- * returned the current directory (dot) without any chance for the caller to
- * recognize the error condition. This should fix the forgotten path problem
- * on Linux, but not sure if it works under all conditions.
- *
- * Revision 1.11  2007/09/11 13:42:17  haraldkipp
- * When multiple configurations is enabled, the repository name is now
- * still stored in the root. This seems to solve a lot of problems with
- * lost configurations.
- *
- * Revision 1.10  2007/02/15 19:33:45  haraldkipp
- * Version 1.4.1 works with wxWidgets 2.8.0.
- * Several wide character issues fixed.
- *
- * Revision 1.9  2006/10/21 12:48:18  christianwelzel
- * Added support for multiple configurations / settings
- *
- * Revision 1.8  2006/10/05 17:04:46  haraldkipp
- * Heavily revised and updated version 1.3
- *
- * Revision 1.7  2005/11/24 09:44:30  haraldkipp
- * wxWidget failed to built with unicode support, which results in a number
- * of compile errors. Fixed by Torben Mikael Hansen.
- *
- * Revision 1.6  2005/07/20 09:23:15  haraldkipp
- * Prepend current directory to the default file paths.
- *
- * Revision 1.5  2004/09/17 13:03:48  haraldkipp
- * New settings page for tool options
- *
- * Revision 1.4  2004/09/07 19:20:07  haraldkipp
- * Initial/default lib/inc dirs updated
- *
- * Revision 1.3  2004/08/18 17:22:28  haraldkipp
- * STK500 is the default programmer
- *
- * Revision 1.2  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.1  2004/08/03 15:04:59  haraldkipp
- * Another change of everything
- *
+ * $Id$
  */
 
 #include <wx/filename.h>

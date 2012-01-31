@@ -19,36 +19,7 @@
  */
 
 /*
- * $Log: bldoptdlg.cpp,v $
- * Revision 1.9  2009/01/04 05:19:29  thiagocorrea
- * Fix behavior of "Browse" buttons in page "Build" of Settings dialog.
- *
- * Revision 1.8  2008/07/28 08:41:32  haraldkipp
- * Configurator accepts empty install path for using the default.
- *
- * Revision 1.7  2008/07/24 15:47:21  haraldkipp
- * Use correct ifdefs for path separators.
- *
- * Revision 1.6  2008/03/17 10:22:48  haraldkipp
- * Added more comments.
- *
- * Revision 1.5  2007/04/25 16:01:39  haraldkipp
- * Path entry validator added.
- * Transfer functions return actual result.
- *
- * Revision 1.4  2005/11/24 09:44:30  haraldkipp
- * wxWidget failed to built with unicode support, which results in a number
- * of compile errors. Fixed by Torben Mikael Hansen.
- *
- * Revision 1.3  2005/04/22 15:07:12  haraldkipp
- * Avoid compiler warnings.
- *
- * Revision 1.2  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.1  2004/08/03 15:04:59  haraldkipp
- * Another change of everything
- *
+ * $Id$
  */
 
 #ifdef __GNUG__
@@ -314,7 +285,6 @@ void CBuildOptionsDialog::OnPlatformEnter(wxCommandEvent& WXUNUSED(event))
  */
 void CBuildOptionsDialog::PopulatePlatform()
 {
-    //CSettings *opts = wxGetApp().GetSettings();
     wxString src_dir = m_entSourceDir->GetValue();
     wxString platform = m_cbxPlatform->GetValue();
 

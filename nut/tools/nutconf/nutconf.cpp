@@ -1,106 +1,26 @@
-/*
- * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
+/* ----------------------------------------------------------------------------
+ * Copyright (C) 2008-2012 by egnite GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
+ * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holders nor the names of
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * For additional information see http://www.ethernut.de/
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * ----------------------------------------------------------------------------
  */
 
 /*
- * $Log: nutconf.cpp,v $
- * Revision 1.20  2009/01/15 17:59:04  haraldkipp
- * Fixed a path separator problem for Linux. The editor is now launched
- * again when double clicking the configured header file in the property list.
- *
- * Revision 1.19  2009/01/14 16:24:38  haraldkipp
- * Applied the patch contributed by Joerg Hermann. This finally
- * seems to fix the seg fault crash on KDE4 and Gnome 2.24.
- *
- * Revision 1.18  2008/09/18 09:53:22  haraldkipp
- * Ignore case when comparing the installation directory.
- *
- * Revision 1.17  2008/07/24 15:45:59  haraldkipp
- * More reliable splash screen appearance on Linux.
- *
- * Revision 1.16  2008/03/17 10:18:27  haraldkipp
- * Splash screen must be destroyed, not deleted.
- *
- * Revision 1.15  2007/09/11 13:43:22  haraldkipp
- * Top installation directory will be used for ICCAVR project configuration.
- * Re-building the application tree will no longer override existing project
- * files. Probably no longer in use, but _MCU_enhanced will be replaced by
- * _MCU_extended for ATmega256.
- *
- * Revision 1.14  2007/02/15 19:33:45  haraldkipp
- * Version 1.4.1 works with wxWidgets 2.8.0.
- * Several wide character issues fixed.
- *
- * Revision 1.13  2006/10/21 12:48:17  christianwelzel
- * Added support for multiple configurations / settings
- *
- * Revision 1.12  2006/10/05 17:04:46  haraldkipp
- * Heavily revised and updated version 1.3
- *
- * Revision 1.11  2005/11/24 09:44:30  haraldkipp
- * wxWidget failed to built with unicode support, which results in a number
- * of compile errors. Fixed by Torben Mikael Hansen.
- *
- * Revision 1.10  2005/07/22 18:47:15  haraldkipp
- * Online help added and Copyright year updated.
- *
- * Revision 1.9  2005/07/20 09:22:18  haraldkipp
- * Make mime types work on Linux
- *
- * Revision 1.8  2005/04/22 15:16:57  haraldkipp
- * Upgraded to wxWidgets 2.5.5.
- *
- * Revision 1.7  2004/11/24 15:36:53  haraldkipp
- * Release 1.1.1.
- * Do not store empty options.
- * Remove include files from the build tree, if they are no longer used.
- * Command line parameter 's' allows different settings.
- * Minor compiler warning fixed.
- *
- * Revision 1.6  2004/09/26 12:04:07  drsung
- * Fixed several hundred memory leaks :-).
- * Relative pathes can now be used for source, build and install directory.
- *
- * Revision 1.5  2004/09/17 13:09:29  haraldkipp
- * New settings page for tool options
- *
- * Revision 1.4  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.3  2004/08/03 15:03:25  haraldkipp
- * Another change of everything
- *
- * Revision 1.2  2004/06/07 16:08:07  haraldkipp
- * Complete redesign based on eCos' configtool
- *
+ * $Id$
  */
 
 #include <wx/wxprec.h>
@@ -150,14 +70,15 @@ bool NutConfApp::OnInit()
 
     static const wxCmdLineEntryDesc cmdLineDesc[] =
     {
-        { wxCMD_LINE_SWITCH, wxT("v"), _T("verbose"), _T("be verbose"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL },
-        { wxCMD_LINE_SWITCH, wxT("h"), _T("help"), _T("show usage"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
-        { wxCMD_LINE_OPTION, wxT("s"), _T("settings"), _T("use alternate settings"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_NEEDS_SEPARATOR },
+        { wxCMD_LINE_SWITCH, "v", "verbose", "be verbose", wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL },
+        { wxCMD_LINE_SWITCH, "h", "help", "show usage", wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+        { wxCMD_LINE_OPTION, "s", "settings", "use alternate settings", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_NEEDS_SEPARATOR },
         { wxCMD_LINE_NONE }
     };
 
     wxCmdLineParser parser(cmdLineDesc, argc, argv);
     parser.SetLogo(_T("Nut/OS Configurator\n") _T(VERSION)
+                      _T("Copyright (c) 2008-2012 by egnite GmbH\n")
                       _T("Copyright (c) 2004-2007 by egnite Software GmbH\n")
                       _T("Copyright (C) 1998, 1999, 2000 Red Hat, Inc."));
     if(parser.Parse()) {
@@ -169,16 +90,6 @@ bool NutConfApp::OnInit()
     else {
         wxLog::GetActiveTarget()->SetVerbose(false);
     }
-
-    /*
-     * Splash display.
-     */
-    wxBitmap bmp(wxBITMAP(SSB_NUTCONF));
-    wxSplashScreen* splash = new wxSplashScreen(bmp,
-          wxSPLASH_CENTRE_ON_SCREEN,
-          0, NULL, -1, wxDefaultPosition, wxDefaultSize,
-          wxSIMPLE_BORDER|wxSTAY_ON_TOP);
-    wxYield();
 
     wxImage::AddHandler(new wxGIFHandler);
     wxImage::AddHandler(new wxPNGHandler);
@@ -212,8 +123,15 @@ bool NutConfApp::OnInit()
     /*
      * The document template defines the relationship between document and view.
      */
-    new wxDocTemplate(m_docManager, wxT("Nut/OS Configuration"), wxT("*.conf"), wxT(""), wxT("conf"), wxT("NutconfDoc"), wxT("NutconfView"),
-                                             CLASSINFO(CNutConfDoc), CLASSINFO(CNutConfView));
+    new wxDocTemplate(m_docManager,     /* Manages this object. */
+        wxT("Nut/OS Configuration"),    /* Displayed in the file selector. */
+        wxT("*.conf"),                  /* File filter. */
+        wxT(""),                        /* Default directory. */
+        wxT("conf"),                    /* Default file extension. */
+        wxT("NutconfDoc"),              /* Unique document type name. */
+        wxT("NutconfView"),             /* Unique view type name. */
+        CLASSINFO(CNutConfDoc),         /* Document class info. */
+        CLASSINFO(CNutConfView));       /* View class info. */
     m_docManager->SetMaxDocsOpen(1);
 
     m_mainFrame = new CMainFrame(m_docManager, wxT("Nut/OS Configurator"));
@@ -254,13 +172,23 @@ bool NutConfApp::OnInit()
     }
 
     /*
+     * Splash display.
+     */
+    wxSplashScreen* splash = new wxSplashScreen(
+          wxBITMAP(SSB_NUTCONF),
+          wxSPLASH_CENTRE_ON_PARENT | wxSPLASH_TIMEOUT,
+          2000, m_mainFrame, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+          wxSIMPLE_BORDER|wxSTAY_ON_TOP);
+
+    /*
      * Create the document. 
      */
     m_docManager->CreateDocument(m_settings->m_configname, 0);
-
+#ifdef __WXMSW__
     if(splash) {
         splash->Destroy();
     }
+#endif
     return true;
 }
 
@@ -325,7 +253,7 @@ bool NutConfApp::Launch(const wxString & strFileName, const wxString & strViewer
         cmd = strViewer + wxString(wxT(" ")) + filePath;
     } else {
         wxString path, filename, ext;
-        wxSplitPath(filePath, &path, &filename, &ext);
+         wxFileName::SplitPath(filePath, &path, &filename, &ext);
 
         wxFileType *ft = wxTheMimeTypesManager->GetFileTypeFromExtension(ext);
         if (ft == NULL) {

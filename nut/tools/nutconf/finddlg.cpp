@@ -22,8 +22,6 @@
 
 #include "nutconf.h"
 #include "nutconfdoc.h"
-#include "configtree.h"
-#include "treeitemdata.h"
 #include "finddlg.h"
 
 #include <wx/app.h>
@@ -46,6 +44,7 @@ CFindDialog::CFindDialog(wxWindow *parent, const wxString& title, long style)
 void CFindDialog::OnFind(wxFindDialogEvent& event)
 {
     wxString string = event.GetFindString();
+#if 0
     bool matchCase = ((event.GetFlags() & wxFR_MATCHCASE) != 0);
     bool matchWord = ((event.GetFlags() & wxFR_WHOLEWORD) != 0);
 
@@ -66,6 +65,7 @@ void CFindDialog::OnFind(wxFindDialogEvent& event)
     else {
         wxMessageBox(wxT("No more matches."), wxT("Search"), wxOK | wxICON_INFORMATION, this);
     }
+#endif
 }
 
 void CFindDialog::OnClose(wxFindDialogEvent& event)

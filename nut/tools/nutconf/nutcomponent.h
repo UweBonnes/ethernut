@@ -2,7 +2,10 @@
 #define _NUTCOMPONENT_H_
 
 /*
- * Copyright (C) 2003-2005 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2008-2012 by egnite GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,11 +20,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -33,43 +36,8 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*
- * $Log$
- * Revision 1.11  2008/07/24 15:41:41  haraldkipp
- * Dynamic configuration.
- *
- * Revision 1.10  2008/03/17 10:16:16  haraldkipp
- * Tool version 1.5.0. Starts working on OS X, though, still
- * problems with scrolling the split tree.
- *
- * Revision 1.9  2006/10/05 17:04:46  haraldkipp
- * Heavily revised and updated version 1.3
- *
- * Revision 1.8  2005/10/07 22:12:28  hwmaier
- * Added bld_dir parameter to CreateSampleDirectory.
- *
- * Revision 1.7  2005/07/26 15:52:15  haraldkipp
- * Default values will not be stored in conf files
- *
- * Revision 1.6  2005/07/20 09:21:35  haraldkipp
- * More comments
- *
- * Revision 1.5  2004/09/26 12:04:07  drsung
- * Fixed several hundred memory leaks :-).
- * Relative pathes can now be used for source, build and install directory.
- *
- * Revision 1.4  2004/09/17 13:02:39  haraldkipp
- * First and last directory added to sample dir
- *
- * Revision 1.3  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.2  2004/08/03 15:03:25  haraldkipp
- * Another change of everything
- *
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
- *
+/*!
+ * $Id$
  */
 
 /* This construct avoids automatic indention. */

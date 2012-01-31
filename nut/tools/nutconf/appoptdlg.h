@@ -2,6 +2,7 @@
 #define APPOPTDLG_H_
 
 /* ----------------------------------------------------------------------------
+ * Copyright (C) 2008-2012 by egnite GmbH
  * Copyright (C) 2004-2007 by egnite Software GmbH
  * Copyright (C) 1998, 1999, 2000 Red Hat, Inc.
  *
@@ -23,16 +24,7 @@
  */
 
 /*
- * $Log$
- * Revision 1.3  2008/03/17 10:22:48  haraldkipp
- * Added more comments.
- *
- * Revision 1.2  2006/10/05 17:04:45  haraldkipp
- * Heavily revised and updated version 1.3
- *
- * Revision 1.1  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
+ * $Id$
  */
 
 #include <wx/wx.h>

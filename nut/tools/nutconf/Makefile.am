@@ -74,19 +74,16 @@ if BUILD_NUTCONF_GUI
 
 bin_PROGRAMS += nutconf
 
-nutconf_SOURCES = nutconf.cpp nutcomponent.c appoptdlg.cpp bldoptdlg.cpp \
-configitem.cpp configtree.cpp enumeditctrl.cpp iconinfo.cpp iconlist.cpp \
-infowindow.cpp inteditctrl.cpp mainframe.cpp nutconfdoc.cpp nutconfhint.cpp \
-nutconfview.cpp propertylist.cpp repoptdlg.cpp scrolledtree.cpp settings.cpp \
-settingsdlg.cpp splitscroll.cpp texteditctrl.cpp tooloptdlg.cpp treecomp.cpp \
-treeitemdata.cpp utils.cpp valuewindow.cpp finddlg.cpp pathvalidator.cpp \
-appoptdlg.h iconinfo.h nutconfdoc.h scrolledtree.h treeitemdata.h \
-bldoptdlg.h iconlist.h nutconf.h settingsdlg.h utils.h \
-configitem.h ids.h nutconfhint.h settings.h valuewindow.h \
-configtree.h infowindow.h nutconfview.h splitscroll.h \
-inteditctrl.h propertylist.h texteditctrl.h \
-enumeditctrl.h mainframe.h repoptdlg.h tooloptdlg.h \
-nutcomponent.h resource.h treecomp.h finddlg.h pathvalidator.h \
+nutconf_SOURCES = appoptdlg.cpp conftreectrl.cpp confvalrender.h infowindow.h \
+nutcomponent.c nutconfhint.h propertylist.h settings.h appoptdlg.h conftreectrl.h \
+mainframe.cpp nutcomponent.h nutconf.rc repoptdlg.cpp stateicontext.cpp \
+conftreemodel.cpp finddlg.cpp mainframe.h nutconf.cpp nutconfview.cpp repoptdlg.h \
+stateicontext.h bldoptdlg.cpp conftreemodel.h finddlg.h nutconfdoc.cpp nutconfview.h \
+resource.h tooloptdlg.cpp bldoptdlg.h conftreenode.cpp nutconfdoc.h \
+pathvalidator.cpp settings.cpp tooloptdlg.h confitemrender.cpp conftreenode.h \
+ids.h nutconf.h pathvalidator.h settingsdlg.cpp utils.cpp confitemrender.h \
+confvalrender.cpp infowindow.cpp nutconfhint.cpp propertylist.cpp settingsdlg.h \
+utils.h \
 bitmaps/application.xpm \
 bitmaps/building_large.xpm bitmaps/building.xpm \
 bitmaps/checked_dis.xpm bitmaps/module.xpm \

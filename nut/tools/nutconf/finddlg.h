@@ -17,22 +17,16 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  * ----------------------------------------------------------------------------
  */
 
 /*
- * $Log$
- * Revision 1.1  2006/10/05 17:04:46  haraldkipp
- * Heavily revised and updated version 1.3
- *
+ * $Id$
  */
 
 #include <wx/wx.h>
 #include <wx/config.h>
 #include <wx/fdrepdlg.h>
-
-#include "configitem.h"
 
 class CFindDialog: public wxFindReplaceDialog
 {

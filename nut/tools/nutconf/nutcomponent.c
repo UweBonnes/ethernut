@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2004-2007 by egnite Software GmbH. All rights reserved.
+ * Copyright (C) 2008-2012 by egnite GmbH
+ * Copyright (C) 2004-2007 by egnite Software GmbH
+ *
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,11 +17,11 @@
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY EGNITE SOFTWARE GMBH AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL EGNITE
- * SOFTWARE GMBH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
  * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
@@ -28,143 +31,10 @@
  * SUCH DAMAGE.
  *
  * For additional information see http://www.ethernut.de/
- *
  */
 
-/*
- * $Log$
- * Revision 1.39  2009/01/09 18:50:50  haraldkipp
- * Re-introduced support for Lua 5.0.
- *
- * Revision 1.38  2009/01/04 04:52:39  thiagocorrea
- * Add .svn to ignore list when copying files and reduce some duplicated code.
- *
- * Revision 1.37  2009/01/04 04:35:45  thiagocorrea
- * Update lua initialization to conform to lua 5.x API change.
- * This change should still be compatible with 4.x.
- *
- * Revision 1.36  2008/09/18 09:52:42  haraldkipp
- * Version 2.0.6 fixes a few memory holes and avoids empty macro definitions
- * for items with "integer" flavor.
- *
- * Revision 1.35  2008/08/29 15:03:04  haraldkipp
- * Fixed Configurator bug #2082123. Options now correctly enabled.
- *
- * Revision 1.34  2008/08/28 11:09:29  haraldkipp
- * Added Lua extension to query specific provisions.
- *
- * Revision 1.33  2008/08/20 07:00:33  haraldkipp
- * Incremented build number because of bad package. No code change.
- *
- * Revision 1.32  2008/07/29 07:30:30  haraldkipp
- * Make sure that children of a disabled parents are disabled too.
- *
- * Revision 1.31  2008/07/28 08:41:32  haraldkipp
- * Configurator accepts empty install path for using the default.
- *
- * Revision 1.30  2008/07/24 15:41:41  haraldkipp
- * Dynamic configuration.
- *
- * Revision 1.29  2008/03/17 10:22:49  haraldkipp
- * Added more comments.
- *
- * Revision 1.28  2007/09/11 14:19:50  haraldkipp
- * Use avr-dude as default.
- *
- * Revision 1.27  2007/04/25 15:59:17  haraldkipp
- * Version 1.4.2 had been tested with wxWidgets 2.8.3.
- *
- * Revision 1.26  2007/02/15 19:33:45  haraldkipp
- * Version 1.4.1 works with wxWidgets 2.8.0.
- * Several wide character issues fixed.
- *
- * Revision 1.25  2006/10/06 17:49:57  haraldkipp
- * MAX_PATH is unknown to Linux.
- *
- * Revision 1.24  2006/10/05 17:04:46  haraldkipp
- * Heavily revised and updated version 1.3
- *
- * Revision 1.23  2005/11/22 09:20:22  haraldkipp
- * Removed modification of a relative top_blddir path.
- *
- * Revision 1.22  2005/10/07 22:36:00  hwmaier
- * Removed generation of -DETHERNUT2 entry for UserConf.mk as this can now accomplished by the PLATFORM macro.
- *
- * Revision 1.21  2005/10/07 22:11:59  hwmaier
- * Changed LoadComponents to parse options in root level.
- * Added bld_dir parameter to CreateSampleDirectory.
- *
- * Revision 1.20  2005/09/07 16:24:23  christianwelzel
- * Changed handling of default parameters. Nutconf now creates all default
- * parameter defines within header files.
- *
- * Revision 1.19  2005/07/26 15:55:36  haraldkipp
- * Version 1.2.3.
- * Added new keyword "default" to specify default values. They will no
- * longer appear in the conf files and we can remove the booldata flavor
- * from most options.
- * Bugfix: Options will now be recognized in all sublevels.
- *
- * Revision 1.18  2005/07/20 09:21:10  haraldkipp
- * Allow subdivided modules
- *
- * Revision 1.17  2005/05/25 09:59:53  haraldkipp
- * Bugfix: Absolute application path for top_appdir pointed to source directory.
- *
- * Revision 1.16  2005/04/28 16:18:22  haraldkipp
- * Autoconfiscated
- *
- * Revision 1.15  2005/04/22 15:16:01  haraldkipp
- * Can now run without GUI.
- *
- * Revision 1.14  2005/02/26 12:13:40  drsung
- * Added support for relative paths for sample application directory.
- *
- * Revision 1.13  2005/02/06 16:39:52  haraldkipp
- * GBA linker script entry in NutConf.mk fixed
- *
- * Revision 1.12  2004/11/24 15:36:53  haraldkipp
- * Release 1.1.1.
- * Do not store empty options.
- * Remove include files from the build tree, if they are no longer used.
- * Command line parameter 's' allows different settings.
- * Minor compiler warning fixed.
- *
- * Revision 1.11  2004/09/26 13:25:00  drsung
- * Fixed call to strdup.
- *
- * Revision 1.10  2004/09/26 12:04:07  drsung
- * Fixed several hundred memory leaks :-).
- * Relative pathes can now be used for source, build and install directory.
- *
- * Revision 1.9  2004/09/19 15:13:09  haraldkipp
- * Only one target per OBJx entry
- *
- * Revision 1.8  2004/09/17 13:02:18  haraldkipp
- * First and last directory added to sample dir
- *
- * Revision 1.7  2004/09/07 19:18:11  haraldkipp
- * Trying to get additional .S and .c targets assembled/compiled.
- * ETHERNUT2 default for newly created UserConf.mk.
- *
- * Revision 1.6  2004/08/18 16:06:03  haraldkipp
- * Use consistent directory structure
- *
- * Revision 1.5  2004/08/18 15:36:25  haraldkipp
- * Phony target clean divided
- *
- * Revision 1.4  2004/08/18 14:05:22  haraldkipp
- * Fill error text if script not found
- *
- * Revision 1.3  2004/08/18 13:34:20  haraldkipp
- * Now working on Linux
- *
- * Revision 1.2  2004/08/03 15:03:25  haraldkipp
- * Another change of everything
- *
- * Revision 1.1  2004/06/07 16:11:22  haraldkipp
- * Complete redesign based on eCos' configtool
- *
+/*!
+ * $Id$
  */
 
 /*
@@ -193,8 +63,10 @@
 #include "dirent.h"
 #define mkdir(P, M) _mkdir(P)
 #define access _access
-#define strcasecmp stricmp
-#define strncasecmp strnicmp
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define strdup _strdup
+#define unlink _unlink
 
 #else
 
