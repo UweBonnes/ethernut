@@ -30,8 +30,10 @@
     #pragma hdrstop
 #endif
 
+#ifdef __WXMSW__
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+#endif
 
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -44,6 +46,8 @@
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 #endif
 
 #include "udpthread.h"
