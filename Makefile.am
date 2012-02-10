@@ -70,7 +70,23 @@ nut/Makedefs.h8-gcc nut/Makerules.h8-gcc \
 nut/Makedefs.unix-gcc nut/Makerules.unix-gcc \
 ChangeLog20090309 nut/tools/packaging/distcheck.lua
 
-SUBDIRS = nut/doc nut/tools/crurom nut/tools/nutconf nut/tools/nutdisc nut/tools/linux
+SUBDIRS = nut/doc nut/tools/linux
+
+if ENABLE_CRUROM
+SUBDIRS += nut/tools/crurom 
+endif
+
+if ENABLE_NUTCONF
+SUBDIRS += nut/tools/nutconf
+endif
+
+if ENABLE_QNUTCONF
+SUBDIRS += nut/tools/qnutconf 
+endif
+
+if ENABLE_NUTDISC
+SUBDIRS += nut/tools/nutdisc
+endif
 
 dist-hook:
 	mkdir -p $(distdir)/nut/app
