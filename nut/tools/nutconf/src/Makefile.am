@@ -30,21 +30,19 @@ nutconf_SOURCES = \
 	appoptdlg.h       \
 	bldoptdlg.cpp     \
 	bldoptdlg.h       \
-	configitem.cpp    \
-	configitem.h      \
-	configtree.cpp    \
-	configtree.h      \
-	enumeditctrl.cpp  \
-	enumeditctrl.h    \
-	iconinfo.cpp      \
-	iconinfo.h        \
-	iconlist.cpp      \
-	iconlist.h        \
+	confitemrender.cpp \
+	confitemrender.h  \
+	conftreectrl.cpp  \
+	conftreectrl.h    \
+	conftreemodel.cpp \
+	conftreemodel.h   \
+	conftreenode.cpp  \
+	conftreenode.h    \
+	confvalrender.cpp \
+	confvalrender.h   \
 	ids.h             \
 	infowindow.cpp    \
 	infowindow.h      \
-	inteditctrl.cpp   \
-	inteditctrl.h     \
 	mainframe.cpp     \
 	mainframe.h       \
 	nutconfdoc.cpp    \
@@ -57,26 +55,16 @@ nutconf_SOURCES = \
 	propertylist.h    \
 	repoptdlg.cpp     \
 	repoptdlg.h       \
-	scrolledtree.cpp  \
-	scrolledtree.h    \
 	settings.cpp      \
 	settings.h        \
 	settingsdlg.cpp   \
 	settingsdlg.h     \
-	splitscroll.cpp   \
-	splitscroll.h     \
-	texteditctrl.cpp  \
-	texteditctrl.h    \
+	stateicontext.cpp \
+	stateicontext.h   \
 	tooloptdlg.cpp    \
 	tooloptdlg.h      \
-	treecomp.cpp      \
-	treecomp.h        \
-	treeitemdata.cpp  \
-	treeitemdata.h    \
 	utils.cpp         \
 	utils.h           \
-	valuewindow.cpp   \
-	valuewindow.h     \
 	finddlg.cpp       \
 	finddlg.h         \
 	pathvalidator.cpp \
