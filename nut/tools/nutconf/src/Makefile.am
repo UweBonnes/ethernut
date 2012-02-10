@@ -1,24 +1,104 @@
 ## Process this file with automake to produce Makefile.in
+
 ## Created by Anjuta
 
-SUBDIRS = src 
+AM_CPPFLAGS = \
+	$(WX_CXXFLAGS) \
+	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
+	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
+	-DPACKAGE_DATA_DIR=\""$(datadir)"\" $(NUTCONF_CFLAGS)
 
-nutconfdocdir = ${prefix}/doc/nutconf
-nutconfdoc_DATA = \
-	README\
-	COPYING\
-	AUTHORS\
-	ChangeLog\
-	INSTALL\
-	NEWS
+AM_CFLAGS =\
+	 -Wall \
+	 -g \
+	 $(WX_CPPFLAGS) \
+	 -I$(srcdir)
 
 
-EXTRA_DIST = $(nutconfdoc_DATA)
+bin_PROGRAMS = nutconfigure
 
-dist-hook:
-	mkdir -p $(distdir)/src/bitmaps
-	cp -R $(srcdir)/src/bitmaps/* $(distdir)/src/bitmaps/
+if BUILD_NUTCONF_GUI
 
-# Remove doc directory on uninstall
-uninstall-local:
-#	-rm -rv $(nutconfdocdir)
+bin_PROGRAMS += nutconf
+
+nutconf_SOURCES = \
+	nutconf.cpp       \
+	nutconf.h         \
+	nutcomponent.c    \
+	nutcomponent.h    \
+	appoptdlg.cpp     \
+	appoptdlg.h       \
+	bldoptdlg.cpp     \
+	bldoptdlg.h       \
+	configitem.cpp    \
+	configitem.h      \
+	configtree.cpp    \
+	configtree.h      \
+	enumeditctrl.cpp  \
+	enumeditctrl.h    \
+	iconinfo.cpp      \
+	iconinfo.h        \
+	iconlist.cpp      \
+	iconlist.h        \
+	ids.h             \
+	infowindow.cpp    \
+	infowindow.h      \
+	inteditctrl.cpp   \
+	inteditctrl.h     \
+	mainframe.cpp     \
+	mainframe.h       \
+	nutconfdoc.cpp    \
+	nutconfdoc.h      \
+	nutconfhint.cpp   \
+	nutconfhint.h     \
+	nutconfview.cpp   \
+	nutconfview.h     \
+	propertylist.cpp  \
+	propertylist.h    \
+	repoptdlg.cpp     \
+	repoptdlg.h       \
+	scrolledtree.cpp  \
+	scrolledtree.h    \
+	settings.cpp      \
+	settings.h        \
+	settingsdlg.cpp   \
+	settingsdlg.h     \
+	splitscroll.cpp   \
+	splitscroll.h     \
+	texteditctrl.cpp  \
+	texteditctrl.h    \
+	tooloptdlg.cpp    \
+	tooloptdlg.h      \
+	treecomp.cpp      \
+	treecomp.h        \
+	treeitemdata.cpp  \
+	treeitemdata.h    \
+	utils.cpp         \
+	utils.h           \
+	valuewindow.cpp   \
+	valuewindow.h     \
+	finddlg.cpp       \
+	finddlg.h         \
+	pathvalidator.cpp \
+	pathvalidator.h
+
+nutconf_CXXFLAGS = @WX_CXXFLAGS@ 
+
+nutconf_LDFLAGS = 
+
+nutconf_LDADD = \
+	$(WX_LIBS) \
+	$(NUTCONF_LIBS)
+
+endif
+
+nutconfigure_SOURCES = \
+	nutcomponent.c \
+	nutcomponent.h
+
+nutconfigure_CPPFLAGS = \
+	-DNUT_CONFIGURE_EXEC \
+	$(NUTCONF_CFLAGS)
+
+nutconfigure_LDADD = $(NUTCONF_LIBS)
+
