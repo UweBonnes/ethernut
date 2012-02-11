@@ -13,8 +13,6 @@ MAINTAINERCLEANFILES = \
 	aclocal.m4 \
 	install-sh
 
-if BUILD_NUTDISC
-
 SUBDIRS = src 
 
 nutdiscdocdir = ${prefix}/doc/nutdisc
@@ -33,6 +31,5 @@ EXTRA_DIST = $(nutdiscdoc_DATA)
 
 # Remove doc directory on uninstall
 uninstall-local:
-	-rm -r $(nutdiscdocdir)
+#	-rm -r $(nutdiscdocdir)
 
-endif

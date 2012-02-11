@@ -2,9 +2,11 @@
 
 ## Created by Anjuta
 
+PROPGRIDLIBNAME = libwx_gtk2_propgrid-2.9.a
+
 MAINTAINERCLEANFILES = Makefile.in
 
-PROPGRIDLIBNAME = libwx_gtk2_propgrid-2.8.a
+if BUILD_NUTDISC
 
 AM_CPPFLAGS = \
 	$(WX_CXXFLAGS) \
@@ -17,7 +19,6 @@ AM_CFLAGS =\
 	 -g \
 	 $(WX_CPPFLAGS)
 
-
 bin_PROGRAMS = nutdisc
 
 nutdisc_SOURCES = \
@@ -26,6 +27,8 @@ nutdisc_SOURCES = \
 	mainframe.h       \
 	nutdisc.cpp       \
 	nutdisc.h         \
+	options.cpp	  \
+	options.h	  \
 	propdialog.cpp    \
 	propdialog.h      \
 	resource.h        \
@@ -40,15 +43,16 @@ nutdisc_SOURCES = \
 
 nutdisc_CXXFLAGS = @WX_CXXFLAGS@ 
 
-nutdisc_LDFLAGS = 
+if PROPGRID_LOCAL
+nutdisc_LDADD = /usr/local/lib/$(PROPGRIDLIBNAME)
+else
+nutdisc_LDADD = /usr/lib/$(PROPGRIDLIBNAME)
+endif
 
-nutdisc_LDADD = \
+nutdisc_LDADD += \
 	$(WX_LIBS) \
 	$(NUTDISC_LIBS)
 
-if PROPGRID_LOCAL
-nutdisc_LDADD += /usr/local/lib/$(PROPGRIDLIBNAME)
-else
-nutdisc_LDADD += /usr/lib/$(PROPGRIDLIBNAME)
 endif
+
 
