@@ -90,6 +90,7 @@ MOC_SOURCES = \
 	moc_mainwindow.cpp               \
 	moc_nutcomponentdelegate.cpp     \
 	moc_nutcomponentdetailsmodel.cpp \
+	moc_nutcomponentmodelfilterproxy.cpp \
 	moc_nutcomponentmodel.cpp        \
 	moc_settings.cpp                 \
 	moc_settingsdialog.cpp
@@ -124,14 +125,16 @@ qnutconf_SOURCES =          \
 	mainwindow.h            \
 	nutcomponent.c          \
 	nutcomponent.h          \
+	nutcomponentdelegate.cpp\
+	nutcomponentdelegate.h  \
 	nutcomponentmodel.cpp   \
 	nutcomponentmodel.h     \
+	nutcomponentmodelfilterproxy.cpp \
+	nutcomponentmodelfilterproxy.h \
 	nutcomponentdetailsmodel.cpp   \
 	nutcomponentdetailsmodel.h     \
 	nutcomponentmodel_p.cpp \
 	nutcomponentmodel_p.h   \
-    nutcomponentdelegate.cpp\
-    nutcomponentdelegate.h  \
 	settings.cpp            \
 	settings.h              \
 	settingsdialog.cpp      \
