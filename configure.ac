@@ -1,14 +1,15 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Created by Anjuta application wizard.
 
-AC_INIT(ethernut, 4.99)
+AC_INIT(ethernut, 5.0.1)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (C) 2005-2011 Ethernut Project])
+AC_COPYRIGHT([Copyright (C) 2005-2012 Ethernut Project])
 AC_REVISION($Revision$)
 
 
 AC_CONFIG_SRCDIR(README)
+AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AC_CONFIG_HEADERS([config.h])

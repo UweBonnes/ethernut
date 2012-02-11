@@ -42,6 +42,7 @@
 #
 #
 
+ACLOCAL_AMFLAGS = -I m4
 MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = nutdoc_en.txt nut_en.cfg.in nut_en.css nut_entabs.css nutfoot.html nuthead.html

@@ -2,6 +2,7 @@
 
 ## Created by Anjuta
 
+ACLOCAL_AMFLAGS = -I m4
 PROPGRIDLIBNAME = libwx_gtk2_propgrid-2.9.a
 
 MAINTAINERCLEANFILES = Makefile.in

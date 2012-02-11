@@ -51,6 +51,7 @@
 #
 #
 
+ACLOCAL_AMFLAGS = -I m4
 MAINTAINERCLEANFILES = depcomp compile missing install-sh
 
 EXTRA_DIST = nut/nutsetup reconf \

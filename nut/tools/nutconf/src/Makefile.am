@@ -2,6 +2,7 @@
 
 ## Created by Anjuta
 
+ACLOCAL_AMFLAGS = -I m4
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CPPFLAGS = \
