@@ -3,6 +3,8 @@
 ## **************************************************************************
 ## Process this file with automake to produce Makefile.in
 
+MAINTAINERCLEANFILES = Makefile.in
+
 DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DNUTCONF_VERSION_STR=\"3.0.0\"
 
 ## UI compiler

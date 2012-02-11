@@ -3,6 +3,18 @@
 ## **************************************************************************
 ## Process this file with automake to produce Makefile.in
 
+MAINTAINERCLEANFILES = \
+	configure \
+	Makefile.in \
+	depcomp \
+	config.guess \
+	config.sub \
+	ltmain.sh \
+	config.h.in \
+	missing \
+	aclocal.m4 \
+	install-sh
+
 SUBDIRS = src 
 
 qnutconfdocdir = ${prefix}/doc/qnutconf

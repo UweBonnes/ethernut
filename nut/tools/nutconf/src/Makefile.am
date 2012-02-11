@@ -2,6 +2,8 @@
 
 ## Created by Anjuta
 
+MAINTAINERCLEANFILES = Makefile.in
+
 AM_CPPFLAGS = \
 	$(WX_CXXFLAGS) \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \

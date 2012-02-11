@@ -1,6 +1,18 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
+MAINTAINERCLEANFILES = \
+	configure \
+	Makefile.in \
+	depcomp \
+	config.guess \
+	config.sub \
+	ltmain.sh \
+	config.h.in \
+	missing \
+	aclocal.m4 \
+	install-sh
+
 if BUILD_NUTDISC
 
 SUBDIRS = src 

@@ -2,6 +2,8 @@
 
 ## Created by Anjuta
 
+MAINTAINERCLEANFILES = Makefile.in
+
 PROPGRIDLIBNAME = libwx_gtk2_propgrid-2.8.a
 
 AM_CPPFLAGS = \
