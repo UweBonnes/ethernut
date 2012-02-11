@@ -59,7 +59,7 @@ ref-build.stamp: nut_en.cfg nutdoc_en.txt nut_en.css nutfoot.html nuthead.html
 
 dist-hook:
 	mkdir -p $(distdir)/../en
-	cp -r ../en/* $(distdir)/../en/
+#	cp -r ../en/* $(distdir)/../en/
 endif
 
 distclean-local: clean
