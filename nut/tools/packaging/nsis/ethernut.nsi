@@ -8,7 +8,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT  "Nut/OS"
 !define NUTVERSION  "5.0"
-!define NUTRELEASE  "1"
+!define NUTRELEASE  "2"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
@@ -263,6 +263,15 @@ SectionGroup "Manuals"
     File ..\..\..\doc\en\html\search\*.css
     File ..\..\..\doc\en\html\search\*.js
     File ..\..\..\doc\en\html\search\*.png
+    SetOutPath "$INSTDIR\nut\doc\gen"
+    File ..\..\..\doc\gen\*.in
+    File ..\..\..\doc\gen\*.cfg
+    File ..\..\..\doc\gen\*.css
+    File ..\..\..\doc\gen\*.html
+    File ..\..\..\doc\gen\*.png
+    File ..\..\..\doc\gen\*.txt
+    SetOutPath "$INSTDIR\nut\doc\images"
+    File ..\..\..\doc\images\*.gif
     SetOutPath "$INSTDIR"
     FILE ..\..\..\doc\en\chm\nutosapiref.chm
     FILE ..\..\..\doc\en\chm\nutosapiref.chi
@@ -741,6 +750,28 @@ SectionGroup "Ethernut Bootloaders"
     File ..\..\..\boot\bootmon\*.S
     File ..\..\..\boot\bootmon\*.ld
     File ..\..\..\boot\bootmon\*.jom
+  SectionEnd
+  Section "AT91SAM7X (at91sam7x_bootloader)" SecBoot30
+    SectionIn 1 2 3
+    SetOutPath "$INSTDIR\nut\boot\at91sam7x_bootloader"
+    File ..\..\..\boot\at91sam7x_bootloader\Make*
+    File ..\..\..\boot\at91sam7x_bootloader\*.c
+    File ..\..\..\boot\at91sam7x_bootloader\*.h
+    File ..\..\..\boot\at91sam7x_bootloader\Readme.txt
+    SetOutPath "$INSTDIR\nut\boot\at91sam7x_bootloader\demo"
+    File ..\..\..\boot\at91sam7x_bootloader\demo\Make*
+    File ..\..\..\boot\at91sam7x_bootloader\demo\*.c
+  SectionEnd
+  Section "AT91SAM7S (xloader7)" SecBoot30
+    SectionIn 1 2 3
+    SetOutPath "$INSTDIR\nut\boot\xloader7"
+    File ..\..\..\boot\xloader7\Make*
+    File ..\..\..\boot\xloader7\*.c
+    File ..\..\..\boot\xloader7\*.h
+    File ..\..\..\boot\xloader7\*.s
+    File ..\..\..\boot\xloader7\*.ld
+    File ..\..\..\boot\xloader7\*.inter
+    File ..\..\..\boot\xloader7\README_FIRST.txt
   SectionEnd
 SectionGroupEnd
 
