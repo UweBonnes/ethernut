@@ -304,6 +304,109 @@ nutpro =
         }
     },
     {
+        name = "nutpro_uhttp",
+        brief = "uHTTP API",
+        description = "Micro HTTP library.",
+        requires = { "NET_TCP", "CRT_STREAM_READ", "NUT_FS", "NUT_FS_READ" },
+        sources = 
+        { 
+            "uhttp/uhttpd.c",
+            "uhttp/envinit.c",
+            "uhttp/envreg.c",
+            "uhttp/envvars.c",
+            "uhttp/mediatypes.c",
+            "uhttp/mtinit.c",
+            "uhttp/mtreg.c",
+            "uhttp/responses.c",
+            "uhttp/utils.c",
+            "uhttp/modules/mod_auth_basic.c",
+            "uhttp/modules/mod_cgi_func.c",
+            "uhttp/modules/mod_redir.c",
+            "uhttp/modules/mod_ssi.c",
+            "uhttp/os/nut/streamio.c",
+        },
+        options = 
+        {
+            {
+                macro = "HTTP_MEDIATYPE_BMP",
+                brief = "Default BMP Handler",
+                description = "If enabled, files with extension .bmp will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_CSS",
+                brief = "Default CSS Handler",
+                description = "If enabled, files with extension .css will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_GIF",
+                brief = "Default GIF Handler",
+                description = "If enabled, files with extension .gif will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_HTM",
+                brief = "Default HTM Handler",
+                description = "If enabled, files with extension .htm will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_JAR",
+                brief = "Default JAR Handler",
+                description = "If enabled, files with extension .jar will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_JS",
+                brief = "Default JS Handler",
+                description = "If enabled, files with extension .js will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_JPG",
+                brief = "Default JPG Handler",
+                description = "If enabled, files with extension .jpg will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_PDF",
+                brief = "Default PDF Handler",
+                description = "If enabled, files with extension .pdf will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_SHTML",
+                brief = "Default SHTML Handler",
+                description = "If enabled, files with extension .shtml will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_SVG",
+                brief = "Default SVG Handler",
+                description = "If enabled, files with extension .svg will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            },
+            {
+                macro = "HTTP_MEDIATYPE_XML",
+                brief = "Default XML Handler",
+                description = "If enabled, files with extension .xml will be handled by default.",
+                flavor = "boolean",
+                file = "include/cfg/http.h"
+            }
+        }
+    },
+    {
         name = "nutpro_httpd",
         brief = "HTTP Server API",
         description = "Webserver helper routines. Provides simple authorization "..
