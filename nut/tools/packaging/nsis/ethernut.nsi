@@ -162,6 +162,7 @@ SectionGroup "Nut/OS"
     File ..\..\..\*.arm-eCross-gcc
     File ..\..\..\*.arm-eCross-gccdbg
 ;    File ..\..\..\*.arm-icc
+    File ..\..\..\*.arm-thumb-gcc
     File ..\..\..\*.avr-gcc
     File ..\..\..\*.avr-gccdbg
     File ..\..\..\*.avr32-gcc
@@ -479,14 +480,13 @@ SectionGroup "Development Tools"
     File ..\..\..\tools\nutdisc\src\*.h
     File ..\..\..\tools\nutdisc\src\*.rc
     SetOutPath "$INSTDIR\nut\tools\nutdisc\src\bitmaps"
-    File ..\..\..\tools\nutdisc\bitmaps\src\*.ico
+    File ..\..\..\tools\nutdisc\src\bitmaps\*.ico
+    File ..\..\..\tools\nutdisc\src\bitmaps\*.xpm
     SetOutPath "$INSTDIR\nut\tools\qnutdisc"
     File ..\..\..\tools\qnutdisc\*.cpp
     File ..\..\..\tools\qnutdisc\*.h
-    File ..\..\..\tools\qnutdisc\*.rc
-    File ..\..\..\tools\qnutdisc\*.qrc
-    File ..\..\..\tools\qnutdisc\*.pri
     File ..\..\..\tools\qnutdisc\*.pro
+    File ..\..\..\tools\qnutdisc\*.qrc
     File ..\..\..\tools\qnutdisc\*.ui
     SetOutPath "$INSTDIR\nut\tools\include\win32"
     File ..\..\..\tools\include\win32\*.h
@@ -765,7 +765,7 @@ SectionGroup "Ethernut Bootloaders"
     File ..\..\..\boot\bootmon\*.ld
     File ..\..\..\boot\bootmon\*.jom
   SectionEnd
-  Section "AT91SAM7X (at91sam7x_bootloader)" SecBoot30
+  Section "AT91SAM7X (at91sam7x_bootloader)" SecBootSam7x
     SectionIn 1 2 3
     SetOutPath "$INSTDIR\nut\boot\at91sam7x_bootloader"
     File ..\..\..\boot\at91sam7x_bootloader\Make*
@@ -776,7 +776,7 @@ SectionGroup "Ethernut Bootloaders"
     File ..\..\..\boot\at91sam7x_bootloader\demo\Make*
     File ..\..\..\boot\at91sam7x_bootloader\demo\*.c
   SectionEnd
-  Section "AT91SAM7S (xloader7)" SecBoot30
+  Section "AT91SAM7S (xloader7)" SecBootSam7s
     SectionIn 1 2 3
     SetOutPath "$INSTDIR\nut\boot\xloader7"
     File ..\..\..\boot\xloader7\Make*
@@ -784,7 +784,6 @@ SectionGroup "Ethernut Bootloaders"
     File ..\..\..\boot\xloader7\*.h
     File ..\..\..\boot\xloader7\*.s
     File ..\..\..\boot\xloader7\*.ld
-    File ..\..\..\boot\xloader7\*.inter
     File ..\..\..\boot\xloader7\README_FIRST.txt
   SectionEnd
 SectionGroupEnd
