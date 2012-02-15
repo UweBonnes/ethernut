@@ -384,7 +384,7 @@ static int SendMailHeaderRecipient(FILE *stream, MAILENVELOPE * me, uint8_t type
                 /* First one found. */
                 fputs(type == MAIL_RCPT_TO ? "To: " : "CC: ", stream);
             }
-            fputs(me->mail_rcpt[i], stream);
+            fputs(me->mail_rcpt_header[i], stream);
             cnt++;
         }
     }
@@ -430,7 +430,7 @@ int NutSmtpSendMailHeader(SMTPCLIENTSESSION * si, MAILENVELOPE * me)
     if (me->mail_date) {
         fprintf(si->smtp_stream, "Date: %s\r\n", Rfc1123TimeString(gmtime(&me->mail_date)));
     }
-    fprintf(si->smtp_stream, "From: %s\r\n", me->mail_from);
+    fprintf(si->smtp_stream, "From: %s\r\n", me->mail_from_header);
     fprintf(si->smtp_stream, "Subject: %s\r\n", me->mail_subj);
     SendMailHeaderRecipient(si->smtp_stream, me, MAIL_RCPT_TO);
     SendMailHeaderRecipient(si->smtp_stream, me, MAIL_RCPT_CC);
@@ -472,6 +472,9 @@ int NutSmtpSendEncodedLines(SMTPCLIENTSESSION * si, CONST char *text)
             if (*text != '\r') {
                 /* Stop at linefeeds or at the end of the message. */
                 if (*text == '\n' || *text == '\0') {
+                    /* Also send newline. */
+                    i++;
+                    text++;
                     break;
                 } else {
                     /* Send this character unchanged. */

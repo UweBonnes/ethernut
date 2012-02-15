@@ -48,6 +48,7 @@
 #include <time.h>
 
 #include <cfg/smtp.h>
+#include <sys/socket.h>
 
 /*!
  * \addtogroup xgSMTPC
@@ -85,14 +86,18 @@
 typedef struct _MAILENVELOPE {
     /*! \brief Creation date and time. */
     time_t mail_date;
-    /*! \brief Initial sender. */
+    /*! \brief Initial sender, return path. */
     char *mail_from;
+    /*! \brief Initial sender, shown in mail client ("Name <mail@domain.com>"). */
+    char *mail_from_header;
     /*! \brief Email's subject. */
     char *mail_subj;
     /*! \brief Email's text body. */
     char *mail_body;
-    /*! \brief List of recipients. */
+    /*! \brief List of recipients, real mail address. */
     char *mail_rcpt[MAX_MAIL_RCPTS];
+    /*! \brief List of recipients, shown in mail client ("Name <mail@domain.com>"). */
+    char *mail_rcpt_header[MAX_MAIL_RCPTS];
     /*! \brief Recipients' status. */
     uint8_t mail_rcpt_stat[MAX_MAIL_RCPTS];
 } MAILENVELOPE;
