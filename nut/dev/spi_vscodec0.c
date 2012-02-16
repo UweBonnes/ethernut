@@ -499,6 +499,12 @@ static int VsCodec0Detect(void)
         dcbVsCodec0.dcb_codec_rev = 'B';
         rc = 0;
     }
+#elif defined(AUDIO0_VS1063A)
+    if ((status & VS_SS_VER) == (VS1063_SS_VER << VS_SS_VER_LSB)) {
+        dcbVsCodec0.dcb_codec_ver = 1063;
+        dcbVsCodec0.dcb_codec_rev = 'A';
+        rc = 0;
+    }
 #else
     /*
     ** If not configured, try to figure it out.

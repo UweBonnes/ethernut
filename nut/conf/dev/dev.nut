@@ -1944,7 +1944,8 @@ nutdev =
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1960,7 +1961,8 @@ nutdev =
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1976,7 +1978,8 @@ nutdev =
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -1992,7 +1995,8 @@ nutdev =
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2008,7 +2012,8 @@ nutdev =
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2024,7 +2029,8 @@ nutdev =
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },
@@ -2040,7 +2046,25 @@ nutdev =
                     "AUDIO0_VS1002D",
                     "AUDIO0_VS1003B",
                     "AUDIO0_VS1033C",
-                    "AUDIO0_VS1053B"
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
+                },
+                file = "include/cfg/audio.h"
+            },
+            {
+                macro = "AUDIO0_VS1063A",
+                brief = "VS1063A",
+                description = "Tested with SAM7SE.",
+                flavor = "boolean",
+                exclusivity = {
+                    "AUDIO0_VSAUTO",
+                    "AUDIO0_VS1001K",
+                    "AUDIO0_VS1011E",
+                    "AUDIO0_VS1002D",
+                    "AUDIO0_VS1003B",
+                    "AUDIO0_VS1033C",
+                    "AUDIO0_VS1053B",
+                    "AUDIO0_VS1063A"
                 },
                 file = "include/cfg/audio.h"
             },

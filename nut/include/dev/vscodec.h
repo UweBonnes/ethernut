@@ -57,6 +57,8 @@
 #define AUDIO0_VS1033C
 #elif defined(AUDIO_VS1053B)
 #define AUDIO0_VS1053B
+#elif defined(AUDIO_VS1063A)
+#define AUDIO0_VS1063A
 #elif defined(AUDIO_VSAUTO)
 #define AUDIO0_VSAUTO
 #endif
@@ -76,6 +78,8 @@
 #include <dev/vs1033.h>
 #elif defined(AUDIO0_VS1053B)
 #include <dev/vs1053.h>
+#elif defined(AUDIO0_VS1063A)
+#include <dev/vs1063.h>
 #elif !defined(AUDIO0_VSAUTO)
 #define AUDIO0_VSAUTO
 #endif
@@ -211,6 +215,61 @@
 /*! \brief Upload into WRAM. */
 #define AUDIO_WRITE_CMEM    0x3038
 
+/*! \brief Set parametric x. */
+#define AUDIO_SET_PARAMX    0x3040
+
+/*! \brief Get parametric x. */
+#define AUDIO_GET_PARAMX    0x3041
+#define VSP4_CHIP_ID_OFF                    0x00
+#define VSP4_VERSION_OFF                    0x02
+#define VSP4_CONFIG1_OFF                    0x03
+#define VSP4_PLAY_SPEED_OFF                 0x04
+#define VSP4_BIT_RATE_PER_100_OFF           0x05
+#define VSP4_END_FILL_BYTE_OFF              0x06
+#define VSP4_RATE_TUNE_OFF                  0x07
+#define VSP4_PLAY_MODE_OFF                  0x09
+#define VSP4_SAMPLE_COUNTER_OFF             0x0a
+#define VSP4_VU_METER_OFF                   0x0c
+#define VSP4_AD_MIXER_GAIN_OFF              0x0d
+#define VSP4_AD_MIXER_CONFIG_OFF            0x0e
+#define VSP4_PCM_MIXER_RATE_OFF             0x0f
+#define VSP4_PCM_MIXER_FREE_OFF             0x10
+#define VSP4_PCM_MIXER_VOL_OFF              0x11
+#define VSP4_EQ5_PARAMS_OFF(i)              (0x12 + (i))
+#define VSP4_EQ5_UPDATED_OFF                0x1c
+#define VSP4_SPEED_SHIFTER_OFF              0x1d
+#define VSP4_EAR_SPEAKER_LEVEL_OFF          0x1e
+#define VSP4_SDI_FREE_OFF                   0x1f
+#define VSP4_AUDIO_FILL_OFF                 0x20
+#define VSP4_LATEST_SOF_OFF                 0x25
+#define VSP4_POSITION_MSEC_OFF              0x27
+#define VSP4_RESYNC_OFF                     0x29
+#define VSP4_ENC_TX_UART_DIV_OFF            0x2a
+#define VSP4_ENC_TX_UART_BYTE_SPEED_OFF     0x2b
+#define VSP4_ENC_TX_PAUSE_GPIO_OFF          0x2c
+#define VSP4_ENC_SEC_ADAPT_MULTIPLIER_OFF   0x2d
+#define VSP4_ENC_CHANNEL_MAX_OFF            0x3c
+#define VSP4_ENC_SERIAL_NUMBER_OFF          0x3e
+#define VSP4_WMA_CUR_PACKET_SIZE_OFF        0x2a
+#define VSP4_WMA_PACKET_SIZE_OFF            0x2c
+#define VSP4_AAC_SCE_FOUND_MASK_OFF         0x2a
+#define VSP4_AAC_CPE_FOUND_MASK_OFF         0x2b
+#define VSP4_AAC_LFE_FOUND_MASK_OFF         0x2c
+#define VSP4_AAC_PLAY_SELECT_OFF            0x2d
+#define VSP4_AAC_DYN_COMPRESS_OFF           0x2e
+#define VSP4_AAC_DYN_BOOST_OFF              0x2f
+#define VSP4_AAC_SBR_AND_PS_STATUS_OFF      0x30
+#define VSP4_AAC_SBR_PS_FLAGS_OFF           0x31
+#define VSP4_VORBIS_GAIN_OFF                0x2a
+
+#define VS_PLAYMODE_MONO_OUTPUT_ON  ox0001
+#define VS_PLAYMODE_PAUSE_ON        0x0002
+#define VS_PLAYMODE_VUMETER_ON      0x0004
+#define VS_PLAYMODE_ADMIXER_ON      0x0008
+#define VS_PLAYMODE_PCMMIXER_ON     0x0010
+#define VS_PLAYMODE_EQ5_ON          0x0020
+#define VS_PLAYMODE_SPEEDSHIFTER_ON 0x0040
+
 typedef struct _VS_PLUGIN_INFO VS_PLUGIN_INFO;
 
 struct _VS_PLUGIN_INFO {
@@ -224,6 +283,13 @@ struct _VS_WRAM_DATA {
     uint16_t vswd_addr;
     uint16_t vswd_size;
     uint16_t *vswd_data;
+};
+
+typedef struct _VS_PARAMX_INFO VS_PARAMX_INFO;
+
+struct _VS_PARAMX_INFO {
+    uint16_t vspx_offs;
+    uint16_t vspx_data;
 };
 
 /*
@@ -467,6 +533,7 @@ struct _VS_WRAM_DATA {
  */
 #if VS_HAS_SM_ADPCM
 #define VS_SM_ADPCM         0x1000
+#define VS_SM_ENCODE        0x1000
 #endif
 
 /*! \brief ADPCM high pass filter.
@@ -490,6 +557,7 @@ struct _VS_WRAM_DATA {
  */
 #if VS_HAS_SM_LINE_IN
 #define VS_SM_LINE_IN       0x4000
+#define VS_SM_LINE1         0x4000
 #endif
 
 /*! \brief Input clock range.
@@ -598,6 +666,7 @@ struct _VS_WRAM_DATA {
 #define VS1003_SS_VER       3
 #define VS1053_SS_VER       4
 #define VS1033_SS_VER       5
+#define VS1063_SS_VER       6
 #define VS1103_SS_VER       7
 
 /*! \brief GBUF overload detection.
@@ -1144,6 +1213,21 @@ struct _VS_WRAM_DATA {
  */
 #if VS_HAS_AICTRL3_REG
 #define VS_AICTRL3_REG     15
+#define VS_AICTRL3_STEREO      0
+#define VS_AICTRL3_DUALCHANNEL 1
+#define VS_AICTRL3_LEFT        2
+#define VS_AICTRL3_RIGHT       3
+#define VS_AICTRL3_MONOMIX     4
+#define VS_ENCMODE_ADPCM      0x0000
+#define VS_ENCMODE_LPCM       0x0010
+#define VS_ENCMODE_G711_ULAW  0x0020
+#define VS_ENCMODE_G711_ALAW  0x0030
+#define VS_ENCMODE_G722       0x0040
+#define VS_ENCMODE_OGGVORBIS  0x0050
+#define VS_ENCMODE_MP3        0x0060
+#define VS_AICTRL3_CODECMODE  0x8000
+#define VS_AICTRL3_ENABLEAEC  0x4000
+#define VS_AICTRL3_ENABLEUART 0x2000
 #endif
 /*@}*/
 
