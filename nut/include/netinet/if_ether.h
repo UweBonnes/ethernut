@@ -72,21 +72,23 @@
 #endif
 
 /*!
- * \struct ether_header if_ether.h netinet/if_ether.h
- * \brief Ethernet protocol header.
- */
-/*!
  * \typedef ETHERHDR
  * \brief Ethernet protocol header type.
  */
-typedef struct __attribute__((packed)) ether_header {
+typedef struct ether_header ETHERHDR;
+
+/*!
+ * \struct ether_header if_ether.h netinet/if_ether.h
+ * \brief Ethernet protocol header.
+ */
+struct __attribute__((packed)) ether_header {
     /*! \brief Destination MAC address. */
     uint8_t  ether_dhost[ETHER_ADDR_LEN];
     /*! \brief Source MAC address. */
     uint8_t  ether_shost[ETHER_ADDR_LEN];
     /*! \brief Protocol type. */
     uint16_t ether_type;
-} ETHERHDR;
+};
 
 /*! \brief Ethernet maximum transfer unit.
  *
