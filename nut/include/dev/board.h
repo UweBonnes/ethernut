@@ -104,6 +104,7 @@
 
 #include <cfg/arch.h>
 #include <cfg/uart.h>
+#include <compiler.h>
 
 #if defined(ARTHERNET1)
 #include <arch/avr/board/arthernet1.h>
@@ -119,9 +120,10 @@
 #include <arch/arm/board/ethernut5.h>
 #elif defined(FLECX1)
 #include <arch/arm/lpc/lpc1700/board/flecx1.h>
-#elif defined(MMNET01) || defined(MMNET02) || defined(MMNET03) || defined(MMNET04) || \
-      defined(MMNET101) || defined(MMNET102) || defined(MMNET103) || defined(MMNET104)
+#elif defined(MMNET01) || defined(MMNET02) || defined(MMNET101) || defined(MMNET102)
 #include <arch/avr/board/mmnet.h>
+#elif defined(SAM7ETH)
+#include <arch/arm/board/sam7eth.h>
 #elif defined(XNUT_100) || defined(XNUT_105)
 #include <arch/avr/board/xnut.h>
 #elif defined(ZERO_EK)
