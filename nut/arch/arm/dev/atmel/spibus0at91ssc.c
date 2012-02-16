@@ -59,6 +59,10 @@
 
 static GSPIREG gspi_reg0;
 
+static uint8_t * volatile spi0_txp;
+static uint8_t * volatile spi0_rxp;
+static volatile size_t spi0_xc;
+
 /*!
  * \brief Set the specified chip select to a given level.
  */
@@ -70,6 +74,64 @@ static GSPIREG *SscSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
         outr(PIOA_CODR, _BV(SBBI0_CS0_BIT));
     }
     return &gspi_reg0;
+}
+
+void SscSpiBus0Interrupt(void *arg)
+{
+    if (spi0_xc) {
+        if (spi0_rxp) {
+            *spi0_rxp++ = (uint8_t) inr(SSC_RHR);
+        }
+        spi0_xc--;
+    }
+    if (spi0_xc) {
+        if (spi0_txp) {
+            outr(SSC_THR, *spi0_txp);
+            spi0_txp++;
+        } else {
+            outr(SSC_THR, 0xFFFFFFFF);
+        }
+    } else {
+        NutEventPostFromIrq((void **)arg);
+    }
+}
+
+static void SscSpiBus0Clock(int xlen)
+{
+    while (xlen--) {
+        outr(SSC_THR, 0xFF);
+        while ((inr(SSC_SR) & SSC_TXRDY) == 0);
+        inr(SSC_RHR);
+    }
+}
+
+static void SscSpiBus0Read(uint8_t *rxbuf, int xlen)
+{
+    while (xlen--) {
+        outr(SSC_THR, 0xFF);
+        while ((inr(SSC_SR) & SSC_RXRDY) == 0);
+        *rxbuf++ = (uint8_t) inr(SSC_RHR);
+    }
+}
+
+static void SscSpiBus0Write(const uint8_t *txbuf, int xlen)
+{
+    while (xlen--) {
+        outr(SSC_THR, *txbuf);
+        txbuf++;
+        while ((inr(SSC_SR) & SSC_TXRDY) == 0);
+        inr(SSC_RHR);
+    }
+}
+
+static void SscSpiBus0WriteRead(const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
+{
+    while (xlen--) {
+        outr(SSC_THR, *txbuf);
+        txbuf++;
+        while ((inr(SSC_SR) & SSC_RXRDY) == 0);
+        *rxbuf++ = (uint8_t) inr(SSC_RHR);
+    }
 }
 
 /*!
@@ -88,39 +150,40 @@ static GSPIREG *SscSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
  */
 static int SscSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
 {
-    CONST uint8_t *txp = txbuf;
-    uint8_t *rxp = rxbuf;
+    if (xlen < 9999) {
+        if (txbuf) {
+            if (rxbuf) {
+                SscSpiBus0WriteRead((const uint8_t *) txbuf, (uint8_t *) rxbuf, xlen);
+            } else {
+                SscSpiBus0Write((const uint8_t *) txbuf, xlen);
+            }
+        }
+        else if (rxbuf) {
+            SscSpiBus0Read((uint8_t *) rxbuf, xlen);
+        }
+        else {
+            SscSpiBus0Clock(xlen);
+        }
+    } else {
+        spi0_txp = (uint8_t *) txbuf;
+        spi0_rxp = (uint8_t *) rxbuf;
+        spi0_xc = (size_t) xlen;
 
-    if (txp) {
-        if (rxp) {
-            while (xlen--) {
-                outr(SSC_THR, *txp);
-                txp++;
-                while ((inr(SSC_SR) & SSC_RXRDY) == 0);
-                *rxp++ = inr(SSC_RHR);
-            }
+        /* Enable and kick interrupts. */
+        if (rxbuf) {
+            outr(SSC_IER, SSC_RXRDY);
         } else {
-            while (xlen--) {
-                outr(SSC_THR, *txp);
-                txp++;
-                while ((inr(SSC_SR) & SSC_RXRDY) == 0);
-                inr(SSC_RHR);
-            }
+            outr(SSC_IER, SSC_TXRDY);
         }
-    }
-    else if (rxp) {
-        while (xlen--) {
-            outr(SSC_THR, 0xFF);
-            while ((inr(SSC_SR) & SSC_RXRDY) == 0);
-            *rxp++ = inr(SSC_RHR);
+        if (txbuf) {
+            outr(SSC_THR, *spi0_txp);
+            spi0_txp++;
+        } else {
+            outr(SSC_THR, 0xFFFFFFFF);
         }
-    }
-    else {
-        while (xlen--) {
-            outr(SSC_THR, 0xFF);
-            while ((inr(SSC_SR) & SSC_RXRDY) == 0);
-            inr(SSC_RHR);
-        }
+        /* Wait until transfer has finished. */
+        NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
+        outr(SSC_IDR, SSC_RXRDY);
     }
     return 0;
 }
@@ -137,6 +200,8 @@ static int SscSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf,
  */
 static int SscSpiBus0NodeInit(NUTSPINODE * node)
 {
+    NUTSPIBUS *bus = node->node_bus;
+
     outr(PIOA_PER, _BV(SBBI0_CS0_BIT));
     outr(PIOA_OER, _BV(SBBI0_CS0_BIT));
     SscSpi0ChipSelect(node->node_cs, 1);
@@ -162,6 +227,9 @@ static int SscSpiBus0NodeInit(NUTSPINODE * node)
     outr(SSC_CR, SSC_TXEN | SSC_RXEN);
 
     SscSpiSetup(node);
+    NutRegisterIrqHandler(bus->bus_sig, SscSpiBus0Interrupt, &bus->bus_ready);
+    outr(SSC_IDR, (unsigned int) - 1);
+    NutIrqEnable(bus->bus_sig);
 
     return 0;
 }
@@ -230,7 +298,7 @@ NUTSPIBUS spiBus0Ssc = {
     NULL,               /*!< Bus mutex semaphore (bus_mutex). */
     NULL,               /*!< Bus ready signal (bus_ready). */
     0,                  /*!< Unused bus base address (bus_base). */
-    NULL,               /*!< Bus interrupt handler (bus_sig). */
+    &sig_SSC,           /*!< Bus interrupt handler (bus_sig). */
     SscSpiBus0NodeInit, /*!< Initialize the bus (bus_initnode). */
     SscSpiBus0Select,   /*!< Select the specified device (bus_alloc). */
     SscSpiBus0Deselect, /*!< Deselect the specified device (bus_release). */
