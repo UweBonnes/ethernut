@@ -171,6 +171,12 @@ struct _NUTSPINODE {
      * Dynamically set when registering the SPI device.
      */
     uint_fast8_t node_cs;
+
+    /*! \brief Pointer to the node driver's device control block.
+     *
+     * Statically configured in most cases.
+     */
+    void *node_dcb;
 };
 
 __BEGIN_DECLS

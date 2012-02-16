@@ -2589,14 +2589,20 @@ nutdev =
         name = "nutdev_spi_at45dib",
         brief = "AT45D Serial Flash Driver",
         description = "Although the implemented routines are quite similar to other device drivers, "..
-                      "this is not a standard block I/O driver.\n\n"..
-                      "The implemented functions offer access to AT45D DataFlash devices "..
-                      "without the need to allocate page buffers from heap memory. Instead, "..
-                      "the chip's internal RAM buffers are used.\n\n"..
-                      "This module also uses the options from the block I/O driver.",
+                      "this is not a standard block I/O driver.\n\n",
+--                      "The implemented functions offer access to AT45D DataFlash devices "..
+--                      "without the need to allocate page buffers from heap memory. Instead, "..
+--                      "the chip's internal RAM buffers are used.\n\n"..
+--                      "This module also uses the options from the block I/O driver.",
         requires = { "SPIBUS_CONTROLLER" },
         provides = { "SERIALFLASH_INTERFACE" },
-        sources = { "spi_at45dib.c" },
+        sources = { 
+                        "spi_at45dib.c",
+                        "spi_flash_at45d.c",
+                        "spi_blkio_at45d.c",
+                        "spi_node_at45d.c",
+                        "spi_at45d_info.c"
+                  },
         options =
         {
             {
@@ -2604,6 +2610,166 @@ nutdev =
                 brief = "Use Page CRC",
                 description = "If enabled, each page is protected by a 16 bit CRC ",
                 flavor = "boolean",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D0",
+                brief = "FFS Reserved Bottom Pages (First Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D0",
+                brief = "FFS Reserved Top Pages (First Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D0",
+                brief = "Block I/O Reserved Bottom Pages (First Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D0",
+                brief = "Block I/O Reserved Top Pages (First Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D0 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D1",
+                brief = "FFS Reserved Bottom Pages (Second Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D1",
+                brief = "FFS Reserved Top Pages (Second Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D1",
+                brief = "Block I/O Reserved Bottom Pages (Second Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D1",
+                brief = "Block I/O Reserved Top Pages (Second Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D1 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D2",
+                brief = "FFS Reserved Bottom Pages (Third Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D2",
+                brief = "FFS Reserved Top Pages (Third Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D2",
+                brief = "Block I/O Reserved Bottom Pages (Third Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D2",
+                brief = "Block I/O Reserved Top Pages (Third Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D2 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_OFFSET_AT45D3",
+                brief = "FFS Reserved Bottom Pages (Forth Device)",
+                description = "Number of pages reserved at the bottom, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D3 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "FLASH_MOUNT_TOP_RESERVE_AT45D3",
+                brief = "FFS Reserved Top Pages (Forth Device)",
+                description = "Number of pages reserved at the top, when mounting a flash file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D3 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_OFFSET_AT45D3",
+                brief = "Block I/O Reserved Bottom Pages (Forth Device)",
+                description = "Number of pages reserved at the bottom, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_OFFSET_AT45D3 is used.",
+                flavor = "booldata",
+                file = "include/cfg/memory.h"
+            },
+            {
+                macro = "BLKIO_MOUNT_TOP_RESERVE_AT45D3",
+                brief = "Block I/O Reserved Top Pages (Forth Device)",
+                description = "Number of pages reserved at the top, when mounting a block I/O based file system.\n\n"..
+                              "When a flash file system driver mounts this device, the specified number "..
+                              "of pages at the top will be excluded from the volume.\n\n"..
+                              "If not defined, the value of MOUNT_TOP_RESERVE_AT45D3 is used.",
+                flavor = "booldata",
                 file = "include/cfg/memory.h"
             }
         }

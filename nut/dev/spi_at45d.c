@@ -59,6 +59,7 @@
 #define AT45_WRITE_POLLS        1000
 #endif
 
+#if 0
 /*! \brief Parameter table of known DataFlash types. */
 AT45D_INFO at45d_info[] = {
     {8, 512, 256, 0x0D},    /* AT45DB011B - 128kB */
@@ -81,6 +82,7 @@ AT45D_INFO at45d_info[] = {
 
 /*! \brief Number of known Dataflash types. */
 uint_fast8_t at45d_known_types = sizeof(at45d_info) / sizeof(AT45D_INFO);
+#endif
 
 /*!
  * \brief Send DataFlash command.

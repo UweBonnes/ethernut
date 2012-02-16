@@ -1013,11 +1013,20 @@ static NUTSPINODE spiNode0 = {
     0                           /*!< \brief Chip select, node_cs. */
 };
 
-#ifndef MOUNT_OFFSET_AT45D0
-#define MOUNT_OFFSET_AT45D0         0
+#ifndef MOUNT_OFFSET_AT45DIB0
+#ifdef MOUNT_OFFSET_AT45D0
+#define MOUNT_OFFSET_AT45DIB0       MOUNT_OFFSET_AT45D0
+#else
+#define MOUNT_OFFSET_AT45DIB0       0
 #endif
-#ifndef MOUNT_TOP_RESERVE_AT45D0
-#define MOUNT_TOP_RESERVE_AT45D0    1
+#endif
+
+#ifndef MOUNT_TOP_RESERVE_AT45DIB0
+#ifdef MOUNT_TOP_RESERVE_AT45D0
+#define MOUNT_TOP_RESERVE_AT45DIB0  MOUNT_TOP_RESERVE_AT45D0
+#else
+#define MOUNT_TOP_RESERVE_AT45DIB0  1
+#endif
 #endif
 
 /*!
@@ -1028,8 +1037,8 @@ NUTSERIALFLASH flashAt45dib0 = {
     NULL,                       /*!< \brief Pointer to a local information structure, sf_info. */
     0,                          /*!< \brief Size of an erase/write unit, sf_unit_size. */
     0,                          /*!< \brief Total number of units, sf_units. */
-    MOUNT_OFFSET_AT45D0,        /*!< \brief Reserved units at the bottom, sf_rsvbot. */
-    MOUNT_TOP_RESERVE_AT45D0,   /*!< \brief Reserved units at the top, sf_rsvtop. */
+    MOUNT_OFFSET_AT45DIB0,      /*!< \brief Reserved units at the bottom, sf_rsvbot. */
+    MOUNT_TOP_RESERVE_AT45DIB0, /*!< \brief Reserved units at the top, sf_rsvtop. */
     SpiAt45dibInit,             /*!< \brief Flash device initialization function, sf_init. */
     SpiAt45dibExit,             /*!< \brief Flash device release function, sf_exit. */
     SpiAt45dibCheck,            /*!< \brief Unit validation function, sf_check. */
@@ -1079,11 +1088,20 @@ static NUTSPINODE spiNode1 = {
     1                           /*!< \brief Chip select, node_cs. */
 };
 
-#ifndef MOUNT_OFFSET_AT45D1
-#define MOUNT_OFFSET_AT45D1         0
+#ifndef MOUNT_OFFSET_AT45DIB1
+#ifdef MOUNT_OFFSET_AT45D1
+#define MOUNT_OFFSET_AT45DIB1       MOUNT_OFFSET_AT45D1
+#else
+#define MOUNT_OFFSET_AT45DIB1       0
 #endif
-#ifndef MOUNT_TOP_RESERVE_AT45D1
-#define MOUNT_TOP_RESERVE_AT45D1    1
+#endif
+
+#ifndef MOUNT_TOP_RESERVE_AT45DIB1
+#ifdef MOUNT_TOP_RESERVE_AT45D1
+#define MOUNT_TOP_RESERVE_AT45DIB1  MOUNT_TOP_RESERVE_AT45D1
+#else
+#define MOUNT_TOP_RESERVE_AT45DIB1  1
+#endif
 #endif
 
 /*!
@@ -1094,8 +1112,8 @@ NUTSERIALFLASH flashAt45dib1 = {
     NULL,                       /*!< \brief Pointer to a local information structure, sf_info. */
     0,                          /*!< \brief Size of an erase/write unit, sf_unit_size. */
     0,                          /*!< \brief Total number of units, sf_units. */
-    MOUNT_OFFSET_AT45D1,        /*!< \brief Reserved units at the bottom, sf_rsvbot. */
-    MOUNT_TOP_RESERVE_AT45D1,   /*!< \brief Reserved units at the top, sf_rsvtop. */
+    MOUNT_OFFSET_AT45DIB1,      /*!< \brief Reserved units at the bottom, sf_rsvbot. */
+    MOUNT_TOP_RESERVE_AT45DIB1, /*!< \brief Reserved units at the top, sf_rsvtop. */
     SpiAt45dibInit,             /*!< \brief Flash device initialization function, sf_init. */
     SpiAt45dibExit,             /*!< \brief Flash device release function, sf_exit. */
     SpiAt45dibCheck,            /*!< \brief Unit validation function, sf_check. */
