@@ -136,9 +136,9 @@
 #define SMC_TDF_MODE                        0x00100000  /*!< \brief TDF optimization. */
 #define SMC_PMEN                            0x01000000  /*!< \brief Page mode enable. */
 #define SMC_PS                              0x30000000  /*!< \brief Page size mask. */
-#define SMC_PS_4                            0x30000000  /*!< \brief 4-byte page. */
-#define SMC_PS_8                            0x30000000  /*!< \brief 8-byte page. */
-#define SMC_PS_16                           0x30000000  /*!< \brief 16-byte page. */
+#define SMC_PS_4                            0x00000000  /*!< \brief 4-byte page. */
+#define SMC_PS_8                            0x10000000  /*!< \brief 8-byte page. */
+#define SMC_PS_16                           0x20000000  /*!< \brief 16-byte page. */
 #define SMC_PS_32                           0x30000000  /*!< \brief 32-byte page. */
 /*@}*/
 
