@@ -139,14 +139,14 @@ int At91SpiSetup(NUTSPINODE * node)
 int At91SpiBusNodeInit(NUTSPINODE * node)
 {
     int rc;
-#if !defined(SPIBUS0_POLLING_MODE) || !defined(SPIBUS1_POLLING_MODE) || defined(SPI1_BASE)
+#if !defined(SPIBUS0_POLLING_MODE) || (!defined(SPIBUS1_POLLING_MODE) && defined(SPI1_BASE)) || defined(SPI1_BASE)
     NUTSPIBUS *bus;
 #endif
 
     /* Sanity check. */
     NUTASSERT(node != NULL);
     NUTASSERT(node->node_bus != NULL);
-#if !defined(SPIBUS0_POLLING_MODE) || !defined(SPIBUS1_POLLING_MODE) || defined(SPI1_BASE)
+#if !defined(SPIBUS0_POLLING_MODE) || (!defined(SPIBUS1_POLLING_MODE) && defined(SPI1_BASE)) || defined(SPI1_BASE)
     bus = node->node_bus;
 #endif
 
