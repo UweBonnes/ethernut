@@ -103,8 +103,13 @@ int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t 
     /*
      * Use specified or default mask.
      */
-    if (ip_mask == 0)
-        ip_mask = inet_addr("255.255.255.0");
+    if (ip_mask == 0) {
+#ifdef __BIG_ENDIAN__
+        ip_mask = 0xFFFFFF00UL;
+#else
+        ip_mask = 0x00FFFFFFUL;
+#endif
+    }
     nif->if_mask = ip_mask;
 
     /*
@@ -119,7 +124,7 @@ int NutNetIfSetup(NUTDEVICE * dev, uint32_t ip_addr, uint32_t ip_mask, uint32_t 
      */
     memcpy(confnet.cd_name, dev->dev_name, sizeof(confnet.cd_name));
     /* Never save an invalid MAC address. */
-    if (ETHER_IS_UNICAST(nif->if_mac)) {
+    if (!ETHER_IS_BROADCAST(nif->if_mac) && !ETHER_IS_ZERO(nif->if_mac)) {
         memcpy(confnet.cdn_mac, nif->if_mac, sizeof(nif->if_mac));
     }
     confnet.cdn_ip_addr = ip_addr;

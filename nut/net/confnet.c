@@ -47,6 +47,20 @@
 #include <sys/confnet.h>
 #include <dev/nvmem.h>
 
+#ifdef CONFNET_VIRGIN_MAC
+#define VIRGIN_MAC  ether_aton(CONFNET_VIRGIN_MAC)
+#else
+static uint8_t virgin_mac[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00 };
+#define VIRGIN_MAC  virgin_mac
+#endif
+
+#ifdef CONFNET_VIRGIN_NETMASK
+#define VIRGIN_NETMASK  inet_addr(CONFNET_VIRGIN_NETMASK)
+#else
+#define VIRGIN_NETMASK  0x00FFFFFFUL
+#endif
+
+
 /*!
  * \addtogroup xgConfNet
  */
@@ -65,7 +79,7 @@ CONFNET confnet;
  *
  * If no configuration is available in EEPROM, all configuration
  * parameters are cleared to zero. Except the MAC address, which
- * is set to the Ethernet broadcast address.
+ * is set to the locally administered address 02-00-00-00-00-00.
  *
  * \param name Name of the device.
  *
@@ -74,38 +88,35 @@ CONFNET confnet;
  */
 int NutNetLoadConfig(CONST char *name)
 {
-#ifdef CONFNET_HARDCODED
-
-    memset(&confnet, 0, sizeof(CONFNET));
-    memcpy(confnet.cdn_mac, ether_aton(CONFNET_VIRGIN_MAC), sizeof(confnet.cdn_mac));
-    confnet.cdn_cip_addr = inet_addr(CONFNET_VIRGIN_IP);
-    confnet.cdn_ip_mask = inet_addr(CONFNET_VIRGIN_NETMASK);
-    confnet.cdn_gateway = inet_addr(CONFNET_VIRGIN_GATE);
-
-    return 0;
-
-#else /* CONFNET_HARDCODED */
-
-#ifndef __NUT_EMULATION__
-    if (NutNvMemLoad(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET))) {
-        return -1;
-    }
-    if (confnet.cd_size == sizeof(CONFNET) && strcmp(confnet.cd_name, name) == 0) {
-        return 0;
+#ifndef CONFNET_HARDCODED
+    /* Read non-volatile memory. */
+    if (NutNvMemLoad(CONFNET_EE_OFFSET, &confnet, sizeof(CONFNET)) == 0) {
+        /* Sanity check. */
+        if (confnet.cd_size == sizeof(CONFNET) && strcmp(confnet.cd_name, name) == 0) {
+            /* Got a (hopefully) valid configuration. */
+            return 0;
+        }
     }
 #endif
-    memset(&confnet, 0, sizeof(confnet));
+    memset(&confnet, 0, sizeof(CONFNET));
+    memcpy(confnet.cdn_mac, VIRGIN_MAC, sizeof(confnet.cdn_mac));
 
-    /*
-     * Set initial MAC address to broadcast. Thanks to Tomohiro
-     * Haraikawa, who pointed out that all zeroes is occupied by
-     * Xerox and should not be used.
-     */
-    memset(confnet.cdn_mac, 0xFF, sizeof(confnet.cdn_mac));
+    /* Set local IP and the gate's IP, if configured. */
+#ifdef CONFNET_VIRGIN_IP
+    confnet.cdn_cip_addr = inet_addr(CONFNET_VIRGIN_IP);
+#endif
+#ifdef CONFNET_VIRGIN_GATE
+    confnet.cdn_gateway = inet_addr(CONFNET_VIRGIN_GATE);
+#endif
 
+#ifdef CONFNET_HARDCODED
+    /* If hard coded, set the default mask and return success. */
+    confnet.cdn_ip_mask = VIRGIN_NETMASK;
+    return 0;
+#else
+    /* Reading from non-volatile memory failed. */
     return -1;
-
-#endif /* CONFNET_HARDCODED */
+#endif
 }
 
 /*!

@@ -843,7 +843,7 @@ THREAD(NicRxLanc, arg)
      * we may not have got a MAC address yet. Wait until a valid one
      * has been set.
      */
-    while (!ETHER_IS_UNICAST(ifn->if_mac)) {
+    if (ETHER_IS_ZERO(ifn->if_mac) || ETHER_IS_BROADCAST(ifn->if_mac)) {
         NutSleep(10);
     }
 
@@ -1158,7 +1158,7 @@ static NICINFO dcb_eth0;
 static IFNET ifn_eth0 = {
     IFT_ETHER,                  /*!< \brief Interface type, if_type. */
     0,                          /*!< \brief Interface flags, if_flags. */
-    {0, 0, 0, 0, 0, 0},         /*!< \brief Hardware net address, if_mac. */
+    { 0, 0, 0, 0, 0, 0 },       /*!< \brief Hardware net address, if_mac. */
     0,                          /*!< \brief IP address, if_local_ip. */
     0,                          /*!< \brief Remote IP address for point to point, if_remote_ip. */
     0,                          /*!< \brief IP network mask, if_mask. */

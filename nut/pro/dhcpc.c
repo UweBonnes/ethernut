@@ -210,6 +210,7 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <netinet/if_ether.h>
 #include <netdb.h>
 #include <net/route.h>
 #include <sys/socket.h>
@@ -2046,55 +2047,53 @@ static int DhcpKick(CONST char *name, uint8_t state, uint32_t timeout)
  */
 int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
 {
-    uint8_t mac0[6];
-    uint8_t macF[6];
     NUTDEVICE *dev;
-    IFNET *nif;
+    IFNET *nif = NULL;
 
     /*
-     * Lookup the Ethernet device.
+     * Verify the given Ethernet device.
      */
-    if ((dev = NutDeviceLookup(name)) == 0 ||   /* No device */
-        dev->dev_type != IFTYP_NET ||   /* Wrong type */
-        (nif = dev->dev_icb) == 0 ||    /* No netif */
-        nif->if_type != IFT_ETHER) {    /* Wrong if type */
+    dev = NutDeviceLookup(name);
+    if (dev && dev->dev_type == IFTYP_NET) {
+        nif = (IFNET *) dev->dev_icb;
+    }
+    if (nif == NULL || nif->if_type != IFT_ETHER) {
+        /* Not a network device or wrong interface type. */
         dhcpError = DHCPERR_BADDEV;
         return -1;
     }
 
     /*
-     * We determine whether the interface is enabled by checking
-     * the MAC address. This is so bloody brain dead.
+     * Determine the MAC address.
      */
-    memset(mac0, 0x00, sizeof(mac0));   /* Uses more code but less RAM... */
-    memset(macF, 0xFF, sizeof(macF));   /* ...than init in declaration.   */
-    if (memcmp(nif->if_mac, mac0, 6) == 0 || memcmp(nif->if_mac, macF, 6) == 0) {
-        /*
-         * If the caller specified a MAC address, we use it and
-         * overwrite the configuration.
-         */
-        if (mac) {
-            memcpy(confnet.cdn_mac, mac, sizeof(confnet.cdn_mac));
-        }
-
-        /*
-         * If no MAC address has been specified, read the configuration
-         * from EEPROM. If this fails, we do not continue any further,
-         * but let the caller know that something is wrong. He may call
-         * us again with a valid MAC address.
-         */
-        else if (NutNetLoadConfig(name)) {
-            dhcpError = DHCPERR_NOMAC;
-            return -1;
-        }
-
-        /*
-         * Copy the MAC address to the interface structure. This will
-         * magically brain dead enable the interface.
-         */
-        memcpy(nif->if_mac, confnet.cdn_mac, 6);
-        NutSleep(500);
+    if (mac && !ETHER_IS_BROADCAST(mac)) {
+         /* If the caller specified a valid MAC address, we use it
+            to override the configuration. */
+        memcpy(confnet.cdn_mac, mac, sizeof(confnet.cdn_mac));
     }
+    else if (ETHER_IS_ZERO(nif->if_mac)) {
+        /* The interface has not defined a MAC. Try to get one from
+           non-volatile memory. */
+        NutNetLoadConfig(name);
+    }
+
+    /*
+     * Check if we have a valid MAC address. In order to maintain
+     * backward compatibility, we accept anything which is neither
+     * zero nor the broadcast address. Later versions may become more
+     * restrictive and demand a valid unicast address.
+     */
+    if (ETHER_IS_ZERO(confnet.cdn_mac) || ETHER_IS_BROADCAST(confnet.cdn_mac)) {
+        dhcpError = DHCPERR_NOMAC;
+        return -1;
+    }
+
+    /*
+     * Copy the MAC address to the interface structure. This will
+     * magically enable the brain dead interface.
+     */
+    memcpy(nif->if_mac, confnet.cdn_mac, 6);
+    NutSleep(500);
 
     /*
      * Zero out the ip address and mask. This allows to switch between
@@ -2107,16 +2106,15 @@ int NutDhcpIfConfig(CONST char *name, uint8_t * mac, uint32_t timeout)
     /*
      * If the EEPROM contains a fixed network configuration, we skip DHCP.
      */
-    if ((confnet.cdn_cip_addr & confnet.cdn_ip_mask) != 0) {
+    if (confnet.cdn_cip_addr & confnet.cdn_ip_mask) {
         /* Give up a previously allocated lease. See patch #2903940. */
         (void)NutDhcpRelease(name, (3*MIN_DHCP_WAIT));
         confnet.cdn_ip_addr = confnet.cdn_cip_addr;
-        NutNetIfConfig2(name,
+        return NutNetIfConfig2(name,
                         confnet.cdn_mac,
                         confnet.cdn_ip_addr,
                         confnet.cdn_ip_mask,
                         confnet.cdn_gateway);
-        return 0;
     }
 
     /*
