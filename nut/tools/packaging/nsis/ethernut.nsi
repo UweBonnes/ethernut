@@ -8,7 +8,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT  "Nut/OS"
 !define NUTVERSION  "5.0"
-!define NUTRELEASE  "2"
+!define NUTRELEASE  "3"
 !define INSTBUILD   "0"
 !define SWREGKEY    "Software\egnite\Ethernut"
 
@@ -493,6 +493,7 @@ SectionGroup "Development Tools"
   SectionEnd
 SectionGroupEnd
 
+
 SectionGroup "Application Samples"
   Section "Ethernut Samples" SecSampleSources
     SectionIn 1 2 3
@@ -720,6 +721,7 @@ SectionGroup "Application Samples"
     SetOutPath "$INSTDIR\nut\app\uart"
     File ..\..\..\app\uart\Makefile
     File ..\..\..\app\uart\*.c
+
     SetOutPath "$INSTDIR\nut\appicc\uart"
     File ..\..\..\appicc\uart\*.prj
     File ..\..\..\appicc\uart\*.SRC
