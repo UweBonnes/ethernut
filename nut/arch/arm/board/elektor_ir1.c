@@ -44,10 +44,45 @@
 #include <arch/arm.h>
 
 /*!
+ * \brief Delay loop.
+ *
+ * In this early stage of NutBoardInit() we have to roll our own delay
+ * loop.
+ *
+ * \param Number of loops to execute. Each loop takes at least 150ns
+ *        on the EIR running at 48 MHz.
+ */
+static void Delay(int n)
+{
+    int l;
+
+    for (l = 0; l < n; l++) {
+        _NOP();
+    }
+}
+
+/*!
  * \brief Early hardware initialization.
  */
 void NutBoardInit(void)
 {
+    /*
+     * Reset the NIC.
+     *
+     * The low active PW_RST line of the DM9000E is connected to PC17.
+     * Unfortunately the datasheet does not specify the minimum active
+     * time. It only tells us, that the NIC will be available 5us
+     * after de-asserting PW_RST. We keep the line low for 75us and
+     * add a delay of 75us after putting it high again. This seems
+     * to work reliable.
+     */
+    outr(PIOC_PER,  _BV(17));
+    outr(PIOC_OER,  _BV(17));
+    outr(PIOC_CODR, _BV(17));
+    Delay(50);
+    outr(PIOC_SODR, _BV(17));
+    Delay(50);
+
     /* Enable Ethernet controller chip select. */
     outr(PIOA_BSR, _BV(PA20_NCS2_B));
     outr(PIOA_PDR, _BV(PA20_NCS2_B));
