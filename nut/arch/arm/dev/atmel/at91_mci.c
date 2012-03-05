@@ -58,6 +58,7 @@
 
 #include <cfg/arch.h>
 #include <cfg/arch/gpio.h>
+#include <cfg/mmci.h>
 
 #include <errno.h>
 #include <string.h>
@@ -108,7 +109,7 @@
 #define MMCARD_VRANGE   (MMCARD_32_33V | MMCARD_31_32V | MMCARD_30_31V)
 #endif
 
-#if MCI_SLOTA
+#ifdef MCI_SLOTA
 
 #ifndef MMC_PINS_A
 #define MMC_PINS_A  _BV(PA6_MCDA0_A) | _BV(PA7_MCCDA_A) | _BV(PA8_MCCK_A) | _BV(PA9_MCDA1_A) | _BV(PA10_MCDA2_A) | _BV(PA11_MCDA3_A)
@@ -256,7 +257,7 @@ static void At91MciReset(int init)
         mode = MCI_RDPROOF | MCI_WRPROOF | (2 << MCI_PWSDIV_LSB);
         /* Slow start. */
         mode |= At91MciClockDiv(MCI_INI_BITRATE) << MCI_CLKDIV_LSB;
-#if MCI_SLOTA
+#ifdef MCI_SLOTA
         slot = MCI_SDCSEL_SLOTA;
 #else
         slot = MCI_SDCSEL_SLOTB;

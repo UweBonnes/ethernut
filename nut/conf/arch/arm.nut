@@ -1379,6 +1379,13 @@ nutarch_arm =
                 flavor = "boolean",
                 file = "include/cfg/arch/armpio.h"
             },
+            {
+                macro = "MCI_SLOTA",
+                brief = "Use Slot A",
+                description = "If enabled, MCI slot A will be used. Otherwise the driver will use slot B.",
+                flavor = "boolean",
+                file = "include/cfg/mmci.h"
+            },
 	},
     },
 
