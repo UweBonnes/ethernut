@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 by egnite Software GmbH.
- * Copyright (C) 2008, 2011 by egnite GmbH.
+ * Copyright (C) 2008, 2011-2012 by egnite GmbH.
  *
  * All rights reserved.
  *
@@ -37,7 +37,7 @@
  * \brief Multimedia Card Interface.
  *
  * This simple implementation supports reading a single
- * 3.3V MultiMedia Card in slot B only.
+ * 3.3V MultiMedia Card in slot A or B only.
  *
  * \verbatim
  *
@@ -108,12 +108,26 @@
 #define MMCARD_VRANGE   (MMCARD_32_33V | MMCARD_31_32V | MMCARD_30_31V)
 #endif
 
+#if MCI_SLOTA
+
+#ifndef MMC_PINS_A
+#define MMC_PINS_A  _BV(PA6_MCDA0_A) | _BV(PA7_MCCDA_A) | _BV(PA8_MCCK_A) | _BV(PA9_MCDA1_A) | _BV(PA10_MCDA2_A) | _BV(PA11_MCDA3_A)
+#endif
+
+#ifndef MMC_PINS_B
+#define MMC_PINS_B  0
+#endif
+
+#else
+
 #ifndef MMC_PINS_A
 #define MMC_PINS_A  _BV(PA8_MCCK_A)
 #endif
 
 #ifndef MMC_PINS_B
 #define MMC_PINS_B  _BV(PA1_MCCDB_B) | _BV(PA0_MCDB0_B) | _BV(PA5_MCDB1_B) | _BV(PA4_MCDB2_B) | _BV(PA3_MCDB3_B)
+#endif
+
 #endif
 
 #define MCICMD_ALL_SEND_CID         (MMCMD_ALL_SEND_CID | MCI_MAXLAT | MCI_RSPTYP_136)
@@ -242,7 +256,11 @@ static void At91MciReset(int init)
         mode = MCI_RDPROOF | MCI_WRPROOF | (2 << MCI_PWSDIV_LSB);
         /* Slow start. */
         mode |= At91MciClockDiv(MCI_INI_BITRATE) << MCI_CLKDIV_LSB;
+#if MCI_SLOTA
+        slot = MCI_SDCSEL_SLOTA;
+#else
         slot = MCI_SDCSEL_SLOTB;
+#endif
     } else {
         /* Retrieve current configuration. */
         dtmo = inr(MCI_DTOR);
