@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2012 by egnite GmbH
  * Copyright (C) 2001-2005 by egnite Software GmbH
  * Copyright (c) 1993 by Digital Equipment Corporation
  * Copyright (c) 1983, 1993 by The Regents of the University of California
@@ -71,6 +72,8 @@ uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
     register uint32_t sum = ics;
     register uint8_t *cp = (uint8_t *) buf;
 
+#ifdef NUT_LEGACY_IPCSUM
+
     /* Sum up 16 bit values. */
     while (len > 1) {
 #ifdef __BIG_ENDIAN__
@@ -81,6 +84,62 @@ uint16_t NutIpChkSumPartial(uint16_t ics, CONST void *buf, int len)
         cp += 2;
         len -= 2;
     }
+
+#else /* NUT_LEGACY_IPCSUM */
+
+    register uint32_t *wp;
+    int step;
+
+    /*
+     * Sum up until the first 32-bit aligned value.
+     */
+    step = (uintptr_t) buf & 3;
+    if (step > 1) {
+#ifdef __BIG_ENDIAN__
+        sum += ((uint16_t)*cp << 8) | *(cp + 1);
+#else
+        sum += ((uint16_t)*(cp + 1) << 8) | *cp;
+#endif
+        cp += 2;
+        step -= 2;
+    }
+    if (step) {
+#ifdef __BIG_ENDIAN__
+        sum += (uint16_t)*cp << 8;
+#else
+        sum += *cp;
+#endif
+        cp++;
+    }
+    
+    /*
+     * Sum up all aligned 32 bit values.
+     *
+     * This significantly accelerates the calculation on 32 bit machines.
+     * On 8 bit CPUs the advantage is partial loop unwinding.
+     */
+    for (wp = (uint32_t *) cp; len > 3; len -= 4) {
+        /* Add value. */
+        sum += *wp;
+        /* Add carry. */
+        sum += *wp++ > sum;
+    }
+
+    /*
+     * Sum up the remaining 16-bit value, if any.
+     */
+    cp = (uint8_t *) wp;
+    if (len > 1) {
+#ifdef __BIG_ENDIAN__
+        sum += ((uint16_t)*cp << 8) | *(cp + 1);
+#else
+        sum += ((uint16_t)*(cp + 1) << 8) | *cp;
+#endif
+        cp += 2;
+        len -= 2;
+    }
+
+#endif /* NUT_LEGACY_IPCSUM */
 
     /* Add remaining byte on odd lengths. */
     if (len) {
