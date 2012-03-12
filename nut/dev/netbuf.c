@@ -141,9 +141,9 @@
  */
 /*@{*/
 
-static int NutNetBufAllocData(NBDATA * nbd, int size)
+static int NutNetBufAllocData(NBDATA * nbd, int size, int offs)
 {
-    nbd->vp = NutHeapAlloc(size);
+    nbd->vp = (uint8_t *)NutHeapAlloc(size + offs) + offs;
     if (nbd->vp) {
         nbd->sz = size;
         return 0;
@@ -173,6 +173,7 @@ static int NutNetBufAllocData(NBDATA * nbd, int size)
 NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
 {
     NBDATA * nbd;
+    int offs = 0;
 
     NUTASSERT(size > 0);
     NUTASSERT(type == NBAF_DATALINK || 
@@ -190,6 +191,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
         switch(type) {
         case NBAF_DATALINK:
             nbd = &nb->nb_dl;
+            offs = 2;
             break;
         case NBAF_NETWORK:
             nbd = &nb->nb_nw;
@@ -205,7 +207,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
         if (nb->nb_flags & type) {
             if (nbd->sz < size) {
                 /* Existing buffer is too small. */
-                NutHeapFree(nbd->vp);
+                NutHeapFree((uint8_t *)nbd->vp - offs);
                 nbd->sz = 0;
             } else {
                 /* 
@@ -225,7 +227,7 @@ NETBUF *NutNetBufAlloc(NETBUF * nb, uint8_t type, int size)
         /* If the size is zero at this point, 
            we need to allocate a new buffer. */
         if (nbd->sz == 0) {
-            if (NutNetBufAllocData(nbd, size)) {
+            if (NutNetBufAllocData(nbd, size, offs)) {
                 /* Out of memory, release the complete net buffer. */
                 NutNetBufFree(nb);
                 nb = NULL;
@@ -271,7 +273,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_dl.sz;
         if (s) {
             if (inserts & NBAF_DATALINK) {
-                e = NutNetBufAllocData(&cb->nb_dl, s);
+                e = NutNetBufAllocData(&cb->nb_dl, s, 2);
                 if (e == 0) {
                     memcpy(cb->nb_dl.vp, nb->nb_dl.vp, s);
                     cb->nb_flags |= NBAF_DATALINK;
@@ -285,7 +287,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_nw.sz;
         if (s && e == 0) {
             if (inserts & NBAF_NETWORK) {
-                e = NutNetBufAllocData(&cb->nb_nw, s);
+                e = NutNetBufAllocData(&cb->nb_nw, s, 0);
                 if (e == 0) {
                     memcpy(cb->nb_nw.vp, nb->nb_nw.vp, s);
                     cb->nb_flags |= NBAF_NETWORK;
@@ -299,7 +301,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_tp.sz;
         if (s && e == 0) {
             if (inserts & NBAF_TRANSPORT) {
-                e = NutNetBufAllocData(&cb->nb_tp, s);
+                e = NutNetBufAllocData(&cb->nb_tp, s, 0);
                 if (e == 0) {
                     memcpy(cb->nb_tp.vp, nb->nb_tp.vp, s);
                     cb->nb_flags |= NBAF_TRANSPORT;
@@ -313,7 +315,7 @@ NETBUF *NutNetBufClonePart(NETBUF * nb, uint8_t inserts)
         s = nb->nb_ap.sz;
         if (s && e == 0) {
             if (inserts & NBAF_APPLICATION) {
-                e = NutNetBufAllocData(&cb->nb_ap, s);
+                e = NutNetBufAllocData(&cb->nb_ap, s, 0);
                 if (e == 0) {
                     memcpy(cb->nb_ap.vp, nb->nb_ap.vp, s);
                     cb->nb_flags |= NBAF_APPLICATION;
@@ -369,7 +371,7 @@ void NutNetBufFree(NETBUF * nb)
         nb->nb_flags--;
     } else {
         if (nb->nb_flags & NBAF_DATALINK) {
-            NutHeapFree(nb->nb_dl.vp);
+            NutHeapFree((uint8_t *) nb->nb_dl.vp - 2);
         }
         if (nb->nb_flags & NBAF_NETWORK) {
             NutHeapFree(nb->nb_nw.vp);
@@ -402,7 +404,7 @@ int NutNetBufCollect(NETBUF * nbq, int total)
     NBDATA nbd;
     uint8_t *ap;
 
-    if (NutNetBufAllocData(&nbd, total) == 0) {
+    if (NutNetBufAllocData(&nbd, total, 0) == 0) {
         ap = (uint8_t *) nbd.vp;
         memcpy(nbd.vp, nbq->nb_ap.vp, nbq->nb_ap.sz);
         nbd.sz = nbq->nb_ap.sz;
