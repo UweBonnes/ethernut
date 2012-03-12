@@ -183,6 +183,8 @@ typedef struct _PHATSECTBUF {
     uint32_t sect_num;
     /*! \brief If not zero, buffer needs to be written. */
     int sect_dirty;
+    /*! \brief If not zero, buffer is locked. */
+    int sect_lock;
 } PHATSECTBUF;
 
 /*!

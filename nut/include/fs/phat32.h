@@ -61,6 +61,7 @@
 
 __BEGIN_DECLS
 /* Prototypes */
+extern uint32_t Phat32FreeClusters(NUTDEVICE * dev);
 extern int Phat32GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link);
 extern int Phat32SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link);
 extern int Phat32ReleaseChain(NUTDEVICE * dev, uint32_t first);

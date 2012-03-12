@@ -649,22 +649,44 @@ int PhatFileWrite(NUTFILE * nfp, CONST void *buffer, int len)
             fcb->f_sect_pos = 0;
         }
 
-        /* Load the sector we want to write to. */
-        if ((sbn = PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) < 0) {
-            rc = -1;
-            break;
+        /* Write full sectors. */
+        if (fcb->f_sect_pos == 0 && len - rc >= vol->vol_sectsz) {
+            uint32_t sect;
+            int cnt;
+
+            step = (int) (vol->vol_clustsz - fcb->f_clust_pos) * vol->vol_sectsz;
+            if (step > len - rc) {
+                step = len - rc;
+            }
+            sect = PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos;
+            cnt = step / vol->vol_sectsz;
+            if (PhatSectorWrite(nfp->nf_dev, sect, &buf[rc], cnt)) {
+                rc = -1;
+                break;
+            }
+            /* Advance file pointers. */
+            fcb->f_clust_pos += cnt - 1;
+            fcb->f_pos += step;
+            fcb->f_sect_pos = vol->vol_sectsz;
+        } else {
+            /* Load the sector we want to write to. */
+            if ((sbn = PhatSectorLoad(nfp->nf_dev, PhatClusterSector(nfp, fcb->f_clust) + fcb->f_clust_pos)) < 0) {
+                rc = -1;
+                break;
+            }
+            /* The number of bytes we write to this sector. */
+            step = (int) (vol->vol_sectsz - fcb->f_sect_pos);
+            if (step > len - rc) {
+                step = len - rc;
+            }
+            /* Copy data to this sector. */
+            memcpy(&vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], &buf[rc], step);
+            vol->vol_buf[sbn].sect_dirty = 1;
+            PhatSectorBufferRelease(dev, sbn);
+            /* Advance file pointers. */
+            fcb->f_pos += step;
+            fcb->f_sect_pos += step;
         }
-        /* The number of bytes we write to this sector. */
-        step = (int) (vol->vol_sectsz - fcb->f_sect_pos);
-        if (step > len - rc) {
-            step = len - rc;
-        }
-        /* Copy data to this sector. */
-        memcpy(&vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], &buf[rc], step);
-        vol->vol_buf[sbn].sect_dirty = 1;
-        /* Advance file pointers. */
-        fcb->f_pos += step;
-        fcb->f_sect_pos += step;
     }
 
     if (rc > 0) {
@@ -801,6 +823,7 @@ int PhatFileRead(NUTFILE * nfp, void *buffer, int size)
             step = size - rc;
         }
         memcpy(&buf[rc], &vol->vol_buf[sbn].sect_data[fcb->f_sect_pos], step);
+        PhatSectorBufferRelease(dev, sbn);
         fcb->f_pos += step;
         fcb->f_sect_pos += step;
     }

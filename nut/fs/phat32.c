@@ -73,6 +73,57 @@
 /*@{*/
 
 /*!
+  * \brief Counts the number of free clusters in a fat32 volume, fast version.
+  *
+  * \param dev Specifies the file system device.
+  *
+  * \return The number of free clusters.
+  */
+uint32_t Phat32FreeClusters(NUTDEVICE * dev)
+{
+    PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
+    uint32_t rc = 0;
+    uint32_t clust;
+    uint32_t clustlast;
+    uint32_t pos = -4;
+    uint32_t sect;
+    int sbn;
+    uint8_t * sdata;
+
+    /* Do not seek beyond the end of the chain. */
+    clustlast = vol->vol_last_clust;
+    if (clustlast >= (PHATEOC & PHAT32CMASK)) {
+        clustlast = (PHATEOC & PHAT32CMASK) -1;
+    }
+
+    sect = vol->vol_tab_sect[0];
+    sbn = PhatSectorLoad(dev, sect);
+    if (sbn >= 0) {
+        sdata = vol->vol_buf[sbn].sect_data;
+        for (clust = 0; clust < clustlast; clust++) {
+            pos += 4;
+            /* Load the sector that contains the table entry. */
+            if (pos >= vol->vol_sectsz) {
+                PhatSectorBufferRelease(dev, sbn);
+                pos = 0;
+                sect++;
+                sbn = PhatSectorLoad(dev, sect);
+                if (sbn < 0) {
+                    break;
+                }
+                sdata = vol->vol_buf[sbn].sect_data;
+            }
+            /* Check if the 32 bit link value is zero */
+            if ((sdata[pos] | sdata[pos + 1] | sdata[pos + 2] | sdata[pos + 3]) == 0) {
+                rc++;
+            }
+        }
+        PhatSectorBufferRelease(dev, sbn);
+    }
+    return rc;
+}
+
+/*!
  * \brief Calculate table location of a specified cluster.
  *
  * \param vol    Mounted volume.
@@ -122,6 +173,7 @@ int Phat32GetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t * link)
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 1]) << 8;
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 2]) << 16;
     *link += (uint32_t)(vol->vol_buf[sbn].sect_data[pos + 3]) << 24;
+    PhatSectorBufferRelease(dev, sbn);
 
     return 0;
 }
@@ -155,6 +207,7 @@ int Phat32SetClusterLink(NUTDEVICE * dev, uint32_t clust, uint32_t link)
         vol->vol_buf[sbn].sect_data[pos + 2] = (uint8_t) (link >> 16);
         vol->vol_buf[sbn].sect_data[pos + 3] = (uint8_t) (link >> 24);
         vol->vol_buf[sbn].sect_dirty = 1;
+        PhatSectorBufferRelease(dev, sbn);
     }
     return 0;
 }

@@ -128,15 +128,8 @@ static uint32_t PhatCountFreeClusters(NUTDEVICE * dev)
     PHATVOL *vol = (PHATVOL *) dev->dev_dcb;
 
     if (vol->vol_type == 32) {
-        while (i < vol->vol_last_clust) {
-            if (Phat32GetClusterLink(dev, i, &link)) {
-                break;
-            }
-            if (link == 0) {
-                rc++;
-            }
-            i++;
-        }
+        /* Use fast verion for FAT32. */
+        rc = Phat32FreeClusters(dev);
     } else if (vol->vol_type == 16) {
         while (i < vol->vol_last_clust) {
             if (Phat16GetClusterLink(dev, i, &link)) {

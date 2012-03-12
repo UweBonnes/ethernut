@@ -517,6 +517,7 @@ int PhatDirEntryUpdate(NUTFILE * nfp)
             }
             memcpy(vol->vol_buf[sbn].sect_data + fcb->f_de_offs, &fcb->f_dirent, sizeof(PHATDIRENT));
             vol->vol_buf[sbn].sect_dirty = 1;
+            PhatSectorBufferRelease(dev, sbn);
         }
         fcb->f_de_dirty = 0;
     }
