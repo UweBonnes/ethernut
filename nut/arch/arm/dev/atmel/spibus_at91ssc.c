@@ -42,16 +42,41 @@
  */
 
 #include <dev/spibus_ssc.h>
+#include <sys/timer.h>
 
 /*!
  * \brief Update SPI settings.
  */
 int SscSpiSetup(NUTSPINODE * node)
 {
-    /* We support 8 bit only. */
-    node->node_bits = 8;
-    /* We may try some rough calculation here. */
-    node->node_rate = 0;
+    uint32_t mck;
+    AT91SSCREG *sscreg = (AT91SSCREG *) node->node_stat;
+
+    /* The SSC can transfer 8, 16 or 32 bits only. */
+    if (node->node_bits != 8 && node->node_bits != 16 && node->node_bits != 32) {
+        return -1;
+    }
+    sscreg->at91ssc_fmr = ((node->node_bits - 1) << SSC_DATLEN_LSB) | SSC_MSBF;
+
+    /* Query peripheral clock. */
+    mck = NutClockGet(NUT_HWCLK_PERIPHERAL);
+    /* Calculate the SPI clock divider: n=mck/(2*rate). Avoid rounding errors. */
+    sscreg->at91ssc_cmr = mck + node->node_rate - 1;
+    sscreg->at91ssc_cmr /= node->node_rate;
+    sscreg->at91ssc_cmr /= 2;
+    /* Honor minimum and maximum value. */
+    if (sscreg->at91ssc_cmr < 3) {
+        /* Theoretically 1, but any value below 3 fails on the EIR.
+           No other boards tested so far. */
+        sscreg->at91ssc_cmr = 3;
+    }
+    else if (sscreg->at91ssc_cmr > 4095) {
+        /* SSC maximum divider on the SAM7SE. No other CPUs had been tested. */
+        sscreg->at91ssc_cmr = 4095;
+    }
+    /* Calculate the actual rate. */
+    node->node_rate = mck / sscreg->at91ssc_cmr / 2;
+
     /* Update done. */
     node->node_mode &= ~SPI_MODE_UPDATE;
 

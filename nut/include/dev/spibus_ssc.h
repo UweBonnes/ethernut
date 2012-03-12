@@ -45,11 +45,20 @@
 
 #include <dev/spibus.h>
 
+typedef struct _AT91SSCREG AT91SSCREG;
+
+struct _AT91SSCREG {
+    uint32_t at91ssc_cmr;
+    uint32_t at91ssc_fmr;
+};
+
+#if 0
 typedef struct _GSPIREG GSPIREG;
 
 struct _GSPIREG {
     uint32_t gspi_dly_rate;
 };
+#endif
 
 extern NUTSPIBUS spiBus0Ssc;
 

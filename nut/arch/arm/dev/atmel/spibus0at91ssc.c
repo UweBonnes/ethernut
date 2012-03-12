@@ -52,28 +52,70 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
-#ifndef SBBI0_CS0_BIT
-#define SBBI0_CS0_BIT   15
+#ifdef ELEKTOR_IR1
+#ifndef SSC0SPI_CS0_PIO_BIT
+#define SSC0SPI_CS0_PIO_BIT 15
+#endif
+#ifndef SSC0SPI_CS0_PIO_ID
+#define SSC0SPI_CS0_PIO_ID  PIOA_ID
+#endif
 #endif
 
-static GSPIREG gspi_reg0;
+#if defined(SSC0SPI_CS0_PIO_BIT)
+#if defined(SSC0SPI_CS0_PIO_ID)
+#undef GPIO_ID
+#define GPIO_ID SSC0SPI_CS0_PIO_ID
+#include <cfg/arch/porttran.h>
+static INLINE void SSC0SPI_CS0_LO(void)
+{
+    GPIO_SET_LO(SSC0SPI_CS0_PIO_BIT);
+}
+
+static INLINE void SSC0SPI_CS0_HI(void)
+{
+    GPIO_SET_HI(SSC0SPI_CS0_PIO_BIT);
+}
+
+static INLINE void SSC0SPI_CS0_SO(void)
+{
+    GPIO_ENABLE(SSC0SPI_CS0_PIO_BIT);
+    GPIO_OUTPUT(SSC0SPI_CS0_PIO_BIT);
+}
+#else
+#define SSC0SPI_CS0_LO()
+#define SSC0SPI_CS0_HI()
+#define SSC0SPI_CS0_SO()
+#endif
+#endif
+
+
+static AT91SSCREG gspi_reg0;
 
 static uint8_t * volatile spi0_txp;
 static uint8_t * volatile spi0_rxp;
 static volatile size_t spi0_xc;
 
+static uint8_t ssc_pdc_txbuf[512] __attribute__ ((section(".ramfunc")));
+static uint8_t ssc_pdc_rxbuf[512] __attribute__ ((section(".ramfunc")));
+
 /*!
  * \brief Set the specified chip select to a given level.
  */
-static GSPIREG *SscSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
+static AT91SSCREG *SscSpi0ChipSelect(uint_fast8_t cs, uint_fast8_t hi)
 {
-    if (hi) {
-        outr(PIOA_SODR, _BV(SBBI0_CS0_BIT));
-    } else {
-        outr(PIOA_CODR, _BV(SBBI0_CS0_BIT));
+    if (cs == 0) {
+        if (hi) {
+            SSC0SPI_CS0_HI();
+        } else {
+            SSC0SPI_CS0_LO();
+        }
+        SSC0SPI_CS0_SO();
+
+        return &gspi_reg0;
     }
-    return &gspi_reg0;
+    return NULL;
 }
 
 void SscSpiBus0Interrupt(void *arg)
@@ -96,11 +138,16 @@ void SscSpiBus0Interrupt(void *arg)
     }
 }
 
+void SscSpiBus0PdcIrq(void *arg)
+{
+    NutEventPostFromIrq((void **)arg);
+}
+
 static void SscSpiBus0Clock(int xlen)
 {
     while (xlen--) {
         outr(SSC_THR, 0xFF);
-        while ((inr(SSC_SR) & SSC_TXRDY) == 0);
+        while ((inr(SSC_SR) & SSC_RXRDY) == 0);
         inr(SSC_RHR);
     }
 }
@@ -119,7 +166,7 @@ static void SscSpiBus0Write(const uint8_t *txbuf, int xlen)
     while (xlen--) {
         outr(SSC_THR, *txbuf);
         txbuf++;
-        while ((inr(SSC_SR) & SSC_TXRDY) == 0);
+        while ((inr(SSC_SR) & SSC_RXRDY) == 0);
         inr(SSC_RHR);
     }
 }
@@ -150,7 +197,7 @@ static void SscSpiBus0WriteRead(const uint8_t *txbuf, uint8_t *rxbuf, int xlen)
  */
 static int SscSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf, int xlen)
 {
-    if (xlen < 9999) {
+    if (xlen < 32) {
         if (txbuf) {
             if (rxbuf) {
                 SscSpiBus0WriteRead((const uint8_t *) txbuf, (uint8_t *) rxbuf, xlen);
@@ -165,6 +212,7 @@ static int SscSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf,
             SscSpiBus0Clock(xlen);
         }
     } else {
+#if 0
         spi0_txp = (uint8_t *) txbuf;
         spi0_rxp = (uint8_t *) rxbuf;
         spi0_xc = (size_t) xlen;
@@ -184,6 +232,33 @@ static int SscSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf,
         /* Wait until transfer has finished. */
         NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
         outr(SSC_IDR, SSC_RXRDY);
+#else
+        if (txbuf) {
+            memcpy(ssc_pdc_txbuf, txbuf, xlen);
+        } else {
+            memset(ssc_pdc_txbuf, 0xFF, xlen);
+        }
+        if (rxbuf) {
+            memset(ssc_pdc_rxbuf, 0xFF, 512);
+        }
+        /* Set first transmit pointer and counter. */
+        outr(SSC_TPR, (unsigned int) ssc_pdc_txbuf);
+        outr(SSC_TCR, (unsigned int) xlen);
+        /* Set first receive pointer and counter. */
+        outr(SSC_RPR, (unsigned int) ssc_pdc_rxbuf);
+        outr(SSC_RCR, (unsigned int) xlen);
+
+        outr(SSC_IER, SSC_RXBUFF);
+        outr(SSC_PTCR, PDC_TXTEN | PDC_RXTEN);
+
+        /* Wait until transfer has finished. */
+        NutEventWait(&node->node_bus->bus_ready, NUT_WAIT_INFINITE);
+        outr(SSC_PTCR, PDC_TXTDIS | PDC_RXTDIS);
+        outr(SSC_IDR, SSC_RXBUFF);
+        if (rxbuf) {
+            memcpy(rxbuf, ssc_pdc_rxbuf, xlen);
+        }
+#endif
     }
     return 0;
 }
@@ -201,36 +276,48 @@ static int SscSpiBus0Transfer(NUTSPINODE * node, CONST void *txbuf, void *rxbuf,
 static int SscSpiBus0NodeInit(NUTSPINODE * node)
 {
     NUTSPIBUS *bus = node->node_bus;
+    AT91SSCREG *sscreg;
 
-    outr(PIOA_PER, _BV(SBBI0_CS0_BIT));
-    outr(PIOA_OER, _BV(SBBI0_CS0_BIT));
-    SscSpi0ChipSelect(node->node_cs, 1);
-    /* Perform software reset. */
-    outr(SSC_CR, SSC_SWRST | SSC_TXDIS | SSC_RXDIS);
-    /* Enable SSC clock. */
-    outr(PMC_PCER, _BV(SSC_ID));
-    /* Select SSC peripheral functions. */
-    outr(PIOA_ASR, _BV(PA16_TK_A) | _BV(PA17_TD_A) | _BV(PA18_RD_A) | _BV(PA19_RK_A));
-    /* Enable SSC peripheral pins. */
-    outr(PIOA_PDR, _BV(PA16_TK_A) | _BV(PA17_TD_A) | _BV(PA18_RD_A) | _BV(PA19_RK_A));
-    /* Set clock divider, clk=mck/(n*2), 0: off, 1: 24MHz, 24: 1MHz, 60: 400kHz  */
-    outr(SSC_CMR, 1);
-    /* Set receive clock mode. */
-    outr(SSC_RCMR, SSC_CKS_PIN | SSC_CKI | SSC_START_TX);
-    /* Set transmit clock mode. */
-    outr(SSC_TCMR, SSC_CKS_DIV | SSC_CKO_TRAN);
-    /* Set receive frame mode. */
-    outr(SSC_RFMR, ((8 - 1) << SSC_DATLEN_LSB) | SSC_MSBF);
-    /* Set transmit frame mode. */
-    outr(SSC_TFMR, ((8 - 1) << SSC_DATLEN_LSB) | SSC_MSBF);
-    /* Enable transmitter. */
-    outr(SSC_CR, SSC_TXEN | SSC_RXEN);
+    /* Try to deactivate the chip select and retrieve the shadow regs. */
+    sscreg = SscSpi0ChipSelect(node->node_cs, 1);
+    if (sscreg == NULL) {
+        /* Invalid chip select. */
+        return -1;
+    }
+    /* Check if this is the first call. */
+    if (node->node_stat == NULL) {
+        /* Bind the shadow register to this node. */
+        node->node_stat = sscreg;
+        /* Perform software reset. */
+        outr(SSC_CR, SSC_SWRST | SSC_TXDIS | SSC_RXDIS);
+        /* Enable SSC clock. */
+        outr(PMC_PCER, _BV(SSC_ID));
+        /* Select SSC peripheral functions. */
+        outr(PIOA_ASR, _BV(PA16_TK_A) | _BV(PA17_TD_A) | _BV(PA18_RD_A) | _BV(PA19_RK_A));
+        /* Enable SSC peripheral pins. */
+        outr(PIOA_PDR, _BV(PA16_TK_A) | _BV(PA17_TD_A) | _BV(PA18_RD_A) | _BV(PA19_RK_A));
+        /* Update shadow registers. */
+        SscSpiSetup(node);
+        /* Set clock divider from shadow register. */
+        outr(SSC_CMR, sscreg->at91ssc_cmr);
+        /* Set receive clock mode. */
+        outr(SSC_RCMR, SSC_CKS_PIN | SSC_CKI | SSC_START_TX);
+        /* Set transmit clock mode. */
+        outr(SSC_TCMR, SSC_CKS_DIV | SSC_CKO_TRAN);
+        /* Set receive and transmit frame mode from shadow register. */
+        outr(SSC_RFMR, sscreg->at91ssc_fmr);
+        outr(SSC_TFMR, sscreg->at91ssc_fmr);
+        /* Enable transmitter. */
+        outr(SSC_CR, SSC_TXEN | SSC_RXEN);
 
-    SscSpiSetup(node);
-    NutRegisterIrqHandler(bus->bus_sig, SscSpiBus0Interrupt, &bus->bus_ready);
-    outr(SSC_IDR, (unsigned int) - 1);
-    NutIrqEnable(bus->bus_sig);
-
+#if 0
+        NutRegisterIrqHandler(bus->bus_sig, SscSpiBus0Interrupt, &bus->bus_ready);
+#else
+        NutRegisterIrqHandler(bus->bus_sig, SscSpiBus0PdcIrq, &bus->bus_ready);
+#endif
+        outr(SSC_IDR, (unsigned int) - 1);
+        NutIrqEnable(bus->bus_sig);
+    }
     return 0;
 }
 
@@ -258,10 +345,17 @@ static int SscSpiBus0Select(NUTSPINODE * node, uint32_t tmo)
     if (rc) {
         errno = EIO;
     } else {
-        /* Do the update, if the mode update bit is set. */
+        AT91SSCREG *sscreg = (AT91SSCREG *) node->node_stat;
+
+        /* If the mode changed, update our shadow registers. */
         if (node->node_mode & SPI_MODE_UPDATE) {
             SscSpiSetup(node);
         }
+        /* Set the clock rate for this node. */
+        outr(SSC_CMR, sscreg->at91ssc_cmr);
+        /* Set receive and transmit frame mode for this node. */
+        outr(SSC_RFMR, sscreg->at91ssc_fmr);
+        outr(SSC_TFMR, sscreg->at91ssc_fmr);
         /* Activate the node's chip select. */
         SscSpi0ChipSelect(node->node_cs, 0);
     }
