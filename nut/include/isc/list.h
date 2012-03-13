@@ -25,7 +25,8 @@
 #define ISC_LIST_H 1
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgIscList Linked list macros
+ * \ingroup xgUHTTPUtils
  */
 /*@{*/
 

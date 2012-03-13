@@ -43,7 +43,8 @@
 #include <pro/uhttp/uhttpd.h>
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPModBasicAuth Basic access authentication
+ * \ingroup xgUHTTPModules
  */
 /*@{*/
 

@@ -52,26 +52,47 @@
 #define HTTP_MAX_REQUEST_SIZE   64
 #endif
 
+/*! Constant string "GET". */
 const char ct_GET[] = "GET";
+/*! Constant string "HEAD". */
 const char ct_HEAD[] = "HEAD";
+/*! Constant string "POST". */
 const char ct_POST[] = "POST";
+/*! Constant string "Content-Disposition". */
 const char ct_Content_Disposition[] = "Content-Disposition";
+/*! Constant string "Content-Type". */
 const char ct_Content_Type[] = "Content-Type";
+/*! Constant string "Accept-Encoding". */
 const char ct_Accept_Encoding[] = "Accept-Encoding";
+/*! Constant string "Authorization". */
 const char ct_Authorization[] = "Authorization";
+/*! Constant string "Connection". */
 const char ct_Connection[] = "Connection";
+/*! Constant string "close". */
 const char ct_close[] = "close";
+/*! Constant string "keep-alive". */
 const char ct_Keep_Alive[] = "keep-alive";
+/*! Constant string "Content-Length". */
 const char ct_Content_Length[] = "Content-Length";
+/*! Constant string "Cookie". */
 const char ct_Cookie[] = "Cookie";
+/*! Constant string "Host". */
 const char ct_Host[] = "Host";
+/*! Constant string "If-Modified-Since". */
 const char ct_If_Modified_Since[] = "If-Modified-Since";
+/*! Constant string "Referer". */
 const char ct_Referer[] = "Referer";
+/*! Constant string "User-Agent". */
 const char ct_User_Agent[] = "User-Agent";
+/*! Constant string "Last-Modified". */
 const char ct_Last_Modified[] = "Last-Modified";
+/*! Constant string "Expires". */
 const char ct_Expires[] = "Expires";
+/*! Constant string "Date". */
 const char ct_Date[] = "Date";
+/*! Constant string "Content-Encoding". */
 const char ct_Content_Encoding[] = "Content-Encoding";
+/*! Constant string "Location". */
 const char ct_Location[] = "Location";
 
 char *http_root;

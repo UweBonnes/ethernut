@@ -35,7 +35,7 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
+/*
  * $Id$
  */
 
@@ -50,7 +50,8 @@
 #endif
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPStreamIo Stream I/O
+ * \ingroup xgUHTTP
  */
 /*@{*/
 

@@ -35,7 +35,7 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
+/*
  * $Id$
  */
 
@@ -47,7 +47,8 @@
 #define MEDIATYPE_EXT_MAXLEN    8
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPMediaTypes Media types
+ * \ingroup xgUHTTP
  */
 /*@{*/
 

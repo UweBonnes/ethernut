@@ -40,7 +40,8 @@
  */
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPUtils Utilities
+ * \ingroup xgUHTTP
  */
 /*@{*/
 

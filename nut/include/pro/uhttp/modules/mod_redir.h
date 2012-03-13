@@ -43,7 +43,8 @@
 #include <pro/uhttp/uhttpd.h>
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPModRedir Redirection
+ * \ingroup xgUHTTPModules
  */
 /*@{*/
 

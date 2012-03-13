@@ -35,7 +35,7 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
+/*
  * $Id$
  */
 
@@ -44,7 +44,8 @@
 #include <pro/uhttp/uhttpd.h>
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPEnvVars Environment variables
+ * \ingroup xgUHTTP
  */
 /*@{*/
 

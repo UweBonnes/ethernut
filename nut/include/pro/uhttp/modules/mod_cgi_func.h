@@ -43,7 +43,8 @@
 #include <pro/uhttp/mediatypes.h>
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPModCgiFunc CGI functions
+ * \ingroup xgUHTTPModules
  */
 /*@{*/
 

@@ -35,7 +35,7 @@
  * For additional information see http://www.ethernut.de/
  */
 
-/*!
+/*
  * $Id$
  */
 

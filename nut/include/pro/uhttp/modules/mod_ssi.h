@@ -42,7 +42,8 @@
 #include <pro/uhttp/mediatypes.h>
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTPModSsi Server side includes
+ * \ingroup xgUHTTPModules
  */
 /*@{*/
 

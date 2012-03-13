@@ -36,7 +36,10 @@
  */
 
 /*!
- * $Id$
+ * \file pro/uhttp/uhttpd.h
+ * \brief Micro HTTP library.
+ *
+ * \verbatim File version $Id$ \endverbatim
  */
 
 #include <cfg/http.h>
@@ -49,7 +52,29 @@
 #endif
 
 /*!
- * \addtogroup xgUHTTP
+ * \addtogroup xgUHTTP uHTTP
+ * \ingroup xgUserPro
+ * \brief Micro hypertext transfer protocol library.
+ *
+ * This is the second version of a HTTP library for Nut/OS. It has been
+ * introduced in Nut/OS 5.0 and may later replace the original
+ * \ref xgHTTPD "HTTP library".
+ *
+ * The main advantage of this new version is its flexibility, which not
+ * only allows to replace almost any default behavior, but also offers
+ * various ways to extend its capabilities without modification of the
+ * original source code. To give an example: The list of hard coded media
+ * types can be configured with the Nut/OS Configurator. Furthermore, new
+ * media types may be either added to this list to be processed by a
+ * default handler or may be processed by an application specific handler.
+ * In the old library new media types had to be added to the hard coded
+ * default list, modifying the original source code.
+ *
+ * Operating system (Nut/OS) dependent functions are no longer
+ * scattered in the source code. Instead, they are collected in a single
+ * module, which makes porting the library to other operating systems
+ * quite easy. So far the code had been successfully tested on Windows and
+ * a Linux port will probably follow some day.
  */
 /*@{*/
 
@@ -329,4 +354,12 @@ extern const char *HttpArgValueSub(const char *str, const char *name, int *len);
 void HttpdClientHandler(HTTP_STREAM *sp);
 
 /*@}*/
+
+/*!
+ * \defgroup xgUHTTPModules Modules
+ * \ingroup xgUHTTP
+ */
+/*@{*/
+/*@}*/
+
 #endif

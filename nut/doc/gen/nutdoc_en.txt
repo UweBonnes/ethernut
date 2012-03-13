@@ -931,7 +931,8 @@
  * \ingroup xgUserPro
  * \brief Hypertext transfer protocol
  *
- * A read-only file system is sufficient to run an HTTP server.
+ * New applications should no longer use this first version of a HTTP library,
+ * but instead use the newer \ref xgUHTTP "Micro HTTP library".
  */
 
 /*!

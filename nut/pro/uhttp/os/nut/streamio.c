@@ -76,7 +76,7 @@ int StreamClientAccept(HTTP_CLIENT_HANDLER handler, const char *params)
     for (;;) {
         sock = NutTcpCreateSocket();
         if (sock) {
-            static uint16_t mss = 1460;
+            static uint16_t mss = 1024; //1460;
             static uint16_t tcpbufsiz = 23360;
 
             NutTcpSetSockOpt(sock, TCP_MAXSEG, &mss, sizeof(mss));

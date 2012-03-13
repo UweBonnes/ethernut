@@ -47,7 +47,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*@cond */
 ISC_LIST(HTTP_ENVVAR_ENTRY) envVarList = ISC_LIST_INITIAL_TYPE(HTTP_ENVVAR_ENTRY);
+/*@endcond */
 
 const char* HttpSessionInfo(HTTPD_SESSION *hs, int item)
 {
