@@ -58,9 +58,11 @@
 
 
 /*!
- * \addtogroup xgNutArchUnixOsContext
+ * \addtogroup xgNutArchUnixOsContext Context Switching for Linux Emulation
+ * \ingroup xgNutArchUnixOs
+ * \brief Context Switching for the UNIX emulator.
  */
-/*@{*/
+ /*@{*/
 
 /* reused parameters for other calls */
 pthread_attr_t attr;
@@ -74,7 +76,6 @@ pthread_cond_t main_cv;
 /* level of critical sections entered but not left outside a thread */
 uint16_t main_cs_level;
 
-/* has to be initialized once */
 void NutThreadInit(void)
 {
     /* Initialize mutex and condition variable objects */
@@ -128,18 +129,6 @@ static void *NutThreadEntry(void *arg)
     return NULL;
 }
 
-/*!
- * \brief Switch to another thread.
- *
- * Stop the current thread, saving its context. Then start the
- * one with the highest priority, which is ready to run.
- *
- * Application programs typically do not call this function.
- *
- * \note CPU interrupts must be disabled before calling this function.
- *
- * \note which means NutEnterCritical was called before
- */
 void NutThreadSwitch(void);
 void NutThreadSwitch(void)
 {
@@ -167,27 +156,6 @@ void NutThreadSwitch(void)
     NutExitCritical();
 }
 
-
-
-
-/*!
- * \brief Create a new thread.
- *
- * If the current thread's priority is lower or equal than the default 
- * priority (64), then the current thread is stopped and the new one 
- * is started.
- *
- * \param name      String containing the symbolic name of the new thread, 
- *                  up to 8 characters long.
- * \param fn        The thread's entry point, typically created by the 
- *                  THREAD macro.
- * \param arg       Argument pointer passed to the new thread.
- * \param stackSize Number of bytes of the stack space allocated for 
- *                  the new thread.
- *
- * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
- *         error.
- */
 HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     NUTTHREADINFO *td;

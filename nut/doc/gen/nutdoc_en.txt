@@ -289,74 +289,6 @@
  * \brief Nut/OS configuration structure.
  */
  
-/*!
- * \defgroup xgThread Thread Management
- * \ingroup xgNutOS
- * \anchor xrThread
- * \brief Cooperative multi-threading support.
- *
- * Typically Nut/OS is at its most useful where there are several
- * concurrent tasks that need to be undertaken at the same time.
- * To support this requirement, Nut/OS offers some kind of light
- * processes called threads. In this context a thread is a sequence
- * of executing software that can be considered to be logically
- * independent from other software that is running on the same CPU.
- *
- * All threads are executing in the same address space using the
- * same hardware resources, which significantly reduces task switching
- * overhead. Therefore it is important to stop them from causing
- * each other problems. This is particularly an issue where two or
- * more threads need to share a resources like memory locations or
- * peripheral devices.
- *
- * The system works on the principle that the most urgent thread
- * always runs. One exception to this is if a CPU interrupt arrives
- * and the interrupt has not been disabled. Each thread has a
- * priority which is used to determine how urgent it is. This
- * priority ranges from 0 to 255, with the lowest value indicating
- * the most urgent.
- *
- * Nut/OS implements cooperative multithreading. That means,
- * that threads are not bound to a fixed timeslice. Unless
- * they are waiting for specific event or explicitely yielding
- * the CPU, they can rely on not being stopped unexpectedly.
- * However, they may be interrupted by hardware interrupt
- * signals. In opposite to pre-emptive multithreading,
- * coorperative multithreading simplifies resource sharing
- * and results in faster and smaller code.
- *
- * \todo Using the special priority 255 to kill a thread is not 
- * required and should be removed.
- *
- * To specify a function named Back as an independant thread, one can write
- * \code
- * #include <sys/thread.h>
- *
- * THREAD(Back, arg)
- * {
- *     for (;;) {
- *         NutSleep(1000);
- *     }
- * } 
- * \endcode
- *
- * To start this thread, use
- * \code
- * #include <sys/thread.h>
- *
- * /* Other code here... */
- *
- * NutThreadCreate("Bg", Back, NULL, 512);
- * /* Execution continues here and concurrently in the background thread.
- * \endcode
- *
- * The functions listed below are hardware independant. Additional
- * API calls are located in the architecture dependant sections.
- * - \ref xgNutArchAvrOsContextGcc "AVR with GNU Compiler"
- * - \ref xgNutArchAvrOsContextGcc "AVR with ImageCraft Compiler"
- * - \ref xgNutArchArmOsContext "ARM"
- * - \ref xgNutArchUnixOsContext "Emulator (UNIX)"
- */
 
 /*!
  * \defgroup xgEvent Event Management
@@ -1824,18 +1756,6 @@
  * \ingroup xgNutArchAvr
  * \brief Hardware dependant functions used by Nut/OS.
  */
-
-/*!
- * \defgroup xgNutArchAvrOsContextGcc GCC Context Switch
- * \ingroup xgNutArchAvrOs
- * \brief Thread context switching for avr-gcc.
- */
- 
-/*!
- * \defgroup xgNutArchAvrOsContextIcc ICC Context Switch
- * \ingroup xgNutArchAvrOs
- * \brief Thread context switching for ImageCraft ICCAVR.
- */
  
 /*!
  * \defgroup xgNutArchAvrDev Device Drivers
@@ -2369,14 +2289,6 @@
  * \ingroup xgNutArchArm
  * \brief Hardware dependant functions used by Nut/OS.
  */
-
-/*!
- * \defgroup xgNutArchArmOsContext Context Switching
- * \ingroup xgNutArchArmOs
- * \brief Context Switching for GNUARM
- *
- * This code should work with other GCC distributions for the ARM CPU.
- */
  
 /*!
  * \defgroup xgNutArchArmOsTimerAt91 AT91 System Timer
@@ -2503,12 +2415,6 @@
  * \brief Hardware dependant functions used by Nut/OS.
  */
 
-/*!
- * \defgroup xgNutArchUnixOsContext Context Switching
- * \ingroup xgNutArchUnixOs
- * \brief Context Switching for the UNIX emulator.
- */
- 
 /*!
  * \defgroup xgNutArchUnixOsTimer System Timer
  * \ingroup xgNutArchUnixOs

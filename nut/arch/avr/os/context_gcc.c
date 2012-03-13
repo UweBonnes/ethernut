@@ -31,84 +31,11 @@
  *
  */
 
-/*
- * $Log$
- * Revision 1.13  2009/02/06 15:41:00  haraldkipp
- * Added stack checking code for AVR.
+/*!
+ * \file arch/avr/os/context_gcc.c
+ * \brief Context switching ported to AVR GCC.
  *
- * Revision 1.12  2009/01/17 11:26:38  haraldkipp
- * Getting rid of two remaining BSD types in favor of stdint.
- * Replaced 'u_int' by 'unsinged int' and 'uptr_t' by 'uintptr_t'.
- *
- * Revision 1.11  2008/08/11 06:59:39  haraldkipp
- * BSD types replaced by stdint types (feature request #1282721).
- *
- * Revision 1.10  2008/06/15 16:58:39  haraldkipp
- * Rolled back to version 1.8.
- *
- * Revision 1.8  2007/05/02 11:25:08  haraldkipp
- * Minor typo with big impact. Extended PC never set in context switch
- * frame.
- * Replaced __AVR_ATmega2561__ by __AVR_3_BYTE_PC__.
- * Removed unused local variable paddr.
- *
- * Revision 1.7  2007/04/12 09:19:00  haraldkipp
- * Added extended program counter byte for the ATmega2561. Code above 128k not
- * working, though.
- *
- * Revision 1.6  2006/09/29 12:27:31  haraldkipp
- * All code should use dedicated stack allocation routines. For targets
- * allocating stack from the normal heap the API calls are remapped by
- * preprocessor macros.
- *
- * Revision 1.5  2006/03/16 15:25:09  haraldkipp
- * Changed human readable strings from u_char to char to stop GCC 4 from
- * nagging about signedness.
- *
- * Revision 1.4  2005/10/04 05:17:15  hwmaier
- * Added support for separating stack and conventional heap as required by AT09CAN128 MCUs
- *
- * Revision 1.3  2005/08/18 15:36:36  christianwelzel
- * Fixed bug in handling of NUTDEBUG.
- *
- * Revision 1.2  2005/08/02 17:46:46  haraldkipp
- * Major API documentation update.
- *
- * Revision 1.1  2005/07/26 18:10:48  haraldkipp
- * Moved from os/thread.c
- *
- * Revision 1.2  2005/07/14 08:55:57  freckle
- * Rewrote CS in NutThreadCreate
- *
- * Revision 1.1  2005/05/27 17:17:31  drsung
- * Moved the file
- *
- * Revision 1.6  2005/04/30 16:42:42  chaac
- * Fixed bug in handling of NUTDEBUG. Added include for cfg/os.h. If NUTDEBUG
- * is defined in NutConf, it will make effect where it is used.
- *
- * Revision 1.5  2005/02/16 19:55:18  haraldkipp
- * Ready-to-run queue handling removed from interrupt context.
- * Avoid AVRGCC prologue and epilogue code. Thanks to Pete Allinson.
- *
- * Revision 1.4  2005/02/10 07:06:48  hwmaier
- * Changes to incorporate support for AT90CAN128 CPU
- *
- * Revision 1.3  2004/09/22 08:15:56  haraldkipp
- * Speparate IRQ stack configurable
- *
- * Revision 1.2  2004/04/25 17:06:17  drsung
- * Separate IRQ stack now compatible with nested interrupts.
- *
- * Revision 1.1  2004/03/16 16:48:46  haraldkipp
- * Added Jan Dubiec's H8/300 port.
- *
- * Revision 1.2  2004/02/18 16:32:48  drsung
- * Bugfix in NutThreadCreate. Thanks to Mike Cornelius.
- *
- * Revision 1.1  2004/02/01 18:49:48  haraldkipp
- * Added CPU family support
- *
+ * \verbatim File version $Id$ \endverbatim
  */
 
 #include <cfg/os.h>
@@ -128,7 +55,9 @@
 #endif
 
 /*!
- * \addtogroup xgNutArchAvrOsContextGcc
+ * \addtogroup xgNutArchAvrOsContextGcc GCC Context Switching for AVR CPUs
+ * \ingroup xgNutArchAvrOs
+ * \brief Thread context switching for avr-gcc.
  */
 /*@{*/
 
@@ -218,18 +147,6 @@ static void NutThreadEntry(void)
         );
 }
 
-
-/*!
- * \brief Switch to another thread.
- *
- * Stop the current thread, saving its context. Then start the
- * one with the highest priority, which is ready to run.
- *
- * Application programs typically do not call this function.
- *
- * \note CPU interrupts must be disabled before calling this function.
- *
- */
 void NutThreadSwitch(void) __attribute__ ((noinline)) __attribute__ ((naked));
 void NutThreadSwitch(void)
 {
@@ -300,24 +217,6 @@ void NutThreadSwitch(void)
     );
 }
 
-/*!
- * \brief Create a new thread.
- *
- * If the current thread's priority is lower or equal than the default
- * priority (64), then the current thread is stopped and the new one
- * is started.
- *
- * \param name      String containing the symbolic name of the new thread,
- *                  up to 8 characters long.
- * \param fn        The thread's entry point, typically created by the
- *                  THREAD macro.
- * \param arg       Argument pointer passed to the new thread.
- * \param stackSize Number of bytes of the stack space allocated for
- *                  the new thread.
- *
- * \return Pointer to the NUTTHREADINFO structure or 0 to indicate an
- *         error.
- */
 HANDLE NutThreadCreate(char * name, void (*fn) (void *), void *arg, size_t stackSize)
 {
     uint8_t *threadMem;
