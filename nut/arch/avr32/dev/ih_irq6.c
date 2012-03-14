@@ -112,7 +112,7 @@ static int Interrupt6Ctl(int cmd, void *param)
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Setup Peripheral mux for interrupt line */
-        gpio_enable_module_pin(AVR32_EIC_EXTINT_6_PIN, AVR32_EIC_EXTINT_6_FUNCTION);
+        gpio_enable_module_pin(INTERRUPT6_ALT_PIN, INTERRUPT6_ALT_PINSET);
         /* Set the vector. */
         register_interrupt(Interrupt6Entry, AVR32_EIC_IRQ_6, NUT_IRQPRI_IRQ6);
         /* Initialize to edge triggered with defined priority. */

@@ -1,3 +1,4 @@
+#if 0
 /*!
  * Copyright (C) 2001-2010 by egnite Software GmbH
  *
@@ -492,3 +493,4 @@ int gpio_configure_pin_periph_event_mode(unsigned int pin, unsigned int mode, un
 #endif
 
 //! @}
+#endif

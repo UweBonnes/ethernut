@@ -283,6 +283,7 @@ avr32_ld_description = {
                         uc3a3256_rom_extram = "AT32UC3A3256, code running in FLASH, data in external SDRAM",
                         uc3a0256_rom        = "AT32UC3A0256, code running in FLASH",
                         uc3b164_rom         = "AT32UC3B164, code running in FLASH",
+                        uc3l064_rom         = "AT32UC3B164, code running in FLASH",
 }
 
 
@@ -293,7 +294,8 @@ avr32_ld_choice = {
 					"uc3a3256_rom",
 					"uc3a3256_rom_extram",
 					"uc3a0256_rom",
-					"uc3b164_rom"
+					"uc3b164_rom",
+					"uc3l064_rom"
 }
 
 arm_ld_description = {

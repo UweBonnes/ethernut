@@ -217,6 +217,36 @@ nutarch_avr32 =
                 flavor = "booldata",
                 file = "include/cfg/clock.h"
             },
+            {
+                macro = "DFLL_CPU_FREQ",
+                brief = "DFLL CPU Frequency",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "For the AT32UC3L, the DFLL is set based on a target frequency value ",
+                requires = { "HW_DFLL_AVR32" },
+                default = "12000000",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "DFLL_CPU_IMUL",
+                brief = "DFLL CPU Integer multiplier",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "For the AT32UC3L, the DFLL is set based on a target frequency value ",
+                requires = { "HW_DFLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
+            {
+                macro = "DFLL_CPU_FMUL",
+                brief = "DFLL CPU Fraction multiplier",
+                description = "Make sure to read the datasheet before modifying this value.\n\n"..
+                              "For the AT32UC3L, the DFLL is set based on a target frequency value ",
+                requires = { "HW_DFLL_AVR32" },
+                default = "0",
+                flavor = "booldata",
+                file = "include/cfg/clock.h"
+            },
         },
     },
     
@@ -403,11 +433,6 @@ nutarch_avr32 =
         provides = { "DEV_IRQ_AVR32" },
         sources =
         {
-            "avr32/dev/ih_uart0.c",
-            "avr32/dev/ih_uart1.c",
-            "avr32/dev/ih_uart2.c",
-			"avr32/dev/ih_rtc.c",
-            "avr32/dev/ih_macb.c",
             "avr32/dev/ih_irq0.c",
             "avr32/dev/ih_irq1.c",
             "avr32/dev/ih_irq2.c",
@@ -419,6 +444,133 @@ nutarch_avr32 =
             "avr32/dev/ih_nmi.c",
             "avr32/dev/ihndlr.c",
         },
+        options =
+        {
+			{
+				macro = "INTERRUPT0_ALT_PIN",
+				brief = "External Interrupt 0 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT0_ALT_PINSET",
+				brief = "External Interrupt 0 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT1_ALT_PIN",
+				brief = "External Interrupt 1 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT1_ALT_PINSET",
+				brief = "External Interrupt 1 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT2_ALT_PIN",
+				brief = "External Interrupt 2 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT2_ALT_PINSET",
+				brief = "External Interrupt 2 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT3_ALT_PIN",
+				brief = "External Interrupt 3 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT3_ALT_PINSET",
+				brief = "External Interrupt 3 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT4_ALT_PIN",
+				brief = "External Interrupt 4 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT4_ALT_PINSET",
+				brief = "External Interrupt 4 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT5_ALT_PIN",
+				brief = "External Interrupt 5 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT5_ALT_PINSET",
+				brief = "External Interrupt 5 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT6_ALT_PIN",
+				brief = "External Interrupt 6 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT6_ALT_PINSET",
+				brief = "External Interrupt 6 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT7_ALT_PIN",
+				brief = "External Interrupt 7 Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT7_ALT_PINSET",
+				brief = "External Interrupt 7 Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+            {
+                macro = "INTERRUPT_NMI_ENABLE",
+                brief = "Enable NMI",
+                description = "When selected, the driver will not support any handshake signals.",
+                flavor = "boolean",
+                file = "include/cfg/arch/avr32pio.h"
+            },
+			{
+				macro = "INTERRUPT_NMI_ALT_PIN",
+				brief = "External Interrupt NMI Pin",
+                type = "integer",
+                file = "include/cfg/arch/avr32pio.h"
+			},
+			{
+				macro = "INTERRUPT_NMI_ALT_PINSET",
+				brief = "External Interrupt NMI Alternative Pinset",
+                type = "enumerated",
+                choices = function() return GetAlternativePinsets() end,
+                file = "include/cfg/arch/avr32pio.h"
+			},
+		},
     },
 
     --
@@ -449,7 +601,11 @@ nutarch_avr32 =
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
-        sources = { "avr32/dev/usart0.c" },
+        sources = 
+		{ 
+			"avr32/dev/usart0.c",
+			"avr32/dev/ih_uart0.c"
+		},
         options =
         {
 			{
@@ -506,7 +662,11 @@ nutarch_avr32 =
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
-        sources = { "avr32/dev/usart1.c" },
+        sources = 
+		{ 
+			"avr32/dev/usart1.c",
+			"avr32/dev/ih_uart1.c",
+		},
         options =
         {
 			{
@@ -563,7 +723,11 @@ nutarch_avr32 =
                       "functions for the generic driver framework.",
         requires = { "HW_UART_AVR32", "HW_UART2_AVR32", "DEV_IRQ_AVR32", "NUT_EVENT", "CRT_HEAPMEM" },
         provides = { "DEV_UART_SPECIFIC" },
-        sources = { "avr32/dev/usart2.c" },
+        sources = 
+		{ 
+			"avr32/dev/usart2.c",
+			"avr32/dev/ih_uart2.c",
+		},
         options =
         {
 			{
@@ -619,7 +783,10 @@ nutarch_avr32 =
         description = "LAN driver for AVR32.",
         requires = { "HW_MACB_AVR32", "NUT_EVENT", "NUT_TIMER" },
         provides = { "NET_PHY" },
-        sources = { "avr32/dev/macb.c" },
+        sources = { 
+                    "avr32/dev/macb.c",
+                    "avr32/dev/ih_macb.c",
+        },
         options =
         {
             {
@@ -897,6 +1064,13 @@ nutarch_avr32 =
                 file = "include/cfg/spi.h"
             },
         },
+    },
+    {
+        name = "nutarch_avr32_rtcc",
+        brief = "RTC Controller",
+        description = "Routines for RTC.",
+        requires = { "HW_RTC_AVR32" },
+        sources = { "avr32/dev/ih_rtc.c" },
     },
     {
         name = "nutarch_avr32_flashc",

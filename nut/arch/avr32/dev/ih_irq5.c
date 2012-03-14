@@ -112,7 +112,7 @@ static int Interrupt5Ctl(int cmd, void *param)
     switch (cmd) {
     case NUT_IRQCTL_INIT:
         /* Setup Peripheral mux for interrupt line */
-        gpio_enable_module_pin(AVR32_EIC_EXTINT_5_PIN, AVR32_EIC_EXTINT_5_FUNCTION);
+        gpio_enable_module_pin(INTERRUPT5_ALT_PIN, INTERRUPT5_ALT_PINSET);
         /* Set the vector. */
         register_interrupt(Interrupt5Entry, AVR32_EIC_IRQ_5, NUT_IRQPRI_IRQ5);
         /* Initialize to edge triggered with defined priority. */

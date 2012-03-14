@@ -119,16 +119,25 @@ static int enable_module_pin(int avr32_bank, int mask, unsigned int function)
     case GPIO_CFG_PERIPHERAL0: // A function.
         gpio_port->pmr0c = mask;
         gpio_port->pmr1c = mask;
+#ifdef AVR32_GPIO_PMR2C
+		gpio_port->pmr2c = mask;
+#endif
         break;
 
     case GPIO_CFG_PERIPHERAL1: // B function.
         gpio_port->pmr0s = mask;
         gpio_port->pmr1c = mask;
+#ifdef AVR32_GPIO_PMR2C
+		gpio_port->pmr2c = mask;
+#endif
         break;
 
     case GPIO_CFG_PERIPHERAL2: // C function.
         gpio_port->pmr0c = mask;
         gpio_port->pmr1s = mask;
+#ifdef AVR32_GPIO_PMR2C
+		gpio_port->pmr2c = mask;
+#endif
         break;
 
     default:

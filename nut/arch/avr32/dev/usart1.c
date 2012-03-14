@@ -151,7 +151,7 @@ NUTDEVICE devUsartAvr321 = {
 #define SIG_UART        sig_UART1
 #define dcb_usart       dcb_usart1
 
-#define USARTn_BASE         AVR32_USART1
+#define USARTn_BASE         AVR32_USART1_ADDRESS
 #if UART1_ALT_PINSET == ALTERNATE_PIN_SET2
 # if defined(AVR32_USART1_TXD_0_0_PIN)
 #  define USART_RX_PIN        AVR32_USART1_RXD_0_1_PIN

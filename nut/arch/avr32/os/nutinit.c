@@ -97,18 +97,6 @@ extern void main(void *);
 #endif
 
 
-typedef union {
-    unsigned long fcr;
-    avr32_flashc_fcr_t FCR;
-} u_avr32_flashc_fcr_t;
-
-static void flashc_set_wait_state(unsigned int wait_state)
-{
-    u_avr32_flashc_fcr_t u_avr32_flashc_fcr = { AVR32_FLASHC.fcr };
-    u_avr32_flashc_fcr.FCR.fws = wait_state;
-    AVR32_FLASHC.fcr = u_avr32_flashc_fcr.fcr;
-}
-
 /*!
  * \brief Idle thread.
  *
@@ -155,67 +143,7 @@ THREAD(NutIdle, arg)
  */
 void NutInit(void)
 {
-    uint32_t CPUFrequency;
-
-    /* Switch main clock to Oscillator 0 */
-    pm_switch_to_osc0(&AVR32_PM, OSC0_VAL, AVR32_PM_OSCCTRL0_STARTUP_2048_RCOSC);
-
-    pm_pll_setup(&AVR32_PM, 0,  /* use PLL0     */
-                 PLL_MUL_VAL,   /* MUL          */
-                 PLL_DIV_VAL,   /* DIV          */
-                 0,             /* Oscillator 0 */
-                 16);           /* lockcount in main clock for the PLL wait lock */
-
-    /*
-     * This function will set a PLL option.
-     *
-     * pm             Base address of the Power Manager (i.e. &AVR32_PM)
-     * pll            PLL number 0
-     * pll_freq       Set to 1 for VCO frequency range 80-180MHz,
-     *                set to 0 for VCO frequency range 160-240Mhz.
-     * pll_div2       Divide the PLL output frequency by 2 (this settings does
-     *                not change the FVCO value)
-     * pll_wbwdisable 1 Disable the Wide-Bandwidth Mode (Wide-Bandwidth mode
-     *                allow a faster startup time and out-of-lock time). 0 to
-     *                enable the Wide-Bandwidth Mode.
-     */
-    pm_pll_set_option(&AVR32_PM, 0,     /* use PLL0 */
-                      PLL_FREQ_VAL,     /* pll_freq */
-                      PLL_DIV2_VAL,     /* pll_div2 */
-                      PLL_WBWD_VAL);    /* pll_wbwd */
-
-    /* Enable PLL0 */
-    pm_pll_enable(&AVR32_PM, 0);
-
-    /* Wait for PLL0 locked */
-    pm_wait_for_pll0_locked(&AVR32_PM);
-
-    /* Create PBA, PBB and HSB clock */
-    pm_cksel(&AVR32_PM, PLL_PBADIV_VAL, /* pbadiv */
-             PLL_PBASEL_VAL,    /* pbasel */
-             PLL_PBBDIV_VAL,    /* pbbdiv */
-             PLL_PBBSEL_VAL,    /* pbbsel */
-             PLL_HSBDIV_VAL,    /* hsbdiv */
-             PLL_HSBSEL_VAL);   /* hsbsel */
-
-    /* Calculate CPU frequency */
-    CPUFrequency = (OSC0_VAL * (PLL_MUL_VAL + 1)) / PLL_DIV_VAL;
-    CPUFrequency = (PLL_DIV2_VAL == 0) ? CPUFrequency : CPUFrequency >> 1;
-
-    if (PLL_HSBDIV_VAL > 0) {
-        CPUFrequency = CPUFrequency >> (PLL_HSBSEL_VAL + 1);
-    }
-
-    if (CPUFrequency > AVR32_FLASHC_FWS_0_MAX_FREQ) {
-        /*
-         * Set one wait-state (WS) for the flash controller if the 
-         * HSB/CPU is more than AVR32_FLASHC_FWS_0_MAX_FREQ.
-         */
-        flashc_set_wait_state(1);
-    }
-
-    /* Switch PLL to main clock */
-    pm_switch_to_clock(&AVR32_PM, AVR32_PM_MCSEL_PLL0);
+	Avr32InitClockTree();
 
 #ifdef EARLY_STDIO_DEV
     /* We may optionally initialize stdout as early as possible.
