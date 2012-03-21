@@ -95,6 +95,11 @@ if ENABLE_NUTDISC
 SUBDIRS += nut/tools/nutdisc
 endif
 
+if ENABLE_QNUTDISC
+SUBDIRS += nut/tools/qnutdisc
+endif
+
+
 dist-hook:
 	mkdir -p $(distdir)/nut/app
 	cp -R $(srcdir)/nut/app/* $(distdir)/nut/app

@@ -45,6 +45,12 @@ AC_ARG_ENABLE(nutdisc,
   [enable_nutdisc=yes]
 )
 
+AC_ARG_ENABLE(qnutdisc,
+  AS_HELP_STRING([--disable-qnutdisc],[disable qt based NutOs Discoverer]),
+  [],
+  [enable_qnutdisc=yes]
+)
+
 if test "x$enable_html_docs" = "xno"; then
   doxygen_ok=no
 else
@@ -76,6 +82,8 @@ AM_CONDITIONAL(ENABLE_CRUROM, test "x$enable_crurom" = "xyes")
 AM_CONDITIONAL(ENABLE_NUTCONF, test "x$enable_nutconf" = "xyes")
 AM_CONDITIONAL(ENABLE_QNUTCONF, test "x$enable_qnutconf" = "xyes")
 AM_CONDITIONAL(ENABLE_NUTDISC, test "x$enable_nutdisc" = "xyes")
+AM_CONDITIONAL(ENABLE_QNUTDISC, test "x$enable_qnutdisc" = "xyes")
+
 
 if test "x$enable_crurom" = "xyes"; then
   if test -d $srcdir/nut/tools/crurom; then
@@ -98,6 +106,12 @@ fi
 if test "x$enable_nutdisc" = "xyes"; then
   if test -d $srcdir/nut/tools/nutdisc; then
     AC_CONFIG_SUBDIRS(nut/tools/nutdisc)
+  fi
+fi
+
+if test "x$enable_qnutdisc" = "xyes"; then
+  if test -d $srcdir/nut/tools/qnutdisc; then
+    AC_CONFIG_SUBDIRS(nut/tools/qnutdisc)
   fi
 fi
 
