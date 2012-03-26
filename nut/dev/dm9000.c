@@ -843,7 +843,7 @@ THREAD(NicRxLanc, arg)
      * we may not have got a MAC address yet. Wait until a valid one
      * has been set.
      */
-    if (ETHER_IS_ZERO(ifn->if_mac) || ETHER_IS_BROADCAST(ifn->if_mac)) {
+    while (ETHER_IS_ZERO(ifn->if_mac) || ETHER_IS_BROADCAST(ifn->if_mac)) {
         NutSleep(10);
     }
 
