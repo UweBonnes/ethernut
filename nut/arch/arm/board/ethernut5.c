@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 by egnite GmbH
+ * Copyright 2010-2012 by egnite GmbH
  *
  * All rights reserved.
  *
@@ -91,6 +91,107 @@
 /*! \brief RTC wake-up. */
 #define PWRMAN_WAKEUP   0x80    
 /*@}*/
+
+#define ARM_TTD_DOM_LSB     5
+#define ARM_TTD_DOM(x)      ((x) << ARM_TTD_DOM_LSB)
+
+#define ARM_TTD_AP_PN_UN    0x000
+#define ARM_TTD_AP_PW_UN    0x400
+#define ARM_TTD_AP_PW_UR    0x800
+#define ARM_TTD_AP_PW_UW    0xC00
+
+#define ARM_TTD_INVALID     0x0
+#define ARM_TTD_COARSE_PAGE 0x1
+#define ARM_TTD_SECTION     0x12
+#define ARM_TTD_FINE_PAGE   0x3
+
+/* Noncacheable, nonbufferable */
+#define ARM_TTD_NC_NB       0x0
+/* Noncacheable, bufferable */
+#define ARM_TTD_NC_B        0x4
+/* Cacheable, write-through */
+#define ARM_TTD_C_WT        0x8
+/* Cacheable, write-back */
+#define ARM_TTD_C_WB        0xC
+
+#define ARM_SET_CP15_TTBR(val) __asm__ __volatile__("mcr p15, 0, %0, c2, c0, 0" :: "r"(val) : "cc")
+#define ARM_SET_CP15_DACR(val) __asm__ __volatile__("mcr p15, 0, %0, c3, c0, 0" :: "r"(val) : "cc")
+
+void __set_stacks(void) __attribute__ ((naked));
+
+void __init2(void) __attribute__ ((naked)) __attribute__ ((section(".init2.user")));
+void __init2(void)
+{
+    /*
+     * The watchdog is enabled after processor reset.
+     */
+#if defined(NUT_WDT_START)
+#if NUT_WDT_START
+    /* Configure the watchdog. */
+    outr(WDT_MR, NUT_WDT_START);
+#else
+    /* Disable the watchdog. */
+    outr(WDT_MR, WDT_WDDIS);
+#endif
+#endif
+    /*
+     * Enable external reset key.
+     */
+    outr(RSTC_MR, RSTC_KEY | RSTC_URSTEN);
+    /* Continue with runtime initialization. */
+    __set_stacks();
+}
+
+
+void __clear_bss(void) __attribute__ ((naked));
+
+void __init3(void) __attribute__ ((naked)) __attribute__ ((section(".init3.user")));
+void __init3(void)
+{
+    /* Enable instruction cache. */
+    ARM_SET_CP15_CR(ARM_GET_CP15_CR() | (1 << 12));
+
+    /* Continue with runtime initialization. */
+    __clear_bss();
+}
+
+void __call_rtos(void) __attribute__ ((naked));
+
+void __init4(void) __attribute__ ((naked)) __attribute__ ((section(".init4.user")));
+void __init4(void)
+{
+    static unsigned int *ttb = (unsigned int *) 0x20000000;
+    static const unsigned int dom = 0xC0000000;
+    static unsigned int i;
+
+    /* Set translation table base. */
+    ARM_SET_CP15_TTBR((unsigned int) ttb);
+    /* Do not check access permissions for domain 15. */
+    ARM_SET_CP15_DACR(dom);
+
+    for(i = 0; i < 4096; i++) {
+        ttb[i] = 0;
+    }
+    /* Set mapped internal SRAM section mapping. */
+    ttb[0x000] = 0x00000000 | ARM_TTD_AP_PW_UN | ARM_TTD_DOM(15) | ARM_TTD_C_WB | ARM_TTD_SECTION;
+    /* Set Flash memory section mapping. */
+    ttb[0x002] = 0x00200000 | ARM_TTD_AP_PW_UN | ARM_TTD_DOM(15) | ARM_TTD_C_WT | ARM_TTD_SECTION;
+    for(i = 0; i < 128; i++) {
+        ttb[0x200 + i] = (0x20000000 + (i << 20)) | ARM_TTD_AP_PW_UN | ARM_TTD_DOM(15) | ARM_TTD_C_WB | ARM_TTD_SECTION;
+    }
+    /* Set external NAND Flash mapping. */
+    for(i = 0; i < 256; i++) {
+        ttb[0x400 + i] = (0x40000000 + (i << 20)) | ARM_TTD_AP_PW_UN | ARM_TTD_DOM(15) | ARM_TTD_SECTION;
+    }
+    /* Set peripheral register mapping. */
+    ttb[0xFFF] = 0xFFF00000 | ARM_TTD_AP_PW_UN | ARM_TTD_DOM(15) | ARM_TTD_SECTION;
+
+    /* Finally enable the MMU and the data cache. */
+    ARM_SET_CP15_CR(ARM_GET_CP15_CR() | (1 << 12) | (1 << 2));
+
+    /* Continue with runtime initialization. */
+    __call_rtos();
+}
 
 /*!
  * \brief Delay loop.

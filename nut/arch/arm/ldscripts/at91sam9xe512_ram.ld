@@ -31,22 +31,18 @@
  */
 
 /*
- * $Log$
- * Revision 1.1  2008/08/06 12:51:04  haraldkipp
- * Added support for Ethernut 5 (AT91SAM9XE reference design).
- *
- * Revision 1.1  2006/08/31 19:08:53  haraldkipp
- * Added support for the AT91SAM9260 and Atmel's AT91SAM9260 Evaluation Kit.
- *
+ * $Id$
  */
 
+OUTPUT_ARCH(arm)
 ENTRY(_start)
 STARTUP(crtat91sam9xe512_ram.o)
 SEARCH_DIR(.)
 
 MEMORY
 {
-  ram(rw) : org = 0x20000000, len = 128M
+  iram(rw) : org = 0x00000000, len = 32K
+  xram(rw) : org = 0x20000000, len = 128M
 }
 
 SECTIONS
@@ -54,67 +50,118 @@ SECTIONS
   .text :
   {
     *(.vectors);
-    . = ALIGN(4);
-    *(.init0);
-    . = ALIGN(4);
-    *(.init1);
-    . = ALIGN(4);
-    *(.init2);
-    . = ALIGN(4);
-    *(.init3);
-    . = ALIGN(4);
-    *(.init4);
-    . = ALIGN(4);
-    *(.init5);
-    . = ALIGN(4);
-    *(.text);
-    . = ALIGN(4);
-    *(.text.*);
-    . = ALIGN(4);
-    *(.rodata*);
-    . = ALIGN(4);
-    *(.eh_frame*);
-    . = ALIGN(4);
+    /* Initialization code. */
+    . = ALIGN(16384); KEEP(*(.init0));
+    . = ALIGN(4); *(.init1.user);
+    . = ALIGN(4); *(.init1);
+    . = ALIGN(4); *(.init2.user);
+    . = ALIGN(4); *(.init2);
+    . = ALIGN(4); *(.init3.user);
+    . = ALIGN(4); *(.init3);
+    . = ALIGN(4); *(.init4.user);
+    . = ALIGN(4); *(.init4);
+    /* Exit handling. */
+    . = ALIGN(4); *(.exit0.user);
+    . = ALIGN(4); *(.exit0);
+    /* System and application code. */
+    . = ALIGN(4); *(.text .text.*);
     *(.glue_7t);
     . = ALIGN(4);
     *(.glue_7);
-  } > ram
+  } > xram
 
-  . = ALIGN(4);
+  .rodata :
+  {
+    *(.rodata .rodata.*)
+    *(.gnu.linkonce.r.*)
+    . = ALIGN(4);
+  } > xram
 
-  __etext = .;
-  PROVIDE (__etext = .);
+  .eh_frame :
+  {
+    KEEP (*(.eh_frame))
+    . = ALIGN(4);
+  } > xram
+
+  .ctors :
+  {
+    PROVIDE(__ctors_start__ = .);
+    KEEP(*(SORT(.ctors.*)))
+    KEEP(*(.ctors))
+    PROVIDE(__ctors_end__ = .);
+    . = ALIGN(4);
+  } > xram
+
+  .dtors :
+  {
+    PROVIDE(__dtors_start__ = .); 
+    KEEP(*(SORT(.dtors.*)))
+    KEEP(*(.dtors))
+    PROVIDE(__dtors_end__ = .);
+    . = ALIGN(4);
+  } > xram
 
   .data :
   {
-    PROVIDE (__data_start = .);
-    *(.data)
+    . = ALIGN(4); *(.data)
+    . = ALIGN(4); *(.data.*)
+    . = ALIGN(4); *(.ramfunc);
+    *(.gnu.linkonce.d*)
+    SORT(CONSTRUCTORS) /* this entry is in the Anglia example */
+    /* CONSTRUCTORS */ /* this entry is in the devkitarm script but not in the Anglia example */
     . = ALIGN(4);
-    *(.ramfunc)
-    _edata = .;
-    PROVIDE (__data_end = .);
-  } > ram
+  } > xram
 
   .bss :
   {
     PROVIDE (__bss_start = .);
     *(.bss)
+    *(.gnu.linkonce.b*)
     *(COMMON)
     . = ALIGN(4);
     PROVIDE (__bss_end = .);
-    . += 0x1000;
-    PROVIDE (__exp_stack = .);
-    . += 0x1000;
-    PROVIDE (__stack = .);
-    PROVIDE (__heap_start = .);
-  } > ram
+  } > xram
 
-  .stab 0 (NOLOAD) :
+  .stacks :
   {
-    [ .stab ]
-  }
-  .stabstr 0 (NOLOAD) :
-  {
-    [ .stabstr ]
-  }
+    /* Stacks for exception handlers and low level initialization. */
+    . = ALIGN(8); *(.stack);
+    PROVIDE (__stack = .);
+    /* All RAM beyond this point is occupied by the heap. */
+    PROVIDE (__heap_start = .);
+  } > xram
+
+  /* Stabs debugging sections.  */
+  .stab          0 : { *(.stab) }
+  .stabstr       0 : { *(.stabstr) }
+  .stab.excl     0 : { *(.stab.excl) }
+  .stab.exclstr  0 : { *(.stab.exclstr) }
+  .stab.index    0 : { *(.stab.index) }
+  .stab.indexstr 0 : { *(.stab.indexstr) }
+  .comment       0 : { *(.comment) }
+  /* DWARF debug sections.
+     Symbols in the DWARF debugging sections are relative to the beginning
+     of the section so we begin them at 0.  */
+  /* DWARF 1 */
+  .debug          0 : { *(.debug) }
+  .line           0 : { *(.line) }
+  /* GNU DWARF 1 extensions */
+  .debug_srcinfo  0 : { *(.debug_srcinfo) }
+  .debug_sfnames  0 : { *(.debug_sfnames) }
+  /* DWARF 1.1 and DWARF 2 */
+  .debug_aranges  0 : { *(.debug_aranges) }
+  .debug_pubnames 0 : { *(.debug_pubnames) }
+  /* DWARF 2 */
+  .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
+  .debug_abbrev   0 : { *(.debug_abbrev) }
+  .debug_line     0 : { *(.debug_line) }
+  .debug_frame    0 : { *(.debug_frame) }
+  .debug_str      0 : { *(.debug_str) }
+  .debug_loc      0 : { *(.debug_loc) }
+  .debug_macinfo  0 : { *(.debug_macinfo) }
+  /* SGI/MIPS DWARF 2 extensions */
+  .debug_weaknames 0 : { *(.debug_weaknames) }
+  .debug_funcnames 0 : { *(.debug_funcnames) }
+  .debug_typenames 0 : { *(.debug_typenames) }
+  .debug_varnames  0 : { *(.debug_varnames) }
 }
