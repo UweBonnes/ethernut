@@ -38,21 +38,48 @@
  * $Id$
  */
 
+#ifdef NUT_OS
+#include <sys/version.h>
+#include <dev/board.h>
+#include <dev/urom.h>
+#include <pro/dhcp.h>
+#endif
+
 #include <pro/uhttp/mediatypes.h>
 #include <pro/uhttp/modules/mod_auth_basic.h>
 #include <pro/uhttp/modules/mod_redir.h>
 
+#include <stdio.h>
+
 int main(void)
 {
+#ifdef NUT_OS
+    NutRegisterDevice(&DEV_CONSOLE, 0, 0);
+    freopen(DEV_CONSOLE_NAME, "w", stdout);
+#endif
+
     puts("uHTTP authentication sample\nBuild " __DATE__ " " __TIME__);
+
+#ifdef NUT_OS
+    NutRegisterDevice(&DEV_ETHER, 0, 0);
+    NutDhcpIfConfig(DEV_ETHER_NAME, NULL, 60000);
+    NutRegisterDevice(&devUrom, 0, 0);
+#endif
 
     StreamInit();
     MediaTypeInitDefaults();
     HttpRegisterRedir("", "/index.html", 301);
-    HttpRegisterAuthBasic("User Area", "user:pass");
-    HttpRegisterAuthBasic("Admin Area", "root:secret");
+    HttpRegisterAuthBasic("user", "user:pass", "User Login");
+    HttpRegisterAuthBasic("admin", "root:secret", "Admin Login");
 
-    StreamClientAccept(HttpdClientHandler, "8088");
+    StreamClientAccept(HttpdClientHandler, "80");
+
+    puts("Exit");
+#ifdef NUT_OS
+    for (;;) ;
+#endif
+
+    return 0;
 }
 
 #endif
