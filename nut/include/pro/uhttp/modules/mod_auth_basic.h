@@ -63,9 +63,11 @@ struct _AUTH_BASIC_ENTRY {
     /*! \brief Chain link. */
     ISC_LINK(AUTH_BASIC_ENTRY) auth_link;
     /*! \brief URL of protected area. */
-    char *auth_realm;
+    char *auth_path;
     /*! \brief Login user and password, separated by a colon. */
     char *auth_login;
+    /*! \brief Description of the resource. */
+    char *auth_realm;
 };
 
 /*!
@@ -101,17 +103,20 @@ struct _AUTH_BASIC_ENTRY {
  * }
  * \endcode
  *
- * \param realm URL of the area.
+ * \param path  Path to the protected resource.
  * \param login Required login to access the given resource or NULL to
  *              remove any previously registered protection for the given
  *              resource . To protect a resource, this string must contain
  *              a user name, followed by a colon followed by an unencrypted
  *              password.
+ * \param realm Description of the protected resource. This optional
+ *              parameter can be a NULL pointer, in which case the path
+ *              is used instead.
  *
  * \return 0 on success or -1 on error. Trying to add duplicate entries
  *         will be silently ignored.
  */
-extern int HttpRegisterAuthBasic(const char *realm, const char *login);
+extern int HttpRegisterAuthBasic(const char *path, const char *login, const char *realm);
 
 /*!
  * \brief Validate an authentication for a specified realm.

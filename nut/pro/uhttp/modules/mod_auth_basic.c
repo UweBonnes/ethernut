@@ -55,10 +55,10 @@ const AUTH_BASIC_ENTRY *HttpAuthBasicLookup(const char *resource, const char *lo
     for (auth = ISC_LIST_HEAD(authInfoList); auth; auth = ISC_LIST_NEXT(auth, auth_link)) {
         if (best) {
             /* Check if the leading part of the resource fits. */
-            i = strncasecmp(auth->auth_realm, resource, strlen(auth->auth_realm));
+            i = strncasecmp(auth->auth_path, resource, strlen(auth->auth_path));
         } else {
-            /* Check if realm and resouce fit exactly. */
-            i = strcasecmp(auth->auth_realm, resource);
+            /* Check if path and resouce fit exactly. */
+            i = strcasecmp(auth->auth_path, resource);
         }
         if (i < 0) {
             /* Items are in descending order. Thus, all items below
@@ -83,17 +83,17 @@ const AUTH_BASIC_ENTRY *HttpAuthBasicLookup(const char *resource, const char *lo
     return auth;
 }
 
-int HttpRegisterAuthBasic(const char *realm, const char *login)
+int HttpRegisterAuthBasic(const char *path, const char *login, const char *realm)
 {
     int rc = -1;
     AUTH_BASIC_ENTRY *auth;
     AUTH_BASIC_ENTRY *cur = NULL;
     int i = -1;
 
-    HTTP_ASSERT(realm != NULL);
+    HTTP_ASSERT(path != NULL);
 
     for (cur = ISC_LIST_HEAD(authInfoList); cur; cur = ISC_LIST_NEXT(cur, auth_link)) {
-        i = strcasecmp(cur->auth_realm, realm);
+        i = strcasecmp(cur->auth_path, path);
         if (i < 0) {
             /* Items are in descending order. Thus, all items below
                will not match, not even partially. */
@@ -115,7 +115,7 @@ int HttpRegisterAuthBasic(const char *realm, const char *login)
                 auth = cur;
                 cur = ISC_LIST_PREV(cur, auth_link);
                 ISC_LIST_UNLINK_TYPE(authInfoList, auth, auth_link, AUTH_BASIC_ENTRY);
-                free(auth->auth_realm);
+                free(auth->auth_path);
                 free(auth->auth_login);
                 free(auth);
                 /* Indicate success, but continue searching additional
@@ -128,10 +128,15 @@ int HttpRegisterAuthBasic(const char *realm, const char *login)
         /* Create a new entry. */
         auth = calloc(1, sizeof(AUTH_BASIC_ENTRY));
         if (auth) {
-            auth->auth_realm = strdup(realm);
-            if (auth->auth_realm) {
+            auth->auth_path = strdup(path);
+            if (auth->auth_path) {
                 auth->auth_login = strdup(login);
                 if (auth->auth_login) {
+                    if (realm) {
+                        auth->auth_realm = strdup(realm);
+                    } else {
+                        auth->auth_realm = NULL;
+                    }
                     if (cur) {
                         /* Insert entry, maintaining descending sort order. */
                         ISC_LIST_INSERTBEFORE(authInfoList, cur, auth, auth_link);
@@ -144,7 +149,7 @@ int HttpRegisterAuthBasic(const char *realm, const char *login)
                     rc = 0;
                     httpd_auth_validator = HttpAuthBasicValidate;
                 } else {
-                    free(auth->auth_realm);
+                    free(auth->auth_path);
                 }
             } else {
                 free(auth);
@@ -169,12 +174,12 @@ int HttpAuthBasicValidate(HTTPD_SESSION *hs)
         rc = 0;
     } else {
         /* Protected resource, check authentication. */
-        hs->s_req.req_realm = strdup(auth->auth_realm);
+        hs->s_req.req_realm = strdup(auth->auth_realm ? auth->auth_realm : auth->auth_path);
         if (hs->s_req.req_auth) {
             /* Accept basic authentication only. */
             if (strncasecmp(hs->s_req.req_auth, "Basic ", 6) == 0) {
                 HttpDecodeBase64(hs->s_req.req_auth + 6);
-                if (HttpAuthBasicLookup(hs->s_req.req_realm, hs->s_req.req_auth + 6, 0)) {
+                if (HttpAuthBasicLookup(auth->auth_path, hs->s_req.req_auth + 6, 0)) {
                     rc = 0;
                 }
             }
