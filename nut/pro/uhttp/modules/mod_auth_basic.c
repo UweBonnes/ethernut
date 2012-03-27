@@ -117,6 +117,7 @@ int HttpRegisterAuthBasic(const char *path, const char *login, const char *realm
                 ISC_LIST_UNLINK_TYPE(authInfoList, auth, auth_link, AUTH_BASIC_ENTRY);
                 free(auth->auth_path);
                 free(auth->auth_login);
+                free(auth->auth_realm);
                 free(auth);
                 /* Indicate success, but continue searching additional
                    logins for this resource. */
